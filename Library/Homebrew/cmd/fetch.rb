@@ -24,14 +24,49 @@
 
 require "formula"
 require "fetch"
+require "cli_parser"
 
 module Homebrew
   module_function
 
+  def fetch_args
+    Homebrew::CLI::Parser.new do
+      usage_banner <<~EOS
+        `fetch` [<options>] <formulae>
+
+        Download the source packages for the given <formulae>.
+        For tarballs, also print SHA-256 checksums.
+      EOS
+      switch "--HEAD",
+        description: "Fetch HEAD version instead of stable version."
+      switch "--devel",
+        description: "Fetch devel version instead of stable version."
+      switch :verbose,
+        description: "Do a verbose VCS checkout, if the URL represents a VCS. This is useful for "\
+                     "seeing if an existing VCS cache has been updated."
+      switch :force,
+        description: "Remove a previously cached version and re-fetch."
+      switch "--retry",
+        description: "Retry if a download fails or re-download if the checksum of a previously cached "\
+                    "version no longer matches."
+      switch "--deps",
+        description: "Download dependencies for any listed <formulae>."
+      switch "-s", "--build-from-source",
+        description: "Download the source rather than a bottle."
+      switch "--force-bottle",
+        description: "Download a bottle if it exists for the current or newest version of macOS, "\
+                     "even if it would not be used during installation."
+      switch :verbose
+      switch :debug
+    end
+  end
+
   def fetch
+    fetch_args.parse
+
     raise FormulaUnspecifiedError if ARGV.named.empty?
 
-    if ARGV.include? "--deps"
+    if args.deps?
       bucket = []
       ARGV.formulae.each do |f|
         bucket << f
@@ -100,7 +135,7 @@ module Homebrew
 
   def retry_fetch?(f)
     @fetch_failed ||= Set.new
-    if ARGV.include?("--retry") && @fetch_failed.add?(f)
+    if args.retry? && @fetch_failed.add?(f)
       ohai "Retrying download"
       f.clear_cache
       true
@@ -111,7 +146,7 @@ module Homebrew
   end
 
   def fetch_fetchable(f)
-    f.clear_cache if ARGV.force?
+    f.clear_cache if args.force?
 
     already_fetched = f.cached_download.exist?
 
