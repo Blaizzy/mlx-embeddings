@@ -87,6 +87,8 @@ class Keg
       "@loader_path/#{bad_name}"
     elsif file.mach_o_executable? && (lib + bad_name).exist?
       "#{lib}/#{bad_name}"
+    elsif bad_name.start_with? "@rpath"
+      bad_name.sub("@rpath", lib)
     elsif (abs_name = find_dylib(bad_name)) && abs_name.exist?
       abs_name.to_s
     else
@@ -97,7 +99,7 @@ class Keg
 
   def each_install_name_for(file, &block)
     dylibs = file.dynamically_linked_libraries
-    dylibs.reject! { |fn| fn =~ /^@(loader_|executable_|r)path/ }
+    dylibs.reject! { |fn| fn =~ /^@(loader_|executable_)path/ }
     dylibs.each(&block)
   end
 
