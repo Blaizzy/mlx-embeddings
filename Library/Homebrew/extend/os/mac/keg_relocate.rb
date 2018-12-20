@@ -78,14 +78,11 @@ class Keg
   def expand_rpath(file, bad_name)
     suffix = bad_name.sub(/^@rpath/, "")
 
-    # short circuit: we expect lib to be usually correct, so we try it first
-    return (lib / suffix) if (lib / suffix).exist?
-
     file.rpaths.each do |rpath|
-      return (rpath / suffix) if (rpath / suffix).exist?
+      return (rpath/suffix) if (rpath/suffix).exist?
     end
 
-    opoo "Could not expand an RPATH in #{file}"
+    opoo "Could not find library #{bad_name} for #{file}"
     bad_name
   end
 
