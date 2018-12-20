@@ -79,10 +79,10 @@ class Keg
     suffix = bad_name.sub(/^@rpath/, "")
 
     # short circuit: we expect lib to be usually correct, so we try it first
-    return (lib + suffix) if (lib + suffix).exist?
+    return (lib / suffix) if (lib / suffix).exist?
 
     file.rpaths.each do |rpath|
-      return (rpath + suffix) if (rpath + suffix).exist?
+      return (rpath / suffix) if (rpath / suffix).exist?
     end
 
     opoo "Could not expand an RPATH in #{file}"
@@ -101,7 +101,7 @@ class Keg
       "@loader_path/#{bad_name}"
     elsif file.mach_o_executable? && (lib + bad_name).exist?
       "#{lib}/#{bad_name}"
-    elsif bad_name.start_with? "@rpath"
+    elsif bad_name.start_with? "@rpath" && ENV["HOMEBREW_RELOCATE_RPATHS"]
       expand_rpath bad_name
     elsif (abs_name = find_dylib(bad_name)) && abs_name.exist?
       abs_name.to_s
