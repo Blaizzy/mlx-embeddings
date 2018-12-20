@@ -79,7 +79,7 @@ class Keg
     suffix = bad_name.sub(/^@rpath/, "")
 
     file.rpaths.each do |rpath|
-      return (rpath/suffix) if (rpath/suffix).exist?
+      return rpath/suffix if (rpath/suffix).exist?
     end
 
     opoo "Could not find library #{bad_name} for #{file}"
