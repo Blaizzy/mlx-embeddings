@@ -60,6 +60,10 @@ module MachOShim
     macho.dylib_id
   end
 
+  def rpaths
+    macho.rpaths
+  end
+
   def archs
     mach_data.map { |m| m.fetch :arch }.extend(ArchitectureListExtension)
   end
