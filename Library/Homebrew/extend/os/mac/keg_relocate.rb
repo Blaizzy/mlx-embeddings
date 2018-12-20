@@ -75,6 +75,20 @@ class Keg
     generic_fix_dynamic_linkage
   end
 
+  def expand_rpath(file, bad_name)
+    suffix = bad_name.sub(/^@rpath/, "")
+
+    # short circuit: we expect lib to be usually correct, so we try it first
+    return (lib + suffix) if (lib + suffix).exist?
+
+    file.rpaths.each do |rpath|
+      return (rpath + suffix) if (rpath + suffix).exist?
+    end
+
+    opoo "Could not expand an RPATH in #{file}"
+    bad_name
+  end
+
   # If file is a dylib or bundle itself, look for the dylib named by
   # bad_name relative to the lib directory, so that we can skip the more
   # expensive recursive search if possible.
@@ -88,7 +102,7 @@ class Keg
     elsif file.mach_o_executable? && (lib + bad_name).exist?
       "#{lib}/#{bad_name}"
     elsif bad_name.start_with? "@rpath"
-      bad_name.sub("@rpath", lib)
+      expand_rpath bad_name
     elsif (abs_name = find_dylib(bad_name)) && abs_name.exist?
       abs_name.to_s
     else
