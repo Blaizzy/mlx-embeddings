@@ -98,7 +98,7 @@ class Keg
       "@loader_path/#{bad_name}"
     elsif file.mach_o_executable? && (lib + bad_name).exist?
       "#{lib}/#{bad_name}"
-    elsif bad_name.start_with? "@rpath" && ENV["HOMEBREW_RELOCATE_RPATHS"]
+    elsif bad_name.start_with?("@rpath") && ENV["HOMEBREW_RELOCATE_RPATHS"]
       expand_rpath bad_name
     elsif (abs_name = find_dylib(bad_name)) && abs_name.exist?
       abs_name.to_s
