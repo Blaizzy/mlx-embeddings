@@ -64,6 +64,10 @@ module MachOShim
     macho.rpaths
   end
 
+  def delete_rpath(rpath)
+    macho.delete_rpath(rpath)
+  end
+
   def archs
     mach_data.map { |m| m.fetch :arch }.extend(ArchitectureListExtension)
   end

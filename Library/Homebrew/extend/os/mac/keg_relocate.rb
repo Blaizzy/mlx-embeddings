@@ -69,6 +69,15 @@ class Keg
           new_name = fixed_name(file, bad_name)
           change_install_name(bad_name, new_name, file) unless new_name == bad_name
         end
+
+        # If none of the install names reference RPATH(s), then we can safely
+        # remove all RPATHs from the file.
+        if file.dynamically_linked_libraries.none? { |lib| lib.start_with?("@rpath") }
+          # Note: This could probably be made more efficient by reverse-sorting
+          # the RPATHs by offset and calling MachOFile#delete_command
+          # with repopulate: false.
+          file.rpaths.each { |r| file.delete_rpath(r) }
+        end
       end
     end
 
