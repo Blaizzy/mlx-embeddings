@@ -18,6 +18,24 @@ describe "brew info", :integration_test do
       .and not_to_output.to_stderr
       .and be_a_success
   end
+
+  it "looks for a Cask with the same name if a given Formula does not exist" do
+    expect { brew "info", "basic-cask" }
+      .to output(/Searching for a cask with the name "basic-cask"/).to_stdout
+      .and output(/No available formula with the name "basic-cask"/).to_stderr
+  end
+
+  it "does not look for a Cask if a given Formula exists" do
+    RSpec::Matchers.define_negated_matcher :not_output, :output
+    expect { brew "info", "testball" }
+      .to not_output(/Searching for a cask with the name "testball"/).to_stdout
+      .and not_to_output.to_stderr
+  end
+
+  it "prints an error message if a given Cask does not exist" do
+    expect { brew "info", "non_existant_cask" }
+      .to output(/No Cask with this name exists./).to_stderr
+  end
 end
 
 describe Homebrew do
