@@ -42,10 +42,6 @@ require "formula"
 require "keg"
 require "tab"
 require "json"
-require_relative "../cask/cmd/abstract_command"
-require_relative "../cask/cmd/info"
-require_relative "../cask/cask_loader"
-require_relative "../cask/installer"
 
 module Homebrew
   module_function
@@ -129,11 +125,6 @@ module Homebrew
           # No formula with this name, try a missing formula lookup
           if (reason = MissingFormula.reason(f))
             $stderr.puts reason
-          end
-          begin
-            ohai "Searching for a cask with the name \"#{f}\""
-            cask = Cask::CaskLoader.load(f)
-            Cask::Cmd::Info.info(cask)
           end
         end
       end
