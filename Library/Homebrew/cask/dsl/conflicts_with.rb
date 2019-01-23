@@ -25,6 +25,9 @@ module Cask
           instance_variable_set("@#{key}", instance_variable_get("@#{key}").merge([*value]))
         end
       end
+      def to_a
+        (@pairs.values)
+      end
     end
   end
 end
