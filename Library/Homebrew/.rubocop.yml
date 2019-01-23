@@ -64,10 +64,10 @@ Metrics/LineLength:
   IgnoredPatterns: ['#: ']
 
 # we won't change backward compatible predicate names
-# TODO: deprecate whitelisted names and move to compat
 Naming/PredicateName:
   Exclude:
     - 'compat/**/*'
+  # can't rename these
   NameWhitelist: is_32_bit?, is_64_bit?
 
 # whitelist those that are standard

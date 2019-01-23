@@ -208,7 +208,7 @@ class SoftwareSpec
   end
 
   def fails_with(compiler, &block)
-    odeprecated "fails_with :gcc_4_0" if compiler == :gcc_4_0
+    odisabled "fails_with :gcc_4_0" if compiler == :gcc_4_0
     compiler_failures << CompilerFailure.create(compiler, &block)
   end
 

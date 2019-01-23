@@ -31,10 +31,6 @@
 #:    source even if a bottle is provided. Dependencies will still be installed
 #:    from bottles if they are available.
 #:
-#:    If `HOMEBREW_BUILD_FROM_SOURCE` is set, regardless of whether `--build-from-source` was
-#:    passed, then both <formula> and the dependencies installed as part of this process
-#:    are built from source even if bottles are available.
-#:
 #:    If `--force-bottle` is passed, install from a bottle if it exists for the
 #:    current or newest version of macOS, even if it would not normally be used
 #:    for installation.

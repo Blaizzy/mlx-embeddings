@@ -1,8 +1,2 @@
-require "compat/extend/os/mac/utils/bottles"
 require "compat/os/mac"
-require "compat/requirements/x11_requirement"
-require "compat/requirements/xcode_requirement"
-require "compat/cask"
-require "compat/download_strategy"
 require "compat/formula"
-require "compat/tap"

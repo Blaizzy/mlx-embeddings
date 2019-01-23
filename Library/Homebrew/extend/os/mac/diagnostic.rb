@@ -15,7 +15,6 @@ module Homebrew
 
       def supported_configuration_checks
         %w[
-          check_build_from_source
           check_for_unsupported_macos
         ].freeze
       end

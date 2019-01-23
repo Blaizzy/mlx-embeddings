@@ -115,15 +115,6 @@ module Homebrew
         EOS
       end
 
-      def check_build_from_source
-        return unless ENV["HOMEBREW_BUILD_FROM_SOURCE"]
-
-        <<~EOS
-          You have HOMEBREW_BUILD_FROM_SOURCE set.
-          #{please_create_pull_requests}
-        EOS
-      end
-
       # Anaconda installs multiple system & brew dupes, including OpenSSL, Python,
       # sqlite, libpng, Qt, etc. Regularly breaks compile on Vim, MacVim and others.
       # Is flagged as part of the *-config script checks below, but people seem

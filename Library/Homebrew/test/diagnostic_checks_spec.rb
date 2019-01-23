@@ -6,12 +6,6 @@ describe Homebrew::Diagnostic::Checks do
     expect(subject.inject_file_list(%w[/a /b], "foo:\n")).to eq("foo:\n  /a\n  /b\n")
   end
 
-  specify "#check_build_from_source" do
-    ENV["HOMEBREW_BUILD_FROM_SOURCE"] = "1"
-    expect(subject.check_build_from_source)
-      .to match("You have HOMEBREW_BUILD_FROM_SOURCE set.")
-  end
-
   specify "#check_for_anaconda" do
     mktmpdir do |path|
       anaconda = "#{path}/anaconda"

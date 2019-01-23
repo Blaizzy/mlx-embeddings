@@ -2510,7 +2510,7 @@ class Formula
     #   version '7.1'
     # end</pre>
     def fails_with(compiler, &block)
-      odeprecated "fails_with :gcc_4_0" if compiler == :gcc_4_0
+      odisabled "fails_with :gcc_4_0" if compiler == :gcc_4_0
       specs.each { |spec| spec.fails_with(compiler, &block) }
     end
 

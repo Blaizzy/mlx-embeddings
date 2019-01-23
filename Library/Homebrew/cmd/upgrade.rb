@@ -28,13 +28,10 @@ module Homebrew
   module_function
 
   def upgrade
-    # TODO: deprecate for next minor release.
     if ARGV.include?("--cleanup")
-      ENV["HOMEBREW_INSTALL_CLEANUP"] = "1"
-      odeprecated("'brew upgrade --cleanup'", "'HOMEBREW_INSTALL_CLEANUP'")
+      odisabled("'brew upgrade --cleanup'")
     elsif ENV["HOMEBREW_UPGRADE_CLEANUP"]
-      ENV["HOMEBREW_INSTALL_CLEANUP"] = "1"
-      odeprecated("'HOMEBREW_UPGRADE_CLEANUP'", "'HOMEBREW_INSTALL_CLEANUP'")
+      odisabled("'HOMEBREW_UPGRADE_CLEANUP'")
     end
 
     FormulaInstaller.prevent_build_flags unless DevelopmentTools.installed?

@@ -3,9 +3,6 @@
 #:
 #:    If `--display-times` is passed, install times for each formula are printed
 #:    at the end of the run.
-#:
-#:    If `HOMEBREW_INSTALL_CLEANUP` is set then remove previously installed versions
-#:    of upgraded <formulae> as well as the HOMEBREW_CACHE for that formula.
 
 require "formula_installer"
 require "development_tools"
@@ -23,9 +20,6 @@ module Homebrew
         `reinstall` [<option(s)>] <formula>:
 
         Uninstall and then install <formula> (with existing install options).
-
-        If `HOMEBREW_INSTALL_CLEANUP` is set then remove previously installed versions
-        of upgraded <formulae> as well as the HOMEBREW_CACHE for that formula.
       EOS
       switch "-s", "--build-from-source",
         description: "Compile the formula> from source even if a bottle is available."
