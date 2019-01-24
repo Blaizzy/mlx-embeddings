@@ -136,7 +136,9 @@ module Cask
         Actual:   #{Formatter.error(actual.to_s)}
         File:     #{path}
 
-        To retry an incomplete download, remove the file above.
+        To retry an incomplete download, remove the file above. If the issue persists, visit:
+
+          https://github.com/Homebrew/homebrew-cask/blob/master/doc/reporting_bugs/checksum_does_not_match_error.md
       EOS
     end
   end
