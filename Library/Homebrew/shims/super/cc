@@ -190,7 +190,7 @@ class Cmd
     when "-Xpreprocessor"
       # used for -Xpreprocessor -fopenmp
       args << arg << enum.next
-    when /-mmacosx-version-min=10\.(\d)/
+    when /-mmacosx-version-min=10\.(\d+)/
       arg = "-mmacosx-version-min=10.9" if high_sierra_or_later? && $1.to_i < 9
       args << arg
     when "--fast-math"
