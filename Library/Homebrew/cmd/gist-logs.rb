@@ -19,11 +19,39 @@ require "install"
 require "system_config"
 require "stringio"
 require "socket"
+require "cli_parser"
 
 module Homebrew
   module_function
 
+  def gist_logs_args
+    Homebrew::CLI::Parser.new do
+      usage_banner <<~EOS
+        `gist-logs` [<options>] <formula>:
+
+        Upload logs for a failed build of <formula> to a new Gist.
+
+        <formula> is usually the name of the formula to install, but it can be specified
+        in several different ways. See [SPECIFYING FORMULAE](#specifying-formulae).
+
+        If no logs are found, an error message is presented.
+      EOS
+      switch "--with-hostname",
+        description: "Include the hostname in the Gist."
+      switch "-n", "--new-issue",
+        description: "Automatically create a new issue in the appropriate GitHub repository as "\
+                     "well as creating the Gist."
+      switch "-p", "--private",
+        description: "The Gist will be marked private and will not appear in listings but will "\
+                     "be accessible with the link."
+      switch :verbose
+      switch :debug
+    end
+  end
+
   def gistify_logs(f)
+    gist_logs_args.parse
+
     files = load_logs(f.logs)
     build_time = f.logs.ctime
     timestamp = build_time.strftime("%Y-%m-%d_%H-%M-%S")
@@ -61,7 +89,7 @@ module Homebrew
     end
     url = create_gist(files, descr)
 
-    if ARGV.include?("--new-issue") || ARGV.switch?("n")
+    if args.new_issue?
       url = create_issue(f.tap, "#{f.name} failed to build on #{MacOS.full_version}", url)
     end
 
@@ -73,7 +101,7 @@ module Homebrew
     s = <<~EOS
       Homebrew build logs for #{f.full_name} on #{OS_VERSION}
     EOS
-    if ARGV.include?("--with-hostname")
+    if args.with_hostname?
       hostname = Socket.gethostname
       s << "Host: #{hostname}\n"
     end
@@ -115,7 +143,7 @@ module Homebrew
   end
 
   def create_private?
-    ARGV.include?("--private") || ARGV.switch?("p")
+    args.private?
   end
 
   def create_gist(files, description)
