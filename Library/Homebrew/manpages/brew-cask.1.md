@@ -35,10 +35,6 @@ graphical user interface.
   * `cat` <token> [ <token> ... ]:
     Dump the given Cask definition file to the standard output.
 
-  * `cleanup` [--outdated]:
-    Clean up cached downloads and tracker symlinks. With `--outdated`,
-    only clean up cached downloads older than 10 days old.
-
   * `create` <token>:
     Generate a Cask definition file for the Cask identified by <token>
     and open a template for it in your favorite editor.
