@@ -27,7 +27,9 @@ module Cask
       end
 
       def to_a
-        @pairs.values
+        conflicts={}
+        @pairs.each { |k, v| conflicts[k]=v }
+        conflicts
       end
     end
   end
