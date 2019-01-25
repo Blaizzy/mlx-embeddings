@@ -581,11 +581,9 @@ module Homebrew
 
             Without a correctly configured origin, Homebrew won't update
             properly. You can solve this by adding the Homebrew remote:
-              git -C "#{coretap_path}" remote add origin #{Formatter.url("https://github.com/Homebrew/homebrew-core.git")}
+              git -C "#{coretap_path}" remote add origin #{Formatter.url(CoreTap.instance.default_remote)}
           EOS
-        elsif origin !~ %r{Homebrew/homebrew-core(\.git|/)?$}
-          return if ENV["CI"] && origin.include?("Homebrew/homebrew-test-bot")
-
+        elsif origin !~ %r{#{CoreTap.instance.full_name}(\.git|/)?$}
           <<~EOS
             Suspicious #{CoreTap.instance} git origin remote found.
 
@@ -595,17 +593,22 @@ module Homebrew
 
             Unless you have compelling reasons, consider setting the
             origin remote to point at the main repository by running:
-              git -C "#{coretap_path}" remote set-url origin #{Formatter.url("https://github.com/Homebrew/homebrew-core.git")}
+              git -C "#{coretap_path}" remote set-url origin #{Formatter.url(CoreTap.instance.default_remote)}
           EOS
         end
+      end
 
+      def check_coretap_git_branch
         return if ENV["CI"]
+
+        coretap_path = CoreTap.instance.path
+        return if !Utils.git_available? || !(coretap_path/".git").exist?
 
         branch = coretap_path.git_branch
         return if branch.nil? || branch =~ /master/
 
         <<~EOS
-          Homebrew/homebrew-core is not on the master branch
+          #{CoreTap.instance.full_name} is not on the master branch
 
           Check out the master branch by running:
             git -C "$(brew --repo homebrew/core)" checkout master
