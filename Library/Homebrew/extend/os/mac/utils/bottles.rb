@@ -4,13 +4,7 @@ module Utils
       undef tag
 
       def tag
-        if MacOS.version >= :lion
-          MacOS.cat
-        elsif MacOS.version == :snow_leopard
-          Hardware::CPU.is_64_bit? ? :snow_leopard : :snow_leopard_32
-        else
-          "#{MacOS.cat}_64".to_sym
-        end
+        MacOS.cat
       end
     end
 

@@ -28,13 +28,9 @@ class XcodeRequirement < Requirement
         Xcode#{version} cannot be installed on macOS #{MacOS.version}.
         You must upgrade your version of macOS.
       EOS
-    elsif MacOS.version >= :lion
-      message + <<~EOS
-        Xcode can be installed from the App Store.
-      EOS
     else
       message + <<~EOS
-        Xcode can be installed from #{Formatter.url("https://developer.apple.com/download/more/")}.
+        Xcode can be installed from the App Store.
       EOS
     end
   end

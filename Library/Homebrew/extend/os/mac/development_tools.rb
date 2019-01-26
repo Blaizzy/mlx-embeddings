@@ -26,17 +26,7 @@ class DevelopmentTools
     end
 
     def default_compiler
-      case default_cc
-      when /^gcc/ then :gcc_4_2
-      when "clang" then :clang
-      else
-        # guess :(
-        if MacOS::Xcode.version >= "4.3"
-          :clang
-        else
-          :gcc_4_2
-        end
-      end
+      :clang
     end
 
     def curl_handles_most_https_certificates?
@@ -52,23 +42,10 @@ class DevelopmentTools
     end
 
     def installation_instructions
-      if MacOS.version >= "10.9"
-        <<~EOS
-          Install the Command Line Tools:
-            xcode-select --install
-        EOS
-      elsif MacOS.version == "10.8" || MacOS.version == "10.7"
-        <<~EOS
-          Install the Command Line Tools from
-            https://developer.apple.com/download/more/
-          or via Xcode's preferences.
-        EOS
-      else
-        <<~EOS
-          Install Xcode from
-            https://developer.apple.com/download/more/
-        EOS
-      end
+      <<~EOS
+        Install the Command Line Tools:
+          xcode-select --install
+      EOS
     end
 
     def custom_installation_instructions

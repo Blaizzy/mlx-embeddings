@@ -36,7 +36,7 @@ class SystemConfig
     end
 
     def clt
-      @clt ||= if MacOS::CLT.installed? && MacOS::Xcode.version >= "4.3"
+      @clt ||= if MacOS::CLT.installed?
         MacOS::CLT.version
       end
     end
@@ -59,7 +59,7 @@ class SystemConfig
       f.puts "CLT: #{clt || "N/A"}"
       f.puts "Xcode: #{xcode || "N/A"}"
       f.puts "CLT headers: #{clt_headers}" if MacOS::CLT.separate_header_package? && clt_headers
-      f.puts "XQuartz: #{xquartz}" if !MacOS::XQuartz.provided_by_apple? && xquartz
+      f.puts "XQuartz: #{xquartz}" if xquartz
     end
   end
 end

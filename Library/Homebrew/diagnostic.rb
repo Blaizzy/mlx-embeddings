@@ -190,8 +190,6 @@ module Homebrew
         # Static libs which are generally OK should be added to this list,
         # with a short description of the software they come with.
         white_list = [
-          "libsecurity_agent_client.a", # OS X 10.8.2 Supplemental Update
-          "libsecurity_agent_server.a", # OS X 10.8.2 Supplemental Update
           "libntfs-3g.a", # NTFS-3G
           "libntfs.a", # NTFS-3G
           "libublio.a", # NTFS-3G

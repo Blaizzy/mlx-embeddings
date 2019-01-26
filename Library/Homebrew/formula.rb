@@ -1034,7 +1034,7 @@ class Formula
   #     called or when brewing a formula.
   #     This is optional. You can use all the vars like #{version} here.
   #   EOS
-  #   s += "Some issue only on older systems" if MacOS.version < :mountain_lion
+  #   s += "Some issue only on older systems" if MacOS.version < :el_capitan
   #   s
   # end</pre>
   def caveats
@@ -2350,12 +2350,9 @@ class Formula
     # <pre># Optional and enforce that boost is built with `--with-c++11`.
     # depends_on "boost" => [:optional, "with-c++11"]</pre>
     # <pre># If a dependency is only needed in certain cases:
-    # depends_on "sqlite" if MacOS.version == :leopard
+    # depends_on "sqlite" if MacOS.version == :mavericks
     # depends_on :xcode # If the formula really needs full Xcode.
-    # depends_on :macos => :lion # Needs at least OS X Lion (10.7).
-    # depends_on :arch => :intel # If this formula only builds on Intel architecture.
-    # depends_on :arch => :x86_64 # If this formula only builds on Intel x86 64-bit.
-    # depends_on :arch => :ppc # Only builds on PowerPC?
+    # depends_on :macos => :mojave # Needs at least OS X Lion (10.14).
     # depends_on :x11 => :optional # X11/XQuartz components.
     # depends_on :osxfuse # Permits the use of the upstream signed binary or our source package.
     # depends_on :tuntap # Does the same thing as above. This is vital for Yosemite and above.</pre>
@@ -2366,8 +2363,6 @@ class Formula
     # depends_on "python3" => :optional</pre>
     # <pre># Python 2.7:
     # depends_on "python@2"</pre>
-    # <pre># Python 2.7 but use system Python where possible
-    # depends_on "python@2" if MacOS.version <= :snow_leopard</pre>
     def depends_on(dep)
       specs.each { |spec| spec.depends_on(dep) }
     end
@@ -2511,10 +2506,14 @@ class Formula
     # end</pre>
     def fails_with(compiler, &block)
       odisabled "fails_with :gcc_4_0" if compiler == :gcc_4_0
+      odisabled "fails_with :gcc_4_2" if compiler == :gcc_4_2
+      odisabled "fails_with :gcc" if compiler == :gcc && !block_given?
       specs.each { |spec| spec.fails_with(compiler, &block) }
     end
 
     def needs(*standards)
+      odisabled "needs :cxx11" if standards.include?(:cxx11)
+      odisabled "needs :cxx14" if standards.include?(:cxx14)
       specs.each { |spec| spec.needs(*standards) }
     end
 
