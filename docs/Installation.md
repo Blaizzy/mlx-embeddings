@@ -1,26 +1,27 @@
 # Installation
 
-The suggested and easiest way to install Homebrew is on the
+The supported and best way to install Homebrew is on the
 [homepage](https://brew.sh).
 
-The standard script installs Homebrew to `/usr/local` so that
+This script installs Homebrew to `/usr/local` so that
 [you don’t need sudo](FAQ.md#why-does-homebrew-say-sudo-is-bad) when you
 `brew install`. It is a careful script; it can be run even if you have stuff
 installed to `/usr/local` already. It tells you exactly what it will do before
-it does it too. And you have to confirm everything it will do before it starts.
+it does it too. You have to confirm everything it will do before it starts.
 
-## Requirements
+## macOS Requirements
 * An 64-bit Intel CPU <sup>[1](#1)</sup>
-* macOS 10.12 or higher <sup>[2](#2)</sup>
+* macOS 10.12 (or higher) <sup>[2](#2)</sup>
 * Command Line Tools (CLT) for Xcode: `xcode-select --install`,
   [developer.apple.com/downloads](https://developer.apple.com/downloads) or
   [Xcode](https://itunes.apple.com/us/app/xcode/id497799835) <sup>[3](#3)</sup>
-* A Bourne-compatible shell for installation (e.g. bash or zsh) <sup>[4](#4)</sup>
+* A Bourne-compatible shell for installation (e.g. `bash` or `zsh`) <sup>[4](#4)</sup>
 
 ## Alternative Installs
 
-### OS X Mountain Lion (10.8) and below
-Because GitHub now only allows clients that support TLS 1.2 to access repositories over HTTPS, the Homebrew installer will use the Git protocol when run on systems older than OS X Mavericks (10.9). This requires the availability of a `git` binary, which can be provided by pre-installing the [Command Line Tools for Xcode](https://developer.apple.com/download/more/). Homebrew will also require the Command Line Tools or Xcode in order to automatically compile and install a newer `curl` and `git` with support for TLS 1.2.
+### Linux or Windows 10 Subsystem for Linux
+
+Check out [the Linuxbrew installation documentation](Linuxbrew.md).
 
 ### Untar anywhere
 Just extract (or `git clone`) Homebrew wherever you want. Just avoid:
