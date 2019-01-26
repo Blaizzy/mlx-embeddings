@@ -79,20 +79,98 @@ require "development_tools"
 require "install"
 require "search"
 require "cleanup"
+require "cli_parser"
 
 module Homebrew
   module_function
 
   extend Search
 
-  def install
-    raise FormulaUnspecifiedError if ARGV.named.empty?
+  def install_args
+    Homebrew::CLI::Parser.new do
+      formulae_options = {}
+      usage_banner <<~EOS
+        `install` [<options>] formula
 
-    if ARGV.include? "--head"
-      raise "Specify `--HEAD` in uppercase to build from trunk."
+        Install <formula>.
+
+        <formula> is usually the name of the formula to install, but it can be specified
+        in several different ways. See [SPECIFYING FORMULAE](#specifying-formulae).
+      EOS
+
+      switch :debug,
+        description: "If brewing fails, open an interactive debugging session with access to IRB "\
+                     "or a shell inside the temporary build directory"
+      flag "--env=",
+        description: "If `std` is passed, use the standard build environment instead of superenv."\
+                     "If `super` is passed, use superenv even if the formula specifies the "\
+                     "standard build environment."
+      switch "--ignore-dependencies",
+        description: "Skip installing any dependencies of any kind. If they are not already "\
+                     "present, the formula will probably fail to install."
+      switch "--only-dependencies",
+        description: "Install the dependencies with specified options but do not install the "\
+                     "specified formula."
+      flag "--cc=",
+        description: "Attempt to compile using provided <compiler>. <compiler> should be the "\
+                     "name of the compiler's executable, for instance `gcc-7` for GCC 7. "\
+                     "In order to use LLVM's clang, use `llvm_clang`. To specify the "\
+                     "Apple-provided clang, use `clang`. This parameter will only accept "\
+                     "compilers that are provided by Homebrew or bundled with macOS. "\
+                     "Please do not file issues if you encounter errors while using this flag."
+      switch "-s", "--build-from-source",
+        description: "Compile the specified <formula> from source even if a bottle is provided. "\
+                     "Dependencies will still be installed from bottles if they are available."
+      switch "--force-bottle",
+        description: "Install from a bottle if it exists for the current or newest version of "\
+                     "macOS, even if it would not normally be used for installation."
+      switch "--include-test",
+        description: "Install testing dependencies required to run `brew test`."
+      switch "--devel",
+        description: "If <formula> defines it, install the development version."
+      switch "--HEAD",
+        description: "If <formula> defines it, install the HEAD version, aka master, trunk, unstable."
+      switch "--fetch-HEAD"
+      switch "--keep-tmp",
+        description: "Dont delele the temporary files created during installation."
+      switch "--build-bottle",
+        description: "Prepare the formula for eventual bottling during installation."
+      switch :force,
+        description: "Install without checking for previously installed keg-only or "\
+                     "non-migrated versions."
+      switch :verbose,
+        description: "Print the verification and postinstall steps."
+      switch "--display-times",
+        description: "Print install times for each formula at the end of the run."
+      switch "-i", "--interactive",
+        description: "Download and patch <formula>, then open a shell. This allows the user to "\
+                     "run `./configure --help` and otherwise determine how to turn the software "\
+                     "package into a Homebrew package."
+      switch "-g", "--git",
+        description: "Create a Git repository, useful for creating patches to the software."
+      ARGV.formulae.each do |f|
+        next if f.options.empty?
+        f.options.each do |option|
+          formulae_options[option.flag] = option.description
+        end
+      end
+      formulae_options.each do |option, description|
+        if option.end_with? "="
+          flag option,
+            description: description
+        else
+          switch option,
+            description: description
+        end
+      end
     end
+  end
 
-    unless ARGV.force?
+  def install
+    install_args.parse
+    raise FormulaUnspecifiedError if args.remaining.empty?
+
+    unless args.force?
       ARGV.named.each do |name|
         next if File.exist?(name)
         if name !~ HOMEBREW_TAP_FORMULA_REGEX && name !~ HOMEBREW_CASK_TAP_CASK_REGEX
@@ -108,14 +186,14 @@ module Homebrew
       formulae = []
 
       unless ARGV.casks.empty?
-        args = []
-        args << "--force" if ARGV.force?
-        args << "--debug" if ARGV.debug?
-        args << "--verbose" if ARGV.verbose?
+        cask_args = []
+        cask_args << "--force" if args.force?
+        cask_args << "--debug" if args.debug?
+        cask_args << "--verbose" if args.verbose?
 
         ARGV.casks.each do |c|
-          ohai "brew cask install #{c} #{args.join " "}"
-          system("#{HOMEBREW_PREFIX}/bin/brew", "cask", "install", c, *args)
+          ohai "brew cask install #{c} #{cask_args.join " "}"
+          system("#{HOMEBREW_PREFIX}/bin/brew", "cask", "install", c, *cask_args)
         end
       end
 
@@ -125,7 +203,7 @@ module Homebrew
 
       ARGV.formulae.each do |f|
         # head-only without --HEAD is an error
-        if !ARGV.build_head? && f.stable.nil? && f.devel.nil?
+        if !Homebrew.args.HEAD? && f.stable.nil? && f.devel.nil?
           raise <<~EOS
             #{f.full_name} is a head-only formula
             Install with `brew install --HEAD #{f.full_name}`
@@ -133,33 +211,33 @@ module Homebrew
         end
 
         # devel-only without --devel is an error
-        if !ARGV.build_devel? && f.stable.nil? && f.head.nil?
+        if !args.devel? && f.stable.nil? && f.head.nil?
           raise <<~EOS
             #{f.full_name} is a devel-only formula
             Install with `brew install --devel #{f.full_name}`
           EOS
         end
 
-        if ARGV.build_stable? && f.stable.nil?
+        if !(args.HEAD? || args.devel?) && f.stable.nil?
           raise "#{f.full_name} has no stable download, please choose --devel or --HEAD"
         end
 
         # --HEAD, fail with no head defined
-        if ARGV.build_head? && f.head.nil?
+        if args.head? && f.head.nil?
           raise "No head is defined for #{f.full_name}"
         end
 
         # --devel, fail with no devel defined
-        if ARGV.build_devel? && f.devel.nil?
+        if args.devel? && f.devel.nil?
           raise "No devel block is defined for #{f.full_name}"
         end
 
         installed_head_version = f.latest_head_version
         new_head_installed = installed_head_version &&
-                             !f.head_version_outdated?(installed_head_version, fetch_head: ARGV.fetch_head?)
+                             !f.head_version_outdated?(installed_head_version, fetch_head: args.fetch_HEAD?)
         prefix_installed = f.prefix.exist? && !f.prefix.children.empty?
 
-        if f.keg_only? && f.any_version_installed? && f.optlinked? && !ARGV.force?
+        if f.keg_only? && f.any_version_installed? && f.optlinked? && !args.force?
           # keg-only install is only possible when no other version is
           # linked to opt, because installing without any warnings can break
           # dependencies. Therefore before performing other checks we need to be
@@ -170,7 +248,7 @@ module Homebrew
               #{f.full_name} #{optlinked_version} is already installed
               To upgrade to #{f.version}, run `brew upgrade #{f.name}`
             EOS
-          elsif ARGV.only_deps?
+          elsif args.only_dependencies?
             formulae << f
           else
             opoo <<~EOS
@@ -178,12 +256,12 @@ module Homebrew
               To reinstall #{f.pkg_version}, run `brew reinstall #{f.name}`
             EOS
           end
-        elsif (ARGV.build_head? && new_head_installed) || prefix_installed
+        elsif (args.HEAD? && new_head_installed) || prefix_installed
           # After we're sure that --force flag is passed for linked to opt
           # keg-only we need to be sure that the version we're attempting to
           # install is not already installed.
 
-          installed_version = if ARGV.build_head?
+          installed_version = if args.HEAD?
             f.latest_head_version
           else
             f.pkg_version
@@ -202,7 +280,7 @@ module Homebrew
               #{msg}, it's just not linked
               You can use `brew link #{f}` to link this version.
             EOS
-          elsif ARGV.only_deps?
+          elsif args.only_dependencies?
             msg = nil
             formulae << f
           else
@@ -221,7 +299,7 @@ module Homebrew
             EOS
           end
           opoo msg
-        elsif f.migration_needed? && !ARGV.force?
+        elsif f.migration_needed? && !args.force?
           # Check if the formula we try to install is the same as installed
           # but not migrated one. If --force passed then install anyway.
           opoo <<~EOS
@@ -317,11 +395,11 @@ module Homebrew
     fi = FormulaInstaller.new(f)
     fi.options              = build_options.used_options
     fi.invalid_option_names = build_options.invalid_option_names
-    fi.ignore_deps          = ARGV.ignore_deps?
-    fi.only_deps            = ARGV.only_deps?
-    fi.build_bottle         = ARGV.build_bottle?
-    fi.interactive          = ARGV.interactive?
-    fi.git                  = ARGV.git?
+    fi.ignore_deps          = args.ignore_dependencies?
+    fi.only_deps            = args.only_dependencies?
+    fi.build_bottle         = args.build_bottle?
+    fi.interactive          = args.interactive?
+    fi.git                  = args.git?
     fi.prelude
     fi.install
     fi.finish
