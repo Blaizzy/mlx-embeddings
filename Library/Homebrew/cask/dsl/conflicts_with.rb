@@ -26,10 +26,8 @@ module Cask
         end
       end
 
-      def to_a
-        conflicts={}
-        @pairs.each { |k, v| conflicts[k]=v }
-        conflicts
+      def to_h
+        Hash[VALID_KEYS.map { |key| [key, instance_variable_get("@#{key}").to_a] }]
       end
     end
   end
