@@ -583,7 +583,7 @@ module Homebrew
             properly. You can solve this by adding the Homebrew remote:
               git -C "#{coretap_path}" remote add origin #{Formatter.url(CoreTap.instance.default_remote)}
           EOS
-        elsif origin !~ %r{#{CoreTap.instance.full_name}(\.git|/)?$}
+        elsif origin !~ %r{#{CoreTap.instance.full_name}(\.git|/)?$}i
           <<~EOS
             Suspicious #{CoreTap.instance} git origin remote found.
 
