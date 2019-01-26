@@ -5,11 +5,12 @@ can be created by anyone to provide their own formulae and/or external commands
 to any Homebrew user.
 
 ## Creating a tap
+
 A tap is usually a Git repository available online, but you can use anything as
 long as it’s a protocol that Git understands, or even just a directory with
 files in it.
 If hosted on GitHub, we recommend that the repository’s name start with
-`homebrew-` so the short `brew tap` command can be used. 
+`homebrew-` so the short `brew tap` command can be used.
 See the [manpage](Manpage.md) for more information on repository naming.
 
 Tap formulae follow the same format as the core’s ones, and can be added at the
@@ -20,7 +21,12 @@ easier to grasp, and top-level files are not mixed with formulae.
 See [homebrew/core](https://github.com/Homebrew/homebrew-core) for an example of
 a tap with a `Formula` subdirectory.
 
+## Naming your formulae to avoid clashes
+
+If your formulae have the same name as Homebrew/homebrew-core formulae they cannot be installed side-by-side. If you wish to create a different version of a formula that's in Homebrew/homebrew-core (e.g. with `option`s) consider giving it a different name e.g. `nginx-full` for more fully-featured `nginx` formula. This will allow both `nginx` and `nginx-full` to be installed at the same time (but not linked if there are conflicts and one of them is not declared to be `keg_only`.
+
 ### Installing
+
 If it’s on GitHub, users can install any of your formulae with
 `brew install user/repo/formula`. Homebrew will automatically add your
 `github.com/user/homebrew-repo` tap before installing the formula.
@@ -42,15 +48,18 @@ no core formula with the same name, or with `brew install user/repo/foo` to
 avoid conflicts.
 
 ## Maintaining a tap
+
 A tap is just a Git repository so you don’t have to do anything specific when
 making modifications, apart from committing and pushing your changes.
 
 ### Updating
+
 Once your tap is installed, Homebrew will update it each time a user runs
 `brew update`. Outdated formulae will be upgraded when a user runs
 `brew upgrade`, like core formulae.
 
 ## External commands
+
 You can provide your tap users with custom `brew` commands by adding them in a
 `cmd` subdirectory. [Read more on external commands](External-Commands.md).
 
