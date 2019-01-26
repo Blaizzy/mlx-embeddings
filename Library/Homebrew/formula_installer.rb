@@ -793,6 +793,17 @@ class FormulaInstaller
       return
     end
 
+    cask_installed_with_formula_name = begin
+      Cask::CaskLoader.load(formula.name).installed?
+    rescue Cask::CaskUnavailableError
+      false
+    end
+
+    if cask_installed_with_formula_name
+      ohai "#{formula.name} cask is installed, skipping link."
+      return
+    end
+
     if keg.linked?
       opoo "This keg was marked linked already, continuing anyway"
       keg.remove_linked_keg_record
