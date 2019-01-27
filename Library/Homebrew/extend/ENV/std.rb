@@ -100,11 +100,6 @@ module Stdenv
     dir/base.to_s.sub("gcc", "g++").sub("clang", "clang++")
   end
 
-  def gcc_4_2
-    super
-    set_cpu_cflags
-  end
-
   GNU_GCC_VERSIONS.each do |n|
     define_method(:"gcc-#{n}") do
       super()
@@ -145,14 +140,8 @@ module Stdenv
   end
 
   def cxx11
-    if compiler == :clang
-      append "CXX", "-std=c++11"
-      append "CXX", "-stdlib=libc++"
-    elsif compiler_with_cxx11_support?(compiler)
-      append "CXX", "-std=c++11"
-    else
-      raise "The selected compiler doesn't support C++11: #{compiler}"
-    end
+    append "CXX", "-std=c++11"
+    libcxx
   end
 
   def libcxx

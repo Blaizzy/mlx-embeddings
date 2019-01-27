@@ -4,7 +4,6 @@ module CompilerConstants
   GNU_GCC_REGEXP = /^gcc-(4\.9|[5-8])$/.freeze
   COMPILER_SYMBOL_MAP = {
     "gcc"        => :gcc,
-    "gcc-4.2"    => :gcc_4_2,
     "clang"      => :clang,
     "llvm_clang" => :llvm_clang,
   }.freeze
@@ -19,9 +18,11 @@ class CompilerFailure
   def version(val = nil)
     if val
       @version = Version.parse(val.to_s)
-    else
-      @version
+      if name.to_s == "clang" && val.to_i < 600
+        odisabled "'fails_with :clang' with 'build' < 600"
+      end
     end
+    @version
   end
 
   # Allows Apple compiler `fails_with` statements to keep using `build`
@@ -66,14 +67,6 @@ class CompilerFailure
   end
 
   COLLECTIONS = {
-    cxx11:  [
-      create(:gcc_4_2),
-      create(:clang) { build 425 },
-    ],
-    cxx14:  [
-      create(:clang) { build 600 },
-      create(:gcc_4_2),
-    ],
     openmp: [
       create(:clang),
     ],
@@ -86,9 +79,8 @@ class CompilerSelector
   Compiler = Struct.new(:name, :version)
 
   COMPILER_PRIORITY = {
-    clang:   [:clang, :gcc_4_2, :gnu, :llvm_clang],
-    gcc_4_2: [:gcc_4_2, :gnu, :clang],
-    gcc:     [:gnu, :gcc, :llvm_clang, :clang, :gcc_4_2],
+    clang: [:clang, :gnu, :llvm_clang],
+    gcc:   [:gnu, :gcc, :llvm_clang, :clang],
   }.freeze
 
   def self.select_for(formula, compilers = self.compilers)

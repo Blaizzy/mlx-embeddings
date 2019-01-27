@@ -117,18 +117,6 @@ module Hardware
       def feature?(name)
         features.include?(name)
       end
-
-      def can_run?(arch)
-        if is_32_bit?
-          arch_32_bit == arch
-        elsif intel?
-          (INTEL_32BIT_ARCHS + INTEL_64BIT_ARCHS).include?(arch)
-        elsif ppc?
-          (PPC_32BIT_ARCHS + PPC_64BIT_ARCHS).include?(arch)
-        else
-          false
-        end
-      end
     end
   end
 

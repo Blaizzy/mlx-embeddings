@@ -1,11 +1,6 @@
 module Language
   module Haskell
     module Cabal
-      def self.included(base)
-        # use llvm-gcc on Lion or below, as when building GHC)
-        base.fails_with(:clang) if MacOS.version <= :lion
-      end
-
       def cabal_sandbox(options = {})
         pwd = Pathname.pwd
         home = options[:home] || pwd

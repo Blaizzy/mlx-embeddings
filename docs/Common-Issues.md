@@ -4,7 +4,6 @@ This is a list of commonly encountered problems, known issues, and their solutio
 
 ### `brew` complains about absence of "Command Line Tools"
 You need to have the Xcode Command Line Utilities installed (and updated): run `xcode-select --install` in the terminal.
-(In OS X prior to 10.9, the "Command Line Tools" package can alternatively be installed from within Xcode. `⌘,` will get you to preferences. Visit the "Downloads" tab and hit the install button next to "Command Line Tools".)
 
 ### Ruby: `bad interpreter: /usr/bin/ruby^M: no such file or directory`
 You cloned with `git`, and your Git configuration is set to use Windows line endings. See this page: <https://help.github.com/articles/dealing-with-line-endings>
@@ -27,28 +26,6 @@ If `brew doctor` still complains about uncommitted modifications, also run this 
 ```sh
 cd $(brew --repository)/Library
 git clean -fd
-```
-
-### Ruby: `invalid multibyte escape: /^\037\213/`
-
-You see an error similar to:
-
-```
-Error: /usr/local/Library/Homebrew/download_strategy.rb:84: invalid multibyte escape: /^\037\213/
-invalid multibyte escape: /^\037\235/
-```
-
-In the past, Homebrew assumed that `/usr/bin/ruby` was Ruby 1.8. On OS X 10.9, it is now Ruby 2.0. There are various incompatibilities between the two versions, so if you upgrade to OS X 10.9 while using a sufficiently old version of Homebrew, you will encounter errors.
-
-The incompatibilities have been addressed in more recent versions of Homebrew, and instead of making assumptions about `/usr/bin/ruby`, it uses the executable inside macOS's Ruby framework or a vendored Ruby.
-
-To recover from this situation, do the following:
-
-```sh
-cd $(brew --prefix)
-git fetch origin
-git reset --hard FETCH_HEAD
-brew update
 ```
 
 ### `launchctl` refuses to load launchd plist files

@@ -10,6 +10,7 @@ installed to `/usr/local` already. It tells you exactly what it will do before
 it does it too. You have to confirm everything it will do before it starts.
 
 ## macOS Requirements
+
 * An 64-bit Intel CPU <sup>[1](#1)</sup>
 * macOS 10.12 (or higher) <sup>[2](#2)</sup>
 * Command Line Tools (CLT) for Xcode: `xcode-select --install`,
@@ -24,6 +25,7 @@ it does it too. You have to confirm everything it will do before it starts.
 Check out [the Linuxbrew installation documentation](Linuxbrew.md).
 
 ### Untar anywhere
+
 Just extract (or `git clone`) Homebrew wherever you want. Just avoid:
 
 * Directories with names that contain spaces. Homebrew itself can handle spaces, but many build scripts cannot.
@@ -40,9 +42,11 @@ mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar 
 ```
 
 ### Multiple installations
+
 Create a Homebrew installation wherever you extract the tarball. Whichever `brew` command is called is where the packages will be installed. You can use this as you see fit, e.g. a system set of libs in `/usr/local` and tweaked formulae for development in `~/homebrew`.
 
 ## Uninstallation
+
 Uninstallation is documented in the [FAQ](FAQ.md).
 
 <a name="1"><sup>1</sup></a> For 32-bit or PPC support see

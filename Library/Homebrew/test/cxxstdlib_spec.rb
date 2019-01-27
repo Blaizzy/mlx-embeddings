@@ -3,21 +3,13 @@ require "cxxstdlib"
 
 describe CxxStdlib do
   let(:clang) { described_class.create(:libstdcxx, :clang) }
-  let(:gcc) { described_class.create(:libstdcxx, :gcc) }
-  let(:gcc42) { described_class.create(:libstdcxx, :gcc_4_2) }
   let(:gcc6) { described_class.create(:libstdcxx, "gcc-6") }
   let(:gcc7) { described_class.create(:libstdcxx, "gcc-7") }
   let(:lcxx) { described_class.create(:libcxx, :clang) }
   let(:purec) { described_class.create(nil, :clang) }
 
   describe "#compatible_with?" do
-    specify "Apple libstdcxx intercompatibility" do
-      expect(clang).to be_compatible_with(gcc)
-      expect(clang).to be_compatible_with(gcc42)
-    end
-
     specify "compatibility with itself" do
-      expect(gcc).to be_compatible_with(gcc)
       expect(gcc7).to be_compatible_with(gcc7)
       expect(clang).to be_compatible_with(clang)
     end
@@ -49,8 +41,6 @@ describe CxxStdlib do
   describe "#apple_compiler?" do
     it "returns true for Apple compilers" do
       expect(clang).to be_an_apple_compiler
-      expect(gcc).to be_an_apple_compiler
-      expect(gcc42).to be_an_apple_compiler
     end
 
     it "returns false for non-Apple compilers" do

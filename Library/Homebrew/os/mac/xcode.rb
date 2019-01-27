@@ -9,10 +9,6 @@ module OS
 
       def latest_version
         case MacOS.version
-        when "10.5"  then "3.1.4"
-        when "10.6"  then "3.2.6"
-        when "10.7"  then "4.6.3"
-        when "10.8"  then "5.1.1"
         when "10.9"  then "6.2"
         when "10.10" then "7.2.1"
         when "10.11" then "8.2.1"
@@ -59,7 +55,7 @@ module OS
       end
 
       def without_clt?
-        version >= "4.3" && !MacOS::CLT.installed?
+        !MacOS::CLT.installed?
       end
 
       # Returns a Pathname object corresponding to Xcode.app's Developer
@@ -80,8 +76,6 @@ module OS
       end
 
       def toolchain_path
-        return if version < "4.3"
-
         Pathname.new("#{prefix}/Toolchains/XcodeDefault.xctoolchain")
       end
 
@@ -110,14 +104,14 @@ module OS
       end
 
       def update_instructions
-        if MacOS.version >= "10.9" && !OS::Mac.prerelease?
+        if OS::Mac.prerelease?
           <<~EOS
-            Xcode can be updated from the App Store.
+            Xcode can be updated from:
+              https://developer.apple.com/download/more/
           EOS
         else
           <<~EOS
-            Xcode can be updated from
-              https://developer.apple.com/download/more/
+            Xcode can be updated from the App Store.
           EOS
         end
       end
@@ -169,18 +163,6 @@ module OS
         # comparable version.
         case (DevelopmentTools.clang_version.to_f * 10).to_i
         when 0       then "dunno"
-        when 1..14   then "3.2.2"
-        when 15      then "3.2.4"
-        when 16      then "3.2.5"
-        when 17..20  then "4.0"
-        when 21      then "4.1"
-        when 22..30  then "4.2"
-        when 31      then "4.3"
-        when 40      then "4.4"
-        when 41      then "4.5"
-        when 42      then "4.6"
-        when 50      then "5.0"
-        when 51      then "5.1"
         when 60      then "6.0"
         when 61      then "6.1"
         when 70      then "7.0"
@@ -194,24 +176,14 @@ module OS
         end
       end
 
-      def provides_gcc?
-        version < "4.3"
-      end
-
       def default_prefix?
-        if version < "4.3"
-          prefix.to_s.start_with? "/Developer"
-        else
-          prefix.to_s == "/Applications/Xcode.app/Contents/Developer"
-        end
+        prefix.to_s == "/Applications/Xcode.app/Contents/Developer"
       end
     end
 
     module CLT
       module_function
 
-      STANDALONE_PKG_ID = "com.apple.pkg.DeveloperToolsCLILeo".freeze
-      FROM_XCODE_PKG_ID = "com.apple.pkg.DeveloperToolsCLI".freeze
       # The original Mavericks CLT package ID
       EXECUTABLE_PKG_ID = "com.apple.pkg.CLTools_Executables".freeze
       MAVERICKS_NEW_PKG_ID = "com.apple.pkg.CLTools_Base".freeze # obsolete
@@ -220,8 +192,7 @@ module OS
         "/Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_:macos_version.pkg".freeze
       HEADER_PKG_ID = "com.apple.pkg.macOS_SDK_headers_for_macOS_10.14".freeze
 
-      # Returns true even if outdated tools are installed, e.g.
-      # tools from Xcode 4.x on 10.9
+      # Returns true even if outdated tools are installed
       def installed?
         !version.null?
       end
@@ -257,15 +228,9 @@ module OS
           <<~EOS
             Update them from Software Update in System Preferences.
           EOS
-        elsif MacOS.version >= "10.9"
+        else
           <<~EOS
             Update them from Software Update in the App Store.
-          EOS
-        elsif MacOS.version == "10.8" || MacOS.version == "10.7"
-          <<~EOS
-            The standalone package can be obtained from
-              https://developer.apple.com/download/more/
-            or it can be installed via Xcode's preferences.
           EOS
         end
       end
@@ -280,9 +245,7 @@ module OS
         when "10.12" then "900.0.39.2"
         when "10.11" then "800.0.42.1"
         when "10.10" then "700.1.81"
-        when "10.9"  then "600.0.57"
-        when "10.8"  then "503.0.40"
-        else              "425.0.28"
+        else              "600.0.57"
         end
       end
 
@@ -296,8 +259,6 @@ module OS
       end
 
       def below_minimum_version?
-        # Lion was the first version of OS X to ship with a CLT
-        return false if MacOS.version < :lion
         return false unless installed?
 
         version < minimum_version
@@ -311,9 +272,6 @@ module OS
       end
 
       def detect_clang_version
-        # Lion was the first version of OS X to ship with a CLT
-        return if MacOS.version < :lion
-
         path = if MacOS.version >= :mavericks
           "#{PKG_PATH}/usr/bin/clang"
         else
@@ -349,17 +307,9 @@ module OS
       end
 
       def detect_version
-        # CLT isn't a distinct entity pre-4.3, and pkgutil doesn't exist
-        # at all on Tiger, so just count it as installed if Xcode is installed
-        if MacOS::Xcode.installed? && MacOS::Xcode.version < "3.0"
-          return MacOS::Xcode.version
-        end
-
         version = nil
-        [EXECUTABLE_PKG_ID, MAVERICKS_NEW_PKG_ID, STANDALONE_PKG_ID, FROM_XCODE_PKG_ID].each do |id|
-          if MacOS.version >= :mavericks
-            next unless File.exist?("#{PKG_PATH}/usr/bin/clang")
-          end
+        [EXECUTABLE_PKG_ID, MAVERICKS_NEW_PKG_ID].each do |id|
+          next unless File.exist?("#{PKG_PATH}/usr/bin/clang")
           version = MacOS.pkgutil_info(id)[/version: (.+)$/, 1]
           break if version
         end

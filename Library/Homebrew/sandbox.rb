@@ -5,7 +5,7 @@ class Sandbox
   SANDBOX_EXEC = "/usr/bin/sandbox-exec".freeze
 
   def self.available?
-    OS.mac? && OS::Mac.version >= "10.6" && File.executable?(SANDBOX_EXEC)
+    OS.mac? && File.executable?(SANDBOX_EXEC)
   end
 
   def self.formula?(_formula)

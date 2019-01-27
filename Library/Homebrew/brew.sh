@@ -93,28 +93,28 @@ then
   # Don't change this from Mac OS X to match what macOS itself does in Safari on 10.12
   HOMEBREW_OS_USER_AGENT_VERSION="Mac OS X $HOMEBREW_MACOS_VERSION"
 
-  # The system Curl is too old for some modern HTTPS certificates on
-  # older macOS versions.
-  #
   # Intentionally set this variable by exploding another.
   # shellcheck disable=SC2086,SC2183
   printf -v HOMEBREW_MACOS_VERSION_NUMERIC "%02d%02d%02d" ${HOMEBREW_MACOS_VERSION//./ }
-  if [[ "$HOMEBREW_MACOS_VERSION_NUMERIC" -lt "101000" ]]
-  then
-    HOMEBREW_SYSTEM_CURL_TOO_OLD="1"
-    HOMEBREW_FORCE_BREWED_CURL="1"
-  fi
 
-  # Announce pre-Mavericks deprecation now
+  # Refuse to run on pre-Mavericks
   if [[ "$HOMEBREW_MACOS_VERSION_NUMERIC" -lt "100900" ]]
   then
-    printf "WARNING: Your version of macOS (%s) will not be able to run Homebrew when\n" "$HOMEBREW_MACOS_VERSION" >&2
-    printf "         version 2.0.0 is released (Q1 2019)!\n" >&2
+    printf "ERROR: Your version of macOS (%s) is too old to run Homebrew!" "$HOMEBREW_MACOS_VERSION" >&2
     if [[ "$HOMEBREW_MACOS_VERSION_NUMERIC" -lt "100700" ]]
     then
       printf "         For 10.4 - 10.6 support see: https://github.com/mistydemeo/tigerbrew\n" >&2
     fi
     printf "\n" >&2
+  fi
+
+  # The system Curl is too old for some modern HTTPS certificates on
+  # older macOS versions.
+  #
+  if [[ "$HOMEBREW_MACOS_VERSION_NUMERIC" -lt "101000" ]]
+  then
+    HOMEBREW_SYSTEM_CURL_TOO_OLD="1"
+    HOMEBREW_FORCE_BREWED_CURL="1"
   fi
 
   # The system Git on macOS versions before Sierra is too old for some Homebrew functionality we rely on.

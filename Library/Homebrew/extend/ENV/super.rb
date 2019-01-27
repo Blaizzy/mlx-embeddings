@@ -77,7 +77,7 @@ module Superenv
     # K - Don't strip -arch <arch>, -m32, or -m64
     # w - Pass -no_weak_imports to the linker
     #
-    # On 10.8 and newer, these flags will also be present:
+    # These flags will also be present:
     # s - apply fix for sed's Unicode support
     # a - apply fix for apr-1-config path
   end
@@ -109,13 +109,8 @@ module Superenv
     path.append(homebrew_extra_paths)
     path.append("/usr/bin", "/bin", "/usr/sbin", "/sbin")
 
-    # Homebrew's apple-gcc42 will be outside the PATH in superenv,
-    # so xcrun may not be able to find it
     begin
-      case homebrew_cc
-      when "gcc-4.2"
-        path.append(Formulary.factory("apple-gcc42").opt_bin)
-      when GNU_GCC_REGEXP
+      if homebrew_cc =~ GNU_GCC_REGEXP
         path.append(gcc_version_formula($&).opt_bin)
       end
     rescue FormulaUnavailableError
@@ -279,14 +274,8 @@ module Superenv
   end
 
   def cxx11
-    if homebrew_cc == "clang"
-      append_to_cccfg "x"
-      append_to_cccfg "g"
-    elsif compiler_with_cxx11_support?(homebrew_cc)
-      append_to_cccfg "x"
-    else
-      raise "The selected compiler doesn't support C++11: #{homebrew_cc}"
-    end
+    append_to_cccfg "x"
+    append_to_cccfg "g" if homebrew_cc == "clang"
   end
 
   def libcxx

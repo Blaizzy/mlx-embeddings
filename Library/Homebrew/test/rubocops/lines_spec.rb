@@ -483,17 +483,6 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
 
-    it "old style OS check" do
-      expect_offense(<<~RUBY)
-        class Foo < Formula
-          desc "foo"
-          url 'https://brew.sh/foo-1.0.tgz'
-          depends_on :foo if MacOS.snow_leopard?
-                             ^^^^^^^^^^^^^^^^^^^ \"MacOS.snow_leopard?\" is deprecated, use a comparison to MacOS.version instead
-        end
-      RUBY
-    end
-
     it "non glob DIR usage" do
       expect_offense(<<~RUBY)
         class Foo < Formula

@@ -316,18 +316,6 @@ module SharedEnvExtension
     %w[clang llvm_clang].include?(cc.to_s)
   end
 
-  # @private
-  def compiler_with_cxx11_support?(cc)
-    return if compiler_any_clang?(cc)
-
-    version = if cc == :gcc
-      DevelopmentTools.non_apple_gcc_version "gcc"
-    else
-      cc[/^gcc-(\d+(?:\.\d+)?)$/, 1]
-    end
-    version && Version.create(version) >= Version.create("4.8")
-  end
-
   private
 
   def cc=(val)
