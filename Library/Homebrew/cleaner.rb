@@ -88,10 +88,12 @@ class Cleaner
 
       Find.prune if @f.skip_clean? path
 
-      next if path.symlink? || path.directory?
+      next if path.directory?
 
       if path.extname == ".la"
         path.unlink
+      elsif path.symlink?
+        # Skip it.
       elsif path.basename.to_s == "perllocal.pod"
         # Both this file & the .packlist one below are completely unnecessary
         # to package & causes pointless conflict with other formulae. They are
