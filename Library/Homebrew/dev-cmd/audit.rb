@@ -1122,20 +1122,9 @@ module Homebrew
     end
 
     def audit_urls
-      urls = [url] + mirrors
-
-      curl_openssl_or_deps = ResourceAuditor.curl_openssl_and_deps.include?(owner.name)
-
-      if spec_name == :stable && curl_openssl_or_deps
-        problem "should not use xz tarballs" if url.end_with?(".xz")
-
-        unless urls.find { |u| u.start_with?("http://") }
-          problem "should always include at least one HTTP mirror"
-        end
-      end
-
       return unless @online
 
+      urls = [url] + mirrors
       urls.each do |url|
         next if !@strict && mirrors.include?(url)
 
