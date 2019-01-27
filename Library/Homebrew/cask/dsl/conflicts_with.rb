@@ -25,6 +25,10 @@ module Cask
           instance_variable_set("@#{key}", instance_variable_get("@#{key}").merge([*value]))
         end
       end
+
+      def to_h
+        Hash[VALID_KEYS.map { |key| [key, instance_variable_get("@#{key}").to_a] }]
+      end
     end
   end
 end
