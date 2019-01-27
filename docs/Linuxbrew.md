@@ -2,7 +2,7 @@
 
 # Linuxbrew
 
-The Homebrew package manager may be used on Linux and Windows 10, using [Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/about). Homebrew is referred to as Linuxbrew when running on Linux or Windows. It can be installed in your home directory, in which case it does not use *sudo*. Linuxbrew does not use any libraries provided by your host system, except *glibc* and *gcc* if they are new enough. Linuxbrew can install its own current versions of *glibc* and *gcc* for older distribution of Linux.
+The Homebrew package manager may be used on Linux and Windows 10, using [Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/about). Homebrew is referred to as Linuxbrew when running on Linux or WSL. It can be installed in your home directory, in which case it does not use *sudo*. Linuxbrew does not use any libraries provided by your host system, except *glibc* and *gcc* if they are new enough. Linuxbrew can install its own current versions of *glibc* and *gcc* for older distributions of Linux.
 
 [Features](#features), [dependencies](#dependencies) and [installation instructions](#install) are described below. Terminology (e.g. the difference between a Cellar, Tap, Cask and so forth) is [explained in the documentation](Formula-Cookbook.md#homebrew-terminology).
 
@@ -40,12 +40,12 @@ brew install hello
 
 If you're using an older distribution of Linux, installing your first package will also install a recent version of `glibc` and `gcc`. Use `brew doctor` to troubleshoot common issues.
 
-## Dependencies
+## Linux/WSL Requirements
 
 + **GCC** 4.4 or newer
 + **Linux** 2.6.32 or newer
 + **Glibc** 2.12 or newer
-+ **64-bit x86** CPU
++ **64-bit x86_64** CPU
 
 Paste at a terminal prompt:
 
@@ -71,7 +71,7 @@ Linuxbrew does not currently support 32-bit x86 platforms. It would be possible 
 
 ## Alternative Installation
 
-Extract or `git clone` Linuxbrew wherever you want. Use `/home/linuxbrew/.linuxbrew` if possible.
+Extract or `git clone` Linuxbrew wherever you want. Use `/home/linuxbrew/.linuxbrew` if possible (to enabled the use of binary packages).
 
 ```sh
 git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew
