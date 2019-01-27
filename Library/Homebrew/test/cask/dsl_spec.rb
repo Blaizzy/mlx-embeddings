@@ -401,7 +401,7 @@ describe Cask::DSL, :cask do
       let(:token) { "with-conflicts-with" }
 
       it "allows conflicts_with stanza to be specified" do
-        expect(cask.conflicts_with.formula).not_to be nil
+        expect(cask.conflicts_with[:formula]).to be_empty
       end
     end
 
