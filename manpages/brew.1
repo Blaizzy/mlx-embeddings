@@ -276,9 +276,6 @@ If \fB\-\-cc=\fR\fIcompiler\fR is passed, attempt to compile using \fIcompiler\f
 If \fB\-\-build\-from\-source\fR (or \fB\-s\fR) is passed, compile the specified \fIformula\fR from source even if a bottle is provided\. Dependencies will still be installed from bottles if they are available\.
 .
 .IP
-If \fBHOMEBREW_BUILD_FROM_SOURCE\fR is set, regardless of whether \fB\-\-build\-from\-source\fR was passed, then both \fIformula\fR and the dependencies installed as part of this process are built from source even if bottles are available\.
-.
-.IP
 If \fB\-\-force\-bottle\fR is passed, install from a bottle if it exists for the current or newest version of macOS, even if it would not normally be used for installation\.
 .
 .IP
@@ -434,9 +431,6 @@ Uninstall and then install \fIformula\fR (with existing install options)\.
 .
 .IP
 If \fB\-\-display\-times\fR is passed, install times for each formula are printed at the end of the run\.
-.
-.IP
-If \fBHOMEBREW_INSTALL_CLEANUP\fR is set then remove previously installed versions of upgraded \fIformulae\fR as well as the HOMEBREW_CACHE for that formula\.
 .
 .TP
 \fBsearch\fR, \fB\-S\fR
@@ -1310,16 +1304,6 @@ Text printed before the installation summary of each successful build\.
 .
 .IP
 \fIDefault:\fR the beer emoji\.
-.
-.TP
-\fBHOMEBREW_INSTALL_CLEANUP\fR
-If set, \fBbrew install\fR, \fBbrew upgrade\fR and \fBbrew reinstall\fR will remove previously installed version(s) of the installed/upgraded formulae\.
-.
-.IP
-If \fBbrew cleanup\fR has not been run in 30 days then it will be run at this time\.
-.
-.IP
-This will become the default in a later version of Homebrew\. To opt\-out see \fBHOMEBREW_NO_INSTALL_CLEANUP\fR\.
 .
 .TP
 \fBHOMEBREW_LOGS\fR

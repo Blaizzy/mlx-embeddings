@@ -46,7 +46,7 @@ class FormulaInstaller
     @show_header = false
     @ignore_deps = false
     @only_deps = false
-    @build_from_source = ARGV.build_from_source? || ARGV.build_all_from_source?
+    @build_from_source = ARGV.build_from_source?
     @build_bottle = false
     @force_bottle = ARGV.force_bottle?
     @include_test = ARGV.include?("--include-test")

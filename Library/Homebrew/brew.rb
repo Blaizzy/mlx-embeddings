@@ -98,7 +98,7 @@ begin
   end
 
   if ENV["HOMEBREW_BUILD_FROM_SOURCE"]
-    odeprecated("HOMEBREW_BUILD_FROM_SOURCE", "--build-from-source")
+    odisabled("HOMEBREW_BUILD_FROM_SOURCE", "--build-from-source")
   end
 
   if internal_cmd

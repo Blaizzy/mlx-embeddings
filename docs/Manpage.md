@@ -269,10 +269,6 @@ these flags should only appear after a command.
     source even if a bottle is provided. Dependencies will still be installed
     from bottles if they are available.
 
-    If `HOMEBREW_BUILD_FROM_SOURCE` is set, regardless of whether `--build-from-source` was
-    passed, then both *`formula`* and the dependencies installed as part of this process
-    are built from source even if bottles are available.
-
     If `--force-bottle` is passed, install from a bottle if it exists for the
     current or newest version of macOS, even if it would not normally be used
     for installation.
@@ -423,9 +419,6 @@ these flags should only appear after a command.
 
     If `--display-times` is passed, install times for each formula are printed
     at the end of the run.
-
-    If `HOMEBREW_INSTALL_CLEANUP` is set then remove previously installed versions
-    of upgraded *`formulae`* as well as the HOMEBREW_CACHE for that formula.
 
   * `search`, `-S`:
     Display all locally available formulae (including tapped ones).
@@ -1184,16 +1177,6 @@ Note that environment variables must have a value set to be detected. For exampl
     Text printed before the installation summary of each successful build.
 
     *Default:* the beer emoji.
-
-  * `HOMEBREW_INSTALL_CLEANUP`:
-    If set, `brew install`, `brew upgrade` and `brew reinstall` will remove
-    previously installed version(s) of the installed/upgraded formulae.
-
-    If `brew cleanup` has not been run in 30 days then it will be run at this
-    time.
-
-    This will become the default in a later version of Homebrew. To opt-out see
-    `HOMEBREW_NO_INSTALL_CLEANUP`.
 
   * `HOMEBREW_LOGS`:
     If set, Homebrew will use the specified directory to store log files.
