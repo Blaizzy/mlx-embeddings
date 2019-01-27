@@ -16,9 +16,9 @@ if [[ -n "$HOMEBREW_MACOS" ]]
 then
   if [[ "$HOMEBREW_PROCESSOR" = "Intel" ]]
   then
-    ruby_URL="$HOMEBREW_BOTTLE_DOMAIN/bottles-portable-ruby/portable-ruby-2.3.7.leopard_64.bottle.tar.gz"
-    ruby_URL2="https://github.com/Homebrew/homebrew-portable-ruby/releases/download/2.3.7/portable-ruby-2.3.7.leopard_64.bottle.tar.gz"
-    ruby_SHA="033ac518bb14abdb1bb47d968dc9e967c3ae2035499383a21a79b49d523065d1"
+    ruby_URL="$HOMEBREW_BOTTLE_DOMAIN/bottles-portable-ruby/portable-ruby-2.3.7.mavericks.bottle.tar.gz"
+    ruby_URL2="https://github.com/Homebrew/homebrew-portable-ruby/releases/download/2.3.7/portable-ruby-2.3.7.mavericks.bottle.tar.gz"
+    ruby_SHA="539ae571968fc74d4ec3a839cb33edc5786c219a5e6ae7fb6a09ec5fc1b04e4e"
   fi
 elif [[ -n "$HOMEBREW_LINUX" ]]
 then
