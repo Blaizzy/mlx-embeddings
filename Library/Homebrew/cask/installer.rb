@@ -104,7 +104,7 @@ module Cask
     def check_conflicts
       return unless @cask.conflicts_with
 
-      @cask.conflicts_with.cask.each do |conflicting_cask|
+      @cask.conflicts_with[:cask].each do |conflicting_cask|
         begin
           conflicting_cask = CaskLoader.load(conflicting_cask)
           if conflicting_cask.installed?

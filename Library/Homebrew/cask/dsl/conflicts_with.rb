@@ -1,33 +1,28 @@
+require "extend/hash_validator"
+using HashValidator
+
 module Cask
   class DSL
-    class ConflictsWith
-      VALID_KEYS = Set.new [
+    class ConflictsWith < DelegateClass(Hash)
+      VALID_KEYS = [
         :formula,
         :cask,
         :macos,
         :arch,
         :x11,
         :java,
-      ]
+      ].freeze
 
-      attr_reader *VALID_KEYS
+      def initialize(**pairs)
+        pairs.assert_valid_keys!(*VALID_KEYS)
 
-      def initialize(pairs = {})
-        @pairs = pairs
+        super(Hash[pairs.map { |k, v| [k, Set.new([*v])] }])
 
-        VALID_KEYS.each do |key|
-          instance_variable_set("@#{key}", Set.new)
-        end
-
-        pairs.each do |key, value|
-          raise "invalid conflicts_with key: '#{key.inspect}'" unless VALID_KEYS.include?(key)
-
-          instance_variable_set("@#{key}", instance_variable_get("@#{key}").merge([*value]))
-        end
+        self.default = Set.new
       end
 
-      def to_h
-        Hash[VALID_KEYS.map { |key| [key, instance_variable_get("@#{key}").to_a] }]
+      def to_json(generator)
+        Hash[map { |k, v| [k, v.to_a] }].to_json(generator)
       end
     end
   end

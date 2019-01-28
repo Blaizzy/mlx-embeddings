@@ -133,7 +133,7 @@ module Cask
         end,
         "caveats"        => caveats,
         "depends_on"     => depends_on,
-        "conflicts_with" => conflicts_with.to_h,
+        "conflicts_with" => conflicts_with,
         "container"      => container,
         "auto_updates"   => auto_updates,
       }
