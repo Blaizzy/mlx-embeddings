@@ -23,7 +23,7 @@ a tap with a `Formula` subdirectory.
 
 ## Naming your formulae to avoid clashes
 
-If your formulae have the same name as Homebrew/homebrew-core formulae they cannot be installed side-by-side. If you wish to create a different version of a formula that's in Homebrew/homebrew-core (e.g. with `option`s) consider giving it a different name e.g. `nginx-full` for more fully-featured `nginx` formula. This will allow both `nginx` and `nginx-full` to be installed at the same time (but not linked if there are conflicts and one of them is not declared to be `keg_only`.
+If your formulae have the same name as Homebrew/homebrew-core formulae they cannot be installed side-by-side. If you wish to create a different version of a formula that's in Homebrew/homebrew-core (e.g. with `option`s) consider giving it a different name e.g. `nginx-full` for more fully-featured `nginx` formula. This will allow both `nginx` and `nginx-full` to be installed at the same time (but not linked if there are conflicts and one of them is not declared to be `keg_only`).
 
 ### Installing
 
