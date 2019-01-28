@@ -69,12 +69,12 @@ def curl_output(*args, **options)
                  print_stderr: false)
 end
 
-def curl_check_http_content(url, user_agents: [:default], check_content: false, strict: false, require_http: false)
+def curl_check_http_content(url, user_agents: [:default], check_content: false, strict: false)
   return unless url.start_with? "http"
 
   details = nil
   user_agent = nil
-  hash_needed = url.start_with?("http:") && !require_http
+  hash_needed = url.start_with?("http:")
   user_agents.each do |ua|
     details = curl_http_content_headers_and_checksum(url, hash_needed: hash_needed, user_agent: ua)
     user_agent = ua
