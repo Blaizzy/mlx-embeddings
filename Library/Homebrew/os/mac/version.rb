@@ -38,6 +38,17 @@ module OS
       def pretty_name
         to_sym.to_s.split("_").map(&:capitalize).join(" ")
       end
+
+      # For OS::Mac::Version compatability
+      def requires_nehalem_cpu?
+        Hardware.oldest_cpu(self) == :nehalem
+      end
+      # https://en.wikipedia.org/wiki/Nehalem_(microarchitecture)
+      # Ensure any extra methods are also added to version/null.rb
+      alias requires_sse4? requires_nehalem_cpu?
+      alias requires_sse41? requires_nehalem_cpu?
+      alias requires_sse42? requires_nehalem_cpu?
+      alias requires_popcnt? requires_nehalem_cpu?
     end
   end
 end
