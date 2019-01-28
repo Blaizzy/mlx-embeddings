@@ -134,7 +134,7 @@ module Hardware
       end
     end
 
-    def oldest_cpu
+    def oldest_cpu(_version = nil)
       if Hardware::CPU.intel?
         if Hardware::CPU.is_64_bit?
           :core2

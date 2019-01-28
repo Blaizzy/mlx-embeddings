@@ -26,6 +26,15 @@ class Version
       true
     end
 
+    # For OS::Mac::Version compatability
+    def requires_nehalem_cpu?
+      false
+    end
+    alias_method :requires_sse4?, :requires_nehalem_cpu?
+    alias_method :requires_sse41?, :requires_nehalem_cpu?
+    alias_method :requires_sse42?, :requires_nehalem_cpu?
+    alias_method :requires_popcnt?, :requires_nehalem_cpu?
+
     def to_f
       Float::NAN
     end
