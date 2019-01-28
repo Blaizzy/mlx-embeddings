@@ -310,6 +310,8 @@ class Keg
     remove_opt_record if optlinked?
     remove_old_aliases
     remove_oldname_opt_record
+  rescue Errno::ENOTEMPTY
+    ofail "Could not remove #{path}! Check its permissions."
   end
 
   def unlink(mode = OpenStruct.new)

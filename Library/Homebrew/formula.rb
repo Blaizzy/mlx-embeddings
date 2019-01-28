@@ -1924,7 +1924,7 @@ class Formula
   end
 
   # @private
-  def eligible_kegs_for_cleanup
+  def eligible_kegs_for_cleanup(quiet: false)
     eligible_for_cleanup = []
     if installed?
       eligible_kegs = if head? && (head_prefix = latest_head_prefix)
@@ -1945,9 +1945,9 @@ class Formula
       unless eligible_kegs.empty?
         eligible_kegs.each do |keg|
           if keg.linked?
-            opoo "Skipping (old) #{keg} due to it being linked"
+            opoo "Skipping (old) #{keg} due to it being linked" unless quiet
           elsif pinned? && keg == Keg.new(@pin.path.resolved_path)
-            opoo "Skipping (old) #{keg} due to it being pinned"
+            opoo "Skipping (old) #{keg} due to it being pinned" unless quiet
           else
             eligible_for_cleanup << keg
           end
@@ -1957,7 +1957,9 @@ class Formula
       # If the cellar only has one version installed, don't complain
       # that we can't tell which one to keep. Don't complain at all if the
       # only installed version is a pinned formula.
-      opoo "Skipping #{full_name}: most recent version #{pkg_version} not installed"
+      unless quiet
+        opoo "Skipping #{full_name}: most recent version #{pkg_version} not installed"
+      end
     end
     eligible_for_cleanup
   end
