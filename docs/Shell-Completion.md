@@ -12,13 +12,19 @@ To make Homebrew's completions available in `bash`, you must source the definiti
 
 ```sh
 if type brew 2&>/dev/null; then
-  source "$(brew --prefix)/etc/bash_completion.d/*"
-else
-  echo "run: brew install git bash-completion"
+  for COMPLETION in $(brew --prefix)/etc/bash_completion.d/*
+  do
+    [[ -f $COMPLETION ]] && source "$COMPLETION"
+  done
+  if [[ -f $(brew --prefix)/etc/profile.d/bash_completion.sh ]];
+  then
+    source "$(brew --prefix)/etc/profile.d/bash_completion.sh"
+  fi
 fi
 ```
 
 ## Configuring Completions in `zsh`
+
 To make Homebrew's completions available in `zsh`, you must get the Homebrew-managed zsh site-functions on your `FPATH` before initialising `zsh`'s completion facility. Add the following to your `~/.zshrc` file:
 
 ```sh
@@ -42,4 +48,5 @@ Additionally, if you receive "zsh compinit: insecure directories" warnings when 
 ```
 
 ## Configuring Completions in `fish`
+
 No configuration is needed in `fish`. Friendly!
