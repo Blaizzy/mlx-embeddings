@@ -132,7 +132,7 @@ module Homebrew
         description: "If <formula> defines it, install the HEAD version, aka master, trunk, unstable."
       switch "--fetch-HEAD"
       switch "--keep-tmp",
-        description: "Dont delele the temporary files created during installation."
+        description: "Dont delete the temporary files created during installation."
       switch "--build-bottle",
         description: "Prepare the formula for eventual bottling during installation."
       switch :force,
