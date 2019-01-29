@@ -148,19 +148,17 @@ module Homebrew
                      "package into a Homebrew package."
       switch "-g", "--git",
         description: "Create a Git repository, useful for creating patches to the software."
+
       ARGV.formulae.each do |f|
         next if f.options.empty?
-        f.options.each do |option|
-          formulae_options[option.flag] = option.description
-        end
-      end
-      formulae_options.each do |option, description|
-        if option.end_with? "="
-          flag option,
-            description: description
-        else
-          switch option,
-            description: description
+        f.options.each do |o|
+          name = o.flag
+          description = "`#{f.name}`: #{o.description}"
+          if name.end_with? "="
+            flag   name, description: description
+          else
+            switch name, description: description
+          end
         end
       end
     end
