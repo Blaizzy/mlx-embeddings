@@ -58,7 +58,7 @@ git() {
 numeric() {
   # Condense the exploded argument into a single return value.
   # shellcheck disable=SC2086,SC2183
-  printf "%01d%02d%02d%02d" ${1//./ }
+  printf "%01d%02d%02d%02d" ${1//[.rc]/ }
 }
 
 HOMEBREW_VERSION="$(git -C "$HOMEBREW_REPOSITORY" describe --tags --dirty --abbrev=7 2>/dev/null)"
