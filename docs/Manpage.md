@@ -182,7 +182,7 @@ these flags should only appear after a command.
     Upload logs for a failed build of *`formula`* to a new Gist.
 
     *`formula`* is usually the name of the formula to install, but it can be specified
-    in several different ways. See [SPECIFYING FORMULAE](#specifying-formulae).
+    in several different ways.
 
     If `--with-hostname` is passed, include the hostname in the Gist.
 
@@ -240,7 +240,7 @@ these flags should only appear after a command.
     Install *`formula`*.
 
     *`formula`* is usually the name of the formula to install, but it can be specified
-    in several different ways. See [SPECIFYING FORMULAE](#specifying-formulae).
+    in several different ways.
 
     If `--debug` (or `-d`) is passed and brewing fails, open an interactive debugging
     session with access to IRB or a shell inside the temporary build directory.
