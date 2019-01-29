@@ -390,7 +390,6 @@ module Homebrew
 
     fi = FormulaInstaller.new(f)
     fi.options              = build_options.used_options
-    fi.invalid_option_names = build_options.invalid_option_names
     fi.ignore_deps          = args.ignore_dependencies?
     fi.only_deps            = args.only_dependencies?
     fi.build_bottle         = args.build_bottle?
