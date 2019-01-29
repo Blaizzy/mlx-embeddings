@@ -88,7 +88,6 @@ module Homebrew
 
   def install_args
     Homebrew::CLI::Parser.new do
-      formulae_options = {}
       usage_banner <<~EOS
         `install` [<options>] formula
 
@@ -230,8 +229,10 @@ module Homebrew
       end
 
       installed_head_version = f.latest_head_version
-      new_head_installed = installed_head_version &&
-                            !f.head_version_outdated?(installed_head_version, fetch_head: args.fetch_HEAD?)
+      if installed_head_version &&
+         !f.head_version_outdated?(installed_head_version, fetch_head: args.fetch_HEAD?)
+        new_head_installed = true
+      end
       prefix_installed = f.prefix.exist? && !f.prefix.children.empty?
 
       if f.keg_only? && f.any_version_installed? && f.optlinked? && !args.force?
@@ -333,7 +334,7 @@ module Homebrew
     end
     Homebrew.messages.display_messages
   rescue FormulaUnreadableError, FormulaClassUnavailableError,
-          TapFormulaUnreadableError, TapFormulaClassUnavailableError => e
+         TapFormulaUnreadableError, TapFormulaClassUnavailableError => e
     # Need to rescue before `FormulaUnavailableError` (superclass of this)
     # is handled, as searching for a formula doesn't make sense here (the
     # formula was found, but there's a problem with its implementation).
