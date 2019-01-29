@@ -180,209 +180,207 @@ module Homebrew
       end
     end
 
-    begin
-      formulae = []
+    formulae = []
 
-      unless ARGV.casks.empty?
-        cask_args = []
-        cask_args << "--force" if args.force?
-        cask_args << "--debug" if args.debug?
-        cask_args << "--verbose" if args.verbose?
+    unless ARGV.casks.empty?
+      cask_args = []
+      cask_args << "--force" if args.force?
+      cask_args << "--debug" if args.debug?
+      cask_args << "--verbose" if args.verbose?
 
-        ARGV.casks.each do |c|
-          ohai "brew cask install #{c} #{cask_args.join " "}"
-          system("#{HOMEBREW_PREFIX}/bin/brew", "cask", "install", c, *cask_args)
-        end
+      ARGV.casks.each do |c|
+        ohai "brew cask install #{c} #{cask_args.join " "}"
+        system("#{HOMEBREW_PREFIX}/bin/brew", "cask", "install", c, *cask_args)
+      end
+    end
+
+    # if the user's flags will prevent bottle only-installations when no
+    # developer tools are available, we need to stop them early on
+    FormulaInstaller.prevent_build_flags unless DevelopmentTools.installed?
+
+    ARGV.formulae.each do |f|
+      # head-only without --HEAD is an error
+      if !Homebrew.args.HEAD? && f.stable.nil? && f.devel.nil?
+        raise <<~EOS
+          #{f.full_name} is a head-only formula
+          Install with `brew install --HEAD #{f.full_name}`
+        EOS
       end
 
-      # if the user's flags will prevent bottle only-installations when no
-      # developer tools are available, we need to stop them early on
-      FormulaInstaller.prevent_build_flags unless DevelopmentTools.installed?
+      # devel-only without --devel is an error
+      if !args.devel? && f.stable.nil? && f.head.nil?
+        raise <<~EOS
+          #{f.full_name} is a devel-only formula
+          Install with `brew install --devel #{f.full_name}`
+        EOS
+      end
 
-      ARGV.formulae.each do |f|
-        # head-only without --HEAD is an error
-        if !Homebrew.args.HEAD? && f.stable.nil? && f.devel.nil?
-          raise <<~EOS
-            #{f.full_name} is a head-only formula
-            Install with `brew install --HEAD #{f.full_name}`
+      if !(args.HEAD? || args.devel?) && f.stable.nil?
+        raise "#{f.full_name} has no stable download, please choose --devel or --HEAD"
+      end
+
+      # --HEAD, fail with no head defined
+      if args.head? && f.head.nil?
+        raise "No head is defined for #{f.full_name}"
+      end
+
+      # --devel, fail with no devel defined
+      if args.devel? && f.devel.nil?
+        raise "No devel block is defined for #{f.full_name}"
+      end
+
+      installed_head_version = f.latest_head_version
+      new_head_installed = installed_head_version &&
+                            !f.head_version_outdated?(installed_head_version, fetch_head: args.fetch_HEAD?)
+      prefix_installed = f.prefix.exist? && !f.prefix.children.empty?
+
+      if f.keg_only? && f.any_version_installed? && f.optlinked? && !args.force?
+        # keg-only install is only possible when no other version is
+        # linked to opt, because installing without any warnings can break
+        # dependencies. Therefore before performing other checks we need to be
+        # sure --force flag is passed.
+        if f.outdated?
+          optlinked_version = Keg.for(f.opt_prefix).version
+          onoe <<~EOS
+            #{f.full_name} #{optlinked_version} is already installed
+            To upgrade to #{f.version}, run `brew upgrade #{f.name}`
           EOS
-        end
-
-        # devel-only without --devel is an error
-        if !args.devel? && f.stable.nil? && f.head.nil?
-          raise <<~EOS
-            #{f.full_name} is a devel-only formula
-            Install with `brew install --devel #{f.full_name}`
-          EOS
-        end
-
-        if !(args.HEAD? || args.devel?) && f.stable.nil?
-          raise "#{f.full_name} has no stable download, please choose --devel or --HEAD"
-        end
-
-        # --HEAD, fail with no head defined
-        if args.head? && f.head.nil?
-          raise "No head is defined for #{f.full_name}"
-        end
-
-        # --devel, fail with no devel defined
-        if args.devel? && f.devel.nil?
-          raise "No devel block is defined for #{f.full_name}"
-        end
-
-        installed_head_version = f.latest_head_version
-        new_head_installed = installed_head_version &&
-                             !f.head_version_outdated?(installed_head_version, fetch_head: args.fetch_HEAD?)
-        prefix_installed = f.prefix.exist? && !f.prefix.children.empty?
-
-        if f.keg_only? && f.any_version_installed? && f.optlinked? && !args.force?
-          # keg-only install is only possible when no other version is
-          # linked to opt, because installing without any warnings can break
-          # dependencies. Therefore before performing other checks we need to be
-          # sure --force flag is passed.
-          if f.outdated?
-            optlinked_version = Keg.for(f.opt_prefix).version
-            onoe <<~EOS
-              #{f.full_name} #{optlinked_version} is already installed
-              To upgrade to #{f.version}, run `brew upgrade #{f.name}`
-            EOS
-          elsif args.only_dependencies?
-            formulae << f
-          else
-            opoo <<~EOS
-              #{f.full_name} #{f.pkg_version} is already installed and up-to-date
-              To reinstall #{f.pkg_version}, run `brew reinstall #{f.name}`
-            EOS
-          end
-        elsif (args.HEAD? && new_head_installed) || prefix_installed
-          # After we're sure that --force flag is passed for linked to opt
-          # keg-only we need to be sure that the version we're attempting to
-          # install is not already installed.
-
-          installed_version = if args.HEAD?
-            f.latest_head_version
-          else
-            f.pkg_version
-          end
-
-          msg = "#{f.full_name} #{installed_version} is already installed"
-          linked_not_equals_installed = f.linked_version != installed_version
-          if f.linked? && linked_not_equals_installed
-            msg = <<~EOS
-              #{msg}
-              The currently linked version is #{f.linked_version}
-              You can use `brew switch #{f} #{installed_version}` to link this version.
-            EOS
-          elsif !f.linked? || f.keg_only?
-            msg = <<~EOS
-              #{msg}, it's just not linked
-              You can use `brew link #{f}` to link this version.
-            EOS
-          elsif args.only_dependencies?
-            msg = nil
-            formulae << f
-          else
-            msg = <<~EOS
-              #{msg} and up-to-date
-              To reinstall #{f.pkg_version}, run `brew reinstall #{f.name}`
-            EOS
-          end
-          opoo msg if msg
-        elsif !f.any_version_installed? && old_formula = f.old_installed_formulae.first
-          msg = "#{old_formula.full_name} #{old_formula.installed_version} already installed"
-          if !old_formula.linked? && !old_formula.keg_only?
-            msg = <<~EOS
-              #{msg}, it's just not linked.
-              You can use `brew link #{old_formula.full_name}` to link this version.
-            EOS
-          end
-          opoo msg
-        elsif f.migration_needed? && !args.force?
-          # Check if the formula we try to install is the same as installed
-          # but not migrated one. If --force passed then install anyway.
-          opoo <<~EOS
-            #{f.oldname} already installed, it's just not migrated
-            You can migrate formula with `brew migrate #{f}`
-            Or you can force install it with `brew install #{f} --force`
-          EOS
-        else
-          # If none of the above is true and the formula is linked, then
-          # FormulaInstaller will handle this case.
+        elsif args.only_dependencies?
           formulae << f
+        else
+          opoo <<~EOS
+            #{f.full_name} #{f.pkg_version} is already installed and up-to-date
+            To reinstall #{f.pkg_version}, run `brew reinstall #{f.name}`
+          EOS
+        end
+      elsif (args.HEAD? && new_head_installed) || prefix_installed
+        # After we're sure that --force flag is passed for linked to opt
+        # keg-only we need to be sure that the version we're attempting to
+        # install is not already installed.
+
+        installed_version = if args.HEAD?
+          f.latest_head_version
+        else
+          f.pkg_version
         end
 
-        # Even if we don't install this formula mark it as no longer just
-        # installed as a dependency.
-        next unless f.opt_prefix.directory?
-
-        keg = Keg.new(f.opt_prefix.resolved_path)
-        tab = Tab.for_keg(keg)
-        unless tab.installed_on_request
-          tab.installed_on_request = true
-          tab.write
+        msg = "#{f.full_name} #{installed_version} is already installed"
+        linked_not_equals_installed = f.linked_version != installed_version
+        if f.linked? && linked_not_equals_installed
+          msg = <<~EOS
+            #{msg}
+            The currently linked version is #{f.linked_version}
+            You can use `brew switch #{f} #{installed_version}` to link this version.
+          EOS
+        elsif !f.linked? || f.keg_only?
+          msg = <<~EOS
+            #{msg}, it's just not linked
+            You can use `brew link #{f}` to link this version.
+          EOS
+        elsif args.only_dependencies?
+          msg = nil
+          formulae << f
+        else
+          msg = <<~EOS
+            #{msg} and up-to-date
+            To reinstall #{f.pkg_version}, run `brew reinstall #{f.name}`
+          EOS
         end
-      end
-
-      return if formulae.empty?
-
-      Install.perform_preinstall_checks
-
-      formulae.each do |f|
-        Migrator.migrate_if_needed(f)
-        install_formula(f)
-        Cleanup.install_formula_clean!(f)
-      end
-      Homebrew.messages.display_messages
-    rescue FormulaUnreadableError, FormulaClassUnavailableError,
-           TapFormulaUnreadableError, TapFormulaClassUnavailableError => e
-      # Need to rescue before `FormulaUnavailableError` (superclass of this)
-      # is handled, as searching for a formula doesn't make sense here (the
-      # formula was found, but there's a problem with its implementation).
-      ofail e.message
-    rescue FormulaUnavailableError => e
-      if e.name == "updog"
-        ofail "What's updog?"
-        return
-      end
-
-      ofail e.message
-      if (reason = MissingFormula.reason(e.name))
-        $stderr.puts reason
-        return
-      end
-
-      ohai "Searching for similarly named formulae..."
-      formulae_search_results = search_formulae(e.name)
-      case formulae_search_results.length
-      when 0
-        ofail "No similarly named formulae found."
-      when 1
-        puts "This similarly named formula was found:"
-        puts formulae_search_results
-        puts "To install it, run:\n  brew install #{formulae_search_results.first}"
+        opoo msg if msg
+      elsif !f.any_version_installed? && old_formula = f.old_installed_formulae.first
+        msg = "#{old_formula.full_name} #{old_formula.installed_version} already installed"
+        if !old_formula.linked? && !old_formula.keg_only?
+          msg = <<~EOS
+            #{msg}, it's just not linked.
+            You can use `brew link #{old_formula.full_name}` to link this version.
+          EOS
+        end
+        opoo msg
+      elsif f.migration_needed? && !args.force?
+        # Check if the formula we try to install is the same as installed
+        # but not migrated one. If --force passed then install anyway.
+        opoo <<~EOS
+          #{f.oldname} already installed, it's just not migrated
+          You can migrate formula with `brew migrate #{f}`
+          Or you can force install it with `brew install #{f} --force`
+        EOS
       else
-        puts "These similarly named formulae were found:"
-        puts Formatter.columns(formulae_search_results)
-        puts "To install one of them, run (for example):\n  brew install #{formulae_search_results.first}"
+        # If none of the above is true and the formula is linked, then
+        # FormulaInstaller will handle this case.
+        formulae << f
       end
 
-      # Do not search taps if the formula name is qualified
-      return if e.name.include?("/")
+      # Even if we don't install this formula mark it as no longer just
+      # installed as a dependency.
+      next unless f.opt_prefix.directory?
 
-      ohai "Searching taps..."
-      taps_search_results = search_taps(e.name)[:formulae]
-      case taps_search_results.length
-      when 0
-        ofail "No formulae found in taps."
-      when 1
-        puts "This formula was found in a tap:"
-        puts taps_search_results
-        puts "To install it, run:\n  brew install #{taps_search_results.first}"
-      else
-        puts "These formulae were found in taps:"
-        puts Formatter.columns(taps_search_results)
-        puts "To install one of them, run (for example):\n  brew install #{taps_search_results.first}"
+      keg = Keg.new(f.opt_prefix.resolved_path)
+      tab = Tab.for_keg(keg)
+      unless tab.installed_on_request
+        tab.installed_on_request = true
+        tab.write
       end
+    end
+
+    return if formulae.empty?
+
+    Install.perform_preinstall_checks
+
+    formulae.each do |f|
+      Migrator.migrate_if_needed(f)
+      install_formula(f)
+      Cleanup.install_formula_clean!(f)
+    end
+    Homebrew.messages.display_messages
+  rescue FormulaUnreadableError, FormulaClassUnavailableError,
+          TapFormulaUnreadableError, TapFormulaClassUnavailableError => e
+    # Need to rescue before `FormulaUnavailableError` (superclass of this)
+    # is handled, as searching for a formula doesn't make sense here (the
+    # formula was found, but there's a problem with its implementation).
+    ofail e.message
+  rescue FormulaUnavailableError => e
+    if e.name == "updog"
+      ofail "What's updog?"
+      return
+    end
+
+    ofail e.message
+    if (reason = MissingFormula.reason(e.name))
+      $stderr.puts reason
+      return
+    end
+
+    ohai "Searching for similarly named formulae..."
+    formulae_search_results = search_formulae(e.name)
+    case formulae_search_results.length
+    when 0
+      ofail "No similarly named formulae found."
+    when 1
+      puts "This similarly named formula was found:"
+      puts formulae_search_results
+      puts "To install it, run:\n  brew install #{formulae_search_results.first}"
+    else
+      puts "These similarly named formulae were found:"
+      puts Formatter.columns(formulae_search_results)
+      puts "To install one of them, run (for example):\n  brew install #{formulae_search_results.first}"
+    end
+
+    # Do not search taps if the formula name is qualified
+    return if e.name.include?("/")
+
+    ohai "Searching taps..."
+    taps_search_results = search_taps(e.name)[:formulae]
+    case taps_search_results.length
+    when 0
+      ofail "No formulae found in taps."
+    when 1
+      puts "This formula was found in a tap:"
+      puts taps_search_results
+      puts "To install it, run:\n  brew install #{taps_search_results.first}"
+    else
+      puts "These formulae were found in taps:"
+      puts Formatter.columns(taps_search_results)
+      puts "To install one of them, run (for example):\n  brew install #{taps_search_results.first}"
     end
   end
 
