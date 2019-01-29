@@ -46,6 +46,7 @@ module Homebrew
                      "formula is outdated. Otherwise, the repository's HEAD will be checked for "\
                      "updates when a new stable or devel version has been released."
       switch :debug
+      conflicts "--quiet", "--verbose", "--json="
     end
   end
 

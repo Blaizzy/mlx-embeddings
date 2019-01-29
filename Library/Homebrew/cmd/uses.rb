@@ -59,6 +59,7 @@ module Homebrew
       switch "--HEAD",
         description: "Show usage of <formulae> by HEAD build."
       switch :debug
+      conflicts "--devel", "--HEAD"
     end
   end
 

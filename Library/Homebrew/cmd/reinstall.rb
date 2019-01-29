@@ -60,6 +60,7 @@ module Homebrew
         description: "Print the verification and postinstall steps."
       switch "--display-times",
         description: "Print install times for each formula at the end of the run."
+      conflicts "--build-from-source", "--force-bottle"
       formula_options
     end
   end

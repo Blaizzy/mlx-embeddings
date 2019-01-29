@@ -98,6 +98,7 @@ module Homebrew
                      "debugging the `--installed`/`--all` display mode."
       switch :verbose
       switch :debug
+      conflicts "--installed", "--all"
     end
   end
 

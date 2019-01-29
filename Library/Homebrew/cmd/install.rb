@@ -146,6 +146,9 @@ module Homebrew
                      "package into a Homebrew package."
       switch "-g", "--git",
         description: "Create a Git repository, useful for creating patches to the software."
+      conflicts "--ignore-dependencies", "--only-dependencies"
+      conflicts "--devel", "--HEAD"
+      conflicts "--build-from-source", "--build-bottle", "--force-bottle"
       formula_options
     end
   end

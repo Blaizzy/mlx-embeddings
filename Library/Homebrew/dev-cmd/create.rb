@@ -59,6 +59,7 @@ module Homebrew
       switch :force
       switch :verbose
       switch :debug
+      conflicts "--autotools", "--cmake", "--meson"
     end
   end
 
