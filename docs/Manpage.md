@@ -171,8 +171,8 @@ these flags should only appear after a command.
 
     If `--deps` is passed, also download dependencies for any listed *`formulae`*.
 
-    If `--build-from-source` (or `-s`) is passed, download the source rather than a
-    bottle.
+    If `--build-from-source` (or `-s`) or `--build-bottle` is passed, download the
+    source rather than a bottle.
 
     If `--force-bottle` is passed, download a bottle if it exists for the
     current or newest version of macOS, even if it would not be used during
