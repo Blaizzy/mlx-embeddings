@@ -148,6 +148,21 @@ module Homebrew
                .gsub(/\*(.*?)\*/m, "#{Tty.underline}\\1#{Tty.reset}")
       end
 
+      def formula_options
+        ARGV.formulae.each do |f|
+          next if f.options.empty?
+          f.options.each do |o|
+            name = o.flag
+            description = "`#{f.name}`: #{o.description}"
+            if name.end_with? "="
+              flag   name, description: description
+            else
+              switch name, description: description
+            end
+          end
+        end
+      end
+
       private
 
       def enable_switch(*names)
