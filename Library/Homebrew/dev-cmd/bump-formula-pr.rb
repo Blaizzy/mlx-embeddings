@@ -104,6 +104,7 @@ module Homebrew
       switch :quiet
       switch :verbose
       switch :debug
+      conflicts "--no-audit", "--strict"
       conflicts "--url", "--tag"
     end
   end

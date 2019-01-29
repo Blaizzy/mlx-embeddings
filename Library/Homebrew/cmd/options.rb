@@ -29,6 +29,7 @@ module Homebrew
       switch "--installed",
         description: "Show options for all installed formulae."
       switch :debug
+      conflicts "--all", "--installed"
     end
   end
 

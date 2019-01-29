@@ -41,6 +41,7 @@ module Homebrew
         description: "Keep the temporary files created for the test."
       switch :verbose
       switch :debug
+      conflicts "--devel", "--HEAD"
     end
   end
 

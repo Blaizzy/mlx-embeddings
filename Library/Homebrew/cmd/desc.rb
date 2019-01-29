@@ -37,6 +37,7 @@ module Homebrew
        description: "Search just the descriptions for provided <text>. If <text> is flanked by slashes, "\
                     "it is interpreted as a regular expression."
       switch :verbose
+      conflicts "--search=", "--name=", "--description="
     end
   end
 

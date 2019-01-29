@@ -79,6 +79,7 @@ module Homebrew
       switch :verbose,
         description: "See more verbose analytics data."
       switch :debug
+      conflicts "--all", "--installed"
     end
   end
 

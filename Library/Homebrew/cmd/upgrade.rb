@@ -1,7 +1,19 @@
-#:  * `upgrade` [<install-options>] [`--fetch-HEAD`] [`--ignore-pinned`] [`--display-times`] [<formulae>]:
-#:    Upgrade outdated, unpinned brews (with existing install options).
+#:  * `upgrade` [`--debug`] [`--build-from-source`|`--force-bottle`] [`--fetch-HEAD`] [`--ignore-pinned`] [`--keep-tmp`] [`--force`] [`--verbose`] [`--display-times`] [<formula>] [<options> ...]:
+#:    Upgrade outdated, unpinned brews (with existing and any appended install options).
 #:
-#:    Options for the `install` command are also valid here.
+#:    If <formula> are given, upgrade only the specified brews (unless they
+#:    are pinned; see `pin`, `unpin`).
+#:
+#:    If `--debug` (or `-d`) is passed and brewing fails, open an interactive debugging
+#:    session with access to IRB or a shell inside the temporary build directory.
+#:
+#:    If `--build-from-source` (or `-s`) is passed, compile the specified <formula> from
+#:    source even if a bottle is provided. Dependencies will still be installed
+#:    from bottles if they are available.
+#:
+#:    If `--force-bottle` is passed, install from a bottle if it exists for the
+#:    current or newest version of macOS, even if it would not normally be used
+#:    for installation.
 #:
 #:    If `--fetch-HEAD` is passed, fetch the upstream repository to detect if
 #:    the HEAD installation of the formula is outdated. Otherwise, the
@@ -11,11 +23,19 @@
 #:    If `--ignore-pinned` is passed, set a 0 exit code even if pinned formulae
 #:    are not upgraded.
 #:
+#:    If `--keep-tmp` is passed, the temporary files created during installation
+#:    are not deleted.
+#:
+#:    If `--force` (or `-f`) is passed, install without checking for previously
+#:    installed keg-only or non-migrated versions
+#:
+#:    If `--verbose` (or `-v`) is passed, print the verification and postinstall steps.
+#:
 #:    If `--display-times` is passed, install times for each formula are printed
 #:    at the end of the run.
 #:
-#:    If <formulae> are given, upgrade only the specified brews (unless they
-#:    are pinned; see `pin`, `unpin`).
+#:    Additional options specific to <formula> may be appended to the command,
+#:    and can be listed with `brew options` <formula>.
 
 require "install"
 require "reinstall"
@@ -23,9 +43,48 @@ require "formula_installer"
 require "development_tools"
 require "messages"
 require "cleanup"
+require "cli_parser"
 
 module Homebrew
   module_function
+
+  def upgrade_args
+    Homebrew::CLI::Parser.new do
+      usage_banner <<~EOS
+        `upgrade` [<options>] <formula>
+
+        Upgrade outdated, unpinned brews (with existing and any appended install options).
+
+        If <formula> are given, upgrade only the specified brews (unless they
+        are pinned; see `pin`, `unpin`).
+      EOS
+      switch :debug,
+        description: "If brewing fails, open an interactive debugging session with access to IRB "\
+                     "or a shell inside the temporary build directory"
+      switch "-s", "--build-from-source",
+        description: "Compile <formula> from source even if a bottle is available."
+      switch "--force-bottle",
+        description: "Install from a bottle if it exists for the current or newest version of "\
+                     "macOS, even if it would not normally be used for installation."
+      switch "--fetch-HEAD",
+        description: "Fetch the upstream repository to detect if the HEAD installation of the "\
+                     "formula is outdated. Otherwise, the repository's HEAD will be checked for "\
+                     "updates when a new stable or devel version has been released."
+      switch "--ignore-pinned",
+        description: "Set a 0 exit code even if pinned formulae are not upgraded."
+      switch "--keep-tmp",
+        description: "Dont delete the temporary files created during installation."
+      switch :force,
+        description: "Install without checking for previously installed keg-only or "\
+                     "non-migrated versions."
+      switch :verbose,
+        description: "Print the verification and postinstall steps."
+      switch "--display-times",
+        description: "Print install times for each formula at the end of the run."
+      conflicts "--build-from-source", "--force-bottle"
+      formula_options
+    end
+  end
 
   def upgrade
     if ARGV.include?("--cleanup")
@@ -40,13 +99,13 @@ module Homebrew
 
     if ARGV.named.empty?
       outdated = Formula.installed.select do |f|
-        f.outdated?(fetch_head: ARGV.fetch_head?)
+        f.outdated?(fetch_head: args.fetch_HEAD?)
       end
 
       exit 0 if outdated.empty?
     else
       outdated = ARGV.resolved_formulae.select do |f|
-        f.outdated?(fetch_head: ARGV.fetch_head?)
+        f.outdated?(fetch_head: args.fetch_HEAD?)
       end
 
       (ARGV.resolved_formulae - outdated).each do |f|
@@ -65,7 +124,7 @@ module Homebrew
     outdated -= pinned
     formulae_to_install = outdated.map(&:latest_formula)
 
-    if !pinned.empty? && !ARGV.include?("--ignore-pinned")
+    if !pinned.empty? && !args.ignore_pinned?
       ofail "Not upgrading #{pinned.count} pinned #{"package".pluralize(pinned.count)}:"
       puts pinned.map { |f| "#{f.full_specified_name} #{f.pkg_version}" } * ", "
     end
@@ -144,7 +203,7 @@ module Homebrew
 
     fi = FormulaInstaller.new(f)
     fi.options = options
-    fi.build_bottle = ARGV.build_bottle? || (!f.bottle_defined? && f.build.bottle?)
+    fi.build_bottle = args.build_bottle? || (!f.bottle_defined? && f.build.bottle?)
     fi.installed_on_request = !ARGV.named.empty?
     fi.link_keg           ||= keg_was_linked if keg_had_linked_opt
     if tab
@@ -203,7 +262,7 @@ module Homebrew
         next if formulae_to_upgrade.include?(f)
         next if formulae_pinned.include?(f)
 
-        if f.outdated?(fetch_head: ARGV.fetch_head?)
+        if f.outdated?(fetch_head: args.fetch_HEAD?)
           if f.pinned?
             formulae_pinned << f
           else
@@ -247,7 +306,7 @@ module Homebrew
           checker = LinkageChecker.new(keg, cache_db: db)
 
           if checker.broken_library_linkage?
-            if f.outdated?(fetch_head: ARGV.fetch_head?)
+            if f.outdated?(fetch_head: args.fetch_HEAD?)
               # Outdated formulae = pinned formulae (see function above)
               formulae_pinned_and_outdated << f
             else
@@ -295,7 +354,7 @@ module Homebrew
 
     return if kegs.empty?
 
-    oh1 "Checking dependents for outdated formulae" if ARGV.verbose?
+    oh1 "Checking dependents for outdated formulae" if args.verbose?
     upgradable, pinned = upgradable_dependents(kegs, formulae).map(&:to_a)
 
     upgradable.sort! { |a, b| depends_on(a, b) }
@@ -310,7 +369,7 @@ module Homebrew
 
     # Print the upgradable dependents.
     if upgradable.empty?
-      ohai "No dependents to upgrade" if ARGV.verbose?
+      ohai "No dependents to upgrade" if args.verbose?
     else
       ohai "Upgrading #{upgradable.count} #{"dependent".pluralize(upgradable.count)}:"
       formulae_upgrades = upgradable.map do |f|
@@ -328,7 +387,7 @@ module Homebrew
     # Assess the dependents tree again.
     kegs = formulae_with_runtime_dependencies
 
-    oh1 "Checking dependents for broken library links" if ARGV.verbose?
+    oh1 "Checking dependents for broken library links" if args.verbose?
     reinstallable, pinned = broken_dependents(kegs, formulae).map(&:to_a)
 
     reinstallable.sort! { |a, b| depends_on(a, b) }
@@ -343,7 +402,7 @@ module Homebrew
 
     # Print the broken dependents.
     if reinstallable.empty?
-      ohai "No broken dependents to reinstall" if ARGV.verbose?
+      ohai "No broken dependents to reinstall" if args.verbose?
     else
       ohai "Reinstalling #{reinstallable.count} broken #{"dependent".pluralize(reinstallable.count)} from source:"
       puts reinstallable.map(&:full_specified_name).join(", ")

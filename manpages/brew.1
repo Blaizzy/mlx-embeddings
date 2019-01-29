@@ -285,7 +285,7 @@ If \fB\-\-include\-test\fR is passed, install testing dependencies\. These are o
 If \fB\-\-devel\fR is passed, and \fIformula\fR defines it, install the development version\.
 .
 .IP
-If \fB\-\-HEAD\fR is passed, and \fIformula\fR defines it, install the HEAD version, aka master, trunk, unstable\.
+If \fB\-\-HEAD\fR is passed, and \fIformula\fR defines it, install the HEAD version, aka\. master, trunk, unstable\.
 .
 .IP
 If \fB\-\-keep\-tmp\fR is passed, the temporary files created during installation are not deleted\.
@@ -426,11 +426,32 @@ If \fB\-\-aliases\fR is passed, also verify any alias symlinks in each tap\.
 If \fB\-\-syntax\fR is passed, also syntax\-check all of Homebrew\'s Ruby files\.
 .
 .TP
-\fBreinstall\fR [\fB\-\-display\-times\fR] \fIformula\fR
-Uninstall and then install \fIformula\fR (with existing install options)\.
+\fBreinstall\fR [\fB\-\-debug\fR] [\fB\-\-build\-from\-source\fR|\fB\-\-force\-bottle\fR] [\fB\-\-keep\-tmp\fR] [\fB\-\-force\fR] [\fB\-\-verbose\fR] [\fB\-\-display\-times\fR] \fIformula\fR
+Uninstall and then install \fIformula\fR (with existing and any appended install options)\.
+.
+.IP
+If \fB\-\-debug\fR (or \fB\-d\fR) is passed and brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory\.
+.
+.IP
+If \fB\-\-build\-from\-source\fR (or \fB\-s\fR) is passed, compile the specified \fIformula\fR from source even if a bottle is provided\. Dependencies will still be installed from bottles if they are available\.
+.
+.IP
+If \fB\-\-force\-bottle\fR is passed, install from a bottle if it exists for the current or newest version of macOS, even if it would not normally be used for installation\.
+.
+.IP
+If \fB\-\-keep\-tmp\fR is passed, the temporary files created during installation are not deleted\.
+.
+.IP
+If \fB\-\-force\fR (or \fB\-f\fR) is passed, install without checking for previously installed keg\-only or non\-migrated versions
+.
+.IP
+If \fB\-\-verbose\fR (or \fB\-v\fR) is passed, print the verification and postinstall steps\.
 .
 .IP
 If \fB\-\-display\-times\fR is passed, install times for each formula are printed at the end of the run\.
+.
+.IP
+Installation options specific to \fIformula\fR may be appended to the command, and can be listed with \fBbrew options\fR \fIformula\fR\.
 .
 .TP
 \fBsearch\fR, \fB\-S\fR
@@ -601,11 +622,20 @@ If \fB\-\-force\fR (or \fB\-f\fR) is specified then always do a slower, full upd
 Fetches and resets Homebrew and all tap repositories (or the specified \fBrepositories\fR) using \fBgit\fR(1) to their latest \fBorigin/master\fR\. Note this will destroy all your uncommitted or committed changes\.
 .
 .TP
-\fBupgrade\fR [\fIinstall\-options\fR] [\fB\-\-fetch\-HEAD\fR] [\fB\-\-ignore\-pinned\fR] [\fB\-\-display\-times\fR] [\fIformulae\fR]
-Upgrade outdated, unpinned brews (with existing install options)\.
+\fBupgrade\fR [\fB\-\-debug\fR] [\fB\-\-build\-from\-source\fR|\fB\-\-force\-bottle\fR] [\fB\-\-fetch\-HEAD\fR] [\fB\-\-ignore\-pinned\fR] [\fB\-\-keep\-tmp\fR] [\fB\-\-force\fR] [\fB\-\-verbose\fR] [\fB\-\-display\-times\fR] [\fIformula\fR] [\fIoptions\fR \.\.\.]
+Upgrade outdated, unpinned brews (with existing and any appended install options)\.
 .
 .IP
-Options for the \fBinstall\fR command are also valid here\.
+If \fIformula\fR are given, upgrade only the specified brews (unless they are pinned; see \fBpin\fR, \fBunpin\fR)\.
+.
+.IP
+If \fB\-\-debug\fR (or \fB\-d\fR) is passed and brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory\.
+.
+.IP
+If \fB\-\-build\-from\-source\fR (or \fB\-s\fR) is passed, compile the specified \fIformula\fR from source even if a bottle is provided\. Dependencies will still be installed from bottles if they are available\.
+.
+.IP
+If \fB\-\-force\-bottle\fR is passed, install from a bottle if it exists for the current or newest version of macOS, even if it would not normally be used for installation\.
 .
 .IP
 If \fB\-\-fetch\-HEAD\fR is passed, fetch the upstream repository to detect if the HEAD installation of the formula is outdated\. Otherwise, the repository\'s HEAD will be checked for updates when a new stable or devel version has been released\.
@@ -614,10 +644,19 @@ If \fB\-\-fetch\-HEAD\fR is passed, fetch the upstream repository to detect if t
 If \fB\-\-ignore\-pinned\fR is passed, set a 0 exit code even if pinned formulae are not upgraded\.
 .
 .IP
+If \fB\-\-keep\-tmp\fR is passed, the temporary files created during installation are not deleted\.
+.
+.IP
+If \fB\-\-force\fR (or \fB\-f\fR) is passed, install without checking for previously installed keg\-only or non\-migrated versions
+.
+.IP
+If \fB\-\-verbose\fR (or \fB\-v\fR) is passed, print the verification and postinstall steps\.
+.
+.IP
 If \fB\-\-display\-times\fR is passed, install times for each formula are printed at the end of the run\.
 .
 .IP
-If \fIformulae\fR are given, upgrade only the specified brews (unless they are pinned; see \fBpin\fR, \fBunpin\fR)\.
+Additional options specific to \fIformula\fR may be appended to the command, and can be listed with \fBbrew options\fR \fIformula\fR\.
 .
 .TP
 \fBuses\fR [\fB\-\-installed\fR] [\fB\-\-recursive\fR] [\fB\-\-include\-build\fR] [\fB\-\-include\-test\fR] [\fB\-\-include\-optional\fR] [\fB\-\-skip\-recommended\fR] [\fB\-\-devel\fR|\fB\-\-HEAD\fR] \fIformulae\fR

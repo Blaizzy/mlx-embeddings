@@ -60,6 +60,8 @@ module Homebrew
                      "even if it would not be used during installation."
       switch :verbose
       switch :debug
+      conflicts "--devel", "--HEAD"
+      conflicts "--build-from-source", "--build-bottle", "--force-bottle"
     end
   end
 

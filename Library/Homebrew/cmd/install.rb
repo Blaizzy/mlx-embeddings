@@ -41,7 +41,7 @@
 #:    If `--devel` is passed, and <formula> defines it, install the development version.
 #:
 #:    If `--HEAD` is passed, and <formula> defines it, install the HEAD version,
-#:    aka master, trunk, unstable.
+#:    aka. master, trunk, unstable.
 #:
 #:    If `--keep-tmp` is passed, the temporary files created during installation
 #:    are not deleted.
@@ -85,7 +85,7 @@ module Homebrew
   def install_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `install` [<options>] formula
+        `install` [<options>] <formula>
 
         Install <formula>.
 
@@ -124,7 +124,7 @@ module Homebrew
       switch "--devel",
         description: "If <formula> defines it, install the development version."
       switch "--HEAD",
-        description: "If <formula> defines it, install the HEAD version, aka master, trunk, unstable."
+        description: "If <formula> defines it, install the HEAD version, aka. master, trunk, unstable."
       switch "--fetch-HEAD",
         description: "Fetch the upstream repository to detect if the HEAD installation of the "\
                      "formula is outdated. Otherwise, the repository's HEAD will be checked for "\
@@ -146,19 +146,10 @@ module Homebrew
                      "package into a Homebrew package."
       switch "-g", "--git",
         description: "Create a Git repository, useful for creating patches to the software."
-
-      ARGV.formulae.each do |f|
-        next if f.options.empty?
-        f.options.each do |o|
-          name = o.flag
-          description = "`#{f.name}`: #{o.description}"
-          if name.end_with? "="
-            flag   name, description: description
-          else
-            switch name, description: description
-          end
-        end
-      end
+      conflicts "--ignore-dependencies", "--only-dependencies"
+      conflicts "--devel", "--HEAD"
+      conflicts "--build-from-source", "--build-bottle", "--force-bottle"
+      formula_options
     end
   end
 

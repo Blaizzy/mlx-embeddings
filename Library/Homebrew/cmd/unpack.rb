@@ -34,6 +34,7 @@ module Homebrew
       switch :force
       switch :verbose
       switch :debug
+      conflicts "--git", "--patch"
     end
   end
 
