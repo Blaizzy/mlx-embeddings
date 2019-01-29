@@ -129,7 +129,10 @@ module Homebrew
         description: "If <formula> defines it, install the development version."
       switch "--HEAD",
         description: "If <formula> defines it, install the HEAD version, aka master, trunk, unstable."
-      switch "--fetch-HEAD"
+      switch "--fetch-HEAD",
+        description: "Fetch the upstream repository to detect if the HEAD installation of the "\
+                     "formula is outdated. Otherwise, the repository's HEAD will be checked for "\
+                     "updates when a new stable or devel version has been released."
       switch "--keep-tmp",
         description: "Dont delete the temporary files created during installation."
       switch "--build-bottle",
