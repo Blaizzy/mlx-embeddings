@@ -4,6 +4,7 @@ require "formulary"
 require "descriptions"
 require "cleanup"
 require "description_cache_store"
+require "cli_parser"
 
 module Homebrew
   module_function
