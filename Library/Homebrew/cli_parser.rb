@@ -5,7 +5,7 @@ require "set"
 module Homebrew
   module CLI
     class Parser
-      attr_reader :processed_options
+      attr_reader :processed_options, :hide_from_man_page
 
       def self.parse(args = ARGV, &block)
         new(&block).parse(args)
@@ -29,6 +29,7 @@ module Homebrew
         @conflicts = []
         @processed_options = []
         @desc_line_length = 43
+        @hide_from_man_page = false
         instance_eval(&block)
         post_initialize
       end
@@ -161,6 +162,10 @@ module Homebrew
             end
           end
         end
+      end
+
+      def hide_from_man_page!
+        @hide_from_man_page = true
       end
 
       private
