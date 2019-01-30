@@ -1,19 +1,12 @@
-#:  * `prof` [<ruby options>]:
-#:    Run Homebrew with the Ruby profiler.
-#:
-#:    *Example:* `brew prof readall`
-
 module Homebrew
   module_function
 
   def prof_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `prof` [<ruby options>]
+        `prof` <command>
 
-        Run Homebrew with the Ruby profiler.
-
-        *Example:* `brew prof readall`
+        Run Homebrew with the Ruby profiler e.g. `brew prof readall`.
       EOS
     end
   end

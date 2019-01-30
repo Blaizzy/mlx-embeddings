@@ -1,23 +1,8 @@
-#:  * `test` [`--devel`|`--HEAD`] [`--debug`] [`--keep-tmp`] <formulae>:
-#:    Run the test method provided by a formula.
-#:    There is no standard output or return code, but generally it should notify the
-#:    user if something is wrong with the installed formula.
-#:
-#:    To test the development or head version of a formula, use `--devel` or
-#:    `--HEAD`.
-#:
-#:    If `--debug` (or `-d`) is passed and the test fails, an interactive debugger will be
-#:    launched with access to IRB or a shell inside the temporary test directory.
-#:
-#:    If `--keep-tmp` is passed, the temporary files created for the test are
-#:    not deleted.
-#:
-#:    *Example:* `brew install jruby && brew test jruby`
-
 require "extend/ENV"
 require "formula_assertions"
 require "sandbox"
 require "timeout"
+require "cli_parser"
 
 module Homebrew
   module_function
@@ -25,7 +10,7 @@ module Homebrew
   def test_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `test` [<options>] <formulae>
+        `test` [<options>] <formula>
 
         Run the test method provided by an installed formula.
         There is no standard output or return code, but generally it should notify the

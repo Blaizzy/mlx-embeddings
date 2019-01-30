@@ -1,9 +1,3 @@
-#:  * `edit`:
-#:    Open the Homebrew repository for editing.
-#:
-#:  * `edit` <formula>:
-#:    Open <formula> in the editor set by `EDITOR` or `HOMEBREW_EDITOR`.
-
 require "formula"
 require "cli_parser"
 
@@ -13,7 +7,7 @@ module Homebrew
   def edit_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `edit` [<formulae>]
+        `edit` [<formula>]
 
         Open a formula in the editor set by `EDITOR` or `HOMEBREW_EDITOR`, or open the
         Homebrew repository for editing if no <formula> is provided.
