@@ -1,12 +1,9 @@
-#:  * `update` [`--merge`] [`--force`]:
-#:    Fetch the newest version of Homebrew and all formulae from GitHub using
-#:    `git`(1) and perform any necessary migrations.
+#:  * `update` [<options>]
 #:
-#:    If `--merge` is specified then `git merge` is used to include updates
-#:    (rather than `git rebase`).
+#:  Fetch the newest version of Homebrew and all formulae from GitHub using `git`(1) and perform any necessary migrations.
 #:
-#:    If `--force` (or `-f`) is specified then always do a slower, full update check even
-#:    if unnecessary.
+#:       --merge                         `git merge` is used to include updates (rather than `git rebase`).
+#:       --force                         Always do a slower, full update check (even if unnecessary).
 
 # Don't need shellcheck to follow this `source`.
 # shellcheck disable=SC1090
