@@ -1,6 +1,3 @@
-#:  * `postinstall` <formula>:
-#:    Rerun the post-install steps for <formula>.
-
 require "sandbox"
 require "formula_installer"
 require "cli_parser"

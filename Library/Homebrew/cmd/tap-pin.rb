@@ -1,7 +1,3 @@
-#:  * `tap-pin` <tap>:
-#:    Pin <tap>, prioritizing its formulae over core when formula names are supplied
-#:    by the user. See also `tap-unpin`.
-
 require "cli_parser"
 
 module Homebrew
@@ -12,7 +8,7 @@ module Homebrew
       usage_banner <<~EOS
         `tap-pin` <tap>
 
-        Pin <tap>, prioritizing its formulae over core when formula names are supplied
+        Pin <tap>, prioritising its formulae over core when formula names are supplied
         by the user. See also `tap-unpin`.
       EOS
       switch :debug

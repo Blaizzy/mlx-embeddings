@@ -1,39 +1,3 @@
-#:  * `info`:
-#:    Display brief statistics for your Homebrew installation.
-#:
-#:  * `info` `--analytics` [`--days=`<days>] [`--category=`<category>]:
-#:    Display Homebrew analytics data (provided neither `HOMEBREW_NO_ANALYTICS`
-#:    or `HOMEBREW_NO_GITHUB_API` are set)
-#:
-#:    The value for `days` must be `30`, `90` or `365`. The default is `30`.
-#:
-#:    The value for `category` must be `install`, `install-on-request`,
-#:    `build-error` or `os-version`. The default is `install`.
-#:
-#:  * `info` <formula> [`--analytics`]:
-#:    Display information about <formula> and analytics data (provided neither
-#:    `HOMEBREW_NO_ANALYTICS` or `HOMEBREW_NO_GITHUB_API` are set)
-#:
-#:    Pass `--verbose` to see more verbose analytics data.
-#:
-#:    Pass `--analytics` to see only more verbose analytics data instead of
-#:    formula information.
-#:
-#:  * `info` `--github` <formula>:
-#:    Open a browser to the GitHub History page for <formula>.
-#:
-#:    To view formula history locally: `brew log -p` <formula>
-#:
-#:  * `info` `--json[=`<version>] (`--all`|`--installed`|<formulae>):
-#:    Print a JSON representation of <formulae>. Currently the default and
-#:    only accepted value for <version> is `v1`.
-#:
-#:    Pass `--all` to get information on all formulae, or `--installed` to get
-#:    information on all installed formulae.
-#:
-#:    See the docs for examples of using the JSON output:
-#:    <https://docs.brew.sh/Querying-Brew>
-
 require "missing_formula"
 require "caveats"
 require "cli_parser"
@@ -49,7 +13,7 @@ module Homebrew
   def info_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `info [<formulae>]`
+        `info` [<formula>]
 
         Display brief statistics for your Homebrew installation.
       EOS
@@ -67,7 +31,7 @@ module Homebrew
         description: "Open a browser to the GitHub History page for provided <formula>. "\
                      "To view formula history locally: `brew log -p` <formula>"
       flag "--json",
-        description: "Print a JSON representation of <formulae>. Currently the default and only accepted "\
+        description: "Print a JSON representation of <formula>. Currently the default and only accepted "\
                      "value for <version> is `v1`. See the docs for examples of using the JSON "\
                      "output: <https://docs.brew.sh/Querying-Brew>"
       switch "--all",

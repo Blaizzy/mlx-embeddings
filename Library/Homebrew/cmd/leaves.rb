@@ -1,6 +1,3 @@
-#:  * `leaves`:
-#:    Show installed formulae that are not dependencies of another installed formula.
-
 require "formula"
 require "tab"
 require "cli_parser"

@@ -1,7 +1,3 @@
-#:  * `pin` <formulae>:
-#:    Pin the specified <formulae>, preventing them from being upgraded when
-#:    issuing the `brew upgrade` <formulae> command. See also `unpin`.
-
 require "formula"
 require "cli_parser"
 
@@ -11,10 +7,10 @@ module Homebrew
   def pin_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `pin` <formulae>
+        `pin` <formula>
 
-        Pin the specified <formulae>, preventing them from being upgraded when
-        issuing the `brew upgrade` <formulae> command. See also `unpin`.
+        Pin the specified <formula>, preventing them from being upgraded when
+        issuing the `brew upgrade` <formula> command. See also `unpin`.
       EOS
       switch :debug
     end

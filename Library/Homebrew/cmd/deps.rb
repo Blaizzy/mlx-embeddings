@@ -1,60 +1,3 @@
-#:  * `deps` [`--1`] [`-n`] [`--union`] [`--full-name`] [`--installed`] [`--include-build`] [`--include-optional`] [`--skip-recommended`] [`--include-requirements`] <formula>:
-#:    Show dependencies for <formula>. When given multiple formula arguments,
-#:    show the intersection of dependencies for every formula.
-#:
-#:    If `--1` is passed, only show dependencies one level down, instead of
-#:    recursing.
-#:
-#:    If `-n` is passed, show dependencies in topological order.
-#:
-#:    If `--union` is passed, show the union of dependencies for <formula>,
-#:    instead of the intersection.
-#:
-#:    If `--full-name` is passed, list dependencies by their full name.
-#:
-#:    If `--installed` is passed, only list those dependencies that are
-#:    currently installed.
-#:
-#:    By default, `deps` shows required and recommended dependencies for
-#:    <formula>. To include the `:build` type dependencies, pass `--include-build`.
-#:    Similarly, pass `--include-optional` to include `:optional` dependencies or
-#:    `--include-test` to include (non-recursive) `:test` dependencies.
-#:    To skip `:recommended` type dependencies, pass `--skip-recommended`.
-#:    To include requirements in addition to dependencies, pass `--include-requirements`.
-#:
-#:  * `deps` `--tree` [`--1`] [<filters>] [`--annotate`] (<formula>|`--installed`):
-#:    Show dependencies as a tree. When given multiple formula arguments, output
-#:    individual trees for every formula.
-#:
-#:    If `--1` is passed, only one level of children is displayed.
-#:
-#:    If `--installed` is passed, output a tree for every installed formula.
-#:
-#:    The <filters> placeholder is any combination of options `--include-build`,
-#:    `--include-optional`, `--include-test`, `--skip-recommended`, and
-#:    `--include-requirements` as documented above.
-#:
-#:    If `--annotate` is passed, the build, optional, and recommended dependencies
-#:    are marked as such in the output.
-#:
-#:  * `deps` [<filters>] (`--installed`|`--all`):
-#:    Show dependencies for installed or all available formulae. Every line of
-#:    output starts with the formula name, followed by a colon and all direct
-#:    dependencies of that formula.
-#:
-#:    The <filters> placeholder is any combination of options `--include-build`,
-#:    `--include-optional`, `--include-test`, and `--skip-recommended` as
-#:    documented above.
-#:
-#:    Additional options specific to <formula> may be appended to the command,
-#:    and can be listed with `brew options` <formula>.
-
-# The undocumented `--for-each` option will switch into the mode used by `deps --all`,
-# but only list dependencies for specified formula, one specified formula per line.
-# This is used for debugging the `--installed`/`--all` display mode.
-
-# encoding: UTF-8
-
 require "formula"
 require "ostruct"
 require "cli_parser"
@@ -81,11 +24,11 @@ module Homebrew
       switch "--installed",
         description: "Only list those dependencies that are currently installed."
       switch "--all",
-        description: "List all the dependencies for all available formuale."
+        description: "List all the dependencies for all available formulae."
       switch "--include-build",
         description: "Show `:build` type dependencies for <formula>."
       switch "--include-optional",
-        description: "Show `:optional` dependecies for <formula>."
+        description: "Show `:optional` dependencies for <formula>."
       switch "--include-test",
         description: "Show `:test` dependencies for <formula> (non-recursive)."
       switch "--skip-recommended",

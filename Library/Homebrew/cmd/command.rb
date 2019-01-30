@@ -1,6 +1,3 @@
-#:  * `command` <cmd>:
-#:    Display the path to the file which is used when invoking `brew` <cmd>.
-
 require "commands"
 require "cli_parser"
 

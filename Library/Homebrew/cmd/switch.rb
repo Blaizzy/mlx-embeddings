@@ -1,6 +1,3 @@
-#:  * `switch` <formula> <version>:
-#:    Symlink all of the specific <version> of <formula>'s install to Homebrew prefix.
-
 require "formula"
 require "keg"
 require "cli_parser"

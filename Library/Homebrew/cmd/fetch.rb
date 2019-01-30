@@ -1,27 +1,3 @@
-#:  * `fetch` [`--force`] [`--retry`] [`-v`] [`--devel`|`--HEAD`] [`--deps`] [`--build-from-source`|`--force-bottle`] <formulae>:
-#:    Download the source packages for the given <formulae>.
-#:    For tarballs, also print SHA-256 checksums.
-#:
-#:    If `--HEAD` or `--devel` is passed, fetch that version instead of the
-#:    stable version.
-#:
-#:    If `-v` is passed, do a verbose VCS checkout, if the URL represents a VCS.
-#:    This is useful for seeing if an existing VCS cache has been updated.
-#:
-#:    If `--force` (or `-f`) is passed, remove a previously cached version and re-fetch.
-#:
-#:    If `--retry` is passed, retry if a download fails or re-download if the
-#:    checksum of a previously cached version no longer matches.
-#:
-#:    If `--deps` is passed, also download dependencies for any listed <formulae>.
-#:
-#:    If `--build-from-source` (or `-s`) or `--build-bottle` is passed, download the
-#:    source rather than a bottle.
-#:
-#:    If `--force-bottle` is passed, download a bottle if it exists for the
-#:    current or newest version of macOS, even if it would not be used during
-#:    installation.
-
 require "formula"
 require "fetch"
 require "cli_parser"
@@ -32,15 +8,15 @@ module Homebrew
   def fetch_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `fetch` [<options>] <formulae>
+        `fetch` [<options>] <formula>
 
-        Download the source packages for the given <formulae>.
+        Download the source packages for the given <formula>.
         For tarballs, also print SHA-256 checksums.
       EOS
       switch "--HEAD",
         description: "Fetch HEAD version instead of stable version."
       switch "--devel",
-        description: "Fetch devel version instead of stable version."
+        description: "Fetch development version instead of stable version."
       switch :verbose,
         description: "Do a verbose VCS checkout, if the URL represents a VCS. This is useful for "\
                      "seeing if an existing VCS cache has been updated."
@@ -50,7 +26,7 @@ module Homebrew
         description: "Retry if a download fails or re-download if the checksum of a previously cached "\
                     "version no longer matches."
       switch "--deps",
-        description: "Download dependencies for any listed <formulae>."
+        description: "Download dependencies for any listed <formula>."
       switch "-s", "--build-from-source",
         description: "Download the source for rather than a bottle."
       switch "--build-bottle",

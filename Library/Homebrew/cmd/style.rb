@@ -1,22 +1,3 @@
-#:  * `style` [`--fix`] [`--display-cop-names`] [`--only-cops=`<cops>|`--except-cops=`<cops>] [<files>|<taps>|<formulae>]:
-#:    Check formulae or files for conformance to Homebrew style guidelines.
-#:
-#:    Lists of <files>, <taps> and <formulae> may not be combined. If none are
-#:    provided, `style` will run style checks on the whole Homebrew library,
-#:    including core code and all formulae.
-#:
-#:    If `--fix` is passed, automatically fix style violations using RuboCop's
-#:    auto-correct feature.
-#:
-#:    If `--display-cop-names` is passed, include the RuboCop cop name for each
-#:    violation in the output.
-#:
-#:    Passing `--only-cops=`<cops> will check for violations of only the listed
-#:    RuboCop <cops>, while `--except-cops=`<cops> will skip checking the listed
-#:    <cops>. For either option <cops> should be a comma-separated list of cop names.
-#:
-#:    Exits with a non-zero status if any style violations are found.
-
 require "json"
 require "open3"
 require "style"
@@ -28,11 +9,11 @@ module Homebrew
   def style_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `style` [<options>] [<files>|<taps>|<formulae>]
+        `style` [<options>] [<file>|<tap>|<formula>]
 
         Check formulae or files for conformance to Homebrew style guidelines.
 
-        Lists of <files>, <taps> and <formulae> may not be combined. If none are
+        Lists of <file>, <tap> and <formula> may not be combined. If none are
         provided, `style` will run style checks on the whole Homebrew library,
         including core code and all formulae.
       EOS

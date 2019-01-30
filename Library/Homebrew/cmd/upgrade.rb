@@ -1,42 +1,3 @@
-#:  * `upgrade` [`--debug`] [`--build-from-source`|`--force-bottle`] [`--fetch-HEAD`] [`--ignore-pinned`] [`--keep-tmp`] [`--force`] [`--verbose`] [`--display-times`] [<formula>] [<options> ...]:
-#:    Upgrade outdated, unpinned brews (with existing and any appended install options).
-#:
-#:    If <formula> are given, upgrade only the specified brews (unless they
-#:    are pinned; see `pin`, `unpin`).
-#:
-#:    If `--debug` (or `-d`) is passed and brewing fails, open an interactive debugging
-#:    session with access to IRB or a shell inside the temporary build directory.
-#:
-#:    If `--build-from-source` (or `-s`) is passed, compile the specified <formula> from
-#:    source even if a bottle is provided. Dependencies will still be installed
-#:    from bottles if they are available.
-#:
-#:    If `--force-bottle` is passed, install from a bottle if it exists for the
-#:    current or newest version of macOS, even if it would not normally be used
-#:    for installation.
-#:
-#:    If `--fetch-HEAD` is passed, fetch the upstream repository to detect if
-#:    the HEAD installation of the formula is outdated. Otherwise, the
-#:    repository's HEAD will be checked for updates when a new stable or devel
-#:    version has been released.
-#:
-#:    If `--ignore-pinned` is passed, set a 0 exit code even if pinned formulae
-#:    are not upgraded.
-#:
-#:    If `--keep-tmp` is passed, the temporary files created during installation
-#:    are not deleted.
-#:
-#:    If `--force` (or `-f`) is passed, install without checking for previously
-#:    installed keg-only or non-migrated versions
-#:
-#:    If `--verbose` (or `-v`) is passed, print the verification and postinstall steps.
-#:
-#:    If `--display-times` is passed, install times for each formula are printed
-#:    at the end of the run.
-#:
-#:    Additional options specific to <formula> may be appended to the command,
-#:    and can be listed with `brew options` <formula>.
-
 require "install"
 require "reinstall"
 require "formula_installer"
@@ -69,11 +30,11 @@ module Homebrew
       switch "--fetch-HEAD",
         description: "Fetch the upstream repository to detect if the HEAD installation of the "\
                      "formula is outdated. Otherwise, the repository's HEAD will be checked for "\
-                     "updates when a new stable or devel version has been released."
+                     "updates when a new stable or development version has been released."
       switch "--ignore-pinned",
         description: "Set a 0 exit code even if pinned formulae are not upgraded."
       switch "--keep-tmp",
-        description: "Dont delete the temporary files created during installation."
+        description: "Don't delete the temporary files created during installation."
       switch :force,
         description: "Install without checking for previously installed keg-only or "\
                      "non-migrated versions."

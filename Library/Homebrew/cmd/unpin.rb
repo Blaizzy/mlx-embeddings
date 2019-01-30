@@ -1,7 +1,3 @@
-#:  * `unpin` <formulae>:
-#:    Unpin <formulae>, allowing them to be upgraded by `brew upgrade` <formulae>.
-#:    See also `pin`.
-
 require "formula"
 require "cli_parser"
 
@@ -11,9 +7,9 @@ module Homebrew
   def unpin_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `unpin` <formulae>
+        `unpin` <formula>
 
-        Unpin <formulae>, allowing them to be upgraded by `brew upgrade` <formulae>.
+        Unpin <formula>, allowing them to be upgraded by `brew upgrade` <formula>.
         See also `pin`.
       EOS
       switch :verbose

@@ -1,20 +1,3 @@
-#:  * `tap-info`:
-#:    Display a brief summary of all installed taps.
-#:
-#:  * `tap-info` (`--installed`|<taps>):
-#:    Display detailed information about one or more <taps>.
-#:
-#:    Pass `--installed` to display information on all installed taps.
-#:
-#:  * `tap-info` `--json=`<version> (`--installed`|<taps>):
-#:    Print a JSON representation of <taps>. Currently the only accepted value
-#:    for <version> is `v1`.
-#:
-#:    Pass `--installed` to get information on installed taps.
-#:
-#:    See the docs for examples of using the JSON output:
-#:    <https://docs.brew.sh/Querying-Brew>
-
 require "cli_parser"
 
 module Homebrew
@@ -23,10 +6,10 @@ module Homebrew
   def tap_info_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `tap-info` [<options>] [<taps>]
+        `tap-info` [<options>] [<tap>]
 
-        Display detailed information about one or more provided <taps>.
-        Display a brief summary of all installed taps if no <taps> are passed.
+        Display detailed information about one or more provided <tap>.
+        Display a brief summary of all installed taps if no <tap> are passed.
       EOS
       switch "--installed",
         description: "Display information on all installed taps."

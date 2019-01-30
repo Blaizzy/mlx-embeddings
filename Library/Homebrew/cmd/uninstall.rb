@@ -1,12 +1,3 @@
-#:  * `uninstall`, `rm`, `remove` [`--force`] [`--ignore-dependencies`] <formula>:
-#:    Uninstall <formula>.
-#:
-#:    If `--force` (or `-f`) is passed, and there are multiple versions of <formula>
-#:    installed, delete all installed versions.
-#:
-#:    If `--ignore-dependencies` is passed, uninstalling won't fail, even if
-#:    formulae depending on <formula> would still be installed.
-
 require "keg"
 require "formula"
 require "diagnostic"
@@ -26,7 +17,7 @@ module Homebrew
       switch :force,
         description: "Delete all installed versions of the <formula>"
       switch "--ignore-dependencies",
-        description: "Dont fail uninstall, even if <formula> is a dependency of any installed "\
+        description: "Don't fail uninstall, even if <formula> is a dependency of any installed "\
                      "formulae."
       switch :debug
     end
