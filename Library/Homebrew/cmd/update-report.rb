@@ -1,7 +1,3 @@
-#: @hide_from_man_page
-#:  * `update_report` [`--preinstall`]:
-#:    The Ruby implementation of `brew update`. Never called manually.
-
 require "formula_versions"
 require "migrator"
 require "formulary"
@@ -19,7 +15,25 @@ module Homebrew
     end
   end
 
+  def update_report_args
+    Homebrew::CLI::Parser.new do
+      usage_banner <<~EOS
+        `update_report` [`--preinstall`]
+
+        The Ruby implementation of `brew update`. Never called manually.
+      EOS
+      switch "--preinstall",
+        description: "Run in 'auto-update' mode (faster, less output)."
+      switch :force
+      switch :debug
+      switch :verbose
+      hide_from_man_page!
+    end
+  end
+
   def update_report
+    update_report_args.parse
+
     HOMEBREW_REPOSITORY.cd do
       analytics_message_displayed =
         Utils.popen_read("git", "config", "--local", "--get", "homebrew.analyticsmessage").chomp == "true"
