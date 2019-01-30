@@ -1,13 +1,13 @@
-#:  * `deps` [`--1`] [`-n`] [`--union`] [`--full-name`] [`--installed`] [`--include-build`] [`--include-optional`] [`--skip-recommended`] [`--include-requirements`] <formulae>:
-#:    Show dependencies for <formulae>. When given multiple formula arguments,
-#:    show the intersection of dependencies for <formulae>.
+#:  * `deps` [`--1`] [`-n`] [`--union`] [`--full-name`] [`--installed`] [`--include-build`] [`--include-optional`] [`--skip-recommended`] [`--include-requirements`] <formula>:
+#:    Show dependencies for <formula>. When given multiple formula arguments,
+#:    show the intersection of dependencies for every formula.
 #:
 #:    If `--1` is passed, only show dependencies one level down, instead of
 #:    recursing.
 #:
 #:    If `-n` is passed, show dependencies in topological order.
 #:
-#:    If `--union` is passed, show the union of dependencies for <formulae>,
+#:    If `--union` is passed, show the union of dependencies for <formula>,
 #:    instead of the intersection.
 #:
 #:    If `--full-name` is passed, list dependencies by their full name.
@@ -16,13 +16,13 @@
 #:    currently installed.
 #:
 #:    By default, `deps` shows required and recommended dependencies for
-#:    <formulae>. To include the `:build` type dependencies, pass `--include-build`.
+#:    <formula>. To include the `:build` type dependencies, pass `--include-build`.
 #:    Similarly, pass `--include-optional` to include `:optional` dependencies or
 #:    `--include-test` to include (non-recursive) `:test` dependencies.
 #:    To skip `:recommended` type dependencies, pass `--skip-recommended`.
 #:    To include requirements in addition to dependencies, pass `--include-requirements`.
 #:
-#:  * `deps` `--tree` [`--1`] [<filters>] [`--annotate`] (<formulae>|`--installed`):
+#:  * `deps` `--tree` [`--1`] [<filters>] [`--annotate`] (<formula>|`--installed`):
 #:    Show dependencies as a tree. When given multiple formula arguments, output
 #:    individual trees for every formula.
 #:
@@ -45,6 +45,9 @@
 #:    The <filters> placeholder is any combination of options `--include-build`,
 #:    `--include-optional`, `--include-test`, and `--skip-recommended` as
 #:    documented above.
+#:
+#:    Additional options specific to <formula> may be appended to the command,
+#:    and can be listed with `brew options` <formula>.
 
 # The undocumented `--for-each` option will switch into the mode used by `deps --all`,
 # but only list dependencies for specified formula, one specified formula per line.
@@ -62,17 +65,17 @@ module Homebrew
   def deps_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `deps` [<options>] <formulae>
+        `deps` [<options>] <formula>
 
-        Show dependencies for <formulae>. When given multiple formula arguments,
-        show the intersection of dependencies for <formulae>.
+        Show dependencies for <formula>. When given multiple formula arguments,
+        show the intersection of dependencies for <formula>.
       EOS
       switch "--1",
         description: "Only show dependencies one level down, instead of recursing."
       switch "-n",
         description: "Show dependencies in topological order."
       switch "--union",
-        description: "Show the union of dependencies for <formulae>, instead of the intersection."
+        description: "Show the union of dependencies for <formula>, instead of the intersection."
       switch "--full-name",
         description: "List dependencies by their full name."
       switch "--installed",
@@ -80,15 +83,15 @@ module Homebrew
       switch "--all",
         description: "List all the dependencies for all available formuale."
       switch "--include-build",
-        description: "Show `:build` type dependencies for <formulae>."
+        description: "Show `:build` type dependencies for <formula>."
       switch "--include-optional",
-        description: "Show `:optional` dependecies for <formulae>."
+        description: "Show `:optional` dependecies for <formula>."
       switch "--include-test",
-        description: "Show `:test` dependencies for <formulae> (non-recursive)."
+        description: "Show `:test` dependencies for <formula> (non-recursive)."
       switch "--skip-recommended",
-        description: "Skip `:recommended` type dependencies for <formulae>."
+        description: "Skip `:recommended` type dependencies for <formula>."
       switch "--include-requirements",
-        description: "Include requirements in addition to dependencies for <formulae>."
+        description: "Include requirements in addition to dependencies for <formula>."
       switch "--tree",
         description: "Show dependencies as a tree. When given multiple formula arguments "\
                      "output individual trees for every formula."
@@ -99,6 +102,7 @@ module Homebrew
       switch :verbose
       switch :debug
       conflicts "--installed", "--all"
+      formula_options
     end
   end
 
