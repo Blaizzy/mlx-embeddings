@@ -5,6 +5,9 @@ require "unpack_strategy"
 require "lazy_object"
 require "cgi"
 
+require "mechanize/version"
+require "mechanize/http/content_disposition_parser"
+
 class AbstractDownloadStrategy
   extend Forwardable
   include FileUtils
@@ -363,9 +366,20 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
       end
     end
 
-    filenames =
-      lines.map { |line| line[/^Content\-Disposition:\s*(?:inline|attachment);\s*filename=(["']?)([^;]+)\1/i, 2] }
-           .compact
+    content_disposition_parser = Mechanize::HTTP::ContentDispositionParser.new
+
+    parse_content_disposition = lambda do |line|
+      next unless content_disposition = content_disposition_parser.parse(line, true)
+
+      if filename_with_encoding = content_disposition.parameters["filename*"]
+        encoding, encoded_filename = filename_with_encoding.split("''", 2)
+        URI.decode_www_form_component(encoded_filename).encode(encoding)
+      else
+        content_disposition.filename
+      end
+    end
+
+    filenames = lines.map(&parse_content_disposition).compact
 
     time =
       lines.map { |line| line[/^Last\-Modified:\s*(.+)/i, 1] }
