@@ -1,7 +1,3 @@
-#: @hide_from_man_page
-#:  * `mirror` <formulae>:
-#:    Reuploads the stable URL for a formula to Bintray to use it as a mirror.
-
 require "cli_parser"
 
 module Homebrew
@@ -10,12 +6,13 @@ module Homebrew
   def mirror_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `mirror` <formulae>
+        `mirror` <formula>
 
         Reuploads the stable URL for a formula to Bintray to use it as a mirror.
       EOS
       switch :verbose
       switch :debug
+      hide_from_man_page!
     end
   end
 

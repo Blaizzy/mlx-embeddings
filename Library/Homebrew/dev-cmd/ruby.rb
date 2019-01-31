@@ -1,8 +1,3 @@
-#:  * `ruby` [<ruby options>]:
-#:    Run a Ruby instance with Homebrew's libraries loaded.
-#:
-#:    *Example:* `brew ruby -e "puts :gcc.f.deps"` or `brew ruby script.rb`
-
 require "cli_parser"
 
 module Homebrew
@@ -11,11 +6,10 @@ module Homebrew
   def ruby_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `ruby` [<ruby options>]
+        `ruby` [`-e`]:
 
-        Run a Ruby instance with Homebrew's libraries loaded.
-
-        *Example:* `brew ruby -e "puts :gcc.f.deps"` or `brew ruby script.rb`
+        Run a Ruby instance with Homebrew's libraries loaded e.g.
+        `brew ruby -e "puts :gcc.f.deps"` or `brew ruby script.rb`
       EOS
       switch "-e",
         description: "Execute the provided string argument as a script."

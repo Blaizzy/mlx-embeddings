@@ -1,22 +1,3 @@
-#:  * `search`, `-S`:
-#:    Display all locally available formulae (including tapped ones).
-#:    No online search is performed.
-#:
-#:  * `search` `--casks`:
-#:    Display all locally available casks (including tapped ones).
-#:    No online search is performed.
-#:
-#:  * `search` [`--desc`] (<text>|`/`<text>`/`):
-#:    Perform a substring search of cask tokens and formula names for <text>. If <text>
-#:    is surrounded with slashes, then it is interpreted as a regular expression.
-#:    The search for <text> is extended online to `homebrew/core` and `homebrew/cask`.
-#:
-#:    If `--desc` is passed, search formulae with a description matching <text> and
-#:    casks with a name matching <text>.
-#:
-#:  * `search` (`--debian`|`--fedora`|`--fink`|`--macports`|`--opensuse`|`--ubuntu`) <text>:
-#:    Search for <text> in the given package manager's list.
-
 require "formula"
 require "missing_formula"
 require "descriptions"
@@ -44,7 +25,7 @@ module Homebrew
   def search_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `search`, `-S` [<options>] (<text>|`/`<text>`/`)
+        `search` [<options>] [<text>|`/`<text>`/`]
 
          Perform a substring search of cask tokens and formula names for <text>. If <text>
          is surrounded with slashes, then it is interpreted as a regular expression.

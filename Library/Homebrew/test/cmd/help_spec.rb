@@ -20,7 +20,7 @@ describe "brew", :integration_test do
 
     it "prints help for a documented shell command" do
       expect { brew "help", "update" }
-        .to output(/^brew update/).to_stdout
+        .to output(/^Usage: brew update/).to_stdout
         .and be_a_success
     end
 

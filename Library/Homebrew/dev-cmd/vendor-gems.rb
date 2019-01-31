@@ -1,13 +1,10 @@
-#:  * `vendor-gems`:
-#:    Install and commit Homebrew's vendored gems.
-
 require "formula"
 require "cli_parser"
 
 module Homebrew
   module_function
 
-  def vendor_gems
+  def vendor_gems_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
         `vendor-gems`
@@ -15,7 +12,11 @@ module Homebrew
         Install and commit Homebrew's vendored gems.
       EOS
       switch :debug
-    end.parse
+    end
+  end
+
+  def vendor_gems
+    vendor_gems_args.parse
 
     Homebrew.install_bundler!
 

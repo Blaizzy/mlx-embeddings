@@ -1,6 +1,7 @@
 #: @hide_from_man_page
-#:  * `vendor-install` [<target>]:
-#:     Install vendor version of Homebrew dependencies.
+#:  * `vendor-install` [<target>]
+#:
+#:  Install Homebrew's portable Ruby.
 
 # Don't need shellcheck to follow this `source`.
 # shellcheck disable=SC1090

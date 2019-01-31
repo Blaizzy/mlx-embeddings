@@ -1,6 +1,3 @@
-#:  * `tap-new` <user>`/`<repo>:
-#:    Generate the template files for a new tap.
-
 require "tap"
 require "cli_parser"
 

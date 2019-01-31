@@ -76,10 +76,13 @@ module Homebrew
 
     def command_help(path)
       # Let OptionParser generate help text for commands which have a parser defined
+      cmd = path.basename(path.extname)
+      cmd_args_method_name = "#{cmd.to_s.tr("-", "_")}_args".to_sym
       begin
-        cmd = path.basename(path.extname)
-        return Homebrew.send("#{cmd.to_s.tr("-", "_")}_args".to_sym).generate_help_text
-      rescue NoMethodError
+        return Homebrew.send(cmd_args_method_name)
+                       .generate_help_text
+      rescue NoMethodError => e
+        raise if e.name != cmd_args_method_name
         nil
       end
 
@@ -89,7 +92,8 @@ module Homebrew
         HOMEBREW_HELP
       else
         help_lines.map do |line|
-          line.sub(/^  \* /, "#{Tty.bold}brew#{Tty.reset} ")
+          line.gsub(/^  /, "")
+              .sub(/^\* /, "#{Tty.bold}Usage: brew#{Tty.reset} ")
               .gsub(/`(.*?)`/, "#{Tty.bold}\\1#{Tty.reset}")
               .gsub(%r{<([^\s]+?://[^\s]+?)>}) { |url| Formatter.url(url) }
               .gsub(/<(.*?)>/, "#{Tty.underline}\\1#{Tty.reset}")

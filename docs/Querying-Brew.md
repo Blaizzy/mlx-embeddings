@@ -12,16 +12,7 @@ To enable users to do rich queries without the problems above, Homebrew provides
 
 ## `brew info --json`
 
-`brew info` outputs JSON-formatted information about formulae. This JSON can then be parsed using your tools of choice.
-
-From the manpage:
-
-  * `info --json=<version> (--all|--installed|<formulae>)`:
-    Print a JSON representation of `<formulae>`. Currently the only accepted value
-    for `<version>` is `v1`.
-
-    Pass `--all` to get information on all formulae, or `--installed` to get
-    information on all installed formulae.
+`brew info` outputs JSON-formatted information about formulae. This JSON can then be parsed using your tools of choice. See more details in `brew info --help`.
 
 The current schema version is `v1`. Note that fields may be added to the schema as needed without incrementing the schema. Any significant breaking changes will cause a change to the schema version.
 

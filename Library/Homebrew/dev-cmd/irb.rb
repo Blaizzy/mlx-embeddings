@@ -1,11 +1,3 @@
-#:  * `irb` [`--examples`] [`--pry`]:
-#:    Enter the interactive Homebrew Ruby shell.
-#:
-#:    If `--examples` is passed, several examples will be shown.
-#:
-#:    If `--pry` is passed or `HOMEBREW_PRY` is set, Pry will be
-#:    used instead of IRB.
-
 require "cli_parser"
 
 class Symbol

@@ -1,15 +1,3 @@
-#:  * `extract` [`--force`] <formula> <tap> [`--version=`<version>]:
-#:    Look through repository history to find the most recent version of <formula> and
-#:    create a copy in <tap>`/Formula/`<formula>`@`<version>`.rb`. If the tap is
-#:    not installed yet, attempt to install/clone the tap before continuing.
-#:
-#:    If `--force` is passed, the file at the destination will be overwritten
-#:    if it already exists. Otherwise, existing files will be preserved.
-#:
-#:    If an argument is passed through `--version`, <version> of <formula>
-#:    will be extracted and placed in the destination tap. Otherwise, the most
-#:    recent version that can be found will be used.
-
 require "cli_parser"
 require "utils/git"
 require "formulary"

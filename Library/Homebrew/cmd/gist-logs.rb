@@ -1,19 +1,3 @@
-#:  * `gist-logs` [`--new-issue`|`-n`] [`--private`|`-p`] <formula>:
-#:    Upload logs for a failed build of <formula> to a new Gist.
-#:
-#:    <formula> is usually the name of the formula to install, but it can be specified
-#:    in several different ways.
-#:
-#:    If `--with-hostname` is passed, include the hostname in the Gist.
-#:
-#:    If `--new-issue` is passed, automatically create a new issue in the appropriate
-#:    GitHub repository as well as creating the Gist.
-#:
-#:    If `--private` is passed, the Gist will be marked private and will not
-#:    appear in listings but will be accessible with the link.
-#:
-#:    If no logs are found, an error message is presented.
-
 require "formula"
 require "install"
 require "system_config"
@@ -27,7 +11,7 @@ module Homebrew
   def gist_logs_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `gist-logs` [<options>] <formula>:
+        `gist-logs` [<options>] <formula>
 
         Upload logs for a failed build of <formula> to a new Gist.
 

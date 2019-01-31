@@ -1,10 +1,3 @@
-#:  * `release-notes` [`--markdown`] [<previous_tag>] [<end_ref>]:
-#:    Print the merged pull requests on Homebrew/brew between two Git refs.
-#:    If no <previous_tag> is provided it defaults to the latest tag.
-#:    If no <end_ref> is provided it defaults to `origin/master`.
-#:
-#:    If `--markdown` is passed, print as a Markdown list.
-
 require "cli_parser"
 
 module Homebrew

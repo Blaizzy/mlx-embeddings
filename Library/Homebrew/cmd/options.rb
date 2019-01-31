@@ -1,13 +1,3 @@
-#:  * `options` [`--compact`] (`--all`|`--installed`|<formulae>):
-#:    Display install options specific to <formulae>.
-#:
-#:    If `--compact` is passed, show all options on a single line separated by
-#:    spaces.
-#:
-#:    If `--all` is passed, show options for all formulae.
-#:
-#:    If `--installed` is passed, show options for all installed formulae.
-
 require "formula"
 require "options"
 require "cli_parser"
@@ -18,9 +8,9 @@ module Homebrew
   def options_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `options` [<options>] <formulae>
+        `options` [<options>] <formula>
 
-        Display install options specific to <formulae>
+        Display install options specific to <formula>
       EOS
       switch "--compact",
         description: "Show all options on a single line separated by spaces."

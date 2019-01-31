@@ -29,52 +29,55 @@ For the full command list, see the [COMMANDS](#commands) section.
 With `--verbose` or `-v`, many commands print extra debugging information. Note that
 these flags should only appear after a command.
 
-  * `install` <formula>:
-    Install <formula>.
+### `install` <formula>:
 
-  * `uninstall` <formula>:
-    Uninstall <formula>.
+Install <formula>.
 
-  * `update`:
-    Fetch the newest version of Homebrew from GitHub using `git`(1).
+### `uninstall` <formula>:
 
-  * `list`:
-    List all installed formulae.
+Uninstall <formula>.
 
-  * `search` (<text>|`/`<text>`/`):
-    Perform a substring search of cask tokens and formula names for <text>. If <text>
-    is surrounded with slashes, then it is interpreted as a regular expression.
-    The search for <text> is extended online to `homebrew/core` and `homebrew/cask`.
-    If no search term is given, all locally available formulae are listed.
+### `list`:
+
+List all installed formulae.
+
+### `search` (<text>|`/`<text>`/`):
+Perform a substring search of cask tokens and formula names for <text>. If <text>
+is surrounded with slashes, then it is interpreted as a regular expression.
+The search for <text> is extended online to `homebrew/core` and `homebrew/cask`.
+If no search term is given, all locally available formulae are listed.
 
 ## COMMANDS
 
-<%= commands.join("\n") %>
+<%= commands %>
 
 ## DEVELOPER COMMANDS
 
-<%= developer_commands.join("\n") %>
+<%= developer_commands %>
 
 ## GLOBAL OPTIONS
 
-<%= global_options.join("\n") %>
+<%= global_options %>
 
 ## OFFICIAL EXTERNAL COMMANDS
 
-  <%= homebrew_bundle.join.strip %>
+### `bundle` <subcommand>:
 
+Bundler for non-Ruby dependencies from Homebrew, Homebrew Cask and the Mac App Store. See `brew bundle --help`.
 
-    **Homebrew/homebrew-bundle**: <https://github.com/Homebrew/homebrew-bundle>
+**Homebrew/homebrew-bundle**: <https://github.com/Homebrew/homebrew-bundle>
 
-  * `cask` [`--version` | `audit` | `cat` | `cleanup` | `create` | `doctor` | `edit` | `fetch` | `home` | `info`]:
-    Install macOS applications distributed as binaries.
+### `cask` <subcommand>:
 
-    **Homebrew/homebrew-cask**: <https://github.com/Homebrew/homebrew-cask>
+Install macOS applications distributed as binaries. See brew-cask(1).
 
-  <%= homebrew_services.join.strip %>
+**Homebrew/homebrew-cask**: <https://github.com/Homebrew/homebrew-cask>
 
+### `services` <subcommand>:
 
-    **Homebrew/homebrew-services**: <https://github.com/Homebrew/homebrew-services>
+Manage background services with macOS' `launchctl`(1) daemon manager. See `brew services --help`.
+
+**Homebrew/homebrew-services**: <https://github.com/Homebrew/homebrew-services>
 
 ## CUSTOM EXTERNAL COMMANDS
 
@@ -213,7 +216,7 @@ Note that environment variables must have a value set to be detected. For exampl
     rather than falling back to building from source.
 
   * `HOMEBREW_NO_COLOR`:
-    If set, Homebrew will not print text with color added.
+    If set, Homebrew will not print text with colour added.
 
   * `HOMEBREW_NO_EMOJI`:
     If set, Homebrew will not print the `HOMEBREW_INSTALL_BADGE` on a

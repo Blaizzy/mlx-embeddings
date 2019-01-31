@@ -1,6 +1,3 @@
-#:  * `cat` <formula>:
-#:    Display the source to <formula>.
-
 require "cli_parser"
 
 module Homebrew

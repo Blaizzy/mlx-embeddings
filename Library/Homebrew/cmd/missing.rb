@@ -1,12 +1,3 @@
-#:  * `missing` [`--hide=`<hidden>] [<formulae>]:
-#:    Check the given <formulae> for missing dependencies. If no <formulae> are
-#:    given, check all installed brews.
-#:
-#:    If `--hide=`<hidden> is passed, act as if none of <hidden> are installed.
-#:    <hidden> should be a comma-separated list of formulae.
-#:
-#:    `missing` exits with a non-zero status if any formulae are missing dependencies.
-
 require "formula"
 require "tab"
 require "diagnostic"
@@ -18,9 +9,9 @@ module Homebrew
   def missing_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `missing` [<options>] [<formulae>]
+        `missing` [<options>] [<formule>]
 
-        Check the given <formulae> for missing dependencies. If no <formulae> are
+        Check the given <formula> for missing dependencies. If no <formula> are
         given, check all installed brews.
 
         `missing` exits with a non-zero status if any formulae are missing dependencies.

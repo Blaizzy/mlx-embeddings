@@ -1,74 +1,3 @@
-#:  * `install` [`--debug`] [`--env=`(`std`|`super`)] [`--ignore-dependencies`|`--only-dependencies`] [`--cc=`<compiler>] [`--build-from-source`|`--force-bottle`] [`--include-test`] [`--devel`|`--HEAD`] [`--keep-tmp`] [`--build-bottle`] [`--force`] [`--verbose`] [`--display-times`] <formula> [<options> ...]:
-#:    Install <formula>.
-#:
-#:    <formula> is usually the name of the formula to install, but it can be specified
-#:    in several different ways.
-#:
-#:    If `--debug` (or `-d`) is passed and brewing fails, open an interactive debugging
-#:    session with access to IRB or a shell inside the temporary build directory.
-#:
-#:    If `--env=std` is passed, use the standard build environment instead of superenv.
-#:
-#:    If `--env=super` is passed, use superenv even if the formula specifies the
-#:    standard build environment.
-#:
-#:    If `--ignore-dependencies` is passed, skip installing any dependencies of
-#:    any kind. If they are not already present, the formula will probably fail
-#:    to install.
-#:
-#:    If `--only-dependencies` is passed, install the dependencies with specified
-#:    options but do not install the specified formula.
-#:
-#:    If `--cc=`<compiler> is passed, attempt to compile using <compiler>.
-#:    <compiler> should be the name of the compiler's executable, for instance
-#:    `gcc-7` for GCC 7. In order to use LLVM's clang, use `llvm_clang`.
-#:    To specify the Apple-provided clang, use `clang`.
-#:    This parameter will only accept compilers that are provided by Homebrew or
-#:    bundled with macOS. Please do not file issues if you encounter errors
-#:    while using this flag.
-#:
-#:    If `--build-from-source` (or `-s`) is passed, compile the specified <formula> from
-#:    source even if a bottle is provided. Dependencies will still be installed
-#:    from bottles if they are available.
-#:
-#:    If `--force-bottle` is passed, install from a bottle if it exists for the
-#:    current or newest version of macOS, even if it would not normally be used
-#:    for installation.
-#:
-#:    If `--include-test` is passed, install testing dependencies. These are only
-#:    needed by formulae maintainers to run `brew test`.
-#:
-#:    If `--devel` is passed, and <formula> defines it, install the development version.
-#:
-#:    If `--HEAD` is passed, and <formula> defines it, install the HEAD version,
-#:    aka. master, trunk, unstable.
-#:
-#:    If `--keep-tmp` is passed, the temporary files created during installation
-#:    are not deleted.
-#:
-#:    If `--build-bottle` is passed, prepare the formula for eventual bottling
-#:    during installation.
-#:
-#:    If `--force` (or `-f`) is passed, install without checking for previously
-#:    installed keg-only or non-migrated versions
-#:
-#:    If `--verbose` (or `-v`) is passed, print the verification and postinstall steps.
-#:
-#:    If `--display-times` is passed, install times for each formula are printed
-#:    at the end of the run.
-#:
-#:    Installation options specific to <formula> may be appended to the command,
-#:    and can be listed with `brew options` <formula>.
-#:
-#:  * `install` `--interactive` [`--git`] <formula>:
-#:    If `--interactive` (or `-i`) is passed, download and patch <formula>, then
-#:    open a shell. This allows the user to run `./configure --help` and
-#:    otherwise determine how to turn the software package into a Homebrew
-#:    formula.
-#:
-#:    If `--git` (or `-g`) is passed, Homebrew will create a Git repository, useful for
-#:    creating patches to the software.
-
 require "missing_formula"
 require "formula_installer"
 require "development_tools"
@@ -128,9 +57,9 @@ module Homebrew
       switch "--fetch-HEAD",
         description: "Fetch the upstream repository to detect if the HEAD installation of the "\
                      "formula is outdated. Otherwise, the repository's HEAD will be checked for "\
-                     "updates when a new stable or devel version has been released."
+                     "updates when a new stable or development version has been released."
       switch "--keep-tmp",
-        description: "Dont delete the temporary files created during installation."
+        description: "Don't delete the temporary files created during installation."
       switch "--build-bottle",
         description: "Prepare the formula for eventual bottling during installation."
       switch :force,

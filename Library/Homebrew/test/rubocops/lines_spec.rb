@@ -650,7 +650,7 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
 
-    it "dependecies which have to vendored" do
+    it "dependencies which have to vendored" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"

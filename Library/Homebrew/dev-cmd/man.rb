@@ -1,34 +1,9 @@
-#:  * `man` [`--fail-if-changed`]:
-#:    Generate Homebrew's manpages.
-#:
-#:    If `--fail-if-changed` is passed, the command will return a failing
-#:    status code if changes are detected in the manpage outputs.
-#:    This can be used for CI to be notified when the manpages are out of date.
-#:    Additionally, the date used in new manpages will match those in the existing
-#:    manpages (to allow comparison without factoring in the date).
-
 require "formula"
 require "erb"
 require "ostruct"
 require "cli_parser"
-require "dev-cmd/audit"
-require "dev-cmd/bottle"
-require "dev-cmd/bump-formula-pr"
-require "dev-cmd/create"
-require "dev-cmd/edit"
-require "dev-cmd/extract"
-require "dev-cmd/formula"
-require "dev-cmd/irb"
-require "dev-cmd/linkage"
-require "dev-cmd/mirror"
-require "dev-cmd/prof"
-require "dev-cmd/pull"
-require "dev-cmd/release-notes"
-require "dev-cmd/ruby"
-require "dev-cmd/tap-new"
-require "dev-cmd/test"
-require "dev-cmd/tests"
-require "dev-cmd/update-test"
+# Require all commands
+Dir.glob("#{HOMEBREW_LIBRARY_PATH}/{dev-,}cmd/*.rb").each { |cmd| require cmd }
 
 module Homebrew
   module_function
@@ -83,22 +58,14 @@ module Homebrew
     convert_man_page(cask_markup, TARGET_MAN_PATH/"brew-cask.1")
   end
 
-  def path_glob_commands(glob)
-    Pathname.glob(glob)
-            .sort_by { |source_file| sort_key_for_path(source_file) }
-            .map(&:read).map(&:lines)
-            .map { |lines| lines.grep(/^#:/).map { |line| line.slice(2..-1) }.join }
-            .reject { |s| s.strip.empty? || s.include?("@hide_from_man_page") }
-  end
-
   def build_man_page
     template = (SOURCE_PATH/"brew.1.md.erb").read
     variables = OpenStruct.new
 
-    variables[:commands] = path_glob_commands("#{HOMEBREW_LIBRARY_PATH}/cmd/*.{rb,sh}")
+    variables[:commands] = generate_cmd_manpages("#{HOMEBREW_LIBRARY_PATH}/cmd/*.{rb,sh}")
+    variables[:developer_commands] = generate_cmd_manpages("#{HOMEBREW_LIBRARY_PATH}/dev-cmd/{*.rb,sh}")
+    variables[:global_options] = global_options_manpage
 
-    variables[:developer_commands] = generate_cmd_manpages("#{HOMEBREW_LIBRARY_PATH}/dev-cmd/*.{rb,sh}")
-    variables[:global_options] = global_options_manpage_lines
     readme = HOMEBREW_REPOSITORY/"README.md"
     variables[:lead_maintainer] =
       readme.read[/(Homebrew's lead maintainer .*\.)/, 1]
@@ -118,9 +85,6 @@ module Homebrew
     variables[:former_maintainers] =
       readme.read[/(Former maintainers .*\.)/, 1]
             .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1')
-
-    variables[:homebrew_bundle] = help_output(:bundle)
-    variables[:homebrew_services] = help_output(:services)
 
     ERB.new(template, nil, ">").result(variables.instance_eval { binding })
   end
@@ -162,6 +126,7 @@ module Homebrew
       odie "Got no output from ronn!" unless ronn_output
       if format_flag == "--markdown"
         ronn_output = ronn_output.gsub(%r{<var>(.*?)</var>}, "*`\\1`*")
+                                 .gsub(/\n\n\n+/, "\n\n")
       elsif format_flag == "--roff"
         ronn_output = ronn_output.gsub(%r{<code>(.*?)</code>}, "\\fB\\1\\fR")
                                  .gsub(%r{<var>(.*?)</var>}, "\\fI\\1\\fR")
@@ -169,12 +134,6 @@ module Homebrew
       end
       target.atomic_write ronn_output
     end
-  end
-
-  def help_output(command)
-    tap = Tap.fetch("Homebrew/homebrew-#{command}")
-    tap.install unless tap.installed?
-    command_help_lines(which("brew-#{command}.rb", Tap.cmd_directories))
   end
 
   def target_path_to_format(target)
@@ -190,38 +149,61 @@ module Homebrew
     cmd_paths = Pathname.glob(glob).sort
     man_page_lines = []
     man_args = Homebrew.args
-    cmd_paths.each do |cmd_path|
-      begin
-        cmd_parser = Homebrew.send(cmd_arg_parser(cmd_path))
-        man_page_lines << cmd_manpage_lines(cmd_parser).join
-      rescue NoMethodError
-        man_page_lines << path_glob_commands(cmd_path.to_s).first
+    # preserve existing manpage order
+    cmd_paths.sort_by(&method(:sort_key_for_path))
+             .each do |cmd_path|
+      cmd_args_method_name = cmd_arg_parser(cmd_path)
+
+      cmd_man_page_lines = begin
+        cmd_parser = Homebrew.send(cmd_args_method_name)
+        next if cmd_parser.hide_from_man_page
+        cmd_parser_manpage_lines(cmd_parser).join
+      rescue NoMethodError => e
+        raise if e.name != cmd_args_method_name
+        nil
       end
+      cmd_man_page_lines ||= cmd_comment_manpage_lines(cmd_path)
+
+      man_page_lines << cmd_man_page_lines
     end
     Homebrew.args = man_args
-    man_page_lines
+    man_page_lines.compact.join("\n")
   end
 
   def cmd_arg_parser(cmd_path)
     "#{cmd_path.basename.to_s.gsub(".rb", "").tr("-", "_")}_args".to_sym
   end
 
-  def cmd_manpage_lines(cmd_parser)
+  def cmd_parser_manpage_lines(cmd_parser)
     lines = [format_usage_banner(cmd_parser.usage_banner_text)]
     lines += cmd_parser.processed_options.map do |short, long, _, desc|
       next if !long.nil? && cmd_parser.global_option?(cmd_parser.option_to_name(long))
       generate_option_doc(short, long, desc)
+    end.reject(&:blank?)
+    lines
+  end
+
+  def cmd_comment_manpage_lines(cmd_path)
+    comment_lines = cmd_path.read.lines.grep(/^#:/)
+    return if comment_lines.empty?
+    return if comment_lines.first.include?("@hide_from_man_page")
+    lines = [format_usage_banner(comment_lines.first).chomp]
+    comment_lines.slice(1..-1)
+                 .each do |line|
+      line = line.slice(4..-1)
+      next unless line
+      lines << line.gsub(/^ +(-+[a-z-]+) */, "* `\\1`:\n  ")
     end
     lines
   end
 
-  def global_options_manpage_lines
+  def global_options_manpage
     lines = ["These options are applicable across all sub-commands.\n"]
     lines += Homebrew::CLI::Parser.global_options.values.map do |names, _, desc|
       short, long = names
       generate_option_doc(short, long, desc)
     end
-    lines
+    lines.join("\n")
   end
 
   def generate_option_doc(short, long, desc)
@@ -238,6 +220,6 @@ module Homebrew
   end
 
   def format_usage_banner(usage_banner)
-    usage_banner.sub(/^/, "### ")
+    usage_banner&.sub(/^(#: *\* )?/, "### ")
   end
 end
