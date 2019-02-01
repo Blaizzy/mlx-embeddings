@@ -8,7 +8,7 @@ module Homebrew
       usage_banner <<~EOS
         `cat` <formula>
 
-        Display the source to <formula>.
+        Display the source of <formula>.
       EOS
     end
   end
