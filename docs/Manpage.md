@@ -49,7 +49,7 @@ If `regenerate-uuid` is passed, regenerate UUID used in Homebrew's analytics.
 
 ### `cat` *`formula`*
 
-Display the source to *`formula`*.
+Display the source of *`formula`*.
 
 ### `cleanup` [*`options`*] [*`formula`*|*`cask`*]
 
