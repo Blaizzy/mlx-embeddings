@@ -5,7 +5,7 @@ describe Cask::Artifact::Binary, :cask do
     end
   }
   let(:artifacts) { cask.artifacts.select { |a| a.is_a?(described_class) } }
-  let(:expected_path) { Cask::Config.global.binarydir.join("binary") }
+  let(:expected_path) { cask.config.binarydir.join("binary") }
 
   after do
     FileUtils.rm expected_path if expected_path.exist?
@@ -38,7 +38,7 @@ describe Cask::Artifact::Binary, :cask do
       end
     }
 
-    let(:expected_path) { Cask::Config.global.binarydir.join("naked_non_executable") }
+    let(:expected_path) { cask.config.binarydir.join("naked_non_executable") }
 
     it "makes the binary executable" do
       expect(FileUtils).to receive(:chmod)

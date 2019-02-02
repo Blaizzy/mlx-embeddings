@@ -468,7 +468,7 @@ describe Cask::DSL, :cask do
       let(:token) { "appdir-interpolation" }
 
       it "is allowed" do
-        expect(cask.artifacts.first.source).to eq(Cask::Config.global.appdir/"some/path")
+        expect(cask.artifacts.first.source).to eq(cask.config.appdir/"some/path")
       end
     end
 

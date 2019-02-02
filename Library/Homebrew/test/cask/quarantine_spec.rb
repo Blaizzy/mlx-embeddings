@@ -11,13 +11,11 @@ describe Cask::Quarantine, :cask do
     it "quarantines a nice fresh Cask" do
       Cask::Cmd::Install.run("local-transmission")
 
-      expect(
-        Cask::CaskLoader.load(cask_path("local-transmission")),
-      ).to be_installed
+      cask = Cask::CaskLoader.load(cask_path("local-transmission"))
 
-      expect(
-        Cask::Config.global.appdir.join("Transmission.app"),
-      ).to be_quarantined
+      expect(cask).to be_installed
+
+      expect(cask.config.appdir.join("Transmission.app")).to be_quarantined
     end
 
     it "quarantines Cask fetches" do
@@ -42,83 +40,81 @@ describe Cask::Quarantine, :cask do
 
       Cask::Cmd::Install.run("local-transmission")
 
-      expect(
-        Cask::CaskLoader.load(cask_path("local-transmission")),
-      ).to be_installed
+      cask = Cask::CaskLoader.load(cask_path("local-transmission"))
 
-      expect(Cask::Config.global.appdir.join("Transmission.app")).to be_quarantined
+      expect(cask).to be_installed
+
+      expect(cask.config.appdir.join("Transmission.app")).to be_quarantined
     end
 
     it "quarantines dmg-based Casks" do
       Cask::Cmd::Install.run("container-dmg")
 
-      expect(
-        Cask::CaskLoader.load(cask_path("container-dmg")),
-      ).to be_installed
+      cask = Cask::CaskLoader.load(cask_path("container-dmg"))
 
-      expect(Cask::Config.global.appdir.join("container")).to be_quarantined
+      expect(cask).to be_installed
+
+      expect(cask.config.appdir.join("container")).to be_quarantined
     end
 
     it "quarantines tar-gz-based Casks" do
       Cask::Cmd::Install.run("container-tar-gz")
 
-      expect(
-        Cask::CaskLoader.load(cask_path("container-tar-gz")),
-      ).to be_installed
+      cask = Cask::CaskLoader.load(cask_path("container-tar-gz"))
 
-      expect(Cask::Config.global.appdir.join("container")).to be_quarantined
+      expect(cask).to be_installed
+
+      expect(cask.config.appdir.join("container")).to be_quarantined
     end
 
     it "quarantines xar-based Casks" do
       Cask::Cmd::Install.run("container-xar")
 
-      expect(
-        Cask::CaskLoader.load(cask_path("container-xar")),
-      ).to be_installed
+      cask = Cask::CaskLoader.load(cask_path("container-xar"))
 
-      expect(Cask::Config.global.appdir.join("container")).to be_quarantined
+      expect(cask).to be_installed
+
+      expect(cask.config.appdir.join("container")).to be_quarantined
     end
 
     it "quarantines pure bzip2-based Casks" do
       Cask::Cmd::Install.run("container-bzip2")
 
-      expect(
-        Cask::CaskLoader.load(cask_path("container-bzip2")),
-      ).to be_installed
+      cask = Cask::CaskLoader.load(cask_path("container-bzip2"))
 
-      expect(Cask::Config.global.appdir.join("container")).to be_quarantined
+      expect(cask).to be_installed
+
+      expect(cask.config.appdir.join("container")).to be_quarantined
     end
 
     it "quarantines pure gzip-based Casks" do
       Cask::Cmd::Install.run("container-gzip")
 
-      expect(
-        Cask::CaskLoader.load(cask_path("container-gzip")),
-      ).to be_installed
+      cask = Cask::CaskLoader.load(cask_path("container-gzip"))
 
-      expect(Cask::Config.global.appdir.join("container")).to be_quarantined
+      expect(cask).to be_installed
+
+      expect(cask.config.appdir.join("container")).to be_quarantined
     end
 
     it "quarantines the pkg in naked-pkg-based Casks" do
       Cask::Cmd::Install.run("container-pkg")
 
-      naked_pkg = Cask::CaskLoader.load(cask_path("container-pkg"))
+      cask = Cask::CaskLoader.load(cask_path("container-pkg"))
 
-      expect(naked_pkg).to be_installed
+      expect(cask).to be_installed
 
-      expect(
-        Cask::Caskroom.path.join("container-pkg", naked_pkg.version, "container.pkg"),
-      ).to be_quarantined
+      expect(cask.staged_path/"container.pkg").to be_quarantined
     end
 
     it "quarantines a nested container" do
       Cask::Cmd::Install.run("nested-app")
 
-      expect(
-        Cask::CaskLoader.load(cask_path("nested-app")),
-      ).to be_installed
+      cask = Cask::CaskLoader.load(cask_path("nested-app"))
 
-      expect(Cask::Config.global.appdir.join("MyNestedApp.app")).to be_quarantined
+      expect(cask).to be_installed
+
+      expect(cask.config.appdir.join("MyNestedApp.app")).to be_quarantined
     end
   end
 
@@ -126,11 +122,11 @@ describe Cask::Quarantine, :cask do
     it "does not quarantine even a nice, fresh Cask" do
       Cask::Cmd::Install.run("local-transmission", "--no-quarantine")
 
-      expect(
-        Cask::CaskLoader.load(cask_path("local-transmission")),
-      ).to be_installed
+      cask = Cask::CaskLoader.load(cask_path("local-transmission"))
 
-      expect(Cask::Config.global.appdir.join("Transmission.app")).not_to be_quarantined
+      expect(cask).to be_installed
+
+      expect(cask.config.appdir.join("Transmission.app")).not_to be_quarantined
     end
 
     it "does not quarantine Cask fetches" do
@@ -155,61 +151,61 @@ describe Cask::Quarantine, :cask do
 
       Cask::Cmd::Install.run("local-transmission", "--no-quarantine")
 
-      expect(
-        Cask::CaskLoader.load(cask_path("local-transmission")),
-      ).to be_installed
+      cask = Cask::CaskLoader.load(cask_path("local-transmission"))
 
-      expect(Cask::Config.global.appdir.join("Transmission.app")).not_to be_quarantined
+      expect(cask).to be_installed
+
+      expect(cask.config.appdir.join("Transmission.app")).not_to be_quarantined
     end
 
     it "does not quarantine dmg-based Casks" do
       Cask::Cmd::Install.run("container-dmg", "--no-quarantine")
 
-      expect(
-        Cask::CaskLoader.load(cask_path("container-dmg")),
-      ).to be_installed
+      cask = Cask::CaskLoader.load(cask_path("container-dmg"))
 
-      expect(Cask::Config.global.appdir.join("container")).not_to be_quarantined
+      expect(cask).to be_installed
+
+      expect(cask.config.appdir.join("container")).not_to be_quarantined
     end
 
     it "does not quarantine tar-gz-based Casks" do
       Cask::Cmd::Install.run("container-tar-gz", "--no-quarantine")
 
-      expect(
-        Cask::CaskLoader.load(cask_path("container-tar-gz")),
-      ).to be_installed
+      cask = Cask::CaskLoader.load(cask_path("container-tar-gz"))
 
-      expect(Cask::Config.global.appdir.join("container")).not_to be_quarantined
+      expect(cask).to be_installed
+
+      expect(cask.config.appdir.join("container")).not_to be_quarantined
     end
 
     it "does not quarantine xar-based Casks" do
       Cask::Cmd::Install.run("container-xar", "--no-quarantine")
 
-      expect(
-        Cask::CaskLoader.load(cask_path("container-xar")),
-      ).to be_installed
+      cask = Cask::CaskLoader.load(cask_path("container-xar"))
 
-      expect(Cask::Config.global.appdir.join("container")).not_to be_quarantined
+      expect(cask).to be_installed
+
+      expect(cask.config.appdir.join("container")).not_to be_quarantined
     end
 
     it "does not quarantine pure bzip2-based Casks" do
       Cask::Cmd::Install.run("container-bzip2", "--no-quarantine")
 
-      expect(
-        Cask::CaskLoader.load(cask_path("container-bzip2")),
-      ).to be_installed
+      cask = Cask::CaskLoader.load(cask_path("container-bzip2"))
 
-      expect(Cask::Config.global.appdir.join("container")).not_to be_quarantined
+      expect(cask).to be_installed
+
+      expect(cask.config.appdir.join("container")).not_to be_quarantined
     end
 
     it "does not quarantine pure gzip-based Casks" do
       Cask::Cmd::Install.run("container-gzip", "--no-quarantine")
 
-      expect(
-        Cask::CaskLoader.load(cask_path("container-gzip")),
-      ).to be_installed
+      cask = Cask::CaskLoader.load(cask_path("container-gzip"))
 
-      expect(Cask::Config.global.appdir.join("container")).not_to be_quarantined
+      expect(cask).to be_installed
+
+      expect(cask.config.appdir.join("container")).not_to be_quarantined
     end
 
     it "does not quarantine the pkg in naked-pkg-based Casks" do
@@ -227,11 +223,11 @@ describe Cask::Quarantine, :cask do
     it "does not quarantine a nested container" do
       Cask::Cmd::Install.run("nested-app", "--no-quarantine")
 
-      expect(
-        Cask::CaskLoader.load(cask_path("nested-app")),
-      ).to be_installed
+      cask = Cask::CaskLoader.load(cask_path("nested-app"))
 
-      expect(Cask::Config.global.appdir.join("MyNestedApp.app")).not_to be_quarantined
+      expect(cask).to be_installed
+
+      expect(cask.config.appdir.join("MyNestedApp.app")).not_to be_quarantined
     end
   end
 end

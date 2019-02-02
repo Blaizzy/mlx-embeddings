@@ -11,7 +11,7 @@ module Cask
     extend Searchable
     include Metadata
 
-    attr_reader :token, :sourcefile_path, :config
+    attr_reader :token, :sourcefile_path
 
     def self.each
       return to_enum unless block_given?
@@ -31,7 +31,7 @@ module Cask
       @tap
     end
 
-    def initialize(token, sourcefile_path: nil, tap: nil, config: Config.global, &block)
+    def initialize(token, sourcefile_path: nil, tap: nil, config: nil, &block)
       @token = token
       @sourcefile_path = sourcefile_path
       @tap = tap
@@ -75,6 +75,14 @@ module Cask
     def installed_caskfile
       installed_version = timestamped_versions.last
       metadata_master_container_path.join(*installed_version, "Casks", "#{token}.rb")
+    end
+
+    def config
+      @config ||= Config.for_cask(self)
+    end
+
+    def config_path
+      metadata_master_container_path/"dirs.json"
     end
 
     def outdated?(greedy = false)

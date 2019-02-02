@@ -11,10 +11,10 @@ describe Cask::Artifact::App, :cask do
     }
 
     let(:source_path_mini) { cask.staged_path.join("Caffeine Mini.app") }
-    let(:target_path_mini) { Cask::Config.global.appdir.join("Caffeine Mini.app") }
+    let(:target_path_mini) { cask.config.appdir.join("Caffeine Mini.app") }
 
     let(:source_path_pro) { cask.staged_path.join("Caffeine Pro.app") }
-    let(:target_path_pro) { Cask::Config.global.appdir.join("Caffeine Pro.app") }
+    let(:target_path_pro) { cask.config.appdir.join("Caffeine Pro.app") }
 
     before do
       InstallHelper.install_without_artifacts(cask)
@@ -52,7 +52,7 @@ describe Cask::Artifact::App, :cask do
       expect(target_path_mini).to be_a_directory
       expect(source_path_mini).not_to exist
 
-      expect(Cask::Config.global.appdir.join("Caffeine Deluxe.app")).not_to exist
+      expect(cask.config.appdir.join("Caffeine Deluxe.app")).not_to exist
       expect(cask.staged_path.join("Caffeine Deluxe.app")).to exist
     end
 

@@ -14,7 +14,7 @@ HOMEBREW_CASK_DIRS = {
 RSpec.shared_context "Homebrew Cask", :needs_macos do
   before do
     HOMEBREW_CASK_DIRS.each do |method, path|
-      allow(Cask::Config.global).to receive(method).and_return(path)
+      Cask::Config.global.send("#{method}=", path)
     end
   end
 
