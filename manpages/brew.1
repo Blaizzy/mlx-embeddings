@@ -259,6 +259,9 @@ Install \fIformula\fR\.
 .P
 \fIformula\fR is usually the name of the formula to install, but it can be specified in several different ways\.
 .
+.P
+Unless \fBHOMEBREW_NO_INSTALL_CLEANUP\fR is set, \fBbrew cleanup\fR will be run for the installed formulae or, every 30 days, for all formulae\.
+.
 .TP
 \fB\-\-env\fR
 If \fBstd\fR is passed, use the standard build environment instead of superenv\.If \fBsuper\fR is passed, use superenv even if the formula specifies the standard build environment\.
@@ -452,6 +455,9 @@ Syntax\-check all of Homebrew\'s Ruby files\.
 .
 .SS "\fBreinstall\fR [\fIoptions\fR] \fIformula\fR"
 Uninstall and then install \fIformula\fR (with existing and any appended install options)\.
+.
+.P
+Unless \fBHOMEBREW_NO_INSTALL_CLEANUP\fR is set, \fBbrew cleanup\fR will be run for the reinstalled formulae or, every 30 days, for all formulae\.
 .
 .TP
 \fB\-s\fR, \fB\-\-build\-from\-source\fR
@@ -651,6 +657,9 @@ Upgrade outdated, unpinned brews (with existing and any appended install options
 .
 .P
 If \fIformula\fR are given, upgrade only the specified brews (unless they are pinned; see \fBpin\fR, \fBunpin\fR)\.
+.
+.P
+Unless \fBHOMEBREW_NO_INSTALL_CLEANUP\fR is set, \fBbrew cleanup\fR will be run for the upgraded formulae or, every 30 days, for all formulae\.
 .
 .TP
 \fB\-s\fR, \fB\-\-build\-from\-source\fR
@@ -1336,7 +1345,7 @@ If set, Homebrew will not use the GitHub API, e\.g\. for searches or fetching re
 .
 .TP
 \fBHOMEBREW_NO_INSTALL_CLEANUP\fR
-If set, \fBbrew install\fR, \fBbrew upgrade\fR and \fBbrew reinstall\fR will never automatically remove the previously installed version(s) of the installed/upgraded formulae\.
+If set, \fBbrew install\fR, \fBbrew upgrade\fR and \fBbrew reinstall\fR will never automatically cleanup the installed/upgraded/reinstalled formulae or all formulae every 30 days\.
 .
 .TP
 \fBHOMEBREW_PRY\fR
