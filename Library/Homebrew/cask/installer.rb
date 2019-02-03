@@ -4,6 +4,7 @@ require "formula_installer"
 require "unpack_strategy"
 
 require "cask/cask_dependencies"
+require "cask/config"
 require "cask/download"
 require "cask/staged"
 require "cask/verify"
@@ -79,6 +80,8 @@ module Cask
     def install
       odebug "Cask::Installer#install"
 
+      old_config = @cask.config
+
       if @cask.installed? && !force? && !reinstall? && !upgrade?
         raise CaskAlreadyInstalledError, @cask
       end
@@ -92,6 +95,9 @@ module Cask
       oh1 "Installing Cask #{Formatter.identifier(@cask)}"
       opoo "macOS's Gatekeeper has been disabled for this Cask" unless quarantine?
       stage
+
+      @cask.config = Config.global.merge(old_config)
+
       install_artifacts
 
       unless @cask.tap&.private?

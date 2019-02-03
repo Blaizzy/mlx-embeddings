@@ -88,7 +88,7 @@ module Cask
     end
 
     def merge(other)
-      self.class.new(**other.explicit.merge(explicit))
+      self.class.new(explicit: other.explicit.merge(explicit))
     end
 
     def to_json(*args)

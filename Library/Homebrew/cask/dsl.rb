@@ -57,7 +57,6 @@ module Cask
       :appcast,
       :artifacts,
       :auto_updates,
-      :caskroom_path,
       :caveats,
       :conflicts_with,
       :container,
@@ -226,7 +225,7 @@ module Cask
     end
 
     def caskroom_path
-      @caskroom_path ||= Caskroom.path.join(token)
+      @cask.caskroom_path
     end
 
     def staged_path
