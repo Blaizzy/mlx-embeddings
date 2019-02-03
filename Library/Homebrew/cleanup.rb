@@ -112,6 +112,8 @@ module CleanupRefinement
     def stale_cask?(scrub)
       return false unless name = basename.to_s[/\A(.*?)\-\-/, 1]
 
+      return if dirname.basename.to_s != "Cask"
+
       cask = begin
         Cask::CaskLoader.load(name)
       rescue Cask::CaskUnavailableError
