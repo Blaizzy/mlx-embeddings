@@ -238,8 +238,8 @@ Note that environment variables must have a value set to be detected. For exampl
 
   * `HOMEBREW_NO_INSTALL_CLEANUP`:
     If set, `brew install`, `brew upgrade` and `brew reinstall` will never
-    automatically remove the previously installed version(s) of the
-    installed/upgraded formulae.
+    automatically cleanup the installed/upgraded/reinstalled formulae or all
+    formulae every 30 days.
 
   * `HOMEBREW_PRY`:
     If set, Homebrew will use Pry for the `brew irb` command.
