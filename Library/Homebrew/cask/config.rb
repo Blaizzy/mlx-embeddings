@@ -68,6 +68,7 @@ module Cask
 
     def env
       @env ||= Shellwords.shellsplit(ENV.fetch("HOMEBREW_CASK_OPTS", ""))
+                         .select { |arg| arg.include?("=") }
                          .map { |arg| arg.split("=", 2) }
                          .map { |(flag, value)| [flag.sub(/^\-\-/, "").to_sym, Pathname(value).expand_path] }
                          .to_h
