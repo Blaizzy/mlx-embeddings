@@ -1,25 +1,32 @@
 require "json"
 
+require "extend/hash_validator"
+using HashValidator
+
 module Cask
-  class Config < DelegateClass(Hash)
+  class Config
     DEFAULT_DIRS = {
-      appdir:               "/Applications",
-      prefpanedir:          "~/Library/PreferencePanes",
-      qlplugindir:          "~/Library/QuickLook",
-      dictionarydir:        "~/Library/Dictionaries",
-      fontdir:              "~/Library/Fonts",
-      colorpickerdir:       "~/Library/ColorPickers",
-      servicedir:           "~/Library/Services",
-      input_methoddir:      "~/Library/Input Methods",
-      internet_plugindir:   "~/Library/Internet Plug-Ins",
-      audio_unit_plugindir: "~/Library/Audio/Plug-Ins/Components",
-      vst_plugindir:        "~/Library/Audio/Plug-Ins/VST",
-      vst3_plugindir:       "~/Library/Audio/Plug-Ins/VST3",
-      screen_saverdir:      "~/Library/Screen Savers",
+      appdir:               Pathname("/Applications").expand_path,
+      prefpanedir:          Pathname("~/Library/PreferencePanes").expand_path,
+      qlplugindir:          Pathname("~/Library/QuickLook").expand_path,
+      dictionarydir:        Pathname("~/Library/Dictionaries").expand_path,
+      fontdir:              Pathname("~/Library/Fonts").expand_path,
+      colorpickerdir:       Pathname("~/Library/ColorPickers").expand_path,
+      servicedir:           Pathname("~/Library/Services").expand_path,
+      input_methoddir:      Pathname("~/Library/Input Methods").expand_path,
+      internet_plugindir:   Pathname("~/Library/Internet Plug-Ins").expand_path,
+      audio_unit_plugindir: Pathname("~/Library/Audio/Plug-Ins/Components").expand_path,
+      vst_plugindir:        Pathname("~/Library/Audio/Plug-Ins/VST").expand_path,
+      vst3_plugindir:       Pathname("~/Library/Audio/Plug-Ins/VST3").expand_path,
+      screen_saverdir:      Pathname("~/Library/Screen Savers").expand_path,
     }.freeze
 
     def self.global
       @global ||= new
+    end
+
+    def self.clear
+      @global = nil
     end
 
     def self.for_cask(cask)
@@ -37,11 +44,33 @@ module Cask
         raise e, "Cannot parse #{path}: #{e}", e.backtrace
       end
 
-      new(Hash[config.map { |k, v| [k.to_sym, v] }])
+      new(
+        default:  config.fetch("default",  {}).map { |k, v| [k.to_sym, Pathname(v).expand_path] }.to_h,
+        env:      config.fetch("env",      {}).map { |k, v| [k.to_sym, Pathname(v).expand_path] }.to_h,
+        explicit: config.fetch("explicit", {}).map { |k, v| [k.to_sym, Pathname(v).expand_path] }.to_h,
+      )
     end
 
-    def initialize(**dirs)
-      super(Hash[DEFAULT_DIRS.map { |(k, v)| [k, Pathname(dirs.fetch(k, v)).expand_path] }])
+    attr_accessor :explicit
+
+    def initialize(default: nil, env: nil, explicit: {})
+      env&.assert_valid_keys!(*DEFAULT_DIRS.keys)
+      explicit.assert_valid_keys!(*DEFAULT_DIRS.keys)
+
+      @default = default
+      @env = env
+      @explicit = explicit.map { |(k, v)| [k.to_sym, Pathname(v).expand_path] }.to_h
+    end
+
+    def default
+      @default ||= DEFAULT_DIRS
+    end
+
+    def env
+      @env ||= Shellwords.shellsplit(ENV.fetch("HOMEBREW_CASK_OPTS", ""))
+                         .map { |arg| arg.split("=", 2) }
+                         .map { |(flag, value)| [flag.sub(/^\-\-/, "").to_sym, Pathname(value).expand_path] }
+                         .to_h
     end
 
     def binarydir
@@ -50,12 +79,24 @@ module Cask
 
     DEFAULT_DIRS.keys.each do |dir|
       define_method(dir) do
-        self[dir]
+        explicit.fetch(dir, env.fetch(dir, default.fetch(dir)))
       end
 
       define_method(:"#{dir}=") do |path|
-        self[dir] = Pathname(path).expand_path
+        explicit[dir] = Pathname(path).expand_path
       end
+    end
+
+    def merge(other)
+      self.class.new(**other.explicit.merge(explicit))
+    end
+
+    def to_json(*args)
+      {
+        default:  default,
+        env:      env,
+        explicit: explicit,
+      }.to_json(*args)
     end
 
     def write(path)

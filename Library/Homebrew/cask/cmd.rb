@@ -186,16 +186,14 @@ module Cask
     end
 
     def process_options(*args)
-      all_args = Shellwords.shellsplit(ENV["HOMEBREW_CASK_OPTS"] || "") + args
-
       non_options = []
 
-      if idx = all_args.index("--")
-        non_options += all_args.drop(idx)
-        all_args = all_args.first(idx)
+      if idx = args.index("--")
+        non_options += args.drop(idx)
+        args = args.first(idx)
       end
 
-      remaining = all_args.select do |arg|
+      remaining = args.select do |arg|
         begin
           !process_arguments([arg]).empty?
         rescue OptionParser::InvalidOption, OptionParser::MissingArgument, OptionParser::AmbiguousOption
