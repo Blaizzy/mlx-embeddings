@@ -60,7 +60,7 @@ def curl_download(*args, to: nil, **options)
   supports_partial_download = http_status.to_i == 206 # Partial Content
   if supports_partial_download &&
      destination.exist? &&
-     destination.size == %r{^.*Content-Range: bytes \d+-\d+/(\d+)\r\n.*$}m.match(headers)[1].to_i
+     destination.size == %r{^.*Content-Range: bytes \d+-\d+/(\d+)\r\n.*$}m.match(headers)&.[](1)&.to_i
     return # We've already downloaded all the bytes
   end
 
