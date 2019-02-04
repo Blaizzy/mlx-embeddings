@@ -26,6 +26,7 @@ module Homebrew
       switch "--preinstall",
         description: "Run in 'auto-update' mode (faster, less output)."
       switch :force
+      switch :quiet
       switch :debug
       switch :verbose
       hide_from_man_page!
