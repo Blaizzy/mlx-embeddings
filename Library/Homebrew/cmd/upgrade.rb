@@ -56,6 +56,8 @@ module Homebrew
       odisabled("'HOMEBREW_UPGRADE_CLEANUP'")
     end
 
+    upgrade_args.parse
+
     FormulaInstaller.prevent_build_flags unless DevelopmentTools.installed?
 
     Install.perform_preinstall_checks
