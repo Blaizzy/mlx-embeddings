@@ -67,22 +67,22 @@ module Homebrew
     variables[:global_options] = global_options_manpage
 
     readme = HOMEBREW_REPOSITORY/"README.md"
-    variables[:lead_maintainer] =
-      readme.read[/(Homebrew's lead maintainer .*\.)/, 1]
+    variables[:lead] =
+      readme.read[/(Homebrew's project lead .*\.)/, 1]
             .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1')
-    variables[:leadership] =
+    variables[:plc] =
       readme.read[/(Homebrew's project leadership committee .*\.)/, 1]
             .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1')
-    variables[:brew_maintainers] =
-      readme.read[%r{(Homebrew/brew's other current maintainers .*\.)}, 1]
+    variables[:tsc] =
+      readme.read[/(Homebrew's technical steering committee .*\.)/, 1]
             .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1')
-    variables[:linux_maintainers] =
+    variables[:linux] =
       readme.read[%r{(Homebrew/brew's Linux support \(and Linuxbrew\) maintainers are .*\.)}, 1]
             .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1')
-    variables[:core_maintainers] =
-      readme.read[%r{(Homebrew/homebrew-core's other current maintainers .*\.)}, 1]
+    variables[:maintainers] =
+      readme.read[/(Homebrew's other current maintainers .*\.)/, 1]
             .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1')
-    variables[:former_maintainers] =
+    variables[:alumni] =
       readme.read[/(Former maintainers .*\.)/, 1]
             .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1')
 
