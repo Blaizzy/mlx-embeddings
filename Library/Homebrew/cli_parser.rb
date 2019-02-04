@@ -162,6 +162,8 @@ module Homebrew
             end
           end
         end
+      rescue FormulaUnavailableError
+        []
       end
 
       def hide_from_man_page!
