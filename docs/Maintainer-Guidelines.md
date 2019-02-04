@@ -157,6 +157,6 @@ All maintainers (and lead maintainer) communication through any medium is bound 
 Maintainers should feel free to pleasantly disagree with the work and decisions of other maintainers. Healthy, friendly, technical disagreement between maintainers is actively encouraged and should occur in public on the issue tracker to make the project better. Interpersonal issues should be handled privately in Slack, ideally with moderation. If work or decisions are insufficiently documented or explained any maintainer or contributor should feel free to ask for clarification. No maintainer may ever justify a decision with e.g. "because I say so" or "it was I who did X" alone. Off-topic discussions on the issue tracker, [bike-shedding](https://en.wikipedia.org/wiki/Law_of_triviality) and personal attacks are forbidden.
 
 ## Project lead guidelines
-There should be one project lead for Homebrew. On February 4th (to coincide with Homebrew maintainers' conference), Mike stepped down as lead maintainer of Homebrew and was elected by a supermajority of Homebrew maintainers into the new project lead role.
+There should be one project lead for Homebrew. On February 4, 2019, coinciding with the Homebrew maintainers' conference, Mike McQuaid stepped down as lead maintainer of Homebrew. He was elected by a supermajority of Homebrew maintainers into the new project lead role.
 
 Additional documentation for the project lead and governance are to follow.
