@@ -136,4 +136,32 @@ describe Cask::Cmd::Info, :cask do
       Caffeine.app (App)
     EOS
   end
+
+  it "can run be run with a url twice" do
+    expect {
+      described_class.run("https://raw.githubusercontent.com/Homebrew/homebrew-cask" \
+                          "/d0b2c58652ae5eff20a7a4ac93292a08b250912b/Casks/docker.rb")
+      described_class.run("https://raw.githubusercontent.com/Homebrew/homebrew-cask" \
+                          "/d0b2c58652ae5eff20a7a4ac93292a08b250912b/Casks/docker.rb")
+    }.to output(<<~EOS).to_stdout
+      ==> Downloading https://raw.githubusercontent.com/Homebrew/homebrew-cask/d0b2c58652ae5eff20a7a4ac93292a08b250912b/Casks/docker.rb.
+      docker: 2.0.0.2-ce-mac81,30215 (auto_updates)
+      https://www.docker.com/community-edition
+      Not installed
+      ==> Names
+      Docker Community Edition
+      Docker CE
+      ==> Artifacts
+      Docker.app (App)
+      ==> Downloading https://raw.githubusercontent.com/Homebrew/homebrew-cask/d0b2c58652ae5eff20a7a4ac93292a08b250912b/Casks/docker.rb.
+      docker: 2.0.0.2-ce-mac81,30215 (auto_updates)
+      https://www.docker.com/community-edition
+      Not installed
+      ==> Names
+      Docker Community Edition
+      Docker CE
+      ==> Artifacts
+      Docker.app (App)
+    EOS
+  end
 end
