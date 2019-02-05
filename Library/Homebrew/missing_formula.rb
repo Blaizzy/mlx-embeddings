@@ -15,7 +15,7 @@ module Homebrew
         EOS
         when "tex", "tex-live", "texlive", "latex" then <<~EOS
           Installing TeX from source is weird and gross, requires a lot of patches,
-          and only builds 32-bit (and thus can’t use Homebrew dependencies)
+          and only builds 32-bit (and thus can't use Homebrew dependencies)
 
           We recommend using a MacTeX distribution: https://www.tug.org/mactex/
 
@@ -23,9 +23,10 @@ module Homebrew
             brew cask install mactex
         EOS
         when "pip" then <<~EOS
-          Homebrew provides pip via: `brew install python`. However you will then
-          have two Pythons installed on your Mac, so alternatively you can install
-          pip via the instructions at:
+          pip is part of the python formula, and can be installed with:
+            brew install python
+          However you will then have two Pythons installed on your Mac,
+          so alternatively you can install pip via the instructions at:
             #{Formatter.url("https://pip.readthedocs.io/en/stable/installing/")}
         EOS
         when "pil" then <<~EOS
@@ -38,7 +39,7 @@ module Homebrew
         EOS
         when /(lib)?lzma/ then <<~EOS
           lzma is now part of the xz formula, and can be installed with:
-            brew install xz.
+            brew install xz
         EOS
         when "gtest", "googletest", "google-test" then <<~EOS
           Installing gtest system-wide is not recommended; it should be vendored
@@ -82,7 +83,8 @@ module Homebrew
             brew cask install ngrok
         EOS
         when "cargo" then <<~EOS
-          Homebrew provides cargo via: `brew install rust`.
+          cargo is part of the rust formula, and can be installed with:
+            brew install rust
         EOS
         end
       end
