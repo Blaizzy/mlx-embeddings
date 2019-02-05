@@ -23,9 +23,10 @@ module Homebrew
             brew cask install mactex
         EOS
         when "pip" then <<~EOS
-          Homebrew provides pip via: `brew install python`. However you will then
-          have two Pythons installed on your Mac, so alternatively you can install
-          pip via the instructions at:
+          pip is part of the python formula, and can be installed with:
+            brew install python
+          However you will then have two Pythons installed on your Mac,
+          so alternatively you can install pip via the instructions at:
             #{Formatter.url("https://pip.readthedocs.io/en/stable/installing/")}
         EOS
         when "pil" then <<~EOS
@@ -36,8 +37,10 @@ module Homebrew
           You can read more about it at:
             #{Formatter.url("https://github.com/MacRuby/MacRuby")}
         EOS
-        when /(lib)?lzma/
-          "lzma is now part of the xz formula."
+        when /(lib)?lzma/ then <<~EOS
+          lzma is now part of the xz formula, and can be installed with:
+            brew install xz
+        EOS
         when "gtest", "googletest", "google-test" then <<~EOS
           Installing gtest system-wide is not recommended; it should be vendored
           in your projects that use it.
@@ -54,7 +57,7 @@ module Homebrew
           Install gsutil with `pip2 install gsutil`
         EOS
         when "gfortran" then <<~EOS
-          GNU Fortran is now provided as part of GCC, and can be installed with:
+          GNU Fortran is now part of the GCC formula, and can be installed with:
             brew install gcc
         EOS
         when "play" then <<~EOS
@@ -78,6 +81,10 @@ module Homebrew
 
           If you wish to use the 2.x release you can install with Homebrew Cask:
             brew cask install ngrok
+        EOS
+        when "cargo" then <<~EOS
+          cargo is part of the rust formula, and can be installed with:
+            brew install rust
         EOS
         end
       end
