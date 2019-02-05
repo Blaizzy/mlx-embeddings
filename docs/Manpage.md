@@ -1191,7 +1191,7 @@ Homebrew's technical steering committee is Michka Popoff, FX Coudert, Markus Rei
 
 Homebrew/brew's Linux support (and Linuxbrew) maintainers are Michka Popoff and Shaun Jackman.
 
-Homebrew's other current maintainers are Claudia Pellegrino, Chongyu Zhu, Vitor Galvao, Gautham Goli, Steven Peters, William Woodruff, Igor Kapkov, Izaak Beekman, Sean Molenaar, Jan Viljanen, Jason Tedor, Viktor Szakats, Thierry Moisan, Steven Peters and Tom Schoonjans.
+Homebrew's other current maintainers are Claudia Pellegrino, Chongyu Zhu, Vitor Galvao, Gautham Goli, Steven Peters, William Woodruff, Igor Kapkov, Izaak Beekman, Sean Molenaar, Jan Viljanen, Jason Tedor, Eric Knibbe, Viktor Szakats, Thierry Moisan, Steven Peters and Tom Schoonjans.
 
 Former maintainers with significant contributions include JCount, commitay, Dominyk Tiller, Tim Smith, Baptiste Fontaine, Xu Cheng, Martin Afanasjew, Brett Koonce, Charlie Sharpsteen, Jack Nagel, Adam Vandenberg, Andrew Janke, Alex Dunn, neutric, Tomasz Pajor, Uladzislau Shablinski, Alyssa Ross, ilovezfs and Homebrew's creator: Max Howell.
 
