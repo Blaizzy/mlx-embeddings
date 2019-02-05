@@ -15,7 +15,7 @@ module Homebrew
         EOS
         when "tex", "tex-live", "texlive", "latex" then <<~EOS
           Installing TeX from source is weird and gross, requires a lot of patches,
-          and only builds 32-bit (and thus can't use Homebrew dependencies)
+          and only builds 32-bit (and thus can’t use Homebrew dependencies)
 
           We recommend using a MacTeX distribution: https://www.tug.org/mactex/
 
@@ -36,8 +36,10 @@ module Homebrew
           You can read more about it at:
             #{Formatter.url("https://github.com/MacRuby/MacRuby")}
         EOS
-        when /(lib)?lzma/
-          "lzma is now part of the xz formula."
+        when /(lib)?lzma/ then <<~EOS
+          lzma is now part of the xz formula, and can be installed with:
+            brew install xz.
+        EOS
         when "gtest", "googletest", "google-test" then <<~EOS
           Installing gtest system-wide is not recommended; it should be vendored
           in your projects that use it.
@@ -54,7 +56,7 @@ module Homebrew
           Install gsutil with `pip2 install gsutil`
         EOS
         when "gfortran" then <<~EOS
-          GNU Fortran is now provided as part of GCC, and can be installed with:
+          GNU Fortran is now part of the GCC formula, and can be installed with:
             brew install gcc
         EOS
         when "play" then <<~EOS
@@ -78,6 +80,9 @@ module Homebrew
 
           If you wish to use the 2.x release you can install with Homebrew Cask:
             brew cask install ngrok
+        EOS
+        when "cargo" then <<~EOS
+          Homebrew provides cargo via: `brew install rust`.
         EOS
         end
       end
