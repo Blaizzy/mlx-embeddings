@@ -321,7 +321,7 @@ module Homebrew
         yield
       end
 
-      @disk_cleanup_size += disk_usage
+      @disk_cleanup_size += disk_usage - path.disk_usage
     end
 
     def cleanup_lockfiles(*lockfiles)
