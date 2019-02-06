@@ -218,32 +218,6 @@ shared_examples "#uninstall_phase or #zap_phase" do
     end
   end
 
-  context "using :rmdir" do
-    let(:fake_system_command) { NeverSudoSystemCommand }
-    let(:cask) { Cask::CaskLoader.load(cask_path("with-#{artifact_dsl_key}-rmdir")) }
-    let(:empty_directory) { Pathname.new("#{TEST_TMPDIR}/empty_directory_path") }
-    let(:ds_store) { empty_directory.join(".DS_Store") }
-
-    before do
-      empty_directory.mkdir
-      FileUtils.touch ds_store
-    end
-
-    after do
-      FileUtils.rm_rf empty_directory
-    end
-
-    it "is supported" do
-      expect(empty_directory).to exist
-      expect(ds_store).to exist
-
-      subject.public_send(:"#{artifact_dsl_key}_phase", command: fake_system_command)
-
-      expect(ds_store).not_to exist
-      expect(empty_directory).not_to exist
-    end
-  end
-
   [:script, :early_script].each do |script_type|
     context "using #{script_type.inspect}" do
       let(:fake_system_command) { NeverSudoSystemCommand }

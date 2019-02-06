@@ -2,6 +2,8 @@ require "timeout"
 
 require "utils/user"
 require "cask/artifact/abstract_artifact"
+require "extend/hash_validator"
+using HashValidator
 
 module Cask
   module Artifact
@@ -27,6 +29,8 @@ module Cask
       attr_reader :directives
 
       def initialize(cask, directives)
+        directives.assert_valid_keys!(*ORDERED_DIRECTIVES)
+
         super(cask)
         directives[:signal] = [*directives[:signal]].flatten.each_slice(2).to_a
         @directives = directives
@@ -49,28 +53,21 @@ module Cask
       private
 
       def dispatch_uninstall_directives(**options)
-        ohai "Running #{stanza} process for #{@cask}; your password may be necessary"
-
-        warn_for_unknown_directives(directives)
-
         ORDERED_DIRECTIVES.each do |directive_sym|
-          next unless directives.key?(directive_sym)
-
-          args = directives[directive_sym]
-          send("uninstall_#{directive_sym}", *(args.is_a?(Hash) ? [args] : args), **options)
+          dispatch_uninstall_directive(directive_sym, **options)
         end
+      end
+
+      def dispatch_uninstall_directive(directive_sym, **options)
+        return unless directives.key?(directive_sym)
+
+        args = directives[directive_sym]
+
+        send("uninstall_#{directive_sym}", *(args.is_a?(Hash) ? [args] : args), **options)
       end
 
       def stanza
         self.class.dsl_key
-      end
-
-      def warn_for_unknown_directives(directives)
-        unknown_keys = directives.keys - ORDERED_DIRECTIVES
-        return if unknown_keys.empty?
-
-        opoo "Unknown arguments to #{stanza} -- #{unknown_keys.inspect}. " \
-             "Running \"brew update; brew cleanup\" will likely fix it."
       end
 
       # Preserve prior functionality of script which runs first. Should rarely be needed.

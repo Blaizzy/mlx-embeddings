@@ -217,6 +217,13 @@ module Cask
           odebug "Reverting installation of artifact of class #{artifact.class}"
           artifact.uninstall_phase(command: @command, verbose: verbose?, force: force?)
         end
+
+        already_installed_artifacts.each do |artifact|
+          next unless artifact.respond_to?(:post_uninstall_phase)
+
+          odebug "Reverting installation of artifact of class #{artifact.class}"
+          artifact.post_uninstall_phase(command: @command, verbose: verbose?, force: force?)
+        end
       ensure
         purge_versioned_files
         raise e
@@ -425,8 +432,17 @@ module Cask
       artifacts.each do |artifact|
         next unless artifact.respond_to?(:uninstall_phase)
 
-        odebug "Un-installing artifact of class #{artifact.class}"
+        odebug "Uninstalling artifact of class #{artifact.class}"
         artifact.uninstall_phase(command: @command, verbose: verbose?, skip: clear, force: force?, upgrade: upgrade?)
+      end
+
+      artifacts.each do |artifact|
+        next unless artifact.respond_to?(:post_uninstall_phase)
+
+        odebug "Post-uninstalling artifact of class #{artifact.class}"
+        artifact.post_uninstall_phase(
+          command: @command, verbose: verbose?, skip: clear, force: force?, upgrade: upgrade?,
+        )
       end
     end
 
