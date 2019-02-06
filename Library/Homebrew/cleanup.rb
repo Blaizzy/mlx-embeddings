@@ -316,12 +316,13 @@ module Homebrew
 
       if dry_run?
         puts "Would remove: #{path} (#{path.abv})"
+        @disk_cleanup_size += disk_usage
       else
         puts "Removing: #{path}... (#{path.abv})"
         yield
+        @disk_cleanup_size += disk_usage - path.disk_usage
       end
 
-      @disk_cleanup_size += disk_usage - path.disk_usage
     end
 
     def cleanup_lockfiles(*lockfiles)
