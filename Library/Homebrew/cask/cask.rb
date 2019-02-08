@@ -84,7 +84,7 @@ module Cask
     end
 
     def config_path
-      metadata_master_container_path/"dirs.json"
+      metadata_master_container_path/"config.json"
     end
 
     def caskroom_path
