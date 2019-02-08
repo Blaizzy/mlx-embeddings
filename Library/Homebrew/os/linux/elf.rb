@@ -133,8 +133,10 @@ module ELFShim
       soname = nil
       needed = []
       command = ["readelf", "-d", path.expand_path.to_s]
-      lines = Utils.safe_popen_read(*command).split("\n")
+      lines = Utils.popen_read(*command, err: :out).split("\n")
       lines.each do |s|
+        next if s.start_with?("readelf: Warning: possibly corrupt ELF header")
+
         filename = s[/\[(.*)\]/, 1]
         next if filename.nil?
 
