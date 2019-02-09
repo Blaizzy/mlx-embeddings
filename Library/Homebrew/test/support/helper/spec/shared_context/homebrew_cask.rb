@@ -9,19 +9,19 @@ module Cask
     remove_const :DEFAULT_DIRS
 
     DEFAULT_DIRS = {
-      appdir:               Pathname.new(TEST_TMPDIR).join("cask-appdir"),
-      prefpanedir:          Pathname.new(TEST_TMPDIR).join("cask-prefpanedir"),
-      qlplugindir:          Pathname.new(TEST_TMPDIR).join("cask-qlplugindir"),
-      dictionarydir:        Pathname.new(TEST_TMPDIR).join("cask-dictionarydir"),
-      fontdir:              Pathname.new(TEST_TMPDIR).join("cask-fontdir"),
-      colorpickerdir:       Pathname.new(TEST_TMPDIR).join("cask-colorpickerdir"),
-      servicedir:           Pathname.new(TEST_TMPDIR).join("cask-servicedir"),
-      input_methoddir:      Pathname.new(TEST_TMPDIR).join("cask-input_methoddir"),
-      internet_plugindir:   Pathname.new(TEST_TMPDIR).join("cask-internet_plugindir"),
-      audio_unit_plugindir: Pathname.new(TEST_TMPDIR).join("cask-audio_unit_plugindir"),
-      vst_plugindir:        Pathname.new(TEST_TMPDIR).join("cask-vst_plugindir"),
-      vst3_plugindir:       Pathname.new(TEST_TMPDIR).join("cask-vst3_plugindir"),
-      screen_saverdir:      Pathname.new(TEST_TMPDIR).join("cask-screen_saverdir"),
+      appdir:               Pathname(TEST_TMPDIR)/"cask-appdir",
+      prefpanedir:          Pathname(TEST_TMPDIR)/"cask-prefpanedir",
+      qlplugindir:          Pathname(TEST_TMPDIR)/"cask-qlplugindir",
+      dictionarydir:        Pathname(TEST_TMPDIR)/"cask-dictionarydir",
+      fontdir:              Pathname(TEST_TMPDIR)/"cask-fontdir",
+      colorpickerdir:       Pathname(TEST_TMPDIR)/"cask-colorpickerdir",
+      servicedir:           Pathname(TEST_TMPDIR)/"cask-servicedir",
+      input_methoddir:      Pathname(TEST_TMPDIR)/"cask-input_methoddir",
+      internet_plugindir:   Pathname(TEST_TMPDIR)/"cask-internet_plugindir",
+      audio_unit_plugindir: Pathname(TEST_TMPDIR)/"cask-audio_unit_plugindir",
+      vst_plugindir:        Pathname(TEST_TMPDIR)/"cask-vst_plugindir",
+      vst3_plugindir:       Pathname(TEST_TMPDIR)/"cask-vst3_plugindir",
+      screen_saverdir:      Pathname(TEST_TMPDIR)/"cask-screen_saverdir",
     }.freeze
   end
 end
