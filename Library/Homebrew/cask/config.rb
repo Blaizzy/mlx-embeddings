@@ -104,9 +104,5 @@ module Cask
         explicit: explicit,
       }.to_json(*args)
     end
-
-    def write(path)
-      path.atomic_write(to_json)
-    end
   end
 end
