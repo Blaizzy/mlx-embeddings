@@ -15,7 +15,7 @@ GEM
     json (2.1.0)
     mustache (1.1.0)
     parallel (1.13.0)
-    parallel_tests (2.27.1)
+    parallel_tests (2.28.0)
       parallel
     parser (2.6.0.0)
       ast (~> 2.4.0)
