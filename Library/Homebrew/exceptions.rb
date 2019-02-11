@@ -471,7 +471,7 @@ class BuildFlagsError < RuntimeError
     EOS
 
     message << <<~EOS.chomp! if bottled
-      Alternatively, remove the #{flag_text} to attempt bottle installation.
+      \nAlternatively, remove the #{flag_text} to attempt bottle installation.
     EOS
 
     super message
