@@ -624,7 +624,7 @@ Display Homebrew's install path. *Default:* `/usr/local` on macOS and
 If *`formula`* is provided, display the location in the cellar where *`formula`*
 is or would be installed.
 
-### `--repository` [*`formula`*]
+### `--repository` [*`user`*`/`*`repo`*]
 
 Display where Homebrew's `.git` directory is located.
 
