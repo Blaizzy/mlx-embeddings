@@ -790,7 +790,7 @@ class FormulaInstaller
 
     cask_installed_with_formula_name = begin
       Cask::CaskLoader.load(formula.name).installed?
-    rescue Cask::CaskUnavailableError
+    rescue Cask::CaskUnavailableError, Cask::CaskInvalidError
       false
     end
 
