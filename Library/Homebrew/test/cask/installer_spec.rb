@@ -111,7 +111,7 @@ describe Cask::Installer, :cask do
       expect {
         Cask::Installer.new(with_installer_manual).install
       }.to output(
-        <<~EOS
+        <<~EOS,
           ==> Satisfying dependencies
           ==> Downloading file:#{HOMEBREW_LIBRARY_PATH}/test/support/fixtures/cask/caffeine.zip
           ==> Verifying SHA-256 checksum for Cask 'with-installer-manual'.

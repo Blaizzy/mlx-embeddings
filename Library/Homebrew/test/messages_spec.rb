@@ -61,7 +61,7 @@ describe Messages do
 
       it "prints caveat details" do
         expect { messages.display_messages }.to output(
-          <<~EOS
+          <<~EOS,
             ==> Caveats
             ==> foo
             Zsh completions were installed
@@ -88,7 +88,7 @@ describe Messages do
 
         it "prints installation times" do
           expect { messages.display_messages }.to output(
-            <<~EOS
+            <<~EOS,
               ==> Installation times
               foo                       1.100 s
             EOS

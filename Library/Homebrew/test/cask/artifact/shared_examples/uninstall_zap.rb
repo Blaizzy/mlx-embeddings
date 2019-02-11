@@ -255,7 +255,7 @@ shared_examples "#uninstall_phase or #zap_phase" do
         .with(
           "osascript",
         args: ["-e", 'tell application "System Events" to delete every login item whose name is "Fancy"'],
-      )
+        )
         .and_return(instance_double("SystemCommand::Result"))
 
       subject.public_send(:"#{artifact_dsl_key}_phase", command: fake_system_command)
