@@ -1037,6 +1037,12 @@ Note that environment variables must have a value set to be detected. For exampl
     If set, Homebrew will tweak behaviour to be more relevant for Homebrew
     developers (active or budding), e.g. turning warnings into errors.
 
+  * `HOMEBREW_DISPLAY`:
+    If set, Homebrew will use this X11 display when opening a page in a browser,
+    for example with `brew home`. Primarily useful on Linux.
+
+    *Default:* the value of the user's `DISPLAY` environment variable.
+
   * `HOMEBREW_EDITOR`:
     If set, Homebrew will use this editor when editing a single formula, or
     several formulae in the same directory.
