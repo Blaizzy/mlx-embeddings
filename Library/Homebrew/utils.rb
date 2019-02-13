@@ -388,6 +388,8 @@ def exec_browser(*args)
   browser ||= OS::PATH_OPEN if defined?(OS::PATH_OPEN)
   return unless browser
 
+  ENV["DISPLAY"] = ENV["HOMEBREW_DISPLAY"]
+
   safe_exec(browser, *args)
 end
 
