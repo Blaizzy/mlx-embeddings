@@ -92,11 +92,6 @@ begin
     # `Homebrew.help` never returns, except for external/unknown commands.
   end
 
-  # Uninstall old brew-cask if it's still around; we just use the tap now.
-  if cmd == "cask" && (HOMEBREW_CELLAR/"brew-cask").exist?
-    system(HOMEBREW_BREW_FILE, "uninstall", "--force", "brew-cask")
-  end
-
   if ENV["HOMEBREW_BUILD_FROM_SOURCE"]
     odisabled("HOMEBREW_BUILD_FROM_SOURCE", "--build-from-source")
   end
