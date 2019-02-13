@@ -23,6 +23,6 @@ module Homebrew
   def prune
     prune_args.parse
 
-    odisabled("'brew prune'", "'brew cleanup'")
+    odisabled("'brew prune'", "'brew cleanup --prune-prefix'")
   end
 end

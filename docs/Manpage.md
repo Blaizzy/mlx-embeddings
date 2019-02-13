@@ -63,6 +63,8 @@ only do this for the specified formulae and casks.
   Show what would be removed, but do not actually remove anything.
 * `-s`:
   Scrub the cache, including downloads for even the latest versions. Note downloads for any installed formula or cask will still not be deleted. If you want to delete those too: `rm -rf "$(brew --cache)"`
+* `--prune-prefix`:
+  Only prune the symlinks and directories from the prefix and remove no other files.
 
 ### `command` *`cmd`*
 

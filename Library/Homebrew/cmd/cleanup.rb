@@ -22,6 +22,8 @@ module Homebrew
         description: "Scrub the cache, including downloads for even the latest versions. "\
                      "Note downloads for any installed formula or cask will still not be deleted. "\
                      "If you want to delete those too: `rm -rf \"$(brew --cache)\"`"
+      switch "--prune-prefix",
+        description: "Only prune the symlinks and directories from the prefix and remove no other files."
       switch :verbose
       switch :debug
     end
@@ -31,6 +33,10 @@ module Homebrew
     cleanup_args.parse
 
     cleanup = Cleanup.new(*args.remaining, dry_run: args.dry_run?, scrub: args.s?, days: args.prune&.to_i)
+    if args.prune_prefix?
+      cleanup.prune_prefix_symlinks_and_directories
+      return
+    end
 
     cleanup.clean!
 
