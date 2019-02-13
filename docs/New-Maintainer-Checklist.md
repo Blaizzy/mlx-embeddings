@@ -2,24 +2,24 @@
 
 **This is a guide used by existing maintainers to invite new maintainers. You might find it interesting but there's nothing here users should have to know.**
 
-There's someone who has been making consistently high-quality contributions to Homebrew for a long time and shown themselves able to make slightly more advanced contributions than just e.g. formula updates? Let's invite them to be a maintainer!
+There's someone who has been making consistently high-quality contributions to Homebrew and shown themselves able to make slightly more advanced contributions than just e.g. formula updates? Let's invite them to be a maintainer!
 
 First, send them the invitation email:
 
-```
+```markdown
 The Homebrew team and I really appreciate your help on issues, pull requests and
 your contributions to Homebrew.
 
 We would like to invite you to have commit access and be a Homebrew maintainer.
 If you agree to be a maintainer, you should spend a significant proportion of
-the time you are working on Homebrew fixing user-reported issues, resolving any
-issues that arise from your code in a timely fashion and reviewing user
-contributions. You should also be making contributions to Homebrew every month
-unless you are ill or on vacation (and please let another maintainer know if
-that's the case so we're aware you won't be able to help while you are out).
+the time you are working on Homebrew applying and self-merging widely used
+changes (e.g. version updates), triaging, fixing and debugging user-reported
+issues, or reviewing user pull requests. You should also be making contributions
+to Homebrew at least once per quarter.
 
-You will need to watch Homebrew/brew and/or Homebrew/homebrew-core. Let us know
-which (or both) so we can grant you commit access appropriately.
+You will should watch or regularly check Homebrew/brew and/or
+Homebrew/homebrew-core. Let us know which (or both) so we can grant you commit
+access appropriately.
 
 If you're no longer able to perform all of these tasks, please continue to
 contribute to Homebrew, but we will ask you to step down as a maintainer.
@@ -34,8 +34,8 @@ A few requests:
   multiple formulae and let it auto-close issues wherever possible (it may
   take ~5m). When this isn't necessary use GitHub's "Merge pull request"
   button in "create a merge commit" mode for Homebrew/brew or "squash and
-  merge" for a single formulae change. If in doubt, check with e.g. GitX that
-  you've not accidentally added merge commits.
+  merge" for a single formulae change. If in doubt, check with e.g. Fork.app
+  that you've not accidentally added merge commits.
 - Still create your branches on your fork rather than in the main repository.
   Note GitHub's UI will create edits and reverts on the main repository if you
   make edits or click "Revert" on the Homebrew/brew repository rather than your
@@ -63,18 +63,19 @@ If they accept, follow a few steps to get them set up:
 - Ask them to (regularly) review remove any unneeded [GitHub personal access tokens](https://github.com/settings/tokens).
 - Add them to [Homebrew/brew's README](https://github.com/Homebrew/brew/edit/master/README.md).
 
-If they are also interested in doing system administration work:
+If they are interested in doing system administration work or Homebrew/brew releases:
 
 - Invite them to the [`homebrew-ops` private operations mailing list](https://lists.sfconservancy.org/mailman/admin/homebrew-ops/members/add).
 - Invite them to the [`homebrew` private 1Password](https://homebrew.1password.com/people).
 
-If they want to consume raw anonymous aggregate analytics data (rather than use `brew formula-analytics`):
+If they are elected to of the Homebrew's [Software Freedom Conservancy](https://sfconservancy.org) Project Leadership Committee:
 
-- Invite them to [Google Analytics](https://analytics.google.com/analytics/web/?authuser=1#management/Settings/a76679469w115400090p120682403/%3Fm.page%3DAccountUsers/).
-
-Once they have been active maintainers for at least a year and had some activity on more than one Homebrew organisation repository (or one repository and helped with system administration work):
-
-- Homebrew's [Software Freedom Conservancy](https://sfconservancy.org) Project Leadership Committee can take a vote on whether to extend an offer to the maintainer to join the committee. If they accept, email their name, email and employer to homebrew@sfconservancy.org, make them [owners on the Homebrew GitHub organisation](https://github.com/orgs/Homebrew/people) and add them to the relevant section of the [Homebrew/brew's README](https://github.com/Homebrew/brew/edit/master/README.md).
+- Email their name, email and employer to homebrew@sfconservancy.org
+- Make them [owners on the Homebrew GitHub organisation](https://github.com/orgs/Homebrew/people)
+- Invite them to the [**@Homebrew/plc** team](https://github.com/orgs/Homebrew/teams/plc/members)
+- Invite them to [Google Analytics](https://analytics.google.com/analytics/web/#management/Settings/a76679469w115400090p120682403/%3Fm.page%3DAccountUsers/) and add them to the relevant section of the [Homebrew/brew's README](https://github.com/Homebrew/brew/edit/master/README.md).
+- Invite them to the [`homebrew` private 1Password](https://homebrew.1password.com/people).
+- Make them owners on the [`machomebrew` private maintainers Slack](https://machomebrew.slack.com/admin)).
 
 If there are problems, ask them to step down as a maintainer and revoke their access to all of the above.
 

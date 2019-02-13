@@ -11,7 +11,7 @@ This document is current practice. If you wish to change or discuss any of the b
 
 ## Mission
 
-Homebrew aims to be the missing package manager for macOS. Its primary goal is to be useful to as many people as possible, while remaining maintainable to a professional, high standard by a small group of volunteers. Where possible and sensible, it should seek to use features of macOS to blend in with the macOS and Apple ecosystems.
+Homebrew aims to be the missing package manager for macOS (and Linux). Its primary goal is to be useful to as many people as possible, while remaining maintainable to a professional, high standard by a small group of volunteers. Where possible and sensible, it should seek to use features of macOS to blend in with the macOS and Apple ecosystems. On Linux and Windows, it should seek to be as self-contained as possible.
 
 ## Quick checklist
 
@@ -34,13 +34,14 @@ Checking dependencies is important, because they will probably stick around
 forever. Nobody really checks if they are necessary or not. Use the
 `:optional` and `:recommended` modifiers as appropriate.
 
-Depend on as little stuff as possible. Disable X11 functionality by default.
-For example, we build Wireshark, but not the heavy GTK/Qt GUI by default.
+Depend on as little stuff as possible. Disable X11 functionality if possible.
+For example, we build Wireshark, but not the heavy GUI.
 
 Homebrew is about Unix software. Stuff that builds to an `.app` should
-probably be in Homebrew Cask instead.
+be in Homebrew Cask instead.
 
 ### Naming
+
 The name is the strictest item, because avoiding a later name change is
 desirable.
 
@@ -55,6 +56,7 @@ underscores and hyphens and so on.
 We now accept versioned formulae as long as they [meet the requirements](Versions.md).
 
 ### Merging, rebasing, cherry-picking
+
 Merging should be done in the `Homebrew/brew` repository to preserve history & GPG commit signing,
 and squash/merge via GitHub should be used for formulae where those formulae
 don't need bottles or the change does not require new bottles to be pulled.
@@ -71,6 +73,7 @@ the commits. Our main branch history should be useful to other people,
 not confusing.
 
 ### Testing
+
 We need to at least check that it builds. Use the [Brew Test Bot](Brew-Test-Bot.md) for this.
 
 Verify the formula works if possible. If you can’t tell (e.g. if it’s a
@@ -94,23 +97,24 @@ that bug must be fixed, or worked around in the formula to yield a passing test,
 before the PR can be merged.
 
 ## Common “gotchas”
-1.  [Ensure you have set your username and email address
-    properly](https://help.github.com/articles/setting-your-email-in-git/)
-2.  Sign off cherry-picks if you amended them ([GitX-dev](https://github.com/rowanj/gitx)
-    can do this, otherwise there is a command-line flag for it)
-3.  If the commit fixes a bug, use “Fixes \#104” syntax to close the bug
-    report and link to the commit
+
+1. [Ensure you have set your username and email address properly](https://help.github.com/articles/setting-your-email-in-git/)
+2. Sign off cherry-picks if you amended them (use `git -s`)
+3. If the commit fixes a bug, use “Fixes \#104” syntax to close the bug report and link to the commit
 
 ### Duplicates
+
 We now accept stuff that comes with macOS as long as it uses `keg_only :provided_by_macos` to be keg-only by default.
 
 ### Add comments
+
 It may be enough to refer to an issue ticket, but make sure changes are clear so that
 if you came to them unaware of the surrounding issues they would make sense
 to you. Many times on other projects I’ve seen code removed because the
 new guy didn’t know why it was there. Regressions suck.
 
 ### Don’t allow bloated diffs
+
 Amend a cherry-pick to remove commits that are only changes in
 whitespace. They are not acceptable because our history is important and
 `git blame` should be useful.
@@ -121,9 +125,11 @@ of modification that is not whitespace in it. But be careful about
 making changes to inline patches—make sure they still apply.
 
 ### Adding or updating formulae
-Any one maintainer is necessary to approve and merge the addition of a new or updated formula which passes CI. However, if the formula addition or update proves controversial the maintainer who adds it will be expected to answer requests and fix problems that arise with it in future.
+
+Only one maintainer is necessary to approve and merge the addition of a new or updated formula which passes CI. However, if the formula addition or update proves controversial the maintainer who adds it will be expected to answer requests and fix problems that arise with it in future.
 
 ### Removing formulae
+
 Formulae that:
 
 - work on at least 2/3 of our supported macOS versions in the default Homebrew prefix
@@ -134,14 +140,17 @@ Formulae that:
 should not be removed from Homebrew. The exception to this rule are [versioned formulae](Versions.md) for which there are higher standards of usage and a maximum number of versions for a given formula.
 
 ### Closing issues/PRs
+
 Maintainers (including the lead maintainer) should not close issues or pull requests (note a merge is not considered a close in this case) opened by other maintainers unless they are stale (i.e. have seen no updates for 28 days) in which case they can be closed by any maintainer. Any maintainer is encouraged to reopen a closed issue when they wish to do additional work on the issue.
 
 Any maintainer can merge any PR they have carefully reviewed and is passing CI that has been opened by any other maintainer. If you do not wish to have other maintainers merge your PRs: please use the `do not merge` label to indicate that until you're ready to merge it yourself.
 
 ## Reverting PRs
+
 Any maintainer can revert a PR created by another maintainer after a user submitted issue or CI failure that results. The maintainer who created the original PR should be given no less than an hour to fix the issue themselves or decide to revert the PR themselves if they would rather.
 
 ## Communication
+
 Maintainers have a variety of ways to communicate with each other:
 
 - Homebrew's public repositories on GitHub
@@ -157,6 +166,7 @@ All maintainers (and lead maintainer) communication through any medium is bound 
 Maintainers should feel free to pleasantly disagree with the work and decisions of other maintainers. Healthy, friendly, technical disagreement between maintainers is actively encouraged and should occur in public on the issue tracker to make the project better. Interpersonal issues should be handled privately in Slack, ideally with moderation. If work or decisions are insufficiently documented or explained any maintainer or contributor should feel free to ask for clarification. No maintainer may ever justify a decision with e.g. "because I say so" or "it was I who did X" alone. Off-topic discussions on the issue tracker, [bike-shedding](https://en.wikipedia.org/wiki/Law_of_triviality) and personal attacks are forbidden.
 
 ## Project lead guidelines
+
 There should be one project lead for Homebrew. On February 4, 2019, coinciding with the Homebrew maintainers' conference, Mike McQuaid stepped down as lead maintainer of Homebrew. He was elected by a supermajority of Homebrew maintainers into the new project lead role.
 
 Additional documentation for the project lead and governance are to follow.
