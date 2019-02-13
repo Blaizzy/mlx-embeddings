@@ -306,6 +306,7 @@ homebrew-update() {
       -*)
         [[ "$option" = *v* ]] && HOMEBREW_VERBOSE=1
         [[ "$option" = *d* ]] && HOMEBREW_DEBUG=1
+        [[ "$option" = *f* ]] && HOMEBREW_UPDATE_FORCE=1
         ;;
       *)
         odie <<EOS
