@@ -195,7 +195,9 @@ module Homebrew
       line = line.slice(4..-1)
       next unless line
 
-      lines << line.gsub(/^ +(-+[a-z-]+) */, "* `\\1`:\n  ")
+      # Format one option or a comma-separated pair of short and long options.
+      lines << line.gsub(/^ +(-+[a-z-]+), (-+[a-z-]+) +/, "* `\\1`, `\\2`:\n  ")
+                   .gsub(/^ +(-+[a-z-]+) +/, "* `\\1`:\n  ")
     end
     lines
   end
