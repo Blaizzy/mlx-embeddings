@@ -371,12 +371,16 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
     parse_content_disposition = lambda do |line|
       next unless content_disposition = content_disposition_parser.parse(line, true)
 
+      filename = nil
+
       if filename_with_encoding = content_disposition.parameters["filename*"]
         encoding, encoded_filename = filename_with_encoding.split("''", 2)
-        URI.decode_www_form_component(encoded_filename).encode(encoding)
-      else
-        content_disposition.filename
+        if encoding && encoded_filename
+          filename = URI.decode_www_form_component(encoded_filename).encode(encoding)
+        end
       end
+
+      filename || content_disposition.filename
     end
 
     filenames = lines.map(&parse_content_disposition).compact
