@@ -180,25 +180,32 @@ module Homebrew
       return false unless periodic_clean_due?
 
       ohai "`brew cleanup` has not been run in #{CLEANUP_DEFAULT_DAYS} days, running now..."
-      clean!(quiet: true)
+      clean!(quiet: true, periodic: true)
     end
 
-    def clean!(quiet: false)
+    def clean!(quiet: false, periodic: false)
       if args.empty?
         Formula.installed.sort_by(&:name).each do |formula|
           cleanup_formula(formula, quiet: quiet)
         end
         cleanup_cache
         cleanup_logs
-        cleanup_portable_ruby
         cleanup_lockfiles
-        return if dry_run?
-
-        cleanup_old_cache_db
-        rm_ds_store
         prune_prefix_symlinks_and_directories
-        HOMEBREW_CACHE.mkpath
-        FileUtils.touch PERIODIC_CLEAN_FILE
+
+        unless dry_run?
+          cleanup_old_cache_db
+          rm_ds_store
+          HOMEBREW_CACHE.mkpath
+          FileUtils.touch PERIODIC_CLEAN_FILE
+        end
+
+        # Cleaning up Ruby needs to be done last to avoid requiring additional
+        # files afterwards. Additionally, don't allow it on periodic cleans to
+        # avoid having to try to do a `brew install` when we've just deleted
+        # the running Ruby process...
+        return if periodic
+        cleanup_portable_ruby
       else
         args.each do |arg|
           formula = begin
