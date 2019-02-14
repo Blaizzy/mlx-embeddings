@@ -14,7 +14,7 @@ Homebrew release:
    branch you can create a new Git tag. Ideally this should be signed with your
    GPG key. This can then be pushed to GitHub.
 3. Use `brew release-notes --markdown $PREVIOUS_TAG` to generate the release
-   notes for the release. [Create a new release on GitHub](https://github.com/Homebrew/brew/releases)
+   notes for the release. [Create a new release on GitHub](https://github.com/Homebrew/brew/releases/new)
    based on the new tag.
 
 If this is a major or minor release (e.g. X.0.0 or X.Y.0) then there are a few more steps:

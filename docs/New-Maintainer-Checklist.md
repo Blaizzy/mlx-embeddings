@@ -17,7 +17,7 @@ changes (e.g. version updates), triaging, fixing and debugging user-reported
 issues, or reviewing user pull requests. You should also be making contributions
 to Homebrew at least once per quarter.
 
-You will should watch or regularly check Homebrew/brew and/or
+You should watch or regularly check Homebrew/brew and/or
 Homebrew/homebrew-core. Let us know which (or both) so we can grant you commit
 access appropriately.
 
@@ -68,7 +68,7 @@ If they are interested in doing system administration work or Homebrew/brew rele
 - Invite them to the [`homebrew-ops` private operations mailing list](https://lists.sfconservancy.org/mailman/admin/homebrew-ops/members/add).
 - Invite them to the [`homebrew` private 1Password](https://homebrew.1password.com/people).
 
-If they are elected to of the Homebrew's [Software Freedom Conservancy](https://sfconservancy.org) Project Leadership Committee:
+If they are elected to the Homebrew's [Software Freedom Conservancy](https://sfconservancy.org) Project Leadership Committee:
 
 - Email their name, email and employer to homebrew@sfconservancy.org
 - Make them [owners on the Homebrew GitHub organisation](https://github.com/orgs/Homebrew/people)
