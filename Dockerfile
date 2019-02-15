@@ -32,7 +32,6 @@ RUN cd /home/linuxbrew/.linuxbrew \
 	&& cd /home/linuxbrew/.linuxbrew/Homebrew \
 	&& git remote set-url origin https://github.com/Homebrew/brew
 
-USER linuxbrew
 WORKDIR /home/linuxbrew
 ENV PATH=/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$PATH \
 	SHELL=/bin/bash \
