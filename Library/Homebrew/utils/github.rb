@@ -274,6 +274,19 @@ module GitHub
     search_issues(name, state: "open", repo: "#{tap.user}/homebrew-#{tap.repo}", in: "title")
   end
 
+  def user
+    @user ||= open_api("#{API_URL}/user")
+  end
+
+  def permission(repo, user)
+    open_api("#{API_URL}/repos/#{repo}/collaborators/#{user}/permission")
+  end
+
+  def write_access?(repo, user = nil)
+    user ||= self.user["login"]
+    ["admin", "write"].include?(permission(repo, user)["permission"])
+  end
+
   def pull_requests(repo, base:, state: :open, **_options)
     url = "#{API_URL}/repos/#{repo}/pulls?#{URI.encode_www_form(base: base, state: state)}"
     open_api(url)

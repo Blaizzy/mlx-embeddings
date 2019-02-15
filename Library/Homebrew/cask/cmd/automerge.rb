@@ -17,16 +17,17 @@ module Cask
       ].freeze
 
       def run
-        raise "This command may only be run by Homebrew maintainers." unless ENV["HOMEBREW_DEVELOPER"]
+        taps = OFFICIAL_CASK_TAPS.map(&Tap.public_method(:fetch))
+
+        access = taps.all? { |tap| GitHub.write_access?(tap.full_name) }
+        raise "This command may only be run by Homebrew maintainers." unless access
 
         Homebrew.install_gem! "git_diff"
         require "git_diff"
 
         failed = []
 
-        OFFICIAL_CASK_TAPS.each do |tap_name|
-          tap = Tap.fetch(tap_name)
-
+        taps.each do |tap|
           open_pull_requests = GitHub.pull_requests(tap.full_name, state: :open, base: "master")
 
           open_pull_requests.each do |pr|
