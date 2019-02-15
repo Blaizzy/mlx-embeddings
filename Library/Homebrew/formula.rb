@@ -1631,7 +1631,7 @@ class Formula
                                                 .uniq,
       "requirements"             => [],
       "conflicts_with"           => conflicts.map(&:name),
-      "caveats"                  => caveats,
+      "caveats"                  => caveats&.gsub(HOMEBREW_PREFIX, "$(brew --prefix)"),
       "installed"                => [],
       "linked_keg"               => linked_version&.to_s,
       "pinned"                   => pinned?,
