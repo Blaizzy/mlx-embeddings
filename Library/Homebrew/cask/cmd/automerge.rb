@@ -39,6 +39,8 @@ module Cask
 
             print "#{Formatter.url(pr["html_url"])} "
 
+            retried = false
+
             begin
               GitHub.merge_pull_request(
                 tap.full_name,
@@ -48,6 +50,12 @@ module Cask
               )
               puts "#{Tty.bold}#{Formatter.success("✔")}#{Tty.reset}"
             rescue
+              unless retried
+                retried = true
+                sleep 5
+                retry
+              end
+
               puts "#{Tty.bold}#{Formatter.error("✘")}#{Tty.reset}"
               failed << pr["html_url"]
             end
