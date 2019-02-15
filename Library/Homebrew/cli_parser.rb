@@ -52,7 +52,7 @@ module Homebrew
         end
         process_option(*names, description)
         @parser.on(*names, *wrap_option_desc(description)) do
-          enable_switch(*names)
+          enable_switch(*names, from: :args)
         end
 
         names.each do |name|
@@ -173,7 +173,7 @@ module Homebrew
 
       private
 
-      def enable_switch(*names, from: :arg)
+      def enable_switch(*names, from:)
         names.each do |name|
           @switch_sources[option_to_name(name)] = from
           Homebrew.args["#{option_to_name(name)}?"] = true

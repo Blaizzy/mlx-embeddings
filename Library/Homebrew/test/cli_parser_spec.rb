@@ -181,6 +181,7 @@ describe Homebrew::CLI::Parser do
     it "prioritizes cli arguments over env vars when they conflict" do
       allow(ENV).to receive(:[]).with("HOMEBREW_SWITCH_A").and_return("1")
       allow(ENV).to receive(:[]).with("HOMEBREW_SWITCH_B").and_return("0")
+      allow(ENV).to receive(:[])
       parser.parse(["--switch-b"])
       expect(Homebrew.args.switch_a?).to be_falsy
       expect(Homebrew.args.switch_b?).to be true
