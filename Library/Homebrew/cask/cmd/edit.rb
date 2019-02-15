@@ -17,7 +17,7 @@ module Cask
 
       def cask_path
         casks.first.sourcefile_path
-      rescue CaskInvalidError
+      rescue CaskInvalidError, CaskUnreadableError
         path = CaskLoader.path(args.first)
         return path if path.file?
 
