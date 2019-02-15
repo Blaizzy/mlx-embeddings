@@ -34,8 +34,7 @@ RUN cd /home/linuxbrew/.linuxbrew \
 
 WORKDIR /home/linuxbrew
 ENV PATH=/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$PATH \
-	SHELL=/bin/bash \
-	USER=linuxbrew
+	SHELL=/bin/bash
 
 # Install portable-ruby and tap homebrew/core.
 RUN HOMEBREW_NO_ANALYTICS=1 HOMEBREW_NO_AUTO_UPDATE=1 brew tap homebrew/core \
