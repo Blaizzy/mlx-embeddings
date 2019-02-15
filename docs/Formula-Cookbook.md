@@ -696,6 +696,16 @@ Homebrew provides two formula DSL methods for launchd plist files:
 * [`plist_name`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#plist_name-instance_method) will return e.g. `homebrew.mxcl.<formula>`
 * [`plist_path`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#plist_path-instance_method) will return e.g. `/usr/local/Cellar/foo/0.1/homebrew.mxcl.foo.plist`
 
+### Using environment variables
+
+Homebrew has multiple levels of environment variable filtering which affects variables available to formulae.
+
+Firstly, the overall environment in which Homebrew runs is filtered to avoid environment contamination breaking from-source builds ([ref](https://github.com/Homebrew/brew/issues/932)).  In particular, this process filters all but the given whitelisted variables, but allows environment variables prefixed with `HOMEBREW_`. The specific implementation can be seen in the [`brew`](https://github.com/Homebrew/brew/blob/master/bin/brew) script.
+
+The second level of filtering removes sensitive environment variables (such as credentials like keys, passwords or tokens) to avoid malicious subprocesses obtaining them ([ref](https://github.com/Homebrew/brew/pull/2524)).  This has the effect of preventing any such variables from reaching a formula's Ruby code as they are filtered before it is called.  The specific implementation can be seen in the [`clear_sensitive_environment` method](https://github.com/Homebrew/brew/blob/master/Library/Homebrew/extend/ENV.rb).
+
+In summary, environment variables used by a formula need to conform to these filtering rules in order to be available.
+
 ## Updating formulae
 
 Eventually a new version of the software will be released. In this case you should update the [`url`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#url-class_method) and [`sha256`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#sha256%3D-class_method). If a [`revision`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#revision%3D-class_method) line exists outside any `bottle do` block *and* the new release is stable rather than devel, it should be removed.
