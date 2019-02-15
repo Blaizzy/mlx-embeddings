@@ -124,9 +124,9 @@ module GitHub
     @api_credentials_error_message ||= begin
       unauthorized = (response_headers["http/1.1"] == "401 Unauthorized")
       scopes = response_headers["x-accepted-oauth-scopes"].to_s.split(", ")
-      needed_human_scopes = needed_scopes.join(", ")
-      needed_human_scopes = "none" if needed_human_scopes.empty?
-      if !unauthorized && scopes.empty?
+      if unauthorized && scopes.empty?
+        needed_human_scopes = needed_scopes.join(", ")
+        needed_human_scopes = "none" if needed_human_scopes.empty?
         credentials_scopes = response_headers["x-oauth-scopes"]
 
         case GitHub.api_credentials_type
@@ -154,7 +154,7 @@ module GitHub
     end
   end
 
-  def open_api(url, data: nil, scopes: [].freeze)
+  def open_api(url, data: nil, request_method: nil, scopes: [].freeze)
     # This is a no-op if the user is opting out of using the GitHub API.
     return block_given? ? yield({}) : {} if ENV["HOMEBREW_NO_GITHUB_API"]
 
@@ -184,6 +184,10 @@ module GitHub
         data_tmpfile.write data
         data_tmpfile.close
         args += ["--data", "@#{data_tmpfile.path}"]
+
+        if request_method
+          args += ["--request", request_method.to_s]
+        end
       end
 
       args += ["--dump-header", headers_tmpfile.path]
@@ -268,6 +272,18 @@ module GitHub
   def issues_for_formula(name, options = {})
     tap = options[:tap] || CoreTap.instance
     search_issues(name, state: "open", repo: "#{tap.user}/homebrew-#{tap.repo}", in: "title")
+  end
+
+  def pull_requests(repo, base:, state: :open, **_options)
+    url = "#{API_URL}/repos/#{repo}/pulls?#{URI.encode_www_form(base: base, state: state)}"
+    open_api(url)
+  end
+
+  def merge_pull_request(repo, number:, sha:, merge_method:, commit_message: nil)
+    url = "#{API_URL}/repos/#{repo}/pulls/#{number}/merge"
+    data = { sha: sha, merge_method: merge_method }
+    data[:commit_message] = commit_message if commit_message
+    open_api(url, data: data, request_method: :PUT, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)
   end
 
   def print_pull_requests_matching(query)
