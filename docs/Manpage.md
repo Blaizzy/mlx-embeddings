@@ -1191,11 +1191,11 @@ Homebrew Documentation: <https://docs.brew.sh>
 
 ## AUTHORS
 
-Homebrew's project lead is Mike McQuaid.
+Homebrew's Project Leader is Mike McQuaid.
 
-Homebrew's project leadership committee is Misty De Meo, Shaun Jackman, Jonathan Chang, Mike McQuaid and Markus Reiter.
+Homebrew's Project Leadership Committee is Misty De Meo, Shaun Jackman, Jonathan Chang, Mike McQuaid and Markus Reiter.
 
-Homebrew's technical steering committee is Michka Popoff, FX Coudert, Markus Reiter, Misty De Meo and Mike McQuaid.
+Homebrew's Technical Steering Committee is Michka Popoff, FX Coudert, Markus Reiter, Misty De Meo and Mike McQuaid.
 
 Homebrew/brew's Linux support (and Linuxbrew) maintainers are Michka Popoff and Shaun Jackman.
 
