@@ -59,7 +59,7 @@ module Homebrew
           set_constraints(name, required_for: required_for, depends_on: depends_on)
         end
 
-        enable_switch(*names, source: :env_var) if !env.nil? && !ENV["HOMEBREW_#{env.to_s.upcase}"].nil?
+        enable_switch(*names, from: :env) if !env.nil? && !ENV["HOMEBREW_#{env.to_s.upcase}"].nil?
       end
       alias switch_option switch
 
@@ -173,9 +173,9 @@ module Homebrew
 
       private
 
-      def enable_switch(*names, source: :cli_arg)
+      def enable_switch(*names, from: :arg)
         names.each do |name|
-          @switch_sources[option_to_name(name)] = source
+          @switch_sources[option_to_name(name)] = from
           Homebrew.args["#{option_to_name(name)}?"] = true
         end
       end
