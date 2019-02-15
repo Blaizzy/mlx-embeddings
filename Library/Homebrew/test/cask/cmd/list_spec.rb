@@ -80,9 +80,9 @@ describe Cask::Cmd::List, :cask do
         described_class.run("local-transmission", "local-caffeine")
       }.to output(<<~EOS).to_stdout
         ==> Apps
-        #{Cask::Config.global.appdir.join("Transmission.app")} (#{Cask::Config.global.appdir.join("Transmission.app").abv})
+        #{transmission.config.appdir.join("Transmission.app")} (#{transmission.config.appdir.join("Transmission.app").abv})
         ==> Apps
-        Missing App: #{Cask::Config.global.appdir.join("Caffeine.app")}
+        Missing App: #{caffeine.config.appdir.join("Caffeine.app")}
       EOS
     end
   end

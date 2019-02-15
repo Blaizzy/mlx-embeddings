@@ -10,7 +10,7 @@ describe Cask::Installer, :cask do
       Cask::Installer.new(caffeine).install
 
       expect(Cask::Caskroom.path.join("local-caffeine", caffeine.version)).to be_a_directory
-      expect(Cask::Config.global.appdir.join("Caffeine.app")).to be_a_directory
+      expect(caffeine.config.appdir.join("Caffeine.app")).to be_a_directory
     end
 
     it "works with dmg-based Casks" do
@@ -19,7 +19,7 @@ describe Cask::Installer, :cask do
       Cask::Installer.new(asset).install
 
       expect(Cask::Caskroom.path.join("container-dmg", asset.version)).to be_a_directory
-      expect(Cask::Config.global.appdir.join("container")).to be_a_file
+      expect(asset.config.appdir.join("container")).to be_a_file
     end
 
     it "works with tar-gz-based Casks" do
@@ -28,7 +28,7 @@ describe Cask::Installer, :cask do
       Cask::Installer.new(asset).install
 
       expect(Cask::Caskroom.path.join("container-tar-gz", asset.version)).to be_a_directory
-      expect(Cask::Config.global.appdir.join("container")).to be_a_file
+      expect(asset.config.appdir.join("container")).to be_a_file
     end
 
     it "works with xar-based Casks" do
@@ -37,7 +37,7 @@ describe Cask::Installer, :cask do
       Cask::Installer.new(asset).install
 
       expect(Cask::Caskroom.path.join("container-xar", asset.version)).to be_a_directory
-      expect(Cask::Config.global.appdir.join("container")).to be_a_file
+      expect(asset.config.appdir.join("container")).to be_a_file
     end
 
     it "works with pure bzip2-based Casks" do
@@ -46,7 +46,7 @@ describe Cask::Installer, :cask do
       Cask::Installer.new(asset).install
 
       expect(Cask::Caskroom.path.join("container-bzip2", asset.version)).to be_a_directory
-      expect(Cask::Config.global.appdir.join("container")).to be_a_file
+      expect(asset.config.appdir.join("container")).to be_a_file
     end
 
     it "works with pure gzip-based Casks" do
@@ -55,7 +55,7 @@ describe Cask::Installer, :cask do
       Cask::Installer.new(asset).install
 
       expect(Cask::Caskroom.path.join("container-gzip", asset.version)).to be_a_directory
-      expect(Cask::Config.global.appdir.join("container")).to be_a_file
+      expect(asset.config.appdir.join("container")).to be_a_file
     end
 
     it "blows up on a bad checksum" do

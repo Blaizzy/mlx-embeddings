@@ -31,15 +31,21 @@ module Cask
       @tap
     end
 
-    def initialize(token, sourcefile_path: nil, tap: nil, config: Config.global, &block)
+    def initialize(token, sourcefile_path: nil, tap: nil, &block)
       @token = token
       @sourcefile_path = sourcefile_path
       @tap = tap
-      @config = config
-      @dsl = DSL.new(self)
-      return unless block_given?
+      @block = block
+      self.config = Config.for_cask(self)
+    end
 
-      @dsl.instance_eval(&block)
+    def config=(config)
+      @config = config
+
+      @dsl = DSL.new(self)
+      return unless @block
+
+      @dsl.instance_eval(&@block)
       @dsl.language_eval
     end
 
@@ -75,6 +81,14 @@ module Cask
     def installed_caskfile
       installed_version = timestamped_versions.last
       metadata_master_container_path.join(*installed_version, "Casks", "#{token}.rb")
+    end
+
+    def config_path
+      metadata_master_container_path/"config.json"
+    end
+
+    def caskroom_path
+      @caskroom_path ||= Caskroom.path.join(token)
     end
 
     def outdated?(greedy = false)

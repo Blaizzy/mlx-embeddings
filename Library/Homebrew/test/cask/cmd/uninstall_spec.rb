@@ -51,9 +51,9 @@ describe Cask::Cmd::Uninstall, :cask do
     described_class.run("local-caffeine", "local-transmission")
 
     expect(caffeine).not_to be_installed
-    expect(Cask::Config.global.appdir.join("Transmission.app")).not_to exist
+    expect(caffeine.config.appdir.join("Transmission.app")).not_to exist
     expect(transmission).not_to be_installed
-    expect(Cask::Config.global.appdir.join("Caffeine.app")).not_to exist
+    expect(transmission.config.appdir.join("Caffeine.app")).not_to exist
   end
 
   it "calls `uninstall` before removing artifacts" do
@@ -69,7 +69,7 @@ describe Cask::Cmd::Uninstall, :cask do
     }.not_to raise_error
 
     expect(cask).not_to be_installed
-    expect(Cask::Config.global.appdir.join("MyFancyApp.app")).not_to exist
+    expect(cask.config.appdir.join("MyFancyApp.app")).not_to exist
   end
 
   it "can uninstall Casks when the uninstall script is missing, but only when using `--force`" do
@@ -79,7 +79,7 @@ describe Cask::Cmd::Uninstall, :cask do
 
     expect(cask).to be_installed
 
-    Cask::Config.global.appdir.join("MyFancyApp.app").rmtree
+    cask.config.appdir.join("MyFancyApp.app").rmtree
 
     expect { described_class.run("with-uninstall-script-app") }
     .to raise_error(Cask::CaskError, /uninstall script .* does not exist/)

@@ -186,7 +186,10 @@ module Cask
     end
 
     def process_options(*args)
-      all_args = Shellwords.shellsplit(ENV["HOMEBREW_CASK_OPTS"] || "") + args
+      exclude_regex = /^\-\-#{Regexp.union(*Config::DEFAULT_DIRS.keys.map(&Regexp.public_method(:escape)))}=/
+
+      all_args = Shellwords.shellsplit(ENV.fetch("HOMEBREW_CASK_OPTS", ""))
+                           .reject { |arg| arg.match?(exclude_regex) } + args
 
       non_options = []
 

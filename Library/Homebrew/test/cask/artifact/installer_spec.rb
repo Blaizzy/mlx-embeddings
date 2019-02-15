@@ -2,7 +2,7 @@ describe Cask::Artifact::Installer, :cask do
   subject(:installer) { described_class.new(cask, **args) }
 
   let(:staged_path) { mktmpdir }
-  let(:cask) { instance_double(Cask::Cask, staged_path: staged_path, config: nil) }
+  let(:cask) { instance_double(Cask::Cask, staged_path: staged_path) }
 
   let(:command) { SystemCommand }
 

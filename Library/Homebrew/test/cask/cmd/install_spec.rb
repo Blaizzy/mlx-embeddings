@@ -21,11 +21,12 @@ describe Cask::Cmd::Install, :cask do
 
   it "allows staging and activation of multiple Casks at once" do
     described_class.run("local-transmission", "local-caffeine")
-
-    expect(Cask::CaskLoader.load(cask_path("local-transmission"))).to be_installed
-    expect(Cask::Config.global.appdir.join("Transmission.app")).to be_a_directory
-    expect(Cask::CaskLoader.load(cask_path("local-caffeine"))).to be_installed
-    expect(Cask::Config.global.appdir.join("Caffeine.app")).to be_a_directory
+    transmission = Cask::CaskLoader.load(cask_path("local-transmission"))
+    caffeine = Cask::CaskLoader.load(cask_path("local-caffeine"))
+    expect(transmission).to be_installed
+    expect(transmission.config.appdir.join("Transmission.app")).to be_a_directory
+    expect(caffeine).to be_installed
+    expect(caffeine.config.appdir.join("Caffeine.app")).to be_a_directory
   end
 
   it "skips double install (without nuking existing installation)" do
