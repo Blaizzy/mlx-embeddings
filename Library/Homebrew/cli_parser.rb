@@ -237,13 +237,9 @@ module Homebrew
             @switch_sources[option_to_name(option)] == :env_var
           end
 
-          if violations.count - env_var_options.count == 1
-            env_var_options.each do |option|
-              disable_switch option
-            end
-          else
-            raise OptionConflictError, violations.map(&method(:name_to_option))
-          end
+          select_cli_arg = violations.count - env_var_options.count == 1
+          raise OptionConflictError, violations.map(&method(:name_to_option)) unless select_cli_arg
+          env_var_options.each(&method(:disable_switch))
         end
       end
 
