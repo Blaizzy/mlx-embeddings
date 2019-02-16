@@ -9,6 +9,7 @@ require "cask/cmd/options"
 
 require "cask/cmd/abstract_command"
 require "cask/cmd/audit"
+require "cask/cmd/automerge"
 require "cask/cmd/cat"
 require "cask/cmd/create"
 require "cask/cmd/doctor"
