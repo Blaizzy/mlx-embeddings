@@ -183,8 +183,8 @@ describe Homebrew::CLI::Parser do
       allow(ENV).to receive(:[]).with("HOMEBREW_SWITCH_B").and_return("0")
       allow(ENV).to receive(:[])
       parser.parse(["--switch-b"])
-      expect(Homebrew.args.switch_a?).to be_falsy
-      expect(Homebrew.args.switch_b?).to be true
+      expect(Homebrew.args.switch_a).to be_falsy
+      expect(Homebrew.args).to be_switch_b
     end
 
     it "raises an exception on constraint violation when both are env vars" do
