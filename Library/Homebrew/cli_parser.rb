@@ -27,6 +27,7 @@ module Homebrew
         Homebrew.args.instance_eval { undef tap }
         @constraints = []
         @conflicts = []
+        @switch_sources = {}
         @processed_options = []
         @desc_line_length = 43
         @hide_from_man_page = false
@@ -51,14 +52,14 @@ module Homebrew
         end
         process_option(*names, description)
         @parser.on(*names, *wrap_option_desc(description)) do
-          enable_switch(*names)
+          enable_switch(*names, from: :args)
         end
 
         names.each do |name|
           set_constraints(name, required_for: required_for, depends_on: depends_on)
         end
 
-        enable_switch(*names) if !env.nil? && !ENV["HOMEBREW_#{env.to_s.upcase}"].nil?
+        enable_switch(*names, from: :env) if !env.nil? && !ENV["HOMEBREW_#{env.to_s.upcase}"].nil?
       end
       alias switch_option switch
 
@@ -172,9 +173,16 @@ module Homebrew
 
       private
 
-      def enable_switch(*names)
+      def enable_switch(*names, from:)
         names.each do |name|
+          @switch_sources[option_to_name(name)] = from
           Homebrew.args["#{option_to_name(name)}?"] = true
+        end
+      end
+
+      def disable_switch(*names)
+        names.each do |name|
+          Homebrew.args.delete_field("#{option_to_name(name)}?")
         end
       end
 
@@ -225,7 +233,13 @@ module Homebrew
 
           next if violations.count < 2
 
-          raise OptionConflictError, violations.map(&method(:name_to_option))
+          env_var_options = violations.select do |option|
+            @switch_sources[option_to_name(option)] == :env_var
+          end
+
+          select_cli_arg = violations.count - env_var_options.count == 1
+          raise OptionConflictError, violations.map(&method(:name_to_option)) unless select_cli_arg
+          env_var_options.each(&method(:disable_switch))
         end
       end
 

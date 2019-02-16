@@ -145,8 +145,8 @@ describe Homebrew::CLI::Parser do
   describe "test constraints for switch options" do
     subject(:parser) {
       described_class.new do
-        switch      "-a", "--switch-a"
-        switch      "-b", "--switch-b"
+        switch      "-a", "--switch-a", env: "switch_a"
+        switch      "-b", "--switch-b", env: "switch_b"
         switch      "--switch-c", required_for: "--switch-a"
         switch      "--switch-d", depends_on: "--switch-b"
 
@@ -176,6 +176,22 @@ describe Homebrew::CLI::Parser do
     it "raises no exception for optional dependency" do
       parser.parse(["--switch-b"])
       expect(Homebrew.args.switch_b?).to be true
+    end
+
+    it "prioritizes cli arguments over env vars when they conflict" do
+      allow(ENV).to receive(:[]).with("HOMEBREW_SWITCH_A").and_return("1")
+      allow(ENV).to receive(:[]).with("HOMEBREW_SWITCH_B").and_return("0")
+      allow(ENV).to receive(:[])
+      parser.parse(["--switch-b"])
+      expect(Homebrew.args.switch_a).to be_falsy
+      expect(Homebrew.args).to be_switch_b
+    end
+
+    it "raises an exception on constraint violation when both are env vars" do
+      allow(ENV).to receive(:[]).with("HOMEBREW_SWITCH_A").and_return("1")
+      allow(ENV).to receive(:[]).with("HOMEBREW_SWITCH_B").and_return("1")
+      allow(ENV).to receive(:[])
+      expect { parser.parse(["--switch-a", "--switch-b"]) }.to raise_error(Homebrew::CLI::OptionConflictError)
     end
   end
 
