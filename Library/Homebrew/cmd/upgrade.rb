@@ -226,7 +226,11 @@ module Homebrew
       dependent_formulae.each do |f|
         next if formulae_to_upgrade.include?(f)
         next if formulae_pinned.include?(f)
-        next if formulae_visited.include?(f)
+
+        if formulae_visited.include?(f)
+          opoo "Found recursive upgradable dependent #{f.full_name}"
+          next
+        end
 
         formulae_visited << f
 
@@ -271,7 +275,11 @@ module Homebrew
 
           next if formulae_to_reinstall.include?(f)
           next if formulae_pinned_and_outdated.include?(f)
-          next if formulae_visited.include?(f)
+
+          if formulae_visited.include?(f)
+            opoo "Found recursive broken dependent #{f.full_name}"
+            next
+          end
 
           formulae_visited << f
 
