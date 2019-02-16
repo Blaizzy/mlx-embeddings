@@ -24,6 +24,7 @@ describe Homebrew::Diagnostic::Checks do
   end
 
   specify "#check_access_directories" do
+    skip "User is root so everything is writable." if Process.euid.zero?
     begin
       dirs = [
         HOMEBREW_CACHE,
