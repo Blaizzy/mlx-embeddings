@@ -1,6 +1,6 @@
 # Formula Cookbook
 
-A *formula* is a package definition written in Ruby. It can be created with `brew create <URL>` where `<URL>` is a zip or tarball, installed with `brew install <formula>`, and debugged with `brew install --debug --verbose <formula>`. Formulae use the [Formula API](https://www.rubydoc.info/github/Homebrew/brew/master/Formula) which provides various Homebrew-specific helpers.
+A *formula* is a package definition written in Ruby. It can be created with `brew create <URL>` where `<URL>` is a zip or tarball, installed with `brew install <formula>`, and debugged with `brew install --drefebug --verbose <formula>`. Formulae use the [Formula API](https://www.rubydoc.info/github/Homebrew/brew/master/Formula) which provides various Homebrew-specific helpers.
 
 ## Homebrew terminology
 
@@ -700,9 +700,9 @@ Homebrew provides two formula DSL methods for launchd plist files:
 
 Homebrew has multiple levels of environment variable filtering which affects variables available to formulae.
 
-Firstly, the overall environment in which Homebrew runs is filtered to avoid environment contamination breaking from-source builds ([ref](https://github.com/Homebrew/brew/issues/932)).  In particular, this process filters all but the given whitelisted variables, but allows environment variables prefixed with `HOMEBREW_`. The specific implementation can be seen in the [`brew`](https://github.com/Homebrew/brew/blob/master/bin/brew) script.
+Firstly, the overall environment in which Homebrew runs is filtered to avoid environment contamination breaking from-source builds (https://github.com/Homebrew/brew/issues/932).  In particular, this process filters all but the given whitelisted variables, but allows environment variables prefixed with `HOMEBREW_`. The specific implementation can be seen in [`bin/brew`](https://github.com/Homebrew/brew/blob/master/bin/brew).
 
-The second level of filtering removes sensitive environment variables (such as credentials like keys, passwords or tokens) to avoid malicious subprocesses obtaining them ([ref](https://github.com/Homebrew/brew/pull/2524)).  This has the effect of preventing any such variables from reaching a formula's Ruby code as they are filtered before it is called.  The specific implementation can be seen in the [`clear_sensitive_environment` method](https://github.com/Homebrew/brew/blob/master/Library/Homebrew/extend/ENV.rb).
+The second level of filtering removes sensitive environment variables (such as credentials like keys, passwords or tokens) to avoid malicious subprocesses obtaining them (https://github.com/Homebrew/brew/pull/2524).  This has the effect of preventing any such variables from reaching a formula's Ruby code as they are filtered before it is called.  The specific implementation can be seen in the [`ENV.clear_sensitive_environment!` method](https://github.com/Homebrew/brew/blob/master/Library/Homebrew/extend/ENV.rb).
 
 In summary, environment variables used by a formula need to conform to these filtering rules in order to be available.
 
