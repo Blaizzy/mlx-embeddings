@@ -118,6 +118,7 @@ describe Pathname do
 
   describe "#ensure_writable" do
     it "makes a file writable and restores permissions afterwards" do
+      skip "User is root so everything is writable." if Process.euid.zero?
       touch file
       chmod 0555, file
       expect(file).not_to be_writable
