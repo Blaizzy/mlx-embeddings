@@ -245,6 +245,8 @@ Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will be run for the 
   Don't delete the temporary files created during installation.
 * `--build-bottle`:
   Prepare the formula for eventual bottling during installation.
+* `--bottle-arch`:
+  Optimise bottles for the given architecture rather than the oldest architecture supported by the version of macOS the bottles are built on.
 * `--display-times`:
   Print install times for each formula at the end of the run.
 * `-i`, `--interactive`:

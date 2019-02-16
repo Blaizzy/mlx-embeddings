@@ -64,6 +64,9 @@ module Homebrew
         description: "Don't delete the temporary files created during installation."
       switch "--build-bottle",
         description: "Prepare the formula for eventual bottling during installation."
+      switch "--bottle-arch=",
+        description: "Optimise bottles for the given architecture rather than the oldest "\
+                     "architecture supported by the version of macOS the bottles are built on."
       switch :force,
         description: "Install without checking for previously installed keg-only or "\
                      "non-migrated versions."
