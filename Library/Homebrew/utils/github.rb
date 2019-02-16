@@ -287,8 +287,8 @@ module GitHub
     ["admin", "write"].include?(permission(repo, user)["permission"])
   end
 
-  def pull_requests(repo, base:, state: :open, **_options)
-    url = "#{API_URL}/repos/#{repo}/pulls?#{URI.encode_www_form(base: base, state: state)}"
+  def pull_requests(repo, **options)
+    url = "#{API_URL}/repos/#{repo}/pulls?#{URI.encode_www_form(options)}"
     open_api(url)
   end
 
