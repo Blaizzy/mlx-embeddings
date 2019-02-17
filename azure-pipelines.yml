@@ -38,11 +38,15 @@ jobs:
   steps:
     - bash: |
         set -e
-        HOMEBREW_REPOSITORY=/home/linuxbrew/.linuxbrew
-        sudo mkdir -p /home/linuxbrew
-        sudo mv "$PWD" "$HOMEBREW_REPOSITORY"
-        sudo ln -s "$HOMEBREW_REPOSITORY" "$PWD"
-        "$HOMEBREW_REPOSITORY/bin/brew" test-bot
+        HOMEBREW_PREFIX=/home/linuxbrew/.linuxbrew
+        HOMEBREW_REPOSITORY="$HOMEBREW_PREFIX/Homebrew"
+        sudo mkdir /home/linuxbrew
+        sudo chown $(whoami): /home/linuxbrew
+        mkdir -p "$HOMEBREW_PREFIX/bin"
+        mv "$PWD" "$HOMEBREW_REPOSITORY"
+        ln -s "$HOMEBREW_REPOSITORY" "$PWD"
+        ln -s ../Homebrew/bin/brew "$HOMEBREW_PREFIX/bin/"
+        "$HOMEBREW_PREFIX/bin/brew" test-bot
       displayName: Run brew test-bot
       env:
         HOMEBREW_GITHUB_API_TOKEN: $(github.publicApiToken)
