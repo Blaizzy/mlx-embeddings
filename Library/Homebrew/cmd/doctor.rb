@@ -21,10 +21,6 @@ module Homebrew
         description: "Enable debugging and profiling of audit methods."
       switch :verbose
       switch :debug
-
-      # Undocumented options:
-      # `-D` activates debugging and profiling of the doctor methods (not the same as `--debug`)
-      # `--list-checks` lists all doctor methods
     end
   end
 

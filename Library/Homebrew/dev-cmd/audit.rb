@@ -56,9 +56,6 @@ module Homebrew
       switch :debug
       conflicts "--only", "--except"
       conflicts "--only-cops", "--except-cops"
-
-      # Undocumented options:
-      # `-D` activates debugging and profiling of the audit methods (not the same as `--debug`)
     end
   end
 

@@ -604,6 +604,18 @@ module Homebrew
         EOS
       end
 
+      def check_deprecated_official_taps
+        tapped_deprecated_taps =
+          Tap.select(&:official?).map(&:repo) & DEPRECATED_OFFICIAL_TAPS
+        return if tapped_deprecated_taps.empty?
+
+        <<~EOS
+          You have the following deprecated, official taps tapped:
+            Homebrew/homebrew-#{tapped_deprecated_taps.join("\n  ")}
+          Untap them with `brew untap`.
+        EOS
+      end
+
       def __check_linked_brew(f)
         f.installed_prefixes.each do |prefix|
           prefix.find do |src|
