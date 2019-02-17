@@ -37,4 +37,5 @@ ENV PATH=/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$PATH \
 
 # Install portable-ruby and tap homebrew/core.
 RUN HOMEBREW_NO_ANALYTICS=1 HOMEBREW_NO_AUTO_UPDATE=1 brew tap homebrew/core \
+	&& chown -R linuxbrew: /home/linuxbrew/.linuxbrew \
 	&& rm -rf ~/.cache
