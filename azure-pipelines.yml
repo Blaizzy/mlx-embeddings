@@ -36,23 +36,10 @@ jobs:
   pool:
     vmImage: ubuntu-16.04
   steps:
-    - bash: |
-        set -e
-        HOMEBREW_PREFIX=/home/linuxbrew/.linuxbrew
-        HOMEBREW_REPOSITORY="$HOMEBREW_PREFIX/Homebrew"
-        sudo mkdir /home/linuxbrew
-        sudo chown $(whoami): /home/linuxbrew
-        mkdir -p "$HOMEBREW_PREFIX/bin"
-        mv "$PWD" "$HOMEBREW_REPOSITORY"
-        ln -s "$HOMEBREW_REPOSITORY" "$PWD"
-        ln -s ../Homebrew/bin/brew "$HOMEBREW_PREFIX/bin/"
-        "$HOMEBREW_PREFIX/bin/brew" test-bot
+    - bash: docker-compose -f Dockerfile.test.yml run --rm -e HOMEBREW_GITHUB_API_TOKEN sut
       displayName: Run brew test-bot
       env:
         HOMEBREW_GITHUB_API_TOKEN: $(github.publicApiToken)
-
-    - bash: docker-compose -f Dockerfile.test.yml run --rm sut
-      displayName: Build and test Docker image
 
     - task: PublishTestResults@2
       displayName: Publish test-bot test results
