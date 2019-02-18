@@ -1,23 +1,3 @@
-#:  * `list`, `ls` [`--full-name`] [`-1`] [`-l`] [`-t`] [`-r`]:
-#:    List all installed formulae. If `--full-name` is passed, print formulae
-#:    with fully-qualified names. If `--full-name` is not passed, other
-#:    options (i.e. `-1`, `-l`, `-t` and `-r`) are passed to `ls` which produces the actual output.
-#:
-#:  * `list`, `ls` `--unbrewed`:
-#:    List all files in the Homebrew prefix not installed by Homebrew.
-#:
-#:  * `list`, `ls` [`--verbose`] [`--versions` [`--multiple`]] [`--pinned`] [<formulae>]:
-#:    List the installed files for <formulae>. Combined with `--verbose`, recursively
-#:    list the contents of all subdirectories in each <formula>'s keg.
-#:
-#:    If `--versions` is passed, show the version number for installed formulae,
-#:    or only the specified formulae if <formulae> are given. With `--multiple`,
-#:    only show formulae with multiple versions installed.
-#:
-#:    If `--pinned` is passed, show the versions of pinned formulae, or only the
-#:    specified (pinned) formulae if <formulae> are given.
-#:    See also `pin`, `unpin`.
-
 require "metafiles"
 require "formula"
 require "cli_parser"
@@ -28,7 +8,7 @@ module Homebrew
   def list_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `list`, `ls` [<options>] [`-1`] [`-l`] [`-t`] [`-r`]
+        `list`, `ls` [<options>]
 
         List all installed formulae.
       EOS
@@ -40,13 +20,13 @@ module Homebrew
         description: "List all files in the Homebrew prefix not installed by Homebrew."
       switch "--versions",
         description: "Show the version number for installed formulae, or only the specified "\
-                     "formulae if <formulae> are given."
+                     "formulae if <formula> are given."
       switch "--multiple",
         depends_on:  "--versions",
         description: "Only show formulae with multiple versions installed."
       switch "--pinned",
         description: "Show the versions of pinned formulae, or only the specified (pinned) "\
-                     "formulae if <formulae> are given. See also `pin`, `unpin`."
+                     "formulae if <formula> are given. See also `pin`, `unpin`."
       # passed through to ls
       switch "-1",
         description: "Force output to be one entry per line. " \

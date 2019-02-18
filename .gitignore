@@ -17,6 +17,7 @@
 /Library/Homebrew/test/fs_leak_log
 /Library/Homebrew/vendor/portable-ruby
 /Library/Taps
+/Library/PinnedTaps
 
 # Ignore Bundler files
 **/.bundle/bin
@@ -24,6 +25,7 @@
 **/vendor/bundle
 **/vendor/ruby
 **/vendor/bundle-standalone/ruby/*/bin
+**/vendor/bundle-standalone/ruby/*/build_info/
 **/vendor/bundle-standalone/ruby/*/cache
 **/vendor/bundle-standalone/ruby/*/extensions
 **/vendor/bundle-standalone/ruby/*/gems/*/*
@@ -92,15 +94,33 @@
 
 # Ignore rubocop's (and other) dependencies we don't wish to vendor
 **/vendor/bundle-standalone/ruby/*/gems/ast-*/
+**/vendor/bundle-standalone/ruby/*/gems/connection_pool-*/lib
+**/vendor/bundle-standalone/ruby/*/gems/domain_name-*/lib
+**/vendor/bundle-standalone/ruby/*/gems/http-cookie-*/lib
 **/vendor/bundle-standalone/ruby/*/gems/jaro_winkler-*/
+**/vendor/bundle-standalone/ruby/*/gems/mime-types-data-*/lib
+**/vendor/bundle-standalone/ruby/*/gems/mime-types-*/lib
+**/vendor/bundle-standalone/ruby/*/gems/mini_portile2-*/lib
 **/vendor/bundle-standalone/ruby/*/gems/minitest-*/lib
+**/vendor/bundle-standalone/ruby/*/gems/net-http-digest_auth-*/lib
+**/vendor/bundle-standalone/ruby/*/gems/net-http-persistent-*/lib
+**/vendor/bundle-standalone/ruby/*/gems/nokogiri-*/lib
+**/vendor/bundle-standalone/ruby/*/gems/ntlm-http-*/lib
 **/vendor/bundle-standalone/ruby/*/gems/parallel-*/
 **/vendor/bundle-standalone/ruby/*/gems/parser-*/
 **/vendor/bundle-standalone/ruby/*/gems/powerpack-*/
 **/vendor/bundle-standalone/ruby/*/gems/rainbow-*/
 **/vendor/bundle-standalone/ruby/*/gems/rubocop-0*/
 **/vendor/bundle-standalone/ruby/*/gems/ruby-progressbar-*/
+**/vendor/bundle-standalone/ruby/*/gems/unf_ext-*/lib
+**/vendor/bundle-standalone/ruby/*/gems/unf-*/lib
 **/vendor/bundle-standalone/ruby/*/gems/unicode-display_width-*/
+**/vendor/bundle-standalone/ruby/*/gems/webrobots-*/lib
+
+# Only include the `Mechanize::HTTP::ContentDispositionParser`.
+**/vendor/bundle-standalone/ruby/*/gems/mechanize-*/lib
+!**/vendor/bundle-standalone/ruby/*/gems/mechanize-*/lib/mechanize/http/content_disposition_parser.rb
+!**/vendor/bundle-standalone/ruby/*/gems/mechanize-*/lib/mechanize/version.rb
 
 # Ignore `bin` contents (again).
 /bin

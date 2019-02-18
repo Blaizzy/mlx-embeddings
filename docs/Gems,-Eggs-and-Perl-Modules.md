@@ -7,8 +7,8 @@ add-ons available to all users:
 * `/Library/Python`
 * `/Library/Perl`
 
-Starting with OS X Lion (10.7), you need `sudo` to install to these like
-so: `sudo gem install`, `sudo easy_install` or `sudo cpan -i`.
+You need `sudo` to install to these like so: `sudo gem install`,
+`sudo easy_install` or `sudo cpan -i`.
 
 An option to avoid sudo is to use an access control list. For example:
 

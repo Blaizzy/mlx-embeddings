@@ -362,13 +362,6 @@ module RuboCop
             problem "`depends_on` can take requirement classes instead of instances"
           end
 
-          os = [:leopard?, :snow_leopard?, :lion?, :mountain_lion?]
-          os.each do |version|
-            find_instance_method_call(body_node, "MacOS", version) do |method|
-              problem "\"#{method.source}\" is deprecated, use a comparison to MacOS.version instead"
-            end
-          end
-
           find_instance_method_call(body_node, "Dir", :[]) do |method|
             next unless parameters(method).size == 1
 

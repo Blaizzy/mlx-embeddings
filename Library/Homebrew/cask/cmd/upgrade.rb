@@ -1,3 +1,5 @@
+require "cask/config"
+
 module Cask
   class Cmd
     class Upgrade < AbstractCommand
@@ -44,13 +46,17 @@ module Cask
 
           old_cask = CaskLoader.load(old_cask.installed_caskfile)
 
+          old_config = old_cask.config
+
           old_cask_installer =
             Installer.new(old_cask, binaries: binaries?,
                                     verbose:  verbose?,
                                     force:    force?,
                                     upgrade:  true)
 
-          new_cask = CaskLoader.load(old_cask.to_s)
+          new_cask = CaskLoader.load(old_cask.token)
+
+          new_cask.config = Config.global.merge(old_config)
 
           new_cask_installer =
             Installer.new(new_cask, binaries:       binaries?,

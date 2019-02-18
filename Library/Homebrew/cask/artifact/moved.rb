@@ -40,9 +40,13 @@ module Cask
         end
 
         ohai "Moving #{self.class.english_name} '#{source.basename}' to '#{target}'."
-        target.dirname.mkpath
+        if target.dirname.ascend.find(&:directory?).writable?
+          target.dirname.mkpath
+        else
+          command.run!("/bin/mkdir", args: ["-p", target.dirname], sudo: true)
+        end
 
-        if target.parent.writable?
+        if target.dirname.writable?
           FileUtils.move(source, target)
         else
           command.run!("/bin/mv", args: [source, target], sudo: true)

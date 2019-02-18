@@ -1,6 +1,3 @@
-#:  * `untap` <tap>:
-#:    Remove a tapped repository.
-
 require "cli_parser"
 
 module Homebrew

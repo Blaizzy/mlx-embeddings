@@ -90,8 +90,6 @@ following conditions:
 will use a bottled version of the formula, but
 `brew install --enable-bar <formula>` will trigger a source build.
 * The `--build-from-source` option is invoked.
-* The environment variable `HOMEBREW_BUILD_FROM_SOURCE` is set
-(intended for developers only).
 * The machine is not running a supported version of macOS as all
 bottled builds are generated only for supported macOS versions.
 * Homebrew is installed to a prefix other than the standard
@@ -141,7 +139,7 @@ You should only ever sudo a tool you trust. Of course, you can trust Homebrew
 😉 But do you trust the multi-megabyte Makefile that Homebrew runs? Developers
 often understand C++ far better than they understand make syntax. It’s too high
 a risk to sudo such stuff. It could modify (or upload) any files on your
-system.And indeed, we’ve seen some build scripts try to modify `/usr` even when
+system. And indeed, we’ve seen some build scripts try to modify `/usr` even when
 the prefix was specified as something else entirely.
 
 We use the macOS sandbox to stop this but this doesn't work when run as the `root` user (which also has read and write access to almost everything on the system).

@@ -10,6 +10,9 @@ if RUBY_X < 2 || (RUBY_X == 2 && RUBY_Y < 3)
   raise "Homebrew must be run under Ruby 2.3! You're running #{RUBY_VERSION}."
 end
 
+# Also define here so we can rescue regardless of location.
+class MissingEnvironmentVariables < RuntimeError; end
+
 begin
   require_relative "global"
 rescue MissingEnvironmentVariables => e
@@ -89,13 +92,8 @@ begin
     # `Homebrew.help` never returns, except for external/unknown commands.
   end
 
-  # Uninstall old brew-cask if it's still around; we just use the tap now.
-  if cmd == "cask" && (HOMEBREW_CELLAR/"brew-cask").exist?
-    system(HOMEBREW_BREW_FILE, "uninstall", "--force", "brew-cask")
-  end
-
   if ENV["HOMEBREW_BUILD_FROM_SOURCE"]
-    odeprecated("HOMEBREW_BUILD_FROM_SOURCE", "--build-from-source")
+    odisabled("HOMEBREW_BUILD_FROM_SOURCE", "--build-from-source")
   end
 
   if internal_cmd

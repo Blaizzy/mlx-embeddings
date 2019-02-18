@@ -1,4 +1,6 @@
 PYTHON_VIRTUALENV_URL =
-  "https://github.com/pypa/virtualenv/archive/16.2.0.tar.gz".freeze
+  "https://files.pythonhosted.org/packages/51/aa" \
+  "/c395a6e6eaaedfa5a04723b6446a1df783b16cca6fec66e671cede514688" \
+  "/virtualenv-16.4.0.tar.gz".freeze
 PYTHON_VIRTUALENV_SHA256 =
-  "448def1220df9960e6d18fb5424107ffb1249eb566a5a311257860ab6b52b3fd".freeze
+  "cceab52aa7d4df1e1871a70236eb2b89fcfe29b6b43510d9738689787c513261".freeze

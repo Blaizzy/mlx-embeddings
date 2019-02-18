@@ -1,17 +1,3 @@
-#:  * `cleanup` [`--prune=`<days>] [`--dry-run`] [`-s`] [<formulae>|<casks>]:
-#:    Remove stale lock files and outdated downloads for formulae and casks,
-#:    and remove old versions of installed formulae. If arguments are specified,
-#:    only do this for the specified formulae and casks.
-#:
-#:    If `--prune=`<days> is specified, remove all cache files older than <days>.
-#:
-#:    If `--dry-run` or `-n` is passed, show what would be removed, but do not
-#:    actually remove anything.
-#:
-#:    If `-s` is passed, scrub the cache, including downloads for even the latest
-#:    versions. Note downloads for any installed formula or cask will still not
-#:    be deleted. If you want to delete those too: `rm -rf "$(brew --cache)"`
-
 require "cleanup"
 require "cli_parser"
 
@@ -21,8 +7,7 @@ module Homebrew
   def cleanup_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `cleanup` [<options>] [<formulae>|<casks>]
-
+        `cleanup` [<options>] [<formula>|<cask>]
 
         Remove stale lock files and outdated downloads for formulae and casks,
         and remove old versions of installed formulae. If arguments are specified,
@@ -37,6 +22,8 @@ module Homebrew
         description: "Scrub the cache, including downloads for even the latest versions. "\
                      "Note downloads for any installed formula or cask will still not be deleted. "\
                      "If you want to delete those too: `rm -rf \"$(brew --cache)\"`"
+      switch "--prune-prefix",
+        description: "Only prune the symlinks and directories from the prefix and remove no other files."
       switch :verbose
       switch :debug
     end
@@ -46,6 +33,10 @@ module Homebrew
     cleanup_args.parse
 
     cleanup = Cleanup.new(*args.remaining, dry_run: args.dry_run?, scrub: args.s?, days: args.prune&.to_i)
+    if args.prune_prefix?
+      cleanup.prune_prefix_symlinks_and_directories
+      return
+    end
 
     cleanup.clean!
 

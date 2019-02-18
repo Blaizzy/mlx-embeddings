@@ -1,14 +1,3 @@
-#:  * `unpack` [`--git`|`--patch`] [`--destdir=`<path>] <formulae>:
-#:    Unpack the source files for <formulae> into subdirectories of the current
-#:    working directory. If `--destdir=`<path> is given, the subdirectories will
-#:    be created in the directory named by <path> instead.
-#:
-#:    If `--patch` is passed, patches for <formulae> will be applied to the
-#:    unpacked source.
-#:
-#:    If `--git` (or `-g`) is passed, a Git repository will be initialized in the unpacked
-#:    source. This is useful for creating patches for the software.
-
 require "stringio"
 require "formula"
 require "cli_parser"
@@ -19,21 +8,22 @@ module Homebrew
   def unpack_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `usage` [<options>] <formulae>
+        `unpack` [<options>] <formula>
 
-        Unpack the source files for <formulae> into subdirectories of the current
+        Unpack the source files for <formula> into subdirectories of the current
         working directory.
       EOS
       flag "--destdir=",
         description: "Create subdirectories in the directory named by <path> instead."
       switch "--patch",
-        description: "Patches for <formulae> will be applied to the unpacked source."
+        description: "Patches for <formula> will be applied to the unpacked source."
       switch "-g", "--git",
-        description: "Initialize a Git repository in the unpacked source. This is useful for creating "\
+        description: "Initialise a Git repository in the unpacked source. This is useful for creating "\
                      "patches for the software."
       switch :force
       switch :verbose
       switch :debug
+      conflicts "--git", "--patch"
     end
   end
 

@@ -126,10 +126,8 @@ shared_examples EnvActivation do
 
   describe "#compiler" do
     it "allows switching compilers" do
-      [:clang, :gcc_4_2].each do |compiler|
-        subject.public_send(compiler)
-        expect(subject.compiler).to eq(compiler)
-      end
+      subject.public_send("gcc-6")
+      expect(subject.compiler).to eq("gcc-6")
     end
   end
 
@@ -162,12 +160,6 @@ shared_examples EnvActivation do
       expect(subject.compiler_any_clang?(:llvm_clang)).to be true
     end
   end
-
-  describe "#compiler_with_cxx11_support?" do
-    it "returns true for gcc-4.9" do
-      expect(subject.compiler_with_cxx11_support?("gcc-4.9")).to be true
-    end
-  end
 end
 
 describe Stdenv do
@@ -183,17 +175,6 @@ describe Superenv do
   end
 
   describe "#cxx11" do
-    it "raises an error when the compiler isn't supported" do
-      %w[gcc gcc-4.7].each do |compiler|
-        subject["HOMEBREW_CC"] = compiler
-
-        expect { subject.cxx11 }
-          .to raise_error(/The selected compiler doesn't support C\+\+11:/)
-
-        expect(subject["HOMEBREW_CCCFG"]).to be nil
-      end
-    end
-
     it "supports gcc-5" do
       subject["HOMEBREW_CC"] = "gcc-5"
       subject.cxx11

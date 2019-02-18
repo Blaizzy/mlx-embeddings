@@ -1,20 +1,7 @@
 module Hardware
   class CPU
     class << self
-      undef optimization_flags, type, family, universal_archs, can_run?,
-            features, sse4?
-
-      PPC_OPTIMIZATION_FLAGS = {
-        g3:    "-mcpu=750",
-        g4:    "-mcpu=7400",
-        g4e:   "-mcpu=7450",
-        g5:    "-mcpu=970",
-        g5_64: "-mcpu=970 -arch ppc64",
-      }.freeze
-
-      def optimization_flags
-        OPTIMIZATION_FLAGS.merge(PPC_OPTIMIZATION_FLAGS)
-      end
+      undef type, family, universal_archs, features, sse4?
 
       # These methods use info spewed out by sysctl.
       # Look in <mach/machine.h> for decoding info.
@@ -22,54 +9,37 @@ module Hardware
         case sysctl_int("hw.cputype")
         when 7
           :intel
-        when 18
-          :ppc
         else
           :dunno
         end
       end
 
       def family
-        if intel?
-          case sysctl_int("hw.cpufamily")
-          when 0x73d67300 # Yonah: Core Solo/Duo
-            :core
-          when 0x426f69ef # Merom: Core 2 Duo
-            :core2
-          when 0x78ea4fbc # Penryn
-            :penryn
-          when 0x6b5a4cd2 # Nehalem
-            :nehalem
-          when 0x573B5EEC # Arrandale
-            :arrandale
-          when 0x5490B78C # Sandy Bridge
-            :sandybridge
-          when 0x1F65E835 # Ivy Bridge
-            :ivybridge
-          when 0x10B282DC # Haswell
-            :haswell
-          when 0x582ed09c # Broadwell
-            :broadwell
-          when 0x37fc219f # Skylake
-            :skylake
-          when 0x0f817246 # Kaby Lake
-            :kabylake
-          else
-            :dunno
-          end
-        elsif ppc?
-          case sysctl_int("hw.cpusubtype")
-          when 9
-            :g3  # PowerPC 750
-          when 10
-            :g4  # PowerPC 7400
-          when 11
-            :g4e # PowerPC 7450
-          when 100
-            :g5_64 # PowerPC 970
-          else
-            :dunno
-          end
+        case sysctl_int("hw.cpufamily")
+        when 0x73d67300 # Yonah: Core Solo/Duo
+          :core
+        when 0x426f69ef # Merom: Core 2 Duo
+          :core2
+        when 0x78ea4fbc # Penryn
+          :penryn
+        when 0x6b5a4cd2 # Nehalem
+          :nehalem
+        when 0x573B5EEC # Arrandale
+          :arrandale
+        when 0x5490B78C # Sandy Bridge
+          :sandybridge
+        when 0x1F65E835 # Ivy Bridge
+          :ivybridge
+        when 0x10B282DC # Haswell
+          :haswell
+        when 0x582ed09c # Broadwell
+          :broadwell
+        when 0x37fc219f # Skylake
+          :skylake
+        when 0x0f817246 # Kaby Lake
+          :kabylake
+        else
+          :dunno
         end
       end
 
@@ -81,20 +51,6 @@ module Hardware
         # order is used.
         # https://superuser.com/questions/740563/gcc-4-8-on-macos-fails-depending-on-arch-order
         [arch_64_bit, arch_32_bit].extend ArchitectureListExtension
-      end
-
-      # Determines whether the current CPU and macOS combination
-      # can run an executable of the specified architecture.
-      # `arch` is a symbol in the same format returned by
-      # {Hardware::CPU.family}.
-      def can_run?(arch)
-        if Hardware::CPU.intel?
-          intel_can_run? arch
-        elsif Hardware::CPU.ppc?
-          ppc_can_run? arch
-        else
-          false
-        end
       end
 
       def features
@@ -154,35 +110,6 @@ module Hardware
       def sysctl_n(*keys)
         (@properties ||= {}).fetch(keys) do
           @properties[keys] = Utils.popen_read("/usr/sbin/sysctl", "-n", *keys)
-        end
-      end
-
-      def intel_can_run?(arch)
-        case arch
-        when *PPC_32BIT_ARCHS
-          # Rosetta is still available
-          MacOS.version < :lion
-        when *PPC_64BIT_ARCHS
-          # Rosetta never supported PPC64
-          false
-        when *INTEL_64BIT_ARCHS
-          Hardware::CPU.is_64_bit?
-        when *INTEL_32BIT_ARCHS
-          true
-        else # dunno
-          false
-        end
-      end
-
-      def ppc_can_run?(arch)
-        case arch
-        when *PPC_32BIT_ARCHS
-          true
-        when *PPC_64BIT_ARCHS
-          Hardware::CPU.is_64_bit?
-        else
-          # Intel is never supported
-          false
         end
       end
     end

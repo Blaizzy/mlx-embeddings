@@ -94,11 +94,14 @@ module Cask
         [executable, arguments]
       end
 
-      attr_reader :cask, :config
+      attr_reader :cask
 
       def initialize(cask)
         @cask = cask
-        @config = cask.config
+      end
+
+      def config
+        cask.config
       end
 
       def to_s

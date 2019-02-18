@@ -4,17 +4,12 @@ module OS
   module Mac
     class Version < ::Version
       SYMBOLS = {
-        mojave:        "10.14",
-        high_sierra:   "10.13",
-        sierra:        "10.12",
-        el_capitan:    "10.11",
-        yosemite:      "10.10",
-        mavericks:     "10.9",
-        mountain_lion: "10.8",
-        lion:          "10.7",
-        snow_leopard:  "10.6",
-        leopard_64:    "10.5",
-        leopard:       "10.5",
+        mojave:      "10.14",
+        high_sierra: "10.13",
+        sierra:      "10.12",
+        el_capitan:  "10.11",
+        yosemite:    "10.10",
+        mavericks:   "10.9",
       }.freeze
 
       def self.from_symbol(sym)
@@ -43,6 +38,17 @@ module OS
       def pretty_name
         to_sym.to_s.split("_").map(&:capitalize).join(" ")
       end
+
+      # For OS::Mac::Version compatability
+      def requires_nehalem_cpu?
+        Hardware.oldest_cpu(self) == :nehalem
+      end
+      # https://en.wikipedia.org/wiki/Nehalem_(microarchitecture)
+      # Ensure any extra methods are also added to version/null.rb
+      alias requires_sse4? requires_nehalem_cpu?
+      alias requires_sse41? requires_nehalem_cpu?
+      alias requires_sse42? requires_nehalem_cpu?
+      alias requires_popcnt? requires_nehalem_cpu?
     end
   end
 end

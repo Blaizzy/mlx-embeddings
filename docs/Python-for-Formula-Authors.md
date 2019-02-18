@@ -18,13 +18,7 @@ Applications should unconditionally bundle all of their Python-language dependen
 
 Formulae for apps that require Python 3 **should** declare an unconditional dependency on `"python"`. These apps **must** work with the current Homebrew Python 3.x formula.
 
-Applications that are compatible with Python 2 **should** use the Apple-provided system Python in `/usr/bin` on systems that provide Python 2.7. To do this, declare:
-
-```ruby
-depends_on "python@2" if MacOS.version <= :snow_leopard
-```
-
-No explicit Python dependency is needed on recent OS versions since `/usr/bin` is always in `PATH` for Homebrew formulae; on Leopard and older, the `python` in `PATH` is used if it's at least version 2.7, or else Homebrew's Python 2.7.x is installed.
+Applications that are compatible with Python 2 **should** use the Apple-provided system Python in `/usr/bin` on systems that provide Python 2.7. No explicit Python dependency is needed since `/usr/bin` is always in `PATH` for Homebrew formulae.
 
 ### Installing
 

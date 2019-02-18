@@ -51,10 +51,20 @@ def curl_download(*args, to: nil, **options)
   destination = Pathname(to)
   destination.dirname.mkpath
 
-  continue_at = if destination.exist? &&
-                   curl_output("--location", "--range", "0-1",
-                               "--write-out", "%{http_code}",
-                               "--output", "/dev/null", *args, **options).stdout.to_i == 206 # Partial Content
+  range_stdout = curl_output("--location", "--range", "0-1",
+                             "--dump-header", "-",
+                             "--write-out", "%{http_code}",
+                             "--output", "/dev/null", *args, **options).stdout
+  headers, _, http_status = range_stdout.partition("\r\n\r\n")
+
+  supports_partial_download = http_status.to_i == 206 # Partial Content
+  if supports_partial_download &&
+     destination.exist? &&
+     destination.size == %r{^.*Content-Range: bytes \d+-\d+/(\d+)\r\n.*$}m.match(headers)&.[](1)&.to_i
+    return # We've already downloaded all the bytes
+  end
+
+  continue_at = if destination.exist? && supports_partial_download
     "-"
   else
     0
@@ -69,12 +79,12 @@ def curl_output(*args, **options)
                  print_stderr: false)
 end
 
-def curl_check_http_content(url, user_agents: [:default], check_content: false, strict: false, require_http: false)
+def curl_check_http_content(url, user_agents: [:default], check_content: false, strict: false)
   return unless url.start_with? "http"
 
   details = nil
   user_agent = nil
-  hash_needed = url.start_with?("http:") && !require_http
+  hash_needed = url.start_with?("http:")
   user_agents.each do |ua|
     details = curl_http_content_headers_and_checksum(url, hash_needed: hash_needed, user_agent: ua)
     user_agent = ua

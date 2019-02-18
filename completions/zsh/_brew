@@ -115,7 +115,7 @@ __brew_common_commands() {
     'link:link a formula'
     'list:list files in a formula or not-installed formulae'
     'log:git commit log for a formula'
-    'missing:check all installed formuale for missing dependencies.'
+    'missing:check all installed formulae for missing dependencies.'
     'migrate:migrate renamed formula to new name'
     'outdated:list formulae for which a newer version is available'
     'pin:pin specified formulae'

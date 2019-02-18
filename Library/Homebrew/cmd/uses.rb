@@ -1,23 +1,3 @@
-#:  * `uses` [`--installed`] [`--recursive`] [`--include-build`] [`--include-test`] [`--include-optional`] [`--skip-recommended`] [`--devel`|`--HEAD`] <formulae>:
-#:    Show the formulae that specify <formulae> as a dependency. When given
-#:    multiple formula arguments, show the intersection of formulae that use
-#:    <formulae>.
-#:
-#:    Use `--recursive` to resolve more than one level of dependencies.
-#:
-#:    If `--installed` is passed, only list installed formulae.
-#:
-#:    By default, `uses` shows all formulae that specify <formulae> as a required
-#:    or recommended dependency. To include the `:build` type dependencies, pass
-#:    `--include-build`, to include the `:test` type dependencies, pass
-#:    `--include-test` and to include `:optional` dependencies pass
-#:    `--include-optional`. To skip `:recommended` type dependencies, pass
-#:    `--skip-recommended`.
-#:
-#:    By default, `uses` shows usage of <formulae> by stable builds. To find
-#:    cases where <formulae> is used by development or HEAD build, pass
-#:    `--devel` or `--HEAD`.
-
 require "formula"
 require "cli_parser"
 
@@ -31,34 +11,35 @@ module Homebrew
   def uses_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `uses` [<options>] <formulae>
+        `uses` [<options>] <formula>
 
-        Show the formulae that specify <formulae> as a dependency. When given
+        Show the formulae that specify <formula> as a dependency. When given
         multiple formula arguments, show the intersection of formulae that use
-        <formulae>.
+        <formula>.
 
-        By default, `uses` shows all formulae that specify <formulae> as a required
+        By default, `uses` shows all formulae that specify <formula> as a required
         or recommended dependency.
 
-        By default, `uses` shows usage of <formulae> by stable builds.
+        By default, `uses` shows usage of <formula> by stable builds.
       EOS
       switch "--recursive",
         description: "Resolve more than one level of dependencies."
       switch "--installed",
         description: "Only list installed formulae."
       switch "--include-build",
-        description: "Include all formulae that specify <formulae> as `:build` type dependency."
+        description: "Include all formulae that specify <formula> as `:build` type dependency."
       switch "--include-test",
-        description: "Include all formulae that specify <formulae> as `:test` type dependency."
+        description: "Include all formulae that specify <formula> as `:test` type dependency."
       switch "--include-optional",
-        description: "Include all formulae that specify <formulae> as `:optional` type dependency."
+        description: "Include all formulae that specify <formula> as `:optional` type dependency."
       switch "--skip-recommended",
-        description: "Skip all formulae that specify <formulae> as `:recommended` type dependency."
+        description: "Skip all formulae that specify <formula> as `:recommended` type dependency."
       switch "--devel",
-        description: "Show usage of <formulae> by development build."
+        description: "Show usage of <formula> by development build."
       switch "--HEAD",
-        description: "Show usage of <formulae> by HEAD build."
+        description: "Show usage of <formula> by HEAD build."
       switch :debug
+      conflicts "--devel", "--HEAD"
     end
   end
 

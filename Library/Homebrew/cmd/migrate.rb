@@ -1,10 +1,3 @@
-#:  * `migrate` [`--force`] <formulae>:
-#:    Migrate renamed packages to new name, where <formulae> are old names of
-#:    packages.
-#:
-#:    If `--force` (or `-f`) is passed, then treat installed <formulae> and passed <formulae>
-#:    like if they are from same taps and migrate them anyway.
-
 require "migrator"
 require "cli_parser"
 
@@ -14,13 +7,13 @@ module Homebrew
   def migrate_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `migrate` [<options>] <formulae>
+        `migrate` [<options>] <formula>
 
-        Migrate renamed packages to new name, where <formulae> are old names of
+        Migrate renamed packages to new name, where <formula> are old names of
         packages.
       EOS
       switch :force,
-        description: "Treat installed <formulae> and passed <formulae> like if they are from "\
+        description: "Treat installed <formula> and passed <formula> like if they are from "\
                      "same taps and migrate them anyway."
       switch :verbose
       switch :debug

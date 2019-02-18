@@ -1,14 +1,25 @@
-#:  * `switch` <formula> <version>:
-#:    Symlink all of the specific <version> of <formula>'s install to Homebrew prefix.
-
 require "formula"
 require "keg"
+require "cli_parser"
 
 module Homebrew
   module_function
 
+  def switch_args
+    Homebrew::CLI::Parser.new do
+      usage_banner <<~EOS
+        `switch` <formula> <version>
+
+        Symlink all of the specific <version> of <formula>'s install to Homebrew prefix.
+      EOS
+      switch_option :verbose
+      switch_option :debug
+    end
+  end
+
   def switch
-    name = ARGV.first
+    switch_args.parse
+    name = args.remaining.first
 
     usage = "Usage: brew switch <formula> <version>"
 
@@ -28,9 +39,9 @@ module Homebrew
                    .map { |d| Keg.new(d).version }
                    .sort
                    .join(", ")
-    version = ARGV.second
+    version = args.remaining.second
 
-    if !version || ARGV.named.length > 2
+    if !version || args.remaining.length > 2
       onoe usage
       puts "#{name} installed versions: #{versions}"
       exit 1

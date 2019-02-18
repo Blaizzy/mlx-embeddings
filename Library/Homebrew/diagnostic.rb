@@ -73,35 +73,36 @@ module Homebrew
       end
       ############# END HELPERS
 
-      def fatal_install_checks
+      def fatal_preinstall_checks
         %w[
           check_access_directories
         ].freeze
       end
 
-      def development_tools_checks
+      def fatal_build_from_source_checks
         %w[
           check_for_installed_developer_tools
         ].freeze
       end
 
-      def fatal_development_tools_checks
-        %w[
-        ].freeze
+      def supported_configuration_checks
+        [].freeze
+      end
+
+      def build_from_source_checks
+        [].freeze
       end
 
       def build_error_checks
-        (development_tools_checks + %w[
-        ]).freeze
+        supported_configuration_checks + build_from_source_checks
       end
 
       def please_create_pull_requests(what = "unsupported configuration")
         <<~EOS
-          You may encounter build failures and other breakages.
-          Please create pull requests instead of asking for help on
-          Homebrew's GitHub, Discourse, Twitter or IRC. You are
-          responsible for resolving any issues you experience, as
-          you are running this #{what}.
+          You will encounter build failures with some formulae.
+          Please create pull requests instead of asking for help on Homebrew's GitHub,
+          Discourse, Twitter or IRC. You are responsible for resolving any issues you
+          experience, as you are running this #{what}.
         EOS
       end
 
@@ -111,17 +112,6 @@ module Homebrew
         <<~EOS
           No developer tools installed.
           #{DevelopmentTools.installation_instructions}
-        EOS
-      end
-
-      def check_build_from_source
-        return unless ENV["HOMEBREW_BUILD_FROM_SOURCE"]
-
-        <<~EOS
-          You have HOMEBREW_BUILD_FROM_SOURCE set. This environment variable is
-          intended for use by Homebrew developers. If you are encountering errors,
-          please try unsetting this. Please do not file issues if you encounter
-          errors when using this environment variable.
         EOS
       end
 
@@ -200,8 +190,6 @@ module Homebrew
         # Static libs which are generally OK should be added to this list,
         # with a short description of the software they come with.
         white_list = [
-          "libsecurity_agent_client.a", # OS X 10.8.2 Supplemental Update
-          "libsecurity_agent_server.a", # OS X 10.8.2 Supplemental Update
           "libntfs-3g.a", # NTFS-3G
           "libntfs.a", # NTFS-3G
           "libublio.a", # NTFS-3G
@@ -582,11 +570,9 @@ module Homebrew
 
             Without a correctly configured origin, Homebrew won't update
             properly. You can solve this by adding the Homebrew remote:
-              git -C "#{coretap_path}" remote add origin #{Formatter.url("https://github.com/Homebrew/homebrew-core.git")}
+              git -C "#{coretap_path}" remote add origin #{Formatter.url(CoreTap.instance.default_remote)}
           EOS
-        elsif origin !~ %r{Homebrew/homebrew-core(\.git|/)?$}
-          return if ENV["CI"] && origin.include?("Homebrew/homebrew-test-bot")
-
+        elsif origin !~ %r{#{CoreTap.instance.full_name}(\.git|/)?$}i
           <<~EOS
             Suspicious #{CoreTap.instance} git origin remote found.
 
@@ -596,20 +582,37 @@ module Homebrew
 
             Unless you have compelling reasons, consider setting the
             origin remote to point at the main repository by running:
-              git -C "#{coretap_path}" remote set-url origin #{Formatter.url("https://github.com/Homebrew/homebrew-core.git")}
+              git -C "#{coretap_path}" remote set-url origin #{Formatter.url(CoreTap.instance.default_remote)}
           EOS
         end
+      end
 
+      def check_coretap_git_branch
         return if ENV["CI"]
+
+        coretap_path = CoreTap.instance.path
+        return if !Utils.git_available? || !(coretap_path/".git").exist?
 
         branch = coretap_path.git_branch
         return if branch.nil? || branch =~ /master/
 
         <<~EOS
-          Homebrew/homebrew-core is not on the master branch
+          #{CoreTap.instance.full_name} is not on the master branch
 
           Check out the master branch by running:
             git -C "$(brew --repo homebrew/core)" checkout master
+        EOS
+      end
+
+      def check_deprecated_official_taps
+        tapped_deprecated_taps =
+          Tap.select(&:official?).map(&:repo) & DEPRECATED_OFFICIAL_TAPS
+        return if tapped_deprecated_taps.empty?
+
+        <<~EOS
+          You have the following deprecated, official taps tapped:
+            Homebrew/homebrew-#{tapped_deprecated_taps.join("\n  ")}
+          Untap them with `brew untap`.
         EOS
       end
 
@@ -802,13 +805,13 @@ module Homebrew
       end
 
       def check_homebrew_prefix
-        return if HOMEBREW_PREFIX.to_s == Homebrew::DEFAULT_PREFIX
+        return if Homebrew.default_prefix?
 
         <<~EOS
           Your Homebrew's prefix is not #{Homebrew::DEFAULT_PREFIX}.
-          You can install Homebrew anywhere you want but some bottles (binary packages)
-          can only be used with a standard prefix and some formulae (packages)
-          may not build correctly with a non-standard prefix.
+          Some of Homebrew's bottles (binary packages) can only be used with the default
+          prefix (#{Homebrew::DEFAULT_PREFIX}).
+          #{please_create_pull_requests}
         EOS
       end
 

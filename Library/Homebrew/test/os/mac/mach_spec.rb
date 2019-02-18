@@ -110,42 +110,18 @@ describe ArchitectureListExtension do
 
   specify "universal checks" do
     expect(archs).to be_universal
-    expect(archs).to be_intel_universal
-    expect(archs).to be_ppc_universal
-    expect(archs).to be_cross_universal
-    expect(archs).to be_fat
 
     non_universal = [:i386].extend(described_class)
     expect(non_universal).not_to be_universal
 
     intel_only = [:i386, :x86_64].extend(described_class)
     expect(intel_only).to be_universal
-    expect(intel_only).not_to be_ppc_universal
-    expect(intel_only).not_to be_cross_universal
-
-    ppc_only = [:ppc970, :ppc64].extend(described_class)
-    expect(ppc_only).to be_universal
-    expect(ppc_only).not_to be_intel_universal
-    expect(ppc_only).not_to be_cross_universal
-
-    cross = [:ppc7400, :i386].extend(described_class)
-    expect(cross).to be_universal
-    expect(cross).not_to be_intel_universal
-    expect(cross).not_to be_ppc_universal
-  end
-
-  specify "messaging flags" do
-    archs.remove_ppc!
-    expect(archs.length).to eq(2)
-    expect(archs.as_arch_flags).to match(/-arch i386/)
-    expect(archs.as_arch_flags).to match(/-arch x86_64/)
   end
 
   specify "architecture flags" do
     pn = dylib_path("fat")
-    expect(pn.archs).to be_intel_universal
+    expect(pn.archs).to be_universal
     expect(pn.archs.as_arch_flags).to eq("-arch x86_64 -arch i386")
-    expect(pn.archs.as_cmake_arch_flags).to eq("x86_64;i386")
   end
 end
 

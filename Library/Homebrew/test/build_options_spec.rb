@@ -37,17 +37,4 @@ describe BuildOptions do
   specify "#unused_options" do
     expect(subject.unused_options).to include("--without-baz")
   end
-
-  specify "#invalid_options" do
-    expect(subject.invalid_options).to be_empty
-    expect(bad_build.invalid_options).to include("--without-bas")
-    expect(bad_build.invalid_options).to include("--without-abc")
-    expect(bad_build.invalid_options).not_to include("--with-foo")
-    expect(bad_build.invalid_options).not_to include("--with-baz")
-  end
-
-  specify "#invalid_option_names" do
-    expect(subject.invalid_option_names).to be_empty
-    expect(bad_build.invalid_option_names).to eq(%w[--without-abc --without-bas])
-  end
 end

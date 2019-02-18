@@ -1,20 +1,3 @@
-#:  * `tests` [`--verbose`] [`--coverage`] [`--generic`] [`--no-compat`] [`--only=`<test_script>[`:`<line_number>]] [`--seed=`<seed>] [`--online`]:
-#:    Run Homebrew's unit and integration tests. If provided,
-#:    `--only=`<test_script> runs only <test_script>`_spec.rb`, and `--seed`
-#:    randomizes tests with the provided value instead of a random seed.
-#:
-#:    If `--verbose` (or `-v`) is passed, print the command that runs the tests.
-#:
-#:    If `--coverage` is passed, also generate code coverage reports.
-#:
-#:    If `--generic` is passed, only run OS-agnostic tests.
-#:
-#:    If `--no-compat` is passed, do not load the compatibility layer when
-#:    running tests.
-#:
-#:    If `--online` is passed, include tests that use the GitHub API and tests
-#:    that use any of the taps for official external commands.
-
 require "cli_parser"
 require "fileutils"
 
@@ -41,7 +24,7 @@ module Homebrew
         description: "Run only <test_script>`_spec.rb`. Appending `:`<line_number> will start at a "\
                      "specific line."
       flag   "--seed=",
-        description: "Randomize tests with the provided <value> instead of a random seed."
+        description: "Randomise tests with the provided <value> instead of a random seed."
       switch :verbose
       switch :debug
     end
@@ -61,7 +44,6 @@ module Homebrew
       ENV.delete("HOMEBREW_NO_GITHUB_API")
       ENV.delete("HOMEBREW_NO_EMOJI")
       ENV.delete("HOMEBREW_DEVELOPER")
-      ENV.delete("HOMEBREW_INSTALL_CLEANUP")
       ENV["HOMEBREW_NO_ANALYTICS_THIS_RUN"] = "1"
       ENV["HOMEBREW_NO_COMPAT"] = "1" if args.no_compat?
       ENV["HOMEBREW_TEST_GENERIC_OS"] = "1" if args.generic?

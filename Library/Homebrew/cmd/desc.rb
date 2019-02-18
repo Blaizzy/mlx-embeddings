@@ -1,13 +1,3 @@
-#:  * `desc` <formula>:
-#:    Display <formula>'s name and one-line description.
-#:
-#:  * `desc` [`--search`|`--name`|`--description`] (<text>|`/`<text>`/`):
-#:    Search both name and description (`--search` or `-s`), just the names
-#:    (`--name` or `-n`), or just the descriptions (`--description` or `-d`) for
-#:    <text>. If <text> is flanked by slashes, it is interpreted as a regular
-#:    expression. Formula descriptions are cached; the cache is created on the
-#:    first search, making that search slower than subsequent ones.
-
 require "descriptions"
 require "search"
 require "description_cache_store"
@@ -37,6 +27,7 @@ module Homebrew
        description: "Search just the descriptions for provided <text>. If <text> is flanked by slashes, "\
                     "it is interpreted as a regular expression."
       switch :verbose
+      conflicts "--search=", "--name=", "--description="
     end
   end
 

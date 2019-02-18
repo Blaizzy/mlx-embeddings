@@ -197,7 +197,6 @@ shared_examples "#uninstall_phase or #zap_phase" do
       end
 
       before do
-        # rubocop:disable RSpec/AnyInstance
         allow_any_instance_of(Cask::Artifact::AbstractUninstall).to receive(:trash_paths)
           .and_wrap_original do |method, *args|
             method.call(*args).tap do |result|
@@ -216,32 +215,6 @@ shared_examples "#uninstall_phase or #zap_phase" do
           expect(path).not_to exist
         end
       end
-    end
-  end
-
-  context "using :rmdir" do
-    let(:fake_system_command) { NeverSudoSystemCommand }
-    let(:cask) { Cask::CaskLoader.load(cask_path("with-#{artifact_dsl_key}-rmdir")) }
-    let(:empty_directory) { Pathname.new("#{TEST_TMPDIR}/empty_directory_path") }
-    let(:ds_store) { empty_directory.join(".DS_Store") }
-
-    before do
-      empty_directory.mkdir
-      FileUtils.touch ds_store
-    end
-
-    after do
-      FileUtils.rm_rf empty_directory
-    end
-
-    it "is supported" do
-      expect(empty_directory).to exist
-      expect(ds_store).to exist
-
-      subject.public_send(:"#{artifact_dsl_key}_phase", command: fake_system_command)
-
-      expect(ds_store).not_to exist
-      expect(empty_directory).not_to exist
     end
   end
 
@@ -282,7 +255,7 @@ shared_examples "#uninstall_phase or #zap_phase" do
         .with(
           "osascript",
         args: ["-e", 'tell application "System Events" to delete every login item whose name is "Fancy"'],
-      )
+        )
         .and_return(instance_double("SystemCommand::Result"))
 
       subject.public_send(:"#{artifact_dsl_key}_phase", command: fake_system_command)

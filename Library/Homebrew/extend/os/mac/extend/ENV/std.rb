@@ -27,36 +27,24 @@ module Stdenv
 
     append_path "ACLOCAL_PATH", "#{MacOS::X11.share}/aclocal"
 
-    if MacOS::XQuartz.provided_by_apple? && MacOS.sdk_path_if_needed
-      append_path "CMAKE_PREFIX_PATH", "#{MacOS.sdk_path_if_needed}/usr/X11"
-    end
-
     append "CFLAGS", "-I#{MacOS::X11.include}" unless MacOS::CLT.installed?
   end
 
   def setup_build_environment(formula = nil)
     generic_setup_build_environment formula
 
-    if MacOS.version >= :mountain_lion
-      # Mountain Lion's sed is stricter, and errors out when
-      # it encounters files with mixed character sets
-      delete("LC_ALL")
-      self["LC_CTYPE"] = "C"
-    end
+    # sed is strict, and errors out when it encounters files with
+    # mixed character sets
+    delete("LC_ALL")
+    self["LC_CTYPE"] = "C"
 
     # Add lib and include etc. from the current macosxsdk to compiler flags:
     macosxsdk MacOS.version
 
-    if MacOS::Xcode.without_clt?
-      append_path "PATH", "#{MacOS::Xcode.prefix}/usr/bin"
-      append_path "PATH", "#{MacOS::Xcode.toolchain_path}/usr/bin"
-    end
+    return unless MacOS::Xcode.without_clt?
 
-    # Leopard's ld needs some convincing that it's building 64-bit
-    # See: https://github.com/mistydemeo/tigerbrew/issues/59
-    return unless MacOS.version == :leopard
-
-    append "LDFLAGS", "-arch #{Hardware::CPU.arch_64_bit}"
+    append_path "PATH", "#{MacOS::Xcode.prefix}/usr/bin"
+    append_path "PATH", "#{MacOS::Xcode.toolchain_path}/usr/bin"
   end
 
   def remove_macosxsdk(version = MacOS.version)

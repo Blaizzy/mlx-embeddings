@@ -22,13 +22,6 @@ module Superenv
 
   def homebrew_extra_paths
     paths = []
-    # On 10.9, there are shims for all tools in /usr/bin.
-    # On 10.7 and 10.8 we need to add these directories ourselves.
-    if MacOS::Xcode.without_clt? && MacOS.version <= "10.8"
-      paths << "#{MacOS::Xcode.prefix}/usr/bin"
-      paths << "#{MacOS::Xcode.toolchain_path}/usr/bin"
-    end
-
     paths << MacOS::X11.bin.to_s if x11?
     paths
   end
@@ -96,9 +89,9 @@ module Superenv
   def determine_cccfg
     s = ""
     # Fix issue with sed barfing on unicode characters on Mountain Lion
-    s << "s" if MacOS.version >= :mountain_lion
-    # Fix issue with >= 10.8 apr-1-config having broken paths
-    s << "a" if MacOS.version >= :mountain_lion
+    s << "s"
+    # Fix issue with >= Mountain Lion apr-1-config having broken paths
+    s << "a"
     s
   end
 
@@ -133,9 +126,9 @@ module Superenv
       ENV["ac_have_clock_syscall"] = "no"
     end
 
-    # On 10.9, the tools in /usr/bin proxy to the active developer directory.
+    # The tools in /usr/bin proxy to the active developer directory.
     # This means we can use them for any combination of CLT and Xcode.
-    self["HOMEBREW_PREFER_CLT_PROXIES"] = "1" if MacOS.version >= "10.9"
+    self["HOMEBREW_PREFER_CLT_PROXIES"] = "1"
   end
 
   def no_weak_imports

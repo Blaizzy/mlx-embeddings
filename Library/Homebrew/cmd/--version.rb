@@ -1,10 +1,22 @@
-#:  * `--version`:
-#:    Print the version number of Homebrew to standard output and exit.
+require "cli_parser"
 
 module Homebrew
   module_function
 
+  def __version_args
+    Homebrew::CLI::Parser.new do
+      usage_banner <<~EOS
+        `--version`
+
+        Print the version number of Homebrew, Homebrew/homebrew-core and Homebrew/homebrew-cask
+        (if tapped) to standard output and exit.
+      EOS
+    end
+  end
+
   def __version
+    __version_args.parse
+
     odie "This command does not take arguments." if ARGV.any?
 
     puts "Homebrew #{HOMEBREW_VERSION}"

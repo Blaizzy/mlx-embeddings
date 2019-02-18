@@ -39,7 +39,7 @@ then
 fi
 
 # Try to find a /usr/local HOMEBREW_PREFIX where possible (for bottles)
-if [[ -L "/usr/local/bin/brew" ]]
+if [[ -L "/usr/local/bin/brew" && ! -L "$HOMEBREW_PREFIX/Cellar" ]]
 then
   USR_LOCAL_BREW_FILE_DIRECTORY="$(symlink_target_directory "/usr/local/bin/brew" "/usr/local/bin")"
   USR_LOCAL_HOMEBREW_REPOSITORY="${USR_LOCAL_BREW_FILE_DIRECTORY%/*}"
@@ -54,7 +54,7 @@ HOMEBREW_LIBRARY="$HOMEBREW_REPOSITORY/Library"
 # Whitelist and copy to HOMEBREW_* all variables previously mentioned in
 # manpage or used elsewhere by Homebrew.
 for VAR in AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY BINTRAY_USER BINTRAY_KEY \
-           BROWSER EDITOR GIT NO_COLOR PATH VISUAL
+           BROWSER DISPLAY EDITOR GIT NO_COLOR PATH VISUAL
 do
   # Skip if variable value is empty.
   [[ -z "${!VAR}" ]] && continue
@@ -64,6 +64,12 @@ do
   [[ -n "${!VAR_NEW}" ]] && continue
   export "$VAR_NEW"="${!VAR}"
 done
+
+# Set CI variable for Azure Pipelines, Jenkins.
+if [[ -n "$TF_BUILD" || -n "$JENKINS_HOME" ]]
+then
+  export CI="1"
+fi
 
 # test-bot does environment filtering itself
 if [[ -z "$HOMEBREW_NO_ENV_FILTERING" && "$1" != "test-bot" ]]

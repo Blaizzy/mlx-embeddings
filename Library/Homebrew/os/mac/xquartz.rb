@@ -7,7 +7,6 @@ module OS
 
       DEFAULT_BUNDLE_PATH = Pathname.new("Applications/Utilities/XQuartz.app").freeze
       FORGE_BUNDLE_ID = "org.macosforge.xquartz.X11".freeze
-      APPLE_BUNDLE_ID = "org.x.X11".freeze
       FORGE_PKG_ID = "org.macosforge.xquartz.pkg".freeze
 
       PKGINFO_VERSION_MAP = {
@@ -44,17 +43,12 @@ module OS
       def detect_version
         if (path = bundle_path) && path.exist? && (version = version_from_mdls(path))
           version
-        elsif prefix.to_s == "/usr/X11" || prefix.to_s == "/usr/X11R6"
-          guess_system_version
         else
           version_from_pkgutil
         end
       end
 
       def minimum_version
-        version = guess_system_version
-        return version unless version == "dunno"
-
         # Update this a little later than latest_version to give people
         # time to upgrade.
         "2.7.11"
@@ -63,12 +57,7 @@ module OS
       # - https://xquartz.macosforge.org/trac/wiki
       # - https://xquartz.macosforge.org/trac/wiki/Releases
       def latest_version
-        case MacOS.version
-        when "10.5"
-          "2.6.3"
-        else
-          "2.7.11"
-        end
+        "2.7.11"
       end
 
       def bundle_path
@@ -77,7 +66,7 @@ module OS
 
         # Ask Spotlight where XQuartz is. If the user didn't install XQuartz
         # in the conventional place, this is our only option.
-        MacOS.app_with_bundle_id(FORGE_BUNDLE_ID, APPLE_BUNDLE_ID)
+        MacOS.app_with_bundle_id(FORGE_BUNDLE_ID)
       end
 
       def version_from_mdls(path)
@@ -87,29 +76,11 @@ module OS
         version unless version.empty?
       end
 
-      # The XQuartz that Apple shipped in OS X through 10.7 does not have a
-      # pkg-util entry, so if Spotlight indexing is disabled we must make an
-      # educated guess as to what version is installed.
-      def guess_system_version
-        case MacOS.version
-        when "10.5" then "2.1.6"
-        when "10.6" then "2.3.6"
-        when "10.7" then "2.6.3"
-        else "dunno"
-        end
-      end
-
       # Upstream XQuartz *does* have a pkg-info entry, so if we can't get it
       # from mdls, we can try pkgutil. This is very slow.
       def version_from_pkgutil
         str = MacOS.pkgutil_info(FORGE_PKG_ID)[/version: (\d\.\d\.\d+)$/, 1]
         PKGINFO_VERSION_MAP.fetch(str, str)
-      end
-
-      def provided_by_apple?
-        [FORGE_BUNDLE_ID, APPLE_BUNDLE_ID].find do |id|
-          MacOS.app_with_bundle_id(id)
-        end == APPLE_BUNDLE_ID
       end
 
       # This should really be private, but for compatibility reasons it must
@@ -118,11 +89,6 @@ module OS
       def prefix
         @prefix ||= if Pathname.new("/opt/X11/lib/libpng.dylib").exist?
           Pathname.new("/opt/X11")
-        elsif Pathname.new("/usr/X11/lib/libpng.dylib").exist?
-          Pathname.new("/usr/X11")
-        # X11 doesn't include libpng on Tiger
-        elsif Pathname.new("/usr/X11R6/lib/libX11.dylib").exist?
-          Pathname.new("/usr/X11R6")
         end
       end
 
@@ -132,22 +98,8 @@ module OS
 
       def outdated?
         return false unless installed?
-        return false if provided_by_apple?
 
         version < latest_version
-      end
-
-      # If XQuartz and/or the CLT are installed, headers will be found under
-      # `/opt/X11/include` or `/usr/X11/include`. For Xcode-only systems, they are
-      # found in the SDK, so we use {.sdk_path} for both the headers and libraries.
-      # Confusingly, executables (e.g. config scripts) are only found under
-      # `/opt/X11/bin` or `/usr/X11/bin` in all cases.
-      def effective_prefix
-        if provided_by_apple? && Xcode.without_clt?
-          Pathname.new("#{OS::Mac.sdk_path}/usr/X11")
-        else
-          prefix
-        end
       end
 
       def bin
@@ -155,11 +107,11 @@ module OS
       end
 
       def include
-        effective_prefix/"include"
+        prefix/"include"
       end
 
       def lib
-        effective_prefix/"lib"
+        prefix/"lib"
       end
 
       def share

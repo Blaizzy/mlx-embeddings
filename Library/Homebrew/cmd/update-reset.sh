@@ -1,7 +1,6 @@
-#:  * `update-reset` [<repositories>]:
-#:    Fetches and resets Homebrew and all tap repositories (or the specified
-#:    `repositories`) using `git`(1) to their latest `origin/master`. Note this
-#:    will destroy all your uncommitted or committed changes.
+#:  * `update-reset` [<repository>]
+#:
+#:  Fetches and resets Homebrew and all tap repositories (or any specified `repository`) using `git`(1) to their latest `origin/master`. Note this will destroy all your uncommitted or committed changes.
 
 homebrew-update-reset() {
   local DIR
@@ -36,14 +35,7 @@ homebrew-update-reset() {
     [[ -d "$DIR/.git" ]] || continue
     cd "$DIR" || continue
     echo "==> Fetching $DIR..."
-
-    if [[ "$DIR" = "$HOMEBREW_REPOSITORY" ]]; then
-      latest_tag="$(git ls-remote --tags --refs -q origin | tail -n1 | cut -f2)"
-      git fetch --force origin --shallow-since="$latest_tag"
-    else
-      git fetch --force --tags origin
-    fi
-
+    git fetch --force --tags origin
     echo
 
     echo "==> Resetting $DIR..."

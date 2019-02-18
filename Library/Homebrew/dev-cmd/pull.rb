@@ -1,52 +1,3 @@
-#:  * `pull` [`--bottle`] [`--bump`] [`--clean`] [`--ignore-whitespace`] [`--resolve`] [`--branch-okay`] [`--no-pbcopy`] [`--no-publish`] [`--warn-on-publish-failure`] [`--bintray-org=`<bintray-org>] [`--test-bot-user=`<test-bot-user>] <patch-source> [<patch-source>]:
-#:    Get a patch from a GitHub commit or pull request and apply it to Homebrew.
-#:    Optionally, publish updated bottles for the formulae changed by the patch.
-#:
-#:    Each <patch-source> may be one of:
-#:
-#:      ~ The ID number of a PR (pull request) in the homebrew/core GitHub
-#:        repository
-#:
-#:      ~ The URL of a PR on GitHub, using either the web page or API URL
-#:        formats. In this form, the PR may be on Homebrew/brew,
-#:        Homebrew/homebrew-core or any tap.
-#:
-#:      ~ The URL of a commit on GitHub
-#:
-#:      ~ A "https://jenkins.brew.sh/job/..." string specifying a testing job ID
-#:
-#:    If `--bottle` is passed, handle bottles, pulling the bottle-update
-#:    commit and publishing files on Bintray.
-#:
-#:    If `--bump` is passed, for one-formula PRs, automatically reword
-#:    commit message to our preferred format.
-#:
-#:    If `--clean` is passed, do not rewrite or otherwise modify the
-#:    commits found in the pulled PR.
-#:
-#:    If `--ignore-whitespace` is passed, silently ignore whitespace
-#:    discrepancies when applying diffs.
-#:
-#:    If `--resolve` is passed, when a patch fails to apply, leave in
-#:    progress and allow user to resolve, instead of aborting.
-#:
-#:    If `--branch-okay` is passed, do not warn if pulling to a branch
-#:    besides master (useful for testing).
-#:
-#:    If `--no-pbcopy` is passed, do not copy anything to the system
-#:    clipboard.
-#:
-#:    If `--no-publish` is passed, do not publish bottles to Bintray.
-#:
-#:    If `--warn-on-publish-failure` was passed, do not exit if there's a
-#:    failure publishing bottles on Bintray.
-#:
-#:    If `--bintray-org=`<bintray-org> is passed, publish at the provided Bintray
-#:    organisation.
-#:
-#:    If `--test-bot-user=`<test-bot-user> is passed, pull the bottle block
-#:    commit from the provided user on GitHub.
-
 require "net/http"
 require "net/https"
 require "json"
@@ -74,23 +25,13 @@ module Homebrew
   def pull_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `pull` [<options>] <patch sources>
+        `pull` [<options>] <patch>
 
         Get a patch from a GitHub commit or pull request and apply it to Homebrew.
         Optionally, publish updated bottles for the formulae changed by the patch.
 
-        Each <patch source> may be one of:
-
-          ~ The ID number of a PR (pull request) in the homebrew/core GitHub
-            repository
-
-          ~ The URL of a PR on GitHub, using either the web page or API URL
-            formats. In this form, the PR may be on Homebrew/brew,
-            Homebrew/homebrew-core or any tap.
-
-          ~ The URL of a commit on GitHub
-
-          ~ A "https://jenkins.brew.sh/job/..." string specifying a testing job ID
+        Each <patch> may be the number of a PR in homebrew/core, the URL of a PR
+        on GitHub, the URL of a commit on GitHub or a "https://jenkins.brew.sh/job/..." testing job URL.
       EOS
       switch "--bottle",
         description: "Handle bottles, pulling the bottle-update commit and publishing files on Bintray."

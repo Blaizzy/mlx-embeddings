@@ -1,6 +1,3 @@
-#:  * `tap-unpin` <tap>:
-#:    Unpin <tap> so its formulae are no longer prioritized. See also `tap-pin`.
-
 require "cli_parser"
 
 module Homebrew
@@ -11,7 +8,7 @@ module Homebrew
       usage_banner <<~EOS
         `tap-unpin` <tap>
 
-        Unpin <tap> so its formulae are no longer prioritized. See also `tap-pin`.
+        Unpin <tap> so its formulae are no longer prioritised. See also `tap-pin`.
       EOS
       switch :debug
     end

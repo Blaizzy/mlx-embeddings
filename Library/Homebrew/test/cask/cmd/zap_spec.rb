@@ -23,8 +23,8 @@ describe Cask::Cmd::Zap, :cask do
     described_class.run("local-caffeine", "local-transmission")
 
     expect(caffeine).not_to be_installed
-    expect(Cask::Config.global.appdir.join("Caffeine.app")).not_to be_a_symlink
+    expect(caffeine.config.appdir.join("Caffeine.app")).not_to be_a_symlink
     expect(transmission).not_to be_installed
-    expect(Cask::Config.global.appdir.join("Transmission.app")).not_to be_a_symlink
+    expect(transmission.config.appdir.join("Transmission.app")).not_to be_a_symlink
   end
 end

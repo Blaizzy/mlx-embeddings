@@ -28,16 +28,14 @@ ADD . /home/linuxbrew/.linuxbrew/Homebrew
 RUN cd /home/linuxbrew/.linuxbrew \
 	&& mkdir -p bin etc include lib opt sbin share var/homebrew/linked Cellar \
 	&& ln -s ../Homebrew/bin/brew /home/linuxbrew/.linuxbrew/bin/ \
-	&& chown -R linuxbrew: /home/linuxbrew/.linuxbrew \
 	&& cd /home/linuxbrew/.linuxbrew/Homebrew \
 	&& git remote set-url origin https://github.com/Homebrew/brew
 
-USER linuxbrew
 WORKDIR /home/linuxbrew
 ENV PATH=/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$PATH \
-	SHELL=/bin/bash \
-	USER=linuxbrew
+	SHELL=/bin/bash
 
 # Install portable-ruby and tap homebrew/core.
 RUN HOMEBREW_NO_ANALYTICS=1 HOMEBREW_NO_AUTO_UPDATE=1 brew tap homebrew/core \
+	&& chown -R linuxbrew: /home/linuxbrew/.linuxbrew \
 	&& rm -rf ~/.cache

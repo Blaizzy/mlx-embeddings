@@ -21,8 +21,9 @@ describe "brew reinstall", :integration_test do
   end
 
   it "reinstalls a Formula even when one of the options is invalid" do
-    expect { brew "reinstall", "testball", "--with-fo" }
-      .to output(/Error: invalid option: --with-fo/).to_stderr
+    expect { brew "reinstall", "testball", "--invalid" }
+      .to output(/Error: invalid option: --invalid/).to_stderr
+      .and not_to_output.to_stdout
       .and be_a_failure
   end
 

@@ -1,10 +1,11 @@
 jobs:
 - job: macOS
   pool:
-    vmImage: xcode9-macos10.13
+    vmImage: macOS-10.13
   steps:
     - bash: |
-        sudo xcode-select --switch /Applications/Xcode_10.app/Contents/Developer
+        set -e
+        sudo xcode-select --switch /Applications/Xcode_10.1.app/Contents/Developer
         HOMEBREW_REPOSITORY="$(brew --repo)"
         mv "$HOMEBREW_REPOSITORY/Library/Taps" "$PWD/Library"
         sudo rm -rf "$HOMEBREW_REPOSITORY"
@@ -36,6 +37,7 @@ jobs:
     vmImage: ubuntu-16.04
   steps:
     - bash: |
+        set -e
         HOMEBREW_REPOSITORY=/home/linuxbrew/.linuxbrew
         sudo mkdir -p /home/linuxbrew
         sudo mv "$PWD" "$HOMEBREW_REPOSITORY"

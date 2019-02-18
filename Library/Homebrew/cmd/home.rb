@@ -1,9 +1,3 @@
-#:  * `home`:
-#:    Open Homebrew's own homepage in a browser.
-#:
-#:  * `home` <formula>:
-#:    Open <formula>'s homepage in a browser.
-
 require "cli_parser"
 
 module Homebrew

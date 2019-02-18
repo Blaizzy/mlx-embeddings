@@ -166,12 +166,12 @@ describe "brew install", :integration_test do
       .and be_a_success
   end
 
-  it "ignores invalid options" do
+  it "rejects invalid options" do
     setup_test_formula "testball1"
-    expect { brew "install", "testball1", "--with-fo" }
-      .to output(/testball1: this formula has no \-\-with\-fo option so it will be ignored!/).to_stderr
-      .and output(/Downloading file/).to_stdout
-      .and be_a_success
+    expect { brew "install", "testball1", "--invalid" }
+      .to output(/Error: invalid option: --invalid/).to_stderr
+      .and not_to_output.to_stdout
+      .and be_a_failure
   end
 
   it "succeeds when a non-fatal requirement isn't satisfied" do

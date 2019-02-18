@@ -1,22 +1,3 @@
-#:  * `outdated` [`--quiet`|`--verbose`|`--json=`<version>] [`--fetch-HEAD`]:
-#:    Show formulae that have an updated version available.
-#:
-#:    By default, version information is displayed in interactive shells, and
-#:    suppressed otherwise.
-#:
-#:    If `--quiet` is passed, list only the names of outdated brews (takes
-#:    precedence over `--verbose`).
-#:
-#:    If `--verbose` (or `-v`) is passed, display detailed version information.
-#:
-#:    If `--json=`<version> is passed, the output will be in JSON format.
-#:    Currently the only accepted value for <version> is `v1`.
-#:
-#:    If `--fetch-HEAD` is passed, fetch the upstream repository to detect if
-#:    the HEAD installation of the formula is outdated. Otherwise, the
-#:    repository's HEAD will be checked for updates when a new stable or devel
-#:    version has been released.
-
 require "formula"
 require "keg"
 require "cli_parser"
@@ -44,8 +25,9 @@ module Homebrew
       switch "--fetch-HEAD",
         description: "Fetch the upstream repository to detect if the HEAD installation of the "\
                      "formula is outdated. Otherwise, the repository's HEAD will be checked for "\
-                     "updates when a new stable or devel version has been released."
+                     "updates when a new stable or development version has been released."
       switch :debug
+      conflicts "--quiet", "--verbose", "--json="
     end
   end
 

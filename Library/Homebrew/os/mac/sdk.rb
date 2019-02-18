@@ -84,8 +84,6 @@ module OS
         @sdk_prefix ||= begin
           # Xcode.prefix is pretty smart, so let's look inside to find the sdk
           sdk_prefix = "#{Xcode.prefix}/Platforms/MacOSX.platform/Developer/SDKs"
-          # Xcode < 4.3 style
-          sdk_prefix = "/Developer/SDKs" unless File.directory? sdk_prefix
           # Finally query Xcode itself (this is slow, so check it last)
           sdk_platform_path = Utils.popen_read(DevelopmentTools.locate("xcrun"), "--show-sdk-platform-path").chomp
           sdk_prefix = File.join(sdk_platform_path, "Developer", "SDKs") unless File.directory? sdk_prefix

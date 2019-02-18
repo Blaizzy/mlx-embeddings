@@ -1,15 +1,3 @@
-#:  * `linkage` [`--test`] [`--reverse`] [<formulae>]:
-#:    Check the library links for kegs of installed formulae.
-#:    Raises an error if run on uninstalled formulae.
-#:
-#:    If `--test` is passed, only display missing libraries and exit with a
-#:    non-zero status if any missing libraries are found.
-#:
-#:    If `--reverse` is passed, for every library that a keg references,
-#:    print its dylib path followed by the binaries that link to it.
-#:
-#:    If <formulae> are given, check linkage for only the specified brews.
-
 require "cache_store"
 require "linkage_checker"
 require "cli_parser"
@@ -20,7 +8,7 @@ module Homebrew
   def linkage_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `linkage` [<options>] [<formulae>]
+        `linkage` [<options>] [<formula>]
 
         Check the library links for kegs of installed formulae.
         Raises an error if run on uninstalled formulae.

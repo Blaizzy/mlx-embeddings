@@ -1,35 +1,3 @@
-#:  * `bottle` [`--verbose`] [`--no-rebuild`|`--keep-old`] [`--skip-relocation`] [`--or-later`] [`--root-url=`<URL>] [`--force-core-tap`] [`--json`] <formulae>:
-#:    Generate a bottle (binary package) from a formula that was installed with
-#:    `--build-bottle`.
-#:
-#:    If the formula specifies a rebuild version, it will be incremented in the
-#:    generated DSL. Passing `--keep-old` will attempt to keep it at its original
-#:    value, while `--no-rebuild` will remove it.
-#:
-#:    If `--verbose` (or `-v`) is passed, print the bottling commands and any warnings
-#:    encountered.
-#:
-#:    If `--skip-relocation` is passed, do not check if the bottle can be marked
-#:    as relocatable.
-#:
-#:    If `--root-url` is passed, use the specified <URL> as the root of the
-#:    bottle's URL instead of Homebrew's default.
-#:
-#:    If `--or-later` is passed, append `_or_later` to the bottle tag.
-#:
-#:    If `--force-core-tap` is passed, build a bottle even if <formula> is not
-#:    in homebrew/core or any installed taps.
-#:
-#:    If `--json` is passed, write bottle information to a JSON file, which can
-#:    be used as the argument for `--merge`.
-#:
-#:  * `bottle` `--merge` [`--keep-old`] [`--write` [`--no-commit`]] <bottle_json_files>:
-#:    Generate a bottle from a `--json` output file and print the new DSL merged
-#:    into the existing formula.
-#:
-#:    If `--write` is passed, write the changes to the formula file. A new
-#:    commit will then be generated unless `--no-commit` is passed.
-
 require "formula"
 require "utils/bottles"
 require "tab"
@@ -72,7 +40,7 @@ module Homebrew
   def bottle_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `bottle` [<options>] <formulae>
+        `bottle` [<options>] <formula>
 
         Generate a bottle (binary package) from a formula that was installed with
         `--build-bottle`.
@@ -365,6 +333,7 @@ module Homebrew
             relocatable = false if keg_contain_absolute_symlink_starting_with?(prefix, keg)
             relocatable = false if keg_contain?("#{prefix}/etc", keg, ignores)
             relocatable = false if keg_contain?("#{prefix}/var", keg, ignores)
+            relocatable = false if keg_contain?("#{prefix}/share/vim", keg, ignores)
           end
           skip_relocation = relocatable && !keg.require_relocation?
         end

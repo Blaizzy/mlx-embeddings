@@ -401,7 +401,7 @@ describe Cask::DSL, :cask do
       let(:token) { "with-conflicts-with" }
 
       it "allows conflicts_with stanza to be specified" do
-        expect(cask.conflicts_with.formula).not_to be nil
+        expect(cask.conflicts_with[:formula]).to be_empty
       end
     end
 
@@ -468,7 +468,7 @@ describe Cask::DSL, :cask do
       let(:token) { "appdir-interpolation" }
 
       it "is allowed" do
-        expect(cask.artifacts.first.source).to eq(Cask::Config.global.appdir/"some/path")
+        expect(cask.artifacts.first.source).to eq(cask.config.appdir/"some/path")
       end
     end
 

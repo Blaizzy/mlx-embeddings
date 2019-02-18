@@ -6,12 +6,6 @@ describe Homebrew::Diagnostic::Checks do
     expect(subject.inject_file_list(%w[/a /b], "foo:\n")).to eq("foo:\n  /a\n  /b\n")
   end
 
-  specify "#check_build_from_source" do
-    ENV["HOMEBREW_BUILD_FROM_SOURCE"] = "1"
-    expect(subject.check_build_from_source)
-      .to match("You have HOMEBREW_BUILD_FROM_SOURCE set.")
-  end
-
   specify "#check_for_anaconda" do
     mktmpdir do |path|
       anaconda = "#{path}/anaconda"
@@ -30,6 +24,7 @@ describe Homebrew::Diagnostic::Checks do
   end
 
   specify "#check_access_directories" do
+    skip "User is root so everything is writable." if Process.euid.zero?
     begin
       dirs = [
         HOMEBREW_CACHE,
@@ -164,7 +159,7 @@ describe Homebrew::Diagnostic::Checks do
   end
 
   specify "#check_homebrew_prefix" do
-    # the integration tests are run in a special prefix
+    allow(Homebrew).to receive(:default_prefix?).and_return(false)
     expect(subject.check_homebrew_prefix)
       .to match("Your Homebrew's prefix is not #{Homebrew::DEFAULT_PREFIX}")
   end

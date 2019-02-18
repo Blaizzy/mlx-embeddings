@@ -187,7 +187,7 @@ Occasionally, these updates require a forced-recompile of the formula itself or 
 
 When a dependent of a formula fails against a new version of that dependency it must receive a [`revision`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#revision%3D-class_method). An example of such failure can be seen [here](https://github.com/Homebrew/legacy-homebrew/issues/31195) and the fix [here](https://github.com/Homebrew/legacy-homebrew/pull/31207).
 
-[`revision`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#revision%3D-class_method)s are also used for formulae that move from the system OpenSSL to the Homebrew-shipped OpenSSL without any other changes to that formula. This ensures users aren’t left exposed to the potential security issues of the outdated OpenSSL. An example of this can be seen in [this commit](https://github.com/Homebrew/legacy-homebrew/commit/6b9d60d474d72b1848304297d91adc6120ea6f96).
+[`revision`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#revision%3D-class_method)s are also used for formulae that move from the system OpenSSL to the Homebrew-shipped OpenSSL without any other changes to that formula. This ensures users aren’t left exposed to the potential security issues of the outdated OpenSSL. An example of this can be seen in [this commit](https://github.com/Homebrew/homebrew-core/commit/0d4453a91923e6118983961e18d0609e9828a1a4).
 
 ### Version scheme changes
 
@@ -695,6 +695,16 @@ Homebrew provides two formula DSL methods for launchd plist files:
 
 * [`plist_name`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#plist_name-instance_method) will return e.g. `homebrew.mxcl.<formula>`
 * [`plist_path`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#plist_path-instance_method) will return e.g. `/usr/local/Cellar/foo/0.1/homebrew.mxcl.foo.plist`
+
+### Using environment variables
+
+Homebrew has multiple levels of environment variable filtering which affects variables available to formulae.
+
+Firstly, the overall environment in which Homebrew runs is filtered to avoid environment contamination breaking from-source builds (https://github.com/Homebrew/brew/issues/932).  In particular, this process filters all but the given whitelisted variables, but allows environment variables prefixed with `HOMEBREW_`. The specific implementation can be seen in [`bin/brew`](https://github.com/Homebrew/brew/blob/master/bin/brew).
+
+The second level of filtering removes sensitive environment variables (such as credentials like keys, passwords or tokens) to avoid malicious subprocesses obtaining them (https://github.com/Homebrew/brew/pull/2524).  This has the effect of preventing any such variables from reaching a formula's Ruby code as they are filtered before it is called.  The specific implementation can be seen in the [`ENV.clear_sensitive_environment!` method](https://github.com/Homebrew/brew/blob/master/Library/Homebrew/extend/ENV.rb).
+
+In summary, environment variables used by a formula need to conform to these filtering rules in order to be available.
 
 ## Updating formulae
 

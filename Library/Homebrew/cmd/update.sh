@@ -1,12 +1,9 @@
-#:  * `update` [`--merge`] [`--force`]:
-#:    Fetch the newest version of Homebrew and all formulae from GitHub using
-#:    `git`(1) and perform any necessary migrations.
+#:  * `update` [<options>]
 #:
-#:    If `--merge` is specified then `git merge` is used to include updates
-#:    (rather than `git rebase`).
+#:  Fetch the newest version of Homebrew and all formulae from GitHub using `git`(1) and perform any necessary migrations.
 #:
-#:    If `--force` (or `-f`) is specified then always do a slower, full update check even
-#:    if unnecessary.
+#:       --merge                         `git merge` is used to include updates (rather than `git rebase`).
+#:       --force                         Always do a slower, full update check (even if unnecessary).
 
 # Don't need shellcheck to follow this `source`.
 # shellcheck disable=SC1090
@@ -513,7 +510,13 @@ EOS
         if ! git fetch --tags --force "${QUIET_ARGS[@]}" origin \
           "refs/heads/$UPSTREAM_BRANCH_DIR:refs/remotes/origin/$UPSTREAM_BRANCH_DIR"
         then
-          echo "Fetching $DIR failed!" >>"$update_failed_file"
+          if [[ "$UPSTREAM_SHA_HTTP_CODE" = "404" ]]
+          then
+            TAP="${DIR#$HOMEBREW_LIBRARY/Taps/}"
+            echo "$TAP does not exist! Run 'brew untap $TAP'" >>"$update_failed_file"
+          else
+            echo "Fetching $DIR failed!" >>"$update_failed_file"
+          fi
         fi
       fi
     ) &

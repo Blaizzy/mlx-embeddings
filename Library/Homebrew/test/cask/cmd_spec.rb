@@ -56,9 +56,7 @@ describe Cask::Cmd, :cask do
     end
 
     it "respects the env variable when choosing what appdir to create" do
-      allow(ENV).to receive(:[]).and_call_original
-      allow(ENV).to receive(:[]).with("HOMEBREW_CASK_OPTS").and_return("--appdir=/custom/appdir")
-      allow(Cask::Config.global).to receive(:appdir).and_call_original
+      ENV["HOMEBREW_CASK_OPTS"] = "--appdir=/custom/appdir"
 
       described_class.run("noop")
 

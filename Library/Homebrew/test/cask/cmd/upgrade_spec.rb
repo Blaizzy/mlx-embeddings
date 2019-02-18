@@ -147,7 +147,7 @@ describe Cask::Cmd::Upgrade, :cask do
 
       it 'does not include the Casks with "auto_updates true" when the version did not change' do
         cask = Cask::CaskLoader.load("auto-updates")
-        cask_path = Cask::Config.global.appdir.join("MyFancyApp.app")
+        cask_path = cask.config.appdir.join("MyFancyApp.app")
 
         expect(cask).to be_installed
         expect(cask_path).to be_a_directory
@@ -188,7 +188,7 @@ describe Cask::Cmd::Upgrade, :cask do
 
     it "restores the old Cask if the upgrade failed" do
       will_fail_if_upgraded = Cask::CaskLoader.load("will-fail-if-upgraded")
-      will_fail_if_upgraded_path = Cask::Config.global.appdir.join("container")
+      will_fail_if_upgraded_path = will_fail_if_upgraded.config.appdir.join("container")
 
       expect(will_fail_if_upgraded).to be_installed
       expect(will_fail_if_upgraded_path).to be_a_file
@@ -206,7 +206,7 @@ describe Cask::Cmd::Upgrade, :cask do
 
     it "does not restore the old Cask if the upgrade failed pre-install" do
       bad_checksum = Cask::CaskLoader.load("bad-checksum")
-      bad_checksum_path = Cask::Config.global.appdir.join("Caffeine.app")
+      bad_checksum_path = bad_checksum.config.appdir.join("Caffeine.app")
 
       expect(bad_checksum).to be_installed
       expect(bad_checksum_path).to be_a_directory

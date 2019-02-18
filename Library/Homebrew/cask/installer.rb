@@ -4,6 +4,7 @@ require "formula_installer"
 require "unpack_strategy"
 
 require "cask/cask_dependencies"
+require "cask/config"
 require "cask/download"
 require "cask/staged"
 require "cask/verify"
@@ -39,7 +40,7 @@ module Cask
     end
 
     attr_predicate :binaries?, :force?, :skip_cask_deps?, :require_sha?,
-                   :upgrade?, :verbose?, :installed_as_dependency?,
+                   :reinstall?, :upgrade?, :verbose?, :installed_as_dependency?,
                    :quarantine?
 
     def self.print_caveats(cask)
@@ -79,7 +80,9 @@ module Cask
     def install
       odebug "Cask::Installer#install"
 
-      if @cask.installed? && !force? && !@reinstall && !upgrade?
+      old_config = @cask.config
+
+      if @cask.installed? && !force? && !reinstall? && !upgrade?
         raise CaskAlreadyInstalledError, @cask
       end
 
@@ -87,11 +90,14 @@ module Cask
 
       print_caveats
       fetch
-      uninstall_existing_cask if @reinstall
+      uninstall_existing_cask if reinstall?
 
       oh1 "Installing Cask #{Formatter.identifier(@cask)}"
       opoo "macOS's Gatekeeper has been disabled for this Cask" unless quarantine?
       stage
+
+      @cask.config = Config.global.merge(old_config)
+
       install_artifacts
 
       unless @cask.tap&.private?
@@ -104,7 +110,7 @@ module Cask
     def check_conflicts
       return unless @cask.conflicts_with
 
-      @cask.conflicts_with.cask.each do |conflicting_cask|
+      @cask.conflicts_with[:cask].each do |conflicting_cask|
         begin
           conflicting_cask = CaskLoader.load(conflicting_cask)
           if conflicting_cask.installed?
@@ -209,6 +215,8 @@ module Cask
         artifact.install_phase(command: @command, verbose: verbose?, force: force?)
         already_installed_artifacts.unshift(artifact)
       end
+
+      save_config_file
     rescue => e
       begin
         already_installed_artifacts.each do |artifact|
@@ -216,6 +224,13 @@ module Cask
 
           odebug "Reverting installation of artifact of class #{artifact.class}"
           artifact.uninstall_phase(command: @command, verbose: verbose?, force: force?)
+        end
+
+        already_installed_artifacts.each do |artifact|
+          next unless artifact.respond_to?(:post_uninstall_phase)
+
+          odebug "Reverting installation of artifact of class #{artifact.class}"
+          artifact.post_uninstall_phase(command: @command, verbose: verbose?, force: force?)
         end
       ensure
         purge_versioned_files
@@ -375,11 +390,21 @@ module Cask
       old_savedir&.rmtree
     end
 
+    def save_config_file
+      @cask.config_path.atomic_write(@cask.config.to_json)
+    end
+
     def uninstall
       oh1 "Uninstalling Cask #{Formatter.identifier(@cask)}"
       uninstall_artifacts(clear: true)
+      remove_config_file unless reinstall? || upgrade?
       purge_versioned_files
       purge_caskroom_path if force?
+    end
+
+    def remove_config_file
+      FileUtils.rm_f @cask.config_path
+      @cask.config_path.parent.rmdir_if_possible
     end
 
     def start_upgrade
@@ -425,8 +450,17 @@ module Cask
       artifacts.each do |artifact|
         next unless artifact.respond_to?(:uninstall_phase)
 
-        odebug "Un-installing artifact of class #{artifact.class}"
+        odebug "Uninstalling artifact of class #{artifact.class}"
         artifact.uninstall_phase(command: @command, verbose: verbose?, skip: clear, force: force?, upgrade: upgrade?)
+      end
+
+      artifacts.each do |artifact|
+        next unless artifact.respond_to?(:post_uninstall_phase)
+
+        odebug "Post-uninstalling artifact of class #{artifact.class}"
+        artifact.post_uninstall_phase(
+          command: @command, verbose: verbose?, skip: clear, force: force?, upgrade: upgrade?,
+        )
       end
     end
 

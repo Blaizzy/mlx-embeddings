@@ -1,6 +1,3 @@
-#:  * `prune` [`--dry-run`]:
-#:    Deprecated. Use `brew cleanup` instead.
-
 require "keg"
 require "cli_parser"
 require "cleanup"
@@ -19,13 +16,13 @@ module Homebrew
         description: "Show what would be removed, but do not actually remove anything."
       switch :verbose
       switch :debug
+      hide_from_man_page!
     end
   end
 
   def prune
     prune_args.parse
 
-    odeprecated("'brew prune'", "'brew cleanup'")
-    Cleanup.new(dry_run: args.dry_run?).prune_prefix_symlinks_and_directories
+    odisabled("'brew prune'", "'brew cleanup --prune-prefix'")
   end
 end

@@ -1,7 +1,7 @@
 require_relative "shared_examples/invalid_option"
 
 describe Cask::Cmd::Audit, :cask do
-  let(:cask) { Cask::Cask.new(nil) }
+  let(:cask) { Cask::Cask.new("cask") }
 
   it_behaves_like "a command that handles invalid options"
 

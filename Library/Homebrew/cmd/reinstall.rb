@@ -1,12 +1,3 @@
-#:  * `reinstall` [`--display-times`] <formula>:
-#:    Uninstall and then install <formula> (with existing install options).
-#:
-#:    If `--display-times` is passed, install times for each formula are printed
-#:    at the end of the run.
-#:
-#:    If `HOMEBREW_INSTALL_CLEANUP` is set then remove previously installed versions
-#:    of upgraded <formulae> as well as the HOMEBREW_CACHE for that formula.
-
 require "formula_installer"
 require "development_tools"
 require "messages"
@@ -20,19 +11,31 @@ module Homebrew
   def reinstall_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `reinstall` [<option(s)>] <formula>:
+        `reinstall` [<options>] <formula>
 
-        Uninstall and then install <formula> (with existing install options).
+        Uninstall and then install <formula> (with existing and any appended install options).
 
-        If `HOMEBREW_INSTALL_CLEANUP` is set then remove previously installed versions
-        of upgraded <formulae> as well as the HOMEBREW_CACHE for that formula.
+        Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will be run for the reinstalled formulae or, every 30 days, for all formulae.
       EOS
+      switch :debug,
+        description: "If brewing fails, open an interactive debugging session with access to IRB "\
+                     "or a shell inside the temporary build directory"
       switch "-s", "--build-from-source",
-        description: "Compile the formula> from source even if a bottle is available."
+        description: "Compile <formula> from source even if a bottle is available."
+      switch "--force-bottle",
+        description: "Install from a bottle if it exists for the current or newest version of "\
+                     "macOS, even if it would not normally be used for installation."
+      switch "--keep-tmp",
+        description: "Don't delete the temporary files created during installation."
+      switch :force,
+        description: "Install without checking for previously installed keg-only or "\
+                     "non-migrated versions."
+      switch :verbose,
+        description: "Print the verification and postinstall steps."
       switch "--display-times",
         description: "Print install times for each formula at the end of the run."
-      switch :verbose
-      switch :debug
+      conflicts "--build-from-source", "--force-bottle"
+      formula_options
     end
   end
 
