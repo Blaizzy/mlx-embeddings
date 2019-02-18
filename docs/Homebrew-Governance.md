@@ -66,7 +66,7 @@
 
 2. The quorum to vote on resolutions at a meeting of the PLC is a majority of its members.
 
-3. A majority of the entire membership of the PLC is required to pass an ordinary resolution. A two-thirds supermajority of the entire membership of the PLC is required to pass a special resolution.
+3. A majority of the entire membership of the PLC is required to pass an ordinary resolution.
 
 4. The PLC will meet annually to review the status of all members and remove inactive members and those who have not affirmed a commitment to Homebrew in the past year. Voting in the AGM confirms that a member wishes to remain active with the project. After the AGM, the PLC will ask the members who did not vote whether they wish to remain active with the project. The PLC removes any members who don't respond to this second request after three weeks.
 
