@@ -35,8 +35,8 @@ module Homebrew
             pip2 install pillow
         EOS
         when "macruby" then <<~EOS
-          macOS provides Ruby. To install a newer version:
-            brew install ruby
+          MacRuby has been discontinued. Consider RubyMotion:
+            brew cask install rubymotion
         EOS
         when /(lib)?lzma/ then <<~EOS
           lzma is now part of the xz formula:
