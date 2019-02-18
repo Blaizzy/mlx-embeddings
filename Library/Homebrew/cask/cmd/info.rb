@@ -25,21 +25,25 @@ module Cask
         "displays information about the given Cask"
       end
 
+      def self.get_info(cask)
+        "#{title_info(cask)}\n"\
+        "#{Formatter.url(cask.homepage) if cask.homepage}\n"\
+        "#{installation_info(cask)}\n"\
+        "#{repo_info(cask)}"\
+        "#{name_info(cask)}"\
+        "#{language_info(cask)}"\
+        "#{artifact_info(cask)}"\
+        "#{Installer.print_caveats(cask)}"\
+      end
+
       def self.info(cask)
-        title_info(cask)
-        puts Formatter.url(cask.homepage) if cask.homepage
-        installation_info(cask)
-        repo_info(cask)
-        name_info(cask)
-        language_info(cask)
-        artifact_info(cask)
-        Installer.print_caveats(cask)
+        puts get_info(cask)
       end
 
       def self.title_info(cask)
         title = "#{cask.token}: #{cask.version}"
         title += " (auto_updates)" if cask.auto_updates
-        puts title
+        title
       end
 
       def self.formatted_url(url)
@@ -50,27 +54,28 @@ module Cask
         if cask.installed?
           cask.versions.each do |version|
             versioned_staged_path = cask.caskroom_path.join(version)
-
-            puts versioned_staged_path.to_s
-              .concat(" (")
-              .concat(versioned_staged_path.exist? ? versioned_staged_path.abv : Formatter.error("does not exist"))
-                                      .concat(")")
+            message = versioned_staged_path.exist? ? versioned_staged_path.abv : Formatter.error("does not exist")
+            versioned_staged_path.to_s.concat(" (").concat(message).concat(")")
           end
         else
-          puts "Not installed"
+          "Not installed"
         end
       end
 
       def self.name_info(cask)
-        ohai((cask.name.size > 1) ? "Names" : "Name")
-        puts cask.name.empty? ? Formatter.error("None") : cask.name
+        <<~EOS
+          #{ohai_title((cask.name.size > 1) ? "Names" : "Name")}
+          #{cask.name.empty? ? Formatter.error("None") : cask.name.join("\n")}
+        EOS
       end
 
       def self.language_info(cask)
         return if cask.languages.empty?
 
-        ohai "Languages"
-        puts cask.languages.join(", ")
+        <<~EOS
+          #{ohai_title("Languages")}
+          #{cask.languages.join(", ")}
+        EOS
       end
 
       def self.repo_info(cask)
@@ -82,16 +87,18 @@ module Cask
           "#{cask.tap.default_remote}/blob/master/Casks/#{cask.token}.rb"
         end
 
-        puts "From: #{Formatter.url(url)}"
+        "From: #{Formatter.url(url)}\n"
       end
 
       def self.artifact_info(cask)
-        ohai "Artifacts"
         cask.artifacts.each do |artifact|
           next unless artifact.respond_to?(:install_phase)
           next unless DSL::ORDINARY_ARTIFACT_CLASSES.include?(artifact.class)
 
-          puts artifact.to_s
+          return <<~EOS
+            #{ohai_title("Artifacts")}
+            #{artifact}
+          EOS
         end
       end
     end

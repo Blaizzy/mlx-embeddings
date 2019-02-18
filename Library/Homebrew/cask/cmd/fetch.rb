@@ -12,7 +12,7 @@ module Cask
 
       def run
         casks.each do |cask|
-          Installer.print_caveats(cask)
+          puts Installer.print_caveats(cask)
           ohai "Downloading external files for Cask #{cask}"
           downloaded_path = Download.new(cask, force: force?, quarantine: quarantine?).perform
           Verify.all(cask, downloaded_path)

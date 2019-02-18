@@ -49,8 +49,8 @@ module Cask
       caveats = cask.caveats
       return if caveats.empty?
 
-      ohai "Caveats"
-      puts caveats + "\n"
+      "#{ohai_title "Caveats"}\n"\
+      "#{caveats}\n"
     end
 
     def fetch
@@ -88,7 +88,7 @@ module Cask
 
       check_conflicts
 
-      print_caveats
+      print print_caveats
       fetch
       uninstall_existing_cask if reinstall?
 

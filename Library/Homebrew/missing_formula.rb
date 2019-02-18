@@ -1,6 +1,6 @@
 require "formulary"
 require "cask/cmd/abstract_command"
-require "cask/cmd/info"
+require "cask/cmd"
 require "cask/cask_loader"
 require "cask/installer"
 
@@ -8,10 +8,8 @@ module Homebrew
   module MissingFormula
     class << self
       def reason(name, silent: false)
-        search_for_cask(name)
-        rescue
-          blacklisted_reason(name) || tap_migration_reason(name) ||
-            deleted_reason(name, silent: silent)
+        cask_reason(name, silent: false) || blacklisted_reason(name) ||
+          tap_migration_reason(name) || deleted_reason(name, silent: silent)
       end
 
       def blacklisted_reason(name)
@@ -180,9 +178,11 @@ module Homebrew
         end
       end
 
-      def search_for_cask(name)
+      def cask_reason(name, silent: false)
         cask = Cask::CaskLoader.load(name)
-        Cask::Cmd::Info.info(cask)
+        return Cask::Cmd::Info.get_info(cask) unless silent
+        rescue Cask::CaskUnavailableError
+          nil
       end
 
       require "extend/os/missing_formula"
