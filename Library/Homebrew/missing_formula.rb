@@ -11,11 +11,13 @@ module Homebrew
       def blacklisted_reason(name)
         case name.downcase
         when "gem", /^rubygems?$/ then <<~EOS
-          gem is part of the ruby formula:
+          macOS provides gem as part of Ruby. To install a newer version:
             brew install ruby
         EOS
         when "tex", "tex-live", "texlive", "latex" then <<~EOS
-          There are three versions of MacTeX. Full installation:
+          There are three versions of MacTeX.
+
+          Full installation:
             brew cask install mactex
 
           Full installation without bundled applications:
@@ -23,9 +25,6 @@ module Homebrew
 
           Minimal installation:
             brew cask install basictex
-
-          You may also want the TeX Live Utility with the latter options:
-            brew cask install tex-live-utility
         EOS
         when "pip" then <<~EOS
           pip is part of the python formula:
@@ -36,11 +35,7 @@ module Homebrew
             pip2 install pillow
         EOS
         when "macruby" then <<~EOS
-          MacRuby is not packaged and is on an indefinite development hiatus.
-          You can read more about it at:
-            #{Formatter.url("https://github.com/MacRuby/MacRuby")}
-
-          You can instead install the ruby formula:
+          macOS provides Ruby. To install a newer version:
             brew install ruby
         EOS
         when /(lib)?lzma/ then <<~EOS
@@ -76,9 +71,16 @@ module Homebrew
             #{Formatter.url("https://www.playframework.com/documentation/2.3.x/Highlights23")}
         EOS
         when "haskell-platform" then <<~EOS
-          We no longer package haskell-platform. Consider installing ghc,
-          cabal-install and stack instead:
-            brew install ghc cabal-install stack
+          The components of the Haskell Platform are available separately.
+
+          Glasgow Haskell Compiler:
+            brew install ghc
+
+          Cabal build system:
+            brew install cabal-install
+
+          Haskell Stack tool:
+            brew install haskell-stack
         EOS
         when "mysqldump-secure" then <<~EOS
           The creator of mysqldump-secure tried to game our popularity metrics.
