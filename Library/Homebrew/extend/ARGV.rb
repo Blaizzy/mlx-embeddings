@@ -30,7 +30,8 @@ module HomebrewArgvExtension
   end
 
   def named
-    @named ||= self - options_only
+    # TODO: use @instance variable to ||= cache when moving to CLI::Parser
+    self - options_only
   end
 
   def options_only
@@ -43,7 +44,8 @@ module HomebrewArgvExtension
 
   def formulae
     require "formula"
-    @formulae ||= (downcased_unique_named - casks).map do |name|
+    # TODO: use @instance variable to ||= cache when moving to CLI::Parser
+    (downcased_unique_named - casks).map do |name|
       if name.include?("/") || File.exist?(name)
         Formulary.factory(name, spec)
       else
@@ -54,19 +56,22 @@ module HomebrewArgvExtension
 
   def resolved_formulae
     require "formula"
-    @resolved_formulae ||= (downcased_unique_named - casks).map do |name|
+    # TODO: use @instance variable to ||= cache when moving to CLI::Parser
+    (downcased_unique_named - casks).map do |name|
       Formulary.resolve(name, spec: spec(nil))
     end.uniq(&:name)
   end
 
   def casks
-    @casks ||= downcased_unique_named.grep HOMEBREW_CASK_TAP_CASK_REGEX
+    # TODO: use @instance variable to ||= cache when moving to CLI::Parser
+    downcased_unique_named.grep HOMEBREW_CASK_TAP_CASK_REGEX
   end
 
   def kegs
     require "keg"
     require "formula"
-    @kegs ||= downcased_unique_named.map do |name|
+    # TODO: use @instance variable to ||= cache when moving to CLI::Parser
+    downcased_unique_named.map do |name|
       raise UsageError if name.empty?
 
       rack = Formulary.to_rack(name.downcase)
@@ -109,7 +114,7 @@ module HomebrewArgvExtension
   end
 
   def include?(arg)
-    !(@n = index(arg)).nil?
+    !index(arg).nil?
   end
 
   def next
@@ -281,7 +286,8 @@ module HomebrewArgvExtension
 
   def downcased_unique_named
     # Only lowercase names, not paths, bottle filenames or URLs
-    @downcased_unique_named ||= named.map do |arg|
+    # TODO: use @instance variable to ||= cache when moving to CLI::Parser
+    named.map do |arg|
       if arg.include?("/") || arg.end_with?(".tar.gz") || File.exist?(arg)
         arg
       else
