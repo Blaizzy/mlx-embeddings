@@ -562,6 +562,9 @@ module Homebrew
         examine_git_origin(CoreTap.instance.path, CoreTap.instance.full_name)
       end
 
+      def check_casktap_git_origin
+        cask = Tap.default_cask_tap
+        examine_git_origin(cask.path, cask.full_name) if cask.installed?
       end
 
       def check_coretap_git_branch
