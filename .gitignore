@@ -109,6 +109,7 @@
 **/vendor/bundle-standalone/ruby/*/gems/parallel-*/
 **/vendor/bundle-standalone/ruby/*/gems/parser-*/
 **/vendor/bundle-standalone/ruby/*/gems/powerpack-*/
+**/vendor/bundle-standalone/ruby/*/gems/psych-*/
 **/vendor/bundle-standalone/ruby/*/gems/rainbow-*/
 **/vendor/bundle-standalone/ruby/*/gems/rubocop-0*/
 **/vendor/bundle-standalone/ruby/*/gems/ruby-progressbar-*/
