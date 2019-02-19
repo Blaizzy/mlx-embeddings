@@ -244,9 +244,7 @@ class FormulaInstaller
 
     check_conflicts
 
-    if !pour_bottle? && !formula.bottle_unneeded? && !DevelopmentTools.installed?
-      raise BuildToolsError, [formula]
-    end
+    raise BuildToolsError, [formula] if !pour_bottle? && !formula.bottle_unneeded? && !DevelopmentTools.installed?
 
     unless ignore_deps?
       deps = compute_dependencies
@@ -267,17 +265,13 @@ class FormulaInstaller
     end
 
     options = display_options(formula)
-    if show_header?
-      oh1 "Installing #{Formatter.identifier(formula.full_name)} #{options}".strip
-    end
+    oh1 "Installing #{Formatter.identifier(formula.full_name)} #{options}".strip if show_header?
 
     unless formula.tap&.private?
       action = "#{formula.full_name} #{options}".strip
       Utils::Analytics.report_event("install", action)
 
-      if installed_on_request
-        Utils::Analytics.report_event("install_on_request", action)
-      end
+      Utils::Analytics.report_event("install_on_request", action) if installed_on_request
     end
 
     self.class.attempted << formula
@@ -624,9 +618,7 @@ class FormulaInstaller
     keg = Keg.new(formula.prefix)
     link(keg)
 
-    unless @poured_bottle && formula.bottle_specification.skip_relocation?
-      fix_dynamic_linkage(keg)
-    end
+    fix_dynamic_linkage(keg) unless @poured_bottle && formula.bottle_specification.skip_relocation?
 
     if build_bottle?
       ohai "Not running post_install as we're building a bottle"
@@ -757,9 +749,7 @@ class FormulaInstaller
 
     formula.update_head_version
 
-    if !formula.prefix.directory? || Keg.new(formula.prefix).empty_installation?
-      raise "Empty installation"
-    end
+    raise "Empty installation" if !formula.prefix.directory? || Keg.new(formula.prefix).empty_installation?
   rescue Exception => e # rubocop:disable Lint/RescueException
     if e.is_a? BuildError
       e.formula = formula

@@ -205,14 +205,10 @@ module Homebrew
   end
 
   def bottle_formula(f)
-    unless f.installed?
-      return ofail "Formula not installed or up-to-date: #{f.full_name}"
-    end
+    return ofail "Formula not installed or up-to-date: #{f.full_name}" unless f.installed?
 
     unless tap = f.tap
-      unless args.force_core_tap?
-        return ofail "Formula not from core or any installed taps: #{f.full_name}"
-      end
+      return ofail "Formula not from core or any installed taps: #{f.full_name}" unless args.force_core_tap?
 
       tap = CoreTap.instance
     end
@@ -223,9 +219,7 @@ module Homebrew
       return
     end
 
-    unless Utils::Bottles.built_as? f
-      return ofail "Formula not installed with '--build-bottle': #{f.full_name}"
-    end
+    return ofail "Formula not installed with '--build-bottle': #{f.full_name}" unless Utils::Bottles.built_as? f
 
     return ofail "Formula has no stable version: #{f.full_name}" unless f.stable
 
@@ -265,9 +259,7 @@ module Homebrew
       begin
         keg.delete_pyc_files!
 
-        unless args.skip_relocation?
-          changed_files = keg.replace_locations_with_placeholders
-        end
+        changed_files = keg.replace_locations_with_placeholders unless args.skip_relocation?
 
         Tab.clear_cache
         tab = Tab.for_keg(keg)
@@ -300,9 +292,7 @@ module Homebrew
           mv "#{relocatable_tar_path}.gz", bottle_path
         end
 
-        if bottle_path.size > 1 * 1024 * 1024
-          ohai "Detecting if #{filename} is relocatable..."
-        end
+        ohai "Detecting if #{filename} is relocatable..." if bottle_path.size > 1 * 1024 * 1024
 
         if Homebrew.default_prefix?(prefix)
           prefix_check = File.join(prefix, "opt")
@@ -344,9 +334,7 @@ module Homebrew
       ensure
         ignore_interrupts do
           original_tab&.write
-          unless args.skip_relocation?
-            keg.replace_placeholders_with_locations changed_files
-          end
+          keg.replace_placeholders_with_locations changed_files unless args.skip_relocation?
         end
       end
     end
@@ -510,9 +498,7 @@ module Homebrew
             string = s.sub!(/  bottle do.+?end\n/m, output)
             odie "Bottle block update failed!" unless string
           else
-            if args.keep_old?
-              odie "--keep-old was passed but there was no existing bottle block!"
-            end
+            odie "--keep-old was passed but there was no existing bottle block!" if args.keep_old?
             puts output
             update_or_add = "add"
             if s.include? "stable do"

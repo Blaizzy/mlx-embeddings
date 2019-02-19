@@ -179,9 +179,7 @@ module Cask
       # :signal should come after :quit so it can be used as a backup when :quit fails
       def uninstall_signal(*signals, command: nil, **_)
         signals.each do |pair|
-          unless pair.size == 2
-            raise CaskInvalidError.new(cask, "Each #{stanza} :signal must consist of 2 elements.")
-          end
+          raise CaskInvalidError.new(cask, "Each #{stanza} :signal must consist of 2 elements.") unless pair.size == 2
 
           signal, bundle_id = pair
           ohai "Signalling '#{signal}' to application ID '#{bundle_id}'"

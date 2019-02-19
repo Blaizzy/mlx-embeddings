@@ -9,17 +9,13 @@ module Cask
     def metadata_versioned_path(version: self.version)
       cask_version = (version || :unknown).to_s
 
-      if cask_version.empty?
-        raise CaskError, "Cannot create metadata path with empty version."
-      end
+      raise CaskError, "Cannot create metadata path with empty version." if cask_version.empty?
 
       metadata_master_container_path.join(cask_version)
     end
 
     def metadata_timestamped_path(version: self.version, timestamp: :latest, create: false)
-      if create && timestamp == :latest
-        raise CaskError, "Cannot create metadata path when timestamp is :latest."
-      end
+      raise CaskError, "Cannot create metadata path when timestamp is :latest." if create && timestamp == :latest
 
       path = if timestamp == :latest
         Pathname.glob(metadata_versioned_path(version: version).join("*")).max
@@ -37,9 +33,7 @@ module Cask
     end
 
     def metadata_subdir(leaf, version: self.version, timestamp: :latest, create: false)
-      if create && timestamp == :latest
-        raise CaskError, "Cannot create metadata subdir when timestamp is :latest."
-      end
+      raise CaskError, "Cannot create metadata subdir when timestamp is :latest." if create && timestamp == :latest
 
       unless leaf.respond_to?(:empty?) && !leaf.empty?
         raise CaskError, "Cannot create metadata subdir for empty leaf."

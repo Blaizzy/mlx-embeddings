@@ -94,9 +94,7 @@ module Homebrew
     unless args.force?
       ARGV.named.each do |name|
         next if File.exist?(name)
-        if name !~ HOMEBREW_TAP_FORMULA_REGEX && name !~ HOMEBREW_CASK_TAP_CASK_REGEX
-          next
-        end
+        next if name !~ HOMEBREW_TAP_FORMULA_REGEX && name !~ HOMEBREW_CASK_TAP_CASK_REGEX
 
         tap = Tap.fetch(Regexp.last_match(1), Regexp.last_match(2))
         tap.install unless tap.installed?
@@ -143,14 +141,10 @@ module Homebrew
       end
 
       # --HEAD, fail with no head defined
-      if args.head? && f.head.nil?
-        raise "No head is defined for #{f.full_name}"
-      end
+      raise "No head is defined for #{f.full_name}" if args.head? && f.head.nil?
 
       # --devel, fail with no devel defined
-      if args.devel? && f.devel.nil?
-        raise "No devel block is defined for #{f.full_name}"
-      end
+      raise "No devel block is defined for #{f.full_name}" if args.devel? && f.devel.nil?
 
       installed_head_version = f.latest_head_version
       if installed_head_version &&

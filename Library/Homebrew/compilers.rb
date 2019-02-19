@@ -18,9 +18,7 @@ class CompilerFailure
   def version(val = nil)
     if val
       @version = Version.parse(val.to_s)
-      if name.to_s == "clang" && val.to_i < 600
-        odisabled "'fails_with :clang' with 'build' < 600"
-      end
+      odisabled "'fails_with :clang' with 'build' < 600" if name.to_s == "clang" && val.to_i < 600
     end
     @version
   end

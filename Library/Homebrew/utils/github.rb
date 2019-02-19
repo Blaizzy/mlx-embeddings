@@ -185,9 +185,7 @@ module GitHub
         data_tmpfile.close
         args += ["--data", "@#{data_tmpfile.path}"]
 
-        if request_method
-          args += ["--request", request_method.to_s]
-        end
+        args += ["--request", request_method.to_s] if request_method
       end
 
       args += ["--dump-header", headers_tmpfile.path]
@@ -206,9 +204,7 @@ module GitHub
     end
 
     begin
-      if !http_code.start_with?("2") || !status.success?
-        raise_api_error(output, errors, http_code, headers, scopes)
-      end
+      raise_api_error(output, errors, http_code, headers, scopes) if !http_code.start_with?("2") || !status.success?
 
       return if http_code == "204" # No Content
 

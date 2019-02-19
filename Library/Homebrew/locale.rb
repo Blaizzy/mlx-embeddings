@@ -11,9 +11,7 @@ class Locale
   def self.parse(string)
     string = string.to_s
 
-    if string !~ LOCALE_REGEX
-      raise ParserError, "'#{string}' cannot be parsed to a #{self}"
-    end
+    raise ParserError, "'#{string}' cannot be parsed to a #{self}" if string !~ LOCALE_REGEX
 
     scan = proc do |regex|
       string.scan(/(?:\-|^)(#{regex})(?:\-|$)/).flatten.first
@@ -29,9 +27,7 @@ class Locale
   attr_reader :language, :region, :script
 
   def initialize(language, region, script)
-    if language.nil? && region.nil? && script.nil?
-      raise ArgumentError, "#{self.class} cannot be empty"
-    end
+    raise ArgumentError, "#{self.class} cannot be empty" if language.nil? && region.nil? && script.nil?
 
     {
       language: language,

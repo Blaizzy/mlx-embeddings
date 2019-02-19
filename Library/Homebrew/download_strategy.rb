@@ -375,9 +375,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
 
       if filename_with_encoding = content_disposition.parameters["filename*"]
         encoding, encoded_filename = filename_with_encoding.split("''", 2)
-        if encoding && encoded_filename
-          filename = URI.decode_www_form_component(encoded_filename).encode(encoding)
-        end
+        filename = URI.decode_www_form_component(encoded_filename).encode(encoding) if encoding && encoded_filename
       end
 
       filename || content_disposition.filename

@@ -7,13 +7,9 @@ module RuboCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           return if body_node.nil?
 
-          if method_called_ever?(body_node, :md5)
-            problem "MD5 checksums are deprecated, please use SHA256"
-          end
+          problem "MD5 checksums are deprecated, please use SHA256" if method_called_ever?(body_node, :md5)
 
-          if method_called_ever?(body_node, :sha1)
-            problem "SHA1 checksums are deprecated, please use SHA256"
-          end
+          problem "SHA1 checksums are deprecated, please use SHA256" if method_called_ever?(body_node, :sha1)
 
           sha256_calls = find_every_method_call_by_name(body_node, :sha256)
           sha256_calls.each do |sha256_call|

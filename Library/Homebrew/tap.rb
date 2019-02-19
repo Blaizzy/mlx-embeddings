@@ -22,17 +22,13 @@ class Tap
       repo = args.second
     end
 
-    if [user, repo].any? { |part| part.nil? || part.include?("/") }
-      raise "Invalid tap name '#{args.join("/")}'"
-    end
+    raise "Invalid tap name '#{args.join("/")}'" if [user, repo].any? { |part| part.nil? || part.include?("/") }
 
     # We special case homebrew and linuxbrew so that users don't have to shift in a terminal.
     user = user.capitalize if ["homebrew", "linuxbrew"].include? user
     repo = repo.delete_prefix "homebrew-"
 
-    if ["Homebrew", "Linuxbrew"].include?(user) && ["core", "homebrew"].include?(repo)
-      return CoreTap.instance
-    end
+    return CoreTap.instance if ["Homebrew", "Linuxbrew"].include?(user) && ["core", "homebrew"].include?(repo)
 
     cache_key = "#{user}/#{repo}".downcase
     cache.fetch(cache_key) { |key| cache[key] = Tap.new(user, repo) }
@@ -280,9 +276,7 @@ class Tap
     begin
       safe_system "git", *args
       unless Readall.valid_tap?(self, aliases: true)
-        unless ARGV.homebrew_developer?
-          raise "Cannot tap #{name}: invalid syntax in tap!"
-        end
+        raise "Cannot tap #{name}: invalid syntax in tap!" unless ARGV.homebrew_developer?
       end
     rescue Interrupt, RuntimeError
       ignore_interrupts do

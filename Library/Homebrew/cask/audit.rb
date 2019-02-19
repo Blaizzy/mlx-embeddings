@@ -106,18 +106,14 @@ module Cask
           k.directives.key?(:uninstall_preflight)
       end
 
-      if count > 1
-        add_warning "only a single uninstall_preflight stanza is allowed"
-      end
+      add_warning "only a single uninstall_preflight stanza is allowed" if count > 1
 
       count = cask.artifacts.count do |k|
         k.is_a?(Artifact::PostflightBlock) &&
           k.directives.key?(:uninstall_postflight)
       end
 
-      if count > 1
-        add_warning "only a single uninstall_postflight stanza is allowed"
-      end
+      add_warning "only a single uninstall_postflight stanza is allowed" if count > 1
 
       return unless cask.artifacts.count { |k| k.is_a?(Artifact::Zap) } > 1
 

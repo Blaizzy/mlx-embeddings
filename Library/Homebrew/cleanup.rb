@@ -120,9 +120,7 @@ module CleanupRefinement
         return false
       end
 
-      unless basename.to_s.match?(/\A#{Regexp.escape(name)}\-\-#{Regexp.escape(cask.version)}\b/)
-        return true
-      end
+      return true unless basename.to_s.match?(/\A#{Regexp.escape(name)}\-\-#{Regexp.escape(cask.version)}\b/)
 
       return true if scrub && !cask.versions.include?(cask.version)
 
@@ -334,9 +332,7 @@ module Homebrew
     def cleanup_lockfiles(*lockfiles)
       return if dry_run?
 
-      if lockfiles.empty? && HOMEBREW_LOCKS.directory?
-        lockfiles = HOMEBREW_LOCKS.children.select(&:file?)
-      end
+      lockfiles = HOMEBREW_LOCKS.children.select(&:file?) if lockfiles.empty? && HOMEBREW_LOCKS.directory?
 
       lockfiles.each do |file|
         next unless file.readable?

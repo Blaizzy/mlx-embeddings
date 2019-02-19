@@ -62,9 +62,7 @@ module Tty
   end
 
   def to_s
-    if !ENV["HOMEBREW_COLOR"] && (ENV["HOMEBREW_NO_COLOR"] || !$stdout.tty?)
-      return ""
-    end
+    return "" if !ENV["HOMEBREW_COLOR"] && (ENV["HOMEBREW_NO_COLOR"] || !$stdout.tty?)
 
     current_escape_sequence
   ensure

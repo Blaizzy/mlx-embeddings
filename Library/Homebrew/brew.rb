@@ -1,6 +1,4 @@
-unless ENV["HOMEBREW_BREW_FILE"]
-  raise "HOMEBREW_BREW_FILE was not exported! Please call bin/brew directly!"
-end
+raise "HOMEBREW_BREW_FILE was not exported! Please call bin/brew directly!" unless ENV["HOMEBREW_BREW_FILE"]
 
 std_trap = trap("INT") { exit! 130 } # no backtrace thanks
 
@@ -92,9 +90,7 @@ begin
     # `Homebrew.help` never returns, except for external/unknown commands.
   end
 
-  if ENV["HOMEBREW_BUILD_FROM_SOURCE"]
-    odisabled("HOMEBREW_BUILD_FROM_SOURCE", "--build-from-source")
-  end
+  odisabled("HOMEBREW_BUILD_FROM_SOURCE", "--build-from-source") if ENV["HOMEBREW_BUILD_FROM_SOURCE"]
 
   if internal_cmd
     Homebrew.send cmd.to_s.tr("-", "_").downcase
@@ -113,9 +109,7 @@ begin
 
     brew_uid = HOMEBREW_BREW_FILE.stat.uid
     tap_commands = []
-    if Process.uid.zero? && !brew_uid.zero?
-      tap_commands += %W[/usr/bin/sudo -u ##{brew_uid}]
-    end
+    tap_commands += %W[/usr/bin/sudo -u ##{brew_uid}] if Process.uid.zero? && !brew_uid.zero?
     # Unset HOMEBREW_HELP to avoid confusing the tap
     ENV.delete("HOMEBREW_HELP") if help_flag
     tap_commands += %W[#{HOMEBREW_BREW_FILE} tap #{possible_tap}]

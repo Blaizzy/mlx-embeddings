@@ -65,14 +65,10 @@ module RuboCop
           desc = parameters(desc_call).first
 
           # Check for leading whitespace.
-          if regex_match_group(desc, /^\s+/)
-            problem "Description shouldn't have a leading space"
-          end
+          problem "Description shouldn't have a leading space" if regex_match_group(desc, /^\s+/)
 
           # Check for trailing whitespace.
-          if regex_match_group(desc, /\s+$/)
-            problem "Description shouldn't have a trailing space"
-          end
+          problem "Description shouldn't have a trailing space" if regex_match_group(desc, /\s+$/)
 
           # Check if command-line is wrongly used in formula's desc
           if match = regex_match_group(desc, /(command ?line)/i)

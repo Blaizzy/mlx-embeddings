@@ -310,9 +310,7 @@ module Homebrew
   def output_analytics(filter: nil)
     days = args.days || "30"
     valid_days = %w[30 90 365]
-    unless valid_days.include?(days)
-      raise ArgumentError("Days must be one of #{valid_days.join(", ")}!")
-    end
+    raise ArgumentError("Days must be one of #{valid_days.join(", ")}!") unless valid_days.include?(days)
 
     category = args.category || "install"
     valid_categories = %w[install install-on-request build-error os-version]

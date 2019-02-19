@@ -75,9 +75,7 @@ module Homebrew
         puts "  #{Formatter.url("https://github.com/Homebrew/brew#donations")}\n"
 
         # Consider the message possibly missed if not a TTY.
-        if $stdout.tty?
-          safe_system "git", "config", "--local", "--replace-all", "homebrew.donationmessage", "true"
-        end
+        safe_system "git", "config", "--local", "--replace-all", "homebrew.donationmessage", "true" if $stdout.tty?
       end
     end
 
@@ -88,9 +86,7 @@ module Homebrew
 
     initial_revision = ENV["HOMEBREW_UPDATE_BEFORE"].to_s
     current_revision = ENV["HOMEBREW_UPDATE_AFTER"].to_s
-    if initial_revision.empty? || current_revision.empty?
-      odie "update-report should not be called directly!"
-    end
+    odie "update-report should not be called directly!" if initial_revision.empty? || current_revision.empty?
 
     if initial_revision != current_revision
       update_preinstall_header
@@ -121,9 +117,7 @@ module Homebrew
     end
 
     if !updated
-      if !ARGV.include?("--preinstall") && !ENV["HOMEBREW_UPDATE_FAILED"]
-        puts "Already up-to-date."
-      end
+      puts "Already up-to-date." if !ARGV.include?("--preinstall") && !ENV["HOMEBREW_UPDATE_FAILED"]
     else
       if hub.empty?
         puts "No changes to formulae."

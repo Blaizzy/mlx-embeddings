@@ -5,38 +5,28 @@ require "tap"
 
 def with_monkey_patch
   BottleSpecification.class_eval do
-    if method_defined?(:method_missing)
-      alias_method :old_method_missing, :method_missing
-    end
+    alias_method :old_method_missing, :method_missing if method_defined?(:method_missing)
     define_method(:method_missing) { |*| }
   end
 
   Module.class_eval do
-    if method_defined?(:method_missing)
-      alias_method :old_method_missing, :method_missing
-    end
+    alias_method :old_method_missing, :method_missing if method_defined?(:method_missing)
     define_method(:method_missing) { |*| }
   end
 
   Resource.class_eval do
-    if method_defined?(:method_missing)
-      alias_method :old_method_missing, :method_missing
-    end
+    alias_method :old_method_missing, :method_missing if method_defined?(:method_missing)
     define_method(:method_missing) { |*| }
   end
 
   DependencyCollector.class_eval do
-    if method_defined?(:parse_symbol_spec)
-      alias_method :old_parse_symbol_spec, :parse_symbol_spec
-    end
+    alias_method :old_parse_symbol_spec, :parse_symbol_spec if method_defined?(:parse_symbol_spec)
     define_method(:parse_symbol_spec) { |*| }
   end
 
   if defined?(DependencyCollector::Compat)
     DependencyCollector::Compat.class_eval do
-      if method_defined?(:parse_string_spec)
-        alias_method :old_parse_string_spec, :parse_string_spec
-      end
+      alias_method :old_parse_string_spec, :parse_string_spec if method_defined?(:parse_string_spec)
       define_method(:parse_string_spec) { |*| }
     end
   end

@@ -220,9 +220,7 @@ module Homebrew
           if :mandatory.equal?(constraint_type) && primary_passed && !secondary_passed
             raise OptionConstraintError.new(primary, secondary)
           end
-          if secondary_passed && !primary_passed
-            raise OptionConstraintError.new(primary, secondary, missing: true)
-          end
+          raise OptionConstraintError.new(primary, secondary, missing: true) if secondary_passed && !primary_passed
         end
       end
 

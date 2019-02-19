@@ -17,9 +17,7 @@ module UnpackStrategy
     def self.can_extract?(path)
       return true if path.magic_number.match?(/\A.{257}ustar/n)
 
-      unless [Bzip2, Gzip, Lzip, Xz].any? { |s| s.can_extract?(path) }
-        return false
-      end
+      return false unless [Bzip2, Gzip, Lzip, Xz].any? { |s| s.can_extract?(path) }
 
       # Check if `tar` can list the contents, then it can also extract it.
       IO.popen(["tar", "tf", path], err: File::NULL) do |stdout|

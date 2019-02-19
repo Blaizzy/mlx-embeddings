@@ -148,6 +148,4 @@ require "official_taps"
 require "tap"
 require "tap_constants"
 
-if !ARGV.include?("--no-compat") && !ENV["HOMEBREW_NO_COMPAT"]
-  require "compat"
-end
+require "compat" if !ARGV.include?("--no-compat") && !ENV["HOMEBREW_NO_COMPAT"]

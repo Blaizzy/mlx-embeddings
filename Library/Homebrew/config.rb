@@ -1,6 +1,4 @@
-unless ENV["HOMEBREW_BREW_FILE"]
-  raise "HOMEBREW_BREW_FILE was not exported! Please call bin/brew directly!"
-end
+raise "HOMEBREW_BREW_FILE was not exported! Please call bin/brew directly!" unless ENV["HOMEBREW_BREW_FILE"]
 
 # Path to `bin/brew` main executable in `HOMEBREW_PREFIX`
 HOMEBREW_BREW_FILE = Pathname.new(ENV["HOMEBREW_BREW_FILE"])
@@ -8,9 +6,7 @@ HOMEBREW_BREW_FILE = Pathname.new(ENV["HOMEBREW_BREW_FILE"])
 class MissingEnvironmentVariables < RuntimeError; end
 
 def get_env_or_raise(env)
-  unless ENV[env]
-    raise MissingEnvironmentVariables, "#{env} was not exported!"
-  end
+  raise MissingEnvironmentVariables, "#{env} was not exported!" unless ENV[env]
   ENV[env]
 end
 

@@ -136,9 +136,7 @@ module Homebrew
     created_pr_comment = false
     if new_formula && !new_formula_problem_lines.empty?
       begin
-        if GitHub.create_issue_comment(new_formula_problem_lines.join("\n"))
-          created_pr_comment = true
-        end
+        created_pr_comment = true if GitHub.create_issue_comment(new_formula_problem_lines.join("\n"))
       rescue *GitHub.api_errors => e
         opoo "Unable to create issue comment: #{e.message}"
       end
@@ -154,9 +152,7 @@ module Homebrew
     formula_plural = "#{formula_count} #{"formula".pluralize(formula_count)}"
     corrected_problem_plural = "#{corrected_problem_count} #{"problem".pluralize(corrected_problem_count)}"
     errors_summary = "#{problem_plural} in #{formula_plural} detected"
-    if corrected_problem_count.positive?
-      errors_summary += ", #{corrected_problem_plural} corrected"
-    end
+    errors_summary += ", #{corrected_problem_plural} corrected" if corrected_problem_count.positive?
 
     if problem_count.positive? ||
        (new_formula_problem_count.positive? && !created_pr_comment)
@@ -263,9 +259,7 @@ module Homebrew
 
       problem "'DATA' was found, but no '__END__'" if text.data? && !text.end?
 
-      if text.end? && !text.data?
-        problem "'__END__' was found, but 'DATA' is not used"
-      end
+      problem "'__END__' was found, but 'DATA' is not used" if text.end? && !text.data?
 
       if text =~ /inreplace [^\n]* do [^\n]*\n[^\n]*\.gsub![^\n]*\n\ *end/m
         problem "'inreplace ... do' was used for a single substitution (use the non-block form instead)."
@@ -344,9 +338,7 @@ module Homebrew
 
       name = formula.name
 
-      if MissingFormula.blacklisted_reason(name)
-        problem "'#{name}' is blacklisted."
-      end
+      problem "'#{name}' is blacklisted." if MissingFormula.blacklisted_reason(name)
 
       if Formula.aliases.include? name
         problem "Formula name conflicts with existing aliases."
@@ -418,13 +410,9 @@ module Homebrew
             problem "Dependency #{dep} does not define option #{opt.name.inspect}"
           end
 
-          if dep.name == "git"
-            problem "Don't use git as a dependency (it's always available)"
-          end
+          problem "Don't use git as a dependency (it's always available)" if dep.name == "git"
 
-          if dep.tags.include?(:run)
-            problem "Dependency '#{dep.name}' is marked as :run. Remove :run; it is a no-op."
-          end
+          problem "Dependency '#{dep.name}' is marked as :run. Remove :run; it is a no-op." if dep.tags.include?(:run)
 
           next unless @core_tap
 
@@ -565,9 +553,7 @@ module Homebrew
       return unless formula.bottle_disabled?
       return if formula.bottle_unneeded?
 
-      unless formula.bottle_disable_reason.valid?
-        problem "Unrecognized bottle modifier"
-      end
+      problem "Unrecognized bottle modifier" unless formula.bottle_disable_reason.valid?
 
       return unless @core_tap
       problem "Formulae should not use `bottle :disabled`"
@@ -635,9 +621,7 @@ module Homebrew
         next unless spec = formula.send(name.downcase)
 
         version = spec.version
-        if version.to_s !~ /\d/
-          problem "#{name}: version (#{version}) is set to a string without a digit"
-        end
+        problem "#{name}: version (#{version}) is set to a string without a digit" if version.to_s !~ /\d/
         if version.to_s.start_with?("HEAD")
           problem "#{name}: non-HEAD version name (#{version}) should not begin with HEAD"
         end
@@ -733,9 +717,7 @@ module Homebrew
         version = Version.parse(stable.url)
         if version >= Version.create("1.0")
           _, minor_version, = version.to_s.split(".", 3).map(&:to_i)
-          if minor_version.odd?
-            problem "#{stable.version} is a development release"
-          end
+          problem "#{stable.version} is a development release" if minor_version.odd?
         end
       end
     end
@@ -875,9 +857,7 @@ module Homebrew
 
       return unless @strict
 
-      if line.include?("env :userpaths")
-        problem "`env :userpaths` in formulae is deprecated"
-      end
+      problem "`env :userpaths` in formulae is deprecated" if line.include?("env :userpaths")
 
       if line =~ /system ((["'])[^"' ]*(?:\s[^"' ]*)+\2)/
         bad_system = Regexp.last_match(1)
@@ -954,9 +934,7 @@ module Homebrew
     def audit
       only_audits = @only
       except_audits = @except
-      if only_audits && except_audits
-        odie "--only and --except cannot be used simultaneously!"
-      end
+      odie "--only and --except cannot be used simultaneously!" if only_audits && except_audits
 
       methods.map(&:to_s).grep(/^audit_/).each do |audit_method_name|
         name = audit_method_name.gsub(/^audit_/, "")
@@ -1027,9 +1005,7 @@ module Homebrew
         end
       end
 
-      if version.to_s.start_with?("v")
-        problem "version #{version} should not have a leading 'v'"
-      end
+      problem "version #{version} should not have a leading 'v'" if version.to_s.start_with?("v")
 
       return unless version.to_s =~ /_\d+$/
 
@@ -1044,9 +1020,7 @@ module Homebrew
       url_strategy = DownloadStrategyDetector.detect(url)
 
       if using == :git || url_strategy == GitDownloadStrategy
-        if specs[:tag] && !specs[:revision]
-          problem "Git should specify :revision when a :tag is specified."
-        end
+        problem "Git should specify :revision when a :tag is specified." if specs[:tag] && !specs[:revision]
       end
 
       return unless using
@@ -1101,16 +1075,12 @@ module Homebrew
             problem http_content_problem
           end
         elsif strategy <= GitDownloadStrategy
-          unless Utils.git_remote_exists? url
-            problem "The URL #{url} is not a valid git URL"
-          end
+          problem "The URL #{url} is not a valid git URL" unless Utils.git_remote_exists? url
         elsif strategy <= SubversionDownloadStrategy
           next unless DevelopmentTools.subversion_handles_most_https_certificates?
           next unless Utils.svn_available?
 
-          unless Utils.svn_remote_exists? url
-            problem "The URL #{url} is not a valid svn URL"
-          end
+          problem "The URL #{url} is not a valid svn URL" unless Utils.svn_remote_exists? url
         end
       end
     end

@@ -49,8 +49,7 @@ Style/CollectionMethods:
 Style/FormatStringToken:
   EnforcedStyle: template
 
-# This often leads to lines longer than the maximum line length.
-# https://github.com/rubocop-hq/rubocop/issues/6149
+# This shouldn't be enabled until LineLength is lower.
 Style/IfUnlessModifier:
   Enabled: false
 

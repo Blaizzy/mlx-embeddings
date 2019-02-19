@@ -95,21 +95,15 @@ module Homebrew
 
     formula.send("recursive_#{type}") do |dependent, dep|
       if dep.recommended?
-        if ignores.include?("recommended?") || dependent.build.without?(dep)
-          klass.prune
-        end
+        klass.prune if ignores.include?("recommended?") || dependent.build.without?(dep)
       elsif dep.test?
         if includes.include?("test?")
-          if type == :dependencies
-            Dependency.keep_but_prune_recursive_deps
-          end
+          Dependency.keep_but_prune_recursive_deps if type == :dependencies
         else
           klass.prune
         end
       elsif dep.optional?
-        if !includes.include?("optional?") && !dependent.build.with?(dep)
-          klass.prune
-        end
+        klass.prune if !includes.include?("optional?") && !dependent.build.with?(dep)
       elsif dep.build?
         klass.prune unless includes.include?("build?")
       end

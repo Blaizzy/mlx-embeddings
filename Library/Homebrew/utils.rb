@@ -37,9 +37,7 @@ def odebug(title, *sput)
 end
 
 def oh1(title, options = {})
-  if $stdout.tty? && !ARGV.verbose? && options.fetch(:truncate, :auto) == :auto
-    title = Tty.truncate(title)
-  end
+  title = Tty.truncate(title) if $stdout.tty? && !ARGV.verbose? && options.fetch(:truncate, :auto) == :auto
   puts Formatter.headline(title, color: :green)
 end
 
@@ -491,9 +489,7 @@ end
 # shortfall or overrun may vary.
 def truncate_text_to_approximate_size(s, max_bytes, options = {})
   front_weight = options.fetch(:front_weight, 0.5)
-  if front_weight < 0.0 || front_weight > 1.0
-    raise "opts[:front_weight] must be between 0.0 and 1.0"
-  end
+  raise "opts[:front_weight] must be between 0.0 and 1.0" if front_weight < 0.0 || front_weight > 1.0
   return s if s.bytesize <= max_bytes
 
   glue = "\n[...snip...]\n"

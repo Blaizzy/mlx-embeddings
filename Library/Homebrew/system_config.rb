@@ -157,15 +157,9 @@ class SystemConfig
       if defaults_hash[:HOMEBREW_REPOSITORY] != HOMEBREW_REPOSITORY.to_s
         f.puts "HOMEBREW_REPOSITORY: #{HOMEBREW_REPOSITORY}"
       end
-      if defaults_hash[:HOMEBREW_CELLAR] != HOMEBREW_CELLAR.to_s
-        f.puts "HOMEBREW_CELLAR: #{HOMEBREW_CELLAR}"
-      end
-      if defaults_hash[:HOMEBREW_CACHE] != HOMEBREW_CACHE.to_s
-        f.puts "HOMEBREW_CACHE: #{HOMEBREW_CACHE}"
-      end
-      if defaults_hash[:HOMEBREW_TEMP] != HOMEBREW_TEMP.to_s
-        f.puts "HOMEBREW_TEMP: #{HOMEBREW_TEMP}"
-      end
+      f.puts "HOMEBREW_CELLAR: #{HOMEBREW_CELLAR}" if defaults_hash[:HOMEBREW_CELLAR] != HOMEBREW_CELLAR.to_s
+      f.puts "HOMEBREW_CACHE: #{HOMEBREW_CACHE}" if defaults_hash[:HOMEBREW_CACHE] != HOMEBREW_CACHE.to_s
+      f.puts "HOMEBREW_TEMP: #{HOMEBREW_TEMP}" if defaults_hash[:HOMEBREW_TEMP] != HOMEBREW_TEMP.to_s
       if defaults_hash[:HOMEBREW_RUBY_WARNINGS] != ENV["HOMEBREW_RUBY_WARNINGS"].to_s
         f.puts "HOMEBREW_RUBY_WARNINGS: #{ENV["HOMEBREW_RUBY_WARNINGS"]}"
       end

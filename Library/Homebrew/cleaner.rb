@@ -25,9 +25,7 @@ class Cleaner
 
     # Get rid of any info 'dir' files, so they don't conflict at the link stage
     info_dir_file = @f.info + "dir"
-    if info_dir_file.file? && !@f.skip_clean?(info_dir_file)
-      observe_file_removal info_dir_file
-    end
+    observe_file_removal info_dir_file if info_dir_file.file? && !@f.skip_clean?(info_dir_file)
 
     prune
   end
@@ -111,9 +109,7 @@ class Cleaner
         end
         if ARGV.debug?
           old_perms = path.stat.mode & 0777
-          if perms != old_perms
-            puts "Fixing #{path} permissions from #{old_perms.to_s(8)} to #{perms.to_s(8)}"
-          end
+          puts "Fixing #{path} permissions from #{old_perms.to_s(8)} to #{perms.to_s(8)}" if perms != old_perms
         end
         path.chmod perms
       end

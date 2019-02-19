@@ -380,30 +380,20 @@ module Homebrew
       contents = path.open("r") { |f| Formulary.ensure_utf8_encoding(f).read }
       contents.extend(StringInreplaceExtension)
       replacement_pairs.each do |old, new|
-        unless Homebrew.args.quiet?
-          ohai "replace #{old.inspect} with #{new.inspect}"
-        end
-        unless old
-          raise "No old value for new value #{new}! Did you pass the wrong arguments?"
-        end
+        ohai "replace #{old.inspect} with #{new.inspect}" unless Homebrew.args.quiet?
+        raise "No old value for new value #{new}! Did you pass the wrong arguments?" unless old
 
         contents.gsub!(old, new)
       end
-      unless contents.errors.empty?
-        raise Utils::InreplaceError, path => contents.errors
-      end
+      raise Utils::InreplaceError, path => contents.errors unless contents.errors.empty?
 
       path.atomic_write(contents) if args.write?
       contents
     else
       Utils::Inreplace.inreplace(path) do |s|
         replacement_pairs.each do |old, new|
-          unless Homebrew.args.quiet?
-            ohai "replace #{old.inspect} with #{new.inspect}"
-          end
-          unless old
-            raise "No old value for new value #{new}! Did you pass the wrong arguments?"
-          end
+          ohai "replace #{old.inspect} with #{new.inspect}" unless Homebrew.args.quiet?
+          raise "No old value for new value #{new}! Did you pass the wrong arguments?" unless old
 
           s.gsub!(old, new)
         end

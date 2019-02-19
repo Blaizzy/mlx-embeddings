@@ -66,17 +66,11 @@ module Homebrew
 
     pull_args.parse
 
-    if ARGV.named.empty?
-      odie "This command requires at least one argument containing a URL or pull request number"
-    end
+    odie "This command requires at least one argument containing a URL or pull request number" if ARGV.named.empty?
 
     # Passthrough Git environment variables for e.g. git am
-    if ENV["HOMEBREW_GIT_NAME"]
-      ENV["GIT_COMMITTER_NAME"] = ENV["HOMEBREW_GIT_NAME"]
-    end
-    if ENV["HOMEBREW_GIT_EMAIL"]
-      ENV["GIT_COMMITTER_EMAIL"] = ENV["HOMEBREW_GIT_EMAIL"]
-    end
+    ENV["GIT_COMMITTER_NAME"] = ENV["HOMEBREW_GIT_NAME"] if ENV["HOMEBREW_GIT_NAME"]
+    ENV["GIT_COMMITTER_EMAIL"] = ENV["HOMEBREW_GIT_EMAIL"] if ENV["HOMEBREW_GIT_EMAIL"]
 
     # Depending on user configuration, git may try to invoke gpg.
     if Utils.popen_read("git config --get --bool commit.gpgsign").chomp == "true"
@@ -123,9 +117,7 @@ module Homebrew
         odie "Not a GitHub pull request or commit: #{arg}"
       end
 
-      if !testing_job && args.bottle? && issue.nil?
-        odie "No pull request detected!"
-      end
+      odie "No pull request detected!" if !testing_job && args.bottle? && issue.nil?
 
       if tap
         tap.install unless tap.installed?
@@ -157,9 +149,7 @@ module Homebrew
         end
         odie "Can not bump if non-formula files are changed" unless patch_changes[:others].empty?
       end
-      if is_bumpable
-        old_versions = current_versions_from_info_external(patch_changes[:formulae].first)
-      end
+      old_versions = current_versions_from_info_external(patch_changes[:formulae].first) if is_bumpable
       patch_puller.apply_patch
 
       changed_formulae_names = []
@@ -288,9 +278,7 @@ module Homebrew
   end
 
   def publish_changed_formula_bottles(tap, changed_formulae_names)
-    if ENV["HOMEBREW_DISABLE_LOAD_FORMULA"]
-      raise "Need to load formulae to publish them!"
-    end
+    raise "Need to load formulae to publish them!" if ENV["HOMEBREW_DISABLE_LOAD_FORMULA"]
 
     published = []
     bintray_creds = { user: ENV["HOMEBREW_BINTRAY_USER"], key: ENV["HOMEBREW_BINTRAY_KEY"] }
@@ -458,9 +446,7 @@ module Homebrew
     repo = Utils::Bottles::Bintray.repository(f.tap)
     package = Utils::Bottles::Bintray.package(f.name)
     info = FormulaInfoFromJson.lookup(f.full_name)
-    if info.nil?
-      raise "Failed publishing bottle: failed reading formula info for #{f.full_name}"
-    end
+    raise "Failed publishing bottle: failed reading formula info for #{f.full_name}" if info.nil?
 
     unless info.bottle_info_any
       opoo "No bottle defined in formula #{package}"
@@ -562,9 +548,7 @@ module Homebrew
   def verify_bintray_published(formulae_names)
     return if formulae_names.empty?
 
-    if ENV["HOMEBREW_DISABLE_LOAD_FORMULA"]
-      raise "Need to load formulae to verify their publication!"
-    end
+    raise "Need to load formulae to verify their publication!" if ENV["HOMEBREW_DISABLE_LOAD_FORMULA"]
 
     ohai "Verifying bottles published on Bintray"
     formulae = formulae_names.map { |n| Formula[n] }
@@ -605,9 +589,7 @@ module Homebrew
               raise "Failed to find published #{f} bottle at #{url} (#{res.code} #{res.message})!"
             end
 
-            if retry_count >= max_retries
-              raise "Failed to find published #{f} bottle at #{url}!"
-            end
+            raise "Failed to find published #{f} bottle at #{url}!" if retry_count >= max_retries
 
             print(wrote_dots ? "." : "Waiting on Bintray.")
             wrote_dots = true
@@ -630,9 +612,7 @@ module Homebrew
             curl_download url, to: filename
             break
           rescue
-            if retry_count >= max_curl_retries
-              raise "Failed to download #{f} bottle from #{url}!"
-            end
+            raise "Failed to download #{f} bottle from #{url}!" if retry_count >= max_curl_retries
 
             puts "curl download failed; retrying in #{curl_retry_delay_seconds} sec"
             sleep curl_retry_delay_seconds

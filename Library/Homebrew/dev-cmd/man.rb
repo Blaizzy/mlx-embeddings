@@ -34,9 +34,7 @@ module Homebrew
 
     raise UsageError unless ARGV.named.empty?
 
-    if args.link?
-      odie "`brew man --link` is now done automatically by `brew update`."
-    end
+    odie "`brew man --link` is now done automatically by `brew update`." if args.link?
 
     regenerate_man_pages
 
