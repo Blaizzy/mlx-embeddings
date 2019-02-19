@@ -95,6 +95,10 @@ module Homebrew
           cargo is part of the rust formula:
             brew install rust
         EOS
+        when "uconv" then <<~EOS
+          uconv is part of the icu4c formula:
+            brew install icu4c
+        EOS
         end
       end
       alias generic_blacklisted_reason blacklisted_reason
