@@ -11,34 +11,35 @@ module Homebrew
       def blacklisted_reason(name)
         case name.downcase
         when "gem", /^rubygems?$/ then <<~EOS
-          Homebrew provides gem via: `brew install ruby`.
+          macOS provides gem as part of Ruby. To install a newer version:
+            brew install ruby
         EOS
         when "tex", "tex-live", "texlive", "latex" then <<~EOS
-          Installing TeX from source is weird and gross, requires a lot of patches,
-          and only builds 32-bit (and thus can't use Homebrew dependencies)
+          There are three versions of MacTeX.
 
-          We recommend using a MacTeX distribution: https://www.tug.org/mactex/
-
-          You can install it with Homebrew Cask:
+          Full installation:
             brew cask install mactex
+
+          Full installation without bundled applications:
+            brew cask install mactex-no-gui
+
+          Minimal installation:
+            brew cask install basictex
         EOS
         when "pip" then <<~EOS
-          pip is part of the python formula, and can be installed with:
+          pip is part of the python formula:
             brew install python
-          However you will then have two Pythons installed on your Mac,
-          so alternatively you can install pip via the instructions at:
-            #{Formatter.url("https://pip.readthedocs.io/en/stable/installing/")}
         EOS
         when "pil" then <<~EOS
-          Instead of PIL, consider `pip2 install pillow`.
+          Instead of PIL, consider pillow:
+            pip2 install pillow
         EOS
         when "macruby" then <<~EOS
-          MacRuby is not packaged and is on an indefinite development hiatus.
-          You can read more about it at:
-            #{Formatter.url("https://github.com/MacRuby/MacRuby")}
+          MacRuby has been discontinued. Consider RubyMotion:
+            brew cask install rubymotion
         EOS
         when /(lib)?lzma/ then <<~EOS
-          lzma is now part of the xz formula, and can be installed with:
+          lzma is now part of the xz formula:
             brew install xz
         EOS
         when "gtest", "googletest", "google-test" then <<~EOS
@@ -54,10 +55,11 @@ module Homebrew
           ruin SSH's security.
         EOS
         when "gsutil" then <<~EOS
-          Install gsutil with `pip2 install gsutil`
+          gsutil is available through pip:
+            pip2 install gsutil
         EOS
         when "gfortran" then <<~EOS
-          GNU Fortran is now part of the GCC formula, and can be installed with:
+          GNU Fortran is part of the GCC formula:
             brew install gcc
         EOS
         when "play" then <<~EOS
@@ -69,9 +71,16 @@ module Homebrew
             #{Formatter.url("https://www.playframework.com/documentation/2.3.x/Highlights23")}
         EOS
         when "haskell-platform" then <<~EOS
-          We no longer package haskell-platform. Consider installing ghc,
-          cabal-install and stack instead:
-            brew install ghc cabal-install stack
+          The components of the Haskell Platform are available separately.
+
+          Glasgow Haskell Compiler:
+            brew install ghc
+
+          Cabal build system:
+            brew install cabal-install
+
+          Haskell Stack tool:
+            brew install haskell-stack
         EOS
         when "mysqldump-secure" then <<~EOS
           The creator of mysqldump-secure tried to game our popularity metrics.
@@ -83,7 +92,7 @@ module Homebrew
             brew cask install ngrok
         EOS
         when "cargo" then <<~EOS
-          cargo is part of the rust formula, and can be installed with:
+          cargo is part of the rust formula:
             brew install rust
         EOS
         end
