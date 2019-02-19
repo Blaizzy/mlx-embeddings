@@ -1,4 +1,5 @@
 require "json"
+require "cask/installer"
 
 module Cask
   class Cmd
@@ -51,12 +52,17 @@ module Cask
       end
 
       def self.installation_info(cask)
+        install_info = ""
         if cask.installed?
           cask.versions.each do |version|
             versioned_staged_path = cask.caskroom_path.join(version)
-            message = versioned_staged_path.exist? ? versioned_staged_path.abv : Formatter.error("does not exist")
-            versioned_staged_path.to_s.concat(" (").concat(message).concat(")")
+            install_info << versioned_staged_path.to_s
+              .concat(" (")
+              .concat(versioned_staged_path.exist? ? versioned_staged_path.abv : Formatter.error("does not exist"))
+                                      .concat(")")
+            install_info << "\n"
           end
+        return install_info.strip
         else
           "Not installed"
         end
