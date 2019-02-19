@@ -1,7 +1,15 @@
 sut:
   build: .
-  command: "sudo -i -u linuxbrew /home/linuxbrew/.linuxbrew/bin/brew test-bot"
+  command:
+    - sh
+    - -xc
+    - |
+      sudo -E -u linuxbrew /home/linuxbrew/.linuxbrew/bin/brew test-bot
+      status=$$?
+      cp brew-test-bot.xml /tmp/test-bot/
+      exit $$status
   environment:
+    - HOME=/home/linuxbrew
     - BUILD_REASON
     - BUILD_REPOSITORY_URI
     - BUILD_SOURCEVERSION
