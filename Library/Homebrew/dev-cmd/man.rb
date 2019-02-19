@@ -155,9 +155,11 @@ module Homebrew
       cmd_man_page_lines = begin
         cmd_parser = Homebrew.send(cmd_args_method_name)
         next if cmd_parser.hide_from_man_page
+
         cmd_parser_manpage_lines(cmd_parser).join
       rescue NoMethodError => e
         raise if e.name != cmd_args_method_name
+
         nil
       end
       cmd_man_page_lines ||= cmd_comment_manpage_lines(cmd_path)
@@ -176,6 +178,7 @@ module Homebrew
     lines = [format_usage_banner(cmd_parser.usage_banner_text)]
     lines += cmd_parser.processed_options.map do |short, long, _, desc|
       next if !long.nil? && cmd_parser.global_option?(cmd_parser.option_to_name(long))
+
       generate_option_doc(short, long, desc)
     end.reject(&:blank?)
     lines
@@ -185,11 +188,13 @@ module Homebrew
     comment_lines = cmd_path.read.lines.grep(/^#:/)
     return if comment_lines.empty?
     return if comment_lines.first.include?("@hide_from_man_page")
+
     lines = [format_usage_banner(comment_lines.first).chomp]
     comment_lines.slice(1..-1)
                  .each do |line|
       line = line.slice(4..-1)
       next unless line
+
       lines << line.gsub(/^ +(-+[a-z-]+) */, "* `\\1`:\n  ")
     end
     lines

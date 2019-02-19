@@ -8,6 +8,7 @@ module Language
     def self.java_home(version = nil)
       req = JavaRequirement.new [*version]
       raise UnsatisfiedRequirements, req.message unless req.satisfied?
+
       req.java_home
     end
 

@@ -7,6 +7,7 @@ class User < DelegateClass(String)
   def gui?
     out, _, status = system_command "who"
     return false unless status.success?
+
     out.lines
        .map(&:split)
        .any? { |user, type,| user == self && type == "console" }

@@ -63,6 +63,7 @@ module Cask
         end
 
         return if failed.empty?
+
         $stderr.puts
         raise CaskError, "Failed merging the following PRs:\n#{failed.join("\n")}"
       end
@@ -90,8 +91,10 @@ module Cask
 
       def diff_is_single_cask(diff)
         return false unless diff.files.count == 1
+
         file = diff.files.first
         return false unless file.a_path == file.b_path
+
         file.a_path.match?(%r{\ACasks/[^/]+\.rb\Z})
       end
 

@@ -203,6 +203,7 @@ module Homebrew
         # avoid having to try to do a `brew install` when we've just deleted
         # the running Ruby process...
         return if periodic
+
         cleanup_portable_ruby
       else
         args.each do |arg|
@@ -251,6 +252,7 @@ module Homebrew
 
     def cleanup_logs
       return unless HOMEBREW_LOGS.directory?
+
       logs_days = if days > CLEANUP_DEFAULT_DAYS
         CLEANUP_DEFAULT_DAYS
       else
@@ -364,6 +366,7 @@ module Homebrew
       portable_ruby_glob = "#{portable_ruby_path}/*.*"
       Pathname.glob(portable_ruby_glob).each do |path|
         next if !use_system_ruby && portable_ruby_version == path.basename.to_s
+
         if dry_run?
           puts "Would remove: #{path} (#{path.abv})"
         else

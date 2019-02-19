@@ -292,6 +292,7 @@ module Cask
 
     def check_https_availability
       return unless download
+
       if !cask.url.blank? && !cask.url.using
         check_url_for_https_availability(cask.url, user_agents: [cask.url.user_agent])
       end

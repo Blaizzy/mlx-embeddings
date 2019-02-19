@@ -556,6 +556,7 @@ module Homebrew
       problem "Unrecognized bottle modifier" unless formula.bottle_disable_reason.valid?
 
       return unless @core_tap
+
       problem "Formulae should not use `bottle :disabled`"
     end
 
@@ -884,6 +885,7 @@ module Homebrew
       return unless @core_tap
 
       return unless line.include?("env :std")
+
       problem "`env :std` in `core` formulae is deprecated"
     end
 

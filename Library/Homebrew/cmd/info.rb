@@ -51,6 +51,7 @@ module Homebrew
     info_args.parse
     if args.json
       raise UsageError, "invalid JSON version: #{args.json}" unless ["v1", true].include? args.json
+
       print_json
     elsif args.github?
       exec_browser(*ARGV.formulae.map { |f| github_info(f) })

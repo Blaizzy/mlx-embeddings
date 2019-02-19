@@ -331,6 +331,7 @@ module Homebrew
           username = response.fetch("owner").fetch("login")
         rescue GitHub::AuthenticationFailedError => e
           raise unless e.github_message =~ /forking is disabled/
+
           # If the repository is private, forking might be disabled.
           # Create branches in the repository itself instead.
           remote_url = Utils.popen_read("git remote get-url --push origin").chomp

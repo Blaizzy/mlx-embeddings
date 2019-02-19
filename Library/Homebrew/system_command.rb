@@ -197,6 +197,7 @@ class SystemCommand
 
     def success?
       return false if @exit_status.nil?
+
       @exit_status.zero?
     end
 

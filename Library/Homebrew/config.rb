@@ -7,6 +7,7 @@ class MissingEnvironmentVariables < RuntimeError; end
 
 def get_env_or_raise(env)
   raise MissingEnvironmentVariables, "#{env} was not exported!" unless ENV[env]
+
   ENV[env]
 end
 

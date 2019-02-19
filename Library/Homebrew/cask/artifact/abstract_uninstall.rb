@@ -136,6 +136,7 @@ module Cask
             Timeout.timeout(10) do
               Kernel.loop do
                 next unless quit(bundle_id).success?
+
                 if running_processes(bundle_id).empty?
                   puts "Application '#{bundle_id}' quit successfully."
                   break
