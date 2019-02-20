@@ -209,6 +209,9 @@ module GitHub
       if !http_code.start_with?("2") || !status.success?
         raise_api_error(output, errors, http_code, headers, scopes)
       end
+
+      return if http_code == "204" # No Content
+
       json = JSON.parse output
       if block_given?
         yield json
