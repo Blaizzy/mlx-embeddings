@@ -207,7 +207,7 @@ module Homebrew
     end
   end
 
-  def upgradable_dependents(kegs, formulae)
+  def upgradable_dependents(kegs, formulae, formulae_visited)
     formulae_to_upgrade = Set.new
     formulae_pinned = Set.new
 
@@ -227,6 +227,13 @@ module Homebrew
         next if formulae_to_upgrade.include?(f)
         next if formulae_pinned.include?(f)
 
+        if formulae_visited.include?(f)
+          opoo "Found recursive upgradable dependent #{f.full_name}"
+          next
+        end
+
+        formulae_visited << f
+
         if f.outdated?(fetch_head: args.fetch_HEAD?)
           if f.pinned?
             formulae_pinned << f
@@ -238,16 +245,17 @@ module Homebrew
         descendants << f
       end
 
-      upgradable_descendants, pinned_descendants = upgradable_dependents(kegs, descendants)
+      upgradable_descendants, pinned_descendants, formulae_visited =
+        upgradable_dependents(kegs, descendants, formulae_visited)
 
       formulae_to_upgrade.merge upgradable_descendants
       formulae_pinned.merge pinned_descendants
     end
 
-    [formulae_to_upgrade, formulae_pinned]
+    [formulae_to_upgrade, formulae_pinned, formulae_visited]
   end
 
-  def broken_dependents(kegs, formulae)
+  def broken_dependents(kegs, formulae, formulae_visited)
     formulae_to_reinstall = Set.new
     formulae_pinned_and_outdated = Set.new
 
@@ -268,6 +276,13 @@ module Homebrew
           next if formulae_to_reinstall.include?(f)
           next if formulae_pinned_and_outdated.include?(f)
 
+          if formulae_visited.include?(f)
+            opoo "Found recursive broken dependent #{f.full_name}"
+            next
+          end
+
+          formulae_visited << f
+
           checker = LinkageChecker.new(keg, cache_db: db)
 
           if checker.broken_library_linkage?
@@ -282,14 +297,15 @@ module Homebrew
           descendants << f
         end
 
-        descendants_to_reinstall, descendants_pinned = broken_dependents(kegs, descendants)
+        descendants_to_reinstall, descendants_pinned, formulae_visited =
+          broken_dependents(kegs, descendants, formulae_visited)
 
         formulae_to_reinstall.merge descendants_to_reinstall
         formulae_pinned_and_outdated.merge descendants_pinned
       end
     end
 
-    [formulae_to_reinstall, formulae_pinned_and_outdated]
+    [formulae_to_reinstall, formulae_pinned_and_outdated, formulae_visited]
   end
 
   # @private
@@ -320,7 +336,7 @@ module Homebrew
     return if kegs.empty?
 
     oh1 "Checking dependents for outdated formulae" if args.verbose?
-    upgradable, pinned = upgradable_dependents(kegs, formulae).map(&:to_a)
+    upgradable, pinned = upgradable_dependents(kegs, formulae, Set.new).map(&:to_a)
 
     upgradable.sort! { |a, b| depends_on(a, b) }
 
@@ -353,7 +369,7 @@ module Homebrew
     kegs = formulae_with_runtime_dependencies
 
     oh1 "Checking dependents for broken library links" if args.verbose?
-    reinstallable, pinned = broken_dependents(kegs, formulae).map(&:to_a)
+    reinstallable, pinned = broken_dependents(kegs, formulae, Set.new).map(&:to_a)
 
     reinstallable.sort! { |a, b| depends_on(a, b) }
 
