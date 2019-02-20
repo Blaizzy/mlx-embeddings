@@ -611,7 +611,7 @@ module Homebrew
 
         <<~EOS
           You have the following deprecated, official taps tapped:
-            Homebrew/homebrew-#{tapped_deprecated_taps.join("\n  ")}
+            Homebrew/homebrew-#{tapped_deprecated_taps.join("\n  Homebrew/homebrew-")}
           Untap them with `brew untap`.
         EOS
       end
