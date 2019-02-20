@@ -49,7 +49,7 @@ module Homebrew
       ENV["HOMEBREW_TEST_GENERIC_OS"] = "1" if args.generic?
       ENV["HOMEBREW_TEST_ONLINE"] = "1" if args.online?
 
-      ENV["USER"] ||= Utils.popen_read("id", "-nu").chomp
+      ENV["USER"] ||= system_command!("id", args: ["-nu"]).stdout.chomp
 
       # Avoid local configuration messing with tests e.g. git being configured
       # to use GPG to sign by default
