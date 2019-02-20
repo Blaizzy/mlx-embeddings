@@ -1430,7 +1430,7 @@ class Formula
     @installed ||= racks.flat_map do |rack|
       begin
         Formulary.from_rack(rack)
-      rescue FormulaUnavailableError, TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
+      rescue
         []
       end
     end.uniq(&:name)
