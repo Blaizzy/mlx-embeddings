@@ -11,6 +11,7 @@ describe "brew pull", :integration_test do
     CoreTap.instance.path.cd do
       system "git", "init"
       system "git", "checkout", "-b", "new-branch"
+      system "git", "remote", "add", "origin", "https://github.com/Homebrew/homebrew-core"
     end
 
     expect { brew "pull", "https://github.com/Homebrew/brew/pull/1249" }

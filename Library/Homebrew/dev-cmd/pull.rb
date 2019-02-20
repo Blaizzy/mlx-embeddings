@@ -90,8 +90,6 @@ module Homebrew
 
     do_bump = args.bump? && !args.clean?
 
-    # Formulae with affected bottles that were published
-    bintray_published_formulae = []
     tap = nil
 
     ARGV.named.each do |arg|
@@ -132,6 +130,7 @@ module Homebrew
       HOMEBREW_CACHE.mkpath
 
       # Store current revision and branch
+      merge_commit = merge_commit?(url)
       orig_revision = `git rev-parse --short HEAD`.strip
       branch = `git symbolic-ref --short HEAD`.strip
 
@@ -139,27 +138,25 @@ module Homebrew
         opoo "Current branch is #{branch}: do you need to pull inside master?"
       end
 
-      patch_puller = PatchPuller.new(url, args)
-      patch_puller.fetch_patch
-      patch_changes = files_changed_in_patch(patch_puller.patchpath, tap)
+      unless merge_commit
+        patch_puller = PatchPuller.new(url, args)
+        patch_puller.fetch_patch
+        patch_changes = files_changed_in_patch(patch_puller.patchpath, tap)
 
-      is_bumpable = patch_changes[:formulae].length == 1 && patch_changes[:others].empty?
-      if do_bump
-        odie "No changed formulae found to bump" if patch_changes[:formulae].empty?
-        if patch_changes[:formulae].length > 1
-          odie "Can only bump one changed formula; bumped #{patch_changes[:formulae]}"
-        end
-        odie "Cannot bump if non-formula files are changed" unless patch_changes[:others].empty?
+        is_bumpable = patch_changes[:formulae].length == 1 && patch_changes[:others].empty?
+        check_bumps(patch_changes) if do_bump
+        old_versions = current_versions_from_info_external(patch_changes[:formulae].first) if is_bumpable
+        patch_puller.apply_patch
       end
-      old_versions = current_versions_from_info_external(patch_changes[:formulae].first) if is_bumpable
-      patch_puller.apply_patch
+
+      end_revision = end_revision?(url, merge_commit)
 
       changed_formulae_names = []
 
       if tap
         Utils.popen_read(
           "git", "diff-tree", "-r", "--name-only",
-          "--diff-filter=AM", orig_revision, "HEAD", "--", tap.formula_dir.to_s
+          "--diff-filter=AM", orig_revision, end_revision, "--", tap.formula_dir.to_s
         ).each_line do |line|
           next unless line.end_with? ".rb\n"
 
@@ -239,7 +236,6 @@ module Homebrew
         safe_system "git", "commit", "--amend", "--signoff", "--allow-empty", "-q", "-m", message
       end
 
-      # Bottles: Pull bottle block commit and publish bottle files on Bintray
       if fetch_bottles
         bottle_commit_url = if testing_job
           bottle_branch = "testing-bottle-#{testing_job}"
@@ -252,22 +248,67 @@ module Homebrew
 
         curl "--silent", "--fail", "--output", "/dev/null", "--head", bottle_commit_url
 
-        safe_system "git", "checkout", "--quiet", "-B", bottle_branch, orig_revision
-        pull_patch bottle_commit_url, "bottle commit"
-        safe_system "git", "rebase", "--quiet", branch
-        safe_system "git", "checkout", "--quiet", branch
-        safe_system "git", "merge", "--quiet", "--ff-only", "--no-edit", bottle_branch
-        safe_system "git", "branch", "--quiet", "-D", bottle_branch
-
-        # Publish bottles on Bintray
-        unless args.no_publish?
-          published = publish_changed_formula_bottles(tap, changed_formulae_names)
-          bintray_published_formulae.concat(published)
+        if merge_commit
+          fetch_merge_patch(bottle_commit_url, args, issue)
+        else
+          fetch_bottles_patch(bottle_commit_url, args, bottle_branch, branch, orig_revision)
         end
+        publish_and_check_bottles(tap, args, changed_formulae_names)
+      elsif merge_commit
+        fetch_merge_patch(url, args, issue)
       end
 
       ohai "Patch changed:"
-      safe_system "git", "diff-tree", "-r", "--stat", orig_revision, "HEAD"
+      safe_system "git", "diff-tree", "-r", "--stat", orig_revision, end_revision
+    end
+  end
+
+  def check_bumps(patch_changes)
+    if patch_changes[:formulae].empty?
+      odie "No changed formulae found to bump"
+    elsif patch_changes[:formulae].length > 1
+      odie "Can only bump one changed formula; bumped #{patch_changes[:formulae]}"
+    elsif !patch_changes[:others].empty?
+      odie "Can not bump if non-formula files are changed"
+    end
+  end
+
+  def fetch_issue(url)
+    issue = url[%r{/pull\/([0-9]+)}, 1]
+    safe_system "git", "fetch", "--quiet", "origin", "pull/#{issue}/head"
+  end
+
+  def merge_commit?(url)
+    fetch_issue(url)
+    Utils.popen_read("git", "rev-list", "--parents", "-n1", "FETCH_HEAD").count(" ") > 1
+  end
+
+  def end_revision?(url, merge_commit)
+    fetch_issue(url)
+    Utils.popen_read("git", "rev-parse", merge_commit ? "FETCH_HEAD" : "HEAD").strip
+  end
+
+  def fetch_bottles_patch(bottle_commit_url, args, bottle_branch, branch, orig_revision)
+    safe_system "git", "checkout", "--quiet", "-B", bottle_branch, orig_revision
+    PatchPuller.new(bottle_commit_url, args, "bottle commit").pull_patch
+    safe_system "git", "rebase", "--quiet", branch
+    safe_system "git", "checkout", "--quiet", branch
+    safe_system "git", "merge", "--quiet", "--ff-only", "--no-edit", bottle_branch
+    safe_system "git", "branch", "--quiet", "-D", bottle_branch
+  end
+
+  def fetch_merge_patch(url, args, issue)
+    PatchPuller.new(url, args, "merge commit").pull_merge_commit(issue)
+  end
+
+  def publish_and_check_bottles(tap, args, changed_formulae_names)
+    # Formulae with affected bottles that were published
+    bintray_published_formulae = []
+
+    # Publish bottles on Bintray
+    unless args.no_publish?
+      published = publish_changed_formula_bottles(tap, changed_formulae_names)
+      bintray_published_formulae.concat(published)
     end
 
     # Verify bintray publishing after all patches have been applied
@@ -300,10 +341,6 @@ module Homebrew
     published
   end
 
-  def pull_patch(url, description = nil)
-    PatchPuller.new(url, args, description).pull_patch
-  end
-
   class PatchPuller
     attr_reader :base_url
     attr_reader :patch_url
@@ -321,6 +358,21 @@ module Homebrew
     def pull_patch
       fetch_patch
       apply_patch
+    end
+
+    def pull_merge_commit(issue)
+      # Used by forks of homebrew-core that use merge-commits (for example linuxbrew)
+      ohai "Fast-forwarding to the merge commit"
+      test_bot_origin = patch_url[%r{(https://github\.com/[\w-]+/[\w-]+)/compare/}, 1]
+      safe_system "git", "fetch", "--quiet", test_bot_origin, "pr-#{issue}" if test_bot_origin
+      safe_system "git", "merge", "--quiet", "--ff-only", "--no-edit", "FETCH_HEAD"
+      return if $CHILD_STATUS.success?
+
+      safe_system "git", "reset", "--hard", "FETCH_HEAD"
+      odie <<~EOS
+        Not possible to fast-forward.
+        Maybe somebody pushed commits to origin/master between the merge commit creation and now.
+      EOS
     end
 
     def fetch_patch
