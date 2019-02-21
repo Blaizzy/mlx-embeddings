@@ -11,6 +11,10 @@ module MachO
     # @return [String] the filename loaded from, or nil if loaded from a binary string
     attr_accessor :filename
 
+    # @return [Hash] any parser options that the instance was created with
+    # @note Options specified in a {FatFile} trickle down into the internal {MachOFile}s.
+    attr_reader :options
+
     # @return [Headers::FatHeader] the file's header
     attr_reader :header
 
@@ -49,9 +53,7 @@ module MachO
       machos.each do |macho|
         macho_offset = Utils.round(offset, 2**macho.segment_alignment)
 
-        if !fat64 && macho_offset > (2**32 - 1)
-          raise FatArchOffsetOverflowError, macho_offset
-        end
+        raise FatArchOffsetOverflowError, macho_offset if !fat64 && macho_offset > (2**32 - 1)
 
         macho_pads[macho] = Utils.padding_for(offset, 2**macho.segment_alignment)
 
@@ -72,30 +74,36 @@ module MachO
 
     # Creates a new FatFile instance from a binary string.
     # @param bin [String] a binary string containing raw Mach-O data
+    # @param opts [Hash] options to control the parser with
+    # @note see {MachOFile#initialize} for currently valid options
     # @return [FatFile] a new FatFile
-    def self.new_from_bin(bin)
+    def self.new_from_bin(bin, **opts)
       instance = allocate
-      instance.initialize_from_bin(bin)
+      instance.initialize_from_bin(bin, opts)
 
       instance
     end
 
     # Creates a new FatFile from the given filename.
     # @param filename [String] the fat file to load from
+    # @param opts [Hash] options to control the parser with
+    # @note see {MachOFile#initialize} for currently valid options
     # @raise [ArgumentError] if the given file does not exist
-    def initialize(filename)
+    def initialize(filename, **opts)
       raise ArgumentError, "#{filename}: no such file" unless File.file?(filename)
 
       @filename = filename
+      @options = opts
       @raw_data = File.open(@filename, "rb", &:read)
       populate_fields
     end
 
-    # Initializes a new FatFile instance from a binary string.
+    # Initializes a new FatFile instance from a binary string with the given options.
     # @see new_from_bin
     # @api private
-    def initialize_from_bin(bin)
+    def initialize_from_bin(bin, opts)
       @filename = nil
+      @options = opts
       @raw_data = bin
       populate_fields
     end
@@ -358,7 +366,7 @@ module MachO
       machos = []
 
       fat_archs.each do |arch|
-        machos << MachOFile.new_from_bin(@raw_data[arch.offset, arch.size])
+        machos << MachOFile.new_from_bin(@raw_data[arch.offset, arch.size], **options)
       end
 
       machos

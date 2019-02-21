@@ -241,6 +241,10 @@ module MachO
     # @api private
     CPU_SUBTYPE_ARM64_32_V8 = 1
 
+    # the e (A12) sub-type for `CPU_TYPE_ARM64`
+    # @api private
+    CPU_SUBTYPE_ARM64E = 2
+
     # the lowest common sub-type for `CPU_TYPE_MC88000`
     # @api private
     CPU_SUBTYPE_MC88000_ALL = 0
@@ -350,6 +354,7 @@ module MachO
       CPU_TYPE_ARM64 => {
         CPU_SUBTYPE_ARM64_ALL => :arm64,
         CPU_SUBTYPE_ARM64_V8 => :arm64v8,
+        CPU_SUBTYPE_ARM64E => :arm64e,
       }.freeze,
       CPU_TYPE_ARM64_32 => {
         CPU_SUBTYPE_ARM64_32_V8 => :arm64_32v8,
