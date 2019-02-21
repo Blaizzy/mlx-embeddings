@@ -61,6 +61,7 @@
 **/vendor/bundle-standalone/ruby/*/gems/backports-*/lib/backports/2.1*
 **/vendor/bundle-standalone/ruby/*/gems/backports-*/lib/backports/2.2*
 **/vendor/bundle-standalone/ruby/*/gems/backports-*/lib/backports/2.3*
+**/vendor/bundle-standalone/ruby/*/gems/backports-*/lib/backports/2.6*
 **/vendor/bundle-standalone/ruby/*/gems/backports-*/lib/backports/2.*.rb
 **/vendor/bundle-standalone/ruby/*/gems/backports-*/lib/backports/force/
 **/vendor/bundle-standalone/ruby/*/gems/backports-*/lib/backports/rails/
@@ -109,6 +110,7 @@
 **/vendor/bundle-standalone/ruby/*/gems/parallel-*/
 **/vendor/bundle-standalone/ruby/*/gems/parser-*/
 **/vendor/bundle-standalone/ruby/*/gems/powerpack-*/
+**/vendor/bundle-standalone/ruby/*/gems/psych-*/
 **/vendor/bundle-standalone/ruby/*/gems/rainbow-*/
 **/vendor/bundle-standalone/ruby/*/gems/rubocop-0*/
 **/vendor/bundle-standalone/ruby/*/gems/ruby-progressbar-*/
