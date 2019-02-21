@@ -1,4 +1,5 @@
 require "utils/bottles"
+require "utils/gems"
 require "formula"
 require "cask/cask_loader"
 require "set"
@@ -198,6 +199,8 @@ module Homebrew
           FileUtils.touch PERIODIC_CLEAN_FILE
         end
 
+        cleanup_bundler
+
         # Cleaning up Ruby needs to be done last to avoid requiring additional
         # files afterwards. Additionally, don't allow it on periodic cleans to
         # avoid having to try to do a `brew install` when we've just deleted
@@ -344,6 +347,21 @@ module Homebrew
           file.unlink
         ensure
           file.open(File::RDWR).flock(File::LOCK_UN) if file.exist?
+        end
+      end
+    end
+
+    def cleanup_bundler
+      HOMEBREW_LIBRARY_PATH.cd do
+        Homebrew.setup_gem_environment!
+        bundle = "#{Gem.bindir}/bundle"
+        return unless File.executable?(bundle)
+        return if Gem::Specification.find_all_by_name("bundler").empty?
+
+        if dry_run?
+          system bundle, "clean", "--dry-run"
+        else
+          system bundle, "clean"
         end
       end
     end
