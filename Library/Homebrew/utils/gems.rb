@@ -61,7 +61,7 @@ module Homebrew
   def install_bundler_gems!
     install_bundler!
 
-    ENV["BUNDLE_GEMFILE"] = "#{ENV["HOMEBREW_LIBRARY"]}/Homebrew/test/Gemfile"
+    ENV["BUNDLE_GEMFILE"] = "#{ENV["HOMEBREW_LIBRARY"]}/Homebrew/Gemfile"
     @bundle_installed ||= begin
       bundle_check_output = `#{Gem.bindir}/bundle check`
       bundle_check_failed = !$CHILD_STATUS.exitstatus.zero?

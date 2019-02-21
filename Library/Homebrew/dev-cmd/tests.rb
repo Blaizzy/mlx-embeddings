@@ -82,7 +82,7 @@ module Homebrew
           ["test/#{test_name}_spec.rb:#{line}"]
         end
       else
-        Dir.glob("test/**/*_spec.rb").reject { |p| p =~ %r{^test/vendor/bundle/} }
+        Dir.glob("test/**/*_spec.rb")
       end
 
       opts = if ENV["CI"]
