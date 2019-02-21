@@ -5,6 +5,7 @@ class DependencyCollector
       dep = Dependency.new("openjdk", tags)
       return dep if dep.installed?
       return req if req.satisfied?
+
       dep
     rescue FormulaUnavailableError
       req

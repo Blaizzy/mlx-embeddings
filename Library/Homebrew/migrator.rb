@@ -118,9 +118,7 @@ class Migrator
     @old_tabs = old_cellar.subdirs.map { |d| Tab.for_keg(Keg.new(d)) }
     @old_tap = old_tabs.first.tap
 
-    if !force && !from_same_tap_user?
-      raise MigratorDifferentTapsError.new(formula, old_tap)
-    end
+    raise MigratorDifferentTapsError.new(formula, old_tap) if !force && !from_same_tap_user?
 
     @new_cellar = HOMEBREW_CELLAR/formula.name
     @new_cellar_existed = @new_cellar.exist?
@@ -233,9 +231,7 @@ class Migrator
         end
       end
 
-      if conflicted
-        odie "Remove #{new_cellar} manually and run brew migrate #{oldname}."
-      end
+      odie "Remove #{new_cellar} manually and run brew migrate #{oldname}." if conflicted
     end
 
     oh1 "Moving #{Formatter.identifier(oldname)} versions to #{new_cellar}"

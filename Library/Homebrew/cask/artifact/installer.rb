@@ -32,9 +32,7 @@ module Cask
             cask.staged_path.join(path)
           end
 
-          if absolute_path.exist? && !absolute_path.executable?
-            FileUtils.chmod "+x", absolute_path
-          end
+          FileUtils.chmod "+x", absolute_path if absolute_path.exist? && !absolute_path.executable?
 
           executable = if absolute_path.exist?
             absolute_path

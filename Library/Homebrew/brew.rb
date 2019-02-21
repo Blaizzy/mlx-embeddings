@@ -1,6 +1,4 @@
-unless ENV["HOMEBREW_BREW_FILE"]
-  raise "HOMEBREW_BREW_FILE was not exported! Please call bin/brew directly!"
-end
+raise "HOMEBREW_BREW_FILE was not exported! Please call bin/brew directly!" unless ENV["HOMEBREW_BREW_FILE"]
 
 std_trap = trap("INT") { exit! 130 } # no backtrace thanks
 
@@ -8,6 +6,12 @@ std_trap = trap("INT") { exit! 130 } # no backtrace thanks
 RUBY_X, RUBY_Y, = RUBY_VERSION.split(".").map(&:to_i)
 if RUBY_X < 2 || (RUBY_X == 2 && RUBY_Y < 3)
   raise "Homebrew must be run under Ruby 2.3! You're running #{RUBY_VERSION}."
+end
+
+# Load Bundler first of all if it's needed to avoid Gem version conflicts.
+if ENV["HOMEBREW_INSTALL_BUNDLER_GEMS_FIRST"]
+  require_relative "utils/gems"
+  Homebrew.install_bundler_gems!
 end
 
 # Also define here so we can rescue regardless of location.
@@ -92,9 +96,7 @@ begin
     # `Homebrew.help` never returns, except for external/unknown commands.
   end
 
-  if ENV["HOMEBREW_BUILD_FROM_SOURCE"]
-    odisabled("HOMEBREW_BUILD_FROM_SOURCE", "--build-from-source")
-  end
+  odisabled("HOMEBREW_BUILD_FROM_SOURCE", "--build-from-source") if ENV["HOMEBREW_BUILD_FROM_SOURCE"]
 
   if internal_cmd
     Homebrew.send cmd.to_s.tr("-", "_").downcase
@@ -113,9 +115,7 @@ begin
 
     brew_uid = HOMEBREW_BREW_FILE.stat.uid
     tap_commands = []
-    if Process.uid.zero? && !brew_uid.zero?
-      tap_commands += %W[/usr/bin/sudo -u ##{brew_uid}]
-    end
+    tap_commands += %W[/usr/bin/sudo -u ##{brew_uid}] if Process.uid.zero? && !brew_uid.zero?
     # Unset HOMEBREW_HELP to avoid confusing the tap
     ENV.delete("HOMEBREW_HELP") if help_flag
     tap_commands += %W[#{HOMEBREW_BREW_FILE} tap #{possible_tap}]

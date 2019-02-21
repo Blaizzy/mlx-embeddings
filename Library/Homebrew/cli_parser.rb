@@ -154,6 +154,7 @@ module Homebrew
       def formula_options
         ARGV.formulae.each do |f|
           next if f.options.empty?
+
           f.options.each do |o|
             name = o.flag
             description = "`#{f.name}`: #{o.description}"
@@ -220,9 +221,7 @@ module Homebrew
           if :mandatory.equal?(constraint_type) && primary_passed && !secondary_passed
             raise OptionConstraintError.new(primary, secondary)
           end
-          if secondary_passed && !primary_passed
-            raise OptionConstraintError.new(primary, secondary, missing: true)
-          end
+          raise OptionConstraintError.new(primary, secondary, missing: true) if secondary_passed && !primary_passed
         end
       end
 
@@ -240,6 +239,7 @@ module Homebrew
 
           select_cli_arg = violations.count - env_var_options.count == 1
           raise OptionConflictError, violations.map(&method(:name_to_option)) unless select_cli_arg
+
           env_var_options.each(&method(:disable_switch))
         end
       end

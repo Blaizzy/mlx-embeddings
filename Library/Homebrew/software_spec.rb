@@ -55,9 +55,7 @@ class SoftwareSpec
     resources.each_value do |r|
       r.owner = self
       r.version ||= begin
-        if version.nil?
-          raise "#{full_name}: version missing for \"#{r.name}\" resource!"
-        end
+        raise "#{full_name}: version missing for \"#{r.name}\" resource!" if version.nil?
 
         if version.head?
           Version.create("HEAD")

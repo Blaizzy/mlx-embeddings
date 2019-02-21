@@ -58,9 +58,7 @@ module Cask
 
         begin
           instance_eval(content, path).tap do |cask|
-            unless cask.is_a?(Cask)
-              raise CaskUnreadableError.new(token, "'#{path}' does not contain a cask.")
-            end
+            raise CaskUnreadableError.new(token, "'#{path}' does not contain a cask.") unless cask.is_a?(Cask)
           end
         rescue NameError, ArgumentError, ScriptError => e
           raise CaskUnreadableError.new(token, e.message)
@@ -70,9 +68,7 @@ module Cask
       private
 
       def cask(header_token, **options, &block)
-        if token != header_token
-          raise CaskTokenMismatchError.new(token, header_token)
-        end
+        raise CaskTokenMismatchError.new(token, header_token) if token != header_token
 
         super(header_token, **options, sourcefile_path: path, &block)
       end
@@ -192,9 +188,7 @@ module Cask
         return loader_class.new(ref) if loader_class.can_load?(ref)
       end
 
-      if FromTapPathLoader.can_load?(default_path(ref))
-        return FromTapPathLoader.new(default_path(ref))
-      end
+      return FromTapPathLoader.new(default_path(ref)) if FromTapPathLoader.can_load?(default_path(ref))
 
       case (possible_tap_casks = tap_paths(ref)).count
       when 1
@@ -209,9 +203,7 @@ module Cask
       end
 
       possible_installed_cask = Cask.new(ref)
-      if possible_installed_cask.installed?
-        return FromPathLoader.new(possible_installed_cask.installed_caskfile)
-      end
+      return FromPathLoader.new(possible_installed_cask.installed_caskfile) if possible_installed_cask.installed?
 
       NullLoader.new(ref)
     end

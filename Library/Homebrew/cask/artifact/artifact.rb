@@ -13,9 +13,7 @@ module Cask
       def self.from_args(cask, *args)
         source_string, target_hash = args
 
-        if source_string.nil?
-          raise CaskInvalidError.new(cask.token, "no source given for #{english_name}")
-        end
+        raise CaskInvalidError.new(cask.token, "no source given for #{english_name}") if source_string.nil?
 
         unless target_hash.is_a?(Hash)
           raise CaskInvalidError.new(cask.token, "target required for #{english_name} '#{source_string}'")

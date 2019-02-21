@@ -3,12 +3,8 @@ class CodesignRequirement < Requirement
 
   def initialize(tags)
     options = tags.shift
-    unless options.is_a?(Hash)
-      raise ArgumentError("CodesignRequirement requires an options Hash!")
-    end
-    unless options.key?(:identity)
-      raise ArgumentError("CodesignRequirement requires an identity key!")
-    end
+    raise ArgumentError("CodesignRequirement requires an options Hash!") unless options.is_a?(Hash)
+    raise ArgumentError("CodesignRequirement requires an identity key!") unless options.key?(:identity)
 
     @identity = options.fetch(:identity)
     @with = options.fetch(:with, "code signing")

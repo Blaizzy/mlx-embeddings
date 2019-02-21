@@ -21,6 +21,7 @@ module Homebrew
   def config
     config_args.parse
     raise UsageError unless args.remaining.empty?
+
     SystemConfig.dump_verbose_config
   end
 end

@@ -200,9 +200,7 @@ module Homebrew
         "│   "
       end
 
-      if dep.is_a? Dependency
-        recursive_deps_tree(Formulary.factory(dep.name), prefix + prefix_addition, true)
-      end
+      recursive_deps_tree(Formulary.factory(dep.name), prefix + prefix_addition, true) if dep.is_a? Dependency
     end
 
     @dep_stack.pop

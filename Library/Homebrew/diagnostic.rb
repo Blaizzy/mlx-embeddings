@@ -278,9 +278,7 @@ module Homebrew
           next unless d.directory?
 
           d.find do |path|
-            if path.symlink? && !path.resolved_path_exists?
-              broken_symlinks << path
-            end
+            broken_symlinks << path if path.symlink? && !path.resolved_path_exists?
           end
         end
         return if broken_symlinks.empty?

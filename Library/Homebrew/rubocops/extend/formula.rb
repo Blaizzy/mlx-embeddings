@@ -367,9 +367,7 @@ module RuboCop
       def check_precedence(first_nodes, next_nodes)
         next_nodes.each do |each_next_node|
           first_nodes.each do |each_first_node|
-            if component_precedes?(each_first_node, each_next_node)
-              return [each_first_node, each_next_node]
-            end
+            return [each_first_node, each_next_node] if component_precedes?(each_first_node, each_next_node)
           end
         end
         nil

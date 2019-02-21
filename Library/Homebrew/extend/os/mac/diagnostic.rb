@@ -106,6 +106,7 @@ module Homebrew
 
       def check_xcode_minimum_version
         return unless MacOS::Xcode.below_minimum_version?
+
         xcode = MacOS::Xcode.version.to_s
         xcode += " => #{MacOS::Xcode.prefix}" unless MacOS::Xcode.default_prefix?
 

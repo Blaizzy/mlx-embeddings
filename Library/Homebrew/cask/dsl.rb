@@ -131,9 +131,7 @@ module Cask
 
       return @language = nil if @language_blocks.nil? || @language_blocks.empty?
 
-      if @language_blocks.default.nil?
-        raise CaskInvalidError.new(cask, "No default language specified.")
-      end
+      raise CaskInvalidError.new(cask, "No default language specified.") if @language_blocks.default.nil?
 
       locales = MacOS.languages
                      .map do |language|

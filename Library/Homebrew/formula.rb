@@ -176,9 +176,7 @@ class Formula
     @name = name
     @path = path
     @alias_path = alias_path
-    @alias_name = if alias_path
-      File.basename(alias_path)
-    end
+    @alias_name = (File.basename(alias_path) if alias_path)
     @revision = self.class.revision || 0
     @version_scheme = self.class.version_scheme || 0
 
@@ -248,14 +246,10 @@ class Formula
   end
 
   def validate_attributes!
-    if name.nil? || name.empty? || name =~ /\s/
-      raise FormulaValidationError.new(full_name, :name, name)
-    end
+    raise FormulaValidationError.new(full_name, :name, name) if name.nil? || name.empty? || name =~ /\s/
 
     url = active_spec.url
-    if url.nil? || url.empty? || url =~ /\s/
-      raise FormulaValidationError.new(full_name, :url, url)
-    end
+    raise FormulaValidationError.new(full_name, :url, url) if url.nil? || url.empty? || url =~ /\s/
 
     val = version.respond_to?(:to_str) ? version.to_str : version
     return unless val.nil? || val.empty? || val =~ /\s/
@@ -1338,9 +1332,7 @@ class Formula
 
     # Avoid false positives for clock_gettime support on 10.11.
     # CMake cache entries for other weak symbols may be added here as needed.
-    if MacOS.version == "10.11" && MacOS::Xcode.version >= "8.0"
-      args << "-DHAVE_CLOCK_GETTIME:INTERNAL=0"
-    end
+    args << "-DHAVE_CLOCK_GETTIME:INTERNAL=0" if MacOS.version == "10.11" && MacOS::Xcode.version >= "8.0"
 
     args
   end
@@ -1842,9 +1834,7 @@ class Formula
       pretty_args.delete "--disable-debug"
     end
     pretty_args.each_index do |i|
-      if pretty_args[i].to_s.start_with? "import setuptools"
-        pretty_args[i] = "import setuptools..."
-      end
+      pretty_args[i] = "import setuptools..." if pretty_args[i].to_s.start_with? "import setuptools"
     end
     ohai "#{cmd} #{pretty_args * " "}".strip
 
@@ -1957,9 +1947,7 @@ class Formula
       # If the cellar only has one version installed, don't complain
       # that we can't tell which one to keep. Don't complain at all if the
       # only installed version is a pinned formula.
-      unless quiet
-        opoo "Skipping #{full_name}: most recent version #{pkg_version} not installed"
-      end
+      opoo "Skipping #{full_name}: most recent version #{pkg_version} not installed" unless quiet
     end
     eligible_for_cleanup
   end

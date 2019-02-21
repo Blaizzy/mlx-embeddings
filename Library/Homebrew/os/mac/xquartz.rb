@@ -87,9 +87,7 @@ module OS
       # remain public. New code should use `MacOS::X11.bin`, `MacOS::X11.lib` and
       # `MacOS::X11.include` instead, as that accounts for Xcode-only systems.
       def prefix
-        @prefix ||= if Pathname.new("/opt/X11/lib/libpng.dylib").exist?
-          Pathname.new("/opt/X11")
-        end
+        @prefix ||= Pathname.new("/opt/X11") if Pathname.new("/opt/X11/lib/libpng.dylib").exist?
       end
 
       def installed?

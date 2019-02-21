@@ -3,6 +3,7 @@ require "utils/analytics"
 require "utils/curl"
 require "utils/fork"
 require "utils/formatter"
+require "utils/gems"
 require "utils/git"
 require "utils/github"
 require "utils/inreplace"
@@ -37,9 +38,7 @@ def odebug(title, *sput)
 end
 
 def oh1(title, options = {})
-  if $stdout.tty? && !ARGV.verbose? && options.fetch(:truncate, :auto) == :auto
-    title = Tty.truncate(title)
-  end
+  title = Tty.truncate(title) if $stdout.tty? && !ARGV.verbose? && options.fetch(:truncate, :auto) == :auto
   puts Formatter.headline(title, color: :green)
 end
 
@@ -201,68 +200,6 @@ module Homebrew
   def system(cmd, *args, **options)
     puts "#{cmd} #{args * " "}" if ARGV.verbose?
     _system(cmd, *args, **options)
-  end
-
-  def setup_gem_environment!
-    # Match where our bundler gems are.
-    ENV["GEM_HOME"] = "#{ENV["HOMEBREW_LIBRARY"]}/Homebrew/vendor/bundle/ruby/#{RbConfig::CONFIG["ruby_version"]}"
-    ENV["GEM_PATH"] = ENV["GEM_HOME"]
-
-    # Make rubygems notice env changes.
-    Gem.clear_paths
-    Gem::Specification.reset
-
-    # Add Gem binary directory and (if missing) Ruby binary directory to PATH.
-    path = PATH.new(ENV["PATH"])
-    path.prepend(RUBY_BIN) if which("ruby") != RUBY_PATH
-    path.prepend(Gem.bindir)
-    ENV["PATH"] = path
-  end
-
-  # TODO: version can be removed when compat/download_strategy is deleted in 2.0
-  def install_gem!(name, version = nil)
-    setup_gem_environment!
-
-    return unless Gem::Specification.find_all_by_name(name, version).empty?
-
-    ohai "Installing or updating '#{name}' gem"
-    install_args = %W[--no-document #{name}]
-    install_args << "--version" << version if version
-
-    # Do `gem install [...]` without having to spawn a separate process or
-    # having to find the right `gem` binary for the running Ruby interpreter.
-    require "rubygems/commands/install_command"
-    install_cmd = Gem::Commands::InstallCommand.new
-    install_cmd.handle_options(install_args)
-    exit_code = 1 # Should not matter as `install_cmd.execute` always throws.
-    begin
-      install_cmd.execute
-    rescue Gem::SystemExitException => e
-      exit_code = e.exit_code
-    end
-    odie "Failed to install/update the '#{name}' gem." if exit_code.nonzero?
-  end
-
-  def install_gem_setup_path!(name, executable: name)
-    install_gem!(name)
-
-    return if which(executable)
-
-    odie <<~EOS
-      The '#{name}' gem is installed but couldn't find '#{executable}' in the PATH:
-      #{ENV["PATH"]}
-    EOS
-  end
-
-  def install_bundler!
-    install_gem_setup_path! "bundler", executable: "bundle"
-  end
-
-  def install_bundler_gems!
-    install_bundler!
-    ENV["BUNDLE_GEMFILE"] = "#{HOMEBREW_LIBRARY_PATH}/test/Gemfile"
-    system "bundle", "install" unless quiet_system("bundle", "check")
-    setup_gem_environment!
   end
 
   # rubocop:disable Style/GlobalVars
@@ -491,9 +428,7 @@ end
 # shortfall or overrun may vary.
 def truncate_text_to_approximate_size(s, max_bytes, options = {})
   front_weight = options.fetch(:front_weight, 0.5)
-  if front_weight < 0.0 || front_weight > 1.0
-    raise "opts[:front_weight] must be between 0.0 and 1.0"
-  end
+  raise "opts[:front_weight] must be between 0.0 and 1.0" if front_weight < 0.0 || front_weight > 1.0
   return s if s.bytesize <= max_bytes
 
   glue = "\n[...snip...]\n"

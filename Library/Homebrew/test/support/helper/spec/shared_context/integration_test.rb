@@ -176,6 +176,7 @@ RSpec.shared_context "integration test" do
   def setup_remote_tap(name)
     Tap.fetch(name).tap do |tap|
       next if tap.installed?
+
       full_name = Tap.fetch(name).full_name
       # Check to see if the original Homebrew process has taps we can use.
       system_tap_path = Pathname("#{ENV["HOMEBREW_LIBRARY"]}/Taps/#{full_name}")

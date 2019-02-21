@@ -309,6 +309,11 @@ then
   esac
 fi
 
+if [[ "$HOMEBREW_COMMAND" = "audit" || "$HOMEBREW_COMMAND" = "style" ]]
+then
+  export HOMEBREW_INSTALL_BUNDLER_GEMS_FIRST="1"
+fi
+
 # Set HOMEBREW_DEV_CMD_RUN for users who have run a development command.
 # This makes them behave like HOMEBREW_DEVELOPERs for brew update.
 if [[ -z "$HOMEBREW_DEVELOPER" ]]

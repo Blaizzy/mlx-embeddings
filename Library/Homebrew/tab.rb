@@ -133,13 +133,9 @@ class Tab < OpenStruct
   def self.for_formula(f)
     paths = []
 
-    if f.opt_prefix.symlink? && f.opt_prefix.directory?
-      paths << f.opt_prefix.resolved_path
-    end
+    paths << f.opt_prefix.resolved_path if f.opt_prefix.symlink? && f.opt_prefix.directory?
 
-    if f.linked_keg.symlink? && f.linked_keg.directory?
-      paths << f.linked_keg.resolved_path
-    end
+    paths << f.linked_keg.resolved_path if f.linked_keg.symlink? && f.linked_keg.directory?
 
     if (dirs = f.installed_prefixes).length == 1
       paths << dirs.first

@@ -89,9 +89,7 @@ module RuboCop
 
       class OptionDeclarations < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
-          if find_method_def(body_node, :options)
-            problem "Use new-style option definitions"
-          end
+          problem "Use new-style option definitions" if find_method_def(body_node, :options)
 
           find_instance_method_call(body_node, :build, :without?) do |method|
             next unless unless_modifier?(method.parent)
@@ -327,9 +325,7 @@ module RuboCop
             problem "Use Language::Node for npm install args" unless languageNodeModule?(method_node)
           end
 
-          if find_method_def(body_node, :test)
-            problem "Use new-style test definitions (test do)"
-          end
+          problem "Use new-style test definitions (test do)" if find_method_def(body_node, :test)
 
           find_method_with_args(body_node, :skip_clean, :all) do
             problem "`skip_clean :all` is deprecated; brew no longer strips symbols. " \

@@ -263,9 +263,7 @@ class Keg
 
     if tap
       bad_tap_opt = opt/tap.user
-      if !bad_tap_opt.symlink? && bad_tap_opt.directory?
-        FileUtils.rm_rf bad_tap_opt
-      end
+      FileUtils.rm_rf bad_tap_opt if !bad_tap_opt.symlink? && bad_tap_opt.directory?
     end
 
     aliases.each do |a|
@@ -569,9 +567,7 @@ class Keg
     begin
       keg = Keg.for(src)
     rescue NotAKegError
-      if ARGV.verbose?
-        puts "Won't resolve conflicts for symlink #{dst} as it doesn't resolve into the Cellar"
-      end
+      puts "Won't resolve conflicts for symlink #{dst} as it doesn't resolve into the Cellar" if ARGV.verbose?
       return
     end
 
@@ -636,9 +632,7 @@ class Keg
         # Don't link pyc or pyo files because Python overwrites these
         # cached object files and next time brew wants to link, the
         # file is in the way.
-        if %w[.pyc .pyo].include?(src.extname) && src.to_s.include?("/site-packages/")
-          Find.prune
-        end
+        Find.prune if %w[.pyc .pyo].include?(src.extname) && src.to_s.include?("/site-packages/")
 
         case yield src.relative_path_from(root)
         when :skip_file, nil

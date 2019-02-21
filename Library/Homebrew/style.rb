@@ -30,9 +30,7 @@ module Homebrew
         args << "--parallel"
       end
 
-      if ARGV.verbose?
-        args += ["--extra-details", "--display-cop-names"]
-      end
+      args += ["--extra-details", "--display-cop-names"] if ARGV.verbose?
 
       if options[:except_cops]
         options[:except_cops].map! { |cop| RuboCop::Cop::Cop.registry.qualified_cop_name(cop.to_s, "") }
@@ -49,9 +47,7 @@ module Homebrew
             RuboCop::Cop::Cop.registry.departments.include?(cop.to_sym)
         end
 
-        if cops_to_include.empty?
-          odie "RuboCops #{options[:only_cops].join(",")} were not found"
-        end
+        odie "RuboCops #{options[:only_cops].join(",")} were not found" if cops_to_include.empty?
 
         args << "--only" << cops_to_include.join(",")
       end
