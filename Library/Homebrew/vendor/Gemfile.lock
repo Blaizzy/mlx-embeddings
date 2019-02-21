@@ -7,7 +7,7 @@ GEM
       minitest (~> 5.1)
       tzinfo (~> 1.1)
     ast (2.4.0)
-    backports (3.11.4)
+    backports (3.12.0)
     concurrent-ruby (1.1.4)
     connection_pool (2.2.2)
     domain_name (0.5.20180417)
