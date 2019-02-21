@@ -9,9 +9,12 @@ module MachO
   class MachOFile
     extend Forwardable
 
-    # @return [String] the filename loaded from, or nil if loaded from a binary
+    # @return [String, nil] the filename loaded from, or nil if loaded from a binary
     #  string
     attr_accessor :filename
+
+    # @return [Hash] any parser options that the instance was created with
+    attr_reader :options
 
     # @return [Symbol] the endianness of the file, :big or :little
     attr_reader :endianness
@@ -27,30 +30,36 @@ module MachO
 
     # Creates a new instance from a binary string.
     # @param bin [String] a binary string containing raw Mach-O data
+    # @param opts [Hash] options to control the parser with
+    # @option opts [Boolean] :permissive whether to ignore unknown load commands
     # @return [MachOFile] a new MachOFile
-    def self.new_from_bin(bin)
+    def self.new_from_bin(bin, **opts)
       instance = allocate
-      instance.initialize_from_bin(bin)
+      instance.initialize_from_bin(bin, opts)
 
       instance
     end
 
     # Creates a new instance from data read from the given filename.
     # @param filename [String] the Mach-O file to load from
+    # @param opts [Hash] options to control the parser with
+    # @option opts [Boolean] :permissive whether to ignore unknown load commands
     # @raise [ArgumentError] if the given file does not exist
-    def initialize(filename)
+    def initialize(filename, **opts)
       raise ArgumentError, "#{filename}: no such file" unless File.file?(filename)
 
       @filename = filename
+      @options = opts
       @raw_data = File.open(@filename, "rb", &:read)
       populate_fields
     end
 
-    # Initializes a new MachOFile instance from a binary string.
+    # Initializes a new MachOFile instance from a binary string with the given options.
     # @see MachO::MachOFile.new_from_bin
     # @api private
-    def initialize_from_bin(bin)
+    def initialize_from_bin(bin, opts)
       @filename = nil
+      @options = opts
       @raw_data = bin
       populate_fields
     end
@@ -146,16 +155,13 @@ module MachO
     def insert_command(offset, lc, options = {})
       context = LoadCommands::LoadCommand::SerializationContext.context_for(self)
       cmd_raw = lc.serialize(context)
+      fileoff = offset + cmd_raw.bytesize
 
-      if offset < header.class.bytesize || offset + cmd_raw.bytesize > low_fileoff
-        raise OffsetInsertionError, offset
-      end
+      raise OffsetInsertionError, offset if offset < header.class.bytesize || fileoff > low_fileoff
 
       new_sizeofcmds = sizeofcmds + cmd_raw.bytesize
 
-      if header.class.bytesize + new_sizeofcmds > low_fileoff
-        raise HeaderPadError, @filename
-      end
+      raise HeaderPadError, @filename if header.class.bytesize + new_sizeofcmds > low_fileoff
 
       # update Mach-O header fields to account for inserted load command
       update_ncmds(ncmds + 1)
@@ -178,9 +184,8 @@ module MachO
       context = LoadCommands::LoadCommand::SerializationContext.context_for(self)
       cmd_raw = new_lc.serialize(context)
       new_sizeofcmds = sizeofcmds + cmd_raw.bytesize - old_lc.cmdsize
-      if header.class.bytesize + new_sizeofcmds > low_fileoff
-        raise HeaderPadError, @filename
-      end
+
+      raise HeaderPadError, @filename if header.class.bytesize + new_sizeofcmds > low_fileoff
 
       delete_command(old_lc)
       insert_command(old_lc.view.offset, new_lc)
@@ -511,6 +516,7 @@ module MachO
     # @raise [LoadCommandError] if an unknown load command is encountered
     # @api private
     def populate_load_commands
+      permissive = options.fetch(:permissive, false)
       offset = header.class.bytesize
       load_commands = []
 
@@ -519,11 +525,16 @@ module MachO
         cmd = @raw_data.slice(offset, 4).unpack(fmt).first
         cmd_sym = LoadCommands::LOAD_COMMANDS[cmd]
 
-        raise LoadCommandError, cmd if cmd_sym.nil?
+        raise LoadCommandError, cmd unless cmd_sym || permissive
 
-        # why do I do this? i don't like declaring constants below
-        # classes, and i need them to resolve...
-        klass = LoadCommands.const_get LoadCommands::LC_STRUCTURES[cmd_sym]
+        # If we're here, then either cmd_sym represents a valid load
+        # command *or* we're in permissive mode.
+        klass = if (klass_str = LoadCommands::LC_STRUCTURES[cmd_sym])
+          LoadCommands.const_get klass_str
+        else
+          LoadCommands::LoadCommand
+        end
+
         view = MachOView.new(@raw_data, endianness, offset)
         command = klass.new_from_bin(view)
 

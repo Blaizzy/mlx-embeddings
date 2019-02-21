@@ -55,7 +55,7 @@ GEM
       unicode-display_width (~> 1.4.0)
     rubocop-rspec (1.32.0)
       rubocop (>= 0.60.0)
-    ruby-macho (2.1.0)
+    ruby-macho (2.2.0)
     ruby-progressbar (1.10.0)
     thread_safe (0.3.6)
     tzinfo (1.2.5)
