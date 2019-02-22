@@ -61,7 +61,7 @@ module Hardware
       def type
         case RUBY_PLATFORM
         when /x86_64/, /i\d86/ then :intel
-        when /arm/ then :arm
+        when /arm/, /aarch64/ then :arm
         when /ppc\d+/ then :ppc
         else :dunno
         end
