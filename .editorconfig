@@ -12,7 +12,7 @@ insert_final_newline = true
 [{Library/Homebrew/**.rb,.simplecov}]
 trim_trailing_whitespace = true
 
-[Library/Taps/homebrew/**.rb]
+[Library/Taps/**.rb]
 # trailing whitespace is crucial for patches
 trim_trailing_whitespace = false
 
