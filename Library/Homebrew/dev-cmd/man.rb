@@ -66,16 +66,16 @@ module Homebrew
 
     readme = HOMEBREW_REPOSITORY/"README.md"
     variables[:lead] =
-      readme.read[/(Homebrew's project lead .*\.)/, 1]
+      readme.read[/(Homebrew's \[Project Leader.*\.)/, 1]
             .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1')
     variables[:plc] =
-      readme.read[/(Homebrew's project leadership committee .*\.)/, 1]
+      readme.read[/(Homebrew's \[Project Leadership Committee.*\.)/, 1]
             .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1')
     variables[:tsc] =
-      readme.read[/(Homebrew's technical steering committee .*\.)/, 1]
+      readme.read[/(Homebrew's \[Technical Steering Committee.*\.)/, 1]
             .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1')
     variables[:linux] =
-      readme.read[%r{(Homebrew/brew's Linux support \(and Linuxbrew\) maintainers are .*\.)}, 1]
+      readme.read[%r{(Homebrew/brew's Linux support \(and Linuxbrew\) maintainers .*\.)}, 1]
             .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1')
     variables[:maintainers] =
       readme.read[/(Homebrew's other current maintainers .*\.)/, 1]

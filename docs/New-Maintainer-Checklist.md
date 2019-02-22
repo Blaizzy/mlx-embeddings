@@ -68,9 +68,9 @@ If they are interested in doing system administration work or Homebrew/brew rele
 - Invite them to the [`homebrew-ops` private operations mailing list](https://lists.sfconservancy.org/mailman/admin/homebrew-ops/members/add).
 - Invite them to the [`homebrew` private 1Password](https://homebrew.1password.com/people).
 
-If they are elected to the Homebrew's [Software Freedom Conservancy](https://sfconservancy.org) Project Leadership Committee:
+If they are elected to the Homebrew's [Project Leadership Committee](https://docs.brew.sh/Homebrew-Governance#4-project-leadership-committee):
 
-- Email their name, email and employer to homebrew@sfconservancy.org
+- Email their name, email and employer to the [Software Freedom Conservancy](https://sfconservancy.org) at homebrew@sfconservancy.org
 - Make them [owners on the Homebrew GitHub organisation](https://github.com/orgs/Homebrew/people)
 - Invite them to the [**@Homebrew/plc** team](https://github.com/orgs/Homebrew/teams/plc/members)
 - Invite them to [Google Analytics](https://analytics.google.com/analytics/web/#management/Settings/a76679469w115400090p120682403/%3Fm.page%3DAccountUsers/) and add them to the relevant section of the [Homebrew/brew's README](https://github.com/Homebrew/brew/edit/master/README.md).
@@ -80,3 +80,7 @@ If they are elected to the Homebrew's [Software Freedom Conservancy](https://sfc
 If there are problems, ask them to step down as a maintainer and revoke their access to all of the above.
 
 Now sit back, relax and let the new maintainers handle more of our contributions.
+
+## Members
+
+People who are either not eligible or willing to be Homebrew maintainers but have shown continued involvement in the Homebrew community may be admitted by a majority vote of the [Project Leadership Committee](https://docs.brew.sh/Homebrew-Governance#4-project-leadership-committee) to join the Homebrew GitHub organisation as [members](https://docs.brew.sh/Homebrew-Governance#2-members).

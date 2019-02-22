@@ -164,9 +164,3 @@ This makes it easier for other maintainers, contributors and users to follow alo
 All maintainers (and lead maintainer) communication through any medium is bound by [Homebrew's Code of Conduct](https://github.com/Homebrew/brew/blob/master/CODE_OF_CONDUCT.md#code-of-conduct). Abusive behaviour towards other maintainers, contributors or users will not be tolerated; the maintainer will be given a warning and if their behaviour continues they will be removed as a maintainer.
 
 Maintainers should feel free to pleasantly disagree with the work and decisions of other maintainers. Healthy, friendly, technical disagreement between maintainers is actively encouraged and should occur in public on the issue tracker to make the project better. Interpersonal issues should be handled privately in Slack, ideally with moderation. If work or decisions are insufficiently documented or explained any maintainer or contributor should feel free to ask for clarification. No maintainer may ever justify a decision with e.g. "because I say so" or "it was I who did X" alone. Off-topic discussions on the issue tracker, [bike-shedding](https://en.wikipedia.org/wiki/Law_of_triviality) and personal attacks are forbidden.
-
-## Project lead guidelines
-
-There should be one project lead for Homebrew. On February 4, 2019, coinciding with the Homebrew maintainers' conference, Mike McQuaid stepped down as lead maintainer of Homebrew. He was elected by a supermajority of Homebrew maintainers into the new project lead role.
-
-Additional documentation for the project lead and governance are to follow.
