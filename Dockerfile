@@ -13,6 +13,7 @@ RUN apt-get update \
 		fonts-dejavu-core \
 		g++ \
 		git \
+		libz-dev \
 		locales \
 		make \
 		openssh-client \
