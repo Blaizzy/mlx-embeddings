@@ -13,8 +13,8 @@ homebrew-shellenv() {
       echo "set -gx HOMEBREW_CELLAR \"$HOMEBREW_CELLAR\";"
       echo "set -gx HOMEBREW_REPOSITORY \"$HOMEBREW_REPOSITORY\";"
       echo "set -g fish_user_paths \"$HOMEBREW_PREFIX/bin\" \"$HOMEBREW_PREFIX/sbin\" \$fish_user_paths;"
-      echo "set -q MANPATH || set MANPATH ''; set -gx MANPATH \"$HOMEBREW_PREFIX/share/man\" \$MANPATH;"
-      echo "set -q INFOPATH || set INFOPATH ''; set -gx INFOPATH \"$HOMEBREW_PREFIX/share/info\" \$INFOPATH;"
+      echo "set -q MANPATH; or set MANPATH ''; set -gx MANPATH \"$HOMEBREW_PREFIX/share/man\" \$MANPATH;"
+      echo "set -q INFOPATH; or set INFOPATH ''; set -gx INFOPATH \"$HOMEBREW_PREFIX/share/info\" \$INFOPATH;"
       ;;
     */csh|*/tcsh)
       echo "setenv HOMEBREW_PREFIX $HOMEBREW_PREFIX;"
