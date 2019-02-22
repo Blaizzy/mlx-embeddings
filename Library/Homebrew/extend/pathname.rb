@@ -135,10 +135,11 @@ class Pathname
   end
 
   def install_symlink_p(src, new_basename)
-    src = Pathname(src).expand_path(self)
-    dst = join(new_basename)
     mkpath
-    FileUtils.ln_sf(src.relative_path_from(dst.parent), dst)
+    dstdir = realpath
+    src = Pathname(src).expand_path(dstdir)
+    src = src.dirname.realpath/src.basename if src.dirname.exist?
+    FileUtils.ln_sf(src.relative_path_from(dstdir), dstdir/new_basename)
   end
   private :install_symlink_p
 
