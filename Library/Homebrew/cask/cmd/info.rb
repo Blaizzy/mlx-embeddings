@@ -27,14 +27,12 @@ module Cask
       end
 
       def self.get_info(cask)
-        "#{title_info(cask)}\n"\
-        "#{Formatter.url(cask.homepage) if cask.homepage}\n"\
-        "#{installation_info(cask)}\n"\
-        "#{repo_info(cask)}"\
-        "#{name_info(cask)}"\
-        "#{language_info(cask)}"\
-        "#{artifact_info(cask)}"\
-        "#{Installer.print_caveats(cask)}"\
+        <<~EOS.chomp
+          #{title_info(cask)}
+          #{Formatter.url(cask.homepage) if cask.homepage}
+          #{installation_info(cask)}
+          #{repo_info(cask)}#{name_info(cask)}#{language_info(cask)}#{artifact_info(cask)}#{Installer.print_caveats(cask)}
+        EOS
       end
 
       def self.info(cask)
@@ -57,12 +55,16 @@ module Cask
           cask.versions.each do |version|
             versioned_staged_path = cask.caskroom_path.join(version)
             install_info << versioned_staged_path.to_s
-              .concat(" (")
-              .concat(versioned_staged_path.exist? ? versioned_staged_path.abv : Formatter.error("does not exist"))
-                                      .concat(")")
+                            .concat(" (")
+                            .concat(
+                              if versioned_staged_path.exist?
+                              then versioned_staged_path.abv
+                              else Formatter.error("does not exist")
+                              end,
+                            ).concat(")")
             install_info << "\n"
           end
-        return install_info.strip
+          return install_info.strip
         else
           "Not installed"
         end

@@ -49,8 +49,10 @@ module Cask
       caveats = cask.caveats
       return if caveats.empty?
 
-      "#{ohai_title "Caveats"}\n"\
-      "#{caveats}\n"
+      <<~EOS
+        #{ohai_title "Caveats"}
+        #{caveats}
+      EOS
     end
 
     def fetch
