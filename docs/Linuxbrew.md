@@ -83,7 +83,7 @@ eval $(~/.linuxbrew/bin/brew shellenv)
 ## Linuxbrew Community
 
 - [@Linuxbrew on Twitter](https://twitter.com/Linuxbrew)
-- [Linuxbrew/core on GitHub](https://github.com/Linuxbrew/homebrew-core)
+- [Homebrew/linuxbrew-core on GitHub](https://github.com/Homebrew/linuxbrew-core)
 - [Linuxbrew category](https://discourse.brew.sh/c/linuxbrew) of [Homebrew's Discourse](https://discourse.brew.sh)
 
 ## Sponsors
