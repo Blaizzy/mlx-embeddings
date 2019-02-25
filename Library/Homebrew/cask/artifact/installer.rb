@@ -26,22 +26,10 @@ module Cask
         def install_phase(command: nil, **_)
           ohai "Running #{self.class.dsl_key} script '#{path}'"
 
-          absolute_path = if path.absolute?
-            path
-          else
-            cask.staged_path.join(path)
-          end
-
-          FileUtils.chmod "+x", absolute_path if absolute_path.exist? && !absolute_path.executable?
-
-          executable = if absolute_path.exist?
-            absolute_path
-          else
-            path
-          end
+          executable_path = staged_path_join_executable(path)
 
           command.run!(
-            executable,
+            executable_path,
             **args,
             env: { "PATH" => PATH.new(
               HOMEBREW_PREFIX/"bin", HOMEBREW_PREFIX/"sbin", ENV["PATH"]

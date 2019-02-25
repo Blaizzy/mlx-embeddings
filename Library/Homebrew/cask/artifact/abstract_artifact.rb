@@ -20,6 +20,24 @@ module Cask
         @dirmethod ||= "#{dsl_key}dir".to_sym
       end
 
+      def staged_path_join_executable(path)
+        path = Pathname(path)
+
+        absolute_path = if path.absolute?
+          path
+        else
+          cask.staged_path.join(path)
+        end
+
+        FileUtils.chmod "+x", absolute_path if absolute_path.exist? && !absolute_path.executable?
+
+        if absolute_path.exist?
+          absolute_path
+        else
+          path
+        end
+      end
+
       def <=>(other)
         return unless other.class < AbstractArtifact
         return 0 if self.class == other.class
