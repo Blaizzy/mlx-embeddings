@@ -63,7 +63,7 @@ sudo yum groupinstall 'Development Tools' && sudo yum install curl file git
 
 ### ARM
 
-Linuxbrew can run on 32-bit ARM (Raspberry Pi) and 64-bit ARM (AArch64), but no binary packages (bottles) are available. Support for ARM is on a best-effort basis. Pull requests are welcome to improve the experience on ARM and Raspberry Pi.
+Linuxbrew can run on 32-bit ARM (Raspberry Pi and others) and 64-bit ARM (AArch64), but no binary packages (bottles) are available. Support for ARM is on a best-effort basis. Pull requests are welcome to improve the experience on ARM platforms.
 
 ### 32-bit x86
 
