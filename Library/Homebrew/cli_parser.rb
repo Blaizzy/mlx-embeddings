@@ -234,7 +234,7 @@ module Homebrew
           next if violations.count < 2
 
           env_var_options = violations.select do |option|
-            @switch_sources[option_to_name(option)] == :env_var
+            @switch_sources[option_to_name(option)] == :env
           end
 
           select_cli_arg = violations.count - env_var_options.count == 1
