@@ -33,6 +33,9 @@ module Homebrew
   def tests
     tests_args.parse
 
+    Homebrew.install_bundler_gems!
+    gem_user_dir = Gem.user_dir
+
     HOMEBREW_LIBRARY_PATH.cd do
       ENV.delete("HOMEBREW_COLOR")
       ENV.delete("HOMEBREW_NO_COLOR")
@@ -68,8 +71,6 @@ module Homebrew
         ENV["GIT_#{role}_EMAIL"] = "brew-tests@localhost"
         ENV["GIT_#{role}_DATE"]  = "Sun Jan 22 19:59:13 2017 +0000"
       end
-
-      Homebrew.install_bundler_gems!
 
       parallel = true
 
@@ -122,6 +123,9 @@ module Homebrew
       end
 
       puts "Randomized with seed #{seed}"
+
+      # Let `bundle` in PATH find its gem.
+      ENV["GEM_PATH"] = "#{ENV["GEM_PATH"]}:#{gem_user_dir}"
 
       if parallel
         system "bundle", "exec", "parallel_rspec", *parallel_args, "--", *bundle_args, "--", *files

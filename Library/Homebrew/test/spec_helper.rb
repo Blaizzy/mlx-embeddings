@@ -72,11 +72,9 @@ RSpec.configure do |config|
 
   config.silence_filter_announcements = true if ENV["TEST_ENV_NUMBER"]
 
-  # TODO: when https://github.com/rspec/rspec-expectations/pull/1056
-  #       makes it into a stable release:
-  # config.expect_with :rspec do |c|
-  #   c.max_formatted_output_length = 200
-  # end
+  config.expect_with :rspec do |c|
+    c.max_formatted_output_length = 200
+  end
 
   # Never truncate output objects.
   RSpec::Support::ObjectFormatter.default_instance.max_formatted_output_length = nil
