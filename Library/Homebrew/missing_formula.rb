@@ -26,6 +26,10 @@ module Homebrew
           Minimal installation:
             brew cask install basictex
         EOS
+        when "asymptote" then <<~EOS
+          Asymptote is bundled with MacTeX. Install it via TeX Live Utility or:
+            tlmgr install asymptote
+        EOS
         when "pip" then <<~EOS
           pip is part of the python formula:
             brew install python
