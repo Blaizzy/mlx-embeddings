@@ -109,10 +109,10 @@ module Homebrew
       elsif (api_match = arg.match HOMEBREW_PULL_API_REGEX)
         _, user, repo, issue = *api_match
         url = "https://github.com/#{user}/#{repo}/pull/#{issue}"
-        tap = Tap.fetch(user, repo) if repo.start_with?("homebrew-")
+        tap = Tap.fetch(user, repo) if repo.match?(HOMEBREW_OFFICIAL_REPO_PREFIXES_REGEX)
       elsif (url_match = arg.match HOMEBREW_PULL_OR_COMMIT_URL_REGEX)
         url, user, repo, issue = *url_match
-        tap = Tap.fetch(user, repo) if repo.start_with?("homebrew-")
+        tap = Tap.fetch(user, repo) if repo.match?(HOMEBREW_OFFICIAL_REPO_PREFIXES_REGEX)
       else
         odie "Not a GitHub pull request or commit: #{arg}"
       end
