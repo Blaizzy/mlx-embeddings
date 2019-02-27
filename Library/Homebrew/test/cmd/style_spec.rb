@@ -15,6 +15,10 @@ describe "brew style" do
     end
   end
 
+  before do
+    allow(Homebrew).to receive(:install_bundler_gems!)
+  end
+
   describe "Homebrew::check_style_json" do
     let(:dir) { mktmpdir }
 

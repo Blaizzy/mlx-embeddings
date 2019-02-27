@@ -42,7 +42,7 @@ describe Cask::Cmd::Style, :cask do
 
     context "when installation succeeds" do
       before do
-        allow(Homebrew).to receive(:install_gem_setup_path!)
+        allow(Homebrew).to receive(:install_bundler_gems!)
       end
 
       it "exits successfully" do
@@ -52,7 +52,7 @@ describe Cask::Cmd::Style, :cask do
 
     context "when installation fails" do
       before do
-        allow(Homebrew).to receive(:install_gem_setup_path!).and_raise(SystemExit)
+        allow(Homebrew).to receive(:install_bundler_gems!).and_raise(SystemExit)
       end
 
       it "raises an error" do

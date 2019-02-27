@@ -8,12 +8,34 @@ module Homebrew
   module_function
 
   def ruby_bindir
-    "#{RbConfig::CONFIG["prefix"]}/bin"
+    "#{RbConfig::CONFIG["prefix"]}/bin".freeze
   end
 
-  def setup_gem_environment!
+  def gem_user_bindir
+    "#{Gem.user_dir}/bin".freeze
+  end
+
+  def ohai_if_defined(message)
+    if defined?(ohai)
+      ohai message
+    else
+      puts "==> #{message}"
+    end
+  end
+
+  def odie_if_defined(message)
+    if defined?(odie)
+      odie message
+    else
+      $stderr.puts "Error: #{message}"
+      exit 1
+    end
+  end
+
+  def setup_gem_environment!(gem_home: nil, gem_bindir: nil)
     # Match where our bundler gems are.
-    ENV["GEM_HOME"] = "#{ENV["HOMEBREW_LIBRARY"]}/Homebrew/vendor/bundle/ruby/#{RbConfig::CONFIG["ruby_version"]}"
+    gem_home ||= "#{ENV["HOMEBREW_LIBRARY"]}/Homebrew/vendor/bundle/ruby/#{RbConfig::CONFIG["ruby_version"]}"
+    ENV["GEM_HOME"] = gem_home
     ENV["GEM_PATH"] = ENV["GEM_HOME"]
 
     # Make RubyGems notice environment changes.
@@ -21,41 +43,41 @@ module Homebrew
     Gem::Specification.reset
 
     # Add necessary Ruby and Gem binary directories to PATH.
+    gem_bindir ||= Gem.bindir
     paths = ENV["PATH"].split(":")
     paths.unshift(ruby_bindir) unless paths.include?(ruby_bindir)
-    paths.unshift(Gem.bindir) unless paths.include?(Gem.bindir)
+    paths.unshift(gem_bindir) unless paths.include?(gem_bindir)
     ENV["PATH"] = paths.compact.join(":")
   end
 
-  def install_gem!(name, version = nil)
-    setup_gem_environment!
+  def install_gem!(name, version = nil, setup_gem_environment: true)
+    setup_gem_environment! if setup_gem_environment
     return unless Gem::Specification.find_all_by_name(name, version).empty?
 
     # Shell out to `gem` to avoid RubyGems requires e.g. loading JSON.
-    puts "==> Installing '#{name}' gem"
+    ohai_if_defined "Installing '#{name}' gem"
     install_args = %W[--no-document #{name}]
     install_args << "--version" << version if version
     return if system "#{ruby_bindir}/gem", "install", *install_args
 
-    $stderr.puts "Error: failed to install the '#{name}' gem."
-    exit 1
+    odie_if_defined "failed to install the '#{name}' gem."
   end
 
-  def install_gem_setup_path!(name, executable: name)
-    install_gem!(name)
+  def install_gem_setup_path!(name, executable: name, setup_gem_environment: true)
+    install_gem!(name, setup_gem_environment: setup_gem_environment)
     return if ENV["PATH"].split(":").any? do |path|
       File.executable?("#{path}/#{executable}")
     end
 
-    $stderr.puts <<~EOS
-      Error: the '#{name}' gem is installed but couldn't find '#{executable}' in the PATH:
+    odie_if_defined <<~EOS
+      the '#{name}' gem is installed but couldn't find '#{executable}' in the PATH:
       #{ENV["PATH"]}
     EOS
-    exit 1
   end
 
   def install_bundler!
-    install_gem_setup_path! "bundler", executable: "bundle"
+    setup_gem_environment!(gem_home: Gem.user_dir, gem_bindir: gem_user_bindir)
+    install_gem_setup_path!("bundler", executable: "bundle", setup_gem_environment: false)
   end
 
   def install_bundler_gems!
@@ -63,12 +85,17 @@ module Homebrew
 
     ENV["BUNDLE_GEMFILE"] = "#{ENV["HOMEBREW_LIBRARY"]}/Homebrew/Gemfile"
     @bundle_installed ||= begin
-      bundle_check_output = `#{Gem.bindir}/bundle check 2>&1`
+      bundle = "#{gem_user_bindir}/bundle".freeze
+      bundle_check_output = `#{bundle} check 2>&1`
       bundle_check_failed = !$CHILD_STATUS.exitstatus.zero?
 
       # for some reason sometimes the exit code lies so check the output too.
       if bundle_check_failed || bundle_check_output.include?("Install missing gems")
-        system "#{Gem.bindir}/bundle", "install"
+        unless system bundle, "install"
+          odie_if_defined <<~EOS
+            failed to run `#{bundle} install`!
+          EOS
+        end
       else
         true
       end
