@@ -44,6 +44,7 @@ module Homebrew
       ENV.delete("HOMEBREW_NO_GITHUB_API")
       ENV.delete("HOMEBREW_NO_EMOJI")
       ENV.delete("HOMEBREW_DEVELOPER")
+      ENV.delete("HOMEBREW_PRY")
       ENV["HOMEBREW_NO_ANALYTICS_THIS_RUN"] = "1"
       ENV["HOMEBREW_NO_COMPAT"] = "1" if args.no_compat?
       ENV["HOMEBREW_TEST_GENERIC_OS"] = "1" if args.generic?
@@ -85,7 +86,7 @@ module Homebrew
         Dir.glob("test/**/*_spec.rb")
       end
 
-      opts = if ENV["CI"]
+      parallel_args = if ENV["CI"]
         %w[
           --combine-stderr
           --serialize-stdout
@@ -123,7 +124,7 @@ module Homebrew
       puts "Randomized with seed #{seed}"
 
       if parallel
-        system "bundle", "exec", "parallel_rspec", *opts, "--", *bundle_args, "--", *files
+        system "bundle", "exec", "parallel_rspec", *parallel_args, "--", *bundle_args, "--", *files
       else
         system "bundle", "exec", "rspec", *bundle_args, "--", *files
       end
