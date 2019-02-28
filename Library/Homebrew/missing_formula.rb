@@ -14,7 +14,7 @@ module Homebrew
           macOS provides gem as part of Ruby. To install a newer version:
             brew install ruby
         EOS
-        when "tex", "tex-live", "texlive", "latex" then <<~EOS
+        when "tex", "tex-live", "texlive", "mactex", "latex" then <<~EOS
           There are three versions of MacTeX.
 
           Full installation:
