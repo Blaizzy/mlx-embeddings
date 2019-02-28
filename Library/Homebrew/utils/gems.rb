@@ -50,7 +50,7 @@ module Homebrew
     ENV["PATH"] = paths.compact.join(":")
   end
 
-  def install_gem!(name, version = nil, setup_gem_environment: true)
+  def install_gem!(name, version: nil, setup_gem_environment: true)
     setup_gem_environment! if setup_gem_environment
     return unless Gem::Specification.find_all_by_name(name, version).empty?
 
@@ -63,8 +63,8 @@ module Homebrew
     odie_if_defined "failed to install the '#{name}' gem."
   end
 
-  def install_gem_setup_path!(name, executable: name, setup_gem_environment: true)
-    install_gem!(name, setup_gem_environment: setup_gem_environment)
+  def install_gem_setup_path!(name, version: nil, executable: name, setup_gem_environment: true)
+    install_gem!(name, version: version, setup_gem_environment: setup_gem_environment)
     return if ENV["PATH"].split(":").any? do |path|
       File.executable?("#{path}/#{executable}")
     end
@@ -77,7 +77,7 @@ module Homebrew
 
   def install_bundler!
     setup_gem_environment!(gem_home: Gem.user_dir, gem_bindir: gem_user_bindir)
-    install_gem_setup_path!("bundler", executable: "bundle", setup_gem_environment: false)
+    install_gem_setup_path!("bundler", version: ">=2", executable: "bundle", setup_gem_environment: false)
   end
 
   def install_bundler_gems!
