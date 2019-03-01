@@ -38,7 +38,7 @@ module UnpackStrategy
         end
 
         system_command! "tar",
-                        args:    ["xf", tar_path, "-C", unpack_dir],
+                        args:    ["xof", tar_path, "-C", unpack_dir],
                         verbose: verbose
       end
     end
