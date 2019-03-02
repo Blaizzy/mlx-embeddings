@@ -386,10 +386,10 @@ module Homebrew
             problem "Dependency '#{dep.name}' is an alias; use the canonical name '#{dep.to_formula.full_name}'."
           end
 
-          if @new_formula && dep_f.keg_only_reason &&
-             !["openssl", "apr", "apr-util"].include?(dep.name) &&
-             !["openblas"].include?(dep.name) &&
-             dep_f.keg_only_reason.reason == :provided_by_macos
+          if @new_formula &&
+             dep_f.keg_only_reason&.reason == :provided_by_macos &&
+             dep_f.keg_only_reason.valid? &&
+             !["apr", "apr-util", "openblas", "openssl"].include?(dep.name)
             new_formula_problem(
               "Dependency '#{dep.name}' may be unnecessary as it is provided " \
               "by macOS; try to build this formula without it.",
