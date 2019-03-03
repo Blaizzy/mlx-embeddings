@@ -22,14 +22,14 @@ If this is a major or minor release (e.g. X.0.0 or X.Y.0) then there are a few m
 1. Before creating the tag you should delete any `odisabled` code, make any
    `odeprecated` code `odisabled` and add any new `odeprecations` that are
    desired.
-2. Write up a release notes blog post to https://brew.sh
-   e.g. https://github.com/Homebrew/brew.sh/pull/319.
+2. Write up a release notes blog post to <https://brew.sh>
+   e.g. [brew.sh#319](https://github.com/Homebrew/brew.sh/pull/319).
    This should use `brew release-notes` as input but have the wording adjusted
    to be more human readable and explain not just what has changed but why.
 3. When the release has shipped and the blog post has been merged, tweet the
-   blog post as the @MacHomebrew Twitter account or tweet it yourself and
-   retweet it with the @MacHomebrew Twitter account (credentials are in
-   1Password).
+   blog post as the [@MacHomebrew Twitter account](https://twitter.com/MacHomebrew)
+   or tweet it yourself and retweet it with the @MacHomebrew Twitter account
+   (credentials are in 1Password).
 4. Send the email to the Homebrew TinyLetter email list (credentials are in
    1Password).
 5. Consider whether to submit it to other sources e.g. Hacker News, Reddit.
