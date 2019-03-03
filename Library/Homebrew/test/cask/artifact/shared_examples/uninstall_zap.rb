@@ -229,11 +229,6 @@ shared_examples "#uninstall_phase or #zap_phase" do
         allow(fake_system_command).to receive(:run).with(any_args).and_call_original
 
         expect(fake_system_command).to receive(:run).with(
-          "/bin/chmod",
-          args: ["--", "+x", script_pathname],
-        )
-
-        expect(fake_system_command).to receive(:run).with(
           cask.staged_path.join("MyFancyPkg", "FancyUninstaller.tool"),
           args:         ["--please"],
           must_succeed: true,
