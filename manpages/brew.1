@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "BREW" "1" "February 2019" "Homebrew" "brew"
+.TH "BREW" "1" "March 2019" "Homebrew" "brew"
 .
 .SH "NAME"
 \fBbrew\fR \- The missing package manager for macOS
@@ -438,7 +438,7 @@ By default, version information is displayed in interactive shells, and suppress
 .
 .TP
 \fB\-\-json\fR
-Show output in JSON format for provided \fIversion\fR\. Currently the only accepted value of \fIversion\fR is \fBv1\fR\.
+Print output in JSON format\. Currently the default and only accepted value for \fIversion\fR is \fBv1\fR\. See the docs for examples of using the JSON output: \fIhttps://docs\.brew\.sh/Querying\-Brew\fR
 .
 .TP
 \fB\-\-fetch\-HEAD\fR
@@ -603,7 +603,7 @@ Display information on all installed taps\.
 .
 .TP
 \fB\-\-json\fR
-Print a JSON representation of \fItaps\fR\. Currently the only accepted value for \fIversion\fR is \fBv1\fR\. See the docs for examples of using the JSON output: \fIhttps://docs\.brew\.sh/Querying\-Brew\fR
+Print a JSON representation of \fItaps\fR\. Currently the default and only accepted value for \fIversion\fR is \fBv1\fR\. See the docs for examples of using the JSON output: \fIhttps://docs\.brew\.sh/Querying\-Brew\fR
 .
 .SS "\fBtap\-pin\fR \fItap\fR"
 Pin \fItap\fR, prioritising its formulae over core when formula names are supplied by the user\. See also \fBtap\-unpin\fR\.
