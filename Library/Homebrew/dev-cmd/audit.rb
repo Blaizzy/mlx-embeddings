@@ -640,18 +640,14 @@ module Homebrew
 
       problem "Formulae should not have a `devel` spec" if formula.devel
 
-      if formula.head
+      if formula.head && @versioned_formula
         head_spec_message = "Formulae should not have a `HEAD` spec"
-        if @new_formula
-          new_formula_problem head_spec_message
-        elsif @versioned_formula
-          versioned_head_spec = %w[
-            bash-completion@2
-            imagemagick@6
-            python@2
-          ]
-          problem head_spec_message unless versioned_head_spec.include?(formula.name)
-        end
+        versioned_head_spec = %w[
+          bash-completion@2
+          imagemagick@6
+          python@2
+        ]
+        problem head_spec_message unless versioned_head_spec.include?(formula.name)
       end
 
       throttled = %w[
