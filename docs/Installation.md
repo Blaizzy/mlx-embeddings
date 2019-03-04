@@ -1,7 +1,6 @@
 # Installation
 
-The supported and best way to install Homebrew is on the
-[homepage](https://brew.sh).
+Instructions for installing Homebrew are on the [homepage](https://brew.sh).
 
 This script installs Homebrew to `/usr/local` so that
 [you don’t need sudo](FAQ.md#why-does-homebrew-say-sudo-is-bad) when you
@@ -11,7 +10,7 @@ it does it too. You have to confirm everything it will do before it starts.
 
 ## macOS Requirements
 
-* An 64-bit Intel CPU <sup>[1](#1)</sup>
+* A 64-bit Intel CPU <sup>[1](#1)</sup>
 * macOS 10.12 (or higher) <sup>[2](#2)</sup>
 * Command Line Tools (CLT) for Xcode: `xcode-select --install`,
   [developer.apple.com/downloads](https://developer.apple.com/downloads) or
