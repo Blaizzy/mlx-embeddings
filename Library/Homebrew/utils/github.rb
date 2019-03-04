@@ -270,7 +270,7 @@ module GitHub
 
   def issues_for_formula(name, options = {})
     tap = options[:tap] || CoreTap.instance
-    search_issues(name, state: "open", repo: "#{tap.user}/homebrew-#{tap.repo}", in: "title")
+    search_issues(name, state: "open", repo: tap.full_name, in: "title")
   end
 
   def user
