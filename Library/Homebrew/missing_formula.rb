@@ -7,7 +7,7 @@ module Homebrew
   module MissingFormula
     class << self
       def reason(name, silent: false)
-        cask_reason(name, silent: false) || blacklisted_reason(name) ||
+        cask_reason(name, silent: silent) || blacklisted_reason(name) ||
           tap_migration_reason(name) || deleted_reason(name, silent: silent)
       end
 
@@ -191,10 +191,12 @@ module Homebrew
       end
 
       def cask_reason(name, silent: false)
+        return if silent
         cask = Cask::CaskLoader.load(name)
-        return Cask::Cmd::Info.get_info(cask) unless silent
-        rescue Cask::CaskUnavailableError
-          nil
+        reason = "Found the following cask named \"#{name}\" instead:\n"
+        reason << Cask::Cmd::Info.get_info(cask) unless silent
+      rescue Cask::CaskUnavailableError
+        nil
       end
 
       require "extend/os/missing_formula"

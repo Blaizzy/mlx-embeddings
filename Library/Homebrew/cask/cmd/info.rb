@@ -27,12 +27,18 @@ module Cask
       end
 
       def self.get_info(cask)
-        <<~EOS.chomp
-          #{title_info(cask)}
-          #{Formatter.url(cask.homepage) if cask.homepage}
-          #{installation_info(cask)}
-          #{repo_info(cask)}#{name_info(cask)}#{language_info(cask)}#{artifact_info(cask)}#{Installer.print_caveats(cask)}
-        EOS
+        output = title_info(cask) + "\n"
+        if cask.homepage then output << Formatter.url(cask.homepage) + "\n" end
+        output << installation_info(cask)
+        repo = repo_info(cask)
+        output << repo unless repo.nil?
+        output << name_info(cask)
+        language = language_info(cask)
+        output << language unless language.nil?
+        output << artifact_info(cask)
+        caveats = Installer.print_caveats(cask)
+        output << caveats unless caveats.nil?
+        output
       end
 
       def self.info(cask)
@@ -64,9 +70,9 @@ module Cask
                             ).concat(")")
             install_info << "\n"
           end
-          return install_info.strip
+          install_info
         else
-          "Not installed"
+          "Not installed\n"
         end
       end
 
@@ -99,15 +105,14 @@ module Cask
       end
 
       def self.artifact_info(cask)
+        artifact_output = ohai_title("Artifacts")
         cask.artifacts.each do |artifact|
           next unless artifact.respond_to?(:install_phase)
           next unless DSL::ORDINARY_ARTIFACT_CLASSES.include?(artifact.class)
 
-          return <<~EOS
-            #{ohai_title("Artifacts")}
-            #{artifact}
-          EOS
+          artifact_output << "\n" << artifact.to_s
         end
+        artifact_output << "\n"
       end
     end
   end

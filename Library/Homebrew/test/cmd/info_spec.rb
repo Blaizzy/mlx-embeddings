@@ -23,17 +23,7 @@ describe "brew info", :integration_test do
     setup_remote_tap "homebrew/cask"
 
     expect { brew "info", "firefox" }
-      .to output(%r{Error:\sNo\savailable\sformula\swith\sthe\sname\s"firefox"\s\n
-        firefox:\s\d+.?\d*\s\(auto_updates\)\n
-        https:\/\/www.mozilla.org\/firefox\/\n
-        Not\sinstalled\n
-        .*\n
-        ==>\sName\n
-        Mozilla\sFirefox\n
-        ==>\sLanguages\n
-        .*\n
-        ==>\sArtifacts\n
-        Firefox.app\s\(App\)\n}x).to_stderr
+      .to output(/Found the following cask named "firefox" instead:\nfirefox: .+ \(auto_updates\)\n/).to_stderr
   end
 end
 
