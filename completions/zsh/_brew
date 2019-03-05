@@ -41,18 +41,19 @@ __brew_formulae_or_ruby_files() {
 
 # completions remain in cache until any tap has new commits
 __brew_completion_caching_policy() {
-  # rebuild cache if no cache file exists (anyway we cannot proceed further down)
-  ! [[ -f "$1" ]] && return 0
-  # cache file modification date (seconds since epoch)
-  local -i cache_mtime=$(date -r "$1" +%s)
-  # latest modified homebrew tap index file
-  local latest_modified_git_index=(${HOMEBREW_REPOSITORY:-/usr/local/Homebrew}/Library/Taps/*/*/.git/index(om[1]))
-  local -i commit_mtime=$(date -r "$latest_modified_git_index" +%s)
-  (( $cache_mtime < $commit_mtime ))
+  local -a tmp
+
+  # invalidate if cache file is missing or >=2 weeks old
+  tmp=( $1(mw-2N) )
+  (( $#tmp )) || return 0
+
+  # otherwise, invalidate if latest tap index file is missing or newer than
+  # cache file
+  tmp=( ${HOMEBREW_REPOSITORY:-/usr/local/Homebrew}/Library/Taps/*/*/.git/index(om[1]N) )
+  [[ -z $tmp || $tmp -nt $1 ]]
 }
 
 __brew_formulae() {
-  zstyle ":completion:${curcontext}:" cache-policy __brew_completion_caching_policy
   local -a formulae
   local comp_cachename=brew_formulae
   if _cache_invalid $comp_cachename || ! _retrieve_cache $comp_cachename; then
@@ -147,7 +148,6 @@ __brew_common_commands() {
 }
 
 __brew_all_commands() {
-  zstyle ":completion:${curcontext}:" cache-policy __brew_completion_caching_policy
   local -a commands
   local comp_cachename=brew_all_commands
   if _cache_invalid $comp_cachename || ! _retrieve_cache $comp_cachename; then
@@ -808,7 +808,7 @@ _brew_vendor_install() {
 # the main completion function
 _brew() {
   local curcontext="$curcontext" state state_descr line expl
-  local ret=1
+  local tmp ret=1
 
   _arguments -C : \
     '(-v)-v[verbose]' \
@@ -816,7 +816,15 @@ _brew() {
     '*::options:->options' && return 0
 
   case "$state" in
-    command) __brew_commands && return 0 ;;
+    command)
+      # set default cache policy
+      zstyle -s ":completion:${curcontext%:*}:*" cache-policy tmp
+      [[ -n $tmp ]] ||
+      zstyle ":completion:${curcontext%:*}:*" cache-policy \
+        __brew_completion_caching_policy
+
+      __brew_commands && return 0
+      ;;
     options)
       local command_or_alias command
       local -A aliases
@@ -827,7 +835,14 @@ _brew() {
       command="${aliases[$command_or_alias]:-$command_or_alias}"
 
       # change context to e.g. brew-list
-      curcontext="${curcontext%:*:*}:brew-${command}"
+      curcontext="${curcontext%:*}-${command}:${curcontext##*:}"
+
+      # set default cache policy (we repeat this dance because the context
+      # service differs from above)
+      zstyle -s ":completion:${curcontext%:*}:*" cache-policy tmp
+      [[ -n $tmp ]] ||
+      zstyle ":completion:${curcontext%:*}:*" cache-policy \
+        __brew_completion_caching_policy
 
       # call completion for named command e.g. _brew_list
       local completion_func="_brew_${command//-/_}"
