@@ -19,15 +19,16 @@ module Homebrew
         description: "List only the names of outdated brews (takes precedence over `--verbose`)."
       switch :verbose,
         description: "Display detailed version information."
-      flag "--json=",
-        description: "Show output in JSON format for provided <version>. Currently the only "\
-                     "accepted value of <version> is `v1`."
+      flag "--json",
+        description: "Print output in JSON format. Currently the default and only accepted "\
+                     "value for <version> is `v1`. See the docs for examples of using the JSON "\
+                     "output: <https://docs.brew.sh/Querying-Brew>"
       switch "--fetch-HEAD",
         description: "Fetch the upstream repository to detect if the HEAD installation of the "\
                      "formula is outdated. Otherwise, the repository's HEAD will be checked for "\
                      "updates when a new stable or development version has been released."
       switch :debug
-      conflicts "--quiet", "--verbose", "--json="
+      conflicts "--quiet", "--verbose", "--json"
     end
   end
 
@@ -39,7 +40,9 @@ module Homebrew
     else
       ARGV.resolved_formulae
     end
-    if args.json == "v1"
+    if args.json
+      raise UsageError, "invalid JSON version: #{args.json}" unless ["v1", true].include? args.json
+
       outdated = print_outdated_json(formulae)
     else
       outdated = print_outdated(formulae)
