@@ -1,6 +1,6 @@
 # Installation
 
-Instructions for installing Homebrew are on the [homepage](https://brew.sh).
+Official instructions for installing Homebrew are on the [homepage](https://brew.sh).
 
 This script installs Homebrew to `/usr/local` so that
 [you don’t need sudo](FAQ.md#why-does-homebrew-say-sudo-is-bad) when you
