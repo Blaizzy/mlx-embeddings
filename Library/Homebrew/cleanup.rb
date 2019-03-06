@@ -59,7 +59,11 @@ module CleanupRefinement
     def stale?(scrub = false)
       return false unless resolved_path.file?
 
-      stale_formula?(scrub) || stale_cask?(scrub)
+      if dirname.basename.to_s == "Cask"
+        stale_cask?(scrub)
+      else
+        stale_formula?(scrub)
+      end
     end
 
     private
@@ -112,8 +116,6 @@ module CleanupRefinement
 
     def stale_cask?(scrub)
       return false unless name = basename.to_s[/\A(.*?)\-\-/, 1]
-
-      return if dirname.basename.to_s != "Cask"
 
       cask = begin
         Cask::CaskLoader.load(name)
