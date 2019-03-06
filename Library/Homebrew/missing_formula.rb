@@ -192,6 +192,7 @@ module Homebrew
 
       def cask_reason(name, silent: false)
         return if silent
+
         cask = Cask::CaskLoader.load(name)
         reason = "Found the following cask named \"#{name}\" instead:\n"
         reason << Cask::Cmd::Info.get_info(cask) unless silent

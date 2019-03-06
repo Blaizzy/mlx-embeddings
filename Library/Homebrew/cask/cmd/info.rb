@@ -28,7 +28,7 @@ module Cask
 
       def self.get_info(cask)
         output = title_info(cask) + "\n"
-        if cask.homepage then output << Formatter.url(cask.homepage) + "\n" end
+        output << Formatter.url(cask.homepage) + "\n" if cask.homepage
         output << installation_info(cask)
         repo = repo_info(cask)
         output << repo unless repo.nil?
