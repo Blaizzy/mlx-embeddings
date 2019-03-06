@@ -384,16 +384,6 @@ _brew_postinstall() {
   __brew_complete_installed
 }
 
-_brew_prune() {
-  local cur="${COMP_WORDS[COMP_CWORD]}"
-  case "$cur" in
-    --*)
-      __brewcomp "--dry-run --verbose"
-      return
-      ;;
-  esac
-}
-
 _brew_pull() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
