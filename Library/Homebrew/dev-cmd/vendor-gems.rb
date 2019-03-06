@@ -20,13 +20,16 @@ module Homebrew
 
     Homebrew.install_bundler!
 
-    ohai "cd #{HOMEBREW_LIBRARY_PATH}/vendor"
-    (HOMEBREW_LIBRARY_PATH/"vendor").cd do
+    ohai "cd #{HOMEBREW_LIBRARY_PATH}"
+    HOMEBREW_LIBRARY_PATH.cd do
+      ohai "bundle pristine"
+      safe_system "bundle", "pristine"
+
       ohai "bundle install --standalone"
       safe_system "bundle", "install", "--standalone"
 
-      ohai "git add bundle-standalone"
-      system "git", "add", "bundle-standalone"
+      ohai "git add vendor/bundle"
+      system "git", "add", "vendor/bundle"
 
       if Formula["gpg"].installed?
         ENV["PATH"] = PATH.new(ENV["PATH"])

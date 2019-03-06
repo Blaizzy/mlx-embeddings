@@ -252,7 +252,7 @@ module Homebrew
           its(:problems) { are_expected.to be_empty }
         end
 
-        describe "which is not whitelisted" do
+        describe "which is not whitelisted", :needs_macos do
           subject { fa }
 
           let(:fa) do

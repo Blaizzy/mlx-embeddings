@@ -28,18 +28,14 @@ module StringInreplaceExtension
 
   def sub!(before, after)
     result = super
-    unless result
-      errors << "expected replacement of #{before.inspect} with #{after.inspect}"
-    end
+    errors << "expected replacement of #{before.inspect} with #{after.inspect}" unless result
     result
   end
 
   # Warn if nothing was replaced
   def gsub!(before, after, audit_result = true)
     result = super(before, after)
-    if audit_result && result.nil?
-      errors << "expected replacement of #{before.inspect} with #{after.inspect}"
-    end
+    errors << "expected replacement of #{before.inspect} with #{after.inspect}" if audit_result && result.nil?
     result
   end
 
@@ -55,9 +51,7 @@ module StringInreplaceExtension
   def remove_make_var!(flags)
     Array(flags).each do |flag|
       # Also remove trailing \n, if present.
-      unless gsub!(/^#{Regexp.escape(flag)}[ \t]*=.*$\n?/, "", false)
-        errors << "expected to remove #{flag.inspect}"
-      end
+      errors << "expected to remove #{flag.inspect}" unless gsub!(/^#{Regexp.escape(flag)}[ \t]*=.*$\n?/, "", false)
     end
   end
 

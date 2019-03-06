@@ -1,0 +1,7 @@
+---
+BUNDLE_BIN: "false"
+BUNDLE_CLEAN: "true"
+BUNDLE_DISABLE_SHARED_GEMS: "true"
+BUNDLE_JOBS: "4"
+BUNDLE_PATH: "vendor/bundle"
+BUNDLE_RETRY: "3"

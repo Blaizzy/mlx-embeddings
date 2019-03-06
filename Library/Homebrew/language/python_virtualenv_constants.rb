@@ -1,6 +1,6 @@
 PYTHON_VIRTUALENV_URL =
-  "https://files.pythonhosted.org/packages/51/aa" \
-  "/c395a6e6eaaedfa5a04723b6446a1df783b16cca6fec66e671cede514688" \
-  "/virtualenv-16.4.0.tar.gz".freeze
+  "https://files.pythonhosted.org/packages/37/db" \
+  "/89d6b043b22052109da35416abc3c397655e4bd3cff031446ba02b9654fa" \
+  "/virtualenv-16.4.3.tar.gz".freeze
 PYTHON_VIRTUALENV_SHA256 =
-  "cceab52aa7d4df1e1871a70236eb2b89fcfe29b6b43510d9738689787c513261".freeze
+  "984d7e607b0a5d1329425dd8845bd971b957424b5ba664729fab51ab8c11bc39".freeze

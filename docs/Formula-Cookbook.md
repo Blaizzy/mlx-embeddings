@@ -160,7 +160,7 @@ description can be overridden using the normal option syntax (in this case, the 
     ```
 * Some [`Requirement`](https://www.rubydoc.info/github/Homebrew/brew/master/Requirement)s can also take a string specifying their minimum version that the formula depends on.
 
-We frown on [`option`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#option-class_method)s in Homebrew/homebrew-core as they are not tested by CI.
+**Note:** [`option`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#option-class_method)s are not allowed in Homebrew/homebrew-core as they are not tested by CI.
 
 ### Specifying conflicts with other formulae
 
@@ -635,6 +635,8 @@ Note that in the context of Homebrew, [`libexec`](https://www.rubydoc.info/githu
 
 ### Adding optional steps
 
+**Note:** [`option`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#option-class_method)s are not allowed in Homebrew/homebrew-core as they are not tested by CI.
+
 If you want to add an [`option`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#option-class_method):
 
 ```ruby
@@ -661,9 +663,7 @@ end
 
 [`option`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#option-class_method) names should be prefixed with the words `with` or `without`. For example, an option to run a test suite should be named `--with-test` or `--with-check` rather than `--test`, and an option to enable a shared library `--with-shared` rather than `--shared` or `--enable-shared`.
 
-**Note:** [`option`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#option-class_method)s that aren’t `build.with? ` or `build.without?` should be deprecated with [`deprecated_option`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#deprecated_option-class_method). See [`wget`](https://github.com/Homebrew/homebrew-core/blob/3f762b63c6fbbd49191ffdf58574d7e18937d93f/Formula/wget.rb#L27-L31) for an example.
-
-We frown on [`option`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#option-class_method)s in Homebrew/homebrew-core as they are not tested by CI.
+[`option`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#option-class_method)s that aren’t `build.with? ` or `build.without?` should be deprecated with [`deprecated_option`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#deprecated_option-class_method). See [`wget`](https://github.com/Homebrew/homebrew-core/blob/3f762b63c6fbbd49191ffdf58574d7e18937d93f/Formula/wget.rb#L27-L31) for an example.
 
 ### File level operations
 
@@ -700,9 +700,9 @@ Homebrew provides two formula DSL methods for launchd plist files:
 
 Homebrew has multiple levels of environment variable filtering which affects variables available to formulae.
 
-Firstly, the overall environment in which Homebrew runs is filtered to avoid environment contamination breaking from-source builds (https://github.com/Homebrew/brew/issues/932).  In particular, this process filters all but the given whitelisted variables, but allows environment variables prefixed with `HOMEBREW_`. The specific implementation can be seen in [`bin/brew`](https://github.com/Homebrew/brew/blob/master/bin/brew).
+Firstly, the overall environment in which Homebrew runs is filtered to avoid environment contamination breaking from-source builds (<https://github.com/Homebrew/brew/issues/932>).  In particular, this process filters all but the given whitelisted variables, but allows environment variables prefixed with `HOMEBREW_`. The specific implementation can be seen in [`bin/brew`](https://github.com/Homebrew/brew/blob/master/bin/brew).
 
-The second level of filtering removes sensitive environment variables (such as credentials like keys, passwords or tokens) to avoid malicious subprocesses obtaining them (https://github.com/Homebrew/brew/pull/2524).  This has the effect of preventing any such variables from reaching a formula's Ruby code as they are filtered before it is called.  The specific implementation can be seen in the [`ENV.clear_sensitive_environment!` method](https://github.com/Homebrew/brew/blob/master/Library/Homebrew/extend/ENV.rb).
+The second level of filtering removes sensitive environment variables (such as credentials like keys, passwords or tokens) to avoid malicious subprocesses obtaining them (<https://github.com/Homebrew/brew/pull/2524>).  This has the effect of preventing any such variables from reaching a formula's Ruby code as they are filtered before it is called.  The specific implementation can be seen in the [`ENV.clear_sensitive_environment!` method](https://github.com/Homebrew/brew/blob/master/Library/Homebrew/extend/ENV.rb).
 
 In summary, environment variables used by a formula need to conform to these filtering rules in order to be available.
 

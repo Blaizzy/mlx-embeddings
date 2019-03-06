@@ -83,6 +83,7 @@ module Homebrew
                        .generate_help_text
       rescue NoMethodError => e
         raise if e.name != cmd_args_method_name
+
         nil
       end
 

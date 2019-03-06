@@ -136,6 +136,7 @@ module Cask
             Timeout.timeout(10) do
               Kernel.loop do
                 next unless quit(bundle_id).success?
+
                 if running_processes(bundle_id).empty?
                   puts "Application '#{bundle_id}' quit successfully."
                   break
@@ -179,9 +180,7 @@ module Cask
       # :signal should come after :quit so it can be used as a backup when :quit fails
       def uninstall_signal(*signals, command: nil, **_)
         signals.each do |pair|
-          unless pair.size == 2
-            raise CaskInvalidError.new(cask, "Each #{stanza} :signal must consist of 2 elements.")
-          end
+          raise CaskInvalidError.new(cask, "Each #{stanza} :signal must consist of 2 elements.") unless pair.size == 2
 
           signal, bundle_id = pair
           ohai "Signalling '#{signal}' to application ID '#{bundle_id}'"
@@ -244,9 +243,10 @@ module Cask
         ohai "Running uninstall script #{executable}"
         raise CaskInvalidError.new(cask, "#{stanza} :#{directive_name} without :executable.") if executable.nil?
 
-        executable_path = cask.staged_path.join(executable)
+        executable_path = staged_path_join_executable(executable)
 
-        unless executable_path.exist?
+        if (executable_path.absolute? && !executable_path.exist?) ||
+           (!executable_path.absolute? && (which executable_path).nil?)
           message = "uninstall script #{executable} does not exist"
           raise CaskError, "#{message}." unless force
 
@@ -254,7 +254,6 @@ module Cask
           return
         end
 
-        command.run("/bin/chmod", args: ["--", "+x", executable_path])
         command.run(executable_path, script_arguments)
         sleep 1
       end

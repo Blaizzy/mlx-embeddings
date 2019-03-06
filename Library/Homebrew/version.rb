@@ -206,9 +206,7 @@ class Version
   end
 
   def self.create(val)
-    unless val.respond_to?(:to_str)
-      raise TypeError, "Version value must be a string; got a #{val.class} (#{val})"
-    end
+    raise TypeError, "Version value must be a string; got a #{val.class} (#{val})" unless val.respond_to?(:to_str)
 
     if val.to_str.start_with?("HEAD")
       HeadVersion.new(val)
@@ -365,9 +363,7 @@ class Version
   private_class_method :_parse
 
   def initialize(val)
-    unless val.respond_to?(:to_str)
-      raise TypeError, "Version value must be a string; got a #{val.class} (#{val})"
-    end
+    raise TypeError, "Version value must be a string; got a #{val.class} (#{val})" unless val.respond_to?(:to_str)
 
     @version = val.to_str
   end

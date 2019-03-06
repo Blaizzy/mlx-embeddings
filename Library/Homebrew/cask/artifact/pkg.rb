@@ -46,9 +46,7 @@ module Cask
           "-target", "/"
         ]
         args << "-verboseR" if verbose
-        if stanza_options.fetch(:allow_untrusted, false)
-          args << "-allowUntrusted"
-        end
+        args << "-allowUntrusted" if stanza_options.fetch(:allow_untrusted, false)
         with_choices_file do |choices_path|
           args << "-applyChoiceChangesXML" << choices_path if choices_path
           env = {

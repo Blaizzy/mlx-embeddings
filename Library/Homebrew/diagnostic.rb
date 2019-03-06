@@ -106,6 +106,32 @@ module Homebrew
         EOS
       end
 
+      def examine_git_origin(repository_path, desired_origin)
+        return if !Utils.git_available? || !repository_path.git?
+
+        current_origin = repository_path.git_origin
+
+        if current_origin.nil?
+          <<~EOS
+            Missing #{desired_origin} git origin remote.
+
+            Without a correctly configured origin, Homebrew won't update
+            properly. You can solve this by adding the remote:
+              git -C "#{repository_path}" remote add origin #{Formatter.url("https://github.com/#{desired_origin}.git")}
+          EOS
+        elsif current_origin !~ %r{#{desired_origin}(\.git|/)?$}i
+          <<~EOS
+            Suspicious #{desired_origin} git origin remote found.
+            The current git origin is:
+              #{current_origin}
+
+            With a non-standard origin, Homebrew won't update properly.
+            You can solve this by setting the origin remote:
+              git -C "#{repository_path}" remote set-url origin #{Formatter.url("https://github.com/#{desired_origin}.git")}
+          EOS
+        end
+      end
+
       def check_for_installed_developer_tools
         return if DevelopmentTools.installed?
 
@@ -278,9 +304,7 @@ module Homebrew
           next unless d.directory?
 
           d.find do |path|
-            if path.symlink? && !path.resolved_path_exists?
-              broken_symlinks << path
-            end
+            broken_symlinks << path if path.symlink? && !path.resolved_path_exists?
           end
         end
         return if broken_symlinks.empty?
@@ -531,60 +555,16 @@ module Homebrew
       end
 
       def check_brew_git_origin
-        return if !Utils.git_available? || !(HOMEBREW_REPOSITORY/".git").exist?
-
-        origin = HOMEBREW_REPOSITORY.git_origin
-
-        if origin.nil?
-          <<~EOS
-            Missing Homebrew/brew git origin remote.
-
-            Without a correctly configured origin, Homebrew won't update
-            properly. You can solve this by adding the Homebrew remote:
-              git -C "#{HOMEBREW_REPOSITORY}" remote add origin #{Formatter.url("https://github.com/Homebrew/brew.git")}
-          EOS
-        elsif origin !~ %r{Homebrew/brew(\.git|/)?$}
-          <<~EOS
-            Suspicious Homebrew/brew git origin remote found.
-
-            With a non-standard origin, Homebrew won't pull updates from
-            the main repository. The current git origin is:
-              #{origin}
-
-            Unless you have compelling reasons, consider setting the
-            origin remote to point at the main repository by running:
-              git -C "#{HOMEBREW_REPOSITORY}" remote set-url origin #{Formatter.url("https://github.com/Homebrew/brew.git")}
-          EOS
-        end
+        examine_git_origin(HOMEBREW_REPOSITORY, "Homebrew/brew")
       end
 
       def check_coretap_git_origin
-        coretap_path = CoreTap.instance.path
-        return if !Utils.git_available? || !(coretap_path/".git").exist?
+        examine_git_origin(CoreTap.instance.path, CoreTap.instance.full_name)
+      end
 
-        origin = coretap_path.git_origin
-
-        if origin.nil?
-          <<~EOS
-            Missing #{CoreTap.instance} git origin remote.
-
-            Without a correctly configured origin, Homebrew won't update
-            properly. You can solve this by adding the Homebrew remote:
-              git -C "#{coretap_path}" remote add origin #{Formatter.url(CoreTap.instance.default_remote)}
-          EOS
-        elsif origin !~ %r{#{CoreTap.instance.full_name}(\.git|/)?$}i
-          <<~EOS
-            Suspicious #{CoreTap.instance} git origin remote found.
-
-            With a non-standard origin, Homebrew won't pull updates from
-            the main repository. The current git origin is:
-              #{origin}
-
-            Unless you have compelling reasons, consider setting the
-            origin remote to point at the main repository by running:
-              git -C "#{coretap_path}" remote set-url origin #{Formatter.url(CoreTap.instance.default_remote)}
-          EOS
-        end
+      def check_casktap_git_origin
+        cask = Tap.default_cask_tap
+        examine_git_origin(cask.path, cask.full_name) if cask.installed?
       end
 
       def check_coretap_git_branch
@@ -611,7 +591,7 @@ module Homebrew
 
         <<~EOS
           You have the following deprecated, official taps tapped:
-            Homebrew/homebrew-#{tapped_deprecated_taps.join("\n  ")}
+            Homebrew/homebrew-#{tapped_deprecated_taps.join("\n  Homebrew/homebrew-")}
           Untap them with `brew untap`.
         EOS
       end

@@ -4,9 +4,7 @@ module Cask
   module Artifact
     class StageOnly < AbstractArtifact
       def self.from_args(cask, *args)
-        if args != [true]
-          raise CaskInvalidError.new(cask.token, "'stage_only' takes only a single argument: true")
-        end
+        raise CaskInvalidError.new(cask.token, "'stage_only' takes only a single argument: true") if args != [true]
 
         new(cask)
       end

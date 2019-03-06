@@ -8,3 +8,4 @@ HOMEBREW_TAP_DIR_REGEX = %r{#{Regexp.escape(HOMEBREW_LIBRARY)}/Taps/(?<user>[\w-
 HOMEBREW_TAP_PATH_REGEX = Regexp.new(HOMEBREW_TAP_DIR_REGEX.source + %r{(?:/.*)?$}.source)
 # match official taps' casks, e.g. homebrew/cask/somecask or homebrew/cask-versions/somecask
 HOMEBREW_CASK_TAP_CASK_REGEX = %r{^(?:([Cc]askroom)/(cask|versions)|(homebrew)/(cask|cask-[\w-]+))/([\w+-.]+)$}.freeze
+HOMEBREW_OFFICIAL_REPO_PREFIXES_REGEX = /^(home|linux)brew-/.freeze

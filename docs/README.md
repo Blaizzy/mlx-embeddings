@@ -50,3 +50,7 @@
 - [Brew Test Bot For Maintainers](Brew-Test-Bot-For-Core-Contributors.md)
 - [Common Issues for Maintainers](Common-Issues-for-Core-Contributors.md)
 - [Releases](Releases.md)
+
+## Governance
+
+- [Homebrew Governance](Homebrew-Governance.md)

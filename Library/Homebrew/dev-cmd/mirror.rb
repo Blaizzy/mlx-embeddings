@@ -23,9 +23,7 @@ module Homebrew
 
     bintray_user = ENV["HOMEBREW_BINTRAY_USER"]
     bintray_key = ENV["HOMEBREW_BINTRAY_KEY"]
-    if !bintray_user || !bintray_key
-      raise "Missing HOMEBREW_BINTRAY_USER or HOMEBREW_BINTRAY_KEY variables!"
-    end
+    raise "Missing HOMEBREW_BINTRAY_USER or HOMEBREW_BINTRAY_KEY variables!" if !bintray_user || !bintray_key
 
     ARGV.formulae.each do |f|
       bintray_package = Utils::Bottles::Bintray.package f.name

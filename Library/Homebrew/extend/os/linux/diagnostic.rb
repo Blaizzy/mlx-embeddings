@@ -54,7 +54,7 @@ module Homebrew
           this variable set to include other locations.
           Some programs like `vapigen` may not work correctly.
           Consider adding Homebrew's share directory to XDG_DATA_DIRS like so:
-            #{Utils::Shell.prepend_variable_in_profile("XDG_DATA_DIRS", HOMEBREW_PREFIX/"share")}
+            echo 'export XDG_DATA_DIRS="#{HOMEBREW_PREFIX}/share:$XDG_DATA_DIRS"' >> #{shell_profile}
         EOS
       end
 

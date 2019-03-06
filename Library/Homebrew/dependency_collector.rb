@@ -134,9 +134,7 @@ class DependencyCollector
   end
 
   def parse_class_spec(spec, tags)
-    unless spec < Requirement
-      raise TypeError, "#{spec.inspect} is not a Requirement subclass"
-    end
+    raise TypeError, "#{spec.inspect} is not a Requirement subclass" unless spec < Requirement
 
     spec.new(tags)
   end

@@ -66,9 +66,7 @@ class Resource
   # directory. Subclasses that override stage should implement the tmp
   # dir using {Mktemp} so that works with all subtypes.
   def stage(target = nil, &block)
-    unless target || block
-      raise ArgumentError, "target directory or block is required"
-    end
+    raise ArgumentError, "target directory or block is required" unless target || block
 
     verify_download_integrity(fetch)
     prepare_patches

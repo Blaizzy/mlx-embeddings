@@ -13,10 +13,10 @@ module Homebrew
       EOS
       switch "--installed",
         description: "Display information on all installed taps."
-      flag "--json=",
-        description: "Print a JSON representation of <taps>. Currently the only accepted value for "\
-                     "<version> is `v1`. See the docs for examples of using the JSON output: "\
-                     "<https://docs.brew.sh/Querying-Brew>"
+      flag "--json",
+        description: "Print a JSON representation of <taps>. Currently the default and only accepted "\
+                     "value for <version> is `v1`. See the docs for examples of using the JSON "\
+                     "output: <https://docs.brew.sh/Querying-Brew>"
       switch :debug
     end
   end
@@ -32,7 +32,9 @@ module Homebrew
       end
     end
 
-    if args.json == "v1"
+    if args.json
+      raise UsageError, "invalid JSON version: #{args.json}" unless ["v1", true].include? args.json
+
       print_tap_json(taps.sort_by(&:to_s))
     else
       print_tap_info(taps.sort_by(&:to_s))

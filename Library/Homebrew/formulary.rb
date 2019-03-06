@@ -16,9 +16,7 @@ module Formulary
   end
 
   def self.load_formula(name, path, contents, namespace)
-    if ENV["HOMEBREW_DISABLE_LOAD_FORMULA"]
-      raise "Formula loading disabled by HOMEBREW_DISABLE_LOAD_FORMULA!"
-    end
+    raise "Formula loading disabled by HOMEBREW_DISABLE_LOAD_FORMULA!" if ENV["HOMEBREW_DISABLE_LOAD_FORMULA"]
 
     mod = Module.new
     const_set(namespace, mod)
@@ -244,9 +242,7 @@ module Formulary
           new_name = new_tap.core_tap? ? name : new_tapped_name
         end
 
-        if warn && old_name && new_name
-          opoo "Use #{new_name} instead of deprecated #{old_name}"
-        end
+        opoo "Use #{new_name} instead of deprecated #{old_name}" if warn && old_name && new_name
       end
 
       [name, path]
@@ -397,22 +393,16 @@ module Formulary
       return TapLoader.new(ref, from: from)
     end
 
-    if File.extname(ref) == ".rb" && Pathname.new(ref).expand_path.exist?
-      return FromPathLoader.new(ref)
-    end
+    return FromPathLoader.new(ref) if File.extname(ref) == ".rb" && Pathname.new(ref).expand_path.exist?
 
     formula_with_that_name = core_path(ref)
-    if formula_with_that_name.file?
-      return FormulaLoader.new(ref, formula_with_that_name)
-    end
+    return FormulaLoader.new(ref, formula_with_that_name) if formula_with_that_name.file?
 
     possible_alias = CoreTap.instance.alias_dir/ref
     return AliasLoader.new(possible_alias) if possible_alias.file?
 
     possible_tap_formulae = tap_paths(ref)
-    if possible_tap_formulae.size > 1
-      raise TapFormulaAmbiguityError.new(ref, possible_tap_formulae)
-    end
+    raise TapFormulaAmbiguityError.new(ref, possible_tap_formulae) if possible_tap_formulae.size > 1
 
     if possible_tap_formulae.size == 1
       path = possible_tap_formulae.first.resolved_path
@@ -422,9 +412,7 @@ module Formulary
 
     if newref = CoreTap.instance.formula_renames[ref]
       formula_with_that_oldname = core_path(newref)
-      if formula_with_that_oldname.file?
-        return FormulaLoader.new(newref, formula_with_that_oldname)
-      end
+      return FormulaLoader.new(newref, formula_with_that_oldname) if formula_with_that_oldname.file?
     end
 
     possible_tap_newname_formulae = []
@@ -438,19 +426,13 @@ module Formulary
       raise TapFormulaWithOldnameAmbiguityError.new(ref, possible_tap_newname_formulae)
     end
 
-    unless possible_tap_newname_formulae.empty?
-      return TapLoader.new(possible_tap_newname_formulae.first, from: from)
-    end
+    return TapLoader.new(possible_tap_newname_formulae.first, from: from) unless possible_tap_newname_formulae.empty?
 
     possible_keg_formula = Pathname.new("#{HOMEBREW_PREFIX}/opt/#{ref}/.brew/#{ref}.rb")
-    if possible_keg_formula.file?
-      return FormulaLoader.new(ref, possible_keg_formula)
-    end
+    return FormulaLoader.new(ref, possible_keg_formula) if possible_keg_formula.file?
 
     possible_cached_formula = Pathname.new("#{HOMEBREW_CACHE_FORMULA}/#{ref}.rb")
-    if possible_cached_formula.file?
-      return FormulaLoader.new(ref, possible_cached_formula)
-    end
+    return FormulaLoader.new(ref, possible_cached_formula) if possible_cached_formula.file?
 
     NullLoader.new(ref)
   end
@@ -473,9 +455,7 @@ module Formulary
 
   def self.find_with_priority(ref, spec = :stable)
     possible_pinned_tap_formulae = tap_paths(ref, Dir["#{HOMEBREW_LIBRARY}/PinnedTaps/*/*/"]).map(&:realpath)
-    if possible_pinned_tap_formulae.size > 1
-      raise TapFormulaAmbiguityError.new(ref, possible_pinned_tap_formulae)
-    end
+    raise TapFormulaAmbiguityError.new(ref, possible_pinned_tap_formulae) if possible_pinned_tap_formulae.size > 1
 
     if possible_pinned_tap_formulae.size == 1
       selected_formula = factory(possible_pinned_tap_formulae.first, spec)

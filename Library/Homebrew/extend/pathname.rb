@@ -345,9 +345,7 @@ class Pathname
   # Writes an exec script that invokes a Java jar
   def write_jar_script(target_jar, script_name, java_opts = "", java_version: nil)
     mkpath
-    java_home = if java_version
-      "JAVA_HOME=\"#{Language::Java.java_home_shell(java_version)}\" "
-    end
+    java_home = ("JAVA_HOME=\"#{Language::Java.java_home_shell(java_version)}\" " if java_version)
     join(script_name).write <<~SH
       #!/bin/bash
       #{java_home}exec java #{java_opts} -jar #{target_jar} "$@"

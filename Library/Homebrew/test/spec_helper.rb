@@ -5,9 +5,7 @@ if ENV["HOMEBREW_TESTS_COVERAGE"]
   if ENV["HOMEBREW_COVERALLS_REPO_TOKEN"]
     require "coveralls"
 
-    if !ENV["HOMEBREW_COLOR"] && (ENV["HOMEBREW_NO_COLOR"] || !$stdout.tty?)
-      Coveralls::Output.no_color
-    end
+    Coveralls::Output.no_color if !ENV["HOMEBREW_COLOR"] && (ENV["HOMEBREW_NO_COLOR"] || !$stdout.tty?)
 
     formatters << Coveralls::SimpleCov::Formatter
 
@@ -74,11 +72,9 @@ RSpec.configure do |config|
 
   config.silence_filter_announcements = true if ENV["TEST_ENV_NUMBER"]
 
-  # TODO: when https://github.com/rspec/rspec-expectations/pull/1056
-  #       makes it into a stable release:
-  # config.expect_with :rspec do |c|
-  #   c.max_formatted_output_length = 200
-  # end
+  config.expect_with :rspec do |c|
+    c.max_formatted_output_length = 200
+  end
 
   # Never truncate output objects.
   RSpec::Support::ObjectFormatter.default_instance.max_formatted_output_length = nil
@@ -128,9 +124,7 @@ RSpec.configure do |config|
 
   config.before(:each, :needs_svn) do
     homebrew_bin = File.dirname HOMEBREW_BREW_FILE
-    unless %W[/usr/bin/svn #{homebrew_bin}/svn].map { |x| File.executable?(x) }.any?
-      skip "subversion not installed."
-    end
+    skip "subversion not installed." unless %W[/usr/bin/svn #{homebrew_bin}/svn].map { |x| File.executable?(x) }.any?
   end
 
   config.before(:each, :needs_unzip) do

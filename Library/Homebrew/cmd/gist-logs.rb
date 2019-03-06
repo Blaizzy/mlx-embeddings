@@ -73,9 +73,7 @@ module Homebrew
     end
     url = create_gist(files, descr)
 
-    if args.new_issue?
-      url = create_issue(f.tap, "#{f.name} failed to build on #{MacOS.full_version}", url)
-    end
+    url = create_issue(f.tap, "#{f.name} failed to build on #{MacOS.full_version}", url) if args.new_issue?
 
     puts url if url
   end

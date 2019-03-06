@@ -36,21 +36,15 @@ class SystemConfig
     end
 
     def clt
-      @clt ||= if MacOS::CLT.installed?
-        MacOS::CLT.version
-      end
+      @clt ||= MacOS::CLT.version if MacOS::CLT.installed?
     end
 
     def clt_headers
-      @clt_headers ||= if MacOS::CLT.headers_installed?
-        MacOS::CLT.headers_version
-      end
+      @clt_headers ||= MacOS::CLT.headers_version if MacOS::CLT.headers_installed?
     end
 
     def xquartz
-      @xquartz ||= if MacOS::XQuartz.installed?
-        "#{MacOS::XQuartz.version} => #{describe_path(MacOS::XQuartz.prefix)}"
-      end
+      @xquartz ||= "#{MacOS::XQuartz.version} => #{describe_path(MacOS::XQuartz.prefix)}" if MacOS::XQuartz.installed?
     end
 
     def dump_verbose_config(f = $stdout)

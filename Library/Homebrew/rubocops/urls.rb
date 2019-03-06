@@ -97,9 +97,7 @@ module RuboCop
               problem "Don't use #{Regexp.last_match(1)}use_mirror in SourceForge urls (url is #{url})."
             end
 
-            if url.end_with?("/download")
-              problem "Don't use /download in SourceForge urls (url is #{url})."
-            end
+            problem "Don't use /download in SourceForge urls (url is #{url})." if url.end_with?("/download")
 
             if url =~ %r{^https?://sourceforge\.}
               problem "Use https://downloads.sourceforge.net to get geolocation (url is #{url})."

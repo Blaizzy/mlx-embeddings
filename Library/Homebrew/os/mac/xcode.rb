@@ -310,6 +310,7 @@ module OS
         version = nil
         [EXECUTABLE_PKG_ID, MAVERICKS_NEW_PKG_ID].each do |id|
           next unless File.exist?("#{PKG_PATH}/usr/bin/clang")
+
           version = MacOS.pkgutil_info(id)[/version: (.+)$/, 1]
           break if version
         end

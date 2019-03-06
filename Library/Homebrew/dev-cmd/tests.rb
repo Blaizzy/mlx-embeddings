@@ -33,6 +33,9 @@ module Homebrew
   def tests
     tests_args.parse
 
+    Homebrew.install_bundler_gems!
+    gem_user_dir = Gem.user_dir
+
     HOMEBREW_LIBRARY_PATH.cd do
       ENV.delete("HOMEBREW_COLOR")
       ENV.delete("HOMEBREW_NO_COLOR")
@@ -44,10 +47,13 @@ module Homebrew
       ENV.delete("HOMEBREW_NO_GITHUB_API")
       ENV.delete("HOMEBREW_NO_EMOJI")
       ENV.delete("HOMEBREW_DEVELOPER")
+      ENV.delete("HOMEBREW_PRY")
       ENV["HOMEBREW_NO_ANALYTICS_THIS_RUN"] = "1"
       ENV["HOMEBREW_NO_COMPAT"] = "1" if args.no_compat?
       ENV["HOMEBREW_TEST_GENERIC_OS"] = "1" if args.generic?
       ENV["HOMEBREW_TEST_ONLINE"] = "1" if args.online?
+
+      ENV["USER"] ||= system_command!("id", args: ["-nu"]).stdout.chomp
 
       # Avoid local configuration messing with tests e.g. git being configured
       # to use GPG to sign by default
@@ -66,8 +72,6 @@ module Homebrew
         ENV["GIT_#{role}_DATE"]  = "Sun Jan 22 19:59:13 2017 +0000"
       end
 
-      Homebrew.install_bundler_gems!
-
       parallel = true
 
       files = if args.only
@@ -80,10 +84,10 @@ module Homebrew
           ["test/#{test_name}_spec.rb:#{line}"]
         end
       else
-        Dir.glob("test/**/*_spec.rb").reject { |p| p =~ %r{^test/vendor/bundle/} }
+        Dir.glob("test/**/*_spec.rb")
       end
 
-      opts = if ENV["CI"]
+      parallel_args = if ENV["CI"]
         %w[
           --combine-stderr
           --serialize-stdout
@@ -120,8 +124,11 @@ module Homebrew
 
       puts "Randomized with seed #{seed}"
 
+      # Let `bundle` in PATH find its gem.
+      ENV["GEM_PATH"] = "#{ENV["GEM_PATH"]}:#{gem_user_dir}"
+
       if parallel
-        system "bundle", "exec", "parallel_rspec", *opts, "--", *bundle_args, "--", *files
+        system "bundle", "exec", "parallel_rspec", *parallel_args, "--", *bundle_args, "--", *files
       else
         system "bundle", "exec", "rspec", *bundle_args, "--", *files
       end

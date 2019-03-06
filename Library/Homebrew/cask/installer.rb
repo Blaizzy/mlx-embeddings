@@ -84,9 +84,7 @@ module Cask
 
       old_config = @cask.config
 
-      if @cask.installed? && !force? && !reinstall? && !upgrade?
-        raise CaskAlreadyInstalledError, @cask
-      end
+      raise CaskAlreadyInstalledError, @cask if @cask.installed? && !force? && !reinstall? && !upgrade?
 
       check_conflicts
 
@@ -102,9 +100,7 @@ module Cask
 
       install_artifacts
 
-      unless @cask.tap&.private?
-        ::Utils::Analytics.report_event("cask_install", @cask.token)
-      end
+      ::Utils::Analytics.report_event("cask_install", @cask.token) unless @cask.tap&.private?
 
       puts summary
     end
@@ -115,9 +111,7 @@ module Cask
       @cask.conflicts_with[:cask].each do |conflicting_cask|
         begin
           conflicting_cask = CaskLoader.load(conflicting_cask)
-          if conflicting_cask.installed?
-            raise CaskConflictError.new(@cask, conflicting_cask)
-          end
+          raise CaskConflictError.new(@cask, conflicting_cask) if conflicting_cask.installed?
         rescue CaskUnavailableError
           next # Ignore conflicting Casks that do not exist.
         end

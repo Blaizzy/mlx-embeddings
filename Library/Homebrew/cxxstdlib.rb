@@ -13,9 +13,7 @@ class CxxStdlib
   end
 
   def self.create(type, compiler)
-    if type && ![:libstdcxx, :libcxx].include?(type)
-      raise ArgumentError, "Invalid C++ stdlib type: #{type}"
-    end
+    raise ArgumentError, "Invalid C++ stdlib type: #{type}" if type && ![:libstdcxx, :libcxx].include?(type)
 
     klass = (compiler.to_s =~ GNU_GCC_REGEXP) ? GnuStdlib : AppleStdlib
     klass.new(type, compiler)
@@ -60,9 +58,7 @@ class CxxStdlib
       next if dep.build?
 
       dep_stdlib = Tab.for_formula(dep.to_formula).cxxstdlib
-      unless compatible_with? dep_stdlib
-        raise CompatibilityError.new(formula, dep, dep_stdlib)
-      end
+      raise CompatibilityError.new(formula, dep, dep_stdlib) unless compatible_with? dep_stdlib
     end
   end
 

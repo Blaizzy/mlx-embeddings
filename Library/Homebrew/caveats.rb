@@ -47,12 +47,8 @@ class Caveats
 
         If you need to have #{f.name} first in your PATH run:
       EOS
-      if f.bin.directory?
-        s << "  #{Utils::Shell.prepend_path_in_profile(f.opt_bin.to_s)}\n"
-      end
-      if f.sbin.directory?
-        s << "  #{Utils::Shell.prepend_path_in_profile(f.opt_sbin.to_s)}\n"
-      end
+      s << "  #{Utils::Shell.prepend_path_in_profile(f.opt_bin.to_s)}\n" if f.bin.directory?
+      s << "  #{Utils::Shell.prepend_path_in_profile(f.opt_sbin.to_s)}\n" if f.sbin.directory?
     end
 
     if f.lib.directory? || f.include.directory?
@@ -61,13 +57,9 @@ class Caveats
         For compilers to find #{f.name} you may need to set:
       EOS
 
-      if f.lib.directory?
-        s << "  #{Utils::Shell.export_value("LDFLAGS", "-L#{f.opt_lib}")}\n"
-      end
+      s << "  #{Utils::Shell.export_value("LDFLAGS", "-L#{f.opt_lib}")}\n" if f.lib.directory?
 
-      if f.include.directory?
-        s << "  #{Utils::Shell.export_value("CPPFLAGS", "-I#{f.opt_include}")}\n"
-      end
+      s << "  #{Utils::Shell.export_value("CPPFLAGS", "-I#{f.opt_include}")}\n" if f.include.directory?
 
       if which("pkg-config", ENV["HOMEBREW_PATH"]) &&
          ((f.lib/"pkgconfig").directory? || (f.share/"pkgconfig").directory?)

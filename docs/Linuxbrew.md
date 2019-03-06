@@ -61,9 +61,9 @@ sudo apt-get install build-essential curl file git
 sudo yum groupinstall 'Development Tools' && sudo yum install curl file git
 ```
 
-### Raspberry Pi
+### ARM
 
-Linuxbrew can run on Raspberry Pi (32-bit ARM), but no binary packages (bottles) are available. Support for Raspberry Pi is on a best-effort basis. Pull requests are welcome to improve the experience on Raspberry Pi.
+Linuxbrew can run on 32-bit ARM (Raspberry Pi and others) and 64-bit ARM (AArch64), but no binary packages (bottles) are available. Support for ARM is on a best-effort basis. Pull requests are welcome to improve the experience on ARM platforms.
 
 ### 32-bit x86
 
@@ -83,7 +83,7 @@ eval $(~/.linuxbrew/bin/brew shellenv)
 ## Linuxbrew Community
 
 - [@Linuxbrew on Twitter](https://twitter.com/Linuxbrew)
-- [Linuxbrew/core on GitHub](https://github.com/Linuxbrew/homebrew-core)
+- [Homebrew/linuxbrew-core on GitHub](https://github.com/Homebrew/linuxbrew-core)
 - [Linuxbrew category](https://discourse.brew.sh/c/linuxbrew) of [Homebrew's Discourse](https://discourse.brew.sh)
 
 ## Sponsors
