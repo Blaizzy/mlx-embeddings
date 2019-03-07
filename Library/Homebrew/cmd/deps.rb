@@ -38,6 +38,9 @@ module Homebrew
       switch "--tree",
         description: "Show dependencies as a tree. When given multiple formula arguments "\
                      "output individual trees for every formula."
+      switch "--annotate",
+        description: "Mark any build, test, optional, or recommended dependencies as "\
+                     "such in the output."
       switch "--for-each",
         description: "Switch into the mode used by `deps --all`, but only list dependencies "\
                      "for specified formula one specified formula per line. This is used for "\
@@ -58,26 +61,28 @@ module Homebrew
       topo_order?: args.n?,
       union?:      args.union?,
       for_each?:   args.for_each?,
+      recursive?:  !args.send("1?"),
     )
 
     if mode.tree?
       if mode.installed?
-        puts_deps_tree Formula.installed.sort, !args.send("1?")
+        puts_deps_tree Formula.installed.sort, mode.recursive?
       else
         raise FormulaUnspecifiedError if args.remaining.empty?
 
-        puts_deps_tree ARGV.formulae, !args.send("1?")
+        puts_deps_tree ARGV.formulae, mode.recursive?
       end
       return
     elsif mode.all?
-      puts_deps Formula.sort
+      puts_deps Formula.sort, mode.recursive?
       return
     elsif !args.remaining.empty? && mode.for_each?
-      puts_deps ARGV.formulae
+      puts_deps ARGV.formulae, mode.recursive?
       return
     end
 
-    @only_installed_arg = args.installed? &&
+    @only_installed_arg = mode.installed? &&
+                          mode.recursive? &&
                           !args.include_build? &&
                           !args.include_test? &&
                           !args.include_optional? &&
@@ -86,11 +91,11 @@ module Homebrew
     if args.remaining.empty?
       raise FormulaUnspecifiedError unless mode.installed?
 
-      puts_deps Formula.installed.sort
+      puts_deps Formula.installed.sort, mode.recursive?
       return
     end
 
-    all_deps = deps_for_formulae(ARGV.formulae, !args.send("1?"), &(mode.union? ? :| : :&))
+    all_deps = deps_for_formulae(ARGV.formulae, mode.recursive?, &(mode.union? ? :| : :&))
     all_deps = condense_requirements(all_deps)
     all_deps.select!(&:installed?) if mode.installed?
     all_deps.map!(&method(:dep_display_name))
@@ -120,10 +125,11 @@ module Homebrew
     end
 
     if args.annotate?
-      str = "#{str}  [build]" if dep.build?
-      str = "#{str}  [test]" if dep.test?
-      str = "#{str}  [optional]" if dep.optional?
-      str = "#{str}  [recommended]" if dep.recommended?
+      str = "#{str} " if args.tree?
+      str = "#{str} [build]" if dep.build?
+      str = "#{str} [test]" if dep.test?
+      str = "#{str} [optional]" if dep.optional?
+      str = "#{str} [recommended]" if dep.recommended?
     end
 
     str
@@ -149,9 +155,9 @@ module Homebrew
     formulae.map { |f| deps_for_formula(f, recursive) }.reduce(&block)
   end
 
-  def puts_deps(formulae)
+  def puts_deps(formulae, recursive = false)
     formulae.each do |f|
-      deps = deps_for_formula(f)
+      deps = deps_for_formula(f, recursive)
       deps = condense_requirements(deps)
       deps.sort_by!(&:name)
       deps.map!(&method(:dep_display_name))
