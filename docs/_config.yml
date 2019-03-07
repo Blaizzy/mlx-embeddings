@@ -22,6 +22,8 @@ defaults:
       path: ""
     values:
       image: /assets/img/homebrew-256x256.png
+      search_name: Homebrew Documentation
+      search_site: docs
 
 logo: /assets/img/homebrew-256x256.png
 
