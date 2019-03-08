@@ -112,6 +112,8 @@ show the intersection of dependencies for *`formula`*.
   Include requirements in addition to dependencies for *`formula`*.
 * `--tree`:
   Show dependencies as a tree. When given multiple formula arguments output individual trees for every formula.
+* `--annotate`:
+  Mark any build, test, optional, or recommended dependencies as such in the output.
 * `--for-each`:
   Switch into the mode used by `deps --all`, but only list dependencies for specified formula one specified formula per line. This is used for debugging the `--installed`/`--all` display mode.
 
