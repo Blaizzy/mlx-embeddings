@@ -152,6 +152,7 @@ __brew_all_commands() {
   local comp_cachename=brew_all_commands
   if _cache_invalid $comp_cachename || ! _retrieve_cache $comp_cachename; then
     commands=($(_call_program brew brew commands --quiet --include-aliases))
+    commands=(${commands:#*instal}) # Exclude instal, uninstal, etc.
     _store_cache $comp_cachename commands
   fi
   _describe -t all-commands 'all commands' commands
