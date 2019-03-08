@@ -4,7 +4,9 @@ describe Hardware::CPU do
   describe "::type" do
     let(:cpu_types) {
       [
+        :arm,
         :intel,
+        :ppc,
         :dunno,
       ]
     }
@@ -17,17 +19,23 @@ describe Hardware::CPU do
   describe "::family" do
     let(:cpu_families) {
       [
+        :arrandale,
+        :atom,
+        :broadwell,
         :core,
         :core2,
-        :penryn,
-        :nehalem,
-        :arrandale,
-        :sandybridge,
-        :ivybridge,
+        :dothan,
         :haswell,
-        :broadwell,
-        :skylake,
+        :ivybridge,
         :kabylake,
+        :merom,
+        :nehalem,
+        :penryn,
+        :prescott,
+        :presler,
+        :sandybridge,
+        :skylake,
+        :westmere,
         :dunno,
       ]
     }
