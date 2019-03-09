@@ -53,7 +53,7 @@ module Homebrew
       switch "--or-later",
         description: "Append `_or_later` to the bottle tag."
       switch "--force-core-tap",
-        description: "Build a bottle even if <formula> is not in homebrew/core or any installed taps."
+        description: "Build a bottle even if <formula> is not in `homebrew/core` or any installed taps."
       switch "--no-rebuild",
         description: "If the formula specifies a rebuild version, remove it from the generated DSL."
       switch "--keep-old",

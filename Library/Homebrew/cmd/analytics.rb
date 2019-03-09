@@ -6,9 +6,9 @@ module Homebrew
   def analytics_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `analytics` (`on`|`off`) [`state`] [`regenerate-uuid`]
+        `analytics` [`on`|`off`|`state`|`regenerate-uuid`]
 
-        If `on`|`off` is passed, turn Homebrew's analytics on or off respectively.
+        If `on` or `off` is passed, turn Homebrew's analytics on or off respectively.
 
         If `state` is passed, display anonymous user behaviour analytics state.
         Read more at <https://docs.brew.sh/Analytics>.

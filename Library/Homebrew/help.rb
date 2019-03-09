@@ -31,6 +31,7 @@ EOS
 # NOTE Keep lines less than 80 characters! Wrapping is just not cricket.
 # NOTE The reason the string is at the top is so 25 lines is easy to measure!
 
+require "cli_parser"
 require "commands"
 
 module Homebrew
@@ -92,15 +93,13 @@ module Homebrew
         opoo "No help text in: #{path}" if ARGV.homebrew_developer?
         HOMEBREW_HELP
       else
-        help_lines.map do |line|
-          line.gsub(/^  /, "")
-              .sub(/^\* /, "#{Tty.bold}Usage: brew#{Tty.reset} ")
-              .gsub(/`(.*?)`/, "#{Tty.bold}\\1#{Tty.reset}")
-              .gsub(%r{<([^\s]+?://[^\s]+?)>}) { |url| Formatter.url(url) }
-              .gsub(/<(.*?)>/, "#{Tty.underline}\\1#{Tty.reset}")
-              .gsub(/\*(.*?)\*/, "#{Tty.underline}\\1#{Tty.reset}")
-              .gsub("@hide_from_man_page", "")
-        end.join.strip
+        Formatter.wrap(help_lines.join.gsub(/^  /, ""), COMMAND_DESC_WIDTH)
+                 .sub("@hide_from_man_page ", "")
+                 .sub(/^\* /, "#{Tty.bold}Usage: brew#{Tty.reset} ")
+                 .gsub(/`(.*?)`/m, "#{Tty.bold}\\1#{Tty.reset}")
+                 .gsub(%r{<([^\s]+?://[^\s]+?)>}) { |url| Formatter.url(url) }
+                 .gsub(/<(.*?)>/m, "#{Tty.underline}\\1#{Tty.reset}")
+                 .gsub(/\*(.*?)\*/m, "#{Tty.underline}\\1#{Tty.reset}")
       end
     end
   end

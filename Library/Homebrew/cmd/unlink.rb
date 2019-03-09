@@ -14,7 +14,7 @@ module Homebrew
         `brew unlink` <formula> `&&` <commands> `&& brew link` <formula>
       EOS
       switch "-n", "--dry-run",
-        description: "List all files which would be unlinked, but will  not actually unlink or "\
+        description: "List all files which would be unlinked, but will not actually unlink or "\
                      "delete any files."
       switch :verbose
       switch :debug

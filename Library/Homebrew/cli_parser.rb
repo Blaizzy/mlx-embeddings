@@ -2,6 +2,9 @@ require "optparse"
 require "ostruct"
 require "set"
 
+COMMAND_DESC_WIDTH = 80
+OPTION_DESC_WIDTH = 43
+
 module Homebrew
   module CLI
     class Parser
@@ -29,7 +32,6 @@ module Homebrew
         @conflicts = []
         @switch_sources = {}
         @processed_options = []
-        @desc_line_length = 43
         @hide_from_man_page = false
         instance_eval(&block)
         post_initialize
@@ -64,7 +66,7 @@ module Homebrew
       alias switch_option switch
 
       def usage_banner(text)
-        @parser.banner = "#{text}\n"
+        @parser.banner = Formatter.wrap("#{text}\n", COMMAND_DESC_WIDTH)
       end
 
       def usage_banner_text
@@ -198,7 +200,7 @@ module Homebrew
       end
 
       def wrap_option_desc(desc)
-        Formatter.wrap(desc, @desc_line_length).split("\n")
+        Formatter.wrap(desc, OPTION_DESC_WIDTH).split("\n")
       end
 
       def set_constraints(name, depends_on:, required_for:)

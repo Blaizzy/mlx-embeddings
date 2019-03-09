@@ -64,7 +64,8 @@ module Homebrew
         description: "Don't delete the temporary files created during installation."
       switch "--build-bottle",
         description: "Prepare the formula for eventual bottling during installation."
-      switch "--bottle-arch=",
+      flag "--bottle-arch=",
+        depends_on:  "--build-bottle",
         description: "Optimise bottles for the given architecture rather than the oldest "\
                      "architecture supported by the version of macOS the bottles are built on."
       switch :force,
