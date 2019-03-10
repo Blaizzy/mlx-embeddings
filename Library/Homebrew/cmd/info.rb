@@ -214,7 +214,7 @@ module Homebrew
   def formulae_api_json(endpoint)
     return if ENV["HOMEBREW_NO_ANALYTICS"] || ENV["HOMEBREW_NO_GITHUB_API"]
 
-    output, = curl_output("--max-time", "3",
+    output, = curl_output("--max-time", "5",
       "https://formulae.brew.sh/api/#{endpoint}")
     return if output.blank?
 
@@ -311,12 +311,12 @@ module Homebrew
   def output_analytics(filter: nil)
     days = args.days || "30"
     valid_days = %w[30 90 365]
-    raise ArgumentError("Days must be one of #{valid_days.join(", ")}!") unless valid_days.include?(days)
+    raise UsageError, "days must be one of #{valid_days.join(", ")}" unless valid_days.include?(days)
 
     category = args.category || "install"
     valid_categories = %w[install install-on-request build-error os-version]
     unless valid_categories.include?(category)
-      raise ArgumentError("Categories must be one of #{valid_categories.join(", ")}")
+      raise UsageError, "category must be one of #{valid_categories.join(", ")}"
     end
 
     json = formulae_api_json("analytics/#{category}/#{days}d.json")
