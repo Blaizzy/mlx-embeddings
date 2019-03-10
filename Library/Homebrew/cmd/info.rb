@@ -26,7 +26,7 @@ module Homebrew
       flag   "--category",
         depends_on:  "--analytics",
         description: "The value for `category` must be `install`, `install-on-request`, "\
-                     "`build-error` or `os-version`. The default is `install`."
+                     "`cask-install`, `build-error` or `os-version`. The default is `install`."
       switch "--github",
         description: "Open a browser to the GitHub History page for provided <formula>. "\
                      "To view formula history locally: `brew log -p` <formula>"
@@ -223,7 +223,7 @@ module Homebrew
     nil
   end
 
-  def analytics_table(category, days, results, os_version: false)
+  def analytics_table(category, days, results, os_version: false, cask_install: false)
     oh1 "#{category} (#{days} days)"
     total_count = results.values.inject("+")
     formatted_total_count = format_count(total_count)
@@ -234,6 +234,8 @@ module Homebrew
     percent_header = "Percent"
     name_with_options_header = if os_version
       "macOS Version"
+    elsif cask_install
+      "Token"
     else
       "Name (with options)"
     end
@@ -314,7 +316,7 @@ module Homebrew
     raise UsageError, "days must be one of #{valid_days.join(", ")}" unless valid_days.include?(days)
 
     category = args.category || "install"
-    valid_categories = %w[install install-on-request build-error os-version]
+    valid_categories = %w[install install-on-request cask-install build-error os-version]
     unless valid_categories.include?(category)
       raise UsageError, "category must be one of #{valid_categories.join(", ")}"
     end
@@ -323,10 +325,13 @@ module Homebrew
     return if json.blank? || json["items"].blank?
 
     os_version = category == "os-version"
+    cask_install = category == "cask-install"
     results = {}
     json["items"].each do |item|
       key = if os_version
         item["os_version"]
+      elsif cask_install
+        item["cask"]
       else
         item["formula"]
       end
@@ -341,7 +346,7 @@ module Homebrew
       return
     end
 
-    analytics_table(category, days, results, os_version: os_version)
+    analytics_table(category, days, results, os_version: os_version, cask_install: cask_install)
   end
 
   def output_formula_analytics(f)

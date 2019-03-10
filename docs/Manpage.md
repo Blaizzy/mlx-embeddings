@@ -203,7 +203,7 @@ Display brief statistics for your Homebrew installation.
 * `--days`:
   The value for `days` must be `30`, `90` or `365`. The default is `30`.
 * `--category`:
-  The value for `category` must be `install`, `install-on-request`, `build-error` or `os-version`. The default is `install`.
+  The value for `category` must be `install`, `install-on-request`, `cask-install`, `build-error` or `os-version`. The default is `install`.
 * `--github`:
   Open a browser to the GitHub History page for provided *`formula`*. To view formula history locally: `brew log -p` *`formula`*
 * `--json`:
