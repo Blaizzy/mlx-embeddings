@@ -18,4 +18,8 @@ class ArchRequirement < Requirement
   def message
     "This formula requires an #{@arch} architecture."
   end
+
+  def display_s
+    "#{@arch} architecture"
+  end
 end
