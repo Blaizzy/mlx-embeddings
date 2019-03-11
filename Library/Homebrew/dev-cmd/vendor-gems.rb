@@ -22,11 +22,11 @@ module Homebrew
 
     ohai "cd #{HOMEBREW_LIBRARY_PATH}"
     HOMEBREW_LIBRARY_PATH.cd do
-      ohai "bundle pristine"
-      safe_system "bundle", "pristine"
-
       ohai "bundle install --standalone"
       safe_system "bundle", "install", "--standalone"
+
+      ohai "bundle pristine"
+      safe_system "bundle", "pristine"
 
       ohai "git add vendor/bundle"
       system "git", "add", "vendor/bundle"
