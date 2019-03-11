@@ -14,7 +14,7 @@ module Language
     end
 
     def self.site_packages(python = "python3.7")
-      if python == "pypy"
+      if (python == "pypy") || (python == "pypy3")
         "site-packages"
       else
         "lib/python#{major_minor_version python}/site-packages"
@@ -23,7 +23,11 @@ module Language
 
     def self.each_python(build, &block)
       original_pythonpath = ENV["PYTHONPATH"]
-      { "python@3" => "python3", "python@2" => "python2.7", "pypy" => "pypy" }.each do |python_formula, python|
+      pythons = { "python@3" => "python3",
+                  "python@2" => "python2.7",
+                  "pypy"     => "pypy",
+                  "pypy3"    => "pypy3" }
+      pythons.each do |python_formula, python|
         python_formula = Formulary.factory(python_formula)
         next if build.without? python_formula.to_s
 
@@ -147,7 +151,7 @@ module Language
       def virtualenv_install_with_resources(options = {})
         python = options[:using]
         if python.nil?
-          wanted = %w[python python@2 python2 python3 python@3 pypy].select { |py| needs_python?(py) }
+          wanted = %w[python python@2 python2 python3 python@3 pypy pypy3].select { |py| needs_python?(py) }
           raise FormulaAmbiguousPythonError, self if wanted.size > 1
 
           python = wanted.first || "python2.7"
