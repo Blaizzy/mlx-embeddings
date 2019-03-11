@@ -1,7 +1,8 @@
 module Concurrent
   module Synchronization
 
-    module MriAttrVolatile
+    # @!visibility private
+    module TruffleRubyAttrVolatile
       def self.included(base)
         base.extend(ClassMethods)
       end
@@ -10,30 +11,33 @@ module Concurrent
         def attr_volatile(*names)
           names.each do |name|
             ivar = :"@volatile_#{name}"
+
             class_eval <<-RUBY, __FILE__, __LINE__ + 1
               def #{name}
-                #{ivar}
+                full_memory_barrier
+                #{ivar}                  
               end
 
               def #{name}=(value)
                 #{ivar} = value
+                full_memory_barrier
               end
             RUBY
           end
+
           names.map { |n| [n, :"#{n}="] }.flatten
         end
       end
 
       def full_memory_barrier
-        # relying on undocumented behavior of CRuby, GVL acquire has lock which ensures visibility of ivars
-        # https://github.com/ruby/ruby/blob/ruby_2_2/thread_pthread.c#L204-L211
+        TruffleRuby.full_memory_barrier
       end
     end
 
     # @!visibility private
     # @!macro internal_implementation_note
-    class MriObject < AbstractObject
-      include MriAttrVolatile
+    class TruffleRubyObject < AbstractObject
+      include TruffleRubyAttrVolatile
 
       def initialize
         # nothing to do
