@@ -13,37 +13,42 @@ module Homebrew
   def info_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `info` [<formula>]
+        `info` [<options>] [<formula>]
 
         Display brief statistics for your Homebrew installation.
+
+        If <formula> is specified, show summary of information about <formula>.
       EOS
       switch "--analytics",
-        description: "Display Homebrew analytics data (provided neither `HOMEBREW_NO_ANALYTICS` "\
-                     "or `HOMEBREW_NO_GITHUB_API` are set)."
+        description: "Display global Homebrew analytics data or, if specified, installation and "\
+                     "build error data for <formula> (provided neither `HOMEBREW_NO_ANALYTICS` "\
+                     "nor `HOMEBREW_NO_GITHUB_API` are set)."
       flag   "--days",
         depends_on:  "--analytics",
-        description: "The value for `days` must be `30`, `90` or `365`. The default is `30`."
+        description: "How many days of global analytics data to retrieve. "\
+                     "The value for <days> must be `30`, `90` or `365`. The default is `30`."
       flag   "--category",
         depends_on:  "--analytics",
-        description: "The value for `category` must be `install`, `install-on-request`, "\
+        description: "Which type of global analytics data to retrieve. "\
+                     "The value for <category> must be `install`, `install-on-request`, "\
                      "`cask-install`, `build-error` or `os-version`. The default is `install`."
       switch "--github",
-        description: "Open a browser to the GitHub History page for provided <formula>. "\
+        description: "Open a browser to the GitHub source page for <formula>. "\
                      "To view formula history locally: `brew log -p` <formula>"
       flag "--json",
         description: "Print a JSON representation of <formula>. Currently the default and only accepted "\
                      "value for <version> is `v1`. See the docs for examples of using the JSON "\
                      "output: <https://docs.brew.sh/Querying-Brew>"
-      switch "--all",
-        depends_on:  "--json",
-        description: "Get information on all formulae."
       switch "--installed",
         depends_on:  "--json",
-        description: "Get information on all installed formulae."
+        description: "Print JSON of formulae that are currently installed."
+      switch "--all",
+        depends_on:  "--json",
+        description: "Print JSON of all available formulae."
       switch :verbose,
-        description: "See more verbose analytics data."
+        description: "Show more verbose analytics data for <formula>."
       switch :debug
-      conflicts "--all", "--installed"
+      conflicts "--installed", "--all"
     end
   end
 
