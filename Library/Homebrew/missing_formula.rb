@@ -27,9 +27,8 @@ module Homebrew
             brew cask install basictex
         EOS
         when "asymptote" then <<~EOS
-          The recommended way to install Asymptote is as part of the MacTeX collection.
-          With that installed, try `which asy` to confirm Asymptote has been installed
-          as part of the collection, or use MacTeX's TeX Live Utility to add it.
+          Asymptote is part of MacTeX:
+            brew cask install mactex
         EOS
         when "pip" then <<~EOS
           pip is part of the python formula:
