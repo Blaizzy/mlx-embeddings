@@ -88,6 +88,7 @@
 **/vendor/bundle/ruby/*/gems/concurrent-ruby-*/lib/synchronization/
 **/vendor/bundle/ruby/*/gems/concurrent-ruby-*/lib/thread_safe/
 **/vendor/bundle/ruby/*/gems/concurrent-ruby-*/lib/utility/
+**/vendor/bundle/ruby/*/gems/concurrent-ruby-*/lib/*/*.jar
 **/vendor/bundle/ruby/*/gems/i18n-*/lib/i18n/tests*
 **/vendor/bundle/ruby/*/gems/thread_safe-*/lib/thread_safe/util
 
