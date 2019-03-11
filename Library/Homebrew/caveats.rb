@@ -136,7 +136,18 @@ class Caveats
     EOS
   end
 
-  def plist_caveats; end
+  def plist_caveats
+    return unless f.plist_manual
+
+    # default to brew services not being supported.
+    # macOS will overwrite this behavior.
+
+    <<~EOS
+      #{Formatter.warning("Warning:")} #{f.name} wants to install a service, which is currently only supported on macOS!
+      You can manually execute the service with:
+      #{f.plist_manual}
+    EOS
+  end
 
   def plist_path
     destination = if f.plist_startup
