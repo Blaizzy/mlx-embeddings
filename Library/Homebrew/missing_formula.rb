@@ -27,10 +27,9 @@ module Homebrew
             brew cask install basictex
         EOS
         when "asymptote" then <<~EOS
-          Asymptote is bundled with MacTeX / TeX Live. When that is installed, Asymptote
-          may have been installed with it or can be added using the TeX Live Utility via
-          either its GUI or command line:
-            tlmgr install asymptote
+          The recommended way to install Asymptote is as part of the MacTeX collection.
+          With that installed, try `which asy` to confirm Asymptote has been installed
+          as part of the collection, or use MacTeX's TeX Live Utility to add it.
         EOS
         when "pip" then <<~EOS
           pip is part of the python formula:
