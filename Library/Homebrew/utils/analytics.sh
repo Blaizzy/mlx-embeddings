@@ -60,7 +60,7 @@ setup-analytics() {
 
   if [[ -n "$HOMEBREW_LINUX" ]]
   then
-    # For Linuxbrew's analytics.
+    # For Homebrew on Linux's analytics.
     HOMEBREW_ANALYTICS_ID="UA-76492262-1"
   else
     # Otherwise, fall back to Homebrew's analytics.

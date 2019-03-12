@@ -166,6 +166,7 @@
 /docs/_site
 /docs/bin
 /docs/.jekyll-metadata
+/docs/vendor
 
 # Unignore our root-level metadata files.
 !/.editorconfig

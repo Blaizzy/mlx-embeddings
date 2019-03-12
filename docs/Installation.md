@@ -21,7 +21,7 @@ it does it too. You have to confirm everything it will do before it starts.
 
 ### Linux or Windows 10 Subsystem for Linux
 
-Check out [the Linuxbrew installation documentation](Linuxbrew.md).
+Check out [the Homebrew on Linux installation documentation](Homebrew-on-Linux.md).
 
 ### Untar anywhere
 

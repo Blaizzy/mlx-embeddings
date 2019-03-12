@@ -1,8 +1,13 @@
-![Linuxbrew logo](https://linuxbrew.sh/images/linuxbrew-256x256.png)
+---
+title: Homebrew on Linux
+image: https://brew.sh/assets/img/linuxbrew.png
+redirect_from:
+  - /Linux
+  - /Linuxbrew
+---
+<img src="https://brew.sh/assets/img/linuxbrew.png" alt="Linuxbrew logo" style="min-width:128px" height="128" width="128">
 
-# Linuxbrew
-
-The Homebrew package manager may be used on Linux and Windows 10, using [Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/about). Homebrew is referred to as Linuxbrew when running on Linux or WSL. It can be installed in your home directory, in which case it does not use *sudo*. Linuxbrew does not use any libraries provided by your host system, except *glibc* and *gcc* if they are new enough. Linuxbrew can install its own current versions of *glibc* and *gcc* for older distributions of Linux.
+The Homebrew package manager may be used on Linux and [Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/about). Homebrew was formerly referred to as Linuxbrew when running on Linux or WSL. It can be installed in your home directory, in which case it does not use *sudo*. Homebrew does not use any libraries provided by your host system, except *glibc* and *gcc* if they are new enough. Homebrew can install its own current versions of *glibc* and *gcc* for older distributions of Linux.
 
 [Features](#features), [dependencies](#dependencies) and [installation instructions](#install) are described below. Terminology (e.g. the difference between a Cellar, Tap, Cask and so forth) is [explained in the documentation](Formula-Cookbook.md#homebrew-terminology).
 
@@ -21,9 +26,9 @@ Paste at a terminal prompt:
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
 ```
 
-The installation script installs Linuxbrew to `/home/linuxbrew/.linuxbrew` using *sudo* if possible and in your home directory at `~/.linuxbrew` otherwise. Linuxbrew does not use *sudo* after installation. Using `/home/linuxbrew/.linuxbrew` allows the use of more binary packages (bottles) than installing in your personal home directory.
+The installation script installs Homebrew to `/home/linuxbrew/.linuxbrew` using *sudo* if possible and in your home directory at `~/.linuxbrew` otherwise. Homebrew does not use *sudo* after installation. Using `/home/linuxbrew/.linuxbrew` allows the use of more binary packages (bottles) than installing in your personal home directory.
 
-Follow the *Next steps* instructions to add Linuxbrew to your `PATH` and to your bash shell profile script, either `~/.profile` on Debian/Ubuntu or `~/.bash_profile` on CentOS/Fedora/RedHat.
+Follow the *Next steps* instructions to add Homebrew to your `PATH` and to your bash shell profile script, either `~/.profile` on Debian/Ubuntu or `~/.bash_profile` on CentOS/Fedora/RedHat.
 
 ```sh
 test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
@@ -63,15 +68,15 @@ sudo yum groupinstall 'Development Tools' && sudo yum install curl file git
 
 ### ARM
 
-Linuxbrew can run on 32-bit ARM (Raspberry Pi and others) and 64-bit ARM (AArch64), but no binary packages (bottles) are available. Support for ARM is on a best-effort basis. Pull requests are welcome to improve the experience on ARM platforms.
+Homebrew can run on 32-bit ARM (Raspberry Pi and others) and 64-bit ARM (AArch64), but no binary packages (bottles) are available. Support for ARM is on a best-effort basis. Pull requests are welcome to improve the experience on ARM platforms.
 
 ### 32-bit x86
 
-Linuxbrew does not currently support 32-bit x86 platforms. It would be possible for Linuxbrew to work on 32-bit x86 platforms with some effort. An interested and dedicated person could maintain a fork of Homebrew to develop support for 32-bit x86.
+Homebrew does not currently support 32-bit x86 platforms. It would be possible for Homebrew to work on 32-bit x86 platforms with some effort. An interested and dedicated person could maintain a fork of Homebrew to develop support for 32-bit x86.
 
 ## Alternative Installation
 
-Extract or `git clone` Linuxbrew wherever you want. Use `/home/linuxbrew/.linuxbrew` if possible (to enabled the use of binary packages).
+Extract or `git clone` Homebrew wherever you want. Use `/home/linuxbrew/.linuxbrew` if possible (to enabled the use of binary packages).
 
 ```sh
 git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew
@@ -80,11 +85,11 @@ ln -s ../Homebrew/bin/brew ~/.linuxbrew/bin
 eval $(~/.linuxbrew/bin/brew shellenv)
 ```
 
-## Linuxbrew Community
+## Homebrew on Linux Community
 
 - [@Linuxbrew on Twitter](https://twitter.com/Linuxbrew)
 - [Homebrew/linuxbrew-core on GitHub](https://github.com/Homebrew/linuxbrew-core)
-- [Linuxbrew category](https://discourse.brew.sh/c/linuxbrew) of [Homebrew's Discourse](https://discourse.brew.sh)
+- [Homebrew on Linux category](https://discourse.brew.sh/c/linuxbrew) of [Homebrew's Discourse](https://discourse.brew.sh)
 
 ## Sponsors
 

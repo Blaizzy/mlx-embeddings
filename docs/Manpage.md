@@ -1201,7 +1201,7 @@ Homebrew's Project Leadership Committee is Misty De Meo, Shaun Jackman, Jonathan
 
 Homebrew's Technical Steering Committee is Michka Popoff, FX Coudert, Markus Reiter, Misty De Meo and Mike McQuaid.
 
-Homebrew/brew's Linux support (and Linuxbrew) maintainers are Michka Popoff and Shaun Jackman.
+Homebrew/brew's Linux maintainers are Michka Popoff and Shaun Jackman.
 
 Homebrew's other current maintainers are Claudia Pellegrino, Chongyu Zhu, Vitor Galvao, Gautham Goli, Steven Peters, William Woodruff, Igor Kapkov, Izaak Beekman, Sean Molenaar, Jan Viljanen, Jason Tedor, Eric Knibbe, Viktor Szakats, Thierry Moisan, Steven Peters and Tom Schoonjans.
 
