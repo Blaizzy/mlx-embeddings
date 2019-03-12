@@ -95,14 +95,6 @@ class Keg
     bad_name
   end
 
-  def expand_loader_path(file, bad_name)
-    suffix = bad_name.sub(/^@loader_path/, "")
-
-    # Note: Weak dylibs are allowed to not exist on disk, so
-    # we don't check for existence & complain here.
-    file.parent/suffix
-  end
-
   # If file is a dylib or bundle itself, look for the dylib named by
   # bad_name relative to the lib directory, so that we can skip the more
   # expensive recursive search if possible.
@@ -112,13 +104,11 @@ class Keg
     elsif bad_name.start_with? CELLAR_PLACEHOLDER
       bad_name.sub(CELLAR_PLACEHOLDER, HOMEBREW_CELLAR)
     elsif (file.dylib? || file.mach_o_bundle?) && (file.parent + bad_name).exist?
-      file.parent/bad_name
+      "@loader_path/#{bad_name}"
     elsif file.mach_o_executable? && (lib + bad_name).exist?
       "#{lib}/#{bad_name}"
     elsif bad_name.start_with?("@rpath") && ENV["HOMEBREW_RELOCATE_METAVARS"]
       expand_rpath file, bad_name
-    elsif bad_name.start_with?("@loader_path") && ENV["HOMEBREW_RELOCATE_METAVARS"]
-      expand_loader_path file, bad_name
     elsif (abs_name = find_dylib(bad_name)) && abs_name.exist?
       abs_name.to_s
     else
@@ -129,7 +119,7 @@ class Keg
 
   def each_install_name_for(file, &block)
     dylibs = file.dynamically_linked_libraries
-    dylibs.reject! { |fn| fn =~ /^@executable_path/ }
+    dylibs.reject! { |fn| fn =~ /^@(loader|executable)_path/ }
     dylibs.each(&block)
   end
 
