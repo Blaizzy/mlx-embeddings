@@ -19,7 +19,7 @@ describe "brew info", :integration_test do
       .and be_a_success
   end
 
-  it "looks for a Cask with the same name if a given Formula does not exist", :needs_network do
+  it "looks for a Cask with the same name if a given Formula does not exist", :needs_macos, :needs_network do
     setup_remote_tap "homebrew/cask"
 
     expect { brew "info", "firefox" }

@@ -31,12 +31,12 @@ module Cask
         output << Formatter.url(cask.homepage) + "\n" if cask.homepage
         output << installation_info(cask)
         repo = repo_info(cask)
-        output << repo unless repo.nil?
+        output << repo + "\n" unless repo.nil?
         output << name_info(cask)
         language = language_info(cask)
         output << language unless language.nil?
-        output << artifact_info(cask)
-        caveats = Installer.print_caveats(cask)
+        output << artifact_info(cask) + "\n"
+        caveats = Installer.caveats(cask)
         output << caveats unless caveats.nil?
         output
       end
@@ -67,8 +67,7 @@ module Cask
                               then versioned_staged_path.abv
                               else Formatter.error("does not exist")
                               end,
-                            ).concat(")")
-            install_info << "\n"
+                            ).concat(")\n")
           end
           install_info
         else
@@ -101,7 +100,7 @@ module Cask
           "#{cask.tap.default_remote}/blob/master/Casks/#{cask.token}.rb"
         end
 
-        "From: #{Formatter.url(url)}\n"
+        "From: #{Formatter.url(url)}"
       end
 
       def self.artifact_info(cask)
@@ -112,7 +111,7 @@ module Cask
 
           artifact_output << "\n" << artifact.to_s
         end
-        artifact_output << "\n"
+        artifact_output
       end
     end
   end
