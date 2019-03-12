@@ -13,7 +13,7 @@ module Homebrew
         List all installed formulae.
       EOS
       switch "--full-name",
-        description: "Print formulae with fully-qualified names.  If `--full-name` is not "\
+        description: "Print formulae with fully-qualified names. If `--full-name` is not "\
                      "passed, other options (i.e. `-1`, `-l`, `-t` and `-r`) are passed to `ls` "\
                      "which produces the actual output."
       switch "--unbrewed",

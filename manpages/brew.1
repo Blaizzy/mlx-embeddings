@@ -35,8 +35,8 @@ Perform a substring search of cask tokens and formula names for \fItext\fR\. If 
 .
 .SH "COMMANDS"
 .
-.SS "\fBanalytics\fR (\fBon\fR|\fBoff\fR) [\fBstate\fR] [\fBregenerate\-uuid\fR]"
-If \fBon\fR|\fBoff\fR is passed, turn Homebrew\'s analytics on or off respectively\.
+.SS "\fBanalytics\fR [\fBon\fR|\fBoff\fR|\fBstate\fR|\fBregenerate\-uuid\fR]"
+If \fBon\fR or \fBoff\fR is passed, turn Homebrew\'s analytics on or off respectively\.
 .
 .P
 If \fBstate\fR is passed, display anonymous user behaviour analytics state\. Read more at \fIhttps://docs\.brew\.sh/Analytics\fR\.
@@ -752,7 +752,7 @@ Show the cache file used when building from source\.
 \fB\-\-force\-bottle\fR
 Show the cache file used when pouring a bottle\.
 .
-.SS "\fB\-\-cache\fR [\fIformula\fR]"
+.SS "\fB\-\-cellar\fR [\fIformula\fR]"
 Display Homebrew\'s Cellar path\. \fIDefault:\fR \fB$(brew \-\-prefix)/Cellar\fR, or if that directory doesn\'t exist, \fB$(brew \-\-repository)/Cellar\fR\.
 .
 .P
@@ -849,7 +849,7 @@ Append \fB_or_later\fR to the bottle tag\.
 .
 .TP
 \fB\-\-force\-core\-tap\fR
-Build a bottle even if \fIformula\fR is not in homebrew/core or any installed taps\.
+Build a bottle even if \fIformula\fR is not in \fBhomebrew/core\fR or any installed taps\.
 .
 .TP
 \fB\-\-no\-rebuild\fR
@@ -1035,7 +1035,7 @@ Run Homebrew with the Ruby profiler e\.g\. \fBbrew prof readall\fR\.
 Get a patch from a GitHub commit or pull request and apply it to Homebrew\. Optionally, publish updated bottles for the formulae changed by the patch\.
 .
 .P
-Each \fIpatch\fR may be the number of a PR in homebrew/core, the URL of a PR on GitHub, the URL of a commit on GitHub or a "https://jenkins\.brew\.sh/job/\.\.\." testing job URL\.
+Each \fIpatch\fR may be the number of a PR in \fBhomebrew/core\fR, the URL of a PR on GitHub, the URL of a commit on GitHub or a "https://jenkins\.brew\.sh/job/\.\.\." testing job URL\.
 .
 .TP
 \fB\-\-bottle\fR

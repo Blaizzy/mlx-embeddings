@@ -1,3 +1,5 @@
+require "cli_parser"
+
 module Homebrew
   module_function
 

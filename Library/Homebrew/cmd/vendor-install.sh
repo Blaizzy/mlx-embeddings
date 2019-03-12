@@ -1,4 +1,4 @@
-#: @hide_from_man_page
+#:  @hide_from_man_page
 #:  * `vendor-install` [<target>]
 #:
 #:  Install Homebrew's portable Ruby.
