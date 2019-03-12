@@ -41,7 +41,7 @@ Homebrew's [Project Leadership Committee](https://docs.brew.sh/Homebrew-Governan
 
 Homebrew's [Technical Steering Committee](https://docs.brew.sh/Homebrew-Governance#7-technical-steering-committee) is [Michka Popoff](https://github.com/imichka), [FX Coudert](https://github.com/fxcoudert), [Markus Reiter](https://github.com/reitermarkus), [Misty De Meo](https://github.com/mistydemeo) and [Mike McQuaid](https://github.com/MikeMcQuaid).
 
-Homebrew/brew's Linux support (and Linuxbrew) maintainers are [Michka Popoff](https://github.com/imichka) and [Shaun Jackman](https://github.com/sjackman).
+Homebrew/brew's Linux maintainers are [Michka Popoff](https://github.com/imichka) and [Shaun Jackman](https://github.com/sjackman).
 
 Homebrew's other current maintainers are [Claudia Pellegrino](https://github.com/claui), [Chongyu Zhu](https://github.com/lembacon), [Vitor Galvao](https://github.com/vitorgalvao), [Gautham Goli](https://github.com/GauthamGoli), [Steven Peters](https://github.com/scpeters), [William Woodruff](https://github.com/woodruffw), [Igor Kapkov](https://github.com/igas), [Izaak Beekman](https://github.com/zbeekman), [Sean Molenaar](https://github.com/SMillerDev), [Jan Viljanen](https://github.com/javian), [Jason Tedor](https://github.com/jasontedor), [Eric Knibbe](https://github.com/EricFromCanada), [Viktor Szakats](https://github.com/vszakats), [Thierry Moisan](https://github.com/moisan), [Steven Peters](https://github.com/scpeters) and [Tom Schoonjans](https://github.com/tschoonj).
 
