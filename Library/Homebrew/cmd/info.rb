@@ -13,37 +13,42 @@ module Homebrew
   def info_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `info` [<formula>]
+        `info` [<options>] [<formula>]
 
         Display brief statistics for your Homebrew installation.
+
+        If <formula> is specified, show summary of information about <formula>.
       EOS
       switch "--analytics",
-        description: "Display Homebrew analytics data (provided neither `HOMEBREW_NO_ANALYTICS` "\
-                     "or `HOMEBREW_NO_GITHUB_API` are set)."
+        description: "Display global Homebrew analytics data or, if specified, installation and "\
+                     "build error data for <formula> (provided neither `HOMEBREW_NO_ANALYTICS` "\
+                     "nor `HOMEBREW_NO_GITHUB_API` are set)."
       flag   "--days",
         depends_on:  "--analytics",
-        description: "The value for `days` must be `30`, `90` or `365`. The default is `30`."
+        description: "How many days of global analytics data to retrieve. "\
+                     "The value for <days> must be `30`, `90` or `365`. The default is `30`."
       flag   "--category",
         depends_on:  "--analytics",
-        description: "The value for `category` must be `install`, `install-on-request`, "\
-                     "`build-error` or `os-version`. The default is `install`."
+        description: "Which type of global analytics data to retrieve. "\
+                     "The value for <category> must be `install`, `install-on-request`, "\
+                     "`cask-install`, `build-error` or `os-version`. The default is `install`."
       switch "--github",
-        description: "Open a browser to the GitHub History page for provided <formula>. "\
+        description: "Open a browser to the GitHub source page for <formula>. "\
                      "To view formula history locally: `brew log -p` <formula>"
       flag "--json",
         description: "Print a JSON representation of <formula>. Currently the default and only accepted "\
                      "value for <version> is `v1`. See the docs for examples of using the JSON "\
                      "output: <https://docs.brew.sh/Querying-Brew>"
-      switch "--all",
-        depends_on:  "--json",
-        description: "Get information on all formulae."
       switch "--installed",
         depends_on:  "--json",
-        description: "Get information on all installed formulae."
+        description: "Print JSON of formulae that are currently installed."
+      switch "--all",
+        depends_on:  "--json",
+        description: "Print JSON of all available formulae."
       switch :verbose,
-        description: "See more verbose analytics data."
+        description: "Show more verbose analytics data for <formula>."
       switch :debug
-      conflicts "--all", "--installed"
+      conflicts "--installed", "--all"
     end
   end
 
@@ -214,7 +219,7 @@ module Homebrew
   def formulae_api_json(endpoint)
     return if ENV["HOMEBREW_NO_ANALYTICS"] || ENV["HOMEBREW_NO_GITHUB_API"]
 
-    output, = curl_output("--max-time", "3",
+    output, = curl_output("--max-time", "5",
       "https://formulae.brew.sh/api/#{endpoint}")
     return if output.blank?
 
@@ -223,7 +228,7 @@ module Homebrew
     nil
   end
 
-  def analytics_table(category, days, results, os_version: false)
+  def analytics_table(category, days, results, os_version: false, cask_install: false)
     oh1 "#{category} (#{days} days)"
     total_count = results.values.inject("+")
     formatted_total_count = format_count(total_count)
@@ -234,6 +239,8 @@ module Homebrew
     percent_header = "Percent"
     name_with_options_header = if os_version
       "macOS Version"
+    elsif cask_install
+      "Token"
     else
       "Name (with options)"
     end
@@ -311,22 +318,25 @@ module Homebrew
   def output_analytics(filter: nil)
     days = args.days || "30"
     valid_days = %w[30 90 365]
-    raise ArgumentError("Days must be one of #{valid_days.join(", ")}!") unless valid_days.include?(days)
+    raise UsageError, "days must be one of #{valid_days.join(", ")}" unless valid_days.include?(days)
 
     category = args.category || "install"
-    valid_categories = %w[install install-on-request build-error os-version]
+    valid_categories = %w[install install-on-request cask-install build-error os-version]
     unless valid_categories.include?(category)
-      raise ArgumentError("Categories must be one of #{valid_categories.join(", ")}")
+      raise UsageError, "category must be one of #{valid_categories.join(", ")}"
     end
 
     json = formulae_api_json("analytics/#{category}/#{days}d.json")
     return if json.blank? || json["items"].blank?
 
     os_version = category == "os-version"
+    cask_install = category == "cask-install"
     results = {}
     json["items"].each do |item|
       key = if os_version
         item["os_version"]
+      elsif cask_install
+        item["cask"]
       else
         item["formula"]
       end
@@ -341,7 +351,7 @@ module Homebrew
       return
     end
 
-    analytics_table(category, days, results, os_version: os_version)
+    analytics_table(category, days, results, os_version: os_version, cask_install: cask_install)
   end
 
   def output_formula_analytics(f)

@@ -194,24 +194,26 @@ If no logs are found, an error message is presented.
 Open *`formula`*'s homepage in a browser. If no formula is provided, open
 Homebrew's own homepage in a browser.
 
-### `info` [*`formula`*]
+### `info` [*`options`*] [*`formula`*]
 
 Display brief statistics for your Homebrew installation.
 
+If *`formula`* is specified, show summary of information about *`formula`*.
+
 * `--analytics`:
-  Display Homebrew analytics data (provided neither `HOMEBREW_NO_ANALYTICS` or `HOMEBREW_NO_GITHUB_API` are set).
+  Display global Homebrew analytics data or, if specified, installation and build error data for *`formula`* (provided neither `HOMEBREW_NO_ANALYTICS` nor `HOMEBREW_NO_GITHUB_API` are set).
 * `--days`:
-  The value for `days` must be `30`, `90` or `365`. The default is `30`.
+  How many days of global analytics data to retrieve. The value for *`days`* must be `30`, `90` or `365`. The default is `30`.
 * `--category`:
-  The value for `category` must be `install`, `install-on-request`, `build-error` or `os-version`. The default is `install`.
+  Which type of global analytics data to retrieve. The value for *`category`* must be `install`, `install-on-request`, `cask-install`, `build-error` or `os-version`. The default is `install`.
 * `--github`:
-  Open a browser to the GitHub History page for provided *`formula`*. To view formula history locally: `brew log -p` *`formula`*
+  Open a browser to the GitHub source page for *`formula`*. To view formula history locally: `brew log -p` *`formula`*
 * `--json`:
   Print a JSON representation of *`formula`*. Currently the default and only accepted value for *`version`* is `v1`. See the docs for examples of using the JSON output: <https://docs.brew.sh/Querying-Brew>
-* `--all`:
-  Get information on all formulae.
 * `--installed`:
-  Get information on all installed formulae.
+  Print JSON of formulae that are currently installed.
+* `--all`:
+  Print JSON of all available formulae.
 
 ### `install` [*`options`*] *`formula`*
 

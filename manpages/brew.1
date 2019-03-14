@@ -230,36 +230,39 @@ The Gist will be marked private and will not appear in listings but will be acce
 .SS "\fBhome\fR [\fIformula\fR]"
 Open \fIformula\fR\'s homepage in a browser\. If no formula is provided, open Homebrew\'s own homepage in a browser\.
 .
-.SS "\fBinfo\fR [\fIformula\fR]"
+.SS "\fBinfo\fR [\fIoptions\fR] [\fIformula\fR]"
 Display brief statistics for your Homebrew installation\.
+.
+.P
+If \fIformula\fR is specified, show summary of information about \fIformula\fR\.
 .
 .TP
 \fB\-\-analytics\fR
-Display Homebrew analytics data (provided neither \fBHOMEBREW_NO_ANALYTICS\fR or \fBHOMEBREW_NO_GITHUB_API\fR are set)\.
+Display global Homebrew analytics data or, if specified, installation and build error data for \fIformula\fR (provided neither \fBHOMEBREW_NO_ANALYTICS\fR nor \fBHOMEBREW_NO_GITHUB_API\fR are set)\.
 .
 .TP
 \fB\-\-days\fR
-The value for \fBdays\fR must be \fB30\fR, \fB90\fR or \fB365\fR\. The default is \fB30\fR\.
+How many days of global analytics data to retrieve\. The value for \fIdays\fR must be \fB30\fR, \fB90\fR or \fB365\fR\. The default is \fB30\fR\.
 .
 .TP
 \fB\-\-category\fR
-The value for \fBcategory\fR must be \fBinstall\fR, \fBinstall\-on\-request\fR, \fBbuild\-error\fR or \fBos\-version\fR\. The default is \fBinstall\fR\.
+Which type of global analytics data to retrieve\. The value for \fIcategory\fR must be \fBinstall\fR, \fBinstall\-on\-request\fR, \fBcask\-install\fR, \fBbuild\-error\fR or \fBos\-version\fR\. The default is \fBinstall\fR\.
 .
 .TP
 \fB\-\-github\fR
-Open a browser to the GitHub History page for provided \fIformula\fR\. To view formula history locally: \fBbrew log \-p\fR \fIformula\fR
+Open a browser to the GitHub source page for \fIformula\fR\. To view formula history locally: \fBbrew log \-p\fR \fIformula\fR
 .
 .TP
 \fB\-\-json\fR
 Print a JSON representation of \fIformula\fR\. Currently the default and only accepted value for \fIversion\fR is \fBv1\fR\. See the docs for examples of using the JSON output: \fIhttps://docs\.brew\.sh/Querying\-Brew\fR
 .
 .TP
-\fB\-\-all\fR
-Get information on all formulae\.
+\fB\-\-installed\fR
+Print JSON of formulae that are currently installed\.
 .
 .TP
-\fB\-\-installed\fR
-Get information on all installed formulae\.
+\fB\-\-all\fR
+Print JSON of all available formulae\.
 .
 .SS "\fBinstall\fR [\fIoptions\fR] \fIformula\fR"
 Install \fIformula\fR\.
