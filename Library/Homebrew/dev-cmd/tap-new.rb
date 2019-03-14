@@ -58,7 +58,7 @@ module Homebrew
               set -e
               sudo xcode-select --switch /Applications/Xcode_10.1.app/Contents/Developer
               brew update
-              HOMEBREW_TAP_DIR="/usr/local/Homebrew/Library/Taps/#{tap}"
+              HOMEBREW_TAP_DIR="/usr/local/Homebrew/Library/Taps/#{tap.full_name}"
               mkdir -p "$HOMEBREW_TAP_DIR"
               rm -rf "$HOMEBREW_TAP_DIR"
               ln -s "$PWD" "$HOMEBREW_TAP_DIR"
