@@ -10,40 +10,42 @@ module Homebrew
       usage_banner <<~EOS
         `deps` [<options>] <formula>
 
-        Show dependencies for <formula>. When given multiple formula arguments,
-        show the intersection of dependencies for <formula>.
+        Show dependencies for <formula>. Additional options specific to <formula>
+        may be appended to the command. When given multiple formula arguments,
+        show the intersection of dependencies for each formula.
       EOS
-      switch "--1",
-        description: "Only show dependencies one level down, instead of recursing."
       switch "-n",
         description: "Show dependencies in topological order."
+      switch "--1",
+        description: "Only show dependencies one level down, instead of recursing."
       switch "--union",
-        description: "Show the union of dependencies for <formula>, instead of the intersection."
+        description: "Show the union of dependencies for multiple <formula>, instead of the intersection."
       switch "--full-name",
         description: "List dependencies by their full name."
-      switch "--installed",
-        description: "Only list those dependencies that are currently installed."
-      switch "--all",
-        description: "List all the dependencies for all available formulae."
       switch "--include-build",
-        description: "Show `:build` type dependencies for <formula>."
+        description: "Include `:build` dependencies for <formula>."
       switch "--include-optional",
-        description: "Show `:optional` dependencies for <formula>."
+        description: "Include `:optional` dependencies for <formula>."
       switch "--include-test",
-        description: "Show `:test` dependencies for <formula> (non-recursive)."
+        description: "Include `:test` dependencies for <formula> (non-recursive)."
       switch "--skip-recommended",
-        description: "Skip `:recommended` type dependencies for <formula>."
+        description: "Skip `:recommended` dependencies for <formula>."
       switch "--include-requirements",
         description: "Include requirements in addition to dependencies for <formula>."
       switch "--tree",
-        description: "Show dependencies as a tree. When given multiple formula arguments "\
-                     "output individual trees for every formula."
+        description: "Show dependencies as a tree. When given multiple formula arguments, "\
+                     "show individual trees for each formula."
       switch "--annotate",
         description: "Mark any build, test, optional, or recommended dependencies as "\
                      "such in the output."
+      switch "--installed",
+        description: "List dependencies for formulae that are currently installed. If <formula> is "\
+                     "specified, list only its dependencies that are currently installed."
+      switch "--all",
+        description: "List dependencies for all available formulae."
       switch "--for-each",
-        description: "Switch into the mode used by `deps --all`, but only list dependencies "\
-                     "for specified formula one specified formula per line. This is used for "\
+        description: "Switch into the mode used by the `--all` option, but only list dependencies "\
+                     "for the specified <formula>, one formula per line. This is used for "\
                      "debugging the `--installed`/`--all` display mode."
       switch :verbose
       switch :debug
