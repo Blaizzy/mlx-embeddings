@@ -80,47 +80,39 @@ Include the aliases of internal commands\.
 Show Homebrew and system configuration useful for debugging\. If you file a bug report, you will likely be asked for this information if you do not provide it\.
 .
 .SS "\fBdeps\fR [\fIoptions\fR] \fIformula\fR"
-Show dependencies for \fIformula\fR\. When given multiple formula arguments, show the intersection of dependencies for \fIformula\fR\.
-.
-.TP
-\fB\-\-1\fR
-Only show dependencies one level down, instead of recursing\.
+Show dependencies for \fIformula\fR\. Additional options specific to \fIformula\fR may be appended to the command\. When given multiple formula arguments, show the intersection of dependencies for each formula\.
 .
 .TP
 \fB\-n\fR
 Show dependencies in topological order\.
 .
 .TP
+\fB\-\-1\fR
+Only show dependencies one level down, instead of recursing\.
+.
+.TP
 \fB\-\-union\fR
-Show the union of dependencies for \fIformula\fR, instead of the intersection\.
+Show the union of dependencies for multiple \fIformula\fR, instead of the intersection\.
 .
 .TP
 \fB\-\-full\-name\fR
 List dependencies by their full name\.
 .
 .TP
-\fB\-\-installed\fR
-Only list those dependencies that are currently installed\.
-.
-.TP
-\fB\-\-all\fR
-List all the dependencies for all available formulae\.
-.
-.TP
 \fB\-\-include\-build\fR
-Show \fB:build\fR type dependencies for \fIformula\fR\.
+Include \fB:build\fR dependencies for \fIformula\fR\.
 .
 .TP
 \fB\-\-include\-optional\fR
-Show \fB:optional\fR dependencies for \fIformula\fR\.
+Include \fB:optional\fR dependencies for \fIformula\fR\.
 .
 .TP
 \fB\-\-include\-test\fR
-Show \fB:test\fR dependencies for \fIformula\fR (non\-recursive)\.
+Include \fB:test\fR dependencies for \fIformula\fR (non\-recursive)\.
 .
 .TP
 \fB\-\-skip\-recommended\fR
-Skip \fB:recommended\fR type dependencies for \fIformula\fR\.
+Skip \fB:recommended\fR dependencies for \fIformula\fR\.
 .
 .TP
 \fB\-\-include\-requirements\fR
@@ -128,15 +120,23 @@ Include requirements in addition to dependencies for \fIformula\fR\.
 .
 .TP
 \fB\-\-tree\fR
-Show dependencies as a tree\. When given multiple formula arguments output individual trees for every formula\.
+Show dependencies as a tree\. When given multiple formula arguments, show individual trees for each formula\.
 .
 .TP
 \fB\-\-annotate\fR
 Mark any build, test, optional, or recommended dependencies as such in the output\.
 .
 .TP
+\fB\-\-installed\fR
+List dependencies for formulae that are currently installed\. If \fIformula\fR is specified, list only its dependencies that are currently installed\.
+.
+.TP
+\fB\-\-all\fR
+List dependencies for all available formulae\.
+.
+.TP
 \fB\-\-for\-each\fR
-Switch into the mode used by \fBdeps \-\-all\fR, but only list dependencies for specified formula one specified formula per line\. This is used for debugging the \fB\-\-installed\fR/\fB\-\-all\fR display mode\.
+Switch into the mode used by the \fB\-\-all\fR option, but only list dependencies for the specified \fIformula\fR, one formula per line\. This is used for debugging the \fB\-\-installed\fR/\fB\-\-all\fR display mode\.
 .
 .SS "\fBdesc\fR [\fIoptions\fR] (\fItext\fR|\fB/\fR\fItext\fR\fB/\fR|\fIformula\fR)"
 Display \fIformula\fR\'s name and one\-line description\. Formula descriptions are cached; the cache is created on the first search, making that search slower than subsequent ones\.

@@ -60,6 +60,7 @@ class Requirement
 
     true
   end
+  alias installed? satisfied?
 
   # Overriding {#fatal?} is unsupported.
   # Pass a boolean to the fatal DSL method instead.
