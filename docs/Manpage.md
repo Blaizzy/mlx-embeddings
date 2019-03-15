@@ -540,9 +540,6 @@ Fetch the newest version of Homebrew and all formulae from GitHub using `git`(1)
 * `--merge`:
   `git merge` is used to include updates (rather than `git rebase`).
 
-* `--force`:
-  Always do a slower, full update check (even if unnecessary).
-
 ### `update-reset` [*`repository`*]
 Fetches and resets Homebrew and all tap repositories (or any specified `repository`) using `git`(1) to their latest `origin/master`. Note this will destroy all your uncommitted or committed changes.
 
