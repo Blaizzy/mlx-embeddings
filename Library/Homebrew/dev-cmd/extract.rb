@@ -142,8 +142,8 @@ module Homebrew
 
     # The class name has to be renamed to match the new filename,
     # e.g. Foo version 1.2.3 becomes FooAT123 and resides in Foo@1.2.3.rb.
-    class_name = Formulary.class_s(name.to_s)
-    versioned_name = Formulary.class_s("#{class_name}@#{version}")
+    class_name = Formulary.class_s(name)
+    versioned_name = Formulary.class_s("#{name}@#{version}")
     result.gsub!("class #{class_name} < Formula", "class #{versioned_name} < Formula")
 
     path = destination_tap.path/"Formula/#{name}@#{version}.rb"
