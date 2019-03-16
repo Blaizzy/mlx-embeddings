@@ -18,12 +18,12 @@ describe "brew info", :integration_test do
       .and not_to_output.to_stderr
       .and be_a_success
   end
+end
 
-  it "looks for a Cask with the same name if a given Formula does not exist", :needs_macos, :needs_network do
-    setup_remote_tap "homebrew/cask"
-
-    expect { brew "info", "firefox" }
-      .to output(/Found the following cask named "firefox" instead:\nfirefox: .+ \(auto_updates\)\n/).to_stderr
+describe "brew info", :integration_test, :needs_macos do
+  it "looks for a Cask with the same name if a given Formula does not exist" do
+    expect { brew "info", "basic-cask" }
+      .to output(/Found the following cask named "basic-cask" instead:\nbasic-cask: .+\n/).to_stderr
   end
 end
 
