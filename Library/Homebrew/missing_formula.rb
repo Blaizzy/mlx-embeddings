@@ -195,7 +195,7 @@ module Homebrew
 
         cask = Cask::CaskLoader.load(name)
         reason = "Found the following cask named \"#{name}\" instead:\n"
-        reason << Cask::Cmd::Info.get_info(cask) unless silent
+        reason << Cask::Cmd::Info.get_info(cask)
       rescue Cask::CaskUnavailableError
         nil
       end

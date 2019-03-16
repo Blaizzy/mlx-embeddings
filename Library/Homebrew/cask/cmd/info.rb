@@ -31,13 +31,13 @@ module Cask
         output << Formatter.url(cask.homepage) + "\n" if cask.homepage
         output << installation_info(cask)
         repo = repo_info(cask)
-        output << repo + "\n" unless repo.nil?
+        output << repo + "\n" if repo
         output << name_info(cask)
         language = language_info(cask)
-        output << language unless language.nil?
+        output << language if language
         output << artifact_info(cask) + "\n"
         caveats = Installer.caveats(cask)
-        output << caveats unless caveats.nil?
+        output << caveats if caveats
         output
       end
 
