@@ -245,6 +245,14 @@ describe Pathname do
       dst.install_symlink "foo" => "bar"
       expect((dst/"bar").readlink).to eq(described_class.new("foo"))
     end
+
+    it "can install relative symlinks in a symlinked directory" do
+      mkdir_p dst/"1/2"
+      dst.install_symlink "1/2" => "12"
+      expect((dst/"12").readlink).to eq(described_class.new("1/2"))
+      (dst/"12").install_symlink dst/"foo"
+      expect((dst/"12/foo").readlink).to eq(described_class.new("../../foo"))
+    end
   end
 
   describe InstallRenamed do
