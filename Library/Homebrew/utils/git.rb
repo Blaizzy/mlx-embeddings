@@ -14,6 +14,19 @@ module Git
     out.chomp
   end
 
+  def last_revision_commit_of_files(repo, file, before_commit: nil)
+    args = [before_commit.nil? ? "--skip=1" : before_commit.split("..").first]
+
+    cmd = [
+      HOMEBREW_SHIMS_PATH/"scm/git", "-C", repo,
+      "log", "--format=%h", "--abbrev=7", "--max-count=1", "--name-only",
+      *args, "--", file
+    ]
+    out, = Open3.capture3(cmd.join(" "))
+    rev, *files = out.chomp.split(/\n/).reject(&:empty?)
+    [rev, files]
+  end
+
   def last_revision_of_file(repo, file, before_commit: nil)
     relative_file = Pathname(file).relative_path_from(repo)
 

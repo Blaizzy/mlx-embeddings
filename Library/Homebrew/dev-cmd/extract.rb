@@ -97,47 +97,64 @@ module Homebrew
     # Expect exactly two named arguments: formula and tap
     raise UsageError if ARGV.named.length != 2
 
+    if ARGV.named.first !~ HOMEBREW_TAP_FORMULA_REGEX
+      name = ARGV.named.first.downcase
+      source_tap = CoreTap.instance
+    else
+      name = Regexp.last_match(3).downcase
+      source_tap = Tap.fetch(Regexp.last_match(1), Regexp.last_match(2))
+      raise TapFormulaUnavailableError.new(source_tap, name) unless source_tap.installed?
+    end
+
     destination_tap = Tap.fetch(ARGV.named.second)
     odie "Cannot extract formula to homebrew/core!" if destination_tap.core_tap?
+    odie "Cannot extract formula to the same tap!" if destination_tap == source_tap
     destination_tap.install unless destination_tap.installed?
 
-    name = ARGV.named.first.downcase
-    repo = CoreTap.instance.path
-    # Formulae can technically live in "<repo>/<formula>.rb" or
-    # "<repo>/Formula/<formula>.rb", but explicitly use the latter for now
-    # since that is how the core tap is structured.
-    file = repo/"Formula/#{name}.rb"
+    repo = source_tap.path
+    pattern = source_tap.core_tap? ? repo/"Formula/#{name}.rb" : repo/"{,**/}#{name}.rb"
 
     if args.version
       ohai "Searching repository history"
       version = args.version
       rev = "HEAD"
       test_formula = nil
+      result = ""
       loop do
-        loop do
-          rev = Git.last_revision_commit_of_file(repo, file, before_commit: "#{rev}~1")
-          break if rev.empty?
-          break unless Git.last_revision_of_file(repo, file, before_commit: rev).empty?
+        rev, (path,) = Git.last_revision_commit_of_files(repo, pattern, before_commit: "#{rev}~1")
+        odie "Could not find #{name}! The formula or version may not have existed." if rev.nil?
 
+        file = repo/path
+        result = Git.last_revision_of_file(repo, file, before_commit: rev)
+        if result.empty?
           ohai "Skipping revision #{rev} - file is empty at this revision" if ARGV.debug?
+          next
         end
+
         test_formula = formula_at_revision(repo, name, file, rev)
         break if test_formula.nil? || test_formula.version == version
 
         ohai "Trying #{test_formula.version} from revision #{rev} against desired #{version}" if ARGV.debug?
       end
       odie "Could not find #{name}! The formula or version may not have existed." if test_formula.nil?
-      result = Git.last_revision_of_file(repo, file, before_commit: rev)
-    elsif File.exist?(file)
-      rev = "HEAD"
-      version = Formulary.factory(file).version
-      result = File.read(file)
     else
-      ohai "Searching repository history"
-      rev = Git.last_revision_commit_of_file(repo, file)
-      version = formula_at_revision(repo, name, file, rev).version
-      odie "Could not find #{name}! The formula or version may not have existed." if rev.empty?
-      result = Git.last_revision_of_file(repo, file)
+      files = Dir[repo/"{,**/}"].map do |dir|
+        Pathname.glob(["#{dir}/#{name}.rb"]).find(&:file?)
+      end.compact
+
+      if files.empty?
+        ohai "Searching repository history"
+        rev, (path,) = Git.last_revision_commit_of_files(repo, pattern)
+        odie "Could not find #{name}! The formula or version may not have existed." if rev.nil?
+        file = repo/path
+        version = formula_at_revision(repo, name, file, rev).version
+        result = Git.last_revision_of_file(repo, file)
+      else
+        file = files.first.realpath
+        rev = "HEAD"
+        version = Formulary.factory(file).version
+        result = File.read(file)
+      end
     end
 
     # The class name has to be renamed to match the new filename,
