@@ -22,7 +22,7 @@ module Git
       "log", "--format=%h", "--abbrev=7", "--max-count=1", "--name-only",
       *args, "--", file
     ]
-    out, = Open3.capture3(cmd.join(" "))
+    out, = Open3.capture3("/bin/bash", "-c", cmd.join(" "))
     rev, *files = out.chomp.split(/\n/).reject(&:empty?)
     [rev, files]
   end
