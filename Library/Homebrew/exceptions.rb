@@ -419,7 +419,7 @@ class BuildError < RuntimeError
 
     puts
 
-    unless issues&.empty?
+    if issues.present?
       puts "These open issues may also help:"
       puts issues.map { |i| "#{i["title"]} #{i["html_url"]}" }.join("\n")
     end
