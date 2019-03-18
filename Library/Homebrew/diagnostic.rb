@@ -511,7 +511,7 @@ module Homebrew
       end
 
       def check_git_version
-        minimum_version = ENV["HOMEBREW_MINIMUM_GIT_VERSION"].freeze
+        minimum_version = ENV["HOMEBREW_MINIMUM_GIT_VERSION"]
         return unless Utils.git_available?
         return if Version.create(Utils.git_version) >= Version.create(minimum_version)
 

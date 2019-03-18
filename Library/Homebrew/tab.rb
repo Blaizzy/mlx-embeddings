@@ -324,7 +324,7 @@ class Tab < OpenStruct
     Time.at(super)
   end
 
-  def to_json
+  def to_json(_opts)
     attributes = {
       "homebrew_version"        => homebrew_version,
       "used_options"            => used_options.as_flags,
