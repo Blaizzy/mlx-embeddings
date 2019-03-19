@@ -81,7 +81,8 @@ module Homebrew
 
         Look through repository history to find the most recent version of <formula> and
         create a copy in <tap>`/Formula/`<formula>`@`<version>`.rb`. If the tap is not
-        installed yet, attempt to install/clone the tap before continuing.
+        installed yet, attempt to install/clone the tap before continuing. To extract
+        a <formula> from a tap that is not homebrew/core use <user>/<repo>/<formula>.
       EOS
 
       flag "--version=",
@@ -112,7 +113,12 @@ module Homebrew
     destination_tap.install unless destination_tap.installed?
 
     repo = source_tap.path
-    pattern = source_tap.core_tap? ? repo/"Formula/#{name}.rb" : repo/"{,**/}#{name}.rb"
+    pattern = if source_tap.core_tap?
+      [repo/"Formula/#{name}.rb"]
+    else
+      # A formula can technically live in the root directory of a tap or in any of its subdirectories
+      [repo/"#{name}.rb", repo/"**/#{name}.rb"]
+    end
 
     if args.version
       ohai "Searching repository history"
@@ -138,6 +144,7 @@ module Homebrew
       end
       odie "Could not find #{name}! The formula or version may not have existed." if test_formula.nil?
     else
+      # Search in the root directory of <repo> as well as recursively in all of its subdirectories
       files = Dir[repo/"{,**/}"].map do |dir|
         Pathname.glob(["#{dir}/#{name}.rb"]).find(&:file?)
       end.compact
