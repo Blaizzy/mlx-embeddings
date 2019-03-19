@@ -12,6 +12,8 @@ module Cask
 
       MAJOR_MINOR_PATCH_REGEX = /^(\d+)(?:\.(\d+)(?:\.(\d+))?)?/.freeze
 
+      INVALID_CHARACTERS = /[^0-9a-zA-Z\.\,\:\-\_]/.freeze
+
       class << self
         private
 
@@ -58,6 +60,23 @@ module Cask
       def initialize(raw_version)
         @raw_version = raw_version
         super(raw_version.to_s)
+      end
+
+      def invalid_characters
+        return [] if latest?
+
+        raw_version.scan(INVALID_CHARACTERS)
+      end
+
+      def unstable?
+        return false if latest?
+
+        s = downcase.delete(".").gsub(/[^a-z\d]+/, "-")
+
+        return true if s.match?(/(\d+|\b)(alpha|beta|preview|rc|dev|canary|snapshot)(\d+|\b)/i)
+        return true if s.match?(/\A[a-z\d]+(\-\d+)*\-?(a|b|pre)(\d+|\b)/i)
+
+        false
       end
 
       def latest?
