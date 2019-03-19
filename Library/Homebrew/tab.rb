@@ -324,7 +324,7 @@ class Tab < OpenStruct
     Time.at(super)
   end
 
-  def to_json
+  def to_json(options = nil)
     attributes = {
       "homebrew_version"        => homebrew_version,
       "used_options"            => used_options.as_flags,
@@ -344,7 +344,7 @@ class Tab < OpenStruct
       "source"                  => source,
     }
 
-    JSON.generate(attributes)
+    JSON.generate(attributes, options)
   end
 
   def write
