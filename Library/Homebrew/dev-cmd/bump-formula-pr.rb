@@ -109,7 +109,7 @@ module Homebrew
         odie "Couldn't guess formula for sure: could be one of these:\n#{guesses}"
       end
     end
-    odie "No formula found!" unless formula
+    raise FormulaUnspecifiedError unless formula
 
     check_for_duplicate_pull_requests(formula) unless checked_for_duplicates
 
