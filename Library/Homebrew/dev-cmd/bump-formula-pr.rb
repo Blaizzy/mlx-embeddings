@@ -166,12 +166,6 @@ module Homebrew
       end
     end
 
-    if args.dry_run?
-      ohai "brew update"
-    else
-      safe_system "brew", "update"
-    end
-
     old_formula_version = formula_version(formula, requested_spec)
 
     replacement_pairs = []
