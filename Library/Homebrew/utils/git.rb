@@ -4,7 +4,11 @@ module Git
   module_function
 
   def last_revision_commit_of_file(repo, file, before_commit: nil)
-    args = [before_commit.nil? ? "--skip=1" : before_commit.split("..").first]
+    args = if before_commit.nil?
+      ["--skip=1"]
+    else
+      [before_commit.split("..").first]
+    end
 
     out, = Open3.capture3(
       HOMEBREW_SHIMS_PATH/"scm/git", "-C", repo,
@@ -12,6 +16,28 @@ module Git
       *args, "--", file
     )
     out.chomp
+  end
+
+  def last_revision_commit_of_files(repo, files, before_commit: nil)
+    args = if before_commit.nil?
+      ["--skip=1"]
+    else
+      [before_commit.split("..").first]
+    end
+
+    # git log output format:
+    #   <commit_hash>
+    #   <file_path1>
+    #   <file_path2>
+    #   ...
+    # return [<commit_hash>, [file_path1, file_path2, ...]]
+    out, = Open3.capture3(
+      HOMEBREW_SHIMS_PATH/"scm/git", "-C", repo, "log",
+      "--pretty=format:%h", "--abbrev=7", "--max-count=1",
+      "--diff-filter=d", "--name-only", *args, "--", *files
+    )
+    rev, *paths = out.chomp.split(/\n/).reject(&:empty?)
+    [rev, paths]
   end
 
   def last_revision_of_file(repo, file, before_commit: nil)
