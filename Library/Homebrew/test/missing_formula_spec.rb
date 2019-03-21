@@ -136,4 +136,20 @@ describe Homebrew::MissingFormula do
       it { is_expected.to be_nil }
     end
   end
+
+  describe "::cask_reason", :cask do
+    subject { described_class.cask_reason(formula) }
+
+    context "with a missing formula that exists as a cask" do
+      let(:formula) { "local-caffeine" }
+
+      it { is_expected.to match(/Found the following cask named "local-caffeine" instead:\nlocal-caffeine: 1.2.3\n/) }
+    end
+
+    context "with a missing formula that does not share a name with a cask" do
+      let(:formula) { "missing-formula" }
+
+      it { is_expected.to be_nil }
+    end
+  end
 end
