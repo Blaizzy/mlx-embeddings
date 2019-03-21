@@ -7,8 +7,7 @@ module Homebrew
   module MissingFormula
     class << self
       def reason(name, silent: false)
-        cask_reason(name, silent: silent) || blacklisted_reason(name) ||
-          tap_migration_reason(name) || deleted_reason(name, silent: silent)
+        blacklisted_reason(name) || tap_migration_reason(name) || deleted_reason(name, silent: silent)
       end
 
       def blacklisted_reason(name)
