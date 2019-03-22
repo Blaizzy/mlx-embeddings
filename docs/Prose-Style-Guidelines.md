@@ -8,9 +8,9 @@ This does not apply to any Ruby or other computer code. You can use it to inform
 
 The primary goal of Homebrew's prose documents is communicating with its community of users and contributors. "Users" includes "contributors" here; wherever you see "users" you can substitute "users and contributors".
 
-Understandability trumps any particular style guideline.
+Understandability is more important than any particular style guideline.
 
-Users trump maintainers, except in specifically maintainer-focused documents.
+Users take precedence over maintainers, except in specifically maintainer-focused documents.
 
 Homebrew's audience includes users with a wide range of education and experience, and users for whom English is not a native language. We aim to support as many of those users as feasible.
 
