@@ -1,12 +1,11 @@
 ---
 title: Homebrew on Linux
+logo: https://brew.sh/assets/img/linuxbrew.png
 image: https://brew.sh/assets/img/linuxbrew.png
 redirect_from:
   - /Linux
   - /Linuxbrew
 ---
-<img src="https://brew.sh/assets/img/linuxbrew.png" alt="Linuxbrew logo" style="min-width:128px" height="128" width="128">
-
 The Homebrew package manager may be used on Linux and [Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/about). Homebrew was formerly referred to as Linuxbrew when running on Linux or WSL. It can be installed in your home directory, in which case it does not use *sudo*. Homebrew does not use any libraries provided by your host system, except *glibc* and *gcc* if they are new enough. Homebrew can install its own current versions of *glibc* and *gcc* for older distributions of Linux.
 
 [Features](#features), [dependencies](#dependencies) and [installation instructions](#install) are described below. Terminology (e.g. the difference between a Cellar, Tap, Cask and so forth) is [explained in the documentation](Formula-Cookbook.md#homebrew-terminology).
