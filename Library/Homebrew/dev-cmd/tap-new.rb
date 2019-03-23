@@ -66,6 +66,8 @@ module Homebrew
             displayName: Run brew test-bot
     YAML
     write_path(tap, "azure-pipelines.yml", azure)
+    ohai "Created #{tap}"
+    puts tap.path.to_s
   end
 
   def write_path(tap, filename, content)
