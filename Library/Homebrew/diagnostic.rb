@@ -350,6 +350,9 @@ module Homebrew
 
           You should change the ownership of these directories to your user.
             sudo chown -R $(whoami) #{not_writable_dirs.join(" ")}
+
+          And make sure that your user has write permission.
+            chmod u+w #{not_writable_dirs.join(" ")}
         EOS
       end
 
