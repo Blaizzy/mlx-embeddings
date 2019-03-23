@@ -1606,6 +1606,7 @@ class Formula
       "version_scheme"           => version_scheme,
       "bottle"                   => {},
       "keg_only"                 => keg_only?,
+      "bottle_disabled"          => bottle_disabled?,
       "options"                  => [],
       "build_dependencies"       => dependencies.select(&:build?)
                                                 .map(&:name)
