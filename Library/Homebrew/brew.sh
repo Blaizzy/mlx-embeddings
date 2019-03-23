@@ -355,8 +355,8 @@ fi
 check-run-command-as-root() {
   [[ "$(id -u)" = 0 ]] || return
 
-  # Allow Docker to do everything as root (as it's normal there)
-  [[ -f /proc/1/cgroup ]] && grep docker -q /proc/1/cgroup && return
+  # Allow Azure Pipelines/Docker to do everything as root (as it's normal there)
+  [[ -f /proc/1/cgroup ]] && grep -E "azpl_job|docker" -q /proc/1/cgroup && return
 
   # Homebrew Services may need `sudo` for system-wide daemons.
   [[ "$HOMEBREW_COMMAND" = "services" ]] && return
