@@ -89,7 +89,7 @@ module Homebrew
           end
           ofail e.message
           # No formula with this name, try a missing formula lookup
-          if (reason = MissingFormula.reason(f) || MissingFormula.cask_reason(f))
+          if (reason = MissingFormula.reason(f, show_info: true))
             $stderr.puts reason
           end
         end
