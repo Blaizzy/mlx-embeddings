@@ -481,20 +481,7 @@ If anything isn’t clear, you can usually figure it out by `grep`ping the `$(br
 
 ### Unstable versions (`devel`, `head`)
 
-Formulae can specify alternate downloads for the upstream project’s [`devel`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#devel-class_method) release (unstable but not `master`/`trunk`) or [`head`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#head-class_method) (`master`/`trunk`).
-
-#### `devel`
-
-The [`devel`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#devel-class_method) spec (activated by passing `--devel`) is used for a project’s unstable releases. It is specified in a block:
-
-```ruby
-devel do
-  url "https://foo.com/foo-0.1.tar.gz"
-  sha256 "85cc828a96735bdafcf29eb6291ca91bac846579bcef7308536e0c875d6c81d7"
-end
-```
-
-You can test if the [`devel`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#devel-class_method) spec is in use with `build.devel?`.
+Formulae can specify alternate downloads for the upstream project’s [`head`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#head-class_method) (`master`/`trunk`) or [`devel`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#devel-class_method) release (unstable but not `master`/`trunk`).
 
 #### `head`
 
@@ -518,6 +505,21 @@ class Foo < Formula
                                          #    :revision => "090930930295adslfknsdfsdaffnasd13"
 end
 ```
+
+#### `devel`
+
+The [`devel`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#devel-class_method) spec (activated by passing `--devel`) is used for a project’s unstable releases. `devel` specs are not allowed in Homebrew/homebrew-core.
+
+A `devel` spec is specified in a block:
+
+```ruby
+devel do
+  url "https://foo.com/foo-0.1.tar.gz"
+  sha256 "85cc828a96735bdafcf29eb6291ca91bac846579bcef7308536e0c875d6c81d7"
+end
+```
+
+You can test if the [`devel`](https://www.rubydoc.info/github/Homebrew/brew/master/Formula#devel-class_method) spec is in use with `build.devel?`.
 
 ### Compiler selection
 
