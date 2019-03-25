@@ -16,10 +16,7 @@ class CompilerFailure
   attr_reader :name
 
   def version(val = nil)
-    if val
-      @version = Version.parse(val.to_s)
-      odisabled "'fails_with :clang' with 'build' < 600" if name.to_s == "clang" && val.to_i < 600
-    end
+    @version = Version.parse(val.to_s) if val
     @version
   end
 
