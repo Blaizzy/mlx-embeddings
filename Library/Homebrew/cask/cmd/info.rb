@@ -1,4 +1,5 @@
 require "json"
+require "cask/installer"
 
 module Cask
   class Cmd
@@ -25,21 +26,29 @@ module Cask
         "displays information about the given Cask"
       end
 
+      def self.get_info(cask)
+        output = title_info(cask) + "\n"
+        output << Formatter.url(cask.homepage) + "\n" if cask.homepage
+        output << installation_info(cask)
+        repo = repo_info(cask)
+        output << repo + "\n" if repo
+        output << name_info(cask)
+        language = language_info(cask)
+        output << language if language
+        output << artifact_info(cask) + "\n"
+        caveats = Installer.caveats(cask)
+        output << caveats if caveats
+        output
+      end
+
       def self.info(cask)
-        title_info(cask)
-        puts Formatter.url(cask.homepage) if cask.homepage
-        installation_info(cask)
-        repo_info(cask)
-        name_info(cask)
-        language_info(cask)
-        artifact_info(cask)
-        Installer.print_caveats(cask)
+        puts get_info(cask)
       end
 
       def self.title_info(cask)
         title = "#{cask.token}: #{cask.version}"
         title += " (auto_updates)" if cask.auto_updates
-        puts title
+        title
       end
 
       def self.formatted_url(url)
@@ -47,30 +56,39 @@ module Cask
       end
 
       def self.installation_info(cask)
+        install_info = ""
         if cask.installed?
           cask.versions.each do |version|
             versioned_staged_path = cask.caskroom_path.join(version)
-
-            puts versioned_staged_path.to_s
-              .concat(" (")
-              .concat(versioned_staged_path.exist? ? versioned_staged_path.abv : Formatter.error("does not exist"))
-                                      .concat(")")
+            install_info << versioned_staged_path.to_s
+                            .concat(" (")
+                            .concat(
+                              if versioned_staged_path.exist?
+                              then versioned_staged_path.abv
+                              else Formatter.error("does not exist")
+                              end,
+                            ).concat(")\n")
           end
+          install_info
         else
-          puts "Not installed"
+          "Not installed\n"
         end
       end
 
       def self.name_info(cask)
-        ohai((cask.name.size > 1) ? "Names" : "Name")
-        puts cask.name.empty? ? Formatter.error("None") : cask.name
+        <<~EOS
+          #{ohai_title((cask.name.size > 1) ? "Names" : "Name")}
+          #{cask.name.empty? ? Formatter.error("None") : cask.name.join("\n")}
+        EOS
       end
 
       def self.language_info(cask)
         return if cask.languages.empty?
 
-        ohai "Languages"
-        puts cask.languages.join(", ")
+        <<~EOS
+          #{ohai_title("Languages")}
+          #{cask.languages.join(", ")}
+        EOS
       end
 
       def self.repo_info(cask)
@@ -82,17 +100,18 @@ module Cask
           "#{cask.tap.default_remote}/blob/master/Casks/#{cask.token}.rb"
         end
 
-        puts "From: #{Formatter.url(url)}"
+        "From: #{Formatter.url(url)}"
       end
 
       def self.artifact_info(cask)
-        ohai "Artifacts"
+        artifact_output = ohai_title("Artifacts")
         cask.artifacts.each do |artifact|
           next unless artifact.respond_to?(:install_phase)
           next unless DSL::ORDINARY_ARTIFACT_CLASSES.include?(artifact.class)
 
-          puts artifact.to_s
+          artifact_output << "\n" << artifact.to_s
         end
+        artifact_output
       end
     end
   end

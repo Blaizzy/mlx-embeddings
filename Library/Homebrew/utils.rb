@@ -24,9 +24,13 @@ rescue LoadError => e
   raise unless e.message.include?(path)
 end
 
-def ohai(title, *sput)
+def ohai_title(title)
   title = Tty.truncate(title) if $stdout.tty? && !ARGV.verbose?
-  puts Formatter.headline(title, color: :blue)
+  Formatter.headline(title, color: :blue)
+end
+
+def ohai(title, *sput)
+  puts ohai_title(title)
   puts sput
 end
 

@@ -43,14 +43,16 @@ module Cask
                    :reinstall?, :upgrade?, :verbose?, :installed_as_dependency?,
                    :quarantine?
 
-    def self.print_caveats(cask)
+    def self.caveats(cask)
       odebug "Printing caveats"
 
       caveats = cask.caveats
       return if caveats.empty?
 
-      ohai "Caveats"
-      puts caveats + "\n"
+      <<~EOS
+        #{ohai_title "Caveats"}
+        #{caveats}
+      EOS
     end
 
     def fetch
@@ -86,7 +88,7 @@ module Cask
 
       check_conflicts
 
-      print_caveats
+      print caveats
       fetch
       uninstall_existing_cask if reinstall?
 
@@ -370,8 +372,8 @@ module Cask
       end
     end
 
-    def print_caveats
-      self.class.print_caveats(@cask)
+    def caveats
+      self.class.caveats(@cask)
     end
 
     def save_caskfile

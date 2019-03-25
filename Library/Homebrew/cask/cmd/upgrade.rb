@@ -74,7 +74,7 @@ module Cask
             # Start new Cask's installation steps
             new_cask_installer.check_conflicts
 
-            new_cask_installer.print_caveats
+            puts new_cask_installer.caveats
 
             new_cask_installer.fetch
 

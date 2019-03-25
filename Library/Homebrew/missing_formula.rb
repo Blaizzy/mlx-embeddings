@@ -1,11 +1,14 @@
 require "formulary"
+require "cask/cmd/abstract_command"
+require "cask/cmd/info"
+require "cask/cask_loader"
 
 module Homebrew
   module MissingFormula
     class << self
-      def reason(name, silent: false)
-        blacklisted_reason(name) || tap_migration_reason(name) ||
-          deleted_reason(name, silent: silent)
+      def reason(name, silent: false, show_info: false)
+        cask_reason(name, silent: silent, show_info: show_info) || blacklisted_reason(name) ||
+          tap_migration_reason(name) || deleted_reason(name, silent: silent)
       end
 
       def blacklisted_reason(name)
@@ -189,6 +192,17 @@ module Homebrew
               https://docs.brew.sh/How-to-Create-and-Maintain-a-Tap
           EOS
         end
+      end
+
+      def cask_reason(name, silent: false, show_info: false)
+        return if silent
+
+        cask = Cask::CaskLoader.load(name)
+        reason = "Found a cask named \"#{name}\" instead.\n"
+        reason << Cask::Cmd::Info.get_info(cask) if show_info
+        reason
+      rescue Cask::CaskUnavailableError
+        nil
       end
 
       require "extend/os/missing_formula"
