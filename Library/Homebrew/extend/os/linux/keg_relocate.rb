@@ -17,7 +17,6 @@ class Keg
     return if !file.elf? || !file.dynamic_elf?
 
     patchelf = DevelopmentTools.locate "patchelf"
-
     cmd_rpath = [patchelf, "--print-rpath", file]
     old_rpath = Utils.popen_read(*cmd_rpath, err: :out).strip
 
