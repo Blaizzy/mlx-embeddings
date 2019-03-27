@@ -1,5 +1,7 @@
 require "open3"
 
+require "formula_installer"
+
 RSpec::Matchers.define_negated_matcher :be_a_failure, :be_a_success
 
 RSpec.shared_context "integration test" do
@@ -140,7 +142,7 @@ RSpec.shared_context "integration test" do
           (prefix/"foo"/"test").write("test") if build.with? "foo"
           prefix.install Dir["*"]
           (buildpath/"test.c").write \
-            "#include <stdio.h>\\nint main(){return printf(\\"test\\");}"
+            "#include <stdio.h>\\nint main(){printf(\\"test\\");return 0;}"
           bin.mkpath
           system ENV.cc, "test.c", "-o", bin/"test"
         end
@@ -171,6 +173,15 @@ RSpec.shared_context "integration test" do
         end
       RUBY
     end
+  end
+
+  def install_test_formula(name, content = nil, build_bottle: false)
+    setup_test_formula(name, content)
+    fi = FormulaInstaller.new(Formula[name])
+    fi.build_bottle = build_bottle
+    fi.prelude
+    fi.install
+    fi.finish
   end
 
   def setup_remote_tap(name)
