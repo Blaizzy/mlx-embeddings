@@ -1,3 +1,9 @@
+require "cmd/shared_examples/args_parse"
+
+describe "Homebrew.test_args" do
+  it_behaves_like "parseable arguments"
+end
+
 describe "brew test", :integration_test do
   it "tests a given Formula" do
     install_test_formula "testball", <<~'RUBY'

@@ -1,5 +1,4 @@
 require "extend/ENV"
-require "formula_assertions"
 require "sandbox"
 require "timeout"
 require "cli_parser"
@@ -31,7 +30,11 @@ module Homebrew
   end
 
   def test
+    test_args.parse
+
     raise FormulaUnspecifiedError if ARGV.named.empty?
+
+    require "formula_assertions"
 
     ARGV.resolved_formulae.each do |f|
       # Cannot test uninstalled formulae

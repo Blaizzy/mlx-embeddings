@@ -1,5 +1,10 @@
 require "dev-cmd/audit"
 require "formulary"
+require "cmd/shared_examples/args_parse"
+
+describe "Homebrew.audit_args" do
+  it_behaves_like "parseable arguments"
+end
 
 module Count
   def self.increment

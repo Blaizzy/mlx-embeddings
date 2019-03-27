@@ -191,7 +191,6 @@ RSpec.configure do |config|
         CoreTap.instance.alias_dir,
         CoreTap.instance.path/"formula_renames.json",
         *Pathname.glob("#{HOMEBREW_CELLAR}/*/"),
-        *Pathname.glob("testball*.bottle.tar.gz"),
       ]
 
       files_after_test = find_files

@@ -1,3 +1,9 @@
+require "cmd/shared_examples/args_parse"
+
+describe "Homebrew.bottle_args" do
+  it_behaves_like "parseable arguments"
+end
+
 describe "brew bottle", :integration_test do
   it "builds a bottle for the given Formula" do
     # create stub patchelf
@@ -21,9 +27,13 @@ describe "brew bottle", :integration_test do
       FileUtils.ln_s "not-exist", "symlink"
     end
 
-    expect { brew "bottle", "--no-rebuild", "testball" }
-      .to output(/testball--0\.1.*\.bottle\.tar\.gz/).to_stdout
-      .and not_to_output.to_stderr
-      .and be_a_success
+    begin
+      expect { brew "bottle", "--no-rebuild", "testball" }
+        .to output(/testball--0\.1.*\.bottle\.tar\.gz/).to_stdout
+        .and not_to_output.to_stderr
+        .and be_a_success
+    ensure
+      FileUtils.rm_f Dir.glob("testball--0.1*.bottle.tar.gz")
+    end
   end
 end

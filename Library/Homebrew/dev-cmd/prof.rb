@@ -14,6 +14,8 @@ module Homebrew
   end
 
   def prof
+    prof_args.parse
+
     Homebrew.install_gem_setup_path! "ruby-prof"
     FileUtils.mkdir_p "prof"
     brew_rb = (HOMEBREW_LIBRARY_PATH/"brew.rb").resolved_path

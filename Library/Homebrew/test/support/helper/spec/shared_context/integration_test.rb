@@ -184,6 +184,19 @@ RSpec.shared_context "integration test" do
     fi.finish
   end
 
+  def setup_test_tap
+    path = Tap::TAP_DIRECTORY/"homebrew/homebrew-foo"
+    path.mkpath
+    path.cd do
+      system "git", "init"
+      system "git", "remote", "add", "origin", "https://github.com/Homebrew/homebrew-foo"
+      FileUtils.touch "readme"
+      system "git", "add", "--all"
+      system "git", "commit", "-m", "init"
+    end
+    path
+  end
+
   def setup_remote_tap(name)
     Tap.fetch(name).tap do |tap|
       next if tap.installed?

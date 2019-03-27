@@ -1,3 +1,9 @@
+require "cmd/shared_examples/args_parse"
+
+describe "Homebrew.linkage_args" do
+  it_behaves_like "parseable arguments"
+end
+
 describe "brew linkage", :integration_test do
   before do
     setup_test_formula "testball"

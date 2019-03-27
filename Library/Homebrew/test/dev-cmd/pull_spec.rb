@@ -1,3 +1,9 @@
+require "cmd/shared_examples/args_parse"
+
+describe "Homebrew.pull_args" do
+  it_behaves_like "parseable arguments"
+end
+
 describe "brew pull", :integration_test do
   it "fetches a patch from a GitHub commit or pull request and applies it", :needs_network do
     CoreTap.instance.path.cd do
