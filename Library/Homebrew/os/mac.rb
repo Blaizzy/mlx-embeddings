@@ -200,6 +200,7 @@ module OS
       "9.4"   => { clang: "9.1", clang_build: 902 },
       "10.0"  => { clang: "10.0", clang_build: 1000 },
       "10.1"  => { clang: "10.0", clang_build: 1000 },
+      "10.2"  => { clang: "10.0", clang_build: 1001 },
     }.freeze
 
     def compilers_standard?
