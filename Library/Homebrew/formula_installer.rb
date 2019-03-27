@@ -15,6 +15,7 @@ require "cache_store"
 require "linkage_checker"
 require "install"
 require "messages"
+require "cask/cask_loader"
 
 class FormulaInstaller
   include FormulaCellarChecks
@@ -66,6 +67,10 @@ class FormulaInstaller
 
   def self.attempted
     @attempted ||= Set.new
+  end
+
+  def self.clear_attempted
+    @attempted = Set.new
   end
 
   # When no build tools are available and build flags are passed through ARGV,

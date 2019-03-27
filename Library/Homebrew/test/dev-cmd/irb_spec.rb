@@ -14,11 +14,4 @@ describe "brew irb", :integration_test do
       .and not_to_output.to_stderr
       .and be_a_success
   end
-
-  specify "--examples" do
-    expect { brew "irb", "--examples" }
-      .to output(/'v8'\.f # => instance of the v8 formula/).to_stdout
-      .and not_to_output.to_stderr
-      .and be_a_success
-  end
 end
