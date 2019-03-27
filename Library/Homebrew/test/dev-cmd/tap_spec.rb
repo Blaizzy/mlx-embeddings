@@ -1,3 +1,9 @@
+require "cmd/shared_examples/args_parse"
+
+describe "Homebrew.tap_args" do
+  it_behaves_like "parseable arguments"
+end
+
 describe "brew tap", :integration_test do
   it "taps a given Tap" do
     path = Tap::TAP_DIRECTORY/"homebrew/homebrew-foo"

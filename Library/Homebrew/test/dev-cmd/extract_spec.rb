@@ -1,3 +1,9 @@
+require "cmd/shared_examples/args_parse"
+
+describe "Homebrew.extract_args" do
+  it_behaves_like "parseable arguments"
+end
+
 describe "brew extract", :integration_test do
   it "retrieves the specified version of formula, defaulting to most recent" do
     path = Tap::TAP_DIRECTORY/"homebrew/homebrew-foo"
