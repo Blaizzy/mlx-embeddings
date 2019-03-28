@@ -136,21 +136,45 @@ module Cask
         "appcast"        => appcast,
         "version"        => version,
         "sha256"         => sha256,
-        "artifacts"      => artifacts.map do |a|
-          if a.respond_to? :to_h
-            a.to_h
-          elsif a.respond_to? :to_a
-            a.to_a
-          else
-            a
-          end
-        end,
-        "caveats"        => caveats,
+        "artifacts"      => artifacts.map(&method(:to_h_gsubs)),
+        "caveats"        => to_h_string_gsubs(caveats),
         "depends_on"     => depends_on,
         "conflicts_with" => conflicts_with,
         "container"      => container,
         "auto_updates"   => auto_updates,
       }
+    end
+
+    private
+
+    def to_h_string_gsubs(string)
+      string.to_s
+            .gsub(ENV["HOME"], "$HOME")
+            .gsub(HOMEBREW_PREFIX, "$(brew --prefix)")
+    end
+
+    def to_h_array_gsubs(array)
+      array.to_a.map do |value|
+        to_h_gsubs(value)
+      end
+    end
+
+    def to_h_hash_gsubs(hash)
+      hash.to_h.each_with_object({}) do |(key, value), h|
+        h[key] = to_h_gsubs(value)
+      end
+    rescue TypeError
+      to_h_array_gsubs(hash)
+    end
+
+    def to_h_gsubs(value)
+      if value.respond_to? :to_h
+        to_h_hash_gsubs(value)
+      elsif value.respond_to? :to_a
+        to_h_array_gsubs(value)
+      else
+        to_h_string_gsubs(value)
+      end
     end
   end
 end
