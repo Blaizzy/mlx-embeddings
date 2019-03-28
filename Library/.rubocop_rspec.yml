@@ -1,21 +1,29 @@
 inherit_from: ./.rubocop.yml
 
+AllCops:
+  Include:
+    - '**/*_spec.rb'
+  Exclude:
+    - '**/vendor/**/*'
+
 NewFormulaAudit:
   Enabled: true
 
-# TODO: try to enable these
+# Intentionally disabled as it doesn't fit with our code style.
 RSpec/AnyInstance:
   Enabled: false
+
+# TODO: try to enable these (also requires fixing Homebrew/bundle)
 RSpec/ContextWording:
   Enabled: false
 RSpec/DescribeClass:
   Enabled: false
-RSpec/ExampleLength:
-  Enabled: false
 RSpec/MessageSpies:
   Enabled: false
 
-# TODO: try to reduce these
+# TODO: try to reduce these (also requires fixing Homebrew/bundle)
+RSpec/ExampleLength:
+  Max: 75
 RSpec/MultipleExpectations:
   Max: 26
 RSpec/NestedGroups:

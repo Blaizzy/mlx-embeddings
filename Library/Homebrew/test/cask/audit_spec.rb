@@ -495,14 +495,13 @@ describe Cask::Audit, :cask do
       let(:cask_token) { "with-binary" }
       let(:check_token_conflicts) { true }
 
-      before do
-        expect(audit).to receive(:core_formula_names).and_return(formula_names)
-      end
-
       context "when cask token conflicts with a core formula" do
         let(:formula_names) { %w[with-binary other-formula] }
 
-        it { is_expected.to warn_with(/possible duplicate/) }
+        it "warns about duplicates" do
+          expect(audit).to receive(:core_formula_names).and_return(formula_names)
+          expect(subject).to warn_with(/possible duplicate/)
+        end
       end
 
       context "when cask token does not conflict with a core formula" do
@@ -519,41 +518,31 @@ describe Cask::Audit, :cask do
       let(:verify) { class_double(Cask::Verify).as_stubbed_const }
       let(:error_msg) { "Download Failed" }
 
-      context "when download and verification succeed" do
-        before do
-          expect(download).to receive(:perform)
-          expect(verify).to receive(:all)
-        end
-
-        it { is_expected.not_to fail_with(/#{error_msg}/) }
+      it "when download and verification succeed it does not fail" do
+        expect(download).to receive(:perform)
+        expect(verify).to receive(:all)
+        expect(subject).not_to fail_with(/#{error_msg}/)
       end
 
-      context "when download fails" do
-        before do
-          expect(download).to receive(:perform).and_raise(StandardError.new(error_msg))
-        end
-
-        it { is_expected.to fail_with(/#{error_msg}/) }
+      it "when download fails it does not fail" do
+        expect(download).to receive(:perform).and_raise(StandardError.new(error_msg))
+        expect(subject).to fail_with(/#{error_msg}/)
       end
 
-      context "when verification fails" do
-        before do
-          expect(download).to receive(:perform)
-          expect(verify).to receive(:all).and_raise(StandardError.new(error_msg))
-        end
-
-        it { is_expected.to fail_with(/#{error_msg}/) }
+      it "when verification fails it does not fail" do
+        expect(download).to receive(:perform)
+        expect(verify).to receive(:all).and_raise(StandardError.new(error_msg))
+        expect(subject).to fail_with(/#{error_msg}/)
       end
     end
 
     context "when an exception is raised" do
       let(:cask) { instance_double(Cask::Cask) }
 
-      before do
+      it "does not fail" do
         expect(cask).to receive(:version).and_raise(StandardError.new)
+        expect(subject).to fail_with(/exception while auditing/)
       end
-
-      it { is_expected.to fail_with(/exception while auditing/) }
     end
   end
 end

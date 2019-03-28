@@ -8,75 +8,28 @@ describe Homebrew::MissingFormula do
   end
 
   describe "::blacklisted_reason" do
-    matcher :be_blacklisted do
+    matcher :blacklist do |name|
       match do |expected|
-        described_class.blacklisted_reason(expected)
+        expected.blacklisted_reason(name)
       end
     end
 
-    specify "RubyGems is blacklisted" do
-      expect(%w[gem rubygem rubygems]).to all be_blacklisted
-    end
-
-    specify "LaTeX is blacklisted" do
-      expect(%w[latex tex tex-live texlive TexLive]).to all be_blacklisted
-    end
-
-    specify "pip is blacklisted" do
-      expect("pip").to be_blacklisted
-    end
-
-    specify "PIL is blacklisted" do
-      expect("pil").to be_blacklisted
-    end
-
-    specify "MacRuby is blacklisted" do
-      expect("MacRuby").to be_blacklisted
-    end
-
-    specify "lzma is blacklisted" do
-      expect(%w[lzma liblzma]).to all be_blacklisted
-    end
-
-    specify "gtest is blacklisted" do
-      expect(%w[gtest googletest google-test]).to all be_blacklisted
-    end
-
-    specify "gmock is blacklisted" do
-      expect(%w[gmock googlemock google-mock]).to all be_blacklisted
-    end
-
-    specify "sshpass is blacklisted" do
-      expect("sshpass").to be_blacklisted
-    end
-
-    specify "gsutil is blacklisted" do
-      expect("gsutil").to be_blacklisted
-    end
-
-    specify "gfortran is blacklisted" do
-      expect("gfortran").to be_blacklisted
-    end
-
-    specify "play is blacklisted" do
-      expect("play").to be_blacklisted
-    end
-
-    specify "haskell-platform is blacklisted" do
-      expect("haskell-platform").to be_blacklisted
-    end
-
-    specify "mysqldump-secure is blacklisted" do
-      expect("mysqldump-secure").to be_blacklisted
-    end
-
-    specify "ngrok is blacklisted" do
-      expect("ngrok").to be_blacklisted
-    end
-
-    specify "Xcode is blacklisted", :needs_macos do
-      expect(%w[xcode Xcode]).to all be_blacklisted
-    end
+    it { is_expected.to blacklist("gem") }
+    it { is_expected.to blacklist("latex") }
+    it { is_expected.to blacklist("pip") }
+    it { is_expected.to blacklist("pil") }
+    it { is_expected.to blacklist("macruby") }
+    it { is_expected.to blacklist("lzma") }
+    it { is_expected.to blacklist("gtest") }
+    it { is_expected.to blacklist("gmock") }
+    it { is_expected.to blacklist("sshpass") }
+    it { is_expected.to blacklist("gsutil") }
+    it { is_expected.to blacklist("gfortran") }
+    it { is_expected.to blacklist("play") }
+    it { is_expected.to blacklist("haskell-platform") }
+    it { is_expected.to blacklist("mysqldump-secure") }
+    it { is_expected.to blacklist("ngrok") }
+    it("blacklists Xcode", :needs_macos) { is_expected.to blacklist("xcode") }
   end
 
   describe "::tap_migration_reason" do
