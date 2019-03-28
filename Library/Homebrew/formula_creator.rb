@@ -80,7 +80,7 @@ module Homebrew
     def template
       <<~ERB
         # Documentation: https://docs.brew.sh/Formula-Cookbook
-        #                https://www.rubydoc.info/github/Homebrew/brew/master/Formula
+        #                https://rubydoc.brew.sh/Formula
         # PLEASE REMOVE ALL GENERATED COMMENTS BEFORE SUBMITTING YOUR PULL REQUEST!
         class #{Formulary.class_s(name)} < Formula
           desc "#{desc}"
