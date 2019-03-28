@@ -197,7 +197,7 @@ describe Migrator do
     expect(old_keg_record.parent).not_to be_a_symlink
   end
 
-  specify "#backup_oldname_cellar" do
+  specify "#backup_oldname_cellar after uninstall" do
     (new_keg_record/"bin").mkpath
     keg.unlink
     keg.uninstall
@@ -217,18 +217,15 @@ describe Migrator do
   end
 
   describe "#backup_oldname" do
-    after do
-      expect(old_keg_record.parent).to be_a_directory
-      expect(old_keg_record.parent.subdirs).not_to be_empty
-      expect(HOMEBREW_LINKED_KEGS/"oldname").to exist
-      expect(HOMEBREW_PREFIX/"opt/oldname").to exist
-      expect(HOMEBREW_PINNED_KEGS/"oldname").to be_a_symlink
-      expect(keg).to be_linked
-    end
-
     context "when cellar exists" do
       it "backs up the old name" do
         subject.backup_oldname
+        expect(old_keg_record.parent).to be_a_directory
+        expect(old_keg_record.parent.subdirs).not_to be_empty
+        expect(HOMEBREW_LINKED_KEGS/"oldname").to exist
+        expect(HOMEBREW_PREFIX/"opt/oldname").to exist
+        expect(HOMEBREW_PINNED_KEGS/"oldname").to be_a_symlink
+        expect(keg).to be_linked
       end
     end
 
@@ -238,6 +235,12 @@ describe Migrator do
         keg.unlink
         keg.uninstall
         subject.backup_oldname
+        expect(old_keg_record.parent).to be_a_directory
+        expect(old_keg_record.parent.subdirs).not_to be_empty
+        expect(HOMEBREW_LINKED_KEGS/"oldname").to exist
+        expect(HOMEBREW_PREFIX/"opt/oldname").to exist
+        expect(HOMEBREW_PINNED_KEGS/"oldname").to be_a_symlink
+        expect(keg).to be_linked
       end
     end
 
@@ -248,6 +251,12 @@ describe Migrator do
         keg.uninstall
         old_keg_record.parent.make_relative_symlink(new_keg_record.parent)
         subject.backup_oldname
+        expect(old_keg_record.parent).to be_a_directory
+        expect(old_keg_record.parent.subdirs).not_to be_empty
+        expect(HOMEBREW_LINKED_KEGS/"oldname").to exist
+        expect(HOMEBREW_PREFIX/"opt/oldname").to exist
+        expect(HOMEBREW_PINNED_KEGS/"oldname").to be_a_symlink
+        expect(keg).to be_linked
       end
     end
   end

@@ -203,7 +203,6 @@ shared_examples "#uninstall_phase or #zap_phase" do
               FileUtils.rm_rf result.stdout.split("\0")
             end
           end
-        # rubocop:enable RSpec/AnyInstance
       end
 
       it "is supported" do

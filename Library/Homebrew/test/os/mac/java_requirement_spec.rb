@@ -10,10 +10,11 @@ describe JavaRequirement do
     FileUtils.mkdir java_home/"bin"
     FileUtils.touch java_home/"bin/java"
     allow(subject).to receive(:preferred_java).and_return(java_home/"bin/java")
-    expect(subject).to be_satisfied
   end
 
   specify "Apple Java environment" do
+    expect(subject).to be_satisfied
+
     expect(ENV).to receive(:prepend_path)
     expect(ENV).to receive(:append_to_cflags)
 
@@ -22,6 +23,8 @@ describe JavaRequirement do
   end
 
   specify "Oracle Java environment" do
+    expect(subject).to be_satisfied
+
     FileUtils.mkdir java_home/"include"
     expect(ENV).to receive(:prepend_path)
     expect(ENV).to receive(:append_to_cflags).twice

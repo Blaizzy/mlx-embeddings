@@ -17,14 +17,12 @@ describe CacheStoreDatabase do
   describe "#set" do
     let(:db) { double("db", :[]= => nil) }
 
-    before do
+    it "sets the value in the `CacheStoreDatabase`" do
       allow(File).to receive(:write)
       allow(subject).to receive(:created?).and_return(true)
-      expect(db).to receive(:has_key?).with(:foo).and_return(false)
       allow(subject).to receive(:db).and_return(db)
-    end
 
-    it "sets the value in the `CacheStoreDatabase`" do
+      expect(db).to receive(:has_key?).with(:foo).and_return(false)
       expect(db).not_to have_key(:foo)
       subject.set(:foo, "bar")
     end
@@ -34,13 +32,10 @@ describe CacheStoreDatabase do
     context "database created" do
       let(:db) { double("db", :[] => "bar") }
 
-      before do
+      it "gets value in the `CacheStoreDatabase` corresponding to the key" do
         allow(subject).to receive(:created?).and_return(true)
         expect(db).to receive(:has_key?).with(:foo).and_return(true)
         allow(subject).to receive(:db).and_return(db)
-      end
-
-      it "gets value in the `CacheStoreDatabase` corresponding to the key" do
         expect(db).to have_key(:foo)
         expect(subject.get(:foo)).to eq("bar")
       end
