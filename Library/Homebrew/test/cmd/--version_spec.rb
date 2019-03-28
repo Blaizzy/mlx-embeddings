@@ -1,3 +1,9 @@
+require "cmd/shared_examples/args_parse"
+
+describe "Homebrew.__version_args" do
+  it_behaves_like "parseable arguments"
+end
+
 describe "brew --version", :integration_test do
   it "prints the Homebrew version" do
     expect { brew "--version" }

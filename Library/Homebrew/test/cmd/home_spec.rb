@@ -1,11 +1,10 @@
-describe "brew home", :integration_test do
-  it "opens the Homebrew homepage when no argument is given" do
-    expect { brew "home", "HOMEBREW_BROWSER" => "echo" }
-      .to output("#{HOMEBREW_WWW}\n").to_stdout
-      .and not_to_output.to_stderr
-      .and be_a_success
-  end
+require "cmd/shared_examples/args_parse"
 
+describe "Homebrew.home_args" do
+  it_behaves_like "parseable arguments"
+end
+
+describe "brew home", :integration_test do
   it "opens the homepage for a given Formula" do
     setup_test_formula "testballhome"
 

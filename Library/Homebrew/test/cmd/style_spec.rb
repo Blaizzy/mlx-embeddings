@@ -1,4 +1,9 @@
 require "cmd/style"
+require "cmd/shared_examples/args_parse"
+
+describe "Homebrew.style_args" do
+  it_behaves_like "parseable arguments"
+end
 
 describe "brew style" do
   around do |example|

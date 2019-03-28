@@ -1,3 +1,9 @@
+require "cmd/shared_examples/args_parse"
+
+describe "Homebrew.desc_args" do
+  it_behaves_like "parseable arguments"
+end
+
 describe "brew desc", :integration_test do
   it "shows a given Formula's description" do
     setup_test_formula "testball"

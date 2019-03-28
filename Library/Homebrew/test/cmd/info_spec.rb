@@ -1,18 +1,15 @@
 require "cmd/info"
 
+require "cmd/shared_examples/args_parse"
+
+describe "Homebrew.info_args" do
+  it_behaves_like "parseable arguments"
+end
+
 describe "brew info", :integration_test do
-  before do
-    setup_test_formula "testball"
-  end
-
-  it "prints information about a given Formula" do
-    expect { brew "info", "testball" }
-      .to output(/testball: stable 0.1/).to_stdout
-      .and not_to_output.to_stderr
-      .and be_a_success
-  end
-
   it "prints as json with the --json=v1 flag" do
+    setup_test_formula "testball"
+
     expect { brew "info", "testball", "--json=v1" }
       .to output(a_json_string).to_stdout
       .and not_to_output.to_stderr
