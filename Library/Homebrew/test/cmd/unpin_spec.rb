@@ -1,12 +1,14 @@
+require "cmd/shared_examples/args_parse"
+
+describe "Homebrew.unpin_args" do
+  it_behaves_like "parseable arguments"
+end
+
 describe "brew unpin", :integration_test do
   it "unpins a Formula's version" do
-    setup_test_formula "testball"
-    (HOMEBREW_CELLAR/"testball/0.0.1/foo").mkpath
+    install_test_formula "testball"
+    Formula["testball"].pin
 
-    expect { brew "pin", "testball" }.to be_a_success
     expect { brew "unpin", "testball" }.to be_a_success
-    expect { brew "upgrade" }.to be_a_success
-
-    expect(HOMEBREW_CELLAR/"testball/0.1").to be_a_directory
   end
 end

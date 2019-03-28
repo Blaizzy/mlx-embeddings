@@ -1,16 +1,10 @@
+require "cmd/shared_examples/args_parse"
+
+describe "Homebrew.log_args" do
+  it_behaves_like "parseable arguments"
+end
+
 describe "brew log", :integration_test do
-  it "shows the Git log for the Homebrew repository when no argument is given" do
-    HOMEBREW_REPOSITORY.cd do
-      system "git", "init"
-      system "git", "commit", "--allow-empty", "-m", "This is a test commit"
-    end
-
-    expect { brew "log" }
-      .to output(/This is a test commit/).to_stdout
-      .and not_to_output.to_stderr
-      .and be_a_success
-  end
-
   it "shows the Git log for a given Formula" do
     setup_test_formula "testball"
 

@@ -1,3 +1,9 @@
+require "cmd/shared_examples/args_parse"
+
+describe "Homebrew.fetch_args" do
+  it_behaves_like "parseable arguments"
+end
+
 describe "brew fetch", :integration_test do
   it "downloads the Formula's URL" do
     setup_test_formula "testball"

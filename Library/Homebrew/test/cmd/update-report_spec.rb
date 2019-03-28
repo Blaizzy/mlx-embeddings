@@ -1,20 +1,14 @@
 require "cmd/update-report"
 require "formula_versions"
 require "yaml"
+require "cmd/shared_examples/args_parse"
+
+describe "Homebrew.update_report_args" do
+  it_behaves_like "parseable arguments"
+end
 
 describe Reporter do
-  def perform_update(fixture_name = "")
-    allow(Formulary).to receive(:factory).and_return(double(pkg_version: "1.0"))
-    allow(FormulaVersions).to receive(:new).and_return(double(formula_at_revision: "2.0"))
-
-    diff = YAML.load_file("#{TEST_FIXTURE_DIR}/updater_fixture.yaml")[fixture_name]
-    allow(subject).to receive(:diff).and_return(diff || "")
-
-    hub.add(subject) if subject.updated?
-  end
-
-  subject { reporter_class.new(tap) }
-
+  let(:tap) { CoreTap.new }
   let(:reporter_class) do
     Class.new(described_class) do
       def initialize(tap)
@@ -27,9 +21,18 @@ describe Reporter do
       end
     end
   end
-
-  let(:tap) { CoreTap.new }
+  let(:reporter) { reporter_class.new(tap) }
   let(:hub) { ReporterHub.new }
+
+  def perform_update(fixture_name = "")
+    allow(Formulary).to receive(:factory).and_return(double(pkg_version: "1.0"))
+    allow(FormulaVersions).to receive(:new).and_return(double(formula_at_revision: "2.0"))
+
+    diff = YAML.load_file("#{TEST_FIXTURE_DIR}/updater_fixture.yaml")[fixture_name]
+    allow(reporter).to receive(:diff).and_return(diff || "")
+
+    hub.add(reporter) if reporter.updated?
+  end
 
   specify "without revision variable" do
     ENV.delete_if { |k, _v| k.start_with? "HOMEBREW_UPDATE" }

@@ -1,3 +1,9 @@
+require "cmd/shared_examples/args_parse"
+
+describe "Homebrew.command_args" do
+  it_behaves_like "parseable arguments"
+end
+
 describe "brew command", :integration_test do
   it "returns the file for a given command" do
     expect { brew "command", "info" }

@@ -1,3 +1,9 @@
+require "cmd/shared_examples/args_parse"
+
+describe "Homebrew.cleanup_args" do
+  it_behaves_like "parseable arguments"
+end
+
 describe "brew cleanup", :integration_test do
   describe "--prune=all" do
     it "removes all files in Homebrew's cache" do

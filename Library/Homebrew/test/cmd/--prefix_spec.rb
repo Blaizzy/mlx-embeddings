@@ -1,11 +1,10 @@
-describe "brew --prefix", :integration_test do
-  it "prints the Homebrew prefix when no argument is given" do
-    expect { brew "--prefix" }
-      .to output("#{HOMEBREW_PREFIX}\n").to_stdout
-      .and not_to_output.to_stderr
-      .and be_a_success
-  end
+require "cmd/shared_examples/args_parse"
 
+describe "Homebrew.__prefix_args" do
+  it_behaves_like "parseable arguments"
+end
+
+describe "brew --prefix", :integration_test do
   it "prints a given Formula's prefix" do
     expect { brew "--prefix", testball }
       .to output(%r{#{HOMEBREW_CELLAR}/testball}).to_stdout
