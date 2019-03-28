@@ -56,6 +56,6 @@ module Homebrew
     end
     args = ARGV.options_only
     args += ["--follow", "--", path] unless path.nil?
-    exec "git", "log", *args
+    system "git", "log", *args
   end
 end

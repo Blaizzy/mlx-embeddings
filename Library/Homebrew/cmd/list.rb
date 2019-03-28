@@ -46,8 +46,7 @@ module Homebrew
   def list
     list_args.parse
 
-    # Use of exec means we don't explicitly exit
-    list_unbrewed if args.unbrewed?
+    return list_unbrewed if args.unbrewed?
 
     # Unbrewed uses the PREFIX, which will exist
     # Things below use the CELLAR, which doesn't until the first formula is installed.
@@ -67,10 +66,10 @@ module Homebrew
         puts Formatter.columns(full_names)
       else
         ENV["CLICOLOR"] = nil
-        exec "ls", *ARGV.options_only << HOMEBREW_CELLAR
+        safe_system "ls", *ARGV.options_only << HOMEBREW_CELLAR
       end
     elsif args.verbose? || !$stdout.tty?
-      exec "find", *ARGV.kegs.map(&:to_s) + %w[-not -type d -print]
+      safe_system "find", *ARGV.kegs.map(&:to_s) + %w[-not -type d -print]
     else
       ARGV.kegs.each { |keg| PrettyListing.new keg }
     end
@@ -116,7 +115,7 @@ module Homebrew
     arguments.concat %w[)]
 
     cd HOMEBREW_PREFIX
-    exec "find", *arguments
+    safe_system "find", *arguments
   end
 
   def filtered_list

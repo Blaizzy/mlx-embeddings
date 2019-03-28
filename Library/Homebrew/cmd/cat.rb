@@ -23,6 +23,6 @@ module Homebrew
     raise "`brew cat` doesn't support multiple arguments" if args.remaining.size > 1
 
     cd HOMEBREW_REPOSITORY
-    exec "cat", formulae.first.path, *ARGV.options_only
+    safe_system "cat", formulae.first.path, *ARGV.options_only
   end
 end

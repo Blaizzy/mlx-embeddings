@@ -21,6 +21,9 @@ module Homebrew
   def ruby
     ruby_args.parse
 
-    exec ENV["HOMEBREW_RUBY_PATH"], "-I", $LOAD_PATH.join(File::PATH_SEPARATOR), "-rglobal", "-rdev-cmd/irb", *ARGV
+    safe_system ENV["HOMEBREW_RUBY_PATH"],
+                "-I", $LOAD_PATH.join(File::PATH_SEPARATOR),
+                "-rglobal", "-rdev-cmd/irb",
+                *ARGV
   end
 end
