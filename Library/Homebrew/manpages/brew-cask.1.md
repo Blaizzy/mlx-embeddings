@@ -19,13 +19,6 @@ graphical user interface.
   * `uninstall` [--force] <token> [ <token> ... ]:
     Uninstall Cask identified by <token>.
 
-  * `search` <text> | /<regexp>/:
-    Perform a substring search of known Cask tokens for <text>. If the text
-    is delimited by slashes, it is interpreted as a Ruby regular expression.
-
-    The tokens returned by `search` are suitable as arguments for most other
-    commands, such as `install` or `uninstall`.
-
 ## COMMANDS
 
   * `audit` [--language=<iso-language>[,<iso-language> ... ]] [ <token> ... ]:
@@ -91,13 +84,6 @@ graphical user interface.
 
   * `reinstall` [--no-quarantine] <token> [ <token> ... ]:
     Reinstall the given Cask.
-
-  * `search` or `-S` [<text> | /<regexp>/]:
-    Without an argument, display all locally available Casks for install; no
-    online search is performed.
-    Otherwise perform a substring search of known Cask tokens for <text> or,
-    if the text is delimited by slashes (/<regexp>/), it is interpreted as a
-    Ruby regular expression.
 
   * `style` [--fix] [ <token> ... ]:
     Check the given Casks for correct style using RuboCop (with custom Cask cops).
