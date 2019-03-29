@@ -22,13 +22,6 @@ Install Cask identified by \fItoken\fR\.
 \fBuninstall\fR [\-\-force] \fItoken\fR [ \fItoken\fR \.\.\. ]
 Uninstall Cask identified by \fItoken\fR\.
 .
-.TP
-\fBsearch\fR \fItext\fR | /\fIregexp\fR/
-Perform a substring search of known Cask tokens for \fItext\fR\. If the text is delimited by slashes, it is interpreted as a Ruby regular expression\.
-.
-.IP
-The tokens returned by \fBsearch\fR are suitable as arguments for most other commands, such as \fBinstall\fR or \fBuninstall\fR\.
-.
 .SH "COMMANDS"
 .
 .TP
@@ -93,10 +86,6 @@ Without token arguments, display all the installed Casks that have newer version
 .TP
 \fBreinstall\fR [\-\-no\-quarantine] \fItoken\fR [ \fItoken\fR \.\.\. ]
 Reinstall the given Cask\.
-.
-.TP
-\fBsearch\fR or \fB\-S\fR [\fItext\fR | /\fIregexp\fR/]
-Without an argument, display all locally available Casks for install; no online search is performed\. Otherwise perform a substring search of known Cask tokens for \fItext\fR or, if the text is delimited by slashes (/\fIregexp\fR/), it is interpreted as a Ruby regular expression\.
 .
 .TP
 \fBstyle\fR [\-\-fix] [ \fItoken\fR \.\.\. ]
