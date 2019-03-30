@@ -11,10 +11,14 @@ module Homebrew
         Unpin <tap> so its formulae are no longer prioritised. See also `tap-pin`.
       EOS
       switch :debug
+      hide_from_man_page!
     end
   end
 
   def tap_unpin
+    odeprecated "brew tap-pin user/tap",
+      "fully-scoped user/tap/formula naming"
+
     tap_unpin_args.parse
 
     ARGV.named.each do |name|

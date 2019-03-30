@@ -488,15 +488,6 @@ summary of all installed taps if no *`tap`* are passed.
 * `--json`:
   Print a JSON representation of *`taps`*. Currently the default and only accepted value for *`version`* is `v1`. See the docs for examples of using the JSON output: <https://docs.brew.sh/Querying-Brew>
 
-### `tap-pin` *`tap`*
-
-Pin *`tap`*, prioritising its formulae over core when formula names are supplied
-by the user. See also `tap-unpin`.
-
-### `tap-unpin` *`tap`*
-
-Unpin *`tap`* so its formulae are no longer prioritised. See also `tap-pin`.
-
 ### `uninstall`, `rm`, `remove` [*`options`*] *`formula`*
 
 Uninstall *`formula`*.
