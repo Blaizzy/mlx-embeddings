@@ -8,7 +8,7 @@ You must configure your shell to enable the completion support. This is because 
 
 ## Configuring Completions in `bash`
 
-To make Homebrew's completions available in `bash`, you must source the definitions as part of your shell startup. Add the following to your `~/.bashrc` file:
+To make Homebrew's completions available in `bash`, you must source the definitions as part of your shell startup. Add the following to your `~/.bash_profile` file:
 
 ```sh
 if type brew &>/dev/null; then
