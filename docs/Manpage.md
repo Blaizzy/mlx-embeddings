@@ -739,6 +739,16 @@ formula already uses.
 * `--revision`:
   Specify the new git commit *`revision`* corresponding to a specified *`tag`*.
 
+### `bump-revision` [*`options`*] [*`formula`*]
+
+Create a commit to increment the revision of the formula. If no revision is
+ present, "revision 1" will be added.
+
+* `-n`, `--dry-run`:
+  Print what would be done rather than doing it.
+* `--message`:
+  Append the provided *`message`* to the default commit message.
+
 ### `create` [*`options`*] *`URL`*
 
 Generate a formula for the downloadable file at *`URL`* and open it in the editor.
