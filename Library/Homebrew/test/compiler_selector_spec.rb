@@ -39,6 +39,12 @@ describe CompilerSelector do
       expect(subject.compiler).to eq("gcc-7")
     end
 
+    it "returns gcc-6 if gcc formula offers gcc-6" do
+      software_spec.fails_with(:clang)
+      allow(Formulary).to receive(:factory).with("gcc").and_return(double(version: "6.0"))
+      expect(subject.compiler).to eq("gcc-6")
+    end
+
     it "raises an error when gcc or llvm is missing" do
       software_spec.fails_with(:clang)
       software_spec.fails_with(gcc: "7")
