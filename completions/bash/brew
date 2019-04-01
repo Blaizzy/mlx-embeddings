@@ -629,7 +629,8 @@ __brew_cask_complete_caskroom ()
 __brew_cask_complete_outdated ()
 {
     local cur="${COMP_WORDS[COMP_CWORD]}"
-    local outdated=$(brew cask outdated --quiet)
+    local greedy=$(__brew_caskcomp_words_include "--greedy" && echo "--greedy")
+    local outdated=$(brew cask outdated --quiet $greedy)
     COMPREPLY=($(compgen -W "$outdated" -- "$cur"))
 }
 
