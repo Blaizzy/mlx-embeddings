@@ -18,8 +18,8 @@ An external command `extcmd` implemented as a Ruby command should be named `brew
 
 The command may `Kernel.exit` with a status code if it needs to; if it doesn't explicitly exit then Homebrew will return `0`.
 
-### Shell scripts
-A shell script for a command named `extcmd` should be named `brew-extcmd`. This file will be run via `exec` with some Homebrew variables set as environment variables, and passed any additional command-line arguments.
+### Other executable scripts
+An execuatable script for a command named `extcmd` should be named `brew-extcmd`. The script itself can use any suitable shebang (`#!`) line, so an external script can be written in sh, bash, Ruby, or anything else. Unlike the ruby commands this file must not end with a language-specific suffix (`.sh`, or `.py`). This file will be run via `exec` with some Homebrew variables set as environment variables, and passed any additional command-line arguments.
 
 | Variable               | Description                                                                                                                                                                 |
 |------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -28,8 +28,6 @@ A shell script for a command named `extcmd` should be named `brew-extcmd`. This 
 | `HOMEBREW_LIBRARY_PATH`| The directory containing Homebrew’s own application code.                                                                                                                   |
 | `HOMEBREW_PREFIX`      | Where Homebrew installs software. This is always the grandparent directory of the `brew` executable, `/usr/local` by default.                                               |
 | `HOMEBREW_REPOSITORY`  | If installed from a Git clone, the repository directory (i.e. where Homebrew’s `.git` directory lives).                                                                       |
-
-Note that the script itself can use any suitable shebang (`#!`) line, so an external “shell script” can be written for sh, bash, Ruby, or anything else.
 
 ## Providing `--help`
 
