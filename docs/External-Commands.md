@@ -19,7 +19,7 @@ An external command `extcmd` implemented as a Ruby command should be named `brew
 The command may `Kernel.exit` with a status code if it needs to; if it doesn't explicitly exit then Homebrew will return `0`.
 
 ### Other executable scripts
-An execuatable script for a command named `extcmd` should be named `brew-extcmd`. The script itself can use any suitable shebang (`#!`) line, so an external script can be written in sh, bash, Ruby, or anything else. Unlike the ruby commands this file must not end with a language-specific suffix (`.sh`, or `.py`). This file will be run via `exec` with some Homebrew variables set as environment variables, and passed any additional command-line arguments.
+An executable script for a command named `extcmd` should be named `brew-extcmd`. The script itself can use any suitable shebang (`#!`) line, so an external script can be written in Bash, Ruby, or even Python. Unlike the ruby commands this file must not end with a language-specific suffix (`.sh`, or `.py`). This file will be run via `exec` with some Homebrew variables set as environment variables, and passed any additional command-line arguments.
 
 | Variable               | Description                                                                                                                                                                 |
 |------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
