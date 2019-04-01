@@ -71,7 +71,7 @@ module Homebrew
 
     odie_if_defined <<~EOS
       the '#{name}' gem is installed but couldn't find '#{executable}' in the PATH:
-      #{ENV["PATH"]}
+        #{ENV["PATH"]}
     EOS
   end
 

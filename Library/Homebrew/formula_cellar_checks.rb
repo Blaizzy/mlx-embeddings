@@ -140,7 +140,7 @@ module FormulaCellarChecks
     <<~EOS
       Emacs Lisp files were installed into the wrong site-lisp subdirectory.
       They should be installed into:
-      #{share}/emacs/site-lisp/#{name}
+        #{share}/emacs/site-lisp/#{name}
     EOS
   end
 
@@ -156,7 +156,7 @@ module FormulaCellarChecks
       Emacs Lisp files were linked directly to #{HOMEBREW_PREFIX}/share/emacs/site-lisp
       This may cause conflicts with other packages.
       They should instead be installed into:
-      #{share}/emacs/site-lisp/#{name}
+        #{share}/emacs/site-lisp/#{name}
 
       The offending files are:
         #{elisps * "\n        "}

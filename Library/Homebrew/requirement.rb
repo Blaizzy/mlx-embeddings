@@ -36,14 +36,14 @@ class Requirement
     if cask
       s += <<~EOS
         You can install with Homebrew Cask:
-         brew cask install #{cask}
+          brew cask install #{cask}
       EOS
     end
 
     if download
       s += <<~EOS
         You can download from:
-         #{download}
+          #{download}
       EOS
     end
     s

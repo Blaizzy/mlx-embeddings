@@ -152,8 +152,8 @@ EOSCRIPT
     odie <<EOS
 Checksum mismatch.
 Expected: $VENDOR_SHA
-Actual: $sha
-Archive: $CACHED_LOCATION
+  Actual: $sha
+ Archive: $CACHED_LOCATION
 To retry an incomplete download, remove the file above.
 EOS
   fi

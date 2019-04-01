@@ -44,7 +44,7 @@ module RuboCop
             if patch_url !~ /[a-fA-F0-9]{40}/
               problem <<~EOS.chomp
                 GitHub/Gist patches should specify a revision:
-                #{patch_url}
+                  #{patch_url}
               EOS
             end
           end
@@ -63,14 +63,14 @@ module RuboCop
           if regex_match_group(patch, %r{macports/trunk})
             problem <<~EOS.chomp
               MacPorts patches should specify a revision instead of trunk:
-              #{patch_url}
+                #{patch_url}
             EOS
           end
 
           if regex_match_group(patch, %r{^http://trac\.macports\.org})
             problem <<~EOS.chomp
               Patches from MacPorts Trac should be https://, not http:
-              #{patch_url}
+                #{patch_url}
             EOS
           end
 
@@ -78,7 +78,7 @@ module RuboCop
 
           problem <<~EOS.chomp
             Patches from Debian should be https://, not http:
-            #{patch_url}
+              #{patch_url}
           EOS
         end
       end

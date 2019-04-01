@@ -63,7 +63,7 @@ describe Options do
     expect(subject.count).to eq(1)
   end
 
-  it "preserves  existing member when adding a duplicate" do
+  it "preserves existing member when adding a duplicate" do
     a = Option.new("foo", "bar")
     b = Option.new("foo", "qux")
     subject << a << b

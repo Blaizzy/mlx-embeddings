@@ -117,8 +117,8 @@ module RuboCop
 
       # Returns array of function call nodes matching func_name in every descendant of node.
       #
-      # - matches function call:  `foo(*args, **kwargs)`
-      # - does not match method calls:  `foo.bar(*args, **kwargs)`
+      # - matches function call: `foo(*args, **kwargs)`
+      # - does not match method calls: `foo.bar(*args, **kwargs)`
       # - returns every function calls if no func_name is passed
       def find_every_func_call_by_name(node, func_name = nil)
         return if node.nil?

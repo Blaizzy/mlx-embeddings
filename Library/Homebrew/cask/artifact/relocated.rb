@@ -52,7 +52,7 @@ module Cask
 
       ALT_NAME_ATTRIBUTE = "com.apple.metadata:kMDItemAlternateNames".freeze
 
-      # Try to make the asset searchable under the target name.  Spotlight
+      # Try to make the asset searchable under the target name. Spotlight
       # respects this attribute for many filetypes, but ignores it for App
       # bundles. Alfred 2.2 respects it even for App bundles.
       def add_altname_metadata(file, altname, command: nil)

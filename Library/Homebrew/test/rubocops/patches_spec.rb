@@ -50,7 +50,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
           [{ message:
                        <<~EOS.chomp,
                          GitHub/Gist patches should specify a revision:
-                         #{patch_url}
+                           #{patch_url}
                        EOS
              severity: :convention,
              line:     5,
@@ -60,7 +60,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
           [{ message:
                        <<~EOS.chomp,
                          MacPorts patches should specify a revision instead of trunk:
-                         #{patch_url}
+                           #{patch_url}
                        EOS
              severity: :convention,
              line:     5,
@@ -70,7 +70,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
           [{ message:
                        <<~EOS.chomp,
                          Patches from MacPorts Trac should be https://, not http:
-                         #{patch_url}
+                           #{patch_url}
                        EOS
              severity: :convention,
              line:     5,
@@ -80,7 +80,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
           [{ message:
                        <<~EOS.chomp,
                          Patches from Debian should be https://, not http:
-                         #{patch_url}
+                           #{patch_url}
                        EOS
              severity: :convention,
              line:     5,
@@ -141,7 +141,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
                            { message:
                                        <<~EOS.chomp,
                                          Patches from MacPorts Trac should be https://, not http:
-                                         http://trac.macports.org/export/68507/trunk/dports/net/trafshow/files/
+                                           http://trac.macports.org/export/68507/trunk/dports/net/trafshow/files/
                                        EOS
                              severity: :convention,
                              line:     8,
@@ -185,7 +185,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
           [{ message:
                        <<~EOS.chomp,
                          GitHub/Gist patches should specify a revision:
-                         #{patch_url}
+                           #{patch_url}
                        EOS
              severity: :convention,
              line:     5,
@@ -195,7 +195,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
           [{ message:
                        <<~EOS.chomp,
                          MacPorts patches should specify a revision instead of trunk:
-                         #{patch_url}
+                           #{patch_url}
                        EOS
              severity: :convention,
              line:     5,
@@ -205,7 +205,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
           [{ message:
                        <<~EOS.chomp,
                          Patches from MacPorts Trac should be https://, not http:
-                         #{patch_url}
+                           #{patch_url}
                        EOS
              severity: :convention,
              line:     5,
@@ -215,7 +215,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
           [{ message:
                        <<~EOS.chomp,
                          Patches from Debian should be https://, not http:
-                         #{patch_url}
+                           #{patch_url}
                        EOS
              severity: :convention,
              line:     5,

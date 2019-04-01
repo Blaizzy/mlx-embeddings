@@ -403,12 +403,12 @@ class BuildError < RuntimeError
       elsif issues_url = formula.tap.issues_url
         puts <<~EOS
           If reporting this issue please do so at (not Homebrew/brew or Homebrew/core):
-          #{Formatter.url(issues_url)}
+            #{Formatter.url(issues_url)}
         EOS
       else
         puts <<~EOS
           If reporting this issue please do so to (not Homebrew/brew or Homebrew/core):
-          #{formula.tap}
+            #{formula.tap}
         EOS
       end
     else
@@ -568,8 +568,8 @@ class ChecksumMismatchError < RuntimeError
     super <<~EOS
       #{@hash_type} mismatch
       Expected: #{expected}
-      Actual: #{actual}
-      Archive: #{fn}
+        Actual: #{actual}
+       Archive: #{fn}
       To retry an incomplete download, remove the file above.
     EOS
   end

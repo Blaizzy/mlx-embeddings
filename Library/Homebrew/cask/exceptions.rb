@@ -133,8 +133,8 @@ module Cask
         Checksum for Cask '#{token}' does not match.
 
         Expected: #{Formatter.success(expected.to_s)}
-        Actual:   #{Formatter.error(actual.to_s)}
-        File:     #{path}
+          Actual: #{Formatter.error(actual.to_s)}
+            File: #{path}
 
         To retry an incomplete download, remove the file above. If the issue persists, visit:
 
