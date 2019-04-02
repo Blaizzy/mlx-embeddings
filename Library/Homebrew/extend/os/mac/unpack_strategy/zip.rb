@@ -2,7 +2,16 @@ module UnpackStrategy
   class Zip
     prepend Module.new {
       def extract_to_dir(unpack_dir, basename:, verbose:)
-        result = super
+        result = begin
+          super
+        rescue ErrorDuringExecution => e
+          raise unless e.stderr.include?("End-of-central-directory signature not found.")
+
+          system_command! "ditto",
+                          args:    ["-x", "-k", path, unpack_dir],
+                          verbose: verbose
+          return
+        end
 
         volumes = result.stderr.chomp
                         .split("\n")

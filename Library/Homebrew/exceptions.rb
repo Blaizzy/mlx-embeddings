@@ -548,6 +548,10 @@ class ErrorDuringExecution < RuntimeError
 
     super s
   end
+
+  def stderr
+    [*output].select { |type,| type == :stderr }.map(&:last).join
+  end
 end
 
 # Raised by {Pathname#verify_checksum} when "expected" is nil or empty.
