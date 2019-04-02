@@ -545,7 +545,7 @@ Fetches and resets Homebrew and all tap repositories (or any specified `reposito
 
 ### `upgrade` [*`options`*] *`formula`*
 
-Upgrade outdated, unpinned brews (with existing and any appended install
+Upgrade outdated, unpinned formulae (with existing and any appended brew formula
 options).
 
 If *`formula`* are given, upgrade only the specified brews (unless they are
