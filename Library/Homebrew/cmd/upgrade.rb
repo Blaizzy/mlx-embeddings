@@ -14,7 +14,7 @@ module Homebrew
       usage_banner <<~EOS
         `upgrade` [<options>] <formula>
 
-        Upgrade outdated, unpinned brews (with existing and any appended install options).
+        Upgrade outdated, unpinned formulae (with existing and any appended brew formula options).
 
         If <formula> are given, upgrade only the specified brews (unless they
         are pinned; see `pin`, `unpin`).
