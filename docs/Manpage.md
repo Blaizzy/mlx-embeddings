@@ -229,7 +229,7 @@ installed formulae or, every 30 days, for all formulae.
 * `--env`:
   If `std` is passed, use the standard build environment instead of superenv.If `super` is passed, use superenv even if the formula specifies the standard build environment.
 * `--ignore-dependencies`:
-  Skip installing any dependencies of any kind. If they are not already present, the formula will probably fail to install.
+  An unsupported Homebrew development flag to skip installing any dependencies of any kind. If the dependencies are not already present, the formula will have issues. If you're not developing Homebrew, consider adjusting your PATH rather than using this flag.
 * `--only-dependencies`:
   Install the dependencies with specified options but do not install the specified formula.
 * `--cc`:
