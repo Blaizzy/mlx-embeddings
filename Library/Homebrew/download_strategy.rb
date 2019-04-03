@@ -344,7 +344,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
       url = url.sub(%r{^((ht|f)tps?://)?}, ENV["HOMEBREW_ARTIFACT_DOMAIN"].chomp("/") + "/")
     end
 
-    out, _, status= curl_output("--location", "--silent", "--head", url.to_s)
+    out, _, status= curl_output("--location", "--silent", "--head", "--request", "GET", url.to_s)
 
     lines = status.success? ? out.lines.map(&:chomp) : []
 
