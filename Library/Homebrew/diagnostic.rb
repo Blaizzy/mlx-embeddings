@@ -713,6 +713,25 @@ module Homebrew
         EOS
       end
 
+      def check_for_unreadable_installed_formula
+        formula_unavailable_exceptions = []
+        Formula.racks.each do |rack|
+          begin
+            Formulary.from_rack(rack)
+          rescue FormulaUnavailableError => e
+            formula_unavailable_exceptions << e
+          rescue TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
+            nil
+          end
+        end
+        return if formula_unavailable_exceptions.empty?
+
+        <<~EOS
+          Some installed formulae are not readable:
+            #{formula_unavailable_exceptions.join("\n\n  ")}
+        EOS
+      end
+
       def check_for_unlinked_but_not_keg_only
         unlinked = Formula.racks.reject do |rack|
           if !(HOMEBREW_LINKED_KEGS/rack.basename).directory?
