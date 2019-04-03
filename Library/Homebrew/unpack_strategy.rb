@@ -88,10 +88,10 @@ module UnpackStrategy
     strategies.find { |s| s.can_extract?(path) }
   end
 
-  def self.detect(path, extension_only: false, type: nil, ref_type: nil, ref: nil)
+  def self.detect(path, prioritise_extension: false, type: nil, ref_type: nil, ref: nil)
     strategy = from_type(type) if type
 
-    if extension_only
+    if prioritise_extension && path.extname.present?
       strategy ||= from_extension(path.extname)
       strategy ||= strategies.select { |s| s < Directory || s == Fossil }
                              .find { |s| s.can_extract?(path) }
@@ -120,7 +120,7 @@ module UnpackStrategy
     extract_to_dir(unpack_dir, basename: basename, verbose: verbose)
   end
 
-  def extract_nestedly(to: nil, basename: nil, verbose: false, extension_only: false)
+  def extract_nestedly(to: nil, basename: nil, verbose: false, prioritise_extension: false)
     Dir.mktmpdir do |tmp_unpack_dir|
       tmp_unpack_dir = Pathname(tmp_unpack_dir)
 
@@ -131,9 +131,9 @@ module UnpackStrategy
       if children.count == 1 && !children.first.directory?
         FileUtils.chmod "+rw", children.first, verbose: verbose
 
-        s = UnpackStrategy.detect(children.first, extension_only: extension_only)
+        s = UnpackStrategy.detect(children.first, prioritise_extension: prioritise_extension)
 
-        s.extract_nestedly(to: to, verbose: verbose, extension_only: extension_only)
+        s.extract_nestedly(to: to, verbose: verbose, prioritise_extension: prioritise_extension)
         next
       end
 
