@@ -96,8 +96,6 @@ begin
     # `Homebrew.help` never returns, except for external/unknown commands.
   end
 
-  odisabled("HOMEBREW_BUILD_FROM_SOURCE", "--build-from-source") if ENV["HOMEBREW_BUILD_FROM_SOURCE"]
-
   if internal_cmd
     Homebrew.send cmd.to_s.tr("-", "_").downcase
   elsif which "brew-#{cmd}"

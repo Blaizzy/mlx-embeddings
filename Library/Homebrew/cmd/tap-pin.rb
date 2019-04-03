@@ -12,10 +12,14 @@ module Homebrew
         by the user. See also `tap-unpin`.
       EOS
       switch :debug
+      hide_from_man_page!
     end
   end
 
   def tap_pin
+    odeprecated "brew tap-pin user/tap",
+      "fully-scoped user/tap/formula naming"
+
     tap_pin_args.parse
 
     ARGV.named.each do |name|

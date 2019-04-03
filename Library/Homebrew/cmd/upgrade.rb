@@ -50,12 +50,6 @@ module Homebrew
   end
 
   def upgrade
-    if ARGV.include?("--cleanup")
-      odisabled("'brew upgrade --cleanup'")
-    elsif ENV["HOMEBREW_UPGRADE_CLEANUP"]
-      odisabled("'HOMEBREW_UPGRADE_CLEANUP'")
-    end
-
     upgrade_args.parse
 
     FormulaInstaller.prevent_build_flags unless DevelopmentTools.installed?

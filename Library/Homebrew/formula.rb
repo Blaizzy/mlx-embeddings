@@ -2496,15 +2496,10 @@ class Formula
     #   version '7.1'
     # end</pre>
     def fails_with(compiler, &block)
-      odisabled "fails_with :gcc_4_0" if compiler == :gcc_4_0
-      odisabled "fails_with :gcc_4_2" if compiler == :gcc_4_2
-      odisabled "fails_with :gcc" if compiler == :gcc && !block_given?
       specs.each { |spec| spec.fails_with(compiler, &block) }
     end
 
     def needs(*standards)
-      odisabled "needs :cxx11" if standards.include?(:cxx11)
-      odisabled "needs :cxx14" if standards.include?(:cxx14)
       specs.each { |spec| spec.needs(*standards) }
     end
 

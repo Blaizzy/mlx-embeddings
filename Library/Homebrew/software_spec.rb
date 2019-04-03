@@ -206,15 +206,10 @@ class SoftwareSpec
   end
 
   def fails_with(compiler, &block)
-    odisabled "fails_with :gcc_4_0" if compiler == :gcc_4_0
-    odisabled "fails_with :gcc_4_2" if compiler == :gcc_4_2
-    odisabled "fails_with :gcc" if compiler == :gcc && !block_given?
     compiler_failures << CompilerFailure.create(compiler, &block)
   end
 
   def needs(*standards)
-    odisabled "needs :cxx11" if standards.include?(:cxx11)
-    odisabled "needs :cxx14" if standards.include?(:cxx14)
     standards.each do |standard|
       compiler_failures.concat CompilerFailure.for_standard(standard)
     end
