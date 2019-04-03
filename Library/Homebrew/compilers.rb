@@ -102,11 +102,19 @@ class CompilerSelector
 
   private
 
+  def gnu_gcc_versions
+    # prioritize gcc version provided by gcc formula.
+    v = Formulary.factory("gcc").version.to_s.slice(/\d/)
+    GNU_GCC_VERSIONS - [v] + [v] # move the version to the end of the list
+  rescue FormulaUnavailableError
+    GNU_GCC_VERSIONS
+  end
+
   def find_compiler
     compilers.each do |compiler|
       case compiler
       when :gnu
-        GNU_GCC_VERSIONS.reverse_each do |v|
+        gnu_gcc_versions.reverse_each do |v|
           name = "gcc-#{v}"
           version = compiler_version(name)
           yield Compiler.new(name, version) unless version.null?
