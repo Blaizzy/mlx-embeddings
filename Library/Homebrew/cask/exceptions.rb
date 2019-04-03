@@ -1,6 +1,19 @@
 module Cask
   class CaskError < RuntimeError; end
 
+  class MultipleCaskErrors < CaskError
+    def initialize(errors)
+      @errors = errors
+    end
+
+    def to_s
+      <<~EOS
+        Problems with multiple casks:
+        #{@errors.map(&:to_s).join("\n")}
+      EOS
+    end
+  end
+
   class AbstractCaskErrorWithToken < CaskError
     attr_reader :token
     attr_reader :reason
