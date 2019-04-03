@@ -36,10 +36,10 @@ jobs:
   pool:
     vmImage: ubuntu-16.04
   steps:
-    - bash: docker-compose -f Dockerfile.test.yml build sut
+    - bash: docker-compose -f Dockerfile.yml build sut
       displayName: Build Docker image
 
-    - bash: docker-compose -f Dockerfile.test.yml run --rm -v $(Build.ArtifactStagingDirectory):/tmp/test-bot sut
+    - bash: docker-compose -f Dockerfile.yml run --rm -v $(Build.ArtifactStagingDirectory):/tmp/test-bot sut
       displayName: Run brew test-bot
       env:
         HOMEBREW_GITHUB_API_TOKEN: $(github.publicApiToken)
