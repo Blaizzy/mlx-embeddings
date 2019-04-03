@@ -718,9 +718,11 @@ module Homebrew
         Formula.racks.each do |rack|
           begin
             Formulary.from_rack(rack)
-          rescue FormulaUnavailableError => e
+          rescue FormulaUnreadableError, FormulaClassUnavailableError,
+                 TapFormulaUnreadableError, TapFormulaClassUnavailableError => e
             formula_unavailable_exceptions << e
-          rescue TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
+          rescue FormulaUnavailableError,
+                 TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
             nil
           end
         end
