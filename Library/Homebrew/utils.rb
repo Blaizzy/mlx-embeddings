@@ -321,7 +321,7 @@ end
 
 def exec_editor(*args)
   puts "Editing #{args.join "\n"}"
-  with_homebrew_path { safe_system(which_editor, *args) }
+  with_homebrew_path { safe_system(*which_editor.shellsplit, *args) }
 end
 
 def exec_browser(*args)
