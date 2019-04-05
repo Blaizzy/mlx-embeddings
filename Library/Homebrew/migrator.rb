@@ -231,7 +231,7 @@ class Migrator
         end
       end
 
-      odie "Remove #{new_cellar} manually and run brew migrate #{oldname}." if conflicted
+      odie "Remove #{new_cellar} manually and run `brew migrate #{oldname}`." if conflicted
     end
 
     oh1 "Moving #{Formatter.identifier(oldname)} versions to #{new_cellar}"

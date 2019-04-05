@@ -306,7 +306,7 @@ module Homebrew
         <<~EOS
           You have installed Bitdefender. The "Traffic Scan" option interferes with
           Homebrew's ability to download packages. See:
-            https://github.com/Homebrew/brew/issues/5558
+            #{Formatter.url("https://github.com/Homebrew/brew/issues/5558")}
         EOS
       end
 

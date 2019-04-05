@@ -189,7 +189,7 @@ module Homebrew
               git -C "$(brew --repo #{tap})" show #{short_hash}^:#{relative_path}
 
             If you still use this formula consider creating your own tap:
-              https://docs.brew.sh/How-to-Create-and-Maintain-a-Tap
+              #{Formatter.url("https://docs.brew.sh/How-to-Create-and-Maintain-a-Tap")}
           EOS
         end
       end

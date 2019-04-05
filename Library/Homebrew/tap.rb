@@ -222,7 +222,7 @@ class Tap
 
   # Install this {Tap}.
   #
-  # @param [Hash] options
+  # @param  options [Hash]
   # @option options [String] :clone_target If passed, it will be used as the clone remote.
   # @option options [Boolean, nil] :force_auto_update If present, whether to override the
   #   logic that skips non-GitHub repositories during auto-updates.

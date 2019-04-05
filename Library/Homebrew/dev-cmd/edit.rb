@@ -24,8 +24,8 @@ module Homebrew
     unless (HOMEBREW_REPOSITORY/".git").directory?
       raise <<~EOS
         Changes will be lost!
-        The first time you `brew update', all local changes will be lost; you should
-        thus `brew update' before you `brew edit'!
+        The first time you `brew update`, all local changes will be lost; you should
+        thus `brew update` before you `brew edit`!
       EOS
     end
 

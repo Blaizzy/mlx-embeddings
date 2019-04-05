@@ -2343,7 +2343,7 @@ class Formula
     # <pre># If a dependency is only needed in certain cases:
     # depends_on "sqlite" if MacOS.version == :mavericks
     # depends_on :xcode # If the formula really needs full Xcode.
-    # depends_on :macos => :mojave # Needs at least OS X Lion (10.14).
+    # depends_on :macos => :mojave # Needs at least macOS Mojave (10.14).
     # depends_on :x11 => :optional # X11/XQuartz components.
     # depends_on :osxfuse # Permits the use of the upstream signed binary or our source package.
     # depends_on :tuntap # Does the same thing as above. This is vital for Yosemite and above.</pre>

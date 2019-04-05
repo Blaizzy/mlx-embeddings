@@ -52,7 +52,7 @@ module Cask
           puts self.class.none_string
         else
           locations.map do |l|
-            add_error "Legacy install at #{l}. Run \"brew uninstall --force brew-cask\"."
+            add_error "Legacy install at #{l}. Run `brew uninstall --force brew-cask`."
             puts l
           end
         end

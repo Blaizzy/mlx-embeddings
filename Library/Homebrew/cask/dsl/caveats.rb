@@ -81,7 +81,7 @@ module Cask
 
         <<~EOS
           Cask #{@cask} installs files under /usr/local. The presence of such
-          files can cause warnings when running "brew doctor", which is considered
+          files can cause warnings when running `brew doctor`, which is considered
           to be a bug in Homebrew Cask.
         EOS
       end
@@ -131,14 +131,14 @@ module Cask
       caveat :license do |web_page|
         <<~EOS
           Installing #{@cask} means you have AGREED to the license at:
-            #{web_page}
+            #{Formatter.url(web_page.to_s)}
         EOS
       end
 
       caveat :free_license do |web_page|
         <<~EOS
           The vendor offers a free license for #{@cask} at:
-            #{web_page}
+            #{Formatter.url(web_page.to_s)}
         EOS
       end
     end
