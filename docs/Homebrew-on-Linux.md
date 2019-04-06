@@ -3,6 +3,7 @@ title: Homebrew on Linux
 logo: https://brew.sh/assets/img/linuxbrew.png
 image: https://brew.sh/assets/img/linuxbrew.png
 redirect_from:
+  - /linux
   - /Linux
   - /Linuxbrew
 ---
