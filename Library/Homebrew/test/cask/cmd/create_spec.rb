@@ -33,7 +33,7 @@ describe Cask::Cmd::Create, :cask do
         version ''
         sha256 ''
 
-        url 'https://'
+        url "https://"
         name ''
         homepage ''
 
