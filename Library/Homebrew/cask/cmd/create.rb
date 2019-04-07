@@ -26,7 +26,7 @@ module Cask
             version ''
             sha256 ''
 
-            url 'https://'
+            url "https://"
             name ''
             homepage ''
 
