@@ -117,7 +117,7 @@ describe Cask::Installer, :cask do
           ==> Verifying SHA-256 checksum for Cask 'with-installer-manual'.
           ==> Installing Cask with-installer-manual
           To complete the installation of Cask with-installer-manual, you must also
-          run the installer at
+          run the installer at:
 
             '#{with_installer_manual.staged_path.join("Caffeine.app")}'
           🍺  with-installer-manual was successfully installed!

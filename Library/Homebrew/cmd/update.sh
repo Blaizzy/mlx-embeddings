@@ -135,7 +135,7 @@ reset_on_interrupt() {
   exit 130
 }
 
-# Used for testing purposes, e.g., for testing formula migration after
+# Used for testing purposes, e.g. for testing formula migration after
 # renaming it in the currently checked-out branch. To test run
 # "brew update --simulate-from-current-branch"
 simulate_from_current_branch() {

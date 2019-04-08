@@ -142,7 +142,7 @@ module GitHub
         when :environment
           onoe <<~EOS
             Your HOMEBREW_GITHUB_API_TOKEN does not have sufficient scope!
-            Scopes they need: #{needed_human_scopes}
+            Scopes it needs: #{needed_human_scopes}
             Scopes it has: #{credentials_scopes}
             Create a new personal access token:
               #{ALL_SCOPES_URL}

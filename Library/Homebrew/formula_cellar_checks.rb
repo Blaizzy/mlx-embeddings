@@ -14,7 +14,7 @@ module FormulaCellarChecks
 
     <<~EOS
       #{prefix_bin} is not in your PATH
-      You can amend this by altering your #{Utils::Shell.profile} file
+      You can amend this by altering your #{Utils::Shell.profile} file.
     EOS
   end
 
@@ -121,7 +121,7 @@ module FormulaCellarChecks
       easy-install.pth files were found
       These .pth files are likely to cause link conflicts. Please invoke
       setup.py using Language::Python.setup_install_args.
-      The offending files are
+      The offending files are:
         #{pth_found * "\n        "}
     EOS
   end

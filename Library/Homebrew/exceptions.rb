@@ -189,7 +189,7 @@ class TapFormulaAmbiguityError < RuntimeError
     super <<~EOS
       Formulae found in multiple taps: #{formulae.map { |f| "\n       * #{f}" }.join}
 
-      Please use the fully-qualified name e.g. #{formulae.first} to refer the formula.
+      Please use the fully-qualified name (e.g. #{formulae.first}) to refer to the formula.
     EOS
   end
 end
@@ -209,7 +209,7 @@ class TapFormulaWithOldnameAmbiguityError < RuntimeError
     super <<~EOS
       Formulae with '#{name}' old name found in multiple taps: #{taps.map { |t| "\n       * #{t}" }.join}
 
-      Please use the fully-qualified name e.g. #{taps.first}/#{name} to refer the formula or use its new name.
+      Please use the fully-qualified name (e.g. #{taps.first}/#{name}) to refer to the formula or use its new name.
     EOS
   end
 end
@@ -333,7 +333,7 @@ class FormulaConflictError < RuntimeError
 
       Unlinking removes a formula's symlinks from #{HOMEBREW_PREFIX}. You can
       link the formula again after the install finishes. You can --force this
-      install, but the build may fail or cause obscure side-effects in the
+      install, but the build may fail or cause obscure side effects in the
       resulting software.
     EOS
     message.join("\n")

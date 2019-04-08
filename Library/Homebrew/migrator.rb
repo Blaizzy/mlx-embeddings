@@ -27,9 +27,9 @@ class Migrator
   class MigratorDifferentTapsError < RuntimeError
     def initialize(formula, tap)
       msg = if tap.core_tap?
-        "Please try to use #{formula.oldname} to refer the formula.\n"
+        "Please try to use #{formula.oldname} to refer to the formula.\n"
       elsif tap
-        "Please try to use fully-qualified #{tap}/#{formula.oldname} to refer the formula.\n"
+        "Please try to use fully-qualified #{tap}/#{formula.oldname} to refer to the formula.\n"
       end
 
       super <<~EOS

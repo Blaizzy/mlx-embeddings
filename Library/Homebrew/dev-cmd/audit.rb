@@ -815,7 +815,7 @@ module Homebrew
       bin_names.each do |name|
         ["system", "shell_output", "pipe_output"].each do |cmd|
           if text =~ /test do.*#{cmd}[\(\s]+['"]#{Regexp.escape(name)}[\s'"]/m
-            problem %Q(fully scope test #{cmd} calls e.g. #{cmd} "\#{bin}/#{name}")
+            problem %Q(fully scope test #{cmd} calls, e.g. #{cmd} "\#{bin}/#{name}")
           end
         end
       end

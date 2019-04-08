@@ -272,11 +272,11 @@ module Homebrew
       def initialize(arg1, arg2, missing: false)
         if !missing
           message = <<~EOS
-            `#{arg1}` and `#{arg2}` should be passed together
+            `#{arg1}` and `#{arg2}` should be passed together.
           EOS
         else
           message = <<~EOS
-            `#{arg2}` cannot be passed without `#{arg1}`
+            `#{arg2}` cannot be passed without `#{arg1}`.
           EOS
         end
         super message
@@ -296,7 +296,7 @@ module Homebrew
     class InvalidConstraintError < RuntimeError
       def initialize(arg1, arg2)
         super <<~EOS
-          `#{arg1}` and `#{arg2}` cannot be mutually exclusive and mutually dependent simultaneously
+          `#{arg1}` and `#{arg2}` cannot be mutually exclusive and mutually dependent simultaneously.
         EOS
       end
     end
