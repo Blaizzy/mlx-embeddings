@@ -14,6 +14,10 @@ module UnpackStrategy
 
     private
 
+    def contains_extended_attributes?(path)
+      path.zipinfo.grep(/(^__MACOSX|\._)/).any?
+    end
+
     def extract_to_dir(unpack_dir, basename:, verbose:)
       quiet_flags = verbose ? [] : ["-qq"]
       result = system_command! "unzip",

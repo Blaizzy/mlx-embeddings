@@ -13,19 +13,22 @@ module UnpackStrategy
           return
         end
 
+        if contains_extended_attributes?(path)
+          # Merge ._ files back into extended attributes.
+          # We use ditto, because dot_clean has issues if the __MACOSX
+          # folder has incorrect permissions.
+          # (Also, Homebrew's ZIP artifact automatically deletes this folder.)
+          system_command! "ditto",
+                          args:         ["-x", "-k", path, unpack_dir],
+                          verbose:      verbose,
+                          print_stderr: false
+          return
+        end
+
         volumes = result.stderr.chomp
                         .split("\n")
                         .map { |l| l[/\A   skipping: (.+)  volume label\Z/, 1] }
                         .compact
-
-        if result.stderr.lines.any? { |line| line.start_with?("._") }
-          # Merge ._ files back into extended attributes.
-          # ._ files inside volumes are automatically merged by ditto.
-          system_command!("dot_clean",
-                          args:         ["-mv", "--keep=dotbar", unpack_dir],
-                          verbose:      verbose,
-                          print_stderr: false)
-        end
 
         return if volumes.empty?
 
