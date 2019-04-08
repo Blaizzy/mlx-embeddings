@@ -37,7 +37,7 @@ class Cleaner
   end
 
   # Removes any empty directories in the formula's prefix subtree
-  # Keeps any empty directions projected by skip_clean
+  # Keeps any empty directions protected by skip_clean
   # Removes any unresolved symlinks
   def prune
     dirs = []
