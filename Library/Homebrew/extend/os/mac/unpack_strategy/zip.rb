@@ -2,6 +2,16 @@ module UnpackStrategy
   class Zip
     prepend Module.new {
       def extract_to_dir(unpack_dir, basename:, verbose:)
+        if merge_xattrs && contains_extended_attributes?(path)
+          # We use ditto directly, because dot_clean has issues if the __MACOSX
+          # folder has incorrect permissions.
+          # (Also, Homebrew's ZIP artifact automatically deletes this folder.)
+          return system_command! "ditto",
+                          args:         ["-x", "-k", path, unpack_dir],
+                          verbose:      verbose,
+                          print_stderr: false
+        end
+
         result = begin
           super
         rescue ErrorDuringExecution => e
@@ -10,18 +20,6 @@ module UnpackStrategy
           system_command! "ditto",
                           args:    ["-x", "-k", path, unpack_dir],
                           verbose: verbose
-          return
-        end
-
-        if contains_extended_attributes?(path)
-          # Merge ._ files back into extended attributes.
-          # We use ditto, because dot_clean has issues if the __MACOSX
-          # folder has incorrect permissions.
-          # (Also, Homebrew's ZIP artifact automatically deletes this folder.)
-          system_command! "ditto",
-                          args:         ["-x", "-k", path, unpack_dir],
-                          verbose:      verbose,
-                          print_stderr: false
           return
         end
 
