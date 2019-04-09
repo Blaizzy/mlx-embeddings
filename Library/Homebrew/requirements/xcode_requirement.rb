@@ -12,8 +12,8 @@ class XcodeRequirement < Requirement
 
   def xcode_installed_version
     return false unless MacOS::Xcode.installed?
+    return false unless xcode_swift_compatability?
     return true unless @version
-    return true if xcode_swift_compatability?
 
     MacOS::Xcode.version >= @version
   end
@@ -54,8 +54,8 @@ class XcodeRequirement < Requirement
   # method in favour of requiring 10.14.4 and 10.2.
   def xcode_swift_compatability?
     return true if MacOS::Xcode.version < "10.2"
-    return true if MacOS::Xcode.version >= "10.14.4"
+    return true if MacOS.full_version >= "10.14.4"
 
-    MacOS.version < "10.14"
+    MacOS.full_version < "10.14"
   end
 end
