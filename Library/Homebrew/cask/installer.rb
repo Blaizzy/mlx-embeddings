@@ -161,7 +161,7 @@ module Cask
 
     def primary_container
       @primary_container ||= begin
-        UnpackStrategy.detect(@downloaded_path, type: @cask.container&.type)
+        UnpackStrategy.detect(@downloaded_path, type: @cask.container&.type, merge_xattrs: true)
       end
     end
 
@@ -179,7 +179,7 @@ module Cask
 
           FileUtils.chmod_R "+rw", tmpdir/nested_container, force: true, verbose: verbose?
 
-          UnpackStrategy.detect(tmpdir/nested_container)
+          UnpackStrategy.detect(tmpdir/nested_container, merge_xattrs: true)
                         .extract_nestedly(to: @cask.staged_path, verbose: verbose?)
         end
       else

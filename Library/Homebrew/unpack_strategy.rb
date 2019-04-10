@@ -88,7 +88,7 @@ module UnpackStrategy
     strategies.find { |s| s.can_extract?(path) }
   end
 
-  def self.detect(path, prioritise_extension: false, type: nil, ref_type: nil, ref: nil)
+  def self.detect(path, prioritise_extension: false, type: nil, ref_type: nil, ref: nil, merge_xattrs: nil)
     strategy = from_type(type) if type
 
     if prioritise_extension && path.extname.present?
@@ -102,15 +102,16 @@ module UnpackStrategy
 
     strategy ||= Uncompressed
 
-    strategy.new(path, ref_type: ref_type, ref: ref)
+    strategy.new(path, ref_type: ref_type, ref: ref, merge_xattrs: merge_xattrs)
   end
 
-  attr_reader :path
+  attr_reader :path, :merge_xattrs
 
-  def initialize(path, ref_type: nil, ref: nil)
+  def initialize(path, ref_type: nil, ref: nil, merge_xattrs: nil)
     @path = Pathname(path).expand_path
     @ref_type = ref_type
     @ref = ref
+    @merge_xattrs = merge_xattrs
   end
 
   def extract(to: nil, basename: nil, verbose: false)
