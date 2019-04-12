@@ -163,8 +163,28 @@ class Pathname
 
   # NOTE: This always overwrites.
   def atomic_write(content)
+    old_stat = (stat if exist?)
     File.atomic_write(self) do |file|
       file.write(content)
+    end
+
+    return unless old_stat
+
+    # Try to restore original file's permissions separately
+    # atomic_write does it itself, but it actually erases
+    # them if chown fails
+    begin
+      # Set correct permissions on new file
+      chown(old_stat.uid, nil)
+      chown(nil, old_stat.gid)
+    rescue Errno::EPERM, Errno::EACCES # rubocop:disable Lint/HandleExceptions
+      # Changing file ownership failed, moving on.
+    end
+    begin
+      # This operation will affect filesystem ACL's
+      chmod(old_stat.mode)
+    rescue Errno::EPERM, Errno::EACCES # rubocop:disable Lint/HandleExceptions
+      # Changing file permissions failed, moving on.
     end
   end
 
