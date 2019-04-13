@@ -48,7 +48,7 @@ graphical user interface.
   * `home` or `homepage` [ <token> ... ]:
     Display the homepage associated with a given Cask in a browser.
 
-    With no arguments, display the project page <https://caskroom.github.io/>.
+    With no arguments, display the project page <https://brew.sh/>.
 
   * `info` or `abv` <token> [ <token> ... ]:
     Display information about the given Cask.
@@ -249,7 +249,7 @@ Other environment variables:
 
 ## SEE ALSO
 
-The Homebrew Cask home page: <https://caskroom.github.io/>
+The Homebrew home page: <https://brew.sh/>
 
 The Homebrew Cask GitHub page: <https://github.com/Homebrew/homebrew-cask>
 
