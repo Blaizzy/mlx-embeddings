@@ -62,10 +62,10 @@ module Cask
   class CaskX11DependencyError < AbstractCaskErrorWithToken
     def to_s
       <<~EOS
-        Cask '#{token}' requires XQuartz/X11, which can be installed using Homebrew Cask by running
+        Cask '#{token}' requires XQuartz/X11, which can be installed using Homebrew Cask by running:
           #{Formatter.identifier("brew cask install xquartz")}
 
-        or manually, by downloading the package from
+        or manually, by downloading the package from:
           #{Formatter.url("https://www.xquartz.org/")}
       EOS
     end
@@ -131,14 +131,12 @@ module Cask
     def to_s
       <<~EOS
         Checksum for Cask '#{token}' does not match.
-
         Expected: #{Formatter.success(expected.to_s)}
-        Actual:   #{Formatter.error(actual.to_s)}
-        File:     #{path}
-
-        To retry an incomplete download, remove the file above. If the issue persists, visit:
-
-          https://github.com/Homebrew/homebrew-cask/blob/master/doc/reporting_bugs/checksum_does_not_match_error.md
+          Actual: #{Formatter.error(actual.to_s)}
+            File: #{path}
+        To retry an incomplete download, remove the file above.
+        If the issue persists, visit:
+          #{Formatter.url("https://github.com/Homebrew/homebrew-cask/blob/master/doc/reporting_bugs/checksum_does_not_match_error.md")}
       EOS
     end
   end

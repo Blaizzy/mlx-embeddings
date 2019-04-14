@@ -12,7 +12,8 @@ module Homebrew
       when :ppc
         abort <<~EOS
           Sorry, Homebrew does not support your computer's CPU architecture.
-          For PPC support, see: https://github.com/mistydemeo/tigerbrew
+          For PPC support, see:
+            #{Formatter.url("https://github.com/mistydemeo/tigerbrew")}
         EOS
       end
     end

@@ -50,7 +50,7 @@ class DevelopmentTools
 
     def custom_installation_instructions
       <<~EOS
-        Install GNU's GCC
+        Install GNU's GCC:
           brew install gcc
       EOS
     end

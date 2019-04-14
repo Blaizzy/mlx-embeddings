@@ -117,8 +117,8 @@ module RuboCop
 
       # Returns array of function call nodes matching func_name in every descendant of node.
       #
-      # - matches function call:  `foo(*args, **kwargs)`
-      # - does not match method calls:  `foo.bar(*args, **kwargs)`
+      # - matches function call: `foo(*args, **kwargs)`
+      # - does not match method calls: `foo.bar(*args, **kwargs)`
       # - returns every function calls if no func_name is passed
       def find_every_func_call_by_name(node, func_name = nil)
         return if node.nil?
@@ -542,7 +542,7 @@ module RuboCop
       def file_path_allowed?
         paths_to_exclude = [%r{/Library/Homebrew/compat/},
                             %r{/Library/Homebrew/test/}]
-        return true if @file_path.nil? # file_path is nil when source is directly passed to the cop eg., in specs
+        return true if @file_path.nil? # file_path is nil when source is directly passed to the cop, e.g. in specs
 
         @file_path !~ Regexp.union(paths_to_exclude)
       end

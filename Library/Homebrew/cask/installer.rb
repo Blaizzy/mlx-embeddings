@@ -438,7 +438,7 @@ module Cask
     end
 
     def uninstall_artifacts(clear: false)
-      odebug "Un-installing artifacts"
+      odebug "Uninstalling artifacts"
       artifacts = @cask.artifacts
 
       odebug "#{artifacts.length} artifact/s defined", artifacts

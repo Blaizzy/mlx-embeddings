@@ -231,8 +231,8 @@ module Homebrew
         # Check if the formula we try to install is the same as installed
         # but not migrated one. If --force passed then install anyway.
         opoo <<~EOS
-          #{f.oldname} already installed, it's just not migrated
-          You can migrate formula with `brew migrate #{f}`
+          #{f.oldname} is already installed, it's just not migrated
+          You can migrate this formula with `brew migrate #{f}`
           Or you can force install it with `brew install #{f} --force`
         EOS
       else

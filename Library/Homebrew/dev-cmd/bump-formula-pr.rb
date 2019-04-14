@@ -106,7 +106,7 @@ module Homebrew
       if guesses.count == 1
         formula = guesses.shift
       elsif guesses.count > 1
-        odie "Couldn't guess formula for sure: could be one of these:\n#{guesses}"
+        odie "Couldn't guess formula for sure; could be one of these:\n#{guesses}"
       end
     end
     raise FormulaUnspecifiedError unless formula
@@ -308,8 +308,8 @@ module Homebrew
         ohai "git commit --no-edit --verbose --message='#{formula.name} " \
              "#{new_formula_version}#{devel_message}' -- #{formula.path}"
         ohai "git push --set-upstream $HUB_REMOTE #{branch}:#{branch}"
-        ohai "create pull request with GitHub API"
         ohai "git checkout --quiet -"
+        ohai "create pull request with GitHub API"
       else
 
         begin

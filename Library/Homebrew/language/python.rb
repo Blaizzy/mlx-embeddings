@@ -171,7 +171,7 @@ module Language
         # @param formula [Formula] the active Formula
         # @param venv_root [Pathname, String] the path to the root of the
         #   virtualenv
-        # @param python [String] which interpreter to use; i.e. "python" or
+        # @param python [String] which interpreter to use, i.e. "python" or
         #   "python2"
         def initialize(formula, venv_root, python)
           @formula = formula

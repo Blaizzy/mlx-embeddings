@@ -70,7 +70,7 @@ module Homebrew
     end
 
     puts "Start commit: #{start_commit}"
-    puts "End   commit: #{end_commit}"
+    puts "  End commit: #{end_commit}"
 
     mkdir "update-test"
     chdir "update-test" do

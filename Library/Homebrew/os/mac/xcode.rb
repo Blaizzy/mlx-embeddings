@@ -107,7 +107,7 @@ module OS
         if OS::Mac.prerelease?
           <<~EOS
             Xcode can be updated from:
-              https://developer.apple.com/download/more/
+              #{Formatter.url("https://developer.apple.com/download/more/")}
           EOS
         else
           <<~EOS

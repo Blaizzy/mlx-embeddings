@@ -225,14 +225,14 @@ class FormulaInstaller
       EOS
       if formula.outdated? && !formula.head?
         message += <<~EOS
-          To upgrade to #{formula.pkg_version}, run `brew upgrade #{formula.name}`
+          To upgrade to #{formula.pkg_version}, run `brew upgrade #{formula.name}`.
         EOS
       elsif only_deps?
         message = nil
       else
         # some other version is already installed *and* linked
         message += <<~EOS
-          To install #{formula.pkg_version}, first run `brew unlink #{formula.name}`
+          To install #{formula.pkg_version}, first run `brew unlink #{formula.name}`.
         EOS
       end
       raise CannotInstallFormulaError, message if message
@@ -875,7 +875,7 @@ class FormulaInstaller
   rescue Exception => e # rubocop:disable Lint/RescueException
     onoe "Failed to fix install linkage"
     puts "The formula built, but you may encounter issues using it or linking other"
-    puts "formula against it."
+    puts "formulae against it."
     ohai e, e.backtrace if debug?
     Homebrew.failed = true
     @show_summary_heading = true

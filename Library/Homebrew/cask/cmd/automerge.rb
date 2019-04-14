@@ -65,7 +65,7 @@ module Cask
         return if failed.empty?
 
         $stderr.puts
-        raise CaskError, "Failed merging the following PRs:\n#{failed.join("\n")}"
+        raise CaskError, "Failed to merge the following PRs:\n#{failed.join("\n")}"
       end
 
       def passed_ci(pr)

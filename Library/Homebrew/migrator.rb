@@ -27,14 +27,14 @@ class Migrator
   class MigratorDifferentTapsError < RuntimeError
     def initialize(formula, tap)
       msg = if tap.core_tap?
-        "Please try to use #{formula.oldname} to refer the formula.\n"
+        "Please try to use #{formula.oldname} to refer to the formula.\n"
       elsif tap
-        "Please try to use fully-qualified #{tap}/#{formula.oldname} to refer the formula.\n"
+        "Please try to use fully-qualified #{tap}/#{formula.oldname} to refer to the formula.\n"
       end
 
       super <<~EOS
         #{formula.name} from #{formula.tap} is given, but old name #{formula.oldname} was installed from #{tap || "path or url"}.
-         #{msg}To force migrate use `brew migrate --force #{formula.oldname}`.
+        #{msg}To force migration use `brew migrate --force #{formula.oldname}`.
       EOS
     end
   end
@@ -231,7 +231,7 @@ class Migrator
         end
       end
 
-      odie "Remove #{new_cellar} manually and run brew migrate #{oldname}." if conflicted
+      odie "Remove #{new_cellar} manually and run `brew migrate #{oldname}`." if conflicted
     end
 
     oh1 "Moving #{Formatter.identifier(oldname)} versions to #{new_cellar}"

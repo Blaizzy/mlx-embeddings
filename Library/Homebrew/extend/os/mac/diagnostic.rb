@@ -202,7 +202,7 @@ module Homebrew
         <<~EOS
           Your XQuartz (#{MacOS::XQuartz.version}) is outdated.
           Please install XQuartz #{MacOS::XQuartz.latest_version} (or delete the current version).
-          XQuartz can be updated using Homebrew Cask by running
+          XQuartz can be updated using Homebrew Cask by running:
             brew cask reinstall xquartz
         EOS
       end
@@ -306,7 +306,7 @@ module Homebrew
         <<~EOS
           You have installed Bitdefender. The "Traffic Scan" option interferes with
           Homebrew's ability to download packages. See:
-            https://github.com/Homebrew/brew/issues/5558
+            #{Formatter.url("https://github.com/Homebrew/brew/issues/5558")}
         EOS
       end
 
@@ -338,7 +338,7 @@ module Homebrew
           macOS won't move relative symlinks across volumes unless the target file already
           exists. Brews known to be affected by this are Git and Narwhal.
 
-          You should set the "HOMEBREW_TEMP" environmental variable to a suitable
+          You should set the "HOMEBREW_TEMP" environment variable to a suitable
           directory on the same volume as your Cellar.
         EOS
       end

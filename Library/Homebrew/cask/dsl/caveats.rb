@@ -47,12 +47,9 @@ module Cask
         next if MacOS.version < :high_sierra
 
         <<~EOS
-          To install and/or use #{@cask} you may need to enable their kernel extension in
-
+          To install and/or use #{@cask} you may need to enable its kernel extension in:
             System Preferences → Security & Privacy → General
-
-          For more information refer to vendor documentation or the Apple Technical Note:
-
+          For more information refer to vendor documentation or this Apple Technical Note:
             #{Formatter.url("https://developer.apple.com/library/content/technotes/tn2459/_index.html")}
         EOS
       end
@@ -60,8 +57,7 @@ module Cask
       caveat :path_environment_variable do |path|
         <<~EOS
           To use #{@cask}, you may need to add the #{path} directory
-          to your PATH environment variable, eg (for bash shell):
-
+          to your PATH environment variable, e.g. (for bash shell):
             export PATH=#{path}:"$PATH"
         EOS
       end
@@ -71,7 +67,6 @@ module Cask
           To use #{@cask}, zsh users may need to add the following line to their
           ~/.zprofile.  (Among other effects, #{path} will be added to the
           PATH environment variable):
-
             eval `/usr/libexec/path_helper -s`
         EOS
       end
@@ -81,7 +76,7 @@ module Cask
 
         <<~EOS
           Cask #{@cask} installs files under /usr/local. The presence of such
-          files can cause warnings when running "brew doctor", which is considered
+          files can cause warnings when running `brew doctor`, which is considered
           to be a bug in Homebrew Cask.
         EOS
       end
@@ -89,20 +84,17 @@ module Cask
       caveat :depends_on_java do |java_version = :any|
         if java_version == :any
           <<~EOS
-            #{@cask} requires Java. You can install the latest version with
-
+            #{@cask} requires Java. You can install the latest version with:
               brew cask install java
           EOS
         elsif java_version.include?("11") || java_version.include?("+")
           <<~EOS
-            #{@cask} requires Java #{java_version}. You can install the latest version with
-
+            #{@cask} requires Java #{java_version}. You can install the latest version with:
               brew cask install java
           EOS
         else
           <<~EOS
-            #{@cask} requires Java #{java_version}. You can install it with
-
+            #{@cask} requires Java #{java_version}. You can install it with:
               brew cask install homebrew/cask-versions/java#{java_version}
           EOS
         end
@@ -130,15 +122,15 @@ module Cask
 
       caveat :license do |web_page|
         <<~EOS
-          Installing #{@cask} means you have AGREED to the license at
-            #{web_page}
+          Installing #{@cask} means you have AGREED to the license at:
+            #{Formatter.url(web_page.to_s)}
         EOS
       end
 
       caveat :free_license do |web_page|
         <<~EOS
-          The vendor offers a free license for #{@cask} at
-            #{web_page}
+          The vendor offers a free license for #{@cask} at:
+            #{Formatter.url(web_page.to_s)}
         EOS
       end
     end

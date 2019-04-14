@@ -251,9 +251,9 @@ module SharedEnvExtension
 
     else
       if (gfortran = which("gfortran", (HOMEBREW_PREFIX/"bin").to_s))
-        ohai "Using Homebrew-provided fortran compiler."
+        ohai "Using Homebrew-provided Fortran compiler."
       elsif (gfortran = which("gfortran", PATH.new(ORIGINAL_PATHS)))
-        ohai "Using a fortran compiler found at #{gfortran}."
+        ohai "Using a Fortran compiler found at #{gfortran}."
       end
       if gfortran
         puts "This may be changed by setting the FC environment variable."

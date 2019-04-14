@@ -115,7 +115,7 @@ module UnpackStrategy
 
     def extract_to_dir(unpack_dir, basename:, verbose:)
       mount(verbose: verbose) do |mounts|
-        raise "No mounts found in '#{path}'; perhaps it is a bad disk image?" if mounts.empty?
+        raise "No mounts found in '#{path}'; perhaps this is a bad disk image?" if mounts.empty?
 
         mounts.each do |mount|
           mount.extract(to: unpack_dir, verbose: verbose)

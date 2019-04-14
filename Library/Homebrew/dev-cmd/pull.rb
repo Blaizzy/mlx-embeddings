@@ -147,7 +147,7 @@ module Homebrew
         if patch_changes[:formulae].length > 1
           odie "Can only bump one changed formula; bumped #{patch_changes[:formulae]}"
         end
-        odie "Can not bump if non-formula files are changed" unless patch_changes[:others].empty?
+        odie "Cannot bump if non-formula files are changed" unless patch_changes[:others].empty?
       end
       old_versions = current_versions_from_info_external(patch_changes[:formulae].first) if is_bumpable
       patch_puller.apply_patch
@@ -208,7 +208,7 @@ module Homebrew
       end
 
       if changed_formulae_names.empty?
-        odie "cannot bump: no changed formulae found after applying patch" if do_bump
+        odie "Cannot bump: no changed formulae found after applying patch" if do_bump
         is_bumpable = false
       end
 
