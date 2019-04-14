@@ -4,7 +4,7 @@ module Cask
       def run
         if casks.none?
           odebug "Opening project homepage"
-          self.class.open_url "https://caskroom.github.io/"
+          self.class.open_url "https://brew.sh/"
         else
           casks.each do |cask|
             odebug "Opening homepage for Cask #{cask}"
