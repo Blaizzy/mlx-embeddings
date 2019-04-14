@@ -16,7 +16,6 @@ module Cask
           puts <<~EOS
             To complete the installation of Cask #{cask}, you must also
             run the installer at:
-
               '#{cask.staged_path.join(path)}'
           EOS
         end

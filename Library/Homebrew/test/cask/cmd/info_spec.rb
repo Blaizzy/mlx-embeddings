@@ -84,7 +84,6 @@ describe Cask::Cmd::Info, :cask do
       Custom text via puts followed by DSL-generated text:
       To use with-caveats, you may need to add the /custom/path/bin directory
       to your PATH environment variable, e.g. (for bash shell):
-
         export PATH=/custom/path/bin:"$PATH"
 
     EOS

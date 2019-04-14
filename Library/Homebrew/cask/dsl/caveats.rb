@@ -48,11 +48,8 @@ module Cask
 
         <<~EOS
           To install and/or use #{@cask} you may need to enable its kernel extension in:
-
             System Preferences → Security & Privacy → General
-
           For more information refer to vendor documentation or this Apple Technical Note:
-
             #{Formatter.url("https://developer.apple.com/library/content/technotes/tn2459/_index.html")}
         EOS
       end
@@ -61,7 +58,6 @@ module Cask
         <<~EOS
           To use #{@cask}, you may need to add the #{path} directory
           to your PATH environment variable, e.g. (for bash shell):
-
             export PATH=#{path}:"$PATH"
         EOS
       end
@@ -71,7 +67,6 @@ module Cask
           To use #{@cask}, zsh users may need to add the following line to their
           ~/.zprofile.  (Among other effects, #{path} will be added to the
           PATH environment variable):
-
             eval `/usr/libexec/path_helper -s`
         EOS
       end
@@ -90,19 +85,16 @@ module Cask
         if java_version == :any
           <<~EOS
             #{@cask} requires Java. You can install the latest version with:
-
               brew cask install java
           EOS
         elsif java_version.include?("11") || java_version.include?("+")
           <<~EOS
             #{@cask} requires Java #{java_version}. You can install the latest version with:
-
               brew cask install java
           EOS
         else
           <<~EOS
             #{@cask} requires Java #{java_version}. You can install it with:
-
               brew cask install homebrew/cask-versions/java#{java_version}
           EOS
         end

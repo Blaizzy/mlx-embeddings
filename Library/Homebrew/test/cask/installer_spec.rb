@@ -118,7 +118,6 @@ describe Cask::Installer, :cask do
           ==> Installing Cask with-installer-manual
           To complete the installation of Cask with-installer-manual, you must also
           run the installer at:
-
             '#{with_installer_manual.staged_path.join("Caffeine.app")}'
           🍺  with-installer-manual was successfully installed!
         EOS

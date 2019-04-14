@@ -131,13 +131,11 @@ module Cask
     def to_s
       <<~EOS
         Checksum for Cask '#{token}' does not match.
-
         Expected: #{Formatter.success(expected.to_s)}
           Actual: #{Formatter.error(actual.to_s)}
             File: #{path}
-
-        To retry an incomplete download, remove the file above. If the issue persists, visit:
-
+        To retry an incomplete download, remove the file above.
+        If the issue persists, visit:
           #{Formatter.url("https://github.com/Homebrew/homebrew-cask/blob/master/doc/reporting_bugs/checksum_does_not_match_error.md")}
       EOS
     end
