@@ -222,4 +222,61 @@ describe Cask::Cmd::Upgrade, :cask do
       expect(bad_checksum.staged_path).not_to exist
     end
   end
+
+  context "multiple failures" do
+    let(:installed) {
+      [
+        "outdated/bad-checksum",
+        "outdated/local-transmission",
+        "outdated/bad-checksum2",
+      ]
+    }
+
+    before do
+      installed.each { |cask| Cask::Cmd::Install.run(cask) }
+
+      allow_any_instance_of(described_class).to receive(:verbose?).and_return(true)
+    end
+
+    it "will not end the upgrade process" do
+      bad_checksum = Cask::CaskLoader.load("bad-checksum")
+      bad_checksum_path = bad_checksum.config.appdir.join("Caffeine.app")
+
+      local_transmission = Cask::CaskLoader.load("local-transmission")
+      local_transmission_path = Cask::Config.global.appdir.join("Transmission.app")
+
+      bad_checksum_2 = Cask::CaskLoader.load("bad-checksum2")
+      bad_checksum_2_path = bad_checksum_2.config.appdir.join("container")
+
+      expect(bad_checksum).to be_installed
+      expect(bad_checksum_path).to be_a_directory
+      expect(bad_checksum.versions).to include("1.2.2")
+
+      expect(local_transmission).to be_installed
+      expect(local_transmission_path).to be_a_directory
+      expect(local_transmission.versions).to include("2.60")
+
+      expect(bad_checksum_2).to be_installed
+      expect(bad_checksum_2_path).to be_a_file
+      expect(bad_checksum_2.versions).to include("1.2.2")
+
+      expect {
+        described_class.run
+      }.to raise_error(Cask::MultipleCaskErrors)
+
+      expect(bad_checksum).to be_installed
+      expect(bad_checksum_path).to be_a_directory
+      expect(bad_checksum.versions).to include("1.2.2")
+      expect(bad_checksum.staged_path).not_to exist
+
+      expect(local_transmission).to be_installed
+      expect(local_transmission_path).to be_a_directory
+      expect(local_transmission.versions).to include("2.61")
+
+      expect(bad_checksum_2).to be_installed
+      expect(bad_checksum_2_path).to be_a_file
+      expect(bad_checksum_2.versions).to include("1.2.2")
+      expect(bad_checksum_2.staged_path).not_to exist
+    end
+  end
 end
