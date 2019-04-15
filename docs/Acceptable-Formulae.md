@@ -60,7 +60,7 @@ Don’t make your formula build an `.app` (native macOS Application); we
 don’t want those things in Homebrew. Encourage upstream projects to build and support a `.app` that can be distributed by [homebrew/cask](https://github.com/Homebrew/homebrew-cask) (and used without it, too).
 
 ### Stuff that builds a GUI by default (but doesn't have to)
-Make it build a command-line tool or a library by default and, if the GUI is useful and would be widely used, add an option to build the GUI. Don't offer an option for multiple GUI backends, e.g. X11 is a bad user experience for GUIs on macOS.
+Make it build a command-line tool or a library by default and, if the GUI is useful and would be widely used, also build the GUI. But don't build X11/XQuartz GUIs as they are a bad user experience on macOS.
 
 ### Stuff that doesn't build with the latest, stable Xcode's Clang
 Clang is the default C/C++ compiler on macOS (and has been for a long time). Software that doesn't build with it hasn't been adequately ported to macOS.
