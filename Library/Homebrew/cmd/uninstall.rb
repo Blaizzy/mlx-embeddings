@@ -2,7 +2,7 @@ require "keg"
 require "formula"
 require "diagnostic"
 require "migrator"
-require "cli_parser"
+require "cli/parser"
 
 module Homebrew
   module_function

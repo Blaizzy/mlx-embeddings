@@ -1,7 +1,7 @@
 require "formula"
 require "erb"
 require "ostruct"
-require "cli_parser"
+require "cli/parser"
 # Require all commands
 Dir.glob("#{HOMEBREW_LIBRARY_PATH}/{dev-,}cmd/*.rb").each { |cmd| require cmd }
 

@@ -1,6 +1,6 @@
 require "missing_formula"
 require "caveats"
-require "cli_parser"
+require "cli/parser"
 require "options"
 require "formula"
 require "keg"

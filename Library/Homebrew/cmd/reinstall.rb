@@ -2,7 +2,7 @@ require "formula_installer"
 require "development_tools"
 require "messages"
 require "reinstall"
-require "cli_parser"
+require "cli/parser"
 require "cleanup"
 
 module Homebrew

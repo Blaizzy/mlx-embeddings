@@ -3,7 +3,7 @@ require "utils/bottles"
 require "tab"
 require "keg"
 require "formula_versions"
-require "cli_parser"
+require "cli/parser"
 require "utils/inreplace"
 require "erb"
 

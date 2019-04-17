@@ -1,7 +1,7 @@
 require "json"
 require "open3"
 require "style"
-require "cli_parser"
+require "cli/parser"
 
 module Homebrew
   module_function

@@ -1,7 +1,7 @@
 require "formula"
 require "missing_formula"
 require "descriptions"
-require "cli_parser"
+require "cli/parser"
 require "search"
 
 module Homebrew

@@ -31,7 +31,7 @@ EOS
 # NOTE Keep lines less than 80 characters! Wrapping is just not cricket.
 # NOTE The reason the string is at the top is so 25 lines is easy to measure!
 
-require "cli_parser"
+require "cli/parser"
 require "commands"
 
 module Homebrew

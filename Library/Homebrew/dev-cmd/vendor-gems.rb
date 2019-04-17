@@ -1,5 +1,5 @@
 require "formula"
-require "cli_parser"
+require "cli/parser"
 
 module Homebrew
   module_function

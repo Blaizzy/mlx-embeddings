@@ -1,6 +1,6 @@
 require "cache_store"
 require "linkage_checker"
-require "cli_parser"
+require "cli/parser"
 
 module Homebrew
   module_function

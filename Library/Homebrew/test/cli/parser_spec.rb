@@ -1,4 +1,4 @@
-require_relative "../cli_parser"
+require_relative "../../cli/parser"
 
 describe Homebrew::CLI::Parser do
   describe "test switch options" do

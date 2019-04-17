@@ -3,7 +3,7 @@ require "install"
 require "system_config"
 require "stringio"
 require "socket"
-require "cli_parser"
+require "cli/parser"
 
 module Homebrew
   module_function

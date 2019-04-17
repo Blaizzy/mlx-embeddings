@@ -4,7 +4,7 @@ require "formula_installer"
 require "development_tools"
 require "messages"
 require "cleanup"
-require "cli_parser"
+require "cli/parser"
 
 module Homebrew
   module_function
