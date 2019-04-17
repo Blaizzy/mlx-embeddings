@@ -171,11 +171,6 @@ describe Cask::DSL::Version, :cask do
                        "1.2.3_4-5" => "1_2_3_4-5"
     end
 
-    describe "#dots_to_slashes" do
-      include_examples "version expectations hash", :dots_to_slashes,
-                       "1.2.3_4-5" => "1/2/3_4-5"
-    end
-
     describe "#hyphens_to_dots" do
       include_examples "version expectations hash", :hyphens_to_dots,
                        "1.2.3_4-5" => "1.2.3_4.5"
@@ -186,11 +181,6 @@ describe Cask::DSL::Version, :cask do
                        "1.2.3_4-5" => "1.2.3_4_5"
     end
 
-    describe "#hyphens_to_slashes" do
-      include_examples "version expectations hash", :hyphens_to_slashes,
-                       "1.2.3_4-5" => "1.2.3_4/5"
-    end
-
     describe "#underscores_to_dots" do
       include_examples "version expectations hash", :underscores_to_dots,
                        "1.2.3_4-5" => "1.2.3.4-5"
@@ -199,11 +189,6 @@ describe Cask::DSL::Version, :cask do
     describe "#underscores_to_hyphens" do
       include_examples "version expectations hash", :underscores_to_hyphens,
                        "1.2.3_4-5" => "1.2.3-4-5"
-    end
-
-    describe "#underscores_to_slashes" do
-      include_examples "version expectations hash", :underscores_to_slashes,
-                       "1.2.3_4-5" => "1.2.3/4-5"
     end
 
     describe "#no_dots" do
