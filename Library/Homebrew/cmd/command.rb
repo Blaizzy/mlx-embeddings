@@ -1,5 +1,5 @@
 require "commands"
-require "cli_parser"
+require "cli/parser"
 
 module Homebrew
   module_function

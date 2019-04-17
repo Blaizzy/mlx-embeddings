@@ -1,7 +1,7 @@
 require "extend/ENV"
 require "sandbox"
 require "timeout"
-require "cli_parser"
+require "cli/parser"
 
 module Homebrew
   module_function

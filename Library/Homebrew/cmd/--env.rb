@@ -1,7 +1,7 @@
 require "extend/ENV"
 require "build_environment"
 require "utils/shell"
-require "cli_parser"
+require "cli/parser"
 
 module Homebrew
   module_function

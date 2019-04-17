@@ -1,4 +1,4 @@
-require "cli_parser"
+require "cli/parser"
 
 class Symbol
   def f(*args)

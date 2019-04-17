@@ -1,7 +1,7 @@
 require "descriptions"
 require "search"
 require "description_cache_store"
-require "cli_parser"
+require "cli/parser"
 
 module Homebrew
   module_function

@@ -1,5 +1,5 @@
 require "formula"
-require "cli_parser"
+require "cli/parser"
 
 # `brew uses foo bar` returns formulae that use both foo and bar
 # If you want the union, run the command twice and concatenate the results.

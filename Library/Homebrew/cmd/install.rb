@@ -4,7 +4,7 @@ require "development_tools"
 require "install"
 require "search"
 require "cleanup"
-require "cli_parser"
+require "cli/parser"
 
 module Homebrew
   module_function

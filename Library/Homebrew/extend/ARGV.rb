@@ -1,34 +1,4 @@
 module HomebrewArgvExtension
-  def formula_install_option_names
-    %w[
-      --debug
-      --env=
-      --ignore-dependencies
-      --cc=
-      --build-from-source
-      --devel
-      --HEAD
-      --keep-tmp
-      --interactive
-      --git
-      --sandbox
-      --no-sandbox
-      --build-bottle
-      --force-bottle
-      --bottle-arch=
-      --include-test
-      --verbose
-      --force
-      --display-times
-      -i
-      -v
-      -d
-      -g
-      -s
-      -f
-    ].freeze
-  end
-
   def named
     # TODO: use @instance variable to ||= cache when moving to CLI::Parser
     self - options_only
@@ -113,26 +83,10 @@ module HomebrewArgvExtension
     end
   end
 
-  def include?(arg)
-    !index(arg).nil?
-  end
-
-  def next
-    at(@n + 1) || raise(UsageError)
-  end
-
   def value(name)
     arg_prefix = "--#{name}="
     flag_with_value = find { |arg| arg.start_with?(arg_prefix) }
     flag_with_value&.delete_prefix(arg_prefix)
-  end
-
-  # Returns an array of values that were given as a comma-separated list.
-  # @see value
-  def values(name)
-    return unless val = value(name)
-
-    val.split(",")
   end
 
   def force?
@@ -155,14 +109,6 @@ module HomebrewArgvExtension
     flag? "--interactive"
   end
 
-  def one?
-    flag? "--1"
-  end
-
-  def dry_run?
-    include?("--dry-run") || switch?("n")
-  end
-
   def keep_tmp?
     include? "--keep-tmp"
   end
@@ -175,10 +121,6 @@ module HomebrewArgvExtension
     !ENV["HOMEBREW_DEVELOPER"].nil?
   end
 
-  def sandbox?
-    include?("--sandbox") || !ENV["HOMEBREW_SANDBOX"].nil?
-  end
-
   def no_sandbox?
     include?("--no-sandbox") || !ENV["HOMEBREW_NO_SANDBOX"].nil?
   end
@@ -187,24 +129,8 @@ module HomebrewArgvExtension
     include? "--ignore-dependencies"
   end
 
-  def only_deps?
-    include? "--only-dependencies"
-  end
-
-  def json
-    value "json"
-  end
-
-  def build_head?
-    include? "--HEAD"
-  end
-
-  def build_devel?
-    include? "--devel"
-  end
-
   def build_stable?
-    !(build_head? || build_devel?)
+    !(include?("--HEAD") || include?("--devel"))
   end
 
   def build_universal?
@@ -244,13 +170,6 @@ module HomebrewArgvExtension
     include? "--fetch-HEAD"
   end
 
-  # e.g. `foo -ns -i --bar` has three switches: `n`, `s` and `i`
-  def switch?(char)
-    return false if char.length > 1
-
-    options_only.any? { |arg| arg.scan("-").size == 1 && arg.include?(char) }
-  end
-
   def cc
     value "cc"
   end
@@ -273,6 +192,13 @@ module HomebrewArgvExtension
   end
 
   private
+
+  # e.g. `foo -ns -i --bar` has three switches: `n`, `s` and `i`
+  def switch?(char)
+    return false if char.length > 1
+
+    options_only.any? { |arg| arg.scan("-").size == 1 && arg.include?(char) }
+  end
 
   def spec(default = :stable)
     if include?("--HEAD")
