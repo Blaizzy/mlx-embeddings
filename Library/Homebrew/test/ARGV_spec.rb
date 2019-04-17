@@ -91,13 +91,13 @@ describe HomebrewArgvExtension do
 
     it "returns true if the given string is a switch" do
       %w[n s i].each do |s|
-        expect(subject.switch?(s)).to be true
+        expect(subject.send("switch?", s)).to be true
       end
     end
 
     it "returns false if the given string is not a switch" do
       %w[b ns bar --bar -n a bad arg].each do |s|
-        expect(subject.switch?(s)).to be false
+        expect(subject.send("switch?", s)).to be false
       end
     end
   end
@@ -131,20 +131,6 @@ describe HomebrewArgvExtension do
 
     it "returns nil if there is no matching argument" do
       expect(subject.value("baz")).to be nil
-    end
-  end
-
-  describe "#values" do
-    let(:argv) { ["--foo=", "--bar=a", "--baz=b,c"] }
-
-    it "returns the value for a given argument" do
-      expect(subject.values("foo")).to eq []
-      expect(subject.values("bar")).to eq ["a"]
-      expect(subject.values("baz")).to eq ["b", "c"]
-    end
-
-    it "returns nil if there is no matching argument" do
-      expect(subject.values("qux")).to be nil
     end
   end
 end
