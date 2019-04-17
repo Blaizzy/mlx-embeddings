@@ -205,7 +205,7 @@ describe Homebrew::CLI::Parser do
 
     it "raises exception upon Homebrew.args mutation" do
       parser.parse(["--switch-a"])
-      expect { parser.parse(["--switch-b"]) }.to raise_error(RuntimeError, /can't modify frozen OpenStruct/)
+      expect { parser.parse(["--switch-b"]) }.to raise_error(RuntimeError, /Arguments were already parsed!/)
     end
   end
 end

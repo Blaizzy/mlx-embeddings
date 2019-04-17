@@ -1,5 +1,5 @@
+require "cli/args"
 require "optparse"
-require "ostruct"
 require "set"
 
 COMMAND_DESC_WIDTH = 80
@@ -25,9 +25,7 @@ module Homebrew
 
       def initialize(&block)
         @parser = OptionParser.new
-        Homebrew.args = OpenStruct.new
-        # undefine tap to allow --tap argument
-        Homebrew.args.instance_eval { undef tap }
+        @args = Homebrew::CLI::Args.new(argv: ARGV_WITHOUT_MONKEY_PATCHING)
         @constraints = []
         @conflicts = []
         @switch_sources = {}
@@ -77,7 +75,7 @@ module Homebrew
         description = option_to_description(name) if description.nil?
         process_option(name, description)
         @parser.on(name, OptionParser::REQUIRED_ARGUMENT, Array, *wrap_option_desc(description)) do |list|
-          Homebrew.args[option_to_name(name)] = list
+          @args[option_to_name(name)] = list
         end
       end
 
@@ -92,7 +90,7 @@ module Homebrew
         process_option(*names, description)
         @parser.on(*names, *wrap_option_desc(description), required) do |option_value|
           names.each do |name|
-            Homebrew.args[option_to_name(name)] = option_value
+            @args[option_to_name(name)] = option_value
           end
         end
 
@@ -128,6 +126,8 @@ module Homebrew
       end
 
       def parse(cmdline_args = ARGV)
+        raise "Arguments were already parsed!" if @args_parsed
+
         begin
           remaining_args = @parser.parse(cmdline_args)
         rescue OptionParser::InvalidOption => e
@@ -135,8 +135,9 @@ module Homebrew
           raise e
         end
         check_constraint_violations
-        Homebrew.args[:remaining] = remaining_args
-        Homebrew.args.freeze
+        @args[:remaining] = remaining_args
+        @args_parsed = true
+        Homebrew.args = @args
         cmdline_args.freeze
         @parser
       end
@@ -180,13 +181,13 @@ module Homebrew
       def enable_switch(*names, from:)
         names.each do |name|
           @switch_sources[option_to_name(name)] = from
-          Homebrew.args["#{option_to_name(name)}?"] = true
+          @args["#{option_to_name(name)}?"] = true
         end
       end
 
       def disable_switch(*names)
         names.each do |name|
-          Homebrew.args.delete_field("#{option_to_name(name)}?")
+          @args.delete_field("#{option_to_name(name)}?")
         end
       end
 
@@ -196,7 +197,7 @@ module Homebrew
       end
 
       def option_passed?(name)
-        Homebrew.args.respond_to?(name) || Homebrew.args.respond_to?("#{name}?")
+        @args.respond_to?(name) || @args.respond_to?("#{name}?")
       end
 
       def wrap_option_desc(desc)
