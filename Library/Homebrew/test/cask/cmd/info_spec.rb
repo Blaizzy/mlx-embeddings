@@ -136,7 +136,7 @@ describe Cask::Cmd::Info, :cask do
     EOS
   end
 
-  it "can run be run with a url twice" do
+  it "can run be run with a url twice", :needs_network do
     expect {
       described_class.run("https://raw.githubusercontent.com/Homebrew/homebrew-cask" \
                           "/d0b2c58652ae5eff20a7a4ac93292a08b250912b/Casks/docker.rb")
