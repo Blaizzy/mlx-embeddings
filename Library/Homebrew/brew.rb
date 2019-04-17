@@ -17,6 +17,16 @@ end
 # Also define here so we can rescue regardless of location.
 class MissingEnvironmentVariables < RuntimeError; end
 
+def create_tap(cmd, tap_name)
+  tap_commands = []
+  if cmd == "services"
+    brew_uid = HOMEBREW_BREW_FILE.stat.uid
+    tap_commands += %W[/usr/bin/sudo -u ##{brew_uid}] if Process.uid.zero? && !brew_uid.zero?
+  end
+  tap_commands += %W[#{HOMEBREW_BREW_FILE} tap #{tap_name}]
+  safe_system(*tap_commands)
+end
+
 begin
   require_relative "global"
 rescue MissingEnvironmentVariables => e
@@ -111,13 +121,9 @@ begin
 
     odie "Unknown command: #{cmd}" if !possible_tap || possible_tap.installed?
 
-    brew_uid = HOMEBREW_BREW_FILE.stat.uid
-    tap_commands = []
-    tap_commands += %W[/usr/bin/sudo -u ##{brew_uid}] if Process.uid.zero? && !brew_uid.zero?
     # Unset HOMEBREW_HELP to avoid confusing the tap
     ENV.delete("HOMEBREW_HELP") if help_flag
-    tap_commands += %W[#{HOMEBREW_BREW_FILE} tap #{possible_tap}]
-    safe_system(*tap_commands)
+    create_tap(cmd, possible_tap.name)
     ENV["HOMEBREW_HELP"] = "1" if help_flag
     exec HOMEBREW_BREW_FILE, cmd, *ARGV
   end
