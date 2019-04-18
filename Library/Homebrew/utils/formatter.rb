@@ -94,7 +94,7 @@ module Formatter
 
     gap_string = "".rjust(gap_size)
 
-    output = ""
+    output = +""
 
     rows.times do |row_index|
       item_indices_for_row = row_index.step(objects.size - 1, rows).to_a
@@ -106,9 +106,11 @@ module Formatter
       # don't add trailing whitespace to last column
       last = objects.values_at(item_indices_for_row.last)
 
-      output.concat((first_n + last).join(gap_string)).concat("\n")
+      output.concat((first_n + last)
+            .join(gap_string))
+            .concat("\n")
     end
 
-    output
+    output.freeze
   end
 end

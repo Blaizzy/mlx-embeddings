@@ -56,7 +56,7 @@ module Cask
       end
 
       def self.installation_info(cask)
-        install_info = ""
+        install_info = +""
         if cask.installed?
           cask.versions.each do |version|
             versioned_staged_path = cask.caskroom_path.join(version)
@@ -69,7 +69,7 @@ module Cask
                               end,
                             ).concat(")\n")
           end
-          install_info
+          install_info.freeze
         else
           "Not installed\n"
         end

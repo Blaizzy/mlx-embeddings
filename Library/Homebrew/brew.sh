@@ -348,6 +348,9 @@ else
   RUBY_DISABLE_OPTIONS="--disable=gems,rubyopt"
 fi
 
+# Don't set this for anyone (yet)
+unset HOMEBREW_FROZEN_STRING_LITERAL
+
 if [[ -z "$HOMEBREW_RUBY_WARNINGS" ]]
 then
   export HOMEBREW_RUBY_WARNINGS="-W0"
@@ -499,5 +502,5 @@ else
 
   # Unshift command back into argument list (unless argument list was empty).
   [[ "$HOMEBREW_ARG_COUNT" -gt 0 ]] && set -- "$HOMEBREW_COMMAND" "$@"
-  { update-preinstall "$@"; exec "$HOMEBREW_RUBY_PATH" $HOMEBREW_RUBY_WARNINGS "$RUBY_DISABLE_OPTIONS" "$HOMEBREW_LIBRARY/Homebrew/brew.rb" "$@"; }
+  { update-preinstall "$@"; exec "$HOMEBREW_RUBY_PATH" $HOMEBREW_FROZEN_STRING_LITERAL $HOMEBREW_RUBY_WARNINGS "$RUBY_DISABLE_OPTIONS" "$HOMEBREW_LIBRARY/Homebrew/brew.rb" "$@"; }
 fi

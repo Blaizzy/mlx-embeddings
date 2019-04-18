@@ -17,10 +17,11 @@ module DiskUsageExtension
   end
 
   def abv
-    out = ""
+    out = +""
     compute_disk_usage
     out << "#{number_readable(@file_count)} files, " if @file_count > 1
     out << disk_usage_readable(@disk_usage).to_s
+    out.freeze
   end
 
   private
@@ -344,8 +345,8 @@ class Pathname
 
   # Writes an exec script that sets environment variables
   def write_env_script(target, env)
-    env_export = ""
-    env.each { |key, value| env_export += "#{key}=\"#{value}\" " }
+    env_export = +""
+    env.each { |key, value| env_export << "#{key}=\"#{value}\" " }
     dirname.mkpath
     write <<~SH
       #!/bin/bash

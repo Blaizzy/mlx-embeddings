@@ -178,13 +178,13 @@ class Sandbox
     end
 
     def add_rule(rule)
-      s = "("
+      s = +"("
       s << (rule[:allow] ? "allow" : "deny")
       s << " #{rule[:operation]}"
       s << " (#{rule[:filter]})" if rule[:filter]
       s << " (with #{rule[:modifier]})" if rule[:modifier]
       s << ")"
-      @rules << s
+      @rules << s.freeze
     end
 
     def dump

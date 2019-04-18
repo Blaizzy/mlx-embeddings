@@ -389,9 +389,6 @@ module Homebrew
                   /usr/bin occurs before #{HOMEBREW_PREFIX}/bin
                   This means that system-provided programs will be used instead of those
                   provided by Homebrew. The following tools exist at both paths:
-                EOS
-
-                message += <<~EOS
 
                   Consider setting your PATH so that #{HOMEBREW_PREFIX}/bin
                   occurs before /usr/bin. Here is a one-liner:
