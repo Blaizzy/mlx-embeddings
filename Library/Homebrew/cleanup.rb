@@ -8,30 +8,6 @@ CLEANUP_DEFAULT_DAYS = 30
 CLEANUP_MAX_AGE_DAYS = 120
 
 module CleanupRefinement
-  refine Enumerator do
-    def parallel
-      queue = Queue.new
-
-      each do |element|
-        queue.enq(element)
-      end
-
-      workers = (0...Hardware::CPU.cores).map do
-        Thread.new do
-          Kernel.loop do
-            begin
-              yield queue.deq(true)
-            rescue ThreadError
-              break # if queue is empty
-            end
-          end
-        end
-      end
-
-      workers.each(&:join)
-    end
-  end
-
   refine Pathname do
     def incomplete?
       extname.end_with?(".incomplete")
@@ -403,7 +379,7 @@ module Homebrew
           HOMEBREW_PREFIX/"Caskroom",
         ]
       end
-      dirs.select(&:directory?).each.parallel do |dir|
+      dirs.select(&:directory?).each do |dir|
         system_command "find",
           args:         [dir, "-name", ".DS_Store", "-delete"],
           print_stderr: false
