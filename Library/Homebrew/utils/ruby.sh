@@ -35,7 +35,10 @@ setup-ruby-path() {
         HOMEBREW_RUBY_PATH="$(type -P ruby)"
       fi
 
-      if [[ -n "$HOMEBREW_RUBY_PATH" && -z "$HOMEBREW_FORCE_VENDOR_RUBY" ]]
+      if [[ -n "$HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH" ]]
+      then
+        ruby_version_new_enough="true"
+      elif [[ -n "$HOMEBREW_RUBY_PATH" && -z "$HOMEBREW_FORCE_VENDOR_RUBY" ]]
       then
         ruby_version_new_enough="$("$HOMEBREW_RUBY_PATH" --disable=gems -rrubygems -e "puts Gem::Version.new(RUBY_VERSION.to_s.dup) >= Gem::Version.new('$minimum_ruby_version')")"
       fi
