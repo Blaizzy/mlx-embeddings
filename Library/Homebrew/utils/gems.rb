@@ -12,6 +12,7 @@ module Homebrew
   end
 
   def gem_user_bindir
+    require "rubygems"
     "#{Gem.user_dir}/bin".freeze
   end
 
@@ -39,6 +40,7 @@ module Homebrew
     ENV["GEM_PATH"] = ENV["GEM_HOME"]
 
     # Make RubyGems notice environment changes.
+    require "rubygems"
     Gem.clear_paths
     Gem::Specification.reset
 
@@ -76,6 +78,7 @@ module Homebrew
   end
 
   def install_bundler!
+    require "rubygems"
     setup_gem_environment!(gem_home: Gem.user_dir, gem_bindir: gem_user_bindir)
     install_gem_setup_path!("bundler", version: ">=2", executable: "bundle", setup_gem_environment: false)
   end

@@ -89,6 +89,7 @@ RSpec.shared_context "integration test" do
         "-I", $LOAD_PATH.join(File::PATH_SEPARATOR)
       ]
       if ENV["HOMEBREW_TESTS_COVERAGE"]
+        require "rubygems"
         simplecov_spec = Gem.loaded_specs["simplecov"]
         specs = [simplecov_spec]
         simplecov_spec.runtime_dependencies.each do |dep|

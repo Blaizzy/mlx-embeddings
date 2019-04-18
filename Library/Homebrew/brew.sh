@@ -327,6 +327,12 @@ then
 
   # Don't allow non-developers to customise Ruby warnings.
   unset HOMEBREW_RUBY_WARNINGS
+
+  # Disable Ruby options we don't need. RubyGems provides a decent speedup.
+  RUBY_DISABLE_OPTIONS="--disable=gems,did_you_mean,rubyopt"
+else
+  # Don't disable did_you_mean for developers as it's useful.
+  RUBY_DISABLE_OPTIONS="--disable=gems,rubyopt"
 fi
 
 if [[ -z "$HOMEBREW_RUBY_WARNINGS" ]]
@@ -480,5 +486,5 @@ else
 
   # Unshift command back into argument list (unless argument list was empty).
   [[ "$HOMEBREW_ARG_COUNT" -gt 0 ]] && set -- "$HOMEBREW_COMMAND" "$@"
-  { update-preinstall "$@"; exec "$HOMEBREW_RUBY_PATH" $HOMEBREW_RUBY_WARNINGS "$HOMEBREW_LIBRARY/Homebrew/brew.rb" "$@"; }
+  { update-preinstall "$@"; exec "$HOMEBREW_RUBY_PATH" $HOMEBREW_RUBY_WARNINGS "$RUBY_DISABLE_OPTIONS" "$HOMEBREW_LIBRARY/Homebrew/brew.rb" "$@"; }
 fi
