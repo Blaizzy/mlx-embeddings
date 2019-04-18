@@ -3,22 +3,11 @@ require "formula"
 module Readall
   class << self
     def valid_ruby_syntax?(ruby_files)
-      ruby_files_queue = Queue.new
-      ruby_files.each { |f| ruby_files_queue << f }
       failed = false
-      workers = (0...Hardware::CPU.cores).map do
-        Thread.new do
-          Kernel.loop do
-            begin
-              # As a side effect, print syntax errors/warnings to `$stderr`.
-              failed = true if syntax_errors_or_warnings?(ruby_files_queue.deq(true))
-            rescue ThreadError
-              break
-            end
-          end
-        end
+      ruby_files.each do |ruby_file|
+        # As a side effect, print syntax errors/warnings to `$stderr`.
+        failed = true if syntax_errors_or_warnings?(ruby_file)
       end
-      workers.each(&:join)
       !failed
     end
 
