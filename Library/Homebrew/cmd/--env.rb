@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "extend/ENV"
 require "build_environment"
 require "utils/shell"

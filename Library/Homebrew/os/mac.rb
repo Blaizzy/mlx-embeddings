@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "os/mac/version"
 require "os/mac/xcode"
 require "os/mac/xquartz"

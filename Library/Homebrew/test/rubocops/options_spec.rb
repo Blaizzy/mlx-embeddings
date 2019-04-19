@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rubocops/options"
 
 describe RuboCop::Cop::FormulaAudit::Options do

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rubocops/conflicts"
 
 describe RuboCop::Cop::FormulaAudit::Conflicts do

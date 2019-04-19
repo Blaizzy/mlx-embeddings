@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "utils/bottles"
 require "utils/gems"
 require "formula"

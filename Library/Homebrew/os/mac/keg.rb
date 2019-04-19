@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Keg
   def change_dylib_id(id, file)
     return if file.dylib_id == id

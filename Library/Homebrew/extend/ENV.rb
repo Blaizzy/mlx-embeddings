@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "hardware"
 require "extend/ENV/shared"
 require "extend/ENV/std"

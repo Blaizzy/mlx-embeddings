@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class BuildEnvironment
   def initialize(*settings)
     @settings = Set.new(*settings)

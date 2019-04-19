@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "hardware"
 require "extend/ENV/shared"
 
@@ -6,7 +8,7 @@ module Stdenv
   include SharedEnvExtension
 
   # @private
-  SAFE_CFLAGS_FLAGS = "-w -pipe".freeze
+  SAFE_CFLAGS_FLAGS = "-w -pipe"
 
   # @private
   def setup_build_environment(formula = nil)

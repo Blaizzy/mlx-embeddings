@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe ErrorDuringExecution do
   subject(:error) { described_class.new(command, status: status, output: output) }
 

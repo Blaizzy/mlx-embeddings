@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "lock_file"
 
 describe LockFile do

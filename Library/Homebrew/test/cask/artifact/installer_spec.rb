@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Cask::Artifact::Installer, :cask do
   subject(:installer) { described_class.new(cask, **args) }
 

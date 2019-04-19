@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module OS
   # Define OS::Mac on Linux for formula API compatibility.
   module Mac

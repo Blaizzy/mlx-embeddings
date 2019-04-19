@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Cask::CaskLoader::FromContentLoader do
   alias_matcher :be_able_to_load, :be_can_load
 

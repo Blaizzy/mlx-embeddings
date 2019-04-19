@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module RuboCop
   module Cask
     # Constants available globally for use in all Cask cops.

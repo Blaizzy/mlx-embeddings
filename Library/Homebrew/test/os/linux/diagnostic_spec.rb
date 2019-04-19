@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "diagnostic"
 
 describe Homebrew::Diagnostic::Checks do

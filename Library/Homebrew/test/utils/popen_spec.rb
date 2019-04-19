@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "utils/popen"
 
 describe Utils do

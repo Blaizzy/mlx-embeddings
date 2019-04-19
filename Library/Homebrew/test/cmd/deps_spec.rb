@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe "brew deps", :integration_test do
   it "outputs all of a Formula's dependencies and their dependencies on separate lines" do
     setup_test_formula "foo"

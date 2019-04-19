@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Cask
   class Cmd
     class Outdated < AbstractCommand

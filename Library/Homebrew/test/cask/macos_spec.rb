@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe MacOS, :cask do
   it "says '/' is undeletable" do
     expect(MacOS).to be_undeletable(

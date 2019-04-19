@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # A Messages object collects messages that may need to be displayed together
 # at the end of a multi-step `brew` command run.
 class Messages

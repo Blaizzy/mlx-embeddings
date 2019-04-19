@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "cmd/command"
 require "cmd/commands"
 require "fileutils"

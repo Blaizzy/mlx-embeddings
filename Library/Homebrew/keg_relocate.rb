@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 class Keg
-  PREFIX_PLACEHOLDER = "@@HOMEBREW_PREFIX@@".freeze
-  CELLAR_PLACEHOLDER = "@@HOMEBREW_CELLAR@@".freeze
-  REPOSITORY_PLACEHOLDER = "@@HOMEBREW_REPOSITORY@@".freeze
+  PREFIX_PLACEHOLDER = "@@HOMEBREW_PREFIX@@"
+  CELLAR_PLACEHOLDER = "@@HOMEBREW_CELLAR@@"
+  REPOSITORY_PLACEHOLDER = "@@HOMEBREW_REPOSITORY@@"
 
   Relocation = Struct.new(:old_prefix, :old_cellar, :old_repository,
                           :new_prefix, :new_cellar, :new_repository) do

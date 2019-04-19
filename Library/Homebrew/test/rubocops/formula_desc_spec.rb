@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rubocops/formula_desc"
 
 describe RuboCop::Cop::FormulaAudit::DescLength do

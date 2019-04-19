@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Utils
   def self.clear_svn_version_cache
     remove_instance_variable(:@svn) if instance_variable_defined?(:@svn)

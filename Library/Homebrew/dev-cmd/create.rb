@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "formula"
 require "formula_creator"
 require "missing_formula"

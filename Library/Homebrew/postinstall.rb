@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 old_trap = trap("INT") { exit! 130 }
 
 require "global"

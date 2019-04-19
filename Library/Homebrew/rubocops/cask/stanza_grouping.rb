@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "forwardable"
 
 module RuboCop
@@ -12,10 +14,10 @@ module RuboCop
         include RangeHelp
 
         MISSING_LINE_MSG = "stanza groups should be separated by a single " \
-                           "empty line".freeze
+                           "empty line"
 
         EXTRA_LINE_MSG = "stanzas within the same group should have no lines " \
-                         "between them".freeze
+                         "between them"
 
         def on_cask(cask_block)
           @cask_block = cask_block

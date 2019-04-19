@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
 module OS
   module Mac
     module Xcode
       module_function
 
       DEFAULT_BUNDLE_PATH = Pathname.new("/Applications/Xcode.app").freeze
-      BUNDLE_ID = "com.apple.dt.Xcode".freeze
-      OLD_BUNDLE_ID = "com.apple.Xcode".freeze
+      BUNDLE_ID = "com.apple.dt.Xcode"
+      OLD_BUNDLE_ID = "com.apple.Xcode"
 
       def latest_version
         case MacOS.version
@@ -185,12 +187,12 @@ module OS
       module_function
 
       # The original Mavericks CLT package ID
-      EXECUTABLE_PKG_ID = "com.apple.pkg.CLTools_Executables".freeze
-      MAVERICKS_NEW_PKG_ID = "com.apple.pkg.CLTools_Base".freeze # obsolete
-      PKG_PATH = "/Library/Developer/CommandLineTools".freeze
+      EXECUTABLE_PKG_ID = "com.apple.pkg.CLTools_Executables"
+      MAVERICKS_NEW_PKG_ID = "com.apple.pkg.CLTools_Base" # obsolete
+      PKG_PATH = "/Library/Developer/CommandLineTools"
       HEADER_PKG_PATH =
-        "/Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_:macos_version.pkg".freeze
-      HEADER_PKG_ID = "com.apple.pkg.macOS_SDK_headers_for_macOS_10.14".freeze
+        "/Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_:macos_version.pkg"
+      HEADER_PKG_ID = "com.apple.pkg.macOS_SDK_headers_for_macOS_10.14"
 
       # Returns true even if outdated tools are installed
       def installed?

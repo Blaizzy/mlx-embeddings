@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "emoji"
 require "utils/analytics"
 require "utils/curl"

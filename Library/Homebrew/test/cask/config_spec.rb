@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Cask::Config, :cask do
   subject(:config) { described_class.new }
 

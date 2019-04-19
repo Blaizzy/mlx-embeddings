@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "forwardable"
 require "uri"
 
@@ -9,7 +11,7 @@ module RuboCop
       class HomepageUrlTrailingSlash < Cop
         include OnHomepageStanza
 
-        MSG_NO_SLASH = "'%{url}' must have a slash after the domain.".freeze
+        MSG_NO_SLASH = "'%{url}' must have a slash after the domain."
 
         def on_homepage_stanza(stanza)
           url_node = stanza.stanza_node.first_argument

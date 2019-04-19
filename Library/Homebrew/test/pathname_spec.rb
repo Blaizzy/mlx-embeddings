@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "extend/pathname"
 require "install_renamed"
 

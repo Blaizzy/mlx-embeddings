@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Metafiles
   # https://github.com/github/markup#markups
   EXTENSIONS = Set.new(%w[

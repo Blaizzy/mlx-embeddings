@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class BuildOptions
   # @private
   def initialize(args, options)

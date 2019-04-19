@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "English"
 require "json"
 require "json/add/exception"
@@ -33,7 +35,7 @@ ARGV.extend(HomebrewArgvExtension)
 
 HOMEBREW_PRODUCT = ENV["HOMEBREW_PRODUCT"]
 HOMEBREW_VERSION = ENV["HOMEBREW_VERSION"]
-HOMEBREW_WWW = "https://brew.sh".freeze
+HOMEBREW_WWW = "https://brew.sh"
 
 require "rbconfig"
 
@@ -42,10 +44,10 @@ RUBY_BIN = RUBY_PATH.dirname.freeze
 
 HOMEBREW_USER_AGENT_CURL = ENV["HOMEBREW_USER_AGENT_CURL"]
 HOMEBREW_USER_AGENT_RUBY =
-  "#{ENV["HOMEBREW_USER_AGENT"]} ruby/#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}".freeze
+  "#{ENV["HOMEBREW_USER_AGENT"]} ruby/#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}"
 HOMEBREW_USER_AGENT_FAKE_SAFARI =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/602.4.8 " \
-  "(KHTML, like Gecko) Version/10.0.3 Safari/602.4.8".freeze
+  "(KHTML, like Gecko) Version/10.0.3 Safari/602.4.8"
 
 HOMEBREW_BOTTLE_DEFAULT_DOMAIN = ENV["HOMEBREW_BOTTLE_DEFAULT_DOMAIN"]
 HOMEBREW_BOTTLE_DOMAIN = ENV["HOMEBREW_BOTTLE_DOMAIN"]
@@ -57,9 +59,9 @@ require "os/global"
 module Homebrew
   extend FileUtils
 
-  DEFAULT_PREFIX ||= "/usr/local".freeze
-  DEFAULT_CELLAR = "#{DEFAULT_PREFIX}/Cellar".freeze
-  DEFAULT_REPOSITORY = "#{DEFAULT_PREFIX}/Homebrew".freeze
+  DEFAULT_PREFIX ||= "/usr/local"
+  DEFAULT_CELLAR = "#{DEFAULT_PREFIX}/Cellar"
+  DEFAULT_REPOSITORY = "#{DEFAULT_PREFIX}/Homebrew"
 
   class << self
     attr_writer :failed, :raise_deprecation_exceptions, :auditing, :args

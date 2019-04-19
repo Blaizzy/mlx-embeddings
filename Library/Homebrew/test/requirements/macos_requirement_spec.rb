@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "requirements/macos_requirement"
 
 describe MacOSRequirement do

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rubocops/dependency_order"
 
 describe RuboCop::Cop::FormulaAudit::DependencyOrder do

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SystemConfig
   class << self
     undef describe_java, describe_homebrew_ruby

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples "a command that handles invalid options" do
   context "when an invalid option is specified" do
     it "raises an exception when no Cask is specified" do

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "benchmark"
 
 shared_examples "#uninstall_phase or #zap_phase" do

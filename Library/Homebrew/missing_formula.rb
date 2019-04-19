@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "formulary"
 require "cask/cmd/abstract_command"
 require "cask/cmd/info"

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rspec/core/formatters/progress_formatter"
 
 class NoSeedProgressFormatter < RSpec::Core::Formatters::ProgressFormatter

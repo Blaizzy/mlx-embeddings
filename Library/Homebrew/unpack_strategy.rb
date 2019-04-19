@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module UnpackStrategy
   module Magic
     # length of the longest regex (currently Tar)

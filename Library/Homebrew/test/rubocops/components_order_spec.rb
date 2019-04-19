@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rubocops/components_order"
 
 describe RuboCop::Cop::FormulaAudit::ComponentsOrder do

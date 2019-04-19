@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "cask/artifact/abstract_artifact"
 
 module Cask

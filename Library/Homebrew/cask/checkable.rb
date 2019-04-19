@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Cask
   module Checkable
     def errors

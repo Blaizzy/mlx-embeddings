@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "utils/git"
 require "utils/popen"
 

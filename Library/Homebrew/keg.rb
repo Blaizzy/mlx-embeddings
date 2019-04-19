@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "keg_relocate"
 require "language/python"
 require "lock_file"

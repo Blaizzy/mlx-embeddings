@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SharedEnvExtension
   def no_weak_imports_support?
     return false unless compiler == :clang

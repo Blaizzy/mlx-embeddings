@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Keg
   def relocate_dynamic_linkage(relocation)
     # Patching the dynamic linker of glibc breaks it.

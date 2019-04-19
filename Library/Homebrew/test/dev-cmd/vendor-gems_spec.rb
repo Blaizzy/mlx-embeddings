@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "cmd/shared_examples/args_parse"
 
 describe "Homebrew.vendor_gems_args" do

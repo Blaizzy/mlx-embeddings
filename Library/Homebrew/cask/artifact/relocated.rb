@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "cask/artifact/abstract_artifact"
 
 require "extend/hash_validator"
@@ -50,7 +52,7 @@ module Cask
 
       private
 
-      ALT_NAME_ATTRIBUTE = "com.apple.metadata:kMDItemAlternateNames".freeze
+      ALT_NAME_ATTRIBUTE = "com.apple.metadata:kMDItemAlternateNames"
 
       # Try to make the asset searchable under the target name. Spotlight
       # respects this attribute for many filetypes, but ignores it for App

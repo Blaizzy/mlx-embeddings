@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Cask::Installer, :cask do
   describe "install" do
     let(:empty_depends_on_stub) {

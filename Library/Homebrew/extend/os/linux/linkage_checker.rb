@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class LinkageChecker
   # Libraries provided by glibc and gcc.
   SYSTEM_LIBRARY_WHITELIST = %w[

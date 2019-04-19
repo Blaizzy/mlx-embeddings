@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require "development_tools"
 module Cask
   module Quarantine
     module_function
 
-    QUARANTINE_ATTRIBUTE = "com.apple.quarantine".freeze
+    QUARANTINE_ATTRIBUTE = "com.apple.quarantine"
 
     QUARANTINE_SCRIPT = (HOMEBREW_LIBRARY_PATH/"cask/utils/quarantine.swift").freeze
 

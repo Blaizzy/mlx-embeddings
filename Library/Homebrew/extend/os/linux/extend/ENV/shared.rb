@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SharedEnvExtension
   # @private
   def effective_arch

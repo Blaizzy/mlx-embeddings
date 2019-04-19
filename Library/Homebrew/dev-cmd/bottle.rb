@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "formula"
 require "utils/bottles"
 require "tab"
@@ -7,7 +9,7 @@ require "cli/parser"
 require "utils/inreplace"
 require "erb"
 
-BOTTLE_ERB = <<-EOS.freeze
+BOTTLE_ERB = <<-EOS
   bottle do
     <% if !["#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}/bottles", "https://homebrew.bintray.com/bottles"].include?(root_url) %>
     root_url "<%= root_url %>"

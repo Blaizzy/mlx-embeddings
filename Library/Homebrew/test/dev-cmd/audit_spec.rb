@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "dev-cmd/audit"
 require "formulary"
 require "cmd/shared_examples/args_parse"

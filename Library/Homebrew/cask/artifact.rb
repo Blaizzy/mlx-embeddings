@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "cask/artifact/app"
 require "cask/artifact/artifact" # generic 'artifact' stanza
 require "cask/artifact/binary"

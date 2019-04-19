@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # match taps' formulae, e.g. someuser/sometap/someformula
 HOMEBREW_TAP_FORMULA_REGEX = %r{^([\w-]+)/([\w-]+)/([\w+-.@]+)$}.freeze
 # match taps' casks, e.g. someuser/sometap/somecask

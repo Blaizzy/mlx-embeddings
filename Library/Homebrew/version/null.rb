@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Version
   NULL = Class.new do
     include Comparable
@@ -49,7 +51,7 @@ class Version
     alias_method :to_str, :to_s
 
     def inspect
-      "#<Version::NULL>".freeze
+      "#<Version::NULL>"
     end
   end.new.freeze
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "dependable"
 
 describe Dependable do

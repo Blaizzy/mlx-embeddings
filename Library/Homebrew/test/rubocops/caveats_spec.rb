@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rubocops/caveats"
 
 describe RuboCop::Cop::FormulaAudit::Caveats do

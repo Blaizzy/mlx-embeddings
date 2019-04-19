@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "load_path"
 
 require "rubocop-rspec"

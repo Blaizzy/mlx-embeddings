@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "cache_store"
 require "linkage_checker"
 require "cli/parser"

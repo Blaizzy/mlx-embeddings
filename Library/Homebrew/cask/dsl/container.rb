@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "unpack_strategy"
 
 module Cask

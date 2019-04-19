@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "shared_examples"
 
 describe UnpackStrategy::Gzip do

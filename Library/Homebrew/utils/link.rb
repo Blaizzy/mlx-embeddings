@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Utils
   module Link
     module_function

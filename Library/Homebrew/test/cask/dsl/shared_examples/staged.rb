@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "cask/staged"
 
 shared_examples Cask::Staged do

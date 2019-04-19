@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "cxxstdlib"
 require "ostruct"
 require "options"
@@ -12,7 +14,7 @@ require "extend/cachable"
 class Tab < OpenStruct
   extend Cachable
 
-  FILENAME = "INSTALL_RECEIPT.json".freeze
+  FILENAME = "INSTALL_RECEIPT.json"
 
   # Instantiates a Tab for a new installation of a formula.
   def self.create(formula, compiler, stdlib)

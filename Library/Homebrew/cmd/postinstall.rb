@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "sandbox"
 require "formula_installer"
 require "cli/parser"

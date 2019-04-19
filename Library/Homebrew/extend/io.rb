@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class IO
   def readline_nonblock(sep = $INPUT_RECORD_SEPARATOR)
     line = +""

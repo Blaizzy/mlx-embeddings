@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # @private
 module CompilerConstants
   GNU_GCC_VERSIONS = %w[4.9 5 6 7 8].freeze

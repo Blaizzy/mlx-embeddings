@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Cask::Audit, :cask do
   def include_msg?(messages, msg)
     if msg.is_a?(Regexp)

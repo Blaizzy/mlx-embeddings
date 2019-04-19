@@ -1,4 +1,6 @@
-HOMEBREW_HELP = <<~EOS.freeze
+# frozen_string_literal: true
+
+HOMEBREW_HELP = <<~EOS
   Example usage:
     brew search [TEXT|/REGEX/]
     brew info [FORMULA...]

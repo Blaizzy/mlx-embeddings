@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DependencyCollector
   undef git_dep_if_needed, subversion_dep_if_needed, cvs_dep_if_needed,
         xz_dep_if_needed, unzip_dep_if_needed, bzip2_dep_if_needed

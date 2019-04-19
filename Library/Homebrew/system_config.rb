@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "hardware"
 require "software_spec"
 require "rexml/document"

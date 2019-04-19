@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Keg
   class << self
     undef file_linked_libraries

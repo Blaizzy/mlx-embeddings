@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module HomebrewArgvExtension
   def named
     # TODO: use @instance variable to ||= cache when moving to CLI::Parser

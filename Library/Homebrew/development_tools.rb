@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # @private
 class DevelopmentTools
   class << self

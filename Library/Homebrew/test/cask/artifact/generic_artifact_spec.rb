@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Cask::Artifact::Artifact, :cask do
   let(:cask) { Cask::CaskLoader.load(cask_path("with-generic-artifact")) }
 
