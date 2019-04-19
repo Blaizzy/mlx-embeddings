@@ -100,7 +100,7 @@ module Homebrew
         raise "Invalid output_type for check_style_impl: #{output_type}"
       end
 
-      return !rubocop_success if !files.nil? && !has_non_formula
+      return !rubocop_success if files.present? || !has_non_formula
 
       shellcheck   = which("shellcheck")
       shellcheck ||= which("shellcheck", ENV["HOMEBREW_PATH"])
