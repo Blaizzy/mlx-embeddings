@@ -96,10 +96,10 @@ module Homebrew
     extract_args.parse
 
     # Expect exactly two named arguments: formula and tap
-    raise UsageError if ARGV.named.length != 2
+    raise UsageError if args.remaining.length != 2
 
-    if ARGV.named.first !~ HOMEBREW_TAP_FORMULA_REGEX
-      name = ARGV.named.first.downcase
+    if args.remaining.first !~ HOMEBREW_TAP_FORMULA_REGEX
+      name = args.remaining.first.downcase
       source_tap = CoreTap.instance
     else
       name = Regexp.last_match(3).downcase
@@ -107,7 +107,7 @@ module Homebrew
       raise TapFormulaUnavailableError.new(source_tap, name) unless source_tap.installed?
     end
 
-    destination_tap = Tap.fetch(ARGV.named.second)
+    destination_tap = Tap.fetch(args.remaining.second)
     odie "Cannot extract formula to homebrew/core!" if destination_tap.core_tap?
     odie "Cannot extract formula to the same tap!" if destination_tap == source_tap
     destination_tap.install unless destination_tap.installed?
