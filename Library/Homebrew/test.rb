@@ -30,5 +30,12 @@ begin
 rescue Exception => e # rubocop:disable Lint/RescueException
   error_pipe.puts e.to_json
   error_pipe.close
+  pid = Process.pid.to_s
+  if which("pgrep") && which("pkill") && system("pgrep", "-qP", pid)
+    $stderr.puts "Killing child processes..."
+    system "pkill", "-P", pid
+    sleep 1
+    system "pkill", "-9", "-P", pid
+  end
   exit! 1
 end
