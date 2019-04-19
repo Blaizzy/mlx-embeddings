@@ -4,19 +4,17 @@ class JavaRequirement < Requirement
   attr_reader :java_home
 
   fatal true
-  download "https://www.oracle.com/technetwork/java/javase/downloads/index.html"
 
   # A strict Java 8 requirement (1.8) should prompt the user to install
-  # the legacy java8 cask because versions newer than Java 8 are not
+  # an OpenJDK 1.8 distribution. Versions newer than Java 8 are not
   # completely backwards compatible, and contain breaking changes such as
   # strong encapsulation of JDK-internal APIs and a modified version scheme
   # (*.0 not 1.*).
-  def cask
-    if @version.nil? || @version.to_s.end_with?("+") ||
-       @version.to_f >= JAVA_CASK_MAP.keys.max.to_f
-      JAVA_CASK_MAP.fetch(JAVA_CASK_MAP.keys.max)
+  def suggestion
+    if fits_latest?
+      JAVA_SUGGESTION_MAP.fetch(JAVA_SUGGESTION_MAP.keys.max)
     else
-      JAVA_CASK_MAP.fetch("1.8")
+      JAVA_SUGGESTION_MAP.fetch("1.8")
     end
   end
 
@@ -34,9 +32,8 @@ class JavaRequirement < Requirement
 
   def message
     version_string = " #{@version}" if @version
-
     s = "Java#{version_string} is required to install this formula.\n"
-    s += super
+    s += suggestion
     s
   end
 
@@ -59,9 +56,22 @@ class JavaRequirement < Requirement
 
   private
 
-  JAVA_CASK_MAP = {
-    "1.8"  => "homebrew/cask-versions/java8",
-    "11.0" => "java",
+  CaskSuggestion = Struct.new(:token, :title) do
+    def to_str
+      title_string = " #{title}" if title
+      <<~EOS
+        Install#{title_string} with Homebrew Cask:
+          brew cask install #{token}
+      EOS
+    end
+  end
+
+  JAVA_SUGGESTION_MAP = {
+    "1.8"  => CaskSuggestion.new(
+      "homebrew/cask-versions/adoptopenjdk8",
+        "AdoptOpenJDK 8",
+    ),
+    "12.0" => CaskSuggestion.new("adoptopenjdk", "AdoptOpenJDK"),
   }.freeze
 
   def version_without_plus
@@ -74,6 +84,12 @@ class JavaRequirement < Requirement
 
   def exact_version?
     @version && @version.to_s.chars.last != "+"
+  end
+
+  def fits_latest?
+    @version.nil? ||
+      @version.to_s.end_with?("+") ||
+      @version.to_f >= JAVA_SUGGESTION_MAP.keys.max.to_f
   end
 
   def setup_java
