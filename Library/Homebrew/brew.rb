@@ -115,7 +115,7 @@ begin
     ENV.delete("HOMEBREW_HELP") if help_flag
     tap_commands = []
     cgroup = Utils.popen_read("cat", "/proc/1/cgroup")
-    unless cgroup.include?("azpl_job") || cgroup.include?("docker")
+    if !cgroup.include?("azpl_job") && !cgroup.include?("docker")
       brew_uid = HOMEBREW_BREW_FILE.stat.uid
       tap_commands += %W[/usr/bin/sudo -u ##{brew_uid}] if Process.uid.zero? && !brew_uid.zero?
     end
