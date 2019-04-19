@@ -156,12 +156,13 @@ def pretty_duration(s)
     m = s / 60
     s %= 60
     res = "#{m} #{"minute".pluralize(m)}"
-    return res if s.zero?
+    return res.freeze if s.zero?
 
     res << " "
   end
 
   res << "#{s} #{"second".pluralize(s)}"
+  res.freeze
 end
 
 def interactive_shell(f = nil)

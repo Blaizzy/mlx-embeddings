@@ -84,7 +84,7 @@ class DATAPatch < EmbeddedPatch
   end
 
   def contents
-    data = ""
+    data = +""
     path.open("rb") do |f|
       loop do
         line = f.gets
@@ -94,7 +94,7 @@ class DATAPatch < EmbeddedPatch
         data << line
       end
     end
-    data
+    data.freeze
   end
 end
 
