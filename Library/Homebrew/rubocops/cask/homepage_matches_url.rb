@@ -19,11 +19,11 @@ module RuboCop
 
         MSG_NO_MATCH = "`%{url}` does not match `%{full_url}`".freeze
 
-        MSG_MISSING = "`%{domain}` does not match `%{homepage}`, a comment has to be added " \
-                      "above the `url` stanza. For details, see " + REFERENCE_URL
+        MSG_MISSING = ("`%{domain}` does not match `%{homepage}`, a comment has to be added " \
+                      "above the `url` stanza. For details, see " + REFERENCE_URL).freeze
 
-        MSG_WRONG_FORMAT = "`%{comment}` does not match the expected comment format. " \
-                           "For details, see " + REFERENCE_URL
+        MSG_WRONG_FORMAT = ("`%{comment}` does not match the expected comment format. " \
+                           "For details, see " + REFERENCE_URL).freeze
 
         MSG_UNNECESSARY = "The URL's domain `%{domain}` matches the homepage `%{homepage}`, " \
                           "the comment above the `url` stanza is unnecessary".freeze

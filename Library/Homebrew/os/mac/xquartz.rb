@@ -1,6 +1,6 @@
 module OS
   module Mac
-    X11 = XQuartz = Module.new
+    X11 = XQuartz = Module.new # rubocop:disable Style/MutableConstant
 
     module XQuartz
       module_function

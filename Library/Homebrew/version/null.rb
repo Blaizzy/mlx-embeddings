@@ -51,5 +51,5 @@ class Version
     def inspect
       "#<Version::NULL>".freeze
     end
-  end.new
+  end.new.freeze
 end

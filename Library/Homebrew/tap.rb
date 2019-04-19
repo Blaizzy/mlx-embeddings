@@ -11,7 +11,7 @@ require "description_cache_store"
 class Tap
   extend Cachable
 
-  TAP_DIRECTORY = HOMEBREW_LIBRARY/"Taps"
+  TAP_DIRECTORY = (HOMEBREW_LIBRARY/"Taps").freeze
 
   def self.fetch(*args)
     case args.length

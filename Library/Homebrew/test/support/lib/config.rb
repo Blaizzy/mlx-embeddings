@@ -2,7 +2,7 @@ raise "HOMEBREW_BREW_FILE was not exported! Please call bin/brew directly!" unle
 
 require "pathname"
 
-HOMEBREW_BREW_FILE = Pathname.new(ENV["HOMEBREW_BREW_FILE"])
+HOMEBREW_BREW_FILE = Pathname.new(ENV["HOMEBREW_BREW_FILE"]).freeze
 
 TEST_TMPDIR = ENV.fetch("HOMEBREW_TEST_TMPDIR") do |k|
   dir = Dir.mktmpdir("homebrew-tests-", ENV["HOMEBREW_TEMP"] || "/tmp")
@@ -12,25 +12,27 @@ TEST_TMPDIR = ENV.fetch("HOMEBREW_TEST_TMPDIR") do |k|
     FileUtils.remove_entry(dir) unless ENV["HOMEBREW_TEST_NO_EXIT_CLEANUP"]
   end
   ENV[k] = dir
-end
+end.freeze
 
 # Paths pointing into the Homebrew code base that persist across test runs
-HOMEBREW_SHIMS_PATH    = HOMEBREW_LIBRARY_PATH.parent/"Homebrew/shims"
+HOMEBREW_SHIMS_PATH = (HOMEBREW_LIBRARY_PATH.parent/"Homebrew/shims").freeze
+
+require "extend/git_repository"
 
 # Paths redirected to a temporary directory and wiped at the end of the test run
-HOMEBREW_PREFIX        = Pathname(TEST_TMPDIR)/"prefix"
-HOMEBREW_REPOSITORY    = HOMEBREW_PREFIX
-HOMEBREW_LIBRARY       = HOMEBREW_REPOSITORY/"Library"
-HOMEBREW_CACHE         = HOMEBREW_PREFIX.parent/"cache"
-HOMEBREW_CACHE_FORMULA = HOMEBREW_PREFIX.parent/"formula_cache"
-HOMEBREW_LINKED_KEGS   = HOMEBREW_PREFIX.parent/"linked"
-HOMEBREW_PINNED_KEGS   = HOMEBREW_PREFIX.parent/"pinned"
-HOMEBREW_LOCKS         = HOMEBREW_PREFIX.parent/"locks"
-HOMEBREW_CELLAR        = HOMEBREW_PREFIX.parent/"cellar"
-HOMEBREW_LOGS          = HOMEBREW_PREFIX.parent/"logs"
-HOMEBREW_TEMP          = HOMEBREW_PREFIX.parent/"temp"
+HOMEBREW_PREFIX        = (Pathname(TEST_TMPDIR)/"prefix").freeze
+HOMEBREW_REPOSITORY    = HOMEBREW_PREFIX.dup.extend(GitRepositoryExtension).freeze
+HOMEBREW_LIBRARY       = (HOMEBREW_REPOSITORY/"Library").freeze
+HOMEBREW_CACHE         = (HOMEBREW_PREFIX.parent/"cache").freeze
+HOMEBREW_CACHE_FORMULA = (HOMEBREW_PREFIX.parent/"formula_cache").freeze
+HOMEBREW_LINKED_KEGS   = (HOMEBREW_PREFIX.parent/"linked").freeze
+HOMEBREW_PINNED_KEGS   = (HOMEBREW_PREFIX.parent/"pinned").freeze
+HOMEBREW_LOCKS         = (HOMEBREW_PREFIX.parent/"locks").freeze
+HOMEBREW_CELLAR        = (HOMEBREW_PREFIX.parent/"cellar").freeze
+HOMEBREW_LOGS          = (HOMEBREW_PREFIX.parent/"logs").freeze
+HOMEBREW_TEMP          = (HOMEBREW_PREFIX.parent/"temp").freeze
 
-TEST_FIXTURE_DIR = HOMEBREW_LIBRARY_PATH/"test/support/fixtures"
+TEST_FIXTURE_DIR = (HOMEBREW_LIBRARY_PATH/"test/support/fixtures").freeze
 
 TESTBALL_SHA256 = "91e3f7930c98d7ccfb288e115ed52d06b0e5bc16fec7dce8bdda86530027067b".freeze
 TESTBALL_PATCHES_SHA256 = "799c2d551ac5c3a5759bea7796631a7906a6a24435b52261a317133a0bfb34d9".freeze

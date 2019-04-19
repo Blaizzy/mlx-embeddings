@@ -77,9 +77,9 @@ class Keg
 
   # Keep relatively in sync with
   # https://github.com/Homebrew/install/blob/master/install
-  MUST_EXIST_DIRECTORIES = MUST_EXIST_SUBDIRECTORIES + [
+  MUST_EXIST_DIRECTORIES = (MUST_EXIST_SUBDIRECTORIES + [
     HOMEBREW_CELLAR,
-  ].uniq.sort.freeze
+  ].sort.uniq).freeze
   MUST_BE_WRITABLE_DIRECTORIES = (
     %w[
       etc/bash_completion.d lib/pkgconfig

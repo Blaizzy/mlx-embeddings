@@ -1,13 +1,13 @@
 module Metafiles
   # https://github.com/github/markup#markups
-  EXTENSIONS = Set.new %w[
-    .adoc .asc .asciidoc .creole .html .markdown .md .mdown .mediawiki .mkdn
-    .org .pod .rdoc .rst .rtf .textile .txt .wiki
-  ].freeze
-  BASENAMES = Set.new %w[
-    about authors changelog changes copying copyright history license licence
-    news notes notice readme todo
-  ].freeze
+  EXTENSIONS = Set.new(%w[
+                         .adoc .asc .asciidoc .creole .html .markdown .md .mdown .mediawiki .mkdn
+                         .org .pod .rdoc .rst .rtf .textile .txt .wiki
+                       ]).freeze
+  BASENAMES = Set.new(%w[
+                        about authors changelog changes copying copyright history license licence
+                        news notes notice readme todo
+                      ]).freeze
 
   module_function
 

@@ -52,7 +52,7 @@ class Version
     end
   end
 
-  NULL_TOKEN = NullToken.new
+  NULL_TOKEN = NullToken.new.freeze
 
   class StringToken < Token
     PATTERN = /[a-z]+[0-9]*/i.freeze
@@ -189,7 +189,7 @@ class Version
     PatchToken::PATTERN,
     NumericToken::PATTERN,
     StringToken::PATTERN,
-  )
+  ).freeze
 
   class FromURL < Version
     def detected_from_url?
