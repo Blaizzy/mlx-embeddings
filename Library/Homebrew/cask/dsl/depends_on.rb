@@ -3,14 +3,14 @@ require "rubygems"
 module Cask
   class DSL
     class DependsOn < DelegateClass(Hash)
-      VALID_KEYS = Set.new [
-        :formula,
-        :cask,
-        :macos,
-        :arch,
-        :x11,
-        :java,
-      ].freeze
+      VALID_KEYS = Set.new([
+                             :formula,
+                             :cask,
+                             :macos,
+                             :arch,
+                             :x11,
+                             :java,
+                           ]).freeze
 
       VALID_ARCHES = {
         intel:  { type: :intel, bits: 64 },

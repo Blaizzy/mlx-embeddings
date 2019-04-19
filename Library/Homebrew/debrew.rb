@@ -4,7 +4,7 @@ require "debrew/irb"
 module Debrew
   extend Mutex_m
 
-  Ignorable = Module.new
+  Ignorable = Module.new.freeze
 
   module Raise
     def raise(*)

@@ -5,8 +5,8 @@ describe "patching" do
   TESTBALL_PATCHES_URL = "file://#{TEST_FIXTURE_DIR}/tarballs/testball-0.1-patches.tgz".freeze
   PATCH_URL_A = "file://#{TEST_FIXTURE_DIR}/patches/noop-a.diff".freeze
   PATCH_URL_B = "file://#{TEST_FIXTURE_DIR}/patches/noop-b.diff".freeze
-  PATCH_A_CONTENTS = File.read "#{TEST_FIXTURE_DIR}/patches/noop-a.diff"
-  PATCH_B_CONTENTS = File.read "#{TEST_FIXTURE_DIR}/patches/noop-b.diff"
+  PATCH_A_CONTENTS = File.read("#{TEST_FIXTURE_DIR}/patches/noop-a.diff").freeze
+  PATCH_B_CONTENTS = File.read("#{TEST_FIXTURE_DIR}/patches/noop-b.diff").freeze
   APPLY_A = "noop-a.diff".freeze
   APPLY_B = "noop-b.diff".freeze
   APPLY_C = "noop-c.diff".freeze

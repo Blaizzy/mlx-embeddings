@@ -3,5 +3,5 @@ module Homebrew
     "/usr/local".freeze
   else
     "/home/linuxbrew/.linuxbrew".freeze
-  end
+  end.freeze
 end

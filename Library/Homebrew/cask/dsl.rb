@@ -46,34 +46,34 @@ module Cask
       Artifact::Zap,
     ].freeze
 
-    ACTIVATABLE_ARTIFACT_CLASSES = ORDINARY_ARTIFACT_CLASSES - [Artifact::StageOnly]
+    ACTIVATABLE_ARTIFACT_CLASSES = (ORDINARY_ARTIFACT_CLASSES - [Artifact::StageOnly]).freeze
 
     ARTIFACT_BLOCK_CLASSES = [
       Artifact::PreflightBlock,
       Artifact::PostflightBlock,
     ].freeze
 
-    DSL_METHODS = Set.new [
-      :appcast,
-      :artifacts,
-      :auto_updates,
-      :caveats,
-      :conflicts_with,
-      :container,
-      :depends_on,
-      :homepage,
-      :language,
-      :languages,
-      :name,
-      :sha256,
-      :staged_path,
-      :url,
-      :version,
-      :appdir,
-      *ORDINARY_ARTIFACT_CLASSES.map(&:dsl_key),
-      *ACTIVATABLE_ARTIFACT_CLASSES.map(&:dsl_key),
-      *ARTIFACT_BLOCK_CLASSES.flat_map { |klass| [klass.dsl_key, klass.uninstall_dsl_key] },
-    ].freeze
+    DSL_METHODS = Set.new([
+                            :appcast,
+                            :artifacts,
+                            :auto_updates,
+                            :caveats,
+                            :conflicts_with,
+                            :container,
+                            :depends_on,
+                            :homepage,
+                            :language,
+                            :languages,
+                            :name,
+                            :sha256,
+                            :staged_path,
+                            :url,
+                            :version,
+                            :appdir,
+                            *ORDINARY_ARTIFACT_CLASSES.map(&:dsl_key),
+                            *ACTIVATABLE_ARTIFACT_CLASSES.map(&:dsl_key),
+                            *ARTIFACT_BLOCK_CLASSES.flat_map { |klass| [klass.dsl_key, klass.uninstall_dsl_key] },
+                          ]).freeze
 
     attr_reader :cask, :token
 

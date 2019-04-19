@@ -28,21 +28,17 @@ require "extend/ARGV"
 require "messages"
 require "system_command"
 
-ARGV_WITHOUT_MONKEY_PATCHING = ARGV.dup
+ARGV_WITHOUT_MONKEY_PATCHING = ARGV.dup.freeze
 ARGV.extend(HomebrewArgvExtension)
 
 HOMEBREW_PRODUCT = ENV["HOMEBREW_PRODUCT"]
 HOMEBREW_VERSION = ENV["HOMEBREW_VERSION"]
 HOMEBREW_WWW = "https://brew.sh".freeze
 
-require "extend/git_repository"
-
-HOMEBREW_REPOSITORY.extend(GitRepositoryExtension)
-
 require "rbconfig"
 
-RUBY_PATH = Pathname.new(RbConfig.ruby)
-RUBY_BIN = RUBY_PATH.dirname
+RUBY_PATH = Pathname.new(RbConfig.ruby).freeze
+RUBY_BIN = RUBY_PATH.dirname.freeze
 
 HOMEBREW_USER_AGENT_CURL = ENV["HOMEBREW_USER_AGENT_CURL"]
 HOMEBREW_USER_AGENT_RUBY =

@@ -8,7 +8,11 @@ module OS
   module Mac
     module_function
 
-    ::MacOS = self # rubocop:disable Naming/ConstantName
+    # rubocop:disable Naming/ConstantName
+    # rubocop:disable Style/MutableConstant
+    ::MacOS = self
+    # rubocop:enable Naming/ConstantName
+    # rubocop:enable Style/MutableConstant
 
     raise "Loaded OS::Mac on generic OS!" if ENV["HOMEBREW_TEST_GENERIC_OS"]
 

@@ -8,8 +8,8 @@ module CompilerConstants
     "llvm_clang" => :llvm_clang,
   }.freeze
 
-  COMPILERS = COMPILER_SYMBOL_MAP.values +
-              GNU_GCC_VERSIONS.map { |n| "gcc-#{n}" }
+  COMPILERS = (COMPILER_SYMBOL_MAP.values +
+               GNU_GCC_VERSIONS.map { |n| "gcc-#{n}" }).freeze
 end
 
 class CompilerFailure
