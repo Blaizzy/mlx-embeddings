@@ -106,14 +106,14 @@ module Cask
       end
 
       def self.artifact_info(cask)
-        artifact_output = ohai_title("Artifacts")
+        artifact_output = ohai_title("Artifacts").dup
         cask.artifacts.each do |artifact|
           next unless artifact.respond_to?(:install_phase)
           next unless DSL::ORDINARY_ARTIFACT_CLASSES.include?(artifact.class)
 
           artifact_output << "\n" << artifact.to_s
         end
-        artifact_output
+        artifact_output.freeze
       end
     end
   end

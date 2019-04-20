@@ -382,7 +382,7 @@ describe Formula do
 
       stamps_with_revisions.each do |stamp, revision|
         version = "HEAD-#{stamp}"
-        version << "_#{revision}" unless revision.zero?
+        version = "#{version}_#{revision}" unless revision.zero?
 
         prefix = f.rack/version
         prefix.mkpath

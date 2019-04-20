@@ -12,9 +12,9 @@ module Cask
       def run
         exec_editor cask_path
       rescue CaskUnavailableError => e
-        reason = e.reason.empty? ? "" : "#{e.reason} "
+        reason = e.reason.empty? ? +"" : +"#{e.reason} "
         reason.concat("Run #{Formatter.identifier("brew cask create #{e.token}")} to create a new Cask.")
-        raise e.class.new(e.token, reason)
+        raise e.class.new(e.token, reason.freeze)
       end
 
       def cask_path

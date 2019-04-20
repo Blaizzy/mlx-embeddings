@@ -138,9 +138,10 @@ module Cask
     end
 
     def summary
-      s = ""
+      s = +""
       s << "#{Emoji.install_badge}  " if Emoji.enabled?
       s << "#{@cask} was successfully #{upgrade? ? "upgraded" : "installed"}!"
+      s.freeze
     end
 
     def download

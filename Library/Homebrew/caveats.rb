@@ -42,7 +42,7 @@ class Caveats
         #{f.name} is keg-only, which means it was not symlinked into #{HOMEBREW_PREFIX},
         because #{f.keg_only_reason.to_s.chomp}.
       EOS
-    end
+    end.dup
 
     if f.bin.directory? || f.sbin.directory?
       s << <<~EOS
@@ -120,10 +120,10 @@ class Caveats
           #{root_dir}/share/zsh/site-functions
       EOS
     when :fish
-      fish_caveats = "fish #{installed.join(" and ")} have been installed to:"
+      fish_caveats = +"fish #{installed.join(" and ")} have been installed to:"
       fish_caveats << "\n  #{root_dir}/share/fish/vendor_completions.d" if completion_installed
       fish_caveats << "\n  #{root_dir}/share/fish/vendor_functions.d" if functions_installed
-      fish_caveats
+      fish_caveats.freeze
     end
   end
 

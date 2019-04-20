@@ -61,8 +61,7 @@ module Cask
         if matches.one?
           "Did you mean “#{matches.first}”?"
         elsif !matches.empty?
-          "Did you mean one of these?\n"
-            .concat(Formatter.columns(matches.take(20)))
+          "Did you mean one of these?\n#{Formatter.columns(matches.take(20))}"
         end
       end
     end

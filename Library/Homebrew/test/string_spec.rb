@@ -5,7 +5,7 @@ require "extend/string"
 describe StringInreplaceExtension do
   subject { string.extend(described_class) }
 
-  let(:string) { "foobar" }
+  let(:string) { +"foobar" }
 
   describe "#sub!" do
     it "adds an error to #errors when no replacement was made" do
