@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "shellwords"
 
 class UsageError < RuntimeError
@@ -529,7 +531,7 @@ class ErrorDuringExecution < RuntimeError
       status
     end
 
-    s = "Failure while executing; `#{cmd.shelljoin.gsub(/\\=/, "=")}` exited with #{exitstatus}."
+    s = +"Failure while executing; `#{cmd.shelljoin.gsub(/\\=/, "=")}` exited with #{exitstatus}."
 
     unless [*output].empty?
       format_output_line = lambda do |type_line|
@@ -546,7 +548,7 @@ class ErrorDuringExecution < RuntimeError
       s << "\n" unless s.end_with?("\n")
     end
 
-    super s
+    super s.freeze
   end
 
   def stderr

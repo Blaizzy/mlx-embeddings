@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "keg"
 require "language/python"
 require "formula"
@@ -69,7 +71,8 @@ module Homebrew
       end
 
       def inject_file_list(list, string)
-        list.reduce(string) { |acc, elem| acc << "  #{elem}\n" }
+        list.reduce(string.dup) { |acc, elem| acc << "  #{elem}\n" }
+            .freeze
       end
       ############# END HELPERS
 

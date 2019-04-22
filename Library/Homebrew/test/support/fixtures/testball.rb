@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Testball < Formula
   def initialize(name = "testball", path = Pathname.new(__FILE__).expand_path, spec = :stable, alias_path: nil)
     self.class.instance_eval do

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "forwardable"
 
 module RuboCop
@@ -10,7 +12,7 @@ module RuboCop
         extend Forwardable
         include CaskHelp
 
-        MESSAGE = "`%{stanza}` stanza out of order".freeze
+        MESSAGE = "`%{stanza}` stanza out of order"
 
         def on_cask(cask_block)
           @cask_block = cask_block

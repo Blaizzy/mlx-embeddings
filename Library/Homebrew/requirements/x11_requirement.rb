@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "requirement"
 
 class X11Requirement < Requirement

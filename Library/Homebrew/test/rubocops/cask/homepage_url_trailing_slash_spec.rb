@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rubocops/rubocop-cask"
 require "test/rubocops/cask/shared_examples/cask_cop"
 

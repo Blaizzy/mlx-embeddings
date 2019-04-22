@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rubocops/urls"
 
 describe RuboCop::Cop::FormulaAudit::Urls do

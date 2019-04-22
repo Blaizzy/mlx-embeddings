@@ -117,6 +117,11 @@ Style/DocumentationMethod:
   Include:
     - 'Library/Homebrew/formula.rb'
 
+# don't want this for formulae but re-enabled for Library/Homebrew
+Style/FrozenStringLiteralComment:
+  Enabled: true
+  EnforcedStyle: always
+
 # so many of these in formulae but none in here
 Style/GuardClause:
   Enabled: true

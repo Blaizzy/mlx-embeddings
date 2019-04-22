@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "formula_versions"
 require "migrator"
 require "formulary"

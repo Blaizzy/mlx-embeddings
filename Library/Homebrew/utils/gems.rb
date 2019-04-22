@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Never `require` anything in this file (except English). It needs to be able to
 # work as the first item in `brew.rb` so we can load gems with Bundler when
 # needed before anything else is loaded (e.g. `json`).
@@ -8,12 +10,12 @@ module Homebrew
   module_function
 
   def ruby_bindir
-    "#{RbConfig::CONFIG["prefix"]}/bin".freeze
+    "#{RbConfig::CONFIG["prefix"]}/bin"
   end
 
   def gem_user_bindir
     require "rubygems"
-    "#{Gem.user_dir}/bin".freeze
+    "#{Gem.user_dir}/bin"
   end
 
   def ohai_if_defined(message)
@@ -88,7 +90,7 @@ module Homebrew
 
     ENV["BUNDLE_GEMFILE"] = "#{ENV["HOMEBREW_LIBRARY"]}/Homebrew/Gemfile"
     @bundle_installed ||= begin
-      bundle = "#{gem_user_bindir}/bundle".freeze
+      bundle = "#{gem_user_bindir}/bundle"
       bundle_check_output = `#{bundle} check 2>&1`
       bundle_check_failed = !$CHILD_STATUS.exitstatus.zero?
 

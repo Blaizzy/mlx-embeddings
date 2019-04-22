@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Utils
   def self.popen_read(*args, **options, &block)
     popen(args, "rb", options, &block)

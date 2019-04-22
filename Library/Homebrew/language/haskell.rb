@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Language
   module Haskell
     module Cabal

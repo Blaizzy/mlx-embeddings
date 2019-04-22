@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module CaskCop
   shared_examples "does not report any offenses" do
     it "does not report any offenses" do

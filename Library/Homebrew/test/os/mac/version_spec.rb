@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "version"
 require "os/mac/version"
 

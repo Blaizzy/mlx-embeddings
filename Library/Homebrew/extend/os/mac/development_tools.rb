@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "os/mac/xcode"
 
 # @private

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module HashValidator
   refine Hash do
     def assert_valid_keys!(*valid_keys)

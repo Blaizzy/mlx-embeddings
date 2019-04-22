@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 def sudo(*args)
   ["/usr/bin/sudo", "-E", "--"] + args.flatten
 end

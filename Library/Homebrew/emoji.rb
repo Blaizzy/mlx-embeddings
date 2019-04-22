@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Emoji
   class << self
     def install_badge

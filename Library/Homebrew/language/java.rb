@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Language
   module Java
     def self.java_home_cmd(_ = nil)

@@ -1,3 +1,7 @@
+# Uses ERB so can't use Frozen String Literals until >=Ruby 2.4:
+# https://bugs.ruby-lang.org/issues/12031
+# frozen_string_literal: false
+
 require "formula"
 require "utils/bottles"
 require "tab"
@@ -39,7 +43,7 @@ module Homebrew
 
   def bottle_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
+      usage_banner <<~EOS.freeze
         `bottle` [<options>] <formula>
 
         Generate a bottle (binary package) from a formula that was installed with
@@ -376,7 +380,7 @@ module Homebrew
           "#{key}: old: #{old_value}, new: #{value}"
         end
 
-        odie <<~EOS
+        odie <<~EOS.freeze
           --keep-old was passed but there are changes in:
           #{mismatches.join("\n")}
         EOS
@@ -487,7 +491,7 @@ module Homebrew
               end
 
               unless mismatches.empty?
-                odie <<~EOS
+                odie <<~EOS.freeze
                   --keep-old was passed but there are changes in:
                   #{mismatches.join("\n")}
                 EOS

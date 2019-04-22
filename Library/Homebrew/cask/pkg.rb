@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Cask
   class Pkg
     def self.all_matching(regexp, command)

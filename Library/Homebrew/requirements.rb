@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "requirement"
 require "requirements/arch_requirement"
 require "requirements/codesign_requirement"

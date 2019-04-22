@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This script is loaded by formula_installer as a separate instance.
 # Thrown exceptions are propagated back to the parent process over a pipe
 

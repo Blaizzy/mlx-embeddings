@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "utils/shell"
 
 describe Utils::Shell do

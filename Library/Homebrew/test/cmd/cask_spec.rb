@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe "brew cask", :integration_test, :needs_macos, :needs_network do
   describe "list" do
     it "returns a list of installed Casks" do

@@ -1,3 +1,7 @@
+# Uses ERB so can't use Frozen String Literals until >=Ruby 2.4:
+# https://bugs.ruby-lang.org/issues/12031
+# frozen_string_literal: false
+
 require "formula"
 require "erb"
 require "ostruct"
@@ -14,7 +18,7 @@ module Homebrew
 
   def man_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
+      usage_banner <<~EOS.freeze
         `man` [<options>]
 
         Generate Homebrew's manpages.

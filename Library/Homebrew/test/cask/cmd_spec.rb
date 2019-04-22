@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Cask::Cmd, :cask do
   it "lists the taps for Casks that show up in two taps" do
     listing = described_class.nice_listing(%w[

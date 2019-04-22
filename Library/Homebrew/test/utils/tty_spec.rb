@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Tty do
   describe "::strip_ansi" do
     it "removes ANSI escape codes from a string" do

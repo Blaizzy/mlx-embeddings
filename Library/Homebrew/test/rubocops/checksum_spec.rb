@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rubocops/checksum"
 
 describe RuboCop::Cop::FormulaAudit::Checksum do

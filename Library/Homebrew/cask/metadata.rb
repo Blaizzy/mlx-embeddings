@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 module Cask
   module Metadata
-    METADATA_SUBDIR = ".metadata".freeze
+    METADATA_SUBDIR = ".metadata"
 
     def metadata_master_container_path
       @metadata_master_container_path ||= caskroom_path.join(METADATA_SUBDIR)

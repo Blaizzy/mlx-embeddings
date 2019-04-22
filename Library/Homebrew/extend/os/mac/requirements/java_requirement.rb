@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class JavaRequirement < Requirement
   env do
     env_java_common

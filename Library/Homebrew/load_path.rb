@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "pathname"
 
 HOMEBREW_LIBRARY_PATH = Pathname(__dir__).realpath.freeze

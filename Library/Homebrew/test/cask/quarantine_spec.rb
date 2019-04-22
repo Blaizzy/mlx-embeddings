@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Cask::Quarantine, :cask do
   matcher :be_quarantined do
     match do |path|

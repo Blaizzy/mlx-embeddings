@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Cask
   module Verify
     module_function

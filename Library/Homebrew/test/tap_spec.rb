@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Tap do
   alias_matcher :have_formula_file, :be_formula_file
   alias_matcher :have_custom_remote, :be_custom_remote

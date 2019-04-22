@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "language/java"
 
 describe Language::Java do

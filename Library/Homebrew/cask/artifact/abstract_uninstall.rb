@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "timeout"
 
 require "utils/user"
@@ -92,10 +94,10 @@ module Cask
               sleep 1
             end
             paths = [
-              "/Library/LaunchAgents/#{service}.plist",
-              "/Library/LaunchDaemons/#{service}.plist",
+              +"/Library/LaunchAgents/#{service}.plist",
+              +"/Library/LaunchDaemons/#{service}.plist",
             ]
-            paths.each { |elt| elt.prepend(ENV["HOME"]) } unless with_sudo
+            paths.each { |elt| elt.prepend(ENV["HOME"]).freeze } unless with_sudo
             paths = paths.map { |elt| Pathname(elt) }.select(&:exist?)
             paths.each do |path|
               command.run!("/bin/rm", args: ["-f", "--", path], sudo: with_sudo)

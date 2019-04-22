@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Cask::Cmd, :cask do
   it "supports setting the appdir" do
     described_class.new.process_options("help", "--appdir=/some/path/foo")

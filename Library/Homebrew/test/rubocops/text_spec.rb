@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rubocops/text"
 
 describe RuboCop::Cop::FormulaAudit::Text do

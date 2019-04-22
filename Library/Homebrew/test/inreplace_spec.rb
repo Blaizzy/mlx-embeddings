@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require "extend/string"
 require "tempfile"
 require "utils/inreplace"
 
 describe StringInreplaceExtension do
-  subject { string.extend(described_class) }
+  subject { string.dup.extend(described_class) }
 
   describe "#change_make_var!" do
     context "flag" do

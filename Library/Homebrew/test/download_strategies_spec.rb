@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "download_strategy"
 
 describe AbstractDownloadStrategy do

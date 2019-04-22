@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "software_spec"
 
 describe SoftwareSpec do

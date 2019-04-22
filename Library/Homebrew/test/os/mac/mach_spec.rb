@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe "Mach-O Pathname tests" do
   specify "fat dylib" do
     pn = dylib_path("fat")

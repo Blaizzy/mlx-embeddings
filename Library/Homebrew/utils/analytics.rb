@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require "erb"
 
 module Utils
   module Analytics
     class << self
       def custom_prefix_label
-        "custom-prefix".freeze
+        "custom-prefix"
       end
 
       def clear_os_prefix_ci

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "download_strategy"
 require "checksum"
 require "version"

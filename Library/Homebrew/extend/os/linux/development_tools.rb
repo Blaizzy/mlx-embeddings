@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DevelopmentTools
   class << self
     def locate(tool)

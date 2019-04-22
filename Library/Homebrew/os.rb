@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module OS
   def self.mac?
     return false if ENV["HOMEBREW_TEST_GENERIC_OS"]
@@ -20,12 +22,12 @@ module OS
        !OS::Mac.outdated_release? &&
        ARGV.none? { |v| v.start_with?("--cc=") } &&
        ENV["HOMEBREW_PREFIX"] == "/usr/local"
-      ISSUES_URL = "https://docs.brew.sh/Troubleshooting".freeze
+      ISSUES_URL = "https://docs.brew.sh/Troubleshooting"
     end
-    PATH_OPEN = "/usr/bin/open".freeze
+    PATH_OPEN = "/usr/bin/open"
   elsif OS.linux?
     require "os/linux"
-    ISSUES_URL = "https://docs.brew.sh/Troubleshooting".freeze
-    PATH_OPEN = "xdg-open".freeze
+    ISSUES_URL = "https://docs.brew.sh/Troubleshooting"
+    PATH_OPEN = "xdg-open"
   end
 end

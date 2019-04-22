@@ -1,15 +1,17 @@
+# frozen_string_literal: true
+
 require "formula"
 
 describe "patching" do
-  TESTBALL_URL = "file://#{TEST_FIXTURE_DIR}/tarballs/testball-0.1.tbz".freeze
-  TESTBALL_PATCHES_URL = "file://#{TEST_FIXTURE_DIR}/tarballs/testball-0.1-patches.tgz".freeze
-  PATCH_URL_A = "file://#{TEST_FIXTURE_DIR}/patches/noop-a.diff".freeze
-  PATCH_URL_B = "file://#{TEST_FIXTURE_DIR}/patches/noop-b.diff".freeze
+  TESTBALL_URL = "file://#{TEST_FIXTURE_DIR}/tarballs/testball-0.1.tbz"
+  TESTBALL_PATCHES_URL = "file://#{TEST_FIXTURE_DIR}/tarballs/testball-0.1-patches.tgz"
+  PATCH_URL_A = "file://#{TEST_FIXTURE_DIR}/patches/noop-a.diff"
+  PATCH_URL_B = "file://#{TEST_FIXTURE_DIR}/patches/noop-b.diff"
   PATCH_A_CONTENTS = File.read("#{TEST_FIXTURE_DIR}/patches/noop-a.diff").freeze
   PATCH_B_CONTENTS = File.read("#{TEST_FIXTURE_DIR}/patches/noop-b.diff").freeze
-  APPLY_A = "noop-a.diff".freeze
-  APPLY_B = "noop-b.diff".freeze
-  APPLY_C = "noop-c.diff".freeze
+  APPLY_A = "noop-a.diff"
+  APPLY_B = "noop-b.diff"
+  APPLY_C = "noop-c.diff"
 
   def formula(name = "formula_name", path: Formulary.core_path(name), spec: :stable, alias_path: nil, &block)
     Class.new(Formula) {

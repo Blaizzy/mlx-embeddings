@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "migrator"
 require "test/support/fixtures/testball"
 require "tab"

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "cxxstdlib"
 require "formula"
 require "keg"
@@ -664,7 +666,7 @@ class FormulaInstaller
   end
 
   def summary
-    s = ""
+    s = +""
     s << "#{Emoji.install_badge}  " if Emoji.enabled?
     s << "#{formula.prefix.resolved_path}: #{formula.prefix.abv}"
     s << ", built in #{pretty_duration build_time}" if build_time

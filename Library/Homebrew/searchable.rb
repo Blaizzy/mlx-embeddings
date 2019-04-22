@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Searchable
   def search(string_or_regex, &block)
     case string_or_regex

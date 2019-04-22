@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "cmd/uninstall"
 
 require "cmd/shared_examples/args_parse"

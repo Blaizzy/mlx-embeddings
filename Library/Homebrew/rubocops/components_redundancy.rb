@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rubocops/extend/formula"
 
 module RuboCop
@@ -11,9 +13,9 @@ module RuboCop
       # - `stable do` should not be present without a `head` or `devel` spec
 
       class ComponentsRedundancy < FormulaCop
-        HEAD_MSG = "`head` and `head do` should not be simultaneously present".freeze
-        BOTTLE_MSG = "`bottle :modifier` and `bottle do` should not be simultaneously present".freeze
-        STABLE_MSG = "`stable do` should not be present without a `head` or `devel` spec".freeze
+        HEAD_MSG = "`head` and `head do` should not be simultaneously present"
+        BOTTLE_MSG = "`bottle :modifier` and `bottle do` should not be simultaneously present"
+        STABLE_MSG = "`stable do` should not be present without a `head` or `devel` spec"
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           stable_block = find_block(body_node, :stable)

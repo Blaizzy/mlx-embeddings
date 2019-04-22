@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe "globally-scoped helper methods" do
   let(:dir) { mktmpdir }
 

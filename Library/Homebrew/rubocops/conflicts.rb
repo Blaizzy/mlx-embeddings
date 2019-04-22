@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rubocops/extend/formula"
 require "extend/string"
 
@@ -7,7 +9,7 @@ module RuboCop
       # This cop audits versioned Formulae for `conflicts_with`.
       class Conflicts < FormulaCop
         MSG = "Versioned formulae should not use `conflicts_with`. " \
-              "Use `keg_only :versioned_formula` instead.".freeze
+              "Use `keg_only :versioned_formula` instead."
 
         WHITELIST = %w[
           bash-completion@

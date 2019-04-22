@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 # @see https://en.wikipedia.org/wiki/Executable_and_Linkable_Format#File_header
 module ELFShim
   MAGIC_NUMBER_OFFSET = 0
-  MAGIC_NUMBER_ASCII = "\x7fELF".freeze
+  MAGIC_NUMBER_ASCII = "\x7fELF"
 
   OS_ABI_OFFSET = 0x07
   OS_ABI_SYSTEM_V = 0

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "cmd/cask"
 
 describe Cask::DSL::Appcast do

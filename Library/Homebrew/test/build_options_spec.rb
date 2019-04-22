@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "build_options"
 require "options"
 

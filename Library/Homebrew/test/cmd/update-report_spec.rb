@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "cmd/update-report"
 require "formula_versions"
 require "yaml"

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Cask::Artifact::App, :cask do
   let(:cask) { Cask::CaskLoader.load(cask_path("local-caffeine")) }
   let(:command) { SystemCommand }

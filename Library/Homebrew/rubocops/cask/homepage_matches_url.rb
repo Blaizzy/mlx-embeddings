@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "forwardable"
 
 module RuboCop
@@ -13,11 +15,11 @@ module RuboCop
 
         REFERENCE_URL =
           "https://github.com/Homebrew/homebrew-cask/blob/master/doc/" \
-          "cask_language_reference/stanzas/url.md#when-url-and-homepage-hostnames-differ-add-a-comment".freeze
+          "cask_language_reference/stanzas/url.md#when-url-and-homepage-hostnames-differ-add-a-comment"
 
         COMMENT_FORMAT = /# [^ ]+ was verified as official when first introduced to the cask/.freeze
 
-        MSG_NO_MATCH = "`%{url}` does not match `%{full_url}`".freeze
+        MSG_NO_MATCH = "`%{url}` does not match `%{full_url}`"
 
         MSG_MISSING = ("`%{domain}` does not match `%{homepage}`, a comment has to be added " \
                       "above the `url` stanza. For details, see " + REFERENCE_URL).freeze
@@ -26,7 +28,7 @@ module RuboCop
                            "For details, see " + REFERENCE_URL).freeze
 
         MSG_UNNECESSARY = "The URL's domain `%{domain}` matches the homepage `%{homepage}`, " \
-                          "the comment above the `url` stanza is unnecessary".freeze
+                          "the comment above the `url` stanza is unnecessary"
 
         def on_cask(cask_block)
           @cask_block = cask_block

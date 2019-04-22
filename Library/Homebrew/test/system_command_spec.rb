@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe SystemCommand do
   describe "#initialize" do
     subject(:command) {

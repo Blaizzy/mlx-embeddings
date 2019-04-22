@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "keg"
 require "formula"
 require "diagnostic"

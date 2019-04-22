@@ -93,8 +93,7 @@ Style/ConditionalAssignment:
 Style/Documentation:
  Enabled: false
 
-# we want to add this slowly and manually
-# TODO: add to more files
+# don't want this for formulae but re-enabled for Library/Homebrew
 Style/FrozenStringLiteralComment:
   Enabled: false
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "cmd/info"
 
 require "cmd/shared_examples/args_parse"

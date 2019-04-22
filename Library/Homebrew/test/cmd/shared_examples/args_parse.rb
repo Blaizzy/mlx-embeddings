@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples "parseable arguments" do
   subject(:method_name) do |example|
     example.metadata[:example_group][:parent_example_group][:description]

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "cli/args"
 require "optparse"
 require "set"

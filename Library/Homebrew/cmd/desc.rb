@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "descriptions"
 require "search"
 require "description_cache_store"

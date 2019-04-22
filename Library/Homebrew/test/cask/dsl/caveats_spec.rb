@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test/cask/dsl/shared_examples/base"
 
 describe Cask::DSL::Caveats, :cask do

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "requirements/linux_requirement"
 
 describe LinuxRequirement do

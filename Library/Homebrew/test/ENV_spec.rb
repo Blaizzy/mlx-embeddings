@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "extend/ENV"
 
 shared_examples EnvActivation do

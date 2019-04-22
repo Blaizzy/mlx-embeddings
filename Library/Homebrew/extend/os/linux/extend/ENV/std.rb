@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Stdenv
   def setup_build_environment(formula = nil)
     generic_setup_build_environment(formula)

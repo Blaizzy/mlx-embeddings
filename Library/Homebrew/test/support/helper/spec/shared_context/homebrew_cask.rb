@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "cask/all"
 
 require "test/support/helper/cask/fake_system_command"

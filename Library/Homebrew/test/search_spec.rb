@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "search"
 
 describe Homebrew::Search do

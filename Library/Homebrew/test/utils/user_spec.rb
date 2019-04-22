@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "utils/user"
 
 describe User do

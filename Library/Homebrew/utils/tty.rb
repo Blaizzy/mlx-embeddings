@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Tty
   module_function
 

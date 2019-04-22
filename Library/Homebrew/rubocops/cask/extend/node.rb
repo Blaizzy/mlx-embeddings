@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module RuboCop
   module AST
     # Extensions for RuboCop's AST Node class

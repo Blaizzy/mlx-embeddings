@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "language/java"
 
 class JavaRequirement < Requirement

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "requirements/x11_requirement"
 
 describe X11Requirement do

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "extend/cachable"
 require "readall"
 require "description_cache_store"

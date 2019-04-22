@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "metafiles"
 require "formula"
 require "cli/parser"

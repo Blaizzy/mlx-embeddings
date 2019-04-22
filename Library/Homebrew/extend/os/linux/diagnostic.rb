@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "tempfile"
 require "utils/shell"
 require "os/linux/diagnostic"

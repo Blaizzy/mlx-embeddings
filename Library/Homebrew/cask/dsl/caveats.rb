@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Caveats DSL. Each method should handle output, following the
 # convention of at least one trailing blank line so that the user
 # can distinguish separate caveats.

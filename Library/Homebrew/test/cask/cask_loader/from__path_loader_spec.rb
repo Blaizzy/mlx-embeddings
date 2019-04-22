@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Cask::CaskLoader::FromPathLoader do
   describe "#load" do
     context "when the file does not contain a cask" do

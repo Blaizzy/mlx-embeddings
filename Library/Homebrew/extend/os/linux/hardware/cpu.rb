@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Hardware
   class CPU
     class << self

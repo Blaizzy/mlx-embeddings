@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "language/node"
 
 describe Language::Node do

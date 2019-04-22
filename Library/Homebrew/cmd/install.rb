@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "missing_formula"
 require "formula_installer"
 require "development_tools"

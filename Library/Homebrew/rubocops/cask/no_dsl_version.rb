@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "forwardable"
 
 module RuboCop
@@ -19,7 +21,7 @@ module RuboCop
         extend Forwardable
         include CaskHelp
 
-        MESSAGE = "Use `%{preferred}` instead of `%{current}`".freeze
+        MESSAGE = "Use `%{preferred}` instead of `%{current}`"
 
         def on_cask(cask_block)
           @cask_header = cask_block.header

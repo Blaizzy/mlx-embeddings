@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PATH
   include Enumerable
   extend Forwardable

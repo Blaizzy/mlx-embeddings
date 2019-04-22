@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe "brew", :integration_test do
   describe "help" do
     it "prints help for a documented Ruby command" do

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Language
   module Node
     def self.npm_cache_config

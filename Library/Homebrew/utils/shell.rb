@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Utils
   module Shell
     module_function

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rubocops/components_redundancy"
 
 describe RuboCop::Cop::FormulaAudit::ComponentsRedundancy do

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Superenv
   class << self
     undef bin

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "install"
 require "reinstall"
 require "formula_installer"

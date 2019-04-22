@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "formulary"
 require "cask/cmd/abstract_command"
 require "cask/cmd/info"
@@ -198,9 +200,9 @@ module Homebrew
         return if silent
 
         cask = Cask::CaskLoader.load(name)
-        reason = "Found a cask named \"#{name}\" instead.\n"
+        reason = +"Found a cask named \"#{name}\" instead.\n"
         reason << Cask::Cmd::Info.get_info(cask) if show_info
-        reason
+        reason.freeze
       rescue Cask::CaskUnavailableError
         nil
       end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rubocops/patches"
 
 describe RuboCop::Cop::FormulaAudit::Patches do

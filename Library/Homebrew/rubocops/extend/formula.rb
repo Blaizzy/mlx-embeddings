@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Silence compatibility warning.
 begin
   old_verbosity = $VERBOSE

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Cask::DSL::Version, :cask do
   shared_examples "expectations hash" do |input_name, expectations|
     expectations.each do |input_value, expected_output|
