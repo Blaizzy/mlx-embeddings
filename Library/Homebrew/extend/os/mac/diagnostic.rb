@@ -51,7 +51,7 @@ module Homebrew
         if OS::Mac.prerelease?
           what = "pre-release version"
         elsif OS::Mac.outdated_release?
-          who << " (and Apple)"
+          +who << " (and Apple)"
           what = "old version"
         else
           return
