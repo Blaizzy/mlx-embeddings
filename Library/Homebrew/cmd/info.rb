@@ -73,7 +73,7 @@ module Homebrew
         output_analytics
       elsif HOMEBREW_CELLAR.exist?
         count = Formula.racks.length
-        puts "#{count} #{"keg".pluralize(count)}, #{HOMEBREW_CELLAR.abv}"
+        puts "#{count} #{"keg".pluralize(count)}, #{HOMEBREW_CELLAR.dup.abv}"
       end
     else
       ARGV.named.each_with_index do |f, i|
