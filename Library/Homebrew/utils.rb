@@ -107,7 +107,7 @@ def odeprecated(method, replacement = nil, disable: false, disable_on: nil, call
     next unless match = line.match(HOMEBREW_TAP_PATH_REGEX)
 
     tap = Tap.fetch(match[:user], match[:repo])
-    tap_message = "\nPlease report this to the #{tap} tap"
+    tap_message = +"\nPlease report this to the #{tap} tap"
     tap_message += ", or even better, submit a PR to fix it" if replacement
     tap_message << ":\n  #{line.sub(/^(.*\:\d+)\:.*$/, '\1')}\n\n"
     break
