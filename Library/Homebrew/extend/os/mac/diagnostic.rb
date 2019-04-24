@@ -47,15 +47,16 @@ module Homebrew
       def check_for_unsupported_macos
         return if ARGV.homebrew_developer?
 
-        who = "We"
+        who = +"We"
         if OS::Mac.prerelease?
           what = "pre-release version"
         elsif OS::Mac.outdated_release?
-          +who << " (and Apple)"
+          who << " (and Apple)"
           what = "old version"
         else
           return
         end
+        who.freeze
 
         <<~EOS
           You are using macOS #{MacOS.version}.
