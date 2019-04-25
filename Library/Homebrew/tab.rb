@@ -280,7 +280,7 @@ class Tab < OpenStruct
     CxxStdlib.create(lib, compiler.to_sym)
   end
 
-  def build_bottle?
+  def built_bottle?
     built_as_bottle && !poured_from_bottle
   end
 
