@@ -10,6 +10,7 @@ module Homebrew
   def reinstall_formula(f, build_from_source: false)
     if f.opt_prefix.directory?
       keg = Keg.new(f.opt_prefix.resolved_path)
+      tab = Tab.for_keg(keg)
       keg_had_linked_opt = true
       keg_was_linked = keg.linked?
       backup keg
@@ -22,11 +23,16 @@ module Homebrew
 
     fi = FormulaInstaller.new(f)
     fi.options              = options
-    fi.build_bottle         = ARGV.build_bottle? || (!f.bottle_defined? && f.build.bottle?)
+    fi.build_bottle         = ARGV.build_bottle?
     fi.interactive          = ARGV.interactive?
     fi.git                  = ARGV.git?
     fi.link_keg           ||= keg_was_linked if keg_had_linked_opt
     fi.build_from_source    = true if build_from_source
+    if tab
+      fi.build_bottle          ||= tab.built_bottle?
+      fi.installed_as_dependency = tab.installed_as_dependency
+      fi.installed_on_request    = tab.installed_on_request
+    end
     fi.prelude
 
     oh1 "Reinstalling #{Formatter.identifier(f.full_name)} #{options.to_a.join " "}"
