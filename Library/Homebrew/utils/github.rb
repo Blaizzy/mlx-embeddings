@@ -47,7 +47,7 @@ module GitHub
   class AuthenticationFailedError < Error
     def initialize(github_message)
       @github_message = github_message
-      message += "GitHub #{github_message}:"
+      message = +"GitHub #{github_message}:"
       if ENV["HOMEBREW_GITHUB_API_TOKEN"]
         message << <<~EOS
           HOMEBREW_GITHUB_API_TOKEN may be invalid or expired; check:
