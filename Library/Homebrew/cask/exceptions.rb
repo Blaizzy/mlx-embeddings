@@ -174,7 +174,7 @@ module Cask
     end
 
     def to_s
-      s = "Failed to quarantine #{path}."
+      s = +"Failed to quarantine #{path}."
 
       unless reason.empty?
         s << " Here's the reason:\n"
@@ -188,7 +188,7 @@ module Cask
 
   class CaskQuarantinePropagationError < CaskQuarantineError
     def to_s
-      s = "Failed to quarantine one or more files within #{path}."
+      s = +"Failed to quarantine one or more files within #{path}."
 
       unless reason.empty?
         s << " Here's the reason:\n"
@@ -202,7 +202,7 @@ module Cask
 
   class CaskQuarantineReleaseError < CaskQuarantineError
     def to_s
-      s = "Failed to release #{path} from quarantine."
+      s = +"Failed to release #{path} from quarantine."
 
       unless reason.empty?
         s << " Here's the reason:\n"
