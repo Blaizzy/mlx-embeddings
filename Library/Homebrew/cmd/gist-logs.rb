@@ -82,7 +82,7 @@ module Homebrew
 
   def brief_build_info(f)
     build_time_str = f.logs.ctime.strftime("%Y-%m-%d %H:%M:%S")
-    s = <<~EOS
+    s = +<<~EOS
       Homebrew build logs for #{f.full_name} on #{OS_VERSION}
     EOS
     if args.with_hostname?
