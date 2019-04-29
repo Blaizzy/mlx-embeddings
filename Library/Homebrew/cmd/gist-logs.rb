@@ -90,7 +90,7 @@ module Homebrew
       s << "Host: #{hostname}\n"
     end
     s << "Build date: #{build_time_str}\n"
-    s
+    s.freeze
   end
 
   # Causes some terminals to display secure password entry indicators
