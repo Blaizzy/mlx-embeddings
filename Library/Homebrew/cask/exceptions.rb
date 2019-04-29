@@ -182,7 +182,7 @@ module Cask
         s << "\n" unless reason.end_with?("\n")
       end
 
-      s
+      s.freeze
     end
   end
 
@@ -196,7 +196,7 @@ module Cask
         s << "\n" unless reason.end_with?("\n")
       end
 
-      s
+      s.freeze
     end
   end
 
@@ -210,7 +210,7 @@ module Cask
         s << "\n" unless reason.end_with?("\n")
       end
 
-      s
+      s.freeze
     end
   end
 end
