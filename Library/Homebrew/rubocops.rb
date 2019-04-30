@@ -2,6 +2,7 @@
 
 require_relative "load_path"
 
+require "rubocop-performance"
 require "rubocop-rspec"
 require "rubocops/formula_desc"
 require "rubocops/components_order"

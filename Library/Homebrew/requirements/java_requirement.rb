@@ -71,7 +71,7 @@ class JavaRequirement < Requirement
   JAVA_SUGGESTION_MAP = {
     "1.8"  => CaskSuggestion.new(
       "homebrew/cask-versions/adoptopenjdk8",
-        "AdoptOpenJDK 8",
+      "AdoptOpenJDK 8",
     ),
     "12.0" => CaskSuggestion.new("adoptopenjdk", "AdoptOpenJDK"),
   }.freeze

@@ -88,7 +88,7 @@ module Homebrew
       EOS
 
       flag "--version=",
-        description: "Extract the provided <version> of <formula> instead of the most recent."
+           description: "Extract the provided <version> of <formula> instead of the most recent."
       switch :force
       switch :debug
     end

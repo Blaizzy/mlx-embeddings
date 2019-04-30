@@ -63,9 +63,9 @@ module Utils
         else
           pid = fork do
             exec ENV["HOMEBREW_CURL"],
-              *args,
-              "--silent", "--output", "/dev/null",
-              "https://www.google-analytics.com/collect"
+                 *args,
+                 "--silent", "--output", "/dev/null",
+                 "https://www.google-analytics.com/collect"
           end
           Process.detach pid
         end
@@ -73,10 +73,10 @@ module Utils
 
       def report_event(category, action, label = os_prefix_ci, value = nil)
         report(:event,
-          ec: category,
-          ea: action,
-          el: label,
-          ev: value)
+               ec: category,
+               ea: action,
+               el: label,
+               ev: value)
       end
 
       def report_build_error(exception)

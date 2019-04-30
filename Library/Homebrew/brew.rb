@@ -72,7 +72,7 @@ begin
       if internal_dev_cmd && !ARGV.homebrew_developer?
         if (HOMEBREW_REPOSITORY/".git/config").exist?
           system "git", "config", "--file=#{HOMEBREW_REPOSITORY}/.git/config",
-                                  "--replace-all", "homebrew.devcmdrun", "true"
+                 "--replace-all", "homebrew.devcmdrun", "true"
         end
         ENV["HOMEBREW_DEV_CMD_RUN"] = "1"
       end

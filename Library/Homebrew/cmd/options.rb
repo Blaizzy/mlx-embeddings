@@ -15,11 +15,11 @@ module Homebrew
         Display install options specific to <formula>
       EOS
       switch "--compact",
-        description: "Show all options on a single line separated by spaces."
+             description: "Show all options on a single line separated by spaces."
       switch "--all",
-        description: "Show options for all formulae."
+             description: "Show options for all formulae."
       switch "--installed",
-        description: "Show options for all installed formulae."
+             description: "Show options for all installed formulae."
       switch :debug
       conflicts "--all", "--installed"
     end

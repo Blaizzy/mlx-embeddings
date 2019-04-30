@@ -16,14 +16,14 @@ module Homebrew
         Raises an error if run on uninstalled formulae.
       EOS
       switch "--test",
-        description: "Display only missing libraries and exit with a non-zero status if any missing "\
-                     "libraries are found."
+             description: "Display only missing libraries and exit with a non-zero status if any missing "\
+                          "libraries are found."
       switch "--reverse",
-        description: "For every library that a keg references, print its dylib path followed by the "\
-                     "binaries that link to it."
+             description: "For every library that a keg references, print its dylib path followed by the "\
+                          "binaries that link to it."
       switch "--cached",
-        description: "Print the cached linkage values stored in `HOMEBREW_CACHE`, set by a previous "\
-                     "`brew linkage` run."
+             description: "Print the cached linkage values stored in `HOMEBREW_CACHE`, set by a previous "\
+                          "`brew linkage` run."
       switch :verbose
       switch :debug
     end

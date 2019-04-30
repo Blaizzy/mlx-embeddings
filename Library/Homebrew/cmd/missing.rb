@@ -19,8 +19,8 @@ module Homebrew
         `missing` exits with a non-zero status if any formulae are missing dependencies.
       EOS
       comma_array "--hide",
-        description: "Act as if none of the provided <hidden> are installed. <hidden> should be "\
-                     "comma-separated list of formulae."
+                  description: "Act as if none of the provided <hidden> are installed. <hidden> should be "\
+                               "comma-separated list of formulae."
       switch :verbose
       switch :debug
     end

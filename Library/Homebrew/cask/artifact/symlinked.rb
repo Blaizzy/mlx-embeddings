@@ -40,14 +40,14 @@ module Cask
       def link(**options)
         unless source.exist?
           raise CaskError,
-            "It seems the #{self.class.link_type_english_name.downcase} " \
-            "source '#{source}' is not there."
+                "It seems the #{self.class.link_type_english_name.downcase} " \
+                "source '#{source}' is not there."
         end
 
         if target.exist? && !target.symlink?
           raise CaskError,
-            "It seems there is already #{self.class.english_article} " \
-            "#{self.class.english_name} at '#{target}'; not linking."
+                "It seems there is already #{self.class.english_article} " \
+                "#{self.class.english_name} at '#{target}'; not linking."
         end
 
         ohai "Linking #{self.class.english_name} '#{source.basename}' to '#{target}'."

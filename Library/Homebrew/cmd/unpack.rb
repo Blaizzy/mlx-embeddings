@@ -16,12 +16,12 @@ module Homebrew
         working directory.
       EOS
       flag "--destdir=",
-        description: "Create subdirectories in the directory named by <path> instead."
+           description: "Create subdirectories in the directory named by <path> instead."
       switch "--patch",
-        description: "Patches for <formula> will be applied to the unpacked source."
+             description: "Patches for <formula> will be applied to the unpacked source."
       switch "-g", "--git",
-        description: "Initialise a Git repository in the unpacked source. This is useful for creating "\
-                     "patches for the software."
+             description: "Initialise a Git repository in the unpacked source. This is useful for creating "\
+                          "patches for the software."
       switch :force
       switch :verbose
       switch :debug

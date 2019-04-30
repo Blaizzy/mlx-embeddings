@@ -20,15 +20,15 @@ module Homebrew
         including core code and all formulae.
       EOS
       switch "--fix",
-        description: "Fix style violations automatically using RuboCop's auto-correct feature."
+             description: "Fix style violations automatically using RuboCop's auto-correct feature."
       switch "--display-cop-names",
-        description: "Include the RuboCop cop name for each violation in the output."
+             description: "Include the RuboCop cop name for each violation in the output."
       comma_array "--only-cops",
-        description: "Specify a comma-separated <cops> list to check for violations of only the "\
-                     "listed RuboCop cops."
+                  description: "Specify a comma-separated <cops> list to check for violations of only the "\
+                               "listed RuboCop cops."
       comma_array "--except-cops",
-        description: "Specify a comma-separated <cops> list to skip checking for violations of the "\
-                     "listed RuboCop cops."
+                  description: "Specify a comma-separated <cops> list to skip checking for violations of the "\
+                               "listed RuboCop cops."
       switch :verbose
       switch :debug
       conflicts "--only-cops", "--except-cops"

@@ -20,7 +20,7 @@ module Homebrew
 
   def tap_pin
     odeprecated "brew tap-pin user/tap",
-      "fully-scoped user/tap/formula naming"
+                "fully-scoped user/tap/formula naming"
 
     tap_pin_args.parse
 

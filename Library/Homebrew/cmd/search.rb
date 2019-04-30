@@ -37,16 +37,16 @@ module Homebrew
         No online search is performed.
       EOS
       switch "--casks",
-        description: "Display all locally available casks (including tapped ones). "\
-                     "No online search is performed."
+             description: "Display all locally available casks (including tapped ones). "\
+                          "No online search is performed."
       switch "--desc",
-        description: "search formulae with a description matching <text> and casks with "\
-                     "a name matching <text>."
+             description: "search formulae with a description matching <text> and casks with "\
+                          "a name matching <text>."
 
       package_manager_switches = PACKAGE_MANAGERS.keys.map { |name| "--#{name}" }
       package_manager_switches.each do |s|
         switch s,
-          description: "Search for <text> in the given package manager's list."
+               description: "Search for <text> in the given package manager's list."
       end
       switch :verbose
       switch :debug

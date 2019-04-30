@@ -36,28 +36,28 @@ module Homebrew
         on GitHub, the URL of a commit on GitHub or a "https://jenkins.brew.sh/job/..." testing job URL.
       EOS
       switch "--bottle",
-        description: "Handle bottles, pulling the bottle-update commit and publishing files on Bintray."
+             description: "Handle bottles, pulling the bottle-update commit and publishing files on Bintray."
       switch "--bump",
-        description: "For one-formula PRs, automatically reword commit message to our preferred format."
+             description: "For one-formula PRs, automatically reword commit message to our preferred format."
       switch "--clean",
-        description: "Do not rewrite or otherwise modify the commits found in the pulled PR."
+             description: "Do not rewrite or otherwise modify the commits found in the pulled PR."
       switch "--ignore-whitespace",
-        description: "Silently ignore whitespace discrepancies when applying diffs."
+             description: "Silently ignore whitespace discrepancies when applying diffs."
       switch "--resolve",
-        description: "When a patch fails to apply, leave in progress and allow user to resolve, instead "\
-                     "of aborting."
+             description: "When a patch fails to apply, leave in progress and allow user to resolve, instead "\
+                          "of aborting."
       switch "--branch-okay",
-        description: "Do not warn if pulling to a branch besides master (useful for testing)."
+             description: "Do not warn if pulling to a branch besides master (useful for testing)."
       switch "--no-pbcopy",
-        description: "Do not copy anything to the system clipboard."
+             description: "Do not copy anything to the system clipboard."
       switch "--no-publish",
-        description: "Do not publish bottles to Bintray."
+             description: "Do not publish bottles to Bintray."
       switch "--warn-on-publish-failure",
-        description: "Do not exit if there's a failure publishing bottles on Bintray."
+             description: "Do not exit if there's a failure publishing bottles on Bintray."
       flag   "--bintray-org=",
-        description: "Publish bottles at the provided Bintray <organisation>."
+             description: "Publish bottles at the provided Bintray <organisation>."
       flag   "--test-bot-user=",
-        description: "Pull the bottle block commit from the provided <user> on GitHub."
+             description: "Pull the bottle block commit from the provided <user> on GitHub."
       switch :verbose
       switch :debug
     end
