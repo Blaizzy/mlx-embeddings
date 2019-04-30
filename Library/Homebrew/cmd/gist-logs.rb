@@ -23,13 +23,13 @@ module Homebrew
         If no logs are found, an error message is presented.
       EOS
       switch "--with-hostname",
-        description: "Include the hostname in the Gist."
+             description: "Include the hostname in the Gist."
       switch "-n", "--new-issue",
-        description: "Automatically create a new issue in the appropriate GitHub repository as "\
-                     "well as creating the Gist."
+             description: "Automatically create a new issue in the appropriate GitHub repository as "\
+                          "well as creating the Gist."
       switch "-p", "--private",
-        description: "The Gist will be marked private and will not appear in listings but will "\
-                     "be accessible with the link."
+             description: "The Gist will be marked private and will not appear in listings but will "\
+                          "be accessible with the link."
       switch :verbose
       switch :debug
     end

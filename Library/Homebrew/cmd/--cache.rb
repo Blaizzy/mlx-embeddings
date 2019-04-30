@@ -16,9 +16,9 @@ module Homebrew
         If <formula> is provided, display the file or directory used to cache <formula>.
       EOS
       switch "-s", "--build-from-source",
-        description: "Show the cache file used when building from source."
+             description: "Show the cache file used when building from source."
       switch "--force-bottle",
-        description: "Show the cache file used when pouring a bottle."
+             description: "Show the cache file used when pouring a bottle."
       conflicts "--build-from-source", "--force-bottle"
     end
   end

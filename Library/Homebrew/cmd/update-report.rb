@@ -26,7 +26,7 @@ module Homebrew
         The Ruby implementation of `brew update`. Never called manually.
       EOS
       switch "--preinstall",
-        description: "Run in 'auto-update' mode (faster, less output)."
+             description: "Run in 'auto-update' mode (faster, less output)."
       switch :force
       switch :quiet
       switch :debug

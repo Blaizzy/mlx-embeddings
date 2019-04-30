@@ -20,11 +20,11 @@ module Homebrew
         *Example:* `brew install jruby && brew test jruby`
       EOS
       switch "--devel",
-        description: "Test the development version of a formula."
+             description: "Test the development version of a formula."
       switch "--HEAD",
-        description: "Test the head version of a formula."
+             description: "Test the head version of a formula."
       switch "--keep-tmp",
-        description: "Keep the temporary files created for the test."
+             description: "Keep the temporary files created for the test."
       switch :verbose
       switch :debug
       conflicts "--devel", "--HEAD"

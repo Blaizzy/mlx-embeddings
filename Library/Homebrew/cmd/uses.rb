@@ -25,21 +25,21 @@ module Homebrew
         By default, `uses` shows usage of <formula> by stable builds.
       EOS
       switch "--recursive",
-        description: "Resolve more than one level of dependencies."
+             description: "Resolve more than one level of dependencies."
       switch "--installed",
-        description: "Only list installed formulae."
+             description: "Only list installed formulae."
       switch "--include-build",
-        description: "Include all formulae that specify <formula> as `:build` type dependency."
+             description: "Include all formulae that specify <formula> as `:build` type dependency."
       switch "--include-test",
-        description: "Include all formulae that specify <formula> as `:test` type dependency."
+             description: "Include all formulae that specify <formula> as `:test` type dependency."
       switch "--include-optional",
-        description: "Include all formulae that specify <formula> as `:optional` type dependency."
+             description: "Include all formulae that specify <formula> as `:optional` type dependency."
       switch "--skip-recommended",
-        description: "Skip all formulae that specify <formula> as `:recommended` type dependency."
+             description: "Skip all formulae that specify <formula> as `:recommended` type dependency."
       switch "--devel",
-        description: "Show usage of <formula> by development build."
+             description: "Show usage of <formula> by development build."
       switch "--HEAD",
-        description: "Show usage of <formula> by HEAD build."
+             description: "Show usage of <formula> by HEAD build."
       switch :debug
       conflicts "--devel", "--HEAD"
     end

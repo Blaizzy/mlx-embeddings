@@ -18,17 +18,17 @@ module Homebrew
         suppressed otherwise.
       EOS
       switch :quiet,
-        description: "List only the names of outdated brews (takes precedence over `--verbose`)."
+             description: "List only the names of outdated brews (takes precedence over `--verbose`)."
       switch :verbose,
-        description: "Display detailed version information."
+             description: "Display detailed version information."
       flag "--json",
-        description: "Print output in JSON format. Currently the default and only accepted "\
-                     "value for <version> is `v1`. See the docs for examples of using the JSON "\
-                     "output: <https://docs.brew.sh/Querying-Brew>"
+           description: "Print output in JSON format. Currently the default and only accepted "\
+                        "value for <version> is `v1`. See the docs for examples of using the JSON "\
+                        "output: <https://docs.brew.sh/Querying-Brew>"
       switch "--fetch-HEAD",
-        description: "Fetch the upstream repository to detect if the HEAD installation of the "\
-                     "formula is outdated. Otherwise, the repository's HEAD will be checked for "\
-                     "updates when a new stable or development version has been released."
+             description: "Fetch the upstream repository to detect if the HEAD installation of the "\
+                          "formula is outdated. Otherwise, the repository's HEAD will be checked for "\
+                          "updates when a new stable or development version has been released."
       switch :debug
       conflicts "--quiet", "--verbose", "--json"
     end

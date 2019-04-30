@@ -26,38 +26,38 @@ module Homebrew
         formula already uses.
       EOS
       switch "--devel",
-        description: "Bump the development rather than stable version. The development spec must already exist."
+             description: "Bump the development rather than stable version. The development spec must already exist."
       switch "-n", "--dry-run",
-        description: "Print what would be done rather than doing it."
+             description: "Print what would be done rather than doing it."
       switch "--write",
-        depends_on:  "--dry-run",
-        description: "When passed along with `--dry-run`, perform a not-so-dry run by making the expected "\
-                     "file modifications but not taking any Git actions."
+             depends_on:  "--dry-run",
+             description: "When passed along with `--dry-run`, perform a not-so-dry run by making the expected "\
+                          "file modifications but not taking any Git actions."
       switch "--no-audit",
-        description: "Don't run `brew audit` before opening the PR."
+             description: "Don't run `brew audit` before opening the PR."
       switch "--strict",
-        description: "Run `brew audit --strict` before opening the PR."
+             description: "Run `brew audit --strict` before opening the PR."
       switch "--no-browse",
-        description: "Print the pull request URL instead of opening in a browser."
+             description: "Print the pull request URL instead of opening in a browser."
       flag   "--mirror=",
-        description: "Use the provided <URL> as a mirror URL."
+             description: "Use the provided <URL> as a mirror URL."
       flag   "--version=",
-        description: "Use the provided <version> to override the value parsed from the URL or tag. Note "\
-                     "that `--version=0` can be used to delete an existing version override from a "\
-                     "formula if it has become redundant."
+             description: "Use the provided <version> to override the value parsed from the URL or tag. Note "\
+                          "that `--version=0` can be used to delete an existing version override from a "\
+                          "formula if it has become redundant."
       flag   "--message=",
-        description: "Append the provided <message> to the default PR message."
+             description: "Append the provided <message> to the default PR message."
       flag   "--url=",
-        description: "Specify the <URL> for the new download. If a <URL> is specified, the <SHA-256> "\
-                     "checksum of the new download should also be specified."
+             description: "Specify the <URL> for the new download. If a <URL> is specified, the <SHA-256> "\
+                          "checksum of the new download should also be specified."
       flag   "--sha256=",
-        depends_on:  "--url=",
-        description: "Specify the <SHA-256> checksum of the new download."
+             depends_on:  "--url=",
+             description: "Specify the <SHA-256> checksum of the new download."
       flag   "--tag=",
-        description: "Specify the new git commit <tag> for the formula."
+             description: "Specify the new git commit <tag> for the formula."
       flag   "--revision=",
-        required_for: "--tag=",
-        description:  "Specify the new git commit <revision> corresponding to a specified <tag>."
+             required_for: "--tag=",
+             description:  "Specify the new git commit <revision> corresponding to a specified <tag>."
 
       switch :force
       switch :quiet
@@ -340,8 +340,8 @@ module Homebrew
         safe_system "git", "fetch", "--unshallow", "origin" if shallow
         safe_system "git", "checkout", "--no-track", "-b", branch, "origin/master"
         safe_system "git", "commit", "--no-edit", "--verbose",
-          "--message=#{formula.name} #{new_formula_version}#{devel_message}",
-          "--", formula.path
+                    "--message=#{formula.name} #{new_formula_version}#{devel_message}",
+                    "--", formula.path
         safe_system "git", "push", "--set-upstream", remote_url, "#{branch}:#{branch}"
         safe_system "git", "checkout", "--quiet", "-"
         pr_message = <<~EOS

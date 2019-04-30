@@ -17,15 +17,15 @@ module Homebrew
       EOS
 
       flag   "--prune=",
-        description: "Remove all cache files older than specified <days>."
+             description: "Remove all cache files older than specified <days>."
       switch "-n", "--dry-run",
-        description: "Show what would be removed, but do not actually remove anything."
+             description: "Show what would be removed, but do not actually remove anything."
       switch "-s",
-        description: "Scrub the cache, including downloads for even the latest versions. "\
-                     "Note downloads for any installed formula or cask will still not be deleted. "\
-                     "If you want to delete those too: `rm -rf \"$(brew --cache)\"`"
+             description: "Scrub the cache, including downloads for even the latest versions. "\
+                          "Note downloads for any installed formula or cask will still not be deleted. "\
+                          "If you want to delete those too: `rm -rf \"$(brew --cache)\"`"
       switch "--prune-prefix",
-        description: "Only prune the symlinks and directories from the prefix and remove no other files."
+             description: "Only prune the symlinks and directories from the prefix and remove no other files."
       switch :verbose
       switch :debug
     end

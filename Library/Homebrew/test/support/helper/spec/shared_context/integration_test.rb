@@ -221,7 +221,7 @@ RSpec.shared_context "integration test" do
       system "git", "init"
       system "git", "add", "--all"
       system "git", "commit", "-m",
-        "#{old_name.capitalize} has not yet been renamed"
+             "#{old_name.capitalize} has not yet been renamed"
 
       brew "install", old_name
 
@@ -230,7 +230,7 @@ RSpec.shared_context "integration test" do
 
       system "git", "add", "--all"
       system "git", "commit", "-m",
-        "#{old_name.capitalize} has been renamed to #{new_name.capitalize}"
+             "#{old_name.capitalize} has been renamed to #{new_name.capitalize}"
     end
   end
 

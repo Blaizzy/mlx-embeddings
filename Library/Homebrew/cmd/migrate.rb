@@ -15,8 +15,8 @@ module Homebrew
         packages.
       EOS
       switch :force,
-        description: "Treat installed <formula> and passed <formula> like if they are from "\
-                     "same taps and migrate them anyway."
+             description: "Treat installed <formula> and passed <formula> like if they are from "\
+                          "same taps and migrate them anyway."
       switch :verbose
       switch :debug
     end

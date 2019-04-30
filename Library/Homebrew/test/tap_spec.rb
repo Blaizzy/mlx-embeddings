@@ -120,7 +120,7 @@ describe Tap do
       cd path do
         system "git", "init"
         system "git", "remote", "add", "origin",
-          "https://github.com/someone/homebrew-foo"
+               "https://github.com/someone/homebrew-foo"
       end
       expect(t.issues_url).to eq("https://github.com/someone/homebrew-foo/issues")
       expect(subject.issues_url).to eq("https://github.com/Homebrew/homebrew-foo/issues")

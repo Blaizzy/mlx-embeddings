@@ -16,26 +16,26 @@ module Homebrew
         For tarballs, also print SHA-256 checksums.
       EOS
       switch "--HEAD",
-        description: "Fetch HEAD version instead of stable version."
+             description: "Fetch HEAD version instead of stable version."
       switch "--devel",
-        description: "Fetch development version instead of stable version."
+             description: "Fetch development version instead of stable version."
       switch :verbose,
-        description: "Do a verbose VCS checkout, if the URL represents a VCS. This is useful for "\
-                     "seeing if an existing VCS cache has been updated."
+             description: "Do a verbose VCS checkout, if the URL represents a VCS. This is useful for "\
+                          "seeing if an existing VCS cache has been updated."
       switch :force,
-        description: "Remove a previously cached version and re-fetch."
+             description: "Remove a previously cached version and re-fetch."
       switch "--retry",
-        description: "Retry if a download fails or re-download if the checksum of a previously cached "\
-                    "version no longer matches."
+             description: "Retry if a download fails or re-download if the checksum of a previously cached "\
+                         "version no longer matches."
       switch "--deps",
-        description: "Download dependencies for any listed <formula>."
+             description: "Download dependencies for any listed <formula>."
       switch "-s", "--build-from-source",
-        description: "Download the source for rather than a bottle."
+             description: "Download the source for rather than a bottle."
       switch "--build-bottle",
-        description: "Download the source (for eventual bottling) rather than a bottle."
+             description: "Download the source (for eventual bottling) rather than a bottle."
       switch "--force-bottle",
-        description: "Download a bottle if it exists for the current or newest version of macOS, "\
-                     "even if it would not be used during installation."
+             description: "Download a bottle if it exists for the current or newest version of macOS, "\
+                          "even if it would not be used during installation."
       switch :verbose
       switch :debug
       conflicts "--devel", "--HEAD"

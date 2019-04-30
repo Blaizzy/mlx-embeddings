@@ -250,7 +250,7 @@ shared_examples "#uninstall_phase or #zap_phase" do
       expect(subject).to receive(:system_command!)
         .with(
           "osascript",
-        args: ["-e", 'tell application "System Events" to delete every login item whose name is "Fancy"'],
+          args: ["-e", 'tell application "System Events" to delete every login item whose name is "Fancy"'],
         )
         .and_return(instance_double("SystemCommand::Result"))
 

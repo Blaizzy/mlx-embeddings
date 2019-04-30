@@ -27,64 +27,64 @@ module Homebrew
       EOS
 
       switch :debug,
-        description: "If brewing fails, open an interactive debugging session with access to IRB "\
-                     "or a shell inside the temporary build directory"
+             description: "If brewing fails, open an interactive debugging session with access to IRB "\
+                          "or a shell inside the temporary build directory"
       flag "--env=",
-        description: "If `std` is passed, use the standard build environment instead of superenv."\
-                     "If `super` is passed, use superenv even if the formula specifies the "\
-                     "standard build environment."
+           description: "If `std` is passed, use the standard build environment instead of superenv."\
+                        "If `super` is passed, use superenv even if the formula specifies the "\
+                        "standard build environment."
       switch "--ignore-dependencies",
-        description: "An unsupported Homebrew development flag to skip installing any dependencies of "\
-                     "any kind. If the dependencies are not already present, the formula will have issues. "\
-                     "If you're not developing Homebrew, consider adjusting your PATH rather than "\
-                     "using this flag."
+             description: "An unsupported Homebrew development flag to skip installing any dependencies of "\
+                          "any kind. If the dependencies are not already present, the formula will have issues. "\
+                          "If you're not developing Homebrew, consider adjusting your PATH rather than "\
+                          "using this flag."
       switch "--only-dependencies",
-        description: "Install the dependencies with specified options but do not install the "\
-                     "specified formula."
+             description: "Install the dependencies with specified options but do not install the "\
+                          "specified formula."
       flag "--cc=",
-        description: "Attempt to compile using provided <compiler>. <compiler> should be the "\
-                     "name of the compiler's executable, for instance `gcc-7` for GCC 7. "\
-                     "In order to use LLVM's clang, use `llvm_clang`. To specify the "\
-                     "Apple-provided clang, use `clang`. This parameter will only accept "\
-                     "compilers that are provided by Homebrew or bundled with macOS. "\
-                     "Please do not file issues if you encounter errors while using this flag."
+           description: "Attempt to compile using provided <compiler>. <compiler> should be the "\
+                        "name of the compiler's executable, for instance `gcc-7` for GCC 7. "\
+                        "In order to use LLVM's clang, use `llvm_clang`. To specify the "\
+                        "Apple-provided clang, use `clang`. This parameter will only accept "\
+                        "compilers that are provided by Homebrew or bundled with macOS. "\
+                        "Please do not file issues if you encounter errors while using this flag."
       switch "-s", "--build-from-source",
-        description: "Compile the specified <formula> from source even if a bottle is provided. "\
-                     "Dependencies will still be installed from bottles if they are available."
+             description: "Compile the specified <formula> from source even if a bottle is provided. "\
+                          "Dependencies will still be installed from bottles if they are available."
       switch "--force-bottle",
-        description: "Install from a bottle if it exists for the current or newest version of "\
-                     "macOS, even if it would not normally be used for installation."
+             description: "Install from a bottle if it exists for the current or newest version of "\
+                          "macOS, even if it would not normally be used for installation."
       switch "--include-test",
-        description: "Install testing dependencies required to run `brew test`."
+             description: "Install testing dependencies required to run `brew test`."
       switch "--devel",
-        description: "If <formula> defines it, install the development version."
+             description: "If <formula> defines it, install the development version."
       switch "--HEAD",
-        description: "If <formula> defines it, install the HEAD version, aka. master, trunk, unstable."
+             description: "If <formula> defines it, install the HEAD version, aka. master, trunk, unstable."
       switch "--fetch-HEAD",
-        description: "Fetch the upstream repository to detect if the HEAD installation of the "\
-                     "formula is outdated. Otherwise, the repository's HEAD will be checked for "\
-                     "updates when a new stable or development version has been released."
+             description: "Fetch the upstream repository to detect if the HEAD installation of the "\
+                          "formula is outdated. Otherwise, the repository's HEAD will be checked for "\
+                          "updates when a new stable or development version has been released."
       switch "--keep-tmp",
-        description: "Don't delete the temporary files created during installation."
+             description: "Don't delete the temporary files created during installation."
       switch "--build-bottle",
-        description: "Prepare the formula for eventual bottling during installation."
+             description: "Prepare the formula for eventual bottling during installation."
       flag "--bottle-arch=",
-        depends_on:  "--build-bottle",
-        description: "Optimise bottles for the given architecture rather than the oldest "\
-                     "architecture supported by the version of macOS the bottles are built on."
+           depends_on:  "--build-bottle",
+           description: "Optimise bottles for the given architecture rather than the oldest "\
+                        "architecture supported by the version of macOS the bottles are built on."
       switch :force,
-        description: "Install without checking for previously installed keg-only or "\
-                     "non-migrated versions."
+             description: "Install without checking for previously installed keg-only or "\
+                          "non-migrated versions."
       switch :verbose,
-        description: "Print the verification and postinstall steps."
+             description: "Print the verification and postinstall steps."
       switch "--display-times",
-        description: "Print install times for each formula at the end of the run."
+             description: "Print install times for each formula at the end of the run."
       switch "-i", "--interactive",
-        description: "Download and patch <formula>, then open a shell. This allows the user to "\
-                     "run `./configure --help` and otherwise determine how to turn the software "\
-                     "package into a Homebrew package."
+             description: "Download and patch <formula>, then open a shell. This allows the user to "\
+                          "run `./configure --help` and otherwise determine how to turn the software "\
+                          "package into a Homebrew package."
       switch "-g", "--git",
-        description: "Create a Git repository, useful for creating patches to the software."
+             description: "Create a Git repository, useful for creating patches to the software."
       conflicts "--ignore-dependencies", "--only-dependencies"
       conflicts "--devel", "--HEAD"
       conflicts "--build-from-source", "--build-bottle", "--force-bottle"

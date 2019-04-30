@@ -16,9 +16,9 @@ module Homebrew
         the Cellar and then link it into Homebrew's prefix with `brew link`.
       EOS
       flag "--name=",
-       description: "Explicitly set the provided <name> of the package being installed."
+           description: "Explicitly set the provided <name> of the package being installed."
       flag "--version=",
-       description: "Explicitly set the provided <version> of the package being installed."
+           description: "Explicitly set the provided <version> of the package being installed."
       switch :verbose
       switch :debug
     end

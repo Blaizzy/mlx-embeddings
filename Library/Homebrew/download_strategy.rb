@@ -1068,7 +1068,7 @@ class DownloadStrategyDetector
       detect_from_symbol(using)
     else
       raise TypeError,
-        "Unknown download strategy specification #{strategy.inspect}"
+            "Unknown download strategy specification #{strategy.inspect}"
     end
 
     strategy

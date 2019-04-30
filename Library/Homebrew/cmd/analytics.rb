@@ -44,12 +44,12 @@ module Homebrew
       end
     when "on"
       safe_system "git", "config", "--file=#{config_file}",
-                                   "--replace-all", "homebrew.analyticsdisabled", "false"
+                  "--replace-all", "homebrew.analyticsdisabled", "false"
       safe_system "git", "config", "--file=#{config_file}",
-                                   "--replace-all", "homebrew.analyticsmessage", "true"
+                  "--replace-all", "homebrew.analyticsmessage", "true"
     when "off"
       safe_system "git", "config", "--file=#{config_file}",
-                                   "--replace-all", "homebrew.analyticsdisabled", "true"
+                  "--replace-all", "homebrew.analyticsdisabled", "true"
       system "git", "config", "--file=#{config_file}", "--unset-all", "homebrew.analyticsuuid"
     when "regenerate-uuid"
       # it will be regenerated in next run.

@@ -54,7 +54,6 @@ GEM
     parser (2.6.3.0)
       ast (~> 2.4.0)
     plist (3.5.0)
-    psych (3.1.0)
     rainbow (3.0.0)
     rdiscount (2.2.0.1)
     ronn (0.7.3)
@@ -81,14 +80,15 @@ GEM
     rspec-support (3.8.0)
     rspec-wait (0.0.9)
       rspec (>= 3, < 4)
-    rubocop (0.67.2)
+    rubocop (0.68.0)
       jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
       parser (>= 2.5, != 2.5.1.1)
-      psych (>= 3.1.0)
       rainbow (>= 2.2.2, < 4.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 1.6)
+    rubocop-performance (1.1.0)
+      rubocop (>= 0.67.0)
     rubocop-rspec (1.32.0)
       rubocop (>= 0.60.0)
     ruby-macho (2.2.0)
@@ -130,6 +130,7 @@ DEPENDENCIES
   rspec-retry
   rspec-wait
   rubocop
+  rubocop-performance
   rubocop-rspec
   ruby-macho
   simplecov

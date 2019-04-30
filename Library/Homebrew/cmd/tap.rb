@@ -25,18 +25,18 @@ module Homebrew
         using protocols other than HTTPS, e.g., SSH, GIT, HTTP, FTP(S), RSYNC.
       EOS
       switch "--full",
-        description: "Use a full clone when tapping a repository. By default, the repository is "\
-                     "cloned as a shallow copy (`--depth=1`). To convert a shallow copy to a "\
-                     "full copy, you can retap passing `--full` without first untapping."
+             description: "Use a full clone when tapping a repository. By default, the repository is "\
+                          "cloned as a shallow copy (`--depth=1`). To convert a shallow copy to a "\
+                          "full copy, you can retap passing `--full` without first untapping."
       switch "--force-auto-update",
-        description: "Auto-update tap even if it is not hosted on GitHub. By default, only taps "\
-                     "hosted on GitHub are auto-updated (for performance reasons)."
+             description: "Auto-update tap even if it is not hosted on GitHub. By default, only taps "\
+                          "hosted on GitHub are auto-updated (for performance reasons)."
       switch "--repair",
-        description: "Migrate tapped formulae from symlink-based to directory-based structure."
+             description: "Migrate tapped formulae from symlink-based to directory-based structure."
       switch "--list-pinned",
-        description: "List all pinned taps."
+             description: "List all pinned taps."
       switch "-q", "--quieter",
-        description: "Suppress any warnings."
+             description: "Suppress any warnings."
       switch :debug
     end
   end

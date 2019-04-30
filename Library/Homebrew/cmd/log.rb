@@ -14,13 +14,13 @@ module Homebrew
         Show the `git log` for the given <formula>.
       EOS
       switch "-p", "-u", "--patch",
-        description: "Also output patch from commit."
+             description: "Also output patch from commit."
       switch "--stat",
-        description: "Also output diffstat from commit."
+             description: "Also output diffstat from commit."
       switch "--oneline",
-        description: "Output only one line per commit."
+             description: "Output only one line per commit."
       switch "-1", "--max-count=1",
-        description: "Output only one commit."
+             description: "Output only one commit."
     end
   end
 

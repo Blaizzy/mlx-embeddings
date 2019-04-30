@@ -189,8 +189,8 @@ class Keg
   extend Forwardable
 
   def_delegators :path,
-    :to_s, :hash, :abv, :disk_usage, :file_count, :directory?, :exist?, :/,
-    :join, :rename, :find
+                 :to_s, :hash, :abv, :disk_usage, :file_count, :directory?, :exist?, :/,
+                 :join, :rename, :find
 
   def initialize(path)
     path = path.resolved_path if path.to_s.start_with?("#{HOMEBREW_PREFIX}/opt/")

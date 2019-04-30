@@ -22,33 +22,33 @@ module Homebrew
         If <formula> is specified, show summary of information about <formula>.
       EOS
       switch "--analytics",
-        description: "Display global Homebrew analytics data or, if specified, installation and "\
-                     "build error data for <formula> (provided neither `HOMEBREW_NO_ANALYTICS` "\
-                     "nor `HOMEBREW_NO_GITHUB_API` are set)."
+             description: "Display global Homebrew analytics data or, if specified, installation and "\
+                          "build error data for <formula> (provided neither `HOMEBREW_NO_ANALYTICS` "\
+                          "nor `HOMEBREW_NO_GITHUB_API` are set)."
       flag   "--days",
-        depends_on:  "--analytics",
-        description: "How many days of global analytics data to retrieve. "\
-                     "The value for <days> must be `30`, `90` or `365`. The default is `30`."
+             depends_on:  "--analytics",
+             description: "How many days of global analytics data to retrieve. "\
+                          "The value for <days> must be `30`, `90` or `365`. The default is `30`."
       flag   "--category",
-        depends_on:  "--analytics",
-        description: "Which type of global analytics data to retrieve. "\
-                     "The value for <category> must be `install`, `install-on-request`, "\
-                     "`cask-install`, `build-error` or `os-version`. The default is `install`."
+             depends_on:  "--analytics",
+             description: "Which type of global analytics data to retrieve. "\
+                          "The value for <category> must be `install`, `install-on-request`, "\
+                          "`cask-install`, `build-error` or `os-version`. The default is `install`."
       switch "--github",
-        description: "Open a browser to the GitHub source page for <formula>. "\
-                     "To view formula history locally: `brew log -p` <formula>"
+             description: "Open a browser to the GitHub source page for <formula>. "\
+                          "To view formula history locally: `brew log -p` <formula>"
       flag "--json",
-        description: "Print a JSON representation of <formula>. Currently the default and only accepted "\
-                     "value for <version> is `v1`. See the docs for examples of using the JSON "\
-                     "output: <https://docs.brew.sh/Querying-Brew>"
+           description: "Print a JSON representation of <formula>. Currently the default and only accepted "\
+                        "value for <version> is `v1`. See the docs for examples of using the JSON "\
+                        "output: <https://docs.brew.sh/Querying-Brew>"
       switch "--installed",
-        depends_on:  "--json",
-        description: "Print JSON of formulae that are currently installed."
+             depends_on:  "--json",
+             description: "Print JSON of formulae that are currently installed."
       switch "--all",
-        depends_on:  "--json",
-        description: "Print JSON of all available formulae."
+             depends_on:  "--json",
+             description: "Print JSON of all available formulae."
       switch :verbose,
-        description: "Show more verbose analytics data for <formula>."
+             description: "Show more verbose analytics data for <formula>."
       switch :debug
       conflicts "--installed", "--all"
     end
@@ -222,7 +222,7 @@ module Homebrew
     return if ENV["HOMEBREW_NO_ANALYTICS"] || ENV["HOMEBREW_NO_GITHUB_API"]
 
     output, = curl_output("--max-time", "5",
-      "https://formulae.brew.sh/api/#{endpoint}")
+                          "https://formulae.brew.sh/api/#{endpoint}")
     return if output.blank?
 
     JSON.parse(output)

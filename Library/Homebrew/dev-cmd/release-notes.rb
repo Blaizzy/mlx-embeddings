@@ -15,7 +15,7 @@ module Homebrew
         If no <end_ref> is provided it defaults to `origin/master`.
       EOS
       switch "--markdown",
-        description: "Print as a Markdown list."
+             description: "Print as a Markdown list."
     end
   end
 

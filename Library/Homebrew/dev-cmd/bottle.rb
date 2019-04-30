@@ -53,33 +53,33 @@ module Homebrew
         value, while `--no-rebuild` will remove it.
       EOS
       switch "--skip-relocation",
-        description: "Do not check if the bottle can be marked as relocatable."
+             description: "Do not check if the bottle can be marked as relocatable."
       switch "--or-later",
-        description: "Append `_or_later` to the bottle tag."
+             description: "Append `_or_later` to the bottle tag."
       switch "--force-core-tap",
-        description: "Build a bottle even if <formula> is not in `homebrew/core` or any installed taps."
+             description: "Build a bottle even if <formula> is not in `homebrew/core` or any installed taps."
       switch "--no-rebuild",
-        description: "If the formula specifies a rebuild version, remove it from the generated DSL."
+             description: "If the formula specifies a rebuild version, remove it from the generated DSL."
       switch "--keep-old",
-        description: "If the formula specifies a rebuild version, attempt to preserve its value in the "\
-                     "generated DSL."
+             description: "If the formula specifies a rebuild version, attempt to preserve its value in the "\
+                          "generated DSL."
       switch "--json",
-        description: "Write bottle information to a JSON file, which can be used as the argument for "\
-                     "`--merge`."
+             description: "Write bottle information to a JSON file, which can be used as the argument for "\
+                          "`--merge`."
       switch "--merge",
-        description: "Generate an updated bottle block for a formula and optionally merge it into the "\
-                     "formula file. Instead of a formula name, requires a JSON file generated with "\
-                     "`brew bottle --json` <formula>."
+             description: "Generate an updated bottle block for a formula and optionally merge it into the "\
+                          "formula file. Instead of a formula name, requires a JSON file generated with "\
+                          "`brew bottle --json` <formula>."
       switch "--write",
-        depends_on:  "--merge",
-        description: "Write the changes to the formula file. A new commit will be generated unless "\
-                     "`--no-commit` is passed."
+             depends_on:  "--merge",
+             description: "Write the changes to the formula file. A new commit will be generated unless "\
+                          "`--no-commit` is passed."
       switch "--no-commit",
-        depends_on:  "--write",
-        description: "When passed with `--write`, a new commit will not generated after writing changes "\
-                     "to the formula file."
+             depends_on:  "--write",
+             description: "When passed with `--write`, a new commit will not generated after writing changes "\
+                          "to the formula file."
       flag   "--root-url=",
-        description: "Use the specified <URL> as the root of the bottle's URL instead of Homebrew's default."
+             description: "Use the specified <URL> as the root of the bottle's URL instead of Homebrew's default."
       switch :verbose
       switch :debug
       conflicts "--no-rebuild", "--keep-old"
@@ -545,8 +545,8 @@ module Homebrew
 
           path.parent.cd do
             safe_system "git", "commit", "--no-edit", "--verbose",
-              "--message=#{short_name}: #{update_or_add} #{pkg_version} bottle.",
-              "--", path
+                        "--message=#{short_name}: #{update_or_add} #{pkg_version} bottle.",
+                        "--", path
           end
         end
       else
