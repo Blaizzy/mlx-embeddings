@@ -43,7 +43,7 @@ GEM
     minitest (5.11.3)
     mustache (1.1.0)
     net-http-digest_auth (1.4.1)
-    net-http-persistent (3.0.0)
+    net-http-persistent (3.0.1)
       connection_pool (~> 2.2)
     nokogiri (1.10.3)
       mini_portile2 (~> 2.4.0)
