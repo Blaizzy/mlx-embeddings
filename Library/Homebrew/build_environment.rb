@@ -59,7 +59,7 @@ module Homebrew
       s = "#{key}: #{value}"
       case key
       when "CC", "CXX", "LD"
-        s << " => #{Pathname.new(value).realpath}" if File.symlink?(value)
+        s += " => #{Pathname.new(value).realpath}" if File.symlink?(value)
       end
       f.puts s
     end
