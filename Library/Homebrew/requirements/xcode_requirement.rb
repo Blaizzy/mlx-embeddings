@@ -14,7 +14,6 @@ class XcodeRequirement < Requirement
 
   def xcode_installed_version
     return false unless MacOS::Xcode.installed?
-    return false unless xcode_swift_compatability?
     return true unless @version
 
     MacOS::Xcode.version >= @version
@@ -26,12 +25,6 @@ class XcodeRequirement < Requirement
       A full installation of Xcode.app#{version} is required to compile
       this software. Installing just the Command Line Tools is not sufficient.
     EOS
-    unless xcode_swift_compatability?
-      message += <<~EOS
-
-        Xcode >=10.2 requires macOS >=10.14.4 to build many formulae.
-      EOS
-    end
     if @version && Version.new(MacOS::Xcode.latest_version) < Version.new(@version)
       message + <<~EOS
 
@@ -48,16 +41,5 @@ class XcodeRequirement < Requirement
 
   def inspect
     "#<#{self.class.name}: #{tags.inspect} version=#{@version.inspect}>"
-  end
-
-  private
-
-  # TODO: when 10.14.4 and 10.2 have been around for long enough remove this
-  # method in favour of requiring 10.14.4 and 10.2.
-  def xcode_swift_compatability?
-    return true if MacOS::Xcode.version < "10.2"
-    return true if MacOS.full_version >= "10.14.4"
-
-    MacOS.full_version < "10.14"
   end
 end
