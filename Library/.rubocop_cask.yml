@@ -24,10 +24,10 @@ Layout/AlignHash:
   EnforcedHashRocketStyle: table
   EnforcedColonStyle: table
 
-Layout/IndentArray:
+Layout/IndentFirstArrayElement:
   EnforcedStyle: align_brackets
 
-Layout/IndentHash:
+Layout/IndentFirstHashElement:
   EnforcedStyle: align_braces
 
 # Casks often contain long URLs and file paths.
