@@ -157,15 +157,13 @@ module Cask
       Tap.default_cask_tap.install unless Tap.default_cask_tap.installed?
       self.class.run_command(command, *args)
     rescue CaskError, MethodDeprecatedError, ArgumentError, OptionParser::InvalidOption => e
-      msg = e.message
-      msg << e.backtrace.join("\n").prepend("\n") if ARGV.debug?
-      onoe msg
+      onoe e.message
+      $stderr.puts e.backtrace if ARGV.debug?
       exit 1
     rescue StandardError, ScriptError, NoMemoryError => e
-      msg = "#{e.message}\n"
-      msg << Utils.error_message_with_suggestions
-      msg << e.backtrace.join("\n")
-      onoe msg
+      onoe e.message
+      $stderr.puts Utils.error_message_with_suggestions
+      $stderr.puts e.backtrace
       exit 1
     end
 
