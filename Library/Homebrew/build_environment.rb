@@ -56,11 +56,12 @@ module Homebrew
 
     keys.each do |key|
       value = env[key]
-      s = "#{key}: #{value}"
+      s = +"#{key}: #{value}"
       case key
       when "CC", "CXX", "LD"
         s << " => #{Pathname.new(value).realpath}" if File.symlink?(value)
       end
+      s.freeze
       f.puts s
     end
   end
