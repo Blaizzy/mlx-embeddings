@@ -62,7 +62,7 @@ module Homebrew
       info += ", #{private_count} private"
       info += ", #{formula_count} #{"formula".pluralize(formula_count)}"
       info += ", #{command_count} #{"command".pluralize(command_count)}"
-      info += ", #{Tap::TAP_DIRECTORY.abv}" if Tap::TAP_DIRECTORY.directory?
+      info += ", #{Tap::TAP_DIRECTORY.dup.abv}" if Tap::TAP_DIRECTORY.directory?
       puts info
     else
       taps.each_with_index do |tap, i|
