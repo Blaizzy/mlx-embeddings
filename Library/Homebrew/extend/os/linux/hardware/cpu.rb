@@ -3,6 +3,20 @@
 module Hardware
   class CPU
     class << self
+      native_arch = (ENV["HOMEBREW_ARCH"] || "native").freeze
+      OPTIMIZATION_FLAGS_LINUX = {
+        native:  "-march=#{native_arch}",
+        nehalem: "-march=nehalem",
+        core2:   "-march=core2",
+        core:    "-march=prescott",
+        armv6:   "-march=armv6",
+        armv8:   "-march=armv8-a",
+      }.freeze
+
+      def optimization_flags
+        OPTIMIZATION_FLAGS_LINUX
+      end
+
       def cpuinfo
         @cpuinfo ||= File.read("/proc/cpuinfo")
       end
