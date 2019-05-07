@@ -992,6 +992,10 @@ Note that environment variables must have a value set to be detected. For exampl
 `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 `export HOMEBREW_NO_INSECURE_REDIRECT`.
 
+  * `HOMEBREW_ARCH`:
+    If set, Homebrew will pass cpu type name to compiler by `-march` option instead of
+    `-march=native`. This is affected on Linux only.
+
   * `HOMEBREW_ARTIFACT_DOMAIN`:
     If set, instructs Homebrew to prefix all download URLs, including those for bottles,
     with this variable. For example, `HOMEBREW_ARTIFACT_DOMAIN=http://localhost:8080`

@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "BREW" "1" "April 2019" "Homebrew" "brew"
+.TH "BREW" "1" "May 2019" "Homebrew" "brew"
 .
 .SH "NAME"
 \fBbrew\fR \- The missing package manager for macOS
@@ -1223,6 +1223,10 @@ Homebrew can install formulae via URL, e\.g\. \fBhttps://raw\.githubusercontent\
 .
 .SH "ENVIRONMENT"
 Note that environment variables must have a value set to be detected\. For example, \fBexport HOMEBREW_NO_INSECURE_REDIRECT=1\fR rather than just \fBexport HOMEBREW_NO_INSECURE_REDIRECT\fR\.
+.
+.TP
+\fBHOMEBREW_ARCH\fR
+If set, Homebrew will pass cpu type name to compiler by \fB\-march\fR option instead of \fB\-march=native\fR\. This is affected on Linux only\.
 .
 .TP
 \fBHOMEBREW_ARTIFACT_DOMAIN\fR
