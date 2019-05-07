@@ -11,14 +11,15 @@ You must configure your shell to enable the completion support. This is because 
 To make Homebrew's completions available in `bash`, you must source the definitions as part of your shell startup. Add the following to your `~/.bash_profile` file:
 
 ```sh
+HOMEBREW_PREFIX=$(brew --prefix)
 if type brew &>/dev/null; then
-  for COMPLETION in $(brew --prefix)/etc/bash_completion.d/*
+  for COMPLETION in "$HOMEBREW_PREFIX"/etc/bash_completion.d/*
   do
     [[ -f $COMPLETION ]] && source "$COMPLETION"
   done
-  if [[ -f $(brew --prefix)/etc/profile.d/bash_completion.sh ]];
+  if [[ -f ${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh ]];
   then
-    source "$(brew --prefix)/etc/profile.d/bash_completion.sh"
+    source "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh"
   fi
 fi
 ```
