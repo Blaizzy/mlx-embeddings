@@ -324,20 +324,27 @@ module Cask
               set item i of argv to (item i of argv as POSIX file)
             end repeat
 
-            tell application "Finder"
-              set trashedItems to (move argv to trash)
-              set output to ""
+            try
+              with timeout of 30 seconds
+                tell application "Finder"
+                  set trashedItems to (move argv to trash)
+                  set output to ""
 
-              repeat with i from 1 to (count trashedItems)
-                set trashedItem to POSIX path of (item i of trashedItems as string)
-                set output to output & trashedItem
-                if i < count trashedItems then
-                  set output to output & character id 0
-                end if
-              end repeat
+                  repeat with i from 1 to (count trashedItems)
+                    set trashedItem to POSIX path of (item i of trashedItems as string)
+                    set output to output & trashedItem
+                    if i < count trashedItems then
+                      set output to output & character id 0
+                    end if
+                  end repeat
 
-              return output
-            end tell
+                  return output
+                end tell
+              end timeout
+            on error
+              -- Ignore errors (probably running under Azure)
+              return 0
+            end try
           end run
         APPLESCRIPT
 
