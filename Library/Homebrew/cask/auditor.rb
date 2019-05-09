@@ -4,15 +4,24 @@ require "cask/download"
 
 module Cask
   class Auditor
-    def self.audit(cask, audit_download: false, check_token_conflicts: false, quarantine: true, commit_range: nil)
-      new(cask, audit_download, check_token_conflicts, quarantine, commit_range).audit
+    include Checkable
+    extend Predicable
+
+    def self.audit(cask, audit_download: false, audit_appcast: false,
+                   check_token_conflicts: false, quarantine: true, commit_range: nil)
+      new(cask, audit_download: audit_download,
+                audit_appcast: audit_appcast,
+                check_token_conflicts: check_token_conflicts,
+                quarantine: quarantine, commit_range: commit_range).audit
     end
 
     attr_reader :cask, :commit_range
 
-    def initialize(cask, audit_download, check_token_conflicts, quarantine, commit_range)
+    def initialize(cask, audit_download: false, audit_appcast: false,
+                   check_token_conflicts: false, quarantine: true, commit_range: nil)
       @cask = cask
       @audit_download = audit_download
+      @audit_appcast = audit_appcast
       @quarantine = quarantine
       @commit_range = commit_range
       @check_token_conflicts = check_token_conflicts
@@ -22,9 +31,7 @@ module Cask
       @audit_download
     end
 
-    def quarantine?
-      @quarantine
-    end
+    attr_predicate :audit_appcast?, :quarantine?
 
     def check_token_conflicts?
       @check_token_conflicts
@@ -57,7 +64,8 @@ module Cask
 
     def audit_cask_instance(cask)
       download = audit_download? && Download.new(cask, quarantine: quarantine?)
-      audit = Audit.new(cask, download:              download,
+      audit = Audit.new(cask, check_appcast:         audit_appcast?,
+                              download:              download,
                               check_token_conflicts: check_token_conflicts?,
                               commit_range:          commit_range)
       audit.run!

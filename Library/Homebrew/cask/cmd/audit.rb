@@ -4,6 +4,7 @@ module Cask
   class Cmd
     class Audit < AbstractCommand
       option "--download",        :download,        false
+      option "--appcast",         :appcast,         false
       option "--token-conflicts", :token_conflicts, false
 
       def self.help
@@ -22,6 +23,7 @@ module Cask
       def audit(cask)
         odebug "Auditing Cask #{cask}"
         Auditor.audit(cask, audit_download:        download?,
+                            audit_appcast:         appcast?,
                             check_token_conflicts: token_conflicts?,
                             quarantine:            quarantine?)
       end

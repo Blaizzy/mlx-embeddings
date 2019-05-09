@@ -21,7 +21,7 @@ describe Cask::Cmd::Audit, :cask do
       expect(Cask::CaskLoader).to receive(:load).with(cask_token).and_return(cask)
 
       expect(Cask::Auditor).to receive(:audit)
-        .with(cask, audit_download: false, check_token_conflicts: false, quarantine: true)
+        .with(cask, audit_download: false, audit_appcast: false, check_token_conflicts: false, quarantine: true)
         .and_return(true)
 
       described_class.run(cask_token)
@@ -32,7 +32,7 @@ describe Cask::Cmd::Audit, :cask do
     it "does not download the Cask per default" do
       allow(Cask::CaskLoader).to receive(:load).and_return(cask)
       expect(Cask::Auditor).to receive(:audit)
-        .with(cask, audit_download: false, check_token_conflicts: false, quarantine: true)
+        .with(cask, audit_download: false, audit_appcast: false, check_token_conflicts: false, quarantine: true)
         .and_return(true)
 
       described_class.run("casktoken")
@@ -41,7 +41,7 @@ describe Cask::Cmd::Audit, :cask do
     it "download a Cask if --download flag is set" do
       allow(Cask::CaskLoader).to receive(:load).and_return(cask)
       expect(Cask::Auditor).to receive(:audit)
-        .with(cask, audit_download: true, check_token_conflicts: false, quarantine: true)
+        .with(cask, audit_download: true, audit_appcast: false, check_token_conflicts: false, quarantine: true)
         .and_return(true)
 
       described_class.run("casktoken", "--download")
@@ -52,7 +52,7 @@ describe Cask::Cmd::Audit, :cask do
     it "does not check for token conflicts per default" do
       allow(Cask::CaskLoader).to receive(:load).and_return(cask)
       expect(Cask::Auditor).to receive(:audit)
-        .with(cask, audit_download: false, check_token_conflicts: false, quarantine: true)
+        .with(cask, audit_download: false, audit_appcast: false, check_token_conflicts: false, quarantine: true)
         .and_return(true)
 
       described_class.run("casktoken")
@@ -61,7 +61,7 @@ describe Cask::Cmd::Audit, :cask do
     it "checks for token conflicts if --token-conflicts flag is set" do
       allow(Cask::CaskLoader).to receive(:load).and_return(cask)
       expect(Cask::Auditor).to receive(:audit)
-        .with(cask, audit_download: false, check_token_conflicts: true, quarantine: true)
+        .with(cask, audit_download: false, audit_appcast: false, check_token_conflicts: true, quarantine: true)
         .and_return(true)
 
       described_class.run("casktoken", "--token-conflicts")
