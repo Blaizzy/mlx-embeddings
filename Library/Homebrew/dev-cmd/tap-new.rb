@@ -54,11 +54,11 @@ module Homebrew
       jobs:
       - job: macOS
         pool:
-          vmImage: macOS-10.13
+          vmImage: macOS-10.14
         steps:
           - bash: |
               set -e
-              sudo xcode-select --switch /Applications/Xcode_10.1.app/Contents/Developer
+              sudo xcode-select --switch /Applications/Xcode_10.2.app/Contents/Developer
               brew update
               HOMEBREW_TAP_DIR="/usr/local/Homebrew/Library/Taps/#{tap.full_name}"
               mkdir -p "$HOMEBREW_TAP_DIR"

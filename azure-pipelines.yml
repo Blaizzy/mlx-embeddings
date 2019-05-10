@@ -1,11 +1,11 @@
 jobs:
 - job: macOS
   pool:
-    vmImage: macOS-10.13
+    vmImage: macOS-10.14
   steps:
     - bash: |
         set -e
-        sudo xcode-select --switch /Applications/Xcode_10.1.app/Contents/Developer
+        sudo xcode-select --switch /Applications/Xcode_10.2.app/Contents/Developer
         HOMEBREW_REPOSITORY="$(brew --repo)"
         mv "$HOMEBREW_REPOSITORY/Library/Taps" "$PWD/Library"
         sudo rm -rf "$HOMEBREW_REPOSITORY"

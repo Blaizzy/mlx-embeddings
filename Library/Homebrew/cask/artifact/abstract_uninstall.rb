@@ -24,6 +24,8 @@ module Cask
         :rmdir,
       ].freeze
 
+      TRASH_SCRIPT = (HOMEBREW_LIBRARY_PATH/"cask/utils/trash.swift").freeze
+
       def self.from_args(cask, **directives)
         new(cask, directives)
       end
@@ -318,28 +320,7 @@ module Cask
       end
 
       def trash_paths(*paths, command: nil, **_)
-        result = command.run!("osascript", args: ["-e", <<~APPLESCRIPT, *paths])
-          on run argv
-            repeat with i from 1 to (count argv)
-              set item i of argv to (item i of argv as POSIX file)
-            end repeat
-
-            tell application "Finder"
-              set trashedItems to (move argv to trash)
-              set output to ""
-
-              repeat with i from 1 to (count trashedItems)
-                set trashedItem to POSIX path of (item i of trashedItems as string)
-                set output to output & trashedItem
-                if i < count trashedItems then
-                  set output to output & character id 0
-                end if
-              end repeat
-
-              return output
-            end tell
-          end run
-        APPLESCRIPT
+        result = command.run!("/usr/bin/swift", args: [TRASH_SCRIPT, *paths])
 
         # Remove AppleScript's automatic newline.
         result.tap { |r| r.stdout.sub!(/\n$/, "") }
