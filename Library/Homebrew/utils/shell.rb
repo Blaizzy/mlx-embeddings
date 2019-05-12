@@ -11,7 +11,7 @@ module Utils
       shell_name = File.basename(path)
       # handle possible version suffix like `zsh-5.2`
       shell_name.sub!(/-.*\z/m, "")
-      shell_name.to_sym if %w[bash csh fish ksh sh tcsh zsh].include?(shell_name)
+      shell_name.to_sym if %w[bash csh fish ksh mksh sh tcsh zsh].include?(shell_name)
     end
 
     def preferred
@@ -25,7 +25,7 @@ module Utils
     # quote values. quoting keys is overkill
     def export_value(key, value, shell = preferred)
       case shell
-      when :bash, :ksh, :sh, :zsh
+      when :bash, :ksh, :mksh, :sh, :zsh
         "export #{key}=\"#{sh_quote(value)}\""
       when :fish
         # fish quoting is mostly Bourne compatible except that
@@ -55,7 +55,7 @@ module Utils
 
     def prepend_path_in_profile(path)
       case preferred
-      when :bash, :ksh, :sh, :zsh, nil
+      when :bash, :ksh, :mksh, :sh, :zsh, nil
         "echo 'export PATH=\"#{sh_quote(path)}:$PATH\"' >> #{profile}"
       when :csh, :tcsh
         "echo 'setenv PATH #{csh_quote(path)}:$PATH' >> #{profile}"
@@ -69,6 +69,7 @@ module Utils
       csh:  "~/.cshrc",
       fish: "~/.config/fish/config.fish",
       ksh:  "~/.kshrc",
+      mksh: "~/.kshrc",
       sh:   "~/.bash_profile",
       tcsh: "~/.tcshrc",
       zsh:  "~/.zshrc",
