@@ -48,6 +48,7 @@ describe Cask::Cmd::Info, :cask do
         None
         ==> Artifacts
         Caffeine.app (App)
+
         local-transmission: 2.61
         https://brew.sh
         Not installed
