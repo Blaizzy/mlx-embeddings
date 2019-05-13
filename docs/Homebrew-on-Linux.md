@@ -63,7 +63,9 @@ sudo apt-get install build-essential curl file git
 ### Fedora, CentOS, or Red Hat
 
 ```sh
-sudo yum groupinstall 'Development Tools' && sudo yum install curl file git
+sudo yum groupinstall 'Development Tools'
+sudo yum install curl file git
+sudo yum install libxcrypt-compat # needed by Fedora 30 and up
 ```
 
 ### ARM
