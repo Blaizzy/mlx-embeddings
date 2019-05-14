@@ -51,6 +51,7 @@ module FormulaCellarChecks
   def check_accelerate_framework_links
     return unless @core_tap
     return unless formula.prefix.directory?
+    return if formula.name == "veclibfort" # veclibfort exists to wrap accelerate
 
     keg = Keg.new(formula.prefix)
     system_accelerate = keg.mach_o_files.select do |obj|
@@ -63,7 +64,8 @@ module FormulaCellarChecks
       object files were linked against system Accelerate
       These object files were linked against the outdated system Accelerate framework.
       Core tap formulae should link against OpenBLAS instead.
-      Adding `depends_on "openblas"` to the formula may help.
+      Removing `depends_on "veclibfort" and/or adding `depends_on "openblas"` to the
+      formula may help.
         #{system_accelerate * "\n  "}
     EOS
   end
