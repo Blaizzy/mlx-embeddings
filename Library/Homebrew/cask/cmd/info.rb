@@ -17,7 +17,8 @@ module Cask
         if json == "v1"
           puts JSON.generate(casks.map(&:to_h))
         else
-          casks.each do |cask|
+          casks.each_with_index do |cask, i|
+            puts unless i.zero?
             odebug "Getting info for Cask #{cask}"
             self.class.info(cask)
           end
