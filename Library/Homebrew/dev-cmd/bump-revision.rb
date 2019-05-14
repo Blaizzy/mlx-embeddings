@@ -15,9 +15,9 @@ module Homebrew
          present, "revision 1" will be added.
       EOS
       switch "-n", "--dry-run",
-        description: "Print what would be done rather than doing it."
+             description: "Print what would be done rather than doing it."
       flag "--message=",
-        description: "Append the provided <message> to the default commit message."
+           description: "Append the provided <message> to the default commit message."
 
       switch :force
       switch :quiet
@@ -76,7 +76,7 @@ module Homebrew
     else
       formula.path.parent.cd do
         safe_system "git", "commit", "--no-edit", "--verbose",
-          "--message=#{message}", "--", formula.path
+                    "--message=#{message}", "--", formula.path
       end
     end
   end
