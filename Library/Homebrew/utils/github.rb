@@ -126,10 +126,13 @@ module GitHub
     @api_credentials_error_message ||= begin
       unauthorized = (response_headers["http/1.1"] == "401 Unauthorized")
       scopes = response_headers["x-accepted-oauth-scopes"].to_s.split(", ")
-      if unauthorized && scopes.empty?
+      if unauthorized && scopes.blank?
         needed_human_scopes = needed_scopes.join(", ")
-        needed_human_scopes = "none" if needed_human_scopes.empty?
         credentials_scopes = response_headers["x-oauth-scopes"]
+        return if needed_human_scopes.blank? && credentials_scopes.blank?
+
+        needed_human_scopes = "none" if needed_human_scopes.blank?
+        credentials_scopes = "none" if credentials_scopes.blank?
 
         case GitHub.api_credentials_type
         when :keychain
