@@ -10,7 +10,7 @@ $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/thread_safe-0.3.6/lib
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/tzinfo-1.2.5/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/activesupport-5.2.3/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/ast-2.4.0/lib"
-$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/backports-3.14.0/lib"
+$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/backports-3.15.0/lib"
 $:.unshift "#{path}/"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/connection_pool-2.2.2/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/extensions/universal-darwin-18/2.3.0/json-2.2.0"
