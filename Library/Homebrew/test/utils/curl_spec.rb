@@ -13,5 +13,10 @@ describe "curl" do
       ENV["HOMEBREW_CURLRC"] = "1"
       expect(curl_args("foo").first).not_to eq("-q")
     end
+
+    it "returns --retry when HOMEBREW_CURL_RETRIES is set" do
+      ENV["HOMEBREW_CURL_RETRIES"] = "3"
+      expect(curl_args("foo").join(" ")).to include("--retry 3")
+    end
   end
 end
