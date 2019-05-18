@@ -37,6 +37,8 @@ def curl_args(*extra_args, show_output: false, user_agent: :default)
     args << "--silent" unless $stdout.tty?
   end
 
+  args << "--retry" << ENV["HOMEBREW_CURL_RETRIES"] if ENV["HOMEBREW_CURL_RETRIES"]
+
   args + extra_args
 end
 
