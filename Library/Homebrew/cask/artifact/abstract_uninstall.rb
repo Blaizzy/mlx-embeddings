@@ -320,6 +320,8 @@ module Cask
       end
 
       def trash_paths(*paths, command: nil, **_)
+        return if paths.empty?
+
         result = command.run!("/usr/bin/swift", args: [TRASH_SCRIPT, *paths])
 
         # Remove AppleScript's automatic newline.
