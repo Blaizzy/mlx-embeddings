@@ -3,21 +3,12 @@
 module Cask
   class DSL
     class Appcast
-      ATTRIBUTES = [
-        :configuration,
-      ].freeze
-      attr_reader :uri, :parameters
-      attr_reader(*ATTRIBUTES)
+      attr_reader :uri, :parameters, :configuration
 
       def initialize(uri, **parameters)
         @uri        = URI(uri)
         @parameters = parameters
-
-        ATTRIBUTES.each do |attribute|
-          next unless parameters.key?(attribute)
-
-          instance_variable_set("@#{attribute}", parameters[attribute])
-        end
+        @configuration = parameters[:configuration] if parameters.key?(:configuration)
       end
 
       def to_yaml
