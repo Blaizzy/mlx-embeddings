@@ -2360,6 +2360,10 @@ class Formula
       specs.each { |spec| spec.depends_on(dep) }
     end
 
+    def uses_from_macos(dep, **args)
+      depends_on(dep)
+    end
+
     # @!attribute [w] option
     # Options can be used as arguments to `brew install`.
     # To switch features on/off: `"with-something"` or `"with-otherthing"`.
