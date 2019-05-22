@@ -2360,7 +2360,7 @@ class Formula
       specs.each { |spec| spec.depends_on(dep) }
     end
 
-    def uses_from_macos(dep, **args)
+    def uses_from_macos(dep, **_args)
       depends_on(dep)
     end
 
