@@ -21,6 +21,9 @@ graphical user interface.
 
 ## COMMANDS
 
+  * `--cache` <token> [ <token> ... ]:
+    Display the file used to cache the Cask identified by <token>.
+
   * `audit` [--language=<iso-language>[,<iso-language> ... ]] [ <token> ... ]:
     Check the given Casks for installability.
     If no tokens are given on the command line, all Casks are audited.
