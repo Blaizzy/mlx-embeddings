@@ -301,11 +301,16 @@ module Cask
     def check_appcast_contains_version
       return unless check_appcast?
       return if cask.appcast.to_s.empty?
+      return if cask.appcast.configuration == :no_check
 
       appcast_stanza = cask.appcast.to_s
-      appcast_contents, = curl_output("--max-time", "5", appcast_stanza)
+      appcast_contents, = curl_output("--location", "--max-time", "5", appcast_stanza)
       version_stanza = cask.version.to_s
-      adjusted_version_stanza = version_stanza.split(",")[0].split("-")[0].split("_")[0]
+      if cask.appcast.configuration.blank?
+        adjusted_version_stanza = version_stanza.split(",")[0].split("-")[0].split("_")[0]
+      else
+        adjusted_version_stanza = cask.appcast.configuration
+      end
       return if appcast_contents.include? adjusted_version_stanza
 
       add_warning "appcast at URL '#{appcast_stanza}' does not contain"\
