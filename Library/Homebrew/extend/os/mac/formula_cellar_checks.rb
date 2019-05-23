@@ -48,28 +48,6 @@ module FormulaCellarChecks
     EOS
   end
 
-  def check_accelerate_framework_links
-    return unless @core_tap
-    return unless formula.prefix.directory?
-    return if formula.name == "veclibfort" # veclibfort exists to wrap accelerate
-
-    keg = Keg.new(formula.prefix)
-    system_accelerate = keg.mach_o_files.select do |obj|
-      dlls = obj.dynamically_linked_libraries
-      dlls.any? { |dll| %r{^/System/Library/Frameworks/Accelerate.framework}.match dll }
-    end
-    return if system_accelerate.empty?
-
-    <<~EOS
-      object files were linked against system Accelerate
-      These object files were linked against the outdated system Accelerate framework.
-      Core tap formulae should link against OpenBLAS instead.
-      Removing `depends_on "veclibfort" and/or adding `depends_on "openblas"` to the
-      formula may help.
-        #{system_accelerate * "\n  "}
-    EOS
-  end
-
   def check_python_framework_links(lib)
     python_modules = Pathname.glob lib/"python*/site-packages/**/*.so"
     framework_links = python_modules.select do |obj|
@@ -117,7 +95,6 @@ module FormulaCellarChecks
     generic_audit_installed
     problem_if_output(check_shadowed_headers)
     problem_if_output(check_openssl_links)
-    problem_if_output(check_accelerate_framework_links)
     problem_if_output(check_python_framework_links(formula.lib))
     check_linkage
   end
