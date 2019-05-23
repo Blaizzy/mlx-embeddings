@@ -174,7 +174,6 @@
 !/.gitignore
 !/.yardopts
 !/CHANGELOG.md
-!/CODE_OF_CONDUCT.md
 !/CONTRIBUTING.md
 !/Dockerfile
 !/Dockerfile.test.yml
