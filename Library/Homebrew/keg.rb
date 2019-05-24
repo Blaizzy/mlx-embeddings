@@ -310,8 +310,11 @@ class Keg
     remove_opt_record if optlinked?
     remove_old_aliases
     remove_oldname_opt_record
-  rescue Errno::ENOTEMPTY
-    ofail "Could not remove #{path}! Check its permissions."
+  rescue Errno::EACCES, Errno::ENOTEMPTY
+    odie <<~EOS
+      Could not remove #{name} keg! Do so manually:
+        sudo rm -rf #{path}
+    EOS
   end
 
   def unlink(mode = OpenStruct.new)

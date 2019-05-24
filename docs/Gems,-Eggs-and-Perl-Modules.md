@@ -116,7 +116,7 @@ If you ever did a `sudo gem`, etc. before then a lot of files will have
 been created owned by root. Fix with:
 
 ```sh
-sudo chown -R $USER /Library/Ruby /Library/Perl /Library/Python
+sudo chown -R $(whoami) /Library/Ruby /Library/Perl /Library/Python
 ```
 
 ## Perl CPAN modules without sudo
