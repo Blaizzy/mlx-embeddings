@@ -2566,5 +2566,3 @@ class Formula
     end
   end
 end
-
-require "extend/os/formula"
