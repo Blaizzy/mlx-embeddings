@@ -289,7 +289,14 @@ class FormulaInstaller
       rescue Exception => e # rubocop:disable Lint/RescueException
         # any exceptions must leave us with nothing installed
         ignore_interrupts do
-          formula.prefix.rmtree if formula.prefix.directory?
+          begin
+            formula.prefix.rmtree if formula.prefix.directory?
+          rescue Errno::EACCES, Errno::ENOTEMPTY
+            odie <<~EOS
+              Could not remove #{formula.prefix.basename} keg! Do so manually:
+                sudo rm -rf #{formula.prefix}
+            EOS
+          end
           formula.rack.rmdir_if_possible
         end
         raise if ARGV.homebrew_developer? ||

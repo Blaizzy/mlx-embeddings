@@ -45,12 +45,26 @@ module Homebrew
     ignore_interrupts { restore_backup(keg, keg_was_linked) }
     raise
   else
-    backup_path(keg).rmtree if backup_path(keg).exist?
+    begin
+      backup_path(keg).rmtree if backup_path(keg).exist?
+    rescue Errno::EACCES, Errno::ENOTEMPTY
+      odie <<~EOS
+        Could not remove #{backup_path(keg).parent.basename} backup keg! Do so manually:
+          sudo rm -rf #{backup_path(keg)}
+      EOS
+    end
   end
 
   def backup(keg)
     keg.unlink
-    keg.rename backup_path(keg)
+    begin
+      keg.rename backup_path(keg)
+    rescue Errno::EACCES, Errno::ENOTEMPTY
+      odie <<~EOS
+        Could not rename #{keg.name} keg! Check/fix its permissions:
+          sudo chown -R $(whoami) #{keg}
+      EOS
+    end
   end
 
   def restore_backup(keg, keg_was_linked)
