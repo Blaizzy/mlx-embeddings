@@ -16,6 +16,10 @@ module RuboCop
             problem "Formulae should not depend on both OpenSSL and LibreSSL (even optionally)."
           end
 
+          if depends_on?("veclibfort") || depends_on?("lapack")
+            problem "Formulae should use OpenBLAS as the default serial linear algebra library."
+          end
+
           if method_called_ever?(body_node, :virtualenv_create) ||
              method_called_ever?(body_node, :virtualenv_install_with_resources)
             find_method_with_args(body_node, :resource, "setuptools") do
