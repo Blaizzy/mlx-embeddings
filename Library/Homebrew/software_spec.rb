@@ -170,6 +170,10 @@ class SoftwareSpec
     add_dep_option(dep) if dep
   end
 
+  def uses_from_macos(spec, **_args)
+    depends_on(spec)
+  end
+
   def deps
     dependency_collector.deps
   end
