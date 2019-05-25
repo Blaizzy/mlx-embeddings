@@ -138,6 +138,18 @@ describe SoftwareSpec do
     expect(subject.options.first.description).to eq("blah")
   end
 
+  describe "#uses_from_macos" do
+    it "allows specifying dependencies" do
+      subject.uses_from_macos("foo")
+      expect(subject.deps.first.name).to eq("foo")
+    end
+
+    it "ignores OS version specifications" do
+      subject.uses_from_macos("foo", after: :mojave)
+      expect(subject.deps.first.name).to eq("foo")
+    end
+  end
+
   describe "#patch" do
     it "adds a patch" do
       subject.patch(:p1, :DATA)
