@@ -13,17 +13,23 @@ describe SoftwareSpec do
       allow(OS::Mac).to receive(:version).and_return(OS::Mac::Version.new(sierra_os_version))
     end
 
-    it "doesn't adds a dependency if it doesn't meet OS version requirements" do
-      spec.uses_from_macos("foo", after: :high_sierra)
-      spec.uses_from_macos("bar", before: :el_capitan)
+    it "allows specifying dependencies before certain version" do
+      spec.uses_from_macos("foo", before: :high_sierra)
 
-      expect(spec.deps).to be_empty
+      expect(spec.deps.first.name).to eq("foo")
     end
 
     it "allows specifying dependencies after certain version" do
       spec.uses_from_macos("foo", after: :el_capitan)
 
       expect(spec.deps.first.name).to eq("foo")
+    end
+
+    it "doesn't adds a dependency if it doesn't meet OS version requirements" do
+      spec.uses_from_macos("foo", after: :high_sierra)
+      spec.uses_from_macos("bar", before: :el_capitan)
+
+      expect(spec.deps).to be_empty
     end
 
     it "works with tags" do
@@ -35,10 +41,17 @@ describe SoftwareSpec do
       expect(dep.tags).to include(:head)
     end
 
-    it "allows specifying dependencies before certain version" do
-      spec.uses_from_macos("foo", before: :high_sierra)
+    it "doesn't adds the dependency without OS version requirements" do
+      spec.uses_from_macos("foo")
+      spec.uses_from_macos("bar" => :head)
 
-      expect(spec.deps.first.name).to eq("foo")
+      expect(spec.deps).to be_empty
+    end
+
+    it "respects OS version requirements with tags" do
+      spec.uses_from_macos("foo" => :head, :after => :mojave)
+
+      expect(spec.deps).to be_empty
     end
 
     it "raises an error if passing invalid OS versions" do
