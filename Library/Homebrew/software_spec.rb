@@ -170,8 +170,10 @@ class SoftwareSpec
     add_dep_option(dep) if dep
   end
 
-  def uses_from_macos(spec, **_args)
-    depends_on(spec)
+  def uses_from_macos(deps, **_args)
+    deps.is_a?(Hash) && deps = Hash[*deps.shift]
+
+    depends_on(deps)
   end
 
   def deps

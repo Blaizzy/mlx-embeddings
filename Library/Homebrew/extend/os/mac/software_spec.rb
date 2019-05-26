@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class SoftwareSpec
+  undef uses_from_macos
+
   def uses_from_macos(deps, **args)
     if deps.is_a?(Hash)
       args = deps
