@@ -2,6 +2,11 @@
 
 class SoftwareSpec
   def uses_from_macos(deps, **args)
+    if deps.is_a?(Hash)
+      args = deps
+      deps = Hash[*args.shift]
+    end
+
     depends_on(deps) if add_mac_dependency?(args)
   end
 
@@ -14,6 +19,6 @@ class SoftwareSpec
 
     return false if args[:before] && OS::Mac.version >= args[:before]
 
-    true
+    args.present?
   end
 end
