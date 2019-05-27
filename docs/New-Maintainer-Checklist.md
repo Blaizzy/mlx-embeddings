@@ -61,7 +61,7 @@ If they accept, follow a few steps to get them set up:
 - Invite them to the [`machomebrew` private maintainers Slack](https://machomebrew.slack.com/admin/invites) (and ensure they've read the [communication guidelines](Maintainer-Guidelines.md#communication)).
 - Ask them to disable SMS as a 2FA device or fallback on their GitHub account in favour of using one of the other authentication methods.
 - Ask them to (regularly) review remove any unneeded [GitHub personal access tokens](https://github.com/settings/tokens).
-- Add them to [Homebrew/brew's README](https://github.com/Homebrew/brew/edit/master/README.md).
+- Add them to Homebrew/brew's README, run `brew man` and commit the changes.
 
 If they are interested in doing system administration work or Homebrew/brew releases:
 
