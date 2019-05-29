@@ -171,7 +171,7 @@ class SoftwareSpec
   end
 
   def uses_from_macos(deps, **_args)
-    deps.is_a?(Hash) && deps = Hash[*deps.shift]
+    deps = Hash[*deps.shift] if deps.is_a?(Hash)
 
     depends_on(deps)
   end
