@@ -719,6 +719,15 @@ module Homebrew
           problem "#{stable.version} is a development release" if minor_version.odd?
         end
       end
+
+      case formula.name
+      when /bind/
+        version = Version.parse(stable.url)
+        return if version.to_s.split(".").second.to_i.even?
+
+        problem "BIND releases with odd minor version numbers (9.13.x, 9.15.x, etc) are " \
+        "for testing, and can be unstable and are not suitable for general deployment. " \
+      end
     end
 
     def audit_revision_and_version_scheme
