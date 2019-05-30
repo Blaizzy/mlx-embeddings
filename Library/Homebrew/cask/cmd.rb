@@ -10,6 +10,7 @@ require "cask/config"
 require "cask/cmd/options"
 
 require "cask/cmd/abstract_command"
+require "cask/cmd/--cache"
 require "cask/cmd/audit"
 require "cask/cmd/automerge"
 require "cask/cmd/cat"
