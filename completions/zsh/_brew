@@ -121,7 +121,6 @@ __brew_common_commands() {
     'outdated:list formulae for which a newer version is available'
     'pin:pin specified formulae'
     'postinstall:perform post_install for a given formula'
-    'prune:remove dead links'
     'remove:remove a formula'
     'search:search for a formula or cask (/regex/ or string)'
     'switch:switch between different versions of a formula'
@@ -547,12 +546,6 @@ _brew_pin() {
 _brew_postinstall() {
   _arguments \
     '*:: :__brew_formulae'
-}
-
-# brew prune [--dry-run]:
-_brew_prune() {
-  _arguments \
-    '(--dry-run -n)'{--dry-run,-n}'[show what would be removed, but do not actually remove anything]'
 }
 
 # pull [--bottle] [--bump] [--clean] [--ignore-whitespace] [--resolve]

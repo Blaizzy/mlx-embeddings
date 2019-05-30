@@ -837,7 +837,6 @@ _brew() {
     outdated)                   _brew_outdated ;;
     pin)                        __brew_complete_formulae ;;
     postinstall)                _brew_postinstall ;;
-    prune)                      _brew_prune ;;
     pull)                       _brew_pull ;;
     readall)                    _brew_readall ;;
     reinstall)                  _brew_install ;;
