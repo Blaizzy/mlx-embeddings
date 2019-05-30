@@ -79,7 +79,7 @@ If they are elected to the Homebrew's [Project Leadership Committee](https://doc
 
 If there are problems, ask them to step down as a maintainer and revoke their access to all of the above.
 
-In interests of loosely verifying maintainer identity and building camaraderie, if you find yourself in the same town (e.g living, visiting or at a conference) as another Homebrew maintainer you should make the effort to meet up. If you do so, you can expense your meal (within SFC policies). This is a more relaxed version of e.g. the Debian system to meet in person to sign keys with a legal ID verification.
+In interests of loosely verifying maintainer identity and building camaraderie, if you find yourself in the same town (e.g living, visiting or at a conference) as another Homebrew maintainer you should make the effort to meet up. If you do so, you can expense your meal (within [SFC reimbursable expense policies](https://sfconservancy.org/projects/policies/conservancy-travel-policy.html#meals-for-organizational-development). This is a more relaxed version of similar policies used by other projects, e.g. the Debian system to meet in person to sign keys with legal ID verification.
 
 Now sit back, relax and let the new maintainers handle more of our contributions.
 
