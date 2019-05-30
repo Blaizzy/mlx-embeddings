@@ -58,7 +58,7 @@ If they accept, follow a few steps to get them set up:
 - Add them to the [Jenkins' GitHub Authorization Settings admin user names](https://jenkins.brew.sh/configureSecurity/) so they can adjust settings and restart jobs.
 - Add them to the [Jenkins' GitHub Pull Request Builder admin list](https://jenkins.brew.sh/configure) to enable `@BrewTestBot test this please` for them.
 - Invite them to the [`homebrew-maintainers` private maintainers mailing list](https://lists.sfconservancy.org/mailman/admin/homebrew-maintainers/members/add).
-- Invite them to the [`machomebrew` private maintainers Slack](https://machomebrew.slack.com/admin/invites) (and ensure they've read the [communication guidelines](Maintainer-Guidelines.md#communication)).
+- Invite them to the [`machomebrew` private maintainers Slack](https://machomebrew.slack.com/admin/invites) (and ensure they've read the [communication guidelines](Maintainer-Guidelines.md#communication)) and ask them to use their real name there (rather than a pseudonym they may use on e.g. GitHub).
 - Ask them to disable SMS as a 2FA device or fallback on their GitHub account in favour of using one of the other authentication methods.
 - Ask them to (regularly) review remove any unneeded [GitHub personal access tokens](https://github.com/settings/tokens).
 - Add them to Homebrew/brew's README, run `brew man` and commit the changes.
@@ -78,6 +78,8 @@ If they are elected to the Homebrew's [Project Leadership Committee](https://doc
 - Make them owners on the [`machomebrew` private maintainers Slack](https://machomebrew.slack.com/admin)).
 
 If there are problems, ask them to step down as a maintainer and revoke their access to all of the above.
+
+In interests of loosely verifying maintainer identity and building camaraderie, if you find yourself in the same town (e.g living, visiting or at a conference) as another Homebrew maintainer you should make the effort to meet up. If you do so, you can expense your meal (within [SFC reimbursable expense policies](https://sfconservancy.org/projects/policies/conservancy-travel-policy.html#meals-for-organizational-development). This is a more relaxed version of similar policies used by other projects, e.g. the Debian system to meet in person to sign keys with legal ID verification.
 
 Now sit back, relax and let the new maintainers handle more of our contributions.
 
