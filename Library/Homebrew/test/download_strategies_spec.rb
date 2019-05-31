@@ -215,15 +215,15 @@ describe CurlDownloadStrategy do
       let(:specs) {
         {
           cookies: {
-            coo: "kie",
+            coo: "k/e",
             mon: "ster",
           },
         }
       }
 
-      it "adds the appropriate curl args" do
+      it "adds the appropriate curl args and does not URL-encode the cookies" do
         expect(subject).to receive(:system_command!) { |*, args:, **|
-          expect(args.each_cons(2)).to include(["-b", "coo=kie;mon=ster"])
+          expect(args.each_cons(2)).to include(["-b", "coo=k/e;mon=ster"])
         }
 
         subject.fetch
