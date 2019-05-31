@@ -3,6 +3,7 @@
 module Cask
   module Metadata
     METADATA_SUBDIR = ".metadata"
+    TIMESTAMP_FORMAT = "%Y%m%d%H%M%S.%L"
 
     def metadata_master_container_path
       @metadata_master_container_path ||= caskroom_path.join(METADATA_SUBDIR)
@@ -58,12 +59,7 @@ module Cask
     private
 
     def new_timestamp(time = Time.now)
-      time = time.utc
-
-      timestamp = time.strftime("%Y%m%d%H%M%S")
-      fraction = format("%.3f", time.to_f - time.to_i)[1..-1]
-
-      timestamp.concat(fraction)
+      time.utc.strftime(TIMESTAMP_FORMAT)
     end
   end
 end
