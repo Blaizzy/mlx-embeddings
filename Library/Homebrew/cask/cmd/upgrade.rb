@@ -34,22 +34,28 @@ module Cask
         ohai "Casks with `auto_updates` or `version :latest` will not be upgraded" if args.empty? && !greedy?
         oh1 "Upgrading #{outdated_casks.count} #{"outdated package".pluralize(outdated_casks.count)}:"
         caught_exceptions = []
-        outdated_casks.each do |cask|
+
+        upgradable_casks = outdated_casks.map { |c| [CaskLoader.load(c.installed_caskfile), c] }
+
+        puts upgradable_casks
+          .map { |(old_cask, new_cask)| "#{new_cask.full_name} #{old_cask.version} -> #{new_cask.version}" }
+          .join(", ")
+
+        upgradable_casks.each do |(old_cask, new_cask)|
           begin
-            old_cask = CaskLoader.load(cask.installed_caskfile)
-            puts "#{cask.full_name} #{old_cask.version} -> #{cask.version}"
-            upgrade_cask(old_cask)
+            upgrade_cask(old_cask, new_cask)
           rescue CaskError => e
             caught_exceptions << e
             next
           end
         end
+
         return if caught_exceptions.empty?
         raise MultipleCaskErrors, caught_exceptions if caught_exceptions.count > 1
         raise caught_exceptions.first if caught_exceptions.count == 1
       end
 
-      def upgrade_cask(old_cask)
+      def upgrade_cask(old_cask, new_cask)
         odebug "Started upgrade process for Cask #{old_cask}"
         old_config = old_cask.config
 
@@ -58,8 +64,6 @@ module Cask
                                   verbose:  verbose?,
                                   force:    force?,
                                   upgrade:  true)
-
-        new_cask = CaskLoader.load(old_cask.token)
 
         new_cask.config = Config.global.merge(old_config)
 
@@ -76,10 +80,12 @@ module Cask
         new_artifacts_installed = false
 
         begin
+          oh1 "Upgrading #{Formatter.identifier(old_cask)}"
+
           # Start new Cask's installation steps
           new_cask_installer.check_conflicts
 
-          puts new_cask_installer.caveats
+          puts new_cask_installer.caveats if new_cask_installer.caveats
 
           new_cask_installer.fetch
 

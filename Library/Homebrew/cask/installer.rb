@@ -407,8 +407,6 @@ module Cask
     end
 
     def start_upgrade
-      oh1 "Starting upgrade for Cask #{Formatter.identifier(@cask)}"
-
       uninstall_artifacts
       backup
     end
