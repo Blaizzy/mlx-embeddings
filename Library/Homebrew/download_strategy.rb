@@ -296,6 +296,8 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
 
       fresh = if cached_location.exist? && url_time
         url_time <= cached_location.mtime
+      elsif version.respond_to?(:latest?)
+        !version.latest?
       else
         true
       end

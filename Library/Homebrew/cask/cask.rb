@@ -80,6 +80,13 @@ module Cask
       !versions.empty?
     end
 
+    def install_time
+      _, time = timestamped_versions.last
+      return unless time
+
+      Time.strptime(time, Metadata::TIMESTAMP_FORMAT)
+    end
+
     def installed_caskfile
       installed_version = timestamped_versions.last
       metadata_master_container_path.join(*installed_version, "Casks", "#{token}.rb")
