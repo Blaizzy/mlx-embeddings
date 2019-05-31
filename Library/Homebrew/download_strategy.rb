@@ -746,7 +746,7 @@ class GitDownloadStrategy < VCSDownloadStrategy
     end
 
     system_command! "git",
-                    args:  ["reset", "--hard", *ref],
+                    args:  ["reset", "--hard", *ref, "--"],
                     chdir: cached_location
   end
 
