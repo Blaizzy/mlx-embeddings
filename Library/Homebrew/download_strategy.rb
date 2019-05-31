@@ -415,10 +415,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
   def _curl_args
     args = []
 
-    if meta.key?(:cookies)
-      escape_cookie = ->(cookie) { URI.encode_www_form([cookie]) }
-      args += ["-b", meta.fetch(:cookies).map(&escape_cookie).join(";")]
-    end
+    args += ["-b", meta.fetch(:cookies).map { |k, v| "#{k}=#{v}" }.join(";")] if meta.key?(:cookies)
 
     args += ["-e", meta.fetch(:referer)] if meta.key?(:referer)
 
