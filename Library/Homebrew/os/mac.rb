@@ -37,7 +37,7 @@ module OS
 
     def latest_sdk_version
       # TODO: bump version when new Xcode macOS SDK is released
-      Version.new "10.14"
+      Version.new "10.15"
     end
 
     def latest_stable_version
@@ -208,6 +208,7 @@ module OS
       "10.1"   => { clang: "10.0", clang_build: 1000 },
       "10.2"   => { clang: "10.0", clang_build: 1001 },
       "10.2.1" => { clang: "10.0", clang_build: 1001 },
+      "11.0"   => { clang: "11.0", clang_build: 1100 },
     }.freeze
 
     def compilers_standard?
