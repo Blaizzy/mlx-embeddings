@@ -50,6 +50,7 @@
 - [Brew Test Bot For Maintainers](Brew-Test-Bot-For-Core-Contributors.md)
 - [Common Issues for Maintainers](Common-Issues-for-Core-Contributors.md)
 - [Releases](Releases.md)
+- [Developer/Internal API Documentation](https://rubydoc.brew.sh)
 
 ## Governance
 
