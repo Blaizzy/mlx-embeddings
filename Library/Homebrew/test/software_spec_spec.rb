@@ -132,6 +132,30 @@ describe SoftwareSpec do
     end
   end
 
+  describe "#uses_from_macos" do
+    it "allows specifying dependencies", :needs_linux do
+      subject.uses_from_macos("foo")
+
+      expect(subject.deps.first.name).to eq("foo")
+    end
+
+    it "works with tags", :needs_linux do
+      subject.uses_from_macos("foo" => :head, :after => :mojave)
+
+      expect(subject.deps.first.name).to eq("foo")
+      expect(subject.deps.first.tags).to include(:head)
+    end
+
+    it "ignores OS version specifications", :needs_linux do
+      subject.uses_from_macos("foo", after: :mojave)
+      subject.uses_from_macos("bar" => :head, :after => :mojave)
+
+      expect(subject.deps.first.name).to eq("foo")
+      expect(subject.deps.last.name).to eq("bar")
+      expect(subject.deps.last.tags).to include(:head)
+    end
+  end
+
   specify "explicit options override defaupt depends_on option description" do
     subject.option("with-foo", "blah")
     subject.depends_on("foo" => :optional)
