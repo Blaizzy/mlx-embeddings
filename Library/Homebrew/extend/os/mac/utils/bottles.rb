@@ -16,8 +16,13 @@ module Utils
       alias generic_find_matching_tag find_matching_tag
 
       def find_matching_tag(tag)
-        generic_find_matching_tag(tag) ||
-          find_older_compatible_tag(tag)
+        # Used primarily by developers testing beta macOS releases.
+        if OS::Mac.prerelease? && ARGV.skip_or_later_bottles?
+          generic_find_matching_tag(tag)
+        else
+          generic_find_matching_tag(tag) ||
+            find_older_compatible_tag(tag)
+        end
       end
 
       def tag_without_or_later(tag)
