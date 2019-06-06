@@ -279,6 +279,23 @@ describe RuboCop::Cop::FormulaAudit::OptionDeclarations do
   end
 end
 
+describe RuboCop::Cop::FormulaAudit::MpiCheck do
+  subject(:cop) { described_class.new }
+
+  context "When auditing formula" do
+    it "reports an offense when using depends_on \"mpich\"" do
+      expect_offense(<<~RUBY, "/homebrew-core/")
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+          depends_on "mpich"
+          ^^^^^^^^^^^^^^^^^^ Use 'depends_on "open-mpi"' instead of 'depends_on "mpich"'.
+        end
+      RUBY
+    end
+  end
+end
+
 describe RuboCop::Cop::FormulaAudit::Miscellaneous do
   subject(:cop) { described_class.new }
 

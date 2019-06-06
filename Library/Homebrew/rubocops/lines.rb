@@ -157,6 +157,24 @@ module RuboCop
         end
       end
 
+      class MpiCheck < FormulaCop
+        def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          # Enforce use of OpenMPI for MPI dependency in core
+          return unless formula_tap == "homebrew-core"
+
+          find_method_with_args(body_node, :depends_on, "mpich") do
+            problem "Use 'depends_on \"open-mpi\"' instead of '#{@offensive_node.source}'."
+          end
+        end
+
+        def autocorrect(node)
+          # The dependency nodes may need to be re-sorted because of this
+          lambda do |corrector|
+            corrector.replace(node.source_range, "depends_on \"open-mpi\"")
+          end
+        end
+      end
+
       class Miscellaneous < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           # FileUtils is included in Formula
