@@ -292,6 +292,14 @@ describe RuboCop::Cop::FormulaAudit::MpiCheck do
           ^^^^^^^^^^^^^^^^^^ Use 'depends_on "open-mpi"' instead of 'depends_on "mpich"'.
         end
       RUBY
+
+      expect_correction(<<~RUBY)
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+          depends_on "open-mpi"
+        end
+      RUBY
     end
   end
 end
