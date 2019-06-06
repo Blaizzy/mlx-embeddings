@@ -17,7 +17,7 @@ module RuboCop
           end
 
           if depends_on?("veclibfort") || depends_on?("lapack")
-            problem "Formulae should use OpenBLAS as the default serial linear algebra library."
+            problem "Formulae should use OpenBLAS as the default serial linear algebra library." if formula_tap == "homebrew-core"
           end
 
           if method_called_ever?(body_node, :virtualenv_create) ||
