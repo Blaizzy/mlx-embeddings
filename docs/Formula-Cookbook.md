@@ -776,6 +776,14 @@ brew search --fink foo
 
 Some software requires a Fortran compiler. This can be declared by adding `depends_on "gcc"` to a formula.
 
+## MPI
+
+Formula requiring MPI should use [OpenMPI](https://www.open-mpi.org/) by adding `depends_on "open-mpi"` to the formula, rather than [MPICH](https://www.mpich.org/). These packages have conflicts and provide the same standardized interfaces. Choosing a default implementation and requiring it to be adopted allows software to link against multiple libraries that rely on MPI without creating un-anticipated incompatibilities due to differing MPI runtimes.
+
+## Linear algebra libraries
+
+By default packages that require BLAS/LAPACK linear algebra interfaces should link to [OpenBLAS](https://www.openblas.net/) using `depends_on "openblas"` and passing `-DBLA_VENDOR=OpenBLAS` to CMake (applies to CMake based formula only) rather than Apple's Accelerate framework, or the default reference lapack implementation. Apple's implementation of BLAS/LAPACK is outdated and may introduce hard-to-debug problems. The reference `lapack` formula is fine, although it is not actively maintained or tuned. For this reason, formulae needing BLAS/LAPACK should link with OpenBLAS.
+
 ## How to start over (reset to upstream `master`)
 
 Have you created a real mess in Git which stops you from creating a commit you want to submit to us? You might want to consider starting again from scratch. Your changes can be reset to the Homebrew `master` branch by running:
