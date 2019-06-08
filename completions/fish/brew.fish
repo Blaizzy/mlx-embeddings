@@ -112,6 +112,11 @@ function __fish_brew_suggest_formulae_pinned
         | string replace -r '\s' '\t'
 end
 
+function __fish_brew_suggest_formulae_unpinned
+    # set difference of: all - pinned
+    join -v2 (brew list --pinned | psub) (brew list | psub)
+end
+
 function __fish_brew_suggest_formulae_multiple_versions -d "List of installed formulae with their multiple versions"
     # NOTE: this assumes having `brew info --json=v1 --installed` cached
     # __fish_brew_ruby_parse_json 'installed.json' "
@@ -465,9 +470,8 @@ __fish_brew_complete_arg 'outdated; and not __fish_brew_opt --quiet -v --verbose
 __fish_brew_complete_arg 'outdated' -l fetch-HEAD -d "Fetch the upstream repository to detect if the HEAD installation is outdated"
 
 
-# TODO: should suggest only unpinned formulae and show their current versions in the description
 __fish_brew_complete_cmd 'pin' "Pin the specified formulae to their current versions"
-__fish_brew_complete_arg 'pin' -a '(__fish_brew_suggest_formulae_installed)'
+__fish_brew_complete_arg 'pin' -a '(__fish_brew_suggest_formulae_unpinned)'
 
 
 __fish_brew_complete_cmd 'postinstall' "Rerun the post-install steps for formula"
