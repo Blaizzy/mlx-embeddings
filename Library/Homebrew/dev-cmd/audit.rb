@@ -672,19 +672,16 @@ module Homebrew
         aalib 1.4rc5
         automysqlbackup 3.0-rc6
         aview 1.3.0rc1
-        distcc 3.2rc1
         elm-format 0.6.0-alpha
         ftgl 2.1.3-rc5
         hidapi 0.8.0-rc1
         libcaca 0.99b19
-        nethack4 4.3.0-beta2
         premake 4.4-beta5
         pwnat 0.3-beta
         recode 3.7-beta2
         speexdsp 1.2rc3
         sqoop 1.4.6
         tcptraceroute 1.5beta7
-        testssl 2.8rc3
         tiny-fugue 5.0b8
         vbindiff 3.0_beta4
       ].each_slice(2).to_a.map do |formula, version|
@@ -692,32 +689,40 @@ module Homebrew
       end
 
       gnome_devel_whitelist = %w[
-        gtk-doc 1.25
         libart 2.3.21
         pygtkglext 1.1.0
-        libepoxy 1.5.0
-        gtk-mac-integration 2.1.2
       ].each_slice(2).to_a.map do |formula, version|
         [formula, version.split(".")[0..1].join(".")]
       end
 
       stable = formula.stable
-      case stable&.url
+      return unless stable
+      return unless stable.url
+
+      stable_version_string = stable.version.to_s
+      stable_url_version = Version.parse(stable.url)
+      _, stable_url_minor_version, = stable_url_version.to_s
+                                                       .split(".", 3)
+                                                       .map(&:to_i)
+
+      case stable.url
       when /[\d\._-](alpha|beta|rc\d)/
         matched = Regexp.last_match(1)
-        version_prefix = stable.version.to_s.sub(/\d+$/, "")
+        version_prefix = stable_version_string.sub(/\d+$/, "")
         return if unstable_whitelist.include?([formula.name, version_prefix])
 
         problem "Stable version URLs should not contain #{matched}"
       when %r{download\.gnome\.org/sources}, %r{ftp\.gnome\.org/pub/GNOME/sources}i
-        version_prefix = stable.version.to_s.split(".")[0..1].join(".")
+        version_prefix = stable_version_string.split(".")[0..1].join(".")
         return if gnome_devel_whitelist.include?([formula.name, version_prefix])
+        return if stable_url_version < Version.create("1.0")
+        return if stable_url_minor_version.even?
 
-        version = Version.parse(stable.url)
-        if version >= Version.create("1.0")
-          _, minor_version, = version.to_s.split(".", 3).map(&:to_i)
-          problem "#{stable.version} is a development release" if minor_version.odd?
-        end
+        problem "#{stable.version} is a development release"
+      when %r{isc.org/isc/bind\d*/}i
+        return if stable_url_minor_version.even?
+
+        problem "#{stable.version} is a development release"
       end
     end
 
