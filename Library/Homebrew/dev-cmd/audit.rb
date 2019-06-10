@@ -702,31 +702,33 @@ module Homebrew
       end
 
       stable = formula.stable
-      case stable&.url
+      return unless stable
+      return unless stable.url
+
+      stable_version_string = stable.version.to_s
+      stable_url_version = Version.parse(stable.url)
+      _, stable_url_minor_version, = stable_url_version.to_s
+                                                       .split(".", 3)
+                                                       .map(&:to_i)
+
+      case stable.url
       when /[\d\._-](alpha|beta|rc\d)/
         matched = Regexp.last_match(1)
-        version_prefix = stable.version.to_s.sub(/\d+$/, "")
+        version_prefix = stable_version_string.sub(/\d+$/, "")
         return if unstable_whitelist.include?([formula.name, version_prefix])
 
         problem "Stable version URLs should not contain #{matched}"
       when %r{download\.gnome\.org/sources}, %r{ftp\.gnome\.org/pub/GNOME/sources}i
-        version_prefix = stable.version.to_s.split(".")[0..1].join(".")
+        version_prefix = stable_version_string.split(".")[0..1].join(".")
         return if gnome_devel_whitelist.include?([formula.name, version_prefix])
+        return if stable_url_version < Version.create("1.0")
+        return if stable_url_minor_version.even?
 
-        version = Version.parse(stable.url)
-        if version >= Version.create("1.0")
-          _, minor_version, = version.to_s.split(".", 3).map(&:to_i)
-          problem "#{stable.version} is a development release" if minor_version.odd?
-        end
-      end
+        problem "#{stable.version} is a development release"
+      when %r{isc.org/isc/bind\d*/}i
+        return if stable_url_minor_version.even?
 
-      case formula.name
-      when /bind/
-        version = Version.parse(stable.url)
-        return if version.to_s.split(".").second.to_i.even?
-
-        problem "BIND releases with odd minor version numbers (9.13.x, 9.15.x, etc) are " \
-        "for testing, and can be unstable and are not suitable for general deployment. " \
+        problem "#{stable.version} is a development release"
       end
     end
 
