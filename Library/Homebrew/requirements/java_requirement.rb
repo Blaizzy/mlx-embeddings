@@ -30,6 +30,7 @@ class JavaRequirement < Requirement
   def initialize(tags = [])
     @version = tags.shift if /^\d/ =~ tags.first
     super(tags)
+    @cask = suggestion.token
   end
 
   def message

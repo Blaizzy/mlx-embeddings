@@ -105,4 +105,25 @@ describe JavaRequirement do
       end
     end
   end
+
+  describe "#suggestion" do
+    context "without specific version" do
+      its(:suggestion) { is_expected.to match(/brew cask install adoptopenjdk/) }
+      its(:cask) { is_expected.to eq("adoptopenjdk") }
+    end
+
+    context "with version 1.8" do
+      subject { described_class.new(%w[1.8]) }
+
+      its(:suggestion) { is_expected.to match(%r{brew cask install homebrew/cask-versions/adoptopenjdk8}) }
+      its(:cask) { is_expected.to eq("homebrew/cask-versions/adoptopenjdk8") }
+    end
+
+    context "with version 1.8+" do
+      subject { described_class.new(%w[1.8+]) }
+
+      its(:suggestion) { is_expected.to match(/brew cask install adoptopenjdk/) }
+      its(:cask) { is_expected.to eq("adoptopenjdk") }
+    end
+  end
 end
