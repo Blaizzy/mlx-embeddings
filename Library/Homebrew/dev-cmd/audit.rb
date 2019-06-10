@@ -672,19 +672,16 @@ module Homebrew
         aalib 1.4rc5
         automysqlbackup 3.0-rc6
         aview 1.3.0rc1
-        distcc 3.2rc1
         elm-format 0.6.0-alpha
         ftgl 2.1.3-rc5
         hidapi 0.8.0-rc1
         libcaca 0.99b19
-        nethack4 4.3.0-beta2
         premake 4.4-beta5
         pwnat 0.3-beta
         recode 3.7-beta2
         speexdsp 1.2rc3
         sqoop 1.4.6
         tcptraceroute 1.5beta7
-        testssl 2.8rc3
         tiny-fugue 5.0b8
         vbindiff 3.0_beta4
       ].each_slice(2).to_a.map do |formula, version|
@@ -692,11 +689,8 @@ module Homebrew
       end
 
       gnome_devel_whitelist = %w[
-        gtk-doc 1.25
         libart 2.3.21
         pygtkglext 1.1.0
-        libepoxy 1.5.0
-        gtk-mac-integration 2.1.2
       ].each_slice(2).to_a.map do |formula, version|
         [formula, version.split(".")[0..1].join(".")]
       end
