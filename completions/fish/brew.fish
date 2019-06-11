@@ -837,9 +837,6 @@ __fish_brew_complete_sub_cmd 'cask' 'audit'     "Verify installability of Casks"
 
 __fish_brew_complete_sub_cmd 'cask' 'cat'       "Dump raw source of the given Cask to the standard output"
 
-__fish_brew_complete_sub_cmd 'cask' 'cleanup'   "Clean up cached downloads and tracker symlinks"
-__fish_brew_complete_sub_arg 'cask' 'cleanup' -l outdated -d "Only clean up cached downloads older than 10 days"
-
 __fish_brew_complete_sub_cmd 'cask' 'create'    "Create the given Cask and open it in an editor"
 
 __fish_brew_complete_sub_cmd 'cask' 'doctor'    "Check for configuration issues"
