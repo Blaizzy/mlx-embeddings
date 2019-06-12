@@ -169,6 +169,7 @@ class SystemConfig
       unless ENV["HOMEBREW_ENV"]
         ENV.sort.each do |key, value|
           next unless key.start_with?("HOMEBREW_")
+          next if key.start_with?("HOMEBREW_BUNDLE_")
           next if boring_keys.include?(key)
           next if defaults_hash[key.to_sym]
 
