@@ -133,7 +133,7 @@ module Homebrew
     already_fetched = f.cached_download.exist?
 
     begin
-      download = f.fetch
+      download = f.fetch(verify_download_integrity: false)
     rescue DownloadError
       retry if retry_fetch? f
       raise

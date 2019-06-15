@@ -47,7 +47,6 @@ module Homebrew
       downloader = f.downloader
 
       downloader.fetch
-      f.verify_download_integrity(downloader.cached_location)
 
       filename = downloader.basename
 
