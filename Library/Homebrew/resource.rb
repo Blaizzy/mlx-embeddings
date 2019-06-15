@@ -70,17 +70,14 @@ class Resource
   def stage(target = nil, &block)
     raise ArgumentError, "target directory or block is required" unless target || block
 
-    verify_download_integrity(fetch)
+    fetch
     prepare_patches
     unpack(target, &block)
   end
 
   def prepare_patches
     patches.grep(DATAPatch) { |p| p.path = owner.owner.path }
-
-    patches.each do |patch|
-      patch.verify_download_integrity(patch.fetch) if patch.external?
-    end
+    patches.select(&:external?).each(&:fetch)
   end
 
   def apply_patches
@@ -114,7 +111,7 @@ class Resource
     Partial.new(self, files)
   end
 
-  def fetch
+  def fetch(verify_download_integrity: true)
     HOMEBREW_CACHE.mkpath
 
     begin
@@ -123,7 +120,9 @@ class Resource
       raise DownloadError.new(self, e)
     end
 
-    cached_download
+    download = cached_download
+    verify_download_integrity(download) if verify_download_integrity
+    download
   end
 
   def verify_download_integrity(fn)

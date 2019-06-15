@@ -1688,8 +1688,8 @@ class Formula
   end
 
   # @private
-  def fetch
-    active_spec.fetch
+  def fetch(verify_download_integrity: true)
+    active_spec.fetch(verify_download_integrity: verify_download_integrity)
   end
 
   # @private
@@ -2057,10 +2057,7 @@ class Formula
     active_spec.add_legacy_patches(patches) if respond_to?(:patches)
 
     patchlist.grep(DATAPatch) { |p| p.path = path }
-
-    patchlist.each do |patch|
-      patch.verify_download_integrity(patch.fetch) if patch.external?
-    end
+    patchlist.select(&:external?).each(&:fetch)
   end
 
   # The methods below define the formula DSL.
