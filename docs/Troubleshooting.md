@@ -10,7 +10,7 @@ This document will help you check for common issues and make sure your issue has
 
 ## Check to see if the issue has been reported
 
-* Search the [Homebrew/homebrew-core issue tracker](https://github.com/Homebrew/homebrew-core/issues) or [Homebrew/linuxbrew-core issue tracker](https://github.com/Homebrew/homebrew-core/issues) to see if someone else has already reported the same issue.
+* Search the [Homebrew/homebrew-core issue tracker](https://github.com/Homebrew/homebrew-core/issues) or [Homebrew/linuxbrew-core issue tracker](https://github.com/Homebrew/linuxbrew-core/issues) to see if someone else has already reported the same issue.
 * If a formula that has failed to build is part of a non-core tap or a cask is part of [homebrew/cask](https://github.com/Homebrew/homebrew-cask/issues) check those issue trackers instead.
 
 ## Create an issue
