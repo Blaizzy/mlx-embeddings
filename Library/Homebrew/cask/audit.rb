@@ -304,7 +304,7 @@ module Cask
       return if cask.appcast.configuration == :no_check
 
       appcast_stanza = cask.appcast.to_s
-      appcast_contents, = curl_output("--location", "--max-time", "5", appcast_stanza)
+      appcast_contents, = curl_output("--compressed", "--location", "--max-time", "5", appcast_stanza)
       version_stanza = cask.version.to_s
       if cask.appcast.configuration.blank?
         adjusted_version_stanza = version_stanza.split(",")[0].split("-")[0].split("_")[0]
