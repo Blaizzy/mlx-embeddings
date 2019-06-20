@@ -283,6 +283,18 @@ Homebrew expects to find manual pages in `#{prefix}/share/man/...`, and not in `
 
 Some software installs to `man` instead of `share/man`, so check the output and add a `"--mandir=#{man}"` to the `./configure` line if needed.
 
+### Caveats
+
+In case there are specific issues with the Homebrew packaging (compared to how the software is installed from other sources) a `caveats` block can be added to the formula to warn users. This can indicate non-standard install paths, an example from the `ruby` formula:
+
+```
+==> Caveats
+By default, binaries installed by gem will be placed into:
+  /usr/local/lib/ruby/gems/bin
+
+You may want to add this to your PATH.
+```
+
 ### A quick word on naming
 
 Name the formula like the project markets the product. So it’s `pkg-config`, not `pkgconfig`; `sdl_mixer`, not `sdl-mixer` or `sdlmixer`.
