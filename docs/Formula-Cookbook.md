@@ -285,7 +285,7 @@ Some software installs to `man` instead of `share/man`, so check the output and 
 
 ### Special instructions
 
-In case there are specific issues with the homebrew install a `caveats` block can be added to the formula to inform users. This can indicate non-standard install paths, an example from the ruby formula:
+In case there are specific issues with the Homebrew packaging (compared to how the software is installed from other sources) a `caveats` block can be added to the formula to warn users. This can indicate non-standard install paths, an example from the `ruby` formula:
 
 ```
 ==> Caveats
