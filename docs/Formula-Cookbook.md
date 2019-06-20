@@ -283,7 +283,7 @@ Homebrew expects to find manual pages in `#{prefix}/share/man/...`, and not in `
 
 Some software installs to `man` instead of `share/man`, so check the output and add a `"--mandir=#{man}"` to the `./configure` line if needed.
 
-### Special instructions
+### Caveats
 
 In case there are specific issues with the Homebrew packaging (compared to how the software is installed from other sources) a `caveats` block can be added to the formula to warn users. This can indicate non-standard install paths, an example from the `ruby` formula:
 
