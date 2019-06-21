@@ -100,6 +100,7 @@ describe Homebrew::MissingFormula do
       let(:show_info) { false }
 
       it { is_expected.to match(/Found a cask named "local-caffeine" instead./) }
+      it { is_expected.to match(/Did you mean to type "brew cask install local-caffeine"?/) }
     end
 
     context "with a formula name that is a cask and show_info: true" do
