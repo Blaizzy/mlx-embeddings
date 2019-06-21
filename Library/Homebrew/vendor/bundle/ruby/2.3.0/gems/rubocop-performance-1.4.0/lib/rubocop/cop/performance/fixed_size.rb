@@ -38,7 +38,7 @@ module RuboCop
       #   # good
       #   [1, 2, *thud].count
       #   garply = [1, 2, 3]
-      #   garly.size
+      #   garply.size
       #
       #   # good
       #   { a: corge, **grault }.length
@@ -53,7 +53,7 @@ module RuboCop
         MATCHER
 
         def on_send(node)
-          return if allowed_parent?(node.parent)
+          return if node.ancestors.any? { |ancestor| allowed_parent?(ancestor) }
 
           counter(node) do |var, arg|
             return if allowed_variable?(var) || allowed_argument?(arg)
