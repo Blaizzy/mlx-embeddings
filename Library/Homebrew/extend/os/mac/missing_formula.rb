@@ -19,7 +19,11 @@ module Homebrew
 
         cask = Cask::CaskLoader.load(name)
         reason = +"Found a cask named \"#{name}\" instead.\n"
-        reason << Cask::Cmd::Info.get_info(cask) if show_info
+        if show_info
+          reason << Cask::Cmd::Info.get_info(cask)
+        else
+          reason << "Did you mean to type \"brew cask install #{name}\"?\n"
+        end
         reason.freeze
       rescue Cask::CaskUnavailableError
         nil
