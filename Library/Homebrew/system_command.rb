@@ -34,7 +34,7 @@ class SystemCommand
   end
 
   def run!
-    puts command.shelljoin.gsub(/\\=/, "=") if verbose? || ARGV.debug?
+    puts redact_secrets(command.shelljoin.gsub('\=', "="), @secrets) if verbose? || ARGV.debug?
 
     @output = []
 
@@ -54,7 +54,7 @@ class SystemCommand
   end
 
   def initialize(executable, args: [], sudo: false, env: {}, input: [], must_succeed: false,
-                 print_stdout: false, print_stderr: true, verbose: false, **options)
+                 print_stdout: false, print_stderr: true, verbose: false, secrets: [], **options)
 
     @executable = executable
     @args = args
@@ -63,6 +63,7 @@ class SystemCommand
     @print_stdout = print_stdout
     @print_stderr = print_stderr
     @verbose = verbose
+    @secrets = Array(secrets)
     @must_succeed = must_succeed
     options.assert_valid_keys!(:chdir)
     @options = options
@@ -106,9 +107,7 @@ class SystemCommand
   def assert_success
     return if @status.success?
 
-    raise ErrorDuringExecution.new(command,
-                                   status: @status,
-                                   output: @output)
+    raise ErrorDuringExecution.new(command, status: @status, output: @output, secrets: @secrets)
   end
 
   def expanded_args
