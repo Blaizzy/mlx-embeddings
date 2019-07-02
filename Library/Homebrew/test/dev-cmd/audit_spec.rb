@@ -225,6 +225,20 @@ module Homebrew
       end
     end
 
+    describe "#audit_gitlab_repository" do
+      specify "#audit_gitlab_repository for stars, forks and creation date" do
+        fa = formula_auditor "foo", <<~RUBY, strict: true, online: true
+          class Foo < Formula
+            homepage "https://gitlab.com/libtiff/libtiff"
+            url "https://brew.sh/foo-1.0.tgz"
+          end
+        RUBY
+
+        fa.audit_gitlab_repository
+        expect(fa.problems).to eq([])
+      end
+    end
+
     describe "#audit_deps" do
       describe "a dependency on a macOS-provided keg-only formula" do
         describe "which is whitelisted" do

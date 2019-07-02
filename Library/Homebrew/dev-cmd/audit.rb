@@ -565,16 +565,8 @@ module Homebrew
     end
 
     def audit_github_repository
-      return unless @core_tap
-      return unless @online
-      return unless @new_formula
-
-      regex = %r{https?://github\.com/([^/]+)/([^/]+)/?.*}
-      _, user, repo = *regex.match(formula.stable.url) if formula.stable
-      _, user, repo = *regex.match(formula.homepage) unless user
-      return if !user || !repo
-
-      repo.gsub!(/.git$/, "")
+      user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*})
+      return if user.nil?
 
       begin
         metadata = GitHub.repository(user, repo)
@@ -593,6 +585,40 @@ module Homebrew
       return if Date.parse(metadata["created_at"]) <= (Date.today - 30)
 
       new_formula_problem "GitHub repository too new (<30 days old)"
+    end
+
+    def audit_gitlab_repository
+      user, repo = get_repo_data(%r{https?://gitlab\.com/([^/]+)/([^/]+)/?.*})
+      return if user.nil?
+
+      out, _, status= curl_output("--request", "GET", "https://gitlab.com/api/v4/projects/#{user}%2F#{repo}")
+      return unless status.success?
+
+      metadata = JSON.parse(out)
+      return if metadata.nil?
+
+      new_formula_problem "GitLab fork (not canonical repository)" if metadata["fork"]
+      if (metadata["forks_count"] < 30) && (metadata["star_count"] < 75)
+        new_formula_problem "GitLab repository not notable enough (<30 forks and <75 stars)"
+      end
+
+      return if Date.parse(metadata["created_at"]) <= (Date.today - 30)
+
+      new_formula_problem "GitLab repository too new (<30 days old)"
+    end
+
+    def get_repo_data(regex)
+      return unless @core_tap
+      return unless @online
+      return unless @new_formula
+
+      _, user, repo = *regex.match(formula.stable.url) if formula.stable
+      _, user, repo = *regex.match(formula.homepage) unless user
+      return if !user || !repo
+
+      repo.gsub!(/.git$/, "")
+
+      [user, repo]
     end
 
     def audit_specs

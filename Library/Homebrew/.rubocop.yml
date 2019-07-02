@@ -56,7 +56,7 @@ Metrics/MethodLength:
   Max: 300
 Metrics/ModuleLength:
   Enabled: true
-  Max: 500
+  Max: 550
 Metrics/PerceivedComplexity:
   Enabled: true
   Max: 100
