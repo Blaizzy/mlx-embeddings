@@ -4,6 +4,9 @@ then
   export LC_ALL="en_US.UTF-8"
 fi
 
+# USER isn't always set so provide a fall back for `brew` and subprocesses.
+export USER=${USER:-`id -un`}
+
 # Where we store built products; a Cellar in HOMEBREW_PREFIX (often /usr/local
 # for bottles) unless there's already a Cellar in HOMEBREW_REPOSITORY.
 if [[ -d "$HOMEBREW_REPOSITORY/Cellar" ]]
