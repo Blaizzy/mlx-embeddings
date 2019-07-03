@@ -29,8 +29,14 @@ To allow that formulae to update again:
 Note that pinned, outdated formulae that another formula depends on need to be upgraded when required as we do not allow formulae to be built against non-latest versions.
 
 ## How do I uninstall old versions of a formula?
-By default, Homebrew does not uninstall old versions of a formula, so
-over time you will accumulate old versions. To remove them, simply use:
+Before `v1.9.0`, Homebrew did not uninstall old versions of a formula, so
+over time you will accumulate old versions.
+After `v1.9.0`, Homebrew introduced optional automatic cleanup via
+the `HOMEBREW_INSTALL_CLEANUP` environment variable.
+After `v2.0.0`, Homebrew's default behavior changed to automatically
+uninstall old versions of a formula every 30 days.
+
+To remove them manually, simply use:
 
     brew cleanup <formula>
 
@@ -41,6 +47,16 @@ or clean up everything at once:
 or to see what would be cleaned up:
 
     brew cleanup -n
+
+or to __enable__ automatic `brew cleanup` for Homebrew `>= v1.9.0`, `<= 2.0.0`:
+
+    # Add this line to your ~/.bashrc or ~/.bash_profile
+    export HOMEBREW_INSTALL_CLEANUP=1
+
+or to __disable__ automatic `brew cleanup` for Homebrew `>= v2.0.0`:
+
+    # Add this line to your ~/.bashrc or ~/.bash_profile
+    export HOMEBREW_NO_INSTALL_CLEANUP=1
 
 ## How do I uninstall Homebrew?
 To uninstall Homebrew, paste the command below in a terminal prompt.
