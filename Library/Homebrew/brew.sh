@@ -4,9 +4,7 @@ then
   export LC_ALL="en_US.UTF-8"
 fi
 
-# The USER env var is not guaranteed to be available, so fall back to id if not
-# provided. We destructively set it in the environment to make it available to
-# any sub-processes called.
+# USER isn't always set so provide a fall back for `brew` and subprocesses.
 export USER=${USER:-`id -un`}
 
 # Where we store built products; a Cellar in HOMEBREW_PREFIX (often /usr/local
