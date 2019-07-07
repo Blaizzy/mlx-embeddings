@@ -106,7 +106,7 @@ class JavaRequirement < Requirement
     javas = []
     javas << Pathname.new(ENV["JAVA_HOME"])/"bin/java" if ENV["JAVA_HOME"]
     jdk = begin
-      Formula["openjdk"]
+      Formula["adoptopenjdk"]
     rescue FormulaUnavailableError
       nil
     end
