@@ -139,6 +139,7 @@ module Cask
 
     def to_h
       {
+        "token"          => token,
         "name"           => name,
         "homepage"       => homepage,
         "url"            => url,
