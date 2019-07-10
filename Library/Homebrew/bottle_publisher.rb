@@ -107,14 +107,14 @@ class BottlePublisher
 
         # Poll for publication completion using a quick partial HEAD, to avoid spurious error messages
         # 401 error is normal while file is still in async publishing process
-        url = URI(bottle_info.url)
+        url = URI(bottle_info["url"])
         puts "Verifying bottle: #{File.basename(url.path)}"
         http = Net::HTTP.new(url.host, url.port)
         http.use_ssl = true
         retry_count = 0
         http.start do
           loop do
-            req = Net::HTTP::Head.new bottle_info.url
+            req = Net::HTTP::Head.new url
             req.initialize_http_header "User-Agent" => HOMEBREW_USER_AGENT_RUBY
             res = http.request req
             break if res.is_a?(Net::HTTPSuccess) || res.code == "302"
@@ -154,7 +154,7 @@ class BottlePublisher
             retry_count += 1
           end
         end
-        checksum = Checksum.new(:sha256, bottle_info.sha256)
+        checksum = Checksum.new(:sha256, bottle_info["sha256"])
         Pathname.new(filename).verify_checksum(checksum)
       end
     end
