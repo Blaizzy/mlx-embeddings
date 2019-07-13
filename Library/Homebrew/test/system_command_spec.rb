@@ -263,6 +263,20 @@ describe SystemCommand do
                                secrets: %w[hunter2]
         end.to raise_error.with_message(redacted_msg).and output(redacted_msg).to_stdout
       end
+
+      it "does not leak the secrets set by environment" do
+        redacted_msg = /#{Regexp.escape("username:******")}/
+        expect do
+          begin
+            ENV["PASSWORD"] = "hunter2"
+            described_class.run! "curl",
+                                 args:    %w[--user username:hunter2],
+                                 verbose: true
+          ensure
+            ENV.delete "PASSWORD"
+          end
+        end.to raise_error.with_message(redacted_msg).and output(redacted_msg).to_stdout
+      end
     end
   end
 end

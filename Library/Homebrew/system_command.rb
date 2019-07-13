@@ -56,6 +56,7 @@ class SystemCommand
   def initialize(executable, args: [], sudo: false, env: {}, input: [], must_succeed: false,
                  print_stdout: false, print_stderr: true, verbose: false, secrets: [], **options)
 
+    require "extend/ENV"
     @executable = executable
     @args = args
     @sudo = sudo
@@ -63,7 +64,7 @@ class SystemCommand
     @print_stdout = print_stdout
     @print_stderr = print_stderr
     @verbose = verbose
-    @secrets = Array(secrets)
+    @secrets = (Array(secrets) + ENV.sensitive_environment.values).uniq
     @must_succeed = must_succeed
     options.assert_valid_keys!(:chdir)
     @options = options
