@@ -279,32 +279,7 @@ module Homebrew
       alias_rename.map! { |a| formula.tap.alias_dir/a }
     end
 
-    if args.dry_run?
-      if args.no_audit?
-        ohai "Skipping `brew audit`"
-      elsif args.strict?
-        ohai "brew audit --strict #{formula.path.basename}"
-      else
-        ohai "brew audit #{formula.path.basename}"
-      end
-    else
-      FileUtils.mv alias_rename.first, alias_rename.last if alias_rename.present?
-      failed_audit = false
-      if args.no_audit?
-        ohai "Skipping `brew audit`"
-      elsif args.strict?
-        system HOMEBREW_BREW_FILE, "audit", "--strict", formula.path
-        failed_audit = !$CHILD_STATUS.success?
-      else
-        system HOMEBREW_BREW_FILE, "audit", formula.path
-        failed_audit = !$CHILD_STATUS.success?
-      end
-      if failed_audit
-        formula.path.atomic_write(backup_file)
-        FileUtils.mv alias_rename.last, alias_rename.first if alias_rename.present?
-        odie "brew audit failed!"
-      end
-    end
+    run_audit(formula, alias_rename, backup_file)
 
     formula.path.parent.cd do
       branch = "#{formula.name}-#{new_formula_version}"
@@ -463,5 +438,34 @@ module Homebrew
     return if Version.create(new_alias_version) <= Version.create(old_alias_version)
 
     [versioned_alias, "#{name}@#{new_alias_version}"]
+  end
+
+  def run_audit(formula, alias_rename, backup_file)
+    if args.dry_run?
+      if args.no_audit?
+        ohai "Skipping `brew audit`"
+      elsif args.strict?
+        ohai "brew audit --strict #{formula.path.basename}"
+      else
+        ohai "brew audit #{formula.path.basename}"
+      end
+      return
+    end
+    FileUtils.mv alias_rename.first, alias_rename.last if alias_rename.present?
+    failed_audit = false
+    if args.no_audit?
+      ohai "Skipping `brew audit`"
+    elsif args.strict?
+      system HOMEBREW_BREW_FILE, "audit", "--strict", formula.path
+      failed_audit = !$CHILD_STATUS.success?
+    else
+      system HOMEBREW_BREW_FILE, "audit", formula.path
+      failed_audit = !$CHILD_STATUS.success?
+    end
+    return if failed_audit
+
+    formula.path.atomic_write(backup_file)
+    FileUtils.mv alias_rename.last, alias_rename.first if alias_rename.present?
+    odie "brew audit failed!"
   end
 end
