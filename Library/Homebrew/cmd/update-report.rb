@@ -226,6 +226,9 @@ class Reporter
           new_version = formula.pkg_version
           old_version = FormulaVersions.new(formula).formula_at_revision(@initial_revision, &:pkg_version)
           next if new_version == old_version
+        rescue FormulaUnavailableError
+          # Don't care if the formula isn't available right now.
+          nil
         rescue Exception => e # rubocop:disable Lint/RescueException
           onoe "#{e.message}\n#{e.backtrace.join "\n"}" if ARGV.homebrew_developer?
         end
