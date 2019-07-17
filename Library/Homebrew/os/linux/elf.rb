@@ -71,7 +71,7 @@ module ELFShim
   def dynamic_elf?
     return @dynamic_elf if defined? @dynamic_elf
 
-    if which "readelf"
+    @dynamic_elf = if which "readelf"
       Utils.popen_read("readelf", "-l", to_path).include?(" DYNAMIC ")
     elsif which "file"
       !Utils.popen_read("file", "-L", "-b", to_path)[/dynamic|shared/].nil?
