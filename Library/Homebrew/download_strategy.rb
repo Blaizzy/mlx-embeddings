@@ -66,13 +66,13 @@ class AbstractDownloadStrategy
 
   def chdir
     entries = Dir["*"]
-    case entries.length
-    when 0 then raise "Empty archive"
-    when 1 then begin
-        Dir.chdir entries.first
-      rescue
-        nil
-      end
+    raise "Empty archive" if entries.length.zero?
+    return if entries.length != 1
+
+    begin
+      Dir.chdir entries.first
+    rescue
+      nil
     end
   end
   private :chdir
