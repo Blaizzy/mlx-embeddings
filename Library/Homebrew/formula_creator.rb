@@ -96,12 +96,12 @@ module Homebrew
         <% end %>
           sha256 "#{sha256}"
         <% end %>
+
         <% if mode == :cmake %>
           depends_on "cmake" => :build
         <% elsif mode == :meson %>
           depends_on "meson" => :build
           depends_on "ninja" => :build
-          depends_on "python" => :build
         <% elsif mode.nil? %>
           # depends_on "cmake" => :build
         <% end %>
