@@ -273,42 +273,28 @@ module Homebrew
       EOS
     end
 
-    if args.dry_run?
-      if args.no_audit?
-        ohai "Skipping `brew audit`"
-      elsif args.strict?
-        ohai "brew audit --strict #{formula.path.basename}"
-      else
-        ohai "brew audit #{formula.path.basename}"
-      end
-    else
-      failed_audit = false
-      if args.no_audit?
-        ohai "Skipping `brew audit`"
-      elsif args.strict?
-        system HOMEBREW_BREW_FILE, "audit", "--strict", formula.path
-        failed_audit = !$CHILD_STATUS.success?
-      else
-        system HOMEBREW_BREW_FILE, "audit", formula.path
-        failed_audit = !$CHILD_STATUS.success?
-      end
-      if failed_audit
-        formula.path.atomic_write(backup_file)
-        odie "brew audit failed!"
-      end
+    alias_rename = alias_update_pair(formula, new_formula_version)
+    if alias_rename.present?
+      ohai "renaming alias #{alias_rename.first} to #{alias_rename.last}"
+      alias_rename.map! { |a| formula.tap.alias_dir/a }
     end
+
+    run_audit(formula, alias_rename, backup_file)
 
     formula.path.parent.cd do
       branch = "#{formula.name}-#{new_formula_version}"
       git_dir = Utils.popen_read("git rev-parse --git-dir").chomp
       shallow = !git_dir.empty? && File.exist?("#{git_dir}/shallow")
+      changed_files = [formula.path]
+      changed_files += alias_rename if alias_rename.present?
 
       if args.dry_run?
         ohai "try to fork repository with GitHub API"
         ohai "git fetch --unshallow origin" if shallow
+        ohai "git add #{alias_rename.first} #{alias_rename.last}" if alias_rename.present?
         ohai "git checkout --no-track -b #{branch} origin/master"
         ohai "git commit --no-edit --verbose --message='#{formula.name} " \
-             "#{new_formula_version}#{devel_message}' -- #{formula.path}"
+             "#{new_formula_version}#{devel_message}' -- #{changed_files.join(" ")}"
         ohai "git push --set-upstream $HUB_REMOTE #{branch}:#{branch}"
         ohai "git checkout --quiet -"
         ohai "create pull request with GitHub API"
@@ -338,10 +324,11 @@ module Homebrew
         end
 
         safe_system "git", "fetch", "--unshallow", "origin" if shallow
+        safe_system "git", "add", *alias_rename if alias_rename.present?
         safe_system "git", "checkout", "--no-track", "-b", branch, "origin/master"
         safe_system "git", "commit", "--no-edit", "--verbose",
                     "--message=#{formula.name} #{new_formula_version}#{devel_message}",
-                    "--", formula.path
+                    "--", *changed_files
         safe_system "git", "push", "--set-upstream", remote_url, "#{branch}:#{branch}"
         safe_system "git", "checkout", "--quiet", "-"
         pr_message = <<~EOS
@@ -439,5 +426,46 @@ module Homebrew
         #{error_message}
       EOS
     end
+  end
+
+  def alias_update_pair(formula, new_formula_version)
+    versioned_alias = formula.aliases.grep(/^.*@\d+(\.\d+)?$/).first
+    return if versioned_alias.nil?
+
+    name, old_alias_version = versioned_alias.split("@")
+    new_alias_regex = (old_alias_version.split(".").length == 1) ? /^\d+/ : /^\d+\.\d+/
+    new_alias_version, = *new_formula_version.to_s.match(new_alias_regex)
+    return if Version.create(new_alias_version) <= Version.create(old_alias_version)
+
+    [versioned_alias, "#{name}@#{new_alias_version}"]
+  end
+
+  def run_audit(formula, alias_rename, backup_file)
+    if args.dry_run?
+      if args.no_audit?
+        ohai "Skipping `brew audit`"
+      elsif args.strict?
+        ohai "brew audit --strict #{formula.path.basename}"
+      else
+        ohai "brew audit #{formula.path.basename}"
+      end
+      return
+    end
+    FileUtils.mv alias_rename.first, alias_rename.last if alias_rename.present?
+    failed_audit = false
+    if args.no_audit?
+      ohai "Skipping `brew audit`"
+    elsif args.strict?
+      system HOMEBREW_BREW_FILE, "audit", "--strict", formula.path
+      failed_audit = !$CHILD_STATUS.success?
+    else
+      system HOMEBREW_BREW_FILE, "audit", formula.path
+      failed_audit = !$CHILD_STATUS.success?
+    end
+    return if failed_audit
+
+    formula.path.atomic_write(backup_file)
+    FileUtils.mv alias_rename.last, alias_rename.first if alias_rename.present?
+    odie "brew audit failed!"
   end
 end
