@@ -42,13 +42,14 @@ def curl_args(*extra_args, show_output: false, user_agent: :default)
   args + extra_args
 end
 
-def curl(*args)
+def curl(*args, secrets: [], **options)
   # SSL_CERT_FILE can be incorrectly set by users or portable-ruby and screw
   # with SSL downloads so unset it here.
   system_command! curl_executable,
-                  args:         curl_args(*args),
+                  args:         curl_args(*args, **options),
                   print_stdout: true,
-                  env:          { "SSL_CERT_FILE" => nil }
+                  env:          { "SSL_CERT_FILE" => nil },
+                  secrets:      secrets
 end
 
 def curl_download(*args, to: nil, **options)
@@ -77,10 +78,11 @@ def curl_download(*args, to: nil, **options)
   curl("--location", "--remote-time", "--continue-at", continue_at.to_s, "--output", destination, *args, **options)
 end
 
-def curl_output(*args, **options)
-  system_command(curl_executable,
+def curl_output(*args, secrets: [], **options)
+  system_command curl_executable,
                  args:         curl_args(*args, show_output: true, **options),
-                 print_stderr: false)
+                 print_stderr: false,
+                 secrets:      secrets
 end
 
 def curl_check_http_content(url, user_agents: [:default], check_content: false, strict: false)

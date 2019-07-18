@@ -143,6 +143,13 @@ shared_examples EnvActivation do
     expect(subject["MAKEFLAGS"]).to eq("-j4")
   end
 
+  describe "#sensitive_environment" do
+    it "list sensitive environment" do
+      subject["SECRET_TOKEN"] = "password"
+      expect(subject.sensitive_environment).to include("SECRET_TOKEN")
+    end
+  end
+
   describe "#clear_sensitive_environment!" do
     it "removes sensitive environment variables" do
       subject["SECRET_TOKEN"] = "password"

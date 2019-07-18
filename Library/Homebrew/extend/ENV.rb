@@ -29,12 +29,16 @@ module EnvActivation
     replace(old_env)
   end
 
-  def clear_sensitive_environment!
-    each_key do |key|
-      next unless /(cookie|key|token|password)/i =~ key
+  def sensitive?(key)
+    /(cookie|key|token|password)/i =~ key
+  end
 
-      delete key
-    end
+  def sensitive_environment
+    select { |key, _| sensitive?(key) }
+  end
+
+  def clear_sensitive_environment!
+    each_key { |key| delete key if sensitive?(key) }
   end
 end
 

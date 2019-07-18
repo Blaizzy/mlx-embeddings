@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "shellwords"
+require "utils"
 
 class UsageError < RuntimeError
   attr_reader :reason
@@ -520,7 +521,7 @@ class ErrorDuringExecution < RuntimeError
   attr_reader :status
   attr_reader :output
 
-  def initialize(cmd, status:, output: nil)
+  def initialize(cmd, status:, output: nil, secrets: [])
     @cmd = cmd
     @status = status
     @output = output
@@ -531,7 +532,8 @@ class ErrorDuringExecution < RuntimeError
       status
     end
 
-    s = +"Failure while executing; `#{cmd.shelljoin.gsub(/\\=/, "=")}` exited with #{exitstatus}."
+    redacted_cmd = redact_secrets(cmd.shelljoin.gsub('\=', "="), secrets)
+    s = +"Failure while executing; `#{redacted_cmd}` exited with #{exitstatus}."
 
     unless [*output].empty?
       format_output_line = lambda do |type_line|
