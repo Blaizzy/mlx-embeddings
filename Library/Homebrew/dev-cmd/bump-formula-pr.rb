@@ -462,7 +462,7 @@ module Homebrew
       system HOMEBREW_BREW_FILE, "audit", formula.path
       failed_audit = !$CHILD_STATUS.success?
     end
-    return if failed_audit
+    return unless failed_audit
 
     formula.path.atomic_write(backup_file)
     FileUtils.mv alias_rename.last, alias_rename.first if alias_rename.present?
