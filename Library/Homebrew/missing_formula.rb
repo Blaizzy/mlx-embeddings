@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 require "formulary"
-require "cask/cmd/abstract_command"
-require "cask/cmd/info"
-require "cask/cask_loader"
 
 module Homebrew
   module MissingFormula
@@ -197,6 +194,8 @@ module Homebrew
       end
 
       def cask_reason(name, silent: false, show_info: false); end
+
+      def suggest_command(name, command); end
 
       require "extend/os/missing_formula"
     end

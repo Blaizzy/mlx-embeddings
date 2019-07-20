@@ -100,14 +100,14 @@ describe Homebrew::MissingFormula do
       let(:show_info) { false }
 
       it { is_expected.to match(/Found a cask named "local-caffeine" instead./) }
-      it { is_expected.to match(/Did you mean to type "brew cask install local-caffeine"?/) }
+      it { is_expected.to match(/Try\n  brew cask install local-caffeine/) }
     end
 
     context "with a formula name that is a cask and show_info: true" do
       let(:formula) { "local-caffeine" }
       let(:show_info) { true }
 
-      it { is_expected.to match(/Found a cask named "local-caffeine" instead.\nlocal-caffeine: 1.2.3\n/) }
+      it { is_expected.to match(/Found a cask named "local-caffeine" instead.\n\nlocal-caffeine: 1.2.3\n/) }
     end
 
     context "with a formula name that is not a cask" do
@@ -115,6 +115,42 @@ describe Homebrew::MissingFormula do
       let(:show_info) { false }
 
       it { is_expected.to be_nil }
+    end
+  end
+
+  describe "::suggest_command", :cask do
+    subject { described_class.suggest_command(name, command) }
+
+    context "brew install" do
+      let(:name) { "local-caffeine" }
+      let(:command) { "install" }
+
+      it { is_expected.to match(/Found a cask named "local-caffeine" instead./) }
+      it { is_expected.to match(/Try\n  brew cask install local-caffeine/) }
+    end
+
+    context "brew uninstall" do
+      let(:name) { "local-caffeine" }
+      let(:command) { "uninstall" }
+
+      it { is_expected.to be_nil }
+
+      context "with described cask installed" do
+        before do
+          allow(Cask::Caskroom).to receive(:casks).and_return(["local-caffeine"])
+        end
+
+        it { is_expected.to match(/Found a cask named "local-caffeine" instead./) }
+        it { is_expected.to match(/Try\n  brew cask uninstall local-caffeine/) }
+      end
+    end
+
+    context "brew info" do
+      let(:name) { "local-caffeine" }
+      let(:command) { "info" }
+
+      it { is_expected.to match(/Found a cask named "local-caffeine" instead./) }
+      it { is_expected.to match(/local-caffeine: 1.2.3/) }
     end
   end
 end
