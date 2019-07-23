@@ -30,19 +30,19 @@ describe Cask::Cask, :cask do
 
     it "returns an instance of the Cask for the given token" do
       c = Cask::CaskLoader.load("local-caffeine")
-      expect(c).to be_kind_of(Cask::Cask)
+      expect(c).to be_kind_of(described_class)
       expect(c.token).to eq("local-caffeine")
     end
 
     it "returns an instance of the Cask from a specific file location" do
       c = Cask::CaskLoader.load("#{tap_path}/Casks/local-caffeine.rb")
-      expect(c).to be_kind_of(Cask::Cask)
+      expect(c).to be_kind_of(described_class)
       expect(c.token).to eq("local-caffeine")
     end
 
     it "returns an instance of the Cask from a url" do
       c = Cask::CaskLoader.load("file://#{tap_path}/Casks/local-caffeine.rb")
-      expect(c).to be_kind_of(Cask::Cask)
+      expect(c).to be_kind_of(described_class)
       expect(c.token).to eq("local-caffeine")
     end
 
@@ -56,7 +56,7 @@ describe Cask::Cask, :cask do
 
     it "returns an instance of the Cask from a relative file location" do
       c = Cask::CaskLoader.load(relative_tap_path/"Casks/local-caffeine.rb")
-      expect(c).to be_kind_of(Cask::Cask)
+      expect(c).to be_kind_of(described_class)
       expect(c.token).to eq("local-caffeine")
     end
 

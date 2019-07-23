@@ -42,9 +42,9 @@ describe Cask::Audit, :cask do
   let(:check_token_conflicts) { false }
   let(:fake_system_command) { class_double(SystemCommand) }
   let(:audit) {
-    Cask::Audit.new(cask, download:              download,
-                          check_token_conflicts: check_token_conflicts,
-                          command:               fake_system_command)
+    described_class.new(cask, download:              download,
+                              check_token_conflicts: check_token_conflicts,
+                              command:               fake_system_command)
   }
 
   describe "#result" do
