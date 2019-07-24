@@ -4,25 +4,26 @@ Homebrew comes with completion definitions for the `brew` command. Some packages
 
 `zsh`, `bash` and `fish` are currently supported. (Homebrew provides `brew` completions for `zsh` and `bash`; `fish` provides its own `brew` completions.)
 
-You must configure your shell to enable the completion support. This is because the Homebrew-managed completions are stored under `HOMEBREW_PREFIX`, which your system shell may not be aware of, and because it is difficult to automatically configure `bash` and `zsh` completions in a robust manner, so the Homebrew installer cannot do it for you.
+You must configure your shell to enable its completion support. This is because the Homebrew-managed completions are stored under `HOMEBREW_PREFIX` which your system shell may not be aware of, and since it is difficult to automatically configure `bash` and `zsh` completions in a robust manner, the Homebrew installer does not do it for you.
 
 ## Configuring Completions in `bash`
 
-To make Homebrew's completions available in `bash`, you must source the definitions as part of your shell startup. Add the following to your `~/.bash_profile` file:
+To make Homebrew's completions available in `bash`, you must source the definitions as part of your shell's startup. Add the following to your `~/.bash_profile` file:
 
 ```sh
 HOMEBREW_PREFIX=$(brew --prefix)
 if type brew &>/dev/null; then
-  for COMPLETION in "$HOMEBREW_PREFIX"/etc/bash_completion.d/*
-  do
-    [[ -f $COMPLETION ]] && source "$COMPLETION"
-  done
-  if [[ -f ${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh ]];
-  then
+  if [[ -r "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh" ]]; then
     source "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh"
+  else
+    for COMPLETION in "${HOMEBREW_PREFIX}/etc/bash_completion.d/"*; do
+      [[ -r "$COMPLETION" ]] && source "$COMPLETION"
+    done
   fi
 fi
 ```
+
+Should you later install the `bash-completion` formula, this will automatically use its initialization script to read the completions files.
 
 ## Configuring Completions in `zsh`
 
