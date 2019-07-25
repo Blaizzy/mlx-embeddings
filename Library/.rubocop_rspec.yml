@@ -18,6 +18,8 @@ RSpec/ContextWording:
   Enabled: false
 RSpec/DescribeClass:
   Enabled: false
+RSpec/LeakyConstantDeclaration:
+  Enabled: false
 RSpec/MessageSpies:
   Enabled: false
 

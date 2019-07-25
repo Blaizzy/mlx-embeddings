@@ -146,7 +146,7 @@ describe Cask::Pkg, :cask do
     end
 
     it "correctly parses a Property List" do
-      pkg = Cask::Pkg.new(pkg_id, fake_system_command)
+      pkg = described_class.new(pkg_id, fake_system_command)
 
       expect(fake_system_command).to receive(:run!).with(
         "/usr/sbin/pkgutil",
