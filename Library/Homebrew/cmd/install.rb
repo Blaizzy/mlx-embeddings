@@ -93,6 +93,14 @@ module Homebrew
   end
 
   def install
+    ARGV.named.each do |name|
+      next if File.exist?(name)
+      next if name !~ HOMEBREW_TAP_FORMULA_REGEX && name !~ HOMEBREW_CASK_TAP_CASK_REGEX
+
+      tap = Tap.fetch(Regexp.last_match(1), Regexp.last_match(2))
+      tap.install unless tap.installed?
+    end
+
     install_args.parse
     raise FormulaUnspecifiedError if args.remaining.empty?
 
@@ -103,16 +111,6 @@ module Homebrew
         PATH rather than using this unsupported flag!
 
       EOS
-    end
-
-    unless args.force?
-      ARGV.named.each do |name|
-        next if File.exist?(name)
-        next if name !~ HOMEBREW_TAP_FORMULA_REGEX && name !~ HOMEBREW_CASK_TAP_CASK_REGEX
-
-        tap = Tap.fetch(Regexp.last_match(1), Regexp.last_match(2))
-        tap.install unless tap.installed?
-      end
     end
 
     formulae = []
