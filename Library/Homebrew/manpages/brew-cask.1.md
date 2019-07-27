@@ -97,12 +97,15 @@ graphical user interface.
     Uninstall the given Cask. With `--force`, uninstall even if the Cask
     does not appear to be present.
 
-  * `upgrade` [--force] [--greedy] <token> [ <token> ... ]:
+  * `upgrade` [--force] [--greedy] [--dry-run] <token> [ <token> ... ]:
     Without token arguments, upgrade all the installed Casks that have newer
     versions available in the tap; otherwise update the tokens given
     in the command line.
     If `--greedy` is given then also upgrade the Casks having `auto_updates true`
     or `version :latest`.
+
+    If `--dry-run` is given, show what would be upgraded, but do not actually
+    upgrade anything.
 
   * `zap` [--force] <token> [ <token> ... ]:
     Unconditionally remove _all_ files associated with the given Cask.

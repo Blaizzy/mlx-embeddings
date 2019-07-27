@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "BREW\-CASK" "1" "May 2019" "Homebrew" "brew-cask"
+.TH "BREW\-CASK" "1" "July 2019" "Homebrew" "brew-cask"
 .
 .SH "NAME"
 \fBbrew\-cask\fR \- a friendly binary installer for macOS
@@ -102,6 +102,9 @@ Uninstall the given Cask\. With \fB\-\-force\fR, uninstall even if the Cask does
 .TP
 \fBupgrade\fR [\-\-force] [\-\-greedy] [\-\-dry\-run] \fItoken\fR [ \fItoken\fR \.\.\. ]
 Without token arguments, upgrade all the installed Casks that have newer versions available in the tap; otherwise update the tokens given in the command line\. If \fB\-\-greedy\fR is given then also upgrade the Casks having \fBauto_updates true\fR or \fBversion :latest\fR\.
+.
+.IP
+If \fB\-\-dry\-run\fR is given, show what would be upgraded, but do not actually upgrade anything\.
 .
 .TP
 \fBzap\fR [\-\-force] \fItoken\fR [ \fItoken\fR \.\.\. ]
