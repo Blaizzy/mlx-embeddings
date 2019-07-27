@@ -9,6 +9,7 @@ module Cask
       option "--quiet",  :quiet, false
       option "--force", :force, false
       option "--skip-cask-deps", :skip_cask_deps, false
+      option "--dry-run", :dry_run, false
 
       def initialize(*)
         super
@@ -41,12 +42,16 @@ module Cask
           .map { |(old_cask, new_cask)| "#{new_cask.full_name} #{old_cask.version} -> #{new_cask.version}" }
           .join(", ")
 
-        upgradable_casks.each do |(old_cask, new_cask)|
-          begin
-            upgrade_cask(old_cask, new_cask)
-          rescue CaskError => e
-            caught_exceptions << e
-            next
+        if dry_run?
+          puts "Dry run: did not upgrade anything."
+        else
+          upgradable_casks.each do |(old_cask, new_cask)|
+            begin
+              upgrade_cask(old_cask, new_cask)
+            rescue CaskError => e
+              caught_exceptions << e
+              next
+            end
           end
         end
 

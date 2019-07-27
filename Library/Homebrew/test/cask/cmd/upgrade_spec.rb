@@ -170,6 +170,179 @@ describe Cask::Cmd::Upgrade, :cask do
     end
   end
 
+  context "dry run upgrade" do
+    let(:installed) {
+      [
+        "outdated/local-caffeine",
+        "outdated/local-transmission",
+        "outdated/auto-updates",
+        "outdated/version-latest",
+      ]
+    }
+
+    before do
+      installed.each { |cask| Cask::Cmd::Install.run(cask) }
+
+      allow_any_instance_of(described_class).to receive(:verbose?).and_return(true)
+    end
+
+    describe 'without --greedy it ignores the Casks with "version latest" or "auto_updates true"' do
+      it "would update all the installed Casks when no token is provided" do
+        local_caffeine = Cask::CaskLoader.load("local-caffeine")
+        local_caffeine_path = Cask::Config.global.appdir.join("Caffeine.app")
+        local_transmission = Cask::CaskLoader.load("local-transmission")
+        local_transmission_path = Cask::Config.global.appdir.join("Transmission.app")
+
+        expect(local_caffeine).to be_installed
+        expect(local_caffeine_path).to be_a_directory
+        expect(local_caffeine.versions).to include("1.2.2")
+
+        expect(local_transmission).to be_installed
+        expect(local_transmission_path).to be_a_directory
+        expect(local_transmission.versions).to include("2.60")
+
+        described_class.run("--dry-run")
+
+        expect(local_caffeine).to be_installed
+        expect(local_caffeine_path).to be_a_directory
+        expect(local_caffeine.versions).to include("1.2.2")
+        expect(local_caffeine.versions).not_to include("1.2.3")
+
+        expect(local_transmission).to be_installed
+        expect(local_transmission_path).to be_a_directory
+        expect(local_transmission.versions).to include("2.60")
+        expect(local_transmission.versions).not_to include("2.61")
+      end
+
+      it "would update only the Casks specified in the command line" do
+        local_caffeine = Cask::CaskLoader.load("local-caffeine")
+        local_caffeine_path = Cask::Config.global.appdir.join("Caffeine.app")
+        local_transmission = Cask::CaskLoader.load("local-transmission")
+        local_transmission_path = Cask::Config.global.appdir.join("Transmission.app")
+
+        expect(local_caffeine).to be_installed
+        expect(local_caffeine_path).to be_a_directory
+        expect(local_caffeine.versions).to include("1.2.2")
+
+        expect(local_transmission).to be_installed
+        expect(local_transmission_path).to be_a_directory
+        expect(local_transmission.versions).to include("2.60")
+
+        described_class.run("--dry-run", "local-caffeine")
+
+        expect(local_caffeine).to be_installed
+        expect(local_caffeine_path).to be_a_directory
+        expect(local_caffeine.versions).to include("1.2.2")
+        expect(local_caffeine.versions).not_to include("1.2.3")
+
+        expect(local_transmission).to be_installed
+        expect(local_transmission_path).to be_a_directory
+        expect(local_transmission.versions).to include("2.60")
+        expect(local_transmission.versions).not_to include("2.61")
+      end
+
+      it 'would update "auto_updates" and "latest" Casks when their tokens are provided in the command line' do
+        local_caffeine = Cask::CaskLoader.load("local-caffeine")
+        local_caffeine_path = Cask::Config.global.appdir.join("Caffeine.app")
+        auto_updates = Cask::CaskLoader.load("auto-updates")
+        auto_updates_path = Cask::Config.global.appdir.join("MyFancyApp.app")
+
+        expect(local_caffeine).to be_installed
+        expect(local_caffeine_path).to be_a_directory
+        expect(local_caffeine.versions).to include("1.2.2")
+
+        expect(auto_updates).to be_installed
+        expect(auto_updates_path).to be_a_directory
+        expect(auto_updates.versions).to include("2.57")
+
+        described_class.run("--dry-run", "local-caffeine", "auto-updates")
+
+        expect(local_caffeine).to be_installed
+        expect(local_caffeine_path).to be_a_directory
+        expect(local_caffeine.versions).to include("1.2.2")
+        expect(local_caffeine.versions).not_to include("1.2.3")
+
+        expect(auto_updates).to be_installed
+        expect(auto_updates_path).to be_a_directory
+        expect(auto_updates.versions).to include("2.57")
+        expect(auto_updates.versions).not_to include("2.61")
+      end
+    end
+
+    describe "with --greedy it checks additional Casks" do
+      it 'would include the Casks with "auto_updates true" or "version latest"' do
+        local_caffeine = Cask::CaskLoader.load("local-caffeine")
+        local_caffeine_path = Cask::Config.global.appdir.join("Caffeine.app")
+        auto_updates = Cask::CaskLoader.load("auto-updates")
+        auto_updates_path = Cask::Config.global.appdir.join("MyFancyApp.app")
+        local_transmission = Cask::CaskLoader.load("local-transmission")
+        local_transmission_path = Cask::Config.global.appdir.join("Transmission.app")
+        version_latest = Cask::CaskLoader.load("version-latest")
+        version_latest_path_1 = Cask::Config.global.appdir.join("Caffeine Mini.app")
+        version_latest_path_2 = Cask::Config.global.appdir.join("Caffeine Pro.app")
+
+        expect(local_caffeine).to be_installed
+        expect(local_caffeine_path).to be_a_directory
+        expect(local_caffeine.versions).to include("1.2.2")
+
+        expect(auto_updates).to be_installed
+        expect(auto_updates_path).to be_a_directory
+        expect(auto_updates.versions).to include("2.57")
+
+        expect(local_transmission).to be_installed
+        expect(local_transmission_path).to be_a_directory
+        expect(local_transmission.versions).to include("2.60")
+
+        expect(version_latest).to be_installed
+        expect(version_latest_path_1).to be_a_directory
+        expect(version_latest.versions).to include("latest")
+
+        described_class.run("--greedy", "--dry-run")
+
+        expect(local_caffeine).to be_installed
+        expect(local_caffeine_path).to be_a_directory
+        expect(local_caffeine.versions).to include("1.2.2")
+        expect(local_caffeine.versions).not_to include("1.2.3")
+
+        expect(auto_updates).to be_installed
+        expect(auto_updates_path).to be_a_directory
+        expect(auto_updates.versions).to include("2.57")
+        expect(auto_updates.versions).not_to include("2.61")
+
+        expect(local_transmission).to be_installed
+        expect(local_transmission_path).to be_a_directory
+        expect(local_transmission.versions).to include("2.60")
+        expect(local_transmission.versions).not_to include("2.61")
+
+        expect(version_latest).to be_installed
+        expect(version_latest_path_2).to be_a_directory
+      end
+
+      it 'does not include the Casks with "auto_updates true" when the version did not change' do
+        cask = Cask::CaskLoader.load("auto-updates")
+        cask_path = cask.config.appdir.join("MyFancyApp.app")
+
+        expect(cask).to be_installed
+        expect(cask_path).to be_a_directory
+        expect(cask.versions).to include("2.57")
+
+        described_class.run("--dry-run", "auto-updates", "--greedy")
+
+        expect(cask).to be_installed
+        expect(cask_path).to be_a_directory
+        expect(cask.versions).to include("2.57")
+        expect(cask.versions).not_to include("2.61")
+
+        described_class.run("--dry-run", "auto-updates", "--greedy")
+
+        expect(cask).to be_installed
+        expect(cask_path).to be_a_directory
+        expect(cask.versions).to include("2.57")
+        expect(cask.versions).not_to include("2.61")
+      end
+    end
+  end
+
   context "failed upgrade" do
     let(:installed) {
       [
