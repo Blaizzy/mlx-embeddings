@@ -557,6 +557,8 @@ upgraded formulae or, every 30 days, for all formulae.
   Don't delete the temporary files created during installation.
 * `--display-times`:
   Print install times for each formula at the end of the run.
+* `--dry-run`:
+  Show what would be upgraded, but do not actually upgrade anything.
 
 ### `uses` [*`options`*] *`formula`*
 

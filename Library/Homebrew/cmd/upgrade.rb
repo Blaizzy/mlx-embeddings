@@ -46,6 +46,8 @@ module Homebrew
              description: "Print the verification and postinstall steps."
       switch "--display-times",
              description: "Print install times for each formula at the end of the run."
+      switch "--dry-run",
+             description: "Show what would be upgraded, but do not actually upgrade anything."
       conflicts "--build-from-source", "--force-bottle"
       formula_options
     end
@@ -104,11 +106,15 @@ module Homebrew
       puts formulae_upgrades.join(", ")
     end
 
-    upgrade_formulae(formulae_to_install)
+    if args.dry_run?
+      puts "Dry run: did not upgrade anything."
+    else
+      upgrade_formulae(formulae_to_install)
 
-    check_dependents(formulae_to_install)
+      check_dependents(formulae_to_install)
 
-    Homebrew.messages.display_messages
+      Homebrew.messages.display_messages
+    end
   end
 
   def upgrade_formulae(formulae_to_install)
