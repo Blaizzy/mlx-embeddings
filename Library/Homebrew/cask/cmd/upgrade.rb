@@ -42,16 +42,14 @@ module Cask
           .map { |(old_cask, new_cask)| "#{new_cask.full_name} #{old_cask.version} -> #{new_cask.version}" }
           .join(", ")
 
-        if dry_run?
-          puts "Dry run: did not upgrade anything."
-        else
-          upgradable_casks.each do |(old_cask, new_cask)|
-            begin
-              upgrade_cask(old_cask, new_cask)
-            rescue CaskError => e
-              caught_exceptions << e
-              next
-            end
+        return puts "Dry run: did not upgrade anything." if dry_run?
+
+        upgradable_casks.each do |(old_cask, new_cask)|
+          begin
+            upgrade_cask(old_cask, new_cask)
+          rescue CaskError => e
+            caught_exceptions << e
+            next
           end
         end
 

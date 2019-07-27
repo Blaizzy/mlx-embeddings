@@ -106,15 +106,13 @@ module Homebrew
       puts formulae_upgrades.join(", ")
     end
 
-    if args.dry_run?
-      puts "Dry run: did not upgrade anything."
-    else
-      upgrade_formulae(formulae_to_install)
+    return puts "Dry run: did not upgrade anything." if args.dry_run?
 
-      check_dependents(formulae_to_install)
+    upgrade_formulae(formulae_to_install)
 
-      Homebrew.messages.display_messages
-    end
+    check_dependents(formulae_to_install)
+
+    Homebrew.messages.display_messages
   end
 
   def upgrade_formulae(formulae_to_install)
