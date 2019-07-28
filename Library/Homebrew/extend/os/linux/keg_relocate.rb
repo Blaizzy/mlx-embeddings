@@ -39,7 +39,7 @@ class Keg
     new_rpath = rpath.join(":")
     cmd = [patchelf, "--force-rpath", "--set-rpath", new_rpath]
 
-    if file.binary_executable?
+    if file.with_interpreter?
       old_interpreter = Utils.safe_popen_read(patchelf, "--print-interpreter", file).strip
       new_interpreter = if File.readable? "#{new_prefix}/lib/ld.so"
         "#{new_prefix}/lib/ld.so"
