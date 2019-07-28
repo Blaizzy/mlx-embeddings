@@ -33,7 +33,8 @@ module Cask
         end
 
         ohai "Casks with `auto_updates` or `version :latest` will not be upgraded" if args.empty? && !greedy?
-        oh1 "Upgrading #{outdated_casks.count} #{"outdated package".pluralize(outdated_casks.count)}:"
+        verb = dry_run? ? "Would upgrade" : "Upgrading"
+        oh1 "#{verb} #{outdated_casks.count} #{"outdated package".pluralize(outdated_casks.count)}:"
         caught_exceptions = []
 
         upgradable_casks = outdated_casks.map { |c| [CaskLoader.load(c.installed_caskfile), c] }
@@ -41,8 +42,7 @@ module Cask
         puts upgradable_casks
           .map { |(old_cask, new_cask)| "#{new_cask.full_name} #{old_cask.version} -> #{new_cask.version}" }
           .join(", ")
-
-        return puts "Dry run: did not upgrade anything." if dry_run?
+        return if dry_run?
 
         upgradable_casks.each do |(old_cask, new_cask)|
           begin

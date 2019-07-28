@@ -95,7 +95,8 @@ module Homebrew
     if formulae_to_install.empty?
       oh1 "No packages to upgrade"
     else
-      oh1 "Upgrading #{formulae_to_install.count} outdated #{"package".pluralize(formulae_to_install.count)}:"
+      verb = args.dry_run? ? "Would upgrade" : "Upgrading"
+      oh1 "#{verb} #{formulae_to_install.count} outdated #{"package".pluralize(formulae_to_install.count)}:"
       formulae_upgrades = formulae_to_install.map do |f|
         if f.optlinked?
           "#{f.full_specified_name} #{Keg.new(f.opt_prefix).version} -> #{f.pkg_version}"
@@ -105,8 +106,7 @@ module Homebrew
       end
       puts formulae_upgrades.join(", ")
     end
-
-    return puts "Dry run: did not upgrade anything." if args.dry_run?
+    return if args.dry_run?
 
     upgrade_formulae(formulae_to_install)
 
