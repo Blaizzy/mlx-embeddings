@@ -100,8 +100,11 @@ Check the given Casks for correct style using RuboCop (with custom Cask cops)\. 
 Uninstall the given Cask\. With \fB\-\-force\fR, uninstall even if the Cask does not appear to be present\.
 .
 .TP
-\fBupgrade\fR [\-\-force] [\-\-greedy] \fItoken\fR [ \fItoken\fR \.\.\. ]
+\fBupgrade\fR [\-\-force] [\-\-greedy] [\-\-dry\-run] \fItoken\fR [ \fItoken\fR \.\.\. ]
 Without token arguments, upgrade all the installed Casks that have newer versions available in the tap; otherwise update the tokens given in the command line\. If \fB\-\-greedy\fR is given then also upgrade the Casks having \fBauto_updates true\fR or \fBversion :latest\fR\.
+.
+.IP
+If \fB\-\-dry\-run\fR is given, show what would be upgraded, but do not actually upgrade anything\.
 .
 .TP
 \fBzap\fR [\-\-force] \fItoken\fR [ \fItoken\fR \.\.\. ]

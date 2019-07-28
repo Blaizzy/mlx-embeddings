@@ -47,6 +47,8 @@ module Homebrew
       switch "--display-times",
              env:         :display_install_times,
              description: "Print install times for each formula at the end of the run."
+      switch "--dry-run",
+             description: "Show what would be upgraded, but do not actually upgrade anything."
       conflicts "--build-from-source", "--force-bottle"
       formula_options
     end
@@ -94,7 +96,8 @@ module Homebrew
     if formulae_to_install.empty?
       oh1 "No packages to upgrade"
     else
-      oh1 "Upgrading #{formulae_to_install.count} outdated #{"package".pluralize(formulae_to_install.count)}:"
+      verb = args.dry_run? ? "Would upgrade" : "Upgrading"
+      oh1 "#{verb} #{formulae_to_install.count} outdated #{"package".pluralize(formulae_to_install.count)}:"
       formulae_upgrades = formulae_to_install.map do |f|
         if f.optlinked?
           "#{f.full_specified_name} #{Keg.new(f.opt_prefix).version} -> #{f.pkg_version}"
@@ -104,6 +107,7 @@ module Homebrew
       end
       puts formulae_upgrades.join(", ")
     end
+    return if args.dry_run?
 
     upgrade_formulae(formulae_to_install)
 
