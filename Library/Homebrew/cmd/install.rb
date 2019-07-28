@@ -78,6 +78,7 @@ module Homebrew
       switch :verbose,
              description: "Print the verification and postinstall steps."
       switch "--display-times",
+             env:         :display_install_times,
              description: "Print install times for each formula at the end of the run."
       switch "-i", "--interactive",
              description: "Download and patch <formula>, then open a shell. This allows the user to "\

@@ -1061,6 +1061,9 @@ Note that environment variables must have a value set to be detected. For exampl
 
     *Default:* the value of the user's `DISPLAY` environment variable.
 
+  * `HOMEBREW_DISPLAY_INSTALL_TIMES`:
+    If set, Homebrew will print install times for each formula at the end of the run.
+
   * `HOMEBREW_EDITOR`:
     If set, Homebrew will use this editor when editing a single formula, or
     several formulae in the same directory.

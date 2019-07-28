@@ -74,7 +74,7 @@ describe Messages do
 
     context "when the --display-times argument is present" do
       before do
-        allow(ARGV).to receive(:include?).with("--display-times").and_return(true)
+        allow(Homebrew.args).to receive(:display_times?).and_return(true)
       end
 
       context "when install_times is empty" do
