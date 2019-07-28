@@ -23,9 +23,13 @@ module Homebrew
   def ruby
     ruby_args.parse
 
-    safe_system ENV["HOMEBREW_RUBY_PATH"],
-                "-I", $LOAD_PATH.join(File::PATH_SEPARATOR),
-                "-rglobal", "-rdev-cmd/irb",
-                *ARGV
+    begin
+      safe_system ENV["HOMEBREW_RUBY_PATH"],
+                  "-I", $LOAD_PATH.join(File::PATH_SEPARATOR),
+                  "-rglobal", "-rdev-cmd/irb",
+                  *ARGV
+    rescue ErrorDuringExecution => e
+      exit e.status.exitstatus
+    end
   end
 end
