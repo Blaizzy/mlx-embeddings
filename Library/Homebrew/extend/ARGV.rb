@@ -42,6 +42,7 @@ module HomebrewArgvExtension
   def kegs
     require "keg"
     require "formula"
+    require "missing_formula"
     # TODO: use @instance variable to ||= cache when moving to CLI::Parser
     downcased_unique_named.map do |name|
       raise UsageError if name.empty?
@@ -50,7 +51,12 @@ module HomebrewArgvExtension
 
       dirs = rack.directory? ? rack.subdirs : []
 
-      raise NoSuchKegError, rack.basename if dirs.empty?
+      if dirs.empty?
+        if (reason = Homebrew::MissingFormula.suggest_command(name, "uninstall"))
+          $stderr.puts reason
+        end
+        raise NoSuchKegError, rack.basename
+      end
 
       linked_keg_ref = HOMEBREW_LINKED_KEGS/rack.basename
       opt_prefix = HOMEBREW_PREFIX/"opt/#{rack.basename}"
