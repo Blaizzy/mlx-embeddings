@@ -22,7 +22,7 @@ module Homebrew
              description: "List all files which would be linked or deleted by "\
                           "`brew link --overwrite`, but will not actually link or delete any files."
       switch :force,
-             description: "Allow only key-only formulae to be linked."
+             description: "Allow keg-only formulae to be linked."
       switch :verbose
       switch :debug
     end
