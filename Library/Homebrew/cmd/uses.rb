@@ -37,9 +37,9 @@ module Homebrew
       switch "--skip-recommended",
              description: "Skip all formulae that specify <formula> as `:recommended` type dependency."
       switch "--devel",
-             description: "Show usage of <formula> by development build."
+             description: "Show usage of <formula> by development builds."
       switch "--HEAD",
-             description: "Show usage of <formula> by HEAD build."
+             description: "Show usage of <formula> by HEAD builds."
       switch :debug
       conflicts "--devel", "--HEAD"
     end

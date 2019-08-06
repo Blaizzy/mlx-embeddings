@@ -38,7 +38,7 @@ module Homebrew
       switch "--display-cop-names",
              description: "Include the RuboCop cop name for each violation in the output."
       switch "--display-filename",
-             description: "Prefix every line of output with name of the file or formula being audited, to "\
+             description: "Prefix every line of output with the file or formula name being audited, to "\
                           "make output easy to grep."
       switch "-D", "--audit-debug",
              description: "Enable debugging and profiling of audit methods."

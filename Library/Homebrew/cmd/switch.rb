@@ -12,7 +12,7 @@ module Homebrew
       usage_banner <<~EOS
         `switch` <formula> <version>
 
-        Symlink all of the specific <version> of <formula>'s install to Homebrew prefix.
+        Symlink all of the specified <version> of <formula>'s installation into Homebrew's prefix.
       EOS
       switch_option :verbose
       switch_option :debug

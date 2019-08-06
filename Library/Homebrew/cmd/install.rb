@@ -28,7 +28,7 @@ module Homebrew
       EOS
       switch :debug,
              description: "If brewing fails, open an interactive debugging session with access to IRB "\
-                          "or a shell inside the temporary build directory"
+                          "or a shell inside the temporary build directory."
       flag   "--env=",
              description: "If `std` is passed, use the standard build environment instead of superenv. "\
                           "If `super` is passed, use superenv even if the formula specifies the "\
@@ -230,7 +230,7 @@ module Homebrew
         opoo msg
       elsif f.migration_needed? && !args.force?
         # Check if the formula we try to install is the same as installed
-        # but not migrated one. If --force passed then install anyway.
+        # but not migrated one. If --force is passed then install anyway.
         opoo <<~EOS
           #{f.oldname} is already installed, it's just not migrated
           You can migrate this formula with `brew migrate #{f}`

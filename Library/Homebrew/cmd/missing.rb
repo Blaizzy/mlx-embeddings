@@ -20,7 +20,7 @@ module Homebrew
       EOS
       comma_array "--hide",
                   description: "Act as if none of the provided <hidden> are installed. <hidden> should be "\
-                               "comma-separated list of formulae."
+                               "a comma-separated list of formulae."
       switch :verbose
       switch :debug
     end

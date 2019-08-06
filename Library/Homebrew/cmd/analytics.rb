@@ -15,7 +15,7 @@ module Homebrew
         If `state` is passed, display anonymous user behaviour analytics state.
         Read more at <https://docs.brew.sh/Analytics>.
 
-        If `regenerate-uuid` is passed, regenerate UUID used in Homebrew's analytics.
+        If `regenerate-uuid` is passed, regenerate the UUID used in Homebrew's analytics.
       EOS
       switch :verbose
       switch :debug

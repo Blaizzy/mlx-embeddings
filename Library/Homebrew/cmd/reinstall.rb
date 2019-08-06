@@ -22,7 +22,7 @@ module Homebrew
       EOS
       switch :debug,
              description: "If brewing fails, open an interactive debugging session with access to IRB "\
-                          "or a shell inside the temporary build directory"
+                          "or a shell inside the temporary build directory."
       switch "-s", "--build-from-source",
              description: "Compile <formula> from source even if a bottle is available."
       switch "--force-bottle",

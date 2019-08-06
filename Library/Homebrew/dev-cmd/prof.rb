@@ -10,7 +10,7 @@ module Homebrew
       usage_banner <<~EOS
         `prof` <command>
 
-        Run Homebrew with the Ruby profiler e.g. `brew prof readall`.
+        Run Homebrew with the Ruby profiler, e.g. `brew prof readall`.
       EOS
     end
   end

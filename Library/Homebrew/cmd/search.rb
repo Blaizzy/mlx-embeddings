@@ -40,7 +40,7 @@ module Homebrew
              description: "Display all locally available casks (including tapped ones). "\
                           "No online search is performed."
       switch "--desc",
-             description: "search formulae with a description matching <text> and casks with "\
+             description: "Search for formulae with a description matching <text> and casks with "\
                           "a name matching <text>."
 
       package_manager_switches = PACKAGE_MANAGERS.keys.map { |name| "--#{name}" }

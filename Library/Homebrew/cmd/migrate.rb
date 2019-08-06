@@ -11,12 +11,12 @@ module Homebrew
       usage_banner <<~EOS
         `migrate` [<options>] <formula>
 
-        Migrate renamed packages to new name, where <formula> are old names of
+        Migrate renamed packages to new names, where <formula> are old names of
         packages.
       EOS
       switch :force,
-             description: "Treat installed <formula> and passed <formula> like if they are from "\
-                          "same taps and migrate them anyway."
+             description: "Treat installed <formula> and passed <formula> as if they are from "\
+                          "the same taps and migrate them anyway."
       switch :verbose
       switch :debug
     end

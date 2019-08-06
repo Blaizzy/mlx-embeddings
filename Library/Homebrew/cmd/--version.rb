@@ -10,7 +10,7 @@ module Homebrew
       usage_banner <<~EOS
         `--version`
 
-        Print the version number of Homebrew, Homebrew/homebrew-core and Homebrew/homebrew-cask
+        Print the version numbers of Homebrew, Homebrew/homebrew-core and Homebrew/homebrew-cask
         (if tapped) to standard output and exit.
       EOS
     end
