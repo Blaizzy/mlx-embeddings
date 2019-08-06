@@ -42,6 +42,7 @@ Uninstall <formula>.
 List all installed formulae.
 
 ### `search` (<text>|`/`<text>`/`):
+
 Perform a substring search of cask tokens and formula names for <text>. If <text>
 is surrounded with slashes, then it is interpreted as a regular expression.
 The search for <text> is extended online to `homebrew/core` and `homebrew/cask`.
@@ -63,7 +64,8 @@ If no search term is given, all locally available formulae are listed.
 
 ### `bundle` <subcommand>:
 
-Bundler for non-Ruby dependencies from Homebrew, Homebrew Cask and the Mac App Store. See `brew bundle --help`.
+Bundler for non-Ruby dependencies from Homebrew, Homebrew Cask and the Mac App Store.
+See `brew bundle --help`.
 
 **Homebrew/homebrew-bundle**: <https://github.com/Homebrew/homebrew-bundle>
 
@@ -75,7 +77,8 @@ Install macOS applications distributed as binaries. See brew-cask(1).
 
 ### `services` <subcommand>:
 
-Manage background services with macOS' `launchctl`(1) daemon manager. See `brew services --help`.
+Manage background services with macOS' `launchctl`(1) daemon manager.
+See `brew services --help`.
 
 **Homebrew/homebrew-services**: <https://github.com/Homebrew/homebrew-services>
 
@@ -116,7 +119,8 @@ Note that environment variables must have a value set to be detected. For exampl
 `export HOMEBREW_NO_INSECURE_REDIRECT`.
 
   * `HOMEBREW_ARCH`:
-    Linux only: If set, Homebrew will pass the set value to type name to the compiler's `-march` option instead of using the default (`-march=native`).
+    Linux only: If set, Homebrew will pass the set value to type name to the compiler's
+    `-march` option instead of using the default (`-march=native`).
 
   * `HOMEBREW_ARTIFACT_DOMAIN`:
     If set, instructs Homebrew to prefix all download URLs, including those for bottles,

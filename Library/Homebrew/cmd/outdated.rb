@@ -21,10 +21,10 @@ module Homebrew
              description: "List only the names of outdated brews (takes precedence over `--verbose`)."
       switch :verbose,
              description: "Display detailed version information."
-      flag "--json",
-           description: "Print output in JSON format. Currently the default and only accepted "\
-                        "value for <version> is `v1`. See the docs for examples of using the JSON "\
-                        "output: <https://docs.brew.sh/Querying-Brew>"
+      flag   "--json",
+             description: "Print output in JSON format. Currently the default and only accepted "\
+                          "value for <version> is `v1`. See the docs for examples of using the JSON "\
+                          "output: <https://docs.brew.sh/Querying-Brew>"
       switch "--fetch-HEAD",
              description: "Fetch the upstream repository to detect if the HEAD installation of the "\
                           "formula is outdated. Otherwise, the repository's HEAD will be checked for "\

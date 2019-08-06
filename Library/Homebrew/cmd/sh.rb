@@ -18,8 +18,8 @@ module Homebrew
         in an Xcode-only configuration since it adds tools like `make` to your `PATH`
         which otherwise build systems would not find.
       EOS
-      flag "--env=",
-           description: "Use the standard `PATH` instead of superenv's, when <std> is passed"
+      flag   "--env=",
+             description: "Use the standard `PATH` instead of superenv's, when <std> is passed"
       switch :verbose
       switch :debug
     end

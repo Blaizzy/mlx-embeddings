@@ -18,9 +18,9 @@ module Homebrew
         If the command's output is sent through a pipe and no shell is specified,
         the list is formatted for export to `bash`(1) unless `--plain` is passed.
       EOS
-      flag "--shell=",
-           description: "Generate a list of environment variables for the specified shell, " \
-                        "or `--shell=auto` to detect the current shell."
+      flag   "--shell=",
+             description: "Generate a list of environment variables for the specified shell, " \
+                          "or `--shell=auto` to detect the current shell."
       switch "--plain",
              description: "Plain output even when piped."
     end

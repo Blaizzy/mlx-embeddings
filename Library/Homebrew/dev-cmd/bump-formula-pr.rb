@@ -58,7 +58,6 @@ module Homebrew
       flag   "--revision=",
              required_for: "--tag=",
              description:  "Specify the new git commit <revision> corresponding to a specified <tag>."
-
       switch :force
       switch :quiet
       switch :verbose

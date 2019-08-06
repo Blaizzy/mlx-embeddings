@@ -17,7 +17,8 @@ module Homebrew
 
         Uninstall and then install <formula> (with existing and any appended install options).
 
-        Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will be run for the reinstalled formulae or, every 30 days, for all formulae.
+        Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will be run for the
+        reinstalled formulae or, every 30 days, for all formulae.
       EOS
       switch :debug,
              description: "If brewing fails, open an interactive debugging session with access to IRB "\

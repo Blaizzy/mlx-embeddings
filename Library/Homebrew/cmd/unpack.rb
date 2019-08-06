@@ -15,8 +15,8 @@ module Homebrew
         Unpack the source files for <formula> into subdirectories of the current
         working directory.
       EOS
-      flag "--destdir=",
-           description: "Create subdirectories in the directory named by <path> instead."
+      flag   "--destdir=",
+             description: "Create subdirectories in the directory named by <path> instead."
       switch "--patch",
              description: "Patches for <formula> will be applied to the unpacked source."
       switch "-g", "--git",

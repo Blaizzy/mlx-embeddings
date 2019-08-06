@@ -86,9 +86,8 @@ module Homebrew
         installed yet, attempt to install/clone the tap before continuing. To extract
         a <formula> from a tap that is not homebrew/core use <user>/<repo>/<formula>.
       EOS
-
-      flag "--version=",
-           description: "Extract the provided <version> of <formula> instead of the most recent."
+      flag   "--version=",
+             description: "Extract the provided <version> of <formula> instead of the most recent."
       switch :force
       switch :debug
     end

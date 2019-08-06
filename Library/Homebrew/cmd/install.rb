@@ -23,16 +23,16 @@ module Homebrew
         <formula> is usually the name of the formula to install, but it can be specified
         in several different ways.
 
-        Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will be run for the installed formulae or, every 30 days, for all formulae.
+        Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will be run for the
+        installed formulae or, every 30 days, for all formulae.
       EOS
-
       switch :debug,
              description: "If brewing fails, open an interactive debugging session with access to IRB "\
                           "or a shell inside the temporary build directory"
-      flag "--env=",
-           description: "If `std` is passed, use the standard build environment instead of superenv."\
-                        "If `super` is passed, use superenv even if the formula specifies the "\
-                        "standard build environment."
+      flag   "--env=",
+             description: "If `std` is passed, use the standard build environment instead of superenv. "\
+                          "If `super` is passed, use superenv even if the formula specifies the "\
+                          "standard build environment."
       switch "--ignore-dependencies",
              description: "An unsupported Homebrew development flag to skip installing any dependencies of "\
                           "any kind. If the dependencies are not already present, the formula will have issues. "\
@@ -41,13 +41,13 @@ module Homebrew
       switch "--only-dependencies",
              description: "Install the dependencies with specified options but do not install the "\
                           "specified formula."
-      flag "--cc=",
-           description: "Attempt to compile using provided <compiler>. <compiler> should be the "\
-                        "name of the compiler's executable, for instance `gcc-7` for GCC 7. "\
-                        "In order to use LLVM's clang, use `llvm_clang`. To specify the "\
-                        "Apple-provided clang, use `clang`. This parameter will only accept "\
-                        "compilers that are provided by Homebrew or bundled with macOS. "\
-                        "Please do not file issues if you encounter errors while using this flag."
+      flag   "--cc=",
+             description: "Attempt to compile using provided <compiler>. <compiler> should be the "\
+                          "name of the compiler's executable, for instance `gcc-7` for GCC 7. "\
+                          "In order to use LLVM's clang, use `llvm_clang`. To specify the "\
+                          "Apple-provided clang, use `clang`. This parameter will only accept "\
+                          "compilers that are provided by Homebrew or bundled with macOS. "\
+                          "Please do not file issues if you encounter errors while using this flag."
       switch "-s", "--build-from-source",
              description: "Compile the specified <formula> from source even if a bottle is provided. "\
                           "Dependencies will still be installed from bottles if they are available."
@@ -68,10 +68,10 @@ module Homebrew
              description: "Don't delete the temporary files created during installation."
       switch "--build-bottle",
              description: "Prepare the formula for eventual bottling during installation."
-      flag "--bottle-arch=",
-           depends_on:  "--build-bottle",
-           description: "Optimise bottles for the given architecture rather than the oldest "\
-                        "architecture supported by the version of macOS the bottles are built on."
+      flag   "--bottle-arch=",
+             depends_on:  "--build-bottle",
+             description: "Optimise bottles for the given architecture rather than the oldest "\
+                          "architecture supported by the version of macOS the bottles are built on."
       switch :force,
              description: "Install without checking for previously installed keg-only or "\
                           "non-migrated versions."

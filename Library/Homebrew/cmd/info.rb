@@ -37,10 +37,10 @@ module Homebrew
       switch "--github",
              description: "Open a browser to the GitHub source page for <formula>. "\
                           "To view formula history locally: `brew log -p` <formula>"
-      flag "--json",
-           description: "Print a JSON representation of <formula>. Currently the default and only accepted "\
-                        "value for <version> is `v1`. See the docs for examples of using the JSON "\
-                        "output: <https://docs.brew.sh/Querying-Brew>"
+      flag   "--json",
+             description: "Print a JSON representation of <formula>. Currently the default and only accepted "\
+                          "value for <version> is `v1`. See the docs for examples of using the JSON "\
+                          "output: <https://docs.brew.sh/Querying-Brew>"
       switch "--installed",
              depends_on:  "--json",
              description: "Print JSON of formulae that are currently installed."

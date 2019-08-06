@@ -26,7 +26,7 @@ module Homebrew
              description: "Remove a previously cached version and re-fetch."
       switch "--retry",
              description: "Retry if a download fails or re-download if the checksum of a previously cached "\
-                         "version no longer matches."
+                          "version no longer matches."
       switch "--deps",
              description: "Download dependencies for any listed <formula>."
       switch "-s", "--build-from-source",

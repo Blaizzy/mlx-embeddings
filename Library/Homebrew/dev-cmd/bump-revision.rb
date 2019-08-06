@@ -12,13 +12,12 @@ module Homebrew
         `bump-revision` [<options>] [<formula>]
 
         Create a commit to increment the revision of the formula. If no revision is
-         present, "revision 1" will be added.
+        present, "revision 1" will be added.
       EOS
       switch "-n", "--dry-run",
              description: "Print what would be done rather than doing it."
-      flag "--message=",
-           description: "Append the provided <message> to the default commit message."
-
+      flag   "--message=",
+             description: "Append the provided <message> to the default commit message."
       switch :force
       switch :quiet
       switch :verbose
