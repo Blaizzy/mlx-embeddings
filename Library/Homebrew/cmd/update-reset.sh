@@ -1,6 +1,6 @@
 #:  * `update-reset` [<repository>]
 #:
-#:  Fetches and resets Homebrew and all tap repositories (or any specified `repository`) using `git`(1) to their latest `origin/master`. Note this will destroy all your uncommitted or committed changes.
+#:  Fetches and resets Homebrew and all tap repositories (or any specified <repository>) using `git`(1) to their latest `origin/master`. Note this will destroy all your uncommitted or committed changes.
 
 homebrew-update-reset() {
   local DIR

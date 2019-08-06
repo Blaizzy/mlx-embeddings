@@ -11,8 +11,8 @@ module Homebrew
       usage_banner <<~EOS
         `edit` [<formula>]
 
-        Open a formula in the editor set by `EDITOR` or `HOMEBREW_EDITOR`, or open the
-        Homebrew repository for editing if no <formula> is provided.
+        Open <formula> in the editor set by `EDITOR` or `HOMEBREW_EDITOR`, or open the
+        Homebrew repository for editing if no formula is provided.
       EOS
       switch :force
       switch :verbose

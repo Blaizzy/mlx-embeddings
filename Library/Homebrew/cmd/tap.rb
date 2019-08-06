@@ -19,7 +19,7 @@ module Homebrew
         `brew tap` <user>`/`<repo> `https://github.com/`<user>`/homebrew-`<repo>.
 
         With <URL> specified, tap a formula repository from anywhere, using
-        any transport protocol that `git` handles. The one-argument form of `tap`
+        any transport protocol that `git`(1) handles. The one-argument form of `tap`
         simplifies but also limits. This two-argument command makes no
         assumptions, so taps can be cloned from places other than GitHub and
         using protocols other than HTTPS, e.g. SSH, GIT, HTTP, FTP(S), RSYNC.

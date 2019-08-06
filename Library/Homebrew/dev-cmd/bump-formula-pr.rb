@@ -11,7 +11,7 @@ module Homebrew
       usage_banner <<~EOS
         `bump-formula-pr` [<options>] [<formula>]
 
-        Create a pull request to update a formula with a new URL or a new tag.
+        Create a pull request to update <formula> with a new URL or a new tag.
 
         If a <URL> is specified, the <SHA-256> checksum of the new download should also
         be specified. A best effort to determine the <SHA-256> and <formula> name will

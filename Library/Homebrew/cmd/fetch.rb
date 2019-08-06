@@ -36,7 +36,6 @@ module Homebrew
       switch "--force-bottle",
              description: "Download a bottle if it exists for the current or newest version of macOS, "\
                           "even if it would not be used during installation."
-      switch :verbose
       switch :debug
       conflicts "--devel", "--HEAD"
       conflicts "--build-from-source", "--build-bottle", "--force-bottle"

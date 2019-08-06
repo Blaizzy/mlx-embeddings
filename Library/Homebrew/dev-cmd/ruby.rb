@@ -8,7 +8,7 @@ module Homebrew
   def ruby_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `ruby` [`-e`]:
+        `ruby` [`-e`]
 
         Run a Ruby instance with Homebrew's libraries loaded, e.g.
         `brew ruby -e "puts :gcc.f.deps"` or `brew ruby script.rb`.

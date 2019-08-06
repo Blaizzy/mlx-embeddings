@@ -19,7 +19,7 @@ module Homebrew
              description: "Also output diffstat from commit."
       switch "--oneline",
              description: "Output only one line per commit."
-      switch "-1", "--max-count=1",
+      flag   "-1", "--max-count",
              description: "Output only one commit."
     end
   end

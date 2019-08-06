@@ -84,7 +84,7 @@ module Homebrew
         Look through repository history to find the most recent version of <formula> and
         create a copy in <tap>`/Formula/`<formula>`@`<version>`.rb`. If the tap is not
         installed yet, attempt to install/clone the tap before continuing. To extract
-        a <formula> from a tap that is not homebrew/core use <user>/<repo>/<formula>.
+        a formula from a tap that is not `homebrew/core` use <user>`/`<repo>`/`<formula>.
       EOS
       flag   "--version=",
              description: "Extract the provided <version> of <formula> instead of the most recent."

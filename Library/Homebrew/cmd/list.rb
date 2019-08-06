@@ -16,7 +16,7 @@ module Homebrew
       EOS
       switch "--full-name",
              description: "Print formulae with fully-qualified names. If `--full-name` is not "\
-                          "passed, other options (i.e. `-1`, `-l`, `-t` and `-r`) are passed to `ls` "\
+                          "passed, other options (i.e. `-1`, `-l`, `-r` and `-t`) are passed to `ls`(1) "\
                           "which produces the actual output."
       switch "--unbrewed",
              description: "List all files in the Homebrew prefix not installed by Homebrew."
