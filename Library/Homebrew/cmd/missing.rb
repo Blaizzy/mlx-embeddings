@@ -11,7 +11,7 @@ module Homebrew
   def missing_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `missing` [<options>] [<formulae>]
+        `missing` [<options>] [<formula>]
 
         Check the given <formula> for missing dependencies. If no <formula> are
         given, check all installed brews.

@@ -9,7 +9,7 @@ module Homebrew
   def log_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `log` [<options>] <formula>
+        `log` [<options>] [<formula>]
 
         Show the `git log` for the given <formula>.
       EOS

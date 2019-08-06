@@ -10,7 +10,7 @@ module Homebrew
   def link_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `ln`, `link` [<options>] <formula>
+        `link`, `ln` [<options>] <formula>
 
         Symlink all of <formula>'s installed files into the Homebrew prefix. This
         is done automatically when you install formulae but can be useful for DIY

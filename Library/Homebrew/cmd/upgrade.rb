@@ -14,7 +14,7 @@ module Homebrew
   def upgrade_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `upgrade` [<options>] <formula>
+        `upgrade` [<options>] [<formula>]
 
         Upgrade outdated, unpinned formulae (with existing and any appended brew formula options).
 

@@ -1,4 +1,4 @@
-#:  * `update` [<options>]
+#:  * `update`, `up` [<options>]
 #:
 #:  Fetch the newest version of Homebrew and all formulae from GitHub using `git`(1) and perform any necessary migrations.
 #:
