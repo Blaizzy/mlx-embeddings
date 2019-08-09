@@ -515,6 +515,7 @@ module Homebrew
         gnupg@1.4
         lua@5.1
         python@2
+        numpy@1.16
       ].freeze
 
       return if keg_only_whitelist.include?(formula.name) || formula.name.start_with?("gcc@")
