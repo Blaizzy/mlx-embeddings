@@ -14,8 +14,8 @@ module Homebrew
 
         Rerun the post-install steps for <formula>.
       EOS
-      switch :verbose
       switch :force
+      switch :verbose
       switch :debug
     end
   end

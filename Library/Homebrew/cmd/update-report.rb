@@ -29,8 +29,8 @@ module Homebrew
              description: "Run in 'auto-update' mode (faster, less output)."
       switch :force
       switch :quiet
-      switch :debug
       switch :verbose
+      switch :debug
       hide_from_man_page!
     end
   end

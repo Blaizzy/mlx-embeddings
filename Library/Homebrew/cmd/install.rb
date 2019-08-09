@@ -20,9 +20,6 @@ module Homebrew
 
         Install <formula>.
 
-        <formula> is usually the name of the formula to install, but it can be specified
-        in several different ways.
-
         Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will be run for the
         installed formulae or, every 30 days, for all formulae.
       EOS

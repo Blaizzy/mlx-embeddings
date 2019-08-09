@@ -16,12 +16,12 @@ module Homebrew
       EOS
       switch "--compact",
              description: "Show all options on a single line separated by spaces."
-      switch "--all",
-             description: "Show options for all formulae."
       switch "--installed",
              description: "Show options for all installed formulae."
+      switch "--all",
+             description: "Show options for all available formulae."
       switch :debug
-      conflicts "--all", "--installed"
+      conflicts "--installed", "--all"
     end
   end
 
