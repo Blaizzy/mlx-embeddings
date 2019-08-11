@@ -11,7 +11,6 @@ module Cask
       OFFICIAL_CASK_TAPS = [
         "homebrew/cask",
         "homebrew/cask-drivers",
-        "homebrew/cask-eid",
         "homebrew/cask-fonts",
         "homebrew/cask-versions",
       ].freeze
