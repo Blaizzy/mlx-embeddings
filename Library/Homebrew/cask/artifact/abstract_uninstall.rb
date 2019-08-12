@@ -206,13 +206,22 @@ module Cask
       def uninstall_login_item(*login_items, command: nil, upgrade: false, **_)
         return if upgrade
 
-        login_items.each do |name|
-          ohai "Removing login item #{name}"
+        apps = cask.artifacts.select { |a| a.class.dsl_key == :app }
+        derived_login_items = apps.map { |a| { path: a.target } }
+
+        [*derived_login_items, *login_items].each do |item|
+          type, id = if item.respond_to?(:key) && item.key?(:path)
+            ["path", item[:path]]
+          else
+            ["name", item]
+          end
+
+          ohai "Removing login item #{id}"
           system_command!(
             "osascript",
             args: [
               "-e",
-              %Q(tell application "System Events" to delete every login item whose name is "#{name}"),
+              %Q(tell application "System Events" to delete every login item whose #{type} is #{id.to_s.inspect}),
             ],
           )
           sleep 1
