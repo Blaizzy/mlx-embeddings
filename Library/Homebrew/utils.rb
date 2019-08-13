@@ -502,5 +502,7 @@ def command_help_lines(path)
 end
 
 def redact_secrets(input, secrets)
-  secrets.reduce(input) { |str, secret| str.gsub secret, "******" }.freeze
+  secrets.compact
+         .reduce(input) { |str, secret| str.gsub secret, "******" }
+         .freeze
 end
