@@ -125,7 +125,7 @@ class DependencyCollector
     when :java          then java_dep_if_needed(tags)
     when :linux         then LinuxRequirement.new(tags)
     when :macos         then MacOSRequirement.new(tags)
-    when :maximum_macos then MaximumMacOSRequirement.new(tags)
+    when :maximum_macos then MacOSRequirement.new(tags, comparator: "<=")
     when :osxfuse       then OsxfuseRequirement.new(tags)
     when :tuntap        then TuntapRequirement.new(tags)
     when :x11           then X11Requirement.new(tags)
