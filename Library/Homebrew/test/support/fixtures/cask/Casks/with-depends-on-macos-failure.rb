@@ -6,7 +6,7 @@ cask 'with-depends-on-macos-failure' do
   homepage 'https://brew.sh/with-depends-on-macos-failure'
 
   # guarantee a mismatched release
-  depends_on macos: MacOS.version.to_s == '10.9' ? '10.10' : '10.9'
+  depends_on macos: MacOS.version == :mavericks ? :sierra : :mavericks
 
   app 'Caffeine.app'
 end

@@ -253,29 +253,9 @@ module Cask
 
     def macos_dependencies
       return unless @cask.depends_on.macos
+      return if @cask.depends_on.macos.satisfied?
 
-      if @cask.depends_on.macos.first.is_a?(Array)
-        operator, release = @cask.depends_on.macos.first
-        unless MacOS.version.send(operator, release)
-          raise CaskError,
-                "Cask #{@cask} depends on macOS release #{operator} #{release}, " \
-                "but you are running release #{MacOS.version}."
-        end
-      elsif @cask.depends_on.macos.length > 1
-        unless @cask.depends_on.macos.include?(Gem::Version.new(MacOS.version.to_s))
-          raise CaskError,
-                "Cask #{@cask} depends on macOS release being one of " \
-                "[#{@cask.depends_on.macos.map(&:to_s).join(", ")}], " \
-                "but you are running release #{MacOS.version}."
-        end
-      else
-        unless MacOS.version == @cask.depends_on.macos.first
-          raise CaskError,
-                "Cask #{@cask} depends on macOS release " \
-                "#{@cask.depends_on.macos.first}, " \
-                "but you are running release #{MacOS.version}."
-        end
-      end
+      raise CaskError, @cask.depends_on.macos.message(type: :cask)
     end
 
     def arch_dependencies

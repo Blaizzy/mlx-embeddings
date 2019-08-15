@@ -6,7 +6,12 @@ class MacOSRequirement < Requirement
   fatal true
 
   def initialize(tags = [], comparator: ">=")
-    @version = MacOS::Version.from_symbol(tags.shift) unless tags.empty?
+    if comparator == "==" && tags.first.respond_to?(:map)
+      @version = tags.shift.map { |s| MacOS::Version.from_symbol(s) }
+    else
+      @version = MacOS::Version.from_symbol(tags.shift) unless tags.empty?
+    end
+
     @comparator = comparator
     super(tags)
   end
@@ -16,25 +21,35 @@ class MacOSRequirement < Requirement
   end
 
   satisfy(build_env: false) do
-    next MacOS.version.public_send(@comparator, @version) if version_specified?
+    next [*@version].any? { |v| MacOS.version.public_send(@comparator, v) } if version_specified?
     next true if OS.mac?
     next true if @version
 
     false
   end
 
-  def message
+  def message(type: :formula)
     return "macOS is required." unless version_specified?
 
     case @comparator
     when ">="
       "macOS #{@version.pretty_name} or newer is required."
     when "<="
-      <<~EOS
-        This formula either does not compile or function as expected on macOS
-        versions newer than #{@version.pretty_name} due to an upstream incompatibility.
-      EOS
+      case type
+      when :formula
+        <<~EOS
+          This formula either does not compile or function as expected on macOS
+          versions newer than #{@version.pretty_name} due to an upstream incompatibility.
+        EOS
+      when :cask
+        "This cask does not on macOS versions newer than #{@version.pretty_name}."
+      end
     else
+      if @version.respond_to?(:to_ary)
+        *versions, last = @version.map(:pretty_name)
+        return "macOS #{versions.join(", ")} or #{last} is required."
+      end
+
       "macOS #{@version.pretty_name} is required."
     end
   end
