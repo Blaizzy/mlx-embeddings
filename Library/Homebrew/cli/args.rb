@@ -12,6 +12,22 @@ module Homebrew
         super
         @argv = argv
       end
+
+      def to_cli_option(name)
+        if name.length == 2
+          "-#{name.tr("?", "")}"
+        else
+          "--#{name.tr("_", "-").tr("?", "")}"
+        end
+      end
+
+      def options_only
+        to_h.keys
+            .map(&:to_s)
+            .reject { |name| %w[argv remaining].include?(name) }
+            .map(&method(:to_cli_option))
+            .select { |arg| arg.start_with?("-") }
+      end
     end
   end
 end

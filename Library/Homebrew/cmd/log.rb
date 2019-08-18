@@ -57,7 +57,7 @@ module Homebrew
           git -C "#{git_cd}" fetch --unshallow
       EOS
     end
-    args = ARGV.options_only
+    args = Homebrew.args.options_only
     args += ["--follow", "--", path] unless path.nil?
     system "git", "log", *args
   end
