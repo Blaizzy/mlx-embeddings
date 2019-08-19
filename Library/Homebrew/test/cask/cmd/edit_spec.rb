@@ -23,7 +23,7 @@ describe Cask::Cmd::Edit, :cask do
     }.to raise_error(/Only one Cask can be edited at a time\./)
   end
 
-  it "raises an exception when the Cask doesnt exist" do
+  it "raises an exception when the Cask doesn't exist" do
     expect {
       described_class.run("notacask")
     }.to raise_error(Cask::CaskUnavailableError)

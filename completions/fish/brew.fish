@@ -25,7 +25,7 @@ function __fish_brew_opts -d "Only arguments starting with a dash (options)"
     string match --all -- '-*' (__fish_brew_args)
 end
 
-# This can be used either to get the first argument or to match it against a given list of commmands
+# This can be used either to get the first argument or to match it against a given list of commands
 #
 # Usage examples (for `completion -n '...'`):
 # * `__fish_brew_command` returns the command (first arg of brew) or exits with 1
@@ -59,7 +59,7 @@ function __fish_brew_subcommand -a cmd -d "Helps matching the second argument of
     end
 end
 
-# This can be used to match any given options agains the given list of arguments:
+# This can be used to match any given option against the given list of arguments:
 # * to add condition on interdependent options
 # * to ddd condition on mutually exclusive options
 #
@@ -390,7 +390,7 @@ __fish_brew_complete_arg 'install upgrade'      -l keep-tmp     -d "Keep temp fi
 __fish_brew_complete_arg 'install upgrade'      -l build-bottle -d "Prepare the formula for eventual bottling during installation"
 __fish_brew_complete_arg 'install upgrade' -s i -l interactive  -d "Download and patch formula, then open a shell"
 __fish_brew_complete_arg 'install upgrade; and __fish_brew_opt -i --interactive' -s g -l git -d "Create a Git repository for working on patches"
-# fomrula installtion options are listed after the formula name:
+# formula installation options are listed after the formula name:
 __fish_brew_complete_arg 'install;
     and [ (count (__fish_brew_args)) -ge 2 ];
     and not string match --quiet -- "-*" (__fish_brew_args)[-1]

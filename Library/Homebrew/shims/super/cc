@@ -381,7 +381,7 @@ class Cmd
     paths.map! { |path| prefix + path }
   end
 
-  # Unlike path_flags, do not prune non-existant directories.
+  # Unlike path_flags, do not prune non-existent directories.
   # formula.lib for example does not yet exist, but should not be pruned.
   def rpath_flags(prefix, paths)
     paths.uniq.map { |path| prefix + path }

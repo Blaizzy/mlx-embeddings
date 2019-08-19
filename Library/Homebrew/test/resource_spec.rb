@@ -38,7 +38,7 @@ describe Resource do
       expect(subject.download_strategy).to eq(GitDownloadStrategy)
     end
 
-    it "raises an error if the download strategy class is unkown" do
+    it "raises an error if the download strategy class is unknown" do
       expect { subject.url("foo", using: Class.new) }.to raise_error(TypeError)
     end
 

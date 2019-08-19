@@ -219,7 +219,7 @@ _brew_audit() {
   _arguments \
     '(--new-formula)--strict[run additional checks including RuboCop style checks]' \
     '(--new-formula)--online[run slower checks that require a network connection]' \
-    '(--online --strict)--new-formula[check if a new formula is eligable for Homebrew. Implies --strict and --online]' \
+    '(--online --strict)--new-formula[check if a new formula is eligible for Homebrew. Implies --strict and --online]' \
     '--display-cop-names[include RuboCop cop name for each violation in the output]' \
     '--display-filename[prefix every line of output with the name of the file or formula being audited]' \
     '*:formula:__brew_formulae'

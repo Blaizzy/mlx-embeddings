@@ -71,7 +71,7 @@ module Formulary
     # instead have found the new formula.)
     #
     # Because of this, the user is referring to this specific formula,
-    # not any formula targetted by the same alias, so in this context
+    # not any formula targeted by the same alias, so in this context
     # the formula shouldn't be considered outdated if the alias used to
     # install it has changed.
     f.follow_installed_alias = false
