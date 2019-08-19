@@ -23,7 +23,9 @@ jobs:
       if: matrix.os == 'macOS-latest'
 
     - name: Build Docker image
-      run: docker-compose -f Dockerfile.yml build sut
+      run: |
+        docker pull linuxbrew/brew
+        docker-compose -f Dockerfile.yml build sut
       if: matrix.os == 'ubuntu-latest'
 
     - name: Run brew test-bot
