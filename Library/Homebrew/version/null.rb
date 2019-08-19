@@ -28,7 +28,7 @@ class Version
       true
     end
 
-    # For OS::Mac::Version compatability
+    # For OS::Mac::Version compatibility
     def requires_nehalem_cpu?
       false
     end

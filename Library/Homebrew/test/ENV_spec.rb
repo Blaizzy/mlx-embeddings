@@ -67,7 +67,7 @@ shared_examples EnvActivation do
       expect(subject["foo"]).to eq("1")
     end
 
-    it "appends to a non-existant key" do
+    it "appends to a non-existent key" do
       subject.append "foo", "1"
       expect(subject["foo"]).to eq("1")
     end
@@ -93,7 +93,7 @@ shared_examples EnvActivation do
       expect(subject["foo"]).to eq("1")
     end
 
-    it "prepends to a non-existant key" do
+    it "prepends to a non-existent key" do
       subject.prepend "foo", "1"
       expect(subject["foo"]).to eq("1")
     end

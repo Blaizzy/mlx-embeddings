@@ -185,7 +185,7 @@ describe Cask::Cask, :cask do
     end
 
     context "when it is from no known tap" do
-      it "retuns the cask token" do
+      it "returns the cask token" do
         file = Tempfile.new(%w[tapless-cask .rb])
 
         begin

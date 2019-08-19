@@ -21,7 +21,7 @@ describe Formula do
       end
     end
 
-    it "cant override the `brew` method" do
+    it "can't override the `brew` method" do
       expect {
         formula do
           def brew; end

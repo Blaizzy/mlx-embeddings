@@ -21,7 +21,7 @@ describe Cask::Cmd::Outdated, :cask do
 
   it_behaves_like "a command that handles invalid options"
 
-  describe 'without --greedy it ignores the Casks with "vesion latest" or "auto_updates true"' do
+  describe 'without --greedy it ignores the Casks with "version latest" or "auto_updates true"' do
     it "checks all the installed Casks when no token is provided" do
       expect {
         described_class.run

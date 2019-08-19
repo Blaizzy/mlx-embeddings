@@ -197,7 +197,7 @@ rescue Exception => e # rubocop:disable Lint/RescueException
 
   # Special case: need to recreate BuildErrors in full
   # for proper analytics reporting and error messages.
-  # BuildErrors are specific to build processses and not other
+  # BuildErrors are specific to build processes and not other
   # children, which is why we create the necessary state here
   # and not in Utils.safe_fork.
   if error_hash["json_class"] == "BuildError"

@@ -307,7 +307,7 @@ describe Tab do
       expect(subject.tabfile).to eq(f_tab_path)
     end
 
-    it "can create a Tab for a non-existant Keg" do
+    it "can create a Tab for a non-existent Keg" do
       f.prefix.mkpath
 
       expect(subject.tabfile).to eq(f_tab_path)
@@ -336,7 +336,7 @@ describe Tab do
       expect(tab.tabfile).to eq(f_tab_path)
     end
 
-    it "can create a Tab for a non-existant Formula" do
+    it "can create a Tab for a non-existent Formula" do
       f.prefix.mkpath
 
       tab = described_class.for_formula(f)

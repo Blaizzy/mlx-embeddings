@@ -115,7 +115,7 @@ module RuboCop
             corrector.insert_after(node2.source_range, line_breaks + indentation + node1.source)
           else
             indentation = " " * (start_column(node2) - line_start_column(node2))
-            # No line breaks upto version_scheme, order_idx == 8
+            # No line breaks up to version_scheme, order_idx == 8
             line_breaks = (order_idx > 8) ? "\n\n" : "\n"
             corrector.insert_before(node2.source_range, node1.source + line_breaks + indentation)
           end

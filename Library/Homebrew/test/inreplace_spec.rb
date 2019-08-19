@@ -199,7 +199,7 @@ describe StringInreplaceExtension do
   describe "#sub!" do
     let(:string) { "foo" }
 
-    it "replaces the first occurence" do
+    it "replaces the first occurrence" do
       subject.sub!("o", "e")
       expect(subject).to eq("feo")
     end
@@ -208,7 +208,7 @@ describe StringInreplaceExtension do
   describe "#gsub!" do
     let(:string) { "foo" }
 
-    it "replaces the all occurences" do
+    it "replaces all occurrences" do
       subject.gsub!("o", "e") # rubocop:disable Performance/StringReplacement
       expect(subject).to eq("fee")
     end
