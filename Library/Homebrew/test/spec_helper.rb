@@ -27,11 +27,6 @@ if ENV["HOMEBREW_TESTS_COVERAGE"]
     ENV["COVERALLS_REPO_TOKEN"] = ENV["HOMEBREW_COVERALLS_REPO_TOKEN"]
   end
 
-  if ENV["HOMEBREW_AZURE_PIPELINES"]
-    require "simplecov-cobertura"
-    formatters << SimpleCov::Formatter::CoberturaFormatter
-  end
-
   SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new(formatters)
 end
 
