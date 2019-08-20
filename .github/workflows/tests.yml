@@ -1,0 +1,38 @@
+name: GitHub Actions CI
+on:
+  push:
+    branches: master
+  pull_request: []
+jobs:
+  tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest]
+    steps:
+    - name: Set up Git repository
+      uses: actions/checkout@master
+
+    - name: Set up Homebrew
+      run: |
+        HOMEBREW_REPOSITORY="$(brew --repo)"
+        mv "$HOMEBREW_REPOSITORY/Library/Taps" "$PWD/Library"
+        sudo rm -rf "$HOMEBREW_REPOSITORY"
+        sudo ln -s "$PWD" "$HOMEBREW_REPOSITORY"
+        brew update-reset Library/Taps/homebrew/homebrew-core
+      if: matrix.os == 'macOS-latest'
+
+    - name: Build Docker image
+      run: docker-compose -f Dockerfile.yml build sut
+      if: matrix.os == 'ubuntu-latest'
+
+    - name: Run brew test-bot
+      run: |
+        if [ "$RUNNER_OS" = "Linux" ]; then
+          docker-compose -f Dockerfile.yml run --rm -v $GITHUB_WORKSPACE:/tmp/test-bot sut
+        else
+          brew test-bot
+        fi
+      env:
+        HOMEBREW_COVERALLS_REPO_TOKEN: ${{ secrets.HOMEBREW_COVERALLS_REPO_TOKEN }}
+        HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
