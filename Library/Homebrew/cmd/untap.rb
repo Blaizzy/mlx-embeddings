@@ -10,7 +10,7 @@ module Homebrew
       usage_banner <<~EOS
         `untap` <tap>
 
-        Remove a tapped repository.
+        Remove a tapped formula repository.
       EOS
       switch :debug
     end

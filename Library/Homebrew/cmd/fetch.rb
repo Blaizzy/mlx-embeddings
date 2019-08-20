@@ -12,7 +12,7 @@ module Homebrew
       usage_banner <<~EOS
         `fetch` [<options>] <formula>
 
-        Download the source packages for the given <formula>.
+        Download a bottle (if available) or source packages for <formula>.
         For tarballs, also print SHA-256 checksums.
       EOS
       switch "--HEAD",
@@ -30,9 +30,9 @@ module Homebrew
       switch "--deps",
              description: "Download dependencies for any listed <formula>."
       switch "-s", "--build-from-source",
-             description: "Download the source for rather than a bottle."
+             description: "Download source packages rather than a bottle."
       switch "--build-bottle",
-             description: "Download the source (for eventual bottling) rather than a bottle."
+             description: "Download source packages (for eventual bottling) rather than a bottle."
       switch "--force-bottle",
              description: "Download a bottle if it exists for the current or newest version of macOS, "\
                           "even if it would not be used during installation."

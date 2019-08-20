@@ -12,7 +12,7 @@ module Homebrew
       usage_banner <<~EOS
         `outdated` [<options>]
 
-        Show formulae that have an updated version available.
+        List formulae that have an updated version available.
 
         By default, version information is displayed in interactive shells, and
         suppressed otherwise.

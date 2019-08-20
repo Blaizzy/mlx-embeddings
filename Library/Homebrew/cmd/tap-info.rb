@@ -16,7 +16,7 @@ module Homebrew
       switch "--installed",
              description: "Display information on all installed taps."
       flag   "--json",
-             description: "Print a JSON representation of <taps>. Currently the default and only accepted "\
+             description: "Print a JSON representation of <tap>. Currently the default and only accepted "\
                           "value for <version> is `v1`. See the docs for examples of using the JSON "\
                           "output: <https://docs.brew.sh/Querying-Brew>"
       switch :debug

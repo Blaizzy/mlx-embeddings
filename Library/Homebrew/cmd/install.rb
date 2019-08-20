@@ -18,7 +18,7 @@ module Homebrew
       usage_banner <<~EOS
         `install` [<options>] <formula>
 
-        Install <formula>.
+        Install <formula>. Additional options specific to <formula> may be appended to the command.
 
         Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will be run for the
         installed formulae or, every 30 days, for all formulae.
@@ -42,9 +42,9 @@ module Homebrew
              description: "Attempt to compile using provided <compiler>. <compiler> should be the "\
                           "name of the compiler's executable, for instance `gcc-7` for GCC 7. "\
                           "In order to use LLVM's clang, use `llvm_clang`. To specify the "\
-                          "Apple-provided clang, use `clang`. This parameter will only accept "\
+                          "Apple-provided clang, use `clang`. This option will only accept "\
                           "compilers that are provided by Homebrew or bundled with macOS. "\
-                          "Please do not file issues if you encounter errors while using this flag."
+                          "Please do not file issues if you encounter errors while using this option."
       switch "-s", "--build-from-source",
              description: "Compile the specified <formula> from source even if a bottle is provided. "\
                           "Dependencies will still be installed from bottles if they are available."
@@ -52,7 +52,7 @@ module Homebrew
              description: "Install from a bottle if it exists for the current or newest version of "\
                           "macOS, even if it would not normally be used for installation."
       switch "--include-test",
-             description: "Install testing dependencies required to run `brew test`."
+             description: "Install testing dependencies required to run `brew test` <formula>."
       switch "--devel",
              description: "If <formula> defines it, install the development version."
       switch "--HEAD",
@@ -64,7 +64,8 @@ module Homebrew
       switch "--keep-tmp",
              description: "Don't delete the temporary files created during installation."
       switch "--build-bottle",
-             description: "Prepare the formula for eventual bottling during installation."
+             description: "Prepare the formula for eventual bottling during installation, skipping any "\
+                          "post-install steps."
       flag   "--bottle-arch=",
              depends_on:  "--build-bottle",
              description: "Optimise bottles for the given architecture rather than the oldest "\

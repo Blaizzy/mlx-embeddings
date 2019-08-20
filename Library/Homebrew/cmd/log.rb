@@ -11,7 +11,8 @@ module Homebrew
       usage_banner <<~EOS
         `log` [<options>] [<formula>]
 
-        Show the `git log` for the given <formula>.
+        Show the `git log` for <formula>, or show the log for the Homebrew repository
+        if no formula is provided.
       EOS
       switch "-p", "-u", "--patch",
              description: "Also output patch from commit."
@@ -20,7 +21,7 @@ module Homebrew
       switch "--oneline",
              description: "Output only one line per commit."
       flag   "-1", "--max-count",
-             description: "Output only one commit."
+             description: "Print only one or a specified number of commits."
     end
   end
 

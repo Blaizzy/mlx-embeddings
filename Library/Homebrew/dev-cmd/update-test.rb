@@ -11,7 +11,7 @@ module Homebrew
         `update-test` [<options>]
 
         Run a test of `brew update` with a new repository clone.
-        If no arguments are passed, use `origin/master` as the start commit.
+        If no options are passed, use `origin/master` as the start commit.
       EOS
       switch "--to-tag",
              description: "Set `HOMEBREW_UPDATE_TO_TAG` to test updating between tags."

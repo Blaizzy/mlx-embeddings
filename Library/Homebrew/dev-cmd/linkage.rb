@@ -12,8 +12,8 @@ module Homebrew
       usage_banner <<~EOS
         `linkage` [<options>] [<formula>]
 
-        Check the library links for kegs of installed formulae.
-        Raises an error if run on uninstalled formulae.
+        Check the library links from the given <formula> kegs. If no <formula> are
+        specified, check all kegs. Raises an error if run on uninstalled formulae.
       EOS
       switch "--test",
              description: "Display only missing libraries and exit with a non-zero status if any missing "\
