@@ -65,8 +65,9 @@ do
   export "$VAR_NEW"="${!VAR}"
 done
 
-# Set CI variable for Azure Pipelines, Jenkins.
-if [[ -n "$TF_BUILD" || -n "$JENKINS_HOME" ]]
+# Set CI variable for GitHub Actions, Azure Pipelines, Jenkins
+# (Set by default on Circle and Travis CI)
+if [[ -n "$GITHUB_ACTIONS" || -n "$TF_BUILD" || -n "$JENKINS_HOME" ]]
 then
   export CI="1"
 fi
