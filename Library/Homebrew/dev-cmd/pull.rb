@@ -32,10 +32,10 @@ module Homebrew
         `pull` [<options>] <patch>
 
         Get a patch from a GitHub commit or pull request and apply it to Homebrew.
-        Optionally, publish updated bottles for the formulae changed by the patch.
+        Optionally, publish updated bottles for any formulae changed by the patch.
 
-        Each <patch> may be the number of a PR in `homebrew/core`, the URL of a PR
-        on GitHub, the URL of a commit on GitHub or a "https://jenkins.brew.sh/job/..." testing job URL.
+        Each <patch> may be the number of a pull request in `homebrew/core`, the URL of any pull request
+        or commit on GitHub or a "https://jenkins.brew.sh/job/..." testing job URL.
       EOS
       switch "--bottle",
              description: "Handle bottles, pulling the bottle-update commit and publishing files on Bintray."
@@ -57,9 +57,9 @@ module Homebrew
       switch "--warn-on-publish-failure",
              description: "Do not exit if there's a failure publishing bottles on Bintray."
       flag   "--bintray-org=",
-             description: "Publish bottles at the provided Bintray <organisation>."
+             description: "Publish bottles to the specified Bintray <organisation>."
       flag   "--test-bot-user=",
-             description: "Pull the bottle block commit from the provided <user> on GitHub."
+             description: "Pull the bottle block commit from the specified <user> on GitHub."
       switch :verbose
       switch :debug
     end

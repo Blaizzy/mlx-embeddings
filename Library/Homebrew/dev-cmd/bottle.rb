@@ -64,15 +64,15 @@ module Homebrew
              description: "If the formula specifies a rebuild version, attempt to preserve its value in the "\
                           "generated DSL."
       switch "--json",
-             description: "Write bottle information to a JSON file, which can be used as the argument for "\
+             description: "Write bottle information to a JSON file, which can be used as the value for "\
                           "`--merge`."
       switch "--merge",
              description: "Generate an updated bottle block for a formula and optionally merge it into the "\
-                          "formula file. Instead of a formula name, requires a JSON file generated with "\
+                          "formula file. Instead of a formula name, requires the path to a JSON file generated with "\
                           "`brew bottle --json` <formula>."
       switch "--write",
              depends_on:  "--merge",
-             description: "Write the changes to the formula file. A new commit will be generated unless "\
+             description: "Write changes to the formula file. A new commit will be generated unless "\
                           "`--no-commit` is passed."
       switch "--no-commit",
              depends_on:  "--write",

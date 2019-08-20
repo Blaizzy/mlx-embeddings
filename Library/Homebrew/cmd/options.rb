@@ -10,18 +10,18 @@ module Homebrew
   def options_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `options` [<options>] <formula>
+        `options` [<options>] [<formula>]
 
-        Display install options specific to <formula>
+        Show install options specific to <formula>.
       EOS
       switch "--compact",
              description: "Show all options on a single line separated by spaces."
-      switch "--all",
-             description: "Show options for all formulae."
       switch "--installed",
-             description: "Show options for all installed formulae."
+             description: "Show options for formulae that are currently installed."
+      switch "--all",
+             description: "Show options for all available formulae."
       switch :debug
-      conflicts "--all", "--installed"
+      conflicts "--installed", "--all"
     end
   end
 

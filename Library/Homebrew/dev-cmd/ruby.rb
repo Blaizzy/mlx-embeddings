@@ -8,13 +8,13 @@ module Homebrew
   def ruby_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `ruby` [`-e`]:
+        `ruby` (`-e` <text>|<file>)
 
-        Run a Ruby instance with Homebrew's libraries loaded e.g.
-        `brew ruby -e "puts :gcc.f.deps"` or `brew ruby script.rb`
+        Run a Ruby instance with Homebrew's libraries loaded, e.g.
+        `brew ruby -e "puts :gcc.f.deps"` or `brew ruby script.rb`.
       EOS
       switch "-e",
-             description: "Execute the provided string argument as a script."
+             description: "Execute the given text string as a script."
       switch :verbose
       switch :debug
     end

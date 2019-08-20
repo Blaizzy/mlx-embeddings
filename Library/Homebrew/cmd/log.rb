@@ -9,18 +9,19 @@ module Homebrew
   def log_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `log` [<options>] <formula>
+        `log` [<options>] [<formula>]
 
-        Show the `git log` for the given <formula>.
+        Show the `git log` for <formula>, or show the log for the Homebrew repository
+        if no formula is provided.
       EOS
       switch "-p", "-u", "--patch",
-             description: "Also output patch from commit."
+             description: "Also print patch from commit."
       switch "--stat",
-             description: "Also output diffstat from commit."
+             description: "Also print diffstat from commit."
       switch "--oneline",
-             description: "Output only one line per commit."
-      switch "-1", "--max-count=1",
-             description: "Output only one commit."
+             description: "Print only one line per commit."
+      flag   "-1", "--max-count",
+             description: "Print only one or a specified number of commits."
     end
   end
 

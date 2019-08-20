@@ -21,7 +21,7 @@ module Homebrew
   def update_report_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `update_report` [`--preinstall`]
+        `update-report`
 
         The Ruby implementation of `brew update`. Never called manually.
       EOS
@@ -29,8 +29,8 @@ module Homebrew
              description: "Run in 'auto-update' mode (faster, less output)."
       switch :force
       switch :quiet
-      switch :debug
       switch :verbose
+      switch :debug
       hide_from_man_page!
     end
   end

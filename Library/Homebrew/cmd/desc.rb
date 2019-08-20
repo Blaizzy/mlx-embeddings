@@ -19,15 +19,15 @@ module Homebrew
         Formula descriptions are cached; the cache is created on the
         first search, making that search slower than subsequent ones.
       EOS
-      flag "-s", "--search=",
-           description: "Search both name and description for provided <text>. If <text> is flanked by "\
-                        "slashes, it is interpreted as a regular expression."
-      flag "-n", "--name=",
-           description: "Search just the names for provided <text>. If <text> is flanked by slashes, it is "\
-                        "interpreted as a regular expression."
-      flag "-d", "--description=",
-           description: "Search just the descriptions for provided <text>. If <text> is flanked by slashes, "\
-                        "it is interpreted as a regular expression."
+      flag   "-s", "--search=",
+             description: "Search both names and descriptions for <text>. If <text> is flanked by "\
+                          "slashes, it is interpreted as a regular expression."
+      flag   "-n", "--name=",
+             description: "Search just names for <text>. If <text> is flanked by slashes, it is "\
+                          "interpreted as a regular expression."
+      flag   "-d", "--description=",
+             description: "Search just descriptions for <text>. If <text> is flanked by slashes, "\
+                          "it is interpreted as a regular expression."
       switch :verbose
       conflicts "--search=", "--name=", "--description="
     end

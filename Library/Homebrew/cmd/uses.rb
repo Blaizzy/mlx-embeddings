@@ -15,19 +15,15 @@ module Homebrew
       usage_banner <<~EOS
         `uses` [<options>] <formula>
 
-        Show the formulae that specify <formula> as a dependency. When given
-        multiple formula arguments, show the intersection of formulae that use
-        <formula>.
-
+        Show formulae that specify <formula> as a dependency. When given multiple
+        formula arguments, show the intersection of formulae that use <formula>.
         By default, `uses` shows all formulae that specify <formula> as a required
-        or recommended dependency.
-
-        By default, `uses` shows usage of <formula> by stable builds.
+        or recommended dependency for their stable builds.
       EOS
       switch "--recursive",
              description: "Resolve more than one level of dependencies."
       switch "--installed",
-             description: "Only list installed formulae."
+             description: "Only list formulae that are currently installed."
       switch "--include-build",
              description: "Include all formulae that specify <formula> as `:build` type dependency."
       switch "--include-test",
@@ -37,9 +33,9 @@ module Homebrew
       switch "--skip-recommended",
              description: "Skip all formulae that specify <formula> as `:recommended` type dependency."
       switch "--devel",
-             description: "Show usage of <formula> by development build."
+             description: "Show usage of <formula> by development builds."
       switch "--HEAD",
-             description: "Show usage of <formula> by HEAD build."
+             description: "Show usage of <formula> by HEAD builds."
       switch :debug
       conflicts "--devel", "--HEAD"
     end

@@ -11,7 +11,7 @@ module Homebrew
       usage_banner <<~EOS
         `bump-formula-pr` [<options>] [<formula>]
 
-        Create a pull request to update a formula with a new URL or a new tag.
+        Create a pull request to update <formula> with a new URL or a new tag.
 
         If a <URL> is specified, the <SHA-256> checksum of the new download should also
         be specified. A best effort to determine the <SHA-256> and <formula> name will
@@ -22,8 +22,7 @@ module Homebrew
 
         *Note:* this command cannot be used to transition a formula from a
         URL-and-SHA-256 style specification into a tag-and-revision style specification,
-        nor vice versa. It must use whichever style specification the preexisting
-        formula already uses.
+        nor vice versa. It must use whichever style specification the formula already uses.
       EOS
       switch "--devel",
              description: "Bump the development rather than stable version. The development spec must already exist."
@@ -40,13 +39,13 @@ module Homebrew
       switch "--no-browse",
              description: "Print the pull request URL instead of opening in a browser."
       flag   "--mirror=",
-             description: "Use the provided <URL> as a mirror URL."
+             description: "Use the specified <URL> as a mirror URL."
       flag   "--version=",
-             description: "Use the provided <version> to override the value parsed from the URL or tag. Note "\
+             description: "Use the specified <version> to override the value parsed from the URL or tag. Note "\
                           "that `--version=0` can be used to delete an existing version override from a "\
                           "formula if it has become redundant."
       flag   "--message=",
-             description: "Append the provided <message> to the default PR message."
+             description: "Append <message> to the default pull request message."
       flag   "--url=",
              description: "Specify the <URL> for the new download. If a <URL> is specified, the <SHA-256> "\
                           "checksum of the new download should also be specified."
@@ -57,8 +56,7 @@ module Homebrew
              description: "Specify the new git commit <tag> for the formula."
       flag   "--revision=",
              required_for: "--tag=",
-             description:  "Specify the new git commit <revision> corresponding to a specified <tag>."
-
+             description:  "Specify the new git commit <revision> corresponding to the specified <tag>."
       switch :force
       switch :quiet
       switch :verbose

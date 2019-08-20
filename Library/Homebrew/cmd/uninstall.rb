@@ -17,7 +17,7 @@ module Homebrew
         Uninstall <formula>.
       EOS
       switch :force,
-             description: "Delete all installed versions of the <formula>"
+             description: "Delete all installed versions of <formula>."
       switch "--ignore-dependencies",
              description: "Don't fail uninstall, even if <formula> is a dependency of any installed "\
                           "formulae."

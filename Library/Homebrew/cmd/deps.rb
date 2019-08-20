@@ -10,14 +10,14 @@ module Homebrew
   def deps_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `deps` [<options>] <formula>
+        `deps` [<options>] [<formula>]
 
         Show dependencies for <formula>. Additional options specific to <formula>
         may be appended to the command. When given multiple formula arguments,
         show the intersection of dependencies for each formula.
       EOS
       switch "-n",
-             description: "Show dependencies in topological order."
+             description: "Sort dependencies in topological order."
       switch "--1",
              description: "Only show dependencies one level down, instead of recursing."
       switch "--union",
@@ -47,7 +47,7 @@ module Homebrew
              description: "List dependencies for all available formulae."
       switch "--for-each",
              description: "Switch into the mode used by the `--all` option, but only list dependencies "\
-                          "for the specified <formula>, one formula per line. This is used for "\
+                          "for each provided <formula>, one formula per line. This is used for "\
                           "debugging the `--installed`/`--all` display mode."
       switch :verbose
       switch :debug

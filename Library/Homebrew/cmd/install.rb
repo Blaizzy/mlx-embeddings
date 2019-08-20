@@ -18,21 +18,18 @@ module Homebrew
       usage_banner <<~EOS
         `install` [<options>] <formula>
 
-        Install <formula>.
+        Install <formula>. Additional options specific to <formula> may be appended to the command.
 
-        <formula> is usually the name of the formula to install, but it can be specified
-        in several different ways.
-
-        Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will be run for the installed formulae or, every 30 days, for all formulae.
+        Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will then be run for the
+        installed formulae or, every 30 days, for all formulae.
       EOS
-
       switch :debug,
              description: "If brewing fails, open an interactive debugging session with access to IRB "\
-                          "or a shell inside the temporary build directory"
-      flag "--env=",
-           description: "If `std` is passed, use the standard build environment instead of superenv."\
-                        "If `super` is passed, use superenv even if the formula specifies the "\
-                        "standard build environment."
+                          "or a shell inside the temporary build directory."
+      flag   "--env=",
+             description: "If `std` is passed, use the standard build environment instead of superenv. "\
+                          "If `super` is passed, use superenv even if the formula specifies the "\
+                          "standard build environment."
       switch "--ignore-dependencies",
              description: "An unsupported Homebrew development flag to skip installing any dependencies of "\
                           "any kind. If the dependencies are not already present, the formula will have issues. "\
@@ -40,38 +37,39 @@ module Homebrew
                           "using this flag."
       switch "--only-dependencies",
              description: "Install the dependencies with specified options but do not install the "\
-                          "specified formula."
-      flag "--cc=",
-           description: "Attempt to compile using provided <compiler>. <compiler> should be the "\
-                        "name of the compiler's executable, for instance `gcc-7` for GCC 7. "\
-                        "In order to use LLVM's clang, use `llvm_clang`. To specify the "\
-                        "Apple-provided clang, use `clang`. This parameter will only accept "\
-                        "compilers that are provided by Homebrew or bundled with macOS. "\
-                        "Please do not file issues if you encounter errors while using this flag."
+                          "formula itself."
+      flag   "--cc=",
+             description: "Attempt to compile using the specified <compiler>, which should be the "\
+                          "name of the compiler's executable, e.g. `gcc-7` for GCC 7. "\
+                          "In order to use LLVM's clang, specify `llvm_clang`. To use the "\
+                          "Apple-provided clang, specify `clang`. This option will only accept "\
+                          "compilers that are provided by Homebrew or bundled with macOS. "\
+                          "Please do not file issues if you encounter errors while using this option."
       switch "-s", "--build-from-source",
-             description: "Compile the specified <formula> from source even if a bottle is provided. "\
+             description: "Compile <formula> from source even if a bottle is provided. "\
                           "Dependencies will still be installed from bottles if they are available."
       switch "--force-bottle",
              description: "Install from a bottle if it exists for the current or newest version of "\
                           "macOS, even if it would not normally be used for installation."
       switch "--include-test",
-             description: "Install testing dependencies required to run `brew test`."
+             description: "Install testing dependencies required to run `brew test` <formula>."
       switch "--devel",
              description: "If <formula> defines it, install the development version."
       switch "--HEAD",
              description: "If <formula> defines it, install the HEAD version, aka. master, trunk, unstable."
       switch "--fetch-HEAD",
              description: "Fetch the upstream repository to detect if the HEAD installation of the "\
-                          "formula is outdated. Otherwise, the repository's HEAD will be checked for "\
+                          "formula is outdated. Otherwise, the repository's HEAD will only be checked for "\
                           "updates when a new stable or development version has been released."
       switch "--keep-tmp",
-             description: "Don't delete the temporary files created during installation."
+             description: "Retain the temporary files created during installation."
       switch "--build-bottle",
-             description: "Prepare the formula for eventual bottling during installation."
-      flag "--bottle-arch=",
-           depends_on:  "--build-bottle",
-           description: "Optimise bottles for the given architecture rather than the oldest "\
-                        "architecture supported by the version of macOS the bottles are built on."
+             description: "Prepare the formula for eventual bottling during installation, skipping any "\
+                          "post-install steps."
+      flag   "--bottle-arch=",
+             depends_on:  "--build-bottle",
+             description: "Optimise bottles for the specified architecture rather than the oldest "\
+                          "architecture supported by the version of macOS the bottles are built on."
       switch :force,
              description: "Install without checking for previously installed keg-only or "\
                           "non-migrated versions."
@@ -230,7 +228,7 @@ module Homebrew
         opoo msg
       elsif f.migration_needed? && !args.force?
         # Check if the formula we try to install is the same as installed
-        # but not migrated one. If --force passed then install anyway.
+        # but not migrated one. If --force is passed then install anyway.
         opoo <<~EOS
           #{f.oldname} is already installed, it's just not migrated
           You can migrate this formula with `brew migrate #{f}`

@@ -26,12 +26,15 @@ didn't include with macOS.
 
 For the full command list, see the [COMMANDS](#commands) section.
 
-With `--verbose` or `-v`, many commands print extra debugging information. Note that
-these flags should only appear after a command.
+With `--verbose` or `--debug`, many commands print extra debugging information. Note that
+these options should only appear after a command.
 
 ### `install` <formula>:
 
 Install <formula>.
+
+<formula> is usually the name of the formula to install, but it has other syntaxes which
+are listed in the [SPECIFYING FORMULAE](#specifying-formulae) section.
 
 ### `uninstall` <formula>:
 
@@ -42,10 +45,11 @@ Uninstall <formula>.
 List all installed formulae.
 
 ### `search` (<text>|`/`<text>`/`):
+
 Perform a substring search of cask tokens and formula names for <text>. If <text>
-is surrounded with slashes, then it is interpreted as a regular expression.
+is flanked by slashes, it is interpreted as a regular expression.
 The search for <text> is extended online to `homebrew/core` and `homebrew/cask`.
-If no search term is given, all locally available formulae are listed.
+If no search term is provided, all locally available formulae are listed.
 
 ## COMMANDS
 
@@ -63,19 +67,21 @@ If no search term is given, all locally available formulae are listed.
 
 ### `bundle` <subcommand>:
 
-Bundler for non-Ruby dependencies from Homebrew, Homebrew Cask and the Mac App Store. See `brew bundle --help`.
+Bundler for non-Ruby dependencies from Homebrew, Homebrew Cask and the Mac App Store.
+See `brew bundle --help`.
 
 **Homebrew/homebrew-bundle**: <https://github.com/Homebrew/homebrew-bundle>
 
 ### `cask` <subcommand>:
 
-Install macOS applications distributed as binaries. See brew-cask(1).
+Install macOS applications distributed as binaries. See `brew-cask`(1).
 
 **Homebrew/homebrew-cask**: <https://github.com/Homebrew/homebrew-cask>
 
 ### `services` <subcommand>:
 
-Manage background services with macOS' `launchctl`(1) daemon manager. See `brew services --help`.
+Manage background services with macOS' `launchctl`(1) daemon manager.
+See `brew services --help`.
 
 **Homebrew/homebrew-services**: <https://github.com/Homebrew/homebrew-services>
 
@@ -106,17 +112,18 @@ can take several different forms:
   * An arbitrary file or URL:
     Homebrew can install formulae via URL, e.g.
     `https://raw.githubusercontent.com/Homebrew/homebrew-core/master/Formula/git.rb`,
-    or from a local path. It could point to either a formula file or a bottle.
+    or from a local path. It can point to either a formula file or a bottle.
     In the case of a URL, the downloaded file will be cached for later use.
 
 ## ENVIRONMENT
 
-Note that environment variables must have a value set to be detected. For example,
+Note that environment variables must have a value set to be detected. For example, run
 `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 `export HOMEBREW_NO_INSECURE_REDIRECT`.
 
   * `HOMEBREW_ARCH`:
-    Linux only: If set, Homebrew will pass the set value to type name to the compiler's `-march` option instead of using the default (`-march=native`).
+    Linux only: If set, Homebrew will pass the set value to type name to the compiler's
+    `-march` option instead of using the default (`-march=native`).
 
   * `HOMEBREW_ARTIFACT_DOMAIN`:
     If set, instructs Homebrew to prefix all download URLs, including those for bottles,
@@ -152,8 +159,8 @@ Note that environment variables must have a value set to be detected. For exampl
     *Default:* `~/Library/Caches/Homebrew`.
 
   * `HOMEBREW_CURLRC`:
-    If set, Homebrew will not pass `-q` when invoking `curl`(1) (which disables
-    the use of `curlrc`).
+    If set, Homebrew will not pass `-q` when invoking `curl`(1), which disables
+    the use of `curlrc`.
 
   * `HOMEBREW_CURL_VERBOSE`:
     If set, Homebrew will pass `--verbose` when invoking `curl`(1).
@@ -194,7 +201,7 @@ Note that environment variables must have a value set to be detected. For exampl
     even if the system version of Ruby is new enough.
 
   * `HOMEBREW_FORCE_BREWED_GIT`:
-    If set, Homebrew will always use a Homebrew-installed `git` rather than the
+    If set, Homebrew will always use a Homebrew-installed `git`(1) rather than the
     system version. Automatically set if the system version of `git` is too old.
 
   * `HOMEBREW_GITHUB_API_TOKEN`:
@@ -318,6 +325,8 @@ And for an authenticated HTTP proxy:
 ## SEE ALSO
 
 Homebrew Documentation: <https://docs.brew.sh>
+
+Homebrew API: <https://rubydoc.brew.sh>
 
 `brew-cask`(1), `git`(1), `git-log`(1)
 

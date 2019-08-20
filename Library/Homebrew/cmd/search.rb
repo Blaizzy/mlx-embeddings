@@ -30,17 +30,17 @@ module Homebrew
         `search` [<options>] [<text>|`/`<text>`/`]
 
         Perform a substring search of cask tokens and formula names for <text>. If <text>
-        is surrounded with slashes, then it is interpreted as a regular expression.
+        is flanked by slashes, it is interpreted as a regular expression.
         The search for <text> is extended online to `homebrew/core` and `homebrew/cask`.
 
-        If no <text> is passed, display all locally available formulae (including tapped ones).
+        If no <text> is provided, list all locally available formulae (including tapped ones).
         No online search is performed.
       EOS
       switch "--casks",
-             description: "Display all locally available casks (including tapped ones). "\
+             description: "List all locally available casks (including tapped ones). "\
                           "No online search is performed."
       switch "--desc",
-             description: "search formulae with a description matching <text> and casks with "\
+             description: "Search for formulae with a description matching <text> and casks with "\
                           "a name matching <text>."
 
       package_manager_switches = PACKAGE_MANAGERS.keys.map { |name| "--#{name}" }

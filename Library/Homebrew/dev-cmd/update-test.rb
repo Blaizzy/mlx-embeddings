@@ -11,16 +11,16 @@ module Homebrew
         `update-test` [<options>]
 
         Run a test of `brew update` with a new repository clone.
-        If no arguments are passed, use `origin/master` as the start commit.
+        If no options are passed, use `origin/master` as the start commit.
       EOS
       switch "--to-tag",
              description: "Set `HOMEBREW_UPDATE_TO_TAG` to test updating between tags."
       switch "--keep-tmp",
              description: "Retain the temporary directory containing the new repository clone."
       flag   "--commit=",
-             description: "Use provided <commit> as the start commit."
+             description: "Use the specified <commit> as the start commit."
       flag   "--before=",
-             description: "Use the commit at provided <date> as the start commit."
+             description: "Use the commit at the specified <date> as the start commit."
       switch :verbose
       switch :debug
     end

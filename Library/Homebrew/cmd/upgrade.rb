@@ -14,18 +14,18 @@ module Homebrew
   def upgrade_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `upgrade` [<options>] <formula>
+        `upgrade` [<options>] [<formula>]
 
-        Upgrade outdated, unpinned formulae (with existing and any appended brew formula options).
+        Upgrade outdated, unpinned formulae using the same options they were originally
+        installed with, plus any appended brew formula options. If <formula> are specified,
+        upgrade only the given <formula> kegs (unless they are pinned; see `pin`, `unpin`).
 
-        If <formula> are given, upgrade only the specified brews (unless they
-        are pinned; see `pin`, `unpin`).
-
-        Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will be run for the upgraded formulae or, every 30 days, for all formulae.
+        Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will then be run for the
+        upgraded formulae or, every 30 days, for all formulae.
       EOS
       switch :debug,
              description: "If brewing fails, open an interactive debugging session with access to IRB "\
-                          "or a shell inside the temporary build directory"
+                          "or a shell inside the temporary build directory."
       switch "-s", "--build-from-source",
              description: "Compile <formula> from source even if a bottle is available."
       switch "--force-bottle",
@@ -33,12 +33,12 @@ module Homebrew
                           "macOS, even if it would not normally be used for installation."
       switch "--fetch-HEAD",
              description: "Fetch the upstream repository to detect if the HEAD installation of the "\
-                          "formula is outdated. Otherwise, the repository's HEAD will be checked for "\
+                          "formula is outdated. Otherwise, the repository's HEAD will only be checked for "\
                           "updates when a new stable or development version has been released."
       switch "--ignore-pinned",
-             description: "Set a 0 exit code even if pinned formulae are not upgraded."
+             description: "Set a successful exit status even if pinned formulae are not upgraded."
       switch "--keep-tmp",
-             description: "Don't delete the temporary files created during installation."
+             description: "Retain the temporary files created during installation."
       switch :force,
              description: "Install without checking for previously installed keg-only or "\
                           "non-migrated versions."

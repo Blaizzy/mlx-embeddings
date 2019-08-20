@@ -18,12 +18,12 @@ module Homebrew
   def audit_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `audit` [<options>] <formula>
+        `audit` [<options>] [<formula>]
 
         Check <formula> for Homebrew coding style violations. This should be run before
-        submitting a new formula. Will exit with a non-zero status if any errors are
+        submitting a new formula. If no <formula> are provided, check all locally
+        available formulae. Will exit with a non-zero status if any errors are
         found, which can be useful for implementing pre-commit hooks.
-        If no <formula> are provided, all of them are checked.
       EOS
       switch "--strict",
              description: "Run additional style checks, including RuboCop style checks."
@@ -38,7 +38,7 @@ module Homebrew
       switch "--display-cop-names",
              description: "Include the RuboCop cop name for each violation in the output."
       switch "--display-filename",
-             description: "Prefix every line of output with name of the file or formula being audited, to "\
+             description: "Prefix every line of output with the file or formula name being audited, to "\
                           "make output easy to grep."
       switch "-D", "--audit-debug",
              description: "Enable debugging and profiling of audit methods."

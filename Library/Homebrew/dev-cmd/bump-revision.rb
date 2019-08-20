@@ -9,16 +9,15 @@ module Homebrew
   def bump_revision_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `bump-revision` [<options>] [<formula>]
+        `bump-revision` [<options>] <formula>
 
-        Create a commit to increment the revision of the formula. If no revision is
-         present, "revision 1" will be added.
+        Create a commit to increment the revision of <formula>. If no revision is
+        present, "revision 1" will be added.
       EOS
       switch "-n", "--dry-run",
              description: "Print what would be done rather than doing it."
-      flag "--message=",
-           description: "Append the provided <message> to the default commit message."
-
+      flag   "--message=",
+             description: "Append <message> to the default commit message."
       switch :force
       switch :quiet
       switch :verbose

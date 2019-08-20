@@ -12,22 +12,22 @@ module Homebrew
 
         Tap a formula repository.
 
-        List all installed taps when no arguments are passed.
+        If no arguments are provided, list all installed taps.
 
-        With <URL> unspecified, taps a formula repository from GitHub using HTTPS.
+        With <URL> unspecified, tap a formula repository from GitHub using HTTPS.
         Since so many taps are hosted on GitHub, this command is a shortcut for
         `brew tap` <user>`/`<repo> `https://github.com/`<user>`/homebrew-`<repo>.
 
-        With <URL> specified, taps a formula repository from anywhere, using
-        any transport protocol that `git` handles. The one-argument form of `tap`
+        With <URL> specified, tap a formula repository from anywhere, using
+        any transport protocol that `git`(1) handles. The one-argument form of `tap`
         simplifies but also limits. This two-argument command makes no
         assumptions, so taps can be cloned from places other than GitHub and
-        using protocols other than HTTPS, e.g., SSH, GIT, HTTP, FTP(S), RSYNC.
+        using protocols other than HTTPS, e.g. SSH, GIT, HTTP, FTP(S), RSYNC.
       EOS
       switch "--full",
              description: "Use a full clone when tapping a repository. By default, the repository is "\
                           "cloned as a shallow copy (`--depth=1`). To convert a shallow copy to a "\
-                          "full copy, you can retap passing `--full` without first untapping."
+                          "full copy, you can retap by passing `--full` without first untapping."
       switch "--force-auto-update",
              description: "Auto-update tap even if it is not hosted on GitHub. By default, only taps "\
                           "hosted on GitHub are auto-updated (for performance reasons)."

@@ -11,7 +11,7 @@ module Homebrew
       usage_banner <<~EOS
         `command` <cmd>
 
-        Display the path to the file which is used when invoking `brew` <cmd>.
+        Display the path to the file being used when invoking `brew` <cmd>.
       EOS
       switch :verbose
       switch :debug

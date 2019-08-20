@@ -11,7 +11,7 @@ module Homebrew
       usage_banner <<~EOS
         `formula` <formula>
 
-        Display the path where a formula is located.
+        Display the path where <formula> is located.
       EOS
       switch :verbose
       switch :debug

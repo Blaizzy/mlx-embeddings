@@ -12,7 +12,7 @@ module Homebrew
       usage_banner <<~EOS
         `leaves`
 
-        Show installed formulae that are not dependencies of another installed formula.
+        List installed formulae that are not dependencies of another installed formula.
       EOS
       switch :debug
     end
