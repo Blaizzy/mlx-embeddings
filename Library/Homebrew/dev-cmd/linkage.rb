@@ -13,10 +13,10 @@ module Homebrew
         `linkage` [<options>] [<formula>]
 
         Check the library links from the given <formula> kegs. If no <formula> are
-        specified, check all kegs. Raises an error if run on uninstalled formulae.
+        provided, check all kegs. Raises an error if run on uninstalled formulae.
       EOS
       switch "--test",
-             description: "Display only missing libraries and exit with a non-zero status if any missing "\
+             description: "Show only missing libraries and exit with a non-zero status if any missing "\
                           "libraries are found."
       switch "--reverse",
              description: "For every library that a keg references, print its dylib path followed by the "\

@@ -11,13 +11,13 @@ module Homebrew
       usage_banner <<~EOS
         `unlink` [<options>] <formula>
 
-        Remove symlinks for <formula> from the Homebrew prefix. This can be useful
+        Remove symlinks for <formula> from Homebrew's prefix. This can be useful
         for temporarily disabling a formula:
         `brew unlink` <formula> `&&` <commands> `&& brew link` <formula>
       EOS
       switch "-n", "--dry-run",
-             description: "List all files which would be unlinked, but will not actually unlink or "\
-                          "delete any files."
+             description: "List files which would be unlinked without actually unlinking or "\
+                          "deleting any files."
       switch :verbose
       switch :debug
     end

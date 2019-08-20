@@ -11,7 +11,7 @@ module Homebrew
       usage_banner <<~EOS
         `doctor` [<options>]
 
-        Check your system for potential problems. Doctor exits with a non-zero status
+        Check your system for potential problems. Will exit with a non-zero status
         if any potential problems are found. Please note that these warnings are just
         used to help the Homebrew maintainers with debugging if you file an issue. If
         everything you use Homebrew for is working fine: please don't worry or file

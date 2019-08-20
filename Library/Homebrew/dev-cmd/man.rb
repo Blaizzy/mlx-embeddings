@@ -25,7 +25,7 @@ module Homebrew
       EOS
       switch "--fail-if-changed",
              description: "Return a failing status code if changes are detected in the manpage outputs. This "\
-                          "can be used for CI to be notified when the manpages are out of date. Additionally, "\
+                          "can be used to notify CI when the manpages are out of date. Additionally, "\
                           "the date used in new manpages will match those in the existing manpages (to allow "\
                           "comparison without factoring in the date)."
       switch "--link",

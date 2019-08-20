@@ -12,7 +12,7 @@ module Homebrew
 
         Tap a formula repository.
 
-        List all installed taps when no arguments are passed.
+        If no arguments are provided, list all installed taps.
 
         With <URL> unspecified, tap a formula repository from GitHub using HTTPS.
         Since so many taps are hosted on GitHub, this command is a shortcut for

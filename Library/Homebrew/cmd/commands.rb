@@ -16,7 +16,7 @@ module Homebrew
              description: "List only the names of commands without category headers."
       switch "--include-aliases",
              depends_on:  "--quiet",
-             description: "Include the aliases of internal commands."
+             description: "Include aliases of internal commands."
       switch :verbose
       switch :debug
     end

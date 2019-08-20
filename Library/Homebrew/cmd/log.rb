@@ -15,11 +15,11 @@ module Homebrew
         if no formula is provided.
       EOS
       switch "-p", "-u", "--patch",
-             description: "Also output patch from commit."
+             description: "Also print patch from commit."
       switch "--stat",
-             description: "Also output diffstat from commit."
+             description: "Also print diffstat from commit."
       switch "--oneline",
-             description: "Output only one line per commit."
+             description: "Print only one line per commit."
       flag   "-1", "--max-count",
              description: "Print only one or a specified number of commits."
     end

@@ -18,9 +18,9 @@ module Homebrew
       switch "--keep-tmp",
              description: "Retain the temporary directory containing the new repository clone."
       flag   "--commit=",
-             description: "Use provided <commit> as the start commit."
+             description: "Use the specified <commit> as the start commit."
       flag   "--before=",
-             description: "Use the commit at provided <date> as the start commit."
+             description: "Use the commit at the specified <date> as the start commit."
       switch :verbose
       switch :debug
     end

@@ -19,10 +19,10 @@ module Homebrew
 
         Display brief statistics for your Homebrew installation.
 
-        If <formula> is specified, show summary of information about <formula>.
+        If <formula> is provided, show summary of information about <formula>.
       EOS
       switch "--analytics",
-             description: "Display global Homebrew analytics data or, if specified, installation and "\
+             description: "List global Homebrew analytics data or, if specified, installation and "\
                           "build error data for <formula> (provided neither `HOMEBREW_NO_ANALYTICS` "\
                           "nor `HOMEBREW_NO_GITHUB_API` are set)."
       flag   "--days",
@@ -35,7 +35,7 @@ module Homebrew
                           "The value for <category> must be `install`, `install-on-request`, "\
                           "`cask-install`, `build-error` or `os-version`. The default is `install`."
       switch "--github",
-             description: "Open a browser to the GitHub source page for <formula>. "\
+             description: "Open the GitHub source page for <formula> in a browser. "\
                           "To view formula history locally: `brew log -p` <formula>"
       flag   "--json",
              description: "Print a JSON representation of <formula>. Currently the default and only accepted "\

@@ -72,7 +72,7 @@ module Homebrew
                           "`brew bottle --json` <formula>."
       switch "--write",
              depends_on:  "--merge",
-             description: "Write the changes to the formula file. A new commit will be generated unless "\
+             description: "Write changes to the formula file. A new commit will be generated unless "\
                           "`--no-commit` is passed."
       switch "--no-commit",
              depends_on:  "--write",

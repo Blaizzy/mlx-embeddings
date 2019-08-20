@@ -27,7 +27,7 @@ didn't include with macOS.
 For the full command list, see the [COMMANDS](#commands) section.
 
 With `--verbose` or `--debug`, many commands print extra debugging information. Note that
-these flags should only appear after a command.
+these options should only appear after a command.
 
 ### `install` <formula>:
 
@@ -47,9 +47,9 @@ List all installed formulae.
 ### `search` (<text>|`/`<text>`/`):
 
 Perform a substring search of cask tokens and formula names for <text>. If <text>
-is surrounded with slashes, then it is interpreted as a regular expression.
+is flanked by slashes, it is interpreted as a regular expression.
 The search for <text> is extended online to `homebrew/core` and `homebrew/cask`.
-If no search term is given, all locally available formulae are listed.
+If no search term is provided, all locally available formulae are listed.
 
 ## COMMANDS
 
@@ -112,12 +112,12 @@ can take several different forms:
   * An arbitrary file or URL:
     Homebrew can install formulae via URL, e.g.
     `https://raw.githubusercontent.com/Homebrew/homebrew-core/master/Formula/git.rb`,
-    or from a local path. It could point to either a formula file or a bottle.
+    or from a local path. It can point to either a formula file or a bottle.
     In the case of a URL, the downloaded file will be cached for later use.
 
 ## ENVIRONMENT
 
-Note that environment variables must have a value set to be detected. For example,
+Note that environment variables must have a value set to be detected. For example, run
 `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 `export HOMEBREW_NO_INSECURE_REDIRECT`.
 
@@ -159,8 +159,8 @@ Note that environment variables must have a value set to be detected. For exampl
     *Default:* `~/Library/Caches/Homebrew`.
 
   * `HOMEBREW_CURLRC`:
-    If set, Homebrew will not pass `-q` when invoking `curl`(1) (which disables
-    the use of `curlrc`).
+    If set, Homebrew will not pass `-q` when invoking `curl`(1), which disables
+    the use of `curlrc`.
 
   * `HOMEBREW_CURL_VERBOSE`:
     If set, Homebrew will pass `--verbose` when invoking `curl`(1).

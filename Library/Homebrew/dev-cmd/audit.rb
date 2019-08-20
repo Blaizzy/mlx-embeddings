@@ -21,9 +21,9 @@ module Homebrew
         `audit` [<options>] [<formula>]
 
         Check <formula> for Homebrew coding style violations. This should be run before
-        submitting a new formula. Will exit with a non-zero status if any errors are
+        submitting a new formula. If no <formula> are provided, check all locally
+        available formulae. Will exit with a non-zero status if any errors are
         found, which can be useful for implementing pre-commit hooks.
-        If no <formula> are provided, all of them are checked.
       EOS
       switch "--strict",
              description: "Run additional style checks, including RuboCop style checks."

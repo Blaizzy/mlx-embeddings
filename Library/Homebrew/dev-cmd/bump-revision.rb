@@ -17,7 +17,7 @@ module Homebrew
       switch "-n", "--dry-run",
              description: "Print what would be done rather than doing it."
       flag   "--message=",
-             description: "Append the provided <message> to the default commit message."
+             description: "Append <message> to the default commit message."
       switch :force
       switch :quiet
       switch :verbose

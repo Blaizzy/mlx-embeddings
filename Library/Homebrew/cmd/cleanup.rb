@@ -11,9 +11,9 @@ module Homebrew
       usage_banner <<~EOS
         `cleanup` [<options>] [<formula>|<cask>]
 
-        Remove stale lock files and outdated downloads for formulae and casks,
+        Remove stale lock files and outdated downloads for all formulae and casks,
         and remove old versions of installed formulae. If arguments are specified,
-        only do this for the specified formulae and casks.
+        only do this for the given formulae and casks.
       EOS
       flag   "--prune=",
              description: "Remove all cache files older than specified <days>."

@@ -12,15 +12,15 @@ module Homebrew
       usage_banner <<~EOS
         `link`, `ln` [<options>] <formula>
 
-        Symlink all of <formula>'s installed files into the Homebrew prefix. This
+        Symlink all of <formula>'s installed files into Homebrew's prefix. This
         is done automatically when you install formulae but can be useful for DIY
         installations.
       EOS
       switch "--overwrite",
-             description: "Delete files already existing in the prefix while linking."
+             description: "Delete files that already exist in the prefix while linking."
       switch "-n", "--dry-run",
-             description: "List all files which would be linked or deleted by "\
-                          "`brew link --overwrite`, but will not actually link or delete any files."
+             description: "List files which would be linked or deleted by "\
+                          "`brew link --overwrite` without actually linking or deleting any files."
       switch :force,
              description: "Allow keg-only formulae to be linked."
       switch :verbose

@@ -13,13 +13,12 @@ module Homebrew
       usage_banner <<~EOS
         `missing` [<options>] [<formula>]
 
-        Check the given <formula> for missing dependencies. If no <formula> are
-        given, check all installed brews.
-
-        `missing` exits with a non-zero status if any formulae are missing dependencies.
+        Check the given <formula> kegs for missing dependencies. If no <formula> are
+        provided, check all kegs. Will exit with a non-zero status if any kegs are found
+        to be missing dependencies.
       EOS
       comma_array "--hide",
-                  description: "Act as if none of the provided <hidden> are installed. <hidden> should be "\
+                  description: "Act as if none of the specified <hidden> are installed. <hidden> should be "\
                                "a comma-separated list of formulae."
       switch :verbose
       switch :debug

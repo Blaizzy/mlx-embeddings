@@ -12,12 +12,12 @@ module Homebrew
       usage_banner <<~EOS
         `options` [<options>] [<formula>]
 
-        Display install options specific to <formula>.
+        Show install options specific to <formula>.
       EOS
       switch "--compact",
              description: "Show all options on a single line separated by spaces."
       switch "--installed",
-             description: "Show options for all installed formulae."
+             description: "Show options for formulae that are currently installed."
       switch "--all",
              description: "Show options for all available formulae."
       switch :debug

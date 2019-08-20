@@ -1,10 +1,9 @@
 #:  * `shellenv`
 #:
-#:  Prints export statements - run them in a shell and this installation of Homebrew will be included into your `PATH`, `MANPATH` and `INFOPATH`.
+#:  Print export statements. When run in a shell, this installation of Homebrew will be added to your `PATH`, `MANPATH`, and `INFOPATH`.
 #:
-#:  `HOMEBREW_PREFIX`, `HOMEBREW_CELLAR` and `HOMEBREW_REPOSITORY` are also exported to save multiple queries of those variables.
-#:
-#:  Consider adding evaluating the output in your dotfiles (e.g. `~/.profile`) with `eval $(brew shellenv)`
+#:  The variables `HOMEBREW_PREFIX`, `HOMEBREW_CELLAR` and `HOMEBREW_REPOSITORY` are also exported to avoid querying them multiple times.
+#:  Consider adding evaluation of this command's output to your dotfiles (e.g. `~/.profile`) with: `eval $(brew shellenv)`
 
 homebrew-shellenv() {
   case "$SHELL" in

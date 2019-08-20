@@ -25,10 +25,10 @@ module Homebrew
              description: "Do a verbose VCS checkout, if the URL represents a VCS. This is useful for "\
                           "seeing if an existing VCS cache has been updated."
       switch "--retry",
-             description: "Retry if a download fails or re-download if the checksum of a previously cached "\
+             description: "Retry if downloading fails or re-download if the checksum of a previously cached "\
                           "version no longer matches."
       switch "--deps",
-             description: "Download dependencies for any listed <formula>."
+             description: "Also download dependencies for any listed <formula>."
       switch "-s", "--build-from-source",
              description: "Download source packages rather than a bottle."
       switch "--build-bottle",

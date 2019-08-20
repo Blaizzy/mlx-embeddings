@@ -15,18 +15,17 @@ module Homebrew
       usage_banner <<~EOS
         `gist-logs` [<options>] <formula>
 
-        Upload logs for a failed build of <formula> to a new Gist.
-
-        If no logs are found, an error message is presented.
+        Upload logs for a failed build of <formula> to a new Gist. Presents an
+        error message if no logs are found.
       EOS
       switch "--with-hostname",
              description: "Include the hostname in the Gist."
       switch "-n", "--new-issue",
-             description: "Automatically create a new issue in the appropriate GitHub repository as "\
-                          "well as creating the Gist."
+             description: "Automatically create a new issue in the appropriate GitHub repository "\
+                          "after creating the Gist."
       switch "-p", "--private",
              description: "The Gist will be marked private and will not appear in listings but will "\
-                          "be accessible with the link."
+                          "be accessible with its link."
       switch :verbose
       switch :debug
     end

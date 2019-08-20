@@ -15,9 +15,10 @@ module Homebrew
       usage_banner <<~EOS
         `reinstall` [<options>] <formula>
 
-        Uninstall and then install <formula> (with existing and any appended install options).
+        Uninstall and then install <formula> using the same options it was originally
+        installed with, plus any appended brew formula options.
 
-        Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will be run for the
+        Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will then be run for the
         reinstalled formulae or, every 30 days, for all formulae.
       EOS
       switch :debug,
@@ -29,7 +30,7 @@ module Homebrew
              description: "Install from a bottle if it exists for the current or newest version of "\
                           "macOS, even if it would not normally be used for installation."
       switch "--keep-tmp",
-             description: "Don't delete the temporary files created during installation."
+             description: "Retain the temporary files created during installation."
       switch :force,
              description: "Install without checking for previously installed keg-only or "\
                           "non-migrated versions."

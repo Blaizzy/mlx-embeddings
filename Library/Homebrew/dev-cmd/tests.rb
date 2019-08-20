@@ -26,7 +26,7 @@ module Homebrew
              description: "Run only <test_script>`_spec.rb`. Appending `:`<line_number> will start at a "\
                           "specific line."
       flag   "--seed=",
-             description: "Randomise tests with the provided <value> instead of a random seed."
+             description: "Randomise tests with the specified <value> instead of a random seed."
       switch :verbose
       switch :debug
     end
