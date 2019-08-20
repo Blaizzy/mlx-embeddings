@@ -72,7 +72,7 @@ module Homebrew
         # `brew test-bot` runs `brew doctor` in the CI for the Homebrew/brew
         # repository. This only needs to support whatever CI providers
         # Homebrew/brew is currently using.
-        return if ENV["HOMEBREW_AZURE_PIPELINES"] || ENV["HOMEBREW_GITHUB_ACTIONS"]
+        return if ENV["HOMEBREW_GITHUB_ACTIONS"]
 
         message = <<~EOS
           Your Xcode (#{MacOS::Xcode.version}) is outdated.
@@ -99,7 +99,7 @@ module Homebrew
         # `brew test-bot` runs `brew doctor` in the CI for the Homebrew/brew
         # repository. This only needs to support whatever CI providers
         # Homebrew/brew is currently using.
-        return if ENV["HOMEBREW_AZURE_PIPELINES"] || ENV["HOMEBREW_GITHUB_ACTIONS"]
+        return if ENV["HOMEBREW_GITHUB_ACTIONS"]
 
         <<~EOS
           A newer Command Line Tools release is available.
