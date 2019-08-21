@@ -33,10 +33,8 @@ __brew_list_aliases() {
 }
 
 __brew_formulae_or_ruby_files() {
-  local -a formulae
-  formulae=($(brew search))
   _alternative 'formulae::__brew_formulae' \
-    'files:files:{_files -g *.rb}'
+    'files:files:{_files -g "*.rb"}'
 }
 
 # completions remain in cache until any tap has new commits
@@ -222,7 +220,7 @@ _brew_audit() {
     '(--online --strict)--new-formula[check if a new formula is eligible for Homebrew. Implies --strict and --online]' \
     '--display-cop-names[include RuboCop cop name for each violation in the output]' \
     '--display-filename[prefix every line of output with the name of the file or formula being audited]' \
-    '*:formula:__brew_formulae'
+    '*:formula:__brew_formulae_or_ruby_files'
 }
 
 # brew bottle [--verbose] [--no-rebuild] [--keep-old] [--skip-relocation] [--root-url=root_url]
@@ -253,11 +251,11 @@ _brew_bump_formula_pr() {
     - set1 \
       '--url=-[new url]:url:_urls' \
       '--sha256=-[new sha256 checksum]:sha256: ' \
-      ': :__brew_formulae' \
+      ': :__brew_formulae_or_ruby_files' \
     - set2 \
       '--tag=-[new tag]: ' \
       '--revision=-[new revision]: ' \
-      ': :__brew_formulae'
+      ': :__brew_formulae_or_ruby_files'
 }
 
 # brew cat formula
@@ -368,7 +366,7 @@ _brew_doctor() {
 # brew edit formulae
 _brew_edit() {
   _arguments \
-    '*:: :__brew_formulae'
+    '*:: :__brew_formulae_or_ruby_files'
 }
 
 # brew fetch [--force] [--retry] [-v] [--devel|--HEAD] [--deps] [--build-from-source|--force-bottle] formulae
@@ -661,7 +659,7 @@ _brew_test() {
     '(--devel --HEAD)'{--devel,--HEAD}'[use the development / head version of the formula]' \
     '--debug[launch an interactive debugger if test fails]' \
     '--keep-tmp[don''t delete temporary files]' \
-    '*:formula:__brew_formulae'
+    '*:formula:__brew_formulae_or_ruby_files'
 }
 
 # brew test-bot [options]  url|formula:
