@@ -196,8 +196,11 @@ module Homebrew
     lines = [format_usage_banner(comment_lines.first).chomp]
     comment_lines.slice(1..-1)
                  .each do |line|
-      line = line.slice(4..-1)
-      next unless line
+      line = line.slice(4..-2)
+      unless line
+        lines.last << "\n"
+        next
+      end
 
       # Omit the common global_options documented separately in the man page.
       next if line =~ /--(debug|force|help|quiet|verbose) /
@@ -206,6 +209,7 @@ module Homebrew
       lines << line.gsub(/^ +(-+[a-z-]+), (-+[a-z-]+) +/, "* `\\1`, `\\2`:\n  ")
                    .gsub(/^ +(-+[a-z-]+) +/, "* `\\1`:\n  ")
     end
+    lines.last << "\n"
     lines
   end
 

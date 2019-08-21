@@ -530,10 +530,7 @@ Use the standard \fBPATH\fR instead of superenv\'s when \fBstd\fR is passed\.
 Print export statements\. When run in a shell, this installation of Homebrew will be added to your \fBPATH\fR, \fBMANPATH\fR, and \fBINFOPATH\fR\.
 .
 .P
-The variables \fBHOMEBREW_PREFIX\fR, \fBHOMEBREW_CELLAR\fR and \fBHOMEBREW_REPOSITORY\fR are also exported to avoid querying them multiple times\.
-.
-.P
-Consider adding evaluation of this command\'s output to your dotfiles (e\.g\. \fB~/\.profile\fR) with: \fBeval $(brew shellenv)\fR
+The variables \fBHOMEBREW_PREFIX\fR, \fBHOMEBREW_CELLAR\fR and \fBHOMEBREW_REPOSITORY\fR are also exported to avoid querying them multiple times\. Consider adding evaluation of this command\'s output to your dotfiles (e\.g\. \fB~/\.profile\fR or \fB~/\.zprofile\fR) with: \fBeval $(brew shellenv)\fR
 .
 .SS "\fBstyle\fR [\fIoptions\fR] [\fIfile\fR|\fItap\fR|\fIformula\fR]"
 Check formulae or files for conformance to Homebrew style guidelines\.

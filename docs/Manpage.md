@@ -423,11 +423,11 @@ build systems would not find otherwise.
   Use the standard `PATH` instead of superenv's when `std` is passed.
 
 ### `shellenv`
+
 Print export statements. When run in a shell, this installation of Homebrew will be added to your `PATH`, `MANPATH`, and `INFOPATH`.
 
 The variables `HOMEBREW_PREFIX`, `HOMEBREW_CELLAR` and `HOMEBREW_REPOSITORY` are also exported to avoid querying them multiple times.
-
-Consider adding evaluation of this command's output to your dotfiles (e.g. `~/.profile`) with: `eval $(brew shellenv)`
+Consider adding evaluation of this command's output to your dotfiles (e.g. `~/.profile` or `~/.zprofile`) with: `eval $(brew shellenv)`
 
 ### `style` [*`options`*] [*`file`*|*`tap`*|*`formula`*]
 
@@ -527,12 +527,14 @@ also `pin`.
 Remove a tapped formula repository.
 
 ### `update`, `up` [*`options`*]
+
 Fetch the newest version of Homebrew and all formulae from GitHub using `git`(1) and perform any necessary migrations.
 
 * `--merge`:
   Use `git merge` to apply updates (rather than `git rebase`).
 
 ### `update-reset` [*`repository`*]
+
 Fetch and reset Homebrew and all tap repositories (or any specified *`repository`*) using `git`(1) to their latest `origin/master`.
 
 *Note:* this will destroy all your uncommitted or committed changes.
