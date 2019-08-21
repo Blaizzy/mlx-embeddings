@@ -7,7 +7,17 @@ describe MacOSRequirement do
 
   describe "#satisfied?" do
     it "returns true on macOS" do
-      expect(requirement.satisfied?).to eq(OS.mac?)
+      expect(requirement.satisfied?).to eq OS.mac?
+    end
+
+    it "supports version symbols", :needs_macos do
+      requirement = described_class.new([MacOS.version.to_sym])
+      expect(requirement).to be_satisfied
+    end
+
+    it "supports maximum versions", :needs_macos do
+      requirement = described_class.new([:mavericks], comparator: "<=")
+      expect(requirement.satisfied?).to eq MacOS.version <= :mavericks
     end
   end
 end

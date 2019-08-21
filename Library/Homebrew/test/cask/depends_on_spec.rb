@@ -45,8 +45,8 @@ describe "Satisfy Dependencies and Requirements", :cask do
       it { is_expected.not_to raise_error }
     end
 
-    context "given a string" do
-      let(:cask) { Cask::CaskLoader.load(cask_path("with-depends-on-macos-string")) }
+    context "given a string", :needs_compat do
+      let(:cask) { Cask::CaskLoader.load(cask_path("compat/with-depends-on-macos-string")) }
 
       it { is_expected.not_to raise_error }
     end

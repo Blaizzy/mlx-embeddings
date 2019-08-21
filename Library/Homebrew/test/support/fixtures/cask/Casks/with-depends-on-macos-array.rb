@@ -6,7 +6,7 @@ cask 'with-depends-on-macos-array' do
   homepage 'https://brew.sh/with-depends-on-macos-array'
 
   # since all OS releases are included, this should always pass
-  depends_on macos: ['10.9', '10.10', MacOS.version.to_s]
+  depends_on macos: [:mavericks, :sierra, MacOS.version.to_sym]
 
   app 'Caffeine.app'
 end

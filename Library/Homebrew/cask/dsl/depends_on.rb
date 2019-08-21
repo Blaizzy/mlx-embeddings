@@ -37,25 +37,6 @@ module Cask
         end
       end
 
-      def self.coerce_os_release(arg)
-        @macos_symbols ||= MacOS::Version::SYMBOLS
-        @inverted_macos_symbols ||= @macos_symbols.invert
-
-        begin
-          if arg.is_a?(Symbol)
-            Gem::Version.new(@macos_symbols.fetch(arg))
-          elsif arg =~ /^\s*:?([a-z]\S+)\s*$/i
-            Gem::Version.new(@macos_symbols.fetch(Regexp.last_match[1].downcase.to_sym))
-          elsif @inverted_macos_symbols.key?(arg)
-            Gem::Version.new(arg)
-          else
-            raise
-          end
-        rescue
-          raise "invalid 'depends_on macos' value: #{arg.inspect}"
-        end
-      end
-
       def formula=(*args)
         @formula.concat(args)
       end
@@ -65,19 +46,23 @@ module Cask
       end
 
       def macos=(*args)
-        @macos ||= []
-        macos = if args.count == 1 && args.first =~ /^\s*(<|>|[=<>]=)\s*(\S+)\s*$/
-          raise "'depends_on macos' comparison expressions cannot be combined" unless @macos.empty?
+        raise "Only a single 'depends_on macos:' is allowed." if defined?(@macos)
 
-          operator = Regexp.last_match[1].to_sym
-          release = self.class.coerce_os_release(Regexp.last_match[2])
-          [[operator, release]]
-        else
-          raise "'depends_on macos' comparison expressions cannot be combined" if @macos.first.is_a?(Symbol)
-
-          args.map(&self.class.method(:coerce_os_release)).sort
+        begin
+          @macos = if args.count > 1
+            MacOSRequirement.new([args], comparator: "==")
+          elsif MacOS::Version::SYMBOLS.key?(args.first)
+            MacOSRequirement.new([args.first], comparator: "==")
+          elsif /^\s*(?<comparator><|>|[=<>]=)\s*:(?<version>\S+)\s*$/ =~ args.first
+            MacOSRequirement.new([version.to_sym], comparator: comparator)
+          elsif /^\s*(?<comparator><|>|[=<>]=)\s*(?<version>\S+)\s*$/ =~ args.first
+            MacOSRequirement.new([version], comparator: comparator)
+          else
+            MacOSRequirement.new([args.first], comparator: "==")
+          end
+        rescue
+          raise "invalid 'depends_on macos' value: #{args.first.inspect}"
         end
-        @macos.concat(macos)
       end
 
       def arch=(*args)
