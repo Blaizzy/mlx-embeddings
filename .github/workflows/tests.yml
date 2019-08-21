@@ -34,5 +34,5 @@ jobs:
           brew test-bot
         fi
       env:
-        HOMEBREW_COVERALLS_REPO_TOKEN: ${{ secrets.HOMEBREW_COVERALLS_REPO_TOKEN }}
+        HOMEBREW_COVERALLS_REPO_TOKEN: 3F6U6ZqctoNJwKyREremsqMgpU3qYgxFk
         HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
