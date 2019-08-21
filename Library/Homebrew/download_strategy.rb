@@ -390,7 +390,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
     time =
       lines.map { |line| line[/^Last\-Modified:\s*(.+)/i, 1] }
            .compact
-           .map(&Time.public_method(:parse))
+           .map { |t| t.match?(/^\d+$/) ? Time.at(t.to_i) : Time.parse(t) }
            .last
 
     basename = filenames.last || parse_basename(redirect_url)
