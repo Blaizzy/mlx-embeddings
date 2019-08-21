@@ -76,6 +76,10 @@ Display the path to the file being used when invoking \fBbrew\fR \fIcmd\fR\.
 Show lists of built\-in and external commands\.
 .
 .TP
+\fB\-q\fR, \fB\-\-quiet\fR
+List only the names of commands without category headers\.
+.
+.TP
 \fB\-\-include\-aliases\fR
 Include aliases of internal commands\.
 .
@@ -190,6 +194,14 @@ Fetch HEAD version instead of stable version\.
 Fetch development version instead of stable version\.
 .
 .TP
+\fB\-f\fR, \fB\-\-force\fR
+Remove a previously cached version and re\-fetch\.
+.
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Do a verbose VCS checkout, if the URL represents a VCS\. This is useful for seeing if an existing VCS cache has been updated\.
+.
+.TP
 \fB\-\-retry\fR
 Retry if downloading fails or re\-download if the checksum of a previously cached version no longer matches\.
 .
@@ -261,11 +273,19 @@ Print JSON of formulae that are currently installed\.
 \fB\-\-all\fR
 Print JSON of all available formulae\.
 .
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Show more verbose analytics data for \fIformula\fR\.
+.
 .SS "\fBinstall\fR [\fIoptions\fR] \fIformula\fR"
 Install \fIformula\fR\. Additional options specific to \fIformula\fR may be appended to the command\.
 .
 .P
 Unless \fBHOMEBREW_NO_INSTALL_CLEANUP\fR is set, \fBbrew cleanup\fR will then be run for the installed formulae or, every 30 days, for all formulae\.
+.
+.TP
+\fB\-d\fR, \fB\-\-debug\fR
+If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory\.
 .
 .TP
 \fB\-\-env\fR
@@ -320,6 +340,14 @@ Prepare the formula for eventual bottling during installation, skipping any post
 Optimise bottles for the specified architecture rather than the oldest architecture supported by the version of macOS the bottles are built on\.
 .
 .TP
+\fB\-f\fR, \fB\-\-force\fR
+Install without checking for previously installed keg\-only or non\-migrated versions\.
+.
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Print the verification and postinstall steps\.
+.
+.TP
 \fB\-\-display\-times\fR
 Print install times for each formula at the end of the run\.
 .
@@ -344,6 +372,10 @@ Delete files that already exist in the prefix while linking\.
 .TP
 \fB\-n\fR, \fB\-\-dry\-run\fR
 List files which would be linked or deleted by \fBbrew link \-\-overwrite\fR without actually linking or deleting any files\.
+.
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+Allow keg\-only formulae to be linked\.
 .
 .SS "\fBlist\fR, \fBls\fR [\fIoptions\fR] [\fIformula\fR]"
 List all installed formulae\.
@@ -409,6 +441,10 @@ Print only one or a specified number of commits\.
 .SS "\fBmigrate\fR [\fIoptions\fR] \fIformula\fR"
 Migrate renamed packages to new names, where \fIformula\fR are old names of packages\.
 .
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+Treat installed \fIformula\fR and provided \fIformula\fR as if they are from the same taps and migrate them anyway\.
+.
 .SS "\fBmissing\fR [\fIoptions\fR] [\fIformula\fR]"
 Check the given \fIformula\fR kegs for missing dependencies\. If no \fIformula\fR are provided, check all kegs\. Will exit with a non\-zero status if any kegs are found to be missing dependencies\.
 .
@@ -433,6 +469,14 @@ Show options for all available formulae\.
 .
 .SS "\fBoutdated\fR [\fIoptions\fR]"
 List installed formulae that have an updated version available\. By default, version information is displayed in interactive shells, and suppressed otherwise\.
+.
+.TP
+\fB\-q\fR, \fB\-\-quiet\fR
+List only the names of outdated kegs (takes precedence over \fB\-\-verbose\fR)\.
+.
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Include detailed version information\.
 .
 .TP
 \fB\-\-json\fR
@@ -466,6 +510,10 @@ Uninstall and then install \fIformula\fR using the same options it was originall
 Unless \fBHOMEBREW_NO_INSTALL_CLEANUP\fR is set, \fBbrew cleanup\fR will then be run for the reinstalled formulae or, every 30 days, for all formulae\.
 .
 .TP
+\fB\-d\fR, \fB\-\-debug\fR
+If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory\.
+.
+.TP
 \fB\-s\fR, \fB\-\-build\-from\-source\fR
 Compile \fIformula\fR from source even if a bottle is available\.
 .
@@ -476,6 +524,14 @@ Install from a bottle if it exists for the current or newest version of macOS, e
 .TP
 \fB\-\-keep\-tmp\fR
 Retain the temporary files created during installation\.
+.
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+Install without checking for previously installed keg\-only or non\-migrated versions\.
+.
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Print the verification and postinstall steps\.
 .
 .TP
 \fB\-\-display\-times\fR
@@ -607,6 +663,10 @@ Print a JSON representation of \fItap\fR\. Currently the default and only accept
 Uninstall \fIformula\fR\.
 .
 .TP
+\fB\-f\fR, \fB\-\-force\fR
+Delete all installed versions of \fIformula\fR\.
+.
+.TP
 \fB\-\-ignore\-dependencies\fR
 Don\'t fail uninstall, even if \fIformula\fR is a dependency of any installed formulae\.
 .
@@ -658,6 +718,10 @@ Upgrade outdated, unpinned formulae using the same options they were originally 
 Unless \fBHOMEBREW_NO_INSTALL_CLEANUP\fR is set, \fBbrew cleanup\fR will then be run for the upgraded formulae or, every 30 days, for all formulae\.
 .
 .TP
+\fB\-d\fR, \fB\-\-debug\fR
+If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory\.
+.
+.TP
 \fB\-s\fR, \fB\-\-build\-from\-source\fR
 Compile \fIformula\fR from source even if a bottle is available\.
 .
@@ -678,11 +742,19 @@ Set a successful exit status even if pinned formulae are not upgraded\.
 Retain the temporary files created during installation\.
 .
 .TP
+\fB\-f\fR, \fB\-\-force\fR
+Install without checking for previously installed keg\-only or non\-migrated versions\.
+.
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Print the verification and postinstall steps\.
+.
+.TP
 \fB\-\-display\-times\fR
 Print install times for each formula at the end of the run\.
 .
 .TP
-\fB\-\-dry\-run\fR
+\fB\-n\fR, \fB\-\-dry\-run\fR
 Show what would be upgraded, but do not actually upgrade anything\.
 .
 .SS "\fBuses\fR [\fIoptions\fR] \fIformula\fR"

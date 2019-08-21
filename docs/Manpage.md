@@ -79,6 +79,8 @@ Display the path to the file being used when invoking `brew` *`cmd`*.
 
 Show lists of built-in and external commands.
 
+* `-q`, `--quiet`:
+  List only the names of commands without category headers.
 * `--include-aliases`:
   Include aliases of internal commands.
 
@@ -168,6 +170,10 @@ also print SHA-256 checksums.
   Fetch HEAD version instead of stable version.
 * `--devel`:
   Fetch development version instead of stable version.
+* `-f`, `--force`:
+  Remove a previously cached version and re-fetch.
+* `-v`, `--verbose`:
+  Do a verbose VCS checkout, if the URL represents a VCS. This is useful for seeing if an existing VCS cache has been updated.
 * `--retry`:
   Retry if downloading fails or re-download if the checksum of a previously cached version no longer matches.
 * `--deps`:
@@ -216,6 +222,8 @@ If *`formula`* is provided, show summary of information about *`formula`*.
   Print JSON of formulae that are currently installed.
 * `--all`:
   Print JSON of all available formulae.
+* `-v`, `--verbose`:
+  Show more verbose analytics data for *`formula`*.
 
 ### `install` [*`options`*] *`formula`*
 
@@ -225,6 +233,8 @@ the command.
 Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will then be run for
 the installed formulae or, every 30 days, for all formulae.
 
+* `-d`, `--debug`:
+  If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory.
 * `--env`:
   If `std` is passed, use the standard build environment instead of superenv. If `super` is passed, use superenv even if the formula specifies the standard build environment.
 * `--ignore-dependencies`:
@@ -251,6 +261,10 @@ the installed formulae or, every 30 days, for all formulae.
   Prepare the formula for eventual bottling during installation, skipping any post-install steps.
 * `--bottle-arch`:
   Optimise bottles for the specified architecture rather than the oldest architecture supported by the version of macOS the bottles are built on.
+* `-f`, `--force`:
+  Install without checking for previously installed keg-only or non-migrated versions.
+* `-v`, `--verbose`:
+  Print the verification and postinstall steps.
 * `--display-times`:
   Print install times for each formula at the end of the run.
 * `-i`, `--interactive`:
@@ -271,6 +285,8 @@ automatically when you install formulae but can be useful for DIY installations.
   Delete files that already exist in the prefix while linking.
 * `-n`, `--dry-run`:
   List files which would be linked or deleted by `brew link --overwrite` without actually linking or deleting any files.
+* `-f`, `--force`:
+  Allow keg-only formulae to be linked.
 
 ### `list`, `ls` [*`options`*] [*`formula`*]
 
@@ -316,6 +332,9 @@ no formula is provided.
 Migrate renamed packages to new names, where *`formula`* are old names of
 packages.
 
+* `-f`, `--force`:
+  Treat installed *`formula`* and provided *`formula`* as if they are from the same taps and migrate them anyway.
+
 ### `missing` [*`options`*] [*`formula`*]
 
 Check the given *`formula`* kegs for missing dependencies. If no *`formula`* are
@@ -342,6 +361,10 @@ List installed formulae that have an updated version available. By default,
 version information is displayed in interactive shells, and suppressed
 otherwise.
 
+* `-q`, `--quiet`:
+  List only the names of outdated kegs (takes precedence over `--verbose`).
+* `-v`, `--verbose`:
+  Include detailed version information.
 * `--json`:
   Print output in JSON format. Currently the default and only accepted value for *`version`* is `v1`. See the docs for examples of using the JSON output: <https://docs.brew.sh/Querying-Brew>
 * `--fetch-HEAD`:
@@ -376,12 +399,18 @@ installed with, plus any appended brew formula options.
 Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will then be run for
 the reinstalled formulae or, every 30 days, for all formulae.
 
+* `-d`, `--debug`:
+  If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory.
 * `-s`, `--build-from-source`:
   Compile *`formula`* from source even if a bottle is available.
 * `--force-bottle`:
   Install from a bottle if it exists for the current or newest version of macOS, even if it would not normally be used for installation.
 * `--keep-tmp`:
   Retain the temporary files created during installation.
+* `-f`, `--force`:
+  Install without checking for previously installed keg-only or non-migrated versions.
+* `-v`, `--verbose`:
+  Print the verification and postinstall steps.
 * `--display-times`:
   Print install times for each formula at the end of the run.
 
@@ -493,6 +522,8 @@ If no *`tap`* names are provided, display brief statistics for all installed tap
 
 Uninstall *`formula`*.
 
+* `-f`, `--force`:
+  Delete all installed versions of *`formula`*.
 * `--ignore-dependencies`:
   Don't fail uninstall, even if *`formula`* is a dependency of any installed formulae.
 
@@ -549,6 +580,8 @@ specified, upgrade only the given *`formula`* kegs (unless they are pinned; see
 Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will then be run for
 the upgraded formulae or, every 30 days, for all formulae.
 
+* `-d`, `--debug`:
+  If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory.
 * `-s`, `--build-from-source`:
   Compile *`formula`* from source even if a bottle is available.
 * `--force-bottle`:
@@ -559,9 +592,13 @@ the upgraded formulae or, every 30 days, for all formulae.
   Set a successful exit status even if pinned formulae are not upgraded.
 * `--keep-tmp`:
   Retain the temporary files created during installation.
+* `-f`, `--force`:
+  Install without checking for previously installed keg-only or non-migrated versions.
+* `-v`, `--verbose`:
+  Print the verification and postinstall steps.
 * `--display-times`:
   Print install times for each formula at the end of the run.
-* `--dry-run`:
+* `-n`, `--dry-run`:
   Show what would be upgraded, but do not actually upgrade anything.
 
 ### `uses` [*`options`*] *`formula`*

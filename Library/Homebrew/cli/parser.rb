@@ -144,8 +144,9 @@ module Homebrew
         @parser
       end
 
-      def global_option?(name)
-        Homebrew::CLI::Parser.global_options.key?(name.to_sym)
+      def global_option?(name, desc)
+        Homebrew::CLI::Parser.global_options.key?(name.to_sym) &&
+          Homebrew::CLI::Parser.global_options[name.to_sym].last == desc
       end
 
       def generate_help_text

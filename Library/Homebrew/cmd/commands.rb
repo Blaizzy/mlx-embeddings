@@ -12,7 +12,7 @@ module Homebrew
 
         Show lists of built-in and external commands.
       EOS
-      switch "--quiet",
+      switch :quiet,
              description: "List only the names of commands without category headers."
       switch "--include-aliases",
              depends_on:  "--quiet",

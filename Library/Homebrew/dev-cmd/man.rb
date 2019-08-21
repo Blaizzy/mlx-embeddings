@@ -181,7 +181,7 @@ module Homebrew
   def cmd_parser_manpage_lines(cmd_parser)
     lines = [format_usage_banner(cmd_parser.usage_banner_text)]
     lines += cmd_parser.processed_options.map do |short, long, _, desc|
-      next if !long.nil? && cmd_parser.global_option?(cmd_parser.option_to_name(long))
+      next if !long.nil? && cmd_parser.global_option?(cmd_parser.option_to_name(long), desc)
 
       generate_option_doc(short, long, desc)
     end.reject(&:blank?)
