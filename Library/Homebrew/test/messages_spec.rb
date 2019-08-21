@@ -72,9 +72,11 @@ describe Messages do
       end
     end
 
+    # Homebrew.args OpenStruct usage cannot use verified doubles.
+    # rubocop:disable RSpec/VerifiedDoubles
     context "when the --display-times argument is present" do
       before do
-        allow(Homebrew.args).to receive(:display_times?).and_return(true)
+        allow(Homebrew).to receive(:args).and_return(double(display_times?: true))
       end
 
       context "when install_times is empty" do
@@ -101,12 +103,13 @@ describe Messages do
 
     context "when the --display-times argument isn't present" do
       before do
-        allow(ARGV).to receive(:include?).with("--display-times").and_return(false)
+        allow(Homebrew).to receive(:args).and_return(double(display_times?: false))
       end
 
       it "doesn't print installation times" do
         expect { messages.display_messages }.not_to output.to_stdout
       end
     end
+    # rubocop:enable RSpec/VerifiedDoubles
   end
 end
