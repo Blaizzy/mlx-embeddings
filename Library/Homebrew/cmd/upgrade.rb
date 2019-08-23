@@ -213,37 +213,43 @@ module Homebrew
     formulae_to_upgrade = Set.new
     formulae_pinned = Set.new
 
-    formulae.each do |formula|
+    formulae_to_check = formulae
+    checked_formulae = Set.new
+
+    until formulae_to_check.empty?
       descendants = Set.new
 
-      dependents = kegs.select do |keg|
-        keg.runtime_dependencies
-           .any? { |d| d["full_name"] == formula.full_name }
-      end
+      formulae_to_check.each do |formula|
+        next if checked_formulae.include?(formula)
 
-      next if dependents.empty?
-
-      dependent_formulae = dependents.map(&:to_formula)
-
-      dependent_formulae.each do |f|
-        next if formulae_to_upgrade.include?(f)
-        next if formulae_pinned.include?(f)
-
-        if f.outdated?(fetch_head: args.fetch_HEAD?)
-          if f.pinned?
-            formulae_pinned << f
-          else
-            formulae_to_upgrade << f
-          end
+        dependents = kegs.select do |keg|
+          keg.runtime_dependencies
+             .any? { |d| d["full_name"] == formula.full_name }
         end
 
-        descendants << f
+        next if dependents.empty?
+
+        dependent_formulae = dependents.map(&:to_formula)
+
+        dependent_formulae.each do |f|
+          next if formulae_to_upgrade.include?(f)
+          next if formulae_pinned.include?(f)
+
+          if f.outdated?(fetch_head: args.fetch_HEAD?)
+            if f.pinned?
+              formulae_pinned << f
+            else
+              formulae_to_upgrade << f
+            end
+          end
+
+          descendants << f
+        end
+
+        checked_formulae << formula
       end
 
-      upgradable_descendants, pinned_descendants = upgradable_dependents(kegs, descendants)
-
-      formulae_to_upgrade.merge upgradable_descendants
-      formulae_pinned.merge pinned_descendants
+      formulae_to_check = descendants
     end
 
     [formulae_to_upgrade, formulae_pinned]
