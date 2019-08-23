@@ -234,6 +234,7 @@ module Homebrew
         dependent_formulae.each do |f|
           next if formulae_to_upgrade.include?(f)
           next if formulae_pinned.include?(f)
+
           if f.outdated?(fetch_head: args.fetch_HEAD?)
             if f.pinned?
               formulae_pinned << f
