@@ -142,12 +142,26 @@ describe RuboCop::Cop::FormulaAudit::Urls do
       "msg" => "https://central.maven.org/maven2/com/bar/foo/1.1/foo-1.1.jar should be " \
                "`https://search.maven.org/remotecontent?filepath=com/bar/foo/1.1/foo-1.1.jar`",
       "col" => 2,
+    }, {
+      "url"         => "https://brew.sh/example-darwin.x86_64.tar.gz",
+      "msg"         => "https://brew.sh/example-darwin.x86_64.tar.gz looks like a binary package, " \
+                       "not a source archive. Homebrew/homebrew-core is source-only.",
+      "col"         => 2,
+      "formula_tap" => "homebrew-core",
+    }, {
+      "url"         => "https://brew.sh/example-darwin.amd64.tar.gz",
+      "msg"         => "https://brew.sh/example-darwin.amd64.tar.gz looks like a binary package, " \
+                       "not a source archive. Homebrew/homebrew-core is source-only.",
+      "col"         => 2,
+      "formula_tap" => "homebrew-core",
     }]
   }
 
   context "When auditing urls" do
     it "with offenses" do
       formulae.each do |formula|
+        allow_any_instance_of(RuboCop::Cop::FormulaCop).to receive(:formula_tap)
+                                                       .and_return(formula["formula_tap"])
         source = <<~RUBY
           class Foo < Formula
             desc "foo"
