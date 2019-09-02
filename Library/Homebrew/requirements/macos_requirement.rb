@@ -42,11 +42,11 @@ class MacOSRequirement < Requirement
           versions newer than #{@version.pretty_name} due to an upstream incompatibility.
         EOS
       when :cask
-        "This cask does not on macOS versions newer than #{@version.pretty_name}."
+        "This cask does not run on macOS versions newer than #{@version.pretty_name}."
       end
     else
       if @version.respond_to?(:to_ary)
-        *versions, last = @version.map(:pretty_name)
+        *versions, last = @version.map(&:pretty_name)
         return "macOS #{versions.join(", ")} or #{last} is required."
       end
 
@@ -58,5 +58,12 @@ class MacOSRequirement < Requirement
     return "macOS is required" unless version_specified?
 
     "macOS #{@comparator} #{@version}"
+  end
+
+  def to_json(*args)
+    comp = @comparator.to_s
+    return { comp => @version.map(&:to_s) }.to_json(*args) if @version.is_a?(Array)
+
+    { comp => [@version.to_s] }.to_json(*args)
   end
 end
