@@ -47,7 +47,7 @@ module Homebrew
       switch "--display-times",
              env:         :display_install_times,
              description: "Print install times for each formula at the end of the run."
-      switch "--dry-run",
+      switch "-n", "--dry-run",
              description: "Show what would be upgraded, but do not actually upgrade anything."
       conflicts "--build-from-source", "--force-bottle"
       formula_options
