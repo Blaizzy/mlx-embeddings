@@ -109,7 +109,6 @@ module Homebrew
       options[:only_cops] = [:FormulaAudit]
     end
 
-    options[:display_cop_names] = args.display_cop_names?
     # Check style in a single batch run up front for performance
     style_results = Style.check_style_json(files, options)
 
@@ -118,6 +117,8 @@ module Homebrew
       only = only_cops ? ["style"] : args.only
       options = { new_formula: new_formula, strict: strict, online: online, only: only, except: args.except }
       options[:style_offenses] = style_results.file_offenses(f.path)
+      options[:display_cop_names] = args.display_cop_names?
+
       fa = FormulaAuditor.new(f, options)
       fa.audit
       next if fa.problems.empty? && fa.new_formula_problems.empty?
