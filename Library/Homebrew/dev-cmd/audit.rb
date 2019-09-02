@@ -920,18 +920,6 @@ module Homebrew
       EOS
     end
 
-    def audit_url_is_not_binary
-      return unless @core_tap
-
-      urls = @specs.map(&:url)
-
-      urls.each do |url|
-        if url =~ /darwin/i && (url =~ /x86_64/i || url =~ /amd64/i)
-          problem "#{url} looks like a binary package, not a source archive. The `core` tap is source-only."
-        end
-      end
-    end
-
     def quote_dep(dep)
       dep.is_a?(Symbol) ? dep.inspect : "'#{dep}'"
     end
