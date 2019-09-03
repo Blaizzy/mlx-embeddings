@@ -62,6 +62,7 @@ If they accept, follow a few steps to get them set up:
 - Ask them to disable SMS as a 2FA device or fallback on their GitHub account in favour of using one of the other authentication methods.
 - Ask them to (regularly) review remove any unneeded [GitHub personal access tokens](https://github.com/settings/tokens).
 - Add them to Homebrew/brew's README, run `brew man` and commit the changes.
+- Start the process to [add them as Homebrew members](#members), for formal voting rights and the ability to hold office for Homebrew.
 
 If they are interested in doing system administration work or Homebrew/brew releases:
 
@@ -86,3 +87,9 @@ Now sit back, relax and let the new maintainers handle more of our contributions
 ## Members
 
 People who are either not eligible or willing to be Homebrew maintainers but have shown continued involvement in the Homebrew community may be admitted by a majority vote of the [Project Leadership Committee](https://docs.brew.sh/Homebrew-Governance#4-project-leadership-committee) to join the Homebrew GitHub organisation as [members](https://docs.brew.sh/Homebrew-Governance#2-members).
+
+When admitted as members:
+
+- Invite them to the [**@Homebrew/members** team](https://github.com/orgs/Homebrew/teams/members), to give them access to the private governance repository.
+- Invite them as a single-channel guest to the #members channel on the [`machomebrew` private maintainers Slack](https://machomebrew.slack.com/admin/invites) (and ensure they've read the [communication guidelines](Maintainer-Guidelines.md#communication)) and ask them to use their real name there (rather than a pseudonym they may use on e.g. GitHub).
+- Add them to the membership list in the [homebrew-governance repository](https://github.com/Homebrew/homebrew-governance).
