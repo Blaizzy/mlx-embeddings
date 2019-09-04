@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require "formula"
-require "cli/parser"
-
 # `brew uses foo bar` returns formulae that use both foo and bar
 # If you want the union, run the command twice and concatenate the results.
 # The intersection is harder to achieve with shell tools.
+
+require "formula"
+require "cli/parser"
 
 module Homebrew
   module_function
