@@ -17,7 +17,7 @@ jobs:
         with:
           version: '>=2.3'
 
-      - name: Set up repositories
+      - name: Build and push API docs
         run: |
           # clone rubydoc.brew.sh with SSH so we can push back
           git clone git@github.com:Homebrew/rubydoc.brew.sh
@@ -26,18 +26,9 @@ jobs:
           # clone latest Homebrew/brew
           git clone --depth=1 https://github.com/Homebrew/brew
 
-      - name: Install RubyGems
-        run: |
-          # silence bundler complaining about being root
-          mkdir ~/.bundle
-          echo 'BUNDLE_SILENCE_ROOT_WARNING: "1"' > ~/.bundle/config
-
+          # run rake to build documentation
           gem install bundler
           bundle install --jobs 4 --retry 3
-
-      - name: Build and push API docs
-        run: |
-          # run rake to build documentation
           bundle exec rake
 
           # commit and push generated files
