@@ -96,7 +96,7 @@ module Homebrew
 
     ARGV.named.each do |arg|
       arg = "#{CoreTap.instance.default_remote}/pull/#{arg}" if arg.to_i.positive?
-      if (testing_match = arg.match %r{/job/Homebrew.*Testing/(\d+)/})
+      if (testing_match = arg.match %r{/job/Homebrew.*Testing/(\d+)})
         tap = ARGV.value("tap")
         tap = if tap&.start_with?("homebrew/")
           Tap.fetch("homebrew", tap.delete_prefix("homebrew/"))
@@ -136,7 +136,7 @@ module Homebrew
       orig_revision = `git rev-parse --short HEAD`.strip
       branch = `git symbolic-ref --short HEAD`.strip
 
-      unless branch == "master" || args.clean? || args.branch_okay?
+      if branch != "master" && !args.clean? && !args.branch_okay?
         opoo "Current branch is #{branch}: do you need to pull inside master?"
       end
 
@@ -151,7 +151,7 @@ module Homebrew
         patch_puller.apply_patch
       end
 
-      end_revision = end_revision?(url, merge_commit)
+      end_revision = head_revision(url, merge_commit)
 
       changed_formulae_names = []
 
@@ -281,19 +281,16 @@ module Homebrew
     end
   end
 
-  def fetch_issue(url)
-    issue = url[%r{/pull\/([0-9]+)}, 1]
-    safe_system "git", "fetch", "--quiet", "origin", "pull/#{issue}/head"
-  end
-
   def merge_commit?(url)
-    fetch_issue(url)
+    pr_number = url[%r{/pull\/([0-9]+)}, 1]
+    return false unless pr_number
+
+    safe_system "git", "fetch", "--quiet", "origin", "pull/#{pr_number}/head"
     Utils.popen_read("git", "rev-list", "--parents", "-n1", "FETCH_HEAD").count(" ") > 1
   end
 
-  def end_revision?(url, merge_commit)
-    fetch_issue(url)
-    Utils.popen_read("git", "rev-parse", merge_commit ? "FETCH_HEAD" : "HEAD").strip
+  def head_revision(_url, fetched)
+    Utils.popen_read("git", "rev-parse", fetched ? "FETCH_HEAD" : "HEAD").strip
   end
 
   def fetch_bottles_patch(bottle_commit_url, args, bottle_branch, branch, orig_revision)
