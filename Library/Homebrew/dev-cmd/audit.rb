@@ -607,6 +607,44 @@ module Homebrew
       new_formula_problem "GitLab repository too new (<30 days old)"
     end
 
+    def audit_bitbucket_repository
+      user, repo = get_repo_data(%r{https?://bitbucket\.org/([^/]+)/([^/]+)/?.*})
+      return if user.nil?
+
+      api_url = "https://api.bitbucket.org/2.0/repositories/#{user}/#{repo}"
+      out, _, status= curl_output("--request", "GET", api_url)
+      return unless status.success?
+
+      metadata = JSON.parse(out)
+      return if metadata.nil?
+
+      new_formula_problem "Uses deprecated mercurial support in Bitbucket" if metadata["scm"] == "hg"
+
+      if metadata["parent"]["full_name"] == "#{user}/#{repo}"
+        new_formula_problem "Bitbucket fork (not canonical repository)"
+      end
+
+      if Date.parse(metadata["created_on"]) >= (Date.today - 30)
+        new_formula_problem "Bitbucket repository too new (<30 days old)"
+      end
+
+      forks_out, _, forks_status= curl_output("--request", "GET", "#{api_url}/forks")
+      return unless forks_status.success?
+
+      watcher_out, _, watcher_status= curl_output("--request", "GET", "#{api_url}/watchers")
+      return unless watcher_status.success?
+
+      forks_metadata = JSON.parse(forks_out)
+      return if forks_metadata.nil?
+
+      watcher_metadata = JSON.parse(watcher_out)
+      return if watcher_metadata.nil?
+
+      return if (forks_metadata["size"] < 30) && (watcher_metadata["size"] < 75)
+
+      new_formula_problem "Bitbucket repository not notable enough (<30 forks and <75 watchers)"
+    end
+
     def get_repo_data(regex)
       return unless @core_tap
       return unless @online
