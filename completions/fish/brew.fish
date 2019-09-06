@@ -868,6 +868,7 @@ __fish_brew_complete_sub_arg 'cask' 'style' -l fix -d "Auto-correct any style er
 
 __fish_brew_complete_sub_cmd 'cask' 'upgrade'     "Upgrades all outdated casks"
 __fish_brew_complete_sub_arg 'cask' 'upgrade' -l force
+__fish_brew_complete_sub_arg 'cask' 'upgrade' -l dry-run
 
 __fish_brew_complete_sub_cmd 'cask' 'uninstall' "Uninstall the given Cask"
 __fish_brew_complete_sub_arg 'cask' 'uninstall remove rm' -l force -d "Uninstall even if the Cask is not present"
