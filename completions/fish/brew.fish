@@ -253,6 +253,7 @@ __fish_brew_complete_arg 'cat' -a '(__fish_brew_suggest_formulae_all)'
 
 __fish_brew_complete_cmd 'cleanup' "Remove old installed versions"
 __fish_brew_complete_arg 'cleanup' -a '(__fish_brew_suggest_formulae_installed)'
+__fish_brew_complete_arg 'cleanup' -a '(__fish_brew_suggest_casks_installed)'
 __fish_brew_complete_arg 'cleanup'      -l prune   -d "Remove all cache files older than given number of days" -a '(seq 1 5)'
 __fish_brew_complete_arg 'cleanup' -s n -l dry-run -d "Show what files would be removed"
 __fish_brew_complete_arg 'cleanup' -s s            -d "Scrub the cache, removing downloads for even the latest versions of formulae"
