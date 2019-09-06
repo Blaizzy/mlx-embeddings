@@ -480,10 +480,6 @@ __fish_brew_complete_cmd 'postinstall' "Rerun the post-install steps for formula
 __fish_brew_complete_arg 'postinstall' -a '(__fish_brew_suggest_formulae_installed)'
 
 
-__fish_brew_complete_cmd 'prune' "Remove dead symlinks"
-__fish_brew_complete_arg 'prune' -s n -l dry-run -d "Show what files would be removed"
-
-
 __fish_brew_complete_cmd 'reinstall' "Uninstall and then install again"
 __fish_brew_complete_arg 'reinstall' -a '(__fish_brew_suggest_formulae_installed)'
 
