@@ -2,7 +2,7 @@
 
 Homebrew comes with completion definitions for the `brew` command. Some packages also provide completion definitions for their own programs.
 
-`zsh`, `bash` and `fish` are currently supported. (Homebrew provides `brew` completions for `zsh`, `bash`, and `fish`.)
+`zsh`, `bash` and `fish` are currently supported.
 
 You must configure your shell to enable its completion support. This is because the Homebrew-managed completions are stored under `HOMEBREW_PREFIX` which your system shell may not be aware of, and since it is difficult to automatically configure `bash` and `zsh` completions in a robust manner, the Homebrew installer does not do it for you.
 
