@@ -851,6 +851,7 @@ __fish_brew_complete_sub_cmd 'cask' 'install'   "Install the given Cask"
 __fish_brew_complete_sub_arg 'cask' 'install' -l force          -d "Reinstall even if the Cask is already present"
 __fish_brew_complete_sub_arg 'cask' 'install' -l skip-cask-deps -d "Skip any Cask dependencies"
 __fish_brew_complete_sub_arg 'cask' 'install' -l require-sha    -d "Abort if the Cask doesn't define a checksum"
+__fish_brew_complete_sub_arg 'cask' 'audit install' -rl language -d "Set language of the Cask to install. The first matching language is used, otherwise the default language on the Cask. The default value is the language of your system."
 
 __fish_brew_complete_sub_cmd 'cask' 'list'      "List installed Casks or staged files of the given installed Casks"
 __fish_brew_complete_sub_arg 'cask' 'list ls' -s 1        -d "Format output in a single column"
