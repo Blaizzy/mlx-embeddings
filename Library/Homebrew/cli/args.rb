@@ -51,22 +51,36 @@ module Homebrew
         options_only - CLI::Parser.global_options.values.map(&:first).flatten
       end
 
-      def downcased_unique_named
-        # Only lowercase names, not paths, bottle filenames or URLs
-        @downcased_unique_named ||= remaining.map do |arg|
-          if arg.include?("/") || arg.end_with?(".tar.gz") || File.exist?(arg)
-            arg
+      def named
+        remaining
+      end
+
+      def formulae
+        require "formula"
+        @formulae ||= (downcased_unique_named - casks).map do |name|
+          if name.include?("/") || File.exist?(name)
+            Formulary.factory(name, spec)
           else
-            arg.downcase
+            Formulary.find_with_priority(name, spec)
           end
-        end.uniq
+        end.uniq(&:name)
+      end
+
+      def resolved_formulae
+        require "formula"
+        @resolved_formulae ||= (downcased_unique_named - casks).map do |name|
+          Formulary.resolve(name, spec: spec(nil))
+        end.uniq(&:name)
+      end
+
+      def casks
+        @casks ||= downcased_unique_named.grep HOMEBREW_CASK_TAP_CASK_REGEX
       end
 
       def kegs
         require "keg"
         require "formula"
         require "missing_formula"
-
         @kegs ||= downcased_unique_named.map do |name|
           raise UsageError if name.empty?
 
@@ -111,6 +125,29 @@ module Homebrew
               Please delete (with rm -rf!) all but one and then try again.
             EOS
           end
+        end
+      end
+
+      private
+
+      def downcased_unique_named
+        # Only lowercase names, not paths, bottle filenames or URLs
+        remaining.map do |arg|
+          if arg.include?("/") || arg.end_with?(".tar.gz") || File.exist?(arg)
+            arg
+          else
+            arg.downcase
+          end
+        end.uniq
+      end
+
+      def spec(default = :stable)
+        if HEAD?
+          :head
+        elsif devel?
+          :devel
+        else
+          default
         end
       end
     end

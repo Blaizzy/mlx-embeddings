@@ -35,7 +35,7 @@ module Homebrew
     else
       raise FormulaUnspecifiedError if args.remaining.empty?
 
-      puts_options ARGV.formulae
+      puts_options Homebrew.args.formulae
     end
   end
 

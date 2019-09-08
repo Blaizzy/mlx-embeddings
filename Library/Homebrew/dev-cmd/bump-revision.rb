@@ -32,10 +32,11 @@ module Homebrew
     # user path, too.
     ENV["PATH"] = ENV["HOMEBREW_PATH"]
 
-    raise FormulaUnspecifiedError if ARGV.formulae.empty?
-    raise "Multiple formulae given, only one is allowed." if ARGV.formulae.length > 1
+    formulae = Homebrew.args.formulae
+    raise FormulaUnspecifiedError if formulae.empty?
+    raise "Multiple formulae given, only one is allowed." if formulae.length > 1
 
-    formula = ARGV.formulae.first
+    formula = formulae.first
     current_revision = formula.revision
 
     if current_revision.zero?

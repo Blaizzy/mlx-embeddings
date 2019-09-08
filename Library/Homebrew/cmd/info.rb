@@ -80,7 +80,7 @@ module Homebrew
 
       print_json
     elsif args.github?
-      exec_browser(*ARGV.formulae.map { |f| github_info(f) })
+      exec_browser(*Homebrew.args.formulae.map { |f| github_info(f) })
     else
       print_info
     end
@@ -129,7 +129,7 @@ module Homebrew
     elsif args.installed?
       Formula.installed.sort
     else
-      ARGV.formulae
+      Homebrew.args.formulae
     end
     json = ff.map(&:to_hash)
     puts JSON.generate(json)

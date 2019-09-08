@@ -28,6 +28,7 @@ module Homebrew
       def initialize(&block)
         @parser = OptionParser.new
         @args = Homebrew::CLI::Args.new(argv: ARGV_WITHOUT_MONKEY_PATCHING)
+        @args[:remaining] = []
         @constraints = []
         @conflicts = []
         @switch_sources = {}
@@ -159,7 +160,7 @@ module Homebrew
       end
 
       def formula_options
-        ARGV.formulae.each do |f|
+        @args.formulae.each do |f|
           next if f.options.empty?
 
           f.options.each do |o|
