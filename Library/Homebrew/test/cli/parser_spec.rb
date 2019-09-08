@@ -225,5 +225,10 @@ describe Homebrew::CLI::Parser do
       parser.parse(["--foo", "-vds", "a", "b", "cdefg"])
       expect(Homebrew.args.options_only).to eq %w[--foo -v -d -s]
     end
+
+    it "#flags_only" do
+      parser.parse(["--foo", "-vds", "a", "b", "cdefg"])
+      expect(Homebrew.args.flags_only).to eq %w[--foo]
+    end
   end
 end

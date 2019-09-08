@@ -28,6 +28,14 @@ module Homebrew
             .map(&method(:to_cli_option))
             .select { |arg| arg.start_with?("-") }
       end
+
+      def flags_only
+        to_h.keys
+            .map(&:to_s)
+            .reject { |name| %w[argv remaining].include?(name) }
+            .map(&method(:to_cli_option))
+            .select { |arg| arg.start_with?("--") }
+      end
     end
   end
 end
