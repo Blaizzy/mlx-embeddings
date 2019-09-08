@@ -399,6 +399,28 @@ describe Cask::Audit, :cask do
       end
     end
 
+    describe "blacklist checks" do
+      context "when the Cask isn't blacklisted" do
+        let(:cask_token) { "adobe-air" }
+
+        it { is_expected.to pass }
+      end
+
+      context "when the Cask is blacklisted" do
+        context "and it's in the official Homebrew tap" do
+          let(:cask_token) { "adobe-illustrator" }
+
+          it { is_expected.to fail_with(/#{cask_token} is blacklisted: \w+/) }
+        end
+
+        context "and it isn't in the official Homebrew tap" do
+          let(:cask_token) { "pharo" }
+
+          it { is_expected.to pass }
+        end
+      end
+    end
+
     describe "latest with auto_updates checks" do
       let(:warning_msg) { "Casks with `version :latest` should not use `auto_updates`" }
 
@@ -541,8 +563,8 @@ describe Cask::Audit, :cask do
     context "when an exception is raised" do
       let(:cask) { instance_double(Cask::Cask) }
 
-      it "does not fail" do
-        expect(cask).to receive(:version).and_raise(StandardError.new)
+      it "fails the audit" do
+        expect(cask).to receive(:tap).and_raise(StandardError.new)
         expect(subject).to fail_with(/exception while auditing/)
       end
     end
