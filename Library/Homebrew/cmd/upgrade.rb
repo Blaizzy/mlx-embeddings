@@ -105,7 +105,7 @@ module Homebrew
           "#{f.full_specified_name} #{f.pkg_version}"
         end
       end
-      puts formulae_upgrades.join(", ")
+      puts formulae_upgrades.join("\n")
     end
     return if args.dry_run?
 
