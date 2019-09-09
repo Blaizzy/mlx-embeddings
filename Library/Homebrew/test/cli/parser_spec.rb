@@ -210,4 +210,20 @@ describe Homebrew::CLI::Parser do
       expect { parser.parse(["--switch-b"]) }.to raise_error(RuntimeError, /Arguments were already parsed!/)
     end
   end
+
+  describe "test argv extensions" do
+    subject(:parser) {
+      described_class.new do
+        switch "--foo"
+        switch "-v"
+        switch "-d"
+        switch "-s"
+      end
+    }
+
+    it "#options_only" do
+      parser.parse(["--foo", "-vds", "a", "b", "cdefg"])
+      expect(Homebrew.args.options_only).to eq %w[--foo -v -d -s]
+    end
+  end
 end
