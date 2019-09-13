@@ -162,7 +162,7 @@ module Homebrew
       tab = Tab.for_keg(keg)
     end
 
-    build_options = BuildOptions.new(Options.create(Homebrew.args.flags_only), f.options)
+    build_options = BuildOptions.new(Options.create(ARGV.flags_only), f.options)
     options = build_options.used_options
     options |= f.build.used_options
     options &= f.options
