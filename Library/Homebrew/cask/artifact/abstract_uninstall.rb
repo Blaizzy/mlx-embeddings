@@ -130,7 +130,12 @@ module Cask
           next if running_processes(bundle_id).empty?
 
           unless User.current.gui?
-            ohai "Not logged into a GUI; skipping quitting application ID '#{bundle_id}'."
+            opoo "Not logged into a GUI; skipping quitting application ID '#{bundle_id}'."
+            next
+          end
+
+          unless User.automation_access?
+            opoo "Skipping quitting application ID '#{bundle_id}'. #{User.automation_access_instructions}"
             next
           end
 
@@ -214,6 +219,11 @@ module Cask
             ["path", item[:path]]
           else
             ["name", item]
+          end
+
+          unless User.automation_access?
+            opoo "Skipping removal of login item #{id}. #{User.automation_access_instructions}"
+            next
           end
 
           ohai "Removing login item #{id}"
