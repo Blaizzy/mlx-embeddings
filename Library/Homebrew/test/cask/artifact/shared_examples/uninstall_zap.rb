@@ -116,16 +116,27 @@ shared_examples "#uninstall_phase or #zap_phase" do
     let(:cask) { Cask::CaskLoader.load(cask_path("with-#{artifact_dsl_key}-quit")) }
     let(:bundle_id) { "my.fancy.package.app" }
 
+    it "is skipped when the user does not have automation access" do
+      allow(User).to receive(:automation_access?).and_return false
+      allow(User.current).to receive(:gui?).and_return true
+      allow(subject).to receive(:running_processes).with(bundle_id).and_return([[0, "", bundle_id]])
+
+      expect {
+        subject.public_send(:"#{artifact_dsl_key}_phase", command: fake_system_command)
+      }.to output(/Skipping quitting application ID 'my.fancy.package.app'\./).to_stderr
+    end
+
     it "is skipped when the user is not a GUI user" do
       allow(User.current).to receive(:gui?).and_return false
       allow(subject).to receive(:running_processes).with(bundle_id).and_return([[0, "", bundle_id]])
 
       expect {
         subject.public_send(:"#{artifact_dsl_key}_phase", command: fake_system_command)
-      }.to output(/Not logged into a GUI; skipping quitting application ID 'my.fancy.package.app'\./).to_stdout
+      }.to output(/Not logged into a GUI; skipping quitting application ID 'my.fancy.package.app'\./).to_stderr
     end
 
     it "quits a running application" do
+      allow(User).to receive(:automation_access?).and_return true
       allow(User.current).to receive(:gui?).and_return true
 
       expect(subject).to receive(:running_processes).with(bundle_id).ordered.and_return([[0, "", bundle_id]])
@@ -139,6 +150,7 @@ shared_examples "#uninstall_phase or #zap_phase" do
     end
 
     it "tries to quit the application for 10 seconds" do
+      allow(User).to receive(:automation_access?).and_return true
       allow(User.current).to receive(:gui?).and_return true
 
       allow(subject).to receive(:running_processes).with(bundle_id).and_return([[0, "", bundle_id]])
@@ -247,6 +259,8 @@ shared_examples "#uninstall_phase or #zap_phase" do
     let(:cask) { Cask::CaskLoader.load(cask_path("with-#{artifact_dsl_key}-login-item")) }
 
     it "is supported" do
+      allow(User).to receive(:automation_access?).and_return true
+
       expect(subject).to receive(:system_command!)
         .with(
           "osascript",
