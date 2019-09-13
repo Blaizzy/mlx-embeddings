@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "cask/macos"
+
 module Cask
   class Pkg
     def self.all_matching(regexp, command)
