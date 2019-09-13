@@ -10,7 +10,7 @@ OPTION_DESC_WIDTH = 43
 module Homebrew
   module CLI
     class Parser
-      attr_reader :processed_options, :hide_from_man_page, :args
+      attr_reader :processed_options, :hide_from_man_page
 
       def self.parse(args = ARGV, &block)
         new(&block).parse(args)

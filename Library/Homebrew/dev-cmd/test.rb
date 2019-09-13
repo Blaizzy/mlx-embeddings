@@ -82,7 +82,7 @@ module Homebrew
           --
           #{HOMEBREW_LIBRARY_PATH}/test.rb
           #{f.path}
-        ].concat(Homebrew.args.options_only)
+        ].concat(ARGV.options_only)
 
         if f.head?
           args << "--HEAD"
