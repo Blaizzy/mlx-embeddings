@@ -118,7 +118,6 @@ module Cask
         <<~EOS
           #{@cask} has been officially discontinued upstream.
           It may stop working correctly (or at all) in recent versions of macOS.
-
         EOS
       end
 
