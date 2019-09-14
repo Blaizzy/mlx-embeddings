@@ -87,17 +87,17 @@ module Cask
         if java_version == :any
           <<~EOS
             #{@cask} requires Java. You can install the latest version with:
-              brew cask install java
+              brew cask install adoptopenjdk
           EOS
         elsif java_version.include?("11") || java_version.include?("+")
           <<~EOS
             #{@cask} requires Java #{java_version}. You can install the latest version with:
-              brew cask install java
+              brew cask install adoptopenjdk
           EOS
         else
           <<~EOS
             #{@cask} requires Java #{java_version}. You can install it with:
-              brew cask install homebrew/cask-versions/java#{java_version}
+              brew cask install homebrew/cask-versions/adoptopenjdk#{java_version}
           EOS
         end
       end
