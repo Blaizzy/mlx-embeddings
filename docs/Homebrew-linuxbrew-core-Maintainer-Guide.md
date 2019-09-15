@@ -39,14 +39,14 @@ merge and make sure that there are 3 remotes:
 Remote names `origin` and `homebrew` are hard-coded in
 `merge-homebrew`, while the remote pointing to your fork must be the
 same as your GitHub username, as it will be used to submit a pull
-request for the merge. Set the name to the `$GITHUB_USER` environment
+request for the merge. Set the name to the `$HOMEBREW_GITHUB_USER` environment
 variable, or let `hub fork` add a remote for you.
 
 ```bash
 brew install hub
 cd $(brew --repo homebrew/core)
 git remote add homebrew https://github.com/Homebrew/homebrew-core.git
-hub fork --remote-name=$GITHUB_USER
+hub fork --remote-name=$HOMEBREW_GITHUB_USER
 ```
 
 Now, let's make sure that our local branch `master` is clean and that
@@ -56,7 +56,7 @@ your fork is up-to-date with Homebrew/linuxbrew-core:
 git checkout master
 git fetch origin master
 git reset --hard origin/master
-git push --force $GITHUB_USER master
+git push --force $HOMEBREW_GITHUB_USER master
 ```
 
 Strictly speaking, there is no need for `git reset --hard
@@ -219,7 +219,7 @@ command where the merge commit is `HEAD`:
 
 ```sh
 for formula in $(brew find-formulae-to-bottle); do
-  brew build-bottle-pr --remote=$GITHUB_USER $formula
+  brew build-bottle-pr --remote=$HOMEBREW_GITHUB_USER $formula
 done
 ```
 
