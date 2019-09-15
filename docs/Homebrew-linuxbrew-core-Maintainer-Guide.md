@@ -198,8 +198,13 @@ Conflicts:
 
 The `merge-homebrew` command will create a pull-request for you, using `hub`.
 
-Once the PR successfully passes the tests and/or is approved by other
-Homebrew developers, you can finalize the merge with:
+It is expected that CI checks on the merge commit of the PR will fail.
+This is due to a bug with Azure Pipelines and its handling of merge
+commits. Master branch builds also fail for the same reason. This is
+OK.
+
+Once the PR is approved by other Homebrew developers, you can finalize
+the merge with:
 
 ```bash
 brew pull --clean <PR-NUMBER>
