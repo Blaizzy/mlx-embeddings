@@ -119,7 +119,7 @@ shared_examples "#uninstall_phase or #zap_phase" do
     it "is skipped when the user does not have automation access" do
       allow(User).to receive(:automation_access?).and_return false
       allow(User.current).to receive(:gui?).and_return true
-      allow(subject).to receive(:running_processes).with(bundle_id).and_return([[0, "", bundle_id]])
+      allow(subject).to receive(:running?).with(bundle_id).and_return(true)
 
       expect {
         subject.public_send(:"#{artifact_dsl_key}_phase", command: fake_system_command)
@@ -128,7 +128,7 @@ shared_examples "#uninstall_phase or #zap_phase" do
 
     it "is skipped when the user is not a GUI user" do
       allow(User.current).to receive(:gui?).and_return false
-      allow(subject).to receive(:running_processes).with(bundle_id).and_return([[0, "", bundle_id]])
+      allow(subject).to receive(:running?).with(bundle_id).and_return(true)
 
       expect {
         subject.public_send(:"#{artifact_dsl_key}_phase", command: fake_system_command)
@@ -139,10 +139,10 @@ shared_examples "#uninstall_phase or #zap_phase" do
       allow(User).to receive(:automation_access?).and_return true
       allow(User.current).to receive(:gui?).and_return true
 
-      expect(subject).to receive(:running_processes).with(bundle_id).ordered.and_return([[0, "", bundle_id]])
+      expect(subject).to receive(:running?).with(bundle_id).ordered.and_return(true)
       expect(subject).to receive(:quit).with(bundle_id)
                                        .and_return(instance_double("SystemCommand::Result", success?: true))
-      expect(subject).to receive(:running_processes).with(bundle_id).ordered.and_return([])
+      expect(subject).to receive(:running?).with(bundle_id).ordered.and_return(false)
 
       expect {
         subject.public_send(:"#{artifact_dsl_key}_phase", command: fake_system_command)
@@ -153,7 +153,7 @@ shared_examples "#uninstall_phase or #zap_phase" do
       allow(User).to receive(:automation_access?).and_return true
       allow(User.current).to receive(:gui?).and_return true
 
-      allow(subject).to receive(:running_processes).with(bundle_id).and_return([[0, "", bundle_id]])
+      allow(subject).to receive(:running?).with(bundle_id).and_return(true)
       allow(subject).to receive(:quit).with(bundle_id)
                                       .and_return(instance_double("SystemCommand::Result", success?: false))
 
