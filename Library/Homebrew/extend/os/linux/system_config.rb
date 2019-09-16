@@ -5,18 +5,6 @@ require "os/linux/glibc"
 
 class SystemConfig
   class << self
-    def host_os_version
-      if which("lsb_release")
-        description = `lsb_release -d`.chomp.sub("Description:\t", "")
-        codename = `lsb_release -c`.chomp.sub("Codename:\t", "")
-        "#{description} (#{codename})"
-      elsif (redhat_release = Pathname.new("/etc/redhat-release")).readable?
-        redhat_release.read.chomp
-      else
-        "N/A"
-      end
-    end
-
     def host_glibc_version
       version = OS::Linux::Glibc.system_version
       return "N/A" if version.null?
@@ -42,7 +30,7 @@ class SystemConfig
     def dump_verbose_config(out = $stdout)
       dump_generic_verbose_config(out)
       out.puts "Kernel: #{`uname -mors`.chomp}"
-      out.puts "OS: #{host_os_version}"
+      out.puts "OS: #{OS::Linux.os_version}"
       out.puts "Host glibc: #{host_glibc_version}"
       out.puts "/usr/bin/gcc: #{host_gcc_version}"
       ["glibc", "gcc", "xorg"].each do |f|
