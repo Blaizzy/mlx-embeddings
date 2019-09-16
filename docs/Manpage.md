@@ -914,6 +914,8 @@ provided it defaults to `origin/master`.
 Run a Ruby instance with Homebrew's libraries loaded, e.g. `brew ruby -e "puts
 :gcc.f.deps"` or `brew ruby script.rb`.
 
+* `-r`:
+  Load a library using `require`.
 * `-e`:
   Execute the given text string as a script.
 
