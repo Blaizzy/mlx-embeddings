@@ -26,6 +26,7 @@ class SoftwareSpec
   attr_reader :dependency_collector
   attr_reader :bottle_specification
   attr_reader :compiler_failures
+  attr_reader :uses_from_macos_elements
 
   def_delegators :@resource, :stage, :fetch, :verify_download_integrity, :source_modified_time
   def_delegators :@resource, :download_name, :cached_download, :clear_cache
