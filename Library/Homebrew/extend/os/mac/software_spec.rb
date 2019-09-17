@@ -23,9 +23,9 @@ class SoftwareSpec
   def add_mac_dependency?(args)
     args.each { |key, version| args[key] = OS::Mac::Version.from_symbol(version) }
 
-    return false if args[:after] && OS::Mac.version < args[:after]
+    return false if args[:after] && OS::Mac.version >= args[:after]
 
-    return false if args[:before] && OS::Mac.version >= args[:before]
+    return false if args[:before] && OS::Mac.version < args[:before]
 
     args.present?
   end
