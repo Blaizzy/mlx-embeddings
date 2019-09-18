@@ -25,6 +25,9 @@ module Homebrew
         begin
           FileUtils.mkdir_p(dir) unless dir.exist?
 
+          # Create these files to ensure that these directories aren't removed
+          # by the Catalina installer.
+          # (https://github.com/Homebrew/brew/issues/6263)
           keep_file = dir/".keepme"
           FileUtils.touch(keep_file) unless keep_file.exist?
         rescue
