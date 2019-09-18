@@ -25,7 +25,7 @@ module Homebrew
         begin
           FileUtils.mkdir_p(dir) unless dir.exist?
 
-          keep_file = "#{dir}/.keepme"
+          keep_file = dir/".keepme"
           FileUtils.touch(keep_file) unless keep_file.exist?
         rescue
           nil
