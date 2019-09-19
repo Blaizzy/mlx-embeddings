@@ -147,7 +147,7 @@ module Cask
         "version"        => version,
         "sha256"         => sha256,
         "artifacts"      => artifacts.map(&method(:to_h_gsubs)),
-        "caveats"        => to_h_string_gsubs(caveats),
+        "caveats"        => (to_h_string_gsubs(caveats) unless caveats.empty?),
         "depends_on"     => depends_on,
         "conflicts_with" => conflicts_with,
         "container"      => container,
