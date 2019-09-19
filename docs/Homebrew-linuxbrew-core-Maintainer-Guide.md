@@ -285,15 +285,16 @@ lbrew-pull-bottle <PR-NUMBER> && brew squash-bottle-pr
 
 For PRs where there have been force pushes or extra commits to fix the
 build or fix bottling syntax, we can't `brew squash-bottle-pr` as we
-must keep the fixes.
+must keep the fixes. If the `# Build a bottle for Linuxbrew` line
+still exists in the formula, remove it.
 
 The `brew pull` command *publishes* the bottle to BinTray and verifies
 that the SHA in the formula and the SHA of the downloaded file match.
 To verify a bottle, the script downloads the bottle from BinTray - if
 you're on an unstable connection, this may take a while or even time
 out. Publishing the bottle means that it's available as the latest
-version for users to download, so we have to be quick with pushing the
-commits to `origin`.
+version for users to download, so remember to push your commits to
+`origin`.
 
 If something goes wrong with the bottle pull and you don't want to
 publish the bottle and push the commit, `git reset --hard
