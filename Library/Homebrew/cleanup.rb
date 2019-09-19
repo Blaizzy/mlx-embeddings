@@ -165,7 +165,7 @@ module Homebrew
     def clean!(quiet: false, periodic: false)
       if args.empty?
         Formula.installed.sort_by(&:name).each do |formula|
-          cleanup_formula(formula, quiet: quiet)
+          cleanup_formula(formula, quiet: quiet, ds_store: false)
         end
         cleanup_cache
         cleanup_logs
@@ -210,17 +210,17 @@ module Homebrew
       @unremovable_kegs ||= []
     end
 
-    def cleanup_formula(formula, quiet: false)
+    def cleanup_formula(formula, quiet: false, ds_store: true)
       formula.eligible_kegs_for_cleanup(quiet: quiet)
              .each(&method(:cleanup_keg))
       cleanup_cache(Pathname.glob(cache/"#{formula.name}--*"))
-      rm_ds_store([formula.rack])
+      rm_ds_store([formula.rack]) if ds_store
       cleanup_lockfiles(FormulaLock.new(formula.name).path)
     end
 
-    def cleanup_cask(cask)
+    def cleanup_cask(cask, ds_store: true)
       cleanup_cache(Pathname.glob(cache/"Cask/#{cask.token}--*"))
-      rm_ds_store([cask.caskroom_path])
+      rm_ds_store([cask.caskroom_path]) if ds_store
       cleanup_lockfiles(CaskLock.new(cask.token).path)
     end
 
@@ -383,11 +383,9 @@ module Homebrew
           HOMEBREW_PREFIX/"Caskroom",
         ]
       end
-      dirs.select(&:directory?).each do |dir|
-        system_command "find",
-                       args:         [dir, "-name", ".DS_Store", "-delete"],
-                       print_stderr: false
-      end
+      dirs.select(&:directory?)
+          .flat_map { |d| Pathname.glob("#{d}/**/.DS_Store") }
+          .each(&:unlink)
     end
 
     def prune_prefix_symlinks_and_directories
