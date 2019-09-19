@@ -483,8 +483,12 @@ class FormulaInstaller
 
       if dep.prune_from_option?(build)
         Dependency.prune
-      elsif include_test? && dep.test? && !dep.installed?
-        Dependency.keep_but_prune_recursive_deps
+      elsif dep.test?
+        if !include_test?
+          Dependency.prune
+        elsif !dep.installed?
+          Dependency.keep_but_prune_recursive_deps
+        end
       elsif dep.build? && install_bottle_for?(dependent, build)
         Dependency.prune
       elsif dep.prune_if_build_and_not_dependent?(dependent)
