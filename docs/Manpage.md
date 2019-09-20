@@ -801,6 +801,8 @@ a simple example. For the complete API, see:
   Create a basic template for an Autotools-style build.
 * `--cmake`:
   Create a basic template for a CMake-style build.
+* `--go-mod`:
+  Create a basic template for a Go-Modules-style build.
 * `--meson`:
   Create a basic template for a Meson-style build.
 * `--no-fetch`:
