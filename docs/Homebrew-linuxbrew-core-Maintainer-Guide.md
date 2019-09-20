@@ -39,14 +39,14 @@ merge and make sure that there are 3 remotes:
 Remote names `origin` and `homebrew` are hard-coded in
 `merge-homebrew`, while the remote pointing to your fork must be the
 same as your GitHub username, as it will be used to submit a pull
-request for the merge. Set the name to the `$GITHUB_USER` environment
+request for the merge. Set the name to the `$HOMEBREW_GITHUB_USER` environment
 variable, or let `hub fork` add a remote for you.
 
 ```bash
 brew install hub
 cd $(brew --repo homebrew/core)
 git remote add homebrew https://github.com/Homebrew/homebrew-core.git
-hub fork --remote-name=$GITHUB_USER
+hub fork --remote-name=$HOMEBREW_GITHUB_USER
 ```
 
 Now, let's make sure that our local branch `master` is clean and that
@@ -56,7 +56,7 @@ your fork is up-to-date with Homebrew/linuxbrew-core:
 git checkout master
 git fetch origin master
 git reset --hard origin/master
-git push --force $GITHUB_USER master
+git push --force $HOMEBREW_GITHUB_USER master
 ```
 
 Strictly speaking, there is no need for `git reset --hard
@@ -198,8 +198,13 @@ Conflicts:
 
 The `merge-homebrew` command will create a pull-request for you, using `hub`.
 
-Once the PR successfully passes the tests and/or is approved by other
-Homebrew developers, you can finalize the merge with:
+It is expected that CI checks on the merge commit of the PR will fail.
+This is due to a bug with Azure Pipelines and its handling of merge
+commits. Master branch builds also fail for the same reason. This is
+OK.
+
+Once the PR is approved by other Homebrew developers, you can finalize
+the merge with:
 
 ```bash
 brew pull --clean <PR-NUMBER>
@@ -219,7 +224,7 @@ command where the merge commit is `HEAD`:
 
 ```sh
 for formula in $(brew find-formulae-to-bottle); do
-  brew build-bottle-pr --remote=$GITHUB_USER $formula
+  brew build-bottle-pr --remote=$HOMEBREW_GITHUB_USER $formula
 done
 ```
 
@@ -244,6 +249,60 @@ The `build-bottle-pr` script creates a branch called `bottle-<FORMULA>`, adds `#
 for Linuxbrew` to the top of the formula, pushes the branch to GitHub
 at the specified remote (default: `origin`), and opens a pull request using `hub
 pull-request`.
+
+## Pulling bottles
+
+Pull requests are either raised by maintainers or users. In both
+cases, how to merge them depends on whether or not a Linux bottle has
+been built for the formula.
+
+We very rarely use the GitHub UI buttons. Instead, we "pull the
+bottle". This means that the PR shows up as "closed" to the user, but
+they still get authorship credit. This is done with the following
+command:
+
+```bash
+HOMEBREW_BOTTLE_DOMAIN=https://linuxbrew.bintray.com brew pull --bottle --bintray-org=linuxbrew --test-bot-user=LinuxbrewTestBot <PR-NUMBER>
+```
+
+It saves a lot of time to alias this in your shell config. One
+possible alias is `lbrew-pull-bottle`.
+
+For PRs with the title "Build a bottle for Linuxbrew" and that have
+only one commit with contents "# Build a bottle for Linuxbrew", these
+have been created with `brew build-bottle-pr` and the commit from the
+PR doesn't need preserving. We don't want to litter the codebase with
+comments. In these cases, you can combine `brew pull --bottle` with
+`brew squash-bottle-pr` (in the Linuxbrew/developer tap). This will
+squash the first commit message, leaving just the commit with the
+bottle SHA authored by `LinuxbrewTestBot`. It will still close the PR,
+as `brew pull --bottle` adds `Closes` and `Signed-off-by` to the
+commit message body.
+
+```bash
+lbrew-pull-bottle <PR-NUMBER> && brew squash-bottle-pr
+```
+
+For PRs where there have been force pushes or extra commits to fix the
+build or fix bottling syntax, we can't `brew squash-bottle-pr` as we
+must keep the fixes. If the `# Build a bottle for Linuxbrew` line
+still exists in the formula, remove it.
+
+The `brew pull` command *publishes* the bottle to BinTray and verifies
+that the SHA in the formula and the SHA of the downloaded file match.
+To verify a bottle, the script downloads the bottle from BinTray - if
+you're on an unstable connection, this may take a while or even time
+out. Publishing the bottle means that it's available as the latest
+version for users to download, so remember to push your commits to
+`origin`.
+
+If something goes wrong with the bottle pull and you don't want to
+publish the bottle and push the commit, `git reset --hard
+origin/master` and login to BinTray and delete the new bottle (there's
+a list of who published what recently).
+
+Once you've pushed to `origin`, there's no going back: you're a
+maintainer now, you can't force-push to fix your mistakes!
 
 ## Common build failures and how to handle them
 
