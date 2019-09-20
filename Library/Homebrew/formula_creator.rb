@@ -99,6 +99,8 @@ module Homebrew
 
         <% if mode == :cmake %>
           depends_on "cmake" => :build
+        <% elsif mode == :go_mod %>
+          depends_on "go" => :build
         <% elsif mode == :meson %>
           depends_on "meson" => :build
           depends_on "ninja" => :build
@@ -116,6 +118,8 @@ module Homebrew
                                   "--disable-dependency-tracking",
                                   "--disable-silent-rules",
                                   "--prefix=\#{prefix}"
+        <% elsif mode == :go_mod %>
+            system "go", "build", "-o", "\#{bin}/\#{name}"
         <% elsif mode == :meson %>
             mkdir "build" do
               system "meson", "--prefix=\#{prefix}", ".."
@@ -130,7 +134,7 @@ module Homebrew
                                   "--prefix=\#{prefix}"
             # system "cmake", ".", *std_cmake_args
         <% end %>
-        <% if mode != :meson %>
+        <% if mode != :meson and mode != :go_mod %>
             system "make", "install" # if this fails, try separate make/make install steps
         <% end %>
           end
