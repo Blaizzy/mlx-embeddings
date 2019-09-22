@@ -1,4 +1,4 @@
 cask 'missing-version' do
-  url 'https://localhost/something.dmg'
-  homepage 'https://brew.sh'
+  url 'https://brew.sh/TestCask.dmg'
+  homepage 'https://brew.sh/'
 end

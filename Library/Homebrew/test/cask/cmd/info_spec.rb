@@ -12,7 +12,7 @@ describe Cask::Cmd::Info, :cask do
       described_class.run("local-caffeine")
     }.to output(<<~EOS).to_stdout
       local-caffeine: 1.2.3
-      https://brew.sh
+      https://brew.sh/
       Not installed
       From: https://github.com/Homebrew/homebrew-cask/blob/master/Casks/local-caffeine.rb
       ==> Name
@@ -41,7 +41,7 @@ describe Cask::Cmd::Info, :cask do
     let(:expected_output) {
       <<~EOS
         local-caffeine: 1.2.3
-        https://brew.sh
+        https://brew.sh/
         Not installed
         From: https://github.com/Homebrew/homebrew-cask/blob/master/Casks/local-caffeine.rb
         ==> Name
@@ -50,7 +50,7 @@ describe Cask::Cmd::Info, :cask do
         Caffeine.app (App)
 
         local-transmission: 2.61
-        https://brew.sh
+        https://brew.sh/
         Not installed
         From: https://github.com/Homebrew/homebrew-cask/blob/master/Casks/local-transmission.rb
         ==> Name
@@ -72,7 +72,7 @@ describe Cask::Cmd::Info, :cask do
       described_class.run("with-caveats")
     }.to output(<<~EOS).to_stdout
       with-caveats: 1.2.3
-      https://brew.sh
+      https://brew.sh/
       Not installed
       From: https://github.com/Homebrew/homebrew-cask/blob/master/Casks/with-caveats.rb
       ==> Name
@@ -97,7 +97,7 @@ describe Cask::Cmd::Info, :cask do
       described_class.run("with-conditional-caveats")
     }.to output(<<~EOS).to_stdout
       with-conditional-caveats: 1.2.3
-      https://brew.sh
+      https://brew.sh/
       Not installed
       From: https://github.com/Homebrew/homebrew-cask/blob/master/Casks/with-conditional-caveats.rb
       ==> Name
@@ -112,7 +112,7 @@ describe Cask::Cmd::Info, :cask do
       described_class.run("with-languages")
     }.to output(<<~EOS).to_stdout
       with-languages: 1.2.3
-      https://brew.sh
+      https://brew.sh/
       Not installed
       From: https://github.com/Homebrew/homebrew-cask/blob/master/Casks/with-languages.rb
       ==> Name
@@ -129,7 +129,7 @@ describe Cask::Cmd::Info, :cask do
       described_class.run("without-languages")
     }.to output(<<~EOS).to_stdout
       without-languages: 1.2.3
-      https://brew.sh
+      https://brew.sh/
       Not installed
       From: https://github.com/Homebrew/homebrew-cask/blob/master/Casks/without-languages.rb
       ==> Name

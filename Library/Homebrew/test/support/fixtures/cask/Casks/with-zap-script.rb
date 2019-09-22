@@ -7,5 +7,5 @@ cask 'with-zap-script' do
 
   pkg 'MyFancyPkg/Fancy.pkg'
 
-  zap script: { executable: 'MyFancyPkg/FancyUninstaller.tool', args: %w[--please] }
+  zap script: { executable: 'MyFancyPkg/FancyUninstaller.tool', args: ['--please'] }
 end

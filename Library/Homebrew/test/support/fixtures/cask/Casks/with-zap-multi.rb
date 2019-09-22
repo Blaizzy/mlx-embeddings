@@ -8,6 +8,5 @@ cask 'with-zap-multi' do
   pkg 'MyFancyPkg/Fancy.pkg'
 
   zap rmdir: "#{TEST_TMPDIR}/empty_directory_path"
-
   zap delete: "#{TEST_TMPDIR}/empty_directory_path"
 end

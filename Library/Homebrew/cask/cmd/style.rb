@@ -31,7 +31,7 @@ module Cask
 
       def cask_paths
         @cask_paths ||= if args.empty?
-          Tap.map(&:cask_dir).select(&:directory?)
+          Tap.map(&:cask_dir).select(&:directory?).concat(test_cask_paths)
         elsif args.any? { |file| File.exist?(file) }
           args.map { |path| Pathname(path).expand_path }
         else
@@ -48,6 +48,13 @@ module Cask
           "--force-exclusion",
           "--config", "#{HOMEBREW_LIBRARY}/.rubocop_cask.yml",
           "--format", "simple"
+        ]
+      end
+
+      def test_cask_paths
+        [
+          Pathname.new("#{HOMEBREW_LIBRARY}/Homebrew/test/support/fixtures/cask/Casks"),
+          Pathname.new("#{HOMEBREW_LIBRARY}/Homebrew/test/support/fixtures/third-party/Casks"),
         ]
       end
 

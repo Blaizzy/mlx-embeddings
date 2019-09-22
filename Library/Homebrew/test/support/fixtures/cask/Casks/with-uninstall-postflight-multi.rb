@@ -9,7 +9,6 @@ cask 'with-uninstall-postflight-multi' do
 
   uninstall_postflight do
   end
-
   uninstall_postflight do
   end
 end
