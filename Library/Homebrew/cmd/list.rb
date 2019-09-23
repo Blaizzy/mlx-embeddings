@@ -70,7 +70,8 @@ module Homebrew
         puts Formatter.columns(full_names)
       else
         ENV["CLICOLOR"] = nil
-        safe_system "ls", *ARGV.options_only << HOMEBREW_CELLAR
+        ls_args = Homebrew.args.options_only - CLI::Parser.global_options.values.map(&:first).flatten
+        safe_system "ls", *ls_args << HOMEBREW_CELLAR
       end
     elsif args.verbose? || !$stdout.tty?
       system_command! "find", args: ARGV.kegs.map(&:to_s) + %w[-not -type d -print], print_stdout: true
