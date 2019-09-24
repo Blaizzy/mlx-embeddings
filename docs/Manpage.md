@@ -805,6 +805,8 @@ a simple example. For the complete API, see:
   Create a basic template for a Go build.
 * `--meson`:
   Create a basic template for a Meson-style build.
+* `--python`:
+  Create a basic template for a Python build.
 * `--no-fetch`:
   Homebrew will not download *`URL`* to the cache and will thus not add its SHA-256 to the formula for you, nor will it check the GitHub API for GitHub projects (to fill out its description and homepage).
 * `--HEAD`:

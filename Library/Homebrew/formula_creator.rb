@@ -85,6 +85,10 @@ module Homebrew
         #                https://rubydoc.brew.sh/Formula
         # PLEASE REMOVE ALL GENERATED COMMENTS BEFORE SUBMITTING YOUR PULL REQUEST!
         class #{Formulary.class_s(name)} < Formula
+        <% if mode == :python %>
+          include Language::Python::Virtualenv
+
+        <% end %>
           desc "#{desc}"
           homepage "#{homepage}"
         <% if head? %>
@@ -104,6 +108,8 @@ module Homebrew
         <% elsif mode == :meson %>
           depends_on "meson" => :build
           depends_on "ninja" => :build
+        <% elsif mode == :python %>
+          depends_on "python"
         <% elsif mode.nil? %>
           # depends_on "cmake" => :build
         <% end %>
@@ -126,6 +132,8 @@ module Homebrew
               system "ninja", "-v"
               system "ninja", "install", "-v"
             end
+        <% elsif mode == :python %>
+            virtualenv_install_with_resources
         <% else %>
             # Remove unrecognized options if warned by configure
             system "./configure", "--disable-debug",
@@ -134,7 +142,7 @@ module Homebrew
                                   "--prefix=\#{prefix}"
             # system "cmake", ".", *std_cmake_args
         <% end %>
-        <% if mode != :meson and mode != :go %>
+        <% if mode != :meson and mode != :go and mode != :python %>
             system "make", "install" # if this fails, try separate make/make install steps
         <% end %>
           end
