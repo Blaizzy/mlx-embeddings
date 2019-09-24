@@ -23,8 +23,8 @@ module Homebrew
              description: "Create a basic template for an Autotools-style build."
       switch "--cmake",
              description: "Create a basic template for a CMake-style build."
-      switch "--go-mod",
-             description: "Create a basic template for a Go-Modules-style build."
+      switch "--go",
+             description: "Create a basic template for a Go build."
       switch "--meson",
              description: "Create a basic template for a Meson-style build."
       switch "--no-fetch",
@@ -42,7 +42,7 @@ module Homebrew
       switch :force
       switch :verbose
       switch :debug
-      conflicts "--autotools", "--cmake", "--go-mod", "--meson"
+      conflicts "--autotools", "--cmake", "--go", "--meson"
     end
   end
 
@@ -75,8 +75,8 @@ module Homebrew
       :autotools
     elsif args.meson?
       :meson
-    elsif args.go_mod?
-      :go_mod
+    elsif args.go?
+      :go
     end
 
     if fc.name.nil? || fc.name.strip.empty?
