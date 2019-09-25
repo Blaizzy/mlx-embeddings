@@ -27,6 +27,8 @@ module Homebrew
              description: "Create a basic template for a Go build."
       switch "--meson",
              description: "Create a basic template for a Meson-style build."
+      switch "--python",
+             description: "Create a basic template for a Python build."
       switch "--no-fetch",
              description: "Homebrew will not download <URL> to the cache and will thus not add its SHA-256 "\
                           "to the formula for you, nor will it check the GitHub API for GitHub projects "\
@@ -42,7 +44,7 @@ module Homebrew
       switch :force
       switch :verbose
       switch :debug
-      conflicts "--autotools", "--cmake", "--go", "--meson"
+      conflicts "--autotools", "--cmake", "--go", "--meson", "--python"
     end
   end
 
@@ -77,6 +79,8 @@ module Homebrew
       :meson
     elsif args.go?
       :go
+    elsif args.python?
+      :python
     end
 
     if fc.name.nil? || fc.name.strip.empty?
