@@ -230,5 +230,10 @@ describe Homebrew::CLI::Parser do
       parser.parse(["--foo", "--bar=value", "-v", "-s", "a", "b", "cdefg"])
       expect(Homebrew.args.flags_only).to eq %w[--foo --bar=value --verbose]
     end
+
+    it "#passthrough" do
+      parser.parse(["--foo", "--bar=value", "-v", "-s", "a", "b", "cdefg"])
+      expect(Homebrew.args.passthrough).to eq %w[--foo --bar=value -s]
+    end
   end
 end

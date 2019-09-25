@@ -21,16 +21,14 @@ module Homebrew
       end
 
       def cli_args
-        return @cli_args unless @cli_args.nil?
+        return @cli_args if @cli_args
 
         @cli_args = []
         processed_options.each do |short, long|
           option = long || short
           switch = "#{option_to_name(option)}?".to_sym
           flag = option_to_name(option).to_sym
-          if @table[switch].instance_of? TrueClass
-            @cli_args << option
-          elsif @table[flag].instance_of? TrueClass
+          if @table[switch] == true || @table[flag] == true
             @cli_args << option
           elsif @table[flag].instance_of? String
             @cli_args << option + "=" + @table[flag]
@@ -47,6 +45,10 @@ module Homebrew
 
       def flags_only
         @flags_only ||= cli_args.select { |arg| arg.start_with?("--") }
+      end
+
+      def passthrough
+        options_only - CLI::Parser.global_options.values.map(&:first).flatten
       end
     end
   end

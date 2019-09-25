@@ -25,7 +25,6 @@ module Homebrew
     raise "`brew cat` doesn't support multiple arguments" if args.remaining.size > 1
 
     cd HOMEBREW_REPOSITORY
-    cat_args = Homebrew.args.options_only - CLI::Parser.global_options.values.map(&:first).flatten
-    safe_system "cat", formulae.first.path, *cat_args
+    safe_system "cat", formulae.first.path, *Homebrew.args.passthrough
   end
 end
