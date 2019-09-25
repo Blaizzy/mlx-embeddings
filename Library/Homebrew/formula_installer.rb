@@ -574,7 +574,7 @@ class FormulaInstaller
     end
 
     tab_tap = tab.source["tap"]
-    if df.tap.to_s != tab_tap
+    if tab_tap.present? && df.tap.present? && df.tap.to_s != tab_tap.to_s
       odie <<~EOS
         #{df} is already installed from #{tab_tap}!
         Please `brew uninstall #{df}` first."
