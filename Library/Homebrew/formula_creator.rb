@@ -108,6 +108,8 @@ module Homebrew
         <% elsif mode == :meson %>
           depends_on "meson" => :build
           depends_on "ninja" => :build
+        <% elsif mode == :perl %>
+          uses_from_macos "perl"
         <% elsif mode == :python %>
           depends_on "python"
         <% elsif mode == :rust %>
@@ -116,8 +118,8 @@ module Homebrew
           # depends_on "cmake" => :build
         <% end %>
 
-        <% if mode == :python %>
-          # Additional Python dependency
+        <% if mode == :perl || mode == :python %>
+          # Additional dependency
           # resource "" do
           #   url ""
           #   sha256 ""
@@ -142,6 +144,26 @@ module Homebrew
               system "ninja", "-v"
               system "ninja", "install", "-v"
             end
+        <% elsif mode == :perl %>
+            ENV.prepend_create_path "PERL5LIB", libexec/"lib/perl5"
+            ENV.prepend_path "PERL5LIB", libexec/"lib"
+
+            # Stage additional dependency (Makefile.PL style)
+            # resource("").stage do
+            #   system "perl", "Makefile.PL", "INSTALL_BASE=\#{libexec}"
+            #   system "make"
+            #   system "make", "install"
+            # end
+
+            # Stage additional dependency (Build.PL style)
+            # resource("").stage do
+            #   system "perl", "Build.PL", "--install_base", libexec
+            #   system "./Build"
+            #   system "./Build", "install"
+            # end
+
+            bin.install name
+            bin.env_script_all_files(libexec/"bin", :PERL5LIB => ENV["PERL5LIB"])
         <% elsif mode == :python %>
             virtualenv_install_with_resources
         <% elsif mode == :rust %>
@@ -154,7 +176,7 @@ module Homebrew
                                   "--prefix=\#{prefix}"
             # system "cmake", ".", *std_cmake_args
         <% end %>
-        <% if mode == :autotools or mode == :cmake %>
+        <% if mode == :autotools || mode == :cmake %>
             system "make", "install" # if this fails, try separate make/make install steps
         <% end %>
           end

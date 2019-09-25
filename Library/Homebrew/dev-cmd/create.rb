@@ -27,6 +27,8 @@ module Homebrew
              description: "Create a basic template for a Go build."
       switch "--meson",
              description: "Create a basic template for a Meson-style build."
+      switch "--perl",
+             description: "Create a basic template for a Perl build."
       switch "--python",
              description: "Create a basic template for a Python build."
       switch "--rust",
@@ -46,7 +48,7 @@ module Homebrew
       switch :force
       switch :verbose
       switch :debug
-      conflicts "--autotools", "--cmake", "--go", "--meson", "--python", "--rust"
+      conflicts "--autotools", "--cmake", "--go", "--meson", "--perl", "--python", "--rust"
     end
   end
 
@@ -81,6 +83,8 @@ module Homebrew
       :meson
     elsif args.go?
       :go
+    elsif args.perl?
+      :perl
     elsif args.python?
       :python
     elsif args.rust?
