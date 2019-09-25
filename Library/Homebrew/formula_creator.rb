@@ -114,6 +114,14 @@ module Homebrew
           # depends_on "cmake" => :build
         <% end %>
 
+        <% if mode == :python %>
+          # Additional Python dependency
+          # resource "" do
+          #   url ""
+          #   sha256 ""
+          # end
+
+        <% end %>
           def install
             # ENV.deparallelize  # if your formula fails when building in parallel
         <% if mode == :cmake %>
