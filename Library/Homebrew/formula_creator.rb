@@ -150,7 +150,7 @@ module Homebrew
                                   "--prefix=\#{prefix}"
             # system "cmake", ".", *std_cmake_args
         <% end %>
-        <% if mode != :meson and mode != :go and mode != :python %>
+        <% if mode == :autotools or mode == :cmake %>
             system "make", "install" # if this fails, try separate make/make install steps
         <% end %>
           end
