@@ -110,6 +110,8 @@ module Homebrew
           depends_on "ninja" => :build
         <% elsif mode == :python %>
           depends_on "python"
+        <% elsif mode == :rust %>
+          depends_on "rust" => :build
         <% elsif mode.nil? %>
           # depends_on "cmake" => :build
         <% end %>
@@ -142,6 +144,8 @@ module Homebrew
             end
         <% elsif mode == :python %>
             virtualenv_install_with_resources
+        <% elsif mode == :rust %>
+            system "cargo", "install", "--root", prefix, "--path", "."
         <% else %>
             # Remove unrecognized options if warned by configure
             system "./configure", "--disable-debug",
