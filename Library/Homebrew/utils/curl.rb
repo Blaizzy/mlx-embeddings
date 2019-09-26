@@ -76,6 +76,23 @@ def curl_download(*args, to: nil, **options)
   end
 
   curl("--location", "--remote-time", "--continue-at", continue_at.to_s, "--output", destination, *args, **options)
+rescue ErrorDuringExecution => e
+  # This is a workaround for https://github.com/curl/curl/issues/1618.
+  raise unless e.status.exitstatus == 56 # Unexpected EOF
+
+  raise if args.include?("--http1.1")
+
+  out = curl_output("-V").stdout
+
+  # If `curl` doesn't support HTTP2, the exception is unrelated to this bug.
+  raise unless out.include?("HTTP2")
+
+  # The bug is fixed in `curl` >= 7.60.0.
+  curl_version = out[/curl (\d+(\.\d+)+)/, 1]
+  raise if Gem::Version.new(curl_version) >= Gem::Version.new("7.60.0")
+
+  args << "--http1.1"
+  retry
 end
 
 def curl_output(*args, secrets: [], **options)
