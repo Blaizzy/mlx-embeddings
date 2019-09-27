@@ -8,7 +8,8 @@ module RuboCop
       # If the first argument of describe is a class, the class is exposed to
       # each example via described_class.
       #
-      # This cop can be configured using the `EnforcedStyle` option
+      # This cop can be configured using the `EnforcedStyle` and `SkipBlocks`
+      # options.
       #
       # @example `EnforcedStyle: described_class`
       #   # bad
@@ -32,6 +33,27 @@ module RuboCop
       #     subject { MyClass.do_something }
       #   end
       #
+      # There's a known caveat with rspec-rails's `controller` helper that
+      # runs its block in a different context, and `described_class` is not
+      # available to it. `SkipBlocks` option excludes detection in all
+      # non-RSpec related blocks.
+      #
+      # To narrow down this setting to only a specific directory, it is
+      # possible to use an overriding configuration file local to that
+      # directory.
+      #
+      # @example `SkipBlocks: true`
+      #   # spec/controllers/.rubocop.yml
+      #   # RSpec/DescribedClass:
+      #   #   SkipBlocks: true
+      #
+      #   # acceptable
+      #   describe MyConcern do
+      #     controller(ApplicationController) do
+      #       include MyConcern
+      #     end
+      #   end
+      #
       class DescribedClass < Cop
         include ConfigurableEnforcedStyle
 
@@ -49,6 +71,10 @@ module RuboCop
 
         def_node_matcher :described_constant, <<-PATTERN
           (block (send _ :describe $(const ...) ...) (args) $_)
+        PATTERN
+
+        def_node_search :contains_described_class?, <<-PATTERN
+          (send nil? :described_class)
         PATTERN
 
         def on_block(node)
@@ -119,6 +145,8 @@ module RuboCop
 
         def offensive_described_class?(node)
           return unless node.const_type?
+          # E.g. `described_class::CONSTANT`
+          return if contains_described_class?(node)
 
           nearest_described_class, = node.each_ancestor(:block)
             .map { |ancestor| described_constant(ancestor) }.find(&:itself)
