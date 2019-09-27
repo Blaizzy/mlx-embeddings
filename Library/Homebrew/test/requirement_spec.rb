@@ -39,7 +39,7 @@ describe Requirement do
   end
 
   describe "#fatal?" do
-    context "#fatal true is specified" do
+    describe "#fatal true is specified" do
       let(:klass) do
         Class.new(described_class) do
           fatal true
@@ -49,13 +49,13 @@ describe Requirement do
       it { is_expected.to be_fatal }
     end
 
-    context "#fatal is omitted" do
+    describe "#fatal is omitted" do
       it { is_expected.not_to be_fatal }
     end
   end
 
   describe "#satisfied?" do
-    context "#satisfy with block and build_env returns true" do
+    describe "#satisfy with block and build_env returns true" do
       let(:klass) do
         Class.new(described_class) do
           satisfy(build_env: false) do
@@ -67,7 +67,7 @@ describe Requirement do
       it { is_expected.to be_satisfied }
     end
 
-    context "#satisfy with block and build_env returns false" do
+    describe "#satisfy with block and build_env returns false" do
       let(:klass) do
         Class.new(described_class) do
           satisfy(build_env: false) do
@@ -79,7 +79,7 @@ describe Requirement do
       it { is_expected.not_to be_satisfied }
     end
 
-    context "#satisfy returns true" do
+    describe "#satisfy returns true" do
       let(:klass) do
         Class.new(described_class) do
           satisfy true
@@ -89,7 +89,7 @@ describe Requirement do
       it { is_expected.to be_satisfied }
     end
 
-    context "#satisfy returns false" do
+    describe "#satisfy returns false" do
       let(:klass) do
         Class.new(described_class) do
           satisfy false
@@ -99,7 +99,7 @@ describe Requirement do
       it { is_expected.not_to be_satisfied }
     end
 
-    context "#satisfy with block returning true and without :build_env" do
+    describe "#satisfy with block returning true and without :build_env" do
       let(:klass) do
         Class.new(described_class) do
           satisfy do
@@ -114,7 +114,7 @@ describe Requirement do
       end
     end
 
-    context "#satisfy with block returning true and :build_env set to false" do
+    describe "#satisfy with block returning true and :build_env set to false" do
       let(:klass) do
         Class.new(described_class) do
           satisfy(build_env: false) do
@@ -129,7 +129,7 @@ describe Requirement do
       end
     end
 
-    context "#satisfy with block returning path and without :build_env" do
+    describe "#satisfy with block returning path and without :build_env" do
       let(:klass) do
         Class.new(described_class) do
           satisfy do
@@ -153,7 +153,7 @@ describe Requirement do
       it { is_expected.to be_a_build_requirement }
     end
 
-    context "#build omitted" do
+    describe "#build omitted" do
       it { is_expected.not_to be_a_build_requirement }
     end
   end
