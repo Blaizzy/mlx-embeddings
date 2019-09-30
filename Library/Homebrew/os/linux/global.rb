@@ -2,8 +2,8 @@
 
 module Homebrew
   DEFAULT_PREFIX ||= if ENV["HOMEBREW_FORCE_HOMEBREW_ON_LINUX"]
-    "/usr/local"
+    HOMEBREW_DEFAULT_PREFIX
   else
-    "/home/linuxbrew/.linuxbrew"
+    LINUXBREW_DEFAULT_PREFIX
   end.freeze
 end

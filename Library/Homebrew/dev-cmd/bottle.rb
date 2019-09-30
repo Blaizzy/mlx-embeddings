@@ -16,7 +16,7 @@ BOTTLE_ERB = <<-EOS.freeze
     <% if !root_url.start_with?(HOMEBREW_BOTTLE_DEFAULT_DOMAIN) %>
     root_url "<%= root_url %>"
     <% end %>
-    <% if ![Homebrew::DEFAULT_PREFIX, "/usr/local"].include?(prefix) %>
+    <% if ![HOMEBREW_DEFAULT_PREFIX, LINUXBREW_DEFAULT_PREFIX].include?(prefix) %>
     prefix "<%= prefix %>"
     <% end %>
     <% if cellar.is_a? Symbol %>

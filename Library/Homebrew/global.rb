@@ -52,6 +52,9 @@ HOMEBREW_USER_AGENT_FAKE_SAFARI =
 HOMEBREW_BOTTLE_DEFAULT_DOMAIN = ENV["HOMEBREW_BOTTLE_DEFAULT_DOMAIN"]
 HOMEBREW_BOTTLE_DOMAIN = ENV["HOMEBREW_BOTTLE_DOMAIN"]
 
+HOMEBREW_DEFAULT_PREFIX = "/usr/local"
+LINUXBREW_DEFAULT_PREFIX = "/home/linuxbrew/.linuxbrew"
+
 require "fileutils"
 require "os"
 require "os/global"
@@ -59,7 +62,7 @@ require "os/global"
 module Homebrew
   extend FileUtils
 
-  DEFAULT_PREFIX ||= "/usr/local"
+  DEFAULT_PREFIX ||= HOMEBREW_DEFAULT_PREFIX
   DEFAULT_CELLAR = "#{DEFAULT_PREFIX}/Cellar"
   DEFAULT_REPOSITORY = "#{DEFAULT_PREFIX}/Homebrew"
 
