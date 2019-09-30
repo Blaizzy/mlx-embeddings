@@ -1077,6 +1077,9 @@ Note that environment variables must have a value set to be detected. For exampl
     to retrieve these access credentials from AWS). If they are not set,
     the `S3` download strategy will download with a public (unsigned) URL.
 
+  * `HOMEBREW_BAT`:
+    If set, Homebrew will use `bat` for the `brew cat` command.
+
   * `HOMEBREW_BOTTLE_DOMAIN`:
     By default, Homebrew uses `https://homebrew.bintray.com/` as its download
     mirror for bottles. If set, instructs Homebrew to instead use the specified

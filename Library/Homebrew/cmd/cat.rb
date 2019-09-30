@@ -25,7 +25,11 @@ module Homebrew
     raise "`brew cat` doesn't support multiple arguments" if args.remaining.size > 1
 
     cd HOMEBREW_REPOSITORY
-    pager = ENV["HOMEBREW_VISUAL"] || "cat"
+    pager = if ENV["HOMEBREW_BAT"].nil?
+      "cat"
+    else
+      "#{HOMEBREW_PREFIX}/bin/bat"
+    end
     safe_system pager, formulae.first.path, *Homebrew.args.passthrough
   end
 end
