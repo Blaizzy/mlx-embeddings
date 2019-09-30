@@ -479,7 +479,6 @@ class FormulaInstaller
         dependent,
         inherited_options.fetch(dependent.name, []),
       )
-      pour_bottle = true if install_bottle_for?(dep.to_formula, build)
 
       if dep.prune_from_option?(build)
         Dependency.prune
@@ -491,6 +490,8 @@ class FormulaInstaller
         Dependency.prune
       elsif dep.satisfied?(inherited_options[dep.name])
         Dependency.skip
+      else
+        pour_bottle ||= install_bottle_for?(dep.to_formula, build)
       end
     end
 
