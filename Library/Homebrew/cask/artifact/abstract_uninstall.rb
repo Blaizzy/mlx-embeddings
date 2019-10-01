@@ -362,6 +362,8 @@ module Cask
       def trash_paths(*paths, command: nil, **_)
         return if paths.empty?
 
+        raise CaskError, "Some files are owned by `root` and cannot be moved to the user's Trash." unless paths.all?(&:writable?)
+
         result = command.run!("/usr/bin/swift", args: [TRASH_SCRIPT, *paths])
 
         # Remove AppleScript's automatic newline.
