@@ -19,6 +19,8 @@ def curl_args(*extra_args, show_output: false, user_agent: :default)
   # do not load .curlrc unless requested (must be the first argument)
   args << "-q" unless ENV["HOMEBREW_CURLRC"]
 
+  args << "--globoff"
+
   args << "--show-error"
 
   args << "--user-agent" << case user_agent
