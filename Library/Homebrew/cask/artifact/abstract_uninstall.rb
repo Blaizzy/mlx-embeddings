@@ -362,9 +362,13 @@ module Cask
       def trash_paths(*paths, command: nil, **_)
         return if paths.empty?
 
-        raise CaskError, "Some files cannot be moved to the user's Trash." unless paths.all?(&:writable?)
+        trashable, untrashable = paths.split(&:writable?)
+        unless untrashable.empty?
+          opoo "These files cannot be moved to the user's Trash: "
+          puts untrashable
+        end
 
-        result = command.run!("/usr/bin/swift", args: [TRASH_SCRIPT, *paths])
+        result = command.run!("/usr/bin/swift", args: [TRASH_SCRIPT, *trashable])
 
         # Remove AppleScript's automatic newline.
         result.tap { |r| r.stdout.sub!(/\n$/, "") }
