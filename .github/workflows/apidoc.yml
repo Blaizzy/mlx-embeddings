@@ -4,6 +4,7 @@ on:
     branches: master
 jobs:
   apidoc:
+    if: github.repository == 'Homebrew/brew'
     runs-on: ubuntu-latest
     steps:
       - uses: Homebrew/actions/git-ssh@master
