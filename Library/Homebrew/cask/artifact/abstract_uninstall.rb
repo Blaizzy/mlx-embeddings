@@ -362,7 +362,7 @@ module Cask
       def trash_paths(*paths, command: nil, **_)
         return if paths.empty?
 
-        trashable, untrashable = paths.split(&:writable?)
+        trashable, untrashable = paths.partition(&:writable?)
         unless untrashable.empty?
           opoo "These files cannot be moved to the user's Trash: "
           puts untrashable
