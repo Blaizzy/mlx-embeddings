@@ -221,9 +221,14 @@ module Cask
         usage
 
         return if @command.nil?
-        return if @command == "help" && @args.empty?
 
-        raise ArgumentError, "help does not take arguments."
+        if @command == "help"
+          return if @args.empty?
+
+          raise ArgumentError, "help does not take arguments." if @args.length
+        end
+
+        raise ArgumentError, "brew cask does not recognise this command"
       end
 
       def purpose
