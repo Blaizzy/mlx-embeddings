@@ -304,6 +304,15 @@ a list of who published what recently).
 Once you've pushed to `origin`, there's no going back: you're a
 maintainer now, you can't force-push to fix your mistakes!
 
+## Creating new Linux specific formula
+
+Make a PR to `Homebrew/linuxbrew-core` containing one commit named like this: `name (new formula)`. Keep only one commit in this PR, squash and force push to your branch if needed. Include a comment: `# tag "linuxbrew"` in the formula after the `url` stanza, so maintainers can easily find Linux only formulae.
+For `brew pull` to be successful when new formulae are added, we have to insert an empty bottle block into the formula code. This usually goes after the `linuxbrew` tag.
+```ruby
+bottle do
+end
+```
+
 ## Common build failures and how to handle them
 
 ### Bottling errors
