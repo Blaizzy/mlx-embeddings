@@ -128,17 +128,17 @@ module Cask
 
         if result.status.success?
           puts none_string
-        elsif result.stderr.match? "ImportError: No module named pkg_resources"
+        elsif result.stderr.include? "ImportError: No module named pkg_resources"
           result = system_command "/usr/bin/python", "--version"
 
-          if result.stdout.match? "Python 2.7"
+          if result.stdout.include? "Python 2.7"
             add_error "Your Python installation has a broken version of setuptools."
             add_error "To fix, reinstall macOS or run 'sudo /usr/bin/python -m pip install -I setuptools'."
           else
             add_error "The system Python version is wrong."
             add_error "To fix, run 'defaults write com.apple.versioner.python Version 2.7'."
           end
-        elsif result.stderr.match? "pkg_resources.DistributionNotFound"
+        elsif result.stderr.include? "pkg_resources.DistributionNotFound"
           add_error "Your Python installation is unable to find xattr."
         else
           add_error "unknown xattr error: #{result.stderr.first}"
