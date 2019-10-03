@@ -337,7 +337,7 @@ EOS
 
   if [[ -z "$HOMEBREW_AUTO_UPDATE_SECS" ]]
   then
-    HOMEBREW_AUTO_UPDATE_SECS="60"
+    HOMEBREW_AUTO_UPDATE_SECS="300"
   fi
 
   # check permissions
@@ -451,12 +451,6 @@ EOS
     # origin branch name is, and use that. If not set, fall back to "master".
     # the refspec ensures that the default upstream branch gets updated
     (
-      if [[ -n "$HOMEBREW_UPDATE_PREINSTALL" ]]
-      then
-        # Skip taps checked/fetched recently
-        [[ -n "$(find "$DIR/.git/FETCH_HEAD" -type f -mtime -"${HOMEBREW_AUTO_UPDATE_SECS}"s 2>/dev/null)" ]] && exit
-      fi
-
       UPSTREAM_REPOSITORY_URL="$(git config remote.origin.url)"
       if [[ "$UPSTREAM_REPOSITORY_URL" = "https://github.com/"* ]]
       then
