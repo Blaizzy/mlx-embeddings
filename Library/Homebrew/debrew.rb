@@ -88,7 +88,7 @@ module Debrew
 
   def self.debrew
     @active = true
-    Object.send(:include, Raise)
+    Object.include Raise
 
     begin
       yield

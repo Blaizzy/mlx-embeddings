@@ -19,15 +19,15 @@ module RuboCop
 
         COMMENT_FORMAT = /# [^ ]+ was verified as official when first introduced to the cask/.freeze
 
-        MSG_NO_MATCH = "`%{url}` does not match `%{full_url}`"
+        MSG_NO_MATCH = "`%<url>s` does not match `%<full_url>s`"
 
-        MSG_MISSING = ("`%{domain}` does not match `%{homepage}`, a comment has to be added " \
+        MSG_MISSING = ("`%<domain>s` does not match `%<homepage>s`, a comment has to be added " \
                       "above the `url` stanza. For details, see " + REFERENCE_URL).freeze
 
-        MSG_WRONG_FORMAT = ("`%{comment}` does not match the expected comment format. " \
+        MSG_WRONG_FORMAT = ("`%<comment>s` does not match the expected comment format. " \
                            "For details, see " + REFERENCE_URL).freeze
 
-        MSG_UNNECESSARY = "The URL's domain `%{domain}` matches the homepage `%{homepage}`, " \
+        MSG_UNNECESSARY = "The URL's domain `%<domain>s` matches the homepage `%<homepage>s`, " \
                           "the comment above the `url` stanza is unnecessary"
 
         def on_cask(cask_block)

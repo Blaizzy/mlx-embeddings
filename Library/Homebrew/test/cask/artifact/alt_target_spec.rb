@@ -5,10 +5,8 @@ describe Cask::Artifact::App, :cask do
     let(:cask) { Cask::CaskLoader.load(cask_path("with-alt-target")) }
 
     let(:install_phase) {
-      lambda do
-        cask.artifacts.select { |a| a.is_a?(described_class) }.each do |artifact|
-          artifact.install_phase(command: NeverSudoSystemCommand, force: false)
-        end
+      cask.artifacts.select { |a| a.is_a?(described_class) }.each do |artifact|
+        artifact.install_phase(command: NeverSudoSystemCommand, force: false)
       end
     }
 
@@ -23,7 +21,7 @@ describe Cask::Artifact::App, :cask do
       expect(source_path).to be_a_directory
       expect(target_path).not_to exist
 
-      install_phase.call
+      install_phase
 
       expect(target_path).to be_a_directory
       expect(source_path).not_to exist
@@ -44,7 +42,7 @@ describe Cask::Artifact::App, :cask do
         appsubdir = cask.staged_path.join("subdir").tap(&:mkpath)
         FileUtils.mv(source_path, appsubdir)
 
-        install_phase.call
+        install_phase
 
         expect(target_path).to be_a_directory
         expect(appsubdir.join("Caffeine.app")).not_to exist
@@ -55,7 +53,7 @@ describe Cask::Artifact::App, :cask do
       staged_app_copy = source_path.sub("Caffeine.app", "Caffeine Deluxe.app")
       FileUtils.cp_r source_path, staged_app_copy
 
-      install_phase.call
+      install_phase
 
       expect(target_path).to be_a_directory
       expect(source_path).not_to exist
@@ -67,7 +65,8 @@ describe Cask::Artifact::App, :cask do
     it "avoids clobbering an existing app by moving over it" do
       target_path.mkpath
 
-      expect(install_phase).to raise_error(Cask::CaskError, "It seems there is already an App at '#{target_path}'.")
+      expect { install_phase }
+        .to raise_error(Cask::CaskError, "It seems there is already an App at '#{target_path}'.")
 
       expect(source_path).to be_a_directory
       expect(target_path).to be_a_directory

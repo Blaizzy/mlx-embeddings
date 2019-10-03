@@ -40,7 +40,7 @@ class Messages
 
     oh1 "Installation times"
     install_times.each do |t|
-      puts format("%-20s %10.3f s", t[:formula], t[:time])
+      puts format("%<formula>-20s %<time>10.3f s", t)
     end
   end
 end

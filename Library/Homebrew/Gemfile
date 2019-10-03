@@ -3,7 +3,7 @@
 source "https://rubygems.org"
 
 # installed gems
-gem "coveralls", require: false
+gem "coveralls", "~> 0.8", require: false
 gem "parallel_tests"
 gem "ronn", require: false
 gem "rspec"
@@ -12,7 +12,6 @@ gem "rspec-retry", require: false
 gem "rspec-wait", require: false
 gem "rubocop"
 gem "simplecov", require: false
-gem "simplecov-cobertura", require: false
 
 # vendored gems
 gem "activesupport"

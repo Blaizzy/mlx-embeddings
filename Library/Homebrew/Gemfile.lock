@@ -66,7 +66,7 @@ GEM
       rspec-mocks (~> 3.8.0)
     rspec-core (3.8.2)
       rspec-support (~> 3.8.0)
-    rspec-expectations (3.8.4)
+    rspec-expectations (3.8.5)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.8.0)
     rspec-its (1.3.0)
@@ -80,14 +80,14 @@ GEM
     rspec-support (3.8.3)
     rspec-wait (0.0.9)
       rspec (>= 3, < 4)
-    rubocop (0.74.0)
+    rubocop (0.75.0)
       jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
       parser (>= 2.6)
       rainbow (>= 2.2.2, < 4.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 1.7)
-    rubocop-performance (1.4.1)
+    rubocop-performance (1.5.0)
       rubocop (>= 0.71.0)
     rubocop-rspec (1.36.0)
       rubocop (>= 0.68.1)
@@ -97,8 +97,6 @@ GEM
       docile (~> 1.1)
       json (>= 1.8, < 3)
       simplecov-html (~> 0.10.0)
-    simplecov-cobertura (1.3.1)
-      simplecov (~> 0.8)
     simplecov-html (0.10.2)
     term-ansicolor (1.7.1)
       tins (~> 1.0)
@@ -120,7 +118,7 @@ DEPENDENCIES
   activesupport
   backports
   concurrent-ruby
-  coveralls
+  coveralls (~> 0.8)
   mechanize
   parallel_tests
   plist
@@ -134,7 +132,6 @@ DEPENDENCIES
   rubocop-rspec
   ruby-macho
   simplecov
-  simplecov-cobertura
 
 BUNDLED WITH
-   2.0.1
+   2.0.2

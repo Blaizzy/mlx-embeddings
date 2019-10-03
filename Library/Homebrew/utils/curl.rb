@@ -60,7 +60,7 @@ def curl_download(*args, to: nil, **options)
 
   range_stdout = curl_output("--location", "--range", "0-1",
                              "--dump-header", "-",
-                             "--write-out", "%{http_code}",
+                             "--write-out", "%\{http_code}",
                              "--output", "/dev/null", *args, **options).stdout
   headers, _, http_status = range_stdout.partition("\r\n\r\n")
 

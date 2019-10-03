@@ -94,9 +94,8 @@ describe Homebrew::Diagnostic::Checks do
       file = "#{path}/foo-config"
       FileUtils.touch file
       FileUtils.chmod 0755, file
-      ENV["HOMEBREW_PATH"] =
-        ENV["PATH"] =
-          "#{path}#{File::PATH_SEPARATOR}#{ENV["PATH"]}"
+      ENV["HOMEBREW_PATH"] = ENV["PATH"] =
+        "#{path}#{File::PATH_SEPARATOR}#{ENV["PATH"]}"
 
       expect(subject.check_for_config_scripts)
         .to match('"config" scripts exist')
