@@ -241,6 +241,8 @@ class Tap
 
     if official? && DEPRECATED_OFFICIAL_TAPS.include?(repo)
       odie "#{name} was deprecated. This tap is now empty as all its formulae were migrated."
+    elsif user == "caskroom"
+      odie "#{name} was moved. Tap homebrew/cask-#{repo} instead."
     end
 
     if installed? && force_auto_update.nil?
