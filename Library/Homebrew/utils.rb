@@ -67,7 +67,7 @@ module Homebrew
     at_exit do
       col_width = [$times.keys.map(&:size).max.to_i + 2, 15].max
       $times.sort_by { |_k, v| v }.each do |method, time|
-        puts format("%-*s %0.4f sec", col_width, "#{method}:", time)
+        puts format("%<method>-#{col_width}s %<time>0.4f sec", method: "#{method}:", time: time)
       end
     end
   end
@@ -415,7 +415,7 @@ module Kernel
     if ((size * 10).to_i % 10).zero?
       "#{size.to_i}#{unit}"
     else
-      "#{format("%.1f", size)}#{unit}"
+      "#{format("%<size>.1f", size: size)}#{unit}"
     end
   end
 

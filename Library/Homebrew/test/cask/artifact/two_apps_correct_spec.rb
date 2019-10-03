@@ -5,10 +5,8 @@ describe Cask::Artifact::App, :cask do
     let(:cask) { Cask::CaskLoader.load(cask_path("with-two-apps-correct")) }
 
     let(:install_phase) {
-      lambda do
-        cask.artifacts.select { |a| a.is_a?(described_class) }.each do |artifact|
-          artifact.install_phase(command: NeverSudoSystemCommand, force: false)
-        end
+      cask.artifacts.select { |a| a.is_a?(described_class) }.each do |artifact|
+        artifact.install_phase(command: NeverSudoSystemCommand, force: false)
       end
     }
 
@@ -23,7 +21,7 @@ describe Cask::Artifact::App, :cask do
     end
 
     it "installs both apps using the proper target directory" do
-      install_phase.call
+      install_phase
 
       expect(target_path_mini).to be_a_directory
       expect(source_path_mini).not_to exist
@@ -36,7 +34,7 @@ describe Cask::Artifact::App, :cask do
       let(:cask) { Cask::CaskLoader.load(cask_path("with-two-apps-subdir")) }
 
       it "installs both apps using the proper target directory" do
-        install_phase.call
+        install_phase
 
         expect(target_path_mini).to be_a_directory
         expect(source_path_mini).not_to exist
@@ -49,7 +47,7 @@ describe Cask::Artifact::App, :cask do
     it "only uses apps when they are specified" do
       FileUtils.cp_r source_path_mini, source_path_mini.sub("Caffeine Mini.app", "Caffeine Deluxe.app")
 
-      install_phase.call
+      install_phase
 
       expect(target_path_mini).to be_a_directory
       expect(source_path_mini).not_to exist
@@ -63,7 +61,7 @@ describe Cask::Artifact::App, :cask do
         target_path_mini.mkpath
 
         expect {
-          expect(install_phase).to output(<<~EOS).to_stdout
+          expect { install_phase }.to output(<<~EOS).to_stdout
             ==> Moving App 'Caffeine Pro.app' to '#{target_path_pro}'
           EOS
         }.to raise_error(Cask::CaskError, "It seems there is already an App at '#{target_path_mini}'.")
@@ -77,7 +75,7 @@ describe Cask::Artifact::App, :cask do
         target_path_pro.mkpath
 
         expect {
-          expect(install_phase).to output(<<~EOS).to_stdout
+          expect { install_phase }.to output(<<~EOS).to_stdout
             ==> Moving App 'Caffeine Mini.app' to '#{target_path_mini}'
           EOS
         }.to raise_error(Cask::CaskError, "It seems there is already an App at '#{target_path_pro}'.")

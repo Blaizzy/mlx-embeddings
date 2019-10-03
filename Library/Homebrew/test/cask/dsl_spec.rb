@@ -14,10 +14,8 @@ describe Cask::DSL, :cask do
 
   describe "when a Cask includes an unknown method" do
     let(:attempt_unknown_method) {
-      lambda do
-        Cask::Cask.new("unexpected-method-cask") do
-          future_feature :not_yet_on_your_machine
-        end
+      Cask::Cask.new("unexpected-method-cask") do
+        future_feature :not_yet_on_your_machine
       end
     }
 
@@ -32,13 +30,13 @@ describe Cask::DSL, :cask do
       EOS
 
       expect {
-        expect(attempt_unknown_method).not_to output.to_stdout
+        expect { attempt_unknown_method }.not_to output.to_stdout
       }.to output(expected).to_stderr
     end
 
     it "will simply warn, not throw an exception" do
       expect {
-        attempt_unknown_method.call
+        attempt_unknown_method
       }.not_to raise_error
     end
   end

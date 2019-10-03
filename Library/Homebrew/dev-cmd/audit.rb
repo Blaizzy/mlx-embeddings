@@ -254,7 +254,7 @@ module Homebrew
       wanted_mode = 0100644 & ~File.umask
       actual_mode = formula.path.stat.mode
       unless actual_mode == wanted_mode
-        problem format("Incorrect file permissions (%03<actual>o): chmod %03<wanted>o %{path}",
+        problem format("Incorrect file permissions (%03<actual>o): chmod %03<wanted>o %<path>s",
                        actual: actual_mode & 0777,
                        wanted: wanted_mode & 0777,
                        path:   formula.path)
