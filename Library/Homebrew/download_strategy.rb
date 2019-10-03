@@ -550,6 +550,7 @@ class SubversionDownloadStrategy < VCSDownloadStrategy
     # This saves on bandwidth and will have a similar effect to verifying the
     # cache as it will make any changes to get the right revision.
     args = []
+    args << "--quiet" unless ARGV.verbose?
 
     if revision
       ohai "Checking out #{@ref}"
