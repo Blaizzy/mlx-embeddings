@@ -1068,7 +1068,7 @@ Note that environment variables must have a value set to be detected. For exampl
   * `HOMEBREW_AUTO_UPDATE_SECS`:
     If set, Homebrew will only check for autoupdates once per this seconds interval.
 
-    *Default:* `60`.
+    *Default:* `300`.
 
   * `HOMEBREW_AWS_ACCESS_KEY_ID`, `HOMEBREW_AWS_SECRET_ACCESS_KEY`:
     When using the `S3` download strategy, Homebrew will look in
