@@ -364,8 +364,8 @@ module Cask
 
         trashable, untrashable = paths.partition(&:writable?)
         unless untrashable.empty?
-          opoo "These files cannot be moved to the user's Trash: "
-          puts untrashable
+          opoo "These files cannot be moved to the user's Trash:"
+          $stderr.puts untrashable
         end
 
         result = command.run!("/usr/bin/swift", args: [TRASH_SCRIPT, *trashable])
