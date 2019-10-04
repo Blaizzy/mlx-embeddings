@@ -228,7 +228,7 @@ module Cask
           raise ArgumentError, "help does not take arguments." if @args.length
         end
 
-        raise ArgumentError, "brew cask does not recognise this command"
+        raise ArgumentError, "Unknown Cask command: #{command}"
       end
 
       def purpose
