@@ -8,6 +8,5 @@ cask 'with-uninstall-multi' do
   pkg 'MyFancyPkg/Fancy.pkg'
 
   uninstall rmdir: "#{TEST_TMPDIR}/empty_directory_path"
-
   uninstall delete: "#{TEST_TMPDIR}/empty_directory_path"
 end

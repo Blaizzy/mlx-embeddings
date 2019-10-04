@@ -11,7 +11,7 @@ cask 'with-zap' do
 
   zap script:     {
                     executable: 'MyFancyPkg/FancyUninstaller.tool',
-                    args:       %w[--please],
+                    args:       ['--please'],
                   },
       quit:       'my.fancy.package.app',
       login_item: 'Fancy',

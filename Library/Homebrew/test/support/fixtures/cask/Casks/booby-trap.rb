@@ -3,6 +3,6 @@ cask 'booby-trap' do
 
   url do
     # to be lazily evaluated
-    fail 'Boom'
+    raise 'Boom'
   end
 end

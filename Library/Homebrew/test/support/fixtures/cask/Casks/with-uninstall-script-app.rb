@@ -16,6 +16,6 @@ cask 'with-uninstall-script-app' do
 
   uninstall script: {
                       executable: "#{appdir}/MyFancyApp.app/uninstall.sh",
-                      sudo: false
+                      sudo:       false,
                     }
 end

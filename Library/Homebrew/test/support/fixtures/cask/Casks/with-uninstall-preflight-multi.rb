@@ -9,7 +9,6 @@ cask 'with-uninstall-preflight-multi' do
 
   uninstall_preflight do
   end
-
   uninstall_preflight do
   end
 end

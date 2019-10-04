@@ -3,6 +3,8 @@ inherit_from: ./.rubocop_shared.yml
 Cask/HomepageMatchesUrl:
   Description: 'Ensure that the homepage and url match, otherwise add a comment. More info at https://github.com/Homebrew/homebrew-cask/blob/master/doc/cask_language_reference/stanzas/url.md#when-url-and-homepage-hostnames-differ-add-a-comment'
   Enabled: true
+  Exclude:
+  - '**/test/support/fixtures/cask/Casks/**/*.rb'
 
 Cask/HomepageUrlTrailingSlash:
   Description: 'Ensure that the homepage url has a slash after the domain name.'

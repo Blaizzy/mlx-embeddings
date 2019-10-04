@@ -7,7 +7,7 @@ cask 'with-installable' do
 
   pkg 'MyFancyPkg/Fancy.pkg'
 
-  uninstall script:     { executable: 'MyFancyPkg/FancyUninstaller.tool', args: %w[--please] },
+  uninstall script:     { executable: 'MyFancyPkg/FancyUninstaller.tool', args: ['--please'] },
             quit:       'my.fancy.package.app',
             login_item: 'Fancy',
             delete:     [

@@ -9,7 +9,6 @@ cask 'with-preflight-multi' do
 
   preflight do
   end
-
   preflight do
   end
 end

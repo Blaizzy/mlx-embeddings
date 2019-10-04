@@ -9,7 +9,6 @@ cask 'with-postflight-multi' do
 
   postflight do
   end
-
   postflight do
   end
 end

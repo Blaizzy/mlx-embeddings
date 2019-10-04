@@ -5,5 +5,5 @@ cask 'with-non-executable-binary' do
   url "file://#{TEST_FIXTURE_DIR}/cask/naked_non_executable"
   homepage 'https://brew.sh/with-binary'
 
-  binary "naked_non_executable"
+  binary 'naked_non_executable'
 end
