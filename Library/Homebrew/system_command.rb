@@ -49,7 +49,8 @@ class SystemCommand
       end
     end
 
-    assert_success if must_succeed?
+    result = Result.new(command, @output, @status, secrets: @secrets)
+    result.assert_success! if must_succeed?
     result
   end
 
@@ -103,12 +104,6 @@ class SystemCommand
 
     askpass_flags = ENV.key?("SUDO_ASKPASS") ? ["-A"] : []
     ["/usr/bin/sudo", *askpass_flags, "-E", "--"]
-  end
-
-  def assert_success
-    return if @status.success?
-
-    raise ErrorDuringExecution.new(command, status: @status, output: @output, secrets: @secrets)
   end
 
   def expanded_args
@@ -166,18 +161,21 @@ class SystemCommand
     sources.each(&:close_read)
   end
 
-  def result
-    Result.new(command, @output, @status)
-  end
-
   class Result
     attr_accessor :command, :status, :exit_status
 
-    def initialize(command, output, status)
+    def initialize(command, output, status, secrets:)
       @command       = command
       @output        = output
       @status        = status
       @exit_status   = status.exitstatus
+      @secrets       = secrets
+    end
+
+    def assert_success!
+      return if @status.success?
+
+      raise ErrorDuringExecution.new(command, status: @status, output: @output, secrets: @secrets)
     end
 
     def stdout

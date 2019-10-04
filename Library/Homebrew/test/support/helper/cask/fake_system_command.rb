@@ -55,7 +55,7 @@ class FakeSystemCommand
     if response.respond_to?(:call)
       response.call(command_string, options)
     else
-      SystemCommand::Result.new(command, [[:stdout, response]], OpenStruct.new(exitstatus: 0))
+      SystemCommand::Result.new(command, [[:stdout, response]], OpenStruct.new(exitstatus: 0), secrets: [])
     end
   end
 

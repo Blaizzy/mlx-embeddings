@@ -4,7 +4,8 @@ require "system_command"
 
 describe SystemCommand::Result do
   subject(:result) {
-    described_class.new([], output_array, instance_double(Process::Status, exitstatus: 0, success?: true))
+    described_class.new([], output_array, instance_double(Process::Status, exitstatus: 0, success?: true),
+                        secrets: [])
   }
 
   let(:output_array) {

@@ -152,7 +152,8 @@ describe Cask::Pkg, :cask do
         "/usr/sbin/pkgutil",
         args: ["--pkg-info-plist", pkg_id],
       ).and_return(
-        SystemCommand::Result.new(nil, [[:stdout, pkg_info_plist]], instance_double(Process::Status, exitstatus: 0)),
+        SystemCommand::Result.new(nil, [[:stdout, pkg_info_plist]], instance_double(Process::Status, exitstatus: 0),
+                                  secrets: []),
       )
 
       info = pkg.info
