@@ -95,7 +95,7 @@ module Homebrew
       odie "--only-cops/--except-cops and --strict/--only cannot be used simultaneously!"
     end
 
-    options = { fix: args.fix?, realpath: true }
+    options = { fix: args.fix? }
 
     if only_cops
       options[:only_cops] = only_cops
