@@ -92,7 +92,7 @@ module Homebrew
     @bundle_installed ||= begin
       bundle = "#{gem_user_bindir}/bundle"
       bundle_check_output = `#{bundle} check 2>&1`
-      bundle_check_failed = !$CHILD_STATUS.exitstatus.zero?
+      bundle_check_failed = !$CHILD_STATUS.success?
 
       # for some reason sometimes the exit code lies so check the output too.
       if bundle_check_failed || bundle_check_output.include?("Install missing gems")

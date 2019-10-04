@@ -79,7 +79,7 @@ describe "brew style" do
 
       rubocop_result = Homebrew::Style.check_style_and_print([target_file])
 
-      expect(rubocop_result).to eq false
+      expect(rubocop_result).to eq true
     end
   end
 end

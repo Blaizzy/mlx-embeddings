@@ -102,7 +102,7 @@ module Homebrew
         raise "Invalid output_type for check_style_impl: #{output_type}"
       end
 
-      return !rubocop_success if files.present? || !has_non_formula
+      return rubocop_success if files.present? || !has_non_formula
 
       shellcheck   = which("shellcheck")
       shellcheck ||= which("shellcheck", ENV["HOMEBREW_PATH"])
@@ -113,7 +113,7 @@ module Homebrew
       end
       unless shellcheck
         opoo "Could not find or install `shellcheck`! Not checking shell style."
-        return !rubocop_success
+        return rubocop_success
       end
 
       shell_files = [
@@ -125,7 +125,7 @@ module Homebrew
       # TODO: check, fix completions here too.
       # TODO: consider using ShellCheck JSON output
       shellcheck_success = system shellcheck, "--shell=bash", *shell_files
-      !rubocop_success || !shellcheck_success
+      rubocop_success && shellcheck_success
     end
 
     class RubocopResults

@@ -62,6 +62,6 @@ module Homebrew
                                  NewFormulaAudit]
     end
 
-    Homebrew.failed = Style.check_style_and_print(target, options)
+    Homebrew.failed = !Style.check_style_and_print(target, options)
   end
 end
