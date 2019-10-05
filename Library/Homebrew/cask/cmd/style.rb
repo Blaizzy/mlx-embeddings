@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "json"
+
 module Cask
   class Cmd
     class Style < AbstractCommand
@@ -7,26 +9,50 @@ module Cask
         "checks Cask style using RuboCop"
       end
 
+      def self.rubocop(*paths, auto_correct: false, debug: false, json: false)
+        Homebrew.install_bundler_gems!
+
+        cache_env = { "XDG_CACHE_HOME" => "#{HOMEBREW_CACHE}/style" }
+        hide_warnings = debug ? [] : [ENV["HOMEBREW_RUBY_PATH"], "-W0", "-S"]
+
+        args = [
+          "--force-exclusion",
+          "--config", "#{HOMEBREW_LIBRARY}/.rubocop_cask.yml"
+        ]
+
+        if json
+          args << "--format" << "json"
+        else
+          if auto_correct
+            args << "--auto-correct"
+          else
+            args << "--debug" if debug
+            args << "--parallel"
+          end
+
+          args << "--format" << "simple"
+          args << "--color" if Tty.color?
+        end
+
+        executable, *args = [*hide_warnings, "rubocop", *args, "--", *paths]
+
+        result = Dir.mktmpdir do |tmpdir|
+          system_command executable, args: args, chdir: tmpdir, env: cache_env,
+                                     print_stdout: !json, print_stderr: !json
+        end
+
+        result.assert_success! unless (0..1).cover?(result.exit_status)
+
+        return JSON.parse(result.stdout) if json
+
+        result
+      end
+
       option "--fix", :fix, false
 
       def run
-        install_rubocop
-        cache_env = { "XDG_CACHE_HOME" => "#{HOMEBREW_CACHE}/style" }
-        hide_warnings = debug? ? [] : [ENV["HOMEBREW_RUBY_PATH"], "-W0", "-S"]
-        Dir.mktmpdir do |tmpdir|
-          system(cache_env, *hide_warnings, "rubocop", *rubocop_args, "--", *cask_paths, chdir: tmpdir)
-        end
-        raise CaskError, "style check failed" unless $CHILD_STATUS.success?
-      end
-
-      def install_rubocop
-        capture_stderr do
-          begin
-            Homebrew.install_bundler_gems!
-          rescue SystemExit
-            raise CaskError, Tty.strip_ansi($stderr.string).chomp.sub(/\AError: /, "")
-          end
-        end
+        result = self.class.rubocop(*cask_paths, auto_correct: fix?, debug: debug?)
+        raise CaskError, "Style check failed." unless result.status.success?
       end
 
       def cask_paths
@@ -39,31 +65,11 @@ module Cask
         end
       end
 
-      def rubocop_args
-        fix? ? autocorrect_args : normal_args
-      end
-
-      def default_args
-        [
-          "--force-exclusion",
-          "--config", "#{HOMEBREW_LIBRARY}/.rubocop_cask.yml",
-          "--format", "simple"
-        ]
-      end
-
       def test_cask_paths
         [
           Pathname.new("#{HOMEBREW_LIBRARY}/Homebrew/test/support/fixtures/cask/Casks"),
           Pathname.new("#{HOMEBREW_LIBRARY}/Homebrew/test/support/fixtures/third-party/Casks"),
         ]
-      end
-
-      def normal_args
-        default_args + ["--parallel"]
-      end
-
-      def autocorrect_args
-        default_args + ["--auto-correct"]
       end
     end
   end

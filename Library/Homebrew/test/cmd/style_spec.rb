@@ -62,8 +62,10 @@ describe "brew style" do
           end
         end
       EOS
-      options = { fix: true, only_cops: ["NewFormulaAudit/DependencyOrder"], realpath: true }
-      rubocop_result = Homebrew::Style.check_style_json([formula], options)
+      rubocop_result = Homebrew::Style.check_style_json(
+        [formula],
+        fix: true, only_cops: ["NewFormulaAudit/DependencyOrder"],
+      )
       offense_string = rubocop_result.file_offenses(formula.realpath).first.to_s
       expect(offense_string).to match(/\[Corrected\]/)
     end
@@ -79,7 +81,7 @@ describe "brew style" do
 
       rubocop_result = Homebrew::Style.check_style_and_print([target_file])
 
-      expect(rubocop_result).to eq false
+      expect(rubocop_result).to eq true
     end
   end
 end

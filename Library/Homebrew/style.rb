@@ -6,19 +6,17 @@ module Homebrew
 
     # Checks style for a list of files, printing simple RuboCop output.
     # Returns true if violations were found, false otherwise.
-    def check_style_and_print(files, options = {})
-      check_style_impl(files, :print, options)
+    def check_style_and_print(files, **options)
+      check_style_impl(files, :print, **options)
     end
 
     # Checks style for a list of files, returning results as a RubocopResults
     # object parsed from its JSON output.
-    def check_style_json(files, options = {})
-      check_style_impl(files, :json, options)
+    def check_style_json(files, **options)
+      check_style_impl(files, :json, **options)
     end
 
-    def check_style_impl(files, output_type, options = {})
-      fix = options[:fix]
-
+    def check_style_impl(files, output_type, fix: false, except_cops: nil, only_cops: nil)
       Homebrew.install_bundler_gems!
       require "rubocop"
       require "rubocops"
@@ -34,22 +32,22 @@ module Homebrew
 
       args += ["--extra-details", "--display-cop-names"] if ARGV.verbose?
 
-      if options[:except_cops]
-        options[:except_cops].map! { |cop| RuboCop::Cop::Cop.registry.qualified_cop_name(cop.to_s, "") }
-        cops_to_exclude = options[:except_cops].select do |cop|
+      if except_cops
+        except_cops.map! { |cop| RuboCop::Cop::Cop.registry.qualified_cop_name(cop.to_s, "") }
+        cops_to_exclude = except_cops.select do |cop|
           RuboCop::Cop::Cop.registry.names.include?(cop) ||
             RuboCop::Cop::Cop.registry.departments.include?(cop.to_sym)
         end
 
         args << "--except" << cops_to_exclude.join(",") unless cops_to_exclude.empty?
-      elsif options[:only_cops]
-        options[:only_cops].map! { |cop| RuboCop::Cop::Cop.registry.qualified_cop_name(cop.to_s, "") }
-        cops_to_include = options[:only_cops].select do |cop|
+      elsif only_cops
+        only_cops.map! { |cop| RuboCop::Cop::Cop.registry.qualified_cop_name(cop.to_s, "") }
+        cops_to_include = only_cops.select do |cop|
           RuboCop::Cop::Cop.registry.names.include?(cop) ||
             RuboCop::Cop::Cop.registry.departments.include?(cop.to_sym)
         end
 
-        odie "RuboCops #{options[:only_cops].join(",")} were not found" if cops_to_include.empty?
+        odie "RuboCops #{only_cops.join(",")} were not found" if cops_to_include.empty?
 
         args << "--only" << cops_to_include.join(",")
       end
@@ -102,7 +100,7 @@ module Homebrew
         raise "Invalid output_type for check_style_impl: #{output_type}"
       end
 
-      return !rubocop_success if files.present? || !has_non_formula
+      return rubocop_success if files.present? || !has_non_formula
 
       shellcheck   = which("shellcheck")
       shellcheck ||= which("shellcheck", ENV["HOMEBREW_PATH"])
@@ -113,7 +111,7 @@ module Homebrew
       end
       unless shellcheck
         opoo "Could not find or install `shellcheck`! Not checking shell style."
-        return !rubocop_success
+        return rubocop_success
       end
 
       shell_files = [
@@ -125,7 +123,7 @@ module Homebrew
       # TODO: check, fix completions here too.
       # TODO: consider using ShellCheck JSON output
       shellcheck_success = system shellcheck, "--shell=bash", *shell_files
-      !rubocop_success || !shellcheck_success
+      rubocop_success && shellcheck_success
     end
 
     class RubocopResults
@@ -168,8 +166,8 @@ module Homebrew
         "[Corrected] " if corrected?
       end
 
-      def to_s(options = {})
-        if options[:display_cop_name]
+      def to_s(display_cop_name: false)
+        if display_cop_name
           "#{severity_code}: #{location.to_short_s}: #{cop_name}: " \
           "#{Tty.green}#{correction_status}#{Tty.reset}#{message}"
         else
