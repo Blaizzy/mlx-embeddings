@@ -19,8 +19,15 @@ describe Utils::Shell do
       expect(subject.profile).to eq("~/.bash_profile")
     end
 
+    it "returns /tmp/.zshrc for Zsh if ZDOTDIR is /tmp" do
+      ENV["SHELL"] = "/bin/zsh"
+      ENV["ZDOTDIR"] = "/tmp"
+      expect(subject.profile).to eq("/tmp/.zshrc")
+    end
+
     it "returns ~/.zshrc for Zsh" do
       ENV["SHELL"] = "/bin/zsh"
+      ENV["ZDOTDIR"] = nil
       expect(subject.profile).to eq("~/.zshrc")
     end
 
