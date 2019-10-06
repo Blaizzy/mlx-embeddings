@@ -29,7 +29,7 @@ module UnpackStrategy
 
         # symlinks to system directories (commonly to /Applications)
         def system_dir_symlink?
-          symlink? && MacOS.system_dir?(readlink)
+          symlink? && MacOS.system_dir?(realpath)
         end
 
         def bom
