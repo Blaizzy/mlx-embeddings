@@ -421,6 +421,8 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
 
     args += ["--user", meta.fetch(:user)] if meta.key?(:user)
 
+    args += ["-H", meta.fetch(:header)] if meta.key?(:header)
+
     args
   end
 
