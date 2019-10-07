@@ -163,7 +163,7 @@ class Sandbox
           (literal "/dev/random")
           (literal "/dev/zero")
           (regex #"^/dev/fd/[0-9]+$")
-          (regex #"^/dev/ttys?[0-9]*$")
+          (regex #"^/dev/tty[a-z0-9]*$")
           )
       (deny file-write*) ; deny non-whitelist file write operations
       (allow process-exec
