@@ -39,6 +39,8 @@ module Utils
 
     # return the shell profile file based on user's preferred shell
     def profile
+      return "#{ENV["ZDOTDIR"]}/.zshrc" if preferred == :zsh && ENV["ZDOTDIR"].present?
+
       SHELL_PROFILE_MAP.fetch(preferred, "~/.bash_profile")
     end
 
