@@ -759,6 +759,7 @@ module Homebrew
         pygtkglext 1.1.0
         gtk-mac-integration 2.1.3
         gtk-doc 1.31
+        gcab 1.3
       ].each_slice(2).to_a.map do |formula, version|
         [formula, version.split(".")[0..1].join(".")]
       end
