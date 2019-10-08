@@ -96,7 +96,7 @@ class SystemCommand
 
     return [] if set_variables.empty?
 
-    ["env", *set_variables]
+    ["/usr/bin/env", *set_variables]
   end
 
   def sudo_prefix

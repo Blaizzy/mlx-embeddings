@@ -47,8 +47,7 @@ RSpec.shared_context "integration test" do
 
       example.run
     ensure
-      FileUtils.rm HOMEBREW_PREFIX/"bin/brew"
-      FileUtils.rmdir HOMEBREW_PREFIX/"bin"
+      FileUtils.rm_r HOMEBREW_PREFIX/"bin"
     end
   end
 
