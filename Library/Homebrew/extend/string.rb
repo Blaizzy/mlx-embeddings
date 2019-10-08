@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-# Contains backports from newer versions of Ruby
-require "backports/2.4.0/string/match"
-require "backports/2.5.0/string/delete_prefix"
 require "active_support/core_ext/object/blank"
 
 class String

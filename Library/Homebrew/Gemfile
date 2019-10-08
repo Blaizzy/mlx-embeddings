@@ -15,7 +15,6 @@ gem "simplecov", require: false
 
 # vendored gems
 gem "activesupport"
-gem "backports"
 gem "concurrent-ruby"
 gem "mechanize"
 gem "plist"

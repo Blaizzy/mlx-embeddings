@@ -35,52 +35,23 @@
 !**/vendor/bundle/ruby/*/gems/rubocop-rspec-*/config
 
 # Ignore partially included gems where we don't need all files
-**/vendor/bundle/ruby/2.3.0/gems/activesupport-*/lib/active_support.rb
-**/vendor/bundle/ruby/2.3.0/gems/activesupport-*/lib/active_support/all.rb
-**/vendor/bundle/ruby/2.3.0/gems/activesupport-*/lib/active_support/cache.rb
-**/vendor/bundle/ruby/2.3.0/gems/activesupport-*/lib/active_support/cache/
-**/vendor/bundle/ruby/2.3.0/gems/activesupport-*/lib/active_support/concurrency/
-**/vendor/bundle/ruby/2.3.0/gems/activesupport-*/lib/active_support/dependencies.rb
-**/vendor/bundle/ruby/2.3.0/gems/activesupport-*/lib/active_support/dependencies/
-**/vendor/bundle/ruby/2.3.0/gems/activesupport-*/lib/active_support/duration/
-**/vendor/bundle/ruby/2.3.0/gems/activesupport-*/lib/active_support/json.rb
-**/vendor/bundle/ruby/2.3.0/gems/activesupport-*/lib/active_support/json/
-**/vendor/bundle/ruby/2.3.0/gems/activesupport-*/lib/active_support/log_subscriber.rb
-**/vendor/bundle/ruby/2.3.0/gems/activesupport-*/lib/active_support/log_subscriber/
-**/vendor/bundle/ruby/2.3.0/gems/activesupport-*/lib/active_support/messages/
-**/vendor/bundle/ruby/2.3.0/gems/activesupport-*/lib/active_support/multibyte/
-**/vendor/bundle/ruby/2.3.0/gems/activesupport-*/lib/active_support/number_helper.rb
-**/vendor/bundle/ruby/2.3.0/gems/activesupport-*/lib/active_support/number_helper/
-**/vendor/bundle/ruby/2.3.0/gems/activesupport-*/lib/active_support/testing/
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/latest.rb
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/rails.rb
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/version.rb
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/1.*
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/2.0*
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/2.1*
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/2.2*
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/2.3*
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/2.6*
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/2.*.rb
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/force/
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/rails/
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/random/
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/*/array/
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/*/comparable/
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/*/dir/
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/*/enumerable/
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/*/false_class/
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/*/fixnum/
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/*/float/
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/*/hash/
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/*/integer/
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/*/kernel/
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/*/module/
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/*/nil_class/
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/*/regexp/
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/*/struct/
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/*/struct/
-**/vendor/bundle/ruby/*/gems/backports-*/lib/backports/*/true_class/
+**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support.rb
+**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/all.rb
+**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/cache.rb
+**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/cache/
+**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/concurrency/
+**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/dependencies.rb
+**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/dependencies/
+**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/duration/
+**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/json.rb
+**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/json/
+**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/log_subscriber.rb
+**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/log_subscriber/
+**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/messages/
+**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/multibyte/
+**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/number_helper.rb
+**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/number_helper/
+**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/testing/
 **/vendor/bundle/ruby/*/gems/concurrent-ruby-*/lib/atomic/
 **/vendor/bundle/ruby/*/gems/concurrent-ruby-*/lib/atomic_reference/
 **/vendor/bundle/ruby/*/gems/concurrent-ruby-*/lib/collection/
@@ -91,6 +62,20 @@
 **/vendor/bundle/ruby/*/gems/concurrent-ruby-*/lib/utility/
 **/vendor/bundle/ruby/*/gems/concurrent-ruby-*/lib/*/*.jar
 **/vendor/bundle/ruby/*/gems/i18n-*/lib/i18n/tests*
+**/vendor/bundle/ruby/*/gems/mechanize-*/lib/*.rb
+**/vendor/bundle/ruby/*/gems/mechanize-*/lib/mechanize/http/agent.rb
+**/vendor/bundle/ruby/*/gems/mechanize-*/lib/mechanize/http/*auth*.rb
+**/vendor/bundle/ruby/*/gems/mechanize-*/lib/mechanize/c*
+**/vendor/bundle/ruby/*/gems/mechanize-*/lib/mechanize/d*
+**/vendor/bundle/ruby/*/gems/mechanize-*/lib/mechanize/e*
+**/vendor/bundle/ruby/*/gems/mechanize-*/lib/mechanize/f*
+**/vendor/bundle/ruby/*/gems/mechanize-*/lib/mechanize/h*
+**/vendor/bundle/ruby/*/gems/mechanize-*/lib/mechanize/i*
+**/vendor/bundle/ruby/*/gems/mechanize-*/lib/mechanize/p*
+**/vendor/bundle/ruby/*/gems/mechanize-*/lib/mechanize/r*
+**/vendor/bundle/ruby/*/gems/mechanize-*/lib/mechanize/t*
+**/vendor/bundle/ruby/*/gems/mechanize-*/lib/mechanize/u*
+**/vendor/bundle/ruby/*/gems/mechanize-*/lib/mechanize/x*
 **/vendor/bundle/ruby/*/gems/thread_safe-*/lib/thread_safe/util
 
 # Ignore dependencies we don't wish to vendor
@@ -146,11 +131,6 @@
 **/vendor/bundle/ruby/*/gems/unf-*/
 **/vendor/bundle/ruby/*/gems/unicode-display_width-*/
 **/vendor/bundle/ruby/*/gems/webrobots-*/
-
-# Only include the `Mechanize::HTTP::ContentDispositionParser`.
-**/vendor/bundle/ruby/*/gems/mechanize-*/lib
-!**/vendor/bundle/ruby/*/gems/mechanize-*/lib/mechanize/http/content_disposition_parser.rb
-!**/vendor/bundle/ruby/*/gems/mechanize-*/lib/mechanize/version.rb
 
 # Ignore `bin` contents (again).
 /bin
