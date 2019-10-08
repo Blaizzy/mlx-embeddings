@@ -22,11 +22,11 @@ export HOMEBREW_NO_AUTO_UPDATE=1
 
 Once we've done that, we need to get access to the `merge-homebrew`
 command that will be used for the merge. To do that we have to tap the
-[`linuxbrew/homebrew-developer`](https://github.com/Linuxbrew/homebrew-developer)
+[`Homebrew/linux-dev`](https://github.com/Homebrew/homebrew-linux-dev)
 repo:
 
 ```bash
-brew tap linuxbrew/developer
+brew tap homebrew/linux-dev
 ```
 
 Next, we have to navigate to the repository where we want to do the
@@ -273,7 +273,7 @@ only one commit with contents "# Build a bottle for Linuxbrew", these
 have been created with `brew build-bottle-pr` and the commit from the
 PR doesn't need preserving. We don't want to litter the codebase with
 comments. In these cases, you can combine `brew pull --bottle` with
-`brew squash-bottle-pr` (in the Linuxbrew/developer tap). This will
+`brew squash-bottle-pr` (in the Homebrew/linux-dev tap). This will
 squash the first commit message, leaving just the commit with the
 bottle SHA authored by `LinuxbrewTestBot`. It will still close the PR,
 as `brew pull --bottle` adds `Closes` and `Signed-off-by` to the
