@@ -24,7 +24,7 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker pull linuxbrew/brew
+        docker pull homebrew/brew
         docker-compose -f Dockerfile.yml build sut
       if: matrix.os == 'ubuntu-latest'
 

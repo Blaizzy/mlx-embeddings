@@ -5,7 +5,7 @@ services:
     build:
       context: .
       cache_from:
-        - linuxbrew/brew
+        - homebrew/brew
       args:
         - FORCE_REBUILD=1
     command:
