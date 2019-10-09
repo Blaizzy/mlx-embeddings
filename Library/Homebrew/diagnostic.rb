@@ -424,7 +424,9 @@ module Homebrew
 
         # Don't complain about sbin not being in the path if it doesn't exist
         sbin = HOMEBREW_PREFIX/"sbin"
-        return unless sbin.directory? && !sbin.children.empty?
+        return unless sbin.directory?
+        return if sbin.children.empty?
+        return if sbin.children.one? && sbin.children.first.basename.to_s == ".keepme"
 
         <<~EOS
           Homebrew's sbin was not found in your PATH but you have installed
