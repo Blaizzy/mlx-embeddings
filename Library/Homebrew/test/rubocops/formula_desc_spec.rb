@@ -41,7 +41,7 @@ describe RuboCop::Cop::FormulaAudit::DescLength do
           url 'https://brew.sh/foo-1.0.tgz'
           desc 'Bar#{"bar" * 9}'\
             '#{"foo" * 21}'
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Description is too long. "name: desc" should be less than 80 characters. Length is calculated as foo + desc. (currently 98)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Description is too long. "name: desc" should be less than 80 characters. Length is calculated as foo + desc. (currently 98)
         end
       RUBY
     end
