@@ -2,6 +2,11 @@
 
 import Foundation
 
+struct swifterr: TextOutputStream {
+  public static var stream = swifterr()
+  mutating func write(_ string: String) { fputs(string, stderr) }
+}
+
 if (CommandLine.arguments.count < 2) {
   exit(2)
 }
@@ -12,10 +17,11 @@ for item in CommandLine.arguments[1...] {
   do {
     let path: URL = URL(fileURLWithPath: item)
     try manager.trashItem(at: path, resultingItemURL: nil)
-    print(path)
+    print(path, terminator: "\0")
   }
   catch {
-    print("\0")
+    print(error.localizedDescription, to: &swifterr.stream)
+    exit(1)
   }
 }
 
