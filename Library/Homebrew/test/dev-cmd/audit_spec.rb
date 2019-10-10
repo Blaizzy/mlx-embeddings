@@ -316,7 +316,7 @@ module Homebrew
             fa.audit_deps
           end
 
-          its(:new_formula_problems) { are_expected.to match([/unnecessary/]) }
+          its(:new_formula_problems) { are_expected.to match([/is provided by macOS/]) }
         end
       end
     end
