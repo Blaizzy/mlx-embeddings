@@ -6,7 +6,7 @@ describe "Homebrew.install_args" do
   it_behaves_like "parseable arguments"
 end
 
-describe "brew install", :integration_test do
+describe "brew install", :integration_test, :needs_no_bad_linux_portable_ruby do
   it "installs formulae" do
     setup_test_formula "testball1"
 
