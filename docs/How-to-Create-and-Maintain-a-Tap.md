@@ -37,7 +37,7 @@ If they want to get your tap without installing any formula at the same time,
 users can add it with the [`brew tap` command](Taps.md).
 
 If it’s on GitHub, they can use `brew tap user/repo`, where `user` is your
-GitHub username and `homebrew-repo` your repository.
+GitHub username and `homebrew-repo` is your repository.
 
 If it’s hosted outside of GitHub, they have to use `brew tap user/repo <URL>`,
 where `user` and `repo` will be used to refer to your tap and `<URL>` is your
