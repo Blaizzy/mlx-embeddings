@@ -13,6 +13,9 @@ If hosted on GitHub, we recommend that the repository’s name start with
 `homebrew-` so the short `brew tap` command can be used.
 See the [manpage](Manpage.md) for more information on repository naming.
 
+The `brew tap-new` command can be used to create a new tap along with some
+template files.
+
 Tap formulae follow the same format as the core’s ones, and can be added at the
 repository’s root, or under `Formula` or `HomebrewFormula` subdirectories. We
 recommend the latter options because it makes the repository organisation
