@@ -3,9 +3,10 @@
 class Keg
   def relocate_dynamic_linkage(relocation)
     # Patching the dynamic linker of glibc breaks it.
+    return if name == "glibc"
+
     # Patching patchelf using itself fails with "Text file busy" or SIGBUS.
-    # Patching portable-ruby causes brew tests to segfault.
-    return if ["glibc", "patchelf", "portable-ruby"].include?(name)
+    return if name == "patchelf"
 
     elf_files.each do |file|
       file.ensure_writable do
