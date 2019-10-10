@@ -6,7 +6,7 @@ describe "Homebrew.upgrade_args" do
   it_behaves_like "parseable arguments"
 end
 
-describe "brew upgrade", :integration_test do
+describe "brew upgrade", :integration_test, :needs_no_bad_linux_portable_ruby do
   it "upgrades a Formula and cleans up old versions" do
     setup_test_formula "testball"
     (HOMEBREW_CELLAR/"testball/0.0.1/foo").mkpath
