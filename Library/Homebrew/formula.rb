@@ -428,6 +428,9 @@ class Formula
   # The {Dependency}s for the currently active {SoftwareSpec}.
   delegate deps: :active_spec
 
+  # Dependencies provided by macOS for the currently active {SoftwareSpec}.
+  delegate uses_from_macos_elements: :active_spec
+
   # The {Requirement}s for the currently active {SoftwareSpec}.
   delegate requirements: :active_spec
 
@@ -1589,6 +1592,7 @@ class Formula
   # @private
   def to_hash
     dependencies = deps
+    uses_from_macos = uses_from_macos_elements || []
 
     hsh = {
       "name"                     => name,
@@ -1624,6 +1628,7 @@ class Formula
       "optional_dependencies"    => dependencies.select(&:optional?)
                                                 .map(&:name)
                                                 .uniq,
+      "uses_from_macos"          => uses_from_macos.uniq,
       "requirements"             => [],
       "conflicts_with"           => conflicts.map(&:name),
       "caveats"                  => caveats&.gsub(HOMEBREW_PREFIX, "$(brew --prefix)"),
