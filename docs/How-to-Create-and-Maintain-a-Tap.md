@@ -1,7 +1,7 @@
 # How to Create and Maintain a Tap
 
-[Taps](Taps.md) are external sources of Homebrew formulae and/or external commands. They
-can be created by anyone to provide their own formulae and/or external commands
+[Taps](Taps.md) are external sources of Homebrew formulae, casks  and/or external commands. They
+can be created by anyone to provide their own formulae, casks  and/or external commands
 to any Homebrew user.
 
 ## Creating a tap
@@ -60,6 +60,19 @@ making modifications, apart from committing and pushing your changes.
 Once your tap is installed, Homebrew will update it each time a user runs
 `brew update`. Outdated formulae will be upgraded when a user runs
 `brew upgrade`, like core formulae.
+
+## Casks
+
+Casks can also be installed from a tap.
+Casks can be included in taps with formulae, or in a tap with just casks.
+Place any cask files you wish to make available in a `Casks` directory at the top level of your tap.
+
+See [homebrew/cask](https://github.com/Homebrew/homebrew-cask) for an example of a tap with a `Casks` subdirectory.
+
+### Naming
+
+Unlike formulae, casks must have globally unique names to avoid clashes.
+This can be achieved by e.g. prepending the cask name with you github username: `username-formula-name`.
 
 ## External commands
 
