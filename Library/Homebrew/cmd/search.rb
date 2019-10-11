@@ -100,7 +100,7 @@ module Homebrew
         puts Formatter.columns(all_casks)
       end
 
-      if $stdout.tty?
+      if $stdout.tty? && !local_casks.include?(query)
         count = all_formulae.count + all_casks.count
 
         if reason = MissingFormula.reason(query, silent: true)
