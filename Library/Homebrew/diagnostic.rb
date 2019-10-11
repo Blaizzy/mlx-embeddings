@@ -663,17 +663,28 @@ module Homebrew
       def check_git_status
         return unless Utils.git_available?
 
+        modified = []
         HOMEBREW_REPOSITORY.cd do
-          return if `git status --untracked-files=all --porcelain -- Library/Homebrew/ 2>/dev/null`.chomp.empty?
+          modified.concat `git status --untracked-files=all --porcelain -- Library/Homebrew/ 2>/dev/null`.split("\n")
+          return if modified.empty?
         end
 
-        <<~EOS
+        message = <<~EOS
           You have uncommitted modifications to Homebrew.
           If this is a surprise to you, then you should stash these modifications.
           Stashing returns Homebrew to a pristine state but can be undone
           should you later need to do so for some reason.
             cd #{HOMEBREW_LIBRARY} && git stash && git clean -d -f
         EOS
+
+        if ENV["CI"]
+          message += inject_file_list modified, <<~EOS
+
+            Modified files:
+          EOS
+        end
+
+        message
       end
 
       def check_for_bad_python_symlink
