@@ -12,7 +12,7 @@ To make Homebrew's completions available in `bash`, you must source the definiti
 
 ```sh
 if type brew &>/dev/null; then
-  HOMEBREW_PREFIX=$(brew --prefix)
+  HOMEBREW_PREFIX="$(brew --prefix)"
   if [[ -r "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh" ]]; then
     source "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh"
   else
