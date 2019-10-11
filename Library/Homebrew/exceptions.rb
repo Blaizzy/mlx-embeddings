@@ -466,7 +466,7 @@ class BuildFlagsError < RuntimeError
       require_text = "requires"
     end
 
-    message = <<~EOS
+    message = +<<~EOS
       The following #{flag_text}:
         #{flags.join(", ")}
       #{require_text} building tools, but none are installed.
