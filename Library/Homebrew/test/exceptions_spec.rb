@@ -225,3 +225,9 @@ describe BottleFormulaUnavailableError do
 
   its(:to_s) { is_expected.to match(/This bottle does not contain the formula file/) }
 end
+
+describe BuildFlagsError do
+  subject { described_class.new(["-s"]) }
+
+  its(:to_s) { is_expected.to match(/flag:\s+-s\nrequires building tools/) }
+end

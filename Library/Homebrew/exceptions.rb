@@ -466,15 +466,17 @@ class BuildFlagsError < RuntimeError
       require_text = "requires"
     end
 
+    bottle_text = if bottled
+      <<~EOS
+        Alternatively, remove the #{flag_text} to attempt bottle installation.
+      EOS
+    end
+
     message = <<~EOS
       The following #{flag_text}:
         #{flags.join(", ")}
       #{require_text} building tools, but none are installed.
-      #{DevelopmentTools.installation_instructions}
-    EOS
-
-    message << <<~EOS if bottled
-      Alternatively, remove the #{flag_text} to attempt bottle installation.
+      #{DevelopmentTools.installation_instructions}#{bottle_text}
     EOS
 
     super message
