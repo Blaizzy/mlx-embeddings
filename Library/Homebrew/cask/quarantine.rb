@@ -154,7 +154,6 @@ module Cask
                                      "--",
                                      xattr,
                                      "-w",
-                                     "-s",
                                      QUARANTINE_ATTRIBUTE,
                                      quarantine_status,
                                    ],
