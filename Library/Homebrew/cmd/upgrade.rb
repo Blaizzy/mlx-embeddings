@@ -255,7 +255,7 @@ module Homebrew
     [formulae_to_upgrade, formulae_pinned]
   end
 
-  def broken_dependents(kegs, formulae)
+  def broken_dependents(kegs, formulae, scanned = [])
     formulae_to_reinstall = Set.new
     formulae_pinned_and_outdated = Set.new
 
@@ -266,6 +266,8 @@ module Homebrew
         dependents = kegs.select do |keg|
           keg.runtime_dependencies
              .any? { |d| d["full_name"] == formula.full_name }
+        end.reject do |keg|
+          scanned.include?(keg)
         end
 
         next if dependents.empty?
@@ -290,7 +292,9 @@ module Homebrew
           descendants << f
         end
 
-        descendants_to_reinstall, descendants_pinned = broken_dependents(kegs, descendants)
+        scanned << dependents
+
+        descendants_to_reinstall, descendants_pinned = broken_dependents(kegs, descendants, scanned)
 
         formulae_to_reinstall.merge descendants_to_reinstall
         formulae_pinned_and_outdated.merge descendants_pinned
