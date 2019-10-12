@@ -11,8 +11,8 @@ You must configure your shell to enable its completion support. This is because 
 To make Homebrew's completions available in `bash`, you must source the definitions as part of your shell's startup. Add the following to your `~/.bash_profile` file:
 
 ```sh
-HOMEBREW_PREFIX=$(brew --prefix)
 if type brew &>/dev/null; then
+  HOMEBREW_PREFIX="$(brew --prefix)"
   if [[ -r "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh" ]]; then
     source "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh"
   else
