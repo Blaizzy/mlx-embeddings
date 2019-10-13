@@ -361,8 +361,8 @@ class FormulaInstaller
       # If the formula name doesn't exist any more then complain but don't
       # stop installation from continuing.
       opoo <<~EOS
-          #{formula}: #{e.message}
-          'conflicts_with \"#{c.name}\"' should be removed from #{formula.path.basename}.
+        #{formula}: #{e.message}
+        'conflicts_with \"#{c.name}\"' should be removed from #{formula.path.basename}.
         EOS
 
       raise if ARGV.homebrew_developer?
