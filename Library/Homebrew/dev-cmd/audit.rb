@@ -434,16 +434,14 @@ module Homebrew
 
     def audit_conflicts
       formula.conflicts.each do |c|
-        begin
-          Formulary.factory(c.name)
-        rescue TapFormulaUnavailableError
-          # Don't complain about missing cross-tap conflicts.
-          next
-        rescue FormulaUnavailableError
-          problem "Can't find conflicting formula #{c.name.inspect}."
-        rescue TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
-          problem "Ambiguous conflicting formula #{c.name.inspect}."
-        end
+        Formulary.factory(c.name)
+      rescue TapFormulaUnavailableError
+        # Don't complain about missing cross-tap conflicts.
+        next
+      rescue FormulaUnavailableError
+        problem "Can't find conflicting formula #{c.name.inspect}."
+      rescue TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
+        problem "Ambiguous conflicting formula #{c.name.inspect}."
       end
     end
 

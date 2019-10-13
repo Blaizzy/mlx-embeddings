@@ -128,17 +128,15 @@ class Keg
     keg_names = kegs.select(&:optlinked?).map(&:name)
     keg_formulae = []
     kegs_by_source = kegs.group_by do |keg|
-      begin
         # First, attempt to resolve the keg to a formula
         # to get up-to-date name and tap information.
-        f = keg.to_formula
-        keg_formulae << f
-        [f.name, f.tap]
-      rescue FormulaUnavailableError
-        # If the formula for the keg can't be found,
-        # fall back to the information in the tab.
-        [keg.name, keg.tab.tap]
-      end
+      f = keg.to_formula
+      keg_formulae << f
+      [f.name, f.tap]
+    rescue FormulaUnavailableError
+      # If the formula for the keg can't be found,
+      # fall back to the information in the tab.
+      [keg.name, keg.tab.tap]
     end
 
     all_required_kegs = Set.new

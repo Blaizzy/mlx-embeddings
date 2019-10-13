@@ -199,15 +199,13 @@ shared_examples "#uninstall_phase or #zap_phase" do
       let(:cask) { Cask::CaskLoader.load(cask_path("with-#{artifact_dsl_key}-#{directive}")) }
 
       around do |example|
-        begin
-          ENV["HOME"] = dir
+        ENV["HOME"] = dir
 
-          FileUtils.touch paths
+        FileUtils.touch paths
 
-          example.run
-        ensure
-          FileUtils.rm_f paths
-        end
+        example.run
+      ensure
+        FileUtils.rm_f paths
       end
 
       before do

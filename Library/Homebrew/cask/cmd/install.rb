@@ -14,16 +14,14 @@ module Cask
       def run
         odie "Installing casks is supported only on macOS" unless OS.mac?
         casks.each do |cask|
-          begin
-            Installer.new(cask, binaries:       binaries?,
-                                verbose:        verbose?,
-                                force:          force?,
-                                skip_cask_deps: skip_cask_deps?,
-                                require_sha:    require_sha?,
-                                quarantine:     quarantine?).install
-          rescue CaskAlreadyInstalledError => e
-            opoo e.message
-          end
+          Installer.new(cask, binaries:       binaries?,
+                              verbose:        verbose?,
+                              force:          force?,
+                              skip_cask_deps: skip_cask_deps?,
+                              require_sha:    require_sha?,
+                              quarantine:     quarantine?).install
+        rescue CaskAlreadyInstalledError => e
+          opoo e.message
         end
       end
 

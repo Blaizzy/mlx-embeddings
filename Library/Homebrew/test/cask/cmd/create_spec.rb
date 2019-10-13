@@ -5,12 +5,10 @@ require_relative "shared_examples/invalid_option"
 
 describe Cask::Cmd::Create, :cask do
   around do |example|
-    begin
-      example.run
-    ensure
-      %w[new-cask additional-cask another-cask yet-another-cask local-caff].each do |cask|
-        FileUtils.rm_f Cask::CaskLoader.path(cask)
-      end
+    example.run
+  ensure
+    %w[new-cask additional-cask another-cask yet-another-cask local-caff].each do |cask|
+      FileUtils.rm_f Cask::CaskLoader.path(cask)
     end
   end
 

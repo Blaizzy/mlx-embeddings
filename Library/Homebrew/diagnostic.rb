@@ -718,15 +718,13 @@ module Homebrew
       def check_for_unreadable_installed_formula
         formula_unavailable_exceptions = []
         Formula.racks.each do |rack|
-          begin
-            Formulary.from_rack(rack)
-          rescue FormulaUnreadableError, FormulaClassUnavailableError,
-                 TapFormulaUnreadableError, TapFormulaClassUnavailableError => e
-            formula_unavailable_exceptions << e
-          rescue FormulaUnavailableError,
-                 TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
-            nil
-          end
+          Formulary.from_rack(rack)
+        rescue FormulaUnreadableError, FormulaClassUnavailableError,
+               TapFormulaUnreadableError, TapFormulaClassUnavailableError => e
+          formula_unavailable_exceptions << e
+        rescue FormulaUnavailableError,
+               TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
+          nil
         end
         return if formula_unavailable_exceptions.empty?
 

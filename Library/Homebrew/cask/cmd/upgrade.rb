@@ -45,12 +45,10 @@ module Cask
         return if dry_run?
 
         upgradable_casks.each do |(old_cask, new_cask)|
-          begin
-            upgrade_cask(old_cask, new_cask)
-          rescue CaskError => e
-            caught_exceptions << e
-            next
-          end
+          upgrade_cask(old_cask, new_cask)
+        rescue CaskError => e
+          caught_exceptions << e
+          next
         end
 
         return if caught_exceptions.empty?

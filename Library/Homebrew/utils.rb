@@ -50,13 +50,11 @@ module Homebrew
 
         method = instance_method(name)
         define_method(name) do |*args, &block|
-          begin
-            time = Time.now
-            method.bind(self).call(*args, &block)
-          ensure
-            $times[name] ||= 0
-            $times[name] += Time.now - time
-          end
+          time = Time.now
+          method.bind(self).call(*args, &block)
+        ensure
+          $times[name] ||= 0
+          $times[name] += Time.now - time
         end
       end
     end
@@ -388,11 +386,9 @@ module Kernel
 
   def paths
     @paths ||= PATH.new(ENV["HOMEBREW_PATH"]).map do |p|
-      begin
-        File.expand_path(p).chomp("/")
-      rescue ArgumentError
-        onoe "The following PATH component is invalid: #{p}"
-      end
+      File.expand_path(p).chomp("/")
+    rescue ArgumentError
+      onoe "The following PATH component is invalid: #{p}"
     end.uniq.compact
   end
 

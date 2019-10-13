@@ -382,21 +382,19 @@ module Homebrew
     end
 
     reinstallable.each do |f|
-      begin
-        reinstall_formula(f, build_from_source: true)
-      rescue FormulaInstallationAlreadyAttemptedError
-        # We already attempted to reinstall f as part of the dependency tree of
-        # another formula. In that case, don't generate an error, just move on.
-        nil
-      rescue CannotInstallFormulaError => e
-        ofail e
-      rescue BuildError => e
-        e.dump
-        puts
-        Homebrew.failed = true
-      rescue DownloadError => e
-        ofail e
-      end
+      reinstall_formula(f, build_from_source: true)
+    rescue FormulaInstallationAlreadyAttemptedError
+      # We already attempted to reinstall f as part of the dependency tree of
+      # another formula. In that case, don't generate an error, just move on.
+      nil
+    rescue CannotInstallFormulaError => e
+      ofail e
+    rescue BuildError => e
+      e.dump
+      puts
+      Homebrew.failed = true
+    rescue DownloadError => e
+      ofail e
     end
   end
 end

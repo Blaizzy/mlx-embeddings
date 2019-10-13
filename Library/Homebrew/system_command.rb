@@ -148,13 +148,11 @@ class SystemCommand
       break if readable_sources.empty?
 
       readable_sources.each do |source|
-        begin
-          line = source.readline_nonblock || ""
-          type = (source == sources[0]) ? :stdout : :stderr
-          yield(type, line)
-        rescue IO::WaitReadable, EOFError
-          next
-        end
+        line = source.readline_nonblock || ""
+        type = (source == sources[0]) ? :stdout : :stderr
+        yield(type, line)
+      rescue IO::WaitReadable, EOFError
+        next
       end
     end
 

@@ -61,27 +61,25 @@ describe Tap do
   end
 
   specify "::fetch" do
-    begin
-      expect(described_class.fetch("Homebrew", "core")).to be_kind_of(CoreTap)
-      expect(described_class.fetch("Homebrew", "homebrew")).to be_kind_of(CoreTap)
-      tap = described_class.fetch("Homebrew", "foo")
-      expect(tap).to be_kind_of(described_class)
-      expect(tap.name).to eq("homebrew/foo")
+    expect(described_class.fetch("Homebrew", "core")).to be_kind_of(CoreTap)
+    expect(described_class.fetch("Homebrew", "homebrew")).to be_kind_of(CoreTap)
+    tap = described_class.fetch("Homebrew", "foo")
+    expect(tap).to be_kind_of(described_class)
+    expect(tap.name).to eq("homebrew/foo")
 
-      expect {
-        described_class.fetch("foo")
-      }.to raise_error(/Invalid tap name/)
+    expect {
+      described_class.fetch("foo")
+    }.to raise_error(/Invalid tap name/)
 
-      expect {
-        described_class.fetch("homebrew/homebrew/bar")
-      }.to raise_error(/Invalid tap name/)
+    expect {
+      described_class.fetch("homebrew/homebrew/bar")
+    }.to raise_error(/Invalid tap name/)
 
-      expect {
-        described_class.fetch("homebrew", "homebrew/baz")
-      }.to raise_error(/Invalid tap name/)
-    ensure
-      described_class.clear_cache
-    end
+    expect {
+      described_class.fetch("homebrew", "homebrew/baz")
+    }.to raise_error(/Invalid tap name/)
+  ensure
+    described_class.clear_cache
   end
 
   describe "::from_path" do
@@ -113,23 +111,21 @@ describe Tap do
   end
 
   specify "#issues_url" do
-    begin
-      t = described_class.new("someone", "foo")
-      path = Tap::TAP_DIRECTORY/"someone/homebrew-foo"
-      path.mkpath
-      cd path do
-        system "git", "init"
-        system "git", "remote", "add", "origin",
-               "https://github.com/someone/homebrew-foo"
-      end
-      expect(t.issues_url).to eq("https://github.com/someone/homebrew-foo/issues")
-      expect(subject.issues_url).to eq("https://github.com/Homebrew/homebrew-foo/issues")
-
-      (Tap::TAP_DIRECTORY/"someone/homebrew-no-git").mkpath
-      expect(described_class.new("someone", "no-git").issues_url).to be nil
-    ensure
-      path.parent.rmtree
+    t = described_class.new("someone", "foo")
+    path = Tap::TAP_DIRECTORY/"someone/homebrew-foo"
+    path.mkpath
+    cd path do
+      system "git", "init"
+      system "git", "remote", "add", "origin",
+             "https://github.com/someone/homebrew-foo"
     end
+    expect(t.issues_url).to eq("https://github.com/someone/homebrew-foo/issues")
+    expect(subject.issues_url).to eq("https://github.com/Homebrew/homebrew-foo/issues")
+
+    (Tap::TAP_DIRECTORY/"someone/homebrew-no-git").mkpath
+    expect(described_class.new("someone", "no-git").issues_url).to be nil
+  ensure
+    path.parent.rmtree
   end
 
   specify "files" do
@@ -272,53 +268,49 @@ describe Tap do
   end
 
   specify "#install and #uninstall" do
-    begin
-      setup_tap_files
-      setup_git_repo
+    setup_tap_files
+    setup_git_repo
 
-      tap = described_class.new("Homebrew", "bar")
+    tap = described_class.new("Homebrew", "bar")
 
-      tap.install clone_target: subject.path/".git"
+    tap.install clone_target: subject.path/".git"
 
-      expect(tap).to be_installed
-      expect(HOMEBREW_PREFIX/"share/man/man1/brew-tap-cmd.1").to be_a_file
-      expect(HOMEBREW_PREFIX/"etc/bash_completion.d/brew-tap-cmd").to be_a_file
-      expect(HOMEBREW_PREFIX/"share/zsh/site-functions/_brew-tap-cmd").to be_a_file
-      expect(HOMEBREW_PREFIX/"share/fish/vendor_completions.d/brew-tap-cmd.fish").to be_a_file
-      tap.uninstall
+    expect(tap).to be_installed
+    expect(HOMEBREW_PREFIX/"share/man/man1/brew-tap-cmd.1").to be_a_file
+    expect(HOMEBREW_PREFIX/"etc/bash_completion.d/brew-tap-cmd").to be_a_file
+    expect(HOMEBREW_PREFIX/"share/zsh/site-functions/_brew-tap-cmd").to be_a_file
+    expect(HOMEBREW_PREFIX/"share/fish/vendor_completions.d/brew-tap-cmd.fish").to be_a_file
+    tap.uninstall
 
-      expect(tap).not_to be_installed
-      expect(HOMEBREW_PREFIX/"share/man/man1/brew-tap-cmd.1").not_to exist
-      expect(HOMEBREW_PREFIX/"share/man/man1").not_to exist
-      expect(HOMEBREW_PREFIX/"etc/bash_completion.d/brew-tap-cmd").not_to exist
-      expect(HOMEBREW_PREFIX/"share/zsh/site-functions/_brew-tap-cmd").not_to exist
-      expect(HOMEBREW_PREFIX/"share/fish/vendor_completions.d/brew-tap-cmd.fish").not_to exist
-    ensure
-      (HOMEBREW_PREFIX/"etc").rmtree if (HOMEBREW_PREFIX/"etc").exist?
-      (HOMEBREW_PREFIX/"share").rmtree if (HOMEBREW_PREFIX/"share").exist?
-    end
+    expect(tap).not_to be_installed
+    expect(HOMEBREW_PREFIX/"share/man/man1/brew-tap-cmd.1").not_to exist
+    expect(HOMEBREW_PREFIX/"share/man/man1").not_to exist
+    expect(HOMEBREW_PREFIX/"etc/bash_completion.d/brew-tap-cmd").not_to exist
+    expect(HOMEBREW_PREFIX/"share/zsh/site-functions/_brew-tap-cmd").not_to exist
+    expect(HOMEBREW_PREFIX/"share/fish/vendor_completions.d/brew-tap-cmd.fish").not_to exist
+  ensure
+    (HOMEBREW_PREFIX/"etc").rmtree if (HOMEBREW_PREFIX/"etc").exist?
+    (HOMEBREW_PREFIX/"share").rmtree if (HOMEBREW_PREFIX/"share").exist?
   end
 
   specify "#link_completions_and_manpages" do
-    begin
-      setup_tap_files
-      setup_git_repo
-      tap = described_class.new("Homebrew", "baz")
-      tap.install clone_target: subject.path/".git"
-      (HOMEBREW_PREFIX/"share/man/man1/brew-tap-cmd.1").delete
-      (HOMEBREW_PREFIX/"etc/bash_completion.d/brew-tap-cmd").delete
-      (HOMEBREW_PREFIX/"share/zsh/site-functions/_brew-tap-cmd").delete
-      (HOMEBREW_PREFIX/"share/fish/vendor_completions.d/brew-tap-cmd.fish").delete
-      tap.link_completions_and_manpages
-      expect(HOMEBREW_PREFIX/"share/man/man1/brew-tap-cmd.1").to be_a_file
-      expect(HOMEBREW_PREFIX/"etc/bash_completion.d/brew-tap-cmd").to be_a_file
-      expect(HOMEBREW_PREFIX/"share/zsh/site-functions/_brew-tap-cmd").to be_a_file
-      expect(HOMEBREW_PREFIX/"share/fish/vendor_completions.d/brew-tap-cmd.fish").to be_a_file
-      tap.uninstall
-    ensure
-      (HOMEBREW_PREFIX/"etc").rmtree if (HOMEBREW_PREFIX/"etc").exist?
-      (HOMEBREW_PREFIX/"share").rmtree if (HOMEBREW_PREFIX/"share").exist?
-    end
+    setup_tap_files
+    setup_git_repo
+    tap = described_class.new("Homebrew", "baz")
+    tap.install clone_target: subject.path/".git"
+    (HOMEBREW_PREFIX/"share/man/man1/brew-tap-cmd.1").delete
+    (HOMEBREW_PREFIX/"etc/bash_completion.d/brew-tap-cmd").delete
+    (HOMEBREW_PREFIX/"share/zsh/site-functions/_brew-tap-cmd").delete
+    (HOMEBREW_PREFIX/"share/fish/vendor_completions.d/brew-tap-cmd.fish").delete
+    tap.link_completions_and_manpages
+    expect(HOMEBREW_PREFIX/"share/man/man1/brew-tap-cmd.1").to be_a_file
+    expect(HOMEBREW_PREFIX/"etc/bash_completion.d/brew-tap-cmd").to be_a_file
+    expect(HOMEBREW_PREFIX/"share/zsh/site-functions/_brew-tap-cmd").to be_a_file
+    expect(HOMEBREW_PREFIX/"share/fish/vendor_completions.d/brew-tap-cmd.fish").to be_a_file
+    tap.uninstall
+  ensure
+    (HOMEBREW_PREFIX/"etc").rmtree if (HOMEBREW_PREFIX/"etc").exist?
+    (HOMEBREW_PREFIX/"share").rmtree if (HOMEBREW_PREFIX/"share").exist?
   end
 
   specify "#pin and #unpin" do

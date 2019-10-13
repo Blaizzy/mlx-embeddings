@@ -68,26 +68,22 @@ module Homebrew
 
     uses = formulae.select do |f|
       used_formulae.all? do |ff|
-        begin
-          deps = f.runtime_dependencies if only_installed_arg
-          deps ||= if recursive
-            recursive_includes(Dependency, f, includes, ignores)
-          else
-            reject_ignores(f.deps, ignores, includes)
-          end
-
-          deps.any? do |dep|
-            begin
-              dep.to_formula.full_name == ff.full_name
-            rescue
-              dep.name == ff.name
-            end
-          end
-        rescue FormulaUnavailableError
-          # Silently ignore this case as we don't care about things used in
-          # taps that aren't currently tapped.
-          next
+        deps = f.runtime_dependencies if only_installed_arg
+        deps ||= if recursive
+          recursive_includes(Dependency, f, includes, ignores)
+        else
+          reject_ignores(f.deps, ignores, includes)
         end
+
+        deps.any? do |dep|
+          dep.to_formula.full_name == ff.full_name
+        rescue
+          dep.name == ff.name
+        end
+      rescue FormulaUnavailableError
+        # Silently ignore this case as we don't care about things used in
+        # taps that aren't currently tapped.
+        next
       end
     end
 

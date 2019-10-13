@@ -351,28 +351,26 @@ class FormulaInstaller
     return if ARGV.force?
 
     conflicts = formula.conflicts.select do |c|
-      begin
-        f = Formulary.factory(c.name)
-      rescue TapFormulaUnavailableError
-        # If the formula name is a fully-qualified name let's silently
-        # ignore it as we don't care about things used in taps that aren't
-        # currently tapped.
-        false
-      rescue FormulaUnavailableError => e
-        # If the formula name doesn't exist any more then complain but don't
-        # stop installation from continuing.
-        opoo <<~EOS
+      f = Formulary.factory(c.name)
+    rescue TapFormulaUnavailableError
+      # If the formula name is a fully-qualified name let's silently
+      # ignore it as we don't care about things used in taps that aren't
+      # currently tapped.
+      false
+    rescue FormulaUnavailableError => e
+      # If the formula name doesn't exist any more then complain but don't
+      # stop installation from continuing.
+      opoo <<~EOS
           #{formula}: #{e.message}
           'conflicts_with \"#{c.name}\"' should be removed from #{formula.path.basename}.
         EOS
 
-        raise if ARGV.homebrew_developer?
+      raise if ARGV.homebrew_developer?
 
-        $stderr.puts "Please report this to the #{formula.tap} tap!"
-        false
-      else
-        f.linked_keg.exist? && f.opt_prefix.exist?
-      end
+      $stderr.puts "Please report this to the #{formula.tap} tap!"
+      false
+    else
+      f.linked_keg.exist? && f.opt_prefix.exist?
     end
 
     raise FormulaConflictError.new(formula, conflicts) unless conflicts.empty?

@@ -142,17 +142,15 @@ class BottlePublisher
         retry_count = 0
         # We're in the cache; make sure to force re-download
         loop do
-          begin
-            curl_download url, to: filename
-            break
-          rescue
-            raise "Failed to download #{f} bottle from #{url}!" if retry_count >= max_curl_retries
+          curl_download url, to: filename
+          break
+        rescue
+          raise "Failed to download #{f} bottle from #{url}!" if retry_count >= max_curl_retries
 
-            puts "curl download failed; retrying in #{curl_retry_delay_seconds} sec"
-            sleep curl_retry_delay_seconds
-            curl_retry_delay_seconds *= 2
-            retry_count += 1
-          end
+          puts "curl download failed; retrying in #{curl_retry_delay_seconds} sec"
+          sleep curl_retry_delay_seconds
+          curl_retry_delay_seconds *= 2
+          retry_count += 1
         end
         checksum = Checksum.new(:sha256, bottle_info["sha256"])
         Pathname.new(filename).verify_checksum(checksum)

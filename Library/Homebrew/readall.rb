@@ -37,15 +37,13 @@ module Readall
     def valid_formulae?(formulae)
       failed = false
       formulae.each do |file|
-        begin
-          Formulary.factory(file)
-        rescue Interrupt
-          raise
-        rescue Exception => e # rubocop:disable Lint/RescueException
-          onoe "Invalid formula: #{file}"
-          puts e
-          failed = true
-        end
+        Formulary.factory(file)
+      rescue Interrupt
+        raise
+      rescue Exception => e # rubocop:disable Lint/RescueException
+        onoe "Invalid formula: #{file}"
+        puts e
+        failed = true
       end
       !failed
     end

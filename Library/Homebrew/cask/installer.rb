@@ -111,12 +111,10 @@ module Cask
       return unless @cask.conflicts_with
 
       @cask.conflicts_with[:cask].each do |conflicting_cask|
-        begin
-          conflicting_cask = CaskLoader.load(conflicting_cask)
-          raise CaskConflictError.new(@cask, conflicting_cask) if conflicting_cask.installed?
-        rescue CaskUnavailableError
-          next # Ignore conflicting Casks that do not exist.
-        end
+        conflicting_cask = CaskLoader.load(conflicting_cask)
+        raise CaskConflictError.new(@cask, conflicting_cask) if conflicting_cask.installed?
+      rescue CaskUnavailableError
+        next # Ignore conflicting Casks that do not exist.
       end
     end
 

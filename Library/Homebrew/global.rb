@@ -106,11 +106,9 @@ require "PATH"
 
 ENV["HOMEBREW_PATH"] ||= ENV["PATH"]
 ORIGINAL_PATHS = PATH.new(ENV["HOMEBREW_PATH"]).map do |p|
-  begin
-    Pathname.new(p).expand_path
-  rescue
-    nil
-  end
+  Pathname.new(p).expand_path
+rescue
+  nil
 end.compact.freeze
 
 HOMEBREW_INTERNAL_COMMAND_ALIASES = {

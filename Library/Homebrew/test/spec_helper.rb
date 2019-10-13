@@ -217,11 +217,9 @@ RSpec::Matchers.alias_matcher :a_string_containing, :include
 
 RSpec::Matchers.define :a_json_string do
   match do |actual|
-    begin
-      JSON.parse(actual)
-      true
-    rescue JSON::ParserError
-      false
-    end
+    JSON.parse(actual)
+    true
+  rescue JSON::ParserError
+    false
   end
 end

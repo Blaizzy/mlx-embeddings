@@ -213,11 +213,9 @@ module SharedEnvExtension
     path.append(
       # user paths
       ORIGINAL_PATHS.map do |p|
-        begin
-          p.realpath.to_s
-        rescue
-          nil
-        end
+        p.realpath.to_s
+      rescue
+        nil
       end - %w[/usr/X11/bin /opt/X11/bin],
     )
     self["PATH"] = path

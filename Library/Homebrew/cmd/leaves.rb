@@ -25,11 +25,9 @@ module Homebrew
 
     deps_of_installed = installed.flat_map do |f|
       f.runtime_dependencies.map do |dep|
-        begin
-          dep.to_formula.full_name
-        rescue FormulaUnavailableError
-          dep.name
-        end
+        dep.to_formula.full_name
+      rescue FormulaUnavailableError
+        dep.name
       end
     end
 

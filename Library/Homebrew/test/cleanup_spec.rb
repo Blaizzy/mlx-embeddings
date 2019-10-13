@@ -34,15 +34,13 @@ describe Homebrew::Cleanup do
   let(:lock_file) { Pathname.new("#{HOMEBREW_LOCKS}/foo") }
 
   around do |example|
-    begin
-      FileUtils.touch ds_store
-      FileUtils.touch lock_file
+    FileUtils.touch ds_store
+    FileUtils.touch lock_file
 
-      example.run
-    ensure
-      FileUtils.rm_f ds_store
-      FileUtils.rm_f lock_file
-    end
+    example.run
+  ensure
+    FileUtils.rm_f ds_store
+    FileUtils.rm_f lock_file
   end
 
   describe "::cleanup" do

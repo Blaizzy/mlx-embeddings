@@ -41,14 +41,12 @@ RSpec.shared_context "integration test" do
   end
 
   around do |example|
-    begin
-      (HOMEBREW_PREFIX/"bin").mkpath
-      FileUtils.touch HOMEBREW_PREFIX/"bin/brew"
+    (HOMEBREW_PREFIX/"bin").mkpath
+    FileUtils.touch HOMEBREW_PREFIX/"bin/brew"
 
-      example.run
-    ensure
-      FileUtils.rm_r HOMEBREW_PREFIX/"bin"
-    end
+    example.run
+  ensure
+    FileUtils.rm_r HOMEBREW_PREFIX/"bin"
   end
 
   # Generate unique ID to be able to
@@ -94,11 +92,9 @@ RSpec.shared_context "integration test" do
         simplecov_spec = Gem.loaded_specs["simplecov"]
         specs = [simplecov_spec]
         simplecov_spec.runtime_dependencies.each do |dep|
-          begin
-            specs += dep.to_specs
-          rescue Gem::LoadError => e
-            onoe e
-          end
+          specs += dep.to_specs
+        rescue Gem::LoadError => e
+          onoe e
         end
         libs = specs.flat_map do |spec|
           full_gem_path = spec.full_gem_path

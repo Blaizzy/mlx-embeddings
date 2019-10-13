@@ -33,15 +33,13 @@ RSpec.shared_context "custom internal commands" do
   end
 
   around do |example|
-    begin
-      cmds.each do |f|
-        FileUtils.touch f
-      end
-
-      example.run
-    ensure
-      FileUtils.rm_f cmds
+    cmds.each do |f|
+      FileUtils.touch f
     end
+
+    example.run
+  ensure
+    FileUtils.rm_f cmds
   end
 end
 
