@@ -229,9 +229,9 @@ class Version
 
     stem = if spec.directory?
       spec.basename
-    elsif %r{((?:sourceforge\.net|sf\.net)/.*)/download$}.match?(spec_s)
+    elsif spec_s.match?(%r{((?:sourceforge\.net|sf\.net)/.*)/download$})
       Pathname.new(spec.dirname).stem
-    elsif /\.[^a-zA-Z]+$/.match?(spec_s)
+    elsif spec_s.match?(/\.[^a-zA-Z]+$/)
       Pathname.new(spec_s).basename
     else
       spec.stem

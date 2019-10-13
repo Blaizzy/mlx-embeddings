@@ -342,7 +342,7 @@ module SharedEnvExtension
   end
 
   def check_for_compiler_universal_support
-    return unless GNU_GCC_REGEXP.match?(homebrew_cc)
+    return unless homebrew_cc.match?(GNU_GCC_REGEXP)
 
     raise "Non-Apple GCC can't build universal binaries"
   end

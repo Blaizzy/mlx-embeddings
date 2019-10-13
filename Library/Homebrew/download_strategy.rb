@@ -242,7 +242,7 @@ class AbstractFileDownloadStrategy < AbstractDownloadStrategy
   end
 
   def parse_basename(url)
-    uri_path = if URI::DEFAULT_PARSER.make_regexp&.match?(url)
+    uri_path = if url.match?(URI::DEFAULT_PARSER.make_regexp)
       uri = URI(url)
 
       if uri.query
@@ -860,7 +860,7 @@ class CVSDownloadStrategy < VCSDownloadStrategy
 
     if meta.key?(:module)
       @module = meta.fetch(:module)
-    elsif !%r{:[^/]+$}.match?(@url)
+    elsif !@url.match?(%r{:[^/]+$})
       @module = name
     else
       @module, @url = split_url(@url)

@@ -400,7 +400,7 @@ module Homebrew
           path.extend(ObserverPathnameExtension)
           if path.symlink?
             unless path.resolved_path_exists?
-              if Keg::INFOFILE_RX.match?(path.to_s)
+              if path.to_s.match?(Keg::INFOFILE_RX)
                 path.uninstall_info unless dry_run?
               end
 

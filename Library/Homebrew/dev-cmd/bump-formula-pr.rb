@@ -156,7 +156,7 @@ module Homebrew
         gnu_tar_gtar_path = HOMEBREW_PREFIX/"opt/gnu-tar/bin/gtar"
         gnu_tar_gtar = gnu_tar_gtar_path if gnu_tar_gtar_path.executable?
         tar = which("gtar") || gnu_tar_gtar || which("tar")
-        if %r{/.*\.}.match?(Utils.popen_read(tar, "-tf", resource_path))
+        if Utils.popen_read(tar, "-tf", resource_path).match?(%r{/.*\.})
           new_hash = resource_path.sha256
         else
           odie "#{resource_path} is not a valid tar file!"
@@ -310,7 +310,7 @@ module Homebrew
           end
           username = response.fetch("owner").fetch("login")
         rescue GitHub::AuthenticationFailedError => e
-          raise unless /forking is disabled/.match?(e.github_message)
+          raise unless e.github_message.match?(/forking is disabled/)
 
           # If the repository is private, forking might be disabled.
           # Create branches in the repository itself instead.

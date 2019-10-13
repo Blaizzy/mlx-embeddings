@@ -73,8 +73,8 @@ describe RuboCop::Cop::FormulaAudit::Homepage do
         RUBY
 
         inspect_source(source)
-        if %r{http:\/\/www\.freedesktop\.org}.match?(homepage)
-          if /Software/.match?(homepage)
+        if homepage.match?(%r{http:\/\/www\.freedesktop\.org})
+          if homepage.match?(/Software/)
             expected_offenses = [{  message:  "#{homepage} should be styled " \
                                              "`https://wiki.freedesktop.org/www/Software/project_name`",
                                     severity: :convention,
@@ -89,13 +89,13 @@ describe RuboCop::Cop::FormulaAudit::Homepage do
                                     column:   2,
                                     source:   source }]
           end
-        elsif %r{https:\/\/code\.google\.com}.match?(homepage)
+        elsif homepage.match?(%r{https:\/\/code\.google\.com})
           expected_offenses = [{  message:  "#{homepage} should end with a slash",
                                   severity: :convention,
                                   line:     2,
                                   column:   2,
                                   source:   source }]
-        elsif /foo\.(sf|sourceforge)\.net/.match?(homepage)
+        elsif homepage.match?(/foo\.(sf|sourceforge)\.net/)
           expected_offenses = [{  message:  "#{homepage} should be `https://foo.sourceforge.io/`",
                                   severity: :convention,
                                   line:     2,

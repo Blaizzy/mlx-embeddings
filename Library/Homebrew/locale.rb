@@ -13,7 +13,7 @@ class Locale
   def self.parse(string)
     string = string.to_s
 
-    raise ParserError, "'#{string}' cannot be parsed to a #{self}" unless LOCALE_REGEX.match?(string)
+    raise ParserError, "'#{string}' cannot be parsed to a #{self}" unless string.match?(LOCALE_REGEX)
 
     scan = proc do |regex|
       string.scan(/(?:\-|^)(#{regex})(?:\-|$)/).flatten.first

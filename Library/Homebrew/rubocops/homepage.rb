@@ -17,7 +17,7 @@ module RuboCop
 
           problem "Formula should have a homepage." if homepage_node.nil? || homepage.empty?
 
-          unless %r{^https?://}.match?(homepage)
+          unless homepage.match?(%r{^https?://})
             problem "The homepage should start with http or https (URL is #{homepage})."
           end
 
