@@ -106,11 +106,8 @@ module UnpackStrategy
     end
 
     def self.can_extract?(path)
-      imageinfo = system_command("hdiutil",
-                                 args:         ["imageinfo", path],
-                                 print_stderr: false).stdout
-
-      !imageinfo.empty?
+      stdout, _, status = system_command("hdiutil", args: ["imageinfo", path], print_stderr: false)
+      status.success? && !stdout.empty?
     end
 
     private

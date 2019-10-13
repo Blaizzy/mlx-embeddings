@@ -22,9 +22,8 @@ module UnpackStrategy
       return false unless [Bzip2, Gzip, Lzip, Xz].any? { |s| s.can_extract?(path) }
 
       # Check if `tar` can list the contents, then it can also extract it.
-      IO.popen(["tar", "tf", path], err: File::NULL) do |stdout|
-        !stdout.read(1).nil?
-      end
+      stdout, _, status = system_command("tar", args: ["tf", path], print_stderr: false)
+      status.success? && !stdout.empty?
     end
 
     private
