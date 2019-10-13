@@ -195,7 +195,7 @@ module RuboCop
           # Use new-style archive downloads
           archive_gh_pattern = %r{https://.*github.*/(?:tar|zip)ball/}
           audit_urls(urls, archive_gh_pattern) do |_, url|
-            next unless !/\.git$/.match?(url)
+            next if /\.git$/.match?(url)
 
             problem "Use /archive/ URLs for GitHub tarballs (url is #{url})."
           end
@@ -203,7 +203,7 @@ module RuboCop
           # Don't use GitHub .zip files
           zip_gh_pattern = %r{https://.*github.*/(archive|releases)/.*\.zip$}
           audit_urls(urls, zip_gh_pattern) do |_, url|
-            next unless !%r{releases/download}.match?(url)
+            next if %r{releases/download}.match?(url)
 
             problem "Use GitHub tarballs rather than zipballs (url is #{url})."
           end
