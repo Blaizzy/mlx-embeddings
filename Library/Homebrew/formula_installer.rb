@@ -370,7 +370,7 @@ class FormulaInstaller
       $stderr.puts "Please report this to the #{formula.tap} tap!"
       false
                 else
-      f.linked_keg.exist? && f.opt_prefix.exist?
+                  f.linked_keg.exist? && f.opt_prefix.exist?
     end
 
     raise FormulaConflictError.new(formula, conflicts) unless conflicts.empty?

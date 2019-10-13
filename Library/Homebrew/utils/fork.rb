@@ -54,7 +54,7 @@ module Utils
 
           exit!
               else
-          exit!(true)
+                exit!(true)
         end
 
         ignore_interrupts(:quietly) do # the child will receive the interrupt and marshal it back
