@@ -88,7 +88,7 @@ module Homebrew
       readme.read[/(Former maintainers .*\.)/, 1]
             .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1')
 
-    ERB.new(template, nil, ">").result(variables.instance_eval { binding })
+    ERB.new(template, trim_mode: ">").result(variables.instance_eval { binding })
   end
 
   def sort_key_for_path(path)
