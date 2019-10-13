@@ -264,7 +264,7 @@ module Homebrew
 
       problem "'__END__' was found, but 'DATA' is not used" if text.end? && !text.data?
 
-      if /inreplace [^\n]* do [^\n]*\n[^\n]*\.gsub![^\n]*\n\ *end/m.match?(text)
+      if /inreplace [^\n]* do [^\n]*\n[^\n]*\.gsub![^\n]*\n\ *end/m.match?(text.to_s)
         problem "'inreplace ... do' was used for a single substitution (use the non-block form instead)."
       end
 
@@ -888,7 +888,7 @@ module Homebrew
       end
       bin_names.each do |name|
         ["system", "shell_output", "pipe_output"].each do |cmd|
-          if /test do.*#{cmd}[\(\s]+['"]#{Regexp.escape(name)}[\s'"]/m.match?(text)
+          if /test do.*#{cmd}[\(\s]+['"]#{Regexp.escape(name)}[\s'"]/m.match?(text.to_s)
             problem %Q(fully scope test #{cmd} calls, e.g. #{cmd} "\#{bin}/#{name}")
           end
         end
