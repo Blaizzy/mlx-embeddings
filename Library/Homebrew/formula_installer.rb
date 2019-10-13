@@ -363,7 +363,7 @@ class FormulaInstaller
       opoo <<~EOS
         #{formula}: #{e.message}
         'conflicts_with \"#{c.name}\"' should be removed from #{formula.path.basename}.
-        EOS
+      EOS
 
       raise if ARGV.homebrew_developer?
 
