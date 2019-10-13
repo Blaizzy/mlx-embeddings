@@ -30,7 +30,7 @@ module RuboCop
           patch_url = string_content(patch)
           gh_patch_param_pattern = %r{https?://github\.com/.+/.+/(?:commit|pull)/[a-fA-F0-9]*.(?:patch|diff)}
           if regex_match_group(patch, gh_patch_param_pattern)
-            if patch_url !~ /\?full_index=\w+$/
+            if !/\?full_index=\w+$/.match?(patch_url)
               problem <<~EOS
                 GitHub patches should use the full_index parameter:
                   #{patch_url}?full_index=1
@@ -43,7 +43,7 @@ module RuboCop
                                             %r{gist\.github\.com/.+/raw},
                                             %r{gist\.githubusercontent\.com/.+/raw}])
           if regex_match_group(patch, gh_patch_patterns)
-            if patch_url !~ /[a-fA-F0-9]{40}/
+            if !/[a-fA-F0-9]{40}/.match?(patch_url)
               problem <<~EOS.chomp
                 GitHub/Gist patches should specify a revision:
                   #{patch_url}

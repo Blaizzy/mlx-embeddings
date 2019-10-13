@@ -225,7 +225,7 @@ class SystemCommand
 
     def warn_plist_garbage(garbage)
       return unless ARGV.verbose?
-      return unless garbage =~ /\S/
+      return unless /\S/.match?(garbage)
 
       opoo "Received non-XML output from #{Formatter.identifier(command.first)}:"
       $stderr.puts garbage.strip

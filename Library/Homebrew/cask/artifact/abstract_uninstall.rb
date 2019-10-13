@@ -91,7 +91,7 @@ module Cask
               args: ["list", service],
               sudo: with_sudo, print_stderr: false
             ).stdout
-            if plist_status =~ /^\{/
+            if /^\{/.match?(plist_status)
               command.run!("/bin/launchctl", args: ["remove", service], sudo: with_sudo)
               sleep 1
             end

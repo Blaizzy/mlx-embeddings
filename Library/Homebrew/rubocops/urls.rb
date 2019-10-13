@@ -123,18 +123,18 @@ module RuboCop
 
             problem "Don't use /download in SourceForge urls (url is #{url})." if url.end_with?("/download")
 
-            if url =~ %r{^https?://sourceforge\.}
+            if %r{^https?://sourceforge\.}.match?(url)
               problem "Use https://downloads.sourceforge.net to get geolocation (url is #{url})."
             end
 
-            if url =~ %r{^https?://prdownloads\.}
+            if %r{^https?://prdownloads\.}.match?(url)
               problem <<~EOS.chomp
                 Don't use prdownloads in SourceForge urls (url is #{url}).
                         See: http://librelist.com/browser/homebrew/2011/1/12/prdownloads-is-bad/
               EOS
             end
 
-            if url =~ %r{^http://\w+\.dl\.}
+            if %r{^http://\w+\.dl\.}.match?(url)
               problem "Don't use specific dl mirrors in SourceForge urls (url is #{url})."
             end
 
@@ -195,7 +195,7 @@ module RuboCop
           # Use new-style archive downloads
           archive_gh_pattern = %r{https://.*github.*/(?:tar|zip)ball/}
           audit_urls(urls, archive_gh_pattern) do |_, url|
-            next unless url !~ /\.git$/
+            next unless !/\.git$/.match?(url)
 
             problem "Use /archive/ URLs for GitHub tarballs (url is #{url})."
           end
@@ -203,7 +203,7 @@ module RuboCop
           # Don't use GitHub .zip files
           zip_gh_pattern = %r{https://.*github.*/(archive|releases)/.*\.zip$}
           audit_urls(urls, zip_gh_pattern) do |_, url|
-            next unless url !~ %r{releases/download}
+            next unless !%r{releases/download}.match?(url)
 
             problem "Use GitHub tarballs rather than zipballs (url is #{url})."
           end

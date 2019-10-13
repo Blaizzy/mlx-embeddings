@@ -270,7 +270,7 @@ class Keg
 
     aliases.each do |a|
       # versioned aliases are handled below
-      next if a =~ /.+@./
+      next if /.+@./.match?(a)
 
       alias_symlink = opt/a
       if alias_symlink.symlink? && alias_symlink.exist?
@@ -340,7 +340,7 @@ class Keg
           next
         end
 
-        dst.uninstall_info if dst.to_s =~ INFOFILE_RX
+        dst.uninstall_info if INFOFILE_RX.match?(dst.to_s)
         dst.unlink
         remove_old_aliases
         Find.prune if src.directory?
@@ -492,7 +492,7 @@ class Keg
       # the :link strategy. However, for Foo.framework and
       # Foo.framework/Versions we have to use :mkpath so that multiple formulae
       # can link their versions into it and `brew [un]link` works.
-      if relative_path.to_s =~ %r{[^/]*\.framework(/Versions)?$}
+      if %r{[^/]*\.framework(/Versions)?$}.match?(relative_path.to_s)
         :mkpath
       else
         :link

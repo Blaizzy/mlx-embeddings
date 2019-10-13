@@ -28,7 +28,7 @@ class JavaRequirement < Requirement
   end
 
   def initialize(tags = [])
-    @version = tags.shift if /^\d/ =~ tags.first
+    @version = tags.shift if /^\d/.match?(tags.first)
     super(tags)
     @cask = suggestion.token
   end

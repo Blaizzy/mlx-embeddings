@@ -122,7 +122,7 @@ module Homebrew
             properly. You can solve this by adding the remote:
               git -C "#{repository_path}" remote add origin #{Formatter.url("https://github.com/#{desired_origin}.git")}
           EOS
-        elsif current_origin !~ %r{#{desired_origin}(\.git|/)?$}i
+        elsif !%r{#{desired_origin}(\.git|/)?$}i.match?(current_origin)
           <<~EOS
             Suspicious #{desired_origin} git origin remote found.
             The current git origin is:

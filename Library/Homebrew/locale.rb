@@ -13,7 +13,7 @@ class Locale
   def self.parse(string)
     string = string.to_s
 
-    raise ParserError, "'#{string}' cannot be parsed to a #{self}" if string !~ LOCALE_REGEX
+    raise ParserError, "'#{string}' cannot be parsed to a #{self}" if !LOCALE_REGEX.match?(string)
 
     scan = proc do |regex|
       string.scan(/(?:\-|^)(#{regex})(?:\-|$)/).flatten.first
@@ -39,7 +39,7 @@ class Locale
       next if value.nil?
 
       regex = self.class.const_get("#{key.upcase}_REGEX")
-      raise ParserError, "'#{value}' does not match #{regex}" unless value =~ regex
+      raise ParserError, "'#{value}' does not match #{regex}" unless value&.match?(regex)
 
       instance_variable_set(:"@#{key}", value)
     end

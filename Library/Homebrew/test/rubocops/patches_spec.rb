@@ -48,7 +48,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
         EOS
 
         inspect_source(source)
-        expected_offense = if patch_url =~ %r{/raw\.github\.com/}
+        expected_offense = if %r{/raw\.github\.com/}.match?(patch_url)
           [{ message:
                        <<~EOS.chomp,
                          GitHub/Gist patches should specify a revision:
@@ -58,7 +58,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
              line:     5,
              column:   12,
              source:   source }]
-        elsif patch_url =~ %r{macports/trunk}
+        elsif %r{macports/trunk}.match?(patch_url)
           [{ message:
                        <<~EOS.chomp,
                          MacPorts patches should specify a revision instead of trunk:
@@ -68,7 +68,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
              line:     5,
              column:   33,
              source:   source }]
-        elsif patch_url =~ %r{^http://trac\.macports\.org}
+        elsif %r{^http://trac\.macports\.org}.match?(patch_url)
           [{ message:
                        <<~EOS.chomp,
                          Patches from MacPorts Trac should be https://, not http:
@@ -78,7 +78,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
              line:     5,
              column:   5,
              source:   source }]
-        elsif patch_url =~ %r{^http://bugs\.debian\.org}
+        elsif %r{^http://bugs\.debian\.org}.match?(patch_url)
           [{ message:
                        <<~EOS.chomp,
                          Patches from Debian should be https://, not http:
@@ -88,7 +88,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
              line:     5,
              column:   5,
              source:   source }]
-        elsif patch_url =~ %r{https?://patch-diff\.githubusercontent\.com/raw/(.+)/(.+)/pull/(.+)\.(?:diff|patch)}
+        elsif %r{https?://patch-diff\.githubusercontent\.com/raw/(.+)/(.+)/pull/(.+)\.(?:diff|patch)}.match?(patch_url)
           [{ message:
                        <<~EOS,
                          use GitHub pull request URLs:
@@ -100,7 +100,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
              line:     5,
              column:   5,
              source:   source }]
-        elsif patch_url =~ %r{https?://github\.com/.+/.+/(?:commit|pull)/[a-fA-F0-9]*.(?:patch|diff)}
+        elsif %r{https?://github\.com/.+/.+/(?:commit|pull)/[a-fA-F0-9]*.(?:patch|diff)}.match?(patch_url)
           [{ message:
                        <<~EOS,
                          GitHub patches should use the full_index parameter:
@@ -183,7 +183,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
         RUBY
 
         inspect_source(source)
-        expected_offense = if patch_url =~ %r{/raw\.github\.com/}
+        expected_offense = if %r{/raw\.github\.com/}.match?(patch_url)
           [{ message:
                        <<~EOS.chomp,
                          GitHub/Gist patches should specify a revision:
@@ -193,7 +193,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
              line:     5,
              column:   16,
              source:   source }]
-        elsif patch_url =~ %r{macports/trunk}
+        elsif %r{macports/trunk}.match?(patch_url)
           [{ message:
                        <<~EOS.chomp,
                          MacPorts patches should specify a revision instead of trunk:
@@ -203,7 +203,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
              line:     5,
              column:   37,
              source:   source }]
-        elsif patch_url =~ %r{^http://trac\.macports\.org}
+        elsif %r{^http://trac\.macports\.org}.match?(patch_url)
           [{ message:
                        <<~EOS.chomp,
                          Patches from MacPorts Trac should be https://, not http:
@@ -213,7 +213,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
              line:     5,
              column:   9,
              source:   source }]
-        elsif patch_url =~ %r{^http://bugs\.debian\.org}
+        elsif %r{^http://bugs\.debian\.org}.match?(patch_url)
           [{ message:
                        <<~EOS.chomp,
                          Patches from Debian should be https://, not http:
@@ -223,7 +223,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
              line:     5,
              column:   9,
              source:   source }]
-        elsif patch_url =~ %r{https?://patch-diff\.githubusercontent\.com/raw/(.+)/(.+)/pull/(.+)\.(?:diff|patch)}
+        elsif %r{https?://patch-diff\.githubusercontent\.com/raw/(.+)/(.+)/pull/(.+)\.(?:diff|patch)}.match?(patch_url)
           [{ message:
                        <<~EOS,
                          use GitHub pull request URLs:

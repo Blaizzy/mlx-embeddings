@@ -22,7 +22,7 @@ class SystemConfig
     def describe_homebrew_ruby
       s = describe_homebrew_ruby_version
 
-      if RUBY_PATH.to_s !~ %r{^/System/Library/Frameworks/Ruby\.framework/Versions/[12]\.[089]/usr/bin/ruby}
+      if !%r{^/System/Library/Frameworks/Ruby\.framework/Versions/[12]\.[089]/usr/bin/ruby}.match?(RUBY_PATH.to_s)
         "#{s} => #{RUBY_PATH}"
       else
         s

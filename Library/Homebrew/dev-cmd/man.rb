@@ -203,7 +203,7 @@ module Homebrew
       end
 
       # Omit the common global_options documented separately in the man page.
-      next if line =~ /--(debug|force|help|quiet|verbose) /
+      next if /--(debug|force|help|quiet|verbose) /.match?(line)
 
       # Format one option or a comma-separated pair of short and long options.
       lines << line.gsub(/^ +(-+[a-z-]+), (-+[a-z-]+) +/, "* `\\1`, `\\2`:\n  ")
