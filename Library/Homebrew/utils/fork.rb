@@ -53,7 +53,7 @@ module Utils
           write.close
 
           exit!
-        else
+              else
           exit!(true)
         end
 
