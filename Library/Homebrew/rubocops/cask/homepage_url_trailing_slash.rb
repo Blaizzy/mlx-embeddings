@@ -17,7 +17,7 @@ module RuboCop
           url_node = stanza.stanza_node.first_argument
           url = url_node.str_content
 
-          return if !%r{^.+://[^/]+$}.match?(url)
+          return unless %r{^.+://[^/]+$}.match?(url)
 
           add_offense(url_node, location: :expression,
                                 message:  format(MSG_NO_SLASH, url: url))
