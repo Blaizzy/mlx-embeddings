@@ -21,11 +21,11 @@ module ELFShim
   ARCHITECTURE_AARCH64 = 0xB7
 
   def read_uint8(offset)
-    read(1, offset).unpack("C").first
+    read(1, offset).unpack1("C")
   end
 
   def read_uint16(offset)
-    read(2, offset).unpack("v").first
+    read(2, offset).unpack1("v")
   end
 
   def elf?
