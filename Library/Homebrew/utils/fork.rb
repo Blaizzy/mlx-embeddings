@@ -53,8 +53,8 @@ module Utils
           write.close
 
           exit!
-              else
-                exit!(true)
+        else # rubocop:disable Lint/ElseAlignment
+          exit!(true)
         end
 
         ignore_interrupts(:quietly) do # the child will receive the interrupt and marshal it back
