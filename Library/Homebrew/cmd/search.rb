@@ -100,10 +100,10 @@ module Homebrew
         puts Formatter.columns(all_casks)
       end
 
-      if $stdout.tty? && !local_casks.include?(query)
+      if $stdout.tty?
         count = all_formulae.count + all_casks.count
 
-        if reason = MissingFormula.reason(query, silent: true)
+        if reason = MissingFormula.reason(query, silent: true) && !local_casks.include?(query)
           if count.positive?
             puts
             puts "If you meant #{query.inspect} specifically:"
