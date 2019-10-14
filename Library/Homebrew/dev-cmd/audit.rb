@@ -264,7 +264,7 @@ module Homebrew
 
       problem "'__END__' was found, but 'DATA' is not used" if text.end? && !text.data?
 
-      if text =~ /inreplace [^\n]* do [^\n]*\n[^\n]*\.gsub![^\n]*\n\ *end/m
+      if text.to_s.match?(/inreplace [^\n]* do [^\n]*\n[^\n]*\.gsub![^\n]*\n\ *end/m)
         problem "'inreplace ... do' was used for a single substitution (use the non-block form instead)."
       end
 
@@ -434,16 +434,14 @@ module Homebrew
 
     def audit_conflicts
       formula.conflicts.each do |c|
-        begin
-          Formulary.factory(c.name)
-        rescue TapFormulaUnavailableError
-          # Don't complain about missing cross-tap conflicts.
-          next
-        rescue FormulaUnavailableError
-          problem "Can't find conflicting formula #{c.name.inspect}."
-        rescue TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
-          problem "Ambiguous conflicting formula #{c.name.inspect}."
-        end
+        Formulary.factory(c.name)
+      rescue TapFormulaUnavailableError
+        # Don't complain about missing cross-tap conflicts.
+        next
+      rescue FormulaUnavailableError
+        problem "Can't find conflicting formula #{c.name.inspect}."
+      rescue TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
+        problem "Ambiguous conflicting formula #{c.name.inspect}."
       end
     end
 
@@ -890,7 +888,7 @@ module Homebrew
       end
       bin_names.each do |name|
         ["system", "shell_output", "pipe_output"].each do |cmd|
-          if text =~ /test do.*#{cmd}[\(\s]+['"]#{Regexp.escape(name)}[\s'"]/m
+          if text.to_s.match?(/test do.*#{cmd}[\(\s]+['"]#{Regexp.escape(name)}[\s'"]/m)
             problem %Q(fully scope test #{cmd} calls, e.g. #{cmd} "\#{bin}/#{name}")
           end
         end
@@ -942,7 +940,7 @@ module Homebrew
 
       problem "`#{Regexp.last_match(1)}` is now unnecessary" if line =~ /(require ["']formula["'])/
 
-      if line =~ %r{#\{share\}/#{Regexp.escape(formula.name)}[/'"]}
+      if line.match?(%r{#\{share\}/#{Regexp.escape(formula.name)}[/'"]})
         problem "Use \#{pkgshare} instead of \#{share}/#{formula.name}"
       end
 
@@ -1069,7 +1067,7 @@ module Homebrew
 
       problem "version #{version} should not have a leading 'v'" if version.to_s.start_with?("v")
 
-      return unless version.to_s =~ /_\d+$/
+      return unless version.to_s.match?(/_\d+$/)
 
       problem "version #{version} should not end with an underline and a number"
     end
@@ -1092,7 +1090,7 @@ module Homebrew
 
         problem "Redundant :module value in URL" if mod == name
 
-        if url =~ %r{:[^/]+$}
+        if url.match?(%r{:[^/]+$})
           mod = url.split(":").last
 
           if mod == name
@@ -1131,7 +1129,7 @@ module Homebrew
         if strategy <= CurlDownloadStrategy && !url.start_with?("file")
           # A `brew mirror`'ed URL is usually not yet reachable at the time of
           # pull request.
-          next if url =~ %r{^https://dl.bintray.com/homebrew/mirror/}
+          next if url.match?(%r{^https://dl.bintray.com/homebrew/mirror/})
 
           if http_content_problem = curl_check_http_content(url)
             problem http_content_problem

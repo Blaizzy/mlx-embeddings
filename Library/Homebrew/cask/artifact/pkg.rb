@@ -65,13 +65,11 @@ module Cask
         return yield nil if choices.empty?
 
         Tempfile.open(["choices", ".xml"]) do |file|
-          begin
-            file.write Plist::Emit.dump(choices)
-            file.close
-            yield file.path
-          ensure
-            file.unlink
-          end
+          file.write Plist::Emit.dump(choices)
+          file.close
+          yield file.path
+        ensure
+          file.unlink
         end
       end
     end

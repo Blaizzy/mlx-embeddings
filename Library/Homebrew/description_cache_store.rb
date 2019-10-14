@@ -63,11 +63,9 @@ class DescriptionCacheStore < CacheStore
     return populate_if_empty! if database.empty?
 
     formula_names.each do |name|
-      begin
-        update!(name, Formula[name].desc)
-      rescue FormulaUnavailableError, *FormulaVersions::IGNORED_EXCEPTIONS
-        delete!(name)
-      end
+      update!(name, Formula[name].desc)
+    rescue FormulaUnavailableError, *FormulaVersions::IGNORED_EXCEPTIONS
+      delete!(name)
     end
   end
 

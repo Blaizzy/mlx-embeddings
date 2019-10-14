@@ -32,31 +32,29 @@ module Utils
         read, write = IO.pipe
 
         pid = fork do
-          begin
-            ENV["HOMEBREW_ERROR_PIPE"] = server.path
-            server.close
-            read.close
-            write.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)
-            yield
-          rescue Exception => e # rubocop:disable Lint/RescueException
-            error_hash = JSON.parse e.to_json
+          ENV["HOMEBREW_ERROR_PIPE"] = server.path
+          server.close
+          read.close
+          write.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)
+          yield
+        rescue Exception => e # rubocop:disable Lint/RescueException
+          error_hash = JSON.parse e.to_json
 
-            # Special case: We need to recreate ErrorDuringExecutions
-            # for proper error messages and because other code expects
-            # to rescue them further down.
-            if e.is_a?(ErrorDuringExecution)
-              error_hash["cmd"] = e.cmd
-              error_hash["status"] = e.status.exitstatus
-              error_hash["output"] = e.output
-            end
-
-            write.puts error_hash.to_json
-            write.close
-
-            exit!
-          else
-            exit!(true)
+          # Special case: We need to recreate ErrorDuringExecutions
+          # for proper error messages and because other code expects
+          # to rescue them further down.
+          if e.is_a?(ErrorDuringExecution)
+            error_hash["cmd"] = e.cmd
+            error_hash["status"] = e.status.exitstatus
+            error_hash["output"] = e.output
           end
+
+          write.puts error_hash.to_json
+          write.close
+
+          exit!
+        else # rubocop:disable Lint/ElseAlignment
+          exit!(true)
         end
 
         ignore_interrupts(:quietly) do # the child will receive the interrupt and marshal it back

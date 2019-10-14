@@ -213,11 +213,9 @@ module SharedEnvExtension
     path.append(
       # user paths
       ORIGINAL_PATHS.map do |p|
-        begin
-          p.realpath.to_s
-        rescue
-          nil
-        end
+        p.realpath.to_s
+      rescue
+        nil
       end - %w[/usr/X11/bin /opt/X11/bin],
     )
     self["PATH"] = path
@@ -344,7 +342,7 @@ module SharedEnvExtension
   end
 
   def check_for_compiler_universal_support
-    return unless homebrew_cc =~ GNU_GCC_REGEXP
+    return unless homebrew_cc.match?(GNU_GCC_REGEXP)
 
     raise "Non-Apple GCC can't build universal binaries"
   end

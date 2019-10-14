@@ -86,11 +86,9 @@ class Caveats
 
   def keg
     @keg ||= [f.prefix, f.opt_prefix, f.linked_keg].map do |d|
-      begin
-        Keg.new(d.resolved_path)
-      rescue
-        nil
-      end
+      Keg.new(d.resolved_path)
+    rescue
+      nil
     end.compact.first
   end
 

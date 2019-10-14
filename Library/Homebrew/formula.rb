@@ -266,7 +266,7 @@ class Formula
   # and is specified to this instance.
   def installed_alias_path
     path = build.source["path"] if build.is_a?(Tab)
-    return unless path =~ %r{#{HOMEBREW_TAP_DIR_REGEX}/Aliases}
+    return unless path&.match?(%r{#{HOMEBREW_TAP_DIR_REGEX}/Aliases})
     return unless File.symlink?(path)
 
     path
@@ -387,11 +387,9 @@ class Formula
     return [] if versioned_formula?
 
     Pathname.glob(path.to_s.gsub(/\.rb$/, "@*.rb")).map do |path|
-      begin
-        Formula[path.basename(".rb").to_s]
-      rescue FormulaUnavailableError
-        nil
-      end
+      Formula[path.basename(".rb").to_s]
+    rescue FormulaUnavailableError
+      nil
     end.compact.sort
   end
 
@@ -1387,14 +1385,12 @@ class Formula
   # @private
   def self.each
     files.each do |file|
-      begin
-        yield Formulary.factory(file)
-      rescue => e
-        # Don't let one broken formula break commands. But do complain.
-        onoe "Failed to import: #{file}"
-        puts e
-        next
-      end
+      yield Formulary.factory(file)
+    rescue => e
+      # Don't let one broken formula break commands. But do complain.
+      onoe "Failed to import: #{file}"
+      puts e
+      next
     end
   end
 
@@ -1425,11 +1421,9 @@ class Formula
   # @private
   def self.installed
     @installed ||= racks.flat_map do |rack|
-      begin
-        Formulary.from_rack(rack)
-      rescue
-        []
-      end
+      Formulary.from_rack(rack)
+    rescue
+      []
     end.uniq(&:name)
   end
 
@@ -1568,11 +1562,9 @@ class Formula
       read_from_tab: read_from_tab,
       undeclared:    undeclared,
     ).map do |d|
-      begin
-        d.to_formula
-      rescue FormulaUnavailableError
-        nil
-      end
+      d.to_formula
+    rescue FormulaUnavailableError
+      nil
     end.compact
   end
 

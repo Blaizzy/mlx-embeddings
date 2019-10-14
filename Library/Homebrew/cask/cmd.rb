@@ -200,11 +200,9 @@ module Cask
       end
 
       remaining = all_args.select do |arg|
-        begin
-          !process_arguments([arg]).empty?
-        rescue OptionParser::InvalidOption, OptionParser::MissingArgument, OptionParser::AmbiguousOption
-          true
-        end
+        !process_arguments([arg]).empty?
+      rescue OptionParser::InvalidOption, OptionParser::MissingArgument, OptionParser::AmbiguousOption
+        true
       end
 
       remaining + non_options

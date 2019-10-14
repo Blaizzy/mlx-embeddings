@@ -148,13 +148,11 @@ class SystemCommand
       break if readable_sources.empty?
 
       readable_sources.each do |source|
-        begin
-          line = source.readline_nonblock || ""
-          type = (source == sources[0]) ? :stdout : :stderr
-          yield(type, line)
-        rescue IO::WaitReadable, EOFError
-          next
-        end
+        line = source.readline_nonblock || ""
+        type = (source == sources[0]) ? :stdout : :stderr
+        yield(type, line)
+      rescue IO::WaitReadable, EOFError
+        next
       end
     end
 
@@ -225,7 +223,7 @@ class SystemCommand
 
     def warn_plist_garbage(garbage)
       return unless ARGV.verbose?
-      return unless garbage =~ /\S/
+      return unless garbage.match?(/\S/)
 
       opoo "Received non-XML output from #{Formatter.identifier(command.first)}:"
       $stderr.puts garbage.strip

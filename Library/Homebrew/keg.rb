@@ -128,17 +128,15 @@ class Keg
     keg_names = kegs.select(&:optlinked?).map(&:name)
     keg_formulae = []
     kegs_by_source = kegs.group_by do |keg|
-      begin
-        # First, attempt to resolve the keg to a formula
-        # to get up-to-date name and tap information.
-        f = keg.to_formula
-        keg_formulae << f
-        [f.name, f.tap]
-      rescue FormulaUnavailableError
-        # If the formula for the keg can't be found,
-        # fall back to the information in the tab.
-        [keg.name, keg.tab.tap]
-      end
+      # First, attempt to resolve the keg to a formula
+      # to get up-to-date name and tap information.
+      f = keg.to_formula
+      keg_formulae << f
+      [f.name, f.tap]
+    rescue FormulaUnavailableError
+      # If the formula for the keg can't be found,
+      # fall back to the information in the tab.
+      [keg.name, keg.tab.tap]
     end
 
     all_required_kegs = Set.new
@@ -270,7 +268,7 @@ class Keg
 
     aliases.each do |a|
       # versioned aliases are handled below
-      next if a =~ /.+@./
+      next if a.match?(/.+@./)
 
       alias_symlink = opt/a
       if alias_symlink.symlink? && alias_symlink.exist?
@@ -340,7 +338,7 @@ class Keg
           next
         end
 
-        dst.uninstall_info if dst.to_s =~ INFOFILE_RX
+        dst.uninstall_info if dst.to_s.match?(INFOFILE_RX)
         dst.unlink
         remove_old_aliases
         Find.prune if src.directory?
@@ -492,7 +490,7 @@ class Keg
       # the :link strategy. However, for Foo.framework and
       # Foo.framework/Versions we have to use :mkpath so that multiple formulae
       # can link their versions into it and `brew [un]link` works.
-      if relative_path.to_s =~ %r{[^/]*\.framework(/Versions)?$}
+      if relative_path.to_s.match?(%r{[^/]*\.framework(/Versions)?$})
         :mkpath
       else
         :link

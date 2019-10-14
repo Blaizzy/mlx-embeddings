@@ -66,10 +66,8 @@ end
 
 RSpec.configure do |config|
   config.after do
-    begin
-      FakeSystemCommand.verify_expectations!
-    ensure
-      FakeSystemCommand.clear
-    end
+    FakeSystemCommand.verify_expectations!
+  ensure
+    FakeSystemCommand.clear
   end
 end

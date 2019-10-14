@@ -122,7 +122,7 @@ module Homebrew
             properly. You can solve this by adding the remote:
               git -C "#{repository_path}" remote add origin #{Formatter.url("https://github.com/#{desired_origin}.git")}
           EOS
-        elsif current_origin !~ %r{#{desired_origin}(\.git|/)?$}i
+        elsif !current_origin.match?(%r{#{desired_origin}(\.git|/)?$}i)
           <<~EOS
             Suspicious #{desired_origin} git origin remote found.
             The current git origin is:
@@ -718,15 +718,13 @@ module Homebrew
       def check_for_unreadable_installed_formula
         formula_unavailable_exceptions = []
         Formula.racks.each do |rack|
-          begin
-            Formulary.from_rack(rack)
-          rescue FormulaUnreadableError, FormulaClassUnavailableError,
-                 TapFormulaUnreadableError, TapFormulaClassUnavailableError => e
-            formula_unavailable_exceptions << e
-          rescue FormulaUnavailableError,
-                 TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
-            nil
-          end
+          Formulary.from_rack(rack)
+        rescue FormulaUnreadableError, FormulaClassUnavailableError,
+               TapFormulaUnreadableError, TapFormulaClassUnavailableError => e
+          formula_unavailable_exceptions << e
+        rescue FormulaUnavailableError,
+               TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
+          nil
         end
         return if formula_unavailable_exceptions.empty?
 

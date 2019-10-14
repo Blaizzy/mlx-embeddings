@@ -88,7 +88,7 @@ module Homebrew
       readme.read[/(Former maintainers .*\.)/, 1]
             .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1')
 
-    ERB.new(template, nil, ">").result(variables.instance_eval { binding })
+    ERB.new(template, trim_mode: ">").result(variables.instance_eval { binding })
   end
 
   def sort_key_for_path(path)
@@ -203,7 +203,7 @@ module Homebrew
       end
 
       # Omit the common global_options documented separately in the man page.
-      next if line =~ /--(debug|force|help|quiet|verbose) /
+      next if line.match?(/--(debug|force|help|quiet|verbose) /)
 
       # Format one option or a comma-separated pair of short and long options.
       lines << line.gsub(/^ +(-+[a-z-]+), (-+[a-z-]+) +/, "* `\\1`, `\\2`:\n  ")

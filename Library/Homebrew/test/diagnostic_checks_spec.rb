@@ -73,20 +73,18 @@ describe Homebrew::Diagnostic::Checks do
   end
 
   specify "#check_user_path_3" do
-    begin
-      sbin = HOMEBREW_PREFIX/"sbin"
-      ENV["HOMEBREW_PATH"] =
-        "#{HOMEBREW_PREFIX}/bin#{File::PATH_SEPARATOR}" +
-        ENV["HOMEBREW_PATH"].gsub(/(?:^|#{Regexp.escape(File::PATH_SEPARATOR)})#{Regexp.escape(sbin)}/, "")
-      (sbin/"something").mkpath
+    sbin = HOMEBREW_PREFIX/"sbin"
+    ENV["HOMEBREW_PATH"] =
+      "#{HOMEBREW_PREFIX}/bin#{File::PATH_SEPARATOR}" +
+      ENV["HOMEBREW_PATH"].gsub(/(?:^|#{Regexp.escape(File::PATH_SEPARATOR)})#{Regexp.escape(sbin)}/, "")
+    (sbin/"something").mkpath
 
-      expect(subject.check_user_path_1).to be nil
-      expect(subject.check_user_path_2).to be nil
-      expect(subject.check_user_path_3)
-        .to match("Homebrew's sbin was not found in your PATH")
-    ensure
-      sbin.rmtree
-    end
+    expect(subject.check_user_path_1).to be nil
+    expect(subject.check_user_path_2).to be nil
+    expect(subject.check_user_path_3)
+      .to match("Homebrew's sbin was not found in your PATH")
+  ensure
+    sbin.rmtree
   end
 
   specify "#check_for_config_scripts" do
@@ -103,18 +101,16 @@ describe Homebrew::Diagnostic::Checks do
   end
 
   specify "#check_for_symlinked_cellar" do
-    begin
-      HOMEBREW_CELLAR.rmtree
+    HOMEBREW_CELLAR.rmtree
 
-      mktmpdir do |path|
-        FileUtils.ln_s path, HOMEBREW_CELLAR
+    mktmpdir do |path|
+      FileUtils.ln_s path, HOMEBREW_CELLAR
 
-        expect(subject.check_for_symlinked_cellar).to match(path)
-      end
-    ensure
-      HOMEBREW_CELLAR.unlink
-      HOMEBREW_CELLAR.mkpath
+      expect(subject.check_for_symlinked_cellar).to match(path)
     end
+  ensure
+    HOMEBREW_CELLAR.unlink
+    HOMEBREW_CELLAR.mkpath
   end
 
   specify "#check_ld_vars catches LD vars" do

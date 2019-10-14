@@ -76,7 +76,7 @@ module Homebrew
         end
       end
 
-      path.write ERB.new(template, nil, ">").result(binding)
+      path.write ERB.new(template, trim_mode: ">").result(binding)
     end
 
     def template
