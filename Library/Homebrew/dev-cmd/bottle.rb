@@ -367,7 +367,9 @@ module Homebrew
       mismatches = [:root_url, :prefix, :cellar, :rebuild].reject do |key|
         old_spec.send(key) == bottle.send(key)
       end
-      if old_spec.cellar == :any && bottle.cellar == :any_skip_relocation
+      if (old_spec.cellar == :any && bottle.cellar == :any_skip_relocation) ||
+         (old_spec.cellar == cellar &&
+          [:any, :any_skip_relocation].include?(bottle.cellar))
         mismatches.delete(:cellar)
         bottle.cellar :any
       end
