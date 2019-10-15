@@ -214,7 +214,7 @@ module Cask
         @args = args
       end
 
-      def run(*_args)
+      def run(*)
         purpose
         usage
 
@@ -226,7 +226,7 @@ module Cask
           raise ArgumentError, "help does not take arguments." if @args.length
         end
 
-        raise ArgumentError, "Unknown Cask command: #{command}"
+        raise ArgumentError, "Unknown Cask command: #{@command}"
       end
 
       def purpose
