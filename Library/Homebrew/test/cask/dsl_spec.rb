@@ -335,14 +335,6 @@ describe Cask::DSL, :cask do
   end
 
   describe "depends_on macos" do
-    context "string disabled", :needs_compat do
-      let(:token) { "compat/with-depends-on-macos-string" }
-
-      it "allows depends_on macos to be specified" do
-        expect { cask }.to raise_error(Cask::CaskInvalidError)
-      end
-    end
-
     context "invalid depends_on macos value" do
       let(:token) { "invalid/invalid-depends-on-macos-bad-release" }
 

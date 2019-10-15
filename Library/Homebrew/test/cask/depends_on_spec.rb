@@ -47,14 +47,6 @@ describe "Satisfy Dependencies and Requirements", :cask do
       end
     end
 
-    context "given a string", :needs_compat do
-      let(:cask) { Cask::CaskLoader.load(cask_path("compat/with-depends-on-macos-string")) }
-
-      it "does not raise an error" do
-        expect { install }.not_to raise_error
-      end
-    end
-
     context "given a symbol" do
       let(:cask) { Cask::CaskLoader.load(cask_path("with-depends-on-macos-symbol")) }
 
