@@ -144,6 +144,7 @@ RSpec.configure do |config|
     end
 
     begin
+      Homebrew.raise_deprecation_exceptions = true
       Tap.clear_cache
       FormulaInstaller.clear_attempted
 

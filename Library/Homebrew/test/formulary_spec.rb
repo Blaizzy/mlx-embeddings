@@ -246,12 +246,6 @@ describe Formulary do
       formula = described_class.find_with_priority(formula_name)
       expect(formula.path).to eq(core_path)
     end
-
-    it "prioritizes Formulae from pinned Taps" do
-      tap.pin
-      formula = described_class.find_with_priority(formula_name)
-      expect(formula.path).to eq(tap_path.realpath)
-    end
   end
 
   describe "::core_path" do
