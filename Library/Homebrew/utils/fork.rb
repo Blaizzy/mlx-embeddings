@@ -53,7 +53,7 @@ module Utils
           write.close
 
           exit!
-        else # rubocop:disable Lint/ElseAlignment
+        else # rubocop:disable Layout/ElseAlignment
           exit!(true)
         end
 

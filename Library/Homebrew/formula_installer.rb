@@ -369,7 +369,7 @@ class FormulaInstaller
 
       $stderr.puts "Please report this to the #{formula.tap} tap!"
       false
-    else # rubocop:disable Lint/ElseAlignment
+    else # rubocop:disable Layout/ElseAlignment
       f.linked_keg.exist? && f.opt_prefix.exist?
     end
 
