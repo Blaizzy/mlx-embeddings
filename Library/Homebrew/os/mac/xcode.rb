@@ -320,9 +320,10 @@ module OS
           next unless File.exist?("#{PKG_PATH}/usr/bin/clang")
 
           version = MacOS.pkgutil_info(id)[/version: (.+)$/, 1]
-          break if version
+          return version if version
         end
-        version
+
+        detect_clang_version
       end
     end
   end
