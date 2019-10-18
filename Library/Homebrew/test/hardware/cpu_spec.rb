@@ -21,6 +21,7 @@ describe Hardware::CPU do
   describe "::family" do
     let(:cpu_families) {
       [
+        :arm,
         :arrandale,
         :atom,
         :broadwell,
