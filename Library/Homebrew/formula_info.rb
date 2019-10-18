@@ -13,7 +13,15 @@ class FormulaInfo
   # Looks up formula on disk and reads its info.
   # Returns nil if formula is absent or if there was an error reading it.
   def self.lookup(name)
-    json = Utils.popen_read(HOMEBREW_BREW_FILE, "info", "--json=v1", name)
+    json = Utils.popen_read(
+      RUBY_PATH,
+      "-W0",
+      "-I", $LOAD_PATH.join(File::PATH_SEPARATOR),
+      HOMEBREW_LIBRARY_PATH/"brew.rb",
+      "info",
+      "--json=v1",
+      name
+    )
 
     return unless $CHILD_STATUS.success?
 
