@@ -665,8 +665,10 @@ module Homebrew
 
         modified = []
         HOMEBREW_REPOSITORY.cd do
-          modified.concat `git status --untracked-files=all --porcelain -- Library/Homebrew/ 2>/dev/null`.split("\n")
-          return if modified.empty?
+          status = `git status --untracked-files=all --porcelain -- Library/Homebrew/ 2>/dev/null`
+          return if status.blank?
+
+          modified = status.split("\n")
         end
 
         message = <<~EOS
