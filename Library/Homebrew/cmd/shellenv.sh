@@ -27,9 +27,9 @@ homebrew-shellenv() {
       echo "export HOMEBREW_PREFIX=\"$HOMEBREW_PREFIX\";"
       echo "export HOMEBREW_CELLAR=\"$HOMEBREW_CELLAR\";"
       echo "export HOMEBREW_REPOSITORY=\"$HOMEBREW_REPOSITORY\";"
-      echo "export PATH=\"$HOMEBREW_PREFIX/bin:$HOMEBREW_PREFIX/sbin:\$PATH\";"
-      echo "export MANPATH=\"$HOMEBREW_PREFIX/share/man:\$MANPATH\";"
-      echo "export INFOPATH=\"$HOMEBREW_PREFIX/share/info:\$INFOPATH\";"
+      echo "export PATH=\"$HOMEBREW_PREFIX/bin:$HOMEBREW_PREFIX/sbin\${PATH+:\$PATH}\";"
+      echo "export MANPATH=\"$HOMEBREW_PREFIX/share/man\${MANPATH+:\$MANPATH}\";"
+      echo "export INFOPATH=\"$HOMEBREW_PREFIX/share/info\${INFOPATH+:\$INFOPATH}\";"
       ;;
   esac
 }
