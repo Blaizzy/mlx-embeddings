@@ -134,6 +134,12 @@ _brew_cask_ls() {
   _brew_cask_list
 }
 
+_brew_cask_outdated() {
+  _arguments : \
+    '--greedy:also list Casks with auto_updates or version \:latest' \
+    '*::token:__brew_installed_casks'
+}
+
 _brew_cask_remove() {
   _brew_cask_uninstall
 }
