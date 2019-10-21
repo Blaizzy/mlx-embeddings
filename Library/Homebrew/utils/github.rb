@@ -271,6 +271,10 @@ module GitHub
     open_api(url_to("repos", repo, "commits", commit, "check-runs"))
   end
 
+  def create_check_run(repo:, data:)
+    open_api(url_to("repos", repo, "check-runs"), data: data)
+  end
+
   def search_issues(query, **qualifiers)
     search("issues", query, **qualifiers)
   end
