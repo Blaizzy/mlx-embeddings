@@ -73,9 +73,9 @@ module Homebrew
         safe_system "ls", *Homebrew.args.passthrough << HOMEBREW_CELLAR
       end
     elsif args.verbose? || !$stdout.tty?
-      system_command! "find", args: ARGV.kegs.map(&:to_s) + %w[-not -type d -print], print_stdout: true
+      system_command! "find", args: Homebrew.args.kegs.map(&:to_s) + %w[-not -type d -print], print_stdout: true
     else
-      ARGV.kegs.each { |keg| PrettyListing.new keg }
+      Homebrew.args.kegs.each { |keg| PrettyListing.new keg }
     end
   end
 

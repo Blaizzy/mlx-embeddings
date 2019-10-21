@@ -27,27 +27,6 @@ describe HomebrewArgvExtension do
     end
   end
 
-  describe "#kegs" do
-    context "when there are matching Kegs" do
-      before do
-        keg = HOMEBREW_CELLAR + "mxcl/10.0"
-        keg.mkpath
-      end
-
-      it "returns an array of Kegs" do
-        expect(subject.kegs.length).to eq 1
-      end
-    end
-
-    context "when there are no matching Kegs" do
-      let(:argv) { [] }
-
-      it "returns an empty array" do
-        expect(subject.kegs).to be_empty
-      end
-    end
-  end
-
   describe "#named" do
     let(:argv) { ["foo", "--debug", "-v"] }
 

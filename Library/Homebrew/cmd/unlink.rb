@@ -31,7 +31,7 @@ module Homebrew
     mode = OpenStruct.new
     mode.dry_run = true if args.dry_run?
 
-    ARGV.kegs.each do |keg|
+    Homebrew.args.kegs.each do |keg|
       if mode.dry_run
         puts "Would remove:"
         keg.unlink(mode)

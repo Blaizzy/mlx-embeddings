@@ -38,7 +38,7 @@ module Homebrew
     mode.overwrite = true if args.overwrite?
     mode.dry_run = true if args.dry_run?
 
-    ARGV.kegs.each do |keg|
+    Homebrew.args.kegs.each do |keg|
       keg_only = Formulary.keg_only?(keg.rack)
 
       if keg.linked?

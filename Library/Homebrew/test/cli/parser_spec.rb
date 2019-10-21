@@ -235,5 +235,22 @@ describe Homebrew::CLI::Parser do
       parser.parse(["--foo", "--bar=value", "-v", "-s", "a", "b", "cdefg"])
       expect(Homebrew.args.passthrough).to eq %w[--foo --bar=value -s]
     end
+
+    context "kegs" do
+      before do
+        keg = HOMEBREW_CELLAR + "mxcl/10.0"
+        keg.mkpath
+      end
+
+      it "when there are matching kegs returns an array of Kegs" do
+        parser.parse(["mxcl"])
+        expect(Homebrew.args.kegs.length).to eq 1
+      end
+
+      it "when there are no matching kegs returns an array of Kegs" do
+        parser.parse([])
+        expect(Homebrew.args.kegs).to be_empty
+      end
+    end
   end
 end

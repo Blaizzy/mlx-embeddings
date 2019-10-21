@@ -50,6 +50,69 @@ module Homebrew
       def passthrough
         options_only - CLI::Parser.global_options.values.map(&:first).flatten
       end
+
+      def downcased_unique_named
+        # Only lowercase names, not paths, bottle filenames or URLs
+        @downcased_unique_named ||= remaining.map do |arg|
+          if arg.include?("/") || arg.end_with?(".tar.gz") || File.exist?(arg)
+            arg
+          else
+            arg.downcase
+          end
+        end.uniq
+      end
+
+      def kegs
+        require "keg"
+        require "formula"
+        require "missing_formula"
+
+        @kegs ||= downcased_unique_named.map do |name|
+          raise UsageError if name.empty?
+
+          rack = Formulary.to_rack(name.downcase)
+
+          dirs = rack.directory? ? rack.subdirs : []
+
+          if dirs.empty?
+            if (reason = Homebrew::MissingFormula.suggest_command(name, "uninstall"))
+              $stderr.puts reason
+            end
+            raise NoSuchKegError, rack.basename
+          end
+
+          linked_keg_ref = HOMEBREW_LINKED_KEGS/rack.basename
+          opt_prefix = HOMEBREW_PREFIX/"opt/#{rack.basename}"
+
+          begin
+            if opt_prefix.symlink? && opt_prefix.directory?
+              Keg.new(opt_prefix.resolved_path)
+            elsif linked_keg_ref.symlink? && linked_keg_ref.directory?
+              Keg.new(linked_keg_ref.resolved_path)
+            elsif dirs.length == 1
+              Keg.new(dirs.first)
+            else
+              f = if name.include?("/") || File.exist?(name)
+                Formulary.factory(name)
+              else
+                Formulary.from_rack(rack)
+              end
+
+              unless (prefix = f.installed_prefix).directory?
+                raise MultipleVersionsInstalledError, rack.basename
+              end
+
+              Keg.new(prefix)
+            end
+          rescue FormulaUnavailableError
+            raise <<~EOS
+              Multiple kegs installed to #{rack}
+              However we don't know which one you refer to.
+              Please delete (with rm -rf!) all but one and then try again.
+            EOS
+          end
+        end
+      end
     end
   end
 end

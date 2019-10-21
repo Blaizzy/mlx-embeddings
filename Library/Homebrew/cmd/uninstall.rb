@@ -38,7 +38,7 @@ module Homebrew
         [rack, rack.subdirs.map { |d| Keg.new(d) }]
       end]
     else
-      ARGV.kegs.group_by(&:rack)
+      Homebrew.args.kegs.group_by(&:rack)
     end
 
     handle_unsatisfied_dependents(kegs_by_rack)
