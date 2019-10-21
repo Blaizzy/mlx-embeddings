@@ -198,6 +198,11 @@ RSpec.configure do |config|
         CoreTap.instance.path/"formula_renames.json",
         *Pathname.glob("#{HOMEBREW_CELLAR}/*/"),
       ]
+      if OS.mac?
+        FileUtils.rm_rf [
+          HOMEBREW_PREFIX/"Frameworks",
+        ]
+      end
 
       files_after_test = find_files
 
