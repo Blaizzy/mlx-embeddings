@@ -371,7 +371,7 @@ module Homebrew
          (old_spec.cellar == cellar &&
           [:any, :any_skip_relocation].include?(bottle.cellar))
         mismatches.delete(:cellar)
-        bottle.cellar :any
+        bottle.cellar old_spec.cellar
       end
       unless mismatches.empty?
         bottle_path.unlink if bottle_path.exist?
