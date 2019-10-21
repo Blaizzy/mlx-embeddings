@@ -6,7 +6,7 @@ Homebrew has the capability to add (and remove) multiple taps to your local inst
 Your taps are Git repositories located at `$(brew --repository)/Library/Taps`.
 
 ## Unsupported interesting taps
-*   [varenc/ffmpeg](https://github.com/varenc/homebrew-ffmpeg): A tap for FFmpeg with additional options, including nonfree additions. 
+*   [homebrew-ffmpeg/ffmpeg](https://github.com/homebrew-ffmpeg/homebrew-ffmpeg): A tap for FFmpeg with additional options, including nonfree additions. 
 
 *   [denji/nginx](https://github.com/denji/homebrew-nginx): A tap for NGINX modules, intended for its `nginx-full` formula which includes more module options.
 
