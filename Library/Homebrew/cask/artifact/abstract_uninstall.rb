@@ -124,6 +124,11 @@ module Cask
           end
       end
 
+      def automation_access_instructions
+        "Enable Automation Access for “Terminal > System Events” in " \
+        "“System Preferences > Security > Privacy > Automation” if you haven't already."
+      end
+
       # :quit/:signal must come before :kext so the kext will not be in use by a running process
       def uninstall_quit(*bundle_ids, command: nil, **_)
         bundle_ids.each do |bundle_id|
@@ -131,11 +136,6 @@ module Cask
 
           unless User.current.gui?
             opoo "Not logged into a GUI; skipping quitting application ID '#{bundle_id}'."
-            next
-          end
-
-          unless User.automation_access?
-            opoo "Skipping quitting application ID '#{bundle_id}'. #{User.automation_access_instructions}"
             next
           end
 
@@ -153,8 +153,7 @@ module Cask
               end
             end
           rescue Timeout::Error
-            opoo "Application '#{bundle_id}' did not quit."
-            next
+            opoo "Application '#{bundle_id}' did not quit. #{automation_access_instructions}"
           end
         end
       end
@@ -242,19 +241,18 @@ module Cask
             ["name", item]
           end
 
-          unless User.automation_access?
-            opoo "Skipping removal of login item #{id}. #{User.automation_access_instructions}"
-            next
-          end
-
           ohai "Removing login item #{id}"
-          system_command!(
+
+          result = system_command(
             "osascript",
             args: [
               "-e",
               %Q(tell application "System Events" to delete every login item whose #{type} is #{id.to_s.inspect}),
             ],
           )
+
+          opoo "Removal of login item #{id} failed. #{automation_access_instructions}" unless result.success?
+
           sleep 1
         end
       end
