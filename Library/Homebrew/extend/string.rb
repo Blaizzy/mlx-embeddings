@@ -50,7 +50,7 @@ module StringInreplaceExtension
   def remove_make_var!(flags)
     Array(flags).each do |flag|
       # Also remove trailing \n, if present.
-      if gsub!(/^#{Regexp.escape(flag)}[ \t]*[\\?\+\:\!]?=.*$\n?/, "", false)
+      unless gsub!(/^#{Regexp.escape(flag)}[ \t]*[\\?\+\:\!]?=.*$\n?/, "", false)
         errors << "expected to remove #{flag.inspect}"
       end
     end
