@@ -93,6 +93,10 @@ module Cask
       @binarydir ||= HOMEBREW_PREFIX/"bin"
     end
 
+    def manpagedir
+      @manpagedir ||= HOMEBREW_PREFIX/"share/man"
+    end
+
     DEFAULT_DIRS.keys.each do |dir|
       define_method(dir) do
         explicit.fetch(dir, env.fetch(dir, default.fetch(dir)))

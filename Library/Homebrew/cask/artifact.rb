@@ -23,6 +23,7 @@ require "cask/artifact/stage_only"
 require "cask/artifact/suite"
 require "cask/artifact/uninstall"
 require "cask/artifact/zap"
+require "cask/artifact/manpage"
 
 module Cask
   module Artifact

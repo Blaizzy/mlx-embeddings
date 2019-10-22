@@ -32,6 +32,7 @@ module RuboCop
           :vst_plugin,
           :artifact,
           :stage_only,
+          :manpage,
         ],
         [:preflight],
         [:postflight],
