@@ -30,9 +30,14 @@ then
       ruby_SHA="e8c9b6d3dc5f40844e07b4b694897b8b7cb5a7dab1013b3b8712a22868f98c98"
       ;;
     aarch64)
-      ruby_URL="$HOMEBREW_BOTTLE_DOMAIN/bottles-portable-ruby/portable-ruby--2.6.3.aarch64_linux.bottle.tar.gz"
-      ruby_URL2="https://github.com/Homebrew/homebrew-portable-ruby/releases/download/2.6.3/portable-ruby--2.6.3.aarch64_linux.bottle.tar.gz"
-      ruby_SHA="7c6acef92c35903859ae4b7649dafb3c061cc6462e0223631ae8aee3c38b0842"
+      ruby_URL="$HOMEBREW_BOTTLE_DOMAIN/bottles-portable-ruby/portable-ruby-2.6.3.aarch64_linux.bottle.tar.gz"
+      ruby_URL2="https://github.com/Homebrew/homebrew-portable-ruby/releases/download/2.6.3/portable-ruby-2.6.3.aarch64_linux.bottle.tar.gz"
+      ruby_SHA="c0b08e2835897af74948508a004d30380b8bcf14264e0dcce194e2c199fb1e35"
+      ;;
+    armv[67]*)
+      ruby_URL="$HOMEBREW_BOTTLE_DOMAIN/bottles-portable-ruby/portable-ruby-2.6.3.armv6_linux.bottle.tar.gz"
+      ruby_URL2="https://github.com/Homebrew/homebrew-portable-ruby/releases/download/2.6.3/portable-ruby-2.6.3.armv6_linux.bottle.tar.gz"
+      ruby_SHA="78e36e4671fd08790bfbfda4408d559341c9872bf48a4f6eab78157a3bf3efa6"
       ;;
   esac
 fi
