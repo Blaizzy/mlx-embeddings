@@ -8,7 +8,7 @@ describe Cask::Artifact::Manpage, :cask do
     let(:cask_token) { "invalid/invalid-manpage-no-section" }
 
     it "fails to load a cask without section" do
-      expect { cask }.to raise_error(Cask::CaskInvalidError, /section should be a positive number/)
+      expect { cask }.to raise_error(Cask::CaskInvalidError, /is not a valid man page name/)
     end
   end
 
