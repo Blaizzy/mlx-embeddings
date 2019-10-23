@@ -24,8 +24,6 @@ module Cask
         :rmdir,
       ].freeze
 
-      TRASH_SCRIPT = (HOMEBREW_LIBRARY_PATH/"cask/utils/trash.swift").freeze
-
       def self.from_args(cask, **directives)
         new(cask, directives)
       end
@@ -360,16 +358,31 @@ module Cask
       def trash_paths(*paths, command: nil, **_)
         return if paths.empty?
 
-        trashable, untrashable = paths.partition(&:writable?)
-        unless untrashable.empty?
-          opoo "These files cannot be moved to the user's Trash:"
-          $stderr.puts untrashable
+        stdout, stderr, = system_command HOMEBREW_LIBRARY_PATH/"cask/utils/trash.swift",
+                                         args:         paths,
+                                         print_stderr: false
+
+        trashed = stdout.split(":").sort
+        untrashable = stderr.split(":").sort
+
+        return trashed, untrashable if untrashable.empty?
+
+        untrashable.delete_if do |path|
+          Utils.gain_permissions(path, ["-R"], SystemCommand) do
+            system_command! HOMEBREW_LIBRARY_PATH/"cask/utils/trash.swift",
+                            args:         [path],
+                            print_stderr: false
+          end
+
+          true
+        rescue
+          false
         end
 
-        result = command.run!("/usr/bin/swift", args: [TRASH_SCRIPT, *trashable])
+        opoo "The following files could not trashed, please do so manually:"
+        $stderr.puts untrashable
 
-        # Remove AppleScript's automatic newline.
-        result.tap { |r| r.stdout.sub!(/\n$/, "") }
+        [trashed, untrashable]
       end
 
       def uninstall_rmdir(*directories, command: nil, **_)
