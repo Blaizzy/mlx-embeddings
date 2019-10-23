@@ -33,23 +33,10 @@ describe Cask::Artifact::Manpage, :cask do
       let(:cask_token) { "with-autodetected-manpage-section" }
       let(:expected_section) { 1 }
 
-      it "moves the manpage to the proper directory" do
+      it "links the manpage to the proper directory" do
         install_phase.call
 
-        expect(target_path).to exist
-        expect(source_path).not_to exist
-      end
-    end
-
-    context "with explicit section" do
-      let(:cask_token) { "with-explicit-manpage-section" }
-      let(:expected_section) { 3 }
-
-      it "moves the manpage to the proper directory" do
-        install_phase.call
-
-        expect(target_path).to exist
-        expect(source_path).not_to exist
+        expect(File).to be_identical target_path, source_path
       end
     end
   end

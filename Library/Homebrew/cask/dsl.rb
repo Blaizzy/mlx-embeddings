@@ -35,6 +35,7 @@ module Cask
       Artifact::Font,
       Artifact::InputMethod,
       Artifact::InternetPlugin,
+      Artifact::Manpage,
       Artifact::Pkg,
       Artifact::Prefpane,
       Artifact::Qlplugin,
@@ -46,7 +47,6 @@ module Cask
       Artifact::Vst3Plugin,
       Artifact::Uninstall,
       Artifact::Zap,
-      Artifact::Manpage,
     ].freeze
 
     ACTIVATABLE_ARTIFACT_CLASSES = (ORDINARY_ARTIFACT_CLASSES - [Artifact::StageOnly]).freeze
