@@ -141,7 +141,7 @@ module Cask
         elsif result.stderr.include? "pkg_resources.DistributionNotFound"
           add_error "Your Python installation is unable to find xattr."
         else
-          add_error "unknown xattr error: #{result.stderr.first}"
+          add_error "unknown xattr error: #{result.stderr.split("\n").last}"
         end
       end
 
