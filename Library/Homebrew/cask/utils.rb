@@ -49,6 +49,7 @@ module Cask
           tried_permissions = true
           retry # rmtree
         end
+
         unless tried_ownership
           # in case of ownership problems
           # TODO: Further examine files to see if ownership is the problem
@@ -62,6 +63,8 @@ module Cask
           tried_permissions = false
           retry # rmtree
         end
+
+        raise
       end
     end
 

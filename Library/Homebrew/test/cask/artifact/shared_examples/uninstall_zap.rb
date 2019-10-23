@@ -199,8 +199,8 @@ shared_examples "#uninstall_phase or #zap_phase" do
       before do
         allow_any_instance_of(Cask::Artifact::AbstractUninstall).to receive(:trash_paths)
           .and_wrap_original do |method, *args|
-            method.call(*args).tap do |result|
-              FileUtils.rm_rf result.stdout.split("\0")
+            method.call(*args).tap do |trashed, _|
+              FileUtils.rm_r trashed
             end
           end
       end
