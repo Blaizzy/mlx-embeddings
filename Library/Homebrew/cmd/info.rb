@@ -368,7 +368,7 @@ module Homebrew
   end
 
   def output_formula_analytics(f)
-    json = formulae_api_json("formula/#{f}.json")
+    json = formulae_api_json("#{formula_path}/#{f}.json")
     return if json.blank? || json["analytics"].blank?
 
     full_analytics = args.analytics? || args.verbose?
@@ -431,4 +431,16 @@ module Homebrew
   def format_percent(percent)
     format("%<percent>.2f", percent: percent)
   end
+
+  def formula_path
+    "formula"
+  end
+  alias_method :generic_formula_path, :formula_path
+
+  def analytics_path
+    "analytics"
+  end
+  alias_method :generic_analytics_path, :analytics_path
+
+  require "extend/os/cmd/info"
 end
