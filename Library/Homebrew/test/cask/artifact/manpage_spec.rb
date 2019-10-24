@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 describe Cask::Artifact::Manpage, :cask do
-  let(:cask_token) { "" }
   let(:cask) { Cask::CaskLoader.load(cask_path(cask_token)) }
 
   context "without section" do
@@ -22,8 +21,7 @@ describe Cask::Artifact::Manpage, :cask do
     }
 
     let(:source_path) { cask.staged_path.join("manpage.1") }
-    let(:expected_section) { "" }
-    let(:target_path) { cask.config.manpagedir.join("man#{expected_section}/manpage.#{expected_section}") }
+    let(:target_path) { cask.config.manpagedir.join("man1/manpage.1") }
 
     before do
       InstallHelper.install_without_artifacts(cask)
@@ -31,7 +29,6 @@ describe Cask::Artifact::Manpage, :cask do
 
     context "with autodetected section" do
       let(:cask_token) { "with-autodetected-manpage-section" }
-      let(:expected_section) { 1 }
 
       it "links the manpage to the proper directory" do
         install_phase.call
