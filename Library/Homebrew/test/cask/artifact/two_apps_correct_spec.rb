@@ -24,23 +24,26 @@ describe Cask::Artifact::App, :cask do
       install_phase
 
       expect(target_path_mini).to be_a_directory
-      expect(source_path_mini).not_to exist
+      expect(source_path_mini).to be_a_symlink
 
       expect(target_path_pro).to be_a_directory
-      expect(source_path_pro).not_to exist
+      expect(source_path_pro).to be_a_symlink
     end
 
     describe "when apps are in a subdirectory" do
       let(:cask) { Cask::CaskLoader.load(cask_path("with-two-apps-subdir")) }
 
+      let(:source_path_mini) { cask.staged_path.join("Caffeines", "Caffeine Mini.app") }
+      let(:source_path_pro) { cask.staged_path.join("Caffeines", "Caffeine Pro.app") }
+
       it "installs both apps using the proper target directory" do
         install_phase
 
         expect(target_path_mini).to be_a_directory
-        expect(source_path_mini).not_to exist
+        expect(source_path_mini).to be_a_symlink
 
         expect(target_path_pro).to be_a_directory
-        expect(source_path_pro).not_to exist
+        expect(source_path_pro).to be_a_symlink
       end
     end
 
@@ -50,7 +53,7 @@ describe Cask::Artifact::App, :cask do
       install_phase
 
       expect(target_path_mini).to be_a_directory
-      expect(source_path_mini).not_to exist
+      expect(source_path_mini).to be_a_symlink
 
       expect(cask.config.appdir.join("Caffeine Deluxe.app")).not_to exist
       expect(cask.staged_path.join("Caffeine Deluxe.app")).to exist

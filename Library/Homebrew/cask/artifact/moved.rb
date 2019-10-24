@@ -54,10 +54,14 @@ module Cask
           command.run!("/bin/mv", args: [source, target], sudo: true)
         end
 
+        FileUtils.ln_sf target, source
+
         add_altname_metadata(target, source.basename, command: command)
       end
 
       def move_back(skip: false, force: false, command: nil, **options)
+        FileUtils.rm source if source.symlink? && source.dirname.join(source.readlink) == target
+
         if Utils.path_occupied?(source)
           message = "It seems there is already #{self.class.english_article} " \
                     "#{self.class.english_name} at '#{source}'"
