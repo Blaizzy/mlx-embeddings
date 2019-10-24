@@ -21,12 +21,8 @@ module Cask
         super(cask, source)
       end
 
-      def resolve_target(_target)
-        config.manpagedir.join("man#{section}", target_name)
-      end
-
-      def target_name
-        "#{@source.basename(@source.extname)}.#{section}"
+      def resolve_target(target)
+        config.manpagedir.join("man#{section}", target)
       end
     end
   end
