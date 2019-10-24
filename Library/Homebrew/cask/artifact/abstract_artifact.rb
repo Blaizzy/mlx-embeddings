@@ -71,6 +71,7 @@ module Cask
           # targets are created prior to linking.
           Pkg,
           Binary,
+          Manpage,
           PostflightBlock,
           Zap,
         ].each_with_index.flat_map { |classes, i| [*classes].map { |c| [c, i] } }.to_h

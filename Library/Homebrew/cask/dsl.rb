@@ -35,6 +35,7 @@ module Cask
       Artifact::Font,
       Artifact::InputMethod,
       Artifact::InternetPlugin,
+      Artifact::Manpage,
       Artifact::Pkg,
       Artifact::Prefpane,
       Artifact::Qlplugin,
