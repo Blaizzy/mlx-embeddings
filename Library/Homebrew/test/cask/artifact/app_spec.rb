@@ -21,7 +21,7 @@ describe Cask::Artifact::App, :cask do
       install_phase
 
       expect(target_path).to be_a_directory
-      expect(source_path).not_to exist
+      expect(source_path).to be_a_symlink
     end
 
     describe "when app is in a subdirectory" do
@@ -42,7 +42,7 @@ describe Cask::Artifact::App, :cask do
         install_phase
 
         expect(target_path).to be_a_directory
-        expect(appsubdir.join("Caffeine.app")).not_to exist
+        expect(appsubdir.join("Caffeine.app")).to be_a_symlink
       end
     end
 
@@ -53,7 +53,7 @@ describe Cask::Artifact::App, :cask do
       install_phase
 
       expect(target_path).to be_a_directory
-      expect(source_path).not_to exist
+      expect(source_path).to be_a_symlink
 
       expect(cask.config.appdir.join("Caffeine Deluxe.app")).not_to exist
       expect(cask.staged_path.join("Caffeine Deluxe.app")).to exist
@@ -100,7 +100,7 @@ describe Cask::Artifact::App, :cask do
               .to output(stdout).to_stdout
               .and output(stderr).to_stderr
 
-            expect(source_path).not_to exist
+            expect(source_path).to be_a_symlink
             expect(target_path).to be_a_directory
 
             contents_path = target_path.join("Contents/Info.plist")
@@ -148,7 +148,7 @@ describe Cask::Artifact::App, :cask do
               .to output(stdout).to_stdout
               .and output(stderr).to_stderr
 
-            expect(source_path).not_to exist
+            expect(source_path).to be_a_symlink
             expect(target_path).to be_a_directory
 
             contents_path = target_path.join("Contents/Info.plist")
@@ -191,7 +191,7 @@ describe Cask::Artifact::App, :cask do
             .to output(stdout).to_stdout
             .and output(stderr).to_stderr
 
-          expect(source_path).not_to exist
+          expect(source_path).to be_a_symlink
           expect(target_path).to be_a_directory
 
           contents_path = target_path.join("Contents/Info.plist")

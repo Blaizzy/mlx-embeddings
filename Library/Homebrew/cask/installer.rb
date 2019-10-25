@@ -94,6 +94,8 @@ module Cask
       fetch
       uninstall_existing_cask if reinstall?
 
+      backup if force? && @cask.staged_path.exist? && @cask.metadata_versioned_path.exist?
+
       oh1 "Installing Cask #{Formatter.identifier(@cask)}"
       opoo "macOS's Gatekeeper has been disabled for this Cask" unless quarantine?
       stage
@@ -104,7 +106,12 @@ module Cask
 
       ::Utils::Analytics.report_event("cask_install", @cask.token) unless @cask.tap&.private?
 
+      purge_backed_up_versioned_files
+
       puts summary
+    rescue
+      restore_backup
+      raise
     end
 
     def check_conflicts
@@ -411,6 +418,8 @@ module Cask
     end
 
     def finalize_upgrade
+      ohai "Purging files for version #{@cask.version} of Cask #{@cask}"
+
       purge_backed_up_versioned_files
 
       puts summary
@@ -471,8 +480,6 @@ module Cask
     end
 
     def purge_backed_up_versioned_files
-      ohai "Purging files for version #{@cask.version} of Cask #{@cask}"
-
       # versioned staged distribution
       gain_permissions_remove(backup_path) if backup_path&.exist?
 

@@ -30,7 +30,7 @@ describe Cask::Artifact::Artifact, :cask do
     install_phase.call
 
     expect(target_path).to be_a_directory
-    expect(source_path).not_to exist
+    expect(source_path).to be_a_symlink
   end
 
   it "avoids clobbering an existing artifact" do
