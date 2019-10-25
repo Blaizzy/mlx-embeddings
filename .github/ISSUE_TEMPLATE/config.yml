@@ -1,0 +1,6 @@
+blank_issues_enabled: false
+
+contact_links:
+- name: Discourse
+  url: https://discourse.brew.sh
+  about: Not sure if it's a bug that affects everyone? The quickest way to get help is on Discourse!
