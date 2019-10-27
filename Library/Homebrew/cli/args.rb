@@ -5,13 +5,14 @@ require "ostruct"
 module Homebrew
   module CLI
     class Args < OpenStruct
-      attr_accessor :processed_options
+      attr_accessor :processed_options, :args_parsed
       # undefine tap to allow --tap argument
       undef tap
 
       def initialize(argv:)
         super
         @argv = argv
+        @args_parsed = false
         @processed_options = []
       end
 
@@ -132,7 +133,12 @@ module Homebrew
 
       def downcased_unique_named
         # Only lowercase names, not paths, bottle filenames or URLs
-        remaining.map do |arg|
+        arguments = if args_parsed
+          remaining
+        else
+          cmdline_args.reject { |arg| arg.start_with?("-") }
+        end
+        arguments.map do |arg|
           if arg.include?("/") || arg.end_with?(".tar.gz") || File.exist?(arg)
             arg
           else
@@ -141,10 +147,18 @@ module Homebrew
         end.uniq
       end
 
+      def head
+        (args_parsed && HEAD?) || cmdline_args.include?("--HEAD")
+      end
+
+      def devel
+        (args_parsed && devel?) || cmdline_args.include?("--devel")
+      end
+
       def spec(default = :stable)
-        if HEAD?
+        if head
           :head
-        elsif devel?
+        elsif devel
           :devel
         else
           default
