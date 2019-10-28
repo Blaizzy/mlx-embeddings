@@ -258,6 +258,14 @@ _brew_bump_formula_pr() {
       ': :__brew_formulae_or_ruby_files'
 }
 
+# brew bump-revision [--dry-run] [--message] formula
+_brew_bump_revision() {
+  _arguments \
+      '--dry-run[print what would be done rather than doing it]' \
+      '--message[append message to the default commit message]:message: ' \
+      ': :__brew_formulae_or_ruby_files'
+}
+
 # brew cat formula
 _brew_cat() {
   _arguments \
