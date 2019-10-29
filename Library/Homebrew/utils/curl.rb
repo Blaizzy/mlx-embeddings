@@ -184,9 +184,12 @@ def curl_check_http_content(url, user_agents: [:default], check_content: false, 
 end
 
 def curl_http_content_headers_and_checksum(url, hash_needed: false, user_agent: :default)
+  file = Tempfile.new.tap(&:close)
+
   max_time = hash_needed ? "600" : "25"
   output, = curl_output(
-    "--connect-timeout", "15", "--include", "--max-time", max_time, "--location", url,
+    "--dump-header", "-", "--output", file.path, "--include", "--location",
+    "--connect-timeout", "15", "--max-time", max_time, url,
     user_agent: user_agent
   )
 
@@ -197,7 +200,7 @@ def curl_http_content_headers_and_checksum(url, hash_needed: false, user_agent: 
     final_url = headers[/^Location:\s*(.*)$/i, 1]&.chomp
   end
 
-  output_hash = Digest::SHA256.digest(output) if hash_needed
+  output_hash = Digest::SHA256.file(file.path) if hash_needed
 
   final_url ||= url
 
@@ -210,6 +213,8 @@ def curl_http_content_headers_and_checksum(url, hash_needed: false, user_agent: 
     file_hash:      output_hash,
     file:           output,
   }
+ensure
+  file.unlink
 end
 
 def http_status_ok?(status)
