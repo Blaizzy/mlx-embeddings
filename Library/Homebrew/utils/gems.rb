@@ -69,9 +69,7 @@ module Homebrew
 
   def install_gem_setup_path!(name, version: nil, executable: name, setup_gem_environment: true)
     install_gem!(name, version: version, setup_gem_environment: setup_gem_environment)
-    return if ENV["PATH"].split(":").any? do |path|
-      File.executable?("#{path}/#{executable}")
-    end
+    return if find_in_path(executable)
 
     odie_if_defined <<~EOS
       the '#{name}' gem is installed but couldn't find '#{executable}' in the PATH:
@@ -79,10 +77,16 @@ module Homebrew
     EOS
   end
 
+  def find_in_path(executable)
+    ENV["PATH"].split(":").find do |path|
+      File.executable?("#{path}/#{executable}")
+    end
+  end
+
   def install_bundler!
     require "rubygems"
     setup_gem_environment!(gem_home: Gem.user_dir, gem_bindir: gem_user_bindir)
-    install_gem_setup_path!("bundler", version: ">=2", executable: "bundle", setup_gem_environment: false)
+    install_gem_setup_path!("bundler", version: ">=1.17", executable: "bundle", setup_gem_environment: false)
   end
 
   def install_bundler_gems!
@@ -90,7 +94,7 @@ module Homebrew
 
     ENV["BUNDLE_GEMFILE"] = "#{ENV["HOMEBREW_LIBRARY"]}/Homebrew/Gemfile"
     @bundle_installed ||= begin
-      bundle = "#{gem_user_bindir}/bundle"
+      bundle = "#{find_in_path(bundle)}/bundle"
       bundle_check_output = `#{bundle} check 2>&1`
       bundle_check_failed = !$CHILD_STATUS.success?
 
