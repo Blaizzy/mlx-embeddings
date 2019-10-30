@@ -203,7 +203,7 @@ This is due to a bug with Azure Pipelines and its handling of merge
 commits. Master branch builds also fail for the same reason. This is
 OK.
 
-Once the PR is approved by other Homebrew developers, you can finalize
+Once the PR is approved by other Homebrew developers, you can finalise
 the merge with:
 
 ```bash
