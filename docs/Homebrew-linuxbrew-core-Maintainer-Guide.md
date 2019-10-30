@@ -74,7 +74,7 @@ brew merge-homebrew --core
 ```
 
 Merging all the changes from upstream in one go is usually
-undesireable since our build servers will time out. Instead, attempt
+undesirable since our build servers will time out. Instead, attempt
 to only merge 8-10 modified formulae.
 
 `git log --oneline master..homebrew/master` will show a list of all
