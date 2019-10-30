@@ -167,7 +167,7 @@ module Homebrew
         <% elsif mode == :python %>
             virtualenv_install_with_resources
         <% elsif mode == :rust %>
-            system "cargo", "install", "--root", prefix, "--path", "."
+            system "cargo", "install", "--locked", "--root", prefix, "--path", "."
         <% else %>
             # Remove unrecognized options if warned by configure
             system "./configure", "--disable-debug",
