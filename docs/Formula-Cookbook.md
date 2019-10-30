@@ -84,7 +84,7 @@ so you can override this with `brew create <URL> --set-name <name>`.
 
 An SSL/TLS (https) [`homepage`](https://rubydoc.brew.sh/Formula#homepage%3D-class_method) is preferred, if one is available.
 
-Try to summarize from the [`homepage`](https://rubydoc.brew.sh/Formula#homepage%3D-class_method) what the formula does in the [`desc`](https://rubydoc.brew.sh/Formula#desc%3D-class_method)ription. Note that the [`desc`](https://rubydoc.brew.sh/Formula#desc%3D-class_method)ription is automatically prepended with the formula name.
+Try to summarise from the [`homepage`](https://rubydoc.brew.sh/Formula#homepage%3D-class_method) what the formula does in the [`desc`](https://rubydoc.brew.sh/Formula#desc%3D-class_method)ription. Note that the [`desc`](https://rubydoc.brew.sh/Formula#desc%3D-class_method)ription is automatically prepended with the formula name.
 
 ### Check the build system
 
@@ -332,7 +332,7 @@ correct. Add an explicit [`version`](https://rubydoc.brew.sh/Formula#version-cla
 Everything is built on Git, so contribution is easy:
 
 ```sh
-brew update # required in more ways than you think (initializes the brew git repository if you don't already have it)
+brew update # required in more ways than you think (initialises the brew git repository if you don't already have it)
 cd $(brew --repo homebrew/core)
 # Create a new git branch for your formula so your pull request is easy to
 # modify if any changes come up during review.
@@ -790,7 +790,7 @@ Some software requires a Fortran compiler. This can be declared by adding `depen
 
 ## MPI
 
-Formula requiring MPI should use [OpenMPI](https://www.open-mpi.org/) by adding `depends_on "open-mpi"` to the formula, rather than [MPICH](https://www.mpich.org/). These packages have conflicts and provide the same standardized interfaces. Choosing a default implementation and requiring it to be adopted allows software to link against multiple libraries that rely on MPI without creating un-anticipated incompatibilities due to differing MPI runtimes.
+Formula requiring MPI should use [OpenMPI](https://www.open-mpi.org/) by adding `depends_on "open-mpi"` to the formula, rather than [MPICH](https://www.mpich.org/). These packages have conflicts and provide the same standardised interfaces. Choosing a default implementation and requiring it to be adopted allows software to link against multiple libraries that rely on MPI without creating un-anticipated incompatibilities due to differing MPI runtimes.
 
 ## Linear algebra libraries
 

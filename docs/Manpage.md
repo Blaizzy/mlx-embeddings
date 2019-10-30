@@ -292,7 +292,7 @@ automatically when you install formulae but can be useful for DIY installations.
 
 List all installed formulae.
 
-If *`formula`* is provided, summarize the paths within its current keg.
+If *`formula`* is provided, summarise the paths within its current keg.
 
 * `--full-name`:
   Print formulae with fully-qualified names. If `--full-name` is not passed, other options (i.e. `-1`, `-l`, `-r` and `-t`) are passed to `ls`(1) which produces the actual output.
@@ -646,7 +646,7 @@ would be installed, without any sort of versioned directory as the last path.
 
 ### `--env` [*`options`*]
 
-Summarize Homebrew's build environment as a plain list.
+Summarise Homebrew's build environment as a plain list.
 
 If the command's output is sent through a pipe and no shell is specified, the
 list is formatted for export to `bash`(1) unless `--plain` is passed.
