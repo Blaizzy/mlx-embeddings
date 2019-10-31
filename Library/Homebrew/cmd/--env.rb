@@ -13,7 +13,7 @@ module Homebrew
       usage_banner <<~EOS
         `--env` [<options>]
 
-        Summarize Homebrew's build environment as a plain list.
+        Summarise Homebrew's build environment as a plain list.
 
         If the command's output is sent through a pipe and no shell is specified,
         the list is formatted for export to `bash`(1) unless `--plain` is passed.

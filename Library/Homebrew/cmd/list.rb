@@ -14,7 +14,7 @@ module Homebrew
 
         List all installed formulae.
 
-        If <formula> is provided, summarize the paths within its current keg.
+        If <formula> is provided, summarise the paths within its current keg.
       EOS
       switch "--full-name",
              description: "Print formulae with fully-qualified names. If `--full-name` is not "\

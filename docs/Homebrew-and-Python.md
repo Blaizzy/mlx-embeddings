@@ -11,7 +11,7 @@ Homebrew provides formulae to brew Python 3.x and a more up-to-date Python 2.7.x
 ## Python 3.x or Python 2.x
 Homebrew provides one formula for Python 3.x (`python`) and another for Python 2.7.x (`python@2`).
 
-The executables are organized as follows so that Python 2 and Python 3 can both be installed without conflict:
+The executables are organised as follows so that Python 2 and Python 3 can both be installed without conflict:
 
 * `python3` points to Homebrew's Python 3.x (if installed)
 * `python2` points to Homebrew's Python 2.7.x (if installed)
