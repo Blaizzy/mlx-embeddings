@@ -94,7 +94,7 @@ module Homebrew
 
     ENV["BUNDLE_GEMFILE"] = "#{ENV["HOMEBREW_LIBRARY"]}/Homebrew/Gemfile"
     @bundle_installed ||= begin
-      bundle = "#{find_in_path(bundle)}/bundle"
+      bundle = "#{find_in_path(:bundle)}/bundle"
       bundle_check_output = `#{bundle} check 2>&1`
       bundle_check_failed = !$CHILD_STATUS.success?
 
