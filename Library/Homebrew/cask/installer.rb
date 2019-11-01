@@ -249,7 +249,7 @@ module Cask
       macos_dependencies
       arch_dependencies
       x11_dependencies
-      formula_and_cask_dependencies
+      cask_and_formula_dependencies
     end
 
     def macos_dependencies
@@ -305,8 +305,8 @@ module Cask
       acc
     end
 
-    def formula_and_cask_dependencies
-      return if installed_as_dependency?
+    def collect_cask_and_formula_dependencies
+      return @cask_and_formula_dependencies if @cask_and_formula_dependencies
 
       graph = graph_dependencies(@cask)
 
@@ -316,29 +316,38 @@ module Cask
         graph_dependencies(dep, graph)
       end
 
-      formulae_and_casks = begin
+      begin
         graph.tsort - [@cask]
       rescue TSort::Cyclic
         strongly_connected_components = graph.strongly_connected_components.sort_by(&:count)
         cyclic_dependencies = strongly_connected_components.last - [@cask]
         raise CaskCyclicDependencyError.new(@cask.token, cyclic_dependencies.to_sentence)
       end
+    end
 
-      return if formulae_and_casks.empty?
-
-      not_installed_formulae_and_casks = formulae_and_casks
-                                         .reject do |cask_or_formula|
+    def missing_cask_and_formula_dependencies
+      collect_cask_and_formula_dependencies.reject do |cask_or_formula|
         (cask_or_formula.respond_to?(:installed?) && cask_or_formula.installed?) ||
           (cask_or_formula.respond_to?(:any_version_installed?) && cask_or_formula.any_version_installed?)
       end
+    end
 
-      if not_installed_formulae_and_casks.empty?
+    def cask_and_formula_dependencies
+      return if installed_as_dependency?
+
+      formulae_and_casks = collect_cask_and_formula_dependencies
+
+      return if formulae_and_casks.empty?
+
+      missing_formulae_and_casks = missing_cask_and_formula_dependencies
+
+      if missing_formulae_and_casks.empty?
         puts "All Formula dependencies satisfied."
         return
       end
 
-      ohai "Installing dependencies: #{not_installed_formulae_and_casks.map(&:to_s).join(", ")}"
-      not_installed_formulae_and_casks.each do |cask_or_formula|
+      ohai "Installing dependencies: #{missing_formulae_and_casks.map(&:to_s).join(", ")}"
+      missing_formulae_and_casks.each do |cask_or_formula|
         if cask_or_formula.is_a?(Cask)
           if skip_cask_deps?
             opoo "`--skip-cask-deps` is set; skipping installation of #{@cask}."
