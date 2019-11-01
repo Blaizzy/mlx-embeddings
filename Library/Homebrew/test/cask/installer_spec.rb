@@ -114,7 +114,6 @@ describe Cask::Installer, :cask do
         described_class.new(with_installer_manual).install
       }.to output(
         <<~EOS,
-          ==> Satisfying dependencies
           ==> Downloading file://#{HOMEBREW_LIBRARY_PATH}/test/support/fixtures/cask/caffeine.zip
           ==> Verifying SHA-256 checksum for Cask 'with-installer-manual'.
           ==> Installing Cask with-installer-manual
