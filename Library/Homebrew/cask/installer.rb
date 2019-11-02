@@ -148,6 +148,8 @@ module Cask
     end
 
     def download
+      return @downloaded_path if @downloaded_path
+
       odebug "Downloading"
       @downloaded_path = Download.new(@cask, force: false, quarantine: quarantine?).perform
       odebug "Downloaded to -> #{@downloaded_path}"
@@ -167,6 +169,7 @@ module Cask
 
     def primary_container
       @primary_container ||= begin
+        download
         UnpackStrategy.detect(@downloaded_path, type: @cask.container&.type, merge_xattrs: true)
       end
     end
@@ -317,7 +320,7 @@ module Cask
       end
 
       begin
-        graph.tsort - [@cask]
+        @cask_and_formula_dependencies = graph.tsort - [@cask]
       rescue TSort::Cyclic
         strongly_connected_components = graph.strongly_connected_components.sort_by(&:count)
         cyclic_dependencies = strongly_connected_components.last - [@cask]
