@@ -922,7 +922,9 @@ module Homebrew
 
       problem "Use separate make calls" if line.include?("make && make")
 
-      if line =~ /JAVA_HOME/i && !formula.requirements.map(&:class).include?(JavaRequirement)
+      if line =~ /JAVA_HOME/i &&
+         [formula.name, *formula.deps.map(&:name)].none? { |name| name.match?(/^openjdk(@|$)/) } &&
+         formula.requirements.none? { |req| req.is_a?(JavaRequirement) }
         problem "Use `depends_on :java` to set JAVA_HOME"
       end
 
