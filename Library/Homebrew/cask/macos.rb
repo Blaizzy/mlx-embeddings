@@ -35,6 +35,8 @@ module OS
       "/Library/Input Methods",
       "/Library/Internet Plug-Ins",
       "/Library/Java",
+      "/Library/Java/Extensions",
+      "/Library/Java/JavaVirtualMachines",
       "/Library/Keyboard Layouts",
       "/Library/Keychains",
       "/Library/LaunchAgents",
