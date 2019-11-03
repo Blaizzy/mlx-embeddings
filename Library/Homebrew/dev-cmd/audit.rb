@@ -618,9 +618,7 @@ module Homebrew
 
       new_formula_problem "Uses deprecated mercurial support in Bitbucket" if metadata["scm"] == "hg"
 
-      if metadata["parent"]["full_name"] == "#{user}/#{repo}"
-        new_formula_problem "Bitbucket fork (not canonical repository)"
-      end
+      new_formula_problem "Bitbucket fork (not canonical repository)" unless metadata["parent"].nil?
 
       if Date.parse(metadata["created_on"]) >= (Date.today - 30)
         new_formula_problem "Bitbucket repository too new (<30 days old)"
