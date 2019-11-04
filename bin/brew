@@ -19,10 +19,12 @@ symlink_target_directory() {
   quiet_cd "$directory" && quiet_cd "$target_dirname" && pwd -P
 }
 
+# Unset functions that override Bash builtins
+# Enable all Bash builtins
 for cmd in $(compgen -A builtin)
 do
-  unset -f $cmd  # Unset functions that override Bash builtins
-  enable $cmd # Enable all Bash builtins
+  unset -f $cmd
+  enable $cmd
 done
 unset cmd
 
