@@ -6,8 +6,8 @@ std_trap = trap("INT") { exit! 130 } # no backtrace thanks
 
 # check ruby version before requiring any modules.
 RUBY_X, RUBY_Y, = RUBY_VERSION.split(".").map(&:to_i)
-if RUBY_X < 2 || (RUBY_X == 2 && RUBY_Y < 3)
-  raise "Homebrew must be run under Ruby 2.3! You're running #{RUBY_VERSION}."
+if RUBY_X < 2 || (RUBY_X == 2 && RUBY_Y < 6)
+  raise "Homebrew must be run under Ruby 2.6! You're running #{RUBY_VERSION}."
 end
 
 # Load Bundler first of all if it's needed to avoid Gem version conflicts.
