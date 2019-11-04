@@ -17,6 +17,7 @@ module RuboCop
           go@1.9
           go@1.10
           go@1.11
+          go@1.12
           haskell-stack
           ldc
           mlton
