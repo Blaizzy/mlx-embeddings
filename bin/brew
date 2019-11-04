@@ -20,10 +20,11 @@ symlink_target_directory() {
 }
 
 # Enable and use default Bash builtins rather than user-defined functions
-for cmd in $(compgen -A builtin)
+builtin enable compgen unset
+for cmd in $(builtin compgen -A builtin)
 do
-  unset -f $cmd
-  enable $cmd
+  builtin unset -f $cmd
+  builtin enable $cmd
 done
 unset cmd
 
