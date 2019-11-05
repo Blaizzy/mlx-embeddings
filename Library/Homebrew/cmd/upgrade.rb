@@ -360,6 +360,10 @@ module Homebrew
 
     upgrade_formulae(upgradable)
 
+    # TODO: re-enable when this code actually works.
+    # https://github.com/Homebrew/brew/issues/6671
+    return unless ENV["HOMEBREW_BROKEN_DEPENDENTS"]
+
     # Assess the dependents tree again.
     kegs = formulae_with_runtime_dependencies
 
