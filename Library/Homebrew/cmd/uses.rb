@@ -46,6 +46,8 @@ module Homebrew
 
     raise FormulaUnspecifiedError if args.remaining.empty?
 
+    Formulary.enable_factory_cache!
+
     used_formulae_missing = false
     used_formulae = begin
       ARGV.formulae
@@ -56,34 +58,43 @@ module Homebrew
       ARGV.named.map { |name| OpenStruct.new name: name, full_name: name }
     end
 
-    formulae = args.installed? ? Formula.installed : Formula
-    recursive = args.recursive?
     only_installed_arg = args.installed? &&
                          !args.include_build? &&
                          !args.include_test? &&
                          !args.include_optional? &&
                          !args.skip_recommended?
 
-    includes, ignores = argv_includes_ignores(ARGV)
+    uses = if only_installed_arg && !used_formulae_missing
+      used_formulae.map(&:runtime_installed_formula_dependents)
+                   .reduce(&:&)
+    else
+      formulae = args.installed? ? Formula.installed : Formula
+      recursive = args.recursive?
+      includes, ignores = argv_includes_ignores(ARGV)
 
-    uses = formulae.select do |f|
-      used_formulae.all? do |ff|
-        deps = f.runtime_dependencies if only_installed_arg
-        deps ||= if recursive
+      formulae.select do |f|
+        deps = if recursive
           recursive_includes(Dependency, f, includes, ignores)
         else
           reject_ignores(f.deps, ignores, includes)
         end
 
-        deps.any? do |dep|
-          dep.to_formula.full_name == ff.full_name
-        rescue
-          dep.name == ff.name
+        used_formulae.all? do |ff|
+          deps.any? do |dep|
+            match = begin
+              dep.to_formula.full_name == ff.full_name if dep.name.include?("/")
+            rescue
+              nil
+            end
+            next match unless match.nil?
+
+            dep.name == ff.name
+          end
+        rescue FormulaUnavailableError
+          # Silently ignore this case as we don't care about things used in
+          # taps that aren't currently tapped.
+          next
         end
-      rescue FormulaUnavailableError
-        # Silently ignore this case as we don't care about things used in
-        # taps that aren't currently tapped.
-        next
       end
     end
 
