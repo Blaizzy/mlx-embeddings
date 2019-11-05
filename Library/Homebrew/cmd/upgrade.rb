@@ -209,100 +209,6 @@ module Homebrew
     end
   end
 
-  def upgradable_dependents(kegs, formulae)
-    formulae_to_upgrade = Set.new
-    formulae_pinned = Set.new
-
-    formulae_to_check = formulae
-    checked_formulae = Set.new
-
-    until formulae_to_check.empty?
-      descendants = Set.new
-
-      formulae_to_check.each do |formula|
-        next if checked_formulae.include?(formula)
-
-        dependents = kegs.select do |keg|
-          keg.runtime_dependencies
-             .any? { |d| d["full_name"] == formula.full_name }
-        end
-
-        next if dependents.empty?
-
-        dependent_formulae = dependents.map(&:to_formula)
-
-        dependent_formulae.each do |f|
-          next if formulae_to_upgrade.include?(f)
-          next if formulae_pinned.include?(f)
-
-          if f.outdated?(fetch_head: args.fetch_HEAD?)
-            if f.pinned?
-              formulae_pinned << f
-            else
-              formulae_to_upgrade << f
-            end
-          end
-
-          descendants << f
-        end
-
-        checked_formulae << formula
-      end
-
-      formulae_to_check = descendants
-    end
-
-    [formulae_to_upgrade, formulae_pinned]
-  end
-
-  def broken_dependents(kegs, formulae, scanned = Set.new)
-    formulae_to_reinstall = Set.new
-    formulae_pinned_and_outdated = Set.new
-
-    CacheStoreDatabase.use(:linkage) do |db|
-      formulae.each do |formula|
-        descendants = Set.new
-
-        dependents = kegs.select do |keg|
-          keg = keg.runtime_dependencies
-                   .any? { |d| d["full_name"] == formula.full_name }
-          keg unless scanned.include?(keg)
-        end
-
-        next if dependents.empty?
-
-        dependents.each do |keg|
-          f = keg.to_formula
-
-          next if formulae_to_reinstall.include?(f)
-          next if formulae_pinned_and_outdated.include?(f)
-
-          checker = LinkageChecker.new(keg, cache_db: db)
-
-          if checker.broken_library_linkage?
-            if f.outdated?(fetch_head: args.fetch_HEAD?)
-              # Outdated formulae = pinned formulae (see function above)
-              formulae_pinned_and_outdated << f
-            else
-              formulae_to_reinstall << f
-            end
-          end
-
-          descendants << f
-        end
-
-        scanned.merge dependents
-
-        descendants_to_reinstall, descendants_pinned = broken_dependents(kegs, descendants, scanned)
-
-        formulae_to_reinstall.merge descendants_to_reinstall
-        formulae_pinned_and_outdated.merge descendants_pinned
-      end
-    end
-
-    [formulae_to_reinstall, formulae_pinned_and_outdated]
-  end
-
   # @private
   def depends_on(a, b)
     if a.opt_or_installed_prefix_keg
@@ -314,81 +220,88 @@ module Homebrew
     end
   end
 
-  # @private
-  def formulae_with_runtime_dependencies
-    Formula.installed
-           .map(&:opt_or_installed_prefix_keg)
-           .reject(&:nil?)
-           .reject { |f| f.runtime_dependencies.to_a.empty? }
-  end
-
-  def check_dependents(formulae)
-    return if formulae.empty?
-
-    # First find all the outdated dependents.
-    kegs = formulae_with_runtime_dependencies
-
-    return if kegs.empty?
+  def check_dependents(formulae_to_install)
+    return if formulae_to_install.empty?
 
     oh1 "Checking dependents for outdated formulae" if args.verbose?
-    upgradable, pinned = upgradable_dependents(kegs, formulae).map(&:to_a)
+    dependents =
+      formulae_to_install.flat_map(&:runtime_installed_formula_dependents)
+    return if dependents.empty?
 
-    upgradable.sort! { |a, b| depends_on(a, b) }
+    upgradeable_dependents = dependents.select(&:outdated?)
+                                       .sort { |a, b| depends_on(a, b) }
+    pinned_dependents = dependents.select(&:pinned?)
+                                  .sort { |a, b| depends_on(a, b) }
 
-    pinned.sort! { |a, b| depends_on(a, b) }
-
-    # Print the pinned dependents.
-    unless pinned.empty?
-      ohai "Not upgrading #{pinned.count} pinned #{"dependent".pluralize(pinned.count)}:"
-      puts pinned.map { |f| "#{f.full_specified_name} #{f.pkg_version}" } * ", "
+    if pinned_dependents.present?
+      plural = "dependent".pluralize(pinned_dependents.count)
+      ohai "Not upgrading #{pinned_dependents.count} pinned #{plural}:"
+      puts pinned_dependents.map do |f|
+        "#{f.full_specified_name} #{f.pkg_version}"
+      end.join(", ")
     end
 
     # Print the upgradable dependents.
-    if upgradable.empty?
+    if upgradeable_dependents.blank?
       ohai "No dependents to upgrade" if args.verbose?
     else
-      ohai "Upgrading #{upgradable.count} #{"dependent".pluralize(upgradable.count)}:"
-      formulae_upgrades = upgradable.map do |f|
+      plural = "dependent".pluralize(upgradeable_dependents.count)
+      ohai "Upgrading #{upgradable.count} #{plural}:"
+      formulae_upgrades = upgradeable_dependents.map do |f|
+        name = f.full_specified_name
         if f.optlinked?
-          "#{f.full_specified_name} #{Keg.new(f.opt_prefix).version} -> #{f.pkg_version}"
+          "#{name} #{Keg.new(f.opt_prefix).version} -> #{f.pkg_version}"
         else
-          "#{f.full_specified_name} #{f.pkg_version}"
+          "#{name} #{f.pkg_version}"
         end
       end
       puts formulae_upgrades.join(", ")
     end
 
-    upgrade_formulae(upgradable)
+    upgrade_formulae(upgradeable_dependents)
 
-    # TODO: re-enable when this code actually works.
-    # https://github.com/Homebrew/brew/issues/6671
-    return unless ENV["HOMEBREW_BROKEN_DEPENDENTS"]
-
-    # Assess the dependents tree again.
-    kegs = formulae_with_runtime_dependencies
-
+    # Assess the dependents tree again now we've upgraded.
     oh1 "Checking dependents for broken library links" if args.verbose?
-    reinstallable, pinned = broken_dependents(kegs, formulae).map(&:to_a)
+    broken_dependents = CacheStoreDatabase.use(:linkage) do |db|
+      formulae_to_install.flat_map(&:runtime_installed_formula_dependents)
+                         .map(&:opt_or_installed_prefix_keg)
+                         .compact
+                         .select do |keg|
+        LinkageChecker.new(keg, cache_db: db)
+                      .broken_library_linkage?
+      end
+    end
+    return if broken_dependents.empty?
 
-    reinstallable.sort! { |a, b| depends_on(a, b) }
-
-    pinned.sort! { |a, b| depends_on(a, b) }
+    reinstallable_broken_dependents =
+      broken_dependents.select(&:outdated?)
+                       .sort { |a, b| depends_on(a, b) }
+    pinned_broken_dependents =
+      broken_dependents.select(&:pinned?)
+                       .sort { |a, b| depends_on(a, b) }
 
     # Print the pinned dependents.
-    unless pinned.empty?
-      onoe "Not reinstalling #{pinned.count} broken and outdated, but pinned #{"dependent".pluralize(pinned.count)}:"
-      $stderr.puts pinned.map { |f| "#{f.full_specified_name} #{f.pkg_version}" } * ", "
+    if pinned_broken_dependents.present?
+      count = pinned_broken_dependents.count
+      plural = "dependent".pluralize(pinned_broken_dependents.count)
+      onoe "Not reinstalling #{count} broken and outdated, but pinned #{plural}:"
+      $stderr.puts pinned_broken_dependents.map do |f|
+        "#{f.full_specified_name} #{f.pkg_version}"
+      end.join(", ")
     end
 
     # Print the broken dependents.
-    if reinstallable.empty?
+    if reinstallable_broken_dependents.empty?
       ohai "No broken dependents to reinstall" if args.verbose?
     else
-      ohai "Reinstalling #{reinstallable.count} broken #{"dependent".pluralize(reinstallable.count)} from source:"
-      puts reinstallable.map(&:full_specified_name).join(", ")
+      count = reinstallable_broken_dependents.count
+      plural = "dependent".pluralize(reinstallable_broken_dependents.count)
+      ohai "Reinstalling #{count} broken #{plural} from source:"
+      puts reinstallable_broken_dependents.map(&:full_specified_name)
+                                          .join(", ")
     end
 
-    reinstallable.each do |f|
+    reinstallable_broken_dependents.each do |f|
       reinstall_formula(f, build_from_source: true)
     rescue FormulaInstallationAlreadyAttemptedError
       # We already attempted to reinstall f as part of the dependency tree of
