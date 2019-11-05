@@ -1570,6 +1570,23 @@ class Formula
     end.compact
   end
 
+  def runtime_installed_formula_dependents
+    # `opt_or_installed_prefix_keg` and `runtime_dependencies` `select`s ensure
+    # that we don't end up with something `Formula#runtime_dependencies` can't
+    # read from a `Tab`.
+    Formula.cache[:runtime_installed_formula_dependents] = {}
+    Formula.cache[:runtime_installed_formula_dependents][name] ||= Formula.installed
+                                                                          .select(&:opt_or_installed_prefix_keg)
+                                                                          .select(&:runtime_dependencies)
+                                                                          .select do |f|
+      f.runtime_formula_dependencies.any? do |dep|
+        full_name == dep.full_name
+      rescue
+        name == dep.name
+      end
+    end
+  end
+
   # Returns a list of formulae depended on by this formula that aren't
   # installed
   def missing_dependencies(hide: nil)
