@@ -145,6 +145,7 @@ RSpec.configure do |config|
 
     begin
       Homebrew.raise_deprecation_exceptions = true
+      Formula.clear_cache
       Keg.clear_cache
       Tap.clear_cache
       FormulaInstaller.clear_attempted
@@ -178,6 +179,7 @@ RSpec.configure do |config|
       end
 
       Tab.clear_cache
+      Formula.clear_cache
       Keg.clear_cache
 
       FileUtils.rm_rf [

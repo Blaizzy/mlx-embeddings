@@ -649,7 +649,6 @@ class FormulaInstaller
 
     # Update tab with actual runtime dependencies
     tab = Tab.for_keg(keg)
-    Keg.clear_cache
     Tab.clear_cache
     f_runtime_deps = formula.runtime_dependencies(read_from_tab: false)
     tab.runtime_dependencies = Tab.runtime_deps_hash(f_runtime_deps)
@@ -783,6 +782,7 @@ class FormulaInstaller
     unless link_keg
       begin
         keg.optlink
+        Formula.clear_cache
       rescue Keg::LinkError => e
         onoe "Failed to create #{formula.opt_prefix}"
         puts "Things that depend on #{formula.full_name} will probably not build."
