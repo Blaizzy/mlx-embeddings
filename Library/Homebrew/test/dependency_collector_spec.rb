@@ -13,10 +13,6 @@ describe DependencyCollector do
     subject.requirements.find { |req| req.is_a? klass }
   end
 
-  after do
-    described_class.clear_cache
-  end
-
   describe "#add" do
     specify "dependency creation" do
       subject.add "foo" => :build
