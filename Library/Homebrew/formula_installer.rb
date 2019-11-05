@@ -649,6 +649,7 @@ class FormulaInstaller
 
     # Update tab with actual runtime dependencies
     tab = Tab.for_keg(keg)
+    Keg.clear_cache
     Tab.clear_cache
     f_runtime_deps = formula.runtime_dependencies(read_from_tab: false)
     tab.runtime_dependencies = Tab.runtime_deps_hash(f_runtime_deps)
