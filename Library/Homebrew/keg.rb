@@ -6,6 +6,8 @@ require "lock_file"
 require "ostruct"
 
 class Keg
+  extend Cachable
+
   class AlreadyLinkedError < RuntimeError
     def initialize(keg)
       super <<~EOS
@@ -519,7 +521,8 @@ class Keg
   end
 
   def runtime_dependencies
-    tab.runtime_dependencies
+    Keg.cache[:runtime_dependencies] ||= {}
+    Keg.cache[:runtime_dependencies][path] ||= tab.runtime_dependencies
   end
 
   def aliases

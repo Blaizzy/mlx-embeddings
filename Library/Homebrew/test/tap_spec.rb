@@ -78,8 +78,6 @@ describe Tap do
     expect {
       described_class.fetch("homebrew", "homebrew/baz")
     }.to raise_error(/Invalid tap name/)
-  ensure
-    described_class.clear_cache
   end
 
   describe "::from_path" do

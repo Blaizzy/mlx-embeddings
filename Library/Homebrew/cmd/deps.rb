@@ -58,6 +58,9 @@ module Homebrew
 
   def deps
     deps_args.parse
+
+    Formulary.enable_factory_cache!
+
     mode = OpenStruct.new(
       installed?:  args.installed?,
       tree?:       args.tree?,

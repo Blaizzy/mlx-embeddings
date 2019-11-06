@@ -52,6 +52,7 @@ class Formula
   include Utils::Shell
   extend Enumerable
   extend Forwardable
+  extend Cachable
 
   # @!method inreplace(paths, before = nil, after = nil)
   # Actually implemented in {Utils::Inreplace.inreplace}.
@@ -1528,7 +1529,8 @@ class Formula
   # If not, return nil.
   # @private
   def opt_or_installed_prefix_keg
-    if optlinked? && opt_prefix.exist?
+    Formula.cache[:opt_or_installed_prefix_keg] ||= {}
+    Formula.cache[:opt_or_installed_prefix_keg][name] ||= if optlinked? && opt_prefix.exist?
       Keg.new(opt_prefix)
     elsif installed_prefix.directory?
       Keg.new(installed_prefix)
@@ -1538,27 +1540,27 @@ class Formula
   # Returns a list of Dependency objects that are required at runtime.
   # @private
   def runtime_dependencies(read_from_tab: true, undeclared: true)
-    if read_from_tab &&
-       undeclared &&
-       (keg = opt_or_installed_prefix_keg) &&
-       (tab_deps = keg.runtime_dependencies)
-      return tab_deps.map do |d|
+    deps = if read_from_tab && undeclared &&
+              (tab_deps = opt_or_installed_prefix_keg&.runtime_dependencies)
+      tab_deps.map do |d|
         full_name = d["full_name"]
         next unless full_name
 
         Dependency.new full_name
       end.compact
     end
-
-    return declared_runtime_dependencies unless undeclared
-
-    declared_runtime_dependencies | undeclared_runtime_dependencies
+    deps ||= declared_runtime_dependencies unless undeclared
+    deps ||= (declared_runtime_dependencies | undeclared_runtime_dependencies)
+    deps
   end
 
   # Returns a list of Formula objects that are required at runtime.
   # @private
   def runtime_formula_dependencies(read_from_tab: true, undeclared: true)
-    runtime_dependencies(
+    cache_key = "#{name}-#{read_from_tab}-#{undeclared}"
+
+    Formula.cache[:runtime_formula_dependencies] ||= {}
+    Formula.cache[:runtime_formula_dependencies][cache_key] ||= runtime_dependencies(
       read_from_tab: read_from_tab,
       undeclared:    undeclared,
     ).map do |d|
@@ -1566,6 +1568,23 @@ class Formula
     rescue FormulaUnavailableError
       nil
     end.compact
+  end
+
+  def runtime_installed_formula_dependents
+    # `opt_or_installed_prefix_keg` and `runtime_dependencies` `select`s ensure
+    # that we don't end up with something `Formula#runtime_dependencies` can't
+    # read from a `Tab`.
+    Formula.cache[:runtime_installed_formula_dependents] = {}
+    Formula.cache[:runtime_installed_formula_dependents][name] ||= Formula.installed
+                                                                          .select(&:opt_or_installed_prefix_keg)
+                                                                          .select(&:runtime_dependencies)
+                                                                          .select do |f|
+      f.runtime_formula_dependencies.any? do |dep|
+        full_name == dep.full_name
+      rescue
+        name == dep.name
+      end
+    end
   end
 
   # Returns a list of formulae depended on by this formula that aren't

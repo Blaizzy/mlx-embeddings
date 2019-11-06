@@ -9,6 +9,14 @@ require "extend/cachable"
 module Formulary
   extend Cachable
 
+  def self.enable_factory_cache!
+    @factory_cache = true
+  end
+
+  def self.factory_cached?
+    !@factory_cache.nil?
+  end
+
   def self.formula_class_defined?(path)
     cache.key?(path)
   end
@@ -314,7 +322,18 @@ module Formulary
   def self.factory(ref, spec = :stable, alias_path: nil, from: nil)
     raise ArgumentError, "Formulae must have a ref!" unless ref
 
-    loader_for(ref, from: from).get_formula(spec, alias_path: alias_path)
+    cache_key = "#{ref}-#{spec}-#{alias_path}-#{from}"
+    if factory_cached? && cache[:formulary_factory] &&
+       cache[:formulary_factory][cache_key]
+      return cache[:formulary_factory][cache_key]
+    end
+
+    formula = loader_for(ref, from: from).get_formula(spec, alias_path: alias_path)
+    if factory_cached?
+      cache[:formulary_factory] ||= {}
+      cache[:formulary_factory][cache_key] ||= formula
+    end
+    formula
   end
 
   # Return a Formula instance for the given rack.

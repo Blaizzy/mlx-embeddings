@@ -145,7 +145,13 @@ RSpec.configure do |config|
 
     begin
       Homebrew.raise_deprecation_exceptions = true
+
+      Formulary.clear_cache
       Tap.clear_cache
+      DependencyCollector.clear_cache
+      Formula.clear_cache
+      Keg.clear_cache
+      Tab.clear_cache
       FormulaInstaller.clear_attempted
 
       TEST_DIRECTORIES.each(&:mkpath)
@@ -176,6 +182,11 @@ RSpec.configure do |config|
         @__stderr.close
       end
 
+      Formulary.clear_cache
+      Tap.clear_cache
+      DependencyCollector.clear_cache
+      Formula.clear_cache
+      Keg.clear_cache
       Tab.clear_cache
 
       FileUtils.rm_rf [

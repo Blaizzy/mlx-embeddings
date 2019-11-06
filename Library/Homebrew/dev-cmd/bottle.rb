@@ -263,6 +263,8 @@ module Homebrew
 
         changed_files = keg.replace_locations_with_placeholders unless args.skip_relocation?
 
+        Formula.clear_cache
+        Keg.clear_cache
         Tab.clear_cache
         tab = Tab.for_keg(keg)
         original_tab = tab.dup
