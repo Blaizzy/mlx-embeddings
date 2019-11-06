@@ -35,7 +35,10 @@ module Homebrew
   end
 
   def system(cmd, *args, **options)
-    puts "#{cmd} #{args * " "}" if ARGV.verbose?
+    if ARGV.verbose?
+      puts "#{cmd} #{args * " "}".gsub(RUBY_PATH, "ruby")
+                                 .gsub($LOAD_PATH.join(File::PATH_SEPARATOR).to_s, "$LOAD_PATH")
+    end
     _system(cmd, *args, **options)
   end
 
