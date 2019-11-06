@@ -18,6 +18,7 @@ require "linkage_checker"
 require "install"
 require "messages"
 require "cask/cask_loader"
+require "find"
 
 class FormulaInstaller
   include FormulaCellarChecks
@@ -201,12 +202,12 @@ class FormulaInstaller
   end
 
   def build_bottle_preinstall
-    @etc_var_glob ||= "#{HOMEBREW_PREFIX}/{etc,var}/**/*"
-    @etc_var_preinstall = Dir[@etc_var_glob]
+    @etc_var_dirs ||= [HOMEBREW_PREFIX/"etc", HOMEBREW_PREFIX/"var"]
+    @etc_var_preinstall = Find.find(*@etc_var_dirs.select(&:directory?)).to_a
   end
 
   def build_bottle_postinstall
-    @etc_var_postinstall = Dir[@etc_var_glob]
+    @etc_var_postinstall = Find.find(*@etc_var_dirs.select(&:directory?)).to_a
     (@etc_var_postinstall - @etc_var_preinstall).each do |file|
       Pathname.new(file).cp_path_sub(HOMEBREW_PREFIX, formula.bottle_prefix)
     end
