@@ -1091,10 +1091,6 @@ describe Formula do
       tab
     end
 
-    def reset_outdated_kegs
-      f.instance_variable_set(:@outdated_kegs, nil)
-    end
-
     example "greater different tap installed" do
       setup_tab_for_prefix(greater_prefix, tap: "user/repo")
       expect(f.outdated_kegs).to be_empty
@@ -1208,7 +1204,7 @@ describe Formula do
       expect(f.outdated_kegs).to be_empty
 
       setup_tab_for_prefix(greater_prefix, tap: "homebrew/core")
-      reset_outdated_kegs
+      described_class.clear_cache
 
       expect(f.outdated_kegs).to be_empty
     end
@@ -1220,12 +1216,12 @@ describe Formula do
 
       setup_tab_for_prefix(outdated_prefix)
       setup_tab_for_prefix(extra_outdated_prefix, tap: "homebrew/core")
-      reset_outdated_kegs
+      described_class.clear_cache
 
       expect(f.outdated_kegs).not_to be_empty
 
       setup_tab_for_prefix(outdated_prefix, tap: "user/repo")
-      reset_outdated_kegs
+      described_class.clear_cache
 
       expect(f.outdated_kegs).not_to be_empty
     end
@@ -1237,7 +1233,7 @@ describe Formula do
       expect(f.outdated_kegs).to be_empty
 
       setup_tab_for_prefix(same_prefix, tap: "user/repo")
-      reset_outdated_kegs
+      described_class.clear_cache
 
       expect(f.outdated_kegs).to be_empty
     end
@@ -1249,7 +1245,7 @@ describe Formula do
 
       tab.source["versions"] = { "stable" => f.version.to_s }
       tab.write
-      reset_outdated_kegs
+      described_class.clear_cache
 
       expect(f.outdated_kegs).to be_empty
     end
@@ -1288,15 +1284,15 @@ describe Formula do
 
         tab_a.source["versions"] = { "stable" => f.version.to_s }
         tab_a.write
-        reset_outdated_kegs
+        described_class.clear_cache
         expect(f.outdated_kegs(fetch_head: true)).not_to be_empty
 
         head_prefix_a.rmtree
-        reset_outdated_kegs
+        described_class.clear_cache
         expect(f.outdated_kegs(fetch_head: true)).not_to be_empty
 
         setup_tab_for_prefix(head_prefix_c, source_modified_time: 1)
-        reset_outdated_kegs
+        described_class.clear_cache
         expect(f.outdated_kegs(fetch_head: true)).to be_empty
       ensure
         testball_repo.rmtree if testball_repo.exist?
@@ -1348,13 +1344,13 @@ describe Formula do
         setup_tab_for_prefix(prefix_b, versions: { "stable" => "2.14", "version_scheme" => 2 })
 
         expect(f.outdated_kegs).not_to be_empty
-        reset_outdated_kegs
+        described_class.clear_cache
 
         prefix_c = HOMEBREW_CELLAR/"testball/20141009"
         setup_tab_for_prefix(prefix_c, versions: { "stable" => "20141009", "version_scheme" => 3 })
 
         expect(f.outdated_kegs).not_to be_empty
-        reset_outdated_kegs
+        described_class.clear_cache
 
         prefix_d = HOMEBREW_CELLAR/"testball/20141011"
         setup_tab_for_prefix(prefix_d, versions: { "stable" => "20141009", "version_scheme" => 3 })
@@ -1377,7 +1373,7 @@ describe Formula do
         setup_tab_for_prefix(head_prefix, versions: { "stable" => "1.0", "version_scheme" => 1 })
         expect(f.outdated_kegs).not_to be_empty
 
-        reset_outdated_kegs
+        described_class.clear_cache
         head_prefix.rmtree
 
         setup_tab_for_prefix(head_prefix, versions: { "stable" => "1.0", "version_scheme" => 2 })

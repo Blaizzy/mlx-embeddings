@@ -495,22 +495,18 @@ class Formula
     prefix(head_version) if head_version
   end
 
-  def head_version_outdated?(version, options = {})
+  def head_version_outdated?(version, fetch_head: false)
     tab = Tab.for_keg(prefix(version))
 
     return true if tab.version_scheme < version_scheme
     return true if stable && tab.stable_version && tab.stable_version < stable.version
     return true if devel && tab.devel_version && tab.devel_version < devel.version
+    return false unless fetch_head
+    return false unless head&.downloader.is_a?(VCSDownloadStrategy)
 
-    if options[:fetch_head]
-      return false unless head&.downloader.is_a?(VCSDownloadStrategy)
-
-      downloader = head.downloader
-      downloader.shutup! unless ARGV.verbose?
-      downloader.commit_outdated?(version.version.commit)
-    else
-      false
-    end
+    downloader = head.downloader
+    downloader.shutup! unless ARGV.verbose?
+    downloader.commit_outdated?(version.version.commit)
   end
 
   # The latest prefix for this formula. Checks for {#head}, then {#devel}
@@ -1173,43 +1169,41 @@ class Formula
   end
 
   # @private
-  def outdated_kegs(options = {})
-    @outdated_kegs ||= Hash.new do |cache, key|
-      raise Migrator::MigrationNeededError, self if migration_needed?
+  def outdated_kegs(fetch_head: false)
+    raise Migrator::MigrationNeededError, self if migration_needed?
 
-      cache[key] = _outdated_kegs(key)
-    end
-    @outdated_kegs[options]
-  end
+    cache_key = "#{name}-#{fetch_head}"
+    Formula.cache[:outdated_kegs] ||= {}
+    Formula.cache[:outdated_kegs][cache_key] ||= begin
+      all_kegs = []
+      current_version = false
 
-  def _outdated_kegs(options = {})
-    all_kegs = []
+      installed_kegs.each do |keg|
+        all_kegs << keg
+        version = keg.version
+        next if version.head?
 
-    installed_kegs.each do |keg|
-      all_kegs << keg
-      version = keg.version
-      next if version.head?
+        tab = Tab.for_keg(keg)
+        next if version_scheme > tab.version_scheme
+        next if version_scheme == tab.version_scheme && pkg_version > version
 
-      tab = Tab.for_keg(keg)
-      next if version_scheme > tab.version_scheme
-      next if version_scheme == tab.version_scheme && pkg_version > version
+        # don't consider this keg current if there's a newer formula available
+        next if follow_installed_alias? && new_formula_available?
 
-      # don't consider this keg current if there's a newer formula available
-      next if follow_installed_alias? && new_formula_available?
+        # this keg is the current version of the formula, so it's not outdated
+        current_version = true
+        break
+      end
 
-      return [] # this keg is the current version of the formula, so it's not outdated
-    end
-
-    # Even if this formula hasn't been installed, there may be installations
-    # of other formulae which used to be targets of the alias currently
-    # targetting this formula. These should be counted as outdated versions.
-    all_kegs.concat old_installed_formulae.flat_map(&:installed_kegs)
-
-    head_version = latest_head_version
-    if head_version && !head_version_outdated?(head_version, options)
-      []
-    else
-      all_kegs.sort_by(&:version)
+      if current_version
+        []
+      elsif (head_version = latest_head_version) &&
+            !head_version_outdated?(head_version, fetch_head: fetch_head)
+        []
+      else
+        all_kegs += old_installed_formulae.flat_map(&:installed_kegs)
+        all_kegs.sort_by(&:version)
+      end
     end
   end
 
@@ -1257,8 +1251,8 @@ class Formula
   end
 
   # @private
-  def outdated?(options = {})
-    !outdated_kegs(options).empty?
+  def outdated?(fetch_head: false)
+    !outdated_kegs(fetch_head: fetch_head).empty?
   rescue Migrator::MigrationNeededError
     true
   end
