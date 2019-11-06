@@ -223,10 +223,13 @@ module Homebrew
   def check_dependents(formulae_to_install)
     return if formulae_to_install.empty?
 
-    oh1 "Checking dependents for outdated formulae" if args.verbose?
+    oh1 "Checking for dependents of upgraded formulae..."
     dependents =
       formulae_to_install.flat_map(&:runtime_installed_formula_dependents)
-    return if dependents.empty?
+    if dependents.blank?
+      ohai "No dependents found!"
+      return
+    end
 
     upgradeable_dependents = dependents.select(&:outdated?)
                                        .sort { |a, b| depends_on(a, b) }
@@ -243,7 +246,7 @@ module Homebrew
 
     # Print the upgradable dependents.
     if upgradeable_dependents.blank?
-      ohai "No dependents to upgrade" if args.verbose?
+      ohai "No outdated dependents to upgrade!"
     else
       plural = "dependent".pluralize(upgradeable_dependents.count)
       ohai "Upgrading #{upgradable.count} #{plural}:"
@@ -261,7 +264,7 @@ module Homebrew
     upgrade_formulae(upgradeable_dependents)
 
     # Assess the dependents tree again now we've upgraded.
-    oh1 "Checking dependents for broken library links" if args.verbose?
+    oh1 "Checking for dependents' broken linkage from upgraded formulae..."
     broken_dependents = CacheStoreDatabase.use(:linkage) do |db|
       formulae_to_install.flat_map(&:runtime_installed_formula_dependents)
                          .map(&:opt_or_installed_prefix_keg)
@@ -271,7 +274,10 @@ module Homebrew
                       .broken_library_linkage?
       end
     end
-    return if broken_dependents.empty?
+    if broken_dependents.blank?
+      ohai "No broken dependents found!"
+      return
+    end
 
     reinstallable_broken_dependents =
       broken_dependents.select(&:outdated?)
@@ -291,8 +297,8 @@ module Homebrew
     end
 
     # Print the broken dependents.
-    if reinstallable_broken_dependents.empty?
-      ohai "No broken dependents to reinstall" if args.verbose?
+    if reinstallable_broken_dependents.blank?
+      ohai "No broken dependents to reinstall!"
     else
       count = reinstallable_broken_dependents.count
       plural = "dependent".pluralize(reinstallable_broken_dependents.count)
