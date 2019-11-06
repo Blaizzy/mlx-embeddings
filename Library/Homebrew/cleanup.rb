@@ -97,7 +97,7 @@ module CleanupRefinement
 
       cask = begin
         Cask::CaskLoader.load(name)
-      rescue Cask::CaskUnavailableError
+      rescue Cask::CaskError
         return false
       end
 
@@ -196,7 +196,7 @@ module Homebrew
 
           cask = begin
             Cask::CaskLoader.load(arg)
-          rescue Cask::CaskUnavailableError
+          rescue Cask::CaskError
             nil
           end
 
