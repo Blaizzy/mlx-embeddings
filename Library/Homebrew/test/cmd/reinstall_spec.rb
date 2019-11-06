@@ -7,7 +7,7 @@ describe "Homebrew.reinstall_args" do
   it_behaves_like "parseable arguments"
 end
 
-describe "brew reinstall", :integration_test, :needs_no_bad_linux_portable_ruby do
+describe "brew reinstall", :integration_test do
   it "reinstalls a Formula" do
     install_test_formula "testball"
     foo_dir = HOMEBREW_CELLAR/"testball/0.1/bin"

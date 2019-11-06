@@ -143,10 +143,6 @@ RSpec.configure do |config|
     skip "unzip not installed." unless which("unzip")
   end
 
-  config.before(:each, :needs_no_bad_linux_portable_ruby) do
-    skip "using Linux portable-ruby." if OS.linux? && RUBY_PATH.to_s.end_with?("portable-ruby/2.6.3/bin/ruby")
-  end
-
   config.around do |example|
     def find_files
       Find.find(TEST_TMPDIR)

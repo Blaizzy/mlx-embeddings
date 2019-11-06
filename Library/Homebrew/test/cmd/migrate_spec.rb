@@ -6,7 +6,7 @@ describe "Homebrew.migrate_args" do
   it_behaves_like "parseable arguments"
 end
 
-describe "brew migrate", :integration_test, :needs_no_bad_linux_portable_ruby do
+describe "brew migrate", :integration_test do
   it "migrates a renamed Formula" do
     setup_test_formula "testball1"
     setup_test_formula "testball2"
