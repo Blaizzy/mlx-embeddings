@@ -2,7 +2,6 @@
 
 module Homebrew
   module Assertions
-    require "rubygems"
     require "test/unit/assertions"
     include ::Test::Unit::Assertions
 
