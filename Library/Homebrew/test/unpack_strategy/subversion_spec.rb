@@ -8,9 +8,7 @@ describe UnpackStrategy::Subversion, :needs_svn do
   let(:path) { working_copy }
 
   before do
-    svnadmin = ["svnadmin"]
-    svnadmin = ["xcrun", *svnadmin] if OS.mac? && MacOS.version >= :catalina
-    safe_system(*svnadmin, "create", repo)
+    safe_system "svnadmin", "create", repo
     safe_system "svn", "checkout", "file://#{repo}", working_copy
 
     FileUtils.touch working_copy/"test"

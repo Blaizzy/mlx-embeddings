@@ -124,8 +124,19 @@ RSpec.configure do |config|
   end
 
   config.before(:each, :needs_svn) do
-    homebrew_bin = File.dirname HOMEBREW_BREW_FILE
-    skip "subversion not installed." unless %W[/usr/bin/svn #{homebrew_bin}/svn].map { |x| File.executable?(x) }.any?
+    svn_paths = PATH.new(ENV["PATH"])
+    if OS.mac?
+      xcrun_svn = Utils.popen_read("xcrun", "-f", "svn")
+      svn_paths.append(File.dirname(xcrun_svn)) if $CHILD_STATUS.success? && xcrun_svn.present?
+    end
+
+    svn = which("svn", svn_paths)
+    svnadmin = which("svnadmin", svn_paths)
+    skip "subversion not installed." if !svn || !svnadmin
+
+    ENV["PATH"] = PATH.new(ENV["PATH"])
+                      .append(svn.dirname)
+                      .append(svnadmin.dirname)
   end
 
   config.before(:each, :needs_unzip) do
