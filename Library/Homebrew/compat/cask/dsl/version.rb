@@ -5,18 +5,15 @@ module Cask
     class Version < ::String
       module Compat
         def dots_to_slashes
-          odeprecated "#dots_to_slashes"
-          version { tr(".", "/") }
+          odisabled "#dots_to_slashes"
         end
 
         def hyphens_to_slashes
-          odeprecated "#hyphens_to_slashes"
-          version { tr("-", "/") }
+          odisabled "#hyphens_to_slashes"
         end
 
         def underscores_to_slashes
-          odeprecated "#underscores_to_slashes"
-          version { tr("_", "/") }
+          odisabled "#underscores_to_slashes"
         end
       end
 

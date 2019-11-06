@@ -717,8 +717,6 @@ at its original value, while `--no-rebuild` will remove it.
 
 * `--skip-relocation`:
   Do not check if the bottle can be marked as relocatable.
-* `--or-later`:
-  Append `_or_later` to the bottle tag.
 * `--force-core-tap`:
   Build a bottle even if *`formula`* is not in `homebrew/core` or any installed taps.
 * `--no-rebuild`:

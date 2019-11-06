@@ -28,7 +28,7 @@ BOTTLE_ERB = <<-EOS
     <% checksums.each do |checksum_type, checksum_values| %>
     <% checksum_values.each do |checksum_value| %>
     <% checksum, macos = checksum_value.shift %>
-    <%= checksum_type %> "<%= checksum %>" => :<%= macos %><%= "_or_later" if Homebrew.args.or_later? %>
+    <%= checksum_type %> "<%= checksum %>" => :<%= macos %>
     <% end %>
     <% end %>
   end
@@ -52,8 +52,6 @@ module Homebrew
       EOS
       switch "--skip-relocation",
              description: "Do not check if the bottle can be marked as relocatable."
-      switch "--or-later",
-             description: "Append `_or_later` to the bottle tag."
       switch "--force-core-tap",
              description: "Build a bottle even if <formula> is not in `homebrew/core` or any installed taps."
       switch "--no-rebuild",
@@ -396,8 +394,6 @@ module Homebrew
 
     return unless args.json?
 
-    tag = Utils::Bottles.tag.to_s
-    tag += "_or_later" if args.or_later?
     json = {
       f.full_name => {
         "formula" => {
@@ -410,7 +406,7 @@ module Homebrew
           "cellar"   => bottle.cellar.to_s,
           "rebuild"  => bottle.rebuild,
           "tags"     => {
-            tag => {
+            Utils::Bottles.tag.to_s => {
               "filename"       => filename.bintray,
               "local_filename" => filename.to_s,
               "sha256"         => sha256,
