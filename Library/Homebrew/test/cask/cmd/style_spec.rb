@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "open3"
-require "rubygems"
 
 require_relative "shared_examples/invalid_option"
 

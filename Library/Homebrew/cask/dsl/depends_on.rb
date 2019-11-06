@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "rubygems"
-
 module Cask
   class DSL
     class DependsOn < DelegateClass(Hash)

@@ -9,6 +9,7 @@ require "pp"
 
 require_relative "load_path"
 
+require "rubygems"
 require "active_support/core_ext/object/blank"
 require "active_support/core_ext/numeric/time"
 require "active_support/core_ext/array/access"
