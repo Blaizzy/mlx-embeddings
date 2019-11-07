@@ -249,7 +249,7 @@ module Homebrew
       ohai "No outdated dependents to upgrade!"
     else
       plural = "dependent".pluralize(upgradeable_dependents.count)
-      ohai "Upgrading #{upgradable.count} #{plural}:"
+      ohai "Upgrading #{upgradeable_dependents.count} #{plural}:"
       formulae_upgrades = upgradeable_dependents.map do |f|
         name = f.full_specified_name
         if f.optlinked?
