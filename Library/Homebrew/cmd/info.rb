@@ -371,6 +371,7 @@ module Homebrew
         if full_analytics
           next if args.days.present? && args.days&.to_i != days
           next if args.category.present? && args.category != category
+
           analytics_table(category, days, results)
         else
           total_count = results.values.inject("+")
