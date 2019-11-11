@@ -267,12 +267,13 @@ module Homebrew
     oh1 "Checking for dependents' broken linkage from upgraded formulae..."
     broken_dependents = CacheStoreDatabase.use(:linkage) do |db|
       formulae_to_install.flat_map(&:runtime_installed_formula_dependents)
-                         .map(&:opt_or_installed_prefix_keg)
-                         .compact
-                         .select do |keg|
+                         .select do |f|
+        keg = f.opt_or_installed_prefix_keg
+        next unless keg
+
         LinkageChecker.new(keg, cache_db: db)
                       .broken_library_linkage?
-      end
+      end.compact
     end
     if broken_dependents.blank?
       ohai "No broken dependents found!"
