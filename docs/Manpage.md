@@ -762,6 +762,8 @@ uses.
   Run `brew audit --strict` before opening the PR.
 * `--no-browse`:
   Print the pull request URL instead of opening in a browser.
+* `--no-fork`:
+  Don't try to fork the repository.
 * `--mirror`:
   Use the specified *`URL`* as a mirror URL.
 * `--version`:
