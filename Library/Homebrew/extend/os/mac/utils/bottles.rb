@@ -6,7 +6,7 @@ module Utils
       undef tag
 
       def tag
-        MacOS.cat
+        MacOS.version.to_sym
       end
     end
 
