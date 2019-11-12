@@ -58,10 +58,6 @@ module OS
       version > latest_stable_version
     end
 
-    def cat
-      version.to_sym
-    end
-
     def languages
       @languages ||= [
         *ARGV.value("language")&.split(","),
