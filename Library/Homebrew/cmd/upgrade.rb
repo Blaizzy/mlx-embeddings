@@ -75,13 +75,13 @@ module Homebrew
       (ARGV.resolved_formulae - outdated).each do |f|
         versions = f.installed_kegs.map(&:version)
         if versions.empty?
-          onoe "#{f.full_specified_name} not installed"
+          ofail "#{f.full_specified_name} not installed"
         else
           version = versions.max
-          onoe "#{f.full_specified_name} #{version} already installed"
+          opoo "#{f.full_specified_name} #{version} already installed"
         end
       end
-      exit 1 if outdated.empty?
+      exit
     end
 
     pinned = outdated.select(&:pinned?)
