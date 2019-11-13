@@ -357,6 +357,8 @@ module Homebrew
   end
 
   def output_formula_analytics(f)
+    valid_days = %w[30 90 365]
+    valid_categories = %w[install install-on-request build-error]
     json = formulae_api_json("formula/#{f}.json")
     return if json.blank? || json["analytics"].blank?
 
@@ -369,8 +371,15 @@ module Homebrew
       value.each do |days, results|
         days = days.to_i
         if full_analytics
-          next if args.days.present? && args.days&.to_i != days
-          next if args.category.present? && args.category != category
+          if args.days.present?
+            raise UsageError, "day must be one of #{valid_days.join(", ")}" unless valid_days.include?(args.days)
+            next if args.days&.to_i != days
+          end
+
+          if args.category.present?
+            raise UsageError, "category must be one of #{valid_categories.join(", ")}" unless valid_categories.include?(args.category)
+            next if args.category.gsub('-','_') != category
+          end
 
           analytics_table(category, days, results)
         else
