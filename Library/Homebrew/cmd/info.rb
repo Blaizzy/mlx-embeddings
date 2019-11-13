@@ -377,8 +377,10 @@ module Homebrew
           end
 
           if args.category.present?
-            raise UsageError, "category must be one of #{valid_categories.join(", ")}" unless valid_categories.include?(args.category)
-            next if args.category.gsub('-','_') != category
+            unless valid_categories.include?(args.category)
+              raise UsageError, "category must be one of #{valid_categories.join(", ")}"
+            end
+            next if args.category.tr("-", "_") != category
           end
 
           analytics_table(category, days, results)
