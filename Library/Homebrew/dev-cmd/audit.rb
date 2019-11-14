@@ -948,15 +948,13 @@ module Homebrew
         problem "`Use :optional` or `:recommended` instead of `#{Regexp.last_match(0)}`"
       end
 
-      return unless line =~ %r{share(\s*[/+]\s*)(['"])#{Regexp.escape(formula.name)}(?:\2|/)}
-
-      problem "Use pkgshare instead of (share#{Regexp.last_match(1)}\"#{formula.name}\")"
+      if line =~ %r{share(\s*[/+]\s*)(['"])#{Regexp.escape(formula.name)}(?:\2|/)}
+        problem "Use pkgshare instead of (share#{Regexp.last_match(1)}\"#{formula.name}\")"
+      end
 
       return unless @core_tap
 
-      return unless line.include?("env :std")
-
-      problem "`env :std` in `core` formulae is deprecated"
+      problem "`env :std` in `core` formulae is deprecated" if line.include?("env :std")
     end
 
     def audit_reverse_migration
