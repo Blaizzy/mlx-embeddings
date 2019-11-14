@@ -81,7 +81,7 @@ module Homebrew
           opoo "#{f.full_specified_name} #{version} already installed"
         end
       end
-      exit
+      return if outdated.empty?
     end
 
     pinned = outdated.select(&:pinned?)
