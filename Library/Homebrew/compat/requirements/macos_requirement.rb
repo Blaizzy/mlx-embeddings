@@ -11,9 +11,8 @@ class MacOSRequirement < Requirement
 
           sym = MacOS::Version.new(v).to_sym
 
-          odeprecated "depends_on macos: #{v.inspect}", "depends_on macos: #{sym.inspect}",
-                      disable_on: Time.parse("2019-10-15")
-
+          odisabled "depends_on macos: #{v.inspect}",
+                    "depends_on macos: #{sym.inspect}"
           sym
         end
 
@@ -22,8 +21,8 @@ class MacOSRequirement < Requirement
         v, *rest = tags
         sym = MacOS::Version.new(v).to_sym
 
-        odeprecated "depends_on macos: #{v.inspect}", "depends_on macos: #{sym.inspect}",
-                    disable_on: Time.parse("2019-10-15")
+        odisabled "depends_on macos: #{v.inspect}",
+                  "depends_on macos: #{sym.inspect}"
 
         tags = [sym, *rest]
       end

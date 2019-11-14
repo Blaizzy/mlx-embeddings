@@ -261,7 +261,7 @@ class Bottle
     def initialize(name, version, tag, rebuild)
       @name = File.basename name
       @version = version
-      @tag = tag.to_s.gsub(/_or_later$/, "")
+      @tag = tag.to_s
       @rebuild = rebuild
     end
 

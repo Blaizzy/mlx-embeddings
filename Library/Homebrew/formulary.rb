@@ -490,14 +490,8 @@ module Formulary
     if possible_pinned_tap_formulae.size == 1
       selected_formula = factory(possible_pinned_tap_formulae.first, spec)
       if core_path(ref).file?
-        odeprecated "brew tap-pin user/tap",
-                    "fully-scoped user/tap/formula naming"
-        opoo <<~EOS
-          #{ref} is provided by core, but is now shadowed by #{selected_formula.full_name}.
-          This behaviour is deprecated and will be removed in Homebrew 2.2.0.
-          To refer to the core formula, use Homebrew/core/#{ref} instead.
-          To refer to the tap formula, use #{selected_formula.full_name} instead.
-        EOS
+        odisabled "brew tap-pin user/tap",
+                  "fully-scoped user/tap/formula naming"
       end
       selected_formula
     else
