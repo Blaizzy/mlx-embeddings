@@ -231,6 +231,18 @@ module Homebrew
   end
 
   def analytics_table(category, days, results, os_version: false, cask_install: false)
+    valid_days = %w[30 90 365]
+    if days.present?
+      raise UsageError, "day must be one of #{valid_days.join(", ")}" unless valid_days.include?(days.to_s)
+    end
+
+    valid_categories = %w[install install-on-request cask-install build-error os-version]
+    if category.present?
+      unless valid_categories.include?(category.tr("_", "-"))
+        raise UsageError, "category must be one of #{valid_categories.join(", ")}"
+      end
+    end
+
     oh1 "#{category} (#{days} days)"
     total_count = results.values.inject("+")
     formatted_total_count = format_count(total_count)
@@ -369,6 +381,14 @@ module Homebrew
       value.each do |days, results|
         days = days.to_i
         if full_analytics
+          if args.days.present?
+            next if args.days&.to_i != days
+          end
+
+          if args.category.present?
+            next if args.category.tr("-", "_") != category
+          end
+
           analytics_table(category, days, results)
         else
           total_count = results.values.inject("+")
