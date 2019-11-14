@@ -79,7 +79,13 @@ module Cask
     class FromURILoader < FromPathLoader
       def self.can_load?(ref)
         uri_regex = ::URI::DEFAULT_PARSER.make_regexp
-        ref.to_s.match?(Regexp.new('\A' + uri_regex.source + '\Z', uri_regex.options))
+        return false unless ref.to_s.match?(Regexp.new('\A' + uri_regex.source + '\Z', uri_regex.options))
+
+        uri = URI(ref)
+        return false unless uri
+        return false unless uri.path
+
+        true
       end
 
       attr_reader :url
