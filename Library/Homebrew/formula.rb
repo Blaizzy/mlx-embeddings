@@ -20,6 +20,7 @@ require "extend/ENV"
 require "language/python"
 require "tab"
 require "mktemp"
+require "find"
 
 # A formula provides instructions and metadata for Homebrew to install a piece
 # of software. Every Homebrew formula is a {Formula}.
@@ -998,7 +999,9 @@ class Formula
     with_env(new_env) do
       ENV.clear_sensitive_environment!
 
-      Pathname.glob("#{bottle_prefix}/{etc,var}/**/*") do |path|
+      etc_var_dirs = [bottle_prefix/"etc", bottle_prefix/"var"]
+      Find.find(*etc_var_dirs.select(&:directory?)) do |path|
+        path = Pathname.new(path)
         path.extend(InstallRenamed)
         path.cp_path_sub(bottle_prefix, HOMEBREW_PREFIX)
       end
