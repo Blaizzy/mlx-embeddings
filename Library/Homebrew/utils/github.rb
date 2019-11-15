@@ -289,7 +289,8 @@ module GitHub
 
   def issues_for_formula(name, options = {})
     tap = options[:tap] || CoreTap.instance
-    search_issues(name, state: "open", repo: tap.full_name, in: "title")
+    tap_full_name = options[:tap_full_name] || tap.full_name
+    search_issues(name, state: "open", repo: tap_full_name, in: "title")
   end
 
   def user

@@ -66,6 +66,42 @@ module Homebrew
     end
   end
 
+  def use_correct_linux_tap(formula)
+    if OS.linux? && formula.tap.core_tap?
+      tap_full_name = formula.tap.full_name.gsub("linuxbrew", "homebrew")
+      homebrew_core_url = "https://github.com/#{tap_full_name}"
+      homebrew_core_remote = "homebrew"
+      homebrew_core_branch = "master"
+      origin_branch = "#{homebrew_core_remote}/#{homebrew_core_branch}"
+      previous_branch = Utils.popen_read("git -C \"#{formula.tap.path}\" symbolic-ref -q --short HEAD").chomp
+      previous_branch = "master" if previous_branch.empty?
+      formula_path = formula.path.to_s[%r{(Formula\/.*)}, 1]
+
+      if args.dry_run?
+        ohai "git remote add #{homebrew_core_remote} #{homebrew_core_url}"
+        ohai "git fetch #{homebrew_core_remote} #{homebrew_core_branch}"
+        ohai "git cat-file -e #{origin_branch}:#{formula_path}"
+        ohai "git checkout #{origin_branch}"
+        return tap_full_name, origin_branch, previous_branch
+      else
+        formula.path.parent.cd do
+          unless Utils.popen_read("git remote -v").match?(%r{^homebrew.*Homebrew\/homebrew-core.*$})
+            ohai "Adding #{homebrew_core_remote} remote"
+            safe_system "git", "remote", "add", homebrew_core_remote, homebrew_core_url
+          end
+          ohai "Fetching #{origin_branch}"
+          safe_system "git", "fetch", homebrew_core_remote, homebrew_core_branch
+          if quiet_system "git", "cat-file", "-e", "#{origin_branch}:#{formula_path}"
+            ohai "#{formula.full_name} exists in #{origin_branch}"
+            safe_system "git", "checkout", origin_branch
+            return tap_full_name, origin_branch, previous_branch
+          end
+        end
+      end
+    end
+    [formula.tap.full_name, "origin/master", "-"]
+  end
+
   def bump_formula_pr
     bump_formula_pr_args.parse
 
@@ -79,7 +115,8 @@ module Homebrew
     formula = ARGV.formulae.first
 
     if formula
-      check_for_duplicate_pull_requests(formula)
+      tap_full_name, origin_branch, previous_branch = use_correct_linux_tap(formula)
+      check_for_duplicate_pull_requests(formula, tap_full_name)
       checked_for_duplicates = true
     end
 
@@ -111,7 +148,7 @@ module Homebrew
     end
     raise FormulaUnspecifiedError unless formula
 
-    check_for_duplicate_pull_requests(formula) unless checked_for_duplicates
+    check_for_duplicate_pull_requests(formula, tap_full_name) unless checked_for_duplicates
 
     requested_spec, formula_spec = if args.devel?
       devel_message = " (devel)"
@@ -290,16 +327,16 @@ module Homebrew
         ohai "try to fork repository with GitHub API"
         ohai "git fetch --unshallow origin" if shallow
         ohai "git add #{alias_rename.first} #{alias_rename.last}" if alias_rename.present?
-        ohai "git checkout --no-track -b #{branch} origin/master"
+        ohai "git checkout --no-track -b #{branch} #{origin_branch}"
         ohai "git commit --no-edit --verbose --message='#{formula.name} " \
              "#{new_formula_version}#{devel_message}' -- #{changed_files.join(" ")}"
         ohai "git push --set-upstream $HUB_REMOTE #{branch}:#{branch}"
-        ohai "git checkout --quiet -"
+        ohai "git checkout --quiet #{previous_branch}"
         ohai "create pull request with GitHub API"
       else
 
         begin
-          response = GitHub.create_fork(formula.tap.full_name)
+          response = GitHub.create_fork(tap_full_name)
           # GitHub API responds immediately but fork takes a few seconds to be ready.
           sleep 3
 
@@ -323,12 +360,12 @@ module Homebrew
 
         safe_system "git", "fetch", "--unshallow", "origin" if shallow
         safe_system "git", "add", *alias_rename if alias_rename.present?
-        safe_system "git", "checkout", "--no-track", "-b", branch, "origin/master"
+        safe_system "git", "checkout", "--no-track", "-b", branch, origin_branch
         safe_system "git", "commit", "--no-edit", "--verbose",
                     "--message=#{formula.name} #{new_formula_version}#{devel_message}",
                     "--", *changed_files
         safe_system "git", "push", "--set-upstream", remote_url, "#{branch}:#{branch}"
-        safe_system "git", "checkout", "--quiet", "-"
+        safe_system "git", "checkout", "--quiet", previous_branch
         pr_message = <<~EOS
           Created with `brew bump-formula-pr`.
         EOS
@@ -343,7 +380,7 @@ module Homebrew
         pr_title = "#{formula.name} #{new_formula_version}#{devel_message}"
 
         begin
-          url = GitHub.create_pull_request(formula.tap.full_name, pr_title,
+          url = GitHub.create_pull_request(tap_full_name, pr_title,
                                            "#{username}:#{branch}", "master", pr_message)["html_url"]
           if args.no_browse?
             puts url
@@ -394,8 +431,8 @@ module Homebrew
     end
   end
 
-  def fetch_pull_requests(formula)
-    GitHub.issues_for_formula(formula.name, tap: formula.tap).select do |pr|
+  def fetch_pull_requests(formula, tap_full_name)
+    GitHub.issues_for_formula(formula.name, tap_full_name: tap_full_name).select do |pr|
       pr["html_url"].include?("/pull/") &&
         /(^|\s)#{Regexp.quote(formula.name)}(:|\s|$)/i =~ pr["title"]
     end
@@ -404,8 +441,8 @@ module Homebrew
     []
   end
 
-  def check_for_duplicate_pull_requests(formula)
-    pull_requests = fetch_pull_requests(formula)
+  def check_for_duplicate_pull_requests(formula, tap_full_name)
+    pull_requests = fetch_pull_requests(formula, tap_full_name)
     return unless pull_requests
     return if pull_requests.empty?
 
