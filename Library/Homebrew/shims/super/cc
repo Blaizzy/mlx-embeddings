@@ -114,7 +114,7 @@ class Cmd
       if tool == "ld"
         args << "-syslibroot" << sysroot
       else
-        args << "-isysroot" << sysroot << "--sysroot=#{sysroot}"
+        args << "-isysroot#{sysroot}" << "--sysroot=#{sysroot}"
       end
     end
 
@@ -213,7 +213,7 @@ class Cmd
       if mac?
         sdk = enum.next
         # We set the sysroot for macOS SDKs
-        args << "-isysroot" << sdk unless sdk.downcase.include? "osx"
+        args << "-isysroot#{sdk}" unless sdk.downcase.include? "osx"
       else
         args << arg << enum.next
       end
