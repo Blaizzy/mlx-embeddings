@@ -91,11 +91,11 @@ module Homebrew
       oh1 "Setup test environment..."
       # copy Homebrew installation
       safe_system "git", "clone", "#{HOMEBREW_REPOSITORY}/.git", ".",
-                  "--local", "--branch", "master", "--single-branch"
+                  "--branch", "master", "--single-branch"
 
       # set git origin to another copy
       safe_system "git", "clone", "#{HOMEBREW_REPOSITORY}/.git", "remote.git",
-                  "--local", "--bare", "--branch", "master", "--single-branch"
+                  "--bare", "--branch", "master", "--single-branch"
       safe_system "git", "config", "remote.origin.url", "#{curdir}/remote.git"
 
       # force push origin to end_commit

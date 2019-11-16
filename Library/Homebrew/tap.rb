@@ -729,7 +729,7 @@ class TapConfig
     return unless Utils.git_available?
 
     tap.path.cd do
-      Utils.popen_read("git", "config", "--local", "--get", "homebrew.#{key}").chomp.presence
+      Utils.popen_read("git", "config", "--get", "homebrew.#{key}").chomp.presence
     end
   end
 
@@ -738,7 +738,7 @@ class TapConfig
     return unless Utils.git_available?
 
     tap.path.cd do
-      safe_system "git", "config", "--local", "--replace-all", "homebrew.#{key}", value.to_s
+      safe_system "git", "config", "--replace-all", "homebrew.#{key}", value.to_s
     end
   end
 end

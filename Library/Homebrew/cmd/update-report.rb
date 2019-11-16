@@ -40,11 +40,11 @@ module Homebrew
 
     HOMEBREW_REPOSITORY.cd do
       analytics_message_displayed =
-        Utils.popen_read("git", "config", "--local", "--get", "homebrew.analyticsmessage").chomp == "true"
+        Utils.popen_read("git", "config", "--get", "homebrew.analyticsmessage").chomp == "true"
       cask_analytics_message_displayed =
-        Utils.popen_read("git", "config", "--local", "--get", "homebrew.caskanalyticsmessage").chomp == "true"
+        Utils.popen_read("git", "config", "--get", "homebrew.caskanalyticsmessage").chomp == "true"
       analytics_disabled =
-        Utils.popen_read("git", "config", "--local", "--get", "homebrew.analyticsdisabled").chomp == "true"
+        Utils.popen_read("git", "config", "--get", "homebrew.analyticsdisabled").chomp == "true"
       if !analytics_message_displayed &&
          !cask_analytics_message_displayed &&
          !analytics_disabled &&
@@ -65,19 +65,19 @@ module Homebrew
 
         # Consider the message possibly missed if not a TTY.
         if $stdout.tty?
-          safe_system "git", "config", "--local", "--replace-all", "homebrew.analyticsmessage", "true"
-          safe_system "git", "config", "--local", "--replace-all", "homebrew.caskanalyticsmessage", "true"
+          safe_system "git", "config", "--replace-all", "homebrew.analyticsmessage", "true"
+          safe_system "git", "config", "--replace-all", "homebrew.caskanalyticsmessage", "true"
         end
       end
 
       donation_message_displayed =
-        Utils.popen_read("git", "config", "--local", "--get", "homebrew.donationmessage").chomp == "true"
+        Utils.popen_read("git", "config", "--get", "homebrew.donationmessage").chomp == "true"
       unless donation_message_displayed
         ohai "Homebrew is run entirely by unpaid volunteers. Please consider donating:"
         puts "  #{Formatter.url("https://github.com/Homebrew/brew#donations")}\n"
 
         # Consider the message possibly missed if not a TTY.
-        safe_system "git", "config", "--local", "--replace-all", "homebrew.donationmessage", "true" if $stdout.tty?
+        safe_system "git", "config", "--replace-all", "homebrew.donationmessage", "true" if $stdout.tty?
       end
     end
 
