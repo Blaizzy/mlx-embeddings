@@ -437,7 +437,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
   end
 
   def curl(*args, **options)
-    args << "--connect-timeout" << "5" unless mirrors.empty?
+    args << "--connect-timeout" << "15" unless mirrors.empty?
     super(*_curl_args, *args, **_curl_opts, **options)
   end
 end
