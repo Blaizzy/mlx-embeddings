@@ -267,8 +267,8 @@ HOMEBREW_BOTTLE_DOMAIN=https://linuxbrew.bintray.com brew pull --bottle --bintra
 It saves a lot of time to alias this in your shell config. One
 possible alias is `lbrew-pull-bottle`.
 
-For PRs with the title "Build a bottle for Linuxbrew" and that have
-only one commit with contents "# Build a bottle for Linuxbrew", these
+For PRs with the title "Build a bottle for Linux" and that have
+only one commit with contents "# Build a bottle for Linux", these
 have been created with `brew build-bottle-pr` and the commit from the
 PR doesn't need preserving. We don't want to litter the codebase with
 comments. In these cases, you can combine `brew pull --bottle` with
@@ -284,7 +284,7 @@ lbrew-pull-bottle <PR-NUMBER> && brew squash-bottle-pr
 
 For PRs where there have been force pushes or extra commits to fix the
 build or fix bottling syntax, we can't `brew squash-bottle-pr` as we
-must keep the fixes. If the `# Build a bottle for Linuxbrew` line
+must keep the fixes. If the `# Build a bottle for Linux` line
 still exists in the formula, remove it.
 
 The `brew pull` command *publishes* the bottle to BinTray and verifies
@@ -303,10 +303,10 @@ a list of who published what recently).
 Once you've pushed to `origin`, there's no going back: you're a
 maintainer now, you can't force-push to fix your mistakes!
 
-## Creating new Linux specific formula
+## Creating new Linux-specific formula
 
-Make a PR to `Homebrew/linuxbrew-core` containing one commit named like this: `name (new formula)`. Keep only one commit in this PR, squash and force push to your branch if needed. Include a comment: `# tag "linuxbrew"` in the formula after the `url` stanza, so maintainers can easily find Linux only formulae.
-For `brew pull` to be successful when new formulae are added, we have to insert an empty bottle block into the formula code. This usually goes after the `linuxbrew` tag.
+Make a PR to `Homebrew/linuxbrew-core` containing one commit named like this: `name (new formula)`. Keep only one commit in this PR, squash and force push to your branch if needed. Include a comment: `# tag "linux"` in the formula after the `url` stanza, so maintainers can easily find Linux only formulae.
+For `brew pull` to be successful when new formulae are added, we have to insert an empty bottle block into the formula code. This usually goes after the `linux` tag.
 ```ruby
 bottle do
 end
@@ -320,14 +320,11 @@ end
 
 ### Formulae that exist in Homebrew/homebrew-core
 
-The `brew bump-formula-pr` command will raise PRs against the Linux
-formula repo for upstream Mac formulae when running on Linux. This
-isn't how version bumps are done for _most_ formulae. Until
-[Homebrew/brew issue
-6341](https://github.com/Homebrew/brew/issues/6341) is implemented - a
-feature that will raise PRs against the correct repo for macOS
-formulae bumps on Linux - we have to redirect users to raise their PRs
-in Homebrew/homebrew-core:
+When running on Linux, the `brew bump-formula-pr` command should raise pull
+requests against the correct upstream macOS Homebrew-core repository. If a
+pull request is raised against the Linuxbrew-core repository when an upstream
+formula exists, please use the following message to direct users to the
+correct repository:
 
 > Thanks for your PR.
 >
@@ -338,7 +335,7 @@ in Homebrew/homebrew-core:
 ### Linux-only formulae
 
 If the formula is a Linux-only formula, it either:
-- will contain the line `# tag "linuxbrew"`
+- will contain the line `# tag "linux"`
 - won't have macOS bottles
 
 These formulae are fine for users to bump with `brew bump-formula-pr`,
