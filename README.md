@@ -29,6 +29,25 @@ Alternatively, for something more substantial, check out one of the issues label
 
 Good luck!
 
+## Donations
+Homebrew is a non-profit project run entirely by unpaid volunteers. We need your funds to pay for software, hardware and hosting around continuous integration and future improvements to the project. Every donation will be spent on making Homebrew better for our users.
+
+Please consider a regular donation through [GitHub Sponsors](https://github.com/sponsors/Homebrew) or [Patreon](https://www.patreon.com/homebrew):
+
+[![Donate with Patreon](https://img.shields.io/badge/patreon-donate-green.svg)](https://www.patreon.com/homebrew)
+
+Alternatively, if you'd rather make a one-off payment:
+
+- [Donate with PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=V6ZE57MJRYC8L)
+- Donate by USA $ check from a USA bank:
+  - Make check payable to "Software Freedom Conservancy, Inc." and place "Directed donation: Homebrew" in the memo field. Checks should then be mailed to:
+    - Software Freedom Conservancy, Inc.
+      137 Montague ST  STE 380
+      BROOKLYN, NY 11201             USA
+- Donate by wire transfer: contact accounting@sfconservancy.org for wire transfer details.
+
+Homebrew is a member of the [Software Freedom Conservancy](https://sfconservancy.org) which provides us with an ability to receive tax-deductible, Homebrew earmarked donations (and [many other services](https://sfconservancy.org/members/services/)). Software Freedom Conservancy, Inc. is a 501(c)(3) organization incorporated in New York, and donations made to it are fully tax-deductible to the extent permitted by law.
+
 ## Security
 Please report security issues to our [HackerOne](https://hackerone.com/homebrew/).
 
@@ -54,25 +73,6 @@ Former maintainers with significant contributions include [JCount](https://githu
 Code is under the [BSD 2-clause "Simplified" License](LICENSE.txt).
 Documentation is under the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/).
 
-## Donations
-Homebrew is a non-profit project run entirely by unpaid volunteers. We need your funds to pay for software, hardware and hosting around continuous integration and future improvements to the project. Every donation will be spent on making Homebrew better for our users.
-
-Please consider a regular donation through [GitHub Sponsors](https://github.com/sponsors/Homebrew) or [Patreon](https://www.patreon.com/homebrew):
-
-[![Donate with Patreon](https://img.shields.io/badge/patreon-donate-green.svg)](https://www.patreon.com/homebrew)
-
-Alternatively, if you'd rather make a one-off payment:
-
-- [Donate with PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=V6ZE57MJRYC8L)
-- Donate by USA $ check from a USA bank:
-  - Make check payable to "Software Freedom Conservancy, Inc." and place "Directed donation: Homebrew" in the memo field. Checks should then be mailed to:
-    - Software Freedom Conservancy, Inc.
-      137 Montague ST  STE 380
-      BROOKLYN, NY 11201             USA
-- Donate by wire transfer: contact accounting@sfconservancy.org for wire transfer details.
-
-Homebrew is a member of the [Software Freedom Conservancy](https://sfconservancy.org) which provides us with an ability to receive tax-deductible, Homebrew earmarked donations (and [many other services](https://sfconservancy.org/members/services/)). Software Freedom Conservancy, Inc. is a 501(c)(3) organization incorporated in New York, and donations made to it are fully tax-deductible to the extent permitted by law.
-
 ## Sponsors
 Our Xserve ESXi boxes for CI are hosted by [MacStadium](https://www.macstadium.com).
 
@@ -81,10 +81,6 @@ Our Xserve ESXi boxes for CI are hosted by [MacStadium](https://www.macstadium.c
 Our Jenkins CI installation is hosted by [DigitalOcean](https://m.do.co/c/7e39c35d5581).
 
 ![DigitalOcean](https://cloud.githubusercontent.com/assets/125011/26827038/4b7b5ade-4ab3-11e7-811b-fed3ab0e934d.png)
-
-Our physical hardware is hosted by [Commsworld](https://www.commsworld.com).
-
-![Commsworld powered by Fluency](https://user-images.githubusercontent.com/125011/30822845-1716bc2c-a222-11e7-843e-ea7c7b6a1503.png)
 
 Our bottles (binary packages) are hosted by [Bintray](https://bintray.com/homebrew).
 
