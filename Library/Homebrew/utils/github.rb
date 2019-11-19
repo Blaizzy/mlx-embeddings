@@ -340,6 +340,15 @@ module GitHub
     open_api(url, data: data, scopes: scopes)
   end
 
+  def check_fork_exists(repo)
+    username = api_credentials[1]
+    reponame = repo.split("/")[1]
+    json = open_api(url_to("repos", username, reponame))
+    return false if json["message"] == "Not Found"
+
+    true
+  end
+
   def create_pull_request(repo, title, head, base, body)
     url = "#{API_URL}/repos/#{repo}/pulls"
     data = { title: title, head: head, base: base, body: body }

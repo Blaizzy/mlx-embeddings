@@ -341,28 +341,7 @@ module Homebrew
           remote_url = Utils.popen_read("git remote get-url --push origin").chomp
           username = formula.tap.user
         else
-          begin
-            response = GitHub.create_fork(formula.tap.full_name)
-            # GitHub API responds immediately but fork takes a few seconds to be ready.
-            sleep 3
-
-            if system("git", "config", "--local", "--get-regexp", "remote\..*\.url", "git@github.com:.*")
-              remote_url = response.fetch("ssh_url")
-            else
-              remote_url = response.fetch("clone_url")
-            end
-            username = response.fetch("owner").fetch("login")
-          rescue GitHub::AuthenticationFailedError => e
-            raise unless e.github_message.match?(/forking is disabled/)
-
-            # If the repository is private, forking might be disabled.
-            # Create branches in the repository itself instead.
-            remote_url = Utils.popen_read("git remote get-url --push origin").chomp
-            username = formula.tap.user
-          rescue *GitHub.api_errors => e
-            formula.path.atomic_write(backup_file) unless args.dry_run?
-            odie "Unable to fork: #{e.message}!"
-          end
+          remote_url, username = forked_repo_info(formula)
         end
 
         safe_system "git", "fetch", "--unshallow", "origin" if shallow
@@ -399,6 +378,23 @@ module Homebrew
         end
       end
     end
+  end
+
+  def forked_repo_info(formula)
+    response = GitHub.create_fork(formula.tap.full_name)
+  rescue GitHub::AuthenticationFailedError, *GitHub.api_errors => e
+    formula.path.atomic_write(backup_file) unless args.dry_run?
+    odie "Unable to fork: #{e.message}!"
+  else
+    # GitHub API responds immediately but fork takes a few seconds to be ready.
+    sleep 1 until GitHub.check_fork_exists(formula.tap.full_name)
+    if system("git", "config", "--local", "--get-regexp", "remote\..*\.url", "git@github.com:.*")
+      remote_url = response.fetch("ssh_url")
+    else
+      remote_url = response.fetch("clone_url")
+    end
+    username = response.fetch("owner").fetch("login")
+    [remote_url, username]
   end
 
   def inreplace_pairs(path, replacement_pairs)
