@@ -388,10 +388,10 @@ module Homebrew
   else
     # GitHub API responds immediately but fork takes a few seconds to be ready.
     sleep 1 until GitHub.check_fork_exists(tap_full_name)
-    if system("git", "config", "--local", "--get-regexp", "remote\..*\.url", "git@github.com:.*")
-      remote_url = response.fetch("ssh_url")
+    remote_url =  if system("git", "config", "--local", "--get-regexp", "remote\..*\.url", "git@github.com:.*")
+      response.fetch("ssh_url")
     else
-      remote_url = response.fetch("clone_url")
+      response.fetch("clone_url")
     end
     username = response.fetch("owner").fetch("login")
     [remote_url, username]
