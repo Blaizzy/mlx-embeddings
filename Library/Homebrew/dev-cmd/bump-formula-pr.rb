@@ -340,7 +340,7 @@ module Homebrew
           # GitHub API responds immediately but fork takes a few seconds to be ready.
           sleep 3
 
-          if system("git", "config", "--local", "--get-regexp", "remote\..*\.url", "git@github.com:.*")
+          if system("git", "config", "--get-regexp", "remote\..*\.url", "git@github.com:.*")
             remote_url = response.fetch("ssh_url")
           else
             remote_url = response.fetch("clone_url")
