@@ -228,6 +228,12 @@ describe Utils::Inreplace do
 
   after { file.unlink }
 
+  it "raises error if there are no files given to replace" do
+    expect {
+      described_class.inreplace [], "d", "f"
+    }.to raise_error(Utils::InreplaceError)
+  end
+
   it "raises error if there is nothing to replace" do
     expect {
       described_class.inreplace file.path, "d", "f"
