@@ -211,9 +211,9 @@ If *`formula`* is provided, show summary of information about *`formula`*.
 * `--analytics`:
   List global Homebrew analytics data or, if specified, installation and build error data for *`formula`* (provided neither `HOMEBREW_NO_ANALYTICS` nor `HOMEBREW_NO_GITHUB_API` are set).
 * `--days`:
-  How many days of global analytics data to retrieve. The value for *`days`* must be `30`, `90` or `365`. The default is `30`.
+  How many days of analytics data to retrieve. The value for *`days`* must be `30`, `90` or `365`. The default is `30`.
 * `--category`:
-  Which type of global analytics data to retrieve. The value for *`category`* must be `install`, `install-on-request`, `cask-install`, `build-error` or `os-version`. The default is `install`.
+  Which type of analytics data to retrieve. The value for *`category`* must be `install`, `install-on-request` or `build-error`; `cask-install` or `os-version` may be specified if *`formula`* is not. The default is `install`.
 * `--github`:
   Open the GitHub source page for *`formula`* in a browser. To view formula history locally: `brew log -p` *`formula`*
 * `--json`:
