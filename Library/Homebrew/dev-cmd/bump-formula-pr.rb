@@ -383,7 +383,7 @@ module Homebrew
   def forked_repo_info(tap_full_name)
     response = GitHub.create_fork(tap_full_name)
   rescue GitHub::AuthenticationFailedError, *GitHub.api_errors => e
-    formula.path.atomic_write(backup_file) unless args.dry_run?
+    formula.path.atomic_write(backup_file)
     odie "Unable to fork: #{e.message}!"
   else
     # GitHub API responds immediately but fork takes a few seconds to be ready.
