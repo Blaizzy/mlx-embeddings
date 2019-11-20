@@ -238,7 +238,7 @@ module Homebrew
 
     valid_categories = %w[install install-on-request cask-install build-error os-version]
     if category.present?
-      unless valid_categories.include?(category.tr("_", "-"))
+      unless valid_categories.include?(category)
         raise UsageError, "category must be one of #{valid_categories.join(", ")}"
       end
     end
@@ -375,7 +375,8 @@ module Homebrew
     full_analytics = args.analytics? || args.verbose?
 
     ohai "Analytics"
-    json["analytics"].each do |category, value|
+    json["analytics"].each do |category_, value|
+      category = category_.tr("_", "-")
       analytics = []
 
       value.each do |days, results|
@@ -384,9 +385,8 @@ module Homebrew
           if args.days.present?
             next if args.days&.to_i != days
           end
-
           if args.category.present?
-            next if args.category.tr("-", "_") != category
+            next if args.category != category
           end
 
           analytics_table(category, days, results)
