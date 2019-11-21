@@ -15,12 +15,83 @@ jobs:
 
     - name: Set up Homebrew
       run: |
-        HOMEBREW_REPOSITORY="$(brew --repo)"
-        mv "$HOMEBREW_REPOSITORY/Library/Taps" "$PWD/Library"
-        sudo rm -rf "$HOMEBREW_REPOSITORY"
-        sudo ln -s "$PWD" "$HOMEBREW_REPOSITORY"
-        brew update-reset Library/Taps/homebrew/homebrew-core
-      if: matrix.os == 'macOS-latest'
+        if [ "$RUNNER_OS" = "Linux" ]; then
+          HOMEBREW_REPOSITORY=/home/linuxbrew/.linuxbrew
+          sudo mkdir -p /home/linuxbrew
+          sudo ln -s "$PWD" "$HOMEBREW_REPOSITORY"
+          sudo chown -R "$USER" /home/linuxbrew
+        else
+          HOMEBREW_REPOSITORY="$(brew --repo)"
+          mv "$HOMEBREW_REPOSITORY/Library/Taps" "$PWD/Library"
+          sudo rm -rf "$HOMEBREW_REPOSITORY"
+          sudo ln -s "$PWD" "$HOMEBREW_REPOSITORY"
+          brew update-reset Library/Taps/homebrew/homebrew-core
+
+          # Install taps needed for 'brew tests'
+          brew tap homebrew/cask
+          brew tap homebrew/bundle
+          brew tap homebrew/services
+        fi
+
+    - name: Install Bundler RubyGems
+      run: |
+        export PATH="/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:/usr/bin:/bin"
+        brew install-bundler-gems
+
+        # Check for uncommitted gems
+        git -C $(brew --repo) diff --stat --exit-code Library/Homebrew/vendor/bundle/ruby
+
+        if [ "$RUNNER_OS" = "Linux" ]; then
+          # Fix permissions for 'brew tests'
+          sudo chmod -R g-w,o-w /home/linuxbrew /home/runner /opt
+        fi
+
+    - name: Run brew tests
+      run: |
+        # brew tests doesn't like world writable directories
+        umask 022
+
+        # set variables for coverage reporting
+        export HOMEBREW_CI_BUILD_NUMBER="$GITHUB_REF"
+        export HOMEBREW_CI_BRANCH="$HEAD_GITHUB_REF"
+        export HOMEBREW_GITHUB_REPOSITORY="$GITHUB_REPOSITORY"
+
+        export PATH="/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:/usr/bin:/bin"
+        brew tests --no-compat --online
+        brew tests --generic --online
+        brew tests --online --coverage
+      env:
+        HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+        # set variables for coverage reporting
+        HOMEBREW_GITHUB_ACTIONS: 1
+        HOMEBREW_CI_NAME: github-actions
+        HOMEBREW_COVERALLS_REPO_TOKEN: 3F6U6ZqctoNJwKyREremsqMgpU3qYgxFk
+
+        # These cannot be queried at the macOS level on GitHub Actions.
+        HOMEBREW_LANGUAGES: en-GB
+
+    - name: Run brew style
+      run: |
+        export PATH="/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:/usr/bin:/bin"
+        brew style
+
+    - name: Run brew man
+      run: |
+        export PATH="/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:/usr/bin:/bin"
+        brew man --fail-if-changed
+
+    - name: Run brew update-tests
+      run: |
+        export PATH="/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:/usr/bin:/bin"
+        brew update-test
+        brew update-test --to-tag
+        brew update-test --commit=HEAD
+
+    - name: Run brew readall
+      run: |
+        export PATH="/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:/usr/bin:/bin"
+        brew readall --aliases
 
     - name: Build Docker image
       run: |
@@ -35,6 +106,3 @@ jobs:
         else
           brew test-bot
         fi
-      env:
-        HOMEBREW_COVERALLS_REPO_TOKEN: 3F6U6ZqctoNJwKyREremsqMgpU3qYgxFk
-        HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}

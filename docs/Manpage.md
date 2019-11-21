@@ -840,6 +840,10 @@ formula from a tap that is not `homebrew/core` use its fully-qualified form of
 
 Display the path where *`formula`* is located.
 
+### `install-bundler-gems`
+
+Install Homebrew's Bundler gems.
+
 ### `irb` [*`options`*]
 
 Enter the interactive Homebrew Ruby shell.
