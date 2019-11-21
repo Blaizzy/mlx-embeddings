@@ -341,8 +341,8 @@ module GitHub
   end
 
   def check_fork_exists(repo)
-    username = api_credentials[1]
-    reponame = repo.split("/")[1]
+    _, username = api_credentials
+    _, reponame = repo.split("/")
     json = open_api(url_to("repos", username, reponame))
     return false if json["message"] == "Not Found"
 
