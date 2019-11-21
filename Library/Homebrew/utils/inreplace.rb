@@ -22,6 +22,8 @@ module Utils
     def inreplace(paths, before = nil, after = nil, audit_result = true)
       errors = {}
 
+      errors["`paths` (first) parameter"] = ["`paths` was empty"] if paths.blank?
+
       Array(paths).each do |path|
         s = File.open(path, "rb", &:read).extend(StringInreplaceExtension)
 
