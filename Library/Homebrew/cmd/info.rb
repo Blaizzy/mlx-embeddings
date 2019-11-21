@@ -12,6 +12,10 @@ require "json"
 module Homebrew
   module_function
 
+  VALID_DAYS = %w[30 90 365].freeze
+  VALID_FORMULA_CATEGORIES = %w[install install-on-request build-error].freeze
+  VALID_CATEGORIES = (VALID_FORMULA_CATEGORIES + %w[cask-install os-version]).freeze
+
   def info_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
@@ -27,13 +31,14 @@ module Homebrew
                           "nor `HOMEBREW_NO_GITHUB_API` are set)."
       flag   "--days",
              depends_on:  "--analytics",
-             description: "How many days of global analytics data to retrieve. "\
+             description: "How many days of analytics data to retrieve. "\
                           "The value for <days> must be `30`, `90` or `365`. The default is `30`."
       flag   "--category",
              depends_on:  "--analytics",
-             description: "Which type of global analytics data to retrieve. "\
-                          "The value for <category> must be `install`, `install-on-request`, "\
-                          "`cask-install`, `build-error` or `os-version`. The default is `install`."
+             description: "Which type of analytics data to retrieve. "\
+                          "The value for <category> must be `install`, `install-on-request` or `build-error`; "\
+                          "`cask-install` or `os-version` may be specified if <formula> is not. "\
+                          "The default is `install`."
       switch "--github",
              description: "Open the GitHub source page for <formula> in a browser. "\
                           "To view formula history locally: `brew log -p` <formula>"
@@ -56,6 +61,20 @@ module Homebrew
 
   def info
     info_args.parse
+    if args.days.present?
+      raise UsageError, "days must be one of #{VALID_DAYS.join(", ")}" unless VALID_DAYS.include?(args.days)
+    end
+
+    if args.category.present?
+      if ARGV.named.present? && !VALID_FORMULA_CATEGORIES.include?(args.category)
+        raise UsageError, "category must be one of #{VALID_FORMULA_CATEGORIES.join(", ")} when querying formulae"
+      end
+
+      unless VALID_CATEGORIES.include?(args.category)
+        raise UsageError, "category must be one of #{VALID_CATEGORIES.join(", ")}"
+      end
+    end
+
     if args.json
       raise UsageError, "invalid JSON version: #{args.json}" unless ["v1", true].include? args.json
 
@@ -231,18 +250,6 @@ module Homebrew
   end
 
   def analytics_table(category, days, results, os_version: false, cask_install: false)
-    valid_days = %w[30 90 365]
-    if days.present?
-      raise UsageError, "day must be one of #{valid_days.join(", ")}" unless valid_days.include?(days.to_s)
-    end
-
-    valid_categories = %w[install install-on-request cask-install build-error os-version]
-    if category.present?
-      unless valid_categories.include?(category.tr("_", "-"))
-        raise UsageError, "category must be one of #{valid_categories.join(", ")}"
-      end
-    end
-
     oh1 "#{category} (#{days} days)"
     total_count = results.values.inject("+")
     formatted_total_count = format_count(total_count)
@@ -331,15 +338,7 @@ module Homebrew
 
   def output_analytics(filter: nil)
     days = args.days || "30"
-    valid_days = %w[30 90 365]
-    raise UsageError, "days must be one of #{valid_days.join(", ")}" unless valid_days.include?(days)
-
     category = args.category || "install"
-    valid_categories = %w[install install-on-request cask-install build-error os-version]
-    unless valid_categories.include?(category)
-      raise UsageError, "category must be one of #{valid_categories.join(", ")}"
-    end
-
     json = formulae_api_json("analytics/#{category}/#{days}d.json")
     return if json.blank? || json["items"].blank?
 
@@ -376,6 +375,7 @@ module Homebrew
 
     ohai "Analytics"
     json["analytics"].each do |category, value|
+      category = category.tr("_", "-")
       analytics = []
 
       value.each do |days, results|
@@ -384,9 +384,8 @@ module Homebrew
           if args.days.present?
             next if args.days&.to_i != days
           end
-
           if args.category.present?
-            next if args.category.tr("-", "_") != category
+            next if args.category != category
           end
 
           analytics_table(category, days, results)
