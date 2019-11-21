@@ -4,7 +4,7 @@ if ENV["HOMEBREW_TESTS_COVERAGE"]
   require "simplecov"
 
   formatters = [SimpleCov::Formatter::HTMLFormatter]
-  if ENV["HOMEBREW_COVERALLS_REPO_TOKEN"]
+  if ENV["HOMEBREW_COVERALLS_REPO_TOKEN"] && RUBY_PLATFORM[/darwin/]
     require "coveralls"
 
     Coveralls::Output.no_color if !ENV["HOMEBREW_COLOR"] && (ENV["HOMEBREW_NO_COLOR"] || !$stdout.tty?)
@@ -19,12 +19,15 @@ if ENV["HOMEBREW_TESTS_COVERAGE"]
     end
 
     ENV["CI_NAME"] = ENV["HOMEBREW_CI_NAME"]
-    ENV["CI_JOB_ID"] = ENV["TEST_ENV_NUMBER"] || "1"
-    ENV["CI_BUILD_NUMBER"] = ENV["HOMEBREW_CI_BUILD_NUMBER"]
-    ENV["CI_BUILD_URL"] = ENV["HOMEBREW_CI_BUILD_URL"]
-    ENV["CI_BRANCH"] = ENV["HOMEBREW_CI_BRANCH"]
-    ENV["CI_PULL_REQUEST"] = ENV["HOMEBREW_CI_PULL_REQUEST"]
     ENV["COVERALLS_REPO_TOKEN"] = ENV["HOMEBREW_COVERALLS_REPO_TOKEN"]
+
+    ENV["CI_BUILD_NUMBER"] = ENV["HOMEBREW_CI_BUILD_NUMBER"]
+    ENV["CI_BRANCH"] = ENV["HOMEBREW_CI_BRANCH"]
+    %r{refs/pull/(?<pr>\d+)/merge} =~ ENV["HOMEBREW_CI_BUILD_NUMBER"]
+    ENV["CI_PULL_REQUEST"] = pr
+    ENV["CI_BUILD_URL"] = "https://github.com/#{ENV["HOMEBREW_GITHUB_REPOSITORY"]}/pull/#{pr}/checks"
+
+    ENV["CI_JOB_ID"] = ENV["TEST_ENV_NUMBER"] || "1"
   end
 
   SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new(formatters)

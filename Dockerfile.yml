@@ -15,21 +15,3 @@ services:
         /home/linuxbrew/.linuxbrew/bin/brew test-bot
         status=$$?
         exit $$status
-    environment:
-      # GitHub Actions
-      - GITHUB_ACTIONS
-      - GITHUB_BASE_REF
-      - GITHUB_EVENT_NAME
-      - GITHUB_REF
-      - GITHUB_REPOSITORY
-      - GITHUB_SHA
-      - HEAD_GITHUB_REF
-      # Azure Pipelines
-      - BUILD_REASON
-      - BUILD_REPOSITORY_URI
-      - BUILD_SOURCEVERSION
-      - SYSTEM_PULLREQUEST_PULLREQUESTNUMBER
-      - SYSTEM_PULLREQUEST_TARGETBRANCH
-      - TF_BUILD
-      # GitHub API
-      - HOMEBREW_GITHUB_API_TOKEN
