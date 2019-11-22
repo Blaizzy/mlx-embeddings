@@ -84,6 +84,8 @@ jobs:
     - name: Run brew update-tests
       run: |
         export PATH="/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:/usr/bin:/bin"
+        git config --global user.name "BrewTestBot"
+        git config --global user.email "homebrew-test-bot@lists.sfconservancy.org"
         brew update-test
         brew update-test --to-tag
         brew update-test --commit=HEAD
