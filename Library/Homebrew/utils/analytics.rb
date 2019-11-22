@@ -163,7 +163,7 @@ module Utils
                 next if Homebrew.args.category != category
               end
 
-              analytics_table(category, days, results)
+              table_output(category, days, results)
             else
               total_count = results.values.inject("+")
               analytics << "#{number_readable(total_count)} (#{days} days)"
