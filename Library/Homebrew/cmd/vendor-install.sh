@@ -87,7 +87,7 @@ fetch() {
   temporary_path="$CACHED_LOCATION.incomplete"
 
   mkdir -p "$HOMEBREW_CACHE"
-  [[ -n "$HOMEBREW_QUIET" ]] || echo "==> Downloading $VENDOR_URL" >&2
+  [[ -n "$HOMEBREW_QUIET" ]] || ohai "Downloading $VENDOR_URL" >&2
   if [[ -f "$CACHED_LOCATION" ]]
   then
     [[ -n "$HOMEBREW_QUIET" ]] || echo "Already downloaded: $CACHED_LOCATION" >&2
@@ -107,7 +107,7 @@ fetch() {
 
     if [[ ! -f "$temporary_path" ]]
     then
-      [[ -n "$HOMEBREW_QUIET" ]] || echo "==> Downloading $VENDOR_URL2" >&2
+      [[ -n "$HOMEBREW_QUIET" ]] || ohai "Downloading $VENDOR_URL2" >&2
       "$HOMEBREW_CURL" "${curl_args[@]}" "$VENDOR_URL2" -o "$temporary_path"
     fi
 
@@ -180,7 +180,7 @@ install() {
   fi
 
   safe_cd "$VENDOR_DIR"
-  [[ -n "$HOMEBREW_QUIET" ]] || echo "==> Pouring $(basename "$VENDOR_URL")" >&2
+  [[ -n "$HOMEBREW_QUIET" ]] || ohai "Pouring $(basename "$VENDOR_URL")" >&2
   tar "$tar_args" "$CACHED_LOCATION"
   safe_cd "$VENDOR_DIR/portable-$VENDOR_NAME"
 

@@ -36,11 +36,11 @@ homebrew-update-reset() {
   do
     [[ -d "$DIR/.git" ]] || continue
     cd "$DIR" || continue
-    echo "==> Fetching $DIR..."
+    ohai "Fetching $DIR..."
     git fetch --force --tags origin
     echo
 
-    echo "==> Resetting $DIR..."
+    ohai "Resetting $DIR..."
     git checkout --force -B master origin/master
     echo
   done
