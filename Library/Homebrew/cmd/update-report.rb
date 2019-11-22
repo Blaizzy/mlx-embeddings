@@ -38,38 +38,27 @@ module Homebrew
   def update_report
     update_report_args.parse
 
+    if !Utils::Analytics.messages_displayed? &&
+       !Utils::Analytics.disabled? &&
+       !Utils::Analytics.no_message_output?
+
+      ENV["HOMEBREW_NO_ANALYTICS_THIS_RUN"] = "1"
+      # Use the shell's audible bell.
+      print "\a"
+
+      # Use an extra newline and bold to avoid this being missed.
+      ohai "Homebrew has enabled anonymous aggregate formulae and cask analytics."
+      puts <<~EOS
+        #{Tty.bold}Read the analytics documentation (and how to opt-out) here:
+          #{Formatter.url("https://docs.brew.sh/Analytics")}#{Tty.reset}
+
+      EOS
+
+      # Consider the messages possibly missed if not a TTY.
+      Utils::Analytics.messages_displayed! if $stdout.tty?
+    end
+
     HOMEBREW_REPOSITORY.cd do
-      analytics_message_displayed =
-        Utils.popen_read("git", "config", "--get", "homebrew.analyticsmessage").chomp == "true"
-      cask_analytics_message_displayed =
-        Utils.popen_read("git", "config", "--get", "homebrew.caskanalyticsmessage").chomp == "true"
-      analytics_disabled =
-        Utils.popen_read("git", "config", "--get", "homebrew.analyticsdisabled").chomp == "true"
-      if !analytics_message_displayed &&
-         !cask_analytics_message_displayed &&
-         !analytics_disabled &&
-         !ENV["HOMEBREW_NO_ANALYTICS"] &&
-         !ENV["HOMEBREW_NO_ANALYTICS_MESSAGE_OUTPUT"]
-
-        ENV["HOMEBREW_NO_ANALYTICS_THIS_RUN"] = "1"
-        # Use the shell's audible bell.
-        print "\a"
-
-        # Use an extra newline and bold to avoid this being missed.
-        ohai "Homebrew has enabled anonymous aggregate formulae and cask analytics."
-        puts <<~EOS
-          #{Tty.bold}Read the analytics documentation (and how to opt-out) here:
-            #{Formatter.url("https://docs.brew.sh/Analytics")}#{Tty.reset}
-
-        EOS
-
-        # Consider the message possibly missed if not a TTY.
-        if $stdout.tty?
-          safe_system "git", "config", "--replace-all", "homebrew.analyticsmessage", "true"
-          safe_system "git", "config", "--replace-all", "homebrew.caskanalyticsmessage", "true"
-        end
-      end
-
       donation_message_displayed =
         Utils.popen_read("git", "config", "--get", "homebrew.donationmessage").chomp == "true"
       unless donation_message_displayed
