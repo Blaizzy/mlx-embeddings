@@ -5,6 +5,7 @@ require_relative 'rspec/capybara/feature_methods'
 
 require_relative 'rspec/factory_bot/attribute_defined_statically'
 require_relative 'rspec/factory_bot/create_list'
+require_relative 'rspec/factory_bot/factory_class_name'
 
 begin
   require_relative 'rspec/rails/http_status'
@@ -25,6 +26,7 @@ require_relative 'rspec/describe_class'
 require_relative 'rspec/describe_method'
 require_relative 'rspec/describe_symbol'
 require_relative 'rspec/described_class'
+require_relative 'rspec/described_class_module_wrapping'
 require_relative 'rspec/dialect'
 require_relative 'rspec/empty_example_group'
 require_relative 'rspec/empty_line_after_example'
