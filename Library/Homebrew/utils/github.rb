@@ -341,9 +341,16 @@ module GitHub
   end
 
   def check_fork_exists(repo)
-    _, username = api_credentials
     _, reponame = repo.split("/")
+
+    case api_credentials_type
+    when :keychain
+      _, username = api_credentials
+    when :environment
+      username = open_api(url_to("user")) { |json| json["login"] }
+    end
     json = open_api(url_to("repos", username, reponame))
+
     return false if json["message"] == "Not Found"
 
     true
