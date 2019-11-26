@@ -667,6 +667,8 @@ module Homebrew
         problems.concat ra.problems.map { |problem| "#{name}: #{problem}" }
 
         spec.resources.each_value do |resource|
+          problem "Resource name should be different from the formula name" if resource.name == formula.name
+
           ra = ResourceAuditor.new(resource, spec_name, online: @online, strict: @strict).audit
           problems.concat ra.problems.map { |problem|
             "#{name} resource #{resource.name.inspect}: #{problem}"
