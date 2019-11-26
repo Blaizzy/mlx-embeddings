@@ -317,7 +317,7 @@ module Cask
       return if appcast_contents.include? adjusted_version_stanza
 
       add_warning "appcast at URL '#{appcast_stanza}' does not contain"\
-                  " the version number: '#{adjusted_version_stanza}'"
+                  " the version number '#{adjusted_version_stanza}':\n#{appcast_contents}"
     rescue
       add_error "appcast at URL '#{appcast_stanza}' offline or looping"
     end
