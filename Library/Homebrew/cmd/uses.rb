@@ -58,15 +58,16 @@ module Homebrew
       ARGV.named.map { |name| OpenStruct.new name: name, full_name: name }
     end
 
-    only_installed_arg = args.installed? &&
-                         !args.include_build? &&
-                         !args.include_test? &&
-                         !args.include_optional? &&
-                         !args.skip_recommended?
+    use_runtime_dependents = args.installed? &&
+                             !args.include_build? &&
+                             !args.include_test? &&
+                             !args.include_optional? &&
+                             !args.skip_recommended?
 
-    uses = if only_installed_arg && !used_formulae_missing
+    uses = if use_runtime_dependents && !used_formulae_missing
       used_formulae.map(&:runtime_installed_formula_dependents)
                    .reduce(&:&)
+                   .select(&:any_version_installed?)
     else
       formulae = args.installed? ? Formula.installed : Formula
       recursive = args.recursive?

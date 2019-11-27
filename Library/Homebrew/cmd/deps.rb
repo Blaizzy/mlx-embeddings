@@ -80,12 +80,13 @@ module Homebrew
       return
     end
 
-    @only_installed_arg = args.installed? &&
-                          recursive &&
-                          !args.include_build? &&
-                          !args.include_test? &&
-                          !args.include_optional? &&
-                          !args.skip_recommended?
+    installed = args.installed? || ARGV.formulae.all?(&:opt_or_installed_prefix_keg)
+
+    @use_runtime_dependencies = installed && recursive &&
+                                !args.include_build? &&
+                                !args.include_test? &&
+                                !args.include_optional? &&
+                                !args.skip_recommended?
 
     if args.remaining.empty?
       raise FormulaUnspecifiedError unless args.installed?
@@ -137,7 +138,7 @@ module Homebrew
   def deps_for_formula(f, recursive = false)
     includes, ignores = argv_includes_ignores(ARGV)
 
-    deps = f.runtime_dependencies if @only_installed_arg
+    deps = f.runtime_dependencies if @use_runtime_dependencies
 
     if recursive
       deps ||= recursive_includes(Dependency,  f, includes, ignores)
