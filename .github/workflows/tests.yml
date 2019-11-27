@@ -74,7 +74,7 @@ jobs:
     - name: Run brew style
       run: |
         export PATH="/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:/usr/bin:/bin"
-        brew style
+        brew style --display-cop-names
 
     - name: Run brew man
       run: |
