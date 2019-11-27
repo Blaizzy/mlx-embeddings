@@ -89,6 +89,7 @@ jobs:
         brew update-test
         brew update-test --to-tag
         brew update-test --commit=HEAD
+      if: github.event_name == 'pull_request'
 
     - name: Run brew readall
       run: |
