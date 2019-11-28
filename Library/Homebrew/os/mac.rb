@@ -168,62 +168,6 @@ module OS
       end
     end
 
-    STANDARD_COMPILERS = {
-      "6.0"    => { clang: "6.0", clang_build: 600 },
-      "6.0.1"  => { clang: "6.0", clang_build: 600 },
-      "6.1"    => { clang: "6.0", clang_build: 600 },
-      "6.1.1"  => { clang: "6.0", clang_build: 600 },
-      "6.2"    => { clang: "6.0", clang_build: 600 },
-      "6.3"    => { clang: "6.1", clang_build: 602 },
-      "6.3.1"  => { clang: "6.1", clang_build: 602 },
-      "6.3.2"  => { clang: "6.1", clang_build: 602 },
-      "6.4"    => { clang: "6.1", clang_build: 602 },
-      "7.0"    => { clang: "7.0", clang_build: 700 },
-      "7.0.1"  => { clang: "7.0", clang_build: 700 },
-      "7.1"    => { clang: "7.0", clang_build: 700 },
-      "7.1.1"  => { clang: "7.0", clang_build: 700 },
-      "7.2"    => { clang: "7.0", clang_build: 700 },
-      "7.2.1"  => { clang: "7.0", clang_build: 700 },
-      "7.3"    => { clang: "7.3", clang_build: 703 },
-      "7.3.1"  => { clang: "7.3", clang_build: 703 },
-      "8.0"    => { clang: "8.0", clang_build: 800 },
-      "8.1"    => { clang: "8.0", clang_build: 800 },
-      "8.2"    => { clang: "8.0", clang_build: 800 },
-      "8.2.1"  => { clang: "8.0", clang_build: 800 },
-      "8.3"    => { clang: "8.1", clang_build: 802 },
-      "8.3.1"  => { clang: "8.1", clang_build: 802 },
-      "8.3.2"  => { clang: "8.1", clang_build: 802 },
-      "8.3.3"  => { clang: "8.1", clang_build: 802 },
-      "9.0"    => { clang: "9.0", clang_build: 900 },
-      "9.0.1"  => { clang: "9.0", clang_build: 900 },
-      "9.1"    => { clang: "9.0", clang_build: 900 },
-      "9.2"    => { clang: "9.0", clang_build: 900 },
-      "9.3"    => { clang: "9.1", clang_build: 902 },
-      "9.4"    => { clang: "9.1", clang_build: 902 },
-      "10.0"   => { clang: "10.0", clang_build: 1000 },
-      "10.1"   => { clang: "10.0", clang_build: 1000 },
-      "10.2"   => { clang: "10.0", clang_build: 1001 },
-      "10.2.1" => { clang: "10.0", clang_build: 1001 },
-      "11.0"   => { clang: "11.0", clang_build: 1100 },
-    }.freeze
-
-    def compilers_standard?
-      STANDARD_COMPILERS.fetch(Xcode.version.to_s).all? do |method, build|
-        send(:"#{method}_version") == build
-      end
-    rescue IndexError
-      onoe <<~EOS
-        Homebrew doesn't know what compiler versions ship with your version
-        of Xcode (#{Xcode.version}). Please `brew update` and if that doesn't
-        help, file an issue with the output of `brew --config`:
-          #{Formatter.url("https://github.com/Homebrew/brew/issues")}
-
-        Note that we only track stable, released versions of Xcode.
-
-        Thanks!
-      EOS
-    end
-
     def app_with_bundle_id(*ids)
       path = mdfind(*ids)
              .reject { |p| p.include?("/Backups.backupdb/") }
