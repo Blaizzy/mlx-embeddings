@@ -10,7 +10,7 @@ AllCops:
     - '**/vendor/**/*'
 
 # messes up system formatting for formulae but good for Homebrew/brew
-Layout/AlignArguments:
+Layout/ArgumentAlignment:
   Enabled: true
 
 # make rspec formatting more flexible
@@ -72,11 +72,11 @@ Naming/PredicateName:
   Exclude:
     - 'compat/**/*'
   # can't rename these
-  NameWhitelist: is_32_bit?, is_64_bit?
+  AllowedMethods: is_32_bit?, is_64_bit?
 
 # whitelist those that are standard
 # TODO: try to remove some of these
-Naming/UncommunicativeMethodParamName:
+Naming/MethodParameterName:
   AllowedNames:
     - '_'
     - 'a'

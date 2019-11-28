@@ -325,7 +325,7 @@ class Formula
     active_spec == head
   end
 
-  delegate [ # rubocop:disable Layout/AlignHash
+  delegate [ # rubocop:disable Layout/HashAlignment
     :bottle_unneeded?,
     :bottle_disabled?,
     :bottle_disable_reason,
@@ -1078,7 +1078,7 @@ class Formula
     # keg's formula is deleted.
     begin
       keg = Keg.for(path)
-    rescue NotAKegError, Errno::ENOENT # rubocop:disable Lint/HandleExceptions
+    rescue NotAKegError, Errno::ENOENT # rubocop:disable Lint/SuppressedException
       # file doesn't belong to any keg.
     else
       tab_tap = Tab.for_keg(keg).tap
@@ -1087,7 +1087,7 @@ class Formula
 
       begin
         Formulary.factory(keg.name)
-      rescue FormulaUnavailableError # rubocop:disable Lint/HandleExceptions
+      rescue FormulaUnavailableError # rubocop:disable Lint/SuppressedException
         # formula for this keg is deleted, so defer to whitelist
       rescue TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
         return false # this keg belongs to another formula

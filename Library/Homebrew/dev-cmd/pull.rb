@@ -80,7 +80,7 @@ module Homebrew
     if Utils.popen_read("git config --get --bool commit.gpgsign").chomp == "true"
       begin
         gnupg = Formula["gnupg"]
-      rescue FormulaUnavailableError # rubocop:disable Lint/HandleExceptions
+      rescue FormulaUnavailableError # rubocop:disable Lint/SuppressedException
       else
         if gnupg.installed?
           path = PATH.new(ENV.fetch("PATH"))
