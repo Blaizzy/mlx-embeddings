@@ -7,7 +7,7 @@ AllCops:
   DisplayCopNames: false
 
 # Use `<<~` for heredocs.
-Layout/IndentHeredoc:
+Layout/HeredocIndentation:
   EnforcedStyle: squiggly
 
 # Not useful in casks and formulae.
@@ -21,7 +21,7 @@ Metrics/ParameterLists:
 
 # Implicitly allow EOS as we use it everywhere.
 Naming/HeredocDelimiterNaming:
-  Blacklist:
+  ForbiddenDelimiters:
     - END, EOD, EOF
 
 # Allow dashes in filenames.

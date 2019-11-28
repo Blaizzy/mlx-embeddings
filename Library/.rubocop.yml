@@ -13,12 +13,12 @@ NewFormulaAudit:
   Enabled: false
 
 # make our hashes consistent
-Layout/AlignHash:
+Layout/HashAlignment:
   EnforcedHashRocketStyle: table
   EnforcedColonStyle: table
 
 # `system` is a special case and aligns on second argument
-Layout/AlignArguments:
+Layout/ArgumentAlignment:
   Enabled: false
 
 # favour parens-less DSL-style arguments

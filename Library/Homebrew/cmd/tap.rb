@@ -59,7 +59,7 @@ module Homebrew
                     quiet:             args.quieter?
       rescue TapRemoteMismatchError => e
         odie e
-      rescue TapAlreadyTappedError, TapAlreadyUnshallowError # rubocop:disable Lint/HandleExceptions
+      rescue TapAlreadyTappedError, TapAlreadyUnshallowError # rubocop:disable Lint/SuppressedException
       end
     end
   end
