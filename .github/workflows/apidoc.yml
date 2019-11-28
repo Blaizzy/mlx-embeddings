@@ -34,8 +34,10 @@ jobs:
 
           # commit and push generated files
           git add docs
-          
+
           if ! git diff --exit-code HEAD -- docs; then
             git commit -m 'docs: update from Homebrew/brew push' docs
+            git fetch
+            git rebase origin/master
             git push
           fi
