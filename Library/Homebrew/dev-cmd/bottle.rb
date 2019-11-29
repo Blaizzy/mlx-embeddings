@@ -172,7 +172,7 @@ module Homebrew
       end
 
       if text_matches.size > MAXIMUM_STRING_MATCHES
-        puts "Only the first #{MAXIMUM_STRING_MATCHES} matches were output"
+        puts "Only the first #{MAXIMUM_STRING_MATCHES} matches were output."
       end
     end
 
