@@ -36,3 +36,9 @@ about: "If you're sure it's reproducible and not just your machine: submit an is
 ## Step-by-step reproduction instructions (by running `brew` commands)
 
 <!-- replace me -->
+
+## Output of `brew config` and `brew doctor` commands
+
+<pre>
+<!-- replace me -->
+</pre>
