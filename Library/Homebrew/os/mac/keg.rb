@@ -5,7 +5,7 @@ class Keg
     return if file.dylib_id == id
 
     @require_relocation = true
-    puts "Changing dylib ID of #{file}\n  from #{file.dylib_id}\n    to #{id}" if ARGV.debug?
+    odebug "Changing dylib ID of #{file}\n  from #{file.dylib_id}\n    to #{id}" if ARGV.debug?
     MachO::Tools.change_dylib_id(file, id, strict: false)
   rescue MachO::MachOError
     onoe <<~EOS
@@ -20,7 +20,7 @@ class Keg
     return if old == new
 
     @require_relocation = true
-    puts "Changing install name in #{file}\n  from #{old}\n    to #{new}" if ARGV.debug?
+    odebug "Changing install name in #{file}\n  from #{old}\n    to #{new}" if ARGV.debug?
     MachO::Tools.change_install_name(file, old, new, strict: false)
   rescue MachO::MachOError
     onoe <<~EOS

@@ -44,7 +44,7 @@ class FormulaVersions
   rescue *IGNORED_EXCEPTIONS => e
     # We rescue these so that we can skip bad versions and
     # continue walking the history
-    ohai "#{e} in #{name} at revision #{rev}", e.backtrace if ARGV.debug?
+    odebug "#{e} in #{name} at revision #{rev}", e.backtrace if ARGV.debug?
   rescue FormulaUnavailableError
     nil
   ensure
