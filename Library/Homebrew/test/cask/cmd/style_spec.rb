@@ -10,6 +10,36 @@ describe Cask::Cmd::Style, :cask do
 
   it_behaves_like "a command that handles invalid options"
 
+  describe ".rubocop" do
+    subject { described_class.rubocop(cask_path) }
+
+    around do |example|
+      FileUtils.ln_s HOMEBREW_LIBRARY_PATH, HOMEBREW_LIBRARY/"Homebrew"
+      FileUtils.ln_s HOMEBREW_LIBRARY_PATH.parent/".rubocop_cask.yml", HOMEBREW_LIBRARY/".rubocop_cask.yml"
+      FileUtils.ln_s HOMEBREW_LIBRARY_PATH.parent/".rubocop_shared.yml", HOMEBREW_LIBRARY/".rubocop_shared.yml"
+
+      example.run
+    ensure
+      FileUtils.rm_f HOMEBREW_LIBRARY/"Homebrew"
+      FileUtils.rm_f HOMEBREW_LIBRARY/".rubocop_cask.yml"
+      FileUtils.rm_f HOMEBREW_LIBRARY/".rubocop_shared.yml"
+    end
+
+    before do
+      allow(Homebrew).to receive(:install_bundler_gems!)
+    end
+
+    context "with a valid Cask" do
+      let(:cask_path) do
+        Pathname.new("#{HOMEBREW_LIBRARY}/Homebrew/test/support/fixtures/cask/Casks/version-latest.rb")
+      end
+
+      it "returns true" do
+        expect(subject.success?).to be true
+      end
+    end
+  end
+
   describe "#cask_paths" do
     subject { cli.cask_paths }
 
