@@ -13,7 +13,7 @@ module Cask
         Homebrew.install_bundler_gems!
 
         cache_env = { "XDG_CACHE_HOME" => "#{HOMEBREW_CACHE}/style" }
-        hide_warnings = debug ? [] : [ENV["HOMEBREW_RUBY_PATH"], "-W0", "-S"]
+        hide_warnings = debug ? [] : [ENV["HOMEBREW_RUBY_PATH"], "-S"]
 
         args = [
           "--force-exclusion",
