@@ -231,11 +231,13 @@ module OS
       def update_instructions
         if MacOS.version >= "10.14"
           <<~EOS
-            Update them from Software Update in System Preferences.
+            Update them from Software Update in System Preferences or
+            #{Formatter.url("https://developer.apple.com/download/more/")}.
           EOS
         else
           <<~EOS
-            Update them from Software Update in the App Store.
+            Update them from Software Update in the App Store
+            #{Formatter.url("https://developer.apple.com/download/more/")}.
           EOS
         end
       end
