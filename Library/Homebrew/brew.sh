@@ -251,6 +251,8 @@ export HOMEBREW_MACOS_VERSION_NUMERIC
 export HOMEBREW_USER_AGENT
 export HOMEBREW_USER_AGENT_CURL
 export HOMEBREW_BOTTLE_DEFAULT_DOMAIN
+export HOMEBREW_BREW_REMOTE
+export HOMEBREW_DEFAULT_CORE_REMOTE
 
 if [[ -n "$HOMEBREW_MACOS" && -x "/usr/bin/xcode-select" ]]
 then
@@ -372,6 +374,19 @@ fi
 if [[ -z "$HOMEBREW_BOTTLE_DOMAIN" ]]
 then
   export HOMEBREW_BOTTLE_DOMAIN="$HOMEBREW_BOTTLE_DEFAULT_DOMAIN"
+fi
+
+HOMEBREW_DEFAULT_BREW_REMOTE="https://github.com/Homebrew/brew.git"
+if [[ -z "$HOMEBREW_BREW_REMOTE" ]]
+then
+  HOMEBREW_BREW_REMOTE="$HOMEBREW_DEFAULT_BREW_REMOTE"
+fi
+
+if [[ -n "$HOMEBREW_MACOS" ]] || [[ -n "$HOMEBREW_FORCE_HOMEBREW_ON_LINUX" ]]
+then
+  HOMEBREW_DEFAULT_CORE_REMOTE="https://github.com/Homebrew/homebrew-core"
+else
+  HOMEBREW_DEFAULT_CORE_REMOTE="https://github.com/Homebrew/linuxbrew-core"
 fi
 
 if [[ -f "$HOMEBREW_LIBRARY/Homebrew/cmd/$HOMEBREW_COMMAND.sh" ]]

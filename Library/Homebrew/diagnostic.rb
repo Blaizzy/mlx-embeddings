@@ -113,7 +113,7 @@ module Homebrew
         return if !Utils.git_available? || !repository_path.git?
 
         current_origin = repository_path.git_origin
-
+        user_origins = [HOMEBREW_BREW_REMOTE, HOMEBREW_CORE_REMOTE]
         if current_origin.nil?
           <<~EOS
             Missing #{desired_origin} git origin remote.
@@ -122,7 +122,8 @@ module Homebrew
             properly. You can solve this by adding the remote:
               git -C "#{repository_path}" remote add origin #{Formatter.url("https://github.com/#{desired_origin}.git")}
           EOS
-        elsif !current_origin.match?(%r{#{desired_origin}(\.git|/)?$}i)
+        elsif !current_origin.match?(%r{#{desired_origin}(\.git|/)?$}i) && \
+              !user_origins.include?(current_origin)
           <<~EOS
             Suspicious #{desired_origin} git origin remote found.
             The current git origin is:
