@@ -132,7 +132,7 @@ class Resource
     end
   rescue ChecksumMissingError
     opoo "Cannot verify integrity of #{fn.basename}"
-    puts "A checksum was not provided for this resource"
+    puts "A checksum was not provided for this resource."
     puts "For your reference the SHA-256 is: #{fn.sha256}"
   end
 

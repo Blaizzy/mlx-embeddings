@@ -236,7 +236,7 @@ module OS
           EOS
         else
           <<~EOS
-            Update them from Software Update in the App Store
+            Update them from Software Update in the App Store or
             #{Formatter.url("https://developer.apple.com/download/more/")}.
           EOS
         end

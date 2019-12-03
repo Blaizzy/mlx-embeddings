@@ -50,7 +50,7 @@ module Homebrew
 
     first_warning = true
     methods.each do |method|
-      $stderr.puts "Checking #{method}" if args.debug?
+      $stderr.puts Formatter.headline("Checking #{method}", color: :magenta) if args.debug?
       unless checks.respond_to?(method)
         Homebrew.failed = true
         puts "No check available by the name: #{method}"
