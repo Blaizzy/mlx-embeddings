@@ -50,7 +50,7 @@ Homebrew is a member of the [Software Freedom Conservancy](https://sfconservancy
 Please report security issues to our [HackerOne](https://hackerone.com/homebrew/).
 
 ## Who Are You?
-Homebrew's [Project Leader](https://github.com/Homebrew/homebrew-governance-private/blob/master/GOVERNANCE.md#6-project-leader) is [Mike McQuaid](https://github.com/MikeMcQuaid).
+Homebrew's [Project Leader](https://docs.brew.sh/Homebrew-Governance#6-project-leader) is [Mike McQuaid](https://github.com/MikeMcQuaid).
 
 Homebrew's [Project Leadership Committee](https://docs.brew.sh/Homebrew-Governance#4-project-leadership-committee) is [Misty De Meo](https://github.com/mistydemeo), [Shaun Jackman](https://github.com/sjackman), [Jonathan Chang](https://github.com/jonchang), [Mike McQuaid](https://github.com/MikeMcQuaid) and [Markus Reiter](https://github.com/reitermarkus).
 
