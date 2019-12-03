@@ -95,7 +95,7 @@ module Homebrew
 
   def ensure_relocation_formulae_installed!
     Keg.relocation_formulae.each do |f|
-      next if Formula[f].installed?
+      next if Formula[f].latest_version_installed?
 
       ohai "Installing #{f}..."
       safe_system HOMEBREW_BREW_FILE, "install", f
@@ -205,7 +205,7 @@ module Homebrew
   end
 
   def bottle_formula(f)
-    return ofail "Formula not installed or up-to-date: #{f.full_name}" unless f.installed?
+    return ofail "Formula not installed or up-to-date: #{f.full_name}" unless f.latest_version_installed?
 
     unless tap = f.tap
       return ofail "Formula not from core or any installed taps: #{f.full_name}" unless args.force_core_tap?

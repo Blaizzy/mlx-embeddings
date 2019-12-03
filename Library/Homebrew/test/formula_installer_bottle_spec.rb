@@ -15,19 +15,19 @@ describe FormulaInstaller do
   end
 
   def temporarily_install_bottle(formula)
-    expect(formula).not_to be_installed
+    expect(formula).not_to be_latest_version_installed
     expect(formula).to be_bottled
     expect(formula).to pour_bottle
 
     stub_formula_loader formula
     stub_formula_loader formula("gcc") { url "gcc-1.0" }
     stub_formula_loader formula("patchelf") { url "patchelf-1.0" }
-    allow(Formula["patchelf"]).to receive(:installed?).and_return(true)
+    allow(Formula["patchelf"]).to receive(:latest_version_installed?).and_return(true)
     described_class.new(formula).install
 
     keg = Keg.new(formula.prefix)
 
-    expect(formula).to be_installed
+    expect(formula).to be_latest_version_installed
 
     begin
       expect(Tab.for_keg(keg)).to be_poured_from_bottle
@@ -41,7 +41,7 @@ describe FormulaInstaller do
     end
 
     expect(keg).not_to exist
-    expect(formula).not_to be_installed
+    expect(formula).not_to be_latest_version_installed
   end
 
   specify "basic bottle install" do
@@ -73,13 +73,13 @@ describe FormulaInstaller do
     # Testball doesn't have a bottle block, so use it to test this behavior
     formula = Testball.new
 
-    expect(formula).not_to be_installed
+    expect(formula).not_to be_latest_version_installed
     expect(formula).not_to be_bottled
 
     expect {
       described_class.new(formula).install
     }.to raise_error(BuildToolsError)
 
-    expect(formula).not_to be_installed
+    expect(formula).not_to be_latest_version_installed
   end
 end

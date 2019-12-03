@@ -463,7 +463,7 @@ class Formula
   # This is actually just a check for if the {#installed_prefix} directory
   # exists and is not empty.
   # @private
-  def installed?
+  def latest_version_installed?
     (dir = installed_prefix).directory? && !dir.children.empty?
   end
 
@@ -1211,7 +1211,7 @@ class Formula
   end
 
   def new_formula_available?
-    installed_alias_target_changed? && !latest_formula.installed?
+    installed_alias_target_changed? && !latest_formula.latest_version_installed?
   end
 
   def current_installed_alias_target
@@ -1932,7 +1932,7 @@ class Formula
   # @private
   def eligible_kegs_for_cleanup(quiet: false)
     eligible_for_cleanup = []
-    if installed?
+    if latest_version_installed?
       eligible_kegs = if head? && (head_prefix = latest_head_prefix)
         installed_kegs - [Keg.new(head_prefix)]
       else

@@ -40,7 +40,7 @@ module Homebrew
 
     ARGV.resolved_formulae.each do |f|
       # Cannot test uninstalled formulae
-      unless f.installed?
+      unless f.latest_version_installed?
         ofail "Testing requires the latest version of #{f.full_name}"
         next
       end
