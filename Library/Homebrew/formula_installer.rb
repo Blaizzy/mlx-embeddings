@@ -343,7 +343,7 @@ class FormulaInstaller
 
     build_bottle_postinstall if build_bottle?
 
-    opoo "Nothing was installed to #{formula.prefix}" unless formula.installed?
+    opoo "Nothing was installed to #{formula.prefix}" unless formula.latest_version_installed?
     end_time = Time.now
     Homebrew.messages.formula_installed(formula, end_time - start_time)
   end

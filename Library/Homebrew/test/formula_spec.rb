@@ -279,22 +279,22 @@ describe Formula do
     expect(f).not_to need_migration
   end
 
-  describe "#installed?" do
+  describe "#latest_version_installed?" do
     let(:f) { Testball.new }
 
     it "returns false if the #installed_prefix is not a directory" do
       allow(f).to receive(:installed_prefix).and_return(double(directory?: false))
-      expect(f).not_to be_installed
+      expect(f).not_to be_latest_version_installed
     end
 
     it "returns false if the #installed_prefix does not have children" do
       allow(f).to receive(:installed_prefix).and_return(double(directory?: true, children: []))
-      expect(f).not_to be_installed
+      expect(f).not_to be_latest_version_installed
     end
 
     it "returns true if the #installed_prefix has children" do
       allow(f).to receive(:installed_prefix).and_return(double(directory?: true, children: [double]))
-      expect(f).to be_installed
+      expect(f).to be_latest_version_installed
     end
   end
 
@@ -871,10 +871,10 @@ describe Formula do
         Tab.create(f, DevelopmentTools.default_compiler, :libcxx).write
       end
 
-      expect(f1).to be_installed
-      expect(f2).to be_installed
-      expect(f3).to be_installed
-      expect(f4).to be_installed
+      expect(f1).to be_latest_version_installed
+      expect(f2).to be_latest_version_installed
+      expect(f3).to be_latest_version_installed
+      expect(f4).to be_latest_version_installed
       expect(f3.eligible_kegs_for_cleanup.sort_by(&:version))
         .to eq([f2, f1].map { |f| Keg.new(f.prefix) })
     end
@@ -890,9 +890,9 @@ describe Formula do
       f3.brew { f3.install }
 
       expect(f1.prefix).to eq((HOMEBREW_PINNED_KEGS/f1.name).resolved_path)
-      expect(f1).to be_installed
-      expect(f2).to be_installed
-      expect(f3).to be_installed
+      expect(f1).to be_latest_version_installed
+      expect(f2).to be_latest_version_installed
+      expect(f3).to be_latest_version_installed
       expect(f3.eligible_kegs_for_cleanup).to eq([Keg.new(f2.prefix)])
     end
 

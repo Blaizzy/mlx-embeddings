@@ -17,7 +17,7 @@ describe FormulaInstaller do
   end
 
   def temporary_install(formula)
-    expect(formula).not_to be_installed
+    expect(formula).not_to be_latest_version_installed
 
     installer = described_class.new(formula)
 
@@ -25,7 +25,7 @@ describe FormulaInstaller do
 
     keg = Keg.new(formula.prefix)
 
-    expect(formula).to be_installed
+    expect(formula).to be_latest_version_installed
 
     begin
       Tab.clear_cache
@@ -42,7 +42,7 @@ describe FormulaInstaller do
     end
 
     expect(keg).not_to exist
-    expect(formula).not_to be_installed
+    expect(formula).not_to be_latest_version_installed
   end
 
   specify "basic installation" do
@@ -84,7 +84,7 @@ describe FormulaInstaller do
     expect(formula).to have_disabled_bottle
 
     temporary_install(formula) do |f|
-      expect(f).to be_installed
+      expect(f).to be_latest_version_installed
     end
   end
 

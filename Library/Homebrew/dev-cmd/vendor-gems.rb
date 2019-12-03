@@ -33,7 +33,7 @@ module Homebrew
       ohai "git add vendor/bundle"
       system "git", "add", "vendor/bundle"
 
-      if Formula["gpg"].installed?
+      if Formula["gpg"].optlinked?
         ENV["PATH"] = PATH.new(ENV["PATH"])
                           .prepend(Formula["gpg"].opt_bin)
       end
