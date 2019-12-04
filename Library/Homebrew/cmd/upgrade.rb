@@ -239,9 +239,9 @@ module Homebrew
     if pinned_dependents.present?
       plural = "dependent".pluralize(pinned_dependents.count)
       ohai "Not upgrading #{pinned_dependents.count} pinned #{plural}:"
-      puts pinned_dependents.map do |f|
+      puts(pinned_dependents.map do |f|
         "#{f.full_specified_name} #{f.pkg_version}"
-      end.join(", ")
+      end.join(", "))
     end
 
     # Print the upgradable dependents.
@@ -292,9 +292,9 @@ module Homebrew
       count = pinned_broken_dependents.count
       plural = "dependent".pluralize(pinned_broken_dependents.count)
       onoe "Not reinstalling #{count} broken and outdated, but pinned #{plural}:"
-      $stderr.puts pinned_broken_dependents.map do |f|
+      $stderr.puts(pinned_broken_dependents.map do |f|
         "#{f.full_specified_name} #{f.pkg_version}"
-      end.join(", ")
+      end.join(", "))
     end
 
     # Print the broken dependents.
