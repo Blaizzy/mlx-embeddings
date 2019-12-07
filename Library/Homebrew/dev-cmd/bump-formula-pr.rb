@@ -101,7 +101,7 @@ module Homebrew
         end
       end
     end
-    [formula.tap ? formula.tap.full_name : nil, "origin/master", "-"]
+    [formula.tap&.full_name, "origin/master", "-"]
   end
 
   def bump_formula_pr
