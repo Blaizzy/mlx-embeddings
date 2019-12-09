@@ -85,50 +85,50 @@ describe Cask::DSL::Version, :cask do
   describe "string manipulation helpers" do
     describe "#major" do
       include_examples "version expectations hash", :major,
-                       "1"         => "1",
-                       "1.2"       => "1",
-                       "1.2.3"     => "1",
-                       "1.2.3_4-5" => "1"
+                       "1"           => "1",
+                       "1.2"         => "1",
+                       "1.2.3"       => "1",
+                       "1.2.3-4,5:6" => "1"
     end
 
     describe "#minor" do
       include_examples "version expectations hash", :minor,
-                       "1"         => "",
-                       "1.2"       => "2",
-                       "1.2.3"     => "2",
-                       "1.2.3_4-5" => "2"
+                       "1"           => "",
+                       "1.2"         => "2",
+                       "1.2.3"       => "2",
+                       "1.2.3-4,5:6" => "2"
     end
 
     describe "#patch" do
       include_examples "version expectations hash", :patch,
-                       "1"         => "",
-                       "1.2"       => "",
-                       "1.2.3"     => "3",
-                       "1.2.3_4-5" => "3"
+                       "1"           => "",
+                       "1.2"         => "",
+                       "1.2.3"       => "3",
+                       "1.2.3-4,5:6" => "3-4"
     end
 
     describe "#major_minor" do
       include_examples "version expectations hash", :major_minor,
-                       "1"         => "1",
-                       "1.2"       => "1.2",
-                       "1.2.3"     => "1.2",
-                       "1.2.3_4-5" => "1.2"
+                       "1"           => "1",
+                       "1.2"         => "1.2",
+                       "1.2.3"       => "1.2",
+                       "1.2.3-4,5:6" => "1.2"
     end
 
     describe "#major_minor_patch" do
       include_examples "version expectations hash", :major_minor_patch,
-                       "1"         => "1",
-                       "1.2"       => "1.2",
-                       "1.2.3"     => "1.2.3",
-                       "1.2.3_4-5" => "1.2.3"
+                       "1"           => "1",
+                       "1.2"         => "1.2",
+                       "1.2.3"       => "1.2.3",
+                       "1.2.3-4,5:6" => "1.2.3-4"
     end
 
     describe "#minor_patch" do
       include_examples "version expectations hash", :minor_patch,
-                       "1"         => "",
-                       "1.2"       => "2",
-                       "1.2.3"     => "2.3",
-                       "1.2.3_4-5" => "2.3"
+                       "1"           => "",
+                       "1.2"         => "2",
+                       "1.2.3"       => "2.3",
+                       "1.2.3-4,5:6" => "2.3-4"
     end
 
     describe "#before_comma" do
