@@ -1546,8 +1546,13 @@ class Formula
         Dependency.new full_name
       end.compact
     end
-    deps ||= declared_runtime_dependencies unless undeclared
-    deps ||= (declared_runtime_dependencies | undeclared_runtime_dependencies)
+    begin
+      deps ||= declared_runtime_dependencies unless undeclared
+      deps ||= (declared_runtime_dependencies | undeclared_runtime_dependencies)
+    rescue FormulaUnavailableError
+      onoe "could not get runtime dependencies from #{path}!"
+      deps ||= []
+    end
     deps
   end
 
