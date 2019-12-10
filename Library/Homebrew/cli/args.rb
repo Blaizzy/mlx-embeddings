@@ -5,7 +5,7 @@ require "ostruct"
 module Homebrew
   module CLI
     class Args < OpenStruct
-      attr_accessor :processed_options, :args_parsed
+      attr_reader :processed_options, :args_parsed
       # undefine tap to allow --tap argument
       undef tap
 
@@ -14,6 +14,12 @@ module Homebrew
         @argv = argv
         @args_parsed = false
         @processed_options = []
+      end
+
+      def freeze_processed_options!(processed_options)
+        @processed_options += processed_options
+        @processed_options.freeze
+        @args_parsed = true
       end
 
       def option_to_name(option)

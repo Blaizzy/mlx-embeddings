@@ -140,10 +140,10 @@ module Homebrew
         end
         check_constraint_violations
         @args[:remaining] = remaining_args
-        @args.args_parsed = @args_parsed = true
-        @args.processed_options = @processed_options
+        @args.freeze_processed_options!(@processed_options)
         Homebrew.args = @args
         cmdline_args.freeze
+        @args_parsed = true
         @parser
       end
 
