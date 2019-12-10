@@ -41,7 +41,7 @@ We prefer:
 
 ### Structure and markup
 
-* Sentence case in section headings, not Title Case
+* Title Case in `h1` headings; sentence case in all other headings
 * Periods at the ends of list items where most items in that list are complete sentences
 * More generally, parallel list item structure
 * Capitalise all list items if you want, even if they're not complete sentences; just be consistent within each list, and preferably, throughout the whole page
