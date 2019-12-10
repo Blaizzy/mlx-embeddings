@@ -1,3 +1,5 @@
+<!-- vale off -->
+<!-- Disable vale linting for the whole of the style guide, because it contains deliberately bad examples. -->
 # Prose Style Guidelines
 
 This is a set of style and usage guidelines for Homebrew's prose documentation aimed at users, contributors, and maintainers (as opposed to executable computer code). It applies to documents like those in `docs` in the `Homebrew/brew` repository, announcement emails, and other communications with the Homebrew community.
@@ -86,3 +88,5 @@ Refer to these guidelines to make decisions about style and usage in your own wr
 PRs that fix style and usage throughout a document or multiple documents are okay and encouraged. PRs for just one or two style changes are a bit much.
 
 Giving style and usage feedback on a PR or commit that involves documents is okay and encouraged. But keep in mind that these are just guidelines, and for any change, the author may have made a deliberate choice to break these rules in the interest of understandability or aesthetics.
+
+<!-- vale on -->
