@@ -23,7 +23,7 @@ export HOMEBREW_NO_AUTO_UPDATE=1
 Once we've done that, we need to get access to the `merge-homebrew`
 command that will be used for the merge. To do that we have to tap the
 [`Homebrew/linux-dev`](https://github.com/Homebrew/homebrew-linux-dev)
-repo:
+repository:
 
 ```bash
 brew tap homebrew/linux-dev
@@ -235,7 +235,7 @@ against the formulae:
 And it skips formulae if any of the following are true:
 - it doesn't need a bottle
 - it already has a bottle
-- the formula's tap is Homebrew/homebrew-core (the upstream macOS repo)
+- the formula's tap is Homebrew/homebrew-core (the upstream macOS repository)
 - there is already an open PR for the formula's bottle
 - the current branch is not master
 
