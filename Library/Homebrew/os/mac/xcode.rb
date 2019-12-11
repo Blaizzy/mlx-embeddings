@@ -193,9 +193,6 @@ module OS
       EXECUTABLE_PKG_ID = "com.apple.pkg.CLTools_Executables"
       MAVERICKS_NEW_PKG_ID = "com.apple.pkg.CLTools_Base" # obsolete
       PKG_PATH = "/Library/Developer/CommandLineTools"
-      HEADER_PKG_PATH =
-        "/Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_:macos_version.pkg"
-      HEADER_PKG_ID = "com.apple.pkg.macOS_SDK_headers_for_macOS_10.14"
 
       # Returns true even if outdated tools are installed
       def installed?
@@ -208,14 +205,6 @@ module OS
 
       def provides_sdk?
         version >= "8"
-      end
-
-      def headers_installed?
-        if !separate_header_package?
-          installed?
-        else
-          headers_version == version
-        end
       end
 
       def sdk(v = nil)
@@ -299,19 +288,6 @@ module OS
           ::Version.new @version
         else
           ::Version::NULL
-        end
-      end
-
-      # Version string of the header package, which is a
-      # separate package as of macOS 10.14.
-      def headers_version
-        if !separate_header_package?
-          version
-        else
-          @header_version ||= MacOS.pkgutil_info(HEADER_PKG_ID)[/version: (.+)$/, 1]
-          return ::Version::NULL unless @header_version
-
-          ::Version.new(@header_version)
         end
       end
 
