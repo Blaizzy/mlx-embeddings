@@ -57,7 +57,8 @@ module Homebrew
       switch :verbose
       switch :debug
       conflicts "--only", "--except"
-      conflicts "--only-cops", "--except-cops"
+      conflicts "--only-cops", "--except-cops", "--strict"
+      conflicts "--only-cops", "--except-cops", "--only"
     end
   end
 
@@ -88,13 +89,6 @@ module Homebrew
 
     only_cops = args.only_cops
     except_cops = args.except_cops
-
-    if only_cops && except_cops
-      odie "--only-cops and --except-cops cannot be used simultaneously!"
-    elsif (only_cops || except_cops) && (strict || args.only)
-      odie "--only-cops/--except-cops and --strict/--only cannot be used simultaneously!"
-    end
-
     options = { fix: args.fix? }
 
     if only_cops
@@ -995,7 +989,6 @@ module Homebrew
     def audit
       only_audits = @only
       except_audits = @except
-      odie "--only and --except cannot be used simultaneously!" if only_audits && except_audits
 
       methods.map(&:to_s).grep(/^audit_/).each do |audit_method_name|
         name = audit_method_name.gsub(/^audit_/, "")
