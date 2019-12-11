@@ -16,13 +16,13 @@ module OS
         when "10.11" then "8.2.1"
         when "10.12" then "9.2"
         when "10.13" then "10.1"
-        when "10.14" then "10.2.1"
-        when "10.15" then "11.2.1"
+        when "10.14" then "11.3"
+        when "10.15" then "11.3"
         else
           raise "macOS '#{MacOS.version}' is invalid" unless OS::Mac.prerelease?
 
           # Default to newest known version of Xcode for unreleased macOS versions.
-          "11.2.1"
+          "11.3"
         end
       end
 
@@ -176,8 +176,8 @@ module OS
         when 90      then "9.2"
         when 91      then "9.4"
         when 100     then "10.2.1"
-        when 110     then "11.2.1"
-        else              "11.2.1"
+        when 110     then "11.3"
+        else              "11.3"
         end
       end
 
@@ -247,7 +247,7 @@ module OS
         # on the older supported platform for that Xcode release, i.e there's no
         # CLT package for 10.11 that contains the Clang version from Xcode 8.
         case MacOS.version
-        when "10.15" then "1100.0.33.12"
+        when "10.15" then "1100.0.33.16"
         when "10.14" then "1001.0.46.4"
         when "10.13" then "1000.10.44.2"
         when "10.12" then "900.0.39.2"
