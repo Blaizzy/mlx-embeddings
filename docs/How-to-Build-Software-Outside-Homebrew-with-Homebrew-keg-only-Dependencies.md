@@ -1,4 +1,4 @@
-# How to build software outside Homebrew with Homebrew `keg_only` dependencies
+# How to Build Software Outside Homebrew with Homebrew `keg_only` Dependencies
 
 ## What does "keg-only" mean?
 

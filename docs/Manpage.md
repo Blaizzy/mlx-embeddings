@@ -1,4 +1,4 @@
-brew(1) -- The missing package manager for macOS
+brew(1) -- The Missing Package Manager for macOS
 ================================================
 
 ## SYNOPSIS

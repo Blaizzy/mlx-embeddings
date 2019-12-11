@@ -1,4 +1,4 @@
-# Taps (third-party repositories)
+# Taps (Third-Party Repositories)
 
 `brew tap` adds more repositories to the list of formulae that `brew` tracks, updates,
 and installs from. By default, `tap` assumes that the repositories come from GitHub,
