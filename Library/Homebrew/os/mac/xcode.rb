@@ -231,7 +231,7 @@ module OS
         end
       end
 
-      def latest_version
+      def latest_clang_version
         # As of Xcode 8 CLT releases are no longer in sync with Xcode releases
         # on the older supported platform for that Xcode release, i.e there's no
         # CLT package for 10.11 that contains the Clang version from Xcode 8.
@@ -266,7 +266,7 @@ module OS
         clang_version = detect_clang_version
         return false unless clang_version
 
-        ::Version.new(clang_version) < latest_version
+        ::Version.new(clang_version) < latest_clang_version
       end
 
       def detect_clang_version
