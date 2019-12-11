@@ -29,7 +29,7 @@ module Homebrew
     if ARGV.named.empty?
       puts HOMEBREW_CACHE
     else
-      ARGV.formulae.each do |f|
+      Homebrew.args.formulae.each do |f|
         if Fetch.fetch_bottle?(f)
           puts f.bottle.cached_download
         else

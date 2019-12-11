@@ -130,7 +130,7 @@ module Homebrew
     # developer tools are available, we need to stop them early on
     FormulaInstaller.prevent_build_flags unless DevelopmentTools.installed?
 
-    ARGV.formulae.each do |f|
+    Homebrew.args.formulae.each do |f|
       # head-only without --HEAD is an error
       if !Homebrew.args.HEAD? && f.stable.nil? && f.devel.nil?
         raise <<~EOS

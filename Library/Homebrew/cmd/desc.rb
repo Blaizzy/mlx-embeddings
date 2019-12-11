@@ -50,7 +50,7 @@ module Homebrew
       raise FormulaUnspecifiedError if ARGV.named.empty?
 
       desc = {}
-      ARGV.formulae.each { |f| desc[f.full_name] = f.desc }
+      Homebrew.args.formulae.each { |f| desc[f.full_name] = f.desc }
       Descriptions.new(desc)
     else
       arg = ARGV.named.join(" ")

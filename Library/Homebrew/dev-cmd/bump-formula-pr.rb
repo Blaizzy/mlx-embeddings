@@ -114,7 +114,7 @@ module Homebrew
     # Use the user's browser, too.
     ENV["BROWSER"] = ENV["HOMEBREW_BROWSER"]
 
-    formula = ARGV.formulae.first
+    formula = Homebrew.args.formulae.first
 
     if formula
       tap_full_name, origin_branch, previous_branch = use_correct_linux_tap(formula)

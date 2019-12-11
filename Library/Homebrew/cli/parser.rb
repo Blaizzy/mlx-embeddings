@@ -13,7 +13,7 @@ module Homebrew
       attr_reader :processed_options, :hide_from_man_page
 
       def self.parse(args = ARGV, &block)
-        new(&block).parse(args)
+        new(args, &block).parse(args)
       end
 
       def self.global_options
@@ -25,9 +25,11 @@ module Homebrew
         }
       end
 
-      def initialize(&block)
+      def initialize(args = ARGV, &block)
         @parser = OptionParser.new
         @args = Homebrew::CLI::Args.new(argv: ARGV_WITHOUT_MONKEY_PATCHING)
+        @args[:remaining] = []
+        @args[:cmdline_args] = args.dup
         @constraints = []
         @conflicts = []
         @switch_sources = {}
@@ -138,10 +140,10 @@ module Homebrew
         end
         check_constraint_violations
         @args[:remaining] = remaining_args
-        @args_parsed = true
-        @args.processed_options = @processed_options
+        @args.freeze_processed_options!(@processed_options)
         Homebrew.args = @args
         cmdline_args.freeze
+        @args_parsed = true
         @parser
       end
 
@@ -159,7 +161,7 @@ module Homebrew
       end
 
       def formula_options
-        ARGV.formulae.each do |f|
+        @args.formulae.each do |f|
           next if f.options.empty?
 
           f.options.each do |o|

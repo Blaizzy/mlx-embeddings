@@ -5,14 +5,21 @@ require "ostruct"
 module Homebrew
   module CLI
     class Args < OpenStruct
-      attr_accessor :processed_options
+      attr_reader :processed_options, :args_parsed
       # undefine tap to allow --tap argument
       undef tap
 
       def initialize(argv:)
         super
         @argv = argv
+        @args_parsed = false
         @processed_options = []
+      end
+
+      def freeze_processed_options!(processed_options)
+        @processed_options += processed_options
+        @processed_options.freeze
+        @args_parsed = true
       end
 
       def option_to_name(option)
@@ -51,22 +58,36 @@ module Homebrew
         options_only - CLI::Parser.global_options.values.map(&:first).flatten
       end
 
-      def downcased_unique_named
-        # Only lowercase names, not paths, bottle filenames or URLs
-        @downcased_unique_named ||= remaining.map do |arg|
-          if arg.include?("/") || arg.end_with?(".tar.gz") || File.exist?(arg)
-            arg
+      def named
+        remaining
+      end
+
+      def formulae
+        require "formula"
+        @formulae ||= (downcased_unique_named - casks).map do |name|
+          if name.include?("/") || File.exist?(name)
+            Formulary.factory(name, spec)
           else
-            arg.downcase
+            Formulary.find_with_priority(name, spec)
           end
-        end.uniq
+        end.uniq(&:name)
+      end
+
+      def resolved_formulae
+        require "formula"
+        @resolved_formulae ||= (downcased_unique_named - casks).map do |name|
+          Formulary.resolve(name, spec: spec(nil))
+        end.uniq(&:name)
+      end
+
+      def casks
+        @casks ||= downcased_unique_named.grep HOMEBREW_CASK_TAP_CASK_REGEX
       end
 
       def kegs
         require "keg"
         require "formula"
         require "missing_formula"
-
         @kegs ||= downcased_unique_named.map do |name|
           raise UsageError if name.empty?
 
@@ -111,6 +132,42 @@ module Homebrew
               Please delete (with rm -rf!) all but one and then try again.
             EOS
           end
+        end
+      end
+
+      private
+
+      def downcased_unique_named
+        # Only lowercase names, not paths, bottle filenames or URLs
+        arguments = if args_parsed
+          remaining
+        else
+          cmdline_args.reject { |arg| arg.start_with?("-") }
+        end
+        arguments.map do |arg|
+          if arg.include?("/") || arg.end_with?(".tar.gz") || File.exist?(arg)
+            arg
+          else
+            arg.downcase
+          end
+        end.uniq
+      end
+
+      def head
+        (args_parsed && HEAD?) || cmdline_args.include?("--HEAD")
+      end
+
+      def devel
+        (args_parsed && devel?) || cmdline_args.include?("--devel")
+      end
+
+      def spec(default = :stable)
+        if head
+          :head
+        elsif devel
+          :devel
+        else
+          default
         end
       end
     end
