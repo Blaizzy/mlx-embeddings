@@ -16,13 +16,13 @@ module OS
         when "10.11" then "8.2.1"
         when "10.12" then "9.2"
         when "10.13" then "10.1"
-        when "10.14" then "10.2.1"
-        when "10.15" then "11.2.1"
+        when "10.14" then "11.3"
+        when "10.15" then "11.3"
         else
           raise "macOS '#{MacOS.version}' is invalid" unless OS::Mac.prerelease?
 
           # Default to newest known version of Xcode for unreleased macOS versions.
-          "11.2.1"
+          "11.3"
         end
       end
 
@@ -176,8 +176,8 @@ module OS
         when 90      then "9.2"
         when 91      then "9.4"
         when 100     then "10.2.1"
-        when 110     then "11.2.1"
-        else              "11.2.1"
+        when 110     then "11.3"
+        else              "11.3"
         end
       end
 
@@ -193,9 +193,6 @@ module OS
       EXECUTABLE_PKG_ID = "com.apple.pkg.CLTools_Executables"
       MAVERICKS_NEW_PKG_ID = "com.apple.pkg.CLTools_Base" # obsolete
       PKG_PATH = "/Library/Developer/CommandLineTools"
-      HEADER_PKG_PATH =
-        "/Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_:macos_version.pkg"
-      HEADER_PKG_ID = "com.apple.pkg.macOS_SDK_headers_for_macOS_10.14"
 
       # Returns true even if outdated tools are installed
       def installed?
@@ -208,14 +205,6 @@ module OS
 
       def provides_sdk?
         version >= "8"
-      end
-
-      def headers_installed?
-        if !separate_header_package?
-          installed?
-        else
-          headers_version == version
-        end
       end
 
       def sdk(v = nil)
@@ -242,12 +231,12 @@ module OS
         end
       end
 
-      def latest_version
+      def latest_clang_version
         # As of Xcode 8 CLT releases are no longer in sync with Xcode releases
         # on the older supported platform for that Xcode release, i.e there's no
         # CLT package for 10.11 that contains the Clang version from Xcode 8.
         case MacOS.version
-        when "10.15" then "1100.0.33.12"
+        when "10.15" then "1100.0.33.16"
         when "10.14" then "1001.0.46.4"
         when "10.13" then "1000.10.44.2"
         when "10.12" then "900.0.39.2"
@@ -277,7 +266,7 @@ module OS
         clang_version = detect_clang_version
         return false unless clang_version
 
-        ::Version.new(clang_version) < latest_version
+        ::Version.new(clang_version) < latest_clang_version
       end
 
       def detect_clang_version
@@ -291,6 +280,10 @@ module OS
         version_output[/clang-(\d+\.\d+\.\d+(\.\d+)?)/, 1]
       end
 
+      def detect_version_from_clang_version
+        detect_clang_version&.sub(/^(\d+)00\./, "\\1.")
+      end
+
       # Version string (a pretty long one) of the CLT package.
       # Note, that different ways to install the CLTs lead to different
       # version numbers.
@@ -299,19 +292,6 @@ module OS
           ::Version.new @version
         else
           ::Version::NULL
-        end
-      end
-
-      # Version string of the header package, which is a
-      # separate package as of macOS 10.14.
-      def headers_version
-        if !separate_header_package?
-          version
-        else
-          @header_version ||= MacOS.pkgutil_info(HEADER_PKG_ID)[/version: (.+)$/, 1]
-          return ::Version::NULL unless @header_version
-
-          ::Version.new(@header_version)
         end
       end
 
@@ -324,7 +304,7 @@ module OS
           return version if version
         end
 
-        detect_clang_version
+        detect_version_from_clang_version
       end
     end
   end

@@ -41,10 +41,6 @@ class SystemConfig
       @clt ||= MacOS::CLT.version if MacOS::CLT.installed?
     end
 
-    def clt_headers
-      @clt_headers ||= MacOS::CLT.headers_version if MacOS::CLT.headers_installed?
-    end
-
     def xquartz
       @xquartz ||= "#{MacOS::XQuartz.version} => #{describe_path(MacOS::XQuartz.prefix)}" if MacOS::XQuartz.installed?
     end
@@ -54,7 +50,6 @@ class SystemConfig
       f.puts "macOS: #{MacOS.full_version}-#{kernel}"
       f.puts "CLT: #{clt || "N/A"}"
       f.puts "Xcode: #{xcode || "N/A"}"
-      f.puts "CLT headers: #{clt_headers}" if MacOS::CLT.separate_header_package? && clt_headers
       f.puts "XQuartz: #{xquartz}" if xquartz
     end
   end
