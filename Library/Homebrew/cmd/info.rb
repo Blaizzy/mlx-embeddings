@@ -61,22 +61,23 @@ module Homebrew
 
   def info
     info_args.parse
+
     if args.days.present?
-      raise UsageError, "days must be one of #{VALID_DAYS.join(", ")}" unless VALID_DAYS.include?(args.days)
+      raise UsageError, "--days must be one of #{VALID_DAYS.join(", ")}" unless VALID_DAYS.include?(args.days)
     end
 
     if args.category.present?
       if ARGV.named.present? && !VALID_FORMULA_CATEGORIES.include?(args.category)
-        raise UsageError, "category must be one of #{VALID_FORMULA_CATEGORIES.join(", ")} when querying formulae"
+        raise UsageError, "--category must be one of #{VALID_FORMULA_CATEGORIES.join(", ")} when querying formulae"
       end
 
       unless VALID_CATEGORIES.include?(args.category)
-        raise UsageError, "category must be one of #{VALID_CATEGORIES.join(", ")}"
+        raise UsageError, "--category must be one of #{VALID_CATEGORIES.join(", ")}"
       end
     end
 
     if args.json
-      raise UsageError, "invalid JSON version: #{args.json}" unless ["v1", true].include? args.json
+      raise UsageError, "Invalid JSON version: #{args.json}" unless ["v1", true].include? args.json
 
       print_json
     elsif args.github?

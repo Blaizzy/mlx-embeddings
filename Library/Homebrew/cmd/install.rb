@@ -101,6 +101,7 @@ module Homebrew
     end
 
     install_args.parse
+
     raise FormulaUnspecifiedError if args.remaining.empty?
 
     if args.ignore_dependencies?

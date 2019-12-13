@@ -27,6 +27,7 @@ module Homebrew
 
   def sh
     sh_args.parse
+
     ENV.activate_extensions!
 
     if superenv?

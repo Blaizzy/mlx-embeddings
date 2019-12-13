@@ -504,6 +504,6 @@ module Homebrew
 
     formula.path.atomic_write(backup_file)
     FileUtils.mv alias_rename.last, alias_rename.first if alias_rename.present?
-    odie "brew audit failed!"
+    odie "`brew audit` failed!"
   end
 end

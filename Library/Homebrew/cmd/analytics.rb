@@ -42,7 +42,7 @@ module Homebrew
     when "regenerate-uuid"
       Utils::Analytics.regenerate_uuid!
     else
-      raise UsageError
+      raise UsageError, "Unknown subcommand."
     end
   end
 end

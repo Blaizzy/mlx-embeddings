@@ -21,7 +21,7 @@ module Homebrew
   def tap_new
     tap_new_args.parse
 
-    raise "A tap argument is required" if ARGV.named.empty?
+    raise UsageError, "This command requires a tap argument" if ARGV.named.empty?
 
     tap = Tap.fetch(ARGV.named.first)
     titleized_user = tap.user.dup

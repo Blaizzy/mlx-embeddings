@@ -219,7 +219,7 @@ module Homebrew
       return
     end
 
-    return ofail "Formula not installed with '--build-bottle': #{f.full_name}" unless Utils::Bottles.built_as? f
+    return ofail "Formula was not installed with --build-bottle: #{f.full_name}" unless Utils::Bottles.built_as? f
 
     return ofail "Formula has no stable version: #{f.full_name}" unless f.stable
 

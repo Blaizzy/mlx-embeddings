@@ -88,7 +88,7 @@ module Homebrew
     chdir "update-test" do
       curdir = Pathname.new(Dir.pwd)
 
-      oh1 "Setup test environment..."
+      oh1 "Preparing test environment..."
       # copy Homebrew installation
       safe_system "git", "clone", "#{HOMEBREW_REPOSITORY}/.git", ".",
                   "--branch", "master", "--single-branch"

@@ -19,11 +19,11 @@ module Homebrew
   def untap
     untap_args.parse
 
-    raise "Usage is `brew untap <tap-name>`" if args.remaining.empty?
+    raise UsageError, "This command requires a tap argument from `brew tap`'s list" if args.remaining.empty?
 
     ARGV.named.each do |tapname|
       tap = Tap.fetch(tapname)
-      raise "untapping #{tap} is not allowed" if tap.core_tap?
+      odie "Untapping #{tap} is not allowed" if tap.core_tap?
 
       tap.uninstall
     end

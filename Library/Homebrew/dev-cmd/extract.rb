@@ -98,7 +98,7 @@ module Homebrew
     extract_args.parse
 
     # Expect exactly two named arguments: formula and tap
-    raise UsageError if args.remaining.length != 2
+    raise UsageError, "This command requires formula and tap arguments" if args.remaining.length != 2
 
     if args.remaining.first !~ HOMEBREW_TAP_FORMULA_REGEX
       name = args.remaining.first.downcase

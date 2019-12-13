@@ -27,6 +27,7 @@ module Homebrew
 
   def missing
     missing_args.parse
+
     return unless HOMEBREW_CELLAR.exist?
 
     ff = if ARGV.named.empty?

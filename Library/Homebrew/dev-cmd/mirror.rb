@@ -21,7 +21,7 @@ module Homebrew
   def mirror
     mirror_args.parse
 
-    odie "This command requires at least one formula argument!" if ARGV.named.empty?
+    raise FormulaUnspecifiedError if args.remaining.empty?
 
     bintray_user = ENV["HOMEBREW_BINTRAY_USER"]
     bintray_key = ENV["HOMEBREW_BINTRAY_KEY"]
