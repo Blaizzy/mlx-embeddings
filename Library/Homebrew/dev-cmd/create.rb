@@ -49,6 +49,7 @@ module Homebrew
       switch :verbose
       switch :debug
       conflicts "--autotools", "--cmake", "--go", "--meson", "--perl", "--python", "--rust"
+      max_named 1
     end
   end
 

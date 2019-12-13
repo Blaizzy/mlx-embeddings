@@ -91,6 +91,7 @@ module Homebrew
              description: "Extract the specified <version> of <formula> instead of the most recent."
       switch :force
       switch :debug
+      max_named 2
     end
   end
 

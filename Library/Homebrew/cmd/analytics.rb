@@ -19,13 +19,12 @@ module Homebrew
       EOS
       switch :verbose
       switch :debug
+      max_named 1
     end
   end
 
   def analytics
     analytics_args.parse
-
-    raise UsageError if args.remaining.size > 1
 
     case args.remaining.first
     when nil, "state"

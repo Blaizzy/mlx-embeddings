@@ -23,6 +23,7 @@ module Homebrew
              description: "Use the commit at the specified <date> as the start commit."
       switch :verbose
       switch :debug
+      max_named 0
     end
   end
 

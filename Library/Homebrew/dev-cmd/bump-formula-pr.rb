@@ -65,6 +65,7 @@ module Homebrew
       switch :debug
       conflicts "--no-audit", "--strict"
       conflicts "--url", "--tag"
+      max_named 1
     end
   end
 

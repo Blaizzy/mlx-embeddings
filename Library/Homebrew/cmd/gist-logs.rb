@@ -28,6 +28,7 @@ module Homebrew
                           "be accessible with its link."
       switch :verbose
       switch :debug
+      max_named 1
     end
   end
 

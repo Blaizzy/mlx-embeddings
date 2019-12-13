@@ -16,6 +16,7 @@ module Homebrew
       EOS
       switch :verbose
       switch :debug
+      max_named 2
     end
   end
 

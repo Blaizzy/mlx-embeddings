@@ -21,6 +21,7 @@ module Homebrew
              description: "Explicitly set the <version> of the package being installed."
       switch :verbose
       switch :debug
+      max_named 0
     end
   end
 

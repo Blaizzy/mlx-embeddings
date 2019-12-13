@@ -22,6 +22,7 @@ module Homebrew
              description: "Print only one line per commit."
       flag   "-1", "--max-count",
              description: "Print only one or a specified number of commits."
+      max_named 1
     end
   end
 

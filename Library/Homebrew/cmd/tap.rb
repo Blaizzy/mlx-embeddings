@@ -38,6 +38,7 @@ module Homebrew
       switch "-q", "--quieter",
              description: "Suppress any warnings."
       switch :debug
+      max_named 2
     end
   end
 

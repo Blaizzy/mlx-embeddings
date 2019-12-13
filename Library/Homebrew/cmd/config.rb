@@ -16,12 +16,12 @@ module Homebrew
       EOS
       switch :verbose
       switch :debug
+      max_named 0
     end
   end
 
   def config
     config_args.parse
-    raise UsageError unless args.remaining.empty?
 
     SystemConfig.dump_verbose_config
   end

@@ -12,6 +12,7 @@ module Homebrew
 
         Display the source of <formula>.
       EOS
+      max_named 1
     end
   end
 
@@ -22,7 +23,6 @@ module Homebrew
     # `brew cat` multiple times.
     formulae = Homebrew.args.formulae
     raise FormulaUnspecifiedError if formulae.empty?
-    raise "`brew cat` doesn't support multiple arguments" if args.remaining.size > 1
 
     cd HOMEBREW_REPOSITORY
     pager = if ENV["HOMEBREW_BAT"].nil?
