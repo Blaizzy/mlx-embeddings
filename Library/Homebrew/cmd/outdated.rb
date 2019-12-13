@@ -10,7 +10,7 @@ module Homebrew
   def outdated_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `outdated` [<options>]
+        `outdated` [<options>] [<formula>]
 
         List installed formulae that have an updated version available. By default, version
         information is displayed in interactive shells, and suppressed otherwise.

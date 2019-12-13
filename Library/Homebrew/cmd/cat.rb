@@ -18,8 +18,8 @@ module Homebrew
   def cat
     cat_args.parse
     # do not "fix" this to support multiple arguments, the output would be
-    # unparsable, if the user wants to cat multiple formula they can call
-    # brew cat multiple times.
+    # unparsable; if the user wants to cat multiple formula they can call
+    # `brew cat` multiple times.
     formulae = Homebrew.args.formulae
     raise FormulaUnspecifiedError if formulae.empty?
     raise "`brew cat` doesn't support multiple arguments" if args.remaining.size > 1
