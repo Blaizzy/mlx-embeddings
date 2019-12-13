@@ -14,46 +14,32 @@ module Homebrew
 
         Symlink all of the specified <version> of <formula>'s installation into Homebrew's prefix.
       EOS
-      switch_option :verbose
-      switch_option :debug
+      switch :verbose
+      switch :debug
     end
   end
 
   def switch
     switch_args.parse
+
+    raise FormulaUnspecifiedError if args.remaining.empty?
+
     name = args.remaining.first
-
-    usage = "Usage: brew switch <formula> <version>"
-
-    unless name
-      onoe usage
-      exit 1
-    end
-
     rack = Formulary.to_rack(name)
 
-    unless rack.directory?
-      onoe "#{name} not found in the Cellar."
-      exit 2
-    end
+    odie "#{name} not found in the Cellar." unless rack.directory?
 
     versions = rack.subdirs
                    .map { |d| Keg.new(d).version }
                    .sort
                    .join(", ")
     version = args.remaining.second
+    raise UsageError, "Specify one of #{name}'s installed versions: #{versions}" unless version
 
-    if !version || args.remaining.length > 2
-      onoe usage
-      puts "#{name} installed versions: #{versions}"
-      exit 1
-    end
-
-    unless (rack/version).directory?
-      onoe "#{name} does not have a version \"#{version}\" in the Cellar."
-      puts "#{name} installed versions: #{versions}"
-      exit 3
-    end
+    odie <<~EOS unless (rack/version).directory?
+      #{name} does not have a version \"#{version}\" in the Cellar.
+      #{name}'s installed versions: #{versions}
+    EOS
 
     # Unlink all existing versions
     rack.subdirs.each do |v|

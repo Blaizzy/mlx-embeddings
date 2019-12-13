@@ -86,6 +86,7 @@ module Homebrew
     bottle_args.parse
 
     return merge if args.merge?
+    raise KegUnspecifiedError if args.remaining.empty?
 
     ensure_relocation_formulae_installed! unless args.skip_relocation?
     ARGV.resolved_formulae.each do |f|
@@ -426,6 +427,7 @@ module Homebrew
 
   def merge
     write = args.write?
+    raise UsageError, "--merge requires a JSON file path argument" if ARGV.named.empty?
 
     bottles_hash = ARGV.named.reduce({}) do |hash, json_file|
       hash.deep_merge(JSON.parse(IO.read(json_file)))
