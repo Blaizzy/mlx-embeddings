@@ -55,14 +55,14 @@ module Homebrew
     # Unbrewed uses the PREFIX, which will exist
     # Things below use the CELLAR, which doesn't until the first formula is installed.
     unless HOMEBREW_CELLAR.exist?
-      raise NoSuchKegError, ARGV.named.first unless ARGV.named.empty?
+      raise NoSuchKegError, Hombrew.args.named.first if Homebrew.args.named.present?
 
       return
     end
 
     if args.pinned? || args.versions?
       filtered_list
-    elsif ARGV.named.empty?
+    elsif Homebrew.args.named.blank?
       if args.full_name?
         full_names = Formula.installed.map(&:full_name).sort(&tap_and_name_comparison)
         return if full_names.empty?
@@ -123,10 +123,10 @@ module Homebrew
   end
 
   def filtered_list
-    names = if ARGV.named.empty?
+    names = if Homebrew.args.named.blank?
       Formula.racks
     else
-      racks = ARGV.named.map { |n| Formulary.to_rack(n) }
+      racks = Homebrew.args.named.map { |n| Formulary.to_rack(n) }
       racks.select do |rack|
         Homebrew.failed = true unless rack.exist?
         rack.exist?

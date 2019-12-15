@@ -30,7 +30,7 @@ module Homebrew
     if args.installed?
       taps = Tap
     else
-      taps = ARGV.named.sort.map do |name|
+      taps = Homebrew.args.named.sort.map do |name|
         Tap.fetch(name)
       end
     end
