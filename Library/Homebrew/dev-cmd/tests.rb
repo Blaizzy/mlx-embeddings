@@ -29,6 +29,7 @@ module Homebrew
              description: "Randomise tests with the specified <value> instead of a random seed."
       switch :verbose
       switch :debug
+      max_named 0
     end
   end
 

@@ -20,17 +20,18 @@ module Homebrew
 
   def command
     command_args.parse
-    abort "This command requires a command argument" if args.remaining.empty?
 
-    cmd = HOMEBREW_INTERNAL_COMMAND_ALIASES.fetch(args.remaining.first, args.remaining.first)
+    raise UsageError, "This command requires a command argument" if args.remaining.empty?
 
-    path = Commands.path(cmd)
+    args.remaining.each do |c|
+      cmd = HOMEBREW_INTERNAL_COMMAND_ALIASES.fetch(c, c)
+      path = Commands.path(cmd)
+      cmd_paths = PATH.new(ENV["PATH"]).append(Tap.cmd_directories) unless path
+      path ||= which("brew-#{cmd}", cmd_paths)
+      path ||= which("brew-#{cmd}.rb", cmd_paths)
 
-    cmd_paths = PATH.new(ENV["PATH"]).append(Tap.cmd_directories) unless path
-    path ||= which("brew-#{cmd}", cmd_paths)
-    path ||= which("brew-#{cmd}.rb", cmd_paths)
-
-    odie "Unknown command: #{cmd}" unless path
-    puts path
+      odie "Unknown command: #{cmd}" unless path
+      puts path
+    end
   end
 end

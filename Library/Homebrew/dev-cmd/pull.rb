@@ -70,7 +70,9 @@ module Homebrew
 
     pull_args.parse
 
-    odie "This command requires at least one argument containing a URL or pull request number" if ARGV.named.empty?
+    if ARGV.named.empty?
+      raise UsageError, "This command requires at least one argument containing a URL or pull request number"
+    end
 
     # Passthrough Git environment variables for e.g. git am
     ENV["GIT_COMMITTER_NAME"] = ENV["HOMEBREW_GIT_NAME"] if ENV["HOMEBREW_GIT_NAME"]
@@ -107,7 +109,7 @@ module Homebrew
         end
         _, testing_job = *testing_match
         url = "https://github.com/Homebrew/homebrew-#{tap.repo}/compare/master...BrewTestBot:testing-#{testing_job}"
-        odie "Testing URLs require `--bottle`!" unless args.bottle?
+        odie "--bottle is required for testing job URLs!" unless args.bottle?
       elsif (api_match = arg.match HOMEBREW_PULL_API_REGEX)
         _, user, repo, issue = *api_match
         url = "https://github.com/#{user}/#{repo}/pull/#{issue}"
@@ -277,7 +279,7 @@ module Homebrew
     elsif patch_changes[:formulae].length > 1
       odie "Can only bump one changed formula; bumped #{patch_changes[:formulae]}"
     elsif !patch_changes[:others].empty?
-      odie "Can not bump if non-formula files are changed"
+      odie "Cannot bump if non-formula files are changed"
     end
   end
 

@@ -47,6 +47,8 @@ module Homebrew
   def reinstall
     reinstall_args.parse
 
+    raise FormulaUnspecifiedError if args.remaining.empty?
+
     FormulaInstaller.prevent_build_flags unless DevelopmentTools.installed?
 
     Install.perform_preinstall_checks

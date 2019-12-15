@@ -23,6 +23,8 @@ module Homebrew
   def postinstall
     postinstall_args.parse
 
+    raise KegUnspecifiedError if args.remaining.empty?
+
     ARGV.resolved_formulae.each do |f|
       ohai "Postinstalling #{f}"
       fi = FormulaInstaller.new(f)

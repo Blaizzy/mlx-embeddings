@@ -28,13 +28,12 @@ module Homebrew
                           "comparison without factoring in the date)."
       switch "--link",
              description: "This is now done automatically by `brew update`."
+      max_named 0
     end
   end
 
   def man
     man_args.parse
-
-    raise UsageError unless ARGV.named.empty?
 
     odie "`brew man --link` is now done automatically by `brew update`." if args.link?
 

@@ -22,6 +22,7 @@ module Homebrew
       switch :quiet
       switch :verbose
       switch :debug
+      max_named 1
     end
   end
 
@@ -34,7 +35,6 @@ module Homebrew
 
     formulae = Homebrew.args.formulae
     raise FormulaUnspecifiedError if formulae.empty?
-    raise "Multiple formulae given, only one is allowed." if formulae.length > 1
 
     formula = formulae.first
     current_revision = formula.revision

@@ -19,6 +19,7 @@ module Homebrew
              description: "Include aliases of internal commands."
       switch :verbose
       switch :debug
+      max_named 0
     end
   end
 

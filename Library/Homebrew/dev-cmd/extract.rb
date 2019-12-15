@@ -91,6 +91,7 @@ module Homebrew
              description: "Extract the specified <version> of <formula> instead of the most recent."
       switch :force
       switch :debug
+      max_named 2
     end
   end
 
@@ -98,7 +99,7 @@ module Homebrew
     extract_args.parse
 
     # Expect exactly two named arguments: formula and tap
-    raise UsageError if args.remaining.length != 2
+    raise UsageError, "This command requires formula and tap arguments" if args.remaining.length != 2
 
     if args.remaining.first !~ HOMEBREW_TAP_FORMULA_REGEX
       name = args.remaining.first.downcase

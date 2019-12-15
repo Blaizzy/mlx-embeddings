@@ -18,7 +18,8 @@ module Homebrew
         an issue; just ignore this.
       EOS
       switch "--list-checks",
-             description: "List all audit methods."
+             description: "List all audit methods, which can be run individually "\
+                          "if provided as arguments."
       switch "-D", "--audit-debug",
              description: "Enable debugging and profiling of audit methods."
       switch :verbose

@@ -14,7 +14,7 @@ module Homebrew
         Import all formulae from the specified <tap>, or from all installed taps if none is provided.
         This can be useful for debugging issues across all formulae when making
         significant changes to `formula.rb`, testing the performance of loading
-        all formulae or to determine if any current formulae have Ruby issues.
+        all formulae or checking if any current formulae have Ruby issues.
       EOS
       switch "--aliases",
              description: "Verify any alias symlinks in each tap."
