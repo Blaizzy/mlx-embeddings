@@ -78,7 +78,9 @@ module Homebrew
 
     if args.json
       raise UsageError, "Invalid JSON version: #{args.json}" unless ["v1", true].include? args.json
-      raise UsageError, "This command's option requires a formula argument" if ARGV.named.empty?
+      if !(args.all? || args.installed?) && ARGV.named.blank?
+        raise UsageError, "This command's option requires a formula argument"
+      end
 
       print_json
     elsif args.github?
