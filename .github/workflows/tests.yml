@@ -130,6 +130,12 @@ jobs:
         export PATH="/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:/usr/bin:/bin"
         brew readall --aliases
 
+    - name: Run vale for docs linting
+      run: |
+        export PATH="/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:/usr/bin:/bin"
+        brew install vale
+        vale $(brew --repo)/docs/
+
     - name: Build Docker image
       run: |
         docker pull homebrew/brew
