@@ -100,7 +100,7 @@ GEM
     simplecov-html (0.10.2)
     term-ansicolor (1.7.1)
       tins (~> 1.0)
-    thor (0.20.3)
+    thor (1.0.1)
     thread_safe (0.3.6)
     tins (1.22.2)
     tzinfo (1.2.5)
