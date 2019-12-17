@@ -63,5 +63,5 @@ $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/ruby-progressbar-1.10
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/unicode-display_width-1.6.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rubocop-0.77.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rubocop-performance-1.5.1/lib"
-$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rubocop-rspec-1.37.0/lib"
+$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rubocop-rspec-1.37.1/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/ruby-macho-2.2.0/lib"
