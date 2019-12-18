@@ -1,3 +1,5 @@
+<!-- vale off -->
+<!-- Disable vale linting for the whole of the style guide, because it contains deliberately bad examples. -->
 # Prose Style Guidelines
 
 This is a set of style and usage guidelines for Homebrew's prose documentation aimed at users, contributors, and maintainers (as opposed to executable computer code). It applies to documents like those in `docs` in the `Homebrew/brew` repository, announcement emails, and other communications with the Homebrew community.
@@ -39,7 +41,7 @@ We prefer:
 
 ### Structure and markup
 
-* Sentence case in section headings, not Title Case
+* Title Case in `h1` headings; sentence case in all other headings
 * Periods at the ends of list items where most items in that list are complete sentences
 * More generally, parallel list item structure
 * Capitalise all list items if you want, even if they're not complete sentences; just be consistent within each list, and preferably, throughout the whole page
@@ -86,3 +88,5 @@ Refer to these guidelines to make decisions about style and usage in your own wr
 PRs that fix style and usage throughout a document or multiple documents are okay and encouraged. PRs for just one or two style changes are a bit much.
 
 Giving style and usage feedback on a PR or commit that involves documents is okay and encouraged. But keep in mind that these are just guidelines, and for any change, the author may have made a deliberate choice to break these rules in the interest of understandability or aesthetics.
+
+<!-- vale on -->

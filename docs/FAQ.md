@@ -204,9 +204,9 @@ our analytics identified it was not widely used.
 
 ## Homebrew is a poor name, it's too generic, why was it chosen?
 @mxcl was too concerned with the beer theme and didn’t consider that the
-project may actually prove popular. By the time he realised it was, it was too
-late. However, today, the first Google hit for “homebrew” is not beer
-related ;&#8209;)
+project may actually prove popular. By the time Max realised that it
+was popular, it was too late. However, today, the first Google hit for
+“homebrew” is not beer related ;&#8209;)
 
 ## What does "keg-only" mean?
 It means the formula is installed only into the Cellar; it is not linked
