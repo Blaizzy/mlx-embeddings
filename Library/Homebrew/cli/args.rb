@@ -59,6 +59,8 @@ module Homebrew
       end
 
       def named
+        return [] if remaining.nil?
+
         remaining
       end
 

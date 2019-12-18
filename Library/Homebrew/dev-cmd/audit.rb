@@ -79,7 +79,7 @@ module Homebrew
     ENV.activate_extensions!
     ENV.setup_build_environment
 
-    if ARGV.named.empty?
+    if Homebrew.args.named.blank?
       ff = Formula
       files = Tap.map(&:formula_dir)
     else

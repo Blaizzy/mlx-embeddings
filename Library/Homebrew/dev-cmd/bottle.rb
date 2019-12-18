@@ -427,9 +427,9 @@ module Homebrew
 
   def merge
     write = args.write?
-    raise UsageError, "--merge requires a JSON file path argument" if ARGV.named.empty?
+    raise UsageError, "--merge requires a JSON file path argument" if Homebrew.args.named.blank?
 
-    bottles_hash = ARGV.named.reduce({}) do |hash, json_file|
+    bottles_hash = Homebrew.args.named.reduce({}) do |hash, json_file|
       hash.deep_merge(JSON.parse(IO.read(json_file)))
     end
 
