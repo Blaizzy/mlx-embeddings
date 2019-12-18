@@ -374,6 +374,9 @@ then
   export HOMEBREW_BOTTLE_DOMAIN="$HOMEBREW_BOTTLE_DEFAULT_DOMAIN"
 fi
 
+export HOMEBREW_BREW_REMOTE
+export HOMEBREW_DEFAULT_CORE_REMOTE
+
 HOMEBREW_DEFAULT_BREW_REMOTE="https://github.com/Homebrew/brew.git"
 if [[ -z "$HOMEBREW_BREW_REMOTE" ]]
 then
@@ -386,9 +389,6 @@ then
 else
   HOMEBREW_DEFAULT_CORE_REMOTE="https://github.com/Homebrew/linuxbrew-core"
 fi
-
-export HOMEBREW_BREW_REMOTE
-export HOMEBREW_DEFAULT_CORE_REMOTE
 
 if [[ -f "$HOMEBREW_LIBRARY/Homebrew/cmd/$HOMEBREW_COMMAND.sh" ]]
 then
