@@ -561,11 +561,13 @@ module Homebrew
 
       def check_brew_git_origin
         return if HOMEBREW_BREW_REMOTE == HOMEBREW_REPOSITORY.git_origin
+
         examine_git_origin(HOMEBREW_REPOSITORY, "Homebrew/brew")
       end
 
       def check_coretap_git_origin
         return if HOMEBREW_BREW_REMOTE == CoreTap.instance.path.git_origin
+
         examine_git_origin(CoreTap.instance.path, CoreTap.instance.full_name)
       end
 
