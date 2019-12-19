@@ -53,7 +53,7 @@ module Homebrew
 
     Install.perform_preinstall_checks
 
-    ARGV.resolved_formulae.each do |f|
+    Homebrew.args.resolved_formulae.each do |f|
       if f.pinned?
         onoe "#{f.full_name} is pinned. You must unpin it to reinstall."
         next

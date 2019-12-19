@@ -89,7 +89,7 @@ module Homebrew
     raise KegUnspecifiedError if args.remaining.empty?
 
     ensure_relocation_formulae_installed! unless args.skip_relocation?
-    ARGV.resolved_formulae.each do |f|
+    Homebrew.args.resolved_formulae.each do |f|
       bottle_formula f
     end
   end

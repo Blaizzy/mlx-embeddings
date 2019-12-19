@@ -33,7 +33,7 @@ module Homebrew
     ff = if Homebrew.args.named.blank?
       Formula.installed.sort
     else
-      ARGV.resolved_formulae.sort
+      Homebrew.args.resolved_formulae.sort
     end
 
     ff.each do |f|

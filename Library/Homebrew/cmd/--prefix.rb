@@ -25,7 +25,7 @@ module Homebrew
     if Homebrew.args.named.blank?
       puts HOMEBREW_PREFIX
     else
-      puts ARGV.resolved_formulae.map { |f|
+      puts Homebrew.args.resolved_formulae.map { |f|
         f.opt_prefix.exist? ? f.opt_prefix : f.installed_prefix
       }
     end

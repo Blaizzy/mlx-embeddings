@@ -35,10 +35,10 @@ module Homebrew
   def outdated
     outdated_args.parse
 
-    formulae = if ARGV.resolved_formulae.empty?
+    formulae = if Homebrew.args.resolved_formulae.blank?
       Formula.installed
     else
-      ARGV.resolved_formulae
+      Homebrew.args.resolved_formulae
     end
     if args.json
       raise UsageError, "Invalid JSON version: #{args.json}" unless ["v1", true].include? args.json
@@ -47,7 +47,7 @@ module Homebrew
     else
       outdated = print_outdated(formulae)
     end
-    Homebrew.failed = !ARGV.resolved_formulae.empty? && !outdated.empty?
+    Homebrew.failed = Homebrew.args.resolved_formulae.present? && !outdated.empty?
   end
 
   def print_outdated(formulae)

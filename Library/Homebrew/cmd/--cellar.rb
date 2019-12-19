@@ -25,7 +25,7 @@ module Homebrew
     if Homebrew.args.named.blank?
       puts HOMEBREW_CELLAR
     else
-      puts ARGV.resolved_formulae.map(&:rack)
+      puts Homebrew.args.resolved_formulae.map(&:rack)
     end
   end
 end
