@@ -19,17 +19,5 @@ describe Formula do
       expect(f.class.devel.deps.first.name).to eq("foo")
       expect(f.class.head.deps.first.name).to eq("foo")
     end
-
-    it "ignores OS version specifications" do
-      f = formula "foo" do
-        url "foo-1.0"
-
-        uses_from_macos("foo", after: :mojave)
-      end
-
-      expect(f.class.stable.deps.first.name).to eq("foo")
-      expect(f.class.devel.deps.first.name).to eq("foo")
-      expect(f.class.head.deps.first.name).to eq("foo")
-    end
   end
 end
