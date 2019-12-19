@@ -88,9 +88,9 @@ describe RuboCop::Cop::FormulaAudit::Patches do
              line:     5,
              column:   5,
              source:   source }]
-        # rubocop:disable Metrics/LineLength
+        # rubocop:disable Layout/LineLength
         elsif patch_url.match?(%r{https?://patch-diff\.githubusercontent\.com/raw/(.+)/(.+)/pull/(.+)\.(?:diff|patch)})
-          # rubocop:enable Metrics/LineLength
+          # rubocop:enable Layout/LineLength
           [{ message:
                        <<~EOS,
                          use GitHub pull request URLs:
@@ -225,9 +225,9 @@ describe RuboCop::Cop::FormulaAudit::Patches do
              line:     5,
              column:   9,
              source:   source }]
-        # rubocop:disable Metrics/LineLength
+        # rubocop:disable Layout/LineLength
         elsif patch_url.match?(%r{https?://patch-diff\.githubusercontent\.com/raw/(.+)/(.+)/pull/(.+)\.(?:diff|patch)})
-          # rubocop:enable Metrics/LineLength
+          # rubocop:enable Layout/LineLength
           [{ message:
                        <<~EOS,
                          use GitHub pull request URLs:
