@@ -5,7 +5,7 @@ require "erb"
 require "ostruct"
 require "cli/parser"
 # Require all commands
-Dir.glob("#{HOMEBREW_LIBRARY_PATH}/{dev-,}cmd/*.rb").each { |cmd| require cmd }
+Dir.glob("#{HOMEBREW_LIBRARY_PATH}/{dev-,}cmd/*.rb").sort.each { |cmd| require cmd }
 
 module Homebrew
   module_function
