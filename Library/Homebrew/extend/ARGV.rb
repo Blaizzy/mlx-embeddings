@@ -27,6 +27,7 @@ module HomebrewArgvExtension
   end
 
   def resolved_formulae
+    odeprecated("ARGV#resolved_formulae", "Args#resolved_formulae")
     require "formula"
     # TODO: use @instance variable to ||= cache when moving to CLI::Parser
     (downcased_unique_named - casks).map do |name|
