@@ -100,7 +100,7 @@ module FormulaCellarChecks
   def check_generic_executables(bin)
     return unless bin.directory?
 
-    generic_names = %w[run service start stop]
+    generic_names = %w[service start stop]
     generics = bin.children.select { |g| generic_names.include? g.basename.to_s }
     return if generics.empty?
 
