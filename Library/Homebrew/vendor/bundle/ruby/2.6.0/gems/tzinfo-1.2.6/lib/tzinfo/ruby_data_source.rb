@@ -1,4 +1,6 @@
 module TZInfo
+  using RubyCoreSupport::UntaintExt if RubyCoreSupport.const_defined?(:UntaintExt)
+
   # A DataSource that loads data from the set of Ruby modules included in the
   # TZInfo::Data library (tzinfo-data gem).
   #
@@ -6,15 +8,30 @@ module TZInfo
   #
   #   TZInfo::DataSource.set(:ruby)
   class RubyDataSource < DataSource
-    # Base path for require.
-    REQUIRE_PATH = File.join('tzinfo', 'data', 'definitions')
-    
     # Whether the timezone index has been loaded yet.
     @@timezone_index_loaded = false
     
     # Whether the country index has been loaded yet.
     @@country_index_loaded = false
   
+    # Initializes a new RubyDataSource instance.
+    def initialize
+      tzinfo_data = File.join('tzinfo', 'data')
+      begin
+        require(tzinfo_data)
+
+        data_file = File.join('', 'tzinfo', 'data.rb')
+        path = $".reverse_each.detect {|p| p.end_with?(data_file) }
+        if path
+          @base_path = File.join(File.dirname(path), 'data').untaint
+        else
+          @base_path = tzinfo_data
+        end
+      rescue LoadError
+        @base_path = tzinfo_data
+      end
+    end
+
     # Returns a TimezoneInfo instance for a given identifier. 
     # Raises InvalidTimezoneIdentifier if the timezone is not found or the 
     # identifier is invalid.
@@ -93,27 +110,17 @@ module TZInfo
     end
     
     # Requires an index by its name.
-    def self.require_index(name)
+    def require_index(name)
       require_data(*['indexes', name])
     end
     
     # Requires a file from tzinfo/data.
     def require_data(*file)
-      self.class.require_data(*file)
-    end
-    
-    # Requires a file from tzinfo/data.
-    def self.require_data(*file)
-      require File.join('tzinfo', 'data', *file)
+      require(File.join(@base_path, *file))
     end
     
     # Loads in the index of timezones if it hasn't already been loaded.
     def load_timezone_index
-      self.class.load_timezone_index
-    end
-    
-    # Loads in the index of timezones if it hasn't already been loaded.
-    def self.load_timezone_index
       unless @@timezone_index_loaded
         require_index('timezones')
         @@timezone_index_loaded = true
@@ -122,11 +129,6 @@ module TZInfo
     
     # Loads in the index of countries if it hasn't already been loaded.
     def load_country_index
-      self.class.load_country_index
-    end
-    
-    # Loads in the index of countries if it hasn't already been loaded.
-    def self.load_country_index
       unless @@country_index_loaded
         require_index('countries')
         @@country_index_loaded = true

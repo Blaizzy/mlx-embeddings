@@ -137,10 +137,40 @@ module TZInfo
       def self.open_file(file_name, mode, opts, &block)
         File.open(file_name, mode, &block)
       end
-    else
+    elsif RUBY_VERSION =~ /\A1\.9\./
       def self.open_file(file_name, mode, opts, &block)
         File.open(file_name, mode, opts, &block)
       end
+    else
+      # Evaluate method as a string because **opts isn't valid syntax prior to
+      # Ruby 2.0.
+      eval(<<-EOF
+        def self.open_file(file_name, mode, opts, &block)
+          File.open(file_name, mode, **opts, &block)
+        end
+      EOF
+      )
+    end
+
+
+    # Object#untaint is a deprecated no-op in Ruby >= 2.7 and will be removed in
+    # 3.0. Add a refinement to either silence the warning, or supply the method
+    # if needed.
+    old_verbose = $VERBOSE
+    $VERBOSE = false
+    begin
+      o = Object.new
+      if [:taint, :untaint, :tainted?].none? {|m| o.respond_to?(m) } || !o.taint.tainted?
+        module UntaintExt
+          refine Object do
+            def untaint
+              self
+            end
+          end
+        end
+      end
+    ensure
+      $VERBOSE = old_verbose
     end
   end
 end
