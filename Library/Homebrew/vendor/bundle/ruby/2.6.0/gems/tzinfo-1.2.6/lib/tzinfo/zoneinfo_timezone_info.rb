@@ -1,4 +1,6 @@
 module TZInfo
+  using RubyCoreSupport::UntaintExt if RubyCoreSupport.const_defined?(:UntaintExt)
+
   # An InvalidZoneinfoFile exception is raised if an attempt is made to load an
   # invalid zoneinfo file.
   class InvalidZoneinfoFile < StandardError

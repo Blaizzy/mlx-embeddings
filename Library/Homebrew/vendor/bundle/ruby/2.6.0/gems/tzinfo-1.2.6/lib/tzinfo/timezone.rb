@@ -571,17 +571,21 @@ module TZInfo
     # version 2.0.0, %z will be passed to Time#strftime and DateTime#strftime
     # instead. Some of the formatting options may cease to be available
     # depending on the version of Ruby in use (for example, %:::z is only
-    # supported by Time#strftime from MRI version 2.0.0 onwards.)
+    # supported by Time#strftime from MRI version 2.0.0 onwards).
     def strftime(format, utc = Time.now.utc)      
+      utc = TimeOrDateTime.wrap(utc)
       period = period_for_utc(utc)
-      local = period.to_local(utc)      
-      local = Time.at(local).utc unless local.kind_of?(Time) || local.kind_of?(DateTime)
+      local_wrapped = period.to_local(utc)
+      local = local_wrapped.to_orig
+      local = local_wrapped.to_time unless local.kind_of?(Time) || local.kind_of?(DateTime)
       abbreviation = period.abbreviation.to_s.gsub(/%/, '%%')
       
-      format = format.gsub(/%(%*)(Z|:*z)/) do
+      format = format.gsub(/%(%*)([sZ]|:*z)/) do
         if $1.length.odd?
           # Escaped literal percent or series of percents. Pass on to strftime.          
           "#$1%#$2"
+        elsif $2 == "s"
+          "#$1#{utc.to_i}"
         elsif $2 == "Z"
           "#$1#{abbreviation}"
         else
