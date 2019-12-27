@@ -98,19 +98,21 @@ module Homebrew
     formula.send("recursive_#{type}") do |dependent, dep|
       if dep.recommended?
         klass.prune if ignores.include?("recommended?") || dependent.build.without?(dep)
+      elsif dep.optional?
+        klass.prune if !includes.include?("optional?") && !dependent.build.with?(dep)
       elsif dep.test?
         if includes.include?("test?")
           Dependency.keep_but_prune_recursive_deps if type == :dependencies
+        elsif dep.build?
+          klass.prune unless includes.include?("build?")
         else
           klass.prune
         end
-      elsif dep.optional?
-        klass.prune if !includes.include?("optional?") && !dependent.build.with?(dep)
       elsif dep.build?
         klass.prune unless includes.include?("build?")
       end
 
-      # If a tap isn't installed, we can't find the dependencies of one
+      # If a tap isn't installed, we can't find the dependencies of one of
       # its formulae, and an exception will be thrown if we try.
       if type == :dependencies &&
          dep.is_a?(TapDependency) &&

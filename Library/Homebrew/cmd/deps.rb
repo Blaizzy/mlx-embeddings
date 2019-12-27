@@ -175,13 +175,11 @@ module Homebrew
   end
 
   def recursive_deps_tree(f, prefix, recursive)
-    reqs = f.requirements
-    deps = f.deps
+    includes, ignores = argv_includes_ignores(ARGV)
+    deps = reject_ignores(f.deps, ignores, includes)
+    reqs = reject_ignores(f.requirements, ignores, includes)
     dependables = reqs + deps
-    dependables.reject!(&:optional?) unless args.include_optional?
-    dependables.reject!(&:build?) unless args.include_build?
-    dependables.reject!(&:test?) unless args.include_test?
-    dependables.reject!(&:recommended?) if args.skip_recommended?
+
     max = dependables.length - 1
     @dep_stack.push f.name
     dependables.each_with_index do |dep, i|
