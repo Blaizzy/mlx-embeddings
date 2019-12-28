@@ -914,13 +914,7 @@ class FormulaInstaller
       --
       #{HOMEBREW_LIBRARY_PATH}/postinstall.rb
       #{formula.path}
-    ].concat(ARGV.options_only) - ["--HEAD", "--devel"]
-
-    if formula.head?
-      args << "--HEAD"
-    elsif formula.devel?
-      args << "--devel"
-    end
+    ]
 
     Utils.safe_fork do
       if Sandbox.formula?(formula)
