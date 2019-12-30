@@ -93,8 +93,13 @@ module Language
       def self.included(base)
         base.class_eval do
           resource "homebrew-virtualenv" do
-            url PYTHON_VIRTUALENV_URL
-            sha256 PYTHON_VIRTUALENV_SHA256
+            if MacOS.version > :mojave
+              url PYTHON_VIRTUALENV_URL
+              sha256 PYTHON_VIRTUALENV_SHA256
+            else
+              url PYTHON_VIRTUALENV_URL_MOJAVE
+              sha256 PYTHON_VIRTUALENV_SHA256_MOJAVE
+            end
           end
         end
       end
