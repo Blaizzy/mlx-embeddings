@@ -130,7 +130,7 @@ module Homebrew
 
             With a non-standard origin, Homebrew won't update properly.
             You can solve this by setting the origin remote:
-              git -C "#{repository_path}" remote set-url origin #{Formatter.url("https://github.com/#{desired_origin}.git")}
+              git -C "#{repository_path}" remote set-url origin #{Formatter.url("https://github.com/#{desired_origin}")}
           EOS
         end
       end
@@ -560,11 +560,11 @@ module Homebrew
       end
 
       def check_brew_git_origin
-        examine_git_origin(HOMEBREW_REPOSITORY, "Homebrew/brew")
+        examine_git_origin(HOMEBREW_REPOSITORY, HOMEBREW_BREW_GIT_REMOTE)
       end
 
       def check_coretap_git_origin
-        examine_git_origin(CoreTap.instance.path, CoreTap.instance.full_name)
+        examine_git_origin(CoreTap.instance.path, HOMEBREW_CORE_GIT_REMOTE)
       end
 
       def check_casktap_git_origin

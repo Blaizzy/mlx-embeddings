@@ -1347,6 +1347,10 @@ If set, Homebrew will use \fBbat\fR for the \fBbrew cat\fR command\.
 By default, Homebrew uses \fBhttps://homebrew\.bintray\.com/\fR as its download mirror for bottles\. If set, instructs Homebrew to instead use the specified URL\. For example, \fBHOMEBREW_BOTTLE_DOMAIN=http://localhost:8080\fR will cause all bottles to download from the prefix \fBhttp://localhost:8080/\fR\.
 .
 .TP
+\fBHOMEBREW_BREW_GIT_REMOTE\fR
+By default, Homebrew uses \fBhttps://github\.com/Homebrew/brew\fR as its Homebrew/brew \fBgit\fR(1) remote\. If set, instructs Homebrew to instead use the specified URL\.
+.
+.TP
 \fBHOMEBREW_BROWSER\fR
 If set, Homebrew uses this setting as the browser when opening project homepages, instead of the OS default browser\.
 .
@@ -1356,6 +1360,10 @@ If set, instructs Homebrew to use the specified directory as the download cache\
 .
 .IP
 \fIDefault:\fR \fB~/Library/Caches/Homebrew\fR\.
+.
+.TP
+\fBHOMEBREW_CORE_GIT_REMOTE\fR
+By default, Homebrew uses \fBhttps://github\.com/Homebrew/homebrew\-core\fR (or \fBhttps://github\.com/Homebrew/linuxbrew\-core\fR) as its Homebrew/homebrew\-core \fBgit\fR(1) remote\. If set, instructs Homebrew to instead use the specified URL\.
 .
 .TP
 \fBHOMEBREW_CURLRC\fR

@@ -1090,6 +1090,11 @@ Note that environment variables must have a value set to be detected. For exampl
     URL. For example, `HOMEBREW_BOTTLE_DOMAIN=http://localhost:8080` will
     cause all bottles to download from the prefix `http://localhost:8080/`.
 
+  * `HOMEBREW_BREW_GIT_REMOTE`:
+    By default, Homebrew uses `https://github.com/Homebrew/brew` as its
+    Homebrew/brew `git`(1) remote. If set, instructs Homebrew to instead use
+    the specified URL.
+
   * `HOMEBREW_BROWSER`:
     If set, Homebrew uses this setting as the browser when opening project
     homepages, instead of the OS default browser.
@@ -1098,6 +1103,11 @@ Note that environment variables must have a value set to be detected. For exampl
     If set, instructs Homebrew to use the specified directory as the download cache.
 
     *Default:* `~/Library/Caches/Homebrew`.
+
+  * `HOMEBREW_CORE_GIT_REMOTE`:
+    By default, Homebrew uses `https://github.com/Homebrew/homebrew-core` (or
+    `https://github.com/Homebrew/linuxbrew-core`) as its Homebrew/homebrew-core
+    `git`(1) remote. If set, instructs Homebrew to instead use the specified URL.
 
   * `HOMEBREW_CURLRC`:
     If set, Homebrew will not pass `-q` when invoking `curl`(1), which disables
