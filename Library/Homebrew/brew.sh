@@ -374,21 +374,25 @@ then
   export HOMEBREW_BOTTLE_DOMAIN="$HOMEBREW_BOTTLE_DEFAULT_DOMAIN"
 fi
 
-export HOMEBREW_BREW_REMOTE
-export HOMEBREW_DEFAULT_CORE_REMOTE
-
-HOMEBREW_DEFAULT_BREW_REMOTE="https://github.com/Homebrew/brew.git"
-if [[ -z "$HOMEBREW_BREW_REMOTE" ]]
+HOMEBREW_DEFAULT_BREW_GIT_REMOTE="https://github.com/Homebrew/brew"
+if [[ -z "$HOMEBREW_BREW_GIT_REMOTE" ]]
 then
-  HOMEBREW_BREW_REMOTE="$HOMEBREW_DEFAULT_BREW_REMOTE"
+  HOMEBREW_BREW_GIT_REMOTE="$HOMEBREW_DEFAULT_BREW_GIT_REMOTE"
 fi
+export HOMEBREW_BREW_GIT_REMOTE
 
 if [[ -n "$HOMEBREW_MACOS" ]] || [[ -n "$HOMEBREW_FORCE_HOMEBREW_ON_LINUX" ]]
 then
-  HOMEBREW_DEFAULT_CORE_REMOTE="https://github.com/Homebrew/homebrew-core"
+  HOMEBREW_DEFAULT_CORE_GIT_REMOTE="https://github.com/Homebrew/homebrew-core"
 else
-  HOMEBREW_DEFAULT_CORE_REMOTE="https://github.com/Homebrew/linuxbrew-core"
+  HOMEBREW_DEFAULT_CORE_GIT_REMOTE="https://github.com/Homebrew/linuxbrew-core"
 fi
+
+if [[ -z "$HOMEBREW_CORE_GIT_REMOTE" ]]
+then
+  HOMEBREW_CORE_GIT_REMOTE="$HOMEBREW_DEFAULT_CORE_GIT_REMOTE"
+fi
+export HOMEBREW_CORE_GIT_REMOTE
 
 if [[ -f "$HOMEBREW_LIBRARY/Homebrew/cmd/$HOMEBREW_COMMAND.sh" ]]
 then

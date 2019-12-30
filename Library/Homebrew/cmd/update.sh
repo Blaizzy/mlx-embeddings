@@ -30,7 +30,7 @@ git_init_if_necessary() {
     trap '{ rm -rf .git; exit 1; }' EXIT
     git init
     git config --bool core.autocrlf false
-    git config remote.origin.url "$HOMEBREW_BREW_REMOTE"
+    git config remote.origin.url "$HOMEBREW_BREW_GIT_REMOTE"
     git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
     latest_tag="$(git ls-remote --tags --refs -q origin | tail -n1 | cut -f2)"
     git fetch --force origin --shallow-since="$latest_tag"
@@ -48,7 +48,7 @@ git_init_if_necessary() {
     trap '{ rm -rf .git; exit 1; }' EXIT
     git init
     git config --bool core.autocrlf false
-    git config remote.origin.url "$HOMEBREW_CORE_REMOTE"
+    git config remote.origin.url "$HOMEBREW_CORE_GIT_REMOTE"
     git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
     git fetch --force --depth=1 origin refs/heads/master:refs/remotes/origin/master
     git reset --hard origin/master
@@ -394,20 +394,20 @@ EOS
 
   git_init_if_necessary
 
-  if [[ "$HOMEBREW_DEFAULT_BREW_REMOTE" != "$HOMEBREW_BREW_REMOTE" ]]
+  if [[ "$HOMEBREW_DEFAULT_BREW_GIT_REMOTE" != "$HOMEBREW_BREW_GIT_REMOTE" ]]
   then
     safe_cd "$HOMEBREW_REPOSITORY"
-    git remote set-url origin "$HOMEBREW_BREW_REMOTE"
+    git remote set-url origin "$HOMEBREW_BREW_GIT_REMOTE"
     git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
     latest_tag="$(git ls-remote --tags --refs -q origin | tail -n1 | cut -f2)"
     git fetch --force origin --shallow-since="$latest_tag"
   fi
 
-  if [[ "$HOMEBREW_DEFAULT_CORE_REMOTE" != "$HOMEBREW_CORE_REMOTE" ]] && 
+  if [[ "$HOMEBREW_DEFAULT_CORE_GIT_REMOTE" != "$HOMEBREW_CORE_GIT_REMOTE" ]] &&
      [[ -d "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core" ]]
   then
     safe_cd "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core"
-    git remote set-url origin "$HOMEBREW_CORE_REMOTE"
+    git remote set-url origin "$HOMEBREW_CORE_GIT_REMOTE"
     git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
     git fetch --force --depth=1 origin refs/heads/master:refs/remotes/origin/master
   fi
@@ -419,8 +419,8 @@ EOS
         -x "$HOMEBREW_PREFIX/opt/curl/bin/curl" &&
         "$(git config remote.origin.url)" =~ ^git:// ]]
   then
-    git config remote.origin.url "$HOMEBREW_BREW_REMOTE"
-    git config -f "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core/.git/config" remote.origin.url "$HOMEBREW_CORE_REMOTE"
+    git config remote.origin.url "$HOMEBREW_BREW_GIT_REMOTE"
+    git config -f "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core/.git/config" remote.origin.url "$HOMEBREW_CORE_GIT_REMOTE"
   fi
 
   # kill all of subprocess on interrupt
