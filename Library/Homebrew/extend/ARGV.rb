@@ -98,7 +98,7 @@ module HomebrewArgvExtension
   end
 
   def build_bottle?
-    include?("--build-bottle") || !ENV["HOMEBREW_BUILD_BOTTLE"].nil?
+    include?("--build-bottle")
   end
 
   def bottle_arch
