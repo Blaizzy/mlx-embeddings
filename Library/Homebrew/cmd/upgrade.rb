@@ -61,7 +61,7 @@ module Homebrew
 
     Install.perform_preinstall_checks
 
-    if ARGV.named.empty?
+    if Homebrew.args.named.blank?
       outdated = Formula.installed.select do |f|
         f.outdated?(fetch_head: args.fetch_HEAD?)
       end
@@ -170,7 +170,7 @@ module Homebrew
     fi = FormulaInstaller.new(f)
     fi.options = options
     fi.build_bottle = args.build_bottle?
-    fi.installed_on_request = !ARGV.named.empty?
+    fi.installed_on_request = Homebrew.args.named.present?
     fi.link_keg           ||= keg_was_linked if keg_had_linked_opt
     if tab
       fi.build_bottle          ||= tab.built_bottle?
@@ -239,9 +239,9 @@ module Homebrew
     if pinned_dependents.present?
       plural = "dependent".pluralize(pinned_dependents.count)
       ohai "Not upgrading #{pinned_dependents.count} pinned #{plural}:"
-      puts pinned_dependents.map do |f|
+      puts(pinned_dependents.map do |f|
         "#{f.full_specified_name} #{f.pkg_version}"
-      end.join(", ")
+      end.join(", "))
     end
 
     # Print the upgradable dependents.
@@ -292,9 +292,9 @@ module Homebrew
       count = pinned_broken_dependents.count
       plural = "dependent".pluralize(pinned_broken_dependents.count)
       onoe "Not reinstalling #{count} broken and outdated, but pinned #{plural}:"
-      $stderr.puts pinned_broken_dependents.map do |f|
+      $stderr.puts(pinned_broken_dependents.map do |f|
         "#{f.full_specified_name} #{f.pkg_version}"
-      end.join(", ")
+      end.join(", "))
     end
 
     # Print the broken dependents.

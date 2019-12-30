@@ -1,4 +1,4 @@
-# Bottles (binary packages)
+# Bottles (Binary Packages)
 
 Bottles are produced by installing a formula with `brew install --build-bottle <formula>` and then bottling it with `brew bottle <formula>`. This outputs the bottle DSL which should be inserted into the formula file.
 

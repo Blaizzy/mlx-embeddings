@@ -23,7 +23,7 @@ module Homebrew
     if args.remaining.empty?
       exec_browser HOMEBREW_WWW
     else
-      exec_browser(*ARGV.formulae.map(&:homepage))
+      exec_browser(*Homebrew.args.formulae.map(&:homepage))
     end
   end
 end

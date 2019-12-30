@@ -306,7 +306,7 @@ homebrew-update() {
       *)
         odie <<EOS
 This command updates brew itself, and does not take formula names.
-Use 'brew upgrade $@' instead.
+Use \`brew upgrade $@\` instead.
 EOS
         ;;
     esac
@@ -521,7 +521,7 @@ EOS
           if [[ "$UPSTREAM_SHA_HTTP_CODE" = "404" ]]
           then
             TAP="${DIR#$HOMEBREW_LIBRARY/Taps/}"
-            echo "$TAP does not exist! Run 'brew untap $TAP'" >>"$update_failed_file"
+            echo "$TAP does not exist! Run \`brew untap $TAP\` to remove it." >>"$update_failed_file"
           else
             echo "Fetching $DIR failed!" >>"$update_failed_file"
           fi

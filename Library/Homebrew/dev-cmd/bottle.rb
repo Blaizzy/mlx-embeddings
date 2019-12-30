@@ -86,6 +86,7 @@ module Homebrew
     bottle_args.parse
 
     return merge if args.merge?
+    raise KegUnspecifiedError if args.remaining.empty?
 
     ensure_relocation_formulae_installed! unless args.skip_relocation?
     ARGV.resolved_formulae.each do |f|
@@ -95,7 +96,7 @@ module Homebrew
 
   def ensure_relocation_formulae_installed!
     Keg.relocation_formulae.each do |f|
-      next if Formula[f].installed?
+      next if Formula[f].latest_version_installed?
 
       ohai "Installing #{f}..."
       safe_system HOMEBREW_BREW_FILE, "install", f
@@ -172,7 +173,7 @@ module Homebrew
       end
 
       if text_matches.size > MAXIMUM_STRING_MATCHES
-        puts "Only the first #{MAXIMUM_STRING_MATCHES} matches were output"
+        puts "Only the first #{MAXIMUM_STRING_MATCHES} matches were output."
       end
     end
 
@@ -205,7 +206,7 @@ module Homebrew
   end
 
   def bottle_formula(f)
-    return ofail "Formula not installed or up-to-date: #{f.full_name}" unless f.installed?
+    return ofail "Formula not installed or up-to-date: #{f.full_name}" unless f.latest_version_installed?
 
     unless tap = f.tap
       return ofail "Formula not from core or any installed taps: #{f.full_name}" unless args.force_core_tap?
@@ -219,7 +220,7 @@ module Homebrew
       return
     end
 
-    return ofail "Formula not installed with '--build-bottle': #{f.full_name}" unless Utils::Bottles.built_as? f
+    return ofail "Formula was not installed with --build-bottle: #{f.full_name}" unless Utils::Bottles.built_as? f
 
     return ofail "Formula has no stable version: #{f.full_name}" unless f.stable
 
@@ -426,8 +427,9 @@ module Homebrew
 
   def merge
     write = args.write?
+    raise UsageError, "--merge requires a JSON file path argument" if Homebrew.args.named.blank?
 
-    bottles_hash = ARGV.named.reduce({}) do |hash, json_file|
+    bottles_hash = Homebrew.args.named.reduce({}) do |hash, json_file|
       hash.deep_merge(JSON.parse(IO.read(json_file)))
     end
 

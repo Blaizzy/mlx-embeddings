@@ -32,7 +32,7 @@ module Homebrew
   def unpack
     unpack_args.parse
 
-    formulae = ARGV.formulae
+    formulae = Homebrew.args.formulae
     raise FormulaUnspecifiedError if formulae.empty?
 
     if dir = args.destdir

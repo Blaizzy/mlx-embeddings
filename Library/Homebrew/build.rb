@@ -127,7 +127,7 @@ class Build
         end
         if ARGV.interactive?
           ohai "Entering interactive mode"
-          puts "Type `exit` to return and finalize the installation"
+          puts "Type `exit` to return and finalize the installation."
           puts "Install to this prefix: #{formula.prefix}"
 
           if ARGV.git?

@@ -14,6 +14,7 @@ class LinkageChecker
     libpthread.so.0
     libresolv.so.2
     librt.so.1
+    libthread_db.so.1
     libutil.so.1
 
     libgcc_s.so.1

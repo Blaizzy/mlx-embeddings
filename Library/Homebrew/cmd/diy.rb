@@ -21,6 +21,7 @@ module Homebrew
              description: "Explicitly set the <version> of the package being installed."
       switch :verbose
       switch :debug
+      max_named 0
     end
   end
 
@@ -47,7 +48,6 @@ module Homebrew
 
   def detect_version(path)
     version = path.version.to_s
-
     raise "Couldn't determine version, set it with --version=<version>" if version.empty?
 
     version

@@ -23,6 +23,7 @@ module Homebrew
              description: "Use the commit at the specified <date> as the start commit."
       switch :verbose
       switch :debug
+      max_named 0
     end
   end
 
@@ -88,7 +89,7 @@ module Homebrew
     chdir "update-test" do
       curdir = Pathname.new(Dir.pwd)
 
-      oh1 "Setup test environment..."
+      oh1 "Preparing test environment..."
       # copy Homebrew installation
       safe_system "git", "clone", "#{HOMEBREW_REPOSITORY}/.git", ".",
                   "--branch", "master", "--single-branch"

@@ -13,7 +13,7 @@ module Homebrew
       attr_reader :processed_options, :hide_from_man_page
 
       def self.parse(args = ARGV, &block)
-        new(&block).parse(args)
+        new(args, &block).parse(args)
       end
 
       def self.global_options
@@ -25,13 +25,16 @@ module Homebrew
         }
       end
 
-      def initialize(&block)
+      def initialize(args = ARGV, &block)
         @parser = OptionParser.new
         @args = Homebrew::CLI::Args.new(argv: ARGV_WITHOUT_MONKEY_PATCHING)
+        @args[:remaining] = []
+        @args[:cmdline_args] = args.dup
         @constraints = []
         @conflicts = []
         @switch_sources = {}
         @processed_options = []
+        @max_named_args = nil
         @hide_from_man_page = false
         instance_eval(&block)
         post_initialize
@@ -137,11 +140,12 @@ module Homebrew
           raise e
         end
         check_constraint_violations
+        check_named_args(remaining_args)
         @args[:remaining] = remaining_args
-        @args_parsed = true
-        @args.processed_options = @processed_options
+        @args.freeze_processed_options!(@processed_options)
         Homebrew.args = @args
         cmdline_args.freeze
+        @args_parsed = true
         @parser
       end
 
@@ -159,7 +163,7 @@ module Homebrew
       end
 
       def formula_options
-        ARGV.formulae.each do |f|
+        @args.formulae.each do |f|
           next if f.options.empty?
 
           f.options.each do |o|
@@ -174,6 +178,10 @@ module Homebrew
         end
       rescue FormulaUnavailableError
         []
+      end
+
+      def max_named(count)
+        @max_named_args = count
       end
 
       def hide_from_man_page!
@@ -267,6 +275,10 @@ module Homebrew
         check_constraints
       end
 
+      def check_named_args(args)
+        raise NamedArgumentsError, @max_named_args if !@max_named_args.nil? && args.size > @max_named_args
+      end
+
       def process_option(*args)
         option, = @parser.make_switch(args)
         @processed_options << [option.short.first, option.long.first, option.arg, option.desc.first]
@@ -275,14 +287,10 @@ module Homebrew
 
     class OptionConstraintError < RuntimeError
       def initialize(arg1, arg2, missing: false)
-        if !missing
-          message = <<~EOS
-            `#{arg1}` and `#{arg2}` should be passed together.
-          EOS
+        message = if !missing
+          "`#{arg1}` and `#{arg2}` should be passed together."
         else
-          message = <<~EOS
-            `#{arg2}` cannot be passed without `#{arg1}`.
-          EOS
+          "`#{arg2}` cannot be passed without `#{arg1}`."
         end
         super message
       end
@@ -292,17 +300,27 @@ module Homebrew
       def initialize(args)
         args_list = args.map(&Formatter.public_method(:option))
                         .join(" and ")
-        super <<~EOS
-          Options #{args_list} are mutually exclusive.
-        EOS
+        super "Options #{args_list} are mutually exclusive."
       end
     end
 
     class InvalidConstraintError < RuntimeError
       def initialize(arg1, arg2)
-        super <<~EOS
-          `#{arg1}` and `#{arg2}` cannot be mutually exclusive and mutually dependent simultaneously.
-        EOS
+        super "`#{arg1}` and `#{arg2}` cannot be mutually exclusive and mutually dependent simultaneously."
+      end
+    end
+
+    class NamedArgumentsError < UsageError
+      def initialize(maximum)
+        message = case maximum
+        when 0
+          "This command does not take named arguments."
+        when 1
+          "This command does not take multiple named arguments."
+        else
+          "This command does not take more than #{maximum} named arguments."
+        end
+        super message
       end
     end
   end

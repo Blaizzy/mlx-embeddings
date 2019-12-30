@@ -1,4 +1,4 @@
-brew(1) -- The missing package manager for macOS
+brew(1) -- The Missing Package Manager for macOS
 ================================================
 
 ## SYNOPSIS
@@ -67,7 +67,7 @@ this for the given formulae and casks.
 * `-n`, `--dry-run`:
   Show what would be removed, but do not actually remove anything.
 * `-s`:
-  Scrub the cache, including downloads for even the latest versions. Note downloads for any installed formula or cask will still not be deleted. If you want to delete those too: `rm -rf "$(brew --cache)"`
+  Scrub the cache, including downloads for even the latest versions. Note downloads for any installed formulae or casks will still not be deleted. If you want to delete those too: `rm -rf "$(brew --cache)"`
 * `--prune-prefix`:
   Only prune the symlinks and directories from the prefix and remove no other files.
 
@@ -157,7 +157,7 @@ everything you use Homebrew for is working fine: please don't worry or file an
 issue; just ignore this.
 
 * `--list-checks`:
-  List all audit methods.
+  List all audit methods, which can be run individually if provided as arguments.
 * `-D`, `--audit-debug`:
   Enable debugging and profiling of audit methods.
 
@@ -355,7 +355,7 @@ Show install options specific to *`formula`*.
 * `--all`:
   Show options for all available formulae.
 
-### `outdated` [*`options`*]
+### `outdated` [*`options`*] [*`formula`*]
 
 List installed formulae that have an updated version available. By default,
 version information is displayed in interactive shells, and suppressed
@@ -384,7 +384,7 @@ Rerun the post-install steps for *`formula`*.
 Import all formulae from the specified *`tap`*, or from all installed taps if none
 is provided. This can be useful for debugging issues across all formulae when
 making significant changes to `formula.rb`, testing the performance of loading
-all formulae or to determine if any current formulae have Ruby issues.
+all formulae or checking if any current formulae have Ruby issues.
 
 * `--aliases`:
   Verify any alias symlinks in each tap.
@@ -644,7 +644,7 @@ directory doesn't exist, `$(brew --repository)/Cellar`.
 If *`formula`* is provided, display the location in the cellar where *`formula`*
 would be installed, without any sort of versioned directory as the last path.
 
-### `--env` [*`options`*]
+### `--env` [*`options`*] [*`formula`*]
 
 Summarise Homebrew's build environment as a plain list.
 

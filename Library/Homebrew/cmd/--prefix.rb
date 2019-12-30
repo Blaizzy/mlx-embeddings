@@ -22,7 +22,7 @@ module Homebrew
   def __prefix
     __prefix_args.parse
 
-    if ARGV.named.empty?
+    if Homebrew.args.named.blank?
       puts HOMEBREW_PREFIX
     else
       puts ARGV.resolved_formulae.map { |f|

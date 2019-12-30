@@ -1,4 +1,4 @@
-# How To Open a Homebrew Pull Request (and get it merged)
+# How To Open a Homebrew Pull Request
 
 The following commands are used by Homebrew contributors to set up a fork of Homebrew's Git repository on GitHub, create a new branch and create a GitHub pull request ("PR") of the changes in that branch.
 

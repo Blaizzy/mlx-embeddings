@@ -49,6 +49,7 @@ module Homebrew
       switch :verbose
       switch :debug
       conflicts "--autotools", "--cmake", "--go", "--meson", "--perl", "--python", "--rust"
+      max_named 1
     end
   end
 
@@ -121,7 +122,7 @@ module Homebrew
 
     fc.generate!
 
-    puts "Please `brew audit --new-formula #{fc.name}` before submitting, thanks."
+    puts "Please run `brew audit --new-formula #{fc.name}` before submitting, thanks."
     exec_editor fc.path
   end
 

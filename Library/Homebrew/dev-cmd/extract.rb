@@ -91,6 +91,7 @@ module Homebrew
              description: "Extract the specified <version> of <formula> instead of the most recent."
       switch :force
       switch :debug
+      max_named 2
     end
   end
 
@@ -98,7 +99,7 @@ module Homebrew
     extract_args.parse
 
     # Expect exactly two named arguments: formula and tap
-    raise UsageError if args.remaining.length != 2
+    raise UsageError, "This command requires formula and tap arguments" if args.remaining.length != 2
 
     if args.remaining.first !~ HOMEBREW_TAP_FORMULA_REGEX
       name = args.remaining.first.downcase
@@ -125,24 +126,34 @@ module Homebrew
     if args.version
       ohai "Searching repository history"
       version = args.version
-      rev = "HEAD"
+      version_segments = Gem::Version.new(version).segments if Gem::Version.correct?(version)
+      rev = nil
       test_formula = nil
       result = ""
       loop do
-        rev, (path,) = Git.last_revision_commit_of_files(repo, pattern, before_commit: "#{rev}~1")
+        rev = rev.nil? ? "HEAD" : "#{rev}~1"
+        rev, (path,) = Git.last_revision_commit_of_files(repo, pattern, before_commit: rev)
         odie "Could not find #{name}! The formula or version may not have existed." if rev.nil?
 
         file = repo/path
         result = Git.last_revision_of_file(repo, file, before_commit: rev)
         if result.empty?
-          ohai "Skipping revision #{rev} - file is empty at this revision" if ARGV.debug?
+          odebug "Skipping revision #{rev} - file is empty at this revision"
           next
         end
 
         test_formula = formula_at_revision(repo, name, file, rev)
         break if test_formula.nil? || test_formula.version == version
 
-        ohai "Trying #{test_formula.version} from revision #{rev} against desired #{version}" if ARGV.debug?
+        if version_segments && Gem::Version.correct?(test_formula.version)
+          test_formula_version_segments = Gem::Version.new(test_formula.version).segments
+          if version_segments.length < test_formula_version_segments.length
+            odebug "Apply semantic versioning with #{test_formual_version_segments}"
+            break if version_segments == test_formula_version_segments.first(version_segments.length)
+          end
+        end
+
+        odebug "Trying #{test_formula.version} from revision #{rev} against desired #{version}"
       end
       odie "Could not find #{name}! The formula or version may not have existed." if test_formula.nil?
     else
@@ -181,7 +192,7 @@ module Homebrew
             brew extract --force --version=#{version} #{name} #{destination_tap.name}
         EOS
       end
-      ohai "Overwriting existing formula at #{path}" if ARGV.debug?
+      odebug "Overwriting existing formula at #{path}"
       path.delete
     end
     ohai "Writing formula for #{name} from revision #{rev} to #{path}"

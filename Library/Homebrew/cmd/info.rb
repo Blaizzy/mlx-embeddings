@@ -61,33 +61,39 @@ module Homebrew
 
   def info
     info_args.parse
+
     if args.days.present?
-      raise UsageError, "days must be one of #{VALID_DAYS.join(", ")}" unless VALID_DAYS.include?(args.days)
+      raise UsageError, "--days must be one of #{VALID_DAYS.join(", ")}" unless VALID_DAYS.include?(args.days)
     end
 
     if args.category.present?
-      if ARGV.named.present? && !VALID_FORMULA_CATEGORIES.include?(args.category)
-        raise UsageError, "category must be one of #{VALID_FORMULA_CATEGORIES.join(", ")} when querying formulae"
+      if Homebrew.args.named.present? && !VALID_FORMULA_CATEGORIES.include?(args.category)
+        raise UsageError, "--category must be one of #{VALID_FORMULA_CATEGORIES.join(", ")} when querying formulae"
       end
 
       unless VALID_CATEGORIES.include?(args.category)
-        raise UsageError, "category must be one of #{VALID_CATEGORIES.join(", ")}"
+        raise UsageError, "--category must be one of #{VALID_CATEGORIES.join(", ")}"
       end
     end
 
     if args.json
-      raise UsageError, "invalid JSON version: #{args.json}" unless ["v1", true].include? args.json
+      raise UsageError, "Invalid JSON version: #{args.json}" unless ["v1", true].include? args.json
+      if !(args.all? || args.installed?) && Homebrew.args.named.blank?
+        raise UsageError, "This command's option requires a formula argument"
+      end
 
       print_json
     elsif args.github?
-      exec_browser(*ARGV.formulae.map { |f| github_info(f) })
+      raise UsageError, "This command's option requires a formula argument" if Homebrew.args.named.blank?
+
+      exec_browser(*Homebrew.args.formulae.map { |f| github_info(f) })
     else
       print_info
     end
   end
 
   def print_info
-    if ARGV.named.empty?
+    if Homebrew.args.named.blank?
       if args.analytics?
         Utils::Analytics.output
       elsif HOMEBREW_CELLAR.exist?
@@ -95,7 +101,7 @@ module Homebrew
         puts "#{count} #{"keg".pluralize(count)}, #{HOMEBREW_CELLAR.dup.abv}"
       end
     else
-      ARGV.named.each_with_index do |f, i|
+      Homebrew.args.named.each_with_index do |f, i|
         puts unless i.zero?
         begin
           formula = if f.include?("/") || File.exist?(f)
@@ -129,7 +135,7 @@ module Homebrew
     elsif args.installed?
       Formula.installed.sort
     else
-      ARGV.formulae
+      Homebrew.args.formulae
     end
     json = ff.map(&:to_hash)
     puts JSON.generate(json)

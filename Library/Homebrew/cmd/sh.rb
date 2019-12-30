@@ -22,11 +22,13 @@ module Homebrew
              description: "Use the standard `PATH` instead of superenv's when `std` is passed."
       switch :verbose
       switch :debug
+      max_named 0
     end
   end
 
   def sh
     sh_args.parse
+
     ENV.activate_extensions!
 
     if superenv?

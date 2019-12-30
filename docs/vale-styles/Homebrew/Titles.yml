@@ -1,0 +1,10 @@
+extends: capitalization
+message: "'%s' should be in title case"
+level: warning
+scope: heading.h1
+match: $title
+style: AP
+exceptions:
+  - brew(1)
+  - Homebrew/homebrew-core
+  - Homebrew/linuxbrew-core

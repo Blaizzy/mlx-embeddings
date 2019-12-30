@@ -343,7 +343,7 @@ class FormulaInstaller
 
     build_bottle_postinstall if build_bottle?
 
-    opoo "Nothing was installed to #{formula.prefix}" unless formula.installed?
+    opoo "Nothing was installed to #{formula.prefix}" unless formula.latest_version_installed?
     end_time = Time.now
     Homebrew.messages.formula_installed(formula, end_time - start_time)
   end
@@ -598,6 +598,10 @@ class FormulaInstaller
     oh1 "Installing #{formula.full_name} dependency: #{Formatter.identifier(dep.name)}"
     fi.install
     fi.finish
+  rescue FormulaInstallationAlreadyAttemptedError
+    # We already attempted to install f as part of the dependency tree of
+    # another formula. In that case, don't generate an error, just move on.
+    nil
   rescue Exception # rubocop:disable Lint/RescueException
     ignore_interrupts do
       tmp_keg.rename(installed_keg) if tmp_keg && !installed_keg.directory?
@@ -910,13 +914,7 @@ class FormulaInstaller
       --
       #{HOMEBREW_LIBRARY_PATH}/postinstall.rb
       #{formula.path}
-    ].concat(ARGV.options_only) - ["--HEAD", "--devel"]
-
-    if formula.head?
-      args << "--HEAD"
-    elsif formula.devel?
-      args << "--devel"
-    end
+    ]
 
     Utils.safe_fork do
       if Sandbox.formula?(formula)

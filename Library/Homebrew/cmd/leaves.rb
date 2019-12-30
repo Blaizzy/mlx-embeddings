@@ -15,6 +15,7 @@ module Homebrew
         List installed formulae that are not dependencies of another installed formula.
       EOS
       switch :debug
+      max_named 0
     end
   end
 
@@ -22,16 +23,8 @@ module Homebrew
     leaves_args.parse
 
     installed = Formula.installed.sort
-
-    deps_of_installed = installed.flat_map do |f|
-      f.runtime_dependencies.map do |dep|
-        dep.to_formula.full_name
-      rescue FormulaUnavailableError
-        dep.name
-      end
-    end
-
-    leaves = installed.map(&:full_name) - deps_of_installed
+    deps_of_installed = installed.flat_map(&:runtime_formula_dependencies)
+    leaves = installed.map(&:full_name) - deps_of_installed.map(&:full_name)
     leaves.each(&method(:puts))
   end
 end

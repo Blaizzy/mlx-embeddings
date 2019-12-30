@@ -5,7 +5,7 @@ require "erb"
 require "ostruct"
 require "cli/parser"
 # Require all commands
-Dir.glob("#{HOMEBREW_LIBRARY_PATH}/{dev-,}cmd/*.rb").each { |cmd| require cmd }
+Dir.glob("#{HOMEBREW_LIBRARY_PATH}/{dev-,}cmd/*.rb").sort.each { |cmd| require cmd }
 
 module Homebrew
   module_function
@@ -28,13 +28,12 @@ module Homebrew
                           "comparison without factoring in the date)."
       switch "--link",
              description: "This is now done automatically by `brew update`."
+      max_named 0
     end
   end
 
   def man
     man_args.parse
-
-    raise UsageError unless ARGV.named.empty?
 
     odie "`brew man --link` is now done automatically by `brew update`." if args.link?
 

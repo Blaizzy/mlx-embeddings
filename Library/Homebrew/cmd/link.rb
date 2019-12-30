@@ -48,7 +48,10 @@ module Homebrew
         else
           keg.name
         end
-        puts "To relink: brew unlink #{keg.name} && brew link #{name_and_flag}"
+        puts <<~EOS
+          To relink:
+            brew unlink #{keg.name} && brew link #{name_and_flag}
+        EOS
         next
       end
 

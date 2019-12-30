@@ -11,7 +11,7 @@ module Utils
       end
 
       def built_as?(f)
-        return false unless f.installed?
+        return false unless f.latest_version_installed?
 
         tab = Tab.for_keg(f.installed_prefix)
         tab.built_as_bottle

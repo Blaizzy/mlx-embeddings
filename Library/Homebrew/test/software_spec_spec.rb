@@ -140,19 +140,19 @@ describe SoftwareSpec do
     end
 
     it "works with tags", :needs_linux do
-      subject.uses_from_macos("foo" => :head, :after => :mojave)
+      subject.uses_from_macos("foo" => :build)
 
       expect(subject.deps.first.name).to eq("foo")
-      expect(subject.deps.first.tags).to include(:head)
+      expect(subject.deps.first.tags).to include(:build)
     end
 
     it "ignores OS version specifications", :needs_linux do
-      subject.uses_from_macos("foo", after: :mojave)
-      subject.uses_from_macos("bar" => :head, :after => :mojave)
+      subject.uses_from_macos("foo")
+      subject.uses_from_macos("bar" => :build)
 
       expect(subject.deps.first.name).to eq("foo")
       expect(subject.deps.last.name).to eq("bar")
-      expect(subject.deps.last.tags).to include(:head)
+      expect(subject.deps.last.tags).to include(:build)
     end
   end
 

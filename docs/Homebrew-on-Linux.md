@@ -89,7 +89,7 @@ eval $(~/.linuxbrew/bin/brew shellenv)
 
 ## Homebrew on Linux Community
 
-- [@Linuxbrew on Twitter](https://twitter.com/Linuxbrew)
+- [@HomebrewOnLinux on Twitter](https://twitter.com/HomebrewOnLinux)
 - [Homebrew/linuxbrew-core on GitHub](https://github.com/Homebrew/linuxbrew-core)
 - [Homebrew on Linux category](https://discourse.brew.sh/c/linuxbrew) of [Homebrew's Discourse](https://discourse.brew.sh)
 

@@ -4,7 +4,7 @@
 .TH "BREW" "1" "December 2019" "Homebrew" "brew"
 .
 .SH "NAME"
-\fBbrew\fR \- The missing package manager for macOS
+\fBbrew\fR \- The Missing Package Manager for macOS
 .
 .SH "SYNOPSIS"
 \fBbrew\fR \fB\-\-version\fR
@@ -63,7 +63,7 @@ Show what would be removed, but do not actually remove anything\.
 .
 .TP
 \fB\-s\fR
-Scrub the cache, including downloads for even the latest versions\. Note downloads for any installed formula or cask will still not be deleted\. If you want to delete those too: \fBrm \-rf "$(brew \-\-cache)"\fR
+Scrub the cache, including downloads for even the latest versions\. Note downloads for any installed formulae or casks will still not be deleted\. If you want to delete those too: \fBrm \-rf "$(brew \-\-cache)"\fR
 .
 .TP
 \fB\-\-prune\-prefix\fR
@@ -176,7 +176,7 @@ Check your system for potential problems\. Will exit with a non\-zero status if 
 .
 .TP
 \fB\-\-list\-checks\fR
-List all audit methods\.
+List all audit methods, which can be run individually if provided as arguments\.
 .
 .TP
 \fB\-D\fR, \fB\-\-audit\-debug\fR
@@ -467,7 +467,7 @@ Show options for formulae that are currently installed\.
 \fB\-\-all\fR
 Show options for all available formulae\.
 .
-.SS "\fBoutdated\fR [\fIoptions\fR]"
+.SS "\fBoutdated\fR [\fIoptions\fR] [\fIformula\fR]"
 List installed formulae that have an updated version available\. By default, version information is displayed in interactive shells, and suppressed otherwise\.
 .
 .TP
@@ -493,7 +493,7 @@ Pin the specified \fIformula\fR, preventing them from being upgraded when issuin
 Rerun the post\-install steps for \fIformula\fR\.
 .
 .SS "\fBreadall\fR [\fIoptions\fR] [\fItap\fR]"
-Import all formulae from the specified \fItap\fR, or from all installed taps if none is provided\. This can be useful for debugging issues across all formulae when making significant changes to \fBformula\.rb\fR, testing the performance of loading all formulae or to determine if any current formulae have Ruby issues\.
+Import all formulae from the specified \fItap\fR, or from all installed taps if none is provided\. This can be useful for debugging issues across all formulae when making significant changes to \fBformula\.rb\fR, testing the performance of loading all formulae or checking if any current formulae have Ruby issues\.
 .
 .TP
 \fB\-\-aliases\fR
@@ -812,7 +812,7 @@ Display Homebrew\'s Cellar path\. \fIDefault:\fR \fB$(brew \-\-prefix)/Cellar\fR
 .P
 If \fIformula\fR is provided, display the location in the cellar where \fIformula\fR would be installed, without any sort of versioned directory as the last path\.
 .
-.SS "\fB\-\-env\fR [\fIoptions\fR]"
+.SS "\fB\-\-env\fR [\fIoptions\fR] [\fIformula\fR]"
 Summarise Homebrew\'s build environment as a plain list\.
 .
 .P

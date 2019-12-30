@@ -77,8 +77,8 @@ HOMEBREW_VERSION="$(git -C "$HOMEBREW_REPOSITORY" describe --tags --dirty --abbr
 HOMEBREW_USER_AGENT_VERSION="$HOMEBREW_VERSION"
 if [[ -z "$HOMEBREW_VERSION" ]]
 then
-  HOMEBREW_VERSION=">=1.7.1 (shallow or no git repository)"
-  HOMEBREW_USER_AGENT_VERSION="1.X.Y"
+  HOMEBREW_VERSION=">=2.2.0 (shallow or no git repository)"
+  HOMEBREW_USER_AGENT_VERSION="2.X.Y"
 fi
 
 if [[ "$HOMEBREW_PREFIX" = "/" || "$HOMEBREW_PREFIX" = "/usr" ]]
@@ -410,8 +410,8 @@ fi
 check-run-command-as-root() {
   [[ "$(id -u)" = 0 ]] || return
 
-  # Allow Azure Pipelines/Docker/Kubernetes to do everything as root (as it's normal there)
-  [[ -f /proc/1/cgroup ]] && grep -E "azpl_job|docker|kubepods" -q /proc/1/cgroup && return
+  # Allow Azure Pipelines/Docker/Concourse/Kubernetes to do everything as root (as it's normal there)
+  [[ -f /proc/1/cgroup ]] && grep -E "azpl_job|docker|garden|kubepods" -q /proc/1/cgroup && return
 
   # Homebrew Services may need `sudo` for system-wide daemons.
   [[ "$HOMEBREW_COMMAND" = "services" ]] && return

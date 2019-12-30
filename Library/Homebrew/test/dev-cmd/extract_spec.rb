@@ -7,7 +7,7 @@ describe "Homebrew.extract_args" do
 end
 
 describe "brew extract", :integration_test do
-  it "retrieves the specified version of formula, defaulting to most recent" do
+  let!(:target) do
     path = Tap::TAP_DIRECTORY/"homebrew/homebrew-foo"
     (path/"Formula").mkpath
     target = Tap.from_path(path)
@@ -23,12 +23,27 @@ describe "brew extract", :integration_test do
       system "git", "add", "--all"
       system "git", "commit", "-m", "testball 0.2"
     end
+    { name: target.name, path: path }
+  end
 
-    expect { brew "extract", "testball", target.name, "--version=0.1" }
+  it "retrieves the most recent version of formula" do
+    expect { brew "extract", "testball", target[:name] }
       .to be_a_success
+    expect(target[:path]/"Formula/testball@0.2.rb").to exist
+    expect(Formulary.factory(target[:path]/"Formula/testball@0.2.rb").version).to be == "0.2"
+  end
 
-    expect(path/"Formula/testball@0.1.rb").to exist
+  it "retrieves the specified version of formula" do
+    expect { brew "extract", "testball", target[:name], "--version=0.1" }
+      .to be_a_success
+    expect(target[:path]/"Formula/testball@0.1.rb").to exist
+    expect(Formulary.factory(target[:path]/"Formula/testball@0.1.rb").version).to be == "0.1"
+  end
 
-    expect(Formulary.factory(path/"Formula/testball@0.1.rb").version).to be == "0.1"
+  it "retrieves the compatible version of formula" do
+    expect { brew "extract", "testball", target[:name], "--version=0", "--debug" }
+      .to be_a_success
+    expect(target[:path]/"Formula/testball@0.rb").to exist
+    expect(Formulary.factory(target[:path]/"Formula/testball@0.rb").version).to be == "0.2"
   end
 end

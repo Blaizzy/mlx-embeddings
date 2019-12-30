@@ -463,7 +463,7 @@ class Formula
   # This is actually just a check for if the {#installed_prefix} directory
   # exists and is not empty.
   # @private
-  def installed?
+  def latest_version_installed?
     (dir = installed_prefix).directory? && !dir.children.empty?
   end
 
@@ -1211,7 +1211,7 @@ class Formula
   end
 
   def new_formula_available?
-    installed_alias_target_changed? && !latest_formula.installed?
+    installed_alias_target_changed? && !latest_formula.latest_version_installed?
   end
 
   def current_installed_alias_target
@@ -1546,8 +1546,13 @@ class Formula
         Dependency.new full_name
       end.compact
     end
-    deps ||= declared_runtime_dependencies unless undeclared
-    deps ||= (declared_runtime_dependencies | undeclared_runtime_dependencies)
+    begin
+      deps ||= declared_runtime_dependencies unless undeclared
+      deps ||= (declared_runtime_dependencies | undeclared_runtime_dependencies)
+    rescue FormulaUnavailableError
+      onoe "could not get runtime dependencies from #{path}!"
+      deps ||= []
+    end
     deps
   end
 
@@ -1932,7 +1937,7 @@ class Formula
   # @private
   def eligible_kegs_for_cleanup(quiet: false)
     eligible_for_cleanup = []
-    if installed?
+    if latest_version_installed?
       eligible_kegs = if head? && (head_prefix = latest_head_prefix)
         installed_kegs - [Keg.new(head_prefix)]
       else
@@ -2370,8 +2375,8 @@ class Formula
       specs.each { |spec| spec.depends_on(dep) }
     end
 
-    def uses_from_macos(dep, **args)
-      specs.each { |spec| spec.uses_from_macos(dep, args) }
+    def uses_from_macos(dep)
+      specs.each { |spec| spec.uses_from_macos(dep) }
     end
 
     # @!attribute [w] option

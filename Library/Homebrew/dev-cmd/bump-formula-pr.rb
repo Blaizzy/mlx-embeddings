@@ -65,6 +65,7 @@ module Homebrew
       switch :debug
       conflicts "--no-audit", "--strict"
       conflicts "--url", "--tag"
+      max_named 1
     end
   end
 
@@ -101,7 +102,7 @@ module Homebrew
         end
       end
     end
-    [formula.tap.full_name, "origin/master", "-"]
+    [formula.tap&.full_name, "origin/master", "-"]
   end
 
   def bump_formula_pr
@@ -114,7 +115,7 @@ module Homebrew
     # Use the user's browser, too.
     ENV["BROWSER"] = ENV["HOMEBREW_BROWSER"]
 
-    formula = ARGV.formulae.first
+    formula = Homebrew.args.formulae.first
 
     if formula
       tap_full_name, origin_branch, previous_branch = use_correct_linux_tap(formula)
@@ -504,6 +505,6 @@ module Homebrew
 
     formula.path.atomic_write(backup_file)
     FileUtils.mv alias_rename.last, alias_rename.first if alias_rename.present?
-    odie "brew audit failed!"
+    odie "`brew audit` failed!"
   end
 end

@@ -40,17 +40,13 @@ module Homebrew
     search_type << :either if args.search
     search_type << :name   if args.name
     search_type << :desc   if args.description
-    if search_type.size > 1
-      odie "Pick one, and only one, of -s/--search, -n/--name, or -d/--description."
-    elsif search_type.present? && ARGV.named.empty?
-      odie "You must provide a search term."
-    end
+    odie "You must provide a search term." if search_type.present? && ARGV.named.empty?
 
     results = if search_type.empty?
       raise FormulaUnspecifiedError if ARGV.named.empty?
 
       desc = {}
-      ARGV.formulae.each { |f| desc[f.full_name] = f.desc }
+      Homebrew.args.formulae.each { |f| desc[f.full_name] = f.desc }
       Descriptions.new(desc)
     else
       arg = ARGV.named.join(" ")

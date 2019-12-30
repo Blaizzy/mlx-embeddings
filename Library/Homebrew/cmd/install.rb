@@ -92,7 +92,9 @@ module Homebrew
   end
 
   def install
-    ARGV.named.each do |name|
+    install_args.parse
+
+    Homebrew.args.named.each do |name|
       next if File.exist?(name)
       next if name !~ HOMEBREW_TAP_FORMULA_REGEX && name !~ HOMEBREW_CASK_TAP_CASK_REGEX
 
@@ -100,7 +102,6 @@ module Homebrew
       tap.install unless tap.installed?
     end
 
-    install_args.parse
     raise FormulaUnspecifiedError if args.remaining.empty?
 
     if args.ignore_dependencies?
@@ -130,7 +131,7 @@ module Homebrew
     # developer tools are available, we need to stop them early on
     FormulaInstaller.prevent_build_flags unless DevelopmentTools.installed?
 
-    ARGV.formulae.each do |f|
+    Homebrew.args.formulae.each do |f|
       # head-only without --HEAD is an error
       if !Homebrew.args.HEAD? && f.stable.nil? && f.devel.nil?
         raise <<~EOS

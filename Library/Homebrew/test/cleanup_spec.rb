@@ -124,17 +124,17 @@ describe Homebrew::Cleanup do
       Tab.create(f, DevelopmentTools.default_compiler, :libcxx).write
     end
 
-    expect(f1).to be_installed
-    expect(f2).to be_installed
-    expect(f3).to be_installed
-    expect(f4).to be_installed
+    expect(f1).to be_latest_version_installed
+    expect(f2).to be_latest_version_installed
+    expect(f3).to be_latest_version_installed
+    expect(f4).to be_latest_version_installed
 
     subject.cleanup_formula f3
 
-    expect(f1).not_to be_installed
-    expect(f2).not_to be_installed
-    expect(f3).to be_installed
-    expect(f4).to be_installed
+    expect(f1).not_to be_latest_version_installed
+    expect(f2).not_to be_latest_version_installed
+    expect(f3).to be_latest_version_installed
+    expect(f4).to be_latest_version_installed
   end
 
   describe "#cleanup_cask", :cask do

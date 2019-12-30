@@ -30,13 +30,13 @@ module Homebrew
     if args.installed?
       taps = Tap
     else
-      taps = ARGV.named.sort.map do |name|
+      taps = Homebrew.args.named.sort.map do |name|
         Tap.fetch(name)
       end
     end
 
     if args.json
-      raise UsageError, "invalid JSON version: #{args.json}" unless ["v1", true].include? args.json
+      raise UsageError, "Invalid JSON version: #{args.json}" unless ["v1", true].include? args.json
 
       print_tap_json(taps.sort_by(&:to_s))
     else

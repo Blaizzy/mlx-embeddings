@@ -11,15 +11,25 @@ jobs:
         os: [ubuntu-latest, macOS-latest]
     steps:
     - name: Set up Git repository
-      uses: actions/checkout@master
+      uses: actions/checkout@v1
 
     - name: Set up Homebrew
       run: |
         if [ "$RUNNER_OS" = "Linux" ]; then
-          HOMEBREW_REPOSITORY=/home/linuxbrew/.linuxbrew
-          sudo mkdir -p /home/linuxbrew
-          sudo ln -s "$PWD" "$HOMEBREW_REPOSITORY"
+          HOMEBREW_REPOSITORY=/home/linuxbrew/.linuxbrew/Homebrew
+          sudo mkdir -p /home/linuxbrew/.linuxbrew
+          cd ..
+          sudo mv "brew" "$HOMEBREW_REPOSITORY"
+          sudo ln -s "$HOMEBREW_REPOSITORY" "brew"
+          cd /home/linuxbrew/.linuxbrew
+          sudo mkdir -p bin etc include lib opt sbin share var/homebrew/linked Cellar
+          sudo ln -s ../Homebrew/bin/brew /home/linuxbrew/.linuxbrew/bin/
           sudo chown -R "$USER" /home/linuxbrew
+          export PATH="/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:/usr/bin:/bin"
+
+          # Install taps needed for 'brew tests'
+          export HOMEBREW_NO_AUTO_UPDATE=1
+          brew tap homebrew/bundle
         else
           HOMEBREW_REPOSITORY="$(brew --repo)"
           mv "$HOMEBREW_REPOSITORY/Library/Taps" "$PWD/Library"
@@ -28,10 +38,29 @@ jobs:
           brew update-reset Library/Taps/homebrew/homebrew-core
 
           # Install taps needed for 'brew tests'
+          export HOMEBREW_NO_AUTO_UPDATE=1
           brew tap homebrew/cask
           brew tap homebrew/bundle
           brew tap homebrew/services
         fi
+
+    - name: Run brew config
+      run: |
+        export PATH="/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:/usr/bin:/bin"
+        brew config
+
+    - name: Run brew doctor
+      run: |
+        if [ "$RUNNER_OS" = "Linux" ]; then
+          export PATH="/home/linuxbrew/.linuxbrew/bin:/usr/bin:/bin"
+
+          # Cleanup some Linux `brew doctor` failures
+          sudo rm -rf /usr/local/include/node/
+        else
+          # Allow Xcode to be outdated
+          export HOMEBREW_GITHUB_ACTIONS=1
+        fi
+        brew doctor
 
     - name: Install Bundler RubyGems
       run: |
@@ -100,6 +129,12 @@ jobs:
       run: |
         export PATH="/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:/usr/bin:/bin"
         brew readall --aliases
+
+    - name: Run vale for docs linting
+      run: |
+        export PATH="/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:/usr/bin:/bin"
+        brew install vale
+        vale $(brew --repo)/docs/
 
     - name: Build Docker image
       run: |

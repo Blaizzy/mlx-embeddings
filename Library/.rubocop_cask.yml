@@ -33,7 +33,7 @@ Layout/FirstHashElementIndentation:
   EnforcedStyle: align_braces
 
 # Casks often contain long URLs and file paths.
-Metrics/LineLength:
+Layout/LineLength:
   Enabled: false
 
 # Casks don't need documentation.

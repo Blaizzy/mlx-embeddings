@@ -62,7 +62,7 @@ Metrics/PerceivedComplexity:
   Max: 100
 
 # GitHub diff UI wraps beyond 118 characters
-Metrics/LineLength:
+Layout/LineLength:
   Max: 118
   # ignore manpage comments
   IgnoredPatterns: ['#: ']

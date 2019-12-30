@@ -11,7 +11,7 @@ module Cask
 
       DIVIDER_REGEX = /(#{DIVIDERS.keys.map { |v| Regexp.quote(v) }.join('|')})/.freeze
 
-      MAJOR_MINOR_PATCH_REGEX = /^(\d+)(?:\.(\d+)(?:\.(\d+))?)?/.freeze
+      MAJOR_MINOR_PATCH_REGEX = /^([^.,:]+)(?:\.([^.,:]+)(?:\.([^.,:]+))?)?/.freeze
 
       INVALID_CHARACTERS = /[^0-9a-zA-Z\.\,\:\-\_]/.freeze
 

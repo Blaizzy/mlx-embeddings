@@ -6,7 +6,7 @@ class OsxfuseRequirement < Requirement
   download "https://github.com/libfuse/libfuse"
 
   satisfy(build_env: false) do
-    next true if libfuse_formula_exists? && Formula["libfuse"].installed?
+    next true if libfuse_formula_exists? && Formula["libfuse"].latest_version_installed?
 
     includedirs = %w[
       /usr/include
