@@ -7,6 +7,9 @@
 require "English"
 
 module Homebrew
+  # Keep in sync with the Gemfile.lock's BUNDLED WITH.
+  HOMEBREW_BUNDLER_VERSION = "1.17.2"
+
   module_function
 
   def ruby_bindir
@@ -86,7 +89,12 @@ module Homebrew
   def install_bundler!
     require "rubygems"
     setup_gem_environment!(gem_home: Gem.user_dir, gem_bindir: gem_user_bindir)
-    install_gem_setup_path!("bundler", version: ">=1.17", executable: "bundle", setup_gem_environment: false)
+    install_gem_setup_path!(
+      "bundler",
+      version:               HOMEBREW_BUNDLER_VERSION,
+      executable:            "bundle",
+      setup_gem_environment: false,
+    )
   end
 
   def install_bundler_gems!
