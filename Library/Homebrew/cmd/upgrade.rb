@@ -107,7 +107,6 @@ module Homebrew
       end
       puts formulae_upgrades.join("\n")
     end
-    return if args.dry_run?
 
     upgrade_formulae(formulae_to_install)
 
@@ -118,6 +117,7 @@ module Homebrew
 
   def upgrade_formulae(formulae_to_install)
     return if formulae_to_install.empty?
+    return if args.dry_run?
 
     # Sort keg-only before non-keg-only formulae to avoid any needless conflicts
     # with outdated, non-keg-only versions of formulae being upgraded.
@@ -144,6 +144,8 @@ module Homebrew
   end
 
   def upgrade_formula(f)
+    return if args.dry_run?
+
     if f.opt_prefix.directory?
       keg = Keg.new(f.opt_prefix.resolved_path)
       keg_had_linked_opt = true
@@ -223,18 +225,20 @@ module Homebrew
   def check_dependents(formulae_to_install)
     return if formulae_to_install.empty?
 
-    oh1 "Checking for dependents of upgraded formulae..."
+    oh1 "Checking for dependents of upgraded formulae..." unless args.dry_run?
     dependents =
       formulae_to_install.flat_map(&:runtime_installed_formula_dependents)
     if dependents.blank?
-      ohai "No dependents found!"
+      ohai "No dependents found!" unless args.dry_run?
       return
     end
 
     upgradeable_dependents = dependents.select(&:outdated?)
                                        .sort { |a, b| depends_on(a, b) }
+    upgradeable_dependents -= formulae_to_install if args.dry_run?
     pinned_dependents = dependents.select(&:pinned?)
                                   .sort { |a, b| depends_on(a, b) }
+    pinned_dependents -= formulae_to_install if args.dry_run?
 
     if pinned_dependents.present?
       plural = "dependent".pluralize(pinned_dependents.count)
@@ -246,10 +250,11 @@ module Homebrew
 
     # Print the upgradable dependents.
     if upgradeable_dependents.blank?
-      ohai "No outdated dependents to upgrade!"
+      ohai "No outdated dependents to upgrade!" unless args.dry_run?
     else
       plural = "dependent".pluralize(upgradeable_dependents.count)
-      ohai "Upgrading #{upgradeable_dependents.count} #{plural}:"
+      verb = args.dry_run? ? "Would upgrade" : "Upgrading"
+      ohai "#{verb} #{upgradeable_dependents.count} #{plural}:"
       formulae_upgrades = upgradeable_dependents.map do |f|
         name = f.full_specified_name
         if f.optlinked?
@@ -264,7 +269,7 @@ module Homebrew
     upgrade_formulae(upgradeable_dependents)
 
     # Assess the dependents tree again now we've upgraded.
-    oh1 "Checking for dependents' broken linkage from upgraded formulae..."
+    oh1 "Checking for dependents of upgraded formulae..." unless args.dry_run?
     broken_dependents = CacheStoreDatabase.use(:linkage) do |db|
       formulae_to_install.flat_map(&:runtime_installed_formula_dependents)
                          .select do |f|
@@ -276,7 +281,12 @@ module Homebrew
       end.compact
     end
     if broken_dependents.blank?
-      ohai "No broken dependents found!"
+      if args.dry_run?
+        ohai "No currently broken dependents found!"
+        opoo "If they are broken by the upgrade they will also be upgraded or reinstalled."
+      else
+        ohai "No broken dependents found!"
+      end
       return
     end
 
