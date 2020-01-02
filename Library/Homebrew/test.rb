@@ -9,10 +9,20 @@ require "debrew"
 require "formula_assertions"
 require "fcntl"
 require "socket"
+require "cli/parser"
+
+def test_args
+  Homebrew::CLI::Parser.new do
+    switch :force
+    switch :verbose
+    switch :debug
+  end
+end
 
 TEST_TIMEOUT_SECONDS = 5 * 60
 
 begin
+  test_args.parse
   error_pipe = UNIXSocket.open(ENV["HOMEBREW_ERROR_PIPE"], &:recv_io)
   error_pipe.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)
 
@@ -23,7 +33,7 @@ begin
 
   formula = Homebrew.args.resolved_formulae.first
   formula.extend(Homebrew::Assertions)
-  formula.extend(Debrew::Formula) if ARGV.debug?
+  formula.extend(Debrew::Formula) if Homebrew.args.debug?
 
   # tests can also return false to indicate failure
   Timeout.timeout TEST_TIMEOUT_SECONDS do
