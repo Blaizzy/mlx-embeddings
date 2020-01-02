@@ -47,7 +47,7 @@ describe HomebrewArgvExtension do
     let(:argv) { ["--foo", "-vds", "a", "b", "cdefg"] }
 
     it "returns an array of option arguments" do
-      expect(subject.options_only).to eq ["--foo", "-vds"]
+      expect(subject.send("options_only")).to eq ["--foo", "-vds"]
     end
   end
 
@@ -87,18 +87,18 @@ describe HomebrewArgvExtension do
     let(:argv) { ["--foo", "-bq", "--bar"] }
 
     it "returns true if the given string is a flag" do
-      expect(subject.flag?("--foo")).to eq true
-      expect(subject.flag?("--bar")).to eq true
+      expect(subject.send("flag?", "--foo")).to eq true
+      expect(subject.send("flag?", "--bar")).to eq true
     end
 
     it "returns true if there is a switch with the same initial character" do
-      expect(subject.flag?("--baz")).to eq true
-      expect(subject.flag?("--qux")).to eq true
+      expect(subject.send("flag?", "--baz")).to eq true
+      expect(subject.send("flag?", "--qux")).to eq true
     end
 
     it "returns false if there is no matching flag" do
-      expect(subject.flag?("--frotz")).to eq false
-      expect(subject.flag?("--debug")).to eq false
+      expect(subject.send("flag?", "--frotz")).to eq false
+      expect(subject.send("flag?", "--debug")).to eq false
     end
   end
 

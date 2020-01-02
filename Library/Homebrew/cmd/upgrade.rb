@@ -68,11 +68,11 @@ module Homebrew
 
       exit 0 if outdated.empty?
     else
-      outdated = ARGV.resolved_formulae.select do |f|
+      outdated = Homebrew.args.resolved_formulae.select do |f|
         f.outdated?(fetch_head: args.fetch_HEAD?)
       end
 
-      (ARGV.resolved_formulae - outdated).each do |f|
+      (Homebrew.args.resolved_formulae - outdated).each do |f|
         versions = f.installed_kegs.map(&:version)
         if versions.empty?
           ofail "#{f.full_specified_name} not installed"

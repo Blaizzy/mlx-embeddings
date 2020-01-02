@@ -24,7 +24,7 @@ module Homebrew
 
     raise FormulaUnspecifiedError if args.remaining.empty?
 
-    ARGV.resolved_formulae.each do |f|
+    Homebrew.args.resolved_formulae.each do |f|
       if f.pinned?
         f.unpin
       elsif !f.pinnable?

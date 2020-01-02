@@ -23,7 +23,7 @@ module Homebrew
 
     raise FormulaUnspecifiedError if args.remaining.empty?
 
-    ARGV.resolved_formulae.each do |f|
+    Homebrew.args.resolved_formulae.each do |f|
       if f.pinned?
         opoo "#{f.name} already pinned"
       elsif !f.pinnable?

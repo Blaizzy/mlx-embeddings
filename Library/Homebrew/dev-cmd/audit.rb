@@ -83,8 +83,8 @@ module Homebrew
       ff = Formula
       files = Tap.map(&:formula_dir)
     else
-      ff = ARGV.resolved_formulae
-      files = ARGV.resolved_formulae.map(&:path)
+      ff = Homebrew.args.resolved_formulae
+      files = Homebrew.args.resolved_formulae.map(&:path)
     end
 
     only_cops = args.only_cops

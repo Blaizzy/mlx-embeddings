@@ -23,6 +23,6 @@ module Homebrew
 
     raise FormulaUnspecifiedError if Homebrew.args.named.blank?
 
-    ARGV.resolved_formulae.each { |f| puts f.path }
+    Homebrew.args.resolved_formulae.each { |f| puts f.path }
   end
 end
