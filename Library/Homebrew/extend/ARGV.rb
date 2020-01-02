@@ -6,10 +6,6 @@ module HomebrewArgvExtension
     self - options_only
   end
 
-  def options_only
-    select { |arg| arg.start_with?("-") }
-  end
-
   def flags_only
     select { |arg| arg.start_with?("--") }
   end
@@ -23,15 +19,6 @@ module HomebrewArgvExtension
       else
         Formulary.find_with_priority(name, spec)
       end
-    end.uniq(&:name)
-  end
-
-  def resolved_formulae
-    odeprecated("ARGV#resolved_formulae", "Args#resolved_formulae")
-    require "formula"
-    # TODO: use @instance variable to ||= cache when moving to CLI::Parser
-    (downcased_unique_named - casks).map do |name|
-      Formulary.resolve(name, spec: spec(nil))
     end.uniq(&:name)
   end
 
@@ -119,16 +106,8 @@ module HomebrewArgvExtension
     formulae.any? { |argv_f| argv_f.full_name == f.full_name }
   end
 
-  def flag?(flag)
-    options_only.include?(flag) || switch?(flag[2, 1])
-  end
-
   def force_bottle?
     include?("--force-bottle")
-  end
-
-  def fetch_head?
-    include? "--fetch-HEAD"
   end
 
   def cc
@@ -153,6 +132,14 @@ module HomebrewArgvExtension
   end
 
   private
+
+  def options_only
+    select { |arg| arg.start_with?("-") }
+  end
+
+  def flag?(flag)
+    options_only.include?(flag) || switch?(flag[2, 1])
+  end
 
   # e.g. `foo -ns -i --bar` has three switches: `n`, `s` and `i`
   def switch?(char)
