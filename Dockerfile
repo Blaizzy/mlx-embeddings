@@ -20,6 +20,7 @@ RUN apt-get update \
 		patch \
 		sudo \
 		uuid-runtime \
+		tzdata \
 	&& rm -rf /var/lib/apt/lists/*
 
 RUN localedef -i en_US -f UTF-8 en_US.UTF-8 \
