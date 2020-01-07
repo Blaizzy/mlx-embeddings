@@ -226,19 +226,21 @@ module Homebrew
     return if formulae_to_install.empty?
 
     oh1 "Checking for dependents of upgraded formulae..." unless args.dry_run?
-    dependents =
+    outdated_dependents =
       formulae_to_install.flat_map(&:runtime_installed_formula_dependents)
-    if dependents.blank?
+                         .select(&:outdated?)
+    if outdated_dependents.blank?
       ohai "No dependents found!" unless args.dry_run?
       return
     end
+    outdated_dependents -= formulae_to_install if args.dry_run?
 
-    upgradeable_dependents = dependents.select(&:outdated?)
-                                       .sort { |a, b| depends_on(a, b) }
-    upgradeable_dependents -= formulae_to_install if args.dry_run?
-    pinned_dependents = dependents.select(&:pinned?)
-                                  .sort { |a, b| depends_on(a, b) }
-    pinned_dependents -= formulae_to_install if args.dry_run?
+    upgradeable_dependents =
+      outdated_dependents.reject(&:pinned?)
+                         .sort { |a, b| depends_on(a, b) }
+    pinned_dependents =
+      outdated_dependents.select(&:pinned?)
+                         .sort { |a, b| depends_on(a, b) }
 
     if pinned_dependents.present?
       plural = "dependent".pluralize(pinned_dependents.count)
@@ -291,18 +293,20 @@ module Homebrew
     end
 
     reinstallable_broken_dependents =
-      broken_dependents.select(&:outdated?)
+      broken_dependents.reject(&:outdated?)
+                       .reject(&:pinned?)
                        .sort { |a, b| depends_on(a, b) }
-    pinned_broken_dependents =
-      broken_dependents.select(&:pinned?)
+    outdated_pinned_broken_dependents =
+      broken_dependents.select(&:outdated?)
+                       .select(&:pinned?)
                        .sort { |a, b| depends_on(a, b) }
 
     # Print the pinned dependents.
-    if pinned_broken_dependents.present?
-      count = pinned_broken_dependents.count
-      plural = "dependent".pluralize(pinned_broken_dependents.count)
+    if outdated_pinned_broken_dependents.present?
+      count = outdated_pinned_broken_dependents.count
+      plural = "dependent".pluralize(outdated_pinned_broken_dependents.count)
       onoe "Not reinstalling #{count} broken and outdated, but pinned #{plural}:"
-      $stderr.puts(pinned_broken_dependents.map do |f|
+      $stderr.puts(outdated_pinned_broken_dependents.map do |f|
         "#{f.full_specified_name} #{f.pkg_version}"
       end.join(", "))
     end
