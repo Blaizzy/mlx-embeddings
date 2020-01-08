@@ -407,7 +407,7 @@ module Homebrew
             problem "Dependency #{dep} does not define option #{opt.name.inspect}"
           end
 
-          problem "Don't use git as a dependency (it's always available)" if dep.name == "git"
+          problem "Don't use git as a dependency (it's always available)" if @new_formula && dep.name == "git"
 
           problem "Dependency '#{dep.name}' is marked as :run. Remove :run; it is a no-op." if dep.tags.include?(:run)
 
