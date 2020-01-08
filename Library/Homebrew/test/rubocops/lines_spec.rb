@@ -106,6 +106,21 @@ describe RuboCop::Cop::FormulaAudit::Comments do
         end
       RUBY
     end
+
+    it "citation tags" do
+      expect_offense(<<~RUBY, "/homebrew-core/")
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+          # cite Howell_2009:
+          ^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should not use `cite` comments
+          # doi "10.111/222.x"
+          ^^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should not use `doi` comments
+          # tag "software"
+          ^^^^^^^^^^^^^^^^ Formulae in homebrew/core should not use `tag` comments
+        end
+      RUBY
+    end
   end
 end
 

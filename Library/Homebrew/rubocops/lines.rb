@@ -64,6 +64,15 @@ module RuboCop
 
             problem "Commented-out dependency #{Regexp.last_match(1)}"
           end
+
+          return if formula_tap != "homebrew-core"
+
+          # Citation and tag comments from third-party taps
+          audit_comments do |comment|
+            next if comment !~ /#\s*(cite(?=\s*\w+:)|doi(?=\s*['"])|tag(?=\s*['"]))/
+
+            problem "Formulae in homebrew/core should not use `#{Regexp.last_match(1)}` comments"
+          end
         end
       end
 
