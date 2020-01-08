@@ -38,7 +38,7 @@ describe RuboCop::Cop::FormulaAudit::Text do
           url "https://brew.sh/foo-1.0.tgz"
           homepage "https://brew.sh"
           depends_on "veclibfort"
-          ^^^^^^^^^^^^^^^^^^^^^^^ Formulae should use OpenBLAS as the default serial linear algebra library.
+          ^^^^^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should use OpenBLAS as the default serial linear algebra library.
         end
       RUBY
     end
@@ -49,7 +49,7 @@ describe RuboCop::Cop::FormulaAudit::Text do
           url "https://brew.sh/foo-1.0.tgz"
           homepage "https://brew.sh"
           depends_on "lapack"
-          ^^^^^^^^^^^^^^^^^^^ Formulae should use OpenBLAS as the default serial linear algebra library.
+          ^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should use OpenBLAS as the default serial linear algebra library.
         end
       RUBY
     end

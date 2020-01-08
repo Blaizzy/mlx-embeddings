@@ -569,7 +569,7 @@ module Homebrew
         fa.audit_versioned_keg_only
 
         expect(fa.problems.first)
-          .to match("Versioned formulae should use `keg_only :versioned_formula`")
+          .to match("Versioned formulae in homebrew/core should use `keg_only :versioned_formula`")
       end
 
       specify "it warns when a versioned formula has an incorrect `keg_only` reason" do
@@ -584,7 +584,7 @@ module Homebrew
         fa.audit_versioned_keg_only
 
         expect(fa.problems.first)
-          .to match("Versioned formulae should use `keg_only :versioned_formula`")
+          .to match("Versioned formulae in homebrew/core should use `keg_only :versioned_formula`")
       end
 
       specify "it does not warn when a versioned formula has `keg_only :versioned_formula`" do

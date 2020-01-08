@@ -163,7 +163,8 @@ module RuboCop
           return unless formula_tap == "homebrew-core"
 
           find_method_with_args(body_node, :depends_on, "mpich") do
-            problem "Use 'depends_on \"open-mpi\"' instead of '#{@offensive_node.source}'."
+            problem "Formulae in homebrew/core should use 'depends_on \"open-mpi\"' " \
+            "instead of '#{@offensive_node.source}'."
           end
         end
 
@@ -201,7 +202,7 @@ module RuboCop
             next if formula_tap != "homebrew-core" || file_path&.include?("linuxbrew")
 
             find_instance_method_call(body_node, "OS", method_name) do |check|
-              problem "Don't use #{check.source}; Homebrew/core only supports macOS"
+              problem "Don't use #{check.source}; homebrew/core only supports macOS"
             end
           end
 

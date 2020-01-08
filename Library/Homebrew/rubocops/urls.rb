@@ -234,8 +234,8 @@ module RuboCop
             next if BINARY_FORMULA_URLS_WHITELIST.include?(@formula_name)
             next if BINARY_URLS_WHITELIST.include?(url)
 
-            problem "#{url} looks like a binary package, not a source archive. " \
-                    "Homebrew/homebrew-core is source-only."
+            problem "#{url} looks like a binary package, not a source archive; " \
+                    "homebrew/core is source-only."
           end
         end
       end

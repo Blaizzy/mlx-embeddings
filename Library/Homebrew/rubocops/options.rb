@@ -10,8 +10,8 @@ module RuboCop
         DEPRECATION_MSG = "macOS has been 64-bit only since 10.6 so 32-bit options are deprecated."
         UNI_DEPRECATION_MSG = "macOS has been 64-bit only since 10.6 so universal options are deprecated."
 
-        DEP_OPTION = "Formulae should not use `deprecated_option`"
-        OPTION = "Formulae should not have an `option`"
+        DEP_OPTION = "Formulae in homebrew/core should not use `deprecated_option`."
+        OPTION = "Formulae in homebrew/core should not use `option`."
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           option_call_nodes = find_every_method_call_by_name(body_node, :option)

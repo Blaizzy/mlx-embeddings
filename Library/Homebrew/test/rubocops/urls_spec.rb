@@ -145,13 +145,13 @@ describe RuboCop::Cop::FormulaAudit::Urls do
     }, {
       "url"         => "https://brew.sh/example-darwin.x86_64.tar.gz",
       "msg"         => "https://brew.sh/example-darwin.x86_64.tar.gz looks like a binary package, " \
-                       "not a source archive. Homebrew/homebrew-core is source-only.",
+                       "not a source archive; homebrew/core is source-only.",
       "col"         => 2,
       "formula_tap" => "homebrew-core",
     }, {
       "url"         => "https://brew.sh/example-darwin.amd64.tar.gz",
       "msg"         => "https://brew.sh/example-darwin.amd64.tar.gz looks like a binary package, " \
-                       "not a source archive. Homebrew/homebrew-core is source-only.",
+                       "not a source archive; homebrew/core is source-only.",
       "col"         => 2,
       "formula_tap" => "homebrew-core",
     }]

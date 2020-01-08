@@ -52,7 +52,7 @@ describe RuboCop::Cop::FormulaAudit::Options do
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
           deprecated_option "examples" => "with-examples"
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Formulae should not use `deprecated_option`
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should not use `deprecated_option`.
         end
       RUBY
     end
@@ -62,7 +62,7 @@ describe RuboCop::Cop::FormulaAudit::Options do
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
           option "with-examples"
-          ^^^^^^^^^^^^^^^^^^^^^^ Formulae should not have an `option`
+          ^^^^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should not use `option`.
         end
       RUBY
     end
