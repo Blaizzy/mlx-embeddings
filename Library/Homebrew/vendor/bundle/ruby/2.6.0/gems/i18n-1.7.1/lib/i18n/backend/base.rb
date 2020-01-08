@@ -163,7 +163,7 @@ module I18n
         #   not standard with regards to the CLDR pluralization rules.
         # Other backends can implement more flexible or complex pluralization rules.
         def pluralize(locale, entry, count)
-          return entry unless entry.is_a?(Hash) && count
+          return entry unless entry.is_a?(Hash) && count && entry.values.none? { |v| v.is_a?(Hash) }
 
           key = pluralization_key(entry, count)
           raise InvalidPluralizationData.new(entry, count, key) unless entry.has_key?(key)
