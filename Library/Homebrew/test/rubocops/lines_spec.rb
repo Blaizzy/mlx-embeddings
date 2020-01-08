@@ -289,7 +289,7 @@ describe RuboCop::Cop::FormulaAudit::MpiCheck do
           desc "foo"
           url 'https://brew.sh/foo-1.0.tgz'
           depends_on "mpich"
-          ^^^^^^^^^^^^^^^^^^ Use 'depends_on "open-mpi"' instead of 'depends_on "mpich"'.
+          ^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should use 'depends_on "open-mpi"' instead of 'depends_on "mpich"'.
         end
       RUBY
 
@@ -353,7 +353,7 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
           url 'https://brew.sh/foo-1.0.tgz'
           bottle do
             if OS.linux?
-               ^^^^^^^^^ Don\'t use OS.linux?; Homebrew/core only supports macOS
+               ^^^^^^^^^ Don\'t use OS.linux?; homebrew/core only supports macOS
               nil
             end
             sha256 "fe0679b932dd43a87fd415b609a7fbac7a069d117642ae8ebaac46ae1fb9f0b3" => :sierra

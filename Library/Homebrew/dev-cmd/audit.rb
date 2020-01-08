@@ -219,7 +219,7 @@ module Homebrew
       @except = options[:except]
       # Accept precomputed style offense results, for efficiency
       @style_offenses = options[:style_offenses]
-      # Allow the formula tap to be set as `core`, for testing purposes
+      # Allow the formula tap to be set as homebrew/core, for testing purposes
       @core_tap = formula.tap&.core_tap? || options[:core_tap]
       @problems = []
       @new_formula_problems = []
@@ -335,15 +335,15 @@ module Homebrew
 
       name = formula.name
 
-      problem "'#{name}' is blacklisted." if MissingFormula.blacklisted_reason(name)
+      problem "'#{name}' is blacklisted from homebrew/core." if MissingFormula.blacklisted_reason(name)
 
       if Formula.aliases.include? name
-        problem "Formula name conflicts with existing aliases."
+        problem "Formula name conflicts with existing aliases in homebrew/core."
         return
       end
 
       if oldname = CoreTap.instance.formula_renames[name]
-        problem "'#{name}' is reserved as the old name of #{oldname}"
+        problem "'#{name}' is reserved as the old name of #{oldname} in homebrew/core."
         return
       end
 
@@ -380,7 +380,8 @@ module Homebrew
 
           if self.class.aliases.include?(dep.name) &&
              (dep_f.core_formula? || !dep_f.versioned_formula?)
-            problem "Dependency '#{dep.name}' is an alias; use the canonical name '#{dep.to_formula.full_name}'."
+            problem "Dependency '#{dep.name}' from homebrew/core is an alias; " \
+            "use the canonical name '#{dep.to_formula.full_name}'."
           end
 
           if @new_formula &&
@@ -414,14 +415,14 @@ module Homebrew
           next unless @core_tap
 
           if dep.tags.include?(:recommended) || dep.tags.include?(:optional)
-            problem "Formulae should not have optional or recommended dependencies"
+            problem "Formulae in homebrew/core should not have optional or recommended dependencies"
           end
         end
 
         next unless @core_tap
 
         if spec.requirements.map(&:recommended?).any? || spec.requirements.map(&:optional?).any?
-          problem "Formulae should not have optional or recommended requirements"
+          problem "Formulae in homebrew/core should not have optional or recommended requirements"
         end
       end
     end
@@ -485,7 +486,7 @@ module Homebrew
       begin
         Formula[previous_formula_name]
       rescue FormulaUnavailableError
-        problem "Versioned #{previous_formula_name} must be created for " \
+        problem "Versioned #{previous_formula_name} in homebrew/core must be created for " \
                 "`brew-postgresql-upgrade-database` and `pg_upgrade` to work."
       end
     end
@@ -513,7 +514,7 @@ module Homebrew
 
       return if keg_only_whitelist.include?(formula.name) || formula.name.start_with?("gcc@")
 
-      problem "Versioned formulae should use `keg_only :versioned_formula`"
+      problem "Versioned formulae in homebrew/core should use `keg_only :versioned_formula`"
     end
 
     def audit_homepage
@@ -542,7 +543,7 @@ module Homebrew
 
       return unless formula.bottle_defined?
 
-      new_formula_problem "New formulae should not have a `bottle do` block"
+      new_formula_problem "New formulae in homebrew/core should not have a `bottle do` block"
     end
 
     def audit_bottle_disabled
@@ -553,7 +554,7 @@ module Homebrew
 
       return unless @core_tap
 
-      problem "Formulae should not use `bottle :disabled`"
+      problem "Formulae in homebrew/core should not use `bottle :disabled`"
     end
 
     def audit_github_repository
@@ -698,7 +699,7 @@ module Homebrew
 
       return unless @core_tap
 
-      problem "Formulae should not have a `devel` spec" if formula.devel
+      problem "Formulae in homebrew/core should not have a `devel` spec" if formula.devel
 
       if formula.head && @versioned_formula
         head_spec_message = "Formulae should not have a `HEAD` spec"
@@ -951,7 +952,7 @@ module Homebrew
 
       return unless @core_tap
 
-      problem "`env :std` in `core` formulae is deprecated" if line.include?("env :std")
+      problem "`env :std` in homebrew/core formulae is deprecated" if line.include?("env :std")
     end
 
     def audit_reverse_migration
