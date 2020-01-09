@@ -349,6 +349,17 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
   subject(:cop) { described_class.new }
 
   context "When auditing formula" do
+    it "build-time checks in homebrew/core" do
+      expect_offense(<<~RUBY, "/homebrew-core/")
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+          system "make", "-j1", "test"
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should not run build-time checks
+        end
+      RUBY
+    end
+
     it "FileUtils usage" do
       expect_offense(<<~RUBY)
         class Foo < Formula

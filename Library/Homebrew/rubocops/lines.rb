@@ -419,6 +419,21 @@ module RuboCop
 
             problem "Use the `#{match}` Ruby method instead of `#{method.source}`"
           end
+
+          return if formula_tap != "homebrew-core"
+
+          # Avoid build-time checks in homebrew/core
+          find_every_method_call_by_name(body_node, :system).each do |method|
+            params = parameters(method)
+            next unless node_equals?(params[0], "make")
+
+            params[1..].each do |arg|
+              next unless regex_match_group(arg, /^(checks?|tests?)$/)
+
+              offending_node(method)
+              problem "Formulae in homebrew/core should not run build-time checks"
+            end
+          end
         end
 
         def modifier?(node)
