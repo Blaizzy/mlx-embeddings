@@ -314,7 +314,62 @@ end
 
 ## Common build failures and how to handle them
 
+### Tests errors
+
+#### "undefined reference to ..."
+
+This error might pop up when parameters passed to `gcc` are in the wrong order.
+
+An example from `libmagic` formula:
+
+```
+==> brew test libmagic --verbose
+Testing libmagic
+==> /usr/bin/gcc -I/home/linuxbrew/.linuxbrew/Cellar/libmagic/5.38/include -L/home/linuxbrew/.linuxbrew/Cellar/libmagic/5.38/lib -lmagic test.c -o test
+/tmp/ccNeDVRt.o: In function `main':
+test.c:(.text+0x15): undefined reference to `magic_open'
+test.c:(.text+0x4a): undefined reference to `magic_load'
+test.c:(.text+0x81): undefined reference to `magic_file'
+collect2: error: ld returned 1 exit status
+```
+
+Solution:
+
+```ruby
+if OS.mac?
+    system ENV.cc, "-I#{include}", "-L#{lib}", "-lmagic", "test.c", "-o", "test"
+else
+    system ENV.cc, "test.c", "-I#{include}", "-L#{lib}", "-lmagic", "-o", "test"
+end
+```
+
+For an explanation of why this happens, read the [Ubuntu 11.04 Toolchain documentation](https://wiki.ubuntu.com/NattyNarwhal/ToolchainTransition).
+
 ### Bottling errors
+
+#### Wrong cellar line
+
+This situation might happen after merging `homebrew-core` to `linuxbrew-core`.
+Linux and macOS cellars may differ and we must correct it to the value suggested by `brew`.
+
+Example:
+
+```
+Error: --keep-old was passed but there are changes in:
+cellar: old: :any, new: "/home/linuxbrew/.linuxbrew/Cellar"
+==> FAILED
+```
+
+In this case deleting `cellar :any` line from the `bottle do` block is enough.
+
+There are some formulae that would fail with an error message like the one provided above, but they are crucial for users of old systems and we should restore the `cellar :any` line after pulling the bottles.
+Those formulae are:
+- `patchelf`
+- `binutils`
+- `gcc`
+- `curl`
+
+Setting `cellar :any` ensures that users who have installed Homebrew at a non-standard prefix will get the bottles.
 
 ## Handling `brew bump-formula-pr` PRs
 
