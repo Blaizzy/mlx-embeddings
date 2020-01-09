@@ -160,6 +160,32 @@ end
 describe RuboCop::Cop::FormulaAudit::OptionDeclarations do
   subject(:cop) { described_class.new }
 
+  it "build.without? in homebrew/core" do
+    expect_offense(<<~RUBY, "/homebrew-core/")
+      class Foo < Formula
+        desc "foo"
+        url 'https://brew.sh/foo-1.0.tgz'
+        def install
+          build.without? "bar"
+          ^^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should not use `build.without?`.
+        end
+      end
+    RUBY
+  end
+
+  it "build.with? in homebrew/core" do
+    expect_offense(<<~RUBY, "/homebrew-core/")
+      class Foo < Formula
+        desc "foo"
+        url 'https://brew.sh/foo-1.0.tgz'
+        def install
+          build.with? "bar"
+          ^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should not use `build.with?`.
+        end
+      end
+    RUBY
+  end
+
   it "unless build.without? conditional" do
     expect_offense(<<~RUBY)
       class Foo < Formula

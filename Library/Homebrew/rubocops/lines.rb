@@ -148,6 +148,16 @@ module RuboCop
 
             problem "Reference '#{match[1]}' without dashes"
           end
+
+          return if formula_tap != "homebrew-core"
+
+          # Use of build.with? implies options, which are forbidden in homebrew/core
+          find_instance_method_call(body_node, :build, :without?) do
+            problem "Formulae in homebrew/core should not use `build.without?`."
+          end
+          find_instance_method_call(body_node, :build, :with?) do
+            problem "Formulae in homebrew/core should not use `build.with?`."
+          end
         end
 
         def unless_modifier?(node)
