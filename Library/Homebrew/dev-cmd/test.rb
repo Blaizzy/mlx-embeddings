@@ -8,31 +8,33 @@ require "cli/parser"
 module Homebrew
   module_function
 
-  def test_args
-    Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `test` [<options>] <formula>
+  module Test
+    def self.args
+      Homebrew::CLI::Parser.new do
+        usage_banner <<~EOS
+          `test` [<options>] <formula>
 
-        Run the test method provided by an installed formula.
-        There is no standard output or return code, but generally it should notify the
-        user if something is wrong with the installed formula.
+          Run the test method provided by an installed formula.
+          There is no standard output or return code, but generally it should notify the
+          user if something is wrong with the installed formula.
 
-        *Example:* `brew install jruby && brew test jruby`
-      EOS
-      switch "--devel",
-             description: "Test the development version of a formula."
-      switch "--HEAD",
-             description: "Test the head version of a formula."
-      switch "--keep-tmp",
-             description: "Retain the temporary files created for the test."
-      switch :verbose
-      switch :debug
-      conflicts "--devel", "--HEAD"
+          *Example:* `brew install jruby && brew test jruby`
+        EOS
+        switch "--devel",
+               description: "Test the development version of a formula."
+        switch "--HEAD",
+               description: "Test the head version of a formula."
+        switch "--keep-tmp",
+               description: "Retain the temporary files created for the test."
+        switch :verbose
+        switch :debug
+        conflicts "--devel", "--HEAD"
+      end
     end
   end
 
   def test
-    test_args.parse
+    Test.args.parse
 
     raise FormulaUnspecifiedError if ARGV.named.empty?
 
