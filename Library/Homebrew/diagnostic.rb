@@ -120,7 +120,7 @@ module Homebrew
 
             Without a correctly configured origin, Homebrew won't update
             properly. You can solve this by adding the remote:
-              git -C "#{repository_path}" remote add origin #{Formatter.url("https://github.com/#{desired_origin}.git")}
+              git -C "#{repository_path}" remote add origin #{Formatter.url(desired_origin)}
           EOS
         elsif !current_origin.match?(%r{#{desired_origin}(\.git|/)?$}i)
           <<~EOS
@@ -130,7 +130,7 @@ module Homebrew
 
             With a non-standard origin, Homebrew won't update properly.
             You can solve this by setting the origin remote:
-              git -C "#{repository_path}" remote set-url origin #{Formatter.url("https://github.com/#{desired_origin}")}
+              git -C "#{repository_path}" remote set-url origin #{Formatter.url(desired_origin)}
           EOS
         end
       end
@@ -568,8 +568,10 @@ module Homebrew
       end
 
       def check_casktap_git_origin
-        cask = Tap.default_cask_tap
-        examine_git_origin(cask.path, cask.full_name) if cask.installed?
+        cask_tap = Tap.default_cask_tap
+        return unless cask_tap.installed?
+
+        examine_git_origin(cask_tap.path, cask_tap.remote)
       end
 
       def check_coretap_git_branch
