@@ -79,45 +79,57 @@ module GitHub
     end
   end
 
-  def api_credentials
-    @api_credentials ||= begin
-      if ENV["HOMEBREW_GITHUB_API_TOKEN"]
-        ENV["HOMEBREW_GITHUB_API_TOKEN"]
-      elsif ENV["HOMEBREW_GITHUB_API_USERNAME"] && ENV["HOMEBREW_GITHUB_API_PASSWORD"]
-        [ENV["HOMEBREW_GITHUB_API_PASSWORD"], ENV["HOMEBREW_GITHUB_API_USERNAME"]]
-      else
-        github_credentials = api_credentials_from_keychain
-        github_username = github_credentials[/username=(.+)/, 1]
-        github_password = github_credentials[/password=(.+)/, 1]
-        if github_username && github_password
-          [github_password, github_username]
-        else
-          []
-        end
-      end
-    end
+  def env_token
+    ENV["HOMEBREW_GITHUB_API_TOKEN"].presence
   end
 
-  def api_credentials_from_keychain
-    Utils.popen(["git", "credential-osxkeychain", "get"], "w+") do |pipe|
+  def env_username_password
+    return if ENV["HOMEBREW_GITHUB_API_USERNAME"].blank?
+    return if ENV["HOMEBREW_GITHUB_API_PASSWORD"].blank?
+
+    [ENV["HOMEBREW_GITHUB_API_PASSWORD"], ENV["HOMEBREW_GITHUB_API_USERNAME"]]
+  end
+
+  def keychain_username_password
+    github_credentials = Utils.popen(["git", "credential-osxkeychain", "get"], "w+") do |pipe|
       pipe.write "protocol=https\nhost=github.com\n"
       pipe.close_write
       pipe.read
     end
+    github_username = github_credentials[/username=(.+)/, 1]
+    github_password = github_credentials[/password=(.+)/, 1]
+    return unless github_username
+
+    # Don't use passwords from the keychain unless they look like
+    # GitHub Personal Access Tokens:
+    #   https://github.com/Homebrew/brew/issues/6862#issuecomment-572610344
+    return unless /^[a-f0-9]{40}$/i.match?(github_password)
+
+    [github_password, github_username]
   rescue Errno::EPIPE
     # The above invocation via `Utils.popen` can fail, causing the pipe to be
     # prematurely closed (before we can write to it) and thus resulting in a
     # broken pipe error. The root cause is usually a missing or malfunctioning
     # `git-credential-osxkeychain` helper.
-    ""
+    nil
+  end
+
+  def api_credentials
+    @api_credentials ||= begin
+      env_token || env_username_password || keychain_username_password
+    end
   end
 
   def api_credentials_type
-    token, username = api_credentials
-    return :none if !token || token.empty?
-    return :environment if !username || username.empty?
-
-    :keychain
+    if env_token
+      :env_token
+    elsif env_username_password
+      :env_username_password
+    elsif keychain_username_password
+      :keychain_username_password
+    else
+      :none
+    end
   end
 
   def api_credentials_error_message(response_headers, needed_scopes)
@@ -135,7 +147,7 @@ module GitHub
         credentials_scopes = "none" if credentials_scopes.blank?
 
         case GitHub.api_credentials_type
-        when :keychain
+        when :keychain_username_password
           onoe <<~EOS
             Your macOS keychain GitHub credentials do not have sufficient scope!
             Scopes they need: #{needed_human_scopes}
@@ -144,7 +156,7 @@ module GitHub
               #{ALL_SCOPES_URL}
             #{Utils::Shell.set_variable_in_profile("HOMEBREW_GITHUB_API_TOKEN", "your_token_here")}
           EOS
-        when :environment
+        when :env_token
           onoe <<~EOS
             Your HOMEBREW_GITHUB_API_TOKEN does not have sufficient scope!
             Scopes it needs: #{needed_human_scopes}
@@ -168,9 +180,9 @@ module GitHub
 
     token, username = api_credentials
     case api_credentials_type
-    when :keychain
+    when :env_username_password, :keychain_username_password
       args += ["--user", "#{username}:#{token}"]
-    when :environment
+    when :env_token
       args += ["--header", "Authorization: token #{token}"]
     end
 
@@ -344,9 +356,9 @@ module GitHub
     _, reponame = repo.split("/")
 
     case api_credentials_type
-    when :keychain
+    when :env_username_password, :keychain_username_password
       _, username = api_credentials
-    when :environment
+    when :env_token
       username = open_api(url_to("user")) { |json| json["login"] }
     end
     json = open_api(url_to("repos", username, reponame))
