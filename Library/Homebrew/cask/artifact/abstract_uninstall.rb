@@ -385,20 +385,37 @@ module Cask
         [trashed, untrashable]
       end
 
-      def uninstall_rmdir(*directories, command: nil, **_)
-        return if directories.empty?
+      def all_dirs?(*directories)
+        directories.all?(&:directory?)
+      end
 
-        ohai "Removing directories if empty:"
-        each_resolved_path(:rmdir, directories) do |path, resolved_paths|
-          puts path
-          resolved_paths.select(&:directory?).each do |resolved_path|
+      def recursive_rmdir(*directories, command: nil, **_)
+        success = true
+        each_resolved_path(:rmdir, directories) do |_path, resolved_paths|
+          resolved_paths.select(&method(:all_dirs?)).each do |resolved_path|
+            puts resolved_path.sub(Dir.home, "~")
+
             if (ds_store = resolved_path.join(".DS_Store")).exist?
               command.run!("/bin/rm", args: ["-f", "--", ds_store], sudo: true, print_stderr: false)
             end
 
-            command.run("/bin/rmdir", args: ["--", resolved_path], sudo: true, print_stderr: false)
+            unless recursive_rmdir(*resolved_path.children, command: command)
+              success = false
+              next
+            end
+
+            status = command.run("/bin/rmdir", args: ["--", resolved_path], sudo: true, print_stderr: false).success?
+            success &= status
           end
         end
+        success
+      end
+
+      def uninstall_rmdir(*args)
+        return if args.empty?
+
+        ohai "Removing directories if empty:"
+        recursive_rmdir(*args)
       end
     end
   end
