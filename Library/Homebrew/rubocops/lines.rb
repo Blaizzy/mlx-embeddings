@@ -64,6 +64,15 @@ module RuboCop
 
             problem "Commented-out dependency #{Regexp.last_match(1)}"
           end
+
+          return if formula_tap != "homebrew-core"
+
+          # Citation and tag comments from third-party taps
+          audit_comments do |comment|
+            next if comment !~ /#\s*(cite(?=\s*\w+:)|doi(?=\s*['"])|tag(?=\s*['"]))/
+
+            problem "Formulae in homebrew/core should not use `#{Regexp.last_match(1)}` comments"
+          end
         end
       end
 
@@ -147,6 +156,16 @@ module RuboCop
             next unless match = regex_match_group(arg, /^\-\-(.*)$/)
 
             problem "Reference '#{match[1]}' without dashes"
+          end
+
+          return if formula_tap != "homebrew-core"
+
+          # Use of build.with? implies options, which are forbidden in homebrew/core
+          find_instance_method_call(body_node, :build, :without?) do
+            problem "Formulae in homebrew/core should not use `build.without?`."
+          end
+          find_instance_method_call(body_node, :build, :with?) do
+            problem "Formulae in homebrew/core should not use `build.with?`."
           end
         end
 
@@ -399,6 +418,21 @@ module RuboCop
             next unless match = regex_match_group(param, fileutils_methods)
 
             problem "Use the `#{match}` Ruby method instead of `#{method.source}`"
+          end
+
+          return if formula_tap != "homebrew-core"
+
+          # Avoid build-time checks in homebrew/core
+          find_every_method_call_by_name(body_node, :system).each do |method|
+            params = parameters(method)
+            next unless node_equals?(params[0], "make")
+
+            params[1..].each do |arg|
+              next unless regex_match_group(arg, /^(checks?|tests?)$/)
+
+              offending_node(method)
+              problem "Formulae in homebrew/core should not run build-time checks"
+            end
           end
         end
 
