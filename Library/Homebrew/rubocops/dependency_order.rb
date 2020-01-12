@@ -12,27 +12,35 @@ module RuboCop
       class DependencyOrder < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           check_dependency_nodes_order(body_node)
+          check_uses_from_macos_nodes_order(body_node)
           [:devel, :head, :stable].each do |block_name|
             block = find_block(body_node, block_name)
             next unless block
 
             check_dependency_nodes_order(block.body)
+            check_uses_from_macos_nodes_order(block.body)
           end
+        end
+
+        def check_uses_from_macos_nodes_order(parent_node)
+          return if parent_node.nil?
+
+          dependency_nodes = parent_node.each_child_node.select { |x| uses_from_macos_node?(x) }
+          ensure_dependency_order(dependency_nodes)
         end
 
         def check_dependency_nodes_order(parent_node)
           return if parent_node.nil?
 
-          dependency_nodes = fetch_depends_on_nodes(parent_node)
-          ordered = dependency_nodes.sort_by { |node| dependency_name(node).downcase }
+          dependency_nodes = parent_node.each_child_node.select { |x| depends_on_node?(x) }
+          ensure_dependency_order(dependency_nodes)
+        end
+
+        def ensure_dependency_order(nodes)
+          ordered = nodes.sort_by { |node| dependency_name(node).downcase }
           ordered = sort_dependencies_by_type(ordered)
           sort_conditional_dependencies!(ordered)
           verify_order_in_source(ordered)
-        end
-
-        # Match all `depends_on` nodes among childnodes of given parent node
-        def fetch_depends_on_nodes(parent_node)
-          parent_node.each_child_node.select { |x| depends_on_node?(x) }
         end
 
         # Separate dependencies according to precedence order:
@@ -101,6 +109,11 @@ module RuboCop
            (send nil? :depends_on ...)}
         EOS
 
+        def_node_matcher :uses_from_macos_node?, <<~EOS
+          {(if _ (send nil? :uses_from_macos ...) nil?)
+           (send nil? :uses_from_macos ...)}
+        EOS
+
         def_node_search :buildtime_dependency?, "(sym :build)"
 
         def_node_search :recommended_dependency?, "(sym :recommended)"
@@ -111,9 +124,9 @@ module RuboCop
 
         def_node_search :negate_normal_dependency?, "(sym {:build :recommended :test :optional})"
 
-        # Node pattern method to extract `name` in `depends_on :name`
+        # Node pattern method to extract `name` in `depends_on :name` or `uses_from_macos :name`
         def_node_search :dependency_name_node, <<~EOS
-          {(send nil? :depends_on {(hash (pair $_ _)) $({str sym} _) $(const nil? _)})
+          {(send nil? {:depends_on :uses_from_macos} {(hash (pair $_ _)) $({str sym} _) $(const nil? _)})
            (if _ (send nil? :depends_on {(hash (pair $_ _)) $({str sym} _) $(const nil? _)}) nil?)}
         EOS
 
