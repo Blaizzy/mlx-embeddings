@@ -7,17 +7,10 @@ require "debrew"
 require "fcntl"
 require "socket"
 require "cli/parser"
-
-def postinstall_args
-  Homebrew::CLI::Parser.new do
-    switch :force
-    switch :verbose
-    switch :debug
-  end
-end
+require "cmd/postinstall"
 
 begin
-  postinstall_args.parse
+  Homebrew.postinstall_args.parse
   error_pipe = UNIXSocket.open(ENV["HOMEBREW_ERROR_PIPE"], &:recv_io)
   error_pipe.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)
 

@@ -10,19 +10,12 @@ require "formula_assertions"
 require "fcntl"
 require "socket"
 require "cli/parser"
-
-def test_args
-  Homebrew::CLI::Parser.new do
-    switch :force
-    switch :verbose
-    switch :debug
-  end
-end
+require "dev-cmd/test"
 
 TEST_TIMEOUT_SECONDS = 5 * 60
 
 begin
-  test_args.parse
+  Homebrew.test_args.parse
   error_pipe = UNIXSocket.open(ENV["HOMEBREW_ERROR_PIPE"], &:recv_io)
   error_pipe.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)
 
