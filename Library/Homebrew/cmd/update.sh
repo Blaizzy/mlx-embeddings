@@ -30,6 +30,10 @@ git_init_if_necessary() {
     trap '{ rm -rf .git; exit 1; }' EXIT
     git init
     git config --bool core.autocrlf false
+    if [[ "$HOMEBREW_DEFAULT_BREW_GIT_REMOTE" != "$HOMEBREW_BREW_GIT_REMOTE" ]]
+    then
+      echo "HOMEBREW_BREW_GIT_REMOTE set: using $HOMEBREW_BREW_GIT_REMOTE for Homebrew/brew Git remote URL."
+    fi
     git config remote.origin.url "$HOMEBREW_BREW_GIT_REMOTE"
     git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
     latest_tag="$(git ls-remote --tags --refs -q origin | tail -n1 | cut -f2)"
@@ -48,6 +52,10 @@ git_init_if_necessary() {
     trap '{ rm -rf .git; exit 1; }' EXIT
     git init
     git config --bool core.autocrlf false
+    if [[ "$HOMEBREW_DEFAULT_CORE_GIT_REMOTE" != "$HOMEBREW_CORE_GIT_REMOTE" ]]
+    then
+      echo "HOMEBREW_CORE_GIT_REMOTE set: using $HOMEBREW_CORE_GIT_REMOTE for Homebrew/core Git remote URL."
+    fi
     git config remote.origin.url "$HOMEBREW_CORE_GIT_REMOTE"
     git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
     git fetch --force --depth=1 origin refs/heads/master:refs/remotes/origin/master
@@ -397,6 +405,7 @@ EOS
   if [[ "$HOMEBREW_DEFAULT_BREW_GIT_REMOTE" != "$HOMEBREW_BREW_GIT_REMOTE" ]]
   then
     safe_cd "$HOMEBREW_REPOSITORY"
+    echo "HOMEBREW_BREW_GIT_REMOTE set: using $HOMEBREW_BREW_GIT_REMOTE for Homebrew/brew Git remote."
     git remote set-url origin "$HOMEBREW_BREW_GIT_REMOTE"
     git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
     latest_tag="$(git ls-remote --tags --refs -q origin | tail -n1 | cut -f2)"
@@ -407,6 +416,7 @@ EOS
      [[ -d "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core" ]]
   then
     safe_cd "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core"
+    echo "HOMEBREW_CORE_GIT_REMOTE set: using $HOMEBREW_CORE_GIT_REMOTE for Homebrew/brew Git remote."
     git remote set-url origin "$HOMEBREW_CORE_GIT_REMOTE"
     git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
     git fetch --force --depth=1 origin refs/heads/master:refs/remotes/origin/master

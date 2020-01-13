@@ -648,6 +648,15 @@ class CoreTap < Tap
     safe_system HOMEBREW_BREW_FILE, "tap", instance.name
   end
 
+  def install(options = {})
+    if HOMEBREW_CORE_GIT_REMOTE != default_remote
+      puts "HOMEBREW_CORE_GIT_REMOTE set: using #{HOMEBREW_CORE_GIT_REMOTE} " \
+           "for Homebrew/core Git remote URL."
+      options[:clone_target] ||= HOMEBREW_CORE_GIT_REMOTE
+    end
+    super(options)
+  end
+
   # @private
   def uninstall
     raise "Tap#uninstall is not available for CoreTap"
