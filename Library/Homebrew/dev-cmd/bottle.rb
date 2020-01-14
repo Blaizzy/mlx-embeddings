@@ -205,6 +205,12 @@ module Homebrew
     erb.result(bottle.instance_eval { binding }).gsub(/^\s*$\n/, "")
   end
 
+  def sudo_purge
+    return unless ENV["HOMEBREW_BOTTLE_SUDO_PURGE"]
+
+    system "/usr/bin/sudo", "/usr/sbin/purge"
+  end
+
   def bottle_formula(f)
     return ofail "Formula not installed or up-to-date: #{f.full_name}" unless f.latest_version_installed?
 
@@ -285,13 +291,16 @@ module Homebrew
         end
 
         cd cellar do
+          sudo_purge
           safe_system "tar", "cf", tar_path, "#{f.name}/#{f.pkg_version}"
+          sudo_purge
           tar_path.utime(tab.source_modified_time, tab.source_modified_time)
           relocatable_tar_path = "#{f}-bottle.tar"
           mv tar_path, relocatable_tar_path
           # Use gzip, faster to compress than bzip2, faster to uncompress than bzip2
           # or an uncompressed tarball (and more bandwidth friendly).
           safe_system "gzip", "-f", relocatable_tar_path
+          sudo_purge
           mv "#{relocatable_tar_path}.gz", bottle_path
         end
 
