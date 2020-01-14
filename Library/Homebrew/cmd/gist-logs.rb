@@ -33,8 +33,6 @@ module Homebrew
   end
 
   def gistify_logs(f)
-    gist_logs_args.parse
-
     files = load_logs(f.logs)
     build_time = f.logs.ctime
     timestamp = build_time.strftime("%Y-%m-%d_%H-%M-%S")
@@ -142,6 +140,8 @@ module Homebrew
   end
 
   def gist_logs
+    gist_logs_args.parse
+
     raise FormulaUnspecifiedError if Homebrew.args.resolved_formulae.length != 1
 
     Install.perform_preinstall_checks(all_fatal: true)
