@@ -6,6 +6,19 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
   subject(:cop) { described_class.new }
 
   context "When auditing formula components order" do
+    it "When uses_from_macos precedes depends_on" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          homepage "https://brew.sh"
+          url "https://brew.sh/foo-1.0.tgz"
+
+          uses_from_macos "apple"
+          depends_on "foo"
+          ^^^^^^^^^^^^^^^^ `depends_on` (line 6) should be put before `uses_from_macos` (line 5)
+        end
+      RUBY
+    end
+
     it "When url precedes homepage" do
       expect_offense(<<~RUBY)
         class Foo < Formula

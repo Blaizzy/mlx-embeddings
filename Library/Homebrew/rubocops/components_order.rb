@@ -32,6 +32,7 @@ module RuboCop
             [{ name: :option,   type: :method_call }],
             [{ name: :deprecated_option, type: :method_call }],
             [{ name: :depends_on, type: :method_call }],
+            [{ name: :uses_from_macos, type: :method_call }],
             [{ name: :conflicts_with, type: :method_call }],
             [{ name: :skip_clean, type: :method_call }],
             [{ name: :cxxstdlib_check, type: :method_call }],
