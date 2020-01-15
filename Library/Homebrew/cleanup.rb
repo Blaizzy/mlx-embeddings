@@ -362,10 +362,9 @@ module Homebrew
 
       bundler_path = vendor_path/"bundle/ruby"
       if dry_run?
-        puts "Would remove: #{bundler_path} (#{bundler_path.abv})"
-        puts "Would remove: #{portable_ruby_path} (#{portable_ruby_path.abv})"
+        puts "Would remove:\n#{Utils.popen_read("git", "clean", "-xnf", bundler_path)}"
       else
-        FileUtils.rm_rf [bundler_path, portable_ruby_path]
+        safe_system "git", "clean", "-xf", bundler_path
       end
     end
 
