@@ -208,7 +208,7 @@ module Homebrew
   def sudo_purge
     return unless ENV["HOMEBREW_BOTTLE_SUDO_PURGE"]
 
-    system "/usr/bin/sudo", "/usr/sbin/purge"
+    system "/usr/bin/sudo", "--non-interactive", "/usr/sbin/purge"
   end
 
   def bottle_formula(f)
