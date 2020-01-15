@@ -185,7 +185,7 @@ module Homebrew
 
     path = destination_tap.path/"Formula/#{name}@#{version}.rb"
     if path.exist?
-      unless ARGV.force?
+      unless Homebrew.args.force?
         odie <<~EOS
           Destination formula already exists: #{path}
           To overwrite it and continue anyways, run:

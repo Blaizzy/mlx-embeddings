@@ -108,7 +108,7 @@ class Migrator
     end
   end
 
-  def initialize(formula, force: ARGV.force?)
+  def initialize(formula, force: Homebrew.args.force?)
     @oldname = formula.oldname
     @newname = formula.name
     raise MigratorNoOldnameError, formula unless oldname
