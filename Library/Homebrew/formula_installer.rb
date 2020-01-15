@@ -349,7 +349,7 @@ class FormulaInstaller
   end
 
   def check_conflicts
-    return if ARGV.force?
+    return if Homebrew.args.force?
 
     conflicts = formula.conflicts.select do |c|
       f = Formulary.factory(c.name)

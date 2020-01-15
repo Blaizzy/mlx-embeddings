@@ -52,7 +52,7 @@ module Homebrew
       end
 
       # Don't test unlinked formulae
-      if !ARGV.force? && !f.keg_only? && !f.linked?
+      if !Homebrew.args.force? && !f.keg_only? && !f.linked?
         ofail "#{f.full_name} is not linked"
         next
       end

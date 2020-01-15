@@ -45,10 +45,6 @@ module HomebrewArgvExtension
     flag_with_value&.delete_prefix(arg_prefix)
   end
 
-  def force?
-    flag? "--force"
-  end
-
   def verbose?
     flag?("--verbose") || !ENV["VERBOSE"].nil? || !ENV["HOMEBREW_VERBOSE"].nil?
   end
