@@ -347,26 +347,26 @@ module Homebrew
 
       portable_ruby_path = vendor_path/"portable-ruby"
       portable_ruby_glob = "#{portable_ruby_path}/*.*"
+      portable_rubies_to_remove = []
       Pathname.glob(portable_ruby_glob).each do |path|
         next if !use_system_ruby && portable_ruby_version == path.basename.to_s
 
-        if dry_run?
-          puts "Would remove: #{path} (#{path.abv})"
-        else
-          FileUtils.rm_rf path
-        end
+        portable_rubies_to_remove << path
+        puts "Would remove: #{path} (#{path.abv})" if dry_run?
       end
 
-      return unless Dir.glob(portable_ruby_glob).empty?
-      return unless portable_ruby_path.exist?
+      return if portable_rubies_to_remove.empty?
 
       bundler_path = vendor_path/"bundle/ruby"
       if dry_run?
-        puts "Would remove: #{bundler_path} (#{bundler_path.abv})"
-        puts "Would remove: #{portable_ruby_path} (#{portable_ruby_path.abv})"
+        puts Utils.popen_read("git", "-C", HOMEBREW_REPOSITORY, "clean", "-nx", bundler_path).chomp
       else
-        FileUtils.rm_rf [bundler_path, portable_ruby_path]
+        puts Utils.popen_read("git", "-C", HOMEBREW_REPOSITORY, "clean", "-ffqx", bundler_path).chomp
       end
+
+      return if dry_run?
+
+      FileUtils.rm_rf portable_rubies_to_remove
     end
 
     def cleanup_old_cache_db
