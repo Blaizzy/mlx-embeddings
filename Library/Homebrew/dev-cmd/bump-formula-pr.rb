@@ -256,6 +256,16 @@ module Homebrew
       ]
     end
 
+    # When bumping a linux-only formula,
+    # one needs to also delete the sha256 linux bottle line.
+    # That's because of running test-bot with --keep-old option in linuxbrew-core.
+    if formula.path.read.include?('# tag "linux"')
+      replacement_pairs << [
+        /^    sha256 ".+" => :x86_64_linux\n/m,
+        "\\2",
+      ]
+    end
+
     if forced_version && forced_version != "0"
       if requested_spec == :stable
         if File.read(formula.path).include?("version \"#{old_formula_version}\"")
