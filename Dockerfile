@@ -16,6 +16,7 @@ RUN apt-get update \
 		libz-dev \
 		locales \
 		make \
+		netbase \
 		openssh-client \
 		patch \
 		sudo \
