@@ -72,6 +72,9 @@ module Homebrew
       # Resume execution in `brew.rb` for unknown commands.
       return if path.nil?
 
+      # Resume execution in `brew.rb` for external commands using "cli/parser".
+      return if !flags[:internal_cmd] && path.read.match?("require .cli/parser.")
+
       # Display help for internal command (or generic help if undocumented).
       puts command_help(path)
       exit 0
