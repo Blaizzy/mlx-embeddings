@@ -474,28 +474,6 @@ module Homebrew
         EOS
       end
 
-      def check_ld_vars
-        ld_vars = ENV.keys.grep(/^(|DY)LD_/)
-        return if ld_vars.empty?
-
-        values = ld_vars.map { |var| "#{var}: #{ENV.fetch(var)}" }
-        message = inject_file_list values, <<~EOS
-          Setting DYLD_* or LD_* variables can break dynamic linking.
-          Set variables:
-        EOS
-
-        if ld_vars.include? "DYLD_INSERT_LIBRARIES"
-          message += <<~EOS
-
-            Setting DYLD_INSERT_LIBRARIES can cause Go builds to fail.
-            Having this set is common if you use this software:
-              #{Formatter.url("https://asepsis.binaryage.com/")}
-          EOS
-        end
-
-        message
-      end
-
       def check_for_symlinked_cellar
         return unless HOMEBREW_CELLAR.exist?
         return unless HOMEBREW_CELLAR.symlink?
