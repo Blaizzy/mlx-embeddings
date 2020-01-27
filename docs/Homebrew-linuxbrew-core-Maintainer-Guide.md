@@ -393,8 +393,8 @@ If the formula is a Linux-only formula, it either:
 - will contain the line `# tag "linux"`
 - won't have macOS bottles
 
-These formulae are fine for users to bump with `brew bump-formula-pr`,
-but you should request that they remove the existing `x86_64_linux`
+If the user hasn't used `brew bump-formula-pr`, or is submitting
+another change, you should request that they remove the `x86_64_linux`
 bottle SHA line so that CI will build a bottle for the new version
 correctly. If the bottle SHA isn't removed, CI will fail with the
 following error:
