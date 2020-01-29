@@ -424,6 +424,25 @@ module RuboCop
 
           # Avoid build-time checks in homebrew/core
           find_every_method_call_by_name(body_node, :system).each do |method|
+            next if @formula_name.start_with?("lib")
+            next if %w[
+              beecrypt
+              ccrypt
+              git
+              gmp
+              gnupg
+              gnupg@1.4
+              google-sparsehash
+              jemalloc
+              jpeg-turbo
+              mpfr
+              open-mpi
+              openssl@1.1
+              pcre
+              wolfssl
+              xz
+            ].include?(@formula_name)
+
             params = parameters(method)
             next unless node_equals?(params[0], "make")
 
@@ -431,7 +450,8 @@ module RuboCop
               next unless regex_match_group(arg, /^(checks?|tests?)$/)
 
               offending_node(method)
-              problem "Formulae in homebrew/core should not run build-time checks"
+              problem "Formulae in homebrew/core (except e.g. cryptography, libraries) " \
+                      "should not run build-time checks"
             end
           end
         end
