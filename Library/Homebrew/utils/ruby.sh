@@ -46,10 +46,7 @@ setup-ruby-path() {
         ruby_version_new_enough="$("$HOMEBREW_RUBY_PATH" --enable-frozen-string-literal --disable=gems,did_you_mean,rubyopt -rrubygems -e "puts Gem::Version.new(RUBY_VERSION.to_s.dup) >= Gem::Version.new('$minimum_ruby_version')")"
       fi
 
-      if [[ -n"$HOMEBREW_MACOS_SYSTEM_RUBY_OLD_ENOUGH" ]]
-      then
-          ruby_version_old_enough="true"
-      elif [[ -n "$HOMEBREW_RUBY_PATH" && -z "$HOMEBREW_FORCE_VENDOR_RUBY" ]]
+      if [[ -n "$HOMEBREW_RUBY_PATH" && -z "$HOMEBREW_FORCE_VENDOR_RUBY" ]]
       then
           ruby_version_old_enough="$("$HOMEBREW_RUBY_PATH" --enable-frozen-string-literal --disable=gems,did_you_mean,rubyopt -rrubygems -e "puts Gem::Version.new(RUBY_VERSION.to_s.dup) < Gem::Version.new('$maximum_ruby_version')")"
       fi
