@@ -58,7 +58,7 @@ class Cleaner
     # actual files gets removed correctly.
     dirs.reverse_each do |d|
       if d.children.empty?
-        puts "rmdir: #{d} (empty)" if ARGV.verbose?
+        puts "rmdir: #{d} (empty)" if Homebrew.args.verbose?
         d.rmdir
       end
     end

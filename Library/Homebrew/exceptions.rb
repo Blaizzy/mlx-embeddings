@@ -381,7 +381,7 @@ class BuildError < RuntimeError
   def dump
     puts
 
-    if ARGV.verbose?
+    if Homebrew.args.verbose?
       require "system_config"
       require "build_environment"
 

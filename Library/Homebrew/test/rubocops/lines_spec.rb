@@ -604,7 +604,7 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
           desc "foo"
           url 'https://brew.sh/foo-1.0.tgz'
           def install
-            verbose = ARGV.verbose?
+            verbose = Homebrew.args.verbose?
           end
         end
       RUBY

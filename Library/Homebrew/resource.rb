@@ -127,7 +127,7 @@ class Resource
 
   def verify_download_integrity(fn)
     if fn.file?
-      ohai "Verifying #{fn.basename} checksum" if ARGV.verbose?
+      ohai "Verifying #{fn.basename} checksum" if Homebrew.args.verbose?
       fn.verify_checksum(checksum)
     end
   rescue ChecksumMissingError

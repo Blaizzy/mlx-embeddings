@@ -443,8 +443,8 @@ module ObserverPathnameExtension
     MAXIMUM_VERBOSE_OUTPUT = 100
 
     def verbose?
-      return ARGV.verbose? unless ENV["CI"]
-      return false unless ARGV.verbose?
+      return Homebrew.args.verbose? unless ENV["CI"]
+      return false unless Homebrew.args.verbose?
 
       if total < MAXIMUM_VERBOSE_OUTPUT
         true

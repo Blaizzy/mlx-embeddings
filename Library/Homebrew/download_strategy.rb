@@ -60,7 +60,7 @@ class AbstractDownloadStrategy
                           ref_type: @ref_type, ref: @ref)
                   .extract_nestedly(basename:             basename,
                                     prioritise_extension: true,
-                                    verbose:              ARGV.verbose? && !shutup)
+                                    verbose:              Homebrew.args.verbose? && !shutup)
     chdir
   end
 
@@ -104,7 +104,7 @@ class AbstractDownloadStrategy
       *args,
       print_stdout: !shutup,
       print_stderr: !shutup,
-      verbose:      ARGV.verbose? && !shutup,
+      verbose:      Homebrew.args.verbose? && !shutup,
       env:          env,
       **options,
     )
@@ -497,7 +497,7 @@ class NoUnzipCurlDownloadStrategy < CurlDownloadStrategy
   def stage
     UnpackStrategy::Uncompressed.new(cached_location)
                                 .extract(basename: basename,
-                                         verbose:  ARGV.verbose? && !shutup)
+                                         verbose:  Homebrew.args.verbose? && !shutup)
   end
 end
 
@@ -552,7 +552,7 @@ class SubversionDownloadStrategy < VCSDownloadStrategy
     # This saves on bandwidth and will have a similar effect to verifying the
     # cache as it will make any changes to get the right revision.
     args = []
-    args << "--quiet" unless ARGV.verbose?
+    args << "--quiet" unless Homebrew.args.verbose?
 
     if revision
       ohai "Checking out #{@ref}"
@@ -896,7 +896,7 @@ class CVSDownloadStrategy < VCSDownloadStrategy
   end
 
   def quiet_flag
-    "-Q" unless ARGV.verbose?
+    "-Q" unless Homebrew.args.verbose?
   end
 
   def clone_repo
