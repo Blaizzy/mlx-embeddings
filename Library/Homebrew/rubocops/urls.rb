@@ -24,12 +24,6 @@ module RuboCop
           rust
         ].freeze
 
-        # specific rust-nightly temporarily acceptable until a newer version is released.
-        # DO NOT RE-ADD A NEWER RUST-NIGHTLY IN FUTURE.
-        BINARY_URLS_WHITELIST = %w[
-          https://static.rust-lang.org/dist/2019-08-24/rust-nightly-x86_64-apple-darwin.tar.xz
-        ].freeze
-
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           urls = find_every_func_call_by_name(body_node, :url)
           mirrors = find_every_func_call_by_name(body_node, :mirror)
@@ -232,7 +226,6 @@ module RuboCop
           audit_urls(urls, /(darwin|macos|osx)/i) do |_, url|
             next if url !~ /x86_64/i && url !~ /amd64/i
             next if BINARY_FORMULA_URLS_WHITELIST.include?(@formula_name)
-            next if BINARY_URLS_WHITELIST.include?(url)
 
             problem "#{url} looks like a binary package, not a source archive; " \
                     "homebrew/core is source-only."
