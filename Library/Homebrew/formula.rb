@@ -1338,6 +1338,11 @@ class Formula
     args
   end
 
+  # Standard parameters for Go builds.
+  def std_go_args
+    ["-trimpath", "-o", bin/name]
+  end
+
   # an array of all core {Formula} names
   # @private
   def self.core_names
