@@ -5,7 +5,7 @@ setup-ruby-path() {
   local ruby_version_new_enough
   # When bumping check if HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH (in brew.sh)
   # also needs to be changed.
-  local minimum_ruby_version="2.6.3"
+  local required_ruby_version="2.6"
 
   vendor_dir="$HOMEBREW_LIBRARY/Homebrew/vendor"
   vendor_ruby_current_version="$vendor_dir/portable-ruby/current"
@@ -42,10 +42,10 @@ setup-ruby-path() {
         ruby_version_new_enough="true"
       elif [[ -n "$HOMEBREW_RUBY_PATH" && -z "$HOMEBREW_FORCE_VENDOR_RUBY" ]]
       then
-        ruby_version_new_enough="$("$HOMEBREW_RUBY_PATH" --enable-frozen-string-literal --disable=gems,did_you_mean,rubyopt -rrubygems -e "puts Gem::Version.new(RUBY_VERSION.to_s.dup) >= Gem::Version.new('$minimum_ruby_version')")"
+        usable_ruby_version="$("$HOMEBREW_RUBY_PATH" --enable-frozen-string-literal --disable=gems,did_you_mean,rubyopt -rrubygems -e "puts Gem::Version.new(RUBY_VERSION.to_s.dup).canonical_segments.first(2) == Gem::Version.new('$required_ruby_version').canonical_segments.first(2)")"
       fi
 
-      if [[ -z "$HOMEBREW_RUBY_PATH" || -n "$HOMEBREW_FORCE_VENDOR_RUBY" || "$ruby_version_new_enough" != "true" ]]
+      if [[ -z "$HOMEBREW_RUBY_PATH" || -n "$HOMEBREW_FORCE_VENDOR_RUBY" || "$usable_ruby_version" != "true" ]]
       then
         brew vendor-install ruby
         if [[ ! -x "$vendor_ruby_path" ]]
