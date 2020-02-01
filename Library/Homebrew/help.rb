@@ -72,25 +72,15 @@ module Homebrew
       # Resume execution in `brew.rb` for unknown commands.
       return if path.nil?
 
-      # Resume execution in `brew.rb` for external commands using "cli/parser".
-      return if !flags[:internal_cmd] && path.read.match?("require .cli/parser.")
-
-      # Display help for internal command (or generic help if undocumented).
+      # Display help for commands (or generic help if undocumented).
       puts command_help(path)
       exit 0
     end
 
     def command_help(path)
-      # Let OptionParser generate help text for commands which have a parser defined
-      cmd = path.basename(path.extname)
-      cmd_args_method_name = "#{cmd.to_s.tr("-", "_")}_args".to_sym
-      begin
-        return Homebrew.send(cmd_args_method_name)
-                       .generate_help_text
-      rescue NoMethodError => e
-        raise if e.name != cmd_args_method_name
-
-        nil
+      # Let OptionParser generate help text for commands which have a parser
+      if cmd_parser = CLI::Parser.from_cmd_path(path)
+        return cmd_parser.generate_help_text
       end
 
       # Otherwise read #: lines from the file.
