@@ -93,19 +93,20 @@ module Homebrew
         nil
       end
 
+      # Otherwise read #: lines from the file.
       help_lines = command_help_lines(path)
-      if help_lines.empty?
+      if help_lines.blank?
         opoo "No help text in: #{path}" if ARGV.homebrew_developer?
-        HOMEBREW_HELP
-      else
-        Formatter.wrap(help_lines.join.gsub(/^  /, ""), COMMAND_DESC_WIDTH)
-                 .sub("@hide_from_man_page ", "")
-                 .sub(/^\* /, "#{Tty.bold}Usage: brew#{Tty.reset} ")
-                 .gsub(/`(.*?)`/m, "#{Tty.bold}\\1#{Tty.reset}")
-                 .gsub(%r{<([^\s]+?://[^\s]+?)>}) { |url| Formatter.url(url) }
-                 .gsub(/<(.*?)>/m, "#{Tty.underline}\\1#{Tty.reset}")
-                 .gsub(/\*(.*?)\*/m, "#{Tty.underline}\\1#{Tty.reset}")
+        return HOMEBREW_HELP
       end
+
+      Formatter.wrap(help_lines.join.gsub(/^  /, ""), COMMAND_DESC_WIDTH)
+               .sub("@hide_from_man_page ", "")
+               .sub(/^\* /, "#{Tty.bold}Usage: brew#{Tty.reset} ")
+               .gsub(/`(.*?)`/m, "#{Tty.bold}\\1#{Tty.reset}")
+               .gsub(%r{<([^\s]+?://[^\s]+?)>}) { |url| Formatter.url(url) }
+               .gsub(/<(.*?)>/m, "#{Tty.underline}\\1#{Tty.reset}")
+               .gsub(/\*(.*?)\*/m, "#{Tty.underline}\\1#{Tty.reset}")
     end
   end
 end
