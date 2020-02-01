@@ -2,7 +2,7 @@ setup-ruby-path() {
   local vendor_dir
   local vendor_ruby_current_version
   local vendor_ruby_path
-  local ruby_version_new_enough
+  local usable_ruby_version
   # When bumping check if HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH (in brew.sh)
   # also needs to be changed.
   local required_ruby_version="2.6"
@@ -39,7 +39,7 @@ setup-ruby-path() {
 
       if [[ -n "$HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH" ]]
       then
-        ruby_version_new_enough="true"
+        usable_ruby_version="true"
       elif [[ -n "$HOMEBREW_RUBY_PATH" && -z "$HOMEBREW_FORCE_VENDOR_RUBY" ]]
       then
         usable_ruby_version="$("$HOMEBREW_RUBY_PATH" --enable-frozen-string-literal --disable=gems,did_you_mean,rubyopt -rrubygems -e "puts Gem::Version.new(RUBY_VERSION.to_s.dup).canonical_segments.first(2) == Gem::Version.new('$required_ruby_version').canonical_segments.first(2)")"
