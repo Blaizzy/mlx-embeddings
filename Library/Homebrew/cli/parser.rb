@@ -155,7 +155,8 @@ module Homebrew
       end
 
       def generate_help_text
-        @parser.to_s.sub(/^/, "#{Tty.bold}Usage: brew#{Tty.reset} ")
+        @parser.to_s
+               .sub(/^/, "#{Tty.bold}Usage: brew#{Tty.reset} ")
                .gsub(/`(.*?)`/m, "#{Tty.bold}\\1#{Tty.reset}")
                .gsub(%r{<([^\s]+?://[^\s]+?)>}) { |url| Formatter.url(url) }
                .gsub(/<(.*?)>/m, "#{Tty.underline}\\1#{Tty.reset}")
