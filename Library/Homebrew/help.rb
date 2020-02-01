@@ -72,37 +72,31 @@ module Homebrew
       # Resume execution in `brew.rb` for unknown commands.
       return if path.nil?
 
-      # Display help for internal command (or generic help if undocumented).
+      # Display help for commands (or generic help if undocumented).
       puts command_help(path)
       exit 0
     end
 
     def command_help(path)
-      # Let OptionParser generate help text for commands which have a parser defined
-      cmd = path.basename(path.extname)
-      cmd_args_method_name = "#{cmd.to_s.tr("-", "_")}_args".to_sym
-      begin
-        return Homebrew.send(cmd_args_method_name)
-                       .generate_help_text
-      rescue NoMethodError => e
-        raise if e.name != cmd_args_method_name
-
-        nil
+      # Let OptionParser generate help text for commands which have a parser
+      if cmd_parser = CLI::Parser.from_cmd_path(path)
+        return cmd_parser.generate_help_text
       end
 
+      # Otherwise read #: lines from the file.
       help_lines = command_help_lines(path)
-      if help_lines.empty?
+      if help_lines.blank?
         opoo "No help text in: #{path}" if ARGV.homebrew_developer?
-        HOMEBREW_HELP
-      else
-        Formatter.wrap(help_lines.join.gsub(/^  /, ""), COMMAND_DESC_WIDTH)
-                 .sub("@hide_from_man_page ", "")
-                 .sub(/^\* /, "#{Tty.bold}Usage: brew#{Tty.reset} ")
-                 .gsub(/`(.*?)`/m, "#{Tty.bold}\\1#{Tty.reset}")
-                 .gsub(%r{<([^\s]+?://[^\s]+?)>}) { |url| Formatter.url(url) }
-                 .gsub(/<(.*?)>/m, "#{Tty.underline}\\1#{Tty.reset}")
-                 .gsub(/\*(.*?)\*/m, "#{Tty.underline}\\1#{Tty.reset}")
+        return HOMEBREW_HELP
       end
+
+      Formatter.wrap(help_lines.join.gsub(/^  /, ""), COMMAND_DESC_WIDTH)
+               .sub("@hide_from_man_page ", "")
+               .sub(/^\* /, "#{Tty.bold}Usage: brew#{Tty.reset} ")
+               .gsub(/`(.*?)`/m, "#{Tty.bold}\\1#{Tty.reset}")
+               .gsub(%r{<([^\s]+?://[^\s]+?)>}) { |url| Formatter.url(url) }
+               .gsub(/<(.*?)>/m, "#{Tty.underline}\\1#{Tty.reset}")
+               .gsub(/\*(.*?)\*/m, "#{Tty.underline}\\1#{Tty.reset}")
     end
   end
 end

@@ -95,7 +95,7 @@ begin
   if (empty_argv || help_flag) && cmd != "cask"
     require "help"
     Homebrew::Help.help cmd, empty_argv: empty_argv
-    # `Homebrew.help` never returns, except for external/unknown commands.
+    # `Homebrew.help` never returns, except for unknown commands.
   end
 
   if internal_cmd
