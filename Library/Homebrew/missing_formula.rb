@@ -28,10 +28,6 @@ module Homebrew
           Minimal installation:
             brew cask install basictex
         EOS
-        when "asymptote" then <<~EOS
-          Asymptote is part of MacTeX:
-            brew cask install mactex
-        EOS
         when "pip" then <<~EOS
           pip is part of the python formula:
             brew install python

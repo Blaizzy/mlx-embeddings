@@ -137,7 +137,7 @@ module Homebrew
                                   "--disable-silent-rules",
                                   "--prefix=\#{prefix}"
         <% elsif mode == :go %>
-            system "go", "build", "-o", "\#{bin}/\#{name}"
+            system "go", "build", *std_go_args
         <% elsif mode == :meson %>
             mkdir "build" do
               system "meson", "--prefix=\#{prefix}", ".."
