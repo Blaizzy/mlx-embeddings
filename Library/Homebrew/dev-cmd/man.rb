@@ -4,8 +4,6 @@ require "formula"
 require "erb"
 require "ostruct"
 require "cli/parser"
-# Require all commands
-Dir.glob("#{HOMEBREW_LIBRARY_PATH}/{dev-,}cmd/*.rb").sort.each { |cmd| require cmd }
 
 module Homebrew
   module_function
@@ -151,28 +149,18 @@ module Homebrew
     # preserve existing manpage order
     cmd_paths.sort_by(&method(:sort_key_for_path))
              .each do |cmd_path|
-      cmd_args_method_name = cmd_arg_parser(cmd_path)
-
-      cmd_man_page_lines = begin
-        cmd_parser = Homebrew.send(cmd_args_method_name)
+      cmd_man_page_lines = if cmd_parser = CLI::Parser.from_cmd_path(cmd_path)
         next if cmd_parser.hide_from_man_page
 
         cmd_parser_manpage_lines(cmd_parser).join
-      rescue NoMethodError => e
-        raise if e.name != cmd_args_method_name
-
-        nil
+      else
+        cmd_comment_manpage_lines(cmd_path)
       end
-      cmd_man_page_lines ||= cmd_comment_manpage_lines(cmd_path)
 
       man_page_lines << cmd_man_page_lines
     end
     Homebrew.args = man_args
     man_page_lines.compact.join("\n")
-  end
-
-  def cmd_arg_parser(cmd_path)
-    "#{cmd_path.basename.to_s.gsub(".rb", "").tr("-", "_")}_args".to_sym
   end
 
   def cmd_parser_manpage_lines(cmd_parser)

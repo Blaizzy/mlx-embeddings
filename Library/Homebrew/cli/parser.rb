@@ -16,6 +16,22 @@ module Homebrew
         new(args, &block).parse(args)
       end
 
+      def self.from_cmd_path(cmd_path)
+        cmd_method_prefix = cmd_path.basename(cmd_path.extname)
+                                    .to_s
+                                    .sub(/^brew-/, "")
+                                    .tr("-", "_")
+        cmd_args_method_name = "#{cmd_method_prefix}_args".to_sym
+
+        begin
+          Homebrew.send(cmd_args_method_name) if require?(cmd_path)
+        rescue NoMethodError => e
+          raise if e.name != cmd_args_method_name
+
+          nil
+        end
+      end
+
       def self.global_options
         {
           quiet:   [["-q", "--quiet"], :quiet, "Suppress any warnings."],
@@ -159,7 +175,8 @@ module Homebrew
       end
 
       def generate_help_text
-        @parser.to_s.sub(/^/, "#{Tty.bold}Usage: brew#{Tty.reset} ")
+        @parser.to_s
+               .sub(/^/, "#{Tty.bold}Usage: brew#{Tty.reset} ")
                .gsub(/`(.*?)`/m, "#{Tty.bold}\\1#{Tty.reset}")
                .gsub(%r{<([^\s]+?://[^\s]+?)>}) { |url| Formatter.url(url) }
                .gsub(/<(.*?)>/m, "#{Tty.underline}\\1#{Tty.reset}")
