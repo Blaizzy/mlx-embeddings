@@ -1626,13 +1626,7 @@ class Formula
         "head"   => head&.version&.to_s,
         "bottle" => !bottle_specification.checksums.empty?,
       },
-      "urls"                     => {
-        "stable" => {
-          "url"      => stable.url,
-          "tag"      => stable.specs&.dig(:tag),
-          "revision" => stable.specs&.dig(:revision),
-        },
-      },
+      "urls"                     => {},
       "revision"                 => revision,
       "version_scheme"           => version_scheme,
       "bottle"                   => {},
@@ -1684,6 +1678,11 @@ class Formula
         }
       end
       hsh["bottle"][spec_sym] = bottle_info
+      hsh["urls"][spec_sym] = {
+        "url"      => spec.url,
+        "tag"      => spec.specs[:tag],
+        "revision" => spec.specs[:revision],
+      }
     end
 
     hsh["options"] = options.map do |opt|
