@@ -59,8 +59,8 @@ module Homebrew
     template = (SOURCE_PATH/"brew.1.md.erb").read
     variables = OpenStruct.new
 
-    variables[:commands] = generate_cmd_manpages("#{HOMEBREW_LIBRARY_PATH}/cmd/*.{rb,sh}")
-    variables[:developer_commands] = generate_cmd_manpages("#{HOMEBREW_LIBRARY_PATH}/dev-cmd/{*.rb,sh}")
+    variables[:commands] = generate_cmd_manpages(Commands.internal_commands_paths)
+    variables[:developer_commands] = generate_cmd_manpages(Commands.internal_developer_commands_paths)
     variables[:global_options] = global_options_manpage
 
     readme = HOMEBREW_REPOSITORY/"README.md"
@@ -142,8 +142,7 @@ module Homebrew
     end
   end
 
-  def generate_cmd_manpages(glob)
-    cmd_paths = Pathname.glob(glob).sort
+  def generate_cmd_manpages(cmd_paths)
     man_page_lines = []
     man_args = Homebrew.args
     # preserve existing manpage order

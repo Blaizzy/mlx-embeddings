@@ -63,12 +63,12 @@ begin
 
   ENV["PATH"] = path
 
-  if cmd
-    internal_cmd = require? HOMEBREW_LIBRARY_PATH/"cmd"/cmd
+  require "commands"
 
-    unless internal_cmd
-      internal_dev_cmd = require? HOMEBREW_LIBRARY_PATH/"dev-cmd"/cmd
-      internal_cmd = internal_dev_cmd
+  if cmd
+    internal_cmd = Commands.valid_internal_cmd?(cmd)
+    internal_cmd ||= begin
+      internal_dev_cmd = Commands.valid_internal_dev_cmd?(cmd)
       if internal_dev_cmd && !ARGV.homebrew_developer?
         if (HOMEBREW_REPOSITORY/".git/config").exist?
           system "git", "config", "--file=#{HOMEBREW_REPOSITORY}/.git/config",
@@ -76,6 +76,7 @@ begin
         end
         ENV["HOMEBREW_DEV_CMD_RUN"] = "1"
       end
+      internal_dev_cmd
     end
   end
 
@@ -98,15 +99,16 @@ begin
     # `Homebrew.help` never returns, except for unknown commands.
   end
 
-  if internal_cmd
-    Homebrew.send cmd.to_s.tr("-", "_").downcase
-  elsif which "brew-#{cmd}"
+  if internal_cmd || Commands.external_ruby_v2_cmd_path(cmd)
+    Homebrew.send Commands.method_name(cmd)
+  elsif (path = Commands.external_ruby_cmd_path(cmd))
+    require?(path)
+    exit Homebrew.failed? ? 1 : 0
+  elsif Commands.external_cmd_path(cmd)
     %w[CACHE LIBRARY_PATH].each do |env|
       ENV["HOMEBREW_#{env}"] = Object.const_get("HOMEBREW_#{env}").to_s
     end
     exec "brew-#{cmd}", *ARGV
-  elsif (path = which("brew-#{cmd}.rb")) && require?(path)
-    exit Homebrew.failed? ? 1 : 0
   else
     possible_tap = OFFICIAL_CMD_TAPS.find { |_, cmds| cmds.include?(cmd) }
     possible_tap = Tap.fetch(possible_tap.first) if possible_tap

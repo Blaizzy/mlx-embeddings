@@ -42,16 +42,11 @@ module Homebrew
 
     def help(cmd = nil, flags = {})
       # Resolve command aliases and find file containing the implementation.
-      if cmd
-        cmd = HOMEBREW_INTERNAL_COMMAND_ALIASES.fetch(cmd, cmd)
-        path = Commands.path(cmd)
-        path ||= which("brew-#{cmd}")
-        path ||= which("brew-#{cmd}.rb")
-      end
+      path = Commands.path(cmd) if cmd
 
       # Display command-specific (or generic) help in response to `UsageError`.
       if (error_message = flags[:usage_error])
-        $stderr.puts path ? command_help(path) : HOMEBREW_HELP
+        $stderr.puts path ? command_help(cmd, path) : HOMEBREW_HELP
         $stderr.puts
         onoe error_message
         exit 1
@@ -72,23 +67,41 @@ module Homebrew
       # Resume execution in `brew.rb` for unknown commands.
       return if path.nil?
 
-      # Display help for commands (or generic help if undocumented).
-      puts command_help(path)
+      # Display help for internal command (or generic help if undocumented).
+      puts command_help(cmd, path)
       exit 0
     end
 
-    def command_help(path)
-      # Let OptionParser generate help text for commands which have a parser
-      if cmd_parser = CLI::Parser.from_cmd_path(path)
-        return cmd_parser.generate_help_text
+    def command_help(cmd, path)
+      # Only some types of commands can have a parser.
+      output = if Commands.valid_internal_cmd?(cmd) ||
+                  Commands.valid_internal_dev_cmd?(cmd) ||
+                  Commands.external_ruby_v2_cmd_path(cmd)
+        parser_help(path)
       end
 
+      output ||= comment_help(path)
+
+      output ||= if output.blank?
+        opoo "No help text in: #{path}" if ARGV.homebrew_developer?
+        HOMEBREW_HELP
+      end
+
+      output
+    end
+
+    def parser_help(path)
+      # Let OptionParser generate help text for commands which have a parser.
+      cmd_parser = CLI::Parser.from_cmd_path(path)
+      return unless cmd_parser
+
+      cmd_parser.generate_help_text
+    end
+
+    def comment_help(path)
       # Otherwise read #: lines from the file.
       help_lines = command_help_lines(path)
-      if help_lines.blank?
-        opoo "No help text in: #{path}" if ARGV.homebrew_developer?
-        return HOMEBREW_HELP
-      end
+      return if help_lines.blank?
 
       Formatter.wrap(help_lines.join.gsub(/^  /, ""), COMMAND_DESC_WIDTH)
                .sub("@hide_from_man_page ", "")

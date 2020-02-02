@@ -17,11 +17,7 @@ module Homebrew
       end
 
       def self.from_cmd_path(cmd_path)
-        cmd_method_prefix = cmd_path.basename(cmd_path.extname)
-                                    .to_s
-                                    .sub(/^brew-/, "")
-                                    .tr("-", "_")
-        cmd_args_method_name = "#{cmd_method_prefix}_args".to_sym
+        cmd_args_method_name = Commands.args_method_name(cmd_path)
 
         begin
           Homebrew.send(cmd_args_method_name) if require?(cmd_path)
