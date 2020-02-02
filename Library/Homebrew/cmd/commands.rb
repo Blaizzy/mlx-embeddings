@@ -27,54 +27,18 @@ module Homebrew
     commands_args.parse
 
     if args.quiet?
-      cmds = internal_commands
-      cmds += external_commands
-      cmds += internal_developer_commands
-      cmds += HOMEBREW_INTERNAL_COMMAND_ALIASES.keys if args.include_aliases?
-      puts Formatter.columns(cmds.sort)
+      puts Formatter.columns(Commands.commands(aliases: args.include_aliases?))
       return
     end
 
-    # Find commands in Homebrew/cmd
-    ohai "Built-in commands", Formatter.columns(internal_commands.sort)
-
-    # Find commands in Homebrew/dev-cmd
+    ohai "Built-in commands", Formatter.columns(Commands.internal_commands)
     puts
-    ohai "Built-in developer commands", Formatter.columns(internal_developer_commands.sort)
+    ohai "Built-in developer commands", Formatter.columns(Commands.internal_developer_commands)
 
-    exts = external_commands
-    return if exts.empty?
+    external_commands = Commands.external_commands
+    return if external_commands.blank?
 
-    # Find commands in the PATH
     puts
-    ohai "External commands", Formatter.columns(exts)
-  end
-
-  def internal_commands
-    find_internal_commands HOMEBREW_LIBRARY_PATH/"cmd"
-  end
-
-  def internal_developer_commands
-    find_internal_commands HOMEBREW_LIBRARY_PATH/"dev-cmd"
-  end
-
-  def external_commands
-    cmd_paths = PATH.new(ENV["PATH"]).append(Tap.cmd_directories)
-    cmd_paths.each_with_object([]) do |path, cmds|
-      Dir["#{path}/brew-*"].each do |file|
-        next unless File.executable?(file)
-
-        cmd = File.basename(file, ".rb")[5..-1]
-        next if cmd.include?(".")
-
-        cmds << cmd
-      end
-    end.sort
-  end
-
-  def find_internal_commands(directory)
-    Pathname.glob(directory/"*")
-            .select(&:file?)
-            .map { |f| f.basename.to_s.sub(/\.(?:rb|sh)$/, "") }
+    ohai "External commands", Formatter.columns(external_commands)
   end
 end

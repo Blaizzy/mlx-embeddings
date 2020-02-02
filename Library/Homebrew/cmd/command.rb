@@ -23,13 +23,8 @@ module Homebrew
 
     raise UsageError, "This command requires a command argument" if args.remaining.empty?
 
-    args.remaining.each do |c|
-      cmd = HOMEBREW_INTERNAL_COMMAND_ALIASES.fetch(c, c)
+    args.remaining.each do |cmd|
       path = Commands.path(cmd)
-      cmd_paths = PATH.new(ENV["PATH"]).append(Tap.cmd_directories) unless path
-      path ||= which("brew-#{cmd}", cmd_paths)
-      path ||= which("brew-#{cmd}.rb", cmd_paths)
-
       odie "Unknown command: #{cmd}" unless path
       puts path
     end

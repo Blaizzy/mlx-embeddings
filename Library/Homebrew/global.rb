@@ -115,25 +115,6 @@ rescue
   nil
 end.compact.freeze
 
-HOMEBREW_INTERNAL_COMMAND_ALIASES = {
-  "ls"          => "list",
-  "homepage"    => "home",
-  "-S"          => "search",
-  "up"          => "update",
-  "ln"          => "link",
-  "instal"      => "install", # gem does the same
-  "uninstal"    => "uninstall",
-  "rm"          => "uninstall",
-  "remove"      => "uninstall",
-  "configure"   => "diy",
-  "abv"         => "info",
-  "dr"          => "doctor",
-  "--repo"      => "--repository",
-  "environment" => "--env",
-  "--config"    => "config",
-  "-v"          => "--version",
-}.freeze
-
 require "set"
 
 require "extend/pathname"

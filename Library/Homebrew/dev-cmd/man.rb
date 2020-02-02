@@ -4,8 +4,6 @@ require "formula"
 require "erb"
 require "ostruct"
 require "cli/parser"
-# Require all commands
-Dir.glob("#{HOMEBREW_LIBRARY_PATH}/{dev-,}cmd/*.rb").sort.each { |cmd| require cmd }
 
 module Homebrew
   module_function
@@ -61,8 +59,8 @@ module Homebrew
     template = (SOURCE_PATH/"brew.1.md.erb").read
     variables = OpenStruct.new
 
-    variables[:commands] = generate_cmd_manpages("#{HOMEBREW_LIBRARY_PATH}/cmd/*.{rb,sh}")
-    variables[:developer_commands] = generate_cmd_manpages("#{HOMEBREW_LIBRARY_PATH}/dev-cmd/{*.rb,sh}")
+    variables[:commands] = generate_cmd_manpages(Commands.internal_commands_paths)
+    variables[:developer_commands] = generate_cmd_manpages(Commands.internal_developer_commands_paths)
     variables[:global_options] = global_options_manpage
 
     readme = HOMEBREW_REPOSITORY/"README.md"
@@ -144,35 +142,24 @@ module Homebrew
     end
   end
 
-  def generate_cmd_manpages(glob)
-    cmd_paths = Pathname.glob(glob).sort
+  def generate_cmd_manpages(cmd_paths)
     man_page_lines = []
     man_args = Homebrew.args
     # preserve existing manpage order
     cmd_paths.sort_by(&method(:sort_key_for_path))
              .each do |cmd_path|
-      cmd_args_method_name = cmd_arg_parser(cmd_path)
-
-      cmd_man_page_lines = begin
-        cmd_parser = Homebrew.send(cmd_args_method_name)
+      cmd_man_page_lines = if cmd_parser = CLI::Parser.from_cmd_path(cmd_path)
         next if cmd_parser.hide_from_man_page
 
         cmd_parser_manpage_lines(cmd_parser).join
-      rescue NoMethodError => e
-        raise if e.name != cmd_args_method_name
-
-        nil
+      else
+        cmd_comment_manpage_lines(cmd_path)
       end
-      cmd_man_page_lines ||= cmd_comment_manpage_lines(cmd_path)
 
       man_page_lines << cmd_man_page_lines
     end
     Homebrew.args = man_args
     man_page_lines.compact.join("\n")
-  end
-
-  def cmd_arg_parser(cmd_path)
-    "#{cmd_path.basename.to_s.gsub(".rb", "").tr("-", "_")}_args".to_sym
   end
 
   def cmd_parser_manpage_lines(cmd_parser)
