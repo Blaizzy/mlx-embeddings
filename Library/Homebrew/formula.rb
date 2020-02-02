@@ -1626,6 +1626,13 @@ class Formula
         "head"   => head&.version&.to_s,
         "bottle" => !bottle_specification.checksums.empty?,
       },
+      "urls"                     => {
+        "stable" => {
+          "url"      => stable.url,
+          "tag"      => stable.specs&.dig(:tag),
+          "revision" => stable.specs&.dig(:revision),
+        },
+      },
       "revision"                 => revision,
       "version_scheme"           => version_scheme,
       "bottle"                   => {},
