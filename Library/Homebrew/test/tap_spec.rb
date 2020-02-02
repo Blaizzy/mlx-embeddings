@@ -207,18 +207,11 @@ describe Tap do
     it "raises an error when the remote doesn't match" do
       setup_git_repo
       already_tapped_tap = described_class.new("Homebrew", "foo")
-      touch subject.path/".git/shallow"
       expect(already_tapped_tap).to be_installed
       wrong_remote = "#{subject.remote}-oops"
       expect {
         already_tapped_tap.install clone_target: wrong_remote, full_clone: true
       }.to raise_error(TapRemoteMismatchError)
-    end
-
-    it "raises an error when the Tap is already unshallow" do
-      setup_git_repo
-      already_tapped_tap = described_class.new("Homebrew", "foo")
-      expect { already_tapped_tap.install full_clone: true }.to raise_error(TapAlreadyUnshallowError)
     end
 
     describe "force_auto_update" do

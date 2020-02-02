@@ -233,7 +233,7 @@ class Tap
   def install(options = {})
     require "descriptions"
 
-    full_clone = options.fetch(:full_clone, false)
+    full_clone = options.fetch(:full_clone, true)
     quiet = options.fetch(:quiet, false)
     requested_remote = options[:clone_target] || default_remote
     # if :force_auto_update is unset, use nil, meaning "no change"
@@ -245,9 +245,12 @@ class Tap
       odie "#{name} was moved. Tap homebrew/cask-#{repo} instead."
     end
 
-    if installed? && force_auto_update.nil?
-      raise TapAlreadyTappedError, name unless full_clone
-      raise TapAlreadyUnshallowError, name unless shallow?
+    if installed?
+      if options[:clone_target] && requested_remote != remote
+        raise TapRemoteMismatchError.new(name, @remote, requested_remote)
+      end
+
+      raise TapAlreadyTappedError, name if force_auto_update.nil?
     end
 
     # ensure git is installed
@@ -257,10 +260,6 @@ class Tap
       unless force_auto_update.nil?
         config["forceautoupdate"] = force_auto_update
         return if !full_clone || !shallow?
-      end
-
-      if options[:clone_target] && requested_remote != remote
-        raise TapRemoteMismatchError.new(name, @remote, requested_remote)
       end
 
       ohai "Unshallowing #{name}" unless quiet
