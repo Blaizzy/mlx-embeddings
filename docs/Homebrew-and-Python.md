@@ -65,7 +65,7 @@ Homebrew's `site-packages` directory is first created if (1) any Homebrew formul
 The reasoning for this location is to preserve your modules between (minor) upgrades or re-installations of Python. Additionally, Homebrew has a strict policy never to write stuff outside of the `brew --prefix`, so we don't spam your system.
 
 ## Homebrew-provided Python bindings
-Some formulae provide Python bindings. Sometimes a `--with-python` or `--with-python@2` option has to be passed to `brew install` in order to build the Python bindings. (Check with `brew options <formula>`.)
+Some formulae provide Python bindings.
 
 **Warning!** Python may crash (see [Common Issues](Common-Issues.md)) if you `import <module>` from a brewed Python if you ran `brew install <formula_with_python_bindings>` against the system Python. If you decide to switch to the brewed Python, then reinstall all formulae with Python bindings (e.g. `pyside`, `wxwidgets`, `pygtk`, `pygobject`, `opencv`, `vtk` and `boost-python`).
 
