@@ -35,7 +35,7 @@ module Homebrew
   end
 
   def system(cmd, *args, **options)
-    if ARGV.verbose?
+    if Homebrew.args.verbose?
       puts "#{cmd} #{args * " "}".gsub(RUBY_PATH, "ruby")
                                  .gsub($LOAD_PATH.join(File::PATH_SEPARATOR).to_s, "$LOAD_PATH")
     end
@@ -87,7 +87,7 @@ module Kernel
   end
 
   def ohai_title(title)
-    title = Tty.truncate(title) if $stdout.tty? && !ARGV.verbose?
+    title = Tty.truncate(title) if $stdout.tty? && !Homebrew.args.verbose?
     Formatter.headline(title, color: :blue)
   end
 
@@ -104,7 +104,7 @@ module Kernel
   end
 
   def oh1(title, options = {})
-    title = Tty.truncate(title) if $stdout.tty? && !ARGV.verbose? && options.fetch(:truncate, :auto) == :auto
+    title = Tty.truncate(title) if $stdout.tty? && !Homebrew.args.verbose? && options.fetch(:truncate, :auto) == :auto
     puts Formatter.headline(title, color: :green)
   end
 
@@ -373,7 +373,7 @@ module Kernel
   end
 
   def nostdout
-    if ARGV.verbose?
+    if Homebrew.args.verbose?
       yield
     else
       begin

@@ -64,9 +64,13 @@ module Homebrew
           set_constraints(name, required_for: required_for, depends_on: depends_on)
         end
 
-        enable_switch(*names, from: :env) if !env.nil? && !ENV["HOMEBREW_#{env.to_s.upcase}"].nil?
+        enable_switch(*names, from: :env) if env?(env)
       end
       alias switch_option switch
+
+      def env?(env)
+        env.present? && ENV["HOMEBREW_#{env.to_s.upcase}"].present?
+      end
 
       def usage_banner(text)
         @parser.banner = Formatter.wrap("#{text}\n", COMMAND_DESC_WIDTH)

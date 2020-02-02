@@ -56,7 +56,7 @@ class FormulaInstaller
     @include_test = ARGV.include?("--include-test")
     @interactive = false
     @git = false
-    @verbose = ARGV.verbose?
+    @verbose = Homebrew.args.verbose?
     @quieter = ARGV.quieter?
     @debug = ARGV.debug?
     @installed_as_dependency = false

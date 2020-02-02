@@ -222,7 +222,7 @@ class SystemCommand
     end
 
     def warn_plist_garbage(garbage)
-      return unless ARGV.verbose?
+      return unless Homebrew.args.verbose?
       return unless garbage.match?(/\S/)
 
       opoo "Received non-XML output from #{Formatter.identifier(command.first)}:"

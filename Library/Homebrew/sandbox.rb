@@ -127,7 +127,7 @@ class Sandbox
         end
       end
 
-      if @failed && ARGV.verbose?
+      if @failed && ENV["HOMEBREW_VERBOSE"].present?
         ohai "Sandbox log"
         puts logs
         $stdout.flush # without it, brew test-bot would fail to catch the log

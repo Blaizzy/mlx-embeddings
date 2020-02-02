@@ -506,7 +506,7 @@ class Formula
     return false unless head&.downloader.is_a?(VCSDownloadStrategy)
 
     downloader = head.downloader
-    downloader.shutup! unless ARGV.verbose?
+    downloader.shutup! unless Homebrew.args.verbose?
     downloader.commit_outdated?(version.version.commit)
   end
 
@@ -1849,7 +1849,7 @@ class Formula
   # # If there is a "make", "install" available, please use it!
   # system "make", "install"</pre>
   def system(cmd, *args)
-    verbose = ARGV.verbose?
+    verbose = Homebrew.args.verbose?
     verbose_using_dots = !ENV["HOMEBREW_VERBOSE_USING_DOTS"].nil?
 
     # remove "boring" arguments so that the important ones are more likely to
