@@ -498,10 +498,7 @@ module Kernel
   end
 
   def command_help_lines(path)
-    path.read
-        .lines
-        .grep(/^#:/)
-        .map { |line| line.slice(2..-1) }
+    path.read.lines.grep(/^#:/).map { |line| line.slice(2..-1) }
   end
 
   def redact_secrets(input, secrets)
