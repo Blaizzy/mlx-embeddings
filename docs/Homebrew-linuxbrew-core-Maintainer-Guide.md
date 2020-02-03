@@ -245,7 +245,7 @@ run `brew find-formulae-to-bottle --verbose` separate to the `for`
 loop above.
 
 The `request-bottle` script kicks off a GitHub Action to build the
-bottle. If successful, it pushes the bottle to `master`. There are no
+bottle. If successful, it pushes the bottle to BinTray and a commit with the SHA to `master`. There are no
 PRs, and no manual steps unless the formula fails to build.
 
 If the formula fails to build, we open and merge a PR with the fix,
