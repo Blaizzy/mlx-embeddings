@@ -224,7 +224,7 @@ command where the merge commit is `HEAD`:
 
 ```sh
 for formula in $(brew find-formulae-to-bottle); do
-  brew build-bottle-pr --remote=$HOMEBREW_GITHUB_USER $formula
+  brew request-bottle $formula
 done
 ```
 
@@ -244,64 +244,12 @@ error; by default, this script won't output the errors. To see them,
 run `brew find-formulae-to-bottle --verbose` separate to the `for`
 loop above.
 
-The `build-bottle-pr` script creates a branch called `bottle-<FORMULA>`, adds `# Build a bottle
-for Linux` to the top of the formula, pushes the branch to GitHub
-at the specified remote (default: `origin`), and opens a pull request using `hub
-pull-request`.
+The `request-bottle` script kicks off a GitHub Action to build the
+bottle. If successful, it pushes the bottle to BinTray and a commit with the SHA to `master`. There are no
+PRs, and no manual steps unless the formula fails to build.
 
-## Pulling bottles
-
-Pull requests are either raised by maintainers or users. In both
-cases, how to merge them depends on whether or not a Linux bottle has
-been built for the formula.
-
-We very rarely use the GitHub UI buttons. Instead, we "pull the
-bottle". This means that the PR shows up as "closed" to the user, but
-they still get authorship credit. This is done with the following
-command:
-
-```bash
-HOMEBREW_BOTTLE_DOMAIN=https://linuxbrew.bintray.com brew pull --bottle --bintray-org=linuxbrew --test-bot-user=LinuxbrewTestBot <PR-NUMBER>
-```
-
-It saves a lot of time to alias this in your shell config. One
-possible alias is `lbrew-pull-bottle`.
-
-For PRs with the title "Build a bottle for Linux" and that have
-only one commit with contents "# Build a bottle for Linux", these
-have been created with `brew build-bottle-pr` and the commit from the
-PR doesn't need preserving. We don't want to litter the codebase with
-comments. In these cases, you can combine `brew pull --bottle` with
-`brew squash-bottle-pr` (in the Homebrew/linux-dev tap). This will
-squash the first commit message, leaving just the commit with the
-bottle SHA authored by `LinuxbrewTestBot`. It will still close the PR,
-as `brew pull --bottle` adds `Closes` and `Signed-off-by` to the
-commit message body.
-
-```bash
-lbrew-pull-bottle <PR-NUMBER> && brew squash-bottle-pr
-```
-
-For PRs where there have been force pushes or extra commits to fix the
-build or fix bottling syntax, we can't `brew squash-bottle-pr` as we
-must keep the fixes. If the `# Build a bottle for Linux` line
-still exists in the formula, remove it.
-
-The `brew pull` command *publishes* the bottle to BinTray and verifies
-that the SHA in the formula and the SHA of the downloaded file match.
-To verify a bottle, the script downloads the bottle from BinTray - if
-you're on an unstable connection, this may take a while or even time
-out. Publishing the bottle means that it's available as the latest
-version for users to download, so remember to push your commits to
-`origin`.
-
-If something goes wrong with the bottle pull and you don't want to
-publish the bottle and push the commit, `git reset --hard
-origin/master` and login to BinTray and delete the new bottle (there's
-a list of who published what recently).
-
-Once you've pushed to `origin`, there's no going back: you're a
-maintainer now, you can't force-push to fix your mistakes!
+If the formula fails to build, we open and merge a PR with the fix,
+and run `brew request-bottle $formula` again.
 
 ## Creating new Linux-specific formula
 
