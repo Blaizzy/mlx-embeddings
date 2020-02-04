@@ -57,7 +57,7 @@ module Homebrew
         tap.install clone_target:      ARGV.named.second,
                     force_auto_update: force_auto_update?,
                     full_clone:        full_clone?,
-                    quiet:             args.quieter?
+                    quiet:             Homebrew.args.quieter?
       rescue TapRemoteMismatchError => e
         odie e
       rescue TapAlreadyTappedError
