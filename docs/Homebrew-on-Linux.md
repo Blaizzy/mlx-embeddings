@@ -95,8 +95,6 @@ eval $(~/.linuxbrew/bin/brew shellenv)
 
 ## Sponsors
 
-Our binary packages (bottles) are built on [CircleCI](https://circleci.com/) and hosted by [Bintray](https://bintray.com/linuxbrew).
-
-[<img alt="CircleCI logo" style="height:1in" src="https://assets.brandfolder.com/otz6k5-cj8pew-e4rk9u/original/circle-logo-horizontal-black.png">](https://circleci.com/)
+Our binary packages (bottles) are built on [GitHub Actions](https://github.com/features/actions) and hosted by [Bintray](https://bintray.com/linuxbrew).
 
 [![Downloads by Bintray](https://bintray.com/docs/images/downloads_by_bintray_96.png)](https://bintray.com/linuxbrew)
