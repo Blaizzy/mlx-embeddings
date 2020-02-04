@@ -26,6 +26,10 @@ module Homebrew
                           "or a shell inside the temporary build directory."
       switch "-s", "--build-from-source",
              description: "Compile <formula> from source even if a bottle is available."
+      switch "-i", "--interactive",
+             description: "Download and patch <formula>, then open a shell. This allows the user to "\
+                          "run `./configure --help` and otherwise determine how to turn the software "\
+                          "package into a Homebrew package."
       switch "--force-bottle",
              description: "Install from a bottle if it exists for the current or newest version of "\
                           "macOS, even if it would not normally be used for installation."
