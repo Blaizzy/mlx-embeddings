@@ -120,7 +120,7 @@ describe SystemCommand::Result do
 
       context "when verbose" do
         before do
-          allow(Homebrew.args).to receive(:verbose?).and_return(true)
+          allow(Homebrew).to receive(:args).and_return(OpenStruct.new("verbose?" => true))
         end
 
         it "warns about garbage" do
@@ -144,7 +144,7 @@ describe SystemCommand::Result do
 
       context "when verbose" do
         before do
-          allow(Homebrew.args).to receive(:verbose?).and_return(true)
+          allow(Homebrew).to receive(:args).and_return(OpenStruct.new("verbose?" => true))
         end
 
         it "warns about garbage" do
