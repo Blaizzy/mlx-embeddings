@@ -217,9 +217,9 @@ running `git push your-fork master`
 ## Building bottles for updated formulae
 
 After merging changes, we must rebuild bottles for all the PRs that
-had conflicts.
-
-To do this, tap `Homebrew/homebrew-linux-dev` and run the following
+had conflicts. There is an automatic workflow job that handles this
+when the merge commit is pushed to the repository; however, to do it
+manually, tap `Homebrew/homebrew-linux-dev` and run the following
 command where the merge commit is `HEAD`:
 
 ```sh
@@ -245,16 +245,29 @@ run `brew find-formulae-to-bottle --verbose` separate to the `for`
 loop above.
 
 The `request-bottle` script kicks off a GitHub Action to build the
-bottle. If successful, it pushes the bottle to BinTray and a commit with the SHA to `master`. There are no
-PRs, and no manual steps unless the formula fails to build.
+bottle. If successful, it pushes the bottle to BinTray and a commit
+with the SHA to `master`. There are no pull requests, and no manual
+steps unless the formula fails to build. Check that the build was
+successful from the [Actions tab](https://github.com/homebrew/linuxbrew-core/actions).
 
-If the formula fails to build, we open and merge a PR with the fix,
-and run `brew request-bottle $formula` again.
+If the formula fails to build, we open a pull request with the fix,
+which will build (but not publish) bottles for that formula. Once the
+formula builds correctly, we merge that pull request from the GitHub
+web interface, which starts a workflow job to publish the bottle and
+push a bottle commit to Homebrew/linuxbrew-core.
 
 ## Creating new Linux-specific formula
 
-Make a PR to `Homebrew/linuxbrew-core` containing one commit named like this: `name (new formula)`. Keep only one commit in this PR, squash and force push to your branch if needed. Include a comment: `# tag "linux"` in the formula after the `url` stanza, so maintainers can easily find Linux only formulae.
-For `brew pull` to be successful when new formulae are added, we have to insert an empty bottle block into the formula code. This usually goes after the `linux` tag.
+Make a PR to `Homebrew/linuxbrew-core` containing one commit named
+like this: `name (new formula)`. Keep only one commit in this PR,
+squash and force push to your branch if needed. Include a comment: `#
+tag "linux"` in the formula after the `url` stanza, so maintainers can
+easily find Linux only formulae.
+
+For the bottle commit to be successful when new formulae are added, we
+have to insert an empty bottle block into the formula code. This
+usually goes after the `linux` tag.
+
 ```ruby
 bottle do
 end
