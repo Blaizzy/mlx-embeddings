@@ -504,8 +504,6 @@ HTTPS, e.g. SSH, GIT, HTTP, FTP(S), RSYNC.
   Migrate tapped formulae from symlink-based to directory-based structure.
 * `--list-pinned`:
   List all pinned taps.
-* `-q`, `--quieter`:
-  Suppress any warnings.
 
 ### `tap-info` [*`options`*] [*`tap`*]
 

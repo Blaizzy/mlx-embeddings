@@ -41,10 +41,6 @@ module HomebrewArgvExtension
     flag?("--debug") || !ENV["HOMEBREW_DEBUG"].nil?
   end
 
-  def quieter?
-    flag? "--quieter"
-  end
-
   def interactive?
     flag? "--interactive"
   end

@@ -42,7 +42,7 @@ class FormulaInstaller
   mode_attr_accessor :show_summary_heading, :show_header
   mode_attr_accessor :build_from_source, :force_bottle, :include_test
   mode_attr_accessor :ignore_deps, :only_deps, :interactive, :git
-  mode_attr_accessor :verbose, :debug, :quieter
+  mode_attr_accessor :verbose, :debug, :quiet
 
   def initialize(formula)
     @formula = formula
@@ -57,7 +57,7 @@ class FormulaInstaller
     @interactive = false
     @git = false
     @verbose = Homebrew.args.verbose?
-    @quieter = ARGV.quieter?
+    @quiet = Homebrew.args.quiet?
     @debug = ARGV.debug?
     @installed_as_dependency = false
     @installed_on_request = true
@@ -589,7 +589,7 @@ class FormulaInstaller
     fi.build_from_source       = ARGV.build_formula_from_source?(df)
     fi.force_bottle            = false
     fi.verbose                 = verbose?
-    fi.quieter                 = quieter?
+    fi.quiet                   = quiet?
     fi.debug                   = debug?
     fi.link_keg              ||= keg_was_linked if keg_had_linked_keg
     fi.installed_as_dependency = true
