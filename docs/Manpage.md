@@ -584,6 +584,8 @@ the upgraded formulae or, every 30 days, for all formulae.
   If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory.
 * `-s`, `--build-from-source`:
   Compile *`formula`* from source even if a bottle is available.
+* `-i`, `--interactive`:
+  Download and patch *`formula`*, then open a shell. This allows the user to run `./configure --help` and otherwise determine how to turn the software package into a Homebrew package.
 * `--force-bottle`:
   Install from a bottle if it exists for the current or newest version of macOS, even if it would not normally be used for installation.
 * `--fetch-HEAD`:
