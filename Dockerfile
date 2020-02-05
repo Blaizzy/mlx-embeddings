@@ -39,8 +39,10 @@ WORKDIR /home/linuxbrew
 ENV PATH=/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$PATH \
 	SHELL=/bin/bash
 
-# Install portable-ruby and tap homebrew/core.
+# Install portable-ruby, tap homebrew/core, install audit gems, and cleanup
 RUN HOMEBREW_NO_ANALYTICS=1 HOMEBREW_NO_AUTO_UPDATE=1 brew tap homebrew/core \
 	&& chown -R linuxbrew: /home/linuxbrew/.linuxbrew \
 	&& chmod -R g+w,o-w /home/linuxbrew/.linuxbrew \
-	&& rm -rf ~/.cache
+	&& rm -rf ~/.cache \
+	&& brew install-bundler-gems \
+	&& brew cleanup
