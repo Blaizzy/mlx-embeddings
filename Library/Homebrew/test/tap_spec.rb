@@ -210,7 +210,7 @@ describe Tap do
       expect(already_tapped_tap).to be_installed
       wrong_remote = "#{subject.remote}-oops"
       expect {
-        already_tapped_tap.install clone_target: wrong_remote, full_clone: true
+        already_tapped_tap.install clone_target: wrong_remote
       }.to raise_error(TapRemoteMismatchError)
     end
 

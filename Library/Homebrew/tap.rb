@@ -224,20 +224,13 @@ class Tap
 
   # Install this {Tap}.
   #
-  # @param  options [Hash]
-  # @option options [String] :clone_target If passed, it will be used as the clone remote.
-  # @option options [Boolean, nil] :force_auto_update If present, whether to override the
+  # @param clone_target [String] If passed, it will be used as the clone remote.
+  # @param force_auto_update [Boolean, nil] If present, whether to override the
   #   logic that skips non-GitHub repositories during auto-updates.
-  # @option options [Boolean] :full_clone If set as true, full clone will be used.
-  # @option options [Boolean] :quiet If set, suppress all output.
-  def install(options = {})
+  # @param full_clone [Boolean] If set as true, full clone will be used. If unset/nil, means "no change".
+  # @param quiet [Boolean] If set, suppress all output.
+  def install(full_clone: true, quiet: false, clone_target: nil, force_auto_update: nil)
     require "descriptions"
-
-    full_clone = options.fetch(:full_clone, true)
-    quiet = options.fetch(:quiet, false)
-    requested_remote = options[:clone_target] || default_remote
-    # if :force_auto_update is unset, use nil, meaning "no change"
-    force_auto_update = options.fetch(:force_auto_update, nil)
 
     if official? && DEPRECATED_OFFICIAL_TAPS.include?(repo)
       odie "#{name} was deprecated. This tap is now empty as all its formulae were migrated."
@@ -245,11 +238,10 @@ class Tap
       odie "#{name} was moved. Tap homebrew/cask-#{repo} instead."
     end
 
-    if installed?
-      if options[:clone_target] && requested_remote != remote
-        raise TapRemoteMismatchError.new(name, @remote, requested_remote)
-      end
+    requested_remote = clone_target || default_remote
 
+    if installed?
+      raise TapRemoteMismatchError.new(name, @remote, requested_remote) if clone_target && requested_remote != remote
       raise TapAlreadyTappedError, name if force_auto_update.nil?
     end
 
@@ -302,7 +294,7 @@ class Tap
                            .update_from_formula_names!(formula_names)
     end
 
-    return if options[:clone_target]
+    return if clone_target
     return unless private?
     return if quiet
 
@@ -647,13 +639,13 @@ class CoreTap < Tap
     safe_system HOMEBREW_BREW_FILE, "tap", instance.name
   end
 
-  def install(options = {})
+  def install(full_clone: true, quiet: false, clone_target: nil, force_auto_update: nil)
     if HOMEBREW_CORE_GIT_REMOTE != default_remote
       puts "HOMEBREW_CORE_GIT_REMOTE set: using #{HOMEBREW_CORE_GIT_REMOTE} " \
            "for Homebrew/core Git remote URL."
-      options[:clone_target] ||= HOMEBREW_CORE_GIT_REMOTE
+      clone_target ||= HOMEBREW_CORE_GIT_REMOTE
     end
-    super(options)
+    super(full_clone: full_clone, quiet: quiet, clone_target: clone_target, force_auto_update: force_auto_update)
   end
 
   # @private
