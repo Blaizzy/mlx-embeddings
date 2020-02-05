@@ -45,4 +45,4 @@ RUN HOMEBREW_NO_ANALYTICS=1 HOMEBREW_NO_AUTO_UPDATE=1 brew tap homebrew/core \
 	&& chmod -R g+w,o-w /home/linuxbrew/.linuxbrew \
 	&& rm -rf ~/.cache \
 	&& brew install-bundler-gems \
-	&& brew cleanup -s
+	&& brew cleanup
