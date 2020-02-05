@@ -35,7 +35,7 @@ module Homebrew
              description: "Migrate tapped formulae from symlink-based to directory-based structure."
       switch "--list-pinned",
              description: "List all pinned taps."
-      switch "-q", "--quieter",
+      switch :quiet,
              description: "Suppress any warnings."
       switch :debug
       max_named 2
@@ -57,7 +57,7 @@ module Homebrew
         tap.install clone_target:      ARGV.named.second,
                     force_auto_update: force_auto_update?,
                     full_clone:        full_clone?,
-                    quiet:             Homebrew.args.quieter?
+                    quiet:             Homebrew.args.quiet?
       rescue TapRemoteMismatchError => e
         odie e
       rescue TapAlreadyTappedError
