@@ -4,45 +4,33 @@ This page describes how Python is handled in Homebrew for users. See [Python for
 
 Homebrew should work with any [CPython](https://stackoverflow.com/questions/2324208/is-there-any-difference-between-cpython-and-python) and defaults to the macOS system Python.
 
-Homebrew provides formulae to brew Python 3.x and a more up-to-date Python 2.7.x.
+Homebrew provides formulae to brew Python 3.x.
 
-**Important:** If you choose to install a Python which isn't either of these two (system Python or brewed Python), the Homebrew team cannot support any breakage that may occur.
+Homebrew provided a `python@2` formula until the end of 2019, at which point it was removed due to the Python 2 deprecation.
 
-## Python 3.x or Python 2.x
-Homebrew provides one formula for Python 3.x (`python`) and another for Python 2.7.x (`python@2`).
+**Important:** If you choose to use a Python which isn't either of these two (system Python or brewed Python), the Homebrew team cannot support any breakage that may occur.
 
-The executables are organised as follows so that Python 2 and Python 3 can both be installed without conflict:
+## Python 3.x
+Homebrew provides a formula for Python 3.x (`python`).
+
+The executables are organised as follows:
 
 * `python3` points to Homebrew's Python 3.x (if installed)
-* `python2` points to Homebrew's Python 2.7.x (if installed)
-* `python` points to Homebrew's Python 2.7.x (if installed) otherwise the macOS system Python. Check out `brew info python` if you wish to add Homebrew's 3.x `python` to your `PATH`.
 * `pip3` points to Homebrew's Python 3.x's pip (if installed)
-* `pip` and `pip2` point to Homebrew's Python 2.7.x's pip (if installed)
-
-([Wondering which one to choose?](https://wiki.python.org/moin/Python2orPython3))
 
 ## Setuptools, Pip, etc.
-The Python formulae install [pip](https://pip.pypa.io/) (as `pip` or `pip2`) and [Setuptools](https://pypi.python.org/pypi/setuptools).
+The Python formulae install [pip](https://pip.pypa.io/) (as `pip3`) and [Setuptools](https://pypi.python.org/pypi/setuptools).
 
-Setuptools can be updated via pip, without having to re-brew Python:
+Setuptools can be updated via pip3, without having to re-brew Python:
 
 ```sh
-python -m pip install --upgrade setuptools
+python3 -m pip3 install --upgrade setuptools
 ```
 
-Similarly, pip can be used to upgrade itself via:
+Similarly, pip3 can be used to upgrade itself via:
 
 ```sh
-python -m pip install --upgrade pip
-```
-
-### Note on `pip install --user`
-The normal `pip install --user` is disabled for brewed Python. This is because of a bug in distutils, because Homebrew writes a `distutils.cfg` which sets the package `prefix`.
-
-A possible workaround (which puts executable scripts in `~/Library/Python/<X>.<Y>/bin`) is:
-
-```sh
-python -m pip install --user --install-option="--prefix=" <package-name>
+python3 -m pip3 install --upgrade pip3
 ```
 
 ## `site-packages` and the `PYTHONPATH`
@@ -75,7 +63,7 @@ These should be installed via `pip install <package>`. To discover, you can use 
 **Note:** macOS's system Python does not provide `pip`. Follow the [pip documentation](https://pip.readthedocs.io/en/stable/installing/#install-pip) to install it for your system Python if you would like it.
 
 ## Brewed Python modules
-For brewed Python, modules installed with `pip` or `python setup.py install` will be installed to the `$(brew --prefix)/lib/pythonX.Y/site-packages` directory (explained above). Executable Python scripts will be in `$(brew --prefix)/bin`.
+For brewed Python, modules installed with `pip3` or `python3 setup.py install` will be installed to the `$(brew --prefix)/lib/pythonX.Y/site-packages` directory (explained above). Executable Python scripts will be in `$(brew --prefix)/bin`.
 
 The system Python may not know which compiler flags to set in order to build bindings for software installed in Homebrew so you may need to run:
 
@@ -92,4 +80,4 @@ Homebrew will still install Python modules into Homebrew's `site-packages` and *
 Virtualenv has a `--system-site-packages` switch to allow "global" (i.e. Homebrew's) `site-packages` to be accessible from within the virtualenv.
 
 ## Why is Homebrew's Python being installed as a dependency?
-Formulae that declare an unconditional dependency on the `"python"` or `"python@2"` formulae are bottled against Homebrew's Python 3.x or 2.7.x and require it to be installed.
+Formulae that declare an unconditional dependency on the `"python"` formula are bottled against Homebrew's Python 3.x and require it to be installed.

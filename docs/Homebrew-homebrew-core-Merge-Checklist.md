@@ -28,7 +28,7 @@ Check for:
   - other teams drop new version with minor release 0 but promote it to stable only after a few minor releases
   - if the software uses only hosted version control (such as GitHub, GitLab or Bitbucket), the release should be tagged and if upstream marks latest/pre-releases, PR must use latest
 - does changelog mention addition/removal of dependency and is it addressed in the PR
-  - does formula depend on versioned formula (for example `python@2`, `go@1.10`, `erlang@17`) that can be upgraded
+  - does formula depend on versioned formula (for example `python@3.7`, `go@1.10`, `erlang@17`) that can be upgraded
 - commits
   - contain one formula change per commit
     - ask author to squash

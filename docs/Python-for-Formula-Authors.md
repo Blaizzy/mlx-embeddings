@@ -149,7 +149,7 @@ Sometimes we have to edit a `Makefile` on-the-fly to use our prefix for the Pyth
 
 Libraries built for Python 3 should include `depends_on "python"`, which will bottle against Homebrew's Python 3.x. Python 2.x libraries must function when they are installed against either the system Python or brewed Python.
 
-Python 2 libraries do not need a `depends_on "python@2"` declaration; they will be built with the system Python, but should still be usable with any other Python 2.7. If this is not the case, it's an upstream bug; [here's some advice for resolving it](https://blog.tim-smith.us/2015/09/python-extension-modules-os-x/).
+Python 2 libraries need a `uses_from_macos "python@2"` declaration; they will be built with the system Python, but should still be usable with any other Python 2.7. If this is not the case, it's an upstream bug; [here's some advice for resolving it](https://blog.tim-smith.us/2015/09/python-extension-modules-os-x/).
 
 ### Installing
 

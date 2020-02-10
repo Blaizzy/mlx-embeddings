@@ -27,25 +27,7 @@ writable location. But if you installed Homebrew as we recommend,
 `/usr/local` will be writable without sudo. So now you are good to
 install the development tools you need without risking the use of sudo.
 
-## Python packages (eggs) without sudo
-
-Rather than changing the rights on `/Library/Python`, we recommend the
-following options:
-
-### With a brewed Python
-Note, `easy_install` is deprecated. We install `pip` (or `pip2` for
-Python 2) along with python/python2.
-
-We set up distutils such that `pip install` will always put modules in
-`$(brew --prefix)/lib/pythonX.Y/site-packages` and scripts in
-`$(brew --prefix)/share/python`. Therefore, you won’t need sudo!
-
-Do `brew info python` or `brew info python@2` for precise information
-about the paths. Note, a brewed Python still searches for modules in
-`/Library/Python/X.Y/site-packages` and also in
-`~/Library/Python/X.Y/lib/python/site-packages`.
-
-### With system’s Python
+### Python packages (eggs) without sudo using system’s Python
 _This is only recommended if you **don't** use a brewed Python._
 
 On macOS, any [Python version X.Y also searches in
@@ -66,7 +48,7 @@ following content:
 install_lib = ~/Library/Python/$py_version_short/lib/python/site-packages
 ```
 
-### Using virtualenv (works with brewed and system’s Python)
+### Using virtualenv (with system Python)
 
 [Virtualenv](https://virtualenv.pypa.io/) ships `pip` and
 creates isolated Python environments with separate site-packages,

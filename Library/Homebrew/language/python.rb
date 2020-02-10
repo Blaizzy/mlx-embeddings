@@ -26,7 +26,6 @@ module Language
     def self.each_python(build, &block)
       original_pythonpath = ENV["PYTHONPATH"]
       pythons = { "python@3" => "python3",
-                  "python@2" => "python2.7",
                   "pypy"     => "pypy",
                   "pypy3"    => "pypy3" }
       pythons.each do |python_formula, python|
@@ -152,17 +151,16 @@ module Language
       # Creates a virtualenv in `libexec`, installs all `resource`s defined
       # on the formula, and then installs the formula. An options hash may be
       # passed (e.g., `:using => "python"`) to override the default, guessed
-      # formula preference for python or python2, or to resolve an ambiguous
-      # case where it's not clear whether python or python2 should be the
+      # formula preference for python or python@x.y, or to resolve an ambiguous
+      # case where it's not clear whether python or python@x.y should be the
       # default guess.
       def virtualenv_install_with_resources(options = {})
         python = options[:using]
         if python.nil?
-          pythons = %w[python python@2 python2 python3 python@3 python@3.8 pypy pypy3]
+          pythons = %w[python python3 python@3 python@3.8 pypy pypy3]
           wanted = pythons.select { |py| needs_python?(py) }
           raise FormulaAmbiguousPythonError, self if wanted.size > 1
 
-          python = wanted.first || "python2.7"
           python = "python3" if python == "python"
         end
         venv = virtualenv_create(libexec, python.delete("@"))
@@ -210,16 +208,14 @@ module Language
             next unless f.symlink?
             next unless (rp = f.realpath.to_s).start_with? HOMEBREW_CELLAR
 
-            python = rp.include?("python@2") ? "python@2" : "python"
-            new_target = rp.sub %r{#{HOMEBREW_CELLAR}/#{python}/[^/]+}, Formula[python].opt_prefix
+            new_target = rp.sub %r{#{HOMEBREW_CELLAR}/python/[^/]+}, Formula["python"].opt_prefix
             f.unlink
             f.make_symlink new_target
           end
 
           Pathname.glob(@venv_root/"lib/python*/orig-prefix.txt").each do |prefix_file|
             prefix_path = prefix_file.read
-            python = prefix_path.include?("python@2") ? "python@2" : "python"
-            prefix_path.sub! %r{^#{HOMEBREW_CELLAR}/#{python}/[^/]+}, Formula[python].opt_prefix
+            prefix_path.sub! %r{^#{HOMEBREW_CELLAR}/#{python}/[^/]+}, Formula["python"].opt_prefix
             prefix_file.atomic_write prefix_path
           end
         end
