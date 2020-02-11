@@ -13,6 +13,7 @@ require "extend/ENV"
 require "debrew"
 require "fcntl"
 require "socket"
+require "cmd/install"
 
 class Build
   attr_reader :formula, :deps, :reqs
@@ -183,13 +184,14 @@ class Build
 end
 
 begin
+  Homebrew.install_args.parse
   error_pipe = UNIXSocket.open(ENV["HOMEBREW_ERROR_PIPE"], &:recv_io)
   error_pipe.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)
 
   trap("INT", old_trap)
 
-  formula = ARGV.formulae.first
-  options = Options.create(ARGV.flags_only)
+  formula = Homebrew.args.formulae.first
+  options = Options.create(Homebrew.args.flags_only)
   build   = Build.new(formula, options)
   build.install
 rescue Exception => e # rubocop:disable Lint/RescueException
