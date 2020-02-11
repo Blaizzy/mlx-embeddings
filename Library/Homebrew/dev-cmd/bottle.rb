@@ -439,7 +439,27 @@ module Homebrew
     raise UsageError, "--merge requires a JSON file path argument" if Homebrew.args.named.blank?
 
     bottles_hash = Homebrew.args.named.reduce({}) do |hash, json_file|
-      hash.deep_merge(JSON.parse(IO.read(json_file)))
+      hash.deep_merge(JSON.parse(IO.read(json_file))) do |key, first, second|
+        if key == "cellar"
+          # Prioritize HOMEBREW_CELLAR over :any over :any_skip_relocation
+          cellars = [first, second]
+          if cellars.include?(HOMEBREW_CELLAR)
+            HOMEBREW_CELLAR
+          elsif first.start_with?("/")
+            first
+          elsif second.start_with?("/")
+            second
+          elsif cellars.include?(:any)
+            :any
+          elsif cellars.include?(:any_skip_relocation)
+            :any_skip_relocation
+          else
+            second
+          end
+        else
+          second
+        end
+      end
     end
 
     bottles_hash.each do |formula_name, bottle_hash|
