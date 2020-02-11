@@ -26,6 +26,10 @@ RSpec/LeakyConstantDeclaration:
   Enabled: false
 RSpec/MessageSpies:
   Enabled: false
+RSpec/RepeatedDescription:
+  Enabled: false
+RSpec/RepeatedExampleGroupDescription:
+  Enabled: false
 
 # TODO: try to reduce these (also requires fixing Homebrew/bundle)
 RSpec/ExampleLength:
