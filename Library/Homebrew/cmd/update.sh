@@ -383,6 +383,18 @@ EOS
   export GIT_TERMINAL_PROMPT="0"
   export GIT_SSH_COMMAND="ssh -oBatchMode=yes"
 
+  if [[ -n "$HOMEBREW_GIT_NAME" ]]
+  then
+    export GIT_AUTHOR_NAME="$HOMEBREW_GIT_NAME"
+    export GIT_COMMITTER_NAME="$HOMEBREW_GIT_NAME"
+  fi
+
+  if [[ -n "$HOMEBREW_GIT_EMAIL" ]]
+  then
+    export GIT_AUTHOR_EMAIL="$HOMEBREW_GIT_EMAIL"
+    export GIT_COMMITTER_EMAIL="$HOMEBREW_GIT_EMAIL"
+  fi
+
   if [[ -z "$HOMEBREW_VERBOSE" ]]
   then
     QUIET_ARGS=(-q)
