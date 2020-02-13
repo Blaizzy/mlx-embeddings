@@ -62,6 +62,13 @@ module Homebrew
     Formulary.enable_factory_cache!
 
     recursive = !args.send("1?")
+    installed = args.installed? || ARGV.formulae.all?(&:opt_or_installed_prefix_keg)
+
+    @use_runtime_dependencies = installed && recursive &&
+                                !args.include_build? &&
+                                !args.include_test? &&
+                                !args.include_optional? &&
+                                !args.skip_recommended?
 
     if args.tree?
       if args.installed?
@@ -79,14 +86,6 @@ module Homebrew
       puts_deps Homebrew.args.formulae, recursive
       return
     end
-
-    installed = args.installed? || ARGV.formulae.all?(&:opt_or_installed_prefix_keg)
-
-    @use_runtime_dependencies = installed && recursive &&
-                                !args.include_build? &&
-                                !args.include_test? &&
-                                !args.include_optional? &&
-                                !args.skip_recommended?
 
     if Homebrew.args.remaining.empty?
       raise FormulaUnspecifiedError unless args.installed?
@@ -176,7 +175,8 @@ module Homebrew
 
   def recursive_deps_tree(f, prefix, recursive)
     includes, ignores = argv_includes_ignores(ARGV)
-    deps = reject_ignores(f.deps, ignores, includes)
+    dependables = @use_runtime_dependencies ? f.runtime_dependencies : f.deps
+    deps = reject_ignores(dependables, ignores, includes)
     reqs = reject_ignores(f.requirements, ignores, includes)
     dependables = reqs + deps
 
