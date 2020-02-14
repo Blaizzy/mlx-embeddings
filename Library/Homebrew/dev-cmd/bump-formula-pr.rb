@@ -256,10 +256,11 @@ module Homebrew
       ]
     end
 
-    # When bumping a linux-only formula,
-    # one needs to also delete the sha256 linux bottle line.
-    # That's because of running test-bot with --keep-old option in linuxbrew-core.
-    if formula.path.read.include?("depends_on :linux")
+    # When bumping a linux-only formula, one needs to also delete the
+    # sha256 linux bottle line if it exists. That's because of running
+    # test-bot with --keep-old option in linuxbrew-core.
+    formula_contents = formula.path.read
+    if formula_contents.include?("depends_on :linux") && formula_contents.include?("=> :x86_64_linux")
       replacement_pairs << [
         /^    sha256 ".+" => :x86_64_linux\n/m,
         "\\2",
