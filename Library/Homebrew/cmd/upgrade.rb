@@ -326,6 +326,8 @@ module Homebrew
                                           .join(", ")
     end
 
+    return if args.dry_run?
+
     reinstallable_broken_dependents.each do |f|
       reinstall_formula(f, build_from_source: true)
     rescue FormulaInstallationAlreadyAttemptedError

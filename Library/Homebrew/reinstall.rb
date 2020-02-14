@@ -8,6 +8,8 @@ module Homebrew
   module_function
 
   def reinstall_formula(f, build_from_source: false)
+    return if args.dry_run?
+
     if f.opt_prefix.directory?
       keg = Keg.new(f.opt_prefix.resolved_path)
       tab = Tab.for_keg(keg)
