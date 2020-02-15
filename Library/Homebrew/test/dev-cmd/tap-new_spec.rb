@@ -7,12 +7,13 @@ describe "Homebrew.tap_new_args" do
 end
 
 describe "brew tap-new", :integration_test do
-  it "initializes a new Tap with a ReadMe file" do
+  it "initializes a new Tap with a ReadMe file and GitHub Actions CI" do
     expect { brew "tap-new", "homebrew/foo", "--verbose" }
       .to be_a_success
       .and output(%r{homebrew/foo}).to_stdout
       .and not_to_output.to_stderr
 
     expect(HOMEBREW_LIBRARY/"Taps/homebrew/homebrew-foo/README.md").to exist
+    expect(HOMEBREW_LIBRARY/"Taps/homebrew/homebrew-foo/.github/workflows/main.yml").to exist
   end
 end
