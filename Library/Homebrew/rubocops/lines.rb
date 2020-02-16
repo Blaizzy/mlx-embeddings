@@ -439,6 +439,7 @@ module RuboCop
               open-mpi
               openssl@1.1
               pcre
+              protobuf
               wolfssl
               xz
             ].include?(@formula_name)
