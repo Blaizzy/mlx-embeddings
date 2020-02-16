@@ -17,7 +17,7 @@ describe Homebrew::MissingFormula do
     end
 
     it { is_expected.to blacklist("gem") }
-    it { is_expected.to blacklist("latex") }
+    it("blacklists LaTeX", :needs_macos) { is_expected.to blacklist("latex") }
     it { is_expected.to blacklist("pip") }
     it { is_expected.to blacklist("pil") }
     it { is_expected.to blacklist("macruby") }
