@@ -529,6 +529,7 @@ class Tap
       "formula_names" => formula_names,
       "formula_files" => formula_files.map(&:to_s),
       "command_files" => command_files.map(&:to_s),
+      "cask_files"    => cask_files.map(&:to_s),
       "pinned"        => pinned?,
     }
 
