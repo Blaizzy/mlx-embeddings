@@ -102,4 +102,12 @@ module Utils
 
     quiet_system "git", "ls-remote", url
   end
+
+  def self.set_git_name_email!
+    return unless ENV["HOMEBREW_GIT_NAME"]
+    return unless ENV["HOMEBREW_GIT_EMAIL"]
+
+    ENV["GIT_AUTHOR_NAME"]  = ENV["GIT_COMMITTER_NAME"]  = ENV["HOMEBREW_GIT_NAME"]
+    ENV["GIT_AUTHOR_EMAIL"] = ENV["GIT_COMMITTER_EMAIL"] = ENV["HOMEBREW_GIT_EMAIL"]
+  end
 end

@@ -1744,6 +1744,7 @@ class Formula
     }
 
     ENV.clear_sensitive_environment!
+    Utils.set_git_name_email!
 
     mktemp("#{name}-test") do |staging|
       staging.retain! if ARGV.keep_tmp?
