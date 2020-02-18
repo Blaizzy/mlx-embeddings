@@ -172,6 +172,10 @@ module Homebrew
     new_mirror ||= case new_url
     when requested_spec != :devel && %r{.*ftp.gnu.org/gnu.*}
       new_url.sub "ftp.gnu.org/gnu", "ftpmirror.gnu.org"
+    when %r{.*download.savannah.gnu.org/*}
+      new_url.sub "download.savannah.gnu.org", "download-mirror.savannah.gnu.org"
+    when %r{.*www.apache.org/dyn/closer.lua\?path=.*}
+      new_url.sub "www.apache.org/dyn/closer.lua?path=", "archive.apache.org/dist/"
     when %r{.*mirrors.ocf.berkeley.edu/debian.*}
       new_url.sub "mirrors.ocf.berkeley.edu/debian", "mirrorservice.org/sites/ftp.debian.org/debian"
     end
