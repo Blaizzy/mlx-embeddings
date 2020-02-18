@@ -312,6 +312,17 @@ module Homebrew
 
     new_formula_version = formula_version(formula, requested_spec, new_contents)
 
+    if !new_mirror && !formula_spec.mirrors.empty?
+      if Homebrew.args.force?
+        opoo "#{formula}: Removing all mirrors because a --mirror= argument was not specified."
+      else
+        odie <<~EOS
+          #{formula}: a --mirror= argument for updating the mirror URL was not specified.
+          Use --force to remove all mirrors.
+        EOS
+      end
+    end
+
     if new_formula_version < old_formula_version
       formula.path.atomic_write(backup_file) unless args.dry_run?
       odie <<~EOS
