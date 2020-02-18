@@ -168,7 +168,13 @@ module Homebrew
     new_hash = args[hash_type] if hash_type
     new_tag = args.tag
     new_revision = args.revision
-    new_mirror = args.mirror
+    new_mirror ||= args.mirror
+    new_mirror ||= case new_url
+    when requested_spec != :devel && %r{.*ftp.gnu.org/gnu.*}
+      new_url.sub "ftp.gnu.org/gnu", "ftpmirror.gnu.org"
+    when %r{.*mirrors.ocf.berkeley.edu/debian.*}
+      new_url.sub "mirrors.ocf.berkeley.edu/debian", "mirrorservice.org/sites/ftp.debian.org/debian"
+    end
     forced_version = args.version
     new_url_hash = if new_url && new_hash
       true
@@ -179,12 +185,6 @@ module Homebrew
     elsif !new_url
       odie "#{formula}: no --url= argument specified!"
     else
-      new_mirror ||= case new_url
-      when requested_spec != :devel && %r{.*ftp.gnu.org/gnu.*}
-        new_url.sub "ftp.gnu.org/gnu", "ftpmirror.gnu.org"
-      when %r{.*mirrors.ocf.berkeley.edu/debian.*}
-        new_url.sub "mirrors.ocf.berkeley.edu/debian", "mirrorservice.org/sites/ftp.debian.org/debian"
-      end
       resource = Resource.new { @url = new_url }
       resource.download_strategy = DownloadStrategyDetector.detect_from_url(new_url)
       resource.owner = Resource.new(formula.name)
