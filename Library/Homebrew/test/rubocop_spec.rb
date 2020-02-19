@@ -5,7 +5,7 @@ require "open3"
 describe "RuboCop" do
   context "when calling `rubocop` outside of the Homebrew environment" do
     before do
-      ENV.keys.each do |key|
+      ENV.each_key do |key|
         ENV.delete(key) if key.start_with?("HOMEBREW_")
       end
 
