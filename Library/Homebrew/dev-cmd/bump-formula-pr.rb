@@ -146,7 +146,7 @@ module Homebrew
       if guesses.count == 1
         formula = guesses.shift
       elsif guesses.count > 1
-        odie "Couldn't guess formula for sure; could be one of these:\n#{guesses}"
+        odie "Couldn't guess formula for sure; could be one of these:\n#{guesses.map(&:name).join(", ")}"
       end
     end
     raise FormulaUnspecifiedError unless formula
