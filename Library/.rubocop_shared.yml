@@ -50,6 +50,14 @@ Style/CollectionMethods:
 Style/FormatStringToken:
   EnforcedStyle: annotated
 
+# autocorrectable and more readable
+Style/HashEachMethods:
+  Enabled: true
+Style/HashTransformKeys:
+  Enabled: true
+Style/HashTransformValues:
+  Enabled: true
+
 # This shouldn't be enabled until LineLength is lower.
 Style/IfUnlessModifier:
   Enabled: false

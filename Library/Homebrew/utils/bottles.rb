@@ -88,6 +88,10 @@ module Utils
     end
 
     class Collector
+      extend Forwardable
+
+      def_delegators :@checksums, :keys, :[], :[]=, :key?, :each_key
+
       def initialize
         @checksums = {}
       end
@@ -95,22 +99,6 @@ module Utils
       def fetch_checksum_for(tag)
         tag = find_matching_tag(tag)
         return self[tag], tag if tag
-      end
-
-      def keys
-        @checksums.keys
-      end
-
-      def [](key)
-        @checksums[key]
-      end
-
-      def []=(key, value)
-        @checksums[key] = value
-      end
-
-      def key?(key)
-        @checksums.key?(key)
       end
 
       private

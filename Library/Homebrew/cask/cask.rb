@@ -168,8 +168,8 @@ module Cask
     end
 
     def to_h_hash_gsubs(hash)
-      hash.to_h.each_with_object({}) do |(key, value), h|
-        h[key] = to_h_gsubs(value)
+      hash.to_h.transform_values do |value|
+        to_h_gsubs(value)
       end
     rescue TypeError
       to_h_array_gsubs(hash)

@@ -196,7 +196,7 @@ class LinkageChecker
 
     version_hash = {}
     version_conflict_deps = Set.new
-    @brewed_dylibs.keys.each do |l|
+    @brewed_dylibs.each_key do |l|
       name = l.split("/").last
       unversioned_name, = name.split("@")
       version_hash[unversioned_name] ||= Set.new
