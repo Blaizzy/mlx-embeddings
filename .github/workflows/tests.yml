@@ -5,6 +5,7 @@ on:
   pull_request: []
 jobs:
   tests:
+    if: github.repository == 'Homebrew/brew'
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
