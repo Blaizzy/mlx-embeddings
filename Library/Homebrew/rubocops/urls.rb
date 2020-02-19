@@ -41,6 +41,11 @@ module RuboCop
             problem "Please don't use fossies.org in the url (using as a mirror is fine)"
           end
 
+          apache_pattern = %r{^https?://(?:[^/]*\.)?apache\.org/(?:dyn/closer\.cgi\?path=/?|dist/)(.*)}i
+          audit_urls(urls, apache_pattern) do |match, url|
+            problem "#{url} should be `https://www.apache.org/dyn/closer.lua?path=#{match[1]}`"
+          end
+
           audit_urls(mirrors, /.*/) do |_, mirror|
             urls.each do |url|
               url_string = string_content(parameters(url).first)
@@ -58,7 +63,7 @@ module RuboCop
                                                  %r{^http://ftpmirror\.gnu\.org/},
                                                  %r{^http://download\.savannah\.gnu\.org/},
                                                  %r{^http://download-mirror\.savannah\.gnu\.org/},
-                                                 %r{^http://[^/]*\.apache\.org/},
+                                                 %r{^http://(?:[^/]*\.)?apache\.org/},
                                                  %r{^http://code\.google\.com/},
                                                  %r{^http://fossies\.org/},
                                                  %r{^http://mirrors\.kernel\.org/},
@@ -76,6 +81,11 @@ module RuboCop
                                                  %r{^http://(?:[^/]*\.)?mirrorservice\.org/}])
           audit_urls(urls, http_to_https_patterns) do |_, url|
             problem "Please use https:// for #{url}"
+          end
+
+          apache_mirror_pattern = %r{^https?://(?:[^/]*\.)?apache\.org/dyn/closer\.(?:cgi|lua)\?path=/?(.*)}i
+          audit_urls(mirrors, apache_mirror_pattern) do |match, mirror|
+            problem "Please use `https://archive.apache.org/dist/#{match[1]}` as a mirror instead of #{mirror}."
           end
 
           cpan_pattern = %r{^http://search\.mcpan\.org/CPAN/(.*)}i
