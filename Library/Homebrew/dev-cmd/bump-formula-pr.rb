@@ -40,8 +40,9 @@ module Homebrew
              description: "Print the pull request URL instead of opening in a browser."
       switch "--no-fork",
              description: "Don't try to fork the repository."
-      flag   "--mirror=",
-             description: "Use the specified <URL> as a mirror URL."
+      comma_array "--mirror=",
+                  description: "Use the specified <URL> as a mirror URL. If <URL> is a comma-separated list "\
+                               "of URLs, multiple mirrors will be added."
       flag   "--version=",
              description: "Use the specified <version> to override the value parsed from the URL or tag. Note "\
                           "that `--version=0` can be used to delete an existing version override from a "\
@@ -168,7 +169,7 @@ module Homebrew
     new_hash = args[hash_type] if hash_type
     new_tag = args.tag
     new_revision = args.revision
-    new_mirror ||= args.mirror
+    new_mirrors ||= args.mirror
     new_mirror ||= case new_url
     when requested_spec != :devel && %r{.*ftp.gnu.org/gnu.*}
       new_url.sub "ftp.gnu.org/gnu", "ftpmirror.gnu.org"
@@ -179,6 +180,7 @@ module Homebrew
     when %r{.*mirrors.ocf.berkeley.edu/debian.*}
       new_url.sub "mirrors.ocf.berkeley.edu/debian", "mirrorservice.org/sites/ftp.debian.org/debian"
     end
+    new_mirrors ||= [new_mirror] unless new_mirror.nil?
     forced_version = args.version
     new_url_hash = if new_url && new_hash
       true
@@ -253,10 +255,10 @@ module Homebrew
 
     backup_file = File.read(formula.path) unless args.dry_run?
 
-    if new_mirror
+    if new_mirrors
       replacement_pairs << [
         /^( +)(url \"#{Regexp.escape(new_url)}\"\n)/m,
-        "\\1\\2\\1mirror \"#{new_mirror}\"\n",
+        "\\1\\2\\1mirror \"#{new_mirrors.join("\"\n\\1mirror \"")}\"\n",
       ]
     end
 
@@ -278,9 +280,9 @@ module Homebrew
             old_formula_version.to_s,
             forced_version,
           ]
-        elsif new_mirror
+        elsif new_mirrors
           replacement_pairs << [
-            /^( +)(mirror \"#{new_mirror}\"\n)/m,
+            /^( +)(mirror \"#{new_mirrors.last}\"\n)/m,
             "\\1\\2\\1version \"#{forced_version}\"\n",
           ]
         else
@@ -312,7 +314,7 @@ module Homebrew
 
     new_formula_version = formula_version(formula, requested_spec, new_contents)
 
-    if !new_mirror && !formula_spec.mirrors.empty?
+    if !new_mirrors && !formula_spec.mirrors.empty?
       if Homebrew.args.force?
         opoo "#{formula}: Removing all mirrors because a --mirror= argument was not specified."
       else
