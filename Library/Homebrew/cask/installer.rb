@@ -328,8 +328,8 @@ module Cask
 
     def missing_cask_and_formula_dependencies
       collect_cask_and_formula_dependencies.reject do |cask_or_formula|
-        (cask_or_formula.respond_to?(:installed?) && cask_or_formula.installed?) ||
-          (cask_or_formula.respond_to?(:any_version_installed?) && cask_or_formula.any_version_installed?)
+        (cask_or_formula.try(:installed?) || cask_or_formula.try(:any_version_installed?)) &&
+          (cask_or_formula.respond_to?(:opt_linked?) ? cask_or_formula.opt_linked? : true)
       end
     end
 
