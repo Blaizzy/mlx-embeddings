@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "commands"
 require "extend/cachable"
 require "readall"
 require "description_cache_store"
@@ -474,17 +475,10 @@ class Tap
     @command_dir ||= path/"cmd"
   end
 
-  def command_file?(file)
-    file = Pathname.new(file) unless file.is_a? Pathname
-    file = file.expand_path(path)
-    file.parent == command_dir && file.basename.to_s.match?(/^brew(cask)?-/) &&
-      (file.executable? || file.extname == ".rb")
-  end
-
   # An array of all commands files of this {Tap}.
   def command_files
     @command_files ||= if command_dir.directory?
-      command_dir.children.select(&method(:command_file?))
+      Commands.find_commands(command_dir)
     else
       []
     end
@@ -533,9 +527,9 @@ class Tap
       "official"      => official?,
       "formula_names" => formula_names,
       "formula_files" => formula_files.map(&:to_s),
-      "command_files" => command_files.map(&:to_s),
       "cask_tokens"   => cask_tokens,
       "cask_files"    => cask_files.map(&:to_s),
+      "command_files" => command_files.map(&:to_s),
       "pinned"        => pinned?,
     }
 
