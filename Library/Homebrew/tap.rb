@@ -419,7 +419,12 @@ class Tap
 
   # An array of all {Formula} names of this {Tap}.
   def formula_names
-    @formula_names ||= formula_files.map { |f| formula_file_to_name(f) }
+    @formula_names ||= formula_files.map(&method(:formula_file_to_name))
+  end
+
+  # An array of all {Cask} tokens of this {Tap}.
+  def cask_tokens
+    @cask_tokens ||= cask_files.map(&method(:formula_file_to_name))
   end
 
   # path to the directory of all alias files for this {Tap}.
@@ -529,6 +534,7 @@ class Tap
       "formula_names" => formula_names,
       "formula_files" => formula_files.map(&:to_s),
       "command_files" => command_files.map(&:to_s),
+      "cask_tokens"   => cask_tokens,
       "cask_files"    => cask_files.map(&:to_s),
       "pinned"        => pinned?,
     }
