@@ -32,6 +32,9 @@ To make Homebrew's completions available in `zsh`, you must get the Homebrew-man
 ```sh
 if type brew &>/dev/null; then
   FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
+
+  autoload -Uz compinit
+  compinit
 fi
 ```
 
