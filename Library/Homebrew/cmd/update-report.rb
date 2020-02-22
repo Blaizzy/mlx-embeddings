@@ -51,6 +51,7 @@ module Homebrew
       puts <<~EOS
         #{Tty.bold}Read the analytics documentation (and how to opt-out) here:
           #{Formatter.url("https://docs.brew.sh/Analytics")}#{Tty.reset}
+        No analytics have been recorded yet (or will be during this `brew` run).
 
       EOS
 
