@@ -12,7 +12,7 @@ module RuboCop
           crystal
           fpc
           ghc
-          ghc@8.2
+          ghc@8.6
           go
           go@1.9
           go@1.10
