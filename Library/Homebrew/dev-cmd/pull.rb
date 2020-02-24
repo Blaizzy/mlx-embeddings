@@ -287,12 +287,7 @@ module Homebrew
     pr_number = url[%r{/pull\/([0-9]+)}, 1]
     return false unless pr_number
 
-    # Use `homebrew` remote if HOMEBREW_FORCE_HOMEBREW_ON_LINUX env variable is set.
-    # The `homebrew` remote points to homebrew-core tap and is used by Linux maintainers.
-    # See https://docs.brew.sh/Homebrew-linuxbrew-core-Maintainer-Guide#preparation
-    # Skip that on Jenkins, because upload job runs on Linux.
-    remote = (ENV["HOMEBREW_FORCE_HOMEBREW_ON_LINUX"] && ENV["JENKINS_HOME"].nil?) ? "homebrew" : "origin"
-    safe_system "git", "fetch", "--quiet", remote, "pull/#{pr_number}/head"
+    safe_system "git", "fetch", "--quiet", "origin", "pull/#{pr_number}/head"
     Utils.popen_read("git", "rev-list", "--parents", "-n1", "FETCH_HEAD").count(" ") > 1
   end
 
