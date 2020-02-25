@@ -29,6 +29,10 @@ module Homebrew
   def log
     log_args.parse
 
+    # As this command is simplifying user run commands then let's just use a
+    # user path, too.
+    ENV["PATH"] = ENV["HOMEBREW_PATH"]
+
     if ARGV.named.empty?
       git_log HOMEBREW_REPOSITORY
     else
