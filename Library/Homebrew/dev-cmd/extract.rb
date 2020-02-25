@@ -180,6 +180,9 @@ module Homebrew
     # The class name has to be renamed to match the new filename,
     # e.g. Foo version 1.2.3 becomes FooAT123 and resides in Foo@1.2.3.rb.
     class_name = Formulary.class_s(name)
+
+    # Remove any existing version suffixes, as a new one will be added later
+    name.sub!(/\b@(.*)\z\b/i, "")
     versioned_name = Formulary.class_s("#{name}@#{version}")
     result.gsub!("class #{class_name} < Formula", "class #{versioned_name} < Formula")
 
