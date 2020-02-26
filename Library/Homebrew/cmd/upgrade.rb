@@ -187,7 +187,6 @@ module Homebrew
 
     upgrade_version = if f.optlinked?
       "#{Keg.new(f.opt_prefix).version} -> #{f.pkg_version}"
-      " #{f.pkg_version} #{fi.options.to_a.join " "}"
     else
       "-> #{f.pkg_version}"
     end
