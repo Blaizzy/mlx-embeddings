@@ -185,12 +185,13 @@ module Homebrew
     end
     fi.prelude
 
-    if f.optlinked?
-      oh1 "Upgrading #{Formatter.identifier(f.full_specified_name)} #{Keg.new(f.opt_prefix).version} ->"\
+    upgrade_version = if f.optlinked?
+      "#{Keg.new(f.opt_prefix).version} -> #{f.pkg_version}"
       " #{f.pkg_version} #{fi.options.to_a.join " "}"
     else
-      oh1 "Upgrading #{Formatter.identifier(f.full_specified_name)} -> #{f.pkg_version} #{fi.options.to_a.join " "}"
+      "-> #{f.pkg_version}"
     end
+    oh1 "Upgrading #{Formatter.identifier(f.full_specified_name)} #{upgrade_version} #{fi.options.to_a.join(" ")}"
 
     # first we unlink the currently active keg for this formula otherwise it is
     # possible for the existing build to interfere with the build we are about to
