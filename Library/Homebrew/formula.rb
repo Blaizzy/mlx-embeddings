@@ -392,7 +392,7 @@ class Formula
       Formula[path.basename(".rb").to_s]
     rescue FormulaUnavailableError
       nil
-    end.compact.sort
+    end.compact.sort_by(&:version).reverse
   end
 
   # A named Resource for the currently active {SoftwareSpec}.
