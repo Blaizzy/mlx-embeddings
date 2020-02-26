@@ -186,7 +186,8 @@ module Homebrew
     fi.prelude
 
     if f.optlinked?
-      oh1 "Upgrading #{Formatter.identifier(f.full_specified_name)} #{Keg.new(f.opt_prefix).version} -> #{f.pkg_version} #{fi.options.to_a.join " "}"
+      oh1 "Upgrading #{Formatter.identifier(f.full_specified_name)} #{Keg.new(f.opt_prefix).version} ->"\
+      " #{f.pkg_version} #{fi.options.to_a.join " "}"
     else
       oh1 "Upgrading #{Formatter.identifier(f.full_specified_name)} -> #{f.pkg_version} #{fi.options.to_a.join " "}"
     end
