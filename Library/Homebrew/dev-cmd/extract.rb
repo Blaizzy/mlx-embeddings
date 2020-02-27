@@ -111,8 +111,10 @@ module Homebrew
     end
 
     destination_tap = Tap.fetch(args.remaining.second)
-    odie "Cannot extract formula to homebrew/core!" if destination_tap.core_tap?
-    odie "Cannot extract formula to the same tap!" if destination_tap == source_tap
+    unless ARGV.homebrew_developer?
+      odie "Cannot extract formula to homebrew/core!" if destination_tap.core_tap?
+      odie "Cannot extract formula to the same tap!" if destination_tap == source_tap
+    end
     destination_tap.install unless destination_tap.installed?
 
     repo = source_tap.path
