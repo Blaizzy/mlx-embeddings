@@ -201,7 +201,7 @@ class Version
 
   def self.detect(url, specs)
     if specs.key?(:tag)
-      FromURL.new(specs[:tag][/((?:\d+\.)*\d+)/, 1])
+      FromURL.parse(specs[:tag])
     else
       FromURL.parse(url)
     end

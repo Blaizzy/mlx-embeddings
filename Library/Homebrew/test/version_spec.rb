@@ -684,9 +684,14 @@ describe Version do
         .to be_detected_from("https://php.net/get/php-7.1.10.tar.gz/from/this/mirror")
     end
 
-    specify "from URL" do
+    specify "from tag" do
       expect(described_class.create("1.2.3"))
         .to be_detected_from("https://github.com/foo/bar.git", tag: "v1.2.3")
+    end
+
+    specify "beta from tag" do
+      expect(described_class.create("1.2.3-beta1"))
+        .to be_detected_from("https://github.com/foo/bar.git", tag: "v1.2.3-beta1")
     end
   end
 end
