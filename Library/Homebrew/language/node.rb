@@ -44,6 +44,7 @@ module Language
       %W[
         -ddd
         --global
+        --unsafe-perm
         --build-from-source
         --#{npm_cache_config}
         --prefix=#{libexec}
