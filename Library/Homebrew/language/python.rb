@@ -88,6 +88,17 @@ module Language
       ]
     end
 
+    def self.rewrite_python_shebang(python_path)
+      Pathname(".").find do |f|
+        regex = %r{^#! ?/usr/bin/(env )?python([23](\.\d{1,2})?)$}
+        maximum_regex_length = "#! /usr/bin/env pythonx.yyy$".length
+        next unless f.file?
+        next unless regex.match?(f.read(maximum_regex_length))
+
+        Utils::Inreplace.inreplace f.to_s, regex, "#!#{python_path}"
+      end
+    end
+
     # Mixin module for {Formula} adding virtualenv support features.
     module Virtualenv
       def self.included(base)
