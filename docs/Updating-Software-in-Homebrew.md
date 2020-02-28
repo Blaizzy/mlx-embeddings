@@ -8,6 +8,6 @@ The guide on [opening a pull request](How-To-Open-a-Homebrew-Pull-Request.md#sub
 
 You can look back at previous pull requests that updated the formula to see how others have handled things in the past but be sure to look at a variety of PRs. Sometimes formulae are not updated properly (for example, running `bump-formula-pr` on a Python formula that needs dependency updates), so you may need to use your judgment to determine how to proceed.
 
-Once you've created the pull request in the appropriate Homebrew repository your commit(s) will be tested on our continuous integration servers, showing a green check mark when everything passed or a red X when there were failures. Maintainers will review your pull request and provide feedback about any changes that need to be made before it can be merged.
+Once you've created the pull request in the appropriate Homebrew repository your commit(s) will be tested on our continuous integration servers, showing a green check mark if everything passed or a red X if there were failures. Maintainers will review your pull request and provide feedback about any changes that need to be made before it can be merged.
 
 We appreciate your help in keeping Homebrew's formulae up to date as new versions of software are released!
