@@ -50,7 +50,7 @@ module Language
         #{Dir.pwd}/#{pack}
       ]
 
-      args << "--unsafe-perm" if ENV["USER"] == "root"
+      args << "--unsafe-perm" if Process.uid.zero?
 
       args
     end
