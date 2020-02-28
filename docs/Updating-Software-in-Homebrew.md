@@ -4,7 +4,7 @@ Did you find something in Homebrew that wasn't the latest version? You can help 
 
 First, check the pull requests in the [homebrew-core](https://github.com/Homebrew/homebrew-core/pulls) or [linuxbrew-core](https://github.com/Homebrew/linuxbrew-core/pulls) repositories (whichever apply) to make sure there isn't already an open PR. You may also want to look through closed pull requests for the formula, as sometimes formulae run into problems preventing them from being updated and it's better to be aware of any issues before putting significant effort into an update.
 
-The guide on [opening a pull request](How-To-Open-a-Homebrew-Pull-Request.md#submit-a-new-version-of-an-existing-formula) should really be all you need, this will explain how to easily change the url to point to the latest version and that's really all you need. If you want to read up on `bump-formula-pr` before using it you could check [the manpage](Manpage.md#bump-formula-pr-options-formula).
+The [How To Open a Homebrew Pull Request](How-To-Open-a-Homebrew-Pull-Request.md) documentation should explain most everything you need to know about the process of creating a PR for a version update. For simple formulae updates, this typically involves changing the URL and sha256.
 
 However, some updates require additional changes to the formulae. You can look back at previous pull requests to see how others have handled things in the past but be sure to look at a variety of PRs. Sometimes formulae aren't updated properly, so you may need to use your judgment to determine how to best proceed.
 
