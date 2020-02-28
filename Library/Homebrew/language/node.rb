@@ -41,15 +41,18 @@ module Language
       pack = pack_for_installation
 
       # npm install args for global style module format installed into libexec
-      %W[
+      args = %W[
         -ddd
         --global
-        --unsafe-perm
         --build-from-source
         --#{npm_cache_config}
         --prefix=#{libexec}
         #{Dir.pwd}/#{pack}
       ]
+
+      args << "--unsafe-perm" if ENV["USER"] == "root"
+
+      args
     end
 
     def self.local_npm_install_args
