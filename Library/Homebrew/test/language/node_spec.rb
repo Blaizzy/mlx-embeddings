@@ -6,7 +6,7 @@ describe Language::Node do
   describe "#setup_npm_environment" do
     it "calls prepend_path when node formula exists only during the first call" do
       node = formula "node" do
-        url "node-test"
+        url "node-test-v1.0"
       end
       stub_formula_loader(node)
       expect(ENV).to receive(:prepend_path)

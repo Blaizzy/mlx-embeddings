@@ -686,7 +686,7 @@ describe Version do
 
     specify "from tag" do
       expect(described_class.create("1.2.3"))
-        .to be_detected_from("https://github.com/foo/bar.git", tag: "v1.2.3")
+        .to be_detected_from("https://github.com/foo/bar.git", tag: "v1.2.3-stable")
     end
 
     specify "beta from tag" do
