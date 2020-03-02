@@ -282,12 +282,12 @@ module Homebrew
           ]
         elsif new_mirrors
           replacement_pairs << [
-            /^( +)(mirror \"#{new_mirrors.last}\"\n)/m,
+            /^( +)(mirror \"#{Regexp.escape(new_mirrors.last)}\"\n)/m,
             "\\1\\2\\1version \"#{forced_version}\"\n",
           ]
         else
           replacement_pairs << [
-            /^( +)(url \"#{new_url}\"\n)/m,
+            /^( +)(url \"#{Regexp.escape(new_url)}\"\n)/m,
             "\\1\\2\\1version \"#{forced_version}\"\n",
           ]
         end
