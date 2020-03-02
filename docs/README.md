@@ -27,6 +27,10 @@
 - [Xcode](Xcode.md)
 - [Kickstarter Supporters](Kickstarter-Supporters.md)
 
+- [Creating a Homebrew Issue](Creating-a-Homebrew-Issue.md)
+- [Updating Software in Homebrew](Updating-Software-in-Homebrew.md)
+- [Adding Software to Homebrew](Adding-Software-to-Homebrew.md)
+
 ## Contributors
 
 - [How To Open A Pull Request (and get it merged)](How-To-Open-a-Homebrew-Pull-Request.md)
