@@ -5,6 +5,8 @@ require "requirement"
 class XcodeRequirement < Requirement
   fatal true
 
+  attr_reader :version
+
   satisfy(build_env: false) { xcode_installed_version }
 
   def initialize(tags = [])
