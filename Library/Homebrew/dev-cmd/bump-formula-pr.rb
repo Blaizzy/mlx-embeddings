@@ -420,7 +420,9 @@ module Homebrew
     remote_url = if system("git", "config", "--local", "--get-regexp", "remote\..*\.url", "git@github.com:.*")
       response.fetch("ssh_url")
     else
-      response.fetch("clone_url")
+      url = response.fetch("clone_url")
+      url.gsub!(%r{^https://github\.com/}, "https://#{GitHub.env_token}@github.com/") if GitHub.env_token
+      url
     end
     username = response.fetch("owner").fetch("login")
     [remote_url, username]
