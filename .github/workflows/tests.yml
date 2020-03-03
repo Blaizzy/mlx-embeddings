@@ -13,7 +13,8 @@ jobs:
     steps:
     - name: Set up Git repository
       uses: actions/checkout@v1
-
+    - name: Add Homebrew path
+      run: echo "::add-path::/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:/usr/bin:/bin"
     - name: Set up Homebrew
       run: |
         if [ "$RUNNER_OS" = "Linux" ]; then
@@ -26,7 +27,6 @@ jobs:
           sudo mkdir -p bin etc include lib opt sbin share var/homebrew/linked Cellar
           sudo ln -s ../Homebrew/bin/brew /home/linuxbrew/.linuxbrew/bin/
           sudo chown -R "$USER" /home/linuxbrew
-          export PATH="/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:/usr/bin:/bin"
 
           # Install taps needed for 'brew tests'
           export HOMEBREW_NO_AUTO_UPDATE=1
@@ -47,14 +47,11 @@ jobs:
 
     - name: Run brew config
       run: |
-        export PATH="/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:/usr/bin:/bin"
         brew config
 
     - name: Run brew doctor
       run: |
         if [ "$RUNNER_OS" = "Linux" ]; then
-          export PATH="/home/linuxbrew/.linuxbrew/bin:/usr/bin:/bin"
-
           # Cleanup some Linux `brew doctor` failures
           sudo rm -rf /usr/local/include/node/
         else
@@ -65,7 +62,6 @@ jobs:
 
     - name: Install Bundler RubyGems
       run: |
-        export PATH="/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:/usr/bin:/bin"
         brew install-bundler-gems
 
         # Check for uncommitted gems
@@ -88,7 +84,6 @@ jobs:
 
         # don't bother running all tests on both platforms (for speed)
         if [ "$RUNNER_OS" = "Linux" ]; then
-          export PATH="/home/linuxbrew/.linuxbrew/bin:/usr/bin:/bin"
           brew tests --no-compat --online
           brew tests --generic --online
           brew tests --online
@@ -108,17 +103,14 @@ jobs:
 
     - name: Run brew style
       run: |
-        export PATH="/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:/usr/bin:/bin"
         brew style --display-cop-names
 
     - name: Run brew man
       run: |
-        export PATH="/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:/usr/bin:/bin"
         brew man --fail-if-changed
 
     - name: Run brew update-tests
       run: |
-        export PATH="/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:/usr/bin:/bin"
         git config --global user.name "BrewTestBot"
         git config --global user.email "homebrew-test-bot@lists.sfconservancy.org"
         brew update-test
@@ -128,12 +120,10 @@ jobs:
 
     - name: Run brew readall
       run: |
-        export PATH="/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:/usr/bin:/bin"
         brew readall --aliases
 
     - name: Run vale for docs linting
       run: |
-        export PATH="/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:/usr/bin:/bin"
         brew install vale
         vale $(brew --repo)/docs/
 
