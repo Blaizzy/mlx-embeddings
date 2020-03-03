@@ -199,8 +199,7 @@ class Reporter
         if status == "D"
           # Have a dedicated report array for deleted casks.
           @report[:DC] << tap.formula_file_to_name(src)
-        end
-        if status == "M"
+        elsif status == "M"
           # Report updated casks
           @report[:MC] << tap.formula_file_to_name(src)
         end
