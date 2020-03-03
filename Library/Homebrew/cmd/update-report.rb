@@ -426,6 +426,7 @@ class ReporterHub
     dump_formula_report :R, "Renamed Formulae"
     dump_formula_report :D, "Deleted Formulae"
     dump_formula_report :MC, "Updated Casks"
+    dump_formula_report :DC, "Deleted Casks"
   end
 
   private
