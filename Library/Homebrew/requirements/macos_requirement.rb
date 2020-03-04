@@ -5,6 +5,8 @@ require "requirement"
 class MacOSRequirement < Requirement
   fatal true
 
+  attr_reader :comparator, :version
+
   def initialize(tags = [], comparator: ">=")
     if comparator == "==" && tags.first.respond_to?(:map)
       @version = tags.shift.map { |s| MacOS::Version.from_symbol(s) }
@@ -52,6 +54,10 @@ class MacOSRequirement < Requirement
 
       "macOS #{@version.pretty_name} is required."
     end
+  end
+
+  def inspect
+    "#<#{self.class.name}: #{tags.inspect} version#{@comparator}#{@version}>"
   end
 
   def display_s

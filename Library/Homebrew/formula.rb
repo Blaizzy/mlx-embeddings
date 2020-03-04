@@ -1690,10 +1690,13 @@ class Formula
     end
 
     hsh["requirements"] = requirements.map do |req|
+      req.name.prepend("maximum_") if req.try(:comparator) == "<="
       {
         "name"     => req.name,
         "cask"     => req.cask,
         "download" => req.download,
+        "version"  => req.try(:version),
+        "contexts" => req.tags,
       }
     end
 

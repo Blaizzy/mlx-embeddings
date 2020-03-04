@@ -3,9 +3,9 @@
 require "language/java"
 
 class JavaRequirement < Requirement
-  attr_reader :java_home
-
   fatal true
+
+  attr_reader :java_home, :version
 
   # A strict Java 8 requirement (1.8) should prompt the user to install
   # an OpenJDK 1.8 distribution. Versions newer than Java 8 are not
