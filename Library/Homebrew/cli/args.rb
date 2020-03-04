@@ -64,6 +64,10 @@ module Homebrew
         remaining
       end
 
+      def no_named?
+        named.blank?
+      end
+
       def formulae
         require "formula"
         @formulae ||= (downcased_unique_named - casks).map do |name|
