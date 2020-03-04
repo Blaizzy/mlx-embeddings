@@ -335,8 +335,8 @@ class FormulaAmbiguousPythonError < RuntimeError
   def initialize(formula)
     super <<~EOS
       The version of python to use with the virtualenv in the `#{formula.full_name}` formula
-      cannot be guessed automatically. If the simultaneous use of python and python@2
-      is intentional, please add `:using => "python"` or `:using => "python@2"` to
+      cannot be guessed automatically. If the simultaneous use of multiple pythons
+      is intentional, please add `:using => "python@x.y"` to
       `virtualenv_install_with_resources` to resolve the ambiguity manually.
     EOS
   end

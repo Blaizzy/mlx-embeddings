@@ -508,7 +508,6 @@ module Homebrew
         bash-completion@2
         gnupg@1.4
         lua@5.1
-        python@2
         numpy@1.16
       ].freeze
 
@@ -706,7 +705,6 @@ module Homebrew
         versioned_head_spec = %w[
           bash-completion@2
           imagemagick@6
-          python@2
         ]
         problem head_spec_message unless versioned_head_spec.include?(formula.name)
       end
