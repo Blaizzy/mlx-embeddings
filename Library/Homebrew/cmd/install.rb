@@ -326,6 +326,7 @@ module Homebrew
     fi.interactive          = args.interactive?
     fi.git                  = args.git?
     fi.prelude
+    fi.fetch
     fi.install
     fi.finish
   rescue FormulaInstallationAlreadyAttemptedError

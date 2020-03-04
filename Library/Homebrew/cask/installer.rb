@@ -369,6 +369,7 @@ module Cask
             fi.show_header = true
             fi.verbose = verbose?
             fi.prelude
+            fi.fetch
             fi.install
             fi.finish
           end

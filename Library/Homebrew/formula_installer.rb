@@ -600,6 +600,7 @@ class FormulaInstaller
     fi.installed_as_dependency = true
     fi.installed_on_request    = df.any_version_installed? && tab.installed_on_request
     fi.prelude
+    fi.fetch
     oh1 "Installing #{formula.full_name} dependency: #{Formatter.identifier(dep.name)}"
     fi.install
     fi.finish
@@ -946,14 +947,35 @@ class FormulaInstaller
     @show_summary_heading = true
   end
 
-  def pour
-    if (bottle_path = formula.local_bottle_path)
-      downloader = LocalBottleDownloadStrategy.new(bottle_path)
-    else
-      downloader = formula.bottle
-      downloader.fetch
-    end
+  def fetch_dependencies
+    deps = compute_dependencies
 
+    return if deps.empty? || ignore_deps?
+
+    deps.each do |dep, _|
+      dep.to_formula.resources.each(&:fetch)
+    end
+  end
+
+  def fetch
+    fetch_dependencies
+
+    return if only_deps?
+
+    downloader.fetch
+  end
+
+  def downloader
+    if (bottle_path = formula.local_bottle_path)
+      LocalBottleDownloadStrategy.new(bottle_path)
+    elsif pour_bottle?
+      formula.bottle
+    else
+      formula.downloader
+    end
+  end
+
+  def pour
     HOMEBREW_CELLAR.cd do
       downloader.stage
     end
