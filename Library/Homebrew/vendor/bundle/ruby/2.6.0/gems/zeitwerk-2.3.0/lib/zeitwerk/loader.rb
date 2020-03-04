@@ -39,7 +39,7 @@ module Zeitwerk
     # @return [<String>]
     attr_reader :preloads
 
-    # Absolute paths of files, directories, of glob patterns to be totally
+    # Absolute paths of files, directories, or glob patterns to be totally
     # ignored.
     #
     # @private
@@ -53,6 +53,19 @@ module Zeitwerk
     # @private
     # @return [Set<String>]
     attr_reader :ignored_paths
+
+    # Absolute paths of directories or glob patterns to be collapsed.
+    #
+    # @private
+    # @return [Set<String>]
+    attr_reader :collapse_glob_patterns
+
+    # The actual collection of absolute directory names at the time the collapse
+    # glob patterns were expanded. Computed on setup, and recomputed on reload.
+    #
+    # @private
+    # @return [Set<String>]
+    attr_reader :collapse_dirs
 
     # Maps real absolute paths for which an autoload has been set ---and not
     # executed--- to their corresponding parent class or module and constant
@@ -131,15 +144,17 @@ module Zeitwerk
       @inflector = Inflector.new
       @logger    = self.class.default_logger
 
-      @root_dirs             = {}
-      @preloads              = []
-      @ignored_glob_patterns = Set.new
-      @ignored_paths         = Set.new
-      @autoloads             = {}
-      @autoloaded_dirs       = []
-      @to_unload             = {}
-      @lazy_subdirs          = {}
-      @eager_load_exclusions = Set.new
+      @root_dirs              = {}
+      @preloads               = []
+      @ignored_glob_patterns  = Set.new
+      @ignored_paths          = Set.new
+      @collapse_glob_patterns = Set.new
+      @collapse_dirs          = Set.new
+      @autoloads              = {}
+      @autoloaded_dirs        = []
+      @to_unload              = {}
+      @lazy_subdirs           = {}
+      @eager_load_exclusions  = Set.new
 
       # TODO: find a better name for these mutexes.
       @mutex        = Mutex.new
@@ -154,6 +169,7 @@ module Zeitwerk
 
     # Sets a tag for the loader, useful for logging.
     #
+    # @param tag [#to_s]
     # @return [void]
     def tag=(tag)
       @tag = tag.to_s
@@ -233,6 +249,18 @@ module Zeitwerk
       end
     end
 
+    # Configure directories or glob patterns to be collapsed.
+    #
+    # @param paths [<String, Pathname, <String, Pathname>>]
+    # @return [void]
+    def collapse(*glob_patterns)
+      glob_patterns = expand_paths(glob_patterns)
+      mutex.synchronize do
+        collapse_glob_patterns.merge(glob_patterns)
+        collapse_dirs.merge(expand_glob_patterns(glob_patterns))
+      end
+    end
+
     # Sets autoloads in the root namespace and preloads files, if any.
     #
     # @return [void]
@@ -306,7 +334,8 @@ module Zeitwerk
         Registry.on_unload(self)
         ExplicitNamespace.unregister(self)
 
-        @setup = false
+        @setup        = false
+        @eager_loaded = false
       end
     end
 
@@ -322,6 +351,7 @@ module Zeitwerk
       if reloading_enabled?
         unload
         recompute_ignored_paths
+        recompute_collapse_dirs
         setup
       else
         raise ReloadingDisabledError, "can't reload, please call loader.enable_reloading before setup"
@@ -351,8 +381,12 @@ module Zeitwerk
                 cref[0].const_get(cref[1], false)
               end
             elsif dir?(abspath) && !root_dirs.key?(abspath)
-              cname = inflector.camelize(basename, abspath)
-              queue << [namespace.const_get(cname, false), abspath]
+              if collapse_dirs.member?(abspath)
+                queue << [namespace, abspath]
+              else
+                cname = inflector.camelize(basename, abspath)
+                queue << [namespace.const_get(cname, false), abspath]
+              end
             end
           end
         end
@@ -476,7 +510,7 @@ module Zeitwerk
       ls(dir) do |basename, abspath|
         begin
           if ruby?(basename)
-            basename.slice!(-3, 3)
+            basename[-3..-1] = ''
             cname = inflector.camelize(basename, abspath).to_sym
             autoload_file(parent, cname, abspath)
           elsif dir?(abspath)
@@ -488,7 +522,11 @@ module Zeitwerk
             # it counts only as root. The guard checks that.
             unless root_dirs.key?(abspath)
               cname = inflector.camelize(basename, abspath).to_sym
-              autoload_subdir(parent, cname, abspath)
+              if collapse_dirs.member?(abspath)
+                set_autoloads_in_dir(abspath, parent)
+              else
+                autoload_subdir(parent, cname, abspath)
+              end
             end
           end
         rescue ::NameError => error
@@ -715,6 +753,11 @@ module Zeitwerk
     # @return [void]
     def recompute_ignored_paths
       ignored_paths.replace(expand_glob_patterns(ignored_glob_patterns))
+    end
+
+    # @return [void]
+    def recompute_collapse_dirs
+      collapse_dirs.replace(expand_glob_patterns(collapse_glob_patterns))
     end
 
     # @param message [String]
