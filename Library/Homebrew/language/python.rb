@@ -172,6 +172,7 @@ module Language
           wanted = pythons.select { |py| needs_python?(py) }
           raise FormulaAmbiguousPythonError, self if wanted.size > 1
 
+          python = wanted.first
           python = "python3" if python == "python"
         end
         venv = virtualenv_create(libexec, python.delete("@"))
