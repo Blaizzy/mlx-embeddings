@@ -21,7 +21,7 @@ jobs:
         else
           echo "::add-path::/home/linuxbrew/.linuxbrew/bin:/usr/bin:/bin"
         fi
-      
+
     - name: Set up Homebrew
       run: |
         if [ "$RUNNER_OS" = "Linux" ]; then
@@ -53,8 +53,7 @@ jobs:
         fi
 
     - name: Run brew config
-      run: |
-        brew config
+      run: brew config
 
     - name: Run brew doctor
       run: |
@@ -109,12 +108,10 @@ jobs:
         HOMEBREW_LANGUAGES: en-GB
 
     - name: Run brew style
-      run: |
-        brew style --display-cop-names
+      run: brew style --display-cop-names
 
     - name: Run brew man
-      run: |
-        brew man --fail-if-changed
+      run: brew man --fail-if-changed
 
     - name: Run brew update-tests
       run: |
@@ -126,8 +123,7 @@ jobs:
       if: github.event_name == 'pull_request'
 
     - name: Run brew readall
-      run: |
-        brew readall --aliases
+      run: brew readall --aliases
 
     - name: Run vale for docs linting
       run: |
@@ -135,10 +131,10 @@ jobs:
         vale $(brew --repo)/docs/
 
     - name: Build Docker image
+      if: matrix.os == 'ubuntu-latest'
       run: |
         docker pull homebrew/brew
         docker-compose -f Dockerfile.yml build sut
-      if: matrix.os == 'ubuntu-latest'
 
     - name: Run brew test-bot
       run: |
