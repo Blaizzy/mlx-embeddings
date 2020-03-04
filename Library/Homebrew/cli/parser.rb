@@ -150,14 +150,14 @@ module Homebrew
         raise "Arguments were already parsed!" if @args_parsed
 
         begin
-          remaining_args = @parser.parse(cmdline_args)
+          named_args = @parser.parse(cmdline_args)
         rescue OptionParser::InvalidOption => e
           $stderr.puts generate_help_text
           raise e
         end
         check_constraint_violations
-        check_named_args(remaining_args)
-        @args[:remaining] = remaining_args
+        check_named_args(named_args)
+        @args[:remaining] = named_args
         @args.freeze_processed_options!(@processed_options)
         Homebrew.args = @args
         cmdline_args.freeze
