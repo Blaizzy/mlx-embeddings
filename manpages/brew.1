@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "BREW" "1" "February 2020" "Homebrew" "brew"
+.TH "BREW" "1" "March 2020" "Homebrew" "brew"
 .
 .SH "NAME"
 \fBbrew\fR \- The Missing Package Manager for macOS
@@ -548,8 +548,12 @@ Perform a substring search of cask tokens and formula names for \fItext\fR\. If 
 If no \fItext\fR is provided, list all locally available formulae (including tapped ones)\. No online search is performed\.
 .
 .TP
+\fB\-\-formulae\fR
+Without \fItext\fR, list all locally available formulae (no online search is performed)\. With \fItext\fR, search online and locally for formulae\.
+.
+.TP
 \fB\-\-casks\fR
-List all locally available casks (including tapped ones)\. No online search is performed\.
+Without \fItext\fR, list all locally available casks (including tapped ones, no online search is performed)\. With \fItext\fR, search online and locally for casks\.
 .
 .TP
 \fB\-\-desc\fR

@@ -425,8 +425,10 @@ search for *`text`* is extended online to `homebrew/core` and `homebrew/cask`.
 If no *`text`* is provided, list all locally available formulae (including tapped
 ones). No online search is performed.
 
+* `--formulae`:
+  Without *`text`*, list all locally available formulae (no online search is performed). With *`text`*, search online and locally for formulae.
 * `--casks`:
-  List all locally available casks (including tapped ones). No online search is performed.
+  Without *`text`*, list all locally available casks (including tapped ones, no online search is performed). With *`text`*, search online and locally for casks.
 * `--desc`:
   Search for formulae with a description matching *`text`* and casks with a name matching *`text`*.
 * `--macports`:
