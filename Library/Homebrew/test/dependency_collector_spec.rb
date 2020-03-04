@@ -62,13 +62,13 @@ describe DependencyCollector do
     it "creates a resource dependency from a CVS URL" do
       resource = Resource.new
       resource.url(":pserver:anonymous:@brew.sh:/cvsroot/foo/bar", using: :cvs)
-      expect(subject.add(resource)).to eq(Dependency.new("cvs", [:build]))
+      expect(subject.add(resource)).to eq(Dependency.new("cvs", [:build, :test]))
     end
 
     it "creates a resource dependency from a '.7z' URL" do
       resource = Resource.new
       resource.url("https://brew.sh/foo.7z")
-      expect(subject.add(resource)).to eq(Dependency.new("p7zip", [:build]))
+      expect(subject.add(resource)).to eq(Dependency.new("p7zip", [:build, :test]))
     end
 
     it "creates a resource dependency from a '.gz' URL" do
@@ -80,25 +80,25 @@ describe DependencyCollector do
     it "creates a resource dependency from a '.lz' URL" do
       resource = Resource.new
       resource.url("https://brew.sh/foo.lz")
-      expect(subject.add(resource)).to eq(Dependency.new("lzip", [:build]))
+      expect(subject.add(resource)).to eq(Dependency.new("lzip", [:build, :test]))
     end
 
     it "creates a resource dependency from a '.lha' URL" do
       resource = Resource.new
       resource.url("https://brew.sh/foo.lha")
-      expect(subject.add(resource)).to eq(Dependency.new("lha", [:build]))
+      expect(subject.add(resource)).to eq(Dependency.new("lha", [:build, :test]))
     end
 
     it "creates a resource dependency from a '.lzh' URL" do
       resource = Resource.new
       resource.url("https://brew.sh/foo.lzh")
-      expect(subject.add(resource)).to eq(Dependency.new("lha", [:build]))
+      expect(subject.add(resource)).to eq(Dependency.new("lha", [:build, :test]))
     end
 
     it "creates a resource dependency from a '.rar' URL" do
       resource = Resource.new
       resource.url("https://brew.sh/foo.rar")
-      expect(subject.add(resource)).to eq(Dependency.new("unrar", [:build]))
+      expect(subject.add(resource)).to eq(Dependency.new("unrar", [:build, :test]))
     end
 
     it "raises a TypeError for unknown classes" do
