@@ -79,12 +79,12 @@ module Homebrew
     ENV.activate_extensions!
     ENV.setup_build_environment
 
-    if Homebrew.args.named.blank?
+    if args.no_named?
       ff = Formula
       files = Tap.map(&:formula_dir)
     else
-      ff = Homebrew.args.resolved_formulae
-      files = Homebrew.args.resolved_formulae.map(&:path)
+      ff = args.resolved_formulae
+      files = args.resolved_formulae.map(&:path)
     end
 
     only_cops = args.only_cops

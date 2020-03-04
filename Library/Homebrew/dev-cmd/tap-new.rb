@@ -15,16 +15,14 @@ module Homebrew
       EOS
       switch :verbose
       switch :debug
-      max_named 1
+      named 1
     end
   end
 
   def tap_new
     tap_new_args.parse
 
-    raise UsageError, "This command requires a tap argument" if ARGV.named.empty?
-
-    tap = Tap.fetch(ARGV.named.first)
+    tap = Tap.fetch(args.named.first)
     titleized_user = tap.user.dup
     titleized_repo = tap.repo.dup
     titleized_user[0] = titleized_user[0].upcase

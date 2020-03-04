@@ -28,17 +28,16 @@ module Homebrew
       switch :verbose
       switch :debug
       conflicts "--devel", "--HEAD"
+      min_named :formula
     end
   end
 
   def test
     test_args.parse
 
-    raise FormulaUnspecifiedError if ARGV.named.empty?
-
     require "formula_assertions"
 
-    Homebrew.args.resolved_formulae.each do |f|
+    args.resolved_formulae.each do |f|
       # Cannot test uninstalled formulae
       unless f.latest_version_installed?
         ofail "Testing requires the latest version of #{f.full_name}"
@@ -52,7 +51,7 @@ module Homebrew
       end
 
       # Don't test unlinked formulae
-      if !Homebrew.args.force? && !f.keg_only? && !f.linked?
+      if !args.force? && !f.keg_only? && !f.linked?
         ofail "#{f.full_name} is not linked"
         next
       end
@@ -75,19 +74,19 @@ module Homebrew
       env = ENV.to_hash
 
       begin
-        args = %W[
+        exec_args = %W[
           #{RUBY_PATH}
           -W0
           -I #{$LOAD_PATH.join(File::PATH_SEPARATOR)}
           --
           #{HOMEBREW_LIBRARY_PATH}/test.rb
           #{f.path}
-        ].concat(Homebrew.args.options_only)
+        ].concat(args.options_only)
 
         if f.head?
-          args << "--HEAD"
+          exec_args << "--HEAD"
         elsif f.devel?
-          args << "--devel"
+          exec_args << "--devel"
         end
 
         Utils.safe_fork do
@@ -102,9 +101,9 @@ module Homebrew
             sandbox.allow_write_path(HOMEBREW_PREFIX/"var/homebrew/locks")
             sandbox.allow_write_path(HOMEBREW_PREFIX/"var/log")
             sandbox.allow_write_path(HOMEBREW_PREFIX/"var/run")
-            sandbox.exec(*args)
+            sandbox.exec(*exec_args)
           else
-            exec(*args)
+            exec(*exec_args)
           end
         end
       rescue Exception => e # rubocop:disable Lint/RescueException

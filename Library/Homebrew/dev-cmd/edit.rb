@@ -32,10 +32,10 @@ module Homebrew
     end
 
     # If no brews are listed, open the project root in an editor.
-    paths = [HOMEBREW_REPOSITORY] if ARGV.named.empty?
+    paths = [HOMEBREW_REPOSITORY] if args.no_named?
 
-    # Don't use ARGV.formulae as that will throw if the file doesn't parse
-    paths ||= ARGV.named.map do |name|
+    # Don't use args.formulae as that will throw if the file doesn't parse
+    paths ||= args.named.map do |name|
       path = Formulary.path(name)
       raise FormulaUnavailableError, name if !path.file? && !args.force?
 

@@ -116,7 +116,7 @@ module Homebrew
     # Use the user's browser, too.
     ENV["BROWSER"] = ENV["HOMEBREW_BROWSER"]
 
-    formula = Homebrew.args.formulae.first
+    formula = args.formulae.first
 
     if formula
       tap_full_name, origin_branch, previous_branch = use_correct_linux_tap(formula)
@@ -315,7 +315,7 @@ module Homebrew
     new_formula_version = formula_version(formula, requested_spec, new_contents)
 
     if !new_mirrors && !formula_spec.mirrors.empty?
-      if Homebrew.args.force?
+      if args.force?
         opoo "#{formula}: Removing all mirrors because a --mirror= argument was not specified."
       else
         odie <<~EOS
@@ -433,7 +433,7 @@ module Homebrew
       contents = path.open("r") { |f| Formulary.ensure_utf8_encoding(f).read }
       contents.extend(StringInreplaceExtension)
       replacement_pairs.each do |old, new|
-        ohai "replace #{old.inspect} with #{new.inspect}" unless Homebrew.args.quiet?
+        ohai "replace #{old.inspect} with #{new.inspect}" unless args.quiet?
         raise "No old value for new value #{new}! Did you pass the wrong arguments?" unless old
 
         contents.gsub!(old, new)
@@ -445,7 +445,7 @@ module Homebrew
     else
       Utils::Inreplace.inreplace(path) do |s|
         replacement_pairs.each do |old, new|
-          ohai "replace #{old.inspect} with #{new.inspect}" unless Homebrew.args.quiet?
+          ohai "replace #{old.inspect} with #{new.inspect}" unless args.quiet?
           raise "No old value for new value #{new}! Did you pass the wrong arguments?" unless old
 
           s.gsub!(old, new)
@@ -485,11 +485,11 @@ module Homebrew
       #{pull_requests.map { |pr| "#{pr["title"]} #{pr["html_url"]}" }.join("\n")}
     EOS
     error_message = "Duplicate PRs should not be opened. Use --force to override this error."
-    if Homebrew.args.force? && !Homebrew.args.quiet?
+    if args.force? && !args.quiet?
       opoo duplicates_message
-    elsif !Homebrew.args.force? && Homebrew.args.quiet?
+    elsif !args.force? && args.quiet?
       odie error_message
-    elsif !Homebrew.args.force?
+    elsif !args.force?
       odie <<~EOS
         #{duplicates_message.chomp}
         #{error_message}
