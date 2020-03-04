@@ -22,9 +22,9 @@ module Homebrew
   def unpin
     unpin_args.parse
 
-    raise FormulaUnspecifiedError if args.remaining.empty?
+    raise FormulaUnspecifiedError if args.no_named?
 
-    Homebrew.args.resolved_formulae.each do |f|
+    args.resolved_formulae.each do |f|
       if f.pinned?
         f.unpin
       elsif !f.pinnable?

@@ -15,15 +15,14 @@ module Homebrew
         issuing the `brew upgrade` <formula> command. See also `unpin`.
       EOS
       switch :debug
+      min_named :formula
     end
   end
 
   def pin
     pin_args.parse
 
-    raise FormulaUnspecifiedError if args.remaining.empty?
-
-    Homebrew.args.resolved_formulae.each do |f|
+    args.resolved_formulae.each do |f|
       if f.pinned?
         opoo "#{f.name} already pinned"
       elsif !f.pinnable?

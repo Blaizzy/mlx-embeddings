@@ -67,7 +67,7 @@ module Homebrew
     end
 
     if args.category.present?
-      if Homebrew.args.named.present? && !VALID_FORMULA_CATEGORIES.include?(args.category)
+      if args.named.present? && !VALID_FORMULA_CATEGORIES.include?(args.category)
         raise UsageError, "--category must be one of #{VALID_FORMULA_CATEGORIES.join(", ")} when querying formulae"
       end
 
@@ -77,23 +77,24 @@ module Homebrew
     end
 
     if args.json
-      raise UsageError, "Invalid JSON version: #{args.json}" unless ["v1", true].include? args.json
-      if !(args.all? || args.installed?) && Homebrew.args.named.blank?
-        raise UsageError, "This command's option requires a formula argument"
+      raise UsageError, "invalid JSON version: #{args.json}" unless ["v1", true].include? args.json
+
+      if !(args.all? || args.installed?) && args.no_named?
+        raise FormulaUnspecifiedError if args.no_named?
       end
 
       print_json
     elsif args.github?
-      raise UsageError, "This command's option requires a formula argument" if Homebrew.args.named.blank?
+      raise FormulaUnspecifiedError if args.no_named?
 
-      exec_browser(*Homebrew.args.formulae.map { |f| github_info(f) })
+      exec_browser(*args.formulae.map { |f| github_info(f) })
     else
       print_info
     end
   end
 
   def print_info
-    if Homebrew.args.named.blank?
+    if args.no_named?
       if args.analytics?
         Utils::Analytics.output
       elsif HOMEBREW_CELLAR.exist?
@@ -101,7 +102,7 @@ module Homebrew
         puts "#{count} #{"keg".pluralize(count)}, #{HOMEBREW_CELLAR.dup.abv}"
       end
     else
-      Homebrew.args.named.each_with_index do |f, i|
+      args.named.each_with_index do |f, i|
         puts unless i.zero?
         begin
           formula = if f.include?("/") || File.exist?(f)
@@ -135,7 +136,7 @@ module Homebrew
     elsif args.installed?
       Formula.installed.sort
     else
-      Homebrew.args.formulae
+      args.formulae
     end
     json = ff.map(&:to_hash)
     puts JSON.generate(json)

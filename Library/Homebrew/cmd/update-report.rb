@@ -13,7 +13,7 @@ module Homebrew
 
   def update_preinstall_header
     @update_preinstall_header ||= begin
-      ohai "Auto-updated Homebrew!" if ARGV.include?("--preinstall")
+      ohai "Auto-updated Homebrew!" if args.preinstall?
       true
     end
   end
@@ -109,7 +109,7 @@ module Homebrew
     end
 
     if !updated
-      puts "Already up-to-date." if !ARGV.include?("--preinstall") && !ENV["HOMEBREW_UPDATE_FAILED"]
+      puts "Already up-to-date." if !args.preinstall? && !ENV["HOMEBREW_UPDATE_FAILED"]
     else
       if hub.empty?
         puts "No changes to formulae."
@@ -122,7 +122,7 @@ module Homebrew
                                .update_from_report!(hub)
         end
       end
-      puts if ARGV.include?("--preinstall")
+      puts if args.preinstall?
     end
 
     link_completions_manpages_and_docs

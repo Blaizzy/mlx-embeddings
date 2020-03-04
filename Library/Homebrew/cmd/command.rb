@@ -15,15 +15,14 @@ module Homebrew
       EOS
       switch :verbose
       switch :debug
+      min_named 1
     end
   end
 
   def command
     command_args.parse
 
-    raise UsageError, "This command requires a command argument" if args.remaining.empty?
-
-    args.remaining.each do |cmd|
+    args.named.each do |cmd|
       path = Commands.path(cmd)
       odie "Unknown command: #{cmd}" unless path
       puts path

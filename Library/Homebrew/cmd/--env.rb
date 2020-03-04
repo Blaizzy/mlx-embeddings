@@ -30,9 +30,8 @@ module Homebrew
     __env_args.parse
 
     ENV.activate_extensions!
-    ENV.deps = Homebrew.args.formulae if superenv?
+    ENV.deps = args.formulae if superenv?
     ENV.setup_build_environment
-    ENV.universal_binary if ARGV.build_universal?
 
     shell = if args.plain?
       nil

@@ -33,7 +33,7 @@ module Homebrew
   def cleanup
     cleanup_args.parse
 
-    cleanup = Cleanup.new(*args.remaining, dry_run: args.dry_run?, scrub: args.s?, days: args.prune&.to_i)
+    cleanup = Cleanup.new(*args.named, dry_run: args.dry_run?, scrub: args.s?, days: args.prune&.to_i)
     if args.prune_prefix?
       cleanup.prune_prefix_symlinks_and_directories
       return

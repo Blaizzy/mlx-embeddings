@@ -32,10 +32,10 @@ module Homebrew
       puts_options Formula.to_a.sort
     elsif args.installed?
       puts_options Formula.installed.sort
+    elsif args.no_named?
+      raise FormulaUnspecifiedError
     else
-      raise FormulaUnspecifiedError if args.remaining.empty?
-
-      puts_options Homebrew.args.formulae
+      puts_options args.formulae
     end
   end
 

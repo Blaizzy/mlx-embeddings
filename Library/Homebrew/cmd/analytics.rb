@@ -26,7 +26,7 @@ module Homebrew
   def analytics
     analytics_args.parse
 
-    case args.remaining.first
+    case args.named.first
     when nil, "state"
       if Utils::Analytics.disabled?
         puts "Analytics are disabled."
@@ -41,7 +41,7 @@ module Homebrew
     when "regenerate-uuid"
       Utils::Analytics.regenerate_uuid!
     else
-      raise UsageError, "Unknown subcommand."
+      raise UsageError, "unknown subcommand"
     end
   end
 end

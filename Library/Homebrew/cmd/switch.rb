@@ -16,16 +16,14 @@ module Homebrew
       EOS
       switch :verbose
       switch :debug
-      max_named 2
+      named 2
     end
   end
 
   def switch
     switch_args.parse
 
-    raise FormulaUnspecifiedError if args.remaining.empty?
-
-    name = args.remaining.first
+    name = args.named.first
     rack = Formulary.to_rack(name)
 
     odie "#{name} not found in the Cellar." unless rack.directory?
@@ -34,8 +32,7 @@ module Homebrew
                    .map { |d| Keg.new(d).version }
                    .sort
                    .join(", ")
-    version = args.remaining.second
-    raise UsageError, "Specify one of #{name}'s installed versions: #{versions}" unless version
+    version = args.named.second
 
     odie <<~EOS unless (rack/version).directory?
       #{name} does not have a version \"#{version}\" in the Cellar.

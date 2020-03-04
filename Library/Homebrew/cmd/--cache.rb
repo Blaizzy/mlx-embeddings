@@ -26,10 +26,10 @@ module Homebrew
   def __cache
     __cache_args.parse
 
-    if ARGV.named.empty?
+    if args.no_named?
       puts HOMEBREW_CACHE
     else
-      Homebrew.args.formulae.each do |f|
+      args.formulae.each do |f|
         if Fetch.fetch_bottle?(f)
           puts f.bottle.cached_download
         else

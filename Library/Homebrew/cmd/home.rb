@@ -20,10 +20,10 @@ module Homebrew
   def home
     home_args.parse
 
-    if args.remaining.empty?
+    if args.no_named?
       exec_browser HOMEBREW_WWW
     else
-      exec_browser(*Homebrew.args.formulae.map(&:homepage))
+      exec_browser(*args.formulae.map(&:homepage))
     end
   end
 end

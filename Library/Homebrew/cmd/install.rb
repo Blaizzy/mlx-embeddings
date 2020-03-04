@@ -88,21 +88,20 @@ module Homebrew
       conflicts "--devel", "--HEAD"
       conflicts "--build-from-source", "--build-bottle", "--force-bottle"
       formula_options
+      min_named :formula
     end
   end
 
   def install
     install_args.parse
 
-    Homebrew.args.named.each do |name|
+    args.named.each do |name|
       next if File.exist?(name)
       next if name !~ HOMEBREW_TAP_FORMULA_REGEX && name !~ HOMEBREW_CASK_TAP_CASK_REGEX
 
       tap = Tap.fetch(Regexp.last_match(1), Regexp.last_match(2))
       tap.install unless tap.installed?
     end
-
-    raise FormulaUnspecifiedError if args.remaining.empty?
 
     if args.ignore_dependencies?
       opoo <<~EOS
@@ -131,9 +130,9 @@ module Homebrew
     # developer tools are available, we need to stop them early on
     FormulaInstaller.prevent_build_flags unless DevelopmentTools.installed?
 
-    Homebrew.args.formulae.each do |f|
+    args.formulae.each do |f|
       # head-only without --HEAD is an error
-      if !Homebrew.args.HEAD? && f.stable.nil? && f.devel.nil?
+      if !args.HEAD? && f.stable.nil? && f.devel.nil?
         raise <<~EOS
           #{f.full_name} is a head-only formula
           Install with `brew install --HEAD #{f.full_name}`

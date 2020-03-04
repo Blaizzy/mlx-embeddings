@@ -20,18 +20,17 @@ module Homebrew
                           "deleting any files."
       switch :verbose
       switch :debug
+      min_named :keg
     end
   end
 
   def unlink
     unlink_args.parse
 
-    raise KegUnspecifiedError if args.remaining.empty?
-
     mode = OpenStruct.new
     mode.dry_run = true if args.dry_run?
 
-    Homebrew.args.kegs.each do |keg|
+    args.kegs.each do |keg|
       if mode.dry_run
         puts "Would remove:"
         keg.unlink(mode)
