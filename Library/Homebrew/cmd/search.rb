@@ -37,11 +37,11 @@ module Homebrew
         No online search is performed.
       EOS
       switch "--formulae",
-             description: "List all locally available formulae. "\
-                          "No online search is performed."
+             description: "Without <text>, list all locally available formulae (no online search is performed). " \
+                          "With <text>, search online and locally for formulae."
       switch "--casks",
-             description: "List all locally available casks (including tapped ones). "\
-                          "No online search is performed."
+             description: "Without <text>, list all locally available casks (including tapped ones, no online " \
+                          "search is performed). With <text>, search online and locally for casks."
       switch "--desc",
              description: "Search for formulae with a description matching <text> and casks with "\
                           "a name matching <text>."
@@ -68,7 +68,7 @@ module Homebrew
 
     if args.remaining.empty?
       if args.casks?
-        raise UsageError, "Cannot specify --formulae and --casks without an argument!" if args.formulae?
+        raise UsageError, "specifying both --formulae and --casks requires an argument!" if args.formulae?
 
         puts Formatter.columns(Cask::Cask.to_a.map(&:full_name).sort)
       else
