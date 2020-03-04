@@ -135,7 +135,7 @@ class Keg
       f = keg.to_formula
       keg_formulae << f
       [f.name, f.tap]
-    rescue FormulaUnavailableError
+    rescue
       # If the formula for the keg can't be found,
       # fall back to the information in the tab.
       [keg.name, keg.tab.tap]
@@ -257,8 +257,7 @@ class Keg
 
     tap = begin
       to_formula.tap
-    rescue FormulaUnavailableError, TapFormulaAmbiguityError,
-           TapFormulaWithOldnameAmbiguityError
+    rescue
       # If the formula can't be found, just ignore aliases for now.
       nil
     end
