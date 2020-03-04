@@ -13,7 +13,7 @@ shared_examples "parseable arguments" do
   it "can parse arguments" do
     require "dev-cmd/#{command_name}" unless require? "cmd/#{command_name}"
 
-    expect { Homebrew.send(method_name).parse({}) }
+    expect { Homebrew.send(method_name).parse({}, allow_no_named_args: true) }
       .not_to raise_error
   end
 end
