@@ -425,6 +425,8 @@ search for *`text`* is extended online to `homebrew/core` and `homebrew/cask`.
 If no *`text`* is provided, list all locally available formulae (including tapped
 ones). No online search is performed.
 
+* `--formulae`:
+  List all locally available formulae. No online search is performed.
 * `--casks`:
   List all locally available casks (including tapped ones). No online search is performed.
 * `--desc`:

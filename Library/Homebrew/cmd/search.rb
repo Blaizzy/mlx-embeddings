@@ -36,6 +36,9 @@ module Homebrew
         If no <text> is provided, list all locally available formulae (including tapped ones).
         No online search is performed.
       EOS
+      switch "--formulae",
+             description: "List all locally available formulae. "\
+                          "No online search is performed."
       switch "--casks",
              description: "List all locally available casks (including tapped ones). "\
                           "No online search is performed."
@@ -65,6 +68,8 @@ module Homebrew
 
     if args.remaining.empty?
       if args.casks?
+        raise UsageError, "Cannot specify --formulae and --casks without an argument!" if args.formulae?
+
         puts Formatter.columns(Cask::Cask.to_a.map(&:full_name).sort)
       else
         puts Formatter.columns(Formula.full_names.sort)
@@ -88,14 +93,17 @@ module Homebrew
       local_casks = search_casks(string_or_regex)
       remote_casks = remote_results[:casks]
       all_casks = local_casks + remote_casks
+      print_formulae = args.formulae?
+      print_casks = args.casks?
+      print_formulae = print_casks = true if !print_formulae && !print_casks
 
-      if all_formulae.any?
+      if print_formulae && all_formulae.any?
         ohai "Formulae"
         puts Formatter.columns(all_formulae)
       end
 
-      if all_casks.any?
-        puts if all_formulae.any?
+      if print_casks && all_casks.any?
+        puts if args.formulae? && all_formulae.any?
         ohai "Casks"
         puts Formatter.columns(all_casks)
       end
