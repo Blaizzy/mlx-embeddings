@@ -1,18 +1,12 @@
 # frozen_string_literal: true
 
 module HomebrewArgvExtension
-  def named
-    # TODO: use @instance variable to ||= cache when moving to CLI::Parser
-    self - options_only
-  end
-
   def flags_only
     select { |arg| arg.start_with?("--") }
   end
 
   def formulae
     require "formula"
-    # TODO: use @instance variable to ||= cache when moving to CLI::Parser
     (downcased_unique_named - casks).map do |name|
       if name.include?("/") || File.exist?(name)
         Formulary.factory(name, spec)
@@ -31,10 +25,6 @@ module HomebrewArgvExtension
     arg_prefix = "--#{name}="
     flag_with_value = find { |arg| arg.start_with?(arg_prefix) }
     flag_with_value&.delete_prefix(arg_prefix)
-  end
-
-  def verbose?
-    flag?("--verbose") || !ENV["VERBOSE"].nil? || !ENV["HOMEBREW_VERBOSE"].nil?
   end
 
   def debug?
@@ -150,9 +140,12 @@ module HomebrewArgvExtension
     end
   end
 
+  def named
+    self - options_only
+  end
+
   def downcased_unique_named
     # Only lowercase names, not paths, bottle filenames or URLs
-    # TODO: use @instance variable to ||= cache when moving to CLI::Parser
     named.map do |arg|
       if arg.include?("/") || arg.end_with?(".tar.gz") || File.exist?(arg)
         arg
