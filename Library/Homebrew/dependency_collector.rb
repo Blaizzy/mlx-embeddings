@@ -142,7 +142,7 @@ class DependencyCollector
   end
 
   def resource_dep(spec, tags)
-    tags << :build
+    tags << :build << :test
     strategy = spec.download_strategy
 
     if strategy <= CurlDownloadStrategy
