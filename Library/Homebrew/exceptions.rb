@@ -19,13 +19,13 @@ end
 
 class FormulaUnspecifiedError < UsageError
   def initialize
-    super "This command requires a formula argument"
+    super "this command requires a formula argument"
   end
 end
 
 class KegUnspecifiedError < UsageError
   def initialize
-    super "This command requires a keg argument"
+    super "this command requires a keg argument"
   end
 end
 

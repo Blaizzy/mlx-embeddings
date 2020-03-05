@@ -39,14 +39,14 @@ module Homebrew
       exit
     end
 
-    if ARGV.named.empty?
+    if args.no_named?
       slow_checks = %w[
         check_for_broken_symlinks
         check_missing_deps
       ]
       methods = (checks.all.sort - slow_checks) + slow_checks
     else
-      methods = ARGV.named
+      methods = args.named
     end
 
     first_warning = true

@@ -15,19 +15,18 @@ module Homebrew
       switch :verbose
       switch :debug
       hide_from_man_page!
+      min_named :formula
     end
   end
 
   def mirror
     mirror_args.parse
 
-    raise FormulaUnspecifiedError if args.remaining.empty?
-
     bintray_user = ENV["HOMEBREW_BINTRAY_USER"]
     bintray_key = ENV["HOMEBREW_BINTRAY_KEY"]
     raise "Missing HOMEBREW_BINTRAY_USER or HOMEBREW_BINTRAY_KEY variables!" if !bintray_user || !bintray_key
 
-    Homebrew.args.formulae.each do |f|
+    args.formulae.each do |f|
       bintray_package = Utils::Bottles::Bintray.package f.name
       bintray_repo_url = "https://api.bintray.com/packages/homebrew/mirror"
       package_url = "#{bintray_repo_url}/#{bintray_package}"

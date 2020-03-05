@@ -79,6 +79,7 @@ module Homebrew
       switch :verbose
       switch :debug
       conflicts "--no-rebuild", "--keep-old"
+      min_named 1
     end
   end
 
@@ -86,10 +87,9 @@ module Homebrew
     bottle_args.parse
 
     return merge if args.merge?
-    raise KegUnspecifiedError if args.remaining.empty?
 
     ensure_relocation_formulae_installed! unless args.skip_relocation?
-    Homebrew.args.resolved_formulae.each do |f|
+    args.resolved_formulae.each do |f|
       bottle_formula f
     end
   end
@@ -435,10 +435,7 @@ module Homebrew
   end
 
   def merge
-    write = args.write?
-    raise UsageError, "--merge requires a JSON file path argument" if Homebrew.args.named.blank?
-
-    bottles_hash = Homebrew.args.named.reduce({}) do |hash, json_file|
+    bottles_hash = args.named.reduce({}) do |hash, json_file|
       hash.deep_merge(JSON.parse(IO.read(json_file))) do |key, first, second|
         if key == "cellar"
           # Prioritize HOMEBREW_CELLAR over :any over :any_skip_relocation
@@ -478,7 +475,7 @@ module Homebrew
 
       output = bottle_output bottle
 
-      if write
+      if args.write?
         path = Pathname.new((HOMEBREW_REPOSITORY/bottle_hash["formula"]["path"]).to_s)
         update_or_add = nil
 

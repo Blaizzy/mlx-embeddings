@@ -45,19 +45,18 @@ module Homebrew
              description: "Print install times for each formula at the end of the run."
       conflicts "--build-from-source", "--force-bottle"
       formula_options
+      min_named :formula
     end
   end
 
   def reinstall
     reinstall_args.parse
 
-    raise FormulaUnspecifiedError if args.remaining.empty?
-
     FormulaInstaller.prevent_build_flags unless DevelopmentTools.installed?
 
     Install.perform_preinstall_checks
 
-    Homebrew.args.resolved_formulae.each do |f|
+    args.resolved_formulae.each do |f|
       if f.pinned?
         onoe "#{f.full_name} is pinned. You must unpin it to reinstall."
         next

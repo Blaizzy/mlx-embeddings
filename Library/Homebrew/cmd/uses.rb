@@ -38,24 +38,23 @@ module Homebrew
              description: "Show usage of <formula> by HEAD builds."
       switch :debug
       conflicts "--devel", "--HEAD"
+      min_named :formula
     end
   end
 
   def uses
     uses_args.parse
 
-    raise FormulaUnspecifiedError if args.remaining.empty?
-
     Formulary.enable_factory_cache!
 
     used_formulae_missing = false
     used_formulae = begin
-      Homebrew.args.formulae
+      args.formulae
     rescue FormulaUnavailableError => e
       opoo e
       used_formulae_missing = true
       # If the formula doesn't exist: fake the needed formula object name.
-      Homebrew.args.named.map { |name| OpenStruct.new name: name, full_name: name }
+      args.named.map { |name| OpenStruct.new name: name, full_name: name }
     end
 
     use_runtime_dependents = args.installed? &&

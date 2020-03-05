@@ -19,15 +19,14 @@ module Homebrew
                           "the same taps and migrate them anyway."
       switch :verbose
       switch :debug
+      min_named :formula
     end
   end
 
   def migrate
     migrate_args.parse
 
-    raise FormulaUnspecifiedError if Homebrew.args.named.blank?
-
-    Homebrew.args.resolved_formulae.each do |f|
+    args.resolved_formulae.each do |f|
       if f.oldname
         unless (rack = HOMEBREW_CELLAR/f.oldname).exist? && !rack.subdirs.empty?
           raise NoSuchKegError, f.oldname

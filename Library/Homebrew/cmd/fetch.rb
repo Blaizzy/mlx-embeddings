@@ -39,23 +39,22 @@ module Homebrew
       switch :debug
       conflicts "--devel", "--HEAD"
       conflicts "--build-from-source", "--build-bottle", "--force-bottle"
+      min_named :formula
     end
   end
 
   def fetch
     fetch_args.parse
 
-    raise FormulaUnspecifiedError if ARGV.named.empty?
-
     if args.deps?
       bucket = []
-      Homebrew.args.formulae.each do |f|
+      args.formulae.each do |f|
         bucket << f
         bucket.concat f.recursive_dependencies.map(&:to_formula)
       end
       bucket.uniq!
     else
-      bucket = Homebrew.args.formulae
+      bucket = args.formulae
     end
 
     puts "Fetching: #{bucket * ", "}" if bucket.size > 1

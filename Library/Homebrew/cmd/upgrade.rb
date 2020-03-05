@@ -65,18 +65,18 @@ module Homebrew
 
     Install.perform_preinstall_checks
 
-    if Homebrew.args.named.blank?
+    if args.no_named?
       outdated = Formula.installed.select do |f|
         f.outdated?(fetch_head: args.fetch_HEAD?)
       end
 
       exit 0 if outdated.empty?
     else
-      outdated = Homebrew.args.resolved_formulae.select do |f|
+      outdated = args.resolved_formulae.select do |f|
         f.outdated?(fetch_head: args.fetch_HEAD?)
       end
 
-      (Homebrew.args.resolved_formulae - outdated).each do |f|
+      (args.resolved_formulae - outdated).each do |f|
         versions = f.installed_kegs.map(&:version)
         if versions.empty?
           ofail "#{f.full_specified_name} not installed"
@@ -168,7 +168,7 @@ module Homebrew
       tab = Tab.for_keg(keg)
     end
 
-    build_options = BuildOptions.new(Options.create(Homebrew.args.flags_only), f.options)
+    build_options = BuildOptions.new(Options.create(args.flags_only), f.options)
     options = build_options.used_options
     options |= f.build.used_options
     options &= f.options
@@ -176,7 +176,7 @@ module Homebrew
     fi = FormulaInstaller.new(f)
     fi.options = options
     fi.build_bottle = args.build_bottle?
-    fi.installed_on_request = Homebrew.args.named.present?
+    fi.installed_on_request = args.named.present?
     fi.link_keg           ||= keg_was_linked if keg_had_linked_opt
     if tab
       fi.build_bottle          ||= tab.built_bottle?

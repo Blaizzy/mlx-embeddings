@@ -48,14 +48,14 @@ module Homebrew
       Tap.each(&:link_completions_and_manpages)
     elsif args.list_pinned?
       puts Tap.select(&:pinned?).map(&:name)
-    elsif ARGV.named.empty?
+    elsif args.no_named?
       puts Tap.names
     else
-      tap = Tap.fetch(ARGV.named.first)
+      tap = Tap.fetch(args.named.first)
       begin
-        tap.install clone_target:      ARGV.named.second,
+        tap.install clone_target:      args.named.second,
                     force_auto_update: force_auto_update?,
-                    quiet:             Homebrew.args.quiet?
+                    quiet:             args.quiet?
       rescue TapRemoteMismatchError => e
         odie e
       rescue TapAlreadyTappedError

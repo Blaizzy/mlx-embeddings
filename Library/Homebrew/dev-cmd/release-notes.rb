@@ -23,13 +23,13 @@ module Homebrew
   def release_notes
     release_notes_args.parse
 
-    previous_tag = ARGV.named.first
+    previous_tag = args.named.first
     previous_tag ||= Utils.popen_read(
       "git", "-C", HOMEBREW_REPOSITORY, "tag", "--list", "--sort=-version:refname"
     ).lines.first.chomp
     odie "Could not find any previous tags!" unless previous_tag
 
-    end_ref = ARGV.named.second || "origin/master"
+    end_ref = args.named.second || "origin/master"
 
     [previous_tag, end_ref].each do |ref|
       next if quiet_system "git", "-C", HOMEBREW_REPOSITORY, "rev-parse", "--verify", "--quiet", ref

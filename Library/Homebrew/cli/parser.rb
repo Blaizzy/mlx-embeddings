@@ -12,8 +12,8 @@ module Homebrew
     class Parser
       attr_reader :processed_options, :hide_from_man_page
 
-      def self.parse(args = ARGV, &block)
-        new(args, &block).parse(args)
+      def self.parse(args = ARGV, allow_no_named_args: false, &block)
+        new(args, &block).parse(args, allow_no_named_args: allow_no_named_args)
       end
 
       def self.from_cmd_path(cmd_path)
@@ -47,6 +47,8 @@ module Homebrew
         @switch_sources = {}
         @processed_options = []
         @max_named_args = nil
+        @min_named_args = nil
+        @min_named_type = nil
         @hide_from_man_page = false
         instance_eval(&block)
         post_initialize
@@ -146,18 +148,18 @@ module Homebrew
         @parser.to_s
       end
 
-      def parse(cmdline_args = ARGV)
+      def parse(cmdline_args = ARGV, allow_no_named_args: false)
         raise "Arguments were already parsed!" if @args_parsed
 
         begin
-          remaining_args = @parser.parse(cmdline_args)
+          named_args = @parser.parse(cmdline_args)
         rescue OptionParser::InvalidOption => e
           $stderr.puts generate_help_text
           raise e
         end
         check_constraint_violations
-        check_named_args(remaining_args)
-        @args[:remaining] = remaining_args
+        check_named_args(named_args, allow_no_named_args: allow_no_named_args)
+        @args[:remaining] = named_args
         @args.freeze_processed_options!(@processed_options)
         Homebrew.args = @args
         cmdline_args.freeze
@@ -198,7 +200,33 @@ module Homebrew
       end
 
       def max_named(count)
+        raise TypeError, "Unsupported type #{count.class.name} for max_named" unless count.is_a?(Integer)
+
         @max_named_args = count
+      end
+
+      def min_named(count_or_type)
+        if count_or_type.is_a?(Integer)
+          @min_named_args = count_or_type
+          @min_named_type = nil
+        elsif count_or_type.is_a?(Symbol)
+          @min_named_args = 1
+          @min_named_type = count_or_type
+        else
+          raise TypeError, "Unsupported type #{count_or_type.class.name} for min_named"
+        end
+      end
+
+      def named(count_or_type)
+        if count_or_type.is_a?(Integer)
+          @max_named_args = @min_named_args = count_or_type
+          @min_named_type = nil
+        elsif count_or_type.is_a?(Symbol)
+          @max_named_args = @min_named_args = 1
+          @min_named_type = count_or_type
+        else
+          raise TypeError, "Unsupported type #{count_or_type.class.name} for named"
+        end
       end
 
       def hide_from_man_page!
@@ -292,8 +320,17 @@ module Homebrew
         check_constraints
       end
 
-      def check_named_args(args)
-        raise NamedArgumentsError, @max_named_args if !@max_named_args.nil? && args.size > @max_named_args
+      def check_named_args(args, allow_no_named_args: false)
+        min_exception = case @min_named_type
+        when :formula
+          FormulaUnspecifiedError.new
+        when :keg
+          KegUnspecifiedError.new
+        else
+          MinNamedArgumentsError.new(@min_named_args)
+        end
+        raise min_exception if !allow_no_named_args && !@min_named_args.nil? && args.size < @min_named_args
+        raise MaxNamedArgumentsError, @max_named_args if !@max_named_args.nil? && args.size > @max_named_args
       end
 
       def process_option(*args)
@@ -327,15 +364,29 @@ module Homebrew
       end
     end
 
-    class NamedArgumentsError < UsageError
+    class MaxNamedArgumentsError < UsageError
       def initialize(maximum)
         message = case maximum
         when 0
-          "This command does not take named arguments."
+          "this command does not take named arguments"
         when 1
-          "This command does not take multiple named arguments."
+          "this command does not take multiple named arguments"
         else
-          "This command does not take more than #{maximum} named arguments."
+          "this command does not take more than #{maximum} named arguments"
+        end
+        super message
+      end
+    end
+
+    class MinNamedArgumentsError < UsageError
+      def initialize(minimum)
+        message = case minimum
+        when 1
+          "this command requires a named argument"
+        when 2
+          "this command requires multiple named arguments"
+        else
+          "this command requires at least #{minimum} named arguments"
         end
         super message
       end

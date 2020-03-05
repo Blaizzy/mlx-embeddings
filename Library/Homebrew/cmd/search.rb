@@ -62,13 +62,13 @@ module Homebrew
 
     if package_manager = PACKAGE_MANAGERS.find { |name,| args[:"#{name}?"] }
       _, url = package_manager
-      exec_browser url.call(URI.encode_www_form_component(args.remaining.join(" ")))
+      exec_browser url.call(URI.encode_www_form_component(args.named.join(" ")))
       return
     end
 
-    if args.remaining.empty?
+    if args.no_named?
       if args.casks?
-        raise UsageError, "specifying both --formulae and --casks requires an argument!" if args.formulae?
+        raise UsageError, "specifying both --formulae and --casks requires <text>" if args.formulae?
 
         puts Formatter.columns(Cask::Cask.to_a.map(&:full_name).sort)
       else
@@ -78,7 +78,7 @@ module Homebrew
       return
     end
 
-    query = args.remaining.join(" ")
+    query = args.named.join(" ")
     string_or_regex = query_regexp(query)
 
     if args.desc?
@@ -125,11 +125,11 @@ module Homebrew
     end
 
     return unless $stdout.tty?
-    return if args.remaining.empty?
+    return if args.no_named?
 
     metacharacters = %w[\\ | ( ) [ ] { } ^ $ * + ?].freeze
     return unless metacharacters.any? do |char|
-      args.remaining.any? do |arg|
+      args.named.any? do |arg|
         arg.include?(char) && !arg.start_with?("/")
       end
     end

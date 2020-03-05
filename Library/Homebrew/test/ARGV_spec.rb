@@ -31,14 +31,14 @@ describe HomebrewArgvExtension do
     let(:argv) { ["foo", "--debug", "-v"] }
 
     it "returns an array of non-option arguments" do
-      expect(subject.named).to eq ["foo"]
+      expect(subject.send(:named)).to eq ["foo"]
     end
 
     context "when there are no named arguments" do
       let(:argv) { [] }
 
       it "returns an empty array" do
-        expect(subject.named).to be_empty
+        expect(subject.send(:named)).to be_empty
       end
     end
   end

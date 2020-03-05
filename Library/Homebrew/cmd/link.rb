@@ -25,20 +25,19 @@ module Homebrew
              description: "Allow keg-only formulae to be linked."
       switch :verbose
       switch :debug
+      min_named :keg
     end
   end
 
   def link
     link_args.parse
 
-    raise KegUnspecifiedError if ARGV.named.empty?
-
     mode = OpenStruct.new
 
     mode.overwrite = true if args.overwrite?
     mode.dry_run = true if args.dry_run?
 
-    Homebrew.args.kegs.each do |keg|
+    args.kegs.each do |keg|
       keg_only = Formulary.keg_only?(keg.rack)
 
       if keg.linked?

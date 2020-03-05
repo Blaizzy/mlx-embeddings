@@ -55,14 +55,14 @@ module Homebrew
     # Unbrewed uses the PREFIX, which will exist
     # Things below use the CELLAR, which doesn't until the first formula is installed.
     unless HOMEBREW_CELLAR.exist?
-      raise NoSuchKegError, Hombrew.args.named.first if Homebrew.args.named.present?
+      raise NoSuchKegError, Hombrew.args.named.first if args.named.present?
 
       return
     end
 
     if args.pinned? || args.versions?
       filtered_list
-    elsif Homebrew.args.named.blank?
+    elsif args.no_named?
       if args.full_name?
         full_names = Formula.installed.map(&:full_name).sort(&tap_and_name_comparison)
         return if full_names.empty?
@@ -70,12 +70,12 @@ module Homebrew
         puts Formatter.columns(full_names)
       else
         ENV["CLICOLOR"] = nil
-        safe_system "ls", *Homebrew.args.passthrough << HOMEBREW_CELLAR
+        safe_system "ls", *args.passthrough << HOMEBREW_CELLAR
       end
     elsif args.verbose? || !$stdout.tty?
-      system_command! "find", args: Homebrew.args.kegs.map(&:to_s) + %w[-not -type d -print], print_stdout: true
+      system_command! "find", args: args.kegs.map(&:to_s) + %w[-not -type d -print], print_stdout: true
     else
-      Homebrew.args.kegs.each { |keg| PrettyListing.new keg }
+      args.kegs.each { |keg| PrettyListing.new keg }
     end
   end
 
@@ -123,10 +123,10 @@ module Homebrew
   end
 
   def filtered_list
-    names = if Homebrew.args.named.blank?
+    names = if args.no_named?
       Formula.racks
     else
-      racks = Homebrew.args.named.map { |n| Formulary.to_rack(n) }
+      racks = args.named.map { |n| Formulary.to_rack(n) }
       racks.select do |rack|
         Homebrew.failed = true unless rack.exist?
         rack.exist?

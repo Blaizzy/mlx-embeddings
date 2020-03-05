@@ -49,7 +49,7 @@ module Homebrew
       switch :verbose
       switch :debug
       conflicts "--autotools", "--cmake", "--go", "--meson", "--perl", "--python", "--rust"
-      max_named 1
+      named 1
     end
   end
 
@@ -57,12 +57,10 @@ module Homebrew
   def create
     create_args.parse
 
-    raise UsageError if ARGV.named.empty?
-
     # Ensure that the cache exists so we can fetch the tarball
     HOMEBREW_CACHE.mkpath
 
-    url = ARGV.named.first # Pull the first (and only) url from ARGV
+    url = args.named.first # Pull the first (and only) url from ARGV
 
     version = args.set_version
     name = args.set_name

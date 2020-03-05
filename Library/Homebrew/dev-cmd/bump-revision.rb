@@ -33,7 +33,7 @@ module Homebrew
     # user path, too.
     ENV["PATH"] = ENV["HOMEBREW_PATH"]
 
-    formulae = Homebrew.args.formulae
+    formulae = args.formulae
     raise FormulaUnspecifiedError if formulae.empty?
 
     formula = formulae.first
@@ -64,7 +64,7 @@ module Homebrew
     end
 
     if args.dry_run?
-      ohai "replace #{old.inspect} with #{replacement.inspect}" unless Homebrew.args.quiet?
+      ohai "replace #{old.inspect} with #{replacement.inspect}" unless args.quiet?
     else
       Utils::Inreplace.inreplace(formula.path) do |s|
         s.gsub!(old, replacement)
