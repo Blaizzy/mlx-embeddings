@@ -53,6 +53,24 @@ describe StringInreplaceExtension do
           EOS
         end
       end
+
+      context "with newlines" do
+        let(:string) do
+          <<~'EOS'
+            CFLAGS = -Wall -O2 \
+                     -DSOME_VAR=1
+            LDFLAGS = -lcrypto -lssl
+          EOS
+        end
+
+        it "is successfully replaced" do
+          subject.change_make_var! "CFLAGS", "-O3"
+          expect(subject).to eq <<~EOS
+            CFLAGS=-O3
+            LDFLAGS = -lcrypto -lssl
+          EOS
+        end
+      end
     end
 
     context "empty flag between other flags" do
@@ -146,6 +164,23 @@ describe StringInreplaceExtension do
           EOS
         end
       end
+
+      context "with newlines" do
+        let(:string) do
+          <<~'EOS'
+            CFLAGS = -Wall -O2 \
+                     -DSOME_VAR=1
+            LDFLAGS = -lcrypto -lssl
+          EOS
+        end
+
+        it "is successfully removed" do
+          subject.remove_make_var! "CFLAGS"
+          expect(subject).to eq <<~EOS
+            LDFLAGS = -lcrypto -lssl
+          EOS
+        end
+      end
     end
 
     context "multiple flags" do
@@ -192,6 +227,20 @@ describe StringInreplaceExtension do
 
       it "extracts the value for a given variable" do
         expect(subject.get_make_var("CFLAGS")).to eq("-Wall -O2")
+      end
+    end
+
+    context "with newlines" do
+      let(:string) do
+        <<~'EOS'
+          CFLAGS = -Wall -O2 \
+                   -DSOME_VAR=1
+          LDFLAGS = -lcrypto -lssl
+        EOS
+      end
+
+      it "extracts the value for a given variable" do
+        expect(subject.get_make_var("CFLAGS")).to match(/^-Wall -O2 \\\n +-DSOME_VAR=1$/)
       end
     end
   end
