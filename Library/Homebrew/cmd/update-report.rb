@@ -441,6 +441,9 @@ class ReporterHub
         "#{name} -> #{new_name}"
       when :A
         name unless installed?(name)
+      when :MC, :DC
+        name = name.split("/").last
+        cask_installed?(name) ? pretty_installed(name) : name
       else
         installed?(name) ? pretty_installed(name) : name
       end
@@ -455,5 +458,9 @@ class ReporterHub
 
   def installed?(formula)
     (HOMEBREW_CELLAR/formula.split("/").last).directory?
+  end
+
+  def cask_installed?(cask)
+    (Cask::Caskroom.path/cask).directory?
   end
 end
