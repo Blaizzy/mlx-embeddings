@@ -242,15 +242,26 @@ module Homebrew
     end
 
     def audit_file
-      # Under normal circumstances (umask 0022), we expect a file mode of 644. If
-      # the user's umask is more restrictive, respect that by masking out the
-      # corresponding bits. (The also included 0100000 flag means regular file.)
-      wanted_mode = 0100644 & ~File.umask
       actual_mode = formula.path.stat.mode
-      unless actual_mode == wanted_mode
-        problem format("Incorrect file permissions (%03<actual>o): chmod %03<wanted>o %<path>s",
+      # Check that the file is world-readable.
+      if actual_mode & 0444 != 0444
+        problem format("Incorrect file permissions (%03<actual>o): chmod %<wanted>s %<path>s",
                        actual: actual_mode & 0777,
-                       wanted: wanted_mode & 0777,
+                       wanted: "+r",
+                       path:   formula.path)
+      end
+      # Check that the file is user-writeable.
+      if actual_mode & 0200 != 0200
+        problem format("Incorrect file permissions (%03<actual>o): chmod %<wanted>s %<path>s",
+                       actual: actual_mode & 0777,
+                       wanted: "u+w",
+                       path:   formula.path)
+      end
+      # Check that the file is *not* other-writeable.
+      if actual_mode & 0002 == 002
+        problem format("Incorrect file permissions (%03<actual>o): chmod %<wanted>s %<path>s",
+                       actual: actual_mode & 0777,
+                       wanted: "o-w",
                        path:   formula.path)
       end
 

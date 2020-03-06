@@ -106,11 +106,40 @@ module Homebrew
         RUBY
 
         path = fa.formula.path
-        path.chmod 0400
 
+        path.chmod 0600
         fa.audit_file
         expect(fa.problems)
-          .to eq(["Incorrect file permissions (400): chmod 644 #{path}"])
+          .to eq([
+                   "Incorrect file permissions (600): chmod +r #{path}",
+                 ])
+        fa.problems.clear
+
+        path.chmod 0444
+        fa.audit_file
+        expect(fa.problems)
+          .to eq([
+                   "Incorrect file permissions (444): chmod u+w #{path}",
+                 ])
+        fa.problems.clear
+
+        path.chmod 0646
+        fa.audit_file
+        expect(fa.problems)
+          .to eq([
+                   "Incorrect file permissions (646): chmod o-w #{path}",
+                 ])
+        fa.problems.clear
+
+        path.chmod 0002
+        fa.audit_file
+        expect(fa.problems)
+          .to eq([
+                   "Incorrect file permissions (002): chmod +r #{path}",
+                   "Incorrect file permissions (002): chmod u+w #{path}",
+                   "Incorrect file permissions (002): chmod o-w #{path}",
+                 ])
+        fa.problems.clear
       end
 
       specify "DATA but no __END__" do
