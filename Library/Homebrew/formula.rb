@@ -1343,6 +1343,17 @@ class Formula
     ["-trimpath", "-o", bin/name]
   end
 
+  # Standard parameters for cabal-v2 builds.
+  def std_cabal_v2_args
+    # cabal-install's dependency-resolution backtracking strategy can
+    # easily need more than the default 2,000 maximum number of
+    # "backjumps," since Hackage is a fast-moving, rolling-release
+    # target. The highest known needed value by a formula was 43,478
+    # for git-annex, so 100,000 should be enough to avoid most
+    # gratuitous backjumps build failures.
+    ["--jobs=#{ENV.make_jobs}", "--max-backjumps=100000", "--install-method=copy", "--installdir=#{bin}"]
+  end
+
   # an array of all core {Formula} names
   # @private
   def self.core_names
