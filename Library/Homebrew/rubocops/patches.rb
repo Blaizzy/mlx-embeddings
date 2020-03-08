@@ -39,6 +39,7 @@ module RuboCop
           end
 
           gh_patch_patterns = Regexp.union([%r{/raw\.github\.com/},
+                                            %r{/raw\.githubusercontent\.com/},
                                             %r{gist\.github\.com/raw},
                                             %r{gist\.github\.com/.+/raw},
                                             %r{gist\.githubusercontent\.com/.+/raw}])
