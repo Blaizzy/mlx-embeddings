@@ -85,10 +85,10 @@ module OS
     # if available. Otherwise, the latest SDK is returned.
 
     def sdk(v = nil)
-      @locator ||= if Xcode.installed?
-        XcodeSDKLocator.new
-      else
+      @locator ||= if CLT.installed? && CLT.provides_sdk?
         CLTSDKLocator.new
+      else
+        XcodeSDKLocator.new
       end
 
       @locator.sdk_if_applicable(v)
@@ -101,7 +101,7 @@ module OS
     end
 
     def sdk_path_if_needed(v = nil)
-      # Prefer Xcode SDK when both Xcode and the CLT are installed.
+      # Prefer CLT SDK when both Xcode and the CLT are installed.
       # Expected results:
       # 1. On Xcode-only systems, return the Xcode SDK.
       # 2. On Xcode-and-CLT systems where headers are provided by the system, return nil.
