@@ -200,7 +200,7 @@ module OS
       end
 
       def separate_header_package?
-        version >= "10"
+        version >= "10" && MacOS.version >= "10.14"
       end
 
       def provides_sdk?

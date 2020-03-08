@@ -111,7 +111,7 @@ module OS
 
       # If there's no CLT SDK, return early
       return if MacOS::CLT.installed? && !MacOS::CLT.provides_sdk?
-      # If the CLT is installed and provides headers, return early
+      # If the CLT is installed and headers are provided by the system, return early
       return if MacOS::CLT.installed? && !MacOS::CLT.separate_header_package?
 
       sdk_path(v)
