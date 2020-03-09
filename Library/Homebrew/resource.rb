@@ -198,6 +198,7 @@ class Resource
 
     def initialize(&block)
       @patch_files = []
+      @directory = nil
       super "patch", &block
     end
 
@@ -205,6 +206,12 @@ class Resource
       paths.flatten!
       @patch_files.concat(paths)
       @patch_files.uniq!
+    end
+
+    def directory(val = nil)
+      return @directory if val.nil?
+
+      @directory = val
     end
   end
 end
