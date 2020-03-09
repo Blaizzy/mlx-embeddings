@@ -33,7 +33,7 @@ module OS
       def sdk_if_applicable(v = nil)
         sdk = begin
           if v.nil?
-            (source_version.to_i >= 7) ? latest_sdk : sdk_for(OS::Mac.version)
+            sdk_for OS::Mac.version
           else
             sdk_for v
           end

@@ -81,23 +81,14 @@ module OS
     #      are available) is returned.
     #   3. If no SDKs are available, nil is returned.
     #
-    # If no specific SDK is requested:
-    #
-    #   1. For Xcode >= 7, the latest SDK is returned even if the latest SDK is
-    #      named after a newer OS version than the running OS. The
-    #      `MACOSX_DEPLOYMENT_TARGET` must be set to the OS for which you're
-    #      actually building (usually the running OS version).
-    #      - https://github.com/Homebrew/legacy-homebrew/pull/50355
-    #      - https://developer.apple.com/library/ios/documentation/DeveloperTools/Conceptual/WhatsNewXcode/Articles/Introduction.html#//apple_ref/doc/uid/TP40004626
-    #      Section "About SDKs and Simulator"
-    #   2. For Xcode < 7, proceed as if the SDK for the running OS version had
-    #      specifically been requested according to the rules above.
+    # If no specific SDK is requested, the SDK matching the OS version is returned,
+    # if available. Otherwise, the latest SDK is returned.
 
     def sdk(v = nil)
-      @locator ||= if Xcode.installed?
-        XcodeSDKLocator.new
-      else
+      @locator ||= if CLT.installed? && CLT.provides_sdk?
         CLTSDKLocator.new
+      else
+        XcodeSDKLocator.new
       end
 
       @locator.sdk_if_applicable(v)
@@ -110,7 +101,7 @@ module OS
     end
 
     def sdk_path_if_needed(v = nil)
-      # Prefer Xcode SDK when both Xcode and the CLT are installed.
+      # Prefer CLT SDK when both Xcode and the CLT are installed.
       # Expected results:
       # 1. On Xcode-only systems, return the Xcode SDK.
       # 2. On Xcode-and-CLT systems where headers are provided by the system, return nil.
@@ -120,7 +111,7 @@ module OS
 
       # If there's no CLT SDK, return early
       return if MacOS::CLT.installed? && !MacOS::CLT.provides_sdk?
-      # If the CLT is installed and provides headers, return early
+      # If the CLT is installed and headers are provided by the system, return early
       return if MacOS::CLT.installed? && !MacOS::CLT.separate_header_package?
 
       sdk_path(v)
