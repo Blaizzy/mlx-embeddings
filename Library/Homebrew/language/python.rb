@@ -88,7 +88,7 @@ module Language
     end
 
     def self.rewrite_python_shebang(python_path)
-      regex = %r{^#! ?/usr/bin/(env )?python([23](\.\d{1,2})?)$}
+      regex = %r{^#! ?/usr/bin/(env )?python([23](\.\d{1,2})?)?$}
       maximum_regex_length = 28 # the length of "#! /usr/bin/env pythonx.yyy$"
       Pathname(".").find do |f|
         next unless f.file?
