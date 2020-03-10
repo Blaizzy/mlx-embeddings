@@ -53,6 +53,10 @@ module OS
       languages.first
     end
 
+    def sdk_path_if_needed(_v = nil)
+      nil
+    end
+
     module Xcode
       module_function
 
