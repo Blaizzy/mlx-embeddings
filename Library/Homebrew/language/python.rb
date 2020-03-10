@@ -220,14 +220,21 @@ module Language
             next unless f.symlink?
             next unless (rp = f.realpath.to_s).start_with? HOMEBREW_CELLAR
 
-            new_target = rp.sub %r{#{HOMEBREW_CELLAR}/python/[^/]+}, Formula["python"].opt_prefix
+            version = rp.match %r{^#{HOMEBREW_CELLAR}/python@(.*?)/}
+            version = "@#{version.captures.first}" unless version.nil?
+
+            new_target = rp.sub %r{#{HOMEBREW_CELLAR}/python#{version}/[^/]+}, Formula["python#{version}"].opt_prefix
             f.unlink
             f.make_symlink new_target
           end
 
           Pathname.glob(@venv_root/"lib/python*/orig-prefix.txt").each do |prefix_file|
             prefix_path = prefix_file.read
-            prefix_path.sub! %r{^#{HOMEBREW_CELLAR}/python/[^/]+}, Formula["python"].opt_prefix
+
+            version = prefix_path.match %r{^#{HOMEBREW_CELLAR}/python@(.*?)/}
+            version = "@#{version.captures.first}" unless version.nil?
+
+            prefix_path.sub! %r{^#{HOMEBREW_CELLAR}/python#{version}/[^/]+}, Formula["python#{version}"].opt_prefix
             prefix_file.atomic_write prefix_path
           end
         end
