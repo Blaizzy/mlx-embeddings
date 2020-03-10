@@ -20,6 +20,7 @@ task test: :build do
     check_opengraph: true,
     check_html: true,
     check_img_http: true,
+    enforce_https: true,
     file_ignore: [
       %r{Kickstarter-Supporters},
     ],
