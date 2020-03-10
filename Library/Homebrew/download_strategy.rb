@@ -423,6 +423,8 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
 
     args += ["--header", meta.fetch(:header)] if meta.key?(:header)
 
+    meta.fetch(:headers).each { |h| args += ["--header", h.strip] } if meta.key?(:headers)
+
     args
   end
 
