@@ -245,7 +245,7 @@ describe CurlDownloadStrategy do
     context "with headers set" do
       alias_matcher :a_string_matching, :match
 
-      let(:specs) { { headers: ["foo", "bar"]} }
+      let(:specs) { { headers: ["foo", "bar"] } }
 
       it "adds the appropriate curl args" do
         expect(subject).to receive(:system_command!) { |*, args:, **|
