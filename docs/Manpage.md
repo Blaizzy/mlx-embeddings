@@ -991,7 +991,7 @@ Install and commit Homebrew's vendored gems.
 
 ## GLOBAL OPTIONS
 
-These options are applicable across all sub-commands.
+These options are applicable across multiple subcommands.
 
 * `-q`, `--quiet`:
   Suppress any warnings.

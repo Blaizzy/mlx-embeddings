@@ -198,7 +198,7 @@ module Homebrew
   end
 
   def global_options_manpage
-    lines = ["These options are applicable across all sub-commands.\n"]
+    lines = ["These options are applicable across multiple subcommands.\n"]
     lines += Homebrew::CLI::Parser.global_options.values.map do |names, _, desc|
       short, long = names
       generate_option_doc(short, long, desc)
