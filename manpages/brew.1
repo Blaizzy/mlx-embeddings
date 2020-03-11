@@ -1262,7 +1262,7 @@ Use the commit at the specified \fIdate\fR as the start commit\.
 Install and commit Homebrew\'s vendored gems\.
 .
 .SH "GLOBAL OPTIONS"
-These options are applicable across all sub\-commands\.
+These options are applicable across multiple subcommands\.
 .
 .TP
 \fB\-q\fR, \fB\-\-quiet\fR
@@ -1282,13 +1282,6 @@ Override warnings and enable potentially unsafe operations\.
 .
 .SH "OFFICIAL EXTERNAL COMMANDS"
 .
-.SS "\fBbundle\fR \fIsubcommand\fR:"
-Bundler for non\-Ruby dependencies from Homebrew, Homebrew Cask and the Mac App Store\. See \fBbrew bundle \-\-help\fR\.
-.
-.P
-\fBHomebrew/homebrew\-bundle\fR
-    \fIhttps://github\.com/Homebrew/homebrew\-bundle\fR
-.
 .SS "\fBcask\fR \fIsubcommand\fR:"
 Install macOS applications distributed as binaries\. See \fBbrew\-cask\fR(1)\.
 .
@@ -1296,12 +1289,128 @@ Install macOS applications distributed as binaries\. See \fBbrew\-cask\fR(1)\.
 \fBHomebrew/homebrew\-cask\fR
     \fIhttps://github\.com/Homebrew/homebrew\-cask\fR
 .
-.SS "\fBservices\fR \fIsubcommand\fR:"
-Manage background services with macOS\' \fBlaunchctl\fR(1) daemon manager\. See \fBbrew services \-\-help\fR\.
+.SS "\fBbundle\fR \fIsubcommand\fR"
+Bundler for non\-Ruby dependencies from Homebrew, Homebrew Cask and the Mac App Store\.
 .
 .P
-\fBHomebrew/homebrew\-services\fR
-    \fIhttps://github\.com/Homebrew/homebrew\-services\fR
+\fBbrew bundle\fR [\fBinstall\fR]
+.
+.P
+Install or upgrade all dependencies in a \fBBrewfile\fR\.
+.
+.P
+\fBbrew bundle dump\fR
+.
+.P
+Write all installed casks/formulae/taps into a \fBBrewfile\fR\.
+.
+.P
+\fBbrew bundle cleanup\fR
+.
+.P
+Uninstall all dependencies not listed in a \fBBrewfile\fR\.
+.
+.P
+\fBbrew bundle check\fR
+.
+.P
+Check if all dependencies are installed in a \fBBrewfile\fR\.
+.
+.P
+\fBbrew bundle exec\fR \fIcommand\fR
+.
+.P
+Run an external command in an isolated build environment\.
+.
+.P
+\fBbrew bundle list\fR
+.
+.P
+List all dependencies present in a Brewfile\. By default, only Homebrew dependencies are listed\.
+.
+.TP
+\fB\-\-file\fR
+Read the \fBBrewfile\fR from this file\. Use \fB\-\-file=\-\fR to pipe to stdin/stdout\.
+.
+.TP
+\fB\-\-global\fR
+Read the \fBBrewfile\fR from \fB~/\.Brewfile\fR\.
+.
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+\fBinstall\fR output is printed from commands as they are run\. \fBcheck\fR prints all missing dependencies\.
+.
+.TP
+\fB\-\-no\-upgrade\fR
+\fBinstall\fR won\'t run \fBbrew upgrade\fR on outdated dependencies\. Note they may still be upgraded by \fBbrew install\fR if needed\.
+.
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+\fBdump\fR overwrites an existing \fBBrewfile\fR\. \fBcleanup\fR actually perform the cleanup operations\.
+.
+.TP
+\fB\-\-no\-lock\fR
+\fBinstall\fR won\'t output a \fBBrewfile\.lock\.json\fR\.
+.
+.TP
+\fB\-\-all\fR
+\fBlist\fR all dependencies\.
+.
+.TP
+\fB\-\-brews\fR
+\fBlist\fR Homebrew dependencies\.
+.
+.TP
+\fB\-\-casks\fR
+\fBlist\fR Homebrew Cask dependencies\.
+.
+.TP
+\fB\-\-taps\fR
+\fBlist\fR tap dependencies\.
+.
+.TP
+\fB\-\-mas\fR
+\fBlist\fR Mac App Store dependencies\.
+.
+.TP
+\fB\-\-describe\fR
+\fBdump\fR a description comment above each line, unless the dependency does not have a description\.
+.
+.TP
+\fB\-\-no\-restart\fR
+\fBdump\fR does not add \fBrestart_service\fR to formula lines\.
+.
+.TP
+\fB\-\-zap\fR
+\fBcleanup\fR casks using the \fBzap\fR command instead of \fBuninstall\fR\.
+.
+.SS "\fBservices\fR \fIsubcommand\fR"
+Manage background services with macOS\' \fBlaunchctl\fR(1) daemon manager\.
+.
+.P
+If \fBsudo\fR is passed, operate on \fB/Library/LaunchDaemons\fR (started at boot)\. Otherwise, operate on \fB~/Library/LaunchAgents\fR (started at login)\.
+.
+.P
+[\fBsudo\fR] \fBbrew services\fR [\fBlist\fR] List all running services for the current user (or root)\.
+.
+.P
+[\fBsudo\fR] \fBbrew services run\fR (\fIformula\fR|\fB\-\-all\fR) Run the service \fIformula\fR without registering to launch at login (or boot)\.
+.
+.P
+[\fBsudo\fR] \fBbrew services start\fR (\fIformula\fR|\fB\-\-all\fR) Start the service \fIformula\fR immediately and register it to launch at login (or boot)\.
+.
+.P
+[\fBsudo\fR] \fBbrew services stop\fR (\fIformula\fR|\fB\-\-all\fR) Stop the service \fIformula\fR immediately and unregister it from launching at login (or boot)\.
+.
+.P
+[\fBsudo\fR] \fBbrew services restart\fR (\fIformula\fR|\fB\-\-all\fR) Stop (if necessary) and start the service \fIformula\fR immediately and register it to launch at login (or boot)\.
+.
+.P
+[\fBsudo\fR] \fBbrew services cleanup\fR Remove all unused services\.
+.
+.TP
+\fB\-\-all\fR
+Run \fIsubcommand\fR on all services\.
 .
 .SH "CUSTOM EXTERNAL COMMANDS"
 Homebrew, like \fBgit\fR(1), supports external commands\. These are executable scripts that reside somewhere in the \fBPATH\fR, named \fBbrew\-\fR\fIcmdname\fR or \fBbrew\-\fR\fIcmdname\fR\fB\.rb\fR, which can be invoked like \fBbrew\fR \fIcmdname\fR\. This allows you to create your own commands without modifying Homebrew\'s internals\.

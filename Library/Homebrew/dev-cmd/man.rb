@@ -61,6 +61,7 @@ module Homebrew
 
     variables[:commands] = generate_cmd_manpages(Commands.internal_commands_paths)
     variables[:developer_commands] = generate_cmd_manpages(Commands.internal_developer_commands_paths)
+    variables[:official_external_commands] = generate_cmd_manpages(Commands.official_external_commands_paths)
     variables[:global_options] = global_options_manpage
 
     readme = HOMEBREW_REPOSITORY/"README.md"
@@ -198,7 +199,7 @@ module Homebrew
   end
 
   def global_options_manpage
-    lines = ["These options are applicable across all sub-commands.\n"]
+    lines = ["These options are applicable across multiple subcommands.\n"]
     lines += Homebrew::CLI::Parser.global_options.values.map do |names, _, desc|
       short, long = names
       generate_option_doc(short, long, desc)
