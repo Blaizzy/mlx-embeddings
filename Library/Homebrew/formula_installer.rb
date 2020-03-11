@@ -228,7 +228,7 @@ class FormulaInstaller
       EOS
       if formula.outdated? && !formula.head?
         message += <<~EOS
-          To upgrade to #{formula.pkg_version}, run `brew upgrade #{formula.name}`.
+          To upgrade to #{formula.pkg_version}, run `brew upgrade #{formula.full_name}`.
         EOS
       elsif only_deps?
         message = nil
