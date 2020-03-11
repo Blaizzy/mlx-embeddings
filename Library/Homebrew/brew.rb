@@ -160,7 +160,7 @@ rescue Exception => e # rubocop:disable Lint/RescueException
   onoe e
   if internal_cmd && defined?(OS::ISSUES_URL) &&
      !ENV["HOMEBREW_NO_AUTO_UPDATE"]
-    $stderr.puts "#{Tty.bold}Please report this bug:#{Tty.reset}"
+    $stderr.puts "#{Tty.bold}Please report this issue:#{Tty.reset}"
     $stderr.puts "  #{Formatter.url(OS::ISSUES_URL)}"
   end
   $stderr.puts e.backtrace

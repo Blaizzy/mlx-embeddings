@@ -368,7 +368,7 @@ class FormulaInstaller
 
       raise if ARGV.homebrew_developer?
 
-      $stderr.puts "Please report this to the #{formula.tap} tap!"
+      $stderr.puts "Please report this issue to the #{formula.tap} tap (not Homebrew/brew or Homebrew/core)!"
       false
     else # rubocop:disable Layout/ElseAlignment
       f.linked_keg.exist? && f.opt_prefix.exist?
