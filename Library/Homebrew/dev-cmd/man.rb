@@ -61,6 +61,7 @@ module Homebrew
 
     variables[:commands] = generate_cmd_manpages(Commands.internal_commands_paths)
     variables[:developer_commands] = generate_cmd_manpages(Commands.internal_developer_commands_paths)
+    variables[:official_external_commands] = generate_cmd_manpages(Commands.official_external_commands_paths)
     variables[:global_options] = global_options_manpage
 
     readme = HOMEBREW_REPOSITORY/"README.md"
