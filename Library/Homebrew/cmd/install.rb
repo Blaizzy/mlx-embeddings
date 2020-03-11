@@ -173,7 +173,7 @@ module Homebrew
           optlinked_version = Keg.for(f.opt_prefix).version
           onoe <<~EOS
             #{f.full_name} #{optlinked_version} is already installed
-            To upgrade to #{f.version}, run `brew upgrade #{f.name}`
+            To upgrade to #{f.version}, run `brew upgrade #{f.full_name}`
           EOS
         elsif args.only_dependencies?
           formulae << f
