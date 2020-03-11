@@ -11,6 +11,9 @@ module Homebrew
       output = `#{cmd}`
       assert_equal result, $CHILD_STATUS.exitstatus
       output
+    rescue Test::Unit::AssertionFailedError
+      puts output if Homebrew.args.verbose?
+      raise
     end
 
     # Returns the output of running the cmd with the optional input, and
@@ -24,6 +27,9 @@ module Homebrew
       end
       assert_equal result, $CHILD_STATUS.exitstatus unless result.nil?
       output
+    rescue Test::Unit::AssertionFailedError
+      puts output if Homebrew.args.verbose?
+      raise
     end
   end
 end
