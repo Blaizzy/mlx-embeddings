@@ -206,7 +206,7 @@ module Formulary
       if url =~ %r{githubusercontent.com/[\w-]+/[\w-]+/[a-f0-9]{40}(/Formula)?/([\w+-.@]+).rb}
         formula_name = Regexp.last_match(2)
         opoo <<~EOS
-          Unsupported installation from an commit URL!
+          Unsupported installation from a commit URL!
           Consider using `brew extract #{formula_name} ...` instead!"
           This will extract your desired #{formula_name} version to a stable tap instead of
           installing from a commit URL that cannnot receive updates or fixes!
