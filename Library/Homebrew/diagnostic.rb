@@ -643,26 +643,31 @@ module Homebrew
       def check_git_status
         return unless Utils.git_available?
 
-        modified = []
-        HOMEBREW_REPOSITORY.cd do
-          status = `git status --untracked-files=all --porcelain -- Library/Homebrew/ 2>/dev/null`
-          return if status.blank?
+        message = nil
+
+        {
+          "Homebrew/brew"          => HOMEBREW_REPOSITORY,
+          "Homebrew/homebrew-core" => CoreTap.instance.path,
+        }.each do |name, path|
+          status = path.cd do
+            `git status --untracked-files=all --porcelain 2>/dev/null`
+          end
+          next if status.blank?
+
+          message ||= ""
+          message += "\n" unless message.empty?
+          message += <<~EOS
+            You have uncommitted modifications to #{name}.
+            If this is a surprise to you, then you should stash these modifications.
+            Stashing returns Homebrew to a pristine state but can be undone
+            should you later need to do so for some reason.
+              cd #{path} && git stash && git clean -d -f
+          EOS
 
           modified = status.split("\n")
-        end
-
-        message = <<~EOS
-          You have uncommitted modifications to Homebrew.
-          If this is a surprise to you, then you should stash these modifications.
-          Stashing returns Homebrew to a pristine state but can be undone
-          should you later need to do so for some reason.
-            cd #{HOMEBREW_LIBRARY} && git stash && git clean -d -f
-        EOS
-
-        if ENV["CI"]
           message += inject_file_list modified, <<~EOS
 
-            Modified files:
+            Uncommitted files:
           EOS
         end
 
