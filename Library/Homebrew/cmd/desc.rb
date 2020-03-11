@@ -19,41 +19,42 @@ module Homebrew
         Formula descriptions are cached; the cache is created on the
         first search, making that search slower than subsequent ones.
       EOS
-      flag   "-s", "--search=",
+      switch "-s", "--search",
              description: "Search both names and descriptions for <text>. If <text> is flanked by "\
                           "slashes, it is interpreted as a regular expression."
-      flag   "-n", "--name=",
+      switch "-n", "--name",
              description: "Search just names for <text>. If <text> is flanked by slashes, it is "\
                           "interpreted as a regular expression."
-      flag   "-d", "--description=",
+      switch "-d", "--description",
              description: "Search just descriptions for <text>. If <text> is flanked by slashes, "\
                           "it is interpreted as a regular expression."
       switch :verbose
-      conflicts "--search=", "--name=", "--description="
+      conflicts "--search", "--name", "--description"
+      min_named 1
     end
   end
 
   def desc
     desc_args.parse
 
-    search_type = []
-    search_type << :either if args.search
-    search_type << :name   if args.name
-    search_type << :desc   if args.description
-    odie "You must provide a search term." if search_type.present? && args.no_named?
+    search_type = if args.search?
+      :either
+    elsif args.name?
+      :name
+    elsif args.description?
+      :desc
+    end
 
-    results = if search_type.empty?
-      raise FormulaUnspecifiedError if args.no_named?
-
+    results = if search_type.nil?
       desc = {}
       args.formulae.each { |f| desc[f.full_name] = f.desc }
       Descriptions.new(desc)
     else
-      arg = args.named.join(" ")
-      string_or_regex = query_regexp(arg)
+      query = args.named.join(" ")
+      string_or_regex = query_regexp(query)
       CacheStoreDatabase.use(:descriptions) do |db|
         cache_store = DescriptionCacheStore.new(db)
-        Descriptions.search(string_or_regex, search_type.first, cache_store)
+        Descriptions.search(string_or_regex, search_type, cache_store)
       end
     end
 
