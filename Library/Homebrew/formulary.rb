@@ -205,10 +205,11 @@ module Formulary
     def load_file
       if url =~ %r{githubusercontent.com/[\w-]+/[\w-]+/[a-f0-9]{40}(/Formula)?/([\w+-.@]+).rb}
         formula_name = Regexp.last_match(2)
-        ohai "Consider using `brew extract #{formula_name} ...`!"
-        puts <<~EOS
+        opoo <<~EOS
+          Unsupported installation from an commit URL!
+          Consider using `brew extract #{formula_name} ...` instead!"
           This will extract your desired #{formula_name} version to a stable tap instead of
-          installing from an unstable URL!
+          installing from a commit URL that cannnot receive updates or fixes!
 
         EOS
       end
