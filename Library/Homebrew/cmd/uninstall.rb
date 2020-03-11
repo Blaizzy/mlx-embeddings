@@ -130,7 +130,7 @@ module Homebrew
     protected
 
     def sample_command
-      "brew uninstall --ignore-dependencies #{Homebrew.args.named.join(" ")}"
+      "brew uninstall --ignore-dependencies #{Array(Homebrew.args.named).join(" ")}"
     end
 
     def are_required_by_deps
