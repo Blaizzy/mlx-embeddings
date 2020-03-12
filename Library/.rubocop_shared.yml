@@ -58,9 +58,9 @@ Style/HashTransformKeys:
 Style/HashTransformValues:
   Enabled: true
 
-# This shouldn't be enabled until LineLength is lower.
+# Enabled now LineLength is lowish.
 Style/IfUnlessModifier:
-  Enabled: false
+  Enabled: true
 
 # Only use this for numbers >= `1_000_000`.
 Style/NumericLiterals:
