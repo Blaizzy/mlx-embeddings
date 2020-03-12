@@ -423,7 +423,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
 
     args += ["--header", meta.fetch(:header)] if meta.key?(:header)
 
-    meta.fetch(:headers).each { |h| args += ["--header", h.strip] } if meta.key?(:headers)
+    args += [meta.fetch(:header), *meta.fetch(:headers)].compact.flat_map { |h| ["--header", h.strip] }
 
     args
   end
