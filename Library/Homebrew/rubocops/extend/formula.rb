@@ -40,10 +40,10 @@ module RuboCop
 
         node_begin_pos = start_column(node)
         line_begin_pos = line_start_column(node)
-        if node_begin_pos == line_begin_pos
-          @column = node_begin_pos + match_object.begin(0) - line_begin_pos
+        @column = if node_begin_pos == line_begin_pos
+          node_begin_pos + match_object.begin(0) - line_begin_pos
         else
-          @column = node_begin_pos + match_object.begin(0) - line_begin_pos + 1
+          node_begin_pos + match_object.begin(0) - line_begin_pos + 1
         end
         @length = match_object.to_s.length
         @line_no = line_number(node)
@@ -200,10 +200,10 @@ module RuboCop
       # Returns true if given dependency name and dependency type exist in given dependency method call node.
       # TODO: Add case where key of hash is an array
       def depends_on_name_type?(node, name = nil, type = :required)
-        if name
-          name_match = false
+        name_match = if name
+          false
         else
-          name_match = true # Match only by type when name is nil
+          true # Match only by type when name is nil
         end
 
         case type

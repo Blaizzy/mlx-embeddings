@@ -81,10 +81,10 @@ class Tab < OpenStruct
 
     if attributes["source"]["spec"].nil?
       version = PkgVersion.parse path.to_s.split("/").second_to_last
-      if version.head?
-        attributes["source"]["spec"] = "head"
+      attributes["source"]["spec"] = if version.head?
+        "head"
       else
-        attributes["source"]["spec"] = "stable"
+        "stable"
       end
     end
 
@@ -360,10 +360,10 @@ class Tab < OpenStruct
 
   def to_s
     s = []
-    if poured_from_bottle
-      s << "Poured from bottle"
+    s << if poured_from_bottle
+      "Poured from bottle"
     else
-      s << "Built from source"
+      "Built from source"
     end
 
     s << Time.at(time).strftime("on %Y-%m-%d at %H:%M:%S") if time

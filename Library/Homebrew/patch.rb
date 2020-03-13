@@ -38,11 +38,11 @@ module Patch
       {}
     end.each_pair do |strip, urls|
       Array(urls).each do |url|
-        case url
+        patch = case url
         when :DATA
-          patch = DATAPatch.new(strip)
+          DATAPatch.new(strip)
         else
-          patch = LegacyPatch.new(strip, url)
+          LegacyPatch.new(strip, url)
         end
         patches << patch
       end

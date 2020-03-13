@@ -27,10 +27,10 @@ module Homebrew
   def tap_info
     tap_info_args.parse
 
-    if args.installed?
-      taps = Tap
+    taps = if args.installed?
+      Tap
     else
-      taps = args.named.sort.map do |name|
+      args.named.sort.map do |name|
         Tap.fetch(name)
       end
     end

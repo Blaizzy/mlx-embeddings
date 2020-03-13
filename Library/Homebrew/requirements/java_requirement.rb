@@ -46,10 +46,10 @@ class JavaRequirement < Requirement
 
   def display_s
     if @version
-      if exact_version?
-        op = "="
+      op = if exact_version?
+        "="
       else
-        op = ">="
+        ">="
       end
       "#{name} #{op} #{version_without_plus}"
     else

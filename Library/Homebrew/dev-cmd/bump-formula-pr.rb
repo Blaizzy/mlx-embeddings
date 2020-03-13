@@ -275,18 +275,18 @@ module Homebrew
 
     if forced_version && forced_version != "0"
       if requested_spec == :stable
-        if File.read(formula.path).include?("version \"#{old_formula_version}\"")
-          replacement_pairs << [
+        replacement_pairs << if File.read(formula.path).include?("version \"#{old_formula_version}\"")
+          [
             old_formula_version.to_s,
             forced_version,
           ]
         elsif new_mirrors
-          replacement_pairs << [
+          [
             /^( +)(mirror \"#{Regexp.escape(new_mirrors.last)}\"\n)/m,
             "\\1\\2\\1version \"#{forced_version}\"\n",
           ]
         else
-          replacement_pairs << [
+          [
             /^( +)(url \"#{Regexp.escape(new_url)}\"\n)/m,
             "\\1\\2\\1version \"#{forced_version}\"\n",
           ]

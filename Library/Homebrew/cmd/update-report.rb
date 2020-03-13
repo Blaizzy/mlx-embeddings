@@ -243,10 +243,10 @@ class Reporter
       new_name = tap.formula_renames[old_name]
       next unless new_name
 
-      if tap.core_tap?
-        new_full_name = new_name
+      new_full_name = if tap.core_tap?
+        new_name
       else
-        new_full_name = "#{tap}/#{new_name}"
+        "#{tap}/#{new_name}"
       end
 
       renamed_formulae << [old_full_name, new_full_name] if @report[:A].include? new_full_name
@@ -257,10 +257,10 @@ class Reporter
       old_name = tap.formula_renames.key(new_name)
       next unless old_name
 
-      if tap.core_tap?
-        old_full_name = old_name
+      old_full_name = if tap.core_tap?
+        old_name
       else
-        old_full_name = "#{tap}/#{old_name}"
+        "#{tap}/#{old_name}"
       end
 
       renamed_formulae << [old_full_name, new_full_name]

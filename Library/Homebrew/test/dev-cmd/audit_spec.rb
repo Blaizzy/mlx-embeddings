@@ -187,6 +187,8 @@ module Homebrew
       end
     end
 
+    # Intentionally outputted non-interpolated strings
+    # rubocop:disable Lint/InterpolationCheck
     describe "#line_problems" do
       specify "pkgshare" do
         fa = formula_auditor "foo", <<~RUBY, strict: true
@@ -237,6 +239,7 @@ module Homebrew
           .to eq('Use pkgshare instead of (share/"foolibc++")')
       end
     end
+    # rubocop:enable Lint/InterpolationCheck
 
     describe "#audit_github_repository" do
       specify "#audit_github_repository when HOMEBREW_NO_GITHUB_API is set" do

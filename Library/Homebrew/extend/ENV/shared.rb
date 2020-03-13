@@ -76,10 +76,10 @@ module SharedEnvExtension
     value = value.to_s
     Array(keys).each do |key|
       old = self[key]
-      if old.nil? || old.empty?
-        self[key] = value
+      self[key] = if old.nil? || old.empty?
+        value
       else
-        self[key] = value + separator + old
+        value + separator + old
       end
     end
   end

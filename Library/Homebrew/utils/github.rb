@@ -48,13 +48,13 @@ module GitHub
     def initialize(github_message)
       @github_message = github_message
       message = +"GitHub #{github_message}:"
-      if ENV["HOMEBREW_GITHUB_API_TOKEN"]
-        message << <<~EOS
+      message << if ENV["HOMEBREW_GITHUB_API_TOKEN"]
+        <<~EOS
           HOMEBREW_GITHUB_API_TOKEN may be invalid or expired; check:
             #{Formatter.url("https://github.com/settings/tokens")}
         EOS
       else
-        message << <<~EOS
+        <<~EOS
           The GitHub credentials in the macOS keychain may be invalid.
           Clear them with:
             printf "protocol=https\\nhost=github.com\\n" | git credential-osxkeychain erase

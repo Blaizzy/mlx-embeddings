@@ -54,10 +54,10 @@ module Superenv
   def homebrew_extra_library_paths
     paths = []
     if compiler == :llvm_clang
-      if !MacOS.sdk_path_if_needed
-        paths << "/usr/lib"
+      paths << if !MacOS.sdk_path_if_needed
+        "/usr/lib"
       else
-        paths << "#{MacOS.sdk_path}/usr/lib"
+        "#{MacOS.sdk_path}/usr/lib"
       end
       paths << Formula["llvm"].opt_lib.to_s
     end
