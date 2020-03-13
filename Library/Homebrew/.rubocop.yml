@@ -22,6 +22,10 @@ Layout/MultilineMethodCallIndentation:
 Lint/AmbiguousRegexpLiteral:
   Enabled: true
 
+# TODO: add parentheses for these and remove
+Lint/AssignmentInCondition:
+  Enabled: false
+
 # `formula do` uses nested method definitions
 Lint/NestedMethodDefinition:
   Exclude:

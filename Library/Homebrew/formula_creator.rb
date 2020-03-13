@@ -27,10 +27,10 @@ module Homebrew
         end
       end
       update_path
-      if @version
-        @version = Version.create(@version)
+      @version = if @version
+        Version.create(@version)
       else
-        @version = Version.detect(url, {})
+        Version.detect(url, {})
       end
     end
 
