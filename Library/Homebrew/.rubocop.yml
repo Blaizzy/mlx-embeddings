@@ -139,7 +139,3 @@ Style/MutableConstant:
 # LineLength is low enough here to re-enable it.
 Style/IfUnlessModifier:
   Enabled: true
-
-# so many of these in formulae but none in here
-Style/TrailingBodyOnMethodDefinition:
-  Enabled: true
