@@ -309,10 +309,10 @@ module Cask
       appcast_contents, = curl_output("--compressed", "--user-agent", HOMEBREW_USER_AGENT_FAKE_SAFARI, "--location",
                                       "--globoff", "--max-time", "5", appcast_stanza)
       version_stanza = cask.version.to_s
-      if cask.appcast.configuration.blank?
-        adjusted_version_stanza = version_stanza.split(",")[0].split("-")[0].split("_")[0]
+      adjusted_version_stanza = if cask.appcast.configuration.blank?
+        version_stanza.split(",")[0].split("-")[0].split("_")[0]
       else
-        adjusted_version_stanza = cask.appcast.configuration
+        cask.appcast.configuration
       end
       return if appcast_contents.include? adjusted_version_stanza
 

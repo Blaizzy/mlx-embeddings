@@ -47,7 +47,7 @@ module Cask
         elsif versions?
           puts installed_casks.map(&self.class.method(:format_versioned))
         elsif full_name?
-          puts installed_casks.map(&:full_name).sort &tap_and_name_comparison
+          puts installed_casks.map(&:full_name).sort(&tap_and_name_comparison)
         elsif !installed_casks.empty?
           puts Formatter.columns(installed_casks.map(&:to_s))
         end

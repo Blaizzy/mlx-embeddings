@@ -103,10 +103,10 @@ module Homebrew
       end
 
       def flag(*names, description: nil, required_for: nil, depends_on: nil)
-        if names.any? { |name| name.end_with? "=" }
-          required = OptionParser::REQUIRED_ARGUMENT
+        required = if names.any? { |name| name.end_with? "=" }
+          OptionParser::REQUIRED_ARGUMENT
         else
-          required = OptionParser::OPTIONAL_ARGUMENT
+          OptionParser::OPTIONAL_ARGUMENT
         end
         names.map! { |name| name.chomp "=" }
         description = option_to_description(*names) if description.nil?

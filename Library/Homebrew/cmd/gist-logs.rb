@@ -63,10 +63,10 @@ module Homebrew
     end
 
     # Description formatted to work well as page title when viewing gist
-    if f.core_formula?
-      descr = "#{f.name} on #{OS_VERSION} - Homebrew build logs"
+    descr = if f.core_formula?
+      "#{f.name} on #{OS_VERSION} - Homebrew build logs"
     else
-      descr = "#{f.name} (#{f.full_name}) on #{OS_VERSION} - Homebrew build logs"
+      "#{f.name} (#{f.full_name}) on #{OS_VERSION} - Homebrew build logs"
     end
     url = create_gist(files, descr)
 

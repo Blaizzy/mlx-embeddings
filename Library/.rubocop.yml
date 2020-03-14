@@ -21,10 +21,6 @@ Layout/HashAlignment:
 Layout/ArgumentAlignment:
   Enabled: false
 
-# favour parens-less DSL-style arguments
-Lint/AmbiguousOperator:
-  Enabled: false
-
 # this is a bit less "floaty"
 Layout/CaseIndentation:
   EnforcedStyle: end
@@ -37,8 +33,7 @@ Layout/EndAlignment:
 Layout/SpaceAroundOperators:
   Enabled: false
 
-# Auto-correct is broken (https://github.com/rubocop-hq/rubocop/issues/6258)
-# and layout is not configurable (https://github.com/rubocop-hq/rubocop/issues/6254).
+# layout is not configurable (https://github.com/rubocop-hq/rubocop/issues/6254).
 Layout/RescueEnsureAlignment:
   Enabled: false
 
@@ -49,15 +44,6 @@ Lint/AmbiguousBlockAssociation:
 # so many of these in formulae and can't be autocorrected
 # TODO: fix these as `ruby -w` complains about them.
 Lint/AmbiguousRegexpLiteral:
-  Enabled: false
-
-# assignment in conditions are useful sometimes
-# TODO: add parentheses for these and remove
-Lint/AssignmentInCondition:
-  Enabled: false
-
-# we output how to use interpolated strings too often
-Lint/InterpolationCheck:
   Enabled: false
 
 # so many of these in formulae and can't be autocorrected
@@ -84,11 +70,6 @@ Layout/LineLength:
   # ignore manpage comments and long single-line strings
   IgnoredPatterns: ['#: ', ' url "', ' mirror "', ' plist_options :']
 
-# our current conditional style is established
-# TODO: enable this when possible
-Style/ConditionalAssignment:
-  Enabled: false
-
 # most of our APIs are internal so don't require docs
 Style/Documentation:
  Enabled: false
@@ -97,7 +78,7 @@ Style/Documentation:
 Style/FrozenStringLiteralComment:
   Enabled: false
 
-# so many of these in formulae and can't be autocorrected
+# potential for errors in formulae too high with this
 Style/GuardClause:
   Enabled: false
 
@@ -109,6 +90,14 @@ Style/HashSyntax:
   - '**/cmd/**/*.rb'
   - '**/lib/**/*.rb'
   - '**/spec/**/*.rb'
+
+# autocorrectable and more readable
+Style/HashEachMethods:
+  Enabled: true
+Style/HashTransformKeys:
+  Enabled: true
+Style/HashTransformValues:
+  Enabled: true
 
 # ruby style guide favorite
 Style/StringLiterals:

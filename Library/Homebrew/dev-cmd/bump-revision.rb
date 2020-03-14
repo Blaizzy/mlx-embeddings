@@ -45,14 +45,14 @@ module Homebrew
         [checksum.hash_type, checksum.hexdigest]
       end
 
-      if hash_type
+      old = if hash_type
         # insert replacement revision after hash
-        old = <<~EOS
+        <<~EOS
           #{hash_type} "#{old_hash}"
         EOS
       else
         # insert replacement revision after :revision
-        old = <<~EOS
+        <<~EOS
           :revision => "#{formula_spec.specs[:revision]}"
         EOS
       end

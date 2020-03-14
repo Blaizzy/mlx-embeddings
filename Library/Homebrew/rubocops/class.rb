@@ -49,9 +49,10 @@ module RuboCop
           lambda do |corrector|
             case node.type
             when :str, :dstr
+              # Rubocop: intentionally outputted non-interpolated strings
               corrector.replace(node.source_range,
                                 node.source.to_s.sub(%r{(/usr/local/(s?bin))},
-                                                     '#{\2}'))
+                                                     '#{\2}')) # rubocop:disable Lint/InterpolationCheck
             when :int
               corrector.remove(
                 range_with_surrounding_comma(

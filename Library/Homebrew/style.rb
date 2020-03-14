@@ -24,10 +24,10 @@ module Homebrew
       args = %w[
         --force-exclusion
       ]
-      if fix
-        args << "--auto-correct"
+      args << if fix
+        "--auto-correct"
       else
-        args << "--parallel"
+        "--parallel"
       end
 
       args += ["--extra-details", "--display-cop-names"] if Homebrew.args.verbose?

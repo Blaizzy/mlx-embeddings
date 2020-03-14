@@ -354,10 +354,10 @@ module Homebrew
       patch_args = []
       # Normally we don't want whitespace errors, but squashing them can break
       # patches so an option is provided to skip this step.
-      if @args.ignore_whitespace? || @args.clean?
-        patch_args << "--whitespace=nowarn"
+      patch_args << if @args.ignore_whitespace? || @args.clean?
+        "--whitespace=nowarn"
       else
-        patch_args << "--whitespace=fix"
+        "--whitespace=fix"
       end
 
       # Fall back to three-way merge if patch does not apply cleanly
