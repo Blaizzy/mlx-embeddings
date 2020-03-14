@@ -31,10 +31,6 @@ module HomebrewArgvExtension
     flag?("--debug") || !ENV["HOMEBREW_DEBUG"].nil?
   end
 
-  def interactive?
-    flag? "--interactive"
-  end
-
   def keep_tmp?
     include? "--keep-tmp"
   end
