@@ -94,7 +94,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
           [{ message:
                        <<~EOS,
                          use GitHub pull request URLs:
-                           https://github.com/foo/foo-bar/pull/100.patch
+                           https://github.com/foo/foo-bar/pull/100.patch?full_index=1
                          Rather than patch-diff:
                            https://patch-diff.githubusercontent.com/raw/foo/foo-bar/pull/100.patch
                        EOS
@@ -231,7 +231,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
           [{ message:
                        <<~EOS,
                          use GitHub pull request URLs:
-                           https://github.com/foo/foo-bar/pull/100.patch
+                           https://github.com/foo/foo-bar/pull/100.patch?full_index=1
                          Rather than patch-diff:
                            https://patch-diff.githubusercontent.com/raw/foo/foo-bar/pull/100.patch
                        EOS
