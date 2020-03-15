@@ -1126,7 +1126,7 @@ class Formula
   def brew
     @prefix_returns_versioned_prefix = true
     stage do |staging|
-      staging.retain! if ARGV.keep_tmp?
+      staging.retain! if Homebrew.args.keep_tmp?
       prepare_patches
 
       begin
@@ -1765,7 +1765,7 @@ class Formula
     Utils.set_git_name_email!
 
     mktemp("#{name}-test") do |staging|
-      staging.retain! if ARGV.keep_tmp?
+      staging.retain! if Homebrew.args.keep_tmp?
       @testpath = staging.tmpdir
       test_env[:HOME] = @testpath
       setup_home @testpath

@@ -123,6 +123,6 @@ module Homebrew
       end
     end
   ensure
-    FileUtils.rm_rf "update-test" unless args.keep_tmp?
+    FileUtils.rm_rf "update-test" unless Homebrew.args.keep_tmp?
   end
 end

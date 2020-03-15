@@ -703,7 +703,7 @@ class FormulaInstaller
     args << "--debug" if debug?
     args << "--cc=#{ARGV.cc}" if ARGV.cc
     args << "--default-fortran-flags" if ARGV.include? "--default-fortran-flags"
-    args << "--keep-tmp" if ARGV.keep_tmp?
+    args << "--keep-tmp" if Homebrew.args.keep_tmp?
 
     if ARGV.env
       args << "--env=#{ARGV.env}"
