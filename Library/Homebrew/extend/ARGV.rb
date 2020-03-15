@@ -35,10 +35,6 @@ module HomebrewArgvExtension
     include? "--keep-tmp"
   end
 
-  def git?
-    flag? "--git"
-  end
-
   def homebrew_developer?
     !ENV["HOMEBREW_DEVELOPER"].nil?
   end
