@@ -85,12 +85,8 @@ including bottles). Once you're satisfied with the list of updated
 formulae, begin the merge:
 
 ```bash
-brew merge-homebrew --core --skip-style <sha>
+brew merge-homebrew --core <sha>
 ```
-
-The `--skip-style` argument skips running `brew style`, which saves
-time and in some cases avoids errors. The style errors can be fixed in
-bottle PRs later in the process when CI flags them.
 
 #### Simple Conflicts
 
