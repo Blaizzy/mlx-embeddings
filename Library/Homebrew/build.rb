@@ -22,7 +22,7 @@ class Build
     @formula = formula
     @formula.build = BuildOptions.new(options, formula.options)
 
-    if ARGV.ignore_deps?
+    if Homebrew.args.ignore_deps?
       @deps = []
       @reqs = []
     else

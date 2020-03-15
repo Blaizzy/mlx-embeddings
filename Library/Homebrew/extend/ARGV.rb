@@ -47,10 +47,6 @@ module HomebrewArgvExtension
     include?("--no-sandbox") || !ENV["HOMEBREW_NO_SANDBOX"].nil?
   end
 
-  def ignore_deps?
-    include? "--ignore-dependencies"
-  end
-
   def build_stable?
     !(include?("--HEAD") || include?("--devel"))
   end
