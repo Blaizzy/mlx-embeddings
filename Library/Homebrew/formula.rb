@@ -12,6 +12,7 @@ require "build_environment"
 require "build_options"
 require "formulary"
 require "software_spec"
+require "livecheck"
 require "install_renamed"
 require "pkg_version"
 require "keg"
@@ -352,6 +353,16 @@ class Formula
   # @method homepage
   # @see .homepage=
   delegate homepage: :"self.class"
+
+  # The livecheck specification for the software.
+  # @method livecheck
+  # @see .livecheck=
+  delegate livecheck: :"self.class"
+
+  # Is a livecheck specification defined for the software?
+  # @method livecheckable?
+  # @see .livecheckable?
+  delegate livecheckable?: :"self.class"
 
   # The version for the currently active {SoftwareSpec}.
   # The version is autodetected from the URL and/or tag so only needs to be
@@ -2186,6 +2197,13 @@ class Formula
     # <pre>homepage "https://www.example.com"</pre>
     attr_rw :homepage
 
+    # Whether a livecheck specification is defined or not.
+    # It returns true when a livecheck block is present in the {Formula} and
+    # false otherwise, and is used by livecheck.
+    def livecheckable?
+      @livecheckable == true
+    end
+
     # The `:startup` attribute set by {.plist_options}.
     # @private
     attr_reader :plist_startup
@@ -2626,6 +2644,26 @@ class Formula
     # Failed assertions and failed `system` commands will raise exceptions.
     def test(&block)
       define_method(:test, &block)
+    end
+
+    # @!attribute [w] livecheck
+    # Livecheck can be used to check for newer versions of the software.
+    # This method evaluates the DSL specified in the livecheck block of the
+    # {Formula} (if it exists) and sets the instance variables of a Livecheck
+    # object accordingly. This is used by brew livecheck to check for newer
+    # versions of the software.
+    #
+    # <pre>livecheck do
+    #   skip "Not maintained"
+    #   url "https://example.com/foo/releases"
+    #   regex /foo-(\d+(?:\.\d+)+)\.tar/
+    # end</pre>
+    def livecheck(&block)
+      @livecheck ||= Livecheck.new
+      return @livecheck unless block_given?
+
+      @livecheckable = true
+      @livecheck.instance_eval(&block)
     end
 
     # Defines whether the {Formula}'s bottle can be used on the given Homebrew

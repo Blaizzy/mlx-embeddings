@@ -46,6 +46,8 @@ Metrics/AbcSize:
 Metrics/BlockLength:
   Enabled: true
   Max: 1100
+  Exclude:
+    - 'test/formula_spec.rb'
 Metrics/BlockNesting:
   Enabled: true
   Max: 5
