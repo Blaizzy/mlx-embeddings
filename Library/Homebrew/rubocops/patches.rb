@@ -57,7 +57,7 @@ module RuboCop
           if match_obj = regex_match_group(patch, gh_patch_diff_pattern)
             problem <<~EOS
               use GitHub pull request URLs:
-                https://github.com/#{match_obj[1]}/#{match_obj[2]}/pull/#{match_obj[3]}.patch
+                https://github.com/#{match_obj[1]}/#{match_obj[2]}/pull/#{match_obj[3]}.patch?full_index=1
               Rather than patch-diff:
                 #{patch_url}
             EOS
