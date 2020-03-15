@@ -126,7 +126,7 @@ class Build
           system "git", "init"
           system "git", "add", "-A"
         end
-        if ARGV.interactive?
+        if Homebrew.args.interactive?
           ohai "Entering interactive mode"
           puts "Type `exit` to return and finalize the installation."
           puts "Install to this prefix: #{formula.prefix}"

@@ -1132,7 +1132,7 @@ class Formula
       begin
         yield self, staging
       rescue
-        staging.retain! if ARGV.interactive? || ARGV.debug?
+        staging.retain! if Homebrew.args.interactive? || ARGV.debug?
         raise
       ensure
         cp Dir["config.log", "CMakeCache.txt"], logs
@@ -2084,7 +2084,7 @@ class Formula
         HOMEBREW_PATH: nil,
       }
 
-      unless ARGV.interactive?
+      unless Homebrew.args.interactive?
         stage_env[:HOME] = env_home
         stage_env[:_JAVA_OPTIONS] =
           "#{ENV["_JAVA_OPTIONS"]&.+(" ")}-Duser.home=#{HOMEBREW_CACHE}/java_cache"
