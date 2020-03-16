@@ -119,7 +119,7 @@ class Build
         # which is not known until after the formula has been staged.
         ENV["HOMEBREW_FORMULA_PREFIX"] = formula.prefix
 
-        staging.retain! if ARGV.keep_tmp?
+        staging.retain! if Homebrew.args.keep_tmp?
         formula.patch
 
         if Homebrew.args.git?
