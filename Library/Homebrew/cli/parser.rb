@@ -95,6 +95,7 @@ module Homebrew
       end
 
       def comma_array(name, description: nil)
+        name = name.chomp "="
         description = option_to_description(name) if description.nil?
         process_option(name, description)
         @parser.on(name, OptionParser::REQUIRED_ARGUMENT, Array, *wrap_option_desc(description)) do |list|
