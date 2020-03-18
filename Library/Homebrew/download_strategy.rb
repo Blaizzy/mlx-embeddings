@@ -421,8 +421,6 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
 
     args += ["--user", meta.fetch(:user)] if meta.key?(:user)
 
-    args += ["--header", meta.fetch(:header)] if meta.key?(:header)
-
     args += [meta[:header], meta[:headers]].compact.flatten.flat_map { |h| ["--header", h.strip] }
 
     args
