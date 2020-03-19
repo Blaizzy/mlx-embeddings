@@ -51,6 +51,7 @@ class Formula
   include FileUtils
   include Utils::Inreplace
   include Utils::Shell
+  include Utils::Deprecate
   extend Enumerable
   extend Forwardable
   extend Cachable
@@ -175,6 +176,16 @@ class Formula
   attr_accessor :follow_installed_alias
   alias follow_installed_alias? follow_installed_alias
 
+  # A Boolean indicating whether this formula is deprecated or not
+  # Defaults to false
+  attr_accessor :is_deprecated
+  alias is_deprecated? is_deprecated
+
+  # A Boolean indicating whether this formula is disabled
+  # Defaults to false
+  attr_accessor :is_disabled
+  alias is_disabled? is_disabled
+
   # @private
   def initialize(name, path, spec, alias_path: nil)
     @name = name
@@ -211,6 +222,8 @@ class Formula
     @follow_installed_alias = true
     @prefix_returns_versioned_prefix = false
     @oldname_lock = nil
+    @is_deprecated = false
+    @is_disabled = false
   end
 
   # @private

@@ -150,6 +150,8 @@ module Homebrew
   def upgrade_formula(f)
     return if args.dry_run?
 
+    opoo "#{f.name} has been deprecated" if f.is_deprecated?
+
     if f.opt_prefix.directory?
       keg = Keg.new(f.opt_prefix.resolved_path)
       keg_had_linked_opt = true
