@@ -1290,7 +1290,7 @@ Install macOS applications distributed as binaries\. See \fBbrew\-cask\fR(1)\.
     \fIhttps://github\.com/Homebrew/homebrew\-cask\fR
 .
 .SS "\fBbundle\fR \fIsubcommand\fR"
-Bundler for non\-Ruby dependencies from Homebrew, Homebrew Cask and the Mac App Store\.
+Bundler for non\-Ruby dependencies from Homebrew, Homebrew Cask, Mac App Store and Whalebrew\.
 .
 .P
 \fBbrew bundle\fR [\fBinstall\fR]
@@ -1302,7 +1302,7 @@ Install or upgrade all dependencies in a \fBBrewfile\fR\.
 \fBbrew bundle dump\fR
 .
 .P
-Write all installed casks/formulae/taps into a \fBBrewfile\fR\.
+Write all installed casks/formulae/images/taps into a \fBBrewfile\fR\.
 .
 .P
 \fBbrew bundle cleanup\fR
@@ -1371,6 +1371,10 @@ Read the \fBBrewfile\fR from \fB~/\.Brewfile\fR\.
 .TP
 \fB\-\-mas\fR
 \fBlist\fR Mac App Store dependencies\.
+.
+.TP
+\fB\-\-whalebrew\fR
+\fBlist\fR Whalebrew dependencies\.
 .
 .TP
 \fB\-\-describe\fR
