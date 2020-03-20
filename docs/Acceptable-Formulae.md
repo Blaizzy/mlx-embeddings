@@ -13,7 +13,7 @@ We now accept versioned formulae as long as they [meet the requirements](Version
 
 ### We don’t like tools that upgrade themselves
 Software that can upgrade itself does not integrate well with Homebrew's own
-upgrade functionality. The self-update functionality should be disabled (if possible without complicating the formula).
+upgrade functionality. The self-update functionality should be disabled (while minimising complication to the formula).
 
 ### We don’t like install scripts that download unversioned things
 We don't like install scripts that are pulling from the `master` branch of Git repositories or unversioned, unchecksummed tarballs. These should use `resource` blocks with specific revisions or checksummed tarballs instead. Note that we now allow tools like `cargo`, `gem` and `pip` to download specifically versioned libraries during installation.
@@ -21,9 +21,18 @@ We don't like install scripts that are pulling from the `master` branch of Git r
 ### We don’t like binary formulae
 Our policy is that formulae in the core tap
 ([homebrew/core](https://github.com/Homebrew/homebrew-core)) must be open-source
-with an [OSI-approved license](https://opensource.org/licenses) and either built
+with an [Debian Free Software Guidelines license](https://wiki.debian.org/DFSGLicenses) and either built
 from source or produce cross-platform binaries (e.g. Java, Mono). Binary-only
 formulae should go to [homebrew/cask](https://github.com/Homebrew/homebrew-cask).
+
+Additionally, [homebrew/core](https://github.com/Homebrew/homebrew-core) formulae must also not depend on proprietary software/casks except the following:
+
+- macOS
+- Java
+- OSXFuse
+- XQuartz
+
+This includes automatic installation of casks at runtime.
 
 ### Stable versions
 Formulae in the core repository must have a stable version tagged by
