@@ -78,6 +78,12 @@ jobs:
           sudo chmod -R g-w,o-w /home/linuxbrew /home/runner /opt
         fi
 
+    - name: Run brew style
+      run: brew style --display-cop-names
+
+    - name: Run brew man
+      run: brew man --fail-if-changed
+
     - name: Run brew tests
       run: |
         # brew tests doesn't like world writable directories
@@ -106,12 +112,6 @@ jobs:
 
         # These cannot be queried at the macOS level on GitHub Actions.
         HOMEBREW_LANGUAGES: en-GB
-
-    - name: Run brew style
-      run: brew style --display-cop-names
-
-    - name: Run brew man
-      run: brew man --fail-if-changed
 
     - name: Run brew update-tests
       run: |
