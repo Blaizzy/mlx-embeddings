@@ -813,6 +813,8 @@ a simple example. For the complete API, see:
   Create a basic template for a Perl build.
 * `--python`:
   Create a basic template for a Python build.
+* `--ruby`:
+  Create a basic template for a Ruby build.
 * `--rust`:
   Create a basic template for a Rust build.
 * `--no-fetch`:

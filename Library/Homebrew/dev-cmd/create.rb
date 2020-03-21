@@ -31,6 +31,8 @@ module Homebrew
              description: "Create a basic template for a Perl build."
       switch "--python",
              description: "Create a basic template for a Python build."
+      switch "--ruby",
+             description: "Create a basic template for a Ruby build."
       switch "--rust",
              description: "Create a basic template for a Rust build."
       switch "--no-fetch",
@@ -86,6 +88,8 @@ module Homebrew
       :perl
     elsif args.python?
       :python
+    elsif args.ruby?
+      :ruby
     elsif args.rust?
       :rust
     end

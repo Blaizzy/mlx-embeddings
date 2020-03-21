@@ -112,6 +112,8 @@ module Homebrew
           uses_from_macos "perl"
         <% elsif mode == :python %>
           depends_on "python"
+        <% elsif mode == :ruby %>
+          uses_from_macos "ruby"
         <% elsif mode == :rust %>
           depends_on "rust" => :build
         <% elsif mode.nil? %>
@@ -166,6 +168,12 @@ module Homebrew
             bin.env_script_all_files(libexec/"bin", :PERL5LIB => ENV["PERL5LIB"])
         <% elsif mode == :python %>
             virtualenv_install_with_resources
+        <% elsif mode == :ruby %>
+            ENV["GEM_HOME"] = libexec
+            system "gem", "build", "\#{name}.gemspec"
+            system "gem", "install", "\#{name}-\#{version}.gem"
+            bin.install libexec/"bin/\#{name}"
+            bin.env_script_all_files(libexec/"bin", :GEM_HOME => ENV["GEM_HOME"])
         <% elsif mode == :rust %>
             system "cargo", "install", "--locked", "--root", prefix, "--path", "."
         <% else %>
