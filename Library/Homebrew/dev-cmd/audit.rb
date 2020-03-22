@@ -795,6 +795,11 @@ module Homebrew
         return if stable_url_minor_version.even?
 
         problem "#{stable.version} is a development release"
+      when %r{^https://github.com/}
+        _, owner, repo, = URI.parse(stable.url).path.split("/")
+        if GitHub.open_api("#{GitHub::API_URL}/repos/#{owner}/#{repo}/releases/tags/#{stable.version}")["prerelease"]
+          problem "#{stable.version} is a GitHub prerelease"
+        end
       end
     end
 
