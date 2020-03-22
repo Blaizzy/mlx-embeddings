@@ -796,12 +796,9 @@ module Homebrew
 
         problem "#{stable.version} is a development release"
       when %r{^https://github.com/}
-        repo_url = URI.parse(stable.url)
-        path = repo_url.path.split("/")
-        owner = path[1]
-        repo = path[2]
+        _, owner, repo, = URI.parse(stable.url).path.split("/")
         if GitHub.open_api("#{GitHub::API_URL}/repos/#{owner}/#{repo}/releases/tags/#{stable.version}")["prerelease"]
-          problem "#{stable.version} is a pre release"
+          problem "#{stable.version} is a GitHub prerelease"
         end
       end
     end
