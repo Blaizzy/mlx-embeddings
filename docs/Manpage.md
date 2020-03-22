@@ -880,6 +880,11 @@ Generate Homebrew's manpages.
 * `--link`:
   This is now done automatically by `brew update`.
 
+### `pr-publish` *`pull_request`*
+
+Publishes bottles for a pull request with GitHub Actions. Requires write access
+to the repository.
+
 ### `prof` *`command`*
 
 Run Homebrew with the Ruby profiler, e.g. `brew prof readall`.
