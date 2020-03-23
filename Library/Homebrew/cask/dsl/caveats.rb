@@ -49,9 +49,11 @@ module Cask
         next if MacOS.version < :high_sierra
 
         <<~EOS
-          To install and/or use #{@cask} you may need to enable its kernel extension in:
+          #{@cask} requires a kernel extension to work.
+          If the installation fails, retry after you enable it in:
             System Preferences → Security & Privacy → General
-          For more information refer to vendor documentation or this Apple Technical Note:
+
+          For more information, refer to vendor documentation or this Apple Technical Note:
             #{Formatter.url("https://developer.apple.com/library/content/technotes/tn2459/_index.html")}
         EOS
       end
