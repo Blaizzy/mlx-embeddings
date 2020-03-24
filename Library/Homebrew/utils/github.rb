@@ -431,7 +431,7 @@ module GitHub
     comments.any? { |comment| comment["body"].eql?(body) }
   end
 
-  def dispatch(user, repo, event, **payload)
+  def dispatch_event(user, repo, event, **payload)
     url = "#{API_URL}/repos/#{user}/#{repo}/dispatches"
     open_api(url, data:           { event_type: event, client_payload: payload },
                   request_method: :POST,
