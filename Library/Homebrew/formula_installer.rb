@@ -80,7 +80,7 @@ class FormulaInstaller
   # it's necessary to interrupt the user before any sort of installation
   # can proceed. Only invoked when the user has no developer tools.
   def self.prevent_build_flags
-    build_flags = ARGV.collect_build_flags
+    build_flags = Homebrew.args.collect_build_args
     return if build_flags.empty?
 
     all_bottled = ARGV.formulae.all?(&:bottled?)
