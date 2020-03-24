@@ -431,6 +431,13 @@ module GitHub
     comments.any? { |comment| comment["body"].eql?(body) }
   end
 
+  def dispatch(user, repo, event, **payload)
+    url = "#{API_URL}/repos/#{user}/#{repo}/dispatches"
+    open_api(url, data:           { event_type: event, client_payload: payload },
+                  request_method: :POST,
+                  scopes:         CREATE_ISSUE_FORK_OR_PR_SCOPES)
+  end
+
   def api_errors
     [GitHub::AuthenticationFailedError, GitHub::HTTPNotFoundError,
      GitHub::RateLimitExceededError, GitHub::Error, JSON::ParserError].freeze
