@@ -88,13 +88,29 @@ module Language
     end
 
     def self.rewrite_python_shebang(python_path)
-      regex = %r{^#! ?/usr/bin/(env )?python([23](\.\d{1,2})?)?$}
-      maximum_regex_length = 28 # the length of "#! /usr/bin/env pythonx.yyy$"
-      Pathname(".").find do |f|
-        next unless f.file?
-        next unless regex.match?(f.read(maximum_regex_length))
+      Pathname.pwd.find { |f| Utils::Shebang.rewrite_shebang(Shebang.python_shebang_rewrite_info(python_path), f) }
+    end
 
-        Utils::Inreplace.inreplace f.to_s, regex, "#!#{python_path}"
+    # Mixin module for {Formula} adding shebang rewrite features.
+    module Shebang
+      module_function
+
+      # @private
+      def python_shebang_rewrite_info(python_path)
+        Utils::Shebang::RewriteInfo.new(
+          %r{^#! ?/usr/bin/(env )?python([23](\.\d{1,2})?)?$},
+          28, # the length of "#! /usr/bin/env pythonx.yyy$"
+          python_path,
+        )
+      end
+
+      def detected_python_shebang(formula = self)
+        python_deps = formula.deps.map(&:name).grep(/^python(@.*)?$/)
+
+        raise "Cannot detect Python shebang: formula does not depend on Python." if python_deps.empty?
+        raise "Cannot detect Python shebang: formula has multiple Python dependencies." if python_deps.length > 1
+
+        python_shebang_rewrite_info(Formula[python_deps.first].opt_bin/"python3")
       end
     end
 
