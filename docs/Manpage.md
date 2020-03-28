@@ -1199,7 +1199,7 @@ Note that environment variables must have a value set to be detected. For exampl
     `git`(1) remote. If set, instructs Homebrew to instead use the specified URL.
 
   * `HOMEBREW_CURLRC`:
-    If set, Homebrew will not pass `-q` when invoking `curl`(1), which disables
+    If set, Homebrew will not pass `--disable` when invoking `curl`(1), which disables
     the use of `curlrc`.
 
   * `HOMEBREW_CURL_VERBOSE`:
