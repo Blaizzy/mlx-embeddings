@@ -73,7 +73,6 @@ module Homebrew
 
     install_core_tap_if_necessary
 
-    hub = ReporterHub.new
     updated = false
 
     initial_revision = ENV["HOMEBREW_UPDATE_BEFORE"].to_s
@@ -85,6 +84,11 @@ module Homebrew
       puts "Updated Homebrew from #{shorten_revision(initial_revision)} to #{shorten_revision(current_revision)}."
       updated = true
     end
+
+    Homebrew.failed = true if ENV["HOMEBREW_UPDATE_FAILED"]
+    return if ENV["HOMEBREW_DISABLE_LOAD_FORMULA"]
+
+    hub = ReporterHub.new
 
     updated_taps = []
     Tap.each do |tap|
@@ -127,8 +131,6 @@ module Homebrew
 
     link_completions_manpages_and_docs
     Tap.each(&:link_completions_and_manpages)
-
-    Homebrew.failed = true if ENV["HOMEBREW_UPDATE_FAILED"]
   end
 
   def shorten_revision(revision)
