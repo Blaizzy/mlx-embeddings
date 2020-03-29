@@ -43,10 +43,6 @@ module HomebrewArgvExtension
     include?("--no-sandbox") || !ENV["HOMEBREW_NO_SANDBOX"].nil?
   end
 
-  def build_stable?
-    !(include?("--HEAD") || include?("--devel"))
-  end
-
   def build_bottle?
     include?("--build-bottle")
   end

@@ -154,6 +154,10 @@ module Homebrew
         end
       end
 
+      def build_stable?
+        !(HEAD? || devel?)
+      end
+
       private
 
       def downcased_unique_named
