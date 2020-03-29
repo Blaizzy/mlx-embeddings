@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-require "uri"
+require "download_strategy"
 require "tempfile"
+require "uri"
 
 module GitHub
   module_function
@@ -436,6 +437,70 @@ module GitHub
     open_api(url, data:           { event_type: event, client_payload: payload },
                   request_method: :POST,
                   scopes:         CREATE_ISSUE_FORK_OR_PR_SCOPES)
+  end
+
+  def fetch_artifact(user, repo, pr, dir, workflow_id: "tests.yml", artifact_name: "bottles")
+    base_url = "#{API_URL}/repos/#{user}/#{repo}"
+    pr_payload = open_api("#{base_url}/pulls/#{pr}")
+    pr_sha = pr_payload["head"]["sha"]
+    pr_branch = pr_payload["head"]["ref"]
+
+    workflow = open_api("#{base_url}/actions/workflows/#{workflow_id}/runs?branch=#{pr_branch}")
+    workflow_run = workflow["workflow_runs"].select do |run|
+      run["head_sha"] == pr_sha
+    end
+
+    if workflow_run.empty?
+      raise Error, <<~EOS
+        No matching workflow run found for these criteria!
+          Commit SHA:   #{pr_sha}
+          Branch ref:   #{pr_branch}
+          Pull request: #{pr}
+          Workflow:     #{workflow_id}
+      EOS
+    end
+
+    status = workflow_run.first["status"].sub("_", " ")
+    if status != "completed"
+      raise Error, <<~EOS
+        The newest workflow run for ##{pr} is still #{status}!
+          #{Formatter.url workflow_run.first["html_url"]}
+      EOS
+    end
+
+    artifacts = open_api(workflow_run.first["artifacts_url"])
+
+    artifact = artifacts["artifacts"].select do |art|
+      art["name"] == artifact_name
+    end
+
+    if artifact.empty?
+      raise Error, <<~EOS
+        No artifact with the name `#{artifact_name}` was found!
+          #{Formatter.url workflow_run.first["html_url"]}
+      EOS
+    end
+
+    artifact_url = artifact.first["archive_download_url"]
+
+    token, username = api_credentials
+    case api_credentials_type
+    when :env_username_password, :keychain_username_password
+      curl_args = { user: "#{username}:#{token}" }
+    when :env_token
+      curl_args = { header: "Authorization: token #{token}" }
+    end
+
+    # Download the artifact as a zip file and unpack it into `dir`. This is
+    # preferred over system `curl` and `tar` as this leverages the Homebrew
+    # cache to avoid repeated downloads of (possibly large) bottles.
+    FileUtils.chdir dir do
+      curl_args[:cache] = Pathname.new(dir)
+      curl_args[:secrets] = [token]
+      downloader = CurlDownloadStrategy.new(artifact_url, "artifact", pr, **curl_args)
+      downloader.fetch
+      downloader.stage
+    end
   end
 
   def api_errors
