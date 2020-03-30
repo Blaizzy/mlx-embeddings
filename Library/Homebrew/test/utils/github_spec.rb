@@ -41,4 +41,18 @@ describe GitHub do
       expect(results.first["title"]).to eq("Shall we run `brew update` automatically?")
     end
   end
+
+  describe "::fetch_artifact", :needs_network do
+    it "fails to find a nonexistant workflow" do
+      expect {
+        subject.fetch_artifact("Homebrew", "homebrew-core", 1, ".")
+      }.to raise_error(/No matching workflow run found/)
+    end
+
+    it "fails to find artifacts that don't exist" do
+      expect {
+        subject.fetch_artifact("Homebrew", "homebrew-core", 51971, ".", artifact_name: "false_bottles")
+      }.to raise_error(/No artifact .+ was found/)
+    end
+  end
 end
