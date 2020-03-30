@@ -13,15 +13,17 @@ class Bintray
     "#<Bintray: user=#{@bintray_user} org=#{@bintray_org} key=***>"
   end
 
-  def initialize(user: nil, key: nil, org: nil, clear: true)
-    @bintray_user = user || ENV["HOMEBREW_BINTRAY_USER"]
-    @bintray_key = key || ENV["HOMEBREW_BINTRAY_KEY"]
+  def initialize(user: ENV["HOMEBREW_BINTRAY_USER"], key: ENV["HOMEBREW_BINTRAY_KEY"], org: "homebrew", clear: true)
+    @bintray_user = user
+    @bintray_key = key
+    @bintray_org = org
 
     if !@bintray_user || !@bintray_key
-      raise Error, "Missing HOMEBREW_BINTRAY_USER or HOMEBREW_BINTRAY_KEY variables!" unless Homebrew.args.dry_run?
+      unless Homebrew.args.dry_run?
+        raise UsageError, "Missing HOMEBREW_BINTRAY_USER or HOMEBREW_BINTRAY_KEY variables!"
+      end
     end
 
-    @bintray_org = org || "homebrew"
     ENV["HOMEBREW_FORCE_HOMEBREW_ON_LINUX"] = "1" if @bintray_org == "homebrew" && !OS.mac?
 
     ENV.clear_sensitive_environment! if clear
