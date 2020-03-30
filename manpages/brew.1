@@ -1127,6 +1127,45 @@ This is now done automatically by \fBbrew update\fR\.
 .SS "\fBpr\-publish\fR \fIpull_request\fR"
 Publishes bottles for a pull request with GitHub Actions\. Requires write access to the repository\.
 .
+.SS "\fBpr\-pull\fR \fIpull_request\fR"
+Download and publish bottles, and apply the bottle commit from a pull request with artifacts generated from GitHub Actions\. Requires write access to the repository\.
+.
+.TP
+\fB\-\-no\-publish\fR
+Download the bottles, apply the bottle commit, and upload the bottles to Bintray, but don\'t publish them\.
+.
+.TP
+\fB\-\-no\-upload\fR
+Download the bottles and apply the bottle commit, but don\'t upload to Bintray\.
+.
+.TP
+\fB\-n\fR, \fB\-\-dry\-run\fR
+Print what would be done rather than doing it\.
+.
+.TP
+\fB\-\-clean\fR
+Do not amend the commits from pull requests\.
+.
+.TP
+\fB\-\-branch\-okay\fR
+Do not warn if pulling to a branch besides master (useful for testing)\.
+.
+.TP
+\fB\-\-resolve\fR
+When a patch fails to apply, leave in progress and allow user to resolve, instead of aborting\.
+.
+.TP
+\fB\-\-workflow\fR
+Retrieve artifacts from the specified workflow (default: tests\.yml)\.
+.
+.TP
+\fB\-\-artifact\fR
+Download artifacts with the specified name (default: bottles)\.
+.
+.TP
+\fB\-\-bintray\-org\fR
+Upload to the specified Bintray organisation\.
+.
 .SS "\fBprof\fR \fIcommand\fR"
 Run Homebrew with the Ruby profiler, e\.g\. \fBbrew prof readall\fR\.
 .
