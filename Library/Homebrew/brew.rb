@@ -35,6 +35,13 @@ rescue MissingEnvironmentVariables => e
   exec ENV["HOMEBREW_BREW_FILE"], *ARGV
 end
 
+def head_unsupported_error
+  $stderr.puts <<~EOS
+    Please create pull requests instead of asking for help on Homebrew's GitHub,
+    Discourse, Twitter or IRC.
+  EOS
+end
+
 begin
   trap("INT", std_trap) # restore default CTRL-C handler
 
@@ -141,12 +148,18 @@ rescue Interrupt
 rescue BuildError => e
   Utils::Analytics.report_build_error(e)
   e.dump
+
+  head_unsupported_error if Homebrew.args.HEAD?
+
   exit 1
 rescue RuntimeError, SystemCallError => e
   raise if e.message.empty?
 
   onoe e
   $stderr.puts e.backtrace if ARGV.debug?
+
+  head_unsupported_error if Homebrew.args.HEAD?
+
   exit 1
 rescue MethodDeprecatedError => e
   onoe e
