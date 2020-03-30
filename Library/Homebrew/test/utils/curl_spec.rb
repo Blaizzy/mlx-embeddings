@@ -4,14 +4,14 @@ require "utils/curl"
 
 describe "curl" do
   describe "curl_args" do
-    it "returns -q as the first argument when HOMEBREW_CURLRC is not set" do
-      # -q must be the first argument according to "man curl"
-      expect(curl_args("foo").first).to eq("-q")
+    it "returns --disable as the first argument when HOMEBREW_CURLRC is not set" do
+      # --disable must be the first argument according to "man curl"
+      expect(curl_args("foo").first).to eq("--disable")
     end
 
-    it "doesn't return -q as the first argument when HOMEBREW_CURLRC is set" do
+    it "doesn't return --disable as the first argument when HOMEBREW_CURLRC is set" do
       ENV["HOMEBREW_CURLRC"] = "1"
-      expect(curl_args("foo").first).not_to eq("-q")
+      expect(curl_args("foo").first).not_to eq("--disable")
     end
 
     it "uses `--retry 3` when HOMEBREW_CURL_RETRIES is unset" do
