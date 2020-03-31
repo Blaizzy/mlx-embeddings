@@ -21,6 +21,8 @@ module Homebrew
   def pr_publish
     pr_publish_args.parse
 
+    ENV["HOMEBREW_FORCE_HOMEBREW_ON_LINUX"] = "1" unless OS.mac?
+
     odie "You need to specify at least one pull request number!" if Homebrew.args.named.empty?
 
     args.named.each do |arg|
