@@ -910,7 +910,9 @@ repository.
 * `--artifact`:
   Download artifacts with the specified name (default: bottles).
 * `--bintray-org`:
-  Upload to the specified Bintray organisation.
+  Upload to the specified Bintray organisation (default: homebrew).
+* `--tap`:
+  Target repository tap (default: homebrew/core).
 
 ### `prof` *`command`*
 
