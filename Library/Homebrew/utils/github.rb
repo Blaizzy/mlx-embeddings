@@ -440,12 +440,13 @@ module GitHub
   end
 
   def fetch_artifact(user, repo, pr, dir, workflow_id: "tests.yml", artifact_name: "bottles")
+    scopes = CREATE_ISSUE_FORK_OR_PR_SCOPES
     base_url = "#{API_URL}/repos/#{user}/#{repo}"
-    pr_payload = open_api("#{base_url}/pulls/#{pr}")
+    pr_payload = open_api("#{base_url}/pulls/#{pr}", scopes: scopes)
     pr_sha = pr_payload["head"]["sha"]
     pr_branch = pr_payload["head"]["ref"]
 
-    workflow = open_api("#{base_url}/actions/workflows/#{workflow_id}/runs?branch=#{pr_branch}")
+    workflow = open_api("#{base_url}/actions/workflows/#{workflow_id}/runs?branch=#{pr_branch}", scopes: scopes)
     workflow_run = workflow["workflow_runs"].select do |run|
       run["head_sha"] == pr_sha
     end
@@ -468,7 +469,7 @@ module GitHub
       EOS
     end
 
-    artifacts = open_api(workflow_run.first["artifacts_url"])
+    artifacts = open_api(workflow_run.first["artifacts_url"], scopes: scopes)
 
     artifact = artifacts["artifacts"].select do |art|
       art["name"] == artifact_name
@@ -489,6 +490,8 @@ module GitHub
       curl_args = { user: "#{username}:#{token}" }
     when :env_token
       curl_args = { header: "Authorization: token #{token}" }
+    when :none
+      raise Error, "Credentials must be set to access the Artifacts API"
     end
 
     # Download the artifact as a zip file and unpack it into `dir`. This is
