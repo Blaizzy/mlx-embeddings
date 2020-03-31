@@ -9,6 +9,11 @@ RSpec::Matchers.define_negated_matcher :be_a_failure, :be_a_success
 RSpec.shared_context "integration test" do
   extend RSpec::Matchers::DSL
 
+  if OS.mac? &&
+     !RUBY_BIN.to_s.match?(%r{^/(System/Library/Frameworks/Ruby\.framework/Versions/(Current|\d+\.\d+)/)usr/bin$})
+    skip "integration test requires system Ruby"
+  end
+
   matcher :be_a_success do
     match do |actual|
       status = actual.is_a?(Proc) ? actual.call : actual
