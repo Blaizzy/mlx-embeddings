@@ -37,7 +37,9 @@ module Homebrew
       flag "--artifact=",
            description: "Download artifacts with the specified name (default: bottles)."
       flag "--bintray-org=",
-           description: "Upload to the specified Bintray organisation."
+           description: "Upload to the specified Bintray organisation (default: homebrew)."
+      flag "--tap=",
+           description: "Target repository tap (default: homebrew/core)."
       switch :verbose
       switch :debug
       min_named 1
@@ -106,12 +108,12 @@ module Homebrew
 
     workflow = args.workflow || "tests.yml"
     artifact = args.artifact || "bottles"
+    tap = Tap.fetch(args.tap || "homebrew/core")
 
     args.named.each do |arg|
-      arg = "#{CoreTap.instance.default_remote}/pull/#{arg}" if arg.to_i.positive?
+      arg = "#{tap.default_remote}/pull/#{arg}" if arg.to_i.positive?
       url_match = arg.match HOMEBREW_PULL_OR_COMMIT_URL_REGEX
       _, user, repo, pr = *url_match
-      tap = Tap.fetch(user, repo) if repo.match?(HOMEBREW_OFFICIAL_REPO_PREFIXES_REGEX)
       odie "Not a GitHub pull request: #{arg}" unless pr
 
       check_branch tap.path, "master"
