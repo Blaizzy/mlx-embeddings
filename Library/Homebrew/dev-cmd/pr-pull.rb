@@ -46,6 +46,27 @@ module Homebrew
     end
   end
 
+  def setup_git_environment!
+    # Passthrough Git environment variables
+    ENV["GIT_COMMITTER_NAME"] = ENV["HOMEBREW_GIT_NAME"] if ENV["HOMEBREW_GIT_NAME"]
+    ENV["GIT_COMMITTER_EMAIL"] = ENV["HOMEBREW_GIT_EMAIL"] if ENV["HOMEBREW_GIT_EMAIL"]
+
+    # Depending on user configuration, git may try to invoke gpg.
+    return unless Utils.popen_read("git config --get --bool commit.gpgsign").chomp == "true"
+
+    begin
+      gnupg = Formula["gnupg"]
+    rescue FormulaUnavailableError
+      nil
+    else
+      if gnupg.installed?
+        path = PATH.new(ENV.fetch("PATH"))
+        path.prepend(gnupg.installed_prefix/"bin")
+        ENV["PATH"] = path
+      end
+    end
+  end
+
   def signoff!(pr, path: ".", dry_run: false)
     message = Utils.popen_read "git", "-C", path, "log", "-1", "--pretty=%B"
     close_message = "Closes ##{pr}."
@@ -98,17 +119,19 @@ module Homebrew
 
     bintray_user = ENV["HOMEBREW_BINTRAY_USER"]
     bintray_key = ENV["HOMEBREW_BINTRAY_KEY"]
-    ENV.clear_sensitive_environment!
+    bintray_org = args.bintray_org || "homebrew"
 
     if bintray_user.blank? || bintray_key.blank?
       odie "Missing HOMEBREW_BINTRAY_USER or HOMEBREW_BINTRAY_KEY variables!" if !args.dry_run? && !args.no_upload?
     else
-      bintray = Bintray.new(user: bintray_user, key: bintray_key, org: args.bintray_org)
+      bintray = Bintray.new(user: bintray_user, key: bintray_key, org: bintray_org)
     end
 
     workflow = args.workflow || "tests.yml"
     artifact = args.artifact || "bottles"
     tap = Tap.fetch(args.tap || "homebrew/core")
+
+    setup_git_environment!
 
     args.named.each do |arg|
       arg = "#{tap.default_remote}/pull/#{arg}" if arg.to_i.positive?
