@@ -24,9 +24,11 @@ class Bintray
       end
     end
 
+    raise UsageError, "Must set a Bintray organisation!" unless @bintray_org
+
     ENV["HOMEBREW_FORCE_HOMEBREW_ON_LINUX"] = "1" if @bintray_org == "homebrew" && !OS.mac?
 
-    ENV.clear_sensitive_environment! if clear
+    ENV.delete "HOMEBREW_BINTRAY_KEY" if clear
   end
 
   def open_api(url, *extra_curl_args, auth: true)
@@ -98,6 +100,7 @@ class Bintray
         filename = tag_hash["filename"]
         sha256 = tag_hash["sha256"]
 
+        odebug "Checking remote file #{@bintray_org}/#{bintray_repo}/#{filename}"
         if file_published? repo: bintray_repo, remote_file: filename
           raise Error, <<~EOS
             #{filename} is already published.
@@ -110,10 +113,12 @@ class Bintray
         end
 
         if !formula_packaged[formula_name] && !package_exists?(repo: bintray_repo, package: bintray_package)
+          odebug "Creating package #{@bintray_org}/#{bintray_repo}/#{package}"
           create_package repo: bintray_repo, package: bintray_package
           formula_packaged[formula_name] = true
         end
 
+        odebug "Uploading #{@bintray_org}/#{bintray_repo}/#{bintray_package}/#{version}/#{tag_hash["local_filename"]}"
         upload(tag_hash["local_filename"],
                repo:        bintray_repo,
                package:     bintray_package,
@@ -121,7 +126,10 @@ class Bintray
                remote_file: filename,
                sha256:      sha256)
       end
-      publish repo: bintray_repo, package: bintray_package, version: version if publish_package
+      if publish_package
+        odebug "Publishing #{@bintray_org}/#{bintray_repo}/#{bintray_package}/#{version}"
+        publish repo: bintray_repo, package: bintray_package, version: version
+      end
     end
   end
 end
