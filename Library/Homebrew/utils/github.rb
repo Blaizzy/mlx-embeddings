@@ -172,7 +172,7 @@ module GitHub
     end
   end
 
-  def open_api(url, data: nil, request_method: nil, scopes: [].freeze)
+  def open_api(url, data: nil, request_method: nil, scopes: [].freeze, parse_json: true)
     # This is a no-op if the user is opting out of using the GitHub API.
     return block_given? ? yield({}) : {} if ENV["HOMEBREW_NO_GITHUB_API"]
 
@@ -227,11 +227,11 @@ module GitHub
 
       return if http_code == "204" # No Content
 
-      json = JSON.parse output
+      output = JSON.parse output if parse_json
       if block_given?
-        yield json
+        yield output
       else
-        json
+        output
       end
     rescue JSON::ParserError => e
       raise Error, "Failed to parse JSON response\n#{e.message}", e.backtrace
