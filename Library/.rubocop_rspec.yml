@@ -2,7 +2,9 @@ inherit_from: ./.rubocop.yml
 
 AllCops:
   Include:
-    - '**/*_spec.rb'
+    - '**/cmd/**/*.rb'
+    - '**/lib/**/*.rb'
+    - '**/spec/**/*.rb'
   Exclude:
     - '**/vendor/**/*'
 
