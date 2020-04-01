@@ -796,10 +796,14 @@ module Homebrew
 
         problem "#{stable.version} is a development release"
       when %r{^https://github.com/}
-        _, owner = URI.parse(stable.url).path.split("/")
-        tag = stable.specs[:tag] || stable.version.to_s
-        if GitHub.open_api("#{GitHub::API_URL}/repos/#{owner}/#{stable.full_name}/releases/tags/#{tag}")["prerelease"]
-          problem "#{tag} is a GitHub prerelease"
+        _, owner, _, _, version = URI.parse(stable.url).path.split("/")
+        tag = stable.specs[:tag] || version.gsub(".tar.gz","")
+        begin
+          if GitHub.open_api("#{GitHub::API_URL}/repos/#{owner}/#{stable.full_name}/releases/tags/#{tag}")\
+             ["prerelease"]
+            problem "#{tag} is a GitHub prerelease"
+          end
+        rescue
         end
       end
     end
