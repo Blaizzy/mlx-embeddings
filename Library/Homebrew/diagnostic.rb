@@ -640,6 +640,20 @@ module Homebrew
         EOS
       end
 
+      def check_deprecated_disabled
+        return unless HOMEBREW_CELLAR.exist?
+
+        deprecated_or_disabled = Formula.installed.select(&:deprecated?)
+        deprecated_or_disabled += Formula.installed.select(&:disabled?)
+        return if deprecated_or_disabled.empty?
+
+        <<~EOS
+          Some installed formulae are deprecated or disabled.
+          You should find replacements for the following formulae:
+            #{deprecated_or_disabled.sort_by(&:full_name).uniq * "\n  "}
+        EOS
+      end
+
       def check_git_status
         return unless Utils.git_available?
 
