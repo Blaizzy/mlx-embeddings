@@ -241,6 +241,21 @@ describe CurlDownloadStrategy do
         subject.fetch
       end
     end
+
+    context "with headers set" do
+      alias_matcher :a_string_matching, :match
+
+      let(:specs) { { headers: ["foo", "bar"] } }
+
+      it "adds the appropriate curl args" do
+        expect(subject).to receive(:system_command!) { |*, args:, **|
+          expect(args.each_cons(2).to_a).to include(["--header", "foo"])
+          expect(args.each_cons(2).to_a).to include(["--header", "bar"])
+        }
+
+        subject.fetch
+      end
+    end
   end
 
   describe "#cached_location" do
