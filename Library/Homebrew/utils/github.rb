@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-require "uri"
+require "download_strategy"
 require "tempfile"
+require "uri"
 
 module GitHub
   module_function
@@ -171,7 +172,7 @@ module GitHub
     end
   end
 
-  def open_api(url, data: nil, request_method: nil, scopes: [].freeze)
+  def open_api(url, data: nil, request_method: nil, scopes: [].freeze, parse_json: true)
     # This is a no-op if the user is opting out of using the GitHub API.
     return block_given? ? yield({}) : {} if ENV["HOMEBREW_NO_GITHUB_API"]
 
@@ -226,11 +227,11 @@ module GitHub
 
       return if http_code == "204" # No Content
 
-      json = JSON.parse output
+      output = JSON.parse output if parse_json
       if block_given?
-        yield json
+        yield output
       else
-        json
+        output
       end
     rescue JSON::ParserError => e
       raise Error, "Failed to parse JSON response\n#{e.message}", e.backtrace
@@ -429,6 +430,80 @@ module GitHub
     return unless comments
 
     comments.any? { |comment| comment["body"].eql?(body) }
+  end
+
+  def dispatch_event(user, repo, event, **payload)
+    url = "#{API_URL}/repos/#{user}/#{repo}/dispatches"
+    open_api(url, data:           { event_type: event, client_payload: payload },
+                  request_method: :POST,
+                  scopes:         CREATE_ISSUE_FORK_OR_PR_SCOPES)
+  end
+
+  def fetch_artifact(user, repo, pr, dir, workflow_id: "tests.yml", artifact_name: "bottles")
+    scopes = CREATE_ISSUE_FORK_OR_PR_SCOPES
+    base_url = "#{API_URL}/repos/#{user}/#{repo}"
+    pr_payload = open_api("#{base_url}/pulls/#{pr}", scopes: scopes)
+    pr_sha = pr_payload["head"]["sha"]
+    pr_branch = pr_payload["head"]["ref"]
+
+    workflow = open_api("#{base_url}/actions/workflows/#{workflow_id}/runs?branch=#{pr_branch}", scopes: scopes)
+    workflow_run = workflow["workflow_runs"].select do |run|
+      run["head_sha"] == pr_sha
+    end
+
+    if workflow_run.empty?
+      raise Error, <<~EOS
+        No matching workflow run found for these criteria!
+          Commit SHA:   #{pr_sha}
+          Branch ref:   #{pr_branch}
+          Pull request: #{pr}
+          Workflow:     #{workflow_id}
+      EOS
+    end
+
+    status = workflow_run.first["status"].sub("_", " ")
+    if status != "completed"
+      raise Error, <<~EOS
+        The newest workflow run for ##{pr} is still #{status}!
+          #{Formatter.url workflow_run.first["html_url"]}
+      EOS
+    end
+
+    artifacts = open_api(workflow_run.first["artifacts_url"], scopes: scopes)
+
+    artifact = artifacts["artifacts"].select do |art|
+      art["name"] == artifact_name
+    end
+
+    if artifact.empty?
+      raise Error, <<~EOS
+        No artifact with the name `#{artifact_name}` was found!
+          #{Formatter.url workflow_run.first["html_url"]}
+      EOS
+    end
+
+    artifact_url = artifact.first["archive_download_url"]
+
+    token, username = api_credentials
+    case api_credentials_type
+    when :env_username_password, :keychain_username_password
+      curl_args = { user: "#{username}:#{token}" }
+    when :env_token
+      curl_args = { header: "Authorization: token #{token}" }
+    when :none
+      raise Error, "Credentials must be set to access the Artifacts API"
+    end
+
+    # Download the artifact as a zip file and unpack it into `dir`. This is
+    # preferred over system `curl` and `tar` as this leverages the Homebrew
+    # cache to avoid repeated downloads of (possibly large) bottles.
+    FileUtils.chdir dir do
+      curl_args[:cache] = Pathname.new(dir)
+      curl_args[:secrets] = [token]
+      downloader = CurlDownloadStrategy.new(artifact_url, "artifact", pr, **curl_args)
+      downloader.fetch
+      downloader.stage
+    end
   end
 
   def api_errors

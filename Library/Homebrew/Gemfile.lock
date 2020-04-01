@@ -1,7 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (6.0.2.1)
+    activesupport (6.0.2.2)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 0.7, < 2)
       minitest (~> 5.1)
@@ -51,7 +51,7 @@ GEM
     parallel (1.19.1)
     parallel_tests (2.32.0)
       parallel
-    parser (2.7.0.4)
+    parser (2.7.0.5)
       ast (~> 2.4.0)
     plist (3.5.0)
     rainbow (3.0.0)
@@ -81,14 +81,14 @@ GEM
     rspec-support (3.9.2)
     rspec-wait (0.0.9)
       rspec (>= 3, < 4)
-    rubocop (0.80.1)
+    rubocop (0.81.0)
       jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
       parser (>= 2.7.0.1)
       rainbow (>= 2.2.2, < 4.0)
       rexml
       ruby-progressbar (~> 1.7)
-      unicode-display_width (>= 1.4.0, < 1.7)
+      unicode-display_width (>= 1.4.0, < 2.0)
     rubocop-performance (1.5.2)
       rubocop (>= 0.71.0)
     rubocop-rspec (1.38.1)
@@ -111,8 +111,8 @@ GEM
       thread_safe (~> 0.1)
     unf (0.1.4)
       unf_ext
-    unf_ext (0.0.7.6)
-    unicode-display_width (1.6.1)
+    unf_ext (0.0.7.7)
+    unicode-display_width (1.7.0)
     webrobots (0.1.2)
     zeitwerk (2.3.0)
 

@@ -6,6 +6,7 @@ require "lock_file"
 require "formula_pin"
 require "hardware"
 require "utils/bottles"
+require "utils/shebang"
 require "utils/shell"
 require "build_environment"
 require "build_options"
@@ -50,6 +51,7 @@ require "find"
 class Formula
   include FileUtils
   include Utils::Inreplace
+  include Utils::Shebang
   include Utils::Shell
   include Utils::Deprecate
   extend Enumerable

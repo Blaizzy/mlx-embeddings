@@ -36,6 +36,7 @@ module Homebrew
     test_args.parse
 
     require "formula_assertions"
+    require "formula_free_port"
 
     args.resolved_formulae.each do |f|
       # Cannot test uninstalled formulae

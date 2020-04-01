@@ -292,7 +292,7 @@ module Homebrew
           unversioned_name = unversioned_formula.basename(".rb")
           problem "#{formula} is versioned but no #{unversioned_name} formula exists"
         end
-      elsif ARGV.build_stable? && formula.stable? &&
+      elsif Homebrew.args.build_stable? && formula.stable? &&
             !(versioned_formulae = formula.versioned_formulae).empty?
         versioned_aliases = formula.aliases.grep(/.@\d/)
         _, last_alias_version = versioned_formulae.map(&:name).last.split("@")
@@ -520,6 +520,7 @@ module Homebrew
         gnupg@1.4
         lua@5.1
         numpy@1.16
+        libsigc++@2
       ].freeze
 
       return if keg_only_whitelist.include?(formula.name) || formula.name.start_with?("gcc@")

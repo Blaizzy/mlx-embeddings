@@ -3,6 +3,9 @@ on:
   push:
     branches: master
   pull_request: []
+  release:
+    types:
+      - published
 jobs:
   tests:
     if: github.repository == 'Homebrew/brew'
@@ -78,6 +81,12 @@ jobs:
           sudo chmod -R g-w,o-w /home/linuxbrew /home/runner /opt
         fi
 
+    - name: Run brew style
+      run: brew style --display-cop-names
+
+    - name: Run brew man
+      run: brew man --fail-if-changed
+
     - name: Run brew tests
       run: |
         # brew tests doesn't like world writable directories
@@ -107,12 +116,6 @@ jobs:
         # These cannot be queried at the macOS level on GitHub Actions.
         HOMEBREW_LANGUAGES: en-GB
 
-    - name: Run brew style
-      run: brew style --display-cop-names
-
-    - name: Run brew man
-      run: brew man --fail-if-changed
-
     - name: Run brew update-tests
       run: |
         git config --global user.name "BrewTestBot"
@@ -140,6 +143,22 @@ jobs:
       run: |
         if [ "$RUNNER_OS" = "Linux" ]; then
           docker-compose -f Dockerfile.yml run --rm -v $GITHUB_WORKSPACE:/tmp/test-bot sut
+          docker tag homebrew_sut brew
         else
           brew test-bot
         fi
+
+    - name: Deploy the latest Docker image
+      if: matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/master'
+      run: |
+        docker login docker.pkg.github.com -u BrewTestBot -p ${{secrets.GITHUB_TOKEN}}
+        docker tag brew docker.pkg.github.com/homebrew/brew/brew
+        docker push docker.pkg.github.com/homebrew/brew/brew
+
+    - name: Deploy the tagged Docker image
+      if: matrix.os == 'ubuntu-latest' && startsWith(github.ref, 'refs/tags/')
+      run: |
+        docker login docker.pkg.github.com -u BrewTestBot -p ${{secrets.GITHUB_TOKEN}}
+        v=${GITHUB_REF:10}
+        docker tag brew "docker.pkg.github.com/homebrew/brew/brew:$v"
+        docker push "docker.pkg.github.com/homebrew/brew/brew:$v"

@@ -43,14 +43,6 @@ module HomebrewArgvExtension
     include?("--no-sandbox") || !ENV["HOMEBREW_NO_SANDBOX"].nil?
   end
 
-  def build_stable?
-    !(include?("--HEAD") || include?("--devel"))
-  end
-
-  def build_universal?
-    include? "--universal"
-  end
-
   def build_bottle?
     include?("--build-bottle")
   end
@@ -82,19 +74,6 @@ module HomebrewArgvExtension
 
   def env
     value "env"
-  end
-
-  # If the user passes any flags that trigger building over installing from
-  # a bottle, they are collected here and returned as an Array for checking.
-  def collect_build_flags
-    build_flags = []
-
-    build_flags << "--HEAD" if include?("--HEAD")
-    build_flags << "--universal" if build_universal?
-    build_flags << "--build-bottle" if build_bottle?
-    build_flags << "--build-from-source" if build_from_source?
-
-    build_flags
   end
 
   private

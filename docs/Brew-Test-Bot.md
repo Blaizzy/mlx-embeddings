@@ -8,7 +8,7 @@ by [our Kickstarter in 2013](https://www.kickstarter.com/projects/homebrew/brew-
 
 It comprises four Mac Minis and three Xserves running in two data centres which host
 [a Jenkins instance at https://jenkins.brew.sh](https://jenkins.brew.sh) and run the
-[`brew-test-bot.rb`](https://github.com/Homebrew/homebrew-test-bot/blob/master/cmd/brew-test-bot.rb)
+[`test-bot.rb`](https://github.com/Homebrew/homebrew-test-bot/blob/master/cmd/test-bot.rb)
 Ruby script to perform automated testing of commits to the master branch, pull
 requests and custom builds requested by maintainers.
 

@@ -17,7 +17,7 @@ def curl_args(*extra_args, show_output: false, user_agent: :default)
   args = []
 
   # do not load .curlrc unless requested (must be the first argument)
-  args << "-q" unless ENV["HOMEBREW_CURLRC"]
+  args << "--disable" unless ENV["HOMEBREW_CURLRC"]
 
   args << "--globoff"
 
@@ -39,7 +39,8 @@ def curl_args(*extra_args, show_output: false, user_agent: :default)
     args << "--silent" unless $stdout.tty?
   end
 
-  args << "--retry" << ENV["HOMEBREW_CURL_RETRIES"] if ENV["HOMEBREW_CURL_RETRIES"]
+  # When changing the default value, the manpage has to be updated.
+  args << "--retry" << (ENV["HOMEBREW_CURL_RETRIES"] || "3")
 
   args + extra_args
 end

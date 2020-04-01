@@ -71,31 +71,6 @@ describe Cask::Cmd::Upgrade, :cask do
         expect(local_transmission_path).to be_a_directory
         expect(local_transmission.versions).to include("2.60")
       end
-
-      it 'updates "auto_updates" and "latest" Casks when their tokens are provided in the command line' do
-        local_caffeine = Cask::CaskLoader.load("local-caffeine")
-        local_caffeine_path = Cask::Config.global.appdir.join("Caffeine.app")
-        auto_updates = Cask::CaskLoader.load("auto-updates")
-        auto_updates_path = Cask::Config.global.appdir.join("MyFancyApp.app")
-
-        expect(local_caffeine).to be_installed
-        expect(local_caffeine_path).to be_a_directory
-        expect(local_caffeine.versions).to include("1.2.2")
-
-        expect(auto_updates).to be_installed
-        expect(auto_updates_path).to be_a_directory
-        expect(auto_updates.versions).to include("2.57")
-
-        described_class.run("local-caffeine", "auto-updates")
-
-        expect(local_caffeine).to be_installed
-        expect(local_caffeine_path).to be_a_directory
-        expect(local_caffeine.versions).to include("1.2.3")
-
-        expect(auto_updates).to be_installed
-        expect(auto_updates_path).to be_a_directory
-        expect(auto_updates.versions).to include("2.61")
-      end
     end
 
     describe "with --greedy it checks additional Casks" do

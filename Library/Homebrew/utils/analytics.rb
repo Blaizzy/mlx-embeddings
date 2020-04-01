@@ -12,7 +12,7 @@ module Utils
         args = []
 
         # do not load .curlrc unless requested (must be the first argument)
-        args << "-q" unless ENV["HOMEBREW_CURLRC"]
+        args << "--disable" unless ENV["HOMEBREW_CURLRC"]
 
         args += %W[
           --max-time 3

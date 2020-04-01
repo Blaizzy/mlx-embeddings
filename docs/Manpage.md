@@ -813,6 +813,8 @@ a simple example. For the complete API, see:
   Create a basic template for a Perl build.
 * `--python`:
   Create a basic template for a Python build.
+* `--ruby`:
+  Create a basic template for a Ruby build.
 * `--rust`:
   Create a basic template for a Rust build.
 * `--no-fetch`:
@@ -879,6 +881,38 @@ Generate Homebrew's manpages.
   Return a failing status code if changes are detected in the manpage outputs. This can be used to notify CI when the manpages are out of date. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date).
 * `--link`:
   This is now done automatically by `brew update`.
+
+### `pr-publish` *`pull_request`*
+
+Publishes bottles for a pull request with GitHub Actions. Requires write access
+to the repository.
+
+### `pr-pull` *`pull_request`*
+
+Download and publish bottles, and apply the bottle commit from a pull request
+with artifacts generated from GitHub Actions. Requires write access to the
+repository.
+
+* `--no-publish`:
+  Download the bottles, apply the bottle commit, and upload the bottles to Bintray, but don't publish them.
+* `--no-upload`:
+  Download the bottles and apply the bottle commit, but don't upload to Bintray.
+* `-n`, `--dry-run`:
+  Print what would be done rather than doing it.
+* `--clean`:
+  Do not amend the commits from pull requests.
+* `--branch-okay`:
+  Do not warn if pulling to a branch besides master (useful for testing).
+* `--resolve`:
+  When a patch fails to apply, leave in progress and allow user to resolve, instead of aborting.
+* `--workflow`:
+  Retrieve artifacts from the specified workflow (default: tests.yml).
+* `--artifact`:
+  Download artifacts with the specified name (default: bottles).
+* `--bintray-org`:
+  Upload to the specified Bintray organisation (default: homebrew).
+* `--tap`:
+  Target repository tap (default: homebrew/core).
 
 ### `prof` *`command`*
 
@@ -1015,8 +1049,8 @@ Install macOS applications distributed as binaries. See `brew-cask`(1).
 
 ### `bundle` *`subcommand`*
 
-Bundler for non-Ruby dependencies from Homebrew, Homebrew Cask and the Mac App
-Store.
+Bundler for non-Ruby dependencies from Homebrew, Homebrew Cask, Mac App Store
+and Whalebrew.
 
 `brew bundle` [`install`]
 
@@ -1024,7 +1058,7 @@ Install or upgrade all dependencies in a `Brewfile`.
 
 `brew bundle dump`
 
-Write all installed casks/formulae/taps into a `Brewfile`.
+Write all installed casks/formulae/images/taps into a `Brewfile`.
 
 `brew bundle cleanup`
 
@@ -1065,6 +1099,8 @@ dependencies are listed.
   `list` tap dependencies.
 * `--mas`:
   `list` Mac App Store dependencies.
+* `--whalebrew`:
+  `list` Whalebrew dependencies.
 * `--describe`:
   `dump` a description comment above each line, unless the dependency does not have a description.
 * `--no-restart`:
@@ -1190,7 +1226,7 @@ Note that environment variables must have a value set to be detected. For exampl
     `git`(1) remote. If set, instructs Homebrew to instead use the specified URL.
 
   * `HOMEBREW_CURLRC`:
-    If set, Homebrew will not pass `-q` when invoking `curl`(1), which disables
+    If set, Homebrew will not pass `--disable` when invoking `curl`(1), which disables
     the use of `curlrc`.
 
   * `HOMEBREW_CURL_VERBOSE`:
@@ -1198,6 +1234,7 @@ Note that environment variables must have a value set to be detected. For exampl
 
   * `HOMEBREW_CURL_RETRIES`:
     If set, Homebrew will pass the given retry count to `--retry` when invoking `curl`(1).
+    By default, `curl`(1) is invoked with `--retry 3`.
 
   * `HOMEBREW_DEBUG`:
     If set, any commands that can emit debugging information will do so.

@@ -4,6 +4,9 @@ require "pathname"
 
 HOMEBREW_LIBRARY_PATH = Pathname(__dir__).realpath.freeze
 
-$LOAD_PATH.push(HOMEBREW_LIBRARY_PATH.to_s) unless $LOAD_PATH.include?(HOMEBREW_LIBRARY_PATH.to_s)
+$LOAD_PATH.push HOMEBREW_LIBRARY_PATH.to_s
 
 require "vendor/bundle/bundler/setup"
+
+$LOAD_PATH.select! { |d| Pathname(d).directory? }
+$LOAD_PATH.uniq!

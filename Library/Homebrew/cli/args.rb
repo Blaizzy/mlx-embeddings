@@ -68,6 +68,19 @@ module Homebrew
         named.blank?
       end
 
+      # If the user passes any flags that trigger building over installing from
+      # a bottle, they are collected here and returned as an Array for checking.
+      def collect_build_args
+        build_flags = []
+
+        build_flags << "--HEAD" if head
+        build_flags << "--universal" if build_universal
+        build_flags << "--build-bottle" if build_bottle
+        build_flags << "--build-from-source" if build_from_source
+
+        build_flags
+      end
+
       def formulae
         require "formula"
         @formulae ||= (downcased_unique_named - casks).map do |name|
@@ -141,6 +154,10 @@ module Homebrew
         end
       end
 
+      def build_stable?
+        !(HEAD? || devel?)
+      end
+
       private
 
       def downcased_unique_named
@@ -160,11 +177,33 @@ module Homebrew
       end
 
       def head
-        (args_parsed && HEAD?) || cmdline_args.include?("--HEAD")
+        return true if args_parsed && HEAD?
+
+        cmdline_args.include?("--HEAD")
       end
 
       def devel
-        (args_parsed && devel?) || cmdline_args.include?("--devel")
+        return true if args_parsed && devel?
+
+        cmdline_args.include?("--devel")
+      end
+
+      def build_universal
+        return true if args_parsed && universal?
+
+        cmdline_args.include?("--universal")
+      end
+
+      def build_bottle
+        return true if args_parsed && build_bottle?
+
+        cmdline_args.include?("--build-bottle")
+      end
+
+      def build_from_source
+        return true if args_parsed && (build_from_source? || s?)
+
+        cmdline_args.include?("--build-from-source") || cmdline_args.include?("-s")
       end
 
       def spec(default = :stable)

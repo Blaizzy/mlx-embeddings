@@ -7,6 +7,7 @@ require "extend/ENV"
 require "timeout"
 require "debrew"
 require "formula_assertions"
+require "formula_free_port"
 require "fcntl"
 require "socket"
 require "cli/parser"
@@ -26,6 +27,7 @@ begin
 
   formula = Homebrew.args.resolved_formulae.first
   formula.extend(Homebrew::Assertions)
+  formula.extend(Homebrew::FreePort)
   formula.extend(Debrew::Formula) if Homebrew.args.debug?
 
   # tests can also return false to indicate failure
