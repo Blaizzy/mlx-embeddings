@@ -561,8 +561,7 @@ module Homebrew
           pkg_version = bottle_hash["formula"]["pkg_version"]
 
           path.parent.cd do
-            author = "BrewTestBot <homebrew-test-bot@lists.sfconservancy.org>"
-            safe_system "git", "commit", "--no-edit", "--verbose", "--author=#{author}",
+            safe_system "git", "commit", "--no-edit", "--verbose",
                         "--message=#{short_name}: #{update_or_add} #{pkg_version} bottle.",
                         "--", path
           end
