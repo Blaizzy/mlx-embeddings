@@ -315,7 +315,6 @@ module Homebrew
   end
 
   def install_formula(f)
-    opoo "#{f.name} has been deprecated" if f.is_deprecated?
     f.print_tap_action
     build_options = f.build
 

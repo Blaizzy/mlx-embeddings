@@ -53,7 +53,6 @@ class Formula
   include Utils::Inreplace
   include Utils::Shebang
   include Utils::Shell
-  include Utils::Deprecate
   extend Enumerable
   extend Forwardable
   extend Cachable
@@ -178,16 +177,6 @@ class Formula
   attr_accessor :follow_installed_alias
   alias follow_installed_alias? follow_installed_alias
 
-  # A Boolean indicating whether this formula is deprecated or not
-  # Defaults to false
-  attr_accessor :is_deprecated
-  alias is_deprecated? is_deprecated
-
-  # A Boolean indicating whether this formula is disabled
-  # Defaults to false
-  attr_accessor :is_disabled
-  alias is_disabled? is_disabled
-
   # @private
   def initialize(name, path, spec, alias_path: nil)
     @name = name
@@ -224,8 +213,6 @@ class Formula
     @follow_installed_alias = true
     @prefix_returns_versioned_prefix = false
     @oldname_lock = nil
-    @is_deprecated = false
-    @is_disabled = false
   end
 
   # @private
@@ -1116,6 +1103,20 @@ class Formula
         to_check.start_with?(p.chomp("/") + "/") ||
         to_check =~ /^#{Regexp.escape(p).gsub('\*', ".*?")}$/
     end
+  end
+
+  # Whether this {Formula} is deprecated (i.e. warns on installation).
+  # Defaults to false.
+  # @return [Boolean]
+  def deprecated?
+    self.class.deprecated?
+  end
+
+  # Whether this {Formula} is disabled (i.e. cannot be installed).
+  # Defaults to false.
+  # @return [Boolean]
+  def disabled?
+    self.class.disabled?
   end
 
   def skip_cxxstdlib_check?
@@ -2616,6 +2617,34 @@ class Formula
     def pour_bottle?(&block)
       @pour_bottle_check = PourBottleCheck.new(self)
       @pour_bottle_check.instance_eval(&block)
+    end
+
+    # Deprecates a {Formula} so a warning is shown on each installation.
+    def deprecate!(date: nil)
+      return if date.present? && Date.parse(date) > Date.today
+
+      @deprecated = true
+    end
+
+    # Whether this {Formula} is deprecated (i.e. warns on installation).
+    # Defaults to false.
+    # @return [Boolean]
+    def deprecated?
+      @deprecated == true
+    end
+
+    # Disables a {Formula} so it cannot be installed.
+    def disable!(date: nil)
+      return if date.present? && Date.parse(date) > Date.today
+
+      @disabled = true
+    end
+
+    # Whether this {Formula} is disabled (i.e. cannot be installed).
+    # Defaults to false.
+    # @return [Boolean]
+    def disabled?
+      @disabled == true
     end
 
     # @private

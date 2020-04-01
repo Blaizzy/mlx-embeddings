@@ -61,7 +61,6 @@ module Homebrew
         onoe "#{f.full_name} is pinned. You must unpin it to reinstall."
         next
       end
-      opoo "#{f.name} has been deprecated" if f.is_deprecated?
       Migrator.migrate_if_needed(f)
       reinstall_formula(f)
       Cleanup.install_formula_clean!(f)

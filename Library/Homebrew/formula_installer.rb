@@ -161,6 +161,12 @@ class FormulaInstaller
   def check_install_sanity
     raise FormulaInstallationAlreadyAttemptedError, formula if self.class.attempted.include?(formula)
 
+    if formula.deprecated?
+      opoo "#{formula.full_name} has been deprecated!"
+    elsif formula.disabled?
+      odie "#{formula.full_name} has been disabled!"
+    end
+
     return if ignore_deps?
 
     recursive_deps = formula.recursive_dependencies
