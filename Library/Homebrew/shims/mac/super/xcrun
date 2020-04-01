@@ -1,10 +1,20 @@
-#!/bin/sh
+#!/bin/bash
 # Historically, xcrun has had various bugs, and in some cases it didn't
 # work at all (e.g. CLT-only in the Xcode 4.3 era). This script emulates
 # it and attempts to avoid these issues.
 
-# Some build tools set DEVELOPER_DIR, so discard it
-unset DEVELOPER_DIR
+# SDKROOT is not used if `--sdk` is supplied.
+# We however don't want to interrupt other uses like `xcrun --find clang`.
+if [[ "$*" =~ (^| )-?-sdk ]]; then
+  export DEVELOPER_DIR=$HOMEBREW_DEVELOPER_DIR
+else
+  # Some build tools set DEVELOPER_DIR, so discard it
+  unset DEVELOPER_DIR
+fi
+
+if [ -z "$SDKROOT" ]; then
+  export SDKROOT=$HOMEBREW_SDKROOT
+fi
 
 if [ $# -eq 0 ]; then
   exec /usr/bin/xcrun "$@"

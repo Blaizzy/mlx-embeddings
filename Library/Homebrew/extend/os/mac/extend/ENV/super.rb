@@ -109,6 +109,11 @@ module Superenv
   def setup_build_environment(formula = nil)
     generic_setup_build_environment(formula)
     self["HOMEBREW_SDKROOT"] = effective_sysroot
+    self["HOMEBREW_DEVELOPER_DIR"] = if MacOS::CLT.installed? && MacOS::CLT.provides_sdk?
+      MacOS::CLT::PKG_PATH
+    else
+      MacOS::Xcode.prefix
+    end
 
     # Filter out symbols known not to be defined since GNU Autotools can't
     # reliably figure this out with Xcode 8 and above.
