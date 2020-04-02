@@ -796,8 +796,9 @@ module Homebrew
 
         problem "#{stable.version} is a development release"
       when %r{^https://github.com/}
-        _, owner, _, _, version = URI.parse(stable.url).path.split("/")
-        tag = stable.specs[:tag] || version.gsub(".tar.gz", "")
+        matches = stable.url.match(%r{https://github.com/(.*)/.*/(releases/download/(.*)/.*tar.gz|archive/(.*).tar.gz)})
+        owner = matches[1]
+        tag = matches[3] || matches[4]
         begin
           if GitHub.open_api("#{GitHub::API_URL}/repos/#{owner}/#{stable.full_name}/releases/tags/#{tag}")\
              ["prerelease"]
