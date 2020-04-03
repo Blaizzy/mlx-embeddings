@@ -44,47 +44,43 @@ module Superenv
 
   def homebrew_extra_isystem_paths
     paths = []
-    paths << "#{effective_sysroot}/usr/include/libxml2" unless deps.any? { |d| d.name == "libxml2" }
-    paths << "#{effective_sysroot}/usr/include/apache2" if MacOS::Xcode.without_clt?
+    paths << "#{self["HOMEBREW_SDKROOT"]}/usr/include/libxml2" unless deps.any? { |d| d.name == "libxml2" }
+    paths << "#{self["HOMEBREW_SDKROOT"]}/usr/include/apache2" if MacOS::Xcode.without_clt?
     paths << MacOS::X11.include.to_s << "#{MacOS::X11.include}/freetype2" if x11?
-    paths << "#{effective_sysroot}/System/Library/Frameworks/OpenGL.framework/Versions/Current/Headers"
+    paths << "#{self["HOMEBREW_SDKROOT"]}/System/Library/Frameworks/OpenGL.framework/Versions/Current/Headers"
     paths
   end
 
   def homebrew_extra_library_paths
     paths = []
     if compiler == :llvm_clang
-      paths << if !MacOS.sdk_path_if_needed
-        "/usr/lib"
-      else
-        "#{MacOS.sdk_path}/usr/lib"
-      end
+      paths << "#{self["HOMEBREW_SDKROOT"]}/usr/lib"
       paths << Formula["llvm"].opt_lib.to_s
     end
     paths << MacOS::X11.lib.to_s if x11?
-    paths << "#{effective_sysroot}/System/Library/Frameworks/OpenGL.framework/Versions/Current/Libraries"
+    paths << "#{self["HOMEBREW_SDKROOT"]}/System/Library/Frameworks/OpenGL.framework/Versions/Current/Libraries"
     paths
   end
 
   def homebrew_extra_cmake_include_paths
     paths = []
-    paths << "#{effective_sysroot}/usr/include/libxml2" unless deps.any? { |d| d.name == "libxml2" }
-    paths << "#{effective_sysroot}/usr/include/apache2" if MacOS::Xcode.without_clt?
+    paths << "#{self["HOMEBREW_SDKROOT"]}/usr/include/libxml2" unless deps.any? { |d| d.name == "libxml2" }
+    paths << "#{self["HOMEBREW_SDKROOT"]}/usr/include/apache2" if MacOS::Xcode.without_clt?
     paths << MacOS::X11.include.to_s << "#{MacOS::X11.include}/freetype2" if x11?
-    paths << "#{effective_sysroot}/System/Library/Frameworks/OpenGL.framework/Versions/Current/Headers"
+    paths << "#{self["HOMEBREW_SDKROOT"]}/System/Library/Frameworks/OpenGL.framework/Versions/Current/Headers"
     paths
   end
 
   def homebrew_extra_cmake_library_paths
     paths = []
     paths << MacOS::X11.lib.to_s if x11?
-    paths << "#{effective_sysroot}/System/Library/Frameworks/OpenGL.framework/Versions/Current/Libraries"
+    paths << "#{self["HOMEBREW_SDKROOT"]}/System/Library/Frameworks/OpenGL.framework/Versions/Current/Libraries"
     paths
   end
 
   def homebrew_extra_cmake_frameworks_paths
     paths = []
-    paths << "#{effective_sysroot}/System/Library/Frameworks" if MacOS::Xcode.without_clt?
+    paths << "#{self["HOMEBREW_SDKROOT"]}/System/Library/Frameworks" if MacOS::Xcode.without_clt?
     paths
   end
 
@@ -97,23 +93,24 @@ module Superenv
     s.freeze
   end
 
-  def effective_sysroot
-    MacOS.sdk_path_if_needed&.to_s
-  end
-
   def set_x11_env_if_installed
     ENV.x11 = MacOS::X11.installed?
   end
 
   # @private
   def setup_build_environment(formula = nil)
-    generic_setup_build_environment(formula)
-    self["HOMEBREW_SDKROOT"] = effective_sysroot
-    self["HOMEBREW_DEVELOPER_DIR"] = if MacOS::CLT.installed? && MacOS::CLT.provides_sdk?
-      MacOS::CLT::PKG_PATH
+    if formula&.requirements&.find { |req| req.is_a? XcodeRequirement }
+      self["HOMEBREW_SDKROOT"] = MacOS.sdk_path_if_needed && MacOS::Xcode.sdk_path
+      self["HOMEBREW_DEVELOPER_DIR"] = MacOS::Xcode.prefix
     else
-      MacOS::Xcode.prefix
+      self["HOMEBREW_SDKROOT"] = MacOS.sdk_path_if_needed&.to_s
+      self["HOMEBREW_DEVELOPER_DIR"] = if MacOS::CLT.installed? && MacOS::CLT.provides_sdk?
+        MacOS::CLT::PKG_PATH
+      else
+        MacOS::Xcode.prefix
+      end
     end
+    generic_setup_build_environment(formula)
 
     # Filter out symbols known not to be defined since GNU Autotools can't
     # reliably figure this out with Xcode 8 and above.
