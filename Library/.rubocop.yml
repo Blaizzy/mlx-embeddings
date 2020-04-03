@@ -50,6 +50,12 @@ Lint/AmbiguousRegexpLiteral:
 Lint/ParenthesesAsGroupedExpression:
   Enabled: false
 
+# not enabled by default but nice to have
+Lint/RaiseException:
+  Enabled: true
+Lint/StructNewOverride:
+  Enabled: true
+
 # most metrics don't make sense to apply for formulae/taps
 Metrics/AbcSize:
   Enabled: false
