@@ -3,9 +3,8 @@
 # work at all (e.g. CLT-only in the Xcode 4.3 era). This script emulates
 # it and attempts to avoid these issues.
 
-# SDKROOT is not used if `--sdk` is supplied.
-# We however don't want to interrupt other uses like `xcrun --find clang`.
-if [[ "$*" =~ (^| )-?-sdk ]]; then
+# These could be used in conjunction with `--sdk` which ignores SDKROOT.
+if [[ "$*" =~ (^| )-?-show-sdk-(path|version|build) ]]; then
   export DEVELOPER_DIR=$HOMEBREW_DEVELOPER_DIR
 else
   # Some build tools set DEVELOPER_DIR, so discard it
