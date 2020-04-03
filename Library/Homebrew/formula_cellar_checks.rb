@@ -165,6 +165,40 @@ module FormulaCellarChecks
     EOS
   end
 
+  def check_python_packages(lib, deps)
+    return unless lib.directory?
+
+    lib_subdirs = lib.children
+                     .select(&:directory?)
+                     .map(&:basename)
+
+    pythons = lib_subdirs.map do |p|
+      match = p.to_s.match(/^python(\d+\.\d+)$/)
+      next if match.blank?
+      next if match.captures.blank?
+
+      match.captures.first
+    end.compact
+
+    python_deps = deps.map(&:name)
+                      .grep(/^python(@.*)?$/)
+                      .map { |d| Formula[d].version.to_s[/^\d+\.\d+/] }
+                      .compact
+
+    return if python_deps.blank?
+    return if pythons.any? { |v| python_deps.include? v }
+
+    pythons = pythons.map { |v| "Python #{v}" }
+    python_deps = python_deps.map { |v| "Python #{v}" }
+
+    <<~EOS
+      Packages have been installed for:
+        #{pythons * "\n        "}
+      but this formula depends on:
+        #{python_deps * "\n        "}
+    EOS
+  end
+
   def audit_installed
     @new_formula ||= false
 
@@ -179,6 +213,7 @@ module FormulaCellarChecks
     problem_if_output(check_easy_install_pth(formula.lib))
     problem_if_output(check_elisp_dirname(formula.share, formula.name))
     problem_if_output(check_elisp_root(formula.share, formula.name))
+    problem_if_output(check_python_packages(formula.lib, formula.deps))
   end
   alias generic_audit_installed audit_installed
 
