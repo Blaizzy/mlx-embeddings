@@ -1,5 +1,7 @@
 module TZInfo
-  using RubyCoreSupport::UntaintExt if RubyCoreSupport.const_defined?(:UntaintExt)
+  # Use send as a workaround for erroneous 'wrong number of arguments' errors
+  # with JRuby 9.0.5.0 when calling methods with Java implementations. See #114.
+  send(:using, RubyCoreSupport::UntaintExt) if RubyCoreSupport.const_defined?(:UntaintExt)
 
   # A DataSource that loads data from the set of Ruby modules included in the
   # TZInfo::Data library (tzinfo-data gem).
