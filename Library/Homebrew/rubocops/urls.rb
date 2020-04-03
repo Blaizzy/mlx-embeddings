@@ -17,6 +17,7 @@ module RuboCop
           https://github.com/sindresorhus/macos-wallpaper/archive/
           https://raw.githubusercontent.com/liyanage/macosx-shell-scripts/
           https://osxbook.com/book/bonus/chapter8/core/download/gcore
+          https://naif.jpl.nasa.gov/pub/naif/toolkit/C/MacIntel_OSX_AppleC_64bit/packages/
         ].freeze
 
         # These are formulae that, sadly, require an upstream binary to bootstrap.
