@@ -9,14 +9,15 @@ module RuboCop
       class Urls < FormulaCop
         # These are parts of URLs that look like binaries but actually aren't.
         NOT_A_BINARY_URL_PREFIX_WHITELIST = %w[
-          https://github.com/obihann/archey-osx/archive/
           https://downloads.sourceforge.net/project/astyle/astyle/
           https://downloads.sourceforge.net/project/bittwist/
           https://downloads.sourceforge.net/project/launch4j/
-          https://osxbook.com/book/bonus/chapter8/core/download/gcore
           https://github.com/ChrisJohnsen/tmux-MacOSX-pasteboard/archive/
-          https://raw.githubusercontent.com/liyanage/macosx-shell-scripts/
+          https://github.com/obihann/archey-osx/archive/
           https://github.com/sindresorhus/macos-wallpaper/archive/
+          https://raw.githubusercontent.com/liyanage/macosx-shell-scripts/
+          https://osxbook.com/book/bonus/chapter8/core/download/gcore
+          https://naif.jpl.nasa.gov/pub/naif/toolkit/C/MacIntel_OSX_AppleC_64bit/packages/
         ].freeze
 
         # These are formulae that, sadly, require an upstream binary to bootstrap.
