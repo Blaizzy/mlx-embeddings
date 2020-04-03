@@ -604,8 +604,8 @@ module TZInfo
             # Passing the invalid format string through to Time#strftime or
             # DateTime#strtime would normally result in it being returned in the
             # result. However, with Ruby 1.8.7 on Windows (as tested with Ruby
-            # 1.8.7-p374 from http://rubyinstaller.org/downloads/archives), this
-            # causes Time#strftime to always return an empty string (e.g.
+            # 1.8.7-p374 from https://rubyinstaller.org/downloads/archives),
+            # this causes Time#strftime to always return an empty string (e.g.
             # Time.now.strftime('a %::::z b') returns '').
             #
             # Escape the percent to force it to be evaluated as a literal.
