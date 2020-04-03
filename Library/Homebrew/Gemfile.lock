@@ -107,7 +107,7 @@ GEM
     thread_safe (0.3.6)
     tins (1.24.1)
       sync
-    tzinfo (1.2.6)
+    tzinfo (1.2.7)
       thread_safe (~> 0.1)
     unf (0.1.4)
       unf_ext
