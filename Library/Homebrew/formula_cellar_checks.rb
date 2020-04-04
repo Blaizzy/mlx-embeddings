@@ -180,6 +180,8 @@ module FormulaCellarChecks
       match.captures.first
     end.compact
 
+    return if pythons.blank?
+
     python_deps = deps.map(&:name)
                       .grep(/^python(@.*)?$/)
                       .map { |d| Formula[d].version.to_s[/^\d+\.\d+/] }
