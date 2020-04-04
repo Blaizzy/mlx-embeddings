@@ -42,9 +42,17 @@ module Superenv
     paths
   end
 
+  # @private
+  def libxml2_include_needed?
+    return false if deps.any? { |d| d.name == "libxml2" }
+    return false if Pathname("#{self["HOMEBREW_SDKROOT"]}/usr/include/libxml").directory?
+
+    true
+  end
+
   def homebrew_extra_isystem_paths
     paths = []
-    paths << "#{self["HOMEBREW_SDKROOT"]}/usr/include/libxml2" unless deps.any? { |d| d.name == "libxml2" }
+    paths << "#{self["HOMEBREW_SDKROOT"]}/usr/include/libxml2" if libxml2_include_needed?
     paths << "#{self["HOMEBREW_SDKROOT"]}/usr/include/apache2" if MacOS::Xcode.without_clt?
     paths << MacOS::X11.include.to_s << "#{MacOS::X11.include}/freetype2" if x11?
     paths << "#{self["HOMEBREW_SDKROOT"]}/System/Library/Frameworks/OpenGL.framework/Versions/Current/Headers"
@@ -64,7 +72,7 @@ module Superenv
 
   def homebrew_extra_cmake_include_paths
     paths = []
-    paths << "#{self["HOMEBREW_SDKROOT"]}/usr/include/libxml2" unless deps.any? { |d| d.name == "libxml2" }
+    paths << "#{self["HOMEBREW_SDKROOT"]}/usr/include/libxml2" if libxml2_include_needed?
     paths << "#{self["HOMEBREW_SDKROOT"]}/usr/include/apache2" if MacOS::Xcode.without_clt?
     paths << MacOS::X11.include.to_s << "#{MacOS::X11.include}/freetype2" if x11?
     paths << "#{self["HOMEBREW_SDKROOT"]}/System/Library/Frameworks/OpenGL.framework/Versions/Current/Headers"

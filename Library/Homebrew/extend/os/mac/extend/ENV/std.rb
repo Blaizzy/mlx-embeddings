@@ -97,12 +97,14 @@ module Stdenv
   end
 
   # Some configure scripts won't find libxml2 without help
+  # This is a no-op with macOS SDK 10.15.4 and later
   def libxml2
-    if !MacOS.sdk_path_if_needed
+    sdk = MacOS.sdk_path_if_needed
+    if !sdk
       append "CPPFLAGS", "-I/usr/include/libxml2"
-    else
+    elsif !(sdk/"usr/include/libxml").directory?
       # Use the includes form the sdk
-      append "CPPFLAGS", "-I#{MacOS.sdk_path}/usr/include/libxml2"
+      append "CPPFLAGS", "-I#{sdk}/usr/include/libxml2"
     end
   end
 
