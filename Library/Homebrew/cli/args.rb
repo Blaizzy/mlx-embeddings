@@ -158,6 +158,14 @@ module Homebrew
         !(HEAD? || devel?)
       end
 
+      # Whether a given formula should be built from source during the current
+      # installation run.
+      def build_formula_from_source?(f)
+        return false if !build_from_source && !build_bottle
+
+        formulae.any? { |args_f| args_f.full_name == f.full_name }
+      end
+
       private
 
       def downcased_unique_named
