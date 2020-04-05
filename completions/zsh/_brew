@@ -569,6 +569,23 @@ _brew_pull() {
     '*:patch source: '
 }
 
+# brew pr-pull [--no-upload|--no-publish] [--dry-run] [--clean] [--branch-okay]
+#   [--resolve] [--workflow] [--artifact] [--bintray-org] [--tap] pull_request 
+_brew_pr_pull() {
+  _arguments \
+    '(--no-upload)--no-publish[download the bottles, apply the bottle commit, and upload the bottles to Bintray, but don''t publish them]' \
+    '(--no-publish)--no-upload[download the bottles and apply the bottle commit, but don''t upload to Bintray]' \
+    '--dry-run[print what would be done rather than doing it]' \
+    '--clean[do not amend the commits from pull requests]' \
+    '--branch-okay[do not warn if pulling to a branch besides master (useful for testing)]' \
+    '--resolve[when a patch fails to apply, leave in progress and allow user to resolve, instead of aborting]' \
+    '--workflow[retrieve artifacts from the specified workflow (default: tests.yml)]' \
+    '--artifact[download artifacts with the specified name (default: bottles)]' \
+    '--bintray-org[upload to the specified Bintray organisation (default: homebrew)]' \
+    '--tap[target repository tap (default: homebrew/core)]' \
+    '*:pull_request: '
+}
+
 # brew readall [tap]:
 _brew_readall() {
   __brew_installed_taps
