@@ -28,6 +28,7 @@ end
 require "config"
 require "os"
 require "extend/ARGV"
+require "cli/args"
 require "messages"
 require "system_command"
 
@@ -83,7 +84,7 @@ module Homebrew
     end
 
     def args
-      @args ||= OpenStruct.new
+      @args ||= CLI::Args.new(argv: ARGV)
     end
 
     def messages
