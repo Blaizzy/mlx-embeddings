@@ -52,18 +52,6 @@ module HomebrewArgvExtension
     arch&.to_sym
   end
 
-  def build_from_source?
-    switch?("s") || include?("--build-from-source")
-  end
-
-  # Whether a given formula should be built from source during the current
-  # installation run.
-  def build_formula_from_source?(f)
-    return false if !build_from_source? && !build_bottle?
-
-    formulae.any? { |argv_f| argv_f.full_name == f.full_name }
-  end
-
   def force_bottle?
     include?("--force-bottle")
   end
