@@ -52,8 +52,8 @@ module Homebrew
     # Add necessary Ruby and Gem binary directories to PATH.
     gem_bindir ||= Gem.bindir
     paths = ENV["PATH"].split(":")
-    paths.unshift(ruby_bindir) unless paths.include?(ruby_bindir)
     paths.unshift(gem_bindir) unless paths.include?(gem_bindir)
+    paths.unshift(ruby_bindir) unless paths.include?(ruby_bindir)
     ENV["PATH"] = paths.compact.join(":")
   end
 
