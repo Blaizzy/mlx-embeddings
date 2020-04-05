@@ -62,6 +62,7 @@ module Cask
             Colorpicker,
             Prefpane,
             Qlplugin,
+            Mdimporter,
             Dictionary,
             Font,
             Service,

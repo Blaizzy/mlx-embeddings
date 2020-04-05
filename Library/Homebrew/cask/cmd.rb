@@ -53,6 +53,7 @@ module Cask
     option "--colorpickerdir=PATH",       ->(value) { Config.global.colorpickerdir       = value }
     option "--prefpanedir=PATH",          ->(value) { Config.global.prefpanedir          = value }
     option "--qlplugindir=PATH",          ->(value) { Config.global.qlplugindir          = value }
+    option "--mdimporterdir=PATH",        ->(value) { Config.global.mdimporterdir        = value }
     option "--dictionarydir=PATH",        ->(value) { Config.global.dictionarydir        = value }
     option "--fontdir=PATH",              ->(value) { Config.global.fontdir              = value }
     option "--servicedir=PATH",           ->(value) { Config.global.servicedir           = value }
