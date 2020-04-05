@@ -1,0 +1,5 @@
+#!/bin/sh
+
+exec "$HOMEBREW_OPT/pkg-config/bin/pkg-config" \
+  "--define-variable=homebrew_sdkroot=$HOMEBREW_SDKROOT" \
+  "$@"
