@@ -140,7 +140,7 @@ module Cask
 
     def summary
       s = +""
-      s << "#{Emoji.install_badge}  " if Emoji.enabled?
+      s << "#{Homebrew::EnvConfig.install_badge}  " unless Homebrew::EnvConfig.no_emoji?
       s << "#{@cask} was successfully #{upgrade? ? "upgraded" : "installed"}!"
       s.freeze
     end

@@ -45,7 +45,7 @@ module Homebrew
       end
 
       def check_for_unsupported_macos
-        return if ARGV.homebrew_developer?
+        return if Homebrew::EnvConfig.developer?
 
         who = +"We"
         if OS::Mac.prerelease?
@@ -141,7 +141,7 @@ module Homebrew
       def check_ruby_version
         ruby_version = "2.6.3"
         return if RUBY_VERSION == ruby_version
-        return if ARGV.homebrew_developer? && OS::Mac.prerelease?
+        return if Homebrew::EnvConfig.developer? && OS::Mac.prerelease?
 
         <<~EOS
           Ruby version #{RUBY_VERSION} is unsupported on #{MacOS.version}. Homebrew

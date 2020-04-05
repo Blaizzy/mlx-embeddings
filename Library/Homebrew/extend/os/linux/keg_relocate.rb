@@ -93,7 +93,7 @@ class Keg
     @bottle_dependencies ||= begin
       formulae = relocation_formulae
       gcc = Formula["gcc"]
-      if !ENV["HOMEBREW_FORCE_HOMEBREW_ON_LINUX"] &&
+      if !Homebrew::EnvConfig.force_homebrew_on_linux? &&
          DevelopmentTools.non_apple_gcc_version("gcc") < gcc.version.to_i
         formulae += gcc.recursive_dependencies.map(&:name)
         formulae << gcc.name

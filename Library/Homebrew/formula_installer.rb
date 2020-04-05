@@ -11,7 +11,6 @@ require "formula_cellar_checks"
 require "install_renamed"
 require "debrew"
 require "sandbox"
-require "emoji"
 require "development_tools"
 require "cache_store"
 require "linkage_checker"
@@ -306,9 +305,9 @@ class FormulaInstaller
           end
           formula.rack.rmdir_if_possible
         end
-        raise if ARGV.homebrew_developer? ||
-                 e.is_a?(Interrupt) ||
-                 ENV["HOMEBREW_NO_BOTTLE_SOURCE_FALLBACK"]
+        raise if Homebrew::EnvConfig.developer? ||
+                 Homebrew::EnvConfig.no_bottle_source_fallback? ||
+                 e.is_a?(Interrupt)
 
         @pour_failed = true
         onoe e.message
@@ -372,7 +371,7 @@ class FormulaInstaller
         'conflicts_with \"#{c.name}\"' should be removed from #{formula.path.basename}.
       EOS
 
-      raise if ARGV.homebrew_developer?
+      raise if Homebrew::EnvConfig.developer?
 
       $stderr.puts "Please report this issue to the #{formula.tap} tap (not Homebrew/brew or Homebrew/core)!"
       false
@@ -621,7 +620,7 @@ class FormulaInstaller
   def caveats
     return if only_deps?
 
-    audit_installed if ARGV.homebrew_developer?
+    audit_installed if Homebrew::EnvConfig.developer?
 
     caveats = Caveats.new(formula)
 
@@ -684,7 +683,7 @@ class FormulaInstaller
 
   def summary
     s = +""
-    s << "#{Emoji.install_badge}  " if Emoji.enabled?
+    s << "#{Homebrew::EnvConfig.install_badge}  " unless Homebrew::EnvConfig.no_emoji?
     s << "#{formula.prefix.resolved_path}: #{formula.prefix.abv}"
     s << ", built in #{pretty_duration build_time}" if build_time
     s.freeze
@@ -943,7 +942,7 @@ class FormulaInstaller
   rescue Exception => e # rubocop:disable Lint/RescueException
     opoo "The post-install step did not complete successfully"
     puts "You can try again using `brew postinstall #{formula.full_name}`"
-    ohai e, e.backtrace if debug? || ARGV.homebrew_developer?
+    ohai e, e.backtrace if debug? || Homebrew::EnvConfig.developer?
     Homebrew.failed = true
     @show_summary_heading = true
   end

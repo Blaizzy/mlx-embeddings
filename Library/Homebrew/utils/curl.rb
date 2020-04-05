@@ -17,7 +17,7 @@ def curl_args(*extra_args, show_output: false, user_agent: :default)
   args = []
 
   # do not load .curlrc unless requested (must be the first argument)
-  args << "--disable" unless ENV["HOMEBREW_CURLRC"]
+  args << "--disable" unless Homebrew::EnvConfig.curlrc?
 
   args << "--globoff"
 
@@ -35,12 +35,11 @@ def curl_args(*extra_args, show_output: false, user_agent: :default)
   unless show_output
     args << "--fail"
     args << "--progress-bar" unless Homebrew.args.verbose?
-    args << "--verbose" if ENV["HOMEBREW_CURL_VERBOSE"]
+    args << "--verbose" if Homebrew::EnvConfig.curl_verbose?
     args << "--silent" unless $stdout.tty?
   end
 
-  # When changing the default value, the manpage has to be updated.
-  args << "--retry" << (ENV["HOMEBREW_CURL_RETRIES"] || "3")
+  args << "--retry" << Homebrew::EnvConfig.curl_retries
 
   args + extra_args
 end
@@ -128,7 +127,7 @@ def curl_check_http_content(url, user_agents: [:default], check_content: false, 
     return "The URL #{url} is not reachable (HTTP status code #{details[:status]})"
   end
 
-  if url.start_with?("https://") && ENV["HOMEBREW_NO_INSECURE_REDIRECT"] &&
+  if url.start_with?("https://") && Homebrew::EnvConfig.no_insecure_redirect? &&
      !details[:final_url].start_with?("https://")
     return "The URL #{url} redirects back to HTTP"
   end

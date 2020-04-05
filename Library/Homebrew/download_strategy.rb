@@ -345,8 +345,8 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
     @resolved_info_cache ||= {}
     return @resolved_info_cache[url] if @resolved_info_cache.include?(url)
 
-    if ENV["HOMEBREW_ARTIFACT_DOMAIN"]
-      url = url.sub(%r{^((ht|f)tps?://)?}, ENV["HOMEBREW_ARTIFACT_DOMAIN"].chomp("/") + "/")
+    if (domain = Homebrew::EnvConfig.artifact_domain)
+      url = url.sub(%r{^((ht|f)tps?://)?}, domain.chomp("/") + "/")
     end
 
     out, _, status= curl_output("--location", "--silent", "--head", "--request", "GET", url.to_s)
@@ -402,7 +402,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
   def _fetch(url:, resolved_url:)
     ohai "Downloading from #{resolved_url}" if url != resolved_url
 
-    if ENV["HOMEBREW_NO_INSECURE_REDIRECT"] &&
+    if Homebrew::EnvConfig.no_insecure_redirect? &&
        url.start_with?("https://") && !resolved_url.start_with?("https://")
       $stderr.puts "HTTPS to HTTP redirect detected & HOMEBREW_NO_INSECURE_REDIRECT is set."
       raise CurlDownloadStrategyError, url
@@ -784,7 +784,7 @@ class GitDownloadStrategy < VCSDownloadStrategy
 
       git_dir = dot_git.read.chomp[/^gitdir: (.*)$/, 1]
       if git_dir.nil?
-        onoe "Failed to parse '#{dot_git}'." if ARGV.homebrew_developer?
+        onoe "Failed to parse '#{dot_git}'." if Homebrew::EnvConfig.developer?
         next
       end
 
@@ -809,7 +809,7 @@ class GitHubGitDownloadStrategy < GitDownloadStrategy
   end
 
   def github_last_commit
-    return if ENV["HOMEBREW_NO_GITHUB_API"]
+    return if Homebrew::EnvConfig.no_github_api?
 
     output, _, status = curl_output(
       "--silent", "--head", "--location",
@@ -825,7 +825,7 @@ class GitHubGitDownloadStrategy < GitDownloadStrategy
   end
 
   def multiple_short_commits_exist?(commit)
-    return if ENV["HOMEBREW_NO_GITHUB_API"]
+    return if Homebrew::EnvConfig.no_github_api?
 
     output, _, status = curl_output(
       "--silent", "--head", "--location",

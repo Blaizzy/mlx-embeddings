@@ -62,8 +62,7 @@ HOMEBREW_LIBRARY="$HOMEBREW_REPOSITORY/Library"
 
 # Whitelist and copy to HOMEBREW_* all variables previously mentioned in
 # manpage or used elsewhere by Homebrew.
-for VAR in AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY BINTRAY_USER BINTRAY_KEY \
-           BROWSER DISPLAY EDITOR GIT NO_COLOR PATH VISUAL
+for VAR in BROWSER DISPLAY EDITOR NO_COLOR PATH
 do
   # Skip if variable value is empty.
   [[ -z "${!VAR}" ]] && continue
@@ -73,6 +72,12 @@ do
   [[ -n "${!VAR_NEW}" ]] && continue
   export "$VAR_NEW"="${!VAR}"
 done
+
+# Use VISUAL if HOMEBREW_EDITOR and EDITOR are unset.
+if [[ -z "$HOMEBREW_EDITOR" && -n "$VISUAL" ]]
+then
+  export HOMEBREW_EDITOR="$VISUAL"
+fi
 
 # Set CI variable for GitHub Actions, Azure Pipelines, Jenkins
 # (Set by default on Circle and Travis CI)
@@ -90,7 +95,7 @@ then
   # Filter all but the specific variables.
   for VAR in HOME SHELL PATH TERM TERMINFO COLUMNS DISPLAY LOGNAME USER CI SSH_AUTH_SOCK SUDO_ASKPASS \
              http_proxy https_proxy ftp_proxy no_proxy all_proxy HTTPS_PROXY FTP_PROXY ALL_PROXY \
-             "${!HOMEBREW_@}" "${!TRAVIS_@}"
+             "${!HOMEBREW_@}"
   do
     # Skip if variable value is empty.
     [[ -z "${!VAR}" ]] && continue

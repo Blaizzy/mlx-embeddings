@@ -110,7 +110,7 @@ module Homebrew
   def check_for_dependents(kegs)
     return false unless result = Keg.find_some_installed_dependents(kegs)
 
-    if ARGV.homebrew_developer?
+    if Homebrew::EnvConfig.developer?
       DeveloperDependentsMessage.new(*result).output
     else
       NondeveloperDependentsMessage.new(*result).output

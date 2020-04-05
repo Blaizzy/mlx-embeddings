@@ -13,8 +13,7 @@ describe Homebrew::CLI::Parser do
     }
 
     before do
-      allow(ENV).to receive(:[])
-      allow(ENV).to receive(:[]).with("HOMEBREW_PRY").and_return("1")
+      allow(Homebrew::EnvConfig).to receive(:pry?).and_return(true)
     end
 
     it "parses short option" do
@@ -181,18 +180,16 @@ describe Homebrew::CLI::Parser do
     end
 
     it "prioritizes cli arguments over env vars when they conflict" do
-      allow(ENV).to receive(:[])
-      allow(ENV).to receive(:[]).with("HOMEBREW_SWITCH_A").and_return("1")
-      allow(ENV).to receive(:[]).with("HOMEBREW_SWITCH_B").and_return(nil)
+      allow(Homebrew::EnvConfig).to receive(:switch_a?).and_return(true)
+      allow(Homebrew::EnvConfig).to receive(:switch_b?).and_return(false)
       parser.parse(["--switch-b"])
       expect(Homebrew.args.switch_a).to be_falsy
       expect(Homebrew.args).to be_switch_b
     end
 
     it "raises an exception on constraint violation when both are env vars" do
-      allow(ENV).to receive(:[])
-      allow(ENV).to receive(:[]).with("HOMEBREW_SWITCH_A").and_return("1")
-      allow(ENV).to receive(:[]).with("HOMEBREW_SWITCH_B").and_return("1")
+      allow(Homebrew::EnvConfig).to receive(:switch_a?).and_return(true)
+      allow(Homebrew::EnvConfig).to receive(:switch_b?).and_return(true)
       expect { parser.parse([]) }.to raise_error(Homebrew::CLI::OptionConflictError)
     end
   end

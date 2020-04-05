@@ -3,9 +3,8 @@
 module Hardware
   class CPU
     class << self
-      native_arch = (ENV["HOMEBREW_ARCH"] || "native").freeze
       OPTIMIZATION_FLAGS_LINUX = {
-        native:  "-march=#{native_arch}",
+        native:  "-march=#{Homebrew::EnvConfig.arch}",
         nehalem: "-march=nehalem",
         core2:   "-march=core2",
         core:    "-march=prescott",

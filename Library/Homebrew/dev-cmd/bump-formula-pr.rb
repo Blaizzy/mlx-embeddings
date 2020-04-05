@@ -114,7 +114,7 @@ module Homebrew
     ENV["PATH"] = ENV["HOMEBREW_PATH"]
 
     # Use the user's browser, too.
-    ENV["BROWSER"] = ENV["HOMEBREW_BROWSER"]
+    ENV["BROWSER"] = Homebrew::EnvConfig.browser
 
     formula = args.formulae.first
 

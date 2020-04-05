@@ -119,67 +119,37 @@ class SystemConfig
       else
         f.puts "Core tap: N/A"
       end
-      defaults_hash = {
-        HOMEBREW_PREFIX:        Homebrew::DEFAULT_PREFIX,
-        HOMEBREW_REPOSITORY:    Homebrew::DEFAULT_REPOSITORY,
-        HOMEBREW_CELLAR:        Homebrew::DEFAULT_CELLAR,
-        HOMEBREW_CACHE:         "#{ENV["HOME"]}/Library/Caches/Homebrew",
-        HOMEBREW_LOGS:          "#{ENV["HOME"]}/Library/Logs/Homebrew",
-        HOMEBREW_TEMP:          ENV["HOMEBREW_SYSTEM_TEMP"],
-        HOMEBREW_RUBY_WARNINGS: "-W0",
-      }.freeze
-      boring_keys = %w[
-        HOMEBREW_BROWSER
-        HOMEBREW_EDITOR
-
-        HOMEBREW_ANALYTICS_ID
-        HOMEBREW_ANALYTICS_USER_UUID
-        HOMEBREW_AUTO_UPDATE_CHECKED
-        HOMEBREW_BOTTLE_DEFAULT_DOMAIN
-        HOMEBREW_BOTTLE_DOMAIN
-        HOMEBREW_BREW_FILE
-        HOMEBREW_BREW_GIT_REMOTE
-        HOMEBREW_COMMAND_DEPTH
-        HOMEBREW_CORE_GIT_REMOTE
-        HOMEBREW_CURL
-        HOMEBREW_DISPLAY
-        HOMEBREW_GIT
-        HOMEBREW_GIT_CONFIG_FILE
-        HOMEBREW_LIBRARY
-        HOMEBREW_MACOS_VERSION
-        HOMEBREW_MACOS_VERSION_NUMERIC
-        HOMEBREW_MINIMUM_GIT_VERSION
-        HOMEBREW_RUBY_PATH
-        HOMEBREW_SYSTEM
-        HOMEBREW_SYSTEM_TEMP
-        HOMEBREW_OS_VERSION
-        HOMEBREW_PATH
-        HOMEBREW_PROCESSOR
-        HOMEBREW_PRODUCT
-        HOMEBREW_USER_AGENT
-        HOMEBREW_USER_AGENT_CURL
-        HOMEBREW_VERSION
-      ].freeze
       f.puts "HOMEBREW_PREFIX: #{HOMEBREW_PREFIX}"
-      [:HOMEBREW_CELLAR, :HOMEBREW_CACHE, :HOMEBREW_LOGS, :HOMEBREW_REPOSITORY,
-       :HOMEBREW_TEMP].each do |key|
+      {
+        HOMEBREW_REPOSITORY: Homebrew::DEFAULT_REPOSITORY,
+        HOMEBREW_CELLAR:     Homebrew::DEFAULT_CELLAR,
+      }.freeze.each do |key, default|
         value = Object.const_get(key)
-        f.puts "#{key}: #{value}" if defaults_hash[key] != value.to_s
+        f.puts "#{key}: #{value}" if value.to_s != default.to_s
       end
-      if defaults_hash[:HOMEBREW_RUBY_WARNINGS] != ENV["HOMEBREW_RUBY_WARNINGS"].to_s
-        f.puts "HOMEBREW_RUBY_WARNINGS: #{ENV["HOMEBREW_RUBY_WARNINGS"]}"
-      end
-      unless ENV["HOMEBREW_ENV"]
-        ENV.sort.each do |key, value|
-          next unless key.start_with?("HOMEBREW_")
-          next if key.start_with?("HOMEBREW_BUNDLE_")
-          next if boring_keys.include?(key)
-          next if defaults_hash[key.to_sym]
 
-          value = "set" if ENV.sensitive?(key)
-          f.puts "#{key}: #{value}"
+      Homebrew::EnvConfig::ENVS.each do |env, hash|
+        method_name = Homebrew::EnvConfig.env_method_name(env, hash)
+
+        if hash[:boolean]
+          f.puts "#{env}: set" if Homebrew::EnvConfig.send(method_name)
+          next
+        end
+
+        value = Homebrew::EnvConfig.send(method_name)
+        next unless value
+
+        if (default = hash[:default].presence)
+          next if value.to_s == default.to_s
+        end
+
+        if ENV.sensitive?(env)
+          f.puts "#{env}: set"
+        else
+          f.puts "#{env}: #{value}"
         end
       end
+
       f.puts hardware if hardware
       f.puts "Homebrew Ruby: #{describe_homebrew_ruby}"
       f.print "Clang: "

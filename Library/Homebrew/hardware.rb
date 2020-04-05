@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "utils/popen"
+
 module Hardware
   class CPU
     INTEL_32BIT_ARCHS = [:i386].freeze

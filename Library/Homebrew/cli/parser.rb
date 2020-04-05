@@ -83,7 +83,11 @@ module Homebrew
       alias switch_option switch
 
       def env?(env)
-        env.present? && ENV["HOMEBREW_#{env.to_s.upcase}"].present?
+        return false if env.blank?
+
+        Homebrew::EnvConfig.send("#{env}?")
+      rescue NoMethodError
+        false
       end
 
       def usage_banner(text)

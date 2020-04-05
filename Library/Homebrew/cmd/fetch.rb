@@ -68,7 +68,7 @@ module Homebrew
         rescue Interrupt
           raise
         rescue => e
-          raise if ARGV.homebrew_developer?
+          raise if Homebrew::EnvConfig.developer?
 
           fetched_bottle = false
           onoe e.message

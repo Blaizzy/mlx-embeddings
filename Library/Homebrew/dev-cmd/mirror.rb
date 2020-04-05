@@ -22,8 +22,8 @@ module Homebrew
   def mirror
     mirror_args.parse
 
-    bintray_user = ENV["HOMEBREW_BINTRAY_USER"]
-    bintray_key = ENV["HOMEBREW_BINTRAY_KEY"]
+    bintray_user = Homebrew::EnvConfig.bintray_user
+    bintray_key = Homebrew::EnvConfig.bintray_key
     raise "Missing HOMEBREW_BINTRAY_USER or HOMEBREW_BINTRAY_KEY variables!" if !bintray_user || !bintray_key
 
     args.formulae.each do |f|

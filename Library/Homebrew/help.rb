@@ -83,7 +83,7 @@ module Homebrew
       output ||= comment_help(path)
 
       output ||= if output.blank?
-        opoo "No help text in: #{path}" if ARGV.homebrew_developer?
+        opoo "No help text in: #{path}" if Homebrew::EnvConfig.developer?
         HOMEBREW_HELP
       end
 

@@ -20,10 +20,10 @@ module Homebrew
     cat_args.parse
 
     cd HOMEBREW_REPOSITORY
-    pager = if ENV["HOMEBREW_BAT"].nil?
-      "cat"
-    else
+    pager = if Homebrew::EnvConfig.bat?
       "#{HOMEBREW_PREFIX}/bin/bat"
+    else
+      "cat"
     end
     safe_system pager, args.formulae.first.path, *args.passthrough
   end

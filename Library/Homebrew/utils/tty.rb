@@ -72,8 +72,8 @@ module Tty
   end
 
   def color?
-    return false if ENV["HOMEBREW_NO_COLOR"]
-    return true if ENV["HOMEBREW_COLOR"]
+    return false if Homebrew::EnvConfig.no_color?
+    return true if Homebrew::EnvConfig.color?
 
     $stdout.tty?
   end

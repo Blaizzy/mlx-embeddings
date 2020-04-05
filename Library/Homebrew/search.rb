@@ -30,7 +30,7 @@ module Homebrew
 
       results = { formulae: [], casks: [] }
 
-      return results if ENV["HOMEBREW_NO_GITHUB_API"]
+      return results if Homebrew::EnvConfig.no_github_api?
 
       unless silent
         # Use stderr to avoid breaking parsed output
