@@ -44,6 +44,10 @@ module Homebrew
     ENV["GEM_HOME"] = gem_home
     ENV["GEM_PATH"] = ENV["GEM_HOME"]
 
+    # Set TMPDIR so Xcode's `make` doesn't fall back to `/var/tmp/`,
+    # which may be not user-writable.
+    ENV["TMPDIR"] = ENV["HOMEBREW_TEMP"]
+
     # Make RubyGems notice environment changes.
     require "rubygems"
     Gem.clear_paths
