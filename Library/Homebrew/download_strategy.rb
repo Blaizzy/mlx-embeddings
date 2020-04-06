@@ -326,6 +326,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
     end
   ensure
     download_lock&.unlock
+    download_lock&.path&.unlink
   end
 
   def clear_cache
