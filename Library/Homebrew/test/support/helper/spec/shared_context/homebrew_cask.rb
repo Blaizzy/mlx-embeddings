@@ -14,6 +14,7 @@ module Cask
       appdir:               Pathname(TEST_TMPDIR)/"cask-appdir",
       prefpanedir:          Pathname(TEST_TMPDIR)/"cask-prefpanedir",
       qlplugindir:          Pathname(TEST_TMPDIR)/"cask-qlplugindir",
+      mdimporterdir:        Pathname(TEST_TMPDIR)/"cask-mdimporter",
       dictionarydir:        Pathname(TEST_TMPDIR)/"cask-dictionarydir",
       fontdir:              Pathname(TEST_TMPDIR)/"cask-fontdir",
       colorpickerdir:       Pathname(TEST_TMPDIR)/"cask-colorpickerdir",

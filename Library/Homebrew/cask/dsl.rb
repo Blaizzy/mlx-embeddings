@@ -39,6 +39,7 @@ module Cask
       Artifact::Pkg,
       Artifact::Prefpane,
       Artifact::Qlplugin,
+      Artifact::Mdimporter,
       Artifact::ScreenSaver,
       Artifact::Service,
       Artifact::StageOnly,

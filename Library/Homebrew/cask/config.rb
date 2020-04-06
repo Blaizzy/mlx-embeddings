@@ -11,6 +11,7 @@ module Cask
       appdir:               "/Applications",
       prefpanedir:          "~/Library/PreferencePanes",
       qlplugindir:          "~/Library/QuickLook",
+      mdimporterdir:        "~/Library/Spotlight",
       dictionarydir:        "~/Library/Dictionaries",
       fontdir:              "~/Library/Fonts",
       colorpickerdir:       "~/Library/ColorPickers",

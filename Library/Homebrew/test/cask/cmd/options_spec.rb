@@ -43,6 +43,20 @@ describe Cask::Cmd, :cask do
     expect(Cask::Config.global.qlplugindir).to eq(Pathname.new("/some/path/bar"))
   end
 
+  it "supports setting the mdimporterdir" do
+    described_class.new.process_options("help", "--mdimporterdir=/some/path/foo")
+
+    expect(Cask::Config.global.mdimporterdir).to eq(Pathname.new("/some/path/foo"))
+  end
+
+  it "supports setting the mdimporterdir from ENV" do
+    ENV["HOMEBREW_CASK_OPTS"] = "--mdimporterdir=/some/path/bar"
+
+    described_class.new.process_options("help")
+
+    expect(Cask::Config.global.mdimporterdir).to eq(Pathname.new("/some/path/bar"))
+  end
+
   it "supports setting the colorpickerdir" do
     described_class.new.process_options("help", "--colorpickerdir=/some/path/foo")
 

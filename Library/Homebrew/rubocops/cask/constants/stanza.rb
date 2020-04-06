@@ -27,6 +27,7 @@ module RuboCop
           :internet_plugin,
           :prefpane,
           :qlplugin,
+          :mdimporter,
           :screen_saver,
           :service,
           :audio_unit_plugin,
