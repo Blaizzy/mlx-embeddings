@@ -63,6 +63,7 @@ module Homebrew
     variables[:developer_commands] = generate_cmd_manpages(Commands.internal_developer_commands_paths)
     variables[:official_external_commands] = generate_cmd_manpages(Commands.official_external_commands_paths)
     variables[:global_options] = global_options_manpage
+    variables[:environment_variables] = env_vars_manpage
 
     readme = HOMEBREW_REPOSITORY/"README.md"
     variables[:lead] =
@@ -207,9 +208,24 @@ module Homebrew
     lines.join("\n")
   end
 
+  def env_vars_manpage
+    lines = Homebrew::EnvConfig::ENVS.flat_map do |env, hash|
+      entry = "  * `#{env}`:\n    #{hash[:description]}\n"
+      default = hash[:default_text]
+      default ||= "`#{hash[:default]}`." if hash[:default]
+      entry += "\n\n    *Default:* #{default}\n" if default
+
+      entry
+    end
+    lines.join("\n")
+  end
+
   def generate_option_doc(short, long, desc)
     comma = (short && long) ? ", " : ""
-    "* #{format_short_opt(short)}" + comma + "#{format_long_opt(long)}:" + "\n  " + desc + "\n"
+    <<~EOS
+      * #{format_short_opt(short)}#{comma}#{format_long_opt(long)}:
+        #{desc}
+    EOS
   end
 
   def format_short_opt(opt)
