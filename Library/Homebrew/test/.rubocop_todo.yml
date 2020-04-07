@@ -30,6 +30,7 @@ RSpec/FilePath:
     - 'checksum_verification_spec.rb'
     - 'cxxstdlib_spec.rb'
     - 'diagnostic_checks_spec.rb'
+    - 'env_config_spec.rb'
     - 'missing_formula_spec.rb'
     - 'os/linux/diagnostic_spec.rb'
     - 'os/mac/diagnostic_spec.rb'
