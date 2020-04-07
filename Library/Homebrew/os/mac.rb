@@ -74,6 +74,17 @@ module OS
       @active_developer_dir ||= Utils.popen_read("/usr/bin/xcode-select", "-print-path").strip
     end
 
+    def sdk_root_needed?
+      if MacOS::CLT.installed?
+        # If there's no CLT SDK, return false
+        return false unless MacOS::CLT.provides_sdk?
+        # If the CLT is installed and headers are provided by the system, return false
+        return false unless MacOS::CLT.separate_header_package?
+      end
+
+      true
+    end
+
     # If a specific SDK is requested:
     #
     #   1. The requested SDK is returned, if it's installed.
@@ -94,6 +105,13 @@ module OS
       @locator.sdk_if_applicable(v)
     end
 
+    def sdk_for_formula(f, v = nil)
+      # If the formula requires Xcode, don't return the CLT SDK
+      return Xcode.sdk if f.requirements.any? { |req| req.is_a? XcodeRequirement }
+
+      sdk(v)
+    end
+
     # Returns the path to an SDK or nil, following the rules set by {.sdk}.
     def sdk_path(v = nil)
       s = sdk(v)
@@ -109,10 +127,7 @@ module OS
       # 4. On CLT-only systems with a CLT SDK, where headers are provided by the system, return nil.
       # 5. On CLT-only systems with a CLT SDK, where headers are not provided by the system, return the CLT SDK.
 
-      # If there's no CLT SDK, return early
-      return if MacOS::CLT.installed? && !MacOS::CLT.provides_sdk?
-      # If the CLT is installed and headers are provided by the system, return early
-      return if MacOS::CLT.installed? && !MacOS::CLT.separate_header_package?
+      return unless sdk_root_needed?
 
       sdk_path(v)
     end
