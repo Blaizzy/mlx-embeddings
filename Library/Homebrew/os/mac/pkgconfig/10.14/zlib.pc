@@ -1,3 +1,4 @@
+homebrew_sdkroot=/Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk
 prefix=${homebrew_sdkroot}/usr
 exec_prefix=/usr
 libdir=${exec_prefix}/lib
