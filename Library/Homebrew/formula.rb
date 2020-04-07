@@ -1352,8 +1352,7 @@ class Formula
     args << "-DHAVE_CLOCK_GETTIME:INTERNAL=0" if MacOS.version == "10.11" && MacOS::Xcode.version >= "8.0"
 
     # Ensure CMake is using the same SDK we are using.
-    sdk = MacOS.sdk_path_if_needed
-    args << "-DCMAKE_OSX_SYSROOT=#{sdk}" if sdk
+    args << "-DCMAKE_OSX_SYSROOT=#{MacOS.sdk_for_formula(self).path}" if MacOS.sdk_root_needed?
 
     args
   end

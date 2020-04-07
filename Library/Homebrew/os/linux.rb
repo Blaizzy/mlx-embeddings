@@ -53,6 +53,10 @@ module OS
       languages.first
     end
 
+    def sdk_root_needed?
+      false
+    end
+
     def sdk_path_if_needed(_v = nil)
       nil
     end

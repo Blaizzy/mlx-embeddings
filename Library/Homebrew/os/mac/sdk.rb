@@ -5,11 +5,12 @@ require "os/mac/version"
 module OS
   module Mac
     class SDK
-      attr_reader :version, :path
+      attr_reader :version, :path, :source
 
-      def initialize(version, path)
+      def initialize(version, path, source)
         @version = OS::Mac::Version.new version
         @path = Pathname.new(path)
+        @source = source
       end
     end
 
@@ -20,14 +21,14 @@ module OS
         path = sdk_paths[v]
         raise NoSDKError if path.nil?
 
-        SDK.new v, path
+        SDK.new v, path, source
       end
 
       def latest_sdk
         return if sdk_paths.empty?
 
         v, path = sdk_paths.max { |a, b| OS::Mac::Version.new(a[0]) <=> OS::Mac::Version.new(b[0]) }
-        SDK.new v, path
+        SDK.new v, path, source
       end
 
       def sdk_if_applicable(v = nil)
@@ -47,6 +48,10 @@ module OS
       end
 
       private
+
+      def source
+        nil
+      end
 
       def source_version
         OS::Mac::Version::NULL
@@ -78,6 +83,10 @@ module OS
     class XcodeSDKLocator < BaseSDKLocator
       private
 
+      def source
+        :xcode
+      end
+
       def source_version
         OS::Mac::Xcode.version
       end
@@ -97,6 +106,10 @@ module OS
 
     class CLTSDKLocator < BaseSDKLocator
       private
+
+      def source
+        :clt
+      end
 
       def source_version
         OS::Mac::CLT.version
