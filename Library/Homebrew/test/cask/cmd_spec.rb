@@ -17,7 +17,7 @@ describe Cask::Cmd, :cask do
 
   it "ignores the `--language` option, which is handled in `OS::Mac`" do
     cli = described_class.new("--language=en")
-    expect(cli).to receive(:detect_command_and_arguments).with(no_args)
+    expect(cli).to receive(:detect_internal_command).with(no_args)
     cli.run
   end
 
@@ -36,33 +36,33 @@ describe Cask::Cmd, :cask do
   end
 
   context "::run" do
-    let(:noop_command) { double("Cmd::Noop") }
-
-    before do
-      allow(described_class).to receive(:lookup_command).with("noop").and_return(noop_command)
-      allow(noop_command).to receive(:run)
-    end
-
-    it "passes `--version` along to the subcommand" do
-      version_command = double("Cmd::Version")
-      allow(described_class).to receive(:lookup_command).with("--version").and_return(version_command)
-      expect(described_class).to receive(:run_command).with(version_command)
-      described_class.run("--version")
-    end
+    let(:noop_command) { double("Cmd::Noop", run: nil) }
 
     it "prints help output when subcommand receives `--help` flag" do
-      command = described_class.new("noop", "--help")
-      expect(described_class).to receive(:run_command).with("help", "noop")
-      command.run
+      command = described_class.new("info", "--help")
+
+      expect { command.run }.to output(/displays information about the given Cask/).to_stdout
       expect(command.help?).to eq(true)
     end
 
     it "respects the env variable when choosing what appdir to create" do
+      allow(described_class).to receive(:lookup_command).with("noop").and_return(noop_command)
+
       ENV["HOMEBREW_CASK_OPTS"] = "--appdir=/custom/appdir"
 
       described_class.run("noop")
 
       expect(Cask::Config.global.appdir).to eq(Pathname.new("/custom/appdir"))
+    end
+
+    it "overrides the env variable when passing --appdir directly" do
+      allow(described_class).to receive(:lookup_command).with("noop").and_return(noop_command)
+
+      ENV["HOMEBREW_CASK_OPTS"] = "--appdir=/custom/appdir"
+
+      described_class.run("noop", "--appdir=/even/more/custom/appdir")
+
+      expect(Cask::Config.global.appdir).to eq(Pathname.new("/even/more/custom/appdir"))
     end
 
     it "exits with a status of 1 when something goes wrong" do
@@ -73,8 +73,8 @@ describe Cask::Cmd, :cask do
     end
   end
 
-  it "provides a help message for all visible commands" do
-    described_class.command_classes.select(&:visible).each do |command_class|
+  it "provides a help message for all commands" do
+    described_class.command_classes.each do |command_class|
       expect(command_class.help).to match(/\w+/), command_class.name
     end
   end

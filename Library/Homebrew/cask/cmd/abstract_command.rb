@@ -24,7 +24,7 @@ module Cask
         name.split("::").last.match?(/^Abstract[^a-z]/)
       end
 
-      def self.visible
+      def self.visible?
         true
       end
 

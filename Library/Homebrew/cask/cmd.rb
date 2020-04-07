@@ -17,6 +17,7 @@ require "cask/cmd/create"
 require "cask/cmd/doctor"
 require "cask/cmd/edit"
 require "cask/cmd/fetch"
+require "cask/cmd/help"
 require "cask/cmd/home"
 require "cask/cmd/info"
 require "cask/cmd/install"
@@ -37,9 +38,7 @@ module Cask
     ALIASES = {
       "ls"       => "list",
       "homepage" => "home",
-      "-S"       => "search",    # verb starting with "-" is questionable
-      "up"       => "update",
-      "instal"   => "install",   # gem does the same
+      "instal"   => "install", # gem does the same
       "uninstal" => "uninstall",
       "rm"       => "uninstall",
       "remove"   => "uninstall",
@@ -86,38 +85,7 @@ module Cask
     def self.lookup_command(command_name)
       @lookup ||= Hash[commands.zip(command_classes)]
       command_name = ALIASES.fetch(command_name, command_name)
-      @lookup.fetch(command_name, command_name)
-    end
-
-    def self.run_command(command, *args)
-      return command.run(*args) if command.respond_to?(:run)
-
-      tap_cmd_directories = Tap.cmd_directories
-
-      path = PATH.new(tap_cmd_directories, ENV["HOMEBREW_PATH"])
-
-      external_ruby_cmd = tap_cmd_directories.map { |d| d/"brewcask-#{command}.rb" }
-                                             .find(&:file?)
-      external_ruby_cmd ||= which("brewcask-#{command}.rb", path)
-
-      if external_ruby_cmd
-        require external_ruby_cmd
-
-        klass = begin
-          const_get(command.to_s.capitalize.to_sym)
-        rescue NameError
-          # External command is a stand-alone Ruby script.
-          return
-        end
-
-        return klass.run(*args)
-      end
-
-      if external_command = which("brewcask-#{command}", path)
-        exec external_command, *ARGV[1..-1]
-      end
-
-      NullCommand.new(command, *args).run
+      @lookup.fetch(command_name, nil)
     end
 
     def self.run(*args)
@@ -128,35 +96,59 @@ module Cask
       @args = process_options(*args)
     end
 
-    def detect_command_and_arguments(*args)
-      command = args.find do |arg|
-        if self.class.commands.include?(arg)
-          true
-        else
-          break unless arg.start_with?("-")
+    def find_external_command(command)
+      @tap_cmd_directories ||= Tap.cmd_directories
+      @path ||= PATH.new(@tap_cmd_directories, ENV["HOMEBREW_PATH"])
+
+      external_ruby_cmd = @tap_cmd_directories.map { |d| d/"brewcask-#{command}.rb" }
+                                              .find(&:file?)
+      external_ruby_cmd ||= which("brewcask-#{command}.rb", @path)
+
+      if external_ruby_cmd
+        ExternalRubyCommand.new(command, external_ruby_cmd)
+      elsif external_command = which("brewcask-#{command}", @path)
+        ExternalCommand.new(external_command)
+      end
+    end
+
+    def detect_internal_command(*args)
+      args.each_with_index do |arg, i|
+        if command = self.class.lookup_command(arg)
+          args.delete_at(i)
+          return [command, args]
+        elsif !arg.start_with?("-")
+          break
         end
       end
 
-      if index = args.index(command)
-        args.delete_at(index)
+      nil
+    end
+
+    def detect_external_command(*args)
+      args.each_with_index do |arg, i|
+        if command = find_external_command(arg)
+          args.delete_at(i)
+          return [command, args]
+        elsif !arg.start_with?("-")
+          break
+        end
       end
 
-      [*command, *args]
+      nil
     end
 
     def run
-      command_name, *args = detect_command_and_arguments(*@args)
-      command = if help?
-        args.unshift(command_name) unless command_name.nil?
-        "help"
-      else
-        self.class.lookup_command(command_name)
-      end
-
       MacOS.full_version = ENV["MACOS_VERSION"] unless ENV["MACOS_VERSION"].nil?
-
       Tap.default_cask_tap.install unless Tap.default_cask_tap.installed?
-      self.class.run_command(command, *args)
+
+      args = @args.dup
+      command, args = detect_internal_command(*args) || detect_external_command(*args) || [NullCommand.new, args]
+
+      if help?
+        puts command.help
+      else
+        command.run(*args)
+      end
     rescue CaskError, MethodDeprecatedError, ArgumentError, OptionParser::InvalidOption => e
       onoe e.message
       $stderr.puts e.backtrace if ARGV.debug?
@@ -190,15 +182,17 @@ module Cask
     def process_options(*args)
       exclude_regex = /^\-\-#{Regexp.union(*Config::DEFAULT_DIRS.keys.map(&Regexp.public_method(:escape)))}=/
 
-      all_args = Shellwords.shellsplit(ENV.fetch("HOMEBREW_CASK_OPTS", ""))
-                           .reject { |arg| arg.match?(exclude_regex) } + args
-
       non_options = []
 
-      if idx = all_args.index("--")
-        non_options += all_args.drop(idx)
-        all_args = all_args.first(idx)
+      if idx = args.index("--")
+        non_options += args.drop(idx)
+        args = args.first(idx)
       end
+
+      cask_opts = Shellwords.shellsplit(ENV.fetch("HOMEBREW_CASK_OPTS", ""))
+                            .reject { |arg| arg.match?(exclude_regex) }
+
+      all_args = cask_opts + args
 
       remaining = all_args.select do |arg|
         !process_arguments([arg]).empty?
@@ -209,53 +203,45 @@ module Cask
       remaining + non_options
     end
 
-    class NullCommand
-      def initialize(command, *args)
-        @command = command
-        @args = args
+    class ExternalRubyCommand
+      def initialize(command, path)
+        @command_name = command.to_s.capitalize.to_sym
+        @path = path
+      end
+
+      def run(*args)
+        require @path
+
+        klass = begin
+          Cmd.const_get(@command_name)
+        rescue NameError
+          return
+        end
+
+        klass.run(*args)
+      end
+    end
+
+    class ExternalCommand
+      def initialize(path)
+        @path = path
       end
 
       def run(*)
-        purpose
-        usage
+        exec @path, *ARGV[1..-1]
+      end
+    end
 
-        return if @command.nil?
-
-        if @command == "help"
-          return if @args.empty?
-
-          raise ArgumentError, "help does not take arguments." if @args.length
+    class NullCommand
+      def run(*args)
+        if args.empty?
+          ofail "No subcommand given.\n"
+        else
+          ofail "Unknown subcommand: #{args.first}"
         end
 
-        raise ArgumentError, "Unknown Cask command: #{@command}"
-      end
-
-      def purpose
-        puts <<~EOS
-          Homebrew Cask provides a friendly CLI workflow for the administration
-          of macOS applications distributed as binaries.
-
-        EOS
-      end
-
-      def usage
-        max_command_len = Cmd.commands.map(&:length).max
-
-        puts "Commands:\n\n"
-        Cmd.command_classes.each do |klass|
-          next unless klass.visible
-
-          puts "    #{klass.command_name.ljust(max_command_len)}  #{_help_for(klass)}"
-        end
-        puts %Q(\nSee also "man brew-cask")
-      end
-
-      def help
-        ""
-      end
-
-      def _help_for(klass)
-        klass.respond_to?(:help) ? klass.help : nil
+        $stderr.puts
+        $stderr.puts Help.usage
       end
     end
   end

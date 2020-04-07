@@ -7,7 +7,7 @@ module Cask
         super.sub(/^internal_/i, "_")
       end
 
-      def self.visible
+      def self.visible?
         false
       end
     end
