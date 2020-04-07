@@ -126,11 +126,12 @@ module Homebrew
                      "such as `brew search`. We strongly recommend using `HOMEBREW_GITHUB_API_TOKEN` instead.",
       },
       HOMEBREW_GITHUB_API_TOKEN:          {
-        description: "A personal access token for the GitHub API, used by Homebrew for features such as " \
+        description:  "A personal access token for the GitHub API, used by Homebrew for features such as " \
                      "`brew search`. You can create one at <https://github.com/settings/tokens>. If set, " \
                      "GitHub will allow you a greater number of API requests. For more information, see: " \
                      "<https://developer.github.com/v3/#rate-limiting>\n\n    *Note:* Homebrew doesn't " \
                      "require permissions for any of the scopes.",
+        default_text: "`$GITHUB_TOKEN`.",
       },
       HOMEBREW_GITHUB_API_USERNAME:       {
         description: "GitHub username for authentication with the GitHub API, used by Homebrew for features " \
