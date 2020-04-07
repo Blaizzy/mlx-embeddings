@@ -79,6 +79,12 @@ then
   export HOMEBREW_EDITOR="$VISUAL"
 fi
 
+# Use GITHUB_TOKEN if HOMEBREW_GITHUB_API_TOKEN is unset.
+if [[ -z "$HOMEBREW_GITHUB_API_TOKEN" && -n "$GITHUB_TOKEN" ]]
+then
+  export HOMEBREW_GITHUB_API_TOKEN="$GITHUB_TOKEN"
+fi
+
 # Set CI variable for GitHub Actions, Azure Pipelines, Jenkins
 # (Set by default on Circle and Travis CI)
 if [[ -n "$GITHUB_ACTIONS" || -n "$TF_BUILD" || -n "$JENKINS_HOME" ]]
