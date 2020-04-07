@@ -427,7 +427,9 @@ module Homebrew
       response.fetch("ssh_url")
     else
       url = response.fetch("clone_url")
-      url.gsub!(%r{^https://github\.com/}, "https://#{GitHub.env_token}@github.com/") if GitHub.env_token
+      if (api_token = Homebrew::EnvConfig.github_api_token)
+        url.gsub!(%r{^https://github\.com/}, "https://#{api_token}@github.com/")
+      end
       url
     end
     username = response.fetch("owner").fetch("login")
