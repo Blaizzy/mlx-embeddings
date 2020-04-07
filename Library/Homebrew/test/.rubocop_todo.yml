@@ -49,6 +49,7 @@ RSpec/FilePath:
     - 'rubocops/options_spec.rb'
     - 'rubocops/patches_spec.rb'
     - 'rubocops/text_spec.rb'
+    - 'rubocops/uses_from_macos_spec.rb'
     - 'search_spec.rb'
     - 'string_spec.rb'
     - 'system_command_result_spec.rb'
