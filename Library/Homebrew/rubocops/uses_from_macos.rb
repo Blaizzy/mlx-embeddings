@@ -15,21 +15,29 @@ module RuboCop
           expect
           flex
           groff
+          icu4c
+          krb5
+          libedit
           libffi
+          libpcap
           libxml2
           libxslt
+          llvm
           ncurses
           m4
+          openldap
+          openssl
           perl
           php
-          python@2
           ruby
           sqlite
+          tcl-tk
           texinfo
           unzip
           vim
           xz
           zlib
+          zip
           zsh
         ].freeze
 
