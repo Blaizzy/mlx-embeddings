@@ -538,11 +538,11 @@ module Homebrew
       end
 
       def check_brew_git_origin
-        examine_git_origin(HOMEBREW_REPOSITORY, HOMEBREW_BREW_GIT_REMOTE)
+        examine_git_origin(HOMEBREW_REPOSITORY, Homebrew::EnvConfig.brew_git_remote)
       end
 
       def check_coretap_git_origin
-        examine_git_origin(CoreTap.instance.path, HOMEBREW_CORE_GIT_REMOTE)
+        examine_git_origin(CoreTap.instance.path, Homebrew::EnvConfig.core_git_remote)
       end
 
       def check_casktap_git_origin

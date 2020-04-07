@@ -28,10 +28,10 @@ class BottlePublisher
   end
 
   def publish_changed_formula_bottles
-    raise "Need to load formulae to publish them!" if ENV["HOMEBREW_DISABLE_LOAD_FORMULA"]
+    raise "Need to load formulae to publish them!" if Homebrew::EnvConfig.disable_load_formula?
 
     published = []
-    bintray_creds = { user: ENV["HOMEBREW_BINTRAY_USER"], key: ENV["HOMEBREW_BINTRAY_KEY"] }
+    bintray_creds = { user: Homebrew::EnvConfig.bintray_user, key: Homebrew::EnvConfig.bintray_key }
     if bintray_creds[:user] && bintray_creds[:key]
       @changed_formulae_names.each do |name|
         f = Formula[name]
@@ -82,7 +82,7 @@ class BottlePublisher
   def verify_bintray_published(formulae_names)
     return if formulae_names.empty?
 
-    raise "Need to load formulae to verify their publication!" if ENV["HOMEBREW_DISABLE_LOAD_FORMULA"]
+    raise "Need to load formulae to verify their publication!" if Homebrew::EnvConfig.disable_load_formula?
 
     ohai "Verifying bottles published on Bintray"
     formulae = formulae_names.map { |n| Formula[n] }

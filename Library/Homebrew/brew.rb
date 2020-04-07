@@ -76,7 +76,7 @@ begin
     internal_cmd = Commands.valid_internal_cmd?(cmd)
     internal_cmd ||= begin
       internal_dev_cmd = Commands.valid_internal_dev_cmd?(cmd)
-      if internal_dev_cmd && !ARGV.homebrew_developer?
+      if internal_dev_cmd && !Homebrew::EnvConfig.developer?
         if (HOMEBREW_REPOSITORY/".git/config").exist?
           system "git", "config", "--file=#{HOMEBREW_REPOSITORY}/.git/config",
                  "--replace-all", "homebrew.devcmdrun", "true"
@@ -172,7 +172,7 @@ rescue MethodDeprecatedError => e
 rescue Exception => e # rubocop:disable Lint/RescueException
   onoe e
   if internal_cmd && defined?(OS::ISSUES_URL) &&
-     !ENV["HOMEBREW_NO_AUTO_UPDATE"]
+     !Homebrew::EnvConfig.no_auto_update?
     $stderr.puts "#{Tty.bold}Please report this issue:#{Tty.reset}"
     $stderr.puts "  #{Formatter.url(OS::ISSUES_URL)}"
   end

@@ -10,16 +10,16 @@ class Sandbox
     OS.mac? && File.executable?(SANDBOX_EXEC)
   end
 
-  def self.formula?(_formula)
+  def self.formula?(_)
     return false unless available?
 
-    !ARGV.no_sandbox?
+    !Homebrew.args.no_sandbox?
   end
 
   def self.test?
     return false unless available?
 
-    !ARGV.no_sandbox?
+    !Homebrew.args.no_sandbox?
   end
 
   def initialize
@@ -127,7 +127,7 @@ class Sandbox
         end
       end
 
-      if @failed && ENV["HOMEBREW_VERBOSE"].present?
+      if @failed && Homebrew::EnvConfig.verbose?
         ohai "Sandbox log"
         puts logs
         $stdout.flush # without it, brew test-bot would fail to catch the log

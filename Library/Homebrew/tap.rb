@@ -272,7 +272,7 @@ class Tap
     begin
       safe_system "git", *args
       unless Readall.valid_tap?(self, aliases: true)
-        raise "Cannot tap #{name}: invalid syntax in tap!" unless ARGV.homebrew_developer?
+        raise "Cannot tap #{name}: invalid syntax in tap!" unless Homebrew::EnvConfig.developer?
       end
     rescue Interrupt, RuntimeError
       ignore_interrupts do
@@ -641,12 +641,9 @@ class CoreTap < Tap
   end
 
   def install(full_clone: true, quiet: false, clone_target: nil, force_auto_update: nil)
-    if HOMEBREW_CORE_GIT_REMOTE != default_remote
-      puts "HOMEBREW_CORE_GIT_REMOTE set: using #{HOMEBREW_CORE_GIT_REMOTE} " \
-           "for Homebrew/core Git remote URL."
-      clone_target ||= HOMEBREW_CORE_GIT_REMOTE
-    end
-    super(full_clone: full_clone, quiet: quiet, clone_target: clone_target, force_auto_update: force_auto_update)
+    remote = Homebrew::EnvConfig.core_git_remote
+    puts "HOMEBREW_CORE_GIT_REMOTE set: using #{remote} for Homebrew/core Git remote URL." if remote != default_remote
+    super(full_clone: full_clone, quiet: quiet, clone_target: remote, force_auto_update: force_auto_update)
   end
 
   # @private

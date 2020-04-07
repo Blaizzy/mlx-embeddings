@@ -72,8 +72,7 @@ module Homebrew
     pull_args.parse
 
     # Passthrough Git environment variables for e.g. git am
-    ENV["GIT_COMMITTER_NAME"] = ENV["HOMEBREW_GIT_NAME"] if ENV["HOMEBREW_GIT_NAME"]
-    ENV["GIT_COMMITTER_EMAIL"] = ENV["HOMEBREW_GIT_EMAIL"] if ENV["HOMEBREW_GIT_EMAIL"]
+    Utils.set_git_name_email!(author: false, committer: true)
 
     # Depending on user configuration, git may try to invoke gpg.
     if Utils.popen_read("git config --get --bool commit.gpgsign").chomp == "true"
@@ -168,7 +167,7 @@ module Homebrew
 
       fetch_bottles = false
       changed_formulae_names.each do |name|
-        next if ENV["HOMEBREW_DISABLE_LOAD_FORMULA"]
+        next if Homebrew::EnvConfig.disable_load_formula?
 
         begin
           f = Formula[name]
@@ -213,7 +212,7 @@ module Homebrew
       end
 
       is_bumpable = false if args.clean?
-      is_bumpable = false if ENV["HOMEBREW_DISABLE_LOAD_FORMULA"]
+      is_bumpable = false if Homebrew::EnvConfig.disable_load_formula?
 
       if is_bumpable
         formula = Formula[changed_formulae_names.first]

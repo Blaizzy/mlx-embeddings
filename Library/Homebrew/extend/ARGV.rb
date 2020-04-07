@@ -31,18 +31,6 @@ module HomebrewArgvExtension
     flag?("--debug") || !ENV["HOMEBREW_DEBUG"].nil?
   end
 
-  def homebrew_developer?
-    !ENV["HOMEBREW_DEVELOPER"].nil?
-  end
-
-  def skip_or_later_bottles?
-    homebrew_developer? && !ENV["HOMEBREW_SKIP_OR_LATER_BOTTLES"].nil?
-  end
-
-  def no_sandbox?
-    include?("--no-sandbox") || !ENV["HOMEBREW_NO_SANDBOX"].nil?
-  end
-
   def build_bottle?
     include?("--build-bottle")
   end

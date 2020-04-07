@@ -4,6 +4,6 @@ class CoreTap < Tap
   # @private
   def initialize
     super "Homebrew", "core"
-    @full_name = "Homebrew/linuxbrew-core" unless ENV["HOMEBREW_FORCE_HOMEBREW_ON_LINUX"]
+    @full_name = "Homebrew/linuxbrew-core" unless Homebrew::EnvConfig.force_homebrew_on_linux?
   end
 end

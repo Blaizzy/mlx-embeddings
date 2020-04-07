@@ -50,7 +50,7 @@ module MachOShim
     rescue
       # ... but complain about other (parse) errors for further investigation.
       onoe "Failed to read Mach-O binary: #{self}"
-      raise if ARGV.homebrew_developer?
+      raise if Homebrew::EnvConfig.developer?
 
       []
     end

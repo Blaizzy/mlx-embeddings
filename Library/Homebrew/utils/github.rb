@@ -49,7 +49,7 @@ module GitHub
     def initialize(github_message)
       @github_message = github_message
       message = +"GitHub #{github_message}:"
-      message << if ENV["HOMEBREW_GITHUB_API_TOKEN"]
+      message << if Homebrew::EnvConfig.github_api_token
         <<~EOS
           HOMEBREW_GITHUB_API_TOKEN may be invalid or expired; check:
             #{Formatter.url("https://github.com/settings/tokens")}
@@ -80,15 +80,11 @@ module GitHub
     end
   end
 
-  def env_token
-    ENV["HOMEBREW_GITHUB_API_TOKEN"].presence
-  end
-
   def env_username_password
-    return if ENV["HOMEBREW_GITHUB_API_USERNAME"].blank?
-    return if ENV["HOMEBREW_GITHUB_API_PASSWORD"].blank?
+    return unless Homebrew::EnvConfig.github_api_username
+    return unless Homebrew::EnvConfig.github_api_password
 
-    [ENV["HOMEBREW_GITHUB_API_PASSWORD"], ENV["HOMEBREW_GITHUB_API_USERNAME"]]
+    [Homebrew::EnvConfig.github_api_password, Homebrew::EnvConfig.github_api_username]
   end
 
   def keychain_username_password
@@ -117,12 +113,12 @@ module GitHub
 
   def api_credentials
     @api_credentials ||= begin
-      env_token || env_username_password || keychain_username_password
+      Homebrew::EnvConfig.github_api_token || env_username_password || keychain_username_password
     end
   end
 
   def api_credentials_type
-    if env_token
+    if Homebrew::EnvConfig.github_api_token
       :env_token
     elsif env_username_password
       :env_username_password
@@ -174,7 +170,7 @@ module GitHub
 
   def open_api(url, data: nil, request_method: nil, scopes: [].freeze, parse_json: true)
     # This is a no-op if the user is opting out of using the GitHub API.
-    return block_given? ? yield({}) : {} if ENV["HOMEBREW_NO_GITHUB_API"]
+    return block_given? ? yield({}) : {} if Homebrew::EnvConfig.no_github_api?
 
     args = ["--header", "Accept: application/vnd.github.v3+json", "--write-out", "\n%\{http_code}"]
     args += ["--header", "Accept: application/vnd.github.antiope-preview+json"]

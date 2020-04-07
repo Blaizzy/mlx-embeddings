@@ -217,11 +217,7 @@ module Superenv
   end
 
   def determine_make_jobs
-    if (j = self["HOMEBREW_MAKE_JOBS"].to_i) < 1
-      Hardware::CPU.cores
-    else
-      j
-    end
+    Homebrew::EnvConfig.make_jobs
   end
 
   def determine_optflags

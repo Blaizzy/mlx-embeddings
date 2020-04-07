@@ -26,7 +26,7 @@ module Formulary
   end
 
   def self.load_formula(name, path, contents, namespace)
-    raise "Formula loading disabled by HOMEBREW_DISABLE_LOAD_FORMULA!" if ENV["HOMEBREW_DISABLE_LOAD_FORMULA"]
+    raise "Formula loading disabled by HOMEBREW_DISABLE_LOAD_FORMULA!" if Homebrew::EnvConfig.disable_load_formula?
 
     mod = Module.new
     const_set(namespace, mod)

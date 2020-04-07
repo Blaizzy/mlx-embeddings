@@ -10,7 +10,7 @@ module Language
     # e.g. `resource "github.com/foo/bar"`
     def self.stage_deps(resources, target)
       if resources.empty?
-        if ARGV.homebrew_developer?
+        if Homebrew::EnvConfig.developer?
           odie "tried to stage empty Language::Go resources array"
         else
           opoo "tried to stage empty Language::Go resources array"

@@ -12,7 +12,7 @@ module Utils
         args = []
 
         # do not load .curlrc unless requested (must be the first argument)
-        args << "--disable" unless ENV["HOMEBREW_CURLRC"]
+        args << "--disable" unless Homebrew::EnvConfig.curlrc?
 
         args += %W[
           --max-time 3
@@ -78,7 +78,7 @@ module Utils
       end
 
       def disabled?
-        return true if ENV["HOMEBREW_NO_ANALYTICS"]
+        return true if Homebrew::EnvConfig.no_analytics?
 
         config_true?(:analyticsdisabled)
       end
@@ -308,7 +308,7 @@ module Utils
       end
 
       def formulae_api_json(endpoint)
-        return if ENV["HOMEBREW_NO_ANALYTICS"] || ENV["HOMEBREW_NO_GITHUB_API"]
+        return if Homebrew::EnvConfig.no_analytics? || Homebrew::EnvConfig.no_github_api?
 
         output, = curl_output("--max-time", "5",
                               "https://formulae.brew.sh/api/#{endpoint}")

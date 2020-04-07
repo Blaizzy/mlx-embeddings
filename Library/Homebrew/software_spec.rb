@@ -346,7 +346,7 @@ class BottleSpecification
 
   def root_url(var = nil, specs = {})
     if var.nil?
-      @root_url ||= "#{HOMEBREW_BOTTLE_DOMAIN}/#{Utils::Bottles::Bintray.repository(tap)}"
+      @root_url ||= "#{Homebrew::EnvConfig.bottle_domain}/#{Utils::Bottles::Bintray.repository(tap)}"
     else
       @root_url = var
       @root_url_specs.merge!(specs)

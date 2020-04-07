@@ -17,7 +17,8 @@ module Utils
 
       def find_matching_tag(tag)
         # Used primarily by developers testing beta macOS releases.
-        if OS::Mac.prerelease? && ARGV.skip_or_later_bottles?
+        if OS::Mac.prerelease? && Homebrew::EnvConfig.developer? &&
+           Homebrew::EnvConfig.skip_or_later_bottles?
           generic_find_matching_tag(tag)
         else
           generic_find_matching_tag(tag) ||

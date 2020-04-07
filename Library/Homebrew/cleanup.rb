@@ -138,7 +138,7 @@ module Homebrew
     end
 
     def self.install_formula_clean!(f)
-      return if ENV["HOMEBREW_NO_INSTALL_CLEANUP"]
+      return if Homebrew::EnvConfig.no_install_cleanup?
 
       cleanup = Cleanup.new
       if cleanup.periodic_clean_due?
@@ -149,7 +149,7 @@ module Homebrew
     end
 
     def periodic_clean_due?
-      return false if ENV["HOMEBREW_NO_INSTALL_CLEANUP"]
+      return false if Homebrew::EnvConfig.no_install_cleanup?
       return true unless PERIODIC_CLEAN_FILE.exist?
 
       PERIODIC_CLEAN_FILE.mtime < CLEANUP_DEFAULT_DAYS.days.ago
@@ -337,7 +337,7 @@ module Homebrew
              .chomp
       use_system_ruby = (
         Gem::Version.new(system_ruby_version) >= Gem::Version.new(RUBY_VERSION)
-      ) && ENV["HOMEBREW_FORCE_VENDOR_RUBY"].nil?
+      ) && !Homebrew::EnvConfig.force_vendor_ruby?
       vendor_path = HOMEBREW_LIBRARY/"Homebrew/vendor"
       portable_ruby_version_file = vendor_path/"portable-ruby-version"
       portable_ruby_version = if portable_ruby_version_file.exist?
