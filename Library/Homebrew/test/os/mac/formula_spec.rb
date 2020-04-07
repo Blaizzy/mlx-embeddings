@@ -3,26 +3,8 @@
 require "formula"
 
 describe Formula do
-  describe "#uses_from_macos" do
-    before do
-      allow(OS).to receive(:mac?).and_return(false)
-    end
-
-    it "acts like #depends_on" do
-      f = formula "foo" do
-        url "foo-1.0"
-
-        uses_from_macos("foo")
-      end
-
-      expect(f.class.stable.deps.first.name).to eq("foo")
-      expect(f.class.devel.deps.first.name).to eq("foo")
-      expect(f.class.head.deps.first.name).to eq("foo")
-    end
-  end
-
-  describe "#on_linux" do
-    it "defines an url on Linux only" do
+  describe "#on_macos" do
+    it "defines an url on macos only" do
       f = formula do
         homepage "https://brew.sh"
 
@@ -37,12 +19,12 @@ describe Formula do
         end
       end
 
-      expect(f.stable.url).to eq("https://brew.sh/test-linux-0.1.tbz")
+      expect(f.stable.url).to eq("https://brew.sh/test-macos-0.1.tbz")
     end
   end
 
-  describe "#on_linux" do
-    it "adds a dependency on Linux only" do
+  describe "#on_macos" do
+    it "adds a dependency on macos only" do
       f = formula do
         homepage "https://brew.sh"
 
@@ -61,13 +43,13 @@ describe Formula do
       end
 
       expect(f.class.stable.deps[0].name).to eq("hello_both")
-      expect(f.class.stable.deps[1].name).to eq("hello_linux")
+      expect(f.class.stable.deps[1].name).to eq("hello_macos")
       expect(f.class.stable.deps[2]).to eq(nil)
     end
   end
 
-  describe "#on_linux" do
-    it "adds a patch on Linux only" do
+  describe "#on_macos" do
+    it "adds a patch on macos only" do
       f = formula do
         homepage "https://brew.sh"
 
@@ -95,7 +77,7 @@ describe Formula do
       expect(f.patchlist.first.strip).to eq(:p1)
       expect(f.patchlist.first.url).to eq("patch_both")
       expect(f.patchlist.second.strip).to eq(:p1)
-      expect(f.patchlist.second.url).to eq("patch_linux")
+      expect(f.patchlist.second.url).to eq("patch_macos")
     end
   end
 end
