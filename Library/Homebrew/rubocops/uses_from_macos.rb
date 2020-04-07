@@ -23,21 +23,22 @@ module RuboCop
           libxml2
           libxslt
           llvm
-          ncurses
           m4
+          ncurses
           openldap
           openssl
           perl
           php
           ruby
           sqlite
+          ssh-copy-id
           tcl-tk
           texinfo
           unzip
           vim
           xz
-          zlib
           zip
+          zlib
           zsh
         ].freeze
 
