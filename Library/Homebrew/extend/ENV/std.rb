@@ -188,7 +188,7 @@ module Stdenv
   end
 
   def make_jobs
-    Homebrew::EnvConfig.make_jobs
+    Homebrew::EnvConfig.make_jobs.to_i
   end
 
   # This method does nothing in stdenv since there's no arg refurbishment
