@@ -436,6 +436,7 @@ module RuboCop
               jemalloc
               jpeg-turbo
               mpfr
+              nettle
               open-mpi
               openssl@1.1
               pcre
