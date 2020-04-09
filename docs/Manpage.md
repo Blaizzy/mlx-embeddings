@@ -1282,8 +1282,6 @@ Note that environment variables must have a value set to be detected. For exampl
 
     *Note:* Homebrew doesn't require permissions for any of the scopes.
 
-    *Default:* `$GITHUB_TOKEN`.
-
   * `HOMEBREW_GITHUB_API_USERNAME`:
     GitHub username for authentication with the GitHub API, used by Homebrew for features such as `brew search`. We strongly recommend using `HOMEBREW_GITHUB_API_TOKEN` instead.
 
