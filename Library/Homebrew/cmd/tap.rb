@@ -27,6 +27,8 @@ module Homebrew
       switch "--full",
              description: "Convert a shallow clone to a full clone without untapping. By default, taps are no "\
                           "longer cloned as shallow clones."
+      switch "--shallow",
+             description: "Fetch tap as a shallow clone rather than a full clone. Useful for continuous integration."
       switch "--force-auto-update",
              description: "Auto-update tap even if it is not hosted on GitHub. By default, only taps "\
                           "hosted on GitHub are auto-updated (for performance reasons)."
@@ -55,7 +57,8 @@ module Homebrew
       begin
         tap.install clone_target:      args.named.second,
                     force_auto_update: force_auto_update?,
-                    quiet:             args.quiet?
+                    quiet:             args.quiet?,
+                    full_clone:        !args.shallow?
       rescue TapRemoteMismatchError => e
         odie e
       rescue TapAlreadyTappedError

@@ -502,6 +502,8 @@ HTTPS, e.g. SSH, git, HTTP, FTP(S), rsync.
 
 * `--full`:
   Convert a shallow clone to a full clone without untapping. By default, taps are no longer cloned as shallow clones.
+* `--shallow`:
+  Fetch tap as a shallow clone rather than a full clone. Useful for continuous integration.
 * `--force-auto-update`:
   Auto-update tap even if it is not hosted on GitHub. By default, only taps hosted on GitHub are auto-updated (for performance reasons).
 * `--repair`:
