@@ -9,23 +9,31 @@ module OS
       BUNDLE_ID = "com.apple.dt.Xcode"
       OLD_BUNDLE_ID = "com.apple.Xcode"
 
+      # Bump these when a new version is available from the App Store and our
+      # CI systems have been updated.
+      # This may be a beta version for a beta macOS.
       def latest_version
+        latest = "11.4"
         case MacOS.version
-        when "10.9"  then "6.2"
-        when "10.10" then "7.2.1"
-        when "10.11" then "8.2.1"
-        when "10.12" then "9.2"
-        when "10.13" then "10.1"
-        when "10.14" then "11.3.1"
         when "10.15" then "11.4"
+        when "10.14" then "11.3.1"
+        when "10.13" then "10.1"
+        when "10.12" then "9.2"
+        when "10.11" then "8.2.1"
+        when "10.10" then "7.2.1"
+        when "10.9"  then "6.2"
         else
           raise "macOS '#{MacOS.version}' is invalid" unless OS::Mac.prerelease?
 
           # Default to newest known version of Xcode for unreleased macOS versions.
-          "11.4"
+          latest
         end
       end
 
+      # Bump these if things are badly broken (e.g. no SDK for this macOS)
+      # without this. Generally this will be the first Xcode release on that
+      # macOS version (which may initially be a beta if that version of macOS is
+      # also in beta).
       def minimum_version
         case MacOS.version
         when "10.15" then "11.0"
@@ -150,8 +158,8 @@ module OS
 
           # Xcode 2.x's xcodebuild has a different version string
           case xcodebuild_output[/DevToolsCore-(\d+\.\d)/, 1]
-          when "515.0" then return "2.0"
           when "798.0" then return "2.5"
+          when "515.0" then return "2.0"
           end
         end
 
@@ -165,19 +173,20 @@ module OS
         # installed CLT version. This is useful as they are packaged
         # simultaneously so workarounds need to apply to both based on their
         # comparable version.
+        latest = "11.4"
         case (DevelopmentTools.clang_version.to_f * 10).to_i
-        when 0       then "dunno"
-        when 60      then "6.0"
-        when 61      then "6.1"
-        when 70      then "7.0"
-        when 73      then "7.3"
-        when 80      then "8.0"
-        when 81      then "8.3"
-        when 90      then "9.2"
-        when 91      then "9.4"
+        when 110     then latest
         when 100     then "10.3"
-        when 110     then "11.4"
-        else              "11.4"
+        when 91      then "9.4"
+        when 90      then "9.2"
+        when 81      then "8.3"
+        when 80      then "8.0"
+        when 73      then "7.3"
+        when 70      then "7.0"
+        when 61      then "6.1"
+        when 60      then "6.0"
+        when 0       then "dunno"
+        else              latest
         end
       end
 
@@ -218,26 +227,31 @@ module OS
       end
 
       def update_instructions
-        if MacOS.version >= "10.14"
-          <<~EOS
-            Update them from Software Update in System Preferences or
-            #{Formatter.url("https://developer.apple.com/download/more/")}.
-          EOS
+        software_update_location = if MacOS.version >= "10.14"
+          "System Preferences"
         else
-          <<~EOS
-            Update them from Software Update in the App Store or
-            #{Formatter.url("https://developer.apple.com/download/more/")}.
-          EOS
+          "the App Store"
         end
+
+        <<~EOS
+          Update them from Software Update in #{software_update_location} or run:
+            softwareupdate --all --install --force
+
+          If that doesn't show you an update run:
+            sudo rm -rf /Library/Developer/CommandLineTools
+            sudo xcode-select --install
+
+          Alternatively, manually download them from:
+            #{Formatter.url("https://developer.apple.com/download/more/")}.
+        EOS
       end
 
+      # Bump these when the new version is distributed through Software Update
+      # and our CI systems have been updated.
       def latest_clang_version
-        # As of Xcode 8 CLT releases are no longer in sync with Xcode releases
-        # on the older supported platform for that Xcode release, i.e there's no
-        # CLT package for 10.11 that contains the Clang version from Xcode 8.
         case MacOS.version
-        when "10.15" then "1103.0.32.29"
-        when "10.14" then "1001.0.46.4" # Later versions are available, but not via Software Update
+        when "10.15" then "1100.0.33.16"
+        when "10.14" then "1001.0.46.4"
         when "10.13" then "1000.10.44.2"
         when "10.12" then "900.0.39.2"
         when "10.11" then "800.0.42.1"
@@ -246,6 +260,9 @@ module OS
         end
       end
 
+      # Bump these if things are badly broken (e.g. no SDK for this macOS)
+      # without this. Generally this will be the first stable CLT release on
+      # that macOS version.
       def minimum_version
         case MacOS.version
         when "10.15" then "11.0.0"
