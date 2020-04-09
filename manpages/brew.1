@@ -1492,110 +1492,110 @@ Note that environment variables must have a value set to be detected\. For examp
 .
 .TP
 \fBHOMEBREW_ARCH\fR
-Linux only: Homebrew will pass the set value to type name to the compiler\'s \fB\-march\fR option\.
+Linux only: Pass the set value to a type name representing the compiler\'s \fB\-march\fR option\.
 .
 .IP
 \fIDefault:\fR \fBnative\fR\.
 .
 .TP
 \fBHOMEBREW_ARTIFACT_DOMAIN\fR
-Instructs Homebrew to prefix all download URLs, including those for bottles, with this variable\. For example, \fBHOMEBREW_ARTIFACT_DOMAIN=http://localhost:8080\fR will cause a formula with the URL \fBhttps://example\.com/foo\.tar\.gz\fR to instead download from \fBhttp://localhost:8080/example\.com/foo\.tar\.gz\fR\.
+Prefix all download URLs, including those for bottles, with this variable\. For example, \fBHOMEBREW_ARTIFACT_DOMAIN=http://localhost:8080\fR will cause a formula with the URL \fBhttps://example\.com/foo\.tar\.gz\fR to instead download from \fBhttp://localhost:8080/example\.com/foo\.tar\.gz\fR\.
 .
 .TP
 \fBHOMEBREW_AUTO_UPDATE_SECS\fR
-Homebrew will only check for autoupdates once per this seconds interval\.
+Automatically check for updates once per this seconds interval\.
 .
 .IP
 \fIDefault:\fR \fB300\fR\.
 .
 .TP
 \fBHOMEBREW_BAT\fR
-Homebrew will use \fBbat\fR for the \fBbrew cat\fR command\.
+If set, use \fBbat\fR for the \fBbrew cat\fR command\.
 .
 .TP
 \fBHOMEBREW_BINTRAY_KEY\fR
-Homebrew uses this API key when accessing the Bintray API (where bottles are stored)\.
+Use this API key when accessing the Bintray API (where bottles are stored)\.
 .
 .TP
 \fBHOMEBREW_BINTRAY_USER\fR
-Homebrew uses this username when accessing the Bintray API (where bottles are stored)\.
+Use this username when accessing the Bintray API (where bottles are stored)\.
 .
 .TP
 \fBHOMEBREW_BOTTLE_DOMAIN\fR
-Instructs Homebrew to use the specified URL as its download mirror for bottles\. For example, \fBHOMEBREW_BOTTLE_DOMAIN=http://localhost:8080\fR will cause all bottles to download from the prefix \fBhttp://localhost:8080/\fR\.
+Use the specified URL as the download mirror for bottles\. For example, \fBHOMEBREW_BOTTLE_DOMAIN=http://localhost:8080\fR will cause all bottles to download from the prefix \fBhttp://localhost:8080/\fR\.
 .
 .IP
 \fIDefault:\fR macOS: \fBhttps://homebrew\.bintray\.com/\fR, Linux: \fBhttps://linuxbrew\.bintray\.com/\fR\.
 .
 .TP
 \fBHOMEBREW_BREW_GIT_REMOTE\fR
-Instructs Homebrew to use the specified URL as its Homebrew/brew \fBgit\fR(1) remote\.
+Use the specified URL as the Homebrew/brew \fBgit\fR(1) remote\.
 .
 .IP
 \fIDefault:\fR \fBhttps://github\.com/Homebrew/brew\fR\.
 .
 .TP
 \fBHOMEBREW_BROWSER\fR
-Homebrew uses this setting as the browser when opening project homepages\.
+Use this as the browser when opening project homepages\.
 .
 .IP
 \fIDefault:\fR \fB$BROWSER\fR or the OS\'s default browser\.
 .
 .TP
 \fBHOMEBREW_CACHE\fR
-Instructs Homebrew to use the specified directory as the download cache\.
+Use the specified directory as the download cache\.
 .
 .IP
 \fIDefault:\fR macOS: \fB$HOME/Library/Caches/Homebrew\fR, Linux: \fB$XDG_CACHE_HOME/Homebrew\fR or \fB$HOME/\.cache/Homebrew\fR\.
 .
 .TP
 \fBHOMEBREW_COLOR\fR
-Homebrew force colour output on non\-TTY outputs\.
+If set, force colour output on non\-TTY outputs\.
 .
 .TP
 \fBHOMEBREW_CORE_GIT_REMOTE\fR
-instructs Homebrew to use the specified URL as its Homebrew/homebrew\-core \fBgit\fR(1) remote\.
+Use the specified URL as the Homebrew/homebrew\-core \fBgit\fR(1) remote\.
 .
 .IP
 \fIDefault:\fR macOS: \fBhttps://github\.com/Homebrew/homebrew\-core\fR, Linux: \fBhttps://github\.com/Homebrew/linuxbrew\-core\fR\.
 .
 .TP
 \fBHOMEBREW_CURLRC\fR
-Homebrew will not pass \fB\-\-disable\fR when invoking \fBcurl\fR(1), which disables the use of \fBcurlrc\fR\.
+If set, do not pass \fB\-\-disable\fR when invoking \fBcurl\fR(1), which disables the use of \fBcurlrc\fR\.
 .
 .TP
 \fBHOMEBREW_CURL_RETRIES\fR
-Homebrew will pass the given retry count to \fB\-\-retry\fR when invoking \fBcurl\fR(1)\.
+Pass the given retry count to \fB\-\-retry\fR when invoking \fBcurl\fR(1)\.
 .
 .IP
 \fIDefault:\fR \fB3\fR\.
 .
 .TP
 \fBHOMEBREW_CURL_VERBOSE\fR
-Homebrew will pass \fB\-\-verbose\fR when invoking \fBcurl\fR(1)\.
+If set, pass \fB\-\-verbose\fR when invoking \fBcurl\fR(1)\.
 .
 .TP
 \fBHOMEBREW_DEVELOPER\fR
-Homebrew will tweak behaviour to be more relevant for Homebrew developers (active or budding), e\.g\. turning warnings into errors\.
+If set, tweak behaviour to be more relevant for Homebrew developers (active or budding) by e\.g\. turning warnings into errors\.
 .
 .TP
 \fBHOMEBREW_DISABLE_LOAD_FORMULA\fR
-Homebrew will refuse to load formulae\. This is useful when formulae are not trusted (such as in pull requests)\.
+If set, refuse to load formulae\. This is useful when formulae are not trusted (such as in pull requests)\.
 .
 .TP
 \fBHOMEBREW_DISPLAY\fR
-Homebrew will use this X11 display when opening a page in a browser, for example with \fBbrew home\fR\. Primarily useful on Linux\.
+Use this X11 display when opening a page in a browser, for example with \fBbrew home\fR\. Primarily useful on Linux\.
 .
 .IP
 \fIDefault:\fR \fB$DISPLAY\fR\.
 .
 .TP
 \fBHOMEBREW_DISPLAY_INSTALL_TIMES\fR
-Homebrew will print install times for each formula at the end of the run\.
+If set, print install times for each formula at the end of the run\.
 .
 .TP
 \fBHOMEBREW_EDITOR\fR
-Homebrew will use this editor when editing a single formula, or several formulae in the same directory\.
+Use this editor when editing a single formula, or several formulae in the same directory\.
 .
 .IP
 \fINote:\fR \fBbrew edit\fR will open all of Homebrew as discontinuous files and directories\. Visual Studio Code can handle this correctly in project mode, but many editors will do strange things in this case\.
@@ -1605,166 +1605,169 @@ Homebrew will use this editor when editing a single formula, or several formulae
 .
 .TP
 \fBHOMEBREW_FAIL_LOG_LINES\fR
-Homebrew will output this many lines of output on formula \fBsystem\fR failures\.
+Output this many lines of output on formula \fBsystem\fR failures\.
 .
 .IP
 \fIDefault:\fR \fB15\fR\.
 .
 .TP
 \fBHOMEBREW_FORCE_BREWED_CURL\fR
-Homebrew will always use a Homebrew\-installed \fBcurl\fR(1) rather than the system version\. Automatically set if the system version of \fBcurl\fR is too old\.
+If set, always use a Homebrew\-installed \fBcurl\fR(1) rather than the system version\. Automatically set if the system version of \fBcurl\fR is too old\.
 .
 .TP
 \fBHOMEBREW_FORCE_BREWED_GIT\fR
-Homebrew will always use a Homebrew\-installed \fBgit\fR(1) rather than the system version\. Automatically set if the system version of \fBgit\fR is too old\.
+If set, always use a Homebrew\-installed \fBgit\fR(1) rather than the system version\. Automatically set if the system version of \fBgit\fR is too old\.
 .
 .TP
 \fBHOMEBREW_FORCE_HOMEBREW_ON_LINUX\fR
-Homebrew running on Linux will use URLs for Homebrew on macOS\. This is useful when mergingpull requests on Linux for macOS\.
+If set, running Homebrew on Linux will use URLs for macOS\. This is useful when merging pull requests for macOS while on Linux\.
 .
 .TP
 \fBHOMEBREW_FORCE_VENDOR_RUBY\fR
-Homebrew will always use its vendored, relocatable Ruby version even if the system version of Ruby is new enough\.
+If set, always use Homebrew\'s vendored, relocatable Ruby version even if the system version of Ruby is new enough\.
 .
 .TP
 \fBHOMEBREW_GITHUB_API_PASSWORD\fR
-GitHub password for authentication with the GitHub API, used by Homebrew for featuressuch as \fBbrew search\fR\. We strongly recommend using \fBHOMEBREW_GITHUB_API_TOKEN\fR instead\.
+Use this password for authentication with the GitHub API, for features such as \fBbrew search\fR\. We strongly recommend using \fBHOMEBREW_GITHUB_API_TOKEN\fR instead\.
 .
 .TP
 \fBHOMEBREW_GITHUB_API_TOKEN\fR
-A personal access token for the GitHub API, used by Homebrew for features such as \fBbrew search\fR\. You can create one at \fIhttps://github\.com/settings/tokens\fR\. If set, GitHub will allow you a greater number of API requests\. For more information, see: \fIhttps://developer\.github\.com/v3/#rate\-limiting\fR
+Use this personal access token for the GitHub API, for features such as \fBbrew search\fR\. You can create one at \fIhttps://github\.com/settings/tokens\fR\. If set, GitHub will allow you a greater number of API requests\. For more information, see: \fIhttps://developer\.github\.com/v3/#rate\-limiting\fR
 .
 .IP
-\fINote:\fR Homebrew doesn\'t require permissions for any of the scopes\.
+\fINote:\fR Homebrew doesn\'t require permissions for any of the scopes, but some developer commands may require additional permissions\.
 .
 .TP
 \fBHOMEBREW_GITHUB_API_USERNAME\fR
-GitHub username for authentication with the GitHub API, used by Homebrew for features such as \fBbrew search\fR\. We strongly recommend using \fBHOMEBREW_GITHUB_API_TOKEN\fR instead\.
+Use this username for authentication with the GitHub API, for features such as \fBbrew search\fR\. We strongly recommend using \fBHOMEBREW_GITHUB_API_TOKEN\fR instead\.
 .
 .TP
 \fBHOMEBREW_GIT_EMAIL\fR
-Homebrew will set the Git author and committer name to this value\.
+Set the Git author and committer name to this value\.
 .
 .TP
 \fBHOMEBREW_GIT_NAME\fR
-Homebrew will set the Git author and committer email to this value\.
+Set the Git author and committer email to this value\.
 .
 .TP
 \fBHOMEBREW_INSTALL_BADGE\fR
-Text printed before the installation summary of each successful build\.
+Print this text before the installation summary of each successful build\.
 .
 .IP
 \fIDefault:\fR The "Beer Mug" emoji\.
 .
 .TP
 \fBHOMEBREW_LOGS\fR
-IHomebrew will use the specified directory to store log files\.
+Use the specified directory to store log files\.
 .
 .IP
 \fIDefault:\fR macOS: \fB$HOME/Library/Logs/Homebrew\fR, Linux: \fB$XDG_CACHE_HOME/Homebrew/Logs\fR or \fB$HOME/\.cache/Homebrew/Logs\fR\.
 .
 .TP
 \fBHOMEBREW_MAKE_JOBS\fR
-Instructs Homebrew to use the value of \fBHOMEBREW_MAKE_JOBS\fR as the number of parallel jobs to run when building with \fBmake\fR(1)\.
+Use this value as the number of parallel jobs to run when building with \fBmake\fR(1)\.
 .
 .IP
 \fIDefault:\fR The number of available CPU cores\.
 .
 .TP
 \fBHOMEBREW_NO_ANALYTICS\fR
-Homebrew will not send analytics\. See: \fIhttps://docs\.brew\.sh/Analytics\fR\.
+If set, do not send analytics\. See: \fIhttps://docs\.brew\.sh/Analytics\fR\.
 .
 .TP
 \fBHOMEBREW_NO_AUTO_UPDATE\fR
-Homebrew will not auto\-update before running \fBbrew install\fR, \fBbrew upgrade\fR or \fBbrew tap\fR\.
+If set, do not automatically update before running \fBbrew install\fR, \fBbrew upgrade\fR or \fBbrew tap\fR\.
 .
 .TP
 \fBHOMEBREW_NO_BOTTLE_SOURCE_FALLBACK\fR
-Homebrew will fail on the failure of installation from a bottle rather than falling back to building from source\.
+If set, fail on the failure of installation from a bottle rather than falling back to building from source\.
 .
 .TP
 \fBHOMEBREW_NO_COLOR\fR
-Homebrew will not print text with colour added\.
+If set, do not print text with colour added\.
 .
 .IP
 \fIDefault:\fR \fB$NO_COLOR\fR\.
 .
 .TP
 \fBHOMEBREW_NO_COMPAT\fR
-Homebrew disables all use of legacy compatibility code\.
+If set, disable all use of legacy compatibility code\.
 .
 .TP
 \fBHOMEBREW_NO_EMOJI\fR
-Homebrew will not print the \fBHOMEBREW_INSTALL_BADGE\fR on a successful build\.
+If set, do not print \fBHOMEBREW_INSTALL_BADGE\fR on a successful build\.
 .
 .IP
-\fINote:\fR Homebrew will only try to print emoji on OS X Lion or newer\.
+\fINote:\fR Only tries to print emoji on OS X Lion or newer\.
 .
 .TP
 \fBHOMEBREW_NO_GITHUB_API\fR
-Homebrew will not use the GitHub API, e\.g\. for searches or fetching relevant issues on a failed install\.
+If set, do not use the GitHub API, e\.g\. for searches or fetching relevant issues on a failed install\.
 .
 .TP
 \fBHOMEBREW_NO_INSECURE_REDIRECT\fR
-Homebrew will not permit redirects from secure HTTPS to insecure HTTP\.
+If set, forbid redirects from secure HTTPS to insecure HTTP\.
 .
 .IP
 \fINote:\fR While ensuring your downloads are fully secure, this is likely to cause from\-source SourceForge, some GNU & GNOME based formulae to fail to download\.
 .
 .TP
 \fBHOMEBREW_NO_INSTALL_CLEANUP\fR
-\fBbrew install\fR, \fBbrew upgrade\fR and \fBbrew reinstall\fR will never automatically cleanup installed/upgraded/reinstalled formulae or all formulae every 30 days\.
+If set, \fBbrew install\fR, \fBbrew upgrade\fR and \fBbrew reinstall\fR will never automatically cleanup installed/upgraded/reinstalled formulae or all formulae every 30 days\.
 .
 .TP
 \fBHOMEBREW_PRY\fR
-Homebrew will use Pry for the \fBbrew irb\fR command\.
+If set, use Pry for the \fBbrew irb\fR command\.
 .
 .TP
 \fBHOMEBREW_SKIP_OR_LATER_BOTTLES\fR
-Along with \fBHOMEBREW_DEVELOPER\fR Homebrew will not use bottles from older versions of macOS\. This is useful in Homebrew development on new macOS versions\.
+If set with \fBHOMEBREW_DEVELOPER\fR, do not use bottles from older versions of macOS\. This is useful in development on new macOS versions\.
 .
 .TP
 \fBHOMEBREW_SVN\fR
-Forces Homebrew to use a particular \fBsvn\fR binary\. Otherwise, a Homebrew\-built Subversion if installed, or the system\-provided binary\.
+Use this as the \fBsvn\fR(1) binary\.
+.
+.IP
+\fIDefault:\fR A Homebrew\-built Subversion (if installed), or the system\-provided binary\.
 .
 .TP
 \fBHOMEBREW_TEMP\fR
-Instructs Homebrew to use \fBHOMEBREW_TEMP\fR as the temporary directory for building packages\. This may be needed if your system temp directory and Homebrew prefix are on different volumes, as macOS has trouble moving symlinks across volumes when the targetdoes not yet exist\. This issue typically occurs when using FileVault or custom SSDconfigurations\.
+Use this path as the temporary directory for building packages\. Changing this may be needed if your system temporary directory and Homebrew prefix are on different volumes, as macOS has trouble moving symlinks across volumes when the target does not yet exist\. This issue typically occurs when using FileVault or custom SSD configurations\.
 .
 .IP
 \fIDefault:\fR macOS: \fB/private/tmp\fR, Linux: \fB/tmp\fR\.
 .
 .TP
 \fBHOMEBREW_UPDATE_TO_TAG\fR
-Instructs Homebrew to always use the latest stable tag (even if developer commands have been run)\.
+If set, always use the latest stable tag (even if developer commands have been run)\.
 .
 .TP
 \fBHOMEBREW_VERBOSE\fR
-Homebrew always assumes \fB\-\-verbose\fR when running commands\.
+If set, always assume \fB\-\-verbose\fR when running commands\.
 .
 .TP
 \fBHOMEBREW_VERBOSE_USING_DOTS\fR
-Homebrew\'s verbose output will print a \fB\.\fR no more than once a minute\. This can be useful to avoid long\-running Homebrew commands being killed due to no output\.
+If set, verbose output will print a \fB\.\fR no more than once a minute\. This can be useful to avoid long\-running Homebrew commands being killed due to no output\.
 .
 .TP
 \fBall_proxy\fR
-Sets the SOCKS5 proxy to be used by \fBcurl\fR(1), \fBgit\fR(1) and \fBsvn\fR(1) when downloading through Homebrew\.
+Use this SOCKS5 proxy for \fBcurl\fR(1), \fBgit\fR(1) and \fBsvn\fR(1) when downloading through Homebrew\.
 .
 .TP
 \fBftp_proxy\fR
-Sets the FTP proxy to be used by \fBcurl\fR(1), \fBgit\fR(1) and \fBsvn\fR(1) when downloading through Homebrew\.
+Use this FTP proxy for \fBcurl\fR(1), \fBgit\fR(1) and \fBsvn\fR(1) when downloading through Homebrew\.
 .
 .TP
 \fBhttp_proxy\fR
-Sets the HTTP proxy to be used by \fBcurl\fR(1), \fBgit\fR(1) and \fBsvn\fR(1) when downloading through Homebrew\.
+Use this HTTP proxy for \fBcurl\fR(1), \fBgit\fR(1) and \fBsvn\fR(1) when downloading through Homebrew\.
 .
 .TP
 \fBhttps_proxy\fR
-Sets the HTTPS proxy to be used by \fBcurl\fR(1), \fBgit\fR(1) and \fBsvn\fR(1) when downloading through Homebrew\.
+Use this HTTPS proxy for \fBcurl\fR(1), \fBgit\fR(1) and \fBsvn\fR(1) when downloading through Homebrew\.
 .
 .TP
 \fBno_proxy\fR
-Sets the comma\-separated list of hostnames and domain names that should be excluded from proxying by \fBcurl\fR(1), \fBgit\fR(1) and \fBsvn\fR(1) when downloading through Homebrew\.
+A comma\-separated list of hostnames and domain names excluded from proxying by \fBcurl\fR(1), \fBgit\fR(1) and \fBsvn\fR(1) when downloading through Homebrew\.
 .
 .SH "USING HOMEBREW BEHIND A PROXY"
 Set the \fBhttp_proxy\fR, \fBhttps_proxy\fR, \fBall_proxy\fR, \fBftp_proxy\fR and/or \fBno_proxy\fR environment variables documented above\.
