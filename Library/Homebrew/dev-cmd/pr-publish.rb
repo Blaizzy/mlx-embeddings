@@ -29,8 +29,8 @@ module Homebrew
       arg = "#{CoreTap.instance.default_remote}/pull/#{arg}" if arg.to_i.positive?
       url_match = arg.match HOMEBREW_PULL_OR_COMMIT_URL_REGEX
       _, user, repo, issue = *url_match
-      tap = Tap.fetch(user, repo) if repo.match?(HOMEBREW_OFFICIAL_REPO_PREFIXES_REGEX)
       odie "Not a GitHub pull request: #{arg}" unless issue
+      tap = Tap.fetch(user, repo) if repo.match?(HOMEBREW_OFFICIAL_REPO_PREFIXES_REGEX)
       ohai "Dispatching #{tap} pull request ##{issue}"
       GitHub.dispatch_event(user, repo, "Publish ##{issue}", pull_request: issue)
     end
