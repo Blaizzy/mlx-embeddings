@@ -121,8 +121,6 @@ module Superenv
     end
     generic_setup_build_environment(formula)
 
-    self["PKG_CONFIG"] = Superenv.bin/"pkg-config"
-
     # Filter out symbols known not to be defined since GNU Autotools can't
     # reliably figure this out with Xcode 8 and above.
     if MacOS.version == "10.12" && MacOS::Xcode.version >= "9.0"
