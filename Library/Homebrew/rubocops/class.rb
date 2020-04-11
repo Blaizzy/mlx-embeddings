@@ -86,8 +86,8 @@ module RuboCop
             return
           end
 
-          return unless test.body.single_line? &&
-                        test.body.source.to_s == "true"
+          return unless test.body.single_line?
+          return if test.body.source.to_s != "true"
 
           problem "`test do` should contain a real test"
         end
