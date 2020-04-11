@@ -396,8 +396,8 @@ module Homebrew
           end
 
           if @new_formula &&
-             dep_f.keg_only_reason&.reason == :provided_by_macos &&
-             dep_f.keg_only_reason.valid? &&
+             dep_f.keg_only_reason.provided_by_macos? &&
+             dep_f.keg_only_reason.applicable? &&
              !%w[apr apr-util openblas openssl openssl@1.1].include?(dep.name)
             new_formula_problem(
               "Dependency '#{dep.name}' is provided by macOS; " \
@@ -507,13 +507,14 @@ module Homebrew
       return unless @core_tap
 
       if formula.keg_only?
-        return if formula.keg_only_reason.reason == :versioned_formula
+        return if formula.keg_only_reason.versioned_formula?
         if formula.name.start_with?("openssl", "libressl") &&
-           formula.keg_only_reason.reason == :provided_by_macos
+           formula.keg_only_reason.provided_by_macos?
           return
         end
       end
 
+      # TODO: verify formulae still exist
       keg_only_whitelist = %w[
         autoconf@2.13
         bash-completion@2

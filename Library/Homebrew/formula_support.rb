@@ -13,24 +13,41 @@ class KegOnlyReason
     @explanation = explanation
   end
 
-  def valid?
-    ![:provided_by_macos, :provided_by_osx, :shadowed_by_macos].include?(@reason)
+  def versioned_formula?
+    @reason == :versioned_formula
+  end
+
+  def provided_by_macos?
+    @reason == :provided_by_macos
+  end
+
+  def shadowed_by_macos?
+    @reason == :shadowed_by_macos
+  end
+
+  def by_macos?
+    provided_by_macos? || shadowed_by_macos?
+  end
+
+  def applicable?
+    # macOS reasons aren't applicable on other OSs
+    # (see extend/os/mac/formula_support for override on macOS)
+    !by_macos?
   end
 
   def to_s
     return @explanation unless @explanation.empty?
 
-    case @reason
-    when :versioned_formula
+    if versioned_formula?
       <<~EOS
         this is an alternate version of another formula
       EOS
-    when :provided_by_macos
+    elsif provided_by_macos?
       <<~EOS
         macOS already provides this software and installing another version in
         parallel can cause all kinds of trouble
       EOS
-    when :shadowed_by_macos
+    elsif shadowed_by_macos?
       <<~EOS
         macOS provides similar software and installing this software in
         parallel can cause all kinds of trouble

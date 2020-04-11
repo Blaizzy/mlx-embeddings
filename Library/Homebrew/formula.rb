@@ -1045,7 +1045,7 @@ class Formula
   def keg_only?
     return false unless keg_only_reason
 
-    keg_only_reason.valid?
+    keg_only_reason.applicable?
   end
 
   # @private
