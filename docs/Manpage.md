@@ -927,8 +927,6 @@ Each *`patch`* may be the number of a pull request in `homebrew/core`, the URL o
 any pull request or commit on GitHub or a "https://jenkins.brew.sh/job/..."
 testing job URL.
 
-* `--bottle`:
-  Handle bottles, pulling the bottle-update commit and publishing files on Bintray.
 * `--bump`:
   For one-formula PRs, automatically reword commit message to our preferred format.
 * `--clean`:
