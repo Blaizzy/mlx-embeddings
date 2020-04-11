@@ -30,12 +30,15 @@ A few requests:
   non-trivial (e.g. not a test or audit improvement or version bump) changes
   to formulae code and don't merge them unless you get at least one approval
   and passing tests.
-- Use `brew pull` for formulae changes that require new bottles or change
-  multiple formulae and let it auto-close issues wherever possible (it may
-  take ~5m). When this isn't necessary use GitHub's "Merge pull request"
-  button in "create a merge commit" mode for Homebrew/brew or "squash and
-  merge" for a single formulae change. If in doubt, check with e.g. Fork.app
-  that you've not accidentally added merge commits.
+- In Homebrew/brew, close pull requests using GitHub's "Merge pull request"
+  button in "Create a merge commit" mode.
+- In Homebrew/homebrew-core, use `brew pr-publish` to close pull requests
+  that require new bottles or change multiple formulae. If commits need to
+  be amended use `brew pr-pull` instead. Let these commands auto-close
+  issues whenever possible (it may take up to 5 minutes). If in doubt,
+  check with e.g. Fork.app that you've not accidentally added merge commits.
+  If bottles are unnecessary, use GitHub's "Merge pull request" button in
+  "Squash and merge" mode for a single formula change.
 - Still create your branches on your fork rather than in the main repository.
   Note GitHub's UI will create edits and reverts on the main repository if you
   make edits or click "Revert" on the Homebrew/brew repository rather than your
@@ -55,8 +58,6 @@ If they accept, follow a few steps to get them set up:
 
 - Invite them to the [**@Homebrew/maintainers** team](https://github.com/orgs/Homebrew/teams/maintainers) (or any relevant [subteams](https://github.com/orgs/Homebrew/teams/maintainers/teams)) to give them write access to relevant repositories (but don't make them owners). They will need to enable [GitHub's Two Factor Authentication](https://help.github.com/articles/about-two-factor-authentication/).
 - Ask them to sign in to [Bintray](https://bintray.com) using their GitHub account and they should auto-sync to [Bintray's Homebrew organisation](https://bintray.com/homebrew/organization/edit/members) as a member so they can publish new bottles.
-- Add them to the [Jenkins' GitHub Authorization Settings admin user names](https://jenkins.brew.sh/configureSecurity/) so they can adjust settings and restart jobs.
-- Add them to the [Jenkins' GitHub Pull Request Builder admin list](https://jenkins.brew.sh/configure) to enable `@BrewTestBot test this please` for them.
 - Invite them to the [`homebrew-maintainers` private maintainers mailing list](https://lists.sfconservancy.org/mailman/admin/homebrew-maintainers/members/add).
 - Invite them to the [`machomebrew` private maintainers Slack](https://machomebrew.slack.com/admin/invites) (and ensure they've read the [communication guidelines](Maintainer-Guidelines.md#communication)) and ask them to use their real name there (rather than a pseudonym they may use on e.g. GitHub).
 - Invite them to the Homebrew Maintainers Monthly Call on Google calendar.

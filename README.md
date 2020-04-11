@@ -72,7 +72,7 @@ Code is under the [BSD 2-clause "Simplified" License](LICENSE.txt).
 Documentation is under the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/).
 
 ## Sponsors
-Our Xserve ESXi boxes for CI are hosted by [MacStadium](https://www.macstadium.com).
+Our macOS continuous integration infrastructure is hosted by [MacStadium](https://www.macstadium.com).
 
 [![Powered by MacStadium](https://cloud.githubusercontent.com/assets/125011/22776032/097557ac-eea6-11e6-8ba8-eff22dfd58f1.png)](https://www.macstadium.com)
 
