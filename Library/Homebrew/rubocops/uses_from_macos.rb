@@ -26,7 +26,7 @@ module RuboCop
           m4
           ncurses
           openldap
-          openssl
+          openssl@1.1
           perl
           php
           ruby
