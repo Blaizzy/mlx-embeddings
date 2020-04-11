@@ -2,7 +2,7 @@ homebrew_sdkroot=/Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk
 prefix=${homebrew_sdkroot}/usr
 exec_prefix=/usr
 libdir=${exec_prefix}/lib
-includedir=${prefix}/include
+includedir=${prefix}/include/libxml2
 modules=1
 
 Name: libXML
@@ -11,4 +11,4 @@ Description: libXML library version2.
 Requires:
 Libs: -L${libdir} -lxml2
 Libs.private: -lz -lpthread -licucore -lm
-Cflags: -I${includedir}/libxml2
+Cflags: -I${includedir}

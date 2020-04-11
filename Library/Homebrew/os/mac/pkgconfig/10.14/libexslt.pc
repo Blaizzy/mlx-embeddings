@@ -10,4 +10,4 @@ Version: 0.8.17
 Description: EXSLT Extension library
 Requires: libxml-2.0
 Libs: -L${libdir} -lexslt -lxslt  -lxml2 -lz -lpthread -licucore -lm
-Cflags: -I${includedir}
+Cflags:
