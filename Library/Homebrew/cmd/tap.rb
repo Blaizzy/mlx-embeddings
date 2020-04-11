@@ -25,8 +25,8 @@ module Homebrew
         using protocols other than HTTPS, e.g. SSH, git, HTTP, FTP(S), rsync.
       EOS
       switch "--full",
-             description: "Convert a shallow clone to a full clone without untapping. By default, taps are no "\
-                          "longer cloned as shallow clones."
+             description: "Convert a shallow clone to a full clone without untapping. Taps are only cloned as "\
+                          "shallow clones on continuous integration, or if `--shallow` was originally passed."
       switch "--shallow",
              description: "Fetch tap as a shallow clone rather than a full clone. Useful for continuous integration."
       switch "--force-auto-update",
@@ -53,12 +53,20 @@ module Homebrew
     elsif args.no_named?
       puts Tap.names
     else
+      full_clone = if args.full?
+        true
+      elsif args.shallow?.nil?
+        !ENV["CI"]
+      else
+        !args.shallow?
+      end
+      odebug "Tapping as #{full_clone ? "full" : "shallow"} clone"
       tap = Tap.fetch(args.named.first)
       begin
         tap.install clone_target:      args.named.second,
                     force_auto_update: force_auto_update?,
                     quiet:             args.quiet?,
-                    full_clone:        !args.shallow?
+                    full_clone:        full_clone
       rescue TapRemoteMismatchError => e
         odie e
       rescue TapAlreadyTappedError
