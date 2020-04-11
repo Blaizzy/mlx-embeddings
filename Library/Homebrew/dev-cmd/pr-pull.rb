@@ -67,19 +67,19 @@ module Homebrew
     end
   end
 
-  def signoff!(pr, path: ".", dry_run: false)
+  def signoff!(pr, path: ".")
     message = Utils.popen_read "git", "-C", path, "log", "-1", "--pretty=%B"
     close_message = "Closes ##{pr}."
     message += "\n#{close_message}" unless message.include? close_message
-    if dry_run
+    if Homebrew.args.dry_run?
       puts "git commit --amend --signoff -m $message"
     else
       safe_system "git", "-C", path, "commit", "--amend", "--signoff", "--allow-empty", "-q", "-m", message
     end
   end
 
-  def cherry_pick_pr!(pr, path: ".", dry_run: false)
-    if dry_run
+  def cherry_pick_pr!(pr, path: ".")
+    if Homebrew.args.dry_run?
       puts <<~EOS
         git fetch --force origin +refs/pull/#{pr}/head
         git merge-base HEAD FETCH_HEAD
@@ -145,10 +145,10 @@ module Homebrew
       Dir.mktmpdir pr do |dir|
         cd dir do
           GitHub.fetch_artifact(user, repo, pr, dir, workflow_id: workflow, artifact_name: artifact)
-          cherry_pick_pr! pr, path: tap.path, dry_run: args.dry_run?
-          signoff! pr, path: tap.path, dry_run: args.dry_run? unless args.clean?
+          cherry_pick_pr! pr, path: tap.path
+          signoff! pr, path: tap.path unless args.clean?
 
-          if args.dry_run?
+          if Homebrew.args.dry_run?
             puts "brew bottle --merge --write #{Dir["*.json"].join " "}"
           else
             quiet_system "#{HOMEBREW_PREFIX}/bin/brew", "bottle", "--merge", "--write", *Dir["*.json"]
@@ -156,7 +156,7 @@ module Homebrew
 
           next if args.no_upload?
 
-          if args.dry_run?
+          if Homebrew.args.dry_run?
             puts "Upload bottles described by these JSON files to Bintray:\n  #{Dir["*.json"].join("\n  ")}"
           else
             bintray.upload_bottle_json Dir["*.json"], publish_package: !args.no_publish?
