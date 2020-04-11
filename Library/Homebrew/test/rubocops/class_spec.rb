@@ -105,7 +105,7 @@ describe RuboCop::Cop::FormulaAudit::TestCalls do
   end
 end
 
-describe RuboCop::Cop::FormulaAuditStrict::Test do
+describe RuboCop::Cop::FormulaAudit::Test do
   subject(:cop) { described_class.new }
 
   it "reports an offense when there is no test block" do

@@ -70,7 +70,7 @@ module RuboCop
       end
     end
 
-    module FormulaAuditStrict
+    module FormulaAudit
       # - `test do ..end` should be meaningfully defined in the formula.
       class Test < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)

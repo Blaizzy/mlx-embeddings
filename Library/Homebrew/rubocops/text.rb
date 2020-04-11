@@ -61,16 +61,18 @@ module RuboCop
           find_method_with_args(body_node, :system, "cargo", "build") do
             problem "use \"cargo\", \"install\", \"--root\", prefix, \"--path\", \".\""
           end
-        end
-      end
-    end
-    module FormulaAuditStrict
-      class Text < FormulaCop
-        def audit_formula(_node, _class_node, _parent_class_node, body_node)
+
           find_method_with_args(body_node, :go_resource) do
             problem "`go_resource`s are deprecated. Please ask upstream to implement Go vendoring"
           end
         end
+      end
+    end
+
+    # Keep this (empty) module and class around in case we need it later to
+    # avoid deleting all the FormulaAuditStrict referencing logic.
+    module FormulaAuditStrict
+      class Text < FormulaCop
       end
     end
   end
