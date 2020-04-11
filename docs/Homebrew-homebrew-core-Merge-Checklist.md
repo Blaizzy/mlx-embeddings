@@ -35,7 +35,6 @@ Check for:
     - rebase during merge
   - version update follows preferred message format for simple version updates: `foobar 7.3`
   - other fixes format is `foobar: fix flibble matrix`
-  - you can use `--bump` flag for `brew pull` in case the PR have a single commit but the wrong message
 - bottle block is not removed
 
   Suggested reply:
@@ -52,8 +51,11 @@ Check for:
     brew bump-revision --message 'for libuv' urbit
     ```
     - make sure it is one commit per revision bump
-- if CI is green and formula `bottle :unneeded` you can merge it through GitHub UI
-- if CI is green and bottles need to be pulled, use: `brew pull --bottle $PR_ID`
+- if CI is green and...
+  - formula `bottle :unneeded`, you can merge it through GitHub UI
+  - bottles need to be pulled, and...
+    - the commits are correct and don't need changes, use: `brew pr-publish $PR_ID`
+    - the commits need to be amended, use `brew pr-pull $PR_ID`, make changes, and `git push`
 - don't forget to thank the contributor
   - celebrate the first-time contributors
 - suggest to use `brew bump-formula-pr` next time if this was not the case
