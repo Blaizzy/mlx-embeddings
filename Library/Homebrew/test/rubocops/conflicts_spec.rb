@@ -26,4 +26,6 @@ describe RuboCop::Cop::FormulaAudit::Conflicts do
       RUBY
     end
   end
+
+  include_examples "formulae exist", described_class::WHITELIST
 end

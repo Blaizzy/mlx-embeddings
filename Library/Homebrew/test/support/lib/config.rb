@@ -17,7 +17,7 @@ TEST_TMPDIR = ENV.fetch("HOMEBREW_TEST_TMPDIR") do |k|
 end.freeze
 
 # Paths pointing into the Homebrew code base that persist across test runs
-HOMEBREW_SHIMS_PATH = (HOMEBREW_LIBRARY_PATH.parent/"Homebrew/shims").freeze
+HOMEBREW_SHIMS_PATH = (HOMEBREW_LIBRARY_PATH/"shims").freeze
 
 require "extend/git_repository"
 
