@@ -114,6 +114,32 @@ module Homebrew
     opoo "Current branch is #{branch}: do you need to pull inside #{ref}?"
   end
 
+  def formulae_need_bottles?(tap, original_commit)
+    return if Homebrew.args.dry_run?
+
+    if Homebrew::EnvConfig.disable_load_formula?
+      opoo "Can't check if updated bottles are necessary as formula loading is disabled!"
+      return
+    end
+
+    Utils.popen_read("git", "-C", tap.path, "diff-tree",
+                     "-r", "--name-only", "--diff-filter=AM",
+                     original_commit, "HEAD", "--", tap.formula_dir)
+         .lines.each do |line|
+      next unless line.end_with? ".rb\n"
+
+      name = "#{tap.name}/#{File.basename(line.chomp, ".rb")}"
+      begin
+        f = Formula[name]
+      rescue Exception # rubocop:disable Lint/RescueException
+        # Make sure we catch syntax errors.
+        next
+      end
+      return true if !f.bottle_unneeded? && !f.bottle_disabled?
+    end
+    nil
+  end
+
   def pr_pull
     pr_pull_args.parse
 
@@ -144,9 +170,16 @@ module Homebrew
       ohai "Fetching #{tap} pull request ##{pr}"
       Dir.mktmpdir pr do |dir|
         cd dir do
-          GitHub.fetch_artifact(user, repo, pr, dir, workflow_id: workflow, artifact_name: artifact)
+          original_commit = Utils.popen_read("git", "-C", tap.path, "rev-parse", "HEAD").chomp
           cherry_pick_pr! pr, path: tap.path
           signoff! pr, path: tap.path unless args.clean?
+
+          unless formulae_need_bottles? tap, original_commit
+            ohai "Skipping artifacts for ##{pr} as the formulae don't need bottles"
+            next
+          end
+
+          GitHub.fetch_artifact(user, repo, pr, dir, workflow_id: workflow, artifact_name: artifact)
 
           if Homebrew.args.dry_run?
             puts "brew bottle --merge --write #{Dir["*.json"].join " "}"
