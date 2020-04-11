@@ -39,7 +39,7 @@ module RuboCop
                     " Migrate '--#{option}' with `deprecated_option`."
           end
 
-          return unless formula_tap == "homebrew-core"
+          return if formula_tap != "homebrew-core"
 
           problem DEP_OPTION if method_called_ever?(body_node, :deprecated_option)
           problem OPTION if method_called_ever?(body_node, :option)
