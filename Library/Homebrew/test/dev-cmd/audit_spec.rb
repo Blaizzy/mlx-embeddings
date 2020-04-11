@@ -633,5 +633,12 @@ module Homebrew
         expect(fa.problems).to eq([])
       end
     end
+
+    include_examples "formulae exist", described_class::VERSIONED_KEG_ONLY_WHITELIST
+    include_examples "formulae exist", described_class::VERSIONED_HEAD_SPEC_WHITELIST
+    include_examples "formulae exist", described_class::USES_FROM_MACOS_WHITELIST
+    include_examples "formulae exist", described_class::THROTTLED_BLACKLIST.keys
+    include_examples "formulae exist", described_class::UNSTABLE_WHITELIST.keys
+    include_examples "formulae exist", described_class::GNOME_DEVEL_WHITELIST.keys
   end
 end
