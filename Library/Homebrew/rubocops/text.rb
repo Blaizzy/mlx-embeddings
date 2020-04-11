@@ -12,7 +12,7 @@ module RuboCop
             problem "Please set plist_options when using a formula-defined plist."
           end
 
-          if depends_on?("openssl") && depends_on?("libressl")
+          if (depends_on?("openssl") || depends_on?("openssl@1.1")) && depends_on?("libressl")
             problem "Formulae should not depend on both OpenSSL and LibreSSL (even optionally)."
           end
 
