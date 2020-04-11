@@ -67,19 +67,19 @@ module Homebrew
     end
   end
 
-  def signoff!(pr, path: ".", dry_run: false)
+  def signoff!(pr, path: ".")
     message = Utils.popen_read "git", "-C", path, "log", "-1", "--pretty=%B"
     close_message = "Closes ##{pr}."
     message += "\n#{close_message}" unless message.include? close_message
-    if dry_run
+    if Homebrew.args.dry_run?
       puts "git commit --amend --signoff -m $message"
     else
       safe_system "git", "-C", path, "commit", "--amend", "--signoff", "--allow-empty", "-q", "-m", message
     end
   end
 
-  def cherry_pick_pr!(pr, path: ".", dry_run: false)
-    if dry_run
+  def cherry_pick_pr!(pr, path: ".")
+    if Homebrew.args.dry_run?
       puts <<~EOS
         git fetch --force origin +refs/pull/#{pr}/head
         git merge-base HEAD FETCH_HEAD
@@ -114,6 +114,32 @@ module Homebrew
     opoo "Current branch is #{branch}: do you need to pull inside #{ref}?"
   end
 
+  def formulae_need_bottles?(tap, original_commit)
+    return if Homebrew.args.dry_run?
+
+    if Homebrew::EnvConfig.disable_load_formula?
+      opoo "Can't check if updated bottles are necessary as formula loading is disabled!"
+      return
+    end
+
+    Utils.popen_read("git", "-C", tap.path, "diff-tree",
+                     "-r", "--name-only", "--diff-filter=AM",
+                     original_commit, "HEAD", "--", tap.formula_dir)
+         .lines.each do |line|
+      next unless line.end_with? ".rb\n"
+
+      name = "#{tap.name}/#{File.basename(line.chomp, ".rb")}"
+      begin
+        f = Formula[name]
+      rescue Exception # rubocop:disable Lint/RescueException
+        # Make sure we catch syntax errors.
+        next
+      end
+      return true if !f.bottle_unneeded? && !f.bottle_disabled?
+    end
+    nil
+  end
+
   def pr_pull
     pr_pull_args.parse
 
@@ -144,11 +170,18 @@ module Homebrew
       ohai "Fetching #{tap} pull request ##{pr}"
       Dir.mktmpdir pr do |dir|
         cd dir do
-          GitHub.fetch_artifact(user, repo, pr, dir, workflow_id: workflow, artifact_name: artifact)
-          cherry_pick_pr! pr, path: tap.path, dry_run: args.dry_run?
-          signoff! pr, path: tap.path, dry_run: args.dry_run? unless args.clean?
+          original_commit = Utils.popen_read("git", "-C", tap.path, "rev-parse", "HEAD").chomp
+          cherry_pick_pr! pr, path: tap.path
+          signoff! pr, path: tap.path unless args.clean?
 
-          if args.dry_run?
+          unless formulae_need_bottles? tap, original_commit
+            ohai "Skipping artifacts for ##{pr} as the formulae don't need bottles"
+            next
+          end
+
+          GitHub.fetch_artifact(user, repo, pr, dir, workflow_id: workflow, artifact_name: artifact)
+
+          if Homebrew.args.dry_run?
             puts "brew bottle --merge --write #{Dir["*.json"].join " "}"
           else
             quiet_system "#{HOMEBREW_PREFIX}/bin/brew", "bottle", "--merge", "--write", *Dir["*.json"]
@@ -156,7 +189,7 @@ module Homebrew
 
           next if args.no_upload?
 
-          if args.dry_run?
+          if Homebrew.args.dry_run?
             puts "Upload bottles described by these JSON files to Bintray:\n  #{Dir["*.json"].join("\n  ")}"
           else
             bintray.upload_bottle_json Dir["*.json"], publish_package: !args.no_publish?
