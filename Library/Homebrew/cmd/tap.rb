@@ -55,8 +55,8 @@ module Homebrew
     else
       full_clone = if args.full?
         true
-      elsif args.shallow?.nil?
-        !ENV["CI"]
+      elsif !args.shallow?
+        ENV["CI"].blank?
       else
         !args.shallow?
       end
