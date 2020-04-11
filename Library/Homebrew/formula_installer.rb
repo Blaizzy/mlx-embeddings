@@ -49,7 +49,7 @@ class FormulaInstaller
     @show_header = false
     @ignore_deps = false
     @only_deps = false
-    @build_from_source = ARGV.build_from_source?
+    @build_from_source = Homebrew.args.build_from_source
     @build_bottle = false
     @force_bottle = ARGV.force_bottle?
     @include_test = ARGV.include?("--include-test")
@@ -97,7 +97,7 @@ class FormulaInstaller
 
     return false if !formula.bottled? && !formula.local_bottle_path
     return true  if force_bottle?
-    return false if build_from_source? || build_bottle? || interactive?
+    return false if Homebrew.args.build_from_source || build_bottle? || interactive?
     return false if ARGV.cc
     return false unless options.empty?
     return false if formula.bottle_disabled?
@@ -128,7 +128,7 @@ class FormulaInstaller
 
   def install_bottle_for?(dep, build)
     return pour_bottle? if dep == formula
-    return false if ARGV.build_formula_from_source?(dep)
+    return false if Homebrew.args.build_formula_from_source?(dep)
     return false unless dep.bottle && dep.pour_bottle?
     return false unless build.used_options.empty?
     return false unless dep.bottle.compatible_cellar?
@@ -591,7 +591,7 @@ class FormulaInstaller
     fi.options                |= Tab.remap_deprecated_options(df.deprecated_options, dep.options)
     fi.options                |= inherited_options
     fi.options                &= df.options
-    fi.build_from_source       = ARGV.build_formula_from_source?(df)
+    fi.build_from_source       = Homebrew.args.build_formula_from_source?(df)
     fi.force_bottle            = false
     fi.verbose                 = verbose?
     fi.quiet                   = quiet?
