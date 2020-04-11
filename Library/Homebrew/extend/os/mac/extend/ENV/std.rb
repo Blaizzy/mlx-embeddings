@@ -3,7 +3,11 @@
 module Stdenv
   # @private
 
-  undef x11
+  undef homebrew_extra_pkg_config_paths, x11
+
+  def homebrew_extra_pkg_config_paths
+    ["#{HOMEBREW_LIBRARY}/Homebrew/os/mac/pkgconfig/#{MacOS.version}"]
+  end
 
   def x11
     # There are some config scripts here that should go in the PATH
