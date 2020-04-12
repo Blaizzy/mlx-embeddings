@@ -37,8 +37,6 @@ module Homebrew
         Each <patch> may be the number of a pull request in `homebrew/core`, the URL of any pull request
         or commit on GitHub or a "https://jenkins.brew.sh/job/..." testing job URL.
       EOS
-      switch "--bottle",
-             description: "Handle bottles, pulling the bottle-update commit and publishing files on Bintray."
       switch "--bump",
              description: "For one-formula PRs, automatically reword commit message to our preferred format."
       switch "--clean",
@@ -105,7 +103,6 @@ module Homebrew
         end
         _, testing_job = *testing_match
         url = "https://github.com/Homebrew/homebrew-#{tap.repo}/compare/master...BrewTestBot:testing-#{testing_job}"
-        odie "--bottle is required for testing job URLs!" unless args.bottle?
       elsif (api_match = arg.match HOMEBREW_PULL_API_REGEX)
         _, user, repo, issue = *api_match
         url = "https://github.com/#{user}/#{repo}/pull/#{issue}"
@@ -117,7 +114,7 @@ module Homebrew
         odie "Not a GitHub pull request or commit: #{arg}"
       end
 
-      odie "No pull request detected!" if !testing_job && args.bottle? && issue.nil?
+      odie "No pull request detected!" if !testing_job && issue.nil?
 
       if tap
         tap.install unless tap.installed?
@@ -176,25 +173,11 @@ module Homebrew
           next
         end
 
-        if f.stable
-          stable_urls = [f.stable.url] + f.stable.mirrors
-          stable_urls.grep(%r{^https://dl.bintray.com/homebrew/mirror/}) do |mirror_url|
-            check_bintray_mirror(f.full_name, mirror_url)
-          end
-        end
+        next unless f.stable
 
-        if args.bottle?
-          if f.bottle_unneeded?
-            ohai "#{f}: skipping unneeded bottle."
-          elsif f.bottle_disabled?
-            ohai "#{f}: skipping disabled bottle: #{f.bottle_disable_reason}"
-          else
-            fetch_bottles = true
-          end
-        else
-          next unless f.bottle_defined?
-
-          opoo "#{f.full_name} has a bottle: do you need to update it with --bottle?"
+        stable_urls = [f.stable.url] + f.stable.mirrors
+        stable_urls.grep(%r{^https://dl.bintray.com/homebrew/mirror/}) do |mirror_url|
+          check_bintray_mirror(f.full_name, mirror_url)
         end
       end
 
