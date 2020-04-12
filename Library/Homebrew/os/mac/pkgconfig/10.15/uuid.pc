@@ -3,7 +3,7 @@ prefix=${homebrew_sdkroot}/usr
 exec_prefix=/usr
 libdir=${exec_prefix}/lib
 sharedlibdir=${libdir}
-includedir=${prefix}/include
+includedir=${prefix}/include/uuid
 
 Name: uuid
 Description: Universally unique id library
@@ -11,4 +11,4 @@ Version: 1.0
 
 Requires:
 Libs:
-Cflags: -I${includedir}/uuid
+Cflags: -I${includedir}

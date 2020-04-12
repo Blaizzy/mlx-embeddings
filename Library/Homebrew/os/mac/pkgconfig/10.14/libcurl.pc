@@ -37,4 +37,4 @@ Description: Library to transfer files with ftp, http, etc.
 Version: 7.54.0
 Libs: -L${libdir} -lcurl
 Libs.private: -lldap -lz
-Cflags: -I${includedir}
+Cflags:

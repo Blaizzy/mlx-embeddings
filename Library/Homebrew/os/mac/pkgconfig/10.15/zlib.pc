@@ -11,4 +11,4 @@ Version: 1.2.11
 
 Requires:
 Libs: -L${libdir} -L${sharedlibdir} -lz
-Cflags: -I${includedir}
+Cflags:
