@@ -884,12 +884,12 @@ Generate Homebrew's manpages.
 * `--link`:
   This is now done automatically by `brew update`.
 
-### `pr-publish` *`pull_request`*
+### `pr-publish` [*`options`*] *`pull_request`* [*`pull_request`* ...]
 
 Publishes bottles for a pull request with GitHub Actions. Requires write access
 to the repository.
 
-### `pr-pull` *`pull_request`*
+### `pr-pull` [*`options`*] *`pull_request`* [*`pull_request`* ...]
 
 Download and publish bottles, and apply the bottle commit from a pull request
 with artifacts generated from GitHub Actions. Requires write access to the
