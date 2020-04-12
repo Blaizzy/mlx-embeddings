@@ -243,7 +243,7 @@ class Tap
 
     if installed?
       raise TapRemoteMismatchError.new(name, @remote, requested_remote) if clone_target && requested_remote != remote
-      raise TapAlreadyTappedError, name if force_auto_update.nil?
+      raise TapAlreadyTappedError, name if force_auto_update.nil? && !shallow?
     end
 
     # ensure git is installed

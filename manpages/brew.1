@@ -635,7 +635,11 @@ With \fIURL\fR specified, tap a formula repository from anywhere, using any tran
 .
 .TP
 \fB\-\-full\fR
-Convert a shallow clone to a full clone without untapping\. By default, taps are no longer cloned as shallow clones\.
+Convert a shallow clone to a full clone without untapping\. Taps are only cloned as shallow clones on continuous integration, or if \fB\-\-shallow\fR was originally passed\.
+.
+.TP
+\fB\-\-shallow\fR
+Fetch tap as a shallow clone rather than a full clone\. Useful for continuous integration\.
 .
 .TP
 \fB\-\-force\-auto\-update\fR
