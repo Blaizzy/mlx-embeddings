@@ -11,7 +11,7 @@ module Homebrew
   def pr_pull_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `pr-pull` <pull_request>
+        `pr-pull` [<options>] <pull_request> [<pull_request> ...]
 
         Download and publish bottles, and apply the bottle commit from a
         pull request with artifacts generated from GitHub Actions.
@@ -159,7 +159,7 @@ module Homebrew
 
     setup_git_environment!
 
-    args.named.each do |arg|
+    args.named.uniq.each do |arg|
       arg = "#{tap.default_remote}/pull/#{arg}" if arg.to_i.positive?
       url_match = arg.match HOMEBREW_PULL_OR_COMMIT_URL_REGEX
       _, user, repo, pr = *url_match

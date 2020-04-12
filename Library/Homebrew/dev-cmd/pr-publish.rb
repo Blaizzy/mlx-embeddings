@@ -9,7 +9,7 @@ module Homebrew
   def pr_publish_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `pr-publish` <pull_request>
+        `pr-publish` [<options>] <pull_request> [<pull_request> ...]
 
         Publishes bottles for a pull request with GitHub Actions.
         Requires write access to the repository.
@@ -25,7 +25,7 @@ module Homebrew
 
     odie "You need to specify at least one pull request number!" if Homebrew.args.named.empty?
 
-    args.named.each do |arg|
+    args.named.uniq.each do |arg|
       arg = "#{CoreTap.instance.default_remote}/pull/#{arg}" if arg.to_i.positive?
       url_match = arg.match HOMEBREW_PULL_OR_COMMIT_URL_REGEX
       _, user, repo, issue = *url_match
