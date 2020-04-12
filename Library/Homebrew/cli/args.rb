@@ -12,6 +12,7 @@ module Homebrew
       def initialize(argv:)
         super
         @argv = argv
+        @cmdline_args = argv
         @args_parsed = false
         @processed_options = []
       end
@@ -166,6 +167,12 @@ module Homebrew
         formulae.any? { |args_f| args_f.full_name == f.full_name }
       end
 
+      def build_from_source
+        return true if args_parsed && (build_from_source? || s?)
+
+        cmdline_args.include?("--build-from-source") || cmdline_args.include?("-s")
+      end
+
       private
 
       def downcased_unique_named
@@ -206,12 +213,6 @@ module Homebrew
         return true if args_parsed && build_bottle?
 
         cmdline_args.include?("--build-bottle")
-      end
-
-      def build_from_source
-        return true if args_parsed && (build_from_source? || s?)
-
-        cmdline_args.include?("--build-from-source") || cmdline_args.include?("-s")
       end
 
       def spec(default = :stable)

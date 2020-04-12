@@ -259,7 +259,7 @@ module Homebrew
       end
 
       def option_passed?(name)
-        @args.respond_to?(name) || @args.respond_to?("#{name}?")
+        @args[name.to_sym] || @args["#{name}?".to_sym]
       end
 
       def wrap_option_desc(desc)
