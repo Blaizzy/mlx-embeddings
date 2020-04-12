@@ -364,6 +364,13 @@ module Homebrew
       problem "Formula name conflicts with existing core formula."
     end
 
+    USES_FROM_MACOS_WHITELIST = %w[
+      apr
+      apr-util
+      openblas
+      openssl@1.1
+    ].freeze
+
     def audit_deps
       @specs.each do |spec|
         # Check for things we don't like to depend on.
@@ -396,9 +403,9 @@ module Homebrew
           end
 
           if @new_formula &&
-             dep_f.keg_only_reason&.reason == :provided_by_macos &&
-             dep_f.keg_only_reason.valid? &&
-             !%w[apr apr-util openblas openssl openssl@1.1].include?(dep.name)
+             dep_f.keg_only_reason.provided_by_macos? &&
+             dep_f.keg_only_reason.applicable? &&
+             !USES_FROM_MACOS_WHITELIST.include?(dep.name)
             new_formula_problem(
               "Dependency '#{dep.name}' is provided by macOS; " \
               "please replace 'depends_on' with 'uses_from_macos'.",
@@ -502,28 +509,28 @@ module Homebrew
       end
     end
 
+    VERSIONED_KEG_ONLY_WHITELIST = %w[
+      autoconf@2.13
+      bash-completion@2
+      gnupg@1.4
+      lua@5.1
+      numpy@1.16
+      libsigc++@2
+    ].freeze
+
     def audit_versioned_keg_only
       return unless @versioned_formula
       return unless @core_tap
 
       if formula.keg_only?
-        return if formula.keg_only_reason.reason == :versioned_formula
+        return if formula.keg_only_reason.versioned_formula?
         if formula.name.start_with?("openssl", "libressl") &&
-           formula.keg_only_reason.reason == :provided_by_macos
+           formula.keg_only_reason.provided_by_macos?
           return
         end
       end
 
-      keg_only_whitelist = %w[
-        autoconf@2.13
-        bash-completion@2
-        gnupg@1.4
-        lua@5.1
-        numpy@1.16
-        libsigc++@2
-      ].freeze
-
-      return if keg_only_whitelist.include?(formula.name) || formula.name.start_with?("gcc@")
+      return if VERSIONED_KEG_ONLY_WHITELIST.include?(formula.name) || formula.name.start_with?("gcc@")
 
       problem "Versioned formulae in homebrew/core should use `keg_only :versioned_formula`"
     end
@@ -661,6 +668,47 @@ module Homebrew
       [user, repo]
     end
 
+    VERSIONED_HEAD_SPEC_WHITELIST = %w[
+      bash-completion@2
+      imagemagick@6
+    ].freeze
+
+    THROTTLED_BLACKLIST = {
+      "aws-sdk-cpp" => "10",
+      "awscli@1"    => "10",
+      "quicktype"   => "10",
+      "vim"         => "50",
+    }.freeze
+
+    UNSTABLE_WHITELIST = {
+      "aalib"           => "1.4rc",
+      "automysqlbackup" => "3.0-rc",
+      "aview"           => "1.3.0rc",
+      "elm-format"      => "0.6.0-alpha",
+      "ftgl"            => "2.1.3-rc",
+      "hidapi"          => "0.8.0-rc",
+      "libcaca"         => "0.99b",
+      "premake"         => "4.4-beta",
+      "pwnat"           => "0.3-beta",
+      "recode"          => "3.7-beta",
+      "speexdsp"        => "1.2rc",
+      "sqoop"           => "1.4.",
+      "tcptraceroute"   => "1.5beta",
+      "tiny-fugue"      => "5.0b",
+      "vbindiff"        => "3.0_beta",
+    }.freeze
+
+    GNOME_DEVEL_WHITELIST = {
+      "libart"              => "2.3",
+      "gtk-mac-integration" => "2.1",
+      "gtk-doc"             => "1.31",
+      "gcab"                => "1.3",
+      "libepoxy"            => "1.5",
+    }.freeze
+
+    # version_prefix = stable_version_string.sub(/\d+$/, "")
+    # version_prefix = stable_version_string.split(".")[0..1].join(".")
+
     def audit_specs
       problem "Head-only (no stable download)" if head_only?(formula)
       problem "Devel-only (no stable download)" if devel_only?(formula)
@@ -714,58 +762,16 @@ module Homebrew
 
       if formula.head && @versioned_formula
         head_spec_message = "Formulae should not have a `HEAD` spec"
-        versioned_head_spec = %w[
-          bash-completion@2
-          imagemagick@6
-        ]
-        problem head_spec_message unless versioned_head_spec.include?(formula.name)
+        problem head_spec_message unless VERSIONED_HEAD_SPEC_WHITELIST.include?(formula.name)
       end
 
-      throttled = %w[
-        aws-sdk-cpp 10
-        awscli@1 10
-        quicktype 10
-        vim 50
-      ]
-
-      throttled.each_slice(2).to_a.map do |a, b|
+      THROTTLED_BLACKLIST.each do |f, v|
         next if formula.stable.nil?
 
         version = formula.stable.version.to_s.split(".").last.to_i
-        if a == formula.name && version.modulo(b.to_i).nonzero?
-          problem "should only be updated every #{b} releases on multiples of #{b}"
+        if f == formula.name && version.modulo(v.to_i).nonzero?
+          problem "should only be updated every #{v} releases on multiples of #{v}"
         end
-      end
-
-      unstable_whitelist = %w[
-        aalib 1.4rc5
-        automysqlbackup 3.0-rc6
-        aview 1.3.0rc1
-        elm-format 0.6.0-alpha
-        ftgl 2.1.3-rc5
-        hidapi 0.8.0-rc1
-        libcaca 0.99b19
-        premake 4.4-beta5
-        pwnat 0.3-beta
-        recode 3.7-beta2
-        speexdsp 1.2rc3
-        sqoop 1.4.6
-        tcptraceroute 1.5beta7
-        tiny-fugue 5.0b8
-        vbindiff 3.0_beta4
-      ].each_slice(2).to_a.map do |formula, version|
-        [formula, version.sub(/\d+$/, "")]
-      end
-
-      gnome_devel_whitelist = %w[
-        libart 2.3.21
-        pygtkglext 1.1.0
-        gtk-mac-integration 2.1.3
-        gtk-doc 1.31
-        gcab 1.3
-        libepoxy 1.5.4
-      ].each_slice(2).to_a.map do |formula, version|
-        [formula, version.split(".")[0..1].join(".")]
       end
 
       stable = formula.stable
@@ -782,12 +788,12 @@ module Homebrew
       when /[\d\._-](alpha|beta|rc\d)/
         matched = Regexp.last_match(1)
         version_prefix = stable_version_string.sub(/\d+$/, "")
-        return if unstable_whitelist.include?([formula.name, version_prefix])
+        return if UNSTABLE_WHITELIST[formula.name] == version_prefix
 
         problem "Stable version URLs should not contain #{matched}"
       when %r{download\.gnome\.org/sources}, %r{ftp\.gnome\.org/pub/GNOME/sources}i
         version_prefix = stable_version_string.split(".")[0..1].join(".")
-        return if gnome_devel_whitelist.include?([formula.name, version_prefix])
+        return if GNOME_DEVEL_WHITELIST[formula.name] == version_prefix
         return if stable_url_version < Version.create("1.0")
         return if stable_url_minor_version.even?
 

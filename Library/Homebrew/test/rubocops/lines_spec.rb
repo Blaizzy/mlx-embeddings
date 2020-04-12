@@ -860,4 +860,6 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
   end
+
+  include_examples "formulae exist", described_class::MAKE_CHECK_WHITELIST
 end

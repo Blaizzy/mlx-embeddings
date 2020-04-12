@@ -48,7 +48,7 @@ describe RuboCop::Cop::FormulaAudit::DescLength do
   end
 end
 
-describe RuboCop::Cop::FormulaAuditStrict::Desc do
+describe RuboCop::Cop::FormulaAudit::Desc do
   subject(:cop) { described_class.new }
 
   context "When auditing formula desc" do

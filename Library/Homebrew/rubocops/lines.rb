@@ -196,6 +196,26 @@ module RuboCop
       end
 
       class Miscellaneous < FormulaCop
+        MAKE_CHECK_WHITELIST = %w[
+          beecrypt
+          ccrypt
+          git
+          gmp
+          gnupg
+          gnupg@1.4
+          google-sparsehash
+          jemalloc
+          jpeg-turbo
+          mpfr
+          nettle
+          open-mpi
+          openssl@1.1
+          pcre
+          protobuf
+          wolfssl
+          xz
+        ].freeze
+
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           # FileUtils is included in Formula
           # encfs modifies a file with this name, so check for some leading characters
@@ -425,25 +445,7 @@ module RuboCop
           # Avoid build-time checks in homebrew/core
           find_every_method_call_by_name(body_node, :system).each do |method|
             next if @formula_name.start_with?("lib")
-            next if %w[
-              beecrypt
-              ccrypt
-              git
-              gmp
-              gnupg
-              gnupg@1.4
-              google-sparsehash
-              jemalloc
-              jpeg-turbo
-              mpfr
-              nettle
-              open-mpi
-              openssl@1.1
-              pcre
-              protobuf
-              wolfssl
-              xz
-            ].include?(@formula_name)
+            next if MAKE_CHECK_WHITELIST.include?(@formula_name)
 
             params = parameters(method)
             next unless node_equals?(params[0], "make")

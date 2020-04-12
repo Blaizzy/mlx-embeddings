@@ -38,7 +38,7 @@ module RuboCop
       end
     end
 
-    module FormulaAuditStrict
+    module FormulaAudit
       # This cop audits `desc` in Formulae.
       #
       # - Checks for leading/trailing whitespace in `desc`
