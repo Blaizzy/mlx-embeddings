@@ -785,7 +785,7 @@ module Homebrew
                                                        .split(".", 3)
                                                        .map(&:to_i)
 
-      case stable.url
+      case (url = stable.url)
       when /[\d\._-](alpha|beta|rc\d)/
         matched = Regexp.last_match(1)
         version_prefix = stable_version_string.sub(/\d+$/, "")
@@ -803,6 +803,24 @@ module Homebrew
         return if stable_url_minor_version.even?
 
         problem "#{stable.version} is a development release"
+      when %r{^https://github.com/([\w-]+)/([\w-]+)/}
+        owner = Regexp.last_match(1)
+        repo = Regexp.last_match(2)
+        tag = url.match(%r{^https://github\.com/[\w-]+/[\w-]+/archive/([^/]+)\.(tar\.gz|zip)$})
+                 .to_a
+                 .second
+        tag ||= url.match(%r{^https://github\.com/[\w-]+/[\w-]+/releases/download/([^/]+)/})
+                   .to_a
+                   .second
+
+        begin
+          if (release = GitHub.open_api("#{GitHub::API_URL}/repos/#{owner}/#{repo}/releases/tags/#{tag}"))
+            problem "#{tag} is a GitHub prerelease" if release["prerelease"]
+          end
+        rescue GitHub::HTTPNotFoundError
+          # No-op if we can't find the release.
+          nil
+        end
       end
     end
 
