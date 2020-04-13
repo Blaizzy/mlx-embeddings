@@ -403,6 +403,7 @@ module Homebrew
           end
 
           if @new_formula &&
+             dep_f.keg_only? &&
              dep_f.keg_only_reason.provided_by_macos? &&
              dep_f.keg_only_reason.applicable? &&
              !USES_FROM_MACOS_WHITELIST.include?(dep.name)
