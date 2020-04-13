@@ -2423,9 +2423,24 @@ class Formula
       specs.each { |spec| spec.depends_on(dep) }
     end
 
+    # Indicates use of dependencies provided by macOS.
+    # On macOS this is a no-op (as we use the system libraries there).
+    # On Linux this will act as `depends_on`.
     def uses_from_macos(dep)
       specs.each { |spec| spec.uses_from_macos(dep) }
     end
+
+    # Block executed only executed on macOS. No-op on Linux.
+    # <pre>on_macos do
+    #   depends_on "mac_only_dep"
+    # end</pre>
+    def on_macos(&_block); end
+
+    # Block executed only executed on Linux. No-op on macOS.
+    # <pre>on_linux do
+    #   depends_on "linux_only_dep"
+    # end</pre>
+    def on_linux(&_block); end
 
     # @!attribute [w] option
     # Options can be used as arguments to `brew install`.
@@ -2657,3 +2672,5 @@ class Formula
     end
   end
 end
+
+require "extend/os/formula"
