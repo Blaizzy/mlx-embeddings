@@ -187,7 +187,9 @@ module Homebrew
             next
           end
 
-          GitHub.fetch_artifact(user, repo, pr, dir, workflow_id: workflow, artifact_name: artifact)
+          GitHub.fetch_artifact(user, repo, pr, dir, workflow_id:   workflow,
+                                                     artifact_name: artifact,
+                                                     strategy:      CurlNoResumeDownloadStrategy)
 
           if Homebrew.args.dry_run?
             puts "brew bottle --merge --write #{Dir["*.json"].join " "}"
@@ -200,9 +202,7 @@ module Homebrew
           if Homebrew.args.dry_run?
             puts "Upload bottles described by these JSON files to Bintray:\n  #{Dir["*.json"].join("\n  ")}"
           else
-            bintray.upload_bottle_json Dir["*.json"],
-                                       publish_package: !args.no_publish?,
-                                       strategy:        CurlNoResumeDownloadStrategy
+            bintray.upload_bottle_json Dir["*.json"], publish_package: !args.no_publish?
           end
         end
       end
