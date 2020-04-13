@@ -26,10 +26,17 @@ module RuboCop
         end
       end
 
-      class TestCalls < FormulaCop
+      class Test < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           test = find_block(body_node, :test)
           return unless test
+
+          if test.body.nil?
+            problem "`test do` should not be empty"
+            return
+          end
+
+          problem "`test do` should contain a real test" if test.body.single_line? && test.body.source.to_s == "true"
 
           test_calls(test) do |node, params|
             p1, p2 = params
@@ -70,26 +77,13 @@ module RuboCop
       end
     end
 
-    module FormulaAudit
-      # - `test do ..end` should be meaningfully defined in the formula.
-      class Test < FormulaCop
+    module FormulaAuditStrict
+      # - `test do ..end` should defined in the formula.
+      class TestPresent < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
-          test = find_block(body_node, :test)
+          return if find_block(body_node, :test)
 
-          unless test
-            problem "A `test do` test block should be added"
-            return
-          end
-
-          if test.body.nil?
-            problem "`test do` should not be empty"
-            return
-          end
-
-          return unless test.body.single_line?
-          return if test.body.source.to_s != "true"
-
-          problem "`test do` should contain a real test"
+          problem "A `test do` test block should be added"
         end
       end
     end

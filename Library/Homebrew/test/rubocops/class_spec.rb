@@ -50,7 +50,7 @@ describe RuboCop::Cop::FormulaAudit::ClassName do
   end
 end
 
-describe RuboCop::Cop::FormulaAudit::TestCalls do
+describe RuboCop::Cop::FormulaAudit::Test do
   subject(:cop) { described_class.new }
 
   it "reports an offense when /usr/local/bin is found in test calls" do
@@ -74,6 +74,31 @@ describe RuboCop::Cop::FormulaAudit::TestCalls do
         test do
           shell_output("\#{bin}/test", 0)
                                       ^ Passing 0 to shell_output() is redundant
+        end
+      end
+    RUBY
+  end
+
+  it "reports an offense when there is an empty test block" do
+    expect_offense(<<~RUBY)
+      class Foo < Formula
+        url 'https://brew.sh/foo-1.0.tgz'
+
+        test do
+        ^^^^^^^ `test do` should not be empty
+        end
+      end
+    RUBY
+  end
+
+  it "reports an offense when test is falsely true" do
+    expect_offense(<<~RUBY)
+      class Foo < Formula
+        url 'https://brew.sh/foo-1.0.tgz'
+
+        test do
+        ^^^^^^^ `test do` should contain a real test
+          true
         end
       end
     RUBY
@@ -105,7 +130,7 @@ describe RuboCop::Cop::FormulaAudit::TestCalls do
   end
 end
 
-describe RuboCop::Cop::FormulaAudit::Test do
+describe RuboCop::Cop::FormulaAuditStrict::TestPresent do
   subject(:cop) { described_class.new }
 
   it "reports an offense when there is no test block" do
@@ -113,31 +138,6 @@ describe RuboCop::Cop::FormulaAudit::Test do
       class Foo < Formula
       ^^^^^^^^^^^^^^^^^^^ A `test do` test block should be added
         url 'https://brew.sh/foo-1.0.tgz'
-      end
-    RUBY
-  end
-
-  it "reports an offense when there is an empty test block" do
-    expect_offense(<<~RUBY)
-      class Foo < Formula
-        url 'https://brew.sh/foo-1.0.tgz'
-
-        test do
-        ^^^^^^^ `test do` should not be empty
-        end
-      end
-    RUBY
-  end
-
-  it "reports an offense when test is falsely true" do
-    expect_offense(<<~RUBY)
-      class Foo < Formula
-        url 'https://brew.sh/foo-1.0.tgz'
-
-        test do
-        ^^^^^^^ `test do` should contain a real test
-          true
-        end
       end
     RUBY
   end
