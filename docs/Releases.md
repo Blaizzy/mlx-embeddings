@@ -5,17 +5,22 @@ set `HOMEBREW_DEVELOPER=1`) require tags on the [Homebrew/brew repository](https
 in order to get new versions of Homebrew. There are a few steps in making a new
 Homebrew release:
 
-1. Check the [Homebrew/brew pull requests](https://github.com/homebrew/brew/pulls)
-   and [issues](https://github.com/homebrew/brew/issues) to see if there is
+1. Check the [Homebrew/brew pull requests](https://github.com/homebrew/brew/pulls),
+   [issues](https://github.com/homebrew/brew/issues),
+   [Homebrew/core issues](https://github.com/homebrew/homebrew-core/issues) and
+   [Discourse](https://discourse.brew.sh) to see if there is
    anything pressing that needs to be fixed or merged before the next release.
    If so, fix and merge these changes.
-2. After no code changes have happened for at least a few hours (ideally 24 hours)
+2. After no code changes have happened for at least a couple of hours (ideally 24 hours)
    and you are confident there's no major regressions on the current `master`
    branch you can create a new Git tag. Ideally this should be signed with your
    GPG key. This can then be pushed to GitHub.
 3. Use `brew release-notes --markdown $PREVIOUS_TAG` to generate the release
-   notes for the release. [Create a new release on GitHub](https://github.com/Homebrew/brew/releases/new)
+   notes for the release.
+4. [Create a new release on GitHub](https://github.com/Homebrew/brew/releases/new)
    based on the new tag.
+
+You can watch a video of the above process [on YouTube](https://youtu.be/dQCpLaXOf6k)
 
 If this is a major or minor release (e.g. X.0.0 or X.Y.0) then there are a few more steps:
 
