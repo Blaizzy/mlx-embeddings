@@ -435,7 +435,8 @@ module GitHub
                   scopes:         CREATE_ISSUE_FORK_OR_PR_SCOPES)
   end
 
-  def fetch_artifact(user, repo, pr, dir, workflow_id: "tests.yml", artifact_name: "bottles")
+  def fetch_artifact(user, repo, pr, dir,
+                     workflow_id: "tests.yml", artifact_name: "bottles", strategy: CurlDownloadStrategy)
     scopes = CREATE_ISSUE_FORK_OR_PR_SCOPES
     base_url = "#{API_URL}/repos/#{user}/#{repo}"
     pr_payload = open_api("#{base_url}/pulls/#{pr}", scopes: scopes)
@@ -496,7 +497,7 @@ module GitHub
     FileUtils.chdir dir do
       curl_args[:cache] = Pathname.new(dir)
       curl_args[:secrets] = [token]
-      downloader = CurlDownloadStrategy.new(artifact_url, "artifact", pr, **curl_args)
+      downloader = strategy.new(artifact_url, "artifact", pr, **curl_args)
       downloader.fetch
       downloader.stage
     end
