@@ -10,7 +10,17 @@ module RuboCop
       #
       # - Checks for existence of `desc`
       # - Checks if size of `desc` > 80
-      class DescLength < FormulaCop
+      # - Checks for leading/trailing whitespace in `desc`
+      # - Checks if `desc` begins with an article
+      # - Checks for correct usage of `command-line` in `desc`
+      # - Checks description starts with a capital letter
+      # - Checks if `desc` contains the formula name
+      # - Checks if `desc` ends with a full stop (apart from in the case of "etc.")
+      class Desc < FormulaCop
+        VALID_LOWERCASE_WORDS = %w[
+          macOS
+        ].freeze
+
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           desc_call = find_node_method_by_name(body_node, :desc)
 
@@ -20,51 +30,14 @@ module RuboCop
             return
           end
 
-          # Check the formula's desc length. Should be >0 and <80 characters.
           desc = parameters(desc_call).first
+
+          # Check the formula's desc length. Should be >0 and <80 characters.
           pure_desc_length = string_content(desc).length
           if pure_desc_length.zero?
             problem "The desc (description) should not be an empty string."
             return
           end
-
-          desc_length = "#{@formula_name}: #{string_content(desc)}".length
-          max_desc_length = 80
-          return if desc_length <= max_desc_length
-
-          problem "Description is too long. \"name: desc\" should be less than #{max_desc_length} characters. " \
-                  "Length is calculated as #{@formula_name} + desc. (currently #{desc_length})"
-        end
-      end
-    end
-
-    module FormulaAudit
-      # This cop audits `desc` in Formulae.
-      #
-      # - Checks for leading/trailing whitespace in `desc`
-      # - Checks if `desc` begins with an article
-      # - Checks for correct usage of `command-line` in `desc`
-      # - Checks description starts with a capital letter
-      # - Checks if `desc` contains the formula name
-      # - Checks if `desc` ends with a full stop (apart from in the case of "etc.")
-      class Desc < FormulaCop
-        VALID_LOWERCASE_WORDS = %w[
-          ex
-          eXtensible
-          iOS
-          macOS
-          malloc
-          ooc
-          preexec
-          x86
-          xUnit
-        ].freeze
-
-        def audit_formula(_node, _class_node, _parent_class_node, body_node)
-          desc_call = find_node_method_by_name(body_node, :desc)
-          return if desc_call.nil?
-
-          desc = parameters(desc_call).first
 
           # Check for leading whitespace.
           problem "Description shouldn't have a leading space" if regex_match_group(desc, /^\s+/)
@@ -96,9 +69,16 @@ module RuboCop
           end
 
           # Check if a full stop is used at the end of a formula's desc (apart from in the case of "etc.")
-          return unless regex_match_group(desc, /\.$/) && !string_content(desc).end_with?("etc.")
+          if regex_match_group(desc, /\.$/) && !string_content(desc).end_with?("etc.")
+            problem "Description shouldn't end with a full stop"
+          end
 
-          problem "Description shouldn't end with a full stop"
+          desc_length = "#{@formula_name}: #{string_content(desc)}".length
+          max_desc_length = 80
+          return if desc_length <= max_desc_length
+
+          problem "Description is too long. \"name: desc\" should be less than #{max_desc_length} characters. " \
+                  "Length is calculated as #{@formula_name} + desc. (currently #{desc_length})"
         end
 
         def autocorrect(node)
