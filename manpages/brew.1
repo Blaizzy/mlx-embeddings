@@ -1128,6 +1128,29 @@ Return a failing status code if changes are detected in the manpage outputs\. Th
 \fB\-\-link\fR
 This is now done automatically by \fBbrew update\fR\.
 .
+.SS "\fBpr\-automerge\fR [\fIoptions\fR]"
+Finds pull requests that can be automatically merged using \fBbrew pr\-publish\fR\.
+.
+.TP
+\fB\-\-tap\fR
+Target repository tap (default: \fBhomebrew/core\fR)
+.
+.TP
+\fB\-\-with\-label\fR
+Pull requests must have this label (default: \fBready to merge\fR)
+.
+.TP
+\fB\-\-without\-label\fR
+Pull requests must not have this label (default: \fBdo not merge\fR)
+.
+.TP
+\fB\-\-publish\fR
+Run \fBbrew pr\-publish\fR on matching pull requests\.
+.
+.TP
+\fB\-\-ignore\-failures\fR
+Include pull requests that have failing status checks\.
+.
 .SS "\fBpr\-publish\fR [\fIoptions\fR] \fIpull_request\fR [\fIpull_request\fR \.\.\.]"
 Publishes bottles for a pull request with GitHub Actions\. Requires write access to the repository\.
 .

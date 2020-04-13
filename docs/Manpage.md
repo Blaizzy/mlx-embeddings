@@ -884,6 +884,21 @@ Generate Homebrew's manpages.
 * `--link`:
   This is now done automatically by `brew update`.
 
+### `pr-automerge` [*`options`*]
+
+Finds pull requests that can be automatically merged using `brew pr-publish`.
+
+* `--tap`:
+  Target repository tap (default: `homebrew/core`)
+* `--with-label`:
+  Pull requests must have this label (default: `ready to merge`)
+* `--without-label`:
+  Pull requests must not have this label (default: `do not merge`)
+* `--publish`:
+  Run `brew pr-publish` on matching pull requests.
+* `--ignore-failures`:
+  Include pull requests that have failing status checks.
+
 ### `pr-publish` [*`options`*] *`pull_request`* [*`pull_request`* ...]
 
 Publishes bottles for a pull request with GitHub Actions. Requires write access
