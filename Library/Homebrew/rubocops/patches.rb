@@ -44,7 +44,7 @@ module RuboCop
                                             %r{gist\.github\.com/.+/raw},
                                             %r{gist\.githubusercontent\.com/.+/raw}])
           if regex_match_group(patch, gh_patch_patterns)
-            unless patch_url.match?(/[a-fA-F0-9]{40}/)
+            unless patch_url.match?(%r{/[a-fA-F0-9]{6,40}/})
               problem <<~EOS.chomp
                 GitHub/Gist patches should specify a revision:
                   #{patch_url}
