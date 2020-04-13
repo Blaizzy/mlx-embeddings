@@ -5,6 +5,14 @@ require "utils/github"
 require "tmpdir"
 require "bintray"
 
+class CurlNoResumeDownloadStrategy < CurlDownloadStrategy
+  private
+
+  def _fetch(url:, resolved_url:)
+    curl("--location", "--remote-time", "--create-dirs", "--output", temporary_path, resolved_url)
+  end
+end
+
 module Homebrew
   module_function
 
@@ -192,7 +200,9 @@ module Homebrew
           if Homebrew.args.dry_run?
             puts "Upload bottles described by these JSON files to Bintray:\n  #{Dir["*.json"].join("\n  ")}"
           else
-            bintray.upload_bottle_json Dir["*.json"], publish_package: !args.no_publish?
+            bintray.upload_bottle_json Dir["*.json"],
+                                       publish_package: !args.no_publish?,
+                                       strategy:        CurlNoResumeDownloadStrategy
           end
         end
       end
