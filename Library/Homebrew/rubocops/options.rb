@@ -46,12 +46,5 @@ module RuboCop
         end
       end
     end
-
-    # Keep this (empty) module and class around in case we need it later to
-    # avoid deleting all the NewFormulaAudit referencing logic.
-    module NewFormulaAudit
-      class Options < FormulaCop
-      end
-    end
   end
 end

@@ -2,7 +2,7 @@
 
 require "rubocops/formula_desc"
 
-describe RuboCop::Cop::FormulaAudit::DescLength do
+describe RuboCop::Cop::FormulaAudit::Desc do
   subject(:cop) { described_class.new }
 
   context "When auditing formula desc" do
@@ -46,10 +46,6 @@ describe RuboCop::Cop::FormulaAudit::DescLength do
       RUBY
     end
   end
-end
-
-describe RuboCop::Cop::FormulaAudit::Desc do
-  subject(:cop) { described_class.new }
 
   context "When auditing formula desc" do
     it "When wrong \"command-line\" usage in desc" do

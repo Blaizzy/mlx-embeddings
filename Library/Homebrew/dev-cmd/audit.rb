@@ -95,8 +95,6 @@ module Homebrew
       options[:only_cops] = only_cops
     elsif args.new_formula?
       nil
-    elsif strict
-      options[:except_cops] = [:NewFormulaAudit]
     elsif except_cops
       options[:except_cops] = except_cops
     elsif !strict
@@ -231,12 +229,6 @@ module Homebrew
       return unless @style_offenses
 
       @style_offenses.each do |offense|
-        if offense.cop_name.start_with?("NewFormulaAudit")
-          next if @versioned_formula
-
-          new_formula_problem offense.to_s(display_cop_name: @display_cop_names)
-          next
-        end
         problem offense.to_s(display_cop_name: @display_cop_names)
       end
     end

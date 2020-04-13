@@ -8,9 +8,6 @@ AllCops:
   Exclude:
     - '**/vendor/**/*'
 
-NewFormulaAudit:
-  Enabled: true
-
 # Intentionally disabled as it doesn't fit with our code style.
 RSpec/AnyInstance:
   Enabled: false

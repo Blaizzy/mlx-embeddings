@@ -10,13 +10,13 @@ end
 describe "brew style" do
   around do |example|
     FileUtils.ln_s HOMEBREW_LIBRARY_PATH, HOMEBREW_LIBRARY/"Homebrew"
-    FileUtils.ln_s HOMEBREW_LIBRARY_PATH.parent/".rubocop.yml", HOMEBREW_LIBRARY/".rubocop_audit.yml"
+    FileUtils.ln_s HOMEBREW_LIBRARY_PATH.parent/".rubocop.yml", HOMEBREW_LIBRARY/".rubocop.yml"
     FileUtils.ln_s HOMEBREW_LIBRARY_PATH.parent/".rubocop_shared.yml", HOMEBREW_LIBRARY/".rubocop_shared.yml"
 
     example.run
   ensure
     FileUtils.rm_f HOMEBREW_LIBRARY/"Homebrew"
-    FileUtils.rm_f HOMEBREW_LIBRARY/".rubocop_audit.yml"
+    FileUtils.rm_f HOMEBREW_LIBRARY/".rubocop.yml"
     FileUtils.rm_f HOMEBREW_LIBRARY/".rubocop_shared.yml"
   end
 
@@ -62,7 +62,7 @@ describe "brew style" do
       EOS
       rubocop_result = Homebrew::Style.check_style_json(
         [formula],
-        fix: true, only_cops: ["NewFormulaAudit/DependencyOrder"],
+        fix: true, only_cops: ["FormulaAudit/DependencyOrder"],
       )
       offense_string = rubocop_result.file_offenses(formula.realpath).first.to_s
       expect(offense_string).to match(/\[Corrected\]/)
