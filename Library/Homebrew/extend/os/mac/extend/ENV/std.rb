@@ -60,9 +60,9 @@ module Stdenv
     return unless (sdk = MacOS.sdk_path_if_needed(version))
 
     delete("SDKROOT")
-    remove_from_cflags "-isysroot #{sdk}"
-    remove "CPPFLAGS", "-isysroot #{sdk}"
-    remove "LDFLAGS", "-isysroot #{sdk}"
+    remove_from_cflags "-isysroot#{sdk}"
+    remove "CPPFLAGS", "-isysroot#{sdk}"
+    remove "LDFLAGS", "-isysroot#{sdk}"
     if HOMEBREW_PREFIX.to_s == "/usr/local"
       delete("CMAKE_PREFIX_PATH")
     else
@@ -87,10 +87,10 @@ module Stdenv
     # Tell clang/gcc where system include's are:
     append_path "CPATH", "#{sdk}/usr/include"
     # The -isysroot is needed, too, because of the Frameworks
-    append_to_cflags "-isysroot #{sdk}"
-    append "CPPFLAGS", "-isysroot #{sdk}"
+    append_to_cflags "-isysroot#{sdk}"
+    append "CPPFLAGS", "-isysroot#{sdk}"
     # And the linker needs to find sdk/usr/lib
-    append "LDFLAGS", "-isysroot #{sdk}"
+    append "LDFLAGS", "-isysroot#{sdk}"
     # Needed to build cmake itself and perhaps some cmake projects:
     append_path "CMAKE_PREFIX_PATH", "#{sdk}/usr"
     append_path "CMAKE_FRAMEWORK_PATH", "#{sdk}/System/Library/Frameworks"
