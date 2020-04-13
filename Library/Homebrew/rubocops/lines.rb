@@ -196,26 +196,6 @@ module RuboCop
       end
 
       class Miscellaneous < FormulaCop
-        MAKE_CHECK_WHITELIST = %w[
-          beecrypt
-          ccrypt
-          git
-          gmp
-          gnupg
-          gnupg@1.4
-          google-sparsehash
-          jemalloc
-          jpeg-turbo
-          mpfr
-          nettle
-          open-mpi
-          openssl@1.1
-          pcre
-          protobuf
-          wolfssl
-          xz
-        ].freeze
-
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           # FileUtils is included in Formula
           # encfs modifies a file with this name, so check for some leading characters
@@ -260,18 +240,18 @@ module RuboCop
           # Avoid hard-coding compilers
           find_every_method_call_by_name(body_node, :system).each do |method|
             param = parameters(method).first
-            if match = regex_match_group(param, %r{^(/usr/bin/)?(gcc|llvm-gcc|clang)\s?})
+            if match = regex_match_group(param, %r{^(/usr/bin/)?(gcc|llvm-gcc|clang)[\s"]?})
               problem "Use \"\#{ENV.cc}\" instead of hard-coding \"#{match[2]}\""
-            elsif match = regex_match_group(param, %r{^(/usr/bin/)?((g|llvm-g|clang)\+\+)\s?})
+            elsif match = regex_match_group(param, %r{^(/usr/bin/)?((g|llvm-g|clang)\+\+)[\s"]?})
               problem "Use \"\#{ENV.cxx}\" instead of hard-coding \"#{match[2]}\""
             end
           end
 
           find_instance_method_call(body_node, "ENV", :[]=) do |method|
             param = parameters(method)[1]
-            if match = regex_match_group(param, %r{^(/usr/bin/)?(gcc|llvm-gcc|clang)\s?})
+            if match = regex_match_group(param, %r{^(/usr/bin/)?(gcc|llvm-gcc|clang)[\s"]?})
               problem "Use \"\#{ENV.cc}\" instead of hard-coding \"#{match[2]}\""
-            elsif match = regex_match_group(param, %r{^(/usr/bin/)?((g|llvm-g|clang)\+\+)\s?})
+            elsif match = regex_match_group(param, %r{^(/usr/bin/)?((g|llvm-g|clang)\+\+)[\s"]?})
               problem "Use \"\#{ENV.cxx}\" instead of hard-coding \"#{match[2]}\""
             end
           end
@@ -439,25 +419,6 @@ module RuboCop
 
             problem "Use the `#{match}` Ruby method instead of `#{method.source}`"
           end
-
-          return if formula_tap != "homebrew-core"
-
-          # Avoid build-time checks in homebrew/core
-          find_every_method_call_by_name(body_node, :system).each do |method|
-            next if @formula_name.start_with?("lib")
-            next if MAKE_CHECK_WHITELIST.include?(@formula_name)
-
-            params = parameters(method)
-            next unless node_equals?(params[0], "make")
-
-            params[1..].each do |arg|
-              next unless regex_match_group(arg, /^(checks?|tests?)$/)
-
-              offending_node(method)
-              problem "Formulae in homebrew/core (except e.g. cryptography, libraries) " \
-                      "should not run build-time checks"
-            end
-          end
         end
 
         def modifier?(node)
@@ -491,6 +452,51 @@ module RuboCop
         def_node_search :languageNodeModule?, <<~EOS
           (const (const nil? :Language) :Node)
         EOS
+      end
+    end
+
+    module FormulaAuditStrict
+      class MakeCheck < FormulaCop
+        MAKE_CHECK_WHITELIST = %w[
+          beecrypt
+          ccrypt
+          git
+          gmp
+          gnupg
+          gnupg@1.4
+          google-sparsehash
+          jemalloc
+          jpeg-turbo
+          mpfr
+          nettle
+          open-mpi
+          openssl@1.1
+          pcre
+          protobuf
+          wolfssl
+          xz
+        ].freeze
+
+        def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          return if formula_tap != "homebrew-core"
+
+          # Avoid build-time checks in homebrew/core
+          find_every_method_call_by_name(body_node, :system).each do |method|
+            next if @formula_name.start_with?("lib")
+            next if MAKE_CHECK_WHITELIST.include?(@formula_name)
+
+            params = parameters(method)
+            next unless node_equals?(params[0], "make")
+
+            params[1..].each do |arg|
+              next unless regex_match_group(arg, /^(checks?|tests?)$/)
+
+              offending_node(method)
+              problem "Formulae in homebrew/core (except e.g. cryptography, libraries) " \
+                      "should not run build-time checks"
+            end
+          end
+        end
       end
     end
   end
