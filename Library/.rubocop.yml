@@ -8,10 +8,6 @@ FormulaAudit:
 FormulaAuditStrict:
   Enabled: true
 
-# disable all formulae strict audits by default
-NewFormulaAudit:
-  Enabled: false
-
 # make our hashes consistent
 Layout/HashAlignment:
   EnforcedHashRocketStyle: table

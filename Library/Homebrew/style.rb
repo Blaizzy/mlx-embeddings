@@ -60,7 +60,7 @@ module Homebrew
         config = if files.first && File.exist?("#{files.first}/spec")
           HOMEBREW_LIBRARY/".rubocop_rspec.yml"
         else
-          HOMEBREW_LIBRARY/".rubocop_audit.yml"
+          HOMEBREW_LIBRARY/".rubocop.yml"
         end
         args << "--config" << config
       end

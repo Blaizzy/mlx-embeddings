@@ -58,8 +58,7 @@ module Homebrew
       options[:except_cops] = except_cops
     elsif only_cops.nil? && except_cops.nil?
       options[:except_cops] = %w[FormulaAudit
-                                 FormulaAuditStrict
-                                 NewFormulaAudit]
+                                 FormulaAuditStrict]
     end
 
     Homebrew.failed = !Style.check_style_and_print(target, options)
