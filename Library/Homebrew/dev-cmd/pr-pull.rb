@@ -1,17 +1,10 @@
 # frozen_string_literal: true
 
+require "download_strategy"
 require "cli/parser"
 require "utils/github"
 require "tmpdir"
 require "bintray"
-
-class CurlNoResumeDownloadStrategy < CurlDownloadStrategy
-  private
-
-  def _fetch(url:, resolved_url:)
-    curl("--location", "--remote-time", "--create-dirs", "--output", temporary_path, resolved_url)
-  end
-end
 
 module Homebrew
   module_function
@@ -148,6 +141,27 @@ module Homebrew
     nil
   end
 
+  def download_artifact(url, dir, pr)
+    token, username = GitHub.api_credentials
+    case GitHub.api_credentials_type
+    when :env_username_password, :keychain_username_password
+      curl_args = ["--user", "#{username}:#{token}"]
+    when :env_token
+      curl_args = ["--header", "Authorization: token #{token}"]
+    when :none
+      raise Error, "Credentials must be set to access the Artifacts API"
+    end
+
+    # Download the artifact as a zip file and unpack it into `dir`. This is
+    # preferred over system `curl` and `tar` as this leverages the Homebrew
+    # cache to avoid repeated downloads of (possibly large) bottles.
+    FileUtils.chdir dir do
+      downloader = GitHubArtifactDownloadStrategy.new(url, "artifact", pr, curl_args: curl_args, secrets: [token])
+      downloader.fetch
+      downloader.stage
+    end
+  end
+
   def pr_pull
     pr_pull_args.parse
 
@@ -163,7 +177,7 @@ module Homebrew
 
     workflow = args.workflow || "tests.yml"
     artifact = args.artifact || "bottles"
-    tap = Tap.fetch(args.tap || "homebrew/core")
+    tap = Tap.fetch(args.tap || CoreTap.instance.name)
 
     setup_git_environment!
 
@@ -187,9 +201,8 @@ module Homebrew
             next
           end
 
-          GitHub.fetch_artifact(user, repo, pr, dir, workflow_id:   workflow,
-                                                     artifact_name: artifact,
-                                                     strategy:      CurlNoResumeDownloadStrategy)
+          url = GitHub.get_artifact_url(user, repo, pr, workflow_id: workflow, artifact_name: artifact)
+          download_artifact(url, dir, pr)
 
           if Homebrew.args.dry_run?
             puts "brew bottle --merge --write #{Dir["*.json"].join " "}"
@@ -207,5 +220,34 @@ module Homebrew
         end
       end
     end
+  end
+end
+
+class GitHubArtifactDownloadStrategy < AbstractFileDownloadStrategy
+  def fetch
+    ohai "Downloading #{url}"
+    if cached_location.exist?
+      puts "Already downloaded: #{cached_location}"
+    else
+      begin
+        curl "--location", "--create-dirs", "--output", temporary_path, url,
+             *meta.fetch(:curl_args, []),
+             secrets: meta.fetch(:secrets, [])
+      rescue ErrorDuringExecution
+        raise CurlDownloadStrategyError, url
+      end
+      ignore_interrupts do
+        cached_location.dirname.mkpath
+        temporary_path.rename(cached_location)
+        symlink_location.dirname.mkpath
+      end
+    end
+    FileUtils.ln_s cached_location.relative_path_from(symlink_location.dirname), symlink_location, force: true
+  end
+
+  private
+
+  def resolved_basename
+    "artifact.zip"
   end
 end

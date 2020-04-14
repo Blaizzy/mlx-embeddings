@@ -42,17 +42,22 @@ describe GitHub do
     end
   end
 
-  describe "::fetch_artifact", :needs_network do
+  describe "::get_artifact_url", :needs_network do
     it "fails to find a nonexistant workflow" do
       expect {
-        subject.fetch_artifact("Homebrew", "homebrew-core", 1, ".")
+        subject.get_artifact_url("Homebrew", "homebrew-core", 1)
       }.to raise_error(/No matching workflow run found/)
     end
 
     it "fails to find artifacts that don't exist" do
       expect {
-        subject.fetch_artifact("Homebrew", "homebrew-core", 51971, ".", artifact_name: "false_bottles")
+        subject.get_artifact_url("Homebrew", "homebrew-core", 51971, artifact_name: "false_bottles")
       }.to raise_error(/No artifact .+ was found/)
+    end
+
+    it "gets an artifact link" do
+      url = subject.get_artifact_url("Homebrew", "homebrew-core", 51971, artifact_name: "bottles")
+      expect(url).to eq("https://api.github.com/repos/Homebrew/homebrew-core/actions/artifacts/3557392/zip")
     end
   end
 end
