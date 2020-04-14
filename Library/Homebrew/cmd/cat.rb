@@ -25,6 +25,6 @@ module Homebrew
     else
       "cat"
     end
-    safe_system pager, args.formulae.first.path, *args.passthrough
+    safe_system pager, args.formulae_paths.first, *args.passthrough
   end
 end
