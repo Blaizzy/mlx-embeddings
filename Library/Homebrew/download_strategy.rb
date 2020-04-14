@@ -374,7 +374,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
     content_disposition_parser = Mechanize::HTTP::ContentDispositionParser.new
 
     parse_content_disposition = lambda do |line|
-      next unless content_disposition = content_disposition_parser.parse(line, true)
+      next unless content_disposition = content_disposition_parser.parse(line.sub(/; *$/, ""), true)
 
       filename = nil
 
