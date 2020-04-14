@@ -125,8 +125,15 @@ jobs:
         brew update-test --commit=HEAD
       if: github.event_name == 'pull_request'
 
-    - name: Run brew readall
+    - name: Run brew readall on all taps
       run: brew readall --aliases
+
+    - name: Run brew style on homebrew-core
+      if: matrix.os == 'macOS-latest'
+      run: brew style --display-cop-names homebrew/core
+
+    - name: Run brew style on official taps
+      run: brew style --display-cop-names homebrew/bundle homebrew/services homebrew/test-bot
 
     - name: Run vale for docs linting
       run: |
