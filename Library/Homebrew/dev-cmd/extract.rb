@@ -132,7 +132,15 @@ module Homebrew
       loop do
         rev = rev.nil? ? "HEAD" : "#{rev}~1"
         rev, (path,) = Git.last_revision_commit_of_files(repo, pattern, before_commit: rev)
-        odie "Could not find #{name}! The formula or version may not have existed." if rev.nil?
+        if rev.nil? && source_tap.shallow?
+          odie <<~EOS
+            Could not find #{name} but #{source_tap} is a shallow clone!
+            Try again after running:
+              git -C "#{source_tap.path}" fetch --unshallow
+          EOS
+        elsif rev.nil?
+          odie "Could not find #{name}! The formula or version may not have existed."
+        end
 
         file = repo/path
         result = Git.last_revision_of_file(repo, file, before_commit: rev)
