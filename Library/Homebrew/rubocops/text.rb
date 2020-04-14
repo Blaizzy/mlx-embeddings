@@ -54,6 +54,7 @@ module RuboCop
 
           find_method_with_args(body_node, :system, "dep", "ensure") do |d|
             next if parameters_passed?(d, /vendor-only/)
+            next if @formula_name == "goose" # needed in 2.3.0
 
             problem "use \"dep\", \"ensure\", \"-vendor-only\""
           end
