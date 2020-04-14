@@ -47,9 +47,6 @@ If \fBstate\fR is passed, display the current anonymous user behaviour analytics
 .P
 If \fBregenerate\-uuid\fR is passed, regenerate the UUID used in Homebrew\'s analytics\.
 .
-.SS "\fBcat\fR \fIformula\fR"
-Display the source of \fIformula\fR\.
-.
 .SS "\fBcleanup\fR [\fIoptions\fR] [\fIformula\fR|\fIcask\fR]"
 Remove stale lock files and outdated downloads for all formulae and casks, and remove old versions of installed formulae\. If arguments are specified, only do this for the given formulae and casks\.
 .
@@ -68,9 +65,6 @@ Scrub the cache, including downloads for even the latest versions\. Note downloa
 .TP
 \fB\-\-prune\-prefix\fR
 Only prune the symlinks and directories from the prefix and remove no other files\.
-.
-.SS "\fBcommand\fR \fIcmd\fR"
-Display the path to the file being used when invoking \fBbrew\fR \fIcmd\fR\.
 .
 .SS "\fBcommands\fR [\fIoptions\fR]"
 Show lists of built\-in and external commands\.
@@ -159,17 +153,6 @@ Search just names for \fItext\fR\. If \fItext\fR is flanked by slashes, it is in
 .TP
 \fB\-d\fR, \fB\-\-description\fR
 Search just descriptions for \fItext\fR\. If \fItext\fR is flanked by slashes, it is interpreted as a regular expression\.
-.
-.SS "\fBdiy\fR [\fIoptions\fR]"
-Automatically determine the installation prefix for non\-Homebrew software\. Using the output from this command, you can install your own software into the Cellar and then link it into Homebrew\'s prefix with \fBbrew link\fR\.
-.
-.TP
-\fB\-\-name\fR
-Explicitly set the \fIname\fR of the package being installed\.
-.
-.TP
-\fB\-\-version\fR
-Explicitly set the \fIversion\fR of the package being installed\.
 .
 .SS "\fBdoctor\fR [\fIoptions\fR]"
 Check your system for potential problems\. Will exit with a non\-zero status if any potential problems are found\. Please note that these warnings are just used to help the Homebrew maintainers with debugging if you file an issue\. If everything you use Homebrew for is working fine: please don\'t worry or file an issue; just ignore this\.
@@ -583,40 +566,11 @@ Search for \fItext\fR in the given package manager\'s list\.
 \fB\-\-ubuntu\fR
 Search for \fItext\fR in the given package manager\'s list\.
 .
-.SS "\fBsh\fR [\fIoptions\fR]"
-Start a Homebrew build environment shell\. Uses our years\-battle\-hardened Homebrew build logic to help your \fB\./configure && make && make install\fR or even your \fBgem install\fR succeed\. Especially handy if you run Homebrew in an Xcode\-only configuration since it adds tools like \fBmake\fR to your \fBPATH\fR which build systems would not find otherwise\.
-.
-.TP
-\fB\-\-env\fR
-Use the standard \fBPATH\fR instead of superenv\'s when \fBstd\fR is passed\.
-.
 .SS "\fBshellenv\fR"
 Print export statements\. When run in a shell, this installation of Homebrew will be added to your \fBPATH\fR, \fBMANPATH\fR, and \fBINFOPATH\fR\.
 .
 .P
 The variables \fBHOMEBREW_PREFIX\fR, \fBHOMEBREW_CELLAR\fR and \fBHOMEBREW_REPOSITORY\fR are also exported to avoid querying them multiple times\. Consider adding evaluation of this command\'s output to your dotfiles (e\.g\. \fB~/\.profile\fR or \fB~/\.zprofile\fR) with: \fBeval $(brew shellenv)\fR
-.
-.SS "\fBstyle\fR [\fIoptions\fR] [\fIfile\fR|\fItap\fR|\fIformula\fR]"
-Check formulae or files for conformance to Homebrew style guidelines\.
-.
-.P
-Lists of \fIfile\fR, \fItap\fR and \fIformula\fR may not be combined\. If none are provided, \fBstyle\fR will run style checks on the whole Homebrew library, including core code and all formulae\.
-.
-.TP
-\fB\-\-fix\fR
-Fix style violations automatically using RuboCop\'s auto\-correct feature\.
-.
-.TP
-\fB\-\-display\-cop\-names\fR
-Include the RuboCop cop name for each violation in the output\.
-.
-.TP
-\fB\-\-only\-cops\fR
-Specify a comma\-separated \fIcops\fR list to check for violations of only the listed RuboCop cops\.
-.
-.TP
-\fB\-\-except\-cops\fR
-Specify a comma\-separated \fIcops\fR list to skip checking for violations of the listed RuboCop cops\.
 .
 .SS "\fBswitch\fR \fIformula\fR \fIversion\fR"
 Symlink all of the specified \fIversion\fR of \fIformula\fR\'s installation into Homebrew\'s prefix\.
@@ -684,21 +638,6 @@ Remove symlinks for \fIformula\fR from Homebrew\'s prefix\. This can be useful f
 .TP
 \fB\-n\fR, \fB\-\-dry\-run\fR
 List files which would be unlinked without actually unlinking or deleting any files\.
-.
-.SS "\fBunpack\fR [\fIoptions\fR] \fIformula\fR"
-Unpack the source files for \fIformula\fR into subdirectories of the current working directory\.
-.
-.TP
-\fB\-\-destdir\fR
-Create subdirectories in the directory named by \fIpath\fR instead\.
-.
-.TP
-\fB\-\-patch\fR
-Patches for \fIformula\fR will be applied to the unpacked source\.
-.
-.TP
-\fB\-g\fR, \fB\-\-git\fR
-Initialise a Git repository in the unpacked source\. This is useful for creating patches for the software\.
 .
 .SS "\fBunpin\fR \fIformula\fR"
 Unpin \fIformula\fR, allowing them to be upgraded by \fBbrew upgrade\fR \fIformula\fR\. See also \fBpin\fR\.
@@ -1020,6 +959,12 @@ Print what would be done rather than doing it\.
 \fB\-\-message\fR
 Append \fImessage\fR to the default commit message\.
 .
+.SS "\fBcat\fR \fIformula\fR"
+Display the source of \fIformula\fR\.
+.
+.SS "\fBcommand\fR \fIcmd\fR"
+Display the path to the file being used when invoking \fBbrew\fR \fIcmd\fR\.
+.
 .SS "\fBcreate\fR [\fIoptions\fR] \fIURL\fR"
 Generate a formula for the downloadable file at \fIURL\fR and open it in the editor\. Homebrew will attempt to automatically derive the formula name and version, but if it fails, you\'ll have to make your own template\. The \fBwget\fR formula serves as a simple example\. For the complete API, see: \fIhttp://www\.rubydoc\.info/github/Homebrew/brew/master/Formula\fR
 .
@@ -1074,6 +1019,17 @@ Explicitly set the \fIversion\fR of the new formula\.
 .TP
 \fB\-\-tap\fR
 Generate the new formula within the given tap, specified as \fIuser\fR\fB/\fR\fIrepo\fR\.
+.
+.SS "\fBdiy\fR [\fIoptions\fR]"
+Automatically determine the installation prefix for non\-Homebrew software\. Using the output from this command, you can install your own software into the Cellar and then link it into Homebrew\'s prefix with \fBbrew link\fR\.
+.
+.TP
+\fB\-\-name\fR
+Explicitly set the \fIname\fR of the package being installed\.
+.
+.TP
+\fB\-\-version\fR
+Explicitly set the \fIversion\fR of the package being installed\.
 .
 .SS "\fBedit\fR [\fIformula\fR]"
 Open \fIformula\fR in the editor set by \fBEDITOR\fR or \fBHOMEBREW_EDITOR\fR, or open the Homebrew repository for editing if no formula is provided\.
@@ -1264,6 +1220,35 @@ Load a library using \fBrequire\fR\.
 \fB\-e\fR
 Execute the given text string as a script\.
 .
+.SS "\fBsh\fR [\fIoptions\fR]"
+Start a Homebrew build environment shell\. Uses our years\-battle\-hardened Homebrew build logic to help your \fB\./configure && make && make install\fR or even your \fBgem install\fR succeed\. Especially handy if you run Homebrew in an Xcode\-only configuration since it adds tools like \fBmake\fR to your \fBPATH\fR which build systems would not find otherwise\.
+.
+.TP
+\fB\-\-env\fR
+Use the standard \fBPATH\fR instead of superenv\'s when \fBstd\fR is passed\.
+.
+.SS "\fBstyle\fR [\fIoptions\fR] [\fIfile\fR|\fItap\fR|\fIformula\fR]"
+Check formulae or files for conformance to Homebrew style guidelines\.
+.
+.P
+Lists of \fIfile\fR, \fItap\fR and \fIformula\fR may not be combined\. If none are provided, \fBstyle\fR will run style checks on the whole Homebrew library, including core code and all formulae\.
+.
+.TP
+\fB\-\-fix\fR
+Fix style violations automatically using RuboCop\'s auto\-correct feature\.
+.
+.TP
+\fB\-\-display\-cop\-names\fR
+Include the RuboCop cop name for each violation in the output\.
+.
+.TP
+\fB\-\-only\-cops\fR
+Specify a comma\-separated \fIcops\fR list to check for violations of only the listed RuboCop cops\.
+.
+.TP
+\fB\-\-except\-cops\fR
+Specify a comma\-separated \fIcops\fR list to skip checking for violations of the listed RuboCop cops\.
+.
 .SS "\fBtap\-new\fR \fIuser\fR\fB/\fR\fIrepo\fR"
 Generate the template files for a new tap\.
 .
@@ -1311,6 +1296,21 @@ Run only \fItest_script\fR\fB_spec\.rb\fR\. Appending \fB:\fR\fIline_number\fR w
 .TP
 \fB\-\-seed\fR
 Randomise tests with the specified \fIvalue\fR instead of a random seed\.
+.
+.SS "\fBunpack\fR [\fIoptions\fR] \fIformula\fR"
+Unpack the source files for \fIformula\fR into subdirectories of the current working directory\.
+.
+.TP
+\fB\-\-destdir\fR
+Create subdirectories in the directory named by \fIpath\fR instead\.
+.
+.TP
+\fB\-\-patch\fR
+Patches for \fIformula\fR will be applied to the unpacked source\.
+.
+.TP
+\fB\-g\fR, \fB\-\-git\fR
+Initialise a Git repository in the unpacked source\. This is useful for creating patches for the software\.
 .
 .SS "\fBupdate\-test\fR [\fIoptions\fR]"
 Run a test of \fBbrew update\fR with a new repository clone\. If no options are passed, use \fBorigin/master\fR as the start commit\.

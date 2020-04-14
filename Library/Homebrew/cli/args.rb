@@ -99,6 +99,12 @@ module Homebrew
         end.uniq(&:name)
       end
 
+      def formulae_paths
+        @formulae_paths ||= (downcased_unique_named - casks).map do |name|
+          Formulary.path(name)
+        end.uniq(&:name)
+      end
+
       def casks
         @casks ||= downcased_unique_named.grep HOMEBREW_CASK_TAP_CASK_REGEX
       end

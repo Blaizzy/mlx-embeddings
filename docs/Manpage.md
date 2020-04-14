@@ -52,10 +52,6 @@ state. Read more at <https://docs.brew.sh/Analytics>.
 If `regenerate-uuid` is passed, regenerate the UUID used in Homebrew's
 analytics.
 
-### `cat` *`formula`*
-
-Display the source of *`formula`*.
-
 ### `cleanup` [*`options`*] [*`formula`*|*`cask`*]
 
 Remove stale lock files and outdated downloads for all formulae and casks, and
@@ -70,10 +66,6 @@ this for the given formulae and casks.
   Scrub the cache, including downloads for even the latest versions. Note downloads for any installed formulae or casks will still not be deleted. If you want to delete those too: `rm -rf "$(brew --cache)"`
 * `--prune-prefix`:
   Only prune the symlinks and directories from the prefix and remove no other files.
-
-### `command` *`cmd`*
-
-Display the path to the file being used when invoking `brew` *`cmd`*.
 
 ### `commands` [*`options`*]
 
@@ -136,17 +128,6 @@ subsequent ones.
   Search just names for *`text`*. If *`text`* is flanked by slashes, it is interpreted as a regular expression.
 * `-d`, `--description`:
   Search just descriptions for *`text`*. If *`text`* is flanked by slashes, it is interpreted as a regular expression.
-
-### `diy` [*`options`*]
-
-Automatically determine the installation prefix for non-Homebrew software. Using
-the output from this command, you can install your own software into the Cellar
-and then link it into Homebrew's prefix with `brew link`.
-
-* `--name`:
-  Explicitly set the *`name`* of the package being installed.
-* `--version`:
-  Explicitly set the *`version`* of the package being installed.
 
 ### `doctor` [*`options`*]
 
@@ -444,40 +425,12 @@ ones). No online search is performed.
 * `--ubuntu`:
   Search for *`text`* in the given package manager's list.
 
-### `sh` [*`options`*]
-
-Start a Homebrew build environment shell. Uses our years-battle-hardened
-Homebrew build logic to help your `./configure && make && make install` or even
-your `gem install` succeed. Especially handy if you run Homebrew in an
-Xcode-only configuration since it adds tools like `make` to your `PATH` which
-build systems would not find otherwise.
-
-* `--env`:
-  Use the standard `PATH` instead of superenv's when `std` is passed.
-
 ### `shellenv`
 
 Print export statements. When run in a shell, this installation of Homebrew will be added to your `PATH`, `MANPATH`, and `INFOPATH`.
 
 The variables `HOMEBREW_PREFIX`, `HOMEBREW_CELLAR` and `HOMEBREW_REPOSITORY` are also exported to avoid querying them multiple times.
 Consider adding evaluation of this command's output to your dotfiles (e.g. `~/.profile` or `~/.zprofile`) with: `eval $(brew shellenv)`
-
-### `style` [*`options`*] [*`file`*|*`tap`*|*`formula`*]
-
-Check formulae or files for conformance to Homebrew style guidelines.
-
-Lists of *`file`*, *`tap`* and *`formula`* may not be combined. If none are provided,
-`style` will run style checks on the whole Homebrew library, including core code
-and all formulae.
-
-* `--fix`:
-  Fix style violations automatically using RuboCop's auto-correct feature.
-* `--display-cop-names`:
-  Include the RuboCop cop name for each violation in the output.
-* `--only-cops`:
-  Specify a comma-separated *`cops`* list to check for violations of only the listed RuboCop cops.
-* `--except-cops`:
-  Specify a comma-separated *`cops`* list to skip checking for violations of the listed RuboCop cops.
 
 ### `switch` *`formula`* *`version`*
 
@@ -539,18 +492,6 @@ brew link` *`formula`*
 
 * `-n`, `--dry-run`:
   List files which would be unlinked without actually unlinking or deleting any files.
-
-### `unpack` [*`options`*] *`formula`*
-
-Unpack the source files for *`formula`* into subdirectories of the current working
-directory.
-
-* `--destdir`:
-  Create subdirectories in the directory named by *`path`* instead.
-* `--patch`:
-  Patches for *`formula`* will be applied to the unpacked source.
-* `-g`, `--git`:
-  Initialise a Git repository in the unpacked source. This is useful for creating patches for the software.
 
 ### `unpin` *`formula`*
 
@@ -795,6 +736,14 @@ present, "revision 1" will be added.
 * `--message`:
   Append *`message`* to the default commit message.
 
+### `cat` *`formula`*
+
+Display the source of *`formula`*.
+
+### `command` *`cmd`*
+
+Display the path to the file being used when invoking `brew` *`cmd`*.
+
 ### `create` [*`options`*] *`URL`*
 
 Generate a formula for the downloadable file at *`URL`* and open it in the editor.
@@ -829,6 +778,17 @@ a simple example. For the complete API, see:
   Explicitly set the *`version`* of the new formula.
 * `--tap`:
   Generate the new formula within the given tap, specified as *`user`*`/`*`repo`*.
+
+### `diy` [*`options`*]
+
+Automatically determine the installation prefix for non-Homebrew software. Using
+the output from this command, you can install your own software into the Cellar
+and then link it into Homebrew's prefix with `brew link`.
+
+* `--name`:
+  Explicitly set the *`name`* of the package being installed.
+* `--version`:
+  Explicitly set the *`version`* of the package being installed.
 
 ### `edit` [*`formula`*]
 
@@ -984,6 +944,34 @@ Run a Ruby instance with Homebrew's libraries loaded, e.g. `brew ruby -e "puts
 * `-e`:
   Execute the given text string as a script.
 
+### `sh` [*`options`*]
+
+Start a Homebrew build environment shell. Uses our years-battle-hardened
+Homebrew build logic to help your `./configure && make && make install` or even
+your `gem install` succeed. Especially handy if you run Homebrew in an
+Xcode-only configuration since it adds tools like `make` to your `PATH` which
+build systems would not find otherwise.
+
+* `--env`:
+  Use the standard `PATH` instead of superenv's when `std` is passed.
+
+### `style` [*`options`*] [*`file`*|*`tap`*|*`formula`*]
+
+Check formulae or files for conformance to Homebrew style guidelines.
+
+Lists of *`file`*, *`tap`* and *`formula`* may not be combined. If none are provided,
+`style` will run style checks on the whole Homebrew library, including core code
+and all formulae.
+
+* `--fix`:
+  Fix style violations automatically using RuboCop's auto-correct feature.
+* `--display-cop-names`:
+  Include the RuboCop cop name for each violation in the output.
+* `--only-cops`:
+  Specify a comma-separated *`cops`* list to check for violations of only the listed RuboCop cops.
+* `--except-cops`:
+  Specify a comma-separated *`cops`* list to skip checking for violations of the listed RuboCop cops.
+
 ### `tap-new` *`user`*`/`*`repo`*
 
 Generate the template files for a new tap.
@@ -1019,6 +1007,18 @@ Run Homebrew's unit and integration tests.
   Run only *`test_script`*`_spec.rb`. Appending `:`*`line_number`* will start at a specific line.
 * `--seed`:
   Randomise tests with the specified *`value`* instead of a random seed.
+
+### `unpack` [*`options`*] *`formula`*
+
+Unpack the source files for *`formula`* into subdirectories of the current working
+directory.
+
+* `--destdir`:
+  Create subdirectories in the directory named by *`path`* instead.
+* `--patch`:
+  Patches for *`formula`* will be applied to the unpacked source.
+* `-g`, `--git`:
+  Initialise a Git repository in the unpacked source. This is useful for creating patches for the software.
 
 ### `update-test` [*`options`*]
 

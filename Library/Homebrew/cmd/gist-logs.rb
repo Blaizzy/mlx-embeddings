@@ -28,7 +28,7 @@ module Homebrew
                           "be accessible with its link."
       switch :verbose
       switch :debug
-      max_named 1
+      named :formula
     end
   end
 
@@ -141,8 +141,6 @@ module Homebrew
 
   def gist_logs
     gist_logs_args.parse
-
-    raise FormulaUnspecifiedError if args.resolved_formulae.length != 1
 
     Install.perform_preinstall_checks(all_fatal: true)
     Install.perform_build_from_source_checks(all_fatal: true)
