@@ -142,7 +142,7 @@ module Homebrew
             system "go", "build", *std_go_args
         <% elsif mode == :meson %>
             mkdir "build" do
-              system "meson", "--prefix=\#{prefix}", ".."
+              system "meson", *std_meson_args, ".."
               system "ninja", "-v"
               system "ninja", "install", "-v"
             end
