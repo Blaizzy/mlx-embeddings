@@ -223,8 +223,8 @@ module Homebrew
   # @private
   def depends_on(a, b)
     if a.opt_or_installed_prefix_keg
-        .runtime_dependencies
-        .any? { |d| d["full_name"] == b.full_name }
+       &.runtime_dependencies
+       &.any? { |d| d["full_name"] == b.full_name }
       1
     else
       a <=> b
