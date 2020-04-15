@@ -1373,6 +1373,11 @@ class Formula
     ["--jobs=#{ENV.make_jobs}", "--max-backjumps=100000", "--install-method=copy", "--installdir=#{bin}"]
   end
 
+  # Standard parameters for meson builds.
+  def std_meson_args
+    ["--prefix=#{prefix}", "--libdir=#{lib}"]
+  end
+
   # an array of all core {Formula} names
   # @private
   def self.core_names
