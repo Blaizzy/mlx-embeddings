@@ -102,7 +102,7 @@ module Homebrew
       def formulae_paths
         @formulae_paths ||= (downcased_unique_named - casks).map do |name|
           Formulary.path(name)
-        end.uniq(&:name)
+        end.uniq
       end
 
       def casks
