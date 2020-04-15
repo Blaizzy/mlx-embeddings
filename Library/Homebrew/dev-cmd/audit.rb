@@ -271,8 +271,6 @@ module Homebrew
         problem "'inreplace ... do' was used for a single substitution (use the non-block form instead)."
       end
 
-      problem "File should end with a newline" unless text.trailing_newline?
-
       if formula.core_formula? && @versioned_formula
         unversioned_formula = begin
           # build this ourselves as we want e.g. homebrew/core to be present
