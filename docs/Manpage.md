@@ -854,8 +854,8 @@ Finds pull requests that can be automatically merged using `brew pr-publish`.
   Target repository tap (default: `homebrew/core`)
 * `--with-label`:
   Pull requests must have this label (default: `ready to merge`)
-* `--without-label`:
-  Pull requests must not have this label (default: `do not merge`)
+* `--without-labels`:
+  Pull requests must not have these labels (default: `do not merge`, `new formula`)
 * `--publish`:
   Run `brew pr-publish` on matching pull requests.
 * `--ignore-failures`:
