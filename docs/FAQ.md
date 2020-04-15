@@ -48,14 +48,7 @@ or to __disable__ automatic `brew cleanup`:
     export HOMEBREW_NO_INSTALL_CLEANUP=1
 
 ## How do I uninstall Homebrew?
-To uninstall Homebrew, paste the command below in a terminal prompt.
-
-```sh
-ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall)"
-```
-
-Download the [uninstall script](https://raw.githubusercontent.com/Homebrew/install/master/uninstall)
-and run `./uninstall --help` to view more uninstall options.
+To uninstall Homebrew, run the [uninstall script from the Homebrew/install repository](https://github.com/homebrew/install#uninstall-homebrew).
 
 ## How do I uninstall a formula?
 If you do not uninstall all of the versions that Homebrew has installed,
