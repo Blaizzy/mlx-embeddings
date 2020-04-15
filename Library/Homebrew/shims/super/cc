@@ -199,7 +199,7 @@ class Cmd
       args << arg unless tool =~ /^g..-4.[02]/
     when /^-Wl,-z,defs/
       # -Wl,-undefined,error is already the default
-    when /^-W[alp],/, /^-Wno-/
+    when /^-W[alp],/, /^-Wno-/, "-Werror=implicit-function-declaration"
       args << arg
     when /^-W.*/
       # prune warnings
