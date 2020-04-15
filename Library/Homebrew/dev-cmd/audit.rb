@@ -240,6 +240,7 @@ module Homebrew
     end
 
     def audit_file
+      # TODO: check could be in RuboCop
       actual_mode = formula.path.stat.mode
       # Check that the file is world-readable.
       if actual_mode & 0444 != 0444
@@ -263,10 +264,13 @@ module Homebrew
                        path:   formula.path)
       end
 
+      # TODO: check could be in RuboCop
       problem "'DATA' was found, but no '__END__'" if text.data? && !text.end?
 
+      # TODO: check could be in RuboCop
       problem "'__END__' was found, but 'DATA' is not used" if text.end? && !text.data?
 
+      # TODO: check could be in RuboCop
       if text.to_s.match?(/inreplace [^\n]* do [^\n]*\n[^\n]*\.gsub![^\n]*\n\ *end/m)
         problem "'inreplace ... do' was used for a single substitution (use the non-block form instead)."
       end
@@ -477,6 +481,7 @@ module Homebrew
       first_word = reason.split.first
 
       if reason =~ /\A[A-Z]/ && !reason.start_with?(*whitelist)
+        # TODO: check could be in RuboCop
         problem <<~EOS
           '#{first_word}' from the keg_only reason should be '#{first_word.downcase}'.
         EOS
@@ -484,6 +489,7 @@ module Homebrew
 
       return unless reason.end_with?(".")
 
+      # TODO: check could be in RuboCop
       problem "keg_only reason should not end with a period."
     end
 
@@ -932,58 +938,70 @@ module Homebrew
     def line_problems(line, _lineno)
       # Check for string interpolation of single values.
       if line =~ /(system|inreplace|gsub!|change_make_var!).*[ ,]"#\{([\w.]+)\}"/
+        # TODO: check could be in RuboCop
         problem "Don't need to interpolate \"#{Regexp.last_match(2)}\" with #{Regexp.last_match(1)}"
       end
 
       # Check for string concatenation; prefer interpolation
       if line =~ /(#\{\w+\s*\+\s*['"][^}]+\})/
+        # TODO: check could be in RuboCop
         problem "Try not to concatenate paths in string interpolation:\n   #{Regexp.last_match(1)}"
       end
 
       # Prefer formula path shortcuts in Pathname+
       if line =~ %r{\(\s*(prefix\s*\+\s*(['"])(bin|include|libexec|lib|sbin|share|Frameworks)[/'"])}
+        # TODO: check could be in RuboCop
         problem(
           "\"(#{Regexp.last_match(1)}...#{Regexp.last_match(2)})\" should" \
           " be \"(#{Regexp.last_match(3).downcase}+...)\"",
         )
       end
 
+      # TODO: check could be in RuboCop
       problem "Use separate make calls" if line.include?("make && make")
 
       if line =~ /JAVA_HOME/i &&
          [formula.name, *formula.deps.map(&:name)].none? { |name| name.match?(/^openjdk(@|$)/) } &&
          formula.requirements.none? { |req| req.is_a?(JavaRequirement) }
+        # TODO: check could be in RuboCop
         problem "Use `depends_on :java` to set JAVA_HOME"
       end
 
       return unless @strict
 
+      # TODO: check could be in RuboCop
       problem "`env :userpaths` in formulae is deprecated" if line.include?("env :userpaths")
 
       if line =~ /system ((["'])[^"' ]*(?:\s[^"' ]*)+\2)/
         bad_system = Regexp.last_match(1)
         unless %w[| < > & ; *].any? { |c| bad_system.include? c }
           good_system = bad_system.gsub(" ", "\", \"")
+          # TODO: check could be in RuboCop
           problem "Use `system #{good_system}` instead of `system #{bad_system}` "
         end
       end
 
+      # TODO: check could be in RuboCop
       problem "`#{Regexp.last_match(1)}` is now unnecessary" if line =~ /(require ["']formula["'])/
 
       if line.match?(%r{#\{share\}/#{Regexp.escape(formula.name)}[/'"]})
+        # TODO: check could be in RuboCop
         problem "Use \#{pkgshare} instead of \#{share}/#{formula.name}"
       end
 
       if !@core_tap && line =~ /depends_on .+ if build\.with(out)?\?\(?["']\w+["']\)?/
+        # TODO: check could be in RuboCop
         problem "`Use :optional` or `:recommended` instead of `#{Regexp.last_match(0)}`"
       end
 
       if line =~ %r{share(\s*[/+]\s*)(['"])#{Regexp.escape(formula.name)}(?:\2|/)}
+        # TODO: check could be in RuboCop
         problem "Use pkgshare instead of (share#{Regexp.last_match(1)}\"#{formula.name}\")"
       end
 
       return unless @core_tap
 
+      # TODO: check could be in RuboCop
       problem "`env :std` in homebrew/core formulae is deprecated" if line.include?("env :std")
     end
 
@@ -1083,6 +1101,7 @@ module Homebrew
       if version.nil?
         problem "missing version"
       elsif version.blank?
+        # TODO: check could be in RuboCop
         problem "version is set to an empty string"
       elsif !version.detected_from_url?
         version_text = version
@@ -1092,21 +1111,25 @@ module Homebrew
         end
       end
 
+      # TODO: check could be in RuboCop
       problem "version #{version} should not have a leading 'v'" if version.to_s.start_with?("v")
 
       return unless version.to_s.match?(/_\d+$/)
 
+      # TODO: check could be in RuboCop
       problem "version #{version} should not end with an underline and a number"
     end
 
     def audit_download_strategy
       if url =~ %r{^(cvs|bzr|hg|fossil)://} || url =~ %r{^(svn)\+http://}
+        # TODO: check could be in RuboCop
         problem "Use of the #{$&} scheme is deprecated, pass `:using => :#{Regexp.last_match(1)}` instead"
       end
 
       url_strategy = DownloadStrategyDetector.detect(url)
 
       if using == :git || url_strategy == GitDownloadStrategy
+        # TODO: check could be in RuboCop
         problem "Git should specify :revision when a :tag is specified." if specs[:tag] && !specs[:revision]
       end
 
