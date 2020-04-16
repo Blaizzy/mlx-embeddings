@@ -799,11 +799,11 @@ Check \fIformula\fR for Homebrew coding style violations\. This should be run be
 .
 .TP
 \fB\-\-strict\fR
-Run additional style checks, including RuboCop style checks\.
+Run additional, stricter style checks\.
 .
 .TP
 \fB\-\-online\fR
-Run additional slower style checks that require a network connection\.
+Run additional, slower style checks that require a network connection\.
 .
 .TP
 \fB\-\-new\-formula\fR
@@ -820,6 +820,10 @@ Include the RuboCop cop name for each violation in the output\.
 .TP
 \fB\-\-display\-filename\fR
 Prefix every line of output with the file or formula name being audited, to make output easy to grep\.
+.
+.TP
+\fB\-\-skip\-style\fR
+Skip running non\-RuboCop style checks\. Useful if you plan on running \fBbrew style\fR separately\.
 .
 .TP
 \fB\-D\fR, \fB\-\-audit\-debug\fR

@@ -633,9 +633,9 @@ available formulae. Will exit with a non-zero status if any errors are found,
 which can be useful for implementing pre-commit hooks.
 
 * `--strict`:
-  Run additional style checks, including RuboCop style checks.
+  Run additional, stricter style checks.
 * `--online`:
-  Run additional slower style checks that require a network connection.
+  Run additional, slower style checks that require a network connection.
 * `--new-formula`:
   Run various additional style checks to determine if a new formula is eligible for Homebrew. This should be used when creating new formula and implies `--strict` and `--online`.
 * `--fix`:
@@ -644,6 +644,8 @@ which can be useful for implementing pre-commit hooks.
   Include the RuboCop cop name for each violation in the output.
 * `--display-filename`:
   Prefix every line of output with the file or formula name being audited, to make output easy to grep.
+* `--skip-style`:
+  Skip running non-RuboCop style checks. Useful if you plan on running `brew style` separately.
 * `-D`, `--audit-debug`:
   Enable debugging and profiling of audit methods.
 * `--only`:
