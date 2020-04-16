@@ -353,7 +353,7 @@ module Homebrew
       end
     end
 
-    describe "#audit_keg_only_style" do
+    describe "#audit_keg_only" do
       specify "keg_only_needs_downcasing" do
         fa = formula_auditor "foo", <<~RUBY, strict: true
           class Foo < Formula
@@ -363,7 +363,7 @@ module Homebrew
           end
         RUBY
 
-        fa.audit_keg_only_style
+        fa.audit_keg_only
         expect(fa.problems)
           .to eq(["'Because' from the keg_only reason should be 'because'.\n"])
       end
@@ -377,7 +377,7 @@ module Homebrew
           end
         RUBY
 
-        fa.audit_keg_only_style
+        fa.audit_keg_only
         expect(fa.problems)
           .to eq(["keg_only reason should not end with a period."])
       end
@@ -396,7 +396,7 @@ module Homebrew
           end
         RUBY
 
-        fa.audit_keg_only_style
+        fa.audit_keg_only
         expect(fa.problems)
           .to eq([])
       end
@@ -410,7 +410,7 @@ module Homebrew
           end
         RUBY
 
-        fa.audit_keg_only_style
+        fa.audit_keg_only
         expect(fa.problems)
           .to eq([])
       end

@@ -26,9 +26,9 @@ module Homebrew
         found, which can be useful for implementing pre-commit hooks.
       EOS
       switch "--strict",
-             description: "Run additional style checks, including RuboCop style checks."
+             description: "Run additional, stricter style checks."
       switch "--online",
-             description: "Run additional slower style checks that require a network connection."
+             description: "Run additional, slower style checks that require a network connection."
       switch "--new-formula",
              description: "Run various additional style checks to determine if a new formula is eligible "\
                           "for Homebrew. This should be used when creating new formula and implies "\
@@ -40,6 +40,9 @@ module Homebrew
       switch "--display-filename",
              description: "Prefix every line of output with the file or formula name being audited, to "\
                           "make output easy to grep."
+      switch "--skip-style",
+             description: "Skip running non-RuboCop style checks. Useful if you plan on running "\
+                          "`brew style` separately."
       switch "-D", "--audit-debug",
              description: "Enable debugging and profiling of audit methods."
       comma_array "--only",
@@ -59,6 +62,9 @@ module Homebrew
       conflicts "--only", "--except"
       conflicts "--only-cops", "--except-cops", "--strict"
       conflicts "--only-cops", "--except-cops", "--only"
+      conflicts "--display-cop-names", "--skip-style"
+      conflicts "--display-cop-names", "--only-cops"
+      conflicts "--display-cop-names", "--except-cops"
     end
   end
 
@@ -80,11 +86,11 @@ module Homebrew
     ENV.setup_build_environment
 
     if args.no_named?
-      ff = Formula
-      files = Tap.map(&:formula_dir)
+      audit_formulae = Formula
+      style_files = Tap.map(&:formula_dir)
     else
-      ff = args.resolved_formulae
-      files = args.formulae_paths
+      audit_formulae = args.resolved_formulae
+      style_files = args.formulae_paths
     end
 
     only_cops = args.only_cops
@@ -98,17 +104,17 @@ module Homebrew
     elsif except_cops
       options[:except_cops] = except_cops
     elsif !strict
-      options[:only_cops] = [:FormulaAudit]
+      options[:except_cops] = [:FormulaAuditStrict]
     end
 
     # Check style in a single batch run up front for performance
-    style_results = Style.check_style_json(files, options)
+    style_results = Style.check_style_json(style_files, options) unless args.skip_style?
 
     new_formula_problem_lines = []
-    ff.sort.each do |f|
+    audit_formulae.sort.each do |f|
       only = only_cops ? ["style"] : args.only
       options = { new_formula: new_formula, strict: strict, online: online, only: only, except: args.except }
-      options[:style_offenses] = style_results.file_offenses(f.path)
+      options[:style_offenses] = style_results.file_offenses(f.path) unless args.skip_style?
       options[:display_cop_names] = args.display_cop_names?
 
       fa = FormulaAuditor.new(f, options)
@@ -119,7 +125,7 @@ module Homebrew
       formula_count += 1
       problem_count += fa.problems.size
       problem_lines = format_problem_lines(fa.problems)
-      corrected_problem_count = options[:style_offenses].count(&:corrected?)
+      corrected_problem_count = options[:style_offenses].count(&:corrected?) unless args.skip_style?
       new_formula_problem_lines = format_problem_lines(fa.new_formula_problems)
       if args.display_filename?
         puts problem_lines.map { |s| "#{f.path}: #{s}" }
@@ -451,7 +457,7 @@ module Homebrew
       end
     end
 
-    def audit_keg_only_style
+    def audit_keg_only
       return unless formula.keg_only?
 
       whitelist = %w[
