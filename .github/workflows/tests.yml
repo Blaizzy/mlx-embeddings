@@ -163,8 +163,7 @@ jobs:
       run: |
         if [ "$RUNNER_OS" = "Linux" ]; then
           docker-compose -f Dockerfile.yml run --rm -v $GITHUB_WORKSPACE:/tmp/test-bot sut
-          # TODO: reenable when we figure out issue
-          # docker tag homebrew_sut brew
+          docker tag brew_sut brew
         else
           brew test-bot
         fi
