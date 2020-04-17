@@ -8,6 +8,19 @@ FormulaAudit:
 FormulaAuditStrict:
   Enabled: true
 
+# enable all pending rubocops
+AllCops:
+  NewCops: enable
+
+# don't allow cops to be disabled in formulae
+Style/DisableCopsWithinSourceCodeDirective:
+  Enabled: true
+  Exclude:
+  # TODO: really long lines but hard to resolve (but would be nice to do).
+  - '**/Formula/libgraphqlparser.rb'
+  # TODO: false positive in RuboCop, see if it can be worked around/fixed.
+  - '**/Formula/rpm.rb'
+
 # make our hashes consistent
 Layout/HashAlignment:
   EnforcedHashRocketStyle: table
@@ -45,12 +58,6 @@ Lint/AmbiguousRegexpLiteral:
 # so many of these in formulae and can't be autocorrected
 Lint/ParenthesesAsGroupedExpression:
   Enabled: false
-
-# not enabled by default but nice to have
-Lint/RaiseException:
-  Enabled: true
-Lint/StructNewOverride:
-  Enabled: true
 
 # most metrics don't make sense to apply for formulae/taps
 Metrics/AbcSize:
