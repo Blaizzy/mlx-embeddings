@@ -201,6 +201,29 @@ module FormulaCellarChecks
     EOS
   end
 
+  def check_shim_references(prefix)
+    return unless prefix.directory?
+
+    keg = Keg.new(prefix)
+
+    matches = []
+    keg.each_unique_file_matching(HOMEBREW_SHIMS_PATH) do |f|
+      match = f.relative_path_from(keg.to_path)
+
+      next if match.to_s.match? %r{^share/doc/.+?/INFO_BIN$}
+
+      matches << match
+    end
+
+    return if matches.empty?
+
+    <<~EOS
+      Files were found with references to the Homebrew shims directory.
+      The offending files are:
+        #{matches * "\n  "}
+    EOS
+  end
+
   def audit_installed
     @new_formula ||= false
 
@@ -216,6 +239,7 @@ module FormulaCellarChecks
     problem_if_output(check_elisp_dirname(formula.share, formula.name))
     problem_if_output(check_elisp_root(formula.share, formula.name))
     problem_if_output(check_python_packages(formula.lib, formula.deps))
+    problem_if_output(check_shim_references(formula.prefix))
   end
   alias generic_audit_installed audit_installed
 
