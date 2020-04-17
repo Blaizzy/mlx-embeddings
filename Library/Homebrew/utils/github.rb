@@ -480,6 +480,34 @@ module GitHub
     artifact.first["archive_download_url"]
   end
 
+  def sponsors_by_tier(user)
+    url = "https://api.github.com/graphql"
+    data = {
+      query: <<~EOS,
+          {
+            organization(login: "#{user}") {
+              sponsorsListing {
+                tiers(first: 100) {
+                  nodes {
+                    monthlyPriceInDollars
+                    adminInfo {
+                    sponsorships(first: 100) {
+                      totalCount
+                      nodes {
+                        sponsor { login }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      EOS
+    }
+    open_api(url, scopes: ["admin:org", "user"], data: data, request_method: "POST")
+  end
+
   def api_errors
     [GitHub::AuthenticationFailedError, GitHub::HTTPNotFoundError,
      GitHub::RateLimitExceededError, GitHub::Error, JSON::ParserError].freeze
