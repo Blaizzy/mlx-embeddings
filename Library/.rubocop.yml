@@ -15,11 +15,6 @@ AllCops:
 # don't allow cops to be disabled in formulae
 Style/DisableCopsWithinSourceCodeDirective:
   Enabled: true
-  Exclude:
-  # TODO: really long lines but hard to resolve (but would be nice to do).
-  - '**/Formula/libgraphqlparser.rb'
-  # TODO: false positive in RuboCop, see if it can be worked around/fixed.
-  - '**/Formula/rpm.rb'
 
 # make our hashes consistent
 Layout/HashAlignment:
