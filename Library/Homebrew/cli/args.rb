@@ -9,10 +9,12 @@ module Homebrew
       # undefine tap to allow --tap argument
       undef tap
 
-      def initialize(argv:)
+      def initialize
         super
-        @argv = argv
-        @cmdline_args = argv
+
+        self[:remaining] = []
+        self[:cmdline_args] = ARGV_WITHOUT_MONKEY_PATCHING.dup
+
         @args_parsed = false
         @processed_options = []
       end
@@ -60,8 +62,6 @@ module Homebrew
       end
 
       def named
-        return [] if remaining.nil?
-
         remaining
       end
 

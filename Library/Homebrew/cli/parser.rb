@@ -37,11 +37,10 @@ module Homebrew
         }
       end
 
-      def initialize(args = ARGV, &block)
+      def initialize(&block)
         @parser = OptionParser.new
-        @args = Homebrew::CLI::Args.new(argv: ARGV_WITHOUT_MONKEY_PATCHING)
-        @args[:remaining] = []
-        @args[:cmdline_args] = args.dup
+        @args = Homebrew::CLI::Args.new
+
         @constraints = []
         @conflicts = []
         @switch_sources = {}

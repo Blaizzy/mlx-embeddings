@@ -86,7 +86,7 @@ module Homebrew
     end
 
     def args
-      @args ||= CLI::Args.new(argv: ARGV_WITHOUT_MONKEY_PATCHING)
+      @args ||= CLI::Args.new
     end
 
     def messages
