@@ -19,6 +19,7 @@ module RuboCop
           krb5
           libedit
           libffi
+          libiconv
           libpcap
           libxml2
           libxslt
