@@ -241,30 +241,6 @@ module Homebrew
 
     def audit_file
       # TODO: check could be in RuboCop
-      actual_mode = formula.path.stat.mode
-      # Check that the file is world-readable.
-      if actual_mode & 0444 != 0444
-        problem format("Incorrect file permissions (%03<actual>o): chmod %<wanted>s %<path>s",
-                       actual: actual_mode & 0777,
-                       wanted: "+r",
-                       path:   formula.path)
-      end
-      # Check that the file is user-writeable.
-      if actual_mode & 0200 != 0200
-        problem format("Incorrect file permissions (%03<actual>o): chmod %<wanted>s %<path>s",
-                       actual: actual_mode & 0777,
-                       wanted: "u+w",
-                       path:   formula.path)
-      end
-      # Check that the file is *not* other-writeable.
-      if actual_mode & 0002 == 002
-        problem format("Incorrect file permissions (%03<actual>o): chmod %<wanted>s %<path>s",
-                       actual: actual_mode & 0777,
-                       wanted: "o-w",
-                       path:   formula.path)
-      end
-
-      # TODO: check could be in RuboCop
       problem "'DATA' was found, but no '__END__'" if text.data? && !text.end?
 
       # TODO: check could be in RuboCop

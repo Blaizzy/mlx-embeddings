@@ -19,5 +19,6 @@ require "rubocops/urls"
 require "rubocops/lines"
 require "rubocops/class"
 require "rubocops/uses_from_macos"
+require "rubocops/files"
 
 require "rubocops/rubocop-cask"

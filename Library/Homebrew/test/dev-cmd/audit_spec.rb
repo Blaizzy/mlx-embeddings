@@ -96,52 +96,6 @@ module Homebrew
     end
 
     describe "#audit_file" do
-      specify "file permissions" do
-        allow(File).to receive(:umask).and_return(022)
-
-        fa = formula_auditor "foo", <<~RUBY
-          class Foo < Formula
-            url "https://brew.sh/foo-1.0.tgz"
-          end
-        RUBY
-
-        path = fa.formula.path
-
-        path.chmod 0600
-        fa.audit_file
-        expect(fa.problems)
-          .to eq([
-                   "Incorrect file permissions (600): chmod +r #{path}",
-                 ])
-        fa.problems.clear
-
-        path.chmod 0444
-        fa.audit_file
-        expect(fa.problems)
-          .to eq([
-                   "Incorrect file permissions (444): chmod u+w #{path}",
-                 ])
-        fa.problems.clear
-
-        path.chmod 0646
-        fa.audit_file
-        expect(fa.problems)
-          .to eq([
-                   "Incorrect file permissions (646): chmod o-w #{path}",
-                 ])
-        fa.problems.clear
-
-        path.chmod 0002
-        fa.audit_file
-        expect(fa.problems)
-          .to eq([
-                   "Incorrect file permissions (002): chmod +r #{path}",
-                   "Incorrect file permissions (002): chmod u+w #{path}",
-                   "Incorrect file permissions (002): chmod o-w #{path}",
-                 ])
-        fa.problems.clear
-      end
-
       specify "DATA but no __END__" do
         fa = formula_auditor "foo", <<~RUBY
           class Foo < Formula
@@ -165,13 +119,6 @@ module Homebrew
 
         fa.audit_file
         expect(fa.problems).to eq(["'__END__' was found, but 'DATA' is not used"])
-      end
-
-      specify "no trailing newline" do
-        fa = formula_auditor "foo", 'class Foo<Formula; url "file:///foo-1.0.tgz";end'
-
-        fa.audit_file
-        expect(fa.problems).to eq(["File should end with a newline"])
       end
 
       specify "no issue" do
