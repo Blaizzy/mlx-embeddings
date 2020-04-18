@@ -13,7 +13,7 @@ module Homebrew
         Display Homebrew's Cellar path. *Default:* `$(brew --prefix)/Cellar`, or if
         that directory doesn't exist, `$(brew --repository)/Cellar`.
 
-        If <formula> is provided, display the location in the cellar where <formula>
+        If <formula> is provided, display the location in the Cellar where <formula>
         would be installed, without any sort of versioned directory as the last path.
       EOS
     end

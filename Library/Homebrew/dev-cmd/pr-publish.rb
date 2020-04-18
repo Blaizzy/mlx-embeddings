@@ -11,10 +11,11 @@ module Homebrew
       usage_banner <<~EOS
         `pr-publish` [<options>] <pull_request> [<pull_request> ...]
 
-        Publishes bottles for a pull request with GitHub Actions.
-        Requires write access to the repository.
+        Publish bottles for a pull request with GitHub Actions.
+        Requires write access to the `homebrew/core` repository.
       EOS
       switch :verbose
+      min_named 1
     end
   end
 
@@ -22,8 +23,6 @@ module Homebrew
     pr_publish_args.parse
 
     ENV["HOMEBREW_FORCE_HOMEBREW_ON_LINUX"] = "1" unless OS.mac?
-
-    odie "You need to specify at least one pull request number!" if Homebrew.args.named.empty?
 
     args.named.uniq.each do |arg|
       arg = "#{CoreTap.instance.default_remote}/pull/#{arg}" if arg.to_i.positive?

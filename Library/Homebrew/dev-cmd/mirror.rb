@@ -10,7 +10,7 @@ module Homebrew
       usage_banner <<~EOS
         `mirror` <formula>
 
-        Reuploads the stable URL for a formula to Bintray to use it as a mirror.
+        Reupload the stable URL of a formula to Bintray for use as a mirror.
       EOS
       switch :verbose
       switch :debug

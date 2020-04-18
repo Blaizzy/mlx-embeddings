@@ -22,8 +22,8 @@ module Homebrew
         Get a patch from a GitHub commit or pull request and apply it to Homebrew.
         Optionally, publish updated bottles for any formulae changed by the patch.
 
-        Each <patch> may be the number of a pull request in `homebrew/core`, the URL of any pull request
-        or commit on GitHub.
+        Each <patch> may be the number of a pull request in `homebrew/core`
+        or the URL of any pull request or commit on GitHub.
       EOS
       switch "--bump",
              description: "For one-formula PRs, automatically reword commit message to our preferred format."
