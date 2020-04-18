@@ -14,9 +14,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, macOS-latest]
     steps:
-    - name: Set up Git repository
-      uses: actions/checkout@v1
-
     - name: Set up Homebrew PATH
       run: |
         if [ "$RUNNER_OS" = "Linux" ]; then
@@ -27,28 +24,14 @@ jobs:
 
     - name: Set up Homebrew
       run: |
+        cd $(brew --repo)
+        rm -rf $GITHUB_WORKSPACE
+        ln -s $PWD $GITHUB_WORKSPACE
+        git fetch --tags origin ${{github.sha}}
+        git checkout --force -B master FETCH_HEAD
+        brew update-reset Library/Taps/homebrew/homebrew-core
         if [ "$RUNNER_OS" = "Linux" ]; then
-          HOMEBREW_REPOSITORY=/home/linuxbrew/.linuxbrew/Homebrew
-
-          sudo mkdir -p "$HOMEBREW_REPOSITORY/Library/Taps"
-          mv "$HOMEBREW_REPOSITORY/Library/Taps" "$PWD/Library"
-          sudo rm -rf "$HOMEBREW_REPOSITORY"
-          sudo ln -sf "$PWD" "$HOMEBREW_REPOSITORY"
-
-          cd /home/linuxbrew/.linuxbrew
-          sudo mkdir -p bin etc include lib opt sbin share var/homebrew/linked Cellar
-          sudo ln -sf ../Homebrew/bin/brew /home/linuxbrew/.linuxbrew/bin/
-          sudo chown -R "$USER" /home/linuxbrew
-
-          brew update-reset Homebrew/Library/Taps/homebrew/homebrew-core
-        else
-          HOMEBREW_REPOSITORY="$(brew --repo)"
-
-          mv "$HOMEBREW_REPOSITORY/Library/Taps" "$PWD/Library"
-          sudo rm -rf "$HOMEBREW_REPOSITORY"
-          sudo ln -sf "$PWD" "$HOMEBREW_REPOSITORY"
-
-          brew update-reset Library/Taps/homebrew/homebrew-core
+          sudo chown -R "$USER" $(brew --prefix)
         fi
 
     - name: Set up Ruby
@@ -76,7 +59,7 @@ jobs:
         brew install-bundler-gems
 
         # Check for uncommitted gems
-        git -C $(brew --repo) diff --stat --exit-code Library/Homebrew/vendor/bundle/ruby
+        git diff --stat --exit-code Library/Homebrew/vendor/bundle/ruby
 
         if [ "$RUNNER_OS" = "Linux" ]; then
           # Fix permissions for 'brew tests'
@@ -87,7 +70,6 @@ jobs:
       run: |
         # Install taps needed for 'brew tests' and 'brew man'
         export HOMEBREW_NO_AUTO_UPDATE=1
-        sudo chown -R "$USER" Library/Taps
         brew tap homebrew/bundle
         brew tap homebrew/services
         if [ "$RUNNER_OS" = "macOS" ]; then
@@ -151,7 +133,7 @@ jobs:
     - name: Run vale for docs linting
       run: |
         brew install vale
-        vale $(brew --repo)/docs/
+        vale docs/
 
     - name: Build Docker image
       if: matrix.os == 'ubuntu-latest'
@@ -163,7 +145,7 @@ jobs:
       run: |
         if [ "$RUNNER_OS" = "Linux" ]; then
           docker-compose -f Dockerfile.yml run --rm -v $GITHUB_WORKSPACE:/tmp/test-bot sut
-          docker tag brew_sut brew
+          docker tag homebrew_sut brew
         else
           brew test-bot
         fi
