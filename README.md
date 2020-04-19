@@ -72,13 +72,10 @@ Code is under the [BSD 2-clause "Simplified" License](LICENSE.txt).
 Documentation is under the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/).
 
 ## Sponsors
-Our macOS continuous integration infrastructure is hosted by [MacStadium](https://www.macstadium.com).
+Our macOS continuous integration infrastructure is hosted by [MacStadium's Orka](https://www.macstadium.com/customers/homebrew).
 
 [![Powered by MacStadium](https://cloud.githubusercontent.com/assets/125011/22776032/097557ac-eea6-11e6-8ba8-eff22dfd58f1.png)](https://www.macstadium.com)
 
-Our Jenkins CI installation is hosted by [DigitalOcean](https://m.do.co/c/7e39c35d5581).
-
-![DigitalOcean](https://cloud.githubusercontent.com/assets/125011/26827038/4b7b5ade-4ab3-11e7-811b-fed3ab0e934d.png)
 
 Our bottles (binary packages) are hosted by [Bintray](https://bintray.com/homebrew).
 

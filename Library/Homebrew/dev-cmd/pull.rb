@@ -11,18 +11,6 @@ require "pkg_version"
 require "bottle_publisher"
 require "formula_info"
 
-module GitHub
-  module_function
-
-  # Return the corresponding test-bot user name for the given GitHub organization.
-  def test_bot_user(user, test_bot)
-    return test_bot if test_bot
-    return "BrewTestBot" if user.casecmp("homebrew").zero?
-
-    "#{user.capitalize}TestBot"
-  end
-end
-
 module Homebrew
   module_function
 
@@ -35,7 +23,7 @@ module Homebrew
         Optionally, publish updated bottles for any formulae changed by the patch.
 
         Each <patch> may be the number of a pull request in `homebrew/core`, the URL of any pull request
-        or commit on GitHub or a "https://jenkins.brew.sh/job/..." testing job URL.
+        or commit on GitHub.
       EOS
       switch "--bump",
              description: "For one-formula PRs, automatically reword commit message to our preferred format."
@@ -50,14 +38,6 @@ module Homebrew
              description: "Do not warn if pulling to a branch besides master (useful for testing)."
       switch "--no-pbcopy",
              description: "Do not copy anything to the system clipboard."
-      switch "--no-publish",
-             description: "Do not publish bottles to Bintray."
-      switch "--warn-on-publish-failure",
-             description: "Do not exit if there's a failure publishing bottles on Bintray."
-      flag   "--bintray-org=",
-             description: "Publish bottles to the specified Bintray <organisation>."
-      flag   "--test-bot-user=",
-             description: "Pull the bottle block commit from the specified <user> on GitHub."
       switch :verbose
       switch :debug
       min_named 1
@@ -92,18 +72,7 @@ module Homebrew
 
     args.named.each do |arg|
       arg = "#{CoreTap.instance.default_remote}/pull/#{arg}" if arg.to_i.positive?
-      if (testing_match = arg.match %r{/job/Homebrew.*Testing/(\d+)})
-        tap = ARGV.value("tap")
-        tap = if tap&.start_with?("homebrew/")
-          Tap.fetch("homebrew", tap.delete_prefix("homebrew/"))
-        elsif tap
-          odie "Tap option did not start with \"homebrew/\": #{tap}"
-        else
-          CoreTap.instance
-        end
-        _, testing_job = *testing_match
-        url = "https://github.com/Homebrew/homebrew-#{tap.repo}/compare/master...BrewTestBot:testing-#{testing_job}"
-      elsif (api_match = arg.match HOMEBREW_PULL_API_REGEX)
+      if (api_match = arg.match HOMEBREW_PULL_API_REGEX)
         _, user, repo, issue = *api_match
         url = "https://github.com/#{user}/#{repo}/pull/#{issue}"
         tap = Tap.fetch(user, repo) if repo.match?(HOMEBREW_OFFICIAL_REPO_PREFIXES_REGEX)
@@ -114,7 +83,7 @@ module Homebrew
         odie "Not a GitHub pull request or commit: #{arg}"
       end
 
-      odie "No pull request detected!" if !testing_job && issue.nil?
+      odie "No pull request detected!" if issue.blank?
 
       if tap
         tap.install unless tap.installed?
@@ -162,7 +131,6 @@ module Homebrew
         end
       end
 
-      fetch_bottles = false
       changed_formulae_names.each do |name|
         next if Homebrew::EnvConfig.disable_load_formula?
 
@@ -219,33 +187,7 @@ module Homebrew
         safe_system "git", "commit", "--amend", "--signoff", "--allow-empty", "-q", "-m", message
       end
 
-      if fetch_bottles
-        bottle_commit_url = if testing_job
-          bottle_branch = "testing-bottle-#{testing_job}"
-          url
-        else
-          bottle_branch = "pull-bottle-#{issue}"
-          bot_username = GitHub.test_bot_user(user, args.test_bot_user)
-          "https://github.com/#{bot_username}/homebrew-#{tap.repo}/compare/#{user}:master...pr-#{issue}"
-        end
-
-        curl "--silent", "--fail", "--output", "/dev/null", "--head", bottle_commit_url
-
-        if merge_commit
-          fetch_merge_patch(bottle_commit_url, args, issue)
-        else
-          fetch_bottles_patch(bottle_commit_url, args, bottle_branch, branch, orig_revision)
-        end
-        BottlePublisher.new(
-          tap,
-          changed_formulae_names,
-          args.bintray_org,
-          args.no_publish?,
-          args.warn_on_publish_failure?,
-        ).publish_and_check_bottles
-      elsif merge_commit
-        fetch_merge_patch(url, args, issue)
-      end
+      fetch_merge_patch(url, args, issue) if merge_commit
 
       ohai "Patch changed:"
       safe_system "git", "diff-tree", "-r", "--stat", orig_revision, end_revision
@@ -272,15 +214,6 @@ module Homebrew
 
   def head_revision(_url, fetched)
     Utils.popen_read("git", "rev-parse", fetched ? "FETCH_HEAD" : "HEAD").strip
-  end
-
-  def fetch_bottles_patch(bottle_commit_url, args, bottle_branch, branch, orig_revision)
-    safe_system "git", "checkout", "--quiet", "-B", bottle_branch, orig_revision
-    PatchPuller.new(bottle_commit_url, args, "bottle commit").pull_patch
-    safe_system "git", "rebase", "--quiet", branch
-    safe_system "git", "checkout", "--quiet", branch
-    safe_system "git", "merge", "--quiet", "--ff-only", "--no-edit", bottle_branch
-    safe_system "git", "branch", "--quiet", "-D", bottle_branch
   end
 
   def fetch_merge_patch(url, args, issue)
