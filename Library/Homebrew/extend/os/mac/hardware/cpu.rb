@@ -40,6 +40,8 @@ module Hardware
           :skylake
         when 0x0f817246 # Kaby Lake
           :kabylake
+        when 0x38435547 # Ice Lake
+          :icelake
         else
           :dunno
         end
