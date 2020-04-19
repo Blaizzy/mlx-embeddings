@@ -9,9 +9,12 @@ module Homebrew
       # undefine tap to allow --tap argument
       undef tap
 
-      def initialize(argv:)
+      def initialize
         super
-        @argv = argv
+
+        self[:remaining] = []
+        self[:cmdline_args] = ARGV_WITHOUT_MONKEY_PATCHING.dup
+
         @args_parsed = false
         @processed_options = []
       end
@@ -59,8 +62,6 @@ module Homebrew
       end
 
       def named
-        return [] if remaining.nil?
-
         remaining
       end
 
@@ -164,6 +165,20 @@ module Homebrew
         !(HEAD? || devel?)
       end
 
+      # Whether a given formula should be built from source during the current
+      # installation run.
+      def build_formula_from_source?(f)
+        return false if !build_from_source && !build_bottle
+
+        formulae.any? { |args_f| args_f.full_name == f.full_name }
+      end
+
+      def build_from_source
+        return true if args_parsed && (build_from_source? || s?)
+
+        cmdline_args.include?("--build-from-source") || cmdline_args.include?("-s")
+      end
+
       private
 
       def downcased_unique_named
@@ -204,12 +219,6 @@ module Homebrew
         return true if args_parsed && build_bottle?
 
         cmdline_args.include?("--build-bottle")
-      end
-
-      def build_from_source
-        return true if args_parsed && (build_from_source? || s?)
-
-        cmdline_args.include?("--build-from-source") || cmdline_args.include?("-s")
       end
 
       def spec(default = :stable)
