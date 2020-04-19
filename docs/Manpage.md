@@ -903,8 +903,7 @@ Get a patch from a GitHub commit or pull request and apply it to Homebrew.
 Optionally, publish updated bottles for any formulae changed by the patch.
 
 Each *`patch`* may be the number of a pull request in `homebrew/core`, the URL of
-any pull request or commit on GitHub or a "https://jenkins.brew.sh/job/..."
-testing job URL.
+any pull request or commit on GitHub.
 
 * `--bump`:
   For one-formula PRs, automatically reword commit message to our preferred format.
@@ -918,14 +917,6 @@ testing job URL.
   Do not warn if pulling to a branch besides master (useful for testing).
 * `--no-pbcopy`:
   Do not copy anything to the system clipboard.
-* `--no-publish`:
-  Do not publish bottles to Bintray.
-* `--warn-on-publish-failure`:
-  Do not exit if there's a failure publishing bottles on Bintray.
-* `--bintray-org`:
-  Publish bottles to the specified Bintray *`organisation`*.
-* `--test-bot-user`:
-  Pull the bottle block commit from the specified *`user`* on GitHub.
 
 ### `release-notes` [*`options`*] [*`previous_tag`*] [*`end_ref`*]
 
