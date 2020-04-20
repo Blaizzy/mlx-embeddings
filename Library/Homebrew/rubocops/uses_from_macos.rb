@@ -7,41 +7,71 @@ module RuboCop
     module FormulaAudit
       # This cop audits `uses_from_macos` dependencies in formulae
       class UsesFromMacos < FormulaCop
-        ALLOWED_USES_FROM_MACOS_DEPS = %w[
+        # Generate with:
+        # brew ruby -e 'puts Formula.select {|f| f.keg_only_reason&.provided_by_macos? }.map(&:name).sort.join("\n")'
+        # Not done at runtime as its too slow and RuboCop doesn't have access.
+        PROVIDED_BY_MACOS_FORMULAE = %w[
+          apr
+          bc
           bison
           bzip2
+          cups
           curl
+          dyld-headers
           expat
-          expect
+          file-formula
           flex
-          groff
+          gcore
+          gnu-getopt
           icu4c
           krb5
+          libarchive
           libedit
           libffi
           libiconv
           libpcap
+          libressl
           libxml2
           libxslt
           llvm
+          lsof
           m4
+          ncompress
           ncurses
+          net-snmp
           openldap
-          openssl@1.1
-          perl
-          php
+          openlibm
+          pod2man
+          rpcgen
           ruby
           sqlite
           ssh-copy-id
+          swift
           tcl-tk
           texinfo
+          unifdef
           unzip
-          vim
-          xz
           zip
           zlib
-          zsh
         ].freeze
+
+        # These formulae aren't keg_only :provided_by_macos but are provided by
+        # macOS (or very similarly e.g. OpenSSL where system provides LibreSSL)
+        # TODO: consider making some of these keg-only.
+        ALLOWED_USES_FROM_MACOS_DEPS = (PROVIDED_BY_MACOS_FORMULAE + %w[
+          bash
+          expect
+          groff
+          openssl
+          openssl@1.1
+          perl
+          php
+          python
+          python@3
+          vim
+          xz
+          zsh
+        ]).freeze
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           find_method_with_args(body_node, :uses_from_macos, /^"(.+)"/).each do |method|
