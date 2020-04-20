@@ -50,6 +50,10 @@ module Homebrew
                       "Linux: `$XDG_CACHE_HOME/Homebrew` or `$HOME/.cache/Homebrew`.",
         default:      HOMEBREW_DEFAULT_CACHE,
       },
+      HOMEBREW_CLEANUP_MAX_AGE_DAYS:      {
+        description: "Cleanup all cached files older than this many days.",
+        default:     120,
+      },
       HOMEBREW_COLOR:                     {
         description: "If set, force colour output on non-TTY outputs.",
         boolean:     true,

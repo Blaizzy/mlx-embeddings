@@ -7,7 +7,6 @@ require "cask/cask_loader"
 require "set"
 
 CLEANUP_DEFAULT_DAYS = 30
-CLEANUP_MAX_AGE_DAYS = 120
 
 module CleanupRefinement
   refine Pathname do
@@ -132,7 +131,7 @@ module Homebrew
       @args = args
       @dry_run = dry_run
       @scrub = scrub
-      @days = days || CLEANUP_MAX_AGE_DAYS
+      @days = days || Homebrew::EnvConfig.cleanup_max_age_days.to_i
       @cache = cache
       @cleaned_up_paths = Set.new
     end
