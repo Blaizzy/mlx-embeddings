@@ -62,12 +62,14 @@ module RuboCop
           bash
           expect
           groff
+          gzip
           openssl
           openssl@1.1
           perl
           php
           python
           python@3
+          rsync
           vim
           xz
           zsh
