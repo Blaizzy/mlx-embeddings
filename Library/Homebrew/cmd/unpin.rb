@@ -16,13 +16,12 @@ module Homebrew
       EOS
       switch :verbose
       switch :debug
+      min_named :formula
     end
   end
 
   def unpin
     unpin_args.parse
-
-    raise FormulaUnspecifiedError if args.no_named?
 
     args.resolved_formulae.each do |f|
       if f.pinned?

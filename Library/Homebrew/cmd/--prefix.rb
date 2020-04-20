@@ -13,7 +13,7 @@ module Homebrew
         Display Homebrew's install path. *Default:* `/usr/local` on macOS and
         `/home/linuxbrew/.linuxbrew` on Linux.
 
-        If <formula> is provided, display the location in the cellar where <formula>
+        If <formula> is provided, display the location in the Cellar where <formula>
         is or would be installed.
       EOS
     end

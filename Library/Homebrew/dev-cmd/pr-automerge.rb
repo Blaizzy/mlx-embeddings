@@ -11,20 +11,21 @@ module Homebrew
       usage_banner <<~EOS
         `pr-automerge` [<options>]
 
-        Finds pull requests that can be automatically merged using `brew pr-publish`.
+        Find pull requests that can be automatically merged using `brew pr-publish`.
       EOS
-      flag "--tap=",
-           description: "Target repository tap (default: `homebrew/core`)"
-      flag "--with-label=",
-           description: "Pull requests must have this label (default: `ready to merge`)"
+      flag   "--tap=",
+             description: "Target tap repository (default: `homebrew/core`)."
+      flag   "--with-label=",
+             description: "Pull requests must have this label (default: `ready to merge`)."
       comma_array "--without-labels=",
-                  description: "Pull requests must not have these labels (default: `do not merge`, `new formula`)"
+                  description: "Pull requests must not have these labels (default: `do not merge`, `new formula`)."
       switch "--publish",
              description: "Run `brew pr-publish` on matching pull requests."
       switch "--ignore-failures",
              description: "Include pull requests that have failing status checks."
-      switch :debug
       switch :verbose
+      switch :debug
+      max_named 0
     end
   end
 
@@ -57,8 +58,7 @@ module Homebrew
     if args.publish?
       safe_system "#{HOMEBREW_PREFIX}/bin/brew", "pr-publish", *pr_urls
     else
-      ohai "Now run:"
-      puts "  brew pr-publish \\\n    #{pr_urls.join " \\\n    "}"
+      ohai "Now run:", "  brew pr-publish \\\n    #{pr_urls.join " \\\n    "}"
     end
   end
 end

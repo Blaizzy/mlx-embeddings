@@ -8,7 +8,7 @@ module Homebrew
   def tap_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `tap` [<options>] <user>`/`<repo> [<URL>]
+        `tap` [<options>] [<user>`/`<repo>] [<URL>]
 
         Tap a formula repository.
 
@@ -36,8 +36,7 @@ module Homebrew
              description: "Migrate tapped formulae from symlink-based to directory-based structure."
       switch "--list-pinned",
              description: "List all pinned taps."
-      switch :quiet,
-             description: "Suppress any warnings."
+      switch :quiet
       switch :debug
       max_named 2
     end

@@ -26,6 +26,7 @@ module Homebrew
       switch :verbose
       switch :debug
       conflicts "--git", "--patch"
+      min_named :formula
     end
   end
 
@@ -33,7 +34,6 @@ module Homebrew
     unpack_args.parse
 
     formulae = args.formulae
-    raise FormulaUnspecifiedError if formulae.empty?
 
     if dir = args.destdir
       unpack_dir = Pathname.new(dir).expand_path

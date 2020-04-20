@@ -12,6 +12,7 @@ module Homebrew
 
         Run Homebrew with the Ruby profiler, e.g. `brew prof readall`.
       EOS
+      min_named 1
     end
   end
 
