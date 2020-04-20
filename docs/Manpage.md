@@ -904,7 +904,6 @@ Run Homebrew with the Ruby profiler, e.g. `brew prof readall`.
 ### `pull` [*`options`*] *`patch`*
 
 Get a patch from a GitHub commit or pull request and apply it to Homebrew.
-Optionally, publish updated bottles for any formulae changed by the patch.
 
 Each *`patch`* may be the number of a pull request in `homebrew/core` or the URL
 of any pull request or commit on GitHub.
