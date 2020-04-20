@@ -54,7 +54,7 @@ Control Homebrew\'s anonymous aggregate user behaviour analytics\. Read more at 
     Regenerate the UUID used for Homebrew\'s analytics\.
 .
 .SS "\fBcleanup\fR [\fIoptions\fR] [\fIformula\fR|\fIcask\fR]"
-Remove stale lock files and outdated downloads for all formulae and casks, and remove old versions of installed formulae\. If arguments are specified, only do this for the given formulae and casks\.
+Remove stale lock files and outdated downloads for all formulae and casks, and remove old versions of installed formulae\. If arguments are specified, only do this for the given formulae and casks\. Removes all downloads more than 120 days old\. This can be adjusted with \fBHOMEBREW_CLEANUP_MAX_AGE_DAYS\fR\.
 .
 .TP
 \fB\-\-prune\fR
@@ -1558,6 +1558,13 @@ Use the specified directory as the download cache\.
 .
 .IP
 \fIDefault:\fR macOS: \fB$HOME/Library/Caches/Homebrew\fR, Linux: \fB$XDG_CACHE_HOME/Homebrew\fR or \fB$HOME/\.cache/Homebrew\fR\.
+.
+.TP
+\fBHOMEBREW_CLEANUP_MAX_AGE_DAYS\fR
+Cleanup all cached files older than this many days\.
+.
+.IP
+\fIDefault:\fR \fB120\fR\.
 .
 .TP
 \fBHOMEBREW_COLOR\fR

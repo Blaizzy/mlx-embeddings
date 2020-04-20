@@ -60,7 +60,8 @@ Control Homebrew's anonymous aggregate user behaviour analytics. Read more at
 
 Remove stale lock files and outdated downloads for all formulae and casks, and
 remove old versions of installed formulae. If arguments are specified, only do
-this for the given formulae and casks.
+this for the given formulae and casks. Removes all downloads more than 120 days
+old. This can be adjusted with `HOMEBREW_CLEANUP_MAX_AGE_DAYS`.
 
 * `--prune`:
   Remove all cache files older than specified *`days`*.
@@ -1221,6 +1222,11 @@ Note that environment variables must have a value set to be detected. For exampl
     Use the specified directory as the download cache.
 
     *Default:* macOS: `$HOME/Library/Caches/Homebrew`, Linux: `$XDG_CACHE_HOME/Homebrew` or `$HOME/.cache/Homebrew`.
+
+  * `HOMEBREW_CLEANUP_MAX_AGE_DAYS`:
+    Cleanup all cached files older than this many days.
+
+    *Default:* `120`.
 
   * `HOMEBREW_COLOR`:
     If set, force colour output on non-TTY outputs.
