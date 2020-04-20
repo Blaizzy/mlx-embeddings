@@ -8,7 +8,6 @@ require "formula"
 require "formulary"
 require "version"
 require "pkg_version"
-require "bottle_publisher"
 require "formula_info"
 
 module Homebrew
@@ -20,7 +19,6 @@ module Homebrew
         `pull` [<options>] <patch>
 
         Get a patch from a GitHub commit or pull request and apply it to Homebrew.
-        Optionally, publish updated bottles for any formulae changed by the patch.
 
         Each <patch> may be the number of a pull request in `homebrew/core`
         or the URL of any pull request or commit on GitHub.
@@ -96,7 +94,6 @@ module Homebrew
       HOMEBREW_CACHE.mkpath
 
       # Store current revision and branch
-      merge_commit = merge_commit?(url)
       orig_revision = `git rev-parse --short HEAD`.strip
       branch = `git symbolic-ref --short HEAD`.strip
 
@@ -104,18 +101,16 @@ module Homebrew
         opoo "Current branch is #{branch}: do you need to pull inside master?"
       end
 
-      unless merge_commit
-        patch_puller = PatchPuller.new(url, args)
-        patch_puller.fetch_patch
-        patch_changes = files_changed_in_patch(patch_puller.patchpath, tap)
+      patch_puller = PatchPuller.new(url, args)
+      patch_puller.fetch_patch
+      patch_changes = files_changed_in_patch(patch_puller.patchpath, tap)
 
-        is_bumpable = patch_changes[:formulae].length == 1 && patch_changes[:others].empty?
-        check_bumps(patch_changes) if do_bump
-        old_versions = current_versions_from_info_external(patch_changes[:formulae].first) if is_bumpable
-        patch_puller.apply_patch
-      end
+      is_bumpable = patch_changes[:formulae].length == 1 && patch_changes[:others].empty?
+      check_bumps(patch_changes) if do_bump
+      old_versions = current_versions_from_info_external(patch_changes[:formulae].first) if is_bumpable
+      patch_puller.apply_patch
 
-      end_revision = head_revision(url, merge_commit)
+      end_revision = head_revision(url)
 
       changed_formulae_names = []
 
@@ -187,8 +182,6 @@ module Homebrew
         safe_system "git", "commit", "--amend", "--signoff", "--allow-empty", "-q", "-m", message
       end
 
-      fetch_merge_patch(url, args, issue) if merge_commit
-
       ohai "Patch changed:"
       safe_system "git", "diff-tree", "-r", "--stat", orig_revision, end_revision
     end
@@ -204,20 +197,8 @@ module Homebrew
     end
   end
 
-  def merge_commit?(url)
-    pr_number = url[%r{/pull\/([0-9]+)}, 1]
-    return false unless pr_number
-
-    safe_system "git", "fetch", "--quiet", "origin", "pull/#{pr_number}/head"
-    Utils.popen_read("git", "rev-list", "--parents", "-n1", "FETCH_HEAD").count(" ") > 1
-  end
-
   def head_revision(_url, fetched)
     Utils.popen_read("git", "rev-parse", fetched ? "FETCH_HEAD" : "HEAD").strip
-  end
-
-  def fetch_merge_patch(url, args, issue)
-    PatchPuller.new(url, args, "merge commit").pull_merge_commit(issue)
   end
 
   class PatchPuller
@@ -232,26 +213,6 @@ module Homebrew
       @patchpath = HOMEBREW_CACHE + File.basename(patch_url)
       @description = description
       @args = args
-    end
-
-    def pull_patch
-      fetch_patch
-      apply_patch
-    end
-
-    def pull_merge_commit(issue)
-      # Used by forks of homebrew-core that use merge-commits (for example linuxbrew)
-      ohai "Fast-forwarding to the merge commit"
-      test_bot_origin = patch_url[%r{(https://github\.com/[\w-]+/[\w-]+)/compare/}, 1]
-      safe_system "git", "fetch", "--quiet", test_bot_origin, "pr-#{issue}" if test_bot_origin
-      safe_system "git", "merge", "--quiet", "--ff-only", "--no-edit", "FETCH_HEAD"
-      return if $CHILD_STATUS.success?
-
-      safe_system "git", "reset", "--hard", "FETCH_HEAD"
-      odie <<~EOS
-        Not possible to fast-forward.
-        Maybe somebody pushed commits to origin/master between the merge commit creation and now.
-      EOS
     end
 
     def fetch_patch
