@@ -19,6 +19,8 @@ module Homebrew
              description: "Print what would be done rather than doing it."
       flag "--bintray-org=",
            description: "Upload to the specified Bintray organisation (default: homebrew)."
+      flag "--root-url=",
+           description: "Use the specified <URL> as the root of the bottle's URL instead of Homebrew's default."
     end
   end
 
@@ -28,10 +30,15 @@ module Homebrew
     bintray_org = args.bintray_org || "homebrew"
     bintray = Bintray.new(org: bintray_org)
 
+    bottle_args = ["bottle", "--merge", "--write"]
+    bottle_args << "--root-url=#{args.root_url}" if args.root_url
+    odie "No JSON files found in the current working directory" if Dir["*.json"].empty?
+    bottle_args += Dir["*.json"]
+
     if args.dry_run?
-      puts "brew bottle --merge --write #{Dir["*.json"].join " "}"
+      puts "brew #{bottle_args.join " "}"
     else
-      system HOMEBREW_BREW_FILE, "bottle", "--merge", "--write", *Dir["*.json"]
+      system HOMEBREW_BREW_FILE, "bottle", *bottle_args
     end
 
     if args.dry_run?
