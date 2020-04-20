@@ -13,7 +13,7 @@ module Homebrew
         super
 
         self[:remaining] = []
-        self[:cmdline_args] = ARGV_WITHOUT_MONKEY_PATCHING.dup
+        self[:cmdline_args] = ARGV.dup.freeze
 
         @args_parsed = false
         @processed_options = []
