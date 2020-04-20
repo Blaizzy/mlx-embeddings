@@ -40,10 +40,6 @@ module HomebrewArgvExtension
     arch&.to_sym
   end
 
-  def force_bottle?
-    include?("--force-bottle")
-  end
-
   def cc
     value "cc"
   end

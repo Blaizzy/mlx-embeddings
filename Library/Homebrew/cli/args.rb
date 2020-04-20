@@ -179,6 +179,12 @@ module Homebrew
         cmdline_args.include?("--build-from-source") || cmdline_args.include?("-s")
       end
 
+      def force_bottle
+        return true if args_parsed && force_bottle?
+
+        cmdline_args.include?("--force-bottle")
+      end
+
       private
 
       def downcased_unique_named
