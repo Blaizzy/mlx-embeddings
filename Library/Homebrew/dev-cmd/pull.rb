@@ -110,7 +110,7 @@ module Homebrew
       old_versions = current_versions_from_info_external(patch_changes[:formulae].first) if is_bumpable
       patch_puller.apply_patch
 
-      end_revision = head_revision(url)
+      end_revision = `git rev-parse --short HEAD`.strip
 
       changed_formulae_names = []
 
@@ -195,10 +195,6 @@ module Homebrew
     elsif !patch_changes[:others].empty?
       odie "Cannot bump if non-formula files are changed"
     end
-  end
-
-  def head_revision(_url, fetched)
-    Utils.popen_read("git", "rev-parse", fetched ? "FETCH_HEAD" : "HEAD").strip
   end
 
   class PatchPuller
