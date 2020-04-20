@@ -908,6 +908,8 @@ Apply the bottle commit and publish bottles to Bintray.
   Print what would be done rather than doing it.
 * `--bintray-org`:
   Upload to the specified Bintray organisation (default: homebrew).
+* `--root-url`:
+  Use the specified *`URL`* as the root of the bottle's URL instead of Homebrew's default.
 
 ### `prof` *`command`*
 
