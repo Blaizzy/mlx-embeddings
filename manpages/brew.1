@@ -1163,6 +1163,21 @@ Upload to the specified Bintray organisation (default: homebrew)\.
 \fB\-\-tap\fR
 Target tap repository (default: homebrew/core)\.
 .
+.SS "\fBpr\-upload\fR [\fIoptions\fR]"
+Apply the bottle commit and publish bottles to Bintray\.
+.
+.TP
+\fB\-\-no\-publish\fR
+Apply the bottle commit and upload the bottles, but don\'t publish them\.
+.
+.TP
+\fB\-n\fR, \fB\-\-dry\-run\fR
+Print what would be done rather than doing it\.
+.
+.TP
+\fB\-\-bintray\-org\fR
+Upload to the specified Bintray organisation (default: homebrew)\.
+.
 .SS "\fBprof\fR \fIcommand\fR"
 Run Homebrew with the Ruby profiler, e\.g\. \fBbrew prof readall\fR\.
 .

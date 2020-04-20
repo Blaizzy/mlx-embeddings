@@ -898,6 +898,17 @@ repository.
 * `--tap`:
   Target tap repository (default: homebrew/core).
 
+### `pr-upload` [*`options`*]
+
+Apply the bottle commit and publish bottles to Bintray.
+
+* `--no-publish`:
+  Apply the bottle commit and upload the bottles, but don't publish them.
+* `-n`, `--dry-run`:
+  Print what would be done rather than doing it.
+* `--bintray-org`:
+  Upload to the specified Bintray organisation (default: homebrew).
+
 ### `prof` *`command`*
 
 Run Homebrew with the Ruby profiler, e.g. `brew prof readall`.
