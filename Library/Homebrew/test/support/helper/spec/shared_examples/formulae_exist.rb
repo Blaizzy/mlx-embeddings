@@ -3,8 +3,10 @@
 shared_examples "formulae exist" do |array|
   array.each do |f|
     it "#{f} formula exists" do
-      formula_path = Pathname("#{HOMEBREW_LIBRARY_PATH}/../Taps/homebrew/homebrew-core/Formula/#{f}.rb")
-      expect(formula_path.exist?).to be true
+      core_tap = Pathname("#{HOMEBREW_LIBRARY_PATH}/../Taps/homebrew/homebrew-core")
+      formula_path = core_tap/"Formula/#{f}.rb"
+      alias_path = core_tap/"Aliases/#{f}"
+      expect(formula_path.exist? || alias_path.exist?).to be true
     end
   end
 end
