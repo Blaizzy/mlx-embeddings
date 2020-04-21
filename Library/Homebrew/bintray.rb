@@ -56,16 +56,27 @@ class Bintray
   end
 
   def create_package(repo:, package:, **extra_data_args)
-    url = "#{API_URL}/packages/#{@bintray_org}/#{repo}/#{package}"
+    url = "#{API_URL}/packages/#{@bintray_org}/#{repo}"
     data = { name: package, public_download_numbers: true }
     data[:public_stats] = official_org?
     data.merge! extra_data_args
-    open_api url, "--request", "POST", "--data", data.to_json
+    open_api url, "--header", "Content-Type: application/json", "--request", "POST", "--data", data.to_json
   end
 
   def package_exists?(repo:, package:)
     url = "#{API_URL}/packages/#{@bintray_org}/#{repo}/#{package}"
-    open_api url, "--output", "/dev/null", auth: false
+    begin
+      open_api url, "--silent", "--output", "/dev/null", auth: false
+    rescue ErrorDuringExecution => e
+      stderr = e.output.select { |type,| type == :stderr }
+                .map { |_, line| line }
+                .join
+      raise if e.status.exitstatus != 22 && !stderr.include?("404 Not Found")
+
+      false
+    else
+      true
+    end
   end
 
   def file_published?(repo:, remote_file:)
@@ -113,7 +124,7 @@ class Bintray
         end
 
         if !formula_packaged[formula_name] && !package_exists?(repo: bintray_repo, package: bintray_package)
-          odebug "Creating package #{@bintray_org}/#{bintray_repo}/#{package}"
+          odebug "Creating package #{@bintray_org}/#{bintray_repo}/#{bintray_package}"
           create_package repo: bintray_repo, package: bintray_package
           formula_packaged[formula_name] = true
         end

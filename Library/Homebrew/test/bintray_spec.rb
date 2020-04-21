@@ -19,7 +19,7 @@ describe Bintray, :needs_network do
   describe "::package_exists?" do
     it "detects a package" do
       results = bintray.package_exists?(repo: "bottles", package: "hello")
-      expect(results.status.exitstatus).to be 0
+      expect(results).to be true
     end
   end
 end
