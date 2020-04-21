@@ -24,19 +24,36 @@ jobs:
 
     - name: Set up Homebrew
       run: |
-        cd $(brew --repo)
-        rm -rf $GITHUB_WORKSPACE
-        ln -s $PWD $GITHUB_WORKSPACE
-        git fetch --tags origin ${{github.sha}}
+        if which brew &>/dev/null; then
+          HOMEBREW_REPOSITORY="$(brew --repo)"
+        else
+          HOMEBREW_PREFIX=/home/linuxbrew/.linuxbrew
+          HOMEBREW_REPOSITORY="$HOMEBREW_PREFIX/Homebrew"
+          sudo mkdir -p "$HOMEBREW_REPOSITORY/Library/Taps"
+          git -C "$HOMEBREW_REPOSITORY" init
+          git -C "$HOMEBREW_REPOSITORY" remote add origin "https://github.com/$GITHUB_REPOSITORY"
+
+          cd "$HOMEBREW_PREFIX"
+          sudo mkdir -p bin etc include lib opt sbin share var/homebrew/linked Cellar
+          sudo ln -sf ../Homebrew/bin/brew "$HOMEBREW_PREFIX/bin/"
+          cd -
+        fi
+
+        cd "$HOMEBREW_REPOSITORY"
+        rm -rf "$GITHUB_WORKSPACE"
+        ln -s "$HOMEBREW_REPOSITORY" "$GITHUB_WORKSPACE"
+        git fetch --tags origin "${{github.sha}}"
         git checkout --force -B master FETCH_HEAD
         brew update-reset Library/Taps/homebrew/homebrew-core
+        cd -
+
         if [ "$RUNNER_OS" = "Linux" ]; then
-          sudo chown -R "$USER" $(brew --prefix)
+          sudo chown -R "$USER" "$HOMEBREW_PREFIX"
         fi
 
     - name: Set up Ruby
       if: matrix.os == 'ubuntu-latest'
-      uses: actions/setup-ruby@v1
+      uses: actions/setup-ruby@master
       with:
         ruby-version: '2.6'
 
