@@ -68,7 +68,8 @@ class Bintray
     begin
       open_api url, "--silent", "--output", "/dev/null", auth: false
     rescue ErrorDuringExecution => e
-      stderr = e.output.select { |type,| type == :stderr }
+      stderr = e.output
+                .select { |type,| type == :stderr }
                 .map { |_, line| line }
                 .join
       raise if e.status.exitstatus != 22 && !stderr.include?("404 Not Found")
@@ -84,7 +85,8 @@ class Bintray
     begin
       curl "--silent", "--head", "--output", "/dev/null", url
     rescue ErrorDuringExecution => e
-      stderr = e.output.select { |type,| type == :stderr }
+      stderr = e.output
+                .select { |type,| type == :stderr }
                 .map { |_, line| line }
                 .join
       raise if e.status.exitstatus != 22 && !stderr.include?("404 Not Found")
