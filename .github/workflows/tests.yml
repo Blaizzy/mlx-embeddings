@@ -68,6 +68,9 @@ jobs:
         else
           # Allow Xcode to be outdated
           export HOMEBREW_GITHUB_ACTIONS=1
+
+          # Link old gettext (otherwise `brew doctor` is sad)
+          brew link gettext
         fi
         brew doctor
 
