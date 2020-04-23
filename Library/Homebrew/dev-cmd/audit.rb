@@ -3,6 +3,7 @@
 require "formula"
 require "formula_versions"
 require "utils/curl"
+require "utils/notability"
 require "extend/ENV"
 require "formula_cellar_checks"
 require "cmd/search"
@@ -510,79 +511,30 @@ module Homebrew
       user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*})
       return if user.nil?
 
-      begin
-        metadata = GitHub.repository(user, repo)
-      rescue GitHub::HTTPNotFoundError
-        return
-      end
+      warning = SharedAudits.github(user, repo)
+      return if warning.nil?
 
-      return if metadata.nil?
-
-      new_formula_problem "GitHub fork (not canonical repository)" if metadata["fork"]
-      if (metadata["forks_count"] < 30) && (metadata["subscribers_count"] < 30) &&
-         (metadata["stargazers_count"] < 75)
-        new_formula_problem "GitHub repository not notable enough (<30 forks, <30 watchers and <75 stars)"
-      end
-
-      return if Date.parse(metadata["created_at"]) <= (Date.today - 30)
-
-      new_formula_problem "GitHub repository too new (<30 days old)"
+      new_formula_problem warning
     end
 
     def audit_gitlab_repository
       user, repo = get_repo_data(%r{https?://gitlab\.com/([^/]+)/([^/]+)/?.*})
       return if user.nil?
 
-      out, _, status= curl_output("--request", "GET", "https://gitlab.com/api/v4/projects/#{user}%2F#{repo}")
-      return unless status.success?
+      warning = SharedAudits.gitlab(user, repo)
+      return if warning.nil?
 
-      metadata = JSON.parse(out)
-      return if metadata.nil?
-
-      new_formula_problem "GitLab fork (not canonical repository)" if metadata["fork"]
-      if (metadata["forks_count"] < 30) && (metadata["star_count"] < 75)
-        new_formula_problem "GitLab repository not notable enough (<30 forks and <75 stars)"
-      end
-
-      return if Date.parse(metadata["created_at"]) <= (Date.today - 30)
-
-      new_formula_problem "GitLab repository too new (<30 days old)"
+      new_formula_problem warning
     end
 
     def audit_bitbucket_repository
       user, repo = get_repo_data(%r{https?://bitbucket\.org/([^/]+)/([^/]+)/?.*})
       return if user.nil?
 
-      api_url = "https://api.bitbucket.org/2.0/repositories/#{user}/#{repo}"
-      out, _, status= curl_output("--request", "GET", api_url)
-      return unless status.success?
+      warning = SharedAudits.bitbucket(user, repo)
+      return if warning.nil?
 
-      metadata = JSON.parse(out)
-      return if metadata.nil?
-
-      new_formula_problem "Uses deprecated mercurial support in Bitbucket" if metadata["scm"] == "hg"
-
-      new_formula_problem "Bitbucket fork (not canonical repository)" unless metadata["parent"].nil?
-
-      if Date.parse(metadata["created_on"]) >= (Date.today - 30)
-        new_formula_problem "Bitbucket repository too new (<30 days old)"
-      end
-
-      forks_out, _, forks_status= curl_output("--request", "GET", "#{api_url}/forks")
-      return unless forks_status.success?
-
-      watcher_out, _, watcher_status= curl_output("--request", "GET", "#{api_url}/watchers")
-      return unless watcher_status.success?
-
-      forks_metadata = JSON.parse(forks_out)
-      return if forks_metadata.nil?
-
-      watcher_metadata = JSON.parse(watcher_out)
-      return if watcher_metadata.nil?
-
-      return if (forks_metadata["size"] < 30) && (watcher_metadata["size"] < 75)
-
-      new_formula_problem "Bitbucket repository not notable enough (<30 forks and <75 watchers)"
+      new_formula_problem warning
     end
 
     def get_repo_data(regex)

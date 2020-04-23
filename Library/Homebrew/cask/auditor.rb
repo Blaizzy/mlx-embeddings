@@ -8,34 +8,37 @@ module Cask
     extend Predicable
 
     def self.audit(cask, audit_download: false, audit_appcast: false,
-                   check_token_conflicts: false, quarantine: true, commit_range: nil)
+                   audit_online: false, audit_strict: false,
+                   audit_token_conflicts: false, audit_new_cask: false,
+                   quarantine: true, commit_range: nil)
       new(cask, audit_download: audit_download,
                 audit_appcast: audit_appcast,
-                check_token_conflicts: check_token_conflicts,
+                audit_online: audit_online,
+                audit_new_cask: audit_new_cask,
+                audit_strict: audit_strict,
+                audit_token_conflicts: audit_token_conflicts,
                 quarantine: quarantine, commit_range: commit_range).audit
     end
 
     attr_reader :cask, :commit_range
 
     def initialize(cask, audit_download: false, audit_appcast: false,
-                   check_token_conflicts: false, quarantine: true, commit_range: nil)
+                   audit_online: false, audit_strict: false,
+                   audit_token_conflicts: false, audit_new_cask: false,
+                   quarantine: true, commit_range: nil)
       @cask = cask
       @audit_download = audit_download
       @audit_appcast = audit_appcast
+      @audit_online = audit_online
+      @audit_strict = audit_strict
+      @audit_new_cask = audit_new_cask
       @quarantine = quarantine
       @commit_range = commit_range
-      @check_token_conflicts = check_token_conflicts
+      @audit_token_conflicts = audit_token_conflicts
     end
 
-    def audit_download?
-      @audit_download
-    end
-
-    attr_predicate :audit_appcast?, :quarantine?
-
-    def check_token_conflicts?
-      @check_token_conflicts
-    end
+    attr_predicate :audit_appcast?, :audit_download?, :audit_online?,
+                   :audit_strict?, :audit_new_cask?, :audit_token_conflicts?, :quarantine?
 
     def audit
       if !Homebrew.args.value("language") && language_blocks
@@ -64,10 +67,13 @@ module Cask
 
     def audit_cask_instance(cask)
       download = audit_download? && Download.new(cask, quarantine: quarantine?)
-      audit = Audit.new(cask, check_appcast:         audit_appcast?,
-                              download:              download,
-                              check_token_conflicts: check_token_conflicts?,
-                              commit_range:          commit_range)
+      audit = Audit.new(cask, appcast:         audit_appcast?,
+                              online:          audit_online?,
+                              strict:          audit_strict?,
+                              new_cask:        audit_new_cask?,
+                              token_conflicts: audit_token_conflicts?,
+                              download:        download,
+                              commit_range:    commit_range)
       audit.run!
       puts audit.summary
       audit.success?
