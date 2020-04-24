@@ -20,15 +20,15 @@ begin
   error_pipe = UNIXSocket.open(ENV["HOMEBREW_ERROR_PIPE"], &:recv_io)
   error_pipe.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)
 
-  ENV.extend(Stdenv)
-  ENV.setup_build_environment
-
   trap("INT", old_trap)
 
   formula = Homebrew.args.resolved_formulae.first
   formula.extend(Homebrew::Assertions)
   formula.extend(Homebrew::FreePort)
   formula.extend(Debrew::Formula) if Homebrew.args.debug?
+
+  ENV.extend(Stdenv)
+  ENV.setup_build_environment(formula)
 
   # tests can also return false to indicate failure
   Timeout.timeout TEST_TIMEOUT_SECONDS do

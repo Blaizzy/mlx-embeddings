@@ -41,7 +41,7 @@ module Stdenv
     self["LC_CTYPE"] = "C"
 
     # Add lib and include etc. from the current macosxsdk to compiler flags:
-    macosxsdk MacOS.version
+    macosxsdk(formula: formula)
 
     return unless MacOS::Xcode.without_clt?
 
@@ -49,15 +49,15 @@ module Stdenv
     append_path "PATH", "#{MacOS::Xcode.toolchain_path}/usr/bin"
   end
 
-  def remove_macosxsdk(version = MacOS.version)
+  def remove_macosxsdk(version = nil)
     # Clear all lib and include dirs from CFLAGS, CPPFLAGS, LDFLAGS that were
     # previously added by macosxsdk
-    version = version.to_s
     remove_from_cflags(/ ?-mmacosx-version-min=10\.\d+/)
     delete("CPATH")
     remove "LDFLAGS", "-L#{HOMEBREW_PREFIX}/lib"
 
-    return unless (sdk = MacOS.sdk_path_if_needed(version))
+    sdk = self["SDKROOT"] || MacOS.sdk_path_if_needed(version)
+    return unless sdk
 
     delete("SDKROOT")
     remove_from_cflags "-isysroot#{sdk}"
@@ -72,15 +72,18 @@ module Stdenv
     remove "CMAKE_FRAMEWORK_PATH", "#{sdk}/System/Library/Frameworks"
   end
 
-  def macosxsdk(version = MacOS.version)
+  def macosxsdk(version = nil, formula: nil)
     # Sets all needed lib and include dirs to CFLAGS, CPPFLAGS, LDFLAGS.
     remove_macosxsdk
-    version = version.to_s
-    append_to_cflags("-mmacosx-version-min=#{version}")
+    min_version = version || MacOS.version
+    append_to_cflags("-mmacosx-version-min=#{min_version}")
     self["CPATH"] = "#{HOMEBREW_PREFIX}/include"
     prepend "LDFLAGS", "-L#{HOMEBREW_PREFIX}/lib"
 
-    return unless (sdk = MacOS.sdk_path_if_needed(version))
+    sdk = formula ? MacOS.sdk_for_formula(formula, version) : MacOS.sdk(version)
+    return if !MacOS.sdk_root_needed? && sdk.source != :xcode
+
+    sdk = sdk.path
 
     # Extra setup to support Xcode 4.3+ without CLT.
     self["SDKROOT"] = sdk
@@ -99,10 +102,10 @@ module Stdenv
   # Some configure scripts won't find libxml2 without help
   # This is a no-op with macOS SDK 10.15.4 and later
   def libxml2
-    sdk = MacOS.sdk_path_if_needed
+    sdk = self["SDKROOT"] || MacOS.sdk_path_if_needed
     if !sdk
       append "CPPFLAGS", "-I/usr/include/libxml2"
-    elsif !(sdk/"usr/include/libxml").directory?
+    elsif !Pathname("#{sdk}/usr/include/libxml").directory?
       # Use the includes form the sdk
       append "CPPFLAGS", "-I#{sdk}/usr/include/libxml2"
     end
