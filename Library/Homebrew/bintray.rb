@@ -66,7 +66,7 @@ class Bintray
   def package_exists?(repo:, package:)
     url = "#{API_URL}/packages/#{@bintray_org}/#{repo}/#{package}"
     begin
-      open_api url, "--silent", "--output", "/dev/null", auth: false
+      open_api url, "--fail", "--silent", "--output", "/dev/null", auth: false
     rescue ErrorDuringExecution => e
       stderr = e.output
                 .select { |type,| type == :stderr }
@@ -83,7 +83,7 @@ class Bintray
   def file_published?(repo:, remote_file:)
     url = "https://dl.bintray.com/#{@bintray_org}/#{repo}/#{remote_file}"
     begin
-      curl "--silent", "--head", "--output", "/dev/null", url
+      curl "--fail", "--silent", "--head", "--output", "/dev/null", url
     rescue ErrorDuringExecution => e
       stderr = e.output
                 .select { |type,| type == :stderr }
