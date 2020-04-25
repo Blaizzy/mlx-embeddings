@@ -42,7 +42,12 @@ module Homebrew
         [checksum.hash_type, checksum.hexdigest]
       end
 
-      old = if hash_type
+      old = if formula.path.read.include?("stable do\n")
+        # insert replacement revision after homepage
+        <<~EOS
+          homepage "#{formula.homepage}"
+        EOS
+      elsif hash_type
         # insert replacement revision after hash
         <<~EOS
           #{hash_type} "#{old_hash}"
