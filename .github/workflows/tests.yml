@@ -161,6 +161,12 @@ jobs:
         brew install vale
         vale docs/
 
+    - name: Lint Dockerfile
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        brew install hadolint
+        hadolint Dockerfile
+
     - name: Build Docker image
       if: matrix.os == 'ubuntu-latest'
       run: |

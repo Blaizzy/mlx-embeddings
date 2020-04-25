@@ -1,6 +1,7 @@
 FROM ubuntu:xenial
 LABEL maintainer="Shaun Jackman <sjackman@gmail.com>"
 
+# hadolint ignore=DL3008
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends software-properties-common \
 	&& add-apt-repository -y ppa:git-core/ppa \
@@ -27,10 +28,12 @@ RUN apt-get update \
 RUN localedef -i en_US -f UTF-8 en_US.UTF-8 \
 	&& useradd -m -s /bin/bash linuxbrew \
 	&& echo 'linuxbrew ALL=(ALL) NOPASSWD:ALL' >>/etc/sudoers
-ADD . /home/linuxbrew/.linuxbrew/Homebrew
+COPY . /home/linuxbrew/.linuxbrew/Homebrew
 ARG FORCE_REBUILD
+
+# hadolint ignore=DL3003
 RUN cd /home/linuxbrew/.linuxbrew \
-	&& mkdir -p bin etc include lib opt sbin share var/homebrew/linked Cellar \
+  && mkdir -p bin etc include lib opt sbin share var/homebrew/linked Cellar \
 	&& ln -s ../Homebrew/bin/brew /home/linuxbrew/.linuxbrew/bin/ \
 	&& cd /home/linuxbrew/.linuxbrew/Homebrew \
 	&& git remote set-url origin https://github.com/Homebrew/brew
