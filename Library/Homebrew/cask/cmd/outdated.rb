@@ -5,30 +5,21 @@ module Cask
     class Outdated < AbstractCommand
       option "--greedy", :greedy, false
       option "--quiet",  :quiet, false
+      option "--json",   :json, false
 
       def initialize(*)
         super
         self.verbose = ($stdout.tty? || verbose?) && !quiet?
+        @outdated_casks = casks(alternative: -> { Caskroom.casks }).select do |cask|
+          odebug "Checking update info of Cask #{cask}"
+          cask.outdated?(greedy?)
+        end
       end
 
       def run
-        casks(alternative: -> { Caskroom.casks }).each do |cask|
-          odebug "Checking update info of Cask #{cask}"
-          self.class.list_if_outdated(cask, greedy?, verbose?)
-        end
-      end
+        output = @outdated_casks.map { |cask| cask.outdated_info(greedy?, verbose?, json?) }
 
-      def self.list_if_outdated(cask, greedy, verbose)
-        return unless cask.outdated?(greedy)
-
-        if verbose
-          outdated_versions = cask.outdated_versions(greedy)
-          outdated_info   = "#{cask.token} (#{outdated_versions.join(", ")})"
-          current_version = cask.version.to_s
-          puts "#{outdated_info} != #{current_version}"
-        else
-          puts cask.token
-        end
+        puts json? ? JSON.generate(output) : output
       end
 
       def self.help
