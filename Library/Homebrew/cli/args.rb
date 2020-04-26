@@ -179,6 +179,12 @@ module Homebrew
         cmdline_args.include?("--build-from-source") || cmdline_args.include?("-s")
       end
 
+      def build_bottle
+        return true if args_parsed && build_bottle?
+
+        cmdline_args.include?("--build-bottle")
+      end
+
       def force_bottle
         return true if args_parsed && force_bottle?
 
@@ -219,12 +225,6 @@ module Homebrew
         return true if args_parsed && universal?
 
         cmdline_args.include?("--universal")
-      end
-
-      def build_bottle
-        return true if args_parsed && build_bottle?
-
-        cmdline_args.include?("--build-bottle")
       end
 
       def spec(default = :stable)
