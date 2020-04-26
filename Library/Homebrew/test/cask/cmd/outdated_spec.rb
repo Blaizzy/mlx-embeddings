@@ -93,15 +93,15 @@ describe Cask::Cmd::Outdated, :cask do
     it "lists outdated Casks in JSON format" do
       result = [
         {
-          name: "local-caffeine",
+          name:               "local-caffeine",
           installed_versions: "1.2.2",
-          current_version: "1.2.3"
+          current_version:    "1.2.3",
         },
         {
-          name: "local-transmission",
+          name:               "local-transmission",
           installed_versions: "2.60",
-          current_version: "2.61"
-        }
+          current_version:    "2.61",
+        },
       ].to_json
 
       expect {
@@ -114,15 +114,15 @@ describe Cask::Cmd::Outdated, :cask do
     it "ignores --quiet and lists outdated Casks in JSON format" do
       result = [
         {
-          name: "local-caffeine",
+          name:               "local-caffeine",
           installed_versions: "1.2.2",
-          current_version: "1.2.3"
+          current_version:    "1.2.3",
         },
         {
-          name: "local-transmission",
+          name:               "local-transmission",
           installed_versions: "2.60",
-          current_version: "2.61"
-        }
+          current_version:    "2.61",
+        },
       ].to_json
 
       expect {
@@ -135,25 +135,25 @@ describe Cask::Cmd::Outdated, :cask do
     it 'includes the Casks with "auto_updates true" or "version latest" in JSON format' do
       result = [
         {
-          name: "auto-updates",
+          name:               "auto-updates",
           installed_versions: "2.57",
-          current_version: "2.61"
+          current_version:    "2.61",
         },
         {
-          name: "local-caffeine",
+          name:               "local-caffeine",
           installed_versions: "1.2.2",
-          current_version: "1.2.3"
+          current_version:    "1.2.3",
         },
         {
-          name: "local-transmission",
+          name:               "local-transmission",
           installed_versions: "2.60",
-          current_version: "2.61"
+          current_version:    "2.61",
         },
         {
-          name: "version-latest-string",
+          name:               "version-latest-string",
           installed_versions: "latest",
-          current_version: "latest"
-        }
+          current_version:    "latest",
+        },
       ].to_json
 
       expect {
@@ -167,20 +167,20 @@ describe Cask::Cmd::Outdated, :cask do
 
       result = [
         {
-          name: "local-caffeine",
+          name:               "local-caffeine",
           installed_versions: "1.2.2",
-          current_version: "1.2.3"
+          current_version:    "1.2.3",
         },
         {
-          name: "local-transmission",
+          name:               "local-transmission",
           installed_versions: "2.60",
-          current_version: "2.61"
+          current_version:    "2.61",
         },
         {
-          name: "version-latest-string",
+          name:               "version-latest-string",
           installed_versions: "latest",
-          current_version: "latest"
-        }
+          current_version:    "latest",
+        },
       ].to_json
 
       expect {

@@ -125,9 +125,9 @@ module Cask
     def outdated_info(greedy, verbose, json)
       if json
         {
-          name: token,
+          name:               token,
           installed_versions: outdated_versions(greedy).join(", "),
-          current_version: version
+          current_version:    version,
         }
       elsif verbose
         outdated_info = token << " (#{outdated_versions(greedy).join(", ")})"
