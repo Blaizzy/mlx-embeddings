@@ -90,10 +90,16 @@ jobs:
       run: |
         # Install taps needed for 'brew tests' and 'brew man'
         export HOMEBREW_NO_AUTO_UPDATE=1
+        cd "$(brew --repo)"
         brew tap homebrew/bundle
+        brew update-reset Library/Taps/homebrew/homebrew-bundle
         brew tap homebrew/services
+        brew update-reset Library/Taps/homebrew/homebrew-services
+        brew tap homebrew/test-bot
+        brew update-reset Library/Taps/homebrew/homebrew-test-bot
         if [ "$RUNNER_OS" = "macOS" ]; then
           brew tap homebrew/cask
+          brew update-reset Library/Taps/homebrew/homebrew-cask
         fi
 
     - name: Run brew style
