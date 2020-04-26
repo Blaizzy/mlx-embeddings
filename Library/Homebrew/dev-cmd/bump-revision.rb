@@ -42,7 +42,14 @@ module Homebrew
         [checksum.hash_type, checksum.hexdigest]
       end
 
-      old = if hash_type
+      stable_block_given = formula.path.read.include? "  stable do"
+
+      old = if stable_block_given
+        # insert replacement revision before stable block
+        <<~EOS
+          stable do
+        EOS
+      elsif hash_type
         # insert replacement revision after hash
         <<~EOS
           #{hash_type} "#{old_hash}"
@@ -53,8 +60,12 @@ module Homebrew
           :revision => "#{formula_spec.specs[:revision]}"
         EOS
       end
-      replacement = old + "  revision 1\n"
 
+      replacement = if stable_block_given
+        "revision 1\n  " + old
+      else
+        old + "  revision 1\n"
+      end
     else
       old = "revision #{current_revision}"
       replacement = "revision #{current_revision+1}"
