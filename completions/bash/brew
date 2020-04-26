@@ -147,7 +147,25 @@ _brew_create() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--autotools --cmake --meson --no-fetch --HEAD --set-name --set-version --tap --force --verbose --debug --help"
+      __brewcomp "
+      --HEAD
+      --autotools
+      --cmake
+      --debug
+      --force
+      --go
+      --help
+      --meson
+      --no-fetch
+      --perl
+      --python
+      --ruby
+      --rust
+      --set-name
+      --set-version
+      --tap
+      --verbose
+      "
       return
       ;;
   esac
