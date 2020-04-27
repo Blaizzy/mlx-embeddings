@@ -3,6 +3,21 @@
 describe Cask::Config, :cask do
   subject(:config) { described_class.new }
 
+  describe "::from_json" do
+    it "deserializes a configuration in JSON format" do
+      config = described_class.from_json <<~EOS
+        {
+          "default": {
+            "appdir": "/path/to/apps"
+          },
+          "env": {},
+          "explicit": {}
+        }
+      EOS
+      expect(config.appdir).to eq(Pathname("/path/to/apps"))
+    end
+  end
+
   describe "#default" do
     it "returns the default directories" do
       expect(config.default[:appdir]).to eq(Pathname(TEST_TMPDIR).join("cask-appdir"))

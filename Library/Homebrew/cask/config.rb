@@ -34,15 +34,15 @@ module Cask
 
     def self.for_cask(cask)
       if cask.config_path.exist?
-        from_file(cask.config_path)
+        from_json(File.read(cask.config_path))
       else
         global
       end
     end
 
-    def self.from_file(path)
+    def self.from_json(json)
       config = begin
-        JSON.parse(File.read(path))
+        JSON.parse(json)
       rescue JSON::ParserError => e
         raise e, "Cannot parse #{path}: #{e}", e.backtrace
       end
