@@ -47,6 +47,9 @@ jobs:
         brew update-reset Library/Taps/homebrew/homebrew-core
         cd -
 
+        GEMS_HASH=$(shasum -a 256 "$HOMEBREW_REPOSITORY/Library/Homebrew/Gemfile.lock" | cut -f1 -d' ')
+        echo "::set-output name=gems-hash::$GEMS_HASH"
+
         if [ "$RUNNER_OS" = "Linux" ]; then
           sudo chown -R "$USER" "$HOMEBREW_PREFIX"
         fi
@@ -74,17 +77,21 @@ jobs:
         fi
         brew doctor
 
+    - name: Cache Bundler RubyGems
+      id: cache
+      uses: actions/cache@v1
+      with:
+        path: Library/Homebrew/vendor/bundle/
+        key: ${{ runner.os }}-gems-${{ steps.set-up-homebrew.outputs.gems-hash }}
+        restore-keys: |
+          ${{ runner.os }}-gems-
+
     - name: Install Bundler RubyGems
-      run: |
-        brew install-bundler-gems
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: brew install-bundler-gems
 
-        # Check for uncommitted gems
-        git diff --stat --exit-code Library/Homebrew/vendor/bundle/ruby
-
-        if [ "$RUNNER_OS" = "Linux" ]; then
-          # Fix permissions for 'brew tests'
-          sudo chmod -R g-w,o-w /home/linuxbrew /home/runner /opt
-        fi
+    - name: Check for uncommitted RubyGems
+      run: git diff --stat --exit-code Library/Homebrew/vendor/bundle/ruby
 
     - name: Install taps
       run: |
@@ -100,6 +107,9 @@ jobs:
         if [ "$RUNNER_OS" = "macOS" ]; then
           brew tap homebrew/cask
           brew update-reset Library/Taps/homebrew/homebrew-cask
+        else
+          # Fix permissions for 'brew tests'
+          sudo chmod -R g-w,o-w /home/linuxbrew /home/runner /opt
         fi
 
     - name: Run brew style
