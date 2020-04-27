@@ -10,7 +10,7 @@ module Cask
   class Config
     remove_const :DEFAULT_DIRS
 
-    DEFAULT_DIRS = {
+    DEFAULT_DIRS_PATHNAMES = {
       appdir:               Pathname(TEST_TMPDIR)/"cask-appdir",
       prefpanedir:          Pathname(TEST_TMPDIR)/"cask-prefpanedir",
       qlplugindir:          Pathname(TEST_TMPDIR)/"cask-qlplugindir",
@@ -26,6 +26,8 @@ module Cask
       vst3_plugindir:       Pathname(TEST_TMPDIR)/"cask-vst3_plugindir",
       screen_saverdir:      Pathname(TEST_TMPDIR)/"cask-screen_saverdir",
     }.freeze
+
+    DEFAULT_DIRS = DEFAULT_DIRS_PATHNAMES.transform_values(&:to_s).freeze
   end
 end
 
@@ -34,7 +36,7 @@ RSpec.shared_context "Homebrew Cask", :needs_macos do
     third_party_tap = Tap.fetch("third-party", "tap")
 
     begin
-      Cask::Config::DEFAULT_DIRS.values.each(&:mkpath)
+      Cask::Config::DEFAULT_DIRS_PATHNAMES.values.each(&:mkpath)
       Cask::Config.global.binarydir.mkpath
 
       Tap.default_cask_tap.tap do |tap|

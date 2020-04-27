@@ -34,15 +34,15 @@ module Cask
 
     def self.for_cask(cask)
       if cask.config_path.exist?
-        from_file(cask.config_path)
+        from_json(File.read(cask.config_path))
       else
         global
       end
     end
 
-    def self.from_file(path)
+    def self.from_json(json)
       config = begin
-        JSON.parse(File.read(path))
+        JSON.parse(json)
       rescue JSON::ParserError => e
         raise e, "Cannot parse #{path}: #{e}", e.backtrace
       end
@@ -69,7 +69,7 @@ module Cask
     attr_accessor :explicit
 
     def initialize(default: nil, env: nil, explicit: {})
-      @default = DEFAULT_DIRS.merge(self.class.canonicalize(default)) if default
+      @default = self.class.canonicalize(DEFAULT_DIRS.merge(default)) if default
       @env = self.class.canonicalize(env) if env
       @explicit = self.class.canonicalize(explicit)
 
