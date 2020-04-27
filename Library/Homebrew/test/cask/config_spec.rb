@@ -50,4 +50,20 @@ describe Cask::Config, :cask do
       expect(config.explicit[:appdir]).to eq(Pathname("/explicit/path/to/apps"))
     end
   end
+
+  context "when installing a cask and then adding a global default dir" do
+    let(:config) { described_class.new(default: { appdir: "/default/path/before/adding/fontdir" }) }
+
+    describe "#appdir" do
+      it "honors metadata of the installed cask" do
+        expect(config.appdir).to eq(Pathname("/default/path/before/adding/fontdir"))
+      end
+    end
+
+    describe "#fontdir" do
+      it "falls back to global default on incomplete metadata" do
+        expect(config.default).to include(fontdir: Pathname(TEST_TMPDIR).join("cask-fontdir"))
+      end
+    end
+  end
 end
