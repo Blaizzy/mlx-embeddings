@@ -67,7 +67,18 @@ describe Cask::Config, :cask do
   end
 
   context "when installing a cask and then adding a global default dir" do
-    let(:config) { described_class.new(default: { appdir: "/default/path/before/adding/fontdir" }) }
+    let(:config) {
+      json = <<~EOS
+        {
+          "default": {
+            "appdir": "/default/path/before/adding/fontdir"
+          },
+          "env": {},
+          "explicit": {}
+        }
+      EOS
+      described_class.from_json(json)
+    }
 
     describe "#appdir" do
       it "honors metadata of the installed cask" do
