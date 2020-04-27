@@ -55,7 +55,7 @@ module Homebrew
     # Unbrewed uses the PREFIX, which will exist
     # Things below use the CELLAR, which doesn't until the first formula is installed.
     unless HOMEBREW_CELLAR.exist?
-      raise NoSuchKegError, Hombrew.args.named.first if args.named.present?
+      raise NoSuchKegError, args.named.first if args.named.present?
 
       return
     end
