@@ -69,7 +69,7 @@ module Cask
     attr_accessor :explicit
 
     def initialize(default: nil, env: nil, explicit: {})
-      @default = DEFAULT_DIRS.merge(self.class.canonicalize(default)) if default
+      @default = self.class.canonicalize(DEFAULT_DIRS.merge(default)) if default
       @env = self.class.canonicalize(env) if env
       @explicit = self.class.canonicalize(explicit)
 
