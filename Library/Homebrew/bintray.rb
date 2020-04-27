@@ -34,6 +34,7 @@ class Bintray
   def open_api(url, *extra_curl_args, auth: true)
     args = extra_curl_args
     args += ["--user", "#{@bintray_user}:#{@bintray_key}"] if auth
+    args += ["--output", "/dev/null"] unless Homebrew.args.verbose?
     curl(*args, url,
          show_output: Homebrew.args.verbose?,
          secrets:     @bintray_key)
@@ -66,7 +67,7 @@ class Bintray
   def package_exists?(repo:, package:)
     url = "#{API_URL}/packages/#{@bintray_org}/#{repo}/#{package}"
     begin
-      open_api url, "--fail", "--silent", "--output", "/dev/null", auth: false
+      open_api url, "--fail", "--silent", auth: false
     rescue ErrorDuringExecution => e
       stderr = e.output
                 .select { |type,| type == :stderr }
