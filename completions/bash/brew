@@ -94,6 +94,13 @@ __brew_complete_tapped() {
   __brewcomp "$taps"
 }
 
+__brew_complete_commands() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  # Do not auto-complete "*instal" or "*uninstal" aliases for "*install" commands.
+  local cmds="$(brew commands --quiet --include-aliases | \grep -v instal$)"
+  COMPREPLY=($(compgen -W "$cmds" -- "$cur"))
+}
+
 _brew_analytics() {
   case "$COMP_CWORD" in
     2)  __brewcomp "off on regenerate-uuid state" ;;
@@ -816,10 +823,7 @@ _brew() {
 
   if [[ "$i" -eq "$COMP_CWORD" ]]
   then
-    # Do not auto-complete "*instal" or "*uninstal" aliases for "*install" commands.
-    # Prefix newline to prevent not checking the first command.
-    local cmds=$'\n'"$(brew commands --quiet --include-aliases | \grep -v instal$)"
-    __brewcomp "$cmds"
+    __brew_complete_commands
     return
   fi
 
@@ -834,6 +838,7 @@ _brew() {
     cask)                       _brew_cask ;;
     cat)                        __brew_complete_formulae ;;
     cleanup)                    _brew_cleanup ;;
+    command)                    __brew_complete_commands ;;
     create)                     _brew_create ;;
     deps)                       _brew_deps ;;
     desc)                       _brew_desc ;;
@@ -842,6 +847,7 @@ _brew() {
     edit)                       __brew_complete_formulae ;;
     fetch)                      _brew_fetch ;;
     gist-logs)                  _brew_gist_logs ;;
+    help)                       __brew_complete_commands ;;
     home|homepage)              __brew_complete_formulae ;;
     info|abv)                   _brew_info ;;
     install|instal)             _brew_install ;;
@@ -855,6 +861,7 @@ _brew() {
     outdated)                   _brew_outdated ;;
     pin)                        __brew_complete_formulae ;;
     postinstall)                _brew_postinstall ;;
+    prof)                       __brew_complete_commands ;;
     pull)                       _brew_pull ;;
     readall)                    _brew_readall ;;
     reinstall)                  _brew_install ;;
