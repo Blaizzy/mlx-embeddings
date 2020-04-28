@@ -126,7 +126,7 @@ module RuboCop
 
         # Node pattern method to extract `name` in `depends_on :name` or `uses_from_macos :name`
         def_node_search :dependency_name_node, <<~EOS
-          {(send nil? {:depends_on :uses_from_macos} {(hash (pair $_ _)) $({str sym} _) $(const nil? _)})
+          {(send nil? {:depends_on :uses_from_macos} {(hash (pair $_ _) ...) $({str sym} _) $(const nil? _)} ...)
            (if _ (send nil? :depends_on {(hash (pair $_ _)) $({str sym} _) $(const nil? _)}) nil?)}
         EOS
 

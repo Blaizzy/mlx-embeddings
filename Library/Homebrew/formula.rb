@@ -2431,8 +2431,8 @@ class Formula
     # Indicates use of dependencies provided by macOS.
     # On macOS this is a no-op (as we use the system libraries there).
     # On Linux this will act as `depends_on`.
-    def uses_from_macos(dep)
-      specs.each { |spec| spec.uses_from_macos(dep) }
+    def uses_from_macos(dep, bounds = {})
+      specs.each { |spec| spec.uses_from_macos(dep, bounds) }
     end
 
     # Block executed only executed on macOS. No-op on Linux.
