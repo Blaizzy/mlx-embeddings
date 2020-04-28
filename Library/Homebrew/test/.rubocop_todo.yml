@@ -46,6 +46,7 @@ RSpec/FilePath:
     - 'rubocops/conflicts_spec.rb'
     - 'rubocops/dependency_order_spec.rb'
     - 'rubocops/files_spec.rb'
+    - 'rubocops/keg_only_spec.rb'
     - 'rubocops/homepage_spec.rb'
     - 'rubocops/options_spec.rb'
     - 'rubocops/patches_spec.rb'

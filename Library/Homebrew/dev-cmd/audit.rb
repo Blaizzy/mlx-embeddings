@@ -435,40 +435,6 @@ module Homebrew
       end
     end
 
-    def audit_keg_only
-      return unless formula.keg_only?
-
-      whitelist = %w[
-        Apple
-        macOS
-        OS
-        Homebrew
-        Xcode
-        GPG
-        GNOME
-        BSD
-        Firefox
-      ].freeze
-
-      reason = formula.keg_only_reason.to_s
-      # Formulae names can legitimately be uppercase/lowercase/both.
-      name = Regexp.new(formula.name, Regexp::IGNORECASE)
-      reason.sub!(name, "")
-      first_word = reason.split.first
-
-      if reason =~ /\A[A-Z]/ && !reason.start_with?(*whitelist)
-        # TODO: check could be in RuboCop
-        problem <<~EOS
-          '#{first_word}' from the keg_only reason should be '#{first_word.downcase}'.
-        EOS
-      end
-
-      return unless reason.end_with?(".")
-
-      # TODO: check could be in RuboCop
-      problem "keg_only reason should not end with a period."
-    end
-
     def audit_postgresql
       return unless formula.name == "postgresql"
       return unless @core_tap
