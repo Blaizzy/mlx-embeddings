@@ -7,7 +7,7 @@
 
 homebrew-shellenv() {
   case "$SHELL" in
-    */fish)
+    */fish|fish)
       echo "set -gx HOMEBREW_PREFIX \"$HOMEBREW_PREFIX\";"
       echo "set -gx HOMEBREW_CELLAR \"$HOMEBREW_CELLAR\";"
       echo "set -gx HOMEBREW_REPOSITORY \"$HOMEBREW_REPOSITORY\";"
@@ -15,7 +15,7 @@ homebrew-shellenv() {
       echo "set -q MANPATH; or set MANPATH ''; set -gx MANPATH \"$HOMEBREW_PREFIX/share/man\" \$MANPATH;"
       echo "set -q INFOPATH; or set INFOPATH ''; set -gx INFOPATH \"$HOMEBREW_PREFIX/share/info\" \$INFOPATH;"
       ;;
-    */csh|*/tcsh)
+    */csh|csh|*/tcsh|tcsh)
       echo "setenv HOMEBREW_PREFIX $HOMEBREW_PREFIX;"
       echo "setenv HOMEBREW_CELLAR $HOMEBREW_CELLAR;"
       echo "setenv HOMEBREW_REPOSITORY $HOMEBREW_REPOSITORY;"
