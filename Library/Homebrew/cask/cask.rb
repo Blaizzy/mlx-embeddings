@@ -123,7 +123,7 @@ module Cask
     end
 
     def outdated_info(greedy, verbose, json)
-      return token unless verbose || json
+      return token if !verbose && !json
 
       installed_versions = outdated_versions(greedy).join(", ")
 
