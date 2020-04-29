@@ -122,6 +122,22 @@ module Cask
       installed.reject { |v| v == version }
     end
 
+    def outdated_info(greedy, verbose, json)
+      return token if !verbose && !json
+
+      installed_versions = outdated_versions(greedy).join(", ")
+
+      if json
+        {
+          name:               token,
+          installed_versions: installed_versions,
+          current_version:    version,
+        }
+      else
+        "#{token} (#{installed_versions}) != #{version}"
+      end
+    end
+
     def to_s
       @token
     end

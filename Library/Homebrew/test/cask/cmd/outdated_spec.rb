@@ -88,4 +88,104 @@ describe Cask::Cmd::Outdated, :cask do
       EOS
     end
   end
+
+  describe "--json" do
+    it "lists outdated Casks in JSON format" do
+      result = [
+        {
+          name:               "local-caffeine",
+          installed_versions: "1.2.2",
+          current_version:    "1.2.3",
+        },
+        {
+          name:               "local-transmission",
+          installed_versions: "2.60",
+          current_version:    "2.61",
+        },
+      ].to_json
+
+      expect {
+        described_class.run("--json")
+      }.to output(result + "\n").to_stdout
+    end
+  end
+
+  describe "--json overrides --quiet" do
+    it "ignores --quiet and lists outdated Casks in JSON format" do
+      result = [
+        {
+          name:               "local-caffeine",
+          installed_versions: "1.2.2",
+          current_version:    "1.2.3",
+        },
+        {
+          name:               "local-transmission",
+          installed_versions: "2.60",
+          current_version:    "2.61",
+        },
+      ].to_json
+
+      expect {
+        described_class.run("--json", "--quiet")
+      }.to output(result + "\n").to_stdout
+    end
+  end
+
+  describe "--json and --greedy" do
+    it 'includes the Casks with "auto_updates true" or "version latest" in JSON format' do
+      result = [
+        {
+          name:               "auto-updates",
+          installed_versions: "2.57",
+          current_version:    "2.61",
+        },
+        {
+          name:               "local-caffeine",
+          installed_versions: "1.2.2",
+          current_version:    "1.2.3",
+        },
+        {
+          name:               "local-transmission",
+          installed_versions: "2.60",
+          current_version:    "2.61",
+        },
+        {
+          name:               "version-latest-string",
+          installed_versions: "latest",
+          current_version:    "latest",
+        },
+      ].to_json
+
+      expect {
+        described_class.run("--json", "--greedy")
+      }.to output(result + "\n").to_stdout
+    end
+
+    it 'does not include the Casks with "auto_updates true" with no version change in JSON format' do
+      cask = Cask::CaskLoader.load(cask_path("auto-updates"))
+      InstallHelper.install_with_caskfile(cask)
+
+      result = [
+        {
+          name:               "local-caffeine",
+          installed_versions: "1.2.2",
+          current_version:    "1.2.3",
+        },
+        {
+          name:               "local-transmission",
+          installed_versions: "2.60",
+          current_version:    "2.61",
+        },
+        {
+          name:               "version-latest-string",
+          installed_versions: "latest",
+          current_version:    "latest",
+        },
+      ].to_json
+
+      expect {
+        described_class.run("--json", "--greedy")
+      }.to output(result + "\n").to_stdout
+    end
+  end
 end
