@@ -2637,7 +2637,9 @@ class Formula
       @pour_bottle_check.instance_eval(&block)
     end
 
-    # Deprecates a {Formula} so a warning is shown on each installation.
+    # Deprecates a {Formula} (on a given date, if provided) so a warning is
+    # shown on each installation. If the date has not yet passed the formula
+    # will not be deprecated.
     def deprecate!(date: nil)
       return if date.present? && Date.parse(date) > Date.today
 
@@ -2651,9 +2653,14 @@ class Formula
       @deprecated == true
     end
 
-    # Disables a {Formula} so it cannot be installed.
+    # Disables a {Formula}  (on a given date, if provided) so it cannot be
+    # installed. If the date has not yet passed the formula
+    # will be deprecated instead of disabled.
     def disable!(date: nil)
-      return if date.present? && Date.parse(date) > Date.today
+      if date.present? && Date.parse(date) > Date.today
+        @deprecated = true
+        return
+      end
 
       @disabled = true
     end
