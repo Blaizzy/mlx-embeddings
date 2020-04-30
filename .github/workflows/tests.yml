@@ -160,7 +160,6 @@ jobs:
       run: brew readall --aliases
 
     - name: Run brew style on homebrew-core
-      if: matrix.os == 'macOS-latest'
       run: brew style --display-cop-names homebrew/core
 
     - name: Run brew style on official taps
