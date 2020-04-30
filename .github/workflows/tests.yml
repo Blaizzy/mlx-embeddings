@@ -14,14 +14,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, macOS-latest]
     steps:
-    - name: Set up Homebrew PATH
-      run: |
-        if [ "$RUNNER_OS" = "Linux" ]; then
-          echo "::add-path::/home/linuxbrew/.linuxbrew/bin"
-        else
-          echo "::add-path::/usr/local/bin"
-        fi
-
     - name: Set up Homebrew
       run: |
         if which brew &>/dev/null; then
@@ -37,6 +29,9 @@ jobs:
           sudo mkdir -p bin etc include lib opt sbin share var/homebrew/linked Cellar
           sudo ln -sf ../Homebrew/bin/brew "$HOMEBREW_PREFIX/bin/"
           cd -
+
+          export PATH="$HOMEBREW_PREFIX/bin:$PATH"
+          echo "::add-path::$HOMEBREW_PREFIX/bin"
         fi
 
         cd "$HOMEBREW_REPOSITORY"
