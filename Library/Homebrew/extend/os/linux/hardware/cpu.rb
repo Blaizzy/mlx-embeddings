@@ -3,17 +3,12 @@
 module Hardware
   class CPU
     class << self
-      OPTIMIZATION_FLAGS_LINUX = {
-        native:  "-march=#{Homebrew::EnvConfig.arch}",
-        nehalem: "-march=nehalem",
-        core2:   "-march=core2",
-        core:    "-march=prescott",
-        armv6:   "-march=armv6",
-        armv8:   "-march=armv8-a",
-      }.freeze
-
       def optimization_flags
-        OPTIMIZATION_FLAGS_LINUX
+        @optimization_flags ||= begin
+          flags = generic_optimization_flags.dup
+          flags[:native] = arch_flag(Homebrew::EnvConfig.arch)
+          flags
+        end
       end
 
       def cpuinfo

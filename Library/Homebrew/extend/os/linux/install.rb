@@ -14,6 +14,19 @@ module Homebrew
       "/system/bin/linker",
     ].freeze
 
+    def check_cpu
+      return if (Hardware::CPU.intel? && Hardware::CPU.is_64_bit?) || Hardware::CPU.arm?
+
+      message = "Sorry, Homebrew does not support your computer's CPU architecture!"
+      if Hardware::CPU.ppc64le?
+        message += <<~EOS
+          For OpenPOWER Linux (PPC64LE) support, see:
+            #{Formatter.url("https://github.com/homebrew-ppc64le/brew")}
+        EOS
+      end
+      abort message
+    end
+
     def symlink_ld_so
       brew_ld_so = HOMEBREW_PREFIX/"lib/ld.so"
       return if brew_ld_so.readable?
