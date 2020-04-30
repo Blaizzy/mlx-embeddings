@@ -68,5 +68,13 @@ module OS
         Version::NULL
       end
     end
+
+    module CLT
+      module_function
+
+      def version
+        Version::NULL
+      end
+    end
   end
 end
