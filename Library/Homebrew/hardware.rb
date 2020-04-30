@@ -7,28 +7,29 @@ module Hardware
     INTEL_32BIT_ARCHS = [:i386].freeze
     INTEL_64BIT_ARCHS = [:x86_64].freeze
     PPC_32BIT_ARCHS   = [:ppc, :ppc32, :ppc7400, :ppc7450, :ppc970].freeze
-    PPC_64BIT_ARCHS   = [:ppc64].freeze
+    PPC_64BIT_ARCHS   = [:ppc64, :ppc64le, :ppc970].freeze
 
     class << self
-      OPTIMIZATION_FLAGS = {
-        native:  "-march=native",
-        nehalem: "-march=nehalem",
-        core2:   "-march=core2",
-        core:    "-march=prescott",
-        armv6:   "-march=armv6",
-        armv8:   "-march=armv8-a",
-      }.freeze
-
       def optimization_flags
-        OPTIMIZATION_FLAGS
+        @optimization_flags ||= {
+          native:  arch_flag("native"),
+          nehalem: "-march=nehalem",
+          core2:   "-march=core2",
+          core:    "-march=prescott",
+          armv6:   "-march=armv6",
+          armv8:   "-march=armv8-a",
+          ppc64:   "-mcpu=powerpc64",
+          ppc64le: "-mcpu=powerpc64le",
+        }.freeze
       end
+      alias generic_optimization_flags optimization_flags
 
       def arch_32_bit
         if arm?
           :arm
         elsif intel?
           :i386
-        elsif ppc?
+        elsif ppc32?
           :ppc32
         else
           :dunno
@@ -40,7 +41,9 @@ module Hardware
           :arm64
         elsif intel?
           :x86_64
-        elsif ppc?
+        elsif ppc64le?
+          :ppc64le
+        elsif ppc64?
           :ppc64
         else
           :dunno
@@ -66,7 +69,7 @@ module Hardware
         case RUBY_PLATFORM
         when /x86_64/, /i\d86/ then :intel
         when /arm/, /aarch64/ then :arm
-        when /ppc\d+/ then :ppc
+        when /ppc|powerpc/ then :ppc
         else :dunno
         end
       end
@@ -85,7 +88,7 @@ module Hardware
 
       def bits
         @bits ||= case RUBY_PLATFORM
-        when /x86_64/, /ppc64/, /aarch64|arm64/ then 64
+        when /x86_64/, /ppc64|powerpc64/, /aarch64|arm64/ then 64
         when /i\d86/, /ppc/, /arm/ then 32
         end
       end
@@ -110,8 +113,28 @@ module Hardware
         type == :ppc
       end
 
+      def ppc32?
+        ppc? && is_32_bit?
+      end
+
+      def ppc64le?
+        ppc? && is_64_bit? && little_endian?
+      end
+
+      def ppc64?
+        ppc? && is_64_bit? && big_endian?
+      end
+
       def arm?
         type == :arm
+      end
+
+      def little_endian?
+        !big_endian?
+      end
+
+      def big_endian?
+        [1].pack("I") == [1].pack("N")
       end
 
       def features
@@ -120,6 +143,12 @@ module Hardware
 
       def feature?(name)
         features.include?(name)
+      end
+
+      def arch_flag(arch)
+        return "-mcpu=#{arch}" if ppc?
+
+        "-march=#{arch}"
       end
     end
   end
