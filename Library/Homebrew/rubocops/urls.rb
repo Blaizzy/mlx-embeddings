@@ -27,6 +27,7 @@ module RuboCop
           fpc
           ghc
           ghc@8.6
+          ghc@8.8
           go
           go@1.9
           go@1.10
