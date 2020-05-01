@@ -180,6 +180,12 @@ module Hardware
         else
           :armv6
         end
+      elsif Hardware::CPU.ppc? && Hardware::CPU.is_64_bit?
+        if Hardware::CPU.little_endian?
+          :ppc64le
+        else
+          :ppc64
+        end
       else
         Hardware::CPU.family
       end
