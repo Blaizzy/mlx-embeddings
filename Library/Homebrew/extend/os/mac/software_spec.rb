@@ -3,8 +3,19 @@
 class SoftwareSpec
   undef uses_from_macos
 
-  def uses_from_macos(deps)
+  def uses_from_macos(deps, bounds = {})
     @uses_from_macos_elements ||= []
-    @uses_from_macos_elements << deps
+
+    if deps.is_a?(Hash)
+      bounds = deps.dup
+      deps = Hash[*bounds.shift]
+    end
+
+    bounds.transform_values! { |v| MacOS::Version.from_symbol(v) }
+    if MacOS.version >= bounds[:since]
+      @uses_from_macos_elements << deps
+    else
+      depends_on deps
+    end
   end
 end

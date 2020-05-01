@@ -147,8 +147,8 @@ describe SoftwareSpec do
     end
 
     it "ignores OS version specifications", :needs_linux do
-      subject.uses_from_macos("foo")
-      subject.uses_from_macos("bar" => :build)
+      subject.uses_from_macos("foo", since: :mojave)
+      subject.uses_from_macos("bar" => :build, :since => :mojave)
 
       expect(subject.deps.first.name).to eq("foo")
       expect(subject.deps.last.name).to eq("bar")
