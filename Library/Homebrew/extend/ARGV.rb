@@ -5,17 +5,6 @@ module HomebrewArgvExtension
     select { |arg| arg.start_with?("--") }
   end
 
-  def formulae
-    require "formula"
-    (downcased_unique_named - casks).map do |name|
-      if name.include?("/") || File.exist?(name)
-        Formulary.factory(name, spec)
-      else
-        Formulary.find_with_priority(name, spec)
-      end
-    end.uniq(&:name)
-  end
-
   def casks
     # TODO: use @instance variable to ||= cache when moving to CLI::Parser
     downcased_unique_named.grep HOMEBREW_CASK_TAP_CASK_REGEX

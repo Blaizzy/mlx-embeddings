@@ -7,20 +7,6 @@ describe HomebrewArgvExtension do
 
   let(:argv) { ["mxcl"] }
 
-  describe "#formulae" do
-    it "raises an error when a Formula is unavailable" do
-      expect { subject.formulae }.to raise_error FormulaUnavailableError
-    end
-
-    context "when there are no Formulae" do
-      let(:argv) { [] }
-
-      it "returns an empty array" do
-        expect(subject.formulae).to be_empty
-      end
-    end
-  end
-
   describe "#casks" do
     it "returns an empty array if there is no match" do
       expect(subject.casks).to eq []
