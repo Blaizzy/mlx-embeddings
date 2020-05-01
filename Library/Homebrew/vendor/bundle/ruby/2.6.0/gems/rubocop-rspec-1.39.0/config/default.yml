@@ -105,6 +105,12 @@ RSpec/EmptyExampleGroup:
   CustomIncludeMethods: []
   StyleGuide: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/EmptyExampleGroup
 
+RSpec/EmptyHook:
+  Description: Checks for empty before and after hooks.
+  Enabled: true
+  VersionAdded: 1.39.0
+  StyleGuide: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/EmptyHook
+
 RSpec/EmptyLineAfterExample:
   Description: Checks if there is an empty line after example blocks.
   Enabled: true
@@ -324,7 +330,6 @@ RSpec/MultipleExpectations:
   Description: Checks if examples contain too many `expect` calls.
   Enabled: true
   Max: 1
-  AggregateFailuresByDefault: false
   StyleGuide: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/MultipleExpectations
 
 RSpec/MultipleSubjects:
@@ -417,6 +422,7 @@ RSpec/ScatteredLet:
   Description: Checks for let scattered across the example group.
   Enabled: true
   StyleGuide: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/ScatteredLet
+  VersionChanged: '1.39'
 
 RSpec/ScatteredSetup:
   Description: Checks for setup scattered across multiple hooks in an example group.
@@ -475,6 +481,12 @@ Capybara/FeatureMethods:
   Enabled: true
   EnabledMethods: []
   StyleGuide: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/Capybara/FeatureMethods
+
+Capybara/VisibilityMatcher:
+  Description: Checks for boolean visibility in capybara finders.
+  Enabled: true
+  VersionAdded: '1.39'
+  StyleGuide: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/Capybara/VisibilityMatcher
 
 FactoryBot/AttributeDefinedStatically:
   Description: Always declare attribute values as blocks.
