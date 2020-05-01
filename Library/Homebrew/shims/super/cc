@@ -76,13 +76,13 @@ class Cmd
     when "cpp" then "cpp"
     when /llvm_(clang(\+\+)?)/
      "#{ENV["HOMEBREW_PREFIX"]}/opt/llvm/bin/#{$1}"
-    when /\w\+\+(-\d(\.\d)?)?$/
+    when /\w\+\+(-\d+(\.\d)?)?$/
       case ENV["HOMEBREW_CC"]
       when /clang/
         "clang++"
       when /llvm-gcc/
         "llvm-g++-4.2"
-      when /(g)?cc(-\d(\.\d)?)?$/
+      when /(g)?cc(-\d+(\.\d)?)?$/
         "g++" + $2.to_s
       end
     else

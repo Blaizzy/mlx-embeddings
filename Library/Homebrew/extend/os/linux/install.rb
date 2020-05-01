@@ -6,6 +6,7 @@ module Homebrew
 
     DYNAMIC_LINKERS = [
       "/lib64/ld-linux-x86-64.so.2",
+      "/lib64/ld64.so.2",
       "/lib/ld-linux.so.3",
       "/lib/ld-linux.so.2",
       "/lib/ld-linux-aarch64.so.1",
