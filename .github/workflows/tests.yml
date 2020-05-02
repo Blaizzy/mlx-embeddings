@@ -15,6 +15,7 @@ jobs:
         os: [ubuntu-latest, macOS-latest]
     steps:
     - name: Set up Homebrew
+      id: set-up-homebrew
       run: |
         if which brew &>/dev/null; then
           HOMEBREW_REPOSITORY="$(brew --repo)"
@@ -76,10 +77,10 @@ jobs:
       id: cache
       uses: actions/cache@v1
       with:
-        path: Library/Homebrew/vendor/bundle/
-        key: ${{ runner.os }}-gems-${{ steps.set-up-homebrew.outputs.gems-hash }}
+        path: Library/Homebrew/vendor/bundle/ruby/
+        key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
         restore-keys: |
-          ${{ runner.os }}-gems-
+          ${{ runner.os }}-rubygems-
 
     - name: Install Bundler RubyGems
       if: steps.cache.outputs.cache-hit != 'true'
