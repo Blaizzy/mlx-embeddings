@@ -7,12 +7,6 @@ describe HomebrewArgvExtension do
 
   let(:argv) { ["mxcl"] }
 
-  describe "#casks" do
-    it "returns an empty array if there is no match" do
-      expect(subject.casks).to eq []
-    end
-  end
-
   describe "#named" do
     let(:argv) { ["foo", "--debug", "-v"] }
 

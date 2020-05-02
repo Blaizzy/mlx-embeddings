@@ -5,11 +5,6 @@ module HomebrewArgvExtension
     select { |arg| arg.start_with?("--") }
   end
 
-  def casks
-    # TODO: use @instance variable to ||= cache when moving to CLI::Parser
-    downcased_unique_named.grep HOMEBREW_CASK_TAP_CASK_REGEX
-  end
-
   def value(name)
     arg_prefix = "--#{name}="
     flag_with_value = find { |arg| arg.start_with?(arg_prefix) }
