@@ -10,18 +10,6 @@ class Sandbox
     OS.mac? && File.executable?(SANDBOX_EXEC)
   end
 
-  def self.formula?(_)
-    return false unless available?
-
-    !Homebrew.args.no_sandbox?
-  end
-
-  def self.test?
-    return false unless available?
-
-    !Homebrew.args.no_sandbox?
-  end
-
   def initialize
     @profile = SandboxProfile.new
   end
