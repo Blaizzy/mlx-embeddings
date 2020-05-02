@@ -753,7 +753,7 @@ class FormulaInstaller
     ].concat(build_argv)
 
     Utils.safe_fork do
-      if Sandbox.formula?(formula)
+      if Sandbox.available?
         sandbox = Sandbox.new
         formula.logs.mkpath
         sandbox.record_log(formula.logs/"build.sandbox.log")
@@ -922,7 +922,7 @@ class FormulaInstaller
     ]
 
     Utils.safe_fork do
-      if Sandbox.formula?(formula)
+      if Sandbox.available?
         sandbox = Sandbox.new
         formula.logs.mkpath
         sandbox.record_log(formula.logs/"postinstall.sandbox.log")

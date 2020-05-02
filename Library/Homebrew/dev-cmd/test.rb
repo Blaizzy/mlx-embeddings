@@ -91,7 +91,7 @@ module Homebrew
         end
 
         Utils.safe_fork do
-          if Sandbox.test?
+          if Sandbox.available?
             sandbox = Sandbox.new
             f.logs.mkpath
             sandbox.record_log(f.logs/"test.sandbox.log")
