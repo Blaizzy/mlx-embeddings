@@ -68,6 +68,8 @@ sudo yum install libxcrypt-compat # needed by Fedora 30 and up
 
 Homebrew can run on 32-bit ARM (Raspberry Pi and others) and 64-bit ARM (AArch64), but no binary packages (bottles) are available. Support for ARM is on a best-effort basis. Pull requests are welcome to improve the experience on ARM platforms.
 
+You may need to install your own Ruby using your system package manager, a PPA, or `rbenv/ruby-build` as in the future we will no longer distribute a Homebrew Portable Ruby for ARM.
+
 ### 32-bit x86
 
 Homebrew does not currently support 32-bit x86 platforms. It would be possible for Homebrew to work on 32-bit x86 platforms with some effort. An interested and dedicated person could maintain a fork of Homebrew to develop support for 32-bit x86.
