@@ -1210,6 +1210,11 @@ Note that environment variables must have a value set to be detected. For exampl
   * `HOMEBREW_BAT`:
     If set, use `bat` for the `brew cat` command.
 
+  * `HOMEBREW_BAT_CONFIG_PATH`:
+    Use the `bat` configuration file. For example, `HOMEBREW_BAT=$HOME/.bat/config`.
+
+    *Default:* $HOME/.bat/config
+
   * `HOMEBREW_BINTRAY_KEY`:
     Use this API key when accessing the Bintray API (where bottles are stored).
 

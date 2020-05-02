@@ -10,7 +10,12 @@ module Cask
 
       def run
         casks.each do |cask|
-          puts File.open(cask.sourcefile_path, &:read)
+          if Homebrew::EnvConfig.bat?
+            ENV["BAT_CONFIG_PATH"] = Homebrew::EnvConfig.bat_config_path
+            safe_system "#{HOMEBREW_PREFIX}/bin/bat", cask.sourcefile_path
+          else
+            puts File.open(cask.sourcefile_path, &:read)
+          end
         end
       end
 

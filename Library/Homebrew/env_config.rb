@@ -23,6 +23,10 @@ module Homebrew
         description: "If set, use `bat` for the `brew cat` command.",
         boolean:     true,
       },
+      HOMEBREW_BAT_CONFIG_PATH:           {
+        description:  "Use the `bat` configuration file. For example, `HOMEBREW_BAT=$HOME/.bat/config`.",
+        default_text: "$HOME/.bat/config",
+      },
       HOMEBREW_BINTRAY_KEY:               {
         description: "Use this API key when accessing the Bintray API (where bottles are stored).",
       },
