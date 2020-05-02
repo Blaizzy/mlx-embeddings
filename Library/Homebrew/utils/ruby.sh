@@ -26,7 +26,18 @@ setup-ruby-path() {
       then
         if ! brew vendor-install ruby
         then
-          onoe "Failed to upgrade vendor Ruby."
+          if [[ -n "$HOMEBREW_MACOS" ]]
+          then
+            odie "Failed to upgrade Homebrew Portable Ruby!"
+          else
+            odie <<-EOS
+Failed to upgrade Homebrew Portable Ruby!
+If there's no Homebrew Portable Ruby available for your processor:
+- install Ruby $required_ruby_version with your system package manager (or rbenv/ruby-build)
+- make it first in your PATH
+- try again
+EOS
+          fi
         fi
       fi
     else
@@ -50,7 +61,18 @@ setup-ruby-path() {
         brew vendor-install ruby
         if [[ ! -x "$vendor_ruby_path" ]]
         then
-          odie "Failed to install vendor Ruby."
+          if [[ -n "$HOMEBREW_MACOS" ]]
+          then
+            odie "Failed to install Homebrew Portable Ruby (and your system version is too old)!"
+          else
+            odie <<-EOS
+Failed to install Homebrew Portable Ruby and cannot find another Ruby $required_ruby_version!
+If there's no Homebrew Portable Ruby available for your processor:
+- install $required_ruby_version with your system package manager (or rbenv/ruby-build)
+- make it first in your PATH
+- try again
+EOS
+          fi
         fi
         HOMEBREW_RUBY_PATH="$vendor_ruby_path"
       fi

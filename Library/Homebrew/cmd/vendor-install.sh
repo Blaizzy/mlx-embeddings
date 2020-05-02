@@ -144,7 +144,7 @@ EOS
 EOSCRIPT
 )"
   else
-    odie "Cannot verify the checksum ('shasum' or 'sha256sum' not found)!"
+    odie "Cannot verify checksum ('shasum' or 'sha256sum' not found)!"
   fi
 
   if [[ "$sha" != "$VENDOR_SHA" ]]
@@ -197,7 +197,7 @@ install() {
     then
       mv "$VENDOR_VERSION.reinstall" "$VENDOR_VERSION"
     fi
-    odie "Failed to vendor $VENDOR_NAME $VENDOR_VERSION."
+    odie "Failed to install $VENDOR_NAME $VENDOR_VERSION!"
   fi
 
   trap - SIGINT
@@ -222,13 +222,13 @@ homebrew-vendor-install() {
         [[ "$option" = *d* ]] && HOMEBREW_DEBUG=1
         ;;
       *)
-        [[ -n "$VENDOR_NAME" ]] && odie "This command does not take multiple vendor targets"
+        [[ -n "$VENDOR_NAME" ]] && odie "This command does not take multiple vendor targets!"
         VENDOR_NAME="$option"
         ;;
     esac
   done
 
-  [[ -z "$VENDOR_NAME" ]] && odie "This command requires one vendor target."
+  [[ -z "$VENDOR_NAME" ]] && odie "This command requires a vendor target!"
   [[ -n "$HOMEBREW_DEBUG" ]] && set -x
 
   url_var="${VENDOR_NAME}_URL"
@@ -237,16 +237,13 @@ homebrew-vendor-install() {
   VENDOR_URL="${!url_var}"
   VENDOR_URL2="${!url2_var}"
   VENDOR_SHA="${!sha_var}"
+  VENDOR_VERSION="$(<"$VENDOR_DIR/portable-$VENDOR_NAME-version")"
 
   if [[ -z "$VENDOR_URL" || -z "$VENDOR_SHA" ]]
   then
-    odie <<-EOS
-Cannot find a vendored version of $VENDOR_NAME for your $HOMEBREW_PROCESSOR
-processor on $HOMEBREW_PRODUCT!
-EOS
+    odie "No Homebrew $VENDOR_NAME $VENDOR_VERSION available for $HOMEBREW_PROCESSOR processors!"
   fi
 
-  VENDOR_VERSION="$(<"$VENDOR_DIR/portable-$VENDOR_NAME-version")"
   CACHED_LOCATION="$HOMEBREW_CACHE/$(basename "$VENDOR_URL")"
 
   lock "vendor-install-$VENDOR_NAME"
