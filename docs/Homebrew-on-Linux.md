@@ -41,7 +41,7 @@ brew install hello
 
 If you're using an older distribution of Linux, installing your first package will also install a recent version of `glibc` and `gcc`. Use `brew doctor` to troubleshoot common issues.
 
-## Linux/WSL Requirements
+## Requirements
 
 + **GCC** 4.7.0 or newer
 + **Linux** 2.6.32 or newer
