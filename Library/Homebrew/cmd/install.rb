@@ -114,13 +114,13 @@ module Homebrew
 
     formulae = []
 
-    unless ARGV.casks.empty?
+    unless Homebrew.args.casks.empty?
       cask_args = []
       cask_args << "--force" if args.force?
       cask_args << "--debug" if args.debug?
       cask_args << "--verbose" if args.verbose?
 
-      ARGV.casks.each do |c|
+      Homebrew.args.casks.each do |c|
         ohai "brew cask install #{c} #{cask_args.join " "}"
         system("#{HOMEBREW_PREFIX}/bin/brew", "cask", "install", c, *cask_args)
       end
