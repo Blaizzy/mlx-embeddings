@@ -561,6 +561,18 @@ class FormulaInstaller
     @show_header = true unless deps.empty?
   end
 
+  def fetch_dependency(dep)
+    df = dep.to_formula
+    fi = FormulaInstaller.new(df)
+
+    fi.build_from_source       = Homebrew.args.build_formula_from_source?(df)
+    fi.force_bottle            = false
+    fi.verbose                 = verbose?
+    fi.quiet                   = quiet?
+    fi.debug                   = debug?
+    fi.fetch
+  end
+
   def install_dependency(dep, inherited_options)
     df = dep.to_formula
     tab = Tab.for_formula(df)
@@ -600,7 +612,6 @@ class FormulaInstaller
     fi.installed_as_dependency = true
     fi.installed_on_request    = df.any_version_installed? && tab.installed_on_request
     fi.prelude
-    fi.fetch
     oh1 "Installing #{formula.full_name} dependency: #{Formatter.identifier(dep.name)}"
     fi.install
     fi.finish
@@ -952,9 +963,7 @@ class FormulaInstaller
 
     return if deps.empty? || ignore_deps?
 
-    deps.each do |dep, _|
-      dep.to_formula.resources.each(&:fetch)
-    end
+    deps.each { |dep, _options| fetch_dependency(dep) }
   end
 
   def fetch
