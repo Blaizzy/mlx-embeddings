@@ -368,8 +368,8 @@ module Cask
             fi.installed_on_request = false
             fi.show_header = true
             fi.verbose = verbose?
-            fi.prelude
             fi.fetch
+            fi.prelude
             fi.install
             fi.finish
           end
