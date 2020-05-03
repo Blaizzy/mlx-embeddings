@@ -76,7 +76,8 @@ describe Messages do
     # rubocop:disable RSpec/VerifiedDoubles
     context "when the --display-times argument is present" do
       before do
-        allow(Homebrew).to receive(:args).and_return(double(display_times?: true))
+        allow(Homebrew).to receive(:args)
+          .and_return(double(display_times?: true, flags_only: ["--display-times"]))
       end
 
       context "when install_times is empty" do
