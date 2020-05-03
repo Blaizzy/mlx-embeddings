@@ -16,10 +16,6 @@ module HomebrewArgvExtension
     arch&.to_sym
   end
 
-  def cc
-    value "cc"
-  end
-
   def env
     value "env"
   end
