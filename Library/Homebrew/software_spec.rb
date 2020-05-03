@@ -11,6 +11,7 @@ require "patch"
 require "compilers"
 require "global"
 require "os/mac/version"
+require "cli/parser"
 
 class SoftwareSpec
   extend Forwardable
@@ -41,7 +42,7 @@ class SoftwareSpec
     @bottle_specification = BottleSpecification.new
     @patches = []
     @options = Options.new
-    @flags = ARGV.flags_only
+    @flags = Homebrew.args.flags_only
     @deprecated_flags = []
     @deprecated_options = []
     @build = BuildOptions.new(Options.create(@flags), options)

@@ -31,14 +31,6 @@ describe HomebrewArgvExtension do
     end
   end
 
-  describe "#flags_only" do
-    let(:argv) { ["--foo", "-vds", "a", "b", "cdefg"] }
-
-    it "returns an array of flags" do
-      expect(subject.flags_only).to eq ["--foo"]
-    end
-  end
-
   describe "#empty?" do
     let(:argv) { [] }
 
