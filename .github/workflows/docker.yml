@@ -1,0 +1,31 @@
+name: Docker
+on:
+  pull_request:
+    paths:
+      - .github/workflows/docker.yml
+      - Dockerfile
+  release:
+    types:
+      - published
+jobs:
+  ubuntu:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: ["18.04", "20.04"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+        with:
+          fetch-depth: 0
+      - name: Build Docker image
+        run: docker build -t brew --build-arg=version=${{matrix.version}} .
+      - name: Run brew test-bot
+        run: docker run --rm brew brew test-bot
+      - name: Deploy the tagged Docker image to GitHub
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          docker login docker.pkg.github.com -u BrewTestBot -p ${{secrets.GITHUB_TOKEN}}
+          v=${GITHUB_REF:10}
+          docker tag brew "docker.pkg.github.com/homebrew/brew/ubuntu${{matrix.version}}:$v"
+          docker push "docker.pkg.github.com/homebrew/brew/ubuntu${{matrix.version}}:$v"
