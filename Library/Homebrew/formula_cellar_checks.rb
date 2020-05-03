@@ -224,6 +224,41 @@ module FormulaCellarChecks
     EOS
   end
 
+  def check_plist(prefix, plist)
+    return unless prefix.directory?
+
+    plist = begin
+      Plist.parse_xml(plist)
+    rescue
+      nil
+    end
+    return if plist.blank?
+
+    program_location = plist["ProgramArguments"]&.first
+    key = "first ProgramArguments value"
+    if program_location.blank?
+      program_location = plist["Program"]
+      key = "Program"
+    end
+    return if program_location.blank?
+
+    Dir.chdir("/") do
+      unless File.exist?(program_location)
+        return <<~EOS
+          The plist #{key} does not exist:
+            #{program_location}
+        EOS
+      end
+
+      return if File.executable?(program_location)
+    end
+
+    <<~EOS
+      The plist #{key} is not executable:
+        #{program_location}
+    EOS
+  end
+
   def audit_installed
     @new_formula ||= false
 
@@ -240,6 +275,7 @@ module FormulaCellarChecks
     problem_if_output(check_elisp_root(formula.share, formula.name))
     problem_if_output(check_python_packages(formula.lib, formula.deps))
     problem_if_output(check_shim_references(formula.prefix))
+    problem_if_output(check_plist(formula.prefix, formula.plist))
   end
   alias generic_audit_installed audit_installed
 
