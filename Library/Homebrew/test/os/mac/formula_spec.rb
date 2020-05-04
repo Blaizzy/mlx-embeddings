@@ -3,6 +3,43 @@
 require "formula"
 
 describe Formula do
+  describe "#uses_from_macos" do
+    before do
+      allow(OS).to receive(:mac?).and_return(true)
+      allow(OS::Mac).to receive(:version).and_return(OS::Mac::Version.from_symbol(:sierra))
+    end
+
+    it "adds a macOS dependency to all specs if the OS version meets requirements" do
+      f = formula "foo" do
+        url "foo-1.0"
+
+        uses_from_macos("foo", since: :el_capitan)
+      end
+
+      expect(f.class.stable.deps).to be_empty
+      expect(f.class.devel.deps).to be_empty
+      expect(f.class.head.deps).to be_empty
+      expect(f.class.stable.uses_from_macos_elements.first).to eq("foo")
+      expect(f.class.devel.uses_from_macos_elements.first).to eq("foo")
+      expect(f.class.head.uses_from_macos_elements.first).to eq("foo")
+    end
+
+    it "doesn't add a macOS dependency to any spec if the OS version doesn't meet requirements" do
+      f = formula "foo" do
+        url "foo-1.0"
+
+        uses_from_macos("foo", since: :high_sierra)
+      end
+
+      expect(f.class.stable.deps.first.name).to eq("foo")
+      expect(f.class.devel.deps.first.name).to eq("foo")
+      expect(f.class.head.deps.first.name).to eq("foo")
+      expect(f.class.stable.uses_from_macos_elements).to be_empty
+      expect(f.class.devel.uses_from_macos_elements).to be_empty
+      expect(f.class.head.uses_from_macos_elements).to be_empty
+    end
+  end
+
   describe "#on_macos" do
     it "defines an url on macos only" do
       f = formula do
