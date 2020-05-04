@@ -152,11 +152,11 @@ module Homebrew
         @parser.to_s
       end
 
-      def parse(cmdline_args = ARGV, allow_no_named_args: false)
+      def parse(argv = ARGV, allow_no_named_args: false)
         raise "Arguments were already parsed!" if @args_parsed
 
         begin
-          named_args = @parser.parse(cmdline_args)
+          named_args = @parser.parse(argv)
         rescue OptionParser::InvalidOption => e
           $stderr.puts generate_help_text
           raise e
@@ -166,7 +166,7 @@ module Homebrew
         @args[:remaining] = named_args
         @args.freeze_processed_options!(@processed_options)
         Homebrew.args = @args
-        cmdline_args.freeze
+        argv.freeze
         @args_parsed = true
         @parser
       end

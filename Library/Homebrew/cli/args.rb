@@ -13,7 +13,7 @@ module Homebrew
         super
 
         self[:remaining] = []
-        self[:cmdline_args] = ARGV.dup.freeze
+        self[:argv] = ARGV.dup.freeze
 
         @args_parsed = false
         @processed_options = []
@@ -174,21 +174,21 @@ module Homebrew
       end
 
       def build_from_source
-        return true if args_parsed && (build_from_source? || s?)
+        return argv.include?("--build-from-source") || argv.include?("-s") unless args_parsed
 
-        cmdline_args.include?("--build-from-source") || cmdline_args.include?("-s")
+        build_from_source? || s?
       end
 
       def build_bottle
-        return true if args_parsed && build_bottle?
+        return argv.include?("--build-bottle") unless args_parsed
 
-        cmdline_args.include?("--build-bottle")
+        build_bottle?
       end
 
       def force_bottle
-        return true if args_parsed && force_bottle?
+        return argv.include?("--force-bottle") unless args_parsed
 
-        cmdline_args.include?("--force-bottle")
+        force_bottle?
       end
 
       private
@@ -198,7 +198,7 @@ module Homebrew
         arguments = if args_parsed
           named
         else
-          cmdline_args.reject { |arg| arg.start_with?("-") }
+          argv.reject { |arg| arg.start_with?("-") }
         end
         arguments.map do |arg|
           if arg.include?("/") || arg.end_with?(".tar.gz") || File.exist?(arg)
@@ -210,21 +210,21 @@ module Homebrew
       end
 
       def head
-        return true if args_parsed && HEAD?
+        return argv.include?("--HEAD") unless args_parsed
 
-        cmdline_args.include?("--HEAD")
+        HEAD?
       end
 
       def devel
-        return true if args_parsed && devel?
+        return argv.include?("--devel") unless args_parsed
 
-        cmdline_args.include?("--devel")
+        devel?
       end
 
       def build_universal
-        return true if args_parsed && universal?
+        return argv.include?("--universal") unless args_parsed
 
-        cmdline_args.include?("--universal")
+        universal?
       end
 
       def spec(default = :stable)
