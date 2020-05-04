@@ -1,5 +1,11 @@
 # frozen_string_literal: true
 
+require "cmd/shared_examples/args_parse"
+
+describe "Homebrew.deps_args" do
+  it_behaves_like "parseable arguments"
+end
+
 describe "brew deps", :integration_test do
   it "outputs all of a Formula's dependencies and their dependencies on separate lines" do
     setup_test_formula "foo"
