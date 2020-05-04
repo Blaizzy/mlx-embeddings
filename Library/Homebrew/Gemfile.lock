@@ -78,7 +78,7 @@ GEM
       rspec-support (~> 3.9.0)
     rspec-retry (0.6.2)
       rspec-core (> 3.3)
-    rspec-support (3.9.2)
+    rspec-support (3.9.3)
     rspec-wait (0.0.9)
       rspec (>= 3, < 4)
     rubocop (0.82.0)
