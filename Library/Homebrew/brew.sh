@@ -93,6 +93,31 @@ case "$HOMEBREW_SYSTEM" in
   Linux)  HOMEBREW_LINUX="1" ;;
 esac
 
+if [[ -n "$HOMEBREW_FORCE_BREWED_CURL" &&
+      -x "$HOMEBREW_PREFIX/opt/curl/bin/curl" ]] &&
+         "$HOMEBREW_PREFIX/opt/curl/bin/curl" --version >/dev/null
+then
+  HOMEBREW_CURL="$HOMEBREW_PREFIX/opt/curl/bin/curl"
+elif [[ -n "$HOMEBREW_DEVELOPER" && -x "$HOMEBREW_CURL_PATH" ]]
+then
+  HOMEBREW_CURL="$HOMEBREW_CURL_PATH"
+else
+  HOMEBREW_CURL="curl"
+fi
+
+if [[ -n "$HOMEBREW_FORCE_BREWED_GIT" &&
+      -x "$HOMEBREW_PREFIX/opt/git/bin/git" ]] &&
+         "$HOMEBREW_PREFIX/opt/git/bin/git" --version >/dev/null
+then
+  HOMEBREW_GIT="$HOMEBREW_PREFIX/opt/git/bin/git"
+elif [[ -n "$HOMEBREW_DEVELOPER" && -x "$HOMEBREW_GIT_PATH" ]]
+then
+  HOMEBREW_GIT="$HOMEBREW_GIT_PATH"
+else
+  HOMEBREW_GIT="git"
+fi
+
+
 if [[ -n "$HOMEBREW_MACOS" ]]
 then
   HOMEBREW_PROCESSOR="$(uname -p)"
@@ -159,9 +184,9 @@ else
 
   # Ensure the system Curl is a version that supports modern HTTPS certificates.
   HOMEBREW_MINIMUM_CURL_VERSION="7.41.0"
-  system_curl_version_output="$($(command -v curl) --version 2>/dev/null)"
-  system_curl_name_and_version="${system_curl_version_output%% (*}"
-  if [[ $(numeric "${system_curl_name_and_version##* }") -lt $(numeric "$HOMEBREW_MINIMUM_CURL_VERSION") ]]
+  curl_version_output="$($HOMEBREW_CURL --version 2>/dev/null)"
+  curl_name_and_version="${curl_version_output%% (*}"
+  if [[ $(numeric "${curl_name_and_version##* }") -lt $(numeric "$HOMEBREW_MINIMUM_CURL_VERSION") ]]
   then
     HOMEBREW_SYSTEM_CURL_TOO_OLD="1"
     HOMEBREW_FORCE_BREWED_CURL="1"
@@ -170,10 +195,10 @@ else
   # Ensure the system Git is at or newer than the minimum required version.
   # Git 2.7.4 is the version of git on Ubuntu 16.04 LTS (Xenial Xerus).
   HOMEBREW_MINIMUM_GIT_VERSION="2.7.0"
-  system_git_version_output="$($(command -v git) --version 2>/dev/null)"
+  git_version_output="$($HOMEBREW_GIT --version 2>/dev/null)"
   # $extra is intentionally discarded.
   # shellcheck disable=SC2034
-  IFS=. read -r major minor micro build extra <<< "${system_git_version_output##* }"
+  IFS=. read -r major minor micro build extra <<< "${git_version_output##* }"
   if [[ $(numeric "$major.$minor.$micro.$build") -lt $(numeric "$HOMEBREW_MINIMUM_GIT_VERSION") ]]
   then
     HOMEBREW_FORCE_BREWED_GIT="1"
@@ -197,30 +222,6 @@ fi
 HOMEBREW_CACHE="${HOMEBREW_CACHE:-${HOMEBREW_DEFAULT_CACHE}}"
 HOMEBREW_LOGS="${HOMEBREW_LOGS:-${HOMEBREW_DEFAULT_LOGS}}"
 HOMEBREW_TEMP="${HOMEBREW_TEMP:-${HOMEBREW_DEFAULT_TEMP}}"
-
-if [[ -n "$HOMEBREW_FORCE_BREWED_CURL" &&
-      -x "$HOMEBREW_PREFIX/opt/curl/bin/curl" ]] &&
-         "$HOMEBREW_PREFIX/opt/curl/bin/curl" --version >/dev/null
-then
-  HOMEBREW_CURL="$HOMEBREW_PREFIX/opt/curl/bin/curl"
-elif [[ -n "$HOMEBREW_DEVELOPER" && -x "$HOMEBREW_CURL_PATH" ]]
-then
-  HOMEBREW_CURL="$HOMEBREW_CURL_PATH"
-else
-  HOMEBREW_CURL="curl"
-fi
-
-if [[ -n "$HOMEBREW_FORCE_BREWED_GIT" &&
-      -x "$HOMEBREW_PREFIX/opt/git/bin/git" ]] &&
-         "$HOMEBREW_PREFIX/opt/git/bin/git" --version >/dev/null
-then
-  HOMEBREW_GIT="$HOMEBREW_PREFIX/opt/git/bin/git"
-elif [[ -n "$HOMEBREW_DEVELOPER" && -x "$HOMEBREW_GIT_PATH" ]]
-then
-  HOMEBREW_GIT="$HOMEBREW_GIT_PATH"
-else
-  HOMEBREW_GIT="git"
-fi
 
 HOMEBREW_USER_AGENT="$HOMEBREW_PRODUCT/$HOMEBREW_USER_AGENT_VERSION ($HOMEBREW_SYSTEM; $HOMEBREW_PROCESSOR $HOMEBREW_OS_USER_AGENT_VERSION)"
 curl_version_output="$("$HOMEBREW_CURL" --version 2>/dev/null)"
