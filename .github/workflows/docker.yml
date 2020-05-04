@@ -18,10 +18,9 @@ jobs:
         uses: actions/checkout@master
         with:
           fetch-depth: 0
-      - name: Configure Git
-        run: |
-          git config --unset "http.https://github.com/.extraheader"
-          git fetch origin master
+          persist-credentials: false
+      - name: Fetch origin/master from Git
+        run: git fetch origin master
       - name: Build Docker image
         run: docker build -t brew --build-arg=version=${{matrix.version}} .
       - name: Run brew test-bot
