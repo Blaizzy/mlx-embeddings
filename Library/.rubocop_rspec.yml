@@ -15,12 +15,14 @@ Style/DisableCopsWithinSourceCodeDirective:
 # Intentionally disabled as it doesn't fit with our code style.
 RSpec/AnyInstance:
   Enabled: false
+RSpec/FilePath:
+  Enabled: false
 RSpec/ImplicitBlockExpectation:
   Enabled: false
 RSpec/SubjectStub:
   Enabled: false
 
-# TODO: try to enable these (also requires fixing Homebrew/bundle)
+# TODO: try to enable these
 RSpec/ContextWording:
   Enabled: false
 RSpec/DescribeClass:
@@ -34,7 +36,7 @@ RSpec/RepeatedDescription:
 RSpec/RepeatedExampleGroupDescription:
   Enabled: false
 
-# TODO: try to reduce these (also requires fixing Homebrew/bundle)
+# TODO: try to reduce these
 RSpec/ExampleLength:
   Max: 75
 RSpec/MultipleExpectations:
