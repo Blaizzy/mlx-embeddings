@@ -12,8 +12,8 @@ module Homebrew
     class Parser
       attr_reader :processed_options, :hide_from_man_page
 
-      def self.parse(args = ARGV, allow_no_named_args: false, &block)
-        new(args, &block).parse(args, allow_no_named_args: allow_no_named_args)
+      def self.parse(argv = ARGV.dup.freeze, allow_no_named_args: false, &block)
+        new(argv, &block).parse(allow_no_named_args: allow_no_named_args)
       end
 
       def self.from_cmd_path(cmd_path)
@@ -37,9 +37,10 @@ module Homebrew
         }
       end
 
-      def initialize(&block)
+      def initialize(argv = ARGV.dup.freeze, &block)
         @parser = OptionParser.new
-        @args = Homebrew::CLI::Args.new
+        @argv = argv
+        @args = Homebrew::CLI::Args.new(@argv)
 
         @constraints = []
         @conflicts = []
@@ -152,7 +153,7 @@ module Homebrew
         @parser.to_s
       end
 
-      def parse(argv = ARGV, allow_no_named_args: false)
+      def parse(argv = @argv, allow_no_named_args: false)
         raise "Arguments were already parsed!" if @args_parsed
 
         begin
@@ -161,12 +162,14 @@ module Homebrew
           $stderr.puts generate_help_text
           raise e
         end
+
         check_constraint_violations
         check_named_args(named_args, allow_no_named_args: allow_no_named_args)
-        @args[:remaining] = named_args
+        @args.freeze_named_args!(named_args)
+        parse_formula_options
         @args.freeze_processed_options!(@processed_options)
         Homebrew.args = @args
-        argv.freeze
+
         @args_parsed = true
         @parser
       end
@@ -186,21 +189,7 @@ module Homebrew
       end
 
       def formula_options
-        @args.formulae.each do |f|
-          next if f.options.empty?
-
-          f.options.each do |o|
-            name = o.flag
-            description = "`#{f.name}`: #{o.description}"
-            if name.end_with? "="
-              flag   name, description: description
-            else
-              switch name, description: description
-            end
-          end
-        end
-      rescue FormulaUnavailableError
-        []
+        @parse_formula_options = true
       end
 
       def max_named(count)
@@ -238,6 +227,26 @@ module Homebrew
       end
 
       private
+
+      def parse_formula_options
+        return unless @parse_formula_options
+
+        @args.formulae.each do |f|
+          next if f.options.empty?
+
+          f.options.each do |o|
+            name = o.flag
+            description = "`#{f.name}`: #{o.description}"
+            if name.end_with? "="
+              flag   name, description: description
+            else
+              switch name, description: description
+            end
+          end
+        end
+      rescue FormulaUnavailableError
+        []
+      end
 
       def enable_switch(*names, from:)
         names.each do |name|

@@ -49,9 +49,9 @@ class FormulaInstaller
     @show_header = false
     @ignore_deps = false
     @only_deps = false
-    @build_from_source = Homebrew.args.build_from_source
+    @build_from_source = Homebrew.args.build_from_source?
     @build_bottle = false
-    @force_bottle = Homebrew.args.force_bottle
+    @force_bottle = Homebrew.args.force_bottle?
     @include_test = ARGV.include?("--include-test")
     @interactive = false
     @git = false

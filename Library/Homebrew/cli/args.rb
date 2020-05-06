@@ -5,56 +5,44 @@ require "ostruct"
 module Homebrew
   module CLI
     class Args < OpenStruct
-      attr_reader :processed_options, :args_parsed
       # undefine tap to allow --tap argument
       undef tap
 
-      def initialize
-        super
+      def initialize(argv = ARGV.dup.freeze, set_default_args: false)
+        super()
 
-        self[:remaining] = []
-        self[:argv] = ARGV.dup.freeze
-
-        @args_parsed = false
         @processed_options = []
+
+        # Set values needed before Parser#parse has been run.
+        return unless set_default_args
+
+        self[:build_from_source?] = argv.include?("--build-from-source") || argv.include?("-s")
+        self[:build_bottle?] = argv.include?("--build-bottle")
+        self[:force_bottle?] = argv.include?("--force-bottle")
+        self[:HEAD?] = argv.include?("--HEAD")
+        self[:devel?] = argv.include?("--devel")
+        self[:universal?] = argv.include?("--universal")
+        self[:named_args] = argv.reject { |arg| arg.start_with?("-") }
+      end
+
+      def freeze_named_args!(named_args)
+        self[:named_args] = named_args
+        self[:named_args].freeze
       end
 
       def freeze_processed_options!(processed_options)
         @processed_options += processed_options
         @processed_options.freeze
-        @args_parsed = true
-      end
-
-      def option_to_name(option)
-        option.sub(/\A--?/, "")
-              .tr("-", "_")
-      end
-
-      def cli_args
-        return @cli_args if @cli_args
-
-        @cli_args = []
-        processed_options.each do |short, long|
-          option = long || short
-          switch = "#{option_to_name(option)}?".to_sym
-          flag = option_to_name(option).to_sym
-          if @table[switch] == true || @table[flag] == true
-            @cli_args << option
-          elsif @table[flag].instance_of? String
-            @cli_args << option + "=" + @table[flag]
-          elsif @table[flag].instance_of? Array
-            @cli_args << option + "=" + @table[flag].join(",")
-          end
-        end
-        @cli_args
       end
 
       def options_only
         @options_only ||= cli_args.select { |arg| arg.start_with?("-") }
+                                  .freeze
       end
 
       def flags_only
         @flags_only ||= cli_args.select { |arg| arg.start_with?("--") }
+                                .freeze
       end
 
       def passthrough
@@ -62,7 +50,7 @@ module Homebrew
       end
 
       def named
-        remaining
+        named_args || []
       end
 
       def no_named?
@@ -74,16 +62,17 @@ module Homebrew
       def collect_build_args
         build_flags = []
 
-        build_flags << "--HEAD" if head
-        build_flags << "--universal" if build_universal
-        build_flags << "--build-bottle" if build_bottle
-        build_flags << "--build-from-source" if build_from_source
+        build_flags << "--HEAD" if HEAD?
+        build_flags << "--universal" if build_universal?
+        build_flags << "--build-bottle" if build_bottle?
+        build_flags << "--build-from-source" if build_from_source?
 
         build_flags
       end
 
       def formulae
         require "formula"
+
         @formulae ||= (downcased_unique_named - casks).map do |name|
           if name.include?("/") || File.exist?(name)
             Formulary.factory(name, spec)
@@ -91,29 +80,35 @@ module Homebrew
             Formulary.find_with_priority(name, spec)
           end
         end.uniq(&:name)
+                                                      .freeze
       end
 
       def resolved_formulae
         require "formula"
+
         @resolved_formulae ||= (downcased_unique_named - casks).map do |name|
           Formulary.resolve(name, spec: spec(nil))
         end.uniq(&:name)
+                                                               .freeze
       end
 
       def formulae_paths
         @formulae_paths ||= (downcased_unique_named - casks).map do |name|
           Formulary.path(name)
         end.uniq
+                                                            .freeze
       end
 
       def casks
-        @casks ||= downcased_unique_named.grep HOMEBREW_CASK_TAP_CASK_REGEX
+        @casks ||= downcased_unique_named.grep(HOMEBREW_CASK_TAP_CASK_REGEX)
+                                         .freeze
       end
 
       def kegs
         require "keg"
         require "formula"
         require "missing_formula"
+
         @kegs ||= downcased_unique_named.map do |name|
           raise UsageError if name.empty?
 
@@ -158,7 +153,7 @@ module Homebrew
               Please delete (with rm -rf!) all but one and then try again.
             EOS
           end
-        end
+        end.freeze
       end
 
       def build_stable?
@@ -168,39 +163,40 @@ module Homebrew
       # Whether a given formula should be built from source during the current
       # installation run.
       def build_formula_from_source?(f)
-        return false if !build_from_source && !build_bottle
+        return false if !build_from_source? && !build_bottle?
 
         formulae.any? { |args_f| args_f.full_name == f.full_name }
       end
 
-      def build_from_source
-        return argv.include?("--build-from-source") || argv.include?("-s") unless args_parsed
-
-        build_from_source? || s?
-      end
-
-      def build_bottle
-        return argv.include?("--build-bottle") unless args_parsed
-
-        build_bottle?
-      end
-
-      def force_bottle
-        return argv.include?("--force-bottle") unless args_parsed
-
-        force_bottle?
-      end
-
       private
+
+      def option_to_name(option)
+        option.sub(/\A--?/, "")
+              .tr("-", "_")
+      end
+
+      def cli_args
+        return @cli_args if @cli_args
+
+        @cli_args = []
+        @processed_options.each do |short, long|
+          option = long || short
+          switch = "#{option_to_name(option)}?".to_sym
+          flag = option_to_name(option).to_sym
+          if @table[switch] == true || @table[flag] == true
+            @cli_args << option
+          elsif @table[flag].instance_of? String
+            @cli_args << option + "=" + @table[flag]
+          elsif @table[flag].instance_of? Array
+            @cli_args << option + "=" + @table[flag].join(",")
+          end
+        end
+        @cli_args.freeze
+      end
 
       def downcased_unique_named
         # Only lowercase names, not paths, bottle filenames or URLs
-        arguments = if args_parsed
-          named
-        else
-          argv.reject { |arg| arg.start_with?("-") }
-        end
-        arguments.map do |arg|
+        named.map do |arg|
           if arg.include?("/") || arg.end_with?(".tar.gz") || File.exist?(arg)
             arg
           else
@@ -209,28 +205,10 @@ module Homebrew
         end.uniq
       end
 
-      def head
-        return argv.include?("--HEAD") unless args_parsed
-
-        HEAD?
-      end
-
-      def devel
-        return argv.include?("--devel") unless args_parsed
-
-        devel?
-      end
-
-      def build_universal
-        return argv.include?("--universal") unless args_parsed
-
-        universal?
-      end
-
       def spec(default = :stable)
-        if head
+        if HEAD?
           :head
-        elsif devel
+        elsif devel?
           :devel
         else
           default
