@@ -491,8 +491,8 @@ module Formulary
     if possible_pinned_tap_formulae.size == 1
       selected_formula = factory(possible_pinned_tap_formulae.first, spec)
       if core_path(ref).file?
-        odisabled "brew tap-pin user/tap",
-                  "fully-scoped user/tap/formula naming"
+        odisabled "the brew tap-pin command",
+                  "fully-scoped user/tap/formula naming when installing and in dependency references"
       end
       selected_formula
     else

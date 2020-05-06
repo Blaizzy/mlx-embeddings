@@ -12,7 +12,7 @@ module Homebrew
   end
 
   def tap_pin
-    odisabled "brew tap-pin user/tap",
-              "fully-scoped user/tap/formula naming"
+    odisabled "the brew tap-pin command",
+              "fully-scoped user/tap/formula naming when installing and in dependency references"
   end
 end
