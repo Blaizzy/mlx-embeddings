@@ -16,9 +16,11 @@ module Homebrew
       flag   "--tap=",
              description: "Target tap repository (default: `homebrew/core`)."
       flag   "--with-label=",
-             description: "Pull requests must have this label (default: `ready to merge`)."
+             description: "Pull requests must have this label."
       comma_array "--without-labels=",
                   description: "Pull requests must not have these labels (default: `do not merge`, `new formula`)."
+      switch "--without-approval",
+             description: "Pull requests do not require approval to be merged."
       switch "--publish",
              description: "Run `brew pr-publish` on matching pull requests."
       switch "--ignore-failures",
@@ -33,12 +35,13 @@ module Homebrew
     pr_automerge_args.parse
 
     ENV["HOMEBREW_FORCE_HOMEBREW_ON_LINUX"] = "1" unless OS.mac?
-    with_label = Homebrew.args.with_label || "ready to merge"
     without_labels = Homebrew.args.without_labels || ["do not merge", "new formula"]
     tap = Tap.fetch(Homebrew.args.tap || CoreTap.instance.name)
 
-    query = "is:pr is:open repo:#{tap.full_name} label:\"#{with_label}\""
-    query += args.ignore_failures? ? " -status:pending" : " status:success"
+    query = "is:pr is:open repo:#{tap.full_name}"
+    query += Homebrew.args.ignore_failures? ? " -status:pending" : " status:success"
+    query += " review:approved" unless Homebrew.args.without_approval?
+    query += " label:\"#{with_label}\"" if Homebrew.args.with_label
     without_labels&.each { |label| query += " -label:\"#{label}\"" }
     odebug "Searching: #{query}"
 
