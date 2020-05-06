@@ -790,6 +790,14 @@ class Formula
     (HOMEBREW_PREFIX/"etc").extend(InstallRenamed)
   end
 
+  # A subdirectory of `etc` with the formula name suffixed.
+  # e.g. `$HOMEBREW_PREFIX/etc/openssl@1.1`
+  # Anything using `pkgetc.install` will not overwrite other files on
+  # e.g. upgrades but will write a new file named `*.default`.
+  def pkgetc
+    (HOMEBREW_PREFIX/"etc"/name).extend(InstallRenamed)
+  end
+
   # The directory where the formula's variable files should be installed.
   # This directory is not inside the `HOMEBREW_CELLAR` so it persists
   # across upgrades.
@@ -1080,7 +1088,7 @@ class Formula
     # keg's formula is deleted.
     begin
       keg = Keg.for(path)
-    rescue NotAKegError, Errno::ENOENT # rubocop:disable Lint/SuppressedException
+    rescue NotAKegError, Errno::ENOENT
       # file doesn't belong to any keg.
     else
       tab_tap = Tab.for_keg(keg).tap
@@ -1089,7 +1097,7 @@ class Formula
 
       begin
         Formulary.factory(keg.name)
-      rescue FormulaUnavailableError # rubocop:disable Lint/SuppressedException
+      rescue FormulaUnavailableError
         # formula for this keg is deleted, so defer to whitelist
       rescue TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
         return false # this keg belongs to another formula
