@@ -166,7 +166,6 @@ module Homebrew
         check_constraint_violations
         check_named_args(named_args, allow_no_named_args: allow_no_named_args)
         @args.freeze_named_args!(named_args)
-        parse_formula_options
         @args.freeze_processed_options!(@processed_options)
         Homebrew.args = @args
 
@@ -189,7 +188,21 @@ module Homebrew
       end
 
       def formula_options
-        @parse_formula_options = true
+        @args.formulae.each do |f|
+          next if f.options.empty?
+
+          f.options.each do |o|
+            name = o.flag
+            description = "`#{f.name}`: #{o.description}"
+            if name.end_with? "="
+              flag   name, description: description
+            else
+              switch name, description: description
+            end
+          end
+        end
+      rescue FormulaUnavailableError
+        []
       end
 
       def max_named(count)
@@ -227,26 +240,6 @@ module Homebrew
       end
 
       private
-
-      def parse_formula_options
-        return unless @parse_formula_options
-
-        @args.formulae.each do |f|
-          next if f.options.empty?
-
-          f.options.each do |o|
-            name = o.flag
-            description = "`#{f.name}`: #{o.description}"
-            if name.end_with? "="
-              flag   name, description: description
-            else
-              switch name, description: description
-            end
-          end
-        end
-      rescue FormulaUnavailableError
-        []
-      end
 
       def enable_switch(*names, from:)
         names.each do |name|

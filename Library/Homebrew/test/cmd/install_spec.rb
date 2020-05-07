@@ -14,6 +14,17 @@ describe "brew install", :integration_test do
       .to output(%r{#{HOMEBREW_CELLAR}/testball1/0\.1}).to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
+    expect(HOMEBREW_CELLAR/"testball1/0.1/foo/test").not_to be_a_file
+  end
+
+  it "installs formulae with options" do
+    setup_test_formula "testball1"
+
+    expect { brew "install", "testball1", "--with-foo" }
+      .to output(%r{#{HOMEBREW_CELLAR}/testball1/0\.1}).to_stdout
+      .and not_to_output.to_stderr
+      .and be_a_success
+    expect(HOMEBREW_CELLAR/"testball1/0.1/foo/test").to be_a_file
   end
 
   it "can install keg-only Formulae" do
@@ -27,6 +38,7 @@ describe "brew install", :integration_test do
       .to output(%r{#{HOMEBREW_CELLAR}/testball1/1\.0}).to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
+    expect(HOMEBREW_CELLAR/"testball1/1.0/foo/test").not_to be_a_file
   end
 
   it "can install HEAD Formulae" do
@@ -59,5 +71,6 @@ describe "brew install", :integration_test do
       .to output(%r{#{HOMEBREW_CELLAR}/testball1/HEAD\-d5eb689}).to_stdout
       .and output(/Cloning into/).to_stderr
       .and be_a_success
+    expect(HOMEBREW_CELLAR/"testball1/HEAD-d5eb689/foo/test").not_to be_a_file
   end
 end
