@@ -142,14 +142,18 @@ module Homebrew
       cleanup = Cleanup.new
       if cleanup.periodic_clean_due?
         cleanup.periodic_clean!
-      elsif f.installed?
+      elsif f.latest_version_installed?
         cleanup.cleanup_formula(f)
       end
     end
 
     def periodic_clean_due?
       return false if Homebrew::EnvConfig.no_install_cleanup?
-      return true unless PERIODIC_CLEAN_FILE.exist?
+
+      unless PERIODIC_CLEAN_FILE.exist?
+        FileUtils.touch PERIODIC_CLEAN_FILE
+        return false
+      end
 
       PERIODIC_CLEAN_FILE.mtime < CLEANUP_DEFAULT_DAYS.days.ago
     end
