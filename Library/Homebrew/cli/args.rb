@@ -79,8 +79,7 @@ module Homebrew
           else
             Formulary.find_with_priority(name, spec)
           end
-        end.uniq(&:name)
-                                                      .freeze
+        end.uniq(&:name).freeze
       end
 
       def resolved_formulae
@@ -88,15 +87,13 @@ module Homebrew
 
         @resolved_formulae ||= (downcased_unique_named - casks).map do |name|
           Formulary.resolve(name, spec: spec(nil))
-        end.uniq(&:name)
-                                                               .freeze
+        end.uniq(&:name).freeze
       end
 
       def formulae_paths
         @formulae_paths ||= (downcased_unique_named - casks).map do |name|
           Formulary.path(name)
-        end.uniq
-                                                            .freeze
+        end.uniq.freeze
       end
 
       def casks
