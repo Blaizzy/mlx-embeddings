@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "BREW" "1" "April 2020" "Homebrew" "brew"
+.TH "BREW" "1" "May 2020" "Homebrew" "brew"
 .
 .SH "NAME"
 \fBbrew\fR \- The Missing Package Manager for macOS
@@ -576,7 +576,7 @@ Search for \fItext\fR in the given package manager\'s list\.
 Print export statements\. When run in a shell, this installation of Homebrew will be added to your \fBPATH\fR, \fBMANPATH\fR, and \fBINFOPATH\fR\.
 .
 .P
-The variables \fBHOMEBREW_PREFIX\fR, \fBHOMEBREW_CELLAR\fR and \fBHOMEBREW_REPOSITORY\fR are also exported to avoid querying them multiple times\. Consider adding evaluation of this command\'s output to your dotfiles (e\.g\. \fB~/\.profile\fR or \fB~/\.zprofile\fR) with: \fBeval $(brew shellenv)\fR
+The variables \fBHOMEBREW_PREFIX\fR, \fBHOMEBREW_CELLAR\fR and \fBHOMEBREW_REPOSITORY\fR are also exported to avoid querying them multiple times\. Consider adding evaluation of this command\'s output to your dotfiles (e\.g\. \fB~/\.bash_profile\fR or \fB~/\.zprofile\fR) with: \fBeval $(brew shellenv)\fR
 .
 .SS "\fBswitch\fR \fIformula\fR \fIversion\fR"
 Symlink all of the specified \fIversion\fR of \fIformula\fR\'s installation into Homebrew\'s prefix\.
