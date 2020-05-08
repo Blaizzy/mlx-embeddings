@@ -345,6 +345,17 @@ module Homebrew
           directory on the same volume as your Cellar.
         EOS
       end
+
+      def check_deprecated_caskroom_taps
+        tapped_caskroom_taps = Tap.select { |t| t.user == "caskroom" }.map(&:repo)
+        return if tapped_caskroom_taps.empty?
+
+        <<~EOS
+          You have the following deprecated, cask taps tapped:
+            Caskroom/homebrew-#{tapped_caskroom_taps.join("\n  Caskroom/homebrew-")}
+          Untap them with `brew untap`.
+        EOS
+      end
     end
   end
 end
