@@ -274,7 +274,7 @@ class Bottle
     end
 
     def bintray
-      "#{name}-#{version}#{extname}"
+      ERB::Util.url_encode("#{name}-#{version}#{extname}")
     end
 
     def extname
