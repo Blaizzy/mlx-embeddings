@@ -72,7 +72,7 @@ See [homebrew/cask](https://github.com/Homebrew/homebrew-cask) for an example of
 ### Naming
 
 Unlike formulae, casks must have globally unique names to avoid clashes.
-This can be achieved by e.g. prepending the cask name with you github username: `username-formula-name`.
+This can be achieved by e.g. prepending the cask name with your github username: `username-formula-name`.
 
 ## External commands
 
