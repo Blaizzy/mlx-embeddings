@@ -92,7 +92,8 @@ module Homebrew
             end
 
             unversioned_name = f.name.gsub(/@.+$/, "")
-            maybe_paths = Dir.glob("#{f.etc}/*#{unversioned_name}*") - paths.to_a
+            maybe_paths = Dir.glob("#{f.etc}/*#{unversioned_name}*")
+            maybe_paths -= paths if paths.present?
             if maybe_paths.present?
               puts
               opoo <<~EOS
