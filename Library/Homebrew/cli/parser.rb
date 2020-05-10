@@ -3,6 +3,7 @@
 require "cli/args"
 require "optparse"
 require "set"
+require "formula"
 
 COMMAND_DESC_WIDTH = 80
 OPTION_DESC_WIDTH = 43
@@ -188,7 +189,7 @@ module Homebrew
       end
 
       def formula_options
-        @args.formulae.each do |f|
+        formulae.each do |f|
           next if f.options.empty?
 
           f.options.each do |o|
@@ -342,6 +343,28 @@ module Homebrew
       def process_option(*args)
         option, = @parser.make_switch(args)
         @processed_options << [option.short.first, option.long.first, option.arg, option.desc.first]
+      end
+
+      def formulae
+        named_args = @argv.reject { |arg| arg.start_with?("-") }
+        spec = if @argv.include?("--HEAD")
+          :head
+        elsif @argv.include?("--devel")
+          :devel
+        else
+          :stable
+        end
+
+        # Only lowercase names, not paths, bottle filenames or URLs
+        named_args.map do |arg|
+          next if arg.match?(HOMEBREW_CASK_TAP_CASK_REGEX)
+
+          if arg.include?("/") || arg.end_with?(".tar.gz") || File.exist?(arg)
+            Formulary.factory(arg, spec)
+          else
+            Formulary.find_with_priority(arg.downcase, spec)
+          end
+        end.compact.uniq(&:name)
       end
     end
 
