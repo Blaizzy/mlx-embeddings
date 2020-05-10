@@ -52,7 +52,7 @@ class FormulaInstaller
     @build_from_source = Homebrew.args.build_from_source?
     @build_bottle = false
     @force_bottle = Homebrew.args.force_bottle?
-    @include_test = ARGV.include?("--include-test")
+    @include_test = Homebrew.args.include_test?
     @interactive = false
     @git = false
     @verbose = Homebrew.args.verbose?
@@ -707,7 +707,6 @@ class FormulaInstaller
     args << "--verbose" if verbose?
     args << "--debug" if debug?
     args << "--cc=#{ARGV.cc}" if ARGV.cc
-    args << "--default-fortran-flags" if ARGV.include? "--default-fortran-flags"
     args << "--keep-tmp" if Homebrew.args.keep_tmp?
 
     if ARGV.env
