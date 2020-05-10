@@ -41,20 +41,21 @@ module Homebrew
 
       downloader.fetch
 
-      filename = downloader.basename
+      filename = ERB::Util.url_encode(downloader.basename)
 
       destination_url = "https://dl.bintray.com/#{bintray_org}/#{bintray_repo}/#{filename}"
       ohai "Uploading to #{destination_url}"
 
+      version = ERB::Util.url_encode(f.pkg_version)
       bintray.upload(
         downloader.cached_location,
         repo:        bintray_repo,
         package:     bintray_package,
-        version:     f.pkg_version,
+        version:     version,
         sha256:      f.stable.checksum,
         remote_file: filename,
       )
-      bintray.publish(repo: bintray_repo, package: bintray_package, version: f.pkg_version)
+      bintray.publish(repo: bintray_repo, package: bintray_package, version: version)
       ohai "Mirrored #{filename}!"
     end
   end
