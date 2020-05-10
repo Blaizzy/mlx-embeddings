@@ -15,11 +15,6 @@ module HomebrewArgvExtension
     flag?("--debug") || !ENV["HOMEBREW_DEBUG"].nil?
   end
 
-  def bottle_arch
-    arch = value "bottle-arch"
-    arch&.to_sym
-  end
-
   def cc
     value "cc"
   end
