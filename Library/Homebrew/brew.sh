@@ -116,6 +116,7 @@ then
 else
   HOMEBREW_GIT="git"
 fi
+
 if [[ -n "$HOMEBREW_MACOS" ]]
 then
   HOMEBREW_PROCESSOR="$(uname -p)"
