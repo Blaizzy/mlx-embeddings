@@ -195,6 +195,6 @@ jobs:
         docker login docker.pkg.github.com -u BrewTestBot -p ${{secrets.GITHUB_TOKEN}}
         docker tag brew "docker.pkg.github.com/homebrew/brew/brew:$v"
         docker push "docker.pkg.github.com/homebrew/brew/brew:$v"
-        docker login docker.com -u brewtestbot -p ${{secrets.DOCKER_TOKEN}}
-        docker tag "brew homebrew/brew:$v"
+        docker login -u brewtestbot -p ${{secrets.DOCKER_TOKEN}}
+        docker tag brew "homebrew/brew:$v"
         docker push "homebrew/brew:$v"
