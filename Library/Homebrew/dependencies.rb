@@ -81,7 +81,7 @@ module Homebrew
       ignores << "optional?"
     end
 
-    ignores << "recommended?" if ARGV.include? "--skip-recommended"
+    ignores << "recommended?" if Homebrew.args.skip_recommended?
 
     [includes, ignores]
   end
