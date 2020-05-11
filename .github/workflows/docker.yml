@@ -36,6 +36,6 @@ jobs:
       - name: Deploy the tagged Docker image to Docker Hub
         if: startsWith(github.ref, 'refs/tags/')
         run: |
-          docker login docker.com -u brewtestbot -p ${{secrets.DOCKER_TOKEN}}
+          docker login -u brewtestbot -p ${{secrets.DOCKER_TOKEN}}
           docker tag brew "homebrew/ubuntu${{matrix.version}}:$brew_version"
           docker push "homebrew/ubuntu${{matrix.version}}:$brew_version"
