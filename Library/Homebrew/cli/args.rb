@@ -5,6 +5,8 @@ require "ostruct"
 module Homebrew
   module CLI
     class Args < OpenStruct
+      attr_reader :options_only, :flags_only
+
       # undefine tap to allow --tap argument
       undef tap
 
@@ -12,6 +14,8 @@ module Homebrew
         super()
 
         @processed_options = []
+        @options_only = args_options_only(argv)
+        @flags_only = args_flags_only(argv)
 
         # Can set these because they will be overwritten by freeze_named_args!
         # (whereas other values below will only be overwritten if passed).
@@ -46,16 +50,9 @@ module Homebrew
 
         @processed_options += processed_options
         @processed_options.freeze
-      end
 
-      def options_only
-        @options_only ||= cli_args.select { |arg| arg.start_with?("-") }
-                                  .freeze
-      end
-
-      def flags_only
-        @flags_only ||= cli_args.select { |arg| arg.start_with?("--") }
-                                .freeze
+        @options_only = args_options_only(cli_args)
+        @flags_only = args_flags_only(cli_args)
       end
 
       def passthrough
@@ -202,6 +199,16 @@ module Homebrew
           end
         end
         @cli_args.freeze
+      end
+
+      def args_options_only(args)
+        args.select { |arg| arg.start_with?("-") }
+            .freeze
+      end
+
+      def args_flags_only(args)
+        args.select { |arg| arg.start_with?("--") }
+            .freeze
       end
 
       def downcased_unique_named
