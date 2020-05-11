@@ -186,8 +186,18 @@ else
   curl_name_and_version="${curl_version_output%% (*}"
   if [[ $(numeric "${curl_name_and_version##* }") -lt $(numeric "$HOMEBREW_MINIMUM_CURL_VERSION") ]]
   then
-    HOMEBREW_SYSTEM_CURL_TOO_OLD="1"
-    HOMEBREW_FORCE_BREWED_CURL="1"
+    if [[ -z $HOMEBREW_CURL_PATH ]]; then
+      HOMEBREW_SYSTEM_CURL_TOO_OLD=1
+      HOMEBREW_FORCE_BREWED_CURL=1
+    else
+      odie <<EOS
+The version of cURL that you provided to Homebrew using HOMEBREW_CURL_PATH is too old.
+Minimum required version: ${HOMEBREW_MINIMUM_CURL_VERSION}.
+Your cURL version: ${curl_name_and_version##* }.
+Please point Homebrew to cURL version ${HOMEBREW_MINIMUM_CURL_VERSION} or newer
+or unset HOMEBREW_CURL_PATH variable.
+EOS
+    fi
   fi
 
   # Ensure the system Git is at or newer than the minimum required version.
