@@ -561,6 +561,18 @@ class FormulaInstaller
     @show_header = true unless deps.empty?
   end
 
+  def fetch_dependency(dep)
+    df = dep.to_formula
+    fi = FormulaInstaller.new(df)
+
+    fi.build_from_source       = Homebrew.args.build_formula_from_source?(df)
+    fi.force_bottle            = false
+    fi.verbose                 = verbose?
+    fi.quiet                   = quiet?
+    fi.debug                   = debug?
+    fi.fetch
+  end
+
   def install_dependency(dep, inherited_options)
     df = dep.to_formula
     tab = Tab.for_formula(df)
@@ -946,14 +958,33 @@ class FormulaInstaller
     @show_summary_heading = true
   end
 
-  def pour
-    if (bottle_path = formula.local_bottle_path)
-      downloader = LocalBottleDownloadStrategy.new(bottle_path)
-    else
-      downloader = formula.bottle
-      downloader.fetch
-    end
+  def fetch_dependencies
+    deps = compute_dependencies
 
+    return if deps.empty? || ignore_deps?
+
+    deps.each { |dep, _options| fetch_dependency(dep) }
+  end
+
+  def fetch
+    fetch_dependencies
+
+    return if only_deps?
+
+    downloader.fetch
+  end
+
+  def downloader
+    if (bottle_path = formula.local_bottle_path)
+      LocalBottleDownloadStrategy.new(bottle_path)
+    elsif pour_bottle?
+      formula.bottle
+    else
+      formula.downloader
+    end
+  end
+
+  def pour
     HOMEBREW_CELLAR.cd do
       downloader.stage
     end

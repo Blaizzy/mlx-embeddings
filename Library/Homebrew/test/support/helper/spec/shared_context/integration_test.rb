@@ -176,6 +176,7 @@ RSpec.shared_context "integration test" do
     setup_test_formula(name, content)
     fi = FormulaInstaller.new(Formula[name])
     fi.build_bottle = build_bottle
+    fi.fetch
     fi.prelude
     fi.install
     fi.finish

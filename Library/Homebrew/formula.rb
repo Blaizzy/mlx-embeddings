@@ -1160,6 +1160,7 @@ class Formula
   # @private
   def brew
     @prefix_returns_versioned_prefix = true
+    active_spec.fetch
     stage do |staging|
       staging.retain! if Homebrew.args.keep_tmp?
       prepare_patches

@@ -149,6 +149,7 @@ describe Formulary do
       let(:installer) { FormulaInstaller.new(installed_formula) }
 
       it "returns a Formula when given a rack" do
+        installer.fetch
         installer.install
 
         f = described_class.from_rack(installed_formula.rack)
@@ -156,6 +157,7 @@ describe Formulary do
       end
 
       it "returns a Formula when given a Keg" do
+        installer.fetch
         installer.install
 
         keg = Keg.new(installed_formula.prefix)

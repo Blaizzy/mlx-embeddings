@@ -21,6 +21,7 @@ describe FormulaInstaller do
 
     installer = described_class.new(formula)
 
+    installer.fetch
     installer.install
 
     keg = Keg.new(formula.prefix)
@@ -158,6 +159,7 @@ describe FormulaInstaller do
 
     it "shows audit problems if HOMEBREW_DEVELOPER is set" do
       ENV["HOMEBREW_DEVELOPER"] = "1"
+      formula_installer.fetch
       formula_installer.install
       expect(formula_installer).to receive(:audit_installed).and_call_original
       formula_installer.caveats

@@ -23,7 +23,10 @@ describe FormulaInstaller do
     stub_formula_loader formula("gcc") { url "gcc-1.0" }
     stub_formula_loader formula("patchelf") { url "patchelf-1.0" }
     allow(Formula["patchelf"]).to receive(:latest_version_installed?).and_return(true)
-    described_class.new(formula).install
+
+    fi = FormulaInstaller.new(formula)
+    fi.fetch
+    fi.install
 
     keg = Keg.new(formula.prefix)
 
