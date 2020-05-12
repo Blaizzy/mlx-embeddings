@@ -1012,11 +1012,11 @@ class Formula
     self.build = Tab.for_formula(self)
 
     new_env = {
-      "TMPDIR"        => HOMEBREW_TEMP,
-      "TEMP"          => HOMEBREW_TEMP,
-      "TMP"           => HOMEBREW_TEMP,
-      "HOMEBREW_PATH" => nil,
-      "PATH"          => ENV["HOMEBREW_PATH"],
+      TMPDIR:        HOMEBREW_TEMP,
+      TEMP:          HOMEBREW_TEMP,
+      TMP:           HOMEBREW_TEMP,
+      HOMEBREW_PATH: nil,
+      PATH:          ENV["HOMEBREW_PATH"],
     }
 
     with_env(new_env) do
@@ -1160,11 +1160,12 @@ class Formula
   # yields |self,staging| with current working directory set to the uncompressed tarball
   # where staging is a Mktemp staging context
   # @private
-  def brew
+  def brew(fetch: true)
     @prefix_returns_versioned_prefix = true
+    active_spec.fetch if fetch
     stage do |staging|
       staging.retain! if Homebrew.args.keep_tmp?
-      prepare_patches
+      fetch_patches if fetch
 
       begin
         yield self, staging
@@ -2078,6 +2079,13 @@ class Formula
     ENV.update(removed)
   end
 
+  def fetch_patches
+    active_spec.add_legacy_patches(patches) if respond_to?(:patches)
+
+    patchlist.grep(DATAPatch) { |p| p.path = path }
+    patchlist.select(&:external?).each(&:fetch)
+  end
+
   private
 
   # Returns the prefix for a given formula version number.
@@ -2145,13 +2153,6 @@ class Formula
         @buildpath = nil
       end
     end
-  end
-
-  def prepare_patches
-    active_spec.add_legacy_patches(patches) if respond_to?(:patches)
-
-    patchlist.grep(DATAPatch) { |p| p.path = path }
-    patchlist.select(&:external?).each(&:fetch)
   end
 
   # The methods below define the formula DSL.

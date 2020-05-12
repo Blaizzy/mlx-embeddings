@@ -977,6 +977,11 @@ class FormulaInstaller
 
     return if only_deps?
 
+    unless pour_bottle?
+      formula.fetch_patches
+      formula.resources.each(&:fetch)
+    end
+
     downloader.fetch
   end
 
@@ -986,7 +991,7 @@ class FormulaInstaller
     elsif pour_bottle?
       formula.bottle
     else
-      formula.downloader
+      formula
     end
   end
 
