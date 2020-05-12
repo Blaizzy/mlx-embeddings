@@ -39,9 +39,15 @@ module Utils
 
     # return the shell profile file based on user's preferred shell
     def profile
-      return "#{ENV["ZDOTDIR"]}/.zshrc" if preferred == :zsh && ENV["ZDOTDIR"].present?
+      case preferred
+      when :bash
+        bash_profile = "#{ENV["HOME"]}/.bash_profile"
+        return bash_profile if File.exist? bash_profile
+      when :zsh
+        return "#{ENV["ZDOTDIR"]}/.zshrc" if ENV["ZDOTDIR"].present?
+      end
 
-      SHELL_PROFILE_MAP.fetch(preferred, "~/.bash_profile")
+      SHELL_PROFILE_MAP.fetch(preferred, "~/.profile")
     end
 
     def set_variable_in_profile(variable, value)
@@ -67,12 +73,12 @@ module Utils
     end
 
     SHELL_PROFILE_MAP = {
-      bash: "~/.bash_profile",
+      bash: "~/.profile",
       csh:  "~/.cshrc",
       fish: "~/.config/fish/config.fish",
       ksh:  "~/.kshrc",
       mksh: "~/.kshrc",
-      sh:   "~/.bash_profile",
+      sh:   "~/.profile",
       tcsh: "~/.tcshrc",
       zsh:  "~/.zshrc",
     }.freeze
