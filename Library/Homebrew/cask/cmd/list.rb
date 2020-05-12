@@ -7,11 +7,6 @@ module Cask
       option "--versions", :versions, false
       option "--full-name", :full_name, false
 
-      option "-l", (lambda do |*|
-        one = true # rubocop:disable Lint/UselessAssignment
-        opoo "Option -l is obsolete! Implying option -1."
-      end)
-
       def run
         args.any? ? list : list_installed
       end
