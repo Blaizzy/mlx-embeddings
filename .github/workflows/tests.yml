@@ -18,7 +18,8 @@ jobs:
       id: set-up-homebrew
       run: |
         if which brew &>/dev/null; then
-          HOMEBREW_REPOSITORY="$(brew --repo)"
+          HOMEBREW_PREFIX="$(brew --prefix)"
+          HOMEBREW_REPOSITORY="$HOMEBREW_PREFIX/Homebrew"
         else
           HOMEBREW_PREFIX=/home/linuxbrew/.linuxbrew
           HOMEBREW_REPOSITORY="$HOMEBREW_PREFIX/Homebrew"
@@ -30,10 +31,10 @@ jobs:
           sudo mkdir -p bin etc include lib opt sbin share var/homebrew/linked Cellar
           sudo ln -sf ../Homebrew/bin/brew "$HOMEBREW_PREFIX/bin/"
           cd -
-
-          export PATH="$HOMEBREW_PREFIX/bin:$PATH"
-          echo "::add-path::$HOMEBREW_PREFIX/bin"
         fi
+
+        export PATH="$HOMEBREW_PREFIX/bin:$PATH"
+        echo "::add-path::$HOMEBREW_PREFIX/bin"
 
         cd "$HOMEBREW_REPOSITORY"
         rm -rf "$GITHUB_WORKSPACE"
