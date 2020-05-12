@@ -114,7 +114,9 @@ class Build
     with_env(new_env) do
       formula.extend(Debrew::Formula) if ARGV.debug?
 
-      formula.brew do |_formula, staging|
+      formula.update_head_version
+
+      formula.brew(fetch: false) do |_formula, staging|
         # For head builds, HOMEBREW_FORMULA_PREFIX should include the commit,
         # which is not known until after the formula has been staged.
         ENV["HOMEBREW_FORMULA_PREFIX"] = formula.prefix
