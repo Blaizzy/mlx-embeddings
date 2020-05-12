@@ -23,6 +23,7 @@ class AbstractDownloadStrategy
 
   attr_reader :cache, :cached_location, :url
   attr_reader :meta, :name, :version, :shutup
+
   private :meta, :name, :version, :shutup
 
   def initialize(url, name, version, **meta)

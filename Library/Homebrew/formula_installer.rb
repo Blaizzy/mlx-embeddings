@@ -25,6 +25,7 @@ class FormulaInstaller
 
   def self.mode_attr_accessor(*names)
     attr_accessor(*names)
+
     private(*names)
     names.each do |name|
       predicate = "#{name}?"
@@ -38,6 +39,7 @@ class FormulaInstaller
   attr_reader :formula
   attr_accessor :options, :build_bottle
   attr_accessor :installed_as_dependency, :installed_on_request, :link_keg
+
   mode_attr_accessor :show_summary_heading, :show_header
   mode_attr_accessor :build_from_source, :force_bottle, :include_test
   mode_attr_accessor :ignore_deps, :only_deps, :interactive, :git

@@ -228,7 +228,7 @@ module Cask
       end
 
       def run(*)
-        exec @path, *ARGV[1..-1]
+        exec @path, *ARGV[1..]
       end
     end
 

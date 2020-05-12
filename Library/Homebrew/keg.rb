@@ -184,6 +184,7 @@ class Keg
   end
 
   attr_reader :path, :name, :linked_keg_record, :opt_record
+
   protected :path
 
   extend Forwardable

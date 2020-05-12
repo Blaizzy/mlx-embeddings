@@ -40,6 +40,7 @@ module RuboCop
         private
 
         attr_reader :cask_block
+
         def_delegators :cask_block, :cask_node, :toplevel_stanzas,
                        :sorted_toplevel_stanzas
 
@@ -141,10 +142,10 @@ module RuboCop
           end
           home = homepage.downcase
           if (split_host = host.split(".")).length >= 3
-            host = split_host[-2..-1].join(".")
+            host = split_host[-2..].join(".")
           end
           if (split_home = homepage.split(".")).length >= 3
-            home = split_home[-2..-1].join(".")
+            home = split_home[-2..].join(".")
           end
           host == home
         end

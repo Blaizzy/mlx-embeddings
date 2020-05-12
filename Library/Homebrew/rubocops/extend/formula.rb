@@ -17,6 +17,7 @@ module RuboCop
       include RangeHelp
 
       attr_accessor :file_path
+
       @registry = Cop.registry
 
       # This method is called by RuboCop and is the main entry point

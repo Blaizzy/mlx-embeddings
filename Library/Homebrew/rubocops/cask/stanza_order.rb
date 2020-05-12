@@ -31,6 +31,7 @@ module RuboCop
         private
 
         attr_reader :cask_block
+
         def_delegators :cask_block, :cask_node, :toplevel_stanzas,
                        :sorted_toplevel_stanzas
 
