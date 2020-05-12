@@ -572,6 +572,10 @@ class FormulaInstaller
     fi.verbose                 = verbose?
     fi.quiet                   = quiet?
     fi.debug                   = debug?
+    # When fetching we don't need to recurse the dependency tree as it's already
+    # been done for us in `compute_dependencies` and there's no requirement to
+    # fetch in a particular order.
+    fi.ignore_deps             = true
     fi.fetch
   end
 
