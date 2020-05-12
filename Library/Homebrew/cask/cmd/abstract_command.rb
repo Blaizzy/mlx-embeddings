@@ -37,6 +37,7 @@ module Cask
       end
 
       attr_accessor :args
+
       private :args=
 
       def initialize(*args)

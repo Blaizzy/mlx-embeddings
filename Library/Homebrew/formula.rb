@@ -126,6 +126,7 @@ class Formula
   # The currently active {SoftwareSpec}.
   # @see #determine_active_spec
   attr_reader :active_spec
+
   protected :active_spec
 
   # A symbol to indicate currently active {SoftwareSpec}.
@@ -176,6 +177,7 @@ class Formula
   # Defaults to true.
   # @return [Boolean]
   attr_accessor :follow_installed_alias
+
   alias follow_installed_alias? follow_installed_alias
 
   # @private
