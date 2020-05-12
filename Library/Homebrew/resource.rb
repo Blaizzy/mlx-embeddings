@@ -70,6 +70,7 @@ class Resource
   def stage(target = nil, &block)
     raise ArgumentError, "target directory or block is required" unless target || block
 
+    fetch
     prepare_patches
 
     unpack(target, &block)
