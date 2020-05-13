@@ -1165,6 +1165,8 @@ class Formula
     active_spec.fetch if fetch
     stage do |staging|
       staging.retain! if Homebrew.args.keep_tmp?
+
+      prepare_patches
       fetch_patches if fetch
 
       begin
@@ -2082,13 +2084,15 @@ class Formula
   end
 
   def fetch_patches
-    active_spec.add_legacy_patches(patches) if respond_to?(:patches)
-
-    patchlist.grep(DATAPatch) { |p| p.path = path }
     patchlist.select(&:external?).each(&:fetch)
   end
 
   private
+
+  def prepare_patches
+    active_spec.add_legacy_patches(patches) if respond_to?(:patches)
+    patchlist.grep(DATAPatch) { |p| p.path = path }
+  end
 
   # Returns the prefix for a given formula version number.
   # @private
