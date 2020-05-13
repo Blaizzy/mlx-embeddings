@@ -1716,6 +1716,13 @@ class Formula
 
     %w[stable devel].each do |spec_sym|
       next unless spec = send(spec_sym)
+
+      hsh["urls"][spec_sym] = {
+        "url"      => spec.url,
+        "tag"      => spec.specs[:tag],
+        "revision" => spec.specs[:revision],
+      }
+
       next unless spec.bottle_defined?
 
       bottle_spec = spec.bottle_specification
@@ -1735,11 +1742,6 @@ class Formula
         }
       end
       hsh["bottle"][spec_sym] = bottle_info
-      hsh["urls"][spec_sym] = {
-        "url"      => spec.url,
-        "tag"      => spec.specs[:tag],
-        "revision" => spec.specs[:revision],
-      }
     end
 
     hsh["options"] = options.map do |opt|
