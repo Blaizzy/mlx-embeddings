@@ -74,14 +74,18 @@ class Resource
   def stage(target = nil, &block)
     raise ArgumentError, "target directory or block is required" if target.blank? && block.blank?
 
+    prepare_patches
     fetch_patches(skip_downloaded: true)
     fetch unless downloaded?
 
     unpack(target, &block)
   end
 
-  def fetch_patches(skip_downloaded: false)
+  def prepare_patches
     patches.grep(DATAPatch) { |p| p.path = owner.owner.path }
+  end
+
+  def fetch_patches(skip_downloaded: false)
     patches.select!(&:external?)
     patches.reject!(&:downloaded?) if skip_downloaded
     patches.each(&:fetch)
