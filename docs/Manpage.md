@@ -435,7 +435,7 @@ ones). No online search is performed.
 Print export statements. When run in a shell, this installation of Homebrew will be added to your `PATH`, `MANPATH`, and `INFOPATH`.
 
 The variables `HOMEBREW_PREFIX`, `HOMEBREW_CELLAR` and `HOMEBREW_REPOSITORY` are also exported to avoid querying them multiple times.
-Consider adding evaluation of this command's output to your dotfiles (e.g. `~/.bash_profile` or `~/.zprofile`) with: `eval $(brew shellenv)`
+Consider adding evaluation of this command's output to your dotfiles (e.g. `~/.profile`, `~/.bash_profile`, or `~/.zprofile`) with: `eval $(brew shellenv)`
 
 ### `switch` *`formula`* *`version`*
 
