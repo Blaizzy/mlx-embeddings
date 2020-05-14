@@ -132,6 +132,8 @@ module ELFShim
       elsif DevelopmentTools.locate "patchelf"
         needed_libraries_using_patchelf path
       else
+        return [nil, []] if path.basename.to_s == "patchelf"
+
         raise "patchelf must be installed: brew install patchelf"
       end
     end
