@@ -86,9 +86,9 @@ class Resource
   end
 
   def fetch_patches(skip_downloaded: false)
-    patches.select!(&:external?)
-    patches.reject!(&:downloaded?) if skip_downloaded
-    patches.each(&:fetch)
+    external_patches = patches.select(&:external?)
+    external_patches.reject!(&:downloaded?) if skip_downloaded
+    external_patches.each(&:fetch)
   end
 
   def apply_patches
