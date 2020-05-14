@@ -243,6 +243,10 @@ module Cask
         $stderr.puts
         $stderr.puts Help.usage
       end
+
+      def help
+        run
+      end
     end
   end
 end
