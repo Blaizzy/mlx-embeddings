@@ -81,6 +81,8 @@ module Homebrew
               puts "Run `brew uninstall --force #{keg.name}` to remove all versions."
             end
 
+            next unless f
+
             paths = f.pkgetc.find.map(&:to_s) if f.pkgetc.exist?
             if paths.present?
               puts
