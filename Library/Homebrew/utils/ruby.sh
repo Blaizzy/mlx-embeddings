@@ -14,6 +14,12 @@ setup-ruby-path() {
   local required_ruby_version="2.6"
   local old_ruby_path
   local old_ruby_usable
+  local advice="
+If there's no Homebrew Portable Ruby available for your processor:
+- install Ruby $required_ruby_version with your system package manager (or rbenv/ruby-build)
+- make it first in your PATH
+- try again
+"
 
   vendor_dir="$HOMEBREW_LIBRARY/Homebrew/vendor"
   vendor_ruby_current_version="$vendor_dir/portable-ruby/current"
@@ -25,12 +31,9 @@ setup-ruby-path() {
     old_ruby_usable=$(test-ruby "$HOMEBREW_RUBY_PATH")
   fi
 
-  if [[ -z "$HOMEBREW_DEVELOPER" ]]
-  then
-    unset HOMEBREW_RUBY_PATH
-  fi
+  unset HOMEBREW_RUBY_PATH
 
-  if [[ -z "$HOMEBREW_RUBY_PATH" && "$HOMEBREW_COMMAND" != "vendor-install" ]]
+  if [[ "$HOMEBREW_COMMAND" != "vendor-install" ]]
   then
     if [[ -x "$vendor_ruby_path" ]]
     then
@@ -44,13 +47,7 @@ setup-ruby-path() {
           then
             odie "Failed to upgrade Homebrew Portable Ruby!"
           else
-            odie <<-EOS
-Failed to upgrade Homebrew Portable Ruby!
-If there's no Homebrew Portable Ruby available for your processor:
-- install Ruby $required_ruby_version with your system package manager (or rbenv/ruby-build)
-- make it first in your PATH
-- try again
-EOS
+            odie "Failed to upgrade Homebrew Portable Ruby!$advice"
           fi
         fi
       fi
@@ -67,13 +64,7 @@ EOS
           then
             if [[ $old_ruby_usable != true ]]
             then
-              odie <<-EOS
-Failed to find usable Ruby $required_ruby_version!
-If there's no Homebrew Portable Ruby available for your processor:
-- install $required_ruby_version with your system package manager (or rbenv/ruby-build)
-- make it first in your PATH
-- try again
-EOS
+              odie "Failed to find usable Ruby $required_ruby_version!$advice"
             else
               HOMEBREW_RUBY_PATH="$old_ruby_path"
             fi
@@ -98,13 +89,7 @@ EOS
           then
             odie "Failed to install Homebrew Portable Ruby (and your system version is too old)!"
           else
-            odie <<-EOS
-Failed to install Homebrew Portable Ruby and cannot find another Ruby $required_ruby_version!
-If there's no Homebrew Portable Ruby available for your processor:
-- install $required_ruby_version with your system package manager (or rbenv/ruby-build)
-- make it first in your PATH
-- try again
-EOS
+            odie "Failed to install Homebrew Portable Ruby and cannot find another Ruby $required_ruby_version!$advice"
           fi
         fi
         HOMEBREW_RUBY_PATH="$vendor_ruby_path"
