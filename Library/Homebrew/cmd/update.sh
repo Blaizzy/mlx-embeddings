@@ -599,13 +599,6 @@ EOS
         -d "$HOMEBREW_LIBRARY/LinkedKegs" ||
         (-n "$HOMEBREW_DEVELOPER" && -z "$HOMEBREW_UPDATE_PREINSTALL") ]]
   then
-    if [[ -n $HOMEBREW_FORCE_VENDOR_RUBY &&
-          -x $HOMEBREW_LIBRARY/Homebrew/vendor/portable-ruby/current/bin/ruby ]]
-    then
-      export HOMEBREW_RUBY_PATH="$HOMEBREW_LIBRARY/Homebrew/vendor/portable-ruby/current/bin/ruby"
-    elif [[ -z $HOMEBREW_DEVELOPER ]]; then
-      unset HOMEBREW_RUBY_PATH
-    fi
     brew update-report "$@"
     return $?
   elif [[ -z "$HOMEBREW_UPDATE_PREINSTALL" ]]

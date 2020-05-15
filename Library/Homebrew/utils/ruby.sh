@@ -1,3 +1,7 @@
+test-ruby () {
+  "$1" --enable-frozen-string-literal --disable=gems,did_you_mean,rubyopt -rrubygems -e "puts Gem::Version.new(RUBY_VERSION.to_s.dup).to_s.split('.').first(2) == Gem::Version.new('$required_ruby_version').to_s.split('.').first(2)"
+}
+
 setup-ruby-path() {
   local vendor_dir
   local vendor_ruby_current_version
@@ -6,10 +10,18 @@ setup-ruby-path() {
   # When bumping check if HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH (in brew.sh)
   # also needs to be changed.
   local required_ruby_version="2.6"
+  local old_ruby_path
+  local old_ruby_usable
 
   vendor_dir="$HOMEBREW_LIBRARY/Homebrew/vendor"
   vendor_ruby_current_version="$vendor_dir/portable-ruby/current"
   vendor_ruby_path="$vendor_ruby_current_version/bin/ruby"
+
+  if [[ -n $HOMEBREW_RUBY_PATH ]]
+  then
+    old_ruby_path="$HOMEBREW_RUBY_PATH"
+    old_ruby_usable=$(test-ruby "$HOMEBREW_RUBY_PATH")
+  fi
 
   if [[ -z "$HOMEBREW_DEVELOPER" ]]
   then
@@ -45,7 +57,26 @@ EOS
       then
         HOMEBREW_RUBY_PATH="/System/Library/Frameworks/Ruby.framework/Versions/Current/usr/bin/ruby"
       else
-        HOMEBREW_RUBY_PATH="$(type -P ruby)"
+        HOMEBREW_RUBY_PATH=$(type -P ruby)
+        if [[ $(test-ruby $HOMEBREW_RUBY_PATH) != "true" ]]
+        then
+          HOMEBREW_RUBY_PATH=$(PATH="$HOMEBREW_PATH" type -P ruby)
+          if [[ $(test-ruby "$HOMEBREW_RUBY_PATH") != "true" ]]
+          then
+            if [[ $old_ruby_usable != true ]]
+            then
+              odie <<-EOS
+Failed to find usable Ruby $required_ruby_version!
+If there's no Homebrew Portable Ruby available for your processor:
+- install $required_ruby_version with your system package manager (or rbenv/ruby-build)
+- make it first in your PATH
+- try again
+EOS
+            else
+              HOMEBREW_RUBY_PATH="$old_ruby_path"
+            fi
+          fi
+        fi
       fi
 
       if [[ -n "$HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH" ]]
@@ -53,7 +84,7 @@ EOS
         usable_ruby_version="true"
       elif [[ -n "$HOMEBREW_RUBY_PATH" && -z "$HOMEBREW_FORCE_VENDOR_RUBY" ]]
       then
-        usable_ruby_version="$("$HOMEBREW_RUBY_PATH" --enable-frozen-string-literal --disable=gems,did_you_mean,rubyopt -rrubygems -e "puts Gem::Version.new(RUBY_VERSION.to_s.dup).to_s.split('.').first(2) == Gem::Version.new('$required_ruby_version').to_s.split('.').first(2)")"
+        usable_ruby_version=$(test-ruby "$HOMEBREW_RUBY_PATH")
       fi
 
       if [[ -z "$HOMEBREW_RUBY_PATH" || -n "$HOMEBREW_FORCE_VENDOR_RUBY" || "$usable_ruby_version" != "true" ]]
