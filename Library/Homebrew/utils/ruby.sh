@@ -1,5 +1,6 @@
 test-ruby () {
-  "$1" --enable-frozen-string-literal --disable=gems,did_you_mean,rubyopt -rrubygems -e "puts Gem::Version.new(RUBY_VERSION.to_s.dup).to_s.split('.').first(2) == Gem::Version.new('$required_ruby_version').to_s.split('.').first(2)"
+  "$1" --enable-frozen-string-literal --disable=gems,did_you_mean,rubyopt -rrubygems -e \
+    "puts Gem::Version.new(RUBY_VERSION.to_s.dup).to_s.split('.').first(2) == Gem::Version.new('$required_ruby_version').to_s.split('.').first(2)"
 }
 
 setup-ruby-path() {
