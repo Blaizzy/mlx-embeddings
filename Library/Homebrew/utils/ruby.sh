@@ -57,7 +57,7 @@ If there's no Homebrew Portable Ruby available for your processor:
         HOMEBREW_RUBY_PATH="/System/Library/Frameworks/Ruby.framework/Versions/Current/usr/bin/ruby"
       else
         HOMEBREW_RUBY_PATH=$(type -P ruby)
-        if [[ $(test-ruby $HOMEBREW_RUBY_PATH) != "true" ]]
+        if [[ $(test-ruby "$HOMEBREW_RUBY_PATH") != "true" ]]
         then
           HOMEBREW_RUBY_PATH=$(PATH="$HOMEBREW_PATH" type -P ruby)
           if [[ $(test-ruby "$HOMEBREW_RUBY_PATH") != "true" ]]
