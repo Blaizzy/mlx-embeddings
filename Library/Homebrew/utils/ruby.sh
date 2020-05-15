@@ -64,7 +64,8 @@ If there's no Homebrew Portable Ruby available for your processor:
           then
             if [[ $old_ruby_usable != true ]]
             then
-              odie "Failed to find usable Ruby $required_ruby_version!$advice"
+              onoe "Failed to find usable Ruby $required_ruby_version!"
+              unset HOMEBREW_RUBY_PATH
             else
               HOMEBREW_RUBY_PATH="$old_ruby_path"
             fi
