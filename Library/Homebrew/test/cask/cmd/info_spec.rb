@@ -155,6 +155,8 @@ describe Cask::Cmd::Info, :cask do
       Docker CE
       ==> Artifacts
       Docker.app (App)
+      ==> Analytics
+      install: 16,997 (30 days), 54,056 (90 days), 239,482 (365 days)
       ==> Downloading https://raw.githubusercontent.com/Homebrew/homebrew-cask/d0b2c58652ae5eff20a7a4ac93292a08b250912b/Casks/docker.rb.
       docker: 2.0.0.2-ce-mac81,30215 (auto_updates)
       https://www.docker.com/community-edition
@@ -164,6 +166,8 @@ describe Cask::Cmd::Info, :cask do
       Docker CE
       ==> Artifacts
       Docker.app (App)
+      ==> Analytics
+      install: 16,997 (30 days), 54,056 (90 days), 239,482 (365 days)
     EOS
   end
 end
