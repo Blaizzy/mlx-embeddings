@@ -178,6 +178,7 @@ module Utils
           puts "#{category}: #{analytics.join(", ")}" unless full_analytics
         end
       end
+      alias cask_output formula_output
 
       def custom_prefix_label
         "custom-prefix"
