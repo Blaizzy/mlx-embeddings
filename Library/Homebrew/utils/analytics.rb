@@ -147,10 +147,7 @@ module Utils
         table_output(category, days, results, os_version: os_version, cask_install: cask_install)
       end
 
-      def formula_output(f)
-        json = formulae_api_json("#{formula_path}/#{f}.json")
-        return if json.blank? || json["analytics"].blank?
-
+      def get_analytics(json)
         full_analytics = Homebrew.args.analytics? || Homebrew.args.verbose?
 
         ohai "Analytics"
@@ -178,7 +175,20 @@ module Utils
           puts "#{category}: #{analytics.join(", ")}" unless full_analytics
         end
       end
-      alias cask_output formula_output
+
+      def formula_output(f)
+        json = formulae_api_json("#{formula_path}/#{f}.json")
+        return if json.blank? || json["analytics"].blank?
+
+        get_analytics(json)
+      end
+
+      def cask_output(cask)
+        json = formulae_api_json("#{cask_path}/#{cask}.json")
+        return if json.blank? || json["analytics"].blank?
+
+        get_analytics(json)
+      end
 
       def custom_prefix_label
         "custom-prefix"
@@ -337,6 +347,10 @@ module Utils
         "analytics"
       end
       alias generic_analytics_path analytics_path
+
+      def cask_path
+        "cask"
+      end
     end
   end
 end
