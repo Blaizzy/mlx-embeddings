@@ -1042,9 +1042,6 @@ module Homebrew
     def audit_version
       if version.nil?
         problem "missing version"
-      elsif version.blank?
-        # TODO: check could be in RuboCop
-        problem "version is set to an empty string"
       elsif !version.detected_from_url?
         version_text = version
         version_url = Version.detect(url, specs)
@@ -1052,14 +1049,6 @@ module Homebrew
           problem "version #{version_text} is redundant with version scanned from URL"
         end
       end
-
-      # TODO: check could be in RuboCop
-      problem "version #{version} should not have a leading 'v'" if version.to_s.start_with?("v")
-
-      return unless version.to_s.match?(/_\d+$/)
-
-      # TODO: check could be in RuboCop
-      problem "version #{version} should not end with an underline and a number"
     end
 
     def audit_download_strategy
