@@ -832,6 +832,25 @@ module Homebrew
         EOS
       end
 
+      def check_deleted_formula
+        formulae = Dir.children(HOMEBREW_CELLAR)
+        formulae.delete(".keepme")
+        deleted_formulae = []
+        formulae.each do |f|
+          Formula[f]
+        rescue
+          deleted_formulae << f
+        end
+        return if deleted_formulae.blank?
+
+        message = <<~EOS
+          Some installed formulae are deleted.
+          You should find replacements for the following formulae:
+            #{deleted_formulae.*"\n  "}
+        EOS
+        message
+      end
+
       def all
         methods.map(&:to_s).grep(/^check_/)
       end
