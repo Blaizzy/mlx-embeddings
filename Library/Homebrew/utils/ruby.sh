@@ -1,4 +1,5 @@
 test-ruby () {
+  [[ ! -x $1 ]] && { echo "false"; return 1; }
   "$1" --enable-frozen-string-literal --disable=gems,did_you_mean,rubyopt -rrubygems -e \
     "puts Gem::Version.new(RUBY_VERSION.to_s.dup).to_s.split('.').first(2) == \
           Gem::Version.new('$required_ruby_version').to_s.split('.').first(2)" 2>/dev/null
@@ -12,8 +13,7 @@ setup-ruby-path() {
   # When bumping check if HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH (in brew.sh)
   # also needs to be changed.
   local required_ruby_version="2.6"
-  local old_ruby_path
-  local old_ruby_usable
+  local old_ruby_path ruby_clean_path ruby_user_path
   local advice="
 If there's no Homebrew Portable Ruby available for your processor:
 - install Ruby $required_ruby_version with your system package manager (or rbenv/ruby-build)
@@ -25,11 +25,7 @@ If there's no Homebrew Portable Ruby available for your processor:
   vendor_ruby_current_version="$vendor_dir/portable-ruby/current"
   vendor_ruby_path="$vendor_ruby_current_version/bin/ruby"
 
-  if [[ -n $HOMEBREW_RUBY_PATH ]]
-  then
-    old_ruby_path="$HOMEBREW_RUBY_PATH"
-    old_ruby_usable=$(test-ruby "$HOMEBREW_RUBY_PATH")
-  fi
+  [[ -n $HOMEBREW_RUBY_PATH ]] && old_ruby_path=$HOMEBREW_RUBY_PATH
 
   unset HOMEBREW_RUBY_PATH
 
@@ -56,20 +52,16 @@ If there's no Homebrew Portable Ruby available for your processor:
       then
         HOMEBREW_RUBY_PATH="/System/Library/Frameworks/Ruby.framework/Versions/Current/usr/bin/ruby"
       else
-        HOMEBREW_RUBY_PATH=$(type -P ruby)
-        if [[ $(test-ruby "$HOMEBREW_RUBY_PATH") != "true" ]]
-        then
-          HOMEBREW_RUBY_PATH=$(PATH="$HOMEBREW_PATH" type -P ruby)
-          if [[ $(test-ruby "$HOMEBREW_RUBY_PATH") != "true" ]]
-          then
-            if [[ $old_ruby_usable != true ]]
-            then
-              onoe "Failed to find usable Ruby $required_ruby_version!"
-              unset HOMEBREW_RUBY_PATH
-            else
-              HOMEBREW_RUBY_PATH="$old_ruby_path"
-            fi
-          fi
+        ruby_clean_path=$(type -P ruby)
+        ruby_user_path=$(PATH="$HOMEBREW_PATH" type -P ruby)
+        if [[ $(test-ruby "$old_ruby_path") == "true" ]]; then
+          HOMEBREW_RUBY_PATH=$old_ruby_path
+        elif [[ $(test-ruby "$ruby_clean_path") == "true" ]]; then
+          HOMEBREW_RUBY_PATH=$ruby_clean_path
+        elif [[ $(test-ruby "$ruby_user_path") == "true" ]]; then
+          HOMEBREW_RUBY_PATH=$ruby_user_path
+        else
+          onoe "Failed to find usable Ruby $required_ruby_version!"
         fi
       fi
 
