@@ -216,7 +216,7 @@ module Homebrew
   ensure
     # restore previous installation state if build failed
     begin
-      linked_kegs.each(&:link) unless f.installed?
+      linked_kegs.each(&:link) unless f.latest_version_installed?
     rescue
       nil
     end

@@ -2090,7 +2090,6 @@ class Formula
   private
 
   def prepare_patches
-    active_spec.add_legacy_patches(patches) if respond_to?(:patches)
     patchlist.grep(DATAPatch) { |p| p.path = path }
   end
 
@@ -2171,7 +2170,10 @@ class Formula
         raise "You cannot override Formula#brew in class #{name}"
       when :test
         define_method(:test_defined?) { true }
+      when :patches
+        odeprecated "a Formula#patches definition", "'patch do' block calls"
       when :options
+        odeprecated "a Formula#options definition", "'option do' block calls"
         instance = allocate
 
         specs.each do |spec|

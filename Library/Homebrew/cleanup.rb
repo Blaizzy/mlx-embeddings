@@ -84,7 +84,7 @@ module CleanupRefinement
         return true
       end
 
-      return true if scrub && !formula.installed?
+      return true if scrub && !formula.latest_version_installed?
 
       return true if Utils::Bottles.file_outdated?(formula, self)
 

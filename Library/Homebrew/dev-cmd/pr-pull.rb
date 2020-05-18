@@ -60,7 +60,7 @@ module Homebrew
     rescue FormulaUnavailableError
       nil
     else
-      if gnupg.installed?
+      if gnupg.any_version_installed?
         path = PATH.new(ENV.fetch("PATH"))
         path.prepend(gnupg.installed_prefix/"bin")
         ENV["PATH"] = path

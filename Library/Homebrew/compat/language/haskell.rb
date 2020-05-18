@@ -5,7 +5,7 @@ module Language
     module Cabal
       module Compat
         def cabal_sandbox(options = {})
-          # odeprecated "Language::Haskell::Cabal.cabal_sandbox"
+          odeprecated "Language::Haskell::Cabal.cabal_sandbox"
 
           pwd = Pathname.pwd
           home = options[:home] || pwd
@@ -41,14 +41,14 @@ module Language
         end
 
         def cabal_sandbox_add_source(*args)
-          # odeprecated "Language::Haskell::Cabal.cabal_sandbox_add_source"
+          odeprecated "Language::Haskell::Cabal.cabal_sandbox_add_source"
 
           system "cabal", "v1-sandbox", "add-source", *args
         end
 
         def cabal_install(*args)
-          # odeprecated "Language::Haskell::Cabal.cabal_install",
-          #             "cabal v2-install directly with std_cabal_v2_args"
+          odeprecated "Language::Haskell::Cabal.cabal_install",
+                      "cabal v2-install directly with std_cabal_v2_args"
 
           # cabal hardcodes 64 as the maximum number of parallel jobs
           # https://github.com/Homebrew/legacy-homebrew/issues/49509
@@ -64,13 +64,13 @@ module Language
         end
 
         def cabal_configure(flags)
-          # odeprecated "Language::Haskell::Cabal.cabal_configure"
+          odeprecated "Language::Haskell::Cabal.cabal_configure"
 
           system "cabal", "v1-configure", flags
         end
 
         def cabal_install_tools(*tools)
-          # odeprecated "Language::Haskell::Cabal.cabal_install_tools"
+          odeprecated "Language::Haskell::Cabal.cabal_install_tools"
 
           # install tools sequentially, as some tools can depend on other tools
           tools.each { |tool| cabal_install tool }
@@ -81,8 +81,8 @@ module Language
         end
 
         def install_cabal_package(*args, **options)
-          # odeprecated "Language::Haskell::Cabal.install_cabal_package",
-          #             "cabal v2-update directly followed by v2-install with std_cabal_v2_args"
+          odeprecated "Language::Haskell::Cabal.install_cabal_package",
+                      "cabal v2-update directly followed by v2-install with std_cabal_v2_args"
 
           cabal_sandbox do
             cabal_install_tools(*options[:using]) if options[:using]

@@ -38,7 +38,7 @@ module Homebrew
 
     if args.examples?
       puts "'v8'.f # => instance of the v8 formula"
-      puts ":hub.f.installed?"
+      puts ":hub.f.latest_version_installed?"
       puts ":lua.f.methods - 1.methods"
       puts ":mpd.f.recursive_dependencies.reject(&:installed?)"
       return

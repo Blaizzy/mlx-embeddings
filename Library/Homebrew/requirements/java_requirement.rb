@@ -111,7 +111,7 @@ class JavaRequirement < Requirement
     rescue FormulaUnavailableError
       nil
     end
-    javas << jdk.bin/"java" if jdk&.installed?
+    javas << jdk.bin/"java" if jdk&.latest_version_installed?
     javas << which("java")
     javas
   end

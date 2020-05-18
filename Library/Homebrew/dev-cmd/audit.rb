@@ -134,19 +134,8 @@ module Homebrew
       end
     end
 
-    created_pr_comment = false
-    if new_formula && !new_formula_problem_lines.empty?
-      begin
-        created_pr_comment = true if GitHub.create_issue_comment(new_formula_problem_lines.join("\n"))
-      rescue *GitHub.api_errors => e
-        opoo "Unable to create issue comment: #{e.message}"
-      end
-    end
-
-    unless created_pr_comment
-      new_formula_problem_count += new_formula_problem_lines.size
-      puts new_formula_problem_lines.map { |s| "  #{s}" }
-    end
+    new_formula_problem_count += new_formula_problem_lines.size
+    puts new_formula_problem_lines.map { |s| "  #{s}" }
 
     total_problems_count = problem_count + new_formula_problem_count
     problem_plural = "#{total_problems_count} #{"problem".pluralize(total_problems_count)}"

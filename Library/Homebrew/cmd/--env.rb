@@ -36,7 +36,6 @@ module Homebrew
     shell = if args.plain?
       nil
     elsif args.shell.nil?
-      # legacy behavior
       :bash unless $stdout.tty?
     elsif args.shell == "auto"
       Utils::Shell.parent || Utils::Shell.preferred

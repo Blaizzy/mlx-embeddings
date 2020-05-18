@@ -65,16 +65,6 @@ describe "patching" do
     end
   end
 
-  specify "single_patch" do
-    expect(
-      formula do
-        def patches
-          PATCH_URL_A
-        end
-      end,
-    ).to be_patched
-  end
-
   specify "single_patch_dsl" do
     expect(
       formula do
@@ -199,72 +189,12 @@ describe "patching" do
     ).to be_patched
   end
 
-  specify "patch_p0" do
-    expect(
-      formula do
-        def patches
-          { p0: PATCH_URL_B }
-        end
-      end,
-    ).to be_patched
-  end
-
-  specify "patch_array" do
-    expect(
-      formula do
-        def patches
-          [PATCH_URL_A]
-        end
-      end,
-    ).to be_patched
-  end
-
-  specify "patch_hash" do
-    expect(
-      formula do
-        def patches
-          { p1: PATCH_URL_A }
-        end
-      end,
-    ).to be_patched
-  end
-
-  specify "patch_hash_array" do
-    expect(
-      formula do
-        def patches
-          { p1: [PATCH_URL_A] }
-        end
-      end,
-    ).to be_patched
-  end
-
   specify "patch_string" do
     expect(formula { patch PATCH_A_CONTENTS }).to be_patched
   end
 
   specify "patch_string_with_strip" do
     expect(formula { patch :p0, PATCH_B_CONTENTS }).to be_patched
-  end
-
-  specify "patch_data_constant" do
-    expect(
-      formula("test", path: Pathname.new(__FILE__).expand_path) do
-        def patches
-          :DATA
-        end
-      end,
-    ).to be_patched
-  end
-
-  specify "single_patch_missing_apply_fail" do
-    expect(
-      formula do
-        def patches
-          TESTBALL_PATCHES_URL
-        end
-      end,
-    ).to miss_apply
   end
 
   specify "single_patch_dsl_missing_apply_fail" do
