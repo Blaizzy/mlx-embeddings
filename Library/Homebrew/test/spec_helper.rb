@@ -39,6 +39,7 @@ require "rspec/retry"
 require "rubocop"
 require "rubocop/rspec/support"
 require "find"
+require "byebug"
 
 $LOAD_PATH.push(File.expand_path("#{ENV["HOMEBREW_LIBRARY"]}/Homebrew/test/support/lib"))
 
@@ -177,7 +178,7 @@ RSpec.configure do |config|
       @__stdout = $stdout.clone
       @__stderr = $stderr.clone
 
-      unless example.metadata.key?(:focus) || ENV.key?("VERBOSE_TESTS")
+      if (example.metadata.keys & [:focus, :byebug]).empty? && !ENV.key?("VERBOSE_TESTS")
         $stdout.reopen(File::NULL)
         $stderr.reopen(File::NULL)
       end
