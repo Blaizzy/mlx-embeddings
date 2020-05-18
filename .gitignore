@@ -78,7 +78,6 @@
 **/vendor/bundle/ruby/*/gems/mechanize-*/lib/mechanize/u*
 **/vendor/bundle/ruby/*/gems/mechanize-*/lib/mechanize/x*
 **/vendor/bundle/ruby/*/gems/thread_safe-*/lib/thread_safe/util
-**/vendor/bundle/ruby/*/gems/byebug-*/
 
 # Ignore dependencies we don't wish to vendor
 **/vendor/bundle/ruby/*/gems/ast-*/
@@ -133,6 +132,7 @@
 **/vendor/bundle/ruby/*/gems/unf-*/
 **/vendor/bundle/ruby/*/gems/unicode-display_width-*/
 **/vendor/bundle/ruby/*/gems/webrobots-*/
+**/vendor/bundle/ruby/*/gems/byebug-*/
 
 # Ignore `bin` contents (again).
 /bin
