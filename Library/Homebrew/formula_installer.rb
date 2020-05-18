@@ -279,7 +279,7 @@ class FormulaInstaller
       opoo "#{formula.full_name}: #{old_flag} was deprecated; using #{new_flag} instead!"
     end
 
-    options = display_options(formula)
+    options = display_options(formula).join(" ")
     oh1 "Installing #{Formatter.identifier(formula.full_name)} #{options}".strip if show_header?
 
     unless formula.tap&.private?
@@ -529,16 +529,15 @@ class FormulaInstaller
   end
 
   def display_options(formula)
-    options = []
-    if formula.head?
-      options << "--HEAD"
+    options = if formula.head?
+      ["--HEAD"]
     elsif formula.devel?
-      options << "--devel"
+      ["--devel"]
+    else
+      []
     end
     options += effective_build_options_for(formula).used_options.to_a
-    return if options.empty?
-
-    options.join(" ")
+    options
   end
 
   def inherited_options_for(dep)
@@ -793,7 +792,7 @@ class FormulaInstaller
   rescue Exception => e # rubocop:disable Lint/RescueException
     if e.is_a? BuildError
       e.formula = formula
-      e.options = options
+      e.options = display_options(formula)
     end
 
     ignore_interrupts do
