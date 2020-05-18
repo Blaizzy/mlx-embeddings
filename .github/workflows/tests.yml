@@ -6,6 +6,9 @@ on:
   release:
     types:
       - published
+env:
+  HOMEBREW_GITHUB_ACTIONS: 1
+  HOMEBREW_NO_AUTO_UPDATE: 1
 jobs:
   tests:
     if: github.repository == 'Homebrew/brew'
@@ -66,9 +69,6 @@ jobs:
           # Cleanup some Linux `brew doctor` failures
           sudo rm -rf /usr/local/include/node/
         else
-          # Allow Xcode to be outdated
-          export HOMEBREW_GITHUB_ACTIONS=1
-
           # Link old gettext (otherwise `brew doctor` is sad)
           brew link gettext
         fi
@@ -93,7 +93,6 @@ jobs:
     - name: Install taps
       run: |
         # Install taps needed for 'brew tests' and 'brew man'
-        export HOMEBREW_NO_AUTO_UPDATE=1
         cd "$(brew --repo)"
         brew tap homebrew/bundle
         brew update-reset Library/Taps/homebrew/homebrew-bundle
@@ -137,7 +136,6 @@ jobs:
         HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
         # set variables for coverage reporting
-        HOMEBREW_GITHUB_ACTIONS: 1
         HOMEBREW_CI_NAME: github-actions
         HOMEBREW_COVERALLS_REPO_TOKEN: 3F6U6ZqctoNJwKyREremsqMgpU3qYgxFk
 
