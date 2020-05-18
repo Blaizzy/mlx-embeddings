@@ -833,20 +833,19 @@ module Homebrew
       end
 
       def check_deleted_formula
-        formulae = Dir.children(HOMEBREW_CELLAR)
-        formulae.delete(".keepme")
+        kegs = Keg.all
         deleted_formulae = []
-        formulae.each do |f|
-          Formula[f]
+        kegs.each do |keg|
+          keg.to_formula
         rescue
-          deleted_formulae << f
+          deleted_formulae << keg.name
         end
         return if deleted_formulae.blank?
 
         message = <<~EOS
-          Some installed formulae are deleted.
+          Some installed formulae were deleted!
           You should find replacements for the following formulae:
-            #{deleted_formulae.*"\n  "}
+            #{deleted_formulae.join("\n  ")}
         EOS
         message
       end
