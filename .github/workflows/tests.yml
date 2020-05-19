@@ -71,6 +71,8 @@ jobs:
 
           # Link old gettext (otherwise `brew doctor` is sad)
           brew link gettext
+
+          # remove deleted formula
           brew uninstall --force python@2
         fi
         brew doctor
