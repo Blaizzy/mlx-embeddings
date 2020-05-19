@@ -269,7 +269,7 @@ class FormulaInstaller
 
     return if only_deps?
 
-    if build_bottle? && (arch = Homebrew.args.bottle_arch) && !Hardware::CPU.optimization_flags.include?(arch)
+    if build_bottle? && (arch = Homebrew.args.bottle_arch) && !Hardware::CPU.optimization_flags.include?(arch.to_sym)
       raise "Unrecognized architecture for --bottle-arch: #{arch}"
     end
 
