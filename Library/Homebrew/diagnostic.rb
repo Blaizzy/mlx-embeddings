@@ -3,6 +3,7 @@
 require "keg"
 require "language/python"
 require "formula"
+require "formulary"
 require "version"
 require "development_tools"
 require "utils/shell"
@@ -836,9 +837,8 @@ module Homebrew
         kegs = Keg.all
         deleted_formulae = []
         kegs.each do |keg|
-          keg.to_formula
-        rescue
-          deleted_formulae << keg.name
+          keg_name = keg.name
+          deleted_formulae << keg_name if Formulary.tap_paths(keg_name).size != 1
         end
         return if deleted_formulae.blank?
 
