@@ -2,14 +2,12 @@
 
 require_relative "options"
 require "search"
-require "utils"
 
 module Cask
   class Cmd
     class AbstractCommand
       include Options
       include Homebrew::Search
-      include Utils
 
       option "--[no-]binaries",   :binaries,      true
       option "--debug",           :debug,         false

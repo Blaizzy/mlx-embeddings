@@ -140,7 +140,7 @@ describe Cask::Cmd::Info, :cask do
     EOS
   end
 
-  it "can run be run with a url twice", :needs_network do
+  it "can run be run with a url twice and returns analytics", :needs_network do
     analytics = {
       "analytics" => {
         "install" => {
