@@ -119,7 +119,7 @@ module Utils
       def output(filter: nil)
         days = Homebrew.args.days || "30"
         category = Homebrew.args.category || "install"
-        json = formulae_api_json("analytics/#{category}/#{days}d.json")
+        json = formulae_brew_sh_json("analytics/#{category}/#{days}d.json")
         return if json.blank? || json["items"].blank?
 
         os_version = category == "os-version"
@@ -177,14 +177,14 @@ module Utils
       end
 
       def formula_output(f)
-        json = formulae_api_json("#{formula_path}/#{f}.json")
+        json = formulae_brew_sh_json("#{formula_path}/#{f}.json")
         return if json.blank? || json["analytics"].blank?
 
         get_analytics(json)
       end
 
       def cask_output(cask)
-        json = formulae_api_json("#{cask_path}/#{cask}.json")
+        json = formulae_brew_sh_json("#{cask_path}/#{cask}.json")
         return if json.blank? || json["analytics"].blank?
 
         get_analytics(json)
@@ -318,7 +318,7 @@ module Utils
         end
       end
 
-      def formulae_api_json(endpoint)
+      def formulae_brew_sh_json(endpoint)
         return if Homebrew::EnvConfig.no_analytics? || Homebrew::EnvConfig.no_github_api?
 
         output, = curl_output("--max-time", "5",
