@@ -18,6 +18,7 @@
 /Library/Homebrew/vendor/portable-ruby
 /Library/Taps
 /Library/PinnedTaps
+/Library/Homebrew/.byebug_history
 
 # Ignore Bundler files
 **/.bundle/bin
@@ -131,6 +132,7 @@
 **/vendor/bundle/ruby/*/gems/unf-*/
 **/vendor/bundle/ruby/*/gems/unicode-display_width-*/
 **/vendor/bundle/ruby/*/gems/webrobots-*/
+**/vendor/bundle/ruby/*/gems/byebug-*/
 
 # Ignore `bin` contents (again).
 /bin

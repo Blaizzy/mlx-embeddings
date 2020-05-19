@@ -1015,6 +1015,8 @@ Run Homebrew's unit and integration tests.
   Do not load the compatibility layer when running tests.
 * `--online`:
   Include tests that use the GitHub API and tests that use any of the taps for official external commands.
+* `--byebug`:
+  Enable debugging using byebug.
 * `--only`:
   Run only *`test_script`*`_spec.rb`. Appending `:`*`line_number`* will start at a specific line.
 * `--seed`:
