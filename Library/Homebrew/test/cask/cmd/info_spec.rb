@@ -3,7 +3,6 @@
 require_relative "shared_examples/requires_cask_token"
 require_relative "shared_examples/invalid_option"
 require "utils"
-require "json"
 
 describe Cask::Cmd::Info, :cask do
   it_behaves_like "a command that requires a Cask token"
@@ -142,9 +141,15 @@ describe Cask::Cmd::Info, :cask do
   end
 
   it "can run be run with a url twice", :needs_network do
-    analytics = '{"analytics":{"install":{"30d":{"docker": 1000},"90d":{"docker": 2000},"365d":{"docker": 3000}}}}'
+    analytics = {
+      "analytics" => {
+        "install" => {
+          "30d" => { "docker" => 1000 }, "90d" => { "docker" => 2000 }, "365d" => { "docker" => 3000 }
+        },
+      },
+    }
     expect(Utils::Analytics).to receive(:formulae_brew_sh_json).twice.with("cask/docker.json")
-    .and_return(JSON.parse(analytics))
+    .and_return(analytics)
     expect {
       described_class.run("https://raw.githubusercontent.com/Homebrew/homebrew-cask" \
                           "/d0b2c58652ae5eff20a7a4ac93292a08b250912b/Casks/docker.rb")
