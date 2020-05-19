@@ -411,6 +411,12 @@ system "make", "install"
 
 You’ll see stuff like this in some formulae. This moves the file `foo` into the formula’s `bin` directory (`/usr/local/Cellar/pkg/0.1/bin`) and makes it executable (`chmod 0555 foo`).
 
+You can also rename the file during the installation process. This can be useful for adding a prefix to binaries that would otherwise cause conflicts with another formula, or for removing a file extension. For example, to install `foo.py` into the formula's `bin` directory (`/usr/local/Cellar/pkg/0.1/bin`) as just `foo` instead of `foo.py`:
+
+```ruby
+bin.install "foo.py" => "foo"
+```
+
 ### `inreplace`
 
 [`inreplace`](https://rubydoc.brew.sh/Utils/Inreplace) is a convenience function that can edit files in-place. For example:
