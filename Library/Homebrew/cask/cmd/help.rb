@@ -11,12 +11,15 @@ module Cask
         elsif args.count == 1
           command_name = args.first
 
-          if (command = self.class.commands[command_name]) && command.respond_to?(:usage)
-            puts command.usage
-            return
+          unless command = self.class.commands[command_name]
+            raise "No help information found for command '#{command_name}'."
           end
 
-          raise "No help information found for command '#{command_name}'."
+          if command.respond_to?(:usage)
+            puts command.usage
+          else
+            puts command.help
+          end
         else
           raise ArgumentError, "#{self.class.command_name} only takes up to one argument."
         end
