@@ -488,10 +488,11 @@ class FormulaInstaller
 
       if dep.prune_from_option?(build)
         Dependency.prune
-      elsif dep.test? && !dep.build? && !include_test?
-        Dependency.prune
-      elsif dep.build? && !dep.test? && install_bottle_for?(dependent, build)
-        Dependency.prune
+      elsif dep.test? || (dep.build? && install_bottle_for?(dependent, build))
+        keep = false
+        keep ||= dep.test? && include_test? && dependent == formula
+        keep ||= dep.build? && !install_bottle_for?(dependent, build)
+        Dependency.prune unless keep
       elsif dep.prune_if_build_and_not_dependent?(dependent)
         Dependency.prune
       elsif dep.satisfied?(inherited_options[dep.name])
