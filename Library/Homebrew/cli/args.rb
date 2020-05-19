@@ -175,6 +175,12 @@ module Homebrew
         formulae.any? { |args_f| args_f.full_name == f.full_name }
       end
 
+      def include_formula_test_deps?(f)
+        return false unless include_test?
+
+        formulae.any? { |args_f| args_f.full_name == f.full_name }
+      end
+
       private
 
       def option_to_name(option)
