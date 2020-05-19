@@ -100,16 +100,11 @@ module Homebrew
         klass.prune if ignores.include?("recommended?") || dependent.build.without?(dep)
       elsif dep.optional?
         klass.prune if !includes.include?("optional?") && !dependent.build.with?(dep)
-      elsif dep.test?
-        if includes.include?("test?")
-          Dependency.keep_but_prune_recursive_deps if type == :dependencies
-        elsif dep.build?
-          klass.prune unless includes.include?("build?")
-        else
-          klass.prune
-        end
-      elsif dep.build?
-        klass.prune unless includes.include?("build?")
+      elsif dep.build? || dep.test?
+        keep = false
+        keep ||= dep.test? && includes.include?("test?") && dependent == formula
+        keep ||= dep.build? && includes.include?("build?")
+        klass.prune unless keep
       end
 
       # If a tap isn't installed, we can't find the dependencies of one of
