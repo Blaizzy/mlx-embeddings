@@ -838,7 +838,7 @@ module Homebrew
         deleted_formulae = []
         kegs.each do |keg|
           keg_name = keg.name
-          deleted_formulae << keg_name if Formulary.tap_paths(keg_name).size != 1
+          deleted_formulae << keg_name if Formulary.tap_paths(keg_name).blank?
         end
         return if deleted_formulae.blank?
 
