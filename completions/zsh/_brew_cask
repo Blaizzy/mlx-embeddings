@@ -19,7 +19,13 @@ __brew_cask() {
 __brew_all_casks() {
   local -a list
   local expl
-  list=( $(brew search --casks) )
+  local comp_cachename=brew_casks
+
+  if _cache_invalid $comp_cachename || ! _retrieve_cache $comp_cachename; then
+    list=( $(brew search --casks) )
+    _store_cache $comp_cachename list
+  fi
+
   _wanted list expl 'all casks' compadd -a list
 }
 
