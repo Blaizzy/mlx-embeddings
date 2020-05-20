@@ -1060,7 +1060,6 @@ module Homebrew
       url_strategy = DownloadStrategyDetector.detect(url)
 
       if using == :git || url_strategy == GitDownloadStrategy
-        # TODO: check could be in RuboCop
         problem "Git should specify :revision when a :tag is specified." if specs[:tag] && !specs[:revision]
       end
 
