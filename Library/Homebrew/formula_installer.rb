@@ -457,13 +457,14 @@ class FormulaInstaller
         keep_build_test ||= runtime_requirements.include?(req)
         keep_build_test ||= req.test? && include_test? && dependent == f
         keep_build_test ||= req.build? && !install_bottle_for_dependent
-        keep_build_test ||= (dep = formula_deps_map[dependent.name]) && !dep.build?
 
         if req.prune_from_option?(build)
           Requirement.prune
         elsif req.satisfied?
           Requirement.prune
         elsif (req.build? || req.test?) && !keep_build_test
+          Requirement.prune
+        elsif (dep = formula_deps_map[dependent.name]) && dep.build?
           Requirement.prune
         else
           unsatisfied_reqs[dependent] << req
