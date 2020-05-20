@@ -159,6 +159,26 @@ describe RuboCop::Cop::FormulaAudit::Urls do
                        "not a source archive; homebrew/core is source-only.",
       "col"         => 2,
       "formula_tap" => "homebrew-core",
+    }, {
+      "url" => "cvs://brew.sh/foo/bar",
+      "msg" => "Use of the cvs:// scheme is deprecated, pass `:using => :cvs` instead",
+      "col" => 2,
+    }, {
+      "url" => "bzr://brew.sh/foo/bar",
+      "msg" => "Use of the bzr:// scheme is deprecated, pass `:using => :bzr` instead",
+      "col" => 2,
+    }, {
+      "url" => "hg://brew.sh/foo/bar",
+      "msg" => "Use of the hg:// scheme is deprecated, pass `:using => :hg` instead",
+      "col" => 2,
+    }, {
+      "url" => "fossil://brew.sh/foo/bar",
+      "msg" => "Use of the fossil:// scheme is deprecated, pass `:using => :fossil` instead",
+      "col" => 2,
+    }, {
+      "url" => "svn+http://brew.sh/foo/bar",
+      "msg" => "Use of the svn+http:// scheme is deprecated, pass `:using => :svn` instead",
+      "col" => 2,
     }]
   }
 
