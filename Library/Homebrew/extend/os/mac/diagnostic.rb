@@ -347,12 +347,13 @@ module Homebrew
       end
 
       def check_deprecated_caskroom_taps
-        tapped_caskroom_taps = Tap.select { |t| t.user == "caskroom" }.map(&:repo)
+        tapped_caskroom_taps = Tap.select { |t| t.user == "caskroom" || t.name == "phinze/cask" }
+                                  .map(&:name)
         return if tapped_caskroom_taps.empty?
 
         <<~EOS
           You have the following deprecated, cask taps tapped:
-            Caskroom/homebrew-#{tapped_caskroom_taps.join("\n  Caskroom/homebrew-")}
+            #{tapped_caskroom_taps.join("\n  ")}
           Untap them with `brew untap`.
         EOS
       end
