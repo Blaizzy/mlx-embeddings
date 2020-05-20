@@ -1,4 +1,4 @@
-ARG version=16.04
+ARG version=20.04
 FROM ubuntu:$version
 ARG DEBIAN_FRONTEND=noninteractive
 
