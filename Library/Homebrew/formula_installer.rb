@@ -490,7 +490,7 @@ class FormulaInstaller
         Dependency.prune
       elsif dep.test? || (dep.build? && install_bottle_for?(dependent, build))
         keep = false
-        keep ||= dep.test? && include_test? && dependent == formula
+        keep ||= dep.test? && include_test? && Homebrew.args.include_formula_test_deps?(dependent)
         keep ||= dep.build? && !install_bottle_for?(dependent, build)
         Dependency.prune unless keep
       elsif dep.prune_if_build_and_not_dependent?(dependent)
@@ -569,6 +569,7 @@ class FormulaInstaller
 
     fi.build_from_source       = Homebrew.args.build_formula_from_source?(df)
     fi.force_bottle            = false
+    fi.include_test            = Homebrew.args.include_formula_test_deps?(df)
     fi.verbose                 = verbose?
     fi.quiet                   = quiet?
     fi.debug                   = debug?
@@ -611,6 +612,7 @@ class FormulaInstaller
     fi.options                &= df.options
     fi.build_from_source       = Homebrew.args.build_formula_from_source?(df)
     fi.force_bottle            = false
+    fi.include_test            = Homebrew.args.include_formula_test_deps?(df)
     fi.verbose                 = verbose?
     fi.quiet                   = quiet?
     fi.debug                   = debug?
