@@ -2,6 +2,7 @@
 
 require_relative "shared_examples/requires_cask_token"
 require_relative "shared_examples/invalid_option"
+require "utils"
 
 describe Cask::Cmd::Info, :cask do
   it_behaves_like "a command that requires a Cask token"
@@ -139,7 +140,16 @@ describe Cask::Cmd::Info, :cask do
     EOS
   end
 
-  it "can run be run with a url twice", :needs_network do
+  it "can run be run with a url twice and returns analytics", :needs_network do
+    analytics = {
+      "analytics" => {
+        "install" => {
+          "30d" => { "docker" => 1000 }, "90d" => { "docker" => 2000 }, "365d" => { "docker" => 3000 }
+        },
+      },
+    }
+    expect(Utils::Analytics).to receive(:formulae_brew_sh_json).twice.with("cask/docker.json")
+    .and_return(analytics)
     expect {
       described_class.run("https://raw.githubusercontent.com/Homebrew/homebrew-cask" \
                           "/d0b2c58652ae5eff20a7a4ac93292a08b250912b/Casks/docker.rb")
@@ -155,6 +165,8 @@ describe Cask::Cmd::Info, :cask do
       Docker CE
       ==> Artifacts
       Docker.app (App)
+      ==> Analytics
+      install: 1,000 (30 days), 2,000 (90 days), 3,000 (365 days)
       ==> Downloading https://raw.githubusercontent.com/Homebrew/homebrew-cask/d0b2c58652ae5eff20a7a4ac93292a08b250912b/Casks/docker.rb.
       docker: 2.0.0.2-ce-mac81,30215 (auto_updates)
       https://www.docker.com/community-edition
@@ -164,6 +176,8 @@ describe Cask::Cmd::Info, :cask do
       Docker CE
       ==> Artifacts
       Docker.app (App)
+      ==> Analytics
+      install: 1,000 (30 days), 2,000 (90 days), 3,000 (365 days)
     EOS
   end
 end
