@@ -50,7 +50,7 @@ If there's no Homebrew Portable Ruby available for your processor:
       then
         HOMEBREW_RUBY_PATH="/System/Library/Frameworks/Ruby.framework/Versions/Current/usr/bin/ruby"
       else
-        IFS=$'\n'
+        IFS=$'\n' # Do word splitting on new lines only
         for ruby_exec in $(which -a ruby) $(PATH=$HOMEBREW_PATH which -a ruby)
         do
           if [[ $(test-ruby "$ruby_exec") == "true" ]]; then
@@ -58,7 +58,7 @@ If there's no Homebrew Portable Ruby available for your processor:
             break
           fi
         done
-        IFS=$' \t\n'
+        IFS=$' \t\n' # Restore IFS to its default value
         [[ -z $HOMEBREW_RUBY_PATH ]] && onoe "Failed to find usable Ruby $required_ruby_version!"
       fi
 
