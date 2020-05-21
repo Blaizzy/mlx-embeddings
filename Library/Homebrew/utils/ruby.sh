@@ -7,8 +7,9 @@ test-ruby () {
 
 setup-ruby-path() {
   local vendor_dir
-  local vendor_ruby_current_version
   local vendor_ruby_path
+  local vendor_ruby_latest_version
+  local vendor_ruby_current_version
   local usable_ruby_version
   # When bumping check if HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH (in brew.sh)
   # also needs to be changed.
@@ -22,8 +23,9 @@ If there's no Homebrew Portable Ruby available for your processor:
 "
 
   vendor_dir="$HOMEBREW_LIBRARY/Homebrew/vendor"
-  vendor_ruby_current_version="$vendor_dir/portable-ruby/current"
-  vendor_ruby_path="$vendor_ruby_current_version/bin/ruby"
+  vendor_ruby_path="$vendor_dir/portable-ruby/current/bin/ruby"
+  vendor_ruby_latest_version=$(<"$vendor_dir/portable-ruby-version")
+  vendor_ruby_current_version=$(readlink "$vendor_dir/portable-ruby/current")
 
   unset HOMEBREW_RUBY_PATH
 
@@ -35,8 +37,7 @@ If there's no Homebrew Portable Ruby available for your processor:
   if [[ -x "$vendor_ruby_path" ]]
   then
     HOMEBREW_RUBY_PATH="$vendor_ruby_path"
-
-    if [[ $(readlink "$vendor_ruby_current_version") != "$(<"$vendor_dir/portable-ruby-version")" ]]
+    if [[ $vendor_ruby_current_version != $vendor_ruby_latest_version ]]
     then
       if ! brew vendor-install ruby
       then
