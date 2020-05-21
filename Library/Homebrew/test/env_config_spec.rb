@@ -49,16 +49,6 @@ describe Homebrew::EnvConfig do
       ENV["HOMEBREW_BAT"] = nil
       expect(env_config.bat?).to be(false)
     end
-
-    it "returns value if set" do
-      ENV["HOMEBREW_BAT_CONFIG_PATH"] = "~/.config/bat/config"
-      expect(env_config.bat_config_path).to eql("~/.config/bat/config")
-    end
-
-    it "returns nil if unset" do
-      ENV["HOMEBREW_BAT_CONFIG_PATH"] = nil
-      expect(env_config.bat_config_path).to be_nil
-    end
   end
 
   describe ".make_jobs" do
