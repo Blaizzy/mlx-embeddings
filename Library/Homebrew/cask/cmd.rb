@@ -145,7 +145,7 @@ module Cask
       command, args = detect_internal_command(*args) || detect_external_command(*args) || [NullCommand.new, args]
 
       if help?
-        puts command.help
+        Help.new(command.command_name).run
       else
         command.run(*args)
       end
