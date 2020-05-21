@@ -27,63 +27,65 @@ If there's no Homebrew Portable Ruby available for your processor:
 
   unset HOMEBREW_RUBY_PATH
 
-  if [[ "$HOMEBREW_COMMAND" != "vendor-install" ]]
+  if [[ "$HOMEBREW_COMMAND" == "vendor-install" ]]
   then
-    if [[ -x "$vendor_ruby_path" ]]
+    return 0
+  fi
+
+  if [[ -x "$vendor_ruby_path" ]]
+  then
+    HOMEBREW_RUBY_PATH="$vendor_ruby_path"
+
+    if [[ $(readlink "$vendor_ruby_current_version") != "$(<"$vendor_dir/portable-ruby-version")" ]]
     then
-      HOMEBREW_RUBY_PATH="$vendor_ruby_path"
-
-      if [[ $(readlink "$vendor_ruby_current_version") != "$(<"$vendor_dir/portable-ruby-version")" ]]
+      if ! brew vendor-install ruby
       then
-        if ! brew vendor-install ruby
+        if [[ -n "$HOMEBREW_MACOS" ]]
         then
-          if [[ -n "$HOMEBREW_MACOS" ]]
-          then
-            odie "Failed to upgrade Homebrew Portable Ruby!"
-          else
-            odie "Failed to upgrade Homebrew Portable Ruby!$advice"
-          fi
+          odie "Failed to upgrade Homebrew Portable Ruby!"
+        else
+          odie "Failed to upgrade Homebrew Portable Ruby!$advice"
         fi
       fi
+    fi
+  else
+    if [[ -n "$HOMEBREW_MACOS" ]]
+    then
+      HOMEBREW_RUBY_PATH="/System/Library/Frameworks/Ruby.framework/Versions/Current/usr/bin/ruby"
     else
-      if [[ -n "$HOMEBREW_MACOS" ]]
-      then
-        HOMEBREW_RUBY_PATH="/System/Library/Frameworks/Ruby.framework/Versions/Current/usr/bin/ruby"
-      else
-        IFS=$'\n' # Do word splitting on new lines only
-        for ruby_exec in $(which -a ruby) $(PATH=$HOMEBREW_PATH which -a ruby)
-        do
-          if [[ $(test-ruby "$ruby_exec") == "true" ]]; then
-            HOMEBREW_RUBY_PATH=$ruby_exec
-            break
-          fi
-        done
-        IFS=$' \t\n' # Restore IFS to its default value
-        [[ -z $HOMEBREW_RUBY_PATH ]] && onoe "Failed to find usable Ruby $required_ruby_version!"
-      fi
-
-      if [[ -n "$HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH" ]]
-      then
-        usable_ruby_version="true"
-      elif [[ -n "$HOMEBREW_RUBY_PATH" && -z "$HOMEBREW_FORCE_VENDOR_RUBY" ]]
-      then
-        usable_ruby_version=$(test-ruby "$HOMEBREW_RUBY_PATH")
-      fi
-
-      if [[ -z "$HOMEBREW_RUBY_PATH" || -n "$HOMEBREW_FORCE_VENDOR_RUBY" || "$usable_ruby_version" != "true" ]]
-      then
-        brew vendor-install ruby
-        if [[ ! -x "$vendor_ruby_path" ]]
-        then
-          if [[ -n "$HOMEBREW_MACOS" ]]
-          then
-            odie "Failed to install Homebrew Portable Ruby (and your system version is too old)!"
-          else
-            odie "Failed to install Homebrew Portable Ruby and cannot find another Ruby $required_ruby_version!$advice"
-          fi
+      IFS=$'\n' # Do word splitting on new lines only
+      for ruby_exec in $(which -a ruby) $(PATH=$HOMEBREW_PATH which -a ruby)
+      do
+        if [[ $(test-ruby "$ruby_exec") == "true" ]]; then
+          HOMEBREW_RUBY_PATH=$ruby_exec
+          break
         fi
-        HOMEBREW_RUBY_PATH="$vendor_ruby_path"
+      done
+      IFS=$' \t\n' # Restore IFS to its default value
+      [[ -z $HOMEBREW_RUBY_PATH ]] && onoe "Failed to find usable Ruby $required_ruby_version!"
+    fi
+
+    if [[ -n "$HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH" ]]
+    then
+      usable_ruby_version="true"
+    elif [[ -n "$HOMEBREW_RUBY_PATH" && -z "$HOMEBREW_FORCE_VENDOR_RUBY" ]]
+    then
+      usable_ruby_version=$(test-ruby "$HOMEBREW_RUBY_PATH")
+    fi
+
+    if [[ -z "$HOMEBREW_RUBY_PATH" || -n "$HOMEBREW_FORCE_VENDOR_RUBY" || "$usable_ruby_version" != "true" ]]
+    then
+      brew vendor-install ruby
+      if [[ ! -x "$vendor_ruby_path" ]]
+      then
+        if [[ -n "$HOMEBREW_MACOS" ]]
+        then
+          odie "Failed to install Homebrew Portable Ruby (and your system version is too old)!"
+        else
+          odie "Failed to install Homebrew Portable Ruby and cannot find another Ruby $required_ruby_version!$advice"
+        fi
       fi
+      HOMEBREW_RUBY_PATH="$vendor_ruby_path"
     fi
   fi
 
