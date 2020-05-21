@@ -1052,11 +1052,6 @@ module Homebrew
     end
 
     def audit_download_strategy
-      if url =~ %r{^(cvs|bzr|hg|fossil)://} || url =~ %r{^(svn)\+http://}
-        # TODO: check could be in RuboCop
-        problem "Use of the #{$&} scheme is deprecated, pass `:using => :#{Regexp.last_match(1)}` instead"
-      end
-
       url_strategy = DownloadStrategyDetector.detect(url)
 
       if using == :git || url_strategy == GitDownloadStrategy
