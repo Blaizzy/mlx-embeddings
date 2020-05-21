@@ -3,9 +3,6 @@ on:
   push:
     branches: master
   pull_request: []
-  release:
-    types:
-      - published
 env:
   HOMEBREW_GITHUB_ACTIONS: 1
   HOMEBREW_NO_AUTO_UPDATE: 1
@@ -176,7 +173,7 @@ jobs:
 
     - name: Build Docker image
       if: matrix.os == 'ubuntu-latest'
-      run: docker build -t brew .
+      run: docker build -t brew --build-arg=version=16.04 .
 
     - name: Run brew test-bot
       run: |
@@ -187,16 +184,11 @@ jobs:
         fi
 
     - name: Deploy the Docker image to GitHub and Docker Hub
-      if: matrix.os == 'ubuntu-latest' && (github.ref == 'refs/heads/master' || github.event_name == 'release')
+      if: matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/master'
       run: |
-        case $GITHUB_REF in
-          refs/heads/master) v=latest ;;
-          refs/tags/*) v=${GITHUB_REF:10} ;;
-          *) echo Error: unexpected GITHUB_REF: $GITHUB_REF; exit 1 ;;
-        esac
         docker login docker.pkg.github.com -u BrewTestBot -p ${{secrets.GITHUB_TOKEN}}
-        docker tag brew "docker.pkg.github.com/homebrew/brew/brew:$v"
-        docker push "docker.pkg.github.com/homebrew/brew/brew:$v"
+        docker tag brew "docker.pkg.github.com/homebrew/brew/ubuntu16.04:master"
+        docker push "docker.pkg.github.com/homebrew/brew/ubuntu16.04:master"
         docker login -u brewtestbot -p ${{secrets.DOCKER_TOKEN}}
-        docker tag brew "homebrew/brew:$v"
-        docker push "homebrew/brew:$v"
+        docker tag brew "homebrew/ubuntu16.04:master"
+        docker push "homebrew/ubuntu16.04:master"
