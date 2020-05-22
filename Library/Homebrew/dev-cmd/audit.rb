@@ -984,7 +984,7 @@ module Homebrew
       except_audits = @except
 
       methods.map(&:to_s).grep(/^audit_/).each do |audit_method_name|
-        name = audit_method_name.gsub(/^audit_/, "")
+        name = audit_method_name.delete_prefix("audit_")
         if only_audits
           next unless only_audits.include?(name)
         elsif except_audits

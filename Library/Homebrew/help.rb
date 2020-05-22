@@ -103,7 +103,7 @@ module Homebrew
       help_lines = command_help_lines(path)
       return if help_lines.blank?
 
-      Formatter.wrap(help_lines.join.gsub(/^  /, ""), COMMAND_DESC_WIDTH)
+      Formatter.wrap(help_lines.join.delete_prefix("  "), COMMAND_DESC_WIDTH)
                .sub("@hide_from_man_page ", "")
                .sub(/^\* /, "#{Tty.bold}Usage: brew#{Tty.reset} ")
                .gsub(/`(.*?)`/m, "#{Tty.bold}\\1#{Tty.reset}")

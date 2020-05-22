@@ -3,11 +3,12 @@
 shared_examples "parseable arguments" do
   subject(:method_name) do |example|
     example.metadata[:example_group][:parent_example_group][:description]
-           .gsub(/^Homebrew\./, "")
+           .delete_prefix("Homebrew.")
   end
 
   let(:command_name) do
-    method_name.gsub(/_args$/, "").tr("_", "-")
+    method_name.delete_suffix("_args")
+               .tr("_", "-")
   end
 
   it "can parse arguments" do
