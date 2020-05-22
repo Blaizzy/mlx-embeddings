@@ -279,6 +279,8 @@ module Formulary
     end
 
     def load_file
+      tap.install unless tap.installed?
+
       super
     rescue MethodDeprecatedError => e
       e.issues_url = tap.issues_url || tap.to_s
