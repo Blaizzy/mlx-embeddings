@@ -227,8 +227,7 @@ describe Formulary do
       end
     end
 
-    it "raises an error if the Formula is not available after tapping" do
-      expect_any_instance_of(Tap).to receive(:install)
+    it "raises an error if the Formula is not available" do
       expect {
         described_class.to_rack("a/b/#{formula_name}")
       }.to raise_error(TapFormulaUnavailableError)
