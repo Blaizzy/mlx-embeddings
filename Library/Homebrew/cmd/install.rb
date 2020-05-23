@@ -152,7 +152,7 @@ module Homebrew
       end
 
       # --HEAD, fail with no head defined
-      raise "No head is defined for #{f.full_name}" if args.head? && f.head.nil?
+      raise "No head is defined for #{f.full_name}" if args.HEAD? && f.head.nil?
 
       # --devel, fail with no devel defined
       raise "No devel block is defined for #{f.full_name}" if args.devel? && f.devel.nil?
@@ -325,6 +325,7 @@ module Homebrew
     fi.build_bottle         = args.build_bottle?
     fi.interactive          = args.interactive?
     fi.git                  = args.git?
+    fi.fetch
     fi.prelude
     fi.install
     fi.finish

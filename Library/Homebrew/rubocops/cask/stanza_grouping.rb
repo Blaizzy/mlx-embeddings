@@ -39,6 +39,7 @@ module RuboCop
         private
 
         attr_reader :cask_block, :line_ops
+
         def_delegators :cask_block, :cask_node, :toplevel_stanzas
 
         def add_offenses

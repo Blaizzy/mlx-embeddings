@@ -19,6 +19,23 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
       RUBY
     end
 
+    it "When `bottle` precedes `livecheck`" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          homepage "https://brew.sh"
+          url "https://brew.sh/foo-1.0.tgz"
+
+          bottle :unneeded
+
+          livecheck do
+          ^^^^^^^^^^^^ `livecheck` (line 7) should be put before `bottle` (line 5)
+            url "https://brew.sh/foo/versions/"
+            regex(/href=.+?foo-(\d+(?:\.\d+)+)\.t/)
+          end
+        end
+      RUBY
+    end
+
     it "When url precedes homepage" do
       expect_offense(<<~RUBY)
         class Foo < Formula

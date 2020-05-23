@@ -3,9 +3,9 @@ on:
   push:
     branches: master
   pull_request: []
-  release:
-    types:
-      - published
+env:
+  HOMEBREW_GITHUB_ACTIONS: 1
+  HOMEBREW_NO_AUTO_UPDATE: 1
 jobs:
   tests:
     if: github.repository == 'Homebrew/brew'
@@ -18,7 +18,8 @@ jobs:
       id: set-up-homebrew
       run: |
         if which brew &>/dev/null; then
-          HOMEBREW_REPOSITORY="$(brew --repo)"
+          HOMEBREW_PREFIX="$(brew --prefix)"
+          HOMEBREW_REPOSITORY="$HOMEBREW_PREFIX/Homebrew"
         else
           HOMEBREW_PREFIX=/home/linuxbrew/.linuxbrew
           HOMEBREW_REPOSITORY="$HOMEBREW_PREFIX/Homebrew"
@@ -30,10 +31,10 @@ jobs:
           sudo mkdir -p bin etc include lib opt sbin share var/homebrew/linked Cellar
           sudo ln -sf ../Homebrew/bin/brew "$HOMEBREW_PREFIX/bin/"
           cd -
-
-          export PATH="$HOMEBREW_PREFIX/bin:$PATH"
-          echo "::add-path::$HOMEBREW_PREFIX/bin"
         fi
+
+        export PATH="$HOMEBREW_PREFIX/bin:$PATH"
+        echo "::add-path::$HOMEBREW_PREFIX/bin"
 
         cd "$HOMEBREW_REPOSITORY"
         rm -rf "$GITHUB_WORKSPACE"
@@ -65,11 +66,11 @@ jobs:
           # Cleanup some Linux `brew doctor` failures
           sudo rm -rf /usr/local/include/node/
         else
-          # Allow Xcode to be outdated
-          export HOMEBREW_GITHUB_ACTIONS=1
-
           # Link old gettext (otherwise `brew doctor` is sad)
           brew link gettext
+
+          # remove deleted formula
+          brew uninstall --force python@2
         fi
         brew doctor
 
@@ -92,7 +93,6 @@ jobs:
     - name: Install taps
       run: |
         # Install taps needed for 'brew tests' and 'brew man'
-        export HOMEBREW_NO_AUTO_UPDATE=1
         cd "$(brew --repo)"
         brew tap homebrew/bundle
         brew update-reset Library/Taps/homebrew/homebrew-bundle
@@ -136,7 +136,6 @@ jobs:
         HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
         # set variables for coverage reporting
-        HOMEBREW_GITHUB_ACTIONS: 1
         HOMEBREW_CI_NAME: github-actions
         HOMEBREW_COVERALLS_REPO_TOKEN: 3F6U6ZqctoNJwKyREremsqMgpU3qYgxFk
 
@@ -174,30 +173,22 @@ jobs:
 
     - name: Build Docker image
       if: matrix.os == 'ubuntu-latest'
-      run: |
-        docker pull homebrew/brew
-        docker-compose -f Dockerfile.yml build sut
+      run: docker build -t brew --build-arg=version=16.04 .
 
     - name: Run brew test-bot
       run: |
         if [ "$RUNNER_OS" = "Linux" ]; then
-          docker-compose -f Dockerfile.yml run --rm -v $GITHUB_WORKSPACE:/tmp/test-bot sut
-          docker tag homebrew_sut brew
+          docker run --rm brew brew test-bot
         else
           brew test-bot
         fi
 
-    - name: Deploy the latest Docker image
+    - name: Deploy the Docker image to GitHub and Docker Hub
       if: matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/master'
       run: |
         docker login docker.pkg.github.com -u BrewTestBot -p ${{secrets.GITHUB_TOKEN}}
-        docker tag brew docker.pkg.github.com/homebrew/brew/brew
-        docker push docker.pkg.github.com/homebrew/brew/brew
-
-    - name: Deploy the tagged Docker image
-      if: matrix.os == 'ubuntu-latest' && startsWith(github.ref, 'refs/tags/')
-      run: |
-        docker login docker.pkg.github.com -u BrewTestBot -p ${{secrets.GITHUB_TOKEN}}
-        v=${GITHUB_REF:10}
-        docker tag brew "docker.pkg.github.com/homebrew/brew/brew:$v"
-        docker push "docker.pkg.github.com/homebrew/brew/brew:$v"
+        docker tag brew "docker.pkg.github.com/homebrew/brew/ubuntu16.04:master"
+        docker push "docker.pkg.github.com/homebrew/brew/ubuntu16.04:master"
+        docker login -u brewtestbot -p ${{secrets.DOCKER_TOKEN}}
+        docker tag brew "homebrew/ubuntu16.04:master"
+        docker push "homebrew/ubuntu16.04:master"

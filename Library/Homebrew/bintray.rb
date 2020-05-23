@@ -106,12 +106,12 @@ class Bintray
     formula_packaged = {}
 
     bottles_hash.each do |formula_name, bottle_hash|
-      version = bottle_hash["formula"]["pkg_version"]
+      version = ERB::Util.url_encode(bottle_hash["formula"]["pkg_version"])
       bintray_package = bottle_hash["bintray"]["package"]
       bintray_repo = bottle_hash["bintray"]["repository"]
 
       bottle_hash["bottle"]["tags"].each do |_tag, tag_hash|
-        filename = tag_hash["filename"]
+        filename = tag_hash["filename"] # URL encoded in Bottle::Filename#bintray
         sha256 = tag_hash["sha256"]
 
         odebug "Checking remote file #{@bintray_org}/#{bintray_repo}/#{filename}"
@@ -132,7 +132,7 @@ class Bintray
           formula_packaged[formula_name] = true
         end
 
-        odebug "Uploading #{@bintray_org}/#{bintray_repo}/#{bintray_package}/#{version}/#{tag_hash["local_filename"]}"
+        odebug "Uploading #{@bintray_org}/#{bintray_repo}/#{bintray_package}/#{version}/#{filename}"
         upload(tag_hash["local_filename"],
                repo:        bintray_repo,
                package:     bintray_package,

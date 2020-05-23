@@ -12,6 +12,7 @@ require "build_environment"
 require "build_options"
 require "formulary"
 require "software_spec"
+require "livecheck"
 require "install_renamed"
 require "pkg_version"
 require "keg"
@@ -125,6 +126,7 @@ class Formula
   # The currently active {SoftwareSpec}.
   # @see #determine_active_spec
   attr_reader :active_spec
+
   protected :active_spec
 
   # A symbol to indicate currently active {SoftwareSpec}.
@@ -175,6 +177,7 @@ class Formula
   # Defaults to true.
   # @return [Boolean]
   attr_accessor :follow_installed_alias
+
   alias follow_installed_alias? follow_installed_alias
 
   # @private
@@ -352,6 +355,16 @@ class Formula
   # @method homepage
   # @see .homepage=
   delegate homepage: :"self.class"
+
+  # The livecheck specification for the software.
+  # @method livecheck
+  # @see .livecheck=
+  delegate livecheck: :"self.class"
+
+  # Is a livecheck specification defined for the software?
+  # @method livecheckable?
+  # @see .livecheckable?
+  delegate livecheckable?: :"self.class"
 
   # The version for the currently active {SoftwareSpec}.
   # The version is autodetected from the URL and/or tag so only needs to be
@@ -790,6 +803,14 @@ class Formula
     (HOMEBREW_PREFIX/"etc").extend(InstallRenamed)
   end
 
+  # A subdirectory of `etc` with the formula name suffixed.
+  # e.g. `$HOMEBREW_PREFIX/etc/openssl@1.1`
+  # Anything using `pkgetc.install` will not overwrite other files on
+  # e.g. upgrades but will write a new file named `*.default`.
+  def pkgetc
+    (HOMEBREW_PREFIX/"etc"/name).extend(InstallRenamed)
+  end
+
   # The directory where the formula's variable files should be installed.
   # This directory is not inside the `HOMEBREW_CELLAR` so it persists
   # across upgrades.
@@ -991,11 +1012,11 @@ class Formula
     self.build = Tab.for_formula(self)
 
     new_env = {
-      "TMPDIR"        => HOMEBREW_TEMP,
-      "TEMP"          => HOMEBREW_TEMP,
-      "TMP"           => HOMEBREW_TEMP,
-      "HOMEBREW_PATH" => nil,
-      "PATH"          => ENV["HOMEBREW_PATH"],
+      TMPDIR:        HOMEBREW_TEMP,
+      TEMP:          HOMEBREW_TEMP,
+      TMP:           HOMEBREW_TEMP,
+      HOMEBREW_PATH: nil,
+      PATH:          ENV["HOMEBREW_PATH"],
     }
 
     with_env(new_env) do
@@ -1080,7 +1101,7 @@ class Formula
     # keg's formula is deleted.
     begin
       keg = Keg.for(path)
-    rescue NotAKegError, Errno::ENOENT # rubocop:disable Lint/SuppressedException
+    rescue NotAKegError, Errno::ENOENT
       # file doesn't belong to any keg.
     else
       tab_tap = Tab.for_keg(keg).tap
@@ -1089,7 +1110,7 @@ class Formula
 
       begin
         Formulary.factory(keg.name)
-      rescue FormulaUnavailableError # rubocop:disable Lint/SuppressedException
+      rescue FormulaUnavailableError
         # formula for this keg is deleted, so defer to whitelist
       rescue TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
         return false # this keg belongs to another formula
@@ -1139,11 +1160,14 @@ class Formula
   # yields |self,staging| with current working directory set to the uncompressed tarball
   # where staging is a Mktemp staging context
   # @private
-  def brew
+  def brew(fetch: true)
     @prefix_returns_versioned_prefix = true
+    active_spec.fetch if fetch
     stage do |staging|
       staging.retain! if Homebrew.args.keep_tmp?
+
       prepare_patches
+      fetch_patches if fetch
 
       begin
         yield self, staging
@@ -1203,7 +1227,7 @@ class Formula
         next if version.head?
 
         tab = Tab.for_keg(keg)
-        next if version_scheme > tab.version_scheme
+        next if version_scheme > tab.version_scheme && pkg_version != version
         next if version_scheme == tab.version_scheme && pkg_version > version
 
         # don't consider this keg current if there's a newer formula available
@@ -1694,6 +1718,13 @@ class Formula
 
     %w[stable devel].each do |spec_sym|
       next unless spec = send(spec_sym)
+
+      hsh["urls"][spec_sym] = {
+        "url"      => spec.url,
+        "tag"      => spec.specs[:tag],
+        "revision" => spec.specs[:revision],
+      }
+
       next unless spec.bottle_defined?
 
       bottle_spec = spec.bottle_specification
@@ -1713,11 +1744,6 @@ class Formula
         }
       end
       hsh["bottle"][spec_sym] = bottle_info
-      hsh["urls"][spec_sym] = {
-        "url"      => spec.url,
-        "tag"      => spec.specs[:tag],
-        "revision" => spec.specs[:revision],
-      }
     end
 
     hsh["options"] = options.map do |opt|
@@ -2057,7 +2083,16 @@ class Formula
     ENV.update(removed)
   end
 
+  def fetch_patches
+    patchlist.select(&:external?).each(&:fetch)
+  end
+
   private
+
+  def prepare_patches
+    active_spec.add_legacy_patches(patches) if respond_to?(:patches)
+    patchlist.grep(DATAPatch) { |p| p.path = path }
+  end
 
   # Returns the prefix for a given formula version number.
   # @private
@@ -2126,13 +2161,6 @@ class Formula
     end
   end
 
-  def prepare_patches
-    active_spec.add_legacy_patches(patches) if respond_to?(:patches)
-
-    patchlist.grep(DATAPatch) { |p| p.path = path }
-    patchlist.select(&:external?).each(&:fetch)
-  end
-
   # The methods below define the formula DSL.
   class << self
     include BuildEnvironment::DSL
@@ -2177,6 +2205,13 @@ class Formula
     #
     # <pre>homepage "https://www.example.com"</pre>
     attr_rw :homepage
+
+    # Whether a livecheck specification is defined or not.
+    # It returns true when a livecheck block is present in the {Formula} and
+    # false otherwise, and is used by livecheck.
+    def livecheckable?
+      @livecheckable == true
+    end
 
     # The `:startup` attribute set by {.plist_options}.
     # @private
@@ -2618,6 +2653,26 @@ class Formula
     # Failed assertions and failed `system` commands will raise exceptions.
     def test(&block)
       define_method(:test, &block)
+    end
+
+    # @!attribute [w] livecheck
+    # Livecheck can be used to check for newer versions of the software.
+    # This method evaluates the DSL specified in the livecheck block of the
+    # {Formula} (if it exists) and sets the instance variables of a Livecheck
+    # object accordingly. This is used by brew livecheck to check for newer
+    # versions of the software.
+    #
+    # <pre>livecheck do
+    #   skip "Not maintained"
+    #   url "https://example.com/foo/releases"
+    #   regex /foo-(\d+(?:\.\d+)+)\.tar/
+    # end</pre>
+    def livecheck(&block)
+      @livecheck ||= Livecheck.new
+      return @livecheck unless block_given?
+
+      @livecheckable = true
+      @livecheck.instance_eval(&block)
     end
 
     # Defines whether the {Formula}'s bottle can be used on the given Homebrew

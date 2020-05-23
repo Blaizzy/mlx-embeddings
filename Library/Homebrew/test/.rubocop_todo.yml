@@ -12,53 +12,6 @@ RSpec/ExampleLength:
   Exclude:
     - 'rubocops/patches_spec.rb'
 
-# Offense count: 41
-# Configuration parameters: CustomTransform, IgnoreMethods.
-RSpec/FilePath:
-  Exclude:
-    - 'ARGV_spec.rb'
-    - 'PATH_spec.rb'
-    - 'bottle_filename_spec.rb'
-    - 'cache_store_spec.rb'
-    - 'cask/artifact/alt_target_spec.rb'
-    - 'cask/artifact/generic_artifact_spec.rb'
-    - 'cask/artifact/two_apps_correct_spec.rb'
-    - 'cask/artifact/uninstall_no_zap_spec.rb'
-    - 'cask/cask_loader/from__path_loader_spec.rb'
-    - 'cask/macos_spec.rb'
-    - 'cli/parser_spec.rb'
-    - 'checksum_verification_spec.rb'
-    - 'cxxstdlib_spec.rb'
-    - 'diagnostic_checks_spec.rb'
-    - 'env_config_spec.rb'
-    - 'missing_formula_spec.rb'
-    - 'os/linux/diagnostic_spec.rb'
-    - 'os/mac/diagnostic_spec.rb'
-    - 'requirements/macos_requirement_spec.rb'
-    - 'rubocops/cask/homepage_matches_url_spec.rb'
-    - 'rubocops/cask/homepage_url_trailing_slash_spec.rb'
-    - 'rubocops/cask/no_dsl_version_spec.rb'
-    - 'rubocops/cask/stanza_grouping_spec.rb'
-    - 'rubocops/cask/stanza_order_spec.rb'
-    - 'rubocops/caveats_spec.rb'
-    - 'rubocops/components_order_spec.rb'
-    - 'rubocops/components_redundancy_spec.rb'
-    - 'rubocops/conflicts_spec.rb'
-    - 'rubocops/dependency_order_spec.rb'
-    - 'rubocops/files_spec.rb'
-    - 'rubocops/homepage_spec.rb'
-    - 'rubocops/options_spec.rb'
-    - 'rubocops/patches_spec.rb'
-    - 'rubocops/text_spec.rb'
-    - 'rubocops/uses_from_macos_spec.rb'
-    - 'rubocops/formula_desc_spec.rb'
-    - 'search_spec.rb'
-    - 'string_spec.rb'
-    - 'style_spec.rb'
-    - 'system_command_result_spec.rb'
-    - 'unpack_strategy/p7zip_spec.rb'
-    - 'utils/github_spec.rb'
-
 # Offense count: 6
 # Configuration parameters: AssignmentOnly.
 RSpec/InstanceVariable:
@@ -83,6 +36,7 @@ RSpec/MultipleDescribes:
     - 'cmd/cleanup_spec.rb'
     - 'cmd/commands_spec.rb'
     - 'cmd/config_spec.rb'
+    - 'cmd/deps_spec.rb'
     - 'cmd/desc_spec.rb'
     - 'cmd/doctor_spec.rb'
     - 'cmd/fetch_spec.rb'

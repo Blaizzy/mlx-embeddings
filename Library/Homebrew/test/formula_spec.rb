@@ -698,6 +698,43 @@ describe Formula do
     expect(f1.test_fixtures("foo")).to eq(Pathname.new("#{HOMEBREW_LIBRARY_PATH}/test/support/fixtures/foo"))
   end
 
+  specify "#livecheck" do
+    f = formula do
+      url "https://brew.sh/test-1.0.tbz"
+      livecheck do
+        skip "foo"
+        url "https://brew.sh/test/releases"
+        regex(/test-(\d+(?:\.\d+)+)\.tbz/)
+      end
+    end
+
+    expect(f.livecheck.skip?).to be true
+    expect(f.livecheck.skip_msg).to eq("foo")
+    expect(f.livecheck.url).to eq("https://brew.sh/test/releases")
+    expect(f.livecheck.regex).to eq(/test-(\d+(?:\.\d+)+)\.tbz/)
+  end
+
+  describe "#livecheckable?" do
+    specify "no livecheck block defined" do
+      f = formula do
+        url "https://brew.sh/test-1.0.tbz"
+      end
+
+      expect(f.livecheckable?).to be false
+    end
+
+    specify "livecheck block defined" do
+      f = formula do
+        url "https://brew.sh/test-1.0.tbz"
+        livecheck do
+          regex(/test-(\d+(?:.\d+)+).tbz/)
+        end
+      end
+
+      expect(f.livecheckable?).to be true
+    end
+  end
+
   specify "dependencies" do
     f1 = formula "f1" do
       url "f1-1.0"

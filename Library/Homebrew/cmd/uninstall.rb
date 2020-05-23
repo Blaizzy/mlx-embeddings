@@ -80,6 +80,30 @@ module Homebrew
               puts "#{keg.name} #{versions.to_sentence} #{"is".pluralize(versions.count)} still installed."
               puts "Run `brew uninstall --force #{keg.name}` to remove all versions."
             end
+
+            next unless f
+
+            paths = f.pkgetc.find.map(&:to_s) if f.pkgetc.exist?
+            if paths.present?
+              puts
+              opoo <<~EOS
+                The following #{f.name} configuration files have not been removed!
+                If desired, remove them manually with `rm -rf`:
+                  #{paths.sort.uniq.join("\n  ")}
+              EOS
+            end
+
+            unversioned_name = f.name.gsub(/@.+$/, "")
+            maybe_paths = Dir.glob("#{f.etc}/*#{unversioned_name}*")
+            maybe_paths -= paths if paths.present?
+            if maybe_paths.present?
+              puts
+              opoo <<~EOS
+                The following may be #{f.name} configuration files and have not been removed!
+                If desired, remove them manually with `rm -rf`:
+                  #{maybe_paths.sort.uniq.join("\n  ")}
+              EOS
+            end
           end
         end
       end

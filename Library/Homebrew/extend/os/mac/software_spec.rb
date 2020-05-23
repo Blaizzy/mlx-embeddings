@@ -11,7 +11,7 @@ class SoftwareSpec
       deps = Hash[*bounds.shift]
     end
 
-    bounds.transform_values! { |v| MacOS::Version.from_symbol(v) }
+    bounds = bounds.transform_values { |v| MacOS::Version.from_symbol(v) }
     if MacOS.version >= bounds[:since]
       @uses_from_macos_elements << deps
     else

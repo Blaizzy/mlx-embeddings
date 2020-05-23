@@ -66,10 +66,11 @@ If they accept, follow a few steps to get them set up:
 - Add them to Homebrew/brew's README, run `brew man` and commit the changes.
 - Start the process to [add them as Homebrew members](#members), for formal voting rights and the ability to hold office for Homebrew.
 
-If they are interested in doing system administration work or Homebrew/brew releases:
+If they are interested in doing system administration work:
 
 - Invite them to the [`homebrew-ops` private operations mailing list](https://lists.sfconservancy.org/mailman/admin/homebrew-ops/members/add).
 - Invite them to the [`homebrew` private 1Password](https://homebrew.1password.com/people).
+- Optionally: make them [owners on the Homebrew GitHub organisation](https://github.com/orgs/Homebrew/people) if they need to access organisation-wide settings (like GitHub Actions organisation shared runners).
 
 If they are elected to the Homebrew's [Project Leadership Committee](https://docs.brew.sh/Homebrew-Governance#4-project-leadership-committee):
 

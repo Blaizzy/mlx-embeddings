@@ -106,7 +106,7 @@ class CompilerSelector
 
   def gnu_gcc_versions
     # prioritize gcc version provided by gcc formula.
-    v = Formulary.factory("gcc").version.to_s.slice(/\d/)
+    v = Formulary.factory("gcc").version.to_s.slice(/\d+/)
     GNU_GCC_VERSIONS - [v] + [v] # move the version to the end of the list
   rescue FormulaUnavailableError
     GNU_GCC_VERSIONS

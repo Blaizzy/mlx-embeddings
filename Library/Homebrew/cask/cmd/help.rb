@@ -3,17 +3,26 @@
 module Cask
   class Cmd
     class Help < AbstractCommand
-      def initialize(*)
-        super
-        return if args.empty?
-
-        raise ArgumentError, "#{self.class.command_name} does not take arguments."
-      end
-
       def run
-        puts self.class.purpose
-        puts
-        puts self.class.usage
+        if args.empty?
+          puts self.class.purpose
+          puts
+          puts self.class.usage
+        elsif args.count == 1
+          command_name = args.first
+
+          unless command = self.class.commands[command_name]
+            raise "No help information found for command '#{command_name}'."
+          end
+
+          if command.respond_to?(:usage)
+            puts command.usage
+          else
+            puts command.help
+          end
+        else
+          raise ArgumentError, "#{self.class.command_name} only takes up to one argument."
+        end
       end
 
       def self.purpose
@@ -21,6 +30,10 @@ module Cask
           Homebrew Cask provides a friendly CLI workflow for the administration
           of macOS applications distributed as binaries.
         EOS
+      end
+
+      def self.commands
+        Cmd.command_classes.select(&:visible?).map { |klass| [klass.command_name, klass] }.to_h
       end
 
       def self.usage

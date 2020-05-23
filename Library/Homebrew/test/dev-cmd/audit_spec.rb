@@ -300,69 +300,6 @@ module Homebrew
       end
     end
 
-    describe "#audit_keg_only" do
-      specify "keg_only_needs_downcasing" do
-        fa = formula_auditor "foo", <<~RUBY, strict: true
-          class Foo < Formula
-            url "https://brew.sh/foo-1.0.tgz"
-
-            keg_only "Because why not"
-          end
-        RUBY
-
-        fa.audit_keg_only
-        expect(fa.problems)
-          .to eq(["'Because' from the keg_only reason should be 'because'.\n"])
-      end
-
-      specify "keg_only_redundant_period" do
-        fa = formula_auditor "foo", <<~RUBY, strict: true
-          class Foo < Formula
-            url "https://brew.sh/foo-1.0.tgz"
-
-            keg_only "because this line ends in a period."
-          end
-        RUBY
-
-        fa.audit_keg_only
-        expect(fa.problems)
-          .to eq(["keg_only reason should not end with a period."])
-      end
-
-      specify "keg_only_handles_block_correctly" do
-        fa = formula_auditor "foo", <<~RUBY, strict: true
-          class Foo < Formula
-            url "https://brew.sh/foo-1.0.tgz"
-
-            keg_only <<~EOF
-              this line starts with a lowercase word.
-
-              This line does not but that shouldn't be a
-              problem
-            EOF
-          end
-        RUBY
-
-        fa.audit_keg_only
-        expect(fa.problems)
-          .to eq([])
-      end
-
-      specify "keg_only_handles_whitelist_correctly" do
-        fa = formula_auditor "foo", <<~RUBY, strict: true
-          class Foo < Formula
-            url "https://brew.sh/foo-1.0.tgz"
-
-            keg_only "Apple ships foo in the CLT package"
-          end
-        RUBY
-
-        fa.audit_keg_only
-        expect(fa.problems)
-          .to eq([])
-      end
-    end
-
     describe "#audit_revision_and_version_scheme" do
       subject {
         fa = described_class.new(Formulary.factory(formula_path))

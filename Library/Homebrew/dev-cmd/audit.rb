@@ -435,40 +435,6 @@ module Homebrew
       end
     end
 
-    def audit_keg_only
-      return unless formula.keg_only?
-
-      whitelist = %w[
-        Apple
-        macOS
-        OS
-        Homebrew
-        Xcode
-        GPG
-        GNOME
-        BSD
-        Firefox
-      ].freeze
-
-      reason = formula.keg_only_reason.to_s
-      # Formulae names can legitimately be uppercase/lowercase/both.
-      name = Regexp.new(formula.name, Regexp::IGNORECASE)
-      reason.sub!(name, "")
-      first_word = reason.split.first
-
-      if reason =~ /\A[A-Z]/ && !reason.start_with?(*whitelist)
-        # TODO: check could be in RuboCop
-        problem <<~EOS
-          '#{first_word}' from the keg_only reason should be '#{first_word.downcase}'.
-        EOS
-      end
-
-      return unless reason.end_with?(".")
-
-      # TODO: check could be in RuboCop
-      problem "keg_only reason should not end with a period."
-    end
-
     def audit_postgresql
       return unless formula.name == "postgresql"
       return unless @core_tap
@@ -1018,7 +984,7 @@ module Homebrew
       except_audits = @except
 
       methods.map(&:to_s).grep(/^audit_/).each do |audit_method_name|
-        name = audit_method_name.gsub(/^audit_/, "")
+        name = audit_method_name.delete_prefix("audit_")
         if only_audits
           next unless only_audits.include?(name)
         elsif except_audits
@@ -1076,9 +1042,6 @@ module Homebrew
     def audit_version
       if version.nil?
         problem "missing version"
-      elsif version.blank?
-        # TODO: check could be in RuboCop
-        problem "version is set to an empty string"
       elsif !version.detected_from_url?
         version_text = version
         version_url = Version.detect(url, specs)
@@ -1086,26 +1049,12 @@ module Homebrew
           problem "version #{version_text} is redundant with version scanned from URL"
         end
       end
-
-      # TODO: check could be in RuboCop
-      problem "version #{version} should not have a leading 'v'" if version.to_s.start_with?("v")
-
-      return unless version.to_s.match?(/_\d+$/)
-
-      # TODO: check could be in RuboCop
-      problem "version #{version} should not end with an underline and a number"
     end
 
     def audit_download_strategy
-      if url =~ %r{^(cvs|bzr|hg|fossil)://} || url =~ %r{^(svn)\+http://}
-        # TODO: check could be in RuboCop
-        problem "Use of the #{$&} scheme is deprecated, pass `:using => :#{Regexp.last_match(1)}` instead"
-      end
-
       url_strategy = DownloadStrategyDetector.detect(url)
 
       if using == :git || url_strategy == GitDownloadStrategy
-        # TODO: check could be in RuboCop
         problem "Git should specify :revision when a :tag is specified." if specs[:tag] && !specs[:revision]
       end
 

@@ -235,20 +235,6 @@ module SharedEnvExtension
       ohai "Building with an alternative Fortran compiler"
       puts "This is unsupported."
       self["F77"] ||= fc
-
-      if ARGV.include? "--default-fortran-flags"
-        flags = FC_FLAG_VARS.reject { |key| self[key] }
-      elsif values_at(*FC_FLAG_VARS).compact.empty?
-        opoo <<~EOS
-          No Fortran optimization information was provided.  You may want to consider
-          setting FCFLAGS and FFLAGS or pass the `--default-fortran-flags` option to
-          `brew install` if your compiler is compatible with GCC.
-
-          If you like the default optimization level of your compiler, ignore this
-          warning.
-        EOS
-      end
-
     else
       if (gfortran = which("gfortran", (HOMEBREW_PREFIX/"bin").to_s))
         ohai "Using Homebrew-provided Fortran compiler."
@@ -268,8 +254,8 @@ module SharedEnvExtension
 
   # @private
   def effective_arch
-    if Homebrew.args.build_bottle && ARGV.bottle_arch
-      ARGV.bottle_arch
+    if Homebrew.args.build_bottle? && Homebrew.args.bottle_arch
+      Homebrew.args.bottle_arch.to_sym
     else
       Hardware.oldest_cpu
     end

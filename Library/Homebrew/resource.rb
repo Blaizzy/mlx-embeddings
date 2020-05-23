@@ -55,6 +55,10 @@ class Resource
     "#{owner.name}--#{escaped_name}"
   end
 
+  def downloaded?
+    cached_download.exist?
+  end
+
   def cached_download
     downloader.cached_location
   end
@@ -68,16 +72,23 @@ class Resource
   # directory. Subclasses that override stage should implement the tmp
   # dir using {Mktemp} so that works with all subtypes.
   def stage(target = nil, &block)
-    raise ArgumentError, "target directory or block is required" unless target || block
+    raise ArgumentError, "target directory or block is required" if target.blank? && block.blank?
 
-    fetch
     prepare_patches
+    fetch_patches(skip_downloaded: true)
+    fetch unless downloaded?
+
     unpack(target, &block)
   end
 
   def prepare_patches
     patches.grep(DATAPatch) { |p| p.path = owner.owner.path }
-    patches.select(&:external?).each(&:fetch)
+  end
+
+  def fetch_patches(skip_downloaded: false)
+    external_patches = patches.select(&:external?)
+    external_patches.reject!(&:downloaded?) if skip_downloaded
+    external_patches.each(&:fetch)
   end
 
   def apply_patches
@@ -113,6 +124,8 @@ class Resource
 
   def fetch(verify_download_integrity: true)
     HOMEBREW_CACHE.mkpath
+
+    fetch_patches
 
     begin
       downloader.fetch

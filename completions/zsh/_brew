@@ -377,17 +377,19 @@ _brew_edit() {
     '*:: :__brew_formulae_or_ruby_files'
 }
 
-# brew fetch [--force] [--retry] [-v] [--devel|--HEAD] [--deps] [--build-from-source|--force-bottle] formulae
+# brew fetch [--force] [--retry] [-v] [--devel|--HEAD] [--deps]
+#   [--build-from-source|--build-bottle|--force-bottle] formulae
 _brew_fetch() {
   _arguments \
-    '--force[remove previously cached version and re-fetch]' \
+    '(--force -f)'{--force,-f}'[remove previously cached version and re-fetch]' \
     '--retry[retry if a download fails or re-download if the checksum of a previously cached version no longer matches]' \
-    '-v[verbose VCS checkout]' \
+    '(--verbose -v)'{--verbose,-v}'[verbose VCS checkout]' \
     '(--HEAD)--devel[fetch devel version instead of stable]' \
     '(--devel)--HEAD[fetch HEAD version instead of stable]' \
     '--deps[also download dependencies for any listed formulae]' \
-    '(--force-bottle)--build-from-source[download the source rather than a bottle]' \
-    '(--build-from-source)--force-bottle[download a bottle if it exists for the current version of OS X, even if it would not be used during installation]' \
+    '(--build-from-source -s --force-bottle --build-bottle)'{--build-from-source,-s}'[download the source rather than a bottle]' \
+    '(--build-from-source -s --force-bottle)--build-bottle[download the source (for eventual bottling) rather than a bottle]' \
+    '(--build-from-source -s --build-bottle)--force-bottle[download a bottle if it exists for the current version of OS X, even if it would not be used during installation]' \
     '*:formula:__brew_formulae'
 }
 
@@ -431,9 +433,10 @@ _brew_info() {
       '(--all --installed)*: :__brew_formulae'
 }
 
-# brew install [--debug] [--env=std|super] [--ignore-dependencies]
-#   [--only-dependencies] [--cc=compiler] [--build-from-source]
-#   [--devel|--HEAD] [--keep-tmp] formulae
+# brew install [--debug] [--env=std|super]
+#   [--ignore-dependencies|--only-dependencies] [--include-test]
+#   [--cc=compiler] [--build-from-source|--build-bottle|--force-fottle]
+#   [--devel|--HEAD] [--fetch-HEAD] [--bottle-arch=architecture] [--keep-tmp] formulae
 # brew install --interactive [--git] formula
 _brew_install() {
   local state
@@ -441,11 +444,16 @@ _brew_install() {
     - normal-install \
       '--debug[if brewing fails, open an interactive debugging session]' \
       -'-env=-[use standard or super environment]:environment:(std super)' \
-      '--ignore-dependencies[skip installing any dependencies of any kind]' \
-      '--only-dependencies[install the dependencies but do not install the specified formula]' \
+      '(--only-dependencies)--ignore-dependencies[skip installing any dependencies of any kind]' \
+      '(--ignore-dependencies)--only-dependencies[install the dependencies but do not install the specified formula]' \
       '--cc=-[attempt to compile using compiler]:compiler: ' \
-      '(--build-from-source -s)'{--build-from-source,-s}'[compile the specified formula from source even if a bottle is provided]' \
+      '(--build-from-source -s --force-bottle --build-bottle)'{--build-from-source,-s}'[compile the specified formula from source even if a bottle is provided]' \
+      '(--build-from-source -s --force-bottle)--build-bottle[prepare the formula for eventual bottling during installation, skipping any post-install steps]' \
+      '(--build-from-source -s --build-bottle)--force-bottle[install from a bottle if it exists for the current version of OS X, even if it would not normally be used for installation]' \
+      '--include-test[install testing dependencies]' \
       '(--devel --HEAD)'{--devel,--HEAD}'[install the development / HEAD version]' \
+      '--fetch-HEAD[fetch the upstream repository to detect if the HEAD installation of the formula is outdated]' \
+      '--bottle-arch=-[optimise bottles for the specified architecture]:architecture: ' \
       '--keep-tmp[don''t delete temporary files created during installation]' \
       '--display-times[display installation times at end of run]' \
       '*: : __brew_formulae' \
@@ -570,7 +578,7 @@ _brew_pull() {
 }
 
 # brew pr-pull [--no-upload|--no-publish] [--dry-run] [--clean] [--branch-okay]
-#   [--resolve] [--workflow] [--artifact] [--bintray-org] [--tap] pull_request 
+#   [--resolve] [--workflow] [--artifact] [--bintray-org] [--tap] pull_request
 _brew_pr_pull() {
   _arguments \
     '(--no-upload)--no-publish[download the bottles, apply the bottle commit, and upload the bottles to Bintray, but don''t publish them]' \
@@ -592,10 +600,19 @@ _brew_readall() {
 }
 
 # brew reinstall formulae:
+# mostly copy from brew install
 _brew_reinstall() {
   _arguments \
-    '--display-times[display installation times at end of run]' \
-    '*::formula:__brew_installed_formulae'
+    - normal-install \
+      '--debug[if brewing fails, open an interactive debugging session]' \
+      '(--build-from-source -s --force-bottle)'{--build-from-source,-s}'[compile the specified formula from source even if a bottle is provided]' \
+      '(--build-from-source -s)--force-bottle[install from a bottle if it exists for the current version of OS X, even if it would not normally be used for installation]' \
+      '--keep-tmp[don''t delete temporary files created during installation]' \
+      '--display-times[display installation times at end of run]' \
+      '*::formula:__brew_installed_formulae' \
+    - interactive-install \
+      '--interactive[download and patch formula, then open a shell]' \
+      '::formula:__brew_installed_formulae'
 }
 
 # brew search, -S:
@@ -790,7 +807,8 @@ _brew_upgrade() {
     '--ignore-dependencies[skip installing any dependencies of any kind]' \
     '--only-dependencies[install the dependencies but do not install the specified formula]' \
     '--cc=-[attempt to compile using compiler]:compiler: ' \
-    '(--build-from-source -s)'{--build-from-source,-s}'[compile the specified formula from source even if a bottle is provided]' \
+    '(--build-from-source -s --force-bottle)'{--build-from-source,-s}'[compile the specified formula from source even if a bottle is provided]' \
+    '(--build-from-source -s)--force-bottle[install from a bottle if it exists for the current version of OS X, even if it would not normally be used for installation]' \
     '(--devel --HEAD)'{--devel,--HEAD}'[install the development / HEAD version]' \
     '--keep-tmp[don''t delete temporary files created during installation]' \
     '--display-times[display installation times at end of run]' \

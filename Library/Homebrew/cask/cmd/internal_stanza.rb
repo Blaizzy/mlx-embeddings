@@ -33,9 +33,11 @@ module Cask
       option "--inspect", :inspect, false
 
       attr_accessor :format
+
       private :format, :format=
 
       attr_accessor :stanza
+
       private :stanza, :stanza=
 
       def initialize(*)

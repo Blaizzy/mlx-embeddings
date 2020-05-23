@@ -114,7 +114,7 @@ sudo cpan local::lib
 
 Note that this will install some other dependencies like `Module::Install`.
 Then put the appropriate incantation in your shell’s startup, e.g. for
-`.bash_profile` you insert the below, for others see the
+`.profile` you insert the below, for others see the
 [`local::lib`](https://metacpan.org/pod/local::lib) docs.
 
 ```sh

@@ -68,7 +68,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
              line:     5,
              column:   33,
              source:   source }]
-        elsif patch_url.match?(%r{^http://trac\.macports\.org})
+        elsif patch_url.start_with?("http://trac.macports.org")
           [{ message:
                        <<~EOS.chomp,
                          Patches from MacPorts Trac should be https://, not http:
@@ -78,7 +78,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
              line:     5,
              column:   5,
              source:   source }]
-        elsif patch_url.match?(%r{^http://bugs\.debian\.org})
+        elsif patch_url.start_with?("http://bugs.debian.org")
           [{ message:
                        <<~EOS.chomp,
                          Patches from Debian should be https://, not http:
@@ -205,7 +205,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
              line:     5,
              column:   37,
              source:   source }]
-        elsif patch_url.match?(%r{^http://trac\.macports\.org})
+        elsif patch_url.start_with?("http://trac.macports.org")
           [{ message:
                        <<~EOS.chomp,
                          Patches from MacPorts Trac should be https://, not http:
@@ -215,7 +215,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
              line:     5,
              column:   9,
              source:   source }]
-        elsif patch_url.match?(%r{^http://bugs\.debian\.org})
+        elsif patch_url.start_with?("http://bugs.debian.org")
           [{ message:
                        <<~EOS.chomp,
                          Patches from Debian should be https://, not http:

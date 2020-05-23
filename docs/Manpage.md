@@ -435,7 +435,7 @@ ones). No online search is performed.
 Print export statements. When run in a shell, this installation of Homebrew will be added to your `PATH`, `MANPATH`, and `INFOPATH`.
 
 The variables `HOMEBREW_PREFIX`, `HOMEBREW_CELLAR` and `HOMEBREW_REPOSITORY` are also exported to avoid querying them multiple times.
-Consider adding evaluation of this command's output to your dotfiles (e.g. `~/.profile` or `~/.zprofile`) with: `eval $(brew shellenv)`
+Consider adding evaluation of this command's output to your dotfiles (e.g. `~/.profile`, `~/.bash_profile`, or `~/.zprofile`) with: `eval $(brew shellenv)`
 
 ### `switch` *`formula`* *`version`*
 
@@ -858,9 +858,11 @@ Find pull requests that can be automatically merged using `brew pr-publish`.
 * `--tap`:
   Target tap repository (default: `homebrew/core`).
 * `--with-label`:
-  Pull requests must have this label (default: `ready to merge`).
+  Pull requests must have this label.
 * `--without-labels`:
   Pull requests must not have these labels (default: `do not merge`, `new formula`).
+* `--without-approval`:
+  Pull requests do not require approval to be merged.
 * `--publish`:
   Run `brew pr-publish` on matching pull requests.
 * `--ignore-failures`:
@@ -1013,6 +1015,8 @@ Run Homebrew's unit and integration tests.
   Do not load the compatibility layer when running tests.
 * `--online`:
   Include tests that use the GitHub API and tests that use any of the taps for official external commands.
+* `--byebug`:
+  Enable debugging using byebug.
 * `--only`:
   Run only *`test_script`*`_spec.rb`. Appending `:`*`line_number`* will start at a specific line.
 * `--seed`:

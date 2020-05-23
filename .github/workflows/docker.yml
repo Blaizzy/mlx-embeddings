@@ -1,0 +1,56 @@
+name: Docker
+on:
+  pull_request:
+    paths:
+      - .github/workflows/docker.yml
+      - Dockerfile
+  release:
+    types:
+      - published
+jobs:
+  ubuntu:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: ["16.04", "18.04", "20.04"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Fetch origin/master from Git
+        run: git fetch origin master
+      - name: Build Docker image
+        run: docker build -t brew --build-arg=version=${{matrix.version}} .
+      - name: Run brew test-bot
+        run: docker run --rm brew brew test-bot
+      - name: Deploy the tagged Docker image to GitHub
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          brew_version=${GITHUB_REF:10}
+          echo "::set-env name=brew_version::$brew_version"
+          docker login docker.pkg.github.com -u BrewTestBot -p ${{secrets.GITHUB_TOKEN}}
+          docker tag brew "docker.pkg.github.com/homebrew/brew/ubuntu${{matrix.version}}:$brew_version"
+          docker push "docker.pkg.github.com/homebrew/brew/ubuntu${{matrix.version}}:$brew_version"
+          docker tag brew "docker.pkg.github.com/homebrew/brew/ubuntu${{matrix.version}}:latest"
+          docker push "docker.pkg.github.com/homebrew/brew/ubuntu${{matrix.version}}:latest"
+      - name: Deploy the tagged Docker image to Docker Hub
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          docker login -u brewtestbot -p ${{secrets.DOCKER_TOKEN}}
+          docker tag brew "homebrew/ubuntu${{matrix.version}}:$brew_version"
+          docker push "homebrew/ubuntu${{matrix.version}}:$brew_version"
+          docker tag brew "homebrew/ubuntu${{matrix.version}}:latest"
+          docker push "homebrew/ubuntu${{matrix.version}}:latest"
+      - name: Deploy the homebrew/brew Docker image to GitHub and Docker Hub
+        if: startsWith(github.ref, 'refs/tags/') && matrix.version == '20.04'
+        run: |
+          docker tag brew "docker.pkg.github.com/homebrew/brew/brew:$brew_version"
+          docker push "docker.pkg.github.com/homebrew/brew/brew:$brew_version"
+          docker tag brew "docker.pkg.github.com/homebrew/brew/brew:latest"
+          docker push "docker.pkg.github.com/homebrew/brew/brew:latest"
+          docker tag brew "homebrew/brew:$brew_version"
+          docker push "homebrew/brew:$brew_version"
+          docker tag brew "homebrew/brew:latest"
+          docker push "homebrew/brew:latest"

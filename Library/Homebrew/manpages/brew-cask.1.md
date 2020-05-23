@@ -243,7 +243,8 @@ Environment variables specific to Homebrew Cask:
   * `HOMEBREW_CASK_OPTS`:
     This variable may contain any arguments normally used as options on
     the command-line. This is particularly useful to make options persistent.
-    For example, you might add to your .bash_profile or .zshenv something like:
+    For example, you might add to your ~/.profile, ~/.bash_profile, or ~/.zshenv
+    something like:
 
                export HOMEBREW_CASK_OPTS='--appdir=~/Applications --fontdir=/Library/Fonts'
 

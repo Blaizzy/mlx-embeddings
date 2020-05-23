@@ -11,7 +11,6 @@ require "patch"
 require "compilers"
 require "global"
 require "os/mac/version"
-require "cli/parser"
 
 class SoftwareSpec
   extend Forwardable
@@ -96,7 +95,7 @@ class SoftwareSpec
 
   def bottled?
     bottle_specification.tag?(Utils::Bottles.tag) && \
-      (bottle_specification.compatible_cellar? || Homebrew.args.force_bottle)
+      (bottle_specification.compatible_cellar? || Homebrew.args.force_bottle?)
   end
 
   def bottle(disable_type = nil, disable_reason = nil, &block)
@@ -275,7 +274,7 @@ class Bottle
     end
 
     def bintray
-      "#{name}-#{version}#{extname}"
+      ERB::Util.url_encode("#{name}-#{version}#{extname}")
     end
 
     def extname

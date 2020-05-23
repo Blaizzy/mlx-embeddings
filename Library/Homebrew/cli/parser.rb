@@ -3,6 +3,7 @@
 require "cli/args"
 require "optparse"
 require "set"
+require "formula"
 
 COMMAND_DESC_WIDTH = 80
 OPTION_DESC_WIDTH = 43
@@ -12,8 +13,8 @@ module Homebrew
     class Parser
       attr_reader :processed_options, :hide_from_man_page
 
-      def self.parse(args = ARGV, allow_no_named_args: false, &block)
-        new(args, &block).parse(args, allow_no_named_args: allow_no_named_args)
+      def self.parse(argv = ARGV.dup.freeze, allow_no_named_args: false, &block)
+        new(argv, &block).parse(allow_no_named_args: allow_no_named_args)
       end
 
       def self.from_cmd_path(cmd_path)
@@ -37,9 +38,10 @@ module Homebrew
         }
       end
 
-      def initialize(&block)
+      def initialize(argv = ARGV.dup.freeze, &block)
         @parser = OptionParser.new
-        @args = Homebrew::CLI::Args.new
+        @argv = argv
+        @args = Homebrew::CLI::Args.new(@argv)
 
         @constraints = []
         @conflicts = []
@@ -152,21 +154,22 @@ module Homebrew
         @parser.to_s
       end
 
-      def parse(cmdline_args = ARGV, allow_no_named_args: false)
+      def parse(argv = @argv, allow_no_named_args: false)
         raise "Arguments were already parsed!" if @args_parsed
 
         begin
-          named_args = @parser.parse(cmdline_args)
+          named_args = @parser.parse(argv)
         rescue OptionParser::InvalidOption => e
           $stderr.puts generate_help_text
           raise e
         end
+
         check_constraint_violations
         check_named_args(named_args, allow_no_named_args: allow_no_named_args)
-        @args[:remaining] = named_args
+        @args.freeze_named_args!(named_args)
         @args.freeze_processed_options!(@processed_options)
         Homebrew.args = @args
-        cmdline_args.freeze
+
         @args_parsed = true
         @parser
       end
@@ -186,7 +189,7 @@ module Homebrew
       end
 
       def formula_options
-        @args.formulae.each do |f|
+        formulae.each do |f|
           next if f.options.empty?
 
           f.options.each do |o|
@@ -340,6 +343,28 @@ module Homebrew
       def process_option(*args)
         option, = @parser.make_switch(args)
         @processed_options << [option.short.first, option.long.first, option.arg, option.desc.first]
+      end
+
+      def formulae
+        named_args = @argv.reject { |arg| arg.start_with?("-") }
+        spec = if @argv.include?("--HEAD")
+          :head
+        elsif @argv.include?("--devel")
+          :devel
+        else
+          :stable
+        end
+
+        # Only lowercase names, not paths, bottle filenames or URLs
+        named_args.map do |arg|
+          next if arg.match?(HOMEBREW_CASK_TAP_CASK_REGEX)
+
+          if arg.include?("/") || arg.end_with?(".tar.gz") || File.exist?(arg)
+            Formulary.factory(arg, spec)
+          else
+            Formulary.find_with_priority(arg.downcase, spec)
+          end
+        end.compact.uniq(&:name)
       end
     end
 

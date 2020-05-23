@@ -66,6 +66,16 @@ module RuboCop
             problem "#{url} should be `https://www.apache.org/dyn/closer.lua?path=#{match[1]}`"
           end
 
+          version_control_pattern = %r{^(cvs|bzr|hg|fossil)://}
+          audit_urls(urls, version_control_pattern) do |match, _|
+            problem "Use of the #{match[1]}:// scheme is deprecated, pass `:using => :#{match[1]}` instead"
+          end
+
+          svn_pattern = %r{^svn\+http://}
+          audit_urls(urls, svn_pattern) do |_, _|
+            problem "Use of the svn+http:// scheme is deprecated, pass `:using => :svn` instead"
+          end
+
           audit_urls(mirrors, /.*/) do |_, mirror|
             urls.each do |url|
               url_string = string_content(parameters(url).first)
@@ -220,7 +230,7 @@ module RuboCop
           # Use new-style archive downloads
           archive_gh_pattern = %r{https://.*github.*/(?:tar|zip)ball/}
           audit_urls(urls, archive_gh_pattern) do |_, url|
-            next if url.match?(/\.git$/)
+            next if url.end_with?(".git")
 
             problem "Use /archive/ URLs for GitHub tarballs (url is #{url})."
           end

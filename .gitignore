@@ -18,6 +18,7 @@
 /Library/Homebrew/vendor/portable-ruby
 /Library/Taps
 /Library/PinnedTaps
+/Library/Homebrew/.byebug_history
 
 # Ignore Bundler files
 **/.bundle/bin
@@ -119,6 +120,7 @@
 **/vendor/bundle/ruby/*/gems/rspec-support-*/
 **/vendor/bundle/ruby/*/gems/rspec-wait-*/
 **/vendor/bundle/ruby/*/gems/rubocop-0*/
+**/vendor/bundle/ruby/*/gems/rubocop-ast-*/
 **/vendor/bundle/ruby/*/gems/ruby-prof-*/
 **/vendor/bundle/ruby/*/gems/ruby-progressbar-*/
 **/vendor/bundle/ruby/*/gems/simplecov-*/
@@ -131,6 +133,7 @@
 **/vendor/bundle/ruby/*/gems/unf-*/
 **/vendor/bundle/ruby/*/gems/unicode-display_width-*/
 **/vendor/bundle/ruby/*/gems/webrobots-*/
+**/vendor/bundle/ruby/*/gems/byebug-*/
 
 # Ignore `bin` contents (again).
 /bin
@@ -151,6 +154,7 @@
 /docs/vendor
 
 # Unignore our root-level metadata files.
+!/.dockerignore
 !/.editorconfig
 !/.gitignore
 !/.yardopts

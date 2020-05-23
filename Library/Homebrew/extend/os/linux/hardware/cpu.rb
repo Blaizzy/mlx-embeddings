@@ -80,7 +80,7 @@ module Hardware
       # Compatibility with Mac method, which returns lowercase symbols
       # instead of strings
       def features
-        @features ||= flags[1..-1].map(&:intern)
+        @features ||= flags[1..].map(&:intern)
       end
 
       %w[aes altivec avx avx2 lm ssse3 sse4_2].each do |flag|

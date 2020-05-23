@@ -5,11 +5,13 @@ require "socket"
 
 module Utils
   def self.rewrite_child_error(child_error)
-    error = if child_error.inner_class == ErrorDuringExecution
+    error = if child_error.inner["cmd"] &&
+               child_error.inner_class == ErrorDuringExecution
       ErrorDuringExecution.new(child_error.inner["cmd"],
                                status: child_error.inner["status"],
                                output: child_error.inner["output"])
-    elsif child_error.inner_class == BuildError
+    elsif child_error.inner["cmd"] &&
+          child_error.inner_class == BuildError
       # We fill `BuildError#formula` and `BuildError#options` in later,
       # when we rescue this in `FormulaInstaller#build`.
       BuildError.new(nil, child_error.inner["cmd"],
