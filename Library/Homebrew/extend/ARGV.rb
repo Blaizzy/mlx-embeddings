@@ -11,10 +11,6 @@ module HomebrewArgvExtension
     flag?("--debug") || !ENV["HOMEBREW_DEBUG"].nil?
   end
 
-  def env
-    value "env"
-  end
-
   private
 
   def options_only

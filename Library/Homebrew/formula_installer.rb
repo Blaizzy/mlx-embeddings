@@ -732,8 +732,8 @@ class FormulaInstaller
     args << "--cc=#{Homebrew.args.cc}" if Homebrew.args.cc
     args << "--keep-tmp" if Homebrew.args.keep_tmp?
 
-    if ARGV.env
-      args << "--env=#{ARGV.env}"
+    if Homebrew.args.env.present?
+      args << "--env=#{Homebrew.args.env}"
     elsif formula.env.std? || formula.deps.select(&:build?).any? { |d| d.name == "scons" }
       args << "--env=std"
     end
