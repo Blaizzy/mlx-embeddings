@@ -56,7 +56,7 @@ module Homebrew
         gnupg = Formula["gnupg"]
       rescue FormulaUnavailableError # rubocop:disable Lint/SuppressedException
       else
-        if gnupg.installed?
+        if gnupg.any_version_installed?
           path = PATH.new(ENV.fetch("PATH"))
           path.prepend(gnupg.installed_prefix/"bin")
           ENV["PATH"] = path

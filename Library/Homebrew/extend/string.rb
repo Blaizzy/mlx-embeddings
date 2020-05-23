@@ -2,21 +2,6 @@
 
 require "active_support/core_ext/object/blank"
 
-class String
-  # String.chomp, but if result is empty: returns nil instead.
-  # Allows `chuzzle || foo` short-circuits.
-  # TODO: Deprecate.
-  def chuzzle
-    s = chomp
-    s unless s.empty?
-  end
-end
-
-class NilClass
-  # TODO: Deprecate.
-  def chuzzle; end
-end
-
 # Used by the inreplace function (in `utils.rb`).
 module StringInreplaceExtension
   attr_accessor :errors

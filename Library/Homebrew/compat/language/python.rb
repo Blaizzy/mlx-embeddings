@@ -5,6 +5,8 @@ module Language
     class << self
       module Compat
         def rewrite_python_shebang(python_path)
+          odeprecated "Language::Python.rewrite_python_shebang",
+                      "Utils::Shebang.rewrite_shebang and Shebang.python_shebang_rewrite_info(python_path)"
           Pathname.pwd.find do |f|
             Utils::Shebang.rewrite_shebang(Shebang.python_shebang_rewrite_info(python_path), f)
           end

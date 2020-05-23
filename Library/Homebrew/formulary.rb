@@ -205,21 +205,16 @@ module Formulary
     def load_file
       if url =~ %r{githubusercontent.com/[\w-]+/[\w-]+/[a-f0-9]{40}(/Formula)?/([\w+-.@]+).rb}
         formula_name = Regexp.last_match(2)
-        opoo <<~EOS
-          Unsupported installation from a commit URL!
-          Consider using `brew extract #{formula_name} ...` instead!"
-          This will extract your desired #{formula_name} version to a stable tap instead of
-          installing from a commit URL that cannnot receive updates or fixes!
-
-        EOS
+        odeprecated "Installation of #{formula_name} from a commit URL",
+                    "Use 'brew extract #{formula_name}' to stable tap."
       end
       HOMEBREW_CACHE_FORMULA.mkpath
       FileUtils.rm_f(path)
       curl_download url, to: path
       super
     rescue MethodDeprecatedError => e
-      if url =~ %r{github.com/([\w-]+)/homebrew-([\w-]+)/}
-        e.issues_url = "https://github.com/#{Regexp.last_match(1)}/homebrew-#{Regexp.last_match(2)}/issues/new"
+      if url =~ %r{github.com/([\w-]+)/([\w-]+)/}
+        e.issues_url = "https://github.com/#{Regexp.last_match(1)}/#{Regexp.last_match(2)}/issues/new"
       end
       raise
     end
@@ -482,21 +477,5 @@ module Formulary
                       "#{tap}Aliases/#{name}",
                     ]).find(&:file?)
     end.compact
-  end
-
-  def self.find_with_priority(ref, spec = :stable)
-    possible_pinned_tap_formulae = tap_paths(ref, Dir["#{HOMEBREW_LIBRARY}/PinnedTaps/*/*/"]).map(&:realpath)
-    raise TapFormulaAmbiguityError.new(ref, possible_pinned_tap_formulae) if possible_pinned_tap_formulae.size > 1
-
-    if possible_pinned_tap_formulae.size == 1
-      selected_formula = factory(possible_pinned_tap_formulae.first, spec)
-      if core_path(ref).file?
-        odisabled "the brew tap-pin command",
-                  "fully-scoped user/tap/formula naming when installing and in dependency references"
-      end
-      selected_formula
-    else
-      factory(ref, spec)
-    end
   end
 end

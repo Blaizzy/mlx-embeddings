@@ -398,15 +398,6 @@ class Pathname
     basename.to_s == ".DS_Store"
   end
 
-  # https://bugs.ruby-lang.org/issues/9915
-  if RUBY_VERSION == "2.0.0"
-    prepend Module.new {
-      def inspect
-        super.force_encoding(@path.encoding)
-      end
-    }
-  end
-
   def binary_executable?
     false
   end

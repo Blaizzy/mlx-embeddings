@@ -234,22 +234,6 @@ describe Formulary do
     end
   end
 
-  describe "::find_with_priority" do
-    let(:core_path) { CoreTap.new.formula_dir/"#{formula_name}.rb" }
-    let(:tap) { Tap.new("homebrew", "foo") }
-    let(:tap_path) { tap.path/"#{formula_name}.rb" }
-
-    before do
-      core_path.write formula_content
-      tap_path.write formula_content
-    end
-
-    it "prioritizes core Formulae" do
-      formula = described_class.find_with_priority(formula_name)
-      expect(formula.path).to eq(core_path)
-    end
-  end
-
   describe "::core_path" do
     it "returns the path to a Formula in the core tap" do
       name = "foo-bar"

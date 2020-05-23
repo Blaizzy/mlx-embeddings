@@ -644,25 +644,6 @@ describe Formula do
     expect(f.head.version).to eq(Version.create("HEAD-5658946"))
   end
 
-  specify "legacy options" do
-    f = formula do
-      url "foo-1.0"
-
-      def options
-        [
-          ["--foo", "desc"],
-          ["--bar", "desc"],
-        ]
-      end
-
-      option("baz")
-    end
-
-    expect(f).to have_option_defined("foo")
-    expect(f).to have_option_defined("bar")
-    expect(f).to have_option_defined("baz")
-  end
-
   specify "#desc" do
     f = formula do
       desc "a formula"
@@ -671,23 +652,6 @@ describe Formula do
     end
 
     expect(f.desc).to eq("a formula")
-  end
-
-  specify "#test_defined?" do
-    f1 = formula do
-      url "foo-1.0"
-
-      def test
-        # do nothing
-      end
-    end
-
-    f2 = formula do
-      url "foo-1.0"
-    end
-
-    expect(f1).to have_test_defined
-    expect(f2).not_to have_test_defined
   end
 
   specify "test fixtures" do

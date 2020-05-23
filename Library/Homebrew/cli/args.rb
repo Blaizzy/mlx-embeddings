@@ -84,11 +84,7 @@ module Homebrew
         require "formula"
 
         @formulae ||= (downcased_unique_named - casks).map do |name|
-          if name.include?("/") || File.exist?(name)
-            Formulary.factory(name, spec)
-          else
-            Formulary.find_with_priority(name, spec)
-          end
+          Formulary.factory(name, spec)
         end.uniq(&:name).freeze
       end
 

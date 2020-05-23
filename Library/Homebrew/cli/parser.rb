@@ -359,11 +359,7 @@ module Homebrew
         named_args.map do |arg|
           next if arg.match?(HOMEBREW_CASK_TAP_CASK_REGEX)
 
-          if arg.include?("/") || arg.end_with?(".tar.gz") || File.exist?(arg)
-            Formulary.factory(arg, spec)
-          else
-            Formulary.find_with_priority(arg.downcase, spec)
-          end
+          Formulary.factory(arg, spec)
         end.compact.uniq(&:name)
       end
     end
