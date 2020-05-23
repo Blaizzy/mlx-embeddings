@@ -172,7 +172,6 @@ RSpec.configure do |config|
 
       @__files_before_test = find_files
 
-      @__argv = ARGV.dup
       @__env = ENV.to_hash # dup doesn't work on ENV
 
       @__stdout = $stdout.clone
@@ -187,7 +186,6 @@ RSpec.configure do |config|
     rescue SystemExit => e
       raise "Unexpected exit with status #{e.status}."
     ensure
-      ARGV.replace(@__argv)
       ENV.replace(@__env)
 
       $stdout.reopen(@__stdout)

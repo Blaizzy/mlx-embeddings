@@ -38,7 +38,7 @@ module Cask
     end
 
     def audit
-      if !ARGV.value("language") && language_blocks
+      if !Homebrew.args.value("language") && language_blocks
         audit_all_languages
       else
         audit_cask_instance(cask)

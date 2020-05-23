@@ -746,7 +746,7 @@ class FormulaInstaller
 
     formula.options.each do |opt|
       name = opt.name[/^([^=]+)=$/, 1]
-      value = ARGV.value(name) if name
+      value = Homebrew.args.value(name) if name
       args << "--#{name}=#{value}" if value
     end
 

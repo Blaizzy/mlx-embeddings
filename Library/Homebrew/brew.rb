@@ -50,7 +50,7 @@ begin
   help_flag = !ENV["HOMEBREW_HELP"].nil?
   cmd = nil
 
-  ARGV.dup.each_with_index do |arg, i|
+  ARGV.each_with_index do |arg, i|
     break if help_flag && cmd
 
     if arg == "help" && !cmd
