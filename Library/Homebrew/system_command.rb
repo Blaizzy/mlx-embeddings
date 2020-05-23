@@ -34,7 +34,7 @@ class SystemCommand
   end
 
   def run!
-    puts redact_secrets(command.shelljoin.gsub('\=', "="), @secrets) if verbose? || ARGV.debug?
+    puts redact_secrets(command.shelljoin.gsub('\=', "="), @secrets) if verbose? || Homebrew.args.debug?
 
     @output = []
 

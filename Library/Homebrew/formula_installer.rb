@@ -59,7 +59,7 @@ class FormulaInstaller
     @git = false
     @verbose = Homebrew.args.verbose?
     @quiet = Homebrew.args.quiet?
-    @debug = ARGV.debug?
+    @debug = Homebrew.args.debug?
     @installed_as_dependency = false
     @installed_on_request = true
     @options = Options.new

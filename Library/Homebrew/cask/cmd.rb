@@ -151,7 +151,7 @@ module Cask
       end
     rescue CaskError, MethodDeprecatedError, ArgumentError, OptionParser::InvalidOption => e
       onoe e.message
-      $stderr.puts e.backtrace if ARGV.debug?
+      $stderr.puts e.backtrace if Homebrew.args.debug?
       exit 1
     rescue StandardError, ScriptError, NoMemoryError => e
       onoe e.message
