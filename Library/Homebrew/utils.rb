@@ -96,7 +96,7 @@ module Kernel
   end
 
   def odebug(title, *sput)
-    return unless ARGV.debug?
+    return unless Homebrew.args.debug?
 
     puts Formatter.headline(title, color: :magenta)
     puts sput unless sput.empty?

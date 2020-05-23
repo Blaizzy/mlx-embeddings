@@ -1172,7 +1172,7 @@ class Formula
       begin
         yield self, staging
       rescue
-        staging.retain! if Homebrew.args.interactive? || ARGV.debug?
+        staging.retain! if Homebrew.args.interactive? || Homebrew.args.debug?
         raise
       ensure
         cp Dir["config.log", "CMakeCache.txt"], logs
@@ -1822,7 +1822,7 @@ class Formula
           end
         end
       rescue Exception # rubocop:disable Lint/RescueException
-        staging.retain! if ARGV.debug?
+        staging.retain! if Homebrew.args.debug?
         raise
       end
     end
