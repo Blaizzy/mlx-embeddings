@@ -15,10 +15,6 @@ module HomebrewArgvExtension
     value "cc"
   end
 
-  def env
-    value "env"
-  end
-
   private
 
   def options_only

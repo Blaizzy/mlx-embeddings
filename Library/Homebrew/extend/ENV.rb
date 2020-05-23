@@ -6,7 +6,7 @@ require "extend/ENV/std"
 require "extend/ENV/super"
 
 def superenv?
-  ARGV.env != "std" && Superenv.bin
+  Homebrew.args.env != "std" && Superenv.bin
 end
 
 module EnvActivation
