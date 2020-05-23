@@ -100,7 +100,7 @@ class FormulaInstaller
     return false if !formula.bottled? && !formula.local_bottle_path
     return true  if force_bottle?
     return false if build_from_source? || build_bottle? || interactive?
-    return false if ARGV.cc
+    return false if Homebrew.args.cc
     return false unless options.empty?
     return false if formula.bottle_disabled?
 
@@ -729,7 +729,7 @@ class FormulaInstaller
     args << "--interactive" if interactive?
     args << "--verbose" if verbose?
     args << "--debug" if debug?
-    args << "--cc=#{ARGV.cc}" if ARGV.cc
+    args << "--cc=#{Homebrew.args.cc}" if Homebrew.args.cc
     args << "--keep-tmp" if Homebrew.args.keep_tmp?
 
     if ARGV.env
