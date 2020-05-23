@@ -325,8 +325,8 @@ module Homebrew
     fi.build_bottle         = args.build_bottle?
     fi.interactive          = args.interactive?
     fi.git                  = args.git?
-    fi.fetch
     fi.prelude
+    fi.fetch
     fi.install
     fi.finish
   rescue FormulaInstallationAlreadyAttemptedError

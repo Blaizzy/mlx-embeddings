@@ -141,7 +141,6 @@ class FormulaInstaller
   def prelude
     Tab.clear_cache
     verify_deps_exist unless ignore_deps?
-    lock
     check_install_sanity
   end
 
@@ -221,6 +220,8 @@ class FormulaInstaller
   end
 
   def install
+    lock
+
     start_time = Time.now
     if !formula.bottle_unneeded? && !pour_bottle? && DevelopmentTools.installed?
       Homebrew::Install.perform_build_from_source_checks
@@ -969,9 +970,10 @@ class FormulaInstaller
   end
 
   def fetch_dependencies
-    deps = compute_dependencies
+    return if ignore_deps?
 
-    return if deps.empty? || ignore_deps?
+    deps = compute_dependencies
+    return if deps.empty?
 
     deps.each { |dep, _options| fetch_dependency(dep) }
   end
