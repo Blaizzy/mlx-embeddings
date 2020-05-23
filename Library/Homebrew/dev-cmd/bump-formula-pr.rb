@@ -118,12 +118,6 @@ module Homebrew
 
     formula = args.formulae.first
 
-    if formula
-      tap_full_name, origin_branch, previous_branch = use_correct_linux_tap(formula)
-      check_for_duplicate_pull_requests(formula, tap_full_name)
-      checked_for_duplicates = true
-    end
-
     new_url = args.url
     if new_url && !formula
       # Split the new URL on / and find any formulae that have the same URL
@@ -152,7 +146,8 @@ module Homebrew
     end
     raise FormulaUnspecifiedError unless formula
 
-    check_for_duplicate_pull_requests(formula, tap_full_name) unless checked_for_duplicates
+    tap_full_name, origin_branch, previous_branch = use_correct_linux_tap(formula)
+    check_for_duplicate_pull_requests(formula, tap_full_name)
 
     requested_spec, formula_spec = if args.devel?
       devel_message = " (devel)"
