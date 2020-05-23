@@ -456,7 +456,7 @@ class FormulaInstaller
         keep_build_test = false
         keep_build_test ||= runtime_requirements.include?(req)
         keep_build_test ||= req.test? && include_test? && dependent == f
-        keep_build_test ||= req.build? && !install_bottle_for_dependent
+        keep_build_test ||= req.build? && !install_bottle_for_dependent && !dependent.latest_version_installed?
 
         if req.prune_from_option?(build)
           Requirement.prune
@@ -491,13 +491,11 @@ class FormulaInstaller
 
       keep_build_test = false
       keep_build_test ||= dep.test? && include_test? && Homebrew.args.include_formula_test_deps?(dependent)
-      keep_build_test ||= dep.build? && !install_bottle_for?(dependent, build)
+      keep_build_test ||= dep.build? && !install_bottle_for?(dependent, build) && !dependent.latest_version_installed?
 
       if dep.prune_from_option?(build)
         Dependency.prune
       elsif (dep.build? || dep.test?) && !keep_build_test
-        Dependency.prune
-      elsif dep.prune_if_build_and_not_dependent?(dependent)
         Dependency.prune
       elsif dep.satisfied?(inherited_options[dep.name])
         Dependency.skip
