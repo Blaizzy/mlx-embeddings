@@ -100,7 +100,7 @@ class FormulaInstaller
     return false if !formula.bottled? && !formula.local_bottle_path
     return true  if force_bottle?
     return false if build_from_source? || build_bottle? || interactive?
-    return false if ARGV.cc
+    return false if Homebrew.args.cc
     return false unless options.empty?
     return false if formula.bottle_disabled?
 
@@ -141,7 +141,6 @@ class FormulaInstaller
   def prelude
     Tab.clear_cache
     verify_deps_exist unless ignore_deps?
-    lock
     check_install_sanity
   end
 
@@ -221,6 +220,8 @@ class FormulaInstaller
   end
 
   def install
+    lock
+
     start_time = Time.now
     if !formula.bottle_unneeded? && !pour_bottle? && DevelopmentTools.installed?
       Homebrew::Install.perform_build_from_source_checks
@@ -728,7 +729,7 @@ class FormulaInstaller
     args << "--interactive" if interactive?
     args << "--verbose" if verbose?
     args << "--debug" if debug?
-    args << "--cc=#{ARGV.cc}" if ARGV.cc
+    args << "--cc=#{Homebrew.args.cc}" if Homebrew.args.cc
     args << "--keep-tmp" if Homebrew.args.keep_tmp?
 
     if Homebrew.args.env.present?
@@ -969,9 +970,10 @@ class FormulaInstaller
   end
 
   def fetch_dependencies
-    deps = compute_dependencies
+    return if ignore_deps?
 
-    return if deps.empty? || ignore_deps?
+    deps = compute_dependencies
+    return if deps.empty?
 
     deps.each { |dep, _options| fetch_dependency(dep) }
   end

@@ -35,8 +35,8 @@ module Homebrew
       fi.installed_as_dependency = tab.installed_as_dependency
       fi.installed_on_request    = tab.installed_on_request
     end
-    fi.fetch
     fi.prelude
+    fi.fetch
 
     oh1 "Reinstalling #{Formatter.identifier(f.full_name)} #{options.to_a.join " "}"
 
