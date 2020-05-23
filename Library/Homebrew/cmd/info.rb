@@ -105,7 +105,7 @@ module Homebrew
       args.named.each_with_index do |f, i|
         puts unless i.zero?
         begin
-          Formulary.factory(f)
+          formula = Formulary.factory(f)
           if args.analytics?
             Utils::Analytics.formula_output(formula)
           else
