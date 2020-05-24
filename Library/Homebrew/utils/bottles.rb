@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "tab"
-require "extend/ARGV"
 
 module Utils
   class Bottles

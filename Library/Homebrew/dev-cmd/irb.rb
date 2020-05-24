@@ -19,7 +19,7 @@ module Homebrew
 
   def irb_args
     # work around IRB modifying ARGV.
-    Homebrew::CLI::Parser.new(ARGV.dup) do
+    Homebrew::CLI::Parser.new(ARGV.dup.freeze) do
       usage_banner <<~EOS
         `irb` [<options>]
 

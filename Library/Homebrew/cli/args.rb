@@ -10,7 +10,7 @@ module Homebrew
       # undefine tap to allow --tap argument
       undef tap
 
-      def initialize(argv = ARGV.dup.freeze, set_default_args: false)
+      def initialize(argv = ARGV.freeze, set_default_args: false)
         super()
 
         @processed_options = []
@@ -175,6 +175,14 @@ module Homebrew
         return false unless include_test?
 
         formulae.any? { |args_f| args_f.full_name == f.full_name }
+      end
+
+      def value(name)
+        arg_prefix = "--#{name}="
+        flag_with_value = flags_only.find { |arg| arg.start_with?(arg_prefix) }
+        return unless flag_with_value
+
+        flag_with_value.delete_prefix(arg_prefix)
       end
 
       private
