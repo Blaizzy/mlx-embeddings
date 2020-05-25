@@ -42,6 +42,8 @@ RUN cd /home/linuxbrew/.linuxbrew \
   && HOMEBREW_NO_ANALYTICS=1 HOMEBREW_NO_AUTO_UPDATE=1 brew tap homebrew/core \
   && brew install-bundler-gems \
   && brew cleanup \
+  && { git -C /home/linuxbrew/.linuxbrew/Homebrew config --unset gc.auto; true; } \
+  && { git -C /home/linuxbrew/.linuxbrew/Homebrew config --unset homebrew.devcmdrun; true; } \
   && rm -rf ~/.cache \
   && chown -R linuxbrew: /home/linuxbrew/.linuxbrew \
   && chmod -R g+w,o-w /home/linuxbrew/.linuxbrew
