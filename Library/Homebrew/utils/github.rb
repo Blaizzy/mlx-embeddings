@@ -407,8 +407,9 @@ module GitHub
     pr_payload = open_api("#{base_url}/pulls/#{pr}", scopes: scopes)
     pr_sha = pr_payload["head"]["sha"]
     pr_branch = URI.encode_www_form_component(pr_payload["head"]["ref"])
+    parameters = "event=pull_request&branch=#{pr_branch}"
 
-    workflow = open_api("#{base_url}/actions/workflows/#{workflow_id}/runs?branch=#{pr_branch}", scopes: scopes)
+    workflow = open_api("#{base_url}/actions/workflows/#{workflow_id}/runs?#{parameters}", scopes: scopes)
     workflow_run = workflow["workflow_runs"].select do |run|
       run["head_sha"] == pr_sha
     end
