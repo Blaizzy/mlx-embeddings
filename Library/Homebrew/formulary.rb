@@ -9,6 +9,8 @@ require "extend/cachable"
 module Formulary
   extend Cachable
 
+  URL_START_REGEX = %r{(https?|ftp|file)://}.freeze
+
   def self.enable_factory_cache!
     @factory_cache = true
   end
@@ -141,7 +143,7 @@ module Formulary
   class BottleLoader < FormulaLoader
     def initialize(bottle_name)
       case bottle_name
-      when %r{(https?|ftp|file)://}
+      when URL_START_REGEX
         # The name of the formula is found between the last slash and the last hyphen.
         formula_name = File.basename(bottle_name)[/(.+)-/, 1]
         resource = Resource.new(formula_name) { url bottle_name }
@@ -205,8 +207,12 @@ module Formulary
     def load_file
       if url =~ %r{githubusercontent.com/[\w-]+/[\w-]+/[a-f0-9]{40}(/Formula)?/([\w+-.@]+).rb}
         formula_name = Regexp.last_match(2)
-        odeprecated "Installation of #{formula_name} from a commit URL",
-                    "Use 'brew extract #{formula_name}' to stable tap."
+        odeprecated "Installation of #{formula_name} from a GitHub commit URL",
+                    "'brew extract #{formula_name}' to stable tap on GitHub"
+      elsif url.match?(%r{^(https?|ftp)://})
+        odeprecated "Non-checksummed download of #{name} formula file from an arbitrary URL",
+                    "'brew extract' or 'brew create' and 'brew tap-new' to create a "\
+                    "formula file in a tap on GitHub"
       end
       HOMEBREW_CACHE_FORMULA.mkpath
       FileUtils.rm_f(path)
@@ -413,7 +419,7 @@ module Formulary
     case ref
     when Pathname::BOTTLE_EXTNAME_RX
       return BottleLoader.new(ref)
-    when %r{(https?|ftp|file)://}
+    when URL_START_REGEX
       return FromUrlLoader.new(ref)
     when HOMEBREW_TAP_FORMULA_REGEX
       return TapLoader.new(ref, from: from)
