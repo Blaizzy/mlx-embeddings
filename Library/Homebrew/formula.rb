@@ -2670,7 +2670,7 @@ class Formula
     #   regex /foo-(\d+(?:\.\d+)+)\.tar/
     # end</pre>
     def livecheck(&block)
-      @livecheck ||= Livecheck.new
+      @livecheck ||= Livecheck.new(self)
       return @livecheck unless block_given?
 
       @livecheckable = true
