@@ -1082,23 +1082,52 @@ Bundler for non-Ruby dependencies from Homebrew, Homebrew Cask, Mac App Store
 and Whalebrew.
 
 `brew bundle` [`install`]:
-    Install or upgrade all dependencies in a `Brewfile`.
+    Install and upgrade (by default) all dependencies from the `Brewfile`.
+
+You can skip the installation of dependencies by adding space-separated values
+to one or more of the following environment variables:
+`HOMEBREW_BUNDLE_BREW_SKIP`, `HOMEBREW_BUNDLE_CASK_SKIP`,
+`HOMEBREW_BUNDLE_MAS_SKIP`, `HOMEBREW_BUNDLE_WHALEBREW_SKIP`,
+`HOMEBREW_BUNDLE_TAP_SKIP`
+
+`brew bundle` will output a `Brewfile.lock.json` in the same directory as the
+`Brewfile` if all dependencies are installed successfully. This contains
+dependency and system status information which can be useful in debugging `brew
+bundle` failures and replicating a "last known good build" state. You can
+opt-out of this behaviour by setting the `HOMEBREW_BUNDLE_NO_LOCK` environment
+variable or passing the `--no-lock` option. You may wish to check this file into
+the same version control system as your `Brewfile` (or ensure your version
+control system ignores it if you'd prefer to rely on debugging information from
+a local machine).
 
 `brew bundle dump`:
     Write all installed casks/formulae/images/taps into a `Brewfile`.
 
 `brew bundle cleanup`:
-    Uninstall all dependencies not listed in a `Brewfile`.
+    Uninstall all dependencies not listed from the `Brewfile`.
+
+This workflow is useful for maintainers or testers who regularly install lots of
+formulae.
 
 `brew bundle check`:
-    Check if all dependencies are installed in a `Brewfile`.
+    Check if all dependencies are installed from the `Brewfile` .
 
-`brew bundle exec` *`command`*:
-    Run an external command in an isolated build environment.
+This provides a successful exit code if everything is up-to-date, making it
+useful for scripting.
 
 `brew bundle list`:
-    List all dependencies present in a `Brewfile`. By default, only Homebrew
-dependencies are listed.
+    List all dependencies present in a `Brewfile`.
+
+By default, only Homebrew dependencies are listed.
+
+`brew bundle exec` *`command`*:
+    Run an external command in an isolated build environment based on the
+`Brewfile` dependencies.
+
+This sanitized build environment ignores unrequested dependencies, which makes
+sure that things you didn't specify in your `Brewfile` won't get picked up by
+commands like `bundle install`, `npm install`, etc. It will also add compiler
+flags which will help find keg-only dependencies like `openssl`, `icu4c`, etc.
 
 * `--file`:
   Read the `Brewfile` from this location. Use `--file=-` to pipe to stdin/stdout.
@@ -1139,7 +1168,7 @@ If `sudo` is passed, operate on `/Library/LaunchDaemons` (started at boot).
 Otherwise, operate on `~/Library/LaunchAgents` (started at login).
 
 [`sudo`] `brew services` [`list`]:
-    List all running services for the current user (or root).
+    List all managed services for the current user (or root).
 
 [`sudo`] `brew services run` (*`formula`*|`--all`):
     Run the service *`formula`* without registering to launch at login (or boot).
@@ -1161,6 +1190,64 @@ it to launch at login (or boot).
 
 * `--all`:
   Run *`subcommand`* on all services.
+
+### `test-bot` [*`options`*] [*`formula`*]:
+
+Tests the full lifecycle of a Homebrew change to a tap (Git repository). For
+example, for a GitHub Actions pull request that changes a formula `brew
+test-bot` will ensure the system is cleaned and setup to test the formula,
+install the formula, run various tests and checks on it, bottle (package) the
+binaries and test formulae that depend on it to ensure they aren't broken by
+these changes.
+
+Only supports GitHub Actions as a CI provider. This is because Homebrew uses
+GitHub Actions and it's freely available for public and private use with macOS
+and Linux workers.
+
+* `--dry-run`:
+  print what would be done rather than doing it.
+* `--cleanup`:
+  clean all state from the Homebrew directory. Use with care!
+* `--skip-setup`:
+  don't check if the local system is set up correctly.
+* `--keep-old`:
+  run `brew bottle --keep-old` to build new bottles for a single platform.
+* `--skip-relocation`:
+  run `brew bottle --skip-relocation` to build new bottles that don't require relocation.
+* `--local`:
+  ask Homebrew to write verbose logs under `./logs/` and set `$HOME` to `./home/`
+* `--tap`:
+  use the `git` repository of the given tap. Defaults to the core tap for syntax checking.
+* `--fail-fast`:
+  immediately exit on a failing step.
+* `-v`, `--verbose`:
+  print test step output in real time. Has the side effect of passing output as raw bytes instead of re-encoding in UTF-8.
+* `--test-default-formula`:
+  use a default testing formula when not building a tap and no other formulae are specified.
+* `--bintray-org`:
+  upload to the given Bintray organisation.
+* `--root-url`:
+  use the specified *`URL`* as the root of the bottle's URL instead of Homebrew's default.
+* `--git-name`:
+  set the Git author/committer names to the given name.
+* `--git-email`:
+  set the Git author/committer email to the given email.
+* `--ci-upload`:
+  use the Homebrew CI bottle upload options.
+* `--publish`:
+  publish the uploaded bottles.
+* `--skip-recursive-dependents`:
+  only test the direct dependents.
+* `--only-cleanup-before`:
+  Only run the pre-cleanup step. Needs `--cleanup`.
+* `--only-setup`:
+  Only run the local system setup check step.
+* `--only-tap-syntax`:
+  Only run the tap syntax check step.
+* `--only-formulae`:
+  Only run the formulae steps.
+* `--only-cleanup-after`:
+  Only run the post-cleanup step. Needs `--cleanup`.
 
 ## CUSTOM EXTERNAL COMMANDS
 
