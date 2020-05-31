@@ -10,7 +10,8 @@ class Livecheck
   # e.g. `Not maintained`
   attr_reader :skip_msg
 
-  def initialize
+  def initialize(formula)
+    @formula = formula
     @regex = nil
     @skip = false
     @skip_msg = nil
@@ -44,7 +45,14 @@ class Livecheck
   def url(val = nil)
     return @url if val.nil?
 
-    @url = val
+    @url = case val
+    when :head, :stable, :devel
+      @formula.send(val).url
+    when :homepage
+      @formula.homepage
+    else
+      val
+    end
   end
 
   # Returns a Hash of all instance variable values.

@@ -697,6 +697,20 @@ describe Formula do
 
       expect(f.livecheckable?).to be true
     end
+
+    specify "livecheck references Formula URL" do
+      f = formula do
+        homepage "https://brew.sh/test"
+
+        url "https://brew.sh/test-1.0.tbz"
+        livecheck do
+          url :homepage
+          regex(/test-(\d+(?:.\d+)+).tbz/)
+        end
+      end
+
+      expect(f.livecheck.url).to eq("https://brew.sh/test")
+    end
   end
 
   specify "dependencies" do
