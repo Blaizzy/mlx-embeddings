@@ -326,7 +326,14 @@ module Cask
             next
           end
 
-          yield path, Pathname.glob(resolved_path)
+          begin
+            yield path, Pathname.glob(resolved_path)
+          rescue Errno::EPERM
+            raise if File.readable?(File.expand_path("~/Library/Application Support/com.apple.TCC"))
+
+            odie "Unable to remove some files. Please enable Full Disk Access for your terminal under " \
+                 "System Preferences → Security & Privacy → Privacy → Full Disk Access."
+          end
         end
       end
 
