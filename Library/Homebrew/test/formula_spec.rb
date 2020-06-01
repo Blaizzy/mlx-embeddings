@@ -668,14 +668,14 @@ describe Formula do
       livecheck do
         skip "foo"
         url "https://brew.sh/test/releases"
-        regex(/test-(\d+(?:\.\d+)+)\.tbz/)
+        regex(/test-v?(\d+(?:\.\d+)+)\.t/i)
       end
     end
 
     expect(f.livecheck.skip?).to be true
     expect(f.livecheck.skip_msg).to eq("foo")
     expect(f.livecheck.url).to eq("https://brew.sh/test/releases")
-    expect(f.livecheck.regex).to eq(/test-(\d+(?:\.\d+)+)\.tbz/)
+    expect(f.livecheck.regex).to eq(/test-v?(\d+(?:\.\d+)+)\.t/i)
   end
 
   describe "#livecheckable?" do
@@ -691,7 +691,7 @@ describe Formula do
       f = formula do
         url "https://brew.sh/test-1.0.tbz"
         livecheck do
-          regex(/test-(\d+(?:.\d+)+).tbz/)
+          regex(/test-v?(\d+(?:\.\d+)+)\.t/i)
         end
       end
 
@@ -705,7 +705,7 @@ describe Formula do
         url "https://brew.sh/test-1.0.tbz"
         livecheck do
           url :homepage
-          regex(/test-(\d+(?:.\d+)+).tbz/)
+          regex(/test-v?(\d+(?:\.\d+)+)\.t/i)
         end
       end
 
