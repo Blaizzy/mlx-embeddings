@@ -445,9 +445,10 @@ module Homebrew
       autoconf@2.13
       bash-completion@2
       gnupg@1.4
+      libsigc++@2
       lua@5.1
       numpy@1.16
-      libsigc++@2
+      python@3.8
     ].freeze
 
     def audit_versioned_keg_only
