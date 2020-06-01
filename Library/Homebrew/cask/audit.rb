@@ -314,7 +314,7 @@ module Cask
                                       "--globoff", "--max-time", "5", appcast_stanza)
       version_stanza = cask.version.to_s
       adjusted_version_stanza = if cask.appcast.configuration.blank?
-        version_stanza.split(",")[0].split("-")[0].split("_")[0]
+        version_stanza.match(/^[[:alnum:].]+/)[0]
       else
         cask.appcast.configuration
       end
