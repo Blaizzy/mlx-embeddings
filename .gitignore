@@ -129,9 +129,6 @@
 **/vendor/bundle/ruby/*/gems/simplecov-*/
 **/vendor/bundle/ruby/*/gems/simplecov-cobertura-*/
 **/vendor/bundle/ruby/*/gems/simplecov-html-*/
-**/vendor/bundle/ruby/*/gems/sorbet-*/
-**/vendor/bundle/ruby/*/gems/sorbet-runtime-*/
-**/vendor/bundle/ruby/*/gems/tapioca-*/
 **/vendor/bundle/ruby/*/gems/term-ansicolor-*/
 **/vendor/bundle/ruby/*/gems/thor-*/
 **/vendor/bundle/ruby/*/gems/tins-*/
@@ -139,6 +136,14 @@
 **/vendor/bundle/ruby/*/gems/unf-*/
 **/vendor/bundle/ruby/*/gems/unicode-display_width-*/
 **/vendor/bundle/ruby/*/gems/webrobots-*/
+
+# Ignore conditional dependencies we don't wish to vendor
+**/vendor/bundle/ruby/*/gems/bindata-*/
+**/vendor/bundle/ruby/*/gems/elftools-*/
+**/vendor/bundle/ruby/*/gems/patchelf-*/
+**/vendor/bundle/ruby/*/gems/sorbet-*/
+**/vendor/bundle/ruby/*/gems/sorbet-runtime-*/
+**/vendor/bundle/ruby/*/gems/tapioca-*/
 
 # Ignore `bin` contents (again).
 /bin

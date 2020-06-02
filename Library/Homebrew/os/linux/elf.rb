@@ -74,7 +74,14 @@ module ELFShim
     @with_interpreter = if binary_executable?
       true
     elsif dylib?
-      if which "readelf"
+      if HOMEBREW_PATCHELF_RB
+        begin
+          patchelf_patcher.interpreter.present?
+        rescue PatchELF::PatchError => e
+          opoo e
+          false
+        end
+      elsif which "readelf"
         Utils.popen_read("readelf", "-l", to_path).include?(" INTERP ")
       elsif which "file"
         Utils.popen_read("file", "-L", "-b", to_path).include?(" interpreter ")
@@ -89,7 +96,9 @@ module ELFShim
   def dynamic_elf?
     return @dynamic_elf if defined? @dynamic_elf
 
-    @dynamic_elf = if which "readelf"
+    @dynamic_elf = if HOMEBREW_PATCHELF_RB
+      patchelf_patcher.instance_variable_get(:@elf).segment_by_type(:DYNAMIC).present?
+    elsif which "readelf"
       Utils.popen_read("readelf", "-l", to_path).include?(" DYNAMIC ")
     elsif which "file"
       !Utils.popen_read("file", "-L", "-b", to_path)[/dynamic|shared/].nil?
@@ -127,7 +136,9 @@ module ELFShim
     private
 
     def needed_libraries(path)
-      if DevelopmentTools.locate "readelf"
+      if HOMEBREW_PATCHELF_RB
+        needed_libraries_using_patchelf_rb path
+      elsif DevelopmentTools.locate "readelf"
         needed_libraries_using_readelf path
       elsif DevelopmentTools.locate "patchelf"
         needed_libraries_using_patchelf path
@@ -136,6 +147,25 @@ module ELFShim
 
         raise "patchelf must be installed: brew install patchelf"
       end
+    end
+
+    def needed_libraries_using_patchelf_rb(path)
+      patcher = path.patchelf_patcher
+      return [nil, []] unless patcher
+
+      soname = begin
+        patcher.soname
+      rescue PatchELF::PatchError => e
+        opoo e unless e.to_s.start_with? "Entry DT_SONAME not found, not a shared library?"
+        nil
+      end
+      needed = begin
+        patcher.needed
+      rescue PatchELF::PatchError => e
+        opoo e
+        []
+      end
+      [soname, needed]
     end
 
     def needed_libraries_using_patchelf(path)
@@ -169,6 +199,16 @@ module ELFShim
         end
       end
       [soname, needed]
+    end
+  end
+
+  def patchelf_patcher
+    return unless HOMEBREW_PATCHELF_RB
+
+    @patchelf_patcher ||= begin
+      Homebrew.install_bundler_gems!
+      require "patchelf"
+      PatchELF::Patcher.new to_s, logging: false
     end
   end
 
