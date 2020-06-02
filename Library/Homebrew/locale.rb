@@ -8,7 +8,7 @@ class Locale
   REGION_REGEX   = /(?:[A-Z]{2}|\d{3})/.freeze # ISO 3166-1 or UN M.49
   SCRIPT_REGEX   = /(?:[A-Z][a-z]{3})/.freeze  # ISO 15924
 
-  LOCALE_REGEX = /\A((?:#{LANGUAGE_REGEX}|#{REGION_REGEX}|#{SCRIPT_REGEX})(?:\-|$)){1,3}\Z/.freeze
+  LOCALE_REGEX = /\A((?:#{LANGUAGE_REGEX}|#{REGION_REGEX}|#{SCRIPT_REGEX})(?:-|$)){1,3}\Z/.freeze
 
   def self.parse(string)
     string = string.to_s
@@ -16,7 +16,7 @@ class Locale
     raise ParserError, "'#{string}' cannot be parsed to a #{self}" unless string.match?(LOCALE_REGEX)
 
     scan = proc do |regex|
-      string.scan(/(?:\-|^)(#{regex})(?:\-|$)/).flatten.first
+      string.scan(/(?:-|^)(#{regex})(?:-|$)/).flatten.first
     end
 
     language = scan.call(LANGUAGE_REGEX)

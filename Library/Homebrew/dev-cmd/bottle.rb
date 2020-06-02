@@ -321,7 +321,7 @@ module Homebrew
         if any_go_deps
           go_regex =
             Version.formula_optionally_versioned_regex(:go, full: false)
-          ignores << %r{#{Regexp.escape(HOMEBREW_CELLAR)}/#{go_regex}/[\d\.]+/libexec}
+          ignores << %r{#{Regexp.escape(HOMEBREW_CELLAR)}/#{go_regex}/[\d.]+/libexec}
         end
 
         relocatable = true

@@ -86,7 +86,7 @@ module Cask
         Shellwords.shellsplit(ENV.fetch("HOMEBREW_CASK_OPTS", ""))
                   .select { |arg| arg.include?("=") }
                   .map { |arg| arg.split("=", 2) }
-                  .map { |(flag, value)| [flag.sub(/^\-\-/, ""), value] },
+                  .map { |(flag, value)| [flag.sub(/^--/, ""), value] },
       )
     end
 

@@ -88,7 +88,7 @@ class SystemConfig
       _, err, status = system_command("java", args: ["-version"], print_stderr: false)
       return "N/A" unless status.success?
 
-      err[/java version "([\d\._]+)"/, 1] || "N/A"
+      err[/java version "([\d._]+)"/, 1] || "N/A"
     end
 
     def describe_git
@@ -100,7 +100,7 @@ class SystemConfig
     def describe_curl
       out, = system_command(curl_executable, args: ["--version"])
 
-      if /^curl (?<curl_version>[\d\.]+)/ =~ out
+      if /^curl (?<curl_version>[\d.]+)/ =~ out
         "#{curl_version} => #{curl_executable}"
       else
         "N/A"

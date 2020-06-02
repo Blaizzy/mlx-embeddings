@@ -46,7 +46,7 @@ module Cask
           next if self.class.options.nil?
 
           self.class.options.each do |option_name, option_method|
-            option_type = case option_name.split(/(\ |\=)/).last
+            option_type = case option_name.split(/(\ |=)/).last
             when "PATH"
               Pathname
             when /\w+(,\w+)+/

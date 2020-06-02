@@ -153,7 +153,7 @@ module RuboCop
 
           find_instance_method_call(body_node, :build, :include?) do |method|
             arg = parameters(method).first
-            next unless match = regex_match_group(arg, /^\-\-(.*)$/)
+            next unless match = regex_match_group(arg, /^--(.*)$/)
 
             problem "Reference '#{match[1]}' without dashes"
           end
@@ -403,7 +403,7 @@ module RuboCop
 
             path = parameters(method).first
             next unless path.str_type?
-            next unless match = regex_match_group(path, /^[^\*{},]+$/)
+            next unless match = regex_match_group(path, /^[^*{},]+$/)
 
             problem "Dir([\"#{string_content(path)}\"]) is unnecessary; just use \"#{match[0]}\""
           end

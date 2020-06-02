@@ -180,7 +180,7 @@ module Cask
     end
 
     def process_options(*args)
-      exclude_regex = /^\-\-#{Regexp.union(*Config::DEFAULT_DIRS.keys.map(&Regexp.public_method(:escape)))}=/
+      exclude_regex = /^--#{Regexp.union(*Config::DEFAULT_DIRS.keys.map(&Regexp.public_method(:escape)))}=/
 
       non_options = []
 

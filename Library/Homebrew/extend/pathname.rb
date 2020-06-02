@@ -224,7 +224,7 @@ class Pathname
     return archive_ext if archive_ext
 
     # Don't treat version numbers as extname.
-    return "" if basename.match?(/\b\d+\.\d+[^\.]*\Z/) && !basename.end_with?(".7z")
+    return "" if basename.match?(/\b\d+\.\d+[^.]*\Z/) && !basename.end_with?(".7z")
 
     File.extname(basename)
   end
