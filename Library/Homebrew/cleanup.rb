@@ -56,14 +56,14 @@ module CleanupRefinement
         end
       end
 
-      version ||= basename.to_s[/\A.*(?:\-\-.*?)*\-\-(.*?)#{Regexp.escape(extname)}\Z/, 1]
-      version ||= basename.to_s[/\A.*\-\-?(.*?)#{Regexp.escape(extname)}\Z/, 1]
+      version ||= basename.to_s[/\A.*(?:--.*?)*--(.*?)#{Regexp.escape(extname)}\Z/, 1]
+      version ||= basename.to_s[/\A.*--?(.*?)#{Regexp.escape(extname)}\Z/, 1]
 
       return false unless version
 
       version = Version.new(version)
 
-      return false unless formula_name = basename.to_s[/\A(.*?)(?:\-\-.*?)*\-\-?(?:#{Regexp.escape(version)})/, 1]
+      return false unless formula_name = basename.to_s[/\A(.*?)(?:--.*?)*--?(?:#{Regexp.escape(version)})/, 1]
 
       formula = begin
         Formulary.from_rack(HOMEBREW_CELLAR/formula_name)
@@ -71,7 +71,7 @@ module CleanupRefinement
         return false
       end
 
-      resource_name = basename.to_s[/\A.*?\-\-(.*?)\-\-?(?:#{Regexp.escape(version)})/, 1]
+      resource_name = basename.to_s[/\A.*?--(.*?)--?(?:#{Regexp.escape(version)})/, 1]
 
       if resource_name == "patch"
         patch_hashes = formula.stable&.patches&.select(&:external?)&.map(&:resource)&.map(&:version)
@@ -92,7 +92,7 @@ module CleanupRefinement
     end
 
     def stale_cask?(scrub)
-      return false unless name = basename.to_s[/\A(.*?)\-\-/, 1]
+      return false unless name = basename.to_s[/\A(.*?)--/, 1]
 
       cask = begin
         Cask::CaskLoader.load(name)
@@ -100,7 +100,7 @@ module CleanupRefinement
         return false
       end
 
-      return true unless basename.to_s.match?(/\A#{Regexp.escape(name)}\-\-#{Regexp.escape(cask.version)}\b/)
+      return true unless basename.to_s.match?(/\A#{Regexp.escape(name)}--#{Regexp.escape(cask.version)}\b/)
 
       return true if scrub && !cask.versions.include?(cask.version)
 

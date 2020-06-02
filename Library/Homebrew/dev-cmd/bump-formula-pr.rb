@@ -79,7 +79,7 @@ module Homebrew
       origin_branch = "#{homebrew_core_remote}/#{homebrew_core_branch}"
       previous_branch = Utils.popen_read("git -C \"#{formula.tap.path}\" symbolic-ref -q --short HEAD").chomp
       previous_branch = "master" if previous_branch.empty?
-      formula_path = formula.path.to_s[%r{(Formula\/.*)}, 1]
+      formula_path = formula.path.to_s[%r{(Formula/.*)}, 1]
 
       if args.dry_run?
         ohai "git remote add #{homebrew_core_remote} #{homebrew_core_url}"
@@ -89,7 +89,7 @@ module Homebrew
         return tap_full_name, origin_branch, previous_branch
       else
         formula.path.parent.cd do
-          unless Utils.popen_read("git remote -v").match?(%r{^homebrew.*Homebrew\/homebrew-core.*$})
+          unless Utils.popen_read("git remote -v").match?(%r{^homebrew.*Homebrew/homebrew-core.*$})
             ohai "Adding #{homebrew_core_remote} remote"
             safe_system "git", "remote", "add", homebrew_core_remote, homebrew_core_url
           end
@@ -225,7 +225,7 @@ module Homebrew
 
     replacement_pairs += formula_spec.mirrors.map do |mirror|
       [
-        / +mirror \"#{Regexp.escape(mirror)}\"\n/m,
+        / +mirror "#{Regexp.escape(mirror)}"\n/m,
         "",
       ]
     end
@@ -258,7 +258,7 @@ module Homebrew
 
     if new_mirrors
       replacement_pairs << [
-        /^( +)(url \"#{Regexp.escape(new_url)}\"\n)/m,
+        /^( +)(url "#{Regexp.escape(new_url)}"\n)/m,
         "\\1\\2\\1mirror \"#{new_mirrors.join("\"\n\\1mirror \"")}\"\n",
       ]
     end
@@ -283,30 +283,30 @@ module Homebrew
           ]
         elsif new_mirrors
           [
-            /^( +)(mirror \"#{Regexp.escape(new_mirrors.last)}\"\n)/m,
+            /^( +)(mirror "#{Regexp.escape(new_mirrors.last)}"\n)/m,
             "\\1\\2\\1version \"#{forced_version}\"\n",
           ]
         else
           [
-            /^( +)(url \"#{Regexp.escape(new_url)}\"\n)/m,
+            /^( +)(url "#{Regexp.escape(new_url)}"\n)/m,
             "\\1\\2\\1version \"#{forced_version}\"\n",
           ]
         end
       elsif requested_spec == :devel
         replacement_pairs << [
-          /(  devel do.+?version \")#{old_formula_version}(\"\n.+?end\n)/m,
+          /(  devel do.+?version ")#{old_formula_version}("\n.+?end\n)/m,
           "\\1#{forced_version}\\2",
         ]
       end
     elsif forced_version && forced_version == "0"
       if requested_spec == :stable
         replacement_pairs << [
-          /^  version \"[\w\.\-\+]+\"\n/m,
+          /^  version "[\w.\-+]+"\n/m,
           "",
         ]
       elsif requested_spec == :devel
         replacement_pairs << [
-          /(  devel do.+?)^ +version \"[^\n]+\"\n(.+?end\n)/m,
+          /(  devel do.+?)^ +version "[^\n]+"\n(.+?end\n)/m,
           "\\1\\2",
         ]
       end

@@ -259,7 +259,7 @@ module Cask
       bad_url_format?(/sourceforge/,
                       [
                         %r{\Ahttps://sourceforge\.net/projects/[^/]+/files/latest/download\Z},
-                        %r{\Ahttps://downloads\.sourceforge\.net/(?!(project|sourceforge)\/)},
+                        %r{\Ahttps://downloads\.sourceforge\.net/(?!(project|sourceforge)/)},
                       ])
     end
 

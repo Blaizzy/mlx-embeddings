@@ -196,7 +196,7 @@ def curl_http_content_headers_and_checksum(url, hash_needed: false, user_agent: 
   status_code = :unknown
   while status_code == :unknown || status_code.to_s.start_with?("3")
     headers, _, output = output.partition("\r\n\r\n")
-    status_code = headers[%r{HTTP\/.* (\d+)}, 1]
+    status_code = headers[%r{HTTP/.* (\d+)}, 1]
     final_url = headers[/^Location:\s*(.*)$/i, 1]&.chomp
   end
 
@@ -208,7 +208,7 @@ def curl_http_content_headers_and_checksum(url, hash_needed: false, user_agent: 
     url:            url,
     final_url:      final_url,
     status:         status_code,
-    etag:           headers[%r{ETag: ([wW]\/)?"(([^"]|\\")*)"}, 2],
+    etag:           headers[%r{ETag: ([wW]/)?"(([^"]|\\")*)"}, 2],
     content_length: headers[/Content-Length: (\d+)/, 1],
     file_hash:      output_hash,
     file:           output,

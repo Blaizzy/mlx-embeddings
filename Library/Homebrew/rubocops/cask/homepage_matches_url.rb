@@ -129,7 +129,7 @@ module RuboCop
           string = stanza.stanza_node.children[2]
           return string.str_content if string.str_type?
 
-          string.to_s.gsub(%r{.*"([a-z0-9]+\:\/\/[^"]+)".*}m, '\1')
+          string.to_s.gsub(%r{.*"([a-z0-9]+://[^"]+)".*}m, '\1')
         end
 
         def url_match_homepage?(stanza)

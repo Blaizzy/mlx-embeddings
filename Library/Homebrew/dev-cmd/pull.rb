@@ -333,7 +333,7 @@ module Homebrew
 
   def check_bintray_mirror(name, url)
     headers, = curl_output("--connect-timeout", "15", "--location", "--head", url)
-    status_code = headers.scan(%r{^HTTP\/.* (\d+)}).last.first
+    status_code = headers.scan(%r{^HTTP/.* (\d+)}).last.first
     return if status_code.start_with?("2")
 
     opoo "The Bintray mirror #{url} is not reachable (HTTP status code #{status_code})."
