@@ -106,10 +106,12 @@ class Keg
       bad_name.sub(PREFIX_PLACEHOLDER, HOMEBREW_PREFIX)
     elsif bad_name.start_with? CELLAR_PLACEHOLDER
       bad_name.sub(CELLAR_PLACEHOLDER, HOMEBREW_CELLAR)
-    elsif (file.dylib? || file.mach_o_bundle?) && (file.parent + bad_name).exist?
+    elsif (file.dylib? || file.mach_o_bundle?) && (file.dirname/bad_name).exist?
       "@loader_path/#{bad_name}"
-    elsif file.mach_o_executable? && (lib + bad_name).exist?
+    elsif file.mach_o_executable? && (lib/bad_name).exist?
       "#{lib}/#{bad_name}"
+    elsif file.mach_o_executable? && (libexec/"lib"/bad_name).exist?
+      "#{libexec}/lib/#{bad_name}"
     elsif bad_name.start_with?("@rpath") && ENV["HOMEBREW_RELOCATE_METAVARS"]
       expand_rpath file, bad_name
     elsif (abs_name = find_dylib(bad_name)) && abs_name.exist?
