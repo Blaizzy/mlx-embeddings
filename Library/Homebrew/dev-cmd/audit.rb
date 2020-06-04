@@ -697,7 +697,7 @@ module Homebrew
                    .second
 
         begin
-          if (release = GitHub.open_api("#{GitHub::API_URL}/repos/#{owner}/#{repo}/releases/tags/#{tag}"))
+          if @online && (@release = GitHub.open_api("#{GitHub::API_URL}/repos/#{owner}/#{repo}/releases/tags/#{tag}"))
             problem "#{tag} is a GitHub prerelease" if release["prerelease"]
             problem "#{tag} is a GitHub draft" if release["draft"]
           end
