@@ -108,7 +108,7 @@ module Superenv
   # @private
   def setup_build_environment(formula = nil)
     sdk = formula ? MacOS.sdk_for_formula(formula) : MacOS.sdk
-    if MacOS.sdk_root_needed? || sdk.source == :xcode
+    if MacOS.sdk_root_needed? || sdk&.source == :xcode
       self["HOMEBREW_SDKROOT"] = sdk.path
       self["HOMEBREW_DEVELOPER_DIR"] = if sdk.source == :xcode
         MacOS::Xcode.prefix
