@@ -275,6 +275,52 @@ describe Cask::Audit, :cask do
       end
     end
 
+    describe "locale validation" do
+      let(:strict) { true }
+      let(:cask) do
+        tmp_cask "locale-cask-test", <<~RUBY
+          cask 'locale-cask-test' do
+            version '1.0'
+            url "https://brew.sh/"
+            name 'Audit'
+            homepage 'https://brew.sh/'
+            app 'Audit.app'
+
+            language 'en', default: true do
+              sha256 '96574251b885c12b48a3495e843e434f9174e02bb83121b578e17d9dbebf1ffb'
+              'zh-CN'
+            end
+
+            language 'zh-CN' do
+              sha256 '96574251b885c12b48a3495e843e434f9174e02bb83121b578e17d9dbebf1ffb'
+              'zh-CN'
+            end
+
+            language 'ZH-CN' do
+              sha256 '96574251b885c12b48a3495e843e434f9174e02bb83121b578e17d9dbebf1ffb'
+              'zh-CN'
+            end
+
+            language 'zh-' do
+              sha256 '96574251b885c12b48a3495e843e434f9174e02bb83121b578e17d9dbebf1ffb'
+              'zh-CN'
+            end
+
+            language 'zh-cn' do
+              sha256 '96574251b885c12b48a3495e843e434f9174e02bb83121b578e17d9dbebf1ffb'
+              'zh-CN'
+            end
+          end
+        RUBY
+      end
+
+      context "when cask locale is invalid" do
+        it "error with invalid locale" do
+          expect(subject).to fail_with(/locale ZH-CN, zh-, zh-cn are invalid/)
+        end
+      end
+    end
+
     describe "pkg allow_untrusted checks" do
       let(:warning_msg) { "allow_untrusted is not permitted in official Homebrew Cask taps" }
 
