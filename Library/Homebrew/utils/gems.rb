@@ -66,12 +66,10 @@ module Homebrew
     setup_gem_environment! if setup_gem_environment
     return unless Gem::Specification.find_all_by_name(name, version).empty?
 
-    # Shell out to `gem` to avoid RubyGems requires for e.g. loading JSON.
     ohai_if_defined "Installing '#{name}' gem"
-    install_args = %W[--no-document #{name}]
-    install_args << "--version" << version if version
-    return if system "#{ruby_bindir}/gem", "install", *install_args
-
+    # document: [] , is equivalent to --no-document
+    Gem.install name, version, document: []
+  rescue Gem::UnsatisfiableDependencyError
     odie_if_defined "failed to install the '#{name}' gem."
   end
 
