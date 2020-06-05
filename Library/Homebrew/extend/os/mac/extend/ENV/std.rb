@@ -81,7 +81,7 @@ module Stdenv
     prepend "LDFLAGS", "-L#{HOMEBREW_PREFIX}/lib"
 
     sdk = formula ? MacOS.sdk_for_formula(formula, version) : MacOS.sdk(version)
-    return if !MacOS.sdk_root_needed? && sdk.source != :xcode
+    return if !MacOS.sdk_root_needed? && sdk&.source != :xcode
 
     sdk = sdk.path
 
