@@ -844,15 +844,6 @@ module Homebrew
       # TODO: check could be in RuboCop
       problem "`env :userpaths` in formulae is deprecated" if line.include?("env :userpaths")
 
-      if line =~ /system ((["'])[^"' ]*(?:\s[^"' ]*)+\2)/
-        bad_system = Regexp.last_match(1)
-        unless %w[| < > & ; *].any? { |c| bad_system.include? c }
-          good_system = bad_system.gsub(" ", "\", \"")
-          # TODO: check could be in RuboCop
-          problem "Use `system #{good_system}` instead of `system #{bad_system}` "
-        end
-      end
-
       # TODO: check could be in RuboCop
       problem "`#{Regexp.last_match(1)}` is now unnecessary" if line =~ /(require ["']formula["'])/
 
