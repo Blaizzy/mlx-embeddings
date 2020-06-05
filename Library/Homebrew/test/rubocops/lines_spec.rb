@@ -345,10 +345,10 @@ describe RuboCop::Cop::FormulaAudit::MpiCheck do
   end
 end
 
-describe RuboCop::Cop::FormulaAudit::ShellCmd do
+describe RuboCop::Cop::FormulaAudit::SafePopenCommands do
   subject(:cop) { described_class.new }
 
-  context "When auditing shell commands" do
+  context "When auditing popen commands" do
     it "Utils.popen_read should become Utils.safe_popen_read" do
       expect_offense(<<~RUBY)
         class Foo < Formula
@@ -436,6 +436,140 @@ describe RuboCop::Cop::FormulaAudit::ShellCmd do
 
       new_source = autocorrect_source(source)
       expect(new_source).to eq(source)
+    end
+  end
+end
+
+describe RuboCop::Cop::FormulaAudit::ShellVariables do
+  subject(:cop) { described_class.new }
+
+  context "When auditing shell variables" do
+    it "Shell variables should be expanded in Utils.popen" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          def install
+            Utils.popen "SHELL=bash foo"
+                         ^^^^^^^^^^^^^^ Use `Utils.popen({ "SHELL" => "bash" }, "foo")` instead of `Utils.popen "SHELL=bash foo"`
+          end
+        end
+      RUBY
+    end
+
+    it "Shell variables should be expanded in Utils.safe_popen_read" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          def install
+            Utils.safe_popen_read "SHELL=bash foo"
+                                   ^^^^^^^^^^^^^^ Use `Utils.safe_popen_read({ "SHELL" => "bash" }, "foo")` instead of `Utils.safe_popen_read "SHELL=bash foo"`
+          end
+        end
+      RUBY
+    end
+
+    it "Shell variables should be expanded in Utils.safe_popen_write" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          def install
+            Utils.safe_popen_write "SHELL=bash foo"
+                                    ^^^^^^^^^^^^^^ Use `Utils.safe_popen_write({ "SHELL" => "bash" }, "foo")` instead of `Utils.safe_popen_write "SHELL=bash foo"`
+          end
+        end
+      RUBY
+    end
+
+    it "Shell variables should be expanded and keep inline string variables in the arguments" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          def install
+            Utils.popen "SHELL=bash \#{bin}/foo"
+                         ^^^^^^^^^^^^^^^^^^^^^ Use `Utils.popen({ "SHELL" => "bash" }, "\#{bin}/foo")` instead of `Utils.popen "SHELL=bash \#{bin}/foo"`
+          end
+        end
+      RUBY
+    end
+
+    it "corrects shell variables in Utils.popen" do
+      source = <<~RUBY
+        class Foo < Formula
+          def install
+            Utils.popen("SHELL=bash foo")
+          end
+        end
+      RUBY
+
+      corrected_source = <<~RUBY
+        class Foo < Formula
+          def install
+            Utils.popen({ "SHELL" => "bash" }, "foo")
+          end
+        end
+      RUBY
+
+      new_source = autocorrect_source(source)
+      expect(new_source).to eq(corrected_source)
+    end
+
+    it "corrects shell variables in Utils.safe_popen_read" do
+      source = <<~RUBY
+        class Foo < Formula
+          def install
+            Utils.safe_popen_read("SHELL=bash foo")
+          end
+        end
+      RUBY
+
+      corrected_source = <<~RUBY
+        class Foo < Formula
+          def install
+            Utils.safe_popen_read({ "SHELL" => "bash" }, "foo")
+          end
+        end
+      RUBY
+
+      new_source = autocorrect_source(source)
+      expect(new_source).to eq(corrected_source)
+    end
+
+    it "corrects shell variables in Utils.safe_popen_write" do
+      source = <<~RUBY
+        class Foo < Formula
+          def install
+            Utils.safe_popen_write("SHELL=bash foo")
+          end
+        end
+      RUBY
+
+      corrected_source = <<~RUBY
+        class Foo < Formula
+          def install
+            Utils.safe_popen_write({ "SHELL" => "bash" }, "foo")
+          end
+        end
+      RUBY
+
+      new_source = autocorrect_source(source)
+      expect(new_source).to eq(corrected_source)
+    end
+
+    it "corrects shell variables with inline string variable in arguments" do
+      source = <<~RUBY
+        class Foo < Formula
+          def install
+            Utils.popen("SHELL=bash \#{bin}/foo")
+          end
+        end
+      RUBY
+
+      corrected_source = <<~RUBY
+        class Foo < Formula
+          def install
+            Utils.popen({ "SHELL" => "bash" }, "\#{bin}/foo")
+          end
+        end
+      RUBY
+
+      new_source = autocorrect_source(source)
+      expect(new_source).to eq(corrected_source)
     end
   end
 end
