@@ -303,18 +303,11 @@ describe Formula do
       formula do
         url "foo"
         version "1.9"
-
         head "foo"
-
-        devel do
-          url "foo"
-          version "2.1-devel"
-        end
       end
     end
 
     let(:stable_prefix) { HOMEBREW_CELLAR/f.name/f.version }
-    let(:devel_prefix) { HOMEBREW_CELLAR/f.name/f.devel.version }
     let(:head_prefix) { HOMEBREW_CELLAR/f.name/f.head.version }
 
     it "is the same as #prefix by default" do
@@ -324,11 +317,6 @@ describe Formula do
     it "returns the stable prefix if it is installed" do
       stable_prefix.mkpath
       expect(f.installed_prefix).to eq(stable_prefix)
-    end
-
-    it "returns the devel prefix if it is installed" do
-      devel_prefix.mkpath
-      expect(f.installed_prefix).to eq(devel_prefix)
     end
 
     it "returns the head prefix if it is installed" do
@@ -345,22 +333,6 @@ describe Formula do
       tab.write
 
       expect(f.installed_prefix).to eq(stable_prefix)
-    end
-
-    it "returns the stable prefix if head and devel are outdated" do
-      head_prefix.mkpath
-
-      tab = Tab.empty
-      tab.tabfile = head_prefix/Tab::FILENAME
-      tab.source["versions"] = { "stable" => "1.9", "devel" => "2.0" }
-      tab.write
-
-      expect(f.installed_prefix).to eq(stable_prefix)
-    end
-
-    it "returns the devel prefix if the active specification is :devel" do
-      f.active_spec = :devel
-      expect(f.installed_prefix).to eq(devel_prefix)
     end
 
     it "returns the head prefix if the active specification is :head" do
@@ -519,19 +491,12 @@ describe Formula do
       sha256 TEST_SHA256
 
       head "https://brew.sh/test.git", tag: "foo"
-
-      devel do
-        url "https://brew.sh/test-0.2.tbz"
-        mirror "https://example.org/test-0.2.tbz"
-        sha256 TEST_SHA256
-      end
     end
 
     expect(f.homepage).to eq("https://brew.sh")
     expect(f.version).to eq(Version.create("0.1"))
     expect(f).to be_stable
     expect(f.stable.version).to eq(Version.create("0.1"))
-    expect(f.devel.version).to eq(Version.create("0.2"))
     expect(f.head.version).to eq(Version.create("HEAD"))
   end
 
@@ -540,22 +505,12 @@ describe Formula do
       url "foo"
       version "1.0"
       revision 1
-
-      devel do
-        url "foo"
-        version "1.0beta"
-      end
     end
 
     expect(f.active_spec_sym).to eq(:stable)
     expect(f.send(:active_spec)).to eq(f.stable)
     expect(f.pkg_version.to_s).to eq("1.0_1")
 
-    f.active_spec = :devel
-
-    expect(f.active_spec_sym).to eq(:devel)
-    expect(f.send(:active_spec)).to eq(f.devel)
-    expect(f.pkg_version.to_s).to eq("1.0beta_1")
     expect { f.active_spec = :head }.to raise_error(FormulaSpecificationError)
   end
 
@@ -565,7 +520,6 @@ describe Formula do
     end
 
     expect(f.class.stable).to be_kind_of(SoftwareSpec)
-    expect(f.class.devel).to be_kind_of(SoftwareSpec)
     expect(f.class.head).to be_kind_of(SoftwareSpec)
   end
 
@@ -574,7 +528,6 @@ describe Formula do
       url "foo-1.0"
     end
 
-    expect(f.devel).to be nil
     expect(f.head).to be nil
   end
 
@@ -583,14 +536,9 @@ describe Formula do
       url "foo-1.0"
 
       depends_on "foo"
-
-      devel do
-        url "foo-1.1"
-      end
     end
 
     expect(f.class.stable.deps.first.name).to eq("foo")
-    expect(f.class.devel.deps.first.name).to eq("foo")
     expect(f.class.head.deps.first.name).to eq("foo")
   end
 
