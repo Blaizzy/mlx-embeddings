@@ -64,7 +64,7 @@ module I18n
         entry
       end
 
-      def exists?(locale, key)
+      def exists?(locale, key, options = EMPTY_HASH)
         lookup(locale, key) != nil
       end
 
@@ -146,7 +146,7 @@ module I18n
               I18n.translate(subject, **options.merge(:locale => locale, :throw => true))
             when Proc
               date_or_time = options.delete(:object) || object
-              resolve(locale, object, subject.call(date_or_time, options))
+              resolve(locale, object, subject.call(date_or_time, **options))
             else
               subject
             end
@@ -163,6 +163,7 @@ module I18n
         #   not standard with regards to the CLDR pluralization rules.
         # Other backends can implement more flexible or complex pluralization rules.
         def pluralize(locale, entry, count)
+          entry = entry.reject { |k, _v| k == :attributes } if entry.is_a?(Hash)
           return entry unless entry.is_a?(Hash) && count && entry.values.none? { |v| v.is_a?(Hash) }
 
           key = pluralization_key(entry, count)
