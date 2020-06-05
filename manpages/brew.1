@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "BREW" "1" "May 2020" "Homebrew" "brew"
+.TH "BREW" "1" "June 2020" "Homebrew" "brew"
 .
 .SH "NAME"
 \fBbrew\fR \- The Missing Package Manager for macOS
@@ -1188,36 +1188,6 @@ Use the specified \fIURL\fR as the root of the bottle\'s URL instead of Homebrew
 .
 .SS "\fBprof\fR \fIcommand\fR"
 Run Homebrew with the Ruby profiler, e\.g\. \fBbrew prof readall\fR\.
-.
-.SS "\fBpull\fR [\fIoptions\fR] \fIpatch\fR"
-Get a patch from a GitHub commit or pull request and apply it to Homebrew\.
-.
-.P
-Each \fIpatch\fR may be the number of a pull request in \fBhomebrew/core\fR or the URL of any pull request or commit on GitHub\.
-.
-.TP
-\fB\-\-bump\fR
-For one\-formula PRs, automatically reword commit message to our preferred format\.
-.
-.TP
-\fB\-\-clean\fR
-Do not rewrite or otherwise modify the commits found in the pulled PR\.
-.
-.TP
-\fB\-\-ignore\-whitespace\fR
-Silently ignore whitespace discrepancies when applying diffs\.
-.
-.TP
-\fB\-\-resolve\fR
-When a patch fails to apply, leave in progress and allow user to resolve, instead of aborting\.
-.
-.TP
-\fB\-\-branch\-okay\fR
-Do not warn if pulling to a branch besides master (useful for testing)\.
-.
-.TP
-\fB\-\-no\-pbcopy\fR
-Do not copy anything to the system clipboard\.
 .
 .SS "\fBrelease\-notes\fR [\fIoptions\fR] [\fIprevious_tag\fR] [\fIend_ref\fR]"
 Print the merged pull requests on Homebrew/brew between two Git refs\. If no \fIprevious_tag\fR is provided it defaults to the latest tag\. If no \fIend_ref\fR is provided it defaults to \fBorigin/master\fR\.

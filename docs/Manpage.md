@@ -917,26 +917,6 @@ Apply the bottle commit and publish bottles to Bintray.
 
 Run Homebrew with the Ruby profiler, e.g. `brew prof readall`.
 
-### `pull` [*`options`*] *`patch`*
-
-Get a patch from a GitHub commit or pull request and apply it to Homebrew.
-
-Each *`patch`* may be the number of a pull request in `homebrew/core` or the URL
-of any pull request or commit on GitHub.
-
-* `--bump`:
-  For one-formula PRs, automatically reword commit message to our preferred format.
-* `--clean`:
-  Do not rewrite or otherwise modify the commits found in the pulled PR.
-* `--ignore-whitespace`:
-  Silently ignore whitespace discrepancies when applying diffs.
-* `--resolve`:
-  When a patch fails to apply, leave in progress and allow user to resolve, instead of aborting.
-* `--branch-okay`:
-  Do not warn if pulling to a branch besides master (useful for testing).
-* `--no-pbcopy`:
-  Do not copy anything to the system clipboard.
-
 ### `release-notes` [*`options`*] [*`previous_tag`*] [*`end_ref`*]
 
 Print the merged pull requests on Homebrew/brew between two Git refs. If no
