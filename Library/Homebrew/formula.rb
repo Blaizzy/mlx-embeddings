@@ -2387,6 +2387,7 @@ class Formula
       @devel ||= SoftwareSpec.new
       return @devel unless block_given?
 
+      odeprecated "'devel' blocks in formulae", "'head' blocks or @-versioned formulae"
       @devel.instance_eval(&block)
     end
 
