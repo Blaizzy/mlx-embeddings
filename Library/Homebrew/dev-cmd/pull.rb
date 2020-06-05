@@ -15,6 +15,7 @@ module Homebrew
 
   def pull_args
     Homebrew::CLI::Parser.new do
+      hide_from_man_page!
       usage_banner <<~EOS
         `pull` [<options>] <patch>
 
@@ -43,6 +44,8 @@ module Homebrew
   end
 
   def pull
+    odeprecated "brew pull", "hub checkout"
+
     odie "You meant `git pull --rebase`." if ARGV[0] == "--rebase"
 
     pull_args.parse
