@@ -73,9 +73,9 @@ module I18n
           throw(:exception, I18n::MissingTranslation.new(locale, key, options))
         end
 
-        def exists?(locale, key)
+        def exists?(locale, key, options = EMPTY_HASH)
           backends.any? do |backend|
-            backend.exists?(locale, key)
+            backend.exists?(locale, key, options)
           end
         end
 
@@ -101,8 +101,7 @@ module I18n
                 init_translations unless initialized?
                 translations
               end
-
-              memo.deep_merge!(partial_translations)
+              memo.deep_merge!(partial_translations) { |_, a, b| b || a }
             end
           end
 
