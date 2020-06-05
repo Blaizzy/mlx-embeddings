@@ -345,6 +345,101 @@ describe RuboCop::Cop::FormulaAudit::MpiCheck do
   end
 end
 
+describe RuboCop::Cop::FormulaAudit::ShellCmd do
+  subject(:cop) { described_class.new }
+
+  context "When auditing shell commands" do
+    it "Utils.popen_read should become Utils.safe_popen_read" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          def install
+            Utils.popen_read "foo"
+            ^^^^^^^^^^^^^^^^^^^^^^ Use `Utils.safe_popen_read` instead of `Utils.popen_read`
+          end
+        end
+      RUBY
+    end
+
+    it "Utils.safe_popen_write should become Utils.popen_write" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          def install
+            Utils.popen_write "foo"
+            ^^^^^^^^^^^^^^^^^^^^^^^ Use `Utils.safe_popen_write` instead of `Utils.popen_write`
+          end
+        end
+      RUBY
+    end
+
+    it "does not correct Utils.popen_read in test block" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          def install; end
+          test do
+            Utils.popen_read "foo"
+          end
+        end
+      RUBY
+    end
+
+    it "corrects Utils.popen_read to Utils.safe_popen_read" do
+      source = <<~RUBY
+        class Foo < Formula
+          def install
+            Utils.popen_read "foo"
+          end
+        end
+      RUBY
+
+      corrected_source = <<~RUBY
+        class Foo < Formula
+          def install
+            Utils.safe_popen_read "foo"
+          end
+        end
+      RUBY
+
+      new_source = autocorrect_source(source)
+      expect(new_source).to eq(corrected_source)
+    end
+
+    it "corrects Utils.popen_write to Utils.safe_popen_write" do
+      source = <<~RUBY
+        class Foo < Formula
+          def install
+            Utils.popen_write "foo"
+          end
+        end
+      RUBY
+
+      corrected_source = <<~RUBY
+        class Foo < Formula
+          def install
+            Utils.safe_popen_write "foo"
+          end
+        end
+      RUBY
+
+      new_source = autocorrect_source(source)
+      expect(new_source).to eq(corrected_source)
+    end
+
+    it "does not correct to Utils.safe_popen_read in test block" do
+      source = <<~RUBY
+        class Foo < Formula
+          def install; end
+          test do
+            Utils.popen_write "foo"
+          end
+        end
+      RUBY
+
+      new_source = autocorrect_source(source)
+      expect(new_source).to eq(source)
+    end
+  end
+end
+
 describe RuboCop::Cop::FormulaAudit::Miscellaneous do
   subject(:cop) { described_class.new }
 
