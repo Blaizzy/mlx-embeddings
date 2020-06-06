@@ -9,29 +9,29 @@ describe Homebrew::MissingFormula do
     it { is_expected.not_to be_nil }
   end
 
-  describe "::blacklisted_reason" do
-    matcher :blacklist do |name|
+  describe "::disallowed_reason" do
+    matcher :disallow do |name|
       match do |expected|
-        expected.blacklisted_reason(name)
+        expected.disallowed_reason(name)
       end
     end
 
-    it { is_expected.to blacklist("gem") }
-    it("blacklists LaTeX", :needs_macos) { is_expected.to blacklist("latex") }
-    it { is_expected.to blacklist("pip") }
-    it { is_expected.to blacklist("pil") }
-    it { is_expected.to blacklist("macruby") }
-    it { is_expected.to blacklist("lzma") }
-    it { is_expected.to blacklist("gtest") }
-    it { is_expected.to blacklist("gmock") }
-    it { is_expected.to blacklist("sshpass") }
-    it { is_expected.to blacklist("gsutil") }
-    it { is_expected.to blacklist("gfortran") }
-    it { is_expected.to blacklist("play") }
-    it { is_expected.to blacklist("haskell-platform") }
-    it { is_expected.to blacklist("mysqldump-secure") }
-    it { is_expected.to blacklist("ngrok") }
-    it("blacklists Xcode", :needs_macos) { is_expected.to blacklist("xcode") }
+    it { is_expected.to disallow("gem") }
+    it("disallows LaTeX", :needs_macos) { is_expected.to disallow("latex") }
+    it { is_expected.to disallow("pip") }
+    it { is_expected.to disallow("pil") }
+    it { is_expected.to disallow("macruby") }
+    it { is_expected.to disallow("lzma") }
+    it { is_expected.to disallow("gtest") }
+    it { is_expected.to disallow("gmock") }
+    it { is_expected.to disallow("sshpass") }
+    it { is_expected.to disallow("gsutil") }
+    it { is_expected.to disallow("gfortran") }
+    it { is_expected.to disallow("play") }
+    it { is_expected.to disallow("haskell-platform") }
+    it { is_expected.to disallow("mysqldump-secure") }
+    it { is_expected.to disallow("ngrok") }
+    it("disallows Xcode", :needs_macos) { is_expected.to disallow("xcode") }
   end
 
   describe "::tap_migration_reason" do

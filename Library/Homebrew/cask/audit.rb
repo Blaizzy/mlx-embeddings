@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "cask/blacklist"
+require "cask/denylist"
 require "cask/checkable"
 require "cask/download"
 require "digest"
@@ -32,7 +32,7 @@ module Cask
     end
 
     def run!
-      check_blacklist
+      check_denylist
       check_required_stanzas
       check_version
       check_sha256
@@ -370,11 +370,11 @@ module Cask
       [user, repo]
     end
 
-    def check_blacklist
+    def check_denylist
       return if cask.tap&.user != "Homebrew"
-      return unless reason = Blacklist.blacklisted_reason(cask.token)
+      return unless reason = Denylist.reason(cask.token)
 
-      add_error "#{cask.token} is blacklisted: #{reason}"
+      add_error "#{cask.token} is not allowed: #{reason}"
     end
 
     def check_https_availability

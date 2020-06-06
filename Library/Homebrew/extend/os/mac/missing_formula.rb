@@ -8,7 +8,7 @@ require "cask/caskroom"
 module Homebrew
   module MissingFormula
     class << self
-      def blacklisted_reason(name)
+      def disallowed_reason(name)
         case name.downcase
         when "xcode"
           <<~EOS
@@ -28,7 +28,7 @@ module Homebrew
               brew cask install basictex
           EOS
         else
-          generic_blacklisted_reason(name)
+          generic_disallowed_reason(name)
         end
       end
 

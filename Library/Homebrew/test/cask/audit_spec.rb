@@ -399,18 +399,18 @@ describe Cask::Audit, :cask do
       end
     end
 
-    describe "blacklist checks" do
-      context "when the Cask isn't blacklisted" do
+    describe "denylist checks" do
+      context "when the Cask isn't disallowed" do
         let(:cask_token) { "adobe-air" }
 
         it { is_expected.to pass }
       end
 
-      context "when the Cask is blacklisted" do
+      context "when the Cask is disallowed" do
         context "and it's in the official Homebrew tap" do
           let(:cask_token) { "adobe-illustrator" }
 
-          it { is_expected.to fail_with(/#{cask_token} is blacklisted: \w+/) }
+          it { is_expected.to fail_with(/#{cask_token} is not allowed: \w+/) }
         end
 
         context "and it isn't in the official Homebrew tap" do

@@ -2609,12 +2609,12 @@ class Formula
     # end</pre>
     #
     # The block may be omitted, and if present the build may be omitted;
-    # if so, then the compiler will be blacklisted for *all* versions.
+    # if so, then the compiler will not be allowed for *all* versions.
     #
     # `major_version` should be the major release number only, for instance
     # '7' for the GCC 7 series (7.0, 7.1, etc.).
-    # If `version` or the block is omitted, then the compiler will be
-    # blacklisted for all compilers in that series.
+    # If `version` or the block is omitted, then the compiler will
+    # not be allowed for all compilers in that series.
     #
     # For example, if a bug is only triggered on GCC 7.1 but is not
     # encountered on 7.2:

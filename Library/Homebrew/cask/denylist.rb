@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Cask
-  module Blacklist
-    def self.blacklisted_reason(name)
+  module Denylist
+    def self.reason(name)
       case name
       when /^adobe-(after|illustrator|indesign|photoshop|premiere)/
         "Adobe casks were removed because they are too difficult to maintain."

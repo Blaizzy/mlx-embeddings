@@ -309,7 +309,7 @@ module Homebrew
 
       name = formula.name
 
-      problem "'#{name}' is blacklisted from homebrew/core." if MissingFormula.blacklisted_reason(name)
+      problem "'#{name}' is not allowed in homebrew/core." if MissingFormula.disallowed_reason(name)
 
       if Formula.aliases.include? name
         problem "Formula name conflicts with existing aliases in homebrew/core."
@@ -557,7 +557,7 @@ module Homebrew
       imagemagick@6
     ].freeze
 
-    THROTTLED_BLACKLIST = {
+    THROTTLED_DENYLIST = {
       "aws-sdk-cpp" => "10",
       "awscli@1"    => "10",
       "quicktype"   => "10",
@@ -649,7 +649,7 @@ module Homebrew
         problem head_spec_message unless VERSIONED_HEAD_SPEC_ALLOWLIST.include?(formula.name)
       end
 
-      THROTTLED_BLACKLIST.each do |f, v|
+      THROTTLED_DENYLIST.each do |f, v|
         next if formula.stable.nil?
 
         version = formula.stable.version.to_s.split(".").last.to_i
