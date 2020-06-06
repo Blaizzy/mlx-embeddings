@@ -1088,7 +1088,7 @@ class Formula
   end
 
   # Sometimes we accidentally install files outside prefix. After we fix that,
-  # users will get nasty link conflict error. So we create a whitelist here to
+  # users will get nasty link conflict error. So we create an allowlist here to
   # allow overwriting certain files. e.g.
   #   link_overwrite "bin/foo", "lib/bar"
   #   link_overwrite "share/man/man1/baz-*"
@@ -1111,7 +1111,7 @@ class Formula
       begin
         Formulary.factory(keg.name)
       rescue FormulaUnavailableError
-        # formula for this keg is deleted, so defer to whitelist
+        # formula for this keg is deleted, so defer to allowlist
       rescue TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
         return false # this keg belongs to another formula
       else
@@ -2609,12 +2609,12 @@ class Formula
     # end</pre>
     #
     # The block may be omitted, and if present the build may be omitted;
-    # if so, then the compiler will be blacklisted for *all* versions.
+    # if so, then the compiler will not be allowed for *all* versions.
     #
     # `major_version` should be the major release number only, for instance
     # '7' for the GCC 7 series (7.0, 7.1, etc.).
-    # If `version` or the block is omitted, then the compiler will be
-    # blacklisted for all compilers in that series.
+    # If `version` or the block is omitted, then the compiler will
+    # not be allowed for all compilers in that series.
     #
     # For example, if a bug is only triggered on GCC 7.1 but is not
     # encountered on 7.2:

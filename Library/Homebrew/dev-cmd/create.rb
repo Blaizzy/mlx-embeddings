@@ -101,12 +101,12 @@ module Homebrew
       fc.update_path
     end
 
-    # Don't allow blacklisted formula, or names that shadow aliases,
+    # Check for disallowed formula, or names that shadow aliases,
     # unless --force is specified.
     unless args.force?
-      if reason = MissingFormula.blacklisted_reason(fc.name)
+      if reason = MissingFormula.disallowed_reason(fc.name)
         raise <<~EOS
-          #{fc.name} is blacklisted for creation.
+          #{fc.name} is not allowed to be created.
           #{reason}
           If you really want to create this formula use --force.
         EOS

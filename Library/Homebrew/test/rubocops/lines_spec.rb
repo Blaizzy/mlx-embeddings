@@ -865,5 +865,5 @@ describe RuboCop::Cop::FormulaAuditStrict::MakeCheck do
     RUBY
   end
 
-  include_examples "formulae exist", described_class::MAKE_CHECK_WHITELIST
+  include_examples "formulae exist", described_class::MAKE_CHECK_ALLOWLIST
 end

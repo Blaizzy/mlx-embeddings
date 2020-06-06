@@ -171,11 +171,11 @@ module Homebrew
         EOS
       end
 
-      def __check_stray_files(dir, pattern, white_list, message)
+      def __check_stray_files(dir, pattern, allow_list, message)
         return unless File.directory?(dir)
 
         files = Dir.chdir(dir) do
-          (Dir.glob(pattern) - Dir.glob(white_list))
+          (Dir.glob(pattern) - Dir.glob(allow_list))
             .select { |f| File.file?(f) && !File.symlink?(f) }
             .map { |f| File.join(dir, f) }
         end
@@ -187,7 +187,7 @@ module Homebrew
       def check_for_stray_dylibs
         # Dylibs which are generally OK should be added to this list,
         # with a short description of the software they come with.
-        white_list = [
+        allow_list = [
           "libfuse.2.dylib", # MacFuse
           "libfuse_ino64.2.dylib", # MacFuse
           "libmacfuse_i32.2.dylib", # OSXFuse MacFuse compatibility layer
@@ -207,7 +207,7 @@ module Homebrew
           "sentinel-*.dylib", # SentinelOne
         ]
 
-        __check_stray_files "/usr/local/lib", "*.dylib", white_list, <<~EOS
+        __check_stray_files "/usr/local/lib", "*.dylib", allow_list, <<~EOS
           Unbrewed dylibs were found in /usr/local/lib.
           If you didn't put them there on purpose they could cause problems when
           building Homebrew formulae, and may need to be deleted.
@@ -219,7 +219,7 @@ module Homebrew
       def check_for_stray_static_libs
         # Static libs which are generally OK should be added to this list,
         # with a short description of the software they come with.
-        white_list = [
+        allow_list = [
           "libntfs-3g.a", # NTFS-3G
           "libntfs.a", # NTFS-3G
           "libublio.a", # NTFS-3G
@@ -232,7 +232,7 @@ module Homebrew
           "libtrustedcomponents.a", # Symantec Endpoint Protection
         ]
 
-        __check_stray_files "/usr/local/lib", "*.a", white_list, <<~EOS
+        __check_stray_files "/usr/local/lib", "*.a", allow_list, <<~EOS
           Unbrewed static libraries were found in /usr/local/lib.
           If you didn't put them there on purpose they could cause problems when
           building Homebrew formulae, and may need to be deleted.
@@ -244,7 +244,7 @@ module Homebrew
       def check_for_stray_pcs
         # Package-config files which are generally OK should be added to this list,
         # with a short description of the software they come with.
-        white_list = [
+        allow_list = [
           "fuse.pc", # OSXFuse/MacFuse
           "macfuse.pc", # OSXFuse MacFuse compatibility layer
           "osxfuse.pc", # OSXFuse
@@ -252,7 +252,7 @@ module Homebrew
           "libublio.pc", # NTFS-3G
         ]
 
-        __check_stray_files "/usr/local/lib/pkgconfig", "*.pc", white_list, <<~EOS
+        __check_stray_files "/usr/local/lib/pkgconfig", "*.pc", allow_list, <<~EOS
           Unbrewed .pc files were found in /usr/local/lib/pkgconfig.
           If you didn't put them there on purpose they could cause problems when
           building Homebrew formulae, and may need to be deleted.
@@ -262,7 +262,7 @@ module Homebrew
       end
 
       def check_for_stray_las
-        white_list = [
+        allow_list = [
           "libfuse.la", # MacFuse
           "libfuse_ino64.la", # MacFuse
           "libosxfuse_i32.la", # OSXFuse
@@ -273,7 +273,7 @@ module Homebrew
           "libublio.la", # NTFS-3G
         ]
 
-        __check_stray_files "/usr/local/lib", "*.la", white_list, <<~EOS
+        __check_stray_files "/usr/local/lib", "*.la", allow_list, <<~EOS
           Unbrewed .la files were found in /usr/local/lib.
           If you didn't put them there on purpose they could cause problems when
           building Homebrew formulae, and may need to be deleted.
@@ -283,7 +283,7 @@ module Homebrew
       end
 
       def check_for_stray_headers
-        white_list = [
+        allow_list = [
           "fuse.h", # MacFuse
           "fuse/**/*.h", # MacFuse
           "macfuse/**/*.h", # OSXFuse MacFuse compatibility layer
@@ -292,7 +292,7 @@ module Homebrew
           "ntfs-3g/**/*.h", # NTFS-3G
         ]
 
-        __check_stray_files "/usr/local/include", "**/*.h", white_list, <<~EOS
+        __check_stray_files "/usr/local/include", "**/*.h", allow_list, <<~EOS
           Unbrewed header files were found in /usr/local/include.
           If you didn't put them there on purpose they could cause problems when
           building Homebrew formulae, and may need to be deleted.
@@ -444,7 +444,7 @@ module Homebrew
 
         scripts = []
 
-        whitelist = %W[
+        allowlist = %W[
           /bin /sbin
           /usr/bin /usr/sbin
           /usr/X11/bin /usr/X11R6/bin /opt/X11/bin
@@ -454,7 +454,7 @@ module Homebrew
         ].map(&:downcase)
 
         paths.each do |p|
-          next if whitelist.include?(p.downcase) || !File.directory?(p)
+          next if allowlist.include?(p.downcase) || !File.directory?(p)
 
           realpath = Pathname.new(p).realpath.to_s
           next if realpath.start_with?(real_cellar.to_s, HOMEBREW_CELLAR.to_s)

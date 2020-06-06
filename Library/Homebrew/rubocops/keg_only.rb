@@ -10,7 +10,7 @@ module RuboCop
           keg_only_node = find_node_method_by_name(body_node, :keg_only)
           return unless keg_only_node
 
-          whitelist = %w[
+          allowlist = %w[
             Apple
             macOS
             OS
@@ -27,7 +27,7 @@ module RuboCop
           reason = reason.sub(name, "")
           first_word = reason.split.first
 
-          if reason =~ /\A[A-Z]/ && !reason.start_with?(*whitelist)
+          if reason =~ /\A[A-Z]/ && !reason.start_with?(*allowlist)
             problem "'#{first_word}' from the keg_only reason should be '#{first_word.downcase}'."
           end
 

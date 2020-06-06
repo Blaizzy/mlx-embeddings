@@ -239,7 +239,7 @@ describe RuboCop::Cop::FormulaAudit::Urls do
     end
   end
 
-  include_examples "formulae exist", described_class::BINARY_BOOTSTRAP_FORMULA_URLS_WHITELIST
+  include_examples "formulae exist", described_class::BINARY_BOOTSTRAP_FORMULA_URLS_ALLOWLIST
 end
 
 describe RuboCop::Cop::FormulaAudit::PyPiUrls do

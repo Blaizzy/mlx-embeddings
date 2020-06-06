@@ -309,7 +309,7 @@ module Homebrew
 
       name = formula.name
 
-      problem "'#{name}' is blacklisted from homebrew/core." if MissingFormula.blacklisted_reason(name)
+      problem "'#{name}' is not allowed in homebrew/core." if MissingFormula.disallowed_reason(name)
 
       if Formula.aliases.include? name
         problem "Formula name conflicts with existing aliases in homebrew/core."
@@ -327,7 +327,7 @@ module Homebrew
       problem "Formula name conflicts with existing core formula."
     end
 
-    USES_FROM_MACOS_WHITELIST = %w[
+    USES_FROM_MACOS_ALLOWLIST = %w[
       apr
       apr-util
       openblas
@@ -369,7 +369,7 @@ module Homebrew
              dep_f.keg_only? &&
              dep_f.keg_only_reason.provided_by_macos? &&
              dep_f.keg_only_reason.applicable? &&
-             !USES_FROM_MACOS_WHITELIST.include?(dep.name)
+             !USES_FROM_MACOS_ALLOWLIST.include?(dep.name)
             new_formula_problem(
               "Dependency '#{dep.name}' is provided by macOS; " \
               "please replace 'depends_on' with 'uses_from_macos'.",
@@ -441,7 +441,7 @@ module Homebrew
       end
     end
 
-    VERSIONED_KEG_ONLY_WHITELIST = %w[
+    VERSIONED_KEG_ONLY_ALLOWLIST = %w[
       autoconf@2.13
       bash-completion@2
       gnupg@1.4
@@ -463,7 +463,7 @@ module Homebrew
         end
       end
 
-      return if VERSIONED_KEG_ONLY_WHITELIST.include?(formula.name) || formula.name.start_with?("gcc@")
+      return if VERSIONED_KEG_ONLY_ALLOWLIST.include?(formula.name) || formula.name.start_with?("gcc@")
 
       problem "Versioned formulae in homebrew/core should use `keg_only :versioned_formula`"
     end
@@ -552,19 +552,19 @@ module Homebrew
       [user, repo]
     end
 
-    VERSIONED_HEAD_SPEC_WHITELIST = %w[
+    VERSIONED_HEAD_SPEC_ALLOWLIST = %w[
       bash-completion@2
       imagemagick@6
     ].freeze
 
-    THROTTLED_BLACKLIST = {
+    THROTTLED_DENYLIST = {
       "aws-sdk-cpp" => "10",
       "awscli@1"    => "10",
       "quicktype"   => "10",
       "vim"         => "50",
     }.freeze
 
-    UNSTABLE_WHITELIST = {
+    UNSTABLE_ALLOWLIST = {
       "aalib"           => "1.4rc",
       "automysqlbackup" => "3.0-rc",
       "aview"           => "1.3.0rc",
@@ -582,7 +582,7 @@ module Homebrew
       "vbindiff"        => "3.0_beta",
     }.freeze
 
-    GNOME_DEVEL_WHITELIST = {
+    GNOME_DEVEL_ALLOWLIST = {
       "libart"              => "2.3",
       "gtk-mac-integration" => "2.1",
       "gtk-doc"             => "1.31",
@@ -646,10 +646,10 @@ module Homebrew
 
       if formula.head && @versioned_formula
         head_spec_message = "Formulae should not have a `HEAD` spec"
-        problem head_spec_message unless VERSIONED_HEAD_SPEC_WHITELIST.include?(formula.name)
+        problem head_spec_message unless VERSIONED_HEAD_SPEC_ALLOWLIST.include?(formula.name)
       end
 
-      THROTTLED_BLACKLIST.each do |f, v|
+      THROTTLED_DENYLIST.each do |f, v|
         next if formula.stable.nil?
 
         version = formula.stable.version.to_s.split(".").last.to_i
@@ -672,12 +672,12 @@ module Homebrew
       when /[\d._-](alpha|beta|rc\d)/
         matched = Regexp.last_match(1)
         version_prefix = stable_version_string.sub(/\d+$/, "")
-        return if UNSTABLE_WHITELIST[formula.name] == version_prefix
+        return if UNSTABLE_ALLOWLIST[formula.name] == version_prefix
 
         problem "Stable version URLs should not contain #{matched}"
       when %r{download\.gnome\.org/sources}, %r{ftp\.gnome\.org/pub/GNOME/sources}i
         version_prefix = stable_version_string.split(".")[0..1].join(".")
-        return if GNOME_DEVEL_WHITELIST[formula.name] == version_prefix
+        return if GNOME_DEVEL_ALLOWLIST[formula.name] == version_prefix
         return if stable_url_version < Version.create("1.0")
         return if stable_url_minor_version.even?
 

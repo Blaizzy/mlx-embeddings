@@ -457,7 +457,7 @@ module RuboCop
 
     module FormulaAuditStrict
       class MakeCheck < FormulaCop
-        MAKE_CHECK_WHITELIST = %w[
+        MAKE_CHECK_ALLOWLIST = %w[
           beecrypt
           ccrypt
           git
@@ -483,7 +483,7 @@ module RuboCop
           # Avoid build-time checks in homebrew/core
           find_every_method_call_by_name(body_node, :system).each do |method|
             next if @formula_name.start_with?("lib")
-            next if MAKE_CHECK_WHITELIST.include?(@formula_name)
+            next if MAKE_CHECK_ALLOWLIST.include?(@formula_name)
 
             params = parameters(method)
             next unless node_equals?(params[0], "make")

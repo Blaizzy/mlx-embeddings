@@ -603,7 +603,7 @@ class SubversionDownloadStrategy < VCSDownloadStrategy
 end
 
 class GitDownloadStrategy < VCSDownloadStrategy
-  SHALLOW_CLONE_WHITELIST = [
+  SHALLOW_CLONE_ALLOWLIST = [
     %r{git://},
     %r{https://github\.com},
     %r{http://git\.sv\.gnu\.org},
@@ -654,7 +654,7 @@ class GitDownloadStrategy < VCSDownloadStrategy
   end
 
   def support_depth?
-    @ref_type != :revision && SHALLOW_CLONE_WHITELIST.any? { |regex| @url =~ regex }
+    @ref_type != :revision && SHALLOW_CLONE_ALLOWLIST.any? { |regex| @url =~ regex }
   end
 
   def git_dir

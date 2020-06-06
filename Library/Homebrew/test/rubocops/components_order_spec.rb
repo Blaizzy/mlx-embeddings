@@ -477,6 +477,6 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
       RUBY
     end
 
-    include_examples "formulae exist", described_class::COMPONENT_WHITELIST
+    include_examples "formulae exist", described_class::COMPONENT_ALLOWLIST
   end
 end

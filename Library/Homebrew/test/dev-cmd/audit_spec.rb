@@ -234,7 +234,7 @@ module Homebrew
 
     describe "#audit_deps" do
       describe "a dependency on a macOS-provided keg-only formula" do
-        describe "which is whitelisted" do
+        describe "which is allowlisted" do
           subject { fa }
 
           let(:fa) do
@@ -266,7 +266,7 @@ module Homebrew
           its(:problems) { are_expected.to be_empty }
         end
 
-        describe "which is not whitelisted", :needs_macos do
+        describe "which is not allowlisted", :needs_macos do
           subject { fa }
 
           let(:fa) do
@@ -518,11 +518,11 @@ module Homebrew
       end
     end
 
-    include_examples "formulae exist", described_class::VERSIONED_KEG_ONLY_WHITELIST
-    include_examples "formulae exist", described_class::VERSIONED_HEAD_SPEC_WHITELIST
-    include_examples "formulae exist", described_class::USES_FROM_MACOS_WHITELIST
-    include_examples "formulae exist", described_class::THROTTLED_BLACKLIST.keys
-    include_examples "formulae exist", described_class::UNSTABLE_WHITELIST.keys
-    include_examples "formulae exist", described_class::GNOME_DEVEL_WHITELIST.keys
+    include_examples "formulae exist", described_class::VERSIONED_KEG_ONLY_ALLOWLIST
+    include_examples "formulae exist", described_class::VERSIONED_HEAD_SPEC_ALLOWLIST
+    include_examples "formulae exist", described_class::USES_FROM_MACOS_ALLOWLIST
+    include_examples "formulae exist", described_class::THROTTLED_DENYLIST.keys
+    include_examples "formulae exist", described_class::UNSTABLE_ALLOWLIST.keys
+    include_examples "formulae exist", described_class::GNOME_DEVEL_ALLOWLIST.keys
   end
 end

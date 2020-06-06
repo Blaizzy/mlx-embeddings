@@ -27,5 +27,5 @@ describe RuboCop::Cop::FormulaAudit::Conflicts do
     end
   end
 
-  include_examples "formulae exist", described_class::WHITELIST
+  include_examples "formulae exist", described_class::ALLOWLIST
 end

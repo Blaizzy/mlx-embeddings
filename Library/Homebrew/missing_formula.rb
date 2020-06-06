@@ -6,11 +6,11 @@ module Homebrew
   module MissingFormula
     class << self
       def reason(name, silent: false, show_info: false)
-        cask_reason(name, silent: silent, show_info: show_info) || blacklisted_reason(name) ||
+        cask_reason(name, silent: silent, show_info: show_info) || disallowed_reason(name) ||
           tap_migration_reason(name) || deleted_reason(name, silent: silent)
       end
 
-      def blacklisted_reason(name)
+      def disallowed_reason(name)
         case name.downcase
         when "gem", /^rubygems?$/ then <<~EOS
           macOS provides gem as part of Ruby. To install a newer version:
@@ -91,7 +91,7 @@ module Homebrew
         EOS
         end
       end
-      alias generic_blacklisted_reason blacklisted_reason
+      alias generic_disallowed_reason disallowed_reason
 
       def tap_migration_reason(name)
         message = nil
