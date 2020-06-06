@@ -68,7 +68,7 @@ describe "brew install", :integration_test do
     # and there will be the git requirement, but we cannot instantiate git
     # formula since we only have testball1 formula.
     expect { brew "install", "testball1", "--HEAD", "--ignore-dependencies" }
-      .to output(%r{#{HOMEBREW_CELLAR}/testball1/HEAD\-d5eb689}).to_stdout
+      .to output(%r{#{HOMEBREW_CELLAR}/testball1/HEAD-d5eb689}).to_stdout
       .and output(/Cloning into/).to_stderr
       .and be_a_success
     expect(HOMEBREW_CELLAR/"testball1/HEAD-d5eb689/foo/test").not_to be_a_file

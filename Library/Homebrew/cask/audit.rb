@@ -6,6 +6,7 @@ require "cask/download"
 require "digest"
 require "utils/curl"
 require "utils/git"
+require "utils/notability"
 
 module Cask
   class Audit
@@ -14,20 +15,20 @@ module Cask
 
     attr_reader :cask, :commit_range, :download
 
-    attr_predicate :check_appcast?
+    attr_predicate :appcast?
 
-    def initialize(cask, check_appcast: false, download: false, check_token_conflicts: false,
-                   commit_range: nil, command: SystemCommand)
+    def initialize(cask, appcast: false, download: false,
+                   token_conflicts: false, online: false, strict: false,
+                   new_cask: false, commit_range: nil, command: SystemCommand)
       @cask = cask
-      @check_appcast = check_appcast
+      @appcast = appcast
       @download = download
+      @online = online
+      @strict = strict
+      @new_cask = new_cask
       @commit_range = commit_range
-      @check_token_conflicts = check_token_conflicts
+      @token_conflicts = token_conflicts
       @command = command
-    end
-
-    def check_token_conflicts?
-      @check_token_conflicts
     end
 
     def run!
@@ -48,6 +49,9 @@ module Cask
       check_latest_with_auto_updates
       check_stanza_requires_uninstall
       check_appcast_contains_version
+      check_github_repository
+      check_gitlab_repository
+      check_bitbucket_repository
       self
     rescue => e
       odebug "#{e.message}\n#{e.backtrace.join("\n")}"
@@ -255,7 +259,7 @@ module Cask
       bad_url_format?(/sourceforge/,
                       [
                         %r{\Ahttps://sourceforge\.net/projects/[^/]+/files/latest/download\Z},
-                        %r{\Ahttps://downloads\.sourceforge\.net/(?!(project|sourceforge)\/)},
+                        %r{\Ahttps://downloads\.sourceforge\.net/(?!(project|sourceforge)/)},
                       ])
     end
 
@@ -272,7 +276,7 @@ module Cask
     end
 
     def check_token_conflicts
-      return unless check_token_conflicts?
+      return unless @token_conflicts
       return unless core_formula_names.include?(cask.token)
 
       add_warning "possible duplicate, cask token conflicts with Homebrew core formula: #{core_formula_url}"
@@ -301,7 +305,7 @@ module Cask
     end
 
     def check_appcast_contains_version
-      return unless check_appcast?
+      return unless appcast?
       return if cask.appcast.to_s.empty?
       return if cask.appcast.must_contain == :no_check
 
@@ -309,8 +313,8 @@ module Cask
       appcast_contents, = curl_output("--compressed", "--user-agent", HOMEBREW_USER_AGENT_FAKE_SAFARI, "--location",
                                       "--globoff", "--max-time", "5", appcast_stanza)
       version_stanza = cask.version.to_s
-      adjusted_version_stanza = if cask.appcast.must_contain.blank?
-        version_stanza.split(",")[0].split("-")[0].split("_")[0]
+      adjusted_version_stanza = if cask.appcast.configuration.blank?
+        version_stanza.match(/^[[:alnum:].]+/)[0]
       else
         cask.appcast.must_contain
       end
@@ -320,6 +324,50 @@ module Cask
                   " the version number '#{adjusted_version_stanza}':\n#{appcast_contents}"
     rescue
       add_error "appcast at URL '#{appcast_stanza}' offline or looping"
+    end
+
+    def check_github_repository
+      user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*})
+      return if user.nil?
+
+      odebug "Auditing GitHub repo"
+
+      error = SharedAudits.github(user, repo)
+      add_error error if error
+    end
+
+    def check_gitlab_repository
+      user, repo = get_repo_data(%r{https?://gitlab\.com/([^/]+)/([^/]+)/?.*})
+      return if user.nil?
+
+      odebug "Auditing GitLab repo"
+
+      error = SharedAudits.gitlab(user, repo)
+      add_error error if error
+    end
+
+    def check_bitbucket_repository
+      user, repo = get_repo_data(%r{https?://bitbucket\.org/([^/]+)/([^/]+)/?.*})
+      return if user.nil?
+
+      odebug "Auditing Bitbucket repo"
+
+      error = SharedAudits.bitbucket(user, repo)
+      add_error error if error
+    end
+
+    def get_repo_data(regex)
+      return unless @online
+      return unless @new_cask
+
+      _, user, repo = *regex.match(cask.url.to_s)
+      _, user, repo = *regex.match(cask.homepage) unless user
+      _, user, repo = *regex.match(cask.appcast.to_s) unless user
+      return if !user || !repo
+
+      repo.gsub!(/.git$/, "")
+
+      [user, repo]
     end
 
     def check_blacklist

@@ -14,8 +14,6 @@ module GitHub
   ALL_SCOPES_URL = Formatter.url(
     "https://github.com/settings/tokens/new?scopes=#{ALL_SCOPES.join(",")}&description=Homebrew",
   ).freeze
-  PR_ENV_KEY = "HOMEBREW_NEW_FORMULA_PULL_REQUEST_URL"
-  PR_ENV = ENV[PR_ENV_KEY]
 
   class Error < RuntimeError
     attr_reader :github_message
@@ -396,37 +394,6 @@ module GitHub
     open_api(uri) { |json| json.fetch("items", []) }
   end
 
-  def create_issue_comment(body)
-    return false unless PR_ENV
-
-    _, user, repo, pr = *PR_ENV.match(HOMEBREW_PULL_OR_COMMIT_URL_REGEX)
-    if !user || !repo || !pr
-      opoo <<-EOS.undent
-        #{PR_ENV_KEY} set but regex matched:
-        user: #{user.inspect}, repo: #{repo.inspect}, pr: #{pr.inspect}
-      EOS
-      return false
-    end
-
-    url = "#{API_URL}/repos/#{user}/#{repo}/issues/#{pr}/comments"
-    data = { "body" => body }
-    if issue_comment_exists?(user, repo, pr, body)
-      ohai "Skipping: identical comment exists on #{PR_ENV}"
-      return true
-    end
-
-    scopes = CREATE_ISSUE_FORK_OR_PR_SCOPES
-    open_api(url, data: data, scopes: scopes)
-  end
-
-  def issue_comment_exists?(user, repo, pr, body)
-    url = "#{API_URL}/repos/#{user}/#{repo}/issues/#{pr}/comments"
-    comments = open_api(url)
-    return unless comments
-
-    comments.any? { |comment| comment["body"].eql?(body) }
-  end
-
   def dispatch_event(user, repo, event, **payload)
     url = "#{API_URL}/repos/#{user}/#{repo}/dispatches"
     open_api(url, data:           { event_type: event, client_payload: payload },
@@ -440,8 +407,9 @@ module GitHub
     pr_payload = open_api("#{base_url}/pulls/#{pr}", scopes: scopes)
     pr_sha = pr_payload["head"]["sha"]
     pr_branch = URI.encode_www_form_component(pr_payload["head"]["ref"])
+    parameters = "event=pull_request&branch=#{pr_branch}"
 
-    workflow = open_api("#{base_url}/actions/workflows/#{workflow_id}/runs?branch=#{pr_branch}", scopes: scopes)
+    workflow = open_api("#{base_url}/actions/workflows/#{workflow_id}/runs?#{parameters}", scopes: scopes)
     workflow_run = workflow["workflow_runs"].select do |run|
       run["head_sha"] == pr_sha
     end

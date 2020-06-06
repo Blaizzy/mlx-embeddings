@@ -221,6 +221,7 @@ class SoftwareSpec
     end
   end
 
+  # TODO
   def add_legacy_patches(list)
     list = Patch.normalize_legacy_patches(list)
     list.each { |p| p.owner = self }

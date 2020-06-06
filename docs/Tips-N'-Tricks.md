@@ -5,14 +5,6 @@
 The supported method of installing specific versions of
 some formulae is to see if there is a versioned formula (e.g. `gcc@7`) available. If the version you’re looking for isn’t available, consider using `brew extract`.
 
-### Installing directly from pull requests
-You can [browse pull requests](https://github.com/Homebrew/homebrew-core/pulls)
-and install through their direct link. For example, Python 3.7.0 from pull request [Homebrew/homebrew-core#29490](https://github.com/Homebrew/homebrew-core/pull/29490):
-
-```sh
-brew install https://raw.githubusercontent.com/sashkab/homebrew-core/176823eb82ee1b5ce55a91e5e1bf2f50aa674092/Formula/python.rb
-```
-
 ## Quickly remove something from `/usr/local`
 
 ```sh

@@ -11,9 +11,9 @@ module Cask
 
       DIVIDER_REGEX = /(#{DIVIDERS.keys.map { |v| Regexp.quote(v) }.join('|')})/.freeze
 
-      MAJOR_MINOR_PATCH_REGEX = /^([^.,:]+)(?:\.([^.,:]+)(?:\.([^.,:]+))?)?/.freeze
+      MAJOR_MINOR_PATCH_REGEX = /^([^.,:]+)(?:.([^.,:]+)(?:.([^.,:]+))?)?/.freeze
 
-      INVALID_CHARACTERS = /[^0-9a-zA-Z\.\,\:\-\_]/.freeze
+      INVALID_CHARACTERS = /[^0-9a-zA-Z.,:\-_]/.freeze
 
       class << self
         private
@@ -75,7 +75,7 @@ module Cask
         s = downcase.delete(".").gsub(/[^a-z\d]+/, "-")
 
         return true if s.match?(/(\d+|\b)(alpha|beta|preview|rc|dev|canary|snapshot)(\d+|\b)/i)
-        return true if s.match?(/\A[a-z\d]+(\-\d+)*\-?(a|b|pre)(\d+|\b)/i)
+        return true if s.match?(/\A[a-z\d]+(-\d+)*-?(a|b|pre)(\d+|\b)/i)
 
         false
       end

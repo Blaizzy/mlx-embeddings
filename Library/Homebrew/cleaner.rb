@@ -109,7 +109,7 @@ class Cleaner
         else
           0444
         end
-        if ARGV.debug?
+        if Homebrew.args.debug?
           old_perms = path.stat.mode & 0777
           odebug "Fixing #{path} permissions from #{old_perms.to_s(8)} to #{perms.to_s(8)}" if perms != old_perms
         end

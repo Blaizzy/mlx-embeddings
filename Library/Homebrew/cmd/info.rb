@@ -105,11 +105,7 @@ module Homebrew
       args.named.each_with_index do |f, i|
         puts unless i.zero?
         begin
-          formula = if f.include?("/") || File.exist?(f)
-            Formulary.factory(f)
-          else
-            Formulary.find_with_priority(f)
-          end
+          formula = Formulary.factory(f)
           if args.analytics?
             Utils::Analytics.formula_output(formula)
           else

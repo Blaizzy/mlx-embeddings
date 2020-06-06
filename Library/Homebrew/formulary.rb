@@ -9,6 +9,8 @@ require "extend/cachable"
 module Formulary
   extend Cachable
 
+  URL_START_REGEX = %r{(https?|ftp|file)://}.freeze
+
   def self.enable_factory_cache!
     @factory_cache = true
   end
@@ -130,7 +132,7 @@ module Formulary
     private
 
     def load_file
-      $stderr.puts "#{$PROGRAM_NAME} (#{self.class.name}): loading #{path}" if ARGV.debug?
+      $stderr.puts "#{$PROGRAM_NAME} (#{self.class.name}): loading #{path}" if Homebrew.args.debug?
       raise FormulaUnavailableError, name unless path.file?
 
       Formulary.load_formula_from_path(name, path)
@@ -141,7 +143,7 @@ module Formulary
   class BottleLoader < FormulaLoader
     def initialize(bottle_name)
       case bottle_name
-      when %r{(https?|ftp|file)://}
+      when URL_START_REGEX
         # The name of the formula is found between the last slash and the last hyphen.
         formula_name = File.basename(bottle_name)[/(.+)-/, 1]
         resource = Resource.new(formula_name) { url bottle_name }
@@ -205,21 +207,20 @@ module Formulary
     def load_file
       if url =~ %r{githubusercontent.com/[\w-]+/[\w-]+/[a-f0-9]{40}(/Formula)?/([\w+-.@]+).rb}
         formula_name = Regexp.last_match(2)
-        opoo <<~EOS
-          Unsupported installation from a commit URL!
-          Consider using `brew extract #{formula_name} ...` instead!"
-          This will extract your desired #{formula_name} version to a stable tap instead of
-          installing from a commit URL that cannnot receive updates or fixes!
-
-        EOS
+        odeprecated "Installation of #{formula_name} from a GitHub commit URL",
+                    "'brew extract #{formula_name}' to stable tap on GitHub"
+      elsif url.match?(%r{^(https?|ftp)://})
+        odeprecated "Non-checksummed download of #{name} formula file from an arbitrary URL",
+                    "'brew extract' or 'brew create' and 'brew tap-new' to create a "\
+                    "formula file in a tap on GitHub"
       end
       HOMEBREW_CACHE_FORMULA.mkpath
       FileUtils.rm_f(path)
       curl_download url, to: path
       super
     rescue MethodDeprecatedError => e
-      if url =~ %r{github.com/([\w-]+)/homebrew-([\w-]+)/}
-        e.issues_url = "https://github.com/#{Regexp.last_match(1)}/homebrew-#{Regexp.last_match(2)}/issues/new"
+      if url =~ %r{github.com/([\w-]+)/([\w-]+)/}
+        e.issues_url = "https://github.com/#{Regexp.last_match(1)}/#{Regexp.last_match(2)}/issues/new"
       end
       raise
     end
@@ -307,7 +308,7 @@ module Formulary
     end
 
     def klass
-      $stderr.puts "#{$PROGRAM_NAME} (#{self.class.name}): loading #{path}" if ARGV.debug?
+      $stderr.puts "#{$PROGRAM_NAME} (#{self.class.name}): loading #{path}" if Homebrew.args.debug?
       namespace = "FormulaNamespace#{Digest::MD5.hexdigest(contents)}"
       Formulary.load_formula(name, path, contents, namespace)
     end
@@ -418,7 +419,7 @@ module Formulary
     case ref
     when Pathname::BOTTLE_EXTNAME_RX
       return BottleLoader.new(ref)
-    when %r{(https?|ftp|file)://}
+    when URL_START_REGEX
       return FromUrlLoader.new(ref)
     when HOMEBREW_TAP_FORMULA_REGEX
       return TapLoader.new(ref, from: from)
@@ -482,21 +483,5 @@ module Formulary
                       "#{tap}Aliases/#{name}",
                     ]).find(&:file?)
     end.compact
-  end
-
-  def self.find_with_priority(ref, spec = :stable)
-    possible_pinned_tap_formulae = tap_paths(ref, Dir["#{HOMEBREW_LIBRARY}/PinnedTaps/*/*/"]).map(&:realpath)
-    raise TapFormulaAmbiguityError.new(ref, possible_pinned_tap_formulae) if possible_pinned_tap_formulae.size > 1
-
-    if possible_pinned_tap_formulae.size == 1
-      selected_formula = factory(possible_pinned_tap_formulae.first, spec)
-      if core_path(ref).file?
-        odisabled "the brew tap-pin command",
-                  "fully-scoped user/tap/formula naming when installing and in dependency references"
-      end
-      selected_formula
-    else
-      factory(ref, spec)
-    end
   end
 end

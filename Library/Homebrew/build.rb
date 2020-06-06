@@ -52,6 +52,8 @@ class Build
         Requirement.prune
       elsif req.prune_if_build_and_not_dependent?(dependent, formula)
         Requirement.prune
+      elsif req.test?
+        Requirement.prune
       end
     end
   end
@@ -65,6 +67,8 @@ class Build
         Dependency.prune
       elsif dep.build?
         Dependency.keep_but_prune_recursive_deps
+      elsif dep.test?
+        Dependency.prune
       end
     end
   end
@@ -112,7 +116,7 @@ class Build
     }
 
     with_env(new_env) do
-      formula.extend(Debrew::Formula) if ARGV.debug?
+      formula.extend(Debrew::Formula) if Homebrew.args.debug?
 
       formula.update_head_version
 

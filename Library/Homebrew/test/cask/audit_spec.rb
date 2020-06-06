@@ -39,12 +39,12 @@ describe Cask::Audit, :cask do
 
   let(:cask) { instance_double(Cask::Cask) }
   let(:download) { false }
-  let(:check_token_conflicts) { false }
+  let(:token_conflicts) { false }
   let(:fake_system_command) { class_double(SystemCommand) }
   let(:audit) {
-    described_class.new(cask, download:              download,
-                              check_token_conflicts: check_token_conflicts,
-                              command:               fake_system_command)
+    described_class.new(cask, download:        download,
+                              token_conflicts: token_conflicts,
+                              command:         fake_system_command)
   }
 
   describe "#result" do
@@ -517,7 +517,7 @@ describe Cask::Audit, :cask do
 
     describe "token conflicts" do
       let(:cask_token) { "with-binary" }
-      let(:check_token_conflicts) { true }
+      let(:token_conflicts) { true }
 
       context "when cask token conflicts with a core formula" do
         let(:formula_names) { %w[with-binary other-formula] }

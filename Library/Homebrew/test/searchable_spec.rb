@@ -19,7 +19,7 @@ describe Searchable do
 
     context "when given a regex" do
       it "does not simplify strings" do
-        expect(subject.search(/with\-dashes/)).to eq ["with-dashes"]
+        expect(subject.search(/with-dashes/)).to eq ["with-dashes"]
       end
     end
 

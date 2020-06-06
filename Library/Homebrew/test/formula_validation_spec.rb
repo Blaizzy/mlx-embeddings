@@ -70,17 +70,6 @@ describe Formula do
       }.to fail_with_invalid :version
     end
 
-    specify "devel-only is valid" do
-      f = formula do
-        devel do
-          url "foo"
-          version "1.0"
-        end
-      end
-
-      expect(f).to be_devel
-    end
-
     specify "head-only is valid" do
       f = formula do
         head "foo"

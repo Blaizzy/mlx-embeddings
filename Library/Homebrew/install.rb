@@ -37,11 +37,11 @@ module Homebrew
     end
 
     def check_cc_argv
-      return unless ARGV.cc
+      return unless Homebrew.args.cc
 
       @checks ||= Diagnostic::Checks.new
       opoo <<~EOS
-        You passed `--cc=#{ARGV.cc}`.
+        You passed `--cc=#{Homebrew.args.cc}`.
         #{@checks.please_create_pull_requests}
       EOS
     end

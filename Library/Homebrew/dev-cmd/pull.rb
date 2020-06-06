@@ -15,6 +15,7 @@ module Homebrew
 
   def pull_args
     Homebrew::CLI::Parser.new do
+      hide_from_man_page!
       usage_banner <<~EOS
         `pull` [<options>] <patch>
 
@@ -43,6 +44,8 @@ module Homebrew
   end
 
   def pull
+    odeprecated "brew pull", "hub checkout"
+
     odie "You meant `git pull --rebase`." if ARGV[0] == "--rebase"
 
     pull_args.parse
@@ -56,7 +59,7 @@ module Homebrew
         gnupg = Formula["gnupg"]
       rescue FormulaUnavailableError # rubocop:disable Lint/SuppressedException
       else
-        if gnupg.installed?
+        if gnupg.any_version_installed?
           path = PATH.new(ENV.fetch("PATH"))
           path.prepend(gnupg.installed_prefix/"bin")
           ENV["PATH"] = path
@@ -333,7 +336,7 @@ module Homebrew
 
   def check_bintray_mirror(name, url)
     headers, = curl_output("--connect-timeout", "15", "--location", "--head", url)
-    status_code = headers.scan(%r{^HTTP\/.* (\d+)}).last.first
+    status_code = headers.scan(%r{^HTTP/.* (\d+)}).last.first
     return if status_code.start_with?("2")
 
     opoo "The Bintray mirror #{url} is not reachable (HTTP status code #{status_code})."

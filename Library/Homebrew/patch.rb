@@ -169,6 +169,7 @@ end
 # Legacy patches have no checksum and are not cached.
 class LegacyPatch < ExternalPatch
   def initialize(strip, url)
+    odeprecated "legacy patches", "'patch do' blocks"
     super(strip)
     resource.url(url)
     resource.download_strategy = CurlDownloadStrategy

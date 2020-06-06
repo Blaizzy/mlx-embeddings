@@ -10,7 +10,7 @@ module Homebrew
       # undefine tap to allow --tap argument
       undef tap
 
-      def initialize(argv = ARGV.dup.freeze, set_default_args: false)
+      def initialize(argv = ARGV.freeze, set_default_args: false)
         super()
 
         @processed_options = []
@@ -84,11 +84,7 @@ module Homebrew
         require "formula"
 
         @formulae ||= (downcased_unique_named - casks).map do |name|
-          if name.include?("/") || File.exist?(name)
-            Formulary.factory(name, spec)
-          else
-            Formulary.find_with_priority(name, spec)
-          end
+          Formulary.factory(name, spec)
         end.uniq(&:name).freeze
       end
 
@@ -173,6 +169,20 @@ module Homebrew
         return false if !build_from_source? && !build_bottle?
 
         formulae.any? { |args_f| args_f.full_name == f.full_name }
+      end
+
+      def include_formula_test_deps?(f)
+        return false unless include_test?
+
+        formulae.any? { |args_f| args_f.full_name == f.full_name }
+      end
+
+      def value(name)
+        arg_prefix = "--#{name}="
+        flag_with_value = flags_only.find { |arg| arg.start_with?(arg_prefix) }
+        return unless flag_with_value
+
+        flag_with_value.delete_prefix(arg_prefix)
       end
 
       private

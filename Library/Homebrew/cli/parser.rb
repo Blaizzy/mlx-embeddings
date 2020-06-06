@@ -13,7 +13,7 @@ module Homebrew
     class Parser
       attr_reader :processed_options, :hide_from_man_page
 
-      def self.parse(argv = ARGV.dup.freeze, allow_no_named_args: false, &block)
+      def self.parse(argv = ARGV.freeze, allow_no_named_args: false, &block)
         new(argv, &block).parse(allow_no_named_args: allow_no_named_args)
       end
 
@@ -38,7 +38,7 @@ module Homebrew
         }
       end
 
-      def initialize(argv = ARGV.dup.freeze, &block)
+      def initialize(argv = ARGV.freeze, &block)
         @parser = OptionParser.new
         @argv = argv
         @args = Homebrew::CLI::Args.new(@argv)
@@ -359,11 +359,7 @@ module Homebrew
         named_args.map do |arg|
           next if arg.match?(HOMEBREW_CASK_TAP_CASK_REGEX)
 
-          if arg.include?("/") || arg.end_with?(".tar.gz") || File.exist?(arg)
-            Formulary.factory(arg, spec)
-          else
-            Formulary.find_with_priority(arg.downcase, spec)
-          end
+          Formulary.factory(arg, spec)
         end.compact.uniq(&:name)
       end
     end

@@ -13,11 +13,12 @@ module RuboCop
           https://downloads.sourceforge.net/project/bittwist/
           https://downloads.sourceforge.net/project/launch4j/
           https://github.com/ChrisJohnsen/tmux-MacOSX-pasteboard/archive/
-          https://github.com/obihann/archey-osx/archive/
+          https://github.com/obihann/archey-osx
           https://github.com/sindresorhus/macos-wallpaper/archive/
           https://raw.githubusercontent.com/liyanage/macosx-shell-scripts/
           https://osxbook.com/book/bonus/chapter8/core/download/gcore
           https://naif.jpl.nasa.gov/pub/naif/toolkit/C/MacIntel_OSX_AppleC_64bit/packages/
+          https://artifacts.videolan.org/x264/release-macos/
         ].freeze
 
         # These are formulae that, sadly, require an upstream binary to bootstrap.
@@ -48,6 +49,12 @@ module RuboCop
           urls = find_every_func_call_by_name(body_node, :url)
           mirrors = find_every_func_call_by_name(body_node, :mirror)
 
+          # Identify livecheck urls, to skip some checks for them
+          livecheck_url = if (livecheck = find_every_func_call_by_name(body_node, :livecheck).first) &&
+                             (livecheck_url = find_every_func_call_by_name(livecheck.parent, :url).first)
+            string_content(parameters(livecheck_url).first)
+          end
+
           # GNU urls; doesn't apply to mirrors
           gnu_pattern = %r{^(?:https?|ftp)://ftpmirror.gnu.org/(.*)}
           audit_urls(urls, gnu_pattern) do |match, url|
@@ -63,7 +70,19 @@ module RuboCop
 
           apache_pattern = %r{^https?://(?:[^/]*\.)?apache\.org/(?:dyn/closer\.cgi\?path=/?|dist/)(.*)}i
           audit_urls(urls, apache_pattern) do |match, url|
+            next if url == livecheck_url
+
             problem "#{url} should be `https://www.apache.org/dyn/closer.lua?path=#{match[1]}`"
+          end
+
+          version_control_pattern = %r{^(cvs|bzr|hg|fossil)://}
+          audit_urls(urls, version_control_pattern) do |match, _|
+            problem "Use of the #{match[1]}:// scheme is deprecated, pass `:using => :#{match[1]}` instead"
+          end
+
+          svn_pattern = %r{^svn\+http://}
+          audit_urls(urls, svn_pattern) do |_, _|
+            problem "Use of the svn+http:// scheme is deprecated, pass `:using => :svn` instead"
           end
 
           audit_urls(mirrors, /.*/) do |_, mirror|
@@ -148,7 +167,7 @@ module RuboCop
 
             problem "Don't use /download in SourceForge urls (url is #{url})." if url.end_with?("/download")
 
-            if url.match?(%r{^https?://sourceforge\.})
+            if url.match?(%r{^https?://sourceforge\.}) && url != livecheck_url
               problem "Use https://downloads.sourceforge.net to get geolocation (url is #{url})."
             end
 
@@ -220,7 +239,7 @@ module RuboCop
           # Use new-style archive downloads
           archive_gh_pattern = %r{https://.*github.*/(?:tar|zip)ball/}
           audit_urls(urls, archive_gh_pattern) do |_, url|
-            next if url.match?(/\.git$/)
+            next if url.end_with?(".git")
 
             problem "Use /archive/ URLs for GitHub tarballs (url is #{url})."
           end

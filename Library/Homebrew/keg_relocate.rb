@@ -117,6 +117,10 @@ class Keg
     path/"lib"
   end
 
+  def libexec
+    path/"libexec"
+  end
+
   def text_files
     text_files = []
     return text_files unless which("file") && which("xargs")

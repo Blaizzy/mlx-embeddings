@@ -3,6 +3,7 @@
 require "keg"
 require "language/python"
 require "formula"
+require "formulary"
 require "version"
 require "development_tools"
 require "utils/shell"
@@ -830,6 +831,23 @@ module Homebrew
           prefix (#{Homebrew::DEFAULT_PREFIX}).
           #{please_create_pull_requests}
         EOS
+      end
+
+      def check_deleted_formula
+        kegs = Keg.all
+        deleted_formulae = []
+        kegs.each do |keg|
+          keg_name = keg.name
+          deleted_formulae << keg_name if Formulary.tap_paths(keg_name).blank?
+        end
+        return if deleted_formulae.blank?
+
+        message = <<~EOS
+          Some installed formulae were deleted!
+          You should find replacements for the following formulae:
+            #{deleted_formulae.join("\n  ")}
+        EOS
+        message
       end
 
       def all

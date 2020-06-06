@@ -33,7 +33,7 @@ module Language
         next if build.without? python_formula.to_s
 
         version = major_minor_version python
-        ENV["PYTHONPATH"] = if python_formula.installed?
+        ENV["PYTHONPATH"] = if python_formula.latest_version_installed?
           nil
         else
           homebrew_site_packages(python)

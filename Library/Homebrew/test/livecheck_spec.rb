@@ -1,9 +1,15 @@
 # frozen_string_literal: true
 
+require "formula"
 require "livecheck"
 
 describe Livecheck do
-  subject(:livecheckable) { described_class.new }
+  let(:f) do
+    formula do
+      url "https://brew.sh/test-0.1.tbz"
+    end
+  end
+  let(:livecheckable) { described_class.new(f) }
 
   describe "#regex" do
     it "returns nil if unset" do

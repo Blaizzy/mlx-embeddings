@@ -4,6 +4,7 @@ require "formula"
 require "formula_installer"
 require "keg"
 require "tab"
+require "cmd/install"
 require "test/support/fixtures/testball"
 require "test/support/fixtures/testball_bottle"
 
@@ -49,7 +50,7 @@ describe FormulaInstaller do
 
   specify "basic bottle install" do
     allow(DevelopmentTools).to receive(:installed?).and_return(false)
-
+    Homebrew.install_args.parse("testball_bottle")
     temporarily_install_bottle(TestballBottle.new) do |f|
       # Copied directly from formula_installer_spec.rb
       # as we expect the same behavior.

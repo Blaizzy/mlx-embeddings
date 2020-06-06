@@ -96,7 +96,7 @@ module Kernel
   end
 
   def odebug(title, *sput)
-    return unless ARGV.debug?
+    return unless Homebrew.args.debug?
 
     puts Formatter.headline(title, color: :magenta)
     puts sput unless sput.empty?
@@ -168,7 +168,7 @@ module Kernel
       tap = Tap.fetch(match[:user], match[:repo])
       tap_message = +"\nPlease report this issue to the #{tap} tap (not Homebrew/brew or Homebrew/core)"
       tap_message += ", or even better, submit a PR to fix it" if replacement
-      tap_message << ":\n  #{line.sub(/^(.*\:\d+)\:.*$/, '\1')}\n\n"
+      tap_message << ":\n  #{line.sub(/^(.*:\d+):.*$/, '\1')}\n\n"
       break
     end
 
@@ -437,13 +437,13 @@ module Kernel
     n_back_bytes = max_bytes_in - n_front_bytes
     if n_front_bytes.zero?
       front = bytes[1..0]
-      back = bytes[-max_bytes_in..-1]
+      back = bytes[-max_bytes_in..]
     elsif n_back_bytes.zero?
       front = bytes[0..(max_bytes_in - 1)]
       back = bytes[1..0]
     else
       front = bytes[0..(n_front_bytes - 1)]
-      back = bytes[-n_back_bytes..-1]
+      back = bytes[-n_back_bytes..]
     end
     out = front + glue_bytes + back
     out.force_encoding("UTF-8")

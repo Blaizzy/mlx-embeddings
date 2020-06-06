@@ -8,7 +8,7 @@ AllCops:
 
 # Use `<<~` for heredocs.
 Layout/HeredocIndentation:
-  EnforcedStyle: squiggly
+  Enabled: true
 
 # Not useful in casks and formulae.
 Metrics/BlockLength:

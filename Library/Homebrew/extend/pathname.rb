@@ -224,7 +224,7 @@ class Pathname
     return archive_ext if archive_ext
 
     # Don't treat version numbers as extname.
-    return "" if basename.match?(/\b\d+\.\d+[^\.]*\Z/) && !basename.end_with?(".7z")
+    return "" if basename.match?(/\b\d+\.\d+[^.]*\Z/) && !basename.end_with?(".7z")
 
     File.extname(basename)
   end
@@ -396,15 +396,6 @@ class Pathname
 
   def ds_store?
     basename.to_s == ".DS_Store"
-  end
-
-  # https://bugs.ruby-lang.org/issues/9915
-  if RUBY_VERSION == "2.0.0"
-    prepend Module.new {
-      def inspect
-        super.force_encoding(@path.encoding)
-      end
-    }
   end
 
   def binary_executable?

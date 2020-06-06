@@ -77,7 +77,7 @@ module Homebrew
 
       case output_type
       when :print
-        args << "--debug" if ARGV.debug?
+        args << "--debug" if Homebrew.args.debug?
         args << "--display-cop-names" if Homebrew.args.display_cop_names?
         args << "--format" << "simple" if files
         system(cache_env, "rubocop", *args)

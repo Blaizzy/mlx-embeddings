@@ -1172,7 +1172,7 @@ class Formula
       begin
         yield self, staging
       rescue
-        staging.retain! if Homebrew.args.interactive? || ARGV.debug?
+        staging.retain! if Homebrew.args.interactive? || Homebrew.args.debug?
         raise
       ensure
         cp Dir["config.log", "CMakeCache.txt"], logs
@@ -1822,7 +1822,7 @@ class Formula
           end
         end
       rescue Exception # rubocop:disable Lint/RescueException
-        staging.retain! if ARGV.debug?
+        staging.retain! if Homebrew.args.debug?
         raise
       end
     end
@@ -2090,7 +2090,6 @@ class Formula
   private
 
   def prepare_patches
-    active_spec.add_legacy_patches(patches) if respond_to?(:patches)
     patchlist.grep(DATAPatch) { |p| p.path = path }
   end
 
@@ -2171,7 +2170,10 @@ class Formula
         raise "You cannot override Formula#brew in class #{name}"
       when :test
         define_method(:test_defined?) { true }
+      when :patches
+        odeprecated "a Formula#patches definition", "'patch do' block calls"
       when :options
+        odeprecated "a Formula#options definition", "'option do' block calls"
         instance = allocate
 
         specs.each do |spec|
@@ -2385,6 +2387,7 @@ class Formula
       @devel ||= SoftwareSpec.new
       return @devel unless block_given?
 
+      odeprecated "'devel' blocks in formulae", "'head' blocks or @-versioned formulae"
       @devel.instance_eval(&block)
     end
 
@@ -2668,7 +2671,7 @@ class Formula
     #   regex /foo-(\d+(?:\.\d+)+)\.tar/
     # end</pre>
     def livecheck(&block)
-      @livecheck ||= Livecheck.new
+      @livecheck ||= Livecheck.new(self)
       return @livecheck unless block_given?
 
       @livecheckable = true
