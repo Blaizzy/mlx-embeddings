@@ -3,12 +3,12 @@
 module Cask
   class DSL
     class Appcast
-      attr_reader :uri, :parameters, :configuration
+      attr_reader :uri, :parameters, :must_contain
 
       def initialize(uri, **parameters)
         @uri        = URI(uri)
         @parameters = parameters
-        @configuration = parameters[:configuration] if parameters.key?(:configuration)
+        @must_contain = parameters[:must_contain] if parameters.key?(:must_contain)
       end
 
       def to_yaml
