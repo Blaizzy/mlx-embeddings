@@ -2474,13 +2474,13 @@ class Formula
       specs.each { |spec| spec.uses_from_macos(dep, bounds) }
     end
 
-    # Block executed only executed on macOS. No-op on Linux.
+    # Block only executed on macOS. No-op on Linux.
     # <pre>on_macos do
     #   depends_on "mac_only_dep"
     # end</pre>
     def on_macos(&_block); end
 
-    # Block executed only executed on Linux. No-op on macOS.
+    # Block only executed on Linux. No-op on macOS.
     # <pre>on_linux do
     #   depends_on "linux_only_dep"
     # end</pre>

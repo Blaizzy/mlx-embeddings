@@ -110,4 +110,23 @@ describe Formula do
       expect(f.patchlist.second.url).to eq("patch_linux")
     end
   end
+
+  describe "#on_linux" do
+    it "uses on_linux within a resource block" do
+      f = formula do
+        homepage "https://brew.sh"
+
+        url "https://brew.sh/test-0.1.tbz"
+        sha256 TEST_SHA256
+
+        resource "test_resource" do
+          on_linux do
+            url "on_linux"
+          end
+        end
+      end
+      expect(f.resources.length).to eq(1)
+      expect(f.resources.first.url).to eq("on_linux")
+    end
+  end
 end
