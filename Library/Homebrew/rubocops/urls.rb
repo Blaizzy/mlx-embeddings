@@ -8,7 +8,7 @@ module RuboCop
       # This cop audits URLs and mirrors in Formulae.
       class Urls < FormulaCop
         # These are parts of URLs that look like binaries but actually aren't.
-        NOT_A_BINARY_URL_PREFIX_WHITELIST = %w[
+        NOT_A_BINARY_URL_PREFIX_ALLOWLIST = %w[
           https://downloads.sourceforge.net/project/astyle/astyle/
           https://downloads.sourceforge.net/project/bittwist/
           https://downloads.sourceforge.net/project/launch4j/
@@ -22,7 +22,7 @@ module RuboCop
         ].freeze
 
         # These are formulae that, sadly, require an upstream binary to bootstrap.
-        BINARY_BOOTSTRAP_FORMULA_URLS_WHITELIST = %w[
+        BINARY_BOOTSTRAP_FORMULA_URLS_ALLOWLIST = %w[
           clozure-cl
           crystal
           fpc
@@ -275,8 +275,8 @@ module RuboCop
           audit_urls(urls, /(darwin|macos|osx)/i) do |match, url|
             next if @formula_name.include?(match.to_s.downcase)
             next if url.match?(/.(patch|diff)(\?full_index=1)?$/)
-            next if NOT_A_BINARY_URL_PREFIX_WHITELIST.any? { |prefix| url.start_with?(prefix) }
-            next if BINARY_BOOTSTRAP_FORMULA_URLS_WHITELIST.include?(@formula_name)
+            next if NOT_A_BINARY_URL_PREFIX_ALLOWLIST.any? { |prefix| url.start_with?(prefix) }
+            next if BINARY_BOOTSTRAP_FORMULA_URLS_ALLOWLIST.include?(@formula_name)
 
             problem "#{url} looks like a binary package, not a source archive; " \
                     "homebrew/core is source-only."

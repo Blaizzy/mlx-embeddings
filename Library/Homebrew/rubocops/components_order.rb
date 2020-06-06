@@ -11,7 +11,7 @@ module RuboCop
       #   where each sub array contains components' details which are at same precedence level
       class ComponentsOrder < FormulaCop
         # `aspell`: options and resources should be grouped by language
-        COMPONENT_WHITELIST = %w[
+        COMPONENT_ALLOWLIST = %w[
           aspell
         ].freeze
 
@@ -235,7 +235,7 @@ module RuboCop
 
         # Method to format message for reporting component precedence violations
         def component_problem(c1, c2)
-          return if COMPONENT_WHITELIST.include?(@formula_name)
+          return if COMPONENT_ALLOWLIST.include?(@formula_name)
 
           problem "`#{format_component(c1)}` (line #{line_number(c1)}) " \
                   "should be put before `#{format_component(c2)}` " \

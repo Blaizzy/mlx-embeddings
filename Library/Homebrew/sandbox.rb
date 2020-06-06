@@ -153,7 +153,7 @@ class Sandbox
           (regex #"^/dev/fd/[0-9]+$")
           (regex #"^/dev/tty[a-z0-9]*$")
           )
-      (deny file-write*) ; deny non-whitelist file write operations
+      (deny file-write*) ; deny non-allowlist file write operations
       (allow process-exec
           (literal "/bin/ps")
           (with no-sandbox)

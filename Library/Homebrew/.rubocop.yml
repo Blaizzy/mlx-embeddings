@@ -74,7 +74,7 @@ Naming/PredicateName:
   # can't rename these
   AllowedMethods: is_32_bit?, is_64_bit?
 
-# whitelist those that are standard
+# allow those that are standard
 # TODO: try to remove some of these
 Naming/MethodParameterName:
   AllowedNames:

@@ -2,7 +2,7 @@
 
 class LinkageChecker
   # Libraries provided by glibc and gcc.
-  SYSTEM_LIBRARY_WHITELIST = %w[
+  SYSTEM_LIBRARY_ALLOWLIST = %w[
     ld-linux-x86-64.so.2
     libanl.so.1
     libc.so.6
@@ -28,7 +28,7 @@ class LinkageChecker
     # glibc and gcc are implicit dependencies.
     # No other linkage to system libraries is expected or desired.
     @unwanted_system_dylibs = @system_dylibs.reject do |s|
-      SYSTEM_LIBRARY_WHITELIST.include? File.basename(s)
+      SYSTEM_LIBRARY_ALLOWLIST.include? File.basename(s)
     end
     @undeclared_deps -= ["gcc", "glibc"]
   end

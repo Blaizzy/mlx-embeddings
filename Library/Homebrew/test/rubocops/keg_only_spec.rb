@@ -46,7 +46,7 @@ describe RuboCop::Cop::FormulaAudit::KegOnly do
     RUBY
   end
 
-  specify "keg_only_handles_whitelist_correctly" do
+  specify "keg_only_handles_allowlist_correctly" do
     expect_no_offenses(<<~RUBY)
       class Foo < Formula
         url "https://brew.sh/foo-1.0.tgz"

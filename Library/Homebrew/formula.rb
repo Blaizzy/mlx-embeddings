@@ -1088,7 +1088,7 @@ class Formula
   end
 
   # Sometimes we accidentally install files outside prefix. After we fix that,
-  # users will get nasty link conflict error. So we create a whitelist here to
+  # users will get nasty link conflict error. So we create an allowlist here to
   # allow overwriting certain files. e.g.
   #   link_overwrite "bin/foo", "lib/bar"
   #   link_overwrite "share/man/man1/baz-*"
@@ -1111,7 +1111,7 @@ class Formula
       begin
         Formulary.factory(keg.name)
       rescue FormulaUnavailableError
-        # formula for this keg is deleted, so defer to whitelist
+        # formula for this keg is deleted, so defer to allowlist
       rescue TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
         return false # this keg belongs to another formula
       else
