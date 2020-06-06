@@ -64,7 +64,7 @@ If there's no Homebrew Portable Ruby available for your processor:
       IFS=$'\n' # Do word splitting on new lines only
       for ruby_exec in $(which -a ruby) $(PATH=$HOMEBREW_PATH which -a ruby)
       do
-        if [[ $(test_ruby "$ruby_exec") == "true" ]]; then
+        if test_ruby "$ruby_exec"; then
           HOMEBREW_RUBY_PATH=$ruby_exec
           break
         fi
@@ -76,9 +76,9 @@ If there's no Homebrew Portable Ruby available for your processor:
     if [[ -n "$HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH" ]]
     then
       usable_ruby_version="true"
-    elif [[ -n "$HOMEBREW_RUBY_PATH" && -z "$HOMEBREW_FORCE_VENDOR_RUBY" ]]
+    elif [[ -n "$HOMEBREW_RUBY_PATH" && -z "$HOMEBREW_FORCE_VENDOR_RUBY" ]] && test_ruby "$HOMEBREW_RUBY_PATH"
     then
-      usable_ruby_version=$(test_ruby "$HOMEBREW_RUBY_PATH")
+      usable_ruby_version=true
     fi
 
     if [[ -z "$HOMEBREW_RUBY_PATH" || -n "$HOMEBREW_FORCE_VENDOR_RUBY" || "$usable_ruby_version" != "true" ]]
