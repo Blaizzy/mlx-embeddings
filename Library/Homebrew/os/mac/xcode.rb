@@ -13,9 +13,9 @@ module OS
       # CI systems have been updated.
       # This may be a beta version for a beta macOS.
       def latest_version
-        latest = "11.4.1"
+        latest = "11.5"
         case MacOS.version
-        when "10.15" then "11.4.1"
+        when "10.15" then latest
         when "10.14" then "11.3.1"
         when "10.13" then "10.1"
         when "10.12" then "9.2"
@@ -173,7 +173,7 @@ module OS
         # installed CLT version. This is useful as they are packaged
         # simultaneously so workarounds need to apply to both based on their
         # comparable version.
-        latest = "11.4.1"
+        latest = "11.5"
         case (DevelopmentTools.clang_version.to_f * 10).to_i
         when 110     then latest
         when 100     then "10.3"
