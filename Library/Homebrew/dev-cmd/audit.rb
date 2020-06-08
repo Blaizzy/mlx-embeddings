@@ -23,11 +23,13 @@ module Homebrew
 
         Check <formula> for Homebrew coding style violations. This should be run before
         submitting a new formula. If no <formula> are provided, check all locally
-        available formulae. Will exit with a non-zero status if any errors are
-        found, which can be useful for implementing pre-commit hooks.
+        available formulae and skip style checks. Will exit with a non-zero status if any
+        errors are found.
       EOS
       switch "--strict",
              description: "Run additional, stricter style checks."
+      switch "--git",
+             description: "Run additional, slower style checks that navigate the Git repository."
       switch "--online",
              description: "Run additional, slower style checks that require a network connection."
       switch "--new-formula",
@@ -82,17 +84,14 @@ module Homebrew
     new_formula = args.new_formula?
     strict = new_formula || args.strict?
     online = new_formula || args.online?
+    git = args.git?
+    skip_style = args.skip_style? || args.no_named?
 
     ENV.activate_extensions!
     ENV.setup_build_environment
 
-    if args.no_named?
-      audit_formulae = Formula
-      style_files = Tap.map(&:formula_dir)
-    else
-      audit_formulae = args.resolved_formulae
-      style_files = args.formulae_paths
-    end
+    audit_formulae = args.no_named? ? Formula : args.resolved_formulae
+    style_files = args.formulae_paths unless skip_style
 
     only_cops = args.only_cops
     except_cops = args.except_cops
@@ -109,13 +108,20 @@ module Homebrew
     end
 
     # Check style in a single batch run up front for performance
-    style_results = Style.check_style_json(style_files, options) unless args.skip_style?
+    style_results = Style.check_style_json(style_files, options) if style_files
 
     new_formula_problem_lines = []
     audit_formulae.sort.each do |f|
       only = only_cops ? ["style"] : args.only
-      options = { new_formula: new_formula, strict: strict, online: online, only: only, except: args.except }
-      options[:style_offenses] = style_results.file_offenses(f.path) unless args.skip_style?
+      options = {
+        new_formula: new_formula,
+        strict:      strict,
+        online:      online,
+        git:         git,
+        only:        only,
+        except:      args.except,
+      }
+      options[:style_offenses] = style_results.file_offenses(f.path) if style_results
       options[:display_cop_names] = args.display_cop_names?
 
       fa = FormulaAuditor.new(f, options)
@@ -126,7 +132,7 @@ module Homebrew
       formula_count += 1
       problem_count += fa.problems.size
       problem_lines = format_problem_lines(fa.problems)
-      corrected_problem_count = options[:style_offenses].count(&:corrected?) unless args.skip_style?
+      corrected_problem_count = options[:style_offenses].count(&:corrected?) if options[:style_offenses]
       new_formula_problem_lines = format_problem_lines(fa.new_formula_problems)
       if args.display_filename?
         puts problem_lines.map { |s| "#{f.path}: #{s}" }
@@ -205,6 +211,7 @@ module Homebrew
       @new_formula = options[:new_formula] && !@versioned_formula
       @strict = options[:strict]
       @online = options[:online]
+      @git = options[:git]
       @display_cop_names = options[:display_cop_names]
       @only = options[:only]
       @except = options[:except]
@@ -709,86 +716,78 @@ module Homebrew
     end
 
     def audit_revision_and_version_scheme
+      return unless @git
       return unless formula.tap # skip formula not from core or any taps
       return unless formula.tap.git? # git log is required
-      return if @new_formula
+      return if formula.stable.blank?
 
       fv = FormulaVersions.new(formula)
 
-      previous_version_and_checksum = fv.previous_version_and_checksum("origin/master")
-      [:stable, :devel].each do |spec_sym|
-        next unless spec = formula.send(spec_sym)
-        next unless previous_version_and_checksum[spec_sym][:version] == spec.version
-        next if previous_version_and_checksum[spec_sym][:checksum] == spec.checksum
+      current_version = formula.stable.version
+      current_checksum = formula.stable.checksum
+      current_version_scheme = formula.version_scheme
+      current_revision = formula.revision
 
+      previous_version = nil
+      previous_checksum = nil
+      previous_version_scheme = nil
+      previous_revision = nil
+
+      newest_committed_version = nil
+      newest_committed_revision = nil
+
+      fv.rev_list("origin/master") do |rev|
+        fv.formula_at_revision(rev) do |f|
+          stable = f.stable
+          next if stable.blank?
+
+          previous_version = stable.version
+          previous_checksum = stable.checksum
+          previous_version_scheme = f.version_scheme
+          previous_revision = f.revision
+
+          newest_committed_version ||= previous_version
+          newest_committed_revision ||= previous_revision
+        end
+
+        break if previous_version && current_version != previous_version
+      end
+
+      if current_version == previous_version &&
+         current_checksum != previous_checksum
         problem(
-          "#{spec_sym}: sha256 changed without the version also changing; " \
+          "stable sha256 changed without the version also changing; " \
           "please create an issue upstream to rule out malicious " \
           "circumstances and to find out why the file changed.",
         )
       end
 
-      attributes = [:revision, :version_scheme]
-      attributes_map = fv.version_attributes_map(attributes, "origin/master")
-
-      current_version_scheme = formula.version_scheme
-      [:stable, :devel].each do |spec|
-        spec_version_scheme_map = attributes_map[:version_scheme][spec]
-        next if spec_version_scheme_map.empty?
-
-        version_schemes = spec_version_scheme_map.values.flatten
-        max_version_scheme = version_schemes.max
-        max_version = spec_version_scheme_map.select do |_, version_scheme|
-          version_scheme.first == max_version_scheme
-        end.keys.max
-
-        if max_version_scheme && current_version_scheme < max_version_scheme
-          problem "version_scheme should not decrease (from #{max_version_scheme} to #{current_version_scheme})"
-        end
-
-        if max_version_scheme && current_version_scheme >= max_version_scheme &&
-           current_version_scheme > 1 &&
-           !version_schemes.include?(current_version_scheme - 1)
-          problem "version_schemes should only increment by 1"
-        end
-
-        formula_spec = formula.send(spec)
-        next unless formula_spec
-
-        spec_version = formula_spec.version
-        next unless max_version
-        next if spec_version >= max_version
-
-        above_max_version_scheme = current_version_scheme > max_version_scheme
-        map_includes_version = spec_version_scheme_map.key?(spec_version)
-        next if !current_version_scheme.zero? &&
-                (above_max_version_scheme || map_includes_version)
-
-        problem "#{spec} version should not decrease (from #{max_version} to #{spec_version})"
+      if !newest_committed_version.nil? &&
+         current_version < newest_committed_version &&
+         current_version_scheme == previous_version_scheme
+        problem "stable version should not decrease (from #{newest_committed_version} to #{current_version})"
       end
 
-      current_revision = formula.revision
-      revision_map = attributes_map[:revision][:stable]
-      if formula.stable && !revision_map.empty?
-        stable_revisions = revision_map[formula.stable.version]
-        stable_revisions ||= []
-        max_revision = stable_revisions.max || 0
-
-        if current_revision < max_revision
-          problem "revision should not decrease (from #{max_revision} to #{current_revision})"
+      unless previous_version_scheme.nil?
+        if current_version_scheme < previous_version_scheme
+          problem "version_scheme should not decrease (from #{previous_version_scheme} " \
+                  "to #{current_version_scheme})"
+        elsif current_version_scheme > (previous_version_scheme + 1)
+          problem "version_schemes should only increment by 1"
         end
+      end
 
-        stable_revisions -= [formula.revision]
-        if !current_revision.zero? && stable_revisions.empty? &&
-           revision_map.keys.length > 1
-          problem "'revision #{formula.revision}' should be removed"
-        elsif current_revision > 1 &&
-              current_revision != max_revision &&
-              !stable_revisions.include?(current_revision - 1)
-          problem "revisions should only increment by 1"
-        end
-      elsif !current_revision.zero? # head/devel-only formula
+      if previous_version != newest_committed_version &&
+         !current_revision.zero? &&
+         current_revision == newest_committed_revision &&
+         current_revision == previous_revision
         problem "'revision #{current_revision}' should be removed"
+      elsif current_version == previous_version &&
+            !previous_revision.nil? &&
+            current_revision < previous_revision
+        problem "revision should not decrease (from #{previous_revision} to #{current_revision})"
+      elsif current_revision > (newest_committed_revision + 1)
+        problem "revisions should only increment by 1"
       end
     end
 
