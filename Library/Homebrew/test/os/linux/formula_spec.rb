@@ -67,27 +67,19 @@ describe Formula do
         sha256 TEST_SHA256
 
         patch do
-          url "patch_both"
-        end
-
-        on_macos do
-          patch do
+          on_macos do
             url "patch_macos"
           end
-        end
 
-        on_linux do
-          patch do
+          on_linux do
             url "patch_linux"
           end
         end
       end
 
-      expect(f.patchlist.length).to eq(2)
+      expect(f.patchlist.length).to eq(1)
       expect(f.patchlist.first.strip).to eq(:p1)
-      expect(f.patchlist.first.url).to eq("patch_both")
-      expect(f.patchlist.second.strip).to eq(:p1)
-      expect(f.patchlist.second.url).to eq("patch_linux")
+      expect(f.patchlist.first.url).to eq("patch_linux")
     end
   end
 
