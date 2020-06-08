@@ -41,26 +41,6 @@ describe Formula do
   end
 
   describe "#on_macos" do
-    it "defines an url on macos only" do
-      f = formula do
-        homepage "https://brew.sh"
-
-        on_macos do
-          url "https://brew.sh/test-macos-0.1.tbz"
-          sha256 TEST_SHA256
-        end
-
-        on_linux do
-          url "https://brew.sh/test-linux-0.1.tbz"
-          sha256 TEST_SHA256
-        end
-      end
-
-      expect(f.stable.url).to eq("https://brew.sh/test-macos-0.1.tbz")
-    end
-  end
-
-  describe "#on_macos" do
     it "adds a dependency on macos only" do
       f = formula do
         homepage "https://brew.sh"
