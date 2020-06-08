@@ -634,11 +634,13 @@ Homebrew/homebrew-cask (if tapped) to standard output.
 
 Check *`formula`* for Homebrew coding style violations. This should be run before
 submitting a new formula. If no *`formula`* are provided, check all locally
-available formulae. Will exit with a non-zero status if any errors are found,
-which can be useful for implementing pre-commit hooks.
+available formulae and skip style checks. Will exit with a non-zero status if
+any errors are found.
 
 * `--strict`:
   Run additional, stricter style checks.
+* `--git`:
+  Run additional, slower style checks that navigate the Git repository.
 * `--online`:
   Run additional, slower style checks that require a network connection.
 * `--new-formula`:

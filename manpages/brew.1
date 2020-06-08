@@ -801,11 +801,15 @@ Print the version numbers of Homebrew, Homebrew/homebrew\-core and Homebrew/home
 .SH "DEVELOPER COMMANDS"
 .
 .SS "\fBaudit\fR [\fIoptions\fR] [\fIformula\fR]"
-Check \fIformula\fR for Homebrew coding style violations\. This should be run before submitting a new formula\. If no \fIformula\fR are provided, check all locally available formulae\. Will exit with a non\-zero status if any errors are found, which can be useful for implementing pre\-commit hooks\.
+Check \fIformula\fR for Homebrew coding style violations\. This should be run before submitting a new formula\. If no \fIformula\fR are provided, check all locally available formulae and skip style checks\. Will exit with a non\-zero status if any errors are found\.
 .
 .TP
 \fB\-\-strict\fR
 Run additional, stricter style checks\.
+.
+.TP
+\fB\-\-git\fR
+Run additional, slower style checks that navigate the Git repository\.
 .
 .TP
 \fB\-\-online\fR

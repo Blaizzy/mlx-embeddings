@@ -302,7 +302,7 @@ module Homebrew
 
     describe "#audit_revision_and_version_scheme" do
       subject {
-        fa = described_class.new(Formulary.factory(formula_path))
+        fa = described_class.new(Formulary.factory(formula_path), git: true)
         fa.audit_revision_and_version_scheme
         fa.problems.first
       }
