@@ -23,9 +23,11 @@ If there's no Homebrew Portable Ruby available for your processor:
 "
 
   vendor_dir="$HOMEBREW_LIBRARY/Homebrew/vendor"
-  vendor_ruby_path="$vendor_dir/portable-ruby/current/bin/ruby"
+  vendor_ruby_root="$vendor_dir/portable-ruby/current"
+  vendor_ruby_path="$vendor_ruby_root/bin/ruby"
+  vendor_ruby_terminfo="$vendor_ruby_root/share/terminfo"
   vendor_ruby_latest_version=$(<"$vendor_dir/portable-ruby-version")
-  vendor_ruby_current_version=$(readlink "$vendor_dir/portable-ruby/current")
+  vendor_ruby_current_version=$(readlink "$vendor_ruby_root")
 
   unset HOMEBREW_RUBY_PATH
 
@@ -37,6 +39,7 @@ If there's no Homebrew Portable Ruby available for your processor:
   if [[ -x "$vendor_ruby_path" ]]
   then
     HOMEBREW_RUBY_PATH="$vendor_ruby_path"
+    [[ -z "$HOMEBREW_MACOS" ]] && TERMINFO_DIRS="$vendor_ruby_terminfo"
     if [[ $vendor_ruby_current_version != $vendor_ruby_latest_version ]]
     then
       if ! brew vendor-install ruby
@@ -87,8 +90,10 @@ If there's no Homebrew Portable Ruby available for your processor:
         fi
       fi
       HOMEBREW_RUBY_PATH="$vendor_ruby_path"
+      [[ -z "$HOMEBREW_MACOS" ]] && TERMINFO_DIRS="$vendor_ruby_terminfo"
     fi
   fi
 
   export HOMEBREW_RUBY_PATH
+  export TERMINFO_DIRS
 }
