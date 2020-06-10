@@ -786,7 +786,8 @@ module Homebrew
             !previous_revision.nil? &&
             current_revision < previous_revision
         problem "revision should not decrease (from #{previous_revision} to #{current_revision})"
-      elsif current_revision > (newest_committed_revision + 1)
+      elsif newest_committed_revision &&
+            current_revision > (newest_committed_revision + 1)
         problem "revisions should only increment by 1"
       end
     end
