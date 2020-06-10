@@ -2,11 +2,6 @@
 
 module Language
   module Java
-    def self.java_home_cmd(_ = nil)
-      # macOS provides /usr/libexec/java_home, but Linux does not.
-      raise NotImplementedError
-    end
-
     def self.java_home(version = nil)
       req = JavaRequirement.new [*version]
       raise UnsatisfiedRequirements, req.message unless req.satisfied?
