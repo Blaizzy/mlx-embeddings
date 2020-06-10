@@ -2383,6 +2383,7 @@ class Formula
     #   depends_on "cairo"
     #   depends_on "pixman"
     # end</pre>
+    # @private
     def devel(&block)
       @devel ||= SoftwareSpec.new
       return @devel unless block_given?
@@ -2415,7 +2416,7 @@ class Formula
     end
 
     # Additional downloads can be defined as resources and accessed in the
-    # install method. Resources can also be defined inside a {.stable}, {.devel} or
+    # install method. Resources can also be defined inside a {.stable} or
     # {.head} block. This mechanism replaces ad-hoc "subformula" classes.
     # <pre>resource "additional_files" do
     #   url "https://example.com/additional-stuff.tar.gz"
@@ -2525,7 +2526,7 @@ class Formula
     #   sha256 "c6bc3f48ce8e797854c4b865f6a8ff969867bbcaebd648ae6fd825683e59fef2"
     # end</pre>
     #
-    # Patches can be declared in stable, devel, and head blocks. This form is
+    # Patches can be declared in stable and head blocks. This form is
     # preferred over using conditionals.
     # <pre>stable do
     #   patch do

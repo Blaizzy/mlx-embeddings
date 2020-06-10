@@ -476,7 +476,7 @@ patch :p0 do
 end
 ```
 
-[`patch`](https://rubydoc.brew.sh/Formula#patch-class_method)es can be declared in [`stable`](https://rubydoc.brew.sh/Formula#stable-class_method), [`devel`](https://rubydoc.brew.sh/Formula#devel-class_method), and [`head`](https://rubydoc.brew.sh/Formula#head-class_method) blocks. Always use a block instead of a conditional, i.e. `stable do ... end` instead of `if build.stable? then ... end`.
+[`patch`](https://rubydoc.brew.sh/Formula#patch-class_method)es can be declared in [`stable`](https://rubydoc.brew.sh/Formula#stable-class_method) and [`head`](https://rubydoc.brew.sh/Formula#head-class_method) blocks. Always use a block instead of a conditional, i.e. `stable do ... end` instead of `if build.stable? then ... end`.
 
 ```ruby
 stable do
@@ -532,9 +532,9 @@ Instead of `git diff | pbcopy`, for some editors `git diff >> path/to/your/formu
 
 If anything isn’t clear, you can usually figure it out by `grep`ping the `$(brew --repo homebrew/core)` directory. Please submit a pull request to amend this document if you think it will help!
 
-### Unstable versions (`devel`, `head`)
+### Unstable versions (`head`)
 
-Formulae can specify alternate downloads for the upstream project’s [`head`](https://rubydoc.brew.sh/Formula#head-class_method) (`master`/`trunk`) or [`devel`](https://rubydoc.brew.sh/Formula#devel-class_method) release (unstable but not `master`/`trunk`).
+Formulae can specify an alternate download for the upstream project’s [`head`](https://rubydoc.brew.sh/Formula#head-class_method) (`master`/`trunk`).
 
 #### `head`
 
@@ -558,21 +558,6 @@ class Foo < Formula
                                          #    :revision => "090930930295adslfknsdfsdaffnasd13"
 end
 ```
-
-#### `devel`
-
-The [`devel`](https://rubydoc.brew.sh/Formula#devel-class_method) spec (activated by passing `--devel`) is used for a project’s unstable releases. `devel` specs are not allowed in Homebrew/homebrew-core.
-
-A `devel` spec is specified in a block:
-
-```ruby
-devel do
-  url "https://foo.com/foo-0.1.tar.gz"
-  sha256 "85cc828a96735bdafcf29eb6291ca91bac846579bcef7308536e0c875d6c81d7"
-end
-```
-
-You can test if the [`devel`](https://rubydoc.brew.sh/Formula#devel-class_method) spec is in use with `build.devel?`.
 
 ### Compiler selection
 
@@ -763,7 +748,7 @@ In summary, environment variables used by a formula need to conform to these fil
 
 ## Updating formulae
 
-Eventually a new version of the software will be released. In this case you should update the [`url`](https://rubydoc.brew.sh/Formula#url-class_method) and [`sha256`](https://rubydoc.brew.sh/Formula#sha256%3D-class_method). If a [`revision`](https://rubydoc.brew.sh/Formula#revision%3D-class_method) line exists outside any `bottle do` block *and* the new release is stable rather than devel, it should be removed.
+Eventually a new version of the software will be released. In this case you should update the [`url`](https://rubydoc.brew.sh/Formula#url-class_method) and [`sha256`](https://rubydoc.brew.sh/Formula#sha256%3D-class_method). If a [`revision`](https://rubydoc.brew.sh/Formula#revision%3D-class_method) line exists outside any `bottle do` block it should be removed.
 
 Leave the `bottle do ... end`  block as-is; our CI system will update it when we pull your change.
 

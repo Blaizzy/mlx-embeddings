@@ -63,7 +63,7 @@ To make a new branch and submit it for review, create a GitHub pull request with
     brew audit --strict <CHANGED_FORMULA>
     ```
 6. [Make a separate commit](Formula-Cookbook.md#commit) for each changed formula with `git add` and `git commit`.
-  * Please note that our preferred commit message format for simple version updates is "`<FORMULA_NAME> <NEW_VERSION>`", e.g. "`source-highlight 3.1.8`" but `devel` version updates should have the commit message suffixed with `(devel)`, e.g. "`nginx 1.9.1 (devel)`". If updating both `stable` and `devel`, the format should be a concatenation of these two forms, e.g. "`x264 r2699, r2705 (devel)`".
+  * Please note that our preferred commit message format for simple version updates is "`<FORMULA_NAME> <NEW_VERSION>`", e.g. "`source-highlight 3.1.8`".
 7. Upload your branch of new commits to your fork:
     ```sh
     git push --set-upstream <YOUR_USERNAME> <YOUR_BRANCH_NAME>
