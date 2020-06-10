@@ -34,7 +34,6 @@ class Bintray
   def open_api(url, *extra_curl_args, auth: true)
     args = extra_curl_args
     args += ["--user", "#{@bintray_user}:#{@bintray_key}"] if auth
-    args += ["--output", "/dev/null"] unless Homebrew.args.verbose?
     curl(*args, url,
          show_output: Homebrew.args.verbose?,
          secrets:     @bintray_key)
@@ -44,12 +43,23 @@ class Bintray
     url = "#{API_URL}/content/#{@bintray_org}/#{repo}/#{package}/#{version}/#{remote_file}"
     args = ["--upload-file", local_file]
     args += ["--header", "X-Checksum-Sha2: #{sha256}"] unless sha256.blank?
-    open_api url, *args
+    result = open_api url, *args
+    json = JSON.parse(result.stdout)
+    raise "Bottle upload failed: #{json["message"]}" if json["message"] != "success"
+
+    result
   end
 
-  def publish(repo:, package:, version:)
+  def publish(repo:, package:, version:, file_count:)
     url = "#{API_URL}/content/#{@bintray_org}/#{repo}/#{package}/#{version}/publish"
-    open_api url, "--request", "POST"
+    result = open_api url, "--request", "POST"
+    json = JSON.parse(result.stdout)
+    if file_count.present? && json["files"] != file_count
+      raise "Bottle publish failed: expected #{file_count} bottles, but published #{json["files"]} instead."
+    end
+
+    odebug "Published #{json["files"]} bottles"
+    result
   end
 
   def official_org?(org: @bintray_org)
@@ -67,7 +77,7 @@ class Bintray
   def package_exists?(repo:, package:)
     url = "#{API_URL}/packages/#{@bintray_org}/#{repo}/#{package}"
     begin
-      open_api url, "--fail", "--silent", auth: false
+      open_api url, "--fail", "--silent", "--output", "/dev/null", auth: false
     rescue ErrorDuringExecution => e
       stderr = e.output
                 .select { |type,| type == :stderr }
@@ -140,10 +150,11 @@ class Bintray
                remote_file: filename,
                sha256:      sha256)
       end
-      if publish_package
-        odebug "Publishing #{@bintray_org}/#{bintray_repo}/#{bintray_package}/#{version}"
-        publish repo: bintray_repo, package: bintray_package, version: version
-      end
+      next unless publish_package
+
+      bottle_count = bottle_hash["bottle"]["tags"].length
+      odebug "Publishing #{@bintray_org}/#{bintray_repo}/#{bintray_package}/#{version}"
+      publish repo: bintray_repo, package: bintray_package, version: version, file_count: bottle_count
     end
   end
 end
