@@ -45,7 +45,7 @@ class Bintray
     args += ["--header", "X-Checksum-Sha2: #{sha256}"] unless sha256.blank?
     result = open_api url, *args
     json = JSON.parse(result.stdout)
-    raise "Bottle upload failed: #{json["message"]}" unless json["message"] == "success"
+    raise "Bottle upload failed: #{json["message"]}" if json["message"] != "success"
 
     result
   end
@@ -54,7 +54,7 @@ class Bintray
     url = "#{API_URL}/content/#{@bintray_org}/#{repo}/#{package}/#{version}/publish"
     result = open_api url, "--request", "POST"
     json = JSON.parse(result.stdout)
-    if !file_count.blank? && json["files"] != file_count
+    if file_count.present? && json["files"] != file_count
       raise "Bottle publish failed: expected #{file_count} bottles, but published #{json["files"]} instead."
     end
 
