@@ -10,10 +10,6 @@ module FormulaCellarChecks
     end
 
     return if formula.name&.match?(Version.formula_optionally_versioned_regex(:php))
-
-    return if MacOS.version < :mavericks && formula.name.start_with?("postgresql")
-    return if MacOS.version < :yosemite  && formula.name.start_with?("memcached")
-
     return if formula.keg_only? || !formula.include.directory?
 
     files  = relative_glob(formula.include, "**/*.h")

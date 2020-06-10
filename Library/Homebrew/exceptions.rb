@@ -612,3 +612,12 @@ class ChildProcessError < RuntimeError
     set_backtrace inner["b"]
   end
 end
+
+class MacOSVersionError < RuntimeError
+  attr_reader :version
+
+  def initialize(version)
+    @version = version
+    super "unknown or unsupported macOS version: #{version.inspect}"
+  end
+end

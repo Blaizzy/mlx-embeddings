@@ -46,7 +46,7 @@ describe SoftwareSpec do
     it "raises an error if passing invalid OS versions" do
       expect {
         spec.uses_from_macos("foo", since: :bar)
-      }.to raise_error(ArgumentError, "unknown version :bar")
+      }.to raise_error(MacOSVersionError, "unknown or unsupported macOS version: :bar")
     end
   end
 end

@@ -12,13 +12,10 @@ module OS
         sierra:      "10.12",
         el_capitan:  "10.11",
         yosemite:    "10.10",
-        mavericks:   "10.9",
       }.freeze
 
       def self.from_symbol(sym)
-        str = SYMBOLS.fetch(sym) do
-          raise ArgumentError, "unknown version #{sym.inspect}"
-        end
+        str = SYMBOLS.fetch(sym) { raise MacOSVersionError, sym }
         new(str)
       end
 

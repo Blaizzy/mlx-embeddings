@@ -386,7 +386,7 @@ class BottleSpecification
       # Sort non-MacOS tags below MacOS tags.
 
       OS::Mac::Version.from_symbol tag
-    rescue ArgumentError
+    rescue MacOSVersionError
       "0.#{tag}"
     end
     checksums = {}
