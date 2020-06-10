@@ -211,6 +211,8 @@ module Homebrew
 
     puts "From: #{Formatter.url(github_info(f))}"
 
+    puts "License: #{f.license}" if f.license
+
     unless f.deps.empty?
       ohai "Dependencies"
       %w[build required recommended optional].map do |type|
