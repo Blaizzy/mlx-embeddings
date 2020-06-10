@@ -70,12 +70,22 @@ module Homebrew
 
   def signoff!(pr, path: ".")
     message = Utils.popen_read "git", "-C", path, "log", "-1", "--pretty=%B"
+    subject = message.lines.first.strip
+
+    # Skip the subject and separate lines that look like trailers (e.g. "Co-authored-by")
+    # from lines that look like regular body text.
+    trailers, body = message.lines.drop(1).partition { |s| s.match?(/^[a-z-]+-by:/i) }
+    trailers = trailers.uniq.join.strip
+    body = body.join.strip.gsub(/\n{3,}/, "\n\n")
+
     close_message = "Closes ##{pr}."
-    message += "\n#{close_message}" unless message.include? close_message
+    body += "\n\n#{close_message}" unless body.include? close_message
+    new_message = [subject, body, trailers].join("\n\n").strip
+
     if Homebrew.args.dry_run?
       puts "git commit --amend --signoff -m $message"
     else
-      safe_system "git", "-C", path, "commit", "--amend", "--signoff", "--allow-empty", "-q", "-m", message
+      safe_system "git", "-C", path, "commit", "--amend", "--signoff", "--allow-empty", "-q", "-m", new_message
     end
   end
 
