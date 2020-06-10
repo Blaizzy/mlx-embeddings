@@ -30,13 +30,13 @@ module Utils
       def find_older_compatible_tag(tag)
         tag_version = begin
           MacOS::Version.from_symbol(tag)
-        rescue ArgumentError
+        rescue MacOSVersionError
           return
         end
 
         keys.find do |key|
           MacOS::Version.from_symbol(key) <= tag_version
-        rescue ArgumentError
+        rescue MacOSVersionError
           false
         end
       end

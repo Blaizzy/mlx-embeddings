@@ -2327,9 +2327,9 @@ class Formula
     #   prefix "/opt/homebrew" # Optional HOMEBREW_PREFIX in which the bottles were built.
     #   cellar "/opt/homebrew/Cellar" # Optional HOMEBREW_CELLAR in which the bottles were built.
     #   rebuild 1 # Making the old bottle outdated without bumping the version/revision of the formula.
-    #   sha256 "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865" => :el_capitan
-    #   sha256 "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3" => :yosemite
-    #   sha256 "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2" => :mavericks
+    #   sha256 "ef65c759c5097a36323fa9c77756468649e8d1980a3a4e05695c05e39568967c" => :catalina
+    #   sha256 "28f4090610946a4eb207df102d841de23ced0d06ba31cb79e040d883906dcd4f" => :mojave
+    #   sha256 "91dd0caca9bd3f38c439d5a7b6f68440c4274945615fae035ff0a369264b8a2f" => :high_sierra
     # end</pre>
     #
     # Only formulae where the upstream URL breaks or moves frequently, require compiling
@@ -2452,7 +2452,7 @@ class Formula
     # <pre># Optional and enforce that boost is built with `--with-c++11`.
     # depends_on "boost" => [:optional, "with-c++11"]</pre>
     # <pre># If a dependency is only needed in certain cases:
-    # depends_on "sqlite" if MacOS.version == :mavericks
+    # depends_on "sqlite" if MacOS.version == :catalina
     # depends_on :xcode # If the formula really needs full Xcode.
     # depends_on :macos => :mojave # Needs at least macOS Mojave (10.14).
     # depends_on :x11 => :optional # X11/XQuartz components.

@@ -287,13 +287,7 @@ module OS
       end
 
       def detect_clang_version
-        path = if MacOS.version >= :mavericks
-          "#{PKG_PATH}/usr/bin/clang"
-        else
-          "/usr/bin/clang"
-        end
-
-        version_output = Utils.popen_read("#{path} --version")
+        version_output = Utils.popen_read("#{PKG_PATH}/usr/bin/clang --version")
         version_output[/clang-(\d+\.\d+\.\d+(\.\d+)?)/, 1]
       end
 
