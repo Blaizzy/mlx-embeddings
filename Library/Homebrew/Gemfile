@@ -13,6 +13,8 @@ gem "rspec-retry", require: false
 gem "rspec-wait", require: false
 gem "rubocop"
 gem "simplecov", require: false
+gem "sorbet"
+gem "sorbet-runtime"
 
 # vendored gems
 gem "activesupport"
