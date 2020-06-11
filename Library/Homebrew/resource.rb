@@ -178,6 +178,18 @@ class Resource
     patches << p
   end
 
+  # Block only executed on macOS. No-op on Linux.
+  # <pre>on_macos do
+  #   url "mac_only_url"
+  # end</pre>
+  def on_macos(&_block); end
+
+  # Block only executed on Linux. No-op on macOS.
+  # <pre>on_linux do
+  #   url "linux_only_url"
+  # end</pre>
+  def on_linux(&_block); end
+
   protected
 
   def mktemp(prefix)
@@ -252,3 +264,5 @@ class ResourceStageContext
     "<#{self.class}: resource=#{resource} staging=#{staging}>"
   end
 end
+
+require "extend/os/resource"
