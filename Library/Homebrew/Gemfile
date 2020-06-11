@@ -13,6 +13,10 @@ gem "rspec-retry", require: false
 gem "rspec-wait", require: false
 gem "rubocop"
 gem "simplecov", require: false
+if ENV["HOMEBREW_SORBET"]
+  gem "sorbet"
+  gem "sorbet-runtime"
+end
 
 # vendored gems
 gem "activesupport"
