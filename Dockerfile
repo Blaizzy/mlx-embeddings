@@ -39,6 +39,7 @@ RUN cd /home/linuxbrew/.linuxbrew \
   && mkdir -p bin etc include lib opt sbin share var/homebrew/linked Cellar \
   && ln -s ../Homebrew/bin/brew /home/linuxbrew/.linuxbrew/bin/ \
   && git -C /home/linuxbrew/.linuxbrew/Homebrew remote set-url origin https://github.com/Homebrew/brew \
+  && git -C /home/linuxbrew/.linuxbrew/Homebrew fetch origin \
   && HOMEBREW_NO_ANALYTICS=1 HOMEBREW_NO_AUTO_UPDATE=1 brew tap homebrew/core \
   && brew install-bundler-gems \
   && brew cleanup \
