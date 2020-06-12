@@ -346,8 +346,12 @@ module Homebrew
       path = File.join(File.dirname(__FILE__),"spdx.json")
       file = File.open(File.expand_path(path))
       valid_licenses = JSON.load(file)
-      return if valid_licenses.key?(formula.license)
-      problem "#{formula.license} is not an SPDX license."
+      unless formula.license.nil?
+        return if valid_licenses.key?(formula.license)
+        problem "#{formula.license} is not an SPDX license."
+      else
+        problem "No license specified for package."
+      end
       end
 
     def audit_deps
