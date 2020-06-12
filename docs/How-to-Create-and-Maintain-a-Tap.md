@@ -16,10 +16,11 @@ See the [manpage](Manpage.md) for more information on repository naming.
 The `brew tap-new` command can be used to create a new tap along with some
 template files.
 
-Tap formulae follow the same format as the core’s ones, and can be added at the
-repository’s root, or under `Formula` or `HomebrewFormula` subdirectories. We
-recommend the latter options because it makes the repository organisation
-easier to grasp, and top-level files are not mixed with formulae.
+Tap formulae follow the same format as the core’s ones, and can be added under
+either the `Formula` subdirectory, the `HomebrewFormula` subdirectory or the
+repository’s root. The first available directory is used, other locations will
+be ignored. We recommend use of subdirectories because it makes the repository
+organisation easier to grasp, and top-level files are not mixed with formulae.
 
 See [homebrew/core](https://github.com/Homebrew/homebrew-core) for an example of
 a tap with a `Formula` subdirectory.
