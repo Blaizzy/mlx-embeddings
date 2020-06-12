@@ -347,12 +347,36 @@ module Homebrew
       file = File.open(File.expand_path(path))
       valid_licenses = JSON.load(file)
       unless formula.license.nil?
-        return if valid_licenses.key?(formula.license)
-        problem "#{formula.license} is not an SPDX license."
+        if valid_licenses.key?(formula.license)
+          return unless @online
+            user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}, false)
+            return if user.nil?
+            github_license = get_repo_license_data(user, repo)
+            if github_license && (github_license == formula.license)
+              return
+            else
+              problem "License mismatch - Github license is: #{github_license}, but Formulae license states: #{formula.license}"
+            end
+        else
+          problem "#{formula.license} is not an SPDX license."
+        end
       else
         problem "No license specified for package."
       end
       end
+
+
+
+    def get_repo_license_data(user, repo)
+      return unless @online
+      begin
+        res = GitHub.open_api("#{GitHub::API_URL}/repos/#{user}/#{repo}/license")
+        return nil unless res.key?("license")
+        return res["license"]["spdx_id"] || nil
+      rescue GitHub::HTTPNotFoundError
+        nil
+      end
+    end
 
     def audit_deps
       @specs.each do |spec|
@@ -558,11 +582,10 @@ module Homebrew
       new_formula_problem warning
     end
 
-    def get_repo_data(regex)
+    def get_repo_data(regex, new_formula_only=true)
       return unless @core_tap
       return unless @online
-      return unless @new_formula
-
+      return unless @new_formula if new_formula_only
       _, user, repo = *regex.match(formula.stable.url) if formula.stable
       _, user, repo = *regex.match(formula.homepage) unless user
       return if !user || !repo

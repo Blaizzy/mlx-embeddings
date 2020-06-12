@@ -128,6 +128,7 @@ DEPENDENCIES
   byebug
   concurrent-ruby
   coveralls (~> 0.8)
+  json
   mechanize
   parallel_tests
   plist
