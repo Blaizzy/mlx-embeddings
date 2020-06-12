@@ -22,7 +22,10 @@ module Homebrew
   def tap_new
     tap_new_args.parse
 
+    tap_name = args.named.first
     tap = Tap.fetch(args.named.first)
+    raise "Invalid tap name '#{tap_name}'" unless tap.path.to_s.match?(HOMEBREW_TAP_PATH_REGEX)
+
     titleized_user = tap.user.dup
     titleized_repo = tap.repo.dup
     titleized_user[0] = titleized_user[0].upcase
