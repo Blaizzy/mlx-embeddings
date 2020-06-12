@@ -597,6 +597,8 @@ module Homebrew
       "libepoxy"            => "1.5",
     }.freeze
 
+    GITHUB_PRERELEASE_ALLOWLIST = %w[cake].freeze
+
     # version_prefix = stable_version_string.sub(/\d+$/, "")
     # version_prefix = stable_version_string.split(".")[0..1].join(".")
 
@@ -705,8 +707,11 @@ module Homebrew
 
         begin
           if @online && (release = GitHub.open_api("#{GitHub::API_URL}/repos/#{owner}/#{repo}/releases/tags/#{tag}"))
-            problem "#{tag} is a GitHub prerelease" if release["prerelease"]
-            problem "#{tag} is a GitHub draft" if release["draft"]
+            if release["prerelease"] && !GITHUB_PRERELEASE_ALLOWLIST.include?(formula.name)
+              problem "#{tag} is a GitHub prerelease"
+            elsif release["draft"]
+              problem "#{tag} is a GitHub draft"
+            end
           end
         rescue GitHub::HTTPNotFoundError
           # No-op if we can't find the release.
