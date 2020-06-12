@@ -12,6 +12,7 @@ require "date"
 require "missing_formula"
 require "digest"
 require "cli/parser"
+require 'json'
 
 module Homebrew
   module_function
@@ -340,6 +341,14 @@ module Homebrew
       openblas
       openssl@1.1
     ].freeze
+
+    def audit_licenses
+      path = File.join(File.dirname(__FILE__),"spdx.json")
+      file = File.open(File.expand_path(path))
+      valid_licenses = JSON.load(file)
+      return if valid_licenses.key?(formula.license)
+      problem "#{formula.license} is not an SPDX license."
+      end
 
     def audit_deps
       @specs.each do |spec|
