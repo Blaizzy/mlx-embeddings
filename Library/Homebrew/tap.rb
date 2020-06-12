@@ -34,7 +34,10 @@ class Tap
     return CoreTap.instance if ["Homebrew", "Linuxbrew"].include?(user) && ["core", "homebrew"].include?(repo)
 
     cache_key = "#{user}/#{repo}".downcase
-    cache.fetch(cache_key) { |key| cache[key] = Tap.new(user, repo) }
+    tap = cache.fetch(cache_key) { |key| cache[key] = Tap.new(user, repo) }
+    raise "Invalid tap name '#{args.join("/")}'" unless tap.path.to_s.match?(HOMEBREW_TAP_PATH_REGEX)
+
+    tap
   end
 
   def self.from_path(path)
