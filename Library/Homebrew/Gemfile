@@ -16,6 +16,7 @@ gem "simplecov", require: false
 if ENV["HOMEBREW_SORBET"]
   gem "sorbet"
   gem "sorbet-runtime"
+  gem "tapioca"
 end
 
 # vendored gems
