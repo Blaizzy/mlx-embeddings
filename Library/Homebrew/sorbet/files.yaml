@@ -1,4 +1,4 @@
-ignore:
+false:
   - ./bintray.rb
   - ./bottle_publisher.rb
   - ./brew.rb
