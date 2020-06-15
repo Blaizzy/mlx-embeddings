@@ -12,7 +12,7 @@ require "date"
 require "missing_formula"
 require "digest"
 require "cli/parser"
-require 'json'
+require "json"
 
 module Homebrew
   module_function
@@ -111,8 +111,8 @@ module Homebrew
     # Check style in a single batch run up front for performance
     style_results = Style.check_style_json(style_files, options) if style_files
     # load licenses
-    path = File.join(File.dirname(__FILE__),"spdx.json")
-    spdx_ids = JSON.load( File.open(File.expand_path(path)))
+    path = File.join(File.dirname(__FILE__), "spdx.json")
+    spdx_ids = JSON.parse(File.open(File.expand_path(path)).read)
     new_formula_problem_lines = []
     audit_formulae.sort.each do |f|
       only = only_cops ? ["style"] : args.only
@@ -123,7 +123,7 @@ module Homebrew
         git:         git,
         only:        only,
         except:      args.except,
-        spdx_ids:    spdx_ids
+        spdx_ids:    spdx_ids,
       }
       options[:style_offenses] = style_results.file_offenses(f.path) if style_results
       options[:display_cop_names] = args.display_cop_names?
@@ -347,33 +347,34 @@ module Homebrew
     ].freeze
 
     def audit_licenses
-      unless formula.license.nil?
+      if formula.license
         if @spdx_ids.key?(formula.license)
           return unless @online
-            user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}, false)
-            return if user.nil?
-            github_license = get_repo_license_data(user, repo)
-            if github_license && (github_license == formula.license)
-              return
-            else
-              problem "License mismatch - Github license is: #{github_license}, but Formulae license states: #{formula.license}"
-            end
+
+          user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}, false)
+          return if user.nil?
+
+          github_license = get_repo_license_data(user, repo)
+          return if github_license && (github_license == formula.license)
+
+          problem "License mismatch - Github license is: #{github_license}, \
+but Formulae license states: #{formula.license}"
         else
           problem "#{formula.license} is not an SPDX license."
         end
       else
         problem "No license specified for package."
       end
-      end
-
-
+    end
 
     def get_repo_license_data(user, repo)
       return unless @online
+
       begin
         res = GitHub.open_api("#{GitHub::API_URL}/repos/#{user}/#{repo}/license")
-        return nil unless res.key?("license")
-        return res["license"]["spdx_id"] || nil
+        return unless res.key?("license")
+
+        res["license"]["spdx_id"] || nil
       rescue GitHub::HTTPNotFoundError
         nil
       end
@@ -583,10 +584,12 @@ module Homebrew
       new_formula_problem warning
     end
 
-    def get_repo_data(regex, new_formula_only=true)
+    def get_repo_data(regex, new_formula_only = true)
       return unless @core_tap
       return unless @online
-      return unless @new_formula if new_formula_only
+
+      return unless @new_formula || !new_formula_only
+
       _, user, repo = *regex.match(formula.stable.url) if formula.stable
       _, user, repo = *regex.match(formula.homepage) unless user
       return if !user || !repo
