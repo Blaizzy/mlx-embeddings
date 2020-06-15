@@ -147,7 +147,6 @@ module Homebrew
     raise FormulaUnspecifiedError unless formula
 
     tap_full_name, origin_branch, previous_branch = use_correct_linux_tap(formula)
-    check_for_duplicate_pull_requests(formula, tap_full_name)
 
     requested_spec, formula_spec = if args.devel?
       devel_message = " (devel)"
@@ -315,6 +314,8 @@ module Homebrew
 
     new_formula_version = formula_version(formula, requested_spec, new_contents)
 
+    check_for_duplicate_pull_requests(formula, tap_full_name, new_formula_version.to_s)
+
     if !new_mirrors && !formula_spec.mirrors.empty?
       if args.force?
         opoo "#{formula}: Removing all mirrors because a --mirror= argument was not specified."
@@ -468,23 +469,26 @@ module Homebrew
     end
   end
 
-  def fetch_pull_requests(formula, tap_full_name)
-    GitHub.issues_for_formula(formula.name, tap_full_name: tap_full_name).select do |pr|
+  def fetch_pull_requests(query, tap_full_name, state: nil)
+    GitHub.issues_for_formula(query, tap_full_name: tap_full_name, state: state).select do |pr|
       pr["html_url"].include?("/pull/") &&
-        /(^|\s)#{Regexp.quote(formula.name)}(:|\s|$)/i =~ pr["title"]
+        /(^|\s)#{Regexp.quote(query)}(:|\s|$)/i =~ pr["title"]
     end
   rescue GitHub::RateLimitExceededError => e
     opoo e.message
     []
   end
 
-  def check_for_duplicate_pull_requests(formula, tap_full_name)
-    pull_requests = fetch_pull_requests(formula, tap_full_name)
-    return unless pull_requests
-    return if pull_requests.empty?
+  def check_for_duplicate_pull_requests(formula, tap_full_name, version)
+    # check for open requests
+    pull_requests = fetch_pull_requests(formula.name, tap_full_name, state: "open")
+
+    # if we haven't already found open requests, try for an exact match across all requests
+    pull_requests = fetch_pull_requests("#{formula.name} #{version}", tap_full_name) if pull_requests.blank?
+    return if pull_requests.blank?
 
     duplicates_message = <<~EOS
-      These open pull requests may be duplicates:
+      These pull requests may be duplicates:
       #{pull_requests.map { |pr| "#{pr["title"]} #{pr["html_url"]}" }.join("\n")}
     EOS
     error_message = "Duplicate PRs should not be opened. Use --force to override this error."
