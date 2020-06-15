@@ -110,7 +110,9 @@ module Homebrew
 
     # Check style in a single batch run up front for performance
     style_results = Style.check_style_json(style_files, options) if style_files
-
+    # load licenses
+    path = File.join(File.dirname(__FILE__),"spdx.json")
+    spdx_ids = JSON.load( File.open(File.expand_path(path)))
     new_formula_problem_lines = []
     audit_formulae.sort.each do |f|
       only = only_cops ? ["style"] : args.only
@@ -121,6 +123,7 @@ module Homebrew
         git:         git,
         only:        only,
         except:      args.except,
+        spdx_ids:    spdx_ids
       }
       options[:style_offenses] = style_results.file_offenses(f.path) if style_results
       options[:display_cop_names] = args.display_cop_names?
@@ -224,6 +227,7 @@ module Homebrew
       @new_formula_problems = []
       @text = FormulaText.new(formula.path)
       @specs = %w[stable devel head].map { |s| formula.send(s) }.compact
+      @spdx_ids = options[:spdx_ids]
     end
 
     def audit_style
@@ -343,11 +347,8 @@ module Homebrew
     ].freeze
 
     def audit_licenses
-      path = File.join(File.dirname(__FILE__),"spdx.json")
-      file = File.open(File.expand_path(path))
-      valid_licenses = JSON.load(file)
       unless formula.license.nil?
-        if valid_licenses.key?(formula.license)
+        if @spdx_ids.key?(formula.license)
           return unless @online
             user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}, false)
             return if user.nil?
