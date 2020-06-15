@@ -5,7 +5,7 @@ require "erb"
 
 module Homebrew
   class FormulaCreator
-    attr_reader :url, :sha256, :desc, :homepage
+    attr_reader :url, :sha256, :desc, :homepage, :license
     attr_accessor :name, :version, :tap, :path, :mode
 
     def url=(url)
@@ -100,6 +100,7 @@ module Homebrew
         <% end %>
           sha256 "#{sha256}"
         <% end %>
+          license "#{license}"
 
         <% if mode == :cmake %>
           depends_on "cmake" => :build
