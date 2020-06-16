@@ -41,6 +41,7 @@ module Cask
       check_token_valid
       check_token_bad_words
       check_token_conflicts
+      check_languages
       check_download
       check_https_availability
       check_single_pre_postflight
@@ -275,6 +276,17 @@ module Cask
           add_error "target must be absolute path for #{artifact.class.english_name} #{artifact.source}"
         end
       end
+    end
+
+    def check_languages
+      invalid = []
+      @cask.languages.each do |language|
+        invalid << language.to_s unless language.match?(/^[a-z]{2}$/) || language.match?(/^[a-z]{2}-[A-Z]{2}$/)
+      end
+
+      return if invalid.empty?
+
+      add_error "locale #{invalid.join(", ")} are invalid"
     end
 
     def check_token_conflicts
