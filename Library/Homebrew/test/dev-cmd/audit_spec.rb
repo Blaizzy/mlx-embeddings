@@ -95,6 +95,52 @@ module Homebrew
       end
     end
 
+    describe "#audit_license" do
+      let(:spdx_ids) {
+        full_path = File.join(File.expand_path(File.dirname(__FILE__) + "../../../dev-cmd/"), "spdx.json")
+        JSON.parse(File.open(full_path).read)
+      }
+
+      let(:custom_spdx_id) { "zzz" }
+
+      it "detects no license info" do
+        fa = formula_auditor "foo", <<~RUBY, spdx_ids: spdx_ids
+          class Foo < Formula
+            url "https://brew.sh/foo-1.0.tgz"
+            license ""
+          end
+        RUBY
+
+        fa.audit_license
+        p fa.problems
+        expect(fa.problems.first).to match ("No license specified for package.")
+      end
+
+      it "detects if license is not a standard spdx-id" do
+        fa = formula_auditor "foo", <<~RUBY, spdx_ids: spdx_ids
+          class Foo < Formula
+            url "https://brew.sh/foo-1.0.tgz"
+            license "#{custom_spdx_id}"
+          end
+        RUBY
+
+        fa.audit_license
+        expect(fa.problems.first).to match ("#{custom_spdx_id} is not a standard SPDX license id.")
+      end
+
+    it "verifies that a license info is a standard spdx id" do
+      fa = formula_auditor "foo", <<~RUBY, spdx_ids: spdx_ids
+          class Foo < Formula
+            url "https://brew.sh/foo-1.0.tgz"
+            license "0BSD"
+          end
+      RUBY
+
+      fa.audit_license
+      expect(fa.problems).to be_empty
+    end
+  end
+
     describe "#audit_file" do
       specify "DATA but no __END__" do
         fa = formula_auditor "foo", <<~RUBY
