@@ -141,11 +141,11 @@ module Homebrew
         expect(fa.problems).to be_empty
       end
 
-      it "checks online and verifies that a standard license id is the same as what is indicated on its Github repo" do
-        fa = formula_auditor "cask", <<~RUBY, spdx_ids: spdx_ids, online: true
+      it "checks online and verifies that a standard license id is the same "\
+        "as what is indicated on its Github repo" do
+        fa = formula_auditor "cask", <<~RUBY, spdx_ids: spdx_ids, online: true, core_tap: true
           class Cask < Formula
               url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
-              sha256 "02f8bb20b33b23fb11e7d2a1d282519dfdb8b3090b9672448b8c2c2cacd3e478"
               head "https://github.com/cask/cask.git"
               license "GPL-3.0"
           end
@@ -155,23 +155,20 @@ module Homebrew
         expect(fa.problems).to be_empty
       end
 
-      # TODO: fix this test
-      it "checks online and detects that a formula-specified license is not the same as what is indicated on its Github repository" do
-        fa = formula_auditor "cask", <<~RUBY, strict: true, online: true, spdx_ids: spdx_ids
+      it "checks online and detects that a formula-specified license is not "\
+        "the same as what is indicated on its Github repository" do
+        # odie "lol"
+        fa = formula_auditor "cask", <<~RUBY, online: true, spdx_ids: spdx_ids, core_tap: true
           class Cask < Formula
-            desc "Emacs dependency management"
-            homepage "https://cask.readthedocs.org/"
-            url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
-            sha256 "02f8bb20b33b23fb11e7d2a1d282519dfdb8b3090b9672448b8c2c2cacd3e478"
-            head "https://github.com/cask/cask.git"
-            license "0BSD"
+              url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
+              head "https://github.com/cask/cask.git"
+              license "#{standard_mismatch_spdx_id}"
           end
         RUBY
 
         fa.audit_license
-        expect(fa.problems).to be_empty
-        #       match "License mismatch - Github license is: GPL-3.0, \
-        # but Formulae license states: #{standard_mismatch_spdx_id}."
+        expect(fa.problems.first).to match "License mismatch - Github license is: GPL-3.0, "\
+        "but Formulae license states: #{standard_mismatch_spdx_id}."
       end
     end
 
