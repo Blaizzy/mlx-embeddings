@@ -206,7 +206,7 @@ module Homebrew
   class FormulaAuditor
     include FormulaCellarChecks
 
-    attr_reader :formula, :text, :problems, :new_formula_problems, :spdx_ids
+    attr_reader :formula, :text, :problems, :new_formula_problems
 
     def initialize(formula, options = {})
       @formula = formula
@@ -358,7 +358,7 @@ module Homebrew
           return if github_license && (github_license == formula.license)
 
           problem "License mismatch - Github license is: #{github_license}, \
-but Formulae license states: #{formula.license}"
+but Formulae license states: #{formula.license}."
         else
           problem "#{formula.license} is not a standard SPDX license id."
         end
