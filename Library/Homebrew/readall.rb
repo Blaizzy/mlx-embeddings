@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "formula"
+require "cask/cask_loader"
 
 module Readall
   class << self
@@ -35,28 +36,43 @@ module Readall
     end
 
     def valid_formulae?(formulae)
-      failed = false
+      success = true
       formulae.each do |file|
         Formulary.factory(file)
       rescue Interrupt
         raise
       rescue Exception => e # rubocop:disable Lint/RescueException
         onoe "Invalid formula: #{file}"
-        puts e
-        failed = true
+        $stderr.puts e
+        success = false
       end
-      !failed
+      success
+    end
+
+    def valid_casks?(casks)
+      success = true
+      casks.each do |file|
+        Cask::CaskLoader.load(file)
+      rescue Interrupt
+        raise
+      rescue Exception => e # rubocop:disable Lint/RescueException
+        onoe "Invalid cask: #{file}"
+        $stderr.puts e
+        success = false
+      end
+      success
     end
 
     def valid_tap?(tap, options = {})
-      failed = false
+      success = true
       if options[:aliases]
         valid_aliases = valid_aliases?(tap.alias_dir, tap.formula_dir)
-        failed = true unless valid_aliases
+        success = false unless valid_aliases
       end
       valid_formulae = valid_formulae?(tap.formula_files)
-      failed = true unless valid_formulae
-      !failed
+      valid_casks = valid_casks?(tap.cask_files)
+      success = false if !valid_formulae || !valid_casks
+      success
     end
 
     private
@@ -79,3 +95,5 @@ module Readall
     end
   end
 end
+
+require "extend/os/readall"
