@@ -102,6 +102,7 @@ module Homebrew
       }
 
       let(:custom_spdx_id) { "zzz" }
+      let(:standard_mismatch_spdx_id) { "0BSD" }
 
       it "detects no license info" do
         fa = formula_auditor "foo", <<~RUBY, spdx_ids: spdx_ids
@@ -113,7 +114,7 @@ module Homebrew
 
         fa.audit_license
         p fa.problems
-        expect(fa.problems.first).to match ("No license specified for package.")
+        expect(fa.problems.first).to match "No license specified for package."
       end
 
       it "detects if license is not a standard spdx-id" do
@@ -125,21 +126,54 @@ module Homebrew
         RUBY
 
         fa.audit_license
-        expect(fa.problems.first).to match ("#{custom_spdx_id} is not a standard SPDX license id.")
+        expect(fa.problems.first).to match "#{custom_spdx_id} is not a standard SPDX license id."
       end
 
-    it "verifies that a license info is a standard spdx id" do
-      fa = formula_auditor "foo", <<~RUBY, spdx_ids: spdx_ids
+      it "verifies that a license info is a standard spdx id" do
+        fa = formula_auditor "foo", <<~RUBY, spdx_ids: spdx_ids
           class Foo < Formula
             url "https://brew.sh/foo-1.0.tgz"
             license "0BSD"
           end
-      RUBY
+        RUBY
 
-      fa.audit_license
-      expect(fa.problems).to be_empty
+        fa.audit_license
+        expect(fa.problems).to be_empty
+      end
+
+      it "checks online and verifies that a standard license id is the same as what is indicated on its Github repo" do
+        fa = formula_auditor "cask", <<~RUBY, spdx_ids: spdx_ids, online: true
+          class Cask < Formula
+              url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
+              sha256 "02f8bb20b33b23fb11e7d2a1d282519dfdb8b3090b9672448b8c2c2cacd3e478"
+              head "https://github.com/cask/cask.git"
+              license "GPL-3.0"
+          end
+        RUBY
+
+        fa.audit_license
+        expect(fa.problems).to be_empty
+      end
+
+      # TODO: fix this test
+      it "checks online and detects that a formula-specified license is not the same as what is indicated on its Github repository" do
+        fa = formula_auditor "cask", <<~RUBY, strict: true, online: true, spdx_ids: spdx_ids
+          class Cask < Formula
+            desc "Emacs dependency management"
+            homepage "https://cask.readthedocs.org/"
+            url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
+            sha256 "02f8bb20b33b23fb11e7d2a1d282519dfdb8b3090b9672448b8c2c2cacd3e478"
+            head "https://github.com/cask/cask.git"
+            license "0BSD"
+          end
+        RUBY
+
+        fa.audit_license
+        expect(fa.problems).to be_empty
+        #       match "License mismatch - Github license is: GPL-3.0, \
+        # but Formulae license states: #{standard_mismatch_spdx_id}."
+      end
     end
-  end
 
     describe "#audit_file" do
       specify "DATA but no __END__" do
