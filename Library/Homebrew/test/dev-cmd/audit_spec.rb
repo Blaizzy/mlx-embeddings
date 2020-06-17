@@ -97,8 +97,12 @@ module Homebrew
 
     describe "#audit_license" do
       let(:spdx_ids) {
-        full_path = File.join(File.expand_path(File.dirname(__FILE__) + "../../../data/"), "spdx.json")
-        JSON.parse(File.open(full_path).read)
+        # full_path = File.join(File.expand_path(File.dirname(__FILE__) + "../../../data/"), "spdx.json")
+        full_path = File.join(File.dirname(__FILE__), "../../data/spdx.json")
+        p full_path
+        File.open(full_path, "r") do |f|
+          JSON.parse(f.read)
+        end
       }
 
       let(:custom_spdx_id) { "zzz" }
@@ -145,9 +149,9 @@ module Homebrew
         "as what is indicated on its Github repo" do
         fa = formula_auditor "cask", <<~RUBY, spdx_ids: spdx_ids, online: true, core_tap: true
           class Cask < Formula
-              url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
-              head "https://github.com/cask/cask.git"
-              license "GPL-3.0"
+            url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
+            head "https://github.com/cask/cask.git"
+            license "GPL-3.0"
           end
         RUBY
 
@@ -157,12 +161,11 @@ module Homebrew
 
       it "checks online and detects that a formula-specified license is not "\
         "the same as what is indicated on its Github repository" do
-        # odie "lol"
         fa = formula_auditor "cask", <<~RUBY, online: true, spdx_ids: spdx_ids, core_tap: true
           class Cask < Formula
-              url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
-              head "https://github.com/cask/cask.git"
-              license "#{standard_mismatch_spdx_id}"
+            url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
+            head "https://github.com/cask/cask.git"
+            license "#{standard_mismatch_spdx_id}"
           end
         RUBY
 
