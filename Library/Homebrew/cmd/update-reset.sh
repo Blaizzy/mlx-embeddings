@@ -38,6 +38,7 @@ homebrew-update-reset() {
     cd "$DIR" || continue
     ohai "Fetching $DIR..."
     git fetch --force --tags origin
+    git remote set-head origin --auto >/dev/null
     echo
 
     ohai "Resetting $DIR..."

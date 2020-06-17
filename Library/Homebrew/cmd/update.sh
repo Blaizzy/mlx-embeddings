@@ -38,6 +38,7 @@ git_init_if_necessary() {
     git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
     latest_tag="$(git ls-remote --tags --refs -q origin | tail -n1 | cut -f2)"
     git fetch --force origin --shallow-since="$latest_tag"
+    git remote set-head origin --auto >/dev/null
     git reset --hard origin/master
     SKIP_FETCH_BREW_REPOSITORY=1
     set +e
@@ -59,6 +60,7 @@ git_init_if_necessary() {
     git config remote.origin.url "$HOMEBREW_CORE_GIT_REMOTE"
     git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
     git fetch --force --depth=1 origin refs/heads/master:refs/remotes/origin/master
+    git remote set-head origin --auto >/dev/null
     git reset --hard origin/master
     SKIP_FETCH_CORE_REPOSITORY=1
     set +e
@@ -84,6 +86,11 @@ upstream_branch() {
   local upstream_branch
 
   upstream_branch="$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null)"
+  if [[ -z "$upstream_branch" ]]
+  then
+    git remote set-head origin --auto >/dev/null
+    upstream_branch="$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null)"
+  fi
   upstream_branch="${upstream_branch#refs/remotes/origin/}"
   [[ -z "$upstream_branch" ]] && upstream_branch="master"
   echo "$upstream_branch"
