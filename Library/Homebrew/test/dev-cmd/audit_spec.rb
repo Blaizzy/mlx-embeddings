@@ -97,9 +97,7 @@ module Homebrew
 
     describe "#audit_license" do
       let(:spdx_ids) {
-        # full_path = File.join(File.expand_path(File.dirname(__FILE__) + "../../../data/"), "spdx.json")
         full_path = File.join(File.dirname(__FILE__), "../../data/spdx.json")
-        p full_path
         File.open(full_path, "r") do |f|
           JSON.parse(f.read)
         end
