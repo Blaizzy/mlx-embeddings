@@ -49,7 +49,6 @@ module Homebrew
     end
 
     def generate!
-      p "generate"
       raise "#{path} already exists" if path.exist?
 
       if version.nil? || version.null?
