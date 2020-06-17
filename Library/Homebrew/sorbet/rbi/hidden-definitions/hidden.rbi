@@ -5854,6 +5854,8 @@ class Class
   def any_instance(); end
 
   def class_attribute(*attrs, instance_accessor: T.unsafe(nil), instance_reader: T.unsafe(nil), instance_writer: T.unsafe(nil), instance_predicate: T.unsafe(nil), default: T.unsafe(nil)); end
+
+  def json_creatable?(); end
 end
 
 module CodeRay
@@ -10310,6 +10312,12 @@ end
 class JSON::Ext::Parser
   def initialize(*_); end
 end
+
+JSON::Parser = JSON::Ext::Parser
+
+JSON::State = JSON::Ext::Generator::State
+
+JSON::UnparserError = JSON::GeneratorError
 
 class JavaRequirement::CaskSuggestion
   def self.[](*_); end

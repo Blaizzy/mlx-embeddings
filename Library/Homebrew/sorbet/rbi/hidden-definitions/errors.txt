@@ -3499,6 +3499,7 @@
 # wrong constant name class_attribute<defaultArg>4
 # wrong constant name class_attribute<defaultArg>5
 # wrong constant name class_attribute
+# wrong constant name json_creatable?
 # wrong constant name <Class:Duo>
 # wrong constant name <Class:Encoders>
 # wrong constant name <Class:FileType>
@@ -13075,7 +13076,7 @@
 # wrong constant name <Class:NormalizeRGBTriple>
 # wrong constant name <Class:WeightedEuclideanDistance>
 # wrong constant name <static-init>
-# undefined method `weighted_euclidean_distance_to<defaultArg>1' for module `#<Module:0x00007faec77ec8e0>'
+# undefined method `weighted_euclidean_distance_to<defaultArg>1' for module `#<Module:0x00007f8ad76ac2c8>'
 # wrong constant name weighted_euclidean_distance_to<defaultArg>1
 # wrong constant name weighted_euclidean_distance_to
 # wrong constant name <static-init>
