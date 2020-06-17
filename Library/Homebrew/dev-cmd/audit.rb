@@ -349,6 +349,8 @@ module Homebrew
     ].freeze
 
     def audit_license
+      return unless @new_formula
+
       if !formula.license.blank?
         if @spdx_ids.key?(formula.license)
           return unless @online
@@ -356,7 +358,7 @@ module Homebrew
           user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}, false)
           return if user.nil?
 
-          github_license = get_repo_license_data(user, repo)
+          github_license = GitHub.get_repo_license(user, repo)
           return if github_license && (github_license == formula.license)
 
           problem "License mismatch - Github license is: #{github_license}, "\
@@ -369,18 +371,18 @@ module Homebrew
       end
     end
 
-    def get_repo_license_data(user, repo)
-      return unless @online
-
-      begin
-        res = GitHub.open_api("#{GitHub::API_URL}/repos/#{user}/#{repo}/license")
-        return unless res.key?("license")
-
-        res["license"]["spdx_id"] || nil
-      rescue GitHub::HTTPNotFoundError
-        nil
-      end
-    end
+    # def get_github_repo_license_data(user, repo)
+    #   return unless @online
+    #
+    #   begin
+    #     res = GitHub.open_api("#{GitHub::API_URL}/repos/#{user}/#{repo}/license")
+    #     return unless res.key?("license")
+    #
+    #     res["license"]["spdx_id"] || nil
+    #   rescue GitHub::HTTPNotFoundError
+    #     nil
+    #   end
+    # end
 
     def audit_deps
       @specs.each do |spec|
