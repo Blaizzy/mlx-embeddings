@@ -38,7 +38,10 @@ module Cask
       check_sha256
       check_url
       check_generic_artifacts
+      check_token_valid
+      check_token_bad_words
       check_token_conflicts
+      check_languages
       check_download
       check_https_availability
       check_single_pre_postflight
@@ -275,11 +278,72 @@ module Cask
       end
     end
 
+    def check_languages
+      invalid = []
+      @cask.languages.each do |language|
+        invalid << language.to_s unless language.match?(/^[a-z]{2}$/) || language.match?(/^[a-z]{2}-[A-Z]{2}$/)
+      end
+
+      return if invalid.empty?
+
+      add_error "locale #{invalid.join(", ")} are invalid"
+    end
+
     def check_token_conflicts
       return unless @token_conflicts
       return unless core_formula_names.include?(cask.token)
 
       add_warning "possible duplicate, cask token conflicts with Homebrew core formula: #{core_formula_url}"
+    end
+
+    def check_token_valid
+      return unless @strict
+
+      add_warning "cask token is not lowercase" if cask.token.downcase!
+
+      add_warning "cask token contains non-ascii characters" unless cask.token.ascii_only?
+
+      add_warning "cask token + should be replaced by -plus-" if cask.token.include? "+"
+
+      add_warning "cask token @ should be replaced by -at-" if cask.token.include? "@"
+
+      add_warning "cask token whitespace should be replaced by hyphens" if cask.token.include? " "
+
+      add_warning "cask token underscores should be replaced by hyphens" if cask.token.include? "_"
+
+      if cask.token.match?(/[^a-z0-9\-]/)
+        add_warning "cask token should only contain alphanumeric characters and hyphens"
+      end
+
+      add_warning "cask token should not contain double hyphens" if cask.token.include? "--"
+
+      return unless cask.token.end_with?("-") || cask.token.start_with?("-")
+
+      add_warning "cask token should not have leading or trailing hyphens"
+    end
+
+    def check_token_bad_words
+      return unless @strict
+
+      token = cask.token
+
+      add_warning "cask token contains .app" if token.end_with? ".app"
+
+      if cask.token.end_with? "alpha", "beta", "release candidate"
+        add_warning "cask token contains version designation"
+      end
+
+      add_warning "cask token mentions launcher" if token.end_with? "launcher"
+
+      add_warning "cask token mentions desktop" if token.end_with? "desktop"
+
+      add_warning "cask token mentions platform" if token.end_with? "mac", "osx", "macos"
+
+      add_warning "cask token mentions architecture" if token.end_with? "x86", "32_bit", "x86_64", "64_bit"
+
+      return unless token.end_with?("cocoa", "qt", "gtk", "wx", "java") && !%w[cocoa qt gtk wx java].include?(token)
+
+      add_warning "cask token mentions framework"
     end
 
     def core_tap

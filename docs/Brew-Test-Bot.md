@@ -1,8 +1,10 @@
 ---
-title: Brew Test Bot
 logo: https://brew.sh/assets/img/brewtestbot.png
 image: https://brew.sh/assets/img/brewtestbot.png
 ---
+
+# Brew Test Bot
+
 `brew test-bot` is the name for the automated review and testing system funded
 by [our Kickstarter in 2013](https://www.kickstarter.com/projects/homebrew/brew-test-bot).
 

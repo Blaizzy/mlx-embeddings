@@ -21,6 +21,7 @@ module Homebrew
 
     cd HOMEBREW_REPOSITORY
     pager = if Homebrew::EnvConfig.bat?
+      ENV["BAT_CONFIG_PATH"] = Homebrew::EnvConfig.bat_config_path
       "#{HOMEBREW_PREFIX}/bin/bat"
     else
       "cat"
