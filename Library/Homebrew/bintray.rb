@@ -66,6 +66,38 @@ class Bintray
     %w[homebrew linuxbrew].include? org
   end
 
+  def stable_mirrored?(url)
+    headers, = curl_output("--connect-timeout", "15", "--location", "--head", url)
+    status_code = headers.scan(%r{^HTTP/.* (\d+)}).last.first
+    status_code.start_with?("2")
+  end
+
+  def mirror_formula(formula, repo: "mirror")
+    package = Utils::Bottles::Bintray.package formula.name
+
+    create_package(repo: repo, package: package) unless package_exists?(repo: repo, package: package)
+
+    formula.downloader.fetch
+
+    version = ERB::Util.url_encode(formula.pkg_version)
+    filename = ERB::Util.url_encode(formula.downloader.basename)
+    destination_url = "https://dl.bintray.com/#{@bintray_org}/#{repo}/#{filename}"
+
+    odebug "Uploading to #{destination_url}"
+
+    upload(
+      formula.downloader.cached_location,
+      repo:        repo,
+      package:     package,
+      version:     version,
+      sha256:      formula.stable.checksum,
+      remote_file: filename,
+    )
+    publish(repo: repo, package: package, version: version)
+
+    destination_url
+  end
+
   def create_package(repo:, package:, **extra_data_args)
     url = "#{API_URL}/packages/#{@bintray_org}/#{repo}"
     data = { name: package, public_download_numbers: true }

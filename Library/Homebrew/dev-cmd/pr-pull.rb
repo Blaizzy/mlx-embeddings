@@ -214,18 +214,40 @@ module Homebrew
           url = GitHub.get_artifact_url(user, repo, pr, workflow_id: workflow, artifact_name: artifact)
           download_artifact(url, dir, pr)
 
+          json_files = Dir["*.json"]
+
           if Homebrew.args.dry_run?
-            puts "brew bottle --merge --write #{Dir["*.json"].join " "}"
+            puts "brew bottle --merge --write #{json_files.join " "}"
           else
-            quiet_system "#{HOMEBREW_PREFIX}/bin/brew", "bottle", "--merge", "--write", *Dir["*.json"]
+            quiet_system "#{HOMEBREW_PREFIX}/bin/brew", "bottle", "--merge", "--write", *json_files
           end
 
           next if args.no_upload?
 
           if Homebrew.args.dry_run?
-            puts "Upload bottles described by these JSON files to Bintray:\n  #{Dir["*.json"].join("\n  ")}"
+            puts "Upload bottles described by these JSON files to Bintray:\n  #{json_files.join("\n  ")}"
           else
-            bintray.upload_bottle_json Dir["*.json"], publish_package: !args.no_publish?
+            bintray.upload_bottle_json json_files, publish_package: !args.no_publish?
+          end
+
+          bottles_hash = json_files.reduce({}) do |hash, json_file|
+            hash.deep_merge(JSON.parse(IO.read(json_file)))
+          end
+
+          bottles_hash.each do |formula_name, _|
+            formula = Formula[formula_name]
+            stable_urls = [formula.stable.url] + formula.stable.mirrors
+            stable_urls.grep(%r{^https://dl.bintray.com/homebrew/mirror/}) do |mirror_url|
+              if Homebrew.args.dry_run?
+                puts "Mirror formulae sources described by these JSON files to Bintray:\n  #{json_files.join("\n  ")}"
+                next
+              end
+
+              next if bintray.stable_mirrored?(mirror_url)
+
+              mirror_url = bintray.mirror_formula(formula)
+              ohai "Mirrored #{formula.full_name} to #{mirror_url}!"
+            end
           end
         end
       end
