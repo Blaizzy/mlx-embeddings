@@ -310,10 +310,16 @@ module Cask
       return if cask.appcast.must_contain == :no_check
 
       appcast_stanza = cask.appcast.to_s
-      appcast_contents, = curl_output("--compressed", "--user-agent", HOMEBREW_USER_AGENT_FAKE_SAFARI, "--location",
-                                      "--globoff", "--max-time", "5", appcast_stanza)
+      appcast_contents, = begin
+        curl_output("--compressed", "--user-agent", HOMEBREW_USER_AGENT_FAKE_SAFARI, "--location",
+                    "--globoff", "--max-time", "5", appcast_stanza)
+      rescue
+        add_error "appcast at URL '#{appcast_stanza}' offline or looping"
+        return
+      end
+
       version_stanza = cask.version.to_s
-      adjusted_version_stanza = if cask.appcast.configuration.blank?
+      adjusted_version_stanza = if cask.appcast.must_contain.blank?
         version_stanza.match(/^[[:alnum:].]+/)[0]
       else
         cask.appcast.must_contain
@@ -322,8 +328,6 @@ module Cask
 
       add_warning "appcast at URL '#{appcast_stanza}' does not contain"\
                   " the version number '#{adjusted_version_stanza}':\n#{appcast_contents}"
-    rescue
-      add_error "appcast at URL '#{appcast_stanza}' offline or looping"
     end
 
     def check_github_repository

@@ -12,6 +12,7 @@ require "date"
 require "missing_formula"
 require "digest"
 require "cli/parser"
+require "json"
 
 module Homebrew
   module_function
@@ -109,7 +110,11 @@ module Homebrew
 
     # Check style in a single batch run up front for performance
     style_results = Style.check_style_json(style_files, options) if style_files
-
+    # load licenses
+    full_path = File.join(File.dirname(__FILE__), "../data/spdx.json")
+    spdx_ids = File.open(full_path, "r") do |f|
+      JSON.parse(f.read)
+    end
     new_formula_problem_lines = []
     audit_formulae.sort.each do |f|
       only = only_cops ? ["style"] : args.only
@@ -120,6 +125,7 @@ module Homebrew
         git:         git,
         only:        only,
         except:      args.except,
+        spdx_ids:    spdx_ids,
       }
       options[:style_offenses] = style_results.file_offenses(f.path) if style_results
       options[:display_cop_names] = args.display_cop_names?
@@ -223,6 +229,7 @@ module Homebrew
       @new_formula_problems = []
       @text = FormulaText.new(formula.path)
       @specs = %w[stable devel head].map { |s| formula.send(s) }.compact
+      @spdx_ids = options[:spdx_ids]
     end
 
     def audit_style
@@ -340,6 +347,40 @@ module Homebrew
       openblas
       openssl@1.1
     ].freeze
+
+    def audit_license
+      if !formula.license.blank?
+        if @spdx_ids.key?(formula.license)
+          return unless @online
+
+          user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}, false)
+          return if user.nil?
+
+          github_license = get_repo_license_data(user, repo)
+          return if github_license && (github_license == formula.license)
+
+          problem "License mismatch - Github license is: #{github_license}, "\
+          "but Formulae license states: #{formula.license}."
+        else
+          problem "#{formula.license} is not a standard SPDX license id."
+        end
+      else
+        problem "No license specified for package."
+      end
+    end
+
+    def get_repo_license_data(user, repo)
+      return unless @online
+
+      begin
+        res = GitHub.open_api("#{GitHub::API_URL}/repos/#{user}/#{repo}/license")
+        return unless res.key?("license")
+
+        res["license"]["spdx_id"] || nil
+      rescue GitHub::HTTPNotFoundError
+        nil
+      end
+    end
 
     def audit_deps
       @specs.each do |spec|
@@ -545,10 +586,11 @@ module Homebrew
       new_formula_problem warning
     end
 
-    def get_repo_data(regex)
+    def get_repo_data(regex, new_formula_only = true)
       return unless @core_tap
       return unless @online
-      return unless @new_formula
+
+      return unless @new_formula || !new_formula_only
 
       _, user, repo = *regex.match(formula.stable.url) if formula.stable
       _, user, repo = *regex.match(formula.homepage) unless user

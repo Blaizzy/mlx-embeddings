@@ -82,6 +82,7 @@
 # Ignore dependencies we don't wish to vendor
 **/vendor/bundle/ruby/*/gems/ast-*/
 **/vendor/bundle/ruby/*/gems/bundler-*/
+**/vendor/bundle/ruby/*/gems/byebug-*/
 **/vendor/bundle/ruby/*/gems/coderay-*/
 **/vendor/bundle/ruby/*/gems/connection_pool-*/
 **/vendor/bundle/ruby/*/gems/coveralls-*/
@@ -127,6 +128,8 @@
 **/vendor/bundle/ruby/*/gems/simplecov-*/
 **/vendor/bundle/ruby/*/gems/simplecov-cobertura-*/
 **/vendor/bundle/ruby/*/gems/simplecov-html-*/
+**/vendor/bundle/ruby/*/gems/sorbet-*/
+**/vendor/bundle/ruby/*/gems/sorbet-runtime-*/
 **/vendor/bundle/ruby/*/gems/term-ansicolor-*/
 **/vendor/bundle/ruby/*/gems/thor-*/
 **/vendor/bundle/ruby/*/gems/tins-*/
@@ -134,7 +137,6 @@
 **/vendor/bundle/ruby/*/gems/unf-*/
 **/vendor/bundle/ruby/*/gems/unicode-display_width-*/
 **/vendor/bundle/ruby/*/gems/webrobots-*/
-**/vendor/bundle/ruby/*/gems/byebug-*/
 
 # Ignore `bin` contents (again).
 /bin
