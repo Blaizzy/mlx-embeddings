@@ -38,8 +38,8 @@ Depend on as little stuff as possible. Disable X11 functionality if possible.
 For example, we build Wireshark, but not the heavy GUI.
 
 For [some formulae](https://github.com/Homebrew/homebrew-core/search?q=%22homebrew%2Fmirror%22&unscoped_q=%22homebrew%2Fmirror%22),
-we mirror the tarballs to our own BinTray. To do this, run
-`brew mirror <formula>` with a local checkout of a PR before it is merged.
+we mirror the tarballs to our own BinTray automatically as part of the
+bottle publish CI run.
 
 Homebrew is about Unix software. Stuff that builds to an `.app` should
 be in Homebrew Cask instead.
