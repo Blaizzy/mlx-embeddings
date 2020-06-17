@@ -111,8 +111,10 @@ module Homebrew
     # Check style in a single batch run up front for performance
     style_results = Style.check_style_json(style_files, options) if style_files
     # load licenses
-    path = File.join(File.dirname(__FILE__), "spdx.json")
-    spdx_ids = JSON.parse(File.open(File.expand_path(path)).read)
+    full_path = File.join(File.dirname(__FILE__), "../data/spdx.json")
+    spdx_ids = File.open(full_path, "r") do |f|
+      JSON.parse(f.read)
+    end
     new_formula_problem_lines = []
     audit_formulae.sort.each do |f|
       only = only_cops ? ["style"] : args.only
@@ -347,7 +349,7 @@ module Homebrew
     ].freeze
 
     def audit_license
-      if ! formula.license.blank?
+      if !formula.license.blank?
         if @spdx_ids.key?(formula.license)
           return unless @online
 
