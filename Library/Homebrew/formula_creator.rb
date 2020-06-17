@@ -5,8 +5,8 @@ require "erb"
 
 module Homebrew
   class FormulaCreator
-    attr_reader :url, :sha256, :desc, :homepage, :license
-    attr_accessor :name, :version, :tap, :path, :mode
+    attr_reader :url, :sha256, :desc, :homepage
+    attr_accessor :name, :version, :tap, :path, :mode, :license
 
     def url=(url)
       @url = url
@@ -49,6 +49,7 @@ module Homebrew
     end
 
     def generate!
+      p "generate"
       raise "#{path} already exists" if path.exist?
 
       if version.nil? || version.null?

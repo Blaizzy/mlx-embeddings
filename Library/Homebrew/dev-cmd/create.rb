@@ -45,8 +45,11 @@ module Homebrew
              description: "Explicitly set the <name> of the new formula."
       flag   "--set-version=",
              description: "Explicitly set the <version> of the new formula."
+      flag   "--set-license=",
+             description: "Explicitly set the <license> of the new formula."
       flag   "--tap=",
              description: "Generate the new formula within the given tap, specified as <user>`/`<repo>."
+
       switch :force
       switch :verbose
       switch :debug
@@ -66,11 +69,13 @@ module Homebrew
 
     version = args.set_version
     name = args.set_name
+    license = args.set_license
     tap = args.tap
 
     fc = FormulaCreator.new
     fc.name = name
     fc.version = version
+    fc.license = license
     fc.tap = Tap.fetch(tap || "homebrew/core")
     raise TapUnavailableError, tap unless fc.tap.installed?
 
