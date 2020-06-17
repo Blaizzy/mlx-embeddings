@@ -111,8 +111,8 @@ module Homebrew
     # Check style in a single batch run up front for performance
     style_results = Style.check_style_json(style_files, options) if style_files
     # load licenses
-    path = File.join(File.dirname(__FILE__), "spdx.json")
-    spdx_ids = JSON.parse(File.open(File.expand_path(path)).read)
+    full_path = File.join(File.dirname(__FILE__), "../data/spdx.json")
+    spdx_ids = JSON.parse(File.open(full_path).read)
     new_formula_problem_lines = []
     audit_formulae.sort.each do |f|
       only = only_cops ? ["style"] : args.only
