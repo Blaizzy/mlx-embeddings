@@ -19,6 +19,7 @@
 /Library/Taps
 /Library/PinnedTaps
 /Library/Homebrew/.byebug_history
+/Library/Homebrew/sorbet/rbi/hidden-definitions/errors.txt
 
 # Ignore Bundler files
 **/.bundle/bin
