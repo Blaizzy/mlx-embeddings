@@ -40,11 +40,13 @@ describe Cask::Audit, :cask do
   let(:cask) { instance_double(Cask::Cask) }
   let(:download) { false }
   let(:token_conflicts) { false }
+  let(:strict) { false }
   let(:fake_system_command) { class_double(SystemCommand) }
   let(:audit) {
     described_class.new(cask, download:        download,
                               token_conflicts: token_conflicts,
-                              command:         fake_system_command)
+                              command:         fake_system_command,
+                              strict:          strict)
   }
 
   describe "#result" do
@@ -83,6 +85,16 @@ describe Cask::Audit, :cask do
   describe "#run!" do
     subject { audit.run! }
 
+    def tmp_cask(name, text)
+      path = Pathname.new "#{dir}/#{name}.rb"
+      path.open("w") do |f|
+        f.write text
+      end
+
+      Cask::CaskLoader.load(path)
+    end
+
+    let(:dir) { mktmpdir }
     let(:cask) { Cask::CaskLoader.load(cask_token) }
 
     describe "required stanzas" do
@@ -91,6 +103,220 @@ describe Cask::Audit, :cask do
           let(:cask_token) { "missing-#{stanza}" }
 
           it { is_expected.to fail_with(/#{stanza} stanza is required/) }
+        end
+      end
+    end
+
+    describe "token validation" do
+      let(:strict) { true }
+      let(:cask) do
+        tmp_cask cask_token.to_s, <<~RUBY
+          cask '#{cask_token}' do
+            version '1.0'
+            sha256 '8dd95daa037ac02455435446ec7bc737b34567afe9156af7d20b2a83805c1d8a'
+            url "https://brew.sh/"
+            name 'Audit'
+            homepage 'https://brew.sh/'
+            app 'Audit.app'
+          end
+        RUBY
+      end
+
+      context "when cask token is not lowercase" do
+        let(:cask_token) { "Upper-Case" }
+
+        it "warns about lowercase" do
+          expect(subject).to warn_with(/token is not lowercase/)
+        end
+      end
+
+      context "when cask token is not ascii" do
+        let(:cask_token) { "ascii⌘" }
+
+        it "warns about ascii" do
+          expect(subject).to warn_with(/contains non-ascii characters/)
+        end
+      end
+
+      context "when cask token has +" do
+        let(:cask_token) { "app++" }
+
+        it "warns about +" do
+          expect(subject).to warn_with(/\+ should be replaced by -plus-/)
+        end
+      end
+
+      context "when cask token has @" do
+        let(:cask_token) { "app@stuff" }
+
+        it "warns about +" do
+          expect(subject).to warn_with(/@ should be replaced by -at-/)
+        end
+      end
+
+      context "when cask token has whitespace" do
+        let(:cask_token) { "app stuff" }
+
+        it "warns about whitespace" do
+          expect(subject).to warn_with(/whitespace should be replaced by hyphens/)
+        end
+      end
+
+      context "when cask token has underscores" do
+        let(:cask_token) { "app_stuff" }
+
+        it "warns about underscores" do
+          expect(subject).to warn_with(/underscores should be replaced by hyphens/)
+        end
+      end
+
+      context "when cask token has non-alphanumeric characters" do
+        let(:cask_token) { "app(stuff)" }
+
+        it "warns about non-alphanumeric characters" do
+          expect(subject).to warn_with(/should only contain alphanumeric characters and hyphens/)
+        end
+      end
+
+      context "when cask token has double hyphens" do
+        let(:cask_token) { "app--stuff" }
+
+        it "warns about double hyphens" do
+          expect(subject).to warn_with(/should not contain double hyphens/)
+        end
+      end
+
+      context "when cask token has trailing hyphens" do
+        let(:cask_token) { "app-" }
+
+        it "warns about trailing hyphens" do
+          expect(subject).to warn_with(/should not have leading or trailing hyphens/)
+        end
+      end
+    end
+
+    describe "token bad words" do
+      let(:strict) { true }
+      let(:cask) do
+        tmp_cask cask_token.to_s, <<~RUBY
+          cask '#{cask_token}' do
+            version '1.0'
+            sha256 '8dd95daa037ac02455435446ec7bc737b34567afe9156af7d20b2a83805c1d8a'
+            url "https://brew.sh/"
+            name 'Audit'
+            homepage 'https://brew.sh/'
+            app 'Audit.app'
+          end
+        RUBY
+      end
+
+      context "when cask token contains .app" do
+        let(:cask_token) { "token.app" }
+
+        it "warns about .app" do
+          expect(subject).to warn_with(/token contains .app/)
+        end
+      end
+
+      context "when cask token contains version" do
+        let(:cask_token) { "token-beta" }
+
+        it "warns about version in token" do
+          expect(subject).to warn_with(/token contains version/)
+        end
+      end
+
+      context "when cask token contains launcher" do
+        let(:cask_token) { "token-launcher" }
+
+        it "warns about launcher in token" do
+          expect(subject).to warn_with(/token mentions launcher/)
+        end
+      end
+
+      context "when cask token contains desktop" do
+        let(:cask_token) { "token-desktop" }
+
+        it "warns about desktop in token" do
+          expect(subject).to warn_with(/token mentions desktop/)
+        end
+      end
+
+      context "when cask token contains platform" do
+        let(:cask_token) { "token-osx" }
+
+        it "warns about platform in token" do
+          expect(subject).to warn_with(/token mentions platform/)
+        end
+      end
+
+      context "when cask token contains architecture" do
+        let(:cask_token) { "token-x86" }
+
+        it "warns about architecture in token" do
+          expect(subject).to warn_with(/token mentions architecture/)
+        end
+      end
+
+      context "when cask token contains framework" do
+        let(:cask_token) { "token-java" }
+
+        it "warns about framework in token" do
+          expect(subject).to warn_with(/cask token mentions framework/)
+        end
+      end
+
+      context "when cask token is framework" do
+        let(:cask_token) { "java" }
+
+        it "does not warn about framework" do
+          expect(subject).not_to warn_with(/token contains version/)
+        end
+      end
+    end
+
+    describe "locale validation" do
+      let(:strict) { true }
+      let(:cask) do
+        tmp_cask "locale-cask-test", <<~RUBY
+          cask 'locale-cask-test' do
+            version '1.0'
+            url "https://brew.sh/"
+            name 'Audit'
+            homepage 'https://brew.sh/'
+            app 'Audit.app'
+
+            language 'en', default: true do
+              sha256 '96574251b885c12b48a3495e843e434f9174e02bb83121b578e17d9dbebf1ffb'
+              'zh-CN'
+            end
+
+            language 'zh-CN' do
+              sha256 '96574251b885c12b48a3495e843e434f9174e02bb83121b578e17d9dbebf1ffb'
+              'zh-CN'
+            end
+
+            language 'ZH-CN' do
+              sha256 '96574251b885c12b48a3495e843e434f9174e02bb83121b578e17d9dbebf1ffb'
+              'zh-CN'
+            end
+
+            language 'zh-' do
+              sha256 '96574251b885c12b48a3495e843e434f9174e02bb83121b578e17d9dbebf1ffb'
+              'zh-CN'
+            end
+
+            language 'zh-cn' do
+              sha256 '96574251b885c12b48a3495e843e434f9174e02bb83121b578e17d9dbebf1ffb'
+              'zh-CN'
+            end
+          end
+        RUBY
+      end
+
+      context "when cask locale is invalid" do
+        it "error with invalid locale" do
+          expect(subject).to fail_with(/locale ZH-CN, zh-, zh-cn are invalid/)
         end
       end
     end

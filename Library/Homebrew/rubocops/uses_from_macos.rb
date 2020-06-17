@@ -18,6 +18,7 @@ module RuboCop
           cups
           curl
           dyld-headers
+          ed
           expat
           file-formula
           flex

@@ -17,17 +17,17 @@ if [[ -n "$HOMEBREW_MACOS" ]]
 then
   if [[ "$HOMEBREW_PROCESSOR" = "Intel" ]]
   then
-    ruby_URL="$HOMEBREW_BOTTLE_DOMAIN/bottles-portable-ruby/portable-ruby-2.6.3_1.yosemite.bottle.tar.gz"
-    ruby_URL2="https://github.com/Homebrew/homebrew-portable-ruby/releases/download/2.6.3_1/portable-ruby-2.6.3_1.yosemite.bottle.tar.gz"
-    ruby_SHA="be48eade040e13e0e572300ba59cf43d5750f53a4f35d2051966a0194e3c0ab2"
+    ruby_URL="$HOMEBREW_BOTTLE_DOMAIN/bottles-portable-ruby/portable-ruby-2.6.3_2.yosemite.bottle.tar.gz"
+    ruby_URL2="https://github.com/Homebrew/homebrew-portable-ruby/releases/download/2.6.3_2/portable-ruby-2.6.3_2.yosemite.bottle.tar.gz"
+    ruby_SHA="b065e5e3783954f3e65d8d3a6377ca51649bfcfa21b356b0dd70490f74c6bd86"
   fi
 elif [[ -n "$HOMEBREW_LINUX" ]]
 then
   case "$HOMEBREW_PROCESSOR" in
     x86_64)
-      ruby_URL="$HOMEBREW_BOTTLE_DOMAIN/bottles-portable-ruby/portable-ruby-2.6.3_1.x86_64_linux.bottle.tar.gz"
-      ruby_URL2="https://github.com/Homebrew/homebrew-portable-ruby/releases/download/2.6.3_1/portable-ruby-2.6.3_1.x86_64_linux.bottle.tar.gz"
-      ruby_SHA="f5731ca80497c31ab1171ece4102e2104d9b6cd31aa7b35926e80829d4b0ce29"
+      ruby_URL="$HOMEBREW_BOTTLE_DOMAIN/bottles-portable-ruby/portable-ruby-2.6.3_2.x86_64_linux.bottle.tar.gz"
+      ruby_URL2="https://github.com/Homebrew/homebrew-portable-ruby/releases/download/2.6.3_2/portable-ruby-2.6.3_2.x86_64_linux.bottle.tar.gz"
+      ruby_SHA="97e639a64dcec285392b53ad804b5334c324f1d2a8bdc2b5087b8bf8051e332f"
       ;;
   esac
 fi

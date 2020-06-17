@@ -48,7 +48,7 @@ GEM
     nokogiri (1.10.9)
       mini_portile2 (~> 2.4.0)
     ntlm-http (0.1.1)
-    parallel (1.19.1)
+    parallel (1.19.2)
     parallel_tests (3.0.0)
       parallel
     parser (2.7.1.3)
