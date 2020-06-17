@@ -35,10 +35,11 @@ module Homebrew
 
     odie "`brew man --link` is now done automatically by `brew update`." if args.link?
 
+    Commands.rebuild_internal_commands_completion_list
     regenerate_man_pages
 
-    if system "git", "-C", HOMEBREW_REPOSITORY, "diff", "--quiet", "docs/Manpage.md", "manpages"
-      puts "No changes to manpage output detected."
+    if system "git", "-C", HOMEBREW_REPOSITORY, "diff", "--quiet", "docs/Manpage.md", "manpages", "completions"
+      puts "No changes to manpage or completions output detected."
     elsif args.fail_if_changed?
       Homebrew.failed = true
     end

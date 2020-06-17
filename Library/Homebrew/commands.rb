@@ -143,4 +143,21 @@ module Commands
             .select(&:file?)
             .sort
   end
+
+  def rebuild_internal_commands_completion_list
+    cmds = internal_commands + internal_developer_commands + internal_commands_aliases
+
+    file = HOMEBREW_REPOSITORY/"completions/internal_commands_list.txt"
+    file.delete if file.exist?
+    file.write(cmds.sort.join("\n") + "\n")
+  end
+
+  def rebuild_commands_completion_list
+    # Ensure that the cache exists so we can build the commands list
+    HOMEBREW_CACHE.mkpath
+
+    file = HOMEBREW_CACHE/"all_commands_list.txt"
+    file.delete if file.exist?
+    file.write(commands(aliases: true).sort.join("\n") + "\n")
+  end
 end

@@ -604,6 +604,7 @@ EOS
         -n "$HOMEBREW_UPDATE_FAILED" ||
         -n "$HOMEBREW_UPDATE_FORCE" ||
         -d "$HOMEBREW_LIBRARY/LinkedKegs" ||
+        ! -f "$HOMEBREW_CACHE/all_commands_list.txt" ||
         (-n "$HOMEBREW_DEVELOPER" && -z "$HOMEBREW_UPDATE_PREINSTALL") ]]
   then
     brew update-report "$@"
