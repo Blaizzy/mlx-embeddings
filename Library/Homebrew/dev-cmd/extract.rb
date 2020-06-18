@@ -155,7 +155,7 @@ module Homebrew
         if version_segments && Gem::Version.correct?(test_formula.version)
           test_formula_version_segments = Gem::Version.new(test_formula.version).segments
           if version_segments.length < test_formula_version_segments.length
-            odebug "Apply semantic versioning with #{test_formual_version_segments}"
+            odebug "Apply semantic versioning with #{test_formula_version_segments}"
             break if version_segments == test_formula_version_segments.first(version_segments.length)
           end
         end
