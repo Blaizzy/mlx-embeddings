@@ -349,9 +349,7 @@ module Homebrew
     ].freeze
 
     def audit_license
-      return unless @new_formula
-
-      if !formula.license.blank?
+      if formula.license.present?
         if @spdx_ids.key?(formula.license)
           return unless @online
 
