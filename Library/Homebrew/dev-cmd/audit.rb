@@ -573,7 +573,7 @@ module Homebrew
       new_formula_problem warning
     end
 
-    def get_repo_data(regex, new_formula_only = true)
+    def get_repo_data(regex)
       return unless @core_tap
       return unless @online
 

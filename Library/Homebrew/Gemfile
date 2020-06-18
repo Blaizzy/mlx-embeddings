@@ -5,7 +5,6 @@ source "https://rubygems.org"
 # installed gems
 gem "byebug"
 gem "coveralls", "~> 0.8", require: false
-gem "json", require: false
 gem "parallel_tests"
 gem "ronn", require: false
 gem "rspec"
