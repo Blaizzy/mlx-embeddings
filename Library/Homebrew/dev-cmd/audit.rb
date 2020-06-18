@@ -353,7 +353,7 @@ module Homebrew
         if @spdx_ids.key?(formula.license)
           return unless @online
 
-          user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}, false)
+          user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*})
           return if user.nil?
 
           github_license = GitHub.get_repo_license(user, repo)
@@ -368,19 +368,6 @@ module Homebrew
         problem "No license specified for package."
       end
     end
-
-    # def get_github_repo_license_data(user, repo)
-    #   return unless @online
-    #
-    #   begin
-    #     res = GitHub.open_api("#{GitHub::API_URL}/repos/#{user}/#{repo}/license")
-    #     return unless res.key?("license")
-    #
-    #     res["license"]["spdx_id"] || nil
-    #   rescue GitHub::HTTPNotFoundError
-    #     nil
-    #   end
-    # end
 
     def audit_deps
       @specs.each do |spec|
@@ -589,8 +576,6 @@ module Homebrew
     def get_repo_data(regex, new_formula_only = true)
       return unless @core_tap
       return unless @online
-
-      return unless @new_formula || !new_formula_only
 
       _, user, repo = *regex.match(formula.stable.url) if formula.stable
       _, user, repo = *regex.match(formula.homepage) unless user
