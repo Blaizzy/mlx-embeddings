@@ -364,7 +364,7 @@ module Homebrew
         else
           problem "#{formula.license} is not a standard SPDX license."
         end
-      else
+      elsif @new_formula
         problem "No license specified for package."
       end
     end
