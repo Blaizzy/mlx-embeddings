@@ -364,7 +364,7 @@ module Homebrew
           problem "License mismatch - GitHub license is: #{github_license}, "\
                   "but Formulae license states: #{formula.license}."
         else
-          problem "#{formula.license} is not a standard SPDX license id."
+          problem "#{formula.license} is not a standard SPDX license."
         end
       else
         problem "No license specified for package."
