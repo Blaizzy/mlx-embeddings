@@ -785,6 +785,8 @@ a simple example. For the complete API, see:
   Explicitly set the *`name`* of the new formula.
 * `--set-version`:
   Explicitly set the *`version`* of the new formula.
+* `--set-license`:
+  Explicitly set the *`license`* of the new formula.
 * `--tap`:
   Generate the new formula within the given tap, specified as *`user`*`/`*`repo`*.
 
