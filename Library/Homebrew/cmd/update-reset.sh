@@ -42,7 +42,9 @@ homebrew-update-reset() {
     echo
 
     ohai "Resetting $DIR..."
-    git checkout --force -B master origin/master
+    head="$(git symbolic-ref refs/remotes/origin/HEAD)"
+    head="${head#refs/remotes/origin/}"
+    git checkout --force -B "$head" origin/HEAD
     echo
   done
 }
