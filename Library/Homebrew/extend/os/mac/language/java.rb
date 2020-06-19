@@ -18,12 +18,12 @@ module Language
       Pathname.new path if path.present?
     end
 
-    # @private
     def self.java_home_shell(version = nil)
       f = find_openjdk_formula(version)
       return (f.opt_libexec/"openjdk.jdk/Contents/Home").to_s if f
 
       "$(#{system_java_home_cmd(version)})"
     end
+    private_class_method :java_home_shell
   end
 end

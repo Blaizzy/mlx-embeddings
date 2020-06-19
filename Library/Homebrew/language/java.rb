@@ -33,10 +33,10 @@ module Language
       req.java_home
     end
 
-    # @private
     def self.java_home_shell(version = nil)
       java_home(version).to_s
     end
+    private_class_method :java_home_shell
 
     def self.java_home_env(version = nil)
       { JAVA_HOME: java_home_shell(version) }
