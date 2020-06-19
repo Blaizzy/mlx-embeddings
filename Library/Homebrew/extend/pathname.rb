@@ -346,13 +346,17 @@ class Pathname
   end
 
   # Writes an exec script that sets environment variables
-  def write_env_script(target, env)
+  def write_env_script(target, args, env = nil)
+    unless env
+      env = args
+      args = nil
+    end
     env_export = +""
     env.each { |key, value| env_export << "#{key}=\"#{value}\" " }
     dirname.mkpath
     write <<~SH
       #!/bin/bash
-      #{env_export}exec "#{target}" "$@"
+      #{env_export}exec "#{target}" #{args} "$@"
     SH
   end
 
