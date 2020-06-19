@@ -23,7 +23,7 @@ module Homebrew
     if args.no_named?
       exec_browser HOMEBREW_WWW
     else
-      exec_browser(*args.formulae.map(&:homepage))
+      exec_browser(*args.formulae_and_casks.map(&:homepage))
     end
   end
 end
