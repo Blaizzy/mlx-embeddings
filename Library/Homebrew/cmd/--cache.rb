@@ -2,6 +2,7 @@
 
 require "fetch"
 require "cli/parser"
+require "cask/cmd"
 
 module Homebrew
   module_function
@@ -29,13 +30,21 @@ module Homebrew
     if args.no_named?
       puts HOMEBREW_CACHE
     else
-      args.formulae.each do |f|
-        if Fetch.fetch_bottle?(f)
-          puts f.bottle.cached_download
-        else
-          puts f.cached_download
+      args.formulae_and_casks.each do |formula_or_cask|
+        case formula_or_cask
+        when Formula
+          formula = formula_or_cask
+          if Fetch.fetch_bottle?(formula)
+            puts formula.bottle.cached_download
+          else
+            puts formula.cached_download
+          end
+        when Cask::Cask
+          cask = formula_or_cask
+          puts "cask: #{Cask::Cmd::Cache.cached_location(cask)}"
         end
       end
     end
   end
+
 end
