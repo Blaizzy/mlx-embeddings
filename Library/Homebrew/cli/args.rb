@@ -108,23 +108,6 @@ module Homebrew
                                          .freeze
       end
 
-      def formulae_and_casks
-        require "cask/cask_loader"
-        require "cask/exceptions"
-
-        @formulae_and_casks ||= downcased_unique_named.map do |name|
-          begin
-            Formulary.factory(name, spec)
-          rescue FormulaUnavailableError => e
-            begin
-              Cask::CaskLoader.load(name)
-            rescue Cask::CaskUnavailableError
-              raise e
-            end
-          end
-        end.uniq.freeze
-      end
-
       def kegs
         require "keg"
         require "formula"

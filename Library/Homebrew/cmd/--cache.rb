@@ -3,6 +3,7 @@
 require "fetch"
 require "cli/parser"
 require "cask/cmd"
+require "cask/cask_loader"
 
 module Homebrew
   module_function
@@ -30,18 +31,21 @@ module Homebrew
     if args.no_named?
       puts HOMEBREW_CACHE
     else
-      args.formulae_and_casks.each do |formula_or_cask|
-        case formula_or_cask
-        when Formula
-          formula = formula_or_cask
+      args.named.each do |name|
+        begin
+          formula = Formulary.factory name
           if Fetch.fetch_bottle?(formula)
             puts formula.bottle.cached_download
           else
             puts formula.cached_download
           end
-        when Cask::Cask
-          cask = formula_or_cask
-          puts "cask: #{Cask::Cmd::Cache.cached_location(cask)}"
+        rescue FormulaUnavailableError => e
+          begin
+            cask = Cask::CaskLoader.load name
+            puts "cask: #{Cask::Cmd::Cache.cached_location(cask)}"
+          rescue Cask::CaskUnavailableError
+            ofail "No available formula or cask with the name \"#{name}\""
+          end
         end
       end
     end
