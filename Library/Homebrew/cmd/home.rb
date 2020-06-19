@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require "cli/parser"
+require "cask/cask_loader"
+require "cask/exceptions"
 
 module Homebrew
   module_function
@@ -23,7 +25,21 @@ module Homebrew
     if args.no_named?
       exec_browser HOMEBREW_WWW
     else
-      exec_browser(*args.formulae_and_casks.map(&:homepage))
+      homepages = args.named.flat_map do |name|
+        begin
+          [Formulary.factory(name).homepage]
+        rescue FormulaUnavailableError => e
+          puts e.message
+          begin
+            cask = Cask::CaskLoader.load(name)
+            puts "Found a cask named \"#{name}\" instead."
+            [cask.homepage]
+          rescue Cask::CaskUnavailableError
+            []
+          end
+        end
+      end
+      exec_browser *homepages
     end
   end
 end
