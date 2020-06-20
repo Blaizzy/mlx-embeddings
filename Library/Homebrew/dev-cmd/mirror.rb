@@ -15,6 +15,10 @@ module Homebrew
       EOS
       flag "--bintray-org=",
            description: "Upload to the specified Bintray organisation (default: homebrew)."
+      flag "--bintray-repo=",
+           description: "Upload to the specified Bintray repository (default: mirror)."
+      switch "--no-publish",
+             description: "Upload to Bintray, but don't publish."
       switch :verbose
       switch :debug
       hide_from_man_page!
@@ -26,11 +30,12 @@ module Homebrew
     mirror_args.parse
 
     bintray_org = args.bintray_org || "homebrew"
+    bintray_repo = args.bintray_repo || "mirror"
 
     bintray = Bintray.new(org: bintray_org)
 
     args.formulae.each do |formula|
-      mirror_url = bintray.mirror_formula(formula)
+      mirror_url = bintray.mirror_formula(formula, repo: bintray_repo, publish_package: !args.no_publish?)
       ohai "Mirrored #{formula.full_name} to #{mirror_url}!"
     end
   end
