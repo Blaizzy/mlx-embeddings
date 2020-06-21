@@ -72,7 +72,7 @@ class Bintray
     status_code.start_with?("2")
   end
 
-  def mirror_formula(formula, repo: "mirror")
+  def mirror_formula(formula, repo: "mirror", publish_package: false)
     package = Utils::Bottles::Bintray.package formula.name
 
     create_package(repo: repo, package: package) unless package_exists?(repo: repo, package: package)
@@ -93,7 +93,10 @@ class Bintray
       sha256:      formula.stable.checksum,
       remote_file: filename,
     )
-    publish(repo: repo, package: package, version: version)
+    return destination_url unless publish_package
+
+    odebug "Publishing #{@bintray_org}/#{repo}/#{package}/#{version}"
+    publish(repo: repo, package: package, version: version, file_count: 1)
 
     destination_url
   end

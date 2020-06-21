@@ -41,6 +41,11 @@ module Homebrew
              description: "Upload to the specified Bintray organisation (default: homebrew)."
       flag   "--tap=",
              description: "Target tap repository (default: homebrew/core)."
+      flag   "--root-url=",
+             description: "Use the specified <URL> as the root of the bottle's URL instead of Homebrew's default."
+      flag   "--bintray-mirror=",
+             description: "Use the specified Bintray repository to automatically mirror stable URLs "\
+                          "defined in the formulae (default: mirror)"
       switch :verbose
       switch :debug
       min_named 1
@@ -128,6 +133,32 @@ module Homebrew
   def formulae_need_bottles?(tap, original_commit)
     return if Homebrew.args.dry_run?
 
+    changed_formulae(tap, original_commit).any? do |f|
+      !f.bottle_unneeded? && !f.bottle_disabled?
+    end
+  end
+
+  def mirror_formulae(tap, original_commit, publish: true, org:, repo:)
+    changed_formulae(tap, original_commit).select do |f|
+      stable_urls = [f.stable.url] + f.stable.mirrors
+      stable_urls.grep(%r{^https://dl.bintray.com/#{org}/#{repo}/}) do |mirror_url|
+        if Homebrew.args.dry_run?
+          puts "brew mirror #{f.full_name}"
+        else
+          odebug "Mirroring #{mirror_url}"
+          mirror_args = ["mirror", f.full_name]
+          mirror_args << "--debug" if Homebrew.args.debug?
+          mirror_args << "--verbose" if Homebrew.args.verbose?
+          mirror_args << "--bintray-org=#{org}" if org
+          mirror_args << "--bintray-repo=#{repo}" if repo
+          mirror_args << "--no-publish" unless publish
+          system HOMEBREW_BREW_FILE, *mirror_args
+        end
+      end
+    end
+  end
+
+  def changed_formulae(tap, original_commit)
     if Homebrew::EnvConfig.disable_load_formula?
       opoo "Can't check if updated bottles are necessary as formula loading is disabled!"
       return
@@ -136,19 +167,17 @@ module Homebrew
     Utils.popen_read("git", "-C", tap.path, "diff-tree",
                      "-r", "--name-only", "--diff-filter=AM",
                      original_commit, "HEAD", "--", tap.formula_dir)
-         .lines.each do |line|
+         .lines.map do |line|
       next unless line.end_with? ".rb\n"
 
       name = "#{tap.name}/#{File.basename(line.chomp, ".rb")}"
       begin
-        f = Formula[name]
+        Formula[name]
       rescue Exception # rubocop:disable Lint/RescueException
         # Make sure we catch syntax errors.
         next
       end
-      return true if !f.bottle_unneeded? && !f.bottle_disabled?
-    end
-    nil
+    end.compact
   end
 
   def download_artifact(url, dir, pr)
@@ -181,12 +210,11 @@ module Homebrew
 
     if bintray_user.blank? || bintray_key.blank?
       odie "Missing HOMEBREW_BINTRAY_USER or HOMEBREW_BINTRAY_KEY variables!" if !args.dry_run? && !args.no_upload?
-    else
-      bintray = Bintray.new(user: bintray_user, key: bintray_key, org: bintray_org)
     end
 
     workflow = args.workflow || "tests.yml"
     artifact = args.artifact || "bottles"
+    mirror_repo = args.bintray_mirror || "mirror"
     tap = Tap.fetch(args.tap || CoreTap.instance.name)
 
     setup_git_environment!
@@ -206,6 +234,10 @@ module Homebrew
           cherry_pick_pr! pr, path: tap.path
           signoff! pr, path: tap.path unless args.clean?
 
+          unless args.no_upload?
+            mirror_formulae(tap, original_commit, org: bintray_org, repo: mirror_repo, publish: !args.no_publish?)
+          end
+
           unless formulae_need_bottles? tap, original_commit
             ohai "Skipping artifacts for ##{pr} as the formulae don't need bottles"
             next
@@ -214,41 +246,16 @@ module Homebrew
           url = GitHub.get_artifact_url(user, repo, pr, workflow_id: workflow, artifact_name: artifact)
           download_artifact(url, dir, pr)
 
-          json_files = Dir["*.json"]
-
-          if Homebrew.args.dry_run?
-            puts "brew bottle --merge --write #{json_files.join " "}"
-          else
-            quiet_system "#{HOMEBREW_PREFIX}/bin/brew", "bottle", "--merge", "--write", *json_files
-          end
-
           next if args.no_upload?
 
-          if Homebrew.args.dry_run?
-            puts "Upload bottles described by these JSON files to Bintray:\n  #{json_files.join("\n  ")}"
-          else
-            bintray.upload_bottle_json json_files, publish_package: !args.no_publish?
-          end
-
-          bottles_hash = json_files.reduce({}) do |hash, json_file|
-            hash.deep_merge(JSON.parse(IO.read(json_file)))
-          end
-
-          bottles_hash.each do |formula_name, _|
-            formula = Formula[formula_name]
-            stable_urls = [formula.stable.url] + formula.stable.mirrors
-            stable_urls.grep(%r{^https://dl.bintray.com/homebrew/mirror/}) do |mirror_url|
-              if Homebrew.args.dry_run?
-                puts "Mirror formulae sources described by these JSON files to Bintray:\n  #{json_files.join("\n  ")}"
-                next
-              end
-
-              next if bintray.stable_mirrored?(mirror_url)
-
-              mirror_url = bintray.mirror_formula(formula)
-              ohai "Mirrored #{formula.full_name} to #{mirror_url}!"
-            end
-          end
+          upload_args = ["pr-upload"]
+          upload_args << "--debug" if Homebrew.args.debug?
+          upload_args << "--verbose" if Homebrew.args.verbose?
+          upload_args << "--no-publish" if args.no_publish?
+          upload_args << "--dry-run" if args.dry_run?
+          upload_args << "--root_url=#{args.root_url}" if args.root_url
+          upload_args << "--bintray-org=#{bintray_org}"
+          system HOMEBREW_BREW_FILE, *upload_args
         end
       end
     end
