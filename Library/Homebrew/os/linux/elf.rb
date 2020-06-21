@@ -78,7 +78,7 @@ module ELFShim
         begin
           patchelf_patcher.interpreter.present?
         rescue PatchELF::PatchError => e
-          opoo e
+          opoo e unless e.to_s.start_with? "No interpreter found"
           false
         end
       elsif which "readelf"
