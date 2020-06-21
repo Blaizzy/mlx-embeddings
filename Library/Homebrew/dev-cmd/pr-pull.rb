@@ -147,6 +147,8 @@ module Homebrew
         else
           odebug "Mirroring #{mirror_url}"
           mirror_args = ["mirror", f.full_name]
+          mirror_args << "--debug" if Homebrew.args.debug?
+          mirror_args << "--verbose" if Homebrew.args.verbose?
           mirror_args << "--bintray-org=#{org}" if org
           mirror_args << "--bintray-repo=#{repo}" if repo
           mirror_args << "--no-publish" unless publish
@@ -247,6 +249,8 @@ module Homebrew
           next if args.no_upload?
 
           upload_args = ["pr-upload"]
+          upload_args << "--debug" if Homebrew.args.debug?
+          upload_args << "--verbose" if Homebrew.args.verbose?
           upload_args << "--no-publish" if args.no_publish?
           upload_args << "--dry-run" if args.dry_run?
           upload_args << "--root_url=#{args.root_url}" if args.root_url
