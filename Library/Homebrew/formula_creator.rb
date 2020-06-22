@@ -175,7 +175,7 @@ module Homebrew
             bin.install libexec/"bin/\#{name}"
             bin.env_script_all_files(libexec/"bin", :GEM_HOME => ENV["GEM_HOME"])
         <% elsif mode == :rust %>
-            system "cargo", "install", "--locked", "--root", prefix, "--path", "."
+            system "cargo", "install", *std_cargo_args
         <% else %>
             # Remove unrecognized options if warned by configure
             system "./configure", "--disable-debug",
