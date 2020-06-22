@@ -2,9 +2,7 @@
 
 module OS
   module Mac
-    X11 = XQuartz = Module.new # rubocop:disable Style/MutableConstant
-
-    module XQuartz
+    X11 = XQuartz = Module.new do # rubocop:disable Style/MutableConstant
       module_function
 
       DEFAULT_BUNDLE_PATH = Pathname.new("Applications/Utilities/XQuartz.app").freeze

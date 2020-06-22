@@ -27,7 +27,7 @@ module OS
 
     # rubocop:disable Naming/ConstantName
     # rubocop:disable Style/MutableConstant
-    ::MacOS = self
+    ::MacOS = OS::Mac
     # rubocop:enable Naming/ConstantName
     # rubocop:enable Style/MutableConstant
 
