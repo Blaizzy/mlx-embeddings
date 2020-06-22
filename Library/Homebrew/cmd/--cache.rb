@@ -32,23 +32,20 @@ module Homebrew
       puts HOMEBREW_CACHE
     else
       args.named.each do |name|
+        formula = Formulary.factory name
+        if Fetch.fetch_bottle?(formula)
+          puts formula.bottle.cached_download
+        else
+          puts formula.cached_download
+        end
+      rescue FormulaUnavailableError
         begin
-          formula = Formulary.factory name
-          if Fetch.fetch_bottle?(formula)
-            puts formula.bottle.cached_download
-          else
-            puts formula.cached_download
-          end
-        rescue FormulaUnavailableError => e
-          begin
-            cask = Cask::CaskLoader.load name
-            puts "cask: #{Cask::Cmd::Cache.cached_location(cask)}"
-          rescue Cask::CaskUnavailableError
-            ofail "No available formula or cask with the name \"#{name}\""
-          end
+          cask = Cask::CaskLoader.load name
+          puts "cask: #{Cask::Cmd::Cache.cached_location(cask)}"
+        rescue Cask::CaskUnavailableError
+          ofail "No available formula or cask with the name \"#{name}\""
         end
       end
     end
   end
-
 end
