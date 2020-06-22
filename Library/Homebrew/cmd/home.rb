@@ -27,15 +27,17 @@ module Homebrew
     else
       homepages = args.named.map do |ref|
         Formulary.factory(ref).homepage
-      rescue FormulaUnavailableError => fe
+      rescue FormulaUnavailableError => e
+        formula_error_message = e.message
         begin
           cask = Cask::CaskLoader.load(ref)
           puts "Formula \"#{ref}\" not found. Found a cask instead."
           cask.homepage
-        rescue Cask::CaskUnavailableError => ce
+        rescue Cask::CaskUnavailableError => e
+          cask_error_message = e.message
           odie "No available formula or cask with the name \"#{name}\"\n" \
-               "#{fe.message}\n" \
-               "#{ce.message}\n"
+               "#{formula_error_message}\n" \
+               "#{cask_error_message}\n"
         end
       end
       exec_browser(*homepages)

@@ -31,8 +31,7 @@ describe "brew home", :integration_test do
 
   it "opens the homepage for a given Cask" do
     expect { brew "home", cask_path("local-caffeine"), "HOMEBREW_BROWSER" => "echo" }
-      .to output(/Formula "#{local_caffeine_path}" not found. Found a cask instead.\n#{local_caffeine_homepage}/m)
-            .to_stdout
+      .to output(/#{local_caffeine_homepage}/).to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
   end
@@ -41,8 +40,7 @@ describe "brew home", :integration_test do
     setup_test_formula "testballhome"
 
     expect { brew "home", "testballhome", cask_path("local-caffeine"), "HOMEBREW_BROWSER" => "echo" }
-      .to output(/Formula "#{local_caffeine_path}" not found. Found a cask instead.\n#{testballhome_homepage} #{local_caffeine_homepage}/m)
-      .to_stdout
+      .to output(/#{testballhome_homepage} #{local_caffeine_homepage}/).to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
   end
