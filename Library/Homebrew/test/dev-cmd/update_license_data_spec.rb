@@ -1,9 +1,7 @@
-require 'rspec'
+# frozen_string_literal: true
 
-describe 'My behaviour' do
+require "cmd/shared_examples/args_parse"
 
-  it 'should do something' do
-
-    true.should == false
-  end
+describe "Homebrew.update_license_data_args" do
+  it_behaves_like "parseable arguments"
 end

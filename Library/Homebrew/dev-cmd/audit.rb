@@ -350,7 +350,7 @@ module Homebrew
 
     def audit_license
       if formula.license.present?
-        if @spdx_data.key?(formula.license)
+        if @spdx_data["licenses"].any?{|lic| lic["licenseId"] == formula.license}
           return unless @online
 
           user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*})

@@ -96,7 +96,7 @@ module Homebrew
     end
 
     describe "#audit_license" do
-      let(:spdx_ids) {
+      let(:spdx_data) {
         full_path = File.join(File.dirname(__FILE__), "../../data/spdx.json")
         File.open(full_path, "r") do |f|
           JSON.parse(f.read)
@@ -107,7 +107,7 @@ module Homebrew
       let(:standard_mismatch_spdx_id) { "0BSD" }
 
       it "does not check if the formula is not a new formula" do
-        fa = formula_auditor "foo", <<~RUBY, spdx_ids: spdx_ids, new_formula: false
+        fa = formula_auditor "foo", <<~RUBY, spdx_data: spdx_data, new_formula: false
           class Foo < Formula
             url "https://brew.sh/foo-1.0.tgz"
             license ""
@@ -119,7 +119,7 @@ module Homebrew
       end
 
       it "detects no license info" do
-        fa = formula_auditor "foo", <<~RUBY, spdx_ids: spdx_ids, new_formula: true
+        fa = formula_auditor "foo", <<~RUBY, spdx_data: spdx_data, new_formula: true
           class Foo < Formula
             url "https://brew.sh/foo-1.0.tgz"
             license ""
@@ -132,7 +132,7 @@ module Homebrew
       end
 
       it "detects if license is not a standard spdx-id" do
-        fa = formula_auditor "foo", <<~RUBY, spdx_ids: spdx_ids, new_formula: true
+        fa = formula_auditor "foo", <<~RUBY, spdx_data: spdx_data, new_formula: true
           class Foo < Formula
             url "https://brew.sh/foo-1.0.tgz"
             license "#{custom_spdx_id}"
@@ -144,7 +144,7 @@ module Homebrew
       end
 
       it "verifies that a license info is a standard spdx id" do
-        fa = formula_auditor "foo", <<~RUBY, spdx_ids: spdx_ids, new_formula: true
+        fa = formula_auditor "foo", <<~RUBY, spdx_data: spdx_data, new_formula: true
           class Foo < Formula
             url "https://brew.sh/foo-1.0.tgz"
             license "0BSD"
@@ -157,7 +157,7 @@ module Homebrew
 
       it "checks online and verifies that a standard license id is the same "\
         "as what is indicated on its Github repo" do
-        fa = formula_auditor "cask", <<~RUBY, spdx_ids: spdx_ids, online: true, core_tap: true, new_formula: true
+        fa = formula_auditor "cask", <<~RUBY, spdx_data: spdx_data, online: true, core_tap: true, new_formula: true
           class Cask < Formula
             url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
             head "https://github.com/cask/cask.git"
@@ -166,12 +166,12 @@ module Homebrew
         RUBY
 
         fa.audit_license
-        expect(fa.problems).to be_empty
+        expect(fa.problems).to be_empty 
       end
 
       it "checks online and detects that a formula-specified license is not "\
         "the same as what is indicated on its Github repository" do
-        fa = formula_auditor "cask", <<~RUBY, online: true, spdx_ids: spdx_ids, core_tap: true, new_formula: true
+        fa = formula_auditor "cask", <<~RUBY, online: true, spdx_data: spdx_data, core_tap: true, new_formula: true
           class Cask < Formula
             url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
             head "https://github.com/cask/cask.git"
