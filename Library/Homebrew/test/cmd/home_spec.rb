@@ -12,8 +12,12 @@ describe "brew home", :integration_test do
     Formula["testballhome"].homepage
   }
 
+  let(:local_caffeine_path) {
+    cask_path("local-caffeine")
+  }
+
   let(:local_caffeine_homepage) {
-    Cask::CaskLoader.load(cask_path("local-caffeine")).homepage
+    Cask::CaskLoader.load(local_caffeine_path).homepage
   }
 
   it "opens the homepage for a given Formula" do
@@ -27,7 +31,8 @@ describe "brew home", :integration_test do
 
   it "opens the homepage for a given Cask" do
     expect { brew "home", cask_path("local-caffeine"), "HOMEBREW_BROWSER" => "echo" }
-      .to output(/Found a cask with ref ".*" instead.\n#{local_caffeine_homepage}/m).to_stdout
+      .to output(/Formula "#{local_caffeine_path}" not found. Found a cask instead.\n#{local_caffeine_homepage}/m)
+            .to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
   end
@@ -36,7 +41,7 @@ describe "brew home", :integration_test do
     setup_test_formula "testballhome"
 
     expect { brew "home", "testballhome", cask_path("local-caffeine"), "HOMEBREW_BROWSER" => "echo" }
-      .to output(/Found a cask with ref ".*" instead.\n#{testballhome_homepage} #{local_caffeine_homepage}/m)
+      .to output(/Formula "#{local_caffeine_path}" not found. Found a cask instead.\n#{testballhome_homepage} #{local_caffeine_homepage}/m)
       .to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
