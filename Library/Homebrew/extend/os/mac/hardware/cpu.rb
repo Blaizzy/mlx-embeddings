@@ -11,12 +11,16 @@ module Hardware
         case sysctl_int("hw.cputype")
         when 7
           :intel
+        when MachO::Headers::CPU_TYPE_ARM64
+          :arm
         else
           :dunno
         end
       end
 
       def family
+        return :dunno if arm?
+
         case sysctl_int("hw.cpufamily")
         when 0x73d67300 # Yonah: Core Solo/Duo
           :core
