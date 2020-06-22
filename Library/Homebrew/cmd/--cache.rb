@@ -38,12 +38,14 @@ module Homebrew
         else
           puts formula.cached_download
         end
-      rescue FormulaUnavailableError
+      rescue FormulaUnavailableError => fe
         begin
           cask = Cask::CaskLoader.load name
           puts "cask: #{Cask::Cmd::Cache.cached_location(cask)}"
-        rescue Cask::CaskUnavailableError
-          ofail "No available formula or cask with the name \"#{name}\""
+        rescue Cask::CaskUnavailableError => ce
+          odie "No available formula or cask with the name \"#{name}\"\n" \
+               "#{fe.message}\n" \
+               "#{ce.message}\n"
         end
       end
     end
