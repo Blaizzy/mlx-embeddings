@@ -6,6 +6,7 @@ module OS
   module Mac
     class Version < ::Version
       SYMBOLS = {
+        big_sur:     "10.16",
         catalina:    "10.15",
         mojave:      "10.14",
         high_sierra: "10.13",
