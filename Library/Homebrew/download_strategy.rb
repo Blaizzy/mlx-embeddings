@@ -614,7 +614,7 @@ class GitDownloadStrategy < VCSDownloadStrategy
     super
     @ref_type ||= :branch
     @ref ||= "master"
-    @shallow = meta.fetch(:shallow) { true }
+    @shallow = meta.fetch(:shallow, true)
   end
 
   def source_modified_time
