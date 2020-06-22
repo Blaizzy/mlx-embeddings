@@ -112,20 +112,20 @@ module Homebrew
     style_results = Style.check_style_json(style_files, options) if style_files
     # load licenses
     full_path = File.join(File.dirname(__FILE__), "../data/spdx.json")
-    spdx_ids = File.open(full_path, "r") do |f|
-      JSON.parse(f.read)
+    spdx_data = File.open(full_path, "r") do |file|
+      JSON.parse(file.read)
     end
     new_formula_problem_lines = []
     audit_formulae.sort.each do |f|
       only = only_cops ? ["style"] : args.only
       options = {
-        new_formula: new_formula,
-        strict:      strict,
-        online:      online,
-        git:         git,
-        only:        only,
-        except:      args.except,
-        spdx_ids:    spdx_ids,
+          new_formula: new_formula,
+          strict:      strict,
+          online:      online,
+          git:         git,
+          only:        only,
+          except:      args.except,
+          spdx_data:    spdx_data,
       }
       options[:style_offenses] = style_results.file_offenses(f.path) if style_results
       options[:display_cop_names] = args.display_cop_names?
@@ -229,7 +229,7 @@ module Homebrew
       @new_formula_problems = []
       @text = FormulaText.new(formula.path)
       @specs = %w[stable devel head].map { |s| formula.send(s) }.compact
-      @spdx_ids = options[:spdx_ids]
+      @spdx_data = options[:spdx_data]
     end
 
     def audit_style
@@ -350,7 +350,7 @@ module Homebrew
 
     def audit_license
       if formula.license.present?
-        if @spdx_ids.key?(formula.license)
+        if @spdx_data.key?(formula.license)
           return unless @online
 
           user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*})
