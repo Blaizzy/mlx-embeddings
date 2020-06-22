@@ -38,7 +38,6 @@ module Homebrew
         @resolved_formulae = nil
         @formulae_paths = nil
         @casks = nil
-        @formulae_and_casks = nil
         @kegs = nil
 
         self[:named_args] = named_args
