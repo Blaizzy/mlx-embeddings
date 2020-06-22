@@ -152,7 +152,7 @@ creating a separate user account especially for use of Homebrew.
 
 If it’s not in `man brew`, it’s probably an external command. These are documented [here](External-Commands.md).
 
-## Why haven’t you pulled my pull request?
+## Why haven’t you merged my pull request?
 If it’s been a while, bump it with a “bump” comment. Sometimes we miss requests and there are plenty of them. Maybe we were thinking on something. It will encourage consideration. In the meantime if you could rebase the pull request so that it can be cherry-picked more easily we will love you for a long time.
 
 ## Can I edit formulae myself?
