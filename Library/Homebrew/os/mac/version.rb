@@ -32,7 +32,7 @@ module OS
       end
 
       def to_sym
-        SYMBOLS.invert.fetch(@version) { :dunno }
+        SYMBOLS.invert.fetch(@version, :dunno)
       end
 
       def pretty_name
