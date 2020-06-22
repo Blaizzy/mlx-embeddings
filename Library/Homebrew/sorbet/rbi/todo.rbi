@@ -3,6 +3,9 @@
 
 # typed: strong
 module DependencyCollector::Compat; end
+module ELFShim::Metadata::PatchELF::PatchError; end
+module ELFShim::PatchELF::PatchError; end
+module ELFShim::PatchELF::Patcher; end
 module Homebrew::Error; end
 module MacOS::CLT; end
 module MacOS::CLT::PKG_PATH; end
