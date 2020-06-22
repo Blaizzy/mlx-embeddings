@@ -1407,6 +1407,10 @@ class Formula
     ["--prefix=#{prefix}", "--libdir=#{lib}"]
   end
 
+  def shared_library(name, version = nil)
+    "#{name}.#{version}#{"." unless version.nil?}dylib"
+  end
+
   # an array of all core {Formula} names
   # @private
   def self.core_names
