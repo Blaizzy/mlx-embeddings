@@ -16,7 +16,7 @@ module Cask
 
       def run
         casks.each do |cask|
-          puts cached_location(cask)
+          puts self.class.cached_location(cask)
         end
       end
 
