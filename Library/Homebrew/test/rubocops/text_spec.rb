@@ -210,7 +210,7 @@ describe RuboCop::Cop::FormulaAudit::Text do
 
           def install
             system "cargo", "build"
-            ^^^^^^^^^^^^^^^^^^^^^^^ use \"cargo\", \"install\", \"--root\", prefix, \"--path\", \".\"
+            ^^^^^^^^^^^^^^^^^^^^^^^ use \"cargo\", \"install\", *std_cargo_args
           end
         end
       RUBY

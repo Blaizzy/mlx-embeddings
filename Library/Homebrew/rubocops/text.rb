@@ -60,7 +60,7 @@ module RuboCop
           end
 
           find_method_with_args(body_node, :system, "cargo", "build") do
-            problem "use \"cargo\", \"install\", \"--root\", prefix, \"--path\", \".\""
+            problem "use \"cargo\", \"install\", *std_cargo_args"
           end
         end
       end
