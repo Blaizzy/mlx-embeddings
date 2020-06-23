@@ -11,11 +11,11 @@ module Homebrew
   def __cache_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `--cache` [<options>] [<formula/cask>]
+        `--cache` [<options>] [<formula>]
 
         Display Homebrew's download cache. See also `HOMEBREW_CACHE`.
 
-        If <formula/cask> is provided, display the file or directory used to cache <formula/cask>.
+        If <formula> is provided, display the file or directory used to cache <formula>.
       EOS
       switch "-s", "--build-from-source",
              description: "Show the cache file used when building from source."
