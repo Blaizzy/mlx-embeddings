@@ -13,9 +13,10 @@ module OS
       # CI systems have been updated.
       # This may be a beta version for a beta macOS.
       def latest_version
-        latest = "11.5"
+        latest_stable = "11.5"
         case MacOS.version
-        when "10.15" then latest
+        when "11.0", "10.16" then "12.0"
+        when "10.15" then latest_stable
         when "10.14" then "11.3.1"
         when "10.13" then "10.1"
         when "10.12" then "9.2"
@@ -26,7 +27,7 @@ module OS
           raise "macOS '#{MacOS.version}' is invalid" unless OS::Mac.prerelease?
 
           # Default to newest known version of Xcode for unreleased macOS versions.
-          latest
+          latest_stable
         end
       end
 
@@ -36,6 +37,7 @@ module OS
       # also in beta).
       def minimum_version
         case MacOS.version
+        when "11.0", "10.16" then "12.0"
         when "10.15" then "11.0"
         when "10.14" then "10.2"
         when "10.13" then "9.0"
@@ -173,9 +175,10 @@ module OS
         # installed CLT version. This is useful as they are packaged
         # simultaneously so workarounds need to apply to both based on their
         # comparable version.
-        latest = "11.5"
+        latest_stable = "11.5"
         case (DevelopmentTools.clang_version.to_f * 10).to_i
-        when 110     then latest
+        when 120     then "12.0"
+        when 110     then latest_stable
         when 100     then "10.3"
         when 91      then "9.4"
         when 90      then "9.2"
@@ -186,7 +189,7 @@ module OS
         when 61      then "6.1"
         when 60      then "6.0"
         when 0       then "dunno"
-        else              latest
+        else              latest_stable
         end
       end
 
