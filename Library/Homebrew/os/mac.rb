@@ -21,7 +21,7 @@ module OS
     # This can be compared to numerics, strings, or symbols
     # using the standard Ruby Comparable methods.
     def version
-      @version ||= Version.new(full_version.to_s[/10\.\d+/])
+      @version ||= Version.new(full_version.to_s[/^\d+\.\d+/])
     end
 
     # This can be compared to numerics, strings, or symbols
