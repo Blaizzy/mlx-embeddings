@@ -25,19 +25,17 @@ module Homebrew
     if args.no_named?
       exec_browser HOMEBREW_WWW
     else
-      homepages = args.named.map do |ref|
-        Formulary.factory(ref).homepage
-      rescue FormulaUnavailableError => e
-        formula_error_message = e.message
+      homepages = args.named.map do |name|
+        f = Formulary.factory(name)
+        puts "Opening homepage for formula #{name}"
+        f.homepage
+      rescue FormulaUnavailableError
         begin
-          cask = Cask::CaskLoader.load(ref)
-          puts "Formula \"#{ref}\" not found. Found a cask instead."
-          cask.homepage
+          c = Cask::CaskLoader.load(name)
+          puts "Opening homepage for cask #{name}"
+          c.homepage
         rescue Cask::CaskUnavailableError => e
-          cask_error_message = e.message
-          odie "No available formula or cask with the name \"#{name}\"\n" \
-               "#{formula_error_message}\n" \
-               "#{cask_error_message}\n"
+          odie "No available formula or cask with the name \"#{name}\""
         end
       end
       exec_browser(*homepages)

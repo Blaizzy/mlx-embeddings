@@ -24,7 +24,7 @@ describe "brew home", :integration_test do
     setup_test_formula "testballhome"
 
     expect { brew "home", "testballhome", "HOMEBREW_BROWSER" => "echo" }
-      .to output("#{testballhome_homepage}\n").to_stdout
+      .to output(/#{testballhome_homepage}/).to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
   end
