@@ -10,10 +10,13 @@ module Homebrew
     module_function
 
     def check_cpu
-      return if (Hardware::CPU.intel? && Hardware::CPU.is_64_bit?) || Hardware::CPU.arm?
+      return if Hardware::CPU.intel? && Hardware::CPU.is_64_bit?
 
       message = "Sorry, Homebrew does not support your computer's CPU architecture!"
-      if Hardware::CPU.ppc?
+      if Hardware::CPU.arm?
+        opoo message
+        return
+      elsif Hardware::CPU.ppc?
         message += <<~EOS
           For PowerPC Mac (PPC32/PPC64BE) support, see:
             #{Formatter.url("https://github.com/mistydemeo/tigerbrew")}

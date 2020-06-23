@@ -16,7 +16,8 @@ module Homebrew
     ].freeze
 
     def check_cpu
-      return if (Hardware::CPU.intel? && Hardware::CPU.is_64_bit?) || Hardware::CPU.arm?
+      return if Hardware::CPU.intel? && Hardware::CPU.is_64_bit?
+      return if Hardware::CPU.arm?
 
       message = "Sorry, Homebrew does not support your computer's CPU architecture!"
       if Hardware::CPU.ppc64le?

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "macho"
+
 module Hardware
   class CPU
     class << self
