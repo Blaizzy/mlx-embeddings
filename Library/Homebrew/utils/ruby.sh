@@ -70,7 +70,6 @@ If there's no Homebrew Portable Ruby available for your processor:
         fi
       done
       IFS=$' \t\n' # Restore IFS to its default value
-      [[ -z $HOMEBREW_RUBY_PATH ]] && onoe "Failed to find usable Ruby $required_ruby_version!"
     fi
 
     if [[ -n "$HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH" ]]
