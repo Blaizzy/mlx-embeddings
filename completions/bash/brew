@@ -96,8 +96,12 @@ __brew_complete_tapped() {
 
 __brew_complete_commands() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
+  HOMEBREW_CACHE=$(brew --cache)
+  HOMEBREW_REPOSITORY=$(brew --repo)
   # Do not auto-complete "*instal" or "*uninstal" aliases for "*install" commands.
-  local cmds="$(brew commands --quiet --include-aliases | \grep -v instal$)"
+  [[ -f "$HOMEBREW_CACHE/all_commands_list.txt" ]] &&
+    local cmds="$(cat "$HOMEBREW_CACHE/all_commands_list.txt" | \grep -v instal$)" ||
+    local cmds="$(cat "$HOMEBREW_REPOSITORY/completions/internal_commands_list.txt" | \grep -v instal$)"
   COMPREPLY=($(compgen -W "$cmds" -- "$cur"))
 }
 
