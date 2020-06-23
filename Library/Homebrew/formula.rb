@@ -2153,6 +2153,7 @@ class Formula
         stage_env[:_JAVA_OPTIONS] =
           "#{ENV["_JAVA_OPTIONS"]&.+(" ")}-Duser.home=#{HOMEBREW_CACHE}/java_cache"
         stage_env[:GOCACHE] = "#{HOMEBREW_CACHE}/go_cache"
+        stage_env[:GOPATH] = "#{HOMEBREW_CACHE}/go_mod_cache"
         stage_env[:CARGO_HOME] = "#{HOMEBREW_CACHE}/cargo_cache"
         stage_env[:CURL_HOME] = ENV["CURL_HOME"] || ENV["HOME"]
       end
