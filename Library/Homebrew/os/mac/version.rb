@@ -7,7 +7,7 @@ module OS
   module Mac
     class Version < ::Version
       SYMBOLS = {
-        big_sur:     Hardware::CPU.arm? ? "11.00" : "10.16",
+        big_sur:     Hardware::CPU.arm? ? "11.0" : "10.16",
         catalina:    "10.15",
         mojave:      "10.14",
         high_sierra: "10.13",
