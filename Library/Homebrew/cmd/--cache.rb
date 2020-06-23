@@ -11,17 +11,22 @@ module Homebrew
   def __cache_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `--cache` [<options>] [<formula>]
+        `--cache` [<options>] [<formula/cask>]
 
         Display Homebrew's download cache. See also `HOMEBREW_CACHE`.
 
-        If <formula> is provided, display the file or directory used to cache <formula>.
+        If <formula/cask> is provided, display the file or directory used to cache <formula/cask>.
       EOS
       switch "-s", "--build-from-source",
              description: "Show the cache file used when building from source."
       switch "--force-bottle",
              description: "Show the cache file used when pouring a bottle."
+      switch "--formula",
+             description: "Show cache files for only formulae"
+      switch "--cask",
+             description: "Show cache files for only casks"
       conflicts "--build-from-source", "--force-bottle"
+      conflicts "--formula", "--cask"
     end
   end
 
@@ -30,26 +35,39 @@ module Homebrew
 
     if args.no_named?
       puts HOMEBREW_CACHE
+    elsif args.formula?
+      args.named.each do |name|
+        print_formula_cache name
+      end
+    elsif args.cask?
+      args.named.each do |name|
+        print_cask_cache name
+      end
     else
       args.named.each do |name|
-        formula = Formulary.factory name
-        if Fetch.fetch_bottle?(formula)
-          puts formula.bottle.cached_download
-        else
-          puts formula.cached_download
-        end
+        print_formula_cache name
       rescue FormulaUnavailableError => e
-        formula_error_message = e.message
         begin
-          cask = Cask::CaskLoader.load name
-          puts "cask: #{Cask::Cmd::Cache.cached_location(cask)}"
+          print_cask_cache name
         rescue Cask::CaskUnavailableError => e
-          cask_error_message = e.message
-          odie "No available formula or cask with the name \"#{name}\"\n" \
-               "#{formula_error_message}\n" \
-               "#{cask_error_message}\n"
+          odie "No available formula or cask with the name \"#{name}\""
         end
       end
     end
   end
+
+  def print_formula_cache(name)
+    formula = Formulary.factory name
+    if Fetch.fetch_bottle?(formula)
+      puts formula.bottle.cached_download
+    else
+      puts formula.cached_download
+    end
+  end
+
+  def print_cask_cache(name)
+      cask = Cask::CaskLoader.load name
+      puts Cask::Cmd::Cache.cached_location(cask)
+  end
+
 end
