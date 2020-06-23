@@ -749,11 +749,11 @@ Show usage of \fIformula\fR by development builds\.
 \fB\-\-HEAD\fR
 Show usage of \fIformula\fR by HEAD builds\.
 .
-.SS "\fB\-\-cache\fR [\fIoptions\fR] [\fIformula\fR]"
+.SS "\fB\-\-cache\fR [\fIoptions\fR] [<formula/cask>]"
 Display Homebrew\'s download cache\. See also \fBHOMEBREW_CACHE\fR\.
 .
 .P
-If \fIformula\fR is provided, display the file or directory used to cache \fIformula\fR\.
+If <formula/cask> is provided, display the file or directory used to cache <formula/cask>\.
 .
 .TP
 \fB\-s\fR, \fB\-\-build\-from\-source\fR
@@ -762,6 +762,14 @@ Show the cache file used when building from source\.
 .TP
 \fB\-\-force\-bottle\fR
 Show the cache file used when pouring a bottle\.
+.
+.TP
+\fB\-\-formula\fR
+Show cache files for only formulae
+.
+.TP
+\fB\-\-cask\fR
+Show cache files for only casks
 .
 .SS "\fB\-\-cellar\fR [\fIformula\fR]"
 Display Homebrew\'s Cellar path\. \fIDefault:\fR \fB$(brew \-\-prefix)/Cellar\fR, or if that directory doesn\'t exist, \fB$(brew \-\-repository)/Cellar\fR\.

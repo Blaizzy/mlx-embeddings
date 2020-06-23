@@ -577,16 +577,21 @@ recommended dependency for their stable builds.
 * `--HEAD`:
   Show usage of *`formula`* by HEAD builds.
 
-### `--cache` [*`options`*] [*`formula`*]
+### `--cache` [*`options`*] [<formula/cask>]
 
 Display Homebrew's download cache. See also `HOMEBREW_CACHE`.
 
-If *`formula`* is provided, display the file or directory used to cache *`formula`*.
+If <formula/cask> is provided, display the file or directory used to cache
+<formula/cask>.
 
 * `-s`, `--build-from-source`:
   Show the cache file used when building from source.
 * `--force-bottle`:
   Show the cache file used when pouring a bottle.
+* `--formula`:
+  Show cache files for only formulae
+* `--cask`:
+  Show cache files for only casks
 
 ### `--cellar` [*`formula`*]
 
