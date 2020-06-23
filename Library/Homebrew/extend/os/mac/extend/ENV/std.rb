@@ -52,7 +52,7 @@ module Stdenv
   def remove_macosxsdk(version = nil)
     # Clear all lib and include dirs from CFLAGS, CPPFLAGS, LDFLAGS that were
     # previously added by macosxsdk
-    remove_from_cflags(/ ?-mmacosx-version-min=10\.\d+/)
+    remove_from_cflags(/ ?-mmacosx-version-min=\d+\.\d+/)
     delete("CPATH")
     remove "LDFLAGS", "-L#{HOMEBREW_PREFIX}/lib"
 
