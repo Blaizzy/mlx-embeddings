@@ -9,7 +9,7 @@ module Hardware
       # Look in <mach/machine.h> for decoding info.
       def type
         case sysctl_int("hw.cputype")
-        when 7
+        when MachO::Headers::CPU_TYPE_I386
           :intel
         when MachO::Headers::CPU_TYPE_ARM64
           :arm
