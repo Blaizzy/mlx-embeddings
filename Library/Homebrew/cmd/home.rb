@@ -34,7 +34,7 @@ module Homebrew
           c = Cask::CaskLoader.load(name)
           puts "Opening homepage for cask #{name}"
           c.homepage
-        rescue Cask::CaskUnavailableError => e
+        rescue Cask::CaskUnavailableError
           odie "No available formula or cask with the name \"#{name}\""
         end
       end

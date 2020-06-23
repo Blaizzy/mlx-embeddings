@@ -46,10 +46,10 @@ module Homebrew
     else
       args.named.each do |name|
         print_formula_cache name
-      rescue FormulaUnavailableError => e
+      rescue FormulaUnavailableError
         begin
           print_cask_cache name
-        rescue Cask::CaskUnavailableError => e
+        rescue Cask::CaskUnavailableError
           odie "No available formula or cask with the name \"#{name}\""
         end
       end
@@ -66,8 +66,7 @@ module Homebrew
   end
 
   def print_cask_cache(name)
-      cask = Cask::CaskLoader.load name
-      puts Cask::Cmd::Cache.cached_location(cask)
+    cask = Cask::CaskLoader.load name
+    puts Cask::Cmd::Cache.cached_location(cask)
   end
-
 end
