@@ -129,6 +129,8 @@ RSpec.configure do |config|
   end
 
   config.before(:each, :needs_svn) do
+    skip "subversion not installed." unless quiet_system "#{HOMEBREW_SHIMS_PATH}/scm/svn", "--version"
+
     svn_paths = PATH.new(ENV["PATH"])
     if OS.mac?
       xcrun_svn = Utils.popen_read("xcrun", "-f", "svn")
