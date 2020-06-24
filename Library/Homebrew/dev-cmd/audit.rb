@@ -112,7 +112,7 @@ module Homebrew
     style_results = Style.check_style_json(style_files, options) if style_files
     # load licenses
     spdx = HOMEBREW_LIBRARY_PATH/"data/spdx.json"
-    spdx_data = open(spdx, "r") do |file|
+    spdx_data = File.open(spdx, "r") do |file|
       JSON.parse(file.read)
     end
     new_formula_problem_lines = []
