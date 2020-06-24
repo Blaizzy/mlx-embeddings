@@ -119,8 +119,10 @@ module Homebrew
     end
 
     possible_casks.each do |name|
-      cask = Cask::CaskLoader.load name
-      Cask::Cmd::Uninstall.uninstall_cask(cask, true, args.verbose, args.force?)
+      cmd = Cask::Cmd::Uninstall.new(name)
+      cmd.force = args.force?
+      cmd.verbose = args.verbose?
+      cmd.run
     rescue Cask::CaskUnavailableError
       ofail "No installed keg or cask with the name \"#{name}\""
     end
