@@ -5,6 +5,9 @@ require "formula"
 require "diagnostic"
 require "migrator"
 require "cli/parser"
+require "cask/all"
+require "cask/cmd"
+require "cask/cask_loader"
 
 module Homebrew
   module_function
@@ -29,15 +32,21 @@ module Homebrew
   def uninstall
     uninstall_args.parse
 
-    kegs_by_rack = if args.force?
-      Hash[args.named.map do |name|
+    if args.force?
+      possible_casks = []
+      kegs_by_rack = Hash[args.named.map do |name|
         rack = Formulary.to_rack(name)
-        next unless rack.directory?
+
+        unless rack.directory?
+          possible_casks << name
+          next
+        end
 
         [rack, rack.subdirs.map { |d| Keg.new(d) }]
       end]
     else
-      args.kegs.group_by(&:rack)
+      kegs_, possible_casks = args.kegs_and_unknowns
+      kegs_by_rack = kegs_.group_by(&:rack)
     end
 
     handle_unsatisfied_dependents(kegs_by_rack)
@@ -107,6 +116,13 @@ module Homebrew
           end
         end
       end
+    end
+
+    possible_casks.each do |name|
+      cask = Cask::CaskLoader.load name
+      Cask::Cmd::Uninstall.uninstall_cask(cask, true, args.verbose, args.force?)
+    rescue Cask::CaskUnavailableError
+      ofail "No installed keg or cask with the name \"#{name}\""
     end
   rescue MultipleVersionsInstalledError => e
     ofail e
