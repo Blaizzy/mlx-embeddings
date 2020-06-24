@@ -1311,6 +1311,13 @@ Patches for \fIformula\fR will be applied to the unpacked source\.
 \fB\-g\fR, \fB\-\-git\fR
 Initialise a Git repository in the unpacked source\. This is useful for creating patches for the software\.
 .
+.SS "\fBupdate_license_data\fR \fIcmd\fR"
+Update SPDX license data in the Homebrew repository\.
+.
+.TP
+\fB\-\-fail\-if\-changed\fR
+Return a failing status code if current license data\'s version is different fromthe upstream\. This can be used to notify CI when the SPDX license data is out of date\.
+.
 .SS "\fBupdate\-test\fR [\fIoptions\fR]"
 Run a test of \fBbrew update\fR with a new repository clone\. If no options are passed, use \fBorigin/master\fR as the start commit\.
 .
