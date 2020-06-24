@@ -36,6 +36,7 @@ module Homebrew
         # Reset cache values reliant on named_args
         @formulae = nil
         @resolved_formulae = nil
+        @resolved_formulae_and_unknowns = nil
         @formulae_paths = nil
         @casks = nil
         @kegs = nil
@@ -97,6 +98,19 @@ module Homebrew
         end.uniq(&:name).freeze
       end
 
+      def resolved_formulae_and_unknowns
+        return @resolved_formulae_and_unknowns if @resolved_formulae_and_unknowns
+
+        resolved_formulae = []
+        unknowns = []
+        downcased_unique_named.each do |name|
+          resolved_formulae << Formulary.resolve(name, spec: spec(nil))
+        rescue FormulaUnavailableError
+          unknowns << name
+        end
+        @resolved_formulae_and_unknowns = [resolved_formulae.freeze, unknowns.freeze].freeze
+      end
+
       def formulae_paths
         @formulae_paths ||= (downcased_unique_named - casks).map do |name|
           Formulary.path(name)
@@ -130,7 +144,7 @@ module Homebrew
           unknowns << name
         end
 
-        @kegs_and_unknowns = [kegs, unknowns]
+        @kegs_and_unknowns = [kegs.freeze, unknowns.freeze].freeze
       end
 
       def resolve_keg(name)
