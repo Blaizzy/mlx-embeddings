@@ -6,6 +6,7 @@ require "messages"
 require "reinstall"
 require "cli/parser"
 require "cleanup"
+require "cask/all"
 
 module Homebrew
   module_function
@@ -56,7 +57,8 @@ module Homebrew
 
     Install.perform_preinstall_checks
 
-    args.resolved_formulae.each do |f|
+    resolved_formulae, possible_casks = args.resolved_formulae_and_unknowns
+    resolved_formulae.each do |f|
       if f.pinned?
         onoe "#{f.full_name} is pinned. You must unpin it to reinstall."
         next
@@ -66,5 +68,14 @@ module Homebrew
       Cleanup.install_formula_clean!(f)
     end
     Homebrew.messages.display_messages
+
+    possible_casks.each do |name|
+      reinstall_cmd = Cask::Cmd::Reinstall.new(name)
+      reinstall_cmd.verbose = args.verbose?
+      reinstall_cmd.force = args.force?
+      reinstall_cmd.run
+    rescue Cask::CaskUnavailableError
+      ofail "No installed keg or cask with the name \"#{name}\""
+    end
   end
 end
