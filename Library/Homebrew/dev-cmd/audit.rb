@@ -112,7 +112,9 @@ module Homebrew
     style_results = Style.check_style_json(style_files, options) if style_files
     # load licenses
     spdx = HOMEBREW_LIBRARY_PATH/"data/spdx.json"
-    JSON.parse(spdx.read)
+    spdx_data = open(spdx, "r") do |file|
+      JSON.parse(file.read)
+    end
     new_formula_problem_lines = []
     audit_formulae.sort.each do |f|
       only = only_cops ? ["style"] : args.only
@@ -351,7 +353,9 @@ module Homebrew
         if @spdx_data["licenses"].any? { |lic| lic["licenseId"] == formula.license }
           return unless @online
 
-          user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*})
+          user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @new_formula
+          user ||= nil
+          repo ||= nil
           return if user.nil?
 
           github_license = GitHub.get_repo_license(user, repo)
@@ -542,7 +546,9 @@ module Homebrew
     end
 
     def audit_github_repository
-      user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*})
+      user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @new_formula
+      user ||=nil
+      repo ||=nil
       return if user.nil?
 
       warning = SharedAudits.github(user, repo)
@@ -552,7 +558,9 @@ module Homebrew
     end
 
     def audit_gitlab_repository
-      user, repo = get_repo_data(%r{https?://gitlab\.com/([^/]+)/([^/]+)/?.*})
+      user, repo = get_repo_data(%r{https?://gitlab\.com/([^/]+)/([^/]+)/?.*}) if @new_formula
+      user ||= nil
+      repo ||=nil
       return if user.nil?
 
       warning = SharedAudits.gitlab(user, repo)
@@ -562,7 +570,9 @@ module Homebrew
     end
 
     def audit_bitbucket_repository
-      user, repo = get_repo_data(%r{https?://bitbucket\.org/([^/]+)/([^/]+)/?.*})
+      user, repo = get_repo_data(%r{https?://bitbucket\.org/([^/]+)/([^/]+)/?.*}) if @new_formula
+      user ||= nil
+      repo ||= nil
       return if user.nil?
 
       warning = SharedAudits.bitbucket(user, repo)
