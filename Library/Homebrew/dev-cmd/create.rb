@@ -49,7 +49,6 @@ module Homebrew
              description: "Explicitly set the <license> of the new formula."
       flag   "--tap=",
              description: "Generate the new formula within the given tap, specified as <user>`/`<repo>."
-
       switch :force
       switch :verbose
       switch :debug

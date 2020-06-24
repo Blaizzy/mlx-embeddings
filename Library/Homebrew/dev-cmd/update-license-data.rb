@@ -19,7 +19,7 @@ module Homebrew
 
         Update SPDX license data in the Homebrew repository.
       EOS
-      switch "--fail-if-outdated",
+      switch "--fail-if-changed",
              description: "Return a failing status code if current license data's version is different from the upstream. This "\
                           "can be used to notify CI when the SPDX license data is out of date."
 

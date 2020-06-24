@@ -2207,7 +2207,7 @@ class Formula
     # The SPDX ID of the open-source license that the formula uses.
     # Shows when running `brew info`.
     #
-    # <pre>license " BSD-2-Clause"</pre>
+    # <pre>license "BSD-2-Clause"</pre>
     attr_rw :license
 
     # @!attribute [w] homepage

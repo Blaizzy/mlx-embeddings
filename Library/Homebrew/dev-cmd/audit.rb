@@ -111,21 +111,19 @@ module Homebrew
     # Check style in a single batch run up front for performance
     style_results = Style.check_style_json(style_files, options) if style_files
     # load licenses
-    full_path = File.join(File.dirname(__FILE__), "../data/spdx.json")
-    spdx_data = File.open(full_path, "r") do |file|
-      JSON.parse(file.read)
-    end
+    spdx = HOMEBREW_LIBRARY_PATH/"data/spdx.json"
+    JSON.parse(spdx.read)
     new_formula_problem_lines = []
     audit_formulae.sort.each do |f|
       only = only_cops ? ["style"] : args.only
       options = {
-          new_formula: new_formula,
-          strict:      strict,
-          online:      online,
-          git:         git,
-          only:        only,
-          except:      args.except,
-          spdx_data:    spdx_data,
+        new_formula: new_formula,
+        strict:      strict,
+        online:      online,
+        git:         git,
+        only:        only,
+        except:      args.except,
+        spdx_data:    spdx_data,
       }
       options[:style_offenses] = style_results.file_offenses(f.path) if style_results
       options[:display_cop_names] = args.display_cop_names?
@@ -350,7 +348,7 @@ module Homebrew
 
     def audit_license
       if formula.license.present?
-        if @spdx_data["licenses"].any?{|lic| lic["licenseId"] == formula.license}
+        if @spdx_data["licenses"].any? { |lic| lic["licenseId"] == formula.license }
           return unless @online
 
           user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*})
@@ -360,9 +358,9 @@ module Homebrew
           return if github_license && (github_license == formula.license)
 
           problem "License mismatch - GitHub license is: #{github_license}, "\
-                  "but Formulae license states: #{formula.license}."
+                  "but formula license states: #{formula.license}."
         else
-          problem "#{formula.license} is not a standard SPDX license."
+          problem "#{formula.license} is not a SPDX license."
         end
       elsif @new_formula
         problem "No license specified for package."
