@@ -13558,26 +13558,6 @@ end
 
 ParseError = Racc::ParseError
 
-class Parser::AST::Processor
-  def on_find_pattern(node); end
-
-  def on_forward_arg(node); end
-end
-
-class Parser::Builders::Default
-  def find_pattern(lbrack_t, elements, rbrack_t); end
-
-  def forward_arg(dots_t); end
-
-  def forward_only_args(begin_t, dots_t, end_t); end
-end
-
-class Parser::Builders::Default
-  def self.emit_forward_arg(); end
-
-  def self.emit_forward_arg=(emit_forward_arg); end
-end
-
 Parser::CurrentRuby = Parser::Ruby26
 
 class Parser::Ruby24
@@ -15342,22 +15322,6 @@ class Parser::Ruby26
 end
 
 class Parser::Ruby26
-end
-
-class Parser::Source::TreeRewriter
-  def as_nested_actions(); end
-
-  def as_replacements(); end
-
-  def import!(foreign_rewriter, offset: T.unsafe(nil)); end
-end
-
-class Parser::Source::TreeRewriter::Action
-  def contract(); end
-
-  def moved(source_buffer, offset); end
-
-  def nested_actions(); end
 end
 
 class Pathname
@@ -24483,8 +24447,6 @@ module Tins::SexySingleton
 
   def dup(); end
 end
-
-Tins::SexySingleton::SingletonClassMethods = Singleton::SingletonClassMethods
 
 module Tins::SexySingleton
   def self.__init__(klass); end
