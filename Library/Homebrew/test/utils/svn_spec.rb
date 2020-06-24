@@ -9,7 +9,7 @@ describe Utils do
     end
 
     it "returns svn version if svn available" do
-      if File.executable? "/usr/bin/svn"
+      if quiet_system "#{HOMEBREW_SHIMS_PATH}/scm/svn", "--version"
         expect(described_class).to be_svn_available
       else
         expect(described_class).not_to be_svn_available
