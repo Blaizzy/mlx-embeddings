@@ -137,8 +137,11 @@ fi
 path="/Applications/Xcode.app/Contents/Developer/usr/bin/$SCM_FILE"
 safe_exec "$path" "$@"
 
-path="/usr/bin/$SCM_FILE"
-[[ -z "$popup_stub" ]] && safe_exec "$path" "$@"
+if [[ -z "$popup_stub" && "$HOMEBREW_MACOS_VERSION_NUMERIC" -lt "101500" ]]
+then
+  path="/usr/bin/$SCM_FILE"
+  safe_exec "$path" "$@"
+fi
 
 echo "You must: brew install $SCM_FILE" >&2
 exit 1
