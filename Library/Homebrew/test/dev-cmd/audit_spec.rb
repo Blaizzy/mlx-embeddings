@@ -166,7 +166,7 @@ module Homebrew
         RUBY
 
         fa.audit_license
-        expect(fa.problems).to be_empty 
+        expect(fa.problems).to be_empty
       end
 
       it "checks online and detects that a formula-specified license is not "\
