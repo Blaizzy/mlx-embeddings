@@ -16,8 +16,12 @@ module Cask
 
       def run
         casks.each do |cask|
-          puts Download.new(cask).downloader.cached_location
+          puts self.class.cached_location(cask)
         end
+      end
+
+      def self.cached_location(cask)
+        Download.new(cask).downloader.cached_location
       end
 
       def self.help

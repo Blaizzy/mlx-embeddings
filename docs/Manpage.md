@@ -587,6 +587,10 @@ If *`formula`* is provided, display the file or directory used to cache *`formul
   Show the cache file used when building from source.
 * `--force-bottle`:
   Show the cache file used when pouring a bottle.
+* `--formula`:
+  Show cache files for only formulae
+* `--cask`:
+  Show cache files for only casks
 
 ### `--cellar` [*`formula`*]
 
