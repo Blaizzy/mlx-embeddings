@@ -17,6 +17,53 @@ describe "brew uninstall", :integration_test do
       .and not_to_output.to_stderr
       .and be_a_success
   end
+
+  it "uninstalls a given Cask" do
+    caffeine = Cask::CaskLoader.load(cask_path("local-caffeine"))
+    Cask::Installer.new(caffeine).install
+
+    expect { brew "uninstall", "local-caffeine" }
+      .to output(/Uninstalling Cask local-caffeine/).to_stdout
+      .and not_to_output.to_stderr
+      .and be_a_success
+
+    expect(caffeine).not_to be_installed
+
+    # expect TEST_TMPDIR/cask-appdir to exist and be empty, then delete it
+    expect(
+      Find.find(TEST_TMPDIR)
+        .reject { |f| File.basename(f) == ".DS_Store" }
+        .filter { |f| File.path(f).start_with?("#{TEST_TMPDIR}/cask-appdir") },
+    ).to eq(["#{TEST_TMPDIR}/cask-appdir"])
+
+    rm_r "#{TEST_TMPDIR}/cask-appdir"
+  end
+
+  it "uninstalls given Formulae and Casks" do
+    install_test_formula "testball"
+
+    caffeine = Cask::CaskLoader.load(cask_path("local-caffeine"))
+    Cask::Installer.new(caffeine).install
+
+    expect { brew "uninstall", "testball", "local-caffeine" }
+      .to output(%r{
+        Uninstalling\s#{TEST_TMPDIR}/cellar/testball/.*\n
+        ==>\sUninstalling\sCask\slocal-caffeine
+      }x).to_stdout
+      .and not_to_output.to_stderr
+      .and be_a_success
+
+    expect(caffeine).not_to be_installed
+
+    # expect TEST_TMPDIR/cask-appdir to exist and be empty, then delete it
+    expect(
+      Find.find(TEST_TMPDIR)
+        .reject { |f| File.basename(f) == ".DS_Store" }
+        .filter { |f| File.path(f).start_with?("#{TEST_TMPDIR}/cask-appdir") },
+    ).to eq(["#{TEST_TMPDIR}/cask-appdir"])
+
+    rm_r "#{TEST_TMPDIR}/cask-appdir"
+  end
 end
 
 describe Homebrew do

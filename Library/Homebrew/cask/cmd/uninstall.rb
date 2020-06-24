@@ -12,7 +12,7 @@ module Cask
 
       def run
         casks.each do |cask|
-          uninstall_cask cask, binaries?, verbose?, force?
+          self.class.uninstall_cask cask, binaries?, verbose?, force?
         end
       end
 
