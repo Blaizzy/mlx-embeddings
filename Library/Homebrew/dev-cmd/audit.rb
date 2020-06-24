@@ -123,7 +123,7 @@ module Homebrew
         git:         git,
         only:        only,
         except:      args.except,
-        spdx_data:    spdx_data,
+        spdx_data:   spdx_data,
       }
       options[:style_offenses] = style_results.file_offenses(f.path) if style_results
       options[:display_cop_names] = args.display_cop_names?
@@ -358,9 +358,9 @@ module Homebrew
           return if github_license && (github_license == formula.license)
 
           problem "License mismatch - GitHub license is: #{github_license}, "\
-                  "but formula license states: #{formula.license}."
+                  "but Formulae license states: #{formula.license}."
         else
-          problem "#{formula.license} is not a SPDX license."
+          problem "#{formula.license} is not a standard SPDX license."
         end
       elsif @new_formula
         problem "No license specified for package."
