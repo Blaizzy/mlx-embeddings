@@ -22,9 +22,9 @@ module Homebrew
       switch "--force-bottle",
              description: "Show the cache file used when pouring a bottle."
       switch "--formula",
-             description: "Show cache files for only formulae"
+             description: "Only show cache files for formulae."
       switch "--cask",
-             description: "Show cache files for only casks"
+             description: "Only show cache files for casks."
       conflicts "--build-from-source", "--force-bottle"
       conflicts "--formula", "--cask"
     end

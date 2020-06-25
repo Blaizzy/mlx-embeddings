@@ -34,18 +34,18 @@ module Homebrew
              description: "When a patch fails to apply, leave in progress and allow user to resolve, "\
                           "instead of aborting."
       flag   "--workflow=",
-             description: "Retrieve artifacts from the specified workflow (default: tests.yml)."
+             description: "Retrieve artifacts from the specified workflow (default: `tests.yml`)."
       flag   "--artifact=",
-             description: "Download artifacts with the specified name (default: bottles)."
+             description: "Download artifacts with the specified name (default: `bottles`)."
       flag   "--bintray-org=",
-             description: "Upload to the specified Bintray organisation (default: homebrew)."
+             description: "Upload to the specified Bintray organisation (default: `homebrew`)."
       flag   "--tap=",
-             description: "Target tap repository (default: homebrew/core)."
+             description: "Target tap repository (default: `homebrew/core`)."
       flag   "--root-url=",
              description: "Use the specified <URL> as the root of the bottle's URL instead of Homebrew's default."
       flag   "--bintray-mirror=",
              description: "Use the specified Bintray repository to automatically mirror stable URLs "\
-                          "defined in the formulae (default: mirror)"
+                          "defined in the formulae (default: `mirror`)."
       switch :verbose
       switch :debug
       min_named 1

@@ -15,12 +15,12 @@ module Homebrew
       EOS
       switch "--no-publish",
              description: "Apply the bottle commit and upload the bottles, but don't publish them."
-      switch "--dry-run", "-n",
+      switch "-n", "--dry-run",
              description: "Print what would be done rather than doing it."
-      flag "--bintray-org=",
-           description: "Upload to the specified Bintray organisation (default: homebrew)."
-      flag "--root-url=",
-           description: "Use the specified <URL> as the root of the bottle's URL instead of Homebrew's default."
+      flag   "--bintray-org=",
+             description: "Upload to the specified Bintray organisation (default: `homebrew`)."
+      flag   "--root-url=",
+             description: "Use the specified <URL> as the root of the bottle's URL instead of Homebrew's default."
       switch :verbose
       switch :debug
     end
