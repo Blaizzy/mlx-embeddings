@@ -115,6 +115,8 @@ class SoftwareSpec
       raise DuplicateResourceError, name if resource_defined?(name)
 
       res = klass.new(name, &block)
+      return unless res.url
+
       resources[name] = res
       dependency_collector.add(res)
     else
