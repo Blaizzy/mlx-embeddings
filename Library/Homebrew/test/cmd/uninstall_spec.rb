@@ -29,14 +29,7 @@ describe "brew uninstall", :integration_test do
 
     expect(caffeine).not_to be_installed
 
-    # expect TEST_TMPDIR/cask-appdir to exist and be empty, then delete it
-    expect(
-      Find.find(TEST_TMPDIR)
-        .reject { |f| File.basename(f) == ".DS_Store" }
-        .filter { |f| File.path(f).start_with?("#{TEST_TMPDIR}/cask-appdir") },
-    ).to eq(["#{TEST_TMPDIR}/cask-appdir"])
-
-    rm_r "#{TEST_TMPDIR}/cask-appdir"
+    rm_r(TEST_TMPDIR + "/cask-appdir")
   end
 
   it "uninstalls given Formulae and Casks" do
@@ -55,14 +48,7 @@ describe "brew uninstall", :integration_test do
 
     expect(caffeine).not_to be_installed
 
-    # expect TEST_TMPDIR/cask-appdir to exist and be empty, then delete it
-    expect(
-      Find.find(TEST_TMPDIR)
-        .reject { |f| File.basename(f) == ".DS_Store" }
-        .filter { |f| File.path(f).start_with?("#{TEST_TMPDIR}/cask-appdir") },
-    ).to eq(["#{TEST_TMPDIR}/cask-appdir"])
-
-    rm_r "#{TEST_TMPDIR}/cask-appdir"
+    rm_r(TEST_TMPDIR + "/cask-appdir")
   end
 end
 
