@@ -24,13 +24,13 @@ describe Homebrew do
 
   specify "::github_remote_path" do
     expect(subject.github_remote_path(remote, "Formula/git.rb"))
-      .to eq("https://github.com/Homebrew/homebrew-core/blob/master/Formula/git.rb")
+      .to eq("https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/git.rb")
 
     expect(subject.github_remote_path("#{remote}.git", "Formula/git.rb"))
-      .to eq("https://github.com/Homebrew/homebrew-core/blob/master/Formula/git.rb")
+      .to eq("https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/git.rb")
 
     expect(subject.github_remote_path("git@github.com:user/repo", "foo.rb"))
-      .to eq("https://github.com/user/repo/blob/master/foo.rb")
+      .to eq("https://github.com/user/repo/blob/HEAD/foo.rb")
 
     expect(subject.github_remote_path("https://mywebsite.com", "foo/bar.rb"))
       .to eq("https://mywebsite.com/foo/bar.rb")

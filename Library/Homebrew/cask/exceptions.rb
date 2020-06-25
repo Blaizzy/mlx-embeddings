@@ -151,7 +151,7 @@ module Cask
             File: #{path}
         To retry an incomplete download, remove the file above.
         If the issue persists, visit:
-          #{Formatter.url("https://github.com/Homebrew/homebrew-cask/blob/master/doc/reporting_bugs/checksum_does_not_match_error.md")}
+          #{Formatter.url("https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/reporting_bugs/checksum_does_not_match_error.md")}
       EOS
     end
   end
