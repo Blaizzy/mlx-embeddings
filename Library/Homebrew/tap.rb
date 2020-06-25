@@ -286,6 +286,7 @@ class Tap
 
     config["forceautoupdate"] = force_auto_update unless force_auto_update.nil?
 
+    Commands.rebuild_commands_completion_list
     link_completions_and_manpages
 
     formatted_contents = contents.presence&.to_sentence&.dup&.prepend(" ")
@@ -334,6 +335,8 @@ class Tap
     path.rmtree
     path.parent.rmdir_if_possible
     puts "Untapped#{formatted_contents} (#{abv})."
+
+    Commands.rebuild_commands_completion_list
     clear_cache
   end
 

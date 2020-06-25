@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
+require "hardware"
 require "version"
 
 module OS
   module Mac
     class Version < ::Version
       SYMBOLS = {
+        big_sur:     Hardware::CPU.arm? ? "11.0" : "10.16",
         catalina:    "10.15",
         mojave:      "10.14",
         high_sierra: "10.13",
@@ -32,7 +34,7 @@ module OS
       end
 
       def to_sym
-        SYMBOLS.invert.fetch(@version) { :dunno }
+        SYMBOLS.invert.fetch(@version, :dunno)
       end
 
       def pretty_name

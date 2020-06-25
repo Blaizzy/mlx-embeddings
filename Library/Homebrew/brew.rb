@@ -58,6 +58,7 @@ begin
       help_flag = true
     elsif !cmd && !help_flag_list.include?(arg)
       cmd = ARGV.delete_at(i)
+      cmd = Commands::HOMEBREW_INTERNAL_COMMAND_ALIASES.fetch(cmd, cmd)
     end
   end
 

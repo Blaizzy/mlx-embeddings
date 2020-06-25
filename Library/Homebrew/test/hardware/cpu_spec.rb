@@ -29,6 +29,7 @@ describe Hardware::CPU do
         :core2,
         :dothan,
         :haswell,
+        :icelake,
         :ivybridge,
         :kabylake,
         :merom,

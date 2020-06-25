@@ -3,14 +3,10 @@
 
 # typed: strong
 module DependencyCollector::Compat; end
+module ELFShim::Metadata::PatchELF::PatchError; end
+module ELFShim::PatchELF::PatchError; end
+module ELFShim::PatchELF::Patcher; end
 module Homebrew::Error; end
-module MacOS::CLT; end
-module MacOS::CLT::PKG_PATH; end
-module MacOS::Version; end
-module MacOS::Version::SYMBOLS; end
-module MacOS::X11; end
-module MacOS::XQuartz; end
-module MacOS::Xcode; end
 module OS::Mac::Version::NULL; end
 module T::CompatibilityPatches::RSpecCompatibility::MethodDoubleExtensions; end
 module T::CompatibilityPatches::RSpecCompatibility::RecorderExtensions; end

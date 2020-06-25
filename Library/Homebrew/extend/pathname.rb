@@ -346,13 +346,17 @@ class Pathname
   end
 
   # Writes an exec script that sets environment variables
-  def write_env_script(target, env)
+  def write_env_script(target, args, env = nil)
+    unless env
+      env = args
+      args = nil
+    end
     env_export = +""
     env.each { |key, value| env_export << "#{key}=\"#{value}\" " }
     dirname.mkpath
     write <<~SH
       #!/bin/bash
-      #{env_export}exec "#{target}" "$@"
+      #{env_export}exec "#{target}" #{args} "$@"
     SH
   end
 
@@ -370,7 +374,7 @@ class Pathname
 
   # Writes an exec script that invokes a Java jar
   def write_jar_script(target_jar, script_name, java_opts = "", java_version: nil)
-    (self/script_name).write_env_script "java #{java_opts} -jar #{target_jar}",
+    (self/script_name).write_env_script "java", "#{java_opts} -jar \"#{target_jar}\"",
                                         Language::Java.overridable_java_home_env(java_version)
   end
 

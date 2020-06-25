@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "test/support/fixtures/testball"
 require "formula"
 
 describe Formula do
@@ -106,6 +107,14 @@ describe Formula do
       end
       expect(f.resources.length).to eq(1)
       expect(f.resources.first.url).to eq("resource_macos")
+    end
+  end
+
+  describe "#shared_library" do
+    it "generates a shared library string" do
+      f = Testball.new
+      expect(f.shared_library("foobar")).to eq("foobar.dylib")
+      expect(f.shared_library("foobar", 2)).to eq("foobar.2.dylib")
     end
   end
 end

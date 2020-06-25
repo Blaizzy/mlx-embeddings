@@ -587,6 +587,10 @@ If *`formula`* is provided, display the file or directory used to cache *`formul
   Show the cache file used when building from source.
 * `--force-bottle`:
   Show the cache file used when pouring a bottle.
+* `--formula`:
+  Show cache files for only formulae
+* `--cask`:
+  Show cache files for only casks
 
 ### `--cellar` [*`formula`*]
 
@@ -903,6 +907,10 @@ repository.
   Upload to the specified Bintray organisation (default: homebrew).
 * `--tap`:
   Target tap repository (default: homebrew/core).
+* `--root-url`:
+  Use the specified *`URL`* as the root of the bottle's URL instead of Homebrew's default.
+* `--bintray-mirror`:
+  Use the specified Bintray repository to automatically mirror stable URLs defined in the formulae (default: mirror)
 
 ### `pr-upload` [*`options`*]
 

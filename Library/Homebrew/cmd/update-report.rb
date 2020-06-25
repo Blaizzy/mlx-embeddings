@@ -129,6 +129,7 @@ module Homebrew
       puts if args.preinstall?
     end
 
+    Commands.rebuild_commands_completion_list
     link_completions_manpages_and_docs
     Tap.each(&:link_completions_and_manpages)
   end

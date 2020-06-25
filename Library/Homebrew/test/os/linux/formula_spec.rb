@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "test/support/fixtures/testball"
 require "formula"
 
 describe Formula do
@@ -99,6 +100,14 @@ describe Formula do
       end
       expect(f.resources.length).to eq(1)
       expect(f.resources.first.url).to eq("on_linux")
+    end
+  end
+
+  describe "#shared_library" do
+    it "generates a shared library string" do
+      f = Testball.new
+      expect(f.shared_library("foobar")).to eq("foobar.so")
+      expect(f.shared_library("foobar", 2)).to eq("foobar.so.2")
     end
   end
 end

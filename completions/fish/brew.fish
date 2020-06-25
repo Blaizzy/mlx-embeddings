@@ -181,7 +181,11 @@ function __fish_brew_suggest_taps_pinned -d "List only pinned taps"
 end
 
 function __fish_brew_suggest_commands -d "Lists all commands names, including aliases"
-    brew commands --quiet --include-aliases
+    if test -f (brew --cache)/all_commands_list.txt
+        cat (brew --cache)/all_commands_list.txt | \grep -v instal\$
+    else
+        cat (brew --repo)/completions/internal_commands_list.txt | \grep -v instal\$
+    end
 end
 
 # TODO: any better way to list available services?
