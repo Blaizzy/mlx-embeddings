@@ -39,7 +39,6 @@ module Homebrew
 
     return unless args.fail_if_changed?
 
-    Homebrew.failed = true
     system("git diff --stat --exit-code #{SPDX_FOLDER_PATH/FILE_NAME}")
   end
 end
