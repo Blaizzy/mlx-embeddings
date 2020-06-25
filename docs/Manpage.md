@@ -769,6 +769,8 @@ a simple example. For the complete API, see:
   Create a basic template for an Autotools-style build.
 * `--cmake`:
   Create a basic template for a CMake-style build.
+* `--crystal`:
+  Create a basic template for a Crystal build.
 * `--go`:
   Create a basic template for a Go build.
 * `--meson`:
