@@ -2,8 +2,9 @@
 
 require "commands"
 require "cli/parser"
-require "open-uri"
 require "json"
+require 'net/http'
+require "open-uri"
 
 module Homebrew
   module_function
@@ -30,10 +31,10 @@ module Homebrew
   def update_license_data
     update_license_data_args.parse
     puts "Fetching newest version of SPDX License data..."
-    open(SPDX_DATA_URL) do |json|
-      File.open(SPDX_FOLDER_PATH/FILE_NAME, "wb") do |file|
-        file.write(json.read)
-      end
+    resp = Net::HTTP.get_response(URI.parse(SPDX_DATA_URL))
+
+    File.open(SPDX_FOLDER_PATH/FILE_NAME, "wb") do |file|
+      file.write(resp.body)
     end
 
     return unless args.fail_if_changed?
