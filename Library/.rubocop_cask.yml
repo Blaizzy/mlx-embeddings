@@ -1,7 +1,7 @@
 inherit_from: ./.rubocop_shared.yml
 
 Cask/HomepageMatchesUrl:
-  Description: 'Ensure that the homepage and url match, otherwise add a comment. More info at https://github.com/Homebrew/homebrew-cask/blob/master/doc/cask_language_reference/stanzas/url.md#when-url-and-homepage-hostnames-differ-add-a-comment'
+  Description: 'Ensure that the homepage and url match, otherwise add a comment. More info at https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/stanzas/url.md#when-url-and-homepage-hostnames-differ-add-a-comment'
   Enabled: true
   Exclude:
   - '**/test/support/fixtures/cask/Casks/**/*.rb'
@@ -15,11 +15,11 @@ Cask/NoDslVersion:
   Enabled: true
 
 Cask/StanzaGrouping:
-  Description: 'Ensure that cask stanzas are grouped correctly. More info at https://github.com/Homebrew/homebrew-cask/blob/master/CONTRIBUTING.md#stanza-order'
+  Description: 'Ensure that cask stanzas are grouped correctly. More info at https://github.com/Homebrew/homebrew-cask/blob/HEAD/CONTRIBUTING.md#stanza-order'
   Enabled: true
 
 Cask/StanzaOrder:
-  Description: 'Ensure that cask stanzas are sorted correctly. More info at https://github.com/Homebrew/homebrew-cask/blob/master/CONTRIBUTING.md#stanza-order'
+  Description: 'Ensure that cask stanzas are sorted correctly. More info at https://github.com/Homebrew/homebrew-cask/blob/HEAD/CONTRIBUTING.md#stanza-order'
   Enabled: true
 
 Layout/HashAlignment:

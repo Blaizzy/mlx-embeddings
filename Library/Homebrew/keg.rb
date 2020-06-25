@@ -80,7 +80,7 @@ class Keg
   ).map { |dir| HOMEBREW_PREFIX/dir }.sort.uniq.freeze
 
   # Keep relatively in sync with
-  # https://github.com/Homebrew/install/blob/master/install
+  # https://github.com/Homebrew/install/blob/HEAD/install
   MUST_EXIST_DIRECTORIES = (MUST_EXIST_SUBDIRECTORIES + [
     HOMEBREW_CELLAR,
   ].sort.uniq).freeze

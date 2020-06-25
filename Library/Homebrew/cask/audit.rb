@@ -219,7 +219,7 @@ module Cask
     def check_hosting_with_appcast
       return if cask.appcast
 
-      add_appcast = "please add an appcast. See https://github.com/Homebrew/homebrew-cask/blob/master/doc/cask_language_reference/stanzas/appcast.md"
+      add_appcast = "please add an appcast. See https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/stanzas/appcast.md"
 
       case cask.url.to_s
       when %r{github.com/([^/]+)/([^/]+)/releases/download/(\S+)}
@@ -246,9 +246,9 @@ module Cask
     def check_download_url_format
       odebug "Auditing URL format"
       if bad_sourceforge_url?
-        add_warning "SourceForge URL format incorrect. See https://github.com/Homebrew/homebrew-cask/blob/master/doc/cask_language_reference/stanzas/url.md#sourceforgeosdn-urls"
+        add_warning "SourceForge URL format incorrect. See https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/stanzas/url.md#sourceforgeosdn-urls"
       elsif bad_osdn_url?
-        add_warning "OSDN URL format incorrect. See https://github.com/Homebrew/homebrew-cask/blob/master/doc/cask_language_reference/stanzas/url.md#sourceforgeosdn-urls"
+        add_warning "OSDN URL format incorrect. See https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/stanzas/url.md#sourceforgeosdn-urls"
       end
     end
 
@@ -355,7 +355,7 @@ module Cask
     end
 
     def core_formula_url
-      "#{core_tap.default_remote}/blob/master/Formula/#{cask.token}.rb"
+      "#{core_tap.default_remote}/blob/HEAD/Formula/#{cask.token}.rb"
     end
 
     def check_download
