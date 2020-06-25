@@ -33,9 +33,10 @@ A few requests:
 - In Homebrew/brew, close pull requests using GitHub's "Merge pull request"
   button in "Create a merge commit" mode.
 - In Homebrew/homebrew-core, use `brew pr-publish` to close pull requests
-  that require new bottles or change multiple formulae. If commits need to
-  be amended use `brew pr-pull` instead. Let these commands auto-close
-  issues whenever possible (it may take up to 5 minutes). If in doubt,
+  that require new bottles or change multiple formulae. Note that an approving
+  review on a pull request for an existing formula will trigger this automatically.
+  If commits need to be amended use `brew pr-pull` instead. Let these commands
+  auto-close issues whenever possible (it may take up to 5 minutes). If in doubt,
   check with e.g. Fork.app that you've not accidentally added merge commits.
   If bottles are unnecessary, use GitHub's "Merge pull request" button in
   "Squash and merge" mode for a single formula change.
