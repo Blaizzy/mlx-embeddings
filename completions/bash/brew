@@ -162,6 +162,7 @@ _brew_create() {
       --HEAD
       --autotools
       --cmake
+      --crystal
       --debug
       --force
       --go
