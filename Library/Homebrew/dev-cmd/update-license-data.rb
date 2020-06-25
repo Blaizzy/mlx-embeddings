@@ -3,7 +3,7 @@
 require "commands"
 require "cli/parser"
 require "json"
-require 'net/http'
+require "net/http"
 require "open-uri"
 
 module Homebrew
