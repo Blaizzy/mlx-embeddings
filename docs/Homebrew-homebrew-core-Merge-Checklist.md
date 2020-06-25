@@ -54,7 +54,7 @@ Check for:
 - if CI is green and...
   - formula `bottle :unneeded`, you can merge it through GitHub UI
   - bottles need to be pulled, and...
-    - the commits are correct and don't need changes, use: `brew pr-publish $PR_ID`
+    - the commits are correct and don't need changes, approve the PR to trigger an automatic merge (use `brew pr-publish $PR_ID` to trigger manually in case of a new formula)
     - the commits need to be amended, use `brew pr-pull $PR_ID`, make changes, and `git push`
 - don't forget to thank the contributor
   - celebrate the first-time contributors
