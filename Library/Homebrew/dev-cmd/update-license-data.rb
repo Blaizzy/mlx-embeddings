@@ -30,7 +30,7 @@ module Homebrew
   def update_license_data
     update_license_data_args.parse
     puts "Fetching newest version of SPDX License data..."
-    File.open(SPDX_DATA_URL) do |json|
+    open(SPDX_DATA_URL) do |json|
       File.open(SPDX_FOLDER_PATH/FILE_NAME, "wb") do |file|
         file.write(json.read)
       end

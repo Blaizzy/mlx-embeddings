@@ -114,6 +114,9 @@ jobs:
     - name: Run brew man
       run: brew man --fail-if-changed
 
+    - name: Check for outdated license data
+      run: brew update-license-data --fail-if-changed
+
     - name: Run brew tests
       run: |
         # brew tests doesn't like world writable directories
