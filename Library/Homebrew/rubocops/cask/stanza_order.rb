@@ -6,7 +6,7 @@ module RuboCop
   module Cop
     module Cask
       # This cop checks that a cask's stanzas are ordered correctly.
-      # See https://github.com/Homebrew/homebrew-cask/blob/master/CONTRIBUTING.md#stanza-order
+      # See https://github.com/Homebrew/homebrew-cask/blob/HEAD/CONTRIBUTING.md#stanza-order
       # for more info.
       class StanzaOrder < Cop
         extend Forwardable

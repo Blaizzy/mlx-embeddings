@@ -341,7 +341,7 @@ correct repository:
 
 > Thanks for your PR.
 >
-> However, this formula is not Linux-specific. Its new versions are merged from the [Homebrew/homebrew-core](https://github.com/Homebrew/homebrew-core) repository daily [as documented in CONTRIBUTING.md](https://github.com/Homebrew/linuxbrew-core/blob/master/CONTRIBUTING.md). Please submit this change as a PR to that repository.
+> However, this formula is not Linux-specific. Its new versions are merged from the [Homebrew/homebrew-core](https://github.com/Homebrew/homebrew-core) repository daily [as documented in CONTRIBUTING.md](https://github.com/Homebrew/linuxbrew-core/blob/HEAD/CONTRIBUTING.md). Please submit this change as a PR to that repository.
 >
 > We look forward to your PR against Homebrew/homebrew-core for the next version bump!
 
