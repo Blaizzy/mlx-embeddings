@@ -35,6 +35,7 @@ module Formulary
     begin
       mod.module_eval(contents, path)
     rescue NameError, ArgumentError, ScriptError => e
+      $stderr.puts e.backtrace if Homebrew::EnvConfig.developer?
       raise FormulaUnreadableError.new(name, e)
     end
     class_name = class_s(name)
