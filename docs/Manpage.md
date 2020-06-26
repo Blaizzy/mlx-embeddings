@@ -340,6 +340,8 @@ Show install options specific to *`formula`*.
   Show options for formulae that are currently installed.
 * `--all`:
   Show options for all available formulae.
+* `--command`:
+  Show options for the specified *`command`*.
 
 ### `outdated` [*`options`*] [*`formula`*]
 
