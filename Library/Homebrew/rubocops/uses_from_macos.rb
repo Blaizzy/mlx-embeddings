@@ -15,6 +15,7 @@ module RuboCop
           bc
           bison
           bzip2
+          cpio
           cups
           curl
           dyld-headers
