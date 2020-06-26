@@ -15,7 +15,7 @@ describe Cask::Cmd::Info, :cask do
       local-caffeine: 1.2.3
       https://brew.sh/
       Not installed
-      From: https://github.com/Homebrew/homebrew-cask/blob/master/Casks/local-caffeine.rb
+      From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/local-caffeine.rb
       ==> Name
       None
       ==> Artifacts
@@ -30,7 +30,7 @@ describe Cask::Cmd::Info, :cask do
       with-auto-updates: 1.0 (auto_updates)
       https://brew.sh/autoupdates
       Not installed
-      From: https://github.com/Homebrew/homebrew-cask/blob/master/Casks/with-auto-updates.rb
+      From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/with-auto-updates.rb
       ==> Name
       AutoUpdates
       ==> Artifacts
@@ -44,7 +44,7 @@ describe Cask::Cmd::Info, :cask do
         local-caffeine: 1.2.3
         https://brew.sh/
         Not installed
-        From: https://github.com/Homebrew/homebrew-cask/blob/master/Casks/local-caffeine.rb
+        From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/local-caffeine.rb
         ==> Name
         None
         ==> Artifacts
@@ -53,7 +53,7 @@ describe Cask::Cmd::Info, :cask do
         local-transmission: 2.61
         https://brew.sh/
         Not installed
-        From: https://github.com/Homebrew/homebrew-cask/blob/master/Casks/local-transmission.rb
+        From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/local-transmission.rb
         ==> Name
         Transmission
         ==> Artifacts
@@ -75,7 +75,7 @@ describe Cask::Cmd::Info, :cask do
       with-caveats: 1.2.3
       https://brew.sh/
       Not installed
-      From: https://github.com/Homebrew/homebrew-cask/blob/master/Casks/with-caveats.rb
+      From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/with-caveats.rb
       ==> Name
       None
       ==> Artifacts
@@ -100,7 +100,7 @@ describe Cask::Cmd::Info, :cask do
       with-conditional-caveats: 1.2.3
       https://brew.sh/
       Not installed
-      From: https://github.com/Homebrew/homebrew-cask/blob/master/Casks/with-conditional-caveats.rb
+      From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/with-conditional-caveats.rb
       ==> Name
       None
       ==> Artifacts
@@ -115,7 +115,7 @@ describe Cask::Cmd::Info, :cask do
       with-languages: 1.2.3
       https://brew.sh/
       Not installed
-      From: https://github.com/Homebrew/homebrew-cask/blob/master/Casks/with-languages.rb
+      From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/with-languages.rb
       ==> Name
       None
       ==> Languages
@@ -132,7 +132,7 @@ describe Cask::Cmd::Info, :cask do
       without-languages: 1.2.3
       https://brew.sh/
       Not installed
-      From: https://github.com/Homebrew/homebrew-cask/blob/master/Casks/without-languages.rb
+      From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/without-languages.rb
       ==> Name
       None
       ==> Artifacts

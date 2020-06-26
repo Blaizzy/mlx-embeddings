@@ -13,10 +13,10 @@ module Homebrew
 
         Reupload the stable URL of a formula to Bintray for use as a mirror.
       EOS
-      flag "--bintray-org=",
-           description: "Upload to the specified Bintray organisation (default: homebrew)."
-      flag "--bintray-repo=",
-           description: "Upload to the specified Bintray repository (default: mirror)."
+      flag   "--bintray-org=",
+             description: "Upload to the specified Bintray organisation (default: `homebrew`)."
+      flag   "--bintray-repo=",
+             description: "Upload to the specified Bintray repository (default: `mirror`)."
       switch "--no-publish",
              description: "Upload to Bintray, but don't publish."
       switch :verbose

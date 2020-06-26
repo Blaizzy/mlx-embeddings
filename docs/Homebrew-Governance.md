@@ -16,7 +16,7 @@
 
 4. Members may be dismissed by majority vote of the Project Leadership Committee and removed from the Homebrew organisation on GitHub. Removed members may be reinstated by the usual admission process.
 
-5. All members will follow the [Homebrew Code of Conduct](https://github.com/Homebrew/.github/blob/master/CODE_OF_CONDUCT.md#code-of-conduct). Changes to the code of conduct must be approved by the PLC.
+5. All members will follow the [Homebrew Code of Conduct](https://github.com/Homebrew/.github/blob/HEAD/CODE_OF_CONDUCT.md#code-of-conduct). Changes to the code of conduct must be approved by the PLC.
 
 6. Homebrew members will comply with the Software Freedom Conservancy's [conflict of interest policy](https://sfconservancy.org/projects/policies/conflict-of-interest-policy.html).
 

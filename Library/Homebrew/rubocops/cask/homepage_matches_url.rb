@@ -14,7 +14,7 @@ module RuboCop
         include CaskHelp
 
         REFERENCE_URL =
-          "https://github.com/Homebrew/homebrew-cask/blob/master/doc/" \
+          "https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/" \
           "cask_language_reference/stanzas/url.md#when-url-and-homepage-hostnames-differ-add-a-comment"
 
         COMMENT_FORMAT = /# [^ ]+ was verified as official when first introduced to the cask/.freeze

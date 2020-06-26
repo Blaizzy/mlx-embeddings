@@ -110,7 +110,7 @@ describe RuboCop::Cop::Cask::HomepageMatchesUrl do
         [{
           message:  "`# brew.sh was verified as official` does not " \
                    "match the expected comment format. For details, see " \
-                  "https://github.com/Homebrew/homebrew-cask/blob/master/doc/" \
+                  "https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/" \
                   "cask_language_reference/stanzas/url.md#when-url-and-homepage-hostnames-differ-add-a-comment",
           severity: :convention,
           line:     2,
@@ -188,7 +188,7 @@ describe RuboCop::Cop::Cask::HomepageMatchesUrl do
         [{
           message:  "`brew.sh` does not match `example.org`, a comment " \
                    "has to be added above the `url` stanza. For details, see " \
-                   "https://github.com/Homebrew/homebrew-cask/blob/master/doc/" \
+                   "https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/" \
                    "cask_language_reference/stanzas/url.md#when-url-and-homepage-hostnames-differ-add-a-comment",
           severity: :convention,
           line:     2,

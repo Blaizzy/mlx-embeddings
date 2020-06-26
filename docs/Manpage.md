@@ -588,9 +588,9 @@ If *`formula`* is provided, display the file or directory used to cache *`formul
 * `--force-bottle`:
   Show the cache file used when pouring a bottle.
 * `--formula`:
-  Show cache files for only formulae
+  Only show cache files for formulae.
 * `--cask`:
-  Show cache files for only casks
+  Only show cache files for casks.
 
 ### `--cellar` [*`formula`*]
 
@@ -769,6 +769,8 @@ a simple example. For the complete API, see:
   Create a basic template for an Autotools-style build.
 * `--cmake`:
   Create a basic template for a CMake-style build.
+* `--crystal`:
+  Create a basic template for a Crystal build.
 * `--go`:
   Create a basic template for a Go build.
 * `--meson`:
@@ -898,17 +900,17 @@ repository.
 * `--resolve`:
   When a patch fails to apply, leave in progress and allow user to resolve, instead of aborting.
 * `--workflow`:
-  Retrieve artifacts from the specified workflow (default: tests.yml).
+  Retrieve artifacts from the specified workflow (default: `tests.yml`).
 * `--artifact`:
-  Download artifacts with the specified name (default: bottles).
+  Download artifacts with the specified name (default: `bottles`).
 * `--bintray-org`:
-  Upload to the specified Bintray organisation (default: homebrew).
+  Upload to the specified Bintray organisation (default: `homebrew`).
 * `--tap`:
-  Target tap repository (default: homebrew/core).
+  Target tap repository (default: `homebrew/core`).
 * `--root-url`:
   Use the specified *`URL`* as the root of the bottle's URL instead of Homebrew's default.
 * `--bintray-mirror`:
-  Use the specified Bintray repository to automatically mirror stable URLs defined in the formulae (default: mirror)
+  Use the specified Bintray repository to automatically mirror stable URLs defined in the formulae (default: `mirror`).
 
 ### `pr-upload` [*`options`*]
 
@@ -919,7 +921,7 @@ Apply the bottle commit and publish bottles to Bintray.
 * `-n`, `--dry-run`:
   Print what would be done rather than doing it.
 * `--bintray-org`:
-  Upload to the specified Bintray organisation (default: homebrew).
+  Upload to the specified Bintray organisation (default: `homebrew`).
 * `--root-url`:
   Use the specified *`URL`* as the root of the bottle's URL instead of Homebrew's default.
 

@@ -765,11 +765,11 @@ Show the cache file used when pouring a bottle\.
 .
 .TP
 \fB\-\-formula\fR
-Show cache files for only formulae
+Only show cache files for formulae\.
 .
 .TP
 \fB\-\-cask\fR
-Show cache files for only casks
+Only show cache files for casks\.
 .
 .SS "\fB\-\-cellar\fR [\fIformula\fR]"
 Display Homebrew\'s Cellar path\. \fIDefault:\fR \fB$(brew \-\-prefix)/Cellar\fR, or if that directory doesn\'t exist, \fB$(brew \-\-repository)/Cellar\fR\.
@@ -999,6 +999,10 @@ Create a basic template for an Autotools\-style build\.
 Create a basic template for a CMake\-style build\.
 .
 .TP
+\fB\-\-crystal\fR
+Create a basic template for a Crystal build\.
+.
+.TP
 \fB\-\-go\fR
 Create a basic template for a Go build\.
 .
@@ -1165,19 +1169,19 @@ When a patch fails to apply, leave in progress and allow user to resolve, instea
 .
 .TP
 \fB\-\-workflow\fR
-Retrieve artifacts from the specified workflow (default: tests\.yml)\.
+Retrieve artifacts from the specified workflow (default: \fBtests\.yml\fR)\.
 .
 .TP
 \fB\-\-artifact\fR
-Download artifacts with the specified name (default: bottles)\.
+Download artifacts with the specified name (default: \fBbottles\fR)\.
 .
 .TP
 \fB\-\-bintray\-org\fR
-Upload to the specified Bintray organisation (default: homebrew)\.
+Upload to the specified Bintray organisation (default: \fBhomebrew\fR)\.
 .
 .TP
 \fB\-\-tap\fR
-Target tap repository (default: homebrew/core)\.
+Target tap repository (default: \fBhomebrew/core\fR)\.
 .
 .TP
 \fB\-\-root\-url\fR
@@ -1185,7 +1189,7 @@ Use the specified \fIURL\fR as the root of the bottle\'s URL instead of Homebrew
 .
 .TP
 \fB\-\-bintray\-mirror\fR
-Use the specified Bintray repository to automatically mirror stable URLs defined in the formulae (default: mirror)
+Use the specified Bintray repository to automatically mirror stable URLs defined in the formulae (default: \fBmirror\fR)\.
 .
 .SS "\fBpr\-upload\fR [\fIoptions\fR]"
 Apply the bottle commit and publish bottles to Bintray\.
@@ -1200,7 +1204,7 @@ Print what would be done rather than doing it\.
 .
 .TP
 \fB\-\-bintray\-org\fR
-Upload to the specified Bintray organisation (default: homebrew)\.
+Upload to the specified Bintray organisation (default: \fBhomebrew\fR)\.
 .
 .TP
 \fB\-\-root\-url\fR

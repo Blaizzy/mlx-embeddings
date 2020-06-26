@@ -497,7 +497,7 @@ module Kernel
     path.read
         .lines
         .grep(/^#:/)
-        .map { |line| line.slice(2..-1) }
+        .map { |line| line.slice(2..-1).delete_prefix("  ") }
   end
 
   def redact_secrets(input, secrets)
