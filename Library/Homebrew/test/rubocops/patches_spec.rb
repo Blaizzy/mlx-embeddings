@@ -175,6 +175,19 @@ describe RuboCop::Cop::FormulaAudit::Patches do
       RUBY
     end
 
+    it "reports no offenses for valid nested inline patches" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          url 'https://brew.sh/foo-1.0.tgz'
+          stable do
+            patch :DATA
+          end
+        end
+        __END__
+        patch content here
+      RUBY
+    end
+
     it "reports an offense when DATA is found with no __END__" do
       expect_offense(<<~RUBY)
         class Foo < Formula

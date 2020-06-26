@@ -18,7 +18,7 @@ module RuboCop
             patch_problems(url_string)
           end
 
-          inline_patches = find_method_calls_by_name(body, :patch)
+          inline_patches = find_every_method_call_by_name(body, :patch)
           inline_patches.each { |patch| inline_patch_problems(patch) }
 
           if inline_patches.empty? && patch_end?
