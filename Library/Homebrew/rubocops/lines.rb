@@ -195,7 +195,7 @@ module RuboCop
         end
       end
 
-      class ShellCmd < FormulaCop
+      class SafePopenCommands < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           test = find_block(body_node, :test)
 
@@ -219,6 +219,35 @@ module RuboCop
         def autocorrect(node)
           lambda do |corrector|
             corrector.replace(node.loc.selector, "safe_#{node.method_name}")
+          end
+        end
+      end
+
+      class ShellVariables < FormulaCop
+        def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          popen_commands = [
+            :popen,
+            :popen_read,
+            :safe_popen_read,
+            :popen_write,
+            :safe_popen_write,
+          ]
+
+          popen_commands.each do |command|
+            find_instance_method_call(body_node, "Utils", command) do |method|
+              next unless match = regex_match_group(parameters(method).first, /^([^"' ]+)=([^"' ]+)(?: (.*))?$/)
+
+              good_args = "Utils.#{command}({ \"#{match[1]}\" => \"#{match[2]}\" }, \"#{match[3]}\")"
+
+              problem "Use `#{good_args}` instead of `#{method.source}`"
+            end
+          end
+        end
+
+        def autocorrect(node)
+          lambda do |corrector|
+            match = regex_match_group(node, /^([^"' ]+)=([^"' ]+)(?: (.*))?$/)
+            corrector.replace(node.source_range, "{ \"#{match[1]}\" => \"#{match[2]}\" }, \"#{match[3]}\"")
           end
         end
       end
