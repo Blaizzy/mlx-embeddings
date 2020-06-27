@@ -112,9 +112,7 @@ module Homebrew
     style_results = Style.check_style_json(style_files, options) if style_files
     # load licenses
     spdx = HOMEBREW_LIBRARY_PATH/"data/spdx.json"
-    spdx_data = File.open(spdx, "r") do |file|
-      JSON.parse(file.read)
-    end
+    spdx_data = JSON.parse(spdx.read)
     new_formula_problem_lines = []
     audit_formulae.sort.each do |f|
       only = only_cops ? ["style"] : args.only
@@ -356,7 +354,7 @@ module Homebrew
           user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @new_formula
           user ||= nil
           repo ||= nil
-          return if user.nil?
+          return if user.blank?
 
           github_license = GitHub.get_repo_license(user, repo)
           return if github_license && (github_license == formula.license)

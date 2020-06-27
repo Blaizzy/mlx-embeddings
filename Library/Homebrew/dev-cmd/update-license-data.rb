@@ -11,7 +11,7 @@ module Homebrew
 
   SPDX_FOLDER_PATH = (HOMEBREW_LIBRARY_PATH/"data").freeze
   FILE_NAME = "spdx.json"
-  SPDX_DATA_URL = "https://raw.githubusercontent.com/spdx/license-list-data/master/json/licenses.json"
+  SPDX_DATA_URL = "https://raw.githubusercontent.com/spdx/license-list-data/HEAD/json/licenses.json"
 
   def update_license_data_args
     Homebrew::CLI::Parser.new do
