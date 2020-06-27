@@ -41,8 +41,6 @@ module Homebrew
         url "https://www.brew.sh/valid-1.0.tar.gz"
       RUBY
 
-      expect(ft).not_to have_data
-      expect(ft).not_to have_end
       expect(ft).to have_trailing_newline
 
       expect(ft =~ /\burl\b/).to be_truthy
@@ -54,20 +52,6 @@ module Homebrew
     specify "#trailing_newline?" do
       ft = formula_text "newline"
       expect(ft).to have_trailing_newline
-    end
-
-    specify "#data?" do
-      ft = formula_text "data", <<~RUBY
-        patch :DATA
-      RUBY
-
-      expect(ft).to have_data
-    end
-
-    specify "#end?" do
-      ft = formula_text "end", "", patch: "__END__\na patch here"
-      expect(ft).to have_end
-      expect(ft.without_patch).to eq("class End < Formula\n  \nend")
     end
   end
 
@@ -96,31 +80,6 @@ module Homebrew
     end
 
     describe "#audit_file" do
-      specify "DATA but no __END__" do
-        fa = formula_auditor "foo", <<~RUBY
-          class Foo < Formula
-            url "https://brew.sh/foo-1.0.tgz"
-            patch :DATA
-          end
-        RUBY
-
-        fa.audit_file
-        expect(fa.problems).to eq(["'DATA' was found, but no '__END__'"])
-      end
-
-      specify "__END__ but no DATA" do
-        fa = formula_auditor "foo", <<~RUBY
-          class Foo < Formula
-            url "https://brew.sh/foo-1.0.tgz"
-          end
-          __END__
-          a patch goes here
-        RUBY
-
-        fa.audit_file
-        expect(fa.problems).to eq(["'__END__' was found, but 'DATA' is not used"])
-      end
-
       specify "no issue" do
         fa = formula_auditor "foo", <<~RUBY
           class Foo < Formula
