@@ -27,6 +27,7 @@ class Keg
     # patchelf requires that the ELF file have a .dynstr section.
     # Skip ELF files that do not have a .dynstr section.
     return if ["cannot find section .dynstr", "strange: no string table"].include?(old_rpath)
+
     unless $CHILD_STATUS.success?
       raise ErrorDuringExecution.new(cmd_rpath, status: $CHILD_STATUS, output: [[:stderr, old_rpath]])
     end
@@ -41,15 +42,15 @@ class Keg
     new_rpath = rpath.join(":")
     cmd = [patchelf, "--force-rpath", "--set-rpath", new_rpath]
 
-    if file.with_interpreter?
-      old_interpreter = Utils.safe_popen_read(patchelf, "--print-interpreter", file).strip
-      new_interpreter = if File.readable? "#{new_prefix}/lib/ld.so"
-        "#{new_prefix}/lib/ld.so"
-      else
-        old_interpreter.sub old_prefix, new_prefix
-      end
-      cmd << "--set-interpreter" << new_interpreter if old_interpreter != new_interpreter
+    old_interpreter = file.interpreter
+    new_interpreter = if old_interpreter.nil?
+      nil
+    elsif File.readable? "#{new_prefix}/lib/ld.so"
+      "#{new_prefix}/lib/ld.so"
+    else
+      old_interpreter.sub old_prefix, new_prefix
     end
+    cmd << "--set-interpreter" << new_interpreter if old_interpreter != new_interpreter
 
     return if old_rpath == new_rpath && old_interpreter == new_interpreter
 

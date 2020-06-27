@@ -8,12 +8,22 @@ module RuboCop
     module FormulaAudit
       # This cop audits patches in Formulae.
       class Patches < FormulaCop
-        def audit_formula(_node, _class_node, _parent_class_node, body)
+        def audit_formula(node, _class_node, _parent_class_node, body)
+          @full_source_content = source_buffer(node).source
+
           external_patches = find_all_blocks(body, :patch)
           external_patches.each do |patch_block|
             url_node = find_every_method_call_by_name(patch_block, :url).first
             url_string = parameters(url_node).first
             patch_problems(url_string)
+          end
+
+          inline_patches = find_every_method_call_by_name(body, :patch)
+          inline_patches.each { |patch| inline_patch_problems(patch) }
+
+          if inline_patches.empty? && patch_end?
+            offending_patch_end_node(node)
+            problem "patch is missing 'DATA'"
           end
 
           patches_node = find_method_def(body, :patches)
@@ -83,6 +93,30 @@ module RuboCop
             Patches from Debian should be https://, not http:
               #{patch_url}
           EOS
+        end
+
+        def inline_patch_problems(patch)
+          return unless patch_data?(patch) && !patch_end?
+
+          offending_node(patch)
+          problem "patch is missing '__END__'"
+        end
+
+        def_node_search :patch_data?, <<~AST
+          (send nil? :patch (:sym :DATA))
+        AST
+
+        def patch_end?
+          /^__END__$/.match?(@full_source_content)
+        end
+
+        def offending_patch_end_node(node)
+          @offensive_node = node
+          @source_buf = source_buffer(node)
+          @line_no = node.loc.last_line + 1
+          @column = 0
+          @length = 7 # "__END__".size
+          @offense_source_range = source_range(@source_buf, @line_no, @column, @length)
         end
       end
     end

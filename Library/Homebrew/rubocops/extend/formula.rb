@@ -495,7 +495,15 @@ module RuboCop
         when :str
           node.str_content
         when :dstr
-          node.each_child_node(:str).map(&:str_content).join
+          content = ""
+          node.each_child_node(:str, :begin) do |child|
+            content += if child.begin_type?
+              child.source
+            else
+              child.str_content
+            end
+          end
+          content
         when :const
           node.const_name
         when :sym

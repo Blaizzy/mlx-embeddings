@@ -21,7 +21,7 @@ __brew_all_casks() {
   local expl
   local comp_cachename=brew_casks
 
-  if _cache_invalid $comp_cachename || ! _retrieve_cache $comp_cachename; then
+  if ! _retrieve_cache $comp_cachename; then
     list=( $(brew search --casks) )
     _store_cache $comp_cachename list
   fi

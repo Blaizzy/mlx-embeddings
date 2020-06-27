@@ -104,6 +104,8 @@ module Homebrew
 
         <% if mode == :cmake %>
           depends_on "cmake" => :build
+        <% elsif mode == :crystal %>
+          depends_on "crystal" => :build
         <% elsif mode == :go %>
           depends_on "go" => :build
         <% elsif mode == :meson %>
@@ -139,6 +141,9 @@ module Homebrew
                                   "--disable-dependency-tracking",
                                   "--disable-silent-rules",
                                   "--prefix=\#{prefix}"
+        <% elsif mode == :crystal %>
+            system "shards", "build", "--release"
+            bin.install "bin/#{name}"
         <% elsif mode == :go %>
             system "go", "build", *std_go_args
         <% elsif mode == :meson %>
