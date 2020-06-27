@@ -6,7 +6,7 @@ describe RuboCop::Cop::FormulaAudit::Deprecate do
   subject(:cop) { described_class.new }
 
   context "When auditing formula for deprecate!" do
-    it "deprecation date is not ISO-8601 compliant" do
+    it "deprecation date is not ISO 8601 compliant" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -16,7 +16,7 @@ describe RuboCop::Cop::FormulaAudit::Deprecate do
       RUBY
     end
 
-    it "deprecation date is ISO-8601 compliant" do
+    it "deprecation date is ISO 8601 compliant" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -34,7 +34,7 @@ describe RuboCop::Cop::FormulaAudit::Deprecate do
       RUBY
     end
 
-    it "auto corrects to ISO-8601 format" do
+    it "auto corrects to ISO 8601 format" do
       source = <<~RUBY
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
