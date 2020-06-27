@@ -352,8 +352,6 @@ module Homebrew
           return unless @online
 
           user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @new_formula
-          user ||= nil
-          repo ||= nil
           return if user.blank?
 
           github_license = GitHub.get_repo_license(user, repo)
@@ -545,8 +543,7 @@ module Homebrew
 
     def audit_github_repository
       user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @new_formula
-      user ||= nil
-      repo ||= nil
+
       return if user.nil?
 
       warning = SharedAudits.github(user, repo)
@@ -557,8 +554,6 @@ module Homebrew
 
     def audit_gitlab_repository
       user, repo = get_repo_data(%r{https?://gitlab\.com/([^/]+)/([^/]+)/?.*}) if @new_formula
-      user ||= nil
-      repo ||= nil
       return if user.nil?
 
       warning = SharedAudits.gitlab(user, repo)
@@ -569,8 +564,6 @@ module Homebrew
 
     def audit_bitbucket_repository
       user, repo = get_repo_data(%r{https?://bitbucket\.org/([^/]+)/([^/]+)/?.*}) if @new_formula
-      user ||= nil
-      repo ||= nil
       return if user.nil?
 
       warning = SharedAudits.bitbucket(user, repo)
