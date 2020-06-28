@@ -59,14 +59,20 @@ class LinkageChecker
     display_items "Broken dependencies", @broken_deps, puts_output: puts_output
     display_items "Unwanted system libraries", @unwanted_system_dylibs, puts_output: puts_output
     display_items "Conflicting libraries", @version_conflict_deps, puts_output: puts_output
-    puts "No broken library linkage" unless broken_library_linkage?
+    if got_library_issues?
+      puts "Broken library linkage ignored" if @formula.allow_missing_libs?
+    else
+      puts "No broken library linkage"
+    end
   end
 
   def broken_library_linkage?
-    !@broken_dylibs.empty? ||
-      !@broken_deps.empty? ||
-      !@unwanted_system_dylibs.empty? ||
-      !@version_conflict_deps.empty?
+    !@formula.allow_missing_libs? && got_library_issues?
+  end
+
+  def got_library_issues?
+    issues = [@broken_dylibs, @broken_deps, @unwanted_system_dylibs, @version_conflict_deps]
+    issues.any?(&:present?)
   end
 
   private
