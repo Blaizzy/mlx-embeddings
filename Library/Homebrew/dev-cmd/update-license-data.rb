@@ -18,11 +18,11 @@ module Homebrew
       usage_banner <<~EOS
         `update_license_data` <cmd>
 
-          Update SPDX license data in the Homebrew repository.
+         Update SPDX license data in the Homebrew repository.
       EOS
       switch "--fail-if-changed",
-             description: "Return a failing status code if current license data's version is different from"\
-                           "the upstream. This can be used to notify CI when the SPDX license data is out of date."
+             description: "Return a failing status code if current license data's version is different from " \
+                          "the upstream. This can be used to notify CI when the SPDX license data is out of date."
 
       max_named 0
     end
@@ -30,15 +30,12 @@ module Homebrew
 
   def update_license_data
     update_license_data_args.parse
-    puts "Fetching newest version of SPDX License data..."
-    resp = Net::HTTP.get_response(URI.parse(SPDX_DATA_URL))
-
-    File.open(SPDX_FOLDER_PATH/FILE_NAME, "wb") do |file|
-      file.write(resp.body)
-    end
+    ohai "Updating SPDX license data..."
+    spdx_data = curl(SPDX_DATA_URL)
+    SPDX_PATH.write(spdx_data)
 
     return unless args.fail_if_changed?
 
-    system("git diff --stat --exit-code #{SPDX_FOLDER_PATH/FILE_NAME}")
+    system("git diff --stat --exit-code #{SPDX_PATH}")
   end
 end
