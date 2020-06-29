@@ -168,14 +168,6 @@ module Homebrew
       @text.split("\n__END__").first
     end
 
-    def data?
-      /^[^#]*\bDATA\b/ =~ @text
-    end
-
-    def end?
-      /^__END__$/ =~ @text
-    end
-
     def trailing_newline?
       /\Z\n/ =~ @text
     end
@@ -234,12 +226,6 @@ module Homebrew
     end
 
     def audit_file
-      # TODO: check could be in RuboCop
-      problem "'DATA' was found, but no '__END__'" if text.data? && !text.end?
-
-      # TODO: check could be in RuboCop
-      problem "'__END__' was found, but 'DATA' is not used" if text.end? && !text.data?
-
       # TODO: check could be in RuboCop
       if text.to_s.match?(/inreplace [^\n]* do [^\n]*\n[^\n]*\.gsub![^\n]*\n\ *end/m)
         problem "'inreplace ... do' was used for a single substitution (use the non-block form instead)."

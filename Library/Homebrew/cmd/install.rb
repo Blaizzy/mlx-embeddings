@@ -267,6 +267,7 @@ module Homebrew
     # Need to rescue before `FormulaUnavailableError` (superclass of this)
     # is handled, as searching for a formula doesn't make sense here (the
     # formula was found, but there's a problem with its implementation).
+    $stderr.puts e.backtrace if Homebrew::EnvConfig.developer?
     ofail e.message
   rescue FormulaUnavailableError => e
     if e.name == "updog"

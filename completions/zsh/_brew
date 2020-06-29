@@ -45,20 +45,19 @@ __brew_completion_caching_policy() {
   tmp=( $1(mw-2N) )
   (( $#tmp )) || return 0
 
-  # otherwise, invalidate if latest tap index file is missing or newer than
-  # cache file
+  # otherwise, invalidate if latest tap index file is missing or newer than cache file
   tmp=( ${HOMEBREW_REPOSITORY:-/usr/local/Homebrew}/Library/Taps/*/*/.git/index(om[1]N) )
   [[ -z $tmp || $tmp -nt $1 ]]
 }
 
 __brew_formulae() {
-  local -a formulae
+  local -a list
   local comp_cachename=brew_formulae
-  if _cache_invalid $comp_cachename || ! _retrieve_cache $comp_cachename; then
-    formulae=($(brew search))
-    _store_cache $comp_cachename formulae
+  if ! _retrieve_cache $comp_cachename; then
+    list=( $(brew search) )
+    _store_cache $comp_cachename list
   fi
-  _describe -t formulae 'all formulae' formulae
+  _describe -t formulae 'all formulae' list
 }
 
 __brew_installed_formulae() {
@@ -145,18 +144,17 @@ __brew_common_commands() {
 }
 
 __brew_all_commands() {
-  local -a commands
+  local -a list
   local comp_cachename=brew_all_commands
-  if _cache_invalid $comp_cachename || ! _retrieve_cache $comp_cachename; then
-    HOMEBREW_CACHE=$(brew --cache)
-    HOMEBREW_REPOSITORY=$(brew --repo)
-    [[ -f "$HOMEBREW_CACHE/all_commands_list.txt" ]] &&
-      commands=($(cat "$HOMEBREW_CACHE/all_commands_list.txt")) ||
-      commands=($(cat "$HOMEBREW_REPOSITORY/completions/internal_commands_list.txt"))
-    commands=(${commands:#*instal}) # Exclude instal, uninstal, etc.
-    _store_cache $comp_cachename commands
+  if ! _retrieve_cache $comp_cachename; then
+    local cache_dir=$(brew --cache)
+    [[ -f $cache_dir/all_commands_list.txt ]] &&
+      list=( $(<$cache_dir/all_commands_list.txt) ) ||
+      list=( $(<$(brew --repo)/completions/internal_commands_list.txt) )
+    list=( ${list:#*instal} ) # Exclude instal, uninstal, etc.
+    _store_cache $comp_cachename list
   fi
-  _describe -t all-commands 'all commands' commands
+  _describe -t all-commands 'all commands' list
 }
 
 __brew_commands() {
@@ -857,10 +855,10 @@ _brew() {
   case "$state" in
     command)
       # set default cache policy
-      zstyle -s ":completion:${curcontext%:*}:*" cache-policy tmp
-      [[ -n $tmp ]] ||
-      zstyle ":completion:${curcontext%:*}:*" cache-policy \
-        __brew_completion_caching_policy
+      zstyle -s ":completion:${curcontext%:*}:*" cache-policy tmp ||
+         zstyle ":completion:${curcontext%:*}:*" cache-policy __brew_completion_caching_policy
+      zstyle -s ":completion:${curcontext%:*}:*" use-cache tmp ||
+         zstyle ":completion:${curcontext%:*}:*" use-cache true
 
       __brew_commands && return 0
       ;;
@@ -878,10 +876,10 @@ _brew() {
 
       # set default cache policy (we repeat this dance because the context
       # service differs from above)
-      zstyle -s ":completion:${curcontext%:*}:*" cache-policy tmp
-      [[ -n $tmp ]] ||
-      zstyle ":completion:${curcontext%:*}:*" cache-policy \
-        __brew_completion_caching_policy
+      zstyle -s ":completion:${curcontext%:*}:*" cache-policy tmp ||
+         zstyle ":completion:${curcontext%:*}:*" cache-policy __brew_completion_caching_policy
+      zstyle -s ":completion:${curcontext%:*}:*" use-cache tmp ||
+         zstyle ":completion:${curcontext%:*}:*" use-cache true
 
       # call completion for named command e.g. _brew_list
       local completion_func="_brew_${command//-/_}"

@@ -429,6 +429,10 @@ class Version
   end
   alias eql? ==
 
+  def empty?
+    version.empty?
+  end
+
   def hash
     version.hash
   end
