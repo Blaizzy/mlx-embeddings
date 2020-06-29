@@ -530,7 +530,7 @@ module Homebrew
     def audit_github_repository
       user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @new_formula
 
-      return if user.nil?
+      return if user.blank?
 
       warning = SharedAudits.github(user, repo)
       return if warning.nil?
@@ -540,7 +540,7 @@ module Homebrew
 
     def audit_gitlab_repository
       user, repo = get_repo_data(%r{https?://gitlab\.com/([^/]+)/([^/]+)/?.*}) if @new_formula
-      return if user.nil?
+      return if user.blank?
 
       warning = SharedAudits.gitlab(user, repo)
       return if warning.nil?
@@ -550,7 +550,7 @@ module Homebrew
 
     def audit_bitbucket_repository
       user, repo = get_repo_data(%r{https?://bitbucket\.org/([^/]+)/([^/]+)/?.*}) if @new_formula
-      return if user.nil?
+      return if user.blank?
 
       warning = SharedAudits.bitbucket(user, repo)
       return if warning.nil?
