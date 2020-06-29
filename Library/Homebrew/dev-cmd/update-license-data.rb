@@ -9,8 +9,7 @@ require "open-uri"
 module Homebrew
   module_function
 
-  SPDX_FOLDER_PATH = (HOMEBREW_LIBRARY_PATH/"data").freeze
-  FILE_NAME = "spdx.json"
+  SPDX_PATH = (HOMEBREW_LIBRARY_PATH/"data/spdx.json").freeze
   SPDX_DATA_URL = "https://raw.githubusercontent.com/spdx/license-list-data/HEAD/json/licenses.json"
 
   def update_license_data_args
@@ -31,9 +30,8 @@ module Homebrew
   def update_license_data
     update_license_data_args.parse
     ohai "Updating SPDX license data..."
-    spdx_data = curl(SPDX_DATA_URL)
-    SPDX_PATH.write(spdx_data)
-
+    spdx_download_result = curl(SPDX_DATA_URL)
+    SPDX_PATH.write(spdx_download_result.stdout, true)
     return unless args.fail_if_changed?
 
     system("git diff --stat --exit-code #{SPDX_PATH}")
