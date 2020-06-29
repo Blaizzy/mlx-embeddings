@@ -6,6 +6,34 @@ describe Cask::Pkg, :cask do
     let(:empty_response) { double(stdout: "", plist: { "volume" => "/", "install-location" => "", "paths" => {} }) }
     let(:pkg) { described_class.new("my.fake.pkg", fake_system_command) }
 
+    it "removes files and dirs referenced by the pkg" do
+      some_files = Array.new(3) { Pathname.new(Tempfile.new("plain_file").path) }
+      allow(pkg).to receive(:pkgutil_bom_files).and_return(some_files)
+
+      some_specials = Array.new(3) { Pathname.new(Tempfile.new("special_file").path) }
+      allow(pkg).to receive(:pkgutil_bom_specials).and_return(some_specials)
+
+      some_dirs = Array.new(3) { mktmpdir }
+      allow(pkg).to receive(:pkgutil_bom_dirs).and_return(some_dirs)
+
+      root_dir = Pathname.new(mktmpdir)
+      allow(pkg).to receive(:root).and_return(root_dir)
+
+      allow(pkg).to receive(:forget)
+
+      pkg.uninstall
+
+      some_files.each do |file|
+        expect(file).not_to exist
+      end
+
+      some_dirs.each do |dir|
+        expect(dir).not_to exist
+      end
+
+      expect(root_dir).not_to exist
+    end
+
     context "pkgutil" do
       it "forgets the pkg" do
         allow(fake_system_command).to receive(:run!).with(
