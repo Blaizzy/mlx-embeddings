@@ -17,15 +17,17 @@ describe "brew uninstall", :integration_test do
       .and not_to_output.to_stderr
       .and be_a_success
   end
+end
 
+describe "brew uninstall cask", :integration_test, :needs_macos do
   it "uninstalls a given Cask" do
     caffeine = Cask::CaskLoader.load(cask_path("local-caffeine"))
     Cask::Installer.new(caffeine).install
 
     expect { brew "uninstall", "local-caffeine" }
       .to output(/Uninstalling Cask local-caffeine/).to_stdout
-      .and not_to_output.to_stderr
-      .and be_a_success
+            .and not_to_output.to_stderr
+                   .and be_a_success
 
     expect(caffeine).not_to be_installed
 
@@ -43,8 +45,8 @@ describe "brew uninstall", :integration_test do
         Uninstalling\s#{TEST_TMPDIR}/cellar/testball/.*\n
         ==>\sUninstalling\sCask\slocal-caffeine
       }x).to_stdout
-      .and not_to_output.to_stderr
-      .and be_a_success
+            .and not_to_output.to_stderr
+                   .and be_a_success
 
     expect(caffeine).not_to be_installed
 
