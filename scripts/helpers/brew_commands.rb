@@ -1,7 +1,7 @@
 require "open3"
 
 class BrewCommands
- 
+
   def livecheck_check_formula(formula_name)
     puts "- livecheck formula : #{formula_name}"
     command_args = [
@@ -20,7 +20,7 @@ class BrewCommands
 
     # eg: ["burp", "2.2.18", "2.2.18"]
     package_name, brew_version, latest_version = livecheck_output
-  
+
     {'name' => package_name, 'current_brew_version' => brew_version, 'livecheck_latest_version' => latest_version}
   end
 
@@ -40,7 +40,7 @@ class BrewCommands
 
   def parse_formula_bump_response(formula_bump_response)
     response, status  = formula_bump_response
-    response    
+    response
   end
 
   def check_for_open_pr(formula_name, download_url)
@@ -48,8 +48,7 @@ class BrewCommands
 
     response =  bump_formula_pr(formula_name, download_url)
 
-    return true if !response.include? 'Error: These open pull requests may be duplicates'
-    false
-  end  
+    !response.include? 'Error: These open pull requests may be duplicates'
+  end
 
 end

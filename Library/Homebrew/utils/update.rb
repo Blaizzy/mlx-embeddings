@@ -120,8 +120,7 @@ module Utils
     puts "==============Formatted outdated packages============\n"
 
     outdated_packages.each do |package_name, package_details|
-      puts ""
-      puts "Formula: #{package_name}"
+      puts "\nFormula: #{package_name}"
       puts "Current formula version: #{package_details['homebrew_version']}"
       puts "Repology latest version: #{package_details['repology_version']}"
       puts "Livecheck latest version: #{package_details['livecheck_latest_version']}"
