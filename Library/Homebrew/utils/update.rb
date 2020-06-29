@@ -121,11 +121,11 @@ module Utils
 
     outdated_packages.each do |package_name, package_details|
       puts ""
-      puts "Package: #{package_name}"
-      puts "Brew current: #{package_details['homebrew_version']}"
-      puts "Repology latest: #{package_details['repology_version']}"
-      puts "Livecheck latest: #{package_details['livecheck_latest_version']}"
-      puts "Has Open PR?: #{package_details['has_open_pr']}"
+      puts "Formula: #{package_name}"
+      puts "Current formula version: #{package_details['homebrew_version']}"
+      puts "Repology latest version: #{package_details['repology_version']}"
+      puts "Livecheck latest version: #{package_details['livecheck_latest_version']}"
+      puts "Open pull request: #{package_details['has_open_pr']}"
     end
   end
 end
