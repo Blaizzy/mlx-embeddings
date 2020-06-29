@@ -424,13 +424,13 @@ module GitHub
       next if commit.present? && commit != r["commit"]["oid"]
       next unless %w[MEMBER OWNER].include? r["authorAssociation"]
 
-      email = if r["author"]["email"].empty?
+      email = if r["author"]["email"].blank?
         "#{r["author"]["databaseId"]}+#{r["author"]["login"]}@users.noreply.github.com"
       else
         r["author"]["email"]
       end
 
-      name = r["author"]["name"] || r["author"]["login"]
+      name = r["author"]["name"].presence || r["author"]["login"]
 
       {
         "email" => email,
