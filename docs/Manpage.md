@@ -1030,10 +1030,10 @@ directory.
 
 ### `update_license_data` *`cmd`*
 
-  Update SPDX license data in the Homebrew repository.
+ Update SPDX license data in the Homebrew repository.
 
 * `--fail-if-changed`:
-  Return a failing status code if current license data's version is different fromthe upstream. This can be used to notify CI when the SPDX license data is out of date.
+  Return a failing status code if current license data's version is different from the upstream. This can be used to notify CI when the SPDX license data is out of date.
 
 ### `update-test` [*`options`*]
 
