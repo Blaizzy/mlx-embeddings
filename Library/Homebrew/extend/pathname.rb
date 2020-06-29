@@ -150,8 +150,8 @@ class Pathname
   alias old_write write
 
   # We assume this pathname object is a file, obviously
-  def write(content, overwrite = false, *open_args)
-    raise "Will not overwrite #{self}" if exist? && !overwrite
+  def write(content, *open_args)
+    raise "Will not overwrite #{self}" if exist?
 
     dirname.mkpath
     open("w", *open_args) { |f| f.write(content) }
