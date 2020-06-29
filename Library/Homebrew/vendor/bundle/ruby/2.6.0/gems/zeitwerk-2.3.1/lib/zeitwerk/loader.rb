@@ -464,7 +464,7 @@ module Zeitwerk
       #   require "zeitwerk"
       #   loader = Zeitwerk::Loader.new
       #   loader.tag = File.basename(__FILE__, ".rb")
-      #   loader.inflector = Zeitwerk::GemInflector.new
+      #   loader.inflector = Zeitwerk::GemInflector.new(__FILE__)
       #   loader.push_dir(__dir__)
       #
       # except that this method returns the same object in subsequent calls from
@@ -616,7 +616,10 @@ module Zeitwerk
       # $LOADED_FEATURES stores real paths since Ruby 2.4.4. We set and save the
       # real path to be able to delete it from $LOADED_FEATURES on unload, and to
       # be able to do a lookup later in Kernel#require for manual require calls.
-      realpath = File.realpath(abspath)
+      #
+      # We freeze realpath because that saves allocations in Module#autoload.
+      # See #125.
+      realpath = File.realpath(abspath).freeze
       parent.autoload(cname, realpath)
       if logger
         if ruby?(realpath)
@@ -719,8 +722,13 @@ module Zeitwerk
     def ls(dir)
       Dir.foreach(dir) do |basename|
         next if basename.start_with?(".")
+
         abspath = File.join(dir, basename)
-        yield basename, abspath unless ignored_paths.member?(abspath)
+        next if ignored_paths.member?(abspath)
+
+        # We freeze abspath because that saves allocations when passed later to
+        # File methods. See #125.
+        yield basename, abspath.freeze
       end
     end
 
