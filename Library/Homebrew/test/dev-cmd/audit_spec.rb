@@ -81,12 +81,9 @@ module Homebrew
 
     describe "#audit_license" do
       let(:spdx_data) {
-        full_path = File.join(File.dirname(__FILE__), "../../data/spdx.json")
-        File.open(full_path, "r") do |f|
-          JSON.parse(f.read)
-        end
+        JSON.parse Pathname(File.join(File.dirname(__FILE__), "../../data/spdx.json")).read
       }
-
+  
       let(:custom_spdx_id) { "zzz" }
       let(:standard_mismatch_spdx_id) { "0BSD" }
 
