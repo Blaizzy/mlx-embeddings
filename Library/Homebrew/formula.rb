@@ -2648,9 +2648,13 @@ class Formula
     #
     # The block will create, run in and delete a temporary directory.
     #
-    # We are fine if the executable does not error out, so we know linking
-    # and building the software was OK.
-    # <pre>system bin/"foobar", "--version"</pre>
+    # We want tests that don't require any user input
+    # and test the basic functionality of the application.
+    # For example foo build-foo input.foo is a good test
+    # and foo --version and foo --help are bad tests.
+    # However, a bad test is better than no test at all.
+    #
+    # See: https://docs.brew.sh/Formula-Cookbook#add-a-test-to-the-formula
     #
     # <pre>(testpath/"test.file").write <<~EOS
     #   writing some test file, if you need to
