@@ -68,28 +68,24 @@ module ELFShim
     elf_type == :executable
   end
 
-  def with_interpreter?
-    return @with_interpreter if defined? @with_interpreter
+  def interpreter
+    return @interpreter if defined? @interpreter
 
-    @with_interpreter = if binary_executable?
-      true
-    elsif dylib?
-      if HOMEBREW_PATCHELF_RB
-        begin
-          patchelf_patcher.interpreter.present?
-        rescue PatchELF::PatchError => e
-          opoo e unless e.to_s.start_with? "No interpreter found"
-          false
-        end
-      elsif which "readelf"
-        Utils.popen_read("readelf", "-l", to_path).include?(" INTERP ")
-      elsif which "file"
-        Utils.popen_read("file", "-L", "-b", to_path).include?(" interpreter ")
-      else
-        raise "Please install either readelf (from binutils) or file."
+    @interpreter = if HOMEBREW_PATCHELF_RB
+      begin
+        patchelf_patcher.interpreter
+      rescue PatchELF::PatchError => e
+        opoo e unless e.to_s.start_with? "No interpreter found"
+        nil
       end
+    elsif (patchelf = DevelopmentTools.locate "patchelf")
+      interp = Utils.popen_read(patchelf, "--print-interpreter", to_s, err: :out).strip
+      $CHILD_STATUS.success? ? interp : nil
+    elsif (file = DevelopmentTools.locate("file"))
+      output = Utils.popen_read(file, "-L", "-b", to_s, err: :out).strip
+      output[/^ELF.*, interpreter (.+?), /, 1]
     else
-      false
+      raise "Please install either patchelf or file."
     end
   end
 

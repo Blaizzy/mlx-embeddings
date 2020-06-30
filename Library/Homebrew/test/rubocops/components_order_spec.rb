@@ -77,6 +77,37 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
       RUBY
     end
 
+    it "When `install` precedes `depends_on`" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          url "https://brew.sh/foo-1.0.tgz"
+
+          def install
+          end
+
+          depends_on "openssl"
+          ^^^^^^^^^^^^^^^^^^^^ `depends_on` (line 7) should be put before `install` (line 4)
+        end
+      RUBY
+    end
+
+    it "When `test` precedes `depends_on`" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          url "https://brew.sh/foo-1.0.tgz"
+
+          def install
+          end
+
+          def test
+          end
+
+          depends_on "openssl"
+          ^^^^^^^^^^^^^^^^^^^^ `depends_on` (line 10) should be put before `install` (line 4)
+        end
+      RUBY
+    end
+
     it "When only one of many `depends_on` precedes `conflicts_with`" do
       expect_offense(<<~RUBY)
         class Foo < Formula

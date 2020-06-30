@@ -226,11 +226,10 @@ module RuboCop
               next if succeeding_component.empty?
 
               offensive_nodes = check_precedence(preceding_component, succeeding_component)
-              break if offensive_nodes
+              return [present_components, offensive_nodes] if offensive_nodes
             end
           end
-
-          [present_components, offensive_nodes]
+          nil
         end
 
         # Method to format message for reporting component precedence violations

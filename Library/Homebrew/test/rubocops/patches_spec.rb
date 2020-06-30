@@ -163,6 +163,53 @@ describe RuboCop::Cop::FormulaAudit::Patches do
     end
   end
 
+  context "When auditing inline patches" do
+    it "reports no offenses for valid inline patches" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          url 'https://brew.sh/foo-1.0.tgz'
+          patch :DATA
+        end
+        __END__
+        patch content here
+      RUBY
+    end
+
+    it "reports no offenses for valid nested inline patches" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          url 'https://brew.sh/foo-1.0.tgz'
+          stable do
+            patch :DATA
+          end
+        end
+        __END__
+        patch content here
+      RUBY
+    end
+
+    it "reports an offense when DATA is found with no __END__" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          url 'https://brew.sh/foo-1.0.tgz'
+          patch :DATA
+          ^^^^^^^^^^^ patch is missing '__END__'
+        end
+      RUBY
+    end
+
+    it "reports an offense when __END__ is found with no DATA" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          url 'https://brew.sh/foo-1.0.tgz'
+        end
+        __END__
+        ^^^^^^^ patch is missing 'DATA'
+        patch content here
+      RUBY
+    end
+  end
+
   context "When auditing external patches" do
     it "Patch URLs" do
       patch_urls = [
