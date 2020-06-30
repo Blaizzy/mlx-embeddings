@@ -22,8 +22,8 @@ module Versions
     parse_formula_bump_response(response)
   end
 
-  def parse_formula_bump_response(response)
-    response, status  = formula_bump_response
+  def parse_formula_bump_response(formula_bump_response)
+    response, _status = formula_bump_response
     response
   end
 

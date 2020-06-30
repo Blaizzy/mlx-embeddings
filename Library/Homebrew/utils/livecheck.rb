@@ -9,7 +9,7 @@ module Livecheck
       "brew",
       "livecheck",
       formula_name,
-      "--quiet"
+      "--quiet",
     ]
 
     response = Open3.capture2e(*command_args)
@@ -17,12 +17,12 @@ module Livecheck
   end
 
   def parse_livecheck_response(response)
-    output = response.first.gsub(" ", "").split(/:|==>|\n/)
+    output = response.first.delete(" ").split(/:|==>|\n/)
 
     # eg: ["burp", "2.2.18", "2.2.18"]
     package_name, brew_version, latest_version = output
 
-    {"name" => package_name, "current_brew_version" => brew_version,
-      "livecheck_latest_version" => latest_version}
+    { "name" => package_name, "current_brew_version" => brew_version,
+      "livecheck_latest_version" => latest_version }
   end
 end

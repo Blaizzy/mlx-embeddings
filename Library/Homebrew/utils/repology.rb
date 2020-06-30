@@ -28,7 +28,7 @@ module RepologyParser
     last_package_index = outdated_packages.size - 1
     response_size = outdated_packages.size
 
-    while response_size > 1 do
+    while response_size > 1
       page_no += 1
       ohai "\n- Paginating repology api page: #{page_no}"
 
@@ -45,27 +45,28 @@ module RepologyParser
     outdated_packages
   end
 
-  def validate__repology_packages(outdated_repology_packages, brew_formulas)
+  def validate__repology_packages(outdated_repology_packages)
     ohai "\n- Verify Outdated Repology Packages as Homebrew Formulae"
 
     packages = {}
 
-    outdated_repology_packages.each do |name, repositories|
+    outdated_repology_packages.each do |_name, repositories|
       # identify homebrew repo
-      repology_homebrew_repo = repositories.select do
-         |repo| repo["repo"] == "homebrew"
-      end.first
+      repology_homebrew_repo = repositories.find do |repo|
+        repo["repo"] == "homebrew"
+      end
 
       next if repology_homebrew_repo.empty?
+
       latest_version = nil
 
-      #identify latest version amongst repology repos
+      # identify latest version amongst repology repos
       repositories.each do |repo|
         latest_version = repo["version"] if repo["status"] == "newest"
       end
 
-      packages[repology_homebrew_repo['srcname']] = {
-        'repology_latest_version' => latest_version,
+      packages[repology_homebrew_repo["srcname"]] = {
+        "repology_latest_version" => latest_version,
       }
     end
     # hash of hashes {'openclonk' => {repology_latest_version => 7.0}, ..}
