@@ -122,12 +122,12 @@ module Homebrew
       end
     end
 
-    unless casks.empty?
-      cask_uninstall = Cask::Cmd::Uninstall.new(casks)
-      cask_uninstall.force = args.force?
-      cask_uninstall.verbose = args.verbose?
-      cask_uninstall.run
-    end
+    return if casks.empty?
+
+    cask_uninstall = Cask::Cmd::Uninstall.new(casks)
+    cask_uninstall.force = args.force?
+    cask_uninstall.verbose = args.verbose?
+    cask_uninstall.run
   rescue MultipleVersionsInstalledError => e
     ofail e
     puts "Run `brew uninstall --force #{e.name}` to remove all versions."
