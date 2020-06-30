@@ -6,7 +6,9 @@ require "messages"
 require "reinstall"
 require "cli/parser"
 require "cleanup"
-require "cask/all"
+require "cask/cmd"
+require "cask/utils"
+require "cask/macos"
 
 module Homebrew
   module_function
