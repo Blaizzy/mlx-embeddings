@@ -17,5 +17,7 @@ module Homebrew
 
   def bump
     bump_args.parse
+    puts "command run"
+    # parse_repology_api()
   end
 end
