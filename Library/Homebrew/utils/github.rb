@@ -478,7 +478,7 @@ module GitHub
     response = GitHub.open_api("#{GitHub::API_URL}/repos/#{user}/#{repo}/license")
     return unless response.key?("license")
 
-    res["license"]["spdx_id"]
+    response["license"]["spdx_id"]
   rescue GitHub::HTTPNotFoundError
     nil
   end
