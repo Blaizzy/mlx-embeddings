@@ -1,16 +1,12 @@
 # frozen_string_literal: true
 
-require "net/http"
-require "json"
+require "utils/curl"
 
 module RepologyParser
   def call_api(url)
     ohai "- Calling API #{url}" if Homebrew.args.verbose?
     uri = URI(url)
-    response = Net::HTTP.get(uri)
-
-    ohai "Parsing response" if Homebrew.args.verbose?
-    JSON.parse(response)
+    curl(uri)
   end
 
   def query_repology_api(last_package_in_response = "")
