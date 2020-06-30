@@ -31,7 +31,6 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
       RUBY
     end
 
-
     it "When `bottle` precedes `livecheck`" do
       expect_offense(<<~RUBY)
         class Foo < Formula

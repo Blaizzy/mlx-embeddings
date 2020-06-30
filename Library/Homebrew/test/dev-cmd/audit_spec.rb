@@ -83,7 +83,7 @@ module Homebrew
       let(:spdx_data) {
         JSON.parse Pathname(File.join(File.dirname(__FILE__), "../../data/spdx.json")).read
       }
-  
+
       let(:custom_spdx_id) { "zzz" }
       let(:standard_mismatch_spdx_id) { "0BSD" }
 
