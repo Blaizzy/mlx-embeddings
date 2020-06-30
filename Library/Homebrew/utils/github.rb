@@ -477,8 +477,8 @@ module GitHub
   end
 
   def get_repo_license(user, repo)
-    res = GitHub.open_api("#{GitHub::API_URL}/repos/#{user}/#{repo}/license")
-    return unless res.key?("license")
+    response = GitHub.open_api("#{GitHub::API_URL}/repos/#{user}/#{repo}/license")
+    return unless response.key?("license")
 
     res["license"]["spdx_id"]
   rescue GitHub::HTTPNotFoundError
