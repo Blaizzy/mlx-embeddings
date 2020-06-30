@@ -33,20 +33,24 @@ module Homebrew
     uninstall_args.parse
 
     if args.force?
-      possible_casks = []
+      casks = []
       kegs_by_rack = Hash[args.named.map do |name|
         rack = Formulary.to_rack(name)
 
         unless rack.directory?
-          possible_casks << name
+          begin
+            casks << Cask::CaskLoader.load(name)
+          rescue Cask::CaskUnavailableError
+            # Since the uninstall was forced, ignore any unavailable casks
+          end
           next
         end
 
         [rack, rack.subdirs.map { |d| Keg.new(d) }]
       end]
     else
-      kegs_, possible_casks = args.kegs_and_unknowns
-      kegs_by_rack = kegs_.group_by(&:rack)
+      _kegs, casks = args.kegs_casks
+      kegs_by_rack = _kegs.group_by(&:rack)
     end
 
     handle_unsatisfied_dependents(kegs_by_rack)
@@ -118,14 +122,13 @@ module Homebrew
       end
     end
 
-    possible_casks.each do |name|
-      cmd = Cask::Cmd::Uninstall.new(name)
-      cmd.force = args.force?
-      cmd.verbose = args.verbose?
-      cmd.run
-    rescue Cask::CaskUnavailableError
-      ofail "No installed keg or cask with the name \"#{name}\""
+    unless casks.empty?
+      cask_uninstall = Cask::Cmd::Uninstall.new(casks)
+      cask_uninstall.force = args.force?
+      cask_uninstall.verbose = args.verbose?
+      cask_uninstall.run
     end
+
   rescue MultipleVersionsInstalledError => e
     ofail e
     puts "Run `brew uninstall --force #{e.name}` to remove all versions."
