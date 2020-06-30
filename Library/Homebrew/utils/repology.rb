@@ -5,11 +5,11 @@ require "json"
 
 module RepologyParser
   def call_api(url)
-    puts "- Calling API #{url}"
+    ohai "- Calling API #{url}" if Homebrew.args.verbose?
     uri = URI(url)
     response = Net::HTTP.get(uri)
 
-    puts "- Parsing response"
+    ohai "Parsing response" if Homebrew.args.verbose?
     JSON.parse(response)
   end
 
@@ -20,45 +20,33 @@ module RepologyParser
   end
 
   def parse_repology_api
-    puts "\n-------- Query outdated packages from Repology --------"
+    ohai "Querying outdated packages from Repology"
     page_no = 1
-    puts "\n- Paginating repology api page: #{page_no}"
+    ohai "\n- Paginating repology api page: #{page_no}"
 
     outdated_packages = query_repology_api("")
-<<<<<<< HEAD
     last_package_index = outdated_packages.size - 1
     response_size = outdated_packages.size
 
     while response_size > 1 do
       page_no += 1
-      puts "\n- Paginating repology api page: #{page_no}"
+      ohai "\n- Paginating repology api page: #{page_no}"
 
       last_package_in_response = outdated_packages.keys[last_package_index]
-=======
-    last_pacakge_index = outdated_packages.size - 1
-    response_size = outdated_packages.size
-
-    while response_size > 1
-      page_no += 1
-      puts "\n- Paginating repology api page: #{page_no}"
-
-      last_package_in_response = outdated_packages.keys[last_pacakge_index]
->>>>>>> 14d63f61a5d3c5ca41d89c670a4bd58cab84aa6c
       response = query_repology_api("#{last_package_in_response}/")
 
       response_size = response.size
       outdated_packages.merge!(response)
-<<<<<<< HEAD
       last_package_index = outdated_packages.size - 1
     end
 
-    puts "\n- #{outdated_packages.size} outdated packages identified"
+    ohai "\n- #{outdated_packages.size} outdated packages identified"
 
     outdated_packages
   end
 
   def validate__repology_packages(outdated_repology_packages, brew_formulas)
-    puts "\n---- Verify Outdated Repology Packages as Homebrew Formulae -----"
+    ohai "\n---- Verify Outdated Repology Packages as Homebrew Formulae -----"
 
     packages = {}
 
@@ -83,13 +71,4 @@ module RepologyParser
     # hash of hashes {'openclonk' => {repology_latest_version => 7.0}, ..}
     packages
   end
-=======
-      last_pacakge_index = outdated_packages.size - 1
-    end
-
-    puts "\n- #{outdated_packages.size} outdated packages identified by repology"
-
-    outdated_packages
-  end
->>>>>>> 14d63f61a5d3c5ca41d89c670a4bd58cab84aa6c
 end
