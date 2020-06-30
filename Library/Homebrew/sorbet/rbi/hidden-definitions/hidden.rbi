@@ -19429,10 +19429,6 @@ class RuboCop::AST::Node
 
   def cask_block?(node=T.unsafe(nil)); end
 
-  def find_pattern_type?(); end
-
-  def forward_arg_type?(); end
-
   def key_node(node=T.unsafe(nil)); end
 
   def method_node(node=T.unsafe(nil)); end
@@ -19602,6 +19598,10 @@ class RuboCop::Cop::FormulaAudit::Miscellaneous
   def hash_dep(node=T.unsafe(nil)); end
 
   def languageNodeModule?(node0); end
+end
+
+class RuboCop::Cop::FormulaAudit::Patches
+  def patch_data?(node0); end
 end
 
 class RuboCop::Cop::FormulaAudit::Test
