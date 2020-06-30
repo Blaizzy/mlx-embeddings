@@ -173,6 +173,16 @@ describe Version do
     expect(versions.sort_by { |v| described_class.create(v) }).to eq(versions)
   end
 
+  describe "#empty?" do
+    it "returns true if version is empty" do
+      expect(described_class.create("").empty?).to eq(true)
+    end
+
+    it "returns false if version is not empty" do
+      expect(described_class.create("1.2.3").empty?).to eq(false)
+    end
+  end
+
   specify "hash equality" do
     v1 = described_class.create("0.1.0")
     v2 = described_class.create("0.1.0")

@@ -652,6 +652,7 @@ false:
   - ./test/rubocops/components_redundancy_spec.rb
   - ./test/rubocops/conflicts_spec.rb
   - ./test/rubocops/dependency_order_spec.rb
+  - ./test/rubocops/deprecate_spec.rb
   - ./test/rubocops/formula_desc_spec.rb
   - ./test/rubocops/homepage_spec.rb
   - ./test/rubocops/lines_spec.rb
@@ -884,6 +885,7 @@ true:
   - ./rubocops/cask/ast/stanza.rb
   - ./rubocops/cask/constants/stanza.rb
   - ./rubocops/cask/extend/string.rb
+  - ./rubocops/deprecate.rb
   - ./tap_constants.rb
   - ./test/support/helper/fixtures.rb
   - ./test/support/lib/config.rb

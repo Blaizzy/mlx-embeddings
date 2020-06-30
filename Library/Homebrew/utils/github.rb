@@ -293,10 +293,8 @@ module GitHub
     search("code", **qualifiers)
   end
 
-  def issues_for_formula(name, options = {})
-    tap = options[:tap] || CoreTap.instance
-    tap_full_name = options[:tap_full_name] || tap.full_name
-    search_issues(name, state: "open", repo: tap_full_name, in: "title")
+  def issues_for_formula(name, tap: CoreTap.instance, tap_full_name: tap.full_name, state: nil)
+    search_issues(name, repo: tap_full_name, state: state, in: "title")
   end
 
   def user
