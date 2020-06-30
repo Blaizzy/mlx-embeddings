@@ -20,7 +20,7 @@ module RepologyParser
     page_no = 1
     ohai "\n- Paginating repology api page: #{page_no}"
 
-    outdated_packages = query_repology_api("")
+    outdated_packages = query_repology_api
     last_package_index = outdated_packages.size - 1
     response_size = outdated_packages.size
 
