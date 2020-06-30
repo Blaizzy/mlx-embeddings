@@ -28,7 +28,7 @@ module RepologyParser
     last_package_index = outdated_packages.size - 1
     response_size = outdated_packages.size
 
-    while response_size > 1
+    while response_size > 1 && page_no <= 15
       page_no += 1
       ohai "\n- Paginating repology api page: #{page_no}"
 
