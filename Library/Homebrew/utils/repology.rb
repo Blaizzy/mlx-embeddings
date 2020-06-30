@@ -46,14 +46,14 @@ module RepologyParser
   end
 
   def validate__repology_packages(outdated_repology_packages, brew_formulas)
-    ohai "\n---- Verify Outdated Repology Packages as Homebrew Formulae -----"
+    ohai "\n- Verify Outdated Repology Packages as Homebrew Formulae"
 
     packages = {}
 
     outdated_repology_packages.each do |name, repositories|
       # identify homebrew repo
       repology_homebrew_repo = repositories.select do
-         |repo| repo['repo'] == 'homebrew'
+         |repo| repo["repo"] == "homebrew"
       end.first
 
       next if repology_homebrew_repo.empty?
@@ -61,7 +61,7 @@ module RepologyParser
 
       #identify latest version amongst repology repos
       repositories.each do |repo|
-        latest_version = repo['version'] if repo['status'] == 'newest'
+        latest_version = repo["version"] if repo["status"] == "newest"
       end
 
       packages[repology_homebrew_repo['srcname']] = {
