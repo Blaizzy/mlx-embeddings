@@ -553,6 +553,7 @@ module Homebrew
     THROTTLED_DENYLIST = {
       "aws-sdk-cpp" => "10",
       "awscli@1"    => "10",
+      "balena-cli"  => "10",
       "quicktype"   => "10",
       "vim"         => "50",
     }.freeze
