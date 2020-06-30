@@ -49,8 +49,8 @@ module Homebrew
         [rack, rack.subdirs.map { |d| Keg.new(d) }]
       end]
     else
-      _kegs, casks = args.kegs_casks
-      kegs_by_rack = _kegs.group_by(&:rack)
+      all_kegs, casks = args.kegs_casks
+      kegs_by_rack = all_kegs.group_by(&:rack)
     end
 
     handle_unsatisfied_dependents(kegs_by_rack)
@@ -128,7 +128,6 @@ module Homebrew
       cask_uninstall.verbose = args.verbose?
       cask_uninstall.run
     end
-
   rescue MultipleVersionsInstalledError => e
     ofail e
     puts "Run `brew uninstall --force #{e.name}` to remove all versions."

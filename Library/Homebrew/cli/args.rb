@@ -266,10 +266,10 @@ module Homebrew
             Keg.new(dirs.first)
           else
             f = if name.include?("/") || File.exist?(name)
-                  Formulary.factory(name)
-                else
-                  Formulary.from_rack(rack)
-                end
+              Formulary.factory(name)
+            else
+              Formulary.from_rack(rack)
+            end
 
             unless (prefix = f.installed_prefix).directory?
               raise MultipleVersionsInstalledError, rack.basename

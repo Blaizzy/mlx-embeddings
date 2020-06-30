@@ -69,11 +69,11 @@ module Homebrew
     end
     Homebrew.messages.display_messages
 
-    unless casks.empty?
-      reinstall_cmd = Cask::Cmd::Reinstall.new(casks)
-      reinstall_cmd.verbose = args.verbose?
-      reinstall_cmd.force = args.force?
-      reinstall_cmd.run
-    end
+    return if casks.empty?
+
+    reinstall_cmd = Cask::Cmd::Reinstall.new(casks)
+    reinstall_cmd.verbose = args.verbose?
+    reinstall_cmd.force = args.force?
+    reinstall_cmd.run
   end
 end
