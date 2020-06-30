@@ -111,7 +111,6 @@ module Homebrew
         RUBY
 
         fa.audit_license
-        p fa.problems
         expect(fa.problems.first).to match "No license specified for package."
       end
 
