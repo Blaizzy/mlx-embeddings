@@ -264,7 +264,7 @@ module RuboCop
             :safe_popen_write,
           ]
 
-          shell_metacharacters = %w[> >> < << | ; & && || *]
+          shell_metacharacters = %w[> < < | ; : & * $ ? : ~ + @ !` ( ) [ ]]
 
           find_every_method_call_by_name(body_node, :system).each do |method|
             # Continue if a shell metacharacter is present
