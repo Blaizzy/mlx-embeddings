@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "BREW" "1" "June 2020" "Homebrew" "brew"
+.TH "BREW" "1" "July 2020" "Homebrew" "brew"
 .
 .SH "NAME"
 \fBbrew\fR \- The Missing Package Manager for macOS
@@ -1176,6 +1176,10 @@ Do not warn if pulling to a branch besides master (useful for testing)\.
 When a patch fails to apply, leave in progress and allow user to resolve, instead of aborting\.
 .
 .TP
+\fB\-\-warn\-on\-upload\-failure\fR
+Warn instead of raising an error if the bottle upload fails\. Useful for repairing bottle uploads that previously failed\.
+.
+.TP
 \fB\-\-workflow\fR
 Retrieve artifacts from the specified workflow (default: \fBtests\.yml\fR)\.
 .
@@ -1209,6 +1213,10 @@ Apply the bottle commit and upload the bottles, but don\'t publish them\.
 .TP
 \fB\-n\fR, \fB\-\-dry\-run\fR
 Print what would be done rather than doing it\.
+.
+.TP
+\fB\-\-warn\-on\-upload\-failure\fR
+Warn instead of raising an error if the bottle upload fails\. Useful for repairing bottle uploads that previously failed\.
 .
 .TP
 \fB\-\-bintray\-org\fR
