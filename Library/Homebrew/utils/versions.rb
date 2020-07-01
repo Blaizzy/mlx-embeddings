@@ -8,15 +8,8 @@ module Versions
   end
 
   def bump_formula_pr(formula_name, url)
-    response = Utils.popen_read("brew", "bump-formula-pr", "--no-browse",
-                                "--dry-run", formula_name, "--url=#{url}").chomp
-
-    parse_formula_bump_response(response)
-  end
-
-  def parse_formula_bump_response(formula_bump_response)
-    response, _status = formula_bump_response
-    response
+    Utils.popen_read("brew", "bump-formula-pr", "--no-browse", "--dry-run",
+                     formula_name, "--url=#{url}").chomp
   end
 
   def check_for_open_pr(formula_name, download_url)

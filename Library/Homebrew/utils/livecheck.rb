@@ -9,7 +9,7 @@ module Livecheck
   end
 
   def parse_livecheck_response(response)
-    output = response.first.delete(" ").split(/:|==>|\n/)
+    output = response.delete(" ").split(/:|==>/)
 
     # eg: ["burp", "2.2.18", "2.2.18"]
     package_name, brew_version, latest_version = output
