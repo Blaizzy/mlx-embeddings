@@ -111,6 +111,10 @@ module Homebrew
         description: "Output this many lines of output on formula `system` failures.",
         default:     15,
       },
+      HOMEBREW_FORBIDDEN_LICENSES:        {
+        description: "Use this environment variable to define a blacklist of space separated licenses and Homebrew " \
+                     "will avoid installing the packages with those licenses.",
+      },
       HOMEBREW_FORCE_BREWED_CURL:         {
         description: "If set, always use a Homebrew-installed `curl`(1) rather than the system version. " \
                      "Automatically set if the system version of `curl` is too old.",
