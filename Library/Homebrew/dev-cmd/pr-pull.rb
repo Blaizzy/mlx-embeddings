@@ -33,6 +33,9 @@ module Homebrew
       switch "--resolve",
              description: "When a patch fails to apply, leave in progress and allow user to resolve, "\
                           "instead of aborting."
+      switch "--warn-on-upload-failure",
+             description: "Warn instead of raising an error if the bottle upload fails. "\
+                          "Useful for repairing bottle uploads that previously failed."
       flag   "--workflow=",
              description: "Retrieve artifacts from the specified workflow (default: `tests.yml`)."
       flag   "--artifact=",
@@ -258,9 +261,10 @@ module Homebrew
           upload_args << "--verbose" if Homebrew.args.verbose?
           upload_args << "--no-publish" if args.no_publish?
           upload_args << "--dry-run" if args.dry_run?
+          upload_args << "--warn-on-upload-failure" if args.warn_on_upload_failure?
           upload_args << "--root_url=#{args.root_url}" if args.root_url
           upload_args << "--bintray-org=#{bintray_org}"
-          system HOMEBREW_BREW_FILE, *upload_args
+          safe_system HOMEBREW_BREW_FILE, *upload_args
         end
       end
     end
