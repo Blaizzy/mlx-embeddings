@@ -95,6 +95,7 @@ module Homebrew
 
   def install
     install_args.parse
+
     args.named.each do |name|
       next if File.exist?(name)
       next if name !~ HOMEBREW_TAP_FORMULA_REGEX && name !~ HOMEBREW_CASK_TAP_CASK_REGEX
@@ -330,11 +331,10 @@ module Homebrew
     fi.build_bottle         = args.build_bottle?
     fi.interactive          = args.interactive?
     fi.git                  = args.git?
-    # fi.prelude
-    # fi.fetch
-    # fi.install
-    # fi.finish
-
+    fi.prelude
+    fi.fetch
+    fi.install
+    fi.finish
   rescue FormulaInstallationAlreadyAttemptedError
     # We already attempted to install f as part of the dependency tree of
     # another formula. In that case, don't generate an error, just move on.
@@ -345,11 +345,14 @@ module Homebrew
 end
 
 def forbidden_license_check(f)
-  license_blist = ENV["HOMEBREW_FORBIDDEN_LICENSES"].split(" ")
+  forbidden_licenses = ENV["HOMEBREW_FORBIDDEN_LICENSES"].split(" ")
   fi = FormulaInstaller.new(f)
   fi.compute_dependencies.each do |dep, _|
-    if license_blist.include? dep.to_formula().license
-      p "VIOLATION #{dep.name}"
-    end
+    dep_f = dep.to_formula
+    next unless forbidden_licenses.include? dep_f.license
+
+    raise CannotInstallFormulaError, <<~EOS
+      #The installation of {f.name} has a dependency on #{dep.name} with a forbidden license #{dep_f.license}
+    EOS
   end
 end
