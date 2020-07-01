@@ -4,13 +4,8 @@ require "open3"
 
 module Livecheck
   def livecheck_formula_response(formula_name)
-    ohai "- livecheck formula : #{formula_name}"
-    command_args = [
-      "brew",
-      "livecheck",
-      formula_name,
-      "--quiet",
-    ]
+    ohai "Checking livecheck formula : #{formula_name}"
+    command_args = ["brew", "livecheck", formula_name, "--quiet"]
 
     response = Open3.capture2e(*command_args)
     parse_livecheck_response(response)
@@ -22,7 +17,10 @@ module Livecheck
     # eg: ["burp", "2.2.18", "2.2.18"]
     package_name, brew_version, latest_version = output
 
-    { "name" => package_name, "current_brew_version" => brew_version,
-      "livecheck_latest_version" => latest_version }
+    {
+      name:              package_name,
+      formula_version:   brew_version,
+      livecheck_version: latest_version,
+    }
   end
 end

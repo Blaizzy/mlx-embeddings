@@ -9,14 +9,8 @@ module Versions
   end
 
   def bump_formula_pr(formula_name, url)
-    command_args = [
-      "brew",
-      "bump-formula-pr",
-      "--no-browse",
-      "--dry-run",
-      formula_name,
-      "--url=#{url}",
-    ]
+    command_args = ["brew", "bump-formula-pr", "--no-browse",
+                    "--dry-run", formula_name, "--url=#{url}"]
 
     response = Open3.capture2e(*command_args)
     parse_formula_bump_response(response)
