@@ -42,7 +42,7 @@ module Homebrew
     if args.dry_run?
       puts "brew #{bottle_args.join " "}"
     else
-      system HOMEBREW_BREW_FILE, *bottle_args
+      safe_system HOMEBREW_BREW_FILE, *bottle_args
     end
 
     if args.dry_run?

@@ -260,7 +260,7 @@ module Homebrew
           upload_args << "--dry-run" if args.dry_run?
           upload_args << "--root_url=#{args.root_url}" if args.root_url
           upload_args << "--bintray-org=#{bintray_org}"
-          system HOMEBREW_BREW_FILE, *upload_args
+          safe_system HOMEBREW_BREW_FILE, *upload_args
         end
       end
     end
