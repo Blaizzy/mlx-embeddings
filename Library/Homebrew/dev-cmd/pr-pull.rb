@@ -73,13 +73,18 @@ module Homebrew
     end
   end
 
-  def signoff!(pr, path: ".")
-    message = Utils.popen_read "git", "-C", path, "log", "-1", "--pretty=%B"
+  def signoff!(pr, tap:)
+    message = Utils.popen_read "git", "-C", tap.path, "log", "-1", "--pretty=%B"
     subject = message.lines.first.strip
 
     # Skip the subject and separate lines that look like trailers (e.g. "Co-authored-by")
     # from lines that look like regular body text.
     trailers, body = message.lines.drop(1).partition { |s| s.match?(/^[a-z-]+-by:/i) }
+
+    # Approving reviewers also sign-off on merge
+    trailers += GitHub.approved_reviews(tap.user, "homebrew-#{tap.repo}", pr).map do |r|
+      "Signed-off-by: #{r["name"]} <#{r["email"]}>\n"
+    end
     trailers = trailers.uniq.join.strip
     body = body.join.strip.gsub(/\n{3,}/, "\n\n")
 
@@ -90,7 +95,7 @@ module Homebrew
     if Homebrew.args.dry_run?
       puts "git commit --amend --signoff -m $message"
     else
-      safe_system "git", "-C", path, "commit", "--amend", "--signoff", "--allow-empty", "-q", "-m", new_message
+      safe_system "git", "-C", tap.path, "commit", "--amend", "--signoff", "--allow-empty", "-q", "-m", new_message
     end
   end
 
@@ -232,7 +237,7 @@ module Homebrew
         cd dir do
           original_commit = Utils.popen_read("git", "-C", tap.path, "rev-parse", "HEAD").chomp
           cherry_pick_pr! pr, path: tap.path
-          signoff! pr, path: tap.path unless args.clean?
+          signoff! pr, tap: tap unless args.clean?
 
           unless args.no_upload?
             mirror_formulae(tap, original_commit, org: bintray_org, repo: mirror_repo, publish: !args.no_publish?)
