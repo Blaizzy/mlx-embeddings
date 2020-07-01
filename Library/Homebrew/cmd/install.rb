@@ -95,7 +95,6 @@ module Homebrew
 
   def install
     install_args.parse
-
     args.named.each do |name|
       next if File.exist?(name)
       next if name !~ HOMEBREW_TAP_FORMULA_REGEX && name !~ HOMEBREW_CASK_TAP_CASK_REGEX
@@ -259,6 +258,7 @@ module Homebrew
 
     formulae.each do |f|
       Migrator.migrate_if_needed(f)
+      licenses_not_blisted(f)
       install_formula(f)
       Cleanup.install_formula_clean!(f)
     end
@@ -330,10 +330,11 @@ module Homebrew
     fi.build_bottle         = args.build_bottle?
     fi.interactive          = args.interactive?
     fi.git                  = args.git?
-    fi.prelude
-    fi.fetch
-    fi.install
-    fi.finish
+    # fi.prelude
+    # fi.fetch
+    # fi.install
+    # fi.finish
+
   rescue FormulaInstallationAlreadyAttemptedError
     # We already attempted to install f as part of the dependency tree of
     # another formula. In that case, don't generate an error, just move on.
@@ -341,4 +342,34 @@ module Homebrew
   rescue CannotInstallFormulaError => e
     ofail e.message
   end
+end
+
+def licenses_not_blisted(f)
+  puts f.class
+  puts "licenses not blisted running"
+  license_blist = ENV["HOMEBREW_FORBIDDEN_LICENSES"].split(" ")
+  fi = FormulaInstaller.new(f)
+  stack = [fi]
+  dep_graph = {}
+  until stack.blank?
+    fi = stack.pop()
+    # p "#{fi.formula.name} | Children: #{fi.compute_dependencies}"
+    fi.compute_dependencies.each do |dep_child, _|
+      dep_graph[dep_child.name] = fi.formula.name
+      stack << FormulaInstaller.new(dep_child.to_formula)
+      p dep_child.name
+      if license_blist.include? dep_child.to_formula().license
+        p "VIOLATION #{dep_child.name}"
+        dep_lineage = [dep_child.name]
+        curr_dep = dep_child.name
+        until dep_graph[curr_dep].blank?
+          curr_dep = dep_graph[curr_dep]
+          dep_lineage << curr_dep
+        end
+        p dep_lineage.reverse.map{ |dep|}.compact
+      end
+    end
+  end
+
+
 end
