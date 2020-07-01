@@ -348,8 +348,8 @@ def forbidden_license_check(f)
   forbidden_licenses = ENV["HOMEBREW_FORBIDDEN_LICENSES"].split(" ")
 
   if forbidden_licenses.include? f.license
-    raise CannotInstallFormulaError , <<~EOS
-        #{f.name} has a forbidden license #{f.license}.
+    raise CannotInstallFormulaError, <<~EOS
+      #{f.name} has a forbidden license #{f.license}.
     EOS
   end
 
