@@ -41,7 +41,7 @@ class Bintray
 
   def upload(local_file, repo:, package:, version:, remote_file:, sha256: nil)
     url = "#{API_URL}/content/#{@bintray_org}/#{repo}/#{package}/#{version}/#{remote_file}"
-    args = ["--upload-file", local_file]
+    args = ["--fail", "--upload-file", local_file]
     args += ["--header", "X-Checksum-Sha2: #{sha256}"] unless sha256.blank?
     result = open_api url, *args
     json = JSON.parse(result.stdout)
@@ -52,7 +52,7 @@ class Bintray
 
   def publish(repo:, package:, version:, file_count:)
     url = "#{API_URL}/content/#{@bintray_org}/#{repo}/#{package}/#{version}/publish"
-    result = open_api url, "--request", "POST"
+    result = open_api url, "--request", "POST", "--fail"
     json = JSON.parse(result.stdout)
     if file_count.present? && json["files"] != file_count
       raise "Bottle publish failed: expected #{file_count} bottles, but published #{json["files"]} instead."
