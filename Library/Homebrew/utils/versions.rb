@@ -22,15 +22,15 @@ module Versions
     parse_formula_bump_response(response)
   end
 
-  def parse_formula_bump_response(response)
-    response, status  = formula_bump_response
+  def parse_formula_bump_response(formula_bump_response)
+    response, _status = formula_bump_response
     response
   end
 
   def check_for_open_pr(formula_name, download_url)
-    puts "- Checking for open PRs for formula : #{formula_name}"
+    ohai "- Checking for open PRs for formula : #{formula_name}"
 
     response = bump_formula_pr(formula_name, download_url)
-    !response.include? 'Error: These open pull requests may be duplicates'
+    !response.include? "Error: These open pull requests may be duplicates"
   end
 end

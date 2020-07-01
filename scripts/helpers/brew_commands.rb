@@ -16,12 +16,12 @@ class BrewCommands
   end
 
   def parse_livecheck_response(livecheck_output)
-    livecheck_output = livecheck_output.first.gsub(' ', '').split(/:|==>|\n/)
+    livecheck_output = livecheck_output.first.gsub(" ", "").split(/:|==>|\n/)
 
     # eg: ["burp", "2.2.18", "2.2.18"]
     package_name, brew_version, latest_version = livecheck_output
 
-    {'name' => package_name, 'current_brew_version' => brew_version, 'livecheck_latest_version' => latest_version}
+    {"name" => package_name, "current_brew_version" => brew_version, "livecheck_latest_version" => latest_version}
   end
 
   def bump_formula_pr(formula_name, url)
@@ -48,7 +48,7 @@ class BrewCommands
 
     response =  bump_formula_pr(formula_name, download_url)
 
-    !response.include? 'Error: These open pull requests may be duplicates'
+    !response.include? "Error: These open pull requests may be duplicates"
   end
 
 end

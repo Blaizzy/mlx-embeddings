@@ -1,4 +1,4 @@
-require_relative 'helpers/api_parser'
+require_relative "helpers/api_parser"
 
 api_parser = ApiParser.new
 

@@ -1,47 +1,75 @@
 # frozen_string_literal: true
 
-require "net/http"
-require "json"
+require "utils/curl"
+require "formula_info"
 
 module RepologyParser
-  def call_api(url)
-    puts "- Calling API #{url}"
-    uri = URI(url)
-    response = Net::HTTP.get(uri)
+  module_function
 
-    puts "- Parsing response"
-    JSON.parse(response)
-  end
-
-  def query_repology_api(last_package_in_response = "")
+  def query_api(last_package_in_response = "")
     url = "https://repology.org/api/v1/projects/#{last_package_in_response}?inrepo=homebrew&outdated=1"
+    ohai "Calling API #{url}" if Homebrew.args.verbose?
 
-    call_api(url)
+    output, errors, status = curl_output(url.to_s)
+    output = JSON.parse(output)
   end
 
-  def parse_repology_api
-    puts "\n-------- Query outdated packages from Repology --------"
+  def parse_api_response()
+    ohai "Querying outdated packages from Repology"
     page_no = 1
-    puts "\n- Paginating repology api page: #{page_no}"
+    ohai "Paginating repology api page: #{page_no}" if Homebrew.args.verbose?
 
-    outdated_packages = query_repology_api("")
+    outdated_packages = query_api()
     last_pacakge_index = outdated_packages.size - 1
     response_size = outdated_packages.size
+    page_limit = 15
 
-    while response_size > 1
+    while response_size > 1 && page_no <= page_limit
       page_no += 1
-      puts "\n- Paginating repology api page: #{page_no}"
+      ohai "Paginating repology api page: #{page_no}" if Homebrew.args.verbose?
 
       last_package_in_response = outdated_packages.keys[last_pacakge_index]
-      response = query_repology_api("#{last_package_in_response}/")
+      response = query_api("#{last_package_in_response}/")
 
       response_size = response.size
       outdated_packages.merge!(response)
       last_pacakge_index = outdated_packages.size - 1
     end
 
-    puts "\n- #{outdated_packages.size} outdated packages identified by repology"
+    ohai "#{outdated_packages.size} outdated packages identified"
 
     outdated_packages
+  end
+
+  def validate__packages(outdated_repology_packages)
+    ohai "Verifying outdated repology packages as Homebrew Formulae"
+
+    packages = {}
+    outdated_repology_packages.each do |_name, repositories|
+      # identify homebrew repo
+      repology_homebrew_repo = repositories.find do |repo|
+        repo["repo"] == "homebrew"
+      end
+
+      next if repology_homebrew_repo.empty?
+      latest_version = nil
+
+      # identify latest version amongst repology repos
+      repositories.each do |repo|
+        latest_version = repo["version"] if repo["status"] == "newest"
+      end
+
+      info = FormulaInfo.lookup(repology_homebrew_repo["srcname"])
+      next unless info
+      current_version = info.pkg_version
+      
+      packages[repology_homebrew_repo["srcname"]] = {
+        "repology_latest_version" => latest_version,
+        "current_formula_version" => current_version.to_s
+      }
+      puts packages 
+    end
+    # hash of hashes {"aacgain"=>{"repology_latest_version"=>"1.9", "current_formula_version"=>"1.8"}, ...}
+    packages
   end
 end

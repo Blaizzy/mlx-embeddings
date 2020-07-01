@@ -17,7 +17,8 @@ module Homebrew
 
   def bump
     bump_args.parse
-    puts "command run"
-    # parse_repology_api()
+    # puts "command run"
+    outdated_repology_pacakges = RepologyParser.parse_api_response()
+    puts RepologyParser.validate__packages(outdated_repology_pacakges)
   end
 end
