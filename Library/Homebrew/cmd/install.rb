@@ -258,7 +258,7 @@ module Homebrew
 
     formulae.each do |f|
       Migrator.migrate_if_needed(f)
-      licenses_not_blisted(f)
+      forbidden_license_check(f) unless ENV["HOMEBREW_FORBIDDEN_LICENSES"].blank?
       install_formula(f)
       Cleanup.install_formula_clean!(f)
     end
@@ -344,32 +344,12 @@ module Homebrew
   end
 end
 
-def licenses_not_blisted(f)
-  puts f.class
-  puts "licenses not blisted running"
+def forbidden_license_check(f)
   license_blist = ENV["HOMEBREW_FORBIDDEN_LICENSES"].split(" ")
   fi = FormulaInstaller.new(f)
-  stack = [fi]
-  dep_graph = {}
-  until stack.blank?
-    fi = stack.pop()
-    # p "#{fi.formula.name} | Children: #{fi.compute_dependencies}"
-    fi.compute_dependencies.each do |dep_child, _|
-      dep_graph[dep_child.name] = fi.formula.name
-      stack << FormulaInstaller.new(dep_child.to_formula)
-      p dep_child.name
-      if license_blist.include? dep_child.to_formula().license
-        p "VIOLATION #{dep_child.name}"
-        dep_lineage = [dep_child.name]
-        curr_dep = dep_child.name
-        until dep_graph[curr_dep].blank?
-          curr_dep = dep_graph[curr_dep]
-          dep_lineage << curr_dep
-        end
-        p dep_lineage.reverse.map{ |dep|}.compact
-      end
+  fi.compute_dependencies.each do |dep, _|
+    if license_blist.include? dep.to_formula().license
+      p "VIOLATION #{dep.name}"
     end
   end
-
-
 end
