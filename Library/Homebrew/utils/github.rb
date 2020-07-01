@@ -413,7 +413,7 @@ module GitHub
         }
       EOS
     }
-    result = open_api(url, data: data, request_method: "POST")
+    result = open_api(url, scopes: ["user:email"], data: data, request_method: "POST")
     raise Error, result["errors"] if result["errors"].present?
 
     reviews = result["data"]["repository"]["pullRequest"]["reviews"]["nodes"]
