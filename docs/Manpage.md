@@ -793,6 +793,8 @@ a simple example. For the complete API, see:
   Explicitly set the *`name`* of the new formula.
 * `--set-version`:
   Explicitly set the *`version`* of the new formula.
+* `--set-license`:
+  Explicitly set the *`license`* of the new formula.
 * `--tap`:
   Generate the new formula within the given tap, specified as *`user`*`/`*`repo`*.
 
@@ -1027,6 +1029,13 @@ directory.
   Patches for *`formula`* will be applied to the unpacked source.
 * `-g`, `--git`:
   Initialise a Git repository in the unpacked source. This is useful for creating patches for the software.
+
+### `update_license_data` *`cmd`*
+
+ Update SPDX license data in the Homebrew repository.
+
+* `--fail-if-changed`:
+  Return a failing status code if current license data's version is different from the upstream. This can be used to notify CI when the SPDX license data is out of date.
 
 ### `update-test` [*`options`*]
 

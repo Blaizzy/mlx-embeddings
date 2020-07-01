@@ -86,6 +86,7 @@ unpin
 untap
 up
 update
+update-license-data
 update-report
 update-reset
 update-test

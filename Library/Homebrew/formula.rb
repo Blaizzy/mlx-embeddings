@@ -351,6 +351,9 @@ class Formula
   # @see .desc=
   delegate desc: :"self.class"
 
+  # The SPDX ID of the software license.
+  delegate license: :"self.class"
+
   # The homepage for the software.
   # @method homepage
   # @see .homepage=
@@ -1687,6 +1690,7 @@ class Formula
       "aliases"                  => aliases.sort,
       "versioned_formulae"       => versioned_formulae.map(&:name),
       "desc"                     => desc,
+      "license"                  => license,
       "homepage"                 => homepage,
       "versions"                 => {
         "stable" => stable&.version&.to_s,
@@ -2210,6 +2214,13 @@ class Formula
     #
     # <pre>desc "Example formula"</pre>
     attr_rw :desc
+
+    # @!attribute [w]
+    # The SPDX ID of the open-source license that the formula uses.
+    # Shows when running `brew info`.
+    #
+    # <pre>license "BSD-2-Clause"</pre>
+    attr_rw :license
 
     # @!attribute [w] homepage
     # The homepage for the software. Used by users to get more information

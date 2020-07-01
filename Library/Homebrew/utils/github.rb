@@ -474,6 +474,15 @@ module GitHub
     open_api(url, scopes: ["admin:org", "user"], data: data, request_method: "POST")
   end
 
+  def get_repo_license(user, repo)
+    response = GitHub.open_api("#{GitHub::API_URL}/repos/#{user}/#{repo}/license")
+    return unless response.key?("license")
+
+    response["license"]["spdx_id"]
+  rescue GitHub::HTTPNotFoundError
+    nil
+  end
+
   def api_errors
     [GitHub::AuthenticationFailedError, GitHub::HTTPNotFoundError,
      GitHub::RateLimitExceededError, GitHub::Error, JSON::ParserError].freeze

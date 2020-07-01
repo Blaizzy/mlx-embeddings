@@ -1047,6 +1047,10 @@ Explicitly set the \fIname\fR of the new formula\.
 Explicitly set the \fIversion\fR of the new formula\.
 .
 .TP
+\fB\-\-set\-license\fR
+Explicitly set the \fIlicense\fR of the new formula\.
+.
+.TP
 \fB\-\-tap\fR
 Generate the new formula within the given tap, specified as \fIuser\fR\fB/\fR\fIrepo\fR\.
 .
@@ -1330,6 +1334,13 @@ Patches for \fIformula\fR will be applied to the unpacked source\.
 .TP
 \fB\-g\fR, \fB\-\-git\fR
 Initialise a Git repository in the unpacked source\. This is useful for creating patches for the software\.
+.
+.SS "\fBupdate_license_data\fR \fIcmd\fR"
+Update SPDX license data in the Homebrew repository\.
+.
+.TP
+\fB\-\-fail\-if\-changed\fR
+Return a failing status code if current license data\'s version is different from the upstream\. This can be used to notify CI when the SPDX license data is out of date\.
 .
 .SS "\fBupdate\-test\fR [\fIoptions\fR]"
 Run a test of \fBbrew update\fR with a new repository clone\. If no options are passed, use \fBorigin/master\fR as the start commit\.
