@@ -34,20 +34,21 @@ module Homebrew
 
     if args.force?
       casks = []
-      kegs_by_rack = Hash[args.named.map do |name|
+      kegs_by_rack = Hash.new
+
+      args.named.each do |name|
         rack = Formulary.to_rack(name)
 
-        unless rack.directory?
+        if rack.directory?
+          kegs_by_rack[rack] = rack.subdirs.map { |d| Keg.new(d) }
+        else
           begin
             casks << Cask::CaskLoader.load(name)
           rescue Cask::CaskUnavailableError
             # Since the uninstall was forced, ignore any unavailable casks
           end
-          next
         end
-
-        [rack, rack.subdirs.map { |d| Keg.new(d) }]
-      end]
+      end
     else
       all_kegs, casks = args.kegs_casks
       kegs_by_rack = all_kegs.group_by(&:rack)
