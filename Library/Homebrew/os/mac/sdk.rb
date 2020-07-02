@@ -31,6 +31,10 @@ module OS
         SDK.new v, path, source
       end
 
+      def all_sdks
+        sdk_paths.map { |v, p| SDK.new v, p, source }
+      end
+
       def sdk_if_applicable(v = nil)
         sdk = begin
           if v.nil?
@@ -47,15 +51,11 @@ module OS
         sdk
       end
 
-      private
-
       def source
         nil
       end
 
-      def source_version
-        OS::Mac::Version::NULL
-      end
+      private
 
       def sdk_prefix
         ""
@@ -81,15 +81,11 @@ module OS
     end
 
     class XcodeSDKLocator < BaseSDKLocator
-      private
-
       def source
         :xcode
       end
 
-      def source_version
-        OS::Mac::Xcode.version
-      end
+      private
 
       def sdk_prefix
         @sdk_prefix ||= begin
@@ -105,15 +101,11 @@ module OS
     end
 
     class CLTSDKLocator < BaseSDKLocator
-      private
-
       def source
         :clt
       end
 
-      def source_version
-        OS::Mac::CLT.version
-      end
+      private
 
       # While CLT SDKs existed prior to Xcode 10, those packages also
       # installed a traditional Unix-style header layout and we prefer

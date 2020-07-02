@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "BREW" "1" "June 2020" "Homebrew" "brew"
+.TH "BREW" "1" "July 2020" "Homebrew" "brew"
 .
 .SH "NAME"
 \fBbrew\fR \- The Missing Package Manager for macOS
@@ -486,7 +486,7 @@ Pin the specified \fIformula\fR, preventing them from being upgraded when issuin
 Rerun the post\-install steps for \fIformula\fR\.
 .
 .SS "\fBreadall\fR [\fIoptions\fR] [\fItap\fR]"
-Import all formulae from the specified \fItap\fR, or from all installed taps if none is provided\. This can be useful for debugging issues across all formulae when making significant changes to \fBformula\.rb\fR, testing the performance of loading all formulae or checking if any current formulae have Ruby issues\.
+Import all items from the specified \fItap\fR, or from all installed taps if none is provided\. This can be useful for debugging issues across all items when making significant changes to \fBformula\.rb\fR, testing the performance of loading all items or checking if any current formulae/casks have Ruby issues\.
 .
 .TP
 \fB\-\-aliases\fR
@@ -1047,6 +1047,10 @@ Explicitly set the \fIname\fR of the new formula\.
 Explicitly set the \fIversion\fR of the new formula\.
 .
 .TP
+\fB\-\-set\-license\fR
+Explicitly set the \fIlicense\fR of the new formula\.
+.
+.TP
 \fB\-\-tap\fR
 Generate the new formula within the given tap, specified as \fIuser\fR\fB/\fR\fIrepo\fR\.
 .
@@ -1172,6 +1176,10 @@ Do not warn if pulling to a branch besides master (useful for testing)\.
 When a patch fails to apply, leave in progress and allow user to resolve, instead of aborting\.
 .
 .TP
+\fB\-\-warn\-on\-upload\-failure\fR
+Warn instead of raising an error if the bottle upload fails\. Useful for repairing bottle uploads that previously failed\.
+.
+.TP
 \fB\-\-workflow\fR
 Retrieve artifacts from the specified workflow (default: \fBtests\.yml\fR)\.
 .
@@ -1205,6 +1213,10 @@ Apply the bottle commit and upload the bottles, but don\'t publish them\.
 .TP
 \fB\-n\fR, \fB\-\-dry\-run\fR
 Print what would be done rather than doing it\.
+.
+.TP
+\fB\-\-warn\-on\-upload\-failure\fR
+Warn instead of raising an error if the bottle upload fails\. Useful for repairing bottle uploads that previously failed\.
 .
 .TP
 \fB\-\-bintray\-org\fR
@@ -1330,6 +1342,13 @@ Patches for \fIformula\fR will be applied to the unpacked source\.
 .TP
 \fB\-g\fR, \fB\-\-git\fR
 Initialise a Git repository in the unpacked source\. This is useful for creating patches for the software\.
+.
+.SS "\fBupdate_license_data\fR \fIcmd\fR"
+Update SPDX license data in the Homebrew repository\.
+.
+.TP
+\fB\-\-fail\-if\-changed\fR
+Return a failing status code if current license data\'s version is different from the upstream\. This can be used to notify CI when the SPDX license data is out of date\.
 .
 .SS "\fBupdate\-test\fR [\fIoptions\fR]"
 Run a test of \fBbrew update\fR with a new repository clone\. If no options are passed, use \fBorigin/master\fR as the start commit\.

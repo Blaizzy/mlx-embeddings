@@ -531,25 +531,21 @@ module Homebrew
             odie "--keep-old was passed but there was no existing bottle block!" if args.keep_old?
             puts output
             update_or_add = "add"
-            if s.include? "stable do"
-              indent = s.slice(/^( +)stable do/, 1).length
-              string = s.sub!(/^ {#{indent}}stable do(.|\n)+?^ {#{indent}}end\n/m, '\0' + output + "\n")
-            else
-              pattern = /(
-                  (\ {2}\#[^\n]*\n)*                                             # comments
-                  \ {2}(                                                         # two spaces at the beginning
-                    (url|head)\ ['"][\S\ ]+['"]                                  # url or head with a string
-                    (
-                      ,[\S\ ]*$                                                  # url may have options
-                      (\n^\ {3}[\S\ ]+$)*                                        # options can be in multiple lines
-                    )?|
-                    (homepage|desc|sha1|sha256|version|mirror)\ ['"][\S\ ]+['"]| # specs with a string
-                    (revision|version_scheme)\ \d+                               # revision with a number
-                  )\n+                                                           # multiple empty lines
-                 )+
-               /mx
-              string = s.sub!(pattern, '\0' + output + "\n")
-            end
+            pattern = /(
+                (\ {2}\#[^\n]*\n)*                                                # comments
+                \ {2}(                                                            # two spaces at the beginning
+                  (url|head)\ ['"][\S\ ]+['"]                                     # url or head with a string
+                  (
+                    ,[\S\ ]*$                                                     # url may have options
+                    (\n^\ {3}[\S\ ]+$)*                                           # options can be in multiple lines
+                  )?|
+                  (homepage|desc|sha256|version|mirror|license)\ ['"][\S\ ]+['"]| # specs with a string
+                  (revision|version_scheme)\ \d+|                                 # revision with a number
+                  (stable|livecheck)\ do(\n+^\ {4}[\S\ ]+$)*\n+^\ {2}end          # components with blocks
+                )\n+                                                              # multiple empty lines
+               )+
+             /mx
+            string = s.sub!(pattern, '\0' + output + "\n")
             odie "Bottle block addition failed!" unless string
           end
         end

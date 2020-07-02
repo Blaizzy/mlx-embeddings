@@ -77,6 +77,14 @@ class FormulaInstaller
     @attempted = Set.new
   end
 
+  def self.installed
+    @installed ||= Set.new
+  end
+
+  def self.clear_installed
+    @installed = Set.new
+  end
+
   # When no build tools are available and build flags are passed through ARGV,
   # it's necessary to interrupt the user before any sort of installation
   # can proceed. Only invoked when the user has no developer tools.
@@ -292,7 +300,7 @@ class FormulaInstaller
 
     self.class.attempted << formula
 
-    if pour_bottle?(warn: true)
+    if pour_bottle?
       begin
         pour
       rescue Exception => e # rubocop:disable Lint/RescueException
@@ -700,6 +708,8 @@ class FormulaInstaller
 
     ohai "Summary" if verbose? || show_summary_heading?
     puts summary
+
+    self.class.installed << formula
   ensure
     unlock
   end
@@ -983,11 +993,24 @@ class FormulaInstaller
 
     return if only_deps?
 
-    unless pour_bottle?
-      formula.fetch_patches
-      formula.resources.each(&:fetch)
-    end
+    if pour_bottle?(warn: true)
+      begin
+        downloader.fetch
+      rescue Exception => e # rubocop:disable Lint/RescueException
+        raise if Homebrew::EnvConfig.developer? ||
+                 Homebrew::EnvConfig.no_bottle_source_fallback? ||
+                 e.is_a?(Interrupt)
 
+        @pour_failed = true
+        onoe e.message
+        opoo "Bottle installation failed: building from source."
+        fetch_dependencies
+      end
+    end
+    return if pour_bottle?
+
+    formula.fetch_patches
+    formula.resources.each(&:fetch)
     downloader.fetch
   end
 

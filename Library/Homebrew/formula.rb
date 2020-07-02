@@ -351,6 +351,9 @@ class Formula
   # @see .desc=
   delegate desc: :"self.class"
 
+  # The SPDX ID of the software license.
+  delegate license: :"self.class"
+
   # The homepage for the software.
   # @method homepage
   # @see .homepage=
@@ -1687,6 +1690,7 @@ class Formula
       "aliases"                  => aliases.sort,
       "versioned_formulae"       => versioned_formulae.map(&:name),
       "desc"                     => desc,
+      "license"                  => license,
       "homepage"                 => homepage,
       "versions"                 => {
         "stable" => stable&.version&.to_s,
@@ -2211,6 +2215,13 @@ class Formula
     # <pre>desc "Example formula"</pre>
     attr_rw :desc
 
+    # @!attribute [w]
+    # The SPDX ID of the open-source license that the formula uses.
+    # Shows when running `brew info`.
+    #
+    # <pre>license "BSD-2-Clause"</pre>
+    attr_rw :license
+
     # @!attribute [w] homepage
     # The homepage for the software. Used by users to get more information
     # about the software and Homebrew maintainers as a point of contact for
@@ -2648,9 +2659,13 @@ class Formula
     #
     # The block will create, run in and delete a temporary directory.
     #
-    # We are fine if the executable does not error out, so we know linking
-    # and building the software was OK.
-    # <pre>system bin/"foobar", "--version"</pre>
+    # We want tests that don't require any user input
+    # and test the basic functionality of the application.
+    # For example foo build-foo input.foo is a good test
+    # and foo --version and foo --help are bad tests.
+    # However, a bad test is better than no test at all.
+    #
+    # See: https://docs.brew.sh/Formula-Cookbook#add-a-test-to-the-formula
     #
     # <pre>(testpath/"test.file").write <<~EOS
     #   writing some test file, if you need to

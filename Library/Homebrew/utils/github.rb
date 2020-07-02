@@ -392,6 +392,52 @@ module GitHub
     open_api(uri) { |json| json.fetch("items", []) }
   end
 
+  def approved_reviews(user, repo, pr, commit: nil)
+    url = "https://api.github.com/graphql"
+    data = {
+      query: <<~EOS,
+        { repository(name: "#{repo}", owner: "#{user}") {
+            pullRequest(number: #{pr}) {
+              reviews(states: APPROVED, first: 100) {
+                nodes {
+                  author {
+                    ... on User { email login name databaseId }
+                    ... on Organization { email login name databaseId }
+                  }
+                  authorAssociation
+                  commit { oid }
+                }
+              }
+            }
+          }
+        }
+      EOS
+    }
+    result = open_api(url, scopes: ["user:email"], data: data, request_method: "POST")
+    raise Error, result["errors"] if result["errors"].present?
+
+    reviews = result["data"]["repository"]["pullRequest"]["reviews"]["nodes"]
+
+    reviews.map do |r|
+      next if commit.present? && commit != r["commit"]["oid"]
+      next unless %w[MEMBER OWNER].include? r["authorAssociation"]
+
+      email = if r["author"]["email"].blank?
+        "#{r["author"]["databaseId"]}+#{r["author"]["login"]}@users.noreply.github.com"
+      else
+        r["author"]["email"]
+      end
+
+      name = r["author"]["name"].presence || r["author"]["login"]
+
+      {
+        "email" => email,
+        "name"  => name,
+        "login" => r["author"]["login"],
+      }
+    end.compact
+  end
+
   def dispatch_event(user, repo, event, **payload)
     url = "#{API_URL}/repos/#{user}/#{repo}/dispatches"
     open_api(url, data:           { event_type: event, client_payload: payload },
@@ -472,6 +518,15 @@ module GitHub
       EOS
     }
     open_api(url, scopes: ["admin:org", "user"], data: data, request_method: "POST")
+  end
+
+  def get_repo_license(user, repo)
+    response = GitHub.open_api("#{GitHub::API_URL}/repos/#{user}/#{repo}/license")
+    return unless response.key?("license")
+
+    response["license"]["spdx_id"]
+  rescue GitHub::HTTPNotFoundError
+    nil
   end
 
   def api_errors

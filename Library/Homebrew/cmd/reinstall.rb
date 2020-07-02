@@ -9,6 +9,7 @@ require "cleanup"
 require "cask/cmd"
 require "cask/utils"
 require "cask/macos"
+require "upgrade"
 
 module Homebrew
   module_function
@@ -69,6 +70,9 @@ module Homebrew
       reinstall_formula(f)
       Cleanup.install_formula_clean!(f)
     end
+
+    check_installed_dependents
+
     Homebrew.messages.display_messages
 
     return if casks.empty?
