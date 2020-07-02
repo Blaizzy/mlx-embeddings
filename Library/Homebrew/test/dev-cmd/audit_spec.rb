@@ -99,6 +99,18 @@ module Homebrew
         expect(fa.problems).to be_empty
       end
 
+      it "detects no license info" do
+        fa = formula_auditor "foo", <<~RUBY, spdx_data: spdx_data, new_formula: true
+          class Foo < Formula
+            url "https://brew.sh/foo-1.0.tgz"
+            license ""
+          end
+        RUBY
+
+        fa.audit_license
+        expect(fa.problems.first).to match "No license specified for package."
+      end
+
       it "detects if license is not a standard spdx-id" do
         fa = formula_auditor "foo", <<~RUBY, spdx_data: spdx_data, new_formula: true
           class Foo < Formula

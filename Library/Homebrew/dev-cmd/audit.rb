@@ -333,21 +333,23 @@ module Homebrew
     ].freeze
 
     def audit_license
-      return if formula.license.blank?
+      if formula.license.present?
+        if @spdx_data["licenses"].any? { |lic| lic["licenseId"] == formula.license }
+          return unless @online
 
-      if @spdx_data["licenses"].any? { |lic| lic["licenseId"] == formula.license }
-        return unless @online
+          user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @new_formula
+          return if user.blank?
 
-        user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @new_formula
-        return if user.blank?
+          github_license = GitHub.get_repo_license(user, repo)
+          return if github_license && (github_license == formula.license)
 
-        github_license = GitHub.get_repo_license(user, repo)
-        return if github_license && (github_license == formula.license)
-
-        problem "License mismatch - GitHub license is: #{github_license}, "\
-                "but Formulae license states: #{formula.license}."
-      else
-        problem "#{formula.license} is not a standard SPDX license."
+          problem "License mismatch - GitHub license is: #{github_license}, "\
+                  "but Formulae license states: #{formula.license}."
+        else
+          problem "#{formula.license} is not a standard SPDX license."
+        end
+      elsif @new_formula
+        problem "No license specified for package."
       end
     end
 
