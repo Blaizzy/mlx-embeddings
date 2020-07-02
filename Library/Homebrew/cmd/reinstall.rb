@@ -6,6 +6,7 @@ require "messages"
 require "reinstall"
 require "cli/parser"
 require "cleanup"
+require "upgrade"
 
 module Homebrew
   module_function
@@ -65,6 +66,9 @@ module Homebrew
       reinstall_formula(f)
       Cleanup.install_formula_clean!(f)
     end
+
+    check_installed_dependents
+
     Homebrew.messages.display_messages
   end
 end

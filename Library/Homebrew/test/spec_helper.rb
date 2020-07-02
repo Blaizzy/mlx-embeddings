@@ -163,6 +163,7 @@ RSpec.configure do |config|
       Keg.clear_cache
       Tab.clear_cache
       FormulaInstaller.clear_attempted
+      FormulaInstaller.clear_installed
 
       TEST_DIRECTORIES.each(&:mkpath)
 
