@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require "English"
 
@@ -20,7 +21,8 @@ SimpleCov.start do
 
       # Just save result, but don't write formatted output.
       coverage_result = Coverage.result
-      SimpleCov.add_not_loaded_files(coverage_result)
+      # TODO: this method is private, find a better way.
+      SimpleCov.send(:add_not_loaded_files, coverage_result)
       simplecov_result = SimpleCov::Result.new(coverage_result)
       SimpleCov::ResultMerger.store_result(simplecov_result)
 
@@ -50,8 +52,8 @@ SimpleCov.start do
 
   require "rbconfig"
   host_os = RbConfig::CONFIG["host_os"]
-  add_filter %r{/os/mac} if host_os !~ /darwin/
-  add_filter %r{/os/linux} if host_os !~ /linux/
+  add_filter %r{/os/mac} unless /darwin/.match?(host_os)
+  add_filter %r{/os/linux} unless /linux/.match?(host_os)
 
   # Add groups and the proper project name to the output.
   project_name "Homebrew"
