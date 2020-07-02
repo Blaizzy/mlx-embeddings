@@ -2,6 +2,7 @@
 
 require "cli/parser"
 require "utils/popen"
+require "utils/repology"
 
 module Homebrew
   module_function
@@ -26,15 +27,14 @@ module Homebrew
   end
 
   def display(outdated_packages)
-    ohai "Outdated Formulae"
+    ohai "Outdated Formulae\n"
 
     outdated_packages.each do |formula, package_details|
-      puts ""
-      puts "Formula: #{formula}"
-      puts "Current formula version: #{package_details["current_formula_version"]}"
-      puts "Latest repology version: #{package_details["repology_latest_version"]}"
-      puts "Latest livecheck version: #{package_details["livecheck_latest_version"]}"
-      puts "Open pull requests: #{package_details["open_pull_requests"]}"
+      ohai formula
+      ohai "Current formula version: #{package_details["current_formula_version"]}"
+      ohai "Latest repology version: #{package_details["repology_latest_version"]}"
+      ohai "Latest livecheck version: #{package_details["livecheck_latest_version"]}"
+      ohai "Open pull requests: #{package_details["open_pull_requests"]}"
     end
   end
 end
