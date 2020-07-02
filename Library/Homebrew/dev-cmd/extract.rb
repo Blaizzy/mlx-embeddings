@@ -191,7 +191,10 @@ module Homebrew
     # Remove any existing version suffixes, as a new one will be added later
     name.sub!(/\b@(.*)\z\b/i, "")
     versioned_name = Formulary.class_s("#{name}@#{version}")
-    result.gsub!("class #{class_name} < Formula", "class #{versioned_name} < Formula")
+    result.sub!("class #{class_name} < Formula", "class #{versioned_name} < Formula")
+
+    # Remove bottle blocks, they won't work.
+    result.sub!(/  bottle do.+?end\n\n/m, "") if destination_tap != source_tap
 
     path = destination_tap.path/"Formula/#{name}@#{version}.rb"
     if path.exist?
@@ -205,7 +208,8 @@ module Homebrew
       odebug "Overwriting existing formula at #{path}"
       path.delete
     end
-    ohai "Writing formula for #{name} from revision #{rev} to #{path}"
+    ohai "Writing formula for #{name} from revision #{rev} to:"
+    puts path
     path.write result
   end
 

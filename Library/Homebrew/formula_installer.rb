@@ -292,7 +292,7 @@ class FormulaInstaller
 
     self.class.attempted << formula
 
-    if pour_bottle?(warn: true)
+    if pour_bottle?
       begin
         pour
       rescue Exception => e # rubocop:disable Lint/RescueException
@@ -983,11 +983,24 @@ class FormulaInstaller
 
     return if only_deps?
 
-    unless pour_bottle?
-      formula.fetch_patches
-      formula.resources.each(&:fetch)
-    end
+    if pour_bottle?(warn: true)
+      begin
+        downloader.fetch
+      rescue Exception => e # rubocop:disable Lint/RescueException
+        raise if Homebrew::EnvConfig.developer? ||
+                 Homebrew::EnvConfig.no_bottle_source_fallback? ||
+                 e.is_a?(Interrupt)
 
+        @pour_failed = true
+        onoe e.message
+        opoo "Bottle installation failed: building from source."
+        fetch_dependencies
+      end
+    end
+    return if pour_bottle?
+
+    formula.fetch_patches
+    formula.resources.each(&:fetch)
     downloader.fetch
   end
 
