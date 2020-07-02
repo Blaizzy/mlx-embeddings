@@ -34,7 +34,7 @@ module Homebrew
 
     if args.force?
       casks = []
-      kegs_by_rack = Hash.new
+      kegs_by_rack = {}
 
       args.named.each do |name|
         rack = Formulary.to_rack(name)
