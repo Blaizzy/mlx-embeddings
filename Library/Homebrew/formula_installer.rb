@@ -77,6 +77,14 @@ class FormulaInstaller
     @attempted = Set.new
   end
 
+  def self.installed
+    @installed ||= Set.new
+  end
+
+  def self.clear_installed
+    @installed = Set.new
+  end
+
   # When no build tools are available and build flags are passed through ARGV,
   # it's necessary to interrupt the user before any sort of installation
   # can proceed. Only invoked when the user has no developer tools.
@@ -700,6 +708,8 @@ class FormulaInstaller
 
     ohai "Summary" if verbose? || show_summary_heading?
     puts summary
+
+    self.class.installed << formula
   ensure
     unlock
   end
