@@ -453,7 +453,6 @@ false:
   - ./utils/github.rb
   - ./utils/notability.rb
   - ./utils/popen.rb
-  - ./utils/tty.rb
   - ./utils/user.rb
 
 false:
@@ -889,6 +888,7 @@ true:
   - ./tap_constants.rb
   - ./test/support/helper/fixtures.rb
   - ./test/support/lib/config.rb
+  - ./utils/tty.rb
   - ./version/null.rb
 
 strict:
