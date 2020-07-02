@@ -30,10 +30,10 @@ module Homebrew
   def update_license_data
     update_license_data_args.parse
     ohai "Updating SPDX license data..."
-    curl_download(SPDX_DATA_URL, to: SPDX_PATH)
+    curl_download(SPDX_DATA_URL, to: SPDX_PATH, partial: false)
 
     return unless args.fail_if_changed?
 
-    system("git diff --stat --exit-code #{SPDX_PATH}")
+    safe_system "git", "diff", "--stat", "--exit-code", SPDX_PATH
   end
 end
