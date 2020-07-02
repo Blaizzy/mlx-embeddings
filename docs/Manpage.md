@@ -883,7 +883,10 @@ Find pull requests that can be automatically merged using `brew pr-publish`.
 ### `pr-publish` [*`options`*] *`pull_request`* [*`pull_request`* ...]
 
 Publish bottles for a pull request with GitHub Actions. Requires write access to
-the `homebrew/core` repository.
+the repository.
+
+* `--tap`:
+  Target tap repository (default: `homebrew/core`).
 
 ### `pr-pull` [*`options`*] *`pull_request`* [*`pull_request`* ...]
 
