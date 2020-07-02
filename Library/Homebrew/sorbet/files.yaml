@@ -445,7 +445,6 @@ false:
   - ./unpack_strategy/zip.rb
   - ./utils.rb
   - ./utils/analytics.rb
-  - ./utils/bottles.rb
   - ./utils/curl.rb
   - ./utils/fork.rb
   - ./utils/formatter.rb
@@ -847,8 +846,6 @@ false:
   - ./utils/inreplace.rb
   - ./utils/link.rb
   - ./utils/shebang.rb
-  - ./utils/shell.rb
-  - ./utils/svn.rb
   - ./version.rb
 
 true:
@@ -888,6 +885,9 @@ true:
   - ./tap_constants.rb
   - ./test/support/helper/fixtures.rb
   - ./test/support/lib/config.rb
+  - ./utils/bottles.rb
+  - ./utils/shell.rb
+  - ./utils/svn.rb
   - ./utils/tty.rb
   - ./version/null.rb
 
