@@ -12,15 +12,6 @@ module Versions
                      formula_name, "--url=#{url}").chomp
   end
 
-  def check_for_open_pr(formula_name)
-    # ohai "- Checking for open PRs for formula : #{formula_name}"
-
-    # response = bump_formula_pr(formula_name, download_url)
-    # !response.include? "Error: These open pull requests may be duplicates"
-
-    # check_for_duplicate_pull_requests(formula, tap_full_name, new_formula_version.to_s)
-  end
-
   def livecheck_formula(formula)
     ohai "Checking livecheck formula : #{formula}" if Homebrew.args.verbose?
 
@@ -36,9 +27,9 @@ module Versions
     package_name, brew_version, latest_version = output
 
     {
-      "formula"                  => package_name,
-      "current_brew_version"     => brew_version,
-      "livecheck_latest_version" => latest_version,
+      name:              package_name,
+      formula_version:   brew_version,
+      livecheck_version: latest_version,
     }
   end
 
@@ -63,6 +54,6 @@ module Versions
     pull_requests = fetch_pull_requests("#{formula.name} #{version}", tap_full_name) if pull_requests.blank?
     return if pull_requests.blank?
 
-    pull_requests.map { |pr| { "title" => pr["title"], "url" => pr["html_url"] } }
+    pull_requests.map { |pr| { title: pr["title"], url: pr["html_url"] } }
   end
 end

@@ -2,13 +2,16 @@
 
 require "utils/curl"
 require "utils/versions"
-
 require "formula_info"
 
 module RepologyParser
   module_function
 
+  MAX_PAGINATION = 15
+
   def query_api(last_package_in_response = "")
+    last_package_in_response += "/" unless last_package_in_response.empty?
+
     url = "https://repology.org/api/v1/projects/#{last_package_in_response}?inrepo=homebrew&outdated=1"
     ohai "Calling API #{url}" if Homebrew.args.verbose?
 
@@ -18,24 +21,22 @@ module RepologyParser
 
   def parse_api_response
     ohai "Querying outdated packages from Repology"
-    page_no = 1
-    ohai "Paginating repology api page: #{page_no}" if Homebrew.args.verbose?
 
     outdated_packages = query_api
-    last_pacakge_index = outdated_packages.size - 1
+    last_package_index = outdated_packages.size - 1
     response_size = outdated_packages.size
-    page_limit = 15
+    page_no = 1
 
-    while response_size > 1 && page_no <= page_limit
-      page_no += 1
-      ohai "Paginating repology api page: #{page_no}" if Homebrew.args.verbose?
+    while response_size > 1 && page_no <= MAX_PAGINATION
+      ohai "Paginating Repology api page: #{page_no}" if Homebrew.args.verbose?
 
-      last_package_in_response = outdated_packages.keys[last_pacakge_index]
-      response = query_api("#{last_package_in_response}/")
+      last_package_in_response = outdated_packages.keys[last_package_index]
+      response = query_api(last_package_in_response)
 
       response_size = response.size
       outdated_packages.merge!(response)
-      last_pacakge_index = outdated_packages.size - 1
+      last_package_index = outdated_packages.size - 1
+      page_no += 1
     end
 
     ohai "#{outdated_packages.size} outdated packages identified"
@@ -44,7 +45,7 @@ module RepologyParser
   end
 
   def validate_and_format_packages(outdated_repology_packages)
-    ohai "Verifying outdated repology packages as Homebrew Formulae"
+    ohai "Verifying outdated Repology packages as Homebrew Formulae"
 
     packages = {}
     outdated_repology_packages.each do |_name, repositories|
@@ -73,13 +74,11 @@ module RepologyParser
     livecheck_response = Versions.livecheck_formula(package_name)
     pull_requests = Versions.check_for_duplicate_pull_requests(package_name, latest_version)
 
-    formatted_package = {
-      "repology_latest_version"  => latest_version,
-      "current_formula_version"  => current_version.to_s,
-      "livecheck_latest_version" => livecheck_response["livecheck_latest_version"],
-      "open_pull_requests"       => pull_requests,
+    {
+      repoology_latest_version: latest_version,
+      current_formula_version:  current_version.to_s,
+      livecheck_latest_version: livecheck_response[:livecheck_version],
+      open_pull_requests:       pull_requests,
     }
-
-    formatted_package
   end
 end

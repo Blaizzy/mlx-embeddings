@@ -31,10 +31,10 @@ module Homebrew
 
     outdated_packages.each do |formula, package_details|
       ohai formula
-      ohai "Current formula version: #{package_details["current_formula_version"]}"
-      ohai "Latest repology version: #{package_details["repology_latest_version"]}"
-      ohai "Latest livecheck version: #{package_details["livecheck_latest_version"]}"
-      ohai "Open pull requests: #{package_details["open_pull_requests"]}"
+      ohai "Current formula version: #{package_details[:current_formula_version]}"
+      ohai "Latest repology version: #{package_details[:repology_latest_version]}"
+      ohai "Latest livecheck version: #{package_details[:livecheck_latest_version]}"
+      ohai "Open pull requests: #{package_details[:open_pull_requests]}"
     end
   end
 end
