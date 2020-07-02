@@ -19,41 +19,6 @@ describe "brew uninstall", :integration_test do
   end
 end
 
-describe "brew uninstall cask", :integration_test, :needs_macos do
-  it "uninstalls a given Cask" do
-    caffeine = Cask::CaskLoader.load(cask_path("local-caffeine"))
-    Cask::Installer.new(caffeine).install
-
-    expect { brew "uninstall", "local-caffeine" }
-      .to output(/Uninstalling Cask local-caffeine/).to_stdout
-      .and not_to_output.to_stderr
-      .and be_a_success
-
-    expect(caffeine).not_to be_installed
-
-    rm_r(TEST_TMPDIR + "/cask-appdir")
-  end
-
-  it "uninstalls given Formulae and Casks" do
-    install_test_formula "testball"
-
-    caffeine = Cask::CaskLoader.load(cask_path("local-caffeine"))
-    Cask::Installer.new(caffeine).install
-
-    expect { brew "uninstall", "testball", "local-caffeine" }
-      .to output(%r{
-        Uninstalling\s#{TEST_TMPDIR}/cellar/testball/.*\n
-        ==>\sUninstalling\sCask\slocal-caffeine
-      }x).to_stdout
-      .and not_to_output.to_stderr
-      .and be_a_success
-
-    expect(caffeine).not_to be_installed
-
-    rm_r(TEST_TMPDIR + "/cask-appdir")
-  end
-end
-
 describe Homebrew do
   let(:dependency) { formula("dependency") { url "f-1" } }
   let(:dependent) do
