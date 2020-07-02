@@ -34,6 +34,6 @@ module Homebrew
 
     return unless args.fail_if_changed?
 
-    system("git diff --stat --exit-code #{SPDX_PATH}")
+    safe_system "git", "diff", "--stat", "--exit-code", SPDX_PATH
   end
 end
