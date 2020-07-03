@@ -246,16 +246,21 @@ module Homebrew
         require "formula"
         require "missing_formula"
 
+        puts 1
         raise UsageError if name.blank?
 
+        puts 2
         rack = Formulary.to_rack(name.downcase)
 
+        puts 3
         dirs = rack.directory? ? rack.subdirs : []
         raise NoSuchKegError, rack.basename if dirs.empty?
 
+        puts 4
         linked_keg_ref = HOMEBREW_LINKED_KEGS/rack.basename
         opt_prefix = HOMEBREW_PREFIX/"opt/#{rack.basename}"
 
+        puts 5
         begin
           if opt_prefix.symlink? && opt_prefix.directory?
             Keg.new(opt_prefix.resolved_path)
@@ -271,7 +276,7 @@ module Homebrew
             end
 
             unless (prefix = f.installed_prefix).directory?
-              raise MultipleVersionsInstalledError, rack.basename
+              raise MultipleVersionsInstalledError, "#{rack.basename} has multiple installed versions"
             end
 
             Keg.new(prefix)
