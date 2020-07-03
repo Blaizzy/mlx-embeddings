@@ -5,11 +5,8 @@ module Versions
 
   def current_formula_version(formula_name)
     Formula[formula_name].version.to_s.to_f
-  end
-
-  def bump_formula_pr(formula_name, url)
-    Utils.popen_read("brew", "bump-formula-pr", "--no-browse", "--dry-run",
-                     formula_name, "--url=#{url}").chomp
+  rescue
+    nil
   end
 
   def livecheck_formula(formula)

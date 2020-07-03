@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require "cli/parser"
-require "utils/popen"
-require "utils/repology"
 
 module Homebrew
   module_function

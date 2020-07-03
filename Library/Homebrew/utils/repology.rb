@@ -2,6 +2,7 @@
 
 require "utils/curl"
 require "utils/versions"
+
 require "formula_info"
 
 module RepologyParser
@@ -45,7 +46,7 @@ module RepologyParser
   end
 
   def validate_and_format_packages(outdated_repology_packages)
-    ohai "Verifying outdated Repology packages as Homebrew Formulae"
+    ohai "Verifying outdated repology packages as Homebrew Formulae"
 
     packages = {}
     outdated_repology_packages.each do |_name, repositories|
@@ -65,7 +66,6 @@ module RepologyParser
 
       packages[repology_homebrew_repo["srcname"]] = format_package(repology_homebrew_repo["srcname"], latest_version)
     end
-    # hash of hashes {"aacgain"=>{"repology_latest_version"=>"1.9", "current_formula_version"=>"1.8"}, ...}
     packages
   end
 
@@ -75,7 +75,7 @@ module RepologyParser
     pull_requests = Versions.check_for_duplicate_pull_requests(package_name, latest_version)
 
     {
-      repoology_latest_version: latest_version,
+      repology_latest_version:  latest_version,
       current_formula_version:  current_version.to_s,
       livecheck_latest_version: livecheck_response[:livecheck_version],
       open_pull_requests:       pull_requests,
