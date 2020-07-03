@@ -215,5 +215,16 @@ describe RuboCop::Cop::FormulaAudit::Text do
         end
       RUBY
     end
+
+    it "When make calls are not separated" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          def install
+            system "make && make install"
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Use separate `make` calls
+          end
+        end
+      RUBY
+    end
   end
 end

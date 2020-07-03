@@ -62,6 +62,13 @@ module RuboCop
           find_method_with_args(body_node, :system, "cargo", "build") do
             problem "use \"cargo\", \"install\", *std_cargo_args"
           end
+
+          find_every_method_call_by_name(body_node, :system).each do |m|
+            next unless parameters_passed?(m, /make && make/)
+
+            offending_node(m)
+            problem "Use separate `make` calls"
+          end
         end
       end
     end
