@@ -747,11 +747,11 @@ module Homebrew
       current_revision = formula.revision
 
       previous_version = nil
-      previous_checksum = nil
       previous_version_scheme = nil
       previous_revision = nil
 
       newest_committed_version = nil
+      newest_committed_checksum = nil
       newest_committed_revision = nil
 
       fv.rev_list("origin/master") do |rev|
@@ -765,6 +765,7 @@ module Homebrew
           previous_revision = f.revision
 
           newest_committed_version ||= previous_version
+          newest_committed_checksum ||= previous_checksum
           newest_committed_revision ||= previous_revision
         end
 
@@ -772,7 +773,7 @@ module Homebrew
       end
 
       if current_version == previous_version &&
-         current_checksum != previous_checksum
+         current_checksum != newest_committed_checksum
         problem(
           "stable sha256 changed without the version also changing; " \
           "please create an issue upstream to rule out malicious " \
