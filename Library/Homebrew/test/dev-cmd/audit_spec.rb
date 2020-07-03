@@ -363,6 +363,7 @@ module Homebrew
         origin_formula_path.write <<~RUBY
           class Foo#{foo_version} < Formula
             url "https://brew.sh/foo-1.0.tar.gz"
+            sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"
             revision 2
             version_scheme 1
           end
@@ -388,7 +389,7 @@ module Homebrew
         formula_path.write text
       end
 
-      def formula_gsub_commit(before, after = "")
+      def formula_gsub_origin_commit(before, after = "")
         text = origin_formula_path.read
         text.gsub!(before, after)
         origin_formula_path.unlink
@@ -404,19 +405,48 @@ module Homebrew
         end
       end
 
+      context "checksums" do
+        context "should not change with the same version" do
+          before do
+            formula_gsub(
+              'sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"',
+              'sha256 "3622d2a53236ed9ca62de0616a7e80fd477a9a3f862ba09d503da188f53ca523"',
+            )
+          end
+
+          it { is_expected.to match("stable sha256 changed without the version also changing") }
+        end
+
+        context "can change with the different version" do
+          before do
+            formula_gsub_origin_commit(
+              'sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"',
+              'sha256 "3622d2a53236ed9ca62de0616a7e80fd477a9a3f862ba09d503da188f53ca523"',
+            )
+            formula_gsub "foo-1.0.tar.gz", "foo-1.1.tar.gz"
+            formula_gsub_origin_commit(
+              'sha256 "3622d2a53236ed9ca62de0616a7e80fd477a9a3f862ba09d503da188f53ca523"',
+              'sha256 "e048c5e6144f5932d8672c2fade81d9073d5b3ca1517b84df006de3d25414fc1"',
+            )
+          end
+
+          it { is_expected.to be_nil }
+        end
+      end
+
       context "revisions" do
         context "should not be removed when first committed above 0" do
           it { is_expected.to be_nil }
         end
 
         context "should not decrease with the same version" do
-          before { formula_gsub_commit "revision 2", "revision 1" }
+          before { formula_gsub_origin_commit "revision 2", "revision 1" }
 
           it { is_expected.to match("revision should not decrease (from 2 to 1)") }
         end
 
         context "should not be removed with the same version" do
-          before { formula_gsub_commit "revision 2" }
+          before { formula_gsub_origin_commit "revision 2" }
 
           it { is_expected.to match("revision should not decrease (from 2 to 0)") }
         end
@@ -428,15 +458,15 @@ module Homebrew
         end
 
         context "should be removed with a newer version" do
-          before { formula_gsub_commit "foo-1.0.tar.gz", "foo-1.1.tar.gz" }
+          before { formula_gsub_origin_commit "foo-1.0.tar.gz", "foo-1.1.tar.gz" }
 
           it { is_expected.to match("'revision 2' should be removed") }
         end
 
         context "should not warn on an newer version revision removal" do
           before do
-            formula_gsub_commit "revision 2", ""
-            formula_gsub_commit "foo-1.0.tar.gz", "foo-1.1.tar.gz"
+            formula_gsub_origin_commit "revision 2", ""
+            formula_gsub_origin_commit "foo-1.0.tar.gz", "foo-1.1.tar.gz"
           end
 
           it { is_expected.to be_nil }
@@ -453,9 +483,9 @@ module Homebrew
 
         context "should not warn on past increment by more than 1" do
           before do
-            formula_gsub_commit "revision 2", "# no revision"
-            formula_gsub_commit "foo-1.0.tar.gz", "foo-1.1.tar.gz"
-            formula_gsub_commit "# no revision", "revision 3"
+            formula_gsub_origin_commit "revision 2", "# no revision"
+            formula_gsub_origin_commit "foo-1.0.tar.gz", "foo-1.1.tar.gz"
+            formula_gsub_origin_commit "# no revision", "revision 3"
           end
 
           it { is_expected.to be_nil }
@@ -464,16 +494,16 @@ module Homebrew
 
       context "version_schemes" do
         context "should not decrease with the same version" do
-          before { formula_gsub_commit "version_scheme 1" }
+          before { formula_gsub_origin_commit "version_scheme 1" }
 
           it { is_expected.to match("version_scheme should not decrease (from 1 to 0)") }
         end
 
         context "should not decrease with a new version" do
           before do
-            formula_gsub_commit "foo-1.0.tar.gz", "foo-1.1.tar.gz"
-            formula_gsub_commit "version_scheme 1", ""
-            formula_gsub_commit "revision 2", ""
+            formula_gsub_origin_commit "foo-1.0.tar.gz", "foo-1.1.tar.gz"
+            formula_gsub_origin_commit "version_scheme 1", ""
+            formula_gsub_origin_commit "revision 2", ""
           end
 
           it { is_expected.to match("version_scheme should not decrease (from 1 to 0)") }
@@ -481,10 +511,10 @@ module Homebrew
 
         context "should only increment by 1" do
           before do
-            formula_gsub_commit "version_scheme 1", "# no version_scheme"
-            formula_gsub_commit "foo-1.0.tar.gz", "foo-1.1.tar.gz"
-            formula_gsub_commit "revision 2", ""
-            formula_gsub_commit "# no version_scheme", "version_scheme 3"
+            formula_gsub_origin_commit "version_scheme 1", "# no version_scheme"
+            formula_gsub_origin_commit "foo-1.0.tar.gz", "foo-1.1.tar.gz"
+            formula_gsub_origin_commit "revision 2", ""
+            formula_gsub_origin_commit "# no version_scheme", "version_scheme 3"
           end
 
           it { is_expected.to match("version_schemes should only increment by 1") }
@@ -500,8 +530,8 @@ module Homebrew
 
         context "committed can decrease" do
           before do
-            formula_gsub_commit "revision 2"
-            formula_gsub_commit "foo-1.0.tar.gz", "foo-0.9.tar.gz"
+            formula_gsub_origin_commit "revision 2"
+            formula_gsub_origin_commit "foo-1.0.tar.gz", "foo-0.9.tar.gz"
           end
 
           it { is_expected.to be_nil }
