@@ -123,7 +123,7 @@ module Homebrew
       end
     end
 
-    return if casks.empty?
+    return if casks.blank?
 
     cask_uninstall = Cask::Cmd::Uninstall.new(casks)
     cask_uninstall.force = args.force?

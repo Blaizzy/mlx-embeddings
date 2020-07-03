@@ -246,12 +246,11 @@ module Homebrew
         require "formula"
         require "missing_formula"
 
-        raise UsageError if name.empty?
+        raise UsageError if name.blank?
 
         rack = Formulary.to_rack(name.downcase)
 
         dirs = rack.directory? ? rack.subdirs : []
-
         raise NoSuchKegError, rack.basename if dirs.empty?
 
         linked_keg_ref = HOMEBREW_LINKED_KEGS/rack.basename
@@ -278,7 +277,7 @@ module Homebrew
             Keg.new(prefix)
           end
         rescue FormulaUnavailableError
-          raise <<~EOS
+          raise MultipleVersionsInstalledError, <<~EOS
             Multiple kegs installed to #{rack}
             However we don't know which one you refer to.
             Please delete (with rm -rf!) all but one and then try again.
