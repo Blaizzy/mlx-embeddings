@@ -168,6 +168,7 @@ false:
   - ./dev-cmd/test.rb
   - ./dev-cmd/tests.rb
   - ./dev-cmd/unpack.rb
+  - ./dev-cmd/update-license-data.rb
   - ./dev-cmd/update-test.rb
   - ./dev-cmd/vendor-gems.rb
   - ./development_tools.rb
@@ -185,6 +186,7 @@ false:
   - ./extend/os/linux/hardware/cpu.rb
   - ./extend/os/linux/install.rb
   - ./extend/os/linux/keg_relocate.rb
+  - ./extend/os/linux/readall.rb
   - ./extend/os/linux/requirements/osxfuse_requirement.rb
   - ./extend/os/linux/system_config.rb
   - ./extend/os/linux/tap.rb
@@ -348,6 +350,7 @@ false:
   - ./test/dev-cmd/audit_spec.rb
   - ./test/dev-cmd/create_spec.rb
   - ./test/dev-cmd/extract_spec.rb
+  - ./test/dev-cmd/update-license-data_spec.rb
   - ./test/diagnostic_checks_spec.rb
   - ./test/download_strategies_spec.rb
   - ./test/error_during_execution_spec.rb
@@ -443,6 +446,7 @@ false:
   - ./unpack_strategy/xar.rb
   - ./unpack_strategy/xz.rb
   - ./unpack_strategy/zip.rb
+  - ./upgrade.rb
   - ./utils.rb
   - ./utils/analytics.rb
   - ./utils/curl.rb
@@ -920,6 +924,7 @@ strict:
   - ./extend/os/mac/formula_support.rb
   - ./extend/os/missing_formula.rb
   - ./extend/os/pathname.rb
+  - ./extend/os/readall.rb
   - ./extend/os/requirements/java_requirement.rb
   - ./extend/os/requirements/osxfuse_requirement.rb
   - ./extend/os/requirements/x11_requirement.rb
