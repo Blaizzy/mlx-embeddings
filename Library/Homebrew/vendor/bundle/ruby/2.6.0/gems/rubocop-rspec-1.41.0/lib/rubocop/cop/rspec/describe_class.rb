@@ -43,11 +43,13 @@ module RuboCop
         def_node_matcher :rails_metadata?, <<-PATTERN
           (pair
             (sym :type)
-            (sym {:request :feature :system :routing :view})
+            (sym {
+                   :channel :controller :helper :job :mailer :model :request
+                   :routing :view :feature :system :mailbox
+                 }
+            )
           )
         PATTERN
-
-        def_node_matcher :shared_group?, SharedGroups::ALL.block_pattern
 
         def on_top_level_describe(node, (described_value, _))
           return if shared_group?(root_node)
