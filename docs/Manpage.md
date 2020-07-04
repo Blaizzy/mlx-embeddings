@@ -967,6 +967,11 @@ build systems would not find otherwise.
 * `--env`:
   Use the standard `PATH` instead of superenv's when `std` is passed.
 
+### `sponsors`
+
+Print a Markdown summary of Homebrew's GitHub Sponsors, suitable for pasting
+into a README.
+
 ### `style` [*`options`*] [*`file`*|*`tap`*|*`formula`*]
 
 Check formulae or files for conformance to Homebrew style guidelines.

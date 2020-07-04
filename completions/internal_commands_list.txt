@@ -71,6 +71,7 @@ ruby
 search
 sh
 shellenv
+sponsors
 style
 switch
 tap
