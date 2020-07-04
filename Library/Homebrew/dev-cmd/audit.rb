@@ -341,7 +341,7 @@ module Homebrew
           return if user.blank?
 
           github_license = GitHub.get_repo_license(user, repo)
-          return if github_license && (github_license == formula.license)
+          return if github_license && [formula.license, "NOASSERTION"].include?(github_license)
 
           problem "License mismatch - GitHub license is: #{github_license}, "\
                   "but Formulae license states: #{formula.license}."
