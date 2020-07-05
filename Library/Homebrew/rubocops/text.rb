@@ -69,6 +69,15 @@ module RuboCop
             offending_node(m)
             problem "Use separate `make` calls"
           end
+
+          body_node.each_descendant(:dstr) do |dstr_node|
+            dstr_node.each_descendant(:begin) do |interpolation_node|
+              next unless interpolation_node.source.match?(/#\{\w+\s*\+\s*['"][^}]+\}/)
+
+              offending_node(interpolation_node)
+              problem "Do not concatenate paths in string interpolation"
+            end
+          end
         end
       end
     end

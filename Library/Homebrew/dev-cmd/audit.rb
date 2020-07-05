@@ -843,12 +843,6 @@ module Homebrew
         problem "Don't need to interpolate \"#{Regexp.last_match(2)}\" with #{Regexp.last_match(1)}"
       end
 
-      # Check for string concatenation; prefer interpolation
-      if line =~ /(#\{\w+\s*\+\s*['"][^}]+\})/
-        # TODO: check could be in RuboCop
-        problem "Try not to concatenate paths in string interpolation:\n   #{Regexp.last_match(1)}"
-      end
-
       # Prefer formula path shortcuts in Pathname+
       if line =~ %r{\(\s*(prefix\s*\+\s*(['"])(bin|include|libexec|lib|sbin|share|Frameworks)[/'"])}
         # TODO: check could be in RuboCop

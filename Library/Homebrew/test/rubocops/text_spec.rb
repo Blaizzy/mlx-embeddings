@@ -226,6 +226,17 @@ describe RuboCop::Cop::FormulaAudit::Text do
         end
       RUBY
     end
+
+    it "When concatenating in string interpolation" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          def install
+            ohai "foo \#{bar + "baz"}"
+                      ^^^^^^^^^^^^^^ Do not concatenate paths in string interpolation
+          end
+        end
+      RUBY
+    end
   end
 end
 
