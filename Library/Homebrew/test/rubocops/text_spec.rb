@@ -342,5 +342,101 @@ describe RuboCop::Cop::FormulaAuditStrict::Text do
         end
       RUBY
     end
+
+    it "when `\#{share}/foo` is used instead of `\#{pkgshare}`" do
+      expect_offense(<<~RUBY, "/homebrew-core/Formula/foo.rb")
+        class Foo < Formula
+          def install
+            ohai "\#{share}/foo"
+                 ^^^^^^^^^^^^^^ Use `\#{pkgshare}` instead of `\#{share}/foo`
+          end
+        end
+      RUBY
+    end
+
+    it "when `\#{share}/foo/bar` is used instead of `\#{pkgshare}/bar`" do
+      expect_offense(<<~RUBY, "/homebrew-core/Formula/foo.rb")
+        class Foo < Formula
+          def install
+            ohai "\#{share}/foo/bar"
+                 ^^^^^^^^^^^^^^^^^^ Use `\#{pkgshare}` instead of `\#{share}/foo`
+          end
+        end
+      RUBY
+    end
+
+    it "when `\#{share}/foolibc++` is used instead of `\#{pkgshare}/foolibc++`" do
+      expect_offense(<<~RUBY, "/homebrew-core/Formula/foolibc++.rb")
+        class Foo < Formula
+          def install
+            ohai "\#{share}/foolibc++"
+                 ^^^^^^^^^^^^^^^^^^^^ Use `\#{pkgshare}` instead of `\#{share}/foolibc++`
+          end
+        end
+      RUBY
+    end
+
+    it "when `share/\"foo\"` is used instead of `pkgshare`" do
+      expect_offense(<<~RUBY, "/homebrew-core/Formula/foo.rb")
+        class Foo < Formula
+          def install
+            ohai share/"foo"
+                 ^^^^^^^^^^^ Use `pkgshare` instead of `share/"foo"`
+          end
+        end
+      RUBY
+    end
+
+    it "when `share/\"foo/bar\"` is used instead of `pkgshare`" do
+      expect_offense(<<~RUBY, "/homebrew-core/Formula/foo.rb")
+        class Foo < Formula
+          def install
+            ohai share/"foo/bar"
+                 ^^^^^^^^^^^^^^^ Use `pkgshare` instead of `share/"foo"`
+          end
+        end
+      RUBY
+    end
+
+    it "when `share/\"foolibc++\"` is used instead of `pkgshare`" do
+      expect_offense(<<~RUBY, "/homebrew-core/Formula/foolibc++.rb")
+        class Foo < Formula
+          def install
+            ohai share/"foolibc++"
+                 ^^^^^^^^^^^^^^^^^ Use `pkgshare` instead of `share/"foolibc++"`
+          end
+        end
+      RUBY
+    end
+
+    it "when `\#{share}/foo-bar` doesn't match formula name" do
+      expect_no_offenses(<<~RUBY, "/homebrew-core/Formula/foo.rb")
+        class Foo < Formula
+          def install
+            ohai "\#{share}/foo-bar"
+          end
+        end
+      RUBY
+    end
+
+    it "when `share/foo-bar` doesn't match formula name" do
+      expect_no_offenses(<<~RUBY, "/homebrew-core/Formula/foo.rb")
+        class Foo < Formula
+          def install
+            ohai share/"foo-bar"
+          end
+        end
+      RUBY
+    end
+
+    it "when `share/bar` doesn't match formula name" do
+      expect_no_offenses(<<~RUBY, "/homebrew-core/Formula/foo.rb")
+        class Foo < Formula
+          def install
+            ohai share/"bar"
+          end
+        end
+      RUBY
+    end
   end
 end

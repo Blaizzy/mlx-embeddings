@@ -848,20 +848,10 @@ module Homebrew
       # TODO: check could be in RuboCop
       problem "`#{Regexp.last_match(1)}` is now unnecessary" if line =~ /(require ["']formula["'])/
 
-      if line.match?(%r{#\{share\}/#{Regexp.escape(formula.name)}[/'"]})
-        # TODO: check could be in RuboCop
-        problem "Use \#{pkgshare} instead of \#{share}/#{formula.name}"
-      end
+      return unless !@core_tap && line =~ /depends_on .+ if build\.with(out)?\?\(?["']\w+["']\)?/
 
-      if !@core_tap && line =~ /depends_on .+ if build\.with(out)?\?\(?["']\w+["']\)?/
-        # TODO: check could be in RuboCop
-        problem "`Use :optional` or `:recommended` instead of `#{Regexp.last_match(0)}`"
-      end
-
-      if line =~ %r{share(\s*[/+]\s*)(['"])#{Regexp.escape(formula.name)}(?:\2|/)}
-        # TODO: check could be in RuboCop
-        problem "Use pkgshare instead of (share#{Regexp.last_match(1)}\"#{formula.name}\")"
-      end
+      # TODO: check could be in RuboCop
+      problem "`Use :optional` or `:recommended` instead of `#{Regexp.last_match(0)}`"
     end
 
     def audit_reverse_migration

@@ -179,60 +179,6 @@ module Homebrew
       end
     end
 
-    # Intentionally outputted non-interpolated strings
-    # rubocop:disable Lint/InterpolationCheck
-    describe "#line_problems" do
-      specify "pkgshare" do
-        fa = formula_auditor "foo", <<~RUBY, strict: true
-          class Foo < Formula
-            url "https://brew.sh/foo-1.0.tgz"
-          end
-        RUBY
-
-        fa.line_problems 'ohai "#{share}/foo"', 3
-        expect(fa.problems.shift).to eq("Use \#{pkgshare} instead of \#{share}/foo")
-
-        fa.line_problems 'ohai "#{share}/foo/bar"', 3
-        expect(fa.problems.shift).to eq("Use \#{pkgshare} instead of \#{share}/foo")
-
-        fa.line_problems 'ohai share/"foo"', 3
-        expect(fa.problems.shift).to eq('Use pkgshare instead of (share/"foo")')
-
-        fa.line_problems 'ohai share/"foo/bar"', 3
-        expect(fa.problems.shift).to eq('Use pkgshare instead of (share/"foo")')
-
-        fa.line_problems 'ohai "#{share}/foo-bar"', 3
-        expect(fa.problems).to eq([])
-
-        fa.line_problems 'ohai share/"foo-bar"', 3
-        expect(fa.problems).to eq([])
-
-        fa.line_problems 'ohai share/"bar"', 3
-        expect(fa.problems).to eq([])
-      end
-
-      # Regression test for https://github.com/Homebrew/legacy-homebrew/pull/48744
-      # Formulae with "++" in their name would break various audit regexps:
-      #   Error: nested *?+ in regexp: /^libxml++3\s/
-      specify "++ in name" do
-        fa = formula_auditor "foolibc++", <<~RUBY, strict: true
-          class Foolibcxx < Formula
-            desc "foolibc++ is a test"
-            url "https://brew.sh/foo-1.0.tgz"
-          end
-        RUBY
-
-        fa.line_problems 'ohai "#{share}/foolibc++"', 3
-        expect(fa.problems.shift)
-          .to eq("Use \#{pkgshare} instead of \#{share}/foolibc++")
-
-        fa.line_problems 'ohai share/"foolibc++"', 3
-        expect(fa.problems.shift)
-          .to eq('Use pkgshare instead of (share/"foolibc++")')
-      end
-    end
-    # rubocop:enable Lint/InterpolationCheck
-
     describe "#audit_github_repository" do
       specify "#audit_github_repository when HOMEBREW_NO_GITHUB_API is set" do
         ENV["HOMEBREW_NO_GITHUB_API"] = "1"

@@ -121,6 +121,20 @@ module RuboCop
             problem "`env :userpaths` in homebrew/core formulae is deprecated"
           end
 
+          body_node.each_descendant(:dstr) do |dstr_node|
+            next unless match = dstr_node.source.match(%r{(\#{share}/#{Regexp.escape(@formula_name)})[ /"]})
+
+            offending_node(dstr_node)
+            problem "Use `\#{pkgshare}` instead of `#{match[1]}`"
+          end
+
+          find_every_method_call_by_name(body_node, :share).each do |share_node|
+            if match = share_node.parent.source.match(%r{(share\s*[/+]\s*"#{Regexp.escape(@formula_name)})[/"]})
+              offending_node(share_node.parent)
+              problem "Use `pkgshare` instead of `#{match[1]}\"`"
+            end
+          end
+
           return unless formula_tap == "homebrew-core"
 
           find_method_with_args(body_node, :env, :std) do
