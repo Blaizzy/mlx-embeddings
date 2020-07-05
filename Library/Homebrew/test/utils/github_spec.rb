@@ -49,6 +49,14 @@ describe GitHub do
     end
   end
 
+  describe "::sponsors_by_tier", :needs_network do
+    it "errors on an unauthenticated token" do
+      expect {
+        subject.sponsors_by_tier("Homebrew")
+      }.to raise_error(/INSUFFICIENT_SCOPES|FORBIDDEN/)
+    end
+  end
+
   describe "::get_artifact_url", :needs_network do
     it "fails to find a nonexistant workflow" do
       expect {
