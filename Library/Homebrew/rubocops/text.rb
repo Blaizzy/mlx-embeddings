@@ -93,6 +93,19 @@ module RuboCop
             offending_node(n)
             problem "Use `depends_on :java` to set JAVA_HOME"
           end
+
+          find_strings(body_node).each do |n|
+            # Skip strings that don't start with one of the keywords
+            next unless regex_match_group(n, %r{^(bin|include|libexec|lib|sbin|share|Frameworks)/?})
+
+            parent = n.parent
+            # Only look at keywords that have `prefix` before them
+            prefix_keyword_regex = %r{(prefix\s*\+\s*["'](bin|include|libexec|lib|sbin|share|Frameworks))["'/]}
+            if match = parent.source.match(prefix_keyword_regex)
+              offending_node(parent)
+              problem "Use `#{match[2].downcase}` instead of `#{match[1]}\"`"
+            end
+          end
         end
       end
     end

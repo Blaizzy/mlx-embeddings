@@ -292,6 +292,28 @@ describe RuboCop::Cop::FormulaAudit::Text do
         end
       RUBY
     end
+
+    it "When using `prefix + \"bin\"` instead of `bin`" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          def install
+            ohai prefix + "bin"
+                 ^^^^^^^^^^^^^^ Use `bin` instead of `prefix + "bin"`
+          end
+        end
+      RUBY
+    end
+
+    it "When using `prefix + \"bin/foo\"` instead of `bin`" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          def install
+            ohai prefix + "bin/foo"
+                 ^^^^^^^^^^^^^^^^^^ Use `bin` instead of `prefix + "bin"`
+          end
+        end
+      RUBY
+    end
   end
 end
 

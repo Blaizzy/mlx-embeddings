@@ -843,15 +843,6 @@ module Homebrew
         problem "Don't need to interpolate \"#{Regexp.last_match(2)}\" with #{Regexp.last_match(1)}"
       end
 
-      # Prefer formula path shortcuts in Pathname+
-      if line =~ %r{\(\s*(prefix\s*\+\s*(['"])(bin|include|libexec|lib|sbin|share|Frameworks)[/'"])}
-        # TODO: check could be in RuboCop
-        problem(
-          "\"(#{Regexp.last_match(1)}...#{Regexp.last_match(2)})\" should" \
-          " be \"(#{Regexp.last_match(3).downcase}+...)\"",
-        )
-      end
-
       return unless @strict
 
       # TODO: check could be in RuboCop
