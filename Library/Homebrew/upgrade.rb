@@ -161,8 +161,8 @@ module Homebrew
     # Assess the dependents tree again now we've upgraded.
     oh1 "Checking for dependents of upgraded formulae..." unless args.dry_run?
     broken_dependents = CacheStoreDatabase.use(:linkage) do |db|
-      formulae_to_install.flat_map(&:runtime_installed_formula_dependents)
-                         .select do |f|
+      installed_formulae.flat_map(&:runtime_installed_formula_dependents)
+                        .select do |f|
         keg = f.opt_or_installed_prefix_keg
         next unless keg
 
