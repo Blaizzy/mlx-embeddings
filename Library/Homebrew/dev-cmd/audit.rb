@@ -868,9 +868,6 @@ module Homebrew
       return unless @strict
 
       # TODO: check could be in RuboCop
-      problem "`env :userpaths` in formulae is deprecated" if line.include?("env :userpaths")
-
-      # TODO: check could be in RuboCop
       problem "`#{Regexp.last_match(1)}` is now unnecessary" if line =~ /(require ["']formula["'])/
 
       if line.match?(%r{#\{share\}/#{Regexp.escape(formula.name)}[/'"]})

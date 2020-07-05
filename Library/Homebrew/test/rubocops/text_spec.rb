@@ -233,6 +233,17 @@ describe RuboCop::Cop::FormulaAuditStrict::Text do
   subject(:cop) { described_class.new }
 
   context "When auditing formula text" do
+    it "when deprecated `env :userpaths` is present" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          url "https://brew.sh/foo-1.0.tgz"
+
+          env :userpaths
+          ^^^^^^^^^^^^^^ `env :userpaths` in homebrew/core formulae is deprecated
+        end
+      RUBY
+    end
+
     it "when deprecated `env :std` is present in homebrew-core" do
       expect_offense(<<~RUBY, "/homebrew-core/")
         class Foo < Formula

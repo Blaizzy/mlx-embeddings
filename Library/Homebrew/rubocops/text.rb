@@ -80,6 +80,10 @@ module RuboCop
             problem "`go_resource`s are deprecated. Please ask upstream to implement Go vendoring"
           end
 
+          find_method_with_args(body_node, :env, :userpaths) do
+            problem "`env :userpaths` in homebrew/core formulae is deprecated"
+          end
+
           return unless formula_tap == "homebrew-core"
 
           find_method_with_args(body_node, :env, :std) do
