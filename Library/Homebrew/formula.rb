@@ -1112,13 +1112,15 @@ class Formula
       return false if tab_tap.nil?
 
       begin
-        Formulary.factory(keg.name)
+        f = Formulary.factory(keg.name)
       rescue FormulaUnavailableError
         # formula for this keg is deleted, so defer to allowlist
       rescue TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
         return false # this keg belongs to another formula
       else
-        return false # this keg belongs to another formula
+        # this keg belongs to another formula
+        # but it is not an alias
+        return false unless f.aliases.include? keg.name
       end
     end
     to_check = path.relative_path_from(HOMEBREW_PREFIX).to_s
