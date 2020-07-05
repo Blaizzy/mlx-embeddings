@@ -887,11 +887,6 @@ module Homebrew
         # TODO: check could be in RuboCop
         problem "Use pkgshare instead of (share#{Regexp.last_match(1)}\"#{formula.name}\")"
       end
-
-      return unless @core_tap
-
-      # TODO: check could be in RuboCop
-      problem "`env :std` in homebrew/core formulae is deprecated" if line.include?("env :std")
     end
 
     def audit_reverse_migration

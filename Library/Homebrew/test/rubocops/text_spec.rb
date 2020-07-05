@@ -228,3 +228,20 @@ describe RuboCop::Cop::FormulaAudit::Text do
     end
   end
 end
+
+describe RuboCop::Cop::FormulaAuditStrict::Text do
+  subject(:cop) { described_class.new }
+
+  context "When auditing formula text" do
+    it "when deprecated `env :std` is present in homebrew-core" do
+      expect_offense(<<~RUBY, "/homebrew-core/")
+        class Foo < Formula
+          url "https://brew.sh/foo-1.0.tgz"
+
+          env :std
+          ^^^^^^^^ `env :std` in homebrew/core formulae is deprecated
+        end
+      RUBY
+    end
+  end
+end
