@@ -852,13 +852,6 @@ module Homebrew
         )
       end
 
-      if line =~ /JAVA_HOME/i &&
-         [formula.name, *formula.deps.map(&:name)].none? { |name| name.match?(/^openjdk(@|$)/) } &&
-         formula.requirements.none? { |req| req.is_a?(JavaRequirement) }
-        # TODO: check could be in RuboCop
-        problem "Use `depends_on :java` to set JAVA_HOME"
-      end
-
       return unless @strict
 
       # TODO: check could be in RuboCop

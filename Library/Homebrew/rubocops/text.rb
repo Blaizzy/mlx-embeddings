@@ -78,6 +78,21 @@ module RuboCop
               problem "Do not concatenate paths in string interpolation"
             end
           end
+
+          find_strings(body_node).each do |n|
+            next unless regex_match_group(n, /JAVA_HOME/i)
+
+            next if @formula_name.match?(/^openjdk(@|$)/)
+
+            next if find_every_method_call_by_name(body_node, :depends_on).any? do |dependency|
+              dependency.each_descendant(:str).count.zero? ||
+              regex_match_group(dependency.each_descendant(:str).first, /^openjdk(@|$)/) ||
+              depends_on?(:java)
+            end
+
+            offending_node(n)
+            problem "Use `depends_on :java` to set JAVA_HOME"
+          end
         end
       end
     end
