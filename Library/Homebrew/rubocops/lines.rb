@@ -267,7 +267,7 @@ module RuboCop
           shell_metacharacters = %w[> < < | ; : & * $ ? : ~ + @ !` ( ) [ ]]
 
           find_every_method_call_by_name(body_node, :system).each do |method|
-            # Continue if a shell metacharacter is present
+            # Only separate when no shell metacharacters are present
             next if shell_metacharacters.any? { |meta| string_content(parameters(method).first).include?(meta) }
 
             next unless match = regex_match_group(parameters(method).first, shell_cmd_with_spaces_regex)
@@ -281,7 +281,7 @@ module RuboCop
             find_instance_method_call(body_node, "Utils", command) do |method|
               index = parameters(method).first.hash_type? ? 1 : 0
 
-              # Continue if a shell metacharacter is present
+              # Only separate when no shell metacharacters are present
               next if shell_metacharacters.any? { |meta| string_content(parameters(method)[index]).include?(meta) }
 
               next unless match = regex_match_group(parameters(method)[index], shell_cmd_with_spaces_regex)

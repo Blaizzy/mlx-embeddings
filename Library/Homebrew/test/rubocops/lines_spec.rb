@@ -715,6 +715,111 @@ describe RuboCop::Cop::FormulaAudit::ShellCommands do
         end
       RUBY
     end
+
+    it "separates shell commands in system" do
+      source = <<~RUBY
+        class Foo < Formula
+          def install
+            system "foo bar"
+          end
+        end
+      RUBY
+
+      corrected_source = <<~RUBY
+        class Foo < Formula
+          def install
+            system "foo", "bar"
+          end
+        end
+      RUBY
+
+      new_source = autocorrect_source(source)
+      expect(new_source).to eq(corrected_source)
+    end
+
+    it "separates shell commands with string interpolation in system" do
+      source = <<~RUBY
+        class Foo < Formula
+          def install
+            system "\#{foo}/bar baz"
+          end
+        end
+      RUBY
+
+      corrected_source = <<~RUBY
+        class Foo < Formula
+          def install
+            system "\#{foo}/bar", "baz"
+          end
+        end
+      RUBY
+
+      new_source = autocorrect_source(source)
+      expect(new_source).to eq(corrected_source)
+    end
+
+    it "separates shell commands in Utils.popen_read" do
+      source = <<~RUBY
+        class Foo < Formula
+          def install
+            Utils.popen_read("foo bar")
+          end
+        end
+      RUBY
+
+      corrected_source = <<~RUBY
+        class Foo < Formula
+          def install
+            Utils.popen_read("foo", "bar")
+          end
+        end
+      RUBY
+
+      new_source = autocorrect_source(source)
+      expect(new_source).to eq(corrected_source)
+    end
+
+    it "separates shell commands with string interpolation in Utils.popen_read" do
+      source = <<~RUBY
+        class Foo < Formula
+          def install
+            Utils.popen_read("\#{foo}/bar baz")
+          end
+        end
+      RUBY
+
+      corrected_source = <<~RUBY
+        class Foo < Formula
+          def install
+            Utils.popen_read("\#{foo}/bar", "baz")
+          end
+        end
+      RUBY
+
+      new_source = autocorrect_source(source)
+      expect(new_source).to eq(corrected_source)
+    end
+
+    it "separates shell commands following a shell variable in Utils.popen_read" do
+      source = <<~RUBY
+        class Foo < Formula
+          def install
+            Utils.popen_read({ "SHELL" => "bash" }, "foo bar")
+          end
+        end
+      RUBY
+
+      corrected_source = <<~RUBY
+        class Foo < Formula
+          def install
+            Utils.popen_read({ "SHELL" => "bash" }, "foo", "bar")
+          end
+        end
+      RUBY
+
+      new_source = autocorrect_source(source)
+      expect(new_source).to eq(corrected_source)
+    end
   end
 end
 
