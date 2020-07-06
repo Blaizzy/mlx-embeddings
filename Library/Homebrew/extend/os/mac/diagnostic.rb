@@ -12,6 +12,7 @@ module Homebrew
           check_xcode_minimum_version
           check_clt_minimum_version
           check_if_xcode_needs_clt_installed
+          check_if_supported_sdk_available
         ].freeze
       end
 
@@ -355,6 +356,34 @@ module Homebrew
           You have the following deprecated, cask taps tapped:
             #{tapped_caskroom_taps.join("\n  ")}
           Untap them with `brew untap`.
+        EOS
+      end
+
+      def check_if_supported_sdk_available
+        return unless MacOS.sdk_root_needed?
+        return if MacOS.sdk
+
+        locator = MacOS.sdk_locator
+
+        source = if locator.source == :clt
+          "CLT"
+        else
+          "Xcode"
+        end
+
+        all_sdks = locator.all_sdks
+        sdks_found_msg = unless all_sdks.empty?
+          <<~EOS
+            Homebrew found the following SDKs in the #{source} install:
+              #{locator.all_sdks.map(&:version).join("\n  ")}
+          EOS
+        end
+
+        <<~EOS
+          Could not find an SDK that supports macOS #{MacOS.version}.
+          You may have have an outdated or incompatible #{source}.
+          #{sdks_found_msg}
+          Please update #{source} or uninstall it if no updates are available.
         EOS
       end
     end

@@ -17,6 +17,9 @@ module Homebrew
              description: "Apply the bottle commit and upload the bottles, but don't publish them."
       switch "-n", "--dry-run",
              description: "Print what would be done rather than doing it."
+      switch "--warn-on-upload-failure",
+             description: "Warn instead of raising an error if the bottle upload fails. "\
+                          "Useful for repairing bottle uploads that previously failed."
       flag   "--bintray-org=",
              description: "Upload to the specified Bintray organisation (default: `homebrew`)."
       flag   "--root-url=",
@@ -42,13 +45,15 @@ module Homebrew
     if args.dry_run?
       puts "brew #{bottle_args.join " "}"
     else
-      system HOMEBREW_BREW_FILE, *bottle_args
+      safe_system HOMEBREW_BREW_FILE, *bottle_args
     end
 
     if args.dry_run?
       puts "Upload bottles described by these JSON files to Bintray:\n  #{Dir["*.json"].join("\n  ")}"
     else
-      bintray.upload_bottle_json Dir["*.json"], publish_package: !args.no_publish?
+      bintray.upload_bottle_json(Dir["*.json"],
+                                 publish_package: !args.no_publish?,
+                                 warn_on_error:   args.warn_on_upload_failure?)
     end
   end
 end

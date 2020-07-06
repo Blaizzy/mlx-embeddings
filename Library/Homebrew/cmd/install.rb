@@ -7,6 +7,7 @@ require "install"
 require "search"
 require "cleanup"
 require "cli/parser"
+require "upgrade"
 
 module Homebrew
   module_function
@@ -261,6 +262,9 @@ module Homebrew
       install_formula(f)
       Cleanup.install_formula_clean!(f)
     end
+
+    check_installed_dependents
+
     Homebrew.messages.display_messages
   rescue FormulaUnreadableError, FormulaClassUnavailableError,
          TapFormulaUnreadableError, TapFormulaClassUnavailableError => e

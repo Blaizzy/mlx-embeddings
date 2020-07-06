@@ -85,6 +85,10 @@ module Homebrew
           cargo is part of the rust formula:
             brew install rust
         EOS
+        when "cargo-completion" then <<~EOS
+          cargo-completion is part of the rust formula:
+            brew install rust
+        EOS
         when "uconv" then <<~EOS
           uconv is part of the icu4c formula:
             brew install icu4c

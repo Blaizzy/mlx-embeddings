@@ -24,13 +24,13 @@ The Python formulae install [pip](https://pip.pypa.io/) (as `pip3`) and [Setupto
 Setuptools can be updated via pip3, without having to re-brew Python:
 
 ```sh
-python3 -m pip3 install --upgrade setuptools
+python3 -m pip install --upgrade setuptools
 ```
 
 Similarly, pip3 can be used to upgrade itself via:
 
 ```sh
-python3 -m pip3 install --upgrade pip3
+python3 -m pip install --upgrade pip
 ```
 
 ## `site-packages` and the `PYTHONPATH`

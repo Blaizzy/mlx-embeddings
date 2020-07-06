@@ -3,7 +3,7 @@
 require "exceptions"
 
 describe MultipleVersionsInstalledError do
-  subject { described_class.new("foo") }
+  subject { described_class.new("foo has multiple installed versions") }
 
   its(:to_s) { is_expected.to eq("foo has multiple installed versions") }
 end

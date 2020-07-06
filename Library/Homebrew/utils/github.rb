@@ -231,6 +231,15 @@ module GitHub
     end
   end
 
+  def open_graphql(query, scopes: [].freeze)
+    data = { query: query }
+    result = open_api("https://api.github.com/graphql", scopes: scopes, data: data, request_method: "POST")
+
+    raise Error, result["errors"].map { |e| "#{e["type"]}: #{e["message"]}" }.join("\n") if result["errors"].present?
+
+    result["data"]
+  end
+
   def raise_api_error(output, errors, http_code, headers, scopes)
     json = begin
       JSON.parse(output)
@@ -429,6 +438,48 @@ module GitHub
     open_api(uri) { |json| json.fetch("items", []) }
   end
 
+  def approved_reviews(user, repo, pr, commit: nil)
+    query = <<~EOS
+      { repository(name: "#{repo}", owner: "#{user}") {
+          pullRequest(number: #{pr}) {
+            reviews(states: APPROVED, first: 100) {
+              nodes {
+                author {
+                  ... on User { email login name databaseId }
+                  ... on Organization { email login name databaseId }
+                }
+                authorAssociation
+                commit { oid }
+              }
+            }
+          }
+        }
+      }
+    EOS
+
+    result = open_graphql(query, scopes: ["user:email"])
+    reviews = result["repository"]["pullRequest"]["reviews"]["nodes"]
+
+    reviews.map do |r|
+      next if commit.present? && commit != r["commit"]["oid"]
+      next unless %w[MEMBER OWNER].include? r["authorAssociation"]
+
+      email = if r["author"]["email"].blank?
+        "#{r["author"]["databaseId"]}+#{r["author"]["login"]}@users.noreply.github.com"
+      else
+        r["author"]["email"]
+      end
+
+      name = r["author"]["name"].presence || r["author"]["login"]
+
+      {
+        "email" => email,
+        "name"  => name,
+        "login" => r["author"]["login"],
+      }
+    end.compact
+  end
+
   def dispatch_event(user, repo, event, **payload)
     url = "#{API_URL}/repos/#{user}/#{repo}/dispatches"
     open_api(url, data:           { event_type: event, client_payload: payload },
@@ -484,20 +535,21 @@ module GitHub
   end
 
   def sponsors_by_tier(user)
-    url = "https://api.github.com/graphql"
-    data = {
-      query: <<~EOS,
-          {
-            organization(login: "#{user}") {
-              sponsorsListing {
-                tiers(first: 100) {
-                  nodes {
-                    monthlyPriceInDollars
-                    adminInfo {
-                    sponsorships(first: 100) {
-                      totalCount
-                      nodes {
-                        sponsor { login }
+    query = <<~EOS
+        { organization(login: "#{user}") {
+          sponsorsListing {
+            tiers(first: 10, orderBy: {field: MONTHLY_PRICE_IN_CENTS, direction: DESC}) {
+              nodes {
+                monthlyPriceInDollars
+                adminInfo {
+                  sponsorships(first: 100, includePrivate: true) {
+                    totalCount
+                    nodes {
+                      privacyLevel
+                      sponsorEntity {
+                        __typename
+                        ... on Organization { login name }
+                        ... on User { login name }
                       }
                     }
                   }
@@ -506,9 +558,44 @@ module GitHub
             }
           }
         }
-      EOS
-    }
-    open_api(url, scopes: ["admin:org", "user"], data: data, request_method: "POST")
+      }
+    EOS
+    result = open_graphql(query, scopes: ["admin:org", "user"])
+
+    tiers = result["organization"]["sponsorsListing"]["tiers"]["nodes"]
+
+    tiers.map do |t|
+      tier = t["monthlyPriceInDollars"]
+      raise Error, "Your token needs the 'admin:org' scope to access this API" if t["adminInfo"].nil?
+
+      sponsorships = t["adminInfo"]["sponsorships"]
+      count = sponsorships["totalCount"]
+      sponsors = sponsorships["nodes"].map do |sponsor|
+        next unless sponsor["privacyLevel"] == "PUBLIC"
+
+        se = sponsor["sponsorEntity"]
+        {
+          "name"  => se["name"].presence || sponsor["login"],
+          "login" => se["login"],
+          "type"  => se["__typename"].downcase,
+        }
+      end.compact
+
+      {
+        "tier"     => tier,
+        "count"    => count,
+        "sponsors" => sponsors,
+      }
+    end.compact
+  end
+
+  def get_repo_license(user, repo)
+    response = GitHub.open_api("#{GitHub::API_URL}/repos/#{user}/#{repo}/license")
+    return unless response.key?("license")
+
+    response["license"]["spdx_id"]
+  rescue GitHub::HTTPNotFoundError
+    nil
   end
 
   def api_errors
