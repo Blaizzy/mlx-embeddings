@@ -69,15 +69,15 @@ module Cask
       end
 
       caveat :unsigned_accessibility do |access = "Accessibility"|
-        # access: the category in System Preferences -> Security & Privacy -> Privacy the app requires.
+        # access: the category in System Preferences > Security & Privacy > Privacy the app requires.
 
         <<~EOS
           #{@cask} is not signed and requires Accessibility access,
           so you will need to re-grant Accessibility access every time the app is updated.
 
           Enable or re-enable it in:
-            System Preferences → Security & Privacy → Privacy -> #{access}
-          To re-enable untick and retick #{@cask}.app.
+            System Preferences → Security & Privacy → Privacy → #{access}
+          To re-enable, untick and retick #{@cask}.app.
         EOS
       end
 

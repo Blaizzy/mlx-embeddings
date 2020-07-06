@@ -133,8 +133,11 @@ module Cask
 
       sig { returns(String) }
       def automation_access_instructions
-        "Enable Automation Access for “Terminal > System Events” in " \
-        "“System Preferences > Security > Privacy > Automation” if you haven't already."
+        <<~EOS
+          Enable Automation access for "Terminal → System Events" in:
+            System Preferences → Security & Privacy → Privacy → Automation
+          if you haven't already.
+        EOS
       end
 
       # :quit/:signal must come before :kext so the kext will not be in use by a running process
