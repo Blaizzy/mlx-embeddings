@@ -92,7 +92,7 @@ odie() {
 }
 
 safe_cd() {
-  cd "$@" >/dev/null || odie "Error: failed to cd to $*!"
+  cd "$@" >/dev/null || odie "Failed to cd to $*!"
 }
 
 brew() {
