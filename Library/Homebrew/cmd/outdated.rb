@@ -46,6 +46,10 @@ module Homebrew
   def outdated
     outdated_args.parse
 
+    if args.json
+      raise UsageError, "invalid JSON version: #{args.json}" unless ["v1", true].include? args.json
+    end
+
     if args.formula_only? || !args.cask_only? && args.json
       formulae = args.resolved_formulae.blank? ? Formula.installed : args.resolved_formulae
       outdated = print_outdated_formulae(formulae)
@@ -72,11 +76,7 @@ module Homebrew
   end
 
   def print_outdated_formulae(formulae)
-    if args.json
-      raise UsageError, "invalid JSON version: #{args.json}" unless ["v1", true].include? args.json
-
-      return print_outdated_formulae_json(formulae)
-    end
+    return print_outdated_formulae_json(formulae) if args.json
 
     fetch_head = args.fetch_HEAD?
 
@@ -143,7 +143,7 @@ module Homebrew
       cask.outdated?(args.greedy?)
     end
 
-    output = outdated.map { |cask| cask.outdated_info(args.greedy?, verbose?, args.json?) }
+    output = outdated.map { |cask| cask.outdated_info(args.greedy?, verbose?, args.json) }
     puts args.json ? JSON.generate(output) : output
 
     outdated
