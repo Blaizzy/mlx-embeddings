@@ -924,6 +924,8 @@ Apply the bottle commit and publish bottles to Bintray.
 
 * `--no-publish`:
   Apply the bottle commit and upload the bottles, but don't publish them.
+* `--keep-old`:
+  If the formula specifies a rebuild version, attempt to preserve its value in the generated DSL.
 * `-n`, `--dry-run`:
   Print what would be done rather than doing it.
 * `--warn-on-upload-failure`:
