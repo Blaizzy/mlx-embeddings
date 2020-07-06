@@ -29,14 +29,7 @@ class KegUnspecifiedError < UsageError
   end
 end
 
-class MultipleVersionsInstalledError < RuntimeError
-  attr_reader :name
-
-  def initialize(name)
-    @name = name
-    super "#{name} has multiple installed versions"
-  end
-end
+class MultipleVersionsInstalledError < RuntimeError; end
 
 class NotAKegError < RuntimeError; end
 

@@ -6,6 +6,9 @@ require "messages"
 require "reinstall"
 require "cli/parser"
 require "cleanup"
+require "cask/cmd"
+require "cask/utils"
+require "cask/macos"
 require "upgrade"
 
 module Homebrew
@@ -57,7 +60,8 @@ module Homebrew
 
     Install.perform_preinstall_checks
 
-    args.resolved_formulae.each do |f|
+    resolved_formulae, casks = args.resolved_formulae_casks
+    resolved_formulae.each do |f|
       if f.pinned?
         onoe "#{f.full_name} is pinned. You must unpin it to reinstall."
         next
@@ -70,5 +74,12 @@ module Homebrew
     check_installed_dependents
 
     Homebrew.messages.display_messages
+
+    return if casks.blank?
+
+    reinstall_cmd = Cask::Cmd::Reinstall.new(casks)
+    reinstall_cmd.verbose = args.verbose?
+    reinstall_cmd.force = args.force?
+    reinstall_cmd.run
   end
 end
