@@ -36,9 +36,11 @@ module Homebrew
         # Reset cache values reliant on named_args
         @formulae = nil
         @resolved_formulae = nil
+        @resolved_formulae_casks = nil
         @formulae_paths = nil
         @casks = nil
         @kegs = nil
+        @kegs_casks = nil
 
         self[:named_args] = named_args
         self[:named_args].freeze
@@ -96,6 +98,25 @@ module Homebrew
         end.uniq(&:name).freeze
       end
 
+      def resolved_formulae_casks
+        @resolved_formulae_casks ||= begin
+          resolved_formulae = []
+          casks = []
+
+          downcased_unique_named.each do |name|
+            resolved_formulae << Formulary.resolve(name, spec: spec(nil))
+          rescue FormulaUnavailableError
+            begin
+              casks << Cask::CaskLoader.load(name)
+            rescue Cask::CaskUnavailableError
+              raise "No available formula or cask with the name \"#{name}\""
+            end
+          end
+
+          [resolved_formulae.freeze, casks.freeze].freeze
+        end
+      end
+
       def formulae_paths
         @formulae_paths ||= (downcased_unique_named - casks).map do |name|
           Formulary.path(name)
@@ -108,55 +129,33 @@ module Homebrew
       end
 
       def kegs
-        require "keg"
-        require "formula"
-        require "missing_formula"
-
         @kegs ||= downcased_unique_named.map do |name|
-          raise UsageError if name.empty?
-
-          rack = Formulary.to_rack(name.downcase)
-
-          dirs = rack.directory? ? rack.subdirs : []
-
-          if dirs.empty?
-            if (reason = Homebrew::MissingFormula.suggest_command(name, "uninstall"))
-              $stderr.puts reason
-            end
-            raise NoSuchKegError, rack.basename
+          resolve_keg name
+        rescue NoSuchKegError => e
+          if (reason = Homebrew::MissingFormula.suggest_command(name, "uninstall"))
+            $stderr.puts reason
           end
-
-          linked_keg_ref = HOMEBREW_LINKED_KEGS/rack.basename
-          opt_prefix = HOMEBREW_PREFIX/"opt/#{rack.basename}"
-
-          begin
-            if opt_prefix.symlink? && opt_prefix.directory?
-              Keg.new(opt_prefix.resolved_path)
-            elsif linked_keg_ref.symlink? && linked_keg_ref.directory?
-              Keg.new(linked_keg_ref.resolved_path)
-            elsif dirs.length == 1
-              Keg.new(dirs.first)
-            else
-              f = if name.include?("/") || File.exist?(name)
-                Formulary.factory(name)
-              else
-                Formulary.from_rack(rack)
-              end
-
-              unless (prefix = f.installed_prefix).directory?
-                raise MultipleVersionsInstalledError, rack.basename
-              end
-
-              Keg.new(prefix)
-            end
-          rescue FormulaUnavailableError
-            raise <<~EOS
-              Multiple kegs installed to #{rack}
-              However we don't know which one you refer to.
-              Please delete (with rm -rf!) all but one and then try again.
-            EOS
-          end
+          raise e
         end.freeze
+      end
+
+      def kegs_casks
+        @kegs_casks ||= begin
+          kegs = []
+          casks = []
+
+          downcased_unique_named.each do |name|
+            kegs << resolve_keg(name)
+          rescue NoSuchKegError
+            begin
+              casks << Cask::CaskLoader.load(name)
+            rescue Cask::CaskUnavailableError
+              raise "No installed keg or cask with the name \"#{name}\""
+            end
+          end
+
+          [kegs.freeze, casks.freeze].freeze
+        end
       end
 
       def build_stable?
@@ -239,6 +238,50 @@ module Homebrew
           :devel
         else
           default
+        end
+      end
+
+      def resolve_keg(name)
+        require "keg"
+        require "formula"
+        require "missing_formula"
+
+        raise UsageError if name.blank?
+
+        rack = Formulary.to_rack(name.downcase)
+
+        dirs = rack.directory? ? rack.subdirs : []
+        raise NoSuchKegError, rack.basename if dirs.empty?
+
+        linked_keg_ref = HOMEBREW_LINKED_KEGS/rack.basename
+        opt_prefix = HOMEBREW_PREFIX/"opt/#{rack.basename}"
+
+        begin
+          if opt_prefix.symlink? && opt_prefix.directory?
+            Keg.new(opt_prefix.resolved_path)
+          elsif linked_keg_ref.symlink? && linked_keg_ref.directory?
+            Keg.new(linked_keg_ref.resolved_path)
+          elsif dirs.length == 1
+            Keg.new(dirs.first)
+          else
+            f = if name.include?("/") || File.exist?(name)
+              Formulary.factory(name)
+            else
+              Formulary.from_rack(rack)
+            end
+
+            unless (prefix = f.installed_prefix).directory?
+              raise MultipleVersionsInstalledError, "#{rack.basename} has multiple installed versions"
+            end
+
+            Keg.new(prefix)
+          end
+        rescue FormulaUnavailableError
+          raise MultipleVersionsInstalledError, <<~EOS
+            Multiple kegs installed to #{rack}
+            However we don't know which one you refer to.
+            Please delete (with rm -rf!) all but one and then try again.
+          EOS
         end
       end
     end

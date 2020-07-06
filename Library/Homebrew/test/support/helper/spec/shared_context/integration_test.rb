@@ -46,7 +46,7 @@ RSpec.shared_context "integration test" do
 
     example.run
   ensure
-    FileUtils.rm_r HOMEBREW_PREFIX/"bin"
+    FileUtils.rm_rf HOMEBREW_PREFIX/"bin"
   end
 
   # Generate unique ID to be able to

@@ -12,6 +12,7 @@ abv
 analytics
 audit
 bottle
+bump
 bump-formula-pr
 bump-revision
 cask
@@ -71,6 +72,7 @@ ruby
 search
 sh
 shellenv
+sponsors
 style
 switch
 tap
@@ -86,6 +88,7 @@ unpin
 untap
 up
 update
+update-license-data
 update-report
 update-reset
 update-test

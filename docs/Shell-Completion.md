@@ -54,4 +54,16 @@ Additionally, if you receive "zsh compinit: insecure directories" warnings when 
 
 ## Configuring Completions in `fish`
 
-No configuration is needed in `fish`. Friendly!
+No configuration is needed if you're using Homebrew's `fish`. Friendly!
+
+If your `fish` is from somewhere else, add the following to your `~/.config/fish/config.fish`:
+
+```sh
+if test -d (brew --prefix)"/share/fish/completions"
+    set -gx fish_complete_path $fish_complete_path (brew --prefix)/share/fish/completions
+end
+
+if test -d (brew --prefix)"/share/fish/vendor_completions.d"
+    set -gx fish_complete_path $fish_complete_path (brew --prefix)/share/fish/vendor_completions.d
+end
+```

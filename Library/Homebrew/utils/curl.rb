@@ -54,21 +54,25 @@ def curl(*args, secrets: [], **options)
                   secrets:      secrets
 end
 
-def curl_download(*args, to: nil, **options)
+def curl_download(*args, to: nil, partial: true, **options)
   destination = Pathname(to)
   destination.dirname.mkpath
 
-  range_stdout = curl_output("--location", "--range", "0-1",
-                             "--dump-header", "-",
-                             "--write-out", "%\{http_code}",
-                             "--output", "/dev/null", *args, **options).stdout
-  headers, _, http_status = range_stdout.partition("\r\n\r\n")
+  if partial
+    range_stdout = curl_output("--location", "--range", "0-1",
+                               "--dump-header", "-",
+                               "--write-out", "%\{http_code}",
+                               "--output", "/dev/null", *args, **options).stdout
+    headers, _, http_status = range_stdout.partition("\r\n\r\n")
 
-  supports_partial_download = http_status.to_i == 206 # Partial Content
-  if supports_partial_download &&
-     destination.exist? &&
-     destination.size == %r{^.*Content-Range: bytes \d+-\d+/(\d+)\r\n.*$}m.match(headers)&.[](1)&.to_i
-    return # We've already downloaded all the bytes
+    supports_partial_download = http_status.to_i == 206 # Partial Content
+    if supports_partial_download &&
+       destination.exist? &&
+       destination.size == %r{^.*Content-Range: bytes \d+-\d+/(\d+)\r\n.*$}m.match(headers)&.[](1)&.to_i
+      return # We've already downloaded all the bytes
+    end
+  else
+    supports_partial_download = false
   end
 
   continue_at = if destination.exist? && supports_partial_download

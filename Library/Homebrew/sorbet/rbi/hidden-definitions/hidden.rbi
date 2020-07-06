@@ -6272,165 +6272,6 @@ module CopHelper
   extend ::RSpec::Its
 end
 
-module Coveralls
-  def noisy(); end
-
-  def noisy=(noisy); end
-
-  def noisy?(); end
-
-  def push!(); end
-
-  def run_locally(); end
-
-  def run_locally=(run_locally); end
-
-  def setup!(); end
-
-  def should_run?(); end
-
-  def start!(simplecov_setting=T.unsafe(nil), &block); end
-
-  def testing(); end
-
-  def testing=(testing); end
-
-  def wear!(simplecov_setting=T.unsafe(nil), &block); end
-
-  def wear_merged!(simplecov_setting=T.unsafe(nil), &block); end
-
-  def will_run?(); end
-  VERSION = ::T.let(nil, ::T.untyped)
-end
-
-class Coveralls::API
-  API_BASE = ::T.let(nil, ::T.untyped)
-  API_DOMAIN = ::T.let(nil, ::T.untyped)
-  API_HOST = ::T.let(nil, ::T.untyped)
-  API_PROTOCOL = ::T.let(nil, ::T.untyped)
-end
-
-class Coveralls::API
-  def self.apified_hash(hash); end
-
-  def self.build_client(uri); end
-
-  def self.build_request(path, hash); end
-
-  def self.build_request_body(hash, boundary); end
-
-  def self.disable_net_blockers!(); end
-
-  def self.endpoint_to_uri(endpoint); end
-
-  def self.hash_to_file(hash); end
-
-  def self.post_json(endpoint, hash); end
-end
-
-module Coveralls::Configuration
-end
-
-module Coveralls::Configuration
-  def self.configuration(); end
-
-  def self.configuration_path(); end
-
-  def self.git(); end
-
-  def self.pwd(); end
-
-  def self.rails_root(); end
-
-  def self.relevant_env(); end
-
-  def self.root(); end
-
-  def self.set_service_params_for_appveyor(config); end
-
-  def self.set_service_params_for_circleci(config); end
-
-  def self.set_service_params_for_coveralls_local(config); end
-
-  def self.set_service_params_for_gitlab(config); end
-
-  def self.set_service_params_for_jenkins(config); end
-
-  def self.set_service_params_for_semaphore(config); end
-
-  def self.set_service_params_for_tddium(config); end
-
-  def self.set_service_params_for_travis(config, service_name); end
-
-  def self.set_standard_service_params_for_generic_ci(config); end
-
-  def self.simplecov_root(); end
-
-  def self.yaml_config(); end
-end
-
-class Coveralls::NilFormatter
-  def format(result); end
-end
-
-class Coveralls::NilFormatter
-end
-
-module Coveralls::Output
-  def format(string, options=T.unsafe(nil)); end
-
-  def no_color(); end
-
-  def no_color=(no_color); end
-
-  def no_color?(); end
-
-  def output(); end
-
-  def output=(output); end
-
-  def print(string, options=T.unsafe(nil)); end
-
-  def puts(string, options=T.unsafe(nil)); end
-
-  def silent(); end
-
-  def silent=(silent); end
-
-  def silent?(); end
-end
-
-module Coveralls::Output
-  extend ::Coveralls::Output
-end
-
-module Coveralls::SimpleCov
-end
-
-class Coveralls::SimpleCov::Formatter
-  def display_error(e); end
-
-  def display_result(result); end
-
-  def format(result); end
-
-  def get_source_files(result); end
-
-  def output_message(result); end
-
-  def short_filename(filename); end
-end
-
-class Coveralls::SimpleCov::Formatter
-end
-
-module Coveralls::SimpleCov
-end
-
-module Coveralls
-  extend ::Coveralls
-end
-
 class DRb::DRbArray
   def _dump(lv); end
 end
@@ -6619,8 +6460,6 @@ DRbIdConv = DRb::DRbIdConv
 DRbObject = DRb::DRbObject
 
 DRbUndumped = DRb::DRbUndumped
-
-DSLKit = Tins
 
 class Date
   include ::DateAndTime::Zones
@@ -7034,10 +6873,6 @@ class Enumerator::Generator
   def initialize(*_); end
 end
 
-class Errno::EACCES
-  include ::Tins::Find::EXPECTED_STANDARD_ERRORS
-end
-
 class Errno::EAUTH
   Errno = ::T.let(nil, ::T.untyped)
 end
@@ -7102,14 +6937,6 @@ end
 class Errno::ELAST
 end
 
-class Errno::ELOOP
-  include ::Tins::Find::EXPECTED_STANDARD_ERRORS
-end
-
-class Errno::ENAMETOOLONG
-  include ::Tins::Find::EXPECTED_STANDARD_ERRORS
-end
-
 class Errno::ENEEDAUTH
   Errno = ::T.let(nil, ::T.untyped)
 end
@@ -7122,10 +6949,6 @@ class Errno::ENOATTR
 end
 
 class Errno::ENOATTR
-end
-
-class Errno::ENOENT
-  include ::Tins::Find::EXPECTED_STANDARD_ERRORS
 end
 
 class Errno::ENOPOLICY
@@ -7136,10 +6959,6 @@ class Errno::ENOPOLICY
 end
 
 Errno::ENOTCAPABLE = Errno::NOERROR
-
-class Errno::ENOTDIR
-  include ::Tins::Find::EXPECTED_STANDARD_ERRORS
-end
 
 class Errno::ENOTSUP
   Errno = ::T.let(nil, ::T.untyped)
@@ -12529,7 +12348,6 @@ end
 
 class Module
   include ::ActiveSupport::Dependencies::ModuleConstMissing
-  include ::Tins::Memoize::CacheMethods
   def alias_attribute(new_name, old_name); end
 
   def anonymous?(); end
@@ -12563,10 +12381,6 @@ class Module
   def mattr_reader(*syms, instance_reader: T.unsafe(nil), instance_accessor: T.unsafe(nil), default: T.unsafe(nil)); end
 
   def mattr_writer(*syms, instance_writer: T.unsafe(nil), instance_accessor: T.unsafe(nil), default: T.unsafe(nil)); end
-
-  def memoize_function(*function_ids); end
-
-  def memoize_method(*method_ids); end
 
   def method_visibility(method); end
 
@@ -13133,8 +12947,6 @@ end
 class Net::HTTPAlreadyReported
 end
 
-Net::HTTPClientError::EXCEPTION_TYPE = Net::HTTPServerException
-
 Net::HTTPClientErrorCode = Net::HTTPClientError
 
 Net::HTTPClientException = Net::HTTPServerException
@@ -13205,8 +13017,6 @@ end
 class Net::HTTPRangeNotSatisfiable
 end
 
-Net::HTTPRedirection::EXCEPTION_TYPE = Net::HTTPRetriableError
-
 Net::HTTPRedirectionCode = Net::HTTPRedirection
 
 class Net::HTTPRequestTimeout
@@ -13222,15 +13032,17 @@ Net::HTTPResponceReceiver = Net::HTTPResponse
 
 Net::HTTPRetriableCode = Net::HTTPRedirection
 
-Net::HTTPServerError::EXCEPTION_TYPE = Net::HTTPFatalError
-
 Net::HTTPServerErrorCode = Net::HTTPServerError
 
 Net::HTTPSession = Net::HTTP
 
-Net::HTTPSuccess::EXCEPTION_TYPE = Net::HTTPError
+class Net::HTTPSuccess
+end
 
-Net::HTTPSuccessCode = Net::HTTPSuccess
+Net::HTTPSuccessCode::EXCEPTION_TYPE = Net::HTTPError
+
+class Net::HTTPSuccess
+end
 
 class Net::HTTPURITooLong
   HAS_BODY = ::T.let(nil, ::T.untyped)
@@ -13346,7 +13158,6 @@ class Object
   include ::ActiveSupport::Dependencies::Loadable
   include ::ActiveSupport::Tryable
   include ::Minitest::Expectations
-  include ::Tins::Full
   include ::ActiveSupport::ToJsonWithActiveSupportEncoder
   def acts_like?(duck); end
 
@@ -20697,6 +20508,51 @@ end
 class SimpleCov::BlockFilter
 end
 
+module SimpleCov::Combine
+end
+
+module SimpleCov::Combine::BranchesCombiner
+end
+
+module SimpleCov::Combine::BranchesCombiner
+  def self.combine(coverage_a, coverage_b); end
+end
+
+module SimpleCov::Combine::FilesCombiner
+end
+
+module SimpleCov::Combine::FilesCombiner
+  def self.combine(coverage_a, coverage_b); end
+end
+
+module SimpleCov::Combine::LinesCombiner
+end
+
+module SimpleCov::Combine::LinesCombiner
+  def self.combine(coverage_a, coverage_b); end
+
+  def self.merge_line_coverage(first_val, second_val); end
+end
+
+module SimpleCov::Combine::ResultsCombiner
+end
+
+module SimpleCov::Combine::ResultsCombiner
+  def self.combine(*results); end
+
+  def self.combine_file_coverage(coverage_a, coverage_b); end
+
+  def self.combine_result_sets(combined_results, result); end
+end
+
+module SimpleCov::Combine
+  def self.combine(combiner_module, coverage_a, coverage_b); end
+
+  def self.empty_coverage?(coverage_a, coverage_b); end
+
+  def self.existing_coverage(coverage_a, coverage_b); end
+end
+
 module SimpleCov::CommandGuesser
 end
 
@@ -20717,13 +20573,29 @@ module SimpleCov::Configuration
 
   def at_exit(&block); end
 
+  def branch_coverage?(); end
+
+  def branch_coverage_supported?(); end
+
+  def clear_coverage_criteria(); end
+
   def command_name(name=T.unsafe(nil)); end
 
   def configure(&block); end
 
+  def coverage_criteria(); end
+
+  def coverage_criterion(criterion=T.unsafe(nil)); end
+
+  def coverage_criterion_enabled?(criterion); end
+
   def coverage_dir(dir=T.unsafe(nil)); end
 
   def coverage_path(); end
+
+  def coverage_start_arguments_supported?(); end
+
+  def enable_coverage(criterion); end
 
   def filters(); end
 
@@ -20751,6 +20623,10 @@ module SimpleCov::Configuration
 
   def nocov_token(nocov_token=T.unsafe(nil)); end
 
+  def print_error_status(); end
+
+  def print_error_status=(print_error_status); end
+
   def profiles(); end
 
   def project_name(new_name=T.unsafe(nil)); end
@@ -20766,9 +20642,29 @@ module SimpleCov::Configuration
   def tracked_files(); end
 
   def use_merging(use=T.unsafe(nil)); end
+  DEFAULT_COVERAGE_CRITERION = ::T.let(nil, ::T.untyped)
+  SUPPORTED_COVERAGE_CRITERIA = ::T.let(nil, ::T.untyped)
 end
 
 module SimpleCov::Configuration
+end
+
+class SimpleCov::CoverageStatistics
+  def covered(); end
+
+  def initialize(covered:, missed:, total_strength: T.unsafe(nil)); end
+
+  def missed(); end
+
+  def percent(); end
+
+  def strength(); end
+
+  def total(); end
+end
+
+class SimpleCov::CoverageStatistics
+  def self.from(coverage_statistics); end
 end
 
 module SimpleCov::ExitCodes
@@ -20782,6 +20678,15 @@ module SimpleCov::ExitCodes
 end
 
 class SimpleCov::FileList
+  include ::Enumerable
+  def branch_covered_percent(); end
+
+  def count(*args, &block); end
+
+  def coverage_statistics(); end
+
+  def covered_branches(); end
+
   def covered_lines(); end
 
   def covered_percent(); end
@@ -20790,18 +20695,39 @@ class SimpleCov::FileList
 
   def covered_strength(); end
 
+  def each(*args, &block); end
+
+  def empty?(*args, &block); end
+
+  def initialize(files); end
+
   def least_covered_file(); end
 
+  def length(*args, &block); end
+
   def lines_of_code(); end
+
+  def map(*args, &block); end
+
+  def missed_branches(); end
 
   def missed_lines(); end
 
   def never_lines(); end
 
+  def size(*args, &block); end
+
   def skipped_lines(); end
+
+  def to_a(*args, &block); end
+
+  def to_ary(*args, &block); end
+
+  def total_branches(); end
 end
 
 class SimpleCov::FileList
+  extend ::Forwardable
 end
 
 class SimpleCov::Filter
@@ -20809,7 +20735,7 @@ class SimpleCov::Filter
 
   def initialize(filter_argument); end
 
-  def matches?(_); end
+  def matches?(_source_file); end
 
   def passes?(source_file); end
 end
@@ -20823,8 +20749,46 @@ end
 module SimpleCov::Formatter
 end
 
-class SimpleCov::Formatter::HTMLFormatter
+class SimpleCov::Formatter::Codecov
+  def build_params(ci); end
+
+  def detect_ci(); end
+
+  def display_header(); end
+
   def format(result); end
+
+  def upload_to_codecov(req, https); end
+  APPVEYOR = ::T.let(nil, ::T.untyped)
+  AZUREPIPELINES = ::T.let(nil, ::T.untyped)
+  BITBUCKET = ::T.let(nil, ::T.untyped)
+  BITRISE = ::T.let(nil, ::T.untyped)
+  BUILDKITE = ::T.let(nil, ::T.untyped)
+  CIRCLE = ::T.let(nil, ::T.untyped)
+  CODESHIP = ::T.let(nil, ::T.untyped)
+  DRONEIO = ::T.let(nil, ::T.untyped)
+  GITLAB = ::T.let(nil, ::T.untyped)
+  HEROKU = ::T.let(nil, ::T.untyped)
+  JENKINS = ::T.let(nil, ::T.untyped)
+  RECOGNIZED_CIS = ::T.let(nil, ::T.untyped)
+  SEMAPHORE = ::T.let(nil, ::T.untyped)
+  SHIPPABLE = ::T.let(nil, ::T.untyped)
+  SOLANO = ::T.let(nil, ::T.untyped)
+  TEAMCITY = ::T.let(nil, ::T.untyped)
+  TRAVIS = ::T.let(nil, ::T.untyped)
+  VERSION = ::T.let(nil, ::T.untyped)
+  WERCKER = ::T.let(nil, ::T.untyped)
+end
+
+class SimpleCov::Formatter::Codecov
+end
+
+class SimpleCov::Formatter::HTMLFormatter
+  def branchable_result?(); end
+
+  def format(result); end
+
+  def line_status?(source_file, line); end
 
   def output_message(result); end
   VERSION = ::T.let(nil, ::T.untyped)
@@ -20896,19 +20860,6 @@ end
 class SimpleCov::Profiles
 end
 
-module SimpleCov::RawCoverage
-end
-
-module SimpleCov::RawCoverage
-  def self.merge_file_coverage(file1, file2); end
-
-  def self.merge_line_coverage(count1, count2); end
-
-  def self.merge_results(*results); end
-
-  def self.merge_resultsets(result1, result2); end
-end
-
 class SimpleCov::RegexFilter
   def matches?(source_file); end
 end
@@ -20920,6 +20871,10 @@ class SimpleCov::Result
   def command_name(); end
 
   def command_name=(command_name); end
+
+  def coverage_statistics(*args, &block); end
+
+  def covered_branches(*args, &block); end
 
   def covered_lines(*args, &block); end
 
@@ -20945,6 +20900,8 @@ class SimpleCov::Result
 
   def least_covered_file(*args, &block); end
 
+  def missed_branches(*args, &block); end
+
   def missed_lines(*args, &block); end
 
   def original_result(); end
@@ -20952,6 +20909,8 @@ class SimpleCov::Result
   def source_files(); end
 
   def to_hash(); end
+
+  def total_branches(*args, &block); end
 
   def total_lines(*args, &block); end
 end
@@ -20961,11 +20920,25 @@ class SimpleCov::Result
   def self.from_hash(hash); end
 end
 
+class SimpleCov::ResultAdapter
+  def adapt(); end
+
+  def initialize(result); end
+
+  def result(); end
+end
+
+class SimpleCov::ResultAdapter
+  def self.call(*args); end
+end
+
 module SimpleCov::ResultMerger
 end
 
 module SimpleCov::ResultMerger
   def self.clear_resultset(); end
+
+  def self.merge_and_store(*results); end
 
   def self.merge_results(*results); end
 
@@ -20986,12 +20959,27 @@ module SimpleCov::ResultMerger
   def self.synchronize_resultset(); end
 end
 
+module SimpleCov::SimulateCoverage
+end
+
+module SimpleCov::SimulateCoverage
+  def self.call(absolute_path); end
+end
+
 class SimpleCov::SourceFile
-  def build_lines(); end
+  def branches(); end
 
-  def coverage(); end
+  def branches_coverage_percent(); end
 
-  def coverage_exceeding_source_warn(); end
+  def branches_for_line(line_number); end
+
+  def branches_report(); end
+
+  def coverage_data(); end
+
+  def coverage_statistics(); end
+
+  def covered_branches(); end
 
   def covered_lines(); end
 
@@ -21001,23 +20989,25 @@ class SimpleCov::SourceFile
 
   def filename(); end
 
-  def initialize(filename, coverage); end
+  def initialize(filename, coverage_data); end
 
   def line(number); end
+
+  def line_with_missed_branch?(line_number); end
 
   def lines(); end
 
   def lines_of_code(); end
 
-  def lines_strength(); end
+  def missed_branches(); end
 
   def missed_lines(); end
 
   def never_lines(); end
 
-  def no_lines?(); end
+  def no_branches?(); end
 
-  def process_skipped_lines(lines); end
+  def no_lines?(); end
 
   def project_filename(); end
 
@@ -21030,6 +21020,41 @@ class SimpleCov::SourceFile
   def source_lines(); end
 
   def src(); end
+
+  def total_branches(); end
+  RUBY_FILE_ENCODING_MAGIC_COMMENT_REGEX = ::T.let(nil, ::T.untyped)
+  SHEBANG_REGEX = ::T.let(nil, ::T.untyped)
+end
+
+class SimpleCov::SourceFile::Branch
+  def coverage(); end
+
+  def covered?(); end
+
+  def end_line(); end
+
+  def initialize(start_line:, end_line:, coverage:, inline:, type:); end
+
+  def inline?(); end
+
+  def missed?(); end
+
+  def overlaps_with?(line_range); end
+
+  def report(); end
+
+  def report_line(); end
+
+  def skipped!(); end
+
+  def skipped?(); end
+
+  def start_line(); end
+
+  def type(); end
+end
+
+class SimpleCov::SourceFile::Branch
 end
 
 class SimpleCov::SourceFile::Line
@@ -21075,17 +21100,35 @@ end
 class SimpleCov::StringFilter
 end
 
+module SimpleCov::UselessResultsRemover
+  ROOT_REGX = ::T.let(nil, ::T.untyped)
+end
+
+module SimpleCov::UselessResultsRemover
+  def self.call(coverage_result); end
+end
+
 module SimpleCov
   extend ::SimpleCov::Configuration
-  def self.add_not_loaded_files(result); end
+  def self.at_exit_behavior(); end
 
   def self.clear_result(); end
+
+  def self.collate(result_filenames, profile=T.unsafe(nil), &block); end
 
   def self.exit_exception(); end
 
   def self.exit_status_from_exception(); end
 
+  def self.external_at_exit(); end
+
+  def self.external_at_exit=(external_at_exit); end
+
+  def self.external_at_exit?(); end
+
   def self.filtered(files); end
+
+  def self.final_result_process?(); end
 
   def self.grouped(files); end
 
@@ -21115,7 +21158,7 @@ module SimpleCov
 
   def self.start(profile=T.unsafe(nil), &block); end
 
-  def self.usable?(); end
+  def self.wait_for_other_processes(); end
 
   def self.write_last_run(covered_percent); end
 end
@@ -21327,8 +21370,6 @@ end
 class SortedSet
   def self.setup(); end
 end
-
-Spruz = Tins
 
 module Stdenv
   def O0(); end
@@ -21557,14 +21598,6 @@ module Superenv
 
   def Os(); end
 
-end
-
-class Sync
-  VERSION = ::T.let(nil, ::T.untyped)
-end
-
-module Sync_m
-  def initialize(*args); end
 end
 
 class SynchronizedDelegator
@@ -22473,501 +22506,6 @@ end
 class Tempfile::Remover
 end
 
-module Term
-end
-
-module Term::ANSIColor
-  include ::Term::ANSIColor::Movement
-  def attributes(); end
-
-  def black(string=T.unsafe(nil), &block); end
-
-  def blink(string=T.unsafe(nil), &block); end
-
-  def blue(string=T.unsafe(nil), &block); end
-
-  def bold(string=T.unsafe(nil), &block); end
-
-  def bright_black(string=T.unsafe(nil), &block); end
-
-  def bright_blue(string=T.unsafe(nil), &block); end
-
-  def bright_cyan(string=T.unsafe(nil), &block); end
-
-  def bright_green(string=T.unsafe(nil), &block); end
-
-  def bright_magenta(string=T.unsafe(nil), &block); end
-
-  def bright_red(string=T.unsafe(nil), &block); end
-
-  def bright_white(string=T.unsafe(nil), &block); end
-
-  def bright_yellow(string=T.unsafe(nil), &block); end
-
-  def clear(string=T.unsafe(nil), &block); end
-
-  def color(name, string=T.unsafe(nil), &block); end
-
-  def conceal(string=T.unsafe(nil), &block); end
-
-  def concealed(string=T.unsafe(nil), &block); end
-
-  def cyan(string=T.unsafe(nil), &block); end
-
-  def dark(string=T.unsafe(nil), &block); end
-
-  def faint(string=T.unsafe(nil), &block); end
-
-  def green(string=T.unsafe(nil), &block); end
-
-  def intense_black(string=T.unsafe(nil), &block); end
-
-  def intense_blue(string=T.unsafe(nil), &block); end
-
-  def intense_cyan(string=T.unsafe(nil), &block); end
-
-  def intense_green(string=T.unsafe(nil), &block); end
-
-  def intense_magenta(string=T.unsafe(nil), &block); end
-
-  def intense_red(string=T.unsafe(nil), &block); end
-
-  def intense_white(string=T.unsafe(nil), &block); end
-
-  def intense_yellow(string=T.unsafe(nil), &block); end
-
-  def italic(string=T.unsafe(nil), &block); end
-
-  def magenta(string=T.unsafe(nil), &block); end
-
-  def negative(string=T.unsafe(nil), &block); end
-
-  def on_black(string=T.unsafe(nil), &block); end
-
-  def on_blue(string=T.unsafe(nil), &block); end
-
-  def on_bright_black(string=T.unsafe(nil), &block); end
-
-  def on_bright_blue(string=T.unsafe(nil), &block); end
-
-  def on_bright_cyan(string=T.unsafe(nil), &block); end
-
-  def on_bright_green(string=T.unsafe(nil), &block); end
-
-  def on_bright_magenta(string=T.unsafe(nil), &block); end
-
-  def on_bright_red(string=T.unsafe(nil), &block); end
-
-  def on_bright_white(string=T.unsafe(nil), &block); end
-
-  def on_bright_yellow(string=T.unsafe(nil), &block); end
-
-  def on_color(name, string=T.unsafe(nil), &block); end
-
-  def on_cyan(string=T.unsafe(nil), &block); end
-
-  def on_green(string=T.unsafe(nil), &block); end
-
-  def on_intense_black(string=T.unsafe(nil), &block); end
-
-  def on_intense_blue(string=T.unsafe(nil), &block); end
-
-  def on_intense_cyan(string=T.unsafe(nil), &block); end
-
-  def on_intense_green(string=T.unsafe(nil), &block); end
-
-  def on_intense_magenta(string=T.unsafe(nil), &block); end
-
-  def on_intense_red(string=T.unsafe(nil), &block); end
-
-  def on_intense_white(string=T.unsafe(nil), &block); end
-
-  def on_intense_yellow(string=T.unsafe(nil), &block); end
-
-  def on_magenta(string=T.unsafe(nil), &block); end
-
-  def on_red(string=T.unsafe(nil), &block); end
-
-  def on_white(string=T.unsafe(nil), &block); end
-
-  def on_yellow(string=T.unsafe(nil), &block); end
-
-  def rapid_blink(string=T.unsafe(nil), &block); end
-
-  def red(string=T.unsafe(nil), &block); end
-
-  def reset(string=T.unsafe(nil), &block); end
-
-  def reverse(string=T.unsafe(nil), &block); end
-
-  def strikethrough(string=T.unsafe(nil), &block); end
-
-  def support?(feature); end
-
-  def term_ansicolor_attributes(); end
-
-  def uncolor(string=T.unsafe(nil)); end
-
-  def uncolored(string=T.unsafe(nil)); end
-
-  def underline(string=T.unsafe(nil), &block); end
-
-  def underscore(string=T.unsafe(nil), &block); end
-
-  def white(string=T.unsafe(nil), &block); end
-
-  def yellow(string=T.unsafe(nil), &block); end
-  ATTRIBUTE_NAMES = ::T.let(nil, ::T.untyped)
-  COLORED_REGEXP = ::T.let(nil, ::T.untyped)
-  VERSION = ::T.let(nil, ::T.untyped)
-  VERSION_ARRAY = ::T.let(nil, ::T.untyped)
-  VERSION_BUILD = ::T.let(nil, ::T.untyped)
-  VERSION_MAJOR = ::T.let(nil, ::T.untyped)
-  VERSION_MINOR = ::T.let(nil, ::T.untyped)
-end
-
-class Term::ANSIColor::Attribute
-  def apply(string=T.unsafe(nil), &block); end
-
-  def background?(); end
-
-  def code(); end
-
-  def distance_to(other, options=T.unsafe(nil)); end
-
-  def gradient_to(other, options=T.unsafe(nil)); end
-
-  def gray?(); end
-
-  def initialize(name, code, options=T.unsafe(nil)); end
-
-  def name(); end
-
-  def rgb(); end
-
-  def rgb_color?(); end
-
-  def to_rgb_triple(); end
-end
-
-class Term::ANSIColor::Attribute::Color256
-end
-
-class Term::ANSIColor::Attribute::Color256
-end
-
-class Term::ANSIColor::Attribute::Color8
-end
-
-class Term::ANSIColor::Attribute::Color8
-end
-
-class Term::ANSIColor::Attribute::IntenseColor8
-end
-
-class Term::ANSIColor::Attribute::IntenseColor8
-end
-
-class Term::ANSIColor::Attribute::Text
-end
-
-class Term::ANSIColor::Attribute::Text
-end
-
-class Term::ANSIColor::Attribute
-  def self.[](name); end
-
-  def self.attributes(&block); end
-
-  def self.get(name); end
-
-  def self.named_attributes(&block); end
-
-  def self.nearest_rgb_color(color, options=T.unsafe(nil)); end
-
-  def self.nearest_rgb_on_color(color, options=T.unsafe(nil)); end
-
-  def self.rgb_colors(options=T.unsafe(nil), &block); end
-
-  def self.set(name, code, options=T.unsafe(nil)); end
-end
-
-class Term::ANSIColor::HSLTriple
-  def ==(other); end
-
-  def adjust_hue(degree); end
-
-  def complement(); end
-
-  def css(); end
-
-  def darken(percentage); end
-
-  def desaturate(percentage); end
-
-  def grayscale(); end
-
-  def hue(); end
-
-  def initialize(hue, saturation, lightness); end
-
-  def lighten(percentage); end
-
-  def lightness(); end
-
-  def method_missing(name, *args, &block); end
-
-  def saturate(percentage); end
-
-  def saturation(); end
-
-  def to_hsl_triple(); end
-
-  def to_rgb_triple(); end
-end
-
-class Term::ANSIColor::HSLTriple
-  def self.[](thing); end
-
-  def self.from_css(css); end
-
-  def self.from_hash(options); end
-
-  def self.from_rgb_triple(rgb); end
-end
-
-module Term::ANSIColor::Movement
-  def clear_screen(string=T.unsafe(nil), &block); end
-
-  def erase_in_display(n=T.unsafe(nil), string=T.unsafe(nil), &block); end
-
-  def erase_in_line(n=T.unsafe(nil), string=T.unsafe(nil), &block); end
-
-  def hide_cursor(string=T.unsafe(nil), &block); end
-
-  def move_backward(columns=T.unsafe(nil), string=T.unsafe(nil), &block); end
-
-  def move_down(lines=T.unsafe(nil), string=T.unsafe(nil), &block); end
-
-  def move_forward(columns=T.unsafe(nil), string=T.unsafe(nil), &block); end
-
-  def move_home(string=T.unsafe(nil), &block); end
-
-  def move_to(line=T.unsafe(nil), column=T.unsafe(nil), string=T.unsafe(nil), &block); end
-
-  def move_to_column(column=T.unsafe(nil), string=T.unsafe(nil), &block); end
-
-  def move_to_line(line=T.unsafe(nil), string=T.unsafe(nil), &block); end
-
-  def move_to_next_line(lines=T.unsafe(nil), string=T.unsafe(nil), &block); end
-
-  def move_to_previous_line(lines=T.unsafe(nil), string=T.unsafe(nil), &block); end
-
-  def move_up(lines=T.unsafe(nil), string=T.unsafe(nil), &block); end
-
-  def restore_position(string=T.unsafe(nil), &block); end
-
-  def return_to_position(string=T.unsafe(nil), &block); end
-
-  def save_position(string=T.unsafe(nil), &block); end
-
-  def scroll_down(pages=T.unsafe(nil), string=T.unsafe(nil), &block); end
-
-  def scroll_up(pages=T.unsafe(nil), string=T.unsafe(nil), &block); end
-
-  def show_cursor(string=T.unsafe(nil), &block); end
-
-  def terminal_columns(); end
-
-  def terminal_lines(); end
-end
-
-module Term::ANSIColor::Movement
-end
-
-class Term::ANSIColor::PPMReader
-  include ::Term::ANSIColor
-  include ::Term::ANSIColor::Movement
-  def each_row(); end
-
-  def initialize(io, options=T.unsafe(nil)); end
-
-  def reset_io(); end
-
-  def to_a(); end
-end
-
-class Term::ANSIColor::PPMReader
-end
-
-module Term::ANSIColor::RGBColorMetrics
-end
-
-module Term::ANSIColor::RGBColorMetrics::CIELab
-end
-
-class Term::ANSIColor::RGBColorMetrics::CIELab::CIELabTriple
-  include ::Term::ANSIColor::RGBColorMetricsHelpers::WeightedEuclideanDistance
-end
-
-class Term::ANSIColor::RGBColorMetrics::CIELab::CIELabTriple
-  extend ::Term::ANSIColor::RGBColorMetricsHelpers::NormalizeRGBTriple
-  def self.from_rgb_triple(rgb_triple); end
-end
-
-module Term::ANSIColor::RGBColorMetrics::CIELab
-  def self.distance(rgb1, rgb2); end
-end
-
-module Term::ANSIColor::RGBColorMetrics::CIEXYZ
-end
-
-class Term::ANSIColor::RGBColorMetrics::CIEXYZ::CIEXYZTriple
-  include ::Term::ANSIColor::RGBColorMetricsHelpers::WeightedEuclideanDistance
-end
-
-class Term::ANSIColor::RGBColorMetrics::CIEXYZ::CIEXYZTriple
-  extend ::Term::ANSIColor::RGBColorMetricsHelpers::NormalizeRGBTriple
-  def self.from_rgb_triple(rgb_triple); end
-end
-
-module Term::ANSIColor::RGBColorMetrics::CIEXYZ
-  def self.distance(rgb1, rgb2); end
-end
-
-module Term::ANSIColor::RGBColorMetrics::CompuPhase
-end
-
-module Term::ANSIColor::RGBColorMetrics::CompuPhase
-  def self.distance(rgb1, rgb2); end
-end
-
-module Term::ANSIColor::RGBColorMetrics::Euclidean
-end
-
-module Term::ANSIColor::RGBColorMetrics::Euclidean
-  def self.distance(rgb1, rgb2); end
-end
-
-module Term::ANSIColor::RGBColorMetrics::NTSC
-end
-
-module Term::ANSIColor::RGBColorMetrics::NTSC
-  def self.distance(rgb1, rgb2); end
-end
-
-module Term::ANSIColor::RGBColorMetrics::YUV
-end
-
-class Term::ANSIColor::RGBColorMetrics::YUV::YUVTriple
-  include ::Term::ANSIColor::RGBColorMetricsHelpers::WeightedEuclideanDistance
-end
-
-class Term::ANSIColor::RGBColorMetrics::YUV::YUVTriple
-  def self.from_rgb_triple(rgb_triple); end
-end
-
-module Term::ANSIColor::RGBColorMetrics::YUV
-  def self.distance(rgb1, rgb2); end
-end
-
-module Term::ANSIColor::RGBColorMetrics
-  def self.metric(name); end
-
-  def self.metric?(name); end
-
-  def self.metrics(); end
-end
-
-module Term::ANSIColor::RGBColorMetricsHelpers
-end
-
-module Term::ANSIColor::RGBColorMetricsHelpers::NormalizeRGBTriple
-end
-
-module Term::ANSIColor::RGBColorMetricsHelpers::NormalizeRGBTriple
-end
-
-module Term::ANSIColor::RGBColorMetricsHelpers::WeightedEuclideanDistance
-  def weighted_euclidean_distance_to(other, weights=T.unsafe(nil)); end
-end
-
-module Term::ANSIColor::RGBColorMetricsHelpers::WeightedEuclideanDistance
-end
-
-module Term::ANSIColor::RGBColorMetricsHelpers
-end
-
-class Term::ANSIColor::RGBTriple
-  include ::Term::ANSIColor::RGBColorMetricsHelpers::WeightedEuclideanDistance
-  def ==(other); end
-
-  def blue(); end
-
-  def blue_p(); end
-
-  def color(string); end
-
-  def css(percentage: T.unsafe(nil)); end
-
-  def distance_to(other, options=T.unsafe(nil)); end
-
-  def gradient_to(other, options=T.unsafe(nil)); end
-
-  def gray?(); end
-
-  def green(); end
-
-  def green_p(); end
-
-  def html(); end
-
-  def initialize(red, green, blue); end
-
-  def invert(); end
-
-  def method_missing(name, *args, &block); end
-
-  def percentages(); end
-
-  def red(); end
-
-  def red_p(); end
-
-  def to_a(); end
-
-  def to_hsl_triple(); end
-
-  def to_rgb_triple(); end
-
-  def values(); end
-end
-
-class Term::ANSIColor::RGBTriple
-  def self.[](thing); end
-
-  def self.from_array(array); end
-
-  def self.from_css(css); end
-
-  def self.from_hash(options); end
-
-  def self.from_html(html); end
-end
-
-module Term::ANSIColor
-  extend ::Term::ANSIColor
-  extend ::Term::ANSIColor::Movement
-  def self.coloring=(val); end
-
-  def self.coloring?(); end
-
-  def self.create_color_method(color_name, color_value); end
-end
-
-module Term
-end
-
 class Thor::Group
   def self.banner(); end
 
@@ -23484,1242 +23022,6 @@ class Time
 
 end
 
-module Tins
-  VERSION = ::T.let(nil, ::T.untyped)
-  VERSION_ARRAY = ::T.let(nil, ::T.untyped)
-  VERSION_BUILD = ::T.let(nil, ::T.untyped)
-  VERSION_MAJOR = ::T.let(nil, ::T.untyped)
-  VERSION_MINOR = ::T.let(nil, ::T.untyped)
-end
-
-module Tins::Annotate
-  def annotate(name); end
-end
-
-module Tins::Annotate
-end
-
-module Tins::Attempt
-  def attempt(opts=T.unsafe(nil), &block); end
-end
-
-module Tins::Attempt
-end
-
-class Tins::Bijection
-  def []=(key, value); end
-
-  def fill(); end
-
-  def initialize(inverted=T.unsafe(nil)); end
-
-  def inverted(); end
-end
-
-class Tins::Bijection
-  def self.[](*pairs); end
-end
-
-module Tins::Blank
-end
-
-module Tins::Blank::Array
-end
-
-module Tins::Blank::Array
-  def self.included(modul); end
-end
-
-module Tins::Blank::FalseClass
-  def blank?(); end
-end
-
-module Tins::Blank::FalseClass
-end
-
-module Tins::Blank::Hash
-end
-
-module Tins::Blank::Hash
-  def self.included(modul); end
-end
-
-module Tins::Blank::NilClass
-  def blank?(); end
-end
-
-module Tins::Blank::NilClass
-end
-
-module Tins::Blank::Numeric
-  def blank?(); end
-end
-
-module Tins::Blank::Numeric
-end
-
-module Tins::Blank::Object
-  def blank?(); end
-
-  def present?(); end
-end
-
-module Tins::Blank::Object
-end
-
-module Tins::Blank::String
-  def blank?(); end
-end
-
-module Tins::Blank::String
-end
-
-module Tins::Blank::TrueClass
-  def blank?(); end
-end
-
-module Tins::Blank::TrueClass
-end
-
-module Tins::Blank
-end
-
-module Tins::BlankSlate
-end
-
-module Tins::BlankSlate
-  def self.with(*ids); end
-end
-
-module Tins::BlockSelf
-end
-
-module Tins::BlockSelf
-  def self.block_self(&block); end
-end
-
-module Tins::CasePredicate
-  def case?(*args); end
-end
-
-module Tins::CasePredicate
-end
-
-module Tins::ClassMethod
-  include ::Tins::Eigenclass
-  def class_attr_accessor(*ids); end
-
-  def class_attr_reader(*ids); end
-
-  def class_attr_writer(*ids); end
-
-  def class_define_method(name, &block); end
-end
-
-module Tins::ClassMethod
-end
-
-module Tins::Complete
-end
-
-module Tins::Complete
-  def self.complete(prompt: T.unsafe(nil), add_hist: T.unsafe(nil), &block); end
-end
-
-module Tins::Concern
-  def append_features(base); end
-
-  def included(base=T.unsafe(nil), &block); end
-end
-
-module Tins::Concern
-  def self.extended(base); end
-end
-
-module Tins::Constant
-  def constant(name, value=T.unsafe(nil)); end
-end
-
-module Tins::Constant
-end
-
-module Tins::ConstantMaker
-  def const_missing(id); end
-end
-
-module Tins::ConstantMaker
-end
-
-module Tins::CountBy
-  def count_by(&b); end
-end
-
-module Tins::CountBy
-end
-
-module Tins::DSLAccessor
-  def dsl_accessor(name, *default, &block); end
-
-  def dsl_reader(name, *default, &block); end
-end
-
-module Tins::DSLAccessor
-end
-
-module Tins::DateDummy
-end
-
-module Tins::DateDummy
-  def self.included(modul); end
-end
-
-module Tins::DateTimeDummy
-end
-
-module Tins::DateTimeDummy
-  def self.included(modul); end
-end
-
-module Tins::DeepConstGet
-  def deep_const_get(path, start_module=T.unsafe(nil)); end
-end
-
-module Tins::DeepConstGet
-  def self.const_defined_in?(modul, constant); end
-
-  def self.deep_const_get(path, start_module=T.unsafe(nil)); end
-end
-
-module Tins::DeepDup
-  def deep_dup(); end
-end
-
-module Tins::DeepDup
-end
-
-module Tins::Deflect
-  def deflect(from, id, deflector); end
-
-  def deflect?(from, id); end
-
-  def deflect_start(from, id, deflector); end
-
-  def deflect_stop(from, id); end
-end
-
-class Tins::Deflect::DeflectError
-end
-
-class Tins::Deflect::DeflectError
-end
-
-class Tins::Deflect::Deflector
-end
-
-class Tins::Deflect::Deflector
-end
-
-class Tins::Deflect::DeflectorCollection
-  def add(klass, id, deflector); end
-
-  def delete(klass, id); end
-
-  def find(klass, id); end
-
-  def member?(klass, id); end
-end
-
-class Tins::Deflect::DeflectorCollection
-end
-
-module Tins::Deflect
-  def self.deflect?(from, id); end
-
-  def self.deflecting(); end
-
-  def self.deflecting=(value); end
-end
-
-module Tins::Delegate
-  def delegate(method_name, opts=T.unsafe(nil)); end
-  UNSET = ::T.let(nil, ::T.untyped)
-end
-
-module Tins::Delegate
-end
-
-class Tins::Duration
-  include ::Comparable
-  def days?(); end
-
-  def format(template=T.unsafe(nil), precision: T.unsafe(nil)); end
-
-  def fractional_seconds?(); end
-
-  def hours?(); end
-
-  def initialize(seconds); end
-
-  def minutes?(); end
-
-  def negative?(); end
-
-  def seconds?(); end
-
-  def to_f(); end
-end
-
-class Tins::Duration
-end
-
-module Tins::DynamicScope
-  include ::Tins::Scope
-  def dynamic_defined?(id); end
-
-  def dynamic_scope(&block); end
-
-  def dynamic_scope_name(); end
-
-  def dynamic_scope_name=(dynamic_scope_name); end
-
-  def method_missing(id, *args); end
-end
-
-class Tins::DynamicScope::Context
-  def [](name); end
-
-  def []=(name, value); end
-end
-
-class Tins::DynamicScope::Context
-end
-
-module Tins::DynamicScope
-end
-
-module Tins::Eigenclass
-  def eigenclass(); end
-
-  def eigenclass_eval(&block); end
-end
-
-module Tins::Eigenclass
-end
-
-module Tins::Expose
-  def expose(method_name=T.unsafe(nil), *args, &block); end
-end
-
-module Tins::Expose
-end
-
-module Tins::ExtractLastArgumentOptions
-  def extract_last_argument_options(); end
-end
-
-module Tins::ExtractLastArgumentOptions
-end
-
-module Tins::FileBinary
-  def ascii?(options=T.unsafe(nil)); end
-
-  def binary?(options=T.unsafe(nil)); end
-end
-
-module Tins::FileBinary::ClassMethods
-  def ascii?(name, options=T.unsafe(nil)); end
-
-  def binary?(name, options=T.unsafe(nil)); end
-end
-
-module Tins::FileBinary::ClassMethods
-end
-
-module Tins::FileBinary::Constants
-  BINARY = ::T.let(nil, ::T.untyped)
-  SEEK_SET = ::T.let(nil, ::T.untyped)
-  ZERO = ::T.let(nil, ::T.untyped)
-end
-
-module Tins::FileBinary::Constants
-end
-
-module Tins::FileBinary
-  def self.default_options(); end
-
-  def self.default_options=(default_options); end
-
-  def self.included(modul); end
-end
-
-module Tins::Find
-end
-
-module Tins::Find::EXPECTED_STANDARD_ERRORS
-end
-
-module Tins::Find::EXPECTED_STANDARD_ERRORS
-end
-
-class Tins::Find::Finder
-  def find(*paths); end
-
-  def follow_symlinks(); end
-
-  def follow_symlinks=(follow_symlinks); end
-
-  def initialize(opts=T.unsafe(nil)); end
-
-  def prepare_path(path); end
-
-  def protect_from_errors(errors=T.unsafe(nil)); end
-
-  def raise_errors(); end
-
-  def raise_errors=(raise_errors); end
-
-  def show_hidden(); end
-
-  def show_hidden=(show_hidden); end
-
-  def suffix(); end
-
-  def suffix=(suffix); end
-
-  def visit_path?(path); end
-end
-
-module Tins::Find::Finder::PathExtension
-  def directory?(); end
-
-  def exist?(); end
-
-  def file(); end
-
-  def file?(); end
-
-  def finder(); end
-
-  def finder=(finder); end
-
-  def finder_stat(); end
-
-  def lstat(); end
-
-  def pathname(); end
-
-  def stat(); end
-
-  def suffix(); end
-end
-
-module Tins::Find::Finder::PathExtension
-end
-
-class Tins::Find::Finder
-end
-
-module Tins::Find
-  def self.find(*paths, &block); end
-
-  def self.prune(); end
-end
-
-module Tins::FromModule
-  include ::Tins::ParameterizedModule
-  def from(*args, &block); end
-
-  def parameterize(opts=T.unsafe(nil)); end
-end
-
-module Tins::FromModule
-end
-
-module Tins::Full
-  def all_full?(); end
-
-  def full?(dispatch=T.unsafe(nil), *args); end
-end
-
-module Tins::Full
-end
-
-module Tins::GO
-end
-
-module Tins::GO::EnumerableExtension
-  include ::Enumerable
-  include ::ActiveSupport::ToJsonWithActiveSupportEncoder
-  def <<(argument); end
-
-  def each(&block); end
-
-  def push(argument); end
-end
-
-module Tins::GO::EnumerableExtension
-end
-
-module Tins::GO
-  def self.go(s, args=T.unsafe(nil), defaults: T.unsafe(nil)); end
-end
-
-class Tins::Generator
-  include ::Enumerable
-  def add_dimension(enum, iterator=T.unsafe(nil)); end
-
-  def each(&block); end
-
-  def initialize(enums); end
-
-  def size(); end
-end
-
-class Tins::Generator
-  def self.[](*enums); end
-end
-
-module Tins::HashSymbolizeKeysRecursive
-  def seen(); end
-
-  def seen=(value); end
-
-  def symbolize_keys_recursive(circular: T.unsafe(nil)); end
-
-  def symbolize_keys_recursive!(circular: T.unsafe(nil)); end
-end
-
-module Tins::HashSymbolizeKeysRecursive
-  extend ::Tins::ThreadLocal
-end
-
-module Tins::HashUnion
-  def |(other); end
-end
-
-module Tins::HashUnion
-end
-
-module Tins::Implement
-  def implement(method_name, msg=T.unsafe(nil)); end
-
-  def implement_in_submodule(method_name); end
-  MESSAGES = ::T.let(nil, ::T.untyped)
-end
-
-module Tins::Implement
-end
-
-module Tins::InstanceExec
-end
-
-module Tins::InstanceExec
-  def self.included(*_); end
-end
-
-module Tins::Interpreter
-  def interpret(source, *args); end
-
-  def interpret_with_binding(source, my_binding, *args); end
-end
-
-module Tins::Interpreter
-end
-
-class Tins::Limited
-  def execute(); end
-
-  def initialize(maximum); end
-
-  def maximum(); end
-
-  def wait(); end
-end
-
-class Tins::Limited
-end
-
-class Tins::LinesFile
-  include ::Enumerable
-  def each(&block); end
-
-  def empty?(); end
-
-  def file_linenumber(); end
-
-  def filename(); end
-
-  def filename=(filename); end
-
-  def initialize(lines, line_number=T.unsafe(nil)); end
-
-  def last_line_number(); end
-
-  def line(); end
-
-  def line_number(); end
-
-  def line_number=(number); end
-
-  def match_backward(regexp, previous_after_match=T.unsafe(nil)); end
-
-  def match_forward(regexp, next_after_match=T.unsafe(nil)); end
-
-  def next!(); end
-
-  def previous!(); end
-
-  def rewind(); end
-end
-
-module Tins::LinesFile::LineExtension
-  def filename(); end
-
-  def line_number(); end
-end
-
-module Tins::LinesFile::LineExtension
-end
-
-class Tins::LinesFile
-  def self.for_file(file, line_number=T.unsafe(nil)); end
-
-  def self.for_filename(filename, line_number=T.unsafe(nil)); end
-
-  def self.for_lines(lines, line_number=T.unsafe(nil)); end
-end
-
-module Tins::Memoize
-end
-
-module Tins::Memoize::CacheMethods
-  def __memoize_cache__(); end
-
-  def memoize_apply_visibility(id); end
-
-  def memoize_cache_clear(); end
-end
-
-module Tins::Memoize::CacheMethods
-end
-
-module Tins::Memoize
-end
-
-module Tins::MethodDescription
-  def description(style: T.unsafe(nil)); end
-
-  def signature(); end
-end
-
-class Tins::MethodDescription::Parameters
-end
-
-class Tins::MethodDescription::Parameters::BlockParameter
-end
-
-class Tins::MethodDescription::Parameters::BlockParameter
-end
-
-class Tins::MethodDescription::Parameters::GenericParameter
-end
-
-class Tins::MethodDescription::Parameters::GenericParameter
-end
-
-class Tins::MethodDescription::Parameters::KeyParameter
-end
-
-class Tins::MethodDescription::Parameters::KeyParameter
-end
-
-class Tins::MethodDescription::Parameters::KeyreqParameter
-end
-
-class Tins::MethodDescription::Parameters::KeyreqParameter
-end
-
-class Tins::MethodDescription::Parameters::KeyrestParameter
-end
-
-class Tins::MethodDescription::Parameters::KeyrestParameter
-end
-
-class Tins::MethodDescription::Parameters::OptParameter
-end
-
-class Tins::MethodDescription::Parameters::OptParameter
-end
-
-class Tins::MethodDescription::Parameters::Parameter
-  def ==(other); end
-end
-
-class Tins::MethodDescription::Parameters::Parameter
-end
-
-class Tins::MethodDescription::Parameters::ReqParameter
-end
-
-class Tins::MethodDescription::Parameters::ReqParameter
-end
-
-class Tins::MethodDescription::Parameters::RestParameter
-end
-
-class Tins::MethodDescription::Parameters::RestParameter
-end
-
-class Tins::MethodDescription::Parameters
-  def self.build(type, name); end
-end
-
-class Tins::MethodDescription::Signature
-  def ==(other); end
-
-  def ===(method); end
-
-  def eql?(other); end
-
-  def initialize(*parameters); end
-
-  def parameters(); end
-end
-
-class Tins::MethodDescription::Signature
-end
-
-module Tins::MethodDescription
-end
-
-module Tins::MethodMissingDelegator
-  def method_missing(id, *a, &b); end
-
-  def method_missing_delegator(); end
-
-  def method_missing_delegator=(method_missing_delegator); end
-end
-
-class Tins::MethodMissingDelegator::DelegatorClass
-  include ::Tins::MethodMissingDelegator::DelegatorModule
-  include ::Tins::MethodMissingDelegator
-end
-
-class Tins::MethodMissingDelegator::DelegatorClass
-end
-
-module Tins::MethodMissingDelegator::DelegatorModule
-  include ::Tins::MethodMissingDelegator
-  def initialize(delegator, *a, &b); end
-end
-
-module Tins::MethodMissingDelegator::DelegatorModule
-end
-
-module Tins::MethodMissingDelegator
-end
-
-module Tins::Minimize
-  def minimize(); end
-
-  def minimize!(); end
-
-  def unminimize(); end
-
-  def unminimize!(); end
-end
-
-module Tins::Minimize
-end
-
-module Tins::ModuleGroup
-end
-
-module Tins::ModuleGroup
-  def self.[](*modules); end
-end
-
-module Tins::NULL
-end
-
-module Tins::NULL
-  extend ::Tins::Null
-end
-
-class Tins::NamedSet
-  def initialize(name); end
-
-  def name(); end
-
-  def name=(name); end
-end
-
-class Tins::NamedSet
-end
-
-module Tins::Null
-  def as_json(*_); end
-
-  def blank?(); end
-
-  def const_missing(*_); end
-
-  def inspect(); end
-
-  def method_missing(*_); end
-
-  def nil?(); end
-
-  def to_a(); end
-
-  def to_ary(); end
-
-  def to_f(); end
-
-  def to_i(); end
-
-  def to_int(); end
-
-  def to_json(*_); end
-
-  def to_s(); end
-
-  def to_str(); end
-end
-
-module Tins::Null::Kernel
-  def Null(value=T.unsafe(nil)); end
-
-  def NullPlus(opts=T.unsafe(nil)); end
-
-  def null(value=T.unsafe(nil)); end
-
-  def null_plus(opts=T.unsafe(nil)); end
-end
-
-module Tins::Null::Kernel
-end
-
-module Tins::Null
-end
-
-class Tins::NullClass
-  include ::Tins::Null
-end
-
-class Tins::NullClass
-end
-
-class Tins::NullPlus
-  include ::Tins::Null
-  def initialize(opts=T.unsafe(nil)); end
-end
-
-class Tins::NullPlus
-end
-
-module Tins::Once
-  include ::File::Constants
-end
-
-module Tins::Once
-  def self.only_once(lock_filename=T.unsafe(nil), locking_constant=T.unsafe(nil)); end
-
-  def self.try_only_once(lock_filename=T.unsafe(nil), locking_constant=T.unsafe(nil), &block); end
-end
-
-module Tins::P
-end
-
-module Tins::P
-end
-
-module Tins::ParameterizedModule
-  def parameterize_for(*args, &block); end
-end
-
-module Tins::ParameterizedModule
-end
-
-module Tins::PartialApplication
-  def partial(*args); end
-end
-
-module Tins::PartialApplication
-  def self.included(modul); end
-end
-
-module Tins::ProcCompose
-  def *(other); end
-
-  def compose(other); end
-end
-
-module Tins::ProcCompose
-end
-
-module Tins::ProcPrelude
-  def apply(&my_proc); end
-
-  def array(*args); end
-
-  def call(obj, &my_proc); end
-
-  def const(konst=T.unsafe(nil), &my_proc); end
-
-  def first(*args); end
-
-  def from(&block); end
-
-  def head(*args); end
-
-  def id1(*args); end
-
-  def last(*args); end
-
-  def map_apply(my_method, *args, &my_proc); end
-
-  def nth(n); end
-
-  def rotate(n=T.unsafe(nil)); end
-
-  def second(*args); end
-
-  def swap(n=T.unsafe(nil)); end
-
-  def tail(*args); end
-end
-
-module Tins::ProcPrelude
-end
-
-module Tins::RangePlus
-  def +(other); end
-end
-
-module Tins::RangePlus
-end
-
-module Tins::RequireMaybe
-  def require_maybe(library); end
-end
-
-module Tins::RequireMaybe
-end
-
-module Tins::Responding
-  def responding?(*method_names); end
-end
-
-module Tins::Responding
-end
-
-module Tins::Scope
-  def scope(name=T.unsafe(nil)); end
-
-  def scope_block(scope_frame, name=T.unsafe(nil)); end
-
-  def scope_get(name=T.unsafe(nil)); end
-
-  def scope_pop(name=T.unsafe(nil)); end
-
-  def scope_push(scope_frame, name=T.unsafe(nil)); end
-
-  def scope_reverse(name=T.unsafe(nil), &block); end
-
-  def scope_top(name=T.unsafe(nil)); end
-end
-
-module Tins::Scope
-end
-
-module Tins::SecureWrite
-  def secure_write(filename, content=T.unsafe(nil), mode=T.unsafe(nil)); end
-end
-
-module Tins::SecureWrite
-end
-
-module Tins::SexySingleton
-  def _dump(depth=T.unsafe(nil)); end
-
-  def clone(); end
-
-  def dup(); end
-end
-
-module Tins::SexySingleton
-  def self.__init__(klass); end
-
-  def self.included(klass); end
-end
-
-module Tins::StringByteOrderMark
-  def bom_encoding(); end
-end
-
-module Tins::StringByteOrderMark
-end
-
-module Tins::StringCamelize
-  def camelcase(first_letter=T.unsafe(nil)); end
-
-  def camelize(first_letter=T.unsafe(nil)); end
-end
-
-module Tins::StringCamelize
-end
-
-module Tins::StringUnderscore
-  def underscore(); end
-end
-
-module Tins::StringUnderscore
-end
-
-module Tins::StringVersion
-  def version(); end
-  LEVELS = ::T.let(nil, ::T.untyped)
-  SYMBOLS = ::T.let(nil, ::T.untyped)
-end
-
-class Tins::StringVersion::Version
-  include ::Comparable
-  def ==(other); end
-
-  def [](level); end
-
-  def []=(level, value); end
-
-  def array(); end
-
-  def build(); end
-
-  def build=(new_level); end
-
-  def bump(level=T.unsafe(nil)); end
-
-  def initialize(string); end
-
-  def level_of(specifier); end
-
-  def major(); end
-
-  def major=(new_level); end
-
-  def minor(); end
-
-  def minor=(new_level); end
-
-  def pred!(); end
-
-  def revision(); end
-
-  def revision=(new_level); end
-
-  def succ!(); end
-
-  def to_a(); end
-end
-
-class Tins::StringVersion::Version
-end
-
-module Tins::StringVersion
-end
-
-module Tins::Subhash
-  def subhash(*patterns); end
-end
-
-module Tins::Subhash
-end
-
-module Tins::SymbolMaker
-  def method_missing(id, *args); end
-end
-
-module Tins::SymbolMaker
-end
-
-module Tins::TempIO
-  def temp_io(content: T.unsafe(nil), name: T.unsafe(nil)); end
-end
-
-class Tins::TempIO::Enum
-  include ::Tins::TempIO
-  def initialize(chunk_size: T.unsafe(nil), filename: T.unsafe(nil), &content_proc); end
-end
-
-class Tins::TempIO::Enum
-end
-
-module Tins::TempIO
-end
-
-module Tins::Terminal
-end
-
-module Tins::Terminal
-  def self.cols(); end
-
-  def self.columns(); end
-
-  def self.lines(); end
-
-  def self.rows(); end
-
-  def self.winsize(); end
-end
-
-module Tins::ThreadGlobal
-  def instance_thread_global(name, value=T.unsafe(nil)); end
-
-  def thread_global(name, default_value=T.unsafe(nil), &default); end
-end
-
-module Tins::ThreadGlobal
-end
-
-module Tins::ThreadLocal
-  def instance_thread_local(name, default_value=T.unsafe(nil), &default); end
-
-  def thread_local(name, default_value=T.unsafe(nil), &default); end
-end
-
-module Tins::ThreadLocal
-end
-
-module Tins::TimeDummy
-end
-
-module Tins::TimeDummy
-  def self.included(modul); end
-end
-
-module Tins::To
-  def to(string); end
-end
-
-module Tins::To
-end
-
-module Tins::ToProc
-  def to_proc(); end
-end
-
-module Tins::ToProc
-end
-
-class Tins::Token
-  def bits(); end
-
-  def bits=(bits); end
-
-  def initialize(bits: T.unsafe(nil), length: T.unsafe(nil), alphabet: T.unsafe(nil), random: T.unsafe(nil)); end
-  BASE16_ALPHABET = ::T.let(nil, ::T.untyped)
-  BASE32_ALPHABET = ::T.let(nil, ::T.untyped)
-  BASE32_EXTENDED_HEX_ALPHABET = ::T.let(nil, ::T.untyped)
-  BASE64_ALPHABET = ::T.let(nil, ::T.untyped)
-  BASE64_URL_FILENAME_SAFE_ALPHABET = ::T.let(nil, ::T.untyped)
-  DEFAULT_ALPHABET = ::T.let(nil, ::T.untyped)
-end
-
-class Tins::Token
-end
-
-module Tins::UniqBy
-  def uniq_by(&b); end
-end
-
-module Tins::UniqBy
-end
-
-module Tins::Unit
-  PREFIX_F = ::T.let(nil, ::T.untyped)
-  PREFIX_LC = ::T.let(nil, ::T.untyped)
-  PREFIX_UC = ::T.let(nil, ::T.untyped)
-end
-
-class Tins::Unit::FormatParser
-  def initialize(format, unit_parser); end
-
-  def parse(); end
-end
-
-class Tins::Unit::FormatParser
-end
-
-class Tins::Unit::ParserError
-end
-
-class Tins::Unit::ParserError
-end
-
-class Tins::Unit::Prefix
-  def fraction(); end
-
-  def fraction=(_); end
-
-  def multiplier(); end
-
-  def multiplier=(_); end
-
-  def name(); end
-
-  def name=(_); end
-
-  def step(); end
-
-  def step=(_); end
-end
-
-class Tins::Unit::Prefix
-  def self.[](*_); end
-
-  def self.members(); end
-end
-
-class Tins::Unit::UnitParser
-  def initialize(source, unit, prefixes=T.unsafe(nil)); end
-
-  def number(); end
-
-  def parse(); end
-
-  def scan(re); end
-
-  def scan_char(char); end
-
-  def scan_number(); end
-
-  def scan_unit(); end
-  NUMBER = ::T.let(nil, ::T.untyped)
-end
-
-class Tins::Unit::UnitParser
-end
-
-module Tins::Unit
-  def self.format(value, format: T.unsafe(nil), prefix: T.unsafe(nil), unit: T.unsafe(nil)); end
-
-  def self.parse(string, format: T.unsafe(nil), unit: T.unsafe(nil), prefix: T.unsafe(nil)); end
-
-  def self.parse?(string, **options); end
-
-  def self.prefixes(identifier); end
-end
-
-module Tins::Write
-end
-
-module Tins::Write
-  def self.extended(modul); end
-end
-
-module Tins
-end
-
 class TracePoint
   def __enable(_, _1); end
 
@@ -24852,15 +23154,59 @@ module URI
 end
 
 class URL
+  def =~(reg); end
+
+  def [](*args, &block); end
+
+  def []=(*args, &block); end
+
+  def add_to_path(val); end
+
   def branch(); end
 
   def cookies(); end
 
   def data(); end
 
+  def delete(*args); end
+
+  def domain(); end
+
+  def domain=(domain); end
+
+  def format(); end
+
+  def format=(format); end
+
+  def get(*args); end
+
+  def hash=(hash); end
+
+  def host(); end
+
+  def host_with_port(); end
+
+  def params(); end
+
+  def params=(p); end
+
   def path(*args, &block); end
 
+  def path=(str); end
+
+  def port(); end
+
+  def port=(port); end
+
+  def post(*args); end
+
+  def put(*args); end
+
   def referer(); end
+
+  def req_handler(); end
+
+  def req_handler=(r); end
 
   def revision(); end
 
@@ -24868,15 +23214,145 @@ class URL
 
   def scheme(*args, &block); end
 
+  def scheme=(scheme); end
+
+  def string(); end
+
+  def subdomain(); end
+
+  def subdomain=(s); end
+
+  def subdomains(); end
+
+  def subdomains=(s); end
+
   def tag(); end
 
   def to_s(*args, &block); end
+
+  def to_uri(); end
 
   def trust_cert(); end
 
   def user_agent(); end
 
   def using(); end
+  VERSION = ::T.let(nil, ::T.untyped)
+end
+
+class URL::ASJSONHandler
+end
+
+class URL::ASJSONHandler
+end
+
+class URL::BaseJSONHandler
+end
+
+class URL::BaseJSONHandler
+end
+
+class URL::JSONHandler
+  def initialize(str); end
+
+  def parse(); end
+
+  def str(); end
+end
+
+class URL::JSONHandler
+end
+
+class URL::Mash
+  def [](k); end
+
+  def []=(k, v); end
+end
+
+class URL::Mash
+end
+
+class URL::NetHandler
+end
+
+class URL::NetHandler
+end
+
+class URL::ParamsHash
+  def reverse_merge!(other); end
+
+  def to_s(questionmark=T.unsafe(nil)); end
+
+  def |(other); end
+end
+
+class URL::ParamsHash
+  def self.from_string(str); end
+end
+
+class URL::RequestHandler
+  def delete(args=T.unsafe(nil)); end
+
+  def get(args=T.unsafe(nil)); end
+
+  def initialize(url); end
+
+  def post(args=T.unsafe(nil)); end
+
+  def put(args=T.unsafe(nil)); end
+
+  def url(); end
+end
+
+class URL::RequestHandler
+end
+
+class URL::Response
+  def code(); end
+
+  def connection_refused(); end
+
+  def initialize(str, args=T.unsafe(nil)); end
+
+  def json(); end
+
+  def response(); end
+
+  def success?(); end
+
+  def successful?(); end
+
+  def time(); end
+
+  def url(); end
+
+  def url_obj(); end
+end
+
+class URL::Response
+end
+
+class URL::TyHandler
+  def head(args=T.unsafe(nil)); end
+end
+
+class URL::TyHandler
+end
+
+class URL::YajlHandler
+end
+
+class URL::YajlHandler
+end
+
+class URL
+  def self.json_handler(); end
+
+  def self.json_handler=(r); end
+
+  def self.req_handler(); end
+
+  def self.req_handler=(r); end
 end
 
 class UnboundMethod

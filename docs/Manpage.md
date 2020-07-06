@@ -369,10 +369,10 @@ Rerun the post-install steps for *`formula`*.
 
 ### `readall` [*`options`*] [*`tap`*]
 
-Import all formulae from the specified *`tap`*, or from all installed taps if none
-is provided. This can be useful for debugging issues across all formulae when
-making significant changes to `formula.rb`, testing the performance of loading
-all formulae or checking if any current formulae have Ruby issues.
+Import all items from the specified *`tap`*, or from all installed taps if none is
+provided. This can be useful for debugging issues across all items when making
+significant changes to `formula.rb`, testing the performance of loading all
+items or checking if any current formulae/casks have Ruby issues.
 
 * `--aliases`:
   Verify any alias symlinks in each tap.
@@ -696,6 +696,11 @@ at its original value, while `--no-rebuild` will remove it.
 * `--root-url`:
   Use the specified *`URL`* as the root of the bottle's URL instead of Homebrew's default.
 
+### `bump`
+
+Display out-of-date brew formulae, the latest version available, and whether a
+pull request has been opened.
+
 ### `bump-formula-pr` [*`options`*] [*`formula`*]
 
 Create a pull request to update *`formula`* with a new URL or a new tag.
@@ -793,6 +798,8 @@ a simple example. For the complete API, see:
   Explicitly set the *`name`* of the new formula.
 * `--set-version`:
   Explicitly set the *`version`* of the new formula.
+* `--set-license`:
+  Explicitly set the *`license`* of the new formula.
 * `--tap`:
   Generate the new formula within the given tap, specified as *`user`*`/`*`repo`*.
 
@@ -901,6 +908,8 @@ repository.
   Do not warn if pulling to a branch besides master (useful for testing).
 * `--resolve`:
   When a patch fails to apply, leave in progress and allow user to resolve, instead of aborting.
+* `--warn-on-upload-failure`:
+  Warn instead of raising an error if the bottle upload fails. Useful for repairing bottle uploads that previously failed.
 * `--workflow`:
   Retrieve artifacts from the specified workflow (default: `tests.yml`).
 * `--artifact`:
@@ -922,6 +931,8 @@ Apply the bottle commit and publish bottles to Bintray.
   Apply the bottle commit and upload the bottles, but don't publish them.
 * `-n`, `--dry-run`:
   Print what would be done rather than doing it.
+* `--warn-on-upload-failure`:
+  Warn instead of raising an error if the bottle upload fails. Useful for repairing bottle uploads that previously failed.
 * `--bintray-org`:
   Upload to the specified Bintray organisation (default: `homebrew`).
 * `--root-url`:
@@ -960,6 +971,11 @@ build systems would not find otherwise.
 
 * `--env`:
   Use the standard `PATH` instead of superenv's when `std` is passed.
+
+### `sponsors`
+
+Print a Markdown summary of Homebrew's GitHub Sponsors, suitable for pasting
+into a README.
 
 ### `style` [*`options`*] [*`file`*|*`tap`*|*`formula`*]
 
@@ -1027,6 +1043,13 @@ directory.
   Patches for *`formula`* will be applied to the unpacked source.
 * `-g`, `--git`:
   Initialise a Git repository in the unpacked source. This is useful for creating patches for the software.
+
+### `update_license_data` *`cmd`*
+
+ Update SPDX license data in the Homebrew repository.
+
+* `--fail-if-changed`:
+  Return a failing status code if current license data's version is different from the upstream. This can be used to notify CI when the SPDX license data is out of date.
 
 ### `update-test` [*`options`*]
 

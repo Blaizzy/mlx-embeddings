@@ -107,10 +107,12 @@ module OS
         !prefix.nil?
       end
 
-      def sdk(v = nil)
-        @locator ||= XcodeSDKLocator.new
+      def sdk_locator
+        @sdk_locator ||= XcodeSDKLocator.new
+      end
 
-        @locator.sdk_if_applicable(v)
+      def sdk(v = nil)
+        sdk_locator.sdk_if_applicable(v)
       end
 
       def sdk_path(v = nil)
@@ -219,10 +221,12 @@ module OS
         version >= "8"
       end
 
-      def sdk(v = nil)
-        @locator ||= CLTSDKLocator.new
+      def sdk_locator
+        @sdk_locator ||= CLTSDKLocator.new
+      end
 
-        @locator.sdk_if_applicable(v)
+      def sdk(v = nil)
+        sdk_locator.sdk_if_applicable(v)
       end
 
       def sdk_path(v = nil)

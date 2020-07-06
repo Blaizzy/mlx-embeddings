@@ -12,6 +12,7 @@ require "date"
 require "missing_formula"
 require "digest"
 require "cli/parser"
+require "json"
 
 module Homebrew
   module_function
@@ -109,7 +110,9 @@ module Homebrew
 
     # Check style in a single batch run up front for performance
     style_results = Style.check_style_json(style_files, options) if style_files
-
+    # load licenses
+    spdx = HOMEBREW_LIBRARY_PATH/"data/spdx.json"
+    spdx_data = JSON.parse(spdx.read)
     new_formula_problem_lines = []
     audit_formulae.sort.each do |f|
       only = only_cops ? ["style"] : args.only
@@ -120,6 +123,7 @@ module Homebrew
         git:         git,
         only:        only,
         except:      args.except,
+        spdx_data:   spdx_data,
       }
       options[:style_offenses] = style_results.file_offenses(f.path) if style_results
       options[:display_cop_names] = args.display_cop_names?
@@ -215,6 +219,7 @@ module Homebrew
       @new_formula_problems = []
       @text = FormulaText.new(formula.path)
       @specs = %w[stable devel head].map { |s| formula.send(s) }.compact
+      @spdx_data = options[:spdx_data]
     end
 
     def audit_style
@@ -326,6 +331,27 @@ module Homebrew
       openblas
       openssl@1.1
     ].freeze
+
+    def audit_license
+      if formula.license.present?
+        if @spdx_data["licenses"].any? { |lic| lic["licenseId"] == formula.license }
+          return unless @online
+
+          user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @new_formula
+          return if user.blank?
+
+          github_license = GitHub.get_repo_license(user, repo)
+          return if github_license && [formula.license, "NOASSERTION"].include?(github_license)
+
+          problem "License mismatch - GitHub license is: #{github_license}, "\
+                  "but Formulae license states: #{formula.license}."
+        else
+          problem "#{formula.license} is not a standard SPDX license."
+        end
+      elsif @new_formula
+        problem "No license specified for package."
+      end
+    end
 
     def audit_deps
       @specs.each do |spec|
@@ -502,8 +528,9 @@ module Homebrew
     end
 
     def audit_github_repository
-      user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*})
-      return if user.nil?
+      user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @new_formula
+
+      return if user.blank?
 
       warning = SharedAudits.github(user, repo)
       return if warning.nil?
@@ -512,8 +539,8 @@ module Homebrew
     end
 
     def audit_gitlab_repository
-      user, repo = get_repo_data(%r{https?://gitlab\.com/([^/]+)/([^/]+)/?.*})
-      return if user.nil?
+      user, repo = get_repo_data(%r{https?://gitlab\.com/([^/]+)/([^/]+)/?.*}) if @new_formula
+      return if user.blank?
 
       warning = SharedAudits.gitlab(user, repo)
       return if warning.nil?
@@ -522,8 +549,8 @@ module Homebrew
     end
 
     def audit_bitbucket_repository
-      user, repo = get_repo_data(%r{https?://bitbucket\.org/([^/]+)/([^/]+)/?.*})
-      return if user.nil?
+      user, repo = get_repo_data(%r{https?://bitbucket\.org/([^/]+)/([^/]+)/?.*}) if @new_formula
+      return if user.blank?
 
       warning = SharedAudits.bitbucket(user, repo)
       return if warning.nil?
@@ -534,7 +561,6 @@ module Homebrew
     def get_repo_data(regex)
       return unless @core_tap
       return unless @online
-      return unless @new_formula
 
       _, user, repo = *regex.match(formula.stable.url) if formula.stable
       _, user, repo = *regex.match(formula.homepage) unless user
@@ -554,6 +580,7 @@ module Homebrew
       "aws-sdk-cpp" => "10",
       "awscli@1"    => "10",
       "balena-cli"  => "10",
+      "gatsby-cli"  => "10",
       "quicktype"   => "10",
       "vim"         => "50",
     }.freeze
@@ -721,11 +748,11 @@ module Homebrew
       current_revision = formula.revision
 
       previous_version = nil
-      previous_checksum = nil
       previous_version_scheme = nil
       previous_revision = nil
 
       newest_committed_version = nil
+      newest_committed_checksum = nil
       newest_committed_revision = nil
 
       fv.rev_list("origin/master") do |rev|
@@ -739,6 +766,7 @@ module Homebrew
           previous_revision = f.revision
 
           newest_committed_version ||= previous_version
+          newest_committed_checksum ||= previous_checksum
           newest_committed_revision ||= previous_revision
         end
 
@@ -746,7 +774,7 @@ module Homebrew
       end
 
       if current_version == previous_version &&
-         current_checksum != previous_checksum
+         current_checksum != newest_committed_checksum
         problem(
           "stable sha256 changed without the version also changing; " \
           "please create an issue upstream to rule out malicious " \
@@ -844,15 +872,6 @@ module Homebrew
 
       # TODO: check could be in RuboCop
       problem "`env :userpaths` in formulae is deprecated" if line.include?("env :userpaths")
-
-      if line =~ /system ((["'])[^"' ]*(?:\s[^"' ]*)+\2)/
-        bad_system = Regexp.last_match(1)
-        unless %w[| < > & ; *].any? { |c| bad_system.include? c }
-          good_system = bad_system.gsub(" ", "\", \"")
-          # TODO: check could be in RuboCop
-          problem "Use `system #{good_system}` instead of `system #{bad_system}` "
-        end
-      end
 
       # TODO: check could be in RuboCop
       problem "`#{Regexp.last_match(1)}` is now unnecessary" if line =~ /(require ["']formula["'])/

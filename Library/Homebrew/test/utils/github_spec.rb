@@ -42,6 +42,21 @@ describe GitHub do
     end
   end
 
+  describe "::approved_reviews", :needs_network do
+    it "can get reviews for a pull request" do
+      reviews = subject.approved_reviews("Homebrew", "homebrew-core", 1, commit: "deadbeef")
+      expect(reviews).to eq([])
+    end
+  end
+
+  describe "::sponsors_by_tier", :needs_network do
+    it "errors on an unauthenticated token" do
+      expect {
+        subject.sponsors_by_tier("Homebrew")
+      }.to raise_error(/INSUFFICIENT_SCOPES|FORBIDDEN/)
+    end
+  end
+
   describe "::get_artifact_url", :needs_network do
     it "fails to find a nonexistant workflow" do
       expect {

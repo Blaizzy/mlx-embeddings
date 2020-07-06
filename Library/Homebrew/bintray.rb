@@ -41,7 +41,7 @@ class Bintray
 
   def upload(local_file, repo:, package:, version:, remote_file:, sha256: nil)
     url = "#{API_URL}/content/#{@bintray_org}/#{repo}/#{package}/#{version}/#{remote_file}"
-    args = ["--upload-file", local_file]
+    args = ["--fail", "--upload-file", local_file]
     args += ["--header", "X-Checksum-Sha2: #{sha256}"] unless sha256.blank?
     result = open_api url, *args
     json = JSON.parse(result.stdout)
@@ -50,12 +50,15 @@ class Bintray
     result
   end
 
-  def publish(repo:, package:, version:, file_count:)
+  def publish(repo:, package:, version:, file_count:, warn_on_error: false)
     url = "#{API_URL}/content/#{@bintray_org}/#{repo}/#{package}/#{version}/publish"
-    result = open_api url, "--request", "POST"
+    result = open_api url, "--request", "POST", "--fail"
     json = JSON.parse(result.stdout)
     if file_count.present? && json["files"] != file_count
-      raise "Bottle publish failed: expected #{file_count} bottles, but published #{json["files"]} instead."
+      message = "Bottle publish failed: expected #{file_count} bottles, but published #{json["files"]} instead."
+      raise message unless warn_on_error
+
+      opoo message
     end
 
     odebug "Published #{json["files"]} bottles"
@@ -143,7 +146,7 @@ class Bintray
     end
   end
 
-  def upload_bottle_json(json_files, publish_package: false)
+  def upload_bottle_json(json_files, publish_package: false, warn_on_error: false)
     bottles_hash = json_files.reduce({}) do |hash, json_file|
       hash.deep_merge(JSON.parse(IO.read(json_file)))
     end
@@ -161,14 +164,19 @@ class Bintray
 
         odebug "Checking remote file #{@bintray_org}/#{bintray_repo}/#{filename}"
         if file_published? repo: bintray_repo, remote_file: filename
-          raise Error, <<~EOS
-            #{filename} is already published.
+          already_published = "#{filename} is already published."
+          failed_message = <<~EOS
+            #{already_published}
             Please remove it manually from:
               https://bintray.com/#{@bintray_org}/#{bintray_repo}/#{bintray_package}/view#files
             Or run:
               curl -X DELETE -u $HOMEBREW_BINTRAY_USER:$HOMEBREW_BINTRAY_KEY \\
               https://api.bintray.com/content/#{@bintray_org}/#{bintray_repo}/#{filename}
           EOS
+          raise Error, failed_message unless warn_on_error
+
+          opoo already_published
+          next
         end
 
         if !formula_packaged[formula_name] && !package_exists?(repo: bintray_repo, package: bintray_package)
@@ -189,7 +197,11 @@ class Bintray
 
       bottle_count = bottle_hash["bottle"]["tags"].length
       odebug "Publishing #{@bintray_org}/#{bintray_repo}/#{bintray_package}/#{version}"
-      publish repo: bintray_repo, package: bintray_package, version: version, file_count: bottle_count
+      publish(repo:          bintray_repo,
+              package:       bintray_package,
+              version:       version,
+              file_count:    bottle_count,
+              warn_on_error: warn_on_error)
     end
   end
 end
