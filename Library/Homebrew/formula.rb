@@ -1118,9 +1118,8 @@ class Formula
       rescue TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
         return false # this keg belongs to another formula
       else
-        # this keg belongs to another formula
-        # but it is not an alias
-        return false unless f.aliases.include? keg.name
+        # this keg belongs to another unrelated formula
+        return false unless (f.aliases + f.oldname).include?(keg.name)
       end
     end
     to_check = path.relative_path_from(HOMEBREW_PREFIX).to_s
