@@ -27,7 +27,7 @@ module Homebrew
   end
 
   def validate_and_format_packages(outdated_repology_packages)
-    ohai "Verifying outdated repology packages as Homebrew Formulae"
+    ohai "Verifying outdated repology packages as Homebrew formulae"
 
     packages = {}
     outdated_repology_packages.each do |_name, repositories|
@@ -36,7 +36,7 @@ module Homebrew
         repo["repo"] == "homebrew"
       end
 
-      next if repology_homebrew_repo.empty?
+      next if repology_homebrew_repo.blank?
 
       latest_version = nil
 
@@ -53,7 +53,7 @@ module Homebrew
   def format_package(package_name, latest_version)
     formula = get_formula_details(package_name)
 
-    return if formula.nil?
+    return if formula.blank?
 
     tap_full_name = formula.tap&.full_name
     current_version = current_formula_version(formula)
@@ -91,7 +91,7 @@ module Homebrew
   def parse_livecheck_response(response)
     output = response.delete(" ").split(/:|==>/)
 
-    # eg: ["openclonk", "7.0", "8.1"]
+    # e.g. ["openclonk", "7.0", "8.1"]
     package_name, brew_version, latest_version = output
 
     {
@@ -102,14 +102,14 @@ module Homebrew
   end
 
   def display(outdated_packages)
-    ohai "Outdated Formulae\n"
+    ohai "Outdated formulae\n"
 
     outdated_packages.each do |formula, package_details|
       ohai formula
-      ohai "Current formula version: #{package_details[:current_formula_version]}"
-      ohai "Latest repology version: #{package_details[:repology_latest_version]}"
-      ohai "Latest livecheck version: #{package_details[:livecheck_latest_version]}"
-      ohai "Open pull requests: #{package_details[:open_pull_requests]}"
+      puts "Current formula version: #{package_details[:current_formula_version]}"
+      puts "Latest repology version: #{package_details[:repology_latest_version]}"
+      puts "Latest livecheck version: #{package_details[:livecheck_latest_version]}"
+      puts "Open pull requests: #{package_details[:open_pull_requests]}"
     end
   end
 end

@@ -8,7 +8,7 @@ module Repology
   MAX_PAGINATION = 15
 
   def query_api(last_package_in_response = "")
-    last_package_in_response += "/" unless last_package_in_response.empty?
+    last_package_in_response += "/" unless last_package_in_response.blank?
 
     url = "https://repology.org/api/v1/projects/#{last_package_in_response}?inrepo=homebrew&outdated=1"
 
@@ -25,7 +25,7 @@ module Repology
     page_no = 1
 
     while response_size > 1 && page_no <= MAX_PAGINATION
-      odebug "Paginating Repology api page: #{page_no}"
+      odebug "Paginating Repology API page: #{page_no}"
 
       last_package_in_response = outdated_packages.keys[last_package_index]
       response = query_api(last_package_in_response)
@@ -36,7 +36,7 @@ module Repology
       page_no += 1
     end
 
-    ohai "#{outdated_packages.size} outdated packages identified"
+    ohai "#{outdated_packages.size} outdated #{"package".pluralize(outdated_packages.size)} identified"
 
     outdated_packages
   end
