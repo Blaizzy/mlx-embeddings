@@ -1119,7 +1119,7 @@ class Formula
         return false # this keg belongs to another formula
       else
         # this keg belongs to another unrelated formula
-        return false unless (f.aliases + f.oldname).include?(keg.name)
+        return false unless (Array(f.aliases) + Array(f.oldname)).include?(keg.name)
       end
     end
     to_check = path.relative_path_from(HOMEBREW_PREFIX).to_s
