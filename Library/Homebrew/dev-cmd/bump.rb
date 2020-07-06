@@ -52,6 +52,7 @@ module Homebrew
 
   def format_package(package_name, latest_version)
     formula = get_formula_details(package_name)
+    
     return if formula.nil?
 
     tap_full_name = formula.tap&.full_name
