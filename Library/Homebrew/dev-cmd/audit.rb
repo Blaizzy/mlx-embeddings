@@ -231,11 +231,6 @@ module Homebrew
     end
 
     def audit_file
-      # TODO: check could be in RuboCop
-      if text.to_s.match?(/inreplace [^\n]* do [^\n]*\n[^\n]*\.gsub![^\n]*\n\ *end/m)
-        problem "'inreplace ... do' was used for a single substitution (use the non-block form instead)."
-      end
-
       if formula.core_formula? && @versioned_formula
         unversioned_formula = begin
           # build this ourselves as we want e.g. homebrew/core to be present
@@ -828,20 +823,6 @@ module Homebrew
           end
         end
       end
-    end
-
-    def audit_lines
-      text.without_patch.split("\n").each_with_index do |line, lineno|
-        line_problems(line, lineno + 1)
-      end
-    end
-
-    def line_problems(line, _lineno)
-      # Check for string interpolation of single values.
-      return unless line =~ /(system|inreplace|gsub!|change_make_var!).*[ ,]"#\{([\w.]+)\}"/
-
-      # TODO: check could be in RuboCop
-      problem "Don't need to interpolate \"#{Regexp.last_match(2)}\" with #{Regexp.last_match(1)}"
     end
 
     def audit_reverse_migration
