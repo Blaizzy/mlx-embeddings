@@ -470,10 +470,7 @@ class ReporterHub
       dump_formula_report :M, "Updated Formulae"
     else
       updated = select_formula(:M).count
-      if updated.positive?
-        ohai "Updated Formulae"
-        puts "Updated #{updated} #{"formula".pluralize(updated)}."
-      end
+      ohai "Updated Formulae", "Updated #{updated} #{"formula".pluralize(updated)}." if updated.positive?
     end
     dump_formula_report :R, "Renamed Formulae"
     dump_formula_report :D, "Deleted Formulae"
@@ -482,10 +479,7 @@ class ReporterHub
       dump_formula_report :MC, "Updated Casks"
     else
       updated = select_formula(:MC).count
-      if updated.positive?
-        ohai "Updated Casks"
-        puts "Updated #{updated} #{"cask".pluralize(updated)}."
-      end
+      ohai "Updated Casks", "Updated #{updated} #{"cask".pluralize(updated)}." if updated.positive?
     end
     dump_formula_report :DC, "Deleted Casks"
   end
@@ -525,8 +519,7 @@ class ReporterHub
     return if formulae.empty?
 
     # Dump formula list.
-    ohai title
-    puts Formatter.columns(formulae.sort)
+    ohai title, Formatter.columns(formulae.sort)
   end
 
   def installed?(formula)

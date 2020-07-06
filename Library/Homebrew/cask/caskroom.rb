@@ -22,8 +22,8 @@ module Cask
       sudo = !path.parent.writable?
 
       if sudo && !ENV.key?("SUDO_ASKPASS") && $stdout.tty?
-        ohai "Creating Caskroom at #{path}"
-        ohai "We'll set permissions properly so we won't need sudo in the future."
+        ohai "Creating Caskroom directory: #{path}",
+             "We'll set permissions properly so we won't need sudo in the future."
       end
 
       SystemCommand.run("/bin/mkdir", args: ["-p", path], sudo: sudo)

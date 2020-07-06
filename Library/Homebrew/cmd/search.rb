@@ -119,15 +119,11 @@ module Homebrew
       print_casks = args.cask?
       print_formulae = print_casks = true if !print_formulae && !print_casks
 
-      if print_formulae && all_formulae.any?
-        ohai "Formulae"
-        puts Formatter.columns(all_formulae)
-      end
+      ohai "Formulae", Formatter.columns(all_formulae) if print_formulae && all_formulae.any?
 
       if print_casks && all_casks.any?
         puts if args.formula? && all_formulae.any?
-        ohai "Casks"
-        puts Formatter.columns(all_casks)
+        ohai "Casks", Formatter.columns(all_casks)
       end
 
       count = all_formulae.count + all_casks.count

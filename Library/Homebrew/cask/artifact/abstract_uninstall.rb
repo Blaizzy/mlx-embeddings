@@ -367,8 +367,7 @@ module Cask
 
         resolved_paths = each_resolved_path(:trash, paths).to_a
 
-        ohai "Trashing files:"
-        puts resolved_paths.map(&:first)
+        ohai "Trashing files:", resolved_paths.map(&:first)
         trash_paths(*resolved_paths.flat_map(&:last), **options)
       end
 
