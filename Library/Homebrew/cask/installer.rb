@@ -212,11 +212,11 @@ module Cask
     end
 
     def install_artifacts
+      artifacts = @cask.artifacts
       already_installed_artifacts = []
 
       odebug "Installing artifacts"
-      artifacts = @cask.artifacts
-      odebug "#{artifacts.length} artifact/s defined", artifacts
+      odebug "#{artifacts.length} #{"artifact".pluralize(artifacts.length)} defined", artifacts
 
       artifacts.each do |artifact|
         next unless artifact.respond_to?(:install_phase)
@@ -459,10 +459,10 @@ module Cask
     end
 
     def uninstall_artifacts(clear: false)
-      odebug "Uninstalling artifacts"
       artifacts = @cask.artifacts
 
-      odebug "#{artifacts.length} artifact/s defined", artifacts
+      odebug "Uninstalling artifacts"
+      odebug "#{artifacts.length} #{"artifact".pluralize(artifacts.length)} defined", artifacts
 
       artifacts.each do |artifact|
         if artifact.respond_to?(:uninstall_phase)
