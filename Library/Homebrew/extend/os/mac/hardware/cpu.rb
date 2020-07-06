@@ -21,8 +21,6 @@ module Hardware
       end
 
       def family
-        return :dunno if arm?
-
         case sysctl_int("hw.cpufamily")
         when 0x73d67300 # Yonah: Core Solo/Duo
           :core
@@ -48,6 +46,8 @@ module Hardware
           :kabylake
         when 0x38435547 # Ice Lake
           :icelake
+        when 0x07d34b9f # ARMv8.3-A (Vortex, Tempest)
+          :arm_vortex_tempest
         else
           :dunno
         end
