@@ -63,17 +63,22 @@ module Homebrew
   def upgrade
     upgrade_args.parse
 
+    formulae, casks = args.resolved_formulae_casks
+
+    upgrade_outdated_formulae(formulae)
+    upgrade_outdated_casks(casks)
+  end
+
+  def upgrade_outdated_formulae(formulae)
     FormulaInstaller.prevent_build_flags unless DevelopmentTools.installed?
 
     Install.perform_preinstall_checks
 
-    if args.no_named?
+    if formulae.blank?
       outdated = Formula.installed.select do |f|
         f.outdated?(fetch_head: args.fetch_HEAD?)
       end
-      casks = [] # Upgrade all installed casks
     else
-      formulae, casks = args.resolved_formulae_casks
       outdated, not_outdated = formulae.partition do |f|
         f.outdated?(fetch_head: args.fetch_HEAD?)
       end
@@ -89,11 +94,6 @@ module Homebrew
       end
     end
 
-    upgrade_outdated_formulae(outdated)
-    upgrade_outdated_casks(casks)
-  end
-
-  def upgrade_outdated_formulae(outdated)
     return if outdated.empty?
 
     pinned = outdated.select(&:pinned?)
