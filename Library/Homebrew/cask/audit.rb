@@ -82,7 +82,7 @@ module Cask
       check_bitbucket_repository
       self
     rescue => e
-      odebug "#{e.message}\n#{e.backtrace.join("\n")}"
+      odebug e, e.backtrace
       add_error "exception while auditing #{cask}: #{e.message}"
       self
     end
