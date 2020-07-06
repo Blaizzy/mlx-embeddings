@@ -38,12 +38,7 @@ module Homebrew
 
       next if repology_homebrew_repo.blank?
 
-      latest_version = nil
-
-      # identify latest version amongst repology repos
-      repositories.each do |repo|
-        latest_version = repo["version"] if repo["status"] == "newest"
-      end
+      latest_version = repositories.find { |repo| repo["status"] == "newest" }["version"]
 
       packages[repology_homebrew_repo["srcname"]] = format_package(repology_homebrew_repo["srcname"], latest_version)
     end
