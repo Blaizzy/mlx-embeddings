@@ -1096,3 +1096,252 @@ describe RuboCop::Cop::FormulaAuditStrict::MakeCheck do
 
   include_examples "formulae exist", described_class::MAKE_CHECK_ALLOWLIST
 end
+
+describe RuboCop::Cop::FormulaAuditStrict::ShellCommands do
+  subject(:cop) { described_class.new }
+
+  context "When auditing shell commands" do
+    it "system arguments should be separated" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          def install
+            system "foo bar"
+                   ^^^^^^^^^ Separate `system` commands into `\"foo\", \"bar\"`
+          end
+        end
+      RUBY
+    end
+
+    it "system arguments with string interpolation should be separated" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          def install
+            system "\#{bin}/foo bar"
+                   ^^^^^^^^^^^^^^^^ Separate `system` commands into `\"\#{bin}/foo\", \"bar\"`
+          end
+        end
+      RUBY
+    end
+
+    it "system arguments with metacharacters should not be separated" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          def install
+            system "foo bar > baz"
+          end
+        end
+      RUBY
+    end
+
+    it "only the first system argument should be separated" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          def install
+            system "foo", "bar baz"
+          end
+        end
+      RUBY
+    end
+
+    it "Utils.popen arguments should not be separated" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          def install
+            Utils.popen("foo bar")
+          end
+        end
+      RUBY
+    end
+
+    it "Utils.popen_read arguments should be separated" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          def install
+            Utils.popen_read("foo bar")
+                             ^^^^^^^^^ Separate `Utils.popen_read` commands into `\"foo\", \"bar\"`
+          end
+        end
+      RUBY
+    end
+
+    it "Utils.safe_popen_read arguments should be separated" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          def install
+            Utils.safe_popen_read("foo bar")
+                                  ^^^^^^^^^ Separate `Utils.safe_popen_read` commands into `\"foo\", \"bar\"`
+          end
+        end
+      RUBY
+    end
+
+    it "Utils.popen_write arguments should be separated" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          def install
+            Utils.popen_write("foo bar")
+                              ^^^^^^^^^ Separate `Utils.popen_write` commands into `\"foo\", \"bar\"`
+          end
+        end
+      RUBY
+    end
+
+    it "Utils.safe_popen_write arguments should be separated" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          def install
+            Utils.safe_popen_write("foo bar")
+                                   ^^^^^^^^^ Separate `Utils.safe_popen_write` commands into `\"foo\", \"bar\"`
+          end
+        end
+      RUBY
+    end
+
+    it "Utils.popen_read arguments with string interpolation should be separated" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          def install
+            Utils.popen_read("\#{bin}/foo bar")
+                             ^^^^^^^^^^^^^^^^ Separate `Utils.popen_read` commands into `\"\#{bin}/foo\", \"bar\"`
+          end
+        end
+      RUBY
+    end
+
+    it "Utils.popen_read arguments with metacharacters should not be separated" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          def install
+            Utils.popen_read("foo bar > baz")
+          end
+        end
+      RUBY
+    end
+
+    it "only the first Utils.popen_read argument should be separated" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          def install
+            Utils.popen_read("foo", "bar baz")
+          end
+        end
+      RUBY
+    end
+
+    it "Utils.popen_read arguments should be separated following a shell variable" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          def install
+            Utils.popen_read({ "SHELL" => "bash"}, "foo bar")
+                                                   ^^^^^^^^^ Separate `Utils.popen_read` commands into `\"foo\", \"bar\"`
+          end
+        end
+      RUBY
+    end
+
+    it "separates shell commands in system" do
+      source = <<~RUBY
+        class Foo < Formula
+          def install
+            system "foo bar"
+          end
+        end
+      RUBY
+
+      corrected_source = <<~RUBY
+        class Foo < Formula
+          def install
+            system "foo", "bar"
+          end
+        end
+      RUBY
+
+      new_source = autocorrect_source(source)
+      expect(new_source).to eq(corrected_source)
+    end
+
+    it "separates shell commands with string interpolation in system" do
+      source = <<~RUBY
+        class Foo < Formula
+          def install
+            system "\#{foo}/bar baz"
+          end
+        end
+      RUBY
+
+      corrected_source = <<~RUBY
+        class Foo < Formula
+          def install
+            system "\#{foo}/bar", "baz"
+          end
+        end
+      RUBY
+
+      new_source = autocorrect_source(source)
+      expect(new_source).to eq(corrected_source)
+    end
+
+    it "separates shell commands in Utils.popen_read" do
+      source = <<~RUBY
+        class Foo < Formula
+          def install
+            Utils.popen_read("foo bar")
+          end
+        end
+      RUBY
+
+      corrected_source = <<~RUBY
+        class Foo < Formula
+          def install
+            Utils.popen_read("foo", "bar")
+          end
+        end
+      RUBY
+
+      new_source = autocorrect_source(source)
+      expect(new_source).to eq(corrected_source)
+    end
+
+    it "separates shell commands with string interpolation in Utils.popen_read" do
+      source = <<~RUBY
+        class Foo < Formula
+          def install
+            Utils.popen_read("\#{foo}/bar baz")
+          end
+        end
+      RUBY
+
+      corrected_source = <<~RUBY
+        class Foo < Formula
+          def install
+            Utils.popen_read("\#{foo}/bar", "baz")
+          end
+        end
+      RUBY
+
+      new_source = autocorrect_source(source)
+      expect(new_source).to eq(corrected_source)
+    end
+
+    it "separates shell commands following a shell variable in Utils.popen_read" do
+      source = <<~RUBY
+        class Foo < Formula
+          def install
+            Utils.popen_read({ "SHELL" => "bash" }, "foo bar")
+          end
+        end
+      RUBY
+
+      corrected_source = <<~RUBY
+        class Foo < Formula
+          def install
+            Utils.popen_read({ "SHELL" => "bash" }, "foo", "bar")
+          end
+        end
+      RUBY
+
+      new_source = autocorrect_source(source)
+      expect(new_source).to eq(corrected_source)
+    end
+  end
+end
