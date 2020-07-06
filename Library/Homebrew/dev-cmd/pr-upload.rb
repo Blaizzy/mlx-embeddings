@@ -15,6 +15,9 @@ module Homebrew
       EOS
       switch "--no-publish",
              description: "Apply the bottle commit and upload the bottles, but don't publish them."
+      switch "--keep-old",
+             description: "If the formula specifies a rebuild version, " \
+                          "attempt to preserve its value in the generated DSL."
       switch "-n", "--dry-run",
              description: "Print what would be done rather than doing it."
       switch "--warn-on-upload-failure",
@@ -38,6 +41,7 @@ module Homebrew
     bottle_args = ["bottle", "--merge", "--write"]
     bottle_args << "--verbose" if args.verbose?
     bottle_args << "--debug" if args.debug?
+    bottle_args << "--keep-old" if args.keep_old?
     bottle_args << "--root-url=#{args.root_url}" if args.root_url
     odie "No JSON files found in the current working directory" if Dir["*.json"].empty?
     bottle_args += Dir["*.json"]
