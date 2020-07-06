@@ -847,11 +847,6 @@ module Homebrew
 
       # TODO: check could be in RuboCop
       problem "`#{Regexp.last_match(1)}` is now unnecessary" if line =~ /(require ["']formula["'])/
-
-      return unless !@core_tap && line =~ /depends_on .+ if build\.with(out)?\?\(?["']\w+["']\)?/
-
-      # TODO: check could be in RuboCop
-      problem "`Use :optional` or `:recommended` instead of `#{Regexp.last_match(0)}`"
     end
 
     def audit_reverse_migration
