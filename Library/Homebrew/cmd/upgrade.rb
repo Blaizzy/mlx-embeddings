@@ -4,6 +4,9 @@ require "cli/parser"
 require "formula_installer"
 require "install"
 require "upgrade"
+require "cask/cmd"
+require "cask/utils"
+require "cask/macos"
 
 module Homebrew
   module_function
@@ -50,6 +53,8 @@ module Homebrew
              description: "Print install times for each formula at the end of the run."
       switch "-n", "--dry-run",
              description: "Show what would be upgraded, but do not actually upgrade anything."
+      switch "--greedy",
+             description: "Upgrade casks with `auto_updates` or `version :latest`"
       conflicts "--build-from-source", "--force-bottle"
       formula_options
     end
@@ -66,14 +71,14 @@ module Homebrew
       outdated = Formula.installed.select do |f|
         f.outdated?(fetch_head: args.fetch_HEAD?)
       end
-
-      exit 0 if outdated.empty?
+      casks = [] # Upgrade all installed casks
     else
-      outdated = args.resolved_formulae.select do |f|
+      formulae, casks = args.resolved_formulae_casks
+      outdated, not_outdated = formulae.partition do |f|
         f.outdated?(fetch_head: args.fetch_HEAD?)
       end
 
-      (args.resolved_formulae - outdated).each do |f|
+      not_outdated.each do |f|
         versions = f.installed_kegs.map(&:version)
         if versions.empty?
           ofail "#{f.full_specified_name} not installed"
@@ -82,8 +87,14 @@ module Homebrew
           opoo "#{f.full_specified_name} #{version} already installed"
         end
       end
-      return if outdated.empty?
     end
+
+    upgrade_outdated_formulae(outdated)
+    upgrade_outdated_casks(casks)
+  end
+
+  def upgrade_outdated_formulae(outdated)
+    return if outdated.empty?
 
     pinned = outdated.select(&:pinned?)
     outdated -= pinned
@@ -114,5 +125,13 @@ module Homebrew
     check_installed_dependents
 
     Homebrew.messages.display_messages
+  end
+
+  def upgrade_outdated_casks(casks)
+    cask_upgrade = Cask::Cmd::Upgrade.new(casks)
+    cask_upgrade.force = args.force?
+    cask_upgrade.dry_run = args.dry_run?
+    cask_upgrade.greedy = args.greedy?
+    cask_upgrade.run
   end
 end
