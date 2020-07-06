@@ -838,15 +838,10 @@ module Homebrew
 
     def line_problems(line, _lineno)
       # Check for string interpolation of single values.
-      if line =~ /(system|inreplace|gsub!|change_make_var!).*[ ,]"#\{([\w.]+)\}"/
-        # TODO: check could be in RuboCop
-        problem "Don't need to interpolate \"#{Regexp.last_match(2)}\" with #{Regexp.last_match(1)}"
-      end
-
-      return unless @strict
+      return unless line =~ /(system|inreplace|gsub!|change_make_var!).*[ ,]"#\{([\w.]+)\}"/
 
       # TODO: check could be in RuboCop
-      problem "`#{Regexp.last_match(1)}` is now unnecessary" if line =~ /(require ["']formula["'])/
+      problem "Don't need to interpolate \"#{Regexp.last_match(2)}\" with #{Regexp.last_match(1)}"
     end
 
     def audit_reverse_migration

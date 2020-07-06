@@ -6,7 +6,19 @@ module RuboCop
   module Cop
     module FormulaAudit
       class Text < FormulaCop
-        def audit_formula(_node, _class_node, _parent_class_node, body_node)
+        def audit_formula(node, _class_node, _parent_class_node, body_node)
+          @full_source_content = source_buffer(node).source
+
+          if match = @full_source_content.match(/^require ['"]formula['"]$/)
+            @offensive_node = node
+            @source_buf = source_buffer(node)
+            @line_no = match.pre_match.count("\n") + 1
+            @column = 0
+            @length = match[0].length
+            @offense_source_range = source_range(@source_buf, @line_no, @column, @length)
+            problem "`#{match}` is now unnecessary"
+          end
+
           if !find_node_method_by_name(body_node, :plist_options) &&
              find_method_def(body_node, :plist)
             problem "Please set plist_options when using a formula-defined plist."

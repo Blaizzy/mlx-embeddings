@@ -6,6 +6,17 @@ describe RuboCop::Cop::FormulaAudit::Text do
   subject(:cop) { described_class.new }
 
   context "When auditing formula text" do
+    it "with `require \"formula\"` is present" do
+      expect_offense(<<~RUBY)
+        require "formula"
+        ^^^^^^^^^^^^^^^^^ `require "formula"` is now unnecessary
+        class Foo < Formula
+          url "https://brew.sh/foo-1.0.tgz"
+          homepage "https://brew.sh"
+        end
+      RUBY
+    end
+
     it "with both openssl and libressl optional dependencies" do
       expect_offense(<<~RUBY)
         class Foo < Formula
