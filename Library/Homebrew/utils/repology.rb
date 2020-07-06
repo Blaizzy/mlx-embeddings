@@ -25,7 +25,7 @@ module Repology
     page_no = 1
 
     while response_size > 1 && page_no <= MAX_PAGINATION
-      ohai "Paginating Repology api page: #{page_no}" if Homebrew.args.debug?
+      odebug "Paginating Repology api page: #{page_no}"
 
       last_package_in_response = outdated_packages.keys[last_package_index]
       response = query_api(last_package_in_response)
