@@ -346,6 +346,43 @@ module GitHub
     prs.each { |i| puts "#{i["title"]} (#{i["html_url"]})" }
   end
 
+  def fetch_pull_requests(query, tap_full_name, state: nil)
+    issues_for_formula(query, tap_full_name: tap_full_name, state: state).select do |pr|
+      pr["html_url"].include?("/pull/") &&
+        /(^|\s)#{Regexp.quote(query)}(:|\s|$)/i =~ pr["title"]
+    end
+  rescue GitHub::RateLimitExceededError => e
+    opoo e.message
+    []
+  end
+
+  def check_for_duplicate_pull_requests(formula, tap_full_name, version, fetch_pr = false)
+    # check for open requests
+    pull_requests = fetch_pull_requests(formula.name, tap_full_name, state: "open")
+
+    # if we haven't already found open requests, try for an exact match across all requests
+    pull_requests = fetch_pull_requests("#{formula.name} #{version}", tap_full_name) if pull_requests.blank?
+    return if pull_requests.blank?
+
+    return pull_requests.map { |pr| { title: pr["title"], url: pr["html_url"] } } if fetch_pr
+
+    duplicates_message = <<~EOS
+      These pull requests may be duplicates:
+      #{pull_requests.map { |pr| "#{pr["title"]} #{pr["html_url"]}" }.join("\n")}
+    EOS
+    error_message = "Duplicate PRs should not be opened. Use --force to override this error."
+    if Homebrew.args.force? && !Homebrew.args.quiet?
+      opoo duplicates_message
+    elsif !Homebrew.args.force? && Homebrew.args.quiet?
+      odie error_message
+    elsif !Homebrew.args.force?
+      odie <<~EOS
+        #{duplicates_message.chomp}
+        #{error_message}
+      EOS
+    end
+  end
+
   def create_fork(repo)
     url = "#{API_URL}/repos/#{repo}/forks"
     data = {}

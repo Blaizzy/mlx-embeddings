@@ -314,7 +314,7 @@ module Homebrew
 
     new_formula_version = formula_version(formula, requested_spec, new_contents)
 
-    check_for_duplicate_pull_requests(formula, tap_full_name, new_formula_version.to_s)
+    GitHub.check_for_duplicate_pull_requests(formula, tap_full_name, new_formula_version.to_s)
 
     if !new_mirrors && !formula_spec.mirrors.empty?
       if args.force?
@@ -466,41 +466,6 @@ module Homebrew
       Formulary.from_contents(name, path, contents, spec).version
     else
       Formulary::FormulaLoader.new(name, path).get_formula(spec).version
-    end
-  end
-
-  def fetch_pull_requests(query, tap_full_name, state: nil)
-    GitHub.issues_for_formula(query, tap_full_name: tap_full_name, state: state).select do |pr|
-      pr["html_url"].include?("/pull/") &&
-        /(^|\s)#{Regexp.quote(query)}(:|\s|$)/i =~ pr["title"]
-    end
-  rescue GitHub::RateLimitExceededError => e
-    opoo e.message
-    []
-  end
-
-  def check_for_duplicate_pull_requests(formula, tap_full_name, version)
-    # check for open requests
-    pull_requests = fetch_pull_requests(formula.name, tap_full_name, state: "open")
-
-    # if we haven't already found open requests, try for an exact match across all requests
-    pull_requests = fetch_pull_requests("#{formula.name} #{version}", tap_full_name) if pull_requests.blank?
-    return if pull_requests.blank?
-
-    duplicates_message = <<~EOS
-      These pull requests may be duplicates:
-      #{pull_requests.map { |pr| "#{pr["title"]} #{pr["html_url"]}" }.join("\n")}
-    EOS
-    error_message = "Duplicate PRs should not be opened. Use --force to override this error."
-    if args.force? && !args.quiet?
-      opoo duplicates_message
-    elsif !args.force? && args.quiet?
-      odie error_message
-    elsif !args.force?
-      odie <<~EOS
-        #{duplicates_message.chomp}
-        #{error_message}
-      EOS
     end
   end
 
