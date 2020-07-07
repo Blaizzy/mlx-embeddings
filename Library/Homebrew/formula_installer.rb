@@ -17,6 +17,7 @@ require "linkage_checker"
 require "install"
 require "messages"
 require "cask/cask_loader"
+require "cmd/install"
 require "find"
 
 class FormulaInstaller
