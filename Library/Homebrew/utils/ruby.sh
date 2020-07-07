@@ -44,7 +44,7 @@ If there's no Homebrew Portable Ruby available for your processor:
   then
     HOMEBREW_RUBY_PATH="$vendor_ruby_path"
     [[ -z "$HOMEBREW_MACOS" ]] && TERMINFO_DIRS="$vendor_ruby_terminfo"
-    if [[ $vendor_ruby_current_version != $vendor_ruby_latest_version ]]
+    if [[ $vendor_ruby_current_version != "$vendor_ruby_latest_version" ]]
     then
       if ! brew vendor-install ruby
       then
