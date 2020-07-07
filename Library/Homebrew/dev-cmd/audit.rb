@@ -964,8 +964,7 @@ module Homebrew
   end
 
   class ResourceAuditor
-    attr_reader :name, :version, :checksum, :url, :mirrors, :using, :specs, :owner
-    attr_reader :spec_name, :problems
+    attr_reader :name, :version, :checksum, :url, :mirrors, :using, :specs, :owner, :spec_name, :problems
 
     def initialize(resource, spec_name, options = {})
       @name     = resource.name

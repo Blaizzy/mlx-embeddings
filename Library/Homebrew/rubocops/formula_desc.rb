@@ -87,7 +87,7 @@ module RuboCop
             first_word = string_content(node).split.first
             unless VALID_LOWERCASE_WORDS.include?(first_word)
               first_char = first_word.to_s.chars.first
-              correction.sub!(/^(['"]?)([a-z])/, "\\1#{first_char.upcase}")
+              correction.sub!(/^(['"]?)([a-z])/, "\\1#{first_char.upcase}") if first_char
             end
             correction.sub!(/^(['"]?)an?\s/i, "\\1")
             correction.gsub!(/(ommand ?line)/i, "ommand-line")

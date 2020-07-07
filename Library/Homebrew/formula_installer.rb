@@ -37,8 +37,7 @@ class FormulaInstaller
   end
 
   attr_reader :formula
-  attr_accessor :options, :build_bottle
-  attr_accessor :installed_as_dependency, :installed_on_request, :link_keg
+  attr_accessor :options, :build_bottle, :installed_as_dependency, :installed_on_request, :link_keg
 
   mode_attr_accessor :show_summary_heading, :show_header
   mode_attr_accessor :build_from_source, :force_bottle, :include_test
@@ -398,9 +397,7 @@ class FormulaInstaller
   def compute_dependencies
     req_map, req_deps = expand_requirements
     check_requirements(req_map)
-    deps = expand_dependencies(req_deps + formula.deps)
-
-    deps
+    expand_dependencies(req_deps + formula.deps)
   end
 
   # Check that each dependency in deps has a bottle available, terminating

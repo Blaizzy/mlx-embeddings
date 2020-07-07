@@ -201,9 +201,7 @@ module Homebrew
   end
 
   class PatchPuller
-    attr_reader :base_url
-    attr_reader :patch_url
-    attr_reader :patchpath
+    attr_reader :base_url, :patch_url, :patchpath
 
     def initialize(url, args, description = nil)
       @base_url = url

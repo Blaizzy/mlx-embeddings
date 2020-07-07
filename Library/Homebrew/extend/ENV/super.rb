@@ -17,8 +17,7 @@ module Superenv
   include SharedEnvExtension
 
   # @private
-  attr_accessor :keg_only_deps, :deps, :run_time_deps
-  attr_accessor :x11
+  attr_accessor :keg_only_deps, :deps, :run_time_deps, :x11
 
   def self.extended(base)
     base.keg_only_deps = []

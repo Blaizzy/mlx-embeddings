@@ -6,7 +6,7 @@ require "linkage_cache_store"
 require "fiddle"
 
 class LinkageChecker
-  attr_reader :undeclared_deps
+  attr_reader :undeclared_deps, :keg, :formula, :store
 
   def initialize(keg, formula = nil, cache_db:, rebuild_cache: false)
     @keg = keg
@@ -70,8 +70,6 @@ class LinkageChecker
   end
 
   private
-
-  attr_reader :keg, :formula, :store
 
   def dylib_to_dep(dylib)
     dylib =~ %r{#{Regexp.escape(HOMEBREW_PREFIX)}/(opt|Cellar)/([\w+-.@]+)/}

@@ -8,8 +8,7 @@ class URL
     :data
   ].freeze
 
-  attr_reader :uri, :specs
-  attr_reader(*ATTRIBUTES)
+  attr_reader :uri, :specs, *ATTRIBUTES
 
   extend Forwardable
   def_delegators :uri, :path, :scheme, :to_s

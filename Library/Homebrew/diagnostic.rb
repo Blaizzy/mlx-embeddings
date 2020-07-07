@@ -847,12 +847,11 @@ module Homebrew
         end
         return if deleted_formulae.blank?
 
-        message = <<~EOS
+        <<~EOS
           Some installed formulae were deleted!
           You should find replacements for the following formulae:
             #{deleted_formulae.join("\n  ")}
         EOS
-        message
       end
 
       def all

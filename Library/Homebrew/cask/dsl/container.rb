@@ -10,8 +10,7 @@ module Cask
                              :nested,
                            ]).freeze
 
-      attr_accessor(*VALID_KEYS)
-      attr_accessor :pairs
+      attr_accessor(*VALID_KEYS, :pairs)
 
       def initialize(pairs = {})
         @pairs = pairs
