@@ -23,8 +23,8 @@ symlink_target_directory() {
 builtin enable compgen unset
 for cmd in $(builtin compgen -A builtin)
 do
-  builtin unset -f $cmd
-  builtin enable $cmd
+  builtin unset -f "$cmd"
+  builtin enable "$cmd"
 done
 unset cmd
 
