@@ -861,6 +861,7 @@ true:
   - ./cask/url.rb
   - ./checksum.rb
   - ./config.rb
+  - ./dev-cmd/sponsers.rb
   - ./extend/cachable.rb
   - ./extend/os/linux/development_tools.rb
   - ./extend/os/linux/formula.rb
@@ -887,6 +888,7 @@ true:
   - ./rubocops/cask/extend/string.rb
   - ./rubocops/deprecate.rb
   - ./tap_constants.rb
+  - ./test/dev-cmd/sponsers_spec.rb
   - ./test/support/helper/fixtures.rb
   - ./test/support/lib/config.rb
   - ./utils/bottles.rb
