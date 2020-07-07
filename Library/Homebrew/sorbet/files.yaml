@@ -163,6 +163,7 @@ false:
   - ./dev-cmd/release-notes.rb
   - ./dev-cmd/ruby.rb
   - ./dev-cmd/sh.rb
+  - ./dev-cmd/sponsors.rb
   - ./dev-cmd/style.rb
   - ./dev-cmd/tap-new.rb
   - ./dev-cmd/test.rb
@@ -603,6 +604,7 @@ false:
   - ./test/dev-cmd/release-notes_spec.rb
   - ./test/dev-cmd/ruby_spec.rb
   - ./test/dev-cmd/sh_spec.rb
+  - ./test/dev-cmd/sponsors_spec.rb
   - ./test/dev-cmd/style_spec.rb
   - ./test/dev-cmd/tap-new_spec.rb
   - ./test/dev-cmd/test_spec.rb
@@ -861,7 +863,6 @@ true:
   - ./cask/url.rb
   - ./checksum.rb
   - ./config.rb
-  - ./dev-cmd/sponsers.rb
   - ./extend/cachable.rb
   - ./extend/os/linux/development_tools.rb
   - ./extend/os/linux/formula.rb
@@ -888,7 +889,6 @@ true:
   - ./rubocops/cask/extend/string.rb
   - ./rubocops/deprecate.rb
   - ./tap_constants.rb
-  - ./test/dev-cmd/sponsers_spec.rb
   - ./test/support/helper/fixtures.rb
   - ./test/support/lib/config.rb
   - ./utils/bottles.rb
