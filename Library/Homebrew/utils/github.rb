@@ -356,7 +356,7 @@ module GitHub
     []
   end
 
-  def check_for_duplicate_pull_requests(formula, tap_full_name, version, args, fetch_pr = false)
+  def check_for_duplicate_pull_requests(formula, tap_full_name, version, fetch_pr = false)
     # check for open requests
     pull_requests = fetch_pull_requests(formula.name, tap_full_name, state: "open")
 
@@ -371,11 +371,11 @@ module GitHub
       #{pull_requests.map { |pr| "#{pr["title"]} #{pr["html_url"]}" }.join("\n")}
     EOS
     error_message = "Duplicate PRs should not be opened. Use --force to override this error."
-    if args.force? && !args.quiet?
+    if Homebrew.args.force? && !Homebrew.args.quiet?
       opoo duplicates_message
-    elsif !args.force? && args.quiet?
+    elsif !Homebrew.args.force? && Homebrew.args.quiet?
       odie error_message
-    elsif !args.force?
+    elsif !Homebrew.args.force?
       odie <<~EOS
         #{duplicates_message.chomp}
         #{error_message}
