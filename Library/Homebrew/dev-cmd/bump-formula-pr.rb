@@ -322,7 +322,7 @@ module Homebrew
     EOS
     error_message = "Duplicate PRs should not be opened. Use --force to override this error."
 
-    unless !pull_requests.blank?
+    if !pull_requests.blank?
       if args.force? && !args.quiet?
         opoo duplicates_message
       elsif !args.force? && args.quiet?
