@@ -48,7 +48,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
         EOS
 
         inspect_source(source)
-        expected_offense = if patch_url.match?(%r{/raw\.github\.com/})
+        expected_offense = if patch_url.include?("/raw.github.com/")
           [{ message:
                        <<~EOS.chomp,
                          GitHub/Gist patches should specify a revision:
@@ -58,7 +58,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
              line:     5,
              column:   12,
              source:   source }]
-        elsif patch_url.match?(%r{macports/trunk})
+        elsif patch_url.include?("macports/trunk")
           [{ message:
                        <<~EOS.chomp,
                          MacPorts patches should specify a revision instead of trunk:
@@ -232,7 +232,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
         RUBY
 
         inspect_source(source)
-        expected_offense = if patch_url.match?(%r{/raw\.github\.com/})
+        expected_offense = if patch_url.include?("/raw.github.com/")
           [{ message:
                        <<~EOS.chomp,
                          GitHub/Gist patches should specify a revision:
@@ -242,7 +242,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
              line:     5,
              column:   16,
              source:   source }]
-        elsif patch_url.match?(%r{macports/trunk})
+        elsif patch_url.include?("macports/trunk")
           [{ message:
                        <<~EOS.chomp,
                          MacPorts patches should specify a revision instead of trunk:

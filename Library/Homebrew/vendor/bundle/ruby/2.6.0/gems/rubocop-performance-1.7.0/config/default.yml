@@ -1,5 +1,16 @@
 # This is the default configuration file.
 
+Performance/AncestorsInclude:
+  Description: 'Use `A <= B` instead of `A.ancestors.include?(B)`.'
+  Reference: 'https://github.com/JuanitoFatas/fast-ruby#ancestorsinclude-vs--code'
+  Enabled: 'pending'
+  VersionAdded: '1.7'
+
+Performance/BigDecimalWithNumericArgument:
+  Description: 'Convert numeric argument to string before passing to BigDecimal.'
+  Enabled: 'pending'
+  VersionAdded: '1.7'
+
 Performance/BindCall:
   Description: 'Use `bind_call(obj, args, ...)` instead of `bind(obj).call(args, ...)`.'
   Enabled: true
@@ -131,6 +142,12 @@ Performance/InefficientHashSearch:
   VersionAdded: '0.56'
   Safe: false
 
+Performance/IoReadlines:
+  Description: 'Use `IO.each_line` (`IO#each_line`) instead of `IO.readlines` (`IO#readlines`).'
+  Reference: 'https://docs.gitlab.com/ee/development/performance.html#reading-from-files-and-other-data-sources'
+  Enabled: false
+  VersionAdded: '1.7'
+
 Performance/OpenStruct:
   Description: 'Use `Struct` instead of `OpenStruct`.'
   Enabled: false
@@ -138,10 +155,11 @@ Performance/OpenStruct:
   Safe: false
 
 Performance/RangeInclude:
-  Description: 'Use `Range#cover?` instead of `Range#include?`.'
+  Description: 'Use `Range#cover?` instead of `Range#include?` (or `Range#member?`).'
   Reference: 'https://github.com/JuanitoFatas/fast-ruby#cover-vs-include-code'
   Enabled: true
   VersionAdded: '0.36'
+  VersionChanged: '1.7'
   Safe: false
 
 Performance/RedundantBlockCall:
@@ -165,6 +183,16 @@ Performance/RedundantMerge:
   # Max number of key-value pairs to consider an offense
   MaxKeyValuePairs: 2
 
+Performance/RedundantSortBlock:
+  Description: 'Use `sort` instead of `sort { |a, b| a <=> b }`.'
+  Enabled: 'pending'
+  VersionAdded: '1.7'
+
+Performance/RedundantStringChars:
+  Description: 'Checks for redundant `String#chars`.'
+  Enabled: 'pending'
+  VersionAdded: '1.7'
+
 Performance/RegexpMatch:
   Description: >-
                   Use `match?` instead of `Regexp#match`, `String#match`, `Symbol#match`,
@@ -179,6 +207,11 @@ Performance/ReverseEach:
   Enabled: true
   VersionAdded: '0.30'
 
+Performance/ReverseFirst:
+  Description: 'Use `last(n).reverse` instead of `reverse.first(n)`.'
+  Enabled: 'pending'
+  VersionAdded: '1.7'
+
 Performance/Size:
   Description: >-
                   Use `size` instead of `count` for counting
@@ -186,6 +219,17 @@ Performance/Size:
   Reference: 'https://github.com/JuanitoFatas/fast-ruby#arraylength-vs-arraysize-vs-arraycount-code'
   Enabled: true
   VersionAdded: '0.30'
+
+Performance/SortReverse:
+  Description: 'Use `sort.reverse` instead of `sort { |a, b| b <=> a }`.'
+  Enabled: 'pending'
+  VersionAdded: '1.7'
+
+Performance/Squeeze:
+  Description: "Use `squeeze('a')` instead of `gsub(/a+/, 'a')`."
+  Reference: 'https://github.com/JuanitoFatas/fast-ruby#remove-extra-spaces-or-other-contiguous-characters-code'
+  Enabled: 'pending'
+  VersionAdded: '1.7'
 
 Performance/StartWith:
   Description: 'Use `start_with?` instead of a regex match anchored to the beginning of a string.'
@@ -199,6 +243,11 @@ Performance/StartWith:
   SafeMultiline: true
   VersionAdded: '0.36'
   VersionChanged: '1.6'
+
+Performance/StringInclude:
+  Description: 'Use `String#include?` instead of a regex match with literal-only pattern.'
+  Enabled: 'pending'
+  VersionAdded: '1.7'
 
 Performance/StringReplacement:
   Description: >-

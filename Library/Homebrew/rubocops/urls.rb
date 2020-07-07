@@ -247,7 +247,7 @@ module RuboCop
           # Don't use GitHub .zip files
           zip_gh_pattern = %r{https://.*github.*/(archive|releases)/.*\.zip$}
           audit_urls(urls, zip_gh_pattern) do |_, url|
-            next if url.match?(%r{releases/download})
+            next if url.include?("releases/download")
 
             problem "Use GitHub tarballs rather than zipballs (url is #{url})."
           end

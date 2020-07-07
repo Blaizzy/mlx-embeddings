@@ -561,7 +561,7 @@ module Homebrew
         return if !Utils.git_available? || !(coretap_path/".git").exist?
 
         branch = coretap_path.git_branch
-        return if branch.nil? || branch =~ /master/
+        return if branch.blank? || branch.include?("master")
 
         <<~EOS
           #{CoreTap.instance.full_name} is not on the master branch.
