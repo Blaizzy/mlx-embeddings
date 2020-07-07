@@ -342,24 +342,31 @@ module Homebrew
   rescue CannotInstallFormulaError => e
     ofail e.message
   end
-end
 
-def forbidden_license_check(f)
-  forbidden_licenses = ENV["HOMEBREW_FORBIDDEN_LICENSES"].split(" ")
+  def get_forbidden_licenses
+    Homebrew::EnvConfig.forbidden_licenses.split(" ")
+  end
 
-  if forbidden_licenses.include? f.license
-    raise CannotInstallFormulaError, <<~EOS
+  def forbidden_license_check(f)
+    forbidden_licenses = get_forbidden_licenses
+
+    if forbidden_licenses.include? f.license
+      raise CannotInstallFormulaError, <<~EOS
       #{f.name} has a forbidden license #{f.license}.
-    EOS
-  end
+      EOS
+    end
 
-  fi = FormulaInstaller.new(f)
-  fi.compute_dependencies.each do |dep, _|
-    dep_f = dep.to_formula
-    next unless forbidden_licenses.include? dep_f.license
+    fi = FormulaInstaller.new(f)
+    fi.compute_dependencies.each do |dep, _|
+      dep_f = dep.to_formula
+      next unless forbidden_licenses.include? dep_f.license
 
-    raise CannotInstallFormulaError, <<~EOS
+      raise CannotInstallFormulaError, <<~EOS
       The installation of #{f.name} has a dependency on #{dep.name} with a forbidden license #{dep_f.license}.
-    EOS
+      EOS
+    end
   end
+
 end
+
+

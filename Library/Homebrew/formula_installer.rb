@@ -148,6 +148,8 @@ class FormulaInstaller
   def prelude
     Tab.clear_cache
     verify_deps_exist unless ignore_deps?
+    Homebrew.forbidden_license_check(formula) unless ENV["HOMEBREW_FORBIDDEN_LICENSES"].blank?
+
     check_install_sanity
   end
 
