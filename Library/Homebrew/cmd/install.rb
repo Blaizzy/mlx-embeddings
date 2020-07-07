@@ -343,12 +343,12 @@ module Homebrew
     ofail e.message
   end
 
-  def get_forbidden_licenses
+  def env_forbidden_licenses
     Homebrew::EnvConfig.forbidden_licenses.split(" ")
   end
 
   def forbidden_license_check(f)
-    forbidden_licenses = get_forbidden_licenses
+    forbidden_licenses = env_forbidden_licenses
 
     if forbidden_licenses.include? f.license
       raise CannotInstallFormulaError, <<~EOS
