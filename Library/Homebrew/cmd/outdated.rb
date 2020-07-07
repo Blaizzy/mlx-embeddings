@@ -24,8 +24,8 @@ module Homebrew
       flag   "--json",
              description: "Print output in JSON format. Currently the default and only accepted "\
                           "value for <version> is `v1`. See the docs for examples of using the JSON "\
-                          "output: <https://docs.brew.sh/Querying-Brew>."\
-                          "By default, this option treats all arguments as formulae."\
+                          "output: <https://docs.brew.sh/Querying-Brew>. "\
+                          "By default, this option treats all arguments as formulae. "\
                           "To treat arguments as casks, use the --cask-only option."
       switch "--fetch-HEAD",
              description: "Fetch the upstream repository to detect if the HEAD installation of the "\
@@ -53,13 +53,9 @@ module Homebrew
     if args.formula_only? || !args.cask_only? && args.json
       formulae = args.resolved_formulae.blank? ? Formula.installed : args.resolved_formulae
       outdated = print_outdated_formulae(formulae)
-
-      Homebrew.failed = !formulae.blank? && !outdated.blank?
     elsif args.cask_only?
       casks = args.named.blank? ? Cask::Caskroom.casks : args.named
       outdated = print_outdated_casks(casks)
-
-      Homebrew.failed = !casks.blank? && !outdated.blank?
     else
       formulae, casks = args.resolved_formulae_casks
 
@@ -68,11 +64,10 @@ module Homebrew
         casks = Cask::Caskroom.casks
       end
 
-      outdated_formulae = print_outdated_formulae(formulae)
-      outdated_casks = print_outdated_casks(casks)
-
-      Homebrew.failed = !formulae.blank? && !outdated_formulae.blank? || !casks.blank? && !outdated_casks.blank?
+      outdated = print_outdated_formulae(formulae) + print_outdated_casks(casks)
     end
+
+    Homebrew.failed = args.named.present? && outdated.present?
   end
 
   def print_outdated_formulae(formulae)
