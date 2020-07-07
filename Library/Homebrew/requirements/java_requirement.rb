@@ -86,7 +86,7 @@ class JavaRequirement < Requirement
   end
 
   def exact_version?
-    @version && @version.to_s.chars.last != "+"
+    @version && @version.to_s[-1] != "+"
   end
 
   def fits_latest?

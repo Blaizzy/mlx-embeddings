@@ -268,7 +268,7 @@ module Language
 
               t.stage { do_install Pathname.pwd }
             else
-              t = t.lines.map(&:strip) if t.respond_to?(:lines) && t =~ /\n/
+              t = t.lines.map(&:strip) if t.respond_to?(:lines) && t.include?("\n")
               do_install t
             end
           end

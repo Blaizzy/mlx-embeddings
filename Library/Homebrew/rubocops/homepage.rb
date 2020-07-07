@@ -37,7 +37,7 @@ module RuboCop
           # https://wiki.freedesktop.org/project_name.
           # "Software" is redirected to https://wiki.freedesktop.org/www/Software/project_name
           when %r{^http://((?:www|nice|libopenraw|liboil|telepathy|xorg)\.)?freedesktop\.org/(?:wiki/)?}
-            if homepage =~ /Software/
+            if homepage.include?("Software")
               problem "#{homepage} should be styled `https://wiki.freedesktop.org/www/Software/project_name`"
             else
               problem "#{homepage} should be styled `https://wiki.freedesktop.org/project_name`"

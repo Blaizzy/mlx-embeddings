@@ -191,7 +191,8 @@ module Homebrew
       def check_xcode_license_approved
         # If the user installs Xcode-only, they have to approve the
         # license or no "xc*" tool will work.
-        return unless `/usr/bin/xcrun clang 2>&1` =~ /license/ && !$CHILD_STATUS.success?
+        return unless `/usr/bin/xcrun clang 2>&1`.include?("license")
+        return if $CHILD_STATUS.success?
 
         <<~EOS
           You have not agreed to the Xcode license.
