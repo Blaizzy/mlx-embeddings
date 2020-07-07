@@ -352,7 +352,7 @@ module Homebrew
 
     if forbidden_licenses.include? f.license
       raise CannotInstallFormulaError, <<~EOS
-      #{f.name} has a forbidden license #{f.license}.
+        #{f.name} has a forbidden license #{f.license}.
       EOS
     end
 
@@ -362,11 +362,8 @@ module Homebrew
       next unless forbidden_licenses.include? dep_f.license
 
       raise CannotInstallFormulaError, <<~EOS
-      The installation of #{f.name} has a dependency on #{dep.name} with a forbidden license #{dep_f.license}.
+        The installation of #{f.name} has a dependency on #{dep.name} with a forbidden license #{dep_f.license}.
       EOS
     end
   end
-
 end
-
-
