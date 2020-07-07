@@ -8,8 +8,7 @@ module Repology
   MAX_PAGINATION = 15
 
   def query_api(last_package_in_response = "")
-    last_package_in_response += "/" unless last_package_in_response.blank?
-
+    last_package_in_response += "/" if last_package_in_response.present?
     url = "https://repology.org/api/v1/projects/#{last_package_in_response}?inrepo=homebrew&outdated=1"
 
     output, _errors, _status = curl_output(url.to_s)

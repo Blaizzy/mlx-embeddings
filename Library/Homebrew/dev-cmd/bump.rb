@@ -71,8 +71,6 @@ module Homebrew
 
   def current_formula_version(formula)
     formula.version.to_s
-  rescue
-    nil
   end
 
   def livecheck_formula(formula)
