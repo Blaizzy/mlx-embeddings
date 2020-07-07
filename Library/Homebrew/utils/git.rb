@@ -36,7 +36,7 @@ module Git
     out, = Open3.capture3(
       HOMEBREW_SHIMS_PATH/"scm/git", "-C", repo, "log",
       "--pretty=format:%h", "--abbrev=7", "--max-count=1",
-      "--diff-filter=d", "--name-only", *args, "--", *files
+      "--diff-filter=d", "--name-only", *args, "--", files.join(" ")
     )
     rev, *paths = out.chomp.split(/\n/).reject(&:empty?)
     [rev, paths]

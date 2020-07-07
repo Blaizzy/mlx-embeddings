@@ -452,7 +452,6 @@ false:
   - ./utils/curl.rb
   - ./utils/fork.rb
   - ./utils/formatter.rb
-  - ./utils/git.rb
   - ./utils/github.rb
   - ./utils/notability.rb
   - ./utils/popen.rb
@@ -890,6 +889,7 @@ true:
   - ./test/support/helper/fixtures.rb
   - ./test/support/lib/config.rb
   - ./utils/bottles.rb
+  - ./utils/git.rb
   - ./utils/shell.rb
   - ./utils/svn.rb
   - ./utils/tty.rb
