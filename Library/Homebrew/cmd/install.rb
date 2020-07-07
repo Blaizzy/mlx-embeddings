@@ -259,7 +259,6 @@ module Homebrew
 
     formulae.each do |f|
       Migrator.migrate_if_needed(f)
-      forbidden_license_check(f)
       install_formula(f)
       Cleanup.install_formula_clean!(f)
     end
@@ -341,31 +340,5 @@ module Homebrew
     nil
   rescue CannotInstallFormulaError => e
     ofail e.message
-  end
-
-  def env_forbidden_licenses
-    Homebrew::EnvConfig.forbidden_licenses.split(" ")
-  end
-
-  def forbidden_license_check(f)
-    return if ENV["HOMEBREW_FORBIDDEN_LICENSES"].blank?
-
-    forbidden_licenses = env_forbidden_licenses
-
-    if forbidden_licenses.include? f.license
-      raise CannotInstallFormulaError, <<~EOS
-        #{f.name} has a forbidden license #{f.license}.
-      EOS
-    end
-
-    fi = FormulaInstaller.new(f)
-    fi.compute_dependencies.each do |dep, _|
-      dep_f = dep.to_formula
-      next unless forbidden_licenses.include? dep_f.license
-
-      raise CannotInstallFormulaError, <<~EOS
-        The installation of #{f.name} has a dependency on #{dep.name} with a forbidden license #{dep_f.license}.
-      EOS
-    end
   end
 end
