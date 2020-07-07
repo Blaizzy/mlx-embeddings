@@ -259,7 +259,7 @@ module Homebrew
 
     formulae.each do |f|
       Migrator.migrate_if_needed(f)
-      forbidden_license_check(f) unless ENV["HOMEBREW_FORBIDDEN_LICENSES"].blank?
+      forbidden_license_check(f)
       install_formula(f)
       Cleanup.install_formula_clean!(f)
     end
@@ -348,6 +348,8 @@ module Homebrew
   end
 
   def forbidden_license_check(f)
+    return if ENV["HOMEBREW_FORBIDDEN_LICENSES"].blank?
+
     forbidden_licenses = env_forbidden_licenses
 
     if forbidden_licenses.include? f.license
