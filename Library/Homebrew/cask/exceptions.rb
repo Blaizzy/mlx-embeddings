@@ -17,8 +17,7 @@ module Cask
   end
 
   class AbstractCaskErrorWithToken < CaskError
-    attr_reader :token
-    attr_reader :reason
+    attr_reader :token, :reason
 
     def initialize(token, reason = nil)
       @token = token

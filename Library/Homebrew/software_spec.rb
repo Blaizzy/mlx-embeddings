@@ -20,19 +20,13 @@ class SoftwareSpec
     cxx11:     Option.new("c++11",     "Build using C++11 mode"),
   }.freeze
 
-  attr_reader :name, :full_name, :owner
-  attr_reader :build, :resources, :patches, :options
-  attr_reader :deprecated_flags, :deprecated_options
-  attr_reader :dependency_collector
-  attr_reader :bottle_specification
-  attr_reader :compiler_failures
-  attr_reader :uses_from_macos_elements
+  attr_reader :name, :full_name, :owner, :build, :resources, :patches, :options, :deprecated_flags,
+              :deprecated_options, :dependency_collector, :bottle_specification, :compiler_failures,
+              :uses_from_macos_elements, :bottle_disable_reason
 
-  def_delegators :@resource, :stage, :fetch, :verify_download_integrity, :source_modified_time
-  def_delegators :@resource, :download_name, :cached_download, :clear_cache
-  def_delegators :@resource, :checksum, :mirrors, :specs, :using
-  def_delegators :@resource, :version, :mirror, *Checksum::TYPES
-  def_delegators :@resource, :downloader
+  def_delegators :@resource, :stage, :fetch, :verify_download_integrity, :source_modified_time, :download_name,
+                 :cached_download, :clear_cache, :checksum, :mirrors, :specs, :using, :version, :mirror,
+                 :downloader, *Checksum::TYPES
 
   def initialize
     @resource = Resource.new
@@ -86,8 +80,6 @@ class SoftwareSpec
   def bottle_disabled?
     @bottle_disable_reason ? true : false
   end
-
-  attr_reader :bottle_disable_reason
 
   def bottle_defined?
     !bottle_specification.collector.keys.empty?

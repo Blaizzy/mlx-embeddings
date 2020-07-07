@@ -111,15 +111,33 @@ Style/BlockDelimiters:
     - '**/*_spec.rb'
     - '**/shared_examples/**/*.rb'
 
+# don't group nicely documented or private attr_readers
+Style/AccessorGrouping:
+  Enabled: true
+  Exclude:
+    - 'cask/cmd/internal_stanza.rb'
+    - 'cask/download.rb'
+    - 'formula.rb'
+    - 'formulary.rb'
+    - 'migrator.rb'
+    - 'resource.rb'
+    - 'system_command.rb'
+    - 'tap.rb'
+
+# https://github.com/rubocop-hq/rubocop/issues/8257
+Style/BisectedAttrAccessor:
+  Exclude:
+     - 'cask/url.rb'
+
 # document our public APIs
 Style/Documentation:
   Enabled: true
   Include:
-    - 'Library/Homebrew/formula.rb'
+    - 'formula.rb'
 Style/DocumentationMethod:
   Enabled: true
   Include:
-    - 'Library/Homebrew/formula.rb'
+    - 'formula.rb'
 
 # don't want this for formulae but re-enabled for Library/Homebrew
 Style/FrozenStringLiteralComment:

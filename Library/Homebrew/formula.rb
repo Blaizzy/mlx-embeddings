@@ -1902,12 +1902,10 @@ class Formula
     keg = opt_or_installed_prefix_keg
     return [] unless keg
 
-    undeclared_deps = CacheStoreDatabase.use(:linkage) do |db|
+    CacheStoreDatabase.use(:linkage) do |db|
       linkage_checker = LinkageChecker.new(keg, self, cache_db: db)
       linkage_checker.undeclared_deps.map { |n| Dependency.new(n) }
     end
-
-    undeclared_deps
   end
 
   public

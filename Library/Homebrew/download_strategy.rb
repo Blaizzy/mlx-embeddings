@@ -21,8 +21,7 @@ class AbstractDownloadStrategy
     end
   end
 
-  attr_reader :cache, :cached_location, :url
-  attr_reader :meta, :name, :version, :shutup
+  attr_reader :cache, :cached_location, :url, :meta, :name, :version, :shutup
 
   private :meta, :name, :version, :shutup
 
@@ -1064,7 +1063,7 @@ end
 
 class DownloadStrategyDetector
   def self.detect(url, using = nil)
-    strategy = if using.nil?
+    if using.nil?
       detect_from_url(url)
     elsif using.is_a?(Class) && using < AbstractDownloadStrategy
       using
@@ -1072,10 +1071,8 @@ class DownloadStrategyDetector
       detect_from_symbol(using)
     else
       raise TypeError,
-            "Unknown download strategy specification #{strategy.inspect}"
+            "Unknown download strategy specification #{using.inspect}"
     end
-
-    strategy
   end
 
   def self.detect_from_url(url)
