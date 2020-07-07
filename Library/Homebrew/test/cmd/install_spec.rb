@@ -17,26 +17,6 @@ describe "brew install", :integration_test do
     expect(HOMEBREW_CELLAR/"testball1/0.1/foo/test").not_to be_a_file
   end
 
-  it "does not install formulae with forbidden license" do
-    setup_test_formula "package_license"
-
-    expect { brew "install", "package_license", "HOMEBREW_FORBIDDEN_LICENSES" => "0BSD MIT" }
-        .to output("Error: package_license has a forbidden license 0BSD.\n").to_stderr
-                .and not_to_output.to_stdout
-                .and be_a_failure
-    expect(HOMEBREW_CELLAR/"testball1/0.1/foo/test").not_to be_a_file
-  end
-
-  it "installs formulae if formulae license is not forbidden" do
-    setup_test_formula "testball1"
-
-    expect { brew "install", "testball1", "HOMEBREW_FORBIDDEN_LICENSES" => "AAK ADSL AML" }
-        .to output(%r{#{HOMEBREW_CELLAR}/testball1/0\.1}).to_stdout
-                .and not_to_output.to_stderr
-                         .and be_a_success
-    expect(HOMEBREW_CELLAR/"testball1/0.1/foo/test").not_to be_a_file
-  end
-
   it "installs formulae with options" do
     setup_test_formula "testball1"
 
