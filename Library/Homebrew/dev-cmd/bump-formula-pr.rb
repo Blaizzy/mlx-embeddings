@@ -314,7 +314,26 @@ module Homebrew
 
     new_formula_version = formula_version(formula, requested_spec, new_contents)
 
-    GitHub.check_for_duplicate_pull_requests(formula, tap_full_name, new_formula_version.to_s)
+    pull_requests = GitHub.check_for_duplicate_pull_requests(formula, tap_full_name, new_formula_version.to_s)
+
+    duplicates_message = <<~EOS
+      These pull requests may be duplicates:
+      #{pull_requests.join("\n")}
+    EOS
+    error_message = "Duplicate PRs should not be opened. Use --force to override this error."
+
+    unless !pull_requests.blank?
+      if args.force? && !args.quiet?
+        opoo duplicates_message
+      elsif !args.force? && args.quiet?
+        odie error_message
+      elsif !args.force?
+        odie <<~EOS
+          #{duplicates_message.chomp}
+          #{error_message}
+        EOS
+      end
+    end
 
     if !new_mirrors && !formula_spec.mirrors.empty?
       if args.force?

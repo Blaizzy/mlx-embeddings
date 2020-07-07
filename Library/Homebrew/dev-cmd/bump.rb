@@ -53,13 +53,13 @@ module Homebrew
     tap_full_name = formula.tap&.full_name
     current_version = current_formula_version(formula)
     livecheck_response = livecheck_formula(package_name)
-    pull_requests = GitHub.check_for_duplicate_pull_requests(formula, tap_full_name, latest_version, true)
+    pull_requests = GitHub.check_for_duplicate_pull_requests(formula, tap_full_name, latest_version)
 
     {
       repology_latest_version:  latest_version,
       current_formula_version:  current_version.to_s,
       livecheck_latest_version: livecheck_response[:livecheck_version],
-      open_pull_requests:       pull_requests,
+      open_pull_requests:       pull_requests.join(", "),
     }
   end
 
