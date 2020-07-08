@@ -43,6 +43,7 @@
 - [Deprecating, Disabling, and Removing Formulae](Deprecating-Disabling-and-Removing-Formulae.md)
 - [Node for Formula Authors](Node-for-Formula-Authors.md)
 - [Python for Formula Authors](Python-for-Formula-Authors.md)
+- [Brew Livecheck](Brew-Livecheck.md)
 - [Migrating A Formula To A Tap](Migrating-A-Formula-To-A-Tap.md)
 - [Rename A Formula](Rename-A-Formula.md)
 - [Building Against Non-Homebrew Dependencies](Building-Against-Non-Homebrew-Dependencies.md)
