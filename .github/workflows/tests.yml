@@ -62,12 +62,12 @@ jobs:
 
     - name: Run brew doctor
       run: |
+        # minimally fix brew doctor failures (a full clean takes ~5m)
         if [ "$RUNNER_OS" = "Linux" ]; then
-          # Cleanup some Linux `brew doctor` failures
           sudo rm -rf /usr/local/include/node/
         else
-          # Link old gettext (otherwise `brew doctor` is sad)
-          brew link gettext
+          # link old formulae
+          brew link --overwrite --force gettext python@3.8
 
           # remove deleted formula
           brew uninstall --force python@2
