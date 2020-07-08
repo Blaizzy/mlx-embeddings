@@ -163,6 +163,7 @@ false:
   - ./dev-cmd/release-notes.rb
   - ./dev-cmd/ruby.rb
   - ./dev-cmd/sh.rb
+  - ./dev-cmd/sponsors.rb
   - ./dev-cmd/style.rb
   - ./dev-cmd/tap-new.rb
   - ./dev-cmd/test.rb
@@ -603,6 +604,7 @@ false:
   - ./test/dev-cmd/release-notes_spec.rb
   - ./test/dev-cmd/ruby_spec.rb
   - ./test/dev-cmd/sh_spec.rb
+  - ./test/dev-cmd/sponsors_spec.rb
   - ./test/dev-cmd/style_spec.rb
   - ./test/dev-cmd/tap-new_spec.rb
   - ./test/dev-cmd/test_spec.rb
