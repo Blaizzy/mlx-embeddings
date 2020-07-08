@@ -9,7 +9,7 @@ module Utils
         if Hardware::CPU.intel?
           MacOS.version.to_sym
         else
-          "#{ENV["HOMEBREW_PROCESSOR"]}_#{MacOS.version.to_sym}".to_sym
+          "#{Hardware::CPU.arch}_#{MacOS.version.to_sym}".to_sym
         end
       end
     end

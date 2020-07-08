@@ -87,6 +87,7 @@ then
   odie "Cowardly refusing to continue at this prefix: $HOMEBREW_PREFIX"
 fi
 
+HOMEBREW_PROCESSOR="$(uname -m)"
 HOMEBREW_SYSTEM="$(uname -s)"
 case "$HOMEBREW_SYSTEM" in
   Darwin) HOMEBREW_MACOS="1" ;;
@@ -119,11 +120,9 @@ fi
 
 if [[ -n "$HOMEBREW_MACOS" ]]
 then
-  HOMEBREW_PROCESSOR="$(uname -p)"
   HOMEBREW_PRODUCT="Homebrew"
   HOMEBREW_SYSTEM="Macintosh"
-  # This is i386 even on x86_64 machines
-  [[ "$HOMEBREW_PROCESSOR" = "i386" ]] && HOMEBREW_PROCESSOR="Intel"
+  [[ "$HOMEBREW_PROCESSOR" = "x86_64" ]] && HOMEBREW_PROCESSOR="Intel"
   HOMEBREW_MACOS_VERSION="$(/usr/bin/sw_vers -productVersion)"
   HOMEBREW_OS_VERSION="macOS $HOMEBREW_MACOS_VERSION"
   # Don't change this from Mac OS X to match what macOS itself does in Safari on 10.12
@@ -166,7 +165,6 @@ then
     HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH="1"
   fi
 else
-  HOMEBREW_PROCESSOR="$(uname -m)"
   HOMEBREW_PRODUCT="${HOMEBREW_SYSTEM}brew"
   [[ -n "$HOMEBREW_LINUX" ]] && HOMEBREW_OS_VERSION="$(lsb_release -sd 2>/dev/null)"
   : "${HOMEBREW_OS_VERSION:=$(uname -r)}"
