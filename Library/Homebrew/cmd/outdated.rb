@@ -48,9 +48,14 @@ module Homebrew
 
     if args.json
       raise UsageError, "invalid JSON version: #{args.json}" unless ["v1", true].include? args.json
+
+      # When user asks for json, print json for formula only unless the user explicitly asks for casks
+      formula_only = !args.cask_only?
+    else
+      formula_only = args.formula_only?
     end
 
-    if args.formula_only? || !args.cask_only? && args.json
+    if formula_only
       formulae = args.resolved_formulae.blank? ? Formula.installed : args.resolved_formulae
       outdated = print_outdated_formulae(formulae)
     elsif args.cask_only?
