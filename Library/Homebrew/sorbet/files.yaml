@@ -456,7 +456,6 @@ false:
   - ./utils/git.rb
   - ./utils/github.rb
   - ./utils/popen.rb
-  - ./utils/user.rb
 
 false:
   - ./PATH.rb
@@ -895,6 +894,7 @@ true:
   - ./utils/shell.rb
   - ./utils/svn.rb
   - ./utils/tty.rb
+  - ./utils/user.rb
   - ./version/null.rb
 
 strict:
