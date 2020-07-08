@@ -50,6 +50,7 @@ describe OS::Mac::Version do
   end
 
   specify "#requires_nehalem_cpu?" do
+    expect(Hardware::CPU).to receive(:type).at_least(:twice).and_return(:intel)
     expect(described_class.new("10.14").requires_nehalem_cpu?).to be true
     expect(described_class.new("10.12").requires_nehalem_cpu?).to be false
   end

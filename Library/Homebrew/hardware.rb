@@ -12,14 +12,15 @@ module Hardware
     class << self
       def optimization_flags
         @optimization_flags ||= {
-          native:  arch_flag("native"),
-          nehalem: "-march=nehalem",
-          core2:   "-march=core2",
-          core:    "-march=prescott",
-          armv6:   "-march=armv6",
-          armv8:   "-march=armv8-a",
-          ppc64:   "-mcpu=powerpc64",
-          ppc64le: "-mcpu=powerpc64le",
+          native:             arch_flag("native"),
+          nehalem:            "-march=nehalem",
+          core2:              "-march=core2",
+          core:               "-march=prescott",
+          arm_vortex_tempest: "",
+          armv6:              "-march=armv6",
+          armv8:              "-march=armv8-a",
+          ppc64:              "-mcpu=powerpc64",
+          ppc64le:            "-mcpu=powerpc64le",
         }.freeze
       end
       alias generic_optimization_flags optimization_flags
