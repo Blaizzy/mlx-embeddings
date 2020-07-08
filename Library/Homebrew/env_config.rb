@@ -112,7 +112,7 @@ module Homebrew
         default:     15,
       },
       HOMEBREW_FORBIDDEN_LICENSES:        {
-        description: "Use this environment variable to define a blacklist of space separated licenses and Homebrew " \
+        description: "Use this environment variable to define a denylist of space separated licenses and Homebrew " \
                      "will avoid installing the packages with those licenses.",
       },
       HOMEBREW_FORCE_BREWED_CURL:         {
