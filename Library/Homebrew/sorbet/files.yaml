@@ -849,7 +849,6 @@ false:
   - ./unpack_strategy/uncompressed.rb
   - ./utils/gems.rb
   - ./utils/inreplace.rb
-  - ./utils/link.rb
   - ./utils/shebang.rb
   - ./version.rb
 
@@ -891,6 +890,7 @@ true:
   - ./test/support/helper/fixtures.rb
   - ./test/support/lib/config.rb
   - ./utils/bottles.rb
+  - ./utils/link.rb
   - ./utils/notability.rb
   - ./utils/shell.rb
   - ./utils/svn.rb

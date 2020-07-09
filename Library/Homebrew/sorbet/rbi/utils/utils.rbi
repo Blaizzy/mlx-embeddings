@@ -6,3 +6,7 @@ module Utils
   class Bottles
   end
 end
+
+module Utils::Link
+  include Kernel
+end
