@@ -33,9 +33,9 @@ module Homebrew
                           "updates when a new stable or development version has been released."
       switch "--greedy",
              description: "Print outdated casks with `auto_updates` or `version :latest`"
-      switch "--formula-only",
+      switch "--formula",
              description: "Treat all arguments as formulae"
-      switch "--cask-only",
+      switch "--cask",
              description: "Treat all arguments as casks"
       switch :debug
       conflicts "--quiet", "--verbose", "--json"
@@ -46,19 +46,18 @@ module Homebrew
   def outdated
     outdated_args.parse
 
+    formula_only = args.formula?
     if args.json
       raise UsageError, "invalid JSON version: #{args.json}" unless ["v1", true].include? args.json
 
       # When user asks for json, print json for formula only unless the user explicitly asks for casks
-      formula_only = !args.cask_only?
-    else
-      formula_only = args.formula_only?
+      formula_only = !args.cask?
     end
 
     if formula_only
       formulae = args.resolved_formulae.blank? ? Formula.installed : args.resolved_formulae
       outdated = print_outdated_formulae(formulae)
-    elsif args.cask_only?
+    elsif args.cask?
       casks = args.named.blank? ? Cask::Caskroom.casks : args.named
       outdated = print_outdated_casks(casks)
     else
