@@ -94,7 +94,7 @@ module Homebrew
       end
     end
 
-    return if outdated.empty?
+    return if outdated.blank?
 
     pinned = outdated.select(&:pinned?)
     outdated -= pinned
