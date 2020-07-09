@@ -495,6 +495,10 @@ class Formula
   # The link status symlink directory for this {Formula}.
   # You probably want {#opt_prefix} instead.
   def linked_keg
+    linked_keg = possible_names.map { |name| HOMEBREW_LINKED_KEGS/name }
+                               .find(&:directory?)
+    return linked_keg if linked_keg.present?
+
     HOMEBREW_LINKED_KEGS/name
   end
 
@@ -598,16 +602,10 @@ class Formula
   # All currently installed prefix directories.
   # @private
   def installed_prefixes
-    prefixes = rack.directory? ? rack.subdirs : []
-
-    prefixes += (aliases + Array(oldname)).flat_map do |alias_name|
-      rack_alias = HOMEBREW_CELLAR/alias_name
-      next unless rack_alias.directory?
-
-      rack_alias.subdirs
-    end.compact
-
-    prefixes.sort_by(&:basename)
+    possible_names.map { |name| HOMEBREW_CELLAR/name }
+                  .select(&:directory?)
+                  .flat_map(&:subdirs)
+                  .sort_by(&:basename)
   end
 
   # All currently installed kegs.
@@ -1128,7 +1126,7 @@ class Formula
         return false # this keg belongs to another formula
       else
         # this keg belongs to another unrelated formula
-        return false unless (Array(f.aliases) + Array(f.oldname)).include?(keg.name)
+        return false unless f.possible_names.include?(keg.name)
       end
     end
     to_check = path.relative_path_from(HOMEBREW_PREFIX).to_s
@@ -1356,6 +1354,11 @@ class Formula
     return unless other.is_a?(Formula)
 
     name <=> other.name
+  end
+
+  # @private
+  def possible_names
+    [name, oldname, *aliases].compact
   end
 
   def to_s
