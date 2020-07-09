@@ -857,7 +857,7 @@ class FormulaInstaller
       if formula.link_overwrite?(conflict_file) && !link_overwrite_backup.key?(conflict_file)
         backup_file = backup_dir/conflict_file.relative_path_from(HOMEBREW_PREFIX).to_s
         backup_file.parent.mkpath
-        conflict_file.rename backup_file
+        FileUtils.mv conflict_file, backup_file
         link_overwrite_backup[conflict_file] = backup_file
         retry
       end
@@ -889,7 +889,7 @@ class FormulaInstaller
         keg.unlink
         link_overwrite_backup.each do |origin, backup|
           origin.parent.mkpath
-          backup.rename origin
+          FileUtils.mv backup, origin
         end
       end
       Homebrew.failed = true
