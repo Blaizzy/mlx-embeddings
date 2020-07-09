@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 PYTHON_VIRTUALENV_URL =
-  "https://files.pythonhosted.org/packages/c4/1b" \
-  "/09bb751c6e805bf4711bbaead5499c8d8caf92398ba8da92daa8bf19f60e" \
-  "/virtualenv-20.0.26.tar.gz"
+  "https://files.pythonhosted.org/packages/11/74" \
+  "/2c151a13ef41ab9fb43b3c4ff9e788e0496ed7923b2078d42cab30622bdf" \
+  "/virtualenv-16.7.4.tar.gz"
 PYTHON_VIRTUALENV_SHA256 =
-  "e10cc66f40cbda459720dfe1d334c4dc15add0d80f09108224f171006a97a172"
+  "94a6898293d07f84a98add34c4df900f8ec64a570292279f6d91c781d37fd305"
 
 PYTHON_VIRTUALENV_URL_MOJAVE =
   "https://files.pythonhosted.org/packages/b1/72" \
