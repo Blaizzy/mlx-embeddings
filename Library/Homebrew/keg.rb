@@ -255,6 +255,7 @@ class Keg
 
   def remove_old_aliases
     opt = opt_record.parent
+    linkedkegs = linked_keg_record.parent
 
     tap = begin
       to_formula.tap
@@ -272,11 +273,18 @@ class Keg
       # versioned aliases are handled below
       next if a.match?(/.+@./)
 
-      alias_symlink = opt/a
-      if alias_symlink.symlink? && alias_symlink.exist?
-        alias_symlink.delete if alias_symlink.realpath == opt_record.realpath
-      elsif alias_symlink.symlink? || alias_symlink.exist?
-        alias_symlink.delete
+      alias_opt_symlink = opt/a
+      if alias_opt_symlink.symlink? && alias_opt_symlink.exist?
+        alias_opt_symlink.delete if alias_opt_symlink.realpath == opt_record.realpath
+      elsif alias_opt_symlink.symlink? || alias_opt_symlink.exist?
+        alias_opt_symlink.delete
+      end
+
+      alias_linkedkegs_symlink = linkedkegs/a
+      if alias_linkedkegs_symlink.symlink? && alias_linkedkegs_symlink.exist?
+        alias_linkedkegs_symlink.delete if alias_linkedkegs_symlink.realpath == linked_keg_record.realpath
+      elsif alias_linkedkegs_symlink.symlink? || alias_linkedkegs_symlink.exist?
+        alias_linkedkegs_symlink.delete
       end
     end
 
@@ -284,12 +292,15 @@ class Keg
       a = a.basename.to_s
       next if aliases.include?(a)
 
-      alias_symlink = opt/a
-      if alias_symlink.symlink? && alias_symlink.exist?
-        next if rack != alias_symlink.realpath.parent
+      alias_opt_symlink = opt/a
+      if alias_opt_symlink.symlink? && alias_opt_symlink.exist?
+        alias_opt_symlink.delete if rack == alias_opt_symlink.realpath.parent
       end
 
-      alias_symlink.delete
+      alias_linkedkegs_symlink = linkedkegs/a
+      if alias_linkedkegs_symlink.symlink? && alias_linkedkegs_symlink.exist?
+        alias_linkedkegs_symlink.delete if rack == alias_linkedkegs_symlink.realpath.parent
+      end
     end
   end
 
