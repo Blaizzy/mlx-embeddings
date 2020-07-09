@@ -1682,7 +1682,7 @@ class Formula
       "aliases"                  => aliases.sort,
       "versioned_formulae"       => versioned_formulae.map(&:name),
       "desc"                     => desc,
-      "license"                  => license,
+      "license"                  => license.class == String ? [license] : license,
       "homepage"                 => homepage,
       "versions"                 => {
         "stable" => stable&.version&.to_s,
@@ -2210,7 +2210,17 @@ class Formula
     # Shows when running `brew info`.
     #
     # <pre>license "BSD-2-Clause"</pre>
-    attr_rw :license
+    def license args=nil
+      if args.blank?
+        return @licenses
+      else
+        @licenses = args.class == String ? [args] : args
+        puts @licenses
+      # license.
+      end
+    end
+
+    # attr_rw :license
 
     # @!attribute [w] homepage
     # The homepage for the software. Used by users to get more information
