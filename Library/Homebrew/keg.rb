@@ -281,11 +281,7 @@ class Keg
       end
 
       alias_linkedkegs_symlink = linkedkegs/a
-      if alias_linkedkegs_symlink.symlink? && alias_linkedkegs_symlink.exist?
-        alias_linkedkegs_symlink.delete if alias_linkedkegs_symlink.realpath == linked_keg_record.realpath
-      elsif alias_linkedkegs_symlink.symlink? || alias_linkedkegs_symlink.exist?
-        alias_linkedkegs_symlink.delete
-      end
+      alias_linkedkegs_symlink.delete if alias_linkedkegs_symlink.symlink? || alias_linkedkegs_symlink.exist?
     end
 
     Pathname.glob("#{opt_record}@*").each do |a|
@@ -298,9 +294,7 @@ class Keg
       end
 
       alias_linkedkegs_symlink = linkedkegs/a
-      if alias_linkedkegs_symlink.symlink? && alias_linkedkegs_symlink.exist?
-        alias_linkedkegs_symlink.delete if rack == alias_linkedkegs_symlink.realpath.parent
-      end
+      alias_linkedkegs_symlink.delete if alias_linkedkegs_symlink.symlink? || alias_linkedkegs_symlink.exist?
     end
   end
 
