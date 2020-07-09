@@ -320,6 +320,18 @@ class FormulaConflictError < RuntimeError
   end
 end
 
+class FormulaUnknownPythonError < RuntimeError
+  def initialize(formula)
+    super <<~EOS
+      The version of Python to use with the virtualenv in the `#{formula.full_name}` formula
+      cannot be guessed automatically because a recognised Python dependency could not be found.
+
+      If you are using a non-standard Python depedency, please add `:using => "python@x.y"` to
+      `virtualenv_install_with_resources` to resolve the issue manually.
+    EOS
+  end
+end
+
 class FormulaAmbiguousPythonError < RuntimeError
   def initialize(formula)
     super <<~EOS
