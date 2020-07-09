@@ -1107,7 +1107,6 @@ class FormulaInstaller
   end
 
   def forbidden_license_check
-
     forbidden_licenses = (Homebrew::EnvConfig.forbidden_licenses || "").split(" ")
     return if forbidden_licenses.blank?
 
