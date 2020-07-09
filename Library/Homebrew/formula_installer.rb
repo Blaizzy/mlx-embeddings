@@ -1110,19 +1110,22 @@ class FormulaInstaller
     forbidden_licenses = Homebrew::EnvConfig.forbidden_licenses.to_s.split(" ")
     return if forbidden_licenses.blank?
 
-    if forbidden_licenses.include? formula.license
-      raise CannotInstallFormulaError, <<~EOS
-        #{formula.name} has a forbidden license #{formula.license}.
-      EOS
-    end
-
     compute_dependencies.each do |dep, _|
+      next if @ignore_deps
+
       dep_f = dep.to_formula
       next unless forbidden_licenses.include? dep_f.license
 
       raise CannotInstallFormulaError, <<~EOS
-        The installation of #{f.name} has a dependency on #{dep.name} with a forbidden license #{dep_f.license}.
+        The installation of #{formula.name} has a dependency on #{dep.name} with a forbidden license #{dep_f.license}.
       EOS
     end
+    return if @only_deps
+
+    return unless forbidden_licenses.include? formula.license
+
+    raise CannotInstallFormulaError, <<~EOS
+      #{formula.name} has a forbidden license #{formula.license}.
+    EOS
   end
 end
