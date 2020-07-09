@@ -149,7 +149,7 @@ class FormulaInstaller
   def prelude
     Tab.clear_cache
     verify_deps_exist unless ignore_deps?
-    forbidden_license_check(formula)
+    forbidden_license_check
 
     check_install_sanity
   end
@@ -1107,7 +1107,8 @@ class FormulaInstaller
   end
 
   def forbidden_license_check
-    forbidden_licenses = Homebrew::EnvConfig.forbidden_licenses.split(" ")
+
+    forbidden_licenses = (Homebrew::EnvConfig.forbidden_licenses || "").split(" ")
     return if forbidden_licenses.blank?
 
     if forbidden_licenses.include? formula.license
