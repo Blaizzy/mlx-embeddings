@@ -47,7 +47,7 @@ module Homebrew
              description: "Sort by time modified, listing most recently modified first."
       switch :verbose
       switch :debug
-      conflicts "--casks", "--unbrewed", "--multiple", "--pinned", "-l", "-r", "-t"
+      ["--unbrewed", "--multiple", "--pinned", "-l", "-r", "-t"].each { |flag| conflicts "--casks", flag }
     end
   end
 
