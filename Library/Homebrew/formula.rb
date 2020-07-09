@@ -598,7 +598,16 @@ class Formula
   # All currently installed prefix directories.
   # @private
   def installed_prefixes
-    rack.directory? ? rack.subdirs.sort : []
+    prefixes = rack.directory? ? rack.subdirs : []
+
+    prefixes += (aliases + Array(oldname)).flat_map do |alias_name|
+      rack_alias = HOMEBREW_CELLAR/alias_name
+      next unless rack_alias.directory?
+
+      rack_alias.subdirs
+    end.compact
+
+    prefixes.sort_by(&:basename)
   end
 
   # All currently installed kegs.
