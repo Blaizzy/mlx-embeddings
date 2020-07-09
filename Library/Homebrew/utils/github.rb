@@ -450,6 +450,13 @@ module GitHub
                   scopes:         CREATE_ISSUE_FORK_OR_PR_SCOPES)
   end
 
+  def workflow_dispatch_event(user, repo, workflow, ref, **inputs)
+    url = "#{API_URL}/repos/#{user}/#{repo}/actions/workflows/#{workflow}/dispatches"
+    open_api(url, data:           { ref: ref, inputs: inputs },
+                  request_method: :POST,
+                  scopes:         CREATE_ISSUE_FORK_OR_PR_SCOPES)
+  end
+
   def get_artifact_url(user, repo, pr, workflow_id: "tests.yml", artifact_name: "bottles")
     scopes = CREATE_ISSUE_FORK_OR_PR_SCOPES
     base_url = "#{API_URL}/repos/#{user}/#{repo}"
