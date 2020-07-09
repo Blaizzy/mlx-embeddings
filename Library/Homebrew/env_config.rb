@@ -112,8 +112,8 @@ module Homebrew
         default:     15,
       },
       HOMEBREW_FORBIDDEN_LICENSES:        {
-        description: "Use this environment variable to define a denylist of space separated licenses and Homebrew " \
-                     "will avoid installing the packages with those licenses.",
+        description: "A space-separated list of licenses. Homebrew will refuse to install a " \
+        "formula if that formula or any of its dependencies has a license on this list.",
       },
       HOMEBREW_FORCE_BREWED_CURL:         {
         description: "If set, always use a Homebrew-installed `curl`(1) rather than the system version. " \
