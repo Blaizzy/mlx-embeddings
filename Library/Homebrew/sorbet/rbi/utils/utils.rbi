@@ -5,8 +5,12 @@ module Utils
 
   class Bottles
   end
-end
 
-module Utils::Link
-  include Kernel
+  module Link
+    include Kernel
+  end
+
+  module Shebang
+    include Kernel
+  end
 end
