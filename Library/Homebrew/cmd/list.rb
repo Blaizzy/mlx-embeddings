@@ -32,7 +32,7 @@ module Homebrew
       switch "--pinned",
              description: "Show the versions of pinned formulae, or only the specified (pinned) "\
                           "formulae if <formula> are provided. See also `pin`, `unpin`."
-      switch "--casks",
+      switch "--cask",
              description: "List casks"
       # passed through to ls
       switch "-1",
@@ -47,14 +47,14 @@ module Homebrew
              description: "Sort by time modified, listing most recently modified first."
       switch :verbose
       switch :debug
-      ["--unbrewed", "--multiple", "--pinned", "-l", "-r", "-t"].each { |flag| conflicts "--casks", flag }
+      ["--unbrewed", "--multiple", "--pinned", "-l", "-r", "-t"].each { |flag| conflicts "--cask", flag }
     end
   end
 
   def list
     list_args.parse
 
-    return list_casks if args.casks?
+    return list_casks if args.cask?
 
     return list_unbrewed if args.unbrewed?
 
