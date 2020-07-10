@@ -446,10 +446,10 @@ module Homebrew
             first
           elsif second.start_with?("/")
             second
-          elsif cellars.include?(:any)
-            :any
-          elsif cellars.include?(:any_skip_relocation)
-            :any_skip_relocation
+          elsif cellars.include?("any")
+            "any"
+          elsif cellars.include?("any_skip_relocation")
+            "any_skip_relocation"
           else
             second
           end
