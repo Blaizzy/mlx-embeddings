@@ -3,6 +3,7 @@
 require "metafiles"
 require "formula"
 require "cli/parser"
+require "cask/cmd"
 
 module Homebrew
   module_function
@@ -31,6 +32,8 @@ module Homebrew
       switch "--pinned",
              description: "Show the versions of pinned formulae, or only the specified (pinned) "\
                           "formulae if <formula> are provided. See also `pin`, `unpin`."
+      switch "--cask",
+             description: "List casks"
       # passed through to ls
       switch "-1",
              description: "Force output to be one entry per line. " \
@@ -44,11 +47,14 @@ module Homebrew
              description: "Sort by time modified, listing most recently modified first."
       switch :verbose
       switch :debug
+      ["--unbrewed", "--multiple", "--pinned", "-l", "-r", "-t"].each { |flag| conflicts "--cask", flag }
     end
   end
 
   def list
     list_args.parse
+
+    return list_casks if args.cask?
 
     return list_unbrewed if args.unbrewed?
 
@@ -149,6 +155,14 @@ module Homebrew
         puts "#{d.basename} #{versions * " "}"
       end
     end
+  end
+
+  def list_casks
+    cask_list = Cask::Cmd::List.new args.named
+    cask_list.one = ARGV.include? "-1"
+    cask_list.versions = args.versions?
+    cask_list.full_name = args.full_name?
+    cask_list.run
   end
 end
 

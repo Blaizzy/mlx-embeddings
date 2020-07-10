@@ -290,6 +290,8 @@ If *`formula`* is provided, summarise the paths within its current keg.
   Only show formulae with multiple versions installed.
 * `--pinned`:
   Show the versions of pinned formulae, or only the specified (pinned) formulae if *`formula`* are provided. See also `pin`, `unpin`.
+* `--cask`:
+  List casks
 * `-1`:
   Force output to be one entry per line. This is the default when output is not to a terminal.
 * `-l`:
