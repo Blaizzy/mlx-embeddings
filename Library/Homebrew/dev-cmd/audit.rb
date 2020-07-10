@@ -231,11 +231,6 @@ module Homebrew
     end
 
     def audit_file
-      # TODO: check could be in RuboCop
-      if text.to_s.match?(/inreplace [^\n]* do [^\n]*\n[^\n]*\.gsub![^\n]*\n\ *end/m)
-        problem "'inreplace ... do' was used for a single substitution (use the non-block form instead)."
-      end
-
       if formula.core_formula? && @versioned_formula
         unversioned_formula = begin
           # build this ourselves as we want e.g. homebrew/core to be present
@@ -828,73 +823,6 @@ module Homebrew
           end
         end
       end
-    end
-
-    def audit_lines
-      text.without_patch.split("\n").each_with_index do |line, lineno|
-        line_problems(line, lineno + 1)
-      end
-    end
-
-    def line_problems(line, _lineno)
-      # Check for string interpolation of single values.
-      if line =~ /(system|inreplace|gsub!|change_make_var!).*[ ,]"#\{([\w.]+)\}"/
-        # TODO: check could be in RuboCop
-        problem "Don't need to interpolate \"#{Regexp.last_match(2)}\" with #{Regexp.last_match(1)}"
-      end
-
-      # Check for string concatenation; prefer interpolation
-      if line =~ /(#\{\w+\s*\+\s*['"][^}]+\})/
-        # TODO: check could be in RuboCop
-        problem "Try not to concatenate paths in string interpolation:\n   #{Regexp.last_match(1)}"
-      end
-
-      # Prefer formula path shortcuts in Pathname+
-      if line =~ %r{\(\s*(prefix\s*\+\s*(['"])(bin|include|libexec|lib|sbin|share|Frameworks)[/'"])}
-        # TODO: check could be in RuboCop
-        problem(
-          "\"(#{Regexp.last_match(1)}...#{Regexp.last_match(2)})\" should" \
-          " be \"(#{Regexp.last_match(3).downcase}+...)\"",
-        )
-      end
-
-      # TODO: check could be in RuboCop
-      problem "Use separate make calls" if line.include?("make && make")
-
-      if line =~ /JAVA_HOME/i &&
-         [formula.name, *formula.deps.map(&:name)].none? { |name| name.match?(/^openjdk(@|$)/) } &&
-         formula.requirements.none? { |req| req.is_a?(JavaRequirement) }
-        # TODO: check could be in RuboCop
-        problem "Use `depends_on :java` to set JAVA_HOME"
-      end
-
-      return unless @strict
-
-      # TODO: check could be in RuboCop
-      problem "`env :userpaths` in formulae is deprecated" if line.include?("env :userpaths")
-
-      # TODO: check could be in RuboCop
-      problem "`#{Regexp.last_match(1)}` is now unnecessary" if line =~ /(require ["']formula["'])/
-
-      if line.match?(%r{#\{share\}/#{Regexp.escape(formula.name)}[/'"]})
-        # TODO: check could be in RuboCop
-        problem "Use \#{pkgshare} instead of \#{share}/#{formula.name}"
-      end
-
-      if !@core_tap && line =~ /depends_on .+ if build\.with(out)?\?\(?["']\w+["']\)?/
-        # TODO: check could be in RuboCop
-        problem "`Use :optional` or `:recommended` instead of `#{Regexp.last_match(0)}`"
-      end
-
-      if line =~ %r{share(\s*[/+]\s*)(['"])#{Regexp.escape(formula.name)}(?:\2|/)}
-        # TODO: check could be in RuboCop
-        problem "Use pkgshare instead of (share#{Regexp.last_match(1)}\"#{formula.name}\")"
-      end
-
-      return unless @core_tap
-
-      # TODO: check could be in RuboCop
-      problem "`env :std` in homebrew/core formulae is deprecated" if line.include?("env :std")
     end
 
     def audit_reverse_migration

@@ -6,6 +6,17 @@ describe RuboCop::Cop::FormulaAudit::Text do
   subject(:cop) { described_class.new }
 
   context "When auditing formula text" do
+    it "with `require \"formula\"` is present" do
+      expect_offense(<<~RUBY)
+        require "formula"
+        ^^^^^^^^^^^^^^^^^ `require "formula"` is now unnecessary
+        class Foo < Formula
+          url "https://brew.sh/foo-1.0.tgz"
+          homepage "https://brew.sh"
+        end
+      RUBY
+    end
+
     it "with both openssl and libressl optional dependencies" do
       expect_offense(<<~RUBY)
         class Foo < Formula
@@ -211,6 +222,229 @@ describe RuboCop::Cop::FormulaAudit::Text do
           def install
             system "cargo", "build"
             ^^^^^^^^^^^^^^^^^^^^^^^ use \"cargo\", \"install\", *std_cargo_args
+          end
+        end
+      RUBY
+    end
+
+    it "When make calls are not separated" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          def install
+            system "make && make install"
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Use separate `make` calls
+          end
+        end
+      RUBY
+    end
+
+    it "When concatenating in string interpolation" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          def install
+            ohai "foo \#{bar + "baz"}"
+                      ^^^^^^^^^^^^^^ Do not concatenate paths in string interpolation
+          end
+        end
+      RUBY
+    end
+
+    it "When using JAVA_HOME without a java dependency" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          def install
+            ohai "JAVA_HOME"
+                 ^^^^^^^^^^^ Use `depends_on :java` to set JAVA_HOME
+          end
+        end
+      RUBY
+    end
+
+    it "When using JAVA_HOME with an openjdk dependency" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          depends_on "openjdk"
+          def install
+            ohai "JAVA_HOME"
+          end
+        end
+      RUBY
+    end
+
+    it "When using JAVA_HOME with an openjdk build dependency" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          depends_on "openjdk" => :build
+          def install
+            ohai "JAVA_HOME"
+          end
+        end
+      RUBY
+    end
+
+    it "When using JAVA_HOME with a java dependency" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          depends_on :java
+          def install
+            ohai "JAVA_HOME"
+          end
+        end
+      RUBY
+    end
+
+    it "When using JAVA_HOME with a java build dependency" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          depends_on :java => :build
+          def install
+            ohai "JAVA_HOME"
+          end
+        end
+      RUBY
+    end
+
+    it "When using `prefix + \"bin\"` instead of `bin`" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          def install
+            ohai prefix + "bin"
+                 ^^^^^^^^^^^^^^ Use `bin` instead of `prefix + "bin"`
+          end
+        end
+      RUBY
+    end
+
+    it "When using `prefix + \"bin/foo\"` instead of `bin`" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          def install
+            ohai prefix + "bin/foo"
+                 ^^^^^^^^^^^^^^^^^^ Use `bin` instead of `prefix + "bin"`
+          end
+        end
+      RUBY
+    end
+  end
+end
+
+describe RuboCop::Cop::FormulaAuditStrict::Text do
+  subject(:cop) { described_class.new }
+
+  context "When auditing formula text" do
+    it "when deprecated `env :userpaths` is present" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          url "https://brew.sh/foo-1.0.tgz"
+
+          env :userpaths
+          ^^^^^^^^^^^^^^ `env :userpaths` in homebrew/core formulae is deprecated
+        end
+      RUBY
+    end
+
+    it "when deprecated `env :std` is present in homebrew-core" do
+      expect_offense(<<~RUBY, "/homebrew-core/")
+        class Foo < Formula
+          url "https://brew.sh/foo-1.0.tgz"
+
+          env :std
+          ^^^^^^^^ `env :std` in homebrew/core formulae is deprecated
+        end
+      RUBY
+    end
+
+    it "when `\#{share}/foo` is used instead of `\#{pkgshare}`" do
+      expect_offense(<<~RUBY, "/homebrew-core/Formula/foo.rb")
+        class Foo < Formula
+          def install
+            ohai "\#{share}/foo"
+                 ^^^^^^^^^^^^^^ Use `\#{pkgshare}` instead of `\#{share}/foo`
+          end
+        end
+      RUBY
+    end
+
+    it "when `\#{share}/foo/bar` is used instead of `\#{pkgshare}/bar`" do
+      expect_offense(<<~RUBY, "/homebrew-core/Formula/foo.rb")
+        class Foo < Formula
+          def install
+            ohai "\#{share}/foo/bar"
+                 ^^^^^^^^^^^^^^^^^^ Use `\#{pkgshare}` instead of `\#{share}/foo`
+          end
+        end
+      RUBY
+    end
+
+    it "when `\#{share}/foolibc++` is used instead of `\#{pkgshare}/foolibc++`" do
+      expect_offense(<<~RUBY, "/homebrew-core/Formula/foolibc++.rb")
+        class Foo < Formula
+          def install
+            ohai "\#{share}/foolibc++"
+                 ^^^^^^^^^^^^^^^^^^^^ Use `\#{pkgshare}` instead of `\#{share}/foolibc++`
+          end
+        end
+      RUBY
+    end
+
+    it "when `share/\"foo\"` is used instead of `pkgshare`" do
+      expect_offense(<<~RUBY, "/homebrew-core/Formula/foo.rb")
+        class Foo < Formula
+          def install
+            ohai share/"foo"
+                 ^^^^^^^^^^^ Use `pkgshare` instead of `share/"foo"`
+          end
+        end
+      RUBY
+    end
+
+    it "when `share/\"foo/bar\"` is used instead of `pkgshare`" do
+      expect_offense(<<~RUBY, "/homebrew-core/Formula/foo.rb")
+        class Foo < Formula
+          def install
+            ohai share/"foo/bar"
+                 ^^^^^^^^^^^^^^^ Use `pkgshare` instead of `share/"foo"`
+          end
+        end
+      RUBY
+    end
+
+    it "when `share/\"foolibc++\"` is used instead of `pkgshare`" do
+      expect_offense(<<~RUBY, "/homebrew-core/Formula/foolibc++.rb")
+        class Foo < Formula
+          def install
+            ohai share/"foolibc++"
+                 ^^^^^^^^^^^^^^^^^ Use `pkgshare` instead of `share/"foolibc++"`
+          end
+        end
+      RUBY
+    end
+
+    it "when `\#{share}/foo-bar` doesn't match formula name" do
+      expect_no_offenses(<<~RUBY, "/homebrew-core/Formula/foo.rb")
+        class Foo < Formula
+          def install
+            ohai "\#{share}/foo-bar"
+          end
+        end
+      RUBY
+    end
+
+    it "when `share/foo-bar` doesn't match formula name" do
+      expect_no_offenses(<<~RUBY, "/homebrew-core/Formula/foo.rb")
+        class Foo < Formula
+          def install
+            ohai share/"foo-bar"
+          end
+        end
+      RUBY
+    end
+
+    it "when `share/bar` doesn't match formula name" do
+      expect_no_offenses(<<~RUBY, "/homebrew-core/Formula/foo.rb")
+        class Foo < Formula
+          def install
+            ohai share/"bar"
           end
         end
       RUBY
