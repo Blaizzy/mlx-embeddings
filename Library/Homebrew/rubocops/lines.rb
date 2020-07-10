@@ -118,6 +118,7 @@ module RuboCop
           depends_on_build_regex = /depends_on .+ (if build\.with(out)?\?\(["']\w+["']\))/
 
           find_instance_method_call(body_node, :build, :with?) do |n|
+            # TODO: this should be refactored to a direct method match
             next unless match = n.parent.source.match(depends_on_build_regex)
 
             problem "Use `:optional` or `:recommended` instead of `#{match[1]}`"

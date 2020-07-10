@@ -112,6 +112,7 @@ module RuboCop
 
             parent = n.parent
             # Only look at keywords that have `prefix` before them
+            # TODO: this should be refactored to a direct method match
             prefix_keyword_regex = %r{(prefix\s*\+\s*["'](bin|include|libexec|lib|sbin|share|Frameworks))["'/]}
             if match = parent.source.match(prefix_keyword_regex)
               offending_node(parent)
