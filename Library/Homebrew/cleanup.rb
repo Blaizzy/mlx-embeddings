@@ -302,6 +302,7 @@ module Homebrew
     end
 
     def cleanup_path(path)
+      return unless path.exist?
       return unless @cleaned_up_paths.add?(path)
 
       disk_usage = path.disk_usage
