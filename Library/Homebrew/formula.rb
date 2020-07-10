@@ -1618,8 +1618,8 @@ class Formula
     Formula.cache[:opt_or_installed_prefix_keg] ||= {}
     Formula.cache[:opt_or_installed_prefix_keg][name] ||= if optlinked? && opt_prefix.exist?
       Keg.new(opt_prefix)
-    elsif installed_prefix.directory?
-      Keg.new(installed_prefix)
+    elsif (latest_installed_prefix = installed_prefixes.last)
+      Keg.new(latest_installed_prefix)
     end
   end
 
