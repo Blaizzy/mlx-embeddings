@@ -1394,6 +1394,9 @@ Note that environment variables must have a value set to be detected. For exampl
 
     *Default:* `15`.
 
+  * `HOMEBREW_FORBIDDEN_LICENSES`:
+    A space-separated list of licenses. Homebrew will refuse to install a formula if that formula or any of its dependencies has a license on this list.
+
   * `HOMEBREW_FORCE_BREWED_CURL`:
     If set, always use a Homebrew-installed `curl`(1) rather than the system version. Automatically set if the system version of `curl` is too old.
 

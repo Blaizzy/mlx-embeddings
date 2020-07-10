@@ -161,6 +161,12 @@ RSpec.shared_context "integration test" do
       content = <<~RUBY
         url "https://brew.sh/#{name}-1.0"
       RUBY
+
+    when "package_license"
+      content = <<~RUBY
+        url "https://brew.sh/#patchelf-1.0"
+        license "0BSD"
+      RUBY
     end
 
     Formulary.core_path(name).tap do |formula_path|

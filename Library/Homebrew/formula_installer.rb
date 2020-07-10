@@ -17,6 +17,7 @@ require "linkage_checker"
 require "install"
 require "messages"
 require "cask/cask_loader"
+require "cmd/install"
 require "find"
 
 class FormulaInstaller
@@ -148,6 +149,8 @@ class FormulaInstaller
   def prelude
     Tab.clear_cache
     verify_deps_exist unless ignore_deps?
+    forbidden_license_check
+
     check_install_sanity
   end
 
@@ -1101,5 +1104,28 @@ class FormulaInstaller
     return if @requirement_messages.empty?
 
     $stderr.puts @requirement_messages
+  end
+
+  def forbidden_license_check
+    forbidden_licenses = Homebrew::EnvConfig.forbidden_licenses.to_s.split(" ")
+    return if forbidden_licenses.blank?
+
+    compute_dependencies.each do |dep, _|
+      next if @ignore_deps
+
+      dep_f = dep.to_formula
+      next unless forbidden_licenses.include? dep_f.license
+
+      raise CannotInstallFormulaError, <<~EOS
+        The installation of #{formula.name} has a dependency on #{dep.name} with a forbidden license #{dep_f.license}.
+      EOS
+    end
+    return if @only_deps
+
+    return unless forbidden_licenses.include? formula.license
+
+    raise CannotInstallFormulaError, <<~EOS
+      #{formula.name} has a forbidden license #{formula.license}.
+    EOS
   end
 end
