@@ -20,27 +20,21 @@ class Keg
 
     patchelf = DevelopmentTools.locate "patchelf"
     odie "Could not locate patchelf, please: brew install patchelf." if patchelf.nil?
+    cmd = [patchelf]
 
-    cmd_rpath = [patchelf, "--print-rpath", file]
-    old_rpath = Utils.popen_read(*cmd_rpath, err: :out).strip
+    old_rpath = file.rpath
+    new_rpath = if old_rpath
+      rpath = old_rpath.split(":")
+                       .map { |x| x.sub(old_prefix, new_prefix) }
+                       .select { |x| x.start_with?(new_prefix, "$ORIGIN") }
 
-    # patchelf requires that the ELF file have a .dynstr section.
-    # Skip ELF files that do not have a .dynstr section.
-    return if ["cannot find section .dynstr", "strange: no string table"].include?(old_rpath)
+      lib_path = "#{new_prefix}/lib"
+      rpath << lib_path unless rpath.include? lib_path
+      new_rpath = rpath.join(":")
+      cmd.push  "--force-rpath", "--set-rpath", new_rpath
 
-    unless $CHILD_STATUS.success?
-      raise ErrorDuringExecution.new(cmd_rpath, status: $CHILD_STATUS, output: [[:stderr, old_rpath]])
+      new_rpath
     end
-
-    rpath = old_rpath
-            .split(":")
-            .map { |x| x.sub(old_prefix, new_prefix) }
-            .select { |x| x.start_with?(new_prefix, "$ORIGIN") }
-
-    lib_path = "#{new_prefix}/lib"
-    rpath << lib_path unless rpath.include? lib_path
-    new_rpath = rpath.join(":")
-    cmd = [patchelf, "--force-rpath", "--set-rpath", new_rpath]
 
     old_interpreter = file.interpreter
     new_interpreter = if old_interpreter.nil?
