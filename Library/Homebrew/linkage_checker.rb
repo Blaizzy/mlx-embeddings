@@ -55,24 +55,35 @@ class LinkageChecker
   end
 
   def display_test_output(puts_output: true)
-    display_items "Missing libraries", @broken_dylibs, puts_output: puts_output
+    display_items "Missing libraries", broken_dylibs_with_expectations, puts_output: puts_output
     display_items "Broken dependencies", @broken_deps, puts_output: puts_output
     display_items "Unwanted system libraries", @unwanted_system_dylibs, puts_output: puts_output
     display_items "Conflicting libraries", @version_conflict_deps, puts_output: puts_output
-    if got_library_issues?
-      puts "Broken library linkage ignored" if @formula.allow_missing_libs?
+
+    if @broken_dylibs.empty?
+      puts "No broken library linkage detected"
+    elsif unexpected_broken_libs.empty?
+      puts "No unexpected broken library linkage detected."
     else
-      puts "No broken library linkage"
+      puts "Broken library linkage detected"
     end
   end
 
   def broken_library_linkage?
-    !@formula.allow_missing_libs? && got_library_issues?
+    issues = [@broken_deps, @unwanted_system_dylibs, @version_conflict_deps]
+    [issues, unexpected_broken_libs].flatten.any?(&:present?)
   end
 
-  def got_library_issues?
-    issues = [@broken_dylibs, @broken_deps, @unwanted_system_dylibs, @version_conflict_deps]
-    issues.any?(&:present?)
+  def unexpected_broken_libs
+    @broken_dylibs.reject { |lib| @formula.allowed_missing_lib? lib }
+  end
+
+  def broken_dylibs_with_expectations
+    output = {}
+    @broken_dylibs.each do |lib|
+      output[lib] = (unexpected_broken_libs.include? lib) ? ["unexpected"] : ["expected"]
+    end
+    output
   end
 
   private
