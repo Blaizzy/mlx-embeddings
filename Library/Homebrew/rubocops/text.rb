@@ -106,20 +106,18 @@ module RuboCop
             problem "Use `depends_on :java` to set JAVA_HOME"
           end
 
-          find_strings(body_node).each do |n|
-            # Skip strings that don't start with one of the keywords
-            next unless regex_match_group(n, %r{^(bin|include|libexec|lib|sbin|share|Frameworks)/?})
+          prefix_path(body_node) do |prefix_node, path|
+            next unless match = path.match(%r{^(bin|include|libexec|lib|sbin|share|Frameworks)(?:/| |$)})
 
-            parent = n.parent
-            # Only look at keywords that have `prefix` before them
-            # TODO: this should be refactored to a direct method match
-            prefix_keyword_regex = %r{(prefix\s*\+\s*["'](bin|include|libexec|lib|sbin|share|Frameworks))["'/]}
-            if match = parent.source.match(prefix_keyword_regex)
-              offending_node(parent)
-              problem "Use `#{match[2].downcase}` instead of `#{match[1]}\"`"
-            end
+            offending_node(prefix_node)
+            problem "Use `#{match[1].downcase}` instead of `prefix + \"#{match[1]}\"`"
           end
         end
+
+        # Find: prefix + "foo"
+        def_node_search :prefix_path, <<~EOS
+          $(send (send nil? :prefix) :+ (str $_))
+        EOS
       end
     end
 
