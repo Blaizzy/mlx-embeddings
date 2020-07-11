@@ -59,13 +59,30 @@ module OS
     end
 
     def languages
-      @languages ||= [
+      return @languages if @languages
+
+      os_langs = Utils.popen_read("defaults", "read", "-g", "AppleLanguages")
+      if os_langs.blank?
+        # User settings don't exist so check the system-wide one.
+        os_langs = Utils.popen_read("defaults", "read", "/Library/Preferences/.GlobalPreferences", "AppleLanguages")
+      end
+      os_langs = os_langs.scan(/[^ \n"(),]+/)
+
+      @languages = [
         *Homebrew.args.value("language")&.split(","),
         *ENV["HOMEBREW_LANGUAGES"]&.split(","),
-        *Open3.capture2("defaults", "read", "-g", "AppleLanguages")
-              .first
-              .scan(/[^ \n"(),]+/),
+        *os_langs,
       ].uniq
+
+      # Ensure all languages are valid
+      @languages.select! do |lang|
+        Locale.parse(lang)
+        true
+      rescue Locale::ParserError
+        false
+      end
+
+      @languages
     end
 
     def language
