@@ -132,18 +132,14 @@ module RuboCop
             problem "`env :userpaths` in homebrew/core formulae is deprecated"
           end
 
-          body_node.each_descendant(:dstr) do |dstr_node|
-            next unless match = dstr_node.source.match(%r{(\#{share}/#{Regexp.escape(@formula_name)})[ /"]})
-
-            offending_node(dstr_node)
-            problem "Use `\#{pkgshare}` instead of `#{match[1]}`"
+          share_formula_name(body_node) do |share_node|
+            offending_node(share_node)
+            problem "Use `pkgshare` instead of `share/\"#{@formula_name}\"`"
           end
 
-          find_every_method_call_by_name(body_node, :share).each do |share_node|
-            if match = share_node.parent.source.match(%r{(share\s*[/+]\s*"#{Regexp.escape(@formula_name)})[/"]})
-              offending_node(share_node.parent)
-              problem "Use `pkgshare` instead of `#{match[1]}\"`"
-            end
+          share_formula_name_dstr(body_node) do |share_node|
+            offending_node(share_node)
+            problem "Use `\#{pkgshare}` instead of `\#{share}/#{@formula_name}`"
           end
 
           return unless formula_tap == "homebrew-core"
@@ -152,6 +148,21 @@ module RuboCop
             problem "`env :std` in homebrew/core formulae is deprecated"
           end
         end
+
+        # Check whether value starts with the formula name and then a "/", " " or EOS
+        def starts_with_formula_name?(value)
+          value.match?(%r{#{Regexp.escape(@formula_name)}(/| |$)})
+        end
+
+        # Find "#{share}/foo"
+        def_node_search :share_formula_name_dstr, <<~EOS
+          $(dstr (begin (send nil? :share)) (str #starts_with_formula_name?))
+        EOS
+
+        # Find share/"foo"
+        def_node_search :share_formula_name, <<~EOS
+          $(send (send nil? :share) :/ (str #starts_with_formula_name?))
+        EOS
       end
     end
   end
