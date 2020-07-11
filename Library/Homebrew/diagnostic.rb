@@ -882,7 +882,7 @@ module Homebrew
             Open3.capture2(csrutil, "status")
                  .first
                  .gsub("This is an unsupported configuration, likely to break in " \
-                   "the future and leave your machine in an unknown state.", "")
+                       "the future and leave your machine in an unknown state.", "")
                  .gsub("System Integrity Protection status: ", "")
                  .delete("\t\.")
                  .capitalize
@@ -896,9 +896,6 @@ module Homebrew
         nil
       end
 
-      # This could be done by calling into Homebrew, but the situation
-      # where `brew doctor` is needed is precisely the situation where such
-      # things are less dependable.
       def check_cask_install_location
         locations = Dir.glob(HOMEBREW_CELLAR.join("brew-cask", "*")).reverse
         return if locations.empty?
@@ -909,6 +906,9 @@ module Homebrew
       end
 
       def check_cask_staging_location
+        # Skip this check when running CI since the staging path is not writable for security reasons
+        return if ENV["HOMEBREW_GITHUB_ACTIONS"]
+
         path = Cask::Caskroom.path
 
         add_info "Homebrew Cask Staging Location", user_tilde(path.to_s)
