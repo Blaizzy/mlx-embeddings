@@ -663,7 +663,7 @@ module Homebrew
       problem "Formulae in homebrew/core should not have a `devel` spec" if formula.devel
 
       if formula.head && @versioned_formula
-        head_spec_message = "Formulae should not have a `HEAD` spec"
+        head_spec_message = "Versioned formulae should not have a `HEAD` spec"
         problem head_spec_message unless VERSIONED_HEAD_SPEC_ALLOWLIST.include?(formula.name)
       end
 
