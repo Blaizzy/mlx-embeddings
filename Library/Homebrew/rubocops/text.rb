@@ -132,12 +132,12 @@ module RuboCop
             problem "`env :userpaths` in homebrew/core formulae is deprecated"
           end
 
-          share_formula_name(body_node) do |share_node|
+          share_path_starts_with(body_node, @formula_name) do |share_node|
             offending_node(share_node)
             problem "Use `pkgshare` instead of `share/\"#{@formula_name}\"`"
           end
 
-          share_formula_name_dstr(body_node) do |share_node|
+          interpolated_share_path_starts_with(body_node, "/#{@formula_name}") do |share_node|
             offending_node(share_node)
             problem "Use `\#{pkgshare}` instead of `\#{share}/#{@formula_name}`"
           end
@@ -150,18 +150,18 @@ module RuboCop
         end
 
         # Check whether value starts with the formula name and then a "/", " " or EOS
-        def starts_with_formula_name?(value, prefix = "")
-          value.match?(%r{^#{Regexp.escape(prefix + @formula_name)}(/| |$)})
+        def path_starts_with?(path, starts_with)
+          path.match?(%r{^#{Regexp.escape(starts_with)}(/| |$)})
         end
 
         # Find "#{share}/foo"
-        def_node_search :share_formula_name_dstr, <<~EOS
-          $(dstr (begin (send nil? :share)) (str #starts_with_formula_name?("/")))
+        def_node_search :interpolated_share_path_starts_with, <<~EOS
+          $(dstr (begin (send nil? :share)) (str #path_starts_with?(%1)))
         EOS
 
         # Find share/"foo"
-        def_node_search :share_formula_name, <<~EOS
-          $(send (send nil? :share) :/ (str #starts_with_formula_name?))
+        def_node_search :share_path_starts_with, <<~EOS
+          $(send (send nil? :share) :/ (str #path_starts_with?(%1)))
         EOS
       end
     end
