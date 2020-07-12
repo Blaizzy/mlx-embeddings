@@ -337,7 +337,7 @@ module Homebrew
         end
 
         if non_standard_licenses.present?
-          problem "Formula #{formula.name} contains non standard SPDX license: #{non_standard_licenses} "
+          problem "Formula #{formula.name} contains non standard SPDX license: #{non_standard_licenses}."
         end
 
           return unless @online

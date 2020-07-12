@@ -120,7 +120,7 @@ module Homebrew
         RUBY
 
         fa.audit_license
-        expect(fa.problems.first).to match "#{custom_spdx_id} is not a standard SPDX license."
+        expect(fa.problems.first).to match "Formula foo contains non standard SPDX license: [\"zzz\"]."
       end
 
       it "verifies that a license info is a standard spdx id" do
@@ -160,8 +160,8 @@ module Homebrew
         RUBY
 
         fa.audit_license
-        expect(fa.problems.first).to match "License mismatch - GitHub license is: GPL-3.0, "\
-        "but Formulae license states: #{standard_mismatch_spdx_id}."
+        expect(fa.problems.first).to match "License mismatch - GitHub license is: [\"GPL-3.0\"], "\
+        "but Formulae license states: #{Array(standard_mismatch_spdx_id)}."
       end
     end
 
