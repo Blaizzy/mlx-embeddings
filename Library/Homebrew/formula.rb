@@ -1682,7 +1682,7 @@ class Formula
       "aliases"                  => aliases.sort,
       "versioned_formulae"       => versioned_formulae.map(&:name),
       "desc"                     => desc,
-      "license"                  => license.class == String ? [license] : license,
+      "license"                  => license,
       "homepage"                 => homepage,
       "versions"                 => {
         "stable" => stable&.version&.to_s,
