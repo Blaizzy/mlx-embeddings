@@ -106,20 +106,18 @@ module RuboCop
             problem "Use `depends_on :java` to set JAVA_HOME"
           end
 
-          find_strings(body_node).each do |n|
-            # Skip strings that don't start with one of the keywords
-            next unless regex_match_group(n, %r{^(bin|include|libexec|lib|sbin|share|Frameworks)/?})
+          prefix_path(body_node) do |prefix_node, path|
+            next unless match = path.match(%r{^(bin|include|libexec|lib|sbin|share|Frameworks)(?:/| |$)})
 
-            parent = n.parent
-            # Only look at keywords that have `prefix` before them
-            # TODO: this should be refactored to a direct method match
-            prefix_keyword_regex = %r{(prefix\s*\+\s*["'](bin|include|libexec|lib|sbin|share|Frameworks))["'/]}
-            if match = parent.source.match(prefix_keyword_regex)
-              offending_node(parent)
-              problem "Use `#{match[2].downcase}` instead of `#{match[1]}\"`"
-            end
+            offending_node(prefix_node)
+            problem "Use `#{match[1].downcase}` instead of `prefix + \"#{match[1]}\"`"
           end
         end
+
+        # Find: prefix + "foo"
+        def_node_search :prefix_path, <<~EOS
+          $(send (send nil? :prefix) :+ (str $_))
+        EOS
       end
     end
 
@@ -134,18 +132,14 @@ module RuboCop
             problem "`env :userpaths` in homebrew/core formulae is deprecated"
           end
 
-          body_node.each_descendant(:dstr) do |dstr_node|
-            next unless match = dstr_node.source.match(%r{(\#{share}/#{Regexp.escape(@formula_name)})[ /"]})
-
-            offending_node(dstr_node)
-            problem "Use `\#{pkgshare}` instead of `#{match[1]}`"
+          share_path_starts_with(body_node, @formula_name) do |share_node|
+            offending_node(share_node)
+            problem "Use `pkgshare` instead of `share/\"#{@formula_name}\"`"
           end
 
-          find_every_method_call_by_name(body_node, :share).each do |share_node|
-            if match = share_node.parent.source.match(%r{(share\s*[/+]\s*"#{Regexp.escape(@formula_name)})[/"]})
-              offending_node(share_node.parent)
-              problem "Use `pkgshare` instead of `#{match[1]}\"`"
-            end
+          interpolated_share_path_starts_with(body_node, "/#{@formula_name}") do |share_node|
+            offending_node(share_node)
+            problem "Use `\#{pkgshare}` instead of `\#{share}/#{@formula_name}`"
           end
 
           return unless formula_tap == "homebrew-core"
@@ -154,6 +148,21 @@ module RuboCop
             problem "`env :std` in homebrew/core formulae is deprecated"
           end
         end
+
+        # Check whether value starts with the formula name and then a "/", " " or EOS
+        def path_starts_with?(path, starts_with)
+          path.match?(%r{^#{Regexp.escape(starts_with)}(/| |$)})
+        end
+
+        # Find "#{share}/foo"
+        def_node_search :interpolated_share_path_starts_with, <<~EOS
+          $(dstr (begin (send nil? :share)) (str #path_starts_with?(%1)))
+        EOS
+
+        # Find share/"foo"
+        def_node_search :share_path_starts_with, <<~EOS
+          $(send (send nil? :share) :/ (str #path_starts_with?(%1)))
+        EOS
       end
     end
   end

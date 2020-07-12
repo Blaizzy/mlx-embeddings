@@ -114,20 +114,9 @@ module RuboCop
             return
           end
 
-          # Matches `depends_on "foo" if build.with?("bar")` or depends_on "foo" if build.without?("bar")`
-          depends_on_build_regex = /depends_on .+ (if build\.with(out)?\?\(["']\w+["']\))/
-
-          find_instance_method_call(body_node, :build, :with?) do |n|
-            # TODO: this should be refactored to a direct method match
-            next unless match = n.parent.source.match(depends_on_build_regex)
-
-            problem "Use `:optional` or `:recommended` instead of `#{match[1]}`"
-          end
-
-          find_instance_method_call(body_node, :build, :without?) do |n|
-            next unless match = n.parent.source.match(depends_on_build_regex)
-
-            problem "Use `:optional` or `:recommended` instead of `#{match[1]}`"
+          depends_on_build_with(body_node) do |build_with_node|
+            offending_node(build_with_node)
+            problem "Use `:optional` or `:recommended` instead of `if #{build_with_node.source}`"
           end
 
           find_instance_method_call(body_node, :build, :without?) do |method|
@@ -181,6 +170,12 @@ module RuboCop
 
           node.modifier_form? && node.unless?
         end
+
+        # Finds `depends_on "foo" if build.with?("bar")` or `depends_on "foo" if build.without?("bar")`
+        def_node_search :depends_on_build_with, <<~EOS
+          (if $(send (send nil? :build) {:with? :without?} str)
+            (send nil? :depends_on str) nil?)
+        EOS
       end
 
       class MpiCheck < FormulaCop

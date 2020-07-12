@@ -449,5 +449,25 @@ describe RuboCop::Cop::FormulaAuditStrict::Text do
         end
       RUBY
     end
+
+    it "when formula name appears afer `share/\"bar\"`" do
+      expect_no_offenses(<<~RUBY, "/homebrew-core/Formula/foo.rb")
+        class Foo < Formula
+          def install
+            ohai share/"bar/foo"
+          end
+        end
+      RUBY
+    end
+
+    it "when formula name appears afer `\"\#{share}/bar\"`" do
+      expect_no_offenses(<<~RUBY, "/homebrew-core/Formula/foo.rb")
+        class Foo < Formula
+          def install
+            ohai "\#{share}/bar/foo"
+          end
+        end
+      RUBY
+    end
   end
 end
