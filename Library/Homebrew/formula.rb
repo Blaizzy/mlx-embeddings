@@ -2210,19 +2210,14 @@ class Formula
     # Shows when running `brew info`.
     # Multiple licenses means that the software is licensed under multiple licenses.
     # Do not use multiple licenses if e.g. different parts are under different licenses.
-    #
     # <pre>license "BSD-2-Clause"</pre>
     def license(args = nil)
       if args.nil?
         @licenses
       else
         @licenses = Array(args) unless args == ""
-        puts @licenses
-        # license.
       end
     end
-
-    # attr_rw :license
 
     # @!attribute [w] homepage
     # The homepage for the software. Used by users to get more information
