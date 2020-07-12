@@ -150,13 +150,13 @@ module RuboCop
         end
 
         # Check whether value starts with the formula name and then a "/", " " or EOS
-        def starts_with_formula_name?(value)
-          value.match?(%r{#{Regexp.escape(@formula_name)}(/| |$)})
+        def starts_with_formula_name?(value, prefix = "")
+          value.match?(%r{^#{Regexp.escape(prefix + @formula_name)}(/| |$)})
         end
 
         # Find "#{share}/foo"
         def_node_search :share_formula_name_dstr, <<~EOS
-          $(dstr (begin (send nil? :share)) (str #starts_with_formula_name?))
+          $(dstr (begin (send nil? :share)) (str #starts_with_formula_name?("/")))
         EOS
 
         # Find share/"foo"
