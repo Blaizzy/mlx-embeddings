@@ -542,7 +542,7 @@ module Homebrew
     include_examples "formulae exist", described_class::VERSIONED_KEG_ONLY_ALLOWLIST
     include_examples "formulae exist", described_class::VERSIONED_HEAD_SPEC_ALLOWLIST
     include_examples "formulae exist", described_class::USES_FROM_MACOS_ALLOWLIST
-    include_examples "formulae exist", described_class::THROTTLED_DENYLIST.keys
+    include_examples "formulae exist", described_class::THROTTLED_FORMULAE.keys
     include_examples "formulae exist", described_class::UNSTABLE_ALLOWLIST.keys
     include_examples "formulae exist", described_class::GNOME_DEVEL_ALLOWLIST.keys
   end

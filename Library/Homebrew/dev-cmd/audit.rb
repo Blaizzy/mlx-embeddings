@@ -571,13 +571,13 @@ module Homebrew
       imagemagick@6
     ].freeze
 
-    THROTTLED_DENYLIST = {
-      "aws-sdk-cpp" => "10",
-      "awscli@1"    => "10",
-      "balena-cli"  => "10",
-      "gatsby-cli"  => "10",
-      "quicktype"   => "10",
-      "vim"         => "50",
+    THROTTLED_FORMULAE = {
+      "aws-sdk-cpp" => 10,
+      "awscli@1"    => 10,
+      "balena-cli"  => 10,
+      "gatsby-cli"  => 10,
+      "quicktype"   => 10,
+      "vim"         => 50,
     }.freeze
 
     UNSTABLE_ALLOWLIST = {
@@ -667,15 +667,6 @@ module Homebrew
         problem head_spec_message unless VERSIONED_HEAD_SPEC_ALLOWLIST.include?(formula.name)
       end
 
-      THROTTLED_DENYLIST.each do |f, v|
-        next if formula.stable.nil?
-
-        version = formula.stable.version.to_s.split(".").last.to_i
-        if f == formula.name && version.modulo(v.to_i).nonzero?
-          problem "should only be updated every #{v} releases on multiples of #{v}"
-        end
-      end
-
       stable = formula.stable
       return unless stable
       return unless stable.url
@@ -685,6 +676,12 @@ module Homebrew
       _, stable_url_minor_version, = stable_url_version.to_s
                                                        .split(".", 3)
                                                        .map(&:to_i)
+
+      formula_suffix = stable_version_string.split(".").last.to_i
+      throttled_rate = THROTTLED_FORMULAE[formula.name]
+      if throttled_rate && formula_suffix.modulo(throttled_rate).nonzero?
+        problem "should only be updated every #{throttled_rate} releases on multiples of #{throttled_rate}"
+      end
 
       case (url = stable.url)
       when /[\d._-](alpha|beta|rc\d)/
