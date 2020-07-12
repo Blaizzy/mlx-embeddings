@@ -330,7 +330,16 @@ module Homebrew
 
     def audit_license
       if formula.license.present?
-        if formula.license.any? { |lic| @spdx_data["licenses"].any? { |standard_lic| standard_lic["licenseId"] == lic } }
+        non_standard_licenses = []
+        formula.license.each do |lic|
+          next if @spdx_data["licenses"].any? { |standard_lic| standard_lic["licenseId"] == lic }
+          non_standard_licenses << lic
+        end
+
+        if non_standard_licenses.present?
+          problem "Formula #{formula.name} contains non standard SPDX license: #{non_standard_licenses} "
+        end
+
           return unless @online
 
           user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @new_formula
@@ -341,9 +350,8 @@ module Homebrew
 
           problem "License mismatch - GitHub license is: #{Array(github_license)}, "\
                   "but Formulae license states: #{formula.license}."
-        else
-          problem "#{formula.license} is not a standard SPDX license."
-        end
+
+
       elsif @new_formula
         problem "No license specified for package."
       end
