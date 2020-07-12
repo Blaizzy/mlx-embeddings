@@ -173,7 +173,8 @@ module RuboCop
 
         # Finds `depends_on "foo" if build.with?("bar")` or `depends_on "foo" if build.without?("bar")`
         def_node_search :depends_on_build_with, <<~EOS
-          (if $(send (send nil? :build) {:with? :without?} str) (send nil? :depends_on str) nil?)
+          (if $(send (send nil? :build) {:with? :without?} str)
+            (send nil? :depends_on str) nil?)
         EOS
       end
 
