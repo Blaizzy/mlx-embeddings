@@ -333,6 +333,7 @@ module Homebrew
         non_standard_licenses = []
         formula.license.each do |lic|
           next if @spdx_data["licenses"].any? { |standard_lic| standard_lic["licenseId"] == lic }
+
           non_standard_licenses << lic
         end
 
@@ -340,17 +341,16 @@ module Homebrew
           problem "Formula #{formula.name} contains non standard SPDX license: #{non_standard_licenses}."
         end
 
-          return unless @online
+        return unless @online
 
-          user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @new_formula
-          return if user.blank?
+        user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @new_formula
+        return if user.blank?
 
-          github_license = GitHub.get_repo_license(user, repo)
-          return if github_license && (formula.license +  ["NOASSERTION"]).include?(github_license)
+        github_license = GitHub.get_repo_license(user, repo)
+        return if github_license && (formula.license + ["NOASSERTION"]).include?(github_license)
 
-          problem "License mismatch - GitHub license is: #{Array(github_license)}, "\
-                  "but Formulae license states: #{formula.license}."
-
+        problem "License mismatch - GitHub license is: #{Array(github_license)}, "\
+                "but Formulae license states: #{formula.license}."
 
       elsif @new_formula
         problem "No license specified for package."

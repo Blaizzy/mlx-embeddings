@@ -2214,11 +2214,11 @@ class Formula
     # <pre>license "BSD-2-Clause"</pre>
     def license(args = nil)
       if args.nil?
-        return @licenses
+        @licenses
       else
         @licenses = Array(args) unless args == ""
         puts @licenses
-      # license.
+        # license.
       end
     end
 
