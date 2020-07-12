@@ -330,16 +330,16 @@ module Homebrew
 
     def audit_license
       if formula.license.present?
-        if @spdx_data["licenses"].any? { |lic| lic["licenseId"] == formula.license }
+        if formula.license.any? { |lic| @spdx_data["licenses"].any? { |standard_lic| standard_lic["licenseId"] == lic } }
           return unless @online
 
           user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @new_formula
           return if user.blank?
 
           github_license = GitHub.get_repo_license(user, repo)
-          return if github_license && [formula.license, "NOASSERTION"].include?(github_license)
+          return if github_license && (formula.license +  ["NOASSERTION"]).include?(github_license)
 
-          problem "License mismatch - GitHub license is: #{github_license}, "\
+          problem "License mismatch - GitHub license is: #{Array(github_license)}, "\
                   "but Formulae license states: #{formula.license}."
         else
           problem "#{formula.license} is not a standard SPDX license."
