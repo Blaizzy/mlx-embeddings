@@ -9,33 +9,33 @@ describe Git do
     HOMEBREW_CACHE.cd do
       system git, "init"
 
-      File.open("blah.rb", "w") { |f| f.write("blah") }
-      system git, "add", HOMEBREW_CACHE/"blah.rb"
+      File.open("README.md", "w") { |f| f.write("README") }
+      system git, "add", HOMEBREW_CACHE/"README.md"
       system git, "commit", "-m", "'File added'"
       @h1 = `git rev-parse HEAD`
 
-      File.open("blah.rb", "w") { |f| f.write("brew") }
-      system git, "add", HOMEBREW_CACHE/"blah.rb"
+      File.open("README.md", "w") { |f| f.write("# README") }
+      system git, "add", HOMEBREW_CACHE/"README.md"
       system git, "commit", "-m", "'written to File'"
       @h2 = `git rev-parse HEAD`
 
-      File.open("bleh.rb", "w") { |f| f.write("bleh") }
-      system git, "add", HOMEBREW_CACHE/"bleh.rb"
+      File.open("LICENSE.txt", "w") { |f| f.write("LICENCE") }
+      system git, "add", HOMEBREW_CACHE/"LICENSE.txt"
       system git, "commit", "-m", "'File added'"
       @h3 = `git rev-parse HEAD`
 
-      File.open("bleh.rb", "w") { |f| f.write("blehbleh") }
-      system git, "add", HOMEBREW_CACHE/"bleh.rb"
+      File.open("LICENSE.txt", "w") { |f| f.write("LICENSE") }
+      system git, "add", HOMEBREW_CACHE/"LICENSE.txt"
       system git, "commit", "-m", "'written to File'"
     end
   end
 
-  let(:file) { "blah.rb" }
+  let(:file) { "README.md" }
   let(:file_hash1) { @h1[0..6] }
   let(:file_hash2) { @h2[0..6] }
-  let(:files) { ["blah.rb", "bleh.rb"] }
-  let(:files_hash1) { [@h3[0..6], ["bleh.rb"]] }
-  let(:files_hash2) { [@h2[0..6], ["blah.rb"]] }
+  let(:files) { ["README.md", "LICENSE.txt"] }
+  let(:files_hash1) { [@h3[0..6], ["LICENSE.txt"]] }
+  let(:files_hash2) { [@h2[0..6], ["README.md"]] }
 
   describe "#last_revision_commit_of_file" do
     it "gives last revision commit when before_commit is nil" do
@@ -78,14 +78,14 @@ describe Git do
       expect(
         described_class.last_revision_of_file(HOMEBREW_CACHE,
                                               HOMEBREW_CACHE/file),
-      ).to eq("blah")
+      ).to eq("README")
     end
 
     it "returns last revision of file based on before_commit" do
       expect(
         described_class.last_revision_of_file(HOMEBREW_CACHE, HOMEBREW_CACHE/file,
                                               before_commit: "0..3"),
-      ).to eq("brew")
+      ).to eq("# README")
     end
   end
 end
