@@ -262,7 +262,7 @@ module Language
         #   the contents of a `requirements.txt`.
         # @return [void]
         def pip_install(targets)
-          targets = [targets] unless targets.is_a? Array
+          targets = Array(targets)
           targets.each do |t|
             if t.respond_to? :stage
               next if t.name == "homebrew-virtualenv"
@@ -292,7 +292,7 @@ module Language
         private
 
         def do_install(targets)
-          targets = [targets] unless targets.is_a? Array
+          targets = Array(targets)
           @formula.system @venv_root/"bin/pip", "install",
                           "-v", "--no-deps", "--no-binary", ":all:",
                           "--ignore-installed", *targets
