@@ -559,6 +559,7 @@ module Homebrew
 
       _, user, repo = *regex.match(formula.stable.url) if formula.stable
       _, user, repo = *regex.match(formula.homepage) unless user
+      _, user, repo = *regex.match(formula.head.url) if !user && formula.head
       return if !user || !repo
 
       repo.delete_suffix!(".git")
