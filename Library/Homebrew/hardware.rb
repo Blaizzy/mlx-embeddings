@@ -154,6 +154,10 @@ module Hardware
 
         "-march=#{arch}"
       end
+
+      def running_under_rosetta?
+        false
+      end
     end
   end
 
