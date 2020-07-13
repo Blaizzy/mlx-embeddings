@@ -61,7 +61,7 @@ class SystemCommand
     @executable = executable
     @args = args
     @sudo = sudo
-    @input = [*input]
+    @input = Array(input)
     @print_stdout = print_stdout
     @print_stderr = print_stderr
     @verbose = verbose

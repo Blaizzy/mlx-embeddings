@@ -274,7 +274,8 @@ module Homebrew
     end
 
     if forced_version && forced_version != "0"
-      if requested_spec == :stable
+      case requested_spec
+      when :stable
         replacement_pairs << if File.read(formula.path).include?("version \"#{old_formula_version}\"")
           [
             old_formula_version.to_s,
@@ -291,19 +292,20 @@ module Homebrew
             "\\1\\2\\1version \"#{forced_version}\"\n",
           ]
         end
-      elsif requested_spec == :devel
+      when :devel
         replacement_pairs << [
           /(  devel do.+?version ")#{old_formula_version}("\n.+?end\n)/m,
           "\\1#{forced_version}\\2",
         ]
       end
     elsif forced_version && forced_version == "0"
-      if requested_spec == :stable
+      case requested_spec
+      when :stable
         replacement_pairs << [
           /^  version "[\w.\-+]+"\n/m,
           "",
         ]
-      elsif requested_spec == :devel
+      when :devel
         replacement_pairs << [
           /(  devel do.+?)^ +version "[^\n]+"\n(.+?end\n)/m,
           "\\1\\2",

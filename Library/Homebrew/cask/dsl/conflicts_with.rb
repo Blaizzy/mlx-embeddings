@@ -18,7 +18,7 @@ module Cask
       def initialize(**pairs)
         pairs.assert_valid_keys!(*VALID_KEYS)
 
-        super(pairs.transform_values { |v| Set.new([*v]) })
+        super(pairs.transform_values { |v| Set.new(Array(v)) })
 
         self.default = Set.new
       end

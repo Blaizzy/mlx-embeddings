@@ -199,10 +199,11 @@ class Reporter
 
       if paths.any? { |p| tap.cask_file?(p) }
         # Currently only need to handle Cask deletion/migration.
-        if status == "D"
+        case status
+        when "D"
           # Have a dedicated report array for deleted casks.
           @report[:DC] << tap.formula_file_to_name(src)
-        elsif status == "M"
+        when "M"
           # Report updated casks
           @report[:MC] << tap.formula_file_to_name(src)
         end

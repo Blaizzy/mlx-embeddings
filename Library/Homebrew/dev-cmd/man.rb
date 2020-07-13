@@ -124,10 +124,11 @@ module Homebrew
       ronn.close_write
       ronn_output = ronn.read
       odie "Got no output from ronn!" if ronn_output.blank?
-      if format_flag == "--markdown"
+      case format_flag
+      when "--markdown"
         ronn_output = ronn_output.gsub(%r{<var>(.*?)</var>}, "*`\\1`*")
                                  .gsub(/\n\n\n+/, "\n\n")
-      elsif format_flag == "--roff"
+      when "--roff"
         ronn_output = ronn_output.gsub(%r{<code>(.*?)</code>}, "\\fB\\1\\fR")
                                  .gsub(%r{<var>(.*?)</var>}, "\\fI\\1\\fR")
                                  .gsub(/(^\[?\\fB.+): /, "\\1\n    ")

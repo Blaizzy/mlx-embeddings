@@ -77,7 +77,7 @@ module Cask
           Manpage,
           PostflightBlock,
           Zap,
-        ].each_with_index.flat_map { |classes, i| [*classes].map { |c| [c, i] } }.to_h
+        ].each_with_index.flat_map { |classes, i| Array(classes).map { |c| [c, i] } }.to_h
 
         (@@sort_order[self.class] <=> @@sort_order[other.class]).to_i
       end

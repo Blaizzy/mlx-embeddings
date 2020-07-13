@@ -524,7 +524,7 @@ class ErrorDuringExecution < RuntimeError
     redacted_cmd = redact_secrets(cmd.shelljoin.gsub('\=', "="), secrets)
     s = +"Failure while executing; `#{redacted_cmd}` exited with #{exitstatus}."
 
-    unless [*output].empty?
+    if Array(output).present?
       format_output_line = lambda do |type_line|
         type, line = *type_line
         if type == :stderr
@@ -543,7 +543,7 @@ class ErrorDuringExecution < RuntimeError
   end
 
   def stderr
-    [*output].select { |type,| type == :stderr }.map(&:last).join
+    Array(output).select { |type,| type == :stderr }.map(&:last).join
   end
 end
 
