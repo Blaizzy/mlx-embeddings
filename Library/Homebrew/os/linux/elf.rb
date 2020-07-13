@@ -93,7 +93,7 @@ module ELFShim
     return @dynamic_elf if defined? @dynamic_elf
 
     @dynamic_elf = if HOMEBREW_PATCHELF_RB
-      patchelf_patcher.instance_variable_get(:@elf).segment_by_type(:DYNAMIC).present?
+      patchelf_patcher.elf.segment_by_type(:DYNAMIC).present?
     elsif which "readelf"
       Utils.popen_read("readelf", "-l", to_path).include?(" DYNAMIC ")
     elsif which "file"
