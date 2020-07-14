@@ -73,8 +73,8 @@ changes that the upstream Homebrew developers have made.
 brew merge-homebrew --core
 ```
 
-Merging all the changes from upstream in one go is usually
-undesirable since our build servers will time out. Instead, attempt
+Merging all the changes from upstream in one go can make it
+harder to keep track of all the active builds. Instead, attempt
 to only merge 8-10 modified formulae.
 
 `git log --oneline master..homebrew/master` will show a list of all
@@ -194,21 +194,22 @@ Conflicts:
 
 The `merge-homebrew` command will create a pull-request for you, using `hub`.
 
-It is expected that CI checks on the merge commit of the PR will fail.
-This is due to a bug with Azure Pipelines and its handling of merge
-commits. Master branch builds also fail for the same reason. This is
-OK.
-
-Once the PR is approved by other Homebrew developers, you can finalise
-the merge with:
+Continuous integration verifies that the pull request passes
+`brew readall` and `brew style`, which only takes a few minutes.
+Finalise the merge with:
 
 ```bash
-brew pull --clean <PR-NUMBER>
 git push origin master
 ```
 
-The merge is now complete. Don't forget to update your GitHub fork by
-running `git push your-fork master`
+If the above command fails (e.g. another maintainer pushed changes to
+Homebrew/linuxbrew-core before you finished the merge),
+you can update your branch with `git rebase --rebase-merges`,
+but it's often easier to just run `git reset --hard origin/master`
+and redo `brew merge-homebrew --core`.
+
+Otherwise, the merge is now complete. Don't forget to update your GitHub
+fork by running `git push your-fork master`.
 
 ## Building bottles for updated formulae
 
