@@ -392,11 +392,11 @@ module Homebrew
                 message = inject_file_list conflicts, <<~EOS
                   /usr/bin occurs before #{HOMEBREW_PREFIX}/bin
                   This means that system-provided programs will be used instead of those
-                  provided by Homebrew. The following tools exist at both paths:
-
-                  Consider setting your PATH so that #{HOMEBREW_PREFIX}/bin
-                  occurs before /usr/bin. Here is a one-liner:
+                  provided by Homebrew. Consider setting your PATH so that
+                  #{HOMEBREW_PREFIX}/bin occurs before /usr/bin. Here is a one-liner:
                     #{Utils::Shell.prepend_path_in_profile("#{HOMEBREW_PREFIX}/bin")}
+
+                  The following tools exist at both paths:
                 EOS
               end
             end
