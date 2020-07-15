@@ -316,7 +316,7 @@ module Homebrew
 
     new_formula_version = formula_version(formula, requested_spec, new_contents)
 
-    check_for_duplicate_pull_requests(formula, tap_full_name, new_formula_version.to_s)
+    check_for_duplicate_pull_requests(formula, backup_file, tap_full_name, new_formula_version.to_s)
 
     if !new_mirrors && !formula_spec.mirrors.empty?
       if args.force?
@@ -481,7 +481,7 @@ module Homebrew
     []
   end
 
-  def check_for_duplicate_pull_requests(formula, tap_full_name, version)
+  def check_for_duplicate_pull_requests(formula, backup_file, tap_full_name, version)
     # check for open requests
     pull_requests = fetch_pull_requests(formula.name, tap_full_name, state: "open")
 
@@ -497,8 +497,10 @@ module Homebrew
     if args.force? && !args.quiet?
       opoo duplicates_message
     elsif !args.force? && args.quiet?
+      formula.path.atomic_write(backup_file) unless args.dry_run?
       odie error_message
     elsif !args.force?
+      formula.path.atomic_write(backup_file) unless args.dry_run?
       odie <<~EOS
         #{duplicates_message.chomp}
         #{error_message}
