@@ -499,9 +499,7 @@ false:
   - ./mktemp.rb
   - ./options.rb
   - ./os/linux/elf.rb
-  - ./os/linux/glibc.rb
   - ./os/linux/global.rb
-  - ./os/linux/kernel.rb
   - ./os/mac/architecture_list.rb
   - ./pkg_version.rb
   - ./requirements/arch_requirement.rb
@@ -879,6 +877,8 @@ true:
   - ./official_taps.rb
   - ./os.rb
   - ./os/linux.rb
+  - ./os/linux/glibc.rb
+  - ./os/linux/kernel.rb
   - ./rubocops/cask/ast/cask_header.rb
   - ./rubocops/cask/ast/stanza.rb
   - ./rubocops/cask/constants/stanza.rb
