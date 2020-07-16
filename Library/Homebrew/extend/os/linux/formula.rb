@@ -15,9 +15,10 @@ class Formula
     #        Ex. 1: "libONE.so.1"
     #        Ex. 2: %r{(libONE|libTWO)\.so}
     self.class.allowed_missing_libraries.any? do |x|
-      if x.is_a? Regexp
+      case x
+      when Regexp
         x.match? lib
-      elsif x.is_a? String
+      when String
         lib.include? x
       end
     end
