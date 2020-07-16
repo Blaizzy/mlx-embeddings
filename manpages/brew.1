@@ -917,7 +917,10 @@ Create a pull request to update \fIformula\fR with a new URL or a new tag\.
 If a \fIURL\fR is specified, the \fISHA\-256\fR checksum of the new download should also be specified\. A best effort to determine the \fISHA\-256\fR and \fIformula\fR name will be made if either or both values are not supplied by the user\.
 .
 .P
-If a \fItag\fR is specified, the Git commit \fIrevision\fR corresponding to that tag must also be specified\.
+If a \fItag\fR is specified, the Git commit \fIrevision\fR corresponding to that tag should also be specified\. A best effort to determine the \fIrevision\fR will be made if the value is not supplied by the user\.
+.
+.P
+If a \fIversion\fR is specified, a best effort to determine the \fIURL\fR and \fISHA\-256\fR or the \fItag\fR and \fIrevision\fR will be made if both values are not supplied by the user\.
 .
 .P
 \fINote:\fR this command cannot be used to transition a formula from a URL\-and\-SHA\-256 style specification into a tag\-and\-revision style specification, nor vice versa\. It must use whichever style specification the formula already uses\.

@@ -707,7 +707,12 @@ be specified. A best effort to determine the *`SHA-256`* and *`formula`* name wi
 be made if either or both values are not supplied by the user.
 
 If a *`tag`* is specified, the Git commit *`revision`* corresponding to that tag
-must also be specified.
+should also be specified. A best effort to determine the *`revision`* will be made
+if the value is not supplied by the user.
+
+If a *`version`* is specified, a best effort to determine the *`URL`* and *`SHA-256`*
+or the *`tag`* and *`revision`* will be made if both values are not supplied by the
+user.
 
 *Note:* this command cannot be used to transition a formula from a
 URL-and-SHA-256 style specification into a tag-and-revision style specification,
