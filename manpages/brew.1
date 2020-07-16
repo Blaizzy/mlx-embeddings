@@ -477,11 +477,23 @@ Include detailed version information\.
 .
 .TP
 \fB\-\-json\fR
-Print output in JSON format\. Currently the default and only accepted value for \fIversion\fR is \fBv1\fR\. See the docs for examples of using the JSON output: \fIhttps://docs\.brew\.sh/Querying\-Brew\fR
+Print output in JSON format\. Currently the default and only accepted value for \fIversion\fR is \fBv1\fR\. See the docs for examples of using the JSON output: \fIhttps://docs\.brew\.sh/Querying\-Brew\fR\. By default, this option treats all arguments as formulae\. To treat arguments as casks, use the \-\-cask option\.
 .
 .TP
 \fB\-\-fetch\-HEAD\fR
 Fetch the upstream repository to detect if the HEAD installation of the formula is outdated\. Otherwise, the repository\'s HEAD will only be checked for updates when a new stable or development version has been released\.
+.
+.TP
+\fB\-\-greedy\fR
+Print outdated casks with \fBauto_updates\fR or \fBversion :latest\fR
+.
+.TP
+\fB\-\-formula\fR
+Treat all arguments as formulae
+.
+.TP
+\fB\-\-cask\fR
+Treat all arguments as casks
 .
 .SS "\fBpin\fR \fIformula\fR"
 Pin the specified \fIformula\fR, preventing them from being upgraded when issuing the \fBbrew upgrade\fR \fIformula\fR command\. See also \fBunpin\fR\.
@@ -721,6 +733,10 @@ Print install times for each formula at the end of the run\.
 .TP
 \fB\-n\fR, \fB\-\-dry\-run\fR
 Show what would be upgraded, but do not actually upgrade anything\.
+.
+.TP
+\fB\-\-greedy\fR
+Upgrade casks with \fBauto_updates\fR or \fBversion :latest\fR
 .
 .SS "\fBuses\fR [\fIoptions\fR] \fIformula\fR"
 Show formulae that specify \fIformula\fR as a dependency\. When given multiple formula arguments, show the intersection of formulae that use \fIformula\fR\. By default, \fBuses\fR shows all formulae that specify \fIformula\fR as a required or recommended dependency for their stable builds\.

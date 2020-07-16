@@ -356,9 +356,15 @@ otherwise.
 * `-v`, `--verbose`:
   Include detailed version information.
 * `--json`:
-  Print output in JSON format. Currently the default and only accepted value for *`version`* is `v1`. See the docs for examples of using the JSON output: <https://docs.brew.sh/Querying-Brew>
+  Print output in JSON format. Currently the default and only accepted value for *`version`* is `v1`. See the docs for examples of using the JSON output: <https://docs.brew.sh/Querying-Brew>. By default, this option treats all arguments as formulae. To treat arguments as casks, use the --cask option.
 * `--fetch-HEAD`:
   Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository's HEAD will only be checked for updates when a new stable or development version has been released.
+* `--greedy`:
+  Print outdated casks with `auto_updates` or `version :latest`
+* `--formula`:
+  Treat all arguments as formulae
+* `--cask`:
+  Treat all arguments as casks
 
 ### `pin` *`formula`*
 
@@ -556,6 +562,8 @@ the upgraded formulae or, every 30 days, for all formulae.
   Print install times for each formula at the end of the run.
 * `-n`, `--dry-run`:
   Show what would be upgraded, but do not actually upgrade anything.
+* `--greedy`:
+  Upgrade casks with `auto_updates` or `version :latest`
 
 ### `uses` [*`options`*] *`formula`*
 
