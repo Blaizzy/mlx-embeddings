@@ -9,35 +9,67 @@ describe Git do
     HOMEBREW_CACHE.cd do
       system git, "init"
 
-      File.open(file, "w") { |f| f.write("blah") }
-      system git, "add", HOMEBREW_CACHE/file
+      File.open("README.md", "w") { |f| f.write("README") }
+      system git, "add", HOMEBREW_CACHE/"README.md"
       system git, "commit", "-m", "'File added'"
       @h1 = `git rev-parse HEAD`
 
-      File.open(file, "w") { |f| f.write("brew") }
-      system git, "add", HOMEBREW_CACHE/file
+      File.open("README.md", "w") { |f| f.write("# README") }
+      system git, "add", HOMEBREW_CACHE/"README.md"
       system git, "commit", "-m", "'written to File'"
       @h2 = `git rev-parse HEAD`
+
+      File.open("LICENSE.txt", "w") { |f| f.write("LICENCE") }
+      system git, "add", HOMEBREW_CACHE/"LICENSE.txt"
+      system git, "commit", "-m", "'File added'"
+      @h3 = `git rev-parse HEAD`
+
+      File.open("LICENSE.txt", "w") { |f| f.write("LICENSE") }
+      system git, "add", HOMEBREW_CACHE/"LICENSE.txt"
+      system git, "commit", "-m", "'written to File'"
     end
   end
 
-  let(:file) { "blah.rb" }
-  let(:hash1) { @h1[0..6] }
-  let(:hash2) { @h2[0..6] }
+  let(:file) { "README.md" }
+  let(:file_hash1) { @h1[0..6] }
+  let(:file_hash2) { @h2[0..6] }
+  let(:files) { ["README.md", "LICENSE.txt"] }
+  let(:files_hash1) { [@h3[0..6], ["LICENSE.txt"]] }
+  let(:files_hash2) { [@h2[0..6], ["README.md"]] }
 
   describe "#last_revision_commit_of_file" do
     it "gives last revision commit when before_commit is nil" do
       expect(
         described_class.last_revision_commit_of_file(HOMEBREW_CACHE, file),
-      ).to eq(hash1)
+      ).to eq(file_hash1)
     end
 
     it "gives revision commit based on before_commit when it is not nil" do
       expect(
         described_class.last_revision_commit_of_file(HOMEBREW_CACHE,
                                                      file,
-                                                     before_commit: hash2),
-      ).to eq(hash2)
+                                                     before_commit: file_hash2),
+      ).to eq(file_hash2)
+    end
+  end
+
+  describe "#last_revision_commit_of_files" do
+    context "when before_commit is nil" do
+      it "gives last revision commit" do
+        expect(
+          described_class.last_revision_commit_of_files(HOMEBREW_CACHE, files),
+        ).to eq(files_hash1)
+      end
+    end
+
+    context "when before_commit is not nil" do
+      it "gives last revision commit" do
+        expect(
+          described_class.last_revision_commit_of_files(HOMEBREW_CACHE,
+                                                        files,
+                                                        before_commit: file_hash2),
+        ).to eq(files_hash2)
+      end
     end
   end
 
@@ -46,14 +78,14 @@ describe Git do
       expect(
         described_class.last_revision_of_file(HOMEBREW_CACHE,
                                               HOMEBREW_CACHE/file),
-      ).to eq("blah")
+      ).to eq("README")
     end
 
     it "returns last revision of file based on before_commit" do
       expect(
         described_class.last_revision_of_file(HOMEBREW_CACHE, HOMEBREW_CACHE/file,
                                               before_commit: "0..3"),
-      ).to eq("brew")
+      ).to eq("# README")
     end
   end
 end
