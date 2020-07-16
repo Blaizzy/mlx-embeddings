@@ -506,7 +506,7 @@ class CurlDownloadStrategyError < RuntimeError
   end
 end
 
-# Raised by {#safe_system} in `utils.rb`.
+# Raised by {Kernel#safe_system} in `utils.rb`.
 class ErrorDuringExecution < RuntimeError
   attr_reader :cmd, :status, :output
 
