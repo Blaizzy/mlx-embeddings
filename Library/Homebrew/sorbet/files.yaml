@@ -229,7 +229,6 @@ false:
   - ./lock_file.rb
   - ./migrator.rb
   - ./missing_formula.rb
-  - ./os/linux.rb
   - ./os/mac.rb
   - ./os/mac/keg.rb
   - ./os/mac/mach.rb
@@ -499,7 +498,6 @@ false:
   - ./messages.rb
   - ./mktemp.rb
   - ./options.rb
-  - ./os.rb
   - ./os/linux/elf.rb
   - ./os/linux/glibc.rb
   - ./os/linux/global.rb
@@ -879,6 +877,8 @@ true:
   - ./locale.rb
   - ./metafiles.rb
   - ./official_taps.rb
+  - ./os.rb
+  - ./os/linux.rb
   - ./rubocops/cask/ast/cask_header.rb
   - ./rubocops/cask/ast/stanza.rb
   - ./rubocops/cask/constants/stanza.rb
