@@ -352,6 +352,8 @@ class Formula
   delegate desc: :"self.class"
 
   # The SPDX ID of the software license.
+  # @method license
+  # @see .license=
   delegate license: :"self.class"
 
   # The homepage for the software.
@@ -941,14 +943,10 @@ class Formula
   end
 
   # @private
-  def plist_manual
-    self.class.plist_manual
-  end
+  delegate plist_manual: :"self.class"
 
   # @private
-  def plist_startup
-    self.class.plist_startup
-  end
+  delegate plist_startup: :"self.class"
 
   # A stable path for this formula, when installed. Contains the formula name
   # but no version number. Only the active version will be linked here if
@@ -1008,9 +1006,7 @@ class Formula
   end
 
   # @private
-  def pour_bottle_check_unsatisfied_reason
-    self.class.pour_bottle_check_unsatisfied_reason
-  end
+  delegate pour_bottle_check_unsatisfied_reason: :"self.class"
 
   # Can be overridden to run commands on both source and bottle installation.
   def post_install; end
@@ -1080,9 +1076,7 @@ class Formula
   end
 
   # @private
-  def keg_only_reason
-    self.class.keg_only_reason
-  end
+  delegate keg_only_reason: :"self.class"
 
   # sometimes the formula cleaner breaks things
   # skip cleaning paths in a formula with a class method like this:
@@ -1139,17 +1133,15 @@ class Formula
 
   # Whether this {Formula} is deprecated (i.e. warns on installation).
   # Defaults to false.
+  # @method deprecated?
   # @return [Boolean]
-  def deprecated?
-    self.class.deprecated?
-  end
+  delegate deprecated?: :"self.class"
 
   # Whether this {Formula} is disabled (i.e. cannot be installed).
   # Defaults to false.
+  # @method disabled?
   # @return [Boolean]
-  def disabled?
-    self.class.disabled?
-  end
+  delegate disabled?: :"self.class"
 
   def skip_cxxstdlib_check?
     false
@@ -1312,29 +1304,19 @@ class Formula
   end
 
   # @private
-  def pinnable?
-    @pin.pinnable?
-  end
+  delegate pinnable?: :@pin
 
   # @private
-  def pinned?
-    @pin.pinned?
-  end
+  delegate pinned?: :@pin
 
   # @private
-  def pinned_version
-    @pin.pinned_version
-  end
+  delegate pinned_version: :@pin
 
   # @private
-  def pin
-    @pin.pin
-  end
+  delegate pin: :@pin
 
   # @private
-  def unpin
-    @pin.unpin
-  end
+  delegate unpin: :@pin
 
   # @private
   def ==(other)
@@ -1589,14 +1571,10 @@ class Formula
   end
 
   # @private
-  def env
-    self.class.env
-  end
+  delegate env: :"self.class"
 
   # @private
-  def conflicts
-    self.class.conflicts
-  end
+  delegate conflicts: :"self.class"
 
   # Returns a list of Dependency objects in an installable order, which
   # means if a depends on b then b will be ordered before a in this list
@@ -1787,10 +1765,9 @@ class Formula
       }
     end
 
-    installed_kegs.each do |keg|
+    hsh["installed"] = installed_kegs.sort_by(&:version).map do |keg|
       tab = Tab.for_keg keg
-
-      hsh["installed"] << {
+      {
         "version"                 => keg.version.to_s,
         "used_options"            => tab.used_options.as_flags,
         "built_as_bottle"         => tab.built_as_bottle,
@@ -1800,8 +1777,6 @@ class Formula
         "installed_on_request"    => tab.installed_on_request,
       }
     end
-
-    hsh["installed"] = hsh["installed"].sort_by { |i| Version.create(i["version"]) }
 
     hsh
   end
@@ -1821,17 +1796,13 @@ class Formula
     @prefix_returns_versioned_prefix = true
 
     test_env = {
-      CURL_HOME:     ENV["CURL_HOME"] || ENV["HOME"],
       TMPDIR:        HOMEBREW_TEMP,
       TEMP:          HOMEBREW_TEMP,
       TMP:           HOMEBREW_TEMP,
       TERM:          "dumb",
       PATH:          PATH.new(ENV["PATH"], HOMEBREW_PREFIX/"bin"),
       HOMEBREW_PATH: nil,
-      _JAVA_OPTIONS: "#{ENV["_JAVA_OPTIONS"]&.+(" ")}-Duser.home=#{HOMEBREW_CACHE}/java_cache",
-      GOCACHE:       "#{HOMEBREW_CACHE}/go_cache",
-      CARGO_HOME:    "#{HOMEBREW_CACHE}/cargo_cache",
-    }
+    }.merge(common_stage_test_env)
 
     ENV.clear_sensitive_environment!
     Utils.set_git_name_email!
@@ -2152,6 +2123,17 @@ class Formula
     exit! 1 # never gets here unless exec threw or failed
   end
 
+  # Common environment variables used at both build and test time
+  def common_stage_test_env
+    {
+      _JAVA_OPTIONS: "#{ENV["_JAVA_OPTIONS"]&.+(" ")}-Duser.home=#{HOMEBREW_CACHE}/java_cache",
+      GOCACHE:       "#{HOMEBREW_CACHE}/go_cache",
+      GOPATH:        "#{HOMEBREW_CACHE}/go_mod_cache",
+      CARGO_HOME:    "#{HOMEBREW_CACHE}/cargo_cache",
+      CURL_HOME:     ENV["CURL_HOME"] || ENV["HOME"],
+    }
+  end
+
   def stage
     active_spec.stage do |staging|
       @source_modified_time = active_spec.source_modified_time
@@ -2165,12 +2147,7 @@ class Formula
 
       unless Homebrew.args.interactive?
         stage_env[:HOME] = env_home
-        stage_env[:_JAVA_OPTIONS] =
-          "#{ENV["_JAVA_OPTIONS"]&.+(" ")}-Duser.home=#{HOMEBREW_CACHE}/java_cache"
-        stage_env[:GOCACHE] = "#{HOMEBREW_CACHE}/go_cache"
-        stage_env[:GOPATH] = "#{HOMEBREW_CACHE}/go_mod_cache"
-        stage_env[:CARGO_HOME] = "#{HOMEBREW_CACHE}/cargo_cache"
-        stage_env[:CURL_HOME] = ENV["CURL_HOME"] || ENV["HOME"]
+        stage_env.merge!(common_stage_test_env)
       end
 
       setup_home env_home
