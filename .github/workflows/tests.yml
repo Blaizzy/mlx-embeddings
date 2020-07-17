@@ -114,11 +114,6 @@ jobs:
     - name: Run brew man
       run: brew man --fail-if-changed
 
-    - name: Check for outdated license data
-      run: brew update-license-data --fail-if-changed
-      env:
-        HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     - name: Run brew tests
       run: |
         # brew tests doesn't like world writable directories

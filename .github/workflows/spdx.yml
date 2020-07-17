@@ -1,0 +1,41 @@
+name: Update license data
+
+on:
+  schedule:
+    - cron: '* */12 * * *'
+
+jobs:
+  spdx:
+    runs-on: ubuntu-latest
+    env:
+      HOMEBREW_NO_ANALYTICS: 1
+      HOMEBREW_NO_AUTO_UPDATE: 1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Configure Git
+        uses: Homebrew/actions/git-user-config@master
+        with:
+          username: BrewTestBot
+
+      - name: Setup Homebrew
+        run: |
+          HOMEBREW_REPOSITORY="$(brew --repo)"
+          rm -rf "$HOMEBREW_REPOSITORY"
+          ln -s "$GITHUB_WORKSPACE" "$HOMEBREW_REPOSITORY"
+
+      - name: Update license data
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd "$GITHUB_WORKSPACE/Library/Homebrew"
+          if brew update-license-data --commit --fail-if-not-changed; then
+            SPDX_VERSION=$(jq -er .licenseListVersion data/spdx.json)
+            if ! git ls-remote --exit-code --heads origin "spdx-$SPDX_VERSION"; then
+              git checkout -b "spdx-$SPDX_VERSION"
+              git push origin "spdx-$SPDX_VERSION"
+              hub pull-request -m "$(git log -1 --format='%s')"
+            fi
+          fi
