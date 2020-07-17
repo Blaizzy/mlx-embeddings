@@ -81,7 +81,6 @@ false:
   - ./cask/utils.rb
   - ./cask/verify.rb
   - ./caveats.rb
-  - ./cleaner.rb
   - ./cleanup.rb
   - ./cli/args.rb
   - ./cli/parser.rb
@@ -129,15 +128,11 @@ false:
   - ./cmd/uses.rb
   - ./commands.rb
   - ./compat/language/python.rb
-  - ./compilers.rb
   - ./cxxstdlib.rb
   - ./debrew.rb
   - ./debrew/irb.rb
   - ./dependencies.rb
   - ./dependency.rb
-  - ./dependency_collector.rb
-  - ./description_cache_store.rb
-  - ./descriptions.rb
   - ./dev-cmd/audit.rb
   - ./dev-cmd/bottle.rb
   - ./dev-cmd/bump-formula-pr.rb
@@ -175,7 +170,6 @@ false:
   - ./development_tools.rb
   - ./diagnostic.rb
   - ./download_strategy.rb
-  - ./env_config.rb
   - ./exceptions.rb
   - ./extend/ENV.rb
   - ./extend/ENV/shared.rb
@@ -854,7 +848,13 @@ true:
   - ./cask/macos.rb
   - ./cask/url.rb
   - ./checksum.rb
+  - ./cleaner.rb
+  - ./compilers.rb
   - ./config.rb
+  - ./dependency_collector.rb
+  - ./description_cache_store.rb
+  - ./descriptions.rb
+  - ./env_config.rb
   - ./extend/cachable.rb
   - ./extend/os/linux/development_tools.rb
   - ./extend/os/linux/formula.rb
