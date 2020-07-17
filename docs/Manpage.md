@@ -1052,8 +1052,8 @@ directory.
 
  Update SPDX license data in the Homebrew repository.
 
-* `--fail-if-changed`:
-  Return a failing status code if current license data's version is different from the upstream. This can be used to notify CI when the SPDX license data is out of date.
+* `--fail-if-not-changed`:
+  Return a failing status code if current license data's version is the same as the upstream. This can be used to notify CI when the SPDX license data is out of date.
 * `--commit`:
   Commit changes to the SPDX license data.
 
