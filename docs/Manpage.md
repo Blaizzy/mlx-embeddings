@@ -1048,12 +1048,14 @@ directory.
 * `-g`, `--git`:
   Initialise a Git repository in the unpacked source. This is useful for creating patches for the software.
 
-### `update_license_data` *`cmd`*
+### `update-license-data` [*`options`*]
 
  Update SPDX license data in the Homebrew repository.
 
 * `--fail-if-changed`:
   Return a failing status code if current license data's version is different from the upstream. This can be used to notify CI when the SPDX license data is out of date.
+* `--commit`:
+  Commit changes to the SPDX license data.
 
 ### `update-test` [*`options`*]
 
