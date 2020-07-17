@@ -1131,6 +1131,13 @@ class Formula
     end
   end
 
+  # Whether this {Formula} is allowed to have a broken linkage to specified library.
+  # Defaults to false.
+  # @return [Boolean]
+  def allowed_missing_lib?(*)
+    false
+  end
+
   # Whether this {Formula} is deprecated (i.e. warns on installation).
   # Defaults to false.
   # @method deprecated?
