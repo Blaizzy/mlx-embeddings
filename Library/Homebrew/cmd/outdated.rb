@@ -46,47 +46,55 @@ module Homebrew
   def outdated
     outdated_args.parse
 
-    formula_only = args.formula?
-    if args.json
-      raise UsageError, "invalid JSON version: #{args.json}" unless ["v1", true].include? args.json
-
-      # When user asks for json, print json for formula only unless the user explicitly asks for casks
-      formula_only = !args.cask?
-    end
-
-    outdated = if formula_only
-      formulae = args.resolved_formulae.presence || Formula.installed
-
-      print_outdated_formulae(formulae)
-    elsif args.cask?
-      casks = args.named.presence || Cask::Caskroom.casks.presence
-
-      print_outdated_casks(casks)
-    else
-      formulae, casks = args.resolved_formulae_casks
-
-      if formulae.blank? && casks.blank?
-        formulae = Formula.installed
-        casks = Cask::Caskroom.casks
+    case json_version
+    when :v1
+      outdated = if args.formula? || !args.cask?
+        outdated_formulae
+      else
+        outdated_casks
       end
 
-      print_outdated_formulae(formulae) + print_outdated_casks(casks)
+      puts JSON.generate(json_info(outdated))
+
+    when :v2
+      formulae, casks = if args.formula?
+        [outdated_formulae, []]
+      elsif args.cask?
+        [[], outdated_casks]
+      else
+        outdated_formulae_casks
+      end
+
+      puts JSON.generate({
+                           "formulae" => json_info(formulae),
+                           "casks"    => json_info(casks),
+                         })
+
+      outdated = formulae + casks
+
+    else
+      outdated = if args.formula?
+        outdated_formulae
+      elsif args.cask?
+        outdated_casks
+      else
+        outdated_formulae_casks.flatten
+      end
+
+      print_outdated(outdated)
     end
 
     Homebrew.failed = args.named.present? && outdated.present?
   end
 
-  def print_outdated_formulae(formulae)
-    return print_outdated_formulae_json(formulae) if args.json
+  def print_outdated(formula_or_cask)
+    return formula_or_cask.each { |f_or_c| print_outdated(f_or_c) } if formula_or_cask.is_a? Array
 
-    fetch_head = args.fetch_HEAD?
+    if formula_or_cask.is_a?(Formula)
+      f = formula_or_cask
 
-    outdated_formulae = formulae.select { |f| f.outdated?(fetch_head: fetch_head) }
-                                .sort
-
-    outdated_formulae.each do |f|
       if verbose?
-        outdated_kegs = f.outdated_kegs(fetch_head: fetch_head)
+        outdated_kegs = f.outdated_kegs(fetch_head: args.fetch_HEAD?)
 
         current_version = if f.alias_changed?
           latest = f.latest_formula
@@ -111,46 +119,79 @@ module Homebrew
       else
         puts f.full_installed_specified_name
       end
+    else
+      c = formula_or_cask
+
+      puts c.outdated_info(args.greedy?, verbose?, false)
     end
   end
 
-  def print_outdated_formulae_json(formulae)
-    json = []
-    fetch_head = args.fetch_HEAD?
-    outdated_formulae = formulae.select { |f| f.outdated?(fetch_head: fetch_head) }
+  def json_info(formula_or_cask)
+    return formula_or_cask.map { |f_or_c| json_info(f_or_c) } if formula_or_cask.is_a? Array
 
-    outdated = outdated_formulae.each do |f|
-      outdated_versions = f.outdated_kegs(fetch_head: fetch_head).map(&:version)
+    if formula_or_cask.is_a?(Formula)
+      f = formula_or_cask
+
+      outdated_versions = f.outdated_kegs(fetch_head: args.fetch_HEAD?).map(&:version)
       current_version = if f.head? && outdated_versions.any? { |v| v.to_s == f.pkg_version.to_s }
         "HEAD"
       else
         f.pkg_version.to_s
       end
 
-      json << { name:               f.full_name,
-                installed_versions: outdated_versions.map(&:to_s),
-                current_version:    current_version,
-                pinned:             f.pinned?,
-                pinned_version:     f.pinned_version }
+      { name:               f.full_name,
+        installed_versions: outdated_versions.map(&:to_s),
+        current_version:    current_version,
+        pinned:             f.pinned?,
+        pinned_version:     f.pinned_version }
+    else
+      c = formula_or_cask
+
+      c.outdated_info(args.greedy?, verbose?, true)
     end
-    puts JSON.generate(json)
-
-    outdated
-  end
-
-  def print_outdated_casks(casks)
-    outdated = casks.map { |cask| Cask::CaskLoader.load(cask) }.select do |cask|
-      odebug "Checking update info of Cask #{cask}"
-      cask.outdated?(args.greedy?)
-    end
-
-    output = outdated.map { |cask| cask.outdated_info(args.greedy?, verbose?, args.json) }
-    puts args.json ? JSON.generate(output) : output
-
-    outdated
   end
 
   def verbose?
     ($stdout.tty? || args.verbose?) && !args.quiet?
+  end
+
+  def json_version
+    version_hash = {
+      nil  => nil,
+      true => :v1,
+      "v1" => :v1,
+      "v2" => :v2,
+    }
+
+    raise UsageError, "invalid JSON version: #{args.json}" unless version_hash.include? args.json
+
+    version_hash[args.json]
+  end
+
+  def outdated_formulae
+    select_outdated((args.resolved_formulae.presence || Formula.installed)).sort
+  end
+
+  def outdated_casks
+    select_outdated(
+      args.named.present? ? args.named.uniq.map { |ref| Cask::CaskLoader.load ref } : Cask::Caskroom.casks,
+    )
+  end
+
+  def outdated_formulae_casks
+    formulae, casks = args.resolved_formulae_casks
+
+    if formulae.blank? && casks.blank?
+      formulae = Formula.installed
+      casks = Cask::Caskroom.casks
+    end
+
+    [select_outdated(formulae), select_outdated(casks)]
+  end
+
+  def select_outdated(formulae_or_casks)
+    formulae_or_casks.select do |fc|
+      fc.is_a?(Formula) ? fc.outdated?(fetch_head: args.fetch_HEAD?) : fc.outdated?(args.greedy?)
+    end
   end
 end
