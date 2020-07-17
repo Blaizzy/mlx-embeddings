@@ -22,11 +22,9 @@ module Homebrew
       switch :verbose,
              description: "Include detailed version information."
       flag   "--json",
-             description: "Print output in JSON format. Currently the default and only accepted "\
-                          "value for <version> is `v1`. See the docs for examples of using the JSON "\
-                          "output: <https://docs.brew.sh/Querying-Brew>. "\
-                          "By default, this option treats all arguments as formulae. "\
-                          "To treat arguments as casks, use the --cask option."
+             description: "Print output in JSON format. There are two versions: v1 and v2. " \
+                          "v1 is deprecated and is currently the default if no version is specified. " \
+                          "v2 prints outdated formulae and casks. "
       switch "--fetch-HEAD",
              description: "Fetch the upstream repository to detect if the HEAD installation of the "\
                           "formula is outdated. Otherwise, the repository's HEAD will only be checked for "\
@@ -48,6 +46,8 @@ module Homebrew
 
     case json_version
     when :v1
+      opoo "JSON v1 has been deprecated. Please use --json=v2"
+
       outdated = if args.formula? || !args.cask?
         outdated_formulae
       else
