@@ -323,6 +323,7 @@ module Homebrew
     USES_FROM_MACOS_ALLOWLIST = %w[
       apr
       apr-util
+      libressl
       openblas
       openssl@1.1
     ].freeze
