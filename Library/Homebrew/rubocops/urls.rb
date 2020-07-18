@@ -291,20 +291,15 @@ module RuboCop
           urls += mirrors
 
           # Check pypi urls
-          @pypi_pattern = %r{^https?://pypi.python.org/(.*)}
-          audit_urls(urls, @pypi_pattern) do |match, url|
-            problem "#{url} should be `https://files.pythonhosted.org/#{match[1]}`"
+          pypi_pattern = %r{^https?://pypi.python.org/}
+          audit_urls(urls, pypi_pattern) do
+            problem "use the `files.pythonhosted.org` url found on the pypi downloads page"
           end
-        end
 
-        def autocorrect(node)
-          lambda do |corrector|
-            url_string_node = parameters(node).first
-            url = string_content(url_string_node)
-            match = regex_match_group(url_string_node, @pypi_pattern)
-            correction = node.source.sub(url, "https://files.pythonhosted.org/#{match[1]}")
-            corrector.insert_before(node.source_range, correction)
-            corrector.remove(node.source_range)
+          # Require long files.pythonhosted.org urls
+          pythonhosted_pattern = %r{^https?://files.pythonhosted.org/packages/source/}
+          audit_urls(urls, pythonhosted_pattern) do
+            problem "use the url found on the pypi downloads page"
           end
         end
       end
