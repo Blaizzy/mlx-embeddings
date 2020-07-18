@@ -16,8 +16,8 @@ module Homebrew
 
          Update SPDX license data in the Homebrew repository.
       EOS
-      switch "--fail-if-changed",
-             description: "Return a failing status code if current license data's version is different from " \
+      switch "--fail-if-not-changed",
+             description: "Return a failing status code if current license data's version is the same as " \
                           "the upstream. This can be used to notify CI when the SPDX license data is out of date."
       switch "--commit",
              description: "Commit changes to the SPDX license data."
@@ -33,7 +33,7 @@ module Homebrew
     data_url = "https://raw.githubusercontent.com/spdx/license-list-data/#{latest_tag}/json/licenses.json"
     curl_download(data_url, to: SPDX_PATH, partial: false)
 
-    Homebrew.failed = !system("git", "diff", "--stat", "--exit-code", SPDX_PATH) if args.fail_if_changed?
+    Homebrew.failed = system("git", "diff", "--stat", "--exit-code", SPDX_PATH) if args.fail_if_not_changed?
 
     return unless args.commit?
 
