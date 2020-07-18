@@ -251,7 +251,7 @@ describe RuboCop::Cop::FormulaAudit::PyPiUrls do
         class Foo < Formula
           desc "foo"
           url "https://pypi.python.org/packages/source/foo/foo-0.1.tar.gz"
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ use the `files.pythonhosted.org` url found on the pypi downloads page
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ use the `Source` url found on PyPI downloads page (`https://pypi.org/project/foo/#files`)
         end
       RUBY
     end
@@ -261,7 +261,7 @@ describe RuboCop::Cop::FormulaAudit::PyPiUrls do
         class Foo < Formula
           desc "foo"
           url "https://files.pythonhosted.org/packages/source/f/foo/foo-0.1.tar.gz"
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ use the url found on the pypi downloads page
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ use the `Source` url found on PyPI downloads page (`https://pypi.org/project/foo/#files`)
         end
       RUBY
     end

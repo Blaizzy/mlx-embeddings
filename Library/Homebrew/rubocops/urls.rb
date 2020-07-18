@@ -292,15 +292,21 @@ module RuboCop
 
           # Check pypi urls
           pypi_pattern = %r{^https?://pypi.python.org/}
-          audit_urls(urls, pypi_pattern) do
-            problem "use the `files.pythonhosted.org` url found on the pypi downloads page"
+          audit_urls(urls, pypi_pattern) do |_, url|
+            problem "use the `Source` url found on PyPI downloads page (`#{get_pypi_url(url)}`)"
           end
 
           # Require long files.pythonhosted.org urls
           pythonhosted_pattern = %r{^https?://files.pythonhosted.org/packages/source/}
-          audit_urls(urls, pythonhosted_pattern) do
-            problem "use the url found on the pypi downloads page"
+          audit_urls(urls, pythonhosted_pattern) do |_, url|
+            problem "use the `Source` url found on PyPI downloads page (`#{get_pypi_url(url)}`)"
           end
+        end
+
+        def get_pypi_url(url)
+          package_file = File.basename(url)
+          package_name = package_file.match(/^(.+)-[a-z0-9.]+$/)[1]
+          "https://pypi.org/project/#{package_name}/#files"
         end
       end
     end
