@@ -127,6 +127,10 @@ module Homebrew
     raise FormulaUnspecifiedError unless formula
 
     tap_full_name, origin_branch, previous_branch = use_correct_linux_tap(formula)
+    check_open_pull_requests(formula, tap_full_name)
+
+    new_version = args.version
+    check_all_pull_requests(formula, tap_full_name, version: new_version) if new_version
 
     requested_spec, formula_spec = if args.devel?
       devel_message = " (devel)"
@@ -155,15 +159,16 @@ module Homebrew
       new_url.sub "mirrors.ocf.berkeley.edu/debian", "mirrorservice.org/sites/ftp.debian.org/debian"
     end
     new_mirrors ||= [new_mirror] unless new_mirror.nil?
-    new_version = args.version
     old_url = formula_spec.url
     old_tag = formula_spec.specs[:tag]
     old_formula_version = formula_version(formula, requested_spec)
     old_version = old_formula_version.to_s
-    forced_version = false
+    forced_version = new_version.present?
     new_url_hash = if new_url && new_hash
+      check_all_pull_requests(formula, tap_full_name, url: new_url) unless new_version
       true
     elsif new_tag && new_revision
+      check_all_pull_requests(formula, tap_full_name, url: old_url, tag: new_tag) unless new_version
       false
     elsif !hash_type
       odie "#{formula}: no --tag= or --version= argument specified!" if !new_tag && !new_version
@@ -174,6 +179,7 @@ module Homebrew
           and old tag are both #{new_tag}.
         EOS
       end
+      check_all_pull_requests(formula, tap_full_name, url: old_url, tag: new_tag) unless new_version
       resource_path, forced_version = fetch_resource(formula, new_version, old_url, tag: new_tag)
       new_revision = Utils.popen_read("git -C \"#{resource_path}\" rev-parse -q --verify HEAD")
       new_revision = new_revision.strip
@@ -189,6 +195,7 @@ module Homebrew
             #{new_url}
         EOS
       end
+      check_all_pull_requests(formula, tap_full_name, url: new_url) unless new_version
       resource_path, forced_version = fetch_resource(formula, new_version, new_url)
       tar_file_extensions = %w[.tar .tb2 .tbz .tbz2 .tgz .tlz .txz .tZ]
       if tar_file_extensions.any? { |extension| new_url.include? extension }
@@ -244,7 +251,7 @@ module Homebrew
       ]
     end
 
-    backup_file = File.read(formula.path) unless args.dry_run?
+    old_contents = File.read(formula.path) unless args.dry_run?
 
     if new_mirrors
       replacement_pairs << [
@@ -307,8 +314,6 @@ module Homebrew
 
     new_formula_version = formula_version(formula, requested_spec, new_contents)
 
-    check_for_duplicate_pull_requests(formula, backup_file, tap_full_name, new_formula_version.to_s)
-
     if !new_mirrors && !formula_spec.mirrors.empty?
       if args.force?
         opoo "#{formula}: Removing all mirrors because a --mirror= argument was not specified."
@@ -321,13 +326,13 @@ module Homebrew
     end
 
     if new_formula_version < old_formula_version
-      formula.path.atomic_write(backup_file) unless args.dry_run?
+      formula.path.atomic_write(old_contents) unless args.dry_run?
       odie <<~EOS
         You probably need to bump this formula manually since changing the
         version from #{old_formula_version} to #{new_formula_version} would be a downgrade.
       EOS
     elsif new_formula_version == old_formula_version
-      formula.path.atomic_write(backup_file) unless args.dry_run?
+      formula.path.atomic_write(old_contents) unless args.dry_run?
       odie <<~EOS
         You probably need to bump this formula manually since the new version
         and old version are both #{new_formula_version}.
@@ -340,7 +345,7 @@ module Homebrew
       alias_rename.map! { |a| formula.tap.alias_dir/a }
     end
 
-    run_audit(formula, alias_rename, backup_file)
+    run_audit(formula, alias_rename, old_contents)
 
     formula.path.parent.cd do
       branch = "#{formula.name}-#{new_formula_version}"
@@ -365,7 +370,7 @@ module Homebrew
           remote_url = Utils.popen_read("git remote get-url --push origin").chomp
           username = formula.tap.user
         else
-          remote_url, username = forked_repo_info(formula, tap_full_name, backup_file)
+          remote_url, username = forked_repo_info(formula, tap_full_name, old_contents)
         end
 
         safe_system "git", "fetch", "--unshallow", "origin" if shallow
@@ -438,10 +443,10 @@ module Homebrew
     [resource.fetch, forced_version]
   end
 
-  def forked_repo_info(formula, tap_full_name, backup_file)
+  def forked_repo_info(formula, tap_full_name, old_contents)
     response = GitHub.create_fork(tap_full_name)
   rescue GitHub::AuthenticationFailedError, *GitHub.api_errors => e
-    formula.path.atomic_write(backup_file)
+    formula.path.atomic_write(old_contents)
     odie "Unable to fork: #{e.message}!"
   else
     # GitHub API responds immediately but fork takes a few seconds to be ready.
@@ -506,12 +511,20 @@ module Homebrew
     []
   end
 
-  def check_for_duplicate_pull_requests(formula, backup_file, tap_full_name, version)
+  def check_open_pull_requests(formula, tap_full_name)
     # check for open requests
     pull_requests = fetch_pull_requests(formula.name, tap_full_name, state: "open")
+    check_for_duplicate_pull_requests(pull_requests)
+  end
 
+  def check_all_pull_requests(formula, tap_full_name, version: nil, url: nil, tag: nil)
+    version ||= Version.detect(url, tag ? { tag: tag } : {})
     # if we haven't already found open requests, try for an exact match across all requests
     pull_requests = fetch_pull_requests("#{formula.name} #{version}", tap_full_name) if pull_requests.blank?
+    check_for_duplicate_pull_requests(pull_requests)
+  end
+
+  def check_for_duplicate_pull_requests(pull_requests)
     return if pull_requests.blank?
 
     duplicates_message = <<~EOS
@@ -522,10 +535,8 @@ module Homebrew
     if args.force? && !args.quiet?
       opoo duplicates_message
     elsif !args.force? && args.quiet?
-      formula.path.atomic_write(backup_file) unless args.dry_run?
       odie error_message
     elsif !args.force?
-      formula.path.atomic_write(backup_file) unless args.dry_run?
       odie <<~EOS
         #{duplicates_message.chomp}
         #{error_message}
@@ -545,7 +556,7 @@ module Homebrew
     [versioned_alias, "#{name}@#{new_alias_version}"]
   end
 
-  def run_audit(formula, alias_rename, backup_file)
+  def run_audit(formula, alias_rename, old_contents)
     if args.dry_run?
       if args.no_audit?
         ohai "Skipping `brew audit`"
@@ -569,7 +580,7 @@ module Homebrew
     end
     return unless failed_audit
 
-    formula.path.atomic_write(backup_file)
+    formula.path.atomic_write(old_contents)
     FileUtils.mv alias_rename.last, alias_rename.first if alias_rename.present?
     odie "`brew audit` failed!"
   end
