@@ -784,6 +784,8 @@ a simple example. For the complete API, see:
   Create a basic template for a Go build.
 * `--meson`:
   Create a basic template for a Meson-style build.
+* `--node`:
+  Create a basic template for a Node build.
 * `--perl`:
   Create a basic template for a Perl build.
 * `--python`:
