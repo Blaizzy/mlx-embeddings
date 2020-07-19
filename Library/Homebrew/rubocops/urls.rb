@@ -291,21 +291,22 @@ module RuboCop
           urls += mirrors
 
           # Check pypi urls
-          @pypi_pattern = %r{^https?://pypi.python.org/(.*)}
-          audit_urls(urls, @pypi_pattern) do |match, url|
-            problem "#{url} should be `https://files.pythonhosted.org/#{match[1]}`"
+          pypi_pattern = %r{^https?://pypi.python.org/}
+          audit_urls(urls, pypi_pattern) do |_, url|
+            problem "use the `Source` url found on PyPI downloads page (`#{get_pypi_url(url)}`)"
+          end
+
+          # Require long files.pythonhosted.org urls
+          pythonhosted_pattern = %r{^https?://files.pythonhosted.org/packages/source/}
+          audit_urls(urls, pythonhosted_pattern) do |_, url|
+            problem "use the `Source` url found on PyPI downloads page (`#{get_pypi_url(url)}`)"
           end
         end
 
-        def autocorrect(node)
-          lambda do |corrector|
-            url_string_node = parameters(node).first
-            url = string_content(url_string_node)
-            match = regex_match_group(url_string_node, @pypi_pattern)
-            correction = node.source.sub(url, "https://files.pythonhosted.org/#{match[1]}")
-            corrector.insert_before(node.source_range, correction)
-            corrector.remove(node.source_range)
-          end
+        def get_pypi_url(url)
+          package_file = File.basename(url)
+          package_name = package_file.match(/^(.+)-[a-z0-9.]+$/)[1]
+          "https://pypi.org/project/#{package_name}/#files"
         end
       end
     end
