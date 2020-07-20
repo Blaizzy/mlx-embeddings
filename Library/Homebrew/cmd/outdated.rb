@@ -30,11 +30,11 @@ module Homebrew
                           "formula is outdated. Otherwise, the repository's HEAD will only be checked for "\
                           "updates when a new stable or development version has been released."
       switch "--greedy",
-             description: "Print outdated casks with `auto_updates` or `version :latest`"
+             description: "Print outdated casks with `auto_updates` or `version :latest`."
       switch "--formula",
-             description: "Treat all arguments as formulae"
+             description: "Treat all arguments as formulae."
       switch "--cask",
-             description: "Treat all arguments as casks"
+             description: "Treat all arguments as casks."
       switch :debug
       conflicts "--quiet", "--verbose", "--json"
       conflicts "--formula", "--cask"
@@ -46,7 +46,7 @@ module Homebrew
 
     case json_version
     when :v1
-      opoo "JSON v1 has been deprecated. Please use --json=v2"
+      opoo "JSON v1 has been deprecated; please use --json=v2"
 
       outdated = if args.formula? || !args.cask?
         outdated_formulae

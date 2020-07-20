@@ -360,11 +360,11 @@ otherwise.
 * `--fetch-HEAD`:
   Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository's HEAD will only be checked for updates when a new stable or development version has been released.
 * `--greedy`:
-  Print outdated casks with `auto_updates` or `version :latest`
+  Print outdated casks with `auto_updates` or `version :latest`.
 * `--formula`:
-  Treat all arguments as formulae
+  Treat all arguments as formulae.
 * `--cask`:
-  Treat all arguments as casks
+  Treat all arguments as casks.
 
 ### `pin` *`formula`*
 
