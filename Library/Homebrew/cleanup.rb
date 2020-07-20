@@ -15,13 +15,21 @@ module CleanupRefinement
     end
 
     def nested_cache?
-      directory? && %w[cargo_cache go_cache glide_home java_cache npm_cache gclient_cache].include?(basename.to_s)
+      directory? && %w[
+        cargo_cache
+        go_cache
+        go_mod_cache
+        glide_home
+        java_cache
+        npm_cache
+        gclient_cache
+      ].include?(basename.to_s)
     end
 
     def go_cache_directory?
       # Go makes its cache contents read-only to ensure cache integrity,
       # which makes sense but is something we need to undo for cleanup.
-      directory? && %w[go_cache].include?(basename.to_s)
+      directory? && %w[go_cache go_mod_cache].include?(basename.to_s)
     end
 
     def prune?(days)
