@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'cask/cmd'
+
 module Commands
   module_function
 
@@ -89,6 +91,7 @@ module Commands
     cmds += internal_developer_commands
     cmds += external_commands
     cmds += internal_commands_aliases if aliases
+    cmds += cask_commands(aliases: aliases).map { |cmd| "cask #{cmd}" }
     cmds.sort
   end
 
@@ -129,9 +132,47 @@ module Commands
     Tap.cmd_directories.flat_map do |path|
       find_commands(path).select(&:executable?)
                          .map(&method(:basename_without_extension))
-                         .map { |p| p.to_s.sub(/^brew(cask)?-/, '\1 ').strip }
+                         .map { |p| p.to_s.delete_prefix("brew-").strip }
     end.map(&:to_s)
        .sort
+  end
+
+  def cask_commands(aliases: false)
+    cmds = cask_internal_commands
+    cmds += cask_internal_command_aliases if aliases
+    cmds += cask_unstable_internal_commands
+    cmds += cask_external_commands
+    cmds
+  end
+
+  def cask_internal_commands
+    Cask::Cmd.commands - cask_unstable_internal_commands
+  end
+
+  def cask_unstable_internal_commands
+    Cask::Cmd.commands.select do |command|
+      command.start_with? "_"
+    end
+  end
+
+  def cask_internal_command_aliases
+    Cask::Cmd.aliases.keys
+  end
+
+  def cask_external_commands
+    tap_cmd_directories = Tap.cmd_directories
+    path = PATH.new(tap_cmd_directories, ENV["HOMEBREW_PATH"])
+
+    path.flat_map do |search_path|
+      find_commands(search_path).map do |possible_command|
+        p = possible_command.to_path
+        command_name = p.match(/brewcask-(.*)\.rb/) { |data| data[1].delete_suffix(".rb") }
+        if command_name.blank? && possible_command.executable?
+          command_name = p.match(/brewcask-(.*)/) { |data| data[1] }
+        end
+        command_name
+      end.compact
+    end
   end
 
   def basename_without_extension(path)

@@ -88,6 +88,10 @@ module Cask
       @lookup.fetch(command_name, nil)
     end
 
+    def self.aliases
+      ALIASES
+    end
+
     def self.run(*args)
       new(*args).run
     end

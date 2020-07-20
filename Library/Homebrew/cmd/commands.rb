@@ -36,9 +36,18 @@ module Homebrew
     ohai "Built-in developer commands", Formatter.columns(Commands.internal_developer_commands)
 
     external_commands = Commands.external_commands
-    return if external_commands.blank?
+    if external_commands.present?
+      puts
+      ohai "External commands", Formatter.columns(external_commands)
+    end
 
     puts
-    ohai "External commands", Formatter.columns(external_commands)
+    ohai "Cask commands", Formatter.columns(Commands.cask_internal_commands)
+
+    cask_external_commands = Commands.cask_external_commands
+    if cask_external_commands.present?
+      puts
+      ohai "External cask commands", Formatter.columns(cask_external_commands)
+    end
   end
 end
