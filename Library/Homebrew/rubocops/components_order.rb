@@ -104,6 +104,27 @@ module RuboCop
             @offensive_node = resource_block
             @offense_source_range = resource_block.source_range
 
+            next if on_macos_blocks.length.zero? && on_linux_blocks.length.zero?
+
+            if on_macos_blocks.length == 1
+              on_macos_block = on_macos_blocks.first
+              child_nodes = on_macos_block.body.child_nodes
+              if child_nodes[0].method_name.to_s != "url" && child_nodes[1].method_name.to_s != "sha256"
+                problem "only an url and a sha256 (in the right order) are allowed in a `on_macos` " \
+                        "block within a resource block."
+                next
+              end
+            end
+
+            if on_linux_blocks.length == 1
+              on_linux_block = on_linux_blocks.first
+              child_nodes = on_linux_block.body.child_nodes
+              if child_nodes[0].method_name.to_s != "url" && child_nodes[1].method_name.to_s != "sha256"
+                problem "only an url and a sha256 (in the right order) are allowed in a `on_linux` " \
+                        "block within a resource block."
+              end
+            end
+
             if on_macos_blocks.length > 1
               problem "there can only be one `on_macos` block in a resource block."
               next
@@ -112,32 +133,6 @@ module RuboCop
             if on_linux_blocks.length > 1
               problem "there can only be one `on_linux` block in a resource block."
               next
-            end
-
-            if on_macos_blocks.length == 1 && on_linux_blocks.length.zero?
-              problem "you need to define an `on_linux` block within your resource block."
-              next
-            end
-
-            if on_macos_blocks.length.zero? && on_linux_blocks.length == 1
-              problem "you need to define an `on_macos` block within your resource block."
-              next
-            end
-
-            on_macos_block = on_macos_blocks.first
-            on_linux_block = on_linux_blocks.first
-
-            child_nodes = on_macos_block.body.child_nodes
-            if child_nodes[0].method_name.to_s != "url" && child_nodes[1].method_name.to_s != "sha256"
-              problem "only an url and a sha256 (in the right order) are allowed in a `on_macos` " \
-                      "block within a resource block."
-              next
-            end
-
-            child_nodes = on_linux_block.body.child_nodes
-            if child_nodes[0].method_name.to_s != "url" && child_nodes[1].method_name.to_s != "sha256"
-              problem "only an url and a sha256 (in the right order) are allowed in a `on_linux` " \
-                      "block within a resource block."
             end
           end
         end
