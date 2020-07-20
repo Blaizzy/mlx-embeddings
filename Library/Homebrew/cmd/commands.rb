@@ -31,23 +31,18 @@ module Homebrew
       return
     end
 
-    ohai "Built-in commands", Formatter.columns(Commands.internal_commands)
-    puts
-    ohai "Built-in developer commands", Formatter.columns(Commands.internal_developer_commands)
-
-    external_commands = Commands.external_commands
-    if external_commands.present?
-      puts
-      ohai "External commands", Formatter.columns(external_commands)
-    end
-
-    puts
-    ohai "Cask commands", Formatter.columns(Commands.cask_internal_commands)
-
-    cask_external_commands = Commands.cask_external_commands
-    if cask_external_commands.present?
-      puts
-      ohai "External cask commands", Formatter.columns(cask_external_commands)
+    [["Built-in commands", -> { Commands.internal_commands }],
+     ["Built-in developer commands", -> { Commands.internal_developer_commands }],
+     ["External commands", -> { Commands.external_commands }],
+     ["Cask commands", -> { Commands.cask_internal_commands }],
+     ["External cask commands", -> { Commands.cask_external_commands }]]
+      .each_with_index do |title_and_proc, index|
+      title, proc = title_and_proc
+      cmds = proc.call
+      if cmds.present?
+        puts unless index.zero?
+        ohai title, Formatter.columns(cmds)
+      end
     end
   end
 end

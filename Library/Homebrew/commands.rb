@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cask/cmd'
+require "cask/cmd"
 
 module Commands
   module_function
@@ -160,10 +160,7 @@ module Commands
   end
 
   def cask_external_commands
-    tap_cmd_directories = Tap.cmd_directories
-    path = PATH.new(tap_cmd_directories, ENV["HOMEBREW_PATH"])
-
-    path.flat_map do |search_path|
+    PATH.new(Tap.cmd_directories, ENV["HOMEBREW_PATH"]).flat_map do |search_path|
       find_commands(search_path).map do |possible_command|
         p = possible_command.to_path
         command_name = p.match(/brewcask-(.*)\.rb/) { |data| data[1].delete_suffix(".rb") }
