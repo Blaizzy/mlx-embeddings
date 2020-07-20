@@ -140,19 +140,12 @@ module Commands
   def cask_commands(aliases: false)
     cmds = cask_internal_commands
     cmds += cask_internal_command_aliases if aliases
-    cmds += cask_unstable_internal_commands
     cmds += cask_external_commands
     cmds
   end
 
   def cask_internal_commands
-    Cask::Cmd.commands - cask_unstable_internal_commands
-  end
-
-  def cask_unstable_internal_commands
-    Cask::Cmd.commands.select do |command|
-      command.start_with? "_"
-    end
+    Cask::Cmd.commands
   end
 
   def cask_internal_command_aliases
