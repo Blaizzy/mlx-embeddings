@@ -28,8 +28,6 @@ module Homebrew
         URL-and-SHA-256 style specification into a tag-and-revision style specification,
         nor vice versa. It must use whichever style specification the formula already uses.
       EOS
-      switch "--devel",
-             description: "Bump the development rather than stable version. The development spec must already exist."
       switch "-n", "--dry-run",
              description: "Print what would be done rather than doing it."
       switch "--write",
@@ -123,7 +121,7 @@ module Homebrew
     formula = args.formulae.first
 
     new_url = args.url
-    formula ||= determine_formula_from_url(new_url, args.devel?) if new_url
+    formula ||= determine_formula_from_url(new_url) if new_url
     raise FormulaUnspecifiedError unless formula
 
     tap_full_name, origin_branch, previous_branch = use_correct_linux_tap(formula)
@@ -132,12 +130,8 @@ module Homebrew
     new_version = args.version
     check_all_pull_requests(formula, tap_full_name, version: new_version) if new_version
 
-    requested_spec, formula_spec = if args.devel?
-      devel_message = " (devel)"
-      [:devel, formula.devel]
-    else
-      [:stable, formula.stable]
-    end
+    requested_spec = :stable
+    formula_spec = formula.stable
     odie "#{formula}: no #{requested_spec} specification found!" unless formula_spec
 
     hash_type, old_hash = if (checksum = formula_spec.checksum)
@@ -149,7 +143,7 @@ module Homebrew
     new_revision = args.revision
     new_mirrors ||= args.mirror
     new_mirror ||= case new_url
-    when requested_spec != :devel && %r{.*ftp.gnu.org/gnu.*}
+    when %r{.*ftp.gnu.org/gnu.*}
       new_url.sub "ftp.gnu.org/gnu", "ftpmirror.gnu.org"
     when %r{.*download.savannah.gnu.org/*}
       new_url.sub "download.savannah.gnu.org", "download-mirror.savannah.gnu.org"
@@ -175,7 +169,7 @@ module Homebrew
       new_tag ||= old_tag.gsub(old_version, new_version)
       if new_tag == old_tag
         odie <<~EOS
-          You probably need to bump this formula manually since the new tag
+          You need to bump this formula manually since the new tag
           and old tag are both #{new_tag}.
         EOS
       end
@@ -190,7 +184,7 @@ module Homebrew
       new_url ||= old_url.gsub(old_version, new_version)
       if new_url == old_url
         odie <<~EOS
-          You probably need to bump this formula manually since the new URL
+          You need to bump this formula manually since the new URL
           and old URL are both:
             #{new_url}
         EOS
@@ -272,43 +266,27 @@ module Homebrew
     end
 
     if forced_version && new_version != "0"
-      case requested_spec
-      when :stable
-        replacement_pairs << if File.read(formula.path).include?("version \"#{old_formula_version}\"")
-          [
-            old_formula_version.to_s,
-            new_version,
-          ]
-        elsif new_mirrors
-          [
-            /^( +)(mirror "#{Regexp.escape(new_mirrors.last)}"\n)/m,
-            "\\1\\2\\1version \"#{new_version}\"\n",
-          ]
-        else
-          [
-            /^( +)(url "#{Regexp.escape(new_url)}"\n)/m,
-            "\\1\\2\\1version \"#{new_version}\"\n",
-          ]
-        end
-      when :devel
-        replacement_pairs << [
-          /(  devel do.+?version ")#{old_formula_version}("\n.+?end\n)/m,
-          "\\1#{new_version}\\2",
+      replacement_pairs << if File.read(formula.path).include?("version \"#{old_formula_version}\"")
+        [
+          old_formula_version.to_s,
+          new_version,
+        ]
+      elsif new_mirrors
+        [
+          /^( +)(mirror "#{Regexp.escape(new_mirrors.last)}"\n)/m,
+          "\\1\\2\\1version \"#{new_version}\"\n",
+        ]
+      else
+        [
+          /^( +)(url "#{Regexp.escape(new_url)}"\n)/m,
+          "\\1\\2\\1version \"#{new_version}\"\n",
         ]
       end
     elsif forced_version && new_version == "0"
-      case requested_spec
-      when :stable
-        replacement_pairs << [
-          /^  version "[\w.\-+]+"\n/m,
-          "",
-        ]
-      when :devel
-        replacement_pairs << [
-          /(  devel do.+?)^ +version "[^\n]+"\n(.+?end\n)/m,
-          "\\1\\2",
-        ]
-      end
+      replacement_pairs << [
+        /^  version "[\w.\-+]+"\n/m,
+        "",
+      ]
     end
     new_contents = inreplace_pairs(formula.path, replacement_pairs.uniq)
 
@@ -328,13 +306,13 @@ module Homebrew
     if new_formula_version < old_formula_version
       formula.path.atomic_write(old_contents) unless args.dry_run?
       odie <<~EOS
-        You probably need to bump this formula manually since changing the
+        You need to bump this formula manually since changing the
         version from #{old_formula_version} to #{new_formula_version} would be a downgrade.
       EOS
     elsif new_formula_version == old_formula_version
       formula.path.atomic_write(old_contents) unless args.dry_run?
       odie <<~EOS
-        You probably need to bump this formula manually since the new version
+        You need to bump this formula manually since the new version
         and old version are both #{new_formula_version}.
       EOS
     end
@@ -360,7 +338,7 @@ module Homebrew
         ohai "git add #{alias_rename.first} #{alias_rename.last}" if alias_rename.present?
         ohai "git checkout --no-track -b #{branch} #{origin_branch}"
         ohai "git commit --no-edit --verbose --message='#{formula.name} " \
-             "#{new_formula_version}#{devel_message}' -- #{changed_files.join(" ")}"
+             "#{new_formula_version}' -- #{changed_files.join(" ")}"
         ohai "git push --set-upstream $HUB_REMOTE #{branch}:#{branch}"
         ohai "git checkout --quiet #{previous_branch}"
         ohai "create pull request with GitHub API"
@@ -377,7 +355,7 @@ module Homebrew
         safe_system "git", "add", *alias_rename if alias_rename.present?
         safe_system "git", "checkout", "--no-track", "-b", branch, origin_branch
         safe_system "git", "commit", "--no-edit", "--verbose",
-                    "--message=#{formula.name} #{new_formula_version}#{devel_message}",
+                    "--message=#{formula.name} #{new_formula_version}",
                     "--", *changed_files
         safe_system "git", "push", "--set-upstream", remote_url, "#{branch}:#{branch}"
         safe_system "git", "checkout", "--quiet", previous_branch
@@ -392,7 +370,7 @@ module Homebrew
             #{user_message}
           EOS
         end
-        pr_title = "#{formula.name} #{new_formula_version}#{devel_message}"
+        pr_title = "#{formula.name} #{new_formula_version}"
 
         begin
           url = GitHub.create_pull_request(tap_full_name, pr_title,
@@ -409,7 +387,7 @@ module Homebrew
     end
   end
 
-  def determine_formula_from_url(url, is_devel)
+  def determine_formula_from_url(url)
     # Split the new URL on / and find any formulae that have the same URL
     # except for the last component, but don't try to match any more than the
     # first five components since sometimes the last component isn't the only
@@ -421,14 +399,10 @@ module Homebrew
     base_url = /#{Regexp.escape(base_url)}/
     guesses = []
     Formula.each do |f|
-      if is_devel && f.devel && f.devel.url && f.devel.url.match(base_url)
-        guesses << f
-      elsif f.stable&.url && f.stable.url.match(base_url)
-        guesses << f
-      end
+      guesses << f if f.stable&.url && f.stable.url.match(base_url)
     end
     return guesses.shift if guesses.count == 1
-    return unless guesses.count > 1
+    return if guesses.count <= 1
 
     odie "Couldn't guess formula for sure; could be one of these:\n#{guesses.map(&:name).join(", ")}"
   end
@@ -518,7 +492,11 @@ module Homebrew
   end
 
   def check_all_pull_requests(formula, tap_full_name, version: nil, url: nil, tag: nil)
-    version ||= Version.detect(url, tag ? { tag: tag } : {})
+    unless version
+      specs = {}
+      specs[:tag] = tag if tag
+      version = Version.detect(url, specs)
+    end
     # if we haven't already found open requests, try for an exact match across all requests
     pull_requests = fetch_pull_requests("#{formula.name} #{version}", tap_full_name) if pull_requests.blank?
     check_for_duplicate_pull_requests(pull_requests)

@@ -719,8 +719,6 @@ URL-and-SHA-256 style specification into a tag-and-revision style specification,
 nor vice versa. It must use whichever style specification the formula already
 uses.
 
-* `--devel`:
-  Bump the development rather than stable version. The development spec must already exist.
 * `-n`, `--dry-run`:
   Print what would be done rather than doing it.
 * `--write`:
