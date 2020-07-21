@@ -139,10 +139,10 @@ module Cask
 
       locales = cask.config.languages
                     .map do |language|
-        Locale.parse(language)
-      rescue Locale::ParserError
-        nil
-      end
+                      Locale.parse(language)
+                    rescue Locale::ParserError
+                      nil
+                    end
                     .compact
 
       locales.each do |locale|
