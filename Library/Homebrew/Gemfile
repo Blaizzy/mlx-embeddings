@@ -23,7 +23,7 @@ end
 gem "activesupport"
 gem "concurrent-ruby"
 gem "mechanize"
-gem "patchelf" if ENV["HOMEBREW_PATCHELF_RB"]
+gem "patchelf"
 gem "plist"
 gem "rubocop-performance"
 gem "rubocop-rspec"
