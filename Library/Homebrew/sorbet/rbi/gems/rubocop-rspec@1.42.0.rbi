@@ -50,12 +50,9 @@ module RuboCop::Cop::RSpec
 end
 
 class RuboCop::Cop::RSpec::AlignLeftLetBrace < ::RuboCop::Cop::RSpec::Cop
-  def autocorrect(let); end
-  def investigate(_processed_source); end
+  extend(::RuboCop::Cop::AutoCorrector)
 
-  private
-
-  def token_aligner; end
+  def on_new_investigation; end
 
   def self.autocorrect_incompatible_with; end
 end
@@ -63,12 +60,9 @@ end
 RuboCop::Cop::RSpec::AlignLeftLetBrace::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::AlignRightLetBrace < ::RuboCop::Cop::RSpec::Cop
-  def autocorrect(let); end
-  def investigate(_processed_source); end
+  extend(::RuboCop::Cop::AutoCorrector)
 
-  private
-
-  def token_aligner; end
+  def on_new_investigation; end
 
   def self.autocorrect_incompatible_with; end
 end
@@ -105,7 +99,8 @@ end
 RuboCop::Cop::RSpec::Be::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::BeEql < ::RuboCop::Cop::RSpec::Cop
-  def autocorrect(node); end
+  extend(::RuboCop::Cop::AutoCorrector)
+
   def eql_type_with_identity(node = _); end
   def on_send(node); end
 end
@@ -123,8 +118,9 @@ module RuboCop::Cop::RSpec::Capybara
 end
 
 class RuboCop::Cop::RSpec::Capybara::CurrentPathExpectation < ::RuboCop::Cop::RSpec::Cop
+  extend(::RuboCop::Cop::AutoCorrector)
+
   def as_is_matcher(node = _); end
-  def autocorrect(node); end
   def expectation_set_on_current_path(node = _); end
   def on_send(node); end
   def regexp_str_matcher(node = _); end
@@ -132,6 +128,7 @@ class RuboCop::Cop::RSpec::Capybara::CurrentPathExpectation < ::RuboCop::Cop::RS
   private
 
   def add_ignore_query_options(corrector, node); end
+  def autocorrect(corrector, node); end
   def convert_regexp_str_to_literal(corrector, matcher_node, regexp_str); end
   def rewrite_expectation(corrector, node, to_symbol, matcher_node); end
 end
@@ -139,8 +136,10 @@ end
 RuboCop::Cop::RSpec::Capybara::CurrentPathExpectation::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::Capybara::FeatureMethods < ::RuboCop::Cop::RSpec::Cop
-  def autocorrect(node); end
+  extend(::RuboCop::Cop::AutoCorrector)
+
   def feature_method(node = _); end
+  def message(range); end
   def on_block(node); end
   def spec?(node = _); end
 
@@ -174,7 +173,8 @@ RuboCop::Cop::RSpec::Capybara::VisibilityMatcher::MSG_FALSE = T.let(T.unsafe(nil
 RuboCop::Cop::RSpec::Capybara::VisibilityMatcher::MSG_TRUE = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::ContextMethod < ::RuboCop::Cop::RSpec::Cop
-  def autocorrect(node); end
+  extend(::RuboCop::Cop::AutoCorrector)
+
   def context_method(node = _); end
   def on_block(node); end
 
@@ -198,7 +198,7 @@ end
 
 RuboCop::Cop::RSpec::ContextWording::MSG = T.let(T.unsafe(nil), String)
 
-class RuboCop::Cop::RSpec::Cop < ::RuboCop::Cop::Cop
+class RuboCop::Cop::RSpec::Cop < ::RuboCop::Cop::Base
   include(::RuboCop::RSpec::Language)
   include(::RuboCop::RSpec::Language::NodePattern)
 
@@ -251,8 +251,8 @@ RuboCop::Cop::RSpec::DescribeSymbol::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::DescribedClass < ::RuboCop::Cop::RSpec::Cop
   include(::RuboCop::Cop::ConfigurableEnforcedStyle)
+  extend(::RuboCop::Cop::AutoCorrector)
 
-  def autocorrect(node); end
   def common_instance_exec_closure?(node = _); end
   def contains_described_class?(node0); end
   def described_constant(node = _); end
@@ -262,6 +262,7 @@ class RuboCop::Cop::RSpec::DescribedClass < ::RuboCop::Cop::RSpec::Cop
 
   private
 
+  def autocorrect(corrector, match); end
   def collapse_namespace(namespace, const); end
   def const_name(node); end
   def find_usage(node, &block); end
@@ -288,14 +289,10 @@ RuboCop::Cop::RSpec::DescribedClassModuleWrapping::MSG = T.let(T.unsafe(nil), St
 
 class RuboCop::Cop::RSpec::Dialect < ::RuboCop::Cop::RSpec::Cop
   include(::RuboCop::Cop::MethodPreference)
+  extend(::RuboCop::Cop::AutoCorrector)
 
-  def autocorrect(node); end
   def on_send(node); end
   def rspec_method?(node = _); end
-
-  private
-
-  def message(node); end
 end
 
 RuboCop::Cop::RSpec::Dialect::MSG = T.let(T.unsafe(nil), String)
@@ -314,8 +311,8 @@ RuboCop::Cop::RSpec::EmptyExampleGroup::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::EmptyHook < ::RuboCop::Cop::RSpec::Cop
   include(::RuboCop::Cop::RangeHelp)
+  extend(::RuboCop::Cop::AutoCorrector)
 
-  def autocorrect(node); end
   def empty_hook?(node = _); end
   def on_block(node); end
 end
@@ -326,6 +323,7 @@ class RuboCop::Cop::RSpec::EmptyLineAfterExample < ::RuboCop::Cop::RSpec::Cop
   include(::RuboCop::RSpec::FinalEndLocation)
   include(::RuboCop::Cop::RangeHelp)
   include(::RuboCop::RSpec::BlankLineSeparation)
+  extend(::RuboCop::Cop::AutoCorrector)
 
   def allow_consecutive_one_liners?; end
   def allowed_one_liner?(node); end
@@ -341,6 +339,7 @@ class RuboCop::Cop::RSpec::EmptyLineAfterExampleGroup < ::RuboCop::Cop::RSpec::C
   include(::RuboCop::RSpec::FinalEndLocation)
   include(::RuboCop::Cop::RangeHelp)
   include(::RuboCop::RSpec::BlankLineSeparation)
+  extend(::RuboCop::Cop::AutoCorrector)
 
   def on_block(node); end
 end
@@ -351,6 +350,7 @@ class RuboCop::Cop::RSpec::EmptyLineAfterFinalLet < ::RuboCop::Cop::RSpec::Cop
   include(::RuboCop::RSpec::FinalEndLocation)
   include(::RuboCop::Cop::RangeHelp)
   include(::RuboCop::RSpec::BlankLineSeparation)
+  extend(::RuboCop::Cop::AutoCorrector)
 
   def on_block(node); end
 end
@@ -361,6 +361,7 @@ class RuboCop::Cop::RSpec::EmptyLineAfterHook < ::RuboCop::Cop::RSpec::Cop
   include(::RuboCop::RSpec::FinalEndLocation)
   include(::RuboCop::Cop::RangeHelp)
   include(::RuboCop::RSpec::BlankLineSeparation)
+  extend(::RuboCop::Cop::AutoCorrector)
 
   def on_block(node); end
 end
@@ -371,6 +372,7 @@ class RuboCop::Cop::RSpec::EmptyLineAfterSubject < ::RuboCop::Cop::RSpec::Cop
   include(::RuboCop::RSpec::FinalEndLocation)
   include(::RuboCop::Cop::RangeHelp)
   include(::RuboCop::RSpec::BlankLineSeparation)
+  extend(::RuboCop::Cop::AutoCorrector)
 
   def on_block(node); end
 
@@ -412,7 +414,8 @@ RuboCop::Cop::RSpec::ExampleWithoutDescription::MSG_ADD_DESCRIPTION = T.let(T.un
 RuboCop::Cop::RSpec::ExampleWithoutDescription::MSG_DEFAULT_ARGUMENT = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::ExampleWording < ::RuboCop::Cop::RSpec::Cop
-  def autocorrect(node); end
+  extend(::RuboCop::Cop::AutoCorrector)
+
   def it_description(node = _); end
   def on_block(node); end
 
@@ -435,7 +438,8 @@ RuboCop::Cop::RSpec::ExampleWording::MSG_SHOULD = T.let(T.unsafe(nil), String)
 RuboCop::Cop::RSpec::ExampleWording::SHOULD_PREFIX = T.let(T.unsafe(nil), Regexp)
 
 class RuboCop::Cop::RSpec::ExpectActual < ::RuboCop::Cop::RSpec::Cop
-  def autocorrect(node); end
+  extend(::RuboCop::Cop::AutoCorrector)
+
   def expect_literal(node = _); end
   def on_send(node); end
 
@@ -457,17 +461,12 @@ RuboCop::Cop::RSpec::ExpectActual::SUPPORTED_MATCHERS = T.let(T.unsafe(nil), Arr
 
 class RuboCop::Cop::RSpec::ExpectChange < ::RuboCop::Cop::RSpec::Cop
   include(::RuboCop::Cop::ConfigurableEnforcedStyle)
+  extend(::RuboCop::Cop::AutoCorrector)
 
-  def autocorrect(node); end
   def expect_change_with_arguments(node = _); end
   def expect_change_with_block(node = _); end
   def on_block(node); end
   def on_send(node); end
-
-  private
-
-  def autocorrect_block_to_method_call(node); end
-  def autocorrect_method_call_to_block(node); end
 end
 
 RuboCop::Cop::RSpec::ExpectChange::MSG_BLOCK = T.let(T.unsafe(nil), String)
@@ -505,11 +504,8 @@ module RuboCop::Cop::RSpec::ExplicitHelper
   private
 
   def allowed_explicit_matchers; end
-  def autocorrect_explicit(node); end
-  def autocorrect_explicit_block(node); end
-  def autocorrect_explicit_send(node); end
   def check_explicit(node); end
-  def corrector_explicit(to_node, actual, matcher, block_child); end
+  def corrector_explicit(corrector, to_node, actual, matcher, block_child); end
   def message_explicit(matcher); end
   def move_predicate(corrector, actual, matcher, block_child); end
   def predicate_matcher_name?(name); end
@@ -525,8 +521,9 @@ module RuboCop::Cop::RSpec::FactoryBot
 end
 
 class RuboCop::Cop::RSpec::FactoryBot::AttributeDefinedStatically < ::RuboCop::Cop::RSpec::Cop
+  extend(::RuboCop::Cop::AutoCorrector)
+
   def association?(node = _); end
-  def autocorrect(node); end
   def factory_attributes(node = _); end
   def on_block(node); end
   def value_matcher(node = _); end
@@ -534,8 +531,9 @@ class RuboCop::Cop::RSpec::FactoryBot::AttributeDefinedStatically < ::RuboCop::C
   private
 
   def attribute_defining_method?(method_name); end
-  def autocorrect_replacing_parens(node); end
-  def autocorrect_without_parens(node); end
+  def autocorrect(corrector, node); end
+  def autocorrect_replacing_parens(corrector, node); end
+  def autocorrect_without_parens(corrector, node); end
   def braces(node); end
   def offensive_receiver?(receiver, node); end
   def proc?(attribute); end
@@ -548,8 +546,8 @@ RuboCop::Cop::RSpec::FactoryBot::AttributeDefinedStatically::MSG = T.let(T.unsaf
 
 class RuboCop::Cop::RSpec::FactoryBot::CreateList < ::RuboCop::Cop::RSpec::Cop
   include(::RuboCop::Cop::ConfigurableEnforcedStyle)
+  extend(::RuboCop::Cop::AutoCorrector)
 
-  def autocorrect(node); end
   def factory_call(node = _); end
   def factory_list_call(node = _); end
   def n_times_block_without_arg?(node = _); end
@@ -602,7 +600,8 @@ class RuboCop::Cop::RSpec::FactoryBot::CreateList::TimesCorrector < ::RuboCop::C
 end
 
 class RuboCop::Cop::RSpec::FactoryBot::FactoryClassName < ::RuboCop::Cop::RSpec::Cop
-  def autocorrect(node); end
+  extend(::RuboCop::Cop::AutoCorrector)
+
   def class_name(node = _); end
   def on_send(node); end
 
@@ -655,8 +654,8 @@ RuboCop::Cop::RSpec::Focus::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::HookArgument < ::RuboCop::Cop::RSpec::Cop
   include(::RuboCop::Cop::ConfigurableEnforcedStyle)
+  extend(::RuboCop::Cop::AutoCorrector)
 
-  def autocorrect(node); end
   def on_block(node); end
   def scoped_hook(node = _); end
   def unscoped_hook(node = _); end
@@ -677,12 +676,14 @@ RuboCop::Cop::RSpec::HookArgument::HOOKS = T.let(T.unsafe(nil), String)
 RuboCop::Cop::RSpec::HookArgument::IMPLICIT_MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::HooksBeforeExamples < ::RuboCop::Cop::RSpec::Cop
-  def autocorrect(node); end
+  extend(::RuboCop::Cop::AutoCorrector)
+
   def example_or_group?(node = _); end
   def on_block(node); end
 
   private
 
+  def autocorrect(corrector, node, first_example); end
   def check_hooks(node); end
   def find_first_example(node); end
   def multiline_block?(block); end
@@ -707,8 +708,8 @@ RuboCop::Cop::RSpec::ImplicitBlockExpectation::MSG = T.let(T.unsafe(nil), String
 
 class RuboCop::Cop::RSpec::ImplicitExpect < ::RuboCop::Cop::RSpec::Cop
   include(::RuboCop::Cop::ConfigurableEnforcedStyle)
+  extend(::RuboCop::Cop::AutoCorrector)
 
-  def autocorrect(node); end
   def implicit_expect(node = _); end
   def on_send(node); end
 
@@ -726,14 +727,15 @@ RuboCop::Cop::RSpec::ImplicitExpect::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::ImplicitSubject < ::RuboCop::Cop::RSpec::Cop
   include(::RuboCop::Cop::ConfigurableEnforcedStyle)
+  extend(::RuboCop::Cop::AutoCorrector)
 
-  def autocorrect(node); end
   def implicit_subject?(node = _); end
   def on_send(node); end
 
   private
 
   def allowed_by_style?(example); end
+  def autocorrect(corrector, node); end
   def valid_usage?(node); end
 end
 
@@ -749,7 +751,6 @@ module RuboCop::Cop::RSpec::InflectedHelper
 
   private
 
-  def autocorrect_inflected(node); end
   def boolean_matcher?(node); end
   def check_inflected(node); end
   def message_inflected(predicate); end
@@ -763,10 +764,15 @@ end
 RuboCop::Cop::RSpec::InflectedHelper::MSG_INFLECTED = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::InstanceSpy < ::RuboCop::Cop::RSpec::Cop
-  def autocorrect(node); end
+  extend(::RuboCop::Cop::AutoCorrector)
+
   def have_received_usage(node0); end
   def null_double(node0); end
   def on_block(node); end
+
+  private
+
+  def autocorrect(corrector, node); end
 end
 
 RuboCop::Cop::RSpec::InstanceSpy::MSG = T.let(T.unsafe(nil), String)
@@ -794,7 +800,6 @@ class RuboCop::Cop::RSpec::InvalidPredicateMatcher < ::RuboCop::Cop::RSpec::Cop
 
   private
 
-  def message(predicate); end
   def predicate?(name); end
 end
 
@@ -802,8 +807,8 @@ RuboCop::Cop::RSpec::InvalidPredicateMatcher::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::ItBehavesLike < ::RuboCop::Cop::RSpec::Cop
   include(::RuboCop::Cop::ConfigurableEnforcedStyle)
+  extend(::RuboCop::Cop::AutoCorrector)
 
-  def autocorrect(node); end
   def example_inclusion_offense(node = _, param1); end
   def on_send(node); end
 
@@ -828,12 +833,14 @@ end
 RuboCop::Cop::RSpec::IteratedExpectation::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::LeadingSubject < ::RuboCop::Cop::RSpec::Cop
-  def autocorrect(node); end
+  extend(::RuboCop::Cop::AutoCorrector)
+
   def check_previous_nodes(node); end
   def on_block(node); end
 
   private
 
+  def autocorrect(corrector, node); end
   def find_first_offending_node(node); end
   def in_spec_block?(node); end
   def offending?(node); end
@@ -858,12 +865,14 @@ RuboCop::Cop::RSpec::LeakyConstantDeclaration::MSG_CONST = T.let(T.unsafe(nil), 
 RuboCop::Cop::RSpec::LeakyConstantDeclaration::MSG_MODULE = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::LetBeforeExamples < ::RuboCop::Cop::RSpec::Cop
-  def autocorrect(node); end
+  extend(::RuboCop::Cop::AutoCorrector)
+
   def example_or_group?(node = _); end
   def on_block(node); end
 
   private
 
+  def autocorrect(corrector, node, first_example); end
   def check_let_declarations(node); end
   def find_first_example(node); end
   def multiline_block?(block); end
@@ -886,7 +895,6 @@ end
 RuboCop::Cop::RSpec::LetSetup::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::MessageChain < ::RuboCop::Cop::RSpec::Cop
-  def message(node); end
   def message_chain(node = _); end
   def on_send(node); end
 end
@@ -965,15 +973,16 @@ RuboCop::Cop::RSpec::MultipleExpectations::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::MultipleSubjects < ::RuboCop::Cop::RSpec::Cop
   include(::RuboCop::Cop::RangeHelp)
+  extend(::RuboCop::Cop::AutoCorrector)
 
-  def autocorrect(node); end
   def on_block(node); end
 
   private
 
+  def autocorrect(corrector, subject); end
   def named_subject?(node); end
-  def remove_autocorrect(node); end
-  def rename_autocorrect(node); end
+  def remove_autocorrect(corrector, node); end
+  def rename_autocorrect(corrector, node); end
 end
 
 RuboCop::Cop::RSpec::MultipleSubjects::MSG = T.let(T.unsafe(nil), String)
@@ -1010,8 +1019,8 @@ RuboCop::Cop::RSpec::NestedGroups::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::NotToNot < ::RuboCop::Cop::RSpec::Cop
   include(::RuboCop::Cop::ConfigurableEnforcedStyle)
+  extend(::RuboCop::Cop::AutoCorrector)
 
-  def autocorrect(node); end
   def not_to_not_offense(node = _, param1); end
   def on_send(node); end
 
@@ -1057,6 +1066,7 @@ class RuboCop::Cop::RSpec::PredicateMatcher < ::RuboCop::Cop::RSpec::Cop
   include(::RuboCop::Cop::ConfigurableEnforcedStyle)
   include(::RuboCop::Cop::RSpec::InflectedHelper)
   include(::RuboCop::Cop::RSpec::ExplicitHelper)
+  extend(::RuboCop::Cop::AutoCorrector)
 
   def autocorrect(node); end
   def on_block(node); end
@@ -1069,13 +1079,15 @@ class RuboCop::Cop::RSpec::PredicateMatcher < ::RuboCop::Cop::RSpec::Cop
 end
 
 class RuboCop::Cop::RSpec::ReceiveCounts < ::RuboCop::Cop::RSpec::Cop
-  def autocorrect(node); end
+  extend(::RuboCop::Cop::AutoCorrector)
+
   def on_send(node); end
   def receive_counts(node = _); end
   def stub?(node0); end
 
   private
 
+  def autocorrect(corrector, node, range); end
   def matcher_for(method, count); end
   def message_for(node, source); end
   def range(node, offending_node); end
@@ -1084,9 +1096,14 @@ end
 RuboCop::Cop::RSpec::ReceiveCounts::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::ReceiveNever < ::RuboCop::Cop::RSpec::Cop
-  def autocorrect(node); end
+  extend(::RuboCop::Cop::AutoCorrector)
+
   def method_on_stub?(node0); end
   def on_send(node); end
+
+  private
+
+  def autocorrect(corrector, node); end
 end
 
 RuboCop::Cop::RSpec::ReceiveNever::MSG = T.let(T.unsafe(nil), String)
@@ -1149,9 +1166,9 @@ RuboCop::Cop::RSpec::RepeatedExampleGroupDescription::MSG = T.let(T.unsafe(nil),
 
 class RuboCop::Cop::RSpec::ReturnFromStub < ::RuboCop::Cop::RSpec::Cop
   include(::RuboCop::Cop::ConfigurableEnforcedStyle)
+  extend(::RuboCop::Cop::AutoCorrector)
 
   def and_return_value(node0); end
-  def autocorrect(node); end
   def contains_stub?(node0); end
   def on_block(node); end
   def on_send(node); end
@@ -1200,7 +1217,8 @@ RuboCop::Cop::RSpec::ReturnFromStub::MSG_AND_RETURN = T.let(T.unsafe(nil), Strin
 RuboCop::Cop::RSpec::ReturnFromStub::MSG_BLOCK = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::ScatteredLet < ::RuboCop::Cop::RSpec::Cop
-  def autocorrect(node); end
+  extend(::RuboCop::Cop::AutoCorrector)
+
   def on_block(node); end
 
   private
@@ -1220,7 +1238,8 @@ end
 RuboCop::Cop::RSpec::ScatteredSetup::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::SharedContext < ::RuboCop::Cop::RSpec::Cop
-  def autocorrect(node); end
+  extend(::RuboCop::Cop::AutoCorrector)
+
   def context?(node0); end
   def examples?(node0); end
   def on_block(node); end
@@ -1229,7 +1248,6 @@ class RuboCop::Cop::RSpec::SharedContext < ::RuboCop::Cop::RSpec::Cop
 
   private
 
-  def add_shared_item_offense(node, message); end
   def context_with_only_examples(node); end
   def examples_with_only_context(node); end
 end
@@ -1239,7 +1257,8 @@ RuboCop::Cop::RSpec::SharedContext::MSG_CONTEXT = T.let(T.unsafe(nil), String)
 RuboCop::Cop::RSpec::SharedContext::MSG_EXAMPLES = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::SharedExamples < ::RuboCop::Cop::RSpec::Cop
-  def autocorrect(node); end
+  extend(::RuboCop::Cop::AutoCorrector)
+
   def on_send(node); end
   def shared_examples(node = _); end
 end
@@ -1260,17 +1279,18 @@ end
 RuboCop::Cop::RSpec::SharedExamples::Checker::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::SingleArgumentMessageChain < ::RuboCop::Cop::RSpec::Cop
-  def autocorrect(node); end
+  extend(::RuboCop::Cop::AutoCorrector)
+
   def message_chain(node = _); end
   def on_send(node); end
   def single_key_hash?(node = _); end
 
   private
 
+  def autocorrect(corrector, node, method, arg); end
   def autocorrect_array_arg(corrector, arg); end
   def autocorrect_hash_arg(corrector, arg); end
   def key_to_arg(node); end
-  def message(node); end
   def replacement(method); end
   def single_element_array?(node); end
   def valid_usage?(node); end
@@ -1360,8 +1380,8 @@ RuboCop::Cop::RSpec::VoidExpect::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::Yield < ::RuboCop::Cop::RSpec::Cop
   include(::RuboCop::Cop::RangeHelp)
+  extend(::RuboCop::Cop::AutoCorrector)
 
-  def autocorrect(node); end
   def block_arg(node = _); end
   def block_call?(node = _, param1); end
   def method_on_stub?(node0); end
@@ -1369,6 +1389,7 @@ class RuboCop::Cop::RSpec::Yield < ::RuboCop::Cop::RSpec::Cop
 
   private
 
+  def autocorrect(corrector, node, range); end
   def block_range(node); end
   def calling_block?(node, block); end
   def convert_block_to_yield(node); end
@@ -1407,7 +1428,6 @@ module RuboCop::RSpec::BlankLineSeparation
   include(::RuboCop::RSpec::FinalEndLocation)
   include(::RuboCop::Cop::RangeHelp)
 
-  def autocorrect(node); end
   def last_child?(node); end
   def missing_separating_line(node); end
   def offending_loc(last_line); end

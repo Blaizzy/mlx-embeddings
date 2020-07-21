@@ -5621,6 +5621,10 @@ class Cask::Cmd::List
 
   def full_name?(); end
 
+  def json=(value); end
+
+  def json?(); end
+
   def one=(value); end
 
   def one?(); end
@@ -6241,6 +6245,48 @@ module CodeRay
   def self.scan_file(filename, lang=T.unsafe(nil), options=T.unsafe(nil), &block); end
 
   def self.scanner(lang, options=T.unsafe(nil), &block); end
+end
+
+module Colorize
+end
+
+module Colorize::ClassMethods
+  def color_codes(); end
+
+  def color_matrix(_=T.unsafe(nil)); end
+
+  def color_methods(); end
+
+  def color_samples(); end
+
+  def colors(); end
+
+  def disable_colorization(value=T.unsafe(nil)); end
+
+  def disable_colorization=(value); end
+
+  def mode_codes(); end
+
+  def modes(); end
+
+  def modes_methods(); end
+end
+
+module Colorize::ClassMethods
+end
+
+module Colorize::InstanceMethods
+  def colorize(params); end
+
+  def colorized?(); end
+
+  def uncolorize(); end
+end
+
+module Colorize::InstanceMethods
+end
+
+module Colorize
 end
 
 class CompilerSelector::Compiler
@@ -7968,6 +8014,8 @@ module Homebrew::EnvConfig
   def self.editor(); end
 
   def self.fail_log_lines(); end
+
+  def self.forbidden_licenses(); end
 
   def self.force_brewed_curl?(); end
 
@@ -12951,6 +12999,8 @@ end
 class Net::HTTPAlreadyReported
 end
 
+Net::HTTPClientError::EXCEPTION_TYPE = Net::HTTPServerException
+
 Net::HTTPClientErrorCode = Net::HTTPClientError
 
 Net::HTTPClientException = Net::HTTPServerException
@@ -13021,6 +13071,8 @@ end
 class Net::HTTPRangeNotSatisfiable
 end
 
+Net::HTTPRedirection::EXCEPTION_TYPE = Net::HTTPRetriableError
+
 Net::HTTPRedirectionCode = Net::HTTPRedirection
 
 class Net::HTTPRequestTimeout
@@ -13035,6 +13087,8 @@ Net::HTTPRequestURITooLarge = Net::HTTPURITooLong
 Net::HTTPResponceReceiver = Net::HTTPResponse
 
 Net::HTTPRetriableCode = Net::HTTPRedirection
+
+Net::HTTPServerError::EXCEPTION_TYPE = Net::HTTPFatalError
 
 Net::HTTPServerErrorCode = Net::HTTPServerError
 
@@ -19415,12 +19469,26 @@ class RuboCop::Cop::FormulaAudit::Miscellaneous
   def languageNodeModule?(node0); end
 end
 
+class RuboCop::Cop::FormulaAudit::OptionDeclarations
+  def depends_on_build_with(node0); end
+end
+
 class RuboCop::Cop::FormulaAudit::Patches
   def patch_data?(node0); end
 end
 
 class RuboCop::Cop::FormulaAudit::Test
   def test_calls(node0); end
+end
+
+class RuboCop::Cop::FormulaAudit::Text
+  def prefix_path(node0); end
+end
+
+class RuboCop::Cop::FormulaAuditStrict::Text
+  def interpolated_share_path_starts_with(node0, param1); end
+
+  def share_path_starts_with(node0, param1); end
 end
 
 class RuboCop::Cop::FormulaCop
@@ -19446,11 +19514,20 @@ module RuboCop::RSpec::ExpectOffense
 end
 
 class RuboCop::RSpec::ExpectOffense::AnnotatedSource
+  def ==(other); end
+
+  def annotations(); end
+
   def initialize(lines, annotations); end
+
+  def lines(); end
+
+  def match_annotations?(other); end
 
   def plain_source(); end
 
   def with_offense_annotations(offenses); end
+  ABBREV = ::T.let(nil, ::T.untyped)
   ANNOTATION_PATTERN = ::T.let(nil, ::T.untyped)
 end
 
@@ -20756,13 +20833,25 @@ end
 class SimpleCov::Formatter::Codecov
   def build_params(ci); end
 
+  def create_report(report); end
+
   def detect_ci(); end
 
   def display_header(); end
 
-  def format(result); end
+  def format(result, disable_net_blockers=T.unsafe(nil)); end
 
-  def upload_to_codecov(req, https); end
+  def gzip_report(report); end
+
+  def handle_report_response(report); end
+
+  def retry_request(req, https); end
+
+  def upload_to_codecov(ci, report); end
+
+  def upload_to_v2(url, report, query, query_without_token); end
+
+  def upload_to_v4(url, report, query, query_without_token); end
   APPVEYOR = ::T.let(nil, ::T.untyped)
   AZUREPIPELINES = ::T.let(nil, ::T.untyped)
   BITBUCKET = ::T.let(nil, ::T.untyped)
@@ -21389,10 +21478,19 @@ module Stdenv
 end
 
 class String
+  include ::Colorize::InstanceMethods
   include ::String::Compat
   def acts_like_string?(); end
 
   def at(position); end
+
+  def black(); end
+
+  def blink(); end
+
+  def blue(); end
+
+  def bold(); end
 
   def camelcase(first_letter=T.unsafe(nil)); end
 
@@ -21401,6 +21499,8 @@ class String
   def classify(); end
 
   def constantize(); end
+
+  def cyan(); end
 
   def dasherize(); end
 
@@ -21418,6 +21518,10 @@ class String
 
   def from(position); end
 
+  def green(); end
+
+  def hide(); end
+
   def html_safe(); end
 
   def humanize(capitalize: T.unsafe(nil), keep_id_suffix: T.unsafe(nil)); end
@@ -21432,15 +21536,69 @@ class String
 
   def isutf8(); end
 
+  def italic(); end
+
   def kconv(to_enc, from_enc=T.unsafe(nil)); end
 
   def last(limit=T.unsafe(nil)); end
 
+  def light_black(); end
+
+  def light_blue(); end
+
+  def light_cyan(); end
+
+  def light_green(); end
+
+  def light_magenta(); end
+
+  def light_red(); end
+
+  def light_white(); end
+
+  def light_yellow(); end
+
+  def magenta(); end
+
   def mb_chars(); end
+
+  def on_black(); end
+
+  def on_blue(); end
+
+  def on_cyan(); end
+
+  def on_green(); end
+
+  def on_light_black(); end
+
+  def on_light_blue(); end
+
+  def on_light_cyan(); end
+
+  def on_light_green(); end
+
+  def on_light_magenta(); end
+
+  def on_light_red(); end
+
+  def on_light_white(); end
+
+  def on_light_yellow(); end
+
+  def on_magenta(); end
+
+  def on_red(); end
+
+  def on_white(); end
+
+  def on_yellow(); end
 
   def parameterize(separator: T.unsafe(nil), preserve_case: T.unsafe(nil), locale: T.unsafe(nil)); end
 
   def pluralize(count=T.unsafe(nil), locale=T.unsafe(nil)); end
+
+  def red(); end
 
   def remove(*patterns); end
 
@@ -21459,6 +21617,8 @@ class String
   def squish!(); end
 
   def starts_with?(*_); end
+
+  def swap(); end
 
   def tableize(); end
 
@@ -21502,11 +21662,21 @@ class String
 
   def truncate_words(words_count, options=T.unsafe(nil)); end
 
+  def underline(); end
+
   def underscore(); end
 
   def upcase_first(); end
+
+  def white(); end
+
+  def yellow(); end
   BLANK_RE = ::T.let(nil, ::T.untyped)
   ENCODED_BLANKS = ::T.let(nil, ::T.untyped)
+end
+
+class String
+  extend ::Colorize::ClassMethods
 end
 
 class StringScanner
@@ -23158,59 +23328,15 @@ module URI
 end
 
 class URL
-  def =~(reg); end
-
-  def [](*args, &block); end
-
-  def []=(*args, &block); end
-
-  def add_to_path(val); end
-
   def branch(); end
 
   def cookies(); end
 
   def data(); end
 
-  def delete(*args); end
-
-  def domain(); end
-
-  def domain=(domain); end
-
-  def format(); end
-
-  def format=(format); end
-
-  def get(*args); end
-
-  def hash=(hash); end
-
-  def host(); end
-
-  def host_with_port(); end
-
-  def params(); end
-
-  def params=(p); end
-
   def path(*args, &block); end
 
-  def path=(str); end
-
-  def port(); end
-
-  def port=(port); end
-
-  def post(*args); end
-
-  def put(*args); end
-
   def referer(); end
-
-  def req_handler(); end
-
-  def req_handler=(r); end
 
   def revision(); end
 
@@ -23218,25 +23344,11 @@ class URL
 
   def scheme(*args, &block); end
 
-  def scheme=(scheme); end
-
   def specs(); end
-
-  def string(); end
-
-  def subdomain(); end
-
-  def subdomain=(s); end
-
-  def subdomains(); end
-
-  def subdomains=(s); end
 
   def tag(); end
 
   def to_s(*args, &block); end
-
-  def to_uri(); end
 
   def trust_cert(); end
 
@@ -23245,122 +23357,6 @@ class URL
   def user_agent(); end
 
   def using(); end
-  VERSION = ::T.let(nil, ::T.untyped)
-end
-
-class URL::ASJSONHandler
-end
-
-class URL::ASJSONHandler
-end
-
-class URL::BaseJSONHandler
-end
-
-class URL::BaseJSONHandler
-end
-
-class URL::JSONHandler
-  def initialize(str); end
-
-  def parse(); end
-
-  def str(); end
-end
-
-class URL::JSONHandler
-end
-
-class URL::Mash
-  def [](k); end
-
-  def []=(k, v); end
-end
-
-class URL::Mash
-end
-
-class URL::NetHandler
-end
-
-class URL::NetHandler
-end
-
-class URL::ParamsHash
-  def reverse_merge!(other); end
-
-  def to_s(questionmark=T.unsafe(nil)); end
-
-  def |(other); end
-end
-
-class URL::ParamsHash
-  def self.from_string(str); end
-end
-
-class URL::RequestHandler
-  def delete(args=T.unsafe(nil)); end
-
-  def get(args=T.unsafe(nil)); end
-
-  def initialize(url); end
-
-  def post(args=T.unsafe(nil)); end
-
-  def put(args=T.unsafe(nil)); end
-
-  def url(); end
-end
-
-class URL::RequestHandler
-end
-
-class URL::Response
-  def code(); end
-
-  def connection_refused(); end
-
-  def initialize(str, args=T.unsafe(nil)); end
-
-  def json(); end
-
-  def response(); end
-
-  def success?(); end
-
-  def successful?(); end
-
-  def time(); end
-
-  def url(); end
-
-  def url_obj(); end
-end
-
-class URL::Response
-end
-
-class URL::TyHandler
-  def head(args=T.unsafe(nil)); end
-end
-
-class URL::TyHandler
-end
-
-class URL::YajlHandler
-end
-
-class URL::YajlHandler
-end
-
-class URL
-  def self.json_handler(); end
-
-  def self.json_handler=(r); end
-
-  def self.req_handler(); end
-
-  def self.req_handler=(r); end
 end
 
 class UnboundMethod
@@ -23496,7 +23492,7 @@ class Zeitwerk::Loader
 
   def preloads(); end
 
-  def push_dir(path); end
+  def push_dir(path, namespace: T.unsafe(nil)); end
 
   def reload(); end
 

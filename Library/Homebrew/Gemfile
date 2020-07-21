@@ -14,8 +14,8 @@ gem "rspec-wait", require: false
 gem "rubocop"
 gem "simplecov", require: false
 if ENV["HOMEBREW_SORBET"]
-  gem "sorbet"
-  gem "sorbet-runtime"
+  gem "sorbet", "0.5.5823"
+  gem "sorbet-runtime", "0.5.5823"
   gem "tapioca"
 end
 
