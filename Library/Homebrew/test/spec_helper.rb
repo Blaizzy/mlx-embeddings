@@ -29,6 +29,7 @@ require "rubocop"
 require "rubocop/rspec/support"
 require "find"
 require "byebug"
+require "timeout"
 
 $LOAD_PATH.push(File.expand_path("#{ENV["HOMEBREW_LIBRARY"]}/Homebrew/test/support/lib"))
 
@@ -181,7 +182,19 @@ RSpec.configure do |config|
         $stderr.reopen(File::NULL)
       end
 
-      example.run
+      begin
+        timeout = example.metadata.fetch(:timeout, 60)
+        inner_timeout = nil
+        Timeout.timeout(timeout) do
+          example.run
+        rescue Timeout::Error => e
+          inner_timeout = e
+        end
+      rescue Timeout::Error
+        raise "Example exceeded maximum runtime of #{timeout} seconds."
+      end
+
+      raise inner_timeout if inner_timeout
     rescue SystemExit => e
       raise "Unexpected exit with status #{e.status}."
     ensure
