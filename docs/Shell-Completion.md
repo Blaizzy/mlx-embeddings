@@ -28,12 +28,7 @@ When installed, the `bash-completion` formula also runs `${HOMEBREW_PREFIX}/etc/
 
 As both Homebrew's completion code given above and the Caveats line do the same thing, it is recommended to either not add the Caveats line or to comment the line out because Homebrew's completion code works even without installing the `bash-completion` formula.
 
----
-**Note**
-
-If you are using a version of `bash` newer than version 4.1 (Like Homebrew's `bash`), it is recommended to use the `bash-completion@2` formula instead as it is newer and has better performance. You can check the version of `bash` you have by running `bash --version`. MacOS ships with version 3.2.
-
----
+If you are using a version of `bash` newer than version 4.1 (like Homebrew's `bash`), we recommended you use the `bash-completion@2` formula instead because it is newer and has better performance. You can check the version of `bash` you have by running `bash --version`. MacOS ships with version 3.2.
 
 
 ## Configuring Completions in `zsh`
