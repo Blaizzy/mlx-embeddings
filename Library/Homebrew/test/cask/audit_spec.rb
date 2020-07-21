@@ -15,16 +15,6 @@ describe Cask::Audit, :cask do
     end
   end
 
-  matcher :fail do
-    match(&:errors?)
-  end
-
-  matcher :warn do
-    match do |audit|
-      audit.warnings? && !audit.errors?
-    end
-  end
-
   matcher :fail_with do |error_msg|
     match do |audit|
       include_msg?(audit.errors, error_msg)
@@ -764,23 +754,27 @@ describe Cask::Audit, :cask do
     describe "audit of downloads" do
       let(:cask_token) { "with-binary" }
       let(:cask) { Cask::CaskLoader.load(cask_token) }
-      let(:download) { instance_double(Cask::Download) }
+      let(:download_double) { instance_double(Cask::Download) }
       let(:verify) { class_double(Cask::Verify).as_stubbed_const }
       let(:error_msg) { "Download Failed" }
 
+      before do
+        allow(audit).to receive(:download).and_return(download_double)
+      end
+
       it "when download and verification succeed it does not fail" do
-        expect(download).to receive(:perform)
+        expect(download_double).to receive(:perform)
         expect(verify).to receive(:all)
         expect(subject).not_to fail_with(/#{error_msg}/)
       end
 
       it "when download fails it does not fail" do
-        expect(download).to receive(:perform).and_raise(StandardError.new(error_msg))
+        expect(download_double).to receive(:perform).and_raise(StandardError.new(error_msg))
         expect(subject).to fail_with(/#{error_msg}/)
       end
 
       it "when verification fails it does not fail" do
-        expect(download).to receive(:perform)
+        expect(download_double).to receive(:perform)
         expect(verify).to receive(:all).and_raise(StandardError.new(error_msg))
         expect(subject).to fail_with(/#{error_msg}/)
       end

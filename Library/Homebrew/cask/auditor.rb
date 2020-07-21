@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "cask/download"
-
 module Cask
   class Auditor
     include Checkable
@@ -66,13 +64,13 @@ module Cask
     end
 
     def audit_cask_instance(cask)
-      download = audit_download? && Download.new(cask, quarantine: quarantine?)
       audit = Audit.new(cask, appcast:         audit_appcast?,
                               online:          audit_online?,
                               strict:          audit_strict?,
                               new_cask:        audit_new_cask?,
                               token_conflicts: audit_token_conflicts?,
-                              download:        download,
+                              download:        audit_download?,
+                              quarantine:      quarantine?,
                               commit_range:    commit_range)
       audit.run!
       puts audit.summary
