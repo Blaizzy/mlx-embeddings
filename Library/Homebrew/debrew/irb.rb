@@ -2,6 +2,7 @@
 
 require "irb"
 
+# @private
 module IRB
   @setup_done = false
 

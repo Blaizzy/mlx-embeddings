@@ -208,11 +208,12 @@ rescue Exception => e # rubocop:disable Lint/RescueException
   # BuildErrors are specific to build processes and not other
   # children, which is why we create the necessary state here
   # and not in Utils.safe_fork.
-  if error_hash["json_class"] == "BuildError"
+  case error_hash["json_class"]
+  when "BuildError"
     error_hash["cmd"] = e.cmd
     error_hash["args"] = e.args
     error_hash["env"] = e.env
-  elsif error_hash["json_class"] == "ErrorDuringExecution"
+  when "ErrorDuringExecution"
     error_hash["cmd"] = e.cmd
     error_hash["status"] = e.status.exitstatus
     error_hash["output"] = e.output

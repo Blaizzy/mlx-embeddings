@@ -27,7 +27,7 @@ module Language
       f = find_openjdk_formula(version)
       return f.opt_libexec if f
 
-      req = JavaRequirement.new [*version]
+      req = JavaRequirement.new Array(version)
       raise UnsatisfiedRequirements, req.message unless req.satisfied?
 
       req.java_home

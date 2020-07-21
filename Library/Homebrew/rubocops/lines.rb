@@ -102,6 +102,23 @@ module RuboCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           problem "Use new-style option definitions" if find_method_def(body_node, :options)
 
+          if formula_tap == "homebrew-core"
+            # Use of build.with? implies options, which are forbidden in homebrew/core
+            find_instance_method_call(body_node, :build, :without?) do
+              problem "Formulae in homebrew/core should not use `build.without?`."
+            end
+            find_instance_method_call(body_node, :build, :with?) do
+              problem "Formulae in homebrew/core should not use `build.with?`."
+            end
+
+            return
+          end
+
+          depends_on_build_with(body_node) do |build_with_node|
+            offending_node(build_with_node)
+            problem "Use `:optional` or `:recommended` instead of `if #{build_with_node.source}`"
+          end
+
           find_instance_method_call(body_node, :build, :without?) do |method|
             next unless unless_modifier?(method.parent)
 
@@ -143,29 +160,8 @@ module RuboCop
             problem "Don't duplicate 'with': Use `build.with? \"#{match[1]}\"` to check for \"--with-#{match[1]}\""
           end
 
-          find_instance_method_call(body_node, :build, :include?) do |method|
-            arg = parameters(method).first
-            next unless match = regex_match_group(arg, /^with(out)?-(.*)/)
-
-            problem "Use build.with#{match[1]}? \"#{match[2]}\" instead of " \
-                    "build.include? 'with#{match[1]}-#{match[2]}'"
-          end
-
-          find_instance_method_call(body_node, :build, :include?) do |method|
-            arg = parameters(method).first
-            next unless match = regex_match_group(arg, /^--(.*)$/)
-
-            problem "Reference '#{match[1]}' without dashes"
-          end
-
-          return if formula_tap != "homebrew-core"
-
-          # Use of build.with? implies options, which are forbidden in homebrew/core
-          find_instance_method_call(body_node, :build, :without?) do
-            problem "Formulae in homebrew/core should not use `build.without?`."
-          end
-          find_instance_method_call(body_node, :build, :with?) do
-            problem "Formulae in homebrew/core should not use `build.with?`."
+          find_instance_method_call(body_node, :build, :include?) do
+            problem "`build.include?` is deprecated"
           end
         end
 
@@ -174,6 +170,12 @@ module RuboCop
 
           node.modifier_form? && node.unless?
         end
+
+        # Finds `depends_on "foo" if build.with?("bar")` or `depends_on "foo" if build.without?("bar")`
+        def_node_search :depends_on_build_with, <<~EOS
+          (if $(send (send nil? :build) {:with? :without?} str)
+            (send nil? :depends_on str) nil?)
+        EOS
       end
 
       class MpiCheck < FormulaCop

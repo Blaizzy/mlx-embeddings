@@ -16,6 +16,11 @@ class User < DelegateClass(String)
   end
 
   def self.current
-    @current ||= new(Etc.getpwuid(Process.euid).name)
+    return @current if defined?(@current)
+
+    pwuid = Etc.getpwuid(Process.euid)
+    return if pwuid.nil?
+
+    @current = new(pwuid.name)
   end
 end

@@ -42,7 +42,7 @@ module OS
     end
 
     def languages
-      @languages ||= [*ENV["LANG"]&.slice(/[a-z]+/)].uniq
+      @languages ||= Array(ENV["LANG"]&.slice(/[a-z]+/)).uniq
     end
 
     def language

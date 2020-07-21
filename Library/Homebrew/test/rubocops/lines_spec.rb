@@ -201,6 +201,24 @@ describe RuboCop::Cop::FormulaAudit::OptionDeclarations do
     RUBY
   end
 
+  it "build.without? in dependencies" do
+    expect_offense(<<~RUBY)
+      class Foo < Formula
+        depends_on "bar" if build.without?("baz")
+                            ^^^^^^^^^^^^^^^^^^^^^ Use `:optional` or `:recommended` instead of `if build.without?("baz")`
+      end
+    RUBY
+  end
+
+  it "build.with? in dependencies" do
+    expect_offense(<<~RUBY)
+      class Foo < Formula
+        depends_on "bar" if build.with?("baz")
+                            ^^^^^^^^^^^^^^^^^^ Use `:optional` or `:recommended` instead of `if build.with?("baz")`
+      end
+    RUBY
+  end
+
   it "unless build.without? conditional" do
     expect_offense(<<~RUBY)
       class Foo < Formula
@@ -279,27 +297,14 @@ describe RuboCop::Cop::FormulaAudit::OptionDeclarations do
     RUBY
   end
 
-  it "build.include? conditional" do
+  it "build.include? deprecated" do
     expect_offense(<<~RUBY)
       class Foo < Formula
         desc "foo"
         url 'https://brew.sh/foo-1.0.tgz'
         def post_install
-          return if build.include? "without-bar"
-                                    ^^^^^^^^^^^ Use build.without? \"bar\" instead of build.include? 'without-bar'
-        end
-      end
-    RUBY
-  end
-
-  it "build.include? with dashed args conditional" do
-    expect_offense(<<~RUBY)
-      class Foo < Formula
-        desc "foo"
-        url 'https://brew.sh/foo-1.0.tgz'
-        def post_install
-          return if build.include? "--bar"
-                                    ^^^^^ Reference 'bar' without dashes
+          return if build.include? "foo"
+                    ^^^^^^^^^^^^^^^^^^^^ `build.include?` is deprecated
         end
       end
     RUBY

@@ -21,7 +21,7 @@ RSpec/InstanceVariable:
     - 'utils/git_spec.rb'
     - 'version_spec.rb'
 
-# Offense count: 74
+# Offense count: 75
 RSpec/MultipleDescribes:
   Exclude:
     - 'ENV_spec.rb'
@@ -94,6 +94,7 @@ RSpec/MultipleDescribes:
     - 'rubocops/class_spec.rb'
     - 'rubocops/formula_desc_spec.rb'
     - 'rubocops/lines_spec.rb'
+    - 'rubocops/text_spec.rb'
     - 'rubocops/urls_spec.rb'
     - 'software_spec_spec.rb'
     - 'tap_spec.rb'

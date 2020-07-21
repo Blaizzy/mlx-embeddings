@@ -393,6 +393,10 @@ Only show formulae with multiple versions installed\.
 Show the versions of pinned formulae, or only the specified (pinned) formulae if \fIformula\fR are provided\. See also \fBpin\fR, \fBunpin\fR\.
 .
 .TP
+\fB\-\-cask\fR
+List casks
+.
+.TP
 \fB\-1\fR
 Force output to be one entry per line\. This is the default when output is not to a terminal\.
 .
@@ -916,7 +920,10 @@ Create a pull request to update \fIformula\fR with a new URL or a new tag\.
 If a \fIURL\fR is specified, the \fISHA\-256\fR checksum of the new download should also be specified\. A best effort to determine the \fISHA\-256\fR and \fIformula\fR name will be made if either or both values are not supplied by the user\.
 .
 .P
-If a \fItag\fR is specified, the Git commit \fIrevision\fR corresponding to that tag must also be specified\.
+If a \fItag\fR is specified, the Git commit \fIrevision\fR corresponding to that tag should also be specified\. A best effort to determine the \fIrevision\fR will be made if the value is not supplied by the user\.
+.
+.P
+If a \fIversion\fR is specified, a best effort to determine the \fIURL\fR and \fISHA\-256\fR or the \fItag\fR and \fIrevision\fR will be made if both values are not supplied by the user\.
 .
 .P
 \fINote:\fR this command cannot be used to transition a formula from a URL\-and\-SHA\-256 style specification into a tag\-and\-revision style specification, nor vice versa\. It must use whichever style specification the formula already uses\.
@@ -1016,6 +1023,10 @@ Create a basic template for a Go build\.
 .TP
 \fB\-\-meson\fR
 Create a basic template for a Meson\-style build\.
+.
+.TP
+\fB\-\-node\fR
+Create a basic template for a Node build\.
 .
 .TP
 \fB\-\-perl\fR
@@ -1353,12 +1364,16 @@ Patches for \fIformula\fR will be applied to the unpacked source\.
 \fB\-g\fR, \fB\-\-git\fR
 Initialise a Git repository in the unpacked source\. This is useful for creating patches for the software\.
 .
-.SS "\fBupdate_license_data\fR \fIcmd\fR"
+.SS "\fBupdate\-license\-data\fR [\fIoptions\fR]"
 Update SPDX license data in the Homebrew repository\.
 .
 .TP
-\fB\-\-fail\-if\-changed\fR
-Return a failing status code if current license data\'s version is different from the upstream\. This can be used to notify CI when the SPDX license data is out of date\.
+\fB\-\-fail\-if\-not\-changed\fR
+Return a failing status code if current license data\'s version is the same as the upstream\. This can be used to notify CI when the SPDX license data is out of date\.
+.
+.TP
+\fB\-\-commit\fR
+Commit changes to the SPDX license data\.
 .
 .SS "\fBupdate\-test\fR [\fIoptions\fR]"
 Run a test of \fBbrew update\fR with a new repository clone\. If no options are passed, use \fBorigin/master\fR as the start commit\.
@@ -1802,6 +1817,10 @@ Output this many lines of output on formula \fBsystem\fR failures\.
 \fIDefault:\fR \fB15\fR\.
 .
 .TP
+\fBHOMEBREW_FORBIDDEN_LICENSES\fR
+A space\-separated list of licenses\. Homebrew will refuse to install a formula if that formula or any of its dependencies has a license on this list\.
+.
+.TP
 \fBHOMEBREW_FORCE_BREWED_CURL\fR
 If set, always use a Homebrew\-installed \fBcurl\fR(1) rather than the system version\. Automatically set if the system version of \fBcurl\fR is too old\.
 .
@@ -2010,10 +2029,10 @@ Homebrew\'s Project Leadership Committee is Misty De Meo, Shaun Jackman, Jonatha
 Homebrew\'s Technical Steering Committee is Michka Popoff, FX Coudert, Markus Reiter, Misty De Meo and Mike McQuaid\.
 .
 .P
-Homebrew/brew\'s Linux maintainers are Michka Popoff, Shaun Jackman, Dawid Dziurla and Issy Long\.
+Homebrew/brew\'s Linux maintainers are Michka Popoff, Shaun Jackman, Dawid Dziurla, Issy Long and Maxim Belkin\.
 .
 .P
-Homebrew\'s other current maintainers are Claudia Pellegrino, Zach Auten, Rui Chen, Vitor Galvao, Caleb Xu, Gautham Goli, Steven Peters, Bo Anderson, William Woodruff, Igor Kapkov, Sam Ford, Alexander Bayandin, Izaak Beekman, Eric Knibbe, Viktor Szakats, Thierry Moisan, Steven Peters, Tom Schoonjans and Issy Long\.
+Homebrew\'s other current maintainers are Claudia Pellegrino, Zach Auten, Rui Chen, Vitor Galvao, Caleb Xu, Gautham Goli, Steven Peters, Bo Anderson, William Woodruff, Igor Kapkov, Sam Ford, Alexander Bayandin, Izaak Beekman, Eric Knibbe, Viktor Szakats, Thierry Moisan, Steven Peters, Tom Schoonjans, Issy Long, CoreCode, Randall, Rylan Polster and SeekingMeaning\.
 .
 .P
 Former maintainers with significant contributions include Jan Viljanen, JCount, commitay, Dominyk Tiller, Tim Smith, Baptiste Fontaine, Xu Cheng, Martin Afanasjew, Brett Koonce, Charlie Sharpsteen, Jack Nagel, Adam Vandenberg, Andrew Janke, Alex Dunn, neutric, Tomasz Pajor, Uladzislau Shablinski, Alyssa Ross, ilovezfs, Chongyu Zhu and Homebrew\'s creator: Max Howell\.

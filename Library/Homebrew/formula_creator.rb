@@ -84,6 +84,10 @@ module Homebrew
         # Documentation: https://docs.brew.sh/Formula-Cookbook
         #                https://rubydoc.brew.sh/Formula
         # PLEASE REMOVE ALL GENERATED COMMENTS BEFORE SUBMITTING YOUR PULL REQUEST!
+        <% if mode == :node %>
+        require "language/node"
+
+        <% end %>
         class #{Formulary.class_s(name)} < Formula
         <% if mode == :python %>
           include Language::Python::Virtualenv
@@ -91,9 +95,7 @@ module Homebrew
         <% end %>
           desc "#{desc}"
           homepage "#{homepage}"
-        <% if head? %>
-          head "#{url}"
-        <% else %>
+        <% unless head? %>
           url "#{url}"
         <% unless version.nil? or version.detected_from_url? %>
           version "#{version}"
@@ -101,6 +103,9 @@ module Homebrew
           sha256 "#{sha256}"
         <% end %>
           license "#{license}"
+        <% if head? %>
+          head "#{url}"
+        <% end %>
 
         <% if mode == :cmake %>
           depends_on "cmake" => :build
@@ -111,6 +116,8 @@ module Homebrew
         <% elsif mode == :meson %>
           depends_on "meson" => :build
           depends_on "ninja" => :build
+        <% elsif mode == :node %>
+          depends_on "node"
         <% elsif mode == :perl %>
           uses_from_macos "perl"
         <% elsif mode == :python %>
@@ -152,6 +159,9 @@ module Homebrew
               system "ninja", "-v"
               system "ninja", "install", "-v"
             end
+        <% elsif mode == :node %>
+            system "npm", "install", *Language::Node.std_npm_install_args(libexec)
+            bin.install_symlink Dir["\#{libexec}/bin/*"]
         <% elsif mode == :perl %>
             ENV.prepend_create_path "PERL5LIB", libexec/"lib/perl5"
             ENV.prepend_path "PERL5LIB", libexec/"lib"

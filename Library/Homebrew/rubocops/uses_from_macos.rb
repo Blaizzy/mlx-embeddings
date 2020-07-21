@@ -15,7 +15,6 @@ module RuboCop
           bc
           bison
           bzip2
-          cpio
           cups
           curl
           dyld-headers
@@ -62,6 +61,7 @@ module RuboCop
         # TODO: consider making some of these keg-only.
         ALLOWED_USES_FROM_MACOS_DEPS = (PROVIDED_BY_MACOS_FORMULAE + %w[
           bash
+          cpio
           expect
           groff
           gzip

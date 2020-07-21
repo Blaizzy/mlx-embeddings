@@ -127,7 +127,7 @@ begin
     ENV.delete("HOMEBREW_HELP") if help_flag
     tap_commands = []
     cgroup = Utils.popen_read("cat", "/proc/1/cgroup")
-    if !cgroup.include?("azpl_job") && !cgroup.include?("docker")
+    if %w[azpl_job actions_job docker garden kubepods].none? { |container| cgroup.include?(container) }
       brew_uid = HOMEBREW_BREW_FILE.stat.uid
       tap_commands += %W[/usr/bin/sudo -u ##{brew_uid}] if Process.uid.zero? && !brew_uid.zero?
     end

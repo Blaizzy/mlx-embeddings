@@ -29,6 +29,8 @@ module Homebrew
              description: "Create a basic template for a Go build."
       switch "--meson",
              description: "Create a basic template for a Meson-style build."
+      switch "--node",
+             description: "Create a basic template for a Node build."
       switch "--perl",
              description: "Create a basic template for a Perl build."
       switch "--python",
@@ -54,7 +56,7 @@ module Homebrew
       switch :force
       switch :verbose
       switch :debug
-      conflicts "--autotools", "--cmake", "--crystal", "--go", "--meson", "--perl", "--python", "--rust"
+      conflicts "--autotools", "--cmake", "--crystal", "--go", "--meson", "--node", "--perl", "--python", "--rust"
       named 1
     end
   end
@@ -92,6 +94,8 @@ module Homebrew
       :crystal
     elsif args.go?
       :go
+    elsif args.node?
+      :node
     elsif args.perl?
       :perl
     elsif args.python?

@@ -195,7 +195,7 @@ class Keg
 
   def initialize(path)
     path = path.resolved_path if path.to_s.start_with?("#{HOMEBREW_PREFIX}/opt/")
-    raise "#{path} is not a valid keg" unless path.parent.parent.realpath == HOMEBREW_CELLAR.realpath
+    raise "#{path} is not a valid keg" if path.parent.parent.realpath != HOMEBREW_CELLAR.realpath
     raise "#{path} is not a directory" unless path.directory?
 
     @path = path
@@ -255,6 +255,7 @@ class Keg
 
   def remove_old_aliases
     opt = opt_record.parent
+    linkedkegs = linked_keg_record.parent
 
     tap = begin
       to_formula.tap
@@ -272,24 +273,28 @@ class Keg
       # versioned aliases are handled below
       next if a.match?(/.+@./)
 
-      alias_symlink = opt/a
-      if alias_symlink.symlink? && alias_symlink.exist?
-        alias_symlink.delete if alias_symlink.realpath == opt_record.realpath
-      elsif alias_symlink.symlink? || alias_symlink.exist?
-        alias_symlink.delete
+      alias_opt_symlink = opt/a
+      if alias_opt_symlink.symlink? && alias_opt_symlink.exist?
+        alias_opt_symlink.delete if alias_opt_symlink.realpath == opt_record.realpath
+      elsif alias_opt_symlink.symlink? || alias_opt_symlink.exist?
+        alias_opt_symlink.delete
       end
+
+      alias_linkedkegs_symlink = linkedkegs/a
+      alias_linkedkegs_symlink.delete if alias_linkedkegs_symlink.symlink? || alias_linkedkegs_symlink.exist?
     end
 
     Pathname.glob("#{opt_record}@*").each do |a|
       a = a.basename.to_s
       next if aliases.include?(a)
 
-      alias_symlink = opt/a
-      if alias_symlink.symlink? && alias_symlink.exist?
-        next if rack != alias_symlink.realpath.parent
+      alias_opt_symlink = opt/a
+      if alias_opt_symlink.symlink? && alias_opt_symlink.exist?
+        alias_opt_symlink.delete if rack == alias_opt_symlink.realpath.parent
       end
 
-      alias_symlink.delete
+      alias_linkedkegs_symlink = linkedkegs/a
+      alias_linkedkegs_symlink.delete if alias_linkedkegs_symlink.symlink? || alias_linkedkegs_symlink.exist?
     end
   end
 
@@ -322,9 +327,9 @@ class Keg
 
     dirs = []
 
-    KEG_LINK_DIRECTORIES.map { |d| path/d }.each do |dir|
-      next unless dir.exist?
-
+    keg_directories = KEG_LINK_DIRECTORIES.map { |d| path/d }
+                                          .select(&:exist?)
+    keg_directories.each do |dir|
       dir.find do |src|
         dst = HOMEBREW_PREFIX + src.relative_path_from(path)
         dst.extend(ObserverPathnameExtension)
@@ -332,7 +337,8 @@ class Keg
         dirs << dst if dst.directory? && !dst.symlink?
 
         # check whether the file to be unlinked is from the current keg first
-        next unless dst.symlink? && src == dst.resolved_path
+        next unless dst.symlink?
+        next if src != dst.resolved_path
 
         if mode.dry_run
           puts dst
@@ -509,7 +515,7 @@ class Keg
 
   def remove_oldname_opt_record
     return unless oldname_opt_record
-    return unless oldname_opt_record.resolved_path == path
+    return if oldname_opt_record.resolved_path != path
 
     @oldname_opt_record.unlink
     @oldname_opt_record.parent.rmdir_if_possible

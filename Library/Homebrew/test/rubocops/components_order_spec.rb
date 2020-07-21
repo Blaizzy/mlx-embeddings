@@ -447,12 +447,10 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
     end
 
     it "there is a on_macos block but no on_linux block" do
-      expect_offense(<<~RUBY)
+      expect_no_offenses(<<~RUBY)
         class Foo < Formula
           url "https://brew.sh/foo-1.0.tgz"
-
           resource do
-          ^^^^^^^^^^^ you need to define an `on_linux` block within your resource block.
             on_macos do
               url "https://brew.sh/resource1.tar.gz"
               sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
@@ -463,12 +461,10 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
     end
 
     it "there is a on_linux block but no on_macos block" do
-      expect_offense(<<~RUBY)
+      expect_no_offenses(<<~RUBY)
         class Foo < Formula
           url "https://brew.sh/foo-1.0.tgz"
-
           resource do
-          ^^^^^^^^^^^ you need to define an `on_macos` block within your resource block.
             on_linux do
               url "https://brew.sh/resource1.tar.gz"
               sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"

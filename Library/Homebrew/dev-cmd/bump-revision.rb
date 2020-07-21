@@ -42,7 +42,12 @@ module Homebrew
         [checksum.hash_type, checksum.hexdigest]
       end
 
-      old = if formula.path.read.include?("stable do\n")
+      old = if formula.license
+        # insert replacement revision after license
+        <<~EOS
+          license "#{formula.license}"
+        EOS
+      elsif formula.path.read.include?("stable do\n")
         # insert replacement revision after homepage
         <<~EOS
           homepage "#{formula.homepage}"

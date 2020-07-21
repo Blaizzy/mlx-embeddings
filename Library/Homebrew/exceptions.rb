@@ -320,6 +320,18 @@ class FormulaConflictError < RuntimeError
   end
 end
 
+class FormulaUnknownPythonError < RuntimeError
+  def initialize(formula)
+    super <<~EOS
+      The version of Python to use with the virtualenv in the `#{formula.full_name}` formula
+      cannot be guessed automatically because a recognised Python dependency could not be found.
+
+      If you are using a non-standard Python depedency, please add `:using => "python@x.y"` to
+      `virtualenv_install_with_resources` to resolve the issue manually.
+    EOS
+  end
+end
+
 class FormulaAmbiguousPythonError < RuntimeError
   def initialize(formula)
     super <<~EOS
@@ -494,7 +506,7 @@ class CurlDownloadStrategyError < RuntimeError
   end
 end
 
-# Raised by {#safe_system} in `utils.rb`.
+# Raised by {Kernel#safe_system} in `utils.rb`.
 class ErrorDuringExecution < RuntimeError
   attr_reader :cmd, :status, :output
 
@@ -512,7 +524,7 @@ class ErrorDuringExecution < RuntimeError
     redacted_cmd = redact_secrets(cmd.shelljoin.gsub('\=', "="), secrets)
     s = +"Failure while executing; `#{redacted_cmd}` exited with #{exitstatus}."
 
-    unless [*output].empty?
+    if Array(output).present?
       format_output_line = lambda do |type_line|
         type, line = *type_line
         if type == :stderr
@@ -531,7 +543,7 @@ class ErrorDuringExecution < RuntimeError
   end
 
   def stderr
-    [*output].select { |type,| type == :stderr }.map(&:last).join
+    Array(output).select { |type,| type == :stderr }.map(&:last).join
   end
 end
 

@@ -29,7 +29,7 @@ class MacOSRequirement < Requirement
   end
 
   satisfy(build_env: false) do
-    next [*@version].any? { |v| MacOS.version.public_send(@comparator, v) } if version_specified?
+    next Array(@version).any? { |v| MacOS.version.public_send(@comparator, v) } if version_specified?
     next true if OS.mac?
     next true if @version
 

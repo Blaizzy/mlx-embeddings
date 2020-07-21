@@ -11,12 +11,18 @@ Homebrew provided a `python@2` formula until the end of 2019, at which point it 
 **Important:** If you choose to use a Python which isn't either of these two (system Python or brewed Python), the Homebrew team cannot support any breakage that may occur.
 
 ## Python 3.x
-Homebrew provides a formula for Python 3.x (`python`).
+Homebrew provides a formula for Python 3.x (`python@3.x`).
 
 The executables are organised as follows:
 
 * `python3` points to Homebrew's Python 3.x (if installed)
 * `pip3` points to Homebrew's Python 3.x's pip (if installed)
+
+Unversioned symlinks for `python`, `python-config`, `pip` etc. are installed here:
+
+```sh
+$(brew --prefix)/opt/python/libexec/bin
+```
 
 ## Setuptools, Pip, etc.
 The Python formulae install [pip](https://pip.pypa.io/) (as `pip3`) and [Setuptools](https://pypi.python.org/pypi/setuptools).

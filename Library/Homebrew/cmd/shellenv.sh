@@ -6,8 +6,8 @@
 #:  Consider adding evaluation of this command's output to your dotfiles (e.g. `~/.profile`, `~/.bash_profile`, or `~/.zprofile`) with: `eval $(brew shellenv)`
 
 homebrew-shellenv() {
-  case "$SHELL" in
-    */fish|fish)
+  case "$(/bin/ps -p $PPID -o comm=)" in
+    fish|-fish)
       echo "set -gx HOMEBREW_PREFIX \"$HOMEBREW_PREFIX\";"
       echo "set -gx HOMEBREW_CELLAR \"$HOMEBREW_CELLAR\";"
       echo "set -gx HOMEBREW_REPOSITORY \"$HOMEBREW_REPOSITORY\";"
@@ -15,7 +15,7 @@ homebrew-shellenv() {
       echo "set -q MANPATH; or set MANPATH ''; set -gx MANPATH \"$HOMEBREW_PREFIX/share/man\" \$MANPATH;"
       echo "set -q INFOPATH; or set INFOPATH ''; set -gx INFOPATH \"$HOMEBREW_PREFIX/share/info\" \$INFOPATH;"
       ;;
-    */csh|csh|*/tcsh|tcsh)
+    csh|-csh|tcsh|-tcsh)
       echo "setenv HOMEBREW_PREFIX $HOMEBREW_PREFIX;"
       echo "setenv HOMEBREW_CELLAR $HOMEBREW_CELLAR;"
       echo "setenv HOMEBREW_REPOSITORY $HOMEBREW_REPOSITORY;"
@@ -29,7 +29,7 @@ homebrew-shellenv() {
       echo "export HOMEBREW_REPOSITORY=\"$HOMEBREW_REPOSITORY\";"
       echo "export PATH=\"$HOMEBREW_PREFIX/bin:$HOMEBREW_PREFIX/sbin\${PATH+:\$PATH}\";"
       echo "export MANPATH=\"$HOMEBREW_PREFIX/share/man\${MANPATH+:\$MANPATH}:\";"
-      echo "export INFOPATH=\"$HOMEBREW_PREFIX/share/info:\${INFOPATH}\";"
+      echo "export INFOPATH=\"$HOMEBREW_PREFIX/share/info:\${INFOPATH:-}\";"
       ;;
   esac
 }

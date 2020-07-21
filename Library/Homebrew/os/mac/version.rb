@@ -43,6 +43,10 @@ module OS
 
       # For OS::Mac::Version compatibility
       def requires_nehalem_cpu?
+        unless Hardware::CPU.intel?
+          raise "Unexpected architecture: #{Hardware::CPU.arch}. This only works with Intel architecture."
+        end
+
         Hardware.oldest_cpu(self) == :nehalem
       end
       # https://en.wikipedia.org/wiki/Nehalem_(microarchitecture)

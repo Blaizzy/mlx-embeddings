@@ -6,7 +6,19 @@ module RuboCop
   module Cop
     module FormulaAudit
       class Text < FormulaCop
-        def audit_formula(_node, _class_node, _parent_class_node, body_node)
+        def audit_formula(node, _class_node, _parent_class_node, body_node)
+          @full_source_content = source_buffer(node).source
+
+          if match = @full_source_content.match(/^require ['"]formula['"]$/)
+            @offensive_node = node
+            @source_buf = source_buffer(node)
+            @line_no = match.pre_match.count("\n") + 1
+            @column = 0
+            @length = match[0].length
+            @offense_source_range = source_range(@source_buf, @line_no, @column, @length)
+            problem "`#{match}` is now unnecessary"
+          end
+
           if !find_node_method_by_name(body_node, :plist_options) &&
              find_method_def(body_node, :plist)
             problem "Please set plist_options when using a formula-defined plist."
@@ -62,7 +74,50 @@ module RuboCop
           find_method_with_args(body_node, :system, "cargo", "build") do
             problem "use \"cargo\", \"install\", *std_cargo_args"
           end
+
+          find_every_method_call_by_name(body_node, :system).each do |m|
+            next unless parameters_passed?(m, /make && make/)
+
+            offending_node(m)
+            problem "Use separate `make` calls"
+          end
+
+          body_node.each_descendant(:dstr) do |dstr_node|
+            dstr_node.each_descendant(:begin) do |interpolation_node|
+              next unless interpolation_node.source.match?(/#\{\w+\s*\+\s*['"][^}]+\}/)
+
+              offending_node(interpolation_node)
+              problem "Do not concatenate paths in string interpolation"
+            end
+          end
+
+          find_strings(body_node).each do |n|
+            next unless regex_match_group(n, /JAVA_HOME/i)
+
+            next if @formula_name.match?(/^openjdk(@|$)/)
+
+            next if find_every_method_call_by_name(body_node, :depends_on).any? do |dependency|
+              dependency.each_descendant(:str).count.zero? ||
+              regex_match_group(dependency.each_descendant(:str).first, /^openjdk(@|$)/) ||
+              depends_on?(:java)
+            end
+
+            offending_node(n)
+            problem "Use `depends_on :java` to set JAVA_HOME"
+          end
+
+          prefix_path(body_node) do |prefix_node, path|
+            next unless match = path.match(%r{^(bin|include|libexec|lib|sbin|share|Frameworks)(?:/| |$)})
+
+            offending_node(prefix_node)
+            problem "Use `#{match[1].downcase}` instead of `prefix + \"#{match[1]}\"`"
+          end
         end
+
+        # Find: prefix + "foo"
+        def_node_search :prefix_path, <<~EOS
+          $(send (send nil? :prefix) :+ (str $_))
+        EOS
       end
     end
 
@@ -72,7 +127,42 @@ module RuboCop
           find_method_with_args(body_node, :go_resource) do
             problem "`go_resource`s are deprecated. Please ask upstream to implement Go vendoring"
           end
+
+          find_method_with_args(body_node, :env, :userpaths) do
+            problem "`env :userpaths` in homebrew/core formulae is deprecated"
+          end
+
+          share_path_starts_with(body_node, @formula_name) do |share_node|
+            offending_node(share_node)
+            problem "Use `pkgshare` instead of `share/\"#{@formula_name}\"`"
+          end
+
+          interpolated_share_path_starts_with(body_node, "/#{@formula_name}") do |share_node|
+            offending_node(share_node)
+            problem "Use `\#{pkgshare}` instead of `\#{share}/#{@formula_name}`"
+          end
+
+          return unless formula_tap == "homebrew-core"
+
+          find_method_with_args(body_node, :env, :std) do
+            problem "`env :std` in homebrew/core formulae is deprecated"
+          end
         end
+
+        # Check whether value starts with the formula name and then a "/", " " or EOS
+        def path_starts_with?(path, starts_with)
+          path.match?(%r{^#{Regexp.escape(starts_with)}(/| |$)})
+        end
+
+        # Find "#{share}/foo"
+        def_node_search :interpolated_share_path_starts_with, <<~EOS
+          $(dstr (begin (send nil? :share)) (str #path_starts_with?(%1)))
+        EOS
+
+        # Find share/"foo"
+        def_node_search :share_path_starts_with, <<~EOS
+          $(send (send nil? :share) :/ (str #path_starts_with?(%1)))
+        EOS
       end
     end
   end

@@ -81,7 +81,6 @@ false:
   - ./cask/utils.rb
   - ./cask/verify.rb
   - ./caveats.rb
-  - ./cleaner.rb
   - ./cleanup.rb
   - ./cli/args.rb
   - ./cli/parser.rb
@@ -129,15 +128,11 @@ false:
   - ./cmd/uses.rb
   - ./commands.rb
   - ./compat/language/python.rb
-  - ./compilers.rb
   - ./cxxstdlib.rb
   - ./debrew.rb
   - ./debrew/irb.rb
   - ./dependencies.rb
   - ./dependency.rb
-  - ./dependency_collector.rb
-  - ./description_cache_store.rb
-  - ./descriptions.rb
   - ./dev-cmd/audit.rb
   - ./dev-cmd/bottle.rb
   - ./dev-cmd/bump-formula-pr.rb
@@ -163,6 +158,7 @@ false:
   - ./dev-cmd/release-notes.rb
   - ./dev-cmd/ruby.rb
   - ./dev-cmd/sh.rb
+  - ./dev-cmd/sponsors.rb
   - ./dev-cmd/style.rb
   - ./dev-cmd/tap-new.rb
   - ./dev-cmd/test.rb
@@ -174,7 +170,6 @@ false:
   - ./development_tools.rb
   - ./diagnostic.rb
   - ./download_strategy.rb
-  - ./env_config.rb
   - ./exceptions.rb
   - ./extend/ENV.rb
   - ./extend/ENV/shared.rb
@@ -228,7 +223,6 @@ false:
   - ./lock_file.rb
   - ./migrator.rb
   - ./missing_formula.rb
-  - ./os/linux.rb
   - ./os/mac.rb
   - ./os/mac/keg.rb
   - ./os/mac/mach.rb
@@ -454,9 +448,7 @@ false:
   - ./utils/formatter.rb
   - ./utils/git.rb
   - ./utils/github.rb
-  - ./utils/notability.rb
   - ./utils/popen.rb
-  - ./utils/user.rb
 
 false:
   - ./PATH.rb
@@ -500,11 +492,8 @@ false:
   - ./messages.rb
   - ./mktemp.rb
   - ./options.rb
-  - ./os.rb
   - ./os/linux/elf.rb
-  - ./os/linux/glibc.rb
   - ./os/linux/global.rb
-  - ./os/linux/kernel.rb
   - ./os/mac/architecture_list.rb
   - ./pkg_version.rb
   - ./requirements/arch_requirement.rb
@@ -603,6 +592,7 @@ false:
   - ./test/dev-cmd/release-notes_spec.rb
   - ./test/dev-cmd/ruby_spec.rb
   - ./test/dev-cmd/sh_spec.rb
+  - ./test/dev-cmd/sponsors_spec.rb
   - ./test/dev-cmd/style_spec.rb
   - ./test/dev-cmd/tap-new_spec.rb
   - ./test/dev-cmd/test_spec.rb
@@ -848,8 +838,6 @@ false:
   - ./unpack_strategy/uncompressed.rb
   - ./utils/gems.rb
   - ./utils/inreplace.rb
-  - ./utils/link.rb
-  - ./utils/shebang.rb
   - ./version.rb
 
 true:
@@ -860,7 +848,13 @@ true:
   - ./cask/macos.rb
   - ./cask/url.rb
   - ./checksum.rb
+  - ./cleaner.rb
+  - ./compilers.rb
   - ./config.rb
+  - ./dependency_collector.rb
+  - ./description_cache_store.rb
+  - ./descriptions.rb
+  - ./env_config.rb
   - ./extend/cachable.rb
   - ./extend/os/linux/development_tools.rb
   - ./extend/os/linux/formula.rb
@@ -881,6 +875,10 @@ true:
   - ./locale.rb
   - ./metafiles.rb
   - ./official_taps.rb
+  - ./os.rb
+  - ./os/linux.rb
+  - ./os/linux/glibc.rb
+  - ./os/linux/kernel.rb
   - ./rubocops/cask/ast/cask_header.rb
   - ./rubocops/cask/ast/stanza.rb
   - ./rubocops/cask/constants/stanza.rb
@@ -890,9 +888,13 @@ true:
   - ./test/support/helper/fixtures.rb
   - ./test/support/lib/config.rb
   - ./utils/bottles.rb
+  - ./utils/link.rb
+  - ./utils/notability.rb
+  - ./utils/shebang.rb
   - ./utils/shell.rb
   - ./utils/svn.rb
   - ./utils/tty.rb
+  - ./utils/user.rb
   - ./version/null.rb
 
 strict:

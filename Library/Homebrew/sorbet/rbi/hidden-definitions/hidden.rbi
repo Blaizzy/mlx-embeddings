@@ -5819,6 +5819,10 @@ class Cask::DSL::Container
 
   def nested=(nested); end
 
+  def pairs(); end
+
+  def pairs=(pairs); end
+
   def type(); end
 
   def type=(type); end
@@ -19436,7 +19440,7 @@ module RuboCop::RSpec::ExpectOffense
 
   def expect_no_offenses(source, file=T.unsafe(nil)); end
 
-  def expect_offense(source, file=T.unsafe(nil), **replacements); end
+  def expect_offense(source, file=T.unsafe(nil), severity: T.unsafe(nil), **replacements); end
 
   def format_offense(source, **replacements); end
 end
@@ -23216,6 +23220,8 @@ class URL
 
   def scheme=(scheme); end
 
+  def specs(); end
+
   def string(); end
 
   def subdomain(); end
@@ -23233,6 +23239,8 @@ class URL
   def to_uri(); end
 
   def trust_cert(); end
+
+  def uri(); end
 
   def user_agent(); end
 

@@ -19,7 +19,7 @@ module Searchable
   def search_regex(regex)
     select do |*args|
       args = yield(*args) if block_given?
-      args = [*args].compact
+      args = Array(args).compact
       args.any? { |arg| arg.match?(regex) }
     end
   end
@@ -28,7 +28,7 @@ module Searchable
     simplified_string = simplify_string(string)
     select do |*args|
       args = yield(*args) if block_given?
-      args = [*args].compact
+      args = Array(args).compact
       args.any? { |arg| simplify_string(arg).include?(simplified_string) }
     end
   end

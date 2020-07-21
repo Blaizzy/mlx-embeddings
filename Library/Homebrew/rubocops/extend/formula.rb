@@ -35,7 +35,7 @@ module RuboCop
       # Checks for regex match of pattern in the node and
       # sets the appropriate instance variables to report the match
       def regex_match_group(node, pattern)
-        string_repr = string_content(node)
+        string_repr = string_content(node).encode("UTF-8", invalid: :replace)
         match_object = string_repr.match(pattern)
         return unless match_object
 

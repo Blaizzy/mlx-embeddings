@@ -213,10 +213,11 @@ module Homebrew
       end
 
       def min_named(count_or_type)
-        if count_or_type.is_a?(Integer)
+        case count_or_type
+        when Integer
           @min_named_args = count_or_type
           @min_named_type = nil
-        elsif count_or_type.is_a?(Symbol)
+        when Symbol
           @min_named_args = 1
           @min_named_type = count_or_type
         else
@@ -225,10 +226,11 @@ module Homebrew
       end
 
       def named(count_or_type)
-        if count_or_type.is_a?(Integer)
+        case count_or_type
+        when Integer
           @max_named_args = @min_named_args = count_or_type
           @min_named_type = nil
-        elsif count_or_type.is_a?(Symbol)
+        when Symbol
           @max_named_args = @min_named_args = 1
           @min_named_type = count_or_type
         else

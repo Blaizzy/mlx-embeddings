@@ -6,9 +6,11 @@ module Utils
       undef tag
 
       def tag
-        tag = MacOS.version.to_sym
-        tag = "#{tag}_arm".to_sym if Hardware::CPU.arm?
-        tag
+        if Hardware::CPU.intel?
+          MacOS.version.to_sym
+        else
+          "#{Hardware::CPU.arch}_#{MacOS.version.to_sym}".to_sym
+        end
       end
     end
 
