@@ -198,9 +198,10 @@ module Cask
       while i < all_args.count
         begin
           arg = all_args[i]
-          next if process_arguments([arg]).empty?
 
-          remaining << arg
+          unless process_arguments([arg]).empty?
+            remaining << arg
+          end
         rescue OptionParser::MissingArgument
           raise if i + 1 >= all_args.count
 
