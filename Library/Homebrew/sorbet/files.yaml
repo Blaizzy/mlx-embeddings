@@ -212,11 +212,8 @@ false:
   - ./formula_versions.rb
   - ./formulary.rb
   - ./global.rb
-  - ./help.rb
   - ./install.rb
   - ./keg.rb
-  - ./language/go.rb
-  - ./language/java.rb
   - ./language/node.rb
   - ./language/python.rb
   - ./linkage_checker.rb
@@ -484,12 +481,7 @@ false:
   - ./extend/os/mac/requirements/osxfuse_requirement.rb
   - ./extend/predicable.rb
   - ./extend/string.rb
-  - ./fetch.rb
-  - ./formula_pin.rb
-  - ./hardware.rb
   - ./keg_relocate.rb
-  - ./language/perl.rb
-  - ./messages.rb
   - ./mktemp.rb
   - ./options.rb
   - ./os/linux/elf.rb
@@ -865,14 +857,22 @@ true:
   - ./extend/os/mac/keg.rb
   - ./extend/os/mac/resource.rb
   - ./extend/os/mac/utils/analytics.rb
+  - ./fetch.rb
   - ./formula_free_port.rb
+  - ./formula_pin.rb
   - ./formula_support.rb
+  - ./hardware.rb
+  - ./help.rb
   - ./install_renamed.rb
+  - ./language/go.rb
+  - ./language/java.rb
+  - ./language/perl.rb
   - ./lazy_object.rb
   - ./linkage_cache_store.rb
   - ./livecheck.rb
   - ./load_path.rb
   - ./locale.rb
+  - ./messages.rb
   - ./metafiles.rb
   - ./official_taps.rb
   - ./os.rb
