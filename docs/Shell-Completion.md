@@ -23,12 +23,9 @@ if type brew &>/dev/null; then
 fi
 ```
 
-Should you later install the `bash-completion` formula, this will automatically use its initialization script to read the completions files.
-When installed, the `bash-completion` formula also runs `${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh` and all files in the `bash_completion.d` directory. This is done by adding a line to your `.bash_profile` which is given in the Caveats section upon the installation of `bash-completion`
+If you install the `bash-completion` formula, this will automatically source the completions' initialisation script (so you do not need to follow the instructions in the caveats).
 
-As both Homebrew's completion code given above and the Caveats line do the same thing, it is recommended to either not add the Caveats line or to comment the line out because Homebrew's completion code works even without installing the `bash-completion` formula.
-
-If you are using a version of `bash` newer than version 4.1 (like Homebrew's `bash`), we recommended you use the `bash-completion@2` formula instead because it is newer and has better performance. You can check the version of `bash` you have by running `bash --version`. MacOS ships with version 3.2.
+If you are using the `bash` formula as your shell (i.e. `bash` >= v4) you should use the `bash-completion@2` formula instead.
 
 
 ## Configuring Completions in `zsh`
