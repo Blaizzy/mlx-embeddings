@@ -2763,6 +2763,10 @@ class Formula
     def link_overwrite_paths
       @link_overwrite_paths ||= Set.new
     end
+
+    def ignore_missing_libraries(*)
+      raise FormulaSpecificationError, "#{__method__} is available on Linux only"
+    end
   end
 end
 

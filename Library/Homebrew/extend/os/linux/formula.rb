@@ -19,7 +19,7 @@ class Formula
       when Regexp
         x.match? lib
       when String
-        lib.include? x
+        lib.to_s.include? x
       end
     end
   end
@@ -31,9 +31,15 @@ class Formula
       yield
     end
 
+    undef ignore_missing_libraries
+
     def ignore_missing_libraries(*libs)
-      libs.flatten!
-      allowed_missing_libraries.merge(libs)
+      libraries = libs.flatten
+      unless libraries.all? { |x| x.is_a?(String) || x.is_a?(Regexp) }
+        raise FormulaSpecificationError, "#{__method__} can handle Strings and Regular Expressions only"
+      end
+
+      allowed_missing_libraries.merge(libraries)
     end
 
     # @private
