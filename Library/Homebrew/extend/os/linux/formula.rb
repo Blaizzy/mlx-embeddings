@@ -9,7 +9,7 @@ class Formula
 
   undef allowed_missing_lib?
   def allowed_missing_lib?(lib)
-    raise TypeError "Library must be a string; got a #{lib.class} (#{lib})" unless lib.is_a? String
+    raise TypeError, "Library must be a string; got a #{lib.class} (#{lib})" unless lib.is_a? String
 
     # lib:   Full path to the missing library
     #        Ex.: /home/linuxbrew/.linuxbrew/lib/libsomething.so.1
