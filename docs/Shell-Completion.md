@@ -8,7 +8,7 @@ You must configure your shell to enable its completion support. This is because 
 
 ## Configuring Completions in `bash`
 
-To make Homebrew's completions available in `bash`, you must source the definitions as part of your shell's startup. Add the following to your `~/.profile` file:
+To make Homebrew's completions available in `bash`, you must source the definitions as part of your shell's startup. Add the following to your `~/.bash_profile` (or, if it doesn't exist, `~/.profile):
 
 ```sh
 if type brew &>/dev/null; then
@@ -23,7 +23,10 @@ if type brew &>/dev/null; then
 fi
 ```
 
-Should you later install the `bash-completion` formula, this will automatically use its initialization script to read the completions files.
+If you install the `bash-completion` formula, this will automatically source the completions' initialisation script (so you do not need to follow the instructions in the caveats).
+
+If you are using the `bash` formula as your shell (i.e. `bash` >= v4) you should use the `bash-completion@2` formula instead.
+
 
 ## Configuring Completions in `zsh`
 
