@@ -37,7 +37,7 @@ class Formula
 
     def ignore_missing_libraries(*libs)
       libraries = libs.flatten
-      unless libraries.all? { |x| x.is_a?(String) || x.is_a?(Regexp) }
+      if libraries.any? { |x| !x.is_a?(String) && !x.is_a?(Regexp) }
         raise FormulaSpecificationError, "#{__method__} can handle Strings and Regular Expressions only"
       end
 
