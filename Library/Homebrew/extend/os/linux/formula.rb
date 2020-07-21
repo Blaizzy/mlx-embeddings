@@ -9,6 +9,8 @@ class Formula
 
   undef allowed_missing_lib?
   def allowed_missing_lib?(lib)
+    raise TypeError "Library must be a string; got a #{lib.class} (#{lib})" unless lib.is_a? String
+
     # lib:   Full path to the missing library
     #        Ex.: /home/linuxbrew/.linuxbrew/lib/libsomething.so.1
     # x -    Name of or a pattern for a library, linkage to which is allowed to be missing.
@@ -19,7 +21,7 @@ class Formula
       when Regexp
         x.match? lib
       when String
-        lib.to_s.include? x
+        lib.include? x
       end
     end
   end
