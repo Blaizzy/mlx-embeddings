@@ -1021,6 +1021,7 @@ class Formula
       TMPDIR:        HOMEBREW_TEMP,
       TEMP:          HOMEBREW_TEMP,
       TMP:           HOMEBREW_TEMP,
+      _JAVA_OPTIONS: "-Djava.io.tmpdir=#{HOMEBREW_TEMP}",
       HOMEBREW_PATH: nil,
       PATH:          ENV["HOMEBREW_PATH"],
     }
@@ -1810,6 +1811,7 @@ class Formula
       PATH:          PATH.new(ENV["PATH"], HOMEBREW_PREFIX/"bin"),
       HOMEBREW_PATH: nil,
     }.merge(common_stage_test_env)
+    test_env[:_JAVA_OPTIONS] += " -Djava.io.tmpdir=#{HOMEBREW_TEMP}"
 
     ENV.clear_sensitive_environment!
     Utils.set_git_name_email!
@@ -2133,7 +2135,7 @@ class Formula
   # Common environment variables used at both build and test time
   def common_stage_test_env
     {
-      _JAVA_OPTIONS: "#{ENV["_JAVA_OPTIONS"]&.+(" ")}-Duser.home=#{HOMEBREW_CACHE}/java_cache",
+      _JAVA_OPTIONS: "-Duser.home=#{HOMEBREW_CACHE}/java_cache",
       GOCACHE:       "#{HOMEBREW_CACHE}/go_cache",
       GOPATH:        "#{HOMEBREW_CACHE}/go_mod_cache",
       CARGO_HOME:    "#{HOMEBREW_CACHE}/cargo_cache",
