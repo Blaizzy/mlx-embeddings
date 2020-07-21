@@ -26,6 +26,10 @@ class RuboCop::Cop::Performance::BigDecimalWithNumericArgument < ::RuboCop::Cop:
   def autocorrect(node); end
   def big_decimal_with_numeric_argument?(node = _); end
   def on_send(node); end
+
+  private
+
+  def specifies_precision?(node); end
 end
 
 RuboCop::Cop::Performance::BigDecimalWithNumericArgument::MSG = T.let(T.unsafe(nil), String)
