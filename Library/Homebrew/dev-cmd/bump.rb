@@ -39,8 +39,8 @@ module Homebrew
       next if repology_homebrew_repo.blank?
 
       latest_version = repositories.find { |repo| repo["status"] == "newest" }["version"]
-
-      packages[repology_homebrew_repo["srcname"]] = format_package(repology_homebrew_repo["srcname"], latest_version)
+      srcname = repology_homebrew_repo["srcname"]
+      packages[srcname] = format_package(srcname, latest_version)
     end
     packages
   end
@@ -54,12 +54,13 @@ module Homebrew
     current_version = current_formula_version(formula)
     livecheck_response = livecheck_formula(package_name)
     pull_requests = GitHub.check_for_duplicate_pull_requests(formula, tap_full_name, latest_version)
+    pull_requests = pull_requests.join(", ") if pull_requests.try(:any?)
 
     {
       repology_latest_version:  latest_version,
       current_formula_version:  current_version.to_s,
       livecheck_latest_version: livecheck_response[:livecheck_version],
-      open_pull_requests:       pull_requests.join(", "),
+      open_pull_requests:       pull_requests,
     }
   end
 
@@ -82,6 +83,7 @@ module Homebrew
   end
 
   def parse_livecheck_response(response)
+    # e.g response => aacgain : 7834 ==> 1.8
     output = response.delete(" ").split(/:|==>/)
 
     # e.g. ["openclonk", "7.0", "8.1"]
