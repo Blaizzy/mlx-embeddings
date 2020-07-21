@@ -6,7 +6,7 @@ describe "Homebrew.readall_args" do
   it_behaves_like "parseable arguments"
 end
 
-describe "brew readall", :integration_test do
+describe "brew readall", :integration_test, timeout: 180 do
   it "imports all Formulae for a given Tap" do
     formula_file = setup_test_formula "testball"
 
