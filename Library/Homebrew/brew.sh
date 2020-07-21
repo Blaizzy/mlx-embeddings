@@ -1,7 +1,19 @@
+HOMEBREW_PROCESSOR="$(uname -m)"
+HOMEBREW_SYSTEM="$(uname -s)"
+case "$HOMEBREW_SYSTEM" in
+  Darwin) HOMEBREW_MACOS="1" ;;
+  Linux)  HOMEBREW_LINUX="1" ;;
+esac
+
 # Force UTF-8 to avoid encoding issues for users with broken locale settings.
 if [[ "$(locale charmap 2>/dev/null)" != "UTF-8" ]]
 then
-  export LC_ALL="en_US.UTF-8"
+  if [[ -n "$HOMEBREW_MACOS" ]]
+  then
+    export LC_ALL="en_US.UTF-8"
+  else
+    export LC_ALL="C.UTF-8"
+  fi
 fi
 
 # USER isn't always set so provide a fall back for `brew` and subprocesses.
@@ -86,13 +98,6 @@ then
   # it may work, but I only see pain this route and don't want to support it
   odie "Cowardly refusing to continue at this prefix: $HOMEBREW_PREFIX"
 fi
-
-HOMEBREW_PROCESSOR="$(uname -m)"
-HOMEBREW_SYSTEM="$(uname -s)"
-case "$HOMEBREW_SYSTEM" in
-  Darwin) HOMEBREW_MACOS="1" ;;
-  Linux)  HOMEBREW_LINUX="1" ;;
-esac
 
 if [[ -n "$HOMEBREW_FORCE_BREWED_CURL" &&
       -x "$HOMEBREW_PREFIX/opt/curl/bin/curl" ]] &&
