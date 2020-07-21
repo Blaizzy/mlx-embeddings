@@ -49,18 +49,16 @@ module Cask
     private
 
     def audit_all_languages
-      saved_languages = MacOS.instance_variable_get(:@languages)
-      begin
-        language_blocks.keys.all?(&method(:audit_languages))
-      ensure
-        MacOS.instance_variable_set(:@languages, saved_languages)
-      end
+      language_blocks.keys.all?(&method(:audit_languages))
     end
 
     def audit_languages(languages)
       ohai "Auditing language: #{languages.map { |lang| "'#{lang}'" }.to_sentence}"
-      MacOS.instance_variable_set(:@languages, languages)
-      audit_cask_instance(CaskLoader.load(cask.sourcefile_path))
+      localized_cask = CaskLoader.load(cask.sourcefile_path)
+      config = localized_cask.config
+      config.languages = languages
+      localized_cask.config = config
+      audit_cask_instance(localized_cask)
     end
 
     def audit_cask_instance(cask)
