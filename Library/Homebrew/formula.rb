@@ -1131,13 +1131,6 @@ class Formula
     end
   end
 
-  # Whether this {Formula} is allowed to have a broken linkage to specified library.
-  # Defaults to false.
-  # @return [Boolean]
-  def allowed_missing_lib?(*)
-    false
-  end
-
   # Whether this {Formula} is deprecated (i.e. warns on installation).
   # Defaults to false.
   # @method deprecated?
@@ -2762,6 +2755,10 @@ class Formula
     # @private
     def link_overwrite_paths
       @link_overwrite_paths ||= Set.new
+    end
+
+    def ignore_missing_libraries(*)
+      raise FormulaSpecificationError, "#{__method__} is available on Linux only"
     end
   end
 end
