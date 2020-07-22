@@ -68,21 +68,7 @@ module OS
       end
       os_langs = os_langs.scan(/[^ \n"(),]+/)
 
-      @languages = [
-        *Homebrew.args.value("language")&.split(","),
-        *ENV["HOMEBREW_LANGUAGES"]&.split(","),
-        *os_langs,
-      ].uniq
-
-      # Ensure all languages are valid
-      @languages.select! do |lang|
-        Locale.parse(lang)
-        true
-      rescue Locale::ParserError
-        false
-      end
-
-      @languages
+      @languages = os_langs
     end
 
     def language
