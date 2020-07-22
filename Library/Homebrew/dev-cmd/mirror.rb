@@ -27,7 +27,7 @@ module Homebrew
   end
 
   def mirror
-    mirror_args.parse
+    args = mirror_args.parse
 
     bintray_org = args.bintray_org || "homebrew"
     bintray_repo = args.bintray_repo || "mirror"

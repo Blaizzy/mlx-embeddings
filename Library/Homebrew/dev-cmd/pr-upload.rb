@@ -33,7 +33,7 @@ module Homebrew
   end
 
   def pr_upload
-    pr_upload_args.parse
+    args = pr_upload_args.parse
 
     bintray_org = args.bintray_org || "homebrew"
     bintray = Bintray.new(org: bintray_org)
