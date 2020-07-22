@@ -118,7 +118,7 @@ module Homebrew
       if hub.empty?
         puts "No changes to formulae."
       else
-        hub.dump
+        hub.dump(updated_formula_report: !args.preinstall?)
         hub.reporters.each(&:migrate_tap_migration)
         hub.reporters.each(&:migrate_formula_rename)
         CacheStoreDatabase.use(:descriptions) do |db|
@@ -218,6 +218,14 @@ class Reporter
         new_tap = tap.tap_migrations[name]
         @report[status.to_sym] << full_name unless new_tap
       when "M"
+        name = tap.formula_file_to_name(src)
+
+        # Skip reporting updated formulae to speed up automatic updates.
+        if Homebrew.args.preinstall?
+          @report[:M] << name
+          next
+        end
+
         begin
           formula = Formulary.factory(tap.path/src)
           new_version = formula.pkg_version
@@ -229,7 +237,8 @@ class Reporter
         rescue Exception => e # rubocop:disable Lint/RescueException
           onoe "#{e.message}\n#{e.backtrace.join "\n"}" if Homebrew::EnvConfig.developer?
         end
-        @report[:M] << tap.formula_file_to_name(src)
+
+        @report[:M] << name
       when /^R\d{0,3}/
         src_full_name = tap.formula_file_to_name(src)
         dst_full_name = tap.formula_file_to_name(dst)
@@ -422,11 +431,19 @@ class ReporterHub
 
   delegate empty?: :@hash
 
-  def dump
+  def dump(updated_formula_report: true)
     # Key Legend: Added (A), Copied (C), Deleted (D), Modified (M), Renamed (R)
 
     dump_formula_report :A, "New Formulae"
-    dump_formula_report :M, "Updated Formulae"
+    if updated_formula_report
+      dump_formula_report :M, "Updated Formulae"
+    else
+      updated = select_formula(:M).count
+      if updated.positive?
+        ohai "Updated Formulae"
+        puts "Updated #{updated} #{"formula".pluralize(updated)}."
+      end
+    end
     dump_formula_report :R, "Renamed Formulae"
     dump_formula_report :D, "Deleted Formulae"
     dump_formula_report :MC, "Updated Casks"
