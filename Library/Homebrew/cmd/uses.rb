@@ -15,10 +15,10 @@ module Homebrew
       usage_banner <<~EOS
         `uses` [<options>] <formula>
 
-        Show formulae that specify <formula> as a dependency. When given multiple
-        formula arguments, show the intersection of formulae that use <formula>.
-        By default, `uses` shows all formulae that specify <formula> as a required
-        or recommended dependency for their stable builds.
+        Show formulae that specify <formula> as a dependency (i.e. show dependents
+        of <formula>). When given multiple formula arguments, show the intersection
+        of formulae that use <formula>. By default, `uses` shows all formulae that
+        specify <formula> as a required or recommended dependency for their stable builds.
       EOS
       switch "--recursive",
              description: "Resolve more than one level of dependencies."
@@ -44,6 +44,9 @@ module Homebrew
 
   def uses
     uses_args.parse
+
+    odeprecated "brew uses --devel" if args.devel?
+    odeprecated "brew uses --HEAD" if args.HEAD?
 
     Formulary.enable_factory_cache!
 
