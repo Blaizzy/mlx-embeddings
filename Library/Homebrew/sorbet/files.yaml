@@ -842,6 +842,7 @@ true:
   - ./compat/os/mac.rb
   - ./compilers.rb
   - ./config.rb
+  - ./dependable.rb
   - ./dependency_collector.rb
   - ./description_cache_store.rb
   - ./descriptions.rb
