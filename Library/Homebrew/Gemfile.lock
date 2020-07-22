@@ -8,6 +8,7 @@ GEM
       tzinfo (~> 1.1)
       zeitwerk (~> 2.2, >= 2.2.2)
     ast (2.4.1)
+    bindata (2.4.7)
     byebug (11.1.3)
     codecov (0.2.2)
       colorize
@@ -20,6 +21,8 @@ GEM
     docile (1.3.2)
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
+    elftools (1.1.2)
+      bindata (~> 2)
     hpricot (0.8.6)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
@@ -52,6 +55,8 @@ GEM
       parallel
     parser (2.7.1.4)
       ast (~> 2.4.1)
+    patchelf (1.1.1)
+      elftools (~> 1.1)
     plist (3.5.0)
     rainbow (3.0.0)
     rdiscount (2.2.0.1)
@@ -122,6 +127,7 @@ DEPENDENCIES
   concurrent-ruby
   mechanize
   parallel_tests
+  patchelf
   plist
   ronn
   rspec
