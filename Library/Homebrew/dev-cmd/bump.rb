@@ -97,8 +97,8 @@ module Homebrew
   end
 
   def display(outdated_packages)
-    ohai "Outdated formulae\n"
-
+    ohai "Outdated formulae"
+    puts
     outdated_packages.each do |formula, package_details|
       ohai formula
       puts "Current formula version: #{package_details[:current_formula_version]}"

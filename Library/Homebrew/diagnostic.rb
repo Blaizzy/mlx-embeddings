@@ -671,7 +671,9 @@ module Homebrew
           next if status.blank?
 
           # these will result in uncommitted gems.
-          next if path == HOMEBREW_REPOSITORY && (ENV["HOMEBREW_SORBET"] || ENV["HOMEBREW_PATCHELF_RB"])
+          if path == HOMEBREW_REPOSITORY
+            next if ENV["HOMEBREW_SORBET"] || ENV["HOMEBREW_PATCHELF_RB"]
+          end
 
           message ||= ""
           message += "\n" unless message.empty?
