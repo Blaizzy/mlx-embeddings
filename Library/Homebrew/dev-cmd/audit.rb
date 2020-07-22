@@ -522,6 +522,30 @@ module Homebrew
       problem "Formulae in homebrew/core should not use `bottle :disabled`"
     end
 
+    def audit_github_repository_archived
+      return if formula.deprecated?
+
+      user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @online
+      return if user.blank?
+
+      metadata = SharedAudits.github_repo_data(user, repo)
+      return if metadata.nil?
+
+      problem "GitHub repo is archived" if metadata["archived"]
+    end
+
+    def audit_gitlab_repository_archived
+      return if formula.deprecated?
+
+      user, repo = get_repo_data(%r{https?://gitlab\.com/([^/]+)/([^/]+)/?.*}) if @online
+      return if user.blank?
+
+      metadata = SharedAudits.gitlab_repo_data(user, repo)
+      return if metadata.nil?
+
+      problem "GitLab repo is archived" if metadata["archived"]
+    end
+
     def audit_github_repository
       user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @new_formula
 
