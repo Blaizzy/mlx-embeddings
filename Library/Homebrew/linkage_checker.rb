@@ -15,6 +15,7 @@ class LinkageChecker
 
     @system_dylibs    = Set.new
     @broken_dylibs    = Set.new
+    @unexpected_broken_dylibs = nil
     @variable_dylibs  = Set.new
     @brewed_dylibs    = Hash.new { |h, k| h[k] = Set.new }
     @reverse_links    = Hash.new { |h, k| h[k] = Set.new }
@@ -62,7 +63,7 @@ class LinkageChecker
 
     if @broken_dylibs.empty?
       puts "No broken library linkage detected"
-    elsif unexpected_broken_libs.empty?
+    elsif unexpected_broken_dylibs.empty?
       puts "No unexpected broken library linkage detected."
     else
       puts "Broken library linkage detected"
@@ -71,17 +72,37 @@ class LinkageChecker
 
   def broken_library_linkage?
     issues = [@broken_deps, @unwanted_system_dylibs, @version_conflict_deps]
-    [issues, unexpected_broken_libs].flatten.any?(&:present?)
+    [issues, unexpected_broken_dylibs].flatten.any?(&:present?)
   end
 
-  def unexpected_broken_libs
-    @broken_dylibs.reject { |lib| @formula.allowed_missing_lib? lib }
+  def allowed_missing_lib?(lib)
+    raise TypeError, "Library must be a string; got a #{lib.class} (#{lib})" unless lib.is_a? String
+
+    # lib:   Full path to the missing library
+    #        Ex.: /home/linuxbrew/.linuxbrew/lib/libsomething.so.1
+    # x -    Name of or a pattern for a library, linkage to which is allowed to be missing.
+    #        Ex. 1: "libONE.so.1"
+    #        Ex. 2: %r{(libONE|libTWO)\.so}
+    @formula.class.allowed_missing_libraries.any? do |x|
+      case x
+      when Regexp
+        x.match? lib
+      when String
+        lib.include? x
+      end
+    end
+  end
+
+  def unexpected_broken_dylibs
+    return @unexpected_broken_dylibs if @unexpected_broken_dylibs
+
+    @unexpected_broken_dylibs = @broken_dylibs.reject { |lib| allowed_missing_lib? lib }
   end
 
   def broken_dylibs_with_expectations
     output = {}
     @broken_dylibs.each do |lib|
-      output[lib] = if unexpected_broken_libs.include? lib
+      output[lib] = if unexpected_broken_dylibs.include? lib
         ["unexpected"]
       else
         ["expected"]

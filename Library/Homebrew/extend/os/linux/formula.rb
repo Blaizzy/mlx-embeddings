@@ -7,25 +7,6 @@ class Formula
     "#{name}.so#{"." unless version.nil?}#{version}"
   end
 
-  undef allowed_missing_lib?
-  def allowed_missing_lib?(lib)
-    raise TypeError, "Library must be a string; got a #{lib.class} (#{lib})" unless lib.is_a? String
-
-    # lib:   Full path to the missing library
-    #        Ex.: /home/linuxbrew/.linuxbrew/lib/libsomething.so.1
-    # x -    Name of or a pattern for a library, linkage to which is allowed to be missing.
-    #        Ex. 1: "libONE.so.1"
-    #        Ex. 2: %r{(libONE|libTWO)\.so}
-    self.class.allowed_missing_libraries.any? do |x|
-      case x
-      when Regexp
-        x.match? lib
-      when String
-        lib.include? x
-      end
-    end
-  end
-
   class << self
     undef on_linux
 
