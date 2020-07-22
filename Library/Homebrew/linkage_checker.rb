@@ -92,8 +92,8 @@ class LinkageChecker
 
   def broken_dylibs_with_expectations
     output = {}
-    @broken_dylibs.each do |lib|
-      output[lib] = if unexpected_broken_dylibs.include? lib
+    @broken_dylibs.each do |broken_lib|
+      output[broken_lib] = if unexpected_broken_dylibs.include? broken_lib
         ["unexpected"]
       else
         ["expected"]
