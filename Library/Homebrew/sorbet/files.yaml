@@ -457,13 +457,8 @@ false:
   - ./cask/dsl/version.rb
   - ./cask/topological_hash.rb
   - ./cmd/cask.rb
-  - ./compat/extend/nil.rb
-  - ./compat/extend/string.rb
-  - ./compat/formula.rb
   - ./compat/language/haskell.rb
   - ./compat/language/java.rb
-  - ./compat/os/mac.rb
-  - ./dependable.rb
   - ./extend/git_repository.rb
   - ./extend/hash_validator.rb
   - ./extend/io.rb
@@ -841,6 +836,10 @@ true:
   - ./cask/url.rb
   - ./checksum.rb
   - ./cleaner.rb
+  - ./compat/extend/nil.rb
+  - ./compat/extend/string.rb
+  - ./compat/formula.rb
+  - ./compat/os/mac.rb
   - ./compilers.rb
   - ./config.rb
   - ./dependency_collector.rb

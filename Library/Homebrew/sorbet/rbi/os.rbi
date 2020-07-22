@@ -12,3 +12,11 @@ module OS
     include Kernel
   end
 end
+
+module OS::Mac
+  class << self
+    module Compat
+      include Kernel
+    end
+  end
+end
