@@ -9,7 +9,7 @@ module SharedAudits
     @github_repo_data ||= {}
     @github_repo_data["#{user}/#{repo}"] ||= GitHub.repository(user, repo)
 
-    @github_data["#{user}/#{repo}"]
+    @github_repo_data["#{user}/#{repo}"]
   rescue GitHub::HTTPNotFoundError
     nil
   end
@@ -23,7 +23,7 @@ module SharedAudits
       JSON.parse(out)
     end
 
-    @gitlab_data["#{user}/#{repo}"]
+    @gitlab_repo_data["#{user}/#{repo}"]
   end
 
   def github(user, repo)
