@@ -320,9 +320,10 @@ module Homebrew
       problem "Formula name conflicts with existing core formula."
     end
 
-    USES_FROM_MACOS_ALLOWLIST = %w[
+    PROVIDED_BY_MACOS_DEPENDS_ON_ALLOWLIST = %w[
       apr
       apr-util
+      libressl
       openblas
       openssl@1.1
     ].freeze
@@ -383,7 +384,7 @@ module Homebrew
              dep_f.keg_only? &&
              dep_f.keg_only_reason.provided_by_macos? &&
              dep_f.keg_only_reason.applicable? &&
-             !USES_FROM_MACOS_ALLOWLIST.include?(dep.name)
+             !PROVIDED_BY_MACOS_DEPENDS_ON_ALLOWLIST.include?(dep.name)
             new_formula_problem(
               "Dependency '#{dep.name}' is provided by macOS; " \
               "please replace 'depends_on' with 'uses_from_macos'.",
