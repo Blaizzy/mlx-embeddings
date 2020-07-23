@@ -31,18 +31,20 @@ module Homebrew
       return
     end
 
-    first = true
+    prepend_separator = false
 
-    [["Built-in commands", Commands.internal_commands],
-     ["Built-in developer commands", Commands.internal_developer_commands],
-     ["External commands", Commands.external_commands],
-     ["Cask commands", Commands.cask_internal_commands],
-     ["External cask commands", Commands.cask_external_commands]]
+    { "Built-in commands"           => Commands.internal_commands,
+      "Built-in developer commands" => Commands.internal_developer_commands,
+      "External commands"           => Commands.external_commands,
+      "Cask commands"               => Commands.cask_internal_commands,
+      "External cask commands"      => Commands.cask_external_commands }
       .each do |title, commands|
-      if commands.present?
-        first = !first && puts
-        ohai title, Formatter.columns(commands)
-      end
+      next if commands.blank?
+
+      puts if prepend_separator
+      ohai title, Formatter.columns(commands)
+
+      prepend_separator = true
     end
   end
 end
