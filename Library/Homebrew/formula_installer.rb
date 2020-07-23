@@ -469,7 +469,7 @@ class FormulaInstaller
 
         if req.prune_from_option?(build)
           Requirement.prune
-        elsif req.satisfied?
+        elsif req.satisfied?(args: Homebrew.args)
           Requirement.prune
         elsif (req.build? || req.test?) && !keep_build_test
           Requirement.prune

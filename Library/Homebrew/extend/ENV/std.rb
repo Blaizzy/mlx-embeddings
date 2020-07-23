@@ -11,7 +11,7 @@ module Stdenv
   SAFE_CFLAGS_FLAGS = "-w -pipe"
 
   # @private
-  def setup_build_environment(formula = nil)
+  def setup_build_environment(formula = nil, args: nil)
     super
 
     self["HOMEBREW_ENV"] = "std"
@@ -110,14 +110,14 @@ module Stdenv
   end
 
   def clang
-    super
+    super()
     replace_in_cflags(/-Xarch_#{Hardware::CPU.arch_32_bit} (-march=\S*)/, '\1')
     map = Hardware::CPU.optimization_flags.dup
     if DevelopmentTools.clang_build_version < 700
       # Clang mistakenly enables AES-NI on plain Nehalem
       map[:nehalem] = "-march=nehalem -Xclang -target-feature -Xclang -aes"
     end
-    set_cpu_cflags map
+    set_cpu_cflags(map)
   end
 
   def m64
@@ -186,7 +186,7 @@ module Stdenv
 
   # @private
   def set_cpu_cflags(map = Hardware::CPU.optimization_flags) # rubocop:disable Naming/AccessorMethodName
-    set_cpu_flags CC_FLAG_VARS, map
+    set_cpu_flags(CC_FLAG_VARS, map)
   end
 
   def make_jobs

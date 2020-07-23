@@ -73,7 +73,7 @@ module Homebrew
   end
 
   def audit
-    audit_args.parse
+    args = audit_args.parse
 
     Homebrew.auditing = true
     inject_dump_stats!(FormulaAuditor, /^audit_/) if args.audit_debug?
@@ -88,8 +88,8 @@ module Homebrew
     git = args.git?
     skip_style = args.skip_style? || args.no_named?
 
-    ENV.activate_extensions!
-    ENV.setup_build_environment
+    ENV.activate_extensions!(args: args)
+    ENV.setup_build_environment(args: args)
 
     audit_formulae = args.no_named? ? Formula : args.resolved_formulae
     style_files = args.formulae_paths unless skip_style

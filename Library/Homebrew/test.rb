@@ -28,7 +28,7 @@ begin
   formula.extend(Debrew::Formula) if Homebrew.args.debug?
 
   ENV.extend(Stdenv)
-  ENV.setup_build_environment(formula)
+  ENV.setup_build_environment(formula, args: args)
 
   # tests can also return false to indicate failure
   Timeout.timeout TEST_TIMEOUT_SECONDS do

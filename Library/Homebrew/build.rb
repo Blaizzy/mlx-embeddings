@@ -83,20 +83,20 @@ class Build
       fixopt(dep) unless dep.opt_prefix.directory?
     end
 
-    ENV.activate_extensions!
+    ENV.activate_extensions!(args: args)
 
-    if superenv?
+    if superenv?(args: args)
       ENV.keg_only_deps = keg_only_deps
       ENV.deps = formula_deps
       ENV.run_time_deps = run_time_deps
       ENV.x11 = reqs.any? { |rq| rq.is_a?(X11Requirement) }
-      ENV.setup_build_environment(formula)
+      ENV.setup_build_environment(formula, args: args)
       post_superenv_hacks
-      reqs.each(&:modify_build_environment)
+      reqs.each { |req| req.modify_build_environment(args: args) }
       deps.each(&:modify_build_environment)
     else
-      ENV.setup_build_environment(formula)
-      reqs.each(&:modify_build_environment)
+      ENV.setup_build_environment(formula, args: args)
+      reqs.each { |req| req.modify_build_environment(args: args) }
       deps.each(&:modify_build_environment)
 
       keg_only_deps.each do |dep|

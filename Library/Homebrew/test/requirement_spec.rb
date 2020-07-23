@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "cli/args"
 require "extend/ENV"
 require "requirement"
 
@@ -9,6 +10,8 @@ describe Requirement do
   subject { klass.new }
 
   let(:klass) { Class.new(described_class) }
+
+  let(:args) { Homebrew::CLI::Args.new }
 
   describe "#tags" do
     subject { described_class.new(tags) }
@@ -64,7 +67,7 @@ describe Requirement do
         end
       end
 
-      it { is_expected.to be_satisfied }
+      it { is_expected.to be_satisfied(args: args) }
     end
 
     describe "#satisfy with block and build_env returns false" do
@@ -76,7 +79,7 @@ describe Requirement do
         end
       end
 
-      it { is_expected.not_to be_satisfied }
+      it { is_expected.not_to be_satisfied(args: args) }
     end
 
     describe "#satisfy returns true" do
@@ -86,7 +89,7 @@ describe Requirement do
         end
       end
 
-      it { is_expected.to be_satisfied }
+      it { is_expected.to be_satisfied(args: args) }
     end
 
     describe "#satisfy returns false" do
@@ -96,7 +99,7 @@ describe Requirement do
         end
       end
 
-      it { is_expected.not_to be_satisfied }
+      it { is_expected.not_to be_satisfied(args: args) }
     end
 
     describe "#satisfy with block returning true and without :build_env" do
@@ -110,7 +113,7 @@ describe Requirement do
 
       it "sets up build environment" do
         expect(ENV).to receive(:with_build_environment).and_call_original
-        subject.satisfied?
+        subject.satisfied?(args: args)
       end
     end
 
@@ -125,7 +128,7 @@ describe Requirement do
 
       it "skips setting up build environment" do
         expect(ENV).not_to receive(:with_build_environment)
-        subject.satisfied?
+        subject.satisfied?(args: args)
       end
     end
 
@@ -140,8 +143,8 @@ describe Requirement do
 
       it "infers path from #satisfy result" do
         expect(ENV).to receive(:prepend_path).with("PATH", Pathname.new("/foo/bar"))
-        subject.satisfied?
-        subject.modify_build_environment
+        subject.satisfied?(args: args)
+        subject.modify_build_environment(args: args)
       end
     end
   end
@@ -179,7 +182,7 @@ describe Requirement do
       let(:klass) { Class.new(described_class) }
 
       it "returns nil" do
-        expect(subject.modify_build_environment).to be nil
+        expect(subject.modify_build_environment(args: args)).to be nil
       end
     end
   end
