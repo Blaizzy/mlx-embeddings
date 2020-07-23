@@ -16,13 +16,14 @@ require "socket"
 require "cmd/install"
 
 class Build
-  attr_reader :formula, :deps, :reqs
+  attr_reader :formula, :deps, :reqs, :args
 
-  def initialize(formula, options)
+  def initialize(formula, options, args:)
     @formula = formula
     @formula.build = BuildOptions.new(options, formula.options)
+    @args = args
 
-    if Homebrew.args.ignore_deps?
+    if args.ignore_deps?
       @deps = []
       @reqs = []
     else
@@ -125,19 +126,19 @@ class Build
         # which is not known until after the formula has been staged.
         ENV["HOMEBREW_FORMULA_PREFIX"] = formula.prefix
 
-        staging.retain! if Homebrew.args.keep_tmp?
+        staging.retain! if args.keep_tmp?
         formula.patch
 
-        if Homebrew.args.git?
+        if args.git?
           system "git", "init"
           system "git", "add", "-A"
         end
-        if Homebrew.args.interactive?
+        if args.interactive?
           ohai "Entering interactive mode"
           puts "Type `exit` to return and finalize the installation."
           puts "Install to this prefix: #{formula.prefix}"
 
-          if Homebrew.args.git?
+          if args.git?
             puts "This directory is now a git repo. Make your changes and then use:"
             puts "  git diff | pbcopy"
             puts "to copy the diff to the clipboard."
@@ -190,15 +191,15 @@ class Build
 end
 
 begin
-  Homebrew.install_args.parse
+  args = Homebrew.install_args.parse
   error_pipe = UNIXSocket.open(ENV["HOMEBREW_ERROR_PIPE"], &:recv_io)
   error_pipe.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)
 
   trap("INT", old_trap)
 
-  formula = Homebrew.args.formulae.first
-  options = Options.create(Homebrew.args.flags_only)
-  build   = Build.new(formula, options)
+  formula = args.formulae.first
+  options = Options.create(args.flags_only)
+  build   = Build.new(formula, options, args: args)
   build.install
 rescue Exception => e # rubocop:disable Lint/RescueException
   error_hash = JSON.parse e.to_json
