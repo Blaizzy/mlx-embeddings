@@ -150,7 +150,7 @@ rescue BuildError => e
   Utils::Analytics.report_build_error(e)
   e.dump
 
-  output_unsupported_error if Homebrew.args.HEAD? || e.formula.deprecated? || e.formula.disabled?
+  output_unsupported_error if e.formula.head? || e.formula.deprecated? || e.formula.disabled?
 
   exit 1
 rescue RuntimeError, SystemCallError => e
