@@ -95,9 +95,7 @@ class LinkageChecker
   end
 
   def unexpected_present_dylibs
-    return @unexpected_present_dylibs if @unexpected_present_dylibs
-
-    @unexpected_present_dylibs = @formula.class.allowed_missing_libraries.reject do |allowed_missing_lib|
+    @unexpected_present_dylibs ||= @formula.class.allowed_missing_libraries.reject do |allowed_missing_lib|
       @broken_dylibs.any? do |broken_lib|
         case allowed_missing_lib
         when Regexp
