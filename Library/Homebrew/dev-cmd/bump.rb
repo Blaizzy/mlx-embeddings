@@ -12,6 +12,8 @@ module Homebrew
 
         Display out-of-date brew formulae, the latest version available, and whether a pull request has been opened.
       EOS
+      flag "--limit=",
+           description: "Limit number of package results returned."
       switch :verbose
       switch :debug
     end
@@ -40,8 +42,12 @@ module Homebrew
 
       latest_version = repositories.find { |repo| repo["status"] == "newest" }["version"]
       srcname = repology_homebrew_repo["srcname"]
-      packages[srcname] = format_package(srcname, latest_version)
+      package_details = format_package(srcname, latest_version)
+      packages[srcname] = package_details unless package_details.nil?
+
+      break if packages.size == Homebrew.args.limit.to_i
     end
+
     packages
   end
 
@@ -103,8 +109,8 @@ module Homebrew
       ohai formula
       puts "Current formula version: #{package_details[:current_formula_version]}"
       puts "Latest repology version: #{package_details[:repology_latest_version]}"
-      puts "Latest livecheck version: #{package_details[:livecheck_latest_version]}"
-      puts "Open pull requests: #{package_details[:open_pull_requests]}"
+      puts "Latest livecheck version: #{package_details[:livecheck_latest_version] || "Not found."}"
+      puts "Open pull requests: #{package_details[:open_pull_requests] || "None."}"
     end
   end
 end
