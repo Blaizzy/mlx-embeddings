@@ -311,7 +311,7 @@ class LinkageChecker
     else
       things.sort.each do |item|
         output += if item.is_a? Regexp
-          "\n #{item.inspect}"
+          "\n  #{item.inspect}"
         else
           "\n  #{item}"
         end
