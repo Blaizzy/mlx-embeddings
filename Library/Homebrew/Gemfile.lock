@@ -26,7 +26,7 @@ GEM
     hpricot (0.8.6)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
-    i18n (1.8.4)
+    i18n (1.8.5)
       concurrent-ruby (~> 1.0)
     json (2.3.1)
     mechanize (2.7.6)
