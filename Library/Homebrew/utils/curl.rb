@@ -201,7 +201,8 @@ def curl_http_content_headers_and_checksum(url, hash_needed: false, user_agent: 
   while status_code == :unknown || status_code.to_s.start_with?("3")
     headers, _, output = output.partition("\r\n\r\n")
     status_code = headers[%r{HTTP/.* (\d+)}, 1]
-    final_url = headers[/^Location:\s*(.*)$/i, 1]&.chomp
+    location = headers[/^Location:\s*(.*)$/i, 1]
+    final_url = location.chomp if location
   end
 
   output_hash = Digest::SHA256.file(file.path) if hash_needed
