@@ -82,7 +82,6 @@ false:
   - ./cask/verify.rb
   - ./caveats.rb
   - ./cleanup.rb
-  - ./cli/args.rb
   - ./cli/parser.rb
   - ./cmd/--cache.rb
   - ./cmd/--cellar.rb
@@ -836,6 +835,7 @@ true:
   - ./cask/url.rb
   - ./checksum.rb
   - ./cleaner.rb
+  - ./cli/args.rb
   - ./compat/extend/nil.rb
   - ./compat/extend/string.rb
   - ./compat/formula.rb
