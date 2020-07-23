@@ -121,12 +121,11 @@ class Build
 
       formula.update_head_version
 
-      formula.brew(fetch: false) do |_formula, staging|
+      formula.brew(fetch: false, keep_tmp: args.keep_tmp?, interactive: args.interactive?) do |_formula, _staging|
         # For head builds, HOMEBREW_FORMULA_PREFIX should include the commit,
         # which is not known until after the formula has been staged.
         ENV["HOMEBREW_FORMULA_PREFIX"] = formula.prefix
 
-        staging.retain! if args.keep_tmp?
         formula.patch
 
         if args.git?
