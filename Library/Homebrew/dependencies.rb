@@ -56,9 +56,7 @@ class Requirements < DelegateClass(Set)
   end
 end
 
-module Homebrew
-  module_function
-
+module DependenciesHelpers
   def argv_includes_ignores(argv)
     includes = []
     ignores = []
@@ -81,7 +79,7 @@ module Homebrew
       ignores << "optional?"
     end
 
-    ignores << "recommended?" if Homebrew.args.skip_recommended?
+    ignores << "recommended?" if args.skip_recommended?
 
     [includes, ignores]
   end

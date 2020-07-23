@@ -8,6 +8,8 @@ require "formula"
 require "cli/parser"
 
 module Homebrew
+  extend DependenciesHelpers
+
   module_function
 
   def uses_args

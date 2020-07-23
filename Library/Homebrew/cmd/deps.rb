@@ -5,6 +5,8 @@ require "ostruct"
 require "cli/parser"
 
 module Homebrew
+  extend DependenciesHelpers
+
   module_function
 
   def deps_args
