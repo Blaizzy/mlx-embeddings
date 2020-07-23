@@ -86,6 +86,9 @@ module Homebrew
 
       let(:custom_spdx_id) { "zzz" }
       let(:standard_mismatch_spdx_id) { "0BSD" }
+      let(:license_array) { ["0BSD", "GPL-3.0"] }
+      let(:license_array_mismatch) { ["0BSD", "MIT"] }
+      let(:license_array_nonstandard) { ["0BSD", "zzz", "MIT"] }
 
       it "does not check if the formula is not a new formula" do
         fa = formula_auditor "foo", <<~RUBY, spdx_data: spdx_data, new_formula: false
@@ -123,11 +126,35 @@ module Homebrew
         expect(fa.problems.first).to match "Formula foo contains non standard SPDX license: [\"zzz\"]."
       end
 
+      it "detects if license array contains a non-standard spdx-id" do
+        fa = formula_auditor "foo", <<~RUBY, spdx_data: spdx_data, new_formula: true
+          class Foo < Formula
+            url "https://brew.sh/foo-1.0.tgz"
+            license "#{custom_spdx_id}"
+          end
+        RUBY
+
+        fa.audit_license
+        expect(fa.problems.first).to match "Formula foo contains non standard SPDX license: [\"zzz\"]."
+      end
+
       it "verifies that a license info is a standard spdx id" do
         fa = formula_auditor "foo", <<~RUBY, spdx_data: spdx_data, new_formula: true
           class Foo < Formula
             url "https://brew.sh/foo-1.0.tgz"
             license "0BSD"
+          end
+        RUBY
+
+        fa.audit_license
+        expect(fa.problems).to be_empty
+      end
+
+      it "verifies that a license array contains only standard spdx id" do
+        fa = formula_auditor "foo", <<~RUBY, spdx_data: spdx_data, new_formula: true
+          class Foo < Formula
+            url "https://brew.sh/foo-1.0.tgz"
+            license #{license_array}
           end
         RUBY
 
@@ -162,6 +189,35 @@ module Homebrew
         fa.audit_license
         expect(fa.problems.first).to match "License mismatch - GitHub license is: [\"GPL-3.0\"], "\
         "but Formulae license states: #{Array(standard_mismatch_spdx_id)}."
+      end
+
+      it "checks online and detects that an array of license does not contain "\
+        "what is indicated on its Github repository" do
+        fa = formula_auditor "cask", <<~RUBY, online: true, spdx_data: spdx_data, core_tap: true, new_formula: true
+          class Cask < Formula
+            url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
+            head "https://github.com/cask/cask.git"
+            license #{license_array_mismatch}
+          end
+        RUBY
+
+        fa.audit_license
+        expect(fa.problems.first).to match "License mismatch - GitHub license is: [\"GPL-3.0\"], "\
+        "but Formulae license states: #{Array(license_array_mismatch)}."
+      end
+
+      it "checks online and verifies that an array of license contains "\
+        "what is indicated on its Github repository" do
+        fa = formula_auditor "cask", <<~RUBY, online: true, spdx_data: spdx_data, core_tap: true, new_formula: true
+          class Cask < Formula
+            url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
+            head "https://github.com/cask/cask.git"
+            license #{license_array}
+          end
+        RUBY
+
+        fa.audit_license
+        expect(fa.problems).to be_empty
       end
     end
 
