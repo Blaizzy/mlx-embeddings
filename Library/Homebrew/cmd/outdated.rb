@@ -46,7 +46,7 @@ module Homebrew
 
     case json_version
     when :v1
-      opoo "JSON v1 has been deprecated; please use --json=v2"
+      odeprecated "brew outdated --json=v1", "brew outdated --json=v2"
 
       outdated = if args.formula? || !args.cask?
         outdated_formulae
@@ -87,67 +87,67 @@ module Homebrew
     Homebrew.failed = args.named.present? && outdated.present?
   end
 
-  def print_outdated(formula_or_cask)
-    return formula_or_cask.each { |f_or_c| print_outdated(f_or_c) } if formula_or_cask.is_a? Array
+  def print_outdated(formulae_or_casks)
+    formulae_or_casks.each do |formula_or_cask|
+      if formula_or_cask.is_a?(Formula)
+        f = formula_or_cask
 
-    if formula_or_cask.is_a?(Formula)
-      f = formula_or_cask
+        if verbose?
+          outdated_kegs = f.outdated_kegs(fetch_head: args.fetch_HEAD?)
 
-      if verbose?
-        outdated_kegs = f.outdated_kegs(fetch_head: args.fetch_HEAD?)
+          current_version = if f.alias_changed?
+            latest = f.latest_formula
+            "#{latest.name} (#{latest.pkg_version})"
+          elsif f.head? && outdated_kegs.any? { |k| k.version.to_s == f.pkg_version.to_s }
+            # There is a newer HEAD but the version number has not changed.
+            "latest HEAD"
+          else
+            f.pkg_version.to_s
+          end
 
-        current_version = if f.alias_changed?
-          latest = f.latest_formula
-          "#{latest.name} (#{latest.pkg_version})"
-        elsif f.head? && outdated_kegs.any? { |k| k.version.to_s == f.pkg_version.to_s }
-          # There is a newer HEAD but the version number has not changed.
-          "latest HEAD"
+          outdated_versions = outdated_kegs
+                              .group_by { |keg| Formulary.from_keg(keg).full_name }
+                              .sort_by { |full_name, _kegs| full_name }
+                              .map do |full_name, kegs|
+            "#{full_name} (#{kegs.map(&:version).join(", ")})"
+          end.join(", ")
+
+          pinned_version = " [pinned at #{f.pinned_version}]" if f.pinned?
+
+          puts "#{outdated_versions} < #{current_version}#{pinned_version}"
+        else
+          puts f.full_installed_specified_name
+        end
+      else
+        c = formula_or_cask
+
+        puts c.outdated_info(args.greedy?, verbose?, false)
+      end
+    end
+  end
+
+  def json_info(formulae_or_casks)
+    formulae_or_casks.map do |formula_or_cask|
+      if formula_or_cask.is_a?(Formula)
+        f = formula_or_cask
+
+        outdated_versions = f.outdated_kegs(fetch_head: args.fetch_HEAD?).map(&:version)
+        current_version = if f.head? && outdated_versions.any? { |v| v.to_s == f.pkg_version.to_s }
+          "HEAD"
         else
           f.pkg_version.to_s
         end
 
-        outdated_versions = outdated_kegs
-                            .group_by { |keg| Formulary.from_keg(keg).full_name }
-                            .sort_by { |full_name, _kegs| full_name }
-                            .map do |full_name, kegs|
-          "#{full_name} (#{kegs.map(&:version).join(", ")})"
-        end.join(", ")
-
-        pinned_version = " [pinned at #{f.pinned_version}]" if f.pinned?
-
-        puts "#{outdated_versions} < #{current_version}#{pinned_version}"
+        { name:               f.full_name,
+          installed_versions: outdated_versions.map(&:to_s),
+          current_version:    current_version,
+          pinned:             f.pinned?,
+          pinned_version:     f.pinned_version }
       else
-        puts f.full_installed_specified_name
+        c = formula_or_cask
+
+        c.outdated_info(args.greedy?, verbose?, true)
       end
-    else
-      c = formula_or_cask
-
-      puts c.outdated_info(args.greedy?, verbose?, false)
-    end
-  end
-
-  def json_info(formula_or_cask)
-    return formula_or_cask.map { |f_or_c| json_info(f_or_c) } if formula_or_cask.is_a? Array
-
-    if formula_or_cask.is_a?(Formula)
-      f = formula_or_cask
-
-      outdated_versions = f.outdated_kegs(fetch_head: args.fetch_HEAD?).map(&:version)
-      current_version = if f.head? && outdated_versions.any? { |v| v.to_s == f.pkg_version.to_s }
-        "HEAD"
-      else
-        f.pkg_version.to_s
-      end
-
-      { name:               f.full_name,
-        installed_versions: outdated_versions.map(&:to_s),
-        current_version:    current_version,
-        pinned:             f.pinned?,
-        pinned_version:     f.pinned_version }
-    else
-      c = formula_or_cask
-
-      c.outdated_info(args.greedy?, verbose?, true)
     end
   end
 
@@ -173,9 +173,11 @@ module Homebrew
   end
 
   def outdated_casks
-    select_outdated(
-      args.named.present? ? args.named.uniq.map { |ref| Cask::CaskLoader.load ref } : Cask::Caskroom.casks,
-    )
+    if args.named.present?
+      select_outdated(args.named.uniq.map(&Cask::CaskLoader.method(:load)))
+    else
+      select_outdated(Cask::Caskroom.casks)
+    end
   end
 
   def outdated_formulae_casks
@@ -190,8 +192,12 @@ module Homebrew
   end
 
   def select_outdated(formulae_or_casks)
-    formulae_or_casks.select do |fc|
-      fc.is_a?(Formula) ? fc.outdated?(fetch_head: args.fetch_HEAD?) : fc.outdated?(args.greedy?)
+    formulae_or_casks.select do |formula_or_cask|
+      if formula_or_cask.is_a?(Formula)
+        formula_or_cask.outdated?(fetch_head: args.fetch_HEAD?)
+      else
+        formula_or_cask.outdated?(args.greedy?)
+      end
     end
   end
 end
