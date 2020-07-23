@@ -63,7 +63,7 @@ module Homebrew
 
   # Create a formula from a tarball URL
   def create
-    create_args.parse
+    args = create_args.parse
 
     # Ensure that the cache exists so we can fetch the tarball
     HOMEBREW_CACHE.mkpath
@@ -75,7 +75,7 @@ module Homebrew
     license = args.set_license
     tap = args.tap
 
-    fc = FormulaCreator.new
+    fc = FormulaCreator.new(args)
     fc.name = name
     fc.version = version
     fc.license = license
