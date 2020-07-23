@@ -31,17 +31,17 @@ module Homebrew
       return
     end
 
-    [["Built-in commands", -> { Commands.internal_commands }],
-     ["Built-in developer commands", -> { Commands.internal_developer_commands }],
-     ["External commands", -> { Commands.external_commands }],
-     ["Cask commands", -> { Commands.cask_internal_commands }],
-     ["External cask commands", -> { Commands.cask_external_commands }]]
-      .each_with_index do |title_and_proc, index|
-      title, proc = title_and_proc
-      cmds = proc.call
-      if cmds.present?
-        puts unless index.zero?
-        ohai title, Formatter.columns(cmds)
+    first = true
+
+    [["Built-in commands", Commands.internal_commands],
+     ["Built-in developer commands", Commands.internal_developer_commands],
+     ["External commands", Commands.external_commands],
+     ["Cask commands", Commands.cask_internal_commands],
+     ["External cask commands", Commands.cask_external_commands]]
+      .each do |title, commands|
+      if commands.present?
+        first = !first && puts
+        ohai title, Formatter.columns(commands)
       end
     end
   end

@@ -155,10 +155,10 @@ module Commands
   def cask_external_commands
     PATH.new(Tap.cmd_directories, ENV["HOMEBREW_PATH"]).flat_map do |search_path|
       find_commands(search_path).map do |possible_command|
-        p = possible_command.to_path
-        command_name = p.match(/brewcask-(.*)\.rb/) { |data| data[1].delete_suffix(".rb") }
+        path = possible_command.to_path
+        command_name = path.match(/brewcask-(.*)\.rb/) { |data| data[1].delete_suffix(".rb") }
         if command_name.blank? && possible_command.executable?
-          command_name = p.match(/brewcask-(.*)/) { |data| data[1] }
+          command_name = path.match(/brewcask-(.*)/) { |data| data[1] }
         end
         command_name
       end.compact
