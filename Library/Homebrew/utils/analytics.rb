@@ -116,9 +116,9 @@ module Utils
         config_delete(:analyticsuuid)
       end
 
-      def output(filter: nil)
-        days = Homebrew.args.days || "30"
-        category = Homebrew.args.category || "install"
+      def output(filter: nil, args:)
+        days = args.days || "30"
+        category = args.category || "install"
         json = formulae_brew_sh_json("analytics/#{category}/#{days}d.json")
         return if json.blank? || json["items"].blank?
 
@@ -147,8 +147,8 @@ module Utils
         table_output(category, days, results, os_version: os_version, cask_install: cask_install)
       end
 
-      def get_analytics(json)
-        full_analytics = Homebrew.args.analytics? || Homebrew.args.verbose?
+      def get_analytics(json, args:)
+        full_analytics = args.analytics? || Homebrew.args.verbose?
 
         ohai "Analytics"
         json["analytics"].each do |category, value|
@@ -158,11 +158,11 @@ module Utils
           value.each do |days, results|
             days = days.to_i
             if full_analytics
-              if Homebrew.args.days.present?
-                next if Homebrew.args.days&.to_i != days
+              if args.days.present?
+                next if args.days&.to_i != days
               end
-              if Homebrew.args.category.present?
-                next if Homebrew.args.category != category
+              if args.category.present?
+                next if args.category != category
               end
 
               table_output(category, days, results)
@@ -176,18 +176,18 @@ module Utils
         end
       end
 
-      def formula_output(f)
+      def formula_output(f, args:)
         json = formulae_brew_sh_json("#{formula_path}/#{f}.json")
         return if json.blank? || json["analytics"].blank?
 
-        get_analytics(json)
+        get_analytics(json, args: args)
       end
 
-      def cask_output(cask)
+      def cask_output(cask, args:)
         json = formulae_brew_sh_json("#{cask_path}/#{cask}.json")
         return if json.blank? || json["analytics"].blank?
 
-        get_analytics(json)
+        get_analytics(json, args: args)
       end
 
       def custom_prefix_label
