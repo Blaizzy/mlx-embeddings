@@ -2763,7 +2763,7 @@ class Formula
 
     # @private
     def allowed_missing_libraries
-      raise NotImplementedError, "#{__method__} is available on Linux only"
+      @allowed_missing_libraries ||= Set.new
     end
   end
 end

@@ -24,12 +24,5 @@ class Formula
 
       allowed_missing_libraries.merge(libraries)
     end
-
-    undef allowed_missing_libraries
-
-    # @private
-    def allowed_missing_libraries
-      @allowed_missing_libraries ||= Set.new
-    end
   end
 end
