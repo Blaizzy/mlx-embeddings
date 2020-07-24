@@ -58,7 +58,9 @@ module Homebrew
     end
 
     if args.publish?
-      safe_system HOMEBREW_BREW_FILE, "pr-publish", *pr_urls
+      publish_args = ["pr-publish"]
+      publish_args << "--tap=#{args.tap}" if args.tap
+      safe_system HOMEBREW_BREW_FILE, *publish_args, *pr_urls
     else
       ohai "Now run:", "  brew pr-publish \\\n    #{pr_urls.join " \\\n    "}"
     end
