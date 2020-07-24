@@ -5,7 +5,7 @@ require "tempfile"
 require "utils/inreplace"
 
 describe StringInreplaceExtension do
-  subject { string.dup.extend(described_class) }
+  subject { described_class.new(string.dup) }
 
   describe "#change_make_var!" do
     context "flag" do
@@ -20,7 +20,7 @@ describe StringInreplaceExtension do
 
         it "is successfully replaced" do
           subject.change_make_var! "FLAG", "def"
-          expect(subject).to eq <<~EOS
+          expect(subject.inreplace_string).to eq <<~EOS
             OTHER=def
             FLAG=def
             FLAG2=abc
@@ -29,7 +29,7 @@ describe StringInreplaceExtension do
 
         it "is successfully appended" do
           subject.change_make_var! "FLAG", "\\1 def"
-          expect(subject).to eq <<~EOS
+          expect(subject.inreplace_string).to eq <<~EOS
             OTHER=def
             FLAG=abc def
             FLAG2=abc
@@ -47,7 +47,7 @@ describe StringInreplaceExtension do
 
         it "is successfully replaced" do
           subject.change_make_var! "CFLAGS", "-O3"
-          expect(subject).to eq <<~EOS
+          expect(subject.inreplace_string).to eq <<~EOS
             CFLAGS=-O3
             LDFLAGS\t=\t-lcrypto -lssl
           EOS
@@ -65,7 +65,7 @@ describe StringInreplaceExtension do
 
         it "is successfully replaced" do
           subject.change_make_var! "CFLAGS", "-O3"
-          expect(subject).to eq <<~EOS
+          expect(subject.inreplace_string).to eq <<~EOS
             CFLAGS=-O3
             LDFLAGS = -lcrypto -lssl
           EOS
@@ -84,7 +84,7 @@ describe StringInreplaceExtension do
 
       it "is successfully replaced" do
         subject.change_make_var! "FLAG", "def"
-        expect(subject).to eq <<~EOS
+        expect(subject.inreplace_string).to eq <<~EOS
           OTHER=def
           FLAG=def
           FLAG2=abc
@@ -102,7 +102,7 @@ describe StringInreplaceExtension do
 
       it "is successfully replaced" do
         subject.change_make_var! "FLAG", "def"
-        expect(subject).to eq <<~EOS
+        expect(subject.inreplace_string).to eq <<~EOS
           FLAG=def
           mv file_a file_b
         EOS
@@ -120,7 +120,7 @@ describe StringInreplaceExtension do
 
       it "is successfully replaced" do
         subject.change_make_var! "FLAG", "def"
-        expect(subject).to eq <<~EOS
+        expect(subject.inreplace_string).to eq <<~EOS
           OTHER=def
           FLAG=def
           FLAG2=abc
@@ -142,7 +142,7 @@ describe StringInreplaceExtension do
 
         it "is successfully removed" do
           subject.remove_make_var! "FLAG"
-          expect(subject).to eq <<~EOS
+          expect(subject.inreplace_string).to eq <<~EOS
             OTHER=def
             FLAG2 = def
           EOS
@@ -159,7 +159,7 @@ describe StringInreplaceExtension do
 
         it "is successfully removed" do
           subject.remove_make_var! "LDFLAGS"
-          expect(subject).to eq <<~EOS
+          expect(subject.inreplace_string).to eq <<~EOS
             CFLAGS\t=\t-Wall -O2
           EOS
         end
@@ -176,7 +176,7 @@ describe StringInreplaceExtension do
 
         it "is successfully removed" do
           subject.remove_make_var! "CFLAGS"
-          expect(subject).to eq <<~EOS
+          expect(subject.inreplace_string).to eq <<~EOS
             LDFLAGS = -lcrypto -lssl
           EOS
         end
@@ -195,7 +195,7 @@ describe StringInreplaceExtension do
 
       specify "are be successfully removed" do
         subject.remove_make_var! ["FLAG", "FLAG2"]
-        expect(subject).to eq <<~EOS
+        expect(subject.inreplace_string).to eq <<~EOS
           OTHER=def
           OTHER2=def
         EOS
@@ -250,7 +250,7 @@ describe StringInreplaceExtension do
 
     it "replaces the first occurrence" do
       subject.sub!("o", "e")
-      expect(subject).to eq("feo")
+      expect(subject.inreplace_string).to eq("feo")
     end
   end
 
@@ -259,7 +259,7 @@ describe StringInreplaceExtension do
 
     it "replaces all occurrences" do
       subject.gsub!("o", "e") # rubocop:disable Performance/StringReplacement
-      expect(subject).to eq("fee")
+      expect(subject.inreplace_string).to eq("fee")
     end
   end
 end
