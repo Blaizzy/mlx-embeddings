@@ -130,7 +130,7 @@ module Homebrew
         fa = formula_auditor "foo", <<~RUBY, spdx_data: spdx_data, new_formula: true
           class Foo < Formula
             url "https://brew.sh/foo-1.0.tgz"
-            license "#{custom_spdx_id}"
+            license "#{license_array}"
           end
         RUBY
 
