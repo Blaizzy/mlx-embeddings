@@ -246,7 +246,7 @@ module ELFShim
       raise ErrorDuringExecution.new(cmd_rpath, status: $CHILD_STATUS, output: [[:stderr, rpath]])
     end
 
-    rpath
+    rpath unless rpath.blank?
   end
 
   def patchelf_patcher
