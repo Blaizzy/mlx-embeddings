@@ -2760,6 +2760,11 @@ class Formula
     def ignore_missing_libraries(*)
       raise FormulaSpecificationError, "#{__method__} is available on Linux only"
     end
+
+    # @private
+    def allowed_missing_libraries
+      @allowed_missing_libraries ||= Set.new
+    end
   end
 end
 

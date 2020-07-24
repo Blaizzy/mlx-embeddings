@@ -16,6 +16,7 @@ class LinkageChecker
     @system_dylibs    = Set.new
     @broken_dylibs    = Set.new
     @unexpected_broken_dylibs = nil
+    @unexpected_present_dylibs = nil
     @variable_dylibs  = Set.new
     @brewed_dylibs    = Hash.new { |h, k| h[k] = Set.new }
     @reverse_links    = Hash.new { |h, k| h[k] = Set.new }
@@ -57,6 +58,7 @@ class LinkageChecker
 
   def display_test_output(puts_output: true)
     display_items "Missing libraries", broken_dylibs_with_expectations, puts_output: puts_output
+    display_items "Unused missing linkage information", unexpected_present_dylibs, puts_output: puts_output
     display_items "Broken dependencies", @broken_deps, puts_output: puts_output
     display_items "Unwanted system libraries", @unwanted_system_dylibs, puts_output: puts_output
     display_items "Conflicting libraries", @version_conflict_deps, puts_output: puts_output
@@ -66,13 +68,15 @@ class LinkageChecker
     elsif unexpected_broken_dylibs.empty?
       puts "No unexpected broken library linkage detected."
     else
-      puts "Broken library linkage detected"
+      puts "Unexpected missing library linkage detected"
     end
+
+    puts "Unexpected non-missing linkage detected" if unexpected_present_dylibs.present?
   end
 
   def broken_library_linkage?
     issues = [@broken_deps, @unwanted_system_dylibs, @version_conflict_deps]
-    [issues, unexpected_broken_dylibs].flatten.any?(&:present?)
+    [issues, unexpected_broken_dylibs, unexpected_present_dylibs].flatten.any?(&:present?)
   end
 
   def unexpected_broken_dylibs
@@ -80,6 +84,19 @@ class LinkageChecker
 
     @unexpected_broken_dylibs = @broken_dylibs.reject do |broken_lib|
       @formula.class.allowed_missing_libraries.any? do |allowed_missing_lib|
+        case allowed_missing_lib
+        when Regexp
+          allowed_missing_lib.match? broken_lib
+        when String
+          broken_lib.include? allowed_missing_lib
+        end
+      end
+    end
+  end
+
+  def unexpected_present_dylibs
+    @unexpected_present_dylibs ||= @formula.class.allowed_missing_libraries.reject do |allowed_missing_lib|
+      @broken_dylibs.any? do |broken_lib|
         case allowed_missing_lib
         when Regexp
           allowed_missing_lib.match? broken_lib
@@ -291,7 +308,11 @@ class LinkageChecker
       end
     else
       things.sort.each do |item|
-        output += "\n  #{item}"
+        output += if item.is_a? Regexp
+          "\n  #{item.inspect}"
+        else
+          "\n  #{item}"
+        end
       end
     end
     puts output if puts_output
