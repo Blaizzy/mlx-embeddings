@@ -38,6 +38,15 @@ module RuboCop
 
         def patch_problems(patch)
           patch_url = string_content(patch)
+
+          if regex_match_group(patch, %r{https://github.com/[^/]*/[^/]*/pull})
+            problem "Use a commit hash URL rather than an unstable pull request URL: #{patch_url}"
+          end
+
+          if regex_match_group(patch, %r{.*gitlab.*/merge_request.*})
+            problem "Use a commit hash URL rather than an unstable merge request URL: #{patch_url}"
+          end
+
           gh_patch_param_pattern = %r{https?://github\.com/.+/.+/(?:commit|pull)/[a-fA-F0-9]*.(?:patch|diff)}
           if regex_match_group(patch, gh_patch_param_pattern)
             unless patch_url.match?(/\?full_index=\w+$/)
@@ -64,13 +73,8 @@ module RuboCop
 
           gh_patch_diff_pattern =
             %r{https?://patch-diff\.githubusercontent\.com/raw/(.+)/(.+)/pull/(.+)\.(?:diff|patch)}
-          if match_obj = regex_match_group(patch, gh_patch_diff_pattern)
-            problem <<~EOS
-              use GitHub pull request URLs:
-                https://github.com/#{match_obj[1]}/#{match_obj[2]}/pull/#{match_obj[3]}.patch?full_index=1
-              Rather than patch-diff:
-                #{patch_url}
-            EOS
+          if regex_match_group(patch, gh_patch_diff_pattern)
+            problem "Use a commit hash URL rather than patch-diff: #{patch_url}"
           end
 
           if regex_match_group(patch, %r{macports/trunk})
