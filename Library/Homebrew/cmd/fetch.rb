@@ -5,6 +5,8 @@ require "fetch"
 require "cli/parser"
 
 module Homebrew
+  extend Fetch
+
   module_function
 
   def fetch_args
@@ -62,7 +64,7 @@ module Homebrew
       f.print_tap_action verb: "Fetching"
 
       fetched_bottle = false
-      if Fetch.fetch_bottle?(f)
+      if fetch_bottle?(f)
         begin
           fetch_formula(f.bottle)
         rescue Interrupt

@@ -36,7 +36,7 @@ module Superenv
   end
 
   # @private
-  def setup_build_environment(formula = nil)
+  def setup_build_environment(formula = nil, args: nil)
     super
     send(compiler)
 

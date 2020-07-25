@@ -5,24 +5,24 @@ require "extend/ENV/shared"
 require "extend/ENV/std"
 require "extend/ENV/super"
 
-def superenv?
-  Homebrew.args.env != "std" && Superenv.bin
+def superenv?(args:)
+  args&.env != "std" && Superenv.bin
 end
 
 module EnvActivation
-  def activate_extensions!
-    if superenv?
+  def activate_extensions!(args:)
+    if superenv?(args: args)
       extend(Superenv)
     else
       extend(Stdenv)
     end
   end
 
-  def with_build_environment
+  def with_build_environment(args:)
     old_env = to_hash.dup
     tmp_env = to_hash.dup.extend(EnvActivation)
-    tmp_env.activate_extensions!
-    tmp_env.setup_build_environment
+    tmp_env.activate_extensions!(args: args)
+    tmp_env.setup_build_environment(args: args)
     replace(tmp_env)
     yield
   ensure

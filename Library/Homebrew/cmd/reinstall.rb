@@ -54,7 +54,7 @@ module Homebrew
   end
 
   def reinstall
-    reinstall_args.parse
+    args = reinstall_args.parse
 
     FormulaInstaller.prevent_build_flags unless DevelopmentTools.installed?
 
@@ -67,11 +67,11 @@ module Homebrew
         next
       end
       Migrator.migrate_if_needed(f)
-      reinstall_formula(f)
+      reinstall_formula(f, args: args)
       Cleanup.install_formula_clean!(f)
     end
 
-    check_installed_dependents
+    check_installed_dependents(args: args)
 
     Homebrew.messages.display_messages
 

@@ -171,7 +171,7 @@ module Homebrew
         Homebrew.args = @args
 
         @args_parsed = true
-        @parser
+        @args
       end
 
       def global_option?(name, desc)

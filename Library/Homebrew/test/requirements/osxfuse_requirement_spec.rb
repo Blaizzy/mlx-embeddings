@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "cli/args"
 require "requirements/osxfuse_requirement"
 
 describe OsxfuseRequirement do
@@ -21,21 +22,23 @@ describe OsxfuseRequirement do
   end
 
   describe "#modify_build_environment", :needs_macos do
+    let(:args) { Homebrew::CLI::Args.new }
+
     it "adds the fuse directories to PKG_CONFIG_PATH" do
       allow(ENV).to receive(:append_path)
-      requirement.modify_build_environment
+      requirement.modify_build_environment(args: args)
       expect(ENV).to have_received(:append_path).with("PKG_CONFIG_PATH", any_args)
     end
 
     it "adds the fuse directories to HOMEBREW_LIBRARY_PATHS" do
       allow(ENV).to receive(:append_path)
-      requirement.modify_build_environment
+      requirement.modify_build_environment(args: args)
       expect(ENV).to have_received(:append_path).with("HOMEBREW_LIBRARY_PATHS", any_args)
     end
 
     it "adds the fuse directories to HOMEBREW_INCLUDE_PATHS" do
       allow(ENV).to receive(:append_path)
-      requirement.modify_build_environment
+      requirement.modify_build_environment(args: args)
       expect(ENV).to have_received(:append_path).with("HOMEBREW_INCLUDE_PATHS", any_args)
     end
   end

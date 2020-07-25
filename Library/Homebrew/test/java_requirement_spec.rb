@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "cli/args"
 require "requirements/java_requirement"
 
 describe JavaRequirement do
@@ -40,14 +41,16 @@ describe JavaRequirement do
   describe "#satisfied?" do
     subject { described_class.new(%w[1.8]) }
 
+    let(:args) { Homebrew::CLI::Args.new }
+
     it "returns false if no `java` executable can be found" do
       allow(File).to receive(:executable?).and_return(false)
-      expect(subject).not_to be_satisfied
+      expect(subject).not_to be_satisfied(args: args)
     end
 
     it "returns true if #preferred_java returns a path" do
       allow(subject).to receive(:preferred_java).and_return(Pathname.new("/usr/bin/java"))
-      expect(subject).to be_satisfied
+      expect(subject).to be_satisfied(args: args)
     end
 
     context "when #possible_javas contains paths" do
@@ -71,17 +74,17 @@ describe JavaRequirement do
 
         it "returns false if all are lower" do
           setup_java_with_version "1.6.0_5"
-          expect(subject).not_to be_satisfied
+          expect(subject).not_to be_satisfied(args: args)
         end
 
         it "returns true if one is equal" do
           setup_java_with_version "1.7.0_5"
-          expect(subject).to be_satisfied
+          expect(subject).to be_satisfied(args: args)
         end
 
         it "returns false if all are higher" do
           setup_java_with_version "1.8.0_5"
-          expect(subject).not_to be_satisfied
+          expect(subject).not_to be_satisfied(args: args)
         end
       end
 
@@ -90,17 +93,17 @@ describe JavaRequirement do
 
         it "returns false if all are lower" do
           setup_java_with_version "1.6.0_5"
-          expect(subject).not_to be_satisfied
+          expect(subject).not_to be_satisfied(args: args)
         end
 
         it "returns true if one is equal" do
           setup_java_with_version "1.7.0_5"
-          expect(subject).to be_satisfied
+          expect(subject).to be_satisfied(args: args)
         end
 
         it "returns true if one is higher" do
           setup_java_with_version "1.8.0_5"
-          expect(subject).to be_satisfied
+          expect(subject).to be_satisfied(args: args)
         end
       end
     end

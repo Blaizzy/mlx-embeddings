@@ -46,7 +46,7 @@ module Cask
 
       def self.info(cask)
         puts get_info(cask)
-        ::Utils::Analytics.cask_output(cask)
+        ::Utils::Analytics.cask_output(cask, args: Homebrew::CLI::Args.new)
       end
 
       def self.title_info(cask)

@@ -6,6 +6,8 @@ require "cask/cmd"
 require "cask/cask_loader"
 
 module Homebrew
+  extend Fetch
+
   module_function
 
   def __cache_args
@@ -58,7 +60,7 @@ module Homebrew
 
   def print_formula_cache(name)
     formula = Formulary.factory name
-    if Fetch.fetch_bottle?(formula)
+    if fetch_bottle?(formula)
       puts formula.bottle.cached_download
     else
       puts formula.cached_download

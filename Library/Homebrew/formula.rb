@@ -1163,11 +1163,11 @@ class Formula
   # yields |self,staging| with current working directory set to the uncompressed tarball
   # where staging is a Mktemp staging context
   # @private
-  def brew(fetch: true)
+  def brew(fetch: true, keep_tmp: false, interactive: false)
     @prefix_returns_versioned_prefix = true
     active_spec.fetch if fetch
-    stage do |staging|
-      staging.retain! if Homebrew.args.keep_tmp?
+    stage(interactive: interactive) do |staging|
+      staging.retain! if keep_tmp
 
       prepare_patches
       fetch_patches if fetch
@@ -1175,7 +1175,7 @@ class Formula
       begin
         yield self, staging
       rescue
-        staging.retain! if Homebrew.args.interactive? || Homebrew.args.debug?
+        staging.retain! if interactive || Homebrew.args.debug?
         raise
       ensure
         cp Dir["config.log", "CMakeCache.txt"], logs
@@ -1792,7 +1792,7 @@ class Formula
   end
 
   # @private
-  def run_test
+  def run_test(keep_tmp: false)
     @prefix_returns_versioned_prefix = true
 
     test_env = {
@@ -1808,7 +1808,7 @@ class Formula
     Utils.set_git_name_email!
 
     mktemp("#{name}-test") do |staging|
-      staging.retain! if Homebrew.args.keep_tmp?
+      staging.retain! if keep_tmp
       @testpath = staging.tmpdir
       test_env[:HOME] = @testpath
       setup_home @testpath
@@ -2134,7 +2134,7 @@ class Formula
     }
   end
 
-  def stage
+  def stage(interactive: false)
     active_spec.stage do |staging|
       @source_modified_time = active_spec.source_modified_time
       @buildpath = Pathname.pwd
@@ -2145,7 +2145,7 @@ class Formula
         HOMEBREW_PATH: nil,
       }
 
-      unless Homebrew.args.interactive?
+      unless interactive
         stage_env[:HOME] = env_home
         stage_env.merge!(common_stage_test_env)
       end
