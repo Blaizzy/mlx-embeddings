@@ -17,10 +17,10 @@ describe FormulaInstaller do
     match(&:poured_from_bottle)
   end
 
-  def temporary_install(formula)
+  def temporary_install(formula, **options)
     expect(formula).not_to be_latest_version_installed
 
-    installer = described_class.new(formula)
+    installer = described_class.new(formula, **options)
 
     installer.fetch
     installer.install
@@ -89,9 +89,7 @@ describe FormulaInstaller do
   end
 
   specify "Formula is not poured from bottle when compiler specified" do
-    expect(Homebrew.args.cc).to be nil
-    Homebrew.install_args.parse(["--cc=clang", "testball_bottle"])
-    temporary_install(TestballBottle.new) do |f|
+    temporary_install(TestballBottle.new, cc: "clang") do |f|
       tab = Tab.for_formula(f)
       expect(tab.compiler).to eq("clang")
     end
