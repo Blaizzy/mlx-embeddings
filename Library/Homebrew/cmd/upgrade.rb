@@ -9,6 +9,8 @@ require "cask/utils"
 require "cask/macos"
 
 module Homebrew
+  extend Install
+
   module_function
 
   def upgrade_args
@@ -77,7 +79,7 @@ module Homebrew
   def upgrade_outdated_formulae(formulae)
     FormulaInstaller.prevent_build_flags unless DevelopmentTools.installed?
 
-    Install.perform_preinstall_checks
+    perform_preinstall_checks
 
     if formulae.blank?
       outdated = Formula.installed.select do |f|
@@ -129,7 +131,7 @@ module Homebrew
 
     check_installed_dependents(args: args)
 
-    Homebrew.messages.display_messages
+    Homebrew.messages.display_messages(display_times: args.display_times?)
   end
 
   def upgrade_outdated_casks(casks)

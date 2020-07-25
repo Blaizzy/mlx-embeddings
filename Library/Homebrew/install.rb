@@ -7,8 +7,6 @@ require "development_tools"
 
 module Homebrew
   module Install
-    module_function
-
     def check_cpu
       return if Hardware::CPU.intel? && Hardware::CPU.is_64_bit?
 
@@ -40,11 +38,11 @@ module Homebrew
     end
 
     def check_cc_argv
-      return unless Homebrew.args.cc
+      return unless (cc = args.cc)
 
       @checks ||= Diagnostic::Checks.new
       opoo <<~EOS
-        You passed `--cc=#{Homebrew.args.cc}`.
+        You passed `--cc=#{cc}`.
         #{@checks.please_create_pull_requests}
       EOS
     end

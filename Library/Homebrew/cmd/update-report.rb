@@ -38,7 +38,7 @@ module Homebrew
   end
 
   def update_report
-    update_report_args.parse
+    args = update_report_args.parse
 
     if !Utils::Analytics.messages_displayed? &&
        !Utils::Analytics.disabled? &&
@@ -122,7 +122,7 @@ module Homebrew
       else
         hub.dump(updated_formula_report: !args.preinstall?)
         hub.reporters.each(&:migrate_tap_migration)
-        hub.reporters.each(&:migrate_formula_rename)
+        hub.reporters.each { |r| r.migrate_formula_rename(force: args.force?) }
         CacheStoreDatabase.use(:descriptions) do |db|
           DescriptionCacheStore.new(db)
                                .update_from_report!(hub)
@@ -373,7 +373,7 @@ class Reporter
     end
   end
 
-  def migrate_formula_rename
+  def migrate_formula_rename(force:)
     Formula.installed.each do |formula|
       next unless Migrator.needs_migration?(formula)
 
@@ -397,7 +397,7 @@ class Reporter
         next
       end
 
-      Migrator.migrate_if_needed(f)
+      Migrator.migrate_if_needed(f, force: force)
     end
   end
 

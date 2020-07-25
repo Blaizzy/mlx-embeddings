@@ -97,18 +97,18 @@ class Migrator
     true
   end
 
-  def self.migrate_if_needed(formula)
+  def self.migrate_if_needed(formula, force:)
     return unless Migrator.needs_migration?(formula)
 
     begin
-      migrator = Migrator.new(formula)
+      migrator = Migrator.new(formula, force: force)
       migrator.migrate
     rescue => e
       onoe e
     end
   end
 
-  def initialize(formula, force: Homebrew.args.force?)
+  def initialize(formula, force: false)
     @oldname = formula.oldname
     @newname = formula.name
     raise MigratorNoOldnameError, formula unless oldname

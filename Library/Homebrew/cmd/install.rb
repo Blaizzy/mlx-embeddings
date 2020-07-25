@@ -10,9 +10,10 @@ require "cli/parser"
 require "upgrade"
 
 module Homebrew
-  module_function
-
+  extend Install
   extend Search
+
+  module_function
 
   def install_args
     Homebrew::CLI::Parser.new do
@@ -255,17 +256,17 @@ module Homebrew
 
     return if formulae.empty?
 
-    Install.perform_preinstall_checks
+    perform_preinstall_checks
 
     formulae.each do |f|
-      Migrator.migrate_if_needed(f)
+      Migrator.migrate_if_needed(f, force: args.force?)
       install_formula(f)
       Cleanup.install_formula_clean!(f)
     end
 
     check_installed_dependents(args: args)
 
-    Homebrew.messages.display_messages
+    Homebrew.messages.display_messages(display_times: args.display_times?)
   rescue FormulaUnreadableError, FormulaClassUnavailableError,
          TapFormulaUnreadableError, TapFormulaClassUnavailableError => e
     # Need to rescue before `FormulaUnavailableError` (superclass of this)
