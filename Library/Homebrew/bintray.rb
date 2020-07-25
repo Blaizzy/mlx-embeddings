@@ -25,8 +25,8 @@ class Bintray
     args = extra_curl_args
 
     if auth
-      raise UsageError, "HOMEBREW_BINTRAY_USER is unset." unless (user = EnvConfig.bintray_user)
-      raise UsageError, "HOMEBREW_BINTRAY_KEY is unset." unless (key = EnvConfig.bintray_key)
+      raise UsageError, "HOMEBREW_BINTRAY_USER is unset." unless (user = Homebrew::EnvConfig.bintray_user)
+      raise UsageError, "HOMEBREW_BINTRAY_KEY is unset." unless (key = Homebrew::EnvConfig.bintray_key)
 
       args += ["--user", "#{user}:#{key}"]
     end
