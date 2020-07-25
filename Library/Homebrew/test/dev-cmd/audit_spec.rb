@@ -94,7 +94,6 @@ module Homebrew
         fa = formula_auditor "foo", <<~RUBY, spdx_data: spdx_data, new_formula: false
           class Foo < Formula
             url "https://brew.sh/foo-1.0.tgz"
-            license ""
           end
         RUBY
 
@@ -106,7 +105,6 @@ module Homebrew
         fa = formula_auditor "foo", <<~RUBY, spdx_data: spdx_data, new_formula: true
           class Foo < Formula
             url "https://brew.sh/foo-1.0.tgz"
-            license ""
           end
         RUBY
 
@@ -123,19 +121,19 @@ module Homebrew
         RUBY
 
         fa.audit_license
-        expect(fa.problems.first).to match "Formula foo contains non standard SPDX license: [\"zzz\"]."
+        expect(fa.problems.first).to match "Formula foo contains non-standard SPDX licenses: [\"zzz\"]."
       end
 
       it "detects if license array contains a non-standard spdx-id" do
         fa = formula_auditor "foo", <<~RUBY, spdx_data: spdx_data, new_formula: true
           class Foo < Formula
             url "https://brew.sh/foo-1.0.tgz"
-            license "#{license_array}"
+            license #{license_array_nonstandard}
           end
         RUBY
 
         fa.audit_license
-        expect(fa.problems.first).to match "Formula foo contains non standard SPDX license: [\"zzz\"]."
+        expect(fa.problems.first).to match "Formula foo contains non-standard SPDX licenses: [\"zzz\"]."
       end
 
       it "verifies that a license info is a standard spdx id" do
