@@ -632,7 +632,10 @@ module Homebrew
       "libepoxy"            => "1.5",
     }.freeze
 
-    GITHUB_PRERELEASE_ALLOWLIST = %w[].freeze
+    GITHUB_PRERELEASE_ALLOWLIST = {
+      "gitless"      => "0.8.8",
+      "telegram-cli" => "1.3.1",
+    }.freeze
 
     # version_prefix = stable_version_string.sub(/\d+$/, "")
     # version_prefix = stable_version_string.split(".")[0..1].join(".")
