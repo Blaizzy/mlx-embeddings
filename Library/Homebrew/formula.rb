@@ -2215,7 +2215,7 @@ class Formula
       if args.nil?
         @licenses
       else
-        @licenses = Array(args) unless args == ""
+        @licenses = Array(args)
       end
     end
 

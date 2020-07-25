@@ -1131,7 +1131,7 @@ class FormulaInstaller
     end
     return if @only_deps
 
-    return unless formula.license.all? { |lic| forbidden_licenses.include? lic }
+    return unless formula.license.all? { |license| forbidden_licenses.include? license }
 
     raise CannotInstallFormulaError, <<~EOS
       #{formula.name}'s licenses are all forbidden: #{formula.license}.
