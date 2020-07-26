@@ -33,13 +33,17 @@ module Homebrew
   end
 
   def check_bottled_formulae(json_files)
-    json_files.reduce({}) { |hash, json| hash.deep_merge(JSON.parse(IO.read(json))) }.each do |name, hash|
+    hashes = json_files.reduce({}) do |hash, json|
+      hash.deep_merge(JSON.parse(IO.read(json)))
+    end
+
+    hashes.each do |name, hash|
       formula_path = HOMEBREW_REPOSITORY/hash["formula"]["path"]
       formula_version = Formulary::FormulaLoader.new(name, formula_path).get_formula("stable").version
       bottle_version = Version.new hash["formula"]["pkg_version"]
-      if formula_version != bottle_version
-        odie "Bottles are for #{name} #{bottle_version} but formula is version #{formula_version}!"
-      end
+      next if formula_version == bottle_version
+
+      odie "Bottles are for #{name} #{bottle_version} but formula is version #{formula_version}!"
     end
   end
 
@@ -61,7 +65,7 @@ module Homebrew
 
     if args.dry_run?
       puts "brew #{bottle_args.join " "}"
-      puts "Upload bottles described by these JSON files to Bintray:\n  #{Dir["*.json"].join("\n  ")}"
+      puts "Upload bottles described by these JSON files to Bintray:\n  #{json_files.join("\n  ")}"
     else
       check_bottled_formulae(json_files)
       safe_system HOMEBREW_BREW_FILE, *bottle_args
