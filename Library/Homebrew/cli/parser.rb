@@ -360,7 +360,7 @@ module Homebrew
         named_args.map do |arg|
           next if arg.match?(HOMEBREW_CASK_TAP_CASK_REGEX)
 
-          Formulary.factory(arg, spec)
+          Formulary.factory(arg, spec, flags: @args.flags_only)
         end.compact.uniq(&:name)
       end
     end

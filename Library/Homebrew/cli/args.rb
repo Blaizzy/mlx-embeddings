@@ -86,7 +86,7 @@ module Homebrew
         require "formula"
 
         @formulae ||= (downcased_unique_named - casks).map do |name|
-          Formulary.factory(name, spec)
+          Formulary.factory(name, spec, force_bottle: force_bottle?, flags: flags_only)
         end.uniq(&:name).freeze
       end
 
@@ -94,7 +94,7 @@ module Homebrew
         require "formula"
 
         @resolved_formulae ||= (downcased_unique_named - casks).map do |name|
-          Formulary.resolve(name, spec: spec(nil))
+          Formulary.resolve(name, spec: spec(nil), force_bottle: force_bottle?, flags: flags_only)
         end.uniq(&:name).freeze
       end
 
@@ -104,7 +104,8 @@ module Homebrew
           casks = []
 
           downcased_unique_named.each do |name|
-            resolved_formulae << Formulary.resolve(name, spec: spec(nil))
+            resolved_formulae << Formulary.resolve(name, spec: spec(nil),
+            force_bottle: force_bottle?, flags: flags_only)
           rescue FormulaUnavailableError
             begin
               casks << Cask::CaskLoader.load(name)

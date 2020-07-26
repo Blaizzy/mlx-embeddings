@@ -16,7 +16,7 @@ describe Formulary do
         bottle do
           cellar :any_skip_relocation
           root_url "file://#{bottle_dir}"
-          sha256 "d48bbbe583dcfbfa608579724fc6f0328b3cd316935c6ea22f134610aaf2952f" => :#{Utils::Bottles.tag}
+          sha256 "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149" => :#{Utils::Bottles.tag}
         end
 
         def install
