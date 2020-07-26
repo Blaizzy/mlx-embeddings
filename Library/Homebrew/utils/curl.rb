@@ -127,6 +127,8 @@ def curl_check_http_content(url, user_agents: [:default], check_content: false, 
     return "The URL #{url} is not reachable"
   end
 
+  return "#{url} permanently redirects to #{details[:permanent_redirect]}" if url != details[:permanent_redirect]
+
   unless http_status_ok?(details[:status])
     return "The URL #{url} is not reachable (HTTP status code #{details[:status]})"
   end
@@ -201,21 +203,25 @@ def curl_http_content_headers_and_checksum(url, hash_needed: false, user_agent: 
   while status_code == :unknown || status_code.to_s.start_with?("3")
     headers, _, output = output.partition("\r\n\r\n")
     status_code = headers[%r{HTTP/.* (\d+)}, 1]
-    final_url = headers[/^Location:\s*(.*)$/i, 1]&.chomp
+    location = headers[/^Location:\s*(.*)$/i, 1]
+    final_url = location.chomp if location
+    permanent_redirect = location.chomp if status_code == "301"
   end
 
   output_hash = Digest::SHA256.file(file.path) if hash_needed
 
   final_url ||= url
+  permanent_redirect ||= url
 
   {
-    url:            url,
-    final_url:      final_url,
-    status:         status_code,
-    etag:           headers[%r{ETag: ([wW]/)?"(([^"]|\\")*)"}, 2],
-    content_length: headers[/Content-Length: (\d+)/, 1],
-    file_hash:      output_hash,
-    file:           output,
+    url:                url,
+    final_url:          final_url,
+    permanent_redirect: permanent_redirect,
+    status:             status_code,
+    etag:               headers[%r{ETag: ([wW]/)?"(([^"]|\\")*)"}, 2],
+    content_length:     headers[/Content-Length: (\d+)/, 1],
+    file_hash:          output_hash,
+    file:               output,
   }
 ensure
   file.unlink

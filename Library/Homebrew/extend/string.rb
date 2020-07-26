@@ -3,22 +3,27 @@
 require "active_support/core_ext/object/blank"
 
 # Used by the inreplace function (in `utils.rb`).
-module StringInreplaceExtension
-  attr_accessor :errors
+class StringInreplaceExtension
+  attr_accessor :errors, :inreplace_string
+
+  def initialize(str)
+    @inreplace_string = str
+    @errors = []
+  end
 
   def self.extended(str)
     str.errors = []
   end
 
   def sub!(before, after)
-    result = super
+    result = inreplace_string.sub!(before, after)
     errors << "expected replacement of #{before.inspect} with #{after.inspect}" unless result
     result
   end
 
   # Warn if nothing was replaced
   def gsub!(before, after, audit_result = true)
-    result = super(before, after)
+    result = inreplace_string.gsub!(before, after)
     errors << "expected replacement of #{before.inspect} with #{after.inspect}" if audit_result && result.nil?
     result
   end
@@ -43,6 +48,6 @@ module StringInreplaceExtension
 
   # Finds the specified variable
   def get_make_var(flag)
-    self[/^#{Regexp.escape(flag)}[ \t]*[\\?+:!]?=[ \t]*((?:.*\\\n)*.*)$/, 1]
+    inreplace_string[/^#{Regexp.escape(flag)}[ \t]*[\\?+:!]?=[ \t]*((?:.*\\\n)*.*)$/, 1]
   end
 end

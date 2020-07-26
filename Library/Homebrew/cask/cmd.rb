@@ -65,8 +65,7 @@ module Cask
 
     option "--help", :help, false
 
-    # handled in OS::Mac
-    option "--language a,b,c", ->(*) {}
+    option "--language=a,b,c", ->(value) { Config.global.languages = value }
 
     # override default handling of --version
     option "--version", ->(*) { raise OptionParser::InvalidOption }
@@ -180,8 +179,6 @@ module Cask
     end
 
     def process_options(*args)
-      exclude_regex = /^--#{Regexp.union(*Config::DEFAULT_DIRS.keys.map(&Regexp.public_method(:escape)))}=/
-
       non_options = []
 
       if idx = args.index("--")
@@ -189,15 +186,31 @@ module Cask
         args = args.first(idx)
       end
 
+      exclude_regex = /^--#{Regexp.union(*Config::DEFAULT_DIRS.keys.map(&Regexp.public_method(:escape)))}=/
       cask_opts = Shellwords.shellsplit(ENV.fetch("HOMEBREW_CASK_OPTS", ""))
                             .reject { |arg| arg.match?(exclude_regex) }
 
       all_args = cask_opts + args
 
-      remaining = all_args.select do |arg|
-        !process_arguments([arg]).empty?
-      rescue OptionParser::InvalidOption, OptionParser::MissingArgument, OptionParser::AmbiguousOption
-        true
+      i = 0
+      remaining = []
+
+      while i < all_args.count
+        begin
+          arg = all_args[i]
+
+          remaining << arg unless process_arguments([arg]).empty?
+        rescue OptionParser::MissingArgument
+          raise if i + 1 >= all_args.count
+
+          args = all_args[i..(i + 1)]
+          process_arguments(args)
+          i += 1
+        rescue OptionParser::InvalidOption
+          remaining << arg
+        end
+
+        i += 1
       end
 
       remaining + non_options

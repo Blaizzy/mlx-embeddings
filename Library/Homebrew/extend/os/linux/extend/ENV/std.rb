@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Stdenv
-  def setup_build_environment(formula = nil)
-    generic_setup_build_environment(formula)
+  def setup_build_environment(formula = nil, args: nil)
+    generic_setup_build_environment(formula, args: args)
 
     prepend_path "CPATH", HOMEBREW_PREFIX/"include"
     prepend_path "LIBRARY_PATH", HOMEBREW_PREFIX/"lib"

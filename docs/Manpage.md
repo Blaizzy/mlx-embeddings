@@ -559,10 +559,10 @@ the upgraded formulae or, every 30 days, for all formulae.
 
 ### `uses` [*`options`*] *`formula`*
 
-Show formulae that specify *`formula`* as a dependency. When given multiple
-formula arguments, show the intersection of formulae that use *`formula`*. By
-default, `uses` shows all formulae that specify *`formula`* as a required or
-recommended dependency for their stable builds.
+Show formulae that specify *`formula`* as a dependency (i.e. show dependents of
+*`formula`*). When given multiple formula arguments, show the intersection of
+formulae that use *`formula`*. By default, `uses` shows all formulae that specify
+*`formula`* as a required or recommended dependency for their stable builds.
 
 * `--recursive`:
   Resolve more than one level of dependencies.
@@ -724,8 +724,6 @@ URL-and-SHA-256 style specification into a tag-and-revision style specification,
 nor vice versa. It must use whichever style specification the formula already
 uses.
 
-* `--devel`:
-  Bump the development rather than stable version. The development spec must already exist.
 * `-n`, `--dry-run`:
   Print what would be done rather than doing it.
 * `--write`:
@@ -776,8 +774,7 @@ Display the path to the file being used when invoking `brew` *`cmd`*.
 Generate a formula for the downloadable file at *`URL`* and open it in the editor.
 Homebrew will attempt to automatically derive the formula name and version, but
 if it fails, you'll have to make your own template. The `wget` formula serves as
-a simple example. For the complete API, see:
-<http://www.rubydoc.info/github/Homebrew/brew/master/Formula>
+a simple example. For the complete API, see: <https://rubydoc.brew.sh/Formula>
 
 * `--autotools`:
   Create a basic template for an Autotools-style build.

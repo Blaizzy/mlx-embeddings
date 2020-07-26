@@ -5,8 +5,12 @@ require "erb"
 
 module Homebrew
   class FormulaCreator
-    attr_reader :url, :sha256, :desc, :homepage
+    attr_reader :args, :url, :sha256, :desc, :homepage
     attr_accessor :name, :version, :tap, :path, :mode, :license
+
+    def initialize(args)
+      @args = args
+    end
 
     def url=(url)
       @url = url
@@ -41,11 +45,11 @@ module Homebrew
     end
 
     def fetch?
-      !Homebrew.args.no_fetch?
+      !args.no_fetch?
     end
 
     def head?
-      @head || Homebrew.args.HEAD?
+      @head || args.HEAD?
     end
 
     def generate!

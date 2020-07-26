@@ -723,7 +723,7 @@ Print install times for each formula at the end of the run\.
 Show what would be upgraded, but do not actually upgrade anything\.
 .
 .SS "\fBuses\fR [\fIoptions\fR] \fIformula\fR"
-Show formulae that specify \fIformula\fR as a dependency\. When given multiple formula arguments, show the intersection of formulae that use \fIformula\fR\. By default, \fBuses\fR shows all formulae that specify \fIformula\fR as a required or recommended dependency for their stable builds\.
+Show formulae that specify \fIformula\fR as a dependency (i\.e\. show dependents of \fIformula\fR)\. When given multiple formula arguments, show the intersection of formulae that use \fIformula\fR\. By default, \fBuses\fR shows all formulae that specify \fIformula\fR as a required or recommended dependency for their stable builds\.
 .
 .TP
 \fB\-\-recursive\fR
@@ -929,10 +929,6 @@ If a \fIversion\fR is specified, a best effort to determine the \fIURL\fR and \f
 \fINote:\fR this command cannot be used to transition a formula from a URL\-and\-SHA\-256 style specification into a tag\-and\-revision style specification, nor vice versa\. It must use whichever style specification the formula already uses\.
 .
 .TP
-\fB\-\-devel\fR
-Bump the development rather than stable version\. The development spec must already exist\.
-.
-.TP
 \fB\-n\fR, \fB\-\-dry\-run\fR
 Print what would be done rather than doing it\.
 .
@@ -1002,7 +998,7 @@ Display the source of \fIformula\fR\.
 Display the path to the file being used when invoking \fBbrew\fR \fIcmd\fR\.
 .
 .SS "\fBcreate\fR [\fIoptions\fR] \fIURL\fR"
-Generate a formula for the downloadable file at \fIURL\fR and open it in the editor\. Homebrew will attempt to automatically derive the formula name and version, but if it fails, you\'ll have to make your own template\. The \fBwget\fR formula serves as a simple example\. For the complete API, see: \fIhttp://www\.rubydoc\.info/github/Homebrew/brew/master/Formula\fR
+Generate a formula for the downloadable file at \fIURL\fR and open it in the editor\. Homebrew will attempt to automatically derive the formula name and version, but if it fails, you\'ll have to make your own template\. The \fBwget\fR formula serves as a simple example\. For the complete API, see: \fIhttps://rubydoc\.brew\.sh/Formula\fR
 .
 .TP
 \fB\-\-autotools\fR

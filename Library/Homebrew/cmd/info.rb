@@ -96,7 +96,7 @@ module Homebrew
   def print_info
     if args.no_named?
       if args.analytics?
-        Utils::Analytics.output
+        Utils::Analytics.output(args: args)
       elsif HOMEBREW_CELLAR.exist?
         count = Formula.racks.length
         puts "#{count} #{"keg".pluralize(count)}, #{HOMEBREW_CELLAR.dup.abv}"
@@ -107,13 +107,13 @@ module Homebrew
         begin
           formula = Formulary.factory(f)
           if args.analytics?
-            Utils::Analytics.formula_output(formula)
+            Utils::Analytics.formula_output(formula, args: args)
           else
-            info_formula(formula)
+            info_formula(formula, args: args)
           end
         rescue FormulaUnavailableError => e
           if args.analytics?
-            Utils::Analytics.output(filter: f)
+            Utils::Analytics.output(filter: f, args: args)
             next
           end
           ofail e.message
@@ -159,7 +159,7 @@ module Homebrew
     end
   end
 
-  def info_formula(f)
+  def info_formula(f, args:)
     specs = []
 
     if stable = f.stable
@@ -239,7 +239,7 @@ module Homebrew
     caveats = Caveats.new(f)
     ohai "Caveats", caveats.to_s unless caveats.empty?
 
-    Utils::Analytics.formula_output(f)
+    Utils::Analytics.formula_output(f, args: args)
   end
 
   def decorate_dependencies(dependencies)
@@ -256,7 +256,7 @@ module Homebrew
   def decorate_requirements(requirements)
     req_status = requirements.map do |req|
       req_s = req.display_s
-      req.satisfied? ? pretty_installed(req_s) : pretty_uninstalled(req_s)
+      req.satisfied?(args: args) ? pretty_installed(req_s) : pretty_uninstalled(req_s)
     end
     req_status.join(", ")
   end

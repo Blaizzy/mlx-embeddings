@@ -9,7 +9,7 @@ require "cleanup"
 module Homebrew
   module_function
 
-  def upgrade_formulae(formulae_to_install)
+  def upgrade_formulae(formulae_to_install, args:)
     return if formulae_to_install.empty?
     return if args.dry_run?
 
@@ -28,7 +28,7 @@ module Homebrew
     formulae_to_install.each do |f|
       Migrator.migrate_if_needed(f)
       begin
-        upgrade_formula(f)
+        upgrade_formula(f, args: args)
         Cleanup.install_formula_clean!(f)
       rescue UnsatisfiedRequirements => e
         Homebrew.failed = true
@@ -37,7 +37,7 @@ module Homebrew
     end
   end
 
-  def upgrade_formula(f)
+  def upgrade_formula(f, args:)
     return if args.dry_run?
 
     if f.opt_prefix.directory?
@@ -63,8 +63,11 @@ module Homebrew
     options |= f.build.used_options
     options &= f.options
 
-    fi = FormulaInstaller.new(f)
+    fi = FormulaInstaller.new(f, force_bottle: args.force_bottle?, include_test: args.include_test?,
+                              build_from_source: args.build_from_source?)
     fi.options = options
+    fi.force = args.force?
+    fi.keep_tmp = args.keep_tmp?
     fi.build_bottle = args.build_bottle?
     fi.installed_on_request = args.named.present?
     fi.link_keg           ||= keg_was_linked if keg_had_linked_opt
@@ -112,7 +115,7 @@ module Homebrew
     end
   end
 
-  def check_installed_dependents
+  def check_installed_dependents(args:)
     installed_formulae = FormulaInstaller.installed.to_a
     return if installed_formulae.empty?
 
@@ -156,7 +159,7 @@ module Homebrew
       puts formulae_upgrades.join(", ")
     end
 
-    upgrade_formulae(upgradeable_dependents)
+    upgrade_formulae(upgradeable_dependents, args: args)
 
     # Assess the dependents tree again now we've upgraded.
     oh1 "Checking for dependents of upgraded formulae..." unless args.dry_run?
@@ -213,7 +216,7 @@ module Homebrew
     return if args.dry_run?
 
     reinstallable_broken_dependents.each do |f|
-      reinstall_formula(f, build_from_source: true)
+      reinstall_formula(f, build_from_source: true, args: args)
     rescue FormulaInstallationAlreadyAttemptedError
       # We already attempted to reinstall f as part of the dependency tree of
       # another formula. In that case, don't generate an error, just move on.

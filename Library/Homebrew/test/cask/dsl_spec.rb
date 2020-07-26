@@ -118,8 +118,8 @@ describe Cask::DSL, :cask do
   end
 
   describe "language stanza" do
-    it "allows multilingual casks" do
-      cask = lambda do
+    context "when language is set explicitly" do
+      subject(:cask) {
         Cask::Cask.new("cask-with-apps") do
           language "zh" do
             sha256 "abc123"
@@ -133,37 +133,65 @@ describe Cask::DSL, :cask do
 
           url "https://example.org/#{language}.zip"
         end
+      }
+
+      matcher :be_the_chinese_version do
+        match do |cask|
+          expect(cask.language).to eq("zh-CN")
+          expect(cask.sha256).to eq("abc123")
+          expect(cask.url.to_s).to eq("https://example.org/zh-CN.zip")
+        end
       end
 
-      allow(MacOS).to receive(:languages).and_return(["zh"])
-      expect(cask.call.language).to eq("zh-CN")
-      expect(cask.call.sha256).to eq("abc123")
-      expect(cask.call.url.to_s).to eq("https://example.org/zh-CN.zip")
+      matcher :be_the_english_version do
+        match do |cask|
+          expect(cask.language).to eq("en-US")
+          expect(cask.sha256).to eq("xyz789")
+          expect(cask.url.to_s).to eq("https://example.org/en-US.zip")
+        end
+      end
 
-      allow(MacOS).to receive(:languages).and_return(["zh-XX"])
-      expect(cask.call.language).to eq("zh-CN")
-      expect(cask.call.sha256).to eq("abc123")
-      expect(cask.call.url.to_s).to eq("https://example.org/zh-CN.zip")
+      before do
+        config = cask.config
+        config.languages = languages
+        cask.config = config
+      end
 
-      allow(MacOS).to receive(:languages).and_return(["en"])
-      expect(cask.call.language).to eq("en-US")
-      expect(cask.call.sha256).to eq("xyz789")
-      expect(cask.call.url.to_s).to eq("https://example.org/en-US.zip")
+      context "to 'zh'" do
+        let(:languages) { ["zh"] }
 
-      allow(MacOS).to receive(:languages).and_return(["xx-XX"])
-      expect(cask.call.language).to eq("en-US")
-      expect(cask.call.sha256).to eq("xyz789")
-      expect(cask.call.url.to_s).to eq("https://example.org/en-US.zip")
+        it { is_expected.to be_the_chinese_version }
+      end
 
-      allow(MacOS).to receive(:languages).and_return(["xx-XX", "zh", "en"])
-      expect(cask.call.language).to eq("zh-CN")
-      expect(cask.call.sha256).to eq("abc123")
-      expect(cask.call.url.to_s).to eq("https://example.org/zh-CN.zip")
+      context "to 'zh-XX'" do
+        let(:languages) { ["zh-XX"] }
 
-      allow(MacOS).to receive(:languages).and_return(["xx-XX", "en-US", "zh"])
-      expect(cask.call.language).to eq("en-US")
-      expect(cask.call.sha256).to eq("xyz789")
-      expect(cask.call.url.to_s).to eq("https://example.org/en-US.zip")
+        it { is_expected.to be_the_chinese_version }
+      end
+
+      context "to 'en'" do
+        let(:languages) { ["en"] }
+
+        it { is_expected.to be_the_english_version }
+      end
+
+      context "to 'xx-XX'" do
+        let(:languages) { ["xx-XX"] }
+
+        it { is_expected.to be_the_english_version }
+      end
+
+      context "to 'xx-XX,zh,en'" do
+        let(:languages) { ["xx-XX", "zh", "en"] }
+
+        it { is_expected.to be_the_chinese_version }
+      end
+
+      context "to 'xx-XX,en-US,zh'" do
+        let(:languages) { ["xx-XX", "en-US", "zh"] }
+
+        it { is_expected.to be_the_english_version }
+      end
     end
 
     it "returns an empty array if no languages are specified" do

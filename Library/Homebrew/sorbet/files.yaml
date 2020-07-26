@@ -82,7 +82,6 @@ false:
   - ./cask/verify.rb
   - ./caveats.rb
   - ./cleanup.rb
-  - ./cli/args.rb
   - ./cli/parser.rb
   - ./cmd/--cache.rb
   - ./cmd/--cellar.rb
@@ -212,11 +211,8 @@ false:
   - ./formula_versions.rb
   - ./formulary.rb
   - ./global.rb
-  - ./help.rb
   - ./install.rb
   - ./keg.rb
-  - ./language/go.rb
-  - ./language/java.rb
   - ./language/node.rb
   - ./language/python.rb
   - ./linkage_checker.rb
@@ -460,13 +456,8 @@ false:
   - ./cask/dsl/version.rb
   - ./cask/topological_hash.rb
   - ./cmd/cask.rb
-  - ./compat/extend/nil.rb
-  - ./compat/extend/string.rb
-  - ./compat/formula.rb
   - ./compat/language/haskell.rb
   - ./compat/language/java.rb
-  - ./compat/os/mac.rb
-  - ./dependable.rb
   - ./extend/git_repository.rb
   - ./extend/hash_validator.rb
   - ./extend/io.rb
@@ -484,12 +475,7 @@ false:
   - ./extend/os/mac/requirements/osxfuse_requirement.rb
   - ./extend/predicable.rb
   - ./extend/string.rb
-  - ./fetch.rb
-  - ./formula_pin.rb
-  - ./hardware.rb
   - ./keg_relocate.rb
-  - ./language/perl.rb
-  - ./messages.rb
   - ./mktemp.rb
   - ./options.rb
   - ./os/linux/elf.rb
@@ -618,6 +604,7 @@ false:
   - ./test/options_spec.rb
   - ./test/os/linux/diagnostic_spec.rb
   - ./test/os/linux/formula_spec.rb
+  - ./test/os/linux/pathname_spec.rb
   - ./test/os/mac/dependency_collector_spec.rb
   - ./test/os/mac/java_requirement_spec.rb
   - ./test/os/mac/keg_spec.rb
@@ -837,7 +824,6 @@ false:
   - ./test/version_spec.rb
   - ./unpack_strategy/uncompressed.rb
   - ./utils/gems.rb
-  - ./utils/inreplace.rb
   - ./version.rb
 
 true:
@@ -849,8 +835,14 @@ true:
   - ./cask/url.rb
   - ./checksum.rb
   - ./cleaner.rb
+  - ./cli/args.rb
+  - ./compat/extend/nil.rb
+  - ./compat/extend/string.rb
+  - ./compat/formula.rb
+  - ./compat/os/mac.rb
   - ./compilers.rb
   - ./config.rb
+  - ./dependable.rb
   - ./dependency_collector.rb
   - ./description_cache_store.rb
   - ./descriptions.rb
@@ -865,14 +857,22 @@ true:
   - ./extend/os/mac/keg.rb
   - ./extend/os/mac/resource.rb
   - ./extend/os/mac/utils/analytics.rb
+  - ./fetch.rb
   - ./formula_free_port.rb
+  - ./formula_pin.rb
   - ./formula_support.rb
+  - ./hardware.rb
+  - ./help.rb
   - ./install_renamed.rb
+  - ./language/go.rb
+  - ./language/java.rb
+  - ./language/perl.rb
   - ./lazy_object.rb
   - ./linkage_cache_store.rb
   - ./livecheck.rb
   - ./load_path.rb
   - ./locale.rb
+  - ./messages.rb
   - ./metafiles.rb
   - ./official_taps.rb
   - ./os.rb
@@ -888,6 +888,7 @@ true:
   - ./test/support/helper/fixtures.rb
   - ./test/support/lib/config.rb
   - ./utils/bottles.rb
+  - ./utils/inreplace.rb
   - ./utils/link.rb
   - ./utils/notability.rb
   - ./utils/shebang.rb

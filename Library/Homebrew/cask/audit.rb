@@ -17,12 +17,12 @@ module Cask
 
     attr_predicate :appcast?
 
-    def initialize(cask, appcast: false, download: false,
+    def initialize(cask, appcast: false, download: false, quarantine: nil,
                    token_conflicts: false, online: false, strict: false,
                    new_cask: false, commit_range: nil, command: SystemCommand)
       @cask = cask
       @appcast = appcast
-      @download = download
+      @download = Download.new(cask, quarantine: quarantine) if download
       @online = online
       @strict = strict
       @new_cask = new_cask

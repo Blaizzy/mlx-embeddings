@@ -195,6 +195,20 @@ module Homebrew
       end
     end
 
+    describe "#audit_github_repository_archived" do
+      specify "#audit_github_repository_archived when HOMEBREW_NO_GITHUB_API is set" do
+        fa = formula_auditor "foo", <<~RUBY, strict: true, online: true
+          class Foo < Formula
+            homepage "https://github.com/example/example"
+            url "https://brew.sh/foo-1.0.tgz"
+          end
+        RUBY
+
+        fa.audit_github_repository_archived
+        expect(fa.problems).to eq([])
+      end
+    end
+
     describe "#audit_gitlab_repository" do
       specify "#audit_gitlab_repository for stars, forks and creation date" do
         fa = formula_auditor "foo", <<~RUBY, strict: true, online: true
@@ -205,6 +219,20 @@ module Homebrew
         RUBY
 
         fa.audit_gitlab_repository
+        expect(fa.problems).to eq([])
+      end
+    end
+
+    describe "#audit_gitlab_repository_archived" do
+      specify "#audit gitlab repository for archived status" do
+        fa = formula_auditor "foo", <<~RUBY, strict: true, online: true
+          class Foo < Formula
+            homepage "https://gitlab.com/libtiff/libtiff"
+            url "https://brew.sh/foo-1.0.tgz"
+          end
+        RUBY
+
+        fa.audit_gitlab_repository_archived
         expect(fa.problems).to eq([])
       end
     end
@@ -541,7 +569,7 @@ module Homebrew
 
     include_examples "formulae exist", described_class::VERSIONED_KEG_ONLY_ALLOWLIST
     include_examples "formulae exist", described_class::VERSIONED_HEAD_SPEC_ALLOWLIST
-    include_examples "formulae exist", described_class::USES_FROM_MACOS_ALLOWLIST
+    include_examples "formulae exist", described_class::PROVIDED_BY_MACOS_DEPENDS_ON_ALLOWLIST
     include_examples "formulae exist", described_class::THROTTLED_FORMULAE.keys
     include_examples "formulae exist", described_class::UNSTABLE_ALLOWLIST.keys
     include_examples "formulae exist", described_class::GNOME_DEVEL_ALLOWLIST.keys

@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
+require "cli/args"
 require "requirements/x11_requirement"
 
 describe X11Requirement do
   let(:default_name) { "x11" }
+
+  let(:args) { Homebrew::CLI::Args.new }
 
   describe "#name" do
     it "defaults to x11" do
@@ -22,7 +25,7 @@ describe X11Requirement do
     it "calls ENV#x11" do
       allow(subject).to receive(:satisfied?).and_return(true)
       expect(ENV).to receive(:x11)
-      subject.modify_build_environment
+      subject.modify_build_environment(args: args)
     end
   end
 
@@ -30,12 +33,12 @@ describe X11Requirement do
     it "returns true if X11 is installed" do
       expect(MacOS::XQuartz).to receive(:version).and_return("2.7.5")
       expect(MacOS::XQuartz).to receive(:installed?).and_return(true)
-      expect(subject).to be_satisfied
+      expect(subject).to be_satisfied(args: args)
     end
 
     it "returns false if X11 is not installed" do
       expect(MacOS::XQuartz).to receive(:installed?).and_return(false)
-      expect(subject).not_to be_satisfied
+      expect(subject).not_to be_satisfied(args: args)
     end
   end
 end

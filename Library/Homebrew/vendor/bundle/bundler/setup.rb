@@ -4,14 +4,14 @@ ruby_engine = defined?(RUBY_ENGINE) ? RUBY_ENGINE : 'ruby'
 ruby_version = RbConfig::CONFIG["ruby_version"]
 path = File.expand_path('..', __FILE__)
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/concurrent-ruby-1.1.6/lib/concurrent-ruby"
-$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/i18n-1.8.4/lib"
+$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/i18n-1.8.5/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/minitest-5.14.1/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/thread_safe-0.3.6/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/tzinfo-1.2.7/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/zeitwerk-2.4.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/activesupport-6.0.3.2/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/ast-2.4.1/lib"
-$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/bindata-2.4.7/lib"
+$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/bindata-2.4.8/lib"
 $:.unshift "#{path}/"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/extensions/universal-darwin-19/2.6.0/byebug-11.1.3"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/byebug-11.1.3/lib"

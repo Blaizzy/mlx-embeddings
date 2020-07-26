@@ -16,23 +16,23 @@ require "dev-cmd/test"
 TEST_TIMEOUT_SECONDS = 5 * 60
 
 begin
-  Homebrew.test_args.parse
+  args = Homebrew.test_args.parse
   error_pipe = UNIXSocket.open(ENV["HOMEBREW_ERROR_PIPE"], &:recv_io)
   error_pipe.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)
 
   trap("INT", old_trap)
 
-  formula = Homebrew.args.resolved_formulae.first
+  formula = args.resolved_formulae.first
   formula.extend(Homebrew::Assertions)
   formula.extend(Homebrew::FreePort)
   formula.extend(Debrew::Formula) if Homebrew.args.debug?
 
   ENV.extend(Stdenv)
-  ENV.setup_build_environment(formula)
+  ENV.setup_build_environment(formula, args: args)
 
   # tests can also return false to indicate failure
   Timeout.timeout TEST_TIMEOUT_SECONDS do
-    raise "test returned false" if formula.run_test == false
+    raise "test returned false" if formula.run_test(keep_tmp: args.keep_tmp?) == false
   end
 rescue Exception => e # rubocop:disable Lint/RescueException
   error_pipe.puts e.to_json

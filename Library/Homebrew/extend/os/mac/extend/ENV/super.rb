@@ -106,7 +106,7 @@ module Superenv
   end
 
   # @private
-  def setup_build_environment(formula = nil)
+  def setup_build_environment(formula = nil, args: nil)
     sdk = formula ? MacOS.sdk_for_formula(formula) : MacOS.sdk
     if MacOS.sdk_root_needed? || sdk&.source == :xcode
       self["HOMEBREW_SDKROOT"] = sdk.path
@@ -119,7 +119,7 @@ module Superenv
       self["HOMEBREW_SDKROOT"] = nil
       self["HOMEBREW_DEVELOPER_DIR"] = nil
     end
-    generic_setup_build_environment(formula)
+    generic_setup_build_environment(formula, args: args)
 
     # Filter out symbols known not to be defined since GNU Autotools can't
     # reliably figure this out with Xcode 8 and above.

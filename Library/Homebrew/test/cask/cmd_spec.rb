@@ -15,12 +15,6 @@ describe Cask::Cmd, :cask do
                           ])
   end
 
-  it "ignores the `--language` option, which is handled in `OS::Mac`" do
-    cli = described_class.new("--language=en")
-    expect(cli).to receive(:detect_internal_command).with(no_args)
-    cli.run
-  end
-
   context "when given no arguments" do
     it "exits successfully" do
       expect(subject).not_to receive(:exit).with(be_nonzero)

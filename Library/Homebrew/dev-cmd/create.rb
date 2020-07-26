@@ -17,7 +17,7 @@ module Homebrew
         Homebrew will attempt to automatically derive the formula name and version, but
         if it fails, you'll have to make your own template. The `wget` formula serves as
         a simple example. For the complete API, see:
-        <http://www.rubydoc.info/github/Homebrew/brew/master/Formula>
+        <https://rubydoc.brew.sh/Formula>
       EOS
       switch "--autotools",
              description: "Create a basic template for an Autotools-style build."
@@ -63,7 +63,7 @@ module Homebrew
 
   # Create a formula from a tarball URL
   def create
-    create_args.parse
+    args = create_args.parse
 
     # Ensure that the cache exists so we can fetch the tarball
     HOMEBREW_CACHE.mkpath
@@ -75,7 +75,7 @@ module Homebrew
     license = args.set_license
     tap = args.tap
 
-    fc = FormulaCreator.new
+    fc = FormulaCreator.new(args)
     fc.name = name
     fc.version = version
     fc.license = license

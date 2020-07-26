@@ -5,12 +5,29 @@ require "utils/curl"
 module SharedAudits
   module_function
 
-  def github(user, repo)
-    begin
-      metadata = GitHub.repository(user, repo)
-    rescue GitHub::HTTPNotFoundError
-      return
+  def github_repo_data(user, repo)
+    @github_repo_data ||= {}
+    @github_repo_data["#{user}/#{repo}"] ||= GitHub.repository(user, repo)
+
+    @github_repo_data["#{user}/#{repo}"]
+  rescue GitHub::HTTPNotFoundError
+    nil
+  end
+
+  def gitlab_repo_data(user, repo)
+    @gitlab_repo_data ||= {}
+    @gitlab_repo_data["#{user}/#{repo}"] ||= begin
+      out, _, status= curl_output("--request", "GET", "https://gitlab.com/api/v4/projects/#{user}%2F#{repo}")
+      return unless status.success?
+
+      JSON.parse(out)
     end
+
+    @gitlab_repo_data["#{user}/#{repo}"]
+  end
+
+  def github(user, repo)
+    metadata = github_repo_data(user, repo)
 
     return if metadata.nil?
 
@@ -26,10 +43,8 @@ module SharedAudits
   end
 
   def gitlab(user, repo)
-    out, _, status= curl_output("--request", "GET", "https://gitlab.com/api/v4/projects/#{user}%2F#{repo}")
-    return unless status.success?
+    metadata = gitlab_repo_data(user, repo)
 
-    metadata = JSON.parse(out)
     return if metadata.nil?
 
     return "GitLab fork (not canonical repository)" if metadata["fork"]

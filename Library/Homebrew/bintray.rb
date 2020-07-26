@@ -10,30 +10,27 @@ class Bintray
   end
 
   def inspect
-    "#<Bintray: user=#{@bintray_user} org=#{@bintray_org} key=***>"
+    "#<Bintray: org=#{@bintray_org}>"
   end
 
-  def initialize(user: ENV["HOMEBREW_BINTRAY_USER"], key: ENV["HOMEBREW_BINTRAY_KEY"], org: "homebrew", clear: true)
-    @bintray_user = user
-    @bintray_key = key
+  def initialize(org: "homebrew")
     @bintray_org = org
-
-    if !@bintray_user || !@bintray_key
-      unless Homebrew.args.dry_run?
-        raise UsageError, "Missing HOMEBREW_BINTRAY_USER or HOMEBREW_BINTRAY_KEY variables!"
-      end
-    end
 
     raise UsageError, "Must set a Bintray organisation!" unless @bintray_org
 
     ENV["HOMEBREW_FORCE_HOMEBREW_ON_LINUX"] = "1" if @bintray_org == "homebrew" && !OS.mac?
-
-    ENV.delete "HOMEBREW_BINTRAY_KEY" if clear
   end
 
   def open_api(url, *extra_curl_args, auth: true)
     args = extra_curl_args
-    args += ["--user", "#{@bintray_user}:#{@bintray_key}"] if auth
+
+    if auth
+      raise UsageError, "HOMEBREW_BINTRAY_USER is unset." unless (user = Homebrew::EnvConfig.bintray_user)
+      raise UsageError, "HOMEBREW_BINTRAY_KEY is unset." unless (key = Homebrew::EnvConfig.bintray_key)
+
+      args += ["--user", "#{user}:#{key}"]
+    end
+
     curl(*args, url,
          show_output: Homebrew.args.verbose?,
          secrets:     @bintray_key)

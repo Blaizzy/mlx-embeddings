@@ -56,7 +56,7 @@ module Homebrew
   end
 
   def upgrade
-    upgrade_args.parse
+    args = upgrade_args.parse
 
     FormulaInstaller.prevent_build_flags unless DevelopmentTools.installed?
 
@@ -109,9 +109,9 @@ module Homebrew
       puts formulae_upgrades.join("\n")
     end
 
-    upgrade_formulae(formulae_to_install)
+    upgrade_formulae(formulae_to_install, args: args)
 
-    check_installed_dependents
+    check_installed_dependents(args: args)
 
     Homebrew.messages.display_messages
   end

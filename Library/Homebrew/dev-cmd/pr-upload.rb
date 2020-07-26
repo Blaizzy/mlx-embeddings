@@ -33,7 +33,7 @@ module Homebrew
   end
 
   def pr_upload
-    pr_upload_args.parse
+    args = pr_upload_args.parse
 
     bintray_org = args.bintray_org || "homebrew"
     bintray = Bintray.new(org: bintray_org)
@@ -48,13 +48,9 @@ module Homebrew
 
     if args.dry_run?
       puts "brew #{bottle_args.join " "}"
-    else
-      safe_system HOMEBREW_BREW_FILE, *bottle_args
-    end
-
-    if args.dry_run?
       puts "Upload bottles described by these JSON files to Bintray:\n  #{Dir["*.json"].join("\n  ")}"
     else
+      safe_system HOMEBREW_BREW_FILE, *bottle_args
       bintray.upload_bottle_json(Dir["*.json"],
                                  publish_package: !args.no_publish?,
                                  warn_on_error:   args.warn_on_upload_failure?)

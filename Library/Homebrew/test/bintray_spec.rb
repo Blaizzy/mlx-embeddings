@@ -3,7 +3,13 @@
 require "bintray"
 
 describe Bintray, :needs_network do
-  bintray = described_class.new(user: "BrewTestBot", key: "deadbeef", org: "homebrew")
+  subject(:bintray) { described_class.new(org: "homebrew") }
+
+  before do
+    ENV["HOMEBREW_BINTRAY_USER"] = "BrewTestBot"
+    ENV["HOMEBREW_BINTRAY_KEY"] = "deadbeef"
+  end
+
   describe "::file_published?" do
     it "detects a published file" do
       results = bintray.file_published?(repo: "bottles", remote_file: "hello-2.10.catalina.bottle.tar.gz")

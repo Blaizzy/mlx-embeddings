@@ -265,7 +265,6 @@ class RuboCop::AST::DefNode < ::RuboCop::AST::Node
   def arguments; end
   def body; end
   def method_name; end
-  def node_parts; end
   def receiver; end
   def void_context?; end
 end
@@ -530,6 +529,7 @@ class RuboCop::AST::Node < ::Parser::AST::Node
   def chained?; end
   def child_nodes; end
   def class_constructor?(node = _); end
+  def class_definition?(node = _); end
   def class_type?; end
   def complete!; end
   def complete?; end
@@ -570,6 +570,7 @@ class RuboCop::AST::Node < ::Parser::AST::Node
   def forward_arg_type?; end
   def forward_args_type?; end
   def forwarded_args_type?; end
+  def global_const?(node = _, param1); end
   def guard_clause?; end
   def gvar_type?; end
   def gvasgn_type?; end
@@ -615,6 +616,7 @@ class RuboCop::AST::Node < ::Parser::AST::Node
   def match_with_lvasgn_type?; end
   def match_with_trailing_comma_type?; end
   def mlhs_type?; end
+  def module_definition?(node = _); end
   def module_type?; end
   def mrasgn_type?; end
   def multiline?; end
@@ -679,6 +681,7 @@ class RuboCop::AST::Node < ::Parser::AST::Node
   def splat_type?; end
   def str_content(node = _); end
   def str_type?; end
+  def struct_constructor?(node = _); end
   def super_type?; end
   def sym_type?; end
   def true_type?; end
@@ -779,6 +782,12 @@ module RuboCop::AST::NodePattern::Macros
   def def_node_search(method_name, pattern_str, **keyword_defaults); end
 end
 
+class RuboCop::AST::NodePattern::Matcher
+  def initialize(&block); end
+
+  def ===(compare); end
+end
+
 module RuboCop::AST::NumericNode
   def sign?; end
 end
@@ -849,6 +858,7 @@ class RuboCop::AST::ProcessedSource
   def commented?(source_range); end
   def comments; end
   def comments_before_line(line); end
+  def contains_comment?(source_range); end
   def current_line(token); end
   def diagnostics; end
   def each_comment; end
@@ -858,6 +868,7 @@ class RuboCop::AST::ProcessedSource
   def find_token; end
   def following_line(token); end
   def line_indentation(line_number); end
+  def line_with_comment?(line); end
   def lines; end
   def parser_error; end
   def path; end
@@ -1034,6 +1045,7 @@ module RuboCop::AST::Traversal
   def on_ensure(node); end
   def on_erange(node); end
   def on_false(node); end
+  def on_find_pattern(node); end
   def on_float(node); end
   def on_for(node); end
   def on_forward_arg(node); end
@@ -1199,9 +1211,13 @@ RuboCop::AST::NodePattern::Compiler::META = T.let(T.unsafe(nil), Regexp)
 
 RuboCop::AST::NodePattern::Compiler::METHOD_NAME = T.let(T.unsafe(nil), Regexp)
 
+RuboCop::AST::NodePattern::Compiler::MULTIPLE_CUR_PLACEHOLDER = T.let(T.unsafe(nil), Regexp)
+
 RuboCop::AST::NodePattern::Compiler::NODE = T.let(T.unsafe(nil), Regexp)
 
 RuboCop::AST::NodePattern::Compiler::NUMBER = T.let(T.unsafe(nil), Regexp)
+
+RuboCop::AST::NodePattern::Compiler::ONLY_SEPARATOR = T.let(T.unsafe(nil), Regexp)
 
 RuboCop::AST::NodePattern::Compiler::PARAM = T.let(T.unsafe(nil), Regexp)
 

@@ -25,7 +25,8 @@ module Utils
       errors["`paths` (first) parameter"] = ["`paths` was empty"] if paths.blank?
 
       Array(paths).each do |path|
-        s = File.open(path, "rb", &:read).extend(StringInreplaceExtension)
+        str = File.open(path, "rb", &:read) || ""
+        s = StringInreplaceExtension.new(str)
 
         if before.nil? && after.nil?
           yield s
@@ -36,7 +37,7 @@ module Utils
 
         errors[path] = s.errors unless s.errors.empty?
 
-        Pathname(path).atomic_write(s)
+        Pathname(path).atomic_write(s.inreplace_string)
       end
 
       raise InreplaceError, errors unless errors.empty?

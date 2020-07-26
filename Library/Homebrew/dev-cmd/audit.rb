@@ -73,7 +73,7 @@ module Homebrew
   end
 
   def audit
-    audit_args.parse
+    args = audit_args.parse
 
     Homebrew.auditing = true
     inject_dump_stats!(FormulaAuditor, /^audit_/) if args.audit_debug?
@@ -88,8 +88,8 @@ module Homebrew
     git = args.git?
     skip_style = args.skip_style? || args.no_named?
 
-    ENV.activate_extensions!
-    ENV.setup_build_environment
+    ENV.activate_extensions!(args: args)
+    ENV.setup_build_environment(args: args)
 
     audit_formulae = args.no_named? ? Formula : args.resolved_formulae
     style_files = args.formulae_paths unless skip_style
@@ -320,9 +320,10 @@ module Homebrew
       problem "Formula name conflicts with existing core formula."
     end
 
-    USES_FROM_MACOS_ALLOWLIST = %w[
+    PROVIDED_BY_MACOS_DEPENDS_ON_ALLOWLIST = %w[
       apr
       apr-util
+      libressl
       openblas
       openssl@1.1
     ].freeze
@@ -383,7 +384,7 @@ module Homebrew
              dep_f.keg_only? &&
              dep_f.keg_only_reason.provided_by_macos? &&
              dep_f.keg_only_reason.applicable? &&
-             !USES_FROM_MACOS_ALLOWLIST.include?(dep.name)
+             !PROVIDED_BY_MACOS_DEPENDS_ON_ALLOWLIST.include?(dep.name)
             new_formula_problem(
               "Dependency '#{dep.name}' is provided by macOS; " \
               "please replace 'depends_on' with 'uses_from_macos'.",
@@ -522,6 +523,30 @@ module Homebrew
       problem "Formulae in homebrew/core should not use `bottle :disabled`"
     end
 
+    def audit_github_repository_archived
+      return if formula.deprecated?
+
+      user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @online
+      return if user.blank?
+
+      metadata = SharedAudits.github_repo_data(user, repo)
+      return if metadata.nil?
+
+      problem "GitHub repo is archived" if metadata["archived"]
+    end
+
+    def audit_gitlab_repository_archived
+      return if formula.deprecated?
+
+      user, repo = get_repo_data(%r{https?://gitlab\.com/([^/]+)/([^/]+)/?.*}) if @online
+      return if user.blank?
+
+      metadata = SharedAudits.gitlab_repo_data(user, repo)
+      return if metadata.nil?
+
+      problem "GitLab repo is archived" if metadata["archived"]
+    end
+
     def audit_github_repository
       user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @new_formula
 
@@ -607,7 +632,10 @@ module Homebrew
       "libepoxy"            => "1.5",
     }.freeze
 
-    GITHUB_PRERELEASE_ALLOWLIST = %w[].freeze
+    GITHUB_PRERELEASE_ALLOWLIST = {
+      "gitless"      => "0.8.8",
+      "telegram-cli" => "1.3.1",
+    }.freeze
 
     # version_prefix = stable_version_string.sub(/\d+$/, "")
     # version_prefix = stable_version_string.split(".")[0..1].join(".")

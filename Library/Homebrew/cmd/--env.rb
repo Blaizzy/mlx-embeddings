@@ -27,11 +27,11 @@ module Homebrew
   end
 
   def __env
-    __env_args.parse
+    args = __env_args.parse
 
-    ENV.activate_extensions!
-    ENV.deps = args.formulae if superenv?
-    ENV.setup_build_environment
+    ENV.activate_extensions!(args: args)
+    ENV.deps = args.formulae if superenv?(args: args)
+    ENV.setup_build_environment(args: args)
 
     shell = if args.plain?
       nil

@@ -94,7 +94,7 @@ module Homebrew
   end
 
   def install
-    install_args.parse
+    args = install_args.parse
 
     args.named.each do |name|
       next if File.exist?(name)
@@ -263,7 +263,7 @@ module Homebrew
       Cleanup.install_formula_clean!(f)
     end
 
-    check_installed_dependents
+    check_installed_dependents(args: args)
 
     Homebrew.messages.display_messages
   rescue FormulaUnreadableError, FormulaClassUnavailableError,
@@ -323,13 +323,19 @@ module Homebrew
     f.print_tap_action
     build_options = f.build
 
-    fi = FormulaInstaller.new(f)
+    fi = FormulaInstaller.new(f, force_bottle: args.force_bottle?, include_test: args.include_test?,
+                              build_from_source: args.build_from_source?)
     fi.options              = build_options.used_options
+    fi.env                  = args.env
+    fi.force                = args.force?
+    fi.keep_tmp             = args.keep_tmp?
     fi.ignore_deps          = args.ignore_dependencies?
     fi.only_deps            = args.only_dependencies?
     fi.build_bottle         = args.build_bottle?
+    fi.bottle_arch          = args.bottle_arch
     fi.interactive          = args.interactive?
     fi.git                  = args.git?
+    fi.cc                   = args.cc
     fi.prelude
     fi.fetch
     fi.install

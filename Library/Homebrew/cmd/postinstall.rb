@@ -22,11 +22,12 @@ module Homebrew
   end
 
   def postinstall
-    postinstall_args.parse
+    args = postinstall_args.parse
 
     args.resolved_formulae.each do |f|
       ohai "Postinstalling #{f}"
       fi = FormulaInstaller.new(f)
+      fi.force = args.force?
       fi.post_install
     end
   end
