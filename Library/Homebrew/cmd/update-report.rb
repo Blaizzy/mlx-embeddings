@@ -104,7 +104,7 @@ module Homebrew
       end
       if reporter.updated?
         updated_taps << tap.name
-        hub.add(reporter)
+        hub.add(reporter, preinstall: args.preinstall?)
       end
     end
 
@@ -186,7 +186,7 @@ class Reporter
     raise ReporterRevisionUnsetError, current_revision_var if @current_revision.empty?
   end
 
-  def report
+  def report(preinstall: false)
     return @report if @report
 
     @report = Hash.new { |h, k| h[k] = [] }
@@ -223,7 +223,7 @@ class Reporter
         name = tap.formula_file_to_name(src)
 
         # Skip reporting updated formulae to speed up automatic updates.
-        if Homebrew.args.preinstall?
+        if preinstall
           @report[:M] << name
           next
         end
@@ -425,9 +425,9 @@ class ReporterHub
     @hash.fetch(key, [])
   end
 
-  def add(reporter)
+  def add(reporter, preinstall: false)
     @reporters << reporter
-    report = reporter.report.delete_if { |_k, v| v.empty? }
+    report = reporter.report(preinstall: preinstall).delete_if { |_k, v| v.empty? }
     @hash.update(report) { |_key, oldval, newval| oldval.concat(newval) }
   end
 
