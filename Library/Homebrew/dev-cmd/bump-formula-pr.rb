@@ -445,28 +445,6 @@ module Homebrew
     [remote_url, username]
   end
 
-  def check_duplicate_pull_requests(formula, tap_full_name, new_formula_version)
-    pull_requests = GitHub.check_for_duplicate_pull_requests(formula, tap_full_name, new_formula_version)
-    return if pull_requests.blank?
-
-    duplicates_message = <<~EOS
-      These pull requests may be duplicates:
-      #{pull_requests.join("\n")}
-    EOS
-    error_message = "Duplicate PRs should not be opened. Use --force to override this error."
-
-    if args.force? && !args.quiet?
-      opoo duplicates_message
-    elsif !args.force? && args.quiet?
-      odie error_message
-    elsif !args.force?
-      odie <<~EOS
-        #{duplicates_message.chomp}
-        #{error_message}
-      EOS
-    end
-  end
-
   def inreplace_pairs(path, replacement_pairs)
     if args.dry_run?
       contents = path.open("r") { |f| Formulary.ensure_utf8_encoding(f).read }
@@ -504,19 +482,9 @@ module Homebrew
     end
   end
 
-  def fetch_pull_requests(query, tap_full_name, state: nil)
-    GitHub.issues_for_formula(query, tap_full_name: tap_full_name, state: state).select do |pr|
-      pr["html_url"].include?("/pull/") &&
-        /(^|\s)#{Regexp.quote(query)}(:|\s|$)/i =~ pr["title"]
-    end
-  rescue GitHub::RateLimitExceededError => e
-    opoo e.message
-    []
-  end
-
   def check_open_pull_requests(formula, tap_full_name)
     # check for open requests
-    pull_requests = fetch_pull_requests(formula.name, tap_full_name, state: "open")
+    pull_requests = GitHub.fetch_pull_requests(formula.name, tap_full_name, state: "open")
     check_for_duplicate_pull_requests(pull_requests)
   end
 
@@ -527,7 +495,7 @@ module Homebrew
       version = Version.detect(url, specs)
     end
     # if we haven't already found open requests, try for an exact match across all requests
-    pull_requests = fetch_pull_requests("#{formula.name} #{version}", tap_full_name) if pull_requests.blank?
+    pull_requests = GitHub.fetch_pull_requests("#{formula.name} #{version}", tap_full_name) if pull_requests.blank?
     check_for_duplicate_pull_requests(pull_requests)
   end
 
