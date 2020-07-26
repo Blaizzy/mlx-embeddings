@@ -8,6 +8,10 @@ module Homebrew::Help
   include Kernel
 end
 
+module Homebrew::Fetch
+  def args; end
+end
+
 module Language::Perl::Shebang
   include Kernel
 end
