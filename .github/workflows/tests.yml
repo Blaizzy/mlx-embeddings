@@ -53,7 +53,7 @@ jobs:
 
     - name: Set up Ruby
       if: matrix.os == 'ubuntu-latest'
-      uses: actions/setup-ruby@master
+      uses: actions/setup-ruby@main
       with:
         ruby-version: '2.6'
 
