@@ -480,7 +480,7 @@ module Homebrew
         update_or_add = nil
 
         Utils::Inreplace.inreplace(path) do |s|
-          if s.include? "bottle do"
+          if s.inreplace_string.include? "bottle do"
             update_or_add = "update"
             if args.keep_old?
               mismatches = []

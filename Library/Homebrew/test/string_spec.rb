@@ -3,7 +3,7 @@
 require "extend/string"
 
 describe StringInreplaceExtension do
-  subject { string.extend(described_class) }
+  subject { described_class.new(string) }
 
   let(:string) { +"foobar" }
 

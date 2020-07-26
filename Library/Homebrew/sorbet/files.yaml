@@ -823,7 +823,6 @@ false:
   - ./test/version_spec.rb
   - ./unpack_strategy/uncompressed.rb
   - ./utils/gems.rb
-  - ./utils/inreplace.rb
   - ./version.rb
 
 true:
@@ -888,6 +887,7 @@ true:
   - ./test/support/helper/fixtures.rb
   - ./test/support/lib/config.rb
   - ./utils/bottles.rb
+  - ./utils/inreplace.rb
   - ./utils/link.rb
   - ./utils/notability.rb
   - ./utils/shebang.rb
