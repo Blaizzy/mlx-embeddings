@@ -39,15 +39,16 @@ class FormulaInstaller
   end
 
   attr_reader :formula
-  attr_accessor :cc, :env, :options, :build_bottle, :bottle_arch,
-                :installed_as_dependency, :installed_on_request, :link_keg
+  attr_accessor :cc, :env, :args, :options, :build_bottle, :bottle_arch,
+                :installed_as_dependency, :installed_on_request, :link_keg, :other_installers
 
   mode_attr_accessor :show_summary_heading, :show_header
   mode_attr_accessor :build_from_source, :force_bottle, :include_test
   mode_attr_accessor :ignore_deps, :only_deps, :interactive, :git, :force, :keep_tmp
   mode_attr_accessor :verbose, :debug, :quiet
 
-  def initialize(formula, force_bottle: false, include_test: false, build_from_source: false, cc: nil)
+  def initialize(formula, force_bottle: false, include_test: false, build_from_source: false, cc: nil, args: nil)
+    @args = args
     @formula = formula
     @env = nil
     @force = false
@@ -96,10 +97,10 @@ class FormulaInstaller
   # it's necessary to interrupt the user before any sort of installation
   # can proceed. Only invoked when the user has no developer tools.
   def self.prevent_build_flags
-    build_flags = Homebrew.args.collect_build_args
-    return if build_flags.empty?
+    build_flags = args&.collect_build_args
+    return if build_flags.blank?
 
-    all_bottled = Homebrew.args.formulae.all?(&:bottled?)
+    all_bottled = args.formulae.all?(&:bottled?)
     raise BuildFlagsError.new(build_flags, bottled: all_bottled)
   end
 
@@ -145,7 +146,7 @@ class FormulaInstaller
 
   def install_bottle_for?(dep, build)
     return pour_bottle? if dep == formula
-    return false if Homebrew.args.build_formula_from_source?(dep)
+    return false if args&.build_formula_from_source?(dep)
     return false unless dep.bottle && dep.pour_bottle?
     return false unless build.used_options.empty?
     return false unless dep.bottle.compatible_cellar?
@@ -504,7 +505,7 @@ class FormulaInstaller
       )
 
       keep_build_test = false
-      keep_build_test ||= dep.test? && include_test? && Homebrew.args.include_formula_test_deps?(dependent)
+      keep_build_test ||= dep.test? && include_test? && args&.include_formula_test_deps?(dependent)
       keep_build_test ||= dep.build? && !install_bottle_for?(dependent, build) && !dependent.latest_version_installed?
 
       if dep.prune_from_option?(build)
@@ -582,8 +583,9 @@ class FormulaInstaller
   def fetch_dependency(dep)
     df = dep.to_formula
     fi = FormulaInstaller.new(df, force_bottle:      false,
-                                  include_test:      Homebrew.args.include_formula_test_deps?(df),
-                                  build_from_source: Homebrew.args.build_formula_from_source?(df))
+                                  include_test:      args&.include_formula_test_deps?(df),
+                                  build_from_source: args&.build_formula_from_source?(df),
+                                  args:              args)
 
     fi.force                   = force?
     fi.keep_tmp                = keep_tmp?
@@ -623,8 +625,9 @@ class FormulaInstaller
     end
 
     fi = FormulaInstaller.new(df, force_bottle:      false,
-                                  include_test:      Homebrew.args.include_formula_test_deps?(df),
-                                  build_from_source: Homebrew.args.build_formula_from_source?(df))
+                                  include_test:      args&.include_formula_test_deps?(df),
+                                  build_from_source: args&.build_formula_from_source?(df),
+                                  args:              args)
 
     fi.options                |= tab.used_options
     fi.options                |= Tab.remap_deprecated_options(df.deprecated_options, dep.options)
@@ -764,7 +767,7 @@ class FormulaInstaller
 
     formula.options.each do |opt|
       name = opt.name[/^([^=]+)=$/, 1]
-      value = Homebrew.args.value(name) if name
+      value = args&.value(name) if name
       args << "--#{name}=#{value}" if value
     end
 

@@ -60,7 +60,7 @@ module Homebrew
 
   def print_formula_cache(name, args:)
     formula = Formulary.factory(name, force_bottle: args.force_bottle?, flags: args.flags_only)
-    if fetch_bottle?(formula)
+    if fetch_bottle?(formula, args: args)
       puts formula.bottle.cached_download
     else
       puts formula.cached_download
