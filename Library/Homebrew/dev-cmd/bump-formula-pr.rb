@@ -276,10 +276,15 @@ module Homebrew
           /^( +)(mirror "#{Regexp.escape(new_mirrors.last)}"\n)/m,
           "\\1\\2\\1version \"#{new_version}\"\n",
         ]
-      else
+      elsif new_url
         [
           /^( +)(url "#{Regexp.escape(new_url)}"\n)/m,
           "\\1\\2\\1version \"#{new_version}\"\n",
+        ]
+      elsif new_revision
+        [
+          /^( {2})( +)(:revision => "#{new_revision}"\n)/m,
+          "\\1\\2\\3\\1version \"#{new_version}\"\n",
         ]
       end
     elsif forced_version && new_version == "0"
@@ -288,7 +293,7 @@ module Homebrew
         "",
       ]
     end
-    new_contents = inreplace_pairs(formula.path, replacement_pairs.uniq)
+    new_contents = inreplace_pairs(formula.path, replacement_pairs.uniq.compact)
 
     new_formula_version = formula_version(formula, requested_spec, new_contents)
 
