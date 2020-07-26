@@ -175,6 +175,8 @@ module ELFShim
     private
 
     def needed_libraries(path)
+      return [nil, []] unless path.dynamic_elf?
+
       if HOMEBREW_PATCHELF_RB
         needed_libraries_using_patchelf_rb path
       elsif DevelopmentTools.locate "readelf"
@@ -194,8 +196,6 @@ module ELFShim
     end
 
     def needed_libraries_using_patchelf(path)
-      return [nil, []] unless path.dynamic_elf?
-
       patchelf = DevelopmentTools.locate "patchelf"
       if path.dylib?
         command = [patchelf, "--print-soname", path.expand_path.to_s]
