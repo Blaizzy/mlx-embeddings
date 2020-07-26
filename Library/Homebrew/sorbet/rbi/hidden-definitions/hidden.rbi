@@ -6840,6 +6840,130 @@ module Docile
   def self.dsl_eval_with_block_return(dsl, *args, &block); end
 end
 
+module ELFTools
+  VERSION = ::T.let(nil, ::T.untyped)
+end
+
+class ELFTools::Structs::ELF32_PhdrBe
+end
+
+class ELFTools::Structs::ELF32_PhdrBe
+end
+
+class ELFTools::Structs::ELF32_PhdrLe
+end
+
+class ELFTools::Structs::ELF32_PhdrLe
+end
+
+class ELFTools::Structs::ELF32_symBe
+end
+
+class ELFTools::Structs::ELF32_symBe
+end
+
+class ELFTools::Structs::ELF32_symLe
+end
+
+class ELFTools::Structs::ELF32_symLe
+end
+
+class ELFTools::Structs::ELF64_PhdrBe
+end
+
+class ELFTools::Structs::ELF64_PhdrBe
+end
+
+class ELFTools::Structs::ELF64_PhdrLe
+end
+
+class ELFTools::Structs::ELF64_PhdrLe
+end
+
+class ELFTools::Structs::ELF64_symBe
+end
+
+class ELFTools::Structs::ELF64_symBe
+end
+
+class ELFTools::Structs::ELF64_symLe
+end
+
+class ELFTools::Structs::ELF64_symLe
+end
+
+class ELFTools::Structs::ELF_DynBe
+end
+
+class ELFTools::Structs::ELF_DynBe
+end
+
+class ELFTools::Structs::ELF_DynLe
+end
+
+class ELFTools::Structs::ELF_DynLe
+end
+
+class ELFTools::Structs::ELF_EhdrBe
+end
+
+class ELFTools::Structs::ELF_EhdrBe
+end
+
+class ELFTools::Structs::ELF_EhdrLe
+end
+
+class ELFTools::Structs::ELF_EhdrLe
+end
+
+class ELFTools::Structs::ELF_NhdrBe
+end
+
+class ELFTools::Structs::ELF_NhdrBe
+end
+
+class ELFTools::Structs::ELF_NhdrLe
+end
+
+class ELFTools::Structs::ELF_NhdrLe
+end
+
+class ELFTools::Structs::ELF_RelBe
+end
+
+class ELFTools::Structs::ELF_RelBe
+end
+
+class ELFTools::Structs::ELF_RelLe
+end
+
+class ELFTools::Structs::ELF_RelLe
+end
+
+class ELFTools::Structs::ELF_RelaBe
+end
+
+class ELFTools::Structs::ELF_RelaBe
+end
+
+class ELFTools::Structs::ELF_RelaLe
+end
+
+class ELFTools::Structs::ELF_RelaLe
+end
+
+class ELFTools::Structs::ELF_ShdrBe
+end
+
+class ELFTools::Structs::ELF_ShdrBe
+end
+
+class ELFTools::Structs::ELF_ShdrLe
+end
+
+class ELFTools::Structs::ELF_ShdrLe
+end
+
 class ERB
   def def_method(mod, methodname, fname=T.unsafe(nil)); end
 
