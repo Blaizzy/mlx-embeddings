@@ -149,7 +149,7 @@ describe "patching" do
       end
 
       f.brew { |formula, _staging| formula.patch }
-    }.to raise_error(ErrorDuringExecution)
+    }.to raise_error(BuildError)
   end
 
   specify "single_patch_dsl_with_incorrect_strip_with_apply" do
@@ -163,7 +163,7 @@ describe "patching" do
       end
 
       f.brew { |formula, _staging| formula.patch }
-    }.to raise_error(ErrorDuringExecution)
+    }.to raise_error(BuildError)
   end
 
   specify "patch_p0_dsl" do
@@ -219,7 +219,7 @@ describe "patching" do
       end
 
       f.brew { |formula, _staging| formula.patch }
-    }.to raise_error(ErrorDuringExecution)
+    }.to raise_error(BuildError)
   end
 end
 

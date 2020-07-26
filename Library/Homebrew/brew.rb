@@ -35,13 +35,6 @@ rescue MissingEnvironmentVariables => e
   exec ENV["HOMEBREW_BREW_FILE"], *ARGV
 end
 
-def output_unsupported_error
-  $stderr.puts <<~EOS
-    Please create pull requests instead of asking for help on Homebrew's GitHub,
-    Discourse, Twitter or IRC.
-  EOS
-end
-
 begin
   trap("INT", std_trap) # restore default CTRL-C handler
 
@@ -150,7 +143,12 @@ rescue BuildError => e
   Utils::Analytics.report_build_error(e)
   e.dump
 
-  output_unsupported_error if e.formula.head? || e.formula.deprecated? || e.formula.disabled?
+  if e.formula.head? || e.formula.deprecated? || e.formula.disabled?
+    $stderr.puts <<~EOS
+      Please create pull requests instead of asking for help on Homebrew's GitHub,
+      Discourse, Twitter or IRC.
+    EOS
+  end
 
   exit 1
 rescue RuntimeError, SystemCallError => e
@@ -158,8 +156,6 @@ rescue RuntimeError, SystemCallError => e
 
   onoe e
   $stderr.puts e.backtrace if Homebrew.args.debug?
-
-  output_unsupported_error if Homebrew.args.HEAD?
 
   exit 1
 rescue MethodDeprecatedError => e
