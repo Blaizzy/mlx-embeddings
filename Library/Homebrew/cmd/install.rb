@@ -323,7 +323,8 @@ module Homebrew
     f.print_tap_action
     build_options = f.build
 
-    fi = FormulaInstaller.new(f, force_bottle: args.force_bottle?, include_test: args.include_test?)
+    fi = FormulaInstaller.new(f, force_bottle: args.force_bottle?, include_test: args.include_test?,
+                              build_from_source: args.build_from_source?)
     fi.options              = build_options.used_options
     fi.env                  = args.env
     fi.force                = args.force?
