@@ -105,7 +105,7 @@ module Homebrew
 
           downcased_unique_named.each do |name|
             resolved_formulae << Formulary.resolve(name, spec: spec(nil),
-            force_bottle: force_bottle?, flags: flags_only)
+                                                   force_bottle: force_bottle?, flags: flags_only)
           rescue FormulaUnavailableError
             begin
               casks << Cask::CaskLoader.load(name)
