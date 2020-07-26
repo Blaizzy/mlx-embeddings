@@ -604,6 +604,7 @@ false:
   - ./test/options_spec.rb
   - ./test/os/linux/diagnostic_spec.rb
   - ./test/os/linux/formula_spec.rb
+  - ./test/os/linux/pathname_spec.rb
   - ./test/os/mac/dependency_collector_spec.rb
   - ./test/os/mac/java_requirement_spec.rb
   - ./test/os/mac/keg_spec.rb
