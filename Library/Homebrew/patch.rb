@@ -160,8 +160,7 @@ class ExternalPatch
       end
     end
   rescue ErrorDuringExecution => e
-    raise unless (f = resource.owner&.owner)
-
+    f = resource.owner.owner
     cmd, *args = e.cmd
     raise BuildError.new(f, cmd, args, ENV.to_hash)
   end
