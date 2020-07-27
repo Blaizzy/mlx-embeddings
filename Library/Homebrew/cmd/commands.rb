@@ -33,18 +33,19 @@ module Homebrew
 
     prepend_separator = false
 
-    { "Built-in commands"           => Commands.internal_commands,
+    {
+      "Built-in commands"           => Commands.internal_commands,
       "Built-in developer commands" => Commands.internal_developer_commands,
       "External commands"           => Commands.external_commands,
       "Cask commands"               => Commands.cask_internal_commands,
-      "External cask commands"      => Commands.cask_external_commands }
-      .each do |title, commands|
-      next if commands.blank?
+      "External cask commands"      => Commands.cask_external_commands,
+    }.each do |title, commands|
+     next if commands.blank?
 
       puts if prepend_separator
       ohai title, Formatter.columns(commands)
 
-      prepend_separator = true
+      prepend_separator ||= true
     end
   end
 end
