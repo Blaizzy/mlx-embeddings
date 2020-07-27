@@ -1081,6 +1081,19 @@ directory.
 * `--commit`:
   Commit changes to the SPDX license data.
 
+### `update-python-resources` [*`options`*] *`formula`*
+
+Update versions for PyPI resource blocks in *`formula`*.
+
+* `-p`, `--print-only`:
+  Print the updated resource blocks instead of changing *`formula`*.
+* `-s`, `--silent`:
+  Suppress any output.
+* `--ignore-non-pypi-packages`:
+  Don't fail if *`formula`* is not a PyPI package.
+* `--version`:
+  Use the specified *`version`* when finding resources for *`formula`*. If no version is specified, the current version for *`formula`* will be used.
+
 ### `update-test` [*`options`*]
 
 Run a test of `brew update` with a new repository clone. If no options are
