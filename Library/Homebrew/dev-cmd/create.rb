@@ -4,6 +4,7 @@ require "formula"
 require "formula_creator"
 require "missing_formula"
 require "cli/parser"
+require "utils/pypi"
 
 module Homebrew
   module_function
@@ -136,6 +137,8 @@ module Homebrew
     end
 
     fc.generate!
+
+    PyPI.update_python_resources! Formula[fc.name], ignore_non_pypi_packages: true if args.python?
 
     puts "Please run `brew audit --new-formula #{fc.name}` before submitting, thanks."
     exec_editor fc.path
