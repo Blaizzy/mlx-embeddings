@@ -2,6 +2,7 @@
 
 require "formula"
 require "cli/parser"
+require "utils/pypi"
 
 module Homebrew
   module_function
@@ -327,6 +328,11 @@ module Homebrew
     if alias_rename.present?
       ohai "renaming alias #{alias_rename.first} to #{alias_rename.last}"
       alias_rename.map! { |a| formula.tap.alias_dir/a }
+    end
+
+    ohai "brew update-python-resources #{formula.name}"
+    if !args.dry_run? || (args.dry_run? && args.write?)
+      PyPI.update_python_resources! formula, new_formula_version, silent: true, ignore_non_pypi_packages: true
     end
 
     run_audit(formula, alias_rename, old_contents)
