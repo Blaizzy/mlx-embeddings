@@ -31,6 +31,10 @@ module Homebrew
       url_match = arg.match HOMEBREW_PULL_OR_COMMIT_URL_REGEX
       _, user, repo, issue = *url_match
       odie "Not a GitHub pull request: #{arg}" unless issue
+      if args.tap.present? && !"#{user}/#{repo}".casecmp(tap.full_name).zero?
+        odie "Pull request URL is for #{user}/#{repo} but --tap=#{tap.full_name}!"
+      end
+
       ohai "Dispatching #{tap} pull request ##{issue}"
       GitHub.dispatch_event(user, repo, "Publish ##{issue}", pull_request: issue)
     end
