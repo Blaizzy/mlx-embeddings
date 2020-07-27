@@ -39,7 +39,7 @@ module Homebrew
 
     hashes.each do |name, hash|
       formula_path = HOMEBREW_REPOSITORY/hash["formula"]["path"]
-      formula_version = Formulary::FormulaLoader.new(name, formula_path).get_formula("stable").version
+      formula_version = Formulary.factory(formula_path).version
       bottle_version = Version.new hash["formula"]["pkg_version"]
       next if formula_version == bottle_version
 
