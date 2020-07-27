@@ -4,7 +4,7 @@ about: "If you're sure it's reproducible and not just your machine: submit an is
 
 ---
 
-# Please note we will close your issue without comment if you delete, do not read or do not fill out the issue checklist below and provide ALL the requested information. If you repeatedly fail to use the issue template, we will block you from ever submitting issues to Homebrew again.
+**Please note we will close your issue without comment if you delete, do not read or do not fill out the issue checklist below and provide ALL the requested information. If you repeatedly fail to use the issue template, we will block you from ever submitting issues to Homebrew again.**
 
 - [ ] ran `brew update` and can still reproduce the problem?
 - [ ] ran `brew doctor`, fixed all issues and can still reproduce the problem?
@@ -12,11 +12,13 @@ about: "If you're sure it's reproducible and not just your machine: submit an is
 
 <!-- To help us debug your issue, please complete these sections: -->
 
-## What you were trying to do (and why)
+## Description
+_What you were trying to do (and why)._
 
 <!-- replace me -->
 
-## What happened (include command output)
+## Observed behavior
+_What happened (include command output)._
 
 <!-- replace me -->
 
@@ -29,15 +31,18 @@ about: "If you're sure it's reproducible and not just your machine: submit an is
   </pre>
 </details>
 
-## What you expected to happen
+## Expected behavior
+_What you expected to happen._
 
 <!-- replace me -->
 
-## Step-by-step reproduction instructions (by running `brew` commands)
+## Steps to reproduce
+_Step-by-step reproduction instructions (by running `brew` commands)._
 
 <!-- replace me -->
 
-## Output of `brew config` and `brew doctor` commands
+## System configuration
+_Output of `brew config` and `brew doctor` commands._
 
 <pre>
 <!-- replace me -->
