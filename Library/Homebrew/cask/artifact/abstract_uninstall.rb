@@ -4,6 +4,7 @@ require "timeout"
 
 require "utils/user"
 require "cask/artifact/abstract_artifact"
+require "cask/pkg"
 require "extend/hash_validator"
 using HashValidator
 
