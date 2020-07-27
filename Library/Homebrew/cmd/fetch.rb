@@ -21,7 +21,7 @@ module Homebrew
              description: "Fetch HEAD version instead of stable version."
       switch "--devel",
              description: "Fetch development version instead of stable version."
-      switch :force,
+      switch "-f", "--force",
              description: "Remove a previously cached version and re-fetch."
       switch :verbose,
              description: "Do a verbose VCS checkout, if the URL represents a VCS. This is useful for "\

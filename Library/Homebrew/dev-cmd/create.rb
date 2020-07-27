@@ -53,7 +53,8 @@ module Homebrew
              description: "Explicitly set the <license> of the new formula."
       flag   "--tap=",
              description: "Generate the new formula within the given tap, specified as <user>`/`<repo>."
-      switch :force
+      switch "-f", "--force",
+             description: "Ignore errors for disallowed formula names and named that shadow aliases."
       switch :verbose
       switch :debug
       conflicts "--autotools", "--cmake", "--crystal", "--go", "--meson", "--node", "--perl", "--python", "--rust"

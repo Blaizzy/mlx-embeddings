@@ -89,7 +89,8 @@ module Homebrew
       EOS
       flag   "--version=",
              description: "Extract the specified <version> of <formula> instead of the most recent."
-      switch :force
+      switch "-f", "--force",
+             description: "Overwrite the destination formula if it already exists."
       switch :debug
       named 2
     end
