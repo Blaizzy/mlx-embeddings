@@ -703,6 +703,9 @@ at its original value, while `--no-rebuild` will remove it.
 Display out-of-date brew formulae, the latest version available, and whether a
 pull request has been opened.
 
+* `--limit`:
+  Limit number of package results returned.
+
 ### `bump-formula-pr` [*`options`*] [*`formula`*]
 
 Create a pull request to update *`formula`* with a new URL or a new tag.
