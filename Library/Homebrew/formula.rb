@@ -279,7 +279,7 @@ class Formula
   # and is specified to this instance.
   def installed_alias_path
     path = build.source["path"] if build.is_a?(Tab)
-    return unless path&.to_s&.match?(%r{#{HOMEBREW_TAP_DIR_REGEX}/Aliases})
+    return unless path&.match?(%r{#{HOMEBREW_TAP_DIR_REGEX}/Aliases})
     return unless File.symlink?(path)
 
     path
