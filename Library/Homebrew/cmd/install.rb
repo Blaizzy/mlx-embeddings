@@ -10,7 +10,6 @@ require "cli/parser"
 require "upgrade"
 
 module Homebrew
-  extend Install
   extend Search
 
   module_function
@@ -256,7 +255,7 @@ module Homebrew
 
     return if formulae.empty?
 
-    perform_preinstall_checks
+    Install.perform_preinstall_checks(cc: args.cc)
 
     formulae.each do |f|
       Migrator.migrate_if_needed(f, force: args.force?)

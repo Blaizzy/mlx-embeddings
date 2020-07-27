@@ -13,8 +13,6 @@ require "cask/macos"
 require "upgrade"
 
 module Homebrew
-  extend Install
-
   module_function
 
   def reinstall_args
@@ -61,7 +59,7 @@ module Homebrew
 
     FormulaInstaller.prevent_build_flags unless DevelopmentTools.installed?
 
-    perform_preinstall_checks
+    Install.perform_preinstall_checks
 
     resolved_formulae, casks = args.resolved_formulae_casks
     resolved_formulae.each do |f|

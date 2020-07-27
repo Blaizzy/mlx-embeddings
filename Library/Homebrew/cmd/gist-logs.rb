@@ -144,8 +144,8 @@ module Homebrew
   def gist_logs
     gist_logs_args.parse
 
-    perform_preinstall_checks(all_fatal: true)
-    perform_build_from_source_checks(all_fatal: true)
+    Install.perform_preinstall_checks(all_fatal: true)
+    Install.perform_build_from_source_checks(all_fatal: true)
     gistify_logs(args.resolved_formulae.first)
   end
 end
