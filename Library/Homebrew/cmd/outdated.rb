@@ -46,7 +46,8 @@ module Homebrew
 
     case json_version
     when :v1
-      odeprecated "brew outdated --json=v1", "brew outdated --json=v2"
+      # TODO: enable for next major/minor release
+      # odeprecated "brew outdated --json=v1", "brew outdated --json=v2"
 
       outdated = if args.formula? || !args.cask?
         outdated_formulae
