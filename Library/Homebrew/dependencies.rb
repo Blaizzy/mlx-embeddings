@@ -84,7 +84,7 @@ module DependenciesHelpers
     [includes, ignores]
   end
 
-  def recursive_includes(klass, formula, includes, ignores)
+  def recursive_includes(klass, root_dependent, includes, ignores)
     type = if klass == Dependency
       :dependencies
     elsif klass == Requirement
@@ -93,7 +93,7 @@ module DependenciesHelpers
       raise ArgumentError, "Invalid class argument: #{klass}"
     end
 
-    formula.send("recursive_#{type}") do |dependent, dep|
+    root_dependent.send("recursive_#{type}") do |dependent, dep|
       if dep.recommended?
         klass.prune if ignores.include?("recommended?") || dependent.build.without?(dep)
       elsif dep.optional?

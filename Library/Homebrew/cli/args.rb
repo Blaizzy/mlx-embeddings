@@ -35,6 +35,7 @@ module Homebrew
       def freeze_named_args!(named_args)
         # Reset cache values reliant on named_args
         @formulae = nil
+        @formulae_and_casks = nil
         @resolved_formulae = nil
         @resolved_formulae_casks = nil
         @formulae_paths = nil
@@ -88,6 +89,24 @@ module Homebrew
         @formulae ||= (downcased_unique_named - casks).map do |name|
           Formulary.factory(name, spec)
         end.uniq(&:name).freeze
+      end
+
+      def formulae_and_casks
+        @formulae_and_casks ||= begin
+          formulae_and_casks = []
+
+          downcased_unique_named.each do |name|
+            formulae_and_casks << Formulary.factory(name, spec)
+          rescue FormulaUnavailableError
+            begin
+              formulae_and_casks << Cask::CaskLoader.load(name)
+            rescue Cask::CaskUnavailableError
+              raise "No available formula or cask with the name \"#{name}\""
+            end
+          end
+
+          formulae_and_casks.freeze
+        end
       end
 
       def resolved_formulae
