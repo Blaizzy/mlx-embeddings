@@ -9,7 +9,7 @@ module RuboCop
       # or if it doesn't, checks if a comment in the form
       # `# example.com was verified as official when first introduced to the cask`
       # is present.
-      class HomepageMatchesUrl < Cop # rubocop:disable Metrics/ClassLength
+      class HomepageMatchesUrl < Cop
         extend Forwardable
         include CaskHelp
 
@@ -134,7 +134,13 @@ module RuboCop
 
         def url_match_homepage?(stanza)
           host = extract_url(stanza).downcase
-          host_uri = URI(remove_non_ascii(host))
+          host_uri = begin
+            URI(remove_non_ascii(host))
+          rescue URI::InvalidURIError
+            # Can't check if we can't parse.
+            return true
+          end
+
           host = if host.match?(/:\d/) && host_uri.port != 80
             "#{host_uri.host}:#{host_uri.port}"
           else

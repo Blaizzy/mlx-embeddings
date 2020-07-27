@@ -1,10 +1,8 @@
-inherit_from: ./.rubocop_shared.yml
+inherit_from: ./Homebrew/.rubocop.yml
 
 Cask/HomepageMatchesUrl:
   Description: 'Ensure that the homepage and url match, otherwise add a comment. More info at https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/stanzas/url.md#when-url-and-homepage-hostnames-differ-add-a-comment'
   Enabled: true
-  Exclude:
-  - '**/test/support/fixtures/cask/Casks/**/*.rb'
 
 Cask/HomepageUrlTrailingSlash:
   Description: 'Ensure that the homepage url has a slash after the domain name.'
@@ -22,44 +20,6 @@ Cask/StanzaOrder:
   Description: 'Ensure that cask stanzas are sorted correctly. More info at https://github.com/Homebrew/homebrew-cask/blob/HEAD/CONTRIBUTING.md#stanza-order'
   Enabled: true
 
-Layout/HashAlignment:
-  EnforcedHashRocketStyle: table
-  EnforcedColonStyle: table
-
-Layout/FirstArrayElementIndentation:
-  EnforcedStyle: align_brackets
-
-Layout/FirstHashElementIndentation:
-  EnforcedStyle: align_braces
-
-# Casks often contain long URLs and file paths.
-Layout/LineLength:
-  Enabled: false
-
-# Casks don't need documentation.
-Style/Documentation:
-  Enabled: false
-
-# These would only be distracting in casks.
+# don't want this for casks but re-enabled for Library/Homebrew
 Style/FrozenStringLiteralComment:
-  EnforcedStyle: never
-
-# Don't use hash rockets.
-Style/HashSyntax:
-  EnforcedStyle: ruby19_no_mixed_keys
-
-# This is more readable when the regex contains slashes.
-Style/RegexpLiteral:
-  EnforcedStyle: percent_r
-
-# Use consistent style for all arrays.
-Style/WordArray:
-  EnforcedStyle: brackets
-
-# This makes multi-line arrays more readable and alignable.
-Layout/FirstArrayElementLineBreak:
-  Enabled: true
-
-# This makes multi-line hashes more readable and alignable.
-Layout/FirstHashElementLineBreak:
-  Enabled: true
+  Enabled: false

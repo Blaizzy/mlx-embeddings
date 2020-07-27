@@ -1,21 +1,21 @@
-cask 'with-installable' do
-  version '1.2.3'
-  sha256 '8c62a2b791cf5f0da6066a0a4b6e85f62949cd60975da062df44adf887f4370b'
+cask "with-installable" do
+  version "1.2.3"
+  sha256 "8c62a2b791cf5f0da6066a0a4b6e85f62949cd60975da062df44adf887f4370b"
 
   url "file://#{TEST_FIXTURE_DIR}/cask/MyFancyPkg.zip"
-  homepage 'https://brew.sh/fancy-pkg'
+  homepage "https://brew.sh/fancy-pkg"
 
-  pkg 'MyFancyPkg/Fancy.pkg'
+  pkg "MyFancyPkg/Fancy.pkg"
 
-  uninstall script:     { executable: 'MyFancyPkg/FancyUninstaller.tool', args: ['--please'] },
-            quit:       'my.fancy.package.app',
-            login_item: 'Fancy',
+  uninstall script:     { executable: "MyFancyPkg/FancyUninstaller.tool", args: ["--please"] },
+            quit:       "my.fancy.package.app",
+            login_item: "Fancy",
             delete:     [
-                          "#{TEST_TMPDIR}/absolute_path",
-                          '~/path_with_tilde',
-                          "#{TEST_TMPDIR}/glob_path*",
-                          'impermissible/relative/path',
-                          '/another/impermissible/../relative/path',
-                        ],
+              "#{TEST_TMPDIR}/absolute_path",
+              "~/path_with_tilde",
+              "#{TEST_TMPDIR}/glob_path*",
+              "impermissible/relative/path",
+              "/another/impermissible/../relative/path",
+            ],
             rmdir:      "#{TEST_TMPDIR}/empty_directory_path"
 end
