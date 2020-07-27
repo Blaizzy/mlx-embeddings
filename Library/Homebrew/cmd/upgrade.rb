@@ -64,9 +64,14 @@ module Homebrew
     args = upgrade_args.parse
 
     formulae, casks = args.resolved_formulae_casks
+    # If one or more formulae are specified, but no casks were
+    # specified, we want to make note of that so we don't
+    # try to upgrade all outdated casks.
+    named_formulae_specified = !formulae.empty? && casks.empty?
+    named_casks_specified = !casks.empty? && formulae.empty?
 
-    upgrade_outdated_formulae(formulae)
-    upgrade_outdated_casks(casks)
+    upgrade_outdated_formulae(formulae) unless named_casks_specified
+    upgrade_outdated_casks(casks) unless named_formulae_specified
   end
 
   def upgrade_outdated_formulae(formulae)
