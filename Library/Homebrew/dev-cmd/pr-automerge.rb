@@ -40,7 +40,7 @@ module Homebrew
     query = "is:pr is:open repo:#{tap.full_name}"
     query += Homebrew.args.ignore_failures? ? " -status:pending" : " status:success"
     query += " review:approved" unless Homebrew.args.without_approval?
-    query += " label:\"#{with_label}\"" if Homebrew.args.with_label
+    query += " label:\"#{args.with_label}\"" if Homebrew.args.with_label
     without_labels&.each { |label| query += " -label:\"#{label}\"" }
     odebug "Searching: #{query}"
 
