@@ -1,4 +1,12 @@
-inherit_from: ./.rubocop_shared.yml
+# TODO: Try getting more rules in sync.
+
+require: ./Homebrew/rubocops.rb
+
+AllCops:
+  TargetRubyVersion: 2.6
+  DisplayCopNames: false
+  # enable all pending rubocops
+  NewCops: enable
 
 # enable all formulae audits
 FormulaAudit:
@@ -8,9 +16,108 @@ FormulaAudit:
 FormulaAuditStrict:
   Enabled: true
 
-# enable all pending rubocops
-AllCops:
-  NewCops: enable
+# Use `<<~` for heredocs.
+Layout/HeredocIndentation:
+  Enabled: true
+
+# Not useful in casks and formulae.
+Metrics/BlockLength:
+  Enabled: false
+
+# Keyword arguments don't have the same readability
+# problems as normal parameters.
+Metrics/ParameterLists:
+  CountKeywordArgs: false
+
+# Implicitly allow EOS as we use it everywhere.
+Naming/HeredocDelimiterNaming:
+  ForbiddenDelimiters:
+    - END, EOD, EOF
+
+# Allow dashes in filenames.
+Naming/FileName:
+  Regex: !ruby/regexp /^[\w\@\-\+\.]+(\.rb)?$/
+
+# Both styles are used depending on context,
+# e.g. `sha256` and `something_countable_1`.
+Naming/VariableNumber:
+  Enabled: false
+
+# Avoid leaking resources.
+Style/AutoResourceCleanup:
+  Enabled: true
+
+# This makes these a little more obvious.
+Style/BarePercentLiterals:
+  EnforcedStyle: percent_q
+
+# Use consistent style for better readability.
+Style/CollectionMethods:
+  Enabled: true
+
+# Prefer tokens with type annotations for consistency
+# between formatting numbers and strings.
+Style/FormatStringToken:
+  EnforcedStyle: annotated
+
+# autocorrectable and more readable
+Style/HashEachMethods:
+  Enabled: true
+Style/HashTransformKeys:
+  Enabled: true
+Style/HashTransformValues:
+  Enabled: true
+
+# Enabled now LineLength is lowish.
+Style/IfUnlessModifier:
+  Enabled: true
+
+# Only use this for numbers >= `1_000_000`.
+Style/NumericLiterals:
+  MinDigits: 7
+  Strict: true
+
+# Zero-prefixed octal literals are widely used and understood.
+Style/NumericLiteralPrefix:
+  EnforcedOctalStyle: zero_only
+
+# Rescuing `StandardError` is an understood default.
+Style/RescueStandardError:
+  EnforcedStyle: implicit
+
+# Returning `nil` is unnecessary.
+Style/ReturnNil:
+  Enabled: true
+
+# We have no use for using `warn` because we
+# are calling Ruby with warnings disabled.
+Style/StderrPuts:
+  Enabled: false
+
+# Use consistent method names.
+Style/StringMethods:
+  Enabled: true
+
+# An array of symbols is more readable than a symbol array
+# and also allows for easier grepping.
+Style/SymbolArray:
+  EnforcedStyle: brackets
+
+# Trailing commas make diffs nicer.
+Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: comma
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: comma
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: comma
+
+# Does not hinder readability, so might as well enable it.
+Performance/CaseWhenSplat:
+  Enabled: true
+
+# Makes code less readable for minor performance increases.
+Performance/Caller:
+  Enabled: false
 
 # don't allow cops to be disabled in formulae
 Style/DisableCopsWithinSourceCodeDirective:
@@ -54,6 +161,7 @@ Lint/AmbiguousRegexpLiteral:
 Lint/ParenthesesAsGroupedExpression:
   Enabled: false
 
+
 # most metrics don't make sense to apply for formulae/taps
 Metrics/AbcSize:
   Enabled: false
@@ -72,7 +180,15 @@ Metrics/PerceivedComplexity:
 Layout/LineLength:
   Max: 118
   # ignore manpage comments and long single-line strings
-  IgnoredPatterns: ['#: ', ' url "', ' mirror "', ' plist_options :']
+  IgnoredPatterns: ['#: ', ' url "', ' mirror "', ' plist_options ',
+                    ' appcast "', ' executable: "', '#{version.',
+                    ' "~/Library/Application Support/', '"~/Library/Caches/', '"~/Application Support',
+                    ' was verified as official when first introduced to the cask']
+
+# TODO: remove this when possible.
+Style/ClassVars:
+  Exclude:
+  - '**/developer/bin/*'
 
 # most of our APIs are internal so don't require docs
 Style/Documentation:
@@ -82,26 +198,18 @@ Style/Documentation:
 Style/FrozenStringLiteralComment:
   Enabled: false
 
+# TODO: remove this when possible.
+Style/GlobalVars:
+  Exclude:
+  - '**/developer/bin/*'
+
 # potential for errors in formulae too high with this
 Style/GuardClause:
   Enabled: false
 
-# depends_on a: :b looks weird in formulae.
+# avoid hash rockets where possible
 Style/HashSyntax:
-  EnforcedStyle: hash_rockets
-  Exclude:
-  - '**/Guardfile'
-  - '**/cmd/**/*.rb'
-  - '**/lib/**/*.rb'
-  - '**/spec/**/*.rb'
-
-# autocorrectable and more readable
-Style/HashEachMethods:
-  Enabled: true
-Style/HashTransformKeys:
-  Enabled: true
-Style/HashTransformValues:
-  Enabled: true
+  EnforcedStyle: ruby19
 
 # ruby style guide favorite
 Style/StringLiterals:
@@ -118,3 +226,11 @@ Style/TernaryParentheses:
 # a bit confusing to non-Rubyists but useful for longer arrays
 Style/WordArray:
   MinSize: 4
+
+# would rather freeze too much than too little
+Style/MutableConstant:
+  EnforcedStyle: strict
+
+# unused keyword arguments improve APIs
+Lint/UnusedMethodArgument:
+  AllowUnusedKeywordArguments: true

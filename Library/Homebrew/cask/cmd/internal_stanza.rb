@@ -32,12 +32,8 @@ module Cask
       option "--yaml",    :yaml,    false
       option "--inspect", :inspect, false
 
-      attr_accessor :format
-
+      attr_accessor :format, :stanza
       private :format, :format=
-
-      attr_accessor :stanza
-
       private :stanza, :stanza=
 
       def initialize(*)

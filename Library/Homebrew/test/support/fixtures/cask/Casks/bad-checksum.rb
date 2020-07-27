@@ -1,9 +1,9 @@
-cask 'bad-checksum' do
-  version '1.2.3'
-  sha256 'badbadbadbadbadbadbadbadbadbadbadbadbadbadbadbadbadbadbadbadbadb'
+cask "bad-checksum" do
+  version "1.2.3"
+  sha256 "badbadbadbadbadbadbadbadbadbadbadbadbadbadbadbadbadbadbadbadbadb"
 
   url "file://#{TEST_FIXTURE_DIR}/cask/caffeine.zip"
-  homepage 'https://brew.sh/'
+  homepage "https://brew.sh/"
 
-  app 'Caffeine.app'
+  app "Caffeine.app"
 end
