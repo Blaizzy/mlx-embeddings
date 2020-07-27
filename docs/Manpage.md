@@ -379,7 +379,7 @@ items or checking if any current formulae/casks have Ruby issues.
 * `--aliases`:
   Verify any alias symlinks in each tap.
 * `--syntax`:
-  Syntax-check all of Homebrew's Ruby files.
+  Syntax-check all of Homebrew's Ruby files (if no `*`tap`*` is passed).
 
 ### `reinstall` [*`options`*] *`formula`*
 
