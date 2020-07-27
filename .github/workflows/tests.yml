@@ -181,12 +181,12 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: docker build -t brew --build-arg=version=16.04 .
 
-    - name: Run brew test-bot
+    - name: Run brew test-bot --only-formulae --test-default-formula
       run: |
         if [ "$RUNNER_OS" = "Linux" ]; then
-          docker run --rm brew brew test-bot
+          docker run --rm brew brew test-bot --only-formulae --test-default-formula
         else
-          brew test-bot
+          brew test-bot --only-formulae --test-default-formula
         fi
 
     - name: Deploy the Docker image to GitHub and Docker Hub
