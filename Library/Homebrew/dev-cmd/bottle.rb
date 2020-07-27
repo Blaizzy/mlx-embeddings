@@ -484,7 +484,7 @@ module Homebrew
             update_or_add = "update"
             if args.keep_old?
               mismatches = []
-              bottle_block_contents = s[/  bottle do(.+?)end\n/m, 1]
+              bottle_block_contents = s.inreplace_string[/  bottle do(.+?)end\n/m, 1]
               bottle_block_contents.lines.each do |line|
                 line = line.strip
                 next if line.empty?
