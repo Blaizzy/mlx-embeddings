@@ -32,26 +32,44 @@ module Homebrew
     end
   end
 
+  def check_bottled_formulae(json_files)
+    hashes = json_files.reduce({}) do |hash, json|
+      hash.deep_merge(JSON.parse(IO.read(json)))
+    end
+
+    hashes.each do |name, hash|
+      formula_path = HOMEBREW_REPOSITORY/hash["formula"]["path"]
+      formula_version = Formulary::FormulaLoader.new(name, formula_path).get_formula("stable").version
+      bottle_version = Version.new hash["formula"]["pkg_version"]
+      next if formula_version == bottle_version
+
+      odie "Bottles are for #{name} #{bottle_version} but formula is version #{formula_version}!"
+    end
+  end
+
   def pr_upload
     args = pr_upload_args.parse
 
     bintray_org = args.bintray_org || "homebrew"
     bintray = Bintray.new(org: bintray_org)
 
+    json_files = Dir["*.json"]
+    odie "No JSON files found in the current working directory" if json_files.empty?
+
     bottle_args = ["bottle", "--merge", "--write"]
     bottle_args << "--verbose" if args.verbose?
     bottle_args << "--debug" if args.debug?
     bottle_args << "--keep-old" if args.keep_old?
     bottle_args << "--root-url=#{args.root_url}" if args.root_url
-    odie "No JSON files found in the current working directory" if Dir["*.json"].empty?
-    bottle_args += Dir["*.json"]
+    bottle_args += json_files
 
     if args.dry_run?
       puts "brew #{bottle_args.join " "}"
-      puts "Upload bottles described by these JSON files to Bintray:\n  #{Dir["*.json"].join("\n  ")}"
+      puts "Upload bottles described by these JSON files to Bintray:\n  #{json_files.join("\n  ")}"
     else
+      check_bottled_formulae(json_files)
       safe_system HOMEBREW_BREW_FILE, *bottle_args
-      bintray.upload_bottle_json(Dir["*.json"],
+      bintray.upload_bottle_json(json_files,
                                  publish_package: !args.no_publish?,
                                  warn_on_error:   args.warn_on_upload_failure?)
     end
