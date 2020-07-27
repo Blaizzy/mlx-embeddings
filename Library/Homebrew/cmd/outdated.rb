@@ -45,9 +45,9 @@ module Homebrew
     outdated_args.parse
 
     case json_version
-    when :v1
+    when :v1, :default
       # TODO: enable for next major/minor release
-      # odeprecated "brew outdated --json=v1", "brew outdated --json=v2"
+      # odeprecated "brew outdated --json#{json_version == :v1 ? "=v1" : ""}", "brew outdated --json=v2"
 
       outdated = if args.formula? || !args.cask?
         outdated_formulae
@@ -66,10 +66,11 @@ module Homebrew
         outdated_formulae_casks
       end
 
-      puts JSON.generate({
-                           "formulae" => json_info(formulae),
-                           "casks"    => json_info(casks),
-                         })
+      json = {
+        "formulae" => json_info(formulae),
+        "casks"    => json_info(casks),
+      }
+      puts JSON.generate(json)
 
       outdated = formulae + casks
 
@@ -106,10 +107,9 @@ module Homebrew
             f.pkg_version.to_s
           end
 
-          outdated_versions = outdated_kegs
-                              .group_by { |keg| Formulary.from_keg(keg).full_name }
-                              .sort_by { |full_name, _kegs| full_name }
-                              .map do |full_name, kegs|
+          outdated_versions = outdated_kegs.group_by { |keg| Formulary.from_keg(keg).full_name }
+                                           .sort_by { |full_name, _kegs| full_name }
+                                           .map do |full_name, kegs|
             "#{full_name} (#{kegs.map(&:version).join(", ")})"
           end.join(", ")
 
@@ -159,7 +159,7 @@ module Homebrew
   def json_version
     version_hash = {
       nil  => nil,
-      true => :v1,
+      true => :default,
       "v1" => :v1,
       "v2" => :v2,
     }
