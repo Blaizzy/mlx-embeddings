@@ -186,7 +186,11 @@ class Requirement
         @satisfied
       elsif @options[:build_env]
         require "extend/ENV"
-        ENV.with_build_environment(args: args) { yield @proc }
+        ENV.with_build_environment(
+          env: args.env, cc: args.cc, build_bottle: args.build_bottle?, bottle_arch: args.bottle_arch,
+        ) do
+          yield @proc
+        end
       else
         yield @proc
       end

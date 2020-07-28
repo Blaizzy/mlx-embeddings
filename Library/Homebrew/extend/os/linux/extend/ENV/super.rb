@@ -7,11 +7,11 @@ module Superenv
   end
 
   # @private
-  def setup_build_environment(formula = nil, args: nil)
-    generic_setup_build_environment(formula, args: args)
+  def setup_build_environment(**options)
+    generic_setup_build_environment(**options)
     self["HOMEBREW_OPTIMIZATION_LEVEL"] = "O2"
     self["HOMEBREW_DYNAMIC_LINKER"] = determine_dynamic_linker_path
-    self["HOMEBREW_RPATH_PATHS"] = determine_rpath_paths(formula)
+    self["HOMEBREW_RPATH_PATHS"] = determine_rpath_paths(@formula)
   end
 
   def homebrew_extra_paths
@@ -27,7 +27,7 @@ module Superenv
 
   def determine_rpath_paths(formula)
     PATH.new(
-      formula&.lib,
+      *formula&.lib,
       "#{HOMEBREW_PREFIX}/lib",
       PATH.new(run_time_deps.map { |dep| dep.opt_lib.to_s }).existing,
     )

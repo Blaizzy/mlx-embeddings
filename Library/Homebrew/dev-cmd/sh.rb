@@ -29,14 +29,14 @@ module Homebrew
   def sh
     args = sh_args.parse
 
-    ENV.activate_extensions!(args: args)
+    ENV.activate_extensions!(env: args.env)
 
-    if superenv?(args: args)
+    if superenv?(args.env)
       ENV.set_x11_env_if_installed
       ENV.deps = Formula.installed.select { |f| f.keg_only? && f.opt_prefix.directory? }
     end
-    ENV.setup_build_environment(args: args)
-    if superenv?(args: args)
+    ENV.setup_build_environment
+    if superenv?(args.env)
       # superenv stopped adding brew's bin but generally users will want it
       ENV["PATH"] = PATH.new(ENV["PATH"]).insert(1, HOMEBREW_PREFIX/"bin")
     end

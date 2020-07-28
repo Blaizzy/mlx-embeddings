@@ -29,9 +29,11 @@ module SharedEnvExtension
   ].freeze
 
   # @private
-  def setup_build_environment(formula = nil, args: nil)
+  def setup_build_environment(formula: nil, cc: nil, build_bottle: false, bottle_arch: nil)
     @formula = formula
-    @args = args
+    @cc = cc
+    @build_bottle = build_bottle
+    @bottle_arch = bottle_arch
     reset
   end
 
@@ -163,7 +165,7 @@ module SharedEnvExtension
   #   ENV.append_to_cflags "-I ./missing/includes"
   # end</pre>
   def compiler
-    @compiler ||= if (cc = @args.cc)
+    @compiler ||= if (cc = @cc)
       warn_about_non_apple_gcc($&) if cc =~ GNU_GCC_REGEXP
       fetch_compiler(cc, "--cc")
     elsif (cc = homebrew_cc)
@@ -255,8 +257,8 @@ module SharedEnvExtension
 
   # @private
   def effective_arch
-    if @args&.build_bottle? && @args&.bottle_arch
-      @args.bottle_arch.to_sym
+    if @build_bottle && @bottle_arch
+      @bottle_arch.to_sym
     else
       Hardware.oldest_cpu
     end
