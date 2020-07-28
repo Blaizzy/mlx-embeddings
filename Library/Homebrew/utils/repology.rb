@@ -19,7 +19,13 @@ module Repology
     url = "https://repology.org/api/v1/project/#{name}"
 
     output, _errors, _status = curl_output(url.to_s)
-    { name: JSON.parse(output) }
+    data = JSON.parse(output)
+
+    outdated_homebrew = data.select do |repo|
+      repo["repo"] == "homebrew" && repo["status"] == "outdated"
+    end
+
+    outdated_homebrew.empty? ? nil : { name: data }
   end
 
   def parse_api_response

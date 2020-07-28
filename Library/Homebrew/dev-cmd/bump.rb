@@ -39,12 +39,19 @@ module Homebrew
       Repology.parse_api_response
     end
 
+    if requested_formula && outdated_repology_packages.nil?
+      ohai "The requested formula, #{requested_formula}, is up-to-date."
+      puts "Current version: #{get_formula_details(requested_formula).version}"
+      return
+    end
+
     outdated_packages = validate_and_format_packages(outdated_repology_packages)
     display(outdated_packages)
   end
 
   def validate_and_format_packages(outdated_repology_packages)
-    ohai "Verifying outdated repology packages as Homebrew formulae"
+    ohai "Verifying outdated repology #{"package".pluralize(outdated_repology_packages.size)} " \
+    "as Homebrew #{"formula".pluralize(outdated_repology_packages.size)}"
 
     packages = {}
     outdated_repology_packages.each do |_name, repositories|
@@ -118,7 +125,7 @@ module Homebrew
   end
 
   def display(outdated_packages)
-    ohai "Outdated formulae"
+    ohai "Outdated #{"formula".pluralize(outdated_packages.size)}"
     puts
     outdated_packages.each do |formula, package_details|
       ohai formula
