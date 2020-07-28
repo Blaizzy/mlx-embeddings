@@ -48,13 +48,15 @@ module Cask
         failed_casks = casks(alternative: -> { Cask.to_a })
                        .reject do |cask|
           odebug "Auditing Cask #{cask}"
-          Auditor.audit(cask, audit_download:        download,
-                              audit_appcast:         appcast,
-                              audit_online:          online,
-                              audit_strict:          strict,
-                              audit_new_cask:        new_cask_arg?,
-                              audit_token_conflicts: token_conflicts,
-                              quarantine:            quarantine?)
+          result = Auditor.audit(cask, audit_download:        download,
+                                       audit_appcast:         appcast,
+                                       audit_online:          online,
+                                       audit_strict:          strict,
+                                       audit_new_cask:        new_cask_arg?,
+                                       audit_token_conflicts: token_conflicts,
+                                       quarantine:            quarantine?)
+
+          result[:warnings].empty? && result[:errors].empty?
         end
 
         return if failed_casks.empty?
