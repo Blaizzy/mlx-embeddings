@@ -26,7 +26,7 @@ module Homebrew
     bump_args.parse
 
     requested_formula = Homebrew.args.formula
-    requested_formula.downcase! if requested_formula
+    requested_formula&.downcase!
 
     if requested_formula && !get_formula_details(requested_formula)
       ohai "Requested formula #{requested_formula} is not valid Homebrew formula."
@@ -34,10 +34,10 @@ module Homebrew
     end
 
     outdated_repology_packages = if requested_formula
-                                   Repology.single_package_query(requested_formula)
-                                 else
-                                   Repology.parse_api_response
-                                 end
+      Repology.single_package_query(requested_formula)
+    else
+      Repology.parse_api_response
+    end
 
     outdated_packages = validate_and_format_packages(outdated_repology_packages)
     display(outdated_packages)
