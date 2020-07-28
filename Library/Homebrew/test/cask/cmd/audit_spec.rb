@@ -4,6 +4,7 @@ require_relative "shared_examples/invalid_option"
 
 describe Cask::Cmd::Audit, :cask do
   let(:cask) { Cask::Cask.new("cask") }
+  let(:result) { { warnings: Set.new, errors: Set.new } }
 
   it_behaves_like "a command that handles invalid options"
 
@@ -11,7 +12,7 @@ describe Cask::Cmd::Audit, :cask do
     it "audits all Casks if no tokens are given" do
       allow(Cask::Cask).to receive(:to_a).and_return([cask, cask])
 
-      expect(Cask::Auditor).to receive(:audit).twice.and_return(true)
+      expect(Cask::Auditor).to receive(:audit).twice.and_return(result)
 
       described_class.run
     end
@@ -28,7 +29,7 @@ describe Cask::Cmd::Audit, :cask do
                     audit_online:          false,
                     audit_strict:          false,
                     quarantine:            true)
-        .and_return(true)
+        .and_return(result)
 
       described_class.run(cask_token)
     end
@@ -45,7 +46,7 @@ describe Cask::Cmd::Audit, :cask do
                     audit_online:          false,
                     audit_strict:          false,
                     quarantine:            true)
-        .and_return(true)
+        .and_return(result)
 
       described_class.run("casktoken")
     end
@@ -60,7 +61,7 @@ describe Cask::Cmd::Audit, :cask do
                     audit_online:          false,
                     audit_strict:          false,
                     quarantine:            true)
-        .and_return(true)
+        .and_return(result)
 
       described_class.run("casktoken", "--download")
     end
@@ -77,7 +78,7 @@ describe Cask::Cmd::Audit, :cask do
                     audit_online:          false,
                     audit_strict:          false,
                     quarantine:            true)
-        .and_return(true)
+        .and_return(result)
 
       described_class.run("casktoken")
     end
@@ -92,7 +93,7 @@ describe Cask::Cmd::Audit, :cask do
                     audit_online:          false,
                     audit_strict:          false,
                     quarantine:            true)
-        .and_return(true)
+        .and_return(result)
 
       described_class.run("casktoken", "--token-conflicts")
     end
@@ -109,7 +110,7 @@ describe Cask::Cmd::Audit, :cask do
                     audit_online:          false,
                     audit_strict:          false,
                     quarantine:            true)
-        .and_return(true)
+        .and_return(result)
 
       described_class.run("casktoken")
     end
@@ -124,7 +125,7 @@ describe Cask::Cmd::Audit, :cask do
                     audit_online:          false,
                     audit_strict:          true,
                     quarantine:            true)
-        .and_return(true)
+        .and_return(result)
 
       described_class.run("casktoken", "--strict")
     end
@@ -141,7 +142,7 @@ describe Cask::Cmd::Audit, :cask do
                     audit_online:          false,
                     audit_strict:          false,
                     quarantine:            true)
-        .and_return(true)
+        .and_return(result)
 
       described_class.run("casktoken")
     end
@@ -156,7 +157,7 @@ describe Cask::Cmd::Audit, :cask do
                     audit_online:          true,
                     audit_strict:          false,
                     quarantine:            true)
-        .and_return(true)
+        .and_return(result)
 
       described_class.run("casktoken", "--online")
     end
@@ -173,7 +174,7 @@ describe Cask::Cmd::Audit, :cask do
                     audit_online:          false,
                     audit_strict:          false,
                     quarantine:            true)
-        .and_return(true)
+        .and_return(result)
 
       described_class.run("casktoken")
     end
@@ -188,7 +189,7 @@ describe Cask::Cmd::Audit, :cask do
                     audit_online:          true,
                     audit_strict:          true,
                     quarantine:            true)
-        .and_return(true)
+        .and_return(result)
 
       described_class.run("casktoken", "--new-cask")
     end

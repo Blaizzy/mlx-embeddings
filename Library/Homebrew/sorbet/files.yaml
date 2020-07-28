@@ -39,7 +39,6 @@ false:
   - ./cask/cask.rb
   - ./cask/cask_loader.rb
   - ./cask/caskroom.rb
-  - ./cask/checkable.rb
   - ./cask/cmd.rb
   - ./cask/cmd/--cache.rb
   - ./cask/cmd/abstract_command.rb
