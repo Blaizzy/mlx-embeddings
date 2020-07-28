@@ -343,7 +343,7 @@ module Homebrew
           subject { fa }
 
           let(:fa) do
-            formula_auditor "foo", <<~RUBY, new_formula: true
+            formula_auditor "foo", <<~RUBY, new_formula: true, core_tap: true
               class Foo < Formula
                 url "https://brew.sh/foo-1.0.tgz"
                 homepage "https://brew.sh"

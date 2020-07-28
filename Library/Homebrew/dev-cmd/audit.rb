@@ -388,7 +388,8 @@ module Homebrew
             "use the canonical name '#{dep.to_formula.full_name}'."
           end
 
-          if @new_formula &&
+          if @core_tap &&
+             @new_formula &&
              dep_f.keg_only? &&
              dep_f.keg_only_reason.provided_by_macos? &&
              dep_f.keg_only_reason.applicable? &&
