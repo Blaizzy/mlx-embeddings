@@ -2208,9 +2208,16 @@ class Formula
     # @!attribute [w]
     # The SPDX ID of the open-source license that the formula uses.
     # Shows when running `brew info`.
-    #
+    # Multiple licenses means that the software is licensed under multiple licenses.
+    # Do not use multiple licenses if e.g. different parts are under different licenses.
     # <pre>license "BSD-2-Clause"</pre>
-    attr_rw :license
+    def license(args = nil)
+      if args.nil?
+        @licenses
+      else
+        @licenses = Array(args)
+      end
+    end
 
     # @!attribute [w] homepage
     # The homepage for the software. Used by users to get more information

@@ -1123,18 +1123,18 @@ class FormulaInstaller
       next if @ignore_deps
 
       dep_f = dep.to_formula
-      next unless forbidden_licenses.include? dep_f.license
+      next unless dep_f.license.all? { |license| forbidden_licenses.include? license }
 
       raise CannotInstallFormulaError, <<~EOS
-        The installation of #{formula.name} has a dependency on #{dep.name} with a forbidden license #{dep_f.license}.
+        The installation of #{formula.name} has a dependency on #{dep.name} where all its licenses are forbidden: #{dep_f.license}.
       EOS
     end
     return if @only_deps
 
-    return unless forbidden_licenses.include? formula.license
+    return unless formula.license.all? { |license| forbidden_licenses.include? license }
 
     raise CannotInstallFormulaError, <<~EOS
-      #{formula.name} has a forbidden license #{formula.license}.
+      #{formula.name}'s licenses are all forbidden: #{formula.license}.
     EOS
   end
 end
