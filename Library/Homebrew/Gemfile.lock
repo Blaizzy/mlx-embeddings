@@ -55,7 +55,7 @@ GEM
       parallel
     parser (2.7.1.4)
       ast (~> 2.4.1)
-    patchelf (1.1.1)
+    patchelf (1.2.0)
       elftools (~> 1.1)
     plist (3.5.0)
     rainbow (3.0.0)
