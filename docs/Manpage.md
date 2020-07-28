@@ -753,6 +753,8 @@ uses.
   Specify the new git commit *`tag`* for the formula.
 * `--revision`:
   Specify the new git commit *`revision`* corresponding to the specified *`tag`*.
+* `-f`, `--force`:
+  Ignore duplicate open PRs. Remove all mirrors if --mirror= was not specified.
 
 ### `bump-revision` [*`options`*] *`formula`*
 
@@ -811,6 +813,8 @@ a simple example. For the complete API, see: <https://rubydoc.brew.sh/Formula>
   Explicitly set the *`license`* of the new formula.
 * `--tap`:
   Generate the new formula within the given tap, specified as *`user`*`/`*`repo`*.
+* `-f`, `--force`:
+  Ignore errors for disallowed formula names and named that shadow aliases.
 
 ### `diy` [*`options`*]
 
@@ -838,6 +842,8 @@ formula from a tap that is not `homebrew/core` use its fully-qualified form of
 
 * `--version`:
   Extract the specified *`version`* of *`formula`* instead of the most recent.
+* `-f`, `--force`:
+  Overwrite the destination formula if it already exists.
 
 ### `formula` *`formula`*
 
@@ -1057,6 +1063,8 @@ directory.
   Patches for *`formula`* will be applied to the unpacked source.
 * `-g`, `--git`:
   Initialise a Git repository in the unpacked source. This is useful for creating patches for the software.
+* `-f`, `--force`:
+  Overwrite the destination directory if it already exists.
 
 ### `update-license-data` [*`options`*]
 
@@ -1097,9 +1105,6 @@ These options are applicable across multiple subcommands.
 
 * `-d`, `--debug`:
   Display any debugging information.
-
-* `-f`, `--force`:
-  Override warnings and enable potentially unsafe operations.
 
 ## OFFICIAL EXTERNAL COMMANDS
 

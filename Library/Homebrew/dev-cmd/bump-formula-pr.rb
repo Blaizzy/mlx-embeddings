@@ -62,7 +62,8 @@ module Homebrew
       flag   "--revision=",
              depends_on:  "--tag=",
              description: "Specify the new git commit <revision> corresponding to the specified <tag>."
-      switch :force
+      switch "-f", "--force",
+             description: "Ignore duplicate open PRs. Remove all mirrors if --mirror= was not specified."
       switch :quiet
       switch :verbose
       switch :debug

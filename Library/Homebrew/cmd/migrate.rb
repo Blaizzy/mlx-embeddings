@@ -14,7 +14,7 @@ module Homebrew
         Migrate renamed packages to new names, where <formula> are old names of
         packages.
       EOS
-      switch :force,
+      switch "-f", "--force",
              description: "Treat installed <formula> and provided <formula> as if they are from "\
                           "the same taps and migrate them anyway."
       switch :verbose

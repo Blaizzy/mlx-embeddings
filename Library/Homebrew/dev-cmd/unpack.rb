@@ -22,7 +22,8 @@ module Homebrew
       switch "-g", "--git",
              description: "Initialise a Git repository in the unpacked source. This is useful for creating "\
                           "patches for the software."
-      switch :force
+      switch "-f", "--force",
+             description: "Overwrite the destination directory if it already exists."
       switch :verbose
       switch :debug
       conflicts "--git", "--patch"

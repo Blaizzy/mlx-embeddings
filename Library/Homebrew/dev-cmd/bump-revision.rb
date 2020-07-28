@@ -18,7 +18,6 @@ module Homebrew
              description: "Print what would be done rather than doing it."
       flag   "--message=",
              description: "Append <message> to the default commit message."
-      switch :force
       switch :quiet
       switch :verbose
       switch :debug
@@ -27,7 +26,7 @@ module Homebrew
   end
 
   def bump_revision
-    bump_revision_args.parse
+    args = bump_revision_args.parse
 
     # As this command is simplifying user-run commands then let's just use a
     # user path, too.

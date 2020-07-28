@@ -43,7 +43,7 @@ module Homebrew
              description: "Set a successful exit status even if pinned formulae are not upgraded."
       switch "--keep-tmp",
              description: "Retain the temporary files created during installation."
-      switch :force,
+      switch "-f", "--force",
              description: "Install without checking for previously installed keg-only or "\
                           "non-migrated versions."
       switch :verbose,

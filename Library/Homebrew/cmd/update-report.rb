@@ -27,7 +27,9 @@ module Homebrew
       EOS
       switch "--preinstall",
              description: "Run in 'auto-update' mode (faster, less output)."
-      switch :force
+      switch "-f", "--force",
+             description: "Treat installed and updated formulae as if they are from "\
+                          "the same taps and migrate them anyway."
       switch :quiet
       switch :verbose
       switch :debug

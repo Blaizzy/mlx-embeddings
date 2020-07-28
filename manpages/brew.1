@@ -993,6 +993,10 @@ Specify the new git commit \fItag\fR for the formula\.
 \fB\-\-revision\fR
 Specify the new git commit \fIrevision\fR corresponding to the specified \fItag\fR\.
 .
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+Ignore duplicate open PRs\. Remove all mirrors if \-\-mirror= was not specified\.
+.
 .SS "\fBbump\-revision\fR [\fIoptions\fR] \fIformula\fR"
 Create a commit to increment the revision of \fIformula\fR\. If no revision is present, "revision 1" will be added\.
 .
@@ -1077,6 +1081,10 @@ Explicitly set the \fIlicense\fR of the new formula\.
 \fB\-\-tap\fR
 Generate the new formula within the given tap, specified as \fIuser\fR\fB/\fR\fIrepo\fR\.
 .
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+Ignore errors for disallowed formula names and named that shadow aliases\.
+.
 .SS "\fBdiy\fR [\fIoptions\fR]"
 Automatically determine the installation prefix for non\-Homebrew software\. Using the output from this command, you can install your own software into the Cellar and then link it into Homebrew\'s prefix with \fBbrew link\fR\.
 .
@@ -1097,6 +1105,10 @@ Look through repository history to find the most recent version of \fIformula\fR
 .TP
 \fB\-\-version\fR
 Extract the specified \fIversion\fR of \fIformula\fR instead of the most recent\.
+.
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+Overwrite the destination formula if it already exists\.
 .
 .SS "\fBformula\fR \fIformula\fR"
 Display the path where \fIformula\fR is located\.
@@ -1377,6 +1389,10 @@ Patches for \fIformula\fR will be applied to the unpacked source\.
 \fB\-g\fR, \fB\-\-git\fR
 Initialise a Git repository in the unpacked source\. This is useful for creating patches for the software\.
 .
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+Overwrite the destination directory if it already exists\.
+.
 .SS "\fBupdate\-license\-data\fR [\fIoptions\fR]"
 Update SPDX license data in the Homebrew repository\.
 .
@@ -1424,10 +1440,6 @@ Make some output more verbose\.
 .TP
 \fB\-d\fR, \fB\-\-debug\fR
 Display any debugging information\.
-.
-.TP
-\fB\-f\fR, \fB\-\-force\fR
-Override warnings and enable potentially unsafe operations\.
 .
 .SH "OFFICIAL EXTERNAL COMMANDS"
 .

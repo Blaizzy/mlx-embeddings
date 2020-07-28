@@ -71,7 +71,7 @@ module Homebrew
              depends_on:  "--build-bottle",
              description: "Optimise bottles for the specified architecture rather than the oldest "\
                           "architecture supported by the version of macOS the bottles are built on."
-      switch :force,
+      switch "-f", "--force",
              description: "Install without checking for previously installed keg-only or "\
                           "non-migrated versions."
       switch :verbose,

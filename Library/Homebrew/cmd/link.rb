@@ -21,7 +21,7 @@ module Homebrew
       switch "-n", "--dry-run",
              description: "List files which would be linked or deleted by "\
                           "`brew link --overwrite` without actually linking or deleting any files."
-      switch :force,
+      switch "-f", "--force",
              description: "Allow keg-only formulae to be linked."
       switch :verbose
       switch :debug
