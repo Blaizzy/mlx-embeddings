@@ -10,7 +10,8 @@ module Homebrew
       usage_banner <<~EOS
         `bump` [<options>]
 
-        Display out-of-date brew formulae, the latest version available, and whether a pull request has been opened.
+        Display out-of-date brew formulae and the latest version available.
+        Also displays whether a pull request has been opened with the URL.
       EOS
       flag "--formula=",
            description: "Return results for package by name."
@@ -24,9 +25,21 @@ module Homebrew
   def bump
     bump_args.parse
 
-    outdated_repology_packages = Repology.parse_api_response
-    outdated_packages = validate_and_format_packages(outdated_repology_packages)
+    requested_formula = Homebrew.args.formula
+    requested_formula.downcase! if requested_formula
 
+    if requested_formula && !get_formula_details(requested_formula)
+      ohai "Requested formula #{requested_formula} is not valid Homebrew formula."
+      return
+    end
+
+    outdated_repology_packages = if requested_formula
+                                   Repology.single_package_query(requested_formula)
+                                 else
+                                   Repology.parse_api_response
+                                 end
+
+    outdated_packages = validate_and_format_packages(outdated_repology_packages)
     display(outdated_packages)
   end
 

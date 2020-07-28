@@ -15,6 +15,13 @@ module Repology
     JSON.parse(output)
   end
 
+  def single_package_query(name)
+    url = "https://repology.org/api/v1/project/#{name}"
+
+    output, _errors, _status = curl_output(url.to_s)
+    { name: JSON.parse(output) }
+  end
+
   def parse_api_response
     ohai "Querying outdated packages from Repology"
 

@@ -910,8 +910,12 @@ When passed with \fB\-\-write\fR, a new commit will not generated after writing 
 \fB\-\-root\-url\fR
 Use the specified \fIURL\fR as the root of the bottle\'s URL instead of Homebrew\'s default\.
 .
-.SS "\fBbump\fR"
-Display out\-of\-date brew formulae, the latest version available, and whether a pull request has been opened\.
+.SS "\fBbump\fR [\fIoptions\fR]"
+Display out\-of\-date brew formulae and the latest version available\. Also displays whether a pull request has been opened with the URL\.
+.
+.TP
+\fB\-\-formula\fR
+Return results for package by name\.
 .
 .TP
 \fB\-\-limit\fR
