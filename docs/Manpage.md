@@ -517,12 +517,14 @@ also `pin`.
 
 Remove a tapped formula repository.
 
-### `update`, `up` [*`options`*]
+### `update` [*`options`*]
 
 Fetch the newest version of Homebrew and all formulae from GitHub using `git`(1) and perform any necessary migrations.
 
 * `--merge`:
   Use `git merge` to apply updates (rather than `git rebase`).
+* `--preinstall`:
+  Run on auto-updates (e.g. before `brew install`). Skips some slower steps.
 
 ### `update-reset` [*`repository`*]
 
