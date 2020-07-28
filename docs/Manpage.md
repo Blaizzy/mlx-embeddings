@@ -901,6 +901,8 @@ the repository.
 
 * `--tap`:
   Target tap repository (default: `homebrew/core`).
+* `--workflow`:
+  Target workflow filename (default: `publish-commit-bottles.yml`).
 
 ### `pr-pull` [*`options`*] *`pull_request`* [*`pull_request`* ...]
 

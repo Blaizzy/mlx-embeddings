@@ -16,6 +16,8 @@ module Homebrew
       EOS
       flag   "--tap=",
              description: "Target tap repository (default: `homebrew/core`)."
+      flag   "--workflow=",
+             description: "Target workflow filename (default: `publish-commit-bottles.yml`)."
       switch :verbose
       min_named 1
     end
@@ -25,6 +27,8 @@ module Homebrew
     pr_publish_args.parse
 
     tap = Tap.fetch(Homebrew.args.tap || CoreTap.instance.name)
+    workflow = Homebrew.args.workflow || "publish-commit-bottles.yml"
+    ref = "master"
 
     args.named.uniq.each do |arg|
       arg = "#{tap.default_remote}/pull/#{arg}" if arg.to_i.positive?
@@ -36,7 +40,7 @@ module Homebrew
       end
 
       ohai "Dispatching #{tap} pull request ##{issue}"
-      GitHub.dispatch_event(user, repo, "Publish ##{issue}", pull_request: issue)
+      GitHub.workflow_dispatch_event(user, repo, workflow, ref, pull_request: issue)
     end
   end
 end
