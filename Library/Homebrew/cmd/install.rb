@@ -129,7 +129,7 @@ module Homebrew
 
     # if the user's flags will prevent bottle only-installations when no
     # developer tools are available, we need to stop them early on
-    FormulaInstaller.prevent_build_flags unless DevelopmentTools.installed?
+    FormulaInstaller.prevent_build_flags(args)
 
     args.formulae.each do |f|
       # head-only without --HEAD is an error

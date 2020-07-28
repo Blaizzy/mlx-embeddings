@@ -69,19 +69,6 @@ module Homebrew
         named.blank?
       end
 
-      # If the user passes any flags that trigger building over installing from
-      # a bottle, they are collected here and returned as an Array for checking.
-      def collect_build_args
-        build_flags = []
-
-        build_flags << "--HEAD" if HEAD?
-        build_flags << "--universal" if build_universal?
-        build_flags << "--build-bottle" if build_bottle?
-        build_flags << "--build-from-source" if build_from_source?
-
-        build_flags
-      end
-
       def formulae
         require "formula"
 

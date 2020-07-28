@@ -57,7 +57,7 @@ module Homebrew
   def reinstall
     args = reinstall_args.parse
 
-    FormulaInstaller.prevent_build_flags unless DevelopmentTools.installed?
+    FormulaInstaller.prevent_build_flags(args)
 
     Install.perform_preinstall_checks
 

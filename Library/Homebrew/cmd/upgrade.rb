@@ -70,12 +70,12 @@ module Homebrew
     named_formulae_specified = !formulae.empty? && casks.empty?
     named_casks_specified = !casks.empty? && formulae.empty?
 
-    upgrade_outdated_formulae(formulae) unless named_casks_specified
+    upgrade_outdated_formulae(formulae, args: args) unless named_casks_specified
     upgrade_outdated_casks(casks) unless named_formulae_specified
   end
 
-  def upgrade_outdated_formulae(formulae)
-    FormulaInstaller.prevent_build_flags unless DevelopmentTools.installed?
+  def upgrade_outdated_formulae(formulae, args:)
+    FormulaInstaller.prevent_build_flags(args)
 
     Install.perform_preinstall_checks
 
