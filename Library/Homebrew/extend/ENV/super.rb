@@ -36,8 +36,8 @@ module Superenv
   end
 
   # @private
-  def setup_build_environment(formula = nil, args: nil)
-    super
+  def setup_build_environment(**options)
+    super(**options)
     send(compiler)
 
     self["HOMEBREW_ENV"] = "super"
@@ -64,7 +64,7 @@ module Superenv
     self["HOMEBREW_INCLUDE_PATHS"] = determine_include_paths
     self["HOMEBREW_LIBRARY_PATHS"] = determine_library_paths
     self["HOMEBREW_DEPENDENCIES"] = determine_dependencies
-    self["HOMEBREW_FORMULA_PREFIX"] = formula.prefix unless formula.nil?
+    self["HOMEBREW_FORMULA_PREFIX"] = @formula.prefix unless @formula.nil?
 
     # The HOMEBREW_CCCFG ENV variable is used by the ENV/cc tool to control
     # compiler flag stripping. It consists of a string of characters which act

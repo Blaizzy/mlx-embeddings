@@ -15,12 +15,10 @@ shared_examples EnvActivation do
   end
 
   describe "#with_build_environment" do
-    let(:args) { Homebrew::CLI::Args.new }
-
     it "restores the environment" do
       before = subject.dup
 
-      subject.with_build_environment(args: args) do
+      subject.with_build_environment do
         subject["foo"] = "bar"
       end
 
@@ -32,7 +30,7 @@ shared_examples EnvActivation do
       before = subject.dup
 
       expect {
-        subject.with_build_environment(args: args) do
+        subject.with_build_environment do
           subject["foo"] = "bar"
           raise StandardError
         end
@@ -43,13 +41,13 @@ shared_examples EnvActivation do
     end
 
     it "returns the value of the block" do
-      expect(subject.with_build_environment(args: args) { 1 }).to eq(1)
+      expect(subject.with_build_environment { 1 }).to eq(1)
     end
 
     it "does not mutate the interface" do
       expected = subject.methods
 
-      subject.with_build_environment(args: args) do
+      subject.with_build_environment do
         expect(subject.methods).to eq(expected)
       end
 

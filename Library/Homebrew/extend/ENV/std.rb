@@ -11,8 +11,8 @@ module Stdenv
   SAFE_CFLAGS_FLAGS = "-w -pipe"
 
   # @private
-  def setup_build_environment(formula = nil, args: nil)
-    super
+  def setup_build_environment(**options)
+    super(**options)
 
     self["HOMEBREW_ENV"] = "std"
 
