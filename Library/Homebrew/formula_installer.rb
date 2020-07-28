@@ -40,6 +40,7 @@ class FormulaInstaller
 
   attr_reader :formula
   attr_accessor :cc, :env, :args, :options, :build_bottle, :bottle_arch,
+                :build_from_source_formulae, :include_test_formulae,
                 :installed_as_dependency, :installed_on_request, :link_keg, :other_installers
 
   mode_attr_accessor :show_summary_heading, :show_header
@@ -47,7 +48,11 @@ class FormulaInstaller
   mode_attr_accessor :ignore_deps, :only_deps, :interactive, :git, :force, :keep_tmp
   mode_attr_accessor :verbose, :debug, :quiet
 
-  def initialize(formula, force_bottle: false, include_test: false, build_from_source: false, cc: nil, args: nil)
+  def initialize(formula,
+                 force_bottle: false,
+                 include_test: false, include_test_formulae: [],
+                 build_from_source: false, build_from_source_formulae: [],
+                 cc: nil, args: nil)
     @args = args
     @formula = formula
     @env = nil
@@ -58,10 +63,12 @@ class FormulaInstaller
     @ignore_deps = false
     @only_deps = false
     @build_from_source = build_from_source
+    @build_from_source_formulae = build_from_source_formulae
     @build_bottle = false
     @bottle_arch = nil
     @force_bottle = force_bottle
     @include_test = include_test
+    @include_test_formulae = include_test_formulae
     @interactive = false
     @git = false
     @cc = cc
@@ -154,7 +161,7 @@ class FormulaInstaller
 
   def install_bottle_for?(dep, build)
     return pour_bottle? if dep == formula
-    return false if args&.build_formula_from_source?(dep)
+    return false if build_from_source_formulae.include?(dep.full_name)
     return false unless dep.bottle && dep.pour_bottle?
     return false unless build.used_options.empty?
     return false unless dep.bottle.compatible_cellar?
@@ -483,7 +490,7 @@ class FormulaInstaller
 
         if req.prune_from_option?(build)
           Requirement.prune
-        elsif req.satisfied?(args: args)
+        elsif req.satisfied?(env: env, cc: cc, build_bottle: @build_bottle, bottle_arch: bottle_arch)
           Requirement.prune
         elsif (req.build? || req.test?) && !keep_build_test
           Requirement.prune
@@ -513,7 +520,7 @@ class FormulaInstaller
       )
 
       keep_build_test = false
-      keep_build_test ||= dep.test? && include_test? && args&.include_formula_test_deps?(dependent)
+      keep_build_test ||= dep.test? && include_test? && include_test_formulae.include?(dependent.full_name)
       keep_build_test ||= dep.build? && !install_bottle_for?(dependent, build) && !dependent.latest_version_installed?
 
       if dep.prune_from_option?(build)
@@ -591,8 +598,8 @@ class FormulaInstaller
   def fetch_dependency(dep)
     df = dep.to_formula
     fi = FormulaInstaller.new(df, force_bottle:      false,
-                                  include_test:      args&.include_formula_test_deps?(df),
-                                  build_from_source: args&.build_formula_from_source?(df),
+                                  include_test:      include_test_formulae.include?(df.full_name),
+                                  build_from_source: build_from_source_formulae.include?(df.full_name),
                                   args:              args)
 
     fi.force                   = force?
@@ -633,8 +640,8 @@ class FormulaInstaller
     end
 
     fi = FormulaInstaller.new(df, force_bottle:      false,
-                                  include_test:      args&.include_formula_test_deps?(df),
-                                  build_from_source: args&.build_formula_from_source?(df),
+                                  include_test:      include_test_formulae.include?(df.full_name),
+                                  build_from_source: build_from_source_formulae.include?(df.full_name),
                                   args:              args)
 
     fi.options                |= tab.used_options
@@ -775,7 +782,7 @@ class FormulaInstaller
 
     formula.options.each do |opt|
       name = opt.name[/^([^=]+)=$/, 1]
-      value = args&.value(name) if name
+      value = self.args&.value(name) if name
       args << "--#{name}=#{value}" if value
     end
 

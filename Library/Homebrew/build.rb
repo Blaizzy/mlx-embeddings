@@ -97,7 +97,11 @@ class Build
         bottle_arch:  args.bottle_arch,
       )
       post_superenv_hacks
-      reqs.each { |req| req.modify_build_environment(args: args) }
+      reqs.each do |req|
+        req.modify_build_environment(
+          env: args.env, cc: args.cc, build_bottle: args.build_bottle?, bottle_arch: args.bottle_arch,
+        )
+      end
       deps.each(&:modify_build_environment)
     else
       ENV.setup_build_environment(
@@ -106,7 +110,11 @@ class Build
         build_bottle: args.build_bottle?,
         bottle_arch:  args.bottle_arch,
       )
-      reqs.each { |req| req.modify_build_environment(args: args) }
+      reqs.each do |req|
+        req.modify_build_environment(
+          env: args.env, cc: args.cc, build_bottle: args.build_bottle?, bottle_arch: args.bottle_arch,
+        )
+      end
       deps.each(&:modify_build_environment)
 
       keg_only_deps.each do |dep|

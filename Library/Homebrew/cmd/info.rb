@@ -256,7 +256,7 @@ module Homebrew
   def decorate_requirements(requirements)
     req_status = requirements.map do |req|
       req_s = req.display_s
-      req.satisfied?(args: args) ? pretty_installed(req_s) : pretty_uninstalled(req_s)
+      req.satisfied? ? pretty_installed(req_s) : pretty_uninstalled(req_s)
     end
     req_status.join(", ")
   end

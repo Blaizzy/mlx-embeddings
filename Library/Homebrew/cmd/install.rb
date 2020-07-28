@@ -259,7 +259,7 @@ module Homebrew
 
     formulae.each do |f|
       Migrator.migrate_if_needed(f, force: args.force?)
-      install_formula(f)
+      install_formula(f, args: args)
       Cleanup.install_formula_clean!(f)
     end
 
@@ -319,12 +319,16 @@ module Homebrew
     end
   end
 
-  def install_formula(f)
+  def install_formula(f, args:)
     f.print_tap_action
     build_options = f.build
 
-    fi = FormulaInstaller.new(f, force_bottle: args.force_bottle?, include_test: args.include_test?,
-                              build_from_source: args.build_from_source?, args: args)
+    fi = FormulaInstaller.new(f, force_bottle:               args.force_bottle?,
+                                 include_test:               args.include_test?,
+                                 include_test_formulae:      args.include_test_formulae,
+                                 build_from_source:          args.build_from_source?,
+                                 build_from_source_formulae: args.build_from_source_formulae,
+                                 args:                       args)
     fi.options              = build_options.used_options
     fi.env                  = args.env
     fi.force                = args.force?

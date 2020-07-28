@@ -150,18 +150,20 @@ module Homebrew
         !(HEAD? || devel?)
       end
 
-      # Whether a given formula should be built from source during the current
-      # installation run.
-      def build_formula_from_source?(f)
-        return false if !build_from_source? && !build_bottle?
-
-        formulae.any? { |args_f| args_f.full_name == f.full_name }
+      def build_from_source_formulae
+        if build_from_source? || build_bottle?
+          formulae.map(&:full_name)
+        else
+          []
+        end
       end
 
-      def include_formula_test_deps?(f)
-        return false unless include_test?
-
-        formulae.any? { |args_f| args_f.full_name == f.full_name }
+      def include_test_formulae
+        if include_test?
+          formulae.map(&:full_name)
+        else
+          []
+        end
       end
 
       def value(name)
