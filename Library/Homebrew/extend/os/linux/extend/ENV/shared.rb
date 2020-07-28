@@ -3,9 +3,9 @@
 module SharedEnvExtension
   # @private
   def effective_arch
-    if @args&.build_bottle? && @args&.bottle_arch
-      @args.bottle_arch.to_sym
-    elsif @args&.build_bottle?
+    if @build_bottle && @bottle_arch
+      @bottle_arch.to_sym
+    elsif @build_bottle
       Hardware.oldest_cpu
     else
       :native
