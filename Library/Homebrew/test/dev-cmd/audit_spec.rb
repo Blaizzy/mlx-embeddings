@@ -86,9 +86,9 @@ module Homebrew
 
       let(:custom_spdx_id) { "zzz" }
       let(:standard_mismatch_spdx_id) { "0BSD" }
-      let(:license_array) { ["0BSD", "GPL-3.0"] }
-      let(:license_array_mismatch) { ["0BSD", "MIT"] }
-      let(:license_array_nonstandard) { ["0BSD", "zzz", "MIT"] }
+      let(:license_array) { ['0BSD', 'GPL-3.0'] }
+      let(:license_array_mismatch) { ['0BSD', 'MIT'] }
+      let(:license_array_nonstandard) { ['0BSD', 'zzz', 'MIT'] }
 
       it "does not check if the formula is not a new formula" do
         fa = formula_auditor "foo", <<~RUBY, spdx_data: spdx_data, new_formula: false
