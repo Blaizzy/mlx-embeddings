@@ -10,7 +10,7 @@ module Stdenv
 
     return unless @formula
 
-    prepend_path "CPATH", formula.include
+    prepend_path "CPATH", @formula.include
     prepend_path "LIBRARY_PATH", @formula.lib
     prepend_path "LD_RUN_PATH", @formula.lib
   end
