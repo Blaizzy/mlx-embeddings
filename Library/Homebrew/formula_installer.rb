@@ -39,7 +39,7 @@ class FormulaInstaller
   end
 
   attr_reader :formula
-  attr_accessor :cc, :env, :args, :options, :build_bottle, :bottle_arch,
+  attr_accessor :cc, :env, :options, :build_bottle, :bottle_arch,
                 :build_from_source_formulae, :include_test_formulae,
                 :installed_as_dependency, :installed_on_request, :link_keg, :other_installers
 
@@ -52,8 +52,7 @@ class FormulaInstaller
                  force_bottle: false,
                  include_test: false, include_test_formulae: [],
                  build_from_source: false, build_from_source_formulae: [],
-                 cc: nil, args: nil)
-    @args = args
+                 cc: nil)
     @formula = formula
     @env = nil
     @force = false
@@ -599,8 +598,7 @@ class FormulaInstaller
     df = dep.to_formula
     fi = FormulaInstaller.new(df, force_bottle:      false,
                                   include_test:      include_test_formulae.include?(df.full_name),
-                                  build_from_source: build_from_source_formulae.include?(df.full_name),
-                                  args:              args)
+                                  build_from_source: build_from_source_formulae.include?(df.full_name))
 
     fi.force                   = force?
     fi.keep_tmp                = keep_tmp?
@@ -641,8 +639,7 @@ class FormulaInstaller
 
     fi = FormulaInstaller.new(df, force_bottle:      false,
                                   include_test:      include_test_formulae.include?(df.full_name),
-                                  build_from_source: build_from_source_formulae.include?(df.full_name),
-                                  args:              args)
+                                  build_from_source: build_from_source_formulae.include?(df.full_name))
 
     fi.options                |= tab.used_options
     fi.options                |= Tab.remap_deprecated_options(df.deprecated_options, dep.options)
@@ -778,12 +775,6 @@ class FormulaInstaller
       args << "--HEAD"
     elsif formula.devel?
       args << "--devel"
-    end
-
-    formula.options.each do |opt|
-      name = opt.name[/^([^=]+)=$/, 1]
-      value = self.args&.value(name) if name
-      args << "--#{name}=#{value}" if value
     end
 
     args

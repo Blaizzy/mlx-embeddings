@@ -25,8 +25,7 @@ module Homebrew
 
     fi = FormulaInstaller.new(f, force_bottle:               args.force_bottle?,
                                  build_from_source:          args.build_from_source?,
-                                 build_from_source_formulae: args.build_from_source_formulae,
-                                 args:                       args)
+                                 build_from_source_formulae: args.build_from_source_formulae)
     fi.options              = options
     fi.force                = args.force?
     fi.keep_tmp             = args.keep_tmp?
