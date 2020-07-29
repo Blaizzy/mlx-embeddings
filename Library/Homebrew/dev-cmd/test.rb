@@ -25,6 +25,8 @@ module Homebrew
              description: "Test the head version of a formula."
       switch "--keep-tmp",
              description: "Retain the temporary files created for the test."
+      switch "--retry",
+             description: "Retry if a testing fails."
       switch :verbose
       switch :debug
       conflicts "--devel", "--HEAD"
@@ -70,7 +72,7 @@ module Homebrew
         next
       end
 
-      puts "Testing #{f.full_name}"
+      oh1 "Testing #{f.full_name}"
 
       env = ENV.to_hash
 
@@ -108,11 +110,24 @@ module Homebrew
           end
         end
       rescue Exception => e # rubocop:disable Lint/RescueException
+        retry if retry_test?(f)
         ofail "#{f.full_name}: failed"
         puts e, e.backtrace
       ensure
         ENV.replace(env)
       end
+    end
+  end
+
+  def retry_test?(f)
+    @test_failed ||= Set.new
+    if args.retry? && @test_failed.add?(f)
+      oh1 "Testing #{f.full_name} (again)"
+      f.clear_cache
+      true
+    else
+      Homebrew.failed = true
+      false
     end
   end
 end
