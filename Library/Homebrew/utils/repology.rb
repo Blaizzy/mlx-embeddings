@@ -48,7 +48,7 @@ module Repology
       page_no += 1
     end
 
-    ohai "#{outdated_packages.size} outdated #{"package".pluralize(outdated_packages.size)} identified"
+    puts "#{outdated_packages.size} outdated #{"package".pluralize(outdated_packages.size)} found"
 
     outdated_packages
   end
