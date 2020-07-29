@@ -19,6 +19,6 @@ class Failball < Formula
     system "/usr/bin/false" if ENV["FAILBALL_BUILD_ERROR"]
 
     # This should get marshalled into a RuntimeError.
-    raise "something that isn't a build error happened!"
+    raise "Something that isn't a build error happened!"
   end
 end

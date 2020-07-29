@@ -280,7 +280,7 @@ describe RuboCop::Cop::FormulaAudit::GitUrls do
   subject(:cop) { described_class.new }
 
   context "when a git URL is used" do
-    it "reports no offenses with a non-git url" do
+    it "reports no offenses with a non-git URL" do
       expect_no_offenses(<<~RUBY, "/homebrew-core/")
         class Foo < Formula
           desc "foo"
@@ -329,7 +329,7 @@ describe RuboCop::Cop::FormulaAudit::GitUrls do
         class Foo < Formula
           desc "foo"
           url "https://github.com/foo/bar.git",
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should specify a revision for git urls
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should specify a revision for git URLs
               tag: "v1.0.0"
         end
       RUBY
@@ -340,7 +340,7 @@ describe RuboCop::Cop::FormulaAudit::GitUrls do
         class Foo < Formula
           desc "foo"
           url "https://github.com/foo/bar.git",
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should specify a revision for git urls
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should specify a revision for git URLs
               shallow: false,
               tag:     "v1.0.0"
         end
@@ -435,7 +435,7 @@ describe RuboCop::Cop::FormulaAuditStrict::GitUrls do
         class Foo < Formula
           desc "foo"
           url "https://github.com/foo/bar.git",
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should specify a tag for git urls
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should specify a tag for git URLs
               revision: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
         end
       RUBY
@@ -446,7 +446,7 @@ describe RuboCop::Cop::FormulaAuditStrict::GitUrls do
         class Foo < Formula
           desc "foo"
           url "https://github.com/foo/bar.git",
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should specify a tag for git urls
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should specify a tag for git URLs
               revision: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
               shallow:  false
         end

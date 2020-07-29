@@ -419,7 +419,7 @@ describe DownloadStrategyDetector do
       it { is_expected.to eq(GitHubGitDownloadStrategy) }
     end
 
-    it "defaults to cURL" do
+    it "defaults to curl" do
       expect(subject).to eq(CurlDownloadStrategy)
     end
 

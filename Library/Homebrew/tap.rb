@@ -209,7 +209,7 @@ class Tap
     return "N/A" unless installed?
 
     pretty_revision = git_short_head
-    return "(no git repository)" unless pretty_revision
+    return "(no Git repository)" unless pretty_revision
 
     "(git revision #{pretty_revision}; last commit #{git_last_commit_date})"
   end

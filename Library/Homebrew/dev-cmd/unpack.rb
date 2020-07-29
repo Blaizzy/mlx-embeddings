@@ -68,7 +68,7 @@ module Homebrew
 
       next unless args.git?
 
-      ohai "Setting up git repository"
+      ohai "Setting up Git repository"
       cd stage_dir
       system "git", "init", "-q"
       system "git", "add", "-A"

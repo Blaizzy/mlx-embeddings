@@ -356,7 +356,7 @@ module Cask
       missing_formulae_and_casks = missing_cask_and_formula_dependencies
 
       if missing_formulae_and_casks.empty?
-        puts "All Formula dependencies satisfied."
+        puts "All formula dependencies satisfied."
         return
       end
 

@@ -351,7 +351,7 @@ module Homebrew
 
     alias_rename = alias_update_pair(formula, new_formula_version)
     if alias_rename.present?
-      ohai "renaming alias #{alias_rename.first} to #{alias_rename.last}"
+      ohai "Renaming alias #{alias_rename.first} to #{alias_rename.last}"
       alias_rename.map! { |a| formula.tap.alias_dir/a }
     end
 

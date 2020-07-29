@@ -98,7 +98,7 @@ module Cask
           begin
             value = cask.send(stanza)
           rescue
-            opoo "failure calling '#{stanza}' on Cask '#{cask}'" unless args.quiet?
+            opoo "Failure calling '#{stanza}' on Cask '#{cask}'" unless args.quiet?
             puts ""
             next
           end

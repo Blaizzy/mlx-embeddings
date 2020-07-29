@@ -145,7 +145,7 @@ module Homebrew
     fc.tap = Tap.fetch(args.tap || "homebrew/core")
     raise TapUnavailableError, args.tap unless fc.tap.installed?
 
-    fc.url = args.named.first # Pull the first (and only) url from ARGV
+    fc.url = args.named.first # Pull the first (and only) URL from ARGV
 
     fc.mode = if args.autotools?
       :autotools

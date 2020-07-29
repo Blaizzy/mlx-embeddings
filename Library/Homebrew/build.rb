@@ -157,7 +157,7 @@ class Build
           puts "Install to this prefix: #{formula.prefix}"
 
           if args.git?
-            puts "This directory is now a git repo. Make your changes and then use:"
+            puts "This directory is now a Git repo. Make your changes and then use:"
             puts "  git diff | pbcopy"
             puts "to copy the diff to the clipboard."
           end

@@ -100,13 +100,13 @@ class Pathname
         src.resource.stage { install(*src.files) }
       when Array
         if src.empty?
-          opoo "tried to install empty array to #{self}"
+          opoo "Tried to install empty array to #{self}"
           break
         end
         src.each { |s| install_p(s, File.basename(s)) }
       when Hash
         if src.empty?
-          opoo "tried to install empty hash to #{self}"
+          opoo "Tried to install empty hash to #{self}"
           break
         end
         src.each { |s, new_basename| install_p(s, new_basename) }
@@ -372,7 +372,7 @@ class Pathname
   def write_exec_script(*targets)
     targets.flatten!
     if targets.empty?
-      opoo "tried to write exec scripts to #{self} for an empty list of targets"
+      opoo "Tried to write exec scripts to #{self} for an empty list of targets"
       return
     end
     mkpath

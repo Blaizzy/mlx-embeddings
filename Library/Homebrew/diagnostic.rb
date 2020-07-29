@@ -715,7 +715,7 @@ module Homebrew
         return if (paths & gnubin).empty?
 
         <<~EOS
-          Putting non-prefixed coreutils in your path can cause gmp builds to fail.
+          Putting non-prefixed coreutils in your path can cause GMP builds to fail.
         EOS
       rescue FormulaUnavailableError
         nil

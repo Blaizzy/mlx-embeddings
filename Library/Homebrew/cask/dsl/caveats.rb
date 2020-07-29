@@ -84,7 +84,7 @@ module Cask
       caveat :path_environment_variable do |path|
         <<~EOS
           To use #{@cask}, you may need to add the #{path} directory
-          to your PATH environment variable, e.g. (for bash shell):
+          to your PATH environment variable, e.g. (for Bash shell):
             export PATH=#{path}:"$PATH"
         EOS
       end

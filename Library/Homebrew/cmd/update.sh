@@ -370,7 +370,7 @@ EOS
     # we cannot install a Homebrew cURL if homebrew/core is unavailable.
     if [[ ! -d "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core" ]] || ! brew install curl
     then
-      odie "Curl must be installed and in your PATH!"
+      odie "'curl' must be installed and in your PATH!"
     fi
   fi
 
@@ -381,7 +381,7 @@ EOS
     # we cannot install a Homebrew Git if homebrew/core is unavailable.
     if [[ ! -d "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core" ]] || ! brew install git
     then
-      odie "Git must be installed and in your PATH!"
+      odie "'git' must be installed and in your PATH!"
     fi
   fi
 
