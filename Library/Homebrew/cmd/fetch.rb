@@ -150,8 +150,8 @@ module Homebrew
   def fetch_patch(p, args:)
     fetch_fetchable p, args: args
   rescue ChecksumMismatchError => e
-    Homebrew.failed = true
     opoo "Patch reports different sha256: #{e.expected}"
+    Homebrew.failed = true
   end
 
   def retry_fetch?(f, args:)

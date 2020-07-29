@@ -57,8 +57,7 @@ module Homebrew
     methods.each do |method|
       $stderr.puts Formatter.headline("Checking #{method}", color: :magenta) if args.debug?
       unless checks.respond_to?(method)
-        Homebrew.failed = true
-        puts "No check available by the name: #{method}"
+        ofail "No check available by the name: #{method}"
         next
       end
 

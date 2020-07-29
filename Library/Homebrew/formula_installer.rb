@@ -951,10 +951,9 @@ class FormulaInstaller
       begin
         keg.optlink(verbose: verbose?)
       rescue Keg::LinkError => e
-        onoe "Failed to create #{formula.opt_prefix}"
+        ofail "Failed to create #{formula.opt_prefix}"
         puts "Things that depend on #{formula.full_name} will probably not build."
         puts e
-        Homebrew.failed = true
       end
       return
     end
@@ -991,25 +990,23 @@ class FormulaInstaller
         link_overwrite_backup[conflict_file] = backup_file
         retry
       end
-      onoe "The `brew link` step did not complete successfully"
+      ofail "The `brew link` step did not complete successfully"
       puts "The formula built, but is not symlinked into #{HOMEBREW_PREFIX}"
       puts e
       puts
       puts "Possible conflicting files are:"
       keg.link(dry_run: true, overwrite: true, verbose: verbose?)
       @show_summary_heading = true
-      Homebrew.failed = true
     rescue Keg::LinkError => e
-      onoe "The `brew link` step did not complete successfully"
+      ofail "The `brew link` step did not complete successfully"
       puts "The formula built, but is not symlinked into #{HOMEBREW_PREFIX}"
       puts e
       puts
       puts "You can try again using:"
       puts "  brew link #{formula.name}"
       @show_summary_heading = true
-      Homebrew.failed = true
     rescue Exception => e # rubocop:disable Lint/RescueException
-      onoe "An unexpected error occurred during the `brew link` step"
+      ofail "An unexpected error occurred during the `brew link` step"
       puts "The formula built, but is not symlinked into #{HOMEBREW_PREFIX}"
       puts e
       puts e.backtrace if debug?
@@ -1021,7 +1018,6 @@ class FormulaInstaller
           FileUtils.mv backup, origin
         end
       end
-      Homebrew.failed = true
       raise
     end
 
@@ -1043,20 +1039,18 @@ class FormulaInstaller
     log = formula.var/"log"
     log.mkpath if formula.plist.include? log.to_s
   rescue Exception => e # rubocop:disable Lint/RescueException
-    onoe "Failed to install plist file"
+    ofail "Failed to install plist file"
     odebug e, e.backtrace
-    Homebrew.failed = true
   end
 
   sig { params(keg: Keg).void }
   def fix_dynamic_linkage(keg)
     keg.fix_dynamic_linkage
   rescue Exception => e # rubocop:disable Lint/RescueException
-    onoe "Failed to fix install linkage"
+    ofail "Failed to fix install linkage"
     puts "The formula built, but you may encounter issues using it or linking other"
     puts "formulae against it."
     odebug e, e.backtrace
-    Homebrew.failed = true
     @show_summary_heading = true
   end
 
