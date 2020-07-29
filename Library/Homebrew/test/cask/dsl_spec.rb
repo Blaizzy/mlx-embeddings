@@ -107,6 +107,16 @@ describe Cask::DSL, :cask do
     end
   end
 
+  describe "desc stanza" do
+    it "lets you set the description via a desc stanza" do
+      cask = Cask::Cask.new("desc-cask") do
+        desc "The package's description"
+      end
+
+      expect(cask.desc).to eq("The package's description")
+    end
+  end
+
   describe "sha256 stanza" do
     it "lets you set checksum via sha256" do
       cask = Cask::Cask.new("checksum-cask") do

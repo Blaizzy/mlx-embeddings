@@ -30,6 +30,7 @@ module Cask
 
             url "https://"
             name ""
+            desc ""
             homepage ""
 
             app ""

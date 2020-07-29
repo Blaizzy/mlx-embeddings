@@ -155,6 +155,7 @@ module Cask
       {
         "token"          => token,
         "name"           => name,
+        "desc"           => desc,
         "homepage"       => homepage,
         "url"            => url,
         "appcast"        => appcast,
