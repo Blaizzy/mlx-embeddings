@@ -134,7 +134,7 @@ module Homebrew
           # depends_on "cmake" => :build
         <% end %>
 
-        <% if mode == :perl || mode == :python %>
+        <% if mode == :perl %>
           # Additional dependency
           # resource "" do
           #   url ""

@@ -1416,6 +1416,25 @@ Return a failing status code if current license data\'s version is the same as t
 \fB\-\-commit\fR
 Commit changes to the SPDX license data\.
 .
+.SS "\fBupdate\-python\-resources\fR [\fIoptions\fR] \fIformula\fR"
+Update versions for PyPI resource blocks in \fIformula\fR\.
+.
+.TP
+\fB\-p\fR, \fB\-\-print\-only\fR
+Print the updated resource blocks instead of changing \fIformula\fR\.
+.
+.TP
+\fB\-s\fR, \fB\-\-silent\fR
+Suppress any output\.
+.
+.TP
+\fB\-\-ignore\-non\-pypi\-packages\fR
+Don\'t fail if \fIformula\fR is not a PyPI package\.
+.
+.TP
+\fB\-\-version\fR
+Use the specified \fIversion\fR when finding resources for \fIformula\fR\. If no version is specified, the current version for \fIformula\fR will be used\.
+.
 .SS "\fBupdate\-test\fR [\fIoptions\fR]"
 Run a test of \fBbrew update\fR with a new repository clone\. If no options are passed, use \fBorigin/master\fR as the start commit\.
 .
