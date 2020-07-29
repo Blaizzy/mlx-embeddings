@@ -57,7 +57,7 @@ class Version
   NULL_TOKEN = NullToken.new.freeze
 
   class StringToken < Token
-    PATTERN = /[a-z]+[0-9]*/i.freeze
+    PATTERN = /[a-z]+/i.freeze
 
     def initialize(value)
       @value = value.to_s
