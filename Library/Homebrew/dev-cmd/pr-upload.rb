@@ -40,7 +40,7 @@ module Homebrew
     hashes.each do |name, hash|
       formula_path = HOMEBREW_REPOSITORY/hash["formula"]["path"]
       formula_version = Formulary.factory(formula_path).pkg_version
-      bottle_version = Version.new hash["formula"]["pkg_version"]
+      bottle_version = PkgVersion.parse hash["formula"]["pkg_version"]
       next if formula_version == bottle_version
 
       odie "Bottles are for #{name} #{bottle_version} but formula is version #{formula_version}!"
