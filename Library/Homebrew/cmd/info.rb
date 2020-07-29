@@ -211,7 +211,7 @@ module Homebrew
 
     puts "From: #{Formatter.url(github_info(f))}"
 
-    puts "License: #{f.license}" if f.license
+    puts "License: #{f.license.join(", ")}" if f.license
 
     unless f.deps.empty?
       ohai "Dependencies"
