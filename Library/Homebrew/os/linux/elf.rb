@@ -1,45 +1,7 @@
 # frozen_string_literal: true
 
-if HOMEBREW_PATCHELF_RB
-  require "utils/gems"
-  Homebrew.install_bundler_gems!
-  require "patchelf"
-
-  module PatchELF
-    refine Patcher do
-      # patchelf.rb throws exception when the requested entry is missing in the ELF file.
-      # We prefer an API that returns nil.
-
-      def rpath
-        super
-      rescue PatchELF::MissingTagError
-        nil
-      end
-
-      def runpath
-        super
-      rescue PatchELF::MissingTagError
-        nil
-      end
-
-      def soname
-        super
-      rescue PatchELF::MissingTagError
-        nil
-      end
-
-      def interpreter
-        super
-      rescue PatchELF::MissingSegmentError
-        nil
-      end
-    end
-  end
-end
-
 # @see https://en.wikipedia.org/wiki/Executable_and_Linkable_Format#File_header
 module ELFShim
-  using PatchELF if HOMEBREW_PATCHELF_RB
   MAGIC_NUMBER_OFFSET = 0
   MAGIC_NUMBER_ASCII = "\x7fELF"
 
@@ -252,7 +214,9 @@ module ELFShim
   def patchelf_patcher
     return unless HOMEBREW_PATCHELF_RB
 
-    @patchelf_patcher ||= PatchELF::Patcher.new to_s, logging: false
+    Homebrew.install_bundler_gems!
+    require "patchelf"
+    @patchelf_patcher ||= PatchELF::Patcher.new to_s, on_error: :silent
   end
 
   def metadata
