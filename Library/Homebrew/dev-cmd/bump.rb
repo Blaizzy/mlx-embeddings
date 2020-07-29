@@ -29,7 +29,7 @@ module Homebrew
     requested_formula&.downcase!
 
     if requested_formula && !get_formula_details(requested_formula)
-      ohai "Requested formula #{requested_formula} is not valid Homebrew formula."
+      raise FormulaUnavailableError, requested_formula
       return
     end
 
