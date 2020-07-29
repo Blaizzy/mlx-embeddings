@@ -1036,6 +1036,8 @@ wrong with the installed formula.
   Test the head version of a formula.
 * `--keep-tmp`:
   Retain the temporary files created for the test.
+* `--retry`:
+  Retry if a testing fails.
 
 ### `tests` [*`options`*]
 
