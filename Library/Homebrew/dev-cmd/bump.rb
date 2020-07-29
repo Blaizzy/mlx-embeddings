@@ -131,7 +131,7 @@ module Homebrew
       ohai formula
       puts "Current formula version:  #{package_details[:current_formula_version]}"
       puts "Latest Repology version:  #{package_details[:repology_latest_version]}"
-      puts "Latest livecheck version: #{package_details[:livecheck_latest_version] || "Not found."}"
+      puts "Latest livecheck version: #{package_details[:livecheck_latest_version] || "Not found"}"
       puts "Open pull requests: #{package_details[:open_pull_requests] || "None."}"
     end
   end
