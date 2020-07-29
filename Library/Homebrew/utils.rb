@@ -13,7 +13,6 @@ require "utils/popen"
 require "utils/repology"
 require "utils/svn"
 require "utils/tty"
-require "utils/repology"
 require "tap_constants"
 require "time"
 
