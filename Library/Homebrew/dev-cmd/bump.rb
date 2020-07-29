@@ -40,7 +40,7 @@ module Homebrew
     end
 
     if requested_formula && outdated_repology_packages.nil?
-      ohai "The requested formula, #{requested_formula}, is up-to-date."
+      ohai "#{requested_formula} is up-to-date!"
       puts "Current version: #{get_formula_details(requested_formula).version}"
       return
     end
