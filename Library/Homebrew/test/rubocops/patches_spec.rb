@@ -34,7 +34,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
         "http://trac.macports.org/export/102865/trunk/dports/mail/uudeview/files/inews.c.patch",
         "http://bugs.debian.org/cgi-bin/bugreport.cgi?msg=5;filename=patch-libunac1.txt;att=1;bug=623340",
         "https://patch-diff.githubusercontent.com/raw/foo/foo-bar/pull/100.patch",
-        "https://github.com/dlang/dub/pull/1221.patch",
+        "https://github.com/dlang/dub/commit/2c916b1a7999a050ac4970c3415ff8f91cd487aa.patch",
       ]
       patch_urls.each do |patch_url|
         source = <<~EOS
@@ -91,13 +91,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
         # rubocop:disable Layout/LineLength
         elsif patch_url.match?(%r{https?://patch-diff\.githubusercontent\.com/raw/(.+)/(.+)/pull/(.+)\.(?:diff|patch)})
           # rubocop:enable Layout/LineLength
-          [{ message:
-                       <<~EOS,
-                         use GitHub pull request URLs:
-                           https://github.com/foo/foo-bar/pull/100.patch?full_index=1
-                         Rather than patch-diff:
-                           https://patch-diff.githubusercontent.com/raw/foo/foo-bar/pull/100.patch
-                       EOS
+          [{ message:  "Use a commit hash URL rather than patch-diff: #{patch_url}",
              severity: :convention,
              line:     5,
              column:   5,
@@ -218,6 +212,8 @@ describe RuboCop::Cop::FormulaAudit::Patches do
         "http://trac.macports.org/export/102865/trunk/dports/mail/uudeview/files/inews.c.patch",
         "http://bugs.debian.org/cgi-bin/bugreport.cgi?msg=5;filename=patch-libunac1.txt;att=1;bug=623340",
         "https://patch-diff.githubusercontent.com/raw/foo/foo-bar/pull/100.patch",
+        "https://github.com/uber/h3/pull/362.patch?full_index=1",
+        "https://gitlab.gnome.org/GNOME/gitg/-/merge_requests/142.diff",
       ]
       patch_urls.each do |patch_url|
         source = <<~RUBY
@@ -272,16 +268,22 @@ describe RuboCop::Cop::FormulaAudit::Patches do
              line:     5,
              column:   9,
              source:   source }]
+        elsif patch_url.match?(%r{https://github.com/[^/]*/[^/]*/pull})
+          [{ message:  "Use a commit hash URL rather than an unstable pull request URL: #{patch_url}",
+             severity: :convention,
+             line:     5,
+             column:   9,
+             source:   source }]
+        elsif patch_url.match?(%r{.*gitlab.*/merge_request.*})
+          [{ message:  "Use a commit hash URL rather than an unstable merge request URL: #{patch_url}",
+             severity: :convention,
+             line:     5,
+             column:   9,
+             source:   source }]
         # rubocop:disable Layout/LineLength
         elsif patch_url.match?(%r{https?://patch-diff\.githubusercontent\.com/raw/(.+)/(.+)/pull/(.+)\.(?:diff|patch)})
           # rubocop:enable Layout/LineLength
-          [{ message:
-                       <<~EOS,
-                         use GitHub pull request URLs:
-                           https://github.com/foo/foo-bar/pull/100.patch?full_index=1
-                         Rather than patch-diff:
-                           https://patch-diff.githubusercontent.com/raw/foo/foo-bar/pull/100.patch
-                       EOS
+          [{ message:  "Use a commit hash URL rather than patch-diff: #{patch_url}",
              severity: :convention,
              line:     5,
              column:   9,
