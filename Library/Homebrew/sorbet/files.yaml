@@ -163,6 +163,7 @@ false:
   - ./dev-cmd/tests.rb
   - ./dev-cmd/unpack.rb
   - ./dev-cmd/update-license-data.rb
+  - ./dev-cmd/update-python-resources.rb
   - ./dev-cmd/update-test.rb
   - ./dev-cmd/vendor-gems.rb
   - ./development_tools.rb
@@ -268,6 +269,7 @@ false:
   - ./test/ENV_spec.rb
   - ./test/bintray_spec.rb
   - ./test/bottle_publisher_spec.rb
+  - ./test/cask_dependent_spec.rb
   - ./test/cask/artifact/alt_target_spec.rb
   - ./test/cask/artifact/app_spec.rb
   - ./test/cask/artifact/binary_spec.rb
@@ -823,11 +825,13 @@ false:
   - ./test/version_spec.rb
   - ./unpack_strategy/uncompressed.rb
   - ./utils/gems.rb
+  - ./utils/pypi.rb
   - ./version.rb
 
 true:
   - ./build_options.rb
   - ./cache_store.rb
+  - ./cask_dependent.rb
   - ./cask/cache.rb
   - ./cask/denylist.rb
   - ./cask/macos.rb
