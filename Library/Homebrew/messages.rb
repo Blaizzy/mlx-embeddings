@@ -20,9 +20,9 @@ class Messages
     @install_times.push(formula: f.name, time: elapsed_time)
   end
 
-  def display_messages
+  def display_messages(display_times: false)
     display_caveats
-    display_install_times if Homebrew.args.display_times?
+    display_install_times if display_times
   end
 
   def display_caveats

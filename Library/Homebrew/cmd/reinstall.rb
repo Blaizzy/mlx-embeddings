@@ -3,6 +3,7 @@
 require "formula_installer"
 require "development_tools"
 require "messages"
+require "install"
 require "reinstall"
 require "cli/parser"
 require "cleanup"
@@ -56,7 +57,7 @@ module Homebrew
   def reinstall
     args = reinstall_args.parse
 
-    FormulaInstaller.prevent_build_flags unless DevelopmentTools.installed?
+    FormulaInstaller.prevent_build_flags(args)
 
     Install.perform_preinstall_checks
 
@@ -66,14 +67,14 @@ module Homebrew
         onoe "#{f.full_name} is pinned. You must unpin it to reinstall."
         next
       end
-      Migrator.migrate_if_needed(f)
+      Migrator.migrate_if_needed(f, force: args.force?)
       reinstall_formula(f, args: args)
       Cleanup.install_formula_clean!(f)
     end
 
     check_installed_dependents(args: args)
 
-    Homebrew.messages.display_messages
+    Homebrew.messages.display_messages(display_times: args.display_times?)
 
     return if casks.blank?
 

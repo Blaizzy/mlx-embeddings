@@ -46,7 +46,7 @@ module Homebrew
   end
 
   def fetch
-    fetch_args.parse
+    args = fetch_args.parse
 
     if args.deps?
       bucket = []
@@ -64,7 +64,7 @@ module Homebrew
       f.print_tap_action verb: "Fetching"
 
       fetched_bottle = false
-      if fetch_bottle?(f)
+      if fetch_bottle?(f, args: args)
         begin
           fetch_formula(f.bottle)
         rescue Interrupt

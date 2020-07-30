@@ -38,7 +38,7 @@ module Homebrew
   end
 
   def update_report
-    update_report_args.parse
+    args = update_report_args.parse
 
     if !Utils::Analytics.messages_displayed? &&
        !Utils::Analytics.disabled? &&
@@ -104,7 +104,7 @@ module Homebrew
       end
       if reporter.updated?
         updated_taps << tap.name
-        hub.add(reporter)
+        hub.add(reporter, preinstall: args.preinstall?)
       end
     end
 
@@ -122,7 +122,7 @@ module Homebrew
       else
         hub.dump(updated_formula_report: !args.preinstall?)
         hub.reporters.each(&:migrate_tap_migration)
-        hub.reporters.each(&:migrate_formula_rename)
+        hub.reporters.each { |r| r.migrate_formula_rename(force: args.force?) }
         CacheStoreDatabase.use(:descriptions) do |db|
           DescriptionCacheStore.new(db)
                                .update_from_report!(hub)
@@ -186,7 +186,7 @@ class Reporter
     raise ReporterRevisionUnsetError, current_revision_var if @current_revision.empty?
   end
 
-  def report
+  def report(preinstall: false)
     return @report if @report
 
     @report = Hash.new { |h, k| h[k] = [] }
@@ -223,7 +223,7 @@ class Reporter
         name = tap.formula_file_to_name(src)
 
         # Skip reporting updated formulae to speed up automatic updates.
-        if Homebrew.args.preinstall?
+        if preinstall
           @report[:M] << name
           next
         end
@@ -373,7 +373,7 @@ class Reporter
     end
   end
 
-  def migrate_formula_rename
+  def migrate_formula_rename(force:)
     Formula.installed.each do |formula|
       next unless Migrator.needs_migration?(formula)
 
@@ -397,7 +397,7 @@ class Reporter
         next
       end
 
-      Migrator.migrate_if_needed(f)
+      Migrator.migrate_if_needed(f, force: force)
     end
   end
 
@@ -425,9 +425,9 @@ class ReporterHub
     @hash.fetch(key, [])
   end
 
-  def add(reporter)
+  def add(reporter, preinstall: false)
     @reporters << reporter
-    report = reporter.report.delete_if { |_k, v| v.empty? }
+    report = reporter.report(preinstall: preinstall).delete_if { |_k, v| v.empty? }
     @hash.update(report) { |_key, oldval, newval| oldval.concat(newval) }
   end
 

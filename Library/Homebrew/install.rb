@@ -39,20 +39,20 @@ module Homebrew
       end
     end
 
-    def check_cc_argv
-      return unless Homebrew.args.cc
+    def check_cc_argv(cc)
+      return unless cc
 
       @checks ||= Diagnostic::Checks.new
       opoo <<~EOS
-        You passed `--cc=#{Homebrew.args.cc}`.
+        You passed `--cc=#{cc}`.
         #{@checks.please_create_pull_requests}
       EOS
     end
 
-    def perform_preinstall_checks(all_fatal: false)
+    def perform_preinstall_checks(all_fatal: false, cc: nil)
       check_cpu
       attempt_directory_creation
-      check_cc_argv
+      check_cc_argv(cc)
       diagnostic_checks(:supported_configuration_checks, fatal: all_fatal)
       diagnostic_checks(:fatal_preinstall_checks)
     end

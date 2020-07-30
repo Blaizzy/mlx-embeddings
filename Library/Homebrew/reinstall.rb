@@ -18,13 +18,14 @@ module Homebrew
       backup keg
     end
 
-    build_options = BuildOptions.new(Options.create(Homebrew.args.flags_only), f.options)
+    build_options = BuildOptions.new(Options.create(args.flags_only), f.options)
     options = build_options.used_options
     options |= f.build.used_options
     options &= f.options
 
-    fi = FormulaInstaller.new(f, force_bottle: args.force_bottle?, include_test: args.include_test?,
-                              build_from_source: args.build_from_source?)
+    fi = FormulaInstaller.new(f, force_bottle:               args.force_bottle?,
+                                 build_from_source:          args.build_from_source?,
+                                 build_from_source_formulae: args.build_from_source_formulae)
     fi.options              = options
     fi.force                = args.force?
     fi.keep_tmp             = args.keep_tmp?

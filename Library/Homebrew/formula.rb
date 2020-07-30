@@ -101,6 +101,10 @@ class Formula
   # @private
   attr_reader :tap
 
+  # Whether or not to force the use of a bottle.
+  # @private
+  attr_reader :force_bottle
+
   # The stable (and default) {SoftwareSpec} for this {Formula}
   # This contains all the attributes (e.g. URL, checksum) that apply to the
   # stable version of this formula.
@@ -181,13 +185,15 @@ class Formula
   alias follow_installed_alias? follow_installed_alias
 
   # @private
-  def initialize(name, path, spec, alias_path: nil)
+  def initialize(name, path, spec, alias_path: nil, force_bottle: false)
     @name = name
     @path = path
     @alias_path = alias_path
     @alias_name = (File.basename(alias_path) if alias_path)
     @revision = self.class.revision || 0
     @version_scheme = self.class.version_scheme || 0
+
+    @force_bottle = force_bottle
 
     @tap = if path == Formulary.core_path(name)
       CoreTap.instance
@@ -2372,6 +2378,16 @@ class Formula
       stable.build
     end
 
+    # Get the `BUILD_FLAGS` from the formula's namespace set in `Formulary::load_formula`.
+    # @private
+    def build_flags
+      namespace = to_s.split("::")[0..-2].join("::")
+      return [] if namespace.empty?
+
+      mod = const_get(namespace)
+      mod.const_get(:BUILD_FLAGS)
+    end
+
     # @!attribute [w] stable
     # Allows adding {.depends_on} and {Patch}es just to the {.stable} {SoftwareSpec}.
     # This is required instead of using a conditional.
@@ -2385,7 +2401,7 @@ class Formula
     #   depends_on "libffi"
     # end</pre>
     def stable(&block)
-      @stable ||= SoftwareSpec.new
+      @stable ||= SoftwareSpec.new(flags: build_flags)
       return @stable unless block_given?
 
       @stable.instance_eval(&block)
@@ -2405,7 +2421,7 @@ class Formula
     # end</pre>
     # @private
     def devel(&block)
-      @devel ||= SoftwareSpec.new
+      @devel ||= SoftwareSpec.new(flags: build_flags)
       return @devel unless block_given?
 
       odeprecated "'devel' blocks in formulae", "'head' blocks or @-versioned formulae"
@@ -2425,7 +2441,7 @@ class Formula
     # or (if autodetect fails):
     # <pre>head "https://hg.is.awesome.but.git.has.won.example.com/", :using => :hg</pre>
     def head(val = nil, specs = {}, &block)
-      @head ||= HeadSoftwareSpec.new
+      @head ||= HeadSoftwareSpec.new(flags: build_flags)
       if block_given?
         @head.instance_eval(&block)
       elsif val

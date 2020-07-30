@@ -24,7 +24,7 @@ module Homebrew
   end
 
   def migrate
-    migrate_args.parse
+    args = migrate_args.parse
 
     args.resolved_formulae.each do |f|
       if f.oldname
@@ -34,7 +34,7 @@ module Homebrew
         raise "#{rack} is a symlink" if rack.symlink?
       end
 
-      migrator = Migrator.new(f)
+      migrator = Migrator.new(f, force: args.force?)
       migrator.migrate
     end
   end

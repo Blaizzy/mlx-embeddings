@@ -31,12 +31,12 @@ module Homebrew
   end
 
   def man
-    man_args.parse
+    args = man_args.parse
 
     odie "`brew man --link` is now done automatically by `brew update`." if args.link?
 
     Commands.rebuild_internal_commands_completion_list
-    regenerate_man_pages
+    regenerate_man_pages(args: args)
 
     if system "git", "-C", HOMEBREW_REPOSITORY, "diff", "--quiet", "docs/Manpage.md", "manpages", "completions"
       puts "No changes to manpage or completions output detected."
@@ -45,15 +45,15 @@ module Homebrew
     end
   end
 
-  def regenerate_man_pages
+  def regenerate_man_pages(args:)
     Homebrew.install_bundler_gems!
 
     markup = build_man_page
-    convert_man_page(markup, TARGET_DOC_PATH/"Manpage.md")
-    convert_man_page(markup, TARGET_MAN_PATH/"brew.1")
+    convert_man_page(markup, TARGET_DOC_PATH/"Manpage.md", args: args)
+    convert_man_page(markup, TARGET_MAN_PATH/"brew.1", args: args)
 
     cask_markup = (SOURCE_PATH/"brew-cask.1.md").read
-    convert_man_page(cask_markup, TARGET_MAN_PATH/"brew-cask.1")
+    convert_man_page(cask_markup, TARGET_MAN_PATH/"brew-cask.1", args: args)
   end
 
   def build_man_page
@@ -94,7 +94,7 @@ module Homebrew
     path.basename.to_s.sub(/\.(rb|sh)$/, "").sub(/^--/, "~~")
   end
 
-  def convert_man_page(markup, target)
+  def convert_man_page(markup, target, args:)
     manual = target.basename(".1")
     organisation = "Homebrew"
 
@@ -148,7 +148,7 @@ module Homebrew
 
   def generate_cmd_manpages(cmd_paths)
     man_page_lines = []
-    man_args = Homebrew.args
+
     # preserve existing manpage order
     cmd_paths.sort_by(&method(:sort_key_for_path))
              .each do |cmd_path|
@@ -162,7 +162,7 @@ module Homebrew
 
       man_page_lines << cmd_man_page_lines
     end
-    Homebrew.args = man_args
+
     man_page_lines.compact.join("\n")
   end
 

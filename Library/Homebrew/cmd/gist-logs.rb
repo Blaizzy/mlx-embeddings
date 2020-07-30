@@ -8,6 +8,8 @@ require "socket"
 require "cli/parser"
 
 module Homebrew
+  extend Install
+
   module_function
 
   def gist_logs_args

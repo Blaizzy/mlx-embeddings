@@ -16,7 +16,7 @@ module Homebrew
       check_style_impl(files, :json, **options)
     end
 
-    def check_style_impl(files, output_type, fix: false, except_cops: nil, only_cops: nil)
+    def check_style_impl(files, output_type, fix: false, except_cops: nil, only_cops: nil, display_cop_names: false)
       Homebrew.install_bundler_gems!
       require "rubocop"
       require "rubocops"
@@ -78,7 +78,7 @@ module Homebrew
       case output_type
       when :print
         args << "--debug" if Homebrew.args.debug?
-        args << "--display-cop-names" if Homebrew.args.display_cop_names?
+        args << "--display-cop-names" if display_cop_names
         args << "--format" << "simple" if files.present?
         system(cache_env, "rubocop", *args)
         rubocop_success = $CHILD_STATUS.success?

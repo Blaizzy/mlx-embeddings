@@ -127,6 +127,7 @@ module Homebrew
       }
       options[:style_offenses] = style_results.file_offenses(f.path) if style_results
       options[:display_cop_names] = args.display_cop_names?
+      options[:build_stable] = args.build_stable?
 
       fa = FormulaAuditor.new(f, options)
       fa.audit
@@ -207,6 +208,7 @@ module Homebrew
       @new_formula = options[:new_formula] && !@versioned_formula
       @strict = options[:strict]
       @online = options[:online]
+      @build_stable = options[:build_stable]
       @git = options[:git]
       @display_cop_names = options[:display_cop_names]
       @only = options[:only]
@@ -248,7 +250,7 @@ module Homebrew
           unversioned_name = unversioned_formula.basename(".rb")
           problem "#{formula} is versioned but no #{unversioned_name} formula exists"
         end
-      elsif Homebrew.args.build_stable? && formula.stable? &&
+      elsif @build_stable && formula.stable? &&
             !(versioned_formulae = formula.versioned_formulae).empty?
         versioned_aliases = formula.aliases.grep(/.@\d/)
         _, last_alias_version = versioned_formulae.map(&:name).last.split("@")

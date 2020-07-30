@@ -70,24 +70,11 @@ module Homebrew
         named.blank?
       end
 
-      # If the user passes any flags that trigger building over installing from
-      # a bottle, they are collected here and returned as an Array for checking.
-      def collect_build_args
-        build_flags = []
-
-        build_flags << "--HEAD" if HEAD?
-        build_flags << "--universal" if build_universal?
-        build_flags << "--build-bottle" if build_bottle?
-        build_flags << "--build-from-source" if build_from_source?
-
-        build_flags
-      end
-
       def formulae
         require "formula"
 
         @formulae ||= (downcased_unique_named - casks).map do |name|
-          Formulary.factory(name, spec)
+          Formulary.factory(name, spec, force_bottle: force_bottle?, flags: flags_only)
         end.uniq(&:name).freeze
       end
 
@@ -113,7 +100,7 @@ module Homebrew
         require "formula"
 
         @resolved_formulae ||= (downcased_unique_named - casks).map do |name|
-          Formulary.resolve(name, spec: spec(nil))
+          Formulary.resolve(name, spec: spec(nil), force_bottle: force_bottle?, flags: flags_only)
         end.uniq(&:name).freeze
       end
 
@@ -123,7 +110,8 @@ module Homebrew
           casks = []
 
           downcased_unique_named.each do |name|
-            resolved_formulae << Formulary.resolve(name, spec: spec(nil))
+            resolved_formulae << Formulary.resolve(name, spec: spec(nil),
+                                                   force_bottle: force_bottle?, flags: flags_only)
           rescue FormulaUnavailableError
             begin
               casks << Cask::CaskLoader.load(name)
@@ -181,18 +169,20 @@ module Homebrew
         !(HEAD? || devel?)
       end
 
-      # Whether a given formula should be built from source during the current
-      # installation run.
-      def build_formula_from_source?(f)
-        return false if !build_from_source? && !build_bottle?
-
-        formulae.any? { |args_f| args_f.full_name == f.full_name }
+      def build_from_source_formulae
+        if build_from_source? || build_bottle?
+          formulae.map(&:full_name)
+        else
+          []
+        end
       end
 
-      def include_formula_test_deps?(f)
-        return false unless include_test?
-
-        formulae.any? { |args_f| args_f.full_name == f.full_name }
+      def include_test_formulae
+        if include_test?
+          formulae.map(&:full_name)
+        else
+          []
+        end
       end
 
       def value(name)
