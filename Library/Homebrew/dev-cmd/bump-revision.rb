@@ -64,7 +64,7 @@ module Homebrew
       else
         # insert replacement revision after :revision
         <<~EOS
-          :revision => "#{formula_spec.specs[:revision]}"
+          revision: "#{formula_spec.specs[:revision]}"
         EOS
       end
       replacement = old + "  revision 1\n"
