@@ -110,16 +110,6 @@ module Homebrew
     puts all_deps
   end
 
-  def dependents(formulae_or_casks)
-    formulae_or_casks.map do |formula_or_cask|
-      if formula_or_cask.is_a?(Formula)
-        formula_or_cask
-      else
-        CaskDependent.new(formula_or_cask)
-      end
-    end
-  end
-
   def sorted_dependents(formulae_or_casks)
     dependents(formulae_or_casks).sort_by(&:name)
   end

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "delegate"
+require "cask_dependent"
 
 class Dependencies < DelegateClass(Array)
   def initialize(*args)
@@ -120,6 +121,16 @@ module DependenciesHelpers
       next false unless ignores.any? { |ignore| dep.send(ignore) }
 
       includes.none? { |include| dep.send(include) }
+    end
+  end
+
+  def dependents(formulae_or_casks)
+    formulae_or_casks.map do |formula_or_cask|
+      if formula_or_cask.is_a?(Formula)
+        formula_or_cask
+      else
+        CaskDependent.new(formula_or_cask)
+      end
     end
   end
 end

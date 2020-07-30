@@ -6,6 +6,7 @@
 
 require "formula"
 require "cli/parser"
+require "cask/caskroom"
 
 module Homebrew
   extend DependenciesHelpers
@@ -71,41 +72,51 @@ module Homebrew
     uses = if use_runtime_dependents && !used_formulae_missing
       used_formulae.map(&:runtime_installed_formula_dependents)
                    .reduce(&:&)
-                   .select(&:any_version_installed?)
+                   .select(&:any_version_installed?) +
+        select_used_dependents(dependents(Cask::Caskroom.casks), used_formulae)
     else
-      formulae = args.installed? ? Formula.installed : Formula
-      recursive = args.recursive?
-      includes, ignores = argv_includes_ignores(ARGV)
-
-      formulae.select do |f|
-        deps = if recursive
-          recursive_includes(Dependency, f, includes, ignores)
-        else
-          reject_ignores(f.deps, ignores, includes)
-        end
-
-        used_formulae.all? do |ff|
-          deps.any? do |dep|
-            match = begin
-              dep.to_formula.full_name == ff.full_name if dep.name.include?("/")
-            rescue
-              nil
-            end
-            next match unless match.nil?
-
-            dep.name == ff.name
-          end
-        rescue FormulaUnavailableError
-          # Silently ignore this case as we don't care about things used in
-          # taps that aren't currently tapped.
-          next
-        end
+      deps = if args.installed?
+        dependents(Formula.installed + Cask::Caskroom.casks)
+      else
+        dependents(Formula.to_a + Cask::Cask.to_a)
       end
+
+      select_used_dependents(deps, used_formulae)
     end
 
     return if uses.empty?
 
     puts Formatter.columns(uses.map(&:full_name).sort)
     odie "Missing formulae should not have dependents!" if used_formulae_missing
+  end
+
+  def select_used_dependents(dependents, used_formulae)
+    recursive = args.recursive?
+    includes, ignores = argv_includes_ignores(ARGV)
+
+    dependents.select do |d|
+      deps = if recursive
+        recursive_includes(Dependency, d, includes, ignores)
+      else
+        reject_ignores(d.deps, ignores, includes)
+      end
+
+      used_formulae.all? do |ff|
+        deps.any? do |dep|
+          match = begin
+            dep.to_formula.full_name == ff.full_name if dep.name.include?("/")
+          rescue
+            nil
+          end
+          next match unless match.nil?
+
+          dep.name == ff.name
+        end
+      rescue FormulaUnavailableError
+        # Silently ignore this case as we don't care about things used in
+        # taps that aren't currently tapped.
+        next
+      end
+    end
   end
 end
