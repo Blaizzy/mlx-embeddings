@@ -52,4 +52,48 @@ module Repology
 
     outdated_packages
   end
+
+  def validate_and_format_packages(outdated_repology_packages)
+    packages = {}
+    outdated_repology_packages.each do |_name, repositories|
+      # identify homebrew repo
+      repology_homebrew_repo = repositories.find do |repo|
+        repo["repo"] == "homebrew"
+      end
+
+      next if repology_homebrew_repo.blank?
+
+      latest_version = repositories.find { |repo| repo["status"] == "newest" }["version"]
+      srcname = repology_homebrew_repo["srcname"]
+      package_details = format_package(srcname, latest_version)
+      packages[srcname] = package_details unless package_details.nil?
+
+      break if Homebrew.args.limit && packages.size >= Homebrew.args.limit.to_i
+    end
+
+    packages
+  end
+
+  def format_package(package_name, latest_version)
+    formula = Formula[package_name]
+
+    return if formula.blank?
+
+    tap_full_name = formula.tap&.full_name
+    current_version = formula.version.to_s
+    livecheck_response = LivecheckFormula.init(package_name)
+    pull_requests = GitHub.check_for_duplicate_pull_requests(formula, tap_full_name, latest_version)
+
+    if pull_requests.try(:any?)
+      pull_requests = pull_requests.map { |pr| "#{pr[:title]} (#{Formatter.url(pr[:url])})" }.join(", ")
+    end
+
+    {
+      repology_latest_version:  latest_version,
+      current_formula_version:  current_version.to_s,
+      livecheck_latest_version: livecheck_response[:livecheck_version],
+      open_pull_requests:       pull_requests,
+    }
+  end
 end
+
