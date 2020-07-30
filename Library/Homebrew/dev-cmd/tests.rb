@@ -29,14 +29,13 @@ module Homebrew
                           "specific line."
       flag   "--seed=",
              description: "Randomise tests with the specified <value> instead of a random seed."
-      switch :verbose
-      switch :debug
+
       max_named 0
     end
   end
 
   def tests
-    tests_args.parse
+    args = tests_args.parse
 
     Homebrew.install_bundler_gems!
     gem_user_dir = Gem.user_dir

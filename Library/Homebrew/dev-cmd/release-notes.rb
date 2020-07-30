@@ -21,7 +21,7 @@ module Homebrew
   end
 
   def release_notes
-    release_notes_args.parse
+    args = release_notes_args.parse
 
     previous_tag = args.named.first
     previous_tag ||= Utils.popen_read(

@@ -525,6 +525,8 @@ Fetch the newest version of Homebrew and all formulae from GitHub using `git`(1)
   Use `git merge` to apply updates (rather than `git rebase`).
 * `--preinstall`:
   Run on auto-updates (e.g. before `brew install`). Skips some slower steps.
+* `-f`, `--force`:
+  Always do a slower, full update check (even if unnecessary).
 
 ### `update-reset` [*`repository`*]
 
@@ -1190,8 +1192,6 @@ flags which will help find keg-only dependencies like `openssl`, `icu4c`, etc.
   Read the `Brewfile` from this location. Use `--file=-` to pipe to stdin/stdout.
 * `--global`:
   Read the `Brewfile` from `~/.Brewfile`.
-* `-v`, `--verbose`:
-  `install` prints output from commands as they are run. `check` lists all missing dependencies.
 * `--no-upgrade`:
   `install` won't run `brew upgrade` on outdated dependencies. Note they may still be upgraded by `brew install` if needed.
 * `-f`, `--force`:

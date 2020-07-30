@@ -28,8 +28,7 @@ module Homebrew
       switch "-p", "--private",
              description: "The Gist will be marked private and will not appear in listings but will "\
                           "be accessible with its link."
-      switch :verbose
-      switch :debug
+
       named :formula
     end
   end
@@ -142,7 +141,7 @@ module Homebrew
   end
 
   def gist_logs
-    gist_logs_args.parse
+    args = gist_logs_args.parse
 
     Install.perform_preinstall_checks(all_fatal: true)
     Install.perform_build_from_source_checks(all_fatal: true)

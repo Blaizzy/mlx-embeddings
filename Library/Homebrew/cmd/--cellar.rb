@@ -20,7 +20,7 @@ module Homebrew
   end
 
   def __cellar
-    __cellar_args.parse
+    args = __cellar_args.parse
 
     if args.no_named?
       puts HOMEBREW_CELLAR

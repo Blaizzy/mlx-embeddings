@@ -13,14 +13,13 @@ module Homebrew
 
         Generate the template files for a new tap.
       EOS
-      switch :verbose
-      switch :debug
+
       named 1
     end
   end
 
   def tap_new
-    tap_new_args.parse
+    args = tap_new_args.parse
 
     tap_name = args.named.first
     tap = Tap.fetch(args.named.first)

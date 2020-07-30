@@ -27,15 +27,14 @@ module Homebrew
              description: "Retain the temporary files created for the test."
       switch "--retry",
              description: "Retry if a testing fails."
-      switch :verbose
-      switch :debug
+
       conflicts "--devel", "--HEAD"
       min_named :formula
     end
   end
 
   def test
-    test_args.parse
+    args = test_args.parse
 
     require "formula_assertions"
     require "formula_free_port"

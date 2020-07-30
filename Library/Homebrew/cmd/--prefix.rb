@@ -20,7 +20,7 @@ module Homebrew
   end
 
   def __prefix
-    __prefix_args.parse
+    args = __prefix_args.parse
 
     if args.no_named?
       puts HOMEBREW_PREFIX

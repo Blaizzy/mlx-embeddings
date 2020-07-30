@@ -10,7 +10,7 @@ module Homebrew
       # undefine tap to allow --tap argument
       undef tap
 
-      def initialize(argv = ARGV.freeze, set_default_args: false)
+      def initialize(argv = ARGV.dup.freeze, set_default_args: false)
         super()
 
         @processed_options = []
@@ -56,10 +56,6 @@ module Homebrew
 
         @options_only = args_options_only(cli_args)
         @flags_only = args_flags_only(cli_args)
-      end
-
-      def passthrough
-        options_only - CLI::Parser.global_options.values.map(&:first).flatten
       end
 
       def named

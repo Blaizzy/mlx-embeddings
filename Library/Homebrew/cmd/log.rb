@@ -27,7 +27,7 @@ module Homebrew
   end
 
   def log
-    log_args.parse
+    args = log_args.parse
 
     # As this command is simplifying user-run commands then let's just use a
     # user path, too.

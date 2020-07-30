@@ -17,7 +17,7 @@ module Homebrew
   end
 
   def cat
-    cat_args.parse
+    args = cat_args.parse
 
     cd HOMEBREW_REPOSITORY
     pager = if Homebrew::EnvConfig.bat?
@@ -26,6 +26,6 @@ module Homebrew
     else
       "cat"
     end
-    safe_system pager, args.formulae_paths.first, *args.passthrough
+    safe_system pager, args.formulae_paths.first
   end
 end

@@ -24,7 +24,7 @@ module Homebrew
       switch "--ignore-dependencies",
              description: "Don't fail uninstall, even if <formula> is a dependency of any installed "\
                           "formulae."
-      switch :debug
+
       min_named :formula
     end
   end

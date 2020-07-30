@@ -55,6 +55,8 @@ begin
     end
   end
 
+  Homebrew.args = Homebrew::CLI::Parser.new.parse(ignore_invalid_options: true)
+
   path = PATH.new(ENV["PATH"])
   homebrew_path = PATH.new(ENV["HOMEBREW_PATH"])
 
@@ -117,16 +119,17 @@ begin
     odie "Unknown command: #{cmd}" if !possible_tap || possible_tap.installed?
 
     # Unset HOMEBREW_HELP to avoid confusing the tap
-    ENV.delete("HOMEBREW_HELP") if help_flag
-    tap_commands = []
-    cgroup = Utils.popen_read("cat", "/proc/1/cgroup")
-    if %w[azpl_job actions_job docker garden kubepods].none? { |container| cgroup.include?(container) }
-      brew_uid = HOMEBREW_BREW_FILE.stat.uid
-      tap_commands += %W[/usr/bin/sudo -u ##{brew_uid}] if Process.uid.zero? && !brew_uid.zero?
+    with_env HOMEBREW_HELP: nil do
+      tap_commands = []
+      cgroup = Utils.popen_read("cat", "/proc/1/cgroup")
+      if %w[azpl_job actions_job docker garden kubepods].none? { |container| cgroup.include?(container) }
+        brew_uid = HOMEBREW_BREW_FILE.stat.uid
+        tap_commands += %W[/usr/bin/sudo -u ##{brew_uid}] if Process.uid.zero? && !brew_uid.zero?
+      end
+      tap_commands += %W[#{HOMEBREW_BREW_FILE} tap #{possible_tap.name}]
+      safe_system(*tap_commands)
     end
-    tap_commands += %W[#{HOMEBREW_BREW_FILE} tap #{possible_tap.name}]
-    safe_system(*tap_commands)
-    ENV["HOMEBREW_HELP"] = "1" if help_flag
+
     exec HOMEBREW_BREW_FILE, cmd, *ARGV
   end
 rescue UsageError => e

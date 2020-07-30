@@ -23,13 +23,13 @@ module Homebrew
              description: "Show options for all available formulae."
       flag   "--command=",
              description: "Show options for the specified <command>."
-      switch :debug
+
       conflicts "--installed", "--all", "--command"
     end
   end
 
   def options
-    options_args.parse
+    args = options_args.parse
 
     if args.all?
       puts_options Formula.to_a.sort

@@ -169,7 +169,7 @@ module Homebrew
   def cmd_parser_manpage_lines(cmd_parser)
     lines = [format_usage_banner(cmd_parser.usage_banner_text)]
     lines += cmd_parser.processed_options.map do |short, long, _, desc|
-      next if !long.nil? && cmd_parser.global_option?(cmd_parser.option_to_name(long), desc)
+      next if !long.nil? && Homebrew::CLI::Parser.global_options.include?([short, long, desc])
 
       generate_option_doc(short, long, desc)
     end.reject(&:blank?)
@@ -191,7 +191,7 @@ module Homebrew
       end
 
       # Omit the common global_options documented separately in the man page.
-      next if line.match?(/--(debug|force|help|quiet|verbose) /)
+      next if line.match?(/--(debug|help|quiet|verbose) /)
 
       # Format one option or a comma-separated pair of short and long options.
       lines << line.gsub(/^ +(-+[a-z-]+), (-+[a-z-]+) +/, "* `\\1`, `\\2`:\n  ")
@@ -203,8 +203,7 @@ module Homebrew
 
   def global_options_manpage
     lines = ["These options are applicable across multiple subcommands.\n"]
-    lines += Homebrew::CLI::Parser.global_options.values.map do |names, _, desc|
-      short, long = names
+    lines += Homebrew::CLI::Parser.global_options.map do |short, long, desc|
       generate_option_doc(short, long, desc)
     end
     lines.join("\n")

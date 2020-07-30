@@ -23,7 +23,7 @@ module Homebrew
              description: "Fetch development version instead of stable version."
       switch "-f", "--force",
              description: "Remove a previously cached version and re-fetch."
-      switch :verbose,
+      switch "-v", "--verbose",
              description: "Do a verbose VCS checkout, if the URL represents a VCS. This is useful for "\
                           "seeing if an existing VCS cache has been updated."
       switch "--retry",
@@ -38,7 +38,7 @@ module Homebrew
       switch "--force-bottle",
              description: "Download a bottle if it exists for the current or newest version of macOS, "\
                           "even if it would not be used during installation."
-      switch :debug
+
       conflicts "--devel", "--HEAD"
       conflicts "--build-from-source", "--build-bottle", "--force-bottle"
       min_named :formula

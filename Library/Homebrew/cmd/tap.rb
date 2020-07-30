@@ -36,14 +36,13 @@ module Homebrew
              description: "Migrate tapped formulae from symlink-based to directory-based structure."
       switch "--list-pinned",
              description: "List all pinned taps."
-      switch :quiet
-      switch :debug
+
       max_named 2
     end
   end
 
   def tap
-    tap_args.parse
+    args = tap_args.parse
 
     if args.repair?
       Tap.each(&:link_completions_and_manpages)

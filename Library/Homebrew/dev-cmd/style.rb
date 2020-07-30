@@ -29,14 +29,13 @@ module Homebrew
       comma_array "--except-cops",
                   description: "Specify a comma-separated <cops> list to skip checking for violations of the "\
                                "listed RuboCop cops."
-      switch :verbose
-      switch :debug
+
       conflicts "--only-cops", "--except-cops"
     end
   end
 
   def style
-    style_args.parse
+    args = style_args.parse
 
     target = if args.no_named?
       nil

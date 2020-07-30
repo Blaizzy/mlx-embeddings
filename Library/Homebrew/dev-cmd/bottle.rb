@@ -76,15 +76,14 @@ module Homebrew
                           "to the formula file."
       flag   "--root-url=",
              description: "Use the specified <URL> as the root of the bottle's URL instead of Homebrew's default."
-      switch :verbose
-      switch :debug
+
       conflicts "--no-rebuild", "--keep-old"
       min_named 1
     end
   end
 
   def bottle
-    bottle_args.parse
+    args = bottle_args.parse
 
     return merge if args.merge?
 

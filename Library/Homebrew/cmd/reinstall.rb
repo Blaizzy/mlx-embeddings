@@ -26,7 +26,7 @@ module Homebrew
         Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will then be run for the
         reinstalled formulae or, every 30 days, for all formulae.
       EOS
-      switch :debug,
+      switch "-d", "--debug",
              description: "If brewing fails, open an interactive debugging session with access to IRB "\
                           "or a shell inside the temporary build directory."
       switch "-s", "--build-from-source",
@@ -43,7 +43,7 @@ module Homebrew
       switch "-f", "--force",
              description: "Install without checking for previously installed keg-only or "\
                           "non-migrated versions."
-      switch :verbose,
+      switch "-v", "--verbose",
              description: "Print the verification and postinstall steps."
       switch "--display-times",
              env:         :display_install_times,

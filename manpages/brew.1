@@ -682,6 +682,10 @@ Use \fBgit merge\fR to apply updates (rather than \fBgit rebase\fR)\.
 \fB\-\-preinstall\fR
 Run on auto\-updates (e\.g\. before \fBbrew install\fR)\. Skips some slower steps\.
 .
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+Always do a slower, full update check (even if unnecessary)\.
+.
 .SS "\fBupdate\-reset\fR [\fIrepository\fR]"
 Fetch and reset Homebrew and all tap repositories (or any specified \fIrepository\fR) using \fBgit\fR(1) to their latest \fBorigin/master\fR\.
 .
@@ -1533,10 +1537,6 @@ Read the \fBBrewfile\fR from this location\. Use \fB\-\-file=\-\fR to pipe to st
 .TP
 \fB\-\-global\fR
 Read the \fBBrewfile\fR from \fB~/\.Brewfile\fR\.
-.
-.TP
-\fB\-v\fR, \fB\-\-verbose\fR
-\fBinstall\fR prints output from commands as they are run\. \fBcheck\fR lists all missing dependencies\.
 .
 .TP
 \fB\-\-no\-upgrade\fR

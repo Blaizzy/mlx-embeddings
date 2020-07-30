@@ -53,15 +53,14 @@ module Homebrew
              description: "Switch into the mode used by the `--all` option, but only list dependencies "\
                           "for each provided <formula>, one formula per line. This is used for "\
                           "debugging the `--installed`/`--all` display mode."
-      switch :verbose
-      switch :debug
+
       conflicts "--installed", "--all"
       formula_options
     end
   end
 
   def deps
-    deps_args.parse
+    args = deps_args.parse
 
     Formulary.enable_factory_cache!
 

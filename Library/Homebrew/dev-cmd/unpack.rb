@@ -24,15 +24,14 @@ module Homebrew
                           "patches for the software."
       switch "-f", "--force",
              description: "Overwrite the destination directory if it already exists."
-      switch :verbose
-      switch :debug
+
       conflicts "--git", "--patch"
       min_named :formula
     end
   end
 
   def unpack
-    unpack_args.parse
+    args = unpack_args.parse
 
     formulae = args.formulae
 

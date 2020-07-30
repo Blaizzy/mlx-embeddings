@@ -12,13 +12,13 @@ module Homebrew
 
         Remove a tapped formula repository.
       EOS
-      switch :debug
+
       min_named 1
     end
   end
 
   def untap
-    untap_args.parse
+    args = untap_args.parse
 
     args.named.each do |tapname|
       tap = Tap.fetch(tapname)

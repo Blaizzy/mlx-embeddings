@@ -37,8 +37,7 @@ module Homebrew
              description: "Do not warn if pulling to a branch besides master (useful for testing)."
       switch "--no-pbcopy",
              description: "Do not copy anything to the system clipboard."
-      switch :verbose
-      switch :debug
+
       min_named 1
     end
   end
@@ -48,7 +47,7 @@ module Homebrew
 
     odie "You meant `git pull --rebase`." if ARGV[0] == "--rebase"
 
-    pull_args.parse
+    args = pull_args.parse
 
     # Passthrough Git environment variables for e.g. git am
     Utils.set_git_name_email!(author: false, committer: true)

@@ -18,9 +18,7 @@ module Homebrew
              description: "Print what would be done rather than doing it."
       flag   "--message=",
              description: "Append <message> to the default commit message."
-      switch :quiet
-      switch :verbose
-      switch :debug
+
       named :formula
     end
   end

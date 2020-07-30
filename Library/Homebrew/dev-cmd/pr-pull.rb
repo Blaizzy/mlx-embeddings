@@ -49,8 +49,7 @@ module Homebrew
       flag   "--bintray-mirror=",
              description: "Use the specified Bintray repository to automatically mirror stable URLs "\
                           "defined in the formulae (default: `mirror`)."
-      switch :verbose
-      switch :debug
+
       min_named 1
     end
   end

@@ -61,8 +61,7 @@ module Homebrew
       comma_array "--except-cops",
                   description: "Specify a comma-separated <cops> list to skip checking for violations of the listed "\
                                "RuboCop cops."
-      switch :verbose
-      switch :debug
+
       conflicts "--only", "--except"
       conflicts "--only-cops", "--except-cops", "--strict"
       conflicts "--only-cops", "--except-cops", "--only"

@@ -19,7 +19,7 @@ module Homebrew
 
   def irb_args
     # work around IRB modifying ARGV.
-    Homebrew::CLI::Parser.new(ARGV.dup.freeze) do
+    Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
         `irb` [<options>]
 
@@ -34,7 +34,7 @@ module Homebrew
   end
 
   def irb
-    irb_args.parse
+    args = irb_args.parse
 
     if args.examples?
       puts "'v8'.f # => instance of the v8 formula"
@@ -55,6 +55,8 @@ module Homebrew
     require "formula"
     require "keg"
     require "cask/all"
+
+    puts ARGV.inspect
 
     ohai "Interactive Homebrew Shell"
     puts "Example commands available with: brew irb --examples"

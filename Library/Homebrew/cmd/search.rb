@@ -51,14 +51,13 @@ module Homebrew
         switch s,
                description: "Search for <text> in the given package manager's list."
       end
-      switch :verbose
-      switch :debug
+
       conflicts(*package_manager_switches)
     end
   end
 
   def search
-    search_args.parse
+    args = search_args.parse
 
     if package_manager = PACKAGE_MANAGERS.find { |name,| args[:"#{name}?"] }
       _, url = package_manager

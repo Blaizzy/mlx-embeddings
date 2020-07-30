@@ -12,19 +12,18 @@ module Homebrew
 
         Show lists of built-in and external commands.
       EOS
-      switch :quiet,
+      switch "-q", "--quiet",
              description: "List only the names of commands without category headers."
       switch "--include-aliases",
              depends_on:  "--quiet",
              description: "Include aliases of internal commands."
-      switch :verbose
-      switch :debug
+
       max_named 0
     end
   end
 
   def commands
-    commands_args.parse
+    args = commands_args.parse
 
     if args.quiet?
       puts Formatter.columns(Commands.commands(aliases: args.include_aliases?))

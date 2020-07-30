@@ -20,8 +20,7 @@ module Homebrew
       EOS
       flag   "--env=",
              description: "Use the standard `PATH` instead of superenv's when `std` is passed."
-      switch :verbose
-      switch :debug
+
       max_named 0
     end
   end

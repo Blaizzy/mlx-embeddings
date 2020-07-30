@@ -38,14 +38,14 @@ module Homebrew
              description: "Show usage of <formula> by development builds."
       switch "--HEAD",
              description: "Show usage of <formula> by HEAD builds."
-      switch :debug
+
       conflicts "--devel", "--HEAD"
       min_named :formula
     end
   end
 
   def uses
-    uses_args.parse
+    args = uses_args.parse
 
     odeprecated "brew uses --devel" if args.devel?
     odeprecated "brew uses --HEAD" if args.HEAD?

@@ -65,9 +65,7 @@ module Homebrew
              description: "Specify the new git commit <revision> corresponding to the specified <tag>."
       switch "-f", "--force",
              description: "Ignore duplicate open PRs. Remove all mirrors if --mirror= was not specified."
-      switch :quiet
-      switch :verbose
-      switch :debug
+
       conflicts "--no-audit", "--strict"
       conflicts "--url", "--tag"
       max_named 1
@@ -111,7 +109,7 @@ module Homebrew
   end
 
   def bump_formula_pr
-    bump_formula_pr_args.parse
+    args = bump_formula_pr_args.parse
 
     # As this command is simplifying user-run commands then let's just use a
     # user path, too.
