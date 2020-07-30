@@ -135,7 +135,11 @@ class Requirement
     klass = self.class.name || self.class.to_s
     klass.sub!(/(Dependency|Requirement)$/, "")
     klass.sub!(/^(\w+::)*/, "")
-    klass.downcase
+    return klass.downcase if klass.present?
+
+    return @cask if @cask.present?
+
+    ""
   end
 
   def which(cmd)

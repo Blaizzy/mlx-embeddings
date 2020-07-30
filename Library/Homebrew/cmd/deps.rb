@@ -3,6 +3,7 @@
 require "formula"
 require "ostruct"
 require "cli/parser"
+require "cask/caskroom"
 
 module Homebrew
   extend DependenciesHelpers
@@ -64,51 +65,68 @@ module Homebrew
     Formulary.enable_factory_cache!
 
     recursive = !args.send("1?")
-    installed = args.installed? || args.formulae.all?(&:opt_or_installed_prefix_keg)
+    installed = args.installed? || dependents(args.formulae_and_casks).all?(&:any_version_installed?)
 
     @use_runtime_dependencies = installed && recursive &&
+                                !args.tree? &&
                                 !args.include_build? &&
                                 !args.include_test? &&
                                 !args.include_optional? &&
                                 !args.skip_recommended?
 
     if args.tree?
-      if args.installed?
-        puts_deps_tree Formula.installed.sort, recursive
+      dependents = if args.named.present?
+        sorted_dependents(args.formulae_and_casks)
+      elsif args.installed?
+        sorted_dependents(Formula.installed + Cask::Caskroom.casks)
       else
-        raise FormulaUnspecifiedError if args.no_named?
-
-        puts_deps_tree args.formulae, recursive
+        raise FormulaUnspecifiedError
       end
+
+      puts_deps_tree dependents, recursive
       return
     elsif args.all?
-      puts_deps Formula.sort, recursive
+      puts_deps sorted_dependents(Formula.to_a + Cask::Cask.to_a), recursive
       return
     elsif !args.no_named? && args.for_each?
-      puts_deps args.formulae, recursive
+      puts_deps sorted_dependents(args.formulae_and_casks), recursive
       return
     end
 
     if args.no_named?
       raise FormulaUnspecifiedError unless args.installed?
 
-      puts_deps Formula.installed.sort, recursive
+      puts_deps sorted_dependents(Formula.installed + Cask::Caskroom.casks), recursive
       return
     end
 
-    all_deps = deps_for_formulae(args.formulae, recursive, &(args.union? ? :| : :&))
-    all_deps = condense_requirements(all_deps)
-    all_deps.select!(&:installed?) if args.installed?
+    dependents = dependents(args.formulae_and_casks)
+
+    all_deps = deps_for_dependents(dependents, recursive, &(args.union? ? :| : :&))
+    condense_requirements(all_deps)
     all_deps.map!(&method(:dep_display_name))
     all_deps.uniq!
     all_deps.sort! unless args.n?
     puts all_deps
   end
 
-  def condense_requirements(deps)
-    return deps if args.include_requirements?
+  def dependents(formulae_or_casks)
+    formulae_or_casks.map do |formula_or_cask|
+      if formula_or_cask.is_a?(Formula)
+        formula_or_cask
+      else
+        CaskDependent.new(formula_or_cask)
+      end
+    end
+  end
 
-    deps.select { |dep| dep.is_a? Dependency }
+  def sorted_dependents(formulae_or_casks)
+    dependents(formulae_or_casks).sort_by(&:name)
+  end
+
+  def condense_requirements(deps)
+    deps.select! { |dep| dep.is_a?(Dependency) } unless args.include_requirements?
+    deps.select! { |dep| dep.is_a?(Requirement) || dep.installed? } if args.installed?
   end
 
   def dep_display_name(dep)
@@ -136,41 +154,41 @@ module Homebrew
     str
   end
 
-  def deps_for_formula(f, recursive = false)
+  def deps_for_dependent(d, recursive = false)
     includes, ignores = argv_includes_ignores(ARGV)
 
-    deps = f.runtime_dependencies if @use_runtime_dependencies
+    deps = d.runtime_dependencies if @use_runtime_dependencies
 
     if recursive
-      deps ||= recursive_includes(Dependency,  f, includes, ignores)
-      reqs   = recursive_includes(Requirement, f, includes, ignores)
+      deps ||= recursive_includes(Dependency, d, includes, ignores)
+      reqs   = recursive_includes(Requirement, d, includes, ignores)
     else
-      deps ||= reject_ignores(f.deps, ignores, includes)
-      reqs   = reject_ignores(f.requirements, ignores, includes)
+      deps ||= reject_ignores(d.deps, ignores, includes)
+      reqs   = reject_ignores(d.requirements, ignores, includes)
     end
 
     deps + reqs.to_a
   end
 
-  def deps_for_formulae(formulae, recursive = false, &block)
-    formulae.map { |f| deps_for_formula(f, recursive) }.reduce(&block)
+  def deps_for_dependents(dependents, recursive = false, &block)
+    dependents.map { |d| deps_for_dependent(d, recursive) }.reduce(&block)
   end
 
-  def puts_deps(formulae, recursive = false)
-    formulae.each do |f|
-      deps = deps_for_formula(f, recursive)
-      deps = condense_requirements(deps)
+  def puts_deps(dependents, recursive = false)
+    dependents.each do |d|
+      deps = deps_for_dependent(d, recursive)
+      condense_requirements(deps)
       deps.sort_by!(&:name)
       deps.map!(&method(:dep_display_name))
-      puts "#{f.full_name}: #{deps.join(" ")}"
+      puts "#{d.full_name}: #{deps.join(" ")}"
     end
   end
 
-  def puts_deps_tree(formulae, recursive = false)
-    formulae.each do |f|
-      puts f.full_name
+  def puts_deps_tree(dependents, recursive = false)
+    dependents.each do |d|
+      puts d.full_name
       @dep_stack = []
-      recursive_deps_tree(f, "", recursive)
+      recursive_deps_tree(d, "", recursive)
       puts
     end
   end
