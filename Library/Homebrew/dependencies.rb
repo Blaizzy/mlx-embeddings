@@ -100,7 +100,7 @@ module DependenciesHelpers
         klass.prune if !includes.include?("optional?") && !dependent.build.with?(dep)
       elsif dep.build? || dep.test?
         keep = false
-        keep ||= dep.test? && includes.include?("test?") && dependent == formula
+        keep ||= dep.test? && includes.include?("test?") && dependent == root_dependent
         keep ||= dep.build? && includes.include?("build?")
         klass.prune unless keep
       end
