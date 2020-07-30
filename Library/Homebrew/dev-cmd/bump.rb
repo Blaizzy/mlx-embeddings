@@ -50,9 +50,6 @@ module Homebrew
   end
 
   def validate_and_format_packages(outdated_repology_packages)
-    ohai "Verifying outdated repology #{"package".pluralize(outdated_repology_packages.size)} " \
-    "as Homebrew #{"formula".pluralize(outdated_repology_packages.size)}"
-
     packages = {}
     outdated_repology_packages.each do |_name, repositories|
       # identify homebrew repo
@@ -82,7 +79,7 @@ module Homebrew
     current_version = current_formula_version(formula)
     livecheck_response = livecheck_formula(package_name)
     pull_requests = GitHub.check_for_duplicate_pull_requests(formula, tap_full_name, latest_version)
-    pull_requests = pull_requests.join(", ") if pull_requests.try(:any?)
+    pull_requests = pull_requests.map{ |pr| "#{pr[:title]} (#{Formatter.url(pr[:url])})" }.join(", ") if pull_requests.try(:any?)
 
     {
       repology_latest_version:  latest_version,
@@ -125,14 +122,13 @@ module Homebrew
   end
 
   def display(outdated_packages)
-    ohai "Outdated #{"formula".pluralize(outdated_packages.size)}"
     puts
     outdated_packages.each do |formula, package_details|
       ohai formula
       puts "Current formula version:  #{package_details[:current_formula_version]}"
       puts "Latest Repology version:  #{package_details[:repology_latest_version]}"
       puts "Latest livecheck version: #{package_details[:livecheck_latest_version] || "Not found"}"
-      puts "Open pull requests: #{package_details[:open_pull_requests] || "None."}"
+      puts "Open pull requests: #{package_details[:open_pull_requests] || "None"}"
     end
   end
 end
