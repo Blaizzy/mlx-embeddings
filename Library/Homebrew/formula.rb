@@ -2378,12 +2378,13 @@ class Formula
       stable.build
     end
 
+    # Get the `BUILD_FLAGS` from the formula's namespace set in `Formulary::load_formula`.
     # @private
     def build_flags
-      mod_name = to_s.split("::")[0..-2].join("::")
-      return [] if mod_name.empty?
+      namespace = to_s.split("::")[0..-2].join("::")
+      return [] if namespace.empty?
 
-      mod = const_get(mod_name)
+      mod = const_get(namespace)
       mod.const_get(:BUILD_FLAGS)
     end
 

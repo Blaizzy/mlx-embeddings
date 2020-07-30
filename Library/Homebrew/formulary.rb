@@ -34,6 +34,8 @@ module Formulary
     const_set(namespace, mod)
 
     begin
+      # Set `BUILD_FLAGS` in the formula's namespace so we can
+      # access them from within the formula's class scope.
       mod.const_set(:BUILD_FLAGS, flags)
       mod.module_eval(contents, path)
     rescue NameError, ArgumentError, ScriptError => e
