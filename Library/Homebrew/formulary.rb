@@ -124,8 +124,8 @@ module Formulary
     # `alias_path` can be overridden here in case an alias was used to refer to
     # a formula that was loaded in another way.
     def get_formula(spec, alias_path: nil, force_bottle: false, flags: [])
-      klass(flags: flags)
-        .new(name, path, spec, alias_path: alias_path || self.alias_path, force_bottle: force_bottle)
+      alias_path ||= self.alias_path
+      klass(flags: flags).new(name, path, spec, alias_path: alias_path, force_bottle: force_bottle)
     end
 
     def klass(flags:)
