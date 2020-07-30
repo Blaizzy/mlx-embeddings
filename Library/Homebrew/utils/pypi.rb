@@ -53,11 +53,13 @@ module PyPI
     end
 
     ohai "Retrieving PyPI dependencies for \"#{pypi_name}==#{version}\"" if !print_only && !silent
-    pipgrip_output = Utils.popen_read Formula["pipgrip"].bin/"pipgrip", "--json", "#{pypi_name}==#{version}"
+    pipgrip_output = Utils.popen_read Formula["pipgrip"].bin/"pipgrip", "--json", "--no-cache-dir",
+                                      "#{pypi_name}==#{version}"
     unless $CHILD_STATUS.success?
       odie <<~EOS
         Unable to determine dependencies for \"#{pypi_name}\" because of a failure when running
-        `pipgrip --json #{pypi_name}==#{version}`. Please update the resources for \"#{formula.name}\" manually.
+        `pipgrip --json --no-cache-dir #{pypi_name}==#{version}`.
+        Please update the resources for \"#{formula.name}\" manually.
       EOS
     end
 
