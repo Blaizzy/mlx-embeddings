@@ -28,10 +28,7 @@ module Homebrew
     requested_formula = Homebrew.args.formula
     requested_formula&.downcase!
 
-    if requested_formula && !get_formula_details(requested_formula)
-      raise FormulaUnavailableError, requested_formula
-      return
-    end
+    raise FormulaUnavailableError, requested_formula if requested_formula && !get_formula_details(requested_formula)
 
     outdated_repology_packages = if requested_formula
       Repology.single_package_query(requested_formula)
@@ -79,7 +76,10 @@ module Homebrew
     current_version = current_formula_version(formula)
     livecheck_response = livecheck_formula(package_name)
     pull_requests = GitHub.check_for_duplicate_pull_requests(formula, tap_full_name, latest_version)
-    pull_requests = pull_requests.map{ |pr| "#{pr[:title]} (#{Formatter.url(pr[:url])})" }.join(", ") if pull_requests.try(:any?)
+
+    if pull_requests.try(:any?)
+      pull_requests = pull_requests.map { |pr| "#{pr[:title]} (#{Formatter.url(pr[:url])})" }.join(", ")
+    end
 
     {
       repology_latest_version:  latest_version,
