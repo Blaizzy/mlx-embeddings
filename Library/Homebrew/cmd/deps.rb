@@ -4,6 +4,7 @@ require "formula"
 require "ostruct"
 require "cli/parser"
 require "cask/caskroom"
+require "cask_dependent"
 
 module Homebrew
   extend DependenciesHelpers
