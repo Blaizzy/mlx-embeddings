@@ -96,4 +96,3 @@ module Repology
     }
   end
 end
-
