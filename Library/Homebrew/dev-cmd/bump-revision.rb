@@ -42,9 +42,14 @@ module Homebrew
       end
 
       old = if formula.license
+        license_string = if formula.license.length > 1
+          formula.license
+        else
+          "\"#{formula.license.first}\""
+        end
         # insert replacement revision after license
         <<~EOS
-          license "#{formula.license}"
+          license #{license_string}
         EOS
       elsif formula.path.read.include?("stable do\n")
         # insert replacement revision after homepage
