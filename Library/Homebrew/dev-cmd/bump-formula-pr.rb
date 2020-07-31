@@ -339,7 +339,7 @@ module Homebrew
     run_audit(formula, alias_rename, old_contents)
 
     formula.path.parent.cd do
-      branch = "#{formula.name}-#{new_formula_version}"
+      branch = "bump-#{formula.name}-#{new_formula_version}"
       git_dir = Utils.popen_read("git rev-parse --git-dir").chomp
       shallow = !git_dir.empty? && File.exist?("#{git_dir}/shallow")
       changed_files = [formula.path]
