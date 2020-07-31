@@ -27,9 +27,6 @@ module PyPI
   def update_python_resources!(formula, version = nil, print_only: false, silent: false,
                                ignore_non_pypi_packages: false)
 
-    @pipgrip_installed ||= Formula["pipgrip"].any_version_installed?
-    odie '"pipgrip" must be installed (`brew install pipgrip`)' unless @pipgrip_installed
-
     # PyPI package name isn't always the same as the formula name. Try to infer from the URL.
     pypi_name = if formula.stable.url.start_with?(PYTHONHOSTED_URL_PREFIX)
       File.basename(formula.stable.url).match(/^(.+)-[a-z\d.]+$/)[1]
@@ -51,6 +48,9 @@ module PyPI
     if non_pypi_resources.present? && !print_only
       odie "\"#{formula.name}\" contains non-PyPI resources. Please update the resources manually."
     end
+
+    @pipgrip_installed ||= Formula["pipgrip"].any_version_installed?
+    odie '"pipgrip" must be installed (`brew install pipgrip`)' unless @pipgrip_installed
 
     ohai "Retrieving PyPI dependencies for \"#{pypi_name}==#{version}\"" if !print_only && !silent
     pipgrip_output = Utils.popen_read Formula["pipgrip"].bin/"pipgrip", "--json", "#{pypi_name}==#{version}"
