@@ -510,7 +510,7 @@ module Homebrew
     end
     # if we haven't already found open requests, try for an exact match across all requests
     pull_requests = fetch_pull_requests("#{formula.name} #{version}", tap_full_name) if pull_requests.blank?
-    check_for_duplicate_pull_requests(pull_requests)
+    check_for_duplicate_pull_requests(pull_requests, args: args)
   end
 
   def check_for_duplicate_pull_requests(pull_requests, args:)
