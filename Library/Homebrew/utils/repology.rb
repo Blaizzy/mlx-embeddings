@@ -21,11 +21,11 @@ module Repology
     output, _errors, _status = curl_output(url.to_s)
     data = JSON.parse(output)
 
-    outdated_homebrew = data.select do |repo|
-      repo["repo"] == "homebrew" && repo["status"] == "outdated"
+    homebrew = data.select do |repo|
+      repo["repo"] == "homebrew"
     end
 
-    outdated_homebrew.empty? ? nil : { name: data }
+    homebrew.empty? ? nil : { name: data }
   end
 
   def parse_api_response
@@ -75,7 +75,7 @@ module Repology
   end
 
   def format_package(package_name, latest_version)
-    formula = Formula[package_name]
+    formula = formula_data(package_name)
 
     return if formula.blank?
 
@@ -94,5 +94,11 @@ module Repology
       livecheck_latest_version: livecheck_response[:livecheck_version],
       open_pull_requests:       pull_requests,
     }
+  end
+
+  def formula_data(package_name)
+    Formula[package_name]
+  rescue
+    nil
   end
 end
