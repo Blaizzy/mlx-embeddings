@@ -333,9 +333,8 @@ module Homebrew
       alias_rename.map! { |a| formula.tap.alias_dir/a }
     end
 
-    ohai "brew update-python-resources #{formula.name}"
     unless read_only_run
-      PyPI.update_python_resources! formula, new_formula_version, silent: true, ignore_non_pypi_packages: true
+      PyPI.update_python_resources! formula, new_formula_version, silent: args.quiet?, ignore_non_pypi_packages: true
     end
 
     run_audit(formula, alias_rename, old_contents, args: args)
