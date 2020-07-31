@@ -57,23 +57,23 @@ class Requirements < DelegateClass(Set)
 end
 
 module DependenciesHelpers
-  def argv_includes_ignores(argv)
+  def args_includes_ignores(args)
     includes = []
     ignores = []
 
-    if argv.include? "--include-build"
+    if args.include_build?
       includes << "build?"
     else
       ignores << "build?"
     end
 
-    if argv.include? "--include-test"
+    if args.include_test?
       includes << "test?"
     else
       ignores << "test?"
     end
 
-    if argv.include? "--include-optional"
+    if args.include_optional?
       includes << "optional?"
     else
       ignores << "optional?"

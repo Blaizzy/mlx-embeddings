@@ -75,7 +75,7 @@ module Homebrew
     else
       formulae = args.installed? ? Formula.installed : Formula
       recursive = args.recursive?
-      includes, ignores = argv_includes_ignores(ARGV)
+      includes, ignores = args_includes_ignores(args)
 
       formulae.select do |f|
         deps = if recursive
