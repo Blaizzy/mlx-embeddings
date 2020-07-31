@@ -106,6 +106,9 @@ jobs:
 
           # don't care about `brew cask style` here.
           brew untap adoptopenjdk/openjdk
+
+          # don't care about `brew audit` here.
+          brew untap mongodb/brew
         else
           # Fix permissions for 'brew tests'
           sudo chmod -R g-w,o-w /home/linuxbrew /home/runner /opt
@@ -165,6 +168,9 @@ jobs:
     - name: Run brew cask style
       if: matrix.os == 'macOS-latest'
       run: brew cask style
+
+    - name: Run brew audit
+      run: brew audit --skip-style
 
     - name: Run vale for docs linting
       run: |
