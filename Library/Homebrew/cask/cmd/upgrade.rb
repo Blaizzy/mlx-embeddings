@@ -47,7 +47,7 @@ module Cask
         upgradable_casks.each do |(old_cask, new_cask)|
           upgrade_cask(old_cask, new_cask)
         rescue => e
-          caught_exceptions << e
+          caught_exceptions << e.exception("#{new_cask.full_name}: #{e}")
           next
         end
 
