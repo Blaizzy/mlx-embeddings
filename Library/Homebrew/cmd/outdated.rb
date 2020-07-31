@@ -83,13 +83,13 @@ module Homebrew
         outdated_formulae_casks.flatten
       end
 
-      print_outdated(outdated)
+      print_outdated(outdated, args: args)
     end
 
     Homebrew.failed = args.named.present? && outdated.present?
   end
 
-  def print_outdated(formulae_or_casks)
+  def print_outdated(formulae_or_casks, args:)
     formulae_or_casks.each do |formula_or_cask|
       if formula_or_cask.is_a?(Formula)
         f = formula_or_cask
