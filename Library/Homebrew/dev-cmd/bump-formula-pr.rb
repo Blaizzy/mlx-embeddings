@@ -72,7 +72,7 @@ module Homebrew
     end
   end
 
-  def use_correct_linux_tap(formula)
+  def use_correct_linux_tap(formula, args:)
     if OS.linux? && formula.tap.core_tap?
       tap_full_name = formula.tap.full_name.gsub("linuxbrew", "homebrew")
       homebrew_core_url = "https://github.com/#{tap_full_name}"
@@ -124,8 +124,8 @@ module Homebrew
     formula ||= determine_formula_from_url(new_url) if new_url
     raise FormulaUnspecifiedError unless formula
 
-    tap_full_name, origin_branch, previous_branch = use_correct_linux_tap(formula)
-    check_open_pull_requests(formula, tap_full_name)
+    tap_full_name, origin_branch, previous_branch = use_correct_linux_tap(formula, args: args)
+    check_open_pull_requests(formula, tap_full_name, args: args)
 
     new_version = args.version
     check_all_pull_requests(formula, tap_full_name, version: new_version) if new_version
@@ -293,7 +293,7 @@ module Homebrew
         "",
       ]
     end
-    new_contents = inreplace_pairs(formula.path, replacement_pairs.uniq.compact)
+    new_contents = inreplace_pairs(formula.path, replacement_pairs.uniq.compact, args: args)
 
     new_formula_version = formula_version(formula, requested_spec, new_contents)
 
@@ -333,7 +333,7 @@ module Homebrew
       PyPI.update_python_resources! formula, new_formula_version, silent: true, ignore_non_pypi_packages: true
     end
 
-    run_audit(formula, alias_rename, old_contents)
+    run_audit(formula, alias_rename, old_contents, args: args)
 
     formula.path.parent.cd do
       branch = "#{formula.name}-#{new_formula_version}"
@@ -448,7 +448,7 @@ module Homebrew
     [remote_url, username]
   end
 
-  def inreplace_pairs(path, replacement_pairs)
+  def inreplace_pairs(path, replacement_pairs, args:)
     if args.dry_run?
       str = path.open("r") { |f| Formulary.ensure_utf8_encoding(f).read }
       contents = StringInreplaceExtension.new(str)
@@ -495,10 +495,10 @@ module Homebrew
     []
   end
 
-  def check_open_pull_requests(formula, tap_full_name)
+  def check_open_pull_requests(formula, tap_full_name, args:)
     # check for open requests
     pull_requests = fetch_pull_requests(formula.name, tap_full_name, state: "open")
-    check_for_duplicate_pull_requests(pull_requests)
+    check_for_duplicate_pull_requests(pull_requests, args: args)
   end
 
   def check_all_pull_requests(formula, tap_full_name, version: nil, url: nil, tag: nil)
@@ -512,7 +512,7 @@ module Homebrew
     check_for_duplicate_pull_requests(pull_requests)
   end
 
-  def check_for_duplicate_pull_requests(pull_requests)
+  def check_for_duplicate_pull_requests(pull_requests, args:)
     return if pull_requests.blank?
 
     duplicates_message = <<~EOS
@@ -544,7 +544,7 @@ module Homebrew
     [versioned_alias, "#{name}@#{new_alias_version}"]
   end
 
-  def run_audit(formula, alias_rename, old_contents)
+  def run_audit(formula, alias_rename, old_contents, args:)
     if args.dry_run?
       if args.no_audit?
         ohai "Skipping `brew audit`"
