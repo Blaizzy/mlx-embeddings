@@ -7,6 +7,20 @@ module PyPI
 
   @pipgrip_installed = nil
 
+  def url_to_pypi_package_name(url)
+    return unless url.start_with? PYTHONHOSTED_URL_PREFIX
+
+    File.basename(url).match(/^(.+)-[a-z\d.]+$/)[1]
+  end
+
+  def update_pypi_url(url, version)
+    package = url_to_pypi_package_name url
+    return if package.nil?
+
+    _, url = get_pypi_info(package, version)
+    url
+  end
+
   # Get name, url, and version for a given pypi package
   def get_pypi_info(package, version)
     metadata_url = "https://pypi.org/pypi/#{package}/#{version}/json"
@@ -32,7 +46,7 @@ module PyPI
 
     # PyPI package name isn't always the same as the formula name. Try to infer from the URL.
     pypi_name = if formula.stable.url.start_with?(PYTHONHOSTED_URL_PREFIX)
-      File.basename(formula.stable.url).match(/^(.+)-[a-z\d.]+$/)[1]
+      url_to_pypi_package_name formula.stable.url
     else
       formula.name
     end

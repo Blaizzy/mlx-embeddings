@@ -183,11 +183,7 @@ module Homebrew
     elsif !new_url && !new_version
       odie "#{formula}: no --url= or --version= argument specified!"
     else
-      new_url ||= if old_url.start_with?(PyPI::PYTHONHOSTED_URL_PREFIX)
-        package_name = File.basename(old_url).match(/^(.+)-[a-z\d.]+$/)[1]
-        _, url = PyPI.get_pypi_info(package_name, new_version)
-        url
-      end
+      new_url ||= PyPI.update_pypi_url(old_url, new_version)
       new_url ||= old_url.gsub(old_version, new_version)
       if new_url == old_url
         odie <<~EOS
