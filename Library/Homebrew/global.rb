@@ -82,7 +82,7 @@ module Homebrew
     end
 
     def args
-      @args ||= CLI::Args.new(set_default_args: true)
+      @args ||= CLI::Args.new
     end
 
     def messages

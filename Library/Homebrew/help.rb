@@ -95,6 +95,8 @@ module Homebrew
       cmd_parser = CLI::Parser.from_cmd_path(path)
       return unless cmd_parser
 
+      # Try parsing arguments here in order to show formula options in help output.
+      cmd_parser.parse(Homebrew.args.remaining, ignore_invalid_options: true)
       cmd_parser.generate_help_text
     end
 

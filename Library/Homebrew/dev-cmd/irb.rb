@@ -34,7 +34,7 @@ module Homebrew
   end
 
   def irb
-    args = irb_args.parse
+    args = irb_args.parse(ARGV.dup.freeze)
 
     if args.examples?
       puts "'v8'.f # => instance of the v8 formula"

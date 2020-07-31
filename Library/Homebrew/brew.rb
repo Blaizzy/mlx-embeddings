@@ -41,6 +41,7 @@ begin
   empty_argv = ARGV.empty?
   help_flag_list = %w[-h --help --usage -?]
   help_flag = !ENV["HOMEBREW_HELP"].nil?
+  help_cmd_index = nil
   cmd = nil
 
   ARGV.each_with_index do |arg, i|
@@ -49,13 +50,16 @@ begin
     if arg == "help" && !cmd
       # Command-style help: `help <cmd>` is fine, but `<cmd> help` is not.
       help_flag = true
+      help_cmd_index = i
     elsif !cmd && !help_flag_list.include?(arg)
       cmd = ARGV.delete_at(i)
       cmd = Commands::HOMEBREW_INTERNAL_COMMAND_ALIASES.fetch(cmd, cmd)
     end
   end
 
-  Homebrew.args = Homebrew::CLI::Parser.new.parse(ignore_invalid_options: true)
+  ARGV.delete_at(help_cmd_index) if help_cmd_index
+
+  Homebrew.args = Homebrew::CLI::Parser.new.parse(ARGV.dup.freeze, ignore_invalid_options: true)
 
   path = PATH.new(ENV["PATH"])
   homebrew_path = PATH.new(ENV["HOMEBREW_PATH"])

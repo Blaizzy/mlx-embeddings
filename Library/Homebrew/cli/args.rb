@@ -10,32 +10,21 @@ module Homebrew
       # undefine tap to allow --tap argument
       undef tap
 
-      def initialize(argv = ARGV.dup.freeze, set_default_args: false)
+      def initialize
         super()
 
         @processed_options = []
-        @options_only = args_options_only(argv)
-        @flags_only = args_flags_only(argv)
+        @options_only = []
+        @flags_only = []
 
         # Can set these because they will be overwritten by freeze_named_args!
         # (whereas other values below will only be overwritten if passed).
-        self[:named_args] = argv.reject { |arg| arg.start_with?("-") }
+        self[:named_args] = []
         self[:remaining] = []
-
-        # Set values needed before Parser#parse has been run.
-        return unless set_default_args
-
-        self[:build_from_source?] = argv.include?("--build-from-source") || argv.include?("-s")
-        self[:build_bottle?] = argv.include?("--build-bottle")
-        self[:force_bottle?] = argv.include?("--force-bottle")
-        self[:HEAD?] = argv.include?("--HEAD")
-        self[:devel?] = argv.include?("--devel")
-        self[:universal?] = argv.include?("--universal")
       end
 
       def freeze_remaining_args!(remaining_args)
-        self[:remaining] = remaining_args
-        self[:remaining].freeze
+        self[:remaining] = remaining_args.freeze
       end
 
       def freeze_named_args!(named_args)
@@ -49,8 +38,7 @@ module Homebrew
         @kegs = nil
         @kegs_casks = nil
 
-        self[:named_args] = named_args
-        self[:named_args].freeze
+        self[:named_args] = named_args.freeze
       end
 
       def freeze_processed_options!(processed_options)
@@ -60,8 +48,8 @@ module Homebrew
         @processed_options += processed_options
         @processed_options.freeze
 
-        @options_only = args_options_only(cli_args)
-        @flags_only = args_flags_only(cli_args)
+        @options_only = cli_args.select { |a| a.start_with?("-") }.freeze
+        @flags_only = cli_args.select { |a| a.start_with?("--") }.freeze
       end
 
       def named
@@ -219,16 +207,6 @@ module Homebrew
           end
         end
         @cli_args.freeze
-      end
-
-      def args_options_only(args)
-        args.select { |arg| arg.start_with?("-") }
-            .freeze
-      end
-
-      def args_flags_only(args)
-        args.select { |arg| arg.start_with?("--") }
-            .freeze
       end
 
       def downcased_unique_named
