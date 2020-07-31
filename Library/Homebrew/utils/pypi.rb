@@ -35,6 +35,8 @@ module PyPI
     end
 
     sdist = json["urls"].find { |url| url["packagetype"] == "sdist" }
+    return json["info"]["name"] if sdist.nil?
+
     [json["info"]["name"], sdist["url"], sdist["digests"]["sha256"]]
   end
 
