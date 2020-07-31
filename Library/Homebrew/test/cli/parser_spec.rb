@@ -15,6 +15,14 @@ describe Homebrew::CLI::Parser do
       allow(Homebrew::EnvConfig).to receive(:pry?).and_return(true)
     end
 
+    context "when `ignore_invalid_options` is true" do
+      it "passes through invalid options" do
+        args = parser.parse(["-v", "named-arg", "--not-a-valid-option"], ignore_invalid_options: true)
+        expect(args.remaining).to eq ["named-arg", "--not-a-valid-option"]
+        expect(args.named_args).to be_empty
+      end
+    end
+
     it "parses short option" do
       args = parser.parse(["-v"])
       expect(args).to be_verbose

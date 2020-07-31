@@ -20,6 +20,7 @@ module Homebrew
         # Can set these because they will be overwritten by freeze_named_args!
         # (whereas other values below will only be overwritten if passed).
         self[:named_args] = argv.reject { |arg| arg.start_with?("-") }
+        self[:remaining] = []
 
         # Set values needed before Parser#parse has been run.
         return unless set_default_args
@@ -30,6 +31,11 @@ module Homebrew
         self[:HEAD?] = argv.include?("--HEAD")
         self[:devel?] = argv.include?("--devel")
         self[:universal?] = argv.include?("--universal")
+      end
+
+      def freeze_remaining_args!(remaining_args)
+        self[:remaining] = remaining_args
+        self[:remaining].freeze
       end
 
       def freeze_named_args!(named_args)

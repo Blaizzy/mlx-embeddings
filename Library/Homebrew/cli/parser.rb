@@ -156,9 +156,7 @@ module Homebrew
         @parser.to_s
       end
 
-      def parse(argv = @argv, ignore_invalid_options: false)
-        raise "Arguments were already parsed!" if @args_parsed
-
+      def parse_remaining(argv, ignore_invalid_options: false)
         i = 0
         remaining = []
 
@@ -189,6 +187,14 @@ module Homebrew
           i += 1
         end
 
+        [remaining, non_options]
+      end
+
+      def parse(argv = @argv, ignore_invalid_options: false)
+        raise "Arguments were already parsed!" if @args_parsed
+
+        remaining, non_options = parse_remaining(argv, ignore_invalid_options: ignore_invalid_options)
+
         named_args = if ignore_invalid_options
           []
         else
@@ -198,6 +204,7 @@ module Homebrew
         check_constraint_violations
         check_named_args(named_args)
         @args.freeze_named_args!(named_args)
+        @args.freeze_remaining_args!(non_options.empty? ? remaining : [*remaining, "--", non_options])
         @args.freeze_processed_options!(@processed_options)
 
         @args_parsed = true
