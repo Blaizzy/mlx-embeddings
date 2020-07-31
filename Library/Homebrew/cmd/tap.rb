@@ -62,7 +62,7 @@ module Homebrew
       tap = Tap.fetch(args.named.first)
       begin
         tap.install clone_target:      args.named.second,
-                    force_auto_update: force_auto_update?,
+                    force_auto_update: force_auto_update?(args: args),
                     quiet:             args.quiet?,
                     full_clone:        full_clone
       rescue TapRemoteMismatchError => e
@@ -73,7 +73,7 @@ module Homebrew
     end
   end
 
-  def force_auto_update?
+  def force_auto_update?(args:)
     # if no relevant flag is present, return nil, meaning "no change"
     true if args.force_auto_update?
   end
