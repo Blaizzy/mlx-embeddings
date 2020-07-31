@@ -21,7 +21,7 @@ module PyPI
     url
   end
 
-  # Get name, url, and version for a given pypi package
+  # Get name, url and sha256 for a given pypi package
   def get_pypi_info(package, version)
     metadata_url = "https://pypi.org/pypi/#{package}/#{version}/json"
     out, _, status = curl_output metadata_url, "--location"
