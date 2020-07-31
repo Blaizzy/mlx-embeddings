@@ -32,9 +32,9 @@ module Homebrew
     args = options_args.parse
 
     if args.all?
-      puts_options Formula.to_a.sort
+      puts_options Formula.to_a.sort, args: args
     elsif args.installed?
-      puts_options Formula.installed.sort
+      puts_options Formula.installed.sort, args: args
     elsif !args.command.nil?
       path = Commands.path(args.command)
       odie "Unknown command: #{args.command}" unless path
@@ -54,7 +54,7 @@ module Homebrew
     elsif args.no_named?
       raise FormulaUnspecifiedError
     else
-      puts_options args.formulae
+      puts_options args.formulae, args: args
     end
   end
 
@@ -72,7 +72,7 @@ module Homebrew
     options
   end
 
-  def puts_options(formulae)
+  def puts_options(formulae, args:)
     formulae.each do |f|
       next if f.options.empty?
 
