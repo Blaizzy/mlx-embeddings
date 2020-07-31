@@ -109,7 +109,7 @@ module Homebrew
           end
         end
       rescue Exception => e # rubocop:disable Lint/RescueException
-        retry if retry_test?(f)
+        retry if retry_test?(f, args: args)
         ofail "#{f.full_name}: failed"
         puts e, e.backtrace
       ensure
@@ -118,7 +118,7 @@ module Homebrew
     end
   end
 
-  def retry_test?(f)
+  def retry_test?(f, args:)
     @test_failed ||= Set.new
     if args.retry? && @test_failed.add?(f)
       oh1 "Testing #{f.full_name} (again)"
