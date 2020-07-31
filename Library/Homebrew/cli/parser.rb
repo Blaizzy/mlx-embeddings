@@ -160,7 +160,7 @@ module Homebrew
         i = 0
         remaining = []
 
-        argv, non_options = split_double_dash(argv)
+        argv, non_options = split_non_options(argv)
 
         while i < argv.count
           begin
@@ -384,7 +384,7 @@ module Homebrew
         @processed_options << [option.short.first, option.long.first, option.arg, option.desc.first]
       end
 
-      def split_double_dash(argv)
+      def split_non_options(argv)
         if sep = argv.index("--")
           [argv.take(sep), argv.drop(sep + 1)]
         else
@@ -393,7 +393,7 @@ module Homebrew
       end
 
       def formulae(argv)
-        argv, non_options = split_double_dash(argv)
+        argv, non_options = split_non_options(argv)
 
         named_args = argv.reject { |arg| arg.start_with?("-") } + non_options
         spec = if argv.include?("--HEAD")
