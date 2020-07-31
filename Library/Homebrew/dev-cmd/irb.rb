@@ -56,8 +56,6 @@ module Homebrew
     require "keg"
     require "cask/all"
 
-    puts ARGV.inspect
-
     ohai "Interactive Homebrew Shell"
     puts "Example commands available with: brew irb --examples"
     if args.pry?
