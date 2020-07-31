@@ -1194,6 +1194,8 @@ flags which will help find keg-only dependencies like `openssl`, `icu4c`, etc.
   Read the `Brewfile` from this location. Use `--file=-` to pipe to stdin/stdout.
 * `--global`:
   Read the `Brewfile` from `~/.Brewfile`.
+* `-v`, `--verbose`:
+  `install` prints output from commands as they are run. `check` lists all missing dependencies.
 * `--no-upgrade`:
   `install` won't run `brew upgrade` on outdated dependencies. Note they may still be upgraded by `brew install` if needed.
 * `-f`, `--force`:
