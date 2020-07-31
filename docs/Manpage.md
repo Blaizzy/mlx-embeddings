@@ -312,8 +312,10 @@ no formula is provided.
   Also print diffstat from commit.
 * `--oneline`:
   Print only one line per commit.
-* `-1`, `--max-count`:
-  Print only one or a specified number of commits.
+* `-1`:
+  Print only one commit.
+* `-n`, `--max-count`:
+  Print only a specified number of commits.
 
 ### `migrate` [*`options`*] *`formula`*
 
