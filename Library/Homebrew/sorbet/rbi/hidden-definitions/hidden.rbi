@@ -13549,6 +13549,94 @@ module ParallelTests
   WINDOWS = ::T.let(nil, ::T.untyped)
 end
 
+class Parlour::ConflictResolver
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Parlour::Debugging::Tree
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Parlour::Debugging
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Parlour::DetachedRbiGenerator
+  def detached!(*args, &blk); end
+end
+
+class Parlour::DetachedRbiGenerator
+end
+
+class Parlour::ParseError
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Parlour::Plugin
+  extend ::T::Private::Abstract::Hooks
+  extend ::T::InterfaceWrapper::Helpers
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Parlour::RbiGenerator::Namespace
+  def create_attr(*args, &blk); end
+end
+
+class Parlour::RbiGenerator::Options
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Parlour::RbiGenerator::Parameter
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Parlour::RbiGenerator::RbiObject
+  def add_comments(*args, &blk); end
+end
+
+class Parlour::RbiGenerator::RbiObject
+  extend ::T::Private::Abstract::Hooks
+  extend ::T::InterfaceWrapper::Helpers
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Parlour::RbiGenerator::StructProp
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Parlour::RbiGenerator
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Parlour::TypeLoader
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Parlour::TypeParser::IntermediateSig
+  def self.inherited(s); end
+end
+
+class Parlour::TypeParser::NodePath
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Parlour::TypeParser
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 ParseError = Racc::ParseError
 
 Parser::CurrentRuby = Parser::Ruby26
@@ -18883,14 +18971,6 @@ end
 module RSpec::Its
 end
 
-class RSpec::Mocks::AnyInstance::Recorder
-  include ::T::CompatibilityPatches::RSpecCompatibility::RecorderExtensions
-end
-
-class RSpec::Mocks::MethodDouble
-  include ::T::CompatibilityPatches::RSpecCompatibility::MethodDoubleExtensions
-end
-
 class RSpec::Retry
   def attempts(); end
 
@@ -21598,7 +21678,6 @@ module Stdenv
   def O3(); end
 
   def Os(); end
-
 end
 
 class String
@@ -21895,7 +21974,6 @@ module Superenv
   def O3(); end
 
   def Os(); end
-
 end
 
 class SynchronizedDelegator
@@ -22566,11 +22644,15 @@ end
 
 class Tapioca::Cli
   include ::Thor::Actions
+  def dsl(*constants); end
+
   def generate(*gems); end
 
   def generator(); end
 
   def init(); end
+
+  def require(); end
 
   def sync(); end
 
@@ -22581,6 +22663,64 @@ class Tapioca::Cli
 end
 
 module Tapioca::Compilers
+end
+
+module Tapioca::Compilers::Dsl
+end
+
+class Tapioca::Compilers::Dsl::Base
+  def decorate(*args, &blk); end
+
+  def gather_constants(*args, &blk); end
+
+  def handles?(*args, &blk); end
+
+  def initialize(*args, &blk); end
+
+  def processable_constants(*args, &blk); end
+  SPECIAL_METHOD_NAMES = ::T.let(nil, ::T.untyped)
+end
+
+class Tapioca::Compilers::Dsl::Base
+  extend ::T::Sig
+  extend ::T::Helpers
+  extend ::T::Private::Abstract::Hooks
+  extend ::T::InterfaceWrapper::Helpers
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Tapioca::Compilers::Dsl
+end
+
+class Tapioca::Compilers::DslCompiler
+  def error_handler(*args, &blk); end
+
+  def generators(*args, &blk); end
+
+  def initialize(*args, &blk); end
+
+  def requested_constants(*args, &blk); end
+
+  def run(*args, &blk); end
+end
+
+class Tapioca::Compilers::DslCompiler
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Tapioca::Compilers::RequiresCompiler
+  def compile(*args, &blk); end
+
+  def initialize(*args, &blk); end
+end
+
+class Tapioca::Compilers::RequiresCompiler
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 module Tapioca::Compilers::Sorbet
@@ -22607,6 +22747,7 @@ class Tapioca::Compilers::SymbolTable::SymbolGenerator
   def initialize(*args, &blk); end
   IGNORED_SYMBOLS = ::T.let(nil, ::T.untyped)
   SPECIAL_METHOD_NAMES = ::T.let(nil, ::T.untyped)
+  TYPE_PARAMETER_MATCHER = ::T.let(nil, ::T.untyped)
 end
 
 class Tapioca::Compilers::SymbolTable::SymbolGenerator
@@ -22663,6 +22804,8 @@ class Tapioca::Config
 
   def generate_command(); end
 
+  def generators(); end
+
   def initialize(*args, &blk); end
 
   def outdir(); end
@@ -22676,13 +22819,16 @@ class Tapioca::Config
   def todos_path(); end
 
   def typed_overrides(); end
-  CONFIG_FILE_PATH = ::T.let(nil, ::T.untyped)
-  DEFAULT_OUTDIR = ::T.let(nil, ::T.untyped)
+  DEFAULT_DSLDIR = ::T.let(nil, ::T.untyped)
+  DEFAULT_GEMDIR = ::T.let(nil, ::T.untyped)
   DEFAULT_OVERRIDES = ::T.let(nil, ::T.untyped)
   DEFAULT_POSTREQUIRE = ::T.let(nil, ::T.untyped)
   DEFAULT_RBIDIR = ::T.let(nil, ::T.untyped)
   DEFAULT_TODOSPATH = ::T.let(nil, ::T.untyped)
   SORBET_CONFIG = ::T.let(nil, ::T.untyped)
+  SORBET_PATH = ::T.let(nil, ::T.untyped)
+  TAPIOCA_CONFIG = ::T.let(nil, ::T.untyped)
+  TAPIOCA_PATH = ::T.let(nil, ::T.untyped)
 end
 
 class Tapioca::Config
@@ -22757,7 +22903,11 @@ class Tapioca::Gemfile
 end
 
 class Tapioca::Generator
+  def build_dsl(*args, &blk); end
+
   def build_gem_rbis(*args, &blk); end
+
+  def build_requires(*args, &blk); end
 
   def build_todos(*args, &blk); end
 
@@ -22778,12 +22928,31 @@ class Tapioca::Loader
   def initialize(*args, &blk); end
 
   def load_bundle(*args, &blk); end
+
+  def load_rails(*args, &blk); end
 end
 
 class Tapioca::Loader
   extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Tapioca::SorbetConfig
+  def ignore(); end
+
+  def initialize(*args, &blk); end
+
+  def paths(*args, &blk); end
+end
+
+class Tapioca::SorbetConfig
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+  def self.parse_file(*args, &blk); end
+
+  def self.parse_string(*args, &blk); end
 end
 
 module Tapioca
