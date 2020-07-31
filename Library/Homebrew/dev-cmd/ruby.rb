@@ -17,8 +17,6 @@ module Homebrew
              description: "Load a library using `require`."
       switch "-e",
              description: "Execute the given text string as a script."
-      switch :verbose
-      switch :debug
     end
   end
 

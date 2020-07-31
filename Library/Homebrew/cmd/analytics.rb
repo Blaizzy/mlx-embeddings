@@ -22,14 +22,12 @@ module Homebrew
         `brew analytics regenerate-uuid`:
         Regenerate the UUID used for Homebrew's analytics.
       EOS
-      switch :verbose
-      switch :debug
       max_named 1
     end
   end
 
   def analytics
-    analytics_args.parse
+    args = analytics_args.parse
 
     case args.named.first
     when nil, "state"

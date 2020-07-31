@@ -14,8 +14,7 @@ module Homebrew
 
         Rerun the post-install steps for <formula>.
       EOS
-      switch :verbose
-      switch :debug
+
       min_named :keg
     end
   end

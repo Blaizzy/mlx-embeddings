@@ -14,13 +14,11 @@ module Homebrew
         Open <formula> in the editor set by `EDITOR` or `HOMEBREW_EDITOR`, or open the
         Homebrew repository for editing if no formula is provided.
       EOS
-      switch :verbose
-      switch :debug
     end
   end
 
   def edit
-    edit_args.parse
+    args = edit_args.parse
 
     unless (HOMEBREW_REPOSITORY/".git").directory?
       raise <<~EOS

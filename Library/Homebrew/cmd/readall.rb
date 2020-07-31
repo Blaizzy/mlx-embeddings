@@ -20,13 +20,11 @@ module Homebrew
              description: "Verify any alias symlinks in each tap."
       switch "--syntax",
              description: "Syntax-check all of Homebrew's Ruby files (if no `<tap>` is passed)."
-      switch :verbose
-      switch :debug
     end
   end
 
   def readall
-    readall_args.parse
+    args = readall_args.parse
 
     if args.syntax? && args.no_named?
       scan_files = "#{HOMEBREW_LIBRARY_PATH}/**/*.rb"

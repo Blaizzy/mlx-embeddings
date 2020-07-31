@@ -23,13 +23,11 @@ module Homebrew
                           "if provided as arguments."
       switch "-D", "--audit-debug",
              description: "Enable debugging and profiling of audit methods."
-      switch :verbose
-      switch :debug
     end
   end
 
   def doctor
-    doctor_args.parse
+    args = doctor_args.parse
 
     inject_dump_stats!(Diagnostic::Checks, /^check_*/) if args.audit_debug?
 

@@ -19,14 +19,13 @@ module Homebrew
              description: "Explicitly set the <name> of the package being installed."
       flag   "--version=",
              description: "Explicitly set the <version> of the package being installed."
-      switch :verbose
-      switch :debug
+
       max_named 0
     end
   end
 
   def diy
-    diy_args.parse
+    args = diy_args.parse
 
     path = Pathname.getwd
 

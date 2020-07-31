@@ -23,7 +23,7 @@ module Homebrew
         Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will then be run for the
         upgraded formulae or, every 30 days, for all formulae.
       EOS
-      switch :debug,
+      switch "-d", "--debug",
              description: "If brewing fails, open an interactive debugging session with access to IRB "\
                           "or a shell inside the temporary build directory."
       switch "-s", "--build-from-source",
@@ -46,7 +46,7 @@ module Homebrew
       switch "-f", "--force",
              description: "Install without checking for previously installed keg-only or "\
                           "non-migrated versions."
-      switch :verbose,
+      switch "-v", "--verbose",
              description: "Print the verification and postinstall steps."
       switch "--display-times",
              env:         :display_install_times,
@@ -71,7 +71,7 @@ module Homebrew
     named_casks_specified = !casks.empty? && formulae.empty?
 
     upgrade_outdated_formulae(formulae, args: args) unless named_casks_specified
-    upgrade_outdated_casks(casks) unless named_formulae_specified
+    upgrade_outdated_casks(casks, args: args) unless named_formulae_specified
   end
 
   def upgrade_outdated_formulae(formulae, args:)
@@ -132,7 +132,7 @@ module Homebrew
     Homebrew.messages.display_messages(display_times: args.display_times?)
   end
 
-  def upgrade_outdated_casks(casks)
+  def upgrade_outdated_casks(casks, args:)
     cask_upgrade = Cask::Cmd::Upgrade.new(casks)
     cask_upgrade.force = args.force?
     cask_upgrade.dry_run = args.dry_run?

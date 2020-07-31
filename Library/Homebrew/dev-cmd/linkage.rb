@@ -24,13 +24,11 @@ module Homebrew
       switch "--cached",
              description: "Print the cached linkage values stored in `HOMEBREW_CACHE`, set by a previous "\
                           "`brew linkage` run."
-      switch :verbose
-      switch :debug
     end
   end
 
   def linkage
-    linkage_args.parse
+    args = linkage_args.parse
 
     CacheStoreDatabase.use(:linkage) do |db|
       kegs = if args.kegs.empty?

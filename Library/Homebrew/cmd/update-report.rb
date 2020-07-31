@@ -30,9 +30,7 @@ module Homebrew
       switch "-f", "--force",
              description: "Treat installed and updated formulae as if they are from "\
                           "the same taps and migrate them anyway."
-      switch :quiet
-      switch :verbose
-      switch :debug
+
       hide_from_man_page!
     end
   end

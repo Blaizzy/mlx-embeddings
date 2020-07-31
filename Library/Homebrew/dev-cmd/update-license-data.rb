@@ -26,7 +26,7 @@ module Homebrew
   end
 
   def update_license_data
-    update_license_data_args.parse
+    args = update_license_data_args.parse
     ohai "Updating SPDX license data..."
 
     latest_tag = GitHub.open_api(SPDX_API_URL)["tag_name"]

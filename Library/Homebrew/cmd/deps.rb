@@ -53,15 +53,14 @@ module Homebrew
              description: "Switch into the mode used by the `--all` option, but only list dependencies "\
                           "for each provided <formula>, one formula per line. This is used for "\
                           "debugging the `--installed`/`--all` display mode."
-      switch :verbose
-      switch :debug
+
       conflicts "--installed", "--all"
       formula_options
     end
   end
 
   def deps
-    deps_args.parse
+    args = deps_args.parse
 
     Formulary.enable_factory_cache!
 
@@ -84,13 +83,13 @@ module Homebrew
         raise FormulaUnspecifiedError
       end
 
-      puts_deps_tree dependents, recursive
+      puts_deps_tree dependents, recursive, args: args
       return
     elsif args.all?
-      puts_deps sorted_dependents(Formula.to_a + Cask::Cask.to_a), recursive
+      puts_deps sorted_dependents(Formula.to_a + Cask::Cask.to_a), recursive, args: args
       return
     elsif !args.no_named? && args.for_each?
-      puts_deps sorted_dependents(args.formulae_and_casks), recursive
+      puts_deps sorted_dependents(args.formulae_and_casks), recursive, args: args
       return
     end
 
@@ -103,9 +102,9 @@ module Homebrew
 
     dependents = dependents(args.formulae_and_casks)
 
-    all_deps = deps_for_dependents(dependents, recursive, &(args.union? ? :| : :&))
+    all_deps = deps_for_dependents(dependents, recursive, args: args, &(args.union? ? :| : :&))
     condense_requirements(all_deps)
-    all_deps.map!(&method(:dep_display_name))
+    all_deps.map! { |d| dep_display_name(d, args: args) }
     all_deps.uniq!
     all_deps.sort! unless args.n?
     puts all_deps
@@ -130,7 +129,7 @@ module Homebrew
     deps.select! { |dep| dep.is_a?(Requirement) || dep.installed? } if args.installed?
   end
 
-  def dep_display_name(dep)
+  def dep_display_name(dep, args:)
     str = if dep.is_a? Requirement
       if args.include_requirements?
         ":#{dep.display_s}"
@@ -155,8 +154,8 @@ module Homebrew
     str
   end
 
-  def deps_for_dependent(d, recursive = false)
-    includes, ignores = argv_includes_ignores(ARGV)
+  def deps_for_dependent(d, recursive = false, args:)
+    includes, ignores = args_includes_ignores(args)
 
     deps = d.runtime_dependencies if @use_runtime_dependencies
 
@@ -171,31 +170,31 @@ module Homebrew
     deps + reqs.to_a
   end
 
-  def deps_for_dependents(dependents, recursive = false, &block)
-    dependents.map { |d| deps_for_dependent(d, recursive) }.reduce(&block)
+  def deps_for_dependents(dependents, recursive = false, args:, &block)
+    dependents.map { |d| deps_for_dependent(d, recursive, args: args) }.reduce(&block)
   end
 
-  def puts_deps(dependents, recursive = false)
-    dependents.each do |d|
-      deps = deps_for_dependent(d, recursive)
+  def puts_deps(dependents, recursive = false, args:)
+    dependents.each do |dependent|
+      deps = deps_for_dependent(dependent, recursive, args: args)
       condense_requirements(deps)
       deps.sort_by!(&:name)
-      deps.map!(&method(:dep_display_name))
-      puts "#{d.full_name}: #{deps.join(" ")}"
+      deps.map! { |d| dep_display_name(d, args: args) }
+      puts "#{dependent.full_name}: #{deps.join(" ")}"
     end
   end
 
-  def puts_deps_tree(dependents, recursive = false)
+  def puts_deps_tree(dependents, recursive = false, args:)
     dependents.each do |d|
       puts d.full_name
       @dep_stack = []
-      recursive_deps_tree(d, "", recursive)
+      recursive_deps_tree(d, "", recursive, args: args)
       puts
     end
   end
 
-  def recursive_deps_tree(f, prefix, recursive)
-    includes, ignores = argv_includes_ignores(ARGV)
+  def recursive_deps_tree(f, prefix, recursive, args:)
+    includes, ignores = args_includes_ignores(args)
     dependables = @use_runtime_dependencies ? f.runtime_dependencies : f.deps
     deps = reject_ignores(dependables, ignores, includes)
     reqs = reject_ignores(f.requirements, ignores, includes)
@@ -212,7 +211,7 @@ module Homebrew
         "├──"
       end
 
-      display_s = "#{tree_lines} #{dep_display_name(dep)}"
+      display_s = "#{tree_lines} #{dep_display_name(dep, args: args)}"
       is_circular = @dep_stack.include?(dep.name)
       display_s = "#{display_s} (CIRCULAR DEPENDENCY)" if is_circular
       puts "#{prefix}#{display_s}"
@@ -225,7 +224,9 @@ module Homebrew
         "│   "
       end
 
-      recursive_deps_tree(Formulary.factory(dep.name), prefix + prefix_addition, true) if dep.is_a? Dependency
+      if dep.is_a? Dependency
+        recursive_deps_tree(Formulary.factory(dep.name), prefix + prefix_addition, true, args: args)
+      end
     end
 
     @dep_stack.pop

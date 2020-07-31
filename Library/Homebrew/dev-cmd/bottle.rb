@@ -76,21 +76,20 @@ module Homebrew
                           "to the formula file."
       flag   "--root-url=",
              description: "Use the specified <URL> as the root of the bottle's URL instead of Homebrew's default."
-      switch :verbose
-      switch :debug
+
       conflicts "--no-rebuild", "--keep-old"
       min_named 1
     end
   end
 
   def bottle
-    bottle_args.parse
+    args = bottle_args.parse
 
-    return merge if args.merge?
+    return merge(args: args) if args.merge?
 
     ensure_relocation_formulae_installed! unless args.skip_relocation?
     args.resolved_formulae.each do |f|
-      bottle_formula f
+      bottle_formula f, args: args
     end
   end
 
@@ -103,7 +102,7 @@ module Homebrew
     end
   end
 
-  def keg_contain?(string, keg, ignores, formula_and_runtime_deps_names = nil)
+  def keg_contain?(string, keg, ignores, formula_and_runtime_deps_names = nil, args:)
     @put_string_exists_header, @put_filenames = nil
 
     print_filename = lambda do |str, filename|
@@ -211,7 +210,7 @@ module Homebrew
     system "/usr/bin/sudo", "--non-interactive", "/usr/sbin/purge"
   end
 
-  def bottle_formula(f)
+  def bottle_formula(f, args:)
     return ofail "Formula not installed or up-to-date: #{f.full_name}" unless f.latest_version_installed?
 
     unless tap = f.tap
@@ -328,14 +327,14 @@ module Homebrew
         if args.skip_relocation?
           skip_relocation = true
         else
-          relocatable = false if keg_contain?(prefix_check, keg, ignores, formula_and_runtime_deps_names)
-          relocatable = false if keg_contain?(repository, keg, ignores)
-          relocatable = false if keg_contain?(cellar, keg, ignores, formula_and_runtime_deps_names)
+          relocatable = false if keg_contain?(prefix_check, keg, ignores, formula_and_runtime_deps_names, args: args)
+          relocatable = false if keg_contain?(repository, keg, ignores, args: args)
+          relocatable = false if keg_contain?(cellar, keg, ignores, formula_and_runtime_deps_names, args: args)
           if prefix != prefix_check
             relocatable = false if keg_contain_absolute_symlink_starting_with?(prefix, keg)
-            relocatable = false if keg_contain?("#{prefix}/etc", keg, ignores)
-            relocatable = false if keg_contain?("#{prefix}/var", keg, ignores)
-            relocatable = false if keg_contain?("#{prefix}/share/vim", keg, ignores)
+            relocatable = false if keg_contain?("#{prefix}/etc", keg, ignores, args: args)
+            relocatable = false if keg_contain?("#{prefix}/var", keg, ignores, args: args)
+            relocatable = false if keg_contain?("#{prefix}/share/vim", keg, ignores, args: args)
           end
           skip_relocation = relocatable && !keg.require_relocation?
         end
@@ -434,7 +433,7 @@ module Homebrew
     end
   end
 
-  def merge
+  def merge(args:)
     bottles_hash = args.named.reduce({}) do |hash, json_file|
       hash.deep_merge(JSON.parse(IO.read(json_file))) do |key, first, second|
         if key == "cellar"

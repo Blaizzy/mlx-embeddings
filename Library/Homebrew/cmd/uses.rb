@@ -38,14 +38,14 @@ module Homebrew
              description: "Show usage of <formula> by development builds."
       switch "--HEAD",
              description: "Show usage of <formula> by HEAD builds."
-      switch :debug
+
       conflicts "--devel", "--HEAD"
       min_named :formula
     end
   end
 
   def uses
-    uses_args.parse
+    args = uses_args.parse
 
     odeprecated "brew uses --devel" if args.devel?
     odeprecated "brew uses --HEAD" if args.HEAD?
@@ -75,7 +75,7 @@ module Homebrew
     else
       formulae = args.installed? ? Formula.installed : Formula
       recursive = args.recursive?
-      includes, ignores = argv_includes_ignores(ARGV)
+      includes, ignores = args_includes_ignores(args)
 
       formulae.select do |f|
         deps = if recursive

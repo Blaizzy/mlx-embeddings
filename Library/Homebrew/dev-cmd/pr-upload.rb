@@ -27,8 +27,6 @@ module Homebrew
              description: "Upload to the specified Bintray organisation (default: `homebrew`)."
       flag   "--root-url=",
              description: "Use the specified <URL> as the root of the bottle's URL instead of Homebrew's default."
-      switch :verbose
-      switch :debug
     end
   end
 

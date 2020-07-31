@@ -13,10 +13,6 @@ module Homebrew
     class Parser
       attr_reader :processed_options, :hide_from_man_page
 
-      def self.parse(argv = ARGV.freeze, allow_no_named_args: false, &block)
-        new(argv, &block).parse(allow_no_named_args: allow_no_named_args)
-      end
-
       def self.from_cmd_path(cmd_path)
         cmd_args_method_name = Commands.args_method_name(cmd_path)
 
@@ -30,17 +26,17 @@ module Homebrew
       end
 
       def self.global_options
-        {
-          quiet:   [["-q", "--quiet"], :quiet, "Suppress any warnings."],
-          verbose: [["-v", "--verbose"], :verbose, "Make some output more verbose."],
-          debug:   [["-d", "--debug"], :debug, "Display any debugging information."],
-        }
+        [
+          ["-q", "--quiet", "Suppress any warnings."],
+          ["-v", "--verbose", "Make some output more verbose."],
+          ["-d", "--debug", "Display any debugging information."],
+        ]
       end
 
-      def initialize(argv = ARGV.freeze, &block)
+      def initialize(&block)
         @parser = OptionParser.new
-        @argv = argv
-        @args = Homebrew::CLI::Args.new(@argv)
+
+        @args = Homebrew::CLI::Args.new
 
         @constraints = []
         @conflicts = []
@@ -50,25 +46,32 @@ module Homebrew
         @min_named_args = nil
         @min_named_type = nil
         @hide_from_man_page = false
-        instance_eval(&block)
+        @formula_options = false
+
+        self.class.global_options.each do |short, long, desc|
+          switch short, long, description: desc
+        end
+
+        instance_eval(&block) if block_given?
+
         post_initialize
       end
 
       def post_initialize
+        # Disable default handling of `--version` switch.
+        @parser.base.long.delete("version")
+
+        # Disable default handling of `--help` switch.
         @parser.on_tail("-h", "--help", "Show this message.") do
-          puts generate_help_text
-          exit 0
+          # Handled in `brew.rb`.
         end
       end
 
       def switch(*names, description: nil, env: nil, required_for: nil, depends_on: nil)
         global_switch = names.first.is_a?(Symbol)
-        names, env, default_description = common_switch(*names) if global_switch
-        if description.nil? && global_switch
-          description = default_description
-        elsif description.nil?
-          description = option_to_description(*names)
-        end
+        return if global_switch
+
+        description = option_to_description(*names) if description.nil?
         process_option(*names, description)
         @parser.on(*names, *wrap_option_desc(description)) do
           enable_switch(*names, from: :args)
@@ -153,29 +156,81 @@ module Homebrew
         @parser.to_s
       end
 
-      def parse(argv = @argv, allow_no_named_args: false)
-        raise "Arguments were already parsed!" if @args_parsed
+      def parse_remaining(argv, ignore_invalid_options: false)
+        i = 0
+        remaining = []
 
-        begin
-          named_args = @parser.parse(argv)
-        rescue OptionParser::InvalidOption => e
-          $stderr.puts generate_help_text
-          raise e
+        argv, non_options = split_non_options(argv)
+
+        while i < argv.count
+          begin
+            begin
+              arg = argv[i]
+
+              remaining << arg unless @parser.parse([arg]).empty?
+            rescue OptionParser::MissingArgument
+              raise if i + 1 >= argv.count
+
+              args = argv[i..(i + 1)]
+              @parser.parse(args)
+              i += 1
+            end
+          rescue OptionParser::InvalidOption
+            if ignore_invalid_options
+              remaining << arg
+            else
+              $stderr.puts generate_help_text
+              raise
+            end
+          end
+
+          i += 1
         end
 
-        check_constraint_violations
-        check_named_args(named_args, allow_no_named_args: allow_no_named_args)
+        [remaining, non_options]
+      end
+
+      def parse(argv = ARGV.freeze, ignore_invalid_options: false)
+        raise "Arguments were already parsed!" if @args_parsed
+
+        # If we accept formula options, parse once allowing invalid options
+        # so we can get the remaining list containing formula names.
+        if @formula_options
+          remaining, non_options = parse_remaining(argv, ignore_invalid_options: true)
+
+          argv = [*remaining, "--", *non_options]
+
+          formulae(argv).each do |f|
+            next if f.options.empty?
+
+            f.options.each do |o|
+              name = o.flag
+              description = "`#{f.name}`: #{o.description}"
+              if name.end_with? "="
+                flag   name, description: description
+              else
+                switch name, description: description
+              end
+            end
+          end
+        end
+
+        remaining, non_options = parse_remaining(argv, ignore_invalid_options: ignore_invalid_options)
+
+        named_args = if ignore_invalid_options
+          []
+        else
+          remaining + non_options
+        end
+
+        check_constraint_violations unless ignore_invalid_options
+        check_named_args(named_args) unless ignore_invalid_options
         @args.freeze_named_args!(named_args)
+        @args.freeze_remaining_args!(non_options.empty? ? remaining : [*remaining, "--", non_options])
         @args.freeze_processed_options!(@processed_options)
-        Homebrew.args = @args
 
         @args_parsed = true
         @args
-      end
-
-      def global_option?(name, desc)
-        Homebrew::CLI::Parser.global_options.key?(name.to_sym) &&
-          Homebrew::CLI::Parser.global_options[name.to_sym].last == desc
       end
 
       def generate_help_text
@@ -188,21 +243,7 @@ module Homebrew
       end
 
       def formula_options
-        formulae.each do |f|
-          next if f.options.empty?
-
-          f.options.each do |o|
-            name = o.flag
-            description = "`#{f.name}`: #{o.description}"
-            if name.end_with? "="
-              flag   name, description: description
-            else
-              switch name, description: description
-            end
-          end
-        end
-      rescue FormulaUnavailableError
-        []
+        @formula_options = true
       end
 
       def max_named(count)
@@ -254,11 +295,6 @@ module Homebrew
         names.each do |name|
           @args.delete_field("#{option_to_name(name)}?")
         end
-      end
-
-      # These are common/global switches accessible throughout Homebrew
-      def common_switch(name)
-        Homebrew::CLI::Parser.global_options.fetch(name, name)
       end
 
       def option_passed?(name)
@@ -328,8 +364,10 @@ module Homebrew
         check_constraints
       end
 
-      def check_named_args(args, allow_no_named_args: false)
+      def check_named_args(args)
         min_exception = case @min_named_type
+        when :cask
+          Cask::CaskUnspecifiedError.new
         when :formula
           FormulaUnspecifiedError.new
         when :keg
@@ -337,8 +375,8 @@ module Homebrew
         else
           MinNamedArgumentsError.new(@min_named_args)
         end
-        raise min_exception if !allow_no_named_args && !@min_named_args.nil? && args.size < @min_named_args
-        raise MaxNamedArgumentsError, @max_named_args if !@max_named_args.nil? && args.size > @max_named_args
+        raise min_exception if @min_named_args && args.size < @min_named_args
+        raise MaxNamedArgumentsError, @max_named_args if @max_named_args && args.size > @max_named_args
       end
 
       def process_option(*args)
@@ -346,11 +384,21 @@ module Homebrew
         @processed_options << [option.short.first, option.long.first, option.arg, option.desc.first]
       end
 
-      def formulae
-        named_args = @argv.reject { |arg| arg.start_with?("-") }
-        spec = if @argv.include?("--HEAD")
+      def split_non_options(argv)
+        if sep = argv.index("--")
+          [argv.take(sep), argv.drop(sep + 1)]
+        else
+          [argv, []]
+        end
+      end
+
+      def formulae(argv)
+        argv, non_options = split_non_options(argv)
+
+        named_args = argv.reject { |arg| arg.start_with?("-") } + non_options
+        spec = if argv.include?("--HEAD")
           :head
-        elsif @argv.include?("--devel")
+        elsif argv.include?("--devel")
           :devel
         else
           :stable
@@ -360,7 +408,11 @@ module Homebrew
         named_args.map do |arg|
           next if arg.match?(HOMEBREW_CASK_TAP_CASK_REGEX)
 
-          Formulary.factory(arg, spec, flags: @args.flags_only)
+          begin
+            Formulary.factory(arg, spec, flags: argv.select { |a| a.start_with?("--") })
+          rescue FormulaUnavailableError
+            nil
+          end
         end.compact.uniq(&:name)
       end
     end

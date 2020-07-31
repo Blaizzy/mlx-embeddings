@@ -49,8 +49,7 @@ module Homebrew
       flag   "--bintray-mirror=",
              description: "Use the specified Bintray repository to automatically mirror stable URLs "\
                           "defined in the formulae (default: `mirror`)."
-      switch :verbose
-      switch :debug
+
       min_named 1
     end
   end
@@ -130,7 +129,7 @@ module Homebrew
     end
   end
 
-  def check_branch(path, ref)
+  def check_branch(path, ref, args:)
     branch = Utils.popen_read("git", "-C", path, "symbolic-ref", "--short", "HEAD").strip
 
     return if branch == ref || args.clean? || args.branch_okay?
@@ -155,8 +154,8 @@ module Homebrew
         else
           odebug "Mirroring #{mirror_url}"
           mirror_args = ["mirror", f.full_name]
-          mirror_args << "--debug" if Homebrew.args.debug?
-          mirror_args << "--verbose" if Homebrew.args.verbose?
+          mirror_args << "--debug" if args.debug?
+          mirror_args << "--verbose" if args.verbose?
           mirror_args << "--bintray-org=#{org}" if org
           mirror_args << "--bintray-repo=#{repo}" if repo
           mirror_args << "--no-publish" unless publish
@@ -233,7 +232,7 @@ module Homebrew
       _, user, repo, pr = *url_match
       odie "Not a GitHub pull request: #{arg}" unless pr
 
-      check_branch tap.path, "master"
+      check_branch tap.path, "master", args: args
 
       ohai "Fetching #{tap} pull request ##{pr}"
       Dir.mktmpdir pr do |dir|
@@ -259,8 +258,8 @@ module Homebrew
           next if args.no_upload?
 
           upload_args = ["pr-upload"]
-          upload_args << "--debug" if Homebrew.args.debug?
-          upload_args << "--verbose" if Homebrew.args.verbose?
+          upload_args << "--debug" if args.debug?
+          upload_args << "--verbose" if args.verbose?
           upload_args << "--no-publish" if args.no_publish?
           upload_args << "--dry-run" if args.dry_run?
           upload_args << "--warn-on-upload-failure" if args.warn_on_upload_failure?
