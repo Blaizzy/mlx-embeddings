@@ -21,7 +21,7 @@ module PyPI
     url
   end
 
-  # Get name, url, and version for a given pypi package
+  # Get name, url and sha256 for a given pypi package
   def get_pypi_info(package, version)
     metadata_url = "https://pypi.org/pypi/#{package}/#{version}/json"
     out, _, status = curl_output metadata_url, "--location"
@@ -35,6 +35,8 @@ module PyPI
     end
 
     sdist = json["urls"].find { |url| url["packagetype"] == "sdist" }
+    return json["info"]["name"] if sdist.nil?
+
     [json["info"]["name"], sdist["url"], sdist["digests"]["sha256"]]
   end
 
