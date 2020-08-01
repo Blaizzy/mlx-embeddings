@@ -11,7 +11,7 @@ require "cli/parser"
 module Homebrew
   module_function
 
-  def update_preinstall_header
+  def update_preinstall_header(args:)
     @update_preinstall_header ||= begin
       ohai "Auto-updated Homebrew!" if args.preinstall?
       true
@@ -80,7 +80,7 @@ module Homebrew
     odie "update-report should not be called directly!" if initial_revision.empty? || current_revision.empty?
 
     if initial_revision != current_revision
-      update_preinstall_header
+      update_preinstall_header args: args
       puts "Updated Homebrew from #{shorten_revision(initial_revision)} to #{shorten_revision(current_revision)}."
       updated = true
     end
@@ -107,7 +107,7 @@ module Homebrew
     end
 
     unless updated_taps.empty?
-      update_preinstall_header
+      update_preinstall_header args: args
       puts "Updated #{updated_taps.count} #{"tap".pluralize(updated_taps.count)} (#{updated_taps.to_sentence})."
       updated = true
     end
