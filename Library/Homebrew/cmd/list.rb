@@ -53,7 +53,7 @@ module Homebrew
   def list
     args = list_args.parse
 
-    return list_casks if args.cask?
+    return list_casks(args: args) if args.cask?
 
     return list_unbrewed if args.unbrewed?
 
@@ -66,7 +66,7 @@ module Homebrew
     end
 
     if args.pinned? || args.versions?
-      filtered_list
+      filtered_list args: args
     elsif args.no_named?
       if args.full_name?
         full_names = Formula.installed.map(&:full_name).sort(&tap_and_name_comparison)
@@ -134,7 +134,7 @@ module Homebrew
     safe_system "find", *arguments
   end
 
-  def filtered_list
+  def filtered_list(args:)
     names = if args.no_named?
       Formula.racks
     else
@@ -163,7 +163,7 @@ module Homebrew
     end
   end
 
-  def list_casks
+  def list_casks(args:)
     cask_list = Cask::Cmd::List.new args.named
     cask_list.one = ARGV.include? "-1"
     cask_list.versions = args.versions?
