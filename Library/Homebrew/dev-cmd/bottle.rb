@@ -176,10 +176,10 @@ module Homebrew
       end
     end
 
-    keg_contain_absolute_symlink_starting_with?(string, keg) || result
+    keg_contain_absolute_symlink_starting_with?(string, keg, args: args) || result
   end
 
-  def keg_contain_absolute_symlink_starting_with?(string, keg)
+  def keg_contain_absolute_symlink_starting_with?(string, keg, args:)
     absolute_symlinks_start_with_string = []
     keg.find do |pn|
       next unless pn.symlink? && (link = pn.readlink).absolute?
@@ -331,7 +331,7 @@ module Homebrew
           relocatable = false if keg_contain?(repository, keg, ignores, args: args)
           relocatable = false if keg_contain?(cellar, keg, ignores, formula_and_runtime_deps_names, args: args)
           if prefix != prefix_check
-            relocatable = false if keg_contain_absolute_symlink_starting_with?(prefix, keg)
+            relocatable = false if keg_contain_absolute_symlink_starting_with?(prefix, keg, args: args)
             relocatable = false if keg_contain?("#{prefix}/etc", keg, ignores, args: args)
             relocatable = false if keg_contain?("#{prefix}/var", keg, ignores, args: args)
             relocatable = false if keg_contain?("#{prefix}/share/vim", keg, ignores, args: args)
