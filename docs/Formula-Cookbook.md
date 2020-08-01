@@ -91,7 +91,7 @@ Try to summarise from the [`homepage`](https://rubydoc.brew.sh/Formula#homepage%
 
 **We don’t accept formulae without a [`license`](https://rubydoc.brew.sh/Formula#license-class_method)!**
 
-Find the license identifier from the [SPDX License List](https://spdx.org/licenses/). Note that we don't accept licenses that don't appear on the list.
+Find the license identifier from the [SPDX License List](https://spdx.org/licenses/). We only accept licenses from this list.
 
 If the formula gives the user the option to choose which license to use, you should list them all in an array:
 
