@@ -54,6 +54,7 @@ class Foo < Formula
   homepage ""
   url "https://example.com/foo-0.1.tar.gz"
   sha256 "85cc828a96735bdafcf29eb6291ca91bac846579bcef7308536e0c875d6c81d7"
+  license ""
 
   # depends_on "cmake" => :build
 
@@ -85,6 +86,20 @@ so you can override this with `brew create <URL> --set-name <name>`.
 An SSL/TLS (https) [`homepage`](https://rubydoc.brew.sh/Formula#homepage%3D-class_method) is preferred, if one is available.
 
 Try to summarise from the [`homepage`](https://rubydoc.brew.sh/Formula#homepage%3D-class_method) what the formula does in the [`desc`](https://rubydoc.brew.sh/Formula#desc%3D-class_method)ription. Note that the [`desc`](https://rubydoc.brew.sh/Formula#desc%3D-class_method)ription is automatically prepended with the formula name.
+
+### Fill in the `license`
+
+**We don’t accept formulae without a [`license`](https://rubydoc.brew.sh/Formula#license-class_method)!**
+
+Find the license identifier from the [SPDX License List](https://spdx.org/licenses/). Note that we don't accept licenses that don't appear on the list.
+
+If the formula gives the user the option to choose which license to use, you should list them all in an array:
+
+```ruby
+license ["MIT", "GPL-2.0"]
+```
+
+Note: only specify multiple licenses if the formula gives the user a choice between the licenses. Formulae that have different licenses for different parts of their software should specify only the more restrictive license.
 
 ### Check the build system
 
