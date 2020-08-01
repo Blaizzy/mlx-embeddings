@@ -1727,6 +1727,8 @@ class Formula
       "linked_keg"               => linked_version&.to_s,
       "pinned"                   => pinned?,
       "outdated"                 => outdated?,
+      "deprecated"               => deprecated?,
+      "disabled"                 => disabled?,
     }
 
     %w[stable devel].each do |spec_sym|
