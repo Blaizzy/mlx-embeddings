@@ -49,7 +49,7 @@ module Homebrew
         @formula_options = false
 
         self.class.global_options.each do |short, long, desc|
-          switch short, long, description: desc
+          switch short, long, description: desc, env: option_to_name(long)
         end
 
         instance_eval(&block) if block_given?
