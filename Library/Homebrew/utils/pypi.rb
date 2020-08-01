@@ -47,7 +47,7 @@ module PyPI
   def update_python_resources!(formula, version = nil, print_only: false, silent: false,
                                ignore_non_pypi_packages: false)
 
-    if !print_only && AUTOMATIC_RESOURCE_UPDATE_BLOCKLIST.include?(formula.name)
+    if !print_only && AUTOMATIC_RESOURCE_UPDATE_BLOCKLIST.include?(formula.full_name)
       odie "The resources for \"#{formula.name}\" need special attention. Please update them manually."
       return
     end
