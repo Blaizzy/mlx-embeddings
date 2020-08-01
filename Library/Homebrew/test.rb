@@ -25,7 +25,7 @@ begin
   formula = args.resolved_formulae.first
   formula.extend(Homebrew::Assertions)
   formula.extend(Homebrew::FreePort)
-  formula.extend(Debrew::Formula) if Homebrew.args.debug?
+  formula.extend(Debrew::Formula) if args.debug?
 
   ENV.extend(Stdenv)
   ENV.setup_build_environment(formula: formula)

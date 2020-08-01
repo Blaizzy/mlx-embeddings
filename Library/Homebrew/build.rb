@@ -135,7 +135,7 @@ class Build
     }
 
     with_env(new_env) do
-      formula.extend(Debrew::Formula) if Homebrew.args.debug?
+      formula.extend(Debrew::Formula) if args.debug?
 
       formula.update_head_version
 
