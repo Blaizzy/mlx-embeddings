@@ -18,14 +18,13 @@ module Homebrew
       switch "-n", "--dry-run",
              description: "List files which would be unlinked without actually unlinking or "\
                           "deleting any files."
-      switch :verbose
-      switch :debug
+
       min_named :keg
     end
   end
 
   def unlink
-    unlink_args.parse
+    args = unlink_args.parse
 
     mode = OpenStruct.new
     mode.dry_run = true if args.dry_run?

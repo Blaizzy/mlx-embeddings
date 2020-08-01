@@ -45,16 +45,15 @@ module Homebrew
              description: "Reverse the order of the sort to list the oldest entries first."
       switch "-t",
              description: "Sort by time modified, listing most recently modified first."
-      switch :verbose
-      switch :debug
+
       ["--unbrewed", "--multiple", "--pinned", "-l", "-r", "-t"].each { |flag| conflicts "--cask", flag }
     end
   end
 
   def list
-    list_args.parse
+    args = list_args.parse
 
-    return list_casks if args.cask?
+    return list_casks(args: args) if args.cask?
 
     return list_unbrewed if args.unbrewed?
 
@@ -67,7 +66,7 @@ module Homebrew
     end
 
     if args.pinned? || args.versions?
-      filtered_list
+      filtered_list args: args
     elsif args.no_named?
       if args.full_name?
         full_names = Formula.installed.map(&:full_name).sort(&tap_and_name_comparison)
@@ -76,7 +75,14 @@ module Homebrew
         puts Formatter.columns(full_names)
       else
         ENV["CLICOLOR"] = nil
-        safe_system "ls", *args.passthrough << HOMEBREW_CELLAR
+
+        ls_args = []
+        ls_args << "-1" if args.public_send(:'1?')
+        ls_args << "-l" if args.l?
+        ls_args << "-r" if args.r?
+        ls_args << "-t" if args.t?
+
+        safe_system "ls", *ls_args, HOMEBREW_CELLAR
       end
     elsif args.verbose? || !$stdout.tty?
       system_command! "find", args: args.kegs.map(&:to_s) + %w[-not -type d -print], print_stdout: true
@@ -128,7 +134,7 @@ module Homebrew
     safe_system "find", *arguments
   end
 
-  def filtered_list
+  def filtered_list(args:)
     names = if args.no_named?
       Formula.racks
     else
@@ -157,7 +163,7 @@ module Homebrew
     end
   end
 
-  def list_casks
+  def list_casks(args:)
     cask_list = Cask::Cmd::List.new args.named
     cask_list.one = ARGV.include? "-1"
     cask_list.versions = args.versions?

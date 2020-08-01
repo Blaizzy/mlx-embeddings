@@ -20,13 +20,11 @@ module Homebrew
       comma_array "--hide",
                   description: "Act as if none of the specified <hidden> are installed. <hidden> should be "\
                                "a comma-separated list of formulae."
-      switch :verbose
-      switch :debug
     end
   end
 
   def missing
-    missing_args.parse
+    args = missing_args.parse
 
     return unless HOMEBREW_CELLAR.exist?
 

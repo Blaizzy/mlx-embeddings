@@ -25,8 +25,7 @@ module Homebrew
              description: "Run `brew pr-publish` on matching pull requests."
       switch "--ignore-failures",
              description: "Include pull requests that have failing status checks."
-      switch :verbose
-      switch :debug
+
       max_named 0
     end
   end

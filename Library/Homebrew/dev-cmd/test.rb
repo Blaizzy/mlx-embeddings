@@ -27,15 +27,14 @@ module Homebrew
              description: "Retain the temporary files created for the test."
       switch "--retry",
              description: "Retry if a testing fails."
-      switch :verbose
-      switch :debug
+
       conflicts "--devel", "--HEAD"
       min_named :formula
     end
   end
 
   def test
-    test_args.parse
+    args = test_args.parse
 
     require "formula_assertions"
     require "formula_free_port"
@@ -110,7 +109,7 @@ module Homebrew
           end
         end
       rescue Exception => e # rubocop:disable Lint/RescueException
-        retry if retry_test?(f)
+        retry if retry_test?(f, args: args)
         ofail "#{f.full_name}: failed"
         puts e, e.backtrace
       ensure
@@ -119,7 +118,7 @@ module Homebrew
     end
   end
 
-  def retry_test?(f)
+  def retry_test?(f, args:)
     @test_failed ||= Set.new
     if args.retry? && @test_failed.add?(f)
       oh1 "Testing #{f.full_name} (again)"

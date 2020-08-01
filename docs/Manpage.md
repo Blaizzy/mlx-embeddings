@@ -312,8 +312,10 @@ no formula is provided.
   Also print diffstat from commit.
 * `--oneline`:
   Print only one line per commit.
-* `-1`, `--max-count`:
-  Print only one or a specified number of commits.
+* `-1`:
+  Print only one commit.
+* `-n`, `--max-count`:
+  Print only a specified number of commits.
 
 ### `migrate` [*`options`*] *`formula`*
 
@@ -525,6 +527,8 @@ Fetch the newest version of Homebrew and all formulae from GitHub using `git`(1)
   Use `git merge` to apply updates (rather than `git rebase`).
 * `--preinstall`:
   Run on auto-updates (e.g. before `brew install`). Skips some slower steps.
+* `-f`, `--force`:
+  Always do a slower, full update check (even if unnecessary).
 
 ### `update-reset` [*`repository`*]
 

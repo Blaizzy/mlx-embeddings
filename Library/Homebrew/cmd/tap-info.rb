@@ -20,12 +20,11 @@ module Homebrew
              description: "Print a JSON representation of <tap>. Currently the default and only accepted "\
                           "value for <version> is `v1`. See the docs for examples of using the JSON "\
                           "output: <https://docs.brew.sh/Querying-Brew>"
-      switch :debug
     end
   end
 
   def tap_info
-    tap_info_args.parse
+    args = tap_info_args.parse
 
     taps = if args.installed?
       Tap

@@ -23,14 +23,13 @@ module Homebrew
                           "`brew link --overwrite` without actually linking or deleting any files."
       switch "-f", "--force",
              description: "Allow keg-only formulae to be linked."
-      switch :verbose
-      switch :debug
+
       min_named :keg
     end
   end
 
   def link
-    link_args.parse
+    args = link_args.parse
 
     mode = OpenStruct.new
 

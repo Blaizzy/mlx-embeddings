@@ -336,6 +336,8 @@ fi
 
 for arg in "$@"
 do
+  [[ $arg = "--" ]] && break
+
   if [[ $arg = "--help" || $arg = "-h" || $arg = "--usage" || $arg = "-?" ]]
   then
     export HOMEBREW_HELP="1"

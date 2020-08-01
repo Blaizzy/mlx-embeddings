@@ -181,7 +181,9 @@ Layout/LineLength:
   Max: 118
   # ignore manpage comments and long single-line strings
   IgnoredPatterns: ['#: ', ' url "', ' mirror "', ' plist_options ',
-                    ' appcast "', ' executable: "', '#{version.',
+                    ' appcast "', ' executable: "', ' font "', ' homepage "', ' name "',
+                    ' pkg "', ' pkgutil: "', '#{language}', '#{version.',
+                    ' "/Library/Application Support/', '"/Library/Caches/', '"/Library/PreferencePanes/',
                     ' "~/Library/Application Support/', '"~/Library/Caches/', '"~/Application Support',
                     ' was verified as official when first introduced to the cask']
 

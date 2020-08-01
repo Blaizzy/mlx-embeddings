@@ -17,8 +17,7 @@ module Homebrew
       switch "-f", "--force",
              description: "Treat installed <formula> and provided <formula> as if they are from "\
                           "the same taps and migrate them anyway."
-      switch :verbose
-      switch :debug
+
       min_named :formula
     end
   end

@@ -56,8 +56,7 @@ module Homebrew
              description: "Generate the new formula within the given tap, specified as <user>`/`<repo>."
       switch "-f", "--force",
              description: "Ignore errors for disallowed formula names and named that shadow aliases."
-      switch :verbose
-      switch :debug
+
       conflicts "--autotools", "--cmake", "--crystal", "--go", "--meson", "--node", "--perl", "--python", "--rust"
       named 1
     end

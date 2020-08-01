@@ -40,14 +40,14 @@ module Homebrew
              description: "Show usage of <formula> by development builds."
       switch "--HEAD",
              description: "Show usage of <formula> by HEAD builds."
-      switch :debug
+
       conflicts "--devel", "--HEAD"
       min_named :formula
     end
   end
 
   def uses
-    uses_args.parse
+    args = uses_args.parse
 
     odeprecated "brew uses --devel" if args.devel?
     odeprecated "brew uses --HEAD" if args.HEAD?
@@ -70,11 +70,14 @@ module Homebrew
                              !args.include_optional? &&
                              !args.skip_recommended?
 
+    recursive = args.recursive?
+    includes, ignores = args_includes_ignores(args)
+
     uses = if use_runtime_dependents && !used_formulae_missing
       used_formulae.map(&:runtime_installed_formula_dependents)
                    .reduce(&:&)
                    .select(&:any_version_installed?) +
-        select_used_dependents(dependents(Cask::Caskroom.casks), used_formulae)
+        select_used_dependents(dependents(Cask::Caskroom.casks), used_formulae, recursive, includes, ignores)
     else
       deps = if args.installed?
         dependents(Formula.installed + Cask::Caskroom.casks)
@@ -82,7 +85,7 @@ module Homebrew
         dependents(Formula.to_a + Cask::Cask.to_a)
       end
 
-      select_used_dependents(deps, used_formulae)
+      select_used_dependents(deps, used_formulae, recursive, includes, ignores)
     end
 
     return if uses.empty?
@@ -91,10 +94,7 @@ module Homebrew
     odie "Missing formulae should not have dependents!" if used_formulae_missing
   end
 
-  def select_used_dependents(dependents, used_formulae)
-    recursive = args.recursive?
-    includes, ignores = argv_includes_ignores(ARGV)
-
+  def select_used_dependents(dependents, used_formulae, recursive, includes, ignores)
     dependents.select do |d|
       deps = if recursive
         recursive_includes(Dependency, d, includes, ignores)

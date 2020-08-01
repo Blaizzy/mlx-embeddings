@@ -61,8 +61,7 @@ module Homebrew
       comma_array "--except-cops",
                   description: "Specify a comma-separated <cops> list to skip checking for violations of the listed "\
                                "RuboCop cops."
-      switch :verbose
-      switch :debug
+
       conflicts "--only", "--except"
       conflicts "--only-cops", "--except-cops", "--strict"
       conflicts "--only-cops", "--except-cops", "--only"
@@ -269,6 +268,12 @@ module Homebrew
           valid_alias_names.map! { |a| "#{formula.tap}/#{a}" }
         end
 
+        # Fix naming based on what people expect.
+        if alias_name_major_minor == "adoptopenjdk@1.8"
+          valid_alias_names << "adoptopenjdk@8"
+          valid_alias_names.delete "adoptopenjdk@1"
+        end
+
         valid_versioned_aliases = versioned_aliases & valid_alias_names
         invalid_versioned_aliases = versioned_aliases - valid_alias_names
 
@@ -284,7 +289,7 @@ module Homebrew
           end
         end
 
-        unless invalid_versioned_aliases.empty?
+        if invalid_versioned_aliases.present?
           problem <<~EOS
             Formula has invalid versioned aliases:
               #{invalid_versioned_aliases.join("\n  ")}
@@ -385,7 +390,7 @@ module Homebrew
           end
 
           if self.class.aliases.include?(dep.name) &&
-             (dep_f.core_formula? || !dep_f.versioned_formula?)
+             dep_f.core_formula? && !dep_f.versioned_formula?
             problem "Dependency '#{dep.name}' from homebrew/core is an alias; " \
             "use the canonical name '#{dep.to_formula.full_name}'."
           end
@@ -467,6 +472,7 @@ module Homebrew
       end
     end
 
+    # openssl@1.1 only needed for Linux
     VERSIONED_KEG_ONLY_ALLOWLIST = %w[
       autoconf@2.13
       bash-completion@2
@@ -474,6 +480,7 @@ module Homebrew
       libsigc++@2
       lua@5.1
       numpy@1.16
+      openssl@1.1
       python@3.8
     ].freeze
 
@@ -489,7 +496,9 @@ module Homebrew
         end
       end
 
-      return if VERSIONED_KEG_ONLY_ALLOWLIST.include?(formula.name) || formula.name.start_with?("gcc@")
+      return if VERSIONED_KEG_ONLY_ALLOWLIST.include?(formula.name)
+      return if formula.name.start_with?("adoptopenjdk@")
+      return if formula.name.start_with?("gcc@")
 
       problem "Versioned formulae in homebrew/core should use `keg_only :versioned_formula`"
     end

@@ -40,28 +40,28 @@ module Homebrew
   module Help
     module_function
 
-    def help(cmd = nil, flags = {})
-      # Resolve command aliases and find file containing the implementation.
-      path = Commands.path(cmd) if cmd
-
-      # Display command-specific (or generic) help in response to `UsageError`.
-      if (error_message = flags[:usage_error])
-        $stderr.puts path ? command_help(cmd, path) : HOMEBREW_HELP
-        $stderr.puts
-        onoe error_message
-        exit 1
-      end
-
-      # Handle `brew` (no arguments).
-      if flags[:empty_argv]
-        $stderr.puts HOMEBREW_HELP
-        exit 1
-      end
-
-      # Handle `brew (-h|--help|--usage|-?|help)` (no other arguments).
+    def help(cmd = nil, empty_argv: false, usage_error: nil)
       if cmd.nil?
+        # Handle `brew` (no arguments).
+        if empty_argv
+          $stderr.puts HOMEBREW_HELP
+          exit 1
+        end
+
+        # Handle `brew (-h|--help|--usage|-?|help)` (no other arguments).
         puts HOMEBREW_HELP
         exit 0
+      end
+
+      # Resolve command aliases and find file containing the implementation.
+      path = Commands.path(cmd)
+
+      # Display command-specific (or generic) help in response to `UsageError`.
+      if usage_error
+        $stderr.puts path ? command_help(cmd, path) : HOMEBREW_HELP
+        $stderr.puts
+        onoe usage_error
+        exit 1
       end
 
       # Resume execution in `brew.rb` for unknown commands.
@@ -95,6 +95,8 @@ module Homebrew
       cmd_parser = CLI::Parser.from_cmd_path(path)
       return unless cmd_parser
 
+      # Try parsing arguments here in order to show formula options in help output.
+      cmd_parser.parse(Homebrew.args.remaining, ignore_invalid_options: true)
       cmd_parser.generate_help_text
     end
 

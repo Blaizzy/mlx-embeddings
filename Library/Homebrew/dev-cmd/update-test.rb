@@ -21,14 +21,13 @@ module Homebrew
              description: "Use the specified <commit> as the start commit."
       flag   "--before=",
              description: "Use the commit at the specified <date> as the start commit."
-      switch :verbose
-      switch :debug
+
       max_named 0
     end
   end
 
   def update_test
-    update_test_args.parse
+    args = update_test_args.parse
 
     ENV["HOMEBREW_UPDATE_TEST"] = "1"
 

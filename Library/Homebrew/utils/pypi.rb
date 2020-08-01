@@ -7,7 +7,21 @@ module PyPI
 
   @pipgrip_installed = nil
 
-  # Get name, url, and version for a given pypi package
+  def url_to_pypi_package_name(url)
+    return unless url.start_with? PYTHONHOSTED_URL_PREFIX
+
+    File.basename(url).match(/^(.+)-[a-z\d.]+$/)[1]
+  end
+
+  def update_pypi_url(url, version)
+    package = url_to_pypi_package_name url
+    return if package.nil?
+
+    _, url = get_pypi_info(package, version)
+    url
+  end
+
+  # Get name, url and sha256 for a given pypi package
   def get_pypi_info(package, version)
     metadata_url = "https://pypi.org/pypi/#{package}/#{version}/json"
     out, _, status = curl_output metadata_url, "--location"
@@ -21,18 +35,17 @@ module PyPI
     end
 
     sdist = json["urls"].find { |url| url["packagetype"] == "sdist" }
+    return json["info"]["name"] if sdist.nil?
+
     [json["info"]["name"], sdist["url"], sdist["digests"]["sha256"]]
   end
 
   def update_python_resources!(formula, version = nil, print_only: false, silent: false,
                                ignore_non_pypi_packages: false)
 
-    @pipgrip_installed ||= Formula["pipgrip"].any_version_installed?
-    odie '"pipgrip" must be installed (`brew install pipgrip`)' unless @pipgrip_installed
-
     # PyPI package name isn't always the same as the formula name. Try to infer from the URL.
     pypi_name = if formula.stable.url.start_with?(PYTHONHOSTED_URL_PREFIX)
-      File.basename(formula.stable.url).match(/^(.+)-[a-z\d.]+$/)[1]
+      url_to_pypi_package_name formula.stable.url
     else
       formula.name
     end
@@ -52,12 +65,17 @@ module PyPI
       odie "\"#{formula.name}\" contains non-PyPI resources. Please update the resources manually."
     end
 
+    @pipgrip_installed ||= Formula["pipgrip"].any_version_installed?
+    odie '"pipgrip" must be installed (`brew install pipgrip`)' unless @pipgrip_installed
+
     ohai "Retrieving PyPI dependencies for \"#{pypi_name}==#{version}\"" if !print_only && !silent
-    pipgrip_output = Utils.popen_read Formula["pipgrip"].bin/"pipgrip", "--json", "#{pypi_name}==#{version}"
+    pipgrip_output = Utils.popen_read Formula["pipgrip"].bin/"pipgrip", "--json", "--no-cache-dir",
+                                      "#{pypi_name}==#{version}"
     unless $CHILD_STATUS.success?
       odie <<~EOS
         Unable to determine dependencies for \"#{pypi_name}\" because of a failure when running
-        `pipgrip --json #{pypi_name}==#{version}`. Please update the resources for \"#{formula.name}\" manually.
+        `pipgrip --json --no-cache-dir #{pypi_name}==#{version}`.
+        Please update the resources for \"#{formula.name}\" manually.
       EOS
     end
 

@@ -17,9 +17,9 @@ module Homebrew
         List installed formulae that have an updated version available. By default, version
         information is displayed in interactive shells, and suppressed otherwise.
       EOS
-      switch :quiet,
+      switch "-q", "--quiet",
              description: "List only the names of outdated kegs (takes precedence over `--verbose`)."
-      switch :verbose,
+      switch "-v", "--verbose",
              description: "Include detailed version information."
       flag   "--json",
              description: "Print output in JSON format. There are two versions: v1 and v2. " \
@@ -35,16 +35,16 @@ module Homebrew
              description: "Treat all arguments as formulae."
       switch "--cask",
              description: "Treat all arguments as casks."
-      switch :debug
+
       conflicts "--quiet", "--verbose", "--json"
       conflicts "--formula", "--cask"
     end
   end
 
   def outdated
-    outdated_args.parse
+    args = outdated_args.parse
 
-    case json_version
+    case json_version(args.json)
     when :v1, :default
       # TODO: enable for next major/minor release
       # odeprecated "brew outdated --json#{json_version == :v1 ? "=v1" : ""}", "brew outdated --json=v2"
@@ -55,7 +55,7 @@ module Homebrew
         outdated_casks
       end
 
-      puts JSON.generate(json_info(outdated))
+      puts JSON.generate(json_info(outdated, args: args))
 
     when :v2
       formulae, casks = if args.formula?
@@ -67,8 +67,8 @@ module Homebrew
       end
 
       json = {
-        "formulae" => json_info(formulae),
-        "casks"    => json_info(casks),
+        "formulae" => json_info(formulae, args: args),
+        "casks"    => json_info(casks, args: args),
       }
       puts JSON.generate(json)
 
@@ -83,13 +83,13 @@ module Homebrew
         outdated_formulae_casks.flatten
       end
 
-      print_outdated(outdated)
+      print_outdated(outdated, args: args)
     end
 
     Homebrew.failed = args.named.present? && outdated.present?
   end
 
-  def print_outdated(formulae_or_casks)
+  def print_outdated(formulae_or_casks, args:)
     formulae_or_casks.each do |formula_or_cask|
       if formula_or_cask.is_a?(Formula)
         f = formula_or_cask
@@ -127,7 +127,7 @@ module Homebrew
     end
   end
 
-  def json_info(formulae_or_casks)
+  def json_info(formulae_or_casks, args:)
     formulae_or_casks.map do |formula_or_cask|
       if formula_or_cask.is_a?(Formula)
         f = formula_or_cask
@@ -156,7 +156,7 @@ module Homebrew
     ($stdout.tty? || args.verbose?) && !args.quiet?
   end
 
-  def json_version
+  def json_version(version)
     version_hash = {
       nil  => nil,
       true => :default,
@@ -164,9 +164,9 @@ module Homebrew
       "v2" => :v2,
     }
 
-    raise UsageError, "invalid JSON version: #{args.json}" unless version_hash.include? args.json
+    raise UsageError, "invalid JSON version: #{version}" unless version_hash.include?(version)
 
-    version_hash[args.json]
+    version_hash[version]
   end
 
   def outdated_formulae
