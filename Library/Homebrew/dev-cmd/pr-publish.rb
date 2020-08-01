@@ -26,8 +26,8 @@ module Homebrew
   def pr_publish
     args = pr_publish_args.parse
 
-    tap = Tap.fetch(Homebrew.args.tap || CoreTap.instance.name)
-    workflow = Homebrew.args.workflow || "publish-commit-bottles.yml"
+    tap = Tap.fetch(args.tap || CoreTap.instance.name)
+    workflow = args.workflow || "publish-commit-bottles.yml"
     ref = "master"
 
     args.named.uniq.each do |arg|
