@@ -246,7 +246,8 @@ module Homebrew
       ]
     end
 
-    old_contents = File.read(formula.path) unless args.dry_run?
+    read_only_run = args.dry_run? && !args.write?
+    old_contents = File.read(formula.path) unless read_only_run
 
     if new_mirrors
       replacement_pairs << [
@@ -310,13 +311,13 @@ module Homebrew
     end
 
     if new_formula_version < old_formula_version
-      formula.path.atomic_write(old_contents) unless args.dry_run?
+      formula.path.atomic_write(old_contents) unless read_only_run
       odie <<~EOS
         You need to bump this formula manually since changing the
         version from #{old_formula_version} to #{new_formula_version} would be a downgrade.
       EOS
     elsif new_formula_version == old_formula_version
-      formula.path.atomic_write(old_contents) unless args.dry_run?
+      formula.path.atomic_write(old_contents) unless read_only_run
       odie <<~EOS
         You need to bump this formula manually since the new version
         and old version are both #{new_formula_version}.
@@ -330,7 +331,7 @@ module Homebrew
     end
 
     ohai "brew update-python-resources #{formula.name}"
-    if !args.dry_run? || (args.dry_run? && args.write?)
+    unless read_only_run
       PyPI.update_python_resources! formula, new_formula_version, silent: true, ignore_non_pypi_packages: true
     end
 
@@ -450,7 +451,8 @@ module Homebrew
   end
 
   def inreplace_pairs(path, replacement_pairs, args:)
-    if args.dry_run?
+    read_only_run = args.dry_run? && !args.write?
+    if read_only_run
       str = path.open("r") { |f| Formulary.ensure_utf8_encoding(f).read }
       contents = StringInreplaceExtension.new(str)
       replacement_pairs.each do |old, new|
