@@ -103,7 +103,7 @@ module Homebrew
     dependents = dependents(args.formulae_and_casks)
 
     all_deps = deps_for_dependents(dependents, recursive, args: args, &(args.union? ? :| : :&))
-    condense_requirements(all_deps)
+    condense_requirements(all_deps, args: args)
     all_deps.map! { |d| dep_display_name(d, args: args) }
     all_deps.uniq!
     all_deps.sort! unless args.n?
@@ -124,7 +124,7 @@ module Homebrew
     dependents(formulae_or_casks).sort_by(&:name)
   end
 
-  def condense_requirements(deps)
+  def condense_requirements(deps, args:)
     deps.select! { |dep| dep.is_a?(Dependency) } unless args.include_requirements?
     deps.select! { |dep| dep.is_a?(Requirement) || dep.installed? } if args.installed?
   end
@@ -177,7 +177,7 @@ module Homebrew
   def puts_deps(dependents, recursive = false, args:)
     dependents.each do |dependent|
       deps = deps_for_dependent(dependent, recursive, args: args)
-      condense_requirements(deps)
+      condense_requirements(deps, args: args)
       deps.sort_by!(&:name)
       deps.map! { |d| dep_display_name(d, args: args) }
       puts "#{dependent.full_name}: #{deps.join(" ")}"
