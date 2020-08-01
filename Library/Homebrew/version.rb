@@ -469,6 +469,26 @@ class Version
   end
   alias eql? ==
 
+  def major
+    tokens[0]
+  end
+
+  def minor
+    tokens[1]
+  end
+
+  def patch
+    tokens[2]
+  end
+
+  def major_minor
+    Version.new([major, minor].reject(&:nil?).join("."))
+  end
+
+  def major_minor_patch
+    Version.new([major, minor, patch].reject(&:nil?).join("."))
+  end
+
   def empty?
     version.empty?
   end
