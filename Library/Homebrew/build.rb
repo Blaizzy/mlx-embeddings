@@ -135,7 +135,7 @@ class Build
     }
 
     with_env(new_env) do
-      formula.extend(Debrew::Formula) if Homebrew.args.debug?
+      formula.extend(Debrew::Formula) if args.debug?
 
       formula.update_head_version
 
@@ -208,7 +208,10 @@ class Build
 end
 
 begin
+  Homebrew.args = Homebrew::CLI::Parser.new.parse(ARGV.dup.freeze, ignore_invalid_options: true)
+
   args = Homebrew.install_args.parse
+
   error_pipe = UNIXSocket.open(ENV["HOMEBREW_ERROR_PIPE"], &:recv_io)
   error_pipe.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)
 
