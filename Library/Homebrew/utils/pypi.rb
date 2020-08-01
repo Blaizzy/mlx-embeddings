@@ -6,6 +6,8 @@ module PyPI
   PYTHONHOSTED_URL_PREFIX = "https://files.pythonhosted.org/packages/"
 
   AUTOMATIC_RESOURCE_UPDATE_BLOCKLIST = %w[
+    ansible
+    ansible@2.8
     diffoscope
     dxpy
     molecule
