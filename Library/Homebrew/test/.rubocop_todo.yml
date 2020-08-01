@@ -75,6 +75,7 @@ RSpec/MultipleDescribes:
     - 'dev-cmd/formula_spec.rb'
     - 'dev-cmd/irb_spec.rb'
     - 'dev-cmd/linkage_spec.rb'
+    - 'dev-cmd/livecheck_spec.rb'
     - 'dev-cmd/pull_spec.rb'
     - 'dev-cmd/ruby_spec.rb'
     - 'dev-cmd/sh_spec.rb'

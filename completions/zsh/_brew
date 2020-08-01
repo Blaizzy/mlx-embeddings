@@ -504,6 +504,23 @@ _brew_list() {
     '*:: :__brew_installed_formulae'
 }
 
+# brew livecheck [--verbose] [--quiet] [--debug] [--full-name] [--tap user/repo]
+#                [--installed] [--json] [--all] [--newer-only] formulae
+_brew_livecheck() {
+  _arguments \
+    '(--verbose,-v)'{--verbose,-v}'[Make some output more verbose]' \
+    '(--quiet,-q)'{--quiet,-q}'[Suppress any warnings]' \
+    '(--debug,-d)'{--debug,-d}'[Display any debugging information]' \
+    '--full-name[Print formulae with fully-qualified name]' \
+    '--tap[Check the formulae within the given tap, specified as user/repo]' \
+    '--installed[Check formulae that are currently installed]' \
+    '--json[Output information in JSON format]' \
+    '--all[Check all available formulae]' \
+    '--newer-only[Show the latest version only if it is newer than the formula]' \
+    '(--help,-h)'{--help,-h}'[Show the help message]' \
+    '*:: :__brew_formulae'
+}
+
 # brew log [git-log-options] formula ...:
 _brew_log() {
   __brew_formulae

@@ -352,6 +352,17 @@ _brew_list() {
   fi
 }
 
+_brew_livecheck() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "--verbose --quiet --debug --full-name --tap --installed --json --all --newer-only --help"
+      return
+      ;;
+  esac
+  __brew_complete_formulae
+}
+
 _brew_log() {
   # if git-completion is loaded, then we complete git-log options
   declare -F _git_log >/dev/null || return
@@ -860,6 +871,7 @@ _brew() {
     irb)                        _brew_irb ;;
     link|ln)                    _brew_link ;;
     list|ls)                    _brew_list ;;
+    livecheck)                  _brew_livecheck ;;
     log)                        _brew_log ;;
     man)                        _brew_man ;;
     missing)                    __brew_complete_formulae ;;

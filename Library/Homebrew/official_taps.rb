@@ -23,6 +23,7 @@ DEPRECATED_OFFICIAL_TAPS = %w[
   games
   gui
   head-only
+  livecheck
   nginx
   php
   python
