@@ -1,20 +1,66 @@
 # frozen_string_literal: true
 
-require_relative "options"
 require "search"
 
 module Cask
   class Cmd
     class AbstractCommand
-      include Options
       include Homebrew::Search
 
-      option "--[no-]binaries",   :binaries,      true
-      option "--debug",           :debug,         false
-      option "--verbose",         :verbose,       false
-      option "--outdated",        :outdated_only, false
-      option "--require-sha",     :require_sha,   false
-      option "--[no-]quarantine", :quarantine,    true
+      def self.min_named
+        nil
+      end
+
+      def self.max_named
+        nil
+      end
+
+      def self.banner_args
+        if min_named == :cask && max_named != 1
+          " <cask>"
+        elsif max_named&.zero?
+          ""
+        else
+          " [<cask>]"
+        end
+      end
+
+      def self.banner_headline
+        "`#{command_name}` [<options>]#{banner_args}"
+      end
+
+      def self.parser(&block)
+        banner = <<~EOS
+          `cask` #{banner_headline}
+
+          #{description}
+        EOS
+
+        min_n = min_named
+        max_n = max_named
+
+        Cmd.parser do
+          usage_banner banner
+
+          instance_eval(&block) if block_given?
+
+          switch "--[no-]binaries",
+                 description: "Disable/enable linking of helper executables to `#{Config.global.binarydir}`. " \
+                              "Default: enabled",
+                 env:         :cask_opts_binaries
+
+          switch "--require-sha",
+                 description: "Require all casks to have a checksum.",
+                 env:         :cask_opts_require_sha
+
+          switch "--[no-]quarantine",
+                 description: "Disable/enable quarantining of downloads. Default: enabled",
+                 env:         :cask_opts_quarantine
+
+          min_named min_n unless min_n.nil?
+          max_named max_n unless max_n.nil?
+        end
+      end
 
       def self.command_name
         @command_name ||= name.sub(/^.*:/, "").gsub(/(.)([A-Z])/, '\1_\2').downcase
@@ -29,19 +75,21 @@ module Cask
       end
 
       def self.help
-        nil
+        parser.generate_help_text
+      end
+
+      def self.short_description
+        description.split(".").first
       end
 
       def self.run(*args)
         new(*args).run
       end
 
-      attr_accessor :args
-
-      private :args=
+      attr_reader :args
 
       def initialize(*args)
-        @args = process_arguments(*args)
+        @args = self.class.parser.parse(args)
       end
 
       private
@@ -49,7 +97,7 @@ module Cask
       def casks(alternative: -> { [] })
         return @casks if defined?(@casks)
 
-        casks = args.empty? ? alternative.call : args
+        casks = args.named.empty? ? alternative.call : args.named
         @casks = casks.map { |cask| CaskLoader.load(cask) }
       rescue CaskUnavailableError => e
         reason = [e.reason, *suggestion_message(e.token)].join(" ")

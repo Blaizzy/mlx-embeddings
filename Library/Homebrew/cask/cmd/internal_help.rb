@@ -3,11 +3,12 @@
 module Cask
   class Cmd
     class InternalHelp < AbstractInternalCommand
-      def initialize(*)
-        super
-        return if args.empty?
+      def self.max_named
+        0
+      end
 
-        raise ArgumentError, "#{self.class.command_name} does not take arguments."
+      def self.description
+        "Print help for unstable internal-use commands."
       end
 
       def run
@@ -19,10 +20,6 @@ module Cask
           puts "    #{klass.command_name.ljust(max_command_len)}  #{klass.help}"
         end
         puts "\n"
-      end
-
-      def self.help
-        "print help strings for unstable internal-use commands"
       end
     end
   end

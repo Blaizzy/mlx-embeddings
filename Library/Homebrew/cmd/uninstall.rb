@@ -128,7 +128,7 @@ module Homebrew
 
     Cask::Cmd::Uninstall.uninstall_casks(
       *casks,
-      binaries: args.binaries?,
+      binaries: EnvConfig.cask_opts_binaries?,
       verbose:  args.verbose?,
       force:    args.force?,
     )

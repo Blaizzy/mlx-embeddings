@@ -13,24 +13,45 @@ module Cask
       #
       # On failure, a blank line is returned on the standard output.
       #
-      # Examples
-      #
-      #     brew cask _stanza appcast   --table
-      #     brew cask _stanza app       --table           alfred google-chrome adium vagrant
-      #     brew cask _stanza url       --table           alfred google-chrome adium vagrant
-      #     brew cask _stanza version   --table           alfred google-chrome adium vagrant
-      #     brew cask _stanza artifacts --table           alfred google-chrome adium vagrant
-      #     brew cask _stanza artifacts --table --yaml    alfred google-chrome adium vagrant
-      #
 
       ARTIFACTS =
         (DSL::ORDINARY_ARTIFACT_CLASSES.map(&:dsl_key) +
          DSL::ARTIFACT_BLOCK_CLASSES.map(&:dsl_key)).freeze
 
-      option "--table",   :table,   false
-      option "--quiet",   :quiet,   false
-      option "--yaml",    :yaml,    false
-      option "--inspect", :inspect, false
+      def self.min_named
+        1
+      end
+
+      def self.banner_args
+        " <stanza_name> [<cask>]"
+      end
+
+      def self.description
+        <<~EOS
+          Extract and render a specific stanza for the given <cask>.
+
+          Examples:
+            `brew cask _stanza appcast   --table`
+            `brew cask _stanza app       --table           alfred google-chrome vagrant`
+            `brew cask _stanza url       --table           alfred google-chrome vagrant`
+            `brew cask _stanza version   --table           alfred google-chrome vagrant`
+            `brew cask _stanza artifacts --table           alfred google-chrome vagrant`
+            `brew cask _stanza artifacts --table --yaml    alfred google-chrome vagrant`
+        EOS
+      end
+
+      def self.parser
+        super do
+          switch "--table",
+                 description: "Print stanza in table format."
+          switch "--quiet",
+                 description: ""
+          switch "--yaml",
+                 description: ""
+          switch "--inspect",
+                 description: ""
+        end
+      end
 
       attr_accessor :format, :stanza
       private :format, :format=
@@ -38,19 +59,19 @@ module Cask
 
       def initialize(*)
         super
-        raise ArgumentError, "No stanza given." if args.empty?
 
-        @stanza = args.shift.to_sym
+        named = args.named.dup
+        @stanza = named.shift.to_sym
+        args.freeze_named_args!(named)
 
-        @format = :to_yaml if yaml?
+        @format = :to_yaml if args.yaml?
 
         return if DSL::DSL_METHODS.include?(stanza)
 
-        raise ArgumentError,
-              <<~EOS
-                Unknown/unsupported stanza: '#{stanza}'
-                Check Cask reference for supported stanzas.
-              EOS
+        raise UsageError, <<~EOS
+          Unknown/unsupported stanza: '#{stanza}'
+          Check cask reference for supported stanzas.
+        EOS
       end
 
       def run
@@ -60,12 +81,12 @@ module Cask
         end
 
         casks(alternative: -> { Cask.to_a }).each do |cask|
-          print "#{cask}\t" if table?
+          print "#{cask}\t" if args.table?
 
           begin
             value = cask.send(stanza)
           rescue
-            opoo "failure calling '#{stanza}' on Cask '#{cask}'" unless quiet?
+            opoo "failure calling '#{stanza}' on Cask '#{cask}'" unless args.quiet?
             puts ""
             next
           end
@@ -88,10 +109,6 @@ module Cask
             puts value.to_s
           end
         end
-      end
-
-      def self.help
-        "extract and render a specific stanza for the given Casks"
       end
     end
   end

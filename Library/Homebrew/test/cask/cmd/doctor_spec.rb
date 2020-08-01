@@ -14,6 +14,6 @@ describe Cask::Cmd::Doctor, :cask do
   it "raises an exception when arguments are given" do
     expect {
       described_class.run("argument")
-    }.to raise_error(ArgumentError)
+    }.to raise_error(UsageError, /does not take named arguments/)
   end
 end

@@ -15,6 +15,24 @@ describe Homebrew::CLI::Parser do
       allow(Homebrew::EnvConfig).to receive(:pry?).and_return(true)
     end
 
+    context "when using negative options" do
+      subject(:parser) {
+        described_class.new do
+          switch "--[no-]positive"
+        end
+      }
+
+      it "sets the positive name to false if the negative flag is passed" do
+        args = parser.parse(["--no-positive"])
+        expect(args).not_to be_positive
+      end
+
+      it "sets the positive name to true if the positive flag is passed" do
+        args = parser.parse(["--positive"])
+        expect(args).to be_positive
+      end
+    end
+
     context "when `ignore_invalid_options` is true" do
       it "passes through invalid options" do
         args = parser.parse(["-v", "named-arg", "--not-a-valid-option"], ignore_invalid_options: true)

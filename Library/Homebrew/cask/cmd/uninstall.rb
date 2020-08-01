@@ -3,24 +3,37 @@
 module Cask
   class Cmd
     class Uninstall < AbstractCommand
-      option "--force", :force, false
+      def self.min_named
+        :cask
+      end
 
-      def initialize(*)
-        super
-        raise CaskUnspecifiedError if args.empty?
+      def self.description
+        "Uninstalls the given <cask>."
+      end
+
+      def self.parser
+        super do
+          switch "--force",
+                 description: "Uninstall even if the <cask> is not installed, overwrite " \
+                              "existing files and ignore errors when removing files."
+        end
       end
 
       def run
         self.class.uninstall_casks(
           *casks,
-          binaries: binaries?,
-          verbose:  verbose?,
-          force:    force?,
+          binaries: args.binaries?,
+          verbose:  args.verbose?,
+          force:    args.force?,
         )
       end
 
-      def self.uninstall_casks(*casks, verbose: false, force: false, binaries: nil)
-        binaries = Homebrew::EnvConfig.cask_opts_binaries? if binaries.nil?
+      def self.uninstall_casks(*casks, binaries: nil, force: false, verbose: false)
+        options = {
+          binaries: binaries,
+          force:    force,
+          verbose:  verbose,
+        }.compact
 
         casks.each do |cask|
           odebug "Uninstalling Cask #{cask}"
@@ -32,7 +45,7 @@ module Cask
             cask = CaskLoader.load(cask.installed_caskfile) if cask.installed_caskfile.exist?
           end
 
-          Installer.new(cask, binaries: binaries, verbose: verbose, force: force).uninstall
+          Installer.new(cask, **options).uninstall
 
           next if (versions = cask.versions).empty?
 
@@ -41,10 +54,6 @@ module Cask
             Remove #{(versions.count == 1) ? "it" : "them all"} with `brew cask uninstall --force #{cask}`.
           EOS
         end
-      end
-
-      def self.help
-        "uninstalls the given Cask"
       end
     end
   end

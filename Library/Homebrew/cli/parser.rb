@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
+require "env_config"
 require "cli/args"
 require "optparse"
 require "set"
 require "formula"
+require "utils/tty"
 
 COMMAND_DESC_WIDTH = 80
 OPTION_DESC_WIDTH = 43
@@ -27,14 +29,23 @@ module Homebrew
 
       def self.global_options
         [
+          ["-d", "--debug", "Display any debugging information."],
           ["-q", "--quiet", "Suppress any warnings."],
           ["-v", "--verbose", "Make some output more verbose."],
-          ["-d", "--debug", "Display any debugging information."],
+          ["-h", "--help", "Show this message."],
         ]
       end
 
       def initialize(&block)
         @parser = OptionParser.new
+
+        @parser.summary_indent = " " * 2
+
+        # Disable default handling of `--version` switch.
+        @parser.base.long.delete("version")
+
+        # Disable default handling of `--help` switch.
+        @parser.base.long.delete("help")
 
         @args = Homebrew::CLI::Args.new
 
@@ -49,54 +60,44 @@ module Homebrew
         @formula_options = false
 
         self.class.global_options.each do |short, long, desc|
-          switch short, long, description: desc, env: option_to_name(long)
+          switch short, long, description: desc, env: option_to_name(long), method: :on_tail
         end
 
         instance_eval(&block) if block_given?
-
-        post_initialize
       end
 
-      def post_initialize
-        # Disable default handling of `--version` switch.
-        @parser.base.long.delete("version")
-
-        # Disable default handling of `--help` switch.
-        @parser.on_tail("-h", "--help", "Show this message.") do
-          # Handled in `brew.rb`.
-        end
-      end
-
-      def switch(*names, description: nil, env: nil, required_for: nil, depends_on: nil)
+      def switch(*names, description: nil, env: nil, required_for: nil, depends_on: nil, method: :on)
         global_switch = names.first.is_a?(Symbol)
         return if global_switch
 
         description = option_to_description(*names) if description.nil?
         process_option(*names, description)
-        @parser.on(*names, *wrap_option_desc(description)) do
-          enable_switch(*names, from: :args)
+        @parser.public_send(method, *names, *wrap_option_desc(description)) do |value|
+          set_switch(*names, value: value, from: :args)
         end
 
         names.each do |name|
           set_constraints(name, required_for: required_for, depends_on: depends_on)
         end
 
-        enable_switch(*names, from: :env) if env?(env)
+        env_value = env?(env)
+        set_switch(*names, value: env_value, from: :env) unless env_value.nil?
       end
       alias switch_option switch
 
       def env?(env)
-        return false if env.blank?
+        return if env.blank?
 
         Homebrew::EnvConfig.try(:"#{env}?")
       end
 
       def usage_banner(text)
-        @parser.banner = Formatter.wrap("#{text}\n", COMMAND_DESC_WIDTH)
+        @parser.banner = "#{text}\n"
       end
 
       def usage_banner_text
         @parser.banner
+               .gsub(/^  - (`[^`]+`)\s+/, "\n- \\1  \n  ") # Format `cask` subcommands as MarkDown list.
       end
 
       def comma_array(name, description: nil)
@@ -133,7 +134,7 @@ module Homebrew
       end
 
       def option_to_name(option)
-        option.sub(/\A--?/, "")
+        option.sub(/\A--?(\[no-\])?/, "")
               .tr("-", "_")
               .delete("=")
       end
@@ -148,10 +149,6 @@ module Homebrew
 
       def option_to_description(*names)
         names.map { |name| name.to_s.sub(/\A--?/, "").tr("-", " ") }.max
-      end
-
-      def summary
-        @parser.to_s
       end
 
       def parse_remaining(argv, ignore_invalid_options: false)
@@ -221,23 +218,35 @@ module Homebrew
           remaining + non_options
         end
 
-        check_constraint_violations unless ignore_invalid_options
-        check_named_args(named_args) unless ignore_invalid_options
+        unless ignore_invalid_options
+          check_constraint_violations
+          check_named_args(named_args)
+        end
+
         @args.freeze_named_args!(named_args)
         @args.freeze_remaining_args!(non_options.empty? ? remaining : [*remaining, "--", non_options])
         @args.freeze_processed_options!(@processed_options)
 
         @args_parsed = true
+
+        if !ignore_invalid_options && @args.help?
+          puts generate_help_text
+          exit
+        end
+
         @args
       end
 
       def generate_help_text
-        @parser.to_s
-               .sub(/^/, "#{Tty.bold}Usage: brew#{Tty.reset} ")
-               .gsub(/`(.*?)`/m, "#{Tty.bold}\\1#{Tty.reset}")
-               .gsub(%r{<([^\s]+?://[^\s]+?)>}) { |url| Formatter.url(url) }
-               .gsub(/<(.*?)>/m, "#{Tty.underline}\\1#{Tty.reset}")
-               .gsub(/\*(.*?)\*/m, "#{Tty.underline}\\1#{Tty.reset}")
+        Formatter.wrap(
+          @parser.to_s.gsub(/^  - (`[^`]+`\s+)/, "  \\1"), # Remove `-` from `cask` subcommand listing.
+          COMMAND_DESC_WIDTH,
+        )
+                 .sub(/^/, "#{Tty.bold}Usage: brew#{Tty.reset} ")
+                 .gsub(/`(.*?)`/m, "#{Tty.bold}\\1#{Tty.reset}")
+                 .gsub(%r{<([^\s]+?://[^\s]+?)>}) { |url| Formatter.url(url) }
+                 .gsub(/<(.*?)>/m, "#{Tty.underline}\\1#{Tty.reset}")
+                 .gsub(/\*(.*?)\*/m, "#{Tty.underline}\\1#{Tty.reset}")
       end
 
       def formula_options
@@ -282,10 +291,10 @@ module Homebrew
 
       private
 
-      def enable_switch(*names, from:)
+      def set_switch(*names, value:, from:)
         names.each do |name|
           @switch_sources[option_to_name(name)] = from
-          @args["#{option_to_name(name)}?"] = true
+          @args["#{option_to_name(name)}?"] = value
         end
       end
 

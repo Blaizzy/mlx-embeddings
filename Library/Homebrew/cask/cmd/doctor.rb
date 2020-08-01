@@ -6,15 +6,12 @@ require "diagnostic"
 module Cask
   class Cmd
     class Doctor < AbstractCommand
-      def initialize(*)
-        super
-        return if args.empty?
-
-        raise ArgumentError, "#{self.class.command_name} does not take arguments."
+      def self.max_named
+        0
       end
 
-      def summary_header
-        "Cask's Doctor Checkup"
+      def self.description
+        "Checks for configuration issues."
       end
 
       def run
@@ -31,10 +28,6 @@ module Cask
         end
 
         raise CaskError, "There are some problems with your setup." unless success
-      end
-
-      def self.help
-        "checks for configuration issues"
       end
     end
   end

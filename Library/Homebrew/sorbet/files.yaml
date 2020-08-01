@@ -449,7 +449,6 @@ false:
 false:
   - ./PATH.rb
   - ./build_environment.rb
-  - ./cask/cmd/options.rb
   - ./cask/config.rb
   - ./cask/dsl/appcast.rb
   - ./cask/dsl/container.rb
@@ -505,7 +504,6 @@ false:
   - ./test/cache_store_spec.rb
   - ./test/cask/cask_loader/from_content_loader_spec.rb
   - ./test/cask/cask_loader/from_uri_loader_spec.rb
-  - ./test/cask/cmd/options_spec.rb
   - ./test/cask/cmd/shared_examples/invalid_option.rb
   - ./test/cask/config_spec.rb
   - ./test/cask/denylist_spec.rb

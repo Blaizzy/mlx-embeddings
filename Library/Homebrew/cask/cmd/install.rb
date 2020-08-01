@@ -3,30 +3,43 @@
 module Cask
   class Cmd
     class Install < AbstractCommand
-      option "--force",          :force,          false
-      option "--skip-cask-deps", :skip_cask_deps, false
-
-      def initialize(*)
-        super
-        raise CaskUnspecifiedError if args.empty?
+      def self.min_named
+        :cask
       end
 
-      def run
-        odie "Installing casks is supported only on macOS" unless OS.mac?
-        casks.each do |cask|
-          Installer.new(cask, binaries:       binaries?,
-                              verbose:        verbose?,
-                              force:          force?,
-                              skip_cask_deps: skip_cask_deps?,
-                              require_sha:    require_sha?,
-                              quarantine:     quarantine?).install
-        rescue CaskAlreadyInstalledError => e
-          opoo e.message
+      def self.description
+        "Installs the given <cask>."
+      end
+
+      def self.parser(&block)
+        super do
+          switch "--force",
+                 description: "Force overwriting existing files."
+          switch "--skip-cask-deps",
+                 description: "Skip installing cask dependencies."
+
+          instance_eval(&block) if block_given?
         end
       end
 
-      def self.help
-        "installs the given Cask"
+      def run
+        options = {
+          binaries:       args.binaries?,
+          verbose:        args.verbose?,
+          force:          args.force?,
+          skip_cask_deps: args.skip_cask_deps?,
+          require_sha:    args.require_sha?,
+          quarantine:     args.quarantine?,
+        }.compact
+
+        options[:quarantine] = true if options[:quarantine].nil?
+
+        odie "Installing casks is supported only on macOS" unless OS.mac?
+        casks.each do |cask|
+          Installer.new(cask, **options).install
+        rescue CaskAlreadyInstalledError => e
+          opoo e.message
+        end
       end
     end
   end
