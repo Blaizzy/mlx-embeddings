@@ -50,20 +50,20 @@ module Homebrew
       # odeprecated "brew outdated --json#{json_version == :v1 ? "=v1" : ""}", "brew outdated --json=v2"
 
       outdated = if args.formula? || !args.cask?
-        outdated_formulae
+        outdated_formulae args: args
       else
-        outdated_casks
+        outdated_casks args: args
       end
 
       puts JSON.generate(json_info(outdated, args: args))
 
     when :v2
       formulae, casks = if args.formula?
-        [outdated_formulae, []]
+        [outdated_formulae(args: args), []]
       elsif args.cask?
-        [[], outdated_casks]
+        [[], outdated_casks(args: args)]
       else
-        outdated_formulae_casks
+        outdated_formulae_casks args: args
       end
 
       json = {
@@ -76,11 +76,11 @@ module Homebrew
 
     else
       outdated = if args.formula?
-        outdated_formulae
+        outdated_formulae args: args
       elsif args.cask?
-        outdated_casks
+        outdated_casks args: args
       else
-        outdated_formulae_casks.flatten
+        outdated_formulae_casks(args: args).flatten
       end
 
       print_outdated(outdated, args: args)
@@ -94,7 +94,7 @@ module Homebrew
       if formula_or_cask.is_a?(Formula)
         f = formula_or_cask
 
-        if verbose?
+        if verbose? args: args
           outdated_kegs = f.outdated_kegs(fetch_head: args.fetch_HEAD?)
 
           current_version = if f.alias_changed?
@@ -122,7 +122,7 @@ module Homebrew
       else
         c = formula_or_cask
 
-        puts c.outdated_info(args.greedy?, verbose?, false)
+        puts c.outdated_info(args.greedy?, verbose?(args: args), false)
       end
     end
   end
@@ -147,12 +147,12 @@ module Homebrew
       else
         c = formula_or_cask
 
-        c.outdated_info(args.greedy?, verbose?, true)
+        c.outdated_info(args.greedy?, verbose?(args: args), true)
       end
     end
   end
 
-  def verbose?
+  def verbose?(args:)
     ($stdout.tty? || args.verbose?) && !args.quiet?
   end
 
@@ -169,19 +169,19 @@ module Homebrew
     version_hash[version]
   end
 
-  def outdated_formulae
-    select_outdated((args.resolved_formulae.presence || Formula.installed)).sort
+  def outdated_formulae(args:)
+    select_outdated((args.resolved_formulae.presence || Formula.installed), args: args).sort
   end
 
-  def outdated_casks
+  def outdated_casks(args:)
     if args.named.present?
-      select_outdated(args.named.uniq.map(&Cask::CaskLoader.method(:load)))
+      select_outdated(args.named.uniq.map(&Cask::CaskLoader.method(:load)), args: args)
     else
-      select_outdated(Cask::Caskroom.casks)
+      select_outdated(Cask::Caskroom.casks, args: args)
     end
   end
 
-  def outdated_formulae_casks
+  def outdated_formulae_casks(args:)
     formulae, casks = args.resolved_formulae_casks
 
     if formulae.blank? && casks.blank?
@@ -189,10 +189,10 @@ module Homebrew
       casks = Cask::Caskroom.casks
     end
 
-    [select_outdated(formulae), select_outdated(casks)]
+    [select_outdated(formulae, args: args), select_outdated(casks, args: args)]
   end
 
-  def select_outdated(formulae_or_casks)
+  def select_outdated(formulae_or_casks, args:)
     formulae_or_casks.select do |formula_or_cask|
       if formula_or_cask.is_a?(Formula)
         formula_or_cask.outdated?(fetch_head: args.fetch_HEAD?)
