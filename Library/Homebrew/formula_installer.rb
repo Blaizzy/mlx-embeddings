@@ -952,7 +952,7 @@ class FormulaInstaller
 
   def clean
     ohai "Cleaning" if verbose?
-    Cleaner.new(formula, verbose: verbose?, debug: debug?).clean
+    Cleaner.new(formula).clean
   rescue Exception => e # rubocop:disable Lint/RescueException
     opoo "The cleaning step did not complete successfully"
     puts "Still, the installation was successful, so we will link it into your prefix"
@@ -1027,10 +1027,8 @@ class FormulaInstaller
     end
     return if pour_bottle?
 
-    formula.fetch_patches(verbose: verbose?)
-    formula.resources.each do |r|
-      r.fetch(verbose: verbose?)
-    end
+    formula.fetch_patches
+    formula.resources.each(&:fetch)
     downloader.fetch
   end
 

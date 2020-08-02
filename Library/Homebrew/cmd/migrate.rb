@@ -33,7 +33,7 @@ module Homebrew
         raise "#{rack} is a symlink" if rack.symlink?
       end
 
-      migrator = Migrator.new(f, force: args.force?, verbose: args.verbose?)
+      migrator = Migrator.new(f, force: args.force?)
       migrator.migrate
     end
   end

@@ -9,6 +9,7 @@ require "mktemp"
 # primary formula download, along with other declared resources, are instances
 # of this class.
 class Resource
+  include Context
   include FileUtils
 
   attr_reader :mirrors, :specs, :using, :source_modified_time, :patches, :owner
@@ -74,10 +75,9 @@ class Resource
   def stage(target = nil, &block)
     raise ArgumentError, "target directory or block is required" if !target && block.blank?
 
-    verbose = owner.owner.verbose?
     prepare_patches
-    fetch_patches(skip_downloaded: true, verbose: verbose)
-    fetch(verbose: owner.owner.verbose?) unless downloaded?
+    fetch_patches(skip_downloaded: true)
+    fetch unless downloaded?
 
     unpack(target, &block)
   end
@@ -86,12 +86,10 @@ class Resource
     patches.grep(DATAPatch) { |p| p.path = owner.owner.path }
   end
 
-  def fetch_patches(skip_downloaded: false, verbose: false)
+  def fetch_patches(skip_downloaded: false)
     external_patches = patches.select(&:external?)
     external_patches.reject!(&:downloaded?) if skip_downloaded
-    external_patches.each do |p|
-      p.fetch(verbose: verbose)
-    end
+    external_patches.each(&:fetch)
   end
 
   def apply_patches
@@ -125,10 +123,10 @@ class Resource
     Partial.new(self, files)
   end
 
-  def fetch(verify_download_integrity: true, verbose: false)
+  def fetch(verify_download_integrity: true)
     HOMEBREW_CACHE.mkpath
 
-    fetch_patches(verbose: verbose)
+    fetch_patches
 
     begin
       downloader.fetch
@@ -137,13 +135,13 @@ class Resource
     end
 
     download = cached_download
-    verify_download_integrity(download, verbose: verbose) if verify_download_integrity
+    verify_download_integrity(download) if verify_download_integrity
     download
   end
 
-  def verify_download_integrity(fn, verbose: false)
+  def verify_download_integrity(fn)
     if fn.file?
-      ohai "Verifying #{fn.basename} checksum" if verbose
+      ohai "Verifying #{fn.basename} checksum" if verbose?
       fn.verify_checksum(checksum)
     end
   rescue ChecksumMissingError

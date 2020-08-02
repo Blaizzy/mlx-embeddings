@@ -188,6 +188,10 @@ module Homebrew
         flag_with_value.delete_prefix(arg_prefix)
       end
 
+      def context
+        Context::ContextStruct.new(debug: debug?, quiet: quiet?, verbose: verbose?)
+      end
+
       private
 
       def option_to_name(option)

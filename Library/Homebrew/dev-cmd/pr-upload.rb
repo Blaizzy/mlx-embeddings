@@ -49,7 +49,7 @@ module Homebrew
     args = pr_upload_args.parse
 
     bintray_org = args.bintray_org || "homebrew"
-    bintray = Bintray.new(org: bintray_org, verbose: args.verbose?)
+    bintray = Bintray.new(org: bintray_org)
 
     json_files = Dir["*.json"]
     odie "No JSON files found in the current working directory" if json_files.empty?

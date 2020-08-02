@@ -5,7 +5,7 @@ require "keg"
 require "tab"
 
 class Migrator
-  extend Predicable
+  include Context
 
   class MigrationNeededError < RuntimeError
     def initialize(formula)
@@ -88,8 +88,6 @@ class Migrator
   # path to newname keg that will be linked if old_linked_keg isn't nil
   attr_reader :new_linked_keg_record
 
-  attr_predicate :verbose?
-
   def self.needs_migration?(formula)
     oldname = formula.oldname
     return false unless oldname
@@ -101,20 +99,18 @@ class Migrator
     true
   end
 
-  def self.migrate_if_needed(formula, force:, verbose:)
+  def self.migrate_if_needed(formula, force:)
     return unless Migrator.needs_migration?(formula)
 
     begin
-      migrator = Migrator.new(formula, force: force, verbose: verbose)
+      migrator = Migrator.new(formula, force: force)
       migrator.migrate
     rescue => e
       onoe e
     end
   end
 
-  def initialize(formula, force: false, verbose: false)
-    @verbose = verbose
-
+  def initialize(formula, force: false)
     @oldname = formula.oldname
     @newname = formula.name
     raise MigratorNoOldnameError, formula unless oldname
@@ -215,7 +211,7 @@ class Migrator
   rescue Exception => e # rubocop:disable Lint/RescueException
     onoe "Error occurred while migrating."
     puts e
-    puts e.backtrace if Homebrew.args.debug?
+    puts e.backtrace if debug?
     puts "Backing up..."
     ignore_interrupts { backup_oldname }
   ensure
@@ -322,7 +318,7 @@ class Migrator
     rescue Exception => e # rubocop:disable Lint/RescueException
       onoe "An unexpected error occurred during linking"
       puts e
-      puts e.backtrace if Homebrew.args.debug?
+      puts e.backtrace if debug?
       ignore_interrupts { new_keg.unlink(verbose: verbose?) }
       raise
     end

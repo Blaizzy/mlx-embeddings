@@ -10,15 +10,11 @@
 # * sets permissions on executables
 # * removes unresolved symlinks
 class Cleaner
-  extend Predicable
-
-  attr_predicate :verbose?, :debug?
+  include Context
 
   # Create a cleaner for the given formula
-  def initialize(f, verbose: false, debug: false)
+  def initialize(f)
     @f = f
-    @verbose = verbose
-    @debug = debug
   end
 
   # Clean the keg of formula @f

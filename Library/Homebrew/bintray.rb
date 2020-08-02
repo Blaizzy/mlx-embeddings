@@ -4,6 +4,8 @@ require "utils/curl"
 require "json"
 
 class Bintray
+  include Context
+
   API_URL = "https://api.bintray.com"
 
   class Error < RuntimeError
@@ -13,9 +15,8 @@ class Bintray
     "#<Bintray: org=#{@bintray_org}>"
   end
 
-  def initialize(org: "homebrew", verbose: false)
+  def initialize(org: "homebrew")
     @bintray_org = org
-    @verbose = verbose
 
     raise UsageError, "Must set a Bintray organisation!" unless @bintray_org
 
@@ -33,8 +34,8 @@ class Bintray
     end
 
     curl(*args, url,
-         show_output: @verbose,
-         secrets:     @bintray_key)
+         show_output: verbose?,
+         secrets:     key)
   end
 
   def upload(local_file, repo:, package:, version:, remote_file:, sha256: nil)

@@ -258,7 +258,7 @@ module Homebrew
     Install.perform_preinstall_checks(cc: args.cc)
 
     formulae.each do |f|
-      Migrator.migrate_if_needed(f, force: args.force?, verbose: args.verbose?)
+      Migrator.migrate_if_needed(f, force: args.force?)
       install_formula(f, args: args)
       Cleanup.install_formula_clean!(f)
     end

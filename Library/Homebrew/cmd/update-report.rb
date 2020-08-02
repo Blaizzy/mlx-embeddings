@@ -395,7 +395,7 @@ class Reporter
         next
       end
 
-      Migrator.migrate_if_needed(f, force: force, verbose: verbose)
+      Migrator.migrate_if_needed(f, force: force)
     end
   end
 

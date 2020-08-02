@@ -2,6 +2,8 @@
 
 module Homebrew
   module Assertions
+    include Context
+
     require "test/unit/assertions"
     include ::Test::Unit::Assertions
 
@@ -12,7 +14,7 @@ module Homebrew
       assert_equal result, $CHILD_STATUS.exitstatus
       output
     rescue Test::Unit::AssertionFailedError
-      puts output if Homebrew.args.verbose?
+      puts output if verbose?
       raise
     end
 
@@ -28,7 +30,7 @@ module Homebrew
       assert_equal result, $CHILD_STATUS.exitstatus unless result.nil?
       output
     rescue Test::Unit::AssertionFailedError
-      puts output if Homebrew.args.verbose?
+      puts output if verbose?
       raise
     end
   end

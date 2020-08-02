@@ -16,6 +16,8 @@ require "tap_constants"
 require "time"
 
 module Homebrew
+  extend Context
+
   module_function
 
   def _system(cmd, *args, **options)
@@ -34,7 +36,7 @@ module Homebrew
   end
 
   def system(cmd, *args, **options)
-    if Homebrew.args.verbose?
+    if verbose?
       puts "#{cmd} #{args * " "}".gsub(RUBY_PATH, "ruby")
                                  .gsub($LOAD_PATH.join(File::PATH_SEPARATOR).to_s, "$LOAD_PATH")
     end
@@ -89,7 +91,7 @@ module Kernel
     verbose = if respond_to?(:verbose?)
       verbose?
     else
-      Homebrew.args.verbose?
+      Context.current.verbose?
     end
 
     title = Tty.truncate(title) if $stdout.tty? && !verbose
@@ -102,10 +104,10 @@ module Kernel
   end
 
   def odebug(title, *sput, always_display: false)
-    debug = if respond_to?(:debug?)
+    debug = if respond_to?(:debug)
       debug?
     else
-      Homebrew.args.debug?
+      Context.current.debug?
     end
 
     return unless debug || always_display
@@ -118,7 +120,7 @@ module Kernel
     verbose = if respond_to?(:verbose?)
       verbose?
     else
-      Homebrew.args.verbose?
+      Context.current.verbose?
     end
 
     title = Tty.truncate(title) if $stdout.tty? && !verbose && truncate == :auto
@@ -387,12 +389,12 @@ module Kernel
   end
 
   def nostdout
-    if Homebrew.args.verbose?
+    if verbose?
       yield
     else
       begin
         out = $stdout.dup
-        $stdout.reopen("/dev/null")
+        $stdout.reopen(File::NULL)
         yield
       ensure
         $stdout.reopen(out)

@@ -143,8 +143,6 @@ class Build
         fetch:       false,
         keep_tmp:    args.keep_tmp?,
         interactive: args.interactive?,
-        debug:       args.debug?,
-        verbose:     args.verbose?,
       ) do
         # For head builds, HOMEBREW_FORMULA_PREFIX should include the commit,
         # which is not known until after the formula has been staged.
@@ -214,9 +212,8 @@ class Build
 end
 
 begin
-  Homebrew.args = Homebrew::CLI::Parser.new.parse(ARGV.dup.freeze, ignore_invalid_options: true)
-
   args = Homebrew.install_args.parse
+  Context.current = args.context
 
   error_pipe = UNIXSocket.open(ENV["HOMEBREW_ERROR_PIPE"], &:recv_io)
   error_pipe.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)

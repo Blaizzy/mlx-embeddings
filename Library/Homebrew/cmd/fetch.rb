@@ -133,7 +133,7 @@ module Homebrew
     already_fetched = f.cached_download.exist?
 
     begin
-      download = f.fetch(verify_download_integrity: false, verbose: args.verbose?)
+      download = f.fetch(verify_download_integrity: false)
     rescue DownloadError
       retry if retry_fetch?(f, args: args)
       raise
@@ -144,6 +144,6 @@ module Homebrew
     puts "Downloaded to: #{download}" unless already_fetched
     puts Checksum::TYPES.map { |t| "#{t.to_s.upcase}: #{download.send(t)}" }
 
-    f.verify_download_integrity(download, verbose: args.verbose?)
+    f.verify_download_integrity(download)
   end
 end

@@ -61,6 +61,7 @@ begin
 
   args = Homebrew::CLI::Parser.new.parse(ARGV.dup.freeze, ignore_invalid_options: true)
   Homebrew.args = args
+  Context.current = args.context
 
   path = PATH.new(ENV["PATH"])
   homebrew_path = PATH.new(ENV["HOMEBREW_PATH"])
