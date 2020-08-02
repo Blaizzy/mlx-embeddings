@@ -13,8 +13,9 @@ class Bintray
     "#<Bintray: org=#{@bintray_org}>"
   end
 
-  def initialize(org: "homebrew")
+  def initialize(org: "homebrew", verbose: false)
     @bintray_org = org
+    @verbose = verbose
 
     raise UsageError, "Must set a Bintray organisation!" unless @bintray_org
 
@@ -32,7 +33,7 @@ class Bintray
     end
 
     curl(*args, url,
-         show_output: Homebrew.args.verbose?,
+         show_output: @verbose,
          secrets:     @bintray_key)
   end
 
