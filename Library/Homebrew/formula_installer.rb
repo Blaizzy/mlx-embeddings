@@ -939,7 +939,7 @@ class FormulaInstaller
     log.mkpath if formula.plist.include? log.to_s
   rescue Exception => e # rubocop:disable Lint/RescueException
     onoe "Failed to install plist file"
-    ohai e, e.backtrace if debug?
+    odebug e, e.backtrace
     Homebrew.failed = true
   end
 
@@ -949,7 +949,7 @@ class FormulaInstaller
     onoe "Failed to fix install linkage"
     puts "The formula built, but you may encounter issues using it or linking other"
     puts "formulae against it."
-    ohai e, e.backtrace if debug?
+    odebug e, e.backtrace
     Homebrew.failed = true
     @show_summary_heading = true
   end
@@ -960,7 +960,7 @@ class FormulaInstaller
   rescue Exception => e # rubocop:disable Lint/RescueException
     opoo "The cleaning step did not complete successfully"
     puts "Still, the installation was successful, so we will link it into your prefix"
-    ohai e, e.backtrace if debug?
+    odebug e, e.backtrace
     Homebrew.failed = true
     @show_summary_heading = true
   end
@@ -996,7 +996,7 @@ class FormulaInstaller
   rescue Exception => e # rubocop:disable Lint/RescueException
     opoo "The post-install step did not complete successfully"
     puts "You can try again using `brew postinstall #{formula.full_name}`"
-    ohai e, e.backtrace if debug? || Homebrew::EnvConfig.developer?
+    odebug e, e.backtrace, always_display: Homebrew::EnvConfig.developer?
     Homebrew.failed = true
     @show_summary_heading = true
   end

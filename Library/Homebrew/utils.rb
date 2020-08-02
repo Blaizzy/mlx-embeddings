@@ -86,7 +86,13 @@ module Kernel
   end
 
   def ohai_title(title)
-    title = Tty.truncate(title) if $stdout.tty? && !Homebrew.args.verbose?
+    verbose = if respond_to?(:verbose?)
+      verbose?
+    else
+      Homebrew.args.verbose?
+    end
+
+    title = Tty.truncate(title) if $stdout.tty? && !verbose
     Formatter.headline(title, color: :blue)
   end
 
@@ -95,15 +101,27 @@ module Kernel
     puts sput
   end
 
-  def odebug(title, *sput)
-    return unless Homebrew.args.debug?
+  def odebug(title, *sput, always_display: false)
+    debug = if respond_to?(:debug?)
+      debug?
+    else
+      Homebrew.args.debug?
+    end
+
+    return unless debug || always_display
 
     puts Formatter.headline(title, color: :magenta)
     puts sput unless sput.empty?
   end
 
-  def oh1(title, options = {})
-    title = Tty.truncate(title) if $stdout.tty? && !Homebrew.args.verbose? && options.fetch(:truncate, :auto) == :auto
+  def oh1(title, truncate: :auto)
+    verbose = if respond_to?(:verbose?)
+      verbose?
+    else
+      Homebrew.args.verbose?
+    end
+
+    title = Tty.truncate(title) if $stdout.tty? && !verbose && truncate == :auto
     puts Formatter.headline(title, color: :green)
   end
 
