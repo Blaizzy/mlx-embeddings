@@ -201,7 +201,7 @@ class Build
     else
       raise
     end
-    Keg.new(path).optlink
+    Keg.new(path).optlink(verbose: args.verbose?)
   rescue
     raise "#{f.opt_prefix} not present or broken\nPlease reinstall #{f.full_name}. Sorry :("
   end

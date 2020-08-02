@@ -662,7 +662,7 @@ class FormulaInstaller
   rescue Exception => e # rubocop:disable Lint/RescueException
     ignore_interrupts do
       tmp_keg.rename(installed_keg) if tmp_keg && !installed_keg.directory?
-      linked_keg.link if keg_was_linked
+      linked_keg.link(verbose: verbose?) if keg_was_linked
     end
     raise unless e.is_a? FormulaInstallationAlreadyAttemptedError
 
@@ -842,7 +842,7 @@ class FormulaInstaller
   def link(keg)
     unless link_keg
       begin
-        keg.optlink
+        keg.optlink(verbose: verbose?)
         Formula.clear_cache
       rescue Keg::LinkError => e
         onoe "Failed to create #{formula.opt_prefix}"
@@ -873,7 +873,7 @@ class FormulaInstaller
     backup_dir = HOMEBREW_CACHE/"Backup"
 
     begin
-      keg.link
+      keg.link(verbose: verbose?)
     rescue Keg::ConflictError => e
       conflict_file = e.dst
       if formula.link_overwrite?(conflict_file) && !link_overwrite_backup.key?(conflict_file)
@@ -888,8 +888,7 @@ class FormulaInstaller
       puts e
       puts
       puts "Possible conflicting files are:"
-      mode = OpenStruct.new(dry_run: true, overwrite: true)
-      keg.link(mode)
+      keg.link(dry_run: true, overwrite: true, verbose: verbose?)
       @show_summary_heading = true
       Homebrew.failed = true
     rescue Keg::LinkError => e

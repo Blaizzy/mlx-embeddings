@@ -26,7 +26,7 @@ module Homebrew
     end
 
     formulae_to_install.each do |f|
-      Migrator.migrate_if_needed(f, force: args.force?)
+      Migrator.migrate_if_needed(f, force: args.force?, verbose: args.verbose?)
       begin
         upgrade_formula(f, args: args)
         Cleanup.install_formula_clean!(f)

@@ -49,7 +49,7 @@ module Homebrew
   rescue FormulaInstallationAlreadyAttemptedError
     nil
   rescue Exception # rubocop:disable Lint/RescueException
-    ignore_interrupts { restore_backup(keg, keg_was_linked) }
+    ignore_interrupts { restore_backup(keg, keg_was_linked, verbose: args.verbose?) }
     raise
   else
     begin
@@ -82,7 +82,7 @@ module Homebrew
     Pathname.new(keg).rmtree if keg.exist?
 
     path.rename keg
-    keg.link if keg_was_linked
+    keg.link(verbose: verbose) if keg_was_linked
   end
 
   def backup_path(path)
