@@ -44,14 +44,13 @@ class FormulaInstaller
                 :installed_as_dependency, :installed_on_request, :link_keg, :other_installers
 
   mode_attr_accessor :show_summary_heading, :show_header
-  mode_attr_accessor :build_from_source, :force_bottle, :include_test
-  mode_attr_accessor :ignore_deps, :only_deps, :interactive, :git, :force, :keep_tmp
+  mode_attr_accessor :force_bottle, :ignore_deps, :only_deps, :interactive, :git, :force, :keep_tmp
   mode_attr_accessor :verbose, :debug, :quiet
 
   def initialize(formula,
                  force_bottle: false,
-                 include_test: false, include_test_formulae: [],
-                 build_from_source: false, build_from_source_formulae: [],
+                 include_test_formulae: [],
+                 build_from_source_formulae: [],
                  cc: nil)
     @formula = formula
     @env = nil
@@ -61,12 +60,10 @@ class FormulaInstaller
     @show_header = false
     @ignore_deps = false
     @only_deps = false
-    @build_from_source = build_from_source
     @build_from_source_formulae = build_from_source_formulae
     @build_bottle = false
     @bottle_arch = nil
     @force_bottle = force_bottle
-    @include_test = include_test
     @include_test_formulae = include_test_formulae
     @interactive = false
     @git = false
@@ -116,6 +113,14 @@ class FormulaInstaller
 
     all_bottled = args.formulae.all?(&:bottled?)
     raise BuildFlagsError.new(build_flags, bottled: all_bottled)
+  end
+
+  def build_from_source?
+    build_from_source_formulae.include?(formula.full_name)
+  end
+
+  def include_test?
+    include_test_formulae.include?(formula.full_name)
   end
 
   def build_bottle?
@@ -596,9 +601,9 @@ class FormulaInstaller
 
   def fetch_dependency(dep)
     df = dep.to_formula
-    fi = FormulaInstaller.new(df, force_bottle:      false,
-                                  include_test:      include_test_formulae.include?(df.full_name),
-                                  build_from_source: build_from_source_formulae.include?(df.full_name))
+    fi = FormulaInstaller.new(df, force_bottle:               false,
+                                  include_test_formulae:      include_test_formulae,
+                                  build_from_source_formulae: build_from_source_formulae)
 
     fi.force                   = force?
     fi.keep_tmp                = keep_tmp?
@@ -637,9 +642,9 @@ class FormulaInstaller
       EOS
     end
 
-    fi = FormulaInstaller.new(df, force_bottle:      false,
-                                  include_test:      include_test_formulae.include?(df.full_name),
-                                  build_from_source: build_from_source_formulae.include?(df.full_name))
+    fi = FormulaInstaller.new(df, force_bottle:               false,
+                                  include_test_formulae:      include_test_formulae,
+                                  build_from_source_formulae: build_from_source_formulae)
 
     fi.options                |= tab.used_options
     fi.options                |= Tab.remap_deprecated_options(df.deprecated_options, dep.options)
