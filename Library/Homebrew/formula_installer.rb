@@ -956,7 +956,7 @@ class FormulaInstaller
 
   def clean
     ohai "Cleaning" if verbose?
-    Cleaner.new(formula).clean
+    Cleaner.new(formula, verbose: verbose?, debug: debug?).clean
   rescue Exception => e # rubocop:disable Lint/RescueException
     opoo "The cleaning step did not complete successfully"
     puts "Still, the installation was successful, so we will link it into your prefix"
