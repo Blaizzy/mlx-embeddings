@@ -1170,7 +1170,7 @@ class Formula
   # yields |self,staging| with current working directory set to the uncompressed tarball
   # where staging is a Mktemp staging context
   # @private
-  def brew(fetch: true, keep_tmp: false, interactive: false)
+  def brew(fetch: true, keep_tmp: false, interactive: false, debug: false)
     @prefix_returns_versioned_prefix = true
     active_spec.fetch if fetch
     stage(interactive: interactive) do |staging|
@@ -1182,7 +1182,7 @@ class Formula
       begin
         yield self, staging
       rescue
-        staging.retain! if interactive || Homebrew.args.debug?
+        staging.retain! if interactive || debug
         raise
       ensure
         cp Dir["config.log", "CMakeCache.txt"], logs
@@ -1803,7 +1803,7 @@ class Formula
   end
 
   # @private
-  def run_test(keep_tmp: false)
+  def run_test(keep_tmp: false, debug: false)
     @prefix_returns_versioned_prefix = true
 
     test_env = {
@@ -1831,7 +1831,7 @@ class Formula
           end
         end
       rescue Exception # rubocop:disable Lint/RescueException
-        staging.retain! if Homebrew.args.debug?
+        staging.retain! if debug
         raise
       end
     end

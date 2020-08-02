@@ -57,7 +57,7 @@ module Homebrew
 
       # show messages about tar
       with_env VERBOSE: "1" do
-        f.brew do
+        f.brew(debug: args.debug?) do
           f.patch if args.patch?
           cp_r getwd, stage_dir, preserve: true
         end
