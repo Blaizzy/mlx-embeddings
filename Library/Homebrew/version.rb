@@ -13,9 +13,6 @@ class Version
     include Comparable
 
     def self.create(val)
-      return NULL_TOKEN if val.nil?
-      return NULL_TOKEN if val.respond_to?(:null?) && val.null?
-
       raise TypeError, "Token value must be a string; got a #{val.class} (#{val})" unless val.respond_to?(:to_str)
 
       case val
