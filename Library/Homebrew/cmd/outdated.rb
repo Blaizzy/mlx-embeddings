@@ -189,7 +189,7 @@ module Homebrew
       casks = Cask::Caskroom.casks
     end
 
-    [select_outdated(formulae, args: args), select_outdated(casks, args: args)]
+    [select_outdated(formulae, args: args).sort, select_outdated(casks, args: args)]
   end
 
   def select_outdated(formulae_or_casks, args:)
