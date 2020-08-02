@@ -51,7 +51,8 @@ class FormulaInstaller
                  force_bottle: false,
                  include_test_formulae: [],
                  build_from_source_formulae: [],
-                 cc: nil)
+                 cc: nil,
+                 debug: false, quiet: false, verbose: false)
     @formula = formula
     @env = nil
     @force = false
@@ -68,9 +69,9 @@ class FormulaInstaller
     @interactive = false
     @git = false
     @cc = cc
-    @verbose = Homebrew.args.verbose?
-    @quiet = Homebrew.args.quiet?
-    @debug = Homebrew.args.debug?
+    @verbose = verbose
+    @quiet = quiet
+    @debug = debug
     @installed_as_dependency = false
     @installed_on_request = true
     @options = Options.new
@@ -601,15 +602,13 @@ class FormulaInstaller
 
   def fetch_dependency(dep)
     df = dep.to_formula
-    fi = FormulaInstaller.new(df, force_bottle:               false,
+    fi = FormulaInstaller.new(df, force_bottle:      false,
                                   include_test_formulae:      include_test_formulae,
-                                  build_from_source_formulae: build_from_source_formulae)
+                                  build_from_source_formulae: build_from_source_formulae,
+                                  debug: debug?, quiet: quiet?, verbose: verbose?)
 
     fi.force                   = force?
     fi.keep_tmp                = keep_tmp?
-    fi.verbose                 = verbose?
-    fi.quiet                   = quiet?
-    fi.debug                   = debug?
     # When fetching we don't need to recurse the dependency tree as it's already
     # been done for us in `compute_dependencies` and there's no requirement to
     # fetch in a particular order.
@@ -642,9 +641,10 @@ class FormulaInstaller
       EOS
     end
 
-    fi = FormulaInstaller.new(df, force_bottle:               false,
+    fi = FormulaInstaller.new(df, force_bottle:      false,
                                   include_test_formulae:      include_test_formulae,
-                                  build_from_source_formulae: build_from_source_formulae)
+                                  build_from_source_formulae: build_from_source_formulae,
+                                  debug: debug?, quiet: quiet?, verbose: verbose?)
 
     fi.options                |= tab.used_options
     fi.options                |= Tab.remap_deprecated_options(df.deprecated_options, dep.options)
@@ -652,9 +652,6 @@ class FormulaInstaller
     fi.options                &= df.options
     fi.force                   = force?
     fi.keep_tmp                = keep_tmp?
-    fi.verbose                 = verbose?
-    fi.quiet                   = quiet?
-    fi.debug                   = debug?
     fi.link_keg              ||= keg_was_linked if keg_had_linked_keg
     fi.installed_as_dependency = true
     fi.installed_on_request    = df.any_version_installed? && tab.installed_on_request
