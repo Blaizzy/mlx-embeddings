@@ -356,10 +356,10 @@ class BuildError < RuntimeError
     []
   end
 
-  def dump
+  def dump(verbose: false)
     puts
 
-    if Homebrew.args.verbose?
+    if verbose
       require "system_config"
       require "build_environment"
 

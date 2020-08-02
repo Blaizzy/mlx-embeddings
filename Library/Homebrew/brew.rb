@@ -59,7 +59,8 @@ begin
 
   ARGV.delete_at(help_cmd_index) if help_cmd_index
 
-  Homebrew.args = Homebrew::CLI::Parser.new.parse(ARGV.dup.freeze, ignore_invalid_options: true)
+  args = Homebrew::CLI::Parser.new.parse(ARGV.dup.freeze, ignore_invalid_options: true)
+  Homebrew.args = args
 
   path = PATH.new(ENV["PATH"])
   homebrew_path = PATH.new(ENV["HOMEBREW_PATH"])
@@ -148,7 +149,7 @@ rescue Interrupt
   exit 130
 rescue BuildError => e
   Utils::Analytics.report_build_error(e)
-  e.dump
+  e.dump(verbose: args.verbose?)
 
   if e.formula.head? || e.formula.deprecated? || e.formula.disabled?
     $stderr.puts <<~EOS

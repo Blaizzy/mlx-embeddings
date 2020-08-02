@@ -102,7 +102,7 @@ module Homebrew
   rescue CannotInstallFormulaError => e
     ofail e
   rescue BuildError => e
-    e.dump
+    e.dump(verbose: args.verbose?)
     puts
     Homebrew.failed = true
   rescue DownloadError => e
@@ -225,7 +225,7 @@ module Homebrew
     rescue CannotInstallFormulaError => e
       ofail e
     rescue BuildError => e
-      e.dump
+      e.dump(verbose: args.verbose?)
       puts
       Homebrew.failed = true
     rescue DownloadError => e
