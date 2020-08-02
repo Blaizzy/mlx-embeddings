@@ -34,7 +34,9 @@ begin
 
   # tests can also return false to indicate failure
   Timeout.timeout TEST_TIMEOUT_SECONDS do
-    raise "test returned false" if formula.run_test(keep_tmp: args.keep_tmp?, debug: args.debug?) == false
+    if formula.run_test(keep_tmp: args.keep_tmp?, debug: args.debug?, verbose: args.verbose?) == false
+      raise "test returned false"
+    end
   end
 rescue Exception => e # rubocop:disable Lint/RescueException
   error_pipe.puts e.to_json

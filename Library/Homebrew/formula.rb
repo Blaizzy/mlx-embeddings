@@ -57,6 +57,7 @@ class Formula
   extend Enumerable
   extend Forwardable
   extend Cachable
+  extend Predicable
 
   # @!method inreplace(paths, before = nil, after = nil)
   # Actually implemented in {Utils::Inreplace.inreplace}.
@@ -1167,17 +1168,22 @@ class Formula
     patchlist.each(&:apply)
   end
 
+  # @private
+  attr_predicate :debug?, :verbose?
+
   # yields |self,staging| with current working directory set to the uncompressed tarball
   # where staging is a Mktemp staging context
   # @private
-  def brew(fetch: true, keep_tmp: false, interactive: false, debug: false)
+  def brew(fetch: true, keep_tmp: false, interactive: false, debug: false, verbose: false)
+    @debug = debug
+    @verbose = verbose
     @prefix_returns_versioned_prefix = true
     active_spec.fetch if fetch
     stage(interactive: interactive) do |staging|
       staging.retain! if keep_tmp
 
       prepare_patches
-      fetch_patches if fetch
+      fetch_patches(verbose: verbose) if fetch
 
       begin
         yield self, staging
@@ -1189,6 +1195,8 @@ class Formula
       end
     end
   ensure
+    @debug = nil
+    @verbose = nil
     @prefix_returns_versioned_prefix = false
   end
 
@@ -1793,17 +1801,19 @@ class Formula
   end
 
   # @private
-  def fetch(verify_download_integrity: true)
-    active_spec.fetch(verify_download_integrity: verify_download_integrity)
+  def fetch(verify_download_integrity: true, verbose: false)
+    active_spec.fetch(verify_download_integrity: verify_download_integrity, verbose: verbose)
   end
 
   # @private
-  def verify_download_integrity(fn)
-    active_spec.verify_download_integrity(fn)
+  def verify_download_integrity(fn, verbose: false)
+    active_spec.verify_download_integrity(fn, verbose: verbose)
   end
 
   # @private
-  def run_test(keep_tmp: false, debug: false)
+  def run_test(keep_tmp: false, debug: false, verbose: false)
+    @debug = debug
+    @verbose = verbose
     @prefix_returns_versioned_prefix = true
 
     test_env = {
@@ -1836,8 +1846,10 @@ class Formula
       end
     end
   ensure
-    @testpath = nil
+    @debug = nil
+    @verbose = nil
     @prefix_returns_versioned_prefix = false
+    @testpath = nil
   end
 
   # @private
@@ -1927,13 +1939,12 @@ class Formula
   # # If there is a "make", "install" available, please use it!
   # system "make", "install"</pre>
   def system(cmd, *args)
-    verbose = Homebrew.args.verbose?
     verbose_using_dots = Homebrew::EnvConfig.verbose_using_dots?
 
     # remove "boring" arguments so that the important ones are more likely to
     # be shown considering that we trim long ohai lines to the terminal width
     pretty_args = args.dup
-    unless verbose
+    unless verbose?
       case cmd
       when "./configure"
         pretty_args -= %w[--disable-dependency-tracking --disable-debug --disable-silent-rules]
@@ -1961,7 +1972,7 @@ class Formula
       log.puts Time.now, "", cmd, args, ""
       log.flush
 
-      if verbose
+      if verbose?
         rd, wr = IO.pipe
         begin
           pid = fork do
@@ -2004,7 +2015,7 @@ class Formula
         log_lines = Homebrew::EnvConfig.fail_log_lines
 
         log.flush
-        if !verbose || verbose_using_dots
+        if !verbose? || verbose_using_dots
           puts "Last #{log_lines} lines from #{logfn}:"
           Kernel.system "/usr/bin/tail", "-n", log_lines, logfn
         end
@@ -2092,8 +2103,10 @@ class Formula
     ENV.update(removed)
   end
 
-  def fetch_patches
-    patchlist.select(&:external?).each(&:fetch)
+  def fetch_patches(verbose: false)
+    patchlist.select(&:external?).each do |p|
+      p.fetch(verbose: verbose)
+    end
   end
 
   private

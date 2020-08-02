@@ -1027,8 +1027,10 @@ class FormulaInstaller
     end
     return if pour_bottle?
 
-    formula.fetch_patches
-    formula.resources.each(&:fetch)
+    formula.fetch_patches(verbose: verbose?)
+    formula.resources.each do |r|
+      r.fetch(verbose: verbose?)
+    end
     downloader.fetch
   end
 

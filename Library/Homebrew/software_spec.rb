@@ -239,8 +239,8 @@ class HeadSoftwareSpec < SoftwareSpec
     @resource.version = Version.create("HEAD")
   end
 
-  def verify_download_integrity(_fn)
-    nil
+  def verify_download_integrity(_fn, verbose: false)
+    # no-op
   end
 end
 

@@ -74,9 +74,10 @@ class Resource
   def stage(target = nil, &block)
     raise ArgumentError, "target directory or block is required" if !target && block.blank?
 
+    verbose = owner.owner.verbose?
     prepare_patches
-    fetch_patches(skip_downloaded: true)
-    fetch unless downloaded?
+    fetch_patches(skip_downloaded: true, verbose: verbose)
+    fetch(verbose: owner.owner.verbose?) unless downloaded?
 
     unpack(target, &block)
   end
@@ -85,10 +86,12 @@ class Resource
     patches.grep(DATAPatch) { |p| p.path = owner.owner.path }
   end
 
-  def fetch_patches(skip_downloaded: false)
+  def fetch_patches(skip_downloaded: false, verbose: false)
     external_patches = patches.select(&:external?)
     external_patches.reject!(&:downloaded?) if skip_downloaded
-    external_patches.each(&:fetch)
+    external_patches.each do |p|
+      p.fetch(verbose: verbose)
+    end
   end
 
   def apply_patches
@@ -122,10 +125,10 @@ class Resource
     Partial.new(self, files)
   end
 
-  def fetch(verify_download_integrity: true)
+  def fetch(verify_download_integrity: true, verbose: false)
     HOMEBREW_CACHE.mkpath
 
-    fetch_patches
+    fetch_patches(verbose: verbose)
 
     begin
       downloader.fetch
@@ -134,13 +137,13 @@ class Resource
     end
 
     download = cached_download
-    verify_download_integrity(download) if verify_download_integrity
+    verify_download_integrity(download, verbose: verbose) if verify_download_integrity
     download
   end
 
-  def verify_download_integrity(fn)
+  def verify_download_integrity(fn, verbose: false)
     if fn.file?
-      ohai "Verifying #{fn.basename} checksum" if Homebrew.args.verbose?
+      ohai "Verifying #{fn.basename} checksum" if verbose
       fn.verify_checksum(checksum)
     end
   rescue ChecksumMissingError

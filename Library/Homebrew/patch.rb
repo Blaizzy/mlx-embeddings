@@ -179,12 +179,12 @@ class LegacyPatch < ExternalPatch
     resource.download_strategy = CurlDownloadStrategy
   end
 
-  def fetch
+  def fetch(verbose: false)
     clear_cache
     super
   end
 
-  def verify_download_integrity(_fn)
+  def verify_download_integrity(_fn, verbose: false)
     # no-op
   end
 
