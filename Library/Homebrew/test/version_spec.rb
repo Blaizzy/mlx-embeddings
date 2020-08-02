@@ -276,6 +276,76 @@ describe Version do
     expect(v2.to_str).to eq("HEAD-ffffff")
   end
 
+  describe "#major" do
+    it "returns major version token" do
+      expect(described_class.create("1").major).to be == Version::Token.create("1")
+      expect(described_class.create("1.2").major).to be == Version::Token.create("1")
+      expect(described_class.create("1.2.3").major).to be == Version::Token.create("1")
+      expect(described_class.create("1.2.3alpha").major).to be == Version::Token.create("1")
+      expect(described_class.create("1.2.3alpha4").major).to be == Version::Token.create("1")
+      expect(described_class.create("1.2.3beta4").major).to be == Version::Token.create("1")
+      expect(described_class.create("1.2.3pre4").major).to be == Version::Token.create("1")
+      expect(described_class.create("1.2.3rc4").major).to be == Version::Token.create("1")
+      expect(described_class.create("1.2.3-p4").major).to be == Version::Token.create("1")
+    end
+  end
+
+  describe "#minor" do
+    it "returns minor version token" do
+      expect(described_class.create("1").minor).to be nil
+      expect(described_class.create("1.2").minor).to be == Version::Token.create("2")
+      expect(described_class.create("1.2.3").minor).to be == Version::Token.create("2")
+      expect(described_class.create("1.2.3alpha").minor).to be == Version::Token.create("2")
+      expect(described_class.create("1.2.3alpha4").minor).to be == Version::Token.create("2")
+      expect(described_class.create("1.2.3beta4").minor).to be == Version::Token.create("2")
+      expect(described_class.create("1.2.3pre4").minor).to be == Version::Token.create("2")
+      expect(described_class.create("1.2.3rc4").minor).to be == Version::Token.create("2")
+      expect(described_class.create("1.2.3-p4").minor).to be == Version::Token.create("2")
+    end
+  end
+
+  describe "#patch" do
+    it "returns patch version token" do
+      expect(described_class.create("1").patch).to be nil
+      expect(described_class.create("1.2").patch).to be nil
+      expect(described_class.create("1.2.3").patch).to be == Version::Token.create("3")
+      expect(described_class.create("1.2.3alpha").patch).to be == Version::Token.create("3")
+      expect(described_class.create("1.2.3alpha4").patch).to be == Version::Token.create("3")
+      expect(described_class.create("1.2.3beta4").patch).to be == Version::Token.create("3")
+      expect(described_class.create("1.2.3pre4").patch).to be == Version::Token.create("3")
+      expect(described_class.create("1.2.3rc4").patch).to be == Version::Token.create("3")
+      expect(described_class.create("1.2.3-p4").patch).to be == Version::Token.create("3")
+    end
+  end
+
+  describe "#major_minor" do
+    it "returns major.minor version" do
+      expect(described_class.create("1").major_minor).to be == described_class.create("1")
+      expect(described_class.create("1.2").major_minor).to be == described_class.create("1.2")
+      expect(described_class.create("1.2.3").major_minor).to be == described_class.create("1.2")
+      expect(described_class.create("1.2.3alpha").major_minor).to be == described_class.create("1.2")
+      expect(described_class.create("1.2.3alpha4").major_minor).to be == described_class.create("1.2")
+      expect(described_class.create("1.2.3beta4").major_minor).to be == described_class.create("1.2")
+      expect(described_class.create("1.2.3pre4").major_minor).to be == described_class.create("1.2")
+      expect(described_class.create("1.2.3rc4").major_minor).to be == described_class.create("1.2")
+      expect(described_class.create("1.2.3-p4").major_minor).to be == described_class.create("1.2")
+    end
+  end
+
+  describe "#major_minor_patch" do
+    it "returns major.minor.patch version" do
+      expect(described_class.create("1").major_minor_patch).to be == described_class.create("1")
+      expect(described_class.create("1.2").major_minor_patch).to be == described_class.create("1.2")
+      expect(described_class.create("1.2.3").major_minor_patch).to be == described_class.create("1.2.3")
+      expect(described_class.create("1.2.3alpha").major_minor_patch).to be == described_class.create("1.2.3")
+      expect(described_class.create("1.2.3alpha4").major_minor_patch).to be == described_class.create("1.2.3")
+      expect(described_class.create("1.2.3beta4").major_minor_patch).to be == described_class.create("1.2.3")
+      expect(described_class.create("1.2.3pre4").major_minor_patch).to be == described_class.create("1.2.3")
+      expect(described_class.create("1.2.3rc4").major_minor_patch).to be == described_class.create("1.2.3")
+      expect(described_class.create("1.2.3-p4").major_minor_patch).to be == described_class.create("1.2.3")
+    end
+  end
+
   describe "::parse" do
     it "returns a NULL version when the URL cannot be parsed" do
       expect(described_class.parse("https://brew.sh/blah.tar")).to be_null
