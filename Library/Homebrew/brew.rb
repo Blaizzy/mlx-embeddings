@@ -141,8 +141,8 @@ rescue UsageError => e
   require "help"
   Homebrew::Help.help cmd, usage_error: e.message
 rescue SystemExit => e
-  onoe "Kernel.exit" if Homebrew.args.debug? && !e.success?
-  $stderr.puts e.backtrace if Homebrew.args.debug?
+  onoe "Kernel.exit" if args.debug? && !e.success?
+  $stderr.puts e.backtrace if args.debug?
   raise
 rescue Interrupt
   $stderr.puts # seemingly a newline is typical
@@ -163,7 +163,7 @@ rescue RuntimeError, SystemCallError => e
   raise if e.message.empty?
 
   onoe e
-  $stderr.puts e.backtrace if Homebrew.args.debug?
+  $stderr.puts e.backtrace if args.debug?
 
   exit 1
 rescue MethodDeprecatedError => e
@@ -172,7 +172,7 @@ rescue MethodDeprecatedError => e
     $stderr.puts "If reporting this issue please do so at (not Homebrew/brew or Homebrew/core):"
     $stderr.puts "  #{Formatter.url(e.issues_url)}"
   end
-  $stderr.puts e.backtrace if Homebrew.args.debug?
+  $stderr.puts e.backtrace if args.debug?
   exit 1
 rescue Exception => e # rubocop:disable Lint/RescueException
   onoe e
