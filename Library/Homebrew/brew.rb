@@ -104,8 +104,8 @@ begin
   # - if cmd is Cask, let Cask handle the help command instead
   if (empty_argv || help_flag) && cmd != "cask"
     require "help"
-    Homebrew::Help.help cmd, empty_argv: empty_argv
-    # `Homebrew.help` never returns, except for unknown commands.
+    Homebrew::Help.help cmd, remaining_args: args.remaining, empty_argv: empty_argv
+    # `Homebrew::Help.help` never returns, except for unknown commands.
   end
 
   if internal_cmd || Commands.external_ruby_v2_cmd_path(cmd)
@@ -140,7 +140,7 @@ begin
   end
 rescue UsageError => e
   require "help"
-  Homebrew::Help.help cmd, usage_error: e.message
+  Homebrew::Help.help cmd, remaining_args: args.remaining, usage_error: e.message
 rescue SystemExit => e
   onoe "Kernel.exit" if args.debug? && !e.success?
   $stderr.puts e.backtrace if args.debug?
