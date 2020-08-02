@@ -1225,7 +1225,7 @@ class Formula
   def outdated_kegs(fetch_head: false)
     raise Migrator::MigrationNeededError, self if migration_needed?
 
-    cache_key = "#{name}-#{fetch_head}"
+    cache_key = "#{full_name}-#{fetch_head}"
     Formula.cache[:outdated_kegs] ||= {}
     Formula.cache[:outdated_kegs][cache_key] ||= begin
       all_kegs = []
@@ -1603,7 +1603,7 @@ class Formula
   # @private
   def opt_or_installed_prefix_keg
     Formula.cache[:opt_or_installed_prefix_keg] ||= {}
-    Formula.cache[:opt_or_installed_prefix_keg][name] ||= if optlinked? && opt_prefix.exist?
+    Formula.cache[:opt_or_installed_prefix_keg][full_name] ||= if optlinked? && opt_prefix.exist?
       Keg.new(opt_prefix)
     elsif (latest_installed_prefix = installed_prefixes.last)
       Keg.new(latest_installed_prefix)
@@ -1635,7 +1635,7 @@ class Formula
   # Returns a list of Formula objects that are required at runtime.
   # @private
   def runtime_formula_dependencies(read_from_tab: true, undeclared: true)
-    cache_key = "#{name}-#{read_from_tab}-#{undeclared}"
+    cache_key = "#{full_name}-#{read_from_tab}-#{undeclared}"
 
     Formula.cache[:runtime_formula_dependencies] ||= {}
     Formula.cache[:runtime_formula_dependencies][cache_key] ||= runtime_dependencies(
@@ -1653,10 +1653,10 @@ class Formula
     # that we don't end up with something `Formula#runtime_dependencies` can't
     # read from a `Tab`.
     Formula.cache[:runtime_installed_formula_dependents] = {}
-    Formula.cache[:runtime_installed_formula_dependents][name] ||= Formula.installed
-                                                                          .select(&:opt_or_installed_prefix_keg)
-                                                                          .select(&:runtime_dependencies)
-                                                                          .select do |f|
+    Formula.cache[:runtime_installed_formula_dependents][full_name] ||= Formula.installed
+                                                                               .select(&:opt_or_installed_prefix_keg)
+                                                                               .select(&:runtime_dependencies)
+                                                                               .select do |f|
       f.runtime_formula_dependencies.any? do |dep|
         full_name == dep.full_name
       rescue
