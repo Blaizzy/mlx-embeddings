@@ -5,6 +5,15 @@ module PyPI
 
   PYTHONHOSTED_URL_PREFIX = "https://files.pythonhosted.org/packages/"
 
+  AUTOMATIC_RESOURCE_UPDATE_BLOCKLIST = %w[
+    ansible
+    ansible@2.8
+    cloudformation-cli
+    diffoscope
+    dxpy
+    molecule
+  ].freeze
+
   @pipgrip_installed = nil
 
   def url_to_pypi_package_name(url)
@@ -42,6 +51,11 @@ module PyPI
 
   def update_python_resources!(formula, version = nil, print_only: false, silent: false,
                                ignore_non_pypi_packages: false)
+
+    if !print_only && AUTOMATIC_RESOURCE_UPDATE_BLOCKLIST.include?(formula.full_name)
+      odie "The resources for \"#{formula.name}\" need special attention. Please update them manually."
+      return
+    end
 
     # PyPI package name isn't always the same as the formula name. Try to infer from the URL.
     pypi_name = if formula.stable.url.start_with?(PYTHONHOSTED_URL_PREFIX)
