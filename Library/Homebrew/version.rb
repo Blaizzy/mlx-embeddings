@@ -12,6 +12,30 @@ class Version
   class Token
     include Comparable
 
+    def self.create(val)
+      raise TypeError, "Token value must be a string; got a #{val.class} (#{val})" unless val.respond_to?(:to_str)
+
+      case val
+      when /\A#{AlphaToken::PATTERN}\z/o   then AlphaToken
+      when /\A#{BetaToken::PATTERN}\z/o    then BetaToken
+      when /\A#{RCToken::PATTERN}\z/o      then RCToken
+      when /\A#{PreToken::PATTERN}\z/o     then PreToken
+      when /\A#{PatchToken::PATTERN}\z/o   then PatchToken
+      when /\A#{NumericToken::PATTERN}\z/o then NumericToken
+      when /\A#{StringToken::PATTERN}\z/o  then StringToken
+      end.new(val)
+    end
+
+    def self.from(val)
+      case val
+      when Token   then val
+      when String  then Token.create(val)
+      when Integer then Token.create(val.to_s)
+      when nil     then NULL_TOKEN
+      else NULL_TOKEN if val.respond_to?(:null?) && val.null?
+      end
+    end
+
     attr_reader :value
 
     def initialize(value)
@@ -37,6 +61,8 @@ class Version
     end
 
     def <=>(other)
+      return unless other = Token.from(other)
+
       case other
       when NullToken
         0
@@ -64,6 +90,8 @@ class Version
     end
 
     def <=>(other)
+      return unless other = Token.from(other)
+
       case other
       when StringToken
         value <=> other.value
@@ -81,6 +109,8 @@ class Version
     end
 
     def <=>(other)
+      return unless other = Token.from(other)
+
       case other
       when NumericToken
         value <=> other.value
@@ -106,6 +136,8 @@ class Version
     PATTERN = /alpha[0-9]*|a[0-9]+/i.freeze
 
     def <=>(other)
+      return unless other = Token.from(other)
+
       case other
       when AlphaToken
         rev <=> other.rev
@@ -121,6 +153,8 @@ class Version
     PATTERN = /beta[0-9]*|b[0-9]+/i.freeze
 
     def <=>(other)
+      return unless other = Token.from(other)
+
       case other
       when BetaToken
         rev <=> other.rev
@@ -138,6 +172,8 @@ class Version
     PATTERN = /pre[0-9]*/i.freeze
 
     def <=>(other)
+      return unless other = Token.from(other)
+
       case other
       when PreToken
         rev <=> other.rev
@@ -155,6 +191,8 @@ class Version
     PATTERN = /rc[0-9]*/i.freeze
 
     def <=>(other)
+      return unless other = Token.from(other)
+
       case other
       when RCToken
         rev <=> other.rev
@@ -172,6 +210,8 @@ class Version
     PATTERN = /p[0-9]*/i.freeze
 
     def <=>(other)
+      return unless other = Token.from(other)
+
       case other
       when PatchToken
         rev <=> other.rev
@@ -465,17 +505,7 @@ class Version
   end
 
   def tokenize
-    version.scan(SCAN_PATTERN).map! do |token|
-      case token
-      when /\A#{AlphaToken::PATTERN}\z/o   then AlphaToken
-      when /\A#{BetaToken::PATTERN}\z/o    then BetaToken
-      when /\A#{RCToken::PATTERN}\z/o      then RCToken
-      when /\A#{PreToken::PATTERN}\z/o     then PreToken
-      when /\A#{PatchToken::PATTERN}\z/o   then PatchToken
-      when /\A#{NumericToken::PATTERN}\z/o then NumericToken
-      when /\A#{StringToken::PATTERN}\z/o  then StringToken
-      end.new(token)
-    end
+    version.scan(SCAN_PATTERN).map { |token| Token.create(token) }
   end
 end
 
