@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "BREW" "1" "July 2020" "Homebrew" "brew"
+.TH "BREW" "1" "August 2020" "Homebrew" "brew"
 .
 .SH "NAME"
 \fBbrew\fR \- The Missing Package Manager for macOS
@@ -806,6 +806,12 @@ Only show cache files for formulae\.
 .TP
 \fB\-\-cask\fR
 Only show cache files for casks\.
+.
+.SS "\fB\-\-caskroom\fR [\fIcask\fR]"
+Display Homebrew\'s Caskroom path\.
+.
+.P
+If \fIcask\fR is provided, display the location in the Caskroom where \fIcask\fR would be installed, without any sort of versioned directory as the last path\.
 .
 .SS "\fB\-\-cellar\fR [\fIformula\fR]"
 Display Homebrew\'s Cellar path\. \fIDefault:\fR \fB$(brew \-\-prefix)/Cellar\fR, or if that directory doesn\'t exist, \fB$(brew \-\-repository)/Cellar\fR\.

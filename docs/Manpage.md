@@ -610,6 +610,13 @@ If *`formula`* is provided, display the file or directory used to cache *`formul
 * `--cask`:
   Only show cache files for casks.
 
+### `--caskroom` [*`cask`*]
+
+Display Homebrew's Caskroom path.
+
+If *`cask`* is provided, display the location in the Caskroom where *`cask`* would
+be installed, without any sort of versioned directory as the last path.
+
 ### `--cellar` [*`formula`*]
 
 Display Homebrew's Cellar path. *Default:* `$(brew --prefix)/Cellar`, or if that
