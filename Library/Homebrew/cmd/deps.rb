@@ -96,7 +96,7 @@ module Homebrew
     if args.no_named?
       raise FormulaUnspecifiedError unless args.installed?
 
-      puts_deps sorted_dependents(Formula.installed + Cask::Caskroom.casks), recursive
+      puts_deps sorted_dependents(Formula.installed + Cask::Caskroom.casks), recursive, args: args
       return
     end
 
