@@ -18,7 +18,6 @@ module Homebrew
   module_function
 
   def irb_args
-    # work around IRB modifying ARGV.
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
         `irb` [<options>]
@@ -34,6 +33,7 @@ module Homebrew
   end
 
   def irb
+    # work around IRB modifying ARGV.
     args = irb_args.parse(ARGV.dup.freeze)
 
     if args.examples?
