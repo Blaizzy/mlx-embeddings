@@ -4,7 +4,7 @@ require "formula"
 require "ostruct"
 require "cli/parser"
 require "cask/caskroom"
-require "cask_dependent"
+require "dependencies_helpers"
 
 module Homebrew
   extend DependenciesHelpers
@@ -108,16 +108,6 @@ module Homebrew
     all_deps.uniq!
     all_deps.sort! unless args.n?
     puts all_deps
-  end
-
-  def dependents(formulae_or_casks)
-    formulae_or_casks.map do |formula_or_cask|
-      if formula_or_cask.is_a?(Formula)
-        formula_or_cask
-      else
-        CaskDependent.new(formula_or_cask)
-      end
-    end
   end
 
   def sorted_dependents(formulae_or_casks)
