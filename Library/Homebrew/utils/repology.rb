@@ -25,7 +25,7 @@ module Repology
       repo["repo"] == "homebrew"
     end
 
-    homebrew.empty? ? nil : { name: data }
+    homebrew.empty? ? nil : { name => data }
   end
 
   def parse_api_response
