@@ -89,11 +89,11 @@ Try to summarise from the [`homepage`](https://rubydoc.brew.sh/Formula#homepage%
 
 ### Fill in the `license`
 
-**We don’t accept formulae without a [`license`](https://rubydoc.brew.sh/Formula#license-class_method)!**
+**We don’t accept new formulae into Homebrew/homebrew-core without a [`license`](https://rubydoc.brew.sh/Formula#license-class_method)!**
 
-Find the license identifier from the [SPDX License List](https://spdx.org/licenses/). We only accept licenses from this list.
+Find the license identifier from the [SPDX License List](https://spdx.org/licenses/). We only accept licenses from this list that are a [Debian Free Software Guidelines license](https://wiki.debian.org/DFSGLicenses).
 
-If the formula gives the user the option to choose which license to use, you should list them all in an array:
+If the software is available under multiple licenses, you should list them all in an array:
 
 ```ruby
 license ["MIT", "GPL-2.0"]
