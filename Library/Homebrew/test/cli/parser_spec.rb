@@ -6,7 +6,6 @@ describe Homebrew::CLI::Parser do
   describe "test switch options" do
     subject(:parser) {
       described_class.new do
-        switch :verbose, description: "Flag for verbosity"
         switch "--more-verbose", description: "Flag for higher verbosity"
         switch "--pry", env: :pry
       end
@@ -16,27 +15,34 @@ describe Homebrew::CLI::Parser do
       allow(Homebrew::EnvConfig).to receive(:pry?).and_return(true)
     end
 
+    context "when `ignore_invalid_options` is true" do
+      it "passes through invalid options" do
+        args = parser.parse(["-v", "named-arg", "--not-a-valid-option"], ignore_invalid_options: true)
+        expect(args.remaining).to eq ["named-arg", "--not-a-valid-option"]
+        expect(args.named_args).to be_empty
+      end
+    end
+
     it "parses short option" do
-      parser.parse(["-v"])
-      expect(Homebrew.args).to be_verbose
+      args = parser.parse(["-v"])
+      expect(args).to be_verbose
     end
 
     it "parses a single valid option" do
-      parser.parse(["--verbose"])
-      expect(Homebrew.args).to be_verbose
+      args = parser.parse(["--verbose"])
+      expect(args).to be_verbose
     end
 
     it "parses a valid option along with few unnamed args" do
-      args = %w[--verbose unnamed args]
-      parser.parse(args)
-      expect(Homebrew.args).to be_verbose
-      expect(args).to eq %w[--verbose unnamed args]
+      args = parser.parse(%w[--verbose unnamed args])
+      expect(args).to be_verbose
+      expect(args.named).to eq %w[unnamed args]
     end
 
     it "parses a single option and checks other options to be nil" do
-      parser.parse(["--verbose"])
-      expect(Homebrew.args).to be_verbose
-      expect(Homebrew.args.more_verbose?).to be nil
+      args = parser.parse(["--verbose"])
+      expect(args).to be_verbose
+      expect(args.more_verbose?).to be nil
     end
 
     it "raises an exception and outputs help text when an invalid option is passed" do
@@ -45,13 +51,8 @@ describe Homebrew::CLI::Parser do
     end
 
     it "maps environment var to an option" do
-      parser.parse([])
-      expect(Homebrew.args.pry?).to be true
-    end
-
-    it ":verbose with custom description" do
-      _, _, _, desc = parser.processed_options.find { |short, _| short == "-v" }
-      expect(desc).to eq "Flag for verbosity"
+      args = parser.parse([])
+      expect(args.pry?).to be true
     end
   end
 
@@ -64,8 +65,8 @@ describe Homebrew::CLI::Parser do
     }
 
     it "parses a long flag option with its argument" do
-      parser.parse(["--filename=random.txt"])
-      expect(Homebrew.args.filename).to eq "random.txt"
+      args = parser.parse(["--filename=random.txt"])
+      expect(args.filename).to eq "random.txt"
     end
 
     it "raises an exception when a flag's required value is not passed" do
@@ -73,8 +74,8 @@ describe Homebrew::CLI::Parser do
     end
 
     it "parses a comma array flag option" do
-      parser.parse(["--files=random1.txt,random2.txt"])
-      expect(Homebrew.args.files).to eq %w[random1.txt random2.txt]
+      args = parser.parse(["--files=random1.txt,random2.txt"])
+      expect(args.files).to eq %w[random1.txt random2.txt]
     end
   end
 
@@ -86,9 +87,9 @@ describe Homebrew::CLI::Parser do
     }
 
     it "parses a short flag option with its argument" do
-      parser.parse(["--filename=random.txt"])
-      expect(Homebrew.args.filename).to eq "random.txt"
-      expect(Homebrew.args.f).to eq "random.txt"
+      args = parser.parse(["--filename=random.txt"])
+      expect(args.filename).to eq "random.txt"
+      expect(args.f).to eq "random.txt"
     end
   end
 
@@ -118,14 +119,14 @@ describe Homebrew::CLI::Parser do
     end
 
     it "raises no exception" do
-      parser.parse(["--flag1=flag1", "--flag2=flag2"])
-      expect(Homebrew.args.flag1).to eq "flag1"
-      expect(Homebrew.args.flag2).to eq "flag2"
+      args = parser.parse(["--flag1=flag1", "--flag2=flag2"])
+      expect(args.flag1).to eq "flag1"
+      expect(args.flag2).to eq "flag2"
     end
 
     it "raises no exception for optional dependency" do
-      parser.parse(["--flag3=flag3"])
-      expect(Homebrew.args.flag3).to eq "flag3"
+      args = parser.parse(["--flag3=flag3"])
+      expect(args.flag3).to eq "flag3"
     end
   end
 
@@ -169,22 +170,22 @@ describe Homebrew::CLI::Parser do
     end
 
     it "raises no exception" do
-      parser.parse(["--switch-a", "--switch-c"])
-      expect(Homebrew.args.switch_a?).to be true
-      expect(Homebrew.args.switch_c?).to be true
+      args = parser.parse(["--switch-a", "--switch-c"])
+      expect(args.switch_a?).to be true
+      expect(args.switch_c?).to be true
     end
 
     it "raises no exception for optional dependency" do
-      parser.parse(["--switch-b"])
-      expect(Homebrew.args.switch_b?).to be true
+      args = parser.parse(["--switch-b"])
+      expect(args.switch_b?).to be true
     end
 
     it "prioritizes cli arguments over env vars when they conflict" do
       allow(Homebrew::EnvConfig).to receive(:switch_a?).and_return(true)
       allow(Homebrew::EnvConfig).to receive(:switch_b?).and_return(false)
-      parser.parse(["--switch-b"])
-      expect(Homebrew.args.switch_a).to be_falsy
-      expect(Homebrew.args).to be_switch_b
+      args = parser.parse(["--switch-b"])
+      expect(args.switch_a).to be_falsy
+      expect(args).to be_switch_b
     end
 
     it "raises an exception on constraint violation when both are env vars" do
@@ -214,38 +215,32 @@ describe Homebrew::CLI::Parser do
         switch "--foo"
         flag   "--bar"
         switch "-s"
-        switch :verbose
       end
     }
 
     it "#options_only" do
-      parser.parse(["--foo", "--bar=value", "-v", "-s", "a", "b", "cdefg"])
-      expect(Homebrew.args.options_only).to eq %w[--foo --bar=value -s --verbose]
+      args = parser.parse(["--foo", "--bar=value", "-v", "-s", "a", "b", "cdefg"])
+      expect(args.options_only).to eq %w[--verbose --foo --bar=value -s]
     end
 
     it "#flags_only" do
-      parser.parse(["--foo", "--bar=value", "-v", "-s", "a", "b", "cdefg"])
-      expect(Homebrew.args.flags_only).to eq %w[--foo --bar=value --verbose]
-    end
-
-    it "#passthrough" do
-      parser.parse(["--foo", "--bar=value", "-v", "-s", "a", "b", "cdefg"])
-      expect(Homebrew.args.passthrough).to eq %w[--foo --bar=value -s]
+      args = parser.parse(["--foo", "--bar=value", "-v", "-s", "a", "b", "cdefg"])
+      expect(args.flags_only).to eq %w[--verbose --foo --bar=value]
     end
 
     it "#formulae raises an error when a Formula is unavailable" do
-      parser.parse(["mxcl"])
-      expect { Homebrew.args.formulae }.to raise_error FormulaUnavailableError
+      args = parser.parse(["mxcl"])
+      expect { args.formulae }.to raise_error FormulaUnavailableError
     end
 
     it "#formulae returns an empty array when there are no Formulae" do
-      parser.parse([])
-      expect(Homebrew.args.formulae).to be_empty
+      args = parser.parse([])
+      expect(args.formulae).to be_empty
     end
 
     it "#casks returns an empty array when there are no matching casks" do
-      parser.parse([])
-      expect(Homebrew.args.casks).to eq []
+      args = parser.parse([])
+      expect(args.casks).to eq []
     end
 
     context "kegs" do
@@ -255,24 +250,24 @@ describe Homebrew::CLI::Parser do
       end
 
       it "when there are matching kegs returns an array of Kegs" do
-        parser.parse(["mxcl"])
-        expect(Homebrew.args.kegs.length).to eq 1
+        args = parser.parse(["mxcl"])
+        expect(args.kegs.length).to eq 1
       end
 
       it "when there are no matching kegs returns an array of Kegs" do
-        parser.parse([])
-        expect(Homebrew.args.kegs).to be_empty
+        args = parser.parse([])
+        expect(args.kegs).to be_empty
       end
     end
 
     it "#named returns an array of non-option arguments" do
-      parser.parse(["foo", "-v", "-s"])
-      expect(Homebrew.args.named).to eq ["foo"]
+      args = parser.parse(["foo", "-v", "-s"])
+      expect(args.named).to eq ["foo"]
     end
 
     it "#named returns an empty array when there are no named arguments" do
-      parser.parse([])
-      expect(Homebrew.args.named).to be_empty
+      args = parser.parse([])
+      expect(args.named).to be_empty
     end
   end
 end

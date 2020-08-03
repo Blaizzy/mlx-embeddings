@@ -61,8 +61,7 @@ module Homebrew
       comma_array "--except-cops",
                   description: "Specify a comma-separated <cops> list to skip checking for violations of the listed "\
                                "RuboCop cops."
-      switch :verbose
-      switch :debug
+
       conflicts "--only", "--except"
       conflicts "--only-cops", "--except-cops", "--strict"
       conflicts "--only-cops", "--except-cops", "--only"
@@ -88,8 +87,8 @@ module Homebrew
     git = args.git?
     skip_style = args.skip_style? || args.no_named?
 
-    ENV.activate_extensions!(args: args)
-    ENV.setup_build_environment(args: args)
+    ENV.activate_extensions!
+    ENV.setup_build_environment
 
     audit_formulae = args.no_named? ? Formula : args.resolved_formulae
     style_files = args.formulae_paths unless skip_style
@@ -127,6 +126,7 @@ module Homebrew
       }
       options[:style_offenses] = style_results.file_offenses(f.path) if style_results
       options[:display_cop_names] = args.display_cop_names?
+      options[:build_stable] = args.build_stable?
 
       fa = FormulaAuditor.new(f, options)
       fa.audit
@@ -207,6 +207,7 @@ module Homebrew
       @new_formula = options[:new_formula] && !@versioned_formula
       @strict = options[:strict]
       @online = options[:online]
+      @build_stable = options[:build_stable]
       @git = options[:git]
       @display_cop_names = options[:display_cop_names]
       @only = options[:only]
@@ -248,7 +249,7 @@ module Homebrew
           unversioned_name = unversioned_formula.basename(".rb")
           problem "#{formula} is versioned but no #{unversioned_name} formula exists"
         end
-      elsif Homebrew.args.build_stable? && formula.stable? &&
+      elsif @build_stable && formula.stable? &&
             !(versioned_formulae = formula.versioned_formulae).empty?
         versioned_aliases = formula.aliases.grep(/.@\d/)
         _, last_alias_version = versioned_formulae.map(&:name).last.split("@")
@@ -267,6 +268,12 @@ module Homebrew
           valid_alias_names.map! { |a| "#{formula.tap}/#{a}" }
         end
 
+        # Fix naming based on what people expect.
+        if alias_name_major_minor == "adoptopenjdk@1.8"
+          valid_alias_names << "adoptopenjdk@8"
+          valid_alias_names.delete "adoptopenjdk@1"
+        end
+
         valid_versioned_aliases = versioned_aliases & valid_alias_names
         invalid_versioned_aliases = versioned_aliases - valid_alias_names
 
@@ -282,7 +289,7 @@ module Homebrew
           end
         end
 
-        unless invalid_versioned_aliases.empty?
+        if invalid_versioned_aliases.present?
           problem <<~EOS
             Formula has invalid versioned aliases:
               #{invalid_versioned_aliases.join("\n  ")}
@@ -330,20 +337,28 @@ module Homebrew
 
     def audit_license
       if formula.license.present?
-        if @spdx_data["licenses"].any? { |lic| lic["licenseId"] == formula.license }
-          return unless @online
+        non_standard_licenses = []
+        formula.license.each do |license|
+          next if @spdx_data["licenses"].any? { |spdx| spdx["licenseId"] == license }
 
-          user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @new_formula
-          return if user.blank?
-
-          github_license = GitHub.get_repo_license(user, repo)
-          return if github_license && [formula.license, "NOASSERTION"].include?(github_license)
-
-          problem "License mismatch - GitHub license is: #{github_license}, "\
-                  "but Formulae license states: #{formula.license}."
-        else
-          problem "#{formula.license} is not a standard SPDX license."
+          non_standard_licenses << license
         end
+
+        if non_standard_licenses.present?
+          problem "Formula #{formula.name} contains non-standard SPDX licenses: #{non_standard_licenses}."
+        end
+
+        return unless @online
+
+        user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @new_formula
+        return if user.blank?
+
+        github_license = GitHub.get_repo_license(user, repo)
+        return if github_license && (formula.license + ["NOASSERTION"]).include?(github_license)
+
+        problem "License mismatch - GitHub license is: #{Array(github_license)}, "\
+                "but Formulae license states: #{formula.license}."
+
       elsif @new_formula
         problem "No license specified for package."
       end
@@ -375,12 +390,13 @@ module Homebrew
           end
 
           if self.class.aliases.include?(dep.name) &&
-             (dep_f.core_formula? || !dep_f.versioned_formula?)
+             dep_f.core_formula? && !dep_f.versioned_formula?
             problem "Dependency '#{dep.name}' from homebrew/core is an alias; " \
             "use the canonical name '#{dep.to_formula.full_name}'."
           end
 
-          if @new_formula &&
+          if @core_tap &&
+             @new_formula &&
              dep_f.keg_only? &&
              dep_f.keg_only_reason.provided_by_macos? &&
              dep_f.keg_only_reason.applicable? &&
@@ -456,6 +472,7 @@ module Homebrew
       end
     end
 
+    # openssl@1.1 only needed for Linux
     VERSIONED_KEG_ONLY_ALLOWLIST = %w[
       autoconf@2.13
       bash-completion@2
@@ -463,6 +480,7 @@ module Homebrew
       libsigc++@2
       lua@5.1
       numpy@1.16
+      openssl@1.1
       python@3.8
     ].freeze
 
@@ -478,7 +496,9 @@ module Homebrew
         end
       end
 
-      return if VERSIONED_KEG_ONLY_ALLOWLIST.include?(formula.name) || formula.name.start_with?("gcc@")
+      return if VERSIONED_KEG_ONLY_ALLOWLIST.include?(formula.name)
+      return if formula.name.start_with?("adoptopenjdk@")
+      return if formula.name.start_with?("gcc@")
 
       problem "Versioned formulae in homebrew/core should use `keg_only :versioned_formula`"
     end

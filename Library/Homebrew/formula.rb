@@ -101,6 +101,10 @@ class Formula
   # @private
   attr_reader :tap
 
+  # Whether or not to force the use of a bottle.
+  # @private
+  attr_reader :force_bottle
+
   # The stable (and default) {SoftwareSpec} for this {Formula}
   # This contains all the attributes (e.g. URL, checksum) that apply to the
   # stable version of this formula.
@@ -181,13 +185,15 @@ class Formula
   alias follow_installed_alias? follow_installed_alias
 
   # @private
-  def initialize(name, path, spec, alias_path: nil)
+  def initialize(name, path, spec, alias_path: nil, force_bottle: false)
     @name = name
     @path = path
     @alias_path = alias_path
     @alias_name = (File.basename(alias_path) if alias_path)
     @revision = self.class.revision || 0
     @version_scheme = self.class.version_scheme || 0
+
+    @force_bottle = force_bottle
 
     @tap = if path == Formulary.core_path(name)
       CoreTap.instance
@@ -1021,6 +1027,7 @@ class Formula
       TMPDIR:        HOMEBREW_TEMP,
       TEMP:          HOMEBREW_TEMP,
       TMP:           HOMEBREW_TEMP,
+      _JAVA_OPTIONS: "-Djava.io.tmpdir=#{HOMEBREW_TEMP}",
       HOMEBREW_PATH: nil,
       PATH:          ENV["HOMEBREW_PATH"],
     }
@@ -1218,7 +1225,7 @@ class Formula
   def outdated_kegs(fetch_head: false)
     raise Migrator::MigrationNeededError, self if migration_needed?
 
-    cache_key = "#{name}-#{fetch_head}"
+    cache_key = "#{full_name}-#{fetch_head}"
     Formula.cache[:outdated_kegs] ||= {}
     Formula.cache[:outdated_kegs][cache_key] ||= begin
       all_kegs = []
@@ -1454,12 +1461,14 @@ class Formula
   # @private
   def self.each
     files.each do |file|
-      yield Formulary.factory(file)
-    rescue => e
-      # Don't let one broken formula break commands. But do complain.
-      onoe "Failed to import: #{file}"
-      puts e
-      next
+      yield begin
+        Formulary.factory(file)
+      rescue FormulaUnavailableError => e
+        # Don't let one broken formula break commands. But do complain.
+        onoe "Failed to import: #{file}"
+        puts e
+        next
+      end
     end
   end
 
@@ -1594,7 +1603,7 @@ class Formula
   # @private
   def opt_or_installed_prefix_keg
     Formula.cache[:opt_or_installed_prefix_keg] ||= {}
-    Formula.cache[:opt_or_installed_prefix_keg][name] ||= if optlinked? && opt_prefix.exist?
+    Formula.cache[:opt_or_installed_prefix_keg][full_name] ||= if optlinked? && opt_prefix.exist?
       Keg.new(opt_prefix)
     elsif (latest_installed_prefix = installed_prefixes.last)
       Keg.new(latest_installed_prefix)
@@ -1626,7 +1635,7 @@ class Formula
   # Returns a list of Formula objects that are required at runtime.
   # @private
   def runtime_formula_dependencies(read_from_tab: true, undeclared: true)
-    cache_key = "#{name}-#{read_from_tab}-#{undeclared}"
+    cache_key = "#{full_name}-#{read_from_tab}-#{undeclared}"
 
     Formula.cache[:runtime_formula_dependencies] ||= {}
     Formula.cache[:runtime_formula_dependencies][cache_key] ||= runtime_dependencies(
@@ -1644,10 +1653,10 @@ class Formula
     # that we don't end up with something `Formula#runtime_dependencies` can't
     # read from a `Tab`.
     Formula.cache[:runtime_installed_formula_dependents] = {}
-    Formula.cache[:runtime_installed_formula_dependents][name] ||= Formula.installed
-                                                                          .select(&:opt_or_installed_prefix_keg)
-                                                                          .select(&:runtime_dependencies)
-                                                                          .select do |f|
+    Formula.cache[:runtime_installed_formula_dependents][full_name] ||= Formula.installed
+                                                                               .select(&:opt_or_installed_prefix_keg)
+                                                                               .select(&:runtime_dependencies)
+                                                                               .select do |f|
       f.runtime_formula_dependencies.any? do |dep|
         full_name == dep.full_name
       rescue
@@ -1718,6 +1727,8 @@ class Formula
       "linked_keg"               => linked_version&.to_s,
       "pinned"                   => pinned?,
       "outdated"                 => outdated?,
+      "deprecated"               => deprecated?,
+      "disabled"                 => disabled?,
     }
 
     %w[stable devel].each do |spec_sym|
@@ -1803,6 +1814,7 @@ class Formula
       PATH:          PATH.new(ENV["PATH"], HOMEBREW_PREFIX/"bin"),
       HOMEBREW_PATH: nil,
     }.merge(common_stage_test_env)
+    test_env[:_JAVA_OPTIONS] += " -Djava.io.tmpdir=#{HOMEBREW_TEMP}"
 
     ENV.clear_sensitive_environment!
     Utils.set_git_name_email!
@@ -2126,7 +2138,7 @@ class Formula
   # Common environment variables used at both build and test time
   def common_stage_test_env
     {
-      _JAVA_OPTIONS: "#{ENV["_JAVA_OPTIONS"]&.+(" ")}-Duser.home=#{HOMEBREW_CACHE}/java_cache",
+      _JAVA_OPTIONS: "-Duser.home=#{HOMEBREW_CACHE}/java_cache",
       GOCACHE:       "#{HOMEBREW_CACHE}/go_cache",
       GOPATH:        "#{HOMEBREW_CACHE}/go_mod_cache",
       CARGO_HOME:    "#{HOMEBREW_CACHE}/cargo_cache",
@@ -2206,9 +2218,16 @@ class Formula
     # @!attribute [w]
     # The SPDX ID of the open-source license that the formula uses.
     # Shows when running `brew info`.
-    #
+    # Multiple licenses means that the software is licensed under multiple licenses.
+    # Do not use multiple licenses if e.g. different parts are under different licenses.
     # <pre>license "BSD-2-Clause"</pre>
-    attr_rw :license
+    def license(args = nil)
+      if args.nil?
+        @licenses
+      else
+        @licenses = Array(args)
+      end
+    end
 
     # @!attribute [w] homepage
     # The homepage for the software. Used by users to get more information
@@ -2363,6 +2382,16 @@ class Formula
       stable.build
     end
 
+    # Get the `BUILD_FLAGS` from the formula's namespace set in `Formulary::load_formula`.
+    # @private
+    def build_flags
+      namespace = to_s.split("::")[0..-2].join("::")
+      return [] if namespace.empty?
+
+      mod = const_get(namespace)
+      mod.const_get(:BUILD_FLAGS)
+    end
+
     # @!attribute [w] stable
     # Allows adding {.depends_on} and {Patch}es just to the {.stable} {SoftwareSpec}.
     # This is required instead of using a conditional.
@@ -2376,7 +2405,7 @@ class Formula
     #   depends_on "libffi"
     # end</pre>
     def stable(&block)
-      @stable ||= SoftwareSpec.new
+      @stable ||= SoftwareSpec.new(flags: build_flags)
       return @stable unless block_given?
 
       @stable.instance_eval(&block)
@@ -2396,7 +2425,7 @@ class Formula
     # end</pre>
     # @private
     def devel(&block)
-      @devel ||= SoftwareSpec.new
+      @devel ||= SoftwareSpec.new(flags: build_flags)
       return @devel unless block_given?
 
       odeprecated "'devel' blocks in formulae", "'head' blocks or @-versioned formulae"
@@ -2416,7 +2445,7 @@ class Formula
     # or (if autodetect fails):
     # <pre>head "https://hg.is.awesome.but.git.has.won.example.com/", :using => :hg</pre>
     def head(val = nil, specs = {}, &block)
-      @head ||= HeadSoftwareSpec.new
+      @head ||= HeadSoftwareSpec.new(flags: build_flags)
       if block_given?
         @head.instance_eval(&block)
       elsif val

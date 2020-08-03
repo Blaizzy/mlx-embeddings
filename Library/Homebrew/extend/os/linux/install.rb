@@ -43,8 +43,8 @@ module Homebrew
       FileUtils.ln_sf ld_so, brew_ld_so
     end
 
-    def perform_preinstall_checks(all_fatal: false)
-      generic_perform_preinstall_checks(all_fatal: all_fatal)
+    def perform_preinstall_checks(all_fatal: false, cc: nil)
+      generic_perform_preinstall_checks(all_fatal: all_fatal, cc: cc)
       symlink_ld_so
     end
   end

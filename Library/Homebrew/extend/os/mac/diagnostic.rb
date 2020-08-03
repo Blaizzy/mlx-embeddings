@@ -372,19 +372,10 @@ module Homebrew
           "Xcode"
         end
 
-        all_sdks = locator.all_sdks
-        sdks_found_msg = unless all_sdks.empty?
-          <<~EOS
-            Homebrew found the following SDKs in the #{source} install:
-              #{locator.all_sdks.map(&:version).join("\n  ")}
-          EOS
-        end
-
         <<~EOS
-          Could not find an SDK that supports macOS #{MacOS.version}.
-          You may have have an outdated or incompatible #{source}.
-          #{sdks_found_msg}
-          Please update #{source} or uninstall it if no updates are available.
+          Your #{source} does not support macOS #{MacOS.version}.
+          It is either outdated or was modified.
+          Please update your #{source} or delete it if no updates are available.
         EOS
       end
     end

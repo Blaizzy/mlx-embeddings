@@ -15,12 +15,11 @@ module Homebrew
         Open <formula>'s homepage in a browser, or open Homebrew's own homepage
         if no formula is provided.
       EOS
-      switch :debug
     end
   end
 
   def home
-    home_args.parse
+    args = home_args.parse
 
     if args.no_named?
       exec_browser HOMEBREW_WWW

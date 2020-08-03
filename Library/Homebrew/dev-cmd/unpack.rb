@@ -22,16 +22,16 @@ module Homebrew
       switch "-g", "--git",
              description: "Initialise a Git repository in the unpacked source. This is useful for creating "\
                           "patches for the software."
-      switch :force
-      switch :verbose
-      switch :debug
+      switch "-f", "--force",
+             description: "Overwrite the destination directory if it already exists."
+
       conflicts "--git", "--patch"
       min_named :formula
     end
   end
 
   def unpack
-    unpack_args.parse
+    args = unpack_args.parse
 
     formulae = args.formulae
 
@@ -55,12 +55,13 @@ module Homebrew
 
       oh1 "Unpacking #{Formatter.identifier(f.full_name)} to: #{stage_dir}"
 
-      ENV["VERBOSE"] = "1" # show messages about tar
-      f.brew do
-        f.patch if args.patch?
-        cp_r getwd, stage_dir, preserve: true
+      # show messages about tar
+      with_env VERBOSE: "1" do
+        f.brew do
+          f.patch if args.patch?
+          cp_r getwd, stage_dir, preserve: true
+        end
       end
-      ENV["VERBOSE"] = nil
 
       next unless args.git?
 

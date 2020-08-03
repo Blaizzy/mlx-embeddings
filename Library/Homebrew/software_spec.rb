@@ -28,14 +28,14 @@ class SoftwareSpec
                  :cached_download, :clear_cache, :checksum, :mirrors, :specs, :using, :version, :mirror,
                  :downloader, *Checksum::TYPES
 
-  def initialize
+  def initialize(flags: [])
     @resource = Resource.new
     @resources = {}
     @dependency_collector = DependencyCollector.new
     @bottle_specification = BottleSpecification.new
     @patches = []
     @options = Options.new
-    @flags = Homebrew.args.flags_only
+    @flags = flags
     @deprecated_flags = []
     @deprecated_options = []
     @build = BuildOptions.new(Options.create(@flags), options)
@@ -87,7 +87,7 @@ class SoftwareSpec
 
   def bottled?
     bottle_specification.tag?(Utils::Bottles.tag) && \
-      (bottle_specification.compatible_cellar? || Homebrew.args.force_bottle?)
+      (bottle_specification.compatible_cellar? || owner.force_bottle)
   end
 
   def bottle(disable_type = nil, disable_reason = nil, &block)
@@ -234,7 +234,7 @@ class SoftwareSpec
 end
 
 class HeadSoftwareSpec < SoftwareSpec
-  def initialize
+  def initialize(flags: [])
     super
     @resource.version = Version.create("HEAD")
   end

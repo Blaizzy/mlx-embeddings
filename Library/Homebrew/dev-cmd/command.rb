@@ -13,14 +13,13 @@ module Homebrew
 
         Display the path to the file being used when invoking `brew` <cmd>.
       EOS
-      switch :verbose
-      switch :debug
+
       min_named 1
     end
   end
 
   def command
-    command_args.parse
+    args = command_args.parse
 
     args.named.each do |cmd|
       path = Commands.path(cmd)

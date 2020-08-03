@@ -7,7 +7,7 @@ describe "Homebrew.test_args" do
 end
 
 # randomly segfaults on Linux with portable-ruby.
-describe "brew test", :integration_test, :needs_macos do
+describe "brew test", :integration_test, :needs_macos, timeout: 120 do
   it "tests a given Formula" do
     install_test_formula "testball", <<~'RUBY'
       test do

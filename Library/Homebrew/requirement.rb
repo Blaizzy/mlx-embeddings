@@ -53,11 +53,14 @@ class Requirement
 
   # Overriding {#satisfied?} is unsupported.
   # Pass a block or boolean to the satisfy DSL method instead.
-  def satisfied?(args: nil)
+  def satisfied?(env: nil, cc: nil, build_bottle: false, bottle_arch: nil)
     satisfy = self.class.satisfy
     return true unless satisfy
 
-    @satisfied_result = satisfy.yielder(args: args) { |p| instance_eval(&p) }
+    @satisfied_result =
+      satisfy.yielder(env: env, cc: cc, build_bottle: build_bottle, bottle_arch: bottle_arch) do |p|
+        instance_eval(&p)
+      end
     return false unless @satisfied_result
 
     true
@@ -81,8 +84,8 @@ class Requirement
 
   # Overriding {#modify_build_environment} is unsupported.
   # Pass a block to the env DSL method instead.
-  def modify_build_environment(args:)
-    satisfied?(args: args)
+  def modify_build_environment(env: nil, cc: nil, build_bottle: false, bottle_arch: nil)
+    satisfied?(env: env, cc: cc, build_bottle: build_bottle, bottle_arch: bottle_arch)
     instance_eval(&env_proc) if env_proc
 
     # XXX If the satisfy block returns a Pathname, then make sure that it
@@ -135,7 +138,11 @@ class Requirement
     klass = self.class.name || self.class.to_s
     klass.sub!(/(Dependency|Requirement)$/, "")
     klass.sub!(/^(\w+::)*/, "")
-    klass.downcase
+    return klass.downcase if klass.present?
+
+    return @cask if @cask.present?
+
+    ""
   end
 
   def which(cmd)
@@ -181,12 +188,16 @@ class Requirement
       @proc = block
     end
 
-    def yielder(args:)
+    def yielder(env: nil, cc: nil, build_bottle: false, bottle_arch: nil)
       if instance_variable_defined?(:@satisfied)
         @satisfied
       elsif @options[:build_env]
         require "extend/ENV"
-        ENV.with_build_environment(args: args) { yield @proc }
+        ENV.with_build_environment(
+          env: env, cc: cc, build_bottle: build_bottle, bottle_arch: bottle_arch,
+        ) do
+          yield @proc
+        end
       else
         yield @proc
       end

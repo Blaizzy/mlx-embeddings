@@ -52,15 +52,15 @@ module Homebrew
       switch "--all",
              depends_on:  "--json",
              description: "Print JSON of all available formulae."
-      switch :verbose,
+      switch "-v", "--verbose",
              description: "Show more verbose analytics data for <formula>."
-      switch :debug
+
       conflicts "--installed", "--all"
     end
   end
 
   def info
-    info_args.parse
+    args = info_args.parse
 
     if args.days.present?
       raise UsageError, "--days must be one of #{VALID_DAYS.join(", ")}" unless VALID_DAYS.include?(args.days)
@@ -83,17 +83,17 @@ module Homebrew
         raise FormulaUnspecifiedError if args.no_named?
       end
 
-      print_json
+      print_json(args: args)
     elsif args.github?
       raise FormulaUnspecifiedError if args.no_named?
 
       exec_browser(*args.formulae.map { |f| github_info(f) })
     else
-      print_info
+      print_info(args: args)
     end
   end
 
-  def print_info
+  def print_info(args:)
     if args.no_named?
       if args.analytics?
         Utils::Analytics.output(args: args)
@@ -126,7 +126,7 @@ module Homebrew
     end
   end
 
-  def print_json
+  def print_json(args:)
     ff = if args.all?
       Formula.sort
     elsif args.installed?
@@ -211,7 +211,7 @@ module Homebrew
 
     puts "From: #{Formatter.url(github_info(f))}"
 
-    puts "License: #{f.license}" if f.license
+    puts "License: #{f.license.join(", ")}" if f.license
 
     unless f.deps.empty?
       ohai "Dependencies"
@@ -256,7 +256,7 @@ module Homebrew
   def decorate_requirements(requirements)
     req_status = requirements.map do |req|
       req_s = req.display_s
-      req.satisfied?(args: args) ? pretty_installed(req_s) : pretty_uninstalled(req_s)
+      req.satisfied? ? pretty_installed(req_s) : pretty_uninstalled(req_s)
     end
     req_status.join(", ")
   end

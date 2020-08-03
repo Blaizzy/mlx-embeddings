@@ -28,14 +28,14 @@ module Homebrew
       switch "-d", "--description",
              description: "Search just descriptions for <text>. If <text> is flanked by slashes, "\
                           "it is interpreted as a regular expression."
-      switch :verbose
+
       conflicts "--search", "--name", "--description"
       min_named 1
     end
   end
 
   def desc
-    desc_args.parse
+    args = desc_args.parse
 
     search_type = if args.search?
       :either

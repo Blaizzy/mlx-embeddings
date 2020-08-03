@@ -33,13 +33,13 @@ module Homebrew
   end
 
   def __cache
-    __cache_args.parse
+    args = __cache_args.parse
 
     if args.no_named?
       puts HOMEBREW_CACHE
     elsif args.formula?
       args.named.each do |name|
-        print_formula_cache name
+        print_formula_cache name, args: args
       end
     elsif args.cask?
       args.named.each do |name|
@@ -47,7 +47,7 @@ module Homebrew
       end
     else
       args.named.each do |name|
-        print_formula_cache name
+        print_formula_cache name, args: args
       rescue FormulaUnavailableError
         begin
           print_cask_cache name
@@ -58,9 +58,9 @@ module Homebrew
     end
   end
 
-  def print_formula_cache(name)
-    formula = Formulary.factory name
-    if fetch_bottle?(formula)
+  def print_formula_cache(name, args:)
+    formula = Formulary.factory(name, force_bottle: args.force_bottle?, flags: args.flags_only)
+    if fetch_bottle?(formula, args: args)
       puts formula.bottle.cached_download
     else
       puts formula.cached_download

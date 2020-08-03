@@ -32,8 +32,8 @@ module Stdenv
     append "CFLAGS", "-I#{MacOS::X11.include}" unless MacOS::CLT.installed?
   end
 
-  def setup_build_environment(formula = nil, args: nil)
-    generic_setup_build_environment(formula, args: args)
+  def setup_build_environment(**options)
+    generic_setup_build_environment(**options)
 
     # sed is strict, and errors out when it encounters files with
     # mixed character sets
@@ -41,7 +41,7 @@ module Stdenv
     self["LC_CTYPE"] = "C"
 
     # Add lib and include etc. from the current macosxsdk to compiler flags:
-    macosxsdk(formula: formula)
+    macosxsdk(formula: @formula)
 
     return unless MacOS::Xcode.without_clt?
 

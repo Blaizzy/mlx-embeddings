@@ -159,6 +159,10 @@ class ExternalPatch
         end
       end
     end
+  rescue ErrorDuringExecution => e
+    f = resource.owner.owner
+    cmd, *args = e.cmd
+    raise BuildError.new(f, cmd, args, ENV.to_hash)
   end
 
   def inspect

@@ -18,7 +18,7 @@ module Homebrew
   end
 
   def __repository
-    __repository_args.parse
+    args = __repository_args.parse
 
     if args.no_named?
       puts HOMEBREW_REPOSITORY

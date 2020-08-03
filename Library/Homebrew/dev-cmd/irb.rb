@@ -18,8 +18,7 @@ module Homebrew
   module_function
 
   def irb_args
-    # work around IRB modifying ARGV.
-    Homebrew::CLI::Parser.new(ARGV.dup.freeze) do
+    Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
         `irb` [<options>]
 
@@ -34,7 +33,8 @@ module Homebrew
   end
 
   def irb
-    irb_args.parse
+    # work around IRB modifying ARGV.
+    args = irb_args.parse(ARGV.dup.freeze)
 
     if args.examples?
       puts "'v8'.f # => instance of the v8 formula"

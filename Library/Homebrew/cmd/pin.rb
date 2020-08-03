@@ -14,13 +14,13 @@ module Homebrew
         Pin the specified <formula>, preventing them from being upgraded when
         issuing the `brew upgrade` <formula> command. See also `unpin`.
       EOS
-      switch :debug
+
       min_named :formula
     end
   end
 
   def pin
-    pin_args.parse
+    args = pin_args.parse
 
     args.resolved_formulae.each do |f|
       if f.pinned?

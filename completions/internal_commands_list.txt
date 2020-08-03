@@ -89,6 +89,7 @@ untap
 up
 update
 update-license-data
+update-python-resources
 update-report
 update-reset
 update-test

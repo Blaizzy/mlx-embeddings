@@ -6,13 +6,11 @@ describe Homebrew::Style do
   around do |example|
     FileUtils.ln_s HOMEBREW_LIBRARY_PATH, HOMEBREW_LIBRARY/"Homebrew"
     FileUtils.ln_s HOMEBREW_LIBRARY_PATH.parent/".rubocop.yml", HOMEBREW_LIBRARY/".rubocop.yml"
-    FileUtils.ln_s HOMEBREW_LIBRARY_PATH.parent/".rubocop_shared.yml", HOMEBREW_LIBRARY/".rubocop_shared.yml"
 
     example.run
   ensure
     FileUtils.rm_f HOMEBREW_LIBRARY/"Homebrew"
     FileUtils.rm_f HOMEBREW_LIBRARY/".rubocop.yml"
-    FileUtils.rm_f HOMEBREW_LIBRARY/".rubocop_shared.yml"
   end
 
   before do

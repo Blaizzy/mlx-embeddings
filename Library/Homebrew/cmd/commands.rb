@@ -12,33 +12,39 @@ module Homebrew
 
         Show lists of built-in and external commands.
       EOS
-      switch :quiet,
+      switch "-q", "--quiet",
              description: "List only the names of commands without category headers."
       switch "--include-aliases",
              depends_on:  "--quiet",
              description: "Include aliases of internal commands."
-      switch :verbose
-      switch :debug
+
       max_named 0
     end
   end
 
   def commands
-    commands_args.parse
+    args = commands_args.parse
 
     if args.quiet?
       puts Formatter.columns(Commands.commands(aliases: args.include_aliases?))
       return
     end
 
-    ohai "Built-in commands", Formatter.columns(Commands.internal_commands)
-    puts
-    ohai "Built-in developer commands", Formatter.columns(Commands.internal_developer_commands)
+    prepend_separator = false
 
-    external_commands = Commands.external_commands
-    return if external_commands.blank?
+    {
+      "Built-in commands"           => Commands.internal_commands,
+      "Built-in developer commands" => Commands.internal_developer_commands,
+      "External commands"           => Commands.external_commands,
+      "Cask commands"               => Commands.cask_internal_commands,
+      "External cask commands"      => Commands.cask_external_commands,
+    }.each do |title, commands|
+      next if commands.blank?
 
-    puts
-    ohai "External commands", Formatter.columns(external_commands)
+      puts if prepend_separator
+      ohai title, Formatter.columns(commands)
+
+      prepend_separator ||= true
+    end
   end
 end

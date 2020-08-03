@@ -19,8 +19,7 @@ module Homebrew
              description: "Upload to the specified Bintray repository (default: `mirror`)."
       switch "--no-publish",
              description: "Upload to Bintray, but don't publish."
-      switch :verbose
-      switch :debug
+
       hide_from_man_page!
       min_named :formula
     end

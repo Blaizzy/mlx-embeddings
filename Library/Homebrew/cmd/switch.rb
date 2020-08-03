@@ -14,14 +14,13 @@ module Homebrew
 
         Symlink all of the specified <version> of <formula>'s installation into Homebrew's prefix.
       EOS
-      switch :verbose
-      switch :debug
+
       named 2
     end
   end
 
   def switch
-    switch_args.parse
+    args = switch_args.parse
 
     name = args.named.first
     rack = Formulary.to_rack(name)

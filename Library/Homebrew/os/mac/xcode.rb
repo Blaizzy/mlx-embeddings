@@ -15,7 +15,7 @@ module OS
       def latest_version
         latest_stable = "11.5"
         case MacOS.version
-        when "11.0", "10.16" then "12.0"
+        when "11.0"  then "12.0"
         when "10.15" then latest_stable
         when "10.14" then "11.3.1"
         when "10.13" then "10.1"
@@ -37,7 +37,7 @@ module OS
       # also in beta).
       def minimum_version
         case MacOS.version
-        when "11.0", "10.16" then "12.0"
+        when "11.0"  then "12.0"
         when "10.15" then "11.0"
         when "10.14" then "10.2"
         when "10.13" then "9.0"
@@ -257,7 +257,7 @@ module OS
       # and our CI systems have been updated.
       def latest_clang_version
         case MacOS.version
-        when "11.0", "10.16" then "1200.0.22.7"
+        when "11.0" then "1200.0.22.7"
         when "10.15" then "1103.0.32.59"
         when "10.14" then "1001.0.46.4"
         when "10.13" then "1000.10.44.2"
@@ -273,7 +273,7 @@ module OS
       # that macOS version.
       def minimum_version
         case MacOS.version
-        when "11.0", "10.16" then "12.0.0"
+        when "11.0"  then "12.0.0"
         when "10.15" then "11.0.0"
         when "10.14" then "10.0.0"
         when "10.13" then "9.0.0"

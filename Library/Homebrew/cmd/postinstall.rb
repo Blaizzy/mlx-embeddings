@@ -14,9 +14,7 @@ module Homebrew
 
         Rerun the post-install steps for <formula>.
       EOS
-      switch :force
-      switch :verbose
-      switch :debug
+
       min_named :keg
     end
   end
@@ -27,7 +25,6 @@ module Homebrew
     args.resolved_formulae.each do |f|
       ohai "Postinstalling #{f}"
       fi = FormulaInstaller.new(f)
-      fi.force = args.force?
       fi.post_install
     end
   end

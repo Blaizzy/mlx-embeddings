@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "system_config"
-require "cask/checkable"
 require "diagnostic"
 
 module Cask

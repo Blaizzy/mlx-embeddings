@@ -13,14 +13,13 @@ module Homebrew
 
         Display the path where <formula> is located.
       EOS
-      switch :verbose
-      switch :debug
+
       min_named :formula
     end
   end
 
   def formula
-    formula_args.parse
+    args = formula_args.parse
 
     args.formulae_paths.each(&method(:puts))
   end

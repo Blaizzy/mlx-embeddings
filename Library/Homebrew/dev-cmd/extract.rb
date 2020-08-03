@@ -89,14 +89,15 @@ module Homebrew
       EOS
       flag   "--version=",
              description: "Extract the specified <version> of <formula> instead of the most recent."
-      switch :force
-      switch :debug
+      switch "-f", "--force",
+             description: "Overwrite the destination formula if it already exists."
+
       named 2
     end
   end
 
   def extract
-    extract_args.parse
+    args = extract_args.parse
 
     if args.named.first !~ HOMEBREW_TAP_FORMULA_REGEX
       name = args.named.first.downcase

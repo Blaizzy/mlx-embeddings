@@ -1,5 +1,5 @@
-cask 'missing-url' do
-  version '1.2.3'
+cask "missing-url" do
+  version "1.2.3"
 
-  homepage 'https://brew.sh/'
+  homepage "https://brew.sh/"
 end

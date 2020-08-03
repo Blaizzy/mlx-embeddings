@@ -103,6 +103,12 @@ jobs:
         if [ "$RUNNER_OS" = "macOS" ]; then
           brew tap homebrew/cask
           brew update-reset Library/Taps/homebrew/homebrew-cask
+
+          # don't care about `brew cask style` here.
+          brew untap adoptopenjdk/openjdk
+
+          # don't care about `brew audit` here.
+          brew untap mongodb/brew
         else
           # Fix permissions for 'brew tests'
           sudo chmod -R g-w,o-w /home/linuxbrew /home/runner /opt
@@ -159,6 +165,13 @@ jobs:
     - name: Run brew style on official taps
       run: brew style --display-cop-names homebrew/bundle homebrew/services homebrew/test-bot
 
+    - name: Run brew cask style
+      if: matrix.os == 'macOS-latest'
+      run: brew cask style
+
+    - name: Run brew audit
+      run: brew audit --skip-style
+
     - name: Run vale for docs linting
       run: |
         brew install vale
@@ -174,12 +187,12 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: docker build -t brew --build-arg=version=16.04 .
 
-    - name: Run brew test-bot
+    - name: Run brew test-bot --only-formulae --test-default-formula
       run: |
         if [ "$RUNNER_OS" = "Linux" ]; then
-          docker run --rm brew brew test-bot
+          docker run --rm brew brew test-bot --only-formulae --test-default-formula
         else
-          brew test-bot
+          brew test-bot --only-formulae --test-default-formula
         fi
 
     - name: Deploy the Docker image to GitHub and Docker Hub

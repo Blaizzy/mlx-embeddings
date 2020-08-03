@@ -13,7 +13,7 @@ module Homebrew
 
         Install Homebrew's Bundler gems.
       EOS
-      switch :debug
+
       max_named 0
     end
   end

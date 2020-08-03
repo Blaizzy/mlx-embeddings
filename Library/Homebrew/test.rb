@@ -16,6 +16,8 @@ require "dev-cmd/test"
 TEST_TIMEOUT_SECONDS = 5 * 60
 
 begin
+  Homebrew.args = Homebrew::CLI::Parser.new.parse(ARGV.dup.freeze, ignore_invalid_options: true)
+
   args = Homebrew.test_args.parse
   error_pipe = UNIXSocket.open(ENV["HOMEBREW_ERROR_PIPE"], &:recv_io)
   error_pipe.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)
@@ -25,10 +27,10 @@ begin
   formula = args.resolved_formulae.first
   formula.extend(Homebrew::Assertions)
   formula.extend(Homebrew::FreePort)
-  formula.extend(Debrew::Formula) if Homebrew.args.debug?
+  formula.extend(Debrew::Formula) if args.debug?
 
   ENV.extend(Stdenv)
-  ENV.setup_build_environment(formula, args: args)
+  ENV.setup_build_environment(formula: formula)
 
   # tests can also return false to indicate failure
   Timeout.timeout TEST_TIMEOUT_SECONDS do

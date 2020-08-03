@@ -14,17 +14,16 @@ module Homebrew
         Migrate renamed packages to new names, where <formula> are old names of
         packages.
       EOS
-      switch :force,
+      switch "-f", "--force",
              description: "Treat installed <formula> and provided <formula> as if they are from "\
                           "the same taps and migrate them anyway."
-      switch :verbose
-      switch :debug
+
       min_named :formula
     end
   end
 
   def migrate
-    migrate_args.parse
+    args = migrate_args.parse
 
     args.resolved_formulae.each do |f|
       if f.oldname
@@ -34,7 +33,7 @@ module Homebrew
         raise "#{rack} is a symlink" if rack.symlink?
       end
 
-      migrator = Migrator.new(f)
+      migrator = Migrator.new(f, force: args.force?)
       migrator.migrate
     end
   end

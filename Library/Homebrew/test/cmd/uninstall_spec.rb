@@ -28,7 +28,7 @@ describe Homebrew do
     end
   end
 
-  let(:opts) { { dependency.rack => [Keg.new(dependency.installed_prefix)] } }
+  let(:kegs_by_rack) { { dependency.rack => [Keg.new(dependency.installed_prefix)] } }
 
   before do
     [dependency, dependent].each do |f|
@@ -53,7 +53,7 @@ describe Homebrew do
       ENV["HOMEBREW_DEVELOPER"] = "1"
 
       expect {
-        described_class.handle_unsatisfied_dependents(opts)
+        described_class.handle_unsatisfied_dependents(kegs_by_rack)
       }.to output(/Warning/).to_stderr
 
       expect(described_class).not_to have_failed
@@ -61,19 +61,15 @@ describe Homebrew do
 
     specify "when not developer" do
       expect {
-        described_class.handle_unsatisfied_dependents(opts)
+        described_class.handle_unsatisfied_dependents(kegs_by_rack)
       }.to output(/Error/).to_stderr
 
       expect(described_class).to have_failed
     end
 
-    specify "when not developer and --ignore-dependencies is specified" do
-      described_class.args = described_class.args.dup if described_class.args.frozen?
-      expect(described_class.args).to receive(:ignore_dependencies?).and_return(true)
-      described_class.args.freeze
-
+    specify "when not developer and `ignore_dependencies` is true" do
       expect {
-        described_class.handle_unsatisfied_dependents(opts)
+        described_class.handle_unsatisfied_dependents(kegs_by_rack, ignore_dependencies: true)
       }.not_to output.to_stderr
 
       expect(described_class).not_to have_failed

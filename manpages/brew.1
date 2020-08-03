@@ -428,8 +428,12 @@ Also print diffstat from commit\.
 Print only one line per commit\.
 .
 .TP
-\fB\-1\fR, \fB\-\-max\-count\fR
-Print only one or a specified number of commits\.
+\fB\-1\fR
+Print only one commit\.
+.
+.TP
+\fB\-n\fR, \fB\-\-max\-count\fR
+Print only a specified number of commits\.
 .
 .SS "\fBmigrate\fR [\fIoptions\fR] \fIformula\fR"
 Migrate renamed packages to new names, where \fIformula\fR are old names of packages\.
@@ -477,11 +481,23 @@ Include detailed version information\.
 .
 .TP
 \fB\-\-json\fR
-Print output in JSON format\. Currently the default and only accepted value for \fIversion\fR is \fBv1\fR\. See the docs for examples of using the JSON output: \fIhttps://docs\.brew\.sh/Querying\-Brew\fR
+Print output in JSON format\. There are two versions: v1 and v2\. v1 is deprecated and is currently the default if no version is specified\. v2 prints outdated formulae and casks\.
 .
 .TP
 \fB\-\-fetch\-HEAD\fR
 Fetch the upstream repository to detect if the HEAD installation of the formula is outdated\. Otherwise, the repository\'s HEAD will only be checked for updates when a new stable or development version has been released\.
+.
+.TP
+\fB\-\-greedy\fR
+Print outdated casks with \fBauto_updates\fR or \fBversion :latest\fR\.
+.
+.TP
+\fB\-\-formula\fR
+Treat all arguments as formulae\.
+.
+.TP
+\fB\-\-cask\fR
+Treat all arguments as casks\.
 .
 .SS "\fBpin\fR \fIformula\fR"
 Pin the specified \fIformula\fR, preventing them from being upgraded when issuing the \fBbrew upgrade\fR \fIformula\fR command\. See also \fBunpin\fR\.
@@ -498,7 +514,7 @@ Verify any alias symlinks in each tap\.
 .
 .TP
 \fB\-\-syntax\fR
-Syntax\-check all of Homebrew\'s Ruby files\.
+Syntax\-check all of Homebrew\'s Ruby files (if no \fB<tap>\fR is passed)\.
 .
 .SS "\fBreinstall\fR [\fIoptions\fR] \fIformula\fR"
 Uninstall and then install \fIformula\fR using the same options it was originally installed with, plus any appended brew formula options\.
@@ -659,12 +675,20 @@ Unpin \fIformula\fR, allowing them to be upgraded by \fBbrew upgrade\fR \fIformu
 .SS "\fBuntap\fR \fItap\fR"
 Remove a tapped formula repository\.
 .
-.SS "\fBupdate\fR, \fBup\fR [\fIoptions\fR]"
+.SS "\fBupdate\fR [\fIoptions\fR]"
 Fetch the newest version of Homebrew and all formulae from GitHub using \fBgit\fR(1) and perform any necessary migrations\.
 .
 .TP
 \fB\-\-merge\fR
 Use \fBgit merge\fR to apply updates (rather than \fBgit rebase\fR)\.
+.
+.TP
+\fB\-\-preinstall\fR
+Run on auto\-updates (e\.g\. before \fBbrew install\fR)\. Skips some slower steps\.
+.
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+Always do a slower, full update check (even if unnecessary)\.
 .
 .SS "\fBupdate\-reset\fR [\fIrepository\fR]"
 Fetch and reset Homebrew and all tap repositories (or any specified \fIrepository\fR) using \fBgit\fR(1) to their latest \fBorigin/master\fR\.
@@ -721,6 +745,10 @@ Print install times for each formula at the end of the run\.
 .TP
 \fB\-n\fR, \fB\-\-dry\-run\fR
 Show what would be upgraded, but do not actually upgrade anything\.
+.
+.TP
+\fB\-\-greedy\fR
+Upgrade casks with \fBauto_updates\fR or \fBversion :latest\fR
 .
 .SS "\fBuses\fR [\fIoptions\fR] \fIformula\fR"
 Show formulae that specify \fIformula\fR as a dependency (i\.e\. show dependents of \fIformula\fR)\. When given multiple formula arguments, show the intersection of formulae that use \fIformula\fR\. By default, \fBuses\fR shows all formulae that specify \fIformula\fR as a required or recommended dependency for their stable builds\.
@@ -988,6 +1016,10 @@ Specify the new git commit \fItag\fR for the formula\.
 \fB\-\-revision\fR
 Specify the new git commit \fIrevision\fR corresponding to the specified \fItag\fR\.
 .
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+Ignore duplicate open PRs\. Remove all mirrors if \-\-mirror= was not specified\.
+.
 .SS "\fBbump\-revision\fR [\fIoptions\fR] \fIformula\fR"
 Create a commit to increment the revision of \fIformula\fR\. If no revision is present, "revision 1" will be added\.
 .
@@ -1072,6 +1104,10 @@ Explicitly set the \fIlicense\fR of the new formula\.
 \fB\-\-tap\fR
 Generate the new formula within the given tap, specified as \fIuser\fR\fB/\fR\fIrepo\fR\.
 .
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+Ignore errors for disallowed formula names and named that shadow aliases\.
+.
 .SS "\fBdiy\fR [\fIoptions\fR]"
 Automatically determine the installation prefix for non\-Homebrew software\. Using the output from this command, you can install your own software into the Cellar and then link it into Homebrew\'s prefix with \fBbrew link\fR\.
 .
@@ -1092,6 +1128,10 @@ Look through repository history to find the most recent version of \fIformula\fR
 .TP
 \fB\-\-version\fR
 Extract the specified \fIversion\fR of \fIformula\fR instead of the most recent\.
+.
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+Overwrite the destination formula if it already exists\.
 .
 .SS "\fBformula\fR \fIformula\fR"
 Display the path where \fIformula\fR is located\.
@@ -1164,7 +1204,15 @@ Run \fBbrew pr\-publish\fR on matching pull requests\.
 Include pull requests that have failing status checks\.
 .
 .SS "\fBpr\-publish\fR [\fIoptions\fR] \fIpull_request\fR [\fIpull_request\fR \.\.\.]"
-Publish bottles for a pull request with GitHub Actions\. Requires write access to the \fBhomebrew/core\fR repository\.
+Publish bottles for a pull request with GitHub Actions\. Requires write access to the repository\.
+.
+.TP
+\fB\-\-tap\fR
+Target tap repository (default: \fBhomebrew/core\fR)\.
+.
+.TP
+\fB\-\-workflow\fR
+Target workflow filename (default: \fBpublish\-commit\-bottles\.yml\fR)\.
 .
 .SS "\fBpr\-pull\fR [\fIoptions\fR] \fIpull_request\fR [\fIpull_request\fR \.\.\.]"
 Download and publish bottles, and apply the bottle commit from a pull request with artifacts generated by GitHub Actions\. Requires write access to the repository\.
@@ -1322,6 +1370,10 @@ Test the head version of a formula\.
 \fB\-\-keep\-tmp\fR
 Retain the temporary files created for the test\.
 .
+.TP
+\fB\-\-retry\fR
+Retry if a testing fails\.
+.
 .SS "\fBtests\fR [\fIoptions\fR]"
 Run Homebrew\'s unit and integration tests\.
 .
@@ -1368,6 +1420,10 @@ Patches for \fIformula\fR will be applied to the unpacked source\.
 \fB\-g\fR, \fB\-\-git\fR
 Initialise a Git repository in the unpacked source\. This is useful for creating patches for the software\.
 .
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+Overwrite the destination directory if it already exists\.
+.
 .SS "\fBupdate\-license\-data\fR [\fIoptions\fR]"
 Update SPDX license data in the Homebrew repository\.
 .
@@ -1378,6 +1434,25 @@ Return a failing status code if current license data\'s version is the same as t
 .TP
 \fB\-\-commit\fR
 Commit changes to the SPDX license data\.
+.
+.SS "\fBupdate\-python\-resources\fR [\fIoptions\fR] \fIformula\fR"
+Update versions for PyPI resource blocks in \fIformula\fR\.
+.
+.TP
+\fB\-p\fR, \fB\-\-print\-only\fR
+Print the updated resource blocks instead of changing \fIformula\fR\.
+.
+.TP
+\fB\-s\fR, \fB\-\-silent\fR
+Suppress any output\.
+.
+.TP
+\fB\-\-ignore\-non\-pypi\-packages\fR
+Don\'t fail if \fIformula\fR is not a PyPI package\.
+.
+.TP
+\fB\-\-version\fR
+Use the specified \fIversion\fR when finding resources for \fIformula\fR\. If no version is specified, the current version for \fIformula\fR will be used\.
 .
 .SS "\fBupdate\-test\fR [\fIoptions\fR]"
 Run a test of \fBbrew update\fR with a new repository clone\. If no options are passed, use \fBorigin/master\fR as the start commit\.
@@ -1415,10 +1490,6 @@ Make some output more verbose\.
 .TP
 \fB\-d\fR, \fB\-\-debug\fR
 Display any debugging information\.
-.
-.TP
-\fB\-f\fR, \fB\-\-force\fR
-Override warnings and enable potentially unsafe operations\.
 .
 .SH "OFFICIAL EXTERNAL COMMANDS"
 .

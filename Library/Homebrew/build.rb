@@ -83,20 +83,38 @@ class Build
       fixopt(dep) unless dep.opt_prefix.directory?
     end
 
-    ENV.activate_extensions!(args: args)
+    ENV.activate_extensions!(env: args.env)
 
-    if superenv?(args: args)
+    if superenv?(args.env)
       ENV.keg_only_deps = keg_only_deps
       ENV.deps = formula_deps
       ENV.run_time_deps = run_time_deps
       ENV.x11 = reqs.any? { |rq| rq.is_a?(X11Requirement) }
-      ENV.setup_build_environment(formula, args: args)
+      ENV.setup_build_environment(
+        formula:      formula,
+        cc:           args.cc,
+        build_bottle: args.build_bottle?,
+        bottle_arch:  args.bottle_arch,
+      )
       post_superenv_hacks
-      reqs.each { |req| req.modify_build_environment(args: args) }
+      reqs.each do |req|
+        req.modify_build_environment(
+          env: args.env, cc: args.cc, build_bottle: args.build_bottle?, bottle_arch: args.bottle_arch,
+        )
+      end
       deps.each(&:modify_build_environment)
     else
-      ENV.setup_build_environment(formula, args: args)
-      reqs.each { |req| req.modify_build_environment(args: args) }
+      ENV.setup_build_environment(
+        formula:      formula,
+        cc:           args.cc,
+        build_bottle: args.build_bottle?,
+        bottle_arch:  args.bottle_arch,
+      )
+      reqs.each do |req|
+        req.modify_build_environment(
+          env: args.env, cc: args.cc, build_bottle: args.build_bottle?, bottle_arch: args.bottle_arch,
+        )
+      end
       deps.each(&:modify_build_environment)
 
       keg_only_deps.each do |dep|
@@ -117,7 +135,7 @@ class Build
     }
 
     with_env(new_env) do
-      formula.extend(Debrew::Formula) if Homebrew.args.debug?
+      formula.extend(Debrew::Formula) if args.debug?
 
       formula.update_head_version
 
@@ -190,7 +208,10 @@ class Build
 end
 
 begin
+  Homebrew.args = Homebrew::CLI::Parser.new.parse(ARGV.dup.freeze, ignore_invalid_options: true)
+
   args = Homebrew.install_args.parse
+
   error_pipe = UNIXSocket.open(ENV["HOMEBREW_ERROR_PIPE"], &:recv_io)
   error_pipe.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)
 
