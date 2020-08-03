@@ -105,7 +105,10 @@ module Homebrew
         end
       end
     end
-    [formula.tap&.full_name, "origin/master", "-"]
+    origin_branch = Utils.popen_read("git", "-C", formula.tap.path.to_s, "symbolic-ref", "-q", "--short",
+                                     "refs/remotes/origin/HEAD").chomp.presence
+    origin_branch ||= "origin/master"
+    [formula.tap&.full_name, origin_branch, "-"]
   end
 
   def bump_formula_pr
@@ -338,6 +341,7 @@ module Homebrew
     run_audit(formula, alias_rename, old_contents, args: args)
 
     formula.path.parent.cd do
+      _, base_branch = origin_branch.split("/")
       branch = "bump-#{formula.name}-#{new_formula_version}"
       git_dir = Utils.popen_read("git rev-parse --git-dir").chomp
       shallow = !git_dir.empty? && File.exist?("#{git_dir}/shallow")
@@ -353,7 +357,7 @@ module Homebrew
              "#{new_formula_version}' -- #{changed_files.join(" ")}"
         ohai "git push --set-upstream $HUB_REMOTE #{branch}:#{branch}"
         ohai "git checkout --quiet #{previous_branch}"
-        ohai "create pull request with GitHub API"
+        ohai "create pull request with GitHub API (base branch: #{base_branch})"
       else
 
         if args.no_fork?
@@ -386,7 +390,7 @@ module Homebrew
 
         begin
           url = GitHub.create_pull_request(tap_full_name, pr_title,
-                                           "#{username}:#{branch}", "master", pr_message)["html_url"]
+                                           "#{username}:#{branch}", base_branch, pr_message)["html_url"]
           if args.no_browse?
             puts url
           else
