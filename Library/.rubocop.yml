@@ -161,7 +161,6 @@ Lint/AmbiguousRegexpLiteral:
 Lint/ParenthesesAsGroupedExpression:
   Enabled: false
 
-
 # most metrics don't make sense to apply for formulae/taps
 Metrics/AbcSize:
   Enabled: false
