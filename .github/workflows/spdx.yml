@@ -6,6 +6,7 @@ on:
 
 jobs:
   spdx:
+    if: github.repository == 'Homebrew/brew'
     runs-on: ubuntu-latest
     env:
       HOMEBREW_NO_ANALYTICS: 1
