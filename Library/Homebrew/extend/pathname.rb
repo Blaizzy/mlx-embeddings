@@ -374,8 +374,11 @@ class Pathname
 
   # Writes an exec script that invokes a Java jar
   def write_jar_script(target_jar, script_name, java_opts = "", java_version: nil)
-    (self/script_name).write_env_script "java", "#{java_opts} -jar \"#{target_jar}\"",
-                                        Language::Java.overridable_java_home_env(java_version)
+    (self/script_name).write <<~EOS
+      #!/bin/bash
+      export JAVA_HOME="#{Language::Java.overridable_java_home_env(java_version)[:JAVA_HOME]}"
+      exec "${JAVA_HOME}/bin/java" #{java_opts} -jar "#{target_jar}" "$@"
+    EOS
   end
 
   def install_metafiles(from = Pathname.pwd)
