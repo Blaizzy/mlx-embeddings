@@ -41,6 +41,7 @@ case "$*" in
   --prefix)            echo "$HOMEBREW_PREFIX"; exit 0 ;;
   --cellar)            echo "$HOMEBREW_CELLAR"; exit 0 ;;
   --repository|--repo) echo "$HOMEBREW_REPOSITORY"; exit 0 ;;
+  --caskroom)          echo "$HOMEBREW_PREFIX/Caskroom"; exit 0 ;;
 esac
 
 # A depth of 1 means this command was directly invoked by a user.

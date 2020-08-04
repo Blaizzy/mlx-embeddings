@@ -35,6 +35,7 @@ module Homebrew
         @resolved_formulae_casks = nil
         @formulae_paths = nil
         @casks = nil
+        @loaded_casks = nil
         @kegs = nil
         @kegs_casks = nil
 
@@ -123,6 +124,10 @@ module Homebrew
       def casks
         @casks ||= downcased_unique_named.grep(HOMEBREW_CASK_TAP_CASK_REGEX)
                                          .freeze
+      end
+
+      def loaded_casks
+        @loaded_casks ||= downcased_unique_named.map(&Cask::CaskLoader.method(:load)).freeze
       end
 
       def kegs
