@@ -1129,14 +1129,17 @@ class FormulaInstaller
   end
 
   def forbidden_license_check
-    forbidden_licenses = Homebrew::EnvConfig.forbidden_licenses.to_s.split(" ")
+    forbidden_licenses = Homebrew::EnvConfig.forbidden_licenses
+                                            .to_s
+                                            .sub("Public Domain", "public_domain")
+                                            .split(" ")
     return if forbidden_licenses.blank?
 
     compute_dependencies.each do |dep, _|
       next if @ignore_deps
 
       dep_f = dep.to_formula
-      next unless dep_f.license.all? { |license| forbidden_licenses.include? license }
+      next unless dep_f.license.all? { |license| forbidden_licenses.include?(license.to_s) }
 
       raise CannotInstallFormulaError, <<~EOS
         The installation of #{formula.name} has a dependency on #{dep.name} where all its licenses are forbidden: #{dep_f.license}.
@@ -1144,7 +1147,7 @@ class FormulaInstaller
     end
     return if @only_deps
 
-    return unless formula.license.all? { |license| forbidden_licenses.include? license }
+    return unless formula.license.all? { |license| forbidden_licenses.include?(license.to_s) }
 
     raise CannotInstallFormulaError, <<~EOS
       #{formula.name}'s licenses are all forbidden: #{formula.license}.

@@ -337,12 +337,12 @@ module Homebrew
 
     def audit_license
       if formula.license.present?
-        non_standard_licenses = []
-        formula.license.each do |license|
+        non_standard_licenses = formula.license.map do |license|
+          next if license == :public_domain
           next if @spdx_data["licenses"].any? { |spdx| spdx["licenseId"] == license }
 
-          non_standard_licenses << license
-        end
+          license
+        end.compact
 
         if non_standard_licenses.present?
           problem "Formula #{formula.name} contains non-standard SPDX licenses: #{non_standard_licenses}."

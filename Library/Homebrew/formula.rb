@@ -2221,6 +2221,8 @@ class Formula
     # Multiple licenses means that the software is licensed under multiple licenses.
     # Do not use multiple licenses if e.g. different parts are under different licenses.
     # <pre>license "BSD-2-Clause"</pre>
+    # <pre>license ["MIT", "GPL-2.0"]</pre>
+    # <pre>license :public_domain</pre>
     def license(args = nil)
       if args.nil?
         @licenses

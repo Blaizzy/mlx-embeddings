@@ -211,7 +211,13 @@ module Homebrew
 
     puts "From: #{Formatter.url(github_info(f))}"
 
-    puts "License: #{f.license.join(", ")}" if f.license
+    if f.license.present?
+      licenses = f.license
+                  .map(&:to_s)
+                  .join(", ")
+                  .sub("public_domain", "Public Domain")
+      puts "License: #{licenses}"
+    end
 
     unless f.deps.empty?
       ohai "Dependencies"
