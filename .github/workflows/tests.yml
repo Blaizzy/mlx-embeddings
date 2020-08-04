@@ -114,7 +114,7 @@ jobs:
           sudo chmod -R g-w,o-w /home/linuxbrew /home/runner /opt
         fi
 
-    - name: Run brew style
+    - name: Run brew style on Homebrew/brew
       run: brew style --display-cop-names
 
     - name: Run brew man
@@ -160,16 +160,21 @@ jobs:
       run: brew readall --aliases
 
     - name: Run brew style on homebrew-core
+      if: matrix.os == 'macOS-latest'
+      run: brew style --display-cop-names homebrew/core
+
+    - name: Run brew style on linuxbrew-core
+      if: matrix.os == 'ubuntu-latest'
       run: brew style --display-cop-names homebrew/core
 
     - name: Run brew style on official taps
       run: brew style --display-cop-names homebrew/bundle homebrew/services homebrew/test-bot
 
-    - name: Run brew cask style
+    - name: Run brew cask style on all taps
       if: matrix.os == 'macOS-latest'
       run: brew cask style
 
-    - name: Run brew audit
+    - name: Run brew audit --skip-style on all taps
       run: brew audit --skip-style
 
     - name: Run vale for docs linting
