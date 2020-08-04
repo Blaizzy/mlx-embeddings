@@ -91,7 +91,7 @@ Try to summarise from the [`homepage`](https://rubydoc.brew.sh/Formula#homepage%
 
 **We don’t accept new formulae into Homebrew/homebrew-core without a [`license`](https://rubydoc.brew.sh/Formula#license-class_method)!**
 
-Find the license identifier from the [SPDX License List](https://spdx.org/licenses/). We only accept licenses from this list that are a [Debian Free Software Guidelines license](https://wiki.debian.org/DFSGLicenses).
+Find the license identifier from the [SPDX License List](https://spdx.org/licenses/) (or `:public_domain` for software in the public domain). We only accept licenses from this list that are a [Debian Free Software Guidelines license](https://wiki.debian.org/DFSGLicenses) (or public domain based on [the Debian Free Software Guidelines on Public Domain software](https://wiki.debian.org/DFSGLicenses#Public_Domain)).
 
 If the software is available under multiple licenses, you should list them all in an array:
 
