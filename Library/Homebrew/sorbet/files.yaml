@@ -1,6 +1,5 @@
 false:
   - ./bintray.rb
-  - ./bottle_publisher.rb
   - ./brew.rb
   - ./build.rb
   - ./cask/artifact/abstract_artifact.rb
@@ -268,7 +267,6 @@ false:
   - ./test.rb
   - ./test/ENV_spec.rb
   - ./test/bintray_spec.rb
-  - ./test/bottle_publisher_spec.rb
   - ./test/cask_dependent_spec.rb
   - ./test/cask/artifact/alt_target_spec.rb
   - ./test/cask/artifact/app_spec.rb
