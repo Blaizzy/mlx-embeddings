@@ -61,6 +61,8 @@ Metrics/MethodLength:
 Metrics/ModuleLength:
   Enabled: true
   Max: 500
+  Exclude:
+    - 'test/dev-cmd/audit_spec.rb'
 Metrics/PerceivedComplexity:
   Enabled: true
   Max: 80
