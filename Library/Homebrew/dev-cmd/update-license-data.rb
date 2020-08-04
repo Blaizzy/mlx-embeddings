@@ -1,13 +1,10 @@
 # frozen_string_literal: true
 
 require "cli/parser"
-require "utils/github"
+require "utils/spdx"
 
 module Homebrew
   module_function
-
-  SPDX_PATH = (HOMEBREW_LIBRARY_PATH/"data/spdx.json").freeze
-  SPDX_API_URL = "https://api.github.com/repos/spdx/license-list-data/releases/latest"
 
   def update_license_data_args
     Homebrew::CLI::Parser.new do
@@ -29,16 +26,14 @@ module Homebrew
     args = update_license_data_args.parse
     ohai "Updating SPDX license data..."
 
-    latest_tag = GitHub.open_api(SPDX_API_URL)["tag_name"]
-    data_url = "https://raw.githubusercontent.com/spdx/license-list-data/#{latest_tag}/json/licenses.json"
-    curl_download(data_url, to: SPDX_PATH, partial: false)
+    SPDX.download_latest_license_data!
 
-    Homebrew.failed = system("git", "diff", "--stat", "--exit-code", SPDX_PATH) if args.fail_if_not_changed?
+    Homebrew.failed = system("git", "diff", "--stat", "--exit-code", SPDX::JSON_PATH) if args.fail_if_not_changed?
 
     return unless args.commit?
 
     ohai "git add"
-    safe_system "git", "add", SPDX_PATH
+    safe_system "git", "add", SPDX::JSON_PATH
     ohai "git commit"
     system "git", "commit", "--message", "data/spdx.json: update to #{latest_tag}"
   end
