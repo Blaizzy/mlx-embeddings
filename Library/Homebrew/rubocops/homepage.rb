@@ -64,7 +64,7 @@ module RuboCop
 
           when %r{^https://github.com.*\.git}
             offending_node(parameters(homepage_node).first)
-            problem "GitHub URLs (`#{homepage}`) should not end with .git"
+            problem "GitHub homepages (`#{homepage}`) should not end with .git"
 
           # There's an auto-redirect here, but this mistake is incredibly common too.
           # Only applies to the homepage and subdomains for now, not the FTP URLs.
