@@ -33,23 +33,19 @@ module Cask
 
       def self.upgrade_casks(
         *casks,
-        force: nil,
-        greedy: nil,
-        dry_run: nil,
+        force: false,
+        greedy: false,
+        dry_run: false,
+        skip_cask_deps: false,
+        verbose: false,
         binaries: nil,
-        skip_cask_deps: nil,
-        verbose: nil,
         quarantine: nil,
         require_sha: nil
       )
         # TODO: Handle this in `CLI::Parser`.
-        binaries    = Homebrew::EnvConfig.cask_opts_binaries?    if binaries.nil?
-        dry_run     = Homebrew::EnvConfig.cask_opts_dry_run?     if dry_run.nil?
-        force       = Homebrew::EnvConfig.cask_opts_force?       if force.nil?
-        greedy      = Homebrew::EnvConfig.cask_opts_greedy?      if greedy.nil?
-        quarantine  = Homebrew::EnvConfig.cask_opts_quarantine?  if quarantine.nil?
+        binaries = Homebrew::EnvConfig.cask_opts_binaries? if binaries.nil?
+        quarantine = Homebrew::EnvConfig.cask_opts_quarantine? if quarantine.nil?
         require_sha = Homebrew::EnvConfig.cask_opts_require_sha? if require_sha.nil?
-        verbose     = Homebrew::EnvConfig.cask_opts_verbose?     if verbose.nil?
 
         outdated_casks = if casks.empty?
           Caskroom.casks.select do |cask|

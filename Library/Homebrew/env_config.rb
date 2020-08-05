@@ -332,18 +332,6 @@ module Homebrew
       true
     end
 
-    def cask_opts_dry_run?
-      cask_opts.include?("--dry-run")
-    end
-
-    def cask_opts_force?
-      cask_opts.include?("--force")
-    end
-
-    def cask_opts_greedy?
-      cask_opts.include?("--greedy")
-    end
-
     def cask_opts_quarantine?
       cask_opts.reverse_each do |opt|
         return true if opt == "--quarantine"
@@ -355,14 +343,6 @@ module Homebrew
 
     def cask_opts_require_sha?
       cask_opts.include?("--require-sha")
-    end
-
-    def cask_opts_skip_cask_deps?
-      cask_opts.include?("--skip-cask-deps")
-    end
-
-    def cask_opts_verbose?
-      cask_opts.include?("--verbose")
     end
   end
 end
