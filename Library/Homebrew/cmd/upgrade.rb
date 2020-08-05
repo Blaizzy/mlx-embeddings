@@ -133,10 +133,16 @@ module Homebrew
   end
 
   def upgrade_outdated_casks(casks, args:)
-    cask_upgrade = Cask::Cmd::Upgrade.new(casks)
-    cask_upgrade.force = args.force?
-    cask_upgrade.dry_run = args.dry_run?
-    cask_upgrade.greedy = args.greedy?
-    cask_upgrade.run
+    Cask::Cmd::Upgrade.upgrade_casks(
+      *casks,
+      force:          args.force?,
+      greedy:         args.greedy?,
+      dry_run:        args.dry_run?,
+      binaries:       args.binaries?,
+      quarantine:     args.quarantine?,
+      require_sha:    args.require_sha?,
+      skip_cask_deps: args.skip_cask_deps?,
+      verbose:        args.verbose?,
+    )
   end
 end
