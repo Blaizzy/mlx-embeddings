@@ -98,6 +98,16 @@ module ELFShim
     @interpreter = patchelf_patcher.interpreter
   end
 
+  def patch!(interpreter: nil, rpath: nil)
+    return if interpreter.blank? && rpath.blank?
+
+    if HOMEBREW_PATCHELF_RB_WRITE
+      save_using_patchelf_rb interpreter, rpath
+    else
+      save_using_patchelf interpreter, rpath
+    end
+  end
+
   def dynamic_elf?
     return @dynamic_elf if defined? @dynamic_elf
 
@@ -148,13 +158,30 @@ module ELFShim
   end
   private_constant :Metadata
 
+  def save_using_patchelf(new_interpreter, new_rpath)
+    patchelf = DevelopmentTools.locate "patchelf"
+    odie "Could not locate patchelf, please: brew install patchelf." if patchelf.blank?
+    args = []
+    args << "--set-interpreter" << new_interpreter if new_interpreter.present?
+    args << "--force-rpath" << "--set-rpath" << new_rpath if new_rpath.present?
+
+    Homebrew.safe_system(patchelf, *args, to_s)
+  end
+
+  def save_using_patchelf_rb(new_interpreter, new_rpath)
+    patcher = patchelf_patcher
+    patcher.interpreter = new_interpreter if new_interpreter.present?
+    patcher.rpath = new_rpath if new_rpath.present?
+    patcher.save(patchelf_compatible: true)
+  end
+
   def rpath_using_patchelf_rb
     patchelf_patcher.runpath || patchelf_patcher.rpath
   end
 
   def patchelf_patcher
     require "patchelf"
-    @patchelf_patcher ||= PatchELF::Patcher.new to_s, on_error: :silent
+    @patchelf_patcher ||= ::PatchELF::Patcher.new to_s, on_error: :silent
   end
 
   def metadata

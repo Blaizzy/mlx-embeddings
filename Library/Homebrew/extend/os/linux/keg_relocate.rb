@@ -18,10 +18,7 @@ class Keg
   def change_rpath(file, old_prefix, new_prefix)
     return if !file.elf? || !file.dynamic_elf?
 
-    patchelf = DevelopmentTools.locate "patchelf"
-    odie "Could not locate patchelf, please: brew install patchelf." if patchelf.nil?
-    cmd = [patchelf]
-
+    updated = {}
     old_rpath = file.rpath
     new_rpath = if old_rpath
       rpath = old_rpath.split(":")
@@ -30,11 +27,10 @@ class Keg
 
       lib_path = "#{new_prefix}/lib"
       rpath << lib_path unless rpath.include? lib_path
-      new_rpath = rpath.join(":")
-      cmd.push  "--force-rpath", "--set-rpath", new_rpath
 
-      new_rpath
+      rpath.join(":")
     end
+    updated[:rpath] = new_rpath if old_rpath != new_rpath
 
     old_interpreter = file.interpreter
     new_interpreter = if old_interpreter.nil?
@@ -44,11 +40,9 @@ class Keg
     else
       old_interpreter.sub old_prefix, new_prefix
     end
-    cmd << "--set-interpreter" << new_interpreter if old_interpreter != new_interpreter
+    updated[:interpreter] = new_interpreter if old_interpreter != new_interpreter
 
-    return if old_rpath == new_rpath && old_interpreter == new_interpreter
-
-    safe_system(*cmd, file)
+    file.patch!(interpreter: updated[:interpreter], rpath: updated[:rpath])
   end
 
   def detect_cxx_stdlibs(options = {})
