@@ -53,7 +53,7 @@ module Repology
     outdated_packages
   end
 
-  def validate_and_format_packages(outdated_repology_packages)
+  def validate_and_format_packages(outdated_repology_packages, limit)
     packages = {}
     outdated_repology_packages.each do |_name, repositories|
       # identify homebrew repo
@@ -68,7 +68,7 @@ module Repology
       package_details = format_package(srcname, latest_version)
       packages[srcname] = package_details unless package_details.nil?
 
-      break if Homebrew.args.limit && packages.size >= Homebrew.args.limit.to_i
+      break if limit && packages.size >= limit
     end
 
     packages
