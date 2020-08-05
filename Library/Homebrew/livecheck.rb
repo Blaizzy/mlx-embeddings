@@ -15,6 +15,7 @@ class Livecheck
     @regex = nil
     @skip = false
     @skip_msg = nil
+    @strategy = nil
     @url = nil
   end
 
@@ -40,6 +41,22 @@ class Livecheck
     @skip
   end
 
+  # Sets the strategy instance variable to the provided symbol or returns the
+  # strategy instance variable when no argument is provided. The strategy
+  # symbols use snake case (e.g., `:page_match`) and correspond to the strategy
+  # file name.
+  # @param symbol [Symbol] symbol for the desired strategy
+  def strategy(symbol = nil)
+    case symbol
+    when nil
+      @strategy
+    when Symbol
+      @strategy = symbol
+    else
+      raise TypeError, "Livecheck#strategy expects a Symbol"
+    end
+  end
+
   # Sets the url instance variable to the argument given, returns the url
   # instance variable when no argument is given.
   def url(val = nil)
@@ -61,6 +78,7 @@ class Livecheck
       "regex"    => @regex,
       "skip"     => @skip,
       "skip_msg" => @skip_msg,
+      "strategy" => @strategy,
       "url"      => @url,
     }
   end

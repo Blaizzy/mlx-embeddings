@@ -44,6 +44,23 @@ describe Livecheck do
     end
   end
 
+  describe "#strategy" do
+    it "returns nil if not set" do
+      expect(livecheckable.strategy).to be nil
+    end
+
+    it "returns the Symbol if set" do
+      livecheckable.strategy(:page_match)
+      expect(livecheckable.strategy).to eq(:page_match)
+    end
+
+    it "raises a TypeError if the argument isn't a Symbol" do
+      expect {
+        livecheckable.strategy("page_match")
+      }.to raise_error(TypeError, "Livecheck#strategy expects a Symbol")
+    end
+  end
+
   describe "#url" do
     it "returns nil if unset" do
       expect(livecheckable.url).to be nil
@@ -57,7 +74,15 @@ describe Livecheck do
 
   describe "#to_hash" do
     it "returns a Hash of all instance variables" do
-      expect(livecheckable.to_hash).to eq({ "regex"=>nil, "skip"=>false, "skip_msg"=>nil, "url"=>nil })
+      expect(livecheckable.to_hash).to eq(
+        {
+          "regex"    => nil,
+          "skip"     => false,
+          "skip_msg" => nil,
+          "strategy" => nil,
+          "url"      => nil,
+        },
+      )
     end
   end
 end
