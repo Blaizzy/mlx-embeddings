@@ -11,17 +11,31 @@ module Cask
       end
 
       def run
+        self.class.uninstall_casks(
+          *casks,
+          binaries: binaries?,
+          verbose: verbose?,
+          force: force?
+        )
+      end
+
+      def self.uninstall_casks(*casks, binaries: nil, verbose: nil, force: nil)
+        # TODO: Handle this in `CLI::Parser`.
+        binaries = Homebrew::EnvConfig.cask_opts_binaries? if binaries.nil?
+        force    = Homebrew::EnvConfig.cask_opts_force?    if force.nil?
+        verbose  = Homebrew::EnvConfig.cask_opts_verbose?  if verbose.nil?
+
         casks.each do |cask|
           odebug "Uninstalling Cask #{cask}"
 
-          raise CaskNotInstalledError, cask unless cask.installed? || force?
+          raise CaskNotInstalledError, cask unless cask.installed? || force
 
           if cask.installed? && !cask.installed_caskfile.nil?
             # use the same cask file that was used for installation, if possible
             cask = CaskLoader.load(cask.installed_caskfile) if cask.installed_caskfile.exist?
           end
 
-          Installer.new(cask, binaries: binaries?, verbose: verbose?, force: force?).uninstall
+          Installer.new(cask, binaries: binaries, verbose: verbose, force: force).uninstall
 
           next if (versions = cask.versions).empty?
 
