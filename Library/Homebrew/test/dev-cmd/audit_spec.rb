@@ -174,8 +174,8 @@ module Homebrew
         expect(fa.problems).to be_empty
       end
 
-      it "checks online and verifies that a standard license id is in the same exempted license group"\
-        "as what is indicated on its Github repo" do
+      it "checks online and verifies that a standard license id is in the same exempted license group" \
+         "as what is indicated on its GitHub repo" do
         fa = formula_auditor "cask", <<~RUBY, spdx_data: spdx_data, online: true, new_formula: true
           class Cask < Formula
             url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
@@ -188,8 +188,8 @@ module Homebrew
         expect(fa.problems).to be_empty
       end
 
-      it "checks online and verifies that a standard license array is in the same exempted license group"\
-        "as what is indicated on its Github repo" do
+      it "checks online and verifies that a standard license array is in the same exempted license group" \
+         "as what is indicated on its GitHub repo" do
         fa = formula_auditor "cask", <<~RUBY, spdx_data: spdx_data, online: true, new_formula: true
           class Cask < Formula
             url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
