@@ -104,7 +104,7 @@ describe RuboCop::Cop::FormulaAudit::Homepage do
                                   column:   2,
                                   source:   source }]
         elsif homepage.match?("https://github.com/foo/bar.git")
-          expected_offenses = [{  message:  "GitHub URLs (`#{homepage}`) should not end with .git",
+          expected_offenses = [{  message:  "GitHub homepages (`#{homepage}`) should not end with .git",
                                   severity: :convention,
                                   line:     2,
                                   column:   11,
