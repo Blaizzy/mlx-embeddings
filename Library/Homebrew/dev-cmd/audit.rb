@@ -335,6 +335,14 @@ module Homebrew
       openssl@1.1
     ].freeze
 
+    PERMITTED_LICENSE_MISMATCHES = {
+      "AGPL-3.0" => ["AGPL-3.0-only", "AGPL-3.0-or-later"],
+      "GPL-2.0"  => ["GPL-2.0-only",  "GPL-2.0-or-later"],
+      "GPL-3.0"  => ["GPL-3.0-only",  "GPL-3.0-or-later"],
+      "LGPL-2.1" => ["LGPL-2.1-only", "LGPL-2.1-or-later"],
+      "LGPL-3.0" => ["LGPL-3.0-only", "LGPL-3.0-or-later"],
+    }.freeze
+
     def audit_license
       if formula.license.present?
         non_standard_licenses = formula.license.map do |license|
@@ -355,12 +363,12 @@ module Homebrew
 
         github_license = GitHub.get_repo_license(user, repo)
         return if github_license && (formula.license + ["NOASSERTION"]).include?(github_license)
+        return if PERMITTED_LICENSE_MISMATCHES[github_license]&.any? { |license| formula.license.include? license }
 
-        problem "License mismatch - GitHub license is: #{Array(github_license)}, "\
-                "but Formulae license states: #{formula.license}."
+        problem "Formula license #{formula.license} does not match GitHub license #{Array(github_license)}."
 
-      elsif @new_formula
-        problem "No license specified for package."
+      elsif @new_formula && @core_tap
+        problem "Formulae in homebrew/core must specify a license."
       end
     end
 
