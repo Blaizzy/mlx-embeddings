@@ -131,7 +131,7 @@ module Homebrew
     check_open_pull_requests(formula, tap_full_name, args: args)
 
     new_version = args.version
-    check_all_pull_requests(formula, tap_full_name, version: new_version, args: args) if new_version
+    check_closed_pull_requests(formula, tap_full_name, version: new_version, args: args) if new_version
 
     requested_spec = :stable
     formula_spec = formula.stable
@@ -162,10 +162,10 @@ module Homebrew
     old_version = old_formula_version.to_s
     forced_version = new_version.present?
     new_url_hash = if new_url && new_hash
-      check_all_pull_requests(formula, tap_full_name, url: new_url, args: args) unless new_version
+      check_closed_pull_requests(formula, tap_full_name, url: new_url, args: args) unless new_version
       true
     elsif new_tag && new_revision
-      check_all_pull_requests(formula, tap_full_name, url: old_url, tag: new_tag, args: args) unless new_version
+      check_closed_pull_requests(formula, tap_full_name, url: old_url, tag: new_tag, args: args) unless new_version
       false
     elsif !hash_type
       odie "#{formula}: no --tag= or --version= argument specified!" if !new_tag && !new_version
@@ -176,7 +176,7 @@ module Homebrew
           and old tag are both #{new_tag}.
         EOS
       end
-      check_all_pull_requests(formula, tap_full_name, url: old_url, tag: new_tag, args: args) unless new_version
+      check_closed_pull_requests(formula, tap_full_name, url: old_url, tag: new_tag, args: args) unless new_version
       resource_path, forced_version = fetch_resource(formula, new_version, old_url, tag: new_tag)
       new_revision = Utils.popen_read("git -C \"#{resource_path}\" rev-parse -q --verify HEAD")
       new_revision = new_revision.strip
@@ -193,7 +193,7 @@ module Homebrew
             #{new_url}
         EOS
       end
-      check_all_pull_requests(formula, tap_full_name, url: new_url, args: args) unless new_version
+      check_closed_pull_requests(formula, tap_full_name, url: new_url, args: args) unless new_version
       resource_path, forced_version = fetch_resource(formula, new_version, new_url)
       tar_file_extensions = %w[.tar .tb2 .tbz .tbz2 .tgz .tlz .txz .tZ]
       if tar_file_extensions.any? { |extension| new_url.include? extension }
@@ -508,14 +508,14 @@ module Homebrew
     check_for_duplicate_pull_requests(pull_requests, args: args)
   end
 
-  def check_all_pull_requests(formula, tap_full_name, version: nil, url: nil, tag: nil, args:)
+  def check_closed_pull_requests(formula, tap_full_name, version: nil, url: nil, tag: nil, args:)
     unless version
       specs = {}
       specs[:tag] = tag if tag
       version = Version.detect(url, specs)
     end
-    # if we haven't already found open requests, try for an exact match across all requests
-    pull_requests = fetch_pull_requests("#{formula.name} #{version}", tap_full_name)
+    # if we haven't already found open requests, try for an exact match across closed requests
+    pull_requests = fetch_pull_requests("#{formula.name} #{version}", tap_full_name, state: "closed")
     check_for_duplicate_pull_requests(pull_requests, args: args)
   end
 
