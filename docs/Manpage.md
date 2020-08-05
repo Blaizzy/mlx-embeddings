@@ -1398,6 +1398,9 @@ Note that environment variables must have a value set to be detected. For exampl
 
     *Default:* macOS: `$HOME/Library/Caches/Homebrew`, Linux: `$XDG_CACHE_HOME/Homebrew` or `$HOME/.cache/Homebrew`.
 
+  * `HOMEBREW_CASK_OPTS`:
+    Options which should be used for all `cask` commands.
+
   * `HOMEBREW_CLEANUP_MAX_AGE_DAYS`:
     Cleanup all cached files older than this many days.
 

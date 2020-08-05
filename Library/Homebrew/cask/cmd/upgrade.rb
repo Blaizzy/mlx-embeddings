@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "env_config"
 require "cask/config"
 
 module Cask
@@ -17,14 +18,45 @@ module Cask
       end
 
       def run
-        outdated_casks = casks(alternative: lambda {
-          Caskroom.casks.select do |cask|
-            cask.outdated?(greedy?)
-          end
-        }).select do |cask|
-          raise CaskNotInstalledError, cask unless cask.installed? || force?
+        self.class.upgrade_casks(
+          *casks,
+          force:          force?,
+          greedy:         greedy?,
+          dry_run:        dry_run?,
+          binaries:       binaries?,
+          quarantine:     quarantine?,
+          require_sha:    require_sha?,
+          skip_cask_deps: skip_cask_deps?,
+          verbose:        verbose?,
+        )
+      end
 
-          cask.outdated?(true)
+      def self.upgrade_casks(
+        *casks,
+        force: false,
+        greedy: false,
+        dry_run: false,
+        skip_cask_deps: false,
+        verbose: false,
+        binaries: nil,
+        quarantine: nil,
+        require_sha: nil
+      )
+        # TODO: Handle this in `CLI::Parser`.
+        binaries = Homebrew::EnvConfig.cask_opts_binaries? if binaries.nil?
+        quarantine = Homebrew::EnvConfig.cask_opts_quarantine? if quarantine.nil?
+        require_sha = Homebrew::EnvConfig.cask_opts_require_sha? if require_sha.nil?
+
+        outdated_casks = if casks.empty?
+          Caskroom.casks.select do |cask|
+            cask.outdated?(greedy)
+          end
+        else
+          casks.select do |cask|
+            raise CaskNotInstalledError, cask unless cask.installed? || force
+
+            cask.outdated?(true)
+          end
         end
 
         if outdated_casks.empty?
@@ -32,9 +64,11 @@ module Cask
           return
         end
 
-        ohai "Casks with `auto_updates` or `version :latest` will not be upgraded" if args.empty? && !greedy?
-        verb = dry_run? ? "Would upgrade" : "Upgrading"
+        ohai "Casks with `auto_updates` or `version :latest` will not be upgraded" if casks.empty? && !greedy
+
+        verb = dry_run ? "Would upgrade" : "Upgrading"
         oh1 "#{verb} #{outdated_casks.count} #{"outdated package".pluralize(outdated_casks.count)}:"
+
         caught_exceptions = []
 
         upgradable_casks = outdated_casks.map { |c| [CaskLoader.load(c.installed_caskfile), c] }
@@ -42,10 +76,14 @@ module Cask
         puts upgradable_casks
           .map { |(old_cask, new_cask)| "#{new_cask.full_name} #{old_cask.version} -> #{new_cask.version}" }
           .join(", ")
-        return if dry_run?
+        return if dry_run
 
         upgradable_casks.each do |(old_cask, new_cask)|
-          upgrade_cask(old_cask, new_cask)
+          upgrade_cask(
+            old_cask, new_cask,
+            binaries: binaries, force: force, skip_cask_deps: skip_cask_deps, verbose: verbose,
+            quarantine: quarantine, require_sha: require_sha
+          )
         rescue => e
           caught_exceptions << e.exception("#{new_cask.full_name}: #{e}")
           next
@@ -56,26 +94,29 @@ module Cask
         raise caught_exceptions.first if caught_exceptions.count == 1
       end
 
-      def upgrade_cask(old_cask, new_cask)
+      def self.upgrade_cask(
+        old_cask, new_cask,
+        binaries:, force:, quarantine:, require_sha:, skip_cask_deps:, verbose:
+      )
         odebug "Started upgrade process for Cask #{old_cask}"
         old_config = old_cask.config
 
         old_cask_installer =
-          Installer.new(old_cask, binaries: binaries?,
-                                  verbose:  verbose?,
-                                  force:    force?,
+          Installer.new(old_cask, binaries: binaries,
+                                  verbose:  verbose,
+                                  force:    force,
                                   upgrade:  true)
 
         new_cask.config = Config.global.merge(old_config)
 
         new_cask_installer =
-          Installer.new(new_cask, binaries:       binaries?,
-                                  verbose:        verbose?,
-                                  force:          force?,
-                                  skip_cask_deps: skip_cask_deps?,
-                                  require_sha:    require_sha?,
+          Installer.new(new_cask, binaries:       binaries,
+                                  verbose:        verbose,
+                                  force:          force,
+                                  skip_cask_deps: skip_cask_deps,
+                                  require_sha:    require_sha,
                                   upgrade:        true,
-                                  quarantine:     quarantine?)
+                                  quarantine:     quarantine)
 
         started_upgrade = false
         new_artifacts_installed = false
