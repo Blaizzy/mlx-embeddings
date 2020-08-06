@@ -274,9 +274,9 @@ automatically when you install formulae but can be useful for DIY installations.
 * `-f`, `--force`:
   Allow keg-only formulae to be linked.
 
-### `list`, `ls` [*`options`*] [*`formula`*]
+### `list`, `ls` [*`options`*] [*`formula|cask`*]
 
-List all installed formulae.
+List all installed formulae or casks
 
 If *`formula`* is provided, summarise the paths within its current keg.
 
@@ -290,8 +290,10 @@ If *`formula`* is provided, summarise the paths within its current keg.
   Only show formulae with multiple versions installed.
 * `--pinned`:
   Show the versions of pinned formulae, or only the specified (pinned) formulae if *`formula`* are provided. See also `pin`, `unpin`.
-* `--cask`:
-  List casks
+* `--formulae`:
+  List only formulae.
+* `--casks`:
+  List only casks.
 * `-1`:
   Force output to be one entry per line. This is the default when output is not to a terminal.
 * `-l`:
@@ -347,26 +349,26 @@ Show install options specific to *`formula`*.
 * `--command`:
   Show options for the specified *`command`*.
 
-### `outdated` [*`options`*] [*`formula`*]
+### `outdated` [*`options`*] [*`formula`*|*`cask`*]
 
-List installed formulae that have an updated version available. By default,
-version information is displayed in interactive shells, and suppressed
+List installed casks and formulae that have an updated version available. By
+default, version information is displayed in interactive shells, and suppressed
 otherwise.
 
 * `-q`, `--quiet`:
   List only the names of outdated kegs (takes precedence over `--verbose`).
 * `-v`, `--verbose`:
   Include detailed version information.
+* `--formulae`:
+  Only output outdated formulae.
+* `--casks`:
+  Only output outdated casks.
 * `--json`:
   Print output in JSON format. There are two versions: v1 and v2. v1 is deprecated and is currently the default if no version is specified. v2 prints outdated formulae and casks. 
 * `--fetch-HEAD`:
   Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository's HEAD will only be checked for updates when a new stable or development version has been released.
 * `--greedy`:
   Print outdated casks with `auto_updates` or `version :latest`.
-* `--formula`:
-  Treat all arguments as formulae.
-* `--cask`:
-  Treat all arguments as casks.
 
 ### `pin` *`formula`*
 
@@ -536,18 +538,22 @@ Fetch and reset Homebrew and all tap repositories (or any specified *`repository
 
 *Note:* this will destroy all your uncommitted or committed changes.
 
-### `upgrade` [*`options`*] [*`formula`*]
+### `upgrade` [*`options`*] [*`formula`*|*`cask`*]
 
-Upgrade outdated, unpinned formulae using the same options they were originally
-installed with, plus any appended brew formula options. If *`formula`* are
-specified, upgrade only the given *`formula`* kegs (unless they are pinned; see
-`pin`, `unpin`).
+Upgrade outdated casks and outdated, unpinned formulae using the same options
+they were originally installed with, plus any appended brew formula options. If
+*`cask`* or *`formula`* are specified, upgrade only the given *`cask`* or *`formula`*
+kegs (unless they are pinned; see `pin`, `unpin`).
 
 Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will then be run for
 the upgraded formulae or, every 30 days, for all formulae.
 
 * `-d`, `--debug`:
   If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory.
+* `--formulae`:
+  Only upgrade outdated formulae.
+* `--casks`:
+  Only upgrade outdated casks.
 * `-s`, `--build-from-source`:
   Compile *`formula`* from source even if a bottle is available.
 * `-i`, `--interactive`:
@@ -595,7 +601,7 @@ formulae that use *`formula`*. By default, `uses` shows all formulae that specif
 * `--HEAD`:
   Show usage of *`formula`* by HEAD builds.
 
-### `--cache` [*`options`*] [*`formula`*]
+### `--cache` [*`options`*] [*`formula|cask`*]
 
 Display Homebrew's download cache. See also `HOMEBREW_CACHE`.
 
@@ -605,9 +611,9 @@ If *`formula`* is provided, display the file or directory used to cache *`formul
   Show the cache file used when building from source.
 * `--force-bottle`:
   Show the cache file used when pouring a bottle.
-* `--formula`:
+* `--formulae`:
   Only show cache files for formulae.
-* `--cask`:
+* `--casks`:
   Only show cache files for casks.
 
 ### `--caskroom` [*`cask`*]
@@ -1211,7 +1217,7 @@ flags which will help find keg-only dependencies like `openssl`, `icu4c`, etc.
   `install` won't output a `Brewfile.lock.json`.
 * `--all`:
   `list` all dependencies.
-* `--brews`:
+* `--formulae`:
   `list` Homebrew dependencies.
 * `--casks`:
   `list` Homebrew Cask dependencies.
