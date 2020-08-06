@@ -14,15 +14,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, macOS-latest]
     steps:
-    - name: Set up Git repository
-      uses: actions/checkout@master
-
-    - name: Set up Ruby
-      if: matrix.os == 'ubuntu-latest'
-      uses: actions/setup-ruby@main
-      with:
-        ruby-version: '2.6'
-
     - name: Set up Homebrew
       id: set-up-homebrew
       uses: Homebrew/actions/setup-homebrew@master
@@ -38,7 +29,7 @@ jobs:
 
     - name: Cache Bundler RubyGems
       id: cache
-      uses: actions/cache@v1
+      uses: actions/cache@master
       with:
         path: ${{ steps.set-up-homebrew.outputs.gems-path }}
         key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
@@ -56,11 +47,11 @@ jobs:
         # Setup taps needed for 'brew tests' and 'brew man'
         brew tap homebrew/bundle
         cd "$(brew --repo)"
-        brew update-reset Library/Taps/homebrew/homebrew-bundle \
-          Library/Taps/homebrew/homebrew-services \
-          Library/Taps/homebrew/homebrew-test-bot
+
         if [ "$RUNNER_OS" = "macOS" ]; then
-          brew update-reset Library/Taps/homebrew/homebrew-cask
+          brew update-reset Library/Taps/homebrew/homebrew-cask Library/Taps/homebrew/homebrew-services
+        else
+          brew update-reset Library/Taps/homebrew/homebrew-services
         fi
 
     - name: Run brew style on Homebrew/brew
@@ -72,7 +63,9 @@ jobs:
     - name: Run brew tests
       run: |
         # brew tests doesn't like world writable directories
-        umask 022
+        if [[ "$RUNNER_OS" = "Linux" ]]; then
+            sudo chmod -R g-w,o-w /home/linuxbrew/.linuxbrew/Homebrew
+        fi
 
         # set variables for coverage reporting
         export HOMEBREW_CI_BUILD_NUMBER="$GITHUB_REF"
