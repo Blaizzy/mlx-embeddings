@@ -4,6 +4,7 @@ on:
     branches: master
   pull_request: []
 env:
+  HOMEBREW_DEVELOPER: 1
   HOMEBREW_GITHUB_ACTIONS: 1
   HOMEBREW_NO_AUTO_UPDATE: 1
 jobs:
@@ -18,6 +19,11 @@ jobs:
       id: set-up-homebrew
       uses: Homebrew/actions/setup-homebrew@master
 
+    - name: Configure Git user
+      uses: Homebrew/actions/git-user-config@master
+      with:
+        username: BrewTestBot
+
     - name: Run brew test-bot --only-cleanup-before
       run: brew test-bot --only-cleanup-before
 
@@ -29,7 +35,7 @@ jobs:
 
     - name: Cache Bundler RubyGems
       id: cache
-      uses: actions/cache@master
+      uses: actions/cache@main
       with:
         path: ${{ steps.set-up-homebrew.outputs.gems-path }}
         key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
@@ -91,8 +97,6 @@ jobs:
 
     - name: Run brew update-tests
       run: |
-        git config --global user.name "BrewTestBot"
-        git config --global user.email "homebrew-test-bot@lists.sfconservancy.org"
         brew update-test
         brew update-test --to-tag
         brew update-test --commit=HEAD
