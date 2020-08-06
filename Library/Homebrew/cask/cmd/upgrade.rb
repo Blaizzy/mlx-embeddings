@@ -59,10 +59,7 @@ module Cask
           end
         end
 
-        if outdated_casks.empty?
-          oh1 "No Casks to upgrade"
-          return
-        end
+        return if outdated_casks.empty?
 
         ohai "Casks with `auto_updates` or `version :latest` will not be upgraded" if casks.empty? && !greedy
 
