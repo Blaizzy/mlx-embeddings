@@ -419,6 +419,8 @@ require "extend/os/pathname"
 # @private
 module ObserverPathnameExtension
   class << self
+    include Context
+
     attr_accessor :n, :d
 
     def reset_counts!
@@ -437,8 +439,8 @@ module ObserverPathnameExtension
     MAXIMUM_VERBOSE_OUTPUT = 100
 
     def verbose?
-      return Homebrew.args.verbose? unless ENV["CI"]
-      return false unless Homebrew.args.verbose?
+      return super unless ENV["CI"]
+      return false unless super
 
       if total < MAXIMUM_VERBOSE_OUTPUT
         true

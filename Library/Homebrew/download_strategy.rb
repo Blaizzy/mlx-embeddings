@@ -13,6 +13,7 @@ require "mechanize/http/content_disposition_parser"
 class AbstractDownloadStrategy
   extend Forwardable
   include FileUtils
+  include Context
 
   module Pourable
     def stage
@@ -21,9 +22,9 @@ class AbstractDownloadStrategy
     end
   end
 
-  attr_reader :cache, :cached_location, :url, :meta, :name, :version, :shutup
+  attr_reader :cache, :cached_location, :url, :meta, :name, :version
 
-  private :meta, :name, :version, :shutup
+  private :meta, :name, :version
 
   def initialize(url, name, version, **meta)
     @url = url
@@ -31,24 +32,18 @@ class AbstractDownloadStrategy
     @version = version
     @cache = meta.fetch(:cache, HOMEBREW_CACHE)
     @meta = meta
-    @shutup = false
     extend Pourable if meta[:bottle]
   end
 
   # Download and cache the resource as {#cached_location}.
   def fetch; end
 
-  # Suppress output
-  def shutup!
-    @shutup = true
-  end
-
   def puts(*args)
-    super(*args) unless shutup
+    super(*args) unless quiet?
   end
 
   def ohai(*args)
-    super(*args) unless shutup
+    super(*args) unless quiet?
   end
 
   # Unpack {#cached_location} into the current working directory, and possibly
@@ -60,7 +55,7 @@ class AbstractDownloadStrategy
                           ref_type: @ref_type, ref: @ref)
                   .extract_nestedly(basename:             basename,
                                     prioritise_extension: true,
-                                    verbose:              Homebrew.args.verbose? && !shutup)
+                                    verbose:              verbose? && !quiet?)
     chdir
   end
 
@@ -102,9 +97,9 @@ class AbstractDownloadStrategy
   def system_command!(*args, **options)
     super(
       *args,
-      print_stdout: !shutup,
-      print_stderr: !shutup,
-      verbose:      Homebrew.args.verbose? && !shutup,
+      print_stdout: !quiet?,
+      print_stderr: !quiet?,
+      verbose:      verbose? && !quiet?,
       env:          env,
       **options,
     )
@@ -498,7 +493,7 @@ class NoUnzipCurlDownloadStrategy < CurlDownloadStrategy
   def stage
     UnpackStrategy::Uncompressed.new(cached_location)
                                 .extract(basename: basename,
-                                         verbose:  Homebrew.args.verbose? && !shutup)
+                                         verbose:  verbose? && !quiet?)
   end
 end
 
@@ -553,7 +548,7 @@ class SubversionDownloadStrategy < VCSDownloadStrategy
     # This saves on bandwidth and will have a similar effect to verifying the
     # cache as it will make any changes to get the right revision.
     args = []
-    args << "--quiet" unless Homebrew.args.verbose?
+    args << "--quiet" unless verbose?
 
     if revision
       ohai "Checking out #{@ref}"
@@ -897,7 +892,7 @@ class CVSDownloadStrategy < VCSDownloadStrategy
   end
 
   def quiet_flag
-    "-Q" unless Homebrew.args.verbose?
+    "-Q" unless verbose?
   end
 
   def clone_repo

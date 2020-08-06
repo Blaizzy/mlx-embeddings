@@ -54,9 +54,11 @@ class Formula
   include Utils::Inreplace
   include Utils::Shebang
   include Utils::Shell
+  include Context
   extend Enumerable
   extend Forwardable
   extend Cachable
+  extend Predicable
 
   # @!method inreplace(paths, before = nil, after = nil)
   # Actually implemented in {Utils::Inreplace.inreplace}.
@@ -536,8 +538,10 @@ class Formula
     return false unless head&.downloader.is_a?(VCSDownloadStrategy)
 
     downloader = head.downloader
-    downloader.shutup! unless Homebrew.args.verbose?
-    downloader.commit_outdated?(version.version.commit)
+
+    with_context quiet: true do
+      downloader.commit_outdated?(version.version.commit)
+    end
   end
 
   # The latest prefix for this formula. Checks for {#head}, then {#devel}
@@ -1182,7 +1186,7 @@ class Formula
       begin
         yield self, staging
       rescue
-        staging.retain! if interactive || Homebrew.args.debug?
+        staging.retain! if interactive || debug?
         raise
       ensure
         cp Dir["config.log", "CMakeCache.txt"], logs
@@ -1831,13 +1835,13 @@ class Formula
           end
         end
       rescue Exception # rubocop:disable Lint/RescueException
-        staging.retain! if Homebrew.args.debug?
+        staging.retain! if debug?
         raise
       end
     end
   ensure
-    @testpath = nil
     @prefix_returns_versioned_prefix = false
+    @testpath = nil
   end
 
   # @private
@@ -1927,13 +1931,12 @@ class Formula
   # # If there is a "make", "install" available, please use it!
   # system "make", "install"</pre>
   def system(cmd, *args)
-    verbose = Homebrew.args.verbose?
     verbose_using_dots = Homebrew::EnvConfig.verbose_using_dots?
 
     # remove "boring" arguments so that the important ones are more likely to
     # be shown considering that we trim long ohai lines to the terminal width
     pretty_args = args.dup
-    unless verbose
+    unless verbose?
       case cmd
       when "./configure"
         pretty_args -= %w[--disable-dependency-tracking --disable-debug --disable-silent-rules]
@@ -1961,7 +1964,7 @@ class Formula
       log.puts Time.now, "", cmd, args, ""
       log.flush
 
-      if verbose
+      if verbose?
         rd, wr = IO.pipe
         begin
           pid = fork do
@@ -2004,7 +2007,7 @@ class Formula
         log_lines = Homebrew::EnvConfig.fail_log_lines
 
         log.flush
-        if !verbose || verbose_using_dots
+        if !verbose? || verbose_using_dots
           puts "Last #{log_lines} lines from #{logfn}:"
           Kernel.system "/usr/bin/tail", "-n", log_lines, logfn
         end

@@ -94,7 +94,7 @@ module Homebrew
       if formula_or_cask.is_a?(Formula)
         f = formula_or_cask
 
-        if verbose? args: args
+        if verbose?
           outdated_kegs = f.outdated_kegs(fetch_head: args.fetch_HEAD?)
 
           current_version = if f.alias_changed?
@@ -122,7 +122,7 @@ module Homebrew
       else
         c = formula_or_cask
 
-        puts c.outdated_info(args.greedy?, verbose?(args: args), false)
+        puts c.outdated_info(args.greedy?, verbose?, false)
       end
     end
   end
@@ -147,13 +147,13 @@ module Homebrew
       else
         c = formula_or_cask
 
-        c.outdated_info(args.greedy?, verbose?(args: args), true)
+        c.outdated_info(args.greedy?, verbose?, true)
       end
     end
   end
 
-  def verbose?(args:)
-    ($stdout.tty? || args.verbose?) && !args.quiet?
+  def verbose?
+    ($stdout.tty? || super) && !quiet?
   end
 
   def json_version(version)

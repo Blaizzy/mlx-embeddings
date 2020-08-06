@@ -35,6 +35,8 @@ require "cask/cmd/internal_stanza"
 
 module Cask
   class Cmd
+    include Context
+
     ALIASES = {
       "ls"       => "list",
       "homepage" => "home",
@@ -154,7 +156,7 @@ module Cask
       end
     rescue CaskError, MethodDeprecatedError, ArgumentError, OptionParser::InvalidOption => e
       onoe e.message
-      $stderr.puts e.backtrace if Homebrew.args.debug?
+      $stderr.puts e.backtrace if debug?
       exit 1
     rescue StandardError, ScriptError, NoMemoryError => e
       onoe e.message

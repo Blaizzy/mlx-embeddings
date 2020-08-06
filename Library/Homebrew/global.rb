@@ -37,7 +37,6 @@ require "config"
 require "os"
 require "cli/args"
 require "messages"
-require "system_command"
 
 HOMEBREW_PRODUCT = ENV["HOMEBREW_PRODUCT"]
 HOMEBREW_VERSION = ENV["HOMEBREW_VERSION"]
@@ -116,6 +115,7 @@ end.compact.freeze
 
 require "set"
 
+require "context"
 require "extend/pathname"
 
 require "extend/module"
@@ -125,6 +125,7 @@ require "active_support/core_ext/object/blank"
 require "active_support/core_ext/hash/deep_merge"
 require "active_support/core_ext/file/atomic"
 
+require "system_command"
 require "exceptions"
 require "utils"
 

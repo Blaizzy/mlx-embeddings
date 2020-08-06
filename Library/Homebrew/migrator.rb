@@ -5,6 +5,8 @@ require "keg"
 require "tab"
 
 class Migrator
+  include Context
+
   class MigrationNeededError < RuntimeError
     def initialize(formula)
       super <<~EOS
@@ -209,7 +211,7 @@ class Migrator
   rescue Exception => e # rubocop:disable Lint/RescueException
     onoe "Error occurred while migrating."
     puts e
-    puts e.backtrace if Homebrew.args.debug?
+    puts e.backtrace if debug?
     puts "Backing up..."
     ignore_interrupts { backup_oldname }
   ensure
@@ -267,7 +269,7 @@ class Migrator
     oh1 "Unlinking #{Formatter.identifier(oldname)}"
     old_cellar.subdirs.each do |d|
       keg = Keg.new(d)
-      keg.unlink
+      keg.unlink(verbose: verbose?)
     end
   end
 
@@ -275,7 +277,7 @@ class Migrator
     oh1 "Temporarily unlinking #{Formatter.identifier(newname)}"
     new_cellar.subdirs.each do |d|
       keg = Keg.new(d)
-      keg.unlink
+      keg.unlink(verbose: verbose?)
     end
   end
 
@@ -288,7 +290,7 @@ class Migrator
     # If formula is keg-only we also optlink it.
     if formula.keg_only? || !old_linked_keg_record
       begin
-        new_keg.optlink
+        new_keg.optlink(verbose: verbose?)
       rescue Keg::LinkError => e
         onoe "Failed to create #{formula.opt_prefix}"
         raise
@@ -299,15 +301,13 @@ class Migrator
     new_keg.remove_linked_keg_record if new_keg.linked?
 
     begin
-      mode = OpenStruct.new(overwrite: true)
-      new_keg.link(mode)
+      new_keg.link(overwrite: true, verbose: verbose?)
     rescue Keg::ConflictError => e
       onoe "Error while executing `brew link` step on #{newname}"
       puts e
       puts
       puts "Possible conflicting files are:"
-      mode = OpenStruct.new(dry_run: true, overwrite: true)
-      new_keg.link(mode)
+      new_keg.link(dry_run: true, overwrite: true, verbose: verbose?)
       raise
     rescue Keg::LinkError => e
       onoe "Error while linking"
@@ -318,8 +318,8 @@ class Migrator
     rescue Exception => e # rubocop:disable Lint/RescueException
       onoe "An unexpected error occurred during linking"
       puts e
-      puts e.backtrace if Homebrew.args.debug?
-      ignore_interrupts { new_keg.unlink }
+      puts e.backtrace if debug?
+      ignore_interrupts { new_keg.unlink(verbose: verbose?) }
       raise
     end
   end
@@ -384,7 +384,7 @@ class Migrator
     if new_cellar.exist?
       new_cellar.subdirs.each do |d|
         newname_keg = Keg.new(d)
-        newname_keg.unlink
+        newname_keg.unlink(verbose: verbose?)
         newname_keg.uninstall if new_cellar_existed
       end
     end
@@ -396,16 +396,16 @@ class Migrator
     # create a keg using its old path
     if old_linked_keg_record
       begin
-        old_linked_keg.link
+        old_linked_keg.link(verbose: verbose?)
       rescue Keg::LinkError
-        old_linked_keg.unlink
+        old_linked_keg.unlink(verbose: verbose?)
         raise
       rescue Keg::AlreadyLinkedError
-        old_linked_keg.unlink
+        old_linked_keg.unlink(verbose: verbose?)
         retry
       end
     else
-      old_linked_keg.optlink
+      old_linked_keg.optlink(verbose: verbose?)
     end
   end
 

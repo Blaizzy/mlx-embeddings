@@ -88,9 +88,7 @@ module Homebrew
       def env?(env)
         return false if env.blank?
 
-        Homebrew::EnvConfig.send("#{env}?")
-      rescue NoMethodError
-        false
+        Homebrew::EnvConfig.try(:"#{env}?")
       end
 
       def usage_banner(text)

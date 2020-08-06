@@ -59,7 +59,9 @@ begin
 
   ARGV.delete_at(help_cmd_index) if help_cmd_index
 
-  Homebrew.args = Homebrew::CLI::Parser.new.parse(ARGV.dup.freeze, ignore_invalid_options: true)
+  args = Homebrew::CLI::Parser.new.parse(ARGV.dup.freeze, ignore_invalid_options: true)
+  Homebrew.args = args
+  Context.current = args.context
 
   path = PATH.new(ENV["PATH"])
   homebrew_path = PATH.new(ENV["HOMEBREW_PATH"])
@@ -102,8 +104,8 @@ begin
   # - if cmd is Cask, let Cask handle the help command instead
   if (empty_argv || help_flag) && cmd != "cask"
     require "help"
-    Homebrew::Help.help cmd, empty_argv: empty_argv
-    # `Homebrew.help` never returns, except for unknown commands.
+    Homebrew::Help.help cmd, remaining_args: args.remaining, empty_argv: empty_argv
+    # `Homebrew::Help.help` never returns, except for unknown commands.
   end
 
   if internal_cmd || Commands.external_ruby_v2_cmd_path(cmd)
@@ -138,17 +140,17 @@ begin
   end
 rescue UsageError => e
   require "help"
-  Homebrew::Help.help cmd, usage_error: e.message
+  Homebrew::Help.help cmd, remaining_args: args.remaining, usage_error: e.message
 rescue SystemExit => e
-  onoe "Kernel.exit" if Homebrew.args.debug? && !e.success?
-  $stderr.puts e.backtrace if Homebrew.args.debug?
+  onoe "Kernel.exit" if args.debug? && !e.success?
+  $stderr.puts e.backtrace if args.debug?
   raise
 rescue Interrupt
   $stderr.puts # seemingly a newline is typical
   exit 130
 rescue BuildError => e
   Utils::Analytics.report_build_error(e)
-  e.dump
+  e.dump(verbose: args.verbose?)
 
   if e.formula.head? || e.formula.deprecated? || e.formula.disabled?
     $stderr.puts <<~EOS
@@ -162,7 +164,7 @@ rescue RuntimeError, SystemCallError => e
   raise if e.message.empty?
 
   onoe e
-  $stderr.puts e.backtrace if Homebrew.args.debug?
+  $stderr.puts e.backtrace if args.debug?
 
   exit 1
 rescue MethodDeprecatedError => e
@@ -171,7 +173,7 @@ rescue MethodDeprecatedError => e
     $stderr.puts "If reporting this issue please do so at (not Homebrew/brew or Homebrew/core):"
     $stderr.puts "  #{Formatter.url(e.issues_url)}"
   end
-  $stderr.puts e.backtrace if Homebrew.args.debug?
+  $stderr.puts e.backtrace if args.debug?
   exit 1
 rescue Exception => e # rubocop:disable Lint/RescueException
   onoe e

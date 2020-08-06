@@ -34,7 +34,7 @@ def curl_args(*extra_args, show_output: false, user_agent: :default)
 
   unless show_output
     args << "--fail"
-    args << "--progress-bar" unless Homebrew.args.verbose?
+    args << "--progress-bar" unless Context.current.verbose?
     args << "--verbose" if Homebrew::EnvConfig.curl_verbose?
     args << "--silent" unless $stdout.tty?
   end

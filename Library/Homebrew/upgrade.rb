@@ -63,9 +63,8 @@ module Homebrew
     options |= f.build.used_options
     options &= f.options
 
-    fi = FormulaInstaller.new(f, force_bottle:               args.force_bottle?,
-                                 include_test_formulae:      args.include_test_formulae,
-                                 build_from_source_formulae: args.build_from_source_formulae)
+    fi = FormulaInstaller.new(f, force_bottle: args.force_bottle?,
+                              debug: args.debug?, quiet: args.quiet?, verbose: args.verbose?)
     fi.options = options
     fi.force = args.force?
     fi.keep_tmp = args.keep_tmp?
@@ -102,7 +101,7 @@ module Homebrew
   rescue CannotInstallFormulaError => e
     ofail e
   rescue BuildError => e
-    e.dump
+    e.dump(verbose: args.verbose?)
     puts
     Homebrew.failed = true
   rescue DownloadError => e
@@ -225,7 +224,7 @@ module Homebrew
     rescue CannotInstallFormulaError => e
       ofail e
     rescue BuildError => e
-      e.dump
+      e.dump(verbose: args.verbose?)
       puts
       Homebrew.failed = true
     rescue DownloadError => e
