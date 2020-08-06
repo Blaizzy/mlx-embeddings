@@ -72,7 +72,7 @@ module Cask
 
         puts upgradable_casks
           .map { |(old_cask, new_cask)| "#{new_cask.full_name} #{old_cask.version} -> #{new_cask.version}" }
-          .join(", ")
+          .join("\n")
         return if dry_run
 
         upgradable_casks.each do |(old_cask, new_cask)|
