@@ -53,20 +53,37 @@ module Homebrew
         pull_request: []
       jobs:
         test-bot:
-          runs-on: [ubuntu-latest, macos-latest]
+          runs-on: ${{ matrix.os }}
+          strategy:
+            matrix:
+              os: [ubuntu-latest, macOS-latest]
           steps:
             - name: Update Homebrew
               run: brew update
 
             - name: Set up Git repository
-              uses: actions/checkout@v2
+              uses: actions/checkout@master
+
+            - name: Set up Ruby
+              if: matrix.os == 'ubuntu-latest'
+              uses: actions/setup-ruby@main
+              with:
+                ruby-version: '2.6'
 
             - name: Set up Homebrew
-              run: |
-                HOMEBREW_TAP_DIR="/usr/local/Homebrew/Library/Taps/#{tap.full_name}"
-                mkdir -p "$HOMEBREW_TAP_DIR"
-                rm -rf "$HOMEBREW_TAP_DIR"
-                ln -s "$PWD" "$HOMEBREW_TAP_DIR"
+              uses: Homebrew/actions/setup-homebrew@master
+
+            - name: Cache Homebrew Bundler RubyGems
+              id: cache
+              uses: actions/cache@v1
+              with:
+                path: ${{ steps.set-up-homebrew.outputs.gems-path }}
+                key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
+                restore-keys: ${{ runner.os }}-rubygems-
+
+            - name: Install Homebrew Bundler RubyGems
+              if: steps.cache.outputs.cache-hit != 'true'
+              run: brew install-bundler-gems
 
             - name: Run brew test-bot --only-cleanup-before
               run: brew test-bot --only-cleanup-before

@@ -14,42 +14,8 @@ jobs:
       matrix:
         os: [ubuntu-latest, macOS-latest]
     steps:
-    - name: Set up Homebrew
-      id: set-up-homebrew
-      run: |
-        if which brew &>/dev/null; then
-          HOMEBREW_PREFIX="$(brew --prefix)"
-          HOMEBREW_REPOSITORY="$HOMEBREW_PREFIX/Homebrew"
-        else
-          HOMEBREW_PREFIX=/home/linuxbrew/.linuxbrew
-          HOMEBREW_REPOSITORY="$HOMEBREW_PREFIX/Homebrew"
-          sudo mkdir -p "$HOMEBREW_REPOSITORY/Library/Taps"
-          git -C "$HOMEBREW_REPOSITORY" init
-          git -C "$HOMEBREW_REPOSITORY" remote add origin "https://github.com/$GITHUB_REPOSITORY"
-
-          cd "$HOMEBREW_PREFIX"
-          sudo mkdir -p bin etc include lib opt sbin share var/homebrew/linked Cellar
-          sudo ln -sf ../Homebrew/bin/brew "$HOMEBREW_PREFIX/bin/"
-          cd -
-        fi
-
-        export PATH="$HOMEBREW_PREFIX/bin:$PATH"
-        echo "::add-path::$HOMEBREW_PREFIX/bin"
-
-        cd "$HOMEBREW_REPOSITORY"
-        rm -rf "$GITHUB_WORKSPACE"
-        ln -s "$HOMEBREW_REPOSITORY" "$GITHUB_WORKSPACE"
-        git fetch --tags origin "${{github.sha}}"
-        git checkout --force -B master FETCH_HEAD
-        brew update-reset Library/Taps/homebrew/homebrew-core
-        cd -
-
-        GEMS_HASH=$(shasum -a 256 "$HOMEBREW_REPOSITORY/Library/Homebrew/Gemfile.lock" | cut -f1 -d' ')
-        echo "::set-output name=gems-hash::$GEMS_HASH"
-
-        if [ "$RUNNER_OS" = "Linux" ]; then
-          sudo chown -R "$USER" "$HOMEBREW_PREFIX"
-        fi
+    - name: Set up Git repository
+      uses: actions/checkout@master
 
     - name: Set up Ruby
       if: matrix.os == 'ubuntu-latest'
@@ -57,31 +23,26 @@ jobs:
       with:
         ruby-version: '2.6'
 
+    - name: Set up Homebrew
+      id: set-up-homebrew
+      uses: Homebrew/actions/setup-homebrew@master
+
+    - name: Run brew test-bot --only-cleanup-before
+      run: brew test-bot --only-cleanup-before
+
     - name: Run brew config
       run: brew config
 
     - name: Run brew doctor
-      run: |
-        # minimally fix brew doctor failures (a full clean takes ~5m)
-        if [ "$RUNNER_OS" = "Linux" ]; then
-          sudo rm -rf /usr/local/include/node/
-        else
-          # link old formulae
-          brew link --overwrite --force gettext python@3.8
-
-          # remove deleted formula
-          brew uninstall --force python@2
-        fi
-        brew doctor
+      run: brew doctor
 
     - name: Cache Bundler RubyGems
       id: cache
       uses: actions/cache@v1
       with:
-        path: Library/Homebrew/vendor/bundle/ruby/
+        path: ${{ steps.set-up-homebrew.outputs.gems-path }}
         key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
-        restore-keys: |
-          ${{ runner.os }}-rubygems-
+        restore-keys: ${{ runner.os }}-rubygems-
 
     - name: Install Bundler RubyGems
       if: steps.cache.outputs.cache-hit != 'true'
@@ -90,28 +51,16 @@ jobs:
     - name: Check for uncommitted RubyGems
       run: git diff --stat --exit-code Library/Homebrew/vendor/bundle/ruby
 
-    - name: Install taps
+    - name: Set up Homebrew official command taps
       run: |
-        # Install taps needed for 'brew tests' and 'brew man'
-        cd "$(brew --repo)"
+        # Setup taps needed for 'brew tests' and 'brew man'
         brew tap homebrew/bundle
-        brew update-reset Library/Taps/homebrew/homebrew-bundle
-        brew tap homebrew/services
-        brew update-reset Library/Taps/homebrew/homebrew-services
-        brew tap homebrew/test-bot
-        brew update-reset Library/Taps/homebrew/homebrew-test-bot
+        cd "$(brew --repo)"
+        brew update-reset Library/Taps/homebrew/homebrew-bundle \
+          Library/Taps/homebrew/homebrew-services \
+          Library/Taps/homebrew/homebrew-test-bot
         if [ "$RUNNER_OS" = "macOS" ]; then
-          brew tap homebrew/cask
           brew update-reset Library/Taps/homebrew/homebrew-cask
-
-          # don't care about `brew cask style` here.
-          brew untap adoptopenjdk/openjdk
-
-          # don't care about `brew audit` here.
-          brew untap mongodb/brew
-        else
-          # Fix permissions for 'brew tests'
-          sudo chmod -R g-w,o-w /home/linuxbrew /home/runner /opt
         fi
 
     - name: Run brew style on Homebrew/brew
