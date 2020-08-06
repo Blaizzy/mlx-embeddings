@@ -10,7 +10,7 @@ module Homebrew
           end
 
           def method_missing(method, *)
-            if ![:debug?, :quiet?, :verbose?].include?(method) && !@printed_args_warning
+            if ![:debug?, :quiet?, :verbose?, :value].include?(method) && !@printed_args_warning
               odeprecated "Homebrew.args", "`args = <command>_args.parse` and pass `args` along the call chain"
               @printed_args_warning = true
             end
