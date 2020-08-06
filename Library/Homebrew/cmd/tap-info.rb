@@ -69,7 +69,6 @@ module Homebrew
         puts unless i.zero?
         info = "#{tap}: "
         if tap.installed?
-          info += tap.pinned? ? "pinned" : "unpinned"
           info += ", private" if tap.private?
           info += if (contents = tap.contents).empty?
             ", no commands/casks/formulae"

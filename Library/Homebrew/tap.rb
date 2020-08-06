@@ -500,26 +500,6 @@ class Tap
     @pinned = pinned_symlink_path.directory?
   end
 
-  # Pin this {Tap}.
-  def pin
-    raise TapUnavailableError, name unless installed?
-    raise TapPinStatusError.new(name, true) if pinned?
-
-    pinned_symlink_path.make_relative_symlink(path)
-    @pinned = true
-  end
-
-  # Unpin this {Tap}.
-  def unpin
-    raise TapUnavailableError, name unless installed?
-    raise TapPinStatusError.new(name, false) unless pinned?
-
-    pinned_symlink_path.delete
-    pinned_symlink_path.parent.rmdir_if_possible
-    pinned_symlink_path.parent.parent.rmdir_if_possible
-    @pinned = false
-  end
-
   def to_hash
     hash = {
       "name"          => name,
@@ -533,7 +513,6 @@ class Tap
       "cask_tokens"   => cask_tokens,
       "cask_files"    => cask_files.map(&:to_s),
       "command_files" => command_files.map(&:to_s),
-      "pinned"        => pinned?,
     }
 
     if installed?
