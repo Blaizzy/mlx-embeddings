@@ -284,11 +284,6 @@ export HOMEBREW_USER_AGENT
 export HOMEBREW_USER_AGENT_CURL
 export HOMEBREW_BOTTLE_DEFAULT_DOMAIN
 
-if [[ -n "$HOMEBREW_DEVELOPER" ]] && [[ -z "$HOMEBREW_NO_PATCHELF_RB" ]]
-then
-  export HOMEBREW_PATCHELF_RB="1"
-fi
-
 if [[ -n "$HOMEBREW_MACOS" && -x "/usr/bin/xcode-select" ]]
 then
   XCODE_SELECT_PATH=$('/usr/bin/xcode-select' --print-path 2>/dev/null)
