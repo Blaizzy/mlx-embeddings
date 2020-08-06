@@ -12,9 +12,9 @@ module SPDX
     @spdx_data ||= JSON.parse(JSON_PATH.read)
   end
 
-  def download_latest_license_data!
+  def download_latest_license_data!(to: JSON_PATH)
     latest_tag = GitHub.open_api(API_URL)["tag_name"]
     data_url = "https://raw.githubusercontent.com/spdx/license-list-data/#{latest_tag}/json/licenses.json"
-    curl_download(data_url, to: JSON_PATH, partial: false)
+    curl_download(data_url, to: to, partial: false)
   end
 end
