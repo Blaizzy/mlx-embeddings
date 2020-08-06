@@ -366,8 +366,8 @@ List files which would be linked or deleted by \fBbrew link \-\-overwrite\fR wit
 \fB\-f\fR, \fB\-\-force\fR
 Allow keg\-only formulae to be linked\.
 .
-.SS "\fBlist\fR, \fBls\fR [\fIoptions\fR] [\fIformula\fR]"
-List all installed formulae\.
+.SS "\fBlist\fR, \fBls\fR [\fIoptions\fR] [\fIformula|cask\fR]"
+List all installed formulae or casks
 .
 .P
 If \fIformula\fR is provided, summarise the paths within its current keg\.
@@ -393,8 +393,12 @@ Only show formulae with multiple versions installed\.
 Show the versions of pinned formulae, or only the specified (pinned) formulae if \fIformula\fR are provided\. See also \fBpin\fR, \fBunpin\fR\.
 .
 .TP
-\fB\-\-cask\fR
-List casks
+\fB\-\-formulae\fR
+List only formulae\.
+.
+.TP
+\fB\-\-casks\fR
+List only casks\.
 .
 .TP
 \fB\-1\fR
@@ -468,8 +472,8 @@ Show options for all available formulae\.
 \fB\-\-command\fR
 Show options for the specified \fIcommand\fR\.
 .
-.SS "\fBoutdated\fR [\fIoptions\fR] [\fIformula\fR]"
-List installed formulae that have an updated version available\. By default, version information is displayed in interactive shells, and suppressed otherwise\.
+.SS "\fBoutdated\fR [\fIoptions\fR] [\fIformula\fR|\fIcask\fR]"
+List installed casks and formulae that have an updated version available\. By default, version information is displayed in interactive shells, and suppressed otherwise\.
 .
 .TP
 \fB\-q\fR, \fB\-\-quiet\fR
@@ -478,6 +482,14 @@ List only the names of outdated kegs (takes precedence over \fB\-\-verbose\fR)\.
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
 Include detailed version information\.
+.
+.TP
+\fB\-\-formulae\fR
+Only output outdated formulae\.
+.
+.TP
+\fB\-\-casks\fR
+Only output outdated casks\.
 .
 .TP
 \fB\-\-json\fR
@@ -490,14 +502,6 @@ Fetch the upstream repository to detect if the HEAD installation of the formula 
 .TP
 \fB\-\-greedy\fR
 Print outdated casks with \fBauto_updates\fR or \fBversion :latest\fR\.
-.
-.TP
-\fB\-\-formula\fR
-Treat all arguments as formulae\.
-.
-.TP
-\fB\-\-cask\fR
-Treat all arguments as casks\.
 .
 .SS "\fBpin\fR \fIformula\fR"
 Pin the specified \fIformula\fR, preventing them from being upgraded when issuing the \fBbrew upgrade\fR \fIformula\fR command\. See also \fBunpin\fR\.
@@ -696,8 +700,8 @@ Fetch and reset Homebrew and all tap repositories (or any specified \fIrepositor
 .P
 \fINote:\fR this will destroy all your uncommitted or committed changes\.
 .
-.SS "\fBupgrade\fR [\fIoptions\fR] [\fIformula\fR]"
-Upgrade outdated, unpinned formulae using the same options they were originally installed with, plus any appended brew formula options\. If \fIformula\fR are specified, upgrade only the given \fIformula\fR kegs (unless they are pinned; see \fBpin\fR, \fBunpin\fR)\.
+.SS "\fBupgrade\fR [\fIoptions\fR] [\fIformula\fR|\fIcask\fR]"
+Upgrade outdated casks and outdated, unpinned formulae using the same options they were originally installed with, plus any appended brew formula options\. If \fIcask\fR or \fIformula\fR are specified, upgrade only the given \fIcask\fR or \fIformula\fR kegs (unless they are pinned; see \fBpin\fR, \fBunpin\fR)\.
 .
 .P
 Unless \fBHOMEBREW_NO_INSTALL_CLEANUP\fR is set, \fBbrew cleanup\fR will then be run for the upgraded formulae or, every 30 days, for all formulae\.
@@ -705,6 +709,14 @@ Unless \fBHOMEBREW_NO_INSTALL_CLEANUP\fR is set, \fBbrew cleanup\fR will then be
 .TP
 \fB\-d\fR, \fB\-\-debug\fR
 If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory\.
+.
+.TP
+\fB\-\-formulae\fR
+Only upgrade outdated formulae\.
+.
+.TP
+\fB\-\-casks\fR
+Only upgrade outdated casks\.
 .
 .TP
 \fB\-s\fR, \fB\-\-build\-from\-source\fR
@@ -785,7 +797,7 @@ Show usage of \fIformula\fR by development builds\.
 \fB\-\-HEAD\fR
 Show usage of \fIformula\fR by HEAD builds\.
 .
-.SS "\fB\-\-cache\fR [\fIoptions\fR] [\fIformula\fR]"
+.SS "\fB\-\-cache\fR [\fIoptions\fR] [\fIformula|cask\fR]"
 Display Homebrew\'s download cache\. See also \fBHOMEBREW_CACHE\fR\.
 .
 .P
@@ -800,11 +812,11 @@ Show the cache file used when building from source\.
 Show the cache file used when pouring a bottle\.
 .
 .TP
-\fB\-\-formula\fR
+\fB\-\-formulae\fR
 Only show cache files for formulae\.
 .
 .TP
-\fB\-\-cask\fR
+\fB\-\-casks\fR
 Only show cache files for casks\.
 .
 .SS "\fB\-\-caskroom\fR [\fIcask\fR]"
@@ -1569,7 +1581,7 @@ Read the \fBBrewfile\fR from \fB~/\.Brewfile\fR\.
 \fBlist\fR all dependencies\.
 .
 .TP
-\fB\-\-brews\fR
+\fB\-\-formulae\fR
 \fBlist\fR Homebrew dependencies\.
 .
 .TP
