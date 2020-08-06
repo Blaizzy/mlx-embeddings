@@ -680,6 +680,8 @@ any errors are found.
   Run additional, slower style checks that require a network connection.
 * `--new-formula`:
   Run various additional style checks to determine if a new formula is eligible for Homebrew. This should be used when creating new formula and implies `--strict` and `--online`.
+* `--tap`:
+  Check the formulae within the given tap, specified as *`user`*`/`*`repo`*.
 * `--fix`:
   Fix style violations automatically using RuboCop's auto-correct feature.
 * `--display-cop-names`:
@@ -687,7 +689,7 @@ any errors are found.
 * `--display-filename`:
   Prefix every line of output with the file or formula name being audited, to make output easy to grep.
 * `--skip-style`:
-  Skip running non-RuboCop style checks. Useful if you plan on running `brew style` separately.
+  Skip running non-RuboCop style checks. Useful if you plan on running `brew style` separately. Default unless a formula is specified by name
 * `-D`, `--audit-debug`:
   Enable debugging and profiling of audit methods.
 * `--only`:

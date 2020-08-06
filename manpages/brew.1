@@ -882,6 +882,10 @@ Run additional, slower style checks that require a network connection\.
 Run various additional style checks to determine if a new formula is eligible for Homebrew\. This should be used when creating new formula and implies \fB\-\-strict\fR and \fB\-\-online\fR\.
 .
 .TP
+\fB\-\-tap\fR
+Check the formulae within the given tap, specified as \fIuser\fR\fB/\fR\fIrepo\fR\.
+.
+.TP
 \fB\-\-fix\fR
 Fix style violations automatically using RuboCop\'s auto\-correct feature\.
 .
@@ -895,7 +899,7 @@ Prefix every line of output with the file or formula name being audited, to make
 .
 .TP
 \fB\-\-skip\-style\fR
-Skip running non\-RuboCop style checks\. Useful if you plan on running \fBbrew style\fR separately\.
+Skip running non\-RuboCop style checks\. Useful if you plan on running \fBbrew style\fR separately\. Default unless a formula is specified by name
 .
 .TP
 \fB\-D\fR, \fB\-\-audit\-debug\fR
