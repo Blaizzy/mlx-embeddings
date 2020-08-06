@@ -123,8 +123,6 @@ __brew_common_commands() {
     'switch:switch between different versions of a formula'
     'tap:tap a new formula repository from GitHub, or list existing taps'
     'tap-info:information about a tap'
-    'tap-pin:pin a tap'
-    'tap-unpin:unpin a tap'
     'test-bot:test a formula and build a bottle'
     'uninstall:uninstall a formula'
     'unlink:unlink a formula'
@@ -679,22 +677,12 @@ _brew_tap_info() {
     '(--installed)*:taps:__brew_installed_taps'
 }
 
-# brew tap-pin tap:
-_brew_tap_pin() {
-  __brew_installed_taps
-}
-
 # brew tap_readme [-v] name:
 # TODO missing argument docs (verbose perhaps)
 _brew_tap_readme() {
   _arguments \
     '(-v)-v' \
     ':name: '
-}
-
-# brew tap-unpin tap:
-_brew_tap_unpin() {
-  __brew_pinned_taps
 }
 
 # brew test [--devel|--HEAD] [--debug] [--keep-tmp] formulae:

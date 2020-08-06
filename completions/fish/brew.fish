@@ -532,14 +532,6 @@ __fish_brew_complete_arg 'tap-info; and not __fish_brew_opt --installed' -l inst
 __fish_brew_complete_arg 'tap-info; and not __fish_brew_opt --json=v1'   -l json=v1   -d "Format output in JSON format"
 
 
-__fish_brew_complete_cmd 'tap-pin' "Prioritize tap's formulae over core"
-__fish_brew_complete_arg 'tap-pin' -a '(__fish_brew_suggest_taps_installed)'
-
-
-__fish_brew_complete_cmd 'tap-unpin' "Don't prioritize tap's formulae over core anymore"
-__fish_brew_complete_arg 'tap-unpin' -a '(__fish_brew_suggest_taps_pinned)'
-
-
 __fish_brew_complete_cmd 'uninstall' "Uninstall formula"
 # FIXME: uninstall has a weird alias uninstal (with single l), probably it should also be supported
 __fish_brew_complete_arg 'uninstall remove rm' -a '(__fish_brew_suggest_formulae_installed)'
