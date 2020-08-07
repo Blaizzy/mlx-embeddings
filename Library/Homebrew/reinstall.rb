@@ -74,7 +74,7 @@ module Homebrew
     end
   end
 
-  def restore_backup(keg, keg_was_linked)
+  def restore_backup(keg, keg_was_linked, verbose:)
     path = backup_path(keg)
 
     return unless path.directory?
