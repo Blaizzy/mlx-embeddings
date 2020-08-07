@@ -79,9 +79,9 @@ then
   export HOMEBREW_EDITOR="$VISUAL"
 fi
 
-# Set CI variable for GitHub Actions, Azure Pipelines, Jenkins
+# Set CI variable for Azure Pipelines and Jenkins
 # (Set by default on Circle and Travis CI)
-if [[ -n "$GITHUB_ACTIONS" || -n "$TF_BUILD" || -n "$JENKINS_HOME" ]]
+if [[ -z "$CI" ]] && [[ -n "$TF_BUILD" || -n "$JENKINS_HOME" ]]
 then
   export CI="1"
 fi
