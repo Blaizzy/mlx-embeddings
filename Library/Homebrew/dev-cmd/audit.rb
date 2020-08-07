@@ -364,6 +364,21 @@ module Homebrew
           problem "Formula #{formula.name} contains non-standard SPDX licenses: #{non_standard_licenses}."
         end
 
+        if @strict
+          deprecated_licenses = formula.license.map do |license|
+            next if license == :public_domain
+            next if @spdx_data["licenses"].any? do |spdx|
+              spdx["licenseId"] == license && !spdx["isDeprecatedLicenseId"]
+            end
+
+            license
+          end.compact
+
+          if deprecated_licenses.present?
+            problem "Formula #{formula.name} contains deprecated SPDX licenses: #{deprecated_licenses}."
+          end
+        end
+
         return unless @online
 
         user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @new_formula

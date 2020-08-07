@@ -85,10 +85,12 @@ module Homebrew
       }
 
       let(:custom_spdx_id) { "zzz" }
+      let(:deprecated_spdx_id) { "GPL-1.0" }
       let(:standard_mismatch_spdx_id) { "0BSD" }
       let(:license_array) { ["0BSD", "GPL-3.0"] }
       let(:license_array_mismatch) { ["0BSD", "MIT"] }
       let(:license_array_nonstandard) { ["0BSD", "zzz", "MIT"] }
+      let(:license_array_deprecated) { ["0BSD", "GPL-1.0", "MIT"] }
 
       it "does not check if the formula is not a new formula" do
         fa = formula_auditor "foo", <<~RUBY, spdx_data: spdx_data, new_formula: false
@@ -124,6 +126,18 @@ module Homebrew
         expect(fa.problems.first).to match "Formula foo contains non-standard SPDX licenses: [\"zzz\"]."
       end
 
+      it "detects if license is a deprecated spdx-id" do
+        fa = formula_auditor "foo", <<~RUBY, spdx_data: spdx_data, new_formula: true, strict: true
+          class Foo < Formula
+            url "https://brew.sh/foo-1.0.tgz"
+            license "#{deprecated_spdx_id}"
+          end
+        RUBY
+
+        fa.audit_license
+        expect(fa.problems.first).to match "Formula foo contains deprecated SPDX licenses: [\"GPL-1.0\"]."
+      end
+
       it "detects if license array contains a non-standard spdx-id" do
         fa = formula_auditor "foo", <<~RUBY, spdx_data: spdx_data, new_formula: true
           class Foo < Formula
@@ -134,6 +148,18 @@ module Homebrew
 
         fa.audit_license
         expect(fa.problems.first).to match "Formula foo contains non-standard SPDX licenses: [\"zzz\"]."
+      end
+
+      it "detects if license array contains a deprecated spdx-id" do
+        fa = formula_auditor "foo", <<~RUBY, spdx_data: spdx_data, new_formula: true, strict: true
+          class Foo < Formula
+            url "https://brew.sh/foo-1.0.tgz"
+            license #{license_array_deprecated}
+          end
+        RUBY
+
+        fa.audit_license
+        expect(fa.problems.first).to match "Formula foo contains deprecated SPDX licenses: [\"GPL-1.0\"]."
       end
 
       it "verifies that a license info is a standard spdx id" do
