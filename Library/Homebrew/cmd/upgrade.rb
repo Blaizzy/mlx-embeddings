@@ -77,14 +77,16 @@ module Homebrew
     # If one or more formulae are specified, but no casks were
     # specified, we want to make note of that so we don't
     # try to upgrade all outdated casks.
-    upgrade_formulae = formulae.present? && casks.blank? && !args.cask?
-    upgrade_casks = casks.present? && formulae.blank? && !args.formula?
+    upgrade_formulae = formulae.present? && casks.blank?
+    upgrade_casks = casks.present? && formulae.blank?
 
     upgrade_outdated_formulae(formulae, args: args) unless upgrade_casks
     upgrade_outdated_casks(casks, args: args) unless upgrade_formulae
   end
 
   def upgrade_outdated_formulae(formulae, args:)
+    return if args.cask?
+
     FormulaInstaller.prevent_build_flags(args)
 
     Install.perform_preinstall_checks
@@ -143,6 +145,8 @@ module Homebrew
   end
 
   def upgrade_outdated_casks(casks, args:)
+    return if args.formula?
+
     Cask::Cmd::Upgrade.upgrade_casks(
       *casks,
       force:          args.force?,
