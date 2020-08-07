@@ -5,7 +5,6 @@ on:
   pull_request: []
 env:
   HOMEBREW_DEVELOPER: 1
-  HOMEBREW_GITHUB_ACTIONS: 1
   HOMEBREW_NO_AUTO_UPDATE: 1
 jobs:
   tests:
@@ -72,11 +71,6 @@ jobs:
         if [[ "$RUNNER_OS" = "Linux" ]]; then
             sudo chmod -R g-w,o-w /home/linuxbrew/.linuxbrew/Homebrew
         fi
-
-        # set variables for coverage reporting
-        export HOMEBREW_CI_BUILD_NUMBER="$GITHUB_REF"
-        export HOMEBREW_CI_BRANCH="$HEAD_GITHUB_REF"
-        export HOMEBREW_GITHUB_REPOSITORY="$GITHUB_REPOSITORY"
 
         # don't bother running all tests on both platforms (for speed)
         if [ "$RUNNER_OS" = "Linux" ]; then
