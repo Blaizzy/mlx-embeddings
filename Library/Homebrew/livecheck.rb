@@ -22,9 +22,14 @@ class Livecheck
   # Sets the regex instance variable to the argument given, returns the
   # regex instance variable when no argument is given.
   def regex(pattern = nil)
-    return @regex if pattern.nil?
-
-    @regex = pattern
+    case pattern
+    when nil
+      @regex
+    when Regexp
+      @regex = pattern
+    else
+      raise TypeError, "Livecheck#regex expects a Regexp"
+    end
   end
 
   # Sets the skip instance variable to true, indicating that livecheck
@@ -32,8 +37,13 @@ class Livecheck
   # its value is assigned to the skip_msg instance variable, else nil is
   # assigned.
   def skip(skip_msg = nil)
+    if skip_msg.is_a?(String)
+      @skip_msg = skip_msg
+    elsif skip_msg.present?
+      raise TypeError, "Livecheck#skip expects a String"
+    end
+
     @skip = true
-    @skip_msg = skip_msg.presence
   end
 
   # Should livecheck be skipped for the formula?
@@ -60,15 +70,17 @@ class Livecheck
   # Sets the url instance variable to the argument given, returns the url
   # instance variable when no argument is given.
   def url(val = nil)
-    return @url if val.nil?
-
     @url = case val
+    when nil
+      return @url
     when :head, :stable, :devel
       @formula.send(val).url
     when :homepage
       @formula.homepage
-    else
+    when String
       val
+    else
+      raise TypeError, "Livecheck#url expects a String or valid Symbol"
     end
   end
 

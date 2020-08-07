@@ -20,6 +20,12 @@ describe Livecheck do
       livecheckable.regex(/foo/)
       expect(livecheckable.regex).to eq(/foo/)
     end
+
+    it "raises a TypeError if the argument isn't a Regexp" do
+      expect {
+        livecheckable.regex("foo")
+      }.to raise_error(TypeError, "Livecheck#regex expects a Regexp")
+    end
   end
 
   describe "#skip" do
@@ -33,6 +39,12 @@ describe Livecheck do
       livecheckable.skip("foo")
       expect(livecheckable.instance_variable_get(:@skip)).to be true
       expect(livecheckable.instance_variable_get(:@skip_msg)).to eq("foo")
+    end
+
+    it "raises a TypeError if the argument isn't a String" do
+      expect {
+        livecheckable.skip(/foo/)
+      }.to raise_error(TypeError, "Livecheck#skip expects a String")
     end
   end
 
@@ -69,6 +81,11 @@ describe Livecheck do
     it "returns the URL if set" do
       livecheckable.url("foo")
       expect(livecheckable.url).to eq("foo")
+
+    it "raises a TypeError if the argument isn't a String or Symbol" do
+      expect {
+        livecheckable.url(/foo/)
+      }.to raise_error(TypeError, "Livecheck#url expects a String or valid Symbol")
     end
   end
 
