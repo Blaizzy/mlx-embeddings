@@ -26,9 +26,9 @@ module Homebrew
       switch "-d", "--debug",
              description: "If brewing fails, open an interactive debugging session with access to IRB "\
                           "or a shell inside the temporary build directory."
-      switch "--formulae",
+      switch "--formula",
              description: "Only upgrade outdated formulae."
-      switch "--casks",
+      switch "--cask",
              description: "Only upgrade outdated casks."
       switch "-s", "--build-from-source",
              description: "Compile <formula> from source even if a bottle is available."
@@ -60,11 +60,11 @@ module Homebrew
       switch "--greedy",
              description: "Upgrade casks with `auto_updates` or `version :latest`"
       conflicts "--build-from-source", "--force-bottle"
-      conflicts "--formulae", "--greedy"
-      ["--formulae", "-s", "--build-from-source", "-i", "--interactive",
+      conflicts "--formula", "--greedy"
+      ["--formula", "-s", "--build-from-source", "-i", "--interactive",
        "--force-bottle", "--fetch-HEAD", "--ignore-pinned", "--keep-tmp",
        "--display-times"].each do |flag|
-        conflicts "--casks", flag
+        conflicts "--cask", flag
       end
       formula_options
     end
@@ -77,8 +77,8 @@ module Homebrew
     # If one or more formulae are specified, but no casks were
     # specified, we want to make note of that so we don't
     # try to upgrade all outdated casks.
-    upgrade_formulae = formulae.present? && casks.blank? && !args.casks?
-    upgrade_casks = casks.present? && formulae.blank? && !args.formulae?
+    upgrade_formulae = formulae.present? && casks.blank? && !args.cask?
+    upgrade_casks = casks.present? && formulae.blank? && !args.formula?
 
     upgrade_outdated_formulae(formulae, args: args) unless upgrade_casks
     upgrade_outdated_casks(casks, args: args) unless upgrade_formulae
