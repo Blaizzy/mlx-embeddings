@@ -4,6 +4,7 @@ require "formula"
 require "formula_versions"
 require "utils/curl"
 require "utils/notability"
+require "utils/spdx"
 require "extend/ENV"
 require "formula_cellar_checks"
 require "cmd/search"
@@ -118,8 +119,7 @@ module Homebrew
     # Check style in a single batch run up front for performance
     style_results = Style.check_style_json(style_files, options) if style_files
     # load licenses
-    spdx = HOMEBREW_LIBRARY_PATH/"data/spdx.json"
-    spdx_data = JSON.parse(spdx.read)
+    spdx_data = SPDX.spdx_data
     new_formula_problem_lines = []
     audit_formulae.sort.each do |f|
       only = only_cops ? ["style"] : args.only
