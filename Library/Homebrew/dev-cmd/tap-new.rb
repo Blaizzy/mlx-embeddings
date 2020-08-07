@@ -58,24 +58,12 @@ module Homebrew
             matrix:
               os: [ubuntu-latest, macOS-latest]
           steps:
-            - name: Update Homebrew
-              run: brew update
-
-            - name: Set up Git repository
-              uses: actions/checkout@master
-
-            - name: Set up Ruby
-              if: matrix.os == 'ubuntu-latest'
-              uses: actions/setup-ruby@main
-              with:
-                ruby-version: '2.6'
-
             - name: Set up Homebrew
               uses: Homebrew/actions/setup-homebrew@master
 
             - name: Cache Homebrew Bundler RubyGems
               id: cache
-              uses: actions/cache@v1
+              uses: actions/cache@main
               with:
                 path: ${{ steps.set-up-homebrew.outputs.gems-path }}
                 key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}

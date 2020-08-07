@@ -1,30 +1,23 @@
 name: Update license data
-
 on:
+  pull_request:
+    paths:
+      - .github/workflows/spdx.yml
   schedule:
     - cron: '0 */12 * * *'
-
 jobs:
   spdx:
     if: github.repository == 'Homebrew/brew'
     runs-on: ubuntu-latest
-    env:
-      HOMEBREW_NO_ANALYTICS: 1
-      HOMEBREW_NO_AUTO_UPDATE: 1
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
 
-      - name: Configure Git
+      - name: Configure Git user
         uses: Homebrew/actions/git-user-config@master
         with:
           username: BrewTestBot
-
-      - name: Setup Homebrew
-        run: |
-          HOMEBREW_REPOSITORY="$(brew --repo)"
-          rm -rf "$HOMEBREW_REPOSITORY"
-          ln -s "$GITHUB_WORKSPACE" "$HOMEBREW_REPOSITORY"
 
       - name: Update license data
         env:
