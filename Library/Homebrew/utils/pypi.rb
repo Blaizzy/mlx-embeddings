@@ -82,7 +82,7 @@ module PyPI
     @pipgrip_installed ||= Formula["pipgrip"].any_version_installed?
     odie '"pipgrip" must be installed (`brew install pipgrip`)' unless @pipgrip_installed
 
-    ohai "Retrieving PyPI dependencies for \"#{pypi_name}==#{version}\"" if !print_only && !silent
+    ohai "Retrieving PyPI dependencies for \"#{pypi_name}==#{version}\"..." if !print_only && !silent
     pipgrip_output = Utils.popen_read Formula["pipgrip"].bin/"pipgrip", "--json", "--no-cache-dir",
                                       "#{pypi_name}==#{version}"
     unless $CHILD_STATUS.success?
@@ -103,6 +103,7 @@ module PyPI
 
     new_resource_blocks = ""
     packages.each do |package, package_version|
+      ohai "Getting PyPI info for \"#{package}==#{package_version}\"" if !print_only && !silent
       name, url, checksum = get_pypi_info package, package_version
       # Fail if unable to find name, url or checksum for any resource
       if name.blank?
