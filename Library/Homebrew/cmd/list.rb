@@ -32,9 +32,9 @@ module Homebrew
       switch "--pinned",
              description: "Show the versions of pinned formulae, or only the specified (pinned) "\
                           "formulae if <formula> are provided. See also `pin`, `unpin`."
-      switch "--formulae",
+      switch "--formula", "--formulae",
              description: "List only formulae."
-      switch "--casks",
+      switch "--cask", "--casks",
              description: "List only casks."
       # passed through to ls
       switch "-1",
@@ -48,8 +48,8 @@ module Homebrew
       switch "-t",
              description: "Sort by time modified, listing most recently modified first."
 
-      ["--formulae", "--unbrewed", "--multiple", "--pinned", "-l", "-r", "-t"].each do |flag|
-        conflicts "--casks", flag
+      ["--formula", "--unbrewed", "--multiple", "--pinned", "-l", "-r", "-t"].each do |flag|
+        conflicts "--cask", flag
       end
     end
   end
@@ -57,7 +57,7 @@ module Homebrew
   def list
     args = list_args.parse
 
-    return list_casks(args: args) if args.casks?
+    return list_casks(args: args) if args.cask?
 
     return list_unbrewed if args.unbrewed?
 

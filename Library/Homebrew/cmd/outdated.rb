@@ -21,9 +21,9 @@ module Homebrew
              description: "List only the names of outdated kegs (takes precedence over `--verbose`)."
       switch "-v", "--verbose",
              description: "Include detailed version information."
-      switch "--formulae",
+      switch "--formula",
              description: "Only output outdated formulae."
-      switch "--casks",
+      switch "--cask",
              description: "Only output outdated casks."
       flag   "--json",
              description: "Print output in JSON format. There are two versions: v1 and v2. " \
@@ -37,7 +37,7 @@ module Homebrew
              description: "Print outdated casks with `auto_updates` or `version :latest`."
 
       conflicts "--quiet", "--verbose", "--json"
-      conflicts "--formulae", "--casks"
+      conflicts "--formula", "--cask"
     end
   end
 
@@ -49,7 +49,7 @@ module Homebrew
       # TODO: enable for next major/minor release
       # odeprecated "brew outdated --json#{json_version == :v1 ? "=v1" : ""}", "brew outdated --json=v2"
 
-      outdated = if args.formulae? || !args.casks?
+      outdated = if args.formula? || !args.cask?
         outdated_formulae args: args
       else
         outdated_casks args: args
@@ -58,9 +58,9 @@ module Homebrew
       puts JSON.generate(json_info(outdated, args: args))
 
     when :v2
-      formulae, casks = if args.formulae?
+      formulae, casks = if args.formula?
         [outdated_formulae(args: args), []]
-      elsif args.casks?
+      elsif args.cask?
         [[], outdated_casks(args: args)]
       else
         outdated_formulae_casks args: args
@@ -75,9 +75,9 @@ module Homebrew
       outdated = formulae + casks
 
     else
-      outdated = if args.formulae?
+      outdated = if args.formula?
         outdated_formulae args: args
-      elsif args.casks?
+      elsif args.cask?
         outdated_casks args: args
       else
         outdated_formulae_casks(args: args).flatten

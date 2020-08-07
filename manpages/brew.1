@@ -393,11 +393,11 @@ Only show formulae with multiple versions installed\.
 Show the versions of pinned formulae, or only the specified (pinned) formulae if \fIformula\fR are provided\. See also \fBpin\fR, \fBunpin\fR\.
 .
 .TP
-\fB\-\-formulae\fR
+\fB\-\-formula\fR
 List only formulae\.
 .
 .TP
-\fB\-\-casks\fR
+\fB\-\-cask\fR
 List only casks\.
 .
 .TP
@@ -484,11 +484,11 @@ List only the names of outdated kegs (takes precedence over \fB\-\-verbose\fR)\.
 Include detailed version information\.
 .
 .TP
-\fB\-\-formulae\fR
+\fB\-\-formula\fR
 Only output outdated formulae\.
 .
 .TP
-\fB\-\-casks\fR
+\fB\-\-cask\fR
 Only output outdated casks\.
 .
 .TP
@@ -565,11 +565,11 @@ Perform a substring search of cask tokens and formula names for \fItext\fR\. If 
 If no \fItext\fR is provided, list all locally available formulae (including tapped ones)\. No online search is performed\.
 .
 .TP
-\fB\-\-formulae\fR
+\fB\-\-formula\fR
 Without \fItext\fR, list all locally available formulae (no online search is performed)\. With \fItext\fR, search online and locally for formulae\.
 .
 .TP
-\fB\-\-casks\fR
+\fB\-\-cask\fR
 Without \fItext\fR, list all locally available casks (including tapped ones, no online search is performed)\. With \fItext\fR, search online and locally for casks\.
 .
 .TP
@@ -711,11 +711,11 @@ Unless \fBHOMEBREW_NO_INSTALL_CLEANUP\fR is set, \fBbrew cleanup\fR will then be
 If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory\.
 .
 .TP
-\fB\-\-formulae\fR
+\fB\-\-formula\fR
 Only upgrade outdated formulae\.
 .
 .TP
-\fB\-\-casks\fR
+\fB\-\-cask\fR
 Only upgrade outdated casks\.
 .
 .TP
@@ -812,11 +812,11 @@ Show the cache file used when building from source\.
 Show the cache file used when pouring a bottle\.
 .
 .TP
-\fB\-\-formulae\fR
+\fB\-\-formula\fR
 Only show cache files for formulae\.
 .
 .TP
-\fB\-\-casks\fR
+\fB\-\-cask\fR
 Only show cache files for casks\.
 .
 .SS "\fB\-\-caskroom\fR [\fIcask\fR]"
@@ -1585,15 +1585,15 @@ Read the \fBBrewfile\fR from \fB~/\.Brewfile\fR\.
 \fBlist\fR all dependencies\.
 .
 .TP
-\fB\-\-formulae\fR
+\fB\-\-formula\fR
 \fBlist\fR Homebrew dependencies\.
 .
 .TP
-\fB\-\-casks\fR
+\fB\-\-cask\fR
 \fBlist\fR Homebrew Cask dependencies\.
 .
 .TP
-\fB\-\-taps\fR
+\fB\-\-tap\fR
 \fBlist\fR tap dependencies\.
 .
 .TP

@@ -23,12 +23,12 @@ module Homebrew
              description: "Show the cache file used when building from source."
       switch "--force-bottle",
              description: "Show the cache file used when pouring a bottle."
-      switch "--formulae",
+      switch "--formula",
              description: "Only show cache files for formulae."
-      switch "--casks",
+      switch "--cask",
              description: "Only show cache files for casks."
       conflicts "--build-from-source", "--force-bottle"
-      conflicts "--formulae", "--casks"
+      conflicts "--formula", "--cask"
     end
   end
 
@@ -37,11 +37,11 @@ module Homebrew
 
     if args.no_named?
       puts HOMEBREW_CACHE
-    elsif args.formulae?
+    elsif args.formula?
       args.named.each do |name|
         print_formula_cache name, args: args
       end
-    elsif args.casks?
+    elsif args.cask?
       args.named.each do |name|
         print_cask_cache name
       end

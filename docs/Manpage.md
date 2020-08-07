@@ -290,9 +290,9 @@ If *`formula`* is provided, summarise the paths within its current keg.
   Only show formulae with multiple versions installed.
 * `--pinned`:
   Show the versions of pinned formulae, or only the specified (pinned) formulae if *`formula`* are provided. See also `pin`, `unpin`.
-* `--formulae`:
+* `--formula`:
   List only formulae.
-* `--casks`:
+* `--cask`:
   List only casks.
 * `-1`:
   Force output to be one entry per line. This is the default when output is not to a terminal.
@@ -359,9 +359,9 @@ otherwise.
   List only the names of outdated kegs (takes precedence over `--verbose`).
 * `-v`, `--verbose`:
   Include detailed version information.
-* `--formulae`:
+* `--formula`:
   Only output outdated formulae.
-* `--casks`:
+* `--cask`:
   Only output outdated casks.
 * `--json`:
   Print output in JSON format. There are two versions: v1 and v2. v1 is deprecated and is currently the default if no version is specified. v2 prints outdated formulae and casks. 
@@ -425,9 +425,9 @@ search for *`text`* is extended online to `homebrew/core` and `homebrew/cask`.
 If no *`text`* is provided, list all locally available formulae (including tapped
 ones). No online search is performed.
 
-* `--formulae`:
+* `--formula`:
   Without *`text`*, list all locally available formulae (no online search is performed). With *`text`*, search online and locally for formulae.
-* `--casks`:
+* `--cask`:
   Without *`text`*, list all locally available casks (including tapped ones, no online search is performed). With *`text`*, search online and locally for casks.
 * `--desc`:
   Search for formulae with a description matching *`text`* and casks with a name matching *`text`*.
@@ -550,9 +550,9 @@ the upgraded formulae or, every 30 days, for all formulae.
 
 * `-d`, `--debug`:
   If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory.
-* `--formulae`:
+* `--formula`:
   Only upgrade outdated formulae.
-* `--casks`:
+* `--cask`:
   Only upgrade outdated casks.
 * `-s`, `--build-from-source`:
   Compile *`formula`* from source even if a bottle is available.
@@ -611,9 +611,9 @@ If *`formula`* is provided, display the file or directory used to cache *`formul
   Show the cache file used when building from source.
 * `--force-bottle`:
   Show the cache file used when pouring a bottle.
-* `--formulae`:
+* `--formula`:
   Only show cache files for formulae.
-* `--casks`:
+* `--cask`:
   Only show cache files for casks.
 
 ### `--caskroom` [*`cask`*]
@@ -1219,11 +1219,11 @@ flags which will help find keg-only dependencies like `openssl`, `icu4c`, etc.
   `install` won't output a `Brewfile.lock.json`.
 * `--all`:
   `list` all dependencies.
-* `--formulae`:
+* `--formula`:
   `list` Homebrew dependencies.
-* `--casks`:
+* `--cask`:
   `list` Homebrew Cask dependencies.
-* `--taps`:
+* `--tap`:
   `list` tap dependencies.
 * `--mas`:
   `list` Mac App Store dependencies.
