@@ -5,7 +5,6 @@ require "formula"
 require "diagnostic"
 require "migrator"
 require "cli/parser"
-require "cask/all"
 require "cask/cmd"
 require "cask/cask_loader"
 

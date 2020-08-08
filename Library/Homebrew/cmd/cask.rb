@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "cask/all"
+require "cask"
 
 module Homebrew
   module_function
