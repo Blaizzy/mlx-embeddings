@@ -35,6 +35,7 @@ describe Cask::Cmd::Create, :cask do
 
         url "https://"
         name ""
+        desc ""
         homepage ""
 
         app ""
