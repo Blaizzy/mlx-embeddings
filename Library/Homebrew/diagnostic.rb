@@ -691,7 +691,7 @@ module Homebrew
 
           # these will result in uncommitted gems.
           if path == HOMEBREW_REPOSITORY
-            next if ENV["HOMEBREW_SORBET"] || ENV["HOMEBREW_PATCHELF_RB"]
+            next if ENV["HOMEBREW_SORBET"]
           end
 
           message ||= ""
