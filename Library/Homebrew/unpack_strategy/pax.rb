@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module UnpackStrategy
+  # Strategy for unpacking pax archives.
   class Pax
     include UnpackStrategy
 

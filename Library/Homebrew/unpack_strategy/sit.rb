@@ -3,6 +3,7 @@
 require_relative "generic_unar"
 
 module UnpackStrategy
+  # Strategy for unpacking Stuffit archives.
   class Sit < GenericUnar
     using Magic
 

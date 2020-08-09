@@ -3,6 +3,7 @@
 require_relative "uncompressed"
 
 module UnpackStrategy
+  # Strategy for unpacking Java archives.
   class Jar < Uncompressed
     using Magic
 

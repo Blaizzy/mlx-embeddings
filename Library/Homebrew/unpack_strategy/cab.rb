@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module UnpackStrategy
+  # Strategy for unpacking Cabinet archives.
   class Cab
     include UnpackStrategy
 

@@ -3,6 +3,7 @@
 require_relative "generic_unar"
 
 module UnpackStrategy
+  # Strategy for unpacking self-extracting executables.
   class SelfExtractingExecutable < GenericUnar
     using Magic
 

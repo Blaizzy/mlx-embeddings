@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module UnpackStrategy
+  # Strategy for unpacking tar archives.
   class Tar
     include UnpackStrategy
 

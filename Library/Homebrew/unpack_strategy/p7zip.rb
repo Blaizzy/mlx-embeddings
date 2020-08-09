@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module UnpackStrategy
+  # Strategy for unpacking P7ZIP archives.
   class P7Zip
     include UnpackStrategy
 

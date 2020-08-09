@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module UnpackStrategy
+  # Strategy for unpacking Fossil repositories.
   class Fossil
     include UnpackStrategy
 

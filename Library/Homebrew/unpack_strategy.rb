@@ -1,8 +1,12 @@
 # frozen_string_literal: true
 
+# Module containing all available strategies for unpacking archives.
+#
+# @api private
 module UnpackStrategy
+  # Helper module for identifying the file type.
   module Magic
-    # length of the longest regex (currently Tar)
+    # Length of the longest regex (currently Tar).
     MAX_MAGIC_NUMBER_LENGTH = 262
 
     refine Pathname do
@@ -31,18 +35,18 @@ module UnpackStrategy
 
   def self.strategies
     @strategies ||= [
-      Tar, # needs to be before Bzip2/Gzip/Xz/Lzma
+      Tar, # Needs to be before Bzip2/Gzip/Xz/Lzma.
       Pax,
       Gzip,
       Lzma,
       Xz,
       Lzip,
-      Air, # needs to be before Zip
-      Jar, # needs to be before Zip
-      LuaRock, # needs to be before Zip
-      MicrosoftOfficeXml, # needs to be before Zip
+      Air, # Needs to be before `Zip`.
+      Jar, # Needs to be before `Zip`.
+      LuaRock, # Needs to be before `Zip`.
+      MicrosoftOfficeXml, # Needs to be before `Zip`.
       Zip,
-      Pkg, # needs to be before Xar
+      Pkg, # Needs to be before `Xar`.
       Xar,
       Ttf,
       Otf,
@@ -50,10 +54,10 @@ module UnpackStrategy
       Mercurial,
       Subversion,
       Cvs,
-      SelfExtractingExecutable, # needs to be before Cab
+      SelfExtractingExecutable, # Needs to be before `Cab`.
       Cab,
       Executable,
-      Dmg, # needs to be before Bzip2
+      Dmg, # Needs to be before `Bzip2`.
       Bzip2,
       Fossil,
       Bazaar,
