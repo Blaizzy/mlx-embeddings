@@ -6,6 +6,7 @@ module RuboCop
     module Constants
       STANZA_GROUPS = [
         [:version, :sha256],
+        [:language],
         [:url, :appcast, :name, :desc, :homepage],
         [
           :auto_updates,
