@@ -1,5 +1,12 @@
 # frozen_string_literal: true
 
+require "cask/cmd/audit"
+require "cask/cmd/fetch"
+require "cask/cmd/install"
+require "cask/cask_loader"
+require "cask/download"
+require "cask/quarantine"
+
 describe Cask::Quarantine, :cask do
   matcher :be_quarantined do
     match do |path|

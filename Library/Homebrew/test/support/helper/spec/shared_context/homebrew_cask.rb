@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "cask/all"
+require "cask/config"
 
 require "test/support/helper/cask/fake_system_command"
 require "test/support/helper/cask/install_helper"

@@ -900,7 +900,7 @@ true:
   - ./version/null.rb
 
 strict:
-  - ./cask/all.rb
+  - ./cask.rb
   - ./cask/artifact.rb
   - ./cask/dsl/uninstall_postflight.rb
   - ./compat.rb

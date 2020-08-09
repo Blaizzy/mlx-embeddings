@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "cli/parser"
+require "cask/auditor"
 
 module Cask
   class Cmd
