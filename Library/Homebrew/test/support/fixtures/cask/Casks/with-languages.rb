@@ -5,7 +5,6 @@ cask "with-languages" do
     sha256 "abc123"
     "zh-CN"
   end
-
   language "en-US", default: true do
     sha256 "xyz789"
     "en-US"
