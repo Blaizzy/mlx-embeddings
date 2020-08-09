@@ -2,6 +2,9 @@
 
 require "fcntl"
 
+# A lock file.
+#
+# @api private
 class LockFile
   attr_reader :path
 
@@ -43,12 +46,18 @@ class LockFile
   end
 end
 
+# A lock file for a formula.
+#
+# @api private
 class FormulaLock < LockFile
   def initialize(name)
     super("#{name}.formula")
   end
 end
 
+# A lock file for a cask.
+#
+# @api private
 class CaskLock < LockFile
   def initialize(name)
     super("#{name}.cask")
