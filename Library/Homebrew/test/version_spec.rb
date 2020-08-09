@@ -671,6 +671,27 @@ describe Version do
         .to be_detected_from("https://ftpmirror.gnu.org/libidn/libidn-1.29-win64.zip")
     end
 
+    specify "breseq version style" do
+      expect(described_class.create("0.35.1"))
+        .to be_detected_from(
+          "https://github.com/barricklab/breseq" \
+          "/releases/download/v0.35.1/breseq-0.35.1.Source.tar.gz",
+        )
+    end
+
+    specify "wildfly version style" do
+      expect(described_class.create("20.0.1"))
+        .to be_detected_from("https://download.jboss.org/wildfly/20.0.1.Final/wildfly-20.0.1.Final.tar.gz")
+    end
+
+    specify "trinity version style" do
+      expect(described_class.create("2.10.0"))
+        .to be_detected_from(
+          "https://github.com/trinityrnaseq/trinityrnaseq" \
+          "/releases/download/v2.10.0/trinityrnaseq-v2.10.0.FULL.tar.gz",
+        )
+    end
+
     specify "with arch" do
       expect(described_class.create("4.0.18-1"))
         .to be_detected_from("https://ftpmirror.gnu.org/mtools/mtools-4.0.18-1.i686.rpm")
