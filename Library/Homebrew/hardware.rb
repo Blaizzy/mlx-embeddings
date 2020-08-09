@@ -2,7 +2,9 @@
 
 require "utils/popen"
 
+# Helper module for querying hardware information.
 module Hardware
+  # Helper module for querying CPU information.
   class CPU
     INTEL_32BIT_ARCHS = [:i386].freeze
     INTEL_64BIT_ARCHS = [:x86_64].freeze
