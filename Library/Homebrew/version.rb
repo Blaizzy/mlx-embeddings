@@ -2,6 +2,9 @@
 
 require "version/null"
 
+# A formula's version.
+#
+# @api private
 class Version
   include Comparable
 
@@ -9,6 +12,7 @@ class Version
     /#{"^" if full}#{Regexp.escape(name)}(@\d[\d.]*)?#{"$" if full}/
   end
 
+  # A part of a `Version`.
   class Token
     include Comparable
 
@@ -67,9 +71,10 @@ class Version
     end
   end
 
+  # A pseudo-token representing the absence of a token.
   class NullToken < Token
-    def initialize(value = nil)
-      super
+    def initialize
+      super(nil)
     end
 
     def <=>(other)
@@ -95,9 +100,12 @@ class Version
       "#<#{self.class.name}>"
     end
   end
+  private_constant :NullToken
 
+  # Represents the absence of a token.
   NULL_TOKEN = NullToken.new.freeze
 
+  # A token string.
   class StringToken < Token
     PATTERN = /[a-z]+/i.freeze
 
@@ -119,6 +127,7 @@ class Version
     end
   end
 
+  # A token consisting of only numbers.
   class NumericToken < Token
     PATTERN = /[0-9]+/i.freeze
 
@@ -146,12 +155,14 @@ class Version
     end
   end
 
+  # A token consisting of an alphabetic and a numeric part.
   class CompositeToken < StringToken
     def rev
       value[/[0-9]+/].to_i
     end
   end
 
+  # A token representing the part of a version designating it is an alpha release.
   class AlphaToken < CompositeToken
     PATTERN = /alpha[0-9]*|a[0-9]+/i.freeze
 
@@ -169,6 +180,7 @@ class Version
     end
   end
 
+  # A token representing the part of a version designating it is a beta release.
   class BetaToken < CompositeToken
     PATTERN = /beta[0-9]*|b[0-9]+/i.freeze
 
@@ -188,6 +200,7 @@ class Version
     end
   end
 
+  # A token representing the part of a version designating it is a pre-release.
   class PreToken < CompositeToken
     PATTERN = /pre[0-9]*/i.freeze
 
@@ -207,6 +220,7 @@ class Version
     end
   end
 
+  # A token representing the part of a version designating it is a release-candidate.
   class RCToken < CompositeToken
     PATTERN = /rc[0-9]*/i.freeze
 
@@ -226,6 +240,7 @@ class Version
     end
   end
 
+  # A token representing the part of a version designating it is a patch release.
   class PatchToken < CompositeToken
     PATTERN = /p[0-9]*/i.freeze
 
@@ -252,19 +267,10 @@ class Version
     NumericToken::PATTERN,
     StringToken::PATTERN,
   ).freeze
+  private_constant :SCAN_PATTERN
 
-  class FromURL < Version
-    def detected_from_url?
-      true
-    end
-  end
-
-  def self.detect(url, specs)
-    if specs.key?(:tag)
-      FromURL.parse(specs[:tag])
-    else
-      FromURL.parse(url)
-    end
+  def self.detect(url, **specs)
+    parse(specs.fetch(:tag, url), detected_from_url: true)
   end
 
   def self.create(val)
@@ -277,9 +283,9 @@ class Version
     end
   end
 
-  def self.parse(spec)
+  def self.parse(spec, detected_from_url: false)
     version = _parse(spec)
-    version.nil? ? NULL : new(version)
+    version.nil? ? NULL : new(version, detected_from_url: detected_from_url)
   end
 
   def self._parse(spec)
@@ -424,14 +430,15 @@ class Version
 
   private_class_method :_parse
 
-  def initialize(val)
+  def initialize(val, detected_from_url: false)
     raise TypeError, "Version value must be a string; got a #{val.class} (#{val})" unless val.respond_to?(:to_str)
 
     @version = val.to_str
+    @detected_from_url = detected_from_url
   end
 
   def detected_from_url?
-    false
+    @detected_from_url
   end
 
   def head?
@@ -550,10 +557,13 @@ class Version
   end
 end
 
+# A formula's [HEAD version](https://docs.brew.sh/Formula-Cookbook#unstable-versions-head).
+#
+# @api private
 class HeadVersion < Version
   attr_reader :commit
 
-  def initialize(val)
+  def initialize(*)
     super
     @commit = @version[/^HEAD-(.+)$/, 1]
   end

@@ -468,7 +468,7 @@ module Homebrew
     unless version
       specs = {}
       specs[:tag] = tag if tag
-      version = Version.detect(url, specs)
+      version = Version.detect(url, **specs)
     end
     # if we haven't already found open requests, try for an exact match across closed requests
     GitHub.check_for_duplicate_pull_requests("#{formula.name} #{version}", tap_full_name, state: "closed", args: args)

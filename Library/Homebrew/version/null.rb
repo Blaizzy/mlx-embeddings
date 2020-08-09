@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Version
+  # Represents the absence of a version.
   NULL = Class.new do
     include Comparable
 
