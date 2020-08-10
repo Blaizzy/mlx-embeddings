@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require "cli/parser"
-require "cask/cask_loader"
-require "cask/exceptions"
 
 module Homebrew
   module_function
@@ -23,21 +21,22 @@ module Homebrew
 
     if args.no_named?
       exec_browser HOMEBREW_WWW
+      return
+    end
+
+    homepages = args.formulae_and_casks.map do |formula_or_cask|
+      puts "Opening homepage for #{name_of(formula_or_cask)}"
+      formula_or_cask.homepage
+    end
+
+    exec_browser(*homepages)
+  end
+
+  def name_of(formula_or_cask)
+    if formula_or_cask.is_a? Formula
+      "Formula #{formula_or_cask.name}"
     else
-      homepages = args.named.map do |name|
-        f = Formulary.factory(name)
-        puts "Opening homepage for formula #{name}"
-        f.homepage
-      rescue FormulaUnavailableError
-        begin
-          c = Cask::CaskLoader.load(name)
-          puts "Opening homepage for cask #{name}"
-          c.homepage
-        rescue Cask::CaskUnavailableError
-          odie "No available formula or cask with the name \"#{name}\""
-        end
-      end
-      exec_browser(*homepages)
+      "Cask #{formula_or_cask.token}"
     end
   end
 end
