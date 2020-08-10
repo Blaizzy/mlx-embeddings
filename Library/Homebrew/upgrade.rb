@@ -64,7 +64,8 @@ module Homebrew
     options &= f.options
 
     fi = FormulaInstaller.new(f, force_bottle: args.force_bottle?,
-                              debug: args.debug?, quiet: args.quiet?, verbose: args.verbose?)
+                                 build_from_source_formulae: args.build_from_source_formulae,
+                                 debug: args.debug?, quiet: args.quiet?, verbose: args.verbose?)
     fi.options = options
     fi.force = args.force?
     fi.keep_tmp = args.keep_tmp?
