@@ -301,7 +301,7 @@ class Version
     # e.g. foobar-4.5.1-1
     # e.g. unrtf_0.20.4-1
     # e.g. ruby-1.9.1-p243
-    m = /[-_]((?:\d+\.)*\d+\.\d+-(?:p|rc|RC)?\d+)(?:[-._](?:bin|dist|stable|src|sources))?$/.match(stem)
+    m = /[-_]((?:\d+\.)*\d+\.\d+-(?:p|rc|RC)?\d+)(?:[-._](?i:bin|dist|stable|src|sources?|final|full))?$/.match(stem)
     return m.captures.first unless m.nil?
 
     # URL with no extension
@@ -359,7 +359,7 @@ class Version
     return m.captures.first unless m.nil?
 
     # e.g. foobar-4.5.0-bin
-    m = /-((?:\d+\.)+\d+[abc]?)[-._](?:bin|dist|stable|src|sources?)$/.match(stem)
+    m = /[-vV]((?:\d+\.)+\d+[abc]?)[-._](?i:bin|dist|stable|src|sources?|final|full)$/.match(stem)
     return m.captures.first unless m.nil?
 
     # dash version style
