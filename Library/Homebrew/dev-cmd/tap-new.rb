@@ -59,6 +59,7 @@ module Homebrew
               os: [ubuntu-latest, macOS-latest]
           steps:
             - name: Set up Homebrew
+              id: set-up-homebrew
               uses: Homebrew/actions/setup-homebrew@master
 
             - name: Cache Homebrew Bundler RubyGems
