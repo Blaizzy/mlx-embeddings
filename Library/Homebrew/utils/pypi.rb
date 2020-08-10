@@ -8,6 +8,7 @@ module PyPI
   AUTOMATIC_RESOURCE_UPDATE_BLOCKLIST = %w[
     ansible
     ansible@2.8
+    cdk8s
     cloudformation-cli
     diffoscope
     dxpy
