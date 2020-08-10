@@ -168,11 +168,12 @@ module Homebrew
   end
 
   def list_casks(args:)
-    cask_list = Cask::Cmd::List.new args.named
-    cask_list.one = args.public_send(:'1?')
-    cask_list.versions = args.versions?
-    cask_list.full_name = args.full_name?
-    cask_list.run
+    Cask::Cmd::List.list_casks(
+      *args.loaded_casks,
+      one:       args.public_send(:'1?'),
+      full_name: args.full_name?,
+      versions:  args.versions?,
+    )
   end
 end
 
