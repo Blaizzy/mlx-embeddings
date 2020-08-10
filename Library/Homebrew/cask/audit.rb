@@ -13,7 +13,7 @@ module Cask
 
     attr_reader :cask, :commit_range, :download
 
-    attr_predicate :appcast?
+    attr_predicate :appcast?, :new_cask?, :strict?, :online?
 
     def initialize(cask, appcast: false, download: false, quarantine: nil,
                    token_conflicts: false, online: false, strict: false,
@@ -34,6 +34,7 @@ module Cask
       check_required_stanzas
       check_version
       check_sha256
+      check_desc
       check_url
       check_generic_artifacts
       check_token_valid
@@ -279,6 +280,14 @@ module Cask
       end
     end
 
+    def check_desc
+      return unless new_cask?
+
+      return if cask.desc.present?
+
+      add_warning "Cask should have a description. Please add a `desc` stanza."
+    end
+
     def check_url
       return unless cask.url
 
@@ -339,7 +348,7 @@ module Cask
     end
 
     def check_token_valid
-      return unless @strict
+      return unless strict?
 
       add_warning "cask token is not lowercase" if cask.token.downcase!
 
@@ -365,7 +374,7 @@ module Cask
     end
 
     def check_token_bad_words
-      return unless @strict
+      return unless strict?
 
       token = cask.token
 
@@ -467,8 +476,8 @@ module Cask
     end
 
     def get_repo_data(regex)
-      return unless @online
-      return unless @new_cask
+      return unless online?
+      return unless new_cask?
 
       _, user, repo = *regex.match(cask.url.to_s)
       _, user, repo = *regex.match(cask.homepage) unless user
