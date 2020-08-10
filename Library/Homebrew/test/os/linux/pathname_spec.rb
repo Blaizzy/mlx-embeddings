@@ -2,7 +2,7 @@
 
 require "extend/pathname"
 
-describe Pathname, skip: HOMEBREW_PATCHELF_RB.blank? do
+describe Pathname do
   let(:elf_dir) { described_class.new "#{TEST_FIXTURE_DIR}/elf" }
   let(:sho) { elf_dir/"libhello.so.0" }
   let(:exec) { elf_dir/"hello" }

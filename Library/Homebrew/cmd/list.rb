@@ -11,9 +11,9 @@ module Homebrew
   def list_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `list`, `ls` [<options>] [<formula>]
+        `list`, `ls` [<options>] [<formula|cask>]
 
-        List all installed formulae.
+        List all installed formulae or casks
 
         If <formula> is provided, summarise the paths within its current keg.
       EOS
@@ -32,8 +32,10 @@ module Homebrew
       switch "--pinned",
              description: "Show the versions of pinned formulae, or only the specified (pinned) "\
                           "formulae if <formula> are provided. See also `pin`, `unpin`."
-      switch "--cask",
-             description: "List casks"
+      switch "--formula", "--formulae",
+             description: "List only formulae."
+      switch "--cask", "--casks",
+             description: "List only casks."
       # passed through to ls
       switch "-1",
              description: "Force output to be one entry per line. " \
@@ -46,7 +48,9 @@ module Homebrew
       switch "-t",
              description: "Sort by time modified, listing most recently modified first."
 
-      ["--unbrewed", "--multiple", "--pinned", "-l", "-r", "-t"].each { |flag| conflicts "--cask", flag }
+      ["--formula", "--unbrewed", "--multiple", "--pinned", "-l", "-r", "-t"].each do |flag|
+        conflicts "--cask", flag
+      end
     end
   end
 

@@ -4,6 +4,8 @@ require "utils/curl"
 require "json"
 
 class Bintray
+  include Context
+
   API_URL = "https://api.bintray.com"
 
   class Error < RuntimeError
@@ -32,8 +34,8 @@ class Bintray
     end
 
     curl(*args, url,
-         show_output: Homebrew.args.verbose?,
-         secrets:     @bintray_key)
+         show_output: verbose?,
+         secrets:     key)
   end
 
   def upload(local_file, repo:, package:, version:, remote_file:, sha256: nil)

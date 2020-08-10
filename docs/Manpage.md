@@ -274,9 +274,9 @@ automatically when you install formulae but can be useful for DIY installations.
 * `-f`, `--force`:
   Allow keg-only formulae to be linked.
 
-### `list`, `ls` [*`options`*] [*`formula`*]
+### `list`, `ls` [*`options`*] [*`formula|cask`*]
 
-List all installed formulae.
+List all installed formulae or casks
 
 If *`formula`* is provided, summarise the paths within its current keg.
 
@@ -290,8 +290,10 @@ If *`formula`* is provided, summarise the paths within its current keg.
   Only show formulae with multiple versions installed.
 * `--pinned`:
   Show the versions of pinned formulae, or only the specified (pinned) formulae if *`formula`* are provided. See also `pin`, `unpin`.
+* `--formula`:
+  List only formulae.
 * `--cask`:
-  List casks
+  List only casks.
 * `-1`:
   Force output to be one entry per line. This is the default when output is not to a terminal.
 * `-l`:
@@ -347,26 +349,26 @@ Show install options specific to *`formula`*.
 * `--command`:
   Show options for the specified *`command`*.
 
-### `outdated` [*`options`*] [*`formula`*]
+### `outdated` [*`options`*] [*`formula`*|*`cask`*]
 
-List installed formulae that have an updated version available. By default,
-version information is displayed in interactive shells, and suppressed
+List installed casks and formulae that have an updated version available. By
+default, version information is displayed in interactive shells, and suppressed
 otherwise.
 
 * `-q`, `--quiet`:
   List only the names of outdated kegs (takes precedence over `--verbose`).
 * `-v`, `--verbose`:
   Include detailed version information.
+* `--formula`:
+  Only output outdated formulae.
+* `--cask`:
+  Only output outdated casks.
 * `--json`:
   Print output in JSON format. There are two versions: v1 and v2. v1 is deprecated and is currently the default if no version is specified. v2 prints outdated formulae and casks. 
 * `--fetch-HEAD`:
   Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository's HEAD will only be checked for updates when a new stable or development version has been released.
 * `--greedy`:
   Print outdated casks with `auto_updates` or `version :latest`.
-* `--formula`:
-  Treat all arguments as formulae.
-* `--cask`:
-  Treat all arguments as casks.
 
 ### `pin` *`formula`*
 
@@ -423,9 +425,9 @@ search for *`text`* is extended online to `homebrew/core` and `homebrew/cask`.
 If no *`text`* is provided, list all locally available formulae (including tapped
 ones). No online search is performed.
 
-* `--formulae`:
+* `--formula`:
   Without *`text`*, list all locally available formulae (no online search is performed). With *`text`*, search online and locally for formulae.
-* `--casks`:
+* `--cask`:
   Without *`text`*, list all locally available casks (including tapped ones, no online search is performed). With *`text`*, search online and locally for casks.
 * `--desc`:
   Search for formulae with a description matching *`text`* and casks with a name matching *`text`*.
@@ -536,18 +538,22 @@ Fetch and reset Homebrew and all tap repositories (or any specified *`repository
 
 *Note:* this will destroy all your uncommitted or committed changes.
 
-### `upgrade` [*`options`*] [*`formula`*]
+### `upgrade` [*`options`*] [*`formula`*|*`cask`*]
 
-Upgrade outdated, unpinned formulae using the same options they were originally
-installed with, plus any appended brew formula options. If *`formula`* are
-specified, upgrade only the given *`formula`* kegs (unless they are pinned; see
-`pin`, `unpin`).
+Upgrade outdated casks and outdated, unpinned formulae using the same options
+they were originally installed with, plus any appended brew formula options. If
+*`cask`* or *`formula`* are specified, upgrade only the given *`cask`* or *`formula`*
+kegs (unless they are pinned; see `pin`, `unpin`).
 
 Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will then be run for
 the upgraded formulae or, every 30 days, for all formulae.
 
 * `-d`, `--debug`:
   If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory.
+* `--formula`:
+  Only upgrade outdated formulae.
+* `--cask`:
+  Only upgrade outdated casks.
 * `-s`, `--build-from-source`:
   Compile *`formula`* from source even if a bottle is available.
 * `-i`, `--interactive`:
@@ -595,7 +601,7 @@ formulae that use *`formula`*. By default, `uses` shows all formulae that specif
 * `--HEAD`:
   Show usage of *`formula`* by HEAD builds.
 
-### `--cache` [*`options`*] [*`formula`*]
+### `--cache` [*`options`*] [*`formula|cask`*]
 
 Display Homebrew's download cache. See also `HOMEBREW_CACHE`.
 
@@ -609,6 +615,13 @@ If *`formula`* is provided, display the file or directory used to cache *`formul
   Only show cache files for formulae.
 * `--cask`:
   Only show cache files for casks.
+
+### `--caskroom` [*`cask`*]
+
+Display Homebrew's Caskroom path.
+
+If *`cask`* is provided, display the location in the Caskroom where *`cask`* would
+be installed, without any sort of versioned directory as the last path.
 
 ### `--cellar` [*`formula`*]
 
@@ -667,6 +680,8 @@ any errors are found.
   Run additional, slower style checks that require a network connection.
 * `--new-formula`:
   Run various additional style checks to determine if a new formula is eligible for Homebrew. This should be used when creating new formula and implies `--strict` and `--online`.
+* `--tap`:
+  Check the formulae within the given tap, specified as *`user`*`/`*`repo`*.
 * `--fix`:
   Fix style violations automatically using RuboCop's auto-correct feature.
 * `--display-cop-names`:
@@ -674,7 +689,7 @@ any errors are found.
 * `--display-filename`:
   Prefix every line of output with the file or formula name being audited, to make output easy to grep.
 * `--skip-style`:
-  Skip running non-RuboCop style checks. Useful if you plan on running `brew style` separately.
+  Skip running non-RuboCop style checks. Useful if you plan on running `brew style` separately. Default unless a formula is specified by name
 * `-D`, `--audit-debug`:
   Enable debugging and profiling of audit methods.
 * `--only`:
@@ -976,7 +991,7 @@ Apply the bottle commit and publish bottles to Bintray.
 * `--root-url`:
   Use the specified *`URL`* as the root of the bottle's URL instead of Homebrew's default.
 
-### `prof` *`command`*
+### `prof` [*`command`*]
 
 Run Homebrew with the Ruby profiler, e.g. `brew prof readall`.
 
@@ -1214,11 +1229,11 @@ flags which will help find keg-only dependencies like `openssl`, `icu4c`, etc.
   `install` won't output a `Brewfile.lock.json`.
 * `--all`:
   `list` all dependencies.
-* `--brews`:
+* `--formula`:
   `list` Homebrew dependencies.
-* `--casks`:
+* `--cask`:
   `list` Homebrew Cask dependencies.
-* `--taps`:
+* `--tap`:
   `list` tap dependencies.
 * `--mas`:
   `list` Mac App Store dependencies.
@@ -1400,6 +1415,9 @@ Note that environment variables must have a value set to be detected. For exampl
     Use the specified directory as the download cache.
 
     *Default:* macOS: `$HOME/Library/Caches/Homebrew`, Linux: `$XDG_CACHE_HOME/Homebrew` or `$HOME/.cache/Homebrew`.
+
+  * `HOMEBREW_CASK_OPTS`:
+    Options which should be used for all `cask` commands.
 
   * `HOMEBREW_CLEANUP_MAX_AGE_DAYS`:
     Cleanup all cached files older than this many days.

@@ -50,7 +50,9 @@ module Homebrew
     only_cops = args.only_cops
     except_cops = args.except_cops
 
-    options = { fix: args.fix?, display_cop_names: args.display_cop_names? }
+    options = {
+      fix: args.fix?, display_cop_names: args.display_cop_names?, debug: args.debug?, verbose: args.verbose?
+    }
     if only_cops
       options[:only_cops] = only_cops
     elsif except_cops

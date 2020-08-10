@@ -35,6 +35,7 @@ module Homebrew
         @resolved_formulae_casks = nil
         @formulae_paths = nil
         @casks = nil
+        @loaded_casks = nil
         @kegs = nil
         @kegs_casks = nil
 
@@ -125,6 +126,10 @@ module Homebrew
                                          .freeze
       end
 
+      def loaded_casks
+        @loaded_casks ||= downcased_unique_named.map(&Cask::CaskLoader.method(:load)).freeze
+      end
+
       def kegs
         @kegs ||= downcased_unique_named.map do |name|
           resolve_keg name
@@ -181,6 +186,10 @@ module Homebrew
         return unless flag_with_value
 
         flag_with_value.delete_prefix(arg_prefix)
+      end
+
+      def context
+        Context::ContextStruct.new(debug: debug?, quiet: quiet?, verbose: verbose?)
       end
 
       private

@@ -821,18 +821,6 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
 
-    it "Using ARGV to check options" do
-      expect_no_offenses(<<~RUBY)
-        class Foo < Formula
-          desc "foo"
-          url 'https://brew.sh/foo-1.0.tgz'
-          def install
-            verbose = Homebrew.args.verbose?
-          end
-        end
-      RUBY
-    end
-
     it 'man+"man8" usage' do
       expect_offense(<<~RUBY)
         class Foo < Formula

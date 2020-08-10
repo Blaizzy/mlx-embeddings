@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require "development_tools"
+require "cask/exceptions"
+
 module Cask
   module Quarantine
     module_function

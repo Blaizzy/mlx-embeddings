@@ -15,7 +15,7 @@ jobs:
         version: ["16.04", "18.04", "20.04"]
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@main
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -23,8 +23,8 @@ jobs:
         run: git fetch origin master
       - name: Build Docker image
         run: docker build -t brew --build-arg=version=${{matrix.version}} .
-      - name: Run brew test-bot
-        run: docker run --rm brew brew test-bot
+      - name: Run brew test-bot --only-setup
+        run: docker run --rm brew brew test-bot --only-setup
       - name: Deploy the tagged Docker image to GitHub
         if: startsWith(github.ref, 'refs/tags/')
         run: |

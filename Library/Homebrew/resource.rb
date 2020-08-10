@@ -9,6 +9,7 @@ require "mktemp"
 # primary formula download, along with other declared resources, are instances
 # of this class.
 class Resource
+  include Context
   include FileUtils
 
   attr_reader :mirrors, :specs, :using, :source_modified_time, :patches, :owner
@@ -140,7 +141,7 @@ class Resource
 
   def verify_download_integrity(fn)
     if fn.file?
-      ohai "Verifying #{fn.basename} checksum" if Homebrew.args.verbose?
+      ohai "Verifying #{fn.basename} checksum" if verbose?
       fn.verify_checksum(checksum)
     end
   rescue ChecksumMissingError

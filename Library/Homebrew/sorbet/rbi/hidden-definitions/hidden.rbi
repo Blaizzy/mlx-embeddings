@@ -5496,6 +5496,8 @@ class Cask::Cask
 
   def depends_on(&block); end
 
+  def desc(&block); end
+
   def dictionary(&block); end
 
   def font(&block); end
@@ -8088,6 +8090,10 @@ end
 module Homebrew
   MAX_PORT = ::T.let(nil, ::T.untyped)
   MIN_PORT = ::T.let(nil, ::T.untyped)
+end
+
+class Homebrew::CLI::Parser
+  include ::Homebrew::CLI::Parser::Compat
 end
 
 module Homebrew::EnvConfig
@@ -13370,6 +13376,7 @@ class Object
   def to_yaml(options=T.unsafe(nil)); end
   ARGF = ::T.let(nil, ::T.untyped)
   ARGV = ::T.let(nil, ::T.untyped)
+  BUG_REPORTS_URL = ::T.let(nil, ::T.untyped)
   CROSS_COMPILING = ::T.let(nil, ::T.untyped)
   DEPRECATED_OFFICIAL_TAPS = ::T.let(nil, ::T.untyped)
   ENV = ::T.let(nil, ::T.untyped)
@@ -19536,6 +19543,8 @@ class RuboCop::Cask::AST::Stanza
 
   def depends_on?(); end
 
+  def desc?(); end
+
   def dictionary?(); end
 
   def font?(); end
@@ -19611,6 +19620,10 @@ class RuboCop::Cop::Cask::NoDslVersion
   def header_str(*args, &block); end
 
   def preferred_header_str(*args, &block); end
+end
+
+module RuboCop::Cop::Cask::OnDescStanza
+  def toplevel_stanzas(*args, &block); end
 end
 
 module RuboCop::Cop::Cask::OnHomepageStanza
@@ -21064,6 +21077,7 @@ class SimpleCov::Formatter::Codecov
   CIRCLE = ::T.let(nil, ::T.untyped)
   CODESHIP = ::T.let(nil, ::T.untyped)
   DRONEIO = ::T.let(nil, ::T.untyped)
+  GITHUB = ::T.let(nil, ::T.untyped)
   GITLAB = ::T.let(nil, ::T.untyped)
   HEROKU = ::T.let(nil, ::T.untyped)
   JENKINS = ::T.let(nil, ::T.untyped)
@@ -21995,8 +22009,6 @@ class SystemCommand
   def print_stdout?(); end
 
   def sudo?(); end
-
-  def verbose?(); end
 end
 
 module TZInfo
@@ -22971,42 +22983,6 @@ class Tempfile::Remover
 end
 
 class Tempfile::Remover
-end
-
-class Thor::Group
-  def self.banner(); end
-
-  def self.self_command(); end
-
-  def self.self_task(); end
-end
-
-class Thor
-  def self.banner(command, namespace=T.unsafe(nil), subcommand=T.unsafe(nil)); end
-
-  def self.disable_required_check(); end
-
-  def self.dispatch(meth, given_args, given_opts, config); end
-
-  def self.dynamic_command_class(); end
-
-  def self.find_command_possibilities(meth); end
-
-  def self.find_task_possibilities(meth); end
-
-  def self.normalize_command_name(meth); end
-
-  def self.normalize_task_name(meth); end
-
-  def self.retrieve_command_name(args); end
-
-  def self.retrieve_task_name(args); end
-
-  def self.stop_on_unknown_option(); end
-
-  def self.subcommand_help(cmd); end
-
-  def self.subtask_help(cmd); end
 end
 
 module ThreadSafe

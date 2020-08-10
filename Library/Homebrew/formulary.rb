@@ -109,6 +109,8 @@ module Formulary
   # A FormulaLoader returns instances of formulae.
   # Subclasses implement loaders for particular sources of formulae.
   class FormulaLoader
+    include Context
+
     # The formula's name
     attr_reader :name
     # The formula's ruby file's path or filename
@@ -138,7 +140,7 @@ module Formulary
     private
 
     def load_file(flags:)
-      $stderr.puts "#{$PROGRAM_NAME} (#{self.class.name}): loading #{path}" if Homebrew.args.debug?
+      $stderr.puts "#{$PROGRAM_NAME} (#{self.class.name}): loading #{path}" if debug?
       raise FormulaUnavailableError, name unless path.file?
 
       Formulary.load_formula_from_path(name, path, flags: flags)
@@ -314,7 +316,7 @@ module Formulary
     end
 
     def klass(flags:)
-      $stderr.puts "#{$PROGRAM_NAME} (#{self.class.name}): loading #{path}" if Homebrew.args.debug?
+      $stderr.puts "#{$PROGRAM_NAME} (#{self.class.name}): loading #{path}" if debug?
       namespace = "FormulaNamespace#{Digest::MD5.hexdigest(contents.to_s)}"
       Formulary.load_formula(name, path, contents, namespace, flags: flags)
     end

@@ -5,6 +5,16 @@ module PyPI
 
   PYTHONHOSTED_URL_PREFIX = "https://files.pythonhosted.org/packages/"
 
+  AUTOMATIC_RESOURCE_UPDATE_BLOCKLIST = %w[
+    ansible
+    ansible@2.8
+    cdk8s
+    cloudformation-cli
+    diffoscope
+    dxpy
+    molecule
+  ].freeze
+
   @pipgrip_installed = nil
 
   def url_to_pypi_package_name(url)
@@ -43,6 +53,11 @@ module PyPI
   def update_python_resources!(formula, version = nil, print_only: false, silent: false,
                                ignore_non_pypi_packages: false)
 
+    if !print_only && AUTOMATIC_RESOURCE_UPDATE_BLOCKLIST.include?(formula.full_name)
+      odie "The resources for \"#{formula.name}\" need special attention. Please update them manually."
+      return
+    end
+
     # PyPI package name isn't always the same as the formula name. Try to infer from the URL.
     pypi_name = if formula.stable.url.start_with?(PYTHONHOSTED_URL_PREFIX)
       url_to_pypi_package_name formula.stable.url
@@ -68,7 +83,7 @@ module PyPI
     @pipgrip_installed ||= Formula["pipgrip"].any_version_installed?
     odie '"pipgrip" must be installed (`brew install pipgrip`)' unless @pipgrip_installed
 
-    ohai "Retrieving PyPI dependencies for \"#{pypi_name}==#{version}\"" if !print_only && !silent
+    ohai "Retrieving PyPI dependencies for \"#{pypi_name}==#{version}\"..." if !print_only && !silent
     pipgrip_output = Utils.popen_read Formula["pipgrip"].bin/"pipgrip", "--json", "--no-cache-dir",
                                       "#{pypi_name}==#{version}"
     unless $CHILD_STATUS.success?
@@ -89,6 +104,7 @@ module PyPI
 
     new_resource_blocks = ""
     packages.each do |package, package_version|
+      ohai "Getting PyPI info for \"#{package}==#{package_version}\"" if !print_only && !silent
       name, url, checksum = get_pypi_info package, package_version
       # Fail if unable to find name, url or checksum for any resource
       if name.blank?

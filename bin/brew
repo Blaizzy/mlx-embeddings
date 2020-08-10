@@ -79,15 +79,14 @@ then
   export HOMEBREW_EDITOR="$VISUAL"
 fi
 
-# Set CI variable for GitHub Actions, Azure Pipelines, Jenkins
+# Set CI variable for Azure Pipelines and Jenkins
 # (Set by default on Circle and Travis CI)
-if [[ -n "$GITHUB_ACTIONS" || -n "$TF_BUILD" || -n "$JENKINS_HOME" ]]
+if [[ -z "$CI" ]] && [[ -n "$TF_BUILD" || -n "$JENKINS_HOME" ]]
 then
   export CI="1"
 fi
 
-# test-bot does environment filtering itself
-if [[ -z "$HOMEBREW_NO_ENV_FILTERING" && "$1" != "test-bot" ]]
+if [[ -z "$HOMEBREW_NO_ENV_FILTERING" ]]
 then
   PATH="/usr/bin:/bin:/usr/sbin:/sbin"
 
@@ -95,6 +94,8 @@ then
   # Filter all but the specific variables.
   for VAR in HOME SHELL PATH TERM TERMINFO COLUMNS DISPLAY LOGNAME USER CI SSH_AUTH_SOCK SUDO_ASKPASS \
              http_proxy https_proxy ftp_proxy no_proxy all_proxy HTTPS_PROXY FTP_PROXY ALL_PROXY \
+             GITHUB_ACTIONS GITHUB_ACTIONS_HOMEBREW_SELF_HOSTED \
+             GITHUB_REPOSITORY GITHUB_RUN_ID GITHUB_SHA GITHUB_HEAD_REF GITHUB_BASE_REF GITHUB_REF \
              "${!HOMEBREW_@}"
   do
     # Skip if variable value is empty.

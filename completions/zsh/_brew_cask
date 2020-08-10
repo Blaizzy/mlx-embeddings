@@ -22,7 +22,7 @@ __brew_all_casks() {
   local comp_cachename=brew_casks
 
   if ! _retrieve_cache $comp_cachename; then
-    list=( $(brew search --casks) )
+    list=( $(brew search --cask) )
     _store_cache $comp_cachename list
   fi
 

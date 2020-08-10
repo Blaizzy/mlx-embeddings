@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "cask/utils"
+
 module Cask
   class DSL
     class Base

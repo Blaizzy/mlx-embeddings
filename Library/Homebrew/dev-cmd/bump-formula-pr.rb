@@ -105,7 +105,10 @@ module Homebrew
         end
       end
     end
-    [formula.tap&.full_name, "origin/master", "-"]
+    origin_branch = Utils.popen_read("git", "-C", formula.tap.path.to_s, "symbolic-ref", "-q", "--short",
+                                     "refs/remotes/origin/HEAD").chomp.presence
+    origin_branch ||= "origin/master"
+    [formula.tap&.full_name, origin_branch, "-"]
   end
 
   def bump_formula_pr
@@ -128,7 +131,7 @@ module Homebrew
     check_open_pull_requests(formula, tap_full_name, args: args)
 
     new_version = args.version
-    check_all_pull_requests(formula, tap_full_name, version: new_version, args: args) if new_version
+    check_closed_pull_requests(formula, tap_full_name, version: new_version, args: args) if new_version
 
     requested_spec = :stable
     formula_spec = formula.stable
@@ -159,10 +162,10 @@ module Homebrew
     old_version = old_formula_version.to_s
     forced_version = new_version.present?
     new_url_hash = if new_url && new_hash
-      check_all_pull_requests(formula, tap_full_name, url: new_url, args: args) unless new_version
+      check_closed_pull_requests(formula, tap_full_name, url: new_url, args: args) unless new_version
       true
     elsif new_tag && new_revision
-      check_all_pull_requests(formula, tap_full_name, url: old_url, tag: new_tag, args: args) unless new_version
+      check_closed_pull_requests(formula, tap_full_name, url: old_url, tag: new_tag, args: args) unless new_version
       false
     elsif !hash_type
       odie "#{formula}: no --tag= or --version= argument specified!" if !new_tag && !new_version
@@ -173,7 +176,7 @@ module Homebrew
           and old tag are both #{new_tag}.
         EOS
       end
-      check_all_pull_requests(formula, tap_full_name, url: old_url, tag: new_tag, args: args) unless new_version
+      check_closed_pull_requests(formula, tap_full_name, url: old_url, tag: new_tag, args: args) unless new_version
       resource_path, forced_version = fetch_resource(formula, new_version, old_url, tag: new_tag)
       new_revision = Utils.popen_read("git -C \"#{resource_path}\" rev-parse -q --verify HEAD")
       new_revision = new_revision.strip
@@ -190,7 +193,7 @@ module Homebrew
             #{new_url}
         EOS
       end
-      check_all_pull_requests(formula, tap_full_name, url: new_url, args: args) unless new_version
+      check_closed_pull_requests(formula, tap_full_name, url: new_url, args: args) unless new_version
       resource_path, forced_version = fetch_resource(formula, new_version, new_url)
       tar_file_extensions = %w[.tar .tb2 .tbz .tbz2 .tgz .tlz .txz .tZ]
       if tar_file_extensions.any? { |extension| new_url.include? extension }
@@ -246,7 +249,8 @@ module Homebrew
       ]
     end
 
-    old_contents = File.read(formula.path) unless args.dry_run?
+    read_only_run = args.dry_run? && !args.write?
+    old_contents = File.read(formula.path) unless read_only_run
 
     if new_mirrors
       replacement_pairs << [
@@ -312,13 +316,13 @@ module Homebrew
     end
 
     if new_formula_version < old_formula_version
-      formula.path.atomic_write(old_contents) unless args.dry_run?
+      formula.path.atomic_write(old_contents) unless read_only_run
       odie <<~EOS
         You need to bump this formula manually since changing the
         version from #{old_formula_version} to #{new_formula_version} would be a downgrade.
       EOS
     elsif new_formula_version == old_formula_version
-      formula.path.atomic_write(old_contents) unless args.dry_run?
+      formula.path.atomic_write(old_contents) unless read_only_run
       odie <<~EOS
         You need to bump this formula manually since the new version
         and old version are both #{new_formula_version}.
@@ -331,14 +335,14 @@ module Homebrew
       alias_rename.map! { |a| formula.tap.alias_dir/a }
     end
 
-    ohai "brew update-python-resources #{formula.name}"
-    if !args.dry_run? || (args.dry_run? && args.write?)
-      PyPI.update_python_resources! formula, new_formula_version, silent: true, ignore_non_pypi_packages: true
+    unless read_only_run
+      PyPI.update_python_resources! formula, new_formula_version, silent: args.quiet?, ignore_non_pypi_packages: true
     end
 
     run_audit(formula, alias_rename, old_contents, args: args)
 
     formula.path.parent.cd do
+      _, base_branch = origin_branch.split("/")
       branch = "bump-#{formula.name}-#{new_formula_version}"
       git_dir = Utils.popen_read("git rev-parse --git-dir").chomp
       shallow = !git_dir.empty? && File.exist?("#{git_dir}/shallow")
@@ -354,7 +358,7 @@ module Homebrew
              "#{new_formula_version}' -- #{changed_files.join(" ")}"
         ohai "git push --set-upstream $HUB_REMOTE #{branch}:#{branch}"
         ohai "git checkout --quiet #{previous_branch}"
-        ohai "create pull request with GitHub API"
+        ohai "create pull request with GitHub API (base branch: #{base_branch})"
       else
 
         if args.no_fork?
@@ -387,7 +391,7 @@ module Homebrew
 
         begin
           url = GitHub.create_pull_request(tap_full_name, pr_title,
-                                           "#{username}:#{branch}", "master", pr_message)["html_url"]
+                                           "#{username}:#{branch}", base_branch, pr_message)["html_url"]
           if args.no_browse?
             puts url
           else
@@ -452,7 +456,8 @@ module Homebrew
   end
 
   def inreplace_pairs(path, replacement_pairs, args:)
-    if args.dry_run?
+    read_only_run = args.dry_run? && !args.write?
+    if read_only_run
       str = path.open("r") { |f| Formulary.ensure_utf8_encoding(f).read }
       contents = StringInreplaceExtension.new(str)
       replacement_pairs.each do |old, new|
@@ -494,14 +499,14 @@ module Homebrew
     check_for_duplicate_pull_requests(pull_requests, args: args)
   end
 
-  def check_all_pull_requests(formula, tap_full_name, version: nil, url: nil, tag: nil, args:)
+  def check_closed_pull_requests(formula, tap_full_name, version: nil, url: nil, tag: nil, args:)
     unless version
       specs = {}
       specs[:tag] = tag if tag
       version = Version.detect(url, specs)
     end
-    # if we haven't already found open requests, try for an exact match across all requests
-    pull_requests = GitHub.fetch_pull_requests("#{formula.name} #{version}", tap_full_name) if pull_requests.blank?
+    # if we haven't already found open requests, try for an exact match across closed requests
+    pull_requests = GitHub.fetch_pull_requests("#{formula.name} #{version}", tap_full_name, state: "closed")
     check_for_duplicate_pull_requests(pull_requests, args: args)
   end
 

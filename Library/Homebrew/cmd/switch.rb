@@ -49,7 +49,7 @@ module Homebrew
 
     # Link new version, if not keg-only
     if Formulary.keg_only?(rack)
-      keg.optlink
+      keg.optlink(verbose: args.verbose?)
       puts "Opt link created for #{keg}"
     else
       puts "#{keg.link} links created for #{keg}"

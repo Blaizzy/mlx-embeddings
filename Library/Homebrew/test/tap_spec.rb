@@ -304,16 +304,6 @@ describe Tap do
     (HOMEBREW_PREFIX/"share").rmtree if (HOMEBREW_PREFIX/"share").exist?
   end
 
-  specify "#pin and #unpin" do
-    expect(subject).not_to be_pinned
-    expect { subject.unpin }.to raise_error(TapPinStatusError)
-    subject.pin
-    expect(subject).to be_pinned
-    expect { subject.pin }.to raise_error(TapPinStatusError)
-    subject.unpin
-    expect(subject).not_to be_pinned
-  end
-
   specify "#config" do
     setup_git_repo
 

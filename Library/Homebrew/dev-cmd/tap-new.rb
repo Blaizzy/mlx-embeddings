@@ -53,23 +53,43 @@ module Homebrew
         pull_request: []
       jobs:
         test-bot:
-          runs-on: macos-latest
+          runs-on: ${{ matrix.os }}
+          strategy:
+            matrix:
+              os: [ubuntu-latest, macOS-latest]
           steps:
-            - name: Set up Git repository
-              uses: actions/checkout@v2
-            - name: Run brew test-bot
-              run: |
-                set -e
-                brew update
-                HOMEBREW_TAP_DIR="/usr/local/Homebrew/Library/Taps/#{tap.full_name}"
-                mkdir -p "$HOMEBREW_TAP_DIR"
-                rm -rf "$HOMEBREW_TAP_DIR"
-                ln -s "$PWD" "$HOMEBREW_TAP_DIR"
-                brew test-bot
+            - name: Set up Homebrew
+              id: set-up-homebrew
+              uses: Homebrew/actions/setup-homebrew@master
+
+            - name: Cache Homebrew Bundler RubyGems
+              id: cache
+              uses: actions/cache@main
+              with:
+                path: ${{ steps.set-up-homebrew.outputs.gems-path }}
+                key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
+                restore-keys: ${{ runner.os }}-rubygems-
+
+            - name: Install Homebrew Bundler RubyGems
+              if: steps.cache.outputs.cache-hit != 'true'
+              run: brew install-bundler-gems
+
+            - name: Run brew test-bot --only-cleanup-before
+              run: brew test-bot --only-cleanup-before
+
+            - name: Run brew test-bot --only-setup
+              run: brew test-bot --only-setup
+
+            - name: Run brew test-bot --only-tap-syntax
+              run: brew test-bot --only-tap-syntax
+
+            - name: Run brew test-bot --only-formulae
+              if: github.event_name == 'pull_request'
+              run: brew test-bot --only-formulae
     YAML
 
     (tap.path/".github/workflows").mkpath
-    write_path(tap, ".github/workflows/main.yml", actions)
+    write_path(tap, ".github/workflows/tests.yml", actions)
     ohai "Created #{tap}"
     puts tap.path.to_s
   end

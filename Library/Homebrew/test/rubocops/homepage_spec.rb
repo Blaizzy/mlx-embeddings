@@ -62,6 +62,8 @@ describe RuboCop::Cop::FormulaAudit::Homepage do
         "sf3"    => "http://foo.sf.net/",
         "sf4"    => "http://foo.sourceforge.io/",
         "waldo"  => "http://www.gnu.org/waldo",
+        "dotgit" => "https://github.com/foo/bar.git",
+        "rtd"    => "https://foo.readthedocs.org",
       }
 
       formula_homepages.each do |name, homepage|
@@ -100,6 +102,18 @@ describe RuboCop::Cop::FormulaAudit::Homepage do
                                   severity: :convention,
                                   line:     2,
                                   column:   2,
+                                  source:   source }]
+        elsif homepage.match?("https://github.com/foo/bar.git")
+          expected_offenses = [{  message:  "GitHub homepages (`#{homepage}`) should not end with .git",
+                                  severity: :convention,
+                                  line:     2,
+                                  column:   11,
+                                  source:   source }]
+        elsif homepage.match?("https://foo.readthedocs.org")
+          expected_offenses = [{  message:  "#{homepage} should be `https://foo.readthedocs.io`",
+                                  severity: :convention,
+                                  line:     2,
+                                  column:   11,
                                   source:   source }]
         else
           expected_offenses = [{  message:  "Please use https:// for #{homepage}",

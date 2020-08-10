@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "cask/audit"
+
 module Cask
   class Auditor
     extend Predicable

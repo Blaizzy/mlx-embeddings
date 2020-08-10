@@ -54,6 +54,9 @@ module Homebrew
                       "Linux: `$XDG_CACHE_HOME/Homebrew` or `$HOME/.cache/Homebrew`.",
         default:      HOMEBREW_DEFAULT_CACHE,
       },
+      HOMEBREW_CASK_OPTS:                 {
+        description: "Options which should be used for all `cask` commands.",
+      },
       HOMEBREW_CLEANUP_MAX_AGE_DAYS:      {
         description: "Cleanup all cached files older than this many days.",
         default:     120,
@@ -293,7 +296,7 @@ module Homebrew
         end
       elsif hash[:default].present?
         # Needs a custom implementation.
-        next if env == "HOMEBREW_MAKE_JOBS"
+        next if ["HOMEBREW_MAKE_JOBS", "HOMEBREW_CASK_OPTS"].include?(env)
 
         define_method(method_name) do
           ENV[env].presence || hash.fetch(:default).to_s
@@ -314,6 +317,32 @@ module Homebrew
           .fetch(:default)
           .call
           .to_s
+    end
+
+    def cask_opts
+      Shellwords.shellsplit(ENV.fetch("HOMEBREW_CASK_OPTS", ""))
+    end
+
+    def cask_opts_binaries?
+      cask_opts.reverse_each do |opt|
+        return true if opt == "--binaries"
+        return false if opt == "--no-binaries"
+      end
+
+      true
+    end
+
+    def cask_opts_quarantine?
+      cask_opts.reverse_each do |opt|
+        return true if opt == "--quarantine"
+        return false if opt == "--no-quarantine"
+      end
+
+      true
+    end
+
+    def cask_opts_require_sha?
+      cask_opts.include?("--require-sha")
     end
   end
 end

@@ -26,20 +26,19 @@ module Homebrew
   def unlink
     args = unlink_args.parse
 
-    mode = OpenStruct.new
-    mode.dry_run = true if args.dry_run?
+    options = { dry_run: args.dry_run?, verbose: args.verbose? }
 
     args.kegs.each do |keg|
-      if mode.dry_run
+      if args.dry_run?
         puts "Would remove:"
-        keg.unlink(mode)
+        keg.unlink(**options)
         next
       end
 
       keg.lock do
         print "Unlinking #{keg}... "
         puts if args.verbose?
-        puts "#{keg.unlink(mode)} symlinks removed"
+        puts "#{keg.unlink(**options)} symlinks removed"
       end
     end
   end

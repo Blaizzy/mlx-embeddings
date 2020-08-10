@@ -120,7 +120,7 @@ module Homebrew
       else
         hub.dump(updated_formula_report: !args.preinstall?)
         hub.reporters.each(&:migrate_tap_migration)
-        hub.reporters.each { |r| r.migrate_formula_rename(force: args.force?) }
+        hub.reporters.each { |r| r.migrate_formula_rename(force: args.force?, verbose: args.verbose?) }
         CacheStoreDatabase.use(:descriptions) do |db|
           DescriptionCacheStore.new(db)
                                .update_from_report!(hub)
@@ -371,7 +371,7 @@ class Reporter
     end
   end
 
-  def migrate_formula_rename(force:)
+  def migrate_formula_rename(force:, verbose:)
     Formula.installed.each do |formula|
       next unless Migrator.needs_migration?(formula)
 
