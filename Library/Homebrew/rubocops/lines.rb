@@ -284,9 +284,7 @@ module RuboCop
             end
           end
 
-          find_instance_call(body_node, "ARGV") do |method_node|
-            next if [:debug?, :verbose?, :value].index(method_node.method_name)
-
+          find_instance_call(body_node, "ARGV") do |_method_node|
             problem "Use build instead of ARGV to check options"
           end
 

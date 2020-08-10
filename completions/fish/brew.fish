@@ -208,7 +208,7 @@ function __fish_brew_suggest_casks_outdated -d "Lists outdated casks with the in
 end
 
 function __fish_brew_suggest_casks_all -d "Lists locally available casks"
-    brew search --casks
+    brew search --cask
 end
 
 
@@ -530,14 +530,6 @@ __fish_brew_complete_cmd 'tap-info' "Display a brief summary of all installed ta
 __fish_brew_complete_arg 'tap-info; and not __fish_brew_opt --installed' -a '(__fish_brew_suggest_taps_installed)'
 __fish_brew_complete_arg 'tap-info; and not __fish_brew_opt --installed' -l installed -d "Display information on all installed taps"
 __fish_brew_complete_arg 'tap-info; and not __fish_brew_opt --json=v1'   -l json=v1   -d "Format output in JSON format"
-
-
-__fish_brew_complete_cmd 'tap-pin' "Prioritize tap's formulae over core"
-__fish_brew_complete_arg 'tap-pin' -a '(__fish_brew_suggest_taps_installed)'
-
-
-__fish_brew_complete_cmd 'tap-unpin' "Don't prioritize tap's formulae over core anymore"
-__fish_brew_complete_arg 'tap-unpin' -a '(__fish_brew_suggest_taps_pinned)'
 
 
 __fish_brew_complete_cmd 'uninstall' "Uninstall formula"

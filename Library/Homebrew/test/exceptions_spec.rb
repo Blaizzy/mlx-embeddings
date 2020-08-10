@@ -117,20 +117,6 @@ describe TapAlreadyTappedError do
   its(:to_s) { is_expected.to eq("Tap foo already tapped.\n") }
 end
 
-describe TapPinStatusError do
-  context "pinned" do
-    subject { described_class.new("foo", true) }
-
-    its(:to_s) { is_expected.to eq("foo is already pinned.") }
-  end
-
-  context "unpinned" do
-    subject { described_class.new("foo", false) }
-
-    its(:to_s) { is_expected.to eq("foo is already unpinned.") }
-  end
-end
-
 describe BuildError do
   subject { described_class.new(formula, "badprg", %w[arg1 arg2], {}) }
 

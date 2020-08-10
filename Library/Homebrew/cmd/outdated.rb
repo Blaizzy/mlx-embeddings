@@ -12,15 +12,19 @@ module Homebrew
   def outdated_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `outdated` [<options>] [<formula>]
+        `outdated` [<options>] [<formula>|<cask>]
 
-        List installed formulae that have an updated version available. By default, version
+        List installed casks and formulae that have an updated version available. By default, version
         information is displayed in interactive shells, and suppressed otherwise.
       EOS
       switch "-q", "--quiet",
              description: "List only the names of outdated kegs (takes precedence over `--verbose`)."
       switch "-v", "--verbose",
              description: "Include detailed version information."
+      switch "--formula",
+             description: "Only output outdated formulae."
+      switch "--cask",
+             description: "Only output outdated casks."
       flag   "--json",
              description: "Print output in JSON format. There are two versions: v1 and v2. " \
                           "v1 is deprecated and is currently the default if no version is specified. " \
@@ -31,10 +35,6 @@ module Homebrew
                           "updates when a new stable or development version has been released."
       switch "--greedy",
              description: "Print outdated casks with `auto_updates` or `version :latest`."
-      switch "--formula",
-             description: "Treat all arguments as formulae."
-      switch "--cask",
-             description: "Treat all arguments as casks."
 
       conflicts "--quiet", "--verbose", "--json"
       conflicts "--formula", "--cask"
@@ -94,7 +94,7 @@ module Homebrew
       if formula_or_cask.is_a?(Formula)
         f = formula_or_cask
 
-        if verbose? args: args
+        if verbose?
           outdated_kegs = f.outdated_kegs(fetch_head: args.fetch_HEAD?)
 
           current_version = if f.alias_changed?
@@ -122,7 +122,7 @@ module Homebrew
       else
         c = formula_or_cask
 
-        puts c.outdated_info(args.greedy?, verbose?(args: args), false)
+        puts c.outdated_info(args.greedy?, verbose?, false)
       end
     end
   end
@@ -147,13 +147,13 @@ module Homebrew
       else
         c = formula_or_cask
 
-        c.outdated_info(args.greedy?, verbose?(args: args), true)
+        c.outdated_info(args.greedy?, verbose?, true)
       end
     end
   end
 
-  def verbose?(args:)
-    ($stdout.tty? || args.verbose?) && !args.quiet?
+  def verbose?
+    ($stdout.tty? || super) && !quiet?
   end
 
   def json_version(version)

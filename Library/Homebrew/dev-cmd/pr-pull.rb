@@ -116,7 +116,7 @@ module Homebrew
       # git cherry-pick unfortunately has no quiet option
       ohai "Cherry-picking #{commit_count} commit#{"s" unless commit_count == 1} from ##{pr}"
       cherry_pick_args = "git", "-C", path, "cherry-pick", "--ff", "--allow-empty", "#{merge_base}..FETCH_HEAD"
-      result = Homebrew.args.verbose? ? system(*cherry_pick_args) : quiet_system(*cherry_pick_args)
+      result = args.verbose? ? system(*cherry_pick_args) : quiet_system(*cherry_pick_args)
 
       unless result
         if args.resolve?

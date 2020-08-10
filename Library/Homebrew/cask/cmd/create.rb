@@ -24,15 +24,16 @@ module Cask
 
       def self.template(cask_token)
         <<~RUBY
-          cask '#{cask_token}' do
-            version ''
-            sha256 ''
+          cask "#{cask_token}" do
+            version ""
+            sha256 ""
 
             url "https://"
-            name ''
-            homepage ''
+            name ""
+            desc ""
+            homepage ""
 
-            app ''
+            app ""
           end
         RUBY
       end

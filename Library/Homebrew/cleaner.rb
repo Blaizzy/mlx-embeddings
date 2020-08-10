@@ -10,6 +10,8 @@
 # * sets permissions on executables
 # * removes unresolved symlinks
 class Cleaner
+  include Context
+
   # Create a cleaner for the given formula
   def initialize(f)
     @f = f
@@ -58,7 +60,7 @@ class Cleaner
     # actual files gets removed correctly.
     dirs.reverse_each do |d|
       if d.children.empty?
-        puts "rmdir: #{d} (empty)" if Homebrew.args.verbose?
+        puts "rmdir: #{d} (empty)" if verbose?
         d.rmdir
       end
     end
@@ -109,7 +111,7 @@ class Cleaner
         else
           0444
         end
-        if Homebrew.args.debug?
+        if debug?
           old_perms = path.stat.mode & 0777
           odebug "Fixing #{path} permissions from #{old_perms.to_s(8)} to #{perms.to_s(8)}" if perms != old_perms
         end

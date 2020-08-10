@@ -40,7 +40,7 @@ module Homebrew
   module Help
     module_function
 
-    def help(cmd = nil, empty_argv: false, usage_error: nil)
+    def help(cmd = nil, empty_argv: false, usage_error: nil, remaining_args: [])
       if cmd.nil?
         # Handle `brew` (no arguments).
         if empty_argv
@@ -58,7 +58,7 @@ module Homebrew
 
       # Display command-specific (or generic) help in response to `UsageError`.
       if usage_error
-        $stderr.puts path ? command_help(cmd, path) : HOMEBREW_HELP
+        $stderr.puts path ? command_help(cmd, path, remaining_args: remaining_args) : HOMEBREW_HELP
         $stderr.puts
         onoe usage_error
         exit 1
@@ -68,16 +68,16 @@ module Homebrew
       return if path.nil?
 
       # Display help for internal command (or generic help if undocumented).
-      puts command_help(cmd, path)
+      puts command_help(cmd, path, remaining_args: remaining_args)
       exit 0
     end
 
-    def command_help(cmd, path)
+    def command_help(cmd, path, remaining_args:)
       # Only some types of commands can have a parser.
       output = if Commands.valid_internal_cmd?(cmd) ||
                   Commands.valid_internal_dev_cmd?(cmd) ||
                   Commands.external_ruby_v2_cmd_path(cmd)
-        parser_help(path)
+        parser_help(path, remaining_args: remaining_args)
       end
 
       output ||= comment_help(path)
@@ -90,13 +90,13 @@ module Homebrew
       output
     end
 
-    def parser_help(path)
+    def parser_help(path, remaining_args:)
       # Let OptionParser generate help text for commands which have a parser.
       cmd_parser = CLI::Parser.from_cmd_path(path)
       return unless cmd_parser
 
       # Try parsing arguments here in order to show formula options in help output.
-      cmd_parser.parse(Homebrew.args.remaining, ignore_invalid_options: true)
+      cmd_parser.parse(remaining_args, ignore_invalid_options: true)
       cmd_parser.generate_help_text
     end
 

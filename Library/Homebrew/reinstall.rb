@@ -24,7 +24,8 @@ module Homebrew
     options &= f.options
 
     fi = FormulaInstaller.new(f, force_bottle:               args.force_bottle?,
-                                 build_from_source_formulae: args.build_from_source_formulae)
+                                 build_from_source_formulae: args.build_from_source_formulae,
+                                 debug: args.debug?, quiet: args.quiet?, verbose: args.verbose?)
     fi.options              = options
     fi.force                = args.force?
     fi.keep_tmp             = args.keep_tmp?
@@ -48,7 +49,7 @@ module Homebrew
   rescue FormulaInstallationAlreadyAttemptedError
     nil
   rescue Exception # rubocop:disable Lint/RescueException
-    ignore_interrupts { restore_backup(keg, keg_was_linked) }
+    ignore_interrupts { restore_backup(keg, keg_was_linked, verbose: args.verbose?) }
     raise
   else
     begin
@@ -73,7 +74,7 @@ module Homebrew
     end
   end
 
-  def restore_backup(keg, keg_was_linked)
+  def restore_backup(keg, keg_was_linked, verbose:)
     path = backup_path(keg)
 
     return unless path.directory?
@@ -81,7 +82,7 @@ module Homebrew
     Pathname.new(keg).rmtree if keg.exist?
 
     path.rename keg
-    keg.link if keg_was_linked
+    keg.link(verbose: verbose) if keg_was_linked
   end
 
   def backup_path(path)

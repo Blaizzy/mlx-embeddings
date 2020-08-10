@@ -29,15 +29,16 @@ describe Cask::Cmd::Create, :cask do
     described_class.run("new-cask")
     template = File.read(Cask::CaskLoader.path("new-cask"))
     expect(template).to eq <<~RUBY
-      cask 'new-cask' do
-        version ''
-        sha256 ''
+      cask "new-cask" do
+        version ""
+        sha256 ""
 
         url "https://"
-        name ''
-        homepage ''
+        name ""
+        desc ""
+        homepage ""
 
-        app ''
+        app ""
       end
     RUBY
   end

@@ -4,6 +4,7 @@ require "formula"
 require "formula_versions"
 require "utils/curl"
 require "utils/notability"
+require "utils/spdx"
 require "extend/ENV"
 require "formula_cellar_checks"
 require "cmd/search"
@@ -37,6 +38,8 @@ module Homebrew
              description: "Run various additional style checks to determine if a new formula is eligible "\
                           "for Homebrew. This should be used when creating new formula and implies "\
                           "`--strict` and `--online`."
+      flag   "--tap=",
+             description: "Check the formulae within the given tap, specified as <user>`/`<repo>."
       switch "--fix",
              description: "Fix style violations automatically using RuboCop's auto-correct feature."
       switch "--display-cop-names",
@@ -46,7 +49,7 @@ module Homebrew
                           "make output easy to grep."
       switch "--skip-style",
              description: "Skip running non-RuboCop style checks. Useful if you plan on running "\
-                          "`brew style` separately."
+                          "`brew style` separately. Default unless a formula is specified by name"
       switch "-D", "--audit-debug",
              description: "Enable debugging and profiling of audit methods."
       comma_array "--only",
@@ -85,17 +88,23 @@ module Homebrew
     strict = new_formula || args.strict?
     online = new_formula || args.online?
     git = args.git?
-    skip_style = args.skip_style? || args.no_named?
+    skip_style = args.skip_style? || args.no_named? || args.tap
 
     ENV.activate_extensions!
     ENV.setup_build_environment
 
-    audit_formulae = args.no_named? ? Formula : args.resolved_formulae
+    audit_formulae = if args.tap
+      Tap.fetch(args.tap).formula_names.map { |name| Formula[name] }
+    elsif args.no_named?
+      Formula
+    else
+      args.resolved_formulae
+    end
     style_files = args.formulae_paths unless skip_style
 
     only_cops = args.only_cops
     except_cops = args.except_cops
-    options = { fix: args.fix? }
+    options = { fix: args.fix?, debug: args.debug?, verbose: args.verbose? }
 
     if only_cops
       options[:only_cops] = only_cops
@@ -110,8 +119,7 @@ module Homebrew
     # Check style in a single batch run up front for performance
     style_results = Style.check_style_json(style_files, options) if style_files
     # load licenses
-    spdx = HOMEBREW_LIBRARY_PATH/"data/spdx.json"
-    spdx_data = JSON.parse(spdx.read)
+    spdx_data = SPDX.spdx_data
     new_formula_problem_lines = []
     audit_formulae.sort.each do |f|
       only = only_cops ? ["style"] : args.only
@@ -335,17 +343,40 @@ module Homebrew
       openssl@1.1
     ].freeze
 
+    PERMITTED_LICENSE_MISMATCHES = {
+      "AGPL-3.0" => ["AGPL-3.0-only", "AGPL-3.0-or-later"],
+      "GPL-2.0"  => ["GPL-2.0-only",  "GPL-2.0-or-later"],
+      "GPL-3.0"  => ["GPL-3.0-only",  "GPL-3.0-or-later"],
+      "LGPL-2.1" => ["LGPL-2.1-only", "LGPL-2.1-or-later"],
+      "LGPL-3.0" => ["LGPL-3.0-only", "LGPL-3.0-or-later"],
+    }.freeze
+
     def audit_license
       if formula.license.present?
-        non_standard_licenses = []
-        formula.license.each do |license|
+        non_standard_licenses = formula.license.map do |license|
+          next if license == :public_domain
           next if @spdx_data["licenses"].any? { |spdx| spdx["licenseId"] == license }
 
-          non_standard_licenses << license
-        end
+          license
+        end.compact
 
         if non_standard_licenses.present?
           problem "Formula #{formula.name} contains non-standard SPDX licenses: #{non_standard_licenses}."
+        end
+
+        if @strict
+          deprecated_licenses = formula.license.map do |license|
+            next if license == :public_domain
+            next if @spdx_data["licenses"].any? do |spdx|
+              spdx["licenseId"] == license && !spdx["isDeprecatedLicenseId"]
+            end
+
+            license
+          end.compact
+
+          if deprecated_licenses.present?
+            problem "Formula #{formula.name} contains deprecated SPDX licenses: #{deprecated_licenses}."
+          end
         end
 
         return unless @online
@@ -355,12 +386,12 @@ module Homebrew
 
         github_license = GitHub.get_repo_license(user, repo)
         return if github_license && (formula.license + ["NOASSERTION"]).include?(github_license)
+        return if PERMITTED_LICENSE_MISMATCHES[github_license]&.any? { |license| formula.license.include? license }
 
-        problem "License mismatch - GitHub license is: #{Array(github_license)}, "\
-                "but Formulae license states: #{formula.license}."
+        problem "Formula license #{formula.license} does not match GitHub license #{Array(github_license)}."
 
-      elsif @new_formula
-        problem "No license specified for package."
+      elsif @new_formula && @core_tap
+        problem "Formulae in homebrew/core must specify a license."
       end
     end
 

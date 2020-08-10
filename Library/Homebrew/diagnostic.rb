@@ -691,7 +691,7 @@ module Homebrew
 
           # these will result in uncommitted gems.
           if path == HOMEBREW_REPOSITORY
-            next if ENV["HOMEBREW_SORBET"] || ENV["HOMEBREW_PATCHELF_RB"]
+            next if ENV["HOMEBREW_SORBET"]
           end
 
           message ||= ""
@@ -907,7 +907,7 @@ module Homebrew
 
       def check_cask_staging_location
         # Skip this check when running CI since the staging path is not writable for security reasons
-        return if ENV["HOMEBREW_GITHUB_ACTIONS"]
+        return if ENV["GITHUB_ACTIONS"]
 
         path = Cask::Caskroom.path
 

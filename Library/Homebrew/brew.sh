@@ -41,6 +41,7 @@ case "$*" in
   --prefix)            echo "$HOMEBREW_PREFIX"; exit 0 ;;
   --cellar)            echo "$HOMEBREW_CELLAR"; exit 0 ;;
   --repository|--repo) echo "$HOMEBREW_REPOSITORY"; exit 0 ;;
+  --caskroom)          echo "$HOMEBREW_PREFIX/Caskroom"; exit 0 ;;
 esac
 
 # A depth of 1 means this command was directly invoked by a user.
@@ -282,11 +283,6 @@ export HOMEBREW_MACOS_VERSION_NUMERIC
 export HOMEBREW_USER_AGENT
 export HOMEBREW_USER_AGENT_CURL
 export HOMEBREW_BOTTLE_DEFAULT_DOMAIN
-
-if [[ -n "$HOMEBREW_DEVELOPER" ]] && [[ -z "$HOMEBREW_NO_PATCHELF_RB" ]]
-then
-  export HOMEBREW_PATCHELF_RB="1"
-fi
 
 if [[ -n "$HOMEBREW_MACOS" && -x "/usr/bin/xcode-select" ]]
 then

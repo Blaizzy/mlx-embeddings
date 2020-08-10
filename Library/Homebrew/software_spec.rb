@@ -240,7 +240,7 @@ class HeadSoftwareSpec < SoftwareSpec
   end
 
   def verify_download_integrity(_fn)
-    nil
+    # no-op
   end
 end
 

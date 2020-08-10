@@ -65,15 +65,25 @@ module Homebrew
     end
 
     use_runtime_dependents = args.installed? &&
+                             !used_formulae_missing &&
                              !args.include_build? &&
                              !args.include_test? &&
                              !args.include_optional? &&
                              !args.skip_recommended?
 
+    uses = intersection_of_dependents(use_runtime_dependents, used_formulae, args: args)
+
+    return if uses.empty?
+
+    puts Formatter.columns(uses.map(&:full_name).sort)
+    odie "Missing formulae should not have dependents!" if used_formulae_missing
+  end
+
+  def intersection_of_dependents(use_runtime_dependents, used_formulae, args:)
     recursive = args.recursive?
     includes, ignores = args_includes_ignores(args)
 
-    uses = if use_runtime_dependents && !used_formulae_missing
+    if use_runtime_dependents
       used_formulae.map(&:runtime_installed_formula_dependents)
                    .reduce(&:&)
                    .select(&:any_version_installed?) +
@@ -87,11 +97,6 @@ module Homebrew
 
       select_used_dependents(deps, used_formulae, recursive, includes, ignores)
     end
-
-    return if uses.empty?
-
-    puts Formatter.columns(uses.map(&:full_name).sort)
-    odie "Missing formulae should not have dependents!" if used_formulae_missing
   end
 
   def select_used_dependents(dependents, used_formulae, recursive, includes, ignores)

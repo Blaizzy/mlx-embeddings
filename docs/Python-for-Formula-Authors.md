@@ -26,7 +26,9 @@ Applications should be installed into a Python [virtualenv](https://virtualenv.p
 
 All of the Python module dependencies of the application (and their dependencies, recursively) should be declared as `resource`s in the formula and installed into the virtualenv, as well. Each dependency should be explicitly specified; please do not rely on `setup.py` or `pip` to perform automatic dependency resolution, for the [reasons described here](Acceptable-Formulae.md#we-dont-like-install-scripts-that-download-unversioned-things).
 
-You can use [homebrew-pypi-poet](https://pypi.python.org/pypi/homebrew-pypi-poet) to help you write resource stanzas. To use it, set up a virtualenv and install your package and all its dependencies. Then, `pip install homebrew-pypi-poet` into the same virtualenv. Running `poet some_package` will generate the necessary resource stanzas. You can do this like:
+You can use `brew update-python-resources` to help you write resource stanzas. To use it, simply run `brew update-python-resources <formula>`. Sometimes, `brew update-python-resources` won't be able to automatically update the resources. If this happens, try running `brew update-python-resources --print-only <formula>` to print the resource stanzas instead of applying the changes directly to the file. You can then copy and paste resources as needed.
+
+If using `brew update-python-resources` doesn't work, you can use [homebrew-pypi-poet](https://pypi.python.org/pypi/homebrew-pypi-poet) to help you write resource stanzas. To use it, set up a virtualenv and install your package and all its dependencies. Then, `pip install homebrew-pypi-poet` into the same virtualenv. Running `poet some_package` will generate the necessary resource stanzas. You can do this like:
 
 ```sh
 # Install virtualenvwrapper

@@ -64,6 +64,7 @@ module Cask
                             :caveats,
                             :conflicts_with,
                             :container,
+                            :desc,
                             :depends_on,
                             :homepage,
                             :language,
@@ -91,6 +92,10 @@ module Cask
       return @name if args.empty?
 
       @name.concat(args.flatten)
+    end
+
+    def desc(description = nil)
+      set_unique_stanza(:desc, description.nil?) { description }
     end
 
     def set_unique_stanza(stanza, should_return)

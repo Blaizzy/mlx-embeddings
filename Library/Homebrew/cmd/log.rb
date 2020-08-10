@@ -37,7 +37,7 @@ module Homebrew
     ENV["PATH"] = ENV["HOMEBREW_PATH"]
 
     if args.no_named?
-      git_log HOMEBREW_REPOSITORY
+      git_log HOMEBREW_REPOSITORY, args: args
     else
       path = Formulary.path(args.named.first)
       tap = Tap.from_path(path)

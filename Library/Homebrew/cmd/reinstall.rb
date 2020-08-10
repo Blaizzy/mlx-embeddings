@@ -78,9 +78,14 @@ module Homebrew
 
     return if casks.blank?
 
-    reinstall_cmd = Cask::Cmd::Reinstall.new(casks)
-    reinstall_cmd.verbose = args.verbose?
-    reinstall_cmd.force = args.force?
-    reinstall_cmd.run
+    Cask::Cmd::Reinstall.reinstall_casks(
+      *casks,
+      binaries:       args.binaries?,
+      verbose:        args.verbose?,
+      force:          args.force?,
+      require_sha:    args.require_sha?,
+      skip_cask_deps: args.skip_cask_deps?,
+      quarantine:     args.quarantine?,
+    )
   end
 end

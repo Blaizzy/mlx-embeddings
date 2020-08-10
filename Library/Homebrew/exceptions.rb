@@ -247,17 +247,6 @@ class TapAlreadyTappedError < RuntimeError
   end
 end
 
-class TapPinStatusError < RuntimeError
-  attr_reader :name, :pinned
-
-  def initialize(name, pinned)
-    @name = name
-    @pinned = pinned
-
-    super pinned ? "#{name} is already pinned." : "#{name} is already unpinned."
-  end
-end
-
 class OperationInProgressError < RuntimeError
   def initialize(name)
     message = <<~EOS
@@ -367,10 +356,10 @@ class BuildError < RuntimeError
     []
   end
 
-  def dump
+  def dump(verbose: false)
     puts
 
-    if Homebrew.args.verbose?
+    if verbose
       require "system_config"
       require "build_environment"
 

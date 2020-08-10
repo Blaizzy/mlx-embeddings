@@ -121,7 +121,6 @@ describe GitDownloadStrategy do
         git_commit_all
       end
 
-      subject.shutup!
       expect(subject.fetch_last_commit).to eq("f68266e")
     end
   end

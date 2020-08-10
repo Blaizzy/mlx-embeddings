@@ -13,7 +13,7 @@ module Homebrew
   def __cache_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `--cache` [<options>] [<formula>]
+        `--cache` [<options>] [<formula|cask>]
 
         Display Homebrew's download cache. See also `HOMEBREW_CACHE`.
 
