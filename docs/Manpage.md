@@ -1178,6 +1178,23 @@ Run Homebrew's unit and integration tests.
 * `--seed`:
   Randomise tests with the specified *`value`* instead of a random seed.
 
+### `typecheck`
+
+Check for typechecking errors using Sorbet.
+
+* `-q`, `--quiet`:
+  Silence all non-critical errors.
+* `--update-definitions`:
+  Update Tapioca gem definitions of recently bumped gems
+* `--fail-if-not-changed`:
+  Return a failing status code if all gems are up to date and gem definitions do not need a tapioca update
+* `--dir`:
+  Typecheck all files in a specific directory.
+* `--file`:
+  Typecheck a single file.
+* `--ignore`:
+  Ignores input files that contain the given string in their paths (relative to the input path passed to Sorbet).
+
 ### `unpack` [*`options`*] *`formula`*
 
 Unpack the source files for *`formula`* into subdirectories of the current

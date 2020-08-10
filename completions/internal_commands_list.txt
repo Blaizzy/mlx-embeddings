@@ -81,6 +81,7 @@ tap-info
 tap-new
 test
 tests
+typecheck
 uninstal
 uninstall
 unlink

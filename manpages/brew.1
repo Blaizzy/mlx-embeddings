@@ -1610,6 +1610,33 @@ Run only \fItest_script\fR\fB_spec\.rb\fR\. Appending \fB:\fR\fIline_number\fR w
 \fB\-\-seed\fR
 Randomise tests with the specified \fIvalue\fR instead of a random seed\.
 .
+.SS "\fBtypecheck\fR"
+Check for typechecking errors using Sorbet\.
+.
+.TP
+\fB\-q\fR, \fB\-\-quiet\fR
+Silence all non\-critical errors\.
+.
+.TP
+\fB\-\-update\-definitions\fR
+Update Tapioca gem definitions of recently bumped gems
+.
+.TP
+\fB\-\-fail\-if\-not\-changed\fR
+Return a failing status code if all gems are up to date and gem definitions do not need a tapioca update
+.
+.TP
+\fB\-\-dir\fR
+Typecheck all files in a specific directory\.
+.
+.TP
+\fB\-\-file\fR
+Typecheck a single file\.
+.
+.TP
+\fB\-\-ignore\fR
+Ignores input files that contain the given string in their paths (relative to the input path passed to Sorbet)\.
+.
 .SS "\fBunpack\fR [\fIoptions\fR] \fIformula\fR"
 Unpack the source files for \fIformula\fR into subdirectories of the current working directory\.
 .
