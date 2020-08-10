@@ -58,26 +58,6 @@ module Concurrent
   # end
   # ```
   #
-  # When defining a constructor it is critical that the first line be a call to
-  # `super` with no arguments. The `super` method initializes the background
-  # thread and other asynchronous components.
-  #
-  # ```
-  # class BackgroundLogger
-  #   include Concurrent::Async
-  #
-  #   def initialize(level)
-  #     super()
-  #     @logger = Logger.new(STDOUT)
-  #     @logger.level = level
-  #   end
-  #
-  #   def info(msg)
-  #     @logger.info(msg)
-  #   end
-  # end
-  # ```
-  #
   # Mixing this module into a class provides each object two proxy methods:
   # `async` and `await`. These methods are thread safe with respect to the
   # enclosing object. The former proxy allows methods to be called
@@ -309,6 +289,7 @@ module Concurrent
         @delegate = delegate
         @queue = []
         @executor = Concurrent.global_io_executor
+        @ruby_pid = $$
       end
 
       # Delegates method calls to the wrapped object.
@@ -326,6 +307,7 @@ module Concurrent
 
         ivar = Concurrent::IVar.new
         synchronize do
+          reset_if_forked
           @queue.push [ivar, method, args, block]
           @executor.post { perform } if @queue.length == 1
         end
@@ -359,6 +341,13 @@ module Concurrent
             @queue.shift
             return if @queue.empty?
           end
+        end
+      end
+
+      def reset_if_forked
+        if $$ != @ruby_pid
+          @queue.clear
+          @ruby_pid = $$
         end
       end
     end
