@@ -13,8 +13,8 @@ gem "rspec-retry", require: false
 gem "rspec-wait", require: false
 gem "rubocop"
 gem "simplecov", require: false
-gem "sorbet", "0.5.5823"
-gem "sorbet-runtime", "0.5.5823"
+gem "sorbet"
+gem "sorbet-runtime"
 gem "tapioca"
 
 # vendored gems
