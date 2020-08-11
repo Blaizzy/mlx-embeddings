@@ -50,7 +50,7 @@ module Homebrew
       on:
         push:
           branches: master
-        pull_request: []
+        pull_request:
       jobs:
         test-bot:
           runs-on: ${{ matrix.os }}
