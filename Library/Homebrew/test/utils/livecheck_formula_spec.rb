@@ -8,14 +8,10 @@ describe LivecheckFormula do
       install_test_formula "testball"
 
       formatted_response = described_class.init("testball")
-
+    
       expect(formatted_response).not_to be_nil
       expect(formatted_response).to be_a(Hash)
       expect(formatted_response.size).not_to eq(0)
-
-      # expect(formatted_response[:name]).to eq("testball")
-      # expect(formatted_response[:formula_version]).not_to be_nil
-      # expect(formatted_response[:livecheck_version]).not_to be_nil
     end
   end
 
