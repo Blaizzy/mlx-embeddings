@@ -20,6 +20,13 @@ describe "brew home", :integration_test do
     Cask::CaskLoader.load(local_caffeine_path).homepage
   }
 
+  it "opens the project page when no formula or cask is specified" do
+    expect { brew "home", "HOMEBREW_BROWSER" => "echo" }
+      .to output("https://brew.sh\n").to_stdout
+      .and not_to_output.to_stderr
+      .and be_a_success
+  end
+
   it "opens the homepage for a given Formula" do
     setup_test_formula "testballhome"
 
@@ -30,7 +37,7 @@ describe "brew home", :integration_test do
   end
 
   it "opens the homepage for a given Cask" do
-    expect { brew "home", cask_path("local-caffeine"), "HOMEBREW_BROWSER" => "echo" }
+    expect { brew "home", local_caffeine_path, "HOMEBREW_BROWSER" => "echo" }
       .to output(/#{local_caffeine_homepage}/).to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
@@ -39,7 +46,7 @@ describe "brew home", :integration_test do
   it "opens the homepages for a given formula and Cask" do
     setup_test_formula "testballhome"
 
-    expect { brew "home", "testballhome", cask_path("local-caffeine"), "HOMEBREW_BROWSER" => "echo" }
+    expect { brew "home", "testballhome", local_caffeine_path, "HOMEBREW_BROWSER" => "echo" }
       .to output(/#{testballhome_homepage} #{local_caffeine_homepage}/).to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
