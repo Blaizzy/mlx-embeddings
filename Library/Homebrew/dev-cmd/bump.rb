@@ -59,7 +59,7 @@ module Homebrew
   def display(formulae)
     puts
     formulae.each do |formula, package_details|
-      title = (up_to_date?(package_details) ? formula + " is up to date!" : formula).to_s
+      title = (up_to_date?(package_details) ? "#{formula} is up to date!" : formula).to_s
       ohai title
       puts "Current formula version:  #{package_details[:current_formula_version]}"
       puts "Latest Repology version:  #{package_details[:repology_latest_version] || "Not found"}"
