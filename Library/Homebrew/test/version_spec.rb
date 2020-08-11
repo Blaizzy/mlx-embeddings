@@ -183,6 +183,10 @@ describe Version do
     expect(described_class.create("1")).to be == 1
   end
 
+  it "can be compared against tokens" do
+    expect(described_class.create("1")).to be == Version::Token.create("1")
+  end
+
   specify "comparison returns nil for non-version" do
     v = described_class.create("1.0")
     expect(v <=> Object.new).to be nil
