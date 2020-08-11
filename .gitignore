@@ -139,9 +139,6 @@
 **/vendor/bundle/ruby/*/gems/webrobots-*/
 
 # Ignore conditional dependencies we don't wish to vendor
-**/vendor/bundle/ruby/*/gems/bindata-*/
-**/vendor/bundle/ruby/*/gems/elftools-*/
-**/vendor/bundle/ruby/*/gems/patchelf-*/
 **/vendor/bundle/ruby/*/gems/sorbet-*/
 **/vendor/bundle/ruby/*/gems/sorbet-runtime-*/
 **/vendor/bundle/ruby/*/gems/tapioca-*/
