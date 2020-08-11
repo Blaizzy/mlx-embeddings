@@ -38,6 +38,11 @@ class AbstractDownloadStrategy
   # Download and cache the resource as {#cached_location}.
   def fetch; end
 
+  # TODO: Deprecate once we have an explicitly documented alternative.
+  def shutup!
+    @quiet = true
+  end
+
   def puts(*args)
     super(*args) unless quiet?
   end
