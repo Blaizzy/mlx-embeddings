@@ -46,6 +46,18 @@ class Version
       "#<#{self.class.name} #{value.inspect}>"
     end
 
+    def hash
+      value.hash
+    end
+
+    def to_f
+      value.to_f
+    end
+
+    def to_i
+      value.to_i
+    end
+
     def to_s
       value.to_s
     end
@@ -73,6 +85,10 @@ class Version
       else
         -1
       end
+    end
+
+    def null?
+      true
     end
 
     def inspect
