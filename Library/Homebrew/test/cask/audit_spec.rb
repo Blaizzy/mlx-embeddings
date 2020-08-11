@@ -278,7 +278,6 @@ describe Cask::Audit, :cask do
     end
 
     describe "locale validation" do
-      let(:strict) { true }
       let(:cask) do
         tmp_cask "locale-cask-test", <<~RUBY
           cask 'locale-cask-test' do
@@ -318,7 +317,9 @@ describe Cask::Audit, :cask do
 
       context "when cask locale is invalid" do
         it "error with invalid locale" do
-          expect(subject).to fail_with(/locale ZH-CN, zh-, zh-cn are invalid/)
+          expect(subject).to fail_with(/Locale 'ZH-CN' is invalid\./)
+          expect(subject).to fail_with(/Locale 'zh-' is invalid\./)
+          expect(subject).to fail_with(/Locale 'zh-cn' is invalid\./)
         end
       end
     end
