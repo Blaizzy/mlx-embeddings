@@ -10,7 +10,7 @@ class PkgVersion
 
   attr_reader :version, :revision
 
-  delegate [
+  delegate [ # rubocop:disable Layout/HashAlignment
     :major,
     :minor,
     :patch,
