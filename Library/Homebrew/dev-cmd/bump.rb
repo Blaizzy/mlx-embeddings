@@ -26,7 +26,7 @@ module Homebrew
     args = bump_args.parse
 
     requested_formula = args.formula
-    requested_limit = args.limit ? args.limit.to_i : nil
+    requested_limit = args.limit.to_i if args.limit.present?
     requested_formula&.downcase!
 
     raise FormulaUnavailableError, requested_formula if requested_formula && !validate_formula(requested_formula)
