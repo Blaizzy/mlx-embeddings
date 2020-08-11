@@ -184,7 +184,12 @@ describe Version do
   end
 
   it "can be compared against tokens" do
+    expect(described_class.create("2.1.0-p194")).to be > Version::Token.create("2")
     expect(described_class.create("1")).to be == Version::Token.create("1")
+  end
+
+  it "can be compared against Version::NULL_TOKEN" do
+    expect(described_class.create("2.1.0-p194")).to be > Version::NULL_TOKEN
   end
 
   specify "comparison returns nil for non-version" do
