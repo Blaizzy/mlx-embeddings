@@ -212,11 +212,19 @@ describe Cask::Audit, :cask do
         end
       end
 
-      context "when cask token contains version" do
+      context "when cask token contains version designation" do
         let(:cask_token) { "token-beta" }
 
-        it "warns about version in token" do
-          expect(subject).to warn_with(/token contains version/)
+        it "warns about version in token if the cask is from an official tap" do
+          allow(cask).to receive(:tap).and_return(Tap.fetch("homebrew/cask"))
+
+          expect(subject).to warn_with(/token contains version designation/)
+        end
+
+        it "does not warn about version in token if the cask is from the `cask-versions` tap" do
+          allow(cask).to receive(:tap).and_return(Tap.fetch("homebrew/cask-versions"))
+
+          expect(subject).not_to warn_with(/token contains version designation/)
         end
       end
 
