@@ -23,8 +23,11 @@ module Homebrew
     options |= f.build.used_options
     options &= f.options
 
+    build_from_source_formulae = args.build_from_source_formulae
+    build_from_source_formulae << f.full_name if build_from_source
+
     fi = FormulaInstaller.new(f, force_bottle:               args.force_bottle?,
-                                 build_from_source_formulae: args.build_from_source_formulae,
+                                 build_from_source_formulae: build_from_source_formulae,
                                  debug: args.debug?, quiet: args.quiet?, verbose: args.verbose?)
     fi.options              = options
     fi.force                = args.force?
@@ -33,7 +36,6 @@ module Homebrew
     fi.interactive          = args.interactive?
     fi.git                  = args.git?
     fi.link_keg           ||= keg_was_linked if keg_had_linked_opt
-    fi.build_from_source    = true if build_from_source
     if tab
       fi.build_bottle          ||= tab.built_bottle?
       fi.installed_as_dependency = tab.installed_as_dependency
