@@ -85,4 +85,46 @@ describe PkgVersion do
       expect(p1.hash).not_to eq(p4.hash)
     end
   end
+
+  describe "#version" do
+    it "returns package version" do
+      expect(described_class.parse("1.2.3_4").version).to be == Version.create("1.2.3")
+    end
+  end
+
+  describe "#revision" do
+    it "returns package revision" do
+      expect(described_class.parse("1.2.3_4").revision).to be == 4
+    end
+  end
+
+  describe "#major" do
+    it "returns major version token" do
+      expect(described_class.parse("1.2.3_4").major).to be == Version::Token.create("1")
+    end
+  end
+
+  describe "#minor" do
+    it "returns minor version token" do
+      expect(described_class.parse("1.2.3_4").minor).to be == Version::Token.create("2")
+    end
+  end
+
+  describe "#patch" do
+    it "returns patch version token" do
+      expect(described_class.parse("1.2.3_4").patch).to be == Version::Token.create("3")
+    end
+  end
+
+  describe "#major_minor" do
+    it "returns major.minor version" do
+      expect(described_class.parse("1.2.3_4").major_minor).to be == Version.create("1.2")
+    end
+  end
+
+  describe "#major_minor_patch" do
+    it "returns major.minor.patch version" do
+      expect(described_class.parse("1.2.3_4").major_minor_patch).to be == Version.create("1.2.3")
+    end
+  end
 end
