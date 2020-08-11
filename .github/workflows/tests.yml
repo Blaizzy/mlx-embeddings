@@ -12,7 +12,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macOS-latest]
+        config:
+          - {os: ubuntu-latest, core-tap: 'linuxbrew-core'}
+          - {os: macOS-latest, core-tap: 'homebrew-core'}
     steps:
     - name: Set up Homebrew
       id: set-up-homebrew
@@ -23,14 +25,9 @@ jobs:
       with:
         username: BrewTestBot
 
-    - name: Run brew test-bot --only-cleanup-before
-      run: brew test-bot --only-cleanup-before
-
-    - name: Run brew config
-      run: brew config
-
-    - name: Run brew doctor
-      run: brew doctor
+    - run: brew test-bot --only-cleanup-before
+    - run: brew config
+    - run: brew doctor
 
     - name: Cache Bundler RubyGems
       id: cache
@@ -99,12 +96,7 @@ jobs:
     - name: Run brew readall on all taps
       run: brew readall --aliases
 
-    - name: Run brew style on homebrew-core
-      if: matrix.os == 'macOS-latest'
-      run: brew style --display-cop-names homebrew/core
-
-    - name: Run brew style on linuxbrew-core
-      if: matrix.os == 'ubuntu-latest'
+    - name: Run brew style on ${{ matrix.core-tap }}
       run: brew style --display-cop-names homebrew/core
 
     - name: Run brew style on official taps
