@@ -330,14 +330,11 @@ module Cask
     end
 
     def check_languages
-      invalid = []
       @cask.languages.each do |language|
-        invalid << language.to_s unless language.match?(/^[a-z]{2}$/) || language.match?(/^[a-z]{2}-[A-Z]{2}$/)
+        Locale.parse(language)
+      rescue Locale::ParserError
+        add_error "Locale '#{language}' is invalid."
       end
-
-      return if invalid.empty?
-
-      add_error "locale #{invalid.join(", ")} are invalid"
     end
 
     def check_token_conflicts

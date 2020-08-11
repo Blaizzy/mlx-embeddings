@@ -136,7 +136,7 @@ module Cask
     end
 
     def language_eval
-      return @language if instance_variable_defined?(:@language)
+      return @language if defined?(@language)
 
       return @language = nil if @language_blocks.nil? || @language_blocks.empty?
 
