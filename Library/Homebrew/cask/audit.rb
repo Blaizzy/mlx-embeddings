@@ -380,8 +380,10 @@ module Cask
 
       add_warning "cask token contains .app" if token.end_with? ".app"
 
-      if cask.token.end_with? "alpha", "beta", "release candidate"
-        add_warning "cask token contains version designation"
+      if /-(?<designation>alpha|beta|rc|release-candidate)$/ =~ cask.token
+        if cask.tap.official? && cask.tap != "homebrew/cask-versions"
+          add_warning "cask token contains version designation '#{designation}'"
+        end
       end
 
       add_warning "cask token mentions launcher" if token.end_with? "launcher"
