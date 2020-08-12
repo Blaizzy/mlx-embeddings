@@ -26,7 +26,7 @@ module Homebrew
     args = bump_args.parse
 
     requested_formula = args.formula
-    requested_limit = args.limit ? args.limit.to_i : nil
+    requested_limit = args.limit.to_i if args.limit.present?
     requested_formula&.downcase!
 
     raise FormulaUnavailableError, requested_formula if requested_formula && !validate_formula(requested_formula)
@@ -59,7 +59,7 @@ module Homebrew
   def display(formulae)
     puts
     formulae.each do |formula, package_details|
-      title = (up_to_date?(package_details) ? formula + " is up to date!" : formula).to_s
+      title = (up_to_date?(package_details) ? "#{formula} is up to date!" : formula).to_s
       ohai title
       puts "Current formula version:  #{package_details[:current_formula_version]}"
       puts "Latest Repology version:  #{package_details[:repology_latest_version] || "Not found"}"
