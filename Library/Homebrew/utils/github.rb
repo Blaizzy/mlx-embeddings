@@ -572,4 +572,35 @@ module GitHub
     [GitHub::AuthenticationFailedError, GitHub::HTTPNotFoundError,
      GitHub::RateLimitExceededError, GitHub::Error, JSON::ParserError].freeze
   end
+
+  def fetch_pull_requests(query, tap_full_name, state: nil)
+    GitHub.issues_for_formula(query, tap_full_name: tap_full_name, state: state).select do |pr|
+      pr["html_url"].include?("/pull/") &&
+        /(^|\s)#{Regexp.quote(query)}(:|\s|$)/i =~ pr["title"]
+    end
+  rescue GitHub::RateLimitExceededError => e
+    opoo e.message
+    []
+  end
+
+  def check_for_duplicate_pull_requests(query, tap_full_name, state:, args:)
+    pull_requests = fetch_pull_requests(query, tap_full_name, state: state)
+    return if pull_requests.blank?
+
+    duplicates_message = <<~EOS
+      These pull requests may be duplicates:
+      #{pull_requests.map { |pr| "#{pr["title"]} #{pr["html_url"]}" }.join("\n")}
+    EOS
+    error_message = "Duplicate PRs should not be opened. Use --force to override this error."
+    if args.force? && !args.quiet?
+      opoo duplicates_message
+    elsif !args.force? && args.quiet?
+      odie error_message
+    elsif !args.force?
+      odie <<~EOS
+        #{duplicates_message.chomp}
+        #{error_message}
+      EOS
+    end
+  end
 end
