@@ -33,6 +33,10 @@ module Homebrew
   def cleanup
     args = cleanup_args.parse
 
+    if args.prune.present? && !Integer(args.prune, exception: false) && args.prune != "all"
+      raise UsageError, "--prune= expects an integer or 'all'."
+    end
+
     cleanup = Cleanup.new(*args.named, dry_run: args.dry_run?, scrub: args.s?, days: args.prune&.to_i)
     if args.prune_prefix?
       cleanup.prune_prefix_symlinks_and_directories
