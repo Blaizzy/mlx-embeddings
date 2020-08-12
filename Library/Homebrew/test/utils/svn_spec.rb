@@ -17,6 +17,21 @@ describe Utils do
     end
   end
 
+  describe "#self.svn_version" do
+    before do
+      described_class.clear_svn_version_cache
+    end
+
+    it "returns nil when svn is not available" do
+      allow(described_class).to receive(:svn_available?).and_return(false)
+      expect(described_class.svn_version).to eq(nil)
+    end
+
+    it "returns version of svn when svn is available", :needs_svn do
+      expect(described_class.svn_version).not_to be_nil
+    end
+  end
+
   describe "#self.svn_remote_exists?" do
     it "returns true when svn is not available" do
       allow(described_class).to receive(:svn_available?).and_return(false)

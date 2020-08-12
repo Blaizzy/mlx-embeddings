@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "json"
-require "rexml/document"
 require "time"
 require "unpack_strategy"
 require "lazy_object"
@@ -523,9 +522,14 @@ class SubversionDownloadStrategy < VCSDownloadStrategy
   end
 
   def source_modified_time
-    out, = system_command("svn", args: ["info", "--xml"], chdir: cached_location)
-    xml = REXML::Document.new(out)
-    Time.parse REXML::XPath.first(xml, "//date/text()").to_s
+    time = if Version.create(Utils.svn_version) >= Version.create("1.9")
+      out, = system_command("svn", args: ["info", "--show-item", "last-changed-date"], chdir: cached_location)
+      out
+    else
+      out, = system_command("svn", args: ["info"], chdir: cached_location)
+      out[/^Last Changed Date: (.+)$/, 1]
+    end
+    Time.parse time
   end
 
   def last_commit
