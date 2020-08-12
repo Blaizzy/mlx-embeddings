@@ -9,7 +9,7 @@ env:
 jobs:
   tests:
     if: github.repository == 'Homebrew/brew'
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.config.os }}
     strategy:
       matrix:
         config:
@@ -96,14 +96,14 @@ jobs:
     - name: Run brew readall on all taps
       run: brew readall --aliases
 
-    - name: Run brew style on ${{ matrix.core-tap }}
+    - name: Run brew style on ${{ matrix.config.core-tap }}
       run: brew style --display-cop-names homebrew/core
 
     - name: Run brew style on official taps
       run: brew style --display-cop-names homebrew/bundle homebrew/services homebrew/test-bot
 
     - name: Run brew cask style on all taps
-      if: matrix.os == 'macOS-latest'
+      if: matrix.config.os == 'macOS-latest'
       run: |
         brew tap homebrew/cask
         brew tap homebrew/cask-drivers
@@ -121,13 +121,13 @@ jobs:
         vale docs/
 
     - name: Lint Dockerfile
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.config.os == 'ubuntu-latest'
       run: |
         brew install hadolint
         hadolint Dockerfile
 
     - name: Build Docker image
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.config.os == 'ubuntu-latest'
       run: docker build -t brew --build-arg=version=16.04 .
 
     - name: Run brew test-bot --only-formulae --test-default-formula
@@ -139,7 +139,7 @@ jobs:
         fi
 
     - name: Deploy the Docker image to GitHub and Docker Hub
-      if: matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/master'
+      if: matrix.config.os == 'ubuntu-latest' && github.ref == 'refs/heads/master'
       run: |
         docker login docker.pkg.github.com -u BrewTestBot -p ${{secrets.GITHUB_TOKEN}}
         docker tag brew "docker.pkg.github.com/homebrew/brew/ubuntu16.04:master"
