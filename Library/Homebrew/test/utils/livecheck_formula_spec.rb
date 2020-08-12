@@ -11,7 +11,7 @@ describe LivecheckFormula do
 
     it "runs livecheck command for Formula" do
       formatted_response = described_class.init(action)
-    
+
       expect(formatted_response).not_to be_nil
       expect(formatted_response).to be_a(Hash)
       expect(formatted_response.size).not_to eq(0)
