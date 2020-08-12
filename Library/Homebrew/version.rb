@@ -46,6 +46,18 @@ class Version
       "#<#{self.class.name} #{value.inspect}>"
     end
 
+    def hash
+      value.hash
+    end
+
+    def to_f
+      value.to_f
+    end
+
+    def to_i
+      value.to_i
+    end
+
     def to_s
       value.to_s
     end
@@ -73,6 +85,10 @@ class Version
       else
         -1
       end
+    end
+
+    def null?
+      true
     end
 
     def inspect
@@ -429,8 +445,9 @@ class Version
     # Used by the *_build_version comparisons, which formerly returned Fixnum
     other = Version.new(other.to_s) if other.is_a? Integer
     return 1 if other.nil?
-
     return 1 if other.respond_to?(:null?) && other.null?
+
+    other = Version.new(other.to_s) if other.is_a? Token
     return unless other.is_a?(Version)
     return 0 if version == other.version
     return 1 if head? && !other.head?
@@ -468,6 +485,26 @@ class Version
     0
   end
   alias eql? ==
+
+  def major
+    tokens.first
+  end
+
+  def minor
+    tokens.second
+  end
+
+  def patch
+    tokens.third
+  end
+
+  def major_minor
+    Version.new([major, minor].compact.join("."))
+  end
+
+  def major_minor_patch
+    Version.new([major, minor, patch].compact.join("."))
+  end
 
   def empty?
     version.empty?
