@@ -1,14 +1,17 @@
 # frozen_string_literal: true
 
 require "utils/livecheck_formula"
+require "formula_installer"
 
 describe LivecheckFormula do
-  describe "init", :integration_test do
+  describe "init" do
+    let(:f) { formula { url "foo-1.0" } }
+    let(:options) { FormulaInstaller.new(f).display_options(f) }
+    let(:action)  { "#{f.full_name} #{options}".strip }
+
     it "runs livecheck command for Formula" do
-      install_test_formula "testball"
-
-      formatted_response = described_class.init("testball")
-
+      formatted_response = described_class.init(action)
+    
       expect(formatted_response).not_to be_nil
       expect(formatted_response).to be_a(Hash)
       expect(formatted_response.size).not_to eq(0)
