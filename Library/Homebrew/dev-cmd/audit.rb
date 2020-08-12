@@ -781,7 +781,7 @@ module Homebrew
         return if stable_url_minor_version.even?
 
         problem "#{stable.version} is a development release"
-      when %r{^https://github.com/([\w-]+)/([\w-]+)/}
+      when %r{^https://github.com/([\w-]+)/([\w-]+)}
         owner = Regexp.last_match(1)
         repo = Regexp.last_match(2)
         tag = url.match(%r{^https://github\.com/[\w-]+/[\w-]+/archive/([^/]+)\.(tar\.gz|zip)$})
@@ -790,6 +790,7 @@ module Homebrew
         tag ||= url.match(%r{^https://github\.com/[\w-]+/[\w-]+/releases/download/([^/]+)/})
                    .to_a
                    .second
+        tag ||= formula.stable.specs[:tag]
 
         begin
           if @online && (release = GitHub.open_api("#{GitHub::API_URL}/repos/#{owner}/#{repo}/releases/tags/#{tag}"))
