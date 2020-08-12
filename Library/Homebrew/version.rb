@@ -487,23 +487,23 @@ class Version
   alias eql? ==
 
   def major
-    tokens[0]
+    tokens.first
   end
 
   def minor
-    tokens[1]
+    tokens.second
   end
 
   def patch
-    tokens[2]
+    tokens.third
   end
 
   def major_minor
-    Version.new([major, minor].reject(&:nil?).join("."))
+    Version.new([major, minor].compact.join("."))
   end
 
   def major_minor_patch
-    Version.new([major, minor, patch].reject(&:nil?).join("."))
+    Version.new([major, minor, patch].compact.join("."))
   end
 
   def empty?
