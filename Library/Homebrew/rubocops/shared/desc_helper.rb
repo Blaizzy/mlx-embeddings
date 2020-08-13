@@ -9,6 +9,8 @@ module RuboCop
       include HelperFunctions
 
       VALID_LOWERCASE_WORDS = %w[
+        iOS
+        iPhone
         macOS
       ].freeze
 
