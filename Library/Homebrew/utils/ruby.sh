@@ -11,7 +11,9 @@ test_ruby () {
 
 setup-ruby-path() {
   local vendor_dir
+  local vendor_ruby_root
   local vendor_ruby_path
+  local vendor_ruby_terminfo
   local vendor_ruby_latest_version
   local vendor_ruby_current_version
   local usable_ruby
