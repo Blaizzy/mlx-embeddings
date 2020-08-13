@@ -9,7 +9,7 @@ esac
 if ! command -v locale >/dev/null
 then
   export LC_ALL=C
-elif [[ "$(locale charmap 2>/dev/null)" != "UTF-8" ]]
+elif [[ "$(locale charmap)" != "UTF-8" ]]
 then
   if [[ -n "$HOMEBREW_MACOS" ]]
   then
