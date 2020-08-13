@@ -230,15 +230,25 @@ module Cask
       end
 
       def run(*args)
+        command_class&.run(*args)
+      end
+
+      def help
+        command_class&.help
+      end
+
+      private
+
+      def command_class
+        return @command_class if defined?(@command_class)
+
         require @path
 
-        klass = begin
+        @command_class = begin
           Cmd.const_get(@command_name)
         rescue NameError
-          return
+          nil
         end
-
-        klass.run(*args)
       end
     end
 
@@ -249,6 +259,10 @@ module Cask
 
       def run(*argv)
         exec @path, *argv
+      end
+
+      def help
+        exec @path, "--help"
       end
     end
 
