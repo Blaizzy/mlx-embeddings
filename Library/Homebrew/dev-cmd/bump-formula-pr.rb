@@ -133,6 +133,9 @@ module Homebrew
     new_version = args.version
     check_closed_pull_requests(formula, tap_full_name, version: new_version, args: args) if new_version
 
+    opoo "This formula has patches that may be resolved upstream." if formula.patchlist.present?
+    opoo "This formula has resources that may need to be updated." if formula.resources.present?
+
     requested_spec = :stable
     formula_spec = formula.stable
     odie "#{formula}: no #{requested_spec} specification found!" unless formula_spec
