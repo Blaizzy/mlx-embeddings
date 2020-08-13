@@ -111,7 +111,6 @@ module Homebrew
     lib/ruby/site_ruby/[12].*
     lib/ruby/vendor_ruby/[12].*
     manpages/brew.1
-    manpages/brew-cask.1
     share/pypy/*
     share/pypy3/*
     share/info/dir

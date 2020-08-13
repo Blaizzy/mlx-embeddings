@@ -6,28 +6,35 @@ require "cask/config"
 module Cask
   class Cmd
     class Upgrade < AbstractCommand
-      option "--greedy", :greedy, false
-      option "--quiet",  :quiet, false
-      option "--force", :force, false
-      option "--skip-cask-deps", :skip_cask_deps, false
-      option "--dry-run", :dry_run, false
+      def self.description
+        "Upgrades all outdated casks or the specified casks."
+      end
 
-      def initialize(*)
-        super
-        self.verbose = ($stdout.tty? || verbose?) && !quiet?
+      def self.parser
+        super do
+          switch "--force",
+                 description: "Force overwriting existing files."
+          switch "--skip-cask-deps",
+                 description: "Skip installing cask dependencies."
+          switch "--greedy",
+                 description: "Also include casks which specify `auto_updates true` or `version :latest`."
+          switch "--dry-run",
+                 description: "Show what would be upgraded, but do not actually upgrade anything."
+        end
       end
 
       def run
+        verbose = ($stdout.tty? || args.verbose?) && !args.quiet?
         self.class.upgrade_casks(
           *casks,
-          force:          force?,
-          greedy:         greedy?,
-          dry_run:        dry_run?,
-          binaries:       binaries?,
-          quarantine:     quarantine?,
-          require_sha:    require_sha?,
-          skip_cask_deps: skip_cask_deps?,
-          verbose:        verbose?,
+          force:          args.force?,
+          greedy:         args.greedy?,
+          dry_run:        args.dry_run?,
+          binaries:       args.binaries?,
+          quarantine:     args.quarantine?,
+          require_sha:    args.require_sha?,
+          skip_cask_deps: args.skip_cask_deps?,
+          verbose:        verbose,
         )
       end
 
@@ -42,10 +49,8 @@ module Cask
         quarantine: nil,
         require_sha: nil
       )
-        # TODO: Handle this in `CLI::Parser`.
-        binaries = Homebrew::EnvConfig.cask_opts_binaries? if binaries.nil?
-        quarantine = Homebrew::EnvConfig.cask_opts_quarantine? if quarantine.nil?
-        require_sha = Homebrew::EnvConfig.cask_opts_require_sha? if require_sha.nil?
+
+        quarantine = true if quarantine.nil?
 
         outdated_casks = if casks.empty?
           Caskroom.casks.select do |cask|
@@ -98,22 +103,30 @@ module Cask
         odebug "Started upgrade process for Cask #{old_cask}"
         old_config = old_cask.config
 
+        old_options = {
+          binaries: binaries,
+          verbose:  verbose,
+          force:    force,
+          upgrade:  true,
+        }.compact
+
         old_cask_installer =
-          Installer.new(old_cask, binaries: binaries,
-                                  verbose:  verbose,
-                                  force:    force,
-                                  upgrade:  true)
+          Installer.new(old_cask, **old_options)
 
         new_cask.config = Config.global.merge(old_config)
 
+        new_options = {
+          binaries:       binaries,
+          verbose:        verbose,
+          force:          force,
+          skip_cask_deps: skip_cask_deps,
+          require_sha:    require_sha,
+          upgrade:        true,
+          quarantine:     quarantine,
+        }.compact
+
         new_cask_installer =
-          Installer.new(new_cask, binaries:       binaries,
-                                  verbose:        verbose,
-                                  force:          force,
-                                  skip_cask_deps: skip_cask_deps,
-                                  require_sha:    require_sha,
-                                  upgrade:        true,
-                                  quarantine:     quarantine)
+          Installer.new(new_cask, **new_options)
 
         started_upgrade = false
         new_artifacts_installed = false
@@ -147,10 +160,6 @@ module Cask
           old_cask_installer.revert_upgrade if started_upgrade
           raise e
         end
-      end
-
-      def self.help
-        "upgrades all outdated casks"
       end
     end
   end

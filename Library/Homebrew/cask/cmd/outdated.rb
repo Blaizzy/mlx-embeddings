@@ -3,27 +3,29 @@
 module Cask
   class Cmd
     class Outdated < AbstractCommand
-      option "--greedy", :greedy, false
-      option "--quiet",  :quiet, false
-      option "--json",   :json, false
+      def self.description
+        "List the outdated installed casks."
+      end
 
-      def initialize(*)
-        super
-        self.verbose = ($stdout.tty? || verbose?) && !quiet?
-        @outdated_casks = casks(alternative: -> { Caskroom.casks }).select do |cask|
-          odebug "Checking update info of Cask #{cask}"
-          cask.outdated?(greedy?)
+      def self.parser
+        super do
+          switch "--greedy",
+                 description: "Also include casks which specify `auto_updates true` or `version :latest`."
+          switch "--json",
+                 description: "Print a JSON representation of outdated casks."
         end
       end
 
       def run
-        output = @outdated_casks.map { |cask| cask.outdated_info(greedy?, verbose?, json?) }
+        outdated_casks = casks(alternative: -> { Caskroom.casks }).select do |cask|
+          odebug "Checking update info of Cask #{cask}"
+          cask.outdated?(args.greedy?)
+        end
 
-        puts json? ? JSON.generate(output) : output
-      end
+        verbose = ($stdout.tty? || args.verbose?) && !args.quiet?
+        output = outdated_casks.map { |cask| cask.outdated_info(args.greedy?, verbose, args.json?) }
 
-      def self.help
-        "list the outdated installed Casks"
+        puts args.json? ? JSON.generate(output) : output
       end
     end
   end

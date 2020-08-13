@@ -8,8 +8,6 @@ require "test/support/helper/cask/never_sudo_system_command"
 
 module Cask
   class Config
-    remove_const :DEFAULT_DIRS
-
     DEFAULT_DIRS_PATHNAMES = {
       appdir:               Pathname(TEST_TMPDIR)/"cask-appdir",
       prefpanedir:          Pathname(TEST_TMPDIR)/"cask-prefpanedir",
@@ -27,6 +25,7 @@ module Cask
       screen_saverdir:      Pathname(TEST_TMPDIR)/"cask-screen_saverdir",
     }.freeze
 
+    remove_const :DEFAULT_DIRS
     DEFAULT_DIRS = DEFAULT_DIRS_PATHNAMES.transform_values(&:to_s).freeze
   end
 end
@@ -51,7 +50,7 @@ RSpec.shared_context "Homebrew Cask", :needs_macos do
 
       example.run
     ensure
-      FileUtils.rm_rf Cask::Config::DEFAULT_DIRS.values
+      FileUtils.rm_rf Cask::Config::DEFAULT_DIRS_PATHNAMES.values
       FileUtils.rm_rf [Cask::Config.global.binarydir, Cask::Caskroom.path, Cask::Cache.path]
       Tap.default_cask_tap.path.unlink
       third_party_tap.path.unlink

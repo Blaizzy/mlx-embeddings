@@ -6,15 +6,23 @@ require "cask/installer"
 module Cask
   class Cmd
     class Info < AbstractCommand
-      option "--json=VERSION", :json
+      def self.min_named
+        :cask
+      end
 
-      def initialize(*)
-        super
-        raise CaskUnspecifiedError if args.empty?
+      def self.description
+        "Displays information about the given <cask>."
+      end
+
+      def self.parser
+        super do
+          flag "--json=",
+               description: "Output information in JSON format."
+        end
       end
 
       def run
-        if json == "v1"
+        if args.json == "v1"
           puts JSON.generate(casks.map(&:to_h))
         else
           casks.each_with_index do |cask, i|
@@ -23,10 +31,6 @@ module Cask
             self.class.info(cask)
           end
         end
-      end
-
-      def self.help
-        "displays information about the given Cask"
       end
 
       def self.get_info(cask)

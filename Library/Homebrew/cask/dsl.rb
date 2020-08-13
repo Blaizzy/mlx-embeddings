@@ -21,6 +21,7 @@ require "cask/dsl/uninstall_preflight"
 require "cask/dsl/version"
 
 require "cask/url"
+require "cask/utils"
 
 module Cask
   class DSL

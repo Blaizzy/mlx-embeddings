@@ -3,25 +3,33 @@
 module Cask
   class Cmd
     class Zap < AbstractCommand
-      option "--force", :force, false
+      def self.min_named
+        :cask
+      end
 
-      def initialize(*)
-        super
-        raise CaskUnspecifiedError if args.empty?
+      def self.description
+        <<~EOS
+          Zaps all files associated with the given <cask>. Implicitly also performs all actions associated with `uninstall`.
+
+          *May remove files which are shared between applications.*
+        EOS
+      end
+
+      def self.parser
+        super do
+          switch "--force",
+                 description: "Ignore errors when removing files."
+        end
       end
 
       def run
         casks.each do |cask|
           odebug "Zapping Cask #{cask}"
 
-          raise CaskNotInstalledError, cask unless cask.installed? || force?
+          raise CaskNotInstalledError, cask unless cask.installed? || args.force?
 
-          Installer.new(cask, verbose: verbose?, force: force?).zap
+          Installer.new(cask, verbose: args.verbose?, force: args.force?).zap
         end
-      end
-
-      def self.help
-        "zaps all files associated with the given Cask"
       end
     end
   end

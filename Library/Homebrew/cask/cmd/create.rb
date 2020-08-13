@@ -3,14 +3,26 @@
 module Cask
   class Cmd
     class Create < AbstractCommand
+      def self.min_named
+        :cask
+      end
+
+      def self.max_named
+        1
+      end
+
+      def self.description
+        "Creates the given <cask> and opens it in an editor."
+      end
+
       def initialize(*)
         super
-        raise CaskUnspecifiedError if args.empty?
-        raise ArgumentError, "Only one Cask can be created at a time." if args.count > 1
+      rescue Homebrew::CLI::MaxNamedArgumentsError
+        raise UsageError, "Only one cask can be created at a time."
       end
 
       def run
-        cask_token = args.first
+        cask_token = args.named.first
         cask_path = CaskLoader.path(cask_token)
         raise CaskAlreadyCreatedError, cask_token if cask_path.exist?
 
@@ -36,10 +48,6 @@ module Cask
             app ""
           end
         RUBY
-      end
-
-      def self.help
-        "creates the given Cask and opens it in an editor"
       end
     end
   end

@@ -152,9 +152,9 @@ module Homebrew
       force:          args.force?,
       greedy:         args.greedy?,
       dry_run:        args.dry_run?,
-      binaries:       args.binaries?,
-      quarantine:     args.quarantine?,
-      require_sha:    args.require_sha?,
+      binaries:       EnvConfig.cask_opts_binaries?,
+      quarantine:     EnvConfig.cask_opts_quarantine?,
+      require_sha:    EnvConfig.cask_opts_require_sha?,
       skip_cask_deps: args.skip_cask_deps?,
       verbose:        args.verbose?,
     )

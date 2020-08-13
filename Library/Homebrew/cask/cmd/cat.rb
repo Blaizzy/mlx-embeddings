@@ -3,9 +3,12 @@
 module Cask
   class Cmd
     class Cat < AbstractCommand
-      def initialize(*)
-        super
-        raise CaskUnspecifiedError if args.empty?
+      def self.min_named
+        :cask
+      end
+
+      def self.description
+        "Dump raw source of a <cask> to the standard output."
       end
 
       def run
@@ -17,10 +20,6 @@ module Cask
             puts File.open(cask.sourcefile_path, &:read)
           end
         end
-      end
-
-      def self.help
-        "dump raw source of the given Cask to the standard output"
       end
     end
   end

@@ -9,22 +9,22 @@ module Cask
     def self.audit(cask, audit_download: false, audit_appcast: false,
                    audit_online: false, audit_strict: false,
                    audit_token_conflicts: false, audit_new_cask: false,
-                   quarantine: true, commit_range: nil)
+                   quarantine: true, commit_range: nil, language: nil)
       new(cask, audit_download: audit_download,
                 audit_appcast: audit_appcast,
                 audit_online: audit_online,
                 audit_new_cask: audit_new_cask,
                 audit_strict: audit_strict,
                 audit_token_conflicts: audit_token_conflicts,
-                quarantine: quarantine, commit_range: commit_range).audit
+                quarantine: quarantine, commit_range: commit_range, language: language).audit
     end
 
-    attr_reader :cask, :commit_range
+    attr_reader :cask, :commit_range, :language
 
     def initialize(cask, audit_download: false, audit_appcast: false,
                    audit_online: false, audit_strict: false,
                    audit_token_conflicts: false, audit_new_cask: false,
-                   quarantine: true, commit_range: nil)
+                   quarantine: true, commit_range: nil, language: nil)
       @cask = cask
       @audit_download = audit_download
       @audit_appcast = audit_appcast
@@ -34,6 +34,7 @@ module Cask
       @quarantine = quarantine
       @commit_range = commit_range
       @audit_token_conflicts = audit_token_conflicts
+      @language = language
     end
 
     attr_predicate :audit_appcast?, :audit_download?, :audit_online?,
@@ -43,7 +44,7 @@ module Cask
       warnings = Set.new
       errors = Set.new
 
-      if !Homebrew.args.value("language") && language_blocks
+      if !language && language_blocks
         language_blocks.each_key do |l|
           audit = audit_languages(l)
           puts audit.summary

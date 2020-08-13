@@ -1,31 +1,9 @@
 # frozen_string_literal: true
 
 describe Cask::Cmd, :cask do
-  it "lists the taps for Casks that show up in two taps" do
-    listing = described_class.nice_listing(%w[
-                                             homebrew/cask/adium
-                                             homebrew/cask/google-chrome
-                                             passcod/homebrew-cask/adium
-                                           ])
-
-    expect(listing).to eq(%w[
-                            google-chrome
-                            homebrew/cask/adium
-                            passcod/cask/adium
-                          ])
-  end
-
-  context "when given no arguments" do
-    it "exits successfully" do
-      expect(subject).not_to receive(:exit).with(be_nonzero)
-      subject.run
-    end
-  end
-
-  context "when no option is specified" do
-    it "--binaries is true by default" do
-      command = Cask::Cmd::Install.new("some-cask")
-      expect(command.binaries?).to be true
+  context "when no subcommand is given" do
+    it "raises an error" do
+      expect { subject.run }.to raise_error(UsageError, /subcommand/)
     end
   end
 
@@ -33,10 +11,9 @@ describe Cask::Cmd, :cask do
     let(:noop_command) { double("Cmd::Noop", run: nil) }
 
     it "prints help output when subcommand receives `--help` flag" do
-      command = described_class.new("info", "--help")
-
-      expect { command.run }.to output(/displays information about the given Cask/).to_stdout
-      expect(command.help?).to eq(true)
+      expect {
+        described_class.run("info", "--help")
+      }.to output(/Displays information about the given cask/).to_stdout
     end
 
     it "respects the env variable when choosing what appdir to create" do
