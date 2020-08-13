@@ -1,4 +1,6 @@
-inherit_from: ../.rubocop_rspec.yml
+inherit_from:
+  - ../.rubocop_rspec.yml
+  - .rubocop_todo.yml
 
 AllCops:
   Include:
@@ -105,12 +107,6 @@ Naming/MethodParameterName:
 Style/AccessModifierDeclarations:
   Enabled: false
 
-# make rspec formatting more flexible
-Style/BlockDelimiters:
-  Exclude:
-    - '**/*_spec.rb'
-    - '**/shared_examples/**/*.rb'
-
 # don't group nicely documented or private attr_readers
 Style/AccessorGrouping:
   Exclude:
@@ -121,11 +117,16 @@ Style/AccessorGrouping:
     - 'system_command.rb'
     - 'tap.rb'
 
+# make rspec formatting more flexible
+Style/BlockDelimiters:
+  Exclude:
+    - '**/*_spec.rb'
+    - '**/shared_examples/**/*.rb'
+
 # document our public APIs
 Style/Documentation:
   Enabled: true
-  Include:
-    - 'formula.rb'
+
 Style/DocumentationMethod:
   Enabled: true
   Include:
