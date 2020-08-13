@@ -679,8 +679,13 @@ module Homebrew
     }.freeze
 
     GITHUB_PRERELEASE_ALLOWLIST = {
+      "cbmc"         => "5.12.6",
+      "elm-format"   => "0.8.3",
       "gitless"      => "0.8.8",
+      "infrakit"     => "0.5",
+      "riff"         => "0.5.0",
       "telegram-cli" => "1.3.1",
+      "volta"        => "0.8.6",
     }.freeze
 
     # version_prefix = stable_version_string.sub(/\d+$/, "")
@@ -774,7 +779,7 @@ module Homebrew
         return if stable_url_minor_version.even?
 
         problem "#{stable.version} is a development release"
-      when %r{^https://github.com/([\w-]+)/([\w-]+)/}
+      when %r{^https://github.com/([\w-]+)/([\w-]+)}
         owner = Regexp.last_match(1)
         repo = Regexp.last_match(2)
         tag = url.match(%r{^https://github\.com/[\w-]+/[\w-]+/archive/([^/]+)\.(tar\.gz|zip)$})
@@ -783,10 +788,11 @@ module Homebrew
         tag ||= url.match(%r{^https://github\.com/[\w-]+/[\w-]+/releases/download/([^/]+)/})
                    .to_a
                    .second
+        tag ||= formula.stable.specs[:tag]
 
         begin
           if @online && (release = GitHub.open_api("#{GitHub::API_URL}/repos/#{owner}/#{repo}/releases/tags/#{tag}"))
-            if release["prerelease"] && !GITHUB_PRERELEASE_ALLOWLIST.include?(formula.name)
+            if release["prerelease"] && (GITHUB_PRERELEASE_ALLOWLIST[formula.name] != formula.version)
               problem "#{tag} is a GitHub prerelease"
             elsif release["draft"]
               problem "#{tag} is a GitHub draft"
