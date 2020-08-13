@@ -145,16 +145,7 @@ module Homebrew
     new_tag = args.tag
     new_revision = args.revision
     new_mirrors ||= args.mirror
-    new_mirror ||= case new_url
-    when %r{.*ftp.gnu.org/gnu.*}
-      new_url.sub "ftp.gnu.org/gnu", "ftpmirror.gnu.org"
-    when %r{.*download.savannah.gnu.org/*}
-      new_url.sub "download.savannah.gnu.org", "download-mirror.savannah.gnu.org"
-    when %r{.*www.apache.org/dyn/closer.lua\?path=.*}
-      new_url.sub "www.apache.org/dyn/closer.lua?path=", "archive.apache.org/dist/"
-    when %r{.*mirrors.ocf.berkeley.edu/debian.*}
-      new_url.sub "mirrors.ocf.berkeley.edu/debian", "mirrorservice.org/sites/ftp.debian.org/debian"
-    end
+    new_mirror ||= determine_mirror(new_url)
     new_mirrors ||= [new_mirror] unless new_mirror.nil?
     old_url = formula_spec.url
     old_tag = formula_spec.specs[:tag]
@@ -420,6 +411,19 @@ module Homebrew
     return if guesses.count <= 1
 
     odie "Couldn't guess formula for sure; could be one of these:\n#{guesses.map(&:name).join(", ")}"
+  end
+
+  def determine_mirror(url)
+    case url
+    when %r{.*ftp.gnu.org/gnu.*}
+      url.sub "ftp.gnu.org/gnu", "ftpmirror.gnu.org"
+    when %r{.*download.savannah.gnu.org/*}
+      url.sub "download.savannah.gnu.org", "download-mirror.savannah.gnu.org"
+    when %r{.*www.apache.org/dyn/closer.lua\?path=.*}
+      url.sub "www.apache.org/dyn/closer.lua?path=", "archive.apache.org/dist/"
+    when %r{.*mirrors.ocf.berkeley.edu/debian.*}
+      url.sub "mirrors.ocf.berkeley.edu/debian", "mirrorservice.org/sites/ftp.debian.org/debian"
+    end
   end
 
   def fetch_resource(formula, new_version, url, **specs)
