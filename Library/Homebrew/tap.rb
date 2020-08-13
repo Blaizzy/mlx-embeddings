@@ -234,9 +234,10 @@ class Tap
     require "descriptions"
 
     if official? && DEPRECATED_OFFICIAL_TAPS.include?(repo)
-      odie "#{name} was deprecated. This tap is now empty as all its formulae were migrated."
+      odie "#{name} was deprecated. This tap is now empty and all its contents were either deleted or migrated."
     elsif user == "caskroom"
-      odie "#{name} was moved. Tap homebrew/cask-#{repo} instead."
+      new_repo = repo == "cask" ? "cask" : "cask-#{repo}"
+      odie "#{name} was moved. Tap homebrew/#{new_repo} instead."
     end
 
     requested_remote = clone_target || default_remote
