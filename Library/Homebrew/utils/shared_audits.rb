@@ -17,6 +17,16 @@ module SharedAudits
     nil
   end
 
+  def github_release_data(user, repo, tag)
+    id = "#{user}/#{repo}/#{tag}"
+    @github_release_data ||= {}
+    @github_release_data[id] ||= GitHub.open_api("#{GitHub::API_URL}/repos/#{user}/#{repo}/releases/tags/#{tag}")
+
+    @github_release_data[id]
+  rescue GitHub::HTTPNotFoundError
+    nil
+  end
+
   def gitlab_repo_data(user, repo)
     @gitlab_repo_data ||= {}
     @gitlab_repo_data["#{user}/#{repo}"] ||= begin
@@ -27,6 +37,21 @@ module SharedAudits
     end
 
     @gitlab_repo_data["#{user}/#{repo}"]
+  end
+
+  def gitlab_release_data(user, repo, tag)
+    id = "#{user}/#{repo}/#{tag}"
+    @gitlab_release_data ||= {}
+    @gitlab_release_data[id] ||= begin
+      out, _, status= curl_output(
+        "--request", "GET", "https://gitlab.com/api/v4/projects/#{user}%2F#{repo}/releases/#{tag}"
+      )
+      return unless status.success?
+
+      JSON.parse(out)
+    end
+
+    @gitlab_release_data[id]
   end
 
   def github(user, repo)
