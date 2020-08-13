@@ -63,7 +63,11 @@ module Repology
 
       next if repology_homebrew_repo.blank?
 
-      latest_version = repositories.find { |repo| repo["status"] == "newest" }["version"]
+      latest_version = repositories.find { |repo| repo["status"] == "newest" }
+
+      next if latest_version.blank?
+
+      latest_version = latest_version["version"]
       srcname = repology_homebrew_repo["srcname"]
       package_details = format_package(srcname, latest_version)
       packages[srcname] = package_details unless package_details.nil?
@@ -79,14 +83,17 @@ module Repology
 
     return if formula.blank?
 
+    formula_name = formula.to_s
     tap_full_name = formula.tap&.full_name
     current_version = formula.version.to_s
     livecheck_response = LivecheckFormula.init(package_name)
-    pull_requests = GitHub.check_for_duplicate_pull_requests(formula, tap_full_name, latest_version)
+    pull_requests = GitHub.fetch_pull_requests(formula_name, tap_full_name, state: "open")
 
     if pull_requests.try(:any?)
-      pull_requests = pull_requests.map { |pr| "#{pr[:title]} (#{Formatter.url(pr[:url])})" }.join(", ")
+      pull_requests = pull_requests.map { |pr| "#{pr["title"]} (#{Formatter.url(pr["url"])})" }.join(", ")
     end
+
+    pull_requests = "None" if pull_requests.empty?
 
     {
       repology_latest_version:  latest_version,
