@@ -17,5 +17,21 @@ module Homebrew::CLI
     def named_args; end
 
     def force_bottle?; end
+
+    def debug?; end
+
+    def quiet?; end
+
+    def verbose?; end
+  end
+
+
+  class Parser
+    module Compat
+      include Kernel
+      module DeprecatedArgs
+        include Kernel
+      end
+    end
   end
 end

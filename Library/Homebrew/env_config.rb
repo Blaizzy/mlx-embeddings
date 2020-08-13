@@ -146,9 +146,9 @@ module Homebrew
         description: "Use this personal access token for the GitHub API, for features such as " \
                      "`brew search`. You can create one at <https://github.com/settings/tokens>. If set, " \
                      "GitHub will allow you a greater number of API requests. For more information, see: " \
-                     "<https://developer.github.com/v3/#rate-limiting>\n\n    *Note:* Homebrew doesn't " \
-                     "require permissions for any of the scopes, but some developer commands may require " \
-                     "additional permissions.",
+                     "<https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting>.\n\n" \
+                     "    *Note:* Homebrew doesn't require permissions for any of the scopes, but some developer " \
+                     "commands may require additional permissions.",
       },
       HOMEBREW_GITHUB_API_USERNAME:       {
         description: "Use this username for authentication with the GitHub API, for features " \

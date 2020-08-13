@@ -20,6 +20,16 @@ module Dependable
   def tags; end
 end
 
+module DependenciesHelpers
+  include Kernel
+
+  module Compat
+    include Kernel
+
+    def args_includes_ignores(args); end
+  end
+end
+
 class Formula
   module Compat
     include Kernel

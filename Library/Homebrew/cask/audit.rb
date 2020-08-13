@@ -330,14 +330,11 @@ module Cask
     end
 
     def check_languages
-      invalid = []
       @cask.languages.each do |language|
-        invalid << language.to_s unless language.match?(/^[a-z]{2}$/) || language.match?(/^[a-z]{2}-[A-Z]{2}$/)
+        Locale.parse(language)
+      rescue Locale::ParserError
+        add_error "Locale '#{language}' is invalid."
       end
-
-      return if invalid.empty?
-
-      add_error "locale #{invalid.join(", ")} are invalid"
     end
 
     def check_token_conflicts
@@ -380,8 +377,10 @@ module Cask
 
       add_warning "cask token contains .app" if token.end_with? ".app"
 
-      if cask.token.end_with? "alpha", "beta", "release candidate"
-        add_warning "cask token contains version designation"
+      if /-(?<designation>alpha|beta|rc|release-candidate)$/ =~ cask.token
+        if cask.tap.official? && cask.tap != "homebrew/cask-versions"
+          add_warning "cask token contains version designation '#{designation}'"
+        end
       end
 
       add_warning "cask token mentions launcher" if token.end_with? "launcher"

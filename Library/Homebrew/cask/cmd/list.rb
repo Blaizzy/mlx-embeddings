@@ -31,28 +31,37 @@ module Cask
       end
 
       def run
-        output = args.any? ? provided_list : Caskroom.casks
+        self.class.list_casks(
+          *casks,
+          json:      json?,
+          one:       one?,
+          full_name: full_name?,
+          versions:  versions?,
+        )
+      end
 
-        if json?
+      def self.list_casks(*casks, json: false, one: false, full_name: false, versions: false)
+        output = if casks.any?
+          casks.each do |cask|
+            raise CaskNotInstalledError, cask unless cask.installed?
+          end
+        else
+          Caskroom.casks
+        end
+
+        if json
           puts JSON.generate(output.map(&:to_h))
-        elsif one?
+        elsif one
           puts output.map(&:to_s)
-        elsif full_name?
+        elsif full_name
           puts output.map(&:full_name).sort(&tap_and_name_comparison)
-        elsif versions?
-          puts output.map(&self.class.method(:format_versioned))
-        elsif !output.empty? && args.any?
-          puts output.map(&self.class.method(:list_artifacts))
+        elsif versions
+          puts output.map(&method(:format_versioned))
+        elsif !output.empty? && casks.any?
+          puts output.map(&method(:list_artifacts))
         elsif !output.empty?
           puts Formatter.columns(output.map(&:to_s))
         end
-      end
-
-      def provided_list
-        casks.each do |cask|
-          raise CaskNotInstalledError, cask unless cask.installed?
-        end
-        casks
       end
 
       def self.list_artifacts(cask)

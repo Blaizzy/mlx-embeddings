@@ -19,6 +19,9 @@ module RuboCop
           return
         end
 
+        @offensive_node = desc_call
+        @offense_source_range = desc_call.source_range
+
         desc = desc_call.first_argument
 
         # Check if the desc is empty.

@@ -10,11 +10,14 @@ require "pp"
 require_relative "load_path"
 
 require "rubygems"
+# Only require "core_ext" here to ensure we're only requiring the minimum of
+# what we need.
 require "active_support/core_ext/object/blank"
 require "active_support/core_ext/numeric/time"
+require "active_support/core_ext/object/try"
 require "active_support/core_ext/array/access"
-require "active_support/i18n"
-require "active_support/inflector/inflections"
+require "active_support/core_ext/string/inflections"
+require "active_support/core_ext/array/conversions"
 
 I18n.backend.available_locales # Initialize locales so they can be overwritten.
 I18n.backend.store_translations :en, support: { array: { last_word_connector: " and " } }

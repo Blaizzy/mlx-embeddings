@@ -261,9 +261,8 @@ module Homebrew
             !(versioned_formulae = formula.versioned_formulae).empty?
         versioned_aliases = formula.aliases.grep(/.@\d/)
         _, last_alias_version = versioned_formulae.map(&:name).last.split("@")
-        major, minor, = formula.version.to_s.split(".")
-        alias_name_major = "#{formula.name}@#{major}"
-        alias_name_major_minor = "#{alias_name_major}.#{minor}"
+        alias_name_major = "#{formula.name}@#{formula.version.major}"
+        alias_name_major_minor = "#{alias_name_major}.#{formula.version.minor}"
         alias_name = if last_alias_version.split(".").length == 1
           alias_name_major
         else
@@ -488,11 +487,7 @@ module Homebrew
       return unless formula.name == "postgresql"
       return unless @core_tap
 
-      major_version = formula.version
-                             .to_s
-                             .split(".")
-                             .first
-                             .to_i
+      major_version = formula.version.major.to_i
       previous_major_version = major_version - 1
       previous_formula_name = "postgresql@#{previous_major_version}"
       begin
@@ -684,12 +679,17 @@ module Homebrew
     }.freeze
 
     GITHUB_PRERELEASE_ALLOWLIST = {
+      "cbmc"         => "5.12.6",
+      "elm-format"   => "0.8.3",
       "gitless"      => "0.8.8",
+      "infrakit"     => "0.5",
+      "riff"         => "0.5.0",
       "telegram-cli" => "1.3.1",
+      "volta"        => "0.8.6",
     }.freeze
 
     # version_prefix = stable_version_string.sub(/\d+$/, "")
-    # version_prefix = stable_version_string.split(".")[0..1].join(".")
+    # version_prefix = stable.version.major_minor
 
     def audit_specs
       problem "Head-only (no stable download)" if head_only?(formula)
@@ -753,11 +753,9 @@ module Homebrew
 
       stable_version_string = stable.version.to_s
       stable_url_version = Version.parse(stable.url)
-      _, stable_url_minor_version, = stable_url_version.to_s
-                                                       .split(".", 3)
-                                                       .map(&:to_i)
+      stable_url_minor_version = stable_url_version.minor.to_i
 
-      formula_suffix = stable_version_string.split(".").last.to_i
+      formula_suffix = stable.version.patch.to_i
       throttled_rate = THROTTLED_FORMULAE[formula.name]
       if throttled_rate && formula_suffix.modulo(throttled_rate).nonzero?
         problem "should only be updated every #{throttled_rate} releases on multiples of #{throttled_rate}"
@@ -771,7 +769,7 @@ module Homebrew
 
         problem "Stable version URLs should not contain #{matched}"
       when %r{download\.gnome\.org/sources}, %r{ftp\.gnome\.org/pub/GNOME/sources}i
-        version_prefix = stable_version_string.split(".")[0..1].join(".")
+        version_prefix = stable.version.major_minor
         return if GNOME_DEVEL_ALLOWLIST[formula.name] == version_prefix
         return if stable_url_version < Version.create("1.0")
         return if stable_url_minor_version.even?
@@ -781,7 +779,7 @@ module Homebrew
         return if stable_url_minor_version.even?
 
         problem "#{stable.version} is a development release"
-      when %r{^https://github.com/([\w-]+)/([\w-]+)/}
+      when %r{^https://github.com/([\w-]+)/([\w-]+)}
         owner = Regexp.last_match(1)
         repo = Regexp.last_match(2)
         tag = url.match(%r{^https://github\.com/[\w-]+/[\w-]+/archive/([^/]+)\.(tar\.gz|zip)$})
@@ -790,10 +788,11 @@ module Homebrew
         tag ||= url.match(%r{^https://github\.com/[\w-]+/[\w-]+/releases/download/([^/]+)/})
                    .to_a
                    .second
+        tag ||= formula.stable.specs[:tag]
 
         begin
           if @online && (release = GitHub.open_api("#{GitHub::API_URL}/repos/#{owner}/#{repo}/releases/tags/#{tag}"))
-            if release["prerelease"] && !GITHUB_PRERELEASE_ALLOWLIST.include?(formula.name)
+            if release["prerelease"] && (GITHUB_PRERELEASE_ALLOWLIST[formula.name] != formula.version)
               problem "#{tag} is a GitHub prerelease"
             elsif release["draft"]
               problem "#{tag} is a GitHub draft"

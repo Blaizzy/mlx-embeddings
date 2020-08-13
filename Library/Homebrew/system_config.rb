@@ -2,7 +2,6 @@
 
 require "hardware"
 require "software_spec"
-require "rexml/document"
 require "development_tools"
 require "extend/ENV"
 

@@ -35,6 +35,6 @@ module Homebrew
     ohai "git add"
     safe_system "git", "add", SPDX::JSON_PATH
     ohai "git commit"
-    system "git", "commit", "--message", "data/spdx.json: update to #{latest_tag}"
+    system "git", "commit", "--message", "data/spdx.json: update to #{SPDX.latest_tag}"
   end
 end

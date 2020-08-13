@@ -4,10 +4,19 @@ require "version"
 
 class PkgVersion
   include Comparable
+  extend Forwardable
 
   RX = /\A(.+?)(?:_(\d+))?\z/.freeze
 
   attr_reader :version, :revision
+
+  delegate [ # rubocop:disable Layout/HashAlignment
+    :major,
+    :minor,
+    :patch,
+    :major_minor,
+    :major_minor_patch,
+  ] => :version
 
   def self.parse(path)
     _, version, revision = *path.match(RX)

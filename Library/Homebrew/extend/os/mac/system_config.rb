@@ -8,15 +8,10 @@ class SystemConfig
       # java_home doesn't exist on all macOSs; it might be missing on older versions.
       return "N/A" unless File.executable? "/usr/libexec/java_home"
 
-      out, _, status = system_command("/usr/libexec/java_home", args: ["--xml", "--failfast"], print_stderr: false)
-      return "N/A" unless status.success?
+      result = system_command("/usr/libexec/java_home", args: ["--xml", "--failfast"], print_stderr: false)
+      return "N/A" unless result.success?
 
-      javas = []
-      xml = REXML::Document.new(out)
-      REXML::XPath.each(xml, "//key[text()='JVMVersion']/following-sibling::string") do |item|
-        javas << item.text
-      end
-      javas.uniq.join(", ")
+      result.plist.map { |jvm| jvm["JVMVersion"] }.uniq.join(", ")
     end
 
     def describe_homebrew_ruby

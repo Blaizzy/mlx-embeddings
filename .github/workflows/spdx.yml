@@ -1,6 +1,6 @@
 name: Update license data
 on:
-  pull_request:
+  push:
     paths:
       - .github/workflows/spdx.yml
   schedule:

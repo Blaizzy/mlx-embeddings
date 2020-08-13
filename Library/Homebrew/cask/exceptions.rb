@@ -129,7 +129,7 @@ module Cask
     def to_s
       <<~EOS
         Cask '#{token}' requires a checksum:
-          #{Formatter.identifier("sha256 '#{actual}'")}
+          #{Formatter.identifier('sha256 "#{actual}"')}
       EOS
     end
   end

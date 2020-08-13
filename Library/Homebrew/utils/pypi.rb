@@ -13,6 +13,7 @@ module PyPI
     diffoscope
     dxpy
     molecule
+    xonsh
   ].freeze
 
   @pipgrip_installed = nil

@@ -26,6 +26,9 @@ describe Locale do
         expect { described_class.parse("zh-CN_Hans") }.to raise_error(Locale::ParserError)
         expect { described_class.parse("zhCN") }.to raise_error(Locale::ParserError)
         expect { described_class.parse("zh_Hans") }.to raise_error(Locale::ParserError)
+        expect { described_class.parse("zh-") }.to raise_error(Locale::ParserError)
+        expect { described_class.parse("ZH-CN") }.to raise_error(Locale::ParserError)
+        expect { described_class.parse("zh-cn") }.to raise_error(Locale::ParserError)
       end
     end
   end
