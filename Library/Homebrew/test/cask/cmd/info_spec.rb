@@ -35,6 +35,8 @@ describe Cask::Cmd::Info, :cask do
       From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/with-auto-updates.rb
       ==> Name
       AutoUpdates
+      ==> Description
+      None
       ==> Artifacts
       AutoUpdates.app (App)
     EOS
@@ -48,6 +50,8 @@ describe Cask::Cmd::Info, :cask do
         Not installed
         From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/local-caffeine.rb
         ==> Name
+        None
+        ==> Description
         None
         ==> Artifacts
         Caffeine.app (App)
@@ -82,6 +86,8 @@ describe Cask::Cmd::Info, :cask do
       From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/with-caveats.rb
       ==> Name
       None
+      ==> Description
+      None
       ==> Artifacts
       Caffeine.app (App)
       ==> Caveats
@@ -107,6 +113,8 @@ describe Cask::Cmd::Info, :cask do
       From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/with-conditional-caveats.rb
       ==> Name
       None
+      ==> Description
+      None
       ==> Artifacts
       Caffeine.app (App)
     EOS
@@ -121,6 +129,8 @@ describe Cask::Cmd::Info, :cask do
       Not installed
       From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/with-languages.rb
       ==> Name
+      None
+      ==> Description
       None
       ==> Languages
       zh, en-US
@@ -138,6 +148,8 @@ describe Cask::Cmd::Info, :cask do
       Not installed
       From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/without-languages.rb
       ==> Name
+      None
+      ==> Description
       None
       ==> Artifacts
       Caffeine.app (App)
@@ -167,6 +179,8 @@ describe Cask::Cmd::Info, :cask do
       ==> Names
       Docker Community Edition
       Docker CE
+      ==> Description
+      None
       ==> Artifacts
       Docker.app (App)
       ==> Analytics
@@ -178,6 +192,8 @@ describe Cask::Cmd::Info, :cask do
       ==> Names
       Docker Community Edition
       Docker CE
+      ==> Description
+      None
       ==> Artifacts
       Docker.app (App)
       ==> Analytics
