@@ -346,27 +346,6 @@ module GitHub
     prs.each { |i| puts "#{i["title"]} (#{i["html_url"]})" }
   end
 
-  def fetch_pull_requests(query, tap_full_name, state: nil)
-    issues_for_formula(query, tap_full_name: tap_full_name, state: state).select do |pr|
-      pr["html_url"].include?("/pull/") &&
-        /(^|\s)#{Regexp.quote(query)}(:|\s|$)/i =~ pr["title"]
-    end
-  rescue GitHub::RateLimitExceededError => e
-    opoo e.message
-    []
-  end
-
-  def check_for_duplicate_pull_requests(formula, tap_full_name, version)
-    # check for open requests
-    pull_requests = fetch_pull_requests(formula.name, tap_full_name, state: "open")
-
-    # if we haven't already found open requests, try for an exact match across all requests
-    pull_requests = fetch_pull_requests("#{formula.name} #{version}", tap_full_name) if pull_requests.blank?
-    return if pull_requests.blank?
-
-    pull_requests.map { |pr| { title: pr["title"], url: pr["html_url"] } }
-  end
-
   def create_fork(repo)
     url = "#{API_URL}/repos/#{repo}/forks"
     data = {}
