@@ -40,6 +40,7 @@ module Cask
         repo = repo_info(cask)
         output << repo + "\n" if repo
         output << name_info(cask)
+        output << desc_info(cask)
         language = language_info(cask)
         output << language if language
         output << artifact_info(cask) + "\n"
@@ -83,6 +84,13 @@ module Cask
         <<~EOS
           #{ohai_title((cask.name.size > 1) ? "Names" : "Name")}
           #{cask.name.empty? ? Formatter.error("None") : cask.name.join("\n")}
+        EOS
+      end
+
+      def self.desc_info(cask)
+        <<~EOS
+          #{ohai_title("Description")}
+          #{cask.desc.nil? ? Formatter.error("None") : cask.desc}
         EOS
       end
 

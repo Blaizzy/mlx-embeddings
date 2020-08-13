@@ -10,16 +10,18 @@ describe Cask::Cmd::Info, :cask do
 
   it "displays some nice info about the specified Cask" do
     expect {
-      described_class.run("local-caffeine")
+      described_class.run("local-transmission")
     }.to output(<<~EOS).to_stdout
-      local-caffeine: 1.2.3
-      https://brew.sh/
+      local-transmission: 2.61
+      https://transmissionbt.com/
       Not installed
-      From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/local-caffeine.rb
+      From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/local-transmission.rb
       ==> Name
-      None
+      Transmission
+      ==> Description
+      BitTorrent client
       ==> Artifacts
-      Caffeine.app (App)
+      Transmission.app (App)
     EOS
   end
 
@@ -33,6 +35,8 @@ describe Cask::Cmd::Info, :cask do
       From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/with-auto-updates.rb
       ==> Name
       AutoUpdates
+      ==> Description
+      None
       ==> Artifacts
       AutoUpdates.app (App)
     EOS
@@ -47,15 +51,19 @@ describe Cask::Cmd::Info, :cask do
         From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/local-caffeine.rb
         ==> Name
         None
+        ==> Description
+        None
         ==> Artifacts
         Caffeine.app (App)
 
         local-transmission: 2.61
-        https://brew.sh/
+        https://transmissionbt.com/
         Not installed
         From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/local-transmission.rb
         ==> Name
         Transmission
+        ==> Description
+        BitTorrent client
         ==> Artifacts
         Transmission.app (App)
       EOS
@@ -77,6 +85,8 @@ describe Cask::Cmd::Info, :cask do
       Not installed
       From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/with-caveats.rb
       ==> Name
+      None
+      ==> Description
       None
       ==> Artifacts
       Caffeine.app (App)
@@ -103,6 +113,8 @@ describe Cask::Cmd::Info, :cask do
       From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/with-conditional-caveats.rb
       ==> Name
       None
+      ==> Description
+      None
       ==> Artifacts
       Caffeine.app (App)
     EOS
@@ -117,6 +129,8 @@ describe Cask::Cmd::Info, :cask do
       Not installed
       From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/with-languages.rb
       ==> Name
+      None
+      ==> Description
       None
       ==> Languages
       zh, en-US
@@ -134,6 +148,8 @@ describe Cask::Cmd::Info, :cask do
       Not installed
       From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/without-languages.rb
       ==> Name
+      None
+      ==> Description
       None
       ==> Artifacts
       Caffeine.app (App)
@@ -163,6 +179,8 @@ describe Cask::Cmd::Info, :cask do
       ==> Names
       Docker Community Edition
       Docker CE
+      ==> Description
+      None
       ==> Artifacts
       Docker.app (App)
       ==> Analytics
@@ -174,6 +192,8 @@ describe Cask::Cmd::Info, :cask do
       ==> Names
       Docker Community Edition
       Docker CE
+      ==> Description
+      None
       ==> Artifacts
       Docker.app (App)
       ==> Analytics

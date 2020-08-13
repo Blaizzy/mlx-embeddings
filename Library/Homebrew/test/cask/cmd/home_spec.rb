@@ -16,7 +16,7 @@ describe Cask::Cmd::Home, :cask do
 
   it "works for multiple Casks" do
     expect(described_class).to receive(:open_url).with("https://brew.sh/")
-    expect(described_class).to receive(:open_url).with("https://brew.sh/")
+    expect(described_class).to receive(:open_url).with("https://transmissionbt.com/")
     described_class.run("local-caffeine", "local-transmission")
   end
 
