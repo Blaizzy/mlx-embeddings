@@ -794,7 +794,7 @@ module Homebrew
 
         begin
           if @online && (release = GitHub.open_api("#{GitHub::API_URL}/repos/#{owner}/#{repo}/releases/tags/#{tag}"))
-            if release["prerelease"] && !GITHUB_PRERELEASE_ALLOWLIST.include?(formula.name)
+            if release["prerelease"] && (GITHUB_PRERELEASE_ALLOWLIST[formula.name] != formula.version)
               problem "#{tag} is a GitHub prerelease"
             elsif release["draft"]
               problem "#{tag} is a GitHub draft"
