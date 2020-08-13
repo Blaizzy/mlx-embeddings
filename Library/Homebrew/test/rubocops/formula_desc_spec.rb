@@ -104,7 +104,7 @@ describe RuboCop::Cop::FormulaAudit::Desc do
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
           desc 'Foo is a foobar'
-                ^^^^ Description shouldn\'t start with the formula name.
+                ^^^ Description shouldn\'t start with the formula name.
         end
       RUBY
     end

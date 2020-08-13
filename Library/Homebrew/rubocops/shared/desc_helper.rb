@@ -61,7 +61,8 @@ module RuboCop
         end
 
         # Check if the desc starts with the formula's or cask's name.
-        problem "Description shouldn't start with the #{type} name." if regex_match_group(desc, /^#{name} /i)
+        name_regex = name.delete("-").split("").join('[\s\-]?')
+        problem "Description shouldn't start with the #{type} name." if regex_match_group(desc, /^#{name_regex}\b/i)
 
         # Check if a full stop is used at the end of a desc (apart from in the case of "etc.").
         if regex_match_group(desc, /\.$/) && !string_content(desc).end_with?("etc.")
