@@ -18,6 +18,8 @@ describe Cask::Cmd::Info, :cask do
       From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/local-transmission.rb
       ==> Name
       Transmission
+      ==> Description
+      BitTorrent client
       ==> Artifacts
       Transmission.app (App)
     EOS
@@ -56,6 +58,8 @@ describe Cask::Cmd::Info, :cask do
         From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/local-transmission.rb
         ==> Name
         Transmission
+        ==> Description
+        BitTorrent client
         ==> Artifacts
         Transmission.app (App)
       EOS

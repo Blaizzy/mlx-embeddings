@@ -4,6 +4,7 @@ cask "local-transmission" do
 
   url "file://#{TEST_FIXTURE_DIR}/cask/transmission-2.61.dmg"
   name "Transmission"
+  desc "BitTorrent client"
   homepage "https://transmissionbt.com/"
 
   app "Transmission.app"
