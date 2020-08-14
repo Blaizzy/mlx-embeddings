@@ -350,6 +350,11 @@ module Homebrew
       "LGPL-3.0" => ["LGPL-3.0-only", "LGPL-3.0-or-later"],
     }.freeze
 
+    PERMITTED_FORMULA_LICENSE_MISMATCHES = {
+      "cmockery" => "0.1.2",
+      "scw@1"    => "1.20",
+    }.freeze
+
     def audit_license
       if formula.license.present?
         non_standard_licenses = formula.license.map do |license|
@@ -380,12 +385,13 @@ module Homebrew
 
         return unless @online
 
-        user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @new_formula
+        user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*})
         return if user.blank?
 
         github_license = GitHub.get_repo_license(user, repo)
         return if github_license && (formula.license + ["NOASSERTION"]).include?(github_license)
         return if PERMITTED_LICENSE_MISMATCHES[github_license]&.any? { |license| formula.license.include? license }
+        return if PERMITTED_FORMULA_LICENSE_MISMATCHES[formula.name] == formula.version
 
         problem "Formula license #{formula.license} does not match GitHub license #{Array(github_license)}."
 
