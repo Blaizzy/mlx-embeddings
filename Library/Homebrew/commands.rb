@@ -2,6 +2,9 @@
 
 require "cask/cmd"
 
+# Helper functions for commands.
+#
+# @api private
 module Commands
   module_function
 
