@@ -105,8 +105,10 @@ module Homebrew
         end
       end
     end
-    origin_branch = Utils.popen_read("git", "-C", formula.tap.path.to_s, "symbolic-ref", "-q", "--short",
-                                     "refs/remotes/origin/HEAD").chomp.presence
+    if formula.tap
+      origin_branch = Utils.popen_read("git", "-C", formula.tap.path.to_s, "symbolic-ref", "-q", "--short",
+                                       "refs/remotes/origin/HEAD").chomp.presence
+    end
     origin_branch ||= "origin/master"
     [formula.tap&.full_name, origin_branch, "-"]
   end
