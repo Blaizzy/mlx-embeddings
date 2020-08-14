@@ -26,15 +26,15 @@ find_ruby() {
   fi
 }
 
-usable_ruby() {
+unusable_ruby() {
   if [[ -n "$HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH" ]]
   then
-    return 0
+    return 1
   elif [[ -n "$HOMEBREW_RUBY_PATH" && -z "$HOMEBREW_FORCE_VENDOR_RUBY" ]] && test_ruby "$HOMEBREW_RUBY_PATH"
   then
-    return 0
-  else
     return 1
+  else
+    return 0
   fi
 }
 
@@ -49,19 +49,20 @@ setup-ruby-path() {
   # also needs to be changed.
   local required_ruby_version="2.6"
   local ruby_exec
-  local advice="
-If there's no Homebrew Portable Ruby available for your processor:
-- install Ruby $required_ruby_version with your system package manager (or rbenv/ruby-build)
-- make it first in your PATH
-- try again
-"
   local upgrade_fail
   local install_fail
+
   if [[ -n $HOMEBREW_MACOS ]]
   then
     upgrade_fail="Failed to upgrade Homebrew Portable Ruby!"
     install_fail="Failed to install Homebrew Portable Ruby (and your system version is too old)!"
   else
+    local advice="
+If there's no Homebrew Portable Ruby available for your processor:
+- install Ruby $required_ruby_version with your system package manager (or rbenv/ruby-build)
+- make it first in your PATH
+- try again
+"
     upgrade_fail="Failed to upgrade Homebrew Portable Ruby!$advice"
     install_fail="Failed to install Homebrew Portable Ruby and cannot find another Ruby $required_ruby_version!$advice"
   fi
@@ -75,7 +76,10 @@ If there's no Homebrew Portable Ruby available for your processor:
 
   unset HOMEBREW_RUBY_PATH
 
-  [[ "$HOMEBREW_COMMAND" == "vendor-install" ]] && return 0
+  if [[ "$HOMEBREW_COMMAND" == "vendor-install" ]]
+  then
+    return 0
+  fi
 
   if [[ -x "$vendor_ruby_path" ]]
   then
@@ -87,8 +91,7 @@ If there's no Homebrew Portable Ruby available for your processor:
     fi
   else
     HOMEBREW_RUBY_PATH=$(find_ruby)
-
-    if [[ -z "$HOMEBREW_RUBY_PATH" || -n "$HOMEBREW_FORCE_VENDOR_RUBY" ]] || ! usable_ruby
+    if [[ -z "$HOMEBREW_RUBY_PATH" || -n "$HOMEBREW_FORCE_VENDOR_RUBY" ]] || unusable_ruby
     then
       brew vendor-install ruby || odie "$install_fail"
       HOMEBREW_RUBY_PATH="$vendor_ruby_path"
