@@ -3,6 +3,9 @@
 require "delegate"
 require "cask_dependent"
 
+# A collection of dependencies.
+#
+# @api private
 class Dependencies < DelegateClass(Array)
   def initialize(*args)
     super(args)
@@ -35,6 +38,9 @@ class Dependencies < DelegateClass(Array)
   end
 end
 
+# A collection of requirements.
+#
+# @api private
 class Requirements < DelegateClass(Set)
   def initialize(*args)
     super(Set.new(args))
