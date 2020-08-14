@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "cask/artifact/relocated"
+
 module Cask
   class Cmd
     class List < AbstractCommand
@@ -48,17 +50,23 @@ module Cask
         elsif versions
           puts output.map(&method(:format_versioned))
         elsif !output.empty? && casks.any?
-          puts output.map(&method(:list_artifacts))
+          output.map(&method(:list_artifacts))
         elsif !output.empty?
           puts Formatter.columns(output.map(&:to_s))
         end
       end
 
       def self.list_artifacts(cask)
-        cask.artifacts.group_by(&:class).each do |klass, artifacts|
-          next unless klass.respond_to?(:english_description)
+        cask.artifacts.group_by(&:class).sort_by { |klass, _| klass.english_name }.each do |klass, artifacts|
+          next if [Artifact::Uninstall, Artifact::Zap].include? klass
 
-          return "==> #{klass.english_description}", artifacts.map(&:summarize_installed)
+          ohai klass.english_name
+          artifacts.each do |artifact|
+            puts artifact.summarize_installed if artifact.respond_to?(:summarize_installed)
+            next if artifact.respond_to?(:summarize_installed)
+
+            puts artifact
+          end
         end
       end
 

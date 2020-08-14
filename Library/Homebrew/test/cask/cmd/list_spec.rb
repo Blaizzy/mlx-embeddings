@@ -126,9 +126,9 @@ describe Cask::Cmd::List, :cask do
       expect {
         described_class.run("local-transmission", "local-caffeine")
       }.to output(<<~EOS).to_stdout
-        ==> Apps
+        ==> App
         #{transmission.config.appdir.join("Transmission.app")} (#{transmission.config.appdir.join("Transmission.app").abv})
-        ==> Apps
+        ==> App
         Missing App: #{caffeine.config.appdir.join("Caffeine.app")}
       EOS
     end
