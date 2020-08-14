@@ -1237,12 +1237,6 @@ These options are applicable across multiple subcommands.
 
 ## OFFICIAL EXTERNAL COMMANDS
 
-### `cask` *`subcommand`*
-
-Install macOS applications distributed as binaries. See `brew-cask`(1).
-
-**Homebrew/homebrew-cask**: <https://github.com/Homebrew/homebrew-cask>
-
 ### `bundle` [*`subcommand`*]
 
 Bundler for non-Ruby dependencies from Homebrew, Homebrew Cask, Mac App Store and Whalebrew.
@@ -1674,7 +1668,7 @@ Homebrew Documentation: <https://docs.brew.sh>
 
 Homebrew API: <https://rubydoc.brew.sh>
 
-`brew-cask`(1), `git`(1), `git-log`(1)
+`git`(1), `git-log`(1)
 
 ## AUTHORS
 
