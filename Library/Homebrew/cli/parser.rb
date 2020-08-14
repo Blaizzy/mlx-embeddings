@@ -73,6 +73,12 @@ module Homebrew
         description = option_to_description(*names) if description.nil?
         process_option(*names, description)
         @parser.public_send(method, *names, *wrap_option_desc(description)) do |value|
+          value = if names.any? { |name| name.start_with?("--[no-]") }
+            value
+          else
+            true
+          end
+
           set_switch(*names, value: value, from: :args)
         end
 
