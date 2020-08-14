@@ -3,6 +3,8 @@
 require "dependable"
 
 # A dependency on another Homebrew formula.
+#
+# @api private
 class Dependency
   extend Forwardable
   include Dependable
@@ -10,6 +12,7 @@ class Dependency
   attr_reader :name, :tags, :env_proc, :option_names
 
   DEFAULT_ENV_PROC = proc {}.freeze
+  private_constant :DEFAULT_ENV_PROC
 
   def initialize(name, tags = [], env_proc = DEFAULT_ENV_PROC, option_names = [name])
     raise ArgumentError, "Dependency must have a name!" unless name
@@ -176,6 +179,7 @@ class Dependency
   end
 end
 
+# A dependency on another Homebrew formula in a specific tap.
 class TapDependency < Dependency
   attr_reader :tap
 
