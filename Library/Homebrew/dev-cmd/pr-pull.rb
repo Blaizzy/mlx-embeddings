@@ -28,6 +28,9 @@ module Homebrew
              description: "Print what would be done rather than doing it."
       switch "--clean",
              description: "Do not amend the commits from pull requests."
+      switch "--keep-old",
+             description: "If the formula specifies a rebuild version, " \
+                          "attempt to preserve its value in the generated DSL."
       switch "--branch-okay",
              description: "Do not warn if pulling to a branch besides master (useful for testing)."
       switch "--resolve",
@@ -262,8 +265,9 @@ module Homebrew
           upload_args << "--verbose" if args.verbose?
           upload_args << "--no-publish" if args.no_publish?
           upload_args << "--dry-run" if args.dry_run?
+          upload_args << "--keep-old" if args.keep_old?
           upload_args << "--warn-on-upload-failure" if args.warn_on_upload_failure?
-          upload_args << "--root_url=#{args.root_url}" if args.root_url
+          upload_args << "--root-url=#{args.root_url}" if args.root_url
           upload_args << "--bintray-org=#{bintray_org}"
           safe_system HOMEBREW_BREW_FILE, *upload_args
         end

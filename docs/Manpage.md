@@ -1034,6 +1034,8 @@ Requires write access to the repository.
   Print what would be done rather than doing it.
 * `--clean`:
   Do not amend the commits from pull requests.
+* `--keep-old`:
+  If the formula specifies a rebuild version, attempt to preserve its value in the generated DSL.
 * `--branch-okay`:
   Do not warn if pulling to a branch besides master (useful for testing).
 * `--resolve`:
