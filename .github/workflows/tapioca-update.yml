@@ -54,4 +54,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
         run: |
           cd "$GITHUB_WORKSPACE/Library/Homebrew"
-          hub pull-request -m "$(git log -1 --format='%s')"
+          hub pull-request -m "$(git log -1 --format='%s%n%n%b')"
