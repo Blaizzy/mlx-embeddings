@@ -45,7 +45,7 @@ jobs:
       - name: Push commits
         uses: Homebrew/actions/git-try-push@master
         with:
-          token: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           branch: tapioca-update
           directory: Library/Homebrew/
 
