@@ -44,10 +44,10 @@ module Cask
                 "source '#{source}' is not there."
         end
 
-        if target.exist? && !target.symlink?
+        if target.exist?
           raise CaskError,
-                "It seems there is already #{self.class.english_article} " \
-                "#{self.class.english_name} at '#{target}'; not linking."
+                "It seems there already exists #{self.class.english_article} " \
+                "#{self.class.english_name} at '#{target}'; not overwriting."
         end
 
         ohai "Linking #{self.class.english_name} '#{source.basename}' to '#{target}'."
