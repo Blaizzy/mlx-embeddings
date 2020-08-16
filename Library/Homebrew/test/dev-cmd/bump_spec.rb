@@ -11,7 +11,7 @@ describe "brew bump" do
     it "returns data for valid specified formula" do
       install_test_formula "testball"
 
-      expect { brew "bump", "--formula=testball" }
+      expect { brew "bump", "testball" }
         .to output.to_stdout
         .and not_to_output.to_stderr
         .and be_a_success

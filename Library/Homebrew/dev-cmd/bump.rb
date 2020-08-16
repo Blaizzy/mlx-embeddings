@@ -8,13 +8,11 @@ module Homebrew
   def bump_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `bump` [<options>]
+        `bump` [<options>] [<formula>]
 
         Display out-of-date brew formulae and the latest version available.
         Also displays whether a pull request has been opened with the URL.
       EOS
-      flag "--formula=",
-           description: "Return results for package by name."
       flag "--limit=",
            description: "Limit number of package results returned."
       switch :verbose
@@ -25,7 +23,7 @@ module Homebrew
   def bump
     args = bump_args.parse
 
-    requested_formula = args.formula
+    requested_formula = args.formulae.first.to_s
     requested_limit = args.limit.to_i if args.limit.present?
 
     raise FormulaUnavailableError, requested_formula if requested_formula && !validate_formula(requested_formula)

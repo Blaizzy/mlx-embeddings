@@ -49,6 +49,7 @@ module Repology
     end
 
     puts "#{outdated_packages.size} outdated #{"package".pluralize(outdated_packages.size)} found"
+    puts
 
     outdated_packages
   end
@@ -90,7 +91,7 @@ module Repology
     pull_requests = GitHub.fetch_pull_requests(formula_name, tap_full_name, state: "open")
 
     if pull_requests.try(:any?)
-      pull_requests = pull_requests.map { |pr| "#{pr["title"]} (#{Formatter.url(pr["url"])})" }.join(", ")
+      pull_requests = pull_requests.map { |pr| "#{pr["title"]} (#{Formatter.url(pr["html_url"])})" }.join(", ")
     end
 
     pull_requests = "None" if pull_requests.empty?

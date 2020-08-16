@@ -727,13 +727,11 @@ at its original value, while `--no-rebuild` will remove it.
 * `--root-url`:
   Use the specified *`URL`* as the root of the bottle's URL instead of Homebrew's default.
 
-### `bump` [*`options`*]
+### `bump` [*`options`*] [*`formula`*]
 
 Display out-of-date brew formulae and the latest version available. Also
 displays whether a pull request has been opened with the URL.
 
-* `--formula`:
-  Return results for package by name.
 * `--limit`:
   Limit number of package results returned.
 
@@ -1219,21 +1217,17 @@ flags which will help find keg-only dependencies like `openssl`, `icu4c`, etc.
   Read the `Brewfile` from this location. Use `--file=-` to pipe to stdin/stdout.
 * `--global`:
   Read the `Brewfile` from `~/.Brewfile`.
-* `-v`, `--verbose`:
-  `install` prints output from commands as they are run. `check` lists all missing dependencies.
 * `--no-upgrade`:
   `install` won't run `brew upgrade` on outdated dependencies. Note they may still be upgraded by `brew install` if needed.
-* `-f`, `--force`:
-  `dump` overwrites an existing `Brewfile`. `cleanup` actually performs its cleanup operations.
 * `--no-lock`:
   `install` won't output a `Brewfile.lock.json`.
 * `--all`:
   `list` all dependencies.
-* `--formula`:
+* `--brews`:
   `list` Homebrew dependencies.
-* `--cask`:
+* `--casks`:
   `list` Homebrew Cask dependencies.
-* `--tap`:
+* `--taps`:
   `list` tap dependencies.
 * `--mas`:
   `list` Mac App Store dependencies.
@@ -1306,8 +1300,6 @@ and Linux workers.
   use the `git` repository of the given tap. Defaults to the core tap for syntax checking.
 * `--fail-fast`:
   immediately exit on a failing step.
-* `-v`, `--verbose`:
-  print test step output in real time. Has the side effect of passing output as raw bytes instead of re-encoding in UTF-8.
 * `--test-default-formula`:
   use a default testing formula when not building a tap and no other formulae are specified.
 * `--bintray-org`:
