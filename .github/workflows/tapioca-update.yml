@@ -45,13 +45,13 @@ jobs:
       - name: Push commits
         uses: Homebrew/actions/git-try-push@master
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
           branch: tapioca-update
           directory: Library/Homebrew/
 
       - name: Open a PR
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
         run: |
           cd "$GITHUB_WORKSPACE/Library/Homebrew"
           hub pull-request -m "$(git log -1 --format='%s')"
