@@ -865,7 +865,7 @@ nor vice versa. It must use whichever style specification the formula already us
 * `-f`, `--force`:
   Ignore duplicate open PRs. Remove all mirrors if --mirror= was not specified.
 
-### `bump-revision` [*`options`*] *`formula`*
+### `bump-revision` [*`options`*] *`formula`* [*`formula`* ...]
 
 Create a commit to increment the revision of *`formula`*. If no revision is
 present, "revision 1" will be added.
