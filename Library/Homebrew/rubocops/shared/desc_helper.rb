@@ -8,6 +8,8 @@ module RuboCop
     module DescHelper
       include HelperFunctions
 
+      MAX_DESC_LENGTH = 80
+
       VALID_LOWERCASE_WORDS = %w[
         iOS
         iPhone
@@ -27,8 +29,8 @@ module RuboCop
         desc = desc_call.first_argument
 
         # Check if the desc is empty.
-        pure_desc_length = string_content(desc).length
-        if pure_desc_length.zero?
+        desc_length = string_content(desc).length
+        if desc_length.zero?
           problem "The desc (description) should not be an empty string."
           return
         end
@@ -64,13 +66,11 @@ module RuboCop
           problem "Description shouldn't end with a full stop."
         end
 
-        # Check if the desc length exceeds 80 characters.
-        desc_length = "#{name}: #{string_content(desc)}".length
-        max_desc_length = 80
-        return if desc_length <= max_desc_length
+        # Check if the desc length exceeds maximum length.
+        return if desc_length <= MAX_DESC_LENGTH
 
-        problem "Description is too long. \"name: desc\" should be less than #{max_desc_length} characters. " \
-                "The current combined length is #{desc_length}."
+        problem "Description is too long. It should be less than #{MAX_DESC_LENGTH} characters. " \
+                "The current length is #{desc_length}."
       end
 
       def autocorrect_desc(node, name)
