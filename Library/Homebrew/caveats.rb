@@ -2,6 +2,9 @@
 
 require "language/python"
 
+# A formula's caveats.
+#
+# @api private
 class Caveats
   extend Forwardable
 
