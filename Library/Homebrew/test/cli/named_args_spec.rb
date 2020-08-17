@@ -99,7 +99,6 @@ describe Homebrew::CLI::NamedArgs do
       named_args = described_class.new("foo", "baz")
       allow(named_args).to receive(:resolve_keg).and_call_original
       allow(named_args).to receive(:resolve_keg).with("foo").and_return foo_keg
-
       stub_cask_loader baz, call_original: true
 
       kegs, casks = named_args.to_kegs_to_casks
