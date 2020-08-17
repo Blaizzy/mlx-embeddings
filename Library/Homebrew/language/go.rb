@@ -3,6 +3,9 @@
 require "resource"
 
 module Language
+  # Helper functions for Go formulae.
+  #
+  # @api public
   module Go
     # Given a set of resources, stages them to a gopath for
     # building go software.
