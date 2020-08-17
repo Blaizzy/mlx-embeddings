@@ -294,7 +294,10 @@ module Homebrew
         "",
       ]
     end
-    new_contents = inreplace_pairs(formula.path, replacement_pairs.uniq.compact, args: args)
+    new_contents = Utils::Inreplace.inreplace_pairs(formula.path,
+                                                    replacement_pairs.uniq.compact,
+                                                    read_only_run: read_only_run,
+                                                    silent:        args.quiet?)
 
     new_formula_version = formula_version(formula, requested_spec, new_contents)
 
@@ -460,34 +463,6 @@ module Homebrew
     end
     username = response.fetch("owner").fetch("login")
     [remote_url, username]
-  end
-
-  def inreplace_pairs(path, replacement_pairs, args:)
-    read_only_run = args.dry_run? && !args.write?
-    if read_only_run
-      str = path.open("r") { |f| Formulary.ensure_utf8_encoding(f).read }
-      contents = StringInreplaceExtension.new(str)
-      replacement_pairs.each do |old, new|
-        ohai "replace #{old.inspect} with #{new.inspect}" unless args.quiet?
-        raise "No old value for new value #{new}! Did you pass the wrong arguments?" unless old
-
-        contents.gsub!(old, new)
-      end
-      raise Utils::InreplaceError, path => contents.errors unless contents.errors.empty?
-
-      path.atomic_write(contents.inreplace_string) if args.write?
-      contents.inreplace_string
-    else
-      Utils::Inreplace.inreplace(path) do |s|
-        replacement_pairs.each do |old, new|
-          ohai "replace #{old.inspect} with #{new.inspect}" unless args.quiet?
-          raise "No old value for new value #{new}! Did you pass the wrong arguments?" unless old
-
-          s.gsub!(old, new)
-        end
-      end
-      path.open("r") { |f| Formulary.ensure_utf8_encoding(f).read }
-    end
   end
 
   def formula_version(formula, spec, contents = nil)
