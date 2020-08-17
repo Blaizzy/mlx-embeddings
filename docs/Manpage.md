@@ -819,8 +819,8 @@ value, while `--no-rebuild` will remove it.
 
 ### `bump` [*`options`*] [*`formula`*]
 
-Display out-of-date brew formulae and the latest version available. Also
-displays whether a pull request has been opened with the URL.
+Display out-of-date brew formulae and the latest version available.
+Also displays whether a pull request has been opened with the URL.
 
 * `--limit`:
   Limit number of package results returned.
