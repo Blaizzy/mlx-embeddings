@@ -80,12 +80,12 @@ module Homebrew
 
     Cask::Cmd::Reinstall.reinstall_casks(
       *casks,
-      binaries:       args.binaries?,
+      binaries:       EnvConfig.cask_opts_binaries?,
       verbose:        args.verbose?,
       force:          args.force?,
-      require_sha:    args.require_sha?,
+      require_sha:    EnvConfig.cask_opts_require_sha?,
       skip_cask_deps: args.skip_cask_deps?,
-      quarantine:     args.quarantine?,
+      quarantine:     EnvConfig.cask_opts_quarantine?,
     )
   end
 end

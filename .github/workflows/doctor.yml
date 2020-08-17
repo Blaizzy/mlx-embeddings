@@ -25,12 +25,9 @@ jobs:
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
 
-      - name: Run brew test-bot --only-cleanup-before
-        run: brew test-bot --only-cleanup-before
+      - run: brew test-bot --only-cleanup-before
 
-      - name: Run brew test-bot --only-setup
-        run: brew test-bot --only-setup
+      - run: brew test-bot --only-setup
 
-      - name: Run brew test-bot --only-cleanup-after
+      - run: brew test-bot --only-cleanup-after
         if: always()
-        run: brew test-bot --only-cleanup-after

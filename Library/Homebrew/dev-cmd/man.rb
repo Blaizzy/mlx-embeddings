@@ -51,9 +51,6 @@ module Homebrew
     markup = build_man_page
     convert_man_page(markup, TARGET_DOC_PATH/"Manpage.md", preserve_date: preserve_date)
     convert_man_page(markup, TARGET_MAN_PATH/"brew.1", preserve_date: preserve_date)
-
-    cask_markup = (SOURCE_PATH/"brew-cask.1.md").read
-    convert_man_page(cask_markup, TARGET_MAN_PATH/"brew-cask.1", preserve_date: preserve_date)
   end
 
   def build_man_page

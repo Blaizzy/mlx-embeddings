@@ -3,11 +3,10 @@
 require "optparse"
 require "shellwords"
 
+require "cli/parser"
 require "extend/optparse"
 
 require "cask/config"
-
-require "cask/cmd/options"
 
 require "cask/cmd/abstract_command"
 require "cask/cmd/--cache"
@@ -48,33 +47,87 @@ module Cask
       "dr"       => "doctor",
     }.freeze
 
-    include Options
+    def self.description
+      max_command_len = Cmd.commands.map(&:length).max
 
-    option "--appdir=PATH",               ->(value) { Config.global.appdir               = value }
-    option "--colorpickerdir=PATH",       ->(value) { Config.global.colorpickerdir       = value }
-    option "--prefpanedir=PATH",          ->(value) { Config.global.prefpanedir          = value }
-    option "--qlplugindir=PATH",          ->(value) { Config.global.qlplugindir          = value }
-    option "--mdimporterdir=PATH",        ->(value) { Config.global.mdimporterdir        = value }
-    option "--dictionarydir=PATH",        ->(value) { Config.global.dictionarydir        = value }
-    option "--fontdir=PATH",              ->(value) { Config.global.fontdir              = value }
-    option "--servicedir=PATH",           ->(value) { Config.global.servicedir           = value }
-    option "--input_methoddir=PATH",      ->(value) { Config.global.input_methoddir      = value }
-    option "--internet_plugindir=PATH",   ->(value) { Config.global.internet_plugindir   = value }
-    option "--audio_unit_plugindir=PATH", ->(value) { Config.global.audio_unit_plugindir = value }
-    option "--vst_plugindir=PATH",        ->(value) { Config.global.vst_plugindir        = value }
-    option "--vst3_plugindir=PATH",       ->(value) { Config.global.vst3_plugindir       = value }
-    option "--screen_saverdir=PATH",      ->(value) { Config.global.screen_saverdir      = value }
+      <<~EOS +
+        Homebrew Cask provides a friendly CLI workflow for the administration of macOS applications distributed as binaries.
 
-    option "--help", :help, false
+        Commands:
+      EOS
+        Cmd.command_classes
+           .select(&:visible?)
+           .map do |klass|
+             "  - #{"`#{klass.command_name}`".ljust(max_command_len + 2)}  #{klass.short_description}\n"
+           end
+           .join +
+        "\nSee also: `man brew`"
+    end
 
-    option "--language=a,b,c", ->(value) { Config.global.languages = value }
+    def self.parser(&block)
+      Homebrew::CLI::Parser.new do
+        if block_given?
+          instance_eval(&block)
+        else
+          usage_banner <<~EOS
+            `cask` <command> [<options>] [<cask>]
 
-    # override default handling of --version
-    option "--version", ->(*) { raise OptionParser::InvalidOption }
+            #{Cmd.description}
+          EOS
+        end
+
+        flag "--appdir=",
+             description: "Target location for Applications. " \
+                          "Default: `#{Config::DEFAULT_DIRS[:appdir]}`"
+        flag "--colorpickerdir=",
+             description: "Target location for Color Pickers. " \
+                          "Default: `#{Config::DEFAULT_DIRS[:colorpickerdir]}`"
+        flag "--prefpanedir=",
+             description: "Target location for Preference Panes. " \
+                          "Default: `#{Config::DEFAULT_DIRS[:prefpanedir]}`"
+        flag "--qlplugindir=",
+             description: "Target location for QuickLook Plugins. " \
+                          "Default: `#{Config::DEFAULT_DIRS[:qlplugindir]}`"
+        flag "--mdimporterdir=",
+             description: "Target location for Spotlight Plugins. " \
+                          "Default: `#{Config::DEFAULT_DIRS[:mdimporterdir]}`"
+        flag "--dictionarydir=",
+             description: "Target location for Dictionaries. " \
+                          "Default: `#{Config::DEFAULT_DIRS[:dictionarydir]}`"
+        flag "--fontdir=",
+             description: "Target location for Fonts. " \
+                          "Default: `#{Config::DEFAULT_DIRS[:fontdir]}`"
+        flag "--servicedir=",
+             description: "Target location for Services. " \
+                          "Default: `#{Config::DEFAULT_DIRS[:servicedir]}`"
+        flag "--input_methoddir=",
+             description: "Target location for Input Methods. " \
+                          "Default: `#{Config::DEFAULT_DIRS[:input_methoddir]}`"
+        flag "--internet_plugindir=",
+             description: "Target location for Internet Plugins. " \
+                          "Default: `#{Config::DEFAULT_DIRS[:internet_plugindir]}`"
+        flag "--audio_unit_plugindir=",
+             description: "Target location for Audio Unit Plugins. " \
+                          "Default: `#{Config::DEFAULT_DIRS[:audio_unit_plugindir]}`"
+        flag "--vst_plugindir=",
+             description: "Target location for VST Plugins. " \
+                          "Default: `#{Config::DEFAULT_DIRS[:vst_plugindir]}`"
+        flag "--vst3_plugindir=",
+             description: "Target location for VST3 Plugins. " \
+                          "Default: `#{Config::DEFAULT_DIRS[:vst3_plugindir]}`"
+        flag "--screen_saverdir=",
+             description: "Target location for Screen Savers. " \
+                          "Default: `#{Config::DEFAULT_DIRS[:screen_saverdir]}`"
+        comma_array "--language",
+                    description: "Set language of the Cask to install. The first matching " \
+                                 "language is used, otherwise the default language on the Cask. " \
+                                 "The default value is the `language of your system`"
+      end
+    end
 
     def self.command_classes
       @command_classes ||= constants.map(&method(:const_get))
-                                    .select { |klass| klass.respond_to?(:run) }
+                                    .select { |klass| klass.is_a?(Class) && klass < AbstractCommand }
                                     .reject(&:abstract?)
                                     .sort_by(&:command_name)
     end
@@ -98,7 +151,7 @@ module Cask
     end
 
     def initialize(*args)
-      @args = process_options(*args)
+      @argv = args
     end
 
     def find_external_command(command)
@@ -143,83 +196,31 @@ module Cask
     end
 
     def run
-      MacOS.full_version = ENV["MACOS_VERSION"] unless ENV["MACOS_VERSION"].nil?
+      argv = @argv
+
+      args = self.class.parser.parse(argv, ignore_invalid_options: true)
+
+      Config::DEFAULT_DIRS.each_key do |name|
+        Config.global.public_send(:"#{name}=", args[name]) if args[name]
+      end
+
+      Config.global.languages = args.language if args.language
+
       Tap.default_cask_tap.install unless Tap.default_cask_tap.installed?
 
-      args = @args.dup
-      command, args = detect_internal_command(*args) || detect_external_command(*args) || [NullCommand.new, args]
+      command, argv = detect_internal_command(*argv) ||
+                      detect_external_command(*argv) ||
+                      [args.remaining.empty? ? NullCommand : UnknownSubcommand.new(args.remaining.first), argv]
 
-      if help?
-        Help.new(command.command_name).run
+      if args.help?
+        puts command.help
       else
-        command.run(*args)
+        command.run(*argv)
       end
-    rescue CaskError, MethodDeprecatedError, ArgumentError, OptionParser::InvalidOption => e
+    rescue CaskError, MethodDeprecatedError, ArgumentError => e
       onoe e.message
-      $stderr.puts e.backtrace if debug?
+      $stderr.puts e.backtrace if args.debug?
       exit 1
-    rescue StandardError, ScriptError, NoMemoryError => e
-      onoe e.message
-      $stderr.puts Utils.error_message_with_suggestions
-      $stderr.puts e.backtrace
-      exit 1
-    end
-
-    def self.nice_listing(cask_list)
-      cask_taps = {}
-      cask_list.each do |c|
-        user, repo, token = c.split "/"
-        repo.sub!(/^homebrew-/i, "")
-        cask_taps[token] ||= []
-        cask_taps[token].push "#{user}/#{repo}"
-      end
-      list = []
-      cask_taps.each do |token, taps|
-        if taps.length == 1
-          list.push token
-        else
-          taps.each { |r| list.push [r, token].join "/" }
-        end
-      end
-      list.sort
-    end
-
-    def process_options(*args)
-      non_options = []
-
-      if idx = args.index("--")
-        non_options += args.drop(idx)
-        args = args.first(idx)
-      end
-
-      exclude_regex = /^--#{Regexp.union(*Config::DEFAULT_DIRS.keys.map(&Regexp.public_method(:escape)))}=/
-      cask_opts = Shellwords.shellsplit(ENV.fetch("HOMEBREW_CASK_OPTS", ""))
-                            .reject { |arg| arg.match?(exclude_regex) }
-
-      all_args = cask_opts + args
-
-      i = 0
-      remaining = []
-
-      while i < all_args.count
-        begin
-          arg = all_args[i]
-
-          remaining << arg unless process_arguments([arg]).empty?
-        rescue OptionParser::MissingArgument
-          raise if i + 1 >= all_args.count
-
-          args = all_args[i..(i + 1)]
-          process_arguments(args)
-          i += 1
-        rescue OptionParser::InvalidOption
-          remaining << arg
-        end
-
-        i += 1
-      end
-
-      remaining + non_options
     end
 
     class ExternalRubyCommand
@@ -229,15 +230,25 @@ module Cask
       end
 
       def run(*args)
+        command_class&.run(*args)
+      end
+
+      def help
+        command_class&.help
+      end
+
+      private
+
+      def command_class
+        return @command_class if defined?(@command_class)
+
         require @path
 
-        klass = begin
+        @command_class = begin
           Cmd.const_get(@command_name)
         rescue NameError
-          return
+          nil
         end
-
-        klass.run(*args)
       end
     end
 
@@ -246,25 +257,36 @@ module Cask
         @path = path
       end
 
-      def run(*)
-        exec @path, *ARGV[1..]
+      def run(*argv)
+        exec @path, *argv
+      end
+
+      def help
+        exec @path, "--help"
       end
     end
 
-    class NullCommand
-      def run(*args)
-        if args.empty?
-          ofail "No subcommand given.\n"
-        else
-          ofail "Unknown subcommand: #{args.first}"
-        end
+    class UnknownSubcommand
+      def initialize(command_name)
+        @command_name = command_name
+      end
 
-        $stderr.puts
-        $stderr.puts Help.usage
+      def run(*)
+        raise UsageError, "Subcommand `#{@command_name}` does not exist."
       end
 
       def help
         run
+      end
+    end
+
+    class NullCommand
+      def self.run(*)
+        raise UsageError, "No subcommand given."
+      end
+
+      def self.help
+        Cmd.parser.generate_help_text
       end
     end
   end

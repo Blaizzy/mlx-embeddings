@@ -12,6 +12,7 @@ module PyPI
     cloudformation-cli
     diffoscope
     dxpy
+    ipython
     molecule
     xonsh
   ].freeze

@@ -1,42 +1,34 @@
 # frozen_string_literal: true
 
+require "cask/artifact/relocated"
+
 module Cask
   class Cmd
     class List < AbstractCommand
-      option "-1",             :one, false
-      option "--versions",     :versions, false
-      option "--full-name",    :full_name, false
-      option "--json",         :json, false
-
-      def self.usage
-        <<~EOS
-          `cask list`, `cask ls` [<options>] [<casks>]
-
-          -1          - Force output to be one entry per line.
-                        This is the default when output is not to a terminal.
-          --versions  - Show the version number for installed formulae, or only the specified
-                        casks if <casks> are provided.
-          --full-name - Print casks with fully-qualified names.
-          --json      - Print a JSON representation of <cask>. See the docs for examples of using the JSON
-                        output: <https://docs.brew.sh/Querying-Brew>
-
-          List all installed casks.
-
-          If <casks> are provided, limit information to just those casks.
-        EOS
+      def self.description
+        "Lists installed casks or the casks provided in the arguments."
       end
 
-      def self.help
-        "lists installed Casks or the casks provided in the arguments"
+      def self.parser
+        super do
+          switch "-1",
+                 description: "Force output to be one entry per line."
+          switch "--versions",
+                 description: "Show the version number the listed casks."
+          switch "--full-name",
+                 description: "Print casks with fully-qualified names."
+          switch "--json",
+                 description: "Print a JSON representation of the listed casks. "
+        end
       end
 
       def run
         self.class.list_casks(
           *casks,
-          json:      json?,
-          one:       one?,
-          full_name: full_name?,
-          versions:  versions?,
+          json:      args.json?,
+          one:       args.public_send(:'1?'),
+          full_name: args.full_name?,
+          versions:  args.versions?,
         )
       end
 
@@ -58,17 +50,23 @@ module Cask
         elsif versions
           puts output.map(&method(:format_versioned))
         elsif !output.empty? && casks.any?
-          puts output.map(&method(:list_artifacts))
+          output.map(&method(:list_artifacts))
         elsif !output.empty?
           puts Formatter.columns(output.map(&:to_s))
         end
       end
 
       def self.list_artifacts(cask)
-        cask.artifacts.group_by(&:class).each do |klass, artifacts|
-          next unless klass.respond_to?(:english_description)
+        cask.artifacts.group_by(&:class).sort_by { |klass, _| klass.english_name }.each do |klass, artifacts|
+          next if [Artifact::Uninstall, Artifact::Zap].include? klass
 
-          return "==> #{klass.english_description}", artifacts.map(&:summarize_installed)
+          ohai klass.english_name
+          artifacts.each do |artifact|
+            puts artifact.summarize_installed if artifact.respond_to?(:summarize_installed)
+            next if artifact.respond_to?(:summarize_installed)
+
+            puts artifact
+          end
         end
       end
 

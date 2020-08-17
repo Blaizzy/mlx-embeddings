@@ -64,7 +64,7 @@ module Homebrew
 
             - name: Cache Homebrew Bundler RubyGems
               id: cache
-              uses: actions/cache@main
+              uses: actions/cache@v1
               with:
                 path: ${{ steps.set-up-homebrew.outputs.gems-path }}
                 key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
@@ -74,18 +74,14 @@ module Homebrew
               if: steps.cache.outputs.cache-hit != 'true'
               run: brew install-bundler-gems
 
-            - name: Run brew test-bot --only-cleanup-before
-              run: brew test-bot --only-cleanup-before
+            - run: brew test-bot --only-cleanup-before
 
-            - name: Run brew test-bot --only-setup
-              run: brew test-bot --only-setup
+            - run: brew test-bot --only-setup
 
-            - name: Run brew test-bot --only-tap-syntax
-              run: brew test-bot --only-tap-syntax
+            - run: brew test-bot --only-tap-syntax
 
-            - name: Run brew test-bot --only-formulae
+            - run: brew test-bot --only-formulae
               if: github.event_name == 'pull_request'
-              run: brew test-bot --only-formulae
     YAML
 
     (tap.path/".github/workflows").mkpath

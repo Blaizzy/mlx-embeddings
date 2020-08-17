@@ -53,6 +53,185 @@ Control Homebrew\'s anonymous aggregate user behaviour analytics\. Read more at 
 \fBbrew analytics regenerate\-uuid\fR
     Regenerate the UUID used for Homebrew\'s analytics\.
 .
+.SS "\fBcask\fR \fIcommand\fR [\fIoptions\fR] [\fIcask\fR]"
+Homebrew Cask provides a friendly CLI workflow for the administration of macOS applications distributed as binaries\.
+.
+.P
+Commands:
+.
+.IP "\(bu" 4
+\fB\-\-cache\fR
+.
+.br
+Display the file used to cache a \fIcask\fR
+.
+.IP "\(bu" 4
+\fBaudit\fR
+.
+.br
+Check \fIcask\fR for Homebrew coding style violations
+.
+.IP "\(bu" 4
+\fBcat\fR
+.
+.br
+Dump raw source of a \fIcask\fR to the standard output
+.
+.IP "\(bu" 4
+\fBcreate\fR
+.
+.br
+Creates the given \fIcask\fR and opens it in an editor
+.
+.IP "\(bu" 4
+\fBdoctor\fR
+.
+.br
+Checks for configuration issues
+.
+.IP "\(bu" 4
+\fBedit\fR
+.
+.br
+Open the given \fIcask\fR for editing
+.
+.IP "\(bu" 4
+\fBfetch\fR
+.
+.br
+Downloads remote application files to local cache
+.
+.IP "\(bu" 4
+\fBhelp\fR
+.
+.br
+Print help for \fBcask\fR commands
+.
+.IP "\(bu" 4
+\fBhome\fR
+.
+.br
+Opens the homepage of the given \fIcask\fR
+.
+.IP "\(bu" 4
+\fBinfo\fR
+.
+.br
+Displays information about the given \fIcask\fR
+.
+.IP "\(bu" 4
+\fBinstall\fR
+.
+.br
+Installs the given \fIcask\fR
+.
+.IP "\(bu" 4
+\fBlist\fR
+.
+.br
+Lists installed casks or the casks provided in the arguments
+.
+.IP "\(bu" 4
+\fBoutdated\fR
+.
+.br
+List the outdated installed casks
+.
+.IP "\(bu" 4
+\fBreinstall\fR
+.
+.br
+Reinstalls the given \fIcask\fR
+.
+.IP "\(bu" 4
+\fBstyle\fR
+.
+.br
+Checks style of the given \fIcask\fR using RuboCop
+.
+.IP "\(bu" 4
+\fBuninstall\fR
+.
+.br
+Uninstalls the given \fIcask\fR
+.
+.IP "\(bu" 4
+\fBupgrade\fR
+.
+.br
+Upgrades all outdated casks or the specified casks
+.
+.IP "\(bu" 4
+\fBzap\fR
+.
+.br
+Zaps all files associated with the given \fIcask\fR
+.
+.IP "" 0
+.
+.P
+See also: \fBman brew\fR
+.
+.TP
+\fB\-\-appdir\fR
+Target location for Applications\. Default: \fB/Applications\fR
+.
+.TP
+\fB\-\-colorpickerdir\fR
+Target location for Color Pickers\. Default: \fB~/Library/ColorPickers\fR
+.
+.TP
+\fB\-\-prefpanedir\fR
+Target location for Preference Panes\. Default: \fB~/Library/PreferencePanes\fR
+.
+.TP
+\fB\-\-qlplugindir\fR
+Target location for QuickLook Plugins\. Default: \fB~/Library/QuickLook\fR
+.
+.TP
+\fB\-\-mdimporterdir\fR
+Target location for Spotlight Plugins\. Default: \fB~/Library/Spotlight\fR
+.
+.TP
+\fB\-\-dictionarydir\fR
+Target location for Dictionaries\. Default: \fB~/Library/Dictionaries\fR
+.
+.TP
+\fB\-\-fontdir\fR
+Target location for Fonts\. Default: \fB~/Library/Fonts\fR
+.
+.TP
+\fB\-\-servicedir\fR
+Target location for Services\. Default: \fB~/Library/Services\fR
+.
+.TP
+\fB\-\-input_methoddir\fR
+Target location for Input Methods\. Default: \fB~/Library/Input Methods\fR
+.
+.TP
+\fB\-\-internet_plugindir\fR
+Target location for Internet Plugins\. Default: \fB~/Library/Internet Plug\-Ins\fR
+.
+.TP
+\fB\-\-audio_unit_plugindir\fR
+Target location for Audio Unit Plugins\. Default: \fB~/Library/Audio/Plug\-Ins/Components\fR
+.
+.TP
+\fB\-\-vst_plugindir\fR
+Target location for VST Plugins\. Default: \fB~/Library/Audio/Plug\-Ins/VST\fR
+.
+.TP
+\fB\-\-vst3_plugindir\fR
+Target location for VST3 Plugins\. Default: \fB~/Library/Audio/Plug\-Ins/VST3\fR
+.
+.TP
+\fB\-\-screen_saverdir\fR
+Target location for Screen Savers\. Default: \fB~/Library/Screen Savers\fR
+.
+.TP
+\fB\-\-language\fR
+Set language of the Cask to install\. The first matching language is used, otherwise the default language on the Cask\. The default value is the \fBlanguage of your system\fR
+.
 .SS "\fBcleanup\fR [\fIoptions\fR] [\fIformula\fR|\fIcask\fR]"
 Remove stale lock files and outdated downloads for all formulae and casks, and remove old versions of installed formulae\. If arguments are specified, only do this for the given formulae and casks\. Removes all downloads more than 120 days old\. This can be adjusted with \fBHOMEBREW_CLEANUP_MAX_AGE_DAYS\fR\.
 .
@@ -1038,7 +1217,7 @@ Specify the new git commit \fIrevision\fR corresponding to the specified \fItag\
 \fB\-f\fR, \fB\-\-force\fR
 Ignore duplicate open PRs\. Remove all mirrors if \-\-mirror= was not specified\.
 .
-.SS "\fBbump\-revision\fR [\fIoptions\fR] \fIformula\fR"
+.SS "\fBbump\-revision\fR [\fIoptions\fR] \fIformula\fR [\fIformula\fR \.\.\.]"
 Create a commit to increment the revision of \fIformula\fR\. If no revision is present, "revision 1" will be added\.
 .
 .TP
@@ -1250,6 +1429,10 @@ Print what would be done rather than doing it\.
 .TP
 \fB\-\-clean\fR
 Do not amend the commits from pull requests\.
+.
+.TP
+\fB\-\-keep\-old\fR
+If the formula specifies a rebuild version, attempt to preserve its value in the generated DSL\.
 .
 .TP
 \fB\-\-branch\-okay\fR
@@ -1498,6 +1681,10 @@ Install and commit Homebrew\'s vendored gems\.
 These options are applicable across multiple subcommands\.
 .
 .TP
+\fB\-d\fR, \fB\-\-debug\fR
+Display any debugging information\.
+.
+.TP
 \fB\-q\fR, \fB\-\-quiet\fR
 Suppress any warnings\.
 .
@@ -1506,17 +1693,10 @@ Suppress any warnings\.
 Make some output more verbose\.
 .
 .TP
-\fB\-d\fR, \fB\-\-debug\fR
-Display any debugging information\.
+\fB\-h\fR, \fB\-\-help\fR
+Show this message\.
 .
 .SH "OFFICIAL EXTERNAL COMMANDS"
-.
-.SS "\fBcask\fR \fIsubcommand\fR"
-Install macOS applications distributed as binaries\. See \fBbrew\-cask\fR(1)\.
-.
-.P
-\fBHomebrew/homebrew\-cask\fR
-    \fIhttps://github\.com/Homebrew/homebrew\-cask\fR
 .
 .SS "\fBbundle\fR [\fIsubcommand\fR]"
 Bundler for non\-Ruby dependencies from Homebrew, Homebrew Cask, Mac App Store and Whalebrew\.
@@ -1760,6 +1940,9 @@ Sometimes a formula from a tapped repository may conflict with one in \fBhomebre
 An arbitrary file
 Homebrew can install formulae from a local path\. It can point to either a formula file or a bottle\.
 .
+.SH "SPECIFYING CASKS"
+Many Homebrew Cask commands accept one or more \fIcask\fR arguments\. These can be specified the same way as the \fIformula\fR arguments described in \fBSPECIFYING FORMULAE\fR above\.
+.
 .SH "ENVIRONMENT"
 Note that environment variables must have a value set to be detected\. For example, run \fBexport HOMEBREW_NO_INSECURE_REDIRECT=1\fR rather than just \fBexport HOMEBREW_NO_INSECURE_REDIRECT\fR\.
 .
@@ -1830,7 +2013,10 @@ Use the specified directory as the download cache\.
 .
 .TP
 \fBHOMEBREW_CASK_OPTS\fR
-Options which should be used for all \fBcask\fR commands\.
+Options which should be used for all \fBcask\fR commands\. All \fB\-\-*dir\fR options, \fB\-\-language\fR, \fB\-\-require\-sha\fR, \fB\-\-no\-quarantine\fR and \fB\-\-no\-binaries\fR are supported\. For example, you might add something like the following to your ~/\.profile, ~/\.bash_profile, or ~/\.zshenv:
+.
+.P
+\fBexport HOMEBREW_CASK_OPTS=\'\-\-appdir=~/Applications \-\-fontdir=/Library/Fonts\'\fR
 .
 .TP
 \fBHOMEBREW_CLEANUP_MAX_AGE_DAYS\fR
@@ -2064,6 +2250,10 @@ Use this HTTPS proxy for \fBcurl\fR(1), \fBgit\fR(1) and \fBsvn\fR(1) when downl
 \fBno_proxy\fR
 A comma\-separated list of hostnames and domain names excluded from proxying by \fBcurl\fR(1), \fBgit\fR(1) and \fBsvn\fR(1) when downloading through Homebrew\.
 .
+.TP
+\fBSUDO_ASKPASS\fR
+When this variable is set, the \fB\-A\fR option is passed when calling \fBsudo\fR(8)
+.
 .SH "USING HOMEBREW BEHIND A PROXY"
 Set the \fBhttp_proxy\fR, \fBhttps_proxy\fR, \fBall_proxy\fR, \fBftp_proxy\fR and/or \fBno_proxy\fR environment variables documented above\.
 .
@@ -2102,7 +2292,7 @@ Homebrew Documentation: \fIhttps://docs\.brew\.sh\fR
 Homebrew API: \fIhttps://rubydoc\.brew\.sh\fR
 .
 .P
-\fBbrew\-cask\fR(1), \fBgit\fR(1), \fBgit\-log\fR(1)
+\fBgit\fR(1), \fBgit\-log\fR(1)
 .
 .SH "AUTHORS"
 Homebrew\'s Project Leader is Mike McQuaid\.
@@ -2132,4 +2322,8 @@ See our issues on GitHub:
 .TP
 \fBHomebrew/homebrew\-core\fR
 \fIhttps://github\.com/Homebrew/homebrew\-core/issues\fR
+.
+.TP
+\fBHomebrew/homebrew\-cask\fR
+\fIhttps://github\.com/Homebrew/homebrew\-cask/issues\fR
 

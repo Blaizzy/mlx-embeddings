@@ -30,7 +30,7 @@ describe RuboCop::Cop::FormulaAudit::Desc do
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
           desc 'Bar#{"bar" * 29}'
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Description is too long. "name: desc" should be less than 80 characters. The current combined length is 95.
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Description is too long. It should be less than 80 characters. The current length is 90.
         end
       RUBY
     end
@@ -41,7 +41,7 @@ describe RuboCop::Cop::FormulaAudit::Desc do
           url 'https://brew.sh/foo-1.0.tgz'
           desc 'Bar#{"bar" * 9}'\
             '#{"foo" * 21}'
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Description is too long. "name: desc" should be less than 80 characters. The current combined length is 98.
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Description is too long. It should be less than 80 characters. The current length is 93.
         end
       RUBY
     end

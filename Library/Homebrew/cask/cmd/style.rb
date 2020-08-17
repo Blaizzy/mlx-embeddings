@@ -5,8 +5,15 @@ require "json"
 module Cask
   class Cmd
     class Style < AbstractCommand
-      def self.help
-        "checks Cask style using RuboCop"
+      def self.description
+        "Checks style of the given <cask> using RuboCop."
+      end
+
+      def self.parser
+        super do
+          switch "--fix",
+                 description: "Fix style violations automatically using RuboCop's auto-correct feature."
+        end
       end
 
       def self.rubocop(*paths, auto_correct: false, debug: false, json: false)
@@ -48,18 +55,16 @@ module Cask
         result
       end
 
-      option "--fix", :fix, false
-
       def run
-        result = self.class.rubocop(*cask_paths, auto_correct: fix?, debug: debug?)
+        result = self.class.rubocop(*cask_paths, auto_correct: args.fix?, debug: args.debug?)
         raise CaskError, "Style check failed." unless result.status.success?
       end
 
       def cask_paths
-        @cask_paths ||= if args.empty?
+        @cask_paths ||= if args.named.empty?
           Tap.map(&:cask_dir).select(&:directory?).concat(test_cask_paths)
-        elsif args.any? { |file| File.exist?(file) }
-          args.map { |path| Pathname(path).expand_path }
+        elsif args.named.any? { |file| File.exist?(file) }
+          args.named.map { |path| Pathname(path).expand_path }
         else
           casks.map(&:sourcefile_path)
         end

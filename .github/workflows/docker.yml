@@ -21,10 +21,13 @@ jobs:
           persist-credentials: false
       - name: Fetch origin/master from Git
         run: git fetch origin master
+
       - name: Build Docker image
         run: docker build -t brew --build-arg=version=${{matrix.version}} .
+
       - name: Run brew test-bot --only-setup
         run: docker run --rm brew brew test-bot --only-setup
+
       - name: Deploy the tagged Docker image to GitHub
         if: startsWith(github.ref, 'refs/tags/')
         run: |
@@ -35,6 +38,7 @@ jobs:
           docker push "docker.pkg.github.com/homebrew/brew/ubuntu${{matrix.version}}:$brew_version"
           docker tag brew "docker.pkg.github.com/homebrew/brew/ubuntu${{matrix.version}}:latest"
           docker push "docker.pkg.github.com/homebrew/brew/ubuntu${{matrix.version}}:latest"
+
       - name: Deploy the tagged Docker image to Docker Hub
         if: startsWith(github.ref, 'refs/tags/')
         run: |
@@ -43,6 +47,7 @@ jobs:
           docker push "homebrew/ubuntu${{matrix.version}}:$brew_version"
           docker tag brew "homebrew/ubuntu${{matrix.version}}:latest"
           docker push "homebrew/ubuntu${{matrix.version}}:latest"
+
       - name: Deploy the homebrew/brew Docker image to GitHub and Docker Hub
         if: startsWith(github.ref, 'refs/tags/') && matrix.version == '20.04'
         run: |
