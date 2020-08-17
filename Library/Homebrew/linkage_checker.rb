@@ -5,6 +5,9 @@ require "formula"
 require "linkage_cache_store"
 require "fiddle"
 
+# Check for broken/missing linkage in a formula's keg.
+#
+# @api private
 class LinkageChecker
   attr_reader :undeclared_deps, :keg, :formula, :store
 
