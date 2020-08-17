@@ -1752,8 +1752,16 @@ Read the \fBBrewfile\fR from this location\. Use \fB\-\-file=\-\fR to pipe to st
 Read the \fBBrewfile\fR from \fB~/\.Brewfile\fR\.
 .
 .TP
+\fB\-v\fR, \fB\-\-verbose\fR
+\fBinstall\fR prints output from commands as they are run\. \fBcheck\fR lists all missing dependencies\.
+.
+.TP
 \fB\-\-no\-upgrade\fR
 \fBinstall\fR won\'t run \fBbrew upgrade\fR on outdated dependencies\. Note they may still be upgraded by \fBbrew install\fR if needed\.
+.
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+\fBdump\fR overwrites an existing \fBBrewfile\fR\. \fBcleanup\fR actually performs its cleanup operations\.
 .
 .TP
 \fB\-\-no\-lock\fR
@@ -1764,15 +1772,15 @@ Read the \fBBrewfile\fR from \fB~/\.Brewfile\fR\.
 \fBlist\fR all dependencies\.
 .
 .TP
-\fB\-\-brews\fR
+\fB\-\-formula\fR
 \fBlist\fR Homebrew dependencies\.
 .
 .TP
-\fB\-\-casks\fR
+\fB\-\-cask\fR
 \fBlist\fR Homebrew Cask dependencies\.
 .
 .TP
-\fB\-\-taps\fR
+\fB\-\-tap\fR
 \fBlist\fR tap dependencies\.
 .
 .TP
@@ -1866,6 +1874,10 @@ use the \fBgit\fR repository of the given tap\. Defaults to the core tap for syn
 .TP
 \fB\-\-fail\-fast\fR
 immediately exit on a failing step\.
+.
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+print test step output in real time\. Has the side effect of passing output as raw bytes instead of re\-encoding in UTF\-8\.
 .
 .TP
 \fB\-\-test\-default\-formula\fR

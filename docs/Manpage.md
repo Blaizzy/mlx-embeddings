@@ -1285,17 +1285,21 @@ This sanitized build environment ignores unrequested dependencies, which makes s
   Read the `Brewfile` from this location. Use `--file=-` to pipe to stdin/stdout.
 * `--global`:
   Read the `Brewfile` from `~/.Brewfile`.
+* `-v`, `--verbose`:
+  `install` prints output from commands as they are run. `check` lists all missing dependencies.
 * `--no-upgrade`:
   `install` won't run `brew upgrade` on outdated dependencies. Note they may still be upgraded by `brew install` if needed.
+* `-f`, `--force`:
+  `dump` overwrites an existing `Brewfile`. `cleanup` actually performs its cleanup operations.
 * `--no-lock`:
   `install` won't output a `Brewfile.lock.json`.
 * `--all`:
   `list` all dependencies.
-* `--brews`:
+* `--formula`:
   `list` Homebrew dependencies.
-* `--casks`:
+* `--cask`:
   `list` Homebrew Cask dependencies.
-* `--taps`:
+* `--tap`:
   `list` tap dependencies.
 * `--mas`:
   `list` Mac App Store dependencies.
@@ -1358,6 +1362,8 @@ Only supports GitHub Actions as a CI provider. This is because Homebrew uses Git
   use the `git` repository of the given tap. Defaults to the core tap for syntax checking.
 * `--fail-fast`:
   immediately exit on a failing step.
+* `-v`, `--verbose`:
+  print test step output in real time. Has the side effect of passing output as raw bytes instead of re-encoding in UTF-8.
 * `--test-default-formula`:
   use a default testing formula when not building a tap and no other formulae are specified.
 * `--bintray-org`:
