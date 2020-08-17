@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 module Language
+  # Helper functions for Node formulae.
+  #
+  # @api public
   module Node
     def self.npm_cache_config
       "cache=#{HOMEBREW_CACHE}/npm_cache"
