@@ -23,6 +23,8 @@ module Cask
       end
 
       def run
+        require "cask/installer"
+
         options = {
           binaries:       args.binaries?,
           verbose:        args.verbose?,

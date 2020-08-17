@@ -100,6 +100,8 @@ module Cask
         old_cask, new_cask,
         binaries:, force:, quarantine:, require_sha:, skip_cask_deps:, verbose:
       )
+        require "cask/installer"
+
         odebug "Started upgrade process for Cask #{old_cask}"
         old_config = old_cask.config
 

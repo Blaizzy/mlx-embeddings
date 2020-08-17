@@ -28,6 +28,7 @@ module Cask
         require_sha: nil,
         quarantine: nil
       )
+        require "cask/installer"
 
         options = {
           binaries:       binaries,

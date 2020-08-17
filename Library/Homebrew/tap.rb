@@ -2,7 +2,6 @@
 
 require "commands"
 require "extend/cachable"
-require "readall"
 require "description_cache_store"
 
 # A {Tap} is used to extend the formulae provided by Homebrew core.
@@ -232,6 +231,7 @@ class Tap
   # @param quiet [Boolean] If set, suppress all output.
   def install(full_clone: true, quiet: false, clone_target: nil, force_auto_update: nil)
     require "descriptions"
+    require "readall"
 
     if official? && DEPRECATED_OFFICIAL_TAPS.include?(repo)
       odie "#{name} was deprecated. This tap is now empty and all its contents were either deleted or migrated."

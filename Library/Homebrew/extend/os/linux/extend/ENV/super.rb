@@ -17,7 +17,7 @@ module Superenv
   def homebrew_extra_paths
     paths = []
     paths += %w[binutils make].map do |f|
-      bin = Formula[f].opt_bin
+      bin = Formulary.factory(f).opt_bin
       bin if bin.directory?
     rescue FormulaUnavailableError
       nil

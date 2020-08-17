@@ -4,7 +4,6 @@ require "env_config"
 require "cli/args"
 require "optparse"
 require "set"
-require "formula"
 require "utils/tty"
 
 COMMAND_DESC_WIDTH = 80

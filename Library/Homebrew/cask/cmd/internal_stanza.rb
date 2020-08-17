@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "cask/dsl"
+
 module Cask
   class Cmd
     class InternalStanza < AbstractInternalCommand

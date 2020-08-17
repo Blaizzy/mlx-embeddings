@@ -3,6 +3,7 @@
 require "cli/parser"
 require "utils/git"
 require "formulary"
+require "software_spec"
 require "tap"
 
 def with_monkey_patch

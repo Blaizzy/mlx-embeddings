@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "cask/download"
-
 module Cask
   class Cmd
     class Cache < AbstractCommand
@@ -24,6 +22,8 @@ module Cask
       end
 
       def self.cached_location(cask)
+        require "cask/download"
+
         Download.new(cask).downloader.cached_location
       end
     end

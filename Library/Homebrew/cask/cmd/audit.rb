@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require "cli/parser"
-require "cask/auditor"
-
 module Cask
   class Cmd
     class Audit < AbstractCommand
@@ -35,6 +32,8 @@ module Cask
       end
 
       def run
+        require "cask/auditor"
+
         Homebrew.auditing = true
         strict = args.new_cask? || args.strict?
         online = args.new_cask? || args.online?

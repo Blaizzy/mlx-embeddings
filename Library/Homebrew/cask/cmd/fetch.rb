@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "cask/download"
-
 module Cask
   class Cmd
     class Fetch < AbstractCommand
@@ -21,6 +19,9 @@ module Cask
       end
 
       def run
+        require "cask/download"
+        require "cask/installer"
+
         options = {
           force:      args.force?,
           quarantine: args.quarantine?,
