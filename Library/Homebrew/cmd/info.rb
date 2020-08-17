@@ -239,7 +239,7 @@ module Homebrew
 
     if !f.options.empty? || f.head || f.devel
       ohai "Options"
-      Homebrew.dump_options_for_formula f
+      Options.dump_for_formula f
     end
 
     caveats = Caveats.new(f)
