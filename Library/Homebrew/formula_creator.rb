@@ -4,6 +4,9 @@ require "digest"
 require "erb"
 
 module Homebrew
+  # Class for generating a formula from a template.
+  #
+  # @api private
   class FormulaCreator
     attr_reader :args, :url, :sha256, :desc, :homepage
     attr_accessor :name, :version, :tap, :path, :mode, :license
