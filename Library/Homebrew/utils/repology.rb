@@ -58,7 +58,6 @@ module Repology
     packages = {}
 
     outdated_repology_packages.each do |_name, repositories|
-      # identify homebrew repo
       repology_homebrew_repo = repositories.find do |repo|
         repo["repo"] == "homebrew"
       end

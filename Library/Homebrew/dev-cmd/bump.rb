@@ -23,21 +23,39 @@ module Homebrew
   def bump
     args = bump_args.parse
 
-    requested_formula = args.formulae.first.to_s if args.formulae.first
+    requested_formulae = !args.formulae.empty? ? args.formulae.map(&:name) : nil
+
     requested_limit = args.limit.to_i if args.limit.present?
 
-    raise FormulaUnavailableError, requested_formula if requested_formula && !validate_formula(requested_formula)
+    repology_data = if requested_formulae
+      response = {}
+      requested_formulae.each do |formula|
+        raise FormulaUnavailableError, formula unless validate_formula(formula)
 
-    repology_data = if requested_formula
-      Repology.single_package_query(requested_formula)
+        package_data = Repology.single_package_query(formula)
+        response[package_data.keys.first] = package_data.values.first if package_data
+      end
+
+      response
     else
       Repology.parse_api_response
     end
 
-    validated_formulae = if repology_data.blank?
-      { requested_formula.to_s => Repology.format_package(requested_formula, nil) }
-    else
-      Repology.validate_and_format_packages(repology_data, requested_limit)
+    validated_formulae = {}
+
+    validated_formulae = Repology.validate_and_format_packages(repology_data, requested_limit) if repology_data
+
+    if requested_formulae
+      repology_excluded_formulae = requested_formulae.reject do |formula|
+        repology_data[formula]
+      end
+
+      formulae = {}
+      repology_excluded_formulae.each do |formula|
+        formulae[formula] = Repology.format_package(formula, nil)
+      end
+
+      formulae.each { |formula, data| validated_formulae[formula] = data }
     end
 
     display(validated_formulae)
