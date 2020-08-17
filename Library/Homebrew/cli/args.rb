@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "cli/named_args"
 require "ostruct"
 
 module Homebrew
@@ -19,7 +20,7 @@ module Homebrew
 
         # Can set these because they will be overwritten by freeze_named_args!
         # (whereas other values below will only be overwritten if passed).
-        self[:named_args] = []
+        self[:named_args] = NamedArgs.new
         self[:remaining] = []
       end
 
@@ -28,18 +29,12 @@ module Homebrew
       end
 
       def freeze_named_args!(named_args)
-        # Reset cache values reliant on named_args
-        @formulae = nil
-        @formulae_and_casks = nil
-        @resolved_formulae = nil
-        @resolved_formulae_casks = nil
-        @formulae_paths = nil
-        @casks = nil
-        @loaded_casks = nil
-        @kegs = nil
-        @kegs_casks = nil
-
-        self[:named_args] = named_args.freeze
+        self[:named_args] = NamedArgs.new(
+          *named_args.freeze,
+          override_spec: spec(nil),
+          force_bottle:  force_bottle?,
+          flags:         flags_only,
+        )
       end
 
       def freeze_processed_options!(processed_options)
@@ -54,7 +49,7 @@ module Homebrew
       end
 
       def named
-        named_args || []
+        named_args || NamedArgs.new
       end
 
       def no_named?
@@ -62,102 +57,39 @@ module Homebrew
       end
 
       def formulae
-        require "formula"
-
-        @formulae ||= (downcased_unique_named - casks).map do |name|
-          Formulary.factory(name, spec, force_bottle: force_bottle?, flags: flags_only)
-        end.uniq(&:name).freeze
+        named.to_formulae
       end
 
       def formulae_and_casks
-        @formulae_and_casks ||= begin
-          formulae_and_casks = []
-
-          downcased_unique_named.each do |name|
-            formulae_and_casks << Formulary.factory(name, spec)
-          rescue FormulaUnavailableError
-            begin
-              formulae_and_casks << Cask::CaskLoader.load(name)
-            rescue Cask::CaskUnavailableError
-              raise "No available formula or cask with the name \"#{name}\""
-            end
-          end
-
-          formulae_and_casks.freeze
-        end
+        named.to_formulae_and_casks
       end
 
       def resolved_formulae
-        require "formula"
-
-        @resolved_formulae ||= (downcased_unique_named - casks).map do |name|
-          Formulary.resolve(name, spec: spec(nil), force_bottle: force_bottle?, flags: flags_only)
-        end.uniq(&:name).freeze
+        named.to_resolved_formulae
       end
 
       def resolved_formulae_casks
-        @resolved_formulae_casks ||= begin
-          resolved_formulae = []
-          casks = []
-
-          downcased_unique_named.each do |name|
-            resolved_formulae << Formulary.resolve(name, spec: spec(nil),
-                                                   force_bottle: force_bottle?, flags: flags_only)
-          rescue FormulaUnavailableError
-            begin
-              casks << Cask::CaskLoader.load(name)
-            rescue Cask::CaskUnavailableError
-              raise "No available formula or cask with the name \"#{name}\""
-            end
-          end
-
-          [resolved_formulae.freeze, casks.freeze].freeze
-        end
+        named.to_resolved_formulae_to_casks
       end
 
       def formulae_paths
-        @formulae_paths ||= (downcased_unique_named - casks).map do |name|
-          Formulary.path(name)
-        end.uniq.freeze
+        named.to_formulae_paths
       end
 
       def casks
-        @casks ||= downcased_unique_named.grep(HOMEBREW_CASK_TAP_CASK_REGEX)
-                                         .freeze
+        named.homebrew_tap_cask_names
       end
 
       def loaded_casks
-        @loaded_casks ||= downcased_unique_named.map(&Cask::CaskLoader.method(:load)).freeze
+        named.to_casks
       end
 
       def kegs
-        @kegs ||= downcased_unique_named.map do |name|
-          resolve_keg name
-        rescue NoSuchKegError => e
-          if (reason = Homebrew::MissingFormula.suggest_command(name, "uninstall"))
-            $stderr.puts reason
-          end
-          raise e
-        end.freeze
+        named.to_kegs
       end
 
       def kegs_casks
-        @kegs_casks ||= begin
-          kegs = []
-          casks = []
-
-          downcased_unique_named.each do |name|
-            kegs << resolve_keg(name)
-          rescue NoSuchKegError
-            begin
-              casks << Cask::CaskLoader.load(name)
-            rescue Cask::CaskUnavailableError
-              raise "No installed keg or cask with the name \"#{name}\""
-            end
-          end
-
-          [kegs.freeze, casks.freeze].freeze
-        end
+        named.to_kegs_to_casks
       end
 
       def build_stable?
@@ -218,17 +150,6 @@ module Homebrew
         @cli_args.freeze
       end
 
-      def downcased_unique_named
-        # Only lowercase names, not paths, bottle filenames or URLs
-        named.map do |arg|
-          if arg.include?("/") || arg.end_with?(".tar.gz") || File.exist?(arg)
-            arg
-          else
-            arg.downcase
-          end
-        end.uniq
-      end
-
       def spec(default = :stable)
         if HEAD?
           :head
@@ -236,50 +157,6 @@ module Homebrew
           :devel
         else
           default
-        end
-      end
-
-      def resolve_keg(name)
-        require "keg"
-        require "formula"
-        require "missing_formula"
-
-        raise UsageError if name.blank?
-
-        rack = Formulary.to_rack(name.downcase)
-
-        dirs = rack.directory? ? rack.subdirs : []
-        raise NoSuchKegError, rack.basename if dirs.empty?
-
-        linked_keg_ref = HOMEBREW_LINKED_KEGS/rack.basename
-        opt_prefix = HOMEBREW_PREFIX/"opt/#{rack.basename}"
-
-        begin
-          if opt_prefix.symlink? && opt_prefix.directory?
-            Keg.new(opt_prefix.resolved_path)
-          elsif linked_keg_ref.symlink? && linked_keg_ref.directory?
-            Keg.new(linked_keg_ref.resolved_path)
-          elsif dirs.length == 1
-            Keg.new(dirs.first)
-          else
-            f = if name.include?("/") || File.exist?(name)
-              Formulary.factory(name)
-            else
-              Formulary.from_rack(rack)
-            end
-
-            unless (prefix = f.installed_prefix).directory?
-              raise MultipleVersionsInstalledError, "#{rack.basename} has multiple installed versions"
-            end
-
-            Keg.new(prefix)
-          end
-        rescue FormulaUnavailableError
-          raise MultipleVersionsInstalledError, <<~EOS
-            Multiple kegs installed to #{rack}
-            However we don't know which one you refer to.
-            Please delete (with rm -rf!) all but one and then try again.
-          EOS
         end
       end
     end
