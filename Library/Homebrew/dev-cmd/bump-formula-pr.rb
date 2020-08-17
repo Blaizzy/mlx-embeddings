@@ -298,7 +298,6 @@ module Homebrew
 
     new_formula_version = formula_version(formula, requested_spec, new_contents)
 
-    check_duplicate_pull_requests(formula, tap_full_name, new_formula_version.to_s)
 
     if !new_mirrors && !formula_spec.mirrors.empty?
       if args.force?
