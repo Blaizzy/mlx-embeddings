@@ -5,9 +5,9 @@ require "cleanup"
 require "cask/cache"
 require "fileutils"
 
-using CleanupRefinement
+using Homebrew::Cleanup::CleanupRefinement
 
-describe CleanupRefinement do
+describe Homebrew::Cleanup::CleanupRefinement do
   describe "::prune?" do
     alias_matcher :be_pruned, :be_prune
 
