@@ -38,7 +38,7 @@ module Homebrew
         f.close
         return if system f.path
 
-        <<~EOS.undent
+        <<~EOS
           The directory #{HOMEBREW_TEMP} does not permit executing
           programs. It is likely mounted as "noexec". Please set HOMEBREW_TEMP
           in your #{shell_profile} to a different directory, for example:
