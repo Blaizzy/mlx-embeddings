@@ -57,6 +57,10 @@ module OS
       nil
     end
 
+    def sdk_path
+      nil
+    end
+
     module Xcode
       module_function
 
