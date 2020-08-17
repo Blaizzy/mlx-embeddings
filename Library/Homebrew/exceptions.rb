@@ -369,7 +369,7 @@ class BuildError < RuntimeError
       ohai "Configuration"
       SystemConfig.dump_verbose_config
       ohai "ENV"
-      Homebrew.dump_build_env(env)
+      BuildEnvironment.dump env
       puts
       onoe "#{formula.full_name} #{formula.version} did not build"
       unless (logs = Dir["#{formula.logs}/*"]).empty?
