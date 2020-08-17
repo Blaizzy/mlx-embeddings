@@ -298,7 +298,6 @@ module Homebrew
 
     new_formula_version = formula_version(formula, requested_spec, new_contents)
 
-
     if !new_mirrors && !formula_spec.mirrors.empty?
       if args.force?
         opoo "#{formula}: Removing all mirrors because a --mirror= argument was not specified."
