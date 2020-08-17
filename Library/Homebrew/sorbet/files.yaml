@@ -951,7 +951,6 @@ strict:
   - ./extend/os/tap.rb
   - ./extend/os/utils/analytics.rb
   - ./language/haskell.rb
-  - ./language/python_virtualenv_constants.rb
   - ./os/global.rb
   - ./os/linux/diagnostic.rb
   - ./requirements.rb
