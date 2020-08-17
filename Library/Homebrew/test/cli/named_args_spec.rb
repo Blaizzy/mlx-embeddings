@@ -39,8 +39,7 @@ describe Homebrew::CLI::NamedArgs do
 
   describe "#to_formulae" do
     it "returns formulae" do
-      allow(Formulary).to receive(:loader_for).and_call_original
-      stub_formula_loader foo
+      stub_formula_loader foo, call_original: true
       stub_formula_loader bar
 
       expect(described_class.new("foo", "bar").to_formulae).to eq [foo, bar]
@@ -49,9 +48,8 @@ describe Homebrew::CLI::NamedArgs do
 
   describe "#to_formulae_and_casks" do
     it "returns formulae and casks" do
-      allow(Formulary).to receive(:loader_for).and_call_original
-      stub_formula_loader foo
-      stub_cask_loader baz
+      stub_formula_loader foo, call_original: true
+      stub_cask_loader baz, call_original: true
 
       expect(described_class.new("foo", "baz").to_formulae_and_casks).to eq [foo, baz]
     end
@@ -69,7 +67,7 @@ describe Homebrew::CLI::NamedArgs do
     it "returns resolved formulae, as well as casks" do
       allow(Formulary).to receive(:resolve).and_call_original
       allow(Formulary).to receive(:resolve).with("foo", any_args).and_return foo
-      stub_cask_loader baz
+      stub_cask_loader baz, call_original: true
 
       resolved_formulae, casks = described_class.new("foo", "baz").to_resolved_formulae_to_casks
 
@@ -101,7 +99,8 @@ describe Homebrew::CLI::NamedArgs do
       named_args = described_class.new("foo", "baz")
       allow(named_args).to receive(:resolve_keg).and_call_original
       allow(named_args).to receive(:resolve_keg).with("foo").and_return foo_keg
-      stub_cask_loader baz
+
+      stub_cask_loader baz, call_original: true
 
       kegs, casks = named_args.to_kegs_to_casks
 

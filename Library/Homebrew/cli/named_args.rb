@@ -26,6 +26,8 @@ module Homebrew
 
           downcased_unique_named.each do |name|
             formulae_and_casks << Formulary.factory(name, spec)
+
+            puts "Treating #{name} as a formula. For the cask, use homebrew/cask/#{name}" if cask_exists_with_ref name
           rescue FormulaUnavailableError
             begin
               formulae_and_casks << Cask::CaskLoader.load(name)
@@ -51,6 +53,8 @@ module Homebrew
 
           downcased_unique_named.each do |name|
             resolved_formulae << Formulary.resolve(name, spec: spec(nil), force_bottle: @force_bottle, flags: @flags)
+
+            puts "Treating #{name} as a formula. For the cask, use homebrew/cask/#{name}" if cask_exists_with_ref name
           rescue FormulaUnavailableError
             begin
               casks << Cask::CaskLoader.load(name)
@@ -91,6 +95,8 @@ module Homebrew
 
           downcased_unique_named.each do |name|
             kegs << resolve_keg(name)
+
+            puts "Treating #{name} as a keg. For the cask, use homebrew/cask/#{name}" if cask_exists_with_ref name
           rescue NoSuchKegError, FormulaUnavailableError
             begin
               casks << Cask::CaskLoader.load(name)
@@ -162,6 +168,12 @@ module Homebrew
             Please delete (with rm -rf!) all but one and then try again.
           EOS
         end
+      end
+
+      def cask_exists_with_ref(ref)
+        Cask::CaskLoader.load ref
+      rescue Cask::CaskUnavailableError
+        false
       end
     end
   end
