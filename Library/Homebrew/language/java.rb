@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 module Language
+  # Helper functions for Java formulae.
+  #
+  # @api public
   module Java
     def self.find_openjdk_formula(version = nil)
       can_be_newer = version&.end_with?("+")
