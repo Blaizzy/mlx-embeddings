@@ -2,6 +2,9 @@
 
 require "formula"
 
+# Helper class for traversing a formula's previous versions.
+#
+# @api private
 class FormulaVersions
   include Context
 
