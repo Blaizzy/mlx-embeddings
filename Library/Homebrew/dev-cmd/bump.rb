@@ -23,7 +23,7 @@ module Homebrew
   def bump
     args = bump_args.parse
 
-    requested_formula = args.formulae.first.to_s
+    requested_formula = args.formulae.first.to_s if args.formulae.first
     requested_limit = args.limit.to_i if args.limit.present?
 
     raise FormulaUnavailableError, requested_formula if requested_formula && !validate_formula(requested_formula)
@@ -34,12 +34,13 @@ module Homebrew
       Repology.parse_api_response
     end
 
-    if repology_data.blank?
-      ohai "No Repology data found."
+    validated_formulae = if repology_data.blank?
+      { requested_formula.to_s => Repology.format_package(requested_formula, nil) }
     else
-      validated_formulae = Repology.validate_and_format_packages(repology_data, requested_limit)
-      display(validated_formulae)
+      Repology.validate_and_format_packages(repology_data, requested_limit)
     end
+
+    display(validated_formulae)
   end
 
   def validate_formula(formula_name)
@@ -49,12 +50,12 @@ module Homebrew
   end
 
   def up_to_date?(package)
-    package[:current_formula_version] == package[:repology_latest_version] &&
+    package &&
+      package[:current_formula_version] == package[:repology_latest_version] &&
       package[:current_formula_version] == package[:livecheck_latest_version]
   end
 
   def display(formulae)
-    puts
     formulae.each do |formula, package_details|
       title = (up_to_date?(package_details) ? "#{formula} is up to date!" : formula).to_s
       ohai title

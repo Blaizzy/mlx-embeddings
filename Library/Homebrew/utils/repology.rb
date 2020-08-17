@@ -56,6 +56,7 @@ module Repology
 
   def validate_and_format_packages(outdated_repology_packages, limit)
     packages = {}
+
     outdated_repology_packages.each do |_name, repositories|
       # identify homebrew repo
       repology_homebrew_repo = repositories.find do |repo|
