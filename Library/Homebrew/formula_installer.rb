@@ -19,6 +19,7 @@ require "messages"
 require "cask/cask_loader"
 require "cmd/install"
 require "find"
+require "utils/spdx"
 
 class FormulaInstaller
   include FormulaCellarChecks
@@ -1130,24 +1131,29 @@ class FormulaInstaller
                                             .to_s
                                             .sub("Public Domain", "public_domain")
                                             .split(" ")
+                                            .to_h do |license|
+      [license, SPDX.license_version_info(license)]
+    end
+
     return if forbidden_licenses.blank?
 
     compute_dependencies.each do |dep, _|
       next if @ignore_deps
 
       dep_f = dep.to_formula
-      next unless dep_f.license.all? { |license| forbidden_licenses.include?(license.to_s) }
+      next unless SPDX.licenses_forbid_installation? dep_f.license, forbidden_licenses
 
       raise CannotInstallFormulaError, <<~EOS
-        The installation of #{formula.name} has a dependency on #{dep.name} where all its licenses are forbidden: #{dep_f.license}.
+        The installation of #{formula.name} has a dependency on #{dep.name} where all its licenses are forbidden:
+          #{SPDX.license_expression_to_string dep_f.license}.
       EOS
     end
     return if @only_deps
 
-    return unless formula.license.all? { |license| forbidden_licenses.include?(license.to_s) }
+    return unless SPDX.licenses_forbid_installation? formula.license, forbidden_licenses
 
     raise CannotInstallFormulaError, <<~EOS
-      #{formula.name}'s licenses are all forbidden: #{formula.license}.
+      #{formula.name}'s licenses are all forbidden: #{SPDX.license_expression_to_string formula.license}.
     EOS
   end
 end

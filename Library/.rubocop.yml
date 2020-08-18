@@ -68,6 +68,10 @@ Style/HashTransformKeys:
 Style/HashTransformValues:
   Enabled: true
 
+# Allow for license expressions
+Style/HashAsLastArrayItem:
+  Enabled: false
+
 # Enabled now LineLength is lowish.
 Style/IfUnlessModifier:
   Enabled: true
