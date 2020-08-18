@@ -3,6 +3,8 @@
 
 require "English"
 
+SimpleCov.enable_for_subprocesses true
+
 SimpleCov.start do
   coverage_dir File.expand_path("../test/coverage", File.realpath(__FILE__))
   root File.expand_path("..", File.realpath(__FILE__))
@@ -12,8 +14,20 @@ SimpleCov.start do
   # tests to be dropped. This causes random fluctuations in test coverage.
   merge_timeout 86400
 
+  at_fork do |pid|
+    # This needs a unique name so it won't be ovewritten
+    command_name "#{SimpleCov.command_name} (#{pid})"
+
+    # be quiet, the parent process will be in charge of output and checking coverage totals
+    print_error_status = false
+  end
+
   if ENV["HOMEBREW_INTEGRATION_TEST"]
+    # This needs a unique name so it won't be ovewritten
     command_name "#{ENV["HOMEBREW_INTEGRATION_TEST"]} (#{$PROCESS_ID})"
+
+    # be quiet, the parent process will be in charge of output and checking coverage totals
+    print_error_status = false
 
     at_exit do
       exit_code = $ERROR_INFO.nil? ? 0 : $ERROR_INFO.status
