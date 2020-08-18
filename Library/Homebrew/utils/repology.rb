@@ -97,9 +97,9 @@ module Repology
     pull_requests = "none" if pull_requests.blank?
 
     {
-      repology_latest_version:  latest_version,
+      repology_latest_version:  latest_version || "not found",
       current_formula_version:  current_version.to_s,
-      livecheck_latest_version: livecheck_response[:livecheck_version],
+      livecheck_latest_version: livecheck_response[:livecheck_version] || "not found",
       open_pull_requests:       pull_requests,
     }
   end
