@@ -119,18 +119,20 @@ module Homebrew
     # Check style in a single batch run up front for performance
     style_results = Style.check_style_json(style_files, options) if style_files
     # load licenses
-    spdx_data = SPDX.spdx_data
+    spdx_license_data = SPDX.license_data
+    spdx_exception_data = SPDX.exception_data
     new_formula_problem_lines = []
     audit_formulae.sort.each do |f|
       only = only_cops ? ["style"] : args.only
       options = {
-        new_formula: new_formula,
-        strict:      strict,
-        online:      online,
-        git:         git,
-        only:        only,
-        except:      args.except,
-        spdx_data:   spdx_data,
+        new_formula:         new_formula,
+        strict:              strict,
+        online:              online,
+        git:                 git,
+        only:                only,
+        except:              args.except,
+        spdx_license_data:   spdx_license_data,
+        spdx_exception_data: spdx_exception_data,
       }
       options[:style_offenses] = style_results.file_offenses(f.path) if style_results
       options[:display_cop_names] = args.display_cop_names?
@@ -228,7 +230,8 @@ module Homebrew
       @new_formula_problems = []
       @text = FormulaText.new(formula.path)
       @specs = %w[stable devel head].map { |s| formula.send(s) }.compact
-      @spdx_data = options[:spdx_data]
+      @spdx_license_data = options[:spdx_license_data]
+      @spdx_exception_data = options[:spdx_exception_data]
     end
 
     def audit_style
@@ -357,30 +360,36 @@ module Homebrew
 
     def audit_license
       if formula.license.present?
-        non_standard_licenses = formula.license.map do |license|
-          next if license == :public_domain
-          next if @spdx_data["licenses"].any? { |spdx| spdx["licenseId"] == license }
+        licenses, exceptions = SPDX.parse_license_expression formula.license
 
-          license
-        end.compact
-
+        non_standard_licenses = licenses.reject { |license| SPDX.valid_license? license }
         if non_standard_licenses.present?
-          problem "Formula #{formula.name} contains non-standard SPDX licenses: #{non_standard_licenses}."
+          problem <<~EOS
+            Formula #{formula.name} contains non-standard SPDX licenses: #{non_standard_licenses}.
+            For a list of valid licenses check: #{Formatter.url("https://spdx.org/licenses/")}
+          EOS
         end
 
         if @strict
-          deprecated_licenses = formula.license.map do |license|
-            next if license == :public_domain
-            next if @spdx_data["licenses"].any? do |spdx|
-              spdx["licenseId"] == license && !spdx["isDeprecatedLicenseId"]
-            end
-
-            license
-          end.compact
-
-          if deprecated_licenses.present?
-            problem "Formula #{formula.name} contains deprecated SPDX licenses: #{deprecated_licenses}."
+          deprecated_licenses = licenses.select do |license|
+            SPDX.deprecated_license? license
           end
+          if deprecated_licenses.present?
+            problem <<~EOS
+              Formula #{formula.name} contains deprecated SPDX licenses: #{deprecated_licenses}.
+              You may need to add `-only` or `-or-later` for GNU licenses (e.g. `GPL`, `LGPL`, `AGPL`, `GFDL`).
+              For a list of valid licenses check: #{Formatter.url("https://spdx.org/licenses/")}
+            EOS
+          end
+        end
+
+        invalid_exceptions = exceptions.reject { |exception| SPDX.valid_license_exception? exception }
+        if invalid_exceptions.present?
+          problem <<~EOS
+            Formula #{formula.name} contains invalid or deprecated SPDX license exceptions: #{invalid_exceptions}.
+            For a list of valid license exceptions check:
+              #{Formatter.url("https://spdx.org/licenses/exceptions-index.html/")}
+          EOS
         end
 
         return unless @online
@@ -389,11 +398,11 @@ module Homebrew
         return if user.blank?
 
         github_license = GitHub.get_repo_license(user, repo)
-        return if github_license && (formula.license + ["NOASSERTION"]).include?(github_license)
-        return if PERMITTED_LICENSE_MISMATCHES[github_license]&.any? { |license| formula.license.include? license }
+        return if github_license && (licenses + ["NOASSERTION"]).include?(github_license)
+        return if PERMITTED_LICENSE_MISMATCHES[github_license]&.any? { |license| licenses.include? license }
         return if PERMITTED_FORMULA_LICENSE_MISMATCHES[formula.name] == formula.version
 
-        problem "Formula license #{formula.license} does not match GitHub license #{Array(github_license)}."
+        problem "Formula license #{licenses} does not match GitHub license #{Array(github_license)}."
 
       elsif @new_formula && @core_tap
         problem "Formulae in homebrew/core must specify a license."
