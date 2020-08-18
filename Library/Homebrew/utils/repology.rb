@@ -45,7 +45,7 @@ module Repology
       last_package_index = outdated_packages.size - 1
     end
 
-    outdated_packages = outdated_packages.first(limit) if outdated_packages.size > limit
+    outdated_packages = outdated_packages.first(limit) if !limit.nil? && outdated_packages.size > limit
 
     puts "#{outdated_packages.size} outdated #{"package".pluralize(outdated_packages.size)} found"
     puts
