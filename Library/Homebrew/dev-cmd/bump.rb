@@ -38,7 +38,7 @@ module Homebrew
 
       response
     else
-      Repology.parse_api_response
+      Repology.parse_api_response(requested_limit)
     end
 
     validated_formulae = {}

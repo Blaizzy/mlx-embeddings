@@ -5,8 +5,6 @@ require "utils/curl"
 module Repology
   module_function
 
-  MAX_PAGINATION = 15
-
   def query_api(last_package_in_response = "")
     last_package_in_response += "/" if last_package_in_response.present?
     url = "https://repology.org/api/v1/projects/#{last_package_in_response}?inrepo=homebrew&outdated=1"
@@ -28,25 +26,26 @@ module Repology
     homebrew.empty? ? nil : { name => data }
   end
 
-  def parse_api_response
+  def parse_api_response(limit = nil)
     ohai "Querying outdated packages from Repology"
 
+    page_no = 1 
     outdated_packages = query_api
-    last_package_index = outdated_packages.size - 1
     response_size = outdated_packages.size
-    page_no = 1
+    last_package_index = outdated_packages.size - 1
+    max_pagination =  limit.nil? ? 15 : (limit.to_f / 200).ceil
 
-    while response_size > 1 && page_no <= MAX_PAGINATION
+    while response_size > 1 && page_no <= max_pagination
       odebug "Paginating Repology API page: #{page_no}"
-
       last_package_in_response = outdated_packages.keys[last_package_index]
       response = query_api(last_package_in_response)
 
       response_size = response.size
       outdated_packages.merge!(response)
       last_package_index = outdated_packages.size - 1
-      page_no += 1
     end
+      
+    outdated_packages = outdated_packages.first(limit) if outdated_packages.size > limit
 
     puts "#{outdated_packages.size} outdated #{"package".pluralize(outdated_packages.size)} found"
     puts
