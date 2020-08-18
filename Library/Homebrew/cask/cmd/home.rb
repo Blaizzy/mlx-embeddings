@@ -8,9 +8,6 @@ module Cask
       end
 
       def run
-        # TODO: enable for next major/minor release
-        # odeprecated "brew cask home", "brew home"
-
         if casks.none?
           odebug "Opening project homepage"
           self.class.open_url "https://brew.sh/"
