@@ -8,6 +8,7 @@ module Cask
       end
 
       def run
+        # TODO: enable for next major/minor release
         # odeprecated "brew cask home", "brew home"
 
         if casks.none?

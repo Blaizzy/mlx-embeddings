@@ -25,14 +25,9 @@ describe Cask::Cmd::Cache, :cask do
       cache: Cask::Cache.path, **local_caffeine.url.specs
     ).cached_location
 
-    expect do
-      described_class.run("local-transmission", "local-caffeine")
-    end.to output("#{transmission_location}\n#{caffeine_location}\n").to_stdout
-  end
-
-  it "properly handles Casks that are not present" do
-    expect {
-      described_class.run("notacask")
-    }.to raise_error(Cask::CaskUnavailableError)
+    expect(described_class.cached_location(local_transmission))
+      .to eql transmission_location
+    expect(described_class.cached_location(local_caffeine))
+      .to eql caffeine_location
   end
 end
