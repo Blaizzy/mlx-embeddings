@@ -55,6 +55,10 @@ module Repology
   end
 
   def validate_and_format_packages(outdated_repology_packages, limit)
+    if outdated_repology_packages.size > 10 && (limit.blank? || limit > 10)
+      ohai "Verifying outdated repology packages"
+    end
+
     packages = {}
 
     outdated_repology_packages.each do |_name, repositories|
