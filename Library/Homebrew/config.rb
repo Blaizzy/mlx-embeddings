@@ -29,6 +29,9 @@ HOMEBREW_LIBRARY = Pathname.new(get_env_or_raise("HOMEBREW_LIBRARY")).freeze
 # Where shim scripts for various build and SCM tools are stored
 HOMEBREW_SHIMS_PATH = (HOMEBREW_LIBRARY/"Homebrew/shims").freeze
 
+# Where external data that has been incorporated into Homebrew is stored
+HOMEBREW_DATA_PATH = (HOMEBREW_LIBRARY/"Homebrew/data").freeze
+
 # Where we store symlinks to currently linked kegs
 HOMEBREW_LINKED_KEGS = (HOMEBREW_PREFIX/"var/homebrew/linked").freeze
 

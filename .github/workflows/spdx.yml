@@ -26,7 +26,7 @@ jobs:
         run: |
           cd "$GITHUB_WORKSPACE/Library/Homebrew"
           if brew update-license-data --commit --fail-if-not-changed; then
-            SPDX_VERSION=$(jq -er .licenseListVersion data/spdx.json)
+            SPDX_VERSION=$(jq -er .licenseListVersion data/spdx/spdx_licenses.json)
             if ! git ls-remote --exit-code --heads origin "spdx-$SPDX_VERSION"; then
               git checkout -b "spdx-$SPDX_VERSION"
               git push origin "spdx-$SPDX_VERSION"
