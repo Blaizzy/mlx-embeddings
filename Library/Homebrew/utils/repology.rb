@@ -94,7 +94,7 @@ module Repology
       pull_requests = pull_requests.map { |pr| "#{pr["title"]} (#{Formatter.url(pr["html_url"])})" }.join(", ")
     end
 
-    pull_requests = "None" if pull_requests.empty?
+    pull_requests = "none" if pull_requests.blank?
 
     {
       repology_latest_version:  latest_version,
