@@ -113,34 +113,12 @@ module Language
 
     # Mixin module for {Formula} adding virtualenv support features.
     module Virtualenv
-      PYTHON_VIRTUALENV_URL =
-        "https://files.pythonhosted.org/packages/11/74" \
-        "/2c151a13ef41ab9fb43b3c4ff9e788e0496ed7923b2078d42cab30622bdf" \
-        "/virtualenv-16.7.4.tar.gz"
-      private_constant :PYTHON_VIRTUALENV_URL
-      PYTHON_VIRTUALENV_SHA256 =
-        "94a6898293d07f84a98add34c4df900f8ec64a570292279f6d91c781d37fd305"
-      private_constant :PYTHON_VIRTUALENV_SHA256
-
-      PYTHON_VIRTUALENV_URL_MOJAVE =
-        "https://files.pythonhosted.org/packages/b1/72" \
-        "/2d70c5a1de409ceb3a27ff2ec007ecdd5cc52239e7c74990e32af57affe9" \
-        "/virtualenv-15.2.0.tar.gz"
-      private_constant :PYTHON_VIRTUALENV_URL_MOJAVE
-      PYTHON_VIRTUALENV_SHA256_MOJAVE =
-        "1d7e241b431e7afce47e77f8843a276f652699d1fa4f93b9d8ce0076fd7b0b54"
-      private_constant :PYTHON_VIRTUALENV_SHA256_MOJAVE
-
       def self.included(base)
         base.class_eval do
           resource "homebrew-virtualenv" do
-            if MacOS.version > :mojave
-              url PYTHON_VIRTUALENV_URL
-              sha256 PYTHON_VIRTUALENV_SHA256
-            else
-              url PYTHON_VIRTUALENV_URL_MOJAVE
-              sha256 PYTHON_VIRTUALENV_SHA256_MOJAVE
-            end
+            url "https://files.pythonhosted.org/packages/11/74" \
+                "/2c151a13ef41ab9fb43b3c4ff9e788e0496ed7923b2078d42cab30622bdf/virtualenv-16.7.4.tar.gz"
+            sha256 "94a6898293d07f84a98add34c4df900f8ec64a570292279f6d91c781d37fd305"
           end
         end
       end
