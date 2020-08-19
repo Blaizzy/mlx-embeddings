@@ -398,6 +398,7 @@ module Homebrew
         return if user.blank?
 
         github_license = GitHub.get_repo_license(user, repo)
+        return unless github_license
         return if github_license && (licenses + ["NOASSERTION"]).include?(github_license)
         return if PERMITTED_LICENSE_MISMATCHES[github_license]&.any? { |license| licenses.include? license }
         return if PERMITTED_FORMULA_LICENSE_MISMATCHES[formula.name] == formula.version
