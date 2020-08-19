@@ -4,6 +4,9 @@ require "searchable"
 require "description_cache_store"
 
 module Homebrew
+  # Helper module for searching formulae or casks.
+  #
+  # @api private
   module Search
     def query_regexp(query)
       if m = query.match(%r{^/(.*)/$})
