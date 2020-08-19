@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Utils
-  class Bottles
+  module Bottles
     class << self
       undef tag
 

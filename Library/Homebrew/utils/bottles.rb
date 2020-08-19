@@ -3,7 +3,10 @@
 require "tab"
 
 module Utils
-  class Bottles
+  # Helper functions for bottles.
+  #
+  # @api private
+  module Bottles
     class << self
       def tag
         @tag ||= "#{ENV["HOMEBREW_PROCESSOR"]}_#{ENV["HOMEBREW_SYSTEM"]}".downcase.to_sym
@@ -69,7 +72,8 @@ module Utils
       end
     end
 
-    class Bintray
+    # Helper functions for bottles hosted on Bintray.
+    module Bintray
       def self.package(formula_name)
         package_name = formula_name.to_s.dup
         package_name.tr!("+", "x")
@@ -86,6 +90,7 @@ module Utils
       end
     end
 
+    # Collector for bottles specifications.
     class Collector
       extend Forwardable
 
