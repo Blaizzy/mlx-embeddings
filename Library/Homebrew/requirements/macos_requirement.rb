@@ -2,6 +2,9 @@
 
 require "requirement"
 
+# A requirement on macOS.
+#
+# @api private
 class MacOSRequirement < Requirement
   fatal true
 
