@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# Helper module for making a class searchable with both regular expressions and strings.
+#
+# @api private
 module Searchable
   def search(string_or_regex, &block)
     case string_or_regex
