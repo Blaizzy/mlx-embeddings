@@ -21,7 +21,7 @@ module Utils
     #
     # `inreplace` supports regular expressions:
     # <pre>inreplace "somefile.cfg", /look[for]what?/, "replace by #{bin}/tool"</pre>
-    def inreplace(paths, before = nil, after = nil, audit_result = true)
+    def inreplace(paths, before = nil, after = nil, audit_result = true) # rubocop:disable Style/OptionalBooleanParameter
       errors = {}
 
       errors["`paths` (first) parameter"] = ["`paths` was empty"] if paths.blank?

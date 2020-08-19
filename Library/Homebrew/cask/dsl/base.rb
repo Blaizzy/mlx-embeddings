@@ -30,7 +30,7 @@ module Cask
       end
 
       def respond_to_missing?(*)
-        true
+        super || true
       end
     end
   end

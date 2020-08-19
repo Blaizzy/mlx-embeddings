@@ -22,7 +22,7 @@ class StringInreplaceExtension
   end
 
   # Warn if nothing was replaced
-  def gsub!(before, after, audit_result = true)
+  def gsub!(before, after, audit_result = true) # rubocop:disable Style/OptionalBooleanParameter
     result = inreplace_string.gsub!(before, after)
     errors << "expected replacement of #{before.inspect} with #{after.inspect}" if audit_result && result.nil?
     result

@@ -85,7 +85,7 @@ module Cask
       poo << "during #{section}" if section
       poo << "on Cask #{token}."
 
-      opoo(poo.join(" ") + "\n" + error_message_with_suggestions)
+      opoo("#{poo.join(" ")}\n#{error_message_with_suggestions}")
     end
   end
 end

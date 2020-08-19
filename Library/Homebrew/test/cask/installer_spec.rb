@@ -233,7 +233,7 @@ describe Cask::Installer, :cask do
 
     it "uninstalls all versions if force is set" do
       caffeine = Cask::CaskLoader.load(cask_path("local-caffeine"))
-      mutated_version = caffeine.version + ".1"
+      mutated_version = "#{caffeine.version}.1"
 
       described_class.new(caffeine).install
 

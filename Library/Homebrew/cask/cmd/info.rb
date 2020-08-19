@@ -34,16 +34,16 @@ module Cask
       end
 
       def self.get_info(cask)
-        output = title_info(cask) + "\n"
-        output << Formatter.url(cask.homepage) + "\n" if cask.homepage
+        output = +"#{title_info(cask)}\n"
+        output << "#{Formatter.url(cask.homepage)}\n" if cask.homepage
         output << installation_info(cask)
         repo = repo_info(cask)
-        output << repo + "\n" if repo
+        output << "#{repo}\n" if repo
         output << name_info(cask)
         output << desc_info(cask)
         language = language_info(cask)
         output << language if language
-        output << artifact_info(cask) + "\n"
+        output << "#{artifact_info(cask)}\n"
         caveats = Installer.caveats(cask)
         output << caveats if caveats
         output

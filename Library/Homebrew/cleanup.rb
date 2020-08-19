@@ -48,7 +48,7 @@ module Homebrew
           mtime < days.days.ago && ctime < days.days.ago
         end
 
-        def stale?(scrub = false)
+        def stale?(scrub: false)
           return false unless resolved_path.file?
 
           if dirname.basename.to_s == "Cask"
@@ -308,7 +308,7 @@ module Homebrew
           next
         end
 
-        next cleanup_path(path) { path.unlink } if path.stale?(scrub?)
+        next cleanup_path(path) { path.unlink } if path.stale?(scrub: scrub?)
       end
 
       cleanup_unreferenced_downloads

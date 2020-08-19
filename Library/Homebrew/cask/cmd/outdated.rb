@@ -19,7 +19,7 @@ module Cask
       def run
         outdated_casks = casks(alternative: -> { Caskroom.casks }).select do |cask|
           odebug "Checking update info of Cask #{cask}"
-          cask.outdated?(args.greedy?)
+          cask.outdated?(greedy: args.greedy?)
         end
 
         verbose = ($stdout.tty? || args.verbose?) && !args.quiet?

@@ -83,26 +83,26 @@ module Homebrew
         raise FormulaUnspecifiedError
       end
 
-      puts_deps_tree dependents, recursive, args: args
+      puts_deps_tree dependents, recursive: recursive, args: args
       return
     elsif args.all?
-      puts_deps sorted_dependents(Formula.to_a + Cask::Cask.to_a), recursive, args: args
+      puts_deps sorted_dependents(Formula.to_a + Cask::Cask.to_a), recursive: recursive, args: args
       return
     elsif !args.no_named? && args.for_each?
-      puts_deps sorted_dependents(args.formulae_and_casks), recursive, args: args
+      puts_deps sorted_dependents(args.formulae_and_casks), recursive: recursive, args: args
       return
     end
 
     if args.no_named?
       raise FormulaUnspecifiedError unless args.installed?
 
-      puts_deps sorted_dependents(Formula.installed + Cask::Caskroom.casks), recursive, args: args
+      puts_deps sorted_dependents(Formula.installed + Cask::Caskroom.casks), recursive: recursive, args: args
       return
     end
 
     dependents = dependents(args.formulae_and_casks)
 
-    all_deps = deps_for_dependents(dependents, recursive, args: args, &(args.union? ? :| : :&))
+    all_deps = deps_for_dependents(dependents, recursive: recursive, args: args, &(args.union? ? :| : :&))
     condense_requirements(all_deps, args: args)
     all_deps.map! { |d| dep_display_name(d, args: args) }
     all_deps.uniq!
@@ -144,7 +144,7 @@ module Homebrew
     str
   end
 
-  def deps_for_dependent(d, recursive = false, args:)
+  def deps_for_dependent(d, recursive: false, args:)
     includes, ignores = args_includes_ignores(args)
 
     deps = d.runtime_dependencies if @use_runtime_dependencies
@@ -160,13 +160,13 @@ module Homebrew
     deps + reqs.to_a
   end
 
-  def deps_for_dependents(dependents, recursive = false, args:, &block)
-    dependents.map { |d| deps_for_dependent(d, recursive, args: args) }.reduce(&block)
+  def deps_for_dependents(dependents, recursive: false, args:, &block)
+    dependents.map { |d| deps_for_dependent(d, recursive: recursive, args: args) }.reduce(&block)
   end
 
-  def puts_deps(dependents, recursive = false, args:)
+  def puts_deps(dependents, recursive: false, args:)
     dependents.each do |dependent|
-      deps = deps_for_dependent(dependent, recursive, args: args)
+      deps = deps_for_dependent(dependent, recursive: recursive, args: args)
       condense_requirements(deps, args: args)
       deps.sort_by!(&:name)
       deps.map! { |d| dep_display_name(d, args: args) }
@@ -174,7 +174,7 @@ module Homebrew
     end
   end
 
-  def puts_deps_tree(dependents, recursive = false, args:)
+  def puts_deps_tree(dependents, recursive: false, args:)
     dependents.each do |d|
       puts d.full_name
       @dep_stack = []

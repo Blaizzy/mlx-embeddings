@@ -544,7 +544,7 @@ module Homebrew
                 )\n+                                                              # multiple empty lines
                )+
              /mx
-            string = s.sub!(pattern, '\0' + output + "\n")
+            string = s.sub!(pattern, "\\0#{output}\n")
             odie "Bottle block addition failed!" unless string
           end
         end

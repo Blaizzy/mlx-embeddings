@@ -193,10 +193,8 @@ class Resource
 
   protected
 
-  def mktemp(prefix)
-    Mktemp.new(prefix).run do |staging|
-      yield staging
-    end
+  def mktemp(prefix, &block)
+    Mktemp.new(prefix).run(&block)
   end
 
   private

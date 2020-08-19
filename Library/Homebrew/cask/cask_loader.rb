@@ -44,7 +44,7 @@ module Cask
 
       attr_reader :token, :path
 
-      def initialize(path)
+      def initialize(path) # rubocop:disable Lint/MissingSuper
         path = Pathname(path).expand_path
 
         @token = path.basename(".rb").to_s
@@ -79,7 +79,7 @@ module Cask
     class FromURILoader < FromPathLoader
       def self.can_load?(ref)
         uri_regex = ::URI::DEFAULT_PARSER.make_regexp
-        return false unless ref.to_s.match?(Regexp.new('\A' + uri_regex.source + '\Z', uri_regex.options))
+        return false unless ref.to_s.match?(Regexp.new("\\A#{uri_regex.source}\\Z", uri_regex.options))
 
         uri = URI(ref)
         return false unless uri

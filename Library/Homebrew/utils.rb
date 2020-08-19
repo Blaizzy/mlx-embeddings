@@ -266,16 +266,12 @@ module Kernel
     raise $CHILD_STATUS.inspect
   end
 
-  def with_homebrew_path
-    with_env(PATH: PATH.new(ENV["HOMEBREW_PATH"])) do
-      yield
-    end
+  def with_homebrew_path(&block)
+    with_env(PATH: PATH.new(ENV["HOMEBREW_PATH"]), &block)
   end
 
-  def with_custom_locale(locale)
-    with_env(LC_ALL: locale) do
-      yield
-    end
+  def with_custom_locale(locale, &block)
+    with_env(LC_ALL: locale, &block)
   end
 
   # Kernel.system but with exceptions

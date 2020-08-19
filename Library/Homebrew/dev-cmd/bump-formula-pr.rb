@@ -378,7 +378,8 @@ module Homebrew
         EOS
         user_message = args.message
         if user_message
-          pr_message += "\n" + <<~EOS
+          pr_message += <<~EOS
+
             ---
 
             #{user_message}

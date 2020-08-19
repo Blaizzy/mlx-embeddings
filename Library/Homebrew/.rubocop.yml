@@ -63,7 +63,7 @@ Metrics/ModuleLength:
   Max: 600
 Metrics/PerceivedComplexity:
   Enabled: true
-  Max: 80
+  Max: 90
 
 # we won't change backward compatible predicate names
 Naming/PredicateName:
@@ -138,4 +138,8 @@ Style/FrozenStringLiteralComment:
 
 # so many of these in formulae but none in here
 Style/GuardClause:
+  Enabled: true
+
+# so many of these in formulae but none in here
+Style/StringConcatenation:
   Enabled: true

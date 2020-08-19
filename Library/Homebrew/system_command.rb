@@ -71,7 +71,9 @@ class SystemCommand
     @options = options
     @env = env
 
-    @env.keys.grep_v(/^[\w&&\D]\w*$/) do |name|
+    @env.each_key do |name|
+      next if /^[\w&&\D]\w*$/.match?(name)
+
       raise ArgumentError, "Invalid variable name: '#{name}'"
     end
   end

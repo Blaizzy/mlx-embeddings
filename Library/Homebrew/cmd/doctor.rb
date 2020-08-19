@@ -31,7 +31,7 @@ module Homebrew
 
     inject_dump_stats!(Diagnostic::Checks, /^check_*/) if args.audit_debug?
 
-    checks = Diagnostic::Checks.new args.verbose?
+    checks = Diagnostic::Checks.new(verbose: args.verbose?)
 
     if args.list_checks?
       puts checks.all.sort

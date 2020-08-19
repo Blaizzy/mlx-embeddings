@@ -362,10 +362,10 @@ class Keg
     ObserverPathnameExtension.n
   end
 
-  def lock
+  def lock(&block)
     FormulaLock.new(name).with_lock do
       if oldname_opt_record
-        FormulaLock.new(oldname_opt_record.basename.to_s).with_lock { yield }
+        FormulaLock.new(oldname_opt_record.basename.to_s).with_lock(&block)
       else
         yield
       end

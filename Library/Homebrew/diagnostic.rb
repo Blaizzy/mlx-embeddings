@@ -30,7 +30,7 @@ module Homebrew
 
     # Diagnostic checks.
     class Checks
-      def initialize(verbose = true)
+      def initialize(verbose: true)
         @verbose = verbose
       end
 

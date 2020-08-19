@@ -205,7 +205,7 @@ module Homebrew
     def initialize(url, args, description = nil)
       @base_url = url
       # GitHub provides commits/pull-requests raw patches using this URL.
-      @patch_url = url + ".patch"
+      @patch_url = "#{url}.patch"
       @patchpath = HOMEBREW_CACHE + File.basename(patch_url)
       @description = description
       @args = args
