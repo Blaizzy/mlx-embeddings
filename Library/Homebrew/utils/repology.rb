@@ -32,20 +32,19 @@ module Repology
     ohai "Querying outdated packages from Repology"
 
     page_no = 1
-    outdated_packages = query_api
-    response_size = outdated_packages.size
-    last_package_index = outdated_packages.size - 1
+    outdated_packages = {}
+    last_package_index = ""
 
-    while response_size > 1 && page_no <= MAX_PAGINATION
+    while page_no <= MAX_PAGINATION
       odebug "Paginating Repology API page: #{page_no}"
-      last_package_in_response = outdated_packages.keys[last_package_index]
-      response = query_api(last_package_in_response)
 
+      response = query_api(last_package_index)
       response_size = response.size
       outdated_packages.merge!(response)
       last_package_index = outdated_packages.size - 1
+
       page_no += 1
-      break if limit && outdated_packages.size >= limit
+      break if limit && outdated_packages.size >= limit || response_size <= 1
     end
 
     puts "#{outdated_packages.size} outdated #{"package".pluralize(outdated_packages.size)} found"
