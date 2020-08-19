@@ -80,12 +80,11 @@ module Cask
     end
 
     def self.method_missing_message(method, token, section = nil)
-      poo = []
-      poo << "Unexpected method '#{method}' called"
-      poo << "during #{section}" if section
-      poo << "on Cask #{token}."
+      message = +"Unexpected method '#{method}' called "
+      message << "during #{section} " if section
+      message << "on Cask #{token}."
 
-      opoo("#{poo.join(" ")}\n#{error_message_with_suggestions}")
+      opoo "#{message}\n#{error_message_with_suggestions}"
     end
   end
 end
