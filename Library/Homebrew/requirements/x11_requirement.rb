@@ -2,6 +2,9 @@
 
 require "requirement"
 
+# A requirement on X11.
+#
+# @api private
 class X11Requirement < Requirement
   include Comparable
 
