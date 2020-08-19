@@ -9,18 +9,6 @@ describe Repology do
     end
   end
 
-  describe "query_api" do
-    it "returns a hash of data" do
-      response = described_class.query_api
-
-      expect(response).not_to be_nil
-      expect(response).to be_a(Hash)
-      expect(response.size).not_to eq(0)
-      # first hash in array val should include "repo" key/val pair
-      expect(response[response.keys[0]].first).to include("repo")
-    end
-  end
-
   describe "single_package_query" do
     it "returns nil for non-existent package" do
       response = described_class.single_package_query("invalidName")
@@ -37,7 +25,8 @@ describe Repology do
   end
 
   describe "parse_api_response" do
-    response = described_class.parse_api_response
+    limit = 1
+    response = described_class.parse_api_response(limit)
 
     it "returns a hash of data" do
       expect(response).not_to be_nil
