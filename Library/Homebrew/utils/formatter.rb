@@ -2,6 +2,9 @@
 
 require "utils/tty"
 
+# Helper module for formatting output.
+#
+# @api private
 module Formatter
   module_function
 
