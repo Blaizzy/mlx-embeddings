@@ -38,7 +38,7 @@ module Repology
     while page_no <= MAX_PAGINATION
       odebug "Paginating Repology API page: #{page_no}"
 
-      response = query_api(last_package_index)
+      response = query_api(last_package_index.to_s)
       response_size = response.size
       outdated_packages.merge!(response)
       last_package_index = outdated_packages.size - 1
