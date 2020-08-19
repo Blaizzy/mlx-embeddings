@@ -13,6 +13,10 @@ module OS
     RbConfig::CONFIG["host_os"].include? "linux"
   end
 
+  def self.kernel_version
+    @kernel_version ||= Version.new(Utils.safe_popen_read("uname", "-r").chomp)
+  end
+
   ::OS_VERSION = ENV["HOMEBREW_OS_VERSION"]
 
   if OS.mac?
