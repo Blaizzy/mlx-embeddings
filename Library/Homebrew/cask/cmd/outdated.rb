@@ -2,6 +2,9 @@
 
 module Cask
   class Cmd
+    # Implementation of the `brew cask outdated` command.
+    #
+    # @api private
     class Outdated < AbstractCommand
       def self.description
         "List the outdated installed casks."

@@ -4,6 +4,9 @@ require "cask/artifact/relocated"
 
 module Cask
   class Cmd
+    # Implementation of the `brew cask list` command.
+    #
+    # @api private
     class List < AbstractCommand
       def self.description
         "Lists installed casks or the casks provided in the arguments."

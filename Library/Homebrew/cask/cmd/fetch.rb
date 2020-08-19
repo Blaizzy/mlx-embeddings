@@ -2,6 +2,9 @@
 
 module Cask
   class Cmd
+    # Implementation of the `brew cask fetch` command.
+    #
+    # @api private
     class Fetch < AbstractCommand
       def self.min_named
         :cask

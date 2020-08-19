@@ -2,6 +2,9 @@
 
 module Cask
   class Cmd
+    # Implementation of the `brew cask uninstall` command.
+    #
+    # @api private
     class Uninstall < AbstractCommand
       def self.min_named
         :cask

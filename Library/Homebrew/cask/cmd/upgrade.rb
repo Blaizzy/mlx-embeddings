@@ -5,6 +5,9 @@ require "cask/config"
 
 module Cask
   class Cmd
+    # Implementation of the `brew cask upgrade` command.
+    #
+    # @api private
     class Upgrade < AbstractCommand
       def self.description
         "Upgrades all outdated casks or the specified casks."

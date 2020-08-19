@@ -2,6 +2,9 @@
 
 module Cask
   class Cmd
+    # Implementation of the `brew cask doctor` command.
+    #
+    # @api private
     class Doctor < AbstractCommand
       def self.max_named
         0

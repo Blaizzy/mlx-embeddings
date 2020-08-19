@@ -2,6 +2,9 @@
 
 module Cask
   class Cmd
+    # Implementation of the `brew cask create` command.
+    #
+    # @api private
     class Create < AbstractCommand
       def self.min_named
         :cask

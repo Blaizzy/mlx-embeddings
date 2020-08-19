@@ -2,6 +2,9 @@
 
 module Cask
   class Cmd
+    # Implementation of the `brew cask home` command.
+    #
+    # @api private
     class Home < AbstractCommand
       def self.description
         "Opens the homepage of the given <cask>. If no cask is given, opens the Homebrew homepage."

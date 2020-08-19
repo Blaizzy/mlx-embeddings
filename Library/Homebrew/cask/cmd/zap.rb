@@ -2,6 +2,9 @@
 
 module Cask
   class Cmd
+    # Implementation of the `brew cask zap` command.
+    #
+    # @api private
     class Zap < AbstractCommand
       def self.min_named
         :cask

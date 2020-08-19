@@ -2,6 +2,9 @@
 
 module Cask
   class Cmd
+    # Implementation of the `brew cask reinstall` command.
+    #
+    # @api private
     class Reinstall < Install
       def self.description
         "Reinstalls the given <cask>."

@@ -2,6 +2,9 @@
 
 module Cask
   class Cmd
+    # Implementation of the `brew cask cat` command.
+    #
+    # @api private
     class Cat < AbstractCommand
       def self.min_named
         :cask
