@@ -2,6 +2,9 @@
 
 require "requirement"
 
+# A requirement on Xcode.
+#
+# @api private
 class XcodeRequirement < Requirement
   fatal true
 
