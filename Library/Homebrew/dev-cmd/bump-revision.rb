@@ -30,7 +30,7 @@ module Homebrew
     # user path, too.
     ENV["PATH"] = ENV["HOMEBREW_PATH"]
 
-    args.formulae.each do |formula|
+    args.named.to_formulae.each do |formula|
       current_revision = formula.revision
 
       if current_revision.zero?

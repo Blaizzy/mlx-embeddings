@@ -98,9 +98,9 @@ module Homebrew
     elsif args.no_named?
       Formula
     else
-      args.resolved_formulae
+      args.named.to_resolved_formulae
     end
-    style_files = args.formulae_paths unless skip_style
+    style_files = args.named.to_formulae_paths unless skip_style
 
     only_cops = args.only_cops
     except_cops = args.except_cops

@@ -88,7 +88,7 @@ module Homebrew
     elsif args.github?
       raise FormulaUnspecifiedError if args.no_named?
 
-      exec_browser(*args.formulae.map { |f| github_info(f) })
+      exec_browser(*args.named.to_formulae.map { |f| github_info(f) })
     else
       print_info(args: args)
     end
@@ -133,7 +133,7 @@ module Homebrew
     elsif args.installed?
       Formula.installed.sort
     else
-      args.formulae
+      args.named.to_formulae
     end
     json = ff.map(&:to_hash)
     puts JSON.generate(json)

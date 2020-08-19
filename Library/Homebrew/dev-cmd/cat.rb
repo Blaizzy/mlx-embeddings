@@ -26,6 +26,6 @@ module Homebrew
     else
       "cat"
     end
-    safe_system pager, args.formulae_paths.first
+    safe_system pager, args.named.to_formulae_paths.first
   end
 end

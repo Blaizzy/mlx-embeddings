@@ -44,7 +44,7 @@ module Homebrew
     elsif args.named.any? { |tap| tap.count("/") == 1 }
       args.named.map { |tap| Tap.fetch(tap).path }
     else
-      args.formulae_paths
+      args.named.to_formulae_paths
     end
 
     only_cops = args.only_cops

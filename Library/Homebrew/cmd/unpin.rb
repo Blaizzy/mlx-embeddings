@@ -22,7 +22,7 @@ module Homebrew
   def unpin
     args = unpin_args.parse
 
-    args.resolved_formulae.each do |f|
+    args.named.to_resolved_formulae.each do |f|
       if f.pinned?
         f.unpin
       elsif !f.pinnable?

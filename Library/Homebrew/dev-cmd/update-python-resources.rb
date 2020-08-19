@@ -29,7 +29,7 @@ module Homebrew
   def update_python_resources
     args = update_python_resources_args.parse
 
-    args.formulae.each do |formula|
+    args.named.to_formulae.each do |formula|
       PyPI.update_python_resources! formula, args.version, print_only: args.print_only?, silent: args.silent?,
                                     ignore_non_pypi_packages: args.ignore_non_pypi_packages?
     end

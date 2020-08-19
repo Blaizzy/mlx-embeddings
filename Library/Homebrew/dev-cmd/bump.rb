@@ -23,7 +23,7 @@ module Homebrew
   def bump
     args = bump_args.parse
 
-    requested_formulae = args.formulae.map(&:name) if args.formulae.present?
+    requested_formulae = args.named.to_formulae.map(&:name) if args.named.to_formulae.present?
 
     requested_limit = args.limit.to_i if args.limit.present?
 

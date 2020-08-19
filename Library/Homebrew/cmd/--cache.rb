@@ -40,11 +40,11 @@ module Homebrew
     end
 
     formulae_or_casks = if args.formula?
-      args.formulae
+      args.named.to_formulae
     elsif args.cask?
-      args.loaded_casks
+      args.named.to_casks
     else
-      args.formulae_and_casks
+      args.named.to_formulae_and_casks
     end
 
     formulae_or_casks.each do |formula_or_cask|

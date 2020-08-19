@@ -49,7 +49,7 @@ module Homebrew
         end
       end
     else
-      all_kegs, casks = args.kegs_casks
+      all_kegs, casks = args.named.to_kegs_to_casks
       kegs_by_rack = all_kegs.group_by(&:rack)
     end
 

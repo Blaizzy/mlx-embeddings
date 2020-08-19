@@ -31,7 +31,7 @@ module Homebrew
     ff = if args.no_named?
       Formula.installed.sort
     else
-      args.resolved_formulae.sort
+      args.named.to_resolved_formulae.sort
     end
 
     ff.each do |f|

@@ -10,23 +10,11 @@ describe Homebrew::CLI::NamedArgs do
     end
   end
 
-  let(:foo_keg) do
-    path = (HOMEBREW_CELLAR/"foo/1.0").resolved_path
-    mkdir_p path
-    Keg.new(path)
-  end
-
   let(:bar) do
     formula "bar" do
       url "https://brew.sh"
       version "1.0"
     end
-  end
-
-  let(:bar_keg) do
-    path = (HOMEBREW_CELLAR/"bar/1.0").resolved_path
-    mkdir_p path
-    Keg.new(path)
   end
 
   let(:baz) do
@@ -43,6 +31,14 @@ describe Homebrew::CLI::NamedArgs do
       stub_formula_loader bar
 
       expect(described_class.new("foo", "bar").to_formulae).to eq [foo, bar]
+    end
+
+    it "raises an error when a Formula is unavailable" do
+      expect { described_class.new("mxcl").to_formulae }.to raise_error FormulaUnavailableError
+    end
+
+    it "returns an empty array when there are no Formulae" do
+      expect(described_class.new.to_formulae).to be_empty
     end
   end
 
@@ -85,26 +81,43 @@ describe Homebrew::CLI::NamedArgs do
   end
 
   describe "#to_kegs" do
-    it "returns kegs" do
-      named_args = described_class.new("foo", "bar")
-      allow(named_args).to receive(:resolve_keg).with("foo").and_return foo_keg
-      allow(named_args).to receive(:resolve_keg).with("bar").and_return bar_keg
+    before do
+      (HOMEBREW_CELLAR/"foo/1.0").mkpath
+      (HOMEBREW_CELLAR/"bar/1.0").mkpath
+    end
 
-      expect(named_args.to_kegs).to eq [foo_keg, bar_keg]
+    it "resolves kegs with #resolve_kegs" do
+      expect(described_class.new("foo", "bar").to_kegs.map(&:name)).to eq ["foo", "bar"]
+    end
+
+    it "when there are no matching kegs returns an array of Kegs" do
+      expect(described_class.new.to_kegs).to be_empty
     end
   end
 
   describe "#to_kegs_to_casks" do
+    before do
+      (HOMEBREW_CELLAR/"foo/1.0").mkpath
+    end
+
     it "returns kegs, as well as casks" do
-      named_args = described_class.new("foo", "baz")
-      allow(named_args).to receive(:resolve_keg).and_call_original
-      allow(named_args).to receive(:resolve_keg).with("foo").and_return foo_keg
       stub_cask_loader baz, call_original: true
 
-      kegs, casks = named_args.to_kegs_to_casks
+      kegs, casks = described_class.new("foo", "baz").to_kegs_to_casks
 
-      expect(kegs).to eq [foo_keg]
+      expect(kegs.map(&:name)).to eq ["foo"]
       expect(casks).to eq [baz]
+    end
+  end
+
+  describe "#homebrew_tap_cask_names" do
+    it "returns an array of casks from homebrew-cask" do
+      expect(described_class.new("foo", "homebrew/cask/local-caffeine").homebrew_tap_cask_names)
+        .to eq ["homebrew/cask/local-caffeine"]
+    end
+
+    it "returns an empty array when there are no matching casks" do
+      expect(described_class.new("foo").homebrew_tap_cask_names).to be_empty
     end
   end
 end

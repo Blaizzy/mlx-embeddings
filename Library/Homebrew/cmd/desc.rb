@@ -47,7 +47,7 @@ module Homebrew
 
     results = if search_type.nil?
       desc = {}
-      args.formulae.each { |f| desc[f.full_name] = f.desc }
+      args.named.to_formulae.each { |f| desc[f.full_name] = f.desc }
       Descriptions.new(desc)
     else
       query = args.named.join(" ")

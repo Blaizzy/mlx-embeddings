@@ -112,7 +112,7 @@ class FormulaInstaller
 
     return if build_flags.empty?
 
-    all_bottled = args.formulae.all?(&:bottled?)
+    all_bottled = args.named.to_formulae.all?(&:bottled?)
     raise BuildFlagsError.new(build_flags, bottled: all_bottled)
   end
 
