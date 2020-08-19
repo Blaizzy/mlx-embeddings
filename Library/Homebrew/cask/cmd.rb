@@ -47,6 +47,16 @@ module Cask
       "dr"       => "doctor",
     }.freeze
 
+    DEPRECATED_COMMANDS = {
+      Cmd::Cache     => "brew --cache --cask",
+      Cmd::Doctor    => "brew doctor --verbose",
+      Cmd::Home      => "brew home",
+      Cmd::List      => "brew list --cask",
+      Cmd::Outdated  => "brew outdated --cask",
+      Cmd::Reinstall => "brew reinstall",
+      Cmd::Upgrade   => "brew upgrade --cask",
+    }.freeze
+
     def self.description
       max_command_len = Cmd.commands.map(&:length).max
 
@@ -211,6 +221,11 @@ module Cask
       command, argv = detect_internal_command(*argv) ||
                       detect_external_command(*argv) ||
                       [args.remaining.empty? ? NullCommand : UnknownSubcommand.new(args.remaining.first), argv]
+
+      # TODO: enable for next major/minor release
+      # if (replacement = DEPRECATED_COMMANDS[command])
+      #   odeprecated "brew cask #{command.command_name}", replacement
+      # end
 
       if args.help?
         puts command.help
