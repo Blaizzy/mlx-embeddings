@@ -13,6 +13,7 @@ abv
 analytics
 audit
 bottle
+bump
 bump-formula-pr
 bump-revision
 cask

@@ -817,6 +817,14 @@ value, while `--no-rebuild` will remove it.
 * `--root-url`:
   Use the specified *`URL`* as the root of the bottle's URL instead of Homebrew's default.
 
+### `bump` [*`options`*] [*`formula`*]
+
+Display out-of-date brew formulae and the latest version available.
+Also displays whether a pull request has been opened with the URL.
+
+* `--limit`:
+  Limit number of package results returned.
+
 ### `bump-formula-pr` [*`options`*] [*`formula`*]
 
 Create a pull request to update *`formula`* with a new URL or a new tag.
