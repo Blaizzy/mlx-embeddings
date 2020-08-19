@@ -197,7 +197,7 @@ module Homebrew
       if formula_or_cask.is_a?(Formula)
         formula_or_cask.outdated?(fetch_head: args.fetch_HEAD?)
       else
-        formula_or_cask.outdated?(args.greedy?)
+        formula_or_cask.outdated?(greedy: args.greedy?)
       end
     end
   end
