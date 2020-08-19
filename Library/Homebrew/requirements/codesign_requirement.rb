@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# A requirement on a code-signing identity.
+#
+# @api private
 class CodesignRequirement < Requirement
   fatal true
 
