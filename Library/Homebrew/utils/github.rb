@@ -603,4 +603,21 @@ module GitHub
       EOS
     end
   end
+
+  def forked_repo_info!(tap_full_name)
+    response = GitHub.create_fork(tap_full_name)
+    # GitHub API responds immediately but fork takes a few seconds to be ready.
+    sleep 1 until GitHub.check_fork_exists(tap_full_name)
+    remote_url = if system("git", "config", "--local", "--get-regexp", "remote\..*\.url", "git@github.com:.*")
+      response.fetch("ssh_url")
+    else
+      url = response.fetch("clone_url")
+      if (api_token = Homebrew::EnvConfig.github_api_token)
+        url.gsub!(%r{^https://github\.com/}, "https://#{api_token}@github.com/")
+      end
+      url
+    end
+    username = response.fetch("owner").fetch("login")
+    [remote_url, username]
+  end
 end

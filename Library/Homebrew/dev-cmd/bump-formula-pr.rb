@@ -362,7 +362,12 @@ module Homebrew
           remote_url = Utils.popen_read("git remote get-url --push origin").chomp
           username = formula.tap.user
         else
-          remote_url, username = forked_repo_info(formula, tap_full_name, old_contents)
+          begin
+            remote_url, username = GitHub.forked_repo_info!(tap_full_name)
+          rescue *GitHub.api_errors => e
+            formula.path.atomic_write(old_contents)
+            odie "Unable to fork: #{e.message}!"
+          end
         end
 
         safe_system "git", "fetch", "--unshallow", "origin" if shallow
@@ -443,27 +448,6 @@ module Homebrew
     resource.version = new_version if forced_version
     odie "No --version= argument specified!" unless resource.version
     [resource.fetch, forced_version]
-  end
-
-  def forked_repo_info(formula, tap_full_name, old_contents)
-    response = GitHub.create_fork(tap_full_name)
-  rescue GitHub::AuthenticationFailedError, *GitHub.api_errors => e
-    formula.path.atomic_write(old_contents)
-    odie "Unable to fork: #{e.message}!"
-  else
-    # GitHub API responds immediately but fork takes a few seconds to be ready.
-    sleep 1 until GitHub.check_fork_exists(tap_full_name)
-    remote_url = if system("git", "config", "--local", "--get-regexp", "remote\..*\.url", "git@github.com:.*")
-      response.fetch("ssh_url")
-    else
-      url = response.fetch("clone_url")
-      if (api_token = Homebrew::EnvConfig.github_api_token)
-        url.gsub!(%r{^https://github\.com/}, "https://#{api_token}@github.com/")
-      end
-      url
-    end
-    username = response.fetch("owner").fetch("login")
-    [remote_url, username]
   end
 
   def formula_version(formula, spec, contents = nil)
