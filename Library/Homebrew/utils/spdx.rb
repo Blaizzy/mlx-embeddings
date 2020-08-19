@@ -33,18 +33,18 @@ module SPDX
     case license_expression
     when String, Symbol
       licenses.push license_expression
-    when Hash
-      license_expression.each do |key, value|
-        if [:any_of, :all_of].include? key
-          sub_license, sub_exception = parse_license_expression value
-          licenses += sub_license
-          exceptions += sub_exception
-        else
-          licenses.push key
-          exceptions.push value[:with]
-        end
+    when Hash, Array
+      if license_expression.is_a? Hash
+        license_expression = license_expression.map do |key, value|
+          if key.is_a? String
+            licenses.push key
+            exceptions.push value[:with]
+            next
+          end
+          value
+        end.compact
       end
-    when Array
+
       license_expression.each do |license|
         sub_license, sub_exception = parse_license_expression license
         licenses += sub_license
@@ -83,7 +83,8 @@ module SPDX
       license_expression
     when :public_domain
       "Public Domain"
-    when Hash
+    when Hash, Array
+      license_expression = { any_of: license_expression } if license_expression.is_a? Array
       expressions = []
 
       if license_expression.keys.length == 1
@@ -134,7 +135,8 @@ module SPDX
     case license_expression
     when String, Symbol
       forbidden_licenses_include? license_expression.to_s, forbidden_licenses
-    when Hash
+    when Hash, Array
+      license_expression = { any_of: license_expression } if license_expression.is_a? Array
       key = license_expression.keys.first
       case key
       when :any_of

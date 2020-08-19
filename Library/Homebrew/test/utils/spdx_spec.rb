@@ -67,6 +67,10 @@ describe SPDX do
       expect(described_class.parse_license_expression(any_of: ["MIT", "EPL-1.0+"]).first).to eq ["MIT", "EPL-1.0+"]
     end
 
+    it "returns multiple licenses with array" do
+      expect(described_class.parse_license_expression(["MIT", "EPL-1.0+"]).first).to eq ["MIT", "EPL-1.0+"]
+    end
+
     it "returns license and exception" do
       license_expression = { "MIT" => { with: "LLVM-exception" } }
       expect(described_class.parse_license_expression(license_expression)).to eq [["MIT"], ["LLVM-exception"]]
@@ -79,7 +83,7 @@ describe SPDX do
         all_of: ["0BSD", "Zlib"],
         "curl" => { with: "LLVM-exception" },
       ] }
-      result = [["MIT", :public_domain, "0BSD", "Zlib", "curl"], ["LLVM-exception"]]
+      result = [["MIT", :public_domain, "curl", "0BSD", "Zlib"], ["LLVM-exception"]]
       expect(described_class.parse_license_expression(license_expression)).to eq result
     end
 
@@ -163,6 +167,10 @@ describe SPDX do
       expect(described_class.license_expression_to_string(any_of: ["MIT", "EPL-1.0+"])).to eq "MIT or EPL-1.0+"
     end
 
+    it "treats array as any_of:" do
+      expect(described_class.license_expression_to_string(["MIT", "EPL-1.0+"])).to eq "MIT or EPL-1.0+"
+    end
+
     it "returns license and exception" do
       license_expression = { "MIT" => { with: "LLVM-exception" } }
       expect(described_class.license_expression_to_string(license_expression)).to eq "MIT with LLVM-exception"
@@ -229,7 +237,17 @@ describe SPDX do
       }
     }
     let(:any_of_license) { { any_of: ["MIT", "0BSD"] } }
+    let(:license_array) { ["MIT", "0BSD"] }
     let(:all_of_license) { { all_of: ["MIT", "0BSD"] } }
+    let(:nested_licenses) {
+      {
+        any_of: [
+          "MIT",
+          { "MIT" => { with: "LLVM-exception" } },
+          { any_of: ["MIT", "0BSD"] },
+        ],
+      }
+    }
     let(:license_exception) { { "MIT" => { with: "LLVM-exception" } } }
 
     it "allows installation with no forbidden licenses" do
@@ -260,6 +278,14 @@ describe SPDX do
       expect(described_class.licenses_forbid_installation?(any_of_license, multiple_forbidden)).to eq true
     end
 
+    it "allows installation when one of the array licenses is allowed" do
+      expect(described_class.licenses_forbid_installation?(license_array, mit_forbidden)).to eq false
+    end
+
+    it "forbids installation when none of the array licenses are allowed" do
+      expect(described_class.licenses_forbid_installation?(license_array, multiple_forbidden)).to eq true
+    end
+
     it "forbids installation when one of the all_of licenses is allowed" do
       expect(described_class.licenses_forbid_installation?(all_of_license, mit_forbidden)).to eq true
     end
@@ -270,6 +296,18 @@ describe SPDX do
 
     it "forbids installation with license + exception that are't forbidden" do
       expect(described_class.licenses_forbid_installation?(license_exception, mit_forbidden)).to eq true
+    end
+
+    it "allows installation with nested licenses with no forbidden licenses" do
+      expect(described_class.licenses_forbid_installation?(nested_licenses, epl_1_forbidden)).to eq false
+    end
+
+    it "allows installation with nested licenses when second hash item matches" do
+      expect(described_class.licenses_forbid_installation?(nested_licenses, mit_forbidden)).to eq false
+    end
+
+    it "forbids installation with nested licenses when all licenses are forbidden" do
+      expect(described_class.licenses_forbid_installation?(nested_licenses, multiple_forbidden)).to eq true
     end
   end
 
