@@ -6,8 +6,26 @@ require "hardware"
 require "development_tools"
 
 module Homebrew
+  # Helper module for performing (pre-)install checks.
+  #
+  # @api private
   module Install
     module_function
+
+    def perform_preinstall_checks(all_fatal: false, cc: nil)
+      check_cpu
+      attempt_directory_creation
+      check_cc_argv(cc)
+      diagnostic_checks(:supported_configuration_checks, fatal: all_fatal)
+      diagnostic_checks(:fatal_preinstall_checks)
+    end
+    alias generic_perform_preinstall_checks perform_preinstall_checks
+    module_function :generic_perform_preinstall_checks
+
+    def perform_build_from_source_checks(all_fatal: false)
+      diagnostic_checks(:fatal_build_from_source_checks)
+      diagnostic_checks(:build_from_source_checks, fatal: all_fatal)
+    end
 
     def check_cpu
       return if Hardware::CPU.intel? && Hardware::CPU.is_64_bit?
@@ -24,6 +42,7 @@ module Homebrew
       end
       abort message
     end
+    private_class_method :check_cpu
 
     def attempt_directory_creation
       Keg::MUST_EXIST_DIRECTORIES.each do |dir|
@@ -38,6 +57,7 @@ module Homebrew
         nil
       end
     end
+    private_class_method :attempt_directory_creation
 
     def check_cc_argv(cc)
       return unless cc
@@ -48,21 +68,7 @@ module Homebrew
         #{@checks.please_create_pull_requests}
       EOS
     end
-
-    def perform_preinstall_checks(all_fatal: false, cc: nil)
-      check_cpu
-      attempt_directory_creation
-      check_cc_argv(cc)
-      diagnostic_checks(:supported_configuration_checks, fatal: all_fatal)
-      diagnostic_checks(:fatal_preinstall_checks)
-    end
-    alias generic_perform_preinstall_checks perform_preinstall_checks
-    module_function :generic_perform_preinstall_checks
-
-    def perform_build_from_source_checks(all_fatal: false)
-      diagnostic_checks(:fatal_build_from_source_checks)
-      diagnostic_checks(:build_from_source_checks, fatal: all_fatal)
-    end
+    private_class_method :check_cc_argv
 
     def diagnostic_checks(type, fatal: true)
       @checks ||= Diagnostic::Checks.new
@@ -80,6 +86,7 @@ module Homebrew
       end
       exit 1 if failed && fatal
     end
+    private_class_method :diagnostic_checks
   end
 end
 

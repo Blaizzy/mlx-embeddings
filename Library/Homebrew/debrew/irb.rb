@@ -11,7 +11,7 @@ module IRB
 
     def start_within(binding)
       unless @setup_done
-        setup(nil)
+        setup(nil, argv: [])
         @setup_done = true
       end
 

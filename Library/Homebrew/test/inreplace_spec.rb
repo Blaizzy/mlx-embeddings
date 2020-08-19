@@ -305,4 +305,12 @@ describe Utils::Inreplace do
       end
     }.to raise_error(Utils::InreplaceError)
   end
+
+  describe "#inreplace_pairs" do
+    it "raises error if there is no old value" do
+      expect {
+        described_class.inreplace_pairs(file.path, [[nil, "f"]])
+      }.to raise_error(Utils::InreplaceError)
+    end
+  end
 end

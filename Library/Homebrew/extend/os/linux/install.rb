@@ -14,6 +14,12 @@ module Homebrew
       "/system/bin/linker64",
       "/system/bin/linker",
     ].freeze
+    private_constant :DYNAMIC_LINKERS
+
+    def perform_preinstall_checks(all_fatal: false, cc: nil)
+      generic_perform_preinstall_checks(all_fatal: all_fatal, cc: cc)
+      symlink_ld_so
+    end
 
     def check_cpu
       return if Hardware::CPU.intel? && Hardware::CPU.is_64_bit?
@@ -28,6 +34,7 @@ module Homebrew
       end
       abort message
     end
+    private_class_method :check_cpu
 
     def symlink_ld_so
       brew_ld_so = HOMEBREW_PREFIX/"lib/ld.so"
@@ -42,10 +49,6 @@ module Homebrew
       FileUtils.mkdir_p HOMEBREW_PREFIX/"lib"
       FileUtils.ln_sf ld_so, brew_ld_so
     end
-
-    def perform_preinstall_checks(all_fatal: false, cc: nil)
-      generic_perform_preinstall_checks(all_fatal: all_fatal, cc: cc)
-      symlink_ld_so
-    end
+    private_class_method :symlink_ld_so
   end
 end

@@ -49,7 +49,7 @@ module Homebrew
       return
     end
 
-    ohai "#{prs.size} matching pull requests:"
+    ohai "#{prs.count} matching pull #{"request".pluralize(prs.count)}:"
     pr_urls = []
     prs.each do |pr|
       puts "#{tap.full_name unless tap.core_tap?}##{pr["number"]}: #{pr["title"]}"

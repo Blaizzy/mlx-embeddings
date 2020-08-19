@@ -36,6 +36,7 @@ class Tab < OpenStruct
       "stdlib"                  => stdlib,
       "aliases"                 => formula.aliases,
       "runtime_dependencies"    => Tab.runtime_deps_hash(runtime_deps),
+      "arch"                    => Hardware::CPU.arch,
       "source"                  => {
         "path"     => formula.specified_path.to_s,
         "tap"      => formula.tap&.name,
@@ -47,6 +48,7 @@ class Tab < OpenStruct
           "version_scheme" => formula.version_scheme,
         },
       },
+      "built_on"                => DevelopmentTools.build_system_info,
     }
 
     new(attributes)
@@ -198,6 +200,7 @@ class Tab < OpenStruct
           "version_scheme" => 0,
         },
       },
+      "built_on"                => DevelopmentTools.generic_build_system_info,
     }
 
     new(attributes)
@@ -344,6 +347,7 @@ class Tab < OpenStruct
       "aliases"                 => aliases,
       "runtime_dependencies"    => runtime_dependencies,
       "source"                  => source,
+      "built_on"                => built_on,
     }
 
     JSON.generate(attributes, options)

@@ -36,6 +36,7 @@ $LOAD_PATH.push(File.expand_path("#{ENV["HOMEBREW_LIBRARY"]}/Homebrew/test/suppo
 require_relative "../global"
 
 require "test/support/no_seed_progress_formatter"
+require "test/support/helper/cask"
 require "test/support/helper/fixtures"
 require "test/support/helper/formula"
 require "test/support/helper/mktmpdir"
@@ -86,6 +87,7 @@ RSpec.configure do |config|
 
   config.include(RuboCop::RSpec::ExpectOffense)
 
+  config.include(Test::Helper::Cask)
   config.include(Test::Helper::Fixtures)
   config.include(Test::Helper::Formula)
   config.include(Test::Helper::MkTmpDir)

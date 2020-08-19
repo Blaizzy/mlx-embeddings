@@ -28,9 +28,9 @@ module Cask
           switch "--online",
                  description: "Run additional, slower style checks that require a network connection"
           switch "--new-cask",
-                 description: "Run various additional style checks to determine if a new cask is eligible
-                               for Homebrew. This should be used when creating new casks and implies
-                               `--strict` and `--online`"
+                 description: "Run various additional style checks to determine if a new cask is eligible " \
+                              "for Homebrew. This should be used when creating new casks and implies " \
+                              "`--strict` and `--online`"
         end
       end
 

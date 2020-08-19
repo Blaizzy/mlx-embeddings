@@ -25,10 +25,7 @@ module Homebrew
     end
 
     homepages = args.formulae_and_casks.map do |formula_or_cask|
-      disclaimer = disclaimers(formula_or_cask)
-      disclaimer = " (#{disclaimer})" if disclaimer.present?
-
-      puts "Opening homepage for #{name_of(formula_or_cask)}#{disclaimer}"
+      puts "Opening homepage for #{name_of(formula_or_cask)}"
       formula_or_cask.homepage
     end
 
@@ -40,17 +37,6 @@ module Homebrew
       "Formula #{formula_or_cask.name}"
     else
       "Cask #{formula_or_cask.token}"
-    end
-  end
-
-  def disclaimers(formula_or_cask)
-    return unless formula_or_cask.is_a? Formula
-
-    begin
-      cask = Cask::CaskLoader.load formula_or_cask.name
-      "for the cask, use #{cask.tap.name}/#{cask.token}"
-    rescue Cask::CaskUnavailableError
-      nil
     end
   end
 end

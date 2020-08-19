@@ -99,6 +99,15 @@ class DevelopmentTools
     def subversion_handles_most_https_certificates?
       true
     end
+
+    def build_system_info
+      {
+        "os"         => ENV["HOMEBREW_SYSTEM"],
+        "os_version" => OS_VERSION,
+        "cpu_family" => Hardware::CPU.family,
+      }
+    end
+    alias generic_build_system_info build_system_info
   end
 end
 

@@ -64,6 +64,9 @@ class FormulaVersions
         versions_seen = (map.keys + [f.pkg_version]).uniq.length
       end
       return map if versions_seen > MAX_VERSIONS_DEPTH
+    rescue MacOSVersionError => e
+      odebug "#{e} in #{name} at revision #{rev}" if debug?
+      break
     end
     map
   end

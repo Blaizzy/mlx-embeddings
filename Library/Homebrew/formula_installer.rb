@@ -21,7 +21,6 @@ require "cmd/install"
 require "find"
 
 class FormulaInstaller
-  include Homebrew::Install
   include FormulaCellarChecks
   extend Predicable
 
@@ -261,7 +260,9 @@ class FormulaInstaller
     lock
 
     start_time = Time.now
-    perform_build_from_source_checks if !formula.bottle_unneeded? && !pour_bottle? && DevelopmentTools.installed?
+    if !formula.bottle_unneeded? && !pour_bottle? && DevelopmentTools.installed?
+      Homebrew::Install.perform_build_from_source_checks
+    end
 
     # not in initialize so upgrade can unlink the active keg before calling this
     # function but after instantiating this class so that it can avoid having to

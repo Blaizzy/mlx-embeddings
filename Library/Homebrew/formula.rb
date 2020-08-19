@@ -2020,7 +2020,7 @@ class Formula
 
         SystemConfig.dump_verbose_config(log)
         log.puts
-        Homebrew.dump_build_env(env, log)
+        BuildEnvironment.dump env, log
 
         raise BuildError.new(self, cmd, args, env)
       end

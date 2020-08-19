@@ -18,6 +18,10 @@ module Cask
       def to_a
         [true]
       end
+
+      def summarize
+        "true"
+      end
     end
   end
 end

@@ -6,12 +6,18 @@ case "$HOMEBREW_SYSTEM" in
 esac
 
 # Force UTF-8 to avoid encoding issues for users with broken locale settings.
-if [[ "$(locale charmap 2>/dev/null)" != "UTF-8" ]]
+if [[ -n "$HOMEBREW_MACOS" ]]
 then
-  if [[ -n "$HOMEBREW_MACOS" ]]
+  if [[ "$(locale charmap)" != "UTF-8" ]]
   then
     export LC_ALL="en_US.UTF-8"
-  else
+  fi
+else
+  if ! command -v locale >/dev/null
+  then
+    export LC_ALL=C
+  elif [[ "$(locale charmap)" != "UTF-8" ]]
+  then
     locales=$(locale -a)
     c_utf_regex='\bC\.(utf8|UTF-8)\b'
     en_us_regex='\ben_US\.(utf8|UTF-8)\b'
