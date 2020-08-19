@@ -4,6 +4,9 @@ require "cask/artifact/moved"
 
 module Cask
   module Artifact
+    # Artifact corresponding to the `mdimporter` stanza.
+    #
+    # @api private
     class Mdimporter < Moved
       def self.english_name
         "Spotlight metadata importer"

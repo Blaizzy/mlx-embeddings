@@ -4,6 +4,9 @@ require "cask/artifact/relocated"
 
 module Cask
   module Artifact
+    # Superclass for all artifacts which are installed by symlinking them to the target location.
+    #
+    # @api private
     class Symlinked < Relocated
       def self.link_type_english_name
         "Symlink"

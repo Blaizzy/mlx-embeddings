@@ -7,6 +7,9 @@ using HashValidator
 
 module Cask
   module Artifact
+    # Superclass for all artifacts which have a source and a target location.
+    #
+    # @api private
     class Relocated < AbstractArtifact
       def self.from_args(cask, *args)
         source_string, target_hash = args

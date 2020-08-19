@@ -4,6 +4,9 @@ require "cask/artifact/moved"
 
 module Cask
   module Artifact
+    # Artifact corresponding to the `suite` stanza.
+    #
+    # @api private
     class Suite < Moved
       def self.english_name
         "App Suite"

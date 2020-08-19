@@ -10,6 +10,9 @@ using HashValidator
 
 module Cask
   module Artifact
+    # Abstract superclass for uninstall artifacts.
+    #
+    # @api private
     class AbstractUninstall < AbstractArtifact
       ORDERED_DIRECTIVES = [
         :early_script,

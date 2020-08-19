@@ -4,6 +4,9 @@ require "cask/artifact/relocated"
 
 module Cask
   module Artifact
+    # Superclass for all artifacts which are installed by moving them to the target location.
+    #
+    # @api private
     class Moved < Relocated
       def self.english_description
         "#{english_name}s"
