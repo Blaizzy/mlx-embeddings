@@ -35,16 +35,15 @@ homebrew-update-reset() {
   for DIR in "${REPOS[@]}"
   do
     [[ -d "$DIR/.git" ]] || continue
-    cd "$DIR" || continue
     ohai "Fetching $DIR..."
-    git fetch --force --tags origin
-    git remote set-head origin --auto >/dev/null
+    git -C "$DIR" fetch --force --tags origin
+    git -C "$DIR" remote set-head origin --auto >/dev/null
     echo
 
     ohai "Resetting $DIR..."
-    head="$(git symbolic-ref refs/remotes/origin/HEAD)"
+    head="$(git -C "$DIR" symbolic-ref refs/remotes/origin/HEAD)"
     head="${head#refs/remotes/origin/}"
-    git checkout --force -B "$head" origin/HEAD
+    git -C "$DIR" checkout --force -B "$head" origin/HEAD
     echo
   done
 }
