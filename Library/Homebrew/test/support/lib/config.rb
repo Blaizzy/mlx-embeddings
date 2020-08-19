@@ -19,6 +19,9 @@ end.freeze
 # Paths pointing into the Homebrew code base that persist across test runs
 HOMEBREW_SHIMS_PATH = (HOMEBREW_LIBRARY_PATH/"shims").freeze
 
+# Where external data that has been incorporated into Homebrew is stored
+HOMEBREW_DATA_PATH = (HOMEBREW_LIBRARY_PATH/"data").freeze
+
 require "extend/git_repository"
 
 # Paths redirected to a temporary directory and wiped at the end of the test run

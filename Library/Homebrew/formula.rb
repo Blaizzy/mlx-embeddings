@@ -2219,18 +2219,20 @@ class Formula
     # @!attribute [w]
     # The SPDX ID of the open-source license that the formula uses.
     # Shows when running `brew info`.
-    # Multiple licenses means that the software is licensed under multiple licenses.
-    # Do not use multiple licenses if e.g. different parts are under different licenses.
+    # Use `:any`, `:all` or `:with` to describe complex license expressions.
+    # `:any` should be used when the user can choose which license to use.
+    # `:all` should be used when the user must use all licenses.
+    # `:with` should be used to specify a valid SPDX exception.
+    # Add `+` to an identifier to indicate that the formulae can be
+    # licensed under later versions of the same license.
+    # @see https://spdx.github.io/spdx-spec/appendix-IV-SPDX-license-expressions/ SPDX license expression guide
     # <pre>license "BSD-2-Clause"</pre>
-    # <pre>license ["MIT", "GPL-2.0"]</pre>
+    # <pre>license "EPL-1.0+"</pre>
+    # <pre>license any_of: ["MIT", "GPL-2.0-only"]</pre>
+    # <pre>license all_of: ["MIT", "GPL-2.0-only"]</pre>
+    # <pre>license "GPL-2.0-only" => { with: "LLVM-exception" }</pre>
     # <pre>license :public_domain</pre>
-    def license(args = nil)
-      if args.nil?
-        @licenses
-      else
-        @licenses = Array(args)
-      end
-    end
+    attr_rw :license
 
     # @!attribute [w] homepage
     # The homepage for the software. Used by users to get more information

@@ -8,6 +8,7 @@ require "formula"
 require "keg"
 require "tab"
 require "json"
+require "utils/spdx"
 
 module Homebrew
   module_function
@@ -211,13 +212,7 @@ module Homebrew
 
     puts "From: #{Formatter.url(github_info(f))}"
 
-    if f.license.present?
-      licenses = f.license
-                  .map(&:to_s)
-                  .join(", ")
-                  .sub("public_domain", "Public Domain")
-      puts "License: #{licenses}"
-    end
+    puts "License: #{SPDX.license_expression_to_string f.license}" if f.license.present?
 
     unless f.deps.empty?
       ohai "Dependencies"
