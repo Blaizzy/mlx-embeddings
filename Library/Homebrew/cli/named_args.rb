@@ -11,7 +11,7 @@ module Homebrew
         @force_bottle = force_bottle
         @flags = flags
 
-        __setobj__(@args)
+        super(@args)
       end
 
       def to_formulae

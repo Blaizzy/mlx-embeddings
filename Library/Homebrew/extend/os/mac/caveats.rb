@@ -44,6 +44,6 @@ class Caveats
         s << "" << "WARNING: brew services will fail when run under tmux."
       end
     end
-    s.join("\n") + "\n" unless s.empty?
+    "#{s.join("\n")}\n" unless s.empty?
   end
 end

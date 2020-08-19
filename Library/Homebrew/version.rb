@@ -102,6 +102,8 @@ class Version
     PATTERN = /[a-z]+/i.freeze
 
     def initialize(value)
+      super
+
       @value = value.to_s
     end
 
@@ -121,6 +123,8 @@ class Version
     PATTERN = /[0-9]+/i.freeze
 
     def initialize(value)
+      super
+
       @value = value.to_i
     end
 

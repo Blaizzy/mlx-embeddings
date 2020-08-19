@@ -212,6 +212,10 @@ Style/GuardClause:
 Style/HashSyntax:
   EnforcedStyle: ruby19
 
+# so many of these in formulae and can't be autocorrected
+Style/StringConcatenation:
+  Enabled: false
+
 # ruby style guide favorite
 Style/StringLiterals:
   EnforcedStyle: double_quotes

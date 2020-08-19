@@ -54,13 +54,13 @@ module Cask
 
         outdated_casks = if casks.empty?
           Caskroom.casks.select do |cask|
-            cask.outdated?(greedy)
+            cask.outdated?(greedy: greedy)
           end
         else
           casks.select do |cask|
             raise CaskNotInstalledError, cask unless cask.installed? || force
 
-            cask.outdated?(true)
+            cask.outdated?(greedy: true)
           end
         end
 

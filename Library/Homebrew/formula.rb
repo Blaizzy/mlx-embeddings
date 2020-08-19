@@ -944,12 +944,12 @@ class Formula
 
   # The generated launchd {.plist} service name.
   def plist_name
-    "homebrew.mxcl." + name
+    "homebrew.mxcl.#{name}"
   end
 
   # The generated launchd {.plist} file path.
   def plist_path
-    prefix + (plist_name + ".plist")
+    prefix/"#{plist_name}.plist"
   end
 
   # @private
@@ -1137,7 +1137,7 @@ class Formula
     to_check = path.relative_path_from(HOMEBREW_PREFIX).to_s
     self.class.link_overwrite_paths.any? do |p|
       p == to_check ||
-        to_check.start_with?(p.chomp("/") + "/") ||
+        to_check.start_with?("#{p.chomp("/")}/") ||
         to_check =~ /^#{Regexp.escape(p).gsub('\*', ".*?")}$/
     end
   end
@@ -2070,21 +2070,17 @@ class Formula
   # recursively delete the temporary directory. Passing `opts[:retain]`
   # or calling `do |staging| ... staging.retain!` in the block will skip
   # the deletion and retain the temporary directory's contents.
-  def mktemp(prefix = name, opts = {})
-    Mktemp.new(prefix, opts).run do |staging|
-      yield staging
-    end
+  def mktemp(prefix = name, opts = {}, &block)
+    Mktemp.new(prefix, opts).run(&block)
   end
 
   # A version of `FileUtils.mkdir` that also changes to that folder in
   # a block.
-  def mkdir(name)
+  def mkdir(name, &block)
     result = FileUtils.mkdir_p(name)
     return result unless block_given?
 
-    FileUtils.chdir name do
-      yield
-    end
+    FileUtils.chdir(name, &block)
   end
 
   # Run `xcodebuild` without Homebrew's compiler environment variables set.
@@ -2184,6 +2180,8 @@ class Formula
     include BuildEnvironment::DSL
 
     def method_added(method)
+      super
+
       case method
       when :brew
         raise "You cannot override Formula#brew in class #{name}"

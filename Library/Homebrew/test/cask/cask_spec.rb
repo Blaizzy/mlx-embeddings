@@ -134,7 +134,7 @@ describe Cask::Cask, :cask do
         expectations.each do |installed_version, expected_output|
           context "when versions #{installed_version} are installed and the " \
                   "tap version is #{tap_version}, #{"not" unless greedy} greedy" do
-            subject { cask.outdated_versions greedy }
+            subject { cask.outdated_versions(greedy: greedy) }
 
             it {
               allow(cask).to receive(:versions).and_return(installed_version)

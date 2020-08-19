@@ -142,9 +142,9 @@ module Homebrew
           if @table[switch] == true || @table[flag] == true
             @cli_args << option
           elsif @table[flag].instance_of? String
-            @cli_args << option + "=" + @table[flag]
+            @cli_args << "#{option}=#{@table[flag]}"
           elsif @table[flag].instance_of? Array
-            @cli_args << option + "=" + @table[flag].join(",")
+            @cli_args << "#{option}=#{@table[flag].join(",")}"
           end
         end
         @cli_args.freeze

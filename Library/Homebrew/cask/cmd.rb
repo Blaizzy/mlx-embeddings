@@ -58,20 +58,22 @@ module Cask
     }.freeze
 
     def self.description
-      max_command_len = Cmd.commands.map(&:length).max
+      max_command_length = Cmd.commands.map(&:length).max
 
-      <<~EOS +
+      command_lines = Cmd.command_classes
+                         .select(&:visible?)
+                         .map do |klass|
+        "  - #{"`#{klass.command_name}`".ljust(max_command_length + 2)}  #{klass.short_description}\n"
+      end
+
+      <<~EOS
         Homebrew Cask provides a friendly CLI workflow for the administration of macOS applications distributed as binaries.
 
         Commands:
+        #{command_lines.join}
+
+        See also: `man brew`
       EOS
-        Cmd.command_classes
-           .select(&:visible?)
-           .map do |klass|
-             "  - #{"`#{klass.command_name}`".ljust(max_command_len + 2)}  #{klass.short_description}\n"
-           end
-           .join +
-        "\nSee also: `man brew`"
     end
 
     def self.parser(&block)

@@ -17,7 +17,7 @@ module Cask
       def run
         success = true
 
-        checks = Homebrew::Diagnostic::Checks.new true
+        checks = Homebrew::Diagnostic::Checks.new(verbose: true)
         checks.cask_checks.each do |check|
           out = checks.send(check)
 

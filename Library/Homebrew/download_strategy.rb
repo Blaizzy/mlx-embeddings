@@ -345,7 +345,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
     return @resolved_info_cache[url] if @resolved_info_cache.include?(url)
 
     if (domain = Homebrew::EnvConfig.artifact_domain)
-      url = url.sub(%r{^((ht|f)tps?://)?}, domain.chomp("/") + "/")
+      url = url.sub(%r{^((ht|f)tps?://)?}, "#{domain.chomp("/")}/")
     end
 
     out, _, status= curl_output("--location", "--silent", "--head", "--request", "GET", url.to_s)
@@ -503,7 +503,7 @@ end
 
 # This strategy extracts local binary packages.
 class LocalBottleDownloadStrategy < AbstractFileDownloadStrategy
-  def initialize(path)
+  def initialize(path) # rubocop:disable Lint/MissingSuper
     @cached_location = path
   end
 end
@@ -552,7 +552,7 @@ class SubversionDownloadStrategy < VCSDownloadStrategy
     end
   end
 
-  def fetch_repo(target, url, revision = nil, ignore_externals = false)
+  def fetch_repo(target, url, revision = nil, ignore_externals: false)
     # Use "svn update" when the repository already exists locally.
     # This saves on bandwidth and will have a similar effect to verifying the
     # cache as it will make any changes to get the right revision.
@@ -593,10 +593,10 @@ class SubversionDownloadStrategy < VCSDownloadStrategy
     when :revisions
       # nil is OK for main_revision, as fetch_repo will then get latest
       main_revision = @ref[:trunk]
-      fetch_repo cached_location, @url, main_revision, true
+      fetch_repo cached_location, @url, main_revision, ignore_externals: true
 
       externals do |external_name, external_url|
-        fetch_repo cached_location/external_name, external_url, @ref[external_name], true
+        fetch_repo cached_location/external_name, external_url, @ref[external_name], ignore_externals: true
       end
     else
       fetch_repo cached_location, @url

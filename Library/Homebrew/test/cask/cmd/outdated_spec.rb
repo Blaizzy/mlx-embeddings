@@ -111,7 +111,7 @@ describe Cask::Cmd::Outdated, :cask do
 
       expect {
         described_class.run("--json")
-      }.to output(result + "\n").to_stdout
+      }.to output("#{result}\n").to_stdout
     end
   end
 
@@ -132,7 +132,7 @@ describe Cask::Cmd::Outdated, :cask do
 
       expect {
         described_class.run("--json", "--quiet")
-      }.to output(result + "\n").to_stdout
+      }.to output("#{result}\n").to_stdout
     end
   end
 
@@ -163,7 +163,7 @@ describe Cask::Cmd::Outdated, :cask do
 
       expect {
         described_class.run("--json", "--greedy")
-      }.to output(result + "\n").to_stdout
+      }.to output("#{result}\n").to_stdout
     end
 
     it 'does not include the Casks with "auto_updates true" with no version change in JSON format' do
@@ -190,7 +190,7 @@ describe Cask::Cmd::Outdated, :cask do
 
       expect {
         described_class.run("--json", "--greedy")
-      }.to output(result + "\n").to_stdout
+      }.to output("#{result}\n").to_stdout
     end
   end
 end

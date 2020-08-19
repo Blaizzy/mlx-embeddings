@@ -287,7 +287,7 @@ describe Homebrew::CLI::Parser do
 
     context "kegs" do
       before do
-        keg = HOMEBREW_CELLAR + "mxcl/10.0"
+        keg = HOMEBREW_CELLAR/"mxcl/10.0"
         keg.mkpath
       end
 

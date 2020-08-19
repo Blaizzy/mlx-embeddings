@@ -7,6 +7,8 @@ class UsageError < RuntimeError
   attr_reader :reason
 
   def initialize(reason = nil)
+    super
+
     @reason = reason
   end
 
@@ -63,6 +65,8 @@ class FormulaUnavailableError < RuntimeError
   attr_accessor :dependent
 
   def initialize(name)
+    super
+
     @name = name
   end
 

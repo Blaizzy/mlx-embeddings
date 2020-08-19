@@ -65,7 +65,7 @@ module Homebrew
             revision: "#{formula_spec.specs[:revision]}"
           EOS
         end
-        replacement = old + "  revision 1\n"
+        replacement = "#{old}  revision 1\n"
 
       else
         old = "revision #{current_revision}"

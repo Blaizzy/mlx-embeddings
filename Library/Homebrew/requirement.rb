@@ -126,10 +126,8 @@ class Requirement
     name
   end
 
-  def mktemp
-    Mktemp.new(name).run do |staging|
-      yield staging
-    end
+  def mktemp(&block)
+    Mktemp.new(name).run(&block)
   end
 
   private

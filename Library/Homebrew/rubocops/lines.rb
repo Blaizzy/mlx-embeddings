@@ -467,7 +467,7 @@ module RuboCop
 
           fileutils_methods = Regexp.new(
             FileUtils.singleton_methods(false)
-                     .map { |m| "(?-mix:^" + Regexp.escape(m) + "$)" }
+                     .map { |m| "(?-mix:^#{Regexp.escape(m)}$)" }
                      .join("|"),
           )
           find_every_method_call_by_name(body_node, :system).each do |method|
