@@ -282,6 +282,10 @@ module Cask
       end
     end
 
+    def respond_to_missing?(*)
+      super
+    end
+
     def method_missing(method, *)
       if method
         Utils.method_missing_message(method, token)
@@ -289,10 +293,6 @@ module Cask
       else
         super
       end
-    end
-
-    def respond_to_missing?(*)
-      super || true
     end
 
     def appdir
