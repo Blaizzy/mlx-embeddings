@@ -3,8 +3,12 @@
 require "erb"
 require "tempfile"
 
+# Helper class for running a sub-process inside of a sandboxed environment.
+#
+# @api private
 class Sandbox
   SANDBOX_EXEC = "/usr/bin/sandbox-exec"
+  private_constant :SANDBOX_EXEC
 
   def self.available?
     OS.mac? && File.executable?(SANDBOX_EXEC)
@@ -139,6 +143,7 @@ class Sandbox
     end
   end
 
+  # Configuration profile for a sandbox.
   class SandboxProfile
     SEATBELT_ERB = <<~ERB
       (version 1)
@@ -181,4 +186,5 @@ class Sandbox
       ERB.new(SEATBELT_ERB).result(binding)
     end
   end
+  private_constant :SandboxProfile
 end
