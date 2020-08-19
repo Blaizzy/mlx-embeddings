@@ -9,6 +9,9 @@ require "extend/io"
 require "extend/hash_validator"
 using HashValidator
 
+# Make `system_command` available everywhere.
+#
+# @api private
 module Kernel
   def system_command(*args)
     SystemCommand.run(*args)
@@ -19,6 +22,9 @@ module Kernel
   end
 end
 
+# Class for running sub-processes and capturing their output and exit status.
+#
+# @api private
 class SystemCommand
   include Context
   extend Predicable
@@ -167,6 +173,7 @@ class SystemCommand
     sources.each(&:close_read)
   end
 
+  # Result containing the output and exit status of a finished sub-process.
   class Result
     include Context
 
