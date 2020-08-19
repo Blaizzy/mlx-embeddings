@@ -3,6 +3,9 @@
 require "tempfile"
 require "uri"
 
+# Helper functions for interacting with the GitHub API.
+#
+# @api private
 module GitHub
   module_function
 
@@ -15,10 +18,12 @@ module GitHub
     "https://github.com/settings/tokens/new?scopes=#{ALL_SCOPES.join(",")}&description=Homebrew",
   ).freeze
 
+  # Generic API error.
   class Error < RuntimeError
     attr_reader :github_message
   end
 
+  # Error when the requested URL is not found.
   class HTTPNotFoundError < Error
     def initialize(github_message)
       @github_message = github_message
@@ -26,6 +31,7 @@ module GitHub
     end
   end
 
+  # Error when the API rate limit is exceeded.
   class RateLimitExceededError < Error
     def initialize(reset, github_message)
       @github_message = github_message
@@ -42,6 +48,7 @@ module GitHub
     end
   end
 
+  # Error when authentication fails.
   class AuthenticationFailedError < Error
     def initialize(github_message)
       @github_message = github_message
@@ -65,6 +72,7 @@ module GitHub
     end
   end
 
+  # Error when the API returns a validation error.
   class ValidationFailedError < Error
     def initialize(github_message, errors)
       @github_message = if errors.empty?
