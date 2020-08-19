@@ -606,10 +606,6 @@ module GitHub
 
   def forked_repo_info!(tap_full_name)
     response = GitHub.create_fork(tap_full_name)
-  rescue GitHub::AuthenticationFailedError, *GitHub.api_errors => e
-    yield
-    odie "Unable to fork: #{e.message}!"
-  else
     # GitHub API responds immediately but fork takes a few seconds to be ready.
     sleep 1 until GitHub.check_fork_exists(tap_full_name)
     remote_url = if system("git", "config", "--local", "--get-regexp", "remote\..*\.url", "git@github.com:.*")

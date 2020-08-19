@@ -362,8 +362,11 @@ module Homebrew
           remote_url = Utils.popen_read("git remote get-url --push origin").chomp
           username = formula.tap.user
         else
-          remote_url, username = GitHub.forked_repo_info!(tap_full_name) do
+          begin
+            remote_url, username = GitHub.forked_repo_info!(tap_full_name)
+          rescue *GitHub.api_errors => e
             formula.path.atomic_write(old_contents)
+            odie "Unable to fork: #{e.message}!"
           end
         end
 
