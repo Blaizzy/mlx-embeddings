@@ -67,14 +67,16 @@ describe Cask::Artifact::Binary, :cask do
     expect(expected_path).not_to be :symlink?
   end
 
-  it "clobbers an existing symlink" do
+  it "avoids clobbering an existing symlink" do
     expected_path.make_symlink("/tmp")
 
-    artifacts.each do |artifact|
-      artifact.install_phase(command: NeverSudoSystemCommand, force: false)
-    end
+    expect {
+      artifacts.each do |artifact|
+        artifact.install_phase(command: NeverSudoSystemCommand, force: false)
+      end
+    }.to raise_error(Cask::CaskError)
 
-    expect(File.readlink(expected_path)).not_to eq("/tmp")
+    expect(File.readlink(expected_path)).to eq("/tmp")
   end
 
   it "creates parent directory if it doesn't exist" do
