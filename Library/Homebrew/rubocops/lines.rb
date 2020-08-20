@@ -272,6 +272,20 @@ module RuboCop
         end
       end
 
+      class Licenses < FormulaCop
+        def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          license_node = find_node_method_by_name(body_node, :license)
+          return unless license_node
+
+          license = parameters(license_node).first
+          return unless license.hash_type?
+          return unless license.each_descendant(:hash).count.positive?
+          return if license.source.include?("\n")
+
+          problem "Split nested license declarations onto multiple lines"
+        end
+      end
+
       class Miscellaneous < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           # FileUtils is included in Formula

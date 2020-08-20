@@ -647,6 +647,66 @@ describe RuboCop::Cop::FormulaAudit::LicenseArrays do
   end
 end
 
+describe RuboCop::Cop::FormulaAudit::Licenses do
+  subject(:cop) { described_class.new }
+
+  context "When auditing licenses" do
+    it "allow license strings" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+          license "MIT"
+        end
+      RUBY
+    end
+
+    it "allow license symbols" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+          license :public_domain
+        end
+      RUBY
+    end
+
+    it "allow license hashes" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+          license any_of: ["MIT", "0BSD"]
+        end
+      RUBY
+    end
+
+    it "allow multiline nested license hashes" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+          license any_of: [
+            "MIT",
+            all_of: ["0BSD", "Zlib"],
+          ]
+        end
+      RUBY
+    end
+
+    it "require multiple lines for nested license hashes" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+          license any_of: ["MIT", all_of: ["0BSD", "Zlib"]]
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Split nested license declarations onto multiple lines
+        end
+      RUBY
+    end
+  end
+end
+
 describe RuboCop::Cop::FormulaAudit::Miscellaneous do
   subject(:cop) { described_class.new }
 
