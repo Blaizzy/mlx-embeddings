@@ -10,17 +10,32 @@ module Homebrew
       usage_banner <<~EOS
         `prof` [<command>]
 
-        Run Homebrew with the Ruby profiler, e.g. `brew prof readall`.
+        Run Homebrew with a Ruby profiler, e.g. `brew prof readall`.
       EOS
+      switch "--stackprof",
+             description: "Use `stackprof` instead of `ruby-prof` (the default)."
     end
   end
 
   def prof
     args = prof_args.parse
 
-    Homebrew.install_gem_setup_path! "ruby-prof", version: "0.18.0"
-    FileUtils.mkdir_p "prof"
     brew_rb = (HOMEBREW_LIBRARY_PATH/"brew.rb").resolved_path
-    safe_system "ruby-prof", "--printer=multi", "--file=prof", brew_rb, "--", *args.named
+    FileUtils.mkdir_p "prof"
+
+    if args.stackprof?
+      Homebrew.install_gem_setup_path! "stackprof"
+      with_env HOMEBREW_STACKPROF: "1" do
+        safe_system ENV["HOMEBREW_RUBY_PATH"], brew_rb, *args.named
+      end
+      output_filename = "prof/d3-flamegraph.html"
+      safe_system "stackprof --d3-flamegraph prof/stackprof.dump > #{output_filename}"
+    else
+      Homebrew.install_gem_setup_path! "ruby-prof"
+      output_filename = "prof/call_stack.html"
+      safe_system "ruby-prof", "--printer=call_stack", "--file=#{output_filename}", brew_rb, "--", *args.named
+    end
+
+    exec_browser output_filename
   end
 end

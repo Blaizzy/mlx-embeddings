@@ -1,5 +1,12 @@
 # frozen_string_literal: true
 
+if ENV["HOMEBREW_STACKPROF"]
+  require_relative "utils/gems"
+  Homebrew.setup_gem_environment!
+  require "stackprof"
+  StackProf.start(mode: :wall, raw: true)
+end
+
 raise "HOMEBREW_BREW_FILE was not exported! Please call bin/brew directly!" unless ENV["HOMEBREW_BREW_FILE"]
 
 std_trap = trap("INT") { exit! 130 } # no backtrace thanks
@@ -186,4 +193,9 @@ rescue Exception => e # rubocop:disable Lint/RescueException
   exit 1
 else
   exit 1 if Homebrew.failed?
+ensure
+  if ENV["HOMEBREW_STACKPROF"]
+    StackProf.stop
+    StackProf.results("prof/stackprof.dump")
+  end
 end

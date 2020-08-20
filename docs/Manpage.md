@@ -1082,7 +1082,10 @@ Apply the bottle commit and publish bottles to Bintray.
 
 ### `prof` [*`command`*]
 
-Run Homebrew with the Ruby profiler, e.g. `brew prof readall`.
+Run Homebrew with a Ruby profiler, e.g. `brew prof readall`.
+
+* `--stackprof`:
+  Use `stackprof` instead of `ruby-prof` (the default).
 
 ### `release-notes` [*`options`*] [*`previous_tag`*] [*`end_ref`*]
 

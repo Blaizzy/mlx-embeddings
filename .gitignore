@@ -133,6 +133,7 @@
 **/vendor/bundle/ruby/*/gems/ruby-progressbar-*/
 **/vendor/bundle/ruby/*/gems/simplecov-*/
 **/vendor/bundle/ruby/*/gems/simplecov-html-*/
+**/vendor/bundle/ruby/*/gems/stackprof-*/
 **/vendor/bundle/ruby/*/gems/thor-*/
 **/vendor/bundle/ruby/*/gems/unf_ext-*/
 **/vendor/bundle/ruby/*/gems/unf-*/
