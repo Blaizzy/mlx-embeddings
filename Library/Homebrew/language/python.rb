@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
-require "language/python_virtualenv_constants"
-
 module Language
+  # Helper functions for Python formulae.
+  #
+  # @api public
   module Python
     def self.major_minor_version(python)
       version = /\d\.\d/.match `#{python} --version 2>&1`
@@ -115,13 +116,9 @@ module Language
       def self.included(base)
         base.class_eval do
           resource "homebrew-virtualenv" do
-            if MacOS.version > :mojave
-              url PYTHON_VIRTUALENV_URL
-              sha256 PYTHON_VIRTUALENV_SHA256
-            else
-              url PYTHON_VIRTUALENV_URL_MOJAVE
-              sha256 PYTHON_VIRTUALENV_SHA256_MOJAVE
-            end
+            url "https://files.pythonhosted.org/packages/11/74" \
+                "/2c151a13ef41ab9fb43b3c4ff9e788e0496ed7923b2078d42cab30622bdf/virtualenv-16.7.4.tar.gz"
+            sha256 "94a6898293d07f84a98add34c4df900f8ec64a570292279f6d91c781d37fd305"
           end
         end
       end
