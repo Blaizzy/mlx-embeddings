@@ -11,7 +11,7 @@ module Homebrew
       usage_banner <<~EOS
         `pr-upload` [<options>]
 
-        Apply the bottle commit and publish bottles to Bintray.
+        Apply the bottle commit and publish bottles to Bintray or GitHub Releases.
       EOS
       switch "--no-publish",
              description: "Apply the bottle commit and upload the bottles, but don't publish them."
@@ -30,29 +30,36 @@ module Homebrew
     end
   end
 
-  def check_bottled_formulae(json_files)
-    hashes = json_files.reduce({}) do |hash, json|
-      hash.deep_merge(JSON.parse(IO.read(json)))
-    end
-
-    hashes.each do |name, hash|
-      formula_path = HOMEBREW_REPOSITORY/hash["formula"]["path"]
+  def check_bottled_formulae(bottles_hash)
+    bottles_hash.each do |name, bottle_hash|
+      formula_path = HOMEBREW_REPOSITORY/bottle_hash["formula"]["path"]
       formula_version = Formulary.factory(formula_path).pkg_version
-      bottle_version = PkgVersion.parse hash["formula"]["pkg_version"]
+      bottle_version = PkgVersion.parse bottle_hash["formula"]["pkg_version"]
       next if formula_version == bottle_version
 
       odie "Bottles are for #{name} #{bottle_version} but formula is version #{formula_version}!"
     end
   end
 
+  def github_releases?(bottles_hash)
+    @github_releases ||= bottles_hash.values.all? do |bottle_hash|
+      root_url = bottle_hash["bottle"]["root_url"]
+      url_match = root_url.match HOMEBREW_RELEASES_URL_REGEX
+      _, _, _, tag = *url_match
+
+      tag
+    end
+  end
+
   def pr_upload
     args = pr_upload_args.parse
 
-    bintray_org = args.bintray_org || "homebrew"
-    bintray = Bintray.new(org: bintray_org)
-
     json_files = Dir["*.json"]
     odie "No JSON files found in the current working directory" if json_files.empty?
+
+    bottles_hash = json_files.reduce({}) do |hash, json_file|
+      hash.deep_merge(JSON.parse(IO.read(json_file)))
+    end
 
     bottle_args = ["bottle", "--merge", "--write"]
     bottle_args << "--verbose" if args.verbose?
@@ -62,14 +69,51 @@ module Homebrew
     bottle_args += json_files
 
     if args.dry_run?
+      service = if github_releases?(bottles_hash)
+        "GitHub Releases"
+      else
+        "Bintray"
+      end
       puts "brew #{bottle_args.join " "}"
-      puts "Upload bottles described by these JSON files to Bintray:\n  #{json_files.join("\n  ")}"
+      puts "Upload bottles described by these JSON files to #{service}:\n  #{json_files.join("\n  ")}"
+      return
+    end
+
+    check_bottled_formulae(bottles_hash)
+
+    safe_system HOMEBREW_BREW_FILE, *bottle_args
+
+    if github_releases?(bottles_hash)
+      # Handle uploading to GitHub Releases.
+      bottles_hash.each_value do |bottle_hash|
+        root_url = bottle_hash["bottle"]["root_url"]
+        url_match = root_url.match HOMEBREW_RELEASES_URL_REGEX
+        _, user, repo, tag = *url_match
+
+        # Ensure a release is created.
+        release = begin
+          GitHub.get_release user, repo, tag
+          odebug "Existing GitHub release \"#{tag}\" found"
+        rescue GitHub::HTTPNotFoundError
+          odebug "Creating new GitHub release \"#{tag}\""
+          GitHub.create_or_update_release user, repo, tag
+        end
+
+        # Upload bottles as release assets.
+        bottle_hash["bottle"]["tags"].each_value do |tag_hash|
+          remote_file = tag_hash["filename"]
+          local_file = tag_hash["local_filename"]
+          odebug "Uploading #{remote_file}"
+          GitHub.upload_release_asset user, repo, release["id"], local_file: local_file, remote_file: remote_file
+        end
+      end
     else
-      check_bottled_formulae(json_files)
-      safe_system HOMEBREW_BREW_FILE, *bottle_args
-      bintray.upload_bottle_json(json_files,
-                                 publish_package: !args.no_publish?,
-                                 warn_on_error:   args.warn_on_upload_failure?)
+      # Handle uploading to Bintray.
+      bintray_org = args.bintray_org || "homebrew"
+      bintray = Bintray.new(org: bintray_org)
+      bintray.upload_bottles(bottles_hash,
+                             publish_package: !args.no_publish?,
+                             warn_on_error:   args.warn_on_upload_failure?)
     end
   end
 end

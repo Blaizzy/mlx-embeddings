@@ -148,11 +148,7 @@ class Bintray
     end
   end
 
-  def upload_bottle_json(json_files, publish_package: false, warn_on_error: false)
-    bottles_hash = json_files.reduce({}) do |hash, json_file|
-      hash.deep_merge(JSON.parse(IO.read(json_file)))
-    end
-
+  def upload_bottles(bottles_hash, publish_package: false, warn_on_error: false)
     formula_packaged = {}
 
     bottles_hash.each do |formula_name, bottle_hash|
