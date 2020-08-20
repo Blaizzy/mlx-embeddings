@@ -798,7 +798,7 @@ class FormulaInstaller
     #    the easiest way to do this
     args = %W[
       nice #{RUBY_PATH}
-      -W0
+      #{ENV["HOMEBREW_RUBY_WARNINGS"]}
       -I #{$LOAD_PATH.join(File::PATH_SEPARATOR)}
       --
       #{HOMEBREW_LIBRARY_PATH}/build.rb
@@ -966,7 +966,7 @@ class FormulaInstaller
   def post_install
     args = %W[
       nice #{RUBY_PATH}
-      -W0
+      #{ENV["HOMEBREW_RUBY_WARNINGS"]}
       -I #{$LOAD_PATH.join(File::PATH_SEPARATOR)}
       --
       #{HOMEBREW_LIBRARY_PATH}/postinstall.rb

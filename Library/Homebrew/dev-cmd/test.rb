@@ -78,7 +78,7 @@ module Homebrew
       begin
         exec_args = %W[
           #{RUBY_PATH}
-          -W0
+          #{ENV["HOMEBREW_RUBY_WARNINGS"]}
           -I #{$LOAD_PATH.join(File::PATH_SEPARATOR)}
           --
           #{HOMEBREW_LIBRARY_PATH}/test.rb
