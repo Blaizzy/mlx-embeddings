@@ -2,24 +2,22 @@
 
 require "version"
 
+# Combination of a version and a revision.
+#
+# @api private
 class PkgVersion
   include Comparable
   extend Forwardable
 
-  RX = /\A(.+?)(?:_(\d+))?\z/.freeze
+  REGEX = /\A(.+?)(?:_(\d+))?\z/.freeze
+  private_constant :REGEX
 
   attr_reader :version, :revision
 
-  delegate [ # rubocop:disable Layout/HashAlignment
-    :major,
-    :minor,
-    :patch,
-    :major_minor,
-    :major_minor_patch,
-  ] => :version
+  delegate [:major, :minor, :patch, :major_minor, :major_minor_patch] => :version
 
   def self.parse(path)
-    _, version, revision = *path.match(RX)
+    _, version, revision = *path.match(REGEX)
     version = Version.create(version)
     new(version, revision.to_i)
   end
