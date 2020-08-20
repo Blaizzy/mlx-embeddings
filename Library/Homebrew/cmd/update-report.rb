@@ -466,7 +466,7 @@ class ReporterHub
       when :A
         name unless installed?(name)
       when :AC
-        name unless cask_installed?(name)
+        name.split("/").last unless cask_installed?(name)
       when :MC, :DC
         name = name.split("/").last
         cask_installed?(name) ? pretty_installed(name) : name
