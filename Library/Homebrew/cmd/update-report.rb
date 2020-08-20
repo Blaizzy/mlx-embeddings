@@ -198,8 +198,10 @@ class Reporter
       next unless dst.extname == ".rb"
 
       if paths.any? { |p| tap.cask_file?(p) }
-        # Currently only need to handle Cask deletion/migration.
         case status
+        when "A"
+          # Have a dedicated report array for new casks.
+          @report[:AC] << tap.formula_file_to_name(src)
         when "D"
           # Have a dedicated report array for deleted casks.
           @report[:DC] << tap.formula_file_to_name(src)
@@ -446,6 +448,7 @@ class ReporterHub
     end
     dump_formula_report :R, "Renamed Formulae"
     dump_formula_report :D, "Deleted Formulae"
+    dump_formula_report :AC, "New Casks"
     dump_formula_report :MC, "Updated Casks"
     dump_formula_report :DC, "Deleted Casks"
   end
@@ -462,6 +465,8 @@ class ReporterHub
         "#{name} -> #{new_name}"
       when :A
         name unless installed?(name)
+      when :AC
+        name unless cask_installed?(name)
       when :MC, :DC
         name = name.split("/").last
         cask_installed?(name) ? pretty_installed(name) : name
