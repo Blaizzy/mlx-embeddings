@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# A formula option.
+#
+# @api private
 class Option
   attr_reader :name, :description, :flag
 
@@ -33,6 +36,9 @@ class Option
   end
 end
 
+# A deprecated formula option.
+#
+# @api private
 class DeprecatedOption
   attr_reader :old, :current
 
@@ -55,6 +61,9 @@ class DeprecatedOption
   alias eql? ==
 end
 
+# A collection of formula options.
+#
+# @api private
 class Options
   include Enumerable
 
@@ -112,12 +121,8 @@ class Options
   def inspect
     "#<#{self.class.name}: #{to_a.inspect}>"
   end
-end
 
-module Homebrew
-  module_function
-
-  def dump_options_for_formula(f)
+  def self.dump_for_formula(f)
     f.options.sort_by(&:flag).each do |opt|
       puts "#{opt.flag}\n\t#{opt.description}"
     end
