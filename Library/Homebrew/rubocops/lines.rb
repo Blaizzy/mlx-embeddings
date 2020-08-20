@@ -254,6 +254,24 @@ module RuboCop
         end
       end
 
+      class LicenseArrays < FormulaCop
+        def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          license_node = find_node_method_by_name(body_node, :license)
+          return unless license_node
+
+          license = parameters(license_node).first
+          return unless license.array_type?
+
+          problem "Use `license any_of: #{license.source}` instead of `license #{license.source}`"
+        end
+
+        def autocorrect(node)
+          lambda do |corrector|
+            corrector.replace(node.source_range, "license any_of: #{parameters(node).first.source}")
+          end
+        end
+      end
+
       class Miscellaneous < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           # FileUtils is included in Formula
