@@ -83,8 +83,7 @@ module SPDX
       license_expression
     when :public_domain
       "Public Domain"
-    when Hash, Array
-      license_expression = { any_of: license_expression } if license_expression.is_a? Array
+    when Hash
       expressions = []
 
       if license_expression.keys.length == 1
@@ -135,8 +134,7 @@ module SPDX
     case license_expression
     when String, Symbol
       forbidden_licenses_include? license_expression.to_s, forbidden_licenses
-    when Hash, Array
-      license_expression = { any_of: license_expression } if license_expression.is_a? Array
+    when Hash
       key = license_expression.keys.first
       case key
       when :any_of
