@@ -30,6 +30,7 @@ module Homebrew
 
     begin
       safe_system RUBY_PATH,
+                  ENV["HOMEBREW_RUBY_WARNINGS"],
                   "-I", $LOAD_PATH.join(File::PATH_SEPARATOR),
                   "-rglobal", "-rdev-cmd/irb",
                   *ruby_sys_args
