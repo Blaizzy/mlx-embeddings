@@ -2236,7 +2236,10 @@ class Formula
       if args.nil?
         @licenses
       else
-        args = { any_of: args } if args.is_a? Array
+        if args.is_a? Array
+          odeprecated "`license [...]`", "`license any_of: [...]`"
+          args = { any_of: args }
+        end
         @licenses = args
       end
     end
