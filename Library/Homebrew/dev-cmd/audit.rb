@@ -545,12 +545,18 @@ module Homebrew
       problem "Versioned formulae in homebrew/core should use `keg_only :versioned_formula`"
     end
 
+    CERT_ERROR_ALLOWLIST = {
+      "monero" => "https://www.getmonero.org/",
+    }.freeze
+
     def audit_homepage
       homepage = formula.homepage
 
       return if homepage.nil? || homepage.empty?
 
       return unless @online
+
+      return if CERT_ERROR_ALLOWLIST[formula.name] == homepage
 
       return unless DevelopmentTools.curl_handles_most_https_certificates?
 
