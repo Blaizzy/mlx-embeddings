@@ -5,7 +5,7 @@ module Cask
 
   class MultipleCaskErrors < CaskError
     def initialize(errors)
-      super
+      super()
 
       @errors = errors
     end
@@ -172,7 +172,7 @@ module Cask
     attr_reader :path, :reason
 
     def initialize(path, reason)
-      super
+      super()
 
       @path = path
       @reason = reason
