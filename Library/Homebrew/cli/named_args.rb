@@ -163,7 +163,7 @@ module Homebrew
               Formulary.from_rack(rack)
             end
 
-            unless (prefix = f.installed_prefix).directory?
+            unless (prefix = f.latest_installed_prefix).directory?
               raise MultipleVersionsInstalledError, "#{rack.basename} has multiple installed versions"
             end
 

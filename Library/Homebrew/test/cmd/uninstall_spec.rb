@@ -28,17 +28,17 @@ describe Homebrew do
     end
   end
 
-  let(:kegs_by_rack) { { dependency.rack => [Keg.new(dependency.installed_prefix)] } }
+  let(:kegs_by_rack) { { dependency.rack => [Keg.new(dependency.latest_installed_prefix)] } }
 
   before do
     [dependency, dependent].each do |f|
-      f.installed_prefix.mkpath
-      Keg.new(f.installed_prefix).optlink
+      f.latest_installed_prefix.mkpath
+      Keg.new(f.latest_installed_prefix).optlink
     end
 
     tab = Tab.empty
     tab.homebrew_version = "1.1.6"
-    tab.tabfile = dependent.installed_prefix/Tab::FILENAME
+    tab.tabfile = dependent.latest_installed_prefix/Tab::FILENAME
     tab.runtime_dependencies = [
       { "full_name" => "dependency", "version" => "1" },
     ]

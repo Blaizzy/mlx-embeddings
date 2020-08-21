@@ -488,11 +488,11 @@ class Formula
   delegate compiler_failures: :active_spec
 
   # If this {Formula} is installed.
-  # This is actually just a check for if the {#installed_prefix} directory
+  # This is actually just a check for if the {#latest_installed_prefix} directory
   # exists and is not empty.
   # @private
   def latest_version_installed?
-    (dir = installed_prefix).directory? && !dir.children.empty?
+    (dir = latest_installed_prefix).directory? && !dir.children.empty?
   end
 
   # If at least one version of {Formula} is installed.
@@ -547,7 +547,7 @@ class Formula
   # The latest prefix for this formula. Checks for {#head}, then {#devel}
   # and then {#stable}'s {#prefix}
   # @private
-  def installed_prefix
+  def latest_installed_prefix
     if head && (head_version = latest_head_version) && !head_version_outdated?(head_version)
       latest_head_prefix
     elsif devel && (devel_prefix = prefix(PkgVersion.new(devel.version, revision))).directory?
@@ -563,7 +563,7 @@ class Formula
   # if the formula is not installed.
   # @private
   def installed_version
-    Keg.new(installed_prefix).version
+    Keg.new(latest_installed_prefix).version
   end
 
   # The directory in the cellar that the formula is installed to.
