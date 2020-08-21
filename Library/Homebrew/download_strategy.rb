@@ -5,6 +5,7 @@ require "time"
 require "unpack_strategy"
 require "lazy_object"
 require "cgi"
+require "lock_file"
 
 require "mechanize/version"
 require "mechanize/http/content_disposition_parser"
