@@ -16,8 +16,6 @@ module Homebrew
       switch "--fail-if-not-changed",
              description: "Return a failing status code if current license data's version is the same as " \
                           "the upstream. This can be used to notify CI when the SPDX license data is out of date."
-      switch "--commit",
-             description: "Commit changes to the SPDX license data."
       max_named 0
     end
   end
@@ -27,14 +25,8 @@ module Homebrew
     ohai "Updating SPDX license data..."
 
     SPDX.download_latest_license_data!
+    return unless args.fail_if_not_changed?
 
-    Homebrew.failed = system("git", "diff", "--stat", "--exit-code", SPDX::DATA_PATH) if args.fail_if_not_changed?
-
-    return unless args.commit?
-
-    ohai "git add"
-    safe_system "git", "add", SPDX::DATA_PATH
-    ohai "git commit"
-    system "git", "commit", "--message", "spdx license data: update to #{SPDX.latest_tag}"
+    Homebrew.failed = system("git", "diff", "--stat", "--exit-code", SPDX::DATA_PATH)
   end
 end
