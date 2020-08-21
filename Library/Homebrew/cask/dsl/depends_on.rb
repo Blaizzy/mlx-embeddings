@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "requirements/macos_requirement"
+
 module Cask
   class DSL
     class DependsOn < DelegateClass(Hash)
@@ -58,7 +60,7 @@ module Cask
           else
             MacOSRequirement.new([args.first], comparator: "==")
           end
-        rescue
+        rescue MacOSVersionError
           raise "invalid 'depends_on macos' value: #{args.first.inspect}"
         end
       end

@@ -42,6 +42,7 @@ require "os"
 require "context"
 require "extend/pathname"
 require "extend/predicable"
+require "extend/module"
 require "cli/args"
 require "messages"
 
@@ -121,7 +122,6 @@ end.compact.freeze
 
 require "set"
 
-require "extend/module"
 require "extend/string"
 require "active_support/core_ext/object/blank"
 require "active_support/core_ext/hash/deep_merge"
