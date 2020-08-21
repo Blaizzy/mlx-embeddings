@@ -559,13 +559,6 @@ class Formula
     end
   end
 
-  # The currently installed version for this formula. Will raise an exception
-  # if the formula is not installed.
-  # @private
-  def installed_version
-    Keg.new(latest_installed_prefix).version
-  end
-
   # The directory in the cellar that the formula is installed to.
   # This directory points to {#opt_prefix} if it exists and if #{prefix} is not
   # called from within the same formula's {#install} or {#post_install} methods.
