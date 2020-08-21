@@ -2237,7 +2237,8 @@ class Formula
         @licenses
       else
         if args.is_a? Array
-          odeprecated "`license [...]`", "`license any_of: [...]`"
+          # TODO: enable for next major/minor release
+          # odeprecated "`license [...]`", "`license any_of: [...]`"
           args = { any_of: args }
         end
         @licenses = args
