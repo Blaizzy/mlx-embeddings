@@ -29,6 +29,8 @@ module Cask
       end
 
       def self.uninstall_casks(*casks, binaries: nil, force: false, verbose: false)
+        require "cask/installer"
+
         options = {
           binaries: binaries,
           force:    force,

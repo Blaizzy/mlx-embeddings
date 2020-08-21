@@ -2,6 +2,7 @@
 
 require "digest/md5"
 require "extend/cachable"
+require "tab"
 
 # The Formulary is responsible for creating instances of {Formula}.
 # It is not meant to be used directly from formulae.
@@ -29,6 +30,8 @@ module Formulary
 
   def self.load_formula(name, path, contents, namespace, flags:)
     raise "Formula loading disabled by HOMEBREW_DISABLE_LOAD_FORMULA!" if Homebrew::EnvConfig.disable_load_formula?
+
+    require "formula"
 
     mod = Module.new
     const_set(namespace, mod)

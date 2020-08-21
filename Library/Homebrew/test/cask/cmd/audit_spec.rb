@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "shared_examples/invalid_option"
+require "cask/auditor"
 
 describe Cask::Cmd::Audit, :cask do
   let(:cask) { Cask::Cask.new("cask") }

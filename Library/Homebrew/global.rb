@@ -6,6 +6,7 @@ require "json/add/exception"
 require "pathname"
 require "ostruct"
 require "pp"
+require "forwardable"
 
 require_relative "load_path"
 
@@ -38,6 +39,9 @@ require "env_config"
 
 require "config"
 require "os"
+require "context"
+require "extend/pathname"
+require "extend/predicable"
 require "cli/args"
 require "messages"
 
@@ -106,7 +110,6 @@ HOMEBREW_PULL_API_REGEX =
 HOMEBREW_PULL_OR_COMMIT_URL_REGEX =
   %r[https://github\.com/([\w-]+)/([\w-]+)?/(?:pull/(\d+)|commit/[0-9a-fA-F]{4,40})].freeze
 
-require "forwardable"
 require "PATH"
 
 ENV["HOMEBREW_PATH"] ||= ENV["PATH"]
@@ -118,11 +121,7 @@ end.compact.freeze
 
 require "set"
 
-require "context"
-require "extend/pathname"
-
 require "extend/module"
-require "extend/predicable"
 require "extend/string"
 require "active_support/core_ext/object/blank"
 require "active_support/core_ext/hash/deep_merge"
