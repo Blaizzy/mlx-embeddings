@@ -2232,7 +2232,18 @@ class Formula
     # <pre>license all_of: ["MIT", "GPL-2.0-only"]</pre>
     # <pre>license "GPL-2.0-only" => { with: "LLVM-exception" }</pre>
     # <pre>license :public_domain</pre>
-    attr_rw :license
+    def license(args = nil)
+      if args.nil?
+        @licenses
+      else
+        if args.is_a? Array
+          # TODO: enable for next major/minor release
+          # odeprecated "`license [...]`", "`license any_of: [...]`"
+          args = { any_of: args }
+        end
+        @licenses = args
+      end
+    end
 
     # @!attribute [w] homepage
     # The homepage for the software. Used by users to get more information
