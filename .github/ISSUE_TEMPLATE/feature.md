@@ -10,23 +10,19 @@ about: Request our thoughts on your suggestion for a new feature for Homebrew.
 
 <!-- Please fill these sections with the relevant information: -->
 
-## Description
-_A detailed description of the proposed feature._
+# A detailed description of the proposed feature
 
 <!-- replace me -->
 
-## Motivation
-_The motivation for the feature._
+# The motivation for the feature
 
 <!-- replace me -->
 
-## Relevance
-_How the feature would be relevant to at least 90% of Homebrew users._
+# How the feature would be relevant to at least 90% of Homebrew users
 
 <!-- (if it's not: do not open a feature request) -->
 
-## Alternatives
-_What alternatives to the feature have been considered._
+# What alternatives to the feature have been considered
 
 <!-- replace me -->
 

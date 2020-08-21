@@ -14,13 +14,11 @@ about: "If you're sure it's reproducible and not just your machine: submit an is
 
 <!-- To help us debug your issue, please complete these sections: -->
 
-## Description
-_What you were trying to do (and why)._
+## What you were trying to do (and why)
 
 <!-- replace me -->
 
-## Observed behavior
-_What happened (include command output)._
+## What happened (include command output)
 
 <!-- replace me -->
 
@@ -33,18 +31,15 @@ _What happened (include command output)._
   </pre>
 </details>
 
-## Expected behavior
-_What you expected to happen._
+## What you expected to happen
 
 <!-- replace me -->
 
-## Steps to reproduce
-_Step-by-step reproduction instructions (by running `brew` commands)._
+## Step-by-step reproduction instructions (by running `brew` commands)
 
 <!-- replace me -->
 
-## System configuration
-_Output of `brew config` and `brew doctor` commands._
+## Output of `brew config` and `brew doctor` commands
 
 <pre>
 <!-- replace me -->
