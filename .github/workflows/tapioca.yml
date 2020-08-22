@@ -39,6 +39,8 @@ jobs:
           bundle exec tapioca sync --exclude json
           bundle exec srb rbi hidden-definitions
 
+          git fetch origin master
+          git reset --hard origin/master
           git checkout -B tapioca-update
           git add sorbet
           if ! git diff --no-patch --exit-code HEAD -- sorbet; then
@@ -57,8 +59,6 @@ jobs:
 
       - name: Open a pull request
         if: steps.update.outputs.committed == 'true'
-        run: |
-          cd "$GITHUB_WORKSPACE/Library/Homebrew"
-          hub pull-request --no-edit
+        run: hub pull-request --no-edit
         env:
           GITHUB_TOKEN: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
