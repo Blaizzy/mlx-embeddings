@@ -9,7 +9,7 @@ describe Repology do
     end
   end
 
-  describe "single_package_query" do
+  describe "single_package_query", :needs_network do
     it "returns nil for non-existent package" do
       response = described_class.single_package_query("invalidName")
 
@@ -24,11 +24,11 @@ describe Repology do
     end
   end
 
-  describe "parse_api_response" do
-    limit = 1
-    response = described_class.parse_api_response(limit)
-
+  describe "parse_api_response", :needs_network do
     it "returns a hash of data" do
+      limit = 1
+      response = described_class.parse_api_response(limit)
+
       expect(response).not_to be_nil
       expect(response).to be_a(Hash)
     end
