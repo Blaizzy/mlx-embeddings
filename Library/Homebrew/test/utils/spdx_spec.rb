@@ -35,8 +35,8 @@ describe SPDX do
     let(:tmp_json_path) { Pathname.new(TEST_TMPDIR) }
 
     after do
-      FileUtils.rm tmp_json_path/"spdx_licenses.json"
-      FileUtils.rm tmp_json_path/"spdx_exceptions.json"
+      FileUtils.rm_f tmp_json_path/"spdx_licenses.json"
+      FileUtils.rm_f tmp_json_path/"spdx_exceptions.json"
     end
 
     it "downloads latest license data" do
