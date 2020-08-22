@@ -23,6 +23,8 @@ module Cask
       end
 
       def run
+        require "cask/installer"
+
         casks.each do |cask|
           odebug "Zapping Cask #{cask}"
 
