@@ -5464,6 +5464,22 @@ class Cask::Audit
   def strict?(); end
 end
 
+class Cask::Auditor
+  def audit_appcast?(); end
+
+  def audit_download?(); end
+
+  def audit_new_cask?(); end
+
+  def audit_online?(); end
+
+  def audit_strict?(); end
+
+  def audit_token_conflicts?(); end
+
+  def quarantine?(); end
+end
+
 class Cask::Cask
   def app(&block); end
 
@@ -5738,12 +5754,6 @@ class Cask::DSL::Version
   def underscores_to_dots(); end
 
   def underscores_to_hyphens(); end
-end
-
-class Caveats
-  def empty?(*args, &block); end
-
-  def to_s(*args, &block); end
 end
 
 class Checksum
@@ -12938,13 +12948,6 @@ end
 
 Net::HTTPFatalErrorCode = Net::HTTPClientError
 
-class Net::HTTPGatewayTimeout
-  HAS_BODY = ::T.let(nil, ::T.untyped)
-end
-
-class Net::HTTPGatewayTimeout
-end
-
 Net::HTTPInformation::EXCEPTION_TYPE = Net::HTTPError
 
 Net::HTTPInformationCode = Net::HTTPInformation
@@ -12998,13 +13001,6 @@ end
 Net::HTTPRedirection::EXCEPTION_TYPE = Net::HTTPRetriableError
 
 Net::HTTPRedirectionCode = Net::HTTPRedirection
-
-class Net::HTTPRequestTimeout
-  HAS_BODY = ::T.let(nil, ::T.untyped)
-end
-
-class Net::HTTPRequestTimeout
-end
 
 Net::HTTPRequestURITooLarge = Net::HTTPURITooLong
 
@@ -13341,19 +13337,53 @@ module ParallelTests
   WINDOWS = ::T.let(nil, ::T.untyped)
 end
 
-class Parlour::ConflictResolver
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
+module Parlour
+  VERSION = ::T.let(nil, ::T.untyped)
 end
 
-module Parlour::Debugging::Tree
+class Parlour::ConflictResolver
+  def resolve_conflicts(*args, &blk); end
+end
+
+class Parlour::ConflictResolver
+  extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 module Parlour::Debugging
+end
+
+module Parlour::Debugging::Tree
+  INDENT_SPACES = ::T.let(nil, ::T.untyped)
+end
+
+module Parlour::Debugging::Tree
+  extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
+  def self.begin(*args, &blk); end
+
+  def self.end(*args, &blk); end
+
+  def self.here(*args, &blk); end
+
+  def self.line_prefix(); end
+
+  def self.text_prefix(); end
+end
+
+module Parlour::Debugging
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+  def self.debug_mode=(*args, &blk); end
+
+  def self.debug_mode?(*args, &blk); end
+
+  def self.debug_puts(*args, &blk); end
+
+  def self.name_for_debug_caller(*args, &blk); end
 end
 
 class Parlour::DetachedRbiGenerator
@@ -13364,55 +13394,417 @@ class Parlour::DetachedRbiGenerator
 end
 
 class Parlour::ParseError
+  def buffer(*args, &blk); end
+
+  def initialize(buffer, range); end
+
+  def range(*args, &blk); end
+end
+
+class Parlour::ParseError
+  extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class Parlour::Plugin
+  def generate(*args, &blk); end
+
+  def initialize(*args, &blk); end
+
+  def strictness(*args, &blk); end
+
+  def strictness=(strictness); end
+end
+
+class Parlour::Plugin
+  extend ::T::Sig
+  extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
+  def self.inherited(*args, &blk); end
+
+  def self.registered_plugins(*args, &blk); end
+
+  def self.run_plugins(*args, &blk); end
+end
+
+class Parlour::RbiGenerator
+  def current_plugin(*args, &blk); end
+
+  def current_plugin=(current_plugin); end
+
+  def initialize(*args, &blk); end
+
+  def options(*args, &blk); end
+
+  def rbi(*args, &blk); end
+
+  def root(*args, &blk); end
+end
+
+class Parlour::RbiGenerator::Arbitrary
+  def ==(*args, &blk); end
+
+  def code(*args, &blk); end
+
+  def code=(code); end
+end
+
+class Parlour::RbiGenerator::Arbitrary
+end
+
+class Parlour::RbiGenerator::Attribute
+  def class_attribute(*args, &blk); end
+
+  def kind(*args, &blk); end
+end
+
+class Parlour::RbiGenerator::Attribute
+end
+
+class Parlour::RbiGenerator::ClassNamespace
+  def abstract(*args, &blk); end
+
+  def superclass(*args, &blk); end
+end
+
+class Parlour::RbiGenerator::ClassNamespace
+end
+
+class Parlour::RbiGenerator::Constant
+  def ==(*args, &blk); end
+
+  def eigen_constant(); end
+
+  def value(*args, &blk); end
+end
+
+class Parlour::RbiGenerator::Constant
+end
+
+class Parlour::RbiGenerator::EnumClassNamespace
+  def enums(*args, &blk); end
+end
+
+class Parlour::RbiGenerator::EnumClassNamespace
+end
+
+class Parlour::RbiGenerator::Extend
+  def ==(*args, &blk); end
+end
+
+class Parlour::RbiGenerator::Extend
+end
+
+class Parlour::RbiGenerator::Include
+  def ==(*args, &blk); end
+end
+
+class Parlour::RbiGenerator::Include
+end
+
+class Parlour::RbiGenerator::Method
+  def ==(*args, &blk); end
+
+  def abstract(*args, &blk); end
+
+  def class_method(*args, &blk); end
+
+  def final(*args, &blk); end
+
+  def implementation(*args, &blk); end
+
+  def overridable(*args, &blk); end
+
+  def override(*args, &blk); end
+
+  def parameters(*args, &blk); end
+
+  def return_type(*args, &blk); end
+
+  def type_parameters(*args, &blk); end
+end
+
+class Parlour::RbiGenerator::Method
+end
+
+class Parlour::RbiGenerator::ModuleNamespace
+  def interface(*args, &blk); end
+end
+
+class Parlour::RbiGenerator::ModuleNamespace
 end
 
 class Parlour::RbiGenerator::Namespace
+  def add_comment_to_next_child(*args, &blk); end
+
+  def children(*args, &blk); end
+
+  def constants(*args, &blk); end
+
+  def create_arbitrary(code:, &block); end
+
   def create_attr(*args, &blk); end
+
+  def create_attr_accessor(*args, &blk); end
+
+  def create_attr_reader(*args, &blk); end
+
+  def create_attr_writer(*args, &blk); end
+
+  def create_attribute(*args, &blk); end
+
+  def create_class(*args, &blk); end
+
+  def create_constant(*args, &blk); end
+
+  def create_enum_class(*args, &blk); end
+
+  def create_extend(*args, &blk); end
+
+  def create_extends(*args, &blk); end
+
+  def create_include(*args, &blk); end
+
+  def create_includes(*args, &blk); end
+
+  def create_method(*args, &blk); end
+
+  def create_module(*args, &blk); end
+
+  def create_struct_class(*args, &blk); end
+
+  def create_type_alias(*args, &blk); end
+
+  def extends(*args, &blk); end
+
+  def final(*args, &blk); end
+
+  def includes(*args, &blk); end
+
+  def path(*args, &blk); end
+end
+
+class Parlour::RbiGenerator::Namespace
 end
 
 class Parlour::RbiGenerator::Options
+  def break_params(*args, &blk); end
+
+  def indented(*args, &blk); end
+
+  def initialize(*args, &blk); end
+
+  def sort_namespaces(*args, &blk); end
+
+  def tab_size(*args, &blk); end
+end
+
+class Parlour::RbiGenerator::Options
+  extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class Parlour::RbiGenerator::Parameter
+  def ==(*args, &blk); end
+
+  def default(*args, &blk); end
+
+  def initialize(*args, &blk); end
+
+  def kind(*args, &blk); end
+
+  def name(*args, &blk); end
+
+  def name_without_kind(*args, &blk); end
+
+  def to_def_param(*args, &blk); end
+
+  def to_sig_param(*args, &blk); end
+
+  def type(*args, &blk); end
+  PREFIXES = ::T.let(nil, ::T.untyped)
+end
+
+class Parlour::RbiGenerator::Parameter
+  extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class Parlour::RbiGenerator::RbiObject
+  def add_comment(*args, &blk); end
+
   def add_comments(*args, &blk); end
+
+  def comments(*args, &blk); end
+
+  def describe(*args, &blk); end
+
+  def generate_rbi(*args, &blk); end
+
+  def generated_by(*args, &blk); end
+
+  def generator(*args, &blk); end
+
+  def initialize(*args, &blk); end
+
+  def merge_into_self(*args, &blk); end
+
+  def mergeable?(*args, &blk); end
+
+  def name(*args, &blk); end
 end
 
 class Parlour::RbiGenerator::RbiObject
+  extend ::T::Helpers
+  extend ::T::Sig
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class Parlour::RbiGenerator::StructClassNamespace
+  def props(*args, &blk); end
+end
+
+class Parlour::RbiGenerator::StructClassNamespace
+end
+
 class Parlour::RbiGenerator::StructProp
+  def ==(*args, &blk); end
+
+  def array(*args, &blk); end
+
+  def default(*args, &blk); end
+
+  def dont_store(*args, &blk); end
+
+  def enum(*args, &blk); end
+
+  def factory(*args, &blk); end
+
+  def foreign(*args, &blk); end
+
+  def immutable(*args, &blk); end
+
+  def initialize(*args, &blk); end
+
+  def name(*args, &blk); end
+
+  def optional(*args, &blk); end
+
+  def override(*args, &blk); end
+
+  def redaction(*args, &blk); end
+
+  def to_prop_call(*args, &blk); end
+
+  def type(*args, &blk); end
+  EXTRA_PROPERTIES = ::T.let(nil, ::T.untyped)
+end
+
+class Parlour::RbiGenerator::StructProp
+  extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class Parlour::RbiGenerator
+  extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 module Parlour::TypeLoader
+end
+
+module Parlour::TypeLoader
+  extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
+  def self.load_file(*args, &blk); end
+
+  def self.load_project(*args, &blk); end
+
+  def self.load_source(*args, &blk); end
+end
+
+class Parlour::TypeParser
+  def ast(*args, &blk); end
+
+  def ast=(ast); end
+
+  def body_has_modifier?(*args, &blk); end
+
+  def body_includes_and_extends(*args, &blk); end
+
+  def constant_names(*args, &blk); end
+
+  def generator(*args, &blk); end
+
+  def generator=(generator); end
+
+  def initialize(*args, &blk); end
+
+  def node_to_s(*args, &blk); end
+
+  def parse_all(*args, &blk); end
+
+  def parse_err(*args, &blk); end
+
+  def parse_method_into_methods(*args, &blk); end
+
+  def parse_path_to_object(*args, &blk); end
+
+  def parse_sig_into_methods(*args, &blk); end
+
+  def parse_sig_into_sig(*args, &blk); end
+
+  def previous_sibling_sig_node?(*args, &blk); end
+
+  def sig_node?(*args, &blk); end
+
+  def unknown_node_errors(*args, &blk); end
+
+  def zip_by(*args, &blk); end
+end
+
+class Parlour::TypeParser::IntermediateSig
+  def abstract(); end
+
+  def abstract=(val); end
+
+  def final(); end
+
+  def final=(val); end
+
+  def initialize(*args, &blk); end
+
+  def overridable(); end
+
+  def overridable=(val); end
+
+  def override(); end
+
+  def override=(val); end
+
+  def params(); end
+
+  def params=(val); end
+
+  def return_type(); end
+
+  def return_type=(val); end
+
+  def type_parameters(); end
+
+  def type_parameters=(val); end
 end
 
 class Parlour::TypeParser::IntermediateSig
@@ -13420,13 +13812,33 @@ class Parlour::TypeParser::IntermediateSig
 end
 
 class Parlour::TypeParser::NodePath
+  def child(*args, &blk); end
+
+  def indices(*args, &blk); end
+
+  def initialize(*args, &blk); end
+
+  def parent(*args, &blk); end
+
+  def sibling(*args, &blk); end
+
+  def traverse(*args, &blk); end
+end
+
+class Parlour::TypeParser::NodePath
+  extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class Parlour::TypeParser
+  extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
+  def self.from_source(*args, &blk); end
+end
+
+module Parlour
 end
 
 ParseError = Racc::ParseError
@@ -22354,49 +22766,6 @@ end
 module TZInfo
 end
 
-module Tapioca
-  VERSION = ::T.let(nil, ::T.untyped)
-end
-
-class Tapioca::Cli
-  include ::Thor::Actions
-  def dsl(*constants); end
-
-  def generate(*gems); end
-
-  def generator(); end
-
-  def init(); end
-
-  def require(); end
-
-  def sync(); end
-
-  def todo(); end
-end
-
-class Tapioca::Cli
-end
-
-module Tapioca::Compilers
-end
-
-module Tapioca::Compilers::Dsl
-end
-
-class Tapioca::Compilers::Dsl::Base
-  def decorate(*args, &blk); end
-
-  def gather_constants(*args, &blk); end
-
-  def handles?(*args, &blk); end
-
-  def initialize(*args, &blk); end
-
-  def processable_constants(*args, &blk); end
-  SPECIAL_METHOD_NAMES = ::T.let(nil, ::T.untyped)
-end
-
 class Tapioca::Compilers::Dsl::Base
   extend ::T::Sig
   extend ::T::Helpers
@@ -22406,31 +22775,10 @@ class Tapioca::Compilers::Dsl::Base
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-module Tapioca::Compilers::Dsl
-end
-
-class Tapioca::Compilers::DslCompiler
-  def error_handler(*args, &blk); end
-
-  def generators(*args, &blk); end
-
-  def initialize(*args, &blk); end
-
-  def requested_constants(*args, &blk); end
-
-  def run(*args, &blk); end
-end
-
 class Tapioca::Compilers::DslCompiler
   extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Tapioca::Compilers::RequiresCompiler
-  def compile(*args, &blk); end
-
-  def initialize(*args, &blk); end
 end
 
 class Tapioca::Compilers::RequiresCompiler
@@ -22440,30 +22788,7 @@ class Tapioca::Compilers::RequiresCompiler
 end
 
 module Tapioca::Compilers::Sorbet
-  SORBET = ::T.let(nil, ::T.untyped)
-end
-
-module Tapioca::Compilers::Sorbet
   extend ::T::Private::Methods::SingletonMethodHooks
-  def self.run(*args, &blk); end
-
-  def self.sorbet_path(*args, &blk); end
-end
-
-module Tapioca::Compilers::SymbolTable
-end
-
-class Tapioca::Compilers::SymbolTable::SymbolGenerator
-  def gem(); end
-
-  def generate(*args, &blk); end
-
-  def indent(); end
-
-  def initialize(*args, &blk); end
-  IGNORED_SYMBOLS = ::T.let(nil, ::T.untyped)
-  SPECIAL_METHOD_NAMES = ::T.let(nil, ::T.untyped)
-  TYPE_PARAMETER_MATCHER = ::T.let(nil, ::T.untyped)
 end
 
 class Tapioca::Compilers::SymbolTable::SymbolGenerator
@@ -22473,27 +22798,7 @@ class Tapioca::Compilers::SymbolTable::SymbolGenerator
 end
 
 module Tapioca::Compilers::SymbolTable::SymbolLoader
-end
-
-class Tapioca::Compilers::SymbolTable::SymbolLoader::SymbolTableParser
-end
-
-class Tapioca::Compilers::SymbolTable::SymbolLoader::SymbolTableParser
-  def self.parse(object, parents=T.unsafe(nil)); end
-end
-
-module Tapioca::Compilers::SymbolTable::SymbolLoader
   extend ::T::Private::Methods::SingletonMethodHooks
-  def self.ignore_symbol?(symbol); end
-
-  def self.list_from_paths(*args, &blk); end
-end
-
-module Tapioca::Compilers::SymbolTable
-end
-
-class Tapioca::Compilers::SymbolTableCompiler
-  def compile(*args, &blk); end
 end
 
 class Tapioca::Compilers::SymbolTableCompiler
@@ -22503,110 +22808,26 @@ class Tapioca::Compilers::SymbolTableCompiler
 end
 
 class Tapioca::Compilers::TodosCompiler
-  def compile(*args, &blk); end
-end
-
-class Tapioca::Compilers::TodosCompiler
   extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-module Tapioca::Compilers
-end
-
-class Tapioca::Config
-  def exclude(); end
-
-  def generate_command(); end
-
-  def generators(); end
-
-  def initialize(*args, &blk); end
-
-  def outdir(); end
-
-  def outpath(*args, &blk); end
-
-  def postrequire(); end
-
-  def prerequire(); end
-
-  def todos_path(); end
-
-  def typed_overrides(); end
-  DEFAULT_DSLDIR = ::T.let(nil, ::T.untyped)
-  DEFAULT_GEMDIR = ::T.let(nil, ::T.untyped)
-  DEFAULT_OVERRIDES = ::T.let(nil, ::T.untyped)
-  DEFAULT_POSTREQUIRE = ::T.let(nil, ::T.untyped)
-  DEFAULT_RBIDIR = ::T.let(nil, ::T.untyped)
-  DEFAULT_TODOSPATH = ::T.let(nil, ::T.untyped)
-  SORBET_CONFIG = ::T.let(nil, ::T.untyped)
-  SORBET_PATH = ::T.let(nil, ::T.untyped)
-  TAPIOCA_CONFIG = ::T.let(nil, ::T.untyped)
-  TAPIOCA_PATH = ::T.let(nil, ::T.untyped)
 end
 
 class Tapioca::Config
   extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
-  def self.inherited(s); end
-end
-
-class Tapioca::ConfigBuilder
-  DEFAULT_OPTIONS = ::T.let(nil, ::T.untyped)
 end
 
 class Tapioca::ConfigBuilder
   extend ::T::Private::Methods::SingletonMethodHooks
-  def self.from_options(*args, &blk); end
-end
-
-module Tapioca::ConstantLocator
-end
-
-module Tapioca::ConstantLocator
-  def self.files_for(klass); end
-end
-
-class Tapioca::Error
-end
-
-class Tapioca::Error
 end
 
 class Tapioca::Gemfile
-  def dependencies(*args, &blk); end
-
-  def gem(*args, &blk); end
-
-  def initialize(*args, &blk); end
-
-  def require(*args, &blk); end
   Spec = ::T.let(nil, ::T.untyped)
 end
 
 class Tapioca::Gemfile::Gem
-  def contains_path?(*args, &blk); end
-
-  def files(*args, &blk); end
-
-  def full_gem_path(*args, &blk); end
-
-  def ignore?(*args, &blk); end
-
-  def initialize(*args, &blk); end
-
-  def name(*args, &blk); end
-
-  def rbi_file_name(*args, &blk); end
-
-  def version(*args, &blk); end
-  IGNORED_GEMS = ::T.let(nil, ::T.untyped)
-end
-
-class Tapioca::Gemfile::Gem
   extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -22619,33 +22840,9 @@ class Tapioca::Gemfile
 end
 
 class Tapioca::Generator
-  def build_dsl(*args, &blk); end
-
-  def build_gem_rbis(*args, &blk); end
-
-  def build_requires(*args, &blk); end
-
-  def build_todos(*args, &blk); end
-
-  def config(*args, &blk); end
-
-  def initialize(*args, &blk); end
-
-  def sync_rbis_with_gemfile(*args, &blk); end
-end
-
-class Tapioca::Generator
   extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Tapioca::Loader
-  def initialize(*args, &blk); end
-
-  def load_bundle(*args, &blk); end
-
-  def load_rails(*args, &blk); end
 end
 
 class Tapioca::Loader
@@ -22655,23 +22852,9 @@ class Tapioca::Loader
 end
 
 class Tapioca::SorbetConfig
-  def ignore(); end
-
-  def initialize(*args, &blk); end
-
-  def paths(*args, &blk); end
-end
-
-class Tapioca::SorbetConfig
   extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
-  def self.parse_file(*args, &blk); end
-
-  def self.parse_string(*args, &blk); end
-end
-
-module Tapioca
 end
 
 class Tempfile
