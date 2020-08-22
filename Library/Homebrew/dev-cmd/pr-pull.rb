@@ -5,6 +5,7 @@ require "cli/parser"
 require "utils/github"
 require "tmpdir"
 require "bintray"
+require "formula"
 
 module Homebrew
   module_function
