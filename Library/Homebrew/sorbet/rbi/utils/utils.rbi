@@ -3,7 +3,7 @@
 module Utils
   include Kernel
 
-  class Bottles
+  module Bottles
   end
 
   module Link
