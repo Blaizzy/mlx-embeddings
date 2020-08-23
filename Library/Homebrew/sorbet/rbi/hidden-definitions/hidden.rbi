@@ -13172,7 +13172,6 @@ class Object
   HOMEBREW_DEFAULT_CACHE = ::T.let(nil, ::T.untyped)
   HOMEBREW_DEFAULT_LOGS = ::T.let(nil, ::T.untyped)
   HOMEBREW_DEFAULT_TEMP = ::T.let(nil, ::T.untyped)
-  HOMEBREW_HELP = ::T.let(nil, ::T.untyped)
   HOMEBREW_LIBRARY_PATH = ::T.let(nil, ::T.untyped)
   HOMEBREW_TAP_CASK_REGEX = ::T.let(nil, ::T.untyped)
   HOMEBREW_TAP_FORMULA_REGEX = ::T.let(nil, ::T.untyped)
