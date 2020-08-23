@@ -5,7 +5,10 @@ require "software_spec"
 require "development_tools"
 require "extend/ENV"
 
-class SystemConfig
+# Helper module for querying information about the system configuration.
+#
+# @api private
+module SystemConfig
   class << self
     def clang
       @clang ||= if DevelopmentTools.installed?

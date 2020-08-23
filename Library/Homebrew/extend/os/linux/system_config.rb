@@ -3,7 +3,7 @@
 require "formula"
 require "os/linux/glibc"
 
-class SystemConfig
+module SystemConfig
   class << self
     def host_glibc_version
       version = OS::Linux::Glibc.system_version
