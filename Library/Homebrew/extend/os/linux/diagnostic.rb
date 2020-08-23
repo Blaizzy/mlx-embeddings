@@ -3,7 +3,6 @@
 require "tempfile"
 require "utils/shell"
 require "hardware"
-require "os/linux/diagnostic"
 require "os/linux/glibc"
 require "os/linux/kernel"
 
