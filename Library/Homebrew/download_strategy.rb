@@ -523,7 +523,7 @@ class SubversionDownloadStrategy < VCSDownloadStrategy
   end
 
   def source_modified_time
-    time = if Version.create(Utils.svn_version) >= Version.create("1.9")
+    time = if Version.create(Utils::Svn.version) >= Version.create("1.9")
       out, = system_command("svn", args: ["info", "--show-item", "last-changed-date"], chdir: cached_location)
       out
     else
