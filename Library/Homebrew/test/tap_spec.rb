@@ -168,7 +168,7 @@ describe Tap do
 
     it "returns nil if Git is not available" do
       setup_git_repo
-      allow(Utils).to receive(:git_available?).and_return(false)
+      allow(Utils::Git).to receive(:available?).and_return(false)
       expect(subject.remote).to be nil
     end
   end

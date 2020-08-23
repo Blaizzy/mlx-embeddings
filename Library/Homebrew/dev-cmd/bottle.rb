@@ -550,7 +550,7 @@ module Homebrew
         end
 
         unless args.no_commit?
-          Utils.set_git_name_email!
+          Utils::Git.set_name_email!
 
           short_name = formula_name.split("/", -1).last
           pkg_version = bottle_hash["formula"]["pkg_version"]

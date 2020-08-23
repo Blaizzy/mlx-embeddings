@@ -2,8 +2,10 @@
 
 require "utils/git"
 
-describe Git do
+describe Utils::Git do
   before do
+    described_class.clear_available_cache
+
     git = HOMEBREW_SHIMS_PATH/"scm/git"
 
     HOMEBREW_CACHE.cd do
@@ -88,49 +90,43 @@ describe Git do
       ).to eq("# README")
     end
   end
-end
 
-describe Utils do
-  before do
-    described_class.clear_git_available_cache
-  end
-
-  describe "::git_available?" do
+  describe "::available?" do
     it "returns true if git --version command succeeds" do
-      expect(described_class).to be_git_available
+      expect(described_class).to be_available
     end
 
     it "returns false if git --version command does not succeed" do
       stub_const("HOMEBREW_SHIMS_PATH", HOMEBREW_PREFIX/"bin/shim")
-      expect(described_class).not_to be_git_available
+      expect(described_class).not_to be_available
     end
   end
 
-  describe "::git_path" do
+  describe "::path" do
     it "returns nil when git is not available" do
       stub_const("HOMEBREW_SHIMS_PATH", HOMEBREW_PREFIX/"bin/shim")
-      expect(described_class.git_path).to eq(nil)
+      expect(described_class.path).to eq(nil)
     end
 
     it "returns path of git when git is available" do
-      expect(described_class.git_path).to end_with("git")
+      expect(described_class.path).to end_with("git")
     end
   end
 
-  describe "::git_version" do
+  describe "::version" do
     it "returns nil when git is not available" do
       stub_const("HOMEBREW_SHIMS_PATH", HOMEBREW_PREFIX/"bin/shim")
-      expect(described_class.git_version).to eq(nil)
+      expect(described_class.version).to eq(nil)
     end
 
     it "returns version of git when git is available" do
-      expect(described_class.git_version).not_to be_nil
+      expect(described_class.version).not_to be_nil
     end
   end
 
-  describe "::ensure_git_installed!" do
+  describe "::ensure_installed!" do
     it "returns nil if git already available" do
-      expect(described_class.ensure_git_installed!).to be_nil
+      expect(described_class.ensure_installed!).to be_nil
     end
 
     context "when git is not already available" do
@@ -140,25 +136,28 @@ describe Utils do
 
       it "can't install brewed git if homebrew/core is unavailable" do
         allow_any_instance_of(Pathname).to receive(:directory?).and_return(false)
-        expect { described_class.ensure_git_installed! }.to raise_error("Git is unavailable")
+        expect { described_class.ensure_installed! }.to raise_error("Git is unavailable")
       end
 
       it "raises error if can't install git" do
         stub_const("HOMEBREW_BREW_FILE", HOMEBREW_PREFIX/"bin/brew")
-        expect { described_class.ensure_git_installed! }.to raise_error("Git is unavailable")
+        expect { described_class.ensure_installed! }.to raise_error("Git is unavailable")
       end
 
       it "installs git" do
-        allow(Homebrew).to receive(:_system).with(any_args).and_return(true)
-        described_class.ensure_git_installed!
+        expect(described_class).to receive(:available?).and_return(false)
+        expect(described_class).to receive(:safe_system).with(HOMEBREW_BREW_FILE, "install", "git").and_return(true)
+        expect(described_class).to receive(:available?).and_return(true)
+
+        described_class.ensure_installed!
       end
     end
   end
 
-  describe "::git_remote_exists?" do
+  describe "::remote_exists?" do
     it "returns true when git is not available" do
       stub_const("HOMEBREW_SHIMS_PATH", HOMEBREW_PREFIX/"bin/shim")
-      expect(described_class).to be_git_remote_exists("blah")
+      expect(described_class).to be_remote_exists("blah")
     end
 
     context "when git is available" do
@@ -173,11 +172,11 @@ describe Utils do
           system git, "remote", "add", "origin", url
         end
 
-        expect(described_class).to be_git_remote_exists(url)
+        expect(described_class).to be_remote_exists(url)
       end
 
       it "returns false when git remote does not exist" do
-        expect(described_class).not_to be_git_remote_exists("blah")
+        expect(described_class).not_to be_remote_exists("blah")
       end
     end
   end

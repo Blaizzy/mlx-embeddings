@@ -133,7 +133,7 @@ module Homebrew
       result = ""
       loop do
         rev = rev.nil? ? "HEAD" : "#{rev}~1"
-        rev, (path,) = Git.last_revision_commit_of_files(repo, pattern, before_commit: rev)
+        rev, (path,) = Utils::Git.last_revision_commit_of_files(repo, pattern, before_commit: rev)
         if rev.nil? && source_tap.shallow?
           odie <<~EOS
             Could not find #{name} but #{source_tap} is a shallow clone!
@@ -145,7 +145,7 @@ module Homebrew
         end
 
         file = repo/path
-        result = Git.last_revision_of_file(repo, file, before_commit: rev)
+        result = Utils::Git.last_revision_of_file(repo, file, before_commit: rev)
         if result.empty?
           odebug "Skipping revision #{rev} - file is empty at this revision"
           next
@@ -173,11 +173,11 @@ module Homebrew
 
       if files.empty?
         ohai "Searching repository history"
-        rev, (path,) = Git.last_revision_commit_of_files(repo, pattern)
+        rev, (path,) = Utils::Git.last_revision_commit_of_files(repo, pattern)
         odie "Could not find #{name}! The formula or version may not have existed." if rev.nil?
         file = repo/path
         version = formula_at_revision(repo, name, file, rev).version
-        result = Git.last_revision_of_file(repo, file)
+        result = Utils::Git.last_revision_of_file(repo, file)
       else
         file = files.first.realpath
         rev = "HEAD"
@@ -219,7 +219,7 @@ module Homebrew
   def formula_at_revision(repo, name, file, rev)
     return if rev.empty?
 
-    contents = Git.last_revision_of_file(repo, file, before_commit: rev)
+    contents = Utils::Git.last_revision_of_file(repo, file, before_commit: rev)
     contents.gsub!("@url=", "url ")
     contents.gsub!("require 'brewkit'", "require 'formula'")
     with_monkey_patch { Formulary.from_contents(name, file, contents) }

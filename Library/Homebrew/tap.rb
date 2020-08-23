@@ -248,7 +248,7 @@ class Tap
     end
 
     # ensure git is installed
-    Utils.ensure_git_installed!
+    Utils::Git.ensure_installed!
 
     if installed?
       unless force_auto_update.nil?
@@ -707,7 +707,7 @@ class TapConfig
 
   def [](key)
     return unless tap.git?
-    return unless Utils.git_available?
+    return unless Utils::Git.available?
 
     tap.path.cd do
       Utils.popen_read("git", "config", "--get", "homebrew.#{key}").chomp.presence
@@ -716,7 +716,7 @@ class TapConfig
 
   def []=(key, value)
     return unless tap.git?
-    return unless Utils.git_available?
+    return unless Utils::Git.available?
 
     tap.path.cd do
       safe_system "git", "config", "--replace-all", "homebrew.#{key}", value.to_s
