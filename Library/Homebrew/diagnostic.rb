@@ -312,6 +312,7 @@ module Homebrew
           Please execute `sudo chmod +t #{HOMEBREW_TEMP}` in your Terminal.
         EOS
       end
+      alias generic_check_tmpdir_sticky_bit check_tmpdir_sticky_bit
 
       def check_exist_directories
         not_exist_dirs = Keg::MUST_EXIST_DIRECTORIES.reject(&:exist?)

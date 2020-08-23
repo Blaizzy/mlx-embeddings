@@ -952,7 +952,6 @@ strict:
   - ./extend/os/utils/analytics.rb
   - ./language/haskell.rb
   - ./os/global.rb
-  - ./os/linux/diagnostic.rb
   - ./requirements.rb
   - ./requirements/osxfuse_requirement.rb
   - ./rubocops.rb
