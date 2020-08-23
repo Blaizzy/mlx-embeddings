@@ -511,13 +511,6 @@ module Kernel
     end
   end
 
-  def command_help_lines(path)
-    path.read
-        .lines
-        .grep(/^#:/)
-        .map { |line| line.slice(2..-1).delete_prefix("  ") }
-  end
-
   def redact_secrets(input, secrets)
     secrets.compact
            .reduce(input) { |str, secret| str.gsub secret, "******" }

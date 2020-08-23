@@ -104,6 +104,14 @@ module Homebrew
     end
     private_class_method :parser_help
 
+    def command_help_lines(path)
+      path.read
+          .lines
+          .grep(/^#:/)
+          .map { |line| line.slice(2..-1).delete_prefix("  ") }
+    end
+    private_class_method :command_help_lines
+
     def comment_help(path)
       # Otherwise read #: lines from the file.
       help_lines = command_help_lines(path)
