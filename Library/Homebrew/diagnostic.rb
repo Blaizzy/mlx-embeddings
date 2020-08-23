@@ -96,7 +96,7 @@ module Homebrew
       end
 
       def examine_git_origin(repository_path, desired_origin)
-        return if !Utils.git_available? || !repository_path.git?
+        return if !Utils::Git.available? || !repository_path.git?
 
         current_origin = repository_path.git_origin
 
@@ -482,13 +482,13 @@ module Homebrew
 
       def check_git_version
         minimum_version = ENV["HOMEBREW_MINIMUM_GIT_VERSION"]
-        return unless Utils.git_available?
-        return if Version.create(Utils.git_version) >= Version.create(minimum_version)
+        return unless Utils::Git.available?
+        return if Version.create(Utils::Git.version) >= Version.create(minimum_version)
 
         git = Formula["git"]
         git_upgrade_cmd = git.any_version_installed? ? "upgrade" : "install"
         <<~EOS
-          An outdated version (#{Utils.git_version}) of Git was detected in your PATH.
+          An outdated version (#{Utils::Git.version}) of Git was detected in your PATH.
           Git #{minimum_version} or newer is required for Homebrew.
           Please upgrade:
             brew #{git_upgrade_cmd} git
@@ -496,7 +496,7 @@ module Homebrew
       end
 
       def check_for_git
-        return if Utils.git_available?
+        return if Utils::Git.available?
 
         <<~EOS
           Git could not be found in your PATH.
@@ -507,7 +507,7 @@ module Homebrew
       end
 
       def check_git_newline_settings
-        return unless Utils.git_available?
+        return unless Utils::Git.available?
 
         autocrlf = HOMEBREW_REPOSITORY.cd { `git config --get core.autocrlf`.chomp }
         return unless autocrlf == "true"
@@ -543,7 +543,7 @@ module Homebrew
         return if ENV["CI"]
 
         coretap_path = CoreTap.instance.path
-        return if !Utils.git_available? || !(coretap_path/".git").exist?
+        return if !Utils::Git.available? || !(coretap_path/".git").exist?
 
         branch = coretap_path.git_branch
         return if branch.blank? || branch.include?("master")
@@ -642,7 +642,7 @@ module Homebrew
       end
 
       def check_git_status
-        return unless Utils.git_available?
+        return unless Utils::Git.available?
 
         message = nil
 

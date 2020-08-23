@@ -98,9 +98,9 @@ module SystemConfig
     end
 
     def describe_git
-      return "N/A" unless Utils.git_available?
+      return "N/A" unless Utils::Git.available?
 
-      "#{Utils.git_version} => #{Utils.git_path}"
+      "#{Utils::Git.version} => #{Utils::Git.path}"
     end
 
     def describe_curl

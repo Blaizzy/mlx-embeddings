@@ -54,7 +54,7 @@ class DependencyCollector
   end
 
   def git_dep_if_needed(tags)
-    return if Utils.git_available?
+    return if Utils::Git.available?
 
     Dependency.new("git", tags)
   end

@@ -722,8 +722,8 @@ class FormulaInstaller
     tab.runtime_dependencies = Tab.runtime_deps_hash(f_runtime_deps)
     tab.write
 
-    # let's reset Utils.git_available? if we just installed git
-    Utils.clear_git_available_cache if formula.name == "git"
+    # let's reset Utils::Git.available? if we just installed git
+    Utils::Git.clear_available_cache if formula.name == "git"
 
     # use installed curl when it's needed and available
     if formula.name == "curl" &&

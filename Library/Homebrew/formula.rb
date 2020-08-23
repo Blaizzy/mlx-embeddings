@@ -1821,7 +1821,7 @@ class Formula
     test_env[:_JAVA_OPTIONS] += " -Djava.io.tmpdir=#{HOMEBREW_TEMP}"
 
     ENV.clear_sensitive_environment!
-    Utils.set_git_name_email!
+    Utils::Git.set_name_email!
 
     mktemp("#{name}-test") do |staging|
       staging.retain! if keep_tmp

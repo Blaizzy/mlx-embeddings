@@ -50,7 +50,7 @@ module Homebrew
     args = pull_args.parse
 
     # Passthrough Git environment variables for e.g. git am
-    Utils.set_git_name_email!(author: false, committer: true)
+    Utils::Git.set_name_email!(author: false, committer: true)
 
     # Depending on user configuration, git may try to invoke gpg.
     if Utils.popen_read("git config --get --bool commit.gpgsign").chomp == "true"
