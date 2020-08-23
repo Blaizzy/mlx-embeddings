@@ -11,10 +11,6 @@ module Hardware
         end
       end
 
-      def cpuinfo
-        @cpuinfo ||= File.read("/proc/cpuinfo")
-      end
-
       def family
         return :arm if arm?
         return :ppc if ppc?
@@ -93,6 +89,12 @@ module Hardware
 
       def sse4?
         flags.include? "sse4_1"
+      end
+
+      private
+
+      def cpuinfo
+        @cpuinfo ||= File.read("/proc/cpuinfo")
       end
     end
   end
