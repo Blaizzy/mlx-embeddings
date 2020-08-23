@@ -1,32 +1,36 @@
 # frozen_string_literal: true
 
+require "system_command"
+
 module Utils
-  def self.clear_svn_version_cache
-    remove_instance_variable(:@svn_available) if defined?(@svn_available)
-    remove_instance_variable(:@svn_version) if defined?(@svn_version)
-  end
+  # Helper functions for querying SVN information.
+  #
+  # @api private
+  module Svn
+    module_function
 
-  def self.svn_available?
-    return @svn_available if defined?(@svn_available)
+    def available?
+      version.present?
+    end
 
-    @svn_available = quiet_system HOMEBREW_SHIMS_PATH/"scm/svn", "--version"
-  end
+    def version
+      return @version if defined?(@version)
 
-  def self.svn_version
-    return unless svn_available?
-    return @svn_version if defined?(@svn_version)
+      stdout, _, status = system_command(HOMEBREW_SHIMS_PATH/"scm/svn", args: ["--version"], print_stderr: false)
+      @version = status.success? ? stdout.chomp[/svn, version (\d+(?:\.\d+)*)/, 1] : nil
+    end
 
-    @svn_version = Utils.popen_read(
-      HOMEBREW_SHIMS_PATH/"scm/svn", "--version"
-    ).chomp[/svn, version (\d+(?:\.\d+)*)/, 1]
-  end
+    def remote_exists?(url)
+      return true unless available?
 
-  def self.svn_remote_exists?(url)
-    return true unless svn_available?
+      # OK to unconditionally trust here because we're just checking if
+      # a URL exists.
+      quiet_system "svn", "ls", url, "--depth", "empty",
+                   "--non-interactive", "--trust-server-cert"
+    end
 
-    # OK to unconditionally trust here because we're just checking if
-    # a URL exists.
-    quiet_system "svn", "ls", url, "--depth", "empty",
-                 "--non-interactive", "--trust-server-cert"
+    def clear_version_cache
+      remove_instance_variable(:@version) if defined?(@version)
+    end
   end
 end

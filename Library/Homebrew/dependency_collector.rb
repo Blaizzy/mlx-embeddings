@@ -60,7 +60,7 @@ class DependencyCollector
   end
 
   def subversion_dep_if_needed(tags)
-    return if Utils.svn_available?
+    return if Utils::Svn.available?
 
     Dependency.new("subversion", tags)
   end
