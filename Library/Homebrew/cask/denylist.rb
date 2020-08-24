@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 module Cask
+  # List of casks which are not allowed in official taps.
+  #
+  # @api private
   module Denylist
     def self.reason(name)
       case name
