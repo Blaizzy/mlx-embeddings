@@ -2,6 +2,9 @@
 
 module Cask
   class DSL
+    # Class corresponding to the `uninstall_postflight` stanza.
+    #
+    # @api private
     class UninstallPostflight < Base
     end
   end

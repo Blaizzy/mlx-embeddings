@@ -1,14 +1,18 @@
 # frozen_string_literal: true
 
-# Caveats DSL. Each method should handle output, following the
-# convention of at least one trailing blank line so that the user
-# can distinguish separate caveats.
-#
-# ( The return value of the last method in the block is also sent
-#   to the output by the caller, but that feature is only for the
-#   convenience of Cask authors. )
 module Cask
   class DSL
+    # Class corresponding to the `caveats` stanza.
+    #
+    # Each method should handle output, following the
+    # convention of at least one trailing blank line so that the user
+    # can distinguish separate caveats.
+    #
+    # The return value of the last method in the block is also sent
+    # to the output by the caller, but that feature is only for the
+    # convenience of Cask authors.
+    #
+    # @api private
     class Caveats < Base
       def initialize(*args)
         super(*args)

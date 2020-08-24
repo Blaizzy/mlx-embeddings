@@ -4,6 +4,9 @@ require "requirements/macos_requirement"
 
 module Cask
   class DSL
+    # Class corresponding to the `depends_on` stanza.
+    #
+    # @api private
     class DependsOn < DelegateClass(Hash)
       VALID_KEYS = Set.new([
                              :formula,

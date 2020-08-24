@@ -4,6 +4,9 @@ require "unpack_strategy"
 
 module Cask
   class DSL
+    # Class corresponding to the `container` stanza.
+    #
+    # @api private
     class Container
       VALID_KEYS = Set.new([
                              :type,
