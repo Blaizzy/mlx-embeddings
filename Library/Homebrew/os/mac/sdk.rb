@@ -4,6 +4,9 @@ require "os/mac/version"
 
 module OS
   module Mac
+    # Class representing a macOS SDK.
+    #
+    # @api private
     class SDK
       attr_reader :version, :path, :source
 
@@ -14,6 +17,9 @@ module OS
       end
     end
 
+    # Base class for SDK locators.
+    #
+    # @api private
     class BaseSDKLocator
       class NoSDKError < StandardError; end
 
@@ -42,7 +48,7 @@ module OS
           else
             sdk_for v
           end
-        rescue BaseSDKLocator::NoSDKError
+        rescue NoSDKError
           latest_sdk
         end
         # Only return an SDK older than the OS version if it was specifically requested
@@ -79,7 +85,11 @@ module OS
         end
       end
     end
+    private_constant :BaseSDKLocator
 
+    # Helper class for locating the Xcode SDK.
+    #
+    # @api private
     class XcodeSDKLocator < BaseSDKLocator
       def source
         :xcode
@@ -100,6 +110,9 @@ module OS
       end
     end
 
+    # Helper class for locating the macOS Command Line Tools SDK.
+    #
+    # @api private
     class CLTSDKLocator < BaseSDKLocator
       def source
         :clt
