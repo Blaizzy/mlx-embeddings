@@ -17,12 +17,6 @@ if RUBY_X < 2 || (RUBY_X == 2 && RUBY_Y < 6)
   raise "Homebrew must be run under Ruby 2.6! You're running #{RUBY_VERSION}."
 end
 
-# Load Bundler first of all if it's needed to avoid Gem version conflicts.
-if ENV["HOMEBREW_INSTALL_BUNDLER_GEMS_FIRST"]
-  require_relative "utils/gems"
-  Homebrew.install_bundler_gems!
-end
-
 # Also define here so we can rescue regardless of location.
 class MissingEnvironmentVariables < RuntimeError; end
 
