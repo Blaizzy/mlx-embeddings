@@ -3,6 +3,9 @@
 require "cask/audit"
 
 module Cask
+  # Helper class for auditing all available languages of a cask.
+  #
+  # @api private
   class Auditor
     extend Predicable
 
