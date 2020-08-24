@@ -1,24 +1,42 @@
 # frozen_string_literal: true
 
+# {Pathname} extension for dealing with ELF files.
+#
 # @see https://en.wikipedia.org/wiki/Executable_and_Linkable_Format#File_header
+#
+# @api private
 module ELFShim
   MAGIC_NUMBER_OFFSET = 0
+  private_constant :MAGIC_NUMBER_OFFSET
   MAGIC_NUMBER_ASCII = "\x7fELF"
+  private_constant :MAGIC_NUMBER_ASCII
 
   OS_ABI_OFFSET = 0x07
+  private_constant :OS_ABI_OFFSET
   OS_ABI_SYSTEM_V = 0
+  private_constant :OS_ABI_SYSTEM_V
   OS_ABI_LINUX = 3
+  private_constant :OS_ABI_LINUX
 
   TYPE_OFFSET = 0x10
+  private_constant :TYPE_OFFSET
   TYPE_EXECUTABLE = 2
+  private_constant :TYPE_EXECUTABLE
   TYPE_SHARED = 3
+  private_constant :TYPE_SHARED
 
   ARCHITECTURE_OFFSET = 0x12
+  private_constant :ARCHITECTURE_OFFSET
   ARCHITECTURE_I386 = 0x3
+  private_constant :ARCHITECTURE_I386
   ARCHITECTURE_POWERPC = 0x14
+  private_constant :ARCHITECTURE_POWERPC
   ARCHITECTURE_ARM = 0x28
+  private_constant :ARCHITECTURE_ARM
   ARCHITECTURE_X86_64 = 0x62
+  private_constant :ARCHITECTURE_X86_64
   ARCHITECTURE_AARCH64 = 0xB7
+  private_constant :ARCHITECTURE_AARCH64
 
   def read_uint8(offset)
     read(1, offset).unpack1("C")
@@ -86,6 +104,9 @@ module ELFShim
     @dynamic_elf = patchelf_patcher.elf.segment_by_type(:DYNAMIC).present?
   end
 
+  # Helper class for reading metadata from an ELF file.
+  #
+  # @api private
   class Metadata
     attr_reader :path, :dylib_id, :dylibs
 
@@ -125,6 +146,7 @@ module ELFShim
       [patcher.soname, patcher.needed]
     end
   end
+  private_constant :Metadata
 
   def rpath_using_patchelf_rb
     patchelf_patcher.runpath || patchelf_patcher.rpath
@@ -138,6 +160,7 @@ module ELFShim
   def metadata
     @metadata ||= Metadata.new(self)
   end
+  private :metadata
 
   def dylib_id
     metadata.dylib_id
