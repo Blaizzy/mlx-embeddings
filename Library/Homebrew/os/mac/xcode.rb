@@ -203,6 +203,9 @@ module OS
       end
     end
 
+    # Helper module for querying macOS Command Line Tools information.
+    #
+    # @api private
     module CLT
       module_function
 
