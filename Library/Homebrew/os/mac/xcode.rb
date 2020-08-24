@@ -2,6 +2,9 @@
 
 module OS
   module Mac
+    # Helper module for querying Xcode information.
+    #
+    # @api private
     module Xcode
       module_function
 
