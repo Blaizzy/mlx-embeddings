@@ -2,6 +2,9 @@
 
 module OS
   module Linux
+    # Helper functions for querying `glibc` information.
+    #
+    # @api private
     module Glibc
       module_function
 
