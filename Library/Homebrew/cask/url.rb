@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# Class corresponding to the `url` stanza.
+#
+# @api private
 class URL
   ATTRIBUTES = [
     :using,
@@ -7,6 +10,7 @@ class URL
     :trust_cert, :cookies, :referer, :user_agent,
     :data
   ].freeze
+  private_constant :ATTRIBUTES
 
   attr_reader :uri, :specs, *ATTRIBUTES
 
