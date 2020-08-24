@@ -178,16 +178,12 @@ module Homebrew
     Utils.popen_read("git", "-C", tap.path, "diff-tree",
                      "-r", "--name-only", "--diff-filter=AM",
                      original_commit, "HEAD", "--", tap.formula_dir)
-         .lines.map do |line|
+         .lines
+         .map do |line|
       next unless line.end_with? ".rb\n"
 
       name = "#{tap.name}/#{File.basename(line.chomp, ".rb")}"
-      begin
-        Formula[name]
-      rescue Exception # rubocop:disable Lint/RescueException
-        # Make sure we catch syntax errors.
-        next
-      end
+      Formula[name]
     end.compact
   end
 
