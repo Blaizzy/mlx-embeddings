@@ -94,6 +94,7 @@ module Utils
         begin
           oh1 "Installing #{Formatter.identifier("git")}"
           safe_system HOMEBREW_BREW_FILE, "install", "git"
+          clear_available_cache
         rescue
           raise "Git is unavailable"
         end
