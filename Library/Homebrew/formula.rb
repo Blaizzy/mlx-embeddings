@@ -2219,12 +2219,13 @@ class Formula
     # @!attribute [w]
     # The SPDX ID of the open-source license that the formula uses.
     # Shows when running `brew info`.
-    # Use `:any`, `:all` or `:with` to describe complex license expressions.
-    # `:any` should be used when the user can choose which license to use.
-    # `:all` should be used when the user must use all licenses.
+    # Use `:any_of`, `:all_of` or `:with` to describe complex license expressions.
+    # `:any_of` should be used when the user can choose which license to use.
+    # `:all_of` should be used when the user must use all licenses.
     # `:with` should be used to specify a valid SPDX exception.
     # Add `+` to an identifier to indicate that the formulae can be
     # licensed under later versions of the same license.
+    # @see https://docs.brew.sh/License-Guidelines Homebrew License Guidelines
     # @see https://spdx.github.io/spdx-spec/appendix-IV-SPDX-license-expressions/ SPDX license expression guide
     # <pre>license "BSD-2-Clause"</pre>
     # <pre>license "EPL-1.0+"</pre>
@@ -2232,6 +2233,12 @@ class Formula
     # <pre>license all_of: ["MIT", "GPL-2.0-only"]</pre>
     # <pre>license "GPL-2.0-only" => { with: "LLVM-exception" }</pre>
     # <pre>license :public_domain</pre>
+    # <pre>license any_of: [
+    #   "MIT",
+    #   :public_domain,
+    #   all_of: ["0BSD", "Zlib", "Artistic-1.0+"],
+    #   "Apache-2.0" => { with: "LLVM-exception" },
+    # ]</pre>
     def license(args = nil)
       if args.nil?
         @licenses
