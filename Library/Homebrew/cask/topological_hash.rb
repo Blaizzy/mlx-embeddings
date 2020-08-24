@@ -2,8 +2,8 @@
 
 require "tsort"
 
-# a basic topologically sortable hashmap
 module Cask
+  # Topologically sortable hash map.
   class TopologicalHash < Hash
     include TSort
 
