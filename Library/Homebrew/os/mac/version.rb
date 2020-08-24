@@ -5,6 +5,9 @@ require "version"
 
 module OS
   module Mac
+    # A macOS version.
+    #
+    # @api private
     class Version < ::Version
       SYMBOLS = {
         big_sur:     "11.0",
