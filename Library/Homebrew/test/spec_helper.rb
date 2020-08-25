@@ -181,7 +181,7 @@ RSpec.configure do |config|
       end
 
       begin
-        timeout = example.metadata.fetch(:timeout, 60)
+        timeout = example.metadata.fetch(:timeout, 120)
         inner_timeout = nil
         Timeout.timeout(timeout) do
           example.run
