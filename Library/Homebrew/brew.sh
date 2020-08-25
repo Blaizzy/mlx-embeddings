@@ -5,6 +5,11 @@ case "$HOMEBREW_SYSTEM" in
   Linux)  HOMEBREW_LINUX="1" ;;
 esac
 
+# Colorize output on GitHub Actions.
+if [[ -n "$GITHUB_ACTIONS" ]]; then
+  export HOMEBREW_COLOR="1"
+fi
+
 # Force UTF-8 to avoid encoding issues for users with broken locale settings.
 if [[ -n "$HOMEBREW_MACOS" ]]
 then
