@@ -7,7 +7,7 @@ esac
 
 # Colorize output on GitHub Actions.
 if [[ -n "$GITHUB_ACTIONS" ]]; then
-    export HOMEBREW_COLOR="1"
+  export HOMEBREW_COLOR="1"
 fi
 
 # Force UTF-8 to avoid encoding issues for users with broken locale settings.
