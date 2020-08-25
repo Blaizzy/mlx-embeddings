@@ -137,9 +137,9 @@ module Homebrew
       puts formulae_upgrades.join("\n")
     end
 
-    upgrade_formulae(formulae_to_install, args: args)
+    Upgrade.upgrade_formulae(formulae_to_install, args: args)
 
-    check_installed_dependents(args: args)
+    Upgrade.check_installed_dependents(args: args)
 
     Homebrew.messages.display_messages(display_times: args.display_times?)
   end
