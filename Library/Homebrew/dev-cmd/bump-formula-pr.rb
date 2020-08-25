@@ -123,7 +123,7 @@ module Homebrew
     # Use the user's browser, too.
     ENV["BROWSER"] = Homebrew::EnvConfig.browser
 
-    formula = args.formulae.first
+    formula = args.named.to_formulae.first
 
     new_url = args.url
     formula ||= determine_formula_from_url(new_url) if new_url

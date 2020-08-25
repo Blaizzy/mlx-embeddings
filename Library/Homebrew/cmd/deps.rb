@@ -65,7 +65,7 @@ module Homebrew
     Formulary.enable_factory_cache!
 
     recursive = !args.send("1?")
-    installed = args.installed? || dependents(args.formulae_and_casks).all?(&:any_version_installed?)
+    installed = args.installed? || dependents(args.named.to_formulae_and_casks).all?(&:any_version_installed?)
 
     @use_runtime_dependencies = installed && recursive &&
                                 !args.tree? &&
@@ -76,7 +76,7 @@ module Homebrew
 
     if args.tree?
       dependents = if args.named.present?
-        sorted_dependents(args.formulae_and_casks)
+        sorted_dependents(args.named.to_formulae_and_casks)
       elsif args.installed?
         sorted_dependents(Formula.installed + Cask::Caskroom.casks)
       else
@@ -89,7 +89,7 @@ module Homebrew
       puts_deps sorted_dependents(Formula.to_a + Cask::Cask.to_a), recursive: recursive, args: args
       return
     elsif !args.no_named? && args.for_each?
-      puts_deps sorted_dependents(args.formulae_and_casks), recursive: recursive, args: args
+      puts_deps sorted_dependents(args.named.to_formulae_and_casks), recursive: recursive, args: args
       return
     end
 
@@ -100,7 +100,7 @@ module Homebrew
       return
     end
 
-    dependents = dependents(args.formulae_and_casks)
+    dependents = dependents(args.named.to_formulae_and_casks)
 
     all_deps = deps_for_dependents(dependents, recursive: recursive, args: args, &(args.union? ? :| : :&))
     condense_requirements(all_deps, args: args)

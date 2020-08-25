@@ -50,13 +50,13 @@ module Homebrew
 
     if args.deps?
       bucket = []
-      args.formulae.each do |f|
+      args.named.to_formulae.each do |f|
         bucket << f
         bucket.concat f.recursive_dependencies.map(&:to_formula)
       end
       bucket.uniq!
     else
-      bucket = args.formulae
+      bucket = args.named.to_formulae
     end
 
     puts "Fetching: #{bucket * ", "}" if bucket.size > 1

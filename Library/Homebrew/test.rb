@@ -24,7 +24,7 @@ begin
 
   trap("INT", old_trap)
 
-  formula = args.resolved_formulae.first
+  formula = args.named.to_resolved_formulae.first
   formula.extend(Homebrew::Assertions)
   formula.extend(Homebrew::FreePort)
   formula.extend(Debrew::Formula) if args.debug?

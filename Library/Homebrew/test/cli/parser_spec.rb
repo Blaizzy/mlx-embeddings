@@ -270,38 +270,6 @@ describe Homebrew::CLI::Parser do
       expect(args.flags_only).to eq %w[--verbose --foo --bar=value]
     end
 
-    it "#formulae raises an error when a Formula is unavailable" do
-      args = parser.parse(["mxcl"])
-      expect { args.formulae }.to raise_error FormulaUnavailableError
-    end
-
-    it "#formulae returns an empty array when there are no Formulae" do
-      args = parser.parse([])
-      expect(args.formulae).to be_empty
-    end
-
-    it "#casks returns an empty array when there are no matching casks" do
-      args = parser.parse([])
-      expect(args.casks).to eq []
-    end
-
-    context "kegs" do
-      before do
-        keg = HOMEBREW_CELLAR/"mxcl/10.0"
-        keg.mkpath
-      end
-
-      it "when there are matching kegs returns an array of Kegs" do
-        args = parser.parse(["mxcl"])
-        expect(args.kegs.length).to eq 1
-      end
-
-      it "when there are no matching kegs returns an array of Kegs" do
-        args = parser.parse([])
-        expect(args.kegs).to be_empty
-      end
-    end
-
     it "#named returns an array of non-option arguments" do
       args = parser.parse(["foo", "-v", "-s"])
       expect(args.named).to eq ["foo"]

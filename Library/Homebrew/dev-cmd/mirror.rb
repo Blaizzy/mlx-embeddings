@@ -33,7 +33,7 @@ module Homebrew
 
     bintray = Bintray.new(org: bintray_org)
 
-    args.formulae.each do |formula|
+    args.named.to_formulae.each do |formula|
       mirror_url = bintray.mirror_formula(formula, repo: bintray_repo, publish_package: !args.no_publish?)
       ohai "Mirrored #{formula.full_name} to #{mirror_url}!"
     end

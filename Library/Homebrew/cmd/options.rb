@@ -54,7 +54,7 @@ module Homebrew
     elsif args.no_named?
       raise FormulaUnspecifiedError
     else
-      puts_options args.formulae, args: args
+      puts_options args.named.to_formulae, args: args
     end
   end
 

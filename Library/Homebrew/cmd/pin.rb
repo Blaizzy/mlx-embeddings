@@ -22,7 +22,7 @@ module Homebrew
   def pin
     args = pin_args.parse
 
-    args.resolved_formulae.each do |f|
+    args.named.to_resolved_formulae.each do |f|
       if f.pinned?
         opoo "#{f.name} already pinned"
       elsif !f.pinnable?

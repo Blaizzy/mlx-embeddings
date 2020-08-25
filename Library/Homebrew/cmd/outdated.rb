@@ -170,7 +170,7 @@ module Homebrew
   end
 
   def outdated_formulae(args:)
-    select_outdated((args.resolved_formulae.presence || Formula.installed), args: args).sort
+    select_outdated((args.named.to_resolved_formulae.presence || Formula.installed), args: args).sort
   end
 
   def outdated_casks(args:)
@@ -182,7 +182,7 @@ module Homebrew
   end
 
   def outdated_formulae_casks(args:)
-    formulae, casks = args.resolved_formulae_casks
+    formulae, casks = args.named.to_resolved_formulae_to_casks
 
     if formulae.blank? && casks.blank?
       formulae = Formula.installed

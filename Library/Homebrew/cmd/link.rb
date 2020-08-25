@@ -37,7 +37,7 @@ module Homebrew
       verbose:   args.verbose?,
     }
 
-    args.kegs.each do |keg|
+    args.named.to_kegs.each do |keg|
       keg_only = Formulary.keg_only?(keg.rack)
 
       if keg.linked?

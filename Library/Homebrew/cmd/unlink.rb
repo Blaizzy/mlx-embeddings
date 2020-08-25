@@ -28,7 +28,7 @@ module Homebrew
 
     options = { dry_run: args.dry_run?, verbose: args.verbose? }
 
-    args.kegs.each do |keg|
+    args.named.to_kegs.each do |keg|
       if args.dry_run?
         puts "Would remove:"
         keg.unlink(**options)

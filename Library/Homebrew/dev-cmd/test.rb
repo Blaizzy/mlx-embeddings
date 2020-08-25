@@ -39,7 +39,7 @@ module Homebrew
     require "formula_assertions"
     require "formula_free_port"
 
-    args.resolved_formulae.each do |f|
+    args.named.to_resolved_formulae.each do |f|
       # Cannot test uninstalled formulae
       unless f.latest_version_installed?
         ofail "Testing requires the latest version of #{f.full_name}"

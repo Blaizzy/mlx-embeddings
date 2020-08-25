@@ -16,7 +16,7 @@ begin
 
   trap("INT", old_trap)
 
-  formula = args.resolved_formulae.first
+  formula = args.named.to_resolved_formulae.first
   formula.extend(Debrew::Formula) if args.debug?
   formula.run_post_install
 rescue Exception => e # rubocop:disable Lint/RescueException

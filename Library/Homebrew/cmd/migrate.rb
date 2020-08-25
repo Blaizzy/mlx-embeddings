@@ -25,7 +25,7 @@ module Homebrew
   def migrate
     args = migrate_args.parse
 
-    args.resolved_formulae.each do |f|
+    args.named.to_resolved_formulae.each do |f|
       if f.oldname
         unless (rack = HOMEBREW_CELLAR/f.oldname).exist? && !rack.subdirs.empty?
           raise NoSuchKegError, f.oldname

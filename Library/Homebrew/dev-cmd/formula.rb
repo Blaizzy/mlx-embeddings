@@ -21,6 +21,6 @@ module Homebrew
   def formula
     args = formula_args.parse
 
-    args.formulae_paths.each(&method(:puts))
+    args.named.to_formulae_paths.each(&method(:puts))
   end
 end

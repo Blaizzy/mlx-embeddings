@@ -28,7 +28,7 @@ module Homebrew
       EOS
     end
 
-    paths = args.formulae_paths.presence
+    paths = args.named.to_formulae_paths.presence
 
     # If no brews are listed, open the project root in an editor.
     paths ||= [HOMEBREW_REPOSITORY]

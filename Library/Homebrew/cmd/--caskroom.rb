@@ -19,10 +19,10 @@ module Homebrew
   def __caskroom
     args = __caskroom_args.parse
 
-    if args.loaded_casks.blank?
+    if args.named.to_casks.blank?
       puts Cask::Caskroom.path
     else
-      args.loaded_casks.each do |cask|
+      args.named.to_casks.each do |cask|
         puts "#{Cask::Caskroom.path}/#{cask.token}"
       end
     end

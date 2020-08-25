@@ -141,6 +141,6 @@ module Homebrew
 
     Install.perform_preinstall_checks(all_fatal: true)
     Install.perform_build_from_source_checks(all_fatal: true)
-    gistify_logs(args.resolved_formulae.first, args: args)
+    gistify_logs(args.named.to_resolved_formulae.first, args: args)
   end
 end

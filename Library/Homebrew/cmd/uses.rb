@@ -56,7 +56,7 @@ module Homebrew
 
     used_formulae_missing = false
     used_formulae = begin
-      args.formulae
+      args.named.to_formulae
     rescue FormulaUnavailableError => e
       opoo e
       used_formulae_missing = true
