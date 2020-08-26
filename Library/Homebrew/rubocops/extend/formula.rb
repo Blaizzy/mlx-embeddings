@@ -14,6 +14,9 @@ require "rubocops/shared/helper_functions"
 
 module RuboCop
   module Cop
+    # Superclass for all formula cops.
+    #
+    # @api private
     class FormulaCop < Cop
       include RangeHelp
       include HelperFunctions
