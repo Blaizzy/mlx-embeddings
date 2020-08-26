@@ -24,5 +24,4 @@ Style/Documentation:
     - 'utils/popen.rb'
     - 'utils/shebang.rb'
     - 'utils/shell.rb'
-    - 'utils/livecheck_formula.rb'
     - 'version.rb'
