@@ -207,7 +207,7 @@ class Resource
     return Version::NULL if val.nil? && url.nil?
 
     case val
-    when nil     then Version.detect(url, specs)
+    when nil     then Version.detect(url, **specs)
     when String  then Version.create(val)
     when Version then val
     else

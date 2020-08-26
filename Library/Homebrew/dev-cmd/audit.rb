@@ -1019,7 +1019,7 @@ module Homebrew
         problem "missing version"
       elsif !version.detected_from_url?
         version_text = version
-        version_url = Version.detect(url, specs)
+        version_url = Version.detect(url, **specs)
         if version_url.to_s == version_text.to_s && version.instance_of?(Version)
           problem "version #{version_text} is redundant with version scanned from URL"
         end

@@ -63,17 +63,19 @@ describe Version::NULL do
   end
 end
 
-describe Version::NullToken do
-  specify "#inspect" do
-    expect(subject.inspect).to eq("#<Version::NullToken>")
-  end
-
-  it "is equal to itself" do
-    expect(subject).to be == described_class.new
-  end
-end
-
 describe Version do
+  describe "::NULL_TOKEN" do
+    subject { described_class::NULL_TOKEN }
+
+    specify "#inspect" do
+      expect(subject.inspect).to eq("#<Version::NullToken>")
+    end
+
+    it "is equal to itself" do
+      expect(subject).to be == described_class::NULL_TOKEN
+    end
+  end
+
   specify "comparison" do
     expect(described_class.create("0.1")).to be == described_class.create("0.1.0")
     expect(described_class.create("0.1")).to be < described_class.create("0.2")
@@ -259,9 +261,17 @@ describe Version do
     end
   end
 
-  specify "#detected_from_url?" do
-    expect(described_class.create("1.0")).not_to be_detected_from_url
-    expect(Version::FromURL.new("1.0")).to be_detected_from_url
+  describe "#detected_from_url?" do
+    it "is false if created explicitly" do
+      expect(described_class.new("1.0.0")).not_to be_detected_from_url
+    end
+
+    it "is true if the version was detected from a URL" do
+      version = described_class.detect("https://example.org/archive-1.0.0.tar.gz")
+
+      expect(version).to eq "1.0.0"
+      expect(version).to be_detected_from_url
+    end
   end
 
   specify "#head?" do
@@ -363,9 +373,9 @@ describe Version do
   end
 
   describe "::detect" do
-    matcher :be_detected_from do |url, specs = {}|
+    matcher :be_detected_from do |url, **specs|
       match do |expected|
-        @detected = described_class.detect(url, specs)
+        @detected = described_class.detect(url, **specs)
         @detected == expected
       end
 

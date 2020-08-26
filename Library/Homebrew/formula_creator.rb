@@ -37,7 +37,7 @@ module Homebrew
       @version = if @version
         Version.create(@version)
       else
-        Version.detect(url, {})
+        Version.detect(url)
       end
     end
 
