@@ -2,6 +2,9 @@
 
 module RuboCop
   module Cop
+    # Helper functions for cops.
+    #
+    # @api private
     module HelperFunctions
       include RangeHelp
 
