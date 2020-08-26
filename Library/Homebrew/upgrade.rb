@@ -170,6 +170,7 @@ module Homebrew
       oh1 "Checking for dependents of upgraded formulae..." unless args.dry_run?
       broken_dependents = CacheStoreDatabase.use(:linkage) do |db|
         installed_formulae.flat_map(&:runtime_installed_formula_dependents)
+                          .uniq
                           .select do |f|
           keg = f.opt_or_installed_prefix_keg
           next unless keg
@@ -221,7 +222,7 @@ module Homebrew
       return if args.dry_run?
 
       reinstallable_broken_dependents.each do |f|
-        reinstall_formula(f, build_from_source: true, args: args)
+        Homebrew.reinstall_formula(f, build_from_source: true, args: args)
       rescue FormulaInstallationAlreadyAttemptedError
         # We already attempted to reinstall f as part of the dependency tree of
         # another formula. In that case, don't generate an error, just move on.
