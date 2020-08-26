@@ -2,6 +2,9 @@
 
 require "utils/github"
 
+# Helper module for updating SPDX license data.
+#
+# @api private
 module SPDX
   module_function
 

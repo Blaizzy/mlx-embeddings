@@ -25,6 +25,5 @@ Style/Documentation:
     - 'utils/pypi.rb'
     - 'utils/shebang.rb'
     - 'utils/shell.rb'
-    - 'utils/spdx.rb'
     - 'utils/livecheck_formula.rb'
     - 'version.rb'
