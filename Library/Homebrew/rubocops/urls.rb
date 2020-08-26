@@ -6,6 +6,8 @@ module RuboCop
   module Cop
     module FormulaAudit
       # This cop audits URLs and mirrors in Formulae.
+      #
+      # @api private
       class Urls < FormulaCop
         # These are parts of URLs that look like binaries but actually aren't.
         NOT_A_BINARY_URL_PREFIX_ALLOWLIST = %w[
@@ -285,6 +287,9 @@ module RuboCop
         end
       end
 
+      # This cop makes sure that the correct format for PyPi URLs is used.
+      #
+      # @api private
       class PyPiUrls < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           urls = find_every_func_call_by_name(body_node, :url)
