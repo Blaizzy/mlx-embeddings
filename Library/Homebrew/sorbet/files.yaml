@@ -902,7 +902,7 @@ true:
   - ./utils/bottles.rb
   - ./utils/inreplace.rb
   - ./utils/link.rb
-  - ./utils/notability.rb
+  - ./utils/shared_audits.rb
   - ./utils/shebang.rb
   - ./utils/shell.rb
   - ./utils/spdx.rb

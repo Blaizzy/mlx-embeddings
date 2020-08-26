@@ -2,6 +2,9 @@
 
 require "utils/curl"
 
+# Auditing functions for rules common to both casks and formulae.
+#
+# @api private
 module SharedAudits
   module_function
 
