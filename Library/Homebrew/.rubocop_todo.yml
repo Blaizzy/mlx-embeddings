@@ -20,7 +20,6 @@ Style/Documentation:
     - 'utils.rb'
     - 'utils/fork.rb'
     - 'utils/gems.rb'
-    - 'utils/notability.rb'
     - 'utils/popen.rb'
     - 'utils/shell.rb'
     - 'utils/livecheck_formula.rb'

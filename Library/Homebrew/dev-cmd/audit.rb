@@ -3,7 +3,7 @@
 require "formula"
 require "formula_versions"
 require "utils/curl"
-require "utils/notability"
+require "utils/shared_audits"
 require "utils/spdx"
 require "extend/ENV"
 require "formula_cellar_checks"
