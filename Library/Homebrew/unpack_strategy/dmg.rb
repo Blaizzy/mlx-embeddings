@@ -3,9 +3,11 @@
 require "tempfile"
 
 module UnpackStrategy
+  # Strategy for unpacking disk images.
   class Dmg
     include UnpackStrategy
 
+    # Helper module for listing the contents of a volume mounted from a disk image.
     module Bom
       DMG_METADATA = Set.new(%w[
                                .background
@@ -23,11 +25,12 @@ module UnpackStrategy
       private_constant :DMG_METADATA
 
       refine Pathname do
+        # Check if path is considered disk image metadata.
         def dmg_metadata?
           DMG_METADATA.include?(cleanpath.ascend.to_a.last.to_s)
         end
 
-        # symlinks to system directories (commonly to /Applications)
+        # Check if path is a symlink to a system directory (commonly to /Applications).
         def system_dir_symlink?
           symlink? && MacOS.system_dir?(dirname.join(readlink))
         end
@@ -48,9 +51,9 @@ module UnpackStrategy
     end
     private_constant :Bom
 
-    using Bom
-
+    # Strategy for unpacking a volume mounted from a disk image.
     class Mount
+      using Bom
       include UnpackStrategy
 
       def eject(verbose: false)

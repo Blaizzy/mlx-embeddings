@@ -21,6 +21,9 @@ require "cmd/install"
 require "find"
 require "utils/spdx"
 
+# Installer for a formula.
+#
+# @api private
 class FormulaInstaller
   include FormulaCellarChecks
   extend Predicable

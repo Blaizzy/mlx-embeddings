@@ -6,9 +6,13 @@ require "lock_file"
 require "ostruct"
 require "extend/cachable"
 
+# Installation prefix of a formula.
+#
+# @api private
 class Keg
   extend Cachable
 
+  # Error for when a keg is already linked.
   class AlreadyLinkedError < RuntimeError
     def initialize(keg)
       super <<~EOS
@@ -18,6 +22,7 @@ class Keg
     end
   end
 
+  # Error for when a keg cannot be linked.
   class LinkError < RuntimeError
     attr_reader :keg, :src, :dst
 
@@ -31,6 +36,7 @@ class Keg
     end
   end
 
+  # Error for when a file already exists or belongs to another keg.
   class ConflictError < LinkError
     def suggestion
       conflict = Keg.for(dst)
@@ -58,6 +64,7 @@ class Keg
     end
   end
 
+  # Error for when a directory is not writable.
   class DirectoryNotWritableError < LinkError
     def to_s
       <<~EOS

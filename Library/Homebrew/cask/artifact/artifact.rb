@@ -7,6 +7,9 @@ using HashValidator
 
 module Cask
   module Artifact
+    # Generic artifact corresponding to the `artifact` stanza.
+    #
+    # @api private
     class Artifact < Moved
       def self.english_name
         "Generic Artifact"

@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# A requirement on Linux.
+#
+# @api private
 class LinuxRequirement < Requirement
   fatal true
 

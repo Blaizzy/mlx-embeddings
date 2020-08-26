@@ -9,6 +9,9 @@ require "extend/hash_validator"
 using HashValidator
 
 module Cask
+  # Configuration for installing casks.
+  #
+  # @api private
   class Config
     DEFAULT_DIRS = {
       appdir:               "/Applications",

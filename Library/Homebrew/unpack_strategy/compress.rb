@@ -3,6 +3,7 @@
 require_relative "tar"
 
 module UnpackStrategy
+  # Strategy for unpacking compress archives.
   class Compress < Tar
     using Magic
 

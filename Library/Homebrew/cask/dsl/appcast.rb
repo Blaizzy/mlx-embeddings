@@ -2,6 +2,9 @@
 
 module Cask
   class DSL
+    # Class corresponding to the `appcast` stanza.
+    #
+    # @api private
     class Appcast
       attr_reader :uri, :parameters, :must_contain
 

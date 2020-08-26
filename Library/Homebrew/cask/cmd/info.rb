@@ -4,6 +4,9 @@ require "json"
 
 module Cask
   class Cmd
+    # Implementation of the `brew cask info` command.
+    #
+    # @api private
     class Info < AbstractCommand
       def self.min_named
         :cask

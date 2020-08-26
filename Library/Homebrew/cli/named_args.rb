@@ -6,6 +6,9 @@ require "formulary"
 
 module Homebrew
   module CLI
+    # Helper class for loading formulae/casks from named arguments.
+    #
+    # @api private
     class NamedArgs < SimpleDelegator
       def initialize(*args, override_spec: nil, force_bottle: false, flags: [])
         @args = args

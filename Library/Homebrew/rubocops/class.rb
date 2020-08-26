@@ -5,6 +5,9 @@ require "rubocops/extend/formula"
 module RuboCop
   module Cop
     module FormulaAudit
+      # This cop makes sure that `Formula` is used as superclass.
+      #
+      # @api private
       class ClassName < FormulaCop
         DEPRECATED_CLASSES = %w[
           GithubGistFormula
@@ -26,6 +29,9 @@ module RuboCop
         end
       end
 
+      # This cop makes sure that a `test` block contains a proper test.
+      #
+      # @api private
       class Test < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           test = find_block(body_node, :test)
@@ -78,7 +84,9 @@ module RuboCop
     end
 
     module FormulaAuditStrict
-      # - `test do ..end` should defined in the formula.
+      # This cop makes sure that a `test` block exists.
+      #
+      # @api private
       class TestPresent < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           return if find_block(body_node, :test)

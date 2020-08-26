@@ -2,6 +2,9 @@
 
 module Cask
   class Cmd
+    # Implementation of the `brew cask edit` command.
+    #
+    # @api private
     class Edit < AbstractCommand
       def self.min_named
         :cask

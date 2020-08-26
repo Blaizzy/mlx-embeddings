@@ -4,6 +4,9 @@ require "development_tools"
 require "cask/exceptions"
 
 module Cask
+  # Helper module for quarantining files.
+  #
+  # @api private
   module Quarantine
     module_function
 
@@ -11,15 +14,15 @@ module Cask
 
     QUARANTINE_SCRIPT = (HOMEBREW_LIBRARY_PATH/"cask/utils/quarantine.swift").freeze
 
-    # @private
     def swift
       @swift ||= DevelopmentTools.locate("swift")
     end
+    private :swift
 
-    # @private
     def xattr
       @xattr ||= DevelopmentTools.locate("xattr")
     end
+    private :xattr
 
     def check_quarantine_support
       odebug "Checking quarantine support"

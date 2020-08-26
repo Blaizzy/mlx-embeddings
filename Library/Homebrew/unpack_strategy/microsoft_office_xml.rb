@@ -3,6 +3,7 @@
 require_relative "uncompressed"
 
 module UnpackStrategy
+  # Strategy for unpacking Microsoft Office documents.
   class MicrosoftOfficeXml < Uncompressed
     using Magic
 

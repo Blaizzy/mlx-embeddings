@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module UnpackStrategy
+  # Strategy for unpacking ZIP archives.
   class Zip
     include UnpackStrategy
 

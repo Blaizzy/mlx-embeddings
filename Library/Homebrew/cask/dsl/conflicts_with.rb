@@ -5,6 +5,9 @@ using HashValidator
 
 module Cask
   class DSL
+    # Class corresponding to the `conflicts_with` stanza.
+    #
+    # @api private
     class ConflictsWith < DelegateClass(Hash)
       VALID_KEYS = [
         :formula,

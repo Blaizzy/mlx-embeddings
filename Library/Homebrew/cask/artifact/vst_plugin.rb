@@ -4,6 +4,9 @@ require "cask/artifact/moved"
 
 module Cask
   module Artifact
+    # Artifact corresponding to the `vst_plugin` stanza.
+    #
+    # @api private
     class VstPlugin < Moved
     end
   end

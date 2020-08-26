@@ -4,6 +4,9 @@ require "cask/artifact/moved"
 
 module Cask
   module Artifact
+    # Artifact corresponding to the `qlplugin` stanza.
+    #
+    # @api private
     class Qlplugin < Moved
       def self.english_name
         "QuickLook Plugin"

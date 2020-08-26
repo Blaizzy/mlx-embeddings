@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 module Language
+  # Helper functions for Perl formulae.
+  #
+  # @api public
   module Perl
+    # Helper module for replacing `perl` shebangs.
     module Shebang
       module_function
 

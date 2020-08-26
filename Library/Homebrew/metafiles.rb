@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# Helper for checking if a file is considered a metadata file.
+#
+# @api private
 module Metafiles
   # https://github.com/github/markup#markups
   EXTENSIONS = Set.new(%w[

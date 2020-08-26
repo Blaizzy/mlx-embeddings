@@ -2,6 +2,9 @@
 
 require "utils/shell"
 
+# Checks to perform on a formula's cellar.
+#
+# @api private
 module FormulaCellarChecks
   def check_env_path(bin)
     # warn the user if stuff was installed outside of their PATH

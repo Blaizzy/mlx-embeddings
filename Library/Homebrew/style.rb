@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 module Homebrew
+  # Helper module for running RuboCop.
+  #
+  # @api private
   module Style
     module_function
 
@@ -127,6 +130,7 @@ module Homebrew
       rubocop_success && shellcheck_success
     end
 
+    # Result of a RuboCop run.
     class RubocopResults
       def initialize(json)
         @metadata = json["metadata"]
@@ -144,6 +148,7 @@ module Homebrew
       end
     end
 
+    # A RuboCop offense.
     class RubocopOffense
       attr_reader :severity, :message, :corrected, :location, :cop_name
 
@@ -177,6 +182,7 @@ module Homebrew
       end
     end
 
+    # Source location of a RuboCop offense.
     class RubocopLineLocation
       attr_reader :line, :column, :length
 

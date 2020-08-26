@@ -4,6 +4,9 @@ require "cask/dsl"
 
 module Cask
   class Cmd
+    # Implementation of the `brew cask _stanza` command.
+    #
+    # @api private
     class InternalStanza < AbstractInternalCommand
       # Syntax
       #

@@ -2,6 +2,9 @@
 
 require "monitor"
 
+# Module for querying the current execution context.
+#
+# @api private
 module Context
   extend MonitorMixin
 
@@ -21,6 +24,7 @@ module Context
     end
   end
 
+  # Struct describing the current execution context.
   class ContextStruct
     def initialize(debug: nil, quiet: nil, verbose: nil)
       @debug = debug

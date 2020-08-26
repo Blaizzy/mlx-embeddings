@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module UnpackStrategy
+  # Strategy for unpacking bzip2 archives.
   class Bzip2
     include UnpackStrategy
 

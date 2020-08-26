@@ -2,6 +2,9 @@
 
 module Cask
   class Cmd
+    # Implementation of the `brew cask help` command.
+    #
+    # @api private
     class Help < AbstractCommand
       def self.max_named
         1

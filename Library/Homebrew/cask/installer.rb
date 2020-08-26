@@ -13,6 +13,9 @@ require "cask/quarantine"
 require "cgi"
 
 module Cask
+  # Installer for a {Cask}.
+  #
+  # @api private
   class Installer
     extend Predicable
     # TODO: it is unwise for Cask::Staged to be a module, when we are

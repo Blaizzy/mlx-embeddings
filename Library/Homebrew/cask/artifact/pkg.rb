@@ -10,6 +10,9 @@ using HashValidator
 
 module Cask
   module Artifact
+    # Artifact corresponding to the `pkg` stanza.
+    #
+    # @api private
     class Pkg < AbstractArtifact
       attr_reader :pkg_relative_path, :path, :stanza_options
 

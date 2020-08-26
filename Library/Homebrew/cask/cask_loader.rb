@@ -4,7 +4,11 @@ require "cask/cask"
 require "uri"
 
 module Cask
+  # Loads a cask from various sources.
+  #
+  # @api private
   module CaskLoader
+    # Loads a cask from a string.
     class FromContentLoader
       attr_reader :content
 
@@ -36,6 +40,7 @@ module Cask
       end
     end
 
+    # Loads a cask from a path.
     class FromPathLoader < FromContentLoader
       def self.can_load?(ref)
         path = Pathname(ref)
@@ -76,6 +81,7 @@ module Cask
       end
     end
 
+    # Loads a cask from a URI.
     class FromURILoader < FromPathLoader
       def self.can_load?(ref)
         uri_regex = ::URI::DEFAULT_PARSER.make_regexp
@@ -109,6 +115,7 @@ module Cask
       end
     end
 
+    # Loads a cask from a tap path.
     class FromTapPathLoader < FromPathLoader
       def self.can_load?(ref)
         super && !Tap.from_path(ref).nil?
@@ -128,6 +135,7 @@ module Cask
       end
     end
 
+    # Loads a cask from a specific tap.
     class FromTapLoader < FromTapPathLoader
       def self.can_load?(ref)
         ref.to_s.match?(HOMEBREW_TAP_CASK_REGEX)
@@ -145,6 +153,7 @@ module Cask
       end
     end
 
+    # Loads a cask from an existing {Cask} instance.
     class FromInstanceLoader
       attr_reader :cask
 
@@ -161,6 +170,7 @@ module Cask
       end
     end
 
+    # Pseudo-loader which raises an error when trying to load the corresponding cask.
     class NullLoader < FromPathLoader
       def self.can_load?(*)
         true

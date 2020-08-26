@@ -3,6 +3,7 @@
 require_relative "uncompressed"
 
 module UnpackStrategy
+  # Strategy for unpacking TrueType fonts.
   class Ttf < Uncompressed
     using Magic
 

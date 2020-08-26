@@ -4,6 +4,9 @@ require "cask/artifact/symlinked"
 
 module Cask
   module Artifact
+    # Artifact corresponding to the `manpage` stanza.
+    #
+    # @api private
     class Manpage < Symlinked
       attr_reader :section
 

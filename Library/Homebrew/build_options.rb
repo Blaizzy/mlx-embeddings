@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# Options for a formula build.
+#
+# @api private
 class BuildOptions
   # @private
   def initialize(args, options)

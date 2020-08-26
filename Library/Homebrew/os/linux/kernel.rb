@@ -2,6 +2,9 @@
 
 module OS
   module Linux
+    # Helper functions for querying Linux kernel information.
+    #
+    # @api private
     module Kernel
       module_function
 

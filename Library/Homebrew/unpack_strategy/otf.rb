@@ -3,6 +3,7 @@
 require_relative "uncompressed"
 
 module UnpackStrategy
+  # Strategy for unpacking OpenType fonts.
   class Otf < Uncompressed
     using Magic
 

@@ -5,7 +5,11 @@ require "etc"
 
 require "system_command"
 
+# A system user.
+#
+# @api private
 class User < DelegateClass(String)
+  # Return whether the user has an active GUI session.
   def gui?
     out, _, status = system_command "who"
     return false unless status.success?
@@ -15,6 +19,7 @@ class User < DelegateClass(String)
        .any? { |user, type,| user == self && type == "console" }
   end
 
+  # Return the current user.
   def self.current
     return @current if defined?(@current)
 

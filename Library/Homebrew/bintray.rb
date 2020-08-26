@@ -3,6 +3,9 @@
 require "utils/curl"
 require "json"
 
+# Bintray API client.
+#
+# @api private
 class Bintray
   include Context
 

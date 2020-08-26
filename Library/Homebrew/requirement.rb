@@ -6,8 +6,10 @@ require "dependencies"
 require "build_environment"
 
 # A base class for non-formula requirements needed by formulae.
-# A "fatal" requirement is one that will fail the build if it is not present.
-# By default, Requirements are non-fatal.
+# A fatal requirement is one that will fail the build if it is not present.
+# By default, requirements are non-fatal.
+#
+# @api private
 class Requirement
   include Dependable
 
@@ -162,7 +164,7 @@ class Requirement
       return @satisfied if options.nil? && !block_given?
 
       options = {} if options.nil?
-      @satisfied = Requirement::Satisfier.new(options, &block)
+      @satisfied = Satisfier.new(options, &block)
     end
 
     def env(*settings, &block)
@@ -174,6 +176,7 @@ class Requirement
     end
   end
 
+  # Helper class for evaluating whether a requirement is satisfied.
   class Satisfier
     def initialize(options, &block)
       case options
@@ -201,6 +204,7 @@ class Requirement
       end
     end
   end
+  private_constant :Satisfier
 
   class << self
     # Expand the requirements of dependent recursively, optionally yielding

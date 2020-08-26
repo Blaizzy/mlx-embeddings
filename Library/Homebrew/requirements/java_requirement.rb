@@ -2,6 +2,9 @@
 
 require "language/java"
 
+# A requirement on Java.
+#
+# @api private
 class JavaRequirement < Requirement
   fatal true
 

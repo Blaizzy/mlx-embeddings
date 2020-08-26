@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Homebrew
+  # @api private
   module Fetch
     def fetch_bottle?(f, args:)
       return true if args.force_bottle? && f.bottle

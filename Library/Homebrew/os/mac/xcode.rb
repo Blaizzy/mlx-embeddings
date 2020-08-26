@@ -2,6 +2,9 @@
 
 module OS
   module Mac
+    # Helper module for querying Xcode information.
+    #
+    # @api private
     module Xcode
       module_function
 
@@ -200,6 +203,9 @@ module OS
       end
     end
 
+    # Helper module for querying macOS Command Line Tools information.
+    #
+    # @api private
     module CLT
       module_function
 

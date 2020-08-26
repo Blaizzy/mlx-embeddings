@@ -33,6 +33,9 @@ require "cask/cmd/internal_help"
 require "cask/cmd/internal_stanza"
 
 module Cask
+  # Implementation of the `brew cask` command-line interface.
+  #
+  # @api private
   class Cmd
     include Context
 
@@ -240,6 +243,7 @@ module Cask
       exit 1
     end
 
+    # Wrapper class for running an external Ruby command.
     class ExternalRubyCommand
       def initialize(command, path)
         @command_name = command.to_s.capitalize.to_sym
@@ -269,6 +273,7 @@ module Cask
       end
     end
 
+    # Wrapper class for running an external command.
     class ExternalCommand
       def initialize(path)
         @path = path
@@ -283,6 +288,7 @@ module Cask
       end
     end
 
+    # Helper class for showing help for unknown subcommands.
     class UnknownSubcommand
       def initialize(command_name)
         @command_name = command_name
@@ -297,6 +303,7 @@ module Cask
       end
     end
 
+    # Helper class for showing help when no subcommand is given.
     class NullCommand
       def self.run(*)
         raise UsageError, "No subcommand given."

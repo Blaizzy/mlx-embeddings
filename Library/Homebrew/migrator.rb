@@ -4,9 +4,13 @@ require "lock_file"
 require "keg"
 require "tab"
 
+# Helper class for migrating a formula from an old to a new name.
+#
+# @api private
 class Migrator
   include Context
 
+  # Error for when a migration is necessary.
   class MigrationNeededError < RuntimeError
     def initialize(formula)
       super <<~EOS
@@ -16,18 +20,21 @@ class Migrator
     end
   end
 
+  # Error for when a formula does not replace another formula.
   class MigratorNoOldnameError < RuntimeError
     def initialize(formula)
       super "#{formula.name} doesn't replace any formula."
     end
   end
 
+  # Error for when the old name's path does not exist.
   class MigratorNoOldpathError < RuntimeError
     def initialize(formula)
       super "#{HOMEBREW_CELLAR/formula.oldname} doesn't exist."
     end
   end
 
+  # Error for when a formula is migrated to a different tap without explicitly using its fully-qualified name.
   class MigratorDifferentTapsError < RuntimeError
     def initialize(formula, tap)
       msg = if tap.core_tap?

@@ -2,6 +2,9 @@
 
 module Cask
   class Cmd
+    # Implementation of the `brew cask audit` command.
+    #
+    # @api private
     class Audit < AbstractCommand
       def self.description
         <<~EOS

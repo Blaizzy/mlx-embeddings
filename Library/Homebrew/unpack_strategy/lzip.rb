@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module UnpackStrategy
+  # Strategy for unpacking lzip archives.
   class Lzip
     include UnpackStrategy
 

@@ -3,6 +3,7 @@
 require "shellwords"
 require "utils"
 
+# Raised when a command is used wrong.
 class UsageError < RuntimeError
   attr_reader :reason
 
@@ -19,12 +20,14 @@ class UsageError < RuntimeError
   end
 end
 
+# Raised when a command expects a formula and none was specified.
 class FormulaUnspecifiedError < UsageError
   def initialize
     super "this command requires a formula argument"
   end
 end
 
+# Raised when a command expects a keg and none was specified.
 class KegUnspecifiedError < UsageError
   def initialize
     super "this command requires a keg argument"
@@ -35,6 +38,7 @@ class MultipleVersionsInstalledError < RuntimeError; end
 
 class NotAKegError < RuntimeError; end
 
+# Raised when a keg doesn't exist.
 class NoSuchKegError < RuntimeError
   attr_reader :name
 
@@ -44,6 +48,7 @@ class NoSuchKegError < RuntimeError
   end
 end
 
+# Raised when an invalid attribute is used in a formula.
 class FormulaValidationError < StandardError
   attr_reader :attr, :formula
 
@@ -56,10 +61,14 @@ end
 
 class FormulaSpecificationError < StandardError; end
 
+# Raised when a deprecated method is used.
+#
+# @api private
 class MethodDeprecatedError < StandardError
   attr_accessor :issues_url
 end
 
+# Raised when a formula is not available.
 class FormulaUnavailableError < RuntimeError
   attr_reader :name
   attr_accessor :dependent
@@ -79,6 +88,9 @@ class FormulaUnavailableError < RuntimeError
   end
 end
 
+# Shared methods for formula class errors.
+#
+# @api private
 module FormulaClassUnavailableErrorModule
   attr_reader :path, :class_name, :class_list
 
@@ -107,6 +119,7 @@ module FormulaClassUnavailableErrorModule
   end
 end
 
+# Raised when a formula does not contain a formula class.
 class FormulaClassUnavailableError < FormulaUnavailableError
   include FormulaClassUnavailableErrorModule
 
@@ -118,6 +131,9 @@ class FormulaClassUnavailableError < FormulaUnavailableError
   end
 end
 
+# Shared methods for formula unreadable errors.
+#
+# @api private
 module FormulaUnreadableErrorModule
   attr_reader :formula_error
 
@@ -126,6 +142,7 @@ module FormulaUnreadableErrorModule
   end
 end
 
+# Raised when a formula is unreadable.
 class FormulaUnreadableError < FormulaUnavailableError
   include FormulaUnreadableErrorModule
 
@@ -135,6 +152,7 @@ class FormulaUnreadableError < FormulaUnavailableError
   end
 end
 
+# Raised when a formula in a specific tap is unavailable.
 class TapFormulaUnavailableError < FormulaUnavailableError
   attr_reader :tap, :user, :repo
 
@@ -152,6 +170,7 @@ class TapFormulaUnavailableError < FormulaUnavailableError
   end
 end
 
+# Raised when a formula in a specific tap does not contain a formula class.
 class TapFormulaClassUnavailableError < TapFormulaUnavailableError
   include FormulaClassUnavailableErrorModule
 
@@ -165,6 +184,7 @@ class TapFormulaClassUnavailableError < TapFormulaUnavailableError
   end
 end
 
+# Raised when a formula in a specific tap is unreadable.
 class TapFormulaUnreadableError < TapFormulaUnavailableError
   include FormulaUnreadableErrorModule
 
@@ -174,6 +194,7 @@ class TapFormulaUnreadableError < TapFormulaUnavailableError
   end
 end
 
+# Raised when a formula with the same name is found multiple taps.
 class TapFormulaAmbiguityError < RuntimeError
   attr_reader :name, :paths, :formulae
 
@@ -192,6 +213,7 @@ class TapFormulaAmbiguityError < RuntimeError
   end
 end
 
+# Raised when a formula's old name in a specific tap is found in multiple taps.
 class TapFormulaWithOldnameAmbiguityError < RuntimeError
   attr_reader :name, :possible_tap_newname_formulae, :taps
 
@@ -212,6 +234,7 @@ class TapFormulaWithOldnameAmbiguityError < RuntimeError
   end
 end
 
+# Raised when a tap is unavailable.
 class TapUnavailableError < RuntimeError
   attr_reader :name
 
@@ -224,6 +247,7 @@ class TapUnavailableError < RuntimeError
   end
 end
 
+# Raised when a tap's remote does not match the actual remote.
 class TapRemoteMismatchError < RuntimeError
   attr_reader :name, :expected_remote, :actual_remote
 
@@ -239,6 +263,7 @@ class TapRemoteMismatchError < RuntimeError
   end
 end
 
+# Raised when a tap is already installed.
 class TapAlreadyTappedError < RuntimeError
   attr_reader :name
 
@@ -251,6 +276,7 @@ class TapAlreadyTappedError < RuntimeError
   end
 end
 
+# Raised when another Homebrew operation is already in progress.
 class OperationInProgressError < RuntimeError
   def initialize(name)
     message = <<~EOS
@@ -265,12 +291,14 @@ end
 
 class CannotInstallFormulaError < RuntimeError; end
 
+# Raised when a formula installation was already attempted.
 class FormulaInstallationAlreadyAttemptedError < RuntimeError
   def initialize(formula)
     super "Formula installation already attempted: #{formula.full_name}"
   end
 end
 
+# Raised when there are unsatisfied requirements.
 class UnsatisfiedRequirements < RuntimeError
   def initialize(reqs)
     if reqs.length == 1
@@ -281,6 +309,7 @@ class UnsatisfiedRequirements < RuntimeError
   end
 end
 
+# Raised when a formula conflicts with another one.
 class FormulaConflictError < RuntimeError
   attr_reader :formula, :conflicts
 
@@ -313,6 +342,7 @@ class FormulaConflictError < RuntimeError
   end
 end
 
+# Raise when the Python version cannot be detected automatically.
 class FormulaUnknownPythonError < RuntimeError
   def initialize(formula)
     super <<~EOS
@@ -325,6 +355,7 @@ class FormulaUnknownPythonError < RuntimeError
   end
 end
 
+# Raise when two Python versions are detected simultaneously.
 class FormulaAmbiguousPythonError < RuntimeError
   def initialize(formula)
     super <<~EOS
@@ -336,6 +367,7 @@ class FormulaAmbiguousPythonError < RuntimeError
   end
 end
 
+# Raised when an error occurs during a formula build.
 class BuildError < RuntimeError
   attr_reader :cmd, :args, :env
   attr_accessor :formula, :options
@@ -561,12 +593,14 @@ class ChecksumMismatchError < RuntimeError
   end
 end
 
+# Raised when a resource is missing.
 class ResourceMissingError < ArgumentError
   def initialize(formula, resource)
     super "#{formula.full_name} does not define resource #{resource.inspect}"
   end
 end
 
+# Raised when a resource is specified multiple times.
 class DuplicateResourceError < ArgumentError
   def initialize(resource)
     super "Resource #{resource.inspect} is defined more than once"
@@ -576,6 +610,7 @@ end
 # Raised when a single patch file is not found and apply hasn't been specified.
 class MissingApplyError < RuntimeError; end
 
+# Raised when a bottle does not contain a formula file.
 class BottleFormulaUnavailableError < RuntimeError
   def initialize(bottle_path, formula_path)
     super <<~EOS
@@ -604,6 +639,7 @@ class ChildProcessError < RuntimeError
   end
 end
 
+# Raised when a macOS version is unsupported.
 class MacOSVersionError < RuntimeError
   attr_reader :version
 

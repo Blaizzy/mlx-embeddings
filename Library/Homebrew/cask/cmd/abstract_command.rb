@@ -4,6 +4,9 @@ require "search"
 
 module Cask
   class Cmd
+    # Abstract superclass for all `brew cask` commands.
+    #
+    # @api private
     class AbstractCommand
       include Homebrew::Search
 

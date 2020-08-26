@@ -27,5 +27,9 @@ Cask/StanzaOrder:
 # don't want these for casks but re-enabled for Library/Homebrew
 Style/FrozenStringLiteralComment:
   Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
 Metrics/BlockLength:
   Enabled: false

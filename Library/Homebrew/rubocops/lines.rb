@@ -6,6 +6,8 @@ module RuboCop
   module Cop
     module FormulaAudit
       # This cop checks for various miscellaneous Homebrew coding styles.
+      #
+      # @api private
       class Lines < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, _body_node)
           [:automake, :ant, :autoconf, :emacs, :expat, :libtool, :mysql, :perl,
@@ -26,6 +28,9 @@ module RuboCop
         end
       end
 
+      # This cop makes sure that a space is used for class inheritance.
+      #
+      # @api private
       class ClassInheritance < FormulaCop
         def audit_formula(_node, class_node, parent_class_node, _body_node)
           begin_pos = start_column(parent_class_node)
@@ -37,6 +42,9 @@ module RuboCop
         end
       end
 
+      # This cop makes sure that template comments are removed.
+      #
+      # @api private
       class Comments < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, _body_node)
           audit_comments do |comment|
@@ -76,6 +84,9 @@ module RuboCop
         end
       end
 
+      # This cop makes sure that idiomatic `assert_*` statements are used.
+      #
+      # @api private
       class AssertStatements < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           find_every_method_call_by_name(body_node, :assert).each do |method|
@@ -98,6 +109,9 @@ module RuboCop
         end
       end
 
+      # This cop makes sure that options are used idiomatically.
+      #
+      # @api private
       class OptionDeclarations < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           problem "Use new-style option definitions" if find_method_def(body_node, :options)
@@ -178,6 +192,9 @@ module RuboCop
         EOS
       end
 
+      # This cop makes sure that formulae depend on `open-mpi` instead of `mpich`.
+      #
+      # @api private
       class MpiCheck < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           # Enforce use of OpenMPI for MPI dependency in core
@@ -197,6 +214,9 @@ module RuboCop
         end
       end
 
+      # This cop makes sure that the safe versions of `popen_*` calls are used.
+      #
+      # @api private
       class SafePopenCommands < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           test = find_block(body_node, :test)
@@ -225,6 +245,9 @@ module RuboCop
         end
       end
 
+      # This cop makes sure that environment variables are passed correctly to `popen_*` calls.
+      #
+      # @api private
       class ShellVariables < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           popen_commands = [
@@ -254,6 +277,9 @@ module RuboCop
         end
       end
 
+      # This cop makes sure that `license` has the correct format.
+      #
+      # @api private
       class LicenseArrays < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           license_node = find_node_method_by_name(body_node, :license)
@@ -272,6 +298,9 @@ module RuboCop
         end
       end
 
+      # This cop makes sure that nested `license` declarations are split onto multiple lines.
+      #
+      # @api private
       class Licenses < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           license_node = find_node_method_by_name(body_node, :license)
@@ -286,6 +315,9 @@ module RuboCop
         end
       end
 
+      # This cop checks for other miscellaneous style violations.
+      #
+      # @api private
       class Miscellaneous < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           # FileUtils is included in Formula
@@ -545,6 +577,9 @@ module RuboCop
     end
 
     module FormulaAuditStrict
+      # This cop makes sure that no build-time checks are performed.
+      #
+      # @api private
       class MakeCheck < FormulaCop
         MAKE_CHECK_ALLOWLIST = %w[
           beecrypt
@@ -588,6 +623,9 @@ module RuboCop
         end
       end
 
+      # This cop makes sure that shell command arguments are separated.
+      #
+      # @api private
       class ShellCommands < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           # Match shell commands separated by spaces in the same string

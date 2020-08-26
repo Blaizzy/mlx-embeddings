@@ -5,6 +5,9 @@ require "rubocops/extend/formula"
 module RuboCop
   module Cop
     module FormulaAudit
+      # This cop checks for various problems in a formula's source code.
+      #
+      # @api private
       class Text < FormulaCop
         def audit_formula(node, _class_node, _parent_class_node, body_node)
           @full_source_content = source_buffer(node).source
@@ -122,6 +125,9 @@ module RuboCop
     end
 
     module FormulaAuditStrict
+      # This cop contains stricter checks for various problems in a formula's source code.
+      #
+      # @api private
       class Text < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           find_method_with_args(body_node, :go_resource) do

@@ -3,6 +3,9 @@
 require "formula"
 require "cask/cask_loader"
 
+# Helper module for validating syntax in taps.
+#
+# @api private
 module Readall
   class << self
     def valid_ruby_syntax?(ruby_files)

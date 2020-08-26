@@ -4,6 +4,9 @@ require "json"
 
 module Cask
   class Cmd
+    # Implementation of the `brew cask style` command.
+    #
+    # @api private
     class Style < AbstractCommand
       def self.description
         "Checks style of the given <cask> using RuboCop."

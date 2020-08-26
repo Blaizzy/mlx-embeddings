@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# Various helper functions for interacting with TTYs.
+#
+# @api private
 module Tty
   module_function
 

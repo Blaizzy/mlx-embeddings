@@ -14,6 +14,9 @@ module CompilerConstants
                GNU_GCC_VERSIONS.map { |n| "gcc-#{n}" }).freeze
 end
 
+# Class for checking compiler compatibility for a formula.
+#
+# @api private
 class CompilerFailure
   attr_reader :name
 
@@ -70,6 +73,9 @@ class CompilerFailure
   }.freeze
 end
 
+# Class for selecting a compiler for a formula.
+#
+# @api private
 class CompilerSelector
   include CompilerConstants
 

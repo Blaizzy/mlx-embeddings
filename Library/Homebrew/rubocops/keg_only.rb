@@ -5,6 +5,9 @@ require "rubocops/extend/formula"
 module RuboCop
   module Cop
     module FormulaAudit
+      # This cop makes sure that a `keg_only` reason has the correct format.
+      #
+      # @api private
       class KegOnly < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           keg_only_node = find_node_method_by_name(body_node, :keg_only)

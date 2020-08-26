@@ -3,6 +3,9 @@
 require "erb"
 
 module Utils
+  # Helper module for fetching and reporting analytics data.
+  #
+  # @api private
   module Analytics
     class << self
       include Context

@@ -7,6 +7,9 @@ require "cask/metadata"
 require "searchable"
 
 module Cask
+  # An instance of a cask.
+  #
+  # @api private
   class Cask
     extend Enumerable
     extend Forwardable

@@ -2,6 +2,9 @@
 
 module Cask
   module Artifact
+    # Abstract superclass for all artifacts.
+    #
+    # @api private
     class AbstractArtifact
       include Comparable
       extend Predicable

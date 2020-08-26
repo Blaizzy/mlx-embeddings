@@ -8,6 +8,9 @@ require "utils/git"
 require "utils/notability"
 
 module Cask
+  # Audit a cask for various problems.
+  #
+  # @api private
   class Audit
     extend Predicable
 

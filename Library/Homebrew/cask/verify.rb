@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 module Cask
+  # Helper module for verifying a cask's checksum.
+  #
+  # @api private
   module Verify
     module_function
 

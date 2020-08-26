@@ -3,11 +3,15 @@
 require "mutex_m"
 require "debrew/irb"
 
+# Helper module for debugging formulae.
+#
+# @api private
 module Debrew
   extend Mutex_m
 
   Ignorable = Module.new.freeze
 
+  # Module for allowing to ignore exceptions.
   module Raise
     def raise(*)
       super
@@ -19,6 +23,7 @@ module Debrew
     alias fail raise
   end
 
+  # Module for allowing to debug formulae.
   module Formula
     def install
       Debrew.debrew { super }
@@ -33,6 +38,7 @@ module Debrew
     end
   end
 
+  # Module for displaying a debugging menu.
   class Menu
     Entry = Struct.new(:name, :action)
 

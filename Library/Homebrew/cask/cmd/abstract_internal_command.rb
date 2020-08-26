@@ -2,6 +2,9 @@
 
 module Cask
   class Cmd
+    # Abstract superclass for all internal `brew cask` commands.
+    #
+    # @api private
     class AbstractInternalCommand < AbstractCommand
       def self.command_name
         super.sub(/^internal_/i, "_")

@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 module Homebrew
+  # Helper module for querying Homebrew-specific environment variables.
+  #
+  # @api private
   module EnvConfig
     module_function
 
