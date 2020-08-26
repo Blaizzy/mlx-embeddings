@@ -124,10 +124,22 @@ module Homebrew
       installed_formulae = FormulaInstaller.installed.to_a
       return if installed_formulae.empty?
 
+      already_broken_dependents = CacheStoreDatabase.use(:linkage) do |db|
+        installed_formulae.flat_map(&:runtime_installed_formula_dependents)
+                          .uniq
+                          .select do |f|
+          keg = f.opt_or_installed_prefix_keg
+          next unless keg
+
+          LinkageChecker.new(keg, cache_db: db)
+                        .broken_library_linkage?
+        end.compact
+      end
+
       outdated_dependents =
         installed_formulae.flat_map(&:runtime_installed_formula_dependents)
                           .select(&:outdated?)
-      return if outdated_dependents.blank?
+      return if outdated_dependents.blank? && already_broken_dependents.blank?
 
       outdated_dependents -= installed_formulae if args.dry_run?
 
