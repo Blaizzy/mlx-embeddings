@@ -3,6 +3,8 @@ on:
   push:
     paths:
       - .github/workflows/tapioca.yml
+    branches-ignore:
+      - master
   schedule:
     - cron: '0 */12 * * *'
 jobs:
