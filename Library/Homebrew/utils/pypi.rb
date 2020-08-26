@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
+# Helper functions for updating PyPi resources.
+#
+# @api private
 module PyPI
   module_function
 
   PYTHONHOSTED_URL_PREFIX = "https://files.pythonhosted.org/packages/"
+  private_constant :PYTHONHOSTED_URL_PREFIX
 
   AUTOMATIC_RESOURCE_UPDATE_BLOCKLIST = %w[
     ansible
@@ -17,6 +21,7 @@ module PyPI
     salt
     xonsh
   ].freeze
+  private_constant :AUTOMATIC_RESOURCE_UPDATE_BLOCKLIST
 
   @pipgrip_installed = nil
 
@@ -34,7 +39,7 @@ module PyPI
     url
   end
 
-  # Get name, url and sha256 for a given pypi package
+  # Get name, URL and SHA-256 checksum for a given PyPi package.
   def get_pypi_info(package, version)
     metadata_url = "https://pypi.org/pypi/#{package}/#{version}/json"
     out, _, status = curl_output metadata_url, "--location"

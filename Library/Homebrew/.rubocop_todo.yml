@@ -22,7 +22,6 @@ Style/Documentation:
     - 'utils/gems.rb'
     - 'utils/notability.rb'
     - 'utils/popen.rb'
-    - 'utils/pypi.rb'
     - 'utils/shebang.rb'
     - 'utils/shell.rb'
     - 'utils/spdx.rb'
