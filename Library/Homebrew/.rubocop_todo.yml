@@ -21,5 +21,4 @@ Style/Documentation:
     - 'utils/gems.rb'
     - 'utils/popen.rb'
     - 'utils/shell.rb'
-    - 'utils/livecheck_formula.rb'
     - 'version.rb'
