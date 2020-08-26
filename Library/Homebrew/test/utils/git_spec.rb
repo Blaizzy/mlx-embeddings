@@ -3,9 +3,14 @@
 require "utils/git"
 
 describe Utils::Git do
-  before do
+  around do |example|
     described_class.clear_available_cache
+    example.run
+  ensure
+    described_class.clear_available_cache
+  end
 
+  before do
     git = HOMEBREW_SHIMS_PATH/"scm/git"
 
     HOMEBREW_CACHE.cd do
