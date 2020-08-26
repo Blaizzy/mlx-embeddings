@@ -6151,48 +6151,6 @@ module CodeRay
   def self.scanner(lang, options=T.unsafe(nil), &block); end
 end
 
-module Colorize
-end
-
-module Colorize::ClassMethods
-  def color_codes(); end
-
-  def color_matrix(_=T.unsafe(nil)); end
-
-  def color_methods(); end
-
-  def color_samples(); end
-
-  def colors(); end
-
-  def disable_colorization(value=T.unsafe(nil)); end
-
-  def disable_colorization=(value); end
-
-  def mode_codes(); end
-
-  def modes(); end
-
-  def modes_methods(); end
-end
-
-module Colorize::ClassMethods
-end
-
-module Colorize::InstanceMethods
-  def colorize(params); end
-
-  def colorized?(); end
-
-  def uncolorize(); end
-end
-
-module Colorize::InstanceMethods
-end
-
-module Colorize
-end
-
 class CompilerSelector::Compiler
   def self.[](*_); end
 
@@ -21810,7 +21768,6 @@ module Stdenv
 end
 
 class String
-  include ::Colorize::InstanceMethods
   include ::String::Compat
   def acts_like_string?(); end
 
@@ -21818,21 +21775,15 @@ class String
 
   def black(); end
 
-  def blink(); end
-
-  def blue(); end
-
-  def bold(); end
-
   def camelcase(first_letter=T.unsafe(nil)); end
 
   def camelize(first_letter=T.unsafe(nil)); end
 
   def classify(); end
 
-  def constantize(); end
+  def colorize(color_code); end
 
-  def cyan(); end
+  def constantize(); end
 
   def dasherize(); end
 
@@ -21852,8 +21803,6 @@ class String
 
   def green(); end
 
-  def hide(); end
-
   def html_safe(); end
 
   def humanize(capitalize: T.unsafe(nil), keep_id_suffix: T.unsafe(nil)); end
@@ -21868,63 +21817,11 @@ class String
 
   def isutf8(); end
 
-  def italic(); end
-
   def kconv(to_enc, from_enc=T.unsafe(nil)); end
 
   def last(limit=T.unsafe(nil)); end
 
-  def light_black(); end
-
-  def light_blue(); end
-
-  def light_cyan(); end
-
-  def light_green(); end
-
-  def light_magenta(); end
-
-  def light_red(); end
-
-  def light_white(); end
-
-  def light_yellow(); end
-
-  def magenta(); end
-
   def mb_chars(); end
-
-  def on_black(); end
-
-  def on_blue(); end
-
-  def on_cyan(); end
-
-  def on_green(); end
-
-  def on_light_black(); end
-
-  def on_light_blue(); end
-
-  def on_light_cyan(); end
-
-  def on_light_green(); end
-
-  def on_light_magenta(); end
-
-  def on_light_red(); end
-
-  def on_light_white(); end
-
-  def on_light_yellow(); end
-
-  def on_magenta(); end
-
-  def on_red(); end
-
-  def on_white(); end
-
-  def on_yellow(); end
 
   def parameterize(separator: T.unsafe(nil), preserve_case: T.unsafe(nil), locale: T.unsafe(nil)); end
 
@@ -21949,8 +21846,6 @@ class String
   def squish!(); end
 
   def starts_with?(*_); end
-
-  def swap(); end
 
   def tableize(); end
 
@@ -21994,21 +21889,11 @@ class String
 
   def truncate_words(words_count, options=T.unsafe(nil)); end
 
-  def underline(); end
-
   def underscore(); end
 
   def upcase_first(); end
-
-  def white(); end
-
-  def yellow(); end
   BLANK_RE = ::T.let(nil, ::T.untyped)
   ENCODED_BLANKS = ::T.let(nil, ::T.untyped)
-end
-
-class String
-  extend ::Colorize::ClassMethods
 end
 
 class StringScanner
