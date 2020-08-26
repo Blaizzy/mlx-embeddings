@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module OS
+  # Helper module for querying system information on Linux.
   module Linux
     module_function
 
@@ -21,7 +22,7 @@ module OS
     end
   end
 
-  # Define OS::Mac on Linux for formula API compatibility.
+  # rubocop:disable Style/Documentation
   module Mac
     module_function
 
@@ -77,4 +78,5 @@ module OS
       end
     end
   end
+  # rubocop:enable Style/Documentation
 end
