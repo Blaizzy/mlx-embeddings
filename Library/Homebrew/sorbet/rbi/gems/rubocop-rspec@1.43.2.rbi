@@ -636,7 +636,7 @@ class RuboCop::Cop::RSpec::FilePath < ::RuboCop::Cop::RSpec::Base
   include(::RuboCop::RSpec::TopLevelGroup)
 
   def const_described(node = T.unsafe(nil)); end
-  def on_top_level_group(node); end
+  def on_top_level_example_group(node); end
   def routing_metadata?(node0); end
 
   private
@@ -861,6 +861,7 @@ class RuboCop::Cop::RSpec::LeadingSubject < ::RuboCop::Cop::RSpec::Base
   def in_spec_block?(node); end
   def offending?(node); end
   def offending_node(node); end
+  def parent(node); end
 end
 
 RuboCop::Cop::RSpec::LeadingSubject::MSG = T.let(T.unsafe(nil), String)
@@ -1710,8 +1711,8 @@ module RuboCop::RSpec::TopLevelGroup
 
   private
 
-  def on_top_level_example_group; end
-  def on_top_level_group; end
+  def on_top_level_example_group(_node); end
+  def on_top_level_group(_node); end
   def root_node; end
   def top_level_group?(node); end
   def top_level_nodes(node); end
