@@ -5,13 +5,14 @@ require "rubocops/extend/formula"
 module RuboCop
   module Cop
     module FormulaAudit
-      # This cop checks if redundant components are present and other component errors.
+      # This cop checks if redundant components are present and for other component errors.
       #
       # - `url|checksum|mirror` should be inside `stable` block
       # - `head` and `head do` should not be simultaneously present
       # - `bottle :unneeded`/`:disable` and `bottle do` should not be simultaneously present
       # - `stable do` should not be present without a `head` or `devel` spec
-
+      #
+      # @api private
       class ComponentsRedundancy < FormulaCop
         HEAD_MSG = "`head` and `head do` should not be simultaneously present"
         BOTTLE_MSG = "`bottle :modifier` and `bottle do` should not be simultaneously present"
