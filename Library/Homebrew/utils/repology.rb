@@ -2,10 +2,14 @@
 
 require "utils/curl"
 
+# Repology API client.
+#
+# @api private
 module Repology
   module_function
 
   MAX_PAGINATION = 15
+  private_constant :MAX_PAGINATION
 
   def query_api(last_package_in_response = "")
     last_package_in_response += "/" if last_package_in_response.present?
