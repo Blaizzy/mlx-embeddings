@@ -8,7 +8,6 @@ Style/Documentation:
     - 'cask/macos.rb'
     - 'cli/args.rb'
     - 'cli/parser.rb'
-    - 'download_strategy.rb'
     - 'global.rb'
     - 'keg_relocate.rb'
     - 'os/linux/global.rb'
