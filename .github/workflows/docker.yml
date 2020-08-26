@@ -4,6 +4,8 @@ on:
     paths:
       - .github/workflows/docker.yml
       - Dockerfile
+    branches-ignore:
+      - master
   release:
     types:
       - published
