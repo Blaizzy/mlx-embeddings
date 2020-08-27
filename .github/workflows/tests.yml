@@ -32,22 +32,15 @@ jobs:
 
     - run: brew config
 
-    - run: brew doctor
-
-    - name: Cache Bundler RubyGems
-      id: cache
-      uses: actions/cache@v1
-      with:
-        path: ${{ steps.set-up-homebrew.outputs.gems-path }}
-        key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
-        restore-keys: ${{ runner.os }}-rubygems-
-
+    # Can't cache this because we need to check that it doesn't fail the
+    # "uncommitted RubyGems" step with a cold cache.
     - name: Install Bundler RubyGems
-      if: steps.cache.outputs.cache-hit != 'true'
       run: brew install-bundler-gems
 
     - name: Check for uncommitted RubyGems
       run: git diff --stat --exit-code Library/Homebrew/vendor/bundle/ruby
+
+    - run: brew doctor
 
     - name: Set up Homebrew official command taps
       run: |
