@@ -1106,7 +1106,7 @@ Run a Ruby instance with Homebrew's libraries loaded, e.g.
 * `-e`:
   Execute the given text string as a script.
 
-### `sh` [*`options`*] [<script>]
+### `sh` [*`options`*] [*`SCRIPT`*]
 
 Homebrew build environment that uses years-battle-hardened
 build logic to help your `./configure && make && make install`
