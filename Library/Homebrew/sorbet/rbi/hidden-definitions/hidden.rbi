@@ -3019,6 +3019,28 @@ class Binding
   def irb(); end
 end
 
+class Bottle
+  def cached_download(*args, &block); end
+
+  def clear_cache(*args, &block); end
+
+  def fetch(*args, &block); end
+
+  def url(*args, &block); end
+
+  def verify_download_integrity(*args, &block); end
+end
+
+class BottleSpecification
+  def cellar(val=T.unsafe(nil)); end
+
+  def prefix(val=T.unsafe(nil)); end
+
+  def rebuild(val=T.unsafe(nil)); end
+
+  def sha256(val); end
+end
+
 Bundler::Deprecate = Gem::Deprecate
 
 class Bundler::Env
@@ -3520,7 +3542,6 @@ class Bundler::Retry
 end
 
 class Bundler::RubyGemsGemInstaller
-  def initialize(gem, options=T.unsafe(nil)); end
 end
 
 class Bundler::RubyGemsGemInstaller
@@ -5756,6 +5777,32 @@ class Cask::DSL::Version
   def underscores_to_hyphens(); end
 end
 
+class Cask::Installer
+  def binaries?(); end
+
+  def force?(); end
+
+  def installed_as_dependency?(); end
+
+  def quarantine?(); end
+
+  def reinstall?(); end
+
+  def require_sha?(); end
+
+  def skip_cask_deps?(); end
+
+  def upgrade?(); end
+
+  def verbose?(); end
+end
+
+class Caveats
+  def empty?(*args, &block); end
+
+  def to_s(*args, &block); end
+end
+
 class Checksum
   def empty?(*args, &block); end
 
@@ -5766,8 +5813,6 @@ class Class
   def any_instance(); end
 
   def class_attribute(*attrs, instance_accessor: T.unsafe(nil), instance_reader: T.unsafe(nil), instance_writer: T.unsafe(nil), instance_predicate: T.unsafe(nil), default: T.unsafe(nil)); end
-
-  def json_creatable?(); end
 end
 
 module CodeRay
@@ -6653,8 +6698,32 @@ class DateTime
   def self.civil_from_format(utc_or_local, year, month=T.unsafe(nil), day=T.unsafe(nil), hour=T.unsafe(nil), min=T.unsafe(nil), sec=T.unsafe(nil)); end
 end
 
+class Debrew::Menu::Entry
+  def self.[](*_); end
+
+  def self.members(); end
+end
+
+module Debrew
+  def self.active?(); end
+
+  def self.lock(); end
+
+  def self.locked?(); end
+
+  def self.synchronize(&block); end
+
+  def self.try_lock(); end
+
+  def self.unlock(); end
+end
+
 class Delegator
   include ::ActiveSupport::Tryable
+end
+
+module DependenciesHelpers
+  include ::DependenciesHelpers::Compat
 end
 
 class Dir
@@ -7098,6 +7167,18 @@ class Fiber
   def self.current(); end
 end
 
+module Fiddle
+  NULL = ::T.let(nil, ::T.untyped)
+  RTLD_GLOBAL = ::T.let(nil, ::T.untyped)
+  RTLD_LAZY = ::T.let(nil, ::T.untyped)
+  RTLD_NOW = ::T.let(nil, ::T.untyped)
+  WINDOWS = ::T.let(nil, ::T.untyped)
+end
+
+class Fiddle::Function
+  STDCALL = ::T.let(nil, ::T.untyped)
+end
+
 class File
   def self.atomic_write(file_name, temp_dir=T.unsafe(nil)); end
 
@@ -7152,13 +7233,131 @@ module FileUtils
 end
 
 class Formula
+  include ::FileUtils::StreamUtils_
   include ::Formula::Compat
+  def bottle_defined?(*args, &block); end
+
+  def bottle_disable_reason(*args, &block); end
+
+  def bottle_disabled?(*args, &block); end
+
+  def bottle_specification(*args, &block); end
+
+  def bottle_unneeded?(*args, &block); end
+
+  def bottled?(*args, &block); end
+
+  def cached_download(*args, &block); end
+
+  def clear_cache(*args, &block); end
+
+  def compiler_failures(*args, &block); end
+
+  def conflicts(*args, &block); end
+
+  def deprecated?(*args, &block); end
+
+  def deprecated_flags(*args, &block); end
+
+  def deprecated_options(*args, &block); end
+
+  def deps(*args, &block); end
+
+  def desc(*args, &block); end
+
+  def disabled?(*args, &block); end
+
+  def downloader(*args, &block); end
+
+  def env(*args, &block); end
+
+  def homepage(*args, &block); end
+
+  def keg_only_reason(*args, &block); end
+
+  def license(*args, &block); end
+
+  def livecheck(*args, &block); end
+
+  def livecheckable?(*args, &block); end
+
+  def option_defined?(*args, &block); end
+
+  def options(*args, &block); end
+
+  def patchlist(*args, &block); end
+
+  def pin(*args, &block); end
+
+  def pinnable?(*args, &block); end
+
+  def pinned?(*args, &block); end
+
+  def pinned_version(*args, &block); end
+
+  def plist_manual(*args, &block); end
+
+  def plist_startup(*args, &block); end
+
+  def pour_bottle_check_unsatisfied_reason(*args, &block); end
+
+  def requirements(*args, &block); end
+
+  def resource(*args, &block); end
+
+  def resources(*args, &block); end
+
+  def unpin(*args, &block); end
+
+  def uses_from_macos_elements(*args, &block); end
+
+  def version(*args, &block); end
+end
+
+class Formula
+  def self.desc(val=T.unsafe(nil)); end
+
+  def self.homepage(val=T.unsafe(nil)); end
+
+  def self.revision(val=T.unsafe(nil)); end
+
+  def self.sha256(val); end
+
+  def self.version_scheme(val=T.unsafe(nil)); end
 end
 
 class FormulaConflict
   def self.[](*_); end
 
   def self.members(); end
+end
+
+class FormulaInstaller
+  def debug=(debug); end
+
+  def force=(force); end
+
+  def force_bottle=(force_bottle); end
+
+  def git=(git); end
+
+  def hold_locks?(); end
+
+  def ignore_deps=(ignore_deps); end
+
+  def interactive=(interactive); end
+
+  def keep_tmp=(keep_tmp); end
+
+  def only_deps=(only_deps); end
+
+  def quiet=(quiet); end
+
+  def show_header=(show_header); end
+
+  def show_summary_heading=(show_summary_heading); end
+
+  def verbose=(verbose); end
 end
 
 module Forwardable
@@ -7858,6 +8057,12 @@ class Homebrew::CLI::Parser
   include ::Homebrew::CLI::Parser::Compat
 end
 
+class Homebrew::Cleanup
+  def dry_run?(); end
+
+  def scrub?(); end
+end
+
 module Homebrew::EnvConfig
   def self.all_proxy(); end
 
@@ -7972,6 +8177,12 @@ module Homebrew::EnvConfig
   def self.verbose?(); end
 
   def self.verbose_using_dots?(); end
+end
+
+module Homebrew
+  extend ::FileUtils::StreamUtils_
+  extend ::DependenciesHelpers::Compat
+  def self.default_prefix?(prefix=T.unsafe(nil)); end
 end
 
 module HostEnvironmentSimulatorHelper
@@ -10074,12 +10285,6 @@ class JSON::Ext::Parser
   def initialize(*_); end
 end
 
-JSON::Parser = JSON::Ext::Parser
-
-JSON::State = JSON::Ext::Generator::State
-
-JSON::UnparserError = JSON::GeneratorError
-
 class JavaRequirement::CaskSuggestion
   def self.[](*_); end
 
@@ -10090,6 +10295,30 @@ module Kconv
   AUTO = ::T.let(nil, ::T.untyped)
   NOCONV = ::T.let(nil, ::T.untyped)
   UNKNOWN = ::T.let(nil, ::T.untyped)
+end
+
+class Keg
+  def /(*args, &block); end
+
+  def abv(*args, &block); end
+
+  def directory?(*args, &block); end
+
+  def disk_usage(*args, &block); end
+
+  def exist?(*args, &block); end
+
+  def file_count(*args, &block); end
+
+  def find(*args, &block); end
+
+  def hash(*args, &block); end
+
+  def join(*args, &block); end
+
+  def rename(*args, &block); end
+
+  def to_s(*args, &block); end
 end
 
 class Keg::Relocation
@@ -12374,8 +12603,6 @@ end
 
 module MonitorMixin
   def initialize(*args); end
-  EXCEPTION_IMMEDIATE = ::T.let(nil, ::T.untyped)
-  EXCEPTION_NEVER = ::T.let(nil, ::T.untyped)
 end
 
 class MonitorMixin::ConditionVariable
@@ -13118,36 +13345,94 @@ class Object
   def to_query(key); end
 
   def to_yaml(options=T.unsafe(nil)); end
+  APPLY_A = ::T.let(nil, ::T.untyped)
+  APPLY_B = ::T.let(nil, ::T.untyped)
+  APPLY_C = ::T.let(nil, ::T.untyped)
   ARGF = ::T.let(nil, ::T.untyped)
   ARGV = ::T.let(nil, ::T.untyped)
+  BOTTLE_ERB = ::T.let(nil, ::T.untyped)
   BUG_REPORTS_URL = ::T.let(nil, ::T.untyped)
+  COMMAND_DESC_WIDTH = ::T.let(nil, ::T.untyped)
   CROSS_COMPILING = ::T.let(nil, ::T.untyped)
   DEPRECATED_OFFICIAL_TAPS = ::T.let(nil, ::T.untyped)
   ENV = ::T.let(nil, ::T.untyped)
+  HEAD_URL = ::T.let(nil, ::T.untyped)
   HOMEBREW_BOTTLE_DEFAULT_DOMAIN = ::T.let(nil, ::T.untyped)
   HOMEBREW_BREW_DEFAULT_GIT_REMOTE = ::T.let(nil, ::T.untyped)
+  HOMEBREW_BREW_FILE = ::T.let(nil, ::T.untyped)
+  HOMEBREW_CACHE = ::T.let(nil, ::T.untyped)
+  HOMEBREW_CACHE_FORMULA = ::T.let(nil, ::T.untyped)
+  HOMEBREW_CASK_TAP_CASK_REGEX = ::T.let(nil, ::T.untyped)
+  HOMEBREW_CELLAR = ::T.let(nil, ::T.untyped)
   HOMEBREW_CORE_DEFAULT_GIT_REMOTE = ::T.let(nil, ::T.untyped)
+  HOMEBREW_DATA_PATH = ::T.let(nil, ::T.untyped)
   HOMEBREW_DEFAULT_CACHE = ::T.let(nil, ::T.untyped)
   HOMEBREW_DEFAULT_LOGS = ::T.let(nil, ::T.untyped)
+  HOMEBREW_DEFAULT_PREFIX = ::T.let(nil, ::T.untyped)
   HOMEBREW_DEFAULT_TEMP = ::T.let(nil, ::T.untyped)
+  HOMEBREW_LIBRARY = ::T.let(nil, ::T.untyped)
   HOMEBREW_LIBRARY_PATH = ::T.let(nil, ::T.untyped)
+  HOMEBREW_LINKED_KEGS = ::T.let(nil, ::T.untyped)
+  HOMEBREW_LOCKS = ::T.let(nil, ::T.untyped)
+  HOMEBREW_LOGS = ::T.let(nil, ::T.untyped)
+  HOMEBREW_OFFICIAL_REPO_PREFIXES_REGEX = ::T.let(nil, ::T.untyped)
+  HOMEBREW_PINNED_KEGS = ::T.let(nil, ::T.untyped)
+  HOMEBREW_PREFIX = ::T.let(nil, ::T.untyped)
+  HOMEBREW_PRODUCT = ::T.let(nil, ::T.untyped)
+  HOMEBREW_PULL_API_REGEX = ::T.let(nil, ::T.untyped)
+  HOMEBREW_PULL_OR_COMMIT_URL_REGEX = ::T.let(nil, ::T.untyped)
+  HOMEBREW_REPOSITORY = ::T.let(nil, ::T.untyped)
+  HOMEBREW_SHIMS_PATH = ::T.let(nil, ::T.untyped)
   HOMEBREW_TAP_CASK_REGEX = ::T.let(nil, ::T.untyped)
+  HOMEBREW_TAP_DIR_REGEX = ::T.let(nil, ::T.untyped)
   HOMEBREW_TAP_FORMULA_REGEX = ::T.let(nil, ::T.untyped)
+  HOMEBREW_TAP_PATH_REGEX = ::T.let(nil, ::T.untyped)
+  HOMEBREW_TEMP = ::T.let(nil, ::T.untyped)
+  HOMEBREW_USER_AGENT_CURL = ::T.let(nil, ::T.untyped)
+  HOMEBREW_USER_AGENT_FAKE_SAFARI = ::T.let(nil, ::T.untyped)
+  HOMEBREW_USER_AGENT_RUBY = ::T.let(nil, ::T.untyped)
+  HOMEBREW_VERSION = ::T.let(nil, ::T.untyped)
+  HOMEBREW_WWW = ::T.let(nil, ::T.untyped)
+  HOMEPAGE_URL = ::T.let(nil, ::T.untyped)
+  LINUXBREW_DEFAULT_PREFIX = ::T.let(nil, ::T.untyped)
+  MAXIMUM_STRING_MATCHES = ::T.let(nil, ::T.untyped)
   OFFICIAL_CASK_TAPS = ::T.let(nil, ::T.untyped)
   OFFICIAL_CMD_TAPS = ::T.let(nil, ::T.untyped)
+  OPTION_DESC_WIDTH = ::T.let(nil, ::T.untyped)
+  ORIGINAL_PATHS = ::T.let(nil, ::T.untyped)
   OS_VERSION = ::T.let(nil, ::T.untyped)
+  PATCH_A_CONTENTS = ::T.let(nil, ::T.untyped)
+  PATCH_A_SHA256 = ::T.let(nil, ::T.untyped)
+  PATCH_B_CONTENTS = ::T.let(nil, ::T.untyped)
+  PATCH_B_SHA256 = ::T.let(nil, ::T.untyped)
+  PATCH_URL_A = ::T.let(nil, ::T.untyped)
+  PATCH_URL_B = ::T.let(nil, ::T.untyped)
+  RUBY_BIN = ::T.let(nil, ::T.untyped)
   RUBY_COPYRIGHT = ::T.let(nil, ::T.untyped)
   RUBY_DESCRIPTION = ::T.let(nil, ::T.untyped)
   RUBY_ENGINE = ::T.let(nil, ::T.untyped)
   RUBY_ENGINE_VERSION = ::T.let(nil, ::T.untyped)
   RUBY_PATCHLEVEL = ::T.let(nil, ::T.untyped)
+  RUBY_PATH = ::T.let(nil, ::T.untyped)
   RUBY_PLATFORM = ::T.let(nil, ::T.untyped)
   RUBY_RELEASE_DATE = ::T.let(nil, ::T.untyped)
   RUBY_REVISION = ::T.let(nil, ::T.untyped)
   RUBY_VERSION = ::T.let(nil, ::T.untyped)
+  RUBY_X = ::T.let(nil, ::T.untyped)
+  RUBY_Y = ::T.let(nil, ::T.untyped)
+  STABLE_URL = ::T.let(nil, ::T.untyped)
   STDERR = ::T.let(nil, ::T.untyped)
   STDIN = ::T.let(nil, ::T.untyped)
   STDOUT = ::T.let(nil, ::T.untyped)
+  TESTBALL_PATCHES_SHA256 = ::T.let(nil, ::T.untyped)
+  TESTBALL_PATCHES_URL = ::T.let(nil, ::T.untyped)
+  TESTBALL_SHA256 = ::T.let(nil, ::T.untyped)
+  TESTBALL_URL = ::T.let(nil, ::T.untyped)
+  TEST_DIRECTORIES = ::T.let(nil, ::T.untyped)
+  TEST_FIXTURE_DIR = ::T.let(nil, ::T.untyped)
+  TEST_SHA1 = ::T.let(nil, ::T.untyped)
+  TEST_SHA256 = ::T.let(nil, ::T.untyped)
+  TEST_TMPDIR = ::T.let(nil, ::T.untyped)
   TOPLEVEL_BINDING = ::T.let(nil, ::T.untyped)
 end
 
@@ -15568,6 +15853,7 @@ end
 
 class Pathname
   include ::ELFShim
+  include ::MachOShim
   def fnmatch?(*_); end
 
   def glob(*_); end
@@ -19152,6 +19438,18 @@ end
 module RSpec::Its
 end
 
+module RSpec::Matchers
+  def a_json_string(*expected, &block_arg); end
+
+  def a_string_containing(*args, &block); end
+
+  def be_a_failure(*args, &block); end
+
+  def have_failed(*args, &block); end
+
+  def not_to_output(*args, &block); end
+end
+
 class RSpec::Retry
   def attempts(); end
 
@@ -19301,6 +19599,10 @@ end
 
 module Readline
   def self.completion_quote_character(); end
+end
+
+class ReporterHub
+  def empty?(*args, &block); end
 end
 
 class Requirement
@@ -21733,18 +22035,36 @@ module Singleton
   def self.__init__(klass); end
 end
 
-class Socket
-  IPV6_DONTFRAG = ::T.let(nil, ::T.untyped)
-  IPV6_PATHMTU = ::T.let(nil, ::T.untyped)
-  IPV6_RECVPATHMTU = ::T.let(nil, ::T.untyped)
-  SO_BPF_EXTENSIONS = ::T.let(nil, ::T.untyped)
-end
+class SoftwareSpec
+  def cached_download(*args, &block); end
 
-module Socket::Constants
-  IPV6_DONTFRAG = ::T.let(nil, ::T.untyped)
-  IPV6_PATHMTU = ::T.let(nil, ::T.untyped)
-  IPV6_RECVPATHMTU = ::T.let(nil, ::T.untyped)
-  SO_BPF_EXTENSIONS = ::T.let(nil, ::T.untyped)
+  def checksum(*args, &block); end
+
+  def clear_cache(*args, &block); end
+
+  def download_name(*args, &block); end
+
+  def downloader(*args, &block); end
+
+  def fetch(*args, &block); end
+
+  def mirror(*args, &block); end
+
+  def mirrors(*args, &block); end
+
+  def sha256(*args, &block); end
+
+  def source_modified_time(*args, &block); end
+
+  def specs(*args, &block); end
+
+  def stage(*args, &block); end
+
+  def using(*args, &block); end
+
+  def verify_download_integrity(*args, &block); end
+
+  def version(*args, &block); end
 end
 
 class SortedSet
