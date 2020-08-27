@@ -15,7 +15,7 @@ module PatchELF
       end
     end
 
-    %i[info warn error].each do |sym|
+    %i[debug info warn error level=].each do |sym|
       define_method(sym) do |msg|
         @logger.__send__(sym, msg)
         nil

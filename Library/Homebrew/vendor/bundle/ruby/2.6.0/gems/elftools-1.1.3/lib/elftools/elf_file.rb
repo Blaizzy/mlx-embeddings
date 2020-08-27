@@ -56,7 +56,7 @@ module ELFTools
       note = section.notes.first
       return nil if note.nil?
 
-      note.desc.unpack('H*').first
+      note.desc.unpack1('H*')
     end
 
     # Get machine architecture.

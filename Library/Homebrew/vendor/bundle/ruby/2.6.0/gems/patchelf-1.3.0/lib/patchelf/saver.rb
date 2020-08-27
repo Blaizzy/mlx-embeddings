@@ -121,30 +121,27 @@ module PatchELF
     def patch_needed
       original_needs = dynamic.tags_by_type(:needed)
       @set[:needed].uniq!
+
+      original = original_needs.map(&:name)
+      replace = @set[:needed]
+
       # 3 sets:
       # 1. in original and in needs - remain unchanged
       # 2. in original but not in needs - remove
       # 3. not in original and in needs - append
-      original_needs.each do |n|
-        next if @set[:needed].include?(n.name)
+      append = replace - original
+      remove = original - replace
 
-        n.header.d_tag = IGNORE # temporarily mark
+      ignored_dyns = remove.each_with_object([]) do |name, ignored|
+        dyn = original_needs.find { |n| n.name == name }.header
+        dyn.d_tag = IGNORE
+        ignored << dyn
       end
 
-      extra = @set[:needed] - original_needs.map(&:name)
-      original_needs.each do |n|
-        break if extra.empty?
-        next if n.header.d_tag != IGNORE
-
-        n.header.d_tag = ELFTools::Constants::DT_NEEDED
-        reg_str_table(extra.shift) { |idx| n.header.d_val = idx }
-      end
-      return if extra.empty?
-
-      # no spaces, need append
-      extra.each do |name|
-        tag = lazy_dyn(:needed)
-        reg_str_table(name) { |idx| tag.d_val = idx }
+      append.zip(ignored_dyns) do |name, ignored_dyn|
+        dyn = ignored_dyn || lazy_dyn(:needed)
+        dyn.d_tag = ELFTools::Constants::DT_NEEDED
+        reg_str_table(name) { |idx| dyn.d_val = idx }
       end
     end
 
