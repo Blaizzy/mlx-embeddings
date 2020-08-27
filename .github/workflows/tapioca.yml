@@ -21,13 +21,6 @@ jobs:
         with:
           username: BrewTestBot
 
-      - name: Set up Ruby
-        uses: actions/setup-ruby@main
-        with:
-          ruby-version: '2.6'
-      - name: Install RubyGems
-        run: brew typecheck --update-definitions
-
       - name: Update Tapioca definitions
         id: update
         run: |
