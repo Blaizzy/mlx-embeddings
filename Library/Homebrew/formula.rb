@@ -2780,6 +2780,9 @@ class Formula
     # will not be deprecated.
     # <pre>deprecate! date: "2020-08-27", because: "it is no longer maintained"</pre>
     def deprecate!(date: nil, because: nil)
+      # TODO: enable for next major/minor release
+      # odeprecated "`deprecate!` without a reason", "`deprecate! because: \"reason\"`" if because.blank?
+
       return if date.present? && Date.parse(date) > Date.today
 
       @deprecation_reason = because if because.present?
@@ -2803,6 +2806,9 @@ class Formula
     # will be deprecated instead of disabled.
     # <pre>disable! date: "2020-08-27", because: "it no longer builds"</pre>
     def disable!(date: nil, because: nil)
+      # TODO: enable for next major/minor release
+      # odeprecated "`disable!` without a reason", "`disable! because: \"reason\"`" if because.blank?
+
       if date.present? && Date.parse(date) > Date.today
         @deprecation_reason = because if because.present?
         @deprecated = true
