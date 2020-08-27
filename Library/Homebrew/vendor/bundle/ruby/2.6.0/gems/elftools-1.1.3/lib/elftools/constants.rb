@@ -95,6 +95,7 @@ module ELFTools
       DT_VERDEF       = 0x6ffffffc # address of version definition table
       DT_VERDEFNUM    = 0x6ffffffd # number of entries in {DT_VERDEF}
       DT_VERNEED      = 0x6ffffffe # address of version dependency table
+      DT_VERSYM       = 0x6ffffff0 # section address of .gnu.version
       DT_VERNEEDNUM   = 0x6fffffff # number of entries in {DT_VERNEED}
       # Values between {DT_LOPROC} and {DT_HIPROC} are reserved for processor-specific semantics.
       DT_LOPROC       = 0x70000000
@@ -212,6 +213,14 @@ module ELFTools
     end
     include ET
 
+    # Program header permission flags, records bitwise OR value in +p_flags+.
+    module PF
+      PF_X = 1
+      PF_W = 2
+      PF_R = 4
+    end
+    include PF
+
     # Program header types, records in +p_type+.
     module PT
       PT_NULL         = 0          # null segment
@@ -232,6 +241,14 @@ module ELFTools
       PT_GNU_RELRO    = 0x6474e552 # read only after relocation
     end
     include PT
+
+    # Special indices to section. These are used when there is no valid index to section header.
+    # The meaning of these values is left upto the embedding header.
+    module SHN
+      SHN_UNDEF     = 0      # undefined section
+      SHN_LORESERVE = 0xff00 # start of reserved indices
+    end
+    include SHN
 
     # Section header types, records in +sh_type+.
     module SHT

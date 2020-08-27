@@ -173,13 +173,20 @@ module PatchELF
     # Save the patched ELF as +out_file+.
     # @param [String?] out_file
     #   If +out_file+ is +nil+, the original input file will be modified.
+    # @param [Boolean] patchelf_compatible
+    #   When +patchelf_compatible+ is true, tries to produce same ELF as the one produced by NixOS/patchelf.
     # @return [void]
-    def save(out_file = nil)
+    def save(out_file = nil, patchelf_compatible: false)
       # If nothing is modified, return directly.
       return if out_file.nil? && !dirty?
 
       out_file ||= @in_file
-      saver = PatchELF::Saver.new(@in_file, out_file, @set)
+      saver = if patchelf_compatible
+                require 'patchelf/alt_saver'
+                PatchELF::AltSaver.new(@in_file, out_file, @set)
+              else
+                PatchELF::Saver.new(@in_file, out_file, @set)
+              end
 
       saver.save!
     end
