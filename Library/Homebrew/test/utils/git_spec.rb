@@ -150,6 +150,8 @@ describe Utils::Git do
       end
 
       it "installs git" do
+        skip if ENV["HOMEBREW_TEST_GENERIC_OS"]
+
         expect(described_class).to receive(:available?).and_return(false)
         expect(described_class).to receive(:safe_system).with(HOMEBREW_BREW_FILE, "install", "git").and_return(true)
         expect(described_class).to receive(:available?).and_return(true)
