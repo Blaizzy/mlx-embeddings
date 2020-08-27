@@ -1,6 +1,13 @@
 # frozen_string_literal: true
 
+require "livecheck/strategy"
+
 module Homebrew
+  # The `Livecheck` module consists of methods used by the `brew livecheck`
+  # command. These methods receive print the requested livecheck information
+  # for formulae.
+  #
+  # @api private
   module Livecheck
     module_function
 
@@ -29,6 +36,9 @@ module Homebrew
       rc
     ].freeze
 
+    # Executes the livecheck logic for each formula in the `formulae_to_check` array
+    # and prints the results.
+    # @return [nil]
     def livecheck_formulae(formulae_to_check, args)
       # Identify any non-homebrew/core taps in use for current formulae
       non_core_taps = {}
@@ -145,6 +155,9 @@ module Homebrew
       puts JSON.generate(formulae_checked.compact) if args.json?
     end
 
+    # Returns the fully-qualified name of a formula if the full_name argument is
+    # provided, returns the name otherwise.
+    # @return [String]
     def formula_name(formula, args:)
       args.full_name? ? formula.full_name : formula.name
     end
@@ -166,6 +179,9 @@ module Homebrew
       status_hash
     end
 
+    # If a formula has to be skipped, it prints or returns a Hash contaning the reason
+    # for doing so, else it returns false.
+    # @return [Hash, nil, Boolean]
     def skip_conditions(formula, args:)
       if formula.deprecated? && !formula.livecheckable?
         return status_hash(formula, "deprecated", args: args) if args.json?
@@ -218,6 +234,8 @@ module Homebrew
       false
     end
 
+    # Formats and prints the livecheck result for a formula.
+    # @return [nil]
     def print_latest_version(info, args:)
       formula_s = "#{Tty.blue}#{info[:formula]}#{Tty.reset}"
       formula_s += " (guessed)" if !info[:meta][:livecheckable] && args.verbose?
@@ -237,6 +255,8 @@ module Homebrew
       puts "#{formula_s} : #{current_s} ==> #{latest_s}"
     end
 
+    # Returns an Array containing the formula URLs that can be used by livecheck.
+    # @return [Array]
     def checkable_urls(formula)
       urls = []
       urls << formula.head.url if formula.head
@@ -249,6 +269,8 @@ module Homebrew
       urls.compact
     end
 
+    # Preprocesses and returns the URL used by livecheck.
+    # @return [String]
     def preprocess_url(url)
       # Check for GitHub repos on github.com, not AWS
       url.sub!("github.s3.amazonaws.com", "github.com") if url.include?("github")
@@ -260,7 +282,7 @@ module Homebrew
         elsif url.include? "releases"
           url = url.sub(%r{/releases/.*}, ".git")
         elsif url.include? "downloads"
-          url = Pathname.new(url.sub(%r{/downloads(.*)}, "\\1")).dirname.to_s+".git"
+          url = "#{Pathname.new(url.sub(%r{/downloads(.*)}, "\\1")).dirname}.git"
         elsif !url.end_with?(".git")
           # Truncate the URL at the user/repo part, if possible
           %r{(?<github_repo_url>(?:[a-z]+://)?github.com/[^/]+/[^/#]+)} =~ url
@@ -276,6 +298,9 @@ module Homebrew
       url
     end
 
+    # Identifies the latest version of the formula and returns a Hash containing
+    # the version information. Returns nil if a latest version couldn't be found.
+    # @return [Hash, nil]
     def latest_version(formula, args:)
       has_livecheckable = formula.livecheckable?
       livecheck = formula.livecheck

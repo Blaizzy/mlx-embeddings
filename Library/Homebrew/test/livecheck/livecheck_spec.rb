@@ -13,7 +13,7 @@ describe Homebrew::Livecheck do
       head "https://github.com/Homebrew/brew.git"
 
       livecheck do
-        url "https://github.s3.amazonaws.com/Homebrew/brew/releases/latest"
+        url(+"https://github.s3.amazonaws.com/Homebrew/brew/releases/latest")
         regex(%r{href=.*?/tag/v?(\d+(?:\.\d+)+)["' >]}i)
       end
     end
@@ -137,12 +137,21 @@ describe Homebrew::Livecheck do
     end
   end
 
+  describe "::preprocess_url" do
+    it "returns the preprocessed URL for livecheck to use" do
+      expect(livecheck.preprocess_url(f.livecheck.url))
+        .to eq("https://github.com/Homebrew/brew/releases/latest")
+    end
+  end
+
   describe "::livecheck_formulae", :needs_network do
     it "checks for the latest versions of the formulae" do
-      allow(args).to receive(:debug?).and_return(true)
+      allow(args).to receive(:debug?).and_return(false)
+      allow(args).to receive(:newer_only?).and_return(false)
 
-      expect(livecheck.livecheck_formulae([f], args))
-        .to eq(/Formula/)
+      expect { livecheck.livecheck_formulae([f], args) }
+        .to output(/test : 0\.0\.1 ==> (\d+(?:\.\d+)+)/im).to_stdout
+        .and not_to_output.to_stderr
     end
   end
 end
