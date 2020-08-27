@@ -46,7 +46,7 @@ module Homebrew
     if args.cmd.present?
       safe_system(ENV["SHELL"], "-c", args.cmd)
     elsif args.named.present?
-      safe_system(ENV["SHELL"], args.named[0])
+      safe_system(ENV["SHELL"], args.named.first)
     else
       subshell = if ENV["SHELL"].include?("zsh")
         "PS1='brew %B%F{green}%~%f%b$ ' #{ENV["SHELL"]} -d"
