@@ -32,7 +32,7 @@ module Homebrew
           downcased_unique_named.each do |name|
             formulae_and_casks << Formulary.factory(name, spec)
 
-            puts "Treating #{name} as a formula. For the cask, use homebrew/cask/#{name}" if cask_exists_with_ref name
+            warn_if_cask_conflicts(name, "formula")
           rescue FormulaUnavailableError
             begin
               formulae_and_casks << Cask::CaskLoader.load(name)
@@ -59,7 +59,7 @@ module Homebrew
           downcased_unique_named.each do |name|
             resolved_formulae << Formulary.resolve(name, spec: spec(nil), force_bottle: @force_bottle, flags: @flags)
 
-            puts "Treating #{name} as a formula. For the cask, use homebrew/cask/#{name}" if cask_exists_with_ref name
+            warn_if_cask_conflicts(name, "formula")
           rescue FormulaUnavailableError
             begin
               casks << Cask::CaskLoader.load(name)
@@ -101,7 +101,7 @@ module Homebrew
           downcased_unique_named.each do |name|
             kegs << resolve_keg(name)
 
-            puts "Treating #{name} as a keg. For the cask, use homebrew/cask/#{name}" if cask_exists_with_ref name
+            warn_if_cask_conflicts(name, "keg")
           rescue NoSuchKegError, FormulaUnavailableError
             begin
               casks << Cask::CaskLoader.load(name)
@@ -177,10 +177,12 @@ module Homebrew
         end
       end
 
-      def cask_exists_with_ref(ref)
-        Cask::CaskLoader.load ref
+      def warn_if_cask_conflicts(ref, loaded_type)
+        cask = Cask::CaskLoader.load ref
+
+        puts "Treating #{ref} as a #{loaded_type}. For the cask, use #{cask.tap.name}/#{cask.token}"
       rescue Cask::CaskUnavailableError
-        false
+        # No ref conflict with a cask, do nothing
       end
     end
   end
