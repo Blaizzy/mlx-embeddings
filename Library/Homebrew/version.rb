@@ -65,6 +65,7 @@ class Version
     def to_s
       value.to_s
     end
+    alias to_str to_s
 
     def numeric?
       false
