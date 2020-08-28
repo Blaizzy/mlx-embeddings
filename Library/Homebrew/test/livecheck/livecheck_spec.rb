@@ -13,8 +13,8 @@ describe Homebrew::Livecheck do
       head "https://github.com/Homebrew/brew.git"
 
       livecheck do
-        url "https://github.s3.amazonaws.com/Homebrew/brew/releases/latest"
-        regex(%r{href=.*?/tag/v?(\d+(?:\.\d+)+)["' >]}i)
+        url "https://formulae.brew.sh/api/formula/ruby.json"
+        regex(/"stable":"(\d+(?:\.\d+)+)"/i)
       end
     end
   end
@@ -138,8 +138,10 @@ describe Homebrew::Livecheck do
   end
 
   describe "::preprocess_url" do
+    let(:url) { "https://github.s3.amazonaws.com/Homebrew/brew/releases/latest" }
+
     it "returns the preprocessed URL for livecheck to use" do
-      expect(livecheck.preprocess_url(f.livecheck.url))
+      expect(livecheck.preprocess_url(url))
         .to eq("https://github.com/Homebrew/brew/releases/latest")
     end
   end
