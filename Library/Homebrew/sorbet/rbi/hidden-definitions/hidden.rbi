@@ -7257,9 +7257,13 @@ class Formula
 
   def deprecated_options(*args, &block); end
 
+  def deprecation_reason(*args, &block); end
+
   def deps(*args, &block); end
 
   def desc(*args, &block); end
+
+  def disable_reason(*args, &block); end
 
   def disabled?(*args, &block); end
 
@@ -13372,6 +13376,7 @@ class Object
   HOMEBREW_LOCKS = ::T.let(nil, ::T.untyped)
   HOMEBREW_LOGS = ::T.let(nil, ::T.untyped)
   HOMEBREW_OFFICIAL_REPO_PREFIXES_REGEX = ::T.let(nil, ::T.untyped)
+  HOMEBREW_PATCHELF_RB_WRITE = ::T.let(nil, ::T.untyped)
   HOMEBREW_PINNED_KEGS = ::T.let(nil, ::T.untyped)
   HOMEBREW_PREFIX = ::T.let(nil, ::T.untyped)
   HOMEBREW_PRODUCT = ::T.let(nil, ::T.untyped)
@@ -13624,7 +13629,75 @@ class PATH
 end
 
 module ParallelTests
+  RUBY_BINARY = ::T.let(nil, ::T.untyped)
+  VERSION = ::T.let(nil, ::T.untyped)
+  Version = ::T.let(nil, ::T.untyped)
   WINDOWS = ::T.let(nil, ::T.untyped)
+end
+
+class ParallelTests::CLI
+  def run(argv); end
+end
+
+class ParallelTests::CLI
+end
+
+class ParallelTests::Grouper
+end
+
+class ParallelTests::Grouper
+  def self.by_scenarios(tests, num_groups, options=T.unsafe(nil)); end
+
+  def self.by_steps(tests, num_groups, options); end
+
+  def self.in_even_groups_by_size(items, num_groups, options=T.unsafe(nil)); end
+end
+
+class ParallelTests::Pids
+  def add(pid); end
+
+  def all(); end
+
+  def count(); end
+
+  def delete(pid); end
+
+  def file_path(); end
+
+  def initialize(file_path); end
+
+  def mutex(); end
+end
+
+class ParallelTests::Pids
+end
+
+module ParallelTests
+  def self.bundler_enabled?(); end
+
+  def self.delta(); end
+
+  def self.determine_number_of_processes(count); end
+
+  def self.first_process?(); end
+
+  def self.last_process?(); end
+
+  def self.now(); end
+
+  def self.number_of_running_processes(); end
+
+  def self.pid_file_path(); end
+
+  def self.pids(); end
+
+  def self.stop_all_processes(); end
+
+  def self.wait_for_other_processes_to_finish(); end
+
+  def self.with_pid_file(); end
+
+  def self.with_ruby_binary(command); end
 end
 
 module Parlour
