@@ -38,6 +38,12 @@ describe Version::Token do
     expect(v <=> Object.new).to be nil
     expect { v > Object.new }.to raise_error(ArgumentError)
   end
+
+  describe "#to_str" do
+    it "implicitly converts token to string" do
+      expect(String.try_convert(described_class.new("foo"))).not_to be nil
+    end
+  end
 end
 
 describe Version::NULL do
