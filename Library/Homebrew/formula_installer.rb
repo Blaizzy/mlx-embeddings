@@ -203,9 +203,17 @@ class FormulaInstaller
     raise FormulaInstallationAlreadyAttemptedError, formula if self.class.attempted.include?(formula)
 
     if formula.deprecated?
-      opoo "#{formula.full_name} has been deprecated!"
+      if formula.deprecation_reason.present?
+        opoo "#{formula.full_name} has been deprecated because #{formula.deprecation_reason}!"
+      else
+        opoo "#{formula.full_name} has been deprecated!"
+      end
     elsif formula.disabled?
-      odie "#{formula.full_name} has been disabled!"
+      if formula.disable_reason.present?
+        odie "#{formula.full_name} has been disabled because #{formula.disable_reason}!"
+      else
+        odie "#{formula.full_name} has been disabled!"
+      end
     end
 
     return if ignore_deps?
