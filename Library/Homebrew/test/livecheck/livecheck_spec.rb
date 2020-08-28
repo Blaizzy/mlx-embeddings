@@ -13,7 +13,7 @@ describe Homebrew::Livecheck do
       head "https://github.com/Homebrew/brew.git"
 
       livecheck do
-        url(+"https://github.s3.amazonaws.com/Homebrew/brew/releases/latest")
+        url "https://github.s3.amazonaws.com/Homebrew/brew/releases/latest"
         regex(%r{href=.*?/tag/v?(\d+(?:\.\d+)+)["' >]}i)
       end
     end
@@ -80,11 +80,11 @@ describe Homebrew::Livecheck do
 
   describe "::status_hash" do
     it "returns a hash containing the livecheck status" do
-      expect(livecheck.status_hash(f, "blah", ["blah"], args: args))
+      expect(livecheck.status_hash(f, "error", ["Unable to get versions"], args: args))
         .to eq({
                  formula:  "test",
-                 status:   "blah",
-                 messages: ["blah"],
+                 status:   "error",
+                 messages: ["Unable to get versions"],
                  meta:     {
                    livecheckable: true,
                  },
@@ -146,12 +146,13 @@ describe Homebrew::Livecheck do
 
   describe "::livecheck_formulae", :needs_network do
     it "checks for the latest versions of the formulae" do
-      allow(args).to receive(:debug?).and_return(false)
+      allow(args).to receive(:debug?).and_return(true)
       allow(args).to receive(:newer_only?).and_return(false)
 
-      expect { livecheck.livecheck_formulae([f], args) }
-        .to output(/test : 0\.0\.1 ==> (\d+(?:\.\d+)+)/im).to_stdout
-        .and not_to_output.to_stderr
+      expectation = expect { livecheck.livecheck_formulae([f], args) }
+      expectation.to output(/Strategy:.*PageMatch/).to_stdout
+      expectation.to output(/test : 0\.0\.1 ==> (\d+(?:\.\d+)+)/).to_stdout
+                 .and not_to_output.to_stderr
     end
   end
 end

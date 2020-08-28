@@ -102,8 +102,9 @@ module Homebrew
           latest = Version.new(m[1])
         end
 
-        # A HEAD-only formula is outdated when the latest commit hash and installed commit hash differ
         is_outdated = if formula.head?
+          # A HEAD-only formula is considered outdated if the latest upstream
+          # commit hash is different than the installed version's commit hash
           (current != latest)
         else
           (current < latest)
@@ -148,7 +149,7 @@ module Homebrew
         end
       end
 
-      if [args.newer_only?, !has_a_newer_upstream_version, !args.json?, !args.debug?].all?
+      if args.newer_only? && !has_a_newer_upstream_version && !args.debug? && !args.json?
         puts "No newer upstream versions."
       end
 
@@ -167,7 +168,7 @@ module Homebrew
         formula: formula_name(formula, args: args),
         status:  status_str,
       }
-      status_hash[:messages] = messages.presence
+      status_hash[:messages] = messages if messages.is_a?(Array)
 
       if args.verbose?
         status_hash[:meta] = {
@@ -273,7 +274,7 @@ module Homebrew
     # @return [String]
     def preprocess_url(url)
       # Check for GitHub repos on github.com, not AWS
-      url.sub!("github.s3.amazonaws.com", "github.com") if url.include?("github")
+      url = url.sub("github.s3.amazonaws.com", "github.com") if url.include?("github")
 
       # Use repo from GitHub or GitLab inferred from download URL
       if url.include?("github.com") && GITHUB_SPECIAL_CASES.none? { |sc| url.include? sc }
