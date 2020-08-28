@@ -1522,12 +1522,16 @@ Load a library using \fBrequire\fR\.
 \fB\-e\fR
 Execute the given text string as a script\.
 .
-.SS "\fBsh\fR [\fIoptions\fR]"
-Start a Homebrew build environment shell\. Uses our years\-battle\-hardened Homebrew build logic to help your \fB\./configure && make && make install\fR or even your \fBgem install\fR succeed\. Especially handy if you run Homebrew in an Xcode\-only configuration since it adds tools like \fBmake\fR to your \fBPATH\fR which build systems would not find otherwise\.
+.SS "\fBsh\fR [\fIoptions\fR] [\fIfile\fR]"
+Homebrew build environment that uses years\-battle\-hardened build logic to help your \fB\./configure && make && make install\fR and even your \fBgem install\fR succeed\. Especially handy if you run Homebrew in an Xcode\-only configuration since it adds tools like \fBmake\fR to your \fBPATH\fR which build systems would not find otherwise\.
 .
 .TP
 \fB\-\-env\fR
 Use the standard \fBPATH\fR instead of superenv\'s when \fBstd\fR is passed\.
+.
+.TP
+\fB\-c\fR, \fB\-\-cmd\fR
+Execute commands in a non\-interactive shell\.
 .
 .SS "\fBsponsors\fR"
 Print a Markdown summary of Homebrew\'s GitHub Sponsors, suitable for pasting into a README\.

@@ -1106,16 +1106,18 @@ Run a Ruby instance with Homebrew's libraries loaded, e.g.
 * `-e`:
   Execute the given text string as a script.
 
-### `sh` [*`options`*]
+### `sh` [*`options`*] [*`file`*]
 
-Start a Homebrew build environment shell. Uses our years-battle-hardened
-Homebrew build logic to help your `./configure && make && make install`
-or even your `gem install` succeed. Especially handy if you run Homebrew
+Homebrew build environment that uses years-battle-hardened
+build logic to help your `./configure && make && make install`
+and even your `gem install` succeed. Especially handy if you run Homebrew
 in an Xcode-only configuration since it adds tools like `make` to your `PATH`
 which build systems would not find otherwise.
 
 * `--env`:
   Use the standard `PATH` instead of superenv's when `std` is passed.
+* `-c`, `--cmd`:
+  Execute commands in a non-interactive shell.
 
 ### `sponsors`
 
