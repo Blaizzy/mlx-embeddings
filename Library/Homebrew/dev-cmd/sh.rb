@@ -10,7 +10,7 @@ module Homebrew
   def sh_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `sh` [<options>] [<SCRIPT>]
+        `sh` [<options>] [<file>]
 
         Homebrew build environment that uses years-battle-hardened
         build logic to help your `./configure && make && make install`
