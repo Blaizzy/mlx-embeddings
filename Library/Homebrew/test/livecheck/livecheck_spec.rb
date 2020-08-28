@@ -138,11 +138,11 @@ describe Homebrew::Livecheck do
   end
 
   describe "::preprocess_url" do
-    let(:url) { "https://github.s3.amazonaws.com/Homebrew/brew/releases/latest" }
+    let(:url) { "https://github.s3.amazonaws.com/downloads/Homebrew/brew/1.0.0.tar.gz" }
 
     it "returns the preprocessed URL for livecheck to use" do
       expect(livecheck.preprocess_url(url))
-        .to eq("https://github.com/Homebrew/brew/releases/latest")
+        .to eq("https://github.com/Homebrew/brew.git")
     end
   end
 
