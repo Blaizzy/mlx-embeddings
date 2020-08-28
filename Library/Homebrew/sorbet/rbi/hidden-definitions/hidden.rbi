@@ -6480,7 +6480,6 @@ class Date
   def to_default_s(); end
 
   def to_formatted_s(format=T.unsafe(nil)); end
-
   DATE_FORMATS = ::T.let(nil, ::T.untyped)
 end
 
@@ -6734,7 +6733,6 @@ end
 
 class Dir
   def self.exists?(_); end
-
 end
 
 module Docile
@@ -6903,7 +6901,6 @@ class ERB
   def def_method(mod, methodname, fname=T.unsafe(nil)); end
 
   def def_module(methodname=T.unsafe(nil)); end
-
 end
 
 class ERB::Compiler::Scanner
@@ -7106,7 +7103,6 @@ end
 
 module Exception2MessageMapper
   def bind(cl); end
-
 end
 
 Exception2MessageMapper::E2MM = Exception2MessageMapper
@@ -13569,6 +13565,58 @@ end
 
 module OpenSSL
   def self.fips_mode(); end
+end
+
+class OpenURI::Buffer
+  def <<(str); end
+
+  def io(); end
+
+  def size(); end
+  StringMax = ::T.let(nil, ::T.untyped)
+end
+
+class OpenURI::Buffer
+end
+
+class OpenURI::HTTPError
+  def initialize(message, io); end
+end
+
+class OpenURI::HTTPRedirect
+  def initialize(message, io, uri); end
+end
+
+module OpenURI::Meta
+  def content_type_parse(); end
+
+  def meta_add_field(name, value); end
+
+  def meta_add_field2(name, values); end
+
+  def meta_setup_encoding(); end
+  RE_LWS = ::T.let(nil, ::T.untyped)
+  RE_PARAMETERS = ::T.let(nil, ::T.untyped)
+  RE_QUOTED_STRING = ::T.let(nil, ::T.untyped)
+  RE_TOKEN = ::T.let(nil, ::T.untyped)
+end
+
+module OpenURI::Meta
+  def self.init(obj, src=T.unsafe(nil)); end
+end
+
+module OpenURI
+  def self.check_options(options); end
+
+  def self.open_http(buf, target, proxy, options); end
+
+  def self.open_loop(uri, options); end
+
+  def self.open_uri(name, *rest); end
+
+  def self.redirectable?(uri1, uri2); end
+
+  def self.scan_open_optional_arguments(*rest); end
 end
 
 class PATH
@@ -22075,6 +22123,40 @@ class SortedSet
   def self.setup(); end
 end
 
+class Spoom::Cli::Main
+  extend ::T::Sig
+end
+
+class Spoom::Sorbet::Config
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::Sorbet::Errors::Error
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::Sorbet::Errors::Parser
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::Sorbet::Metrics
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Spoom::Sorbet
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 module Stdenv
   def O0(); end
 
@@ -22095,6 +22177,12 @@ class String
 
   def black(); end
 
+  def blink(); end
+
+  def blue(); end
+
+  def bold(); end
+
   def camelcase(first_letter=T.unsafe(nil)); end
 
   def camelize(first_letter=T.unsafe(nil)); end
@@ -22104,6 +22192,8 @@ class String
   def colorize(color_code); end
 
   def constantize(); end
+
+  def cyan(); end
 
   def dasherize(); end
 
@@ -22123,6 +22213,8 @@ class String
 
   def green(); end
 
+  def hide(); end
+
   def html_safe(); end
 
   def humanize(capitalize: T.unsafe(nil), keep_id_suffix: T.unsafe(nil)); end
@@ -22137,11 +22229,63 @@ class String
 
   def isutf8(); end
 
+  def italic(); end
+
   def kconv(to_enc, from_enc=T.unsafe(nil)); end
 
   def last(limit=T.unsafe(nil)); end
 
+  def light_black(); end
+
+  def light_blue(); end
+
+  def light_cyan(); end
+
+  def light_green(); end
+
+  def light_magenta(); end
+
+  def light_red(); end
+
+  def light_white(); end
+
+  def light_yellow(); end
+
+  def magenta(); end
+
   def mb_chars(); end
+
+  def on_black(); end
+
+  def on_blue(); end
+
+  def on_cyan(); end
+
+  def on_green(); end
+
+  def on_light_black(); end
+
+  def on_light_blue(); end
+
+  def on_light_cyan(); end
+
+  def on_light_green(); end
+
+  def on_light_magenta(); end
+
+  def on_light_red(); end
+
+  def on_light_white(); end
+
+  def on_light_yellow(); end
+
+  def on_magenta(); end
+
+  def on_red(); end
+
+  def on_white(); end
+
+  def on_yellow(); end
 
   def parameterize(separator: T.unsafe(nil), preserve_case: T.unsafe(nil), locale: T.unsafe(nil)); end
 
@@ -22166,6 +22310,8 @@ class String
   def squish!(); end
 
   def starts_with?(*_); end
+
+  def swap(); end
 
   def tableize(); end
 
@@ -22209,9 +22355,15 @@ class String
 
   def truncate_words(words_count, options=T.unsafe(nil)); end
 
+  def underline(); end
+
   def underscore(); end
 
   def upcase_first(); end
+
+  def white(); end
+
+  def yellow(); end
   BLANK_RE = ::T.let(nil, ::T.untyped)
   ENCODED_BLANKS = ::T.let(nil, ::T.untyped)
 end
@@ -23055,12 +23207,6 @@ class Tapioca::Loader
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class Tapioca::SorbetConfig
-  extend ::T::Sig
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class Tempfile
   def _close(); end
 
@@ -23520,7 +23666,6 @@ class Time
   def to_default_s(); end
 
   def to_formatted_s(format=T.unsafe(nil)); end
-
   COMMON_YEAR_DAYS_IN_MONTH = ::T.let(nil, ::T.untyped)
   DATE_FORMATS = ::T.let(nil, ::T.untyped)
 end
@@ -23553,7 +23698,6 @@ class Time
   def self.zone_default(); end
 
   def self.zone_default=(zone_default); end
-
 end
 
 class TracePoint
@@ -23603,6 +23747,10 @@ module URI
 end
 
 class URI::FTP
+  def buffer_open(buf, proxy, options); end
+end
+
+class URI::FTP
   def self.new2(user, password, host, port, path, typecode=T.unsafe(nil), arg_check=T.unsafe(nil)); end
 end
 
@@ -23619,6 +23767,10 @@ class URI::File
 end
 
 class URI::File
+end
+
+class URI::HTTP
+  def buffer_open(buf, proxy, options); end
 end
 
 class URI::LDAP
