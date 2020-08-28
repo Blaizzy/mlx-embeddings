@@ -22,7 +22,7 @@ module Metafiles
 
   def copy?(file)
     file = file.downcase
-    return true if LICENSES.include? file.split(".").first
+    return true if LICENSES.include? file.split(/\.|-/).first
 
     ext  = File.extname(file)
     file = File.basename(file, ext) if EXTENSIONS.include?(ext)
