@@ -3,9 +3,14 @@
 require "utils/git"
 
 describe Utils::Git do
-  before do
+  around do |example|
     described_class.clear_available_cache
+    example.run
+  ensure
+    described_class.clear_available_cache
+  end
 
+  before do
     git = HOMEBREW_SHIMS_PATH/"scm/git"
 
     HOMEBREW_CACHE.cd do
@@ -145,6 +150,8 @@ describe Utils::Git do
       end
 
       it "installs git" do
+        skip if ENV["HOMEBREW_TEST_GENERIC_OS"]
+
         expect(described_class).to receive(:available?).and_return(false)
         expect(described_class).to receive(:safe_system).with(HOMEBREW_BREW_FILE, "install", "git").and_return(true)
         expect(described_class).to receive(:available?).and_return(true)

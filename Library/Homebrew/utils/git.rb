@@ -94,13 +94,12 @@ module Utils
         begin
           oh1 "Installing #{Formatter.identifier("git")}"
 
-          # We need to unset `HOMEBREW_TEST_GENERIC_OS`, otherwise `git` will be
-          # installed from source in tests that need it. This is slow and will
-          # also likely fail due to `OS::Linux` and `OS::Mac` being undefined.
-          with_env "HOMEBREW_TEST_GENERIC_OS" => nil do
-            safe_system HOMEBREW_BREW_FILE, "install", "git"
-            clear_available_cache
-          end
+          # Otherwise `git` will be installed from source in tests that need it. This is slow
+          # and will also likely fail due to `OS::Linux` and `OS::Mac` being undefined.
+          raise "Refusing to install Git on a generic OS." if ENV["HOMEBREW_TEST_GENERIC_OS"]
+
+          safe_system HOMEBREW_BREW_FILE, "install", "git"
+          clear_available_cache
         rescue
           raise "Git is unavailable"
         end
