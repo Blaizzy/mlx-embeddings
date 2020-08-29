@@ -211,11 +211,29 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       RUBY
     end
 
+    it "deprecation reason is acceptable as a symbol" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          url 'https://brew.sh/foo-1.0.tgz'
+          deprecate! because: :does_not_build
+        end
+      RUBY
+    end
+
     it "deprecation reason is acceptable with date" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
           deprecate! date: "2020-08-28", because: "is broken"
+        end
+      RUBY
+    end
+
+    it "deprecation reason is acceptable as a symbol with date" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          url 'https://brew.sh/foo-1.0.tgz'
+          deprecate! date: "2020-08-28", because: :does_not_build
         end
       RUBY
     end
@@ -349,11 +367,29 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       RUBY
     end
 
+    it "disable reason is acceptable as a symbol" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          url 'https://brew.sh/foo-1.0.tgz'
+          disable! because: :does_not_build
+        end
+      RUBY
+    end
+
     it "disable reason is acceptable with date" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
           disable! date: "2020-08-28", because: "is broken"
+        end
+      RUBY
+    end
+
+    it "disable reason is acceptable as a symbol with date" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          url 'https://brew.sh/foo-1.0.tgz'
+          disable! date: "2020-08-28", because: :does_not_build
         end
       RUBY
     end

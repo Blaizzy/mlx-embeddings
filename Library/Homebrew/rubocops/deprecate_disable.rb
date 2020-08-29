@@ -46,6 +46,8 @@ module RuboCop
             reason_found = false
             reason(node) do |reason_node|
               reason_found = true
+              next if reason_node.sym_type?
+
               offending_node(reason_node)
               reason_string = string_content(reason_node)
 
@@ -77,7 +79,7 @@ module RuboCop
         end
 
         def_node_search :reason, <<~EOS
-          (pair (sym :because) $str)
+          (pair (sym :because) ${str sym})
         EOS
       end
     end

@@ -1151,7 +1151,7 @@ class Formula
   # The reason this {Formula} is deprecated.
   # Returns `nil` if no reason is specified or the formula is not deprecated.
   # @method deprecation_reason
-  # @return [String]
+  # @return [String, Symbol]
   delegate deprecation_reason: :"self.class"
 
   # Whether this {Formula} is disabled (i.e. cannot be installed).
@@ -1163,7 +1163,7 @@ class Formula
   # The reason this {Formula} is disabled.
   # Returns `nil` if no reason is specified or the formula is not disabled.
   # @method disable_reason
-  # @return [String]
+  # @return [String, Symbol]
   delegate disable_reason: :"self.class"
 
   def skip_cxxstdlib_check?
@@ -2778,7 +2778,8 @@ class Formula
     # Deprecates a {Formula} (on a given date, if provided) so a warning is
     # shown on each installation. If the date has not yet passed the formula
     # will not be deprecated.
-    # <pre>deprecate! date: "2020-08-27", because: "it is no longer maintained"</pre>
+    # <pre>deprecate! date: "2020-08-27", because: :unmaintained</pre>
+    # <pre>deprecate! date: "2020-08-27", because: "it has been replaced by"</pre>
     def deprecate!(date: nil, because: nil)
       # TODO: enable for next major/minor release
       # odeprecated "`deprecate!` without a reason", "`deprecate! because: \"reason\"`" if because.blank?
@@ -2798,13 +2799,14 @@ class Formula
 
     # The reason for deprecation of a {Formula}.
     # Returns `nil` if no reason was provided or the formula is not deprecated.
-    # @return [String]
+    # @return [String, Symbol]
     attr_reader :deprecation_reason
 
     # Disables a {Formula}  (on a given date, if provided) so it cannot be
     # installed. If the date has not yet passed the formula
     # will be deprecated instead of disabled.
-    # <pre>disable! date: "2020-08-27", because: "it no longer builds"</pre>
+    # <pre>disable! date: "2020-08-27", because: :does_not_build</pre>
+    # <pre>disable! date: "2020-08-27", because: "has been replaced by foo"</pre>
     def disable!(date: nil, because: nil)
       # TODO: enable for next major/minor release
       # odeprecated "`disable!` without a reason", "`disable! because: \"reason\"`" if because.blank?
@@ -2828,7 +2830,7 @@ class Formula
 
     # The reason for a {Formula} is disabled.
     # Returns `nil` if no reason was provided or the formula is not disabled.
-    # @return [String]
+    # @return [String, Symbol]
     attr_reader :disable_reason
 
     # @private
