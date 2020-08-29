@@ -180,7 +180,7 @@ module Homebrew
       def warn_if_cask_conflicts(ref, loaded_type)
         cask = Cask::CaskLoader.load ref
 
-        puts "Treating #{ref} as a #{loaded_type}. For the cask, use #{cask.tap.name}/#{cask.token}"
+        opoo "Treating #{ref} as a #{loaded_type}. For the cask, use #{cask.tap.name}/#{cask.token}"
       rescue Cask::CaskUnavailableError
         # No ref conflict with a cask, do nothing
       end
