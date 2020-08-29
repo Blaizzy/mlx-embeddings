@@ -93,7 +93,7 @@ RSpec/MultipleDescribes:
     - 'patch_spec.rb'
     - 'rubocops/checksum_spec.rb'
     - 'rubocops/class_spec.rb'
-    - 'rubocops/deprecate_spec.rb'
+    - 'rubocops/deprecate_disable_spec.rb'
     - 'rubocops/formula_desc_spec.rb'
     - 'rubocops/lines_spec.rb'
     - 'rubocops/text_spec.rb'
