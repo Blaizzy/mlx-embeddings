@@ -12,8 +12,25 @@ module Utils
     raise ErrorDuringExecution.new(args, status: $CHILD_STATUS, output: [[:stdout, output]])
   end
 
-  def self.popen_write(*args, **options, &block)
-    popen(args, "wb", options, &block)
+  def self.popen_write(*args, **options)
+    popen(args, "w+b", options) do |pipe|
+      output = ""
+
+      # Before we yield to the block, capture as much output as we can
+      loop do
+        output += pipe.read_nonblock(4096)
+      rescue IO::WaitReadable, EOFError
+        break
+      end
+
+      yield pipe
+      pipe.close_write
+      IO.select([pipe])
+
+      # Capture the rest of the output
+      output += pipe.read
+      output.freeze
+    end
   end
 
   def self.safe_popen_write(*args, **options, &block)
