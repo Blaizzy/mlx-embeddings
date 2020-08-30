@@ -8,6 +8,30 @@ AllCops:
   # enable all pending rubocops
   NewCops: enable
 
+Cask/Desc:
+  Description: 'Ensure that the desc stanza conforms to various content and style checks.'
+  Enabled: true
+
+Cask/HomepageMatchesUrl:
+  Description: 'Ensure that the homepage and url match, otherwise add a comment. More info at https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/stanzas/url.md#when-url-and-homepage-hostnames-differ-add-a-comment'
+  Enabled: true
+
+Cask/HomepageUrlTrailingSlash:
+  Description: 'Ensure that the homepage url has a slash after the domain name.'
+  Enabled: true
+
+Cask/NoDslVersion:
+  Description: 'Do not use the deprecated DSL version syntax in your cask header.'
+  Enabled: true
+
+Cask/StanzaGrouping:
+  Description: 'Ensure that cask stanzas are grouped correctly. More info at https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/readme.md#stanza-order'
+  Enabled: true
+
+Cask/StanzaOrder:
+  Description: 'Ensure that cask stanzas are sorted correctly. More info at https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/readme.md#stanza-order'
+  Enabled: true
+
 # enable all formulae audits
 FormulaAudit:
   Enabled: true
@@ -195,11 +219,11 @@ Style/ClassVars:
   Exclude:
   - '**/developer/bin/*'
 
-# most of our APIs are internal so don't require docs
+# Don't enforce documentation in casks or formulae.
 Style/Documentation:
  Enabled: false
 
-# don't want this for formulae but re-enabled for Library/Homebrew
+# Not used for casks and formulae.
 Style/FrozenStringLiteralComment:
   Enabled: false
 
