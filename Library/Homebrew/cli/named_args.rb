@@ -3,6 +3,7 @@
 require "cask/cask_loader"
 require "delegate"
 require "formulary"
+require "missing_formula"
 
 module Homebrew
   module CLI
