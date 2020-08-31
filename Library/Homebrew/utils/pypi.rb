@@ -18,6 +18,7 @@ module PyPI
     dxpy
     ipython
     molecule
+    pulumi
     salt
     xonsh
   ].freeze
