@@ -219,8 +219,7 @@ module Homebrew
         end
         opoo msg if msg
       elsif !f.any_version_installed? && old_formula = f.old_installed_formulae.first
-        installed_version = old_formula.any_installed_keg.version
-        msg = "#{old_formula.full_name} #{installed_version} already installed"
+        msg = "#{old_formula.full_name} #{old_formula.any_installed_version} already installed"
         if !old_formula.linked? && !old_formula.keg_only?
           msg = <<~EOS
             #{msg}, it's just not linked.

@@ -1625,6 +1625,10 @@ class Formula
     end
   end
 
+  def any_installed_version
+    any_installed_keg&.version
+  end
+
   # Returns a list of Dependency objects that are required at runtime.
   # @private
   def runtime_dependencies(read_from_tab: true, undeclared: true)

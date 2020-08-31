@@ -81,7 +81,7 @@ module Homebrew
         formula.head.downloader.shutup! if formula.head?
 
         current = if formula.head?
-          formula.any_installed_keg.version.version.commit
+          formula.any_installed_version.version.commit
         else
           formula.version
         end

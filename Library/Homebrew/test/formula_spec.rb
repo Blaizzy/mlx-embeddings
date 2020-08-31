@@ -1344,4 +1344,22 @@ describe Formula do
       end
     end
   end
+
+  describe "#any_installed_version" do
+    let(:f) do
+      Class.new(Testball) do
+        version "1.0"
+        revision 1
+      end.new
+    end
+
+    it "returns nil when not installed" do
+      expect(f.any_installed_version).to be nil
+    end
+
+    it "returns package version when installed" do
+      f.brew { f.install }
+      expect(f.any_installed_version).to eq(PkgVersion.parse("1.0_1"))
+    end
+  end
 end
