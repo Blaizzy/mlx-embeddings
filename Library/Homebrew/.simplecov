@@ -19,7 +19,7 @@ SimpleCov.start do
     command_name "#{SimpleCov.command_name} (#{pid})"
 
     # be quiet, the parent process will be in charge of output and checking coverage totals
-    print_error_status = false
+    SimpleCov.print_error_status = false
   end
 
   if ENV["HOMEBREW_INTEGRATION_TEST"]
@@ -27,7 +27,7 @@ SimpleCov.start do
     command_name "#{ENV["HOMEBREW_INTEGRATION_TEST"]} (#{$PROCESS_ID})"
 
     # be quiet, the parent process will be in charge of output and checking coverage totals
-    print_error_status = false
+    SimpleCov.print_error_status = false
 
     at_exit do
       exit_code = $ERROR_INFO.nil? ? 0 : $ERROR_INFO.status
