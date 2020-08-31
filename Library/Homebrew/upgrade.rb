@@ -120,14 +120,30 @@ module Homebrew
     end
     private_class_method :upgrade_formula
 
+    def check_broken_dependents(installed_formulae)
+      CacheStoreDatabase.use(:linkage) do |db|
+        installed_formulae.flat_map(&:runtime_installed_formula_dependents)
+                          .uniq
+                          .select do |f|
+          keg = f.opt_or_installed_prefix_keg
+          next unless keg
+
+          LinkageChecker.new(keg, cache_db: db)
+                        .broken_library_linkage?
+        end.compact
+      end
+    end
+
     def check_installed_dependents(args:)
       installed_formulae = FormulaInstaller.installed.to_a
       return if installed_formulae.empty?
 
+      already_broken_dependents = check_broken_dependents(installed_formulae)
+
       outdated_dependents =
         installed_formulae.flat_map(&:runtime_installed_formula_dependents)
                           .select(&:outdated?)
-      return if outdated_dependents.blank?
+      return if outdated_dependents.blank? && already_broken_dependents.blank?
 
       outdated_dependents -= installed_formulae if args.dry_run?
 
@@ -168,17 +184,7 @@ module Homebrew
 
       # Assess the dependents tree again now we've upgraded.
       oh1 "Checking for dependents of upgraded formulae..." unless args.dry_run?
-      broken_dependents = CacheStoreDatabase.use(:linkage) do |db|
-        installed_formulae.flat_map(&:runtime_installed_formula_dependents)
-                          .uniq
-                          .select do |f|
-          keg = f.opt_or_installed_prefix_keg
-          next unless keg
-
-          LinkageChecker.new(keg, cache_db: db)
-                        .broken_library_linkage?
-        end.compact
-      end
+      broken_dependents = check_broken_dependents(installed_formulae)
       if broken_dependents.blank?
         if args.dry_run?
           ohai "No currently broken dependents found!"
