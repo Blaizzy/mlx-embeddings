@@ -992,6 +992,26 @@ provided, check all kegs. Raises an error if run on uninstalled formulae.
 * `--cached`:
   Print the cached linkage values stored in `HOMEBREW_CACHE`, set by a previous `brew linkage` run.
 
+### `livecheck` [*`formulae`*]
+
+Check for newer versions of formulae from upstream.
+
+If no formula argument is passed, the list of formulae to check is taken from `HOMEBREW_LIVECHECK_WATCHLIST`
+or `~/.brew_livecheck_watchlist`.
+
+* `--full-name`:
+  Print formulae with fully-qualified names.
+* `--tap`:
+  Check the formulae within the given tap, specified as *`user`*`/`*`repo`*.
+* `--installed`:
+  Check formulae that are currently installed.
+* `--json`:
+  Output informations in JSON format.
+* `--all`:
+  Check all available formulae.
+* `--newer-only`:
+  Show the latest version only if it's newer than the formula.
+
 ### `man` [*`options`*]
 
 Generate Homebrew's manpages.
@@ -1590,6 +1610,11 @@ For example, you might add something like the following to your ~/.profile, ~/.b
     Print this text before the installation summary of each successful build.
 
     *Default:* The "Beer Mug" emoji.
+
+  * `HOMEBREW_LIVECHECK_WATCHLIST`:
+    Use this file to get the list of default Formulae to check when no Formula argument is passed to `brew livecheck`
+
+    *Default:* `$HOME/.brew_livecheck_watchlist`.
 
   * `HOMEBREW_LOGS`:
     Use the specified directory to store log files.

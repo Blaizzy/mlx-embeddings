@@ -47,6 +47,7 @@ leaves
 link
 linkage
 list
+livecheck
 ln
 log
 ls

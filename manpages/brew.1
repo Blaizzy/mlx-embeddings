@@ -1362,6 +1362,36 @@ For every library that a keg references, print its dylib path followed by the bi
 \fB\-\-cached\fR
 Print the cached linkage values stored in \fBHOMEBREW_CACHE\fR, set by a previous \fBbrew linkage\fR run\.
 .
+.SS "\fBlivecheck\fR [\fIformulae\fR]"
+Check for newer versions of formulae from upstream\.
+.
+.P
+If no formula argument is passed, the list of formulae to check is taken from \fBHOMEBREW_LIVECHECK_WATCHLIST\fR or \fB~/\.brew_livecheck_watchlist\fR\.
+.
+.TP
+\fB\-\-full\-name\fR
+Print formulae with fully\-qualified names\.
+.
+.TP
+\fB\-\-tap\fR
+Check the formulae within the given tap, specified as \fIuser\fR\fB/\fR\fIrepo\fR\.
+.
+.TP
+\fB\-\-installed\fR
+Check formulae that are currently installed\.
+.
+.TP
+\fB\-\-json\fR
+Output informations in JSON format\.
+.
+.TP
+\fB\-\-all\fR
+Check all available formulae\.
+.
+.TP
+\fB\-\-newer\-only\fR
+Show the latest version only if it\'s newer than the formula\.
+.
 .SS "\fBman\fR [\fIoptions\fR]"
 Generate Homebrew\'s manpages\.
 .
@@ -2179,6 +2209,13 @@ Print this text before the installation summary of each successful build\.
 .
 .IP
 \fIDefault:\fR The "Beer Mug" emoji\.
+.
+.TP
+\fBHOMEBREW_LIVECHECK_WATCHLIST\fR
+Use this file to get the list of default Formulae to check when no Formula argument is passed to \fBbrew livecheck\fR
+.
+.IP
+\fIDefault:\fR \fB$HOME/\.brew_livecheck_watchlist\fR\.
 .
 .TP
 \fBHOMEBREW_LOGS\fR

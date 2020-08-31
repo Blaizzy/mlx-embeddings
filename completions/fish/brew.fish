@@ -446,6 +446,20 @@ __fish_brew_complete_arg 'list ls;
     ' -l multiple -d "Only show formulae with multiple versions"
 
 
+__fish_brew_complete_cmd 'livecheck' "Check for newer versions of formulae from upstream"
+__fish_brew_complete_arg 'livecheck' -a '(__fish_brew_suggest_formulae_all)'
+__fish_brew_complete_arg 'livecheck' -s v -l verbose    -d "Make some output more verbose"
+__fish_brew_complete_arg 'livecheck' -s q -l quiet      -d "Suppress any warnings"
+__fish_brew_complete_arg 'livecheck' -s d -l debug      -d "Display any debugging information"
+__fish_brew_complete_arg 'livecheck'      -l full-name  -d "Print formulae with fully-qualified name"
+__fish_brew_complete_arg 'livecheck'      -l tap        -d "Check the formulae within the given tap, specified as user/repo"
+__fish_brew_complete_arg 'livecheck'      -l installed  -d "Check formulae that are currently installed"
+__fish_brew_complete_arg 'livecheck'      -l json       -d "Output information in JSON format"
+__fish_brew_complete_arg 'livecheck'      -l all        -d "Check all available formulae"
+__fish_brew_complete_arg 'livecheck'      -l newer-only -d "Show the latest version only if it is newer than the formula"
+__fish_brew_complete_arg 'livecheck' -s h -l help       -d "Show the help message"
+
+
 __fish_brew_complete_cmd 'log' "Show git log for formula"
 __fish_brew_complete_arg 'log' -a '(__fish_brew_suggest_formulae_all)'
 
