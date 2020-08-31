@@ -6,7 +6,7 @@ Homebrew has the capability to add (and remove) multiple taps to your local inst
 Your taps are Git repositories located at `$(brew --repository)/Library/Taps`.
 
 ## Unsupported interesting taps
-*   [homebrew-ffmpeg/ffmpeg](https://github.com/homebrew-ffmpeg/homebrew-ffmpeg): A tap for FFmpeg with additional options, including nonfree additions. 
+*   [homebrew-ffmpeg/ffmpeg](https://github.com/homebrew-ffmpeg/homebrew-ffmpeg): A tap for FFmpeg with additional options, including nonfree additions.
 
 *   [denji/nginx](https://github.com/denji/homebrew-nginx): A tap for NGINX modules, intended for its `nginx-full` formula which includes more module options.
 
@@ -15,12 +15,6 @@ Your taps are Git repositories located at `$(brew --repository)/Library/Taps`.
 *   [osx-cross/avr](https://github.com/osx-cross/homebrew-avr): GNU AVR toolchain (Libc, compilers and other tools for Atmel MCUs, useful for Arduino hackers and AVR programmers).
 
 *   [petere/postgresql](https://github.com/petere/homebrew-postgresql): Allows installing multiple PostgreSQL versions in parallel.
-
-*   [titanous/gnuradio](https://github.com/titanous/homebrew-gnuradio):  GNU Radio and friends running on macOS.
-
-*   [dunn/emacs](https://github.com/dunn/homebrew-emacs): A tap for Emacs packages.
-
-*   [sidaf/pentest](https://github.com/sidaf/homebrew-pentest): Tools for penetration testing.
 
 *   [osrf/simulation](https://github.com/osrf/homebrew-simulation): Tools for robotics simulation.
 
