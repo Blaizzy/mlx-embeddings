@@ -202,15 +202,38 @@ class FormulaInstaller
   def check_install_sanity
     raise FormulaInstallationAlreadyAttemptedError, formula if self.class.attempted.include?(formula)
 
+    deprecate_disable_reasons = {
+      does_not_build:      "does not build",
+      no_license:          "has no license",
+      repo_archived:       "has an archived upstream repository",
+      repo_removed:        "has a removed upstream repository",
+      unmaintained:        "is not maintained upstream",
+      unsupported:         "is not supported upstream",
+      deprecated_upstream: "is deprecated upstream",
+      versioned_formula:   "is a versioned formula",
+    }
+
     if formula.deprecated?
       if formula.deprecation_reason.present?
-        opoo "#{formula.full_name} has been deprecated because #{formula.deprecation_reason}!"
+        reason = if deprecate_disable_reasons.key? formula.deprecation_reason
+          deprecate_disable_reasons[formula.deprecation_reason]
+        else
+          deprecate_disable_reasons
+        end
+
+        opoo "#{formula.full_name} has been deprecated because it #{reason}!"
       else
         opoo "#{formula.full_name} has been deprecated!"
       end
     elsif formula.disabled?
       if formula.disable_reason.present?
-        odie "#{formula.full_name} has been disabled because #{formula.disable_reason}!"
+        reason = if deprecate_disable_reasons.key? formula.disable_reason
+          deprecate_disable_reasons[formula.disable_reason]
+        else
+          deprecate_disable_reasons
+        end
+
+        odie "#{formula.full_name} has been disabled because it #{reason}!"
       else
         odie "#{formula.full_name} has been disabled!"
       end
