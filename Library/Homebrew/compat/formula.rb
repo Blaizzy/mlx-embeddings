@@ -32,6 +32,12 @@ class Formula
       # odeprecated "Formula#installed_version"
       Keg.new(latest_installed_prefix).version
     end
+
+    def opt_or_installed_prefix_keg
+      # TODO: deprecate for Homebrew 2.5
+      # odeprecated "Formula#opt_or_installed_prefix_keg", "Formula#any_installed_keg"
+      any_installed_keg
+    end
   end
 
   prepend Compat

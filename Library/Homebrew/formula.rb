@@ -1610,12 +1610,18 @@ class Formula
   # Returns a Keg for the opt_prefix or installed_prefix if they exist.
   # If not, return nil.
   # @private
-  def opt_or_installed_prefix_keg
-    Formula.cache[:opt_or_installed_prefix_keg] ||= {}
-    Formula.cache[:opt_or_installed_prefix_keg][full_name] ||= if optlinked? && opt_prefix.exist?
-      Keg.new(opt_prefix)
+  def any_installed_keg
+    Formula.cache[:any_installed_keg] ||= {}
+    Formula.cache[:any_installed_keg][full_name] ||= if (installed_prefix = any_installed_prefix)
+      Keg.new(installed_prefix)
+    end
+  end
+
+  def any_installed_prefix
+    if optlinked? && opt_prefix.exist?
+      opt_prefix
     elsif (latest_installed_prefix = installed_prefixes.last)
-      Keg.new(latest_installed_prefix)
+      latest_installed_prefix
     end
   end
 
@@ -1623,7 +1629,7 @@ class Formula
   # @private
   def runtime_dependencies(read_from_tab: true, undeclared: true)
     deps = if read_from_tab && undeclared &&
-              (tab_deps = opt_or_installed_prefix_keg&.runtime_dependencies)
+              (tab_deps = any_installed_keg&.runtime_dependencies)
       tab_deps.map do |d|
         full_name = d["full_name"]
         next unless full_name
@@ -1658,12 +1664,12 @@ class Formula
   end
 
   def runtime_installed_formula_dependents
-    # `opt_or_installed_prefix_keg` and `runtime_dependencies` `select`s ensure
+    # `any_installed_keg` and `runtime_dependencies` `select`s ensure
     # that we don't end up with something `Formula#runtime_dependencies` can't
     # read from a `Tab`.
     Formula.cache[:runtime_installed_formula_dependents] = {}
     Formula.cache[:runtime_installed_formula_dependents][full_name] ||= Formula.installed
-                                                                               .select(&:opt_or_installed_prefix_keg)
+                                                                               .select(&:any_installed_keg)
                                                                                .select(&:runtime_dependencies)
                                                                                .select do |f|
       f.runtime_formula_dependencies.any? do |dep|
@@ -1903,7 +1909,7 @@ class Formula
   # but the formula links to.
   # @private
   def undeclared_runtime_dependencies
-    keg = opt_or_installed_prefix_keg
+    keg = any_installed_keg
     return [] unless keg
 
     CacheStoreDatabase.use(:linkage) do |db|
