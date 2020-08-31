@@ -73,7 +73,7 @@ module Homebrew
     else
       if gnupg.any_version_installed?
         path = PATH.new(ENV.fetch("PATH"))
-        path.prepend(gnupg.installed_prefix/"bin")
+        path.prepend(gnupg.opt_or_installed_prefix_keg/"bin")
         ENV["PATH"] = path
       end
     end
