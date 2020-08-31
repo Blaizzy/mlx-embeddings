@@ -14,7 +14,7 @@ AllCops:
   NewCops: enable
   Exclude:
     - 'Homebrew/bin/*'
-    - 'Homebrew/**/vendor/**/*'
+    - 'Homebrew/vendor/**/*'
 
 Cask/Desc:
   Description: 'Ensure that the desc stanza conforms to various content and style checks.'
