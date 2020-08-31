@@ -2,11 +2,19 @@
 
 require: ./Homebrew/rubocops.rb
 
+inherit_mode:
+  merge:
+    - Include
+    - Exclude
+
 AllCops:
   TargetRubyVersion: 2.6
   DisplayCopNames: false
   # enable all pending rubocops
   NewCops: enable
+  Exclude:
+    - 'Homebrew/bin/*'
+    - 'Homebrew/**/vendor/**/*'
 
 Cask/Desc:
   Description: 'Ensure that the desc stanza conforms to various content and style checks.'
@@ -43,10 +51,6 @@ FormulaAuditStrict:
 # Use `<<~` for heredocs.
 Layout/HeredocIndentation:
   Enabled: true
-
-# Not useful in casks and formulae.
-Metrics/BlockLength:
-  Enabled: false
 
 # Keyword arguments don't have the same readability
 # problems as normal parameters.
@@ -94,7 +98,8 @@ Style/HashTransformValues:
 
 # Allow for license expressions
 Style/HashAsLastArrayItem:
-  Enabled: false
+  Exclude:
+    - 'Taps/*/*/{Formula/,}*.rb'
 
 # Enabled now LineLength is lowish.
 Style/IfUnlessModifier:
@@ -147,18 +152,21 @@ Performance/CaseWhenSplat:
 Performance/Caller:
   Enabled: false
 
-# don't allow cops to be disabled in formulae
+# Don't allow cops to be disabled in casks and formulae.
 Style/DisableCopsWithinSourceCodeDirective:
   Enabled: true
+  Include:
+    - 'Taps/*/*/{Formula/,Casks/,}*.rb'
 
 # make our hashes consistent
 Layout/HashAlignment:
   EnforcedHashRocketStyle: table
   EnforcedColonStyle: table
 
-# `system` is a special case and aligns on second argument
+# `system` is a special case and aligns on second argument, so allow this for formulae.
 Layout/ArgumentAlignment:
-  Enabled: false
+  Exclude:
+    - 'Taps/*/*/{Formula/,}*.rb'
 
 # this is a bit less "floaty"
 Layout/CaseIndentation:
@@ -183,25 +191,62 @@ Lint/AmbiguousBlockAssociation:
 # so many of these in formulae and can't be autocorrected
 # TODO: fix these as `ruby -w` complains about them.
 Lint/AmbiguousRegexpLiteral:
-  Enabled: false
+  Exclude:
+    - 'Taps/*/*/{Formula/,}*.rb'
 
 # so many of these in formulae and can't be autocorrected
 Lint/ParenthesesAsGroupedExpression:
-  Enabled: false
+  Exclude:
+    - 'Taps/*/*/{Formula/,}*.rb'
 
-# most metrics don't make sense to apply for formulae/taps
+# Most metrics don't make sense to apply for casks/formulae/taps.
 Metrics/AbcSize:
-  Enabled: false
+  Exclude:
+    - 'Taps/**/*'
+Metrics/BlockLength:
+  Exclude:
+    - 'Taps/**/*'
 Metrics/ClassLength:
-  Enabled: false
+  Exclude:
+    - 'Taps/**/*'
 Metrics/CyclomaticComplexity:
-  Enabled: false
+  Exclude:
+    - 'Taps/**/*'
 Metrics/MethodLength:
-  Enabled: false
+  Exclude:
+    - 'Taps/**/*'
 Metrics/ModuleLength:
-  Enabled: false
+  Exclude:
+    - 'Taps/**/*'
 Metrics/PerceivedComplexity:
-  Enabled: false
+  Exclude:
+    - 'Taps/**/*'
+
+# allow those that are standard
+# TODO: try to remove some of these
+Naming/MethodParameterName:
+  AllowedNames:
+    - '_'
+    - 'a'
+    - 'b'
+    - 'cc'
+    - 'c1'
+    - 'c2'
+    - 'd'
+    - 'e'
+    - 'f'
+    - 'ff'
+    - 'fn'
+    - 'id'
+    - 'io'
+    - 'o'
+    - 'p'
+    - 'pr'
+    - 'r'
+    - 'rb'
+    - 's'
+    - 'to'
+    - 'v'
 
 # GitHub diff UI wraps beyond 118 characters
 Layout/LineLength:
@@ -214,6 +259,27 @@ Layout/LineLength:
                     ' "~/Library/Application Support/', '"~/Library/Caches/', '"~/Application Support',
                     ' was verified as official when first introduced to the cask']
 
+# Avoid false positives on modifiers used on symbols of methods
+# See https://github.com/rubocop-hq/rubocop/issues/5953
+Style/AccessModifierDeclarations:
+  Enabled: false
+
+# don't group nicely documented or private attr_readers
+Style/AccessorGrouping:
+  Exclude:
+    - 'Homebrew/formula.rb'
+    - 'Homebrew/formulary.rb'
+    - 'Homebrew/migrator.rb'
+    - 'Homebrew/resource.rb'
+    - 'Homebrew/system_command.rb'
+    - 'Homebrew/tap.rb'
+
+# make rspec formatting more flexible
+Style/BlockDelimiters:
+  Exclude:
+    - 'Homebrew/**/*_spec.rb'
+    - 'Homebrew/**/shared_examples/**/*.rb'
+
 # TODO: remove this when possible.
 Style/ClassVars:
   Exclude:
@@ -221,11 +287,18 @@ Style/ClassVars:
 
 # Don't enforce documentation in casks or formulae.
 Style/Documentation:
- Enabled: false
+  Exclude:
+    - 'Taps/**/*'
+
+Style/DocumentationMethod:
+  Include:
+    - 'Homebrew/formula.rb'
 
 # Not used for casks and formulae.
 Style/FrozenStringLiteralComment:
-  Enabled: false
+  EnforcedStyle: always
+  Exclude:
+    - 'Taps/*/*/{Formula/,Casks/,}*.rb'
 
 # TODO: remove this when possible.
 Style/GlobalVars:
@@ -234,7 +307,8 @@ Style/GlobalVars:
 
 # potential for errors in formulae too high with this
 Style/GuardClause:
-  Enabled: false
+  Exclude:
+    - 'Taps/*/*/{Formula/,Casks/,}*.rb'
 
 # avoid hash rockets where possible
 Style/HashSyntax:
@@ -242,7 +316,8 @@ Style/HashSyntax:
 
 # so many of these in formulae and can't be autocorrected
 Style/StringConcatenation:
-  Enabled: false
+  Exclude:
+    - 'Taps/*/*/{Formula/,Casks/,}*.rb'
 
 # ruby style guide favorite
 Style/StringLiterals:
