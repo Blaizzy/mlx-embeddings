@@ -200,6 +200,7 @@ RSpec/VerifiedDoubles:
     - 'formula_spec.rb'
     - 'language/python_spec.rb'
     - 'linkage_cache_store_spec.rb'
+    - 'livecheck/livecheck_spec.rb'
     - 'resource_spec.rb'
     - 'software_spec_spec.rb'
     - 'support/helper/formula.rb'
