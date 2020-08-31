@@ -145,16 +145,4 @@ describe Homebrew::Livecheck do
         .to eq("https://github.com/Homebrew/brew.git")
     end
   end
-
-  describe "::livecheck_formulae", :needs_network do
-    it "checks for the latest versions of the formulae" do
-      allow(args).to receive(:debug?).and_return(true)
-      allow(args).to receive(:newer_only?).and_return(false)
-
-      expectation = expect { livecheck.livecheck_formulae([f], args) }
-      expectation.to output(/Strategy:.*PageMatch/).to_stdout
-      expectation.to output(/test : 0\.0\.1 ==> (\d+(?:\.\d+)+)/).to_stdout
-                 .and not_to_output.to_stderr
-    end
-  end
 end
