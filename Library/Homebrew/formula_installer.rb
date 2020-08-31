@@ -218,7 +218,7 @@ class FormulaInstaller
         reason = if deprecate_disable_reasons.key? formula.deprecation_reason
           deprecate_disable_reasons[formula.deprecation_reason]
         else
-          deprecate_disable_reasons
+          formula.deprecation_reason
         end
 
         opoo "#{formula.full_name} has been deprecated because it #{reason}!"
@@ -230,7 +230,7 @@ class FormulaInstaller
         reason = if deprecate_disable_reasons.key? formula.disable_reason
           deprecate_disable_reasons[formula.disable_reason]
         else
-          deprecate_disable_reasons
+          formula.disable_reason
         end
 
         odie "#{formula.full_name} has been disabled because it #{reason}!"
