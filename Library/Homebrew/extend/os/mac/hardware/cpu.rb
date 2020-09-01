@@ -67,7 +67,7 @@ module Hardware
       # Apple Silicon Mac. This can be detected via seeing if there's a
       # conflict between what `uname` report and the underlying `sysctl` flags,
       # since the `sysctl` flags don't change behaviour under Rosetta.
-      def running_under_rosetta?
+      def in_rosetta?
         intel? && physical_cpu_arm64?
       end
 
