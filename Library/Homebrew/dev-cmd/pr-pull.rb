@@ -105,7 +105,7 @@ module Homebrew
     end
   end
 
-  def cherry_pick_pr!(pr, path: ".", args:)
+  def cherry_pick_pr!(pr, args:, path: ".")
     if args.dry_run?
       puts <<~EOS
         git fetch --force origin +refs/pull/#{pr}/head
@@ -149,7 +149,7 @@ module Homebrew
     end
   end
 
-  def mirror_formulae(tap, original_commit, publish: true, org:, repo:, args:)
+  def mirror_formulae(tap, original_commit, org:, repo:, args:, publish: true)
     changed_formulae(tap, original_commit).select do |f|
       stable_urls = [f.stable.url] + f.stable.mirrors
       stable_urls.grep(%r{^https://dl.bintray.com/#{org}/#{repo}/}) do |mirror_url|

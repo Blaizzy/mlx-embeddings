@@ -7,7 +7,7 @@ require "messages"
 module Homebrew
   module_function
 
-  def reinstall_formula(f, build_from_source: false, args:)
+  def reinstall_formula(f, args:, build_from_source: false)
     return if args.dry_run?
 
     if f.opt_prefix.directory?

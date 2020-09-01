@@ -464,7 +464,7 @@ module Homebrew
     GitHub.check_for_duplicate_pull_requests(formula.name, tap_full_name, state: "open", args: args)
   end
 
-  def check_closed_pull_requests(formula, tap_full_name, version: nil, url: nil, tag: nil, args:)
+  def check_closed_pull_requests(formula, tap_full_name, args:, version: nil, url: nil, tag: nil)
     unless version
       specs = {}
       specs[:tag] = tag if tag

@@ -144,7 +144,7 @@ module Homebrew
     str
   end
 
-  def deps_for_dependent(d, recursive: false, args:)
+  def deps_for_dependent(d, args:, recursive: false)
     includes, ignores = args_includes_ignores(args)
 
     deps = d.runtime_dependencies if @use_runtime_dependencies
@@ -160,11 +160,11 @@ module Homebrew
     deps + reqs.to_a
   end
 
-  def deps_for_dependents(dependents, recursive: false, args:, &block)
+  def deps_for_dependents(dependents, args:, recursive: false, &block)
     dependents.map { |d| deps_for_dependent(d, recursive: recursive, args: args) }.reduce(&block)
   end
 
-  def puts_deps(dependents, recursive: false, args:)
+  def puts_deps(dependents, args:, recursive: false)
     dependents.each do |dependent|
       deps = deps_for_dependent(dependent, recursive: recursive, args: args)
       condense_requirements(deps, args: args)
@@ -174,7 +174,7 @@ module Homebrew
     end
   end
 
-  def puts_deps_tree(dependents, recursive: false, args:)
+  def puts_deps_tree(dependents, args:, recursive: false)
     dependents.each do |d|
       puts d.full_name
       @dep_stack = []

@@ -121,7 +121,7 @@ module Utils
         config_delete(:analyticsuuid)
       end
 
-      def output(filter: nil, args:)
+      def output(args:, filter: nil)
         days = args.days || "30"
         category = args.category || "install"
         json = formulae_brew_sh_json("analytics/#{category}/#{days}d.json")
