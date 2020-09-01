@@ -64,6 +64,10 @@ module RuboCop
         name_regex = name.delete("-").split("").join('[\s\-]?')
         problem "Description shouldn't start with the #{type} name." if regex_match_group(desc, /^#{name_regex}\b/i)
 
+        if type == :cask && match = regex_match_group(desc, /\b(macOS|Mac( ?OS( ?X)?)?|OS ?X)\b/i)
+          problem "Description shouldn't contain the platform." if match[1] != "MAC"
+        end
+
         # Check if a full stop is used at the end of a desc (apart from in the case of "etc.").
         if regex_match_group(desc, /\.$/) && !string_content(desc).end_with?("etc.")
           problem "Description shouldn't end with a full stop."
