@@ -154,6 +154,10 @@ module Hardware
 
         "-march=#{arch}"
       end
+
+      def in_rosetta?
+        false
+      end
     end
   end
 
