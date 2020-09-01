@@ -18,11 +18,9 @@ module RuboCop
           option_call_nodes.each do |option_call|
             option = parameters(option_call).first
             problem DEPRECATION_MSG if regex_match_group(option, /32-bit/)
-          end
 
-          option_call_nodes.each do |option_call|
             offending_node(option_call)
-            option = string_content(parameters(option_call).first)
+            option = string_content(option)
             problem UNI_DEPRECATION_MSG if option == "universal"
 
             if option !~ /with(out)?-/ &&

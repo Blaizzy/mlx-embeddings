@@ -145,10 +145,7 @@ module SystemConfig
 
         value = Homebrew::EnvConfig.send(method_name)
         next unless value
-
-        if (default = hash[:default].presence)
-          next if value.to_s == default.to_s
-        end
+        next if (default = hash[:default].presence) && value.to_s == default.to_s
 
         if ENV.sensitive?(env)
           f.puts "#{env}: set"

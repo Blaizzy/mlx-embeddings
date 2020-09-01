@@ -19,6 +19,8 @@ require "active_support/core_ext/object/try"
 require "active_support/core_ext/array/access"
 require "active_support/core_ext/string/inflections"
 require "active_support/core_ext/array/conversions"
+require "active_support/core_ext/hash/deep_merge"
+require "active_support/core_ext/file/atomic"
 
 I18n.backend.available_locales # Initialize locales so they can be overwritten.
 I18n.backend.store_translations :en, support: { array: { last_word_connector: " and " } }
@@ -66,7 +68,6 @@ HOMEBREW_DEFAULT_PREFIX = "/usr/local"
 LINUXBREW_DEFAULT_PREFIX = "/home/linuxbrew/.linuxbrew"
 
 require "fileutils"
-require "os"
 require "os/global"
 
 module Homebrew
@@ -123,9 +124,6 @@ end.compact.freeze
 require "set"
 
 require "extend/string"
-require "active_support/core_ext/object/blank"
-require "active_support/core_ext/hash/deep_merge"
-require "active_support/core_ext/file/atomic"
 
 require "system_command"
 require "exceptions"

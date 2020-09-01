@@ -47,15 +47,13 @@ class PATH
   alias to_s to_str
 
   def ==(other)
-    if other.respond_to?(:to_ary)
-      return true if to_ary == other.to_ary
+    if other.respond_to?(:to_ary) && to_ary == other.to_ary
+      true
+    elsif other.respond_to?(:to_str) && to_str == other.to_str
+      true
+    else
+      false
     end
-
-    if other.respond_to?(:to_str)
-      return true if to_str == other.to_str
-    end
-
-    false
   end
 
   def empty?

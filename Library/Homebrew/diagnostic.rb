@@ -656,11 +656,6 @@ module Homebrew
           end
           next if status.blank?
 
-          # these will result in uncommitted gems.
-          if path == HOMEBREW_REPOSITORY
-            next if ENV["HOMEBREW_SORBET"]
-          end
-
           message ||= ""
           message += "\n" unless message.empty?
           message += <<~EOS

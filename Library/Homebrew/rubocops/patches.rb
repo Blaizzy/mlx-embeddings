@@ -48,13 +48,11 @@ module RuboCop
           end
 
           gh_patch_param_pattern = %r{https?://github\.com/.+/.+/(?:commit|pull)/[a-fA-F0-9]*.(?:patch|diff)}
-          if regex_match_group(patch, gh_patch_param_pattern)
-            unless patch_url.match?(/\?full_index=\w+$/)
-              problem <<~EOS
-                GitHub patches should use the full_index parameter:
-                  #{patch_url}?full_index=1
-              EOS
-            end
+          if regex_match_group(patch, gh_patch_param_pattern) && !patch_url.match?(/\?full_index=\w+$/)
+            problem <<~EOS
+              GitHub patches should use the full_index parameter:
+                #{patch_url}?full_index=1
+            EOS
           end
 
           gh_patch_patterns = Regexp.union([%r{/raw\.github\.com/},
@@ -62,13 +60,11 @@ module RuboCop
                                             %r{gist\.github\.com/raw},
                                             %r{gist\.github\.com/.+/raw},
                                             %r{gist\.githubusercontent\.com/.+/raw}])
-          if regex_match_group(patch, gh_patch_patterns)
-            unless patch_url.match?(%r{/[a-fA-F0-9]{6,40}/})
-              problem <<~EOS.chomp
-                GitHub/Gist patches should specify a revision:
-                  #{patch_url}
-              EOS
-            end
+          if regex_match_group(patch, gh_patch_patterns) && !patch_url.match?(%r{/[a-fA-F0-9]{6,40}/})
+            problem <<~EOS.chomp
+              GitHub/Gist patches should specify a revision:
+                #{patch_url}
+            EOS
           end
 
           gh_patch_diff_pattern =

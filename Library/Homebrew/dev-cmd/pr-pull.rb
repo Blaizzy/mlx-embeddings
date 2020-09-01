@@ -105,7 +105,7 @@ module Homebrew
     end
   end
 
-  def cherry_pick_pr!(pr, path: ".", args:)
+  def cherry_pick_pr!(pr, args:, path: ".")
     if args.dry_run?
       puts <<~EOS
         git fetch --force origin +refs/pull/#{pr}/head
@@ -149,7 +149,7 @@ module Homebrew
     end
   end
 
-  def mirror_formulae(tap, original_commit, publish: true, org:, repo:, args:)
+  def mirror_formulae(tap, original_commit, org:, repo:, args:, publish: true)
     changed_formulae(tap, original_commit).select do |f|
       stable_urls = [f.stable.url] + f.stable.mirrors
       stable_urls.grep(%r{^https://dl.bintray.com/#{org}/#{repo}/}) do |mirror_url|
@@ -215,8 +215,8 @@ module Homebrew
     bintray_key = ENV["HOMEBREW_BINTRAY_KEY"]
     bintray_org = args.bintray_org || "homebrew"
 
-    if bintray_user.blank? || bintray_key.blank?
-      odie "Missing HOMEBREW_BINTRAY_USER or HOMEBREW_BINTRAY_KEY variables!" if !args.dry_run? && !args.no_upload?
+    if (bintray_user.blank? || bintray_key.blank?) && !args.dry_run? && !args.no_upload?
+      odie "Missing HOMEBREW_BINTRAY_USER or HOMEBREW_BINTRAY_KEY variables!"
     end
 
     workflow = args.workflow || "tests.yml"

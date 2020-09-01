@@ -81,11 +81,6 @@ class DescriptionCacheStore < CacheStore
 
   private
 
-  # Not implemented; access is through `Searchable`.
-  def fetch
-    super
-  end
-
   # `select` from the underlying database.
   def select(&block)
     database.select(&block)
