@@ -46,8 +46,6 @@ describe Cask::Cmd::Style, :cask do
         expect(subject).to contain_exactly(
           a_path_ending_with("/homebrew/homebrew-cask/Casks"),
           a_path_ending_with("/third-party/homebrew-tap/Casks"),
-          a_path_ending_with("/Homebrew/test/support/fixtures/cask/Casks"),
-          a_path_ending_with("/Homebrew/test/support/fixtures/third-party/Casks"),
         )
       }
     end

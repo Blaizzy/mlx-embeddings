@@ -32,19 +32,12 @@ module Cask
 
       def cask_paths
         @cask_paths ||= if args.named.empty?
-          Tap.map(&:cask_dir).select(&:directory?).concat(test_cask_paths)
+          Tap.map(&:cask_dir).select(&:directory?)
         elsif args.named.any? { |file| File.exist?(file) }
           args.named.map { |path| Pathname(path).expand_path }
         else
           casks.map(&:sourcefile_path)
         end
-      end
-
-      def test_cask_paths
-        [
-          Pathname.new("#{HOMEBREW_LIBRARY}/Homebrew/test/support/fixtures/cask/Casks"),
-          Pathname.new("#{HOMEBREW_LIBRARY}/Homebrew/test/support/fixtures/third-party/Casks"),
-        ]
       end
     end
   end
