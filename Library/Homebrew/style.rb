@@ -12,10 +12,17 @@ module Homebrew
     # Checks style for a list of files, printing simple RuboCop output.
     # Returns true if violations were found, false otherwise.
     def check_style_and_print(files, **options)
-      check_style_impl(files, :print, **options)
+      success = check_style_impl(files, :print, **options)
+
+      if ENV["GITHUB_ACTIONS"] && !success
+        offenses = check_style_json(files, **options)
+        puts offenses.to_github_annotations
+      end
+
+      success
     end
 
-    # Checks style for a list of files, returning results as a RubocopResults
+    # Checks style for a list of files, returning results as `Offenses`
     # object parsed from its JSON output.
     def check_style_json(files, **options)
       check_style_impl(files, :json, **options)
@@ -49,7 +56,7 @@ module Homebrew
       end
 
       if output_type == :json
-        RubocopResults.new(rubocop_result + shellcheck_result)
+        Offenses.new(rubocop_result + shellcheck_result)
       else
         rubocop_result && shellcheck_result
       end
@@ -161,12 +168,12 @@ module Homebrew
         system shellcheck, "--format=tty", *args
         $CHILD_STATUS.success?
       when :json
-        result = system_command shellcheck, args: ["--format=json1", *args]
+        result = system_command shellcheck, args: ["--format=json", *args]
         json = json_result!(result)
 
         # Convert to same format as RuboCop offenses.
-        json["comments"].group_by { |v| v["file"] }
-                        .map do |k, v|
+        json.group_by { |v| v["file"] }
+            .map do |k, v|
           {
             "path"     => k,
             "offenses" => v.map do |o|
@@ -208,25 +215,51 @@ module Homebrew
       JSON.parse(result.stdout)
     end
 
-    # Result of a RuboCop run.
-    class RubocopResults
-      def initialize(files)
-        @file_offenses = {}
-        files.each do |f|
+    # Collection of style offenses.
+    class Offenses
+      include Enumerable
+
+      def initialize(paths)
+        @offenses = {}
+        paths.each do |f|
           next if f["offenses"].empty?
 
-          file = File.realpath(f["path"])
-          @file_offenses[file] = f["offenses"].map { |x| RubocopOffense.new(x) }
+          path = Pathname(f["path"]).realpath
+          @offenses[path] = f["offenses"].map { |x| Offense.new(x) }
         end
       end
 
-      def file_offenses(path)
-        @file_offenses.fetch(path.to_s, [])
+      def for_path(path)
+        @offenses.fetch(Pathname(path), [])
+      end
+
+      def each(*args, &block)
+        @offenses.each(*args, &block)
+      end
+
+      def to_github_annotations
+        workspace = ENV["GITHUB_WORKSPACE"]
+        return [] if workspace.blank?
+
+        workspace = Pathname(workspace).realpath
+
+        @offenses.flat_map do |path, offenses|
+          relative_path = path.relative_path_from(workspace)
+
+          # Only generate annotations for paths relative to the `GITHUB_WORKSPACE` directory.
+          next [] if relative_path.descend.next.to_s == ".."
+
+          offenses.map do |o|
+            line = o.location.line
+            column = o.location.line
+            GitHub::Actions::Annotation.new(:error, o.message, file: relative_path, line: line, column: column)
+          end
+        end
       end
     end
 
-    # A RuboCop offense.
-    class RubocopOffense
+    # A style offense.
+    class Offense
       attr_reader :severity, :message, :corrected, :location, :cop_name
 
       def initialize(json)
@@ -234,7 +267,7 @@ module Homebrew
         @message = json["message"]
         @cop_name = json["cop_name"]
         @corrected = json["corrected"]
-        @location = RubocopLineLocation.new(json["location"])
+        @location = LineLocation.new(json["location"])
       end
 
       def severity_code
@@ -259,8 +292,8 @@ module Homebrew
       end
     end
 
-    # Source location of a RuboCop offense.
-    class RubocopLineLocation
+    # Source location of a style offense.
+    class LineLocation
       attr_reader :line, :column, :length
 
       def initialize(json)

@@ -2,6 +2,7 @@
 
 require "tempfile"
 require "uri"
+require "utils/github/actions"
 
 # Helper functions for interacting with the GitHub API.
 #

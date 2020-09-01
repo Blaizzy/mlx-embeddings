@@ -117,7 +117,7 @@ module Homebrew
     end
 
     # Check style in a single batch run up front for performance
-    style_results = Style.check_style_json(style_files, options) if style_files
+    style_offenses = Style.check_style_json(style_files, options) if style_files
     # load licenses
     spdx_license_data = SPDX.license_data
     spdx_exception_data = SPDX.exception_data
@@ -134,7 +134,7 @@ module Homebrew
         spdx_license_data:   spdx_license_data,
         spdx_exception_data: spdx_exception_data,
       }
-      options[:style_offenses] = style_results.file_offenses(f.path) if style_results
+      options[:style_offenses] = style_offenses.for_path(f.path) if style_offenses
       options[:display_cop_names] = args.display_cop_names?
       options[:build_stable] = args.build_stable?
 
