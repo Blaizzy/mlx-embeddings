@@ -298,7 +298,8 @@ Style/DocumentationMethod:
 Style/FrozenStringLiteralComment:
   EnforcedStyle: always
   Exclude:
-    - 'Taps/*/*/{Formula/,Casks/,}*.rb'
+    - 'Taps/*/*/{Formula,Casks,}/*.rb'
+    - 'Homebrew/test/**/Casks/**/*.rb'
 
 # TODO: remove this when possible.
 Style/GlobalVars:
