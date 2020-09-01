@@ -58,7 +58,7 @@ module Homebrew
       args.formulae
     elsif File.exist?(WATCHLIST_PATH)
       begin
-        WATCHLIST_PATH.read.lines.map do |line|
+        Pathname.new(WATCHLIST_PATH).read.lines.map do |line|
           next if line.start_with?("#")
 
           Formula[line.strip]
