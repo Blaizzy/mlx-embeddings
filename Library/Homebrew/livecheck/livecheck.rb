@@ -80,7 +80,11 @@ module Homebrew
 
         formula.head.downloader.shutup! if formula.head?
 
-        current = formula.head? ? formula.installed_version.version.commit : formula.version
+        current = if formula.head?
+          formula.opt_or_installed_prefix_keg.version.version.commit
+        else
+          formula.version
+        end
 
         latest = if formula.stable?
           version_info = latest_version(formula, args: args)
