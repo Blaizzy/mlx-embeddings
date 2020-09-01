@@ -27,7 +27,7 @@ module Cask
 
         args = [
           "--force-exclusion",
-          "--config", "#{HOMEBREW_LIBRARY}/.rubocop_cask.yml"
+          "--config", HOMEBREW_LIBRARY/".rubocop.yml"
         ]
 
         if json

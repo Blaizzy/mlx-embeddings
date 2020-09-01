@@ -1,35 +1,4 @@
-inherit_from: ./Homebrew/.rubocop.yml
+# TODO: This file can be deleted once https://github.com/Homebrew/brew/pull/8542
+# is in a stable release and `rubocop.yml` has been removed from all cask taps.
 
-Cask/Desc:
-  Description: 'Ensure that the desc stanza conforms to various content and style checks.'
-  Enabled: true
-
-Cask/HomepageMatchesUrl:
-  Description: 'Ensure that the homepage and url match, otherwise add a comment. More info at https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/stanzas/url.md#when-url-and-homepage-hostnames-differ-add-a-comment'
-  Enabled: true
-
-Cask/HomepageUrlTrailingSlash:
-  Description: 'Ensure that the homepage url has a slash after the domain name.'
-  Enabled: true
-
-Cask/NoDslVersion:
-  Description: 'Do not use the deprecated DSL version syntax in your cask header.'
-  Enabled: true
-
-Cask/StanzaGrouping:
-  Description: 'Ensure that cask stanzas are grouped correctly. More info at https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/readme.md#stanza-order'
-  Enabled: true
-
-Cask/StanzaOrder:
-  Description: 'Ensure that cask stanzas are sorted correctly. More info at https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/readme.md#stanza-order'
-  Enabled: true
-
-# don't want these for casks but re-enabled for Library/Homebrew
-Style/FrozenStringLiteralComment:
-  Enabled: false
-
-Style/Documentation:
-  Enabled: false
-
-Metrics/BlockLength:
-  Enabled: false
+inherit_from: ./.rubocop.yml
