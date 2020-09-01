@@ -63,4 +63,40 @@ describe RuboCop::Cop::Cask::Desc do
       end
     RUBY
   end
+
+  it "does not contain the platform" do
+    expect_offense <<~RUBY, "/homebrew-cask/Casks/foo.rb"
+      cask 'foo-bar' do
+        desc 'macOS status bar monitor'
+              ^^^^^ Description shouldn\'t contain the platform.
+      end
+    RUBY
+
+    expect_offense <<~RUBY, "/homebrew-cask/Casks/foo.rb"
+      cask 'foo-bar' do
+        desc 'Toggles dark mode on Mac OS Mojave'
+                                   ^^^^^^ Description shouldn\'t contain the platform.
+      end
+    RUBY
+
+    expect_offense <<~RUBY, "/homebrew-cask/Casks/foo.rb"
+      cask 'foo-bar' do
+        desc 'Better input source switcher for OS X'
+                                               ^^^^ Description shouldn\'t contain the platform.
+      end
+    RUBY
+
+    expect_offense <<~RUBY, "/homebrew-cask/Casks/foo.rb"
+      cask 'foo-bar' do
+        desc 'Media Manager for Mac OS X'
+                                ^^^^^^^^ Description shouldn\'t contain the platform.
+      end
+    RUBY
+
+    expect_no_offenses <<~RUBY
+      cask 'foo' do
+        desc 'MAC address changer'
+      end
+    RUBY
+  end
 end
