@@ -8140,6 +8140,8 @@ module Homebrew::EnvConfig
 
   def self.install_badge(); end
 
+  def self.livecheck_watchlist(); end
+
   def self.logs(); end
 
   def self.no_analytics?(); end
@@ -20273,6 +20275,10 @@ class RuboCop::Cop::FormulaAudit::DependencyOrder
   def test_dependency?(node0); end
 
   def uses_from_macos_node?(node=T.unsafe(nil)); end
+end
+
+class RuboCop::Cop::FormulaAudit::DeprecateDate
+  def deprecate_date(node0); end
 end
 
 class RuboCop::Cop::FormulaAudit::Miscellaneous
