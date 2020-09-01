@@ -488,11 +488,11 @@ class Formula
   delegate compiler_failures: :active_spec
 
   # If this {Formula} is installed.
-  # This is actually just a check for if the {#installed_prefix} directory
+  # This is actually just a check for if the {#latest_installed_prefix} directory
   # exists and is not empty.
   # @private
   def latest_version_installed?
-    (dir = installed_prefix).directory? && !dir.children.empty?
+    (dir = latest_installed_prefix).directory? && !dir.children.empty?
   end
 
   # If at least one version of {Formula} is installed.
@@ -547,7 +547,7 @@ class Formula
   # The latest prefix for this formula. Checks for {#head}, then {#devel}
   # and then {#stable}'s {#prefix}
   # @private
-  def installed_prefix
+  def latest_installed_prefix
     if head && (head_version = latest_head_version) && !head_version_outdated?(head_version)
       latest_head_prefix
     elsif devel && (devel_prefix = prefix(PkgVersion.new(devel.version, revision))).directory?
@@ -557,13 +557,6 @@ class Formula
     else
       prefix
     end
-  end
-
-  # The currently installed version for this formula. Will raise an exception
-  # if the formula is not installed.
-  # @private
-  def installed_version
-    Keg.new(installed_prefix).version
   end
 
   # The directory in the cellar that the formula is installed to.
@@ -1617,20 +1610,30 @@ class Formula
   # Returns a Keg for the opt_prefix or installed_prefix if they exist.
   # If not, return nil.
   # @private
-  def opt_or_installed_prefix_keg
-    Formula.cache[:opt_or_installed_prefix_keg] ||= {}
-    Formula.cache[:opt_or_installed_prefix_keg][full_name] ||= if optlinked? && opt_prefix.exist?
-      Keg.new(opt_prefix)
-    elsif (latest_installed_prefix = installed_prefixes.last)
-      Keg.new(latest_installed_prefix)
+  def any_installed_keg
+    Formula.cache[:any_installed_keg] ||= {}
+    Formula.cache[:any_installed_keg][full_name] ||= if (installed_prefix = any_installed_prefix)
+      Keg.new(installed_prefix)
     end
+  end
+
+  def any_installed_prefix
+    if optlinked? && opt_prefix.exist?
+      opt_prefix
+    elsif (latest_installed_prefix = installed_prefixes.last)
+      latest_installed_prefix
+    end
+  end
+
+  def any_installed_version
+    any_installed_keg&.version
   end
 
   # Returns a list of Dependency objects that are required at runtime.
   # @private
   def runtime_dependencies(read_from_tab: true, undeclared: true)
     deps = if read_from_tab && undeclared &&
-              (tab_deps = opt_or_installed_prefix_keg&.runtime_dependencies)
+              (tab_deps = any_installed_keg&.runtime_dependencies)
       tab_deps.map do |d|
         full_name = d["full_name"]
         next unless full_name
@@ -1665,12 +1668,12 @@ class Formula
   end
 
   def runtime_installed_formula_dependents
-    # `opt_or_installed_prefix_keg` and `runtime_dependencies` `select`s ensure
+    # `any_installed_keg` and `runtime_dependencies` `select`s ensure
     # that we don't end up with something `Formula#runtime_dependencies` can't
     # read from a `Tab`.
     Formula.cache[:runtime_installed_formula_dependents] = {}
     Formula.cache[:runtime_installed_formula_dependents][full_name] ||= Formula.installed
-                                                                               .select(&:opt_or_installed_prefix_keg)
+                                                                               .select(&:any_installed_keg)
                                                                                .select(&:runtime_dependencies)
                                                                                .select do |f|
       f.runtime_formula_dependencies.any? do |dep|
@@ -1910,7 +1913,7 @@ class Formula
   # but the formula links to.
   # @private
   def undeclared_runtime_dependencies
-    keg = opt_or_installed_prefix_keg
+    keg = any_installed_keg
     return [] unless keg
 
     CacheStoreDatabase.use(:linkage) do |db|

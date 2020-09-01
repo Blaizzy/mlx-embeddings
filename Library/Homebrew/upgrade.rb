@@ -125,7 +125,7 @@ module Homebrew
         installed_formulae.flat_map(&:runtime_installed_formula_dependents)
                           .uniq
                           .select do |f|
-          keg = f.opt_or_installed_prefix_keg
+          keg = f.any_installed_keg
           next unless keg
 
           LinkageChecker.new(keg, cache_db: db)
@@ -245,7 +245,7 @@ module Homebrew
     end
 
     def depends_on(a, b)
-      if a.opt_or_installed_prefix_keg
+      if a.any_installed_keg
          &.runtime_dependencies
          &.any? { |d| d["full_name"] == b.full_name }
         1

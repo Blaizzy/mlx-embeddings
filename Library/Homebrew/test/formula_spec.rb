@@ -282,23 +282,23 @@ describe Formula do
   describe "#latest_version_installed?" do
     let(:f) { Testball.new }
 
-    it "returns false if the #installed_prefix is not a directory" do
-      allow(f).to receive(:installed_prefix).and_return(double(directory?: false))
+    it "returns false if the #latest_installed_prefix is not a directory" do
+      allow(f).to receive(:latest_installed_prefix).and_return(double(directory?: false))
       expect(f).not_to be_latest_version_installed
     end
 
-    it "returns false if the #installed_prefix does not have children" do
-      allow(f).to receive(:installed_prefix).and_return(double(directory?: true, children: []))
+    it "returns false if the #latest_installed_prefix does not have children" do
+      allow(f).to receive(:latest_installed_prefix).and_return(double(directory?: true, children: []))
       expect(f).not_to be_latest_version_installed
     end
 
-    it "returns true if the #installed_prefix has children" do
-      allow(f).to receive(:installed_prefix).and_return(double(directory?: true, children: [double]))
+    it "returns true if the #latest_installed_prefix has children" do
+      allow(f).to receive(:latest_installed_prefix).and_return(double(directory?: true, children: [double]))
       expect(f).to be_latest_version_installed
     end
   end
 
-  describe "#installed prefix" do
+  describe "#latest_installed_prefix" do
     let(:f) do
       formula do
         url "foo"
@@ -311,17 +311,17 @@ describe Formula do
     let(:head_prefix) { HOMEBREW_CELLAR/f.name/f.head.version }
 
     it "is the same as #prefix by default" do
-      expect(f.installed_prefix).to eq(f.prefix)
+      expect(f.latest_installed_prefix).to eq(f.prefix)
     end
 
     it "returns the stable prefix if it is installed" do
       stable_prefix.mkpath
-      expect(f.installed_prefix).to eq(stable_prefix)
+      expect(f.latest_installed_prefix).to eq(stable_prefix)
     end
 
     it "returns the head prefix if it is installed" do
       head_prefix.mkpath
-      expect(f.installed_prefix).to eq(head_prefix)
+      expect(f.latest_installed_prefix).to eq(head_prefix)
     end
 
     it "returns the stable prefix if head is outdated" do
@@ -332,12 +332,12 @@ describe Formula do
       tab.source["versions"] = { "stable" => "1.0" }
       tab.write
 
-      expect(f.installed_prefix).to eq(stable_prefix)
+      expect(f.latest_installed_prefix).to eq(stable_prefix)
     end
 
     it "returns the head prefix if the active specification is :head" do
       f.active_spec = :head
-      expect(f.installed_prefix).to eq(head_prefix)
+      expect(f.latest_installed_prefix).to eq(head_prefix)
     end
   end
 
@@ -728,7 +728,7 @@ describe Formula do
       dependency = formula("dependency") { url "f-1.0" }
 
       formula.brew { formula.install }
-      keg = Keg.for(formula.installed_prefix)
+      keg = Keg.for(formula.latest_installed_prefix)
       keg.link
 
       linkage_checker = double("linkage checker", undeclared_deps: [dependency.name])
@@ -745,7 +745,7 @@ describe Formula do
       tab.runtime_dependencies = ["foo"]
       tab.write
 
-      keg = Keg.for(formula.installed_prefix)
+      keg = Keg.for(formula.latest_installed_prefix)
       keg.link
 
       expect(formula.runtime_dependencies.map(&:name)).to be_empty
@@ -865,7 +865,7 @@ describe Formula do
         head("foo")
       end
 
-      stable_prefix = f.installed_prefix
+      stable_prefix = f.latest_installed_prefix
       stable_prefix.mkpath
 
       [["000000_1", 1], ["111111", 2], ["111111_1", 2]].each do |pkg_version_suffix, stamp|
@@ -1342,6 +1342,24 @@ describe Formula do
         setup_tab_for_prefix(head_prefix, versions: { "stable" => "1.0", "version_scheme" => 2 })
         expect(f.outdated_kegs).to be_empty
       end
+    end
+  end
+
+  describe "#any_installed_version" do
+    let(:f) do
+      Class.new(Testball) do
+        version "1.0"
+        revision 1
+      end.new
+    end
+
+    it "returns nil when not installed" do
+      expect(f.any_installed_version).to be nil
+    end
+
+    it "returns package version when installed" do
+      f.brew { f.install }
+      expect(f.any_installed_version).to eq(PkgVersion.parse("1.0_1"))
     end
   end
 end

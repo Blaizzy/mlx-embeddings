@@ -14,7 +14,7 @@ module Language
         next false unless f.any_version_installed?
 
         unless version.zero?
-          major = f.opt_or_installed_prefix_keg.version.major
+          major = f.any_installed_version.major
           next false if major < version
           next false if major > version && !can_be_newer
         end
