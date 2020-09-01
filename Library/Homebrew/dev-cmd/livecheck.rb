@@ -10,7 +10,7 @@ module Homebrew
 
   WATCHLIST_PATH = (
     ENV["HOMEBREW_LIVECHECK_WATCHLIST"] ||
-    Pathname.new(Dir.home)/".brew_livecheck_watchlist"
+     "#{Dir.home}/.brew_livecheck_watchlist"
   ).freeze
 
   def livecheck_args
