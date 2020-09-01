@@ -68,6 +68,10 @@ module OS
       def version
         Version::NULL
       end
+
+      def installed?
+        false
+      end
     end
 
     module CLT
@@ -75,6 +79,10 @@ module OS
 
       def version
         Version::NULL
+      end
+
+      def installed?
+        false
       end
     end
   end
