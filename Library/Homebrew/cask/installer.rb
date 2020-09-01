@@ -332,7 +332,7 @@ module Cask
         else
           cask_or_formula.try(:installed?)
         end
-        installed && (cask_or_formula.respond_to?(:opt_linked?) ? cask_or_formula.opt_linked? : true)
+        installed && (cask_or_formula.respond_to?(:optlinked?) ? cask_or_formula.optlinked? : true)
       end
     end
 
