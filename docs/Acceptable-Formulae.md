@@ -77,6 +77,11 @@ Clang is the default C/C++ compiler on macOS (and has been for a long time). Sof
 ### Stuff that requires heavy manual pre/post-install intervention
 We're a package manager so we want to do things like resolve dependencies and set up applications for our users. If things require too much manual intervention then they aren't useful in a package manager.
 
+## Stuff that requires vendored versions of homebrew formulae
+Homebrew formula should avoid having multiple, separate, upstream projects bundled together in a single package to avoid having shipping outdated/insecure versions of software that is already a formula.
+
+For more info see [Debian](https://www.debian.org/doc/debian-policy/ch-source.html#s-embeddedfiles) and [Fedora's](https://docs.fedoraproject.org/en-US/packaging-guidelines/#bundling) stance on this.
+
 ### Sometimes there are exceptions
 Even if all criteria are met we may not accept the formula.
 Documentation tends to lag behind current decision-making. Although some
