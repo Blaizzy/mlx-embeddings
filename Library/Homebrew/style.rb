@@ -118,7 +118,6 @@ module Homebrew
       case output_type
       when :print
         args << "--debug" if debug
-        args << "--format" << "simple" if files.present?
         args << "--color" if Tty.color?
 
         system cache_env, "rubocop", *args
