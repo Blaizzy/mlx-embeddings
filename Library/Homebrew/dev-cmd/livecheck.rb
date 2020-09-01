@@ -10,7 +10,7 @@ module Homebrew
 
   WATCHLIST_PATH = (
     ENV["HOMEBREW_LIVECHECK_WATCHLIST"] ||
-    Pathname.new(Dir.home)/".brew_livecheck_watchlist"
+    "#{Dir.home}/.brew_livecheck_watchlist"
   ).freeze
 
   def livecheck_args
@@ -58,7 +58,7 @@ module Homebrew
       args.formulae
     elsif File.exist?(WATCHLIST_PATH)
       begin
-        WATCHLIST_PATH.read.lines.map do |line|
+        Pathname.new(WATCHLIST_PATH).read.lines.map do |line|
           next if line.start_with?("#")
 
           Formula[line.strip]
