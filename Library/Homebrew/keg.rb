@@ -297,8 +297,8 @@ class Keg
       next if aliases.include?(a)
 
       alias_opt_symlink = opt/a
-      if alias_opt_symlink.symlink? && alias_opt_symlink.exist?
-        alias_opt_symlink.delete if rack == alias_opt_symlink.realpath.parent
+      if alias_opt_symlink.symlink? && alias_opt_symlink.exist? && rack == alias_opt_symlink.realpath.parent
+        alias_opt_symlink.delete
       end
 
       alias_linkedkegs_symlink = linkedkegs/a

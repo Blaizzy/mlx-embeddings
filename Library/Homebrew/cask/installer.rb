@@ -214,9 +214,7 @@ module Cask
 
         odebug "Installing artifact of class #{artifact.class}"
 
-        if artifact.is_a?(Artifact::Binary)
-          next unless binaries?
-        end
+        next if artifact.is_a?(Artifact::Binary) && !binaries?
 
         artifact.install_phase(command: @command, verbose: verbose?, force: force?)
         already_installed_artifacts.unshift(artifact)
@@ -226,13 +224,11 @@ module Cask
     rescue => e
       begin
         already_installed_artifacts.each do |artifact|
-          next unless artifact.respond_to?(:uninstall_phase)
+          if artifact.respond_to?(:uninstall_phase)
+            odebug "Reverting installation of artifact of class #{artifact.class}"
+            artifact.uninstall_phase(command: @command, verbose: verbose?, force: force?)
+          end
 
-          odebug "Reverting installation of artifact of class #{artifact.class}"
-          artifact.uninstall_phase(command: @command, verbose: verbose?, force: force?)
-        end
-
-        already_installed_artifacts.each do |artifact|
           next unless artifact.respond_to?(:post_uninstall_phase)
 
           odebug "Reverting installation of artifact of class #{artifact.class}"
@@ -455,13 +451,13 @@ module Cask
       odebug "#{artifacts.length} artifact/s defined", artifacts
 
       artifacts.each do |artifact|
-        next unless artifact.respond_to?(:uninstall_phase)
+        if artifact.respond_to?(:uninstall_phase)
+          odebug "Uninstalling artifact of class #{artifact.class}"
+          artifact.uninstall_phase(
+            command: @command, verbose: verbose?, skip: clear, force: force?, upgrade: upgrade?,
+          )
+        end
 
-        odebug "Uninstalling artifact of class #{artifact.class}"
-        artifact.uninstall_phase(command: @command, verbose: verbose?, skip: clear, force: force?, upgrade: upgrade?)
-      end
-
-      artifacts.each do |artifact|
         next unless artifact.respond_to?(:post_uninstall_phase)
 
         odebug "Post-uninstalling artifact of class #{artifact.class}"

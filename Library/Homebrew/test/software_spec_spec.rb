@@ -192,9 +192,6 @@ describe BottleSpecification do
 
     checksums.each_pair do |cat, digest|
       subject.sha256(digest => cat)
-    end
-
-    checksums.each_pair do |cat, digest|
       checksum, = subject.checksum_for(cat)
       expect(Checksum.new(:sha256, digest)).to eq(checksum)
     end

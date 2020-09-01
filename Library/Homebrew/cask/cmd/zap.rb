@@ -32,9 +32,9 @@ module Cask
           odebug "Zapping Cask #{cask}"
 
           if cask.installed?
-            if installed_caskfile = cask.installed_caskfile
+            if (installed_caskfile = cask.installed_caskfile) && installed_caskfile.exist?
               # Use the same cask file that was used for installation, if possible.
-              cask = CaskLoader.load(installed_caskfile) if installed_caskfile.exist?
+              cask = CaskLoader.load(installed_caskfile)
             end
           else
             raise CaskNotInstalledError, cask unless args.force?

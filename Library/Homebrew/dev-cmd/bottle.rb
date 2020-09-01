@@ -187,12 +187,10 @@ module Homebrew
       absolute_symlinks_start_with_string << pn if link.to_s.start_with?(string)
     end
 
-    if args.verbose?
-      unless absolute_symlinks_start_with_string.empty?
-        opoo "Absolute symlink starting with #{string}:"
-        absolute_symlinks_start_with_string.each do |pn|
-          puts "  #{pn} -> #{pn.resolved_path}"
-        end
+    if args.verbose? && absolute_symlinks_start_with_string.present?
+      opoo "Absolute symlink starting with #{string}:"
+      absolute_symlinks_start_with_string.each do |pn|
+        puts "  #{pn} -> #{pn.resolved_path}"
       end
     end
 

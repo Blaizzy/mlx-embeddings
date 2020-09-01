@@ -138,9 +138,8 @@ module Utils
           else
             item["formula"]
           end
-          if filter.present?
-            next if key != filter && !key.start_with?("#{filter} ")
-          end
+          next if filter.present? && key != filter && !key.start_with?("#{filter} ")
+
           results[key] = item["count"].tr(",", "").to_i
         end
 
@@ -163,12 +162,8 @@ module Utils
           value.each do |days, results|
             days = days.to_i
             if full_analytics
-              if args.days.present?
-                next if args.days&.to_i != days
-              end
-              if args.category.present?
-                next if args.category != category
-              end
+              next if args.days.present? && args.days&.to_i != days
+              next if args.category.present? && args.category != category
 
               table_output(category, days, results)
             else

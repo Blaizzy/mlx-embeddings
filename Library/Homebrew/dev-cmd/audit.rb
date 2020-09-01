@@ -1030,8 +1030,8 @@ module Homebrew
     def audit_download_strategy
       url_strategy = DownloadStrategyDetector.detect(url)
 
-      if using == :git || url_strategy == GitDownloadStrategy
-        problem "Git should specify :revision when a :tag is specified." if specs[:tag] && !specs[:revision]
+      if (using == :git || url_strategy == GitDownloadStrategy) && specs[:tag] && !specs[:revision]
+        problem "Git should specify :revision when a :tag is specified."
       end
 
       return unless using

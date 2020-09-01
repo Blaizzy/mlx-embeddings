@@ -215,8 +215,8 @@ module Homebrew
     bintray_key = ENV["HOMEBREW_BINTRAY_KEY"]
     bintray_org = args.bintray_org || "homebrew"
 
-    if bintray_user.blank? || bintray_key.blank?
-      odie "Missing HOMEBREW_BINTRAY_USER or HOMEBREW_BINTRAY_KEY variables!" if !args.dry_run? && !args.no_upload?
+    if (bintray_user.blank? || bintray_key.blank?) && !args.dry_run? && !args.no_upload?
+      odie "Missing HOMEBREW_BINTRAY_USER or HOMEBREW_BINTRAY_KEY variables!"
     end
 
     workflow = args.workflow || "tests.yml"

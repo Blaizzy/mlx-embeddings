@@ -285,10 +285,8 @@ module Cask
       end
     end
 
-    def respond_to_missing?(*)
-      super
-    end
-
+    # No need to define it as its the default/superclass implementation.
+    # rubocop:disable Style/MissingRespondToMissing
     def method_missing(method, *)
       if method
         Utils.method_missing_message(method, token)
@@ -297,6 +295,7 @@ module Cask
         super
       end
     end
+    # rubocop:enable Style/MissingRespondToMissing
 
     def appdir
       cask.config.appdir

@@ -416,9 +416,7 @@ module Homebrew
           path.extend(ObserverPathnameExtension)
           if path.symlink?
             unless path.resolved_path_exists?
-              if path.to_s.match?(Keg::INFOFILE_RX)
-                path.uninstall_info unless dry_run?
-              end
+              path.uninstall_info if path.to_s.match?(Keg::INFOFILE_RX) && !dry_run?
 
               if dry_run?
                 puts "Would remove (broken link): #{path}"

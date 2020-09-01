@@ -5,10 +5,8 @@ module Homebrew
     class Parser
       module Compat
         module DeprecatedArgs
-          def respond_to_missing?(*)
-            super
-          end
-
+          # No need to define it as its the default/superclass implementation.
+          # rubocop:disable Style/MissingRespondToMissing
           def method_missing(method, *)
             if ![:debug?, :quiet?, :verbose?, :value].include?(method) && !@printed_args_warning
               odeprecated "Homebrew.args", "`args = <command>_args.parse` and pass `args` along the call chain"
@@ -17,6 +15,7 @@ module Homebrew
 
             super
           end
+          # rubocop:enable Style/MissingRespondToMissing
         end
 
         def parse(*)
