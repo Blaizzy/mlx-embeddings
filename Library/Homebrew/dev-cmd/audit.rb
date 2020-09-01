@@ -518,6 +518,7 @@ module Homebrew
     VERSIONED_KEG_ONLY_ALLOWLIST = %w[
       autoconf@2.13
       bash-completion@2
+      clang-format@8
       gnupg@1.4
       libsigc++@2
       lua@5.1
