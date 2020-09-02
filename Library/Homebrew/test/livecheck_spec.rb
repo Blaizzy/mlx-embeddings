@@ -107,6 +107,26 @@ describe Livecheck do
     end
   end
 
+  describe "#version" do
+    it "returns nil if not set" do
+      expect(livecheckable.version).to be nil
+    end
+
+    it "returns value if set" do
+      livecheckable.version("foo")
+      expect(livecheckable.version).to eq("foo")
+
+      livecheckable.version(:before_comma)
+      expect(livecheckable.version).to eq([",", :first])
+    end
+
+    it "raises a TypeError if the argument isn't a String or Symbol" do
+      expect {
+        livecheckable.version(/foo/)
+      }.to raise_error(TypeError, "Livecheck#version expects a String or valid Symbol")
+    end
+  end
+
   describe "#to_hash" do
     it "returns a Hash of all instance variables" do
       expect(livecheckable.to_hash).to eq(
@@ -116,6 +136,7 @@ describe Livecheck do
           "skip_msg" => nil,
           "strategy" => nil,
           "url"      => nil,
+          "version"  => nil,
         },
       )
     end

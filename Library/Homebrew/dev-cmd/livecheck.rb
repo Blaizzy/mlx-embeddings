@@ -54,28 +54,28 @@ module Homebrew
       puts ENV["HOMEBREW_LIVECHECK_WATCHLIST"] if ENV["HOMEBREW_LIVECHECK_WATCHLIST"].present?
     end
 
-    formulae_to_check = if args.tap
-      Tap.fetch(args.tap).formula_names.map { |name| Formula[name] }
+    formulae_and_casks_to_check = if args.tap
+      tap = Tap.fetch(args.tap)
+      formulae = tap.formula_names.map { |name| Formula[name] }
+      casks = tap.cask_tokens.map { |token| Cask::CaskLoader.load(token) }
+      formulae + casks
     elsif args.installed?
-      Formula.installed
+      Formula.installed + Cask::Caskroom.casks
     elsif args.all?
-      Formula
-    elsif (formulae_args = args.named.to_formulae) && formulae_args.present?
-      formulae_args
+      Formula.to_a + Cask::Cask.to_a
+    elsif args.named.present?
+      args.named.to_formulae_and_casks
     elsif File.exist?(WATCHLIST_PATH)
       begin
-        Pathname.new(WATCHLIST_PATH).read.lines.map do |line|
-          next if line.start_with?("#")
-
-          Formula[line.strip]
-        end.compact
+        names = Pathname.new(WATCHLIST_PATH).read.lines.reject { |line| line.start_with?("#") }.map(&:strip)
+        CLI::NamedArgs.new(*names).to_formulae_and_casks
       rescue Errno::ENOENT => e
         onoe e
       end
     end
 
-    raise UsageError, "No formulae to check." if formulae_to_check.blank?
+    raise UsageError, "No formulae or casks to check." if formulae_and_casks_to_check.blank?
 
-    Livecheck.livecheck_formulae(formulae_to_check, args)
+    Livecheck.livecheck_formulae_and_casks(formulae_and_casks_to_check, args)
   end
 end

@@ -3,6 +3,7 @@
 
 require "locale"
 require "lazy_object"
+require "livecheck"
 
 require "cask/artifact"
 
@@ -81,6 +82,8 @@ module Cask
                             :version,
                             :appdir,
                             :discontinued?,
+                            :livecheck,
+                            :livecheckable?,
                             *ORDINARY_ARTIFACT_CLASSES.map(&:dsl_key),
                             *ACTIVATABLE_ARTIFACT_CLASSES.map(&:dsl_key),
                             *ARTIFACT_BLOCK_CLASSES.flat_map { |klass| [klass.dsl_key, klass.uninstall_dsl_key] },
@@ -271,6 +274,20 @@ module Cask
 
     def auto_updates(auto_updates = nil)
       set_unique_stanza(:auto_updates, auto_updates.nil?) { auto_updates }
+    end
+
+    def livecheck(&block)
+      @livecheck ||= Livecheck.new(self)
+      return @livecheck unless block_given?
+
+      raise CaskInvalidError.new(cask, "'livecheck' stanza may only appear once.") if @livecheckable
+
+      @livecheckable = true
+      @livecheck.instance_eval(&block)
+    end
+
+    def livecheckable?
+      @livecheckable == true
     end
 
     ORDINARY_ARTIFACT_CLASSES.each do |klass|

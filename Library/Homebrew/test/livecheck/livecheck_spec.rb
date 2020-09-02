@@ -74,6 +74,24 @@ describe Homebrew::Livecheck do
     end
   end
 
+  let(:c) do
+    Cask::CaskLoader.load(+<<-RUBY)
+      cask "test" do
+        version "0.0.1,2"
+
+        url "https://brew.sh/test-0.0.1.tgz"
+        name "Test"
+        homepage "https://brew.sh"
+
+        livecheck do
+          url "https://formulae.brew.sh/api/formula/ruby.json"
+          version :before_comma
+          regex(/"stable":"(\d+(?:\.\d+)+)"/i)
+        end
+      end
+    RUBY
+  end
+
   let(:args) { double("livecheck_args", full_name?: false, json?: false, quiet?: false, verbose?: true) }
 
   describe "::formula_name" do
@@ -85,6 +103,18 @@ describe Homebrew::Livecheck do
       allow(args).to receive(:full_name?).and_return(true)
 
       expect(livecheck.formula_name(f, args: args)).to eq("test")
+    end
+  end
+
+  describe "::cask_name" do
+    it "returns the token of the cask" do
+      expect(livecheck.cask_name(c, args: args)).to eq("test")
+    end
+
+    it "returns the full name of the cask" do
+      allow(args).to receive(:full_name?).and_return(true)
+
+      expect(livecheck.cask_name(c, args: args)).to eq("test")
     end
   end
 
@@ -142,6 +172,10 @@ describe Homebrew::Livecheck do
     it "returns false for a non-skippable formula" do
       expect(livecheck.skip_conditions(f, args: args)).to eq(false)
     end
+
+    it "returns false for a non-skippable cask" do
+      expect(livecheck.skip_conditions(c, args: args)).to eq(false)
+    end
   end
 
   describe "::checkable_urls" do
@@ -150,6 +184,7 @@ describe Homebrew::Livecheck do
         .to eq(
           ["https://github.com/Homebrew/brew.git", "https://brew.sh/test-0.0.1.tgz", "https://brew.sh"],
         )
+      expect(livecheck.checkable_urls(c)).to eq(["https://brew.sh/test-0.0.1.tgz", "https://brew.sh"])
     end
   end
 
