@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 module Utils
+  IO_DEFAULT_BUFFER_SIZE = 4096
+  private_constant :IO_DEFAULT_BUFFER_SIZE
+
   def self.popen_read(*args, **options, &block)
     popen(args, "rb", options, &block)
   end
@@ -18,7 +21,7 @@ module Utils
 
       # Before we yield to the block, capture as much output as we can
       loop do
-        output += pipe.read_nonblock(4096)
+        output += pipe.read_nonblock(IO_DEFAULT_BUFFER_SIZE)
       rescue IO::WaitReadable, EOFError
         break
       end
