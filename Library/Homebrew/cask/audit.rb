@@ -515,7 +515,7 @@ module Cask
     end
 
     def check_gitlab_repository
-      return unless @new_cask
+      return unless new_cask?
 
       user, repo = get_repo_data(%r{https?://gitlab\.com/([^/]+)/([^/]+)/?.*})
       return if user.nil?
