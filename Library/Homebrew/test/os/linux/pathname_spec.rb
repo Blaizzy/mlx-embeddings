@@ -10,7 +10,7 @@ describe Pathname do
 
   def patch_elfs
     mktmpdir do |tmp_dir|
-      %w[c.elf cpp.elf go.elf rust.elf].each do |elf|
+      %w[c.elf].each do |elf|
         FileUtils.cp(elf_dir/elf, tmp_dir/elf)
         yield tmp_dir/elf
       end
