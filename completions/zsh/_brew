@@ -508,15 +508,15 @@ _brew_list() {
 #                [--installed] [--json] [--all] [--newer-only] formulae
 _brew_livecheck() {
   _arguments \
-    '(--verbose,-v)'{--verbose,-v}'[Make some output more verbose]' \
-    '(--quiet,-q)'{--quiet,-q}'[Suppress any warnings]' \
-    '(--debug,-d)'{--debug,-d}'[Display any debugging information]' \
     '--full-name[Print formulae with fully-qualified name]' \
     '--tap[Check the formulae within the given tap, specified as user/repo]' \
-    '--installed[Check formulae that are currently installed]' \
-    '--json[Output information in JSON format]' \
     '--all[Check all available formulae]' \
+    '--installed[Check formulae that are currently installed]' \
     '--newer-only[Show the latest version only if it is newer than the formula]' \
+    '--json[Output information in JSON format]' \
+    '(--quiet,-q)'{--quiet,-q}'[Suppress warnings, do not print a progress bar for JSON output]' \
+    '(--debug,-d)'{--debug,-d}'[Display any debugging information]' \
+    '(--verbose,-v)'{--verbose,-v}'[Make some output more verbose]' \
     '(--help,-h)'{--help,-h}'[Show the help message]' \
     '*:: :__brew_formulae'
 }
@@ -590,7 +590,7 @@ _brew_pull() {
     '--resolve[allow user to resolve patches that fail to apply]' \
     '--branch-okay[do not warn on pulling branches other than master]' \
     '--no-pbcopy[do not copy anything to the system]' \
-    '--no-publish[do no publish bottles to Bintray]' \
+    '--no-publish[do not publish bottles to Bintray]' \
     '*:patch source: '
 }
 

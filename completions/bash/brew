@@ -356,7 +356,18 @@ _brew_livecheck() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--verbose --quiet --debug --full-name --tap --installed --json --all --newer-only --help"
+      __brewcomp "
+        --full-name
+        --tap
+        --all
+        --installed
+        --newer-only
+        --json
+        --quiet
+        --debug
+        --verbose
+        --help
+        "
       return
       ;;
   esac

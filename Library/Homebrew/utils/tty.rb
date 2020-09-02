@@ -53,6 +53,15 @@ module Tty
     no_underline:  24,
   }.freeze
 
+  SPECIAL_CODES = {
+    up:         "1A",
+    down:       "1B",
+    right:      "1C",
+    left:       "1D",
+    erase_line: "K",
+    erase_char: "P",
+  }.freeze
+
   CODES = COLOR_CODES.merge(STYLE_CODES).freeze
 
   def append_to_escape_sequence(code)
@@ -74,6 +83,16 @@ module Tty
   CODES.each do |name, code|
     define_singleton_method(name) do
       append_to_escape_sequence(code)
+    end
+  end
+
+  SPECIAL_CODES.each do |name, code|
+    define_singleton_method(name) do
+      if $stdout.tty?
+        "\033[#{code}"
+      else
+        ""
+      end
     end
   end
 

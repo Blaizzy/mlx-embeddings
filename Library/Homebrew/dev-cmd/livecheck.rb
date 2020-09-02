@@ -26,15 +26,17 @@ module Homebrew
       switch "--full-name",
              description: "Print formulae with fully-qualified names."
       flag   "--tap=",
-             description: "Check the formulae within the given tap, specified as <user>`/`<repo>."
-      switch "--installed",
-             description: "Check formulae that are currently installed."
-      switch "--json",
-             description: "Output informations in JSON format."
+             description: "Check formulae within the given tap, specified as <user>`/`<repo>."
       switch "--all",
              description: "Check all available formulae."
+      switch "--installed",
+             description: "Check formulae that are currently installed."
       switch "--newer-only",
              description: "Show the latest version only if it's newer than the formula."
+      switch "--json",
+             description: "Output information in JSON format."
+      switch "-q", "--quiet",
+             description: "Suppress warnings, don't print a progress bar for JSON output."
       conflicts "--debug", "--json"
       conflicts "--tap=", "--all", "--installed"
     end
