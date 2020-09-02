@@ -47,7 +47,7 @@ module Homebrew
       print "\a"
 
       # Use an extra newline and bold to avoid this being missed.
-      ohai "Homebrew has enabled anonymous aggregate formulae and cask analytics."
+      ohai "Homebrew has enabled anonymous aggregate formula and cask analytics."
       puts <<~EOS
         #{Tty.bold}Read the analytics documentation (and how to opt-out) here:
           #{Formatter.url("https://docs.brew.sh/Analytics")}#{Tty.reset}

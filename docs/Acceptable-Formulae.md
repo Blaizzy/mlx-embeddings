@@ -71,16 +71,16 @@ don’t want those things in Homebrew. Encourage upstream projects to build and 
 ### Stuff that builds a GUI by default (but doesn't have to)
 Make it build a command-line tool or a library by default and, if the GUI is useful and would be widely used, also build the GUI. Don’t build X11/XQuartz GUIs as they are a bad user experience on macOS.
 
-### Stuff that doesn't build with the latest, stable Xcode's Clang
+### Stuff that doesn't build with the latest, stable Xcode Clang
 Clang is the default C/C++ compiler on macOS (and has been for a long time). Software that doesn't build with it hasn't been adequately ported to macOS.
 
 ### Stuff that requires heavy manual pre/post-install intervention
 We're a package manager so we want to do things like resolve dependencies and set up applications for our users. If things require too much manual intervention then they aren't useful in a package manager.
 
-## Stuff that requires vendored versions of homebrew formulae
-Homebrew formula should avoid having multiple, separate, upstream projects bundled together in a single package to avoid having shipping outdated/insecure versions of software that is already a formula.
+## Stuff that requires vendored versions of Homebrew formulae
+Homebrew formulae should avoid having multiple, separate, upstream projects bundled together in a single package to avoid shipping outdated/insecure versions of software that is already a formula.
 
-For more info see [Debian](https://www.debian.org/doc/debian-policy/ch-source.html#s-embeddedfiles) and [Fedora's](https://docs.fedoraproject.org/en-US/packaging-guidelines/#bundling) stance on this.
+For more info see [Debian's](https://www.debian.org/doc/debian-policy/ch-source.html#s-embeddedfiles) and [Fedora's](https://docs.fedoraproject.org/en-US/packaging-guidelines/#bundling) stances on this.
 
 ### Sometimes there are exceptions
 Even if all criteria are met we may not accept the formula.
