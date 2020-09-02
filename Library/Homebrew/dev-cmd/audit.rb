@@ -891,7 +891,8 @@ module Homebrew
         end
       end
 
-      if previous_version != newest_committed_version &&
+      if (previous_version != newest_committed_version ||
+         current_version != newest_committed_version) &&
          !current_revision.zero? &&
          current_revision == newest_committed_revision &&
          current_revision == previous_revision
