@@ -54,8 +54,12 @@ module Cask
       check_latest_with_auto_updates
       check_stanza_requires_uninstall
       check_appcast_contains_version
-      check_github_repository
       check_gitlab_repository
+      check_gitlab_repository_archived
+      check_gitlab_prerelease_version
+      check_github_repository
+      check_github_repository_archived
+      check_github_prerelease_version
       check_bitbucket_repository
       self
     rescue => e
@@ -447,7 +451,60 @@ module Cask
                   " the version number '#{adjusted_version_stanza}':\n#{appcast_contents}"
     end
 
+    def check_github_prerelease_version
+      odebug "Auditing GitHub prerelease"
+      user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @online
+      return if user.nil?
+
+      metadata = SharedAudits.github_release_data(user, repo, cask.version)
+      return if metadata.nil?
+
+      if metadata["prerelease"]
+        problem "#{cask.version} is a GitHub prerelease"
+      elsif metadata["draft"]
+        problem "#{cask.version} is a GitHub draft"
+      end
+    end
+
+    def check_gitlab_prerelease_version
+      user, repo = get_repo_data(%r{https?://gitlab\.com/([^/]+)/([^/]+)/?.*}) if @online
+      return if user.nil?
+
+      odebug "Auditing GitLab prerelease"
+
+      metadata = SharedAudits.gitlab_release_data(user, repo, cask.version)
+      return if metadata.nil?
+
+      problem "#{cask.version} is a GitLab prerelease" if Date.parse(metadata["released_at"]) > Date.today
+    end
+
+    def check_github_repository_archived
+      user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @online
+      return if user.nil?
+
+      odebug "Auditing GitHub repo archived"
+
+      metadata = SharedAudits.github_repo_data(user, repo)
+      return if metadata.nil?
+
+      problem "GitHub repo is archived" if metadata["archived"]
+    end
+
+    def check_gitlab_repository_archived
+      user, repo = get_repo_data(%r{https?://gitlab\.com/([^/]+)/([^/]+)/?.*}) if @online
+      return if user.nil?
+
+      odebug "Auditing GitLab repo archived"
+
+      metadata = SharedAudits.gitlab_repo_data(user, repo)
+      return if metadata.nil?
+
+      problem "GitLab repo is archived" if metadata["archived"]
+    end
+
     def check_github_repository
+      return unless @new_cask
+
       user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*})
       return if user.nil?
 
@@ -458,6 +515,8 @@ module Cask
     end
 
     def check_gitlab_repository
+      return unless new_cask?
+
       user, repo = get_repo_data(%r{https?://gitlab\.com/([^/]+)/([^/]+)/?.*})
       return if user.nil?
 
@@ -468,6 +527,8 @@ module Cask
     end
 
     def check_bitbucket_repository
+      return unless @new_cask
+
       user, repo = get_repo_data(%r{https?://bitbucket\.org/([^/]+)/([^/]+)/?.*})
       return if user.nil?
 
@@ -479,7 +540,6 @@ module Cask
 
     def get_repo_data(regex)
       return unless online?
-      return unless new_cask?
 
       _, user, repo = *regex.match(cask.url.to_s)
       _, user, repo = *regex.match(cask.homepage) unless user

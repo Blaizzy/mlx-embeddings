@@ -701,6 +701,8 @@ module Homebrew
       "libepoxy"            => "1.5",
     }.freeze
 
+    GITLAB_PRERELEASE_ALLOWLIST = {}.freeze
+
     GITHUB_PRERELEASE_ALLOWLIST = {
       "cbmc"         => "5.12.6",
       "elm-format"   => "0.8.3",
@@ -802,6 +804,17 @@ module Homebrew
         return if stable_url_minor_version.even?
 
         problem "#{stable.version} is a development release"
+
+      when %r{https?://gitlab\.com/([\w-]+)/([\w-]+)}
+        owner = Regexp.last_match(1)
+        repo = Regexp.last_match(2)
+
+        return unless @online && (release = SharedAudits.gitlab_release_data(owner, repo, stable.version))
+
+        release_date = Date.parse(release["released_at"])
+        if release_date > Date.today && (GITLAB_PRERELEASE_ALLOWLIST[formula.name] != formula.version)
+          problem "#{stable.version} is a GitLab prerelease"
+        end
       when %r{^https://github.com/([\w-]+)/([\w-]+)}
         owner = Regexp.last_match(1)
         repo = Regexp.last_match(2)
@@ -813,17 +826,12 @@ module Homebrew
                    .second
         tag ||= formula.stable.specs[:tag]
 
-        begin
-          if @online && (release = GitHub.open_api("#{GitHub::API_URL}/repos/#{owner}/#{repo}/releases/tags/#{tag}"))
-            if release["prerelease"] && (GITHUB_PRERELEASE_ALLOWLIST[formula.name] != formula.version)
-              problem "#{tag} is a GitHub prerelease"
-            elsif release["draft"]
-              problem "#{tag} is a GitHub draft"
-            end
+        if @online && (release = SharedAudits.github_release_data(owner, repo, tag))
+          if release["prerelease"] && (GITHUB_PRERELEASE_ALLOWLIST[formula.name] != formula.version)
+            problem "#{tag} is a GitHub prerelease"
+          elsif release["draft"]
+            problem "#{tag} is a GitHub draft"
           end
-        rescue GitHub::HTTPNotFoundError
-          # No-op if we can't find the release.
-          nil
         end
       end
     end
