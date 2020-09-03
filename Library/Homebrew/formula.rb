@@ -1460,14 +1460,12 @@ class Formula
   # @private
   def self.each
     files.each do |file|
-      yield begin
-        Formulary.factory(file)
-      rescue FormulaUnavailableError => e
-        # Don't let one broken formula break commands. But do complain.
-        onoe "Failed to import: #{file}"
-        puts e
-        next
-      end
+      yield Formulary.factory(file)
+    rescue FormulaUnavailableError, FormulaUnreadableError => e
+      # Don't let one broken formula break commands. But do complain.
+      onoe "Failed to import: #{file}"
+      $stderr.puts e
+      next
     end
   end
 
