@@ -142,9 +142,9 @@ jobs:
     - name: Deploy the Docker image to GitHub and Docker Hub
       if: matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/master'
       run: |
-        docker login docker.pkg.github.com -u BrewTestBot -p ${{secrets.GITHUB_TOKEN}}
-        docker tag brew "docker.pkg.github.com/homebrew/brew/ubuntu16.04:master"
-        docker push "docker.pkg.github.com/homebrew/brew/ubuntu16.04:master"
+        docker login ghcr.io -u BrewTestBot -p ${{secrets.HOMEBREW_GITHUB_PACKAGES_API_TOKEN}}
+        docker tag brew "ghcr.io/homebrew/ubuntu16.04:master"
+        docker push "ghcr.io/homebrew/ubuntu16.04:master"
         docker login -u brewtestbot -p ${{secrets.DOCKER_TOKEN}}
         docker tag brew "homebrew/ubuntu16.04:master"
         docker push "homebrew/ubuntu16.04:master"
