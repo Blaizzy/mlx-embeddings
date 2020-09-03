@@ -12,9 +12,15 @@ raise "HOMEBREW_BREW_FILE was not exported! Please call bin/brew directly!" unle
 std_trap = trap("INT") { exit! 130 } # no backtrace thanks
 
 # check ruby version before requiring any modules.
+unless ENV["HOMEBREW_REQUIRED_RUBY_VERSION"]
+  raise "HOMEBREW_REQUIRED_RUBY_VERSION was not exported! Please call bin/brew directly!"
+end
+
+REQUIRED_RUBY_X, REQUIRED_RUBY_Y, = ENV["HOMEBREW_REQUIRED_RUBY_VERSION"].split(".").map(&:to_i)
 RUBY_X, RUBY_Y, = RUBY_VERSION.split(".").map(&:to_i)
-if RUBY_X < 2 || (RUBY_X == 2 && RUBY_Y < 6)
-  raise "Homebrew must be run under Ruby 2.6! You're running #{RUBY_VERSION}."
+if RUBY_X < REQUIRED_RUBY_X || (RUBY_X == REQUIRED_RUBY_X && RUBY_Y < REQUIRED_RUBY_Y)
+  raise "Homebrew must be run under Ruby #{REQUIRED_RUBY_X}.#{REQUIRED_RUBY_Y}! " \
+        "You're running #{RUBY_VERSION}."
 end
 
 # Also define here so we can rescue regardless of location.

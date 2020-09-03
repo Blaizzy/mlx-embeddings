@@ -178,13 +178,12 @@ module Homebrew
       end
 
       def check_ruby_version
-        ruby_version = "2.6.3"
-        return if RUBY_VERSION == ruby_version
+        return if RUBY_VERSION == HOMEBREW_REQUIRED_RUBY_VERSION
         return if Homebrew::EnvConfig.developer? && OS::Mac.prerelease?
 
         <<~EOS
           Ruby version #{RUBY_VERSION} is unsupported on #{MacOS.version}. Homebrew
-          is developed and tested on Ruby #{ruby_version}, and may not work correctly
+          is developed and tested on Ruby #{HOMEBREW_REQUIRED_RUBY_VERSION}, and may not work correctly
           on other Rubies. Patches are accepted as long as they don't cause breakage
           on supported Rubies.
         EOS

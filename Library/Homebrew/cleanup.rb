@@ -348,24 +348,26 @@ module Homebrew
     end
 
     def cleanup_portable_ruby
-      system_ruby_version =
-        Utils.popen_read("/usr/bin/ruby", "-e", "puts RUBY_VERSION")
-             .chomp
-      use_system_ruby = (
-        Gem::Version.new(system_ruby_version) >= Gem::Version.new(RUBY_VERSION)
-      ) && !Homebrew::EnvConfig.force_vendor_ruby?
-      vendor_path = HOMEBREW_LIBRARY/"Homebrew/vendor"
-      portable_ruby_version_file = vendor_path/"portable-ruby-version"
-      portable_ruby_version = if portable_ruby_version_file.exist?
-        portable_ruby_version_file.read
-                                  .chomp
+      rubies = [which("ruby"), which("ruby", ENV["HOMEBREW_PATH"])].compact
+      system_ruby = Pathname.new("/usr/bin/ruby")
+      rubies << system_ruby if system_ruby.exist?
+
+      use_system_ruby = if Homebrew::EnvConfig.force_vendor_ruby?
+        false
+      else
+        check_ruby_version = HOMEBREW_LIBRARY_PATH/"utils/ruby_check_version_script.rb"
+        rubies.uniq.any? do |ruby|
+          system ruby, "--enable-frozen-string-literal", "--disable=gems,did_you_mean,rubyopt",
+                 check_ruby_version, HOMEBREW_REQUIRED_RUBY_VERSION
+        end
       end
 
-      portable_ruby_path = vendor_path/"portable-ruby"
-      portable_ruby_glob = "#{portable_ruby_path}/*.*"
+      vendor_dir = HOMEBREW_LIBRARY/"Homebrew/vendor"
+      portable_ruby_latest_version = (vendor_dir/"portable-ruby-version").read.chomp
+
       portable_rubies_to_remove = []
-      Pathname.glob(portable_ruby_glob).each do |path|
-        next if !use_system_ruby && portable_ruby_version == path.basename.to_s
+      Pathname.glob(vendor_dir/"portable-ruby/*.*").select(&:directory?).each do |path|
+        next if !use_system_ruby && portable_ruby_latest_version == path.basename.to_s
 
         portable_rubies_to_remove << path
         puts "Would remove: #{path} (#{path.abv})" if dry_run?
@@ -373,7 +375,7 @@ module Homebrew
 
       return if portable_rubies_to_remove.empty?
 
-      bundler_path = vendor_path/"bundle/ruby"
+      bundler_path = vendor_dir/"bundle/ruby"
       if dry_run?
         puts Utils.popen_read("git", "-C", HOMEBREW_REPOSITORY, "clean", "-nx", bundler_path).chomp
       else
