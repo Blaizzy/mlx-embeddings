@@ -358,6 +358,7 @@ module Homebrew
 
     def checkable_cask_urls(cask)
       urls = []
+      urls << cask.appcast.to_s if cask.appcast
       urls << cask.url.to_s
       urls << cask.homepage if cask.homepage
       urls.compact
