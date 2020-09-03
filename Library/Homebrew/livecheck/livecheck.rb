@@ -250,7 +250,7 @@ module Homebrew
       if formula
         status_hash[:formula] = formula_name(formula, args: args)
       else
-        status_hash[:cask] = formula_name(formula_or_cask, args: args)
+        status_hash[:cask] = cask_name(formula_or_cask, args: args)
       end
 
       if args.verbose?
