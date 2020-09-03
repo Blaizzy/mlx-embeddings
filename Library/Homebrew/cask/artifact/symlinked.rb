@@ -40,7 +40,7 @@ module Cask
 
       private
 
-      def link(**options)
+      def link(force: false, **options)
         unless source.exist?
           raise CaskError,
                 "It seems the #{self.class.link_type_english_name.downcase} " \
@@ -48,9 +48,16 @@ module Cask
         end
 
         if target.exist?
-          raise CaskError,
-                "It seems there already exists #{self.class.english_article} " \
-                "#{self.class.english_name} at '#{target}'; not overwriting."
+          message = "It seems there is already #{self.class.english_article} " \
+                    "#{self.class.english_name} at '#{target}'"
+
+          if force && target.symlink? && \
+             (target.realpath == source.realpath || target.realpath.to_s.start_with?("#{cask.caskroom_path}/"))
+            opoo "#{message}; overwriting."
+            target.delete
+          else
+            raise CaskError, "#{message}."
+          end
         end
 
         ohai "Linking #{self.class.english_name} '#{source.basename}' to '#{target}'."
