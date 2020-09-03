@@ -727,6 +727,12 @@ module Homebrew
           it { is_expected.to match("'revision 2' should be removed") }
         end
 
+        context "should be removed with a newer local version" do
+          before { formula_gsub "foo-1.0.tar.gz", "foo-1.1.tar.gz" }
+
+          it { is_expected.to match("'revision 2' should be removed") }
+        end
+
         context "should not warn on an newer version revision removal" do
           before do
             formula_gsub_origin_commit "revision 2", ""
