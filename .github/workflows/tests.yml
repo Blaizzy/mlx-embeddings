@@ -143,8 +143,8 @@ jobs:
       if: matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/master'
       run: |
         echo ${{secrets.HOMEBREW_GITHUB_PACKAGES_API_TOKEN}} | docker login ghcr.io -u BrewTestBot --password-stdin
-        docker tag brew "ghcr.io/Homebrew/ubuntu16.04:master"
-        docker push "ghcr.io/Homebrew/ubuntu16.04:master"
+        docker tag brew "ghcr.io/homebrew/ubuntu16.04:master"
+        docker push "ghcr.io/homebrew/ubuntu16.04:master"
         echo ${{secrets.DOCKER_TOKEN}} | docker login -u brewtestbot --password-stdin
         docker tag brew "homebrew/ubuntu16.04:master"
         docker push "homebrew/ubuntu16.04:master"
