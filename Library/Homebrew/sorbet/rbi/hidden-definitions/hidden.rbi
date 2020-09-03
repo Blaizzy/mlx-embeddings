@@ -20115,6 +20115,10 @@ class RuboCop::AST::Node
   def val_node(node=T.unsafe(nil)); end
 end
 
+class RuboCop::AST::RegexpNode
+  include ::RuboCop::Ext::RegexpNode
+end
+
 class RuboCop::Cask::AST::CaskBlock
   def cask_body(*args, &block); end
 end
@@ -20277,8 +20281,12 @@ class RuboCop::Cop::FormulaAudit::DependencyOrder
   def uses_from_macos_node?(node=T.unsafe(nil)); end
 end
 
-class RuboCop::Cop::FormulaAudit::DeprecateDate
-  def deprecate_date(node0); end
+class RuboCop::Cop::FormulaAudit::DeprecateDisableDate
+  def date(node0); end
+end
+
+class RuboCop::Cop::FormulaAudit::DeprecateDisableReason
+  def reason(node0); end
 end
 
 class RuboCop::Cop::FormulaAudit::Miscellaneous
@@ -21736,6 +21744,7 @@ class SimpleCov::Formatter::Codecov
   BITRISE = ::T.let(nil, ::T.untyped)
   BUILDKITE = ::T.let(nil, ::T.untyped)
   CIRCLE = ::T.let(nil, ::T.untyped)
+  CODEBUILD = ::T.let(nil, ::T.untyped)
   CODESHIP = ::T.let(nil, ::T.untyped)
   DRONEIO = ::T.let(nil, ::T.untyped)
   GITHUB = ::T.let(nil, ::T.untyped)
@@ -22267,8 +22276,6 @@ class String
   def camelize(first_letter=T.unsafe(nil)); end
 
   def classify(); end
-
-  def colorize(color_code); end
 
   def constantize(); end
 
