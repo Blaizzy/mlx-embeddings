@@ -9,6 +9,7 @@ class Formula
 
     def prepare_patches
       odisabled "patches", "patch do" if respond_to?(:patches)
+      super
     end
 
     def installed_prefix
