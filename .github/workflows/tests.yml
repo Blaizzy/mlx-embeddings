@@ -139,12 +139,12 @@ jobs:
           brew test-bot --only-formulae --test-default-formula
         fi
 
-    - name: Deploy the Docker image to GitHub and Docker Hub
+    - name: Deploy the Docker image to GitHub Packages and Docker Hub
       if: matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/master'
       run: |
-        docker login ghcr.io -u BrewTestBot -p ${{secrets.HOMEBREW_GITHUB_PACKAGES_API_TOKEN}}
-        docker tag brew "ghcr.io/homebrew/ubuntu16.04:master"
-        docker push "ghcr.io/homebrew/ubuntu16.04:master"
-        docker login -u brewtestbot -p ${{secrets.DOCKER_TOKEN}}
+        echo ${{secrets.HOMEBREW_GITHUB_PACKAGES_API_TOKEN}} | docker login ghcr.io -u BrewTestBot --password-stdin
+        docker tag brew "ghcr.io/Homebrew/ubuntu16.04:master"
+        docker push "ghcr.io/Homebrew/ubuntu16.04:master"
+        echo ${{secrets.DOCKER_TOKEN}} | docker login -u brewtestbot --password-stdin
         docker tag brew "homebrew/ubuntu16.04:master"
         docker push "homebrew/ubuntu16.04:master"
