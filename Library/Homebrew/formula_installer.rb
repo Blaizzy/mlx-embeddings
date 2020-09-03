@@ -605,8 +605,6 @@ class FormulaInstaller
   def display_options(formula)
     options = if formula.head?
       ["--HEAD"]
-    elsif formula.devel?
-      ["--devel"]
     else
       []
     end
@@ -809,11 +807,7 @@ class FormulaInstaller
       args << "--env=std"
     end
 
-    if formula.head?
-      args << "--HEAD"
-    elsif formula.devel?
-      args << "--devel"
-    end
+    args << "--HEAD" if formula.head?
 
     args
   end

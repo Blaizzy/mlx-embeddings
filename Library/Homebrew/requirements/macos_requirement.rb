@@ -20,7 +20,7 @@ class MacOSRequirement < Requirement
     rescue MacOSVersionError => e
       raise if e.version != :mavericks
 
-      odeprecated "depends_on :macos => :mavericks"
+      odisabled "depends_on :macos => :mavericks"
     end
 
     @comparator = comparator

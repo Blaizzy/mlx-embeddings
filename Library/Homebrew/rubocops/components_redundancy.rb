@@ -10,13 +10,13 @@ module RuboCop
       # - `url|checksum|mirror` should be inside `stable` block
       # - `head` and `head do` should not be simultaneously present
       # - `bottle :unneeded`/`:disable` and `bottle do` should not be simultaneously present
-      # - `stable do` should not be present without a `head` or `devel` spec
+      # - `stable do` should not be present without a `head` spec
       #
       # @api private
       class ComponentsRedundancy < FormulaCop
         HEAD_MSG = "`head` and `head do` should not be simultaneously present"
         BOTTLE_MSG = "`bottle :modifier` and `bottle do` should not be simultaneously present"
-        STABLE_MSG = "`stable do` should not be present without a `head` or `devel` spec"
+        STABLE_MSG = "`stable do` should not be present without a `head` spec"
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           urls = find_method_calls_by_name(body_node, :url)
@@ -46,8 +46,7 @@ module RuboCop
                                 find_block(body_node, :bottle)
 
           return if method_called?(body_node, :head) ||
-                    find_block(body_node, :head) ||
-                    find_block(body_node, :devel)
+                    find_block(body_node, :head)
 
           problem STABLE_MSG if stable_block
         end

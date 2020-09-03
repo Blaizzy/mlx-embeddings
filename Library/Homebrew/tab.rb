@@ -43,7 +43,6 @@ class Tab < OpenStruct
         "spec"     => formula.active_spec_sym.to_s,
         "versions" => {
           "stable"         => formula.stable&.version.to_s,
-          "devel"          => formula.devel&.version.to_s,
           "head"           => formula.head&.version.to_s,
           "version_scheme" => formula.version_scheme,
         },
@@ -93,7 +92,6 @@ class Tab < OpenStruct
     if attributes["source"]["versions"].nil?
       attributes["source"]["versions"] = {
         "stable"         => nil,
-        "devel"          => nil,
         "head"           => nil,
         "version_scheme" => 0,
       }
@@ -163,7 +161,6 @@ class Tab < OpenStruct
         "spec"     => f.active_spec_sym.to_s,
         "versions" => {
           "stable"         => f.stable&.version.to_s,
-          "devel"          => f.devel&.version.to_s,
           "head"           => f.head&.version.to_s,
           "version_scheme" => f.version_scheme,
         },
@@ -195,7 +192,6 @@ class Tab < OpenStruct
         "spec"     => "stable",
         "versions" => {
           "stable"         => nil,
-          "devel"          => nil,
           "head"           => nil,
           "version_scheme" => 0,
         },
@@ -234,10 +230,12 @@ class Tab < OpenStruct
   end
 
   def universal?
+    odeprecated "Tab#universal?"
     include?("universal")
   end
 
   def cxx11?
+    odeprecated "Tab#cxx11?"
     include?("c++11")
   end
 
@@ -246,7 +244,7 @@ class Tab < OpenStruct
   end
 
   def devel?
-    spec == :devel
+    odisabled "Tab#devel?"
   end
 
   def stable?
@@ -314,7 +312,7 @@ class Tab < OpenStruct
   end
 
   def devel_version
-    Version.create(versions["devel"]) if versions["devel"]
+    odisabled "Tab#devel_version"
   end
 
   def head_version

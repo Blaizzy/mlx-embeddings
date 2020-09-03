@@ -191,25 +191,8 @@ end
 #
 # @api private
 class LegacyPatch < ExternalPatch
-  def initialize(strip, url)
-    odeprecated "legacy patches", "'patch do' blocks"
+  def initialize(strip, _url)
+    odisabled "legacy patches", "'patch do' blocks"
     super(strip)
-    resource.url(url)
-    resource.download_strategy = CurlDownloadStrategy
-  end
-
-  def fetch
-    clear_cache
-    super
-  end
-
-  def verify_download_integrity(_fn)
-    # no-op
-  end
-
-  def apply
-    super
-  ensure
-    clear_cache
   end
 end

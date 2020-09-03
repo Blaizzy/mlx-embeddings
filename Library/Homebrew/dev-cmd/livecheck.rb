@@ -54,8 +54,8 @@ module Homebrew
       Formula.installed
     elsif args.all?
       Formula
-    elsif args.formulae.present?
-      args.formulae
+    elsif (formulae_args = args.named.to_formulae) && formulae_args.present?
+      formulae_args
     elsif File.exist?(WATCHLIST_PATH)
       begin
         Pathname.new(WATCHLIST_PATH).read.lines.map do |line|

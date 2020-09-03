@@ -18,10 +18,8 @@ describe Formula do
       end
 
       expect(f.class.stable.deps).to be_empty
-      expect(f.class.devel.deps).to be_empty
       expect(f.class.head.deps).to be_empty
       expect(f.class.stable.uses_from_macos_elements.first).to eq("foo")
-      expect(f.class.devel.uses_from_macos_elements.first).to eq("foo")
       expect(f.class.head.uses_from_macos_elements.first).to eq("foo")
     end
 
@@ -33,10 +31,8 @@ describe Formula do
       end
 
       expect(f.class.stable.deps.first.name).to eq("foo")
-      expect(f.class.devel.deps.first.name).to eq("foo")
       expect(f.class.head.deps.first.name).to eq("foo")
       expect(f.class.stable.uses_from_macos_elements).to be_empty
-      expect(f.class.devel.uses_from_macos_elements).to be_empty
       expect(f.class.head.uses_from_macos_elements).to be_empty
     end
   end

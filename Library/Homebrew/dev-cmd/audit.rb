@@ -229,7 +229,7 @@ module Homebrew
       @problems = []
       @new_formula_problems = []
       @text = FormulaText.new(formula.path)
-      @specs = %w[stable devel head].map { |s| formula.send(s) }.compact
+      @specs = %w[stable head].map { |s| formula.send(s) }.compact
       @spdx_license_data = options[:spdx_license_data]
       @spdx_exception_data = options[:spdx_exception_data]
     end
@@ -718,9 +718,8 @@ module Homebrew
 
     def audit_specs
       problem "Head-only (no stable download)" if head_only?(formula)
-      problem "Devel-only (no stable download)" if devel_only?(formula)
 
-      %w[Stable Devel HEAD].each do |name|
+      %w[Stable HEAD].each do |name|
         spec_name = name.downcase.to_sym
         next unless spec = formula.send(spec_name)
 
@@ -745,27 +744,15 @@ module Homebrew
         )
       end
 
-      %w[Stable Devel].each do |name|
-        next unless spec = formula.send(name.downcase)
-
-        version = spec.version
-        problem "#{name}: version (#{version}) is set to a string without a digit" if version.to_s !~ /\d/
+      if stable = formula.stable
+        version = stable.version
+        problem "Stable: version (#{version}) is set to a string without a digit" if version.to_s !~ /\d/
         if version.to_s.start_with?("HEAD")
-          problem "#{name}: non-HEAD version name (#{version}) should not begin with HEAD"
-        end
-      end
-
-      if formula.stable && formula.devel
-        if formula.devel.version < formula.stable.version
-          problem "devel version #{formula.devel.version} is older than stable version #{formula.stable.version}"
-        elsif formula.devel.version == formula.stable.version
-          problem "stable and devel versions are identical"
+          problem "Stable: non-HEAD version name (#{version}) should not begin with HEAD"
         end
       end
 
       return unless @core_tap
-
-      problem "Formulae in homebrew/core should not have a `devel` spec" if formula.devel
 
       if formula.head && @versioned_formula
         head_spec_message = "Versioned formulae should not have a `HEAD` spec"
@@ -990,11 +977,7 @@ module Homebrew
     end
 
     def head_only?(formula)
-      formula.head && formula.devel.nil? && formula.stable.nil?
-    end
-
-    def devel_only?(formula)
-      formula.devel && formula.stable.nil?
+      formula.head && formula.stable.nil?
     end
   end
 

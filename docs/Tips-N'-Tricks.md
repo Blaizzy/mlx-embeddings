@@ -67,7 +67,7 @@ brew install --only-dependencies <formula>
 ```sh
 $ brew irb
 1.8.7 :001 > Formula.factory("ace").methods - Object.methods
- => [:install, :path, :homepage, :downloader, :stable, :bottle, :devel, :head, :active_spec, :buildpath, :ensure_specs_set, :url, :version, :specs, :mirrors, :installed?, :explicitly_requested?, :linked_keg, :installed_prefix, :prefix, :rack, :bin, :doc, :include, :info, :lib, :libexec, :man, :man1, :man2, :man3, :man4, :man5, :man6, :man7, :man8, :sbin, :share, :etc, :var, :plist_name, :plist_path, :download_strategy, :cached_download, :caveats, :options, :patches, :keg_only?, :fails_with?, :skip_clean?, :brew, :std_cmake_args, :deps, :external_deps, :recursive_deps, :system, :fetch, :verify_download_integrity, :fails_with_llvm, :fails_with_llvm?, :std_cmake_parameters, :mkdir, :mktemp]
+ => [:install, :path, :homepage, :downloader, :stable, :bottle, :head, :active_spec, :buildpath, :ensure_specs_set, :url, :version, :specs, :mirrors, :installed?, :explicitly_requested?, :linked_keg, :installed_prefix, :prefix, :rack, :bin, :doc, :include, :info, :lib, :libexec, :man, :man1, :man2, :man3, :man4, :man5, :man6, :man7, :man8, :sbin, :share, :etc, :var, :plist_name, :plist_path, :download_strategy, :cached_download, :caveats, :options, :patches, :keg_only?, :fails_with?, :skip_clean?, :brew, :std_cmake_args, :deps, :external_deps, :recursive_deps, :system, :fetch, :verify_download_integrity, :fails_with_llvm, :fails_with_llvm?, :std_cmake_parameters, :mkdir, :mktemp]
 1.8.7 :002 >
 ```
 

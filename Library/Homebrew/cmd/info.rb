@@ -166,10 +166,6 @@ module Homebrew
       specs << s
     end
 
-    if devel = f.devel
-      specs << "devel #{devel.version}"
-    end
-
     specs << "HEAD" if f.head
 
     attrs = []
@@ -229,7 +225,7 @@ module Homebrew
       end
     end
 
-    if !f.options.empty? || f.head || f.devel
+    if !f.options.empty? || f.head
       ohai "Options"
       Options.dump_for_formula f
     end

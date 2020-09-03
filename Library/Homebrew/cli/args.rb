@@ -57,66 +57,57 @@ module Homebrew
       end
 
       def formulae
-        # TODO: enable for next major/minor release
-        # odeprecated "args.formulae", "args.named.to_formulae"
+        odeprecated "args.formulae", "args.named.to_formulae"
         named.to_formulae
       end
 
       def formulae_and_casks
-        # TODO: enable for next major/minor release
-        # odeprecated "args.formulae_and_casks", "args.named.to_formulae_and_casks"
+        odeprecated "args.formulae_and_casks", "args.named.to_formulae_and_casks"
         named.to_formulae_and_casks
       end
 
       def resolved_formulae
-        # TODO: enable for next major/minor release
-        # odeprecated "args.resolved_formulae", "args.named.to_resolved_formulae"
+        odeprecated "args.resolved_formulae", "args.named.to_resolved_formulae"
         named.to_resolved_formulae
       end
 
       def resolved_formulae_casks
-        # TODO: enable for next major/minor release
-        # odeprecated "args.resolved_formulae_casks", "args.named.to_resolved_formulae_to_casks"
+        odeprecated "args.resolved_formulae_casks", "args.named.to_resolved_formulae_to_casks"
         named.to_resolved_formulae_to_casks
       end
 
       def formulae_paths
-        # TODO: enable for next major/minor release
-        # odeprecated "args.formulae_paths", "args.named.to_formulae_paths"
+        odeprecated "args.formulae_paths", "args.named.to_formulae_paths"
         named.to_formulae_paths
       end
 
       def casks
-        # TODO: enable for next major/minor release
-        # odeprecated "args.casks", "args.named.homebrew_tap_cask_names"
+        odeprecated "args.casks", "args.named.homebrew_tap_cask_names"
         named.homebrew_tap_cask_names
       end
 
       def loaded_casks
-        # TODO: enable for next major/minor release
-        # odeprecated "args.loaded_casks", "args.named.to_cask"
+        odeprecated "args.loaded_casks", "args.named.to_cask"
         named.to_casks
       end
 
       def kegs
-        # TODO: enable for next major/minor release
-        # odeprecated "args.kegs", "args.named.to_kegs"
+        odeprecated "args.kegs", "args.named.to_kegs"
         named.to_kegs
       end
 
       def kegs_casks
-        # TODO: enable for next major/minor release
-        # odeprecated "args.kegs", "args.named.to_kegs_to_casks"
+        odeprecated "args.kegs", "args.named.to_kegs_to_casks"
         named.to_kegs_to_casks
       end
 
       def build_stable?
-        !(HEAD? || devel?)
+        !HEAD?
       end
 
       def build_from_source_formulae
         if build_from_source? || build_bottle?
-          formulae.map(&:full_name)
+          named.to_formulae.map(&:full_name)
         else
           []
         end
@@ -124,7 +115,7 @@ module Homebrew
 
       def include_test_formulae
         if include_test?
-          formulae.map(&:full_name)
+          named.to_formulae.map(&:full_name)
         else
           []
         end
@@ -171,8 +162,6 @@ module Homebrew
       def spec(default = :stable)
         if HEAD?
           :head
-        elsif devel?
-          :devel
         else
           default
         end

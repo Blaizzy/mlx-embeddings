@@ -44,10 +44,9 @@ module Homebrew
   def outdated
     args = outdated_args.parse
 
-    case json_version(args.json)
+    case (j = json_version(args.json))
     when :v1, :default
-      # TODO: enable for next major/minor release
-      # odeprecated "brew outdated --json#{json_version == :v1 ? "=v1" : ""}", "brew outdated --json=v2"
+      odeprecated "brew outdated --json#{j == :v1 ? "=v1" : ""}", "brew outdated --json=v2"
 
       outdated = if args.formula? || !args.cask?
         outdated_formulae args: args
