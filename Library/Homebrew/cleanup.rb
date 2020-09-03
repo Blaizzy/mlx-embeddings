@@ -357,8 +357,8 @@ module Homebrew
       else
         check_ruby_version = HOMEBREW_LIBRARY_PATH/"utils/ruby_check_version_script.rb"
         rubies.uniq.any? do |ruby|
-          system ruby, "--enable-frozen-string-literal", "--disable=gems,did_you_mean,rubyopt",
-                 check_ruby_version, HOMEBREW_REQUIRED_RUBY_VERSION
+          quiet_system ruby, "--enable-frozen-string-literal", "--disable=gems,did_you_mean,rubyopt",
+                       check_ruby_version, HOMEBREW_REQUIRED_RUBY_VERSION
         end
       end
 
