@@ -1675,6 +1675,9 @@ For example, you might add something like the following to your ~/.profile, ~/.b
   * `HOMEBREW_VERBOSE`:
     If set, always assume `--verbose` when running commands.
 
+  * `HOMEBREW_DEBUG`:
+    If set, always assume `--debug` when running commands.
+
   * `HOMEBREW_VERBOSE_USING_DOTS`:
     If set, verbose output will print a `.` no more than once a minute. This can be useful to avoid long-running Homebrew commands being killed due to no output.
 
