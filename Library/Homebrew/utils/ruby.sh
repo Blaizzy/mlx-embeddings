@@ -1,12 +1,14 @@
+export HOMEBREW_REQUIRED_RUBY_VERSION=2.6.3
+
 test_ruby () {
   if [[ ! -x $1 ]]
   then
     return 1
   fi
 
-  "$1" --enable-frozen-string-literal --disable=gems,did_you_mean,rubyopt -rrubygems -e \
-    "abort if Gem::Version.new(RUBY_VERSION.to_s.dup).to_s.split('.').first(2) != \
-              Gem::Version.new('$required_ruby_version').to_s.split('.').first(2)" 2>/dev/null
+  "$1" --enable-frozen-string-literal --disable=gems,did_you_mean,rubyopt \
+    "$HOMEBREW_LIBRARY/Homebrew/utils/ruby_check_version_script.rb" \
+    "$HOMEBREW_REQUIRED_RUBY_VERSION" 2>/dev/null
 }
 
 find_ruby() {
@@ -47,7 +49,6 @@ setup-ruby-path() {
   local vendor_ruby_current_version
   # When bumping check if HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH (in brew.sh)
   # also needs to be changed.
-  local required_ruby_version="2.6"
   local ruby_exec
   local upgrade_fail
   local install_fail
@@ -59,12 +60,12 @@ setup-ruby-path() {
   else
     local advice="
 If there's no Homebrew Portable Ruby available for your processor:
-- install Ruby $required_ruby_version with your system package manager (or rbenv/ruby-build)
+- install Ruby $HOMEBREW_REQUIRED_RUBY_VERSION with your system package manager (or rbenv/ruby-build)
 - make it first in your PATH
 - try again
 "
     upgrade_fail="Failed to upgrade Homebrew Portable Ruby!$advice"
-    install_fail="Failed to install Homebrew Portable Ruby and cannot find another Ruby $required_ruby_version!$advice"
+    install_fail="Failed to install Homebrew Portable Ruby and cannot find another Ruby $HOMEBREW_REQUIRED_RUBY_VERSION!$advice"
   fi
 
   vendor_dir="$HOMEBREW_LIBRARY/Homebrew/vendor"
