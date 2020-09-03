@@ -42,7 +42,7 @@ module Formulary
       # access them from within the formula's class scope.
       mod.const_set(:BUILD_FLAGS, flags)
       mod.module_eval(contents, path)
-    rescue NameError, ArgumentError, ScriptError => e
+    rescue NameError, ArgumentError, ScriptError, MethodDeprecatedError => e
       $stderr.puts e.backtrace if Homebrew::EnvConfig.developer?
       raise FormulaUnreadableError.new(name, e)
     end
