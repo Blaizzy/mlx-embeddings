@@ -410,8 +410,6 @@ module Homebrew
         named_args = argv.reject { |arg| arg.start_with?("-") } + non_options
         spec = if argv.include?("--HEAD")
           :head
-        elsif argv.include?("--devel")
-          :devel
         else
           :stable
         end

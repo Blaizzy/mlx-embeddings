@@ -13,7 +13,7 @@ module RuboCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           check_dependency_nodes_order(body_node)
           check_uses_from_macos_nodes_order(body_node)
-          [:devel, :head, :stable].each do |block_name|
+          [:head, :stable].each do |block_name|
             block = find_block(body_node, block_name)
             next unless block
 

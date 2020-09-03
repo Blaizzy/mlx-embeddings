@@ -24,7 +24,7 @@ describe Homebrew::Livecheck do
       desc "Deprecated test formula"
       homepage "https://brew.sh"
       url "https://brew.sh/test-0.0.1.tgz"
-      deprecate!
+      deprecate! because: :unmaintained
     end
   end
 

@@ -14,12 +14,6 @@ describe BuildOptions do
   let(:opts) { Options.create(%w[--with-foo --with-bar --without-baz --without-qux]) }
   let(:bad_args) { Options.create(%w[--with-foo --with-bar --without-bas --without-qux --without-abc]) }
 
-  specify "#include?" do
-    expect(subject).to include("with-foo")
-    expect(subject).not_to include("with-qux")
-    expect(subject).not_to include("--with-foo")
-  end
-
   specify "#with?" do
     expect(subject).to be_built_with("foo")
     expect(subject).to be_built_with("bar")

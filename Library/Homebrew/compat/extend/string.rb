@@ -2,12 +2,8 @@
 
 class String
   module Compat
-    # String.chomp, but if result is empty: returns nil instead.
-    # Allows `chuzzle || foo` short-circuits.
     def chuzzle
-      odeprecated "chuzzle", "chomp.presence"
-      s = chomp
-      s unless s.empty?
+      odisabled ".chuzzle", "&.chomp.presence"
     end
   end
 

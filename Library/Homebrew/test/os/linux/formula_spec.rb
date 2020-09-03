@@ -17,7 +17,6 @@ describe Formula do
       end
 
       expect(f.class.stable.deps.first.name).to eq("foo")
-      expect(f.class.devel.deps.first.name).to eq("foo")
       expect(f.class.head.deps.first.name).to eq("foo")
     end
 
@@ -29,7 +28,6 @@ describe Formula do
       end
 
       expect(f.class.stable.deps.first.name).to eq("foo")
-      expect(f.class.devel.deps.first.name).to eq("foo")
       expect(f.class.head.deps.first.name).to eq("foo")
     end
   end

@@ -84,7 +84,7 @@ class Livecheck
     @url = case val
     when nil
       return @url
-    when :head, :stable, :devel
+    when :head, :stable
       @formula.send(val).url
     when :homepage
       @formula.homepage

@@ -3,7 +3,7 @@
 class NilClass
   module Compat
     def chuzzle
-      odeprecated "chuzzle", "chomp.presence"
+      odisabled ".chuzzle", "&.chomp.presence"
     end
   end
 

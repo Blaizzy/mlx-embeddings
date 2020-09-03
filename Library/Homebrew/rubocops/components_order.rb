@@ -32,7 +32,6 @@ module RuboCop
             [{ name: :livecheck, type: :block_call }],
             [{ name: :bottle,    type: :block_call }],
             [{ name: :pour_bottle?, type: :block_call }],
-            [{ name: :devel,     type: :block_call }],
             [{ name: :head,      type: :block_call }],
             [{ name: :bottle,    type: :method_call }],
             [{ name: :keg_only,  type: :method_call }],

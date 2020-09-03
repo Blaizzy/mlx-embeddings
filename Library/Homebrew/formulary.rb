@@ -220,12 +220,12 @@ module Formulary
     def load_file(flags:)
       if url =~ %r{githubusercontent.com/[\w-]+/[\w-]+/[a-f0-9]{40}(/Formula)?/([\w+-.@]+).rb}
         formula_name = Regexp.last_match(2)
-        odeprecated "Installation of #{formula_name} from a GitHub commit URL",
-                    "'brew extract #{formula_name}' to stable tap on GitHub"
+        odisabled "Installation of #{formula_name} from a GitHub commit URL",
+                  "'brew extract #{formula_name}' to stable tap on GitHub"
       elsif url.match?(%r{^(https?|ftp)://})
-        odeprecated "Non-checksummed download of #{name} formula file from an arbitrary URL",
-                    "'brew extract' or 'brew create' and 'brew tap-new' to create a "\
-                    "formula file in a tap on GitHub"
+        odisabled "Non-checksummed download of #{name} formula file from an arbitrary URL",
+                  "'brew extract' or 'brew create' and 'brew tap-new' to create a "\
+                  "formula file in a tap on GitHub"
       end
       HOMEBREW_CACHE_FORMULA.mkpath
       FileUtils.rm_f(path)

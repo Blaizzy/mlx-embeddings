@@ -327,8 +327,6 @@ installed formulae or, every 30 days, for all formulae.
   Install from a bottle if it exists for the current or newest version of macOS, even if it would not normally be used for installation.
 * `--include-test`:
   Install testing dependencies required to run `brew test` *`formula`*.
-* `--devel`:
-  If *`formula`* defines it, install the development version.
 * `--HEAD`:
   If *`formula`* defines it, install the HEAD version, aka. master, trunk, unstable.
 * `--fetch-HEAD`:
@@ -686,10 +684,6 @@ specify *`formula`* as a required or recommended dependency for their stable bui
   Include all formulae that specify *`formula`* as `:optional` type dependency.
 * `--skip-recommended`:
   Skip all formulae that specify *`formula`* as `:recommended` type dependency.
-* `--devel`:
-  Show usage of *`formula`* by development builds.
-* `--HEAD`:
-  Show usage of *`formula`* by HEAD builds.
 
 ### `--cache` [*`options`*] [*`formula|cask`*]
 

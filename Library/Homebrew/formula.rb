@@ -113,12 +113,10 @@ class Formula
   # @private
   attr_reader :stable
 
-  # The development {SoftwareSpec} for this {Formula}.
-  # Installed when using `brew install --devel`
-  # `nil` if there is no development version.
-  # @see #stable
   # @private
-  attr_reader :devel
+  def devel
+    odisabled "Formula#devel"
+  end
 
   # The HEAD {SoftwareSpec} for this {Formula}.
   # Installed when using `brew install --HEAD`
@@ -136,7 +134,7 @@ class Formula
   protected :active_spec
 
   # A symbol to indicate currently active {SoftwareSpec}.
-  # It's either :stable, :devel or :head
+  # It's either :stable or :head
   # @see #active_spec
   # @private
   attr_reader :active_spec_sym
@@ -207,14 +205,11 @@ class Formula
     @full_alias_name = full_name_with_optional_tap(@alias_name)
 
     spec_eval :stable
-    spec_eval :devel
     spec_eval :head
 
     @active_spec = determine_active_spec(spec)
     @active_spec_sym = if head?
       :head
-    elsif devel?
-      :devel
     else
       :stable
     end
@@ -258,7 +253,7 @@ class Formula
   end
 
   def determine_active_spec(requested)
-    spec = send(requested) || stable || devel || head
+    spec = send(requested) || stable || head
     spec || raise(FormulaSpecificationError, "formulae require at least a URL")
   end
 
@@ -326,10 +321,9 @@ class Formula
     active_spec == stable
   end
 
-  # Is the currently active {SoftwareSpec} a {#devel} build?
   # @private
   def devel?
-    active_spec == devel
+    odisabled "Formula#devel?"
   end
 
   # Is the currently active {SoftwareSpec} a {#head} build?
@@ -533,7 +527,6 @@ class Formula
 
     return true if tab.version_scheme < version_scheme
     return true if stable && tab.stable_version && tab.stable_version < stable.version
-    return true if devel && tab.devel_version && tab.devel_version < devel.version
     return false unless fetch_head
     return false unless head&.downloader.is_a?(VCSDownloadStrategy)
 
@@ -544,14 +537,11 @@ class Formula
     end
   end
 
-  # The latest prefix for this formula. Checks for {#head}, then {#devel}
-  # and then {#stable}'s {#prefix}
+  # The latest prefix for this formula. Checks for {#head} and then {#stable}'s {#prefix}
   # @private
   def latest_installed_prefix
     if head && (head_version = latest_head_version) && !head_version_outdated?(head_version)
       latest_head_prefix
-    elsif devel && (devel_prefix = prefix(PkgVersion.new(devel.version, revision))).directory?
-      devel_prefix
     elsif stable && (stable_prefix = prefix(PkgVersion.new(stable.version, revision))).directory?
       stable_prefix
     else
@@ -1713,7 +1703,6 @@ class Formula
       "homepage"                 => homepage,
       "versions"                 => {
         "stable" => stable&.version&.to_s,
-        "devel"  => devel&.version&.to_s,
         "head"   => head&.version&.to_s,
         "bottle" => !bottle_specification.checksums.empty?,
       },
@@ -1750,34 +1739,32 @@ class Formula
       "disabled"                 => disabled?,
     }
 
-    %w[stable devel].each do |spec_sym|
-      next unless spec = send(spec_sym)
-
-      hsh["urls"][spec_sym] = {
-        "url"      => spec.url,
-        "tag"      => spec.specs[:tag],
-        "revision" => spec.specs[:revision],
+    if stable
+      hsh["urls"]["stable"] = {
+        "url"      => stable.url,
+        "tag"      => stable.specs[:tag],
+        "revision" => stable.specs[:revision],
       }
 
-      next unless spec.bottle_defined?
-
-      bottle_spec = spec.bottle_specification
-      bottle_info = {
-        "rebuild"  => bottle_spec.rebuild,
-        "cellar"   => (cellar = bottle_spec.cellar).is_a?(Symbol) ? cellar.inspect : cellar,
-        "prefix"   => bottle_spec.prefix,
-        "root_url" => bottle_spec.root_url,
-      }
-      bottle_info["files"] = {}
-      bottle_spec.collector.each_key do |os|
-        bottle_url = "#{bottle_spec.root_url}/#{Bottle::Filename.create(self, os, bottle_spec.rebuild).bintray}"
-        checksum = bottle_spec.collector[os]
-        bottle_info["files"][os] = {
-          "url"                   => bottle_url,
-          checksum.hash_type.to_s => checksum.hexdigest,
+      if bottle_defined?
+        bottle_spec = stable.bottle_specification
+        bottle_info = {
+          "rebuild"  => bottle_spec.rebuild,
+          "cellar"   => (cellar = bottle_spec.cellar).is_a?(Symbol) ? cellar.inspect : cellar,
+          "prefix"   => bottle_spec.prefix,
+          "root_url" => bottle_spec.root_url,
         }
+        bottle_info["files"] = {}
+        bottle_spec.collector.each_key do |os|
+          bottle_url = "#{bottle_spec.root_url}/#{Bottle::Filename.create(self, os, bottle_spec.rebuild).bintray}"
+          checksum = bottle_spec.collector[os]
+          bottle_info["files"][os] = {
+            "url"                   => bottle_url,
+            checksum.hash_type.to_s => checksum.hexdigest,
+          }
+        end
+        hsh["bottle"]["stable"] = bottle_info
       end
-      hsh["bottle"][spec_sym] = bottle_info
     end
 
     hsh["options"] = options.map do |opt|
@@ -2203,18 +2190,9 @@ class Formula
       when :test
         define_method(:test_defined?) { true }
       when :patches
-        odeprecated "a Formula#patches definition", "'patch do' block calls"
+        odisabled "a Formula#patches definition", "'patch do' block calls"
       when :options
-        odeprecated "a Formula#options definition", "'option do' block calls"
-        instance = allocate
-
-        specs.each do |spec|
-          instance.options.each do |opt, desc|
-            spec.option(opt[/^--(.+)$/, 1], desc)
-          end
-        end
-
-        remove_method(:options)
+        odisabled "a Formula#options definition", "'option do' block calls"
       end
     end
 
@@ -2259,8 +2237,7 @@ class Formula
         @licenses
       else
         if args.is_a? Array
-          # TODO: enable for next major/minor release
-          # odeprecated "`license [...]`", "`license any_of: [...]`"
+          odeprecated "`license [...]`", "`license any_of: [...]`"
           args = { any_of: args }
         end
         @licenses = args
@@ -2318,10 +2295,10 @@ class Formula
     # <pre>version_scheme 1</pre>
     attr_rw :version_scheme
 
-    # A list of the {.stable}, {.devel} and {.head} {SoftwareSpec}s.
+    # A list of the {.stable} and {.head} {SoftwareSpec}s.
     # @private
     def specs
-      @specs ||= [stable, devel, head].freeze
+      @specs ||= [stable, head].freeze
     end
 
     # @!attribute [w] url
@@ -2449,25 +2426,9 @@ class Formula
       @stable.instance_eval(&block)
     end
 
-    # @!attribute [w] devel
-    # Adds a {.devel} {SoftwareSpec}.
-    # This can be installed by passing the `--devel` option to allow
-    # installing non-stable (e.g. beta) versions of software.
-    #
-    # <pre>devel do
-    #   url "https://example.com/archive-2.0-beta.tar.gz"
-    #   sha256 "2a2ba417eebaadcb4418ee7b12fe2998f26d6e6f7fda7983412ff66a741ab6f7"
-    #
-    #   depends_on "cairo"
-    #   depends_on "pixman"
-    # end</pre>
     # @private
-    def devel(&block)
-      @devel ||= SoftwareSpec.new(flags: build_flags)
-      return @devel unless block_given?
-
-      odeprecated "'devel' blocks in formulae", "'head' blocks or @-versioned formulae"
-      @devel.instance_eval(&block)
+    def devel
+      odisabled "'devel' blocks in formulae", "'head' blocks or @-versioned formulae"
     end
 
     # @!attribute [w] head
@@ -2784,8 +2745,7 @@ class Formula
     # <pre>deprecate! date: "2020-08-27", because: :unmaintained</pre>
     # <pre>deprecate! date: "2020-08-27", because: "it has been replaced by"</pre>
     def deprecate!(date: nil, because: nil)
-      # TODO: enable for next major/minor release
-      # odeprecated "`deprecate!` without a reason", "`deprecate! because: \"reason\"`" if because.blank?
+      odeprecated "`deprecate!` without a reason", "`deprecate! because: \"reason\"`" if because.blank?
 
       return if date.present? && Date.parse(date) > Date.today
 
@@ -2811,8 +2771,7 @@ class Formula
     # <pre>disable! date: "2020-08-27", because: :does_not_build</pre>
     # <pre>disable! date: "2020-08-27", because: "has been replaced by foo"</pre>
     def disable!(date: nil, because: nil)
-      # TODO: enable for next major/minor release
-      # odeprecated "`disable!` without a reason", "`disable! because: \"reason\"`" if because.blank?
+      odeprecated "`disable!` without a reason", "`disable! because: \"reason\"`" if because.blank?
 
       if date.present? && Date.parse(date) > Date.today
         @deprecation_reason = because if because.present?

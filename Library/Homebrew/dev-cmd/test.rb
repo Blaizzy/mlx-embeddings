@@ -85,11 +85,7 @@ module Homebrew
           #{f.path}
         ].concat(args.options_only)
 
-        if f.head?
-          exec_args << "--HEAD"
-        elsif f.devel?
-          exec_args << "--devel"
-        end
+        exec_args << "--HEAD" if f.head?
 
         Utils.safe_fork do
           if Sandbox.available?

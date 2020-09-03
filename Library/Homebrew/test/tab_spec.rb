@@ -38,7 +38,6 @@ describe Tab do
         "spec"     => "stable",
         "versions" => {
           "stable" => "0.10",
-          "devel"  => "0.14",
           "head"   => "HEAD-1111111",
         },
       },
@@ -66,14 +65,12 @@ describe Tab do
     expect(tab).not_to be_built_as_bottle
     expect(tab).not_to be_poured_from_bottle
     expect(tab).to be_stable
-    expect(tab).not_to be_devel
     expect(tab).not_to be_head
     expect(tab.tap).to be nil
     expect(tab.time).to be nil
     expect(tab.HEAD).to be nil
     expect(tab.runtime_dependencies).to be nil
     expect(tab.stable_version).to be nil
-    expect(tab.devel_version).to be nil
     expect(tab.head_version).to be nil
     expect(tab.cxxstdlib.compiler).to eq(DevelopmentTools.default_compiler)
     expect(tab.cxxstdlib.type).to be nil
@@ -90,11 +87,6 @@ describe Tab do
     expect(subject).to be_built_with("qux")
     expect(subject).not_to be_built_with("bar")
     expect(subject).not_to be_built_with("baz")
-  end
-
-  specify "#universal?" do
-    tab = described_class.new(used_options: %w[--universal])
-    expect(tab).to be_universal
   end
 
   specify "#parsed_homebrew_version" do
@@ -179,7 +171,6 @@ describe Tab do
       expect(tab).not_to be_built_as_bottle
       expect(tab).to be_poured_from_bottle
       expect(tab).to be_stable
-      expect(tab).not_to be_devel
       expect(tab).not_to be_head
       expect(tab.tap.name).to eq("homebrew/core")
       expect(tab.spec).to eq(:stable)
@@ -189,7 +180,6 @@ describe Tab do
       expect(tab.cxxstdlib.type).to eq(:libcxx)
       expect(tab.runtime_dependencies).to eq(runtime_dependencies)
       expect(tab.stable_version.to_s).to eq("2.14")
-      expect(tab.devel_version.to_s).to eq("2.15")
       expect(tab.head_version.to_s).to eq("HEAD-0000000")
       expect(tab.source["path"]).to eq(source_path)
     end
@@ -209,7 +199,6 @@ describe Tab do
       expect(tab).not_to be_built_as_bottle
       expect(tab).to be_poured_from_bottle
       expect(tab).to be_stable
-      expect(tab).not_to be_devel
       expect(tab).not_to be_head
       expect(tab.tap.name).to eq("homebrew/core")
       expect(tab.spec).to eq(:stable)
@@ -219,7 +208,6 @@ describe Tab do
       expect(tab.cxxstdlib.type).to eq(:libcxx)
       expect(tab.runtime_dependencies).to eq(runtime_dependencies)
       expect(tab.stable_version.to_s).to eq("2.14")
-      expect(tab.devel_version.to_s).to eq("2.15")
       expect(tab.head_version.to_s).to eq("HEAD-0000000")
       expect(tab.source["path"]).to eq(source_path)
     end
@@ -233,7 +221,6 @@ describe Tab do
       expect(tab).not_to be_built_as_bottle
       expect(tab).to be_poured_from_bottle
       expect(tab).to be_stable
-      expect(tab).not_to be_devel
       expect(tab).not_to be_head
       expect(tab.tap.name).to eq("homebrew/core")
       expect(tab.spec).to eq(:stable)
@@ -385,7 +372,6 @@ describe Tab do
     expect(tab.stdlib).to eq(subject.stdlib)
     expect(tab.runtime_dependencies).to eq(subject.runtime_dependencies)
     expect(tab.stable_version).to eq(subject.stable_version)
-    expect(tab.devel_version).to eq(subject.devel_version)
     expect(tab.head_version).to eq(subject.head_version)
     expect(tab.source["path"]).to eq(subject.source["path"])
   end

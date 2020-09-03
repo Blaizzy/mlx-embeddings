@@ -36,21 +36,12 @@ module Homebrew
              description: "Include all formulae that specify <formula> as `:optional` type dependency."
       switch "--skip-recommended",
              description: "Skip all formulae that specify <formula> as `:recommended` type dependency."
-      switch "--devel",
-             description: "Show usage of <formula> by development builds."
-      switch "--HEAD",
-             description: "Show usage of <formula> by HEAD builds."
-
-      conflicts "--devel", "--HEAD"
       min_named :formula
     end
   end
 
   def uses
     args = uses_args.parse
-
-    odeprecated "brew uses --devel" if args.devel?
-    odeprecated "brew uses --HEAD" if args.HEAD?
 
     Formulary.enable_factory_cache!
 

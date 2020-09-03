@@ -227,10 +227,9 @@ module Cask
                       detect_external_command(*argv) ||
                       [args.remaining.empty? ? NullCommand : UnknownSubcommand.new(args.remaining.first), argv]
 
-      # TODO: enable for next major/minor release
-      # if (replacement = DEPRECATED_COMMANDS[command])
-      #   odeprecated "brew cask #{command.command_name}", replacement
-      # end
+      if (replacement = DEPRECATED_COMMANDS[command])
+        odeprecated "brew cask #{command.command_name}", replacement
+      end
 
       if args.help?
         puts command.help
