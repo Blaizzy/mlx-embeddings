@@ -34,11 +34,9 @@ describe Cask::Audit, :cask do
   let(:token_conflicts) { false }
   let(:strict) { false }
   let(:new_cask) { false }
-  let(:fake_system_command) { class_double(SystemCommand) }
   let(:audit) {
     described_class.new(cask, download:        download,
                               token_conflicts: token_conflicts,
-                              command:         fake_system_command,
                               strict:          strict,
                               new_cask:        new_cask)
   }

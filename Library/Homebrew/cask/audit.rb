@@ -14,22 +14,32 @@ module Cask
   class Audit
     extend Predicable
 
-    attr_reader :cask, :commit_range, :download
+    attr_reader :cask, :download
 
     attr_predicate :appcast?, :new_cask?, :strict?, :online?
 
-    def initialize(cask, appcast: false, download: false, quarantine: nil,
-                   token_conflicts: false, online: false, strict: false,
-                   new_cask: false, commit_range: nil, command: SystemCommand)
+    def initialize(cask, appcast: nil, download: nil, quarantine: nil,
+                   token_conflicts: nil, online: nil, strict: nil,
+                   new_cask: nil)
+
+      # `new_cask` implies `online` and `strict`
+      online = new_cask if online.nil?
+      strict = new_cask if strict.nil?
+
+      # `online` implies `appcast` and `download`
+      appcast = online if appcast.nil?
+      download = online if download.nil?
+
+      # `strict` implies `token_conflicts`
+      token_conflicts = strict if token_conflicts.nil?
+
       @cask = cask
       @appcast = appcast
       @download = Download.new(cask, quarantine: quarantine) if download
       @online = online
       @strict = strict
       @new_cask = new_cask
-      @commit_range = commit_range
       @token_conflicts = token_conflicts
-      @command = command
     end
 
     def run!
