@@ -41,8 +41,13 @@ module Homebrew
              description: "Output information in JSON format."
       switch "-q", "--quiet",
              description: "Suppress warnings, don't print a progress bar for JSON output."
+      switch "--formula", "--formulae",
+             description: "Only check formulae."
+      switch "--cask", "--casks",
+             description: "Only check casks."
       conflicts "--debug", "--json"
       conflicts "--tap=", "--all", "--installed"
+      conflicts "--cask", "--formula"
     end
   end
 
@@ -56,21 +61,38 @@ module Homebrew
 
     formulae_and_casks_to_check = if args.tap
       tap = Tap.fetch(args.tap)
-      formulae = tap.formula_names.map { |name| Formula[name] }
-      casks = tap.cask_tokens.map { |token| Cask::CaskLoader.load(token) }
+      formulae = !args.cask? ? tap.formula_names.map { |name| Formula[name] } : []
+      casks = !args.formula? ? tap.cask_tokens.map { |token| Cask::CaskLoader.load(token) } : []
       formulae + casks
     elsif args.installed?
-      Formula.installed + Cask::Caskroom.casks
+      formulae = !args.cask? ? Formula.installed : []
+      casks = !args.formula? ? Cask::Caskroom.casks : []
+      formulae + casks
     elsif args.all?
-      Formula.to_a + Cask::Cask.to_a
+      formulae = !args.cask? ? Formula.to_a : []
+      casks = !args.formula? ? Cask::Cask.to_a : []
+      formulae + casks
     elsif args.named.present?
-      args.named.to_formulae_and_casks
+      if args.formula?
+        args.named.to_formulae
+      elsif args.cask?
+        args.named.to_casks
+      else
+        args.named.to_formulae_and_casks
+      end
     elsif File.exist?(WATCHLIST_PATH)
       begin
         names = Pathname.new(WATCHLIST_PATH).read.lines
                         .reject { |line| line.start_with?("#") || line.blank? }
                         .map(&:strip)
-        CLI::NamedArgs.new(*names).to_formulae_and_casks
+        named_args = CLI::NamedArgs.new(*names)
+        if args.formula?
+          named_args.to_formulae
+        elsif args.cask?
+          named_args.to_casks
+        else
+          named_args.to_formulae_and_casks
+        end
       rescue Errno::ENOENT => e
         onoe e
       end
