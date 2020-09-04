@@ -5483,22 +5483,8 @@ class Cask::Audit
   def online?(); end
 
   def strict?(); end
-end
 
-class Cask::Auditor
-  def audit_appcast?(); end
-
-  def audit_download?(); end
-
-  def audit_new_cask?(); end
-
-  def audit_online?(); end
-
-  def audit_strict?(); end
-
-  def audit_token_conflicts?(); end
-
-  def quarantine?(); end
+  def token_conflicts?(); end
 end
 
 class Cask::Cask
