@@ -841,7 +841,9 @@ nor vice versa. It must use whichever style specification the formula already us
 * `-n`, `--dry-run`:
   Print what would be done rather than doing it.
 * `--write`:
-  When passed along with `--dry-run`, perform a not-so-dry run by making the expected file modifications but not taking any Git actions.
+  Make the expected file modifications without taking any Git actions.
+* `--commit`:
+  When passed with `--write`, generate a new commit after writing changes to the formula file.
 * `--no-audit`:
   Don't run `brew audit` before opening the PR.
 * `--strict`:
