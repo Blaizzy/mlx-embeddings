@@ -470,9 +470,9 @@ module Cask
       return if metadata.nil?
 
       if metadata["prerelease"]
-        problem "#{cask.version} is a GitHub prerelease"
+        add_error "#{cask.version} is a GitHub prerelease"
       elsif metadata["draft"]
-        problem "#{cask.version} is a GitHub draft"
+        add_error "#{cask.version} is a GitHub draft"
       end
     end
 
@@ -485,7 +485,7 @@ module Cask
       metadata = SharedAudits.gitlab_release_data(user, repo, cask.version)
       return if metadata.nil?
 
-      problem "#{cask.version} is a GitLab prerelease" if Date.parse(metadata["released_at"]) > Date.today
+      add_error "#{cask.version} is a GitLab prerelease" if Date.parse(metadata["released_at"]) > Date.today
     end
 
     def check_github_repository_archived
@@ -497,7 +497,7 @@ module Cask
       metadata = SharedAudits.github_repo_data(user, repo)
       return if metadata.nil?
 
-      problem "GitHub repo is archived" if metadata["archived"]
+      add_error "GitHub repo is archived" if metadata["archived"]
     end
 
     def check_gitlab_repository_archived
@@ -509,7 +509,7 @@ module Cask
       metadata = SharedAudits.gitlab_repo_data(user, repo)
       return if metadata.nil?
 
-      problem "GitLab repo is archived" if metadata["archived"]
+      add_error "GitLab repo is archived" if metadata["archived"]
     end
 
     def check_github_repository
