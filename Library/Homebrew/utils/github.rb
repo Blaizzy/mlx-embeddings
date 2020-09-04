@@ -630,4 +630,88 @@ module GitHub
     username = response.fetch("owner").fetch("login")
     [remote_url, username]
   end
+
+  def create_bump_pr(info, args:)
+    sourcefile_path = info[:sourcefile_path]
+    old_contents = info[:old_contents]
+    additional_files = info[:additional_files] || []
+    origin_branch = info[:origin_branch]
+    branch = info[:branch_name]
+    commit_message = info[:commit_message]
+    previous_branch = info[:previous_branch]
+    tap = info[:tap]
+    tap_full_name = info[:tap_full_name]
+    pr_message = info[:pr_message]
+
+    sourcefile_path.parent.cd do
+      _, base_branch = origin_branch.split("/")
+      git_dir = Utils.popen_read("git rev-parse --git-dir").chomp
+      shallow = !git_dir.empty? && File.exist?("#{git_dir}/shallow")
+      changed_files = [sourcefile_path]
+      changed_files += additional_files if additional_files.present?
+
+      if args.dry_run? || (args.write? && !args.commit?)
+        ohai "try to fork repository with GitHub API" unless args.no_fork?
+        ohai "git fetch --unshallow origin" if shallow
+        ohai "git add #{changed_files.join(" ")}"
+        ohai "git checkout --no-track -b #{branch} #{origin_branch}"
+        ohai "git commit --no-edit --verbose --message='#{commit_message}'" \
+             " -- #{changed_files.join(" ")}"
+        ohai "git push --set-upstream $HUB_REMOTE #{branch}:#{branch}"
+        ohai "git checkout --quiet #{previous_branch}"
+        ohai "create pull request with GitHub API (base branch: #{base_branch})"
+      else
+
+        unless args.commit?
+          if args.no_fork?
+            remote_url = Utils.popen_read("git remote get-url --push origin").chomp
+            username = tap.user
+          else
+            begin
+              remote_url, username = GitHub.forked_repo_info!(tap_full_name)
+            rescue *GitHub.api_errors => e
+              sourcefile_path.atomic_write(old_contents)
+              odie "Unable to fork: #{e.message}!"
+            end
+          end
+
+          safe_system "git", "fetch", "--unshallow", "origin" if shallow
+        end
+
+        safe_system "git", "add", *changed_files
+        safe_system "git", "checkout", "--no-track", "-b", branch, origin_branch unless args.commit?
+        safe_system "git", "commit", "--no-edit", "--verbose",
+                    "--message=#{commit_message}",
+                    "--", *changed_files
+        return if args.commit?
+
+        safe_system "git", "push", "--set-upstream", remote_url, "#{branch}:#{branch}"
+        safe_system "git", "checkout", "--quiet", previous_branch
+        pr_message = <<~EOS
+          #{pr_message}
+        EOS
+        user_message = args.message
+        if user_message
+          pr_message += <<~EOS
+
+            ---
+
+            #{user_message}
+          EOS
+        end
+
+        begin
+          url = GitHub.create_pull_request(tap_full_name, commit_message,
+                                           "#{username}:#{branch}", base_branch, pr_message)["html_url"]
+          if args.no_browse?
+            puts url
+          else
+            exec_browser url
+          end
+        rescue *GitHub.api_errors => e
+          odie "Unable to open pull request: #{e.message}!"
+        end
+      end
+    end
+  end
 end

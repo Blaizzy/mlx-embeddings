@@ -340,64 +340,19 @@ module Homebrew
 
     run_audit(formula, alias_rename, old_contents, args: args)
 
-    formula.path.parent.cd do
-      _, base_branch = origin_branch.split("/")
-      branch = "bump-#{formula.name}-#{new_formula_version}"
-      git_dir = Utils.popen_read("git rev-parse --git-dir").chomp
-      shallow = !git_dir.empty? && File.exist?("#{git_dir}/shallow")
-      changed_files = [formula.path]
-      changed_files += alias_rename if alias_rename.present?
-
-      if args.dry_run? || (args.write? && !args.commit?)
-        ohai "try to fork repository with GitHub API" unless args.no_fork?
-        ohai "git fetch --unshallow origin" if shallow
-        ohai "git add #{alias_rename.first} #{alias_rename.last}" if alias_rename.present?
-        ohai "git checkout --no-track -b #{branch} #{origin_branch}"
-        ohai "git commit --no-edit --verbose --message='#{formula.name} " \
-             "#{new_formula_version}' -- #{changed_files.join(" ")}"
-        ohai "git push --set-upstream $HUB_REMOTE #{branch}:#{branch}"
-        ohai "git checkout --quiet #{previous_branch}"
-        ohai "create pull request with GitHub API (base branch: #{base_branch})"
-      else
-
-        safe_system "git", "fetch", "--unshallow", "origin" if shallow && !args.commit?
-        safe_system "git", "add", *alias_rename if alias_rename.present?
-        safe_system "git", "checkout", "--no-track", "-b", branch, origin_branch unless args.commit?
-        safe_system "git", "commit", "--no-edit", "--verbose",
-                    "--message=#{formula.name} #{new_formula_version}",
-                    "--", *changed_files
-        return if args.commit?
-
-        remote_url, username = determine_remote_and_username(formula, tap_full_name, old_contents, args: args)
-        safe_system "git", "push", "--set-upstream", remote_url, "#{branch}:#{branch}"
-        safe_system "git", "checkout", "--quiet", previous_branch
-        pr_message = <<~EOS
-          Created with `brew bump-formula-pr`.
-        EOS
-        user_message = args.message
-        if user_message
-          pr_message += <<~EOS
-
-            ---
-
-            #{user_message}
-          EOS
-        end
-        pr_title = "#{formula.name} #{new_formula_version}"
-
-        begin
-          url = GitHub.create_pull_request(tap_full_name, pr_title,
-                                           "#{username}:#{branch}", base_branch, pr_message)["html_url"]
-          if args.no_browse?
-            puts url
-          else
-            exec_browser url
-          end
-        rescue *GitHub.api_errors => e
-          odie "Unable to open pull request: #{e.message}!"
-        end
-      end
-    end
+    pr_info = {
+      sourcefile_path:  formula.path,
+      old_contents:     old_contents,
+      additional_files: alias_rename,
+      origin_branch:    origin_branch,
+      branch_name:      "bump-#{formula.name}-#{new_formula_version}",
+      commit_message:   "#{formula.name} #{new_formula_version}",
+      previous_branch:  previous_branch,
+      tap:              formula.tap,
+      tap_full_name:    tap_full_name,
+      pr_message:       "Created with `brew bump-formula-pr`.",
+    }
+    GitHub.create_bump_pr(pr_info, args: args)
   end
 
   def determine_formula_from_url(url)
@@ -506,20 +461,5 @@ module Homebrew
     formula.path.atomic_write(old_contents)
     FileUtils.mv alias_rename.last, alias_rename.first if alias_rename.present?
     odie "`brew audit` failed!"
-  end
-
-  def determine_remote_and_username(formula, tap_full_name, old_contents, args:)
-    if args.no_fork?
-      remote_url = Utils.popen_read("git remote get-url --push origin").chomp
-      username = formula.tap.user
-      [remote_url, username]
-    else
-      begin
-        GitHub.forked_repo_info!(tap_full_name)
-      rescue *GitHub.api_errors => e
-        formula.path.atomic_write(old_contents)
-        odie "Unable to fork: #{e.message}!"
-      end
-    end
   end
 end
