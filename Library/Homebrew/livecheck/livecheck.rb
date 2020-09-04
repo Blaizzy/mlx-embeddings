@@ -44,7 +44,7 @@ module Homebrew
     # Executes the livecheck logic for each formula/cask in the
     # `formulae_and_casks_to_check` array and prints the results.
     # @return [nil]
-    def livecheck_formulae_and_casks(formulae_and_casks_to_check, args)
+    def run_checks(formulae_and_casks_to_check, args)
       # Identify any non-homebrew/core taps in use for current formulae
       non_core_taps = {}
       formulae_and_casks_to_check.each do |fc|

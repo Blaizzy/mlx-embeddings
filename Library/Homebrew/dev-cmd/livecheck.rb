@@ -80,6 +80,6 @@ module Homebrew
 
     raise UsageError, "No formulae or casks to check." if formulae_and_casks_to_check.blank?
 
-    Livecheck.livecheck_formulae_and_casks(formulae_and_casks_to_check, args)
+    Livecheck.run_checks(formulae_and_casks_to_check, args)
   end
 end
