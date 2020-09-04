@@ -119,5 +119,10 @@ module Utils
       ENV["GIT_AUTHOR_EMAIL"] = Homebrew::EnvConfig.git_email if author
       ENV["GIT_COMMITTER_EMAIL"] = Homebrew::EnvConfig.git_email if committer
     end
+
+    def origin_branch(repo)
+      Utils.popen_read("git", "-C", repo, "symbolic-ref", "-q", "--short",
+                       "refs/remotes/origin/HEAD").chomp.presence
+    end
   end
 end
