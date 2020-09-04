@@ -6,7 +6,7 @@ on:
     branches-ignore:
       - master
   schedule:
-    - cron: '0 */12 * * *'
+    - cron: '0 0 * * *'
 jobs:
   tapioca:
     if: github.repository == 'Homebrew/brew'
