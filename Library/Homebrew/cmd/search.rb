@@ -13,7 +13,7 @@ module Homebrew
 
   PACKAGE_MANAGERS = {
     macports: ->(query) { "https://www.macports.org/ports.php?by=name&substr=#{query}" },
-    fink:     ->(query) { "http://pdb.finkproject.org/pdb/browse.php?summary=#{query}" },
+    fink:     ->(query) { "https://pdb.finkproject.org/pdb/browse.php?summary=#{query}" },
     opensuse: ->(query) { "https://software.opensuse.org/search?q=#{query}" },
     fedora:   ->(query) { "https://apps.fedoraproject.org/packages/s/#{query}" },
     debian:   lambda { |query|
