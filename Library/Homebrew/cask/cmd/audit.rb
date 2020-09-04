@@ -19,7 +19,7 @@ module Cask
         super do
           switch "--download",
                  description: "Audit the downloaded file"
-          switch "--appcast",
+          switch "--[no-]appcast",
                  description: "Audit the appcast"
           switch "--token-conflicts",
                  description: "Audit for token conflicts"
