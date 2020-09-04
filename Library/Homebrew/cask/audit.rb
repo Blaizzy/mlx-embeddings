@@ -16,7 +16,7 @@ module Cask
 
     attr_reader :cask, :download
 
-    attr_predicate :appcast?, :new_cask?, :strict?, :online?
+    attr_predicate :appcast?, :new_cask?, :strict?, :online?, :token_conflicts?
 
     def initialize(cask, appcast: nil, download: nil, quarantine: nil,
                    token_conflicts: nil, online: nil, strict: nil,
@@ -355,7 +355,7 @@ module Cask
     end
 
     def check_token_conflicts
-      return unless @token_conflicts
+      return unless token_conflicts?
       return unless core_formula_names.include?(cask.token)
 
       add_warning "possible duplicate, cask token conflicts with Homebrew core formula: #{core_formula_url}"
