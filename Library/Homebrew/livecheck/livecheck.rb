@@ -92,7 +92,7 @@ module Homebrew
         )
       end
 
-      formulae_checked = formulae_and_casks_to_check.sort_by(&:name).map.with_index do |formula_or_cask, i|
+      formulae_checked = formulae_and_casks_to_check.map.with_index do |formula_or_cask, i|
         formula = formula_or_cask if formula_or_cask.is_a?(Formula)
         cask = formula_or_cask if formula_or_cask.is_a?(Cask::Cask)
 
