@@ -19,7 +19,7 @@ module Cask
         super do
           switch "--download",
                  description: "Audit the downloaded file"
-          switch "--appcast",
+          switch "--[no-]appcast",
                  description: "Audit the appcast"
           switch "--token-conflicts",
                  description: "Audit for token conflicts"
@@ -38,16 +38,14 @@ module Cask
         require "cask/auditor"
 
         Homebrew.auditing = true
-        strict = args.new_cask? || args.strict?
-        online = args.new_cask? || args.online?
 
         options = {
-          audit_download:        online || args.download?,
-          audit_appcast:         online || args.appcast?,
-          audit_online:          online,
-          audit_strict:          strict,
+          audit_download:        args.download?,
+          audit_appcast:         args.appcast?,
+          audit_online:          args.online?,
+          audit_strict:          args.strict?,
           audit_new_cask:        args.new_cask?,
-          audit_token_conflicts: strict || args.token_conflicts?,
+          audit_token_conflicts: args.token_conflicts?,
           quarantine:            args.quarantine?,
           language:              args.language,
         }.compact

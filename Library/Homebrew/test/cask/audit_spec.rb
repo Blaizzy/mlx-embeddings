@@ -30,18 +30,51 @@ describe Cask::Audit, :cask do
   end
 
   let(:cask) { instance_double(Cask::Cask) }
-  let(:download) { false }
-  let(:token_conflicts) { false }
-  let(:strict) { false }
-  let(:new_cask) { false }
-  let(:fake_system_command) { class_double(SystemCommand) }
+  let(:new_cask) { nil }
+  let(:online) { nil }
+  let(:strict) { nil }
+  let(:token_conflicts) { nil }
   let(:audit) {
-    described_class.new(cask, download:        download,
-                              token_conflicts: token_conflicts,
-                              command:         fake_system_command,
+    described_class.new(cask, online:          online,
+
                               strict:          strict,
-                              new_cask:        new_cask)
+                              new_cask:        new_cask,
+                              token_conflicts: token_conflicts)
   }
+
+  describe "#new" do
+    context "when `new_cask` is specified" do
+      let(:new_cask) { true }
+
+      it "implies `online`" do
+        expect(audit).to be_online
+      end
+
+      it "implies `strict`" do
+        expect(audit).to be_strict
+      end
+    end
+
+    context "when `online` is specified" do
+      let(:online) { true }
+
+      it "implies `appcast`" do
+        expect(audit.appcast?).to be true
+      end
+
+      it "implies `download`" do
+        expect(audit.download).to be_truthy
+      end
+    end
+
+    context "when `strict` is specified" do
+      let(:strict) { true }
+
+      it "implies `token_conflicts`" do
+        expect(audit.token_conflicts?).to be true
+      end
+    end
+  end
 
   describe "#result" do
     subject { audit.result }
