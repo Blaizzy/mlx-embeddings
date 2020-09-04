@@ -99,7 +99,7 @@ module Cask
         Cask '#{token}' is already installed.
 
         To re-install #{token}, run:
-          #{Formatter.identifier("brew cask reinstall #{token}")}
+          #{Formatter.identifier("brew reinstall #{token}")}
       EOS
     end
   end
