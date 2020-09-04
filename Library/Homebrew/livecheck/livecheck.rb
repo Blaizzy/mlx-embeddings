@@ -339,34 +339,26 @@ module Homebrew
       puts "#{formula_or_cask_s} : #{current_s} ==> #{latest_s}"
     end
 
-    # Returns an Array containing the formula URLs that can be used by livecheck.
+    # Returns an Array containing the formula/cask URLs that can be used by livecheck.
     # @return [Array]
-    def checkable_formula_urls(formula)
-      urls = []
-      urls << formula.head.url if formula.head
-      if formula.stable
-        urls << formula.stable.url
-        urls.concat(formula.stable.mirrors)
-      end
-      urls << formula.homepage if formula.homepage
-
-      urls.compact
-    end
-
-    def checkable_cask_urls(cask)
-      urls = []
-      urls << cask.appcast.to_s if cask.appcast
-      urls << cask.url.to_s
-      urls << cask.homepage if cask.homepage
-      urls.compact
-    end
-
     def checkable_urls(formula_or_cask)
-      if formula_or_cask.is_a?(Formula)
-        checkable_formula_urls(formula_or_cask)
-      else
-        checkable_cask_urls(formula_or_cask)
+      urls = []
+
+      case formula_or_cask
+      when Formula
+        urls << formula_or_cask.head.url if formula_or_cask.head
+        if formula_or_cask.stable
+          urls << formula_or_cask.stable.url
+          urls.concat(formula_or_cask.stable.mirrors)
+        end
+        urls << formula_or_cask.homepage if formula_or_cask.homepage
+      when Cask::Cask
+        urls << formula_or_cask.appcast.to_s if formula_or_cask.appcast
+        urls << formula_or_cask.url.to_s if formula_or_cask.url
+        urls << formula_or_cask.homepage if formula_or_cask.homepage
       end
+
+      urls.compact
     end
 
     # Preprocesses and returns the URL used by livecheck.
