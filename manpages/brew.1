@@ -1134,6 +1134,60 @@ Display out\-of\-date brew formulae and the latest version available\. Also disp
 \fB\-\-limit\fR
 Limit number of package results returned\.
 .
+.SS "\fBbump\-cask\-pr\fR [\fIoptions\fR] [\fIcask\fR]"
+Create a pull request to update \fIcask\fR with a new version\.
+.
+.P
+A best effort to determine the \fISHA\-256\fR will be made if the value is not supplied by the user\.
+.
+.TP
+\fB\-n\fR, \fB\-\-dry\-run\fR
+Print what would be done rather than doing it\.
+.
+.TP
+\fB\-\-write\fR
+Make the expected file modifications without taking any Git actions\.
+.
+.TP
+\fB\-\-commit\fR
+When passed with \fB\-\-write\fR, generate a new commit after writing changes to the cask file\.
+.
+.TP
+\fB\-\-no\-audit\fR
+Don\'t run \fBbrew cask audit\fR before opening the PR\.
+.
+.TP
+\fB\-\-no\-style\fR
+Don\'t run \fBbrew cask style \-\-fix\fR before opening the PR\.
+.
+.TP
+\fB\-\-no\-browse\fR
+Print the pull request URL instead of opening in a browser\.
+.
+.TP
+\fB\-\-no\-fork\fR
+Don\'t try to fork the repository\.
+.
+.TP
+\fB\-\-version\fR
+Specify the new \fIversion\fR for the cask\.
+.
+.TP
+\fB\-\-message\fR
+Append \fImessage\fR to the default pull request message\.
+.
+.TP
+\fB\-\-url\fR
+Specify the \fIURL\fR for the new download\.
+.
+.TP
+\fB\-\-sha256\fR
+Specify the \fISHA\-256\fR checksum of the new download\.
+.
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+Ignore duplicate open PRs\.
+.
 .SS "\fBbump\-formula\-pr\fR [\fIoptions\fR] [\fIformula\fR]"
 Create a pull request to update \fIformula\fR with a new URL or a new tag\.
 .

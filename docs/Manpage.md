@@ -819,6 +819,38 @@ Also displays whether a pull request has been opened with the URL.
 * `--limit`:
   Limit number of package results returned.
 
+### `bump-cask-pr` [*`options`*] [*`cask`*]
+
+Create a pull request to update *`cask`* with a new version.
+
+A best effort to determine the *`SHA-256`* will be made if the value is not
+supplied by the user.
+
+* `-n`, `--dry-run`:
+  Print what would be done rather than doing it.
+* `--write`:
+  Make the expected file modifications without taking any Git actions.
+* `--commit`:
+  When passed with `--write`, generate a new commit after writing changes to the cask file.
+* `--no-audit`:
+  Don't run `brew cask audit` before opening the PR.
+* `--no-style`:
+  Don't run `brew cask style --fix` before opening the PR.
+* `--no-browse`:
+  Print the pull request URL instead of opening in a browser.
+* `--no-fork`:
+  Don't try to fork the repository.
+* `--version`:
+  Specify the new *`version`* for the cask.
+* `--message`:
+  Append *`message`* to the default pull request message.
+* `--url`:
+  Specify the *`URL`* for the new download.
+* `--sha256`:
+  Specify the *`SHA-256`* checksum of the new download.
+* `-f`, `--force`:
+  Ignore duplicate open PRs.
+
 ### `bump-formula-pr` [*`options`*] [*`formula`*]
 
 Create a pull request to update *`formula`* with a new URL or a new tag.
