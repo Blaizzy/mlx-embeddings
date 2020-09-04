@@ -67,7 +67,9 @@ module Homebrew
       args.named.to_formulae_and_casks
     elsif File.exist?(WATCHLIST_PATH)
       begin
-        names = Pathname.new(WATCHLIST_PATH).read.lines.reject { |line| line.start_with?("#") }.map(&:strip)
+        names = Pathname.new(WATCHLIST_PATH).read.lines
+                        .reject { |line| line.start_with?("#") || line.blank? }
+                        .map(&:strip)
         CLI::NamedArgs.new(*names).to_formulae_and_casks
       rescue Errno::ENOENT => e
         onoe e

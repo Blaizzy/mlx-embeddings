@@ -115,9 +115,11 @@ module Homebrew
         # comparison.
         livecheck_version = formula_or_cask.livecheck.version
         current = if livecheck_version.is_a?(String)
-          livecheck_version
-        else
-          version = if formula
+          Version.new(livecheck_version)
+        elsif livecheck_version.is_a?(Array)
+          separator, method = livecheck_version
+          Version.new(formula_or_cask.version.to_s.split(separator, 2).try(method))
+        elsif formula
             if formula.head_only?
               formula.any_installed_version.version.commit
             else
@@ -125,13 +127,6 @@ module Homebrew
             end
           else
             Version.new(formula_or_cask.version)
-          end
-          if livecheck_version.is_a?(Array)
-            separator, method = livecheck_version
-            Version.new(version.to_s.split(separator, 2).try(method))
-          else
-            version
-          end
         end
 
         latest = if formula&.stable? || cask

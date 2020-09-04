@@ -113,8 +113,8 @@ describe Livecheck do
     end
 
     it "returns value if set" do
-      livecheckable.version("foo")
-      expect(livecheckable.version).to eq("foo")
+      livecheckable.version("1.2.3")
+      expect(livecheckable.version).to eq("1.2.3")
 
       livecheckable.version(:before_comma)
       expect(livecheckable.version).to eq([",", :first])
