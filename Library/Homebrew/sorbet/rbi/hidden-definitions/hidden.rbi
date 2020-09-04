@@ -8100,6 +8100,8 @@ module Homebrew::EnvConfig
 
   def self.curlrc?(); end
 
+  def self.debug?(); end
+
   def self.developer?(); end
 
   def self.disable_load_formula?(); end
