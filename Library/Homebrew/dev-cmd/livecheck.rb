@@ -20,23 +20,23 @@ module Homebrew
   def livecheck_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `livecheck` [<formulae>]
+        `livecheck` [<formulae>|<casks>]
 
-        Check for newer versions of formulae from upstream.
+        Check for newer versions of formulae and/or casks from upstream.
 
-        If no formula argument is passed, the list of formulae to check is taken from `HOMEBREW_LIVECHECK_WATCHLIST`
-        or `~/.brew_livecheck_watchlist`.
+        If no formula or cask argument is passed, the list of formulae and casks to check is taken from
+        `HOMEBREW_LIVECHECK_WATCHLIST` or `~/.brew_livecheck_watchlist`.
       EOS
       switch "--full-name",
-             description: "Print formulae with fully-qualified names."
+             description: "Print formulae/casks with fully-qualified names."
       flag   "--tap=",
-             description: "Check formulae within the given tap, specified as <user>`/`<repo>."
+             description: "Check formulae/casks within the given tap, specified as <user>`/`<repo>."
       switch "--all",
-             description: "Check all available formulae."
+             description: "Check all available formulae/casks."
       switch "--installed",
-             description: "Check formulae that are currently installed."
+             description: "Check formulae/casks that are currently installed."
       switch "--newer-only",
-             description: "Show the latest version only if it's newer than the formula."
+             description: "Show the latest version only if it's newer than the formula/cask."
       switch "--json",
              description: "Output information in JSON format."
       switch "-q", "--quiet",
