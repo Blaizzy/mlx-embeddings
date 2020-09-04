@@ -32,9 +32,11 @@ module Homebrew
       switch "-n", "--dry-run",
              description: "Print what would be done rather than doing it."
       switch "--write",
-             depends_on:  "--dry-run",
-             description: "When passed along with `--dry-run`, perform a not-so-dry run by making the expected "\
-                          "file modifications but not taking any Git actions."
+             description: "Make the expected file modifications without taking any Git actions."
+      switch "--commit",
+             depends_on:  "--write",
+             description: "When passed with `--write`, generate a new commit after writing changes "\
+                          "to the formula file."
       switch "--no-audit",
              description: "Don't run `brew audit` before opening the PR."
       switch "--strict",
@@ -66,6 +68,7 @@ module Homebrew
       switch "-f", "--force",
              description: "Ignore duplicate open PRs. Remove all mirrors if --mirror= was not specified."
 
+      conflicts "--dry-run", "--write"
       conflicts "--no-audit", "--strict"
       conflicts "--url", "--tag"
       max_named 1
@@ -83,7 +86,7 @@ module Homebrew
       previous_branch = "master" if previous_branch.empty?
       formula_path = formula.path.to_s[%r{(Formula/.*)}, 1]
 
-      if args.dry_run?
+      if args.dry_run? || args.write?
         ohai "git remote add #{homebrew_core_remote} #{homebrew_core_url}"
         ohai "git fetch #{homebrew_core_remote} #{homebrew_core_branch}"
         ohai "git cat-file -e #{origin_branch}:#{formula_path}"
@@ -245,8 +248,7 @@ module Homebrew
       ]
     end
 
-    read_only_run = args.dry_run? && !args.write?
-    old_contents = File.read(formula.path) unless read_only_run
+    old_contents = File.read(formula.path) unless args.dry_run?
 
     if new_mirrors
       replacement_pairs << [
@@ -296,7 +298,7 @@ module Homebrew
     end
     new_contents = Utils::Inreplace.inreplace_pairs(formula.path,
                                                     replacement_pairs.uniq.compact,
-                                                    read_only_run: read_only_run,
+                                                    read_only_run: args.dry_run?,
                                                     silent:        args.quiet?)
 
     new_formula_version = formula_version(formula, requested_spec, new_contents)
@@ -313,13 +315,13 @@ module Homebrew
     end
 
     if new_formula_version < old_formula_version
-      formula.path.atomic_write(old_contents) unless read_only_run
+      formula.path.atomic_write(old_contents) unless args.dry_run?
       odie <<~EOS
         You need to bump this formula manually since changing the
         version from #{old_formula_version} to #{new_formula_version} would be a downgrade.
       EOS
     elsif new_formula_version == old_formula_version
-      formula.path.atomic_write(old_contents) unless read_only_run
+      formula.path.atomic_write(old_contents) unless args.dry_run?
       odie <<~EOS
         You need to bump this formula manually since the new version
         and old version are both #{new_formula_version}.
@@ -332,7 +334,7 @@ module Homebrew
       alias_rename.map! { |a| formula.tap.alias_dir/a }
     end
 
-    unless read_only_run
+    unless args.dry_run?
       PyPI.update_python_resources! formula, new_formula_version, silent: args.quiet?, ignore_non_pypi_packages: true
     end
 
@@ -346,7 +348,7 @@ module Homebrew
       changed_files = [formula.path]
       changed_files += alias_rename if alias_rename.present?
 
-      if args.dry_run?
+      if args.dry_run? || (args.write? && !args.commit?)
         ohai "try to fork repository with GitHub API" unless args.no_fork?
         ohai "git fetch --unshallow origin" if shallow
         ohai "git add #{alias_rename.first} #{alias_rename.last}" if alias_rename.present?
@@ -358,24 +360,15 @@ module Homebrew
         ohai "create pull request with GitHub API (base branch: #{base_branch})"
       else
 
-        if args.no_fork?
-          remote_url = Utils.popen_read("git remote get-url --push origin").chomp
-          username = formula.tap.user
-        else
-          begin
-            remote_url, username = GitHub.forked_repo_info!(tap_full_name)
-          rescue *GitHub.api_errors => e
-            formula.path.atomic_write(old_contents)
-            odie "Unable to fork: #{e.message}!"
-          end
-        end
-
-        safe_system "git", "fetch", "--unshallow", "origin" if shallow
+        safe_system "git", "fetch", "--unshallow", "origin" if shallow && !args.commit?
         safe_system "git", "add", *alias_rename if alias_rename.present?
-        safe_system "git", "checkout", "--no-track", "-b", branch, origin_branch
+        safe_system "git", "checkout", "--no-track", "-b", branch, origin_branch unless args.commit?
         safe_system "git", "commit", "--no-edit", "--verbose",
                     "--message=#{formula.name} #{new_formula_version}",
                     "--", *changed_files
+        return if args.commit?
+
+        remote_url, username = determine_remote_and_username(formula, tap_full_name, old_contents, args: args)
         safe_system "git", "push", "--set-upstream", remote_url, "#{branch}:#{branch}"
         safe_system "git", "checkout", "--quiet", previous_branch
         pr_message = <<~EOS
@@ -513,5 +506,20 @@ module Homebrew
     formula.path.atomic_write(old_contents)
     FileUtils.mv alias_rename.last, alias_rename.first if alias_rename.present?
     odie "`brew audit` failed!"
+  end
+
+  def determine_remote_and_username(formula, tap_full_name, old_contents, args:)
+    if args.no_fork?
+      remote_url = Utils.popen_read("git remote get-url --push origin").chomp
+      username = formula.tap.user
+      [remote_url, username]
+    else
+      begin
+        GitHub.forked_repo_info!(tap_full_name)
+      rescue *GitHub.api_errors => e
+        formula.path.atomic_write(old_contents)
+        odie "Unable to fork: #{e.message}!"
+      end
+    end
   end
 end

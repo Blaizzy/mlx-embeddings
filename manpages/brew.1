@@ -1155,7 +1155,11 @@ Print what would be done rather than doing it\.
 .
 .TP
 \fB\-\-write\fR
-When passed along with \fB\-\-dry\-run\fR, perform a not\-so\-dry run by making the expected file modifications but not taking any Git actions\.
+Make the expected file modifications without taking any Git actions\.
+.
+.TP
+\fB\-\-commit\fR
+When passed with \fB\-\-write\fR, generate a new commit after writing changes to the formula file\.
 .
 .TP
 \fB\-\-no\-audit\fR
