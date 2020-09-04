@@ -4,7 +4,8 @@ require "formula"
 require "os/linux/glibc"
 
 module SystemConfig
-  SYSTEM_RUBY_PATH = "/usr/bin/ruby"
+  HOST_RUBY_PATH = "/usr/bin/ruby"
+
   class << self
     def host_glibc_version
       version = OS::Linux::Glibc.system_version
@@ -28,8 +29,8 @@ module SystemConfig
       "N/A"
     end
 
-    def system_ruby_version
-      out, _, status = system_command(SYSTEM_RUBY_PATH, args: ["-e", "puts RUBY_VERSION"], print_stderr: false)
+    def host_ruby_version
+      out, _, status = system_command(HOST_RUBY_PATH, args: ["-e", "puts RUBY_VERSION"], print_stderr: false)
       return "N/A" unless status.success?
 
       out
@@ -41,7 +42,7 @@ module SystemConfig
       out.puts "OS: #{OS::Linux.os_version}"
       out.puts "Host glibc: #{host_glibc_version}"
       out.puts "/usr/bin/gcc: #{host_gcc_version}"
-      out.puts "/usr/bin/ruby: #{system_ruby_version}" if RUBY_PATH != SYSTEM_RUBY_PATH
+      out.puts "/usr/bin/ruby: #{host_ruby_version}" if RUBY_PATH != HOST_RUBY_PATH
       ["glibc", "gcc", "xorg"].each do |f|
         out.puts "#{f}: #{formula_linked_version f}"
       end
