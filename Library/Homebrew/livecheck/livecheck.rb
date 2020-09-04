@@ -125,6 +125,8 @@ module Homebrew
             else
               formula.stable.version
             end
+        elsif livecheck_version.is_a?(Symbol)
+          Version.new(Cask::DSL::Version.new(formula_or_cask.version).try(livecheck_version))
           else
             Version.new(formula_or_cask.version)
         end

@@ -106,22 +106,12 @@ class Livecheck
 
   # TODO: documentation
   def version(val = nil)
-    @version = case val
-    when nil
-      return @version
-    when :before_comma
-      [",", :first]
-    when :after_comma
-      [",", :second]
-    when :before_colon
-      [":", :first]
-    when :after_colon
-      [":", :second]
-    when String
-      val
-    else
+    return @version if val.nil?
+    unless val.is_a?(String) || (val.is_a?(Symbol) && Cask::DSL::Version.method_defined?(val))
       raise TypeError, "Livecheck#version expects a String or valid Symbol"
     end
+
+    @version = val
   end
 
   # Returns a `Hash` of all instance variable values.

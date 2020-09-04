@@ -117,7 +117,7 @@ describe Livecheck do
       expect(livecheckable.version).to eq("1.2.3")
 
       livecheckable.version(:before_comma)
-      expect(livecheckable.version).to eq([",", :first])
+      expect(livecheckable.version).to eq(:before_comma)
     end
 
     it "raises a TypeError if the argument isn't a String or Symbol" do
