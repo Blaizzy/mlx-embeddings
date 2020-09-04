@@ -7,8 +7,6 @@ module Cask
   #
   # @api private
   class Auditor
-    extend Predicable
-
     def self.audit(
       cask,
       audit_download: nil,
@@ -57,9 +55,6 @@ module Cask
       @language = language
     end
 
-    attr_predicate :audit_appcast?, :audit_download?, :audit_online?,
-                   :audit_strict?, :audit_new_cask?, :audit_token_conflicts?, :quarantine?
-
     def audit
       warnings = Set.new
       errors = Set.new
@@ -95,13 +90,13 @@ module Cask
     def audit_cask_instance(cask)
       audit = Audit.new(
         cask,
-        appcast:         audit_appcast?,
-        online:          audit_online?,
-        strict:          audit_strict?,
-        new_cask:        audit_new_cask?,
-        token_conflicts: audit_token_conflicts?,
-        download:        audit_download?,
-        quarantine:      quarantine?,
+        appcast:         @audit_appcast,
+        online:          @audit_online,
+        strict:          @audit_strict,
+        new_cask:        @audit_new_cask,
+        token_conflicts: @audit_token_conflicts,
+        download:        @audit_download,
+        quarantine:      @quarantine,
       )
       audit.run!
       audit
