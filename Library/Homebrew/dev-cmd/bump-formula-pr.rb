@@ -145,6 +145,21 @@ module Homebrew
     formula_spec = formula.stable
     odie "#{formula}: no #{requested_spec} specification found!" unless formula_spec
 
+    new_mirrors ||= args.mirror
+    new_mirror ||= determine_mirror(new_url)
+    new_mirrors ||= [new_mirror] unless new_mirror.nil?
+
+    if !new_mirrors && !formula_spec.mirrors.empty?
+      if args.force?
+        opoo "#{formula}: Removing all mirrors because a --mirror= argument was not specified."
+      else
+        odie <<~EOS
+          #{formula}: a --mirror= argument for updating the mirror URL was not specified.
+          Use --force to remove all mirrors.
+        EOS
+      end
+    end
+
     hash_type, old_hash = if (checksum = formula_spec.checksum)
       [checksum.hash_type, checksum.hexdigest]
     end
@@ -152,9 +167,6 @@ module Homebrew
     new_hash = args[hash_type] if hash_type
     new_tag = args.tag
     new_revision = args.revision
-    new_mirrors ||= args.mirror
-    new_mirror ||= determine_mirror(new_url)
-    new_mirrors ||= [new_mirror] unless new_mirror.nil?
     old_url = formula_spec.url
     old_tag = formula_spec.specs[:tag]
     old_formula_version = formula_version(formula, requested_spec)
@@ -302,17 +314,6 @@ module Homebrew
                                                     silent:        args.quiet?)
 
     new_formula_version = formula_version(formula, requested_spec, new_contents)
-
-    if !new_mirrors && !formula_spec.mirrors.empty?
-      if args.force?
-        opoo "#{formula}: Removing all mirrors because a --mirror= argument was not specified."
-      else
-        odie <<~EOS
-          #{formula}: a --mirror= argument for updating the mirror URL was not specified.
-          Use --force to remove all mirrors.
-        EOS
-      end
-    end
 
     if new_formula_version < old_formula_version
       formula.path.atomic_write(old_contents) unless args.dry_run?
