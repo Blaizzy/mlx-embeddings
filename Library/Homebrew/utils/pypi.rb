@@ -106,7 +106,7 @@ module PyPI
     packages = JSON.parse(pipgrip_output).sort.to_h
 
     # Remove extra packages that may be included in pipgrip output
-    exclude_list = %W[#{pypi_name} argparse pip setuptools wheel wsgiref]
+    exclude_list = %W[#{pypi_name.downcase} argparse pip setuptools wheel wsgiref]
     packages.delete_if do |package|
       exclude_list.include? package
     end
