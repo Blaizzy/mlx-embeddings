@@ -10,7 +10,7 @@ GEM
     ast (2.4.1)
     bindata (2.4.8)
     byebug (11.1.3)
-    codecov (0.2.9)
+    codecov (0.2.10)
       json
       simplecov
     coderay (1.1.3)
