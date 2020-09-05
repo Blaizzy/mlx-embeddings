@@ -481,10 +481,8 @@ module Cask
 
       odebug "Auditing GitLab prerelease"
 
-      metadata = SharedAudits.gitlab_release_data(user, repo, cask.version)
-      return if metadata.nil?
-
-      add_error "#{cask.version} is a GitLab prerelease" if Date.parse(metadata["released_at"]) > Date.today
+      error = SharedAudits.gitlab_release(user, repo, cask.version)
+      add_error error if error
     end
 
     def check_github_repository_archived
