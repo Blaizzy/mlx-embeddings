@@ -354,7 +354,7 @@ module Homebrew
         expect(fa.problems.first).to match <<~EOS
           Formula cask contains invalid or deprecated SPDX license exceptions: ["zzz"].
           For a list of valid license exceptions check:
-            https://spdx.org/licenses/exceptions-index.html/
+            https://spdx.org/licenses/exceptions-index.html
         EOS
       end
 
@@ -373,7 +373,7 @@ module Homebrew
         expect(fa.problems.first).to match <<~EOS
           Formula cask contains invalid or deprecated SPDX license exceptions: ["#{deprecated_spdx_exception}"].
           For a list of valid license exceptions check:
-            https://spdx.org/licenses/exceptions-index.html/
+            https://spdx.org/licenses/exceptions-index.html
         EOS
       end
 
