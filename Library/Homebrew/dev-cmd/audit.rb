@@ -388,7 +388,7 @@ module Homebrew
           problem <<~EOS
             Formula #{formula.name} contains invalid or deprecated SPDX license exceptions: #{invalid_exceptions}.
             For a list of valid license exceptions check:
-              #{Formatter.url("https://spdx.org/licenses/exceptions-index.html/")}
+              #{Formatter.url("https://spdx.org/licenses/exceptions-index.html")}
           EOS
         end
 
