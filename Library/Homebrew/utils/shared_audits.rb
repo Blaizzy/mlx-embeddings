@@ -74,7 +74,7 @@ module SharedAudits
     @gitlab_release_data ||= {}
     @gitlab_release_data[id] ||= begin
       out, _, status= curl_output(
-        "--request", "GET", "https://gitlab.com/api/v4/projects/#{user}%2F#{repo}/releases/#{tag}"
+        "https://gitlab.com/api/v4/projects/#{user}%2F#{repo}/releases/#{tag}", "--fail"
       )
       return unless status.success?
 
