@@ -96,12 +96,19 @@ module SharedAudits
     "#{tag} is a GitLab pre-release."
   end
 
+  GITHUB_FORK_ALLOWLIST = %w[
+    variar/klogg
+  ].freeze
+
   def github(user, repo)
     metadata = github_repo_data(user, repo)
 
     return if metadata.nil?
 
-    return "GitHub fork (not canonical repository)" if metadata["fork"]
+    if metadata["fork"] && !GITHUB_FORK_ALLOWLIST.include?("#{user}/#{repo}")
+      return "GitHub fork (not canonical repository)"
+    end
+
     if (metadata["forks_count"] < 30) && (metadata["subscribers_count"] < 30) &&
        (metadata["stargazers_count"] < 75)
       return "GitHub repository not notable enough (<30 forks, <30 watchers and <75 stars)"
