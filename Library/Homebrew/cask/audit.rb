@@ -395,7 +395,7 @@ module Cask
       add_warning "cask token contains .app" if token.end_with? ".app"
 
       if /-(?<designation>alpha|beta|rc|release-candidate)$/ =~ cask.token &&
-         cask.tap.official? &&
+         cask.tap&.official? &&
          cask.tap != "homebrew/cask-versions"
         add_warning "cask token contains version designation '#{designation}'"
       end
@@ -561,7 +561,7 @@ module Cask
     end
 
     def check_denylist
-      return if cask.tap&.user != "Homebrew"
+      return unless cask.tap&.official?
       return unless reason = Denylist.reason(cask.token)
 
       add_error "#{cask.token} is not allowed: #{reason}"
@@ -570,15 +570,15 @@ module Cask
     def check_https_availability
       return unless download
 
-      if !cask.url.blank? && !cask.url.using
-        check_url_for_https_availability(cask.url, user_agents: [cask.url.user_agent])
-      end
-      check_url_for_https_availability(cask.appcast) unless cask.appcast.blank?
-      check_url_for_https_availability(cask.homepage, user_agents: [:browser]) unless cask.homepage.blank?
+      check_url_for_https_availability(cask.url, user_agents: [cask.url.user_agent]) if cask.url && !cask.url.using
+
+      check_url_for_https_availability(cask.appcast, check_content: true) if cask.appcast && appcast?
+
+      check_url_for_https_availability(cask.homepage, check_content: true, user_agents: [:browser]) if cask.homepage
     end
 
-    def check_url_for_https_availability(url_to_check, user_agents: [:default])
-      problem = curl_check_http_content(url_to_check.to_s, user_agents: user_agents)
+    def check_url_for_https_availability(url_to_check, **options)
+      problem = curl_check_http_content(url_to_check.to_s, **options)
       add_error problem if problem
     end
   end
