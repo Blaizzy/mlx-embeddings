@@ -703,16 +703,6 @@ module Homebrew
 
     GITLAB_PRERELEASE_ALLOWLIST = {}.freeze
 
-    GITHUB_PRERELEASE_ALLOWLIST = {
-      "cbmc"         => "5.12.6",
-      "elm-format"   => "0.8.3",
-      "gitless"      => "0.8.8",
-      "infrakit"     => "0.5",
-      "riff"         => "0.5.0",
-      "telegram-cli" => "1.3.1",
-      "volta"        => "0.8.6",
-    }.freeze
-
     # version_prefix = stable_version_string.sub(/\d+$/, "")
     # version_prefix = stable.version.major_minor
 
@@ -813,12 +803,9 @@ module Homebrew
                    .second
         tag ||= formula.stable.specs[:tag]
 
-        if @online && (release = SharedAudits.github_release_data(owner, repo, tag))
-          if release["prerelease"] && (GITHUB_PRERELEASE_ALLOWLIST[formula.name] != formula.version)
-            problem "#{tag} is a GitHub prerelease"
-          elsif release["draft"]
-            problem "#{tag} is a GitHub draft"
-          end
+        if @online
+          error = SharedAudits.github_release(owner, repo, tag, formula: formula)
+          problem error if error
         end
       end
     end

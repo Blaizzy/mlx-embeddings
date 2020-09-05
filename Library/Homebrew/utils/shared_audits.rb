@@ -27,6 +27,36 @@ module SharedAudits
     nil
   end
 
+  GITHUB_PRERELEASE_ALLOWLIST = {
+    "amd-power-gadget" => :all,
+    "cbmc"             => "5.12.6",
+    "elm-format"       => "0.8.3",
+    "gitless"          => "0.8.8",
+    "infrakit"         => "0.5",
+    "riff"             => "0.5.0",
+    "telegram-cli"     => "1.3.1",
+    "volta"            => "0.8.6",
+  }.freeze
+
+  def github_release(user, repo, tag, formula: nil, cask: nil)
+    release = github_release_data(user, repo, tag)
+    return unless release
+
+    if cask && GITHUB_PRERELEASE_ALLOWLIST[cask.token] == :all
+      return if release["prerelease"]
+
+      return "#{tag} is not a GitHub pre-release but cask '#{cask.token}' is in GITHUB_PRERELEASE_ALLOWLIST."
+    end
+
+    if release["prerelease"]
+      return if formula && GITHUB_PRERELEASE_ALLOWLIST[formula.name] == formula.version
+
+      return "#{tag} is a GitHub pre-release."
+    end
+
+    return "#{tag} is a GitHub draft." if release["draft"]
+  end
+
   def gitlab_repo_data(user, repo)
     @gitlab_repo_data ||= {}
     @gitlab_repo_data["#{user}/#{repo}"] ||= begin
