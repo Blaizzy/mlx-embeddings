@@ -395,7 +395,7 @@ module Cask
       add_warning "cask token contains .app" if token.end_with? ".app"
 
       if /-(?<designation>alpha|beta|rc|release-candidate)$/ =~ cask.token &&
-         cask.tap.official? &&
+         cask.tap&.official? &&
          cask.tap != "homebrew/cask-versions"
         add_warning "cask token contains version designation '#{designation}'"
       end
@@ -562,7 +562,7 @@ module Cask
     end
 
     def check_denylist
-      return if cask.tap&.user != "Homebrew"
+      return unless cask.tap&.official?
       return unless reason = Denylist.reason(cask.token)
 
       add_error "#{cask.token} is not allowed: #{reason}"
