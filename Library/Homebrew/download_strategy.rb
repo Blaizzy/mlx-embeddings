@@ -757,6 +757,7 @@ class GitDownloadStrategy < VCSDownloadStrategy
     case @ref_type
     when :branch, :tag
       args << "--branch" << @ref
+      args << "-c" << "advice.detachedHead=false" # silences detached head warning
     end
 
     args << @url << cached_location
