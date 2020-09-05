@@ -46,6 +46,7 @@
 - [Building Against Non-Homebrew Dependencies](Building-Against-Non-Homebrew-Dependencies.md)
 - [How To Create (And Maintain) A Tap](How-to-Create-and-Maintain-a-Tap.md)
 - [Brew Test Bot](Brew-Test-Bot.md)
+- [Diagram Guidelines](Diagram-Guidelines.md)
 - [Prose Style Guidelines](Prose-Style-Guidelines.md)
 - [Type Checking with Sorbet](Typechecking.md)
 
