@@ -466,14 +466,9 @@ module Cask
       user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @online
       return if user.nil?
 
-      metadata = SharedAudits.github_release_data(user, repo, cask.version)
-      return if metadata.nil?
-
-      if metadata["prerelease"]
-        add_error "#{cask.version} is a GitHub prerelease"
-      elsif metadata["draft"]
-        add_error "#{cask.version} is a GitHub draft"
-      end
+      # TODO: Detect tag from URL instead of using `cask.version`.
+      error = SharedAudits.github_release(user, repo, cask.version, cask: cask)
+      add_error error if error
     end
 
     def check_gitlab_prerelease_version
