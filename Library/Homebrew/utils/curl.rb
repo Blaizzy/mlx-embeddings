@@ -44,14 +44,47 @@ def curl_args(*extra_args, show_output: false, user_agent: :default)
   args + extra_args
 end
 
-def curl(*args, secrets: [], **options)
+def curl_with_workarounds(*args, secrets: nil, print_stdout: nil, print_stderr: nil, **options)
+  command_options = {
+    secrets:      secrets,
+    print_stdout: print_stdout,
+    print_stderr: print_stderr,
+  }.compact
+
   # SSL_CERT_FILE can be incorrectly set by users or portable-ruby and screw
   # with SSL downloads so unset it here.
-  system_command! curl_executable,
-                  args:         curl_args(*args, **options),
-                  print_stdout: true,
-                  env:          { "SSL_CERT_FILE" => nil },
-                  secrets:      secrets
+  result = system_command curl_executable,
+                          args: curl_args(*args, **options),
+                          env:  { "SSL_CERT_FILE" => nil },
+                          **command_options
+
+  if !result.success? && !args.include?("--http1.1")
+    # This is a workaround for https://github.com/curl/curl/issues/1618.
+    if result.status.exitstatus == 56 # Unexpected EOF
+      out = curl_output("-V").stdout
+
+      # If `curl` doesn't support HTTP2, the exception is unrelated to this bug.
+      return result unless out.include?("HTTP2")
+
+      # The bug is fixed in `curl` >= 7.60.0.
+      curl_version = out[/curl (\d+(\.\d+)+)/, 1]
+      return result if Gem::Version.new(curl_version) >= Gem::Version.new("7.60.0")
+
+      return curl_with_workarounds(*args, "--http1.1", **command_options, **options)
+    end
+
+    if result.status.exitstatus == 16 # Error in the HTTP2 framing layer
+      return curl_with_workarounds(*args, "--http1.1", **command_options, **options)
+    end
+  end
+
+  result
+end
+
+def curl(*args, **options)
+  result = curl_with_workarounds(*args, print_stdout: true, **options)
+  result.assert_success!
+  result
 end
 
 def curl_download(*args, to: nil, partial: true, **options)
@@ -82,30 +115,10 @@ def curl_download(*args, to: nil, partial: true, **options)
   end
 
   curl("--location", "--remote-time", "--continue-at", continue_at.to_s, "--output", destination, *args, **options)
-rescue ErrorDuringExecution => e
-  # This is a workaround for https://github.com/curl/curl/issues/1618.
-  raise unless e.status.exitstatus == 56 # Unexpected EOF
-
-  raise if args.include?("--http1.1")
-
-  out = curl_output("-V").stdout
-
-  # If `curl` doesn't support HTTP2, the exception is unrelated to this bug.
-  raise unless out.include?("HTTP2")
-
-  # The bug is fixed in `curl` >= 7.60.0.
-  curl_version = out[/curl (\d+(\.\d+)+)/, 1]
-  raise if Gem::Version.new(curl_version) >= Gem::Version.new("7.60.0")
-
-  args << "--http1.1"
-  retry
 end
 
-def curl_output(*args, secrets: [], **options)
-  system_command curl_executable,
-                 args:         curl_args(*args, show_output: true, **options),
-                 print_stderr: false,
-                 secrets:      secrets
+def curl_output(*args, **options)
+  curl_with_workarounds(*args, print_stderr: false, show_output: true, **options)
 end
 
 def curl_check_http_content(url, user_agents: [:default], check_content: false, strict: false)
