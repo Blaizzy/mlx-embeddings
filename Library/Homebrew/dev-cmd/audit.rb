@@ -784,8 +784,14 @@ module Homebrew
         owner = Regexp.last_match(1)
         repo = Regexp.last_match(2)
 
+        tag = url.match(%r{^https://gitlab\.com/[\w-]+/[\w-]+/-/archive/([^/]+)/})
+                 .to_a
+                 .second
+        tag ||= stable.specs[:tag]
+        tag ||= stable.version
+
         if @online
-          error = SharedAudits.gitlab_release(owner, repo, stable.version, formula: formula)
+          error = SharedAudits.gitlab_release(owner, repo, tag, formula: formula)
           problem error if error
         end
       when %r{^https://github.com/([\w-]+)/([\w-]+)}
