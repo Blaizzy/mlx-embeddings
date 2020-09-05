@@ -701,8 +701,6 @@ module Homebrew
       "libepoxy"            => "1.5",
     }.freeze
 
-    GITLAB_PRERELEASE_ALLOWLIST = {}.freeze
-
     # version_prefix = stable_version_string.sub(/\d+$/, "")
     # version_prefix = stable.version.major_minor
 
@@ -786,11 +784,9 @@ module Homebrew
         owner = Regexp.last_match(1)
         repo = Regexp.last_match(2)
 
-        return unless @online && (release = SharedAudits.gitlab_release_data(owner, repo, stable.version))
-
-        release_date = Date.parse(release["released_at"])
-        if release_date > Date.today && (GITLAB_PRERELEASE_ALLOWLIST[formula.name] != formula.version)
-          problem "#{stable.version} is a GitLab prerelease"
+        if @online
+          error = SharedAudits.gitlab_release(owner, repo, stable.version, formula: formula)
+          problem error if error
         end
       when %r{^https://github.com/([\w-]+)/([\w-]+)}
         owner = Regexp.last_match(1)

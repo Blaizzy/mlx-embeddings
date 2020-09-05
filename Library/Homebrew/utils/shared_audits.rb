@@ -84,6 +84,18 @@ module SharedAudits
     @gitlab_release_data[id]
   end
 
+  GITLAB_PRERELEASE_ALLOWLIST = {}.freeze
+
+  def gitlab_release(user, repo, tag, formula: nil)
+    release = gitlab_release_data(user, repo, tag)
+    return unless release
+
+    return if Date.parse(release["released_at"]) <= Date.today
+    return if formula && GITLAB_PRERELEASE_ALLOWLIST[formula.name] == formula.version
+
+    "#{tag} is a GitLab pre-release."
+  end
+
   def github(user, repo)
     metadata = github_repo_data(user, repo)
 
