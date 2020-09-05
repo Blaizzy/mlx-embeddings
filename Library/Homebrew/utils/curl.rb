@@ -128,6 +128,13 @@ def curl_check_http_content(url, user_agents: [:default], check_content: false, 
   end
 
   unless http_status_ok?(details[:status])
+    # The URL is protected by CloudFlare.
+    if details[:status].to_i == 503 &&
+       details[:file].include?("set-cookie: __cfduid=") &&
+       details[:file].include?("server: cloudflare")
+      return
+    end
+
     return "The URL #{url} is not reachable (HTTP status code #{details[:status]})"
   end
 
