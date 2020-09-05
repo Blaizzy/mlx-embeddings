@@ -257,3 +257,10 @@ RSpec::Matchers.define :a_json_string do
     false
   end
 end
+
+# Match consecutive elements in an array.
+RSpec::Matchers.define :array_including_cons do |*cons|
+  match do |actual|
+    expect(actual.each_cons(cons.size)).to include(cons)
+  end
+end
