@@ -19557,6 +19557,8 @@ module RSpec::Matchers
 
   def a_string_containing(*args, &block); end
 
+  def array_including_cons(*expected, &block_arg); end
+
   def be_a_failure(*args, &block); end
 
   def have_failed(*args, &block); end
