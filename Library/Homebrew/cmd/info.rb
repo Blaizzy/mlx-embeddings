@@ -9,6 +9,7 @@ require "keg"
 require "tab"
 require "json"
 require "utils/spdx"
+require "deprecate_disable"
 
 module Homebrew
   module_function
@@ -175,6 +176,15 @@ module Homebrew
     puts "#{f.full_name}: #{specs * ", "}#{" [#{attrs * ", "}]" unless attrs.empty?}"
     puts f.desc if f.desc
     puts Formatter.url(f.homepage) if f.homepage
+
+    deprecate_disable_type, deprecate_disable_reason = DeprecateDisable.deprecate_disable_info f
+    if deprecate_disable_type.present?
+      if deprecate_disable_reason.present?
+        puts "#{deprecate_disable_type.capitalize} because it #{deprecate_disable_reason}!"
+      else
+        puts "#{deprecate_disable_type.capitalize}!"
+      end
+    end
 
     conflicts = f.conflicts.map do |c|
       reason = " (because #{c.reason})" if c.reason
