@@ -126,10 +126,9 @@ module Homebrew
       when :print
         args << "--debug" if debug
 
-        if ENV["CI"]
-          # Don't show the default formatter's progress dots on CI.
-          args << "--format" << "clang"
-        end
+        # Don't show the default formatter's progress dots
+        # on CI or if only checking a single file.
+        args << "--format" << "clang" if ENV["CI"] || files.count { |f| !f.directory? } == 1
 
         args << "--color" if Tty.color?
 

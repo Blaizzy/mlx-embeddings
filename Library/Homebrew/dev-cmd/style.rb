@@ -39,12 +39,8 @@ module Homebrew
 
     target = if args.no_named?
       nil
-    elsif args.named.any? { |file| File.exist? file }
-      args.named
-    elsif args.named.any? { |tap| tap.count("/") == 1 }
-      args.named.map { |tap| Tap.fetch(tap).path }
     else
-      args.named.to_formulae_paths
+      args.named.to_paths
     end
 
     only_cops = args.only_cops
