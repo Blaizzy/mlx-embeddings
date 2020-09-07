@@ -547,6 +547,7 @@ module Homebrew
     end
 
     CERT_ERROR_ALLOWLIST = {
+      "jinx"        => "https://www.jinx-lang.org/",
       "lmod"        => "https://www.tacc.utexas.edu/research-development/tacc-projects/lmod",
       "micropython" => "https://www.micropython.org/",
       "monero"      => "https://www.getmonero.org/",
