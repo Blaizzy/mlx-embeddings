@@ -54,6 +54,13 @@ module SystemConfig
       CoreTap.instance.remote || "(none)"
     end
 
+    def describe_clang
+      return "N/A" if clang.null?
+
+      clang_build_info = clang_build.null? ? "(parse error)" : clang_build
+      "#{clang} build #{clang_build_info}"
+    end
+
     def describe_path(path)
       return "N/A" if path.nil?
 
@@ -113,11 +120,7 @@ module SystemConfig
       end
     end
 
-    def dump_verbose_config(f = $stdout)
-      f.puts "HOMEBREW_VERSION: #{HOMEBREW_VERSION}"
-      f.puts "ORIGIN: #{origin}"
-      f.puts "HEAD: #{head}"
-      f.puts "Last commit: #{last_commit}"
+    def core_tap_config(f = $stdout)
       if CoreTap.instance.installed?
         f.puts "Core tap ORIGIN: #{core_tap_origin}"
         f.puts "Core tap HEAD: #{core_tap_head}"
@@ -126,6 +129,16 @@ module SystemConfig
       else
         f.puts "Core tap: N/A"
       end
+    end
+
+    def homebrew_config(f = $stdout)
+      f.puts "HOMEBREW_VERSION: #{HOMEBREW_VERSION}"
+      f.puts "ORIGIN: #{origin}"
+      f.puts "HEAD: #{head}"
+      f.puts "Last commit: #{last_commit}"
+    end
+
+    def homebrew_env_config(f = $stdout)
       f.puts "HOMEBREW_PREFIX: #{HOMEBREW_PREFIX}"
       {
         HOMEBREW_REPOSITORY: Homebrew::DEFAULT_REPOSITORY,
@@ -153,23 +166,22 @@ module SystemConfig
           f.puts "#{env}: #{value}"
         end
       end
-
-      f.puts hardware if hardware
       f.puts "Homebrew Ruby: #{describe_homebrew_ruby}"
-      f.print "Clang: "
-      if clang.null?
-        f.puts "N/A"
-      else
-        f.print "#{clang} build "
-        if clang_build.null?
-          f.puts "(parse error)"
-        else
-          f.puts clang_build
-        end
-      end
+    end
+
+    def host_software_config(f = $stdout)
+      f.puts "Clang: #{describe_clang}"
       f.puts "Git: #{describe_git}"
       f.puts "Curl: #{describe_curl}"
       f.puts "Java: #{describe_java}" if describe_java != "N/A"
+    end
+
+    def dump_verbose_config(f = $stdout)
+      homebrew_config(f)
+      core_tap_config(f)
+      homebrew_env_config(f)
+      f.puts hardware if hardware
+      host_software_config(f)
     end
     alias dump_generic_verbose_config dump_verbose_config
   end
