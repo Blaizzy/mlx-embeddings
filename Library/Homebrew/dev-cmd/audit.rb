@@ -547,7 +547,8 @@ module Homebrew
     end
 
     CERT_ERROR_ALLOWLIST = {
-      "monero" => "https://www.getmonero.org/",
+      "micropython" => "https://www.micropython.org/",
+      "monero"      => "https://www.getmonero.org/",
     }.freeze
 
     def audit_homepage
