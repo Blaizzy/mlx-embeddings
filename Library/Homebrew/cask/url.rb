@@ -8,7 +8,7 @@ class URL
   extend T::Sig
 
   attr_reader :uri, :specs,
-              :using,
+              :verified, :using,
               :tag, :branch, :revisions, :revision,
               :trust_cert, :cookies, :referer, :header, :user_agent,
               :data
@@ -19,6 +19,7 @@ class URL
   sig do
     params(
       uri:        T.any(URI::Generic, String),
+      verified:   T.nilable(String),
       using:      T.nilable(Symbol),
       tag:        T.nilable(String),
       branch:     T.nilable(String),
@@ -34,6 +35,7 @@ class URL
   end
   def initialize(
     uri,
+    verified: nil,
     using: nil,
     tag: nil,
     branch: nil,
@@ -49,6 +51,7 @@ class URL
     @uri = URI(uri)
 
     specs = {}
+    specs[:verified]   = @verified   = verified
     specs[:using]      = @using      = using
     specs[:tag]        = @tag        = tag
     specs[:branch]     = @branch     = branch
