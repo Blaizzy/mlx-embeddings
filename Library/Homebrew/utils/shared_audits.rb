@@ -29,7 +29,6 @@ module SharedAudits
 
   GITHUB_PRERELEASE_ALLOWLIST = {
     "amd-power-gadget" => :all,
-    "cbmc"             => "5.12.6",
     "elm-format"       => "0.8.3",
     "gitless"          => "0.8.8",
     "infrakit"         => "0.5",
