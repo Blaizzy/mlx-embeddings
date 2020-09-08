@@ -7,3 +7,5 @@ There are times when we may wish to migrate a formula from one tap into another 
 3. Put a link for each pull request in the other pull request so the maintainers can merge them both at once.
 
 Congratulations, you've moved a formula to a tap!
+
+For Homebrew maintainers, formulae should only ever be migrated into and within the Homebrew organisation (e.g. from Homebrew/core to Homebrew/cask, or from a third-party tap to Homebrew/core), and never out of it.
