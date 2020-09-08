@@ -32,11 +32,11 @@ Node modules which are compatible with the latest Node version should declare a 
 depends_on "node"
 ```
 
-If your formula requires being executed with an older Node version you should use one of the versioned node formulae (e.g. `node@6`).
+If your formula requires being executed with an older Node version you should use one of the versioned node formulae (e.g. `node@12`).
 
 ### Special requirements for native addons
 
-If your Node module is a native addon or has a native addon somewhere in its dependency tree you have to declare an additional dependency. Since the compilation of the native addon results in an invocation of `node-gyp` we need an additional build time dependency on `"python"` (because GYP depends on Python 2.7).
+If your Node module is a native addon or has a native addon somewhere in its dependency tree you have to declare an additional dependency. Since the compilation of the native addon results in an invocation of `node-gyp` we need an additional build time dependency on `"python"` (because GYP depends on Python).
 
 ```ruby
 depends_on "python" => :build
@@ -74,8 +74,6 @@ This will install your Node module in npm's global module style with a custom pr
 ```ruby
 bin.install_symlink Dir["#{libexec}/bin/*"]
 ```
-
-**Note:** Because of a required workaround for `npm@5` calling `npm pack` we currently don't support installing modules (from non-npm registry tarballs), which require a prepublish step (e.g. for transpiling sources). See [Homebrew/brew#2820](https://github.com/Homebrew/brew/pull/2820) for more information.
 
 ### Installing module dependencies locally with `local_npm_install_args`
 
