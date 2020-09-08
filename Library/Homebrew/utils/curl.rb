@@ -81,8 +81,8 @@ def curl_with_workarounds(*args, secrets: nil, print_stdout: nil, print_stderr: 
   result
 end
 
-def curl(*args, **options)
-  result = curl_with_workarounds(*args, print_stdout: true, **options)
+def curl(*args, print_stdout: true, **options)
+  result = curl_with_workarounds(*args, print_stdout: print_stdout, **options)
   result.assert_success!
   result
 end
