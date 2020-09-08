@@ -76,6 +76,10 @@ their branch is filled with nonsensical merges, then `rebase` and squash
 the commits. Our main branch history should be useful to other people,
 not confusing.
 
+Here’s a flowchart for managing a PR which is ready to merge:
+
+![Flowchart for managing pull requests](assets/img/docs/managing-pull-requests.drawio.svg)
+
 ### Testing
 
 We need to at least check that it builds. Use the [Brew Test Bot](Brew-Test-Bot.md) for this.
