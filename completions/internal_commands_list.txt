@@ -14,6 +14,7 @@ analytics
 audit
 bottle
 bump
+bump-cask-pr
 bump-formula-pr
 bump-revision
 cask
