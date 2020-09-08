@@ -32,7 +32,7 @@ __brew_all_casks() {
 __brew_installed_casks() {
   local -a list
   local expl
-  list=( $(__brew_cask list|sed 's/(!)//') )
+  list=( $(brew list --cask) )
   _wanted list expl 'installed casks' compadd -a list
 }
 
@@ -134,10 +134,6 @@ _brew_cask_list() {
     '-1[format output in a single column]' \
     '-l[format as detailed list]' \
     '*::token:__brew_installed_casks'
-}
-
-_brew_cask_ls() {
-  _brew_cask_list
 }
 
 _brew_cask_outdated() {
