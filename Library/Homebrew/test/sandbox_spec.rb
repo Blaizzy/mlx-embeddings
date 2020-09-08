@@ -2,7 +2,7 @@
 
 require "sandbox"
 
-describe Sandbox do
+describe Sandbox, :needs_macos do
   define_negated_matcher :not_matching, :matching
 
   let(:dir) { mktmpdir }

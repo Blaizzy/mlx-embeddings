@@ -118,6 +118,8 @@ module Homebrew
         --out #{HOMEBREW_CACHE}/tests/parallel_runtime_rspec.log
       ]
 
+      bundle_args << "--format" << "RSpec::Github::Formatter" if ENV["GITHUB_ACTIONS"]
+
       unless OS.mac?
         bundle_args << "--tag" << "~needs_macos" << "--tag" << "~cask"
         files = files.reject { |p| p =~ %r{^test/(os/mac|cask)(/.*|_spec\.rb)$} }
