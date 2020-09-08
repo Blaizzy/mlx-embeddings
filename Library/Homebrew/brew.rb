@@ -143,6 +143,7 @@ begin
       safe_system(*tap_commands)
     end
 
+    ARGV << "--help" if help_flag
     exec HOMEBREW_BREW_FILE, cmd, *ARGV
   end
 rescue UsageError => e
