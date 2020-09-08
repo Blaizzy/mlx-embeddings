@@ -3,6 +3,7 @@
 require "formula"
 require "cli/parser"
 require "utils/pypi"
+require "utils/tar"
 
 module Homebrew
   module_function
@@ -205,19 +206,8 @@ module Homebrew
       end
       check_closed_pull_requests(formula, tap_full_name, url: new_url, args: args) unless new_version
       resource_path, forced_version = fetch_resource(formula, new_version, new_url)
-      tar_file_extensions = %w[.tar .tb2 .tbz .tbz2 .tgz .tlz .txz .tZ]
-      if tar_file_extensions.any? { |extension| new_url.include? extension }
-        gnu_tar_gtar_path = HOMEBREW_PREFIX/"opt/gnu-tar/bin/gtar"
-        gnu_tar_gtar = gnu_tar_gtar_path if gnu_tar_gtar_path.executable?
-        tar = which("gtar") || gnu_tar_gtar || which("tar")
-        if Utils.popen_read(tar, "-tf", resource_path).match?(%r{/.*\.})
-          new_hash = resource_path.sha256
-        else
-          odie "#{resource_path} is not a valid tar file!"
-        end
-      else
-        new_hash = resource_path.sha256
-      end
+      Utils::Tar.validate_file(resource_path)
+      new_hash = resource_path.sha256
     end
 
     replacement_pairs = []
