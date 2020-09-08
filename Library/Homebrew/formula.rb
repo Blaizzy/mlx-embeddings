@@ -1408,7 +1408,7 @@ class Formula
 
   # Standard parameters for meson builds.
   def std_meson_args
-    ["--prefix=#{prefix}", "--libdir=#{lib}", "--buildtype=release"]
+    ["--prefix=#{prefix}", "--libdir=#{lib}", "--buildtype=release", "--wrap-mode=nofallback"]
   end
 
   def shared_library(name, version = nil)
