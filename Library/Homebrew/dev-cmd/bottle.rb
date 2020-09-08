@@ -278,10 +278,7 @@ module Homebrew
 
         keg.find do |file|
           if file.symlink?
-            # Ruby does not support `File.lutime` yet.
-            # Shellout using `touch` to change modified time of symlink itself.
-            system "/usr/bin/touch", "-h",
-                   "-t", tab.source_modified_time.strftime("%Y%m%d%H%M.%S"), file
+            File.lutime(tab.source_modified_time, tab.source_modified_time, file)
           else
             file.utime(tab.source_modified_time, tab.source_modified_time)
           end
