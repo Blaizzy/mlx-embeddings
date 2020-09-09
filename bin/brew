@@ -60,7 +60,7 @@ fi
 
 HOMEBREW_LIBRARY="$HOMEBREW_REPOSITORY/Library"
 
-# Whitelist and copy to HOMEBREW_* all variables previously mentioned in
+# Copy and export all HOMEBREW_* variables previously mentioned in
 # manpage or used elsewhere by Homebrew.
 for VAR in BROWSER DISPLAY EDITOR NO_COLOR PATH
 do
