@@ -1,5 +1,8 @@
 # FAQ
 
+## Is there a glossary of terms around?
+All your terminology needs can be [found here](Formula-Cookbook.md#homebrew-terminology).
+
 ## How do I update my local packages?
 First update the formulae and Homebrew itself:
 
@@ -26,38 +29,21 @@ To allow that formulae to update again:
 
     brew unpin <formula>
 
-Note that pinned, outdated formulae that another formula depends on need to be upgraded when required as we do not allow formulae to be built against non-latest versions.
-
-## How do I uninstall old versions of a formula?
-Homebrew's default behaviour automatically uninstalls old versions of a formula every 30 days.
-
-To remove them manually, simply use:
-
-    brew cleanup <formula>
-
-or clean up everything at once:
-
-    brew cleanup
-
-or to see what would be cleaned up:
-
-    brew cleanup -n
-
-or to __disable__ automatic `brew cleanup`:
-
-    export HOMEBREW_NO_INSTALL_CLEANUP=1
+Note that pinned, outdated formulae that another formula depends on need to be upgraded when required, as we do not allow formulae to be built against outdated versions. If this is not desired, you can instead `brew extract` to [maintain your own copy of the formula in a tap](How-to-Create-and-Maintain-a-Tap.md).
 
 ## How do I uninstall Homebrew?
 To uninstall Homebrew, run the [uninstall script from the Homebrew/install repository](https://github.com/homebrew/install#uninstall-homebrew).
 
-## How do I uninstall a formula?
-If you do not uninstall all of the versions that Homebrew has installed,
-Homebrew will continue to attempt to install the newest version it knows
-about when you run `brew upgrade`. This can be surprising.
+## How can I keep old versions of a formula when upgrading?
+Homebrew automatically uninstalls old versions of a formula after that formula is upgraded with `brew upgrade`, and periodically performs additional cleanup every 30 days.
 
-To remove a formula entirely, you may run `brew uninstall --force <formula>`.
+To __disable__ automatic `brew cleanup`:
 
-Be careful as this is a destructive operation.
+    export HOMEBREW_NO_INSTALL_CLEANUP=1
+
+When automatic `brew cleanup` is disabled, if you uninstall a formula, it will only remove the latest version you have installed. It will not remove all versions of the formula that you may have installed in the past. Homebrew will continue to attempt to install the newest version it knows about when you run `brew upgrade`. This can be surprising.
+
+In this case, to remove a formula entirely, you may run `brew uninstall --force <formula>`. Be careful as this is a destructive operation.
 
 ## Where does stuff get downloaded?
 
@@ -66,12 +52,7 @@ Be careful as this is a destructive operation.
 Which is usually: `~/Library/Caches/Homebrew`
 
 ## My Mac `.app`s don’t find `/usr/local/bin` utilities!
-GUI apps on macOS don’t have `/usr/local/bin` in their `PATH` by
-default. If you’re on Mountain Lion or later, you can fix this by
-running `sudo launchctl config user path "/usr/local/bin:$PATH"` and
-then rebooting, as documented in `man launchctl`. Note that this sets
-the launchctl PATH for *all users*. For earlier versions of macOS, see
-[this page](https://developer.apple.com/legacy/library/qa/qa1067/_index.html).
+GUI apps on macOS don’t have `/usr/local/bin` in their `PATH` by default. If you're on Mountain Lion or later, you can fix this by running `sudo launchctl config user path "/usr/local/bin:$PATH"` and then rebooting, as documented in `man launchctl`. Note that this sets the launchctl `PATH` for *all users*. For earlier versions of macOS, see [this page](https://developer.apple.com/legacy/library/qa/qa1067/_index.html).
 
 ## How do I contribute to Homebrew?
 Read our [contribution guidelines](https://github.com/Homebrew/brew/blob/HEAD/CONTRIBUTING.md#contributing-to-homebrew).
@@ -104,10 +85,6 @@ cd $(brew --repository)
 hub pull someone_else
 ```
 
-Or:
-
-    brew pull https://github.com/Homebrew/homebrew-core/pull/1234
-
 ## Why does Homebrew prefer I install to `/usr/local`?
 
 1.  **It’s easier**<br>`/usr/local/bin` is already in your
@@ -121,9 +98,7 @@ Or:
     there are no files in `/usr/local` by default, so there
     is no need to worry about messing up existing or system tools.
 
-**If you plan to install gems that depend on
-brews then save yourself a bunch of hassle and install to
-`/usr/local`!**
+**If you plan to install gems that depend on formulae then save yourself a bunch of hassle and install to `/usr/local`!**
 
 It is not always straightforward to tell `gem` to look in non-standard directories for headers and libraries. If you choose `/usr/local`, many things will "just work".
 
@@ -156,7 +131,7 @@ If it’s not in `man brew`, it’s probably an external command. These are docu
 If it’s been a while, bump it with a “bump” comment. Sometimes we miss requests and there are plenty of them. Maybe we were thinking on something. It will encourage consideration. In the meantime if you could rebase the pull request so that it can be cherry-picked more easily we will love you for a long time.
 
 ## Can I edit formulae myself?
-Yes! It’s easy! Just `brew edit <formula>`. You don’t have to submit modifications back to `homebrew/core`, just edit the formula as you personally need it and `brew install`. As a bonus `brew update` will merge your changes with upstream so you can still keep the formula up-to-date **with** your personal modifications!
+Yes! It’s easy! Just `brew edit <formula>`. You don’t have to submit modifications back to `homebrew/core`, just edit the formula as you personally need it and `brew install <formula>`. As a bonus `brew update` will merge your changes with upstream so you can still keep the formula up-to-date **with** your personal modifications!
 
 ## Can I make new formulae?
 Yes! It’s easy! Just `brew create URL`. Homebrew will then open the formula in
@@ -191,25 +166,19 @@ $ brew link foo
 Linking /usr/local/Cellar/foo/0.1… 17 symlinks created
 ```
 
-## Why was a formula deleted?
-Use `brew log <formula>` to find out! Likely because it had unresolved issues or
-our analytics identified it was not widely used.
+## Why was a formula deleted or disabled?
+Use `brew log <formula>` to find out! Likely because it had [unresolved issues](Acceptable-Formulae.md) and/or [our analytics](Analytics.md) identified it was not widely used.
+
+For disabled and deprecated formulae, running `brew info <formula>` will also provide an explanation.
 
 ## Homebrew is a poor name, it's too generic, why was it chosen?
-@mxcl was too concerned with the beer theme and didn’t consider that the
-project may actually prove popular. By the time Max realised that it
-was popular, it was too late. However, today, the first Google hit for
-“homebrew” is not beer related ;&#8209;)
+Homebrew's creator @mxcl was too concerned with the beer theme and didn't consider that the project may actually prove popular. By the time Max realised that it was popular, it was too late. However, today, the first Google hit for "homebrew" is not beer related 😉
 
 ## What does "keg-only" mean?
-It means the formula is installed only into the Cellar; it is not linked
-into `/usr/local`. This means most tools will not find it. We don’t do
-this for stupid reasons. You can still link in the formula if you need
-to with `brew link`.
+It means the formula is installed only into the Cellar and is not linked into `/usr/local`. This means most tools will not find it. You can see why a formula was installed as keg-only, and instructions to include it in your `PATH`, by running `brew info <formula>`.
+
+You can still link in the formula if you need to with `brew link <formula>`, though this can cause unexpected behaviour if you are shadowing macOS software.
 
 ## How can I specify different configure arguments for a formula?
 `brew edit <formula>` and edit the formula. Currently there is no
 other way to do this.
-
-## Is there a glossary of terms around?
-All your terminology needs can be [found here](Formula-Cookbook.md#homebrew-terminology).
