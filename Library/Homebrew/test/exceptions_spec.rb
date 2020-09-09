@@ -3,9 +3,19 @@
 require "exceptions"
 
 describe MultipleVersionsInstalledError do
-  subject { described_class.new("foo has multiple installed versions") }
+  subject {
+    described_class.new <<~EOS
+      foo has multiple installed versions
+      Run `brew uninstall --force foo` to remove all versions.
+    EOS
+  }
 
-  its(:to_s) { is_expected.to eq("foo has multiple installed versions") }
+  its(:to_s) {
+    is_expected.to eq <<~EOS
+      foo has multiple installed versions
+      Run `brew uninstall --force foo` to remove all versions.
+    EOS
+  }
 end
 
 describe NoSuchKegError do
