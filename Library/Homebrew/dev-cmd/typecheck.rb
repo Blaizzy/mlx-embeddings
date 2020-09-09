@@ -40,6 +40,7 @@ module Homebrew
       if args.update_definitions?
         system "bundle", "exec", "tapioca", "sync"
         system "bundle", "exec", "srb", "rbi", "hidden-definitions"
+        system "bundle", "exec", "srb", "rbi", "todo"
 
         Homebrew.failed = system("git", "diff", "--stat", "--exit-code") if args.fail_if_not_changed?
 
