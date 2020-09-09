@@ -37,8 +37,8 @@ class Bintray
     end
 
     curl(*args, url,
-         show_output: verbose?,
-         secrets:     key)
+         print_stdout: false,
+         secrets:      key)
   end
 
   def upload(local_file, repo:, package:, version:, remote_file:, sha256: nil)
