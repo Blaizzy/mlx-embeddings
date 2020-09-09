@@ -164,7 +164,10 @@ module Homebrew
             end
 
             unless (prefix = f.latest_installed_prefix).directory?
-              raise MultipleVersionsInstalledError, "#{rack.basename} has multiple installed versions"
+              raise MultipleVersionsInstalledError, <<~EOS
+                #{rack.basename} has multiple installed versions
+                Run `brew uninstall --force #{rack.basename}` to remove all versions.
+              EOS
             end
 
             Keg.new(prefix)
