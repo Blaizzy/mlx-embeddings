@@ -139,7 +139,8 @@ begin
         brew_uid = HOMEBREW_BREW_FILE.stat.uid
         tap_commands += %W[/usr/bin/sudo -u ##{brew_uid}] if Process.uid.zero? && !brew_uid.zero?
       end
-      tap_commands += %W[#{HOMEBREW_BREW_FILE} tap #{possible_tap.name}]
+      quiet_arg = args.quiet? ? "--quiet" : nil
+      tap_commands += [HOMEBREW_BREW_FILE, "tap", *quiet_arg, possible_tap.name]
       safe_system(*tap_commands)
     end
 

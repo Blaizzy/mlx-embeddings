@@ -106,10 +106,10 @@ module Commands
     find_commands HOMEBREW_DEV_CMD_PATH
   end
 
-  def official_external_commands_paths
+  def official_external_commands_paths(quiet:)
     %w[bundle services test-bot].map do |cmd|
       tap = Tap.fetch("Homebrew/#{cmd}")
-      tap.install unless tap.installed?
+      tap.install(quiet: quiet) unless tap.installed?
       external_ruby_v2_cmd_path(cmd)
     end
   end
