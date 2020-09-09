@@ -84,7 +84,7 @@ module Homebrew
         @to_paths ||= {}
         @to_paths[only] ||= downcased_unique_named.flat_map do |name|
           if File.exist?(name)
-            name
+            Pathname(name)
           elsif name.count("/") == 1
             Tap.fetch(name).path
           else
