@@ -468,8 +468,9 @@ module Cask
       user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @online
       return if user.nil?
 
-      # TODO: Detect tag from URL instead of using `cask.version`.
-      error = SharedAudits.github_release(user, repo, cask.version, cask: cask)
+      tag = SharedAudits.github_tag_from_url(cask.url)
+      tag ||= cask.version
+      error = SharedAudits.github_release(user, repo, tag, cask: cask)
       add_error error if error
     end
 
@@ -481,7 +482,9 @@ module Cask
 
       odebug "Auditing GitLab prerelease"
 
-      error = SharedAudits.gitlab_release(user, repo, cask.version)
+      tag = SharedAudits.gitlab_tag_from_url(cask.url)
+      tag ||= cask.version
+      error = SharedAudits.gitlab_release(user, repo, tag)
       add_error error if error
     end
 

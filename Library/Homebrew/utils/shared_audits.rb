@@ -164,4 +164,22 @@ module SharedAudits
 
     "Bitbucket repository not notable enough (<30 forks and <75 watchers)"
   end
+
+  def github_tag_from_url(url)
+    url = url.to_s
+    tag = url.match(%r{^https://github\.com/[\w-]+/[\w-]+/archive/([^/]+)\.(tar\.gz|zip)$})
+             .to_a
+             .second
+    tag ||= url.match(%r{^https://github\.com/[\w-]+/[\w-]+/releases/download/([^/]+)/})
+               .to_a
+               .second
+    tag
+  end
+
+  def gitlab_tag_from_url(url)
+    url = url.to_s
+    url.match(%r{^https://gitlab\.com/[\w-]+/[\w-]+/-/archive/([^/]+)/})
+       .to_a
+       .second
+  end
 end

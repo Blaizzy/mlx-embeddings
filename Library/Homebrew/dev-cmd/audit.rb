@@ -784,9 +784,7 @@ module Homebrew
         owner = Regexp.last_match(1)
         repo = Regexp.last_match(2)
 
-        tag = url.match(%r{^https://gitlab\.com/[\w-]+/[\w-]+/-/archive/([^/]+)/})
-                 .to_a
-                 .second
+        tag = SharedAudits.gitlab_tag_from_url(url)
         tag ||= stable.specs[:tag]
         tag ||= stable.version
 
@@ -797,12 +795,7 @@ module Homebrew
       when %r{^https://github.com/([\w-]+)/([\w-]+)}
         owner = Regexp.last_match(1)
         repo = Regexp.last_match(2)
-        tag = url.match(%r{^https://github\.com/[\w-]+/[\w-]+/archive/([^/]+)\.(tar\.gz|zip)$})
-                 .to_a
-                 .second
-        tag ||= url.match(%r{^https://github\.com/[\w-]+/[\w-]+/releases/download/([^/]+)/})
-                   .to_a
-                   .second
+        tag = SharedAudits.github_tag_from_url(url)
         tag ||= formula.stable.specs[:tag]
 
         if @online
