@@ -6,10 +6,10 @@ module GitHub
   # @api private
   module Actions
     def self.escape(string)
-      string.gsub(/\r/, "%0D")
-            .gsub(/\n/, "%0A")
-            .gsub(/]/, "%5D")
-            .gsub(/;/, "%3B")
+      # See https://github.community/t/set-output-truncates-multiline-strings/16852/3.
+      string.gsub("%", "%25")
+            .gsub("\n", "%0A")
+            .gsub("\r", "%0D")
     end
 
     # Helper class for formatting annotations on GitHub Actions.

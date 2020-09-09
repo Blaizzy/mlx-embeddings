@@ -95,15 +95,15 @@ RSpec.configure do |config|
   config.include(Test::Helper::OutputAsTTY)
 
   config.before(:each, :needs_compat) do
-    skip "Requires compatibility layer." if ENV["HOMEBREW_NO_COMPAT"]
+    skip "Requires the compatibility layer." if ENV["HOMEBREW_NO_COMPAT"]
   end
 
   config.before(:each, :needs_linux) do
-    skip "Not on Linux." unless OS.linux?
+    skip "Not running on Linux." unless OS.linux?
   end
 
   config.before(:each, :needs_macos) do
-    skip "Not on macOS." unless OS.mac?
+    skip "Not running on macOS." unless OS.mac?
   end
 
   config.before(:each, :needs_java) do
@@ -113,11 +113,11 @@ RSpec.configure do |config|
     else
       which("java")
     end
-    skip "Java not installed." unless java_installed
+    skip "Java is not installed." unless java_installed
   end
 
   config.before(:each, :needs_python) do
-    skip "Python not installed." unless which("python")
+    skip "Python is not installed." unless which("python")
   end
 
   config.before(:each, :needs_network) do
@@ -125,7 +125,7 @@ RSpec.configure do |config|
   end
 
   config.before(:each, :needs_svn) do
-    skip "subversion not installed." unless quiet_system "#{HOMEBREW_SHIMS_PATH}/scm/svn", "--version"
+    skip "Subversion is not installed." unless quiet_system "#{HOMEBREW_SHIMS_PATH}/scm/svn", "--version"
 
     svn_paths = PATH.new(ENV["PATH"])
     if OS.mac?
@@ -135,7 +135,7 @@ RSpec.configure do |config|
 
     svn = which("svn", svn_paths)
     svnadmin = which("svnadmin", svn_paths)
-    skip "subversion not installed." if !svn || !svnadmin
+    skip "Subversion is not installed." if !svn || !svnadmin
 
     ENV["PATH"] = PATH.new(ENV["PATH"])
                       .append(svn.dirname)
@@ -143,7 +143,7 @@ RSpec.configure do |config|
   end
 
   config.before(:each, :needs_unzip) do
-    skip "unzip not installed." unless which("unzip")
+    skip "UnZip is not installed." unless which("unzip")
   end
 
   config.around do |example|
