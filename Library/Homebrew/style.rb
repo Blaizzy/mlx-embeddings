@@ -15,8 +15,15 @@ module Homebrew
       success = check_style_impl(files, :print, **options)
 
       if ENV["GITHUB_ACTIONS"] && !success
-        offenses = check_style_json(files, **options)
-        puts offenses.to_github_annotations
+        check_style_json(files, **options).each do |path, offenses|
+          offenses.each do |o|
+            line = o.location.line
+            column = o.location.line
+
+            annotation = GitHub::Actions::Annotation.new(:error, o.message, file: path, line: line, column: column)
+            puts annotation if annotation.relevant?
+          end
+        end
       end
 
       success
@@ -235,26 +242,6 @@ module Homebrew
 
       def each(*args, &block)
         @offenses.each(*args, &block)
-      end
-
-      def to_github_annotations
-        workspace = ENV["GITHUB_WORKSPACE"]
-        return [] if workspace.blank?
-
-        workspace = Pathname(workspace).realpath
-
-        @offenses.flat_map do |path, offenses|
-          relative_path = path.relative_path_from(workspace)
-
-          # Only generate annotations for paths relative to the `GITHUB_WORKSPACE` directory.
-          next [] if relative_path.descend.next.to_s == ".."
-
-          offenses.map do |o|
-            line = o.location.line
-            column = o.location.line
-            GitHub::Actions::Annotation.new(:error, o.message, file: relative_path, line: line, column: column)
-          end
-        end
       end
     end
 

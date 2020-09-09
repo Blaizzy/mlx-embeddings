@@ -14,12 +14,20 @@ module GitHub
 
     # Helper class for formatting annotations on GitHub Actions.
     class Annotation
+      def self.path_relative_to_workspace(path)
+        workspace = Pathname(ENV.fetch("GITHUB_WORKSPACE", Dir.pwd)).realpath
+        path = Pathname(path)
+        return path unless path.exist?
+
+        path.realpath.relative_path_from(workspace)
+      end
+
       def initialize(type, message, file: nil, line: nil, column: nil)
         raise ArgumentError, "Unsupported type: #{type.inspect}" unless [:warning, :error].include?(type)
 
         @type = type
         @message = String(message)
-        @file = Pathname(file) if file
+        @file = self.class.path_relative_to_workspace(file) if file
         @line = Integer(line) if line
         @column = Integer(column) if column
       end
@@ -32,6 +40,14 @@ module GitHub
         metadata = [*file, *line, *column].join(",").presence&.prepend(" ")
 
         "::#{@type}#{metadata}::#{Actions.escape(@message)}"
+      end
+
+      # An annotation is only relevant if the corresponding `file` is relative to
+      # the `GITHUB_WORKSPACE` directory or if no `file` is specified.
+      def relevant?
+        return true if @file.nil?
+
+        @file.descend.next.to_s != ".."
       end
     end
   end
