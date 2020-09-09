@@ -428,8 +428,12 @@ EOS
     echo "HOMEBREW_BREW_GIT_REMOTE set: using $HOMEBREW_BREW_GIT_REMOTE for Homebrew/brew Git remote."
     git remote set-url origin "$HOMEBREW_BREW_GIT_REMOTE"
     git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
-    latest_tag="$(git ls-remote --tags --refs -q origin | tail -n1 | cut -f2)"
-    git fetch --force origin --shallow-since="$latest_tag"
+    latest_tag="$(git ls-remote --tags --refs -q origin |
+                  cut -d/ -f3 | 
+                  sort --numeric-sort --field-separator=. --key=1,1 --key=2,2 --key=3,3 |
+                  tail -n1)"
+    latest_ref="refs/tags/$latest_tag"
+    git fetch --force origin --shallow-since="$latest_ref"
   fi
 
   if [[ "$HOMEBREW_CORE_DEFAULT_GIT_REMOTE" != "$HOMEBREW_CORE_GIT_REMOTE" ]] &&
