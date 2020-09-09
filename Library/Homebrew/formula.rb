@@ -333,6 +333,12 @@ class Formula
     active_spec == head
   end
 
+  # Is this formula HEAD-only?
+  # @private
+  def head_only?
+    head && !stable
+  end
+
   delegate [ # rubocop:disable Layout/HashAlignment
     :bottle_unneeded?,
     :bottle_disabled?,
