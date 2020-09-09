@@ -140,7 +140,7 @@ HOMEBREW_VERSION="$("$HOMEBREW_GIT" -C "$HOMEBREW_REPOSITORY" describe --tags --
 HOMEBREW_USER_AGENT_VERSION="$HOMEBREW_VERSION"
 if [[ -z "$HOMEBREW_VERSION" ]]
 then
-  HOMEBREW_VERSION=">=2.2.0 (shallow or no git repository)"
+  HOMEBREW_VERSION=">=2.5.0 (shallow or no git repository)"
   HOMEBREW_USER_AGENT_VERSION="2.X.Y"
 fi
 
