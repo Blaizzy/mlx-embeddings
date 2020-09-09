@@ -33,7 +33,7 @@ module RSpec
 
         description = failure.example.full_description
         message = failure.message_lines.join("\n")
-        annotation = "#{description}:\n\n#{message}"
+        annotation = "#{description}\n\n#{message}"
 
         output.puts "\n::error file=#{file},line=#{line}::#{self.class.escape(annotation)}"
       end
@@ -48,7 +48,7 @@ module RSpec
         else
           "Pending: #{pending.example.execution_result.pending_message}"
         end
-        annotation = "#{description}:\n\n#{message}"
+        annotation = "#{description}\n\n#{message}"
 
         output.puts "\n::warning file=#{file},line=#{line}::#{self.class.escape(annotation)}"
       end
