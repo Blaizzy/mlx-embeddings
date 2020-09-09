@@ -430,8 +430,8 @@ EOS
     git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
     latest_tag="$(git ls-remote --tags --refs -q origin |
                   cut -d/ -f3 | 
-                  sort --field-separator=. --key=1,1nr -k 2,2nr -k 3,3nr|
-                  head -n1)"
+                  sort --numeric-sort --field-separator=. --key=1,1 --key=2,2 --key=3,3 |
+                  tail -n1)"
     latest_ref="refs/tags/$latest_tag"
     git fetch --force origin --shallow-since="$latest_ref"
   fi
