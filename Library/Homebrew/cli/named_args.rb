@@ -74,8 +74,33 @@ module Homebrew
       end
 
       def to_formulae_paths
-        @to_formulae_paths ||= (downcased_unique_named - homebrew_tap_cask_names).map do |name|
-          Formulary.path(name)
+        to_paths(only: :formulae)
+      end
+
+      # Keep existing paths and try to convert others to tap, formula or cask paths.
+      # If a cask and formula with the same name exist, includes both their paths
+      # unless `only` is specified.
+      def to_paths(only: nil)
+        @to_paths ||= {}
+        @to_paths[only] ||= downcased_unique_named.flat_map do |name|
+          if File.exist?(name)
+            Pathname(name)
+          elsif name.count("/") == 1
+            Tap.fetch(name).path
+          else
+            next Formulary.path(name) if only == :formulae
+            next Cask::CaskLoader.path(name) if only == :casks
+
+            formula_path = Formulary.path(name)
+            cask_path = Cask::CaskLoader.path(name)
+
+            paths = []
+
+            paths << formula_path if formula_path.exist?
+            paths << cask_path if cask_path.exist?
+
+            paths.empty? ? name : paths
+          end
         end.uniq.freeze
       end
 
