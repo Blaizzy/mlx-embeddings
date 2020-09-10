@@ -120,12 +120,18 @@ class AbstractDownloadStrategy
   def command!(*args, **options)
     system_command!(
       *args,
+      env: env.merge(options.fetch(:env, {})),
+      **command_output_options,
+      **options,
+    )
+  end
+
+  def command_output_options
+    {
       print_stdout: !quiet?,
       print_stderr: !quiet?,
       verbose:      verbose? && !quiet?,
-      env:          env,
-      **options,
-    )
+    }
   end
 
   def env
@@ -484,7 +490,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
 
   def curl(*args, **options)
     args << "--connect-timeout" << "15" unless mirrors.empty?
-    super(*_curl_args, *args, **_curl_opts, **options)
+    super(*_curl_args, *args, **_curl_opts, **command_output_options, **options)
   end
 end
 
