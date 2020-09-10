@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "utils/github/actions"
+
 module Cask
   class Cmd
     # Implementation of the `brew cask audit` command.
@@ -57,7 +59,19 @@ module Cask
           odebug "Auditing Cask #{cask}"
           result = Auditor.audit(cask, **options)
 
-          result[:warnings].empty? && result[:errors].empty?
+          next true if result[:warnings].empty? && result[:errors].empty?
+
+          if ENV["GITHUB_ACTIONS"]
+            cask_path = cask.sourcefile_path
+            annotations = (result[:warnings].map { |w| [:warning, w] } + result[:errors].map { |e| [:error, e] })
+                          .map { |type, message| GitHub::Actions::Annotation.new(type, message, file: cask_path) }
+
+            annotations.each do |annotation|
+              puts annotation if annotation.relevant?
+            end
+          end
+
+          false
         end
 
         return if failed_casks.empty?
