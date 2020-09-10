@@ -2,14 +2,13 @@
 #   srb rbi todo
 
 # typed: strong
+module ::StackProf; end
 module DependencyCollector::Compat; end
-module ELFShim::Metadata::PatchELF::PatchError; end
-module ELFShim::PatchELF::PatchError; end
-module ELFShim::PatchELF::Patcher; end
 module Homebrew::Error; end
 module OS::Mac::Version::NULL; end
-module T::CompatibilityPatches::RSpecCompatibility::MethodDoubleExtensions; end
-module T::CompatibilityPatches::RSpecCompatibility::RecorderExtensions; end
+module SPDX::JSON_PATH; end
+module T::InterfaceWrapper::Helpers; end
+module T::Private::Abstract::Hooks; end
 module T::Private::Methods::MethodHooks; end
 module T::Private::Methods::SingletonMethodHooks; end
 module Test::Unit::AssertionFailedError; end
