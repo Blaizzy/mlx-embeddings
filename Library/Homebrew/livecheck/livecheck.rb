@@ -191,29 +191,23 @@ module Homebrew
       if formula.deprecated? && !formula.livecheckable?
         return status_hash(formula, "deprecated", args: args) if args.json?
 
-        unless args.quiet?
-          puts "#{Tty.red}#{formula_name(formula, args: args)}#{Tty.reset} : deprecated"
-          return
-        end
+        puts "#{Tty.red}#{formula_name(formula, args: args)}#{Tty.reset} : deprecated" unless args.quiet?
+        return
       end
 
       if formula.versioned_formula? && !formula.livecheckable?
         return status_hash(formula, "versioned", args: args) if args.json?
 
-        unless args.quiet?
-          puts "#{Tty.red}#{formula_name(formula, args: args)}#{Tty.reset} : versioned"
-          return
-        end
+        puts "#{Tty.red}#{formula_name(formula, args: args)}#{Tty.reset} : versioned" unless args.quiet?
+        return
       end
 
       if formula.head? && !formula.any_version_installed?
         head_only_msg = "HEAD only formula must be installed to be livecheckable"
         return status_hash(formula, "error", [head_only_msg], args: args) if args.json?
 
-        unless args.quiet?
-          puts "#{Tty.red}#{formula_name(formula, args: args)}#{Tty.reset} : #{head_only_msg}"
-          return
-        end
+        puts "#{Tty.red}#{formula_name(formula, args: args)}#{Tty.reset} : #{head_only_msg}" unless args.quiet?
+        return
       end
 
       is_gist = formula.stable&.url&.include?("gist.github.com")
@@ -232,8 +226,8 @@ module Homebrew
         unless args.quiet?
           puts "#{Tty.red}#{formula_name(formula, args: args)}#{Tty.reset} : skipped" \
               "#{" - #{skip_msg}" if skip_msg.present?}"
-          return
         end
+        return
       end
 
       false
