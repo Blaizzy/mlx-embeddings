@@ -106,14 +106,6 @@ numeric() {
   printf "%01d%02d%02d%03d" ${1//[.rc]/ } 2>/dev/null
 }
 
-HOMEBREW_VERSION="$(git -C "$HOMEBREW_REPOSITORY" describe --tags --dirty --abbrev=7 2>/dev/null)"
-HOMEBREW_USER_AGENT_VERSION="$HOMEBREW_VERSION"
-if [[ -z "$HOMEBREW_VERSION" ]]
-then
-  HOMEBREW_VERSION=">=2.2.0 (shallow or no git repository)"
-  HOMEBREW_USER_AGENT_VERSION="2.X.Y"
-fi
-
 if [[ "$HOMEBREW_PREFIX" = "/" || "$HOMEBREW_PREFIX" = "/usr" ]]
 then
   # it may work, but I only see pain this route and don't want to support it
@@ -142,6 +134,14 @@ then
   HOMEBREW_GIT="$HOMEBREW_GIT_PATH"
 else
   HOMEBREW_GIT="git"
+fi
+
+HOMEBREW_VERSION="$("$HOMEBREW_GIT" -C "$HOMEBREW_REPOSITORY" describe --tags --dirty --abbrev=7 2>/dev/null)"
+HOMEBREW_USER_AGENT_VERSION="$HOMEBREW_VERSION"
+if [[ -z "$HOMEBREW_VERSION" ]]
+then
+  HOMEBREW_VERSION=">=2.5.0 (shallow or no git repository)"
+  HOMEBREW_USER_AGENT_VERSION="2.X.Y"
 fi
 
 if [[ -n "$HOMEBREW_MACOS" ]]
