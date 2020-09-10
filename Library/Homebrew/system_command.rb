@@ -62,7 +62,6 @@ class SystemCommand
 
   def initialize(executable, args: [], sudo: false, env: {}, input: [], must_succeed: false,
                  print_stdout: false, print_stderr: true, verbose: false, secrets: [], **options)
-
     require "extend/ENV"
     @executable = executable
     @args = args
