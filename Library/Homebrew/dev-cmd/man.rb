@@ -36,7 +36,7 @@ module Homebrew
     odie "`brew man --link` is now done automatically by `brew update`." if args.link?
 
     Commands.rebuild_internal_commands_completion_list
-    regenerate_man_pages(preserve_date: args.fail_if_changed?)
+    regenerate_man_pages(preserve_date: args.fail_if_changed?, quiet: args.quiet?)
 
     if system "git", "-C", HOMEBREW_REPOSITORY, "diff", "--quiet", "docs/Manpage.md", "manpages", "completions"
       puts "No changes to manpage or completions output detected."
@@ -45,21 +45,22 @@ module Homebrew
     end
   end
 
-  def regenerate_man_pages(preserve_date:)
+  def regenerate_man_pages(preserve_date:, quiet:)
     Homebrew.install_bundler_gems!
 
-    markup = build_man_page
+    markup = build_man_page(quiet: quiet)
     convert_man_page(markup, TARGET_DOC_PATH/"Manpage.md", preserve_date: preserve_date)
     convert_man_page(markup, TARGET_MAN_PATH/"brew.1", preserve_date: preserve_date)
   end
 
-  def build_man_page
+  def build_man_page(quiet:)
     template = (SOURCE_PATH/"brew.1.md.erb").read
     variables = OpenStruct.new
 
     variables[:commands] = generate_cmd_manpages(Commands.internal_commands_paths)
     variables[:developer_commands] = generate_cmd_manpages(Commands.internal_developer_commands_paths)
-    variables[:official_external_commands] = generate_cmd_manpages(Commands.official_external_commands_paths)
+    variables[:official_external_commands] =
+      generate_cmd_manpages(Commands.official_external_commands_paths(quiet: quiet))
     variables[:global_options] = global_options_manpage
     variables[:environment_variables] = env_vars_manpage
 
