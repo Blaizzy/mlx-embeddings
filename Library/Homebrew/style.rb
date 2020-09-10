@@ -263,36 +263,18 @@ module Homebrew
       def corrected?
         @corrected
       end
-
-      def correction_status
-        "[Corrected] " if corrected?
-      end
-
-      def to_s(display_cop_name: false)
-        if display_cop_name
-          "#{severity_code}: #{location.to_short_s}: #{cop_name}: " \
-          "#{Tty.green}#{correction_status}#{Tty.reset}#{message}"
-        else
-          "#{severity_code}: #{location.to_short_s}: #{Tty.green}#{correction_status}#{Tty.reset}#{message}"
-        end
-      end
     end
 
     # Source location of a style offense.
     class LineLocation
-      attr_reader :line, :column, :length
+      attr_reader :line, :column
 
       def initialize(json)
         @line = json["line"]
         @column = json["column"]
-        @length = json["length"]
       end
 
       def to_s
-        "#{line}: col #{column} (#{length} chars)"
-      end
-
-      def to_short_s
         "#{line}: col #{column}"
       end
     end
