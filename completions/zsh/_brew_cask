@@ -12,10 +12,6 @@
 zstyle -T ':completion:*:*:*:brew-cask:*' tag-order && \
 	zstyle ':completion:*:*:*:brew-cask:*' tag-order 'commands'
 
-__brew_cask() {
-  [ -d "$(brew --repo homebrew/cask)" ] && brew cask $@
-}
-
 __brew_all_casks() {
   local -a list
   local expl
@@ -32,7 +28,7 @@ __brew_all_casks() {
 __brew_installed_casks() {
   local -a list
   local expl
-  list=( $(__brew_cask list|sed 's/(!)//') )
+  list=( $(brew list --cask) )
   _wanted list expl 'installed casks' compadd -a list
 }
 
@@ -91,10 +87,6 @@ _brew_cask_cat() {
   __brew_all_casks
 }
 
-_brew_cask_cat() {
-  __brew_all_casks
-}
-
 _brew_cask_create() {
   _arguments '*::token:'
 }
@@ -134,10 +126,6 @@ _brew_cask_list() {
     '-1[format output in a single column]' \
     '-l[format as detailed list]' \
     '*::token:__brew_installed_casks'
-}
-
-_brew_cask_ls() {
-  _brew_cask_list
 }
 
 _brew_cask_outdated() {
