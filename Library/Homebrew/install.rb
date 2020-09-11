@@ -16,15 +16,15 @@ module Homebrew
       check_cpu
       attempt_directory_creation
       check_cc_argv(cc)
-      diagnostic_checks(:supported_configuration_checks, fatal: all_fatal)
-      diagnostic_checks(:fatal_preinstall_checks)
+      Diagnostic.checks(:supported_configuration_checks, fatal: all_fatal)
+      Diagnostic.checks(:fatal_preinstall_checks)
     end
     alias generic_perform_preinstall_checks perform_preinstall_checks
     module_function :generic_perform_preinstall_checks
 
     def perform_build_from_source_checks(all_fatal: false)
-      diagnostic_checks(:fatal_build_from_source_checks)
-      diagnostic_checks(:build_from_source_checks, fatal: all_fatal)
+      Diagnostic.checks(:fatal_build_from_source_checks)
+      Diagnostic.checks(:build_from_source_checks, fatal: all_fatal)
     end
 
     def check_cpu
@@ -69,24 +69,6 @@ module Homebrew
       EOS
     end
     private_class_method :check_cc_argv
-
-    def diagnostic_checks(type, fatal: true)
-      @checks ||= Diagnostic::Checks.new
-      failed = false
-      @checks.public_send(type).each do |check|
-        out = @checks.public_send(check)
-        next if out.nil?
-
-        if fatal
-          failed ||= true
-          ofail out
-        else
-          opoo out
-        end
-      end
-      exit 1 if failed && fatal
-    end
-    private_class_method :diagnostic_checks
   end
 end
 

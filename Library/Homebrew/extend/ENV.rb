@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "hardware"
+require "diagnostic"
 require "extend/ENV/shared"
 require "extend/ENV/std"
 require "extend/ENV/super"

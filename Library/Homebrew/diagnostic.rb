@@ -28,6 +28,23 @@ module Homebrew
       missing
     end
 
+    def self.checks(type, fatal: true)
+      @checks ||= Checks.new
+      failed = false
+      @checks.public_send(type).each do |check|
+        out = @checks.public_send(check)
+        next if out.nil?
+
+        if fatal
+          failed ||= true
+          ofail out
+        else
+          opoo out
+        end
+      end
+      exit 1 if failed && fatal
+    end
+
     # Diagnostic checks.
     class Checks
       def initialize(verbose: true)
@@ -72,6 +89,10 @@ module Homebrew
         %w[
           check_for_installed_developer_tools
         ].freeze
+      end
+
+      def fatal_setup_build_environment_checks
+        [].freeze
       end
 
       def supported_configuration_checks

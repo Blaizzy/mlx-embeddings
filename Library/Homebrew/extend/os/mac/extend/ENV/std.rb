@@ -83,6 +83,7 @@ module Stdenv
     sdk = formula ? MacOS.sdk_for_formula(formula, version) : MacOS.sdk(version)
     return if !MacOS.sdk_root_needed? && sdk&.source != :xcode
 
+    Homebrew::Diagnostic.checks(:fatal_setup_build_environment_checks)
     sdk = sdk.path
 
     # Extra setup to support Xcode 4.3+ without CLT.

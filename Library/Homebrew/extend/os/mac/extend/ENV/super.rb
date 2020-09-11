@@ -110,7 +110,9 @@ module Superenv
     formula = options[:formula]
     sdk = formula ? MacOS.sdk_for_formula(formula) : MacOS.sdk
     if MacOS.sdk_root_needed? || sdk&.source == :xcode
+      Homebrew::Diagnostic.checks(:fatal_setup_build_environment_checks)
       self["HOMEBREW_SDKROOT"] = sdk.path
+
       self["HOMEBREW_DEVELOPER_DIR"] = if sdk.source == :xcode
         MacOS::Xcode.prefix
       else
