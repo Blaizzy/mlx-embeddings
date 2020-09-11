@@ -456,22 +456,32 @@ class ReporterHub
   private
 
   def dump_formula_report(key, title)
+    only_installed = Homebrew::EnvConfig.update_report_only_installed?
+
     formulae = select_formula(key).sort.map do |name, new_name|
       # Format list items of renamed formulae
       case key
       when :R
         name = pretty_installed(name) if installed?(name)
         new_name = pretty_installed(new_name) if installed?(new_name)
-        "#{name} -> #{new_name}"
+        "#{name} -> #{new_name}" unless only_installed
       when :A
-        name unless installed?(name)
+        name if !installed?(name) && !only_installed
       when :AC
-        name.split("/").last unless cask_installed?(name)
+        name.split("/").last if !cask_installed?(name) && !only_installed
       when :MC, :DC
         name = name.split("/").last
-        cask_installed?(name) ? pretty_installed(name) : name
+        if cask_installed?(name)
+          pretty_installed(name)
+        elsif !only_installed
+          name
+        end
       else
-        installed?(name) ? pretty_installed(name) : name
+        if installed?(name)
+          pretty_installed(name)
+        elsif !only_installed
+          name
+        end
       end
     end.compact
 
