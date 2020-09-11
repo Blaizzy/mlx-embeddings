@@ -45,11 +45,10 @@ jobs:
     - name: Set up Homebrew official command taps
       run: |
         # Setup taps needed for 'brew tests' and 'brew man'
-        brew tap homebrew/bundle
         cd "$(brew --repo)"
 
         if [ "$RUNNER_OS" = "macOS" ]; then
-          brew update-reset Library/Taps/homebrew/homebrew-cask Library/Taps/homebrew/homebrew-services
+          brew update-reset Library/Taps/homebrew/homebrew-bundle Library/Taps/homebrew/homebrew-cask Library/Taps/homebrew/homebrew-services
         else
           brew update-reset Library/Taps/homebrew/homebrew-services
         fi
