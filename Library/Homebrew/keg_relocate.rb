@@ -170,7 +170,7 @@ class Keg
     libtool_files = []
 
     path.find do |pn|
-      next if pn.symlink? || pn.directory? || ![".la", ".lai"].include?(pn.extname)
+      next if pn.symlink? || pn.directory? || !Keg::LIBTOOL_EXTENSIONS.include?(pn.extname)
 
       libtool_files << pn
     end

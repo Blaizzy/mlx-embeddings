@@ -453,13 +453,14 @@ module Homebrew
       end
     end
 
+    any_cellars = ["any", "any_skip_relocation"]
     bottles_hash.each do |formula_name, bottle_hash|
       ohai formula_name
 
       bottle = BottleSpecification.new
       bottle.root_url bottle_hash["bottle"]["root_url"]
       cellar = bottle_hash["bottle"]["cellar"]
-      cellar = cellar.to_sym if ["any", "any_skip_relocation"].include?(cellar)
+      cellar = cellar.to_sym if any_cellars.include?(cellar)
       bottle.cellar cellar
       bottle.prefix bottle_hash["bottle"]["prefix"]
       bottle.rebuild bottle_hash["bottle"]["rebuild"]
@@ -478,14 +479,14 @@ module Homebrew
             update_or_add = "update"
             if args.keep_old?
               mismatches = []
+              valid_keys = %w[root_url prefix cellar rebuild sha1 sha256]
               bottle_block_contents = s.inreplace_string[/  bottle do(.+?)end\n/m, 1]
               bottle_block_contents.lines.each do |line|
                 line = line.strip
                 next if line.empty?
 
                 key, old_value_original, _, tag = line.split " ", 4
-                valid_key = %w[root_url prefix cellar rebuild sha1 sha256].include? key
-                next unless valid_key
+                next unless valid_keys.include?(key)
 
                 old_value = old_value_original.to_s.delete "'\""
                 old_value = old_value.to_s.delete ":" if key != "root_url"

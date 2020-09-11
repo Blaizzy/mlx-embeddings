@@ -45,8 +45,9 @@ SimpleCov.start do
   else
     command_name "#{command_name} (#{$PROCESS_ID})"
 
+    excludes = ["test", "vendor"]
     subdirs = Dir.chdir(SimpleCov.root) { Dir.glob("*") }
-                 .reject { |d| d.end_with?(".rb") || ["test", "vendor"].include?(d) }
+                 .reject { |d| d.end_with?(".rb") || excludes.include?(d) }
                  .map { |d| "#{d}/**/*.rb" }.join(",")
 
     # Not using this during integration tests makes the tests 4x times faster

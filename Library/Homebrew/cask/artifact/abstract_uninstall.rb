@@ -85,9 +85,10 @@ module Cask
 
       # :launchctl must come before :quit/:signal for cases where app would instantly re-launch
       def uninstall_launchctl(*services, command: nil, **_)
+        booleans = [false, true]
         services.each do |service|
           ohai "Removing launchctl service #{service}"
-          [false, true].each do |with_sudo|
+          booleans.each do |with_sudo|
             plist_status = command.run(
               "/bin/launchctl",
               args: ["list", service],

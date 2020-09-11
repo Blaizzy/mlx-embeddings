@@ -893,8 +893,9 @@ module Homebrew
 
         bin_names += dir.children.map(&:basename).map(&:to_s)
       end
+      shell_commands = ["system", "shell_output", "pipe_output"]
       bin_names.each do |name|
-        ["system", "shell_output", "pipe_output"].each do |cmd|
+        shell_commands.each do |cmd|
           if text.to_s.match?(/test do.*#{cmd}[(\s]+['"]#{Regexp.escape(name)}[\s'"]/m)
             problem %Q(fully scope test #{cmd} calls, e.g. #{cmd} "\#{bin}/#{name}")
           end

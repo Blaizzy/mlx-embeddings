@@ -433,9 +433,10 @@ module GitHub
     result = open_graphql(query, scopes: ["user:email"])
     reviews = result["repository"]["pullRequest"]["reviews"]["nodes"]
 
+    valid_associations = %w[MEMBER OWNER]
     reviews.map do |r|
       next if commit.present? && commit != r["commit"]["oid"]
-      next unless %w[MEMBER OWNER].include? r["authorAssociation"]
+      next unless valid_associations.include? r["authorAssociation"]
 
       email = if r["author"]["email"].blank?
         "#{r["author"]["databaseId"]}+#{r["author"]["login"]}@users.noreply.github.com"
