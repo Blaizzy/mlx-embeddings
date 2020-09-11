@@ -61,6 +61,8 @@ module Homebrew
 
     cask = args.named.to_casks.first
     new_version = args.version
+    new_version = "latest" if new_version == ":latest"
+    new_version = Cask::DSL::Version.new(new_version)
     new_base_url = args.url
     new_hash = args.sha256
 
@@ -74,30 +76,46 @@ module Homebrew
 
     check_open_pull_requests(cask, tap_full_name, args: args)
 
-    odie "#{cask}: no --version= argument specified!" unless new_version
+    odie "#{cask}: no --version= argument specified!" if new_version.empty?
 
-    check_closed_pull_requests(cask, tap_full_name, version: new_version, args: args)
+    check_closed_pull_requests(cask, tap_full_name, version: new_version, args: args) unless new_version.latest?
 
-    if Version.new(new_version) < Version.new(old_version)
-      odie <<~EOS
-        You need to bump this cask manually since changing the
-        version from #{old_version} to #{new_version} would be a downgrade.
-      EOS
-    elsif new_version == old_version
+    if new_version == old_version
       odie <<~EOS
         You need to bump this cask manually since the new version
         and old version are both #{new_version}.
+      EOS
+    elsif old_version.latest?
+      opoo "No --url= argument specified!" unless new_base_url
+    elsif new_version.latest?
+      opoo "Ignoring specified --sha256= argument." if new_hash
+    elsif Version.new(new_version) < Version.new(old_version)
+      odie <<~EOS
+        You need to bump this cask manually since changing the
+        version from #{old_version} to #{new_version} would be a downgrade.
       EOS
     end
 
     old_contents = File.read(cask.sourcefile_path)
 
-    replacement_pairs = [
+    replacement_pairs = []
+
+    replacement_pairs << if old_version.latest?
+      [
+        "version :latest",
+        "version \"#{new_version}\"",
+      ]
+    elsif new_version.latest?
+      [
+        "version \"#{old_version}\"",
+        "version :latest",
+      ]
+    else
       [
         old_version,
         new_version,
-      ],
-    ]
+      ]
+    end
 
     if new_base_url.present?
       m = /^ +url "(.+?)"\n/m.match(old_contents)
@@ -111,7 +129,7 @@ module Homebrew
       ]
     end
 
-    if new_hash.nil? || cask.languages.present?
+    if !new_version.latest? && (new_hash.nil? || cask.languages.present?)
       tmp_contents = Utils::Inreplace.inreplace_pairs(cask.sourcefile_path,
                                                       replacement_pairs.uniq.compact,
                                                       read_only_run: true,
@@ -146,10 +164,22 @@ module Homebrew
       end
     end
 
-    replacement_pairs << [
-      old_hash,
-      new_hash,
-    ]
+    replacement_pairs << if old_version.latest?
+      [
+        "sha256 :no_check",
+        "sha256 \"#{new_hash}\"",
+      ]
+    elsif new_version.latest?
+      [
+        "sha256 \"#{old_hash}\"",
+        "sha256 :no_check",
+      ]
+    else
+      [
+        old_hash,
+        new_hash,
+      ]
+    end
 
     Utils::Inreplace.inreplace_pairs(cask.sourcefile_path,
                                      replacement_pairs.uniq.compact,
