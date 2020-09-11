@@ -48,6 +48,20 @@ module RuboCop
             problem "Use a commit hash URL rather than an unstable merge request URL: #{patch_url}"
           end
 
+          if regex_match_group(patch, %r{https://github.com/[^/]*/[^/]*/commit/[a-fA-F0-9]*\.diff})
+            problem <<~EOS.chomp
+              GitHub patches should end with .patch, not .diff:
+                #{patch_url}
+            EOS
+          end
+
+          if regex_match_group(patch, %r{.*gitlab.*/commit/[a-fA-F0-9]*\.diff})
+            problem <<~EOS.chomp
+              GitLab patches should end with .patch, not .diff:
+                #{patch_url}
+            EOS
+          end
+
           gh_patch_param_pattern = %r{https?://github\.com/.+/.+/(?:commit|pull)/[a-fA-F0-9]*.(?:patch|diff)}
           if regex_match_group(patch, gh_patch_param_pattern) && !patch_url.match?(/\?full_index=\w+$/)
             problem <<~EOS
