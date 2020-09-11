@@ -1697,7 +1697,7 @@ class Formula
       "aliases"                  => aliases.sort,
       "versioned_formulae"       => versioned_formulae.map(&:name),
       "desc"                     => desc,
-      "license"                  => license,
+      "license"                  => SPDX.license_expression_to_string(license),
       "homepage"                 => homepage,
       "versions"                 => {
         "stable" => stable&.version&.to_s,
