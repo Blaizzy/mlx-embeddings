@@ -60,6 +60,14 @@ jobs:
     - name: Run brew man
       run: brew man --fail-if-changed
 
+    - name: Install brew tests dependencies
+      if: matrix.os == 'macOS-latest'
+      run: |
+        brew install subversion
+        Library/Homebrew/shims/scm/svn --homebrew=print-path
+        which svn
+        which svnadmin
+
     - name: Run brew tests
       run: |
         # brew tests doesn't like world writable directories

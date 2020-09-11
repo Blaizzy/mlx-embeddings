@@ -125,17 +125,23 @@ RSpec.configure do |config|
   end
 
   config.before(:each, :needs_svn) do
-    skip "Subversion is not installed." unless quiet_system "#{HOMEBREW_SHIMS_PATH}/scm/svn", "--version"
+    svn_shim = HOMEBREW_SHIMS_PATH/"scm/svn"
+    skip "Subversion is not installed." unless quiet_system svn_shim, "--version"
 
+    svn_shim_path = Pathname(Utils.popen_read(svn_shim, "--homebrew=print-path").chomp.presence)
     svn_paths = PATH.new(ENV["PATH"])
+    svn_paths.prepend(svn_shim_path.dirname)
+
     if OS.mac?
       xcrun_svn = Utils.popen_read("xcrun", "-f", "svn")
       svn_paths.append(File.dirname(xcrun_svn)) if $CHILD_STATUS.success? && xcrun_svn.present?
     end
 
     svn = which("svn", svn_paths)
+    skip "svn is not installed." unless svn
+
     svnadmin = which("svnadmin", svn_paths)
-    skip "Subversion is not installed." if !svn || !svnadmin
+    skip "svnadmin is not installed." unless svnadmin
 
     ENV["PATH"] = PATH.new(ENV["PATH"])
                       .append(svn.dirname)
@@ -143,7 +149,7 @@ RSpec.configure do |config|
   end
 
   config.before(:each, :needs_unzip) do
-    skip "UnZip is not installed." unless which("unzip")
+    skip "Unzip is not installed." unless which("unzip")
   end
 
   config.around do |example|
