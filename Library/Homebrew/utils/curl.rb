@@ -44,18 +44,19 @@ def curl_args(*extra_args, show_output: false, user_agent: :default)
   args + extra_args
 end
 
-def curl_with_workarounds(*args, secrets: nil, print_stdout: nil, print_stderr: nil, **options)
+def curl_with_workarounds(*args, secrets: nil, print_stdout: nil, print_stderr: nil, verbose: nil, env: {}, **options)
   command_options = {
     secrets:      secrets,
     print_stdout: print_stdout,
     print_stderr: print_stderr,
+    verbose:      verbose,
   }.compact
 
   # SSL_CERT_FILE can be incorrectly set by users or portable-ruby and screw
   # with SSL downloads so unset it here.
   result = system_command curl_executable,
                           args: curl_args(*args, **options),
-                          env:  { "SSL_CERT_FILE" => nil },
+                          env:  { "SSL_CERT_FILE" => nil }.merge(env),
                           **command_options
 
   if !result.success? && !args.include?("--http1.1")
