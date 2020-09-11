@@ -306,6 +306,11 @@ module Homebrew
       method_name
     end
 
+    CUSTOM_IMPLEMENTATIONS = %w[
+      HOMEBREW_MAKE_JOBS
+      HOMEBREW_CASK_OPTS
+    ].freeze
+
     ENVS.each do |env, hash|
       method_name = env_method_name(env, hash)
       env = env.to_s
@@ -316,7 +321,7 @@ module Homebrew
         end
       elsif hash[:default].present?
         # Needs a custom implementation.
-        next if ["HOMEBREW_MAKE_JOBS", "HOMEBREW_CASK_OPTS"].include?(env)
+        next if CUSTOM_IMPLEMENTATIONS.include?(env)
 
         define_method(method_name) do
           ENV[env].presence || hash.fetch(:default).to_s

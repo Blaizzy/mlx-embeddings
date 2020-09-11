@@ -122,6 +122,10 @@ class Keg
     mime-info pixmaps sounds postgresql
   ].freeze
 
+  ELISP_EXTENSIONS = %w[.el .elc].freeze
+  PYC_EXTENSIONS = %w[.pyc .pyo].freeze
+  LIBTOOL_EXTENSIONS = %w[.la .lai].freeze
+
   # Given an array of kegs, this method will try to find some other kegs
   # that depend on them. If it does, it returns:
   #
@@ -423,7 +427,7 @@ class Keg
   def elisp_installed?
     return false unless (path/"share/emacs/site-lisp"/name).exist?
 
-    (path/"share/emacs/site-lisp"/name).children.any? { |f| %w[.el .elc].include? f.extname }
+    (path/"share/emacs/site-lisp"/name).children.any? { |f| ELISP_EXTENSIONS.include? f.extname }
   end
 
   def version
@@ -559,7 +563,7 @@ class Keg
   end
 
   def delete_pyc_files!
-    find { |pn| pn.delete if %w[.pyc .pyo].include?(pn.extname) }
+    find { |pn| pn.delete if PYC_EXTENSIONS.include?(pn.extname) }
     find { |pn| FileUtils.rm_rf pn if pn.basename.to_s == "__pycache__" }
   end
 
@@ -652,7 +656,7 @@ class Keg
         # Don't link pyc or pyo files because Python overwrites these
         # cached object files and next time brew wants to link, the
         # file is in the way.
-        Find.prune if %w[.pyc .pyo].include?(src.extname) && src.to_s.include?("/site-packages/")
+        Find.prune if PYC_EXTENSIONS.include?(src.extname) && src.to_s.include?("/site-packages/")
 
         case yield src.relative_path_from(root)
         when :skip_file, nil

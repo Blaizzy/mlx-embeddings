@@ -204,7 +204,8 @@ module Cask
       end
       add_error "at least one name stanza is required" if cask.name.empty?
       # TODO: specific DSL knowledge should not be spread around in various files like this
-      installable_artifacts = cask.artifacts.reject { |k| [:uninstall, :zap].include?(k) }
+      rejected_artifacts = [:uninstall, :zap]
+      installable_artifacts = cask.artifacts.reject { |k| rejected_artifacts.include?(k) }
       add_error "at least one activatable artifact stanza is required" if installable_artifacts.empty?
     end
 

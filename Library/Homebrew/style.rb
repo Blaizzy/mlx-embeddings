@@ -178,6 +178,7 @@ module Homebrew
         json = json_result!(result)
 
         # Convert to same format as RuboCop offenses.
+        severity_hash = { "style" => "refactor", "info" => "convention" }
         json.group_by { |v| v["file"] }
             .map do |k, v|
           {
@@ -188,7 +189,7 @@ module Homebrew
               o["cop_name"] = "SC#{o.delete("code")}"
 
               level = o.delete("level")
-              o["severity"] = { "style" => "refactor", "info" => "convention" }.fetch(level, level)
+              o["severity"] = severity_hash.fetch(level, level)
 
               line = o.delete("line")
               column = o.delete("column")

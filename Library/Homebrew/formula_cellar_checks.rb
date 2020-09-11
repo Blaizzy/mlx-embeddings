@@ -154,7 +154,9 @@ module FormulaCellarChecks
     # Emacs itself can do what it wants
     return if name == "emacs"
 
-    elisps = (share/"emacs/site-lisp").children.select { |file| %w[.el .elc].include? file.extname }
+    elisps = (share/"emacs/site-lisp").children.select do |file|
+      Keg::ELISP_EXTENSIONS.include? file.extname
+    end
     return if elisps.empty?
 
     <<~EOS
