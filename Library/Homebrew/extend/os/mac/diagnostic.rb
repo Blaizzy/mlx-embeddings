@@ -41,8 +41,8 @@ module Homebrew
     end
 
     class Checks
-      undef fatal_build_from_source_checks, supported_configuration_checks,
-            build_from_source_checks
+      undef fatal_build_from_source_checks, fatal_setup_build_environment_checks,
+            supported_configuration_checks, build_from_source_checks
 
       def fatal_build_from_source_checks
         %w[
@@ -50,6 +50,12 @@ module Homebrew
           check_xcode_minimum_version
           check_clt_minimum_version
           check_if_xcode_needs_clt_installed
+          check_if_supported_sdk_available
+        ].freeze
+      end
+
+      def fatal_setup_build_environment_checks
+        %w[
           check_if_supported_sdk_available
         ].freeze
       end
