@@ -180,7 +180,7 @@ module Homebrew
     def clean!(quiet: false, periodic: false)
       if args.empty?
         Formula.installed.sort_by(&:name).each do |formula|
-          cleanup_formula(formula, quiet: quiet, ds_store: false)
+          cleanup_formula(formula, quiet: quiet, ds_store: false, cache_db: false)
         end
         cleanup_cache
         cleanup_logs
@@ -188,7 +188,7 @@ module Homebrew
         prune_prefix_symlinks_and_directories
 
         unless dry_run?
-          cleanup_old_cache_db
+          cleanup_cache_db
           rm_ds_store
           HOMEBREW_CACHE.mkpath
           FileUtils.touch PERIODIC_CLEAN_FILE
@@ -225,11 +225,12 @@ module Homebrew
       @unremovable_kegs ||= []
     end
 
-    def cleanup_formula(formula, quiet: false, ds_store: true)
+    def cleanup_formula(formula, quiet: false, ds_store: true, cache_db: true)
       formula.eligible_kegs_for_cleanup(quiet: quiet)
              .each(&method(:cleanup_keg))
       cleanup_cache(Pathname.glob(cache/"#{formula.name}--*"))
       rm_ds_store([formula.rack]) if ds_store
+      cleanup_cache_db(formula.rack) if cache_db
       cleanup_lockfiles(FormulaLock.new(formula.name).path)
     end
 
@@ -387,12 +388,23 @@ module Homebrew
       FileUtils.rm_rf portable_rubies_to_remove
     end
 
-    def cleanup_old_cache_db
+    def cleanup_cache_db(rack = nil)
       FileUtils.rm_rf [
         cache/"desc_cache.json",
         cache/"linkage.db",
         cache/"linkage.db.db",
       ]
+
+      CacheStoreDatabase.use(:linkage) do |db|
+        break unless db.created?
+
+        db.each_key do |keg|
+          next if rack.present? && !keg.start_with?("#{rack}/")
+          next if File.directory?(keg)
+
+          LinkageCacheStore.new(keg, db).delete!
+        end
+      end
     end
 
     def rm_ds_store(dirs = nil)
