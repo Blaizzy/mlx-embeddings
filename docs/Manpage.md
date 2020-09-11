@@ -1703,6 +1703,9 @@ For example, you might add something like the following to your ~/.profile, ~/.b
 
     *Default:* macOS: `/private/tmp`, Linux: `/tmp`.
 
+  * `HOMEBREW_UPDATE_REPORT_ONLY_INSTALLED`:
+    If set, `brew update` only outputs updates to installed software.
+
   * `HOMEBREW_UPDATE_TO_TAG`:
     If set, always use the latest stable tag (even if developer commands have been run).
 
