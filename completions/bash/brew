@@ -312,7 +312,7 @@ _brew_link() {
 }
 
 _brew_list() {
-  local allopts="--unbrewed --verbose --pinned --versions --multiple"
+  local allopts="--unbrewed --verbose --pinned --versions --multiple --cask"
   local cur="${COMP_WORDS[COMP_CWORD]}"
 
   case "$cur" in
@@ -408,7 +408,7 @@ _brew_outdated() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--quiet --json=v1 --fetch-HEAD"
+      __brewcomp "--quiet --cask --json=v1 --fetch-HEAD"
       return
       ;;
   esac
@@ -578,6 +578,7 @@ _brew_upgrade() {
         --all
         --build-from-source --build-bottle --force-bottle
         --cleanup
+        --cask
         --debug
         --verbose
         --fetch-HEAD
@@ -656,7 +657,7 @@ __brew_cask_complete_formulae ()
 __brew_cask_complete_installed ()
 {
     local cur="${COMP_WORDS[COMP_CWORD]}"
-    local inst=$(brew cask list -1)
+    local inst=$(brew list --cask -1)
     COMPREPLY=($(compgen -W "$inst" -- "$cur"))
 }
 
@@ -672,7 +673,7 @@ __brew_cask_complete_outdated ()
 {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local greedy=$(__brew_caskcomp_words_include "--greedy" && echo "--greedy")
-    local outdated=$(brew cask outdated --quiet $greedy)
+    local outdated=$(brew outdated --cask --quiet $greedy)
     COMPREPLY=($(compgen -W "$outdated" -- "$cur"))
 }
 
