@@ -13,4 +13,8 @@ module Utils
   module Shebang
     include Kernel
   end
+  
+  module Tar
+    include Kernel
+  end
 end

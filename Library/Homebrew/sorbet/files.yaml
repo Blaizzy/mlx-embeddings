@@ -133,6 +133,7 @@ false:
   - ./dependency.rb
   - ./dev-cmd/audit.rb
   - ./dev-cmd/bottle.rb
+  - ./dev-cmd/bump-cask-pr.rb
   - ./dev-cmd/bump-formula-pr.rb
   - ./dev-cmd/bump-revision.rb
   - ./dev-cmd/cat.rb
@@ -145,6 +146,7 @@ false:
   - ./dev-cmd/install-bundler-gems.rb
   - ./dev-cmd/irb.rb
   - ./dev-cmd/linkage.rb
+  - ./dev-cmd/livecheck.rb
   - ./dev-cmd/man.rb
   - ./dev-cmd/mirror.rb
   - ./dev-cmd/pr-automerge.rb
@@ -161,6 +163,7 @@ false:
   - ./dev-cmd/tap-new.rb
   - ./dev-cmd/test.rb
   - ./dev-cmd/tests.rb
+  - ./dev-cmd/typecheck.rb
   - ./dev-cmd/unpack.rb
   - ./dev-cmd/update-license-data.rb
   - ./dev-cmd/update-python-resources.rb
@@ -561,6 +564,7 @@ false:
   - ./test/dependencies_helpers_spec.rb
   - ./test/descriptions_spec.rb
   - ./test/dev-cmd/bottle_spec.rb
+  - ./test/dev-cmd/bump-cask-pr_spec.rb
   - ./test/dev-cmd/bump-formula-pr_spec.rb
   - ./test/dev-cmd/bump-revision_spec.rb
   - ./test/dev-cmd/cat_spec.rb
@@ -577,7 +581,6 @@ false:
   - ./test/dev-cmd/pr-pull_spec.rb
   - ./test/dev-cmd/pr-upload_spec.rb
   - ./test/dev-cmd/prof_spec.rb
-  - ./test/dev-cmd/pull_spec.rb
   - ./test/dev-cmd/release-notes_spec.rb
   - ./test/dev-cmd/ruby_spec.rb
   - ./test/dev-cmd/sh_spec.rb
@@ -797,6 +800,7 @@ false:
   - ./test/support/fixtures/testball.rb
   - ./test/support/fixtures/third-party/Casks/pharo.rb
   - ./test/support/fixtures/third-party/Casks/third-party-cask.rb
+  - ./test/support/github_formatter.rb
   - ./test/support/helper/mktmpdir.rb
   - ./test/support/helper/output_as_tty.rb
   - ./test/support/helper/spec/shared_examples/formulae_exist.rb
@@ -821,14 +825,17 @@ false:
   - ./test/utils/curl_spec.rb
   - ./test/utils/git_spec.rb
   - ./test/utils/github_spec.rb
+  - ./test/utils/github/actions_spec.rb
   - ./test/utils/popen_spec.rb
   - ./test/utils/shell_spec.rb
   - ./test/utils/spdx_spec.rb
   - ./test/utils/svn_spec.rb
+  - ./test/utils/tar_spec.rb
   - ./test/utils/tty_spec.rb
   - ./test/version_spec.rb
   - ./unpack_strategy/uncompressed.rb
   - ./utils/gems.rb
+  - ./utils/github/actions.rb
   - ./utils/pypi.rb
   - ./version.rb
 
@@ -855,6 +862,7 @@ true:
   - ./dependable.rb
   - ./dependencies_helpers.rb
   - ./dependency_collector.rb
+  - ./deprecate_disable.rb
   - ./description_cache_store.rb
   - ./descriptions.rb
   - ./env_config.rb
@@ -902,11 +910,13 @@ true:
   - ./utils/bottles.rb
   - ./utils/inreplace.rb
   - ./utils/link.rb
+  - ./utils/ruby_check_version_script.rb
   - ./utils/shared_audits.rb
   - ./utils/shebang.rb
   - ./utils/shell.rb
   - ./utils/spdx.rb
   - ./utils/svn.rb
+  - ./utils/tar.rb
   - ./utils/tty.rb
   - ./utils/user.rb
   - ./version/null.rb

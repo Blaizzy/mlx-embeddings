@@ -38,6 +38,10 @@ class Formula
 
     def active_spec; end
 
+    def any_installed_keg; end
+
+    def latest_installed_prefix; end
+
     def patches; end
   end
 end
