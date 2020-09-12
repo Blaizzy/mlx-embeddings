@@ -173,8 +173,8 @@ class Tapioca::Compilers::SymbolTable::SymbolGenerator
   def compile_object(name, value); end
   sig { params(constant: Module).returns(String) }
   def compile_props(constant); end
-  sig { params(signature: T.untyped).returns(String) }
-  def compile_signature(signature); end
+  sig { params(signature: T.untyped, parameters: T::Array[[Symbol, String]]).returns(String) }
+  def compile_signature(signature, parameters); end
   sig { params(name: String, constant: Module).returns(T.nilable(String)) }
   def compile_subconstants(name, constant); end
   sig { params(constant: Class).returns(String) }
