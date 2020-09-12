@@ -40,8 +40,11 @@ module Homebrew
         end
 
         old = if formula.license
-          license_string = if formula.license.is_a? String
+          license_string = case formula.license
+          when String
             "\"#{formula.license}\""
+          when Symbol
+            ":#{formula.license}"
           else
             formula.license.to_s.gsub(/:(\w+)=>/, '\1: ')                   # Change `:any_of=>` to `any_of: `
                    .tr("{}", "")                                            # Remove braces
