@@ -35,6 +35,7 @@ module SharedAudits
     "pock"             => :all,
     "riff"             => "0.5.0",
     "telegram-cli"     => "1.3.1",
+    "toggl-track"      => :all,
     "volta"            => "0.8.6",
   }.freeze
 
