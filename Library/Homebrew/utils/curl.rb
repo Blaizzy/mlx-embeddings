@@ -143,9 +143,9 @@ def curl_check_http_content(url, user_agents: [:default], check_content: false, 
 
   unless http_status_ok?(details[:status])
     # Check if the URL is protected by CloudFlare.
-    if details[:status].to_i == 503 &&
-       details[:file].include?("set-cookie: __cfduid=") &&
-       details[:file].include?("server: cloudflare")
+    if [403, 503].include?(details[:status].to_i) &&
+       details[:headers].include?("set-cookie: __cfduid=") &&
+       details[:headers].include?("server: cloudflare")
       return
     end
 
@@ -236,6 +236,7 @@ def curl_http_content_headers_and_checksum(url, hash_needed: false, user_agent: 
     status:         status_code,
     etag:           headers[%r{ETag: ([wW]/)?"(([^"]|\\")*)"}, 2],
     content_length: headers[/Content-Length: (\d+)/, 1],
+    headers:        headers,
     file_hash:      output_hash,
     file:           output,
   }
