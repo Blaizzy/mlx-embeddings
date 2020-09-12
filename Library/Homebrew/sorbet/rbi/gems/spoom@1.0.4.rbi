@@ -271,15 +271,15 @@ end
 
 module Spoom::Sorbet
   class << self
-    sig { params(path: String, capture_err: T::Boolean, arg: String).returns([String, T::Boolean]) }
+    sig { params(arg: String, path: String, capture_err: T::Boolean).returns([String, T::Boolean]) }
     def srb(*arg, path: T.unsafe(nil), capture_err: T.unsafe(nil)); end
     sig { params(config: Spoom::Sorbet::Config, path: String).returns(T::Array[String]) }
     def srb_files(config, path: T.unsafe(nil)); end
-    sig { params(path: String, capture_err: T::Boolean, arg: String).returns(T.nilable(Spoom::Sorbet::Metrics)) }
+    sig { params(arg: String, path: String, capture_err: T::Boolean).returns(T.nilable(Spoom::Sorbet::Metrics)) }
     def srb_metrics(*arg, path: T.unsafe(nil), capture_err: T.unsafe(nil)); end
-    sig { params(path: String, capture_err: T::Boolean, arg: String).returns([String, T::Boolean]) }
+    sig { params(arg: String, path: String, capture_err: T::Boolean).returns([String, T::Boolean]) }
     def srb_tc(*arg, path: T.unsafe(nil), capture_err: T.unsafe(nil)); end
-    sig { params(path: String, capture_err: T::Boolean, arg: String).returns(T.nilable(String)) }
+    sig { params(arg: String, path: String, capture_err: T::Boolean).returns(T.nilable(String)) }
     def srb_version(*arg, path: T.unsafe(nil), capture_err: T.unsafe(nil)); end
   end
 end
