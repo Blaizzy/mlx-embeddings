@@ -13114,8 +13114,6 @@ Net::HTTPClientError::EXCEPTION_TYPE = Net::HTTPServerException
 
 Net::HTTPClientErrorCode = Net::HTTPClientError
 
-Net::HTTPClientException = Net::HTTPServerException
-
 class Net::HTTPEarlyHints
   HAS_BODY = ::T.let(nil, ::T.untyped)
 end
