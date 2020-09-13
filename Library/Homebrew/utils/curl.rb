@@ -122,6 +122,20 @@ def curl_output(*args, **options)
   curl_with_workarounds(*args, print_stderr: false, show_output: true, **options)
 end
 
+# Check if a URL is protected by CloudFlare (e.g. badlion.net and jaxx.io).
+def url_protected_by_cloudflare?(details)
+  [403, 503].include?(details[:status].to_i) &&
+    details[:headers].match?(/^Set-Cookie: __cfduid=/i) &&
+    details[:headers].match?(/^Server: cloudflare/i)
+end
+
+# Check if a URL is protected by Incapsula (e.g. corsair.com).
+def url_protected_by_incapsula?(details)
+  details[:status].to_i == 403 &&
+    details[:headers].match?(/^Set-Cookie: visid_incap_/i) &&
+    details[:headers].match?(/^Set-Cookie: incap_ses_/i)
+end
+
 def curl_check_http_content(url, user_agents: [:default], check_content: false, strict: false)
   return unless url.start_with? "http"
 
@@ -142,12 +156,7 @@ def curl_check_http_content(url, user_agents: [:default], check_content: false, 
   end
 
   unless http_status_ok?(details[:status])
-    # Check if the URL is protected by CloudFlare.
-    if [403, 503].include?(details[:status].to_i) &&
-       details[:headers].include?("set-cookie: __cfduid=") &&
-       details[:headers].include?("server: cloudflare")
-      return
-    end
+    return if url_protected_by_cloudflare?(details) || url_protected_by_incapsula?(details)
 
     return "The URL #{url} is not reachable (HTTP status code #{details[:status]})"
   end
