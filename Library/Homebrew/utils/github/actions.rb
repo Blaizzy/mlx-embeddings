@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "utils/tty"
+
 module GitHub
   # Helper functions for interacting with GitHub Actions.
   #
@@ -26,7 +28,7 @@ module GitHub
         raise ArgumentError, "Unsupported type: #{type.inspect}" unless [:warning, :error].include?(type)
 
         @type = type
-        @message = String(message)
+        @message = Tty.strip_ansi(message)
         @file = self.class.path_relative_to_workspace(file) if file
         @line = Integer(line) if line
         @column = Integer(column) if column
