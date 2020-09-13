@@ -113,7 +113,7 @@ module Homebrew
         RUBY
 
         fa.audit_license
-        expect(fa.problems.first).to match "Formulae in homebrew/core must specify a license."
+        expect(fa.problems.first[:message]).to match "Formulae in homebrew/core must specify a license."
       end
 
       it "detects if license is not a standard spdx-id" do
@@ -125,7 +125,7 @@ module Homebrew
         RUBY
 
         fa.audit_license
-        expect(fa.problems.first).to match <<~EOS
+        expect(fa.problems.first[:message]).to match <<~EOS
           Formula foo contains non-standard SPDX licenses: ["zzz"].
           For a list of valid licenses check: https://spdx.org/licenses/
         EOS
@@ -140,7 +140,7 @@ module Homebrew
         RUBY
 
         fa.audit_license
-        expect(fa.problems.first).to match <<~EOS
+        expect(fa.problems.first[:message]).to match <<~EOS
           Formula foo contains deprecated SPDX licenses: ["GPL-1.0"].
           You may need to add `-only` or `-or-later` for GNU licenses (e.g. `GPL`, `LGPL`, `AGPL`, `GFDL`).
           For a list of valid licenses check: https://spdx.org/licenses/
@@ -156,7 +156,7 @@ module Homebrew
         RUBY
 
         fa.audit_license
-        expect(fa.problems.first).to match <<~EOS
+        expect(fa.problems.first[:message]).to match <<~EOS
           Formula foo contains non-standard SPDX licenses: ["zzz"].
           For a list of valid licenses check: https://spdx.org/licenses/
         EOS
@@ -171,7 +171,7 @@ module Homebrew
         RUBY
 
         fa.audit_license
-        expect(fa.problems.first).to match <<~EOS
+        expect(fa.problems.first[:message]).to match <<~EOS
           Formula foo contains non-standard SPDX licenses: ["zzz"].
           For a list of valid licenses check: https://spdx.org/licenses/
         EOS
@@ -186,7 +186,7 @@ module Homebrew
         RUBY
 
         fa.audit_license
-        expect(fa.problems.first).to match <<~EOS
+        expect(fa.problems.first[:message]).to match <<~EOS
           Formula foo contains deprecated SPDX licenses: ["GPL-1.0"].
           You may need to add `-only` or `-or-later` for GNU licenses (e.g. `GPL`, `LGPL`, `AGPL`, `GFDL`).
           For a list of valid licenses check: https://spdx.org/licenses/
@@ -351,7 +351,7 @@ module Homebrew
                              spdx_license_data: spdx_license_data, spdx_exception_data: spdx_exception_data
 
         fa.audit_license
-        expect(fa.problems.first).to match <<~EOS
+        expect(fa.problems.first[:message]).to match <<~EOS
           Formula cask contains invalid or deprecated SPDX license exceptions: ["zzz"].
           For a list of valid license exceptions check:
             https://spdx.org/licenses/exceptions-index.html
@@ -370,7 +370,7 @@ module Homebrew
                              spdx_license_data: spdx_license_data, spdx_exception_data: spdx_exception_data
 
         fa.audit_license
-        expect(fa.problems.first).to match <<~EOS
+        expect(fa.problems.first[:message]).to match <<~EOS
           Formula cask contains invalid or deprecated SPDX license exceptions: ["#{deprecated_spdx_exception}"].
           For a list of valid license exceptions check:
             https://spdx.org/licenses/exceptions-index.html
@@ -418,7 +418,8 @@ module Homebrew
                              online: true, core_tap: true, new_formula: true
 
         fa.audit_license
-        expect(fa.problems.first).to match "Formula license [\"0BSD\"] does not match GitHub license [\"GPL-3.0\"]."
+        expect(fa.problems.first[:message])
+          .to eq 'Formula license ["0BSD"] does not match GitHub license ["GPL-3.0"].'
       end
 
       it "checks online and detects that an array of license does not contain "\
@@ -434,7 +435,7 @@ module Homebrew
                              online: true, core_tap: true, new_formula: true
 
         fa.audit_license
-        expect(fa.problems.first).to match "Formula license [\"0BSD\", \"MIT\"] "\
+        expect(fa.problems.first[:message]).to match "Formula license [\"0BSD\", \"MIT\"] "\
           "does not match GitHub license [\"GPL-3.0\"]."
       end
 
@@ -465,7 +466,7 @@ module Homebrew
         RUBY
 
         fa.audit_file
-        expect(fa.problems).to eq([])
+        expect(fa.problems).to be_empty
       end
     end
 
@@ -481,7 +482,7 @@ module Homebrew
         RUBY
 
         fa.audit_github_repository
-        expect(fa.problems).to eq([])
+        expect(fa.problems).to be_empty
       end
     end
 
@@ -495,7 +496,7 @@ module Homebrew
         RUBY
 
         fa.audit_github_repository_archived
-        expect(fa.problems).to eq([])
+        expect(fa.problems).to be_empty
       end
     end
 
@@ -509,7 +510,7 @@ module Homebrew
         RUBY
 
         fa.audit_gitlab_repository
-        expect(fa.problems).to eq([])
+        expect(fa.problems).to be_empty
       end
     end
 
@@ -523,7 +524,7 @@ module Homebrew
         RUBY
 
         fa.audit_gitlab_repository_archived
-        expect(fa.problems).to eq([])
+        expect(fa.problems).to be_empty
       end
     end
 
@@ -537,7 +538,7 @@ module Homebrew
         RUBY
 
         fa.audit_bitbucket_repository
-        expect(fa.problems).to eq([])
+        expect(fa.problems).to be_empty
       end
     end
 
@@ -604,7 +605,9 @@ module Homebrew
             fa.audit_deps
           end
 
-          its(:new_formula_problems) { are_expected.to match([/is provided by macOS/]) }
+          its(:new_formula_problems) {
+            are_expected.to include(a_hash_including(message: a_string_matching(/is provided by macOS/)))
+          }
         end
       end
     end
@@ -613,7 +616,7 @@ module Homebrew
       subject {
         fa = described_class.new(Formulary.factory(formula_path), git: true)
         fa.audit_revision_and_version_scheme
-        fa.problems.first
+        fa.problems.first&.fetch(:message)
       }
 
       let(:origin_tap_path) { Tap::TAP_DIRECTORY/"homebrew/homebrew-foo" }
@@ -829,7 +832,7 @@ module Homebrew
 
         fa.audit_versioned_keg_only
 
-        expect(fa.problems.first)
+        expect(fa.problems.first[:message])
           .to match("Versioned formulae in homebrew/core should use `keg_only :versioned_formula`")
       end
 
@@ -844,7 +847,7 @@ module Homebrew
 
         fa.audit_versioned_keg_only
 
-        expect(fa.problems.first)
+        expect(fa.problems.first[:message])
           .to match("Versioned formulae in homebrew/core should use `keg_only :versioned_formula`")
       end
 
@@ -859,7 +862,7 @@ module Homebrew
 
         fa.audit_versioned_keg_only
 
-        expect(fa.problems).to eq([])
+        expect(fa.problems).to be_empty
       end
     end
 

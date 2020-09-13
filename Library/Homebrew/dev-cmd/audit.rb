@@ -3,6 +3,7 @@
 require "formula"
 require "formula_versions"
 require "utils/curl"
+require "utils/github/actions"
 require "utils/shared_audits"
 require "utils/spdx"
 require "extend/ENV"
@@ -142,7 +143,6 @@ module Homebrew
       fa.audit
       next if fa.problems.empty? && fa.new_formula_problems.empty?
 
-      fa.problems
       formula_count += 1
       problem_count += fa.problems.size
       problem_lines = format_problem_lines(fa.problems)
@@ -152,6 +152,15 @@ module Homebrew
         puts problem_lines.map { |s| "#{f.path}: #{s}" }
       else
         puts "#{f.full_name}:", problem_lines.map { |s| "  #{s}" }
+      end
+
+      next unless ENV["GITHUB_ACTIONS"]
+
+      (fa.problems + fa.new_formula_problems).each do |message:, location:|
+        annotation = GitHub::Actions::Annotation.new(
+          :error, message, file: f.path, line: location&.line, column: location&.column
+        )
+        puts annotation if annotation.relevant?
       end
     end
 
@@ -169,7 +178,12 @@ module Homebrew
   end
 
   def format_problem_lines(problems)
-    problems.uniq.map { |p| "* #{p.chomp.gsub("\n", "\n    ")}" }
+    problems.uniq
+            .map { |message:, location:| format_problem(message, location) }
+  end
+
+  def format_problem(message, location)
+    "* #{location&.to_s&.dup&.concat(": ")}#{message.chomp.gsub("\n", "\n    ")}"
   end
 
   class FormulaText
@@ -238,7 +252,12 @@ module Homebrew
       return unless @style_offenses
 
       @style_offenses.each do |offense|
-        problem offense.to_s(display_cop_name: @display_cop_names)
+        correction_status = "#{Tty.green}[Corrected]#{Tty.reset} " if offense.corrected?
+
+        cop_name = "#{offense.cop_name}: " if @display_cop_names
+        message = "#{cop_name}#{correction_status}#{offense.message}"
+
+        problem message, location: offense.location
       end
     end
 
@@ -701,9 +720,6 @@ module Homebrew
       "libepoxy"            => "1.5",
     }.freeze
 
-    # version_prefix = stable_version_string.sub(/\d+$/, "")
-    # version_prefix = stable.version.major_minor
-
     def audit_specs
       problem "Head-only (no stable download)" if head_only?(formula)
 
@@ -712,15 +728,17 @@ module Homebrew
         next unless spec = formula.send(spec_name)
 
         ra = ResourceAuditor.new(spec, spec_name, online: @online, strict: @strict).audit
-        problems.concat ra.problems.map { |problem| "#{name}: #{problem}" }
+        ra.problems.each do |message|
+          problem "#{name}: #{message}"
+        end
 
         spec.resources.each_value do |resource|
           problem "Resource name should be different from the formula name" if resource.name == formula.name
 
           ra = ResourceAuditor.new(resource, spec_name, online: @online, strict: @strict).audit
-          problems.concat ra.problems.map { |problem|
-            "#{name} resource #{resource.name.inspect}: #{problem}"
-          }
+          ra.problems.each do |message|
+            problem "#{name} resource #{resource.name.inspect}: #{message}"
+          end
         end
 
         next if spec.patches.empty?
@@ -952,12 +970,12 @@ module Homebrew
 
     private
 
-    def problem(p)
-      @problems << p
+    def problem(message, location: nil)
+      @problems << ({ message: message, location: location })
     end
 
-    def new_formula_problem(p)
-      @new_formula_problems << p
+    def new_formula_problem(message, location: nil)
+      @new_formula_problems << ({ message: message, location: location })
     end
 
     def head_only?(formula)
