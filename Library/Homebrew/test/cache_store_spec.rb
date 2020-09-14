@@ -9,9 +9,9 @@ describe CacheStoreDatabase do
     let(:type) { :test }
 
     it "creates a new `DatabaseCache` instance" do
-      cache_store = double("cache_store", close_if_open!: nil)
+      cache_store = double("cache_store", write_if_dirty!: nil)
       expect(described_class).to receive(:new).with(type).and_return(cache_store)
-      expect(cache_store).to receive(:close_if_open!)
+      expect(cache_store).to receive(:write_if_dirty!)
       described_class.use(type) { |_db| }
     end
   end
@@ -92,10 +92,10 @@ describe CacheStoreDatabase do
     end
   end
 
-  describe "#close_if_open!" do
+  describe "#write_if_dirty!" do
     context "database open" do
       it "does not raise an error when `close` is called on the database" do
-        expect { subject.close_if_open! }.not_to raise_error(NoMethodError)
+        expect { subject.write_if_dirty! }.not_to raise_error(NoMethodError)
       end
     end
 
@@ -105,7 +105,7 @@ describe CacheStoreDatabase do
       end
 
       it "does not raise an error when `close` is called on the database" do
-        expect { subject.close_if_open! }.not_to raise_error(NoMethodError)
+        expect { subject.write_if_dirty! }.not_to raise_error(NoMethodError)
       end
     end
   end
