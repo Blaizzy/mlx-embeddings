@@ -30,8 +30,8 @@ module Cask
       appcast = online if appcast.nil?
       download = online if download.nil?
 
-      # `strict` implies `token_conflicts`
-      token_conflicts = strict if token_conflicts.nil?
+      # `new_cask` implies `token_conflicts`
+      token_conflicts = new_cask if token_conflicts.nil?
 
       @cask = cask
       @appcast = appcast
@@ -91,7 +91,11 @@ module Cask
     end
 
     def add_warning(message)
-      warnings << message
+      if strict?
+        add_error message
+      else
+        warnings << message
+      end
     end
 
     def errors?
@@ -299,11 +303,9 @@ module Cask
     end
 
     def check_desc
-      return unless new_cask?
-
       return if cask.desc.present?
 
-      add_error "Cask should have a description. Please add a `desc` stanza."
+      add_warning "Cask should have a description. Please add a `desc` stanza."
     end
 
     def check_url
@@ -380,7 +382,7 @@ module Cask
     end
 
     def check_token_bad_words
-      return unless strict?
+      return unless new_cask?
 
       token = cask.token
 
