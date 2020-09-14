@@ -4,6 +4,7 @@ cask "pharo" do
 
   url "https://brew.sh/ThirdParty.dmg"
   name "Pharo"
+  desc "Cask from a third-party tap"
   homepage "https://brew.sh/"
 
   app "ThirdParty.app"

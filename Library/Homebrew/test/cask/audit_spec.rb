@@ -17,15 +17,15 @@ describe Cask::Audit, :cask do
     end
   end
 
-  matcher :fail_with do |error_msg|
+  matcher :fail_with do |message|
     match do |audit|
-      include_msg?(audit.errors, error_msg)
+      include_msg?(audit.errors, message)
     end
   end
 
-  matcher :warn_with do |warning_msg|
+  matcher :warn_with do |message|
     match do |audit|
-      include_msg?(audit.warnings, warning_msg)
+      include_msg?(audit.warnings, message)
     end
   end
 
@@ -53,6 +53,10 @@ describe Cask::Audit, :cask do
       it "implies `strict`" do
         expect(audit).to be_strict
       end
+
+      it "implies `token_conflicts`" do
+        expect(audit.token_conflicts?).to be true
+      end
     end
 
     context "when `online` is specified" do
@@ -64,14 +68,6 @@ describe Cask::Audit, :cask do
 
       it "implies `download`" do
         expect(audit.download).to be_truthy
-      end
-    end
-
-    context "when `strict` is specified" do
-      let(:strict) { true }
-
-      it "implies `token_conflicts`" do
-        expect(audit.token_conflicts?).to be true
       end
     end
   end
@@ -152,78 +148,87 @@ describe Cask::Audit, :cask do
       context "when cask token is not lowercase" do
         let(:cask_token) { "Upper-Case" }
 
-        it "warns about lowercase" do
-          expect(subject).to warn_with(/token is not lowercase/)
+        it "fails" do
+          expect(subject).to fail_with(/lowercase/)
         end
       end
 
       context "when cask token is not ascii" do
         let(:cask_token) { "ascii⌘" }
 
-        it "warns about ascii" do
-          expect(subject).to warn_with(/contains non-ascii characters/)
+        it "fails" do
+          expect(subject).to fail_with(/contains non-ascii characters/)
         end
       end
 
       context "when cask token has +" do
         let(:cask_token) { "app++" }
 
-        it "warns about +" do
-          expect(subject).to warn_with(/\+ should be replaced by -plus-/)
+        it "fails" do
+          expect(subject).to fail_with(/\+ should be replaced by -plus-/)
         end
       end
 
       context "when cask token has @" do
         let(:cask_token) { "app@stuff" }
 
-        it "warns about +" do
-          expect(subject).to warn_with(/@ should be replaced by -at-/)
+        it "fails" do
+          expect(subject).to fail_with(/@ should be replaced by -at-/)
         end
       end
 
       context "when cask token has whitespace" do
         let(:cask_token) { "app stuff" }
 
-        it "warns about whitespace" do
-          expect(subject).to warn_with(/whitespace should be replaced by hyphens/)
+        it "fails" do
+          expect(subject).to fail_with(/whitespace should be replaced by hyphens/)
         end
       end
 
       context "when cask token has underscores" do
         let(:cask_token) { "app_stuff" }
 
-        it "warns about underscores" do
-          expect(subject).to warn_with(/underscores should be replaced by hyphens/)
+        it "fails" do
+          expect(subject).to fail_with(/underscores should be replaced by hyphens/)
         end
       end
 
       context "when cask token has non-alphanumeric characters" do
         let(:cask_token) { "app(stuff)" }
 
-        it "warns about non-alphanumeric characters" do
-          expect(subject).to warn_with(/should only contain alphanumeric characters and hyphens/)
+        it "fails" do
+          expect(subject).to fail_with(/alphanumeric characters and hyphens/)
         end
       end
 
       context "when cask token has double hyphens" do
         let(:cask_token) { "app--stuff" }
 
-        it "warns about double hyphens" do
-          expect(subject).to warn_with(/should not contain double hyphens/)
+        it "fails" do
+          expect(subject).to fail_with(/should not contain double hyphens/)
+        end
+      end
+
+      context "when cask token has leading hyphens" do
+        let(:cask_token) { "-app" }
+
+        it "fails" do
+          expect(subject).to fail_with(/should not have leading or trailing hyphens/)
         end
       end
 
       context "when cask token has trailing hyphens" do
         let(:cask_token) { "app-" }
 
-        it "warns about trailing hyphens" do
-          expect(subject).to warn_with(/should not have leading or trailing hyphens/)
+        it "fails" do
+          expect(subject).to fail_with(/should not have leading or trailing hyphens/)
         end
       end
     end
 
     describe "token bad words" do
-      let(:strict) { true }
+      let(:new_cask) { true }
+      let(:online) { false }
       let(:cask) do
         tmp_cask cask_token.to_s, <<~RUBY
           cask '#{cask_token}' do
@@ -231,6 +236,7 @@ describe Cask::Audit, :cask do
             sha256 '8dd95daa037ac02455435446ec7bc737b34567afe9156af7d20b2a83805c1d8a'
             url "https://brew.sh/"
             name 'Audit'
+            desc 'Cask for testing tokens'
             homepage 'https://brew.sh/'
             app 'Audit.app'
           end
@@ -240,72 +246,72 @@ describe Cask::Audit, :cask do
       context "when cask token contains .app" do
         let(:cask_token) { "token.app" }
 
-        it "warns about .app" do
-          expect(subject).to warn_with(/token contains .app/)
+        it "fails" do
+          expect(subject).to fail_with(/token contains .app/)
         end
       end
 
       context "when cask token contains version designation" do
         let(:cask_token) { "token-beta" }
 
-        it "warns about version in token if the cask is from an official tap" do
+        it "fails if the cask is from an official tap" do
           allow(cask).to receive(:tap).and_return(Tap.fetch("homebrew/cask"))
 
-          expect(subject).to warn_with(/token contains version designation/)
+          expect(subject).to fail_with(/token contains version designation/)
         end
 
-        it "does not warn about version in token if the cask is from the `cask-versions` tap" do
+        it "does not fail if the cask is from the `cask-versions` tap" do
           allow(cask).to receive(:tap).and_return(Tap.fetch("homebrew/cask-versions"))
 
-          expect(subject).not_to warn_with(/token contains version designation/)
+          expect(subject).to pass
         end
       end
 
       context "when cask token contains launcher" do
         let(:cask_token) { "token-launcher" }
 
-        it "warns about launcher in token" do
-          expect(subject).to warn_with(/token mentions launcher/)
+        it "fails" do
+          expect(subject).to fail_with(/token mentions launcher/)
         end
       end
 
       context "when cask token contains desktop" do
         let(:cask_token) { "token-desktop" }
 
-        it "warns about desktop in token" do
-          expect(subject).to warn_with(/token mentions desktop/)
+        it "fails" do
+          expect(subject).to fail_with(/token mentions desktop/)
         end
       end
 
       context "when cask token contains platform" do
         let(:cask_token) { "token-osx" }
 
-        it "warns about platform in token" do
-          expect(subject).to warn_with(/token mentions platform/)
+        it "fails" do
+          expect(subject).to fail_with(/token mentions platform/)
         end
       end
 
       context "when cask token contains architecture" do
         let(:cask_token) { "token-x86" }
 
-        it "warns about architecture in token" do
-          expect(subject).to warn_with(/token mentions architecture/)
+        it "fails" do
+          expect(subject).to fail_with(/token mentions architecture/)
         end
       end
 
       context "when cask token contains framework" do
         let(:cask_token) { "token-java" }
 
-        it "warns about framework in token" do
-          expect(subject).to warn_with(/cask token mentions framework/)
+        it "fails" do
+          expect(subject).to fail_with(/cask token mentions framework/)
         end
       end
 
       context "when cask token is framework" do
         let(:cask_token) { "java" }
 
-        it "does not warn about framework" do
-          expect(subject).not_to warn_with(/token contains version/)
+        it "does not fail" do
+          expect(subject).to pass
         end
       end
     end
@@ -358,206 +364,206 @@ describe Cask::Audit, :cask do
     end
 
     describe "pkg allow_untrusted checks" do
-      let(:warning_msg) { "allow_untrusted is not permitted in official Homebrew Cask taps" }
+      let(:message) { "allow_untrusted is not permitted in official Homebrew Cask taps" }
 
       context "when the Cask has no pkg stanza" do
         let(:cask_token) { "basic-cask" }
 
-        it { is_expected.not_to warn_with(warning_msg) }
+        it { is_expected.not_to fail_with(message) }
       end
 
       context "when the Cask does not have allow_untrusted" do
         let(:cask_token) { "with-uninstall-pkgutil" }
 
-        it { is_expected.not_to warn_with(warning_msg) }
+        it { is_expected.not_to fail_with(message) }
       end
 
       context "when the Cask has allow_untrusted" do
         let(:cask_token) { "with-allow-untrusted" }
 
-        it { is_expected.to warn_with(warning_msg) }
+        it { is_expected.to fail_with(message) }
       end
     end
 
     describe "when the Cask stanza requires uninstall" do
-      let(:warning_msg) { "installer and pkg stanzas require an uninstall stanza" }
+      let(:message) { "installer and pkg stanzas require an uninstall stanza" }
 
       context "when the Cask does not require an uninstall" do
         let(:cask_token) { "basic-cask" }
 
-        it { is_expected.not_to warn_with(warning_msg) }
+        it { is_expected.not_to fail_with(message) }
       end
 
       context "when the pkg Cask has an uninstall" do
         let(:cask_token) { "with-uninstall-pkgutil" }
 
-        it { is_expected.not_to warn_with(warning_msg) }
+        it { is_expected.not_to fail_with(message) }
       end
 
       context "when the installer Cask has an uninstall" do
         let(:cask_token) { "installer-with-uninstall" }
 
-        it { is_expected.not_to warn_with(warning_msg) }
+        it { is_expected.not_to fail_with(message) }
       end
 
       context "when the installer Cask does not have an uninstall" do
         let(:cask_token) { "with-installer-manual" }
 
-        it { is_expected.to warn_with(warning_msg) }
+        it { is_expected.to fail_with(message) }
       end
 
       context "when the pkg Cask does not have an uninstall" do
         let(:cask_token) { "pkg-without-uninstall" }
 
-        it { is_expected.to warn_with(warning_msg) }
+        it { is_expected.to fail_with(message) }
       end
     end
 
     describe "preflight stanza checks" do
-      let(:warning_msg) { "only a single preflight stanza is allowed" }
+      let(:message) { "only a single preflight stanza is allowed" }
 
       context "when the Cask has no preflight stanza" do
         let(:cask_token) { "with-zap-rmdir" }
 
-        it { is_expected.not_to warn_with(warning_msg) }
+        it { is_expected.not_to fail_with(message) }
       end
 
       context "when the Cask has only one preflight stanza" do
         let(:cask_token) { "with-preflight" }
 
-        it { is_expected.not_to warn_with(warning_msg) }
+        it { is_expected.not_to fail_with(message) }
       end
 
       context "when the Cask has multiple preflight stanzas" do
         let(:cask_token) { "with-preflight-multi" }
 
-        it { is_expected.to warn_with(warning_msg) }
+        it { is_expected.to fail_with(message) }
       end
     end
 
-    describe "uninstall_postflight stanza checks" do
-      let(:warning_msg) { "only a single postflight stanza is allowed" }
+    describe "postflight stanza checks" do
+      let(:message) { "only a single postflight stanza is allowed" }
 
       context "when the Cask has no postflight stanza" do
         let(:cask_token) { "with-zap-rmdir" }
 
-        it { is_expected.not_to warn_with(warning_msg) }
+        it { is_expected.not_to fail_with(message) }
       end
 
       context "when the Cask has only one postflight stanza" do
         let(:cask_token) { "with-postflight" }
 
-        it { is_expected.not_to warn_with(warning_msg) }
+        it { is_expected.not_to fail_with(message) }
       end
 
       context "when the Cask has multiple postflight stanzas" do
         let(:cask_token) { "with-postflight-multi" }
 
-        it { is_expected.to warn_with(warning_msg) }
+        it { is_expected.to fail_with(message) }
       end
     end
 
     describe "uninstall stanza checks" do
-      let(:warning_msg) { "only a single uninstall stanza is allowed" }
+      let(:message) { "only a single uninstall stanza is allowed" }
 
       context "when the Cask has no uninstall stanza" do
         let(:cask_token) { "with-zap-rmdir" }
 
-        it { is_expected.not_to warn_with(warning_msg) }
+        it { is_expected.not_to fail_with(message) }
       end
 
       context "when the Cask has only one uninstall stanza" do
         let(:cask_token) { "with-uninstall-rmdir" }
 
-        it { is_expected.not_to warn_with(warning_msg) }
+        it { is_expected.not_to fail_with(message) }
       end
 
       context "when the Cask has multiple uninstall stanzas" do
         let(:cask_token) { "with-uninstall-multi" }
 
-        it { is_expected.to warn_with(warning_msg) }
+        it { is_expected.to fail_with(message) }
       end
     end
 
     describe "uninstall_preflight stanza checks" do
-      let(:warning_msg) { "only a single uninstall_preflight stanza is allowed" }
+      let(:message) { "only a single uninstall_preflight stanza is allowed" }
 
       context "when the Cask has no uninstall_preflight stanza" do
         let(:cask_token) { "with-zap-rmdir" }
 
-        it { is_expected.not_to warn_with(warning_msg) }
+        it { is_expected.not_to fail_with(message) }
       end
 
       context "when the Cask has only one uninstall_preflight stanza" do
         let(:cask_token) { "with-uninstall-preflight" }
 
-        it { is_expected.not_to warn_with(warning_msg) }
+        it { is_expected.not_to fail_with(message) }
       end
 
       context "when the Cask has multiple uninstall_preflight stanzas" do
         let(:cask_token) { "with-uninstall-preflight-multi" }
 
-        it { is_expected.to warn_with(warning_msg) }
+        it { is_expected.to fail_with(message) }
       end
     end
 
     describe "uninstall_postflight stanza checks" do
-      let(:warning_msg) { "only a single uninstall_postflight stanza is allowed" }
+      let(:message) { "only a single uninstall_postflight stanza is allowed" }
 
       context "when the Cask has no uninstall_postflight stanza" do
         let(:cask_token) { "with-zap-rmdir" }
 
-        it { is_expected.not_to warn_with(warning_msg) }
+        it { is_expected.not_to fail_with(message) }
       end
 
       context "when the Cask has only one uninstall_postflight stanza" do
         let(:cask_token) { "with-uninstall-postflight" }
 
-        it { is_expected.not_to warn_with(warning_msg) }
+        it { is_expected.not_to fail_with(message) }
       end
 
       context "when the Cask has multiple uninstall_postflight stanzas" do
         let(:cask_token) { "with-uninstall-postflight-multi" }
 
-        it { is_expected.to warn_with(warning_msg) }
+        it { is_expected.to fail_with(message) }
       end
     end
 
     describe "zap stanza checks" do
-      let(:warning_msg) { "only a single zap stanza is allowed" }
+      let(:message) { "only a single zap stanza is allowed" }
 
       context "when the Cask has no zap stanza" do
         let(:cask_token) { "with-uninstall-rmdir" }
 
-        it { is_expected.not_to warn_with(warning_msg) }
+        it { is_expected.not_to fail_with(message) }
       end
 
       context "when the Cask has only one zap stanza" do
         let(:cask_token) { "with-zap-rmdir" }
 
-        it { is_expected.not_to warn_with(warning_msg) }
+        it { is_expected.not_to fail_with(message) }
       end
 
       context "when the Cask has multiple zap stanzas" do
         let(:cask_token) { "with-zap-multi" }
 
-        it { is_expected.to warn_with(warning_msg) }
+        it { is_expected.to fail_with(message) }
       end
     end
 
     describe "version checks" do
-      let(:error_msg) { "you should use version :latest instead of version 'latest'" }
+      let(:message) { "you should use version :latest instead of version 'latest'" }
 
       context "when version is 'latest'" do
         let(:cask_token) { "version-latest-string" }
 
-        it { is_expected.to fail_with(error_msg) }
+        it { is_expected.to fail_with(message) }
       end
 
       context "when version is :latest" do
         let(:cask_token) { "version-latest-with-checksum" }
 
-        it { is_expected.not_to fail_with(error_msg) }
+        it { is_expected.not_to fail_with(message) }
       end
     end
 
@@ -582,93 +588,93 @@ describe Cask::Audit, :cask do
     end
 
     describe "hosting with appcast checks" do
-      let(:appcast_warning) { /please add an appcast/ }
+      let(:message) { /please add an appcast/ }
 
       context "when the download does not use hosting with an appcast" do
         let(:cask_token) { "basic-cask" }
 
-        it { is_expected.not_to warn_with(appcast_warning) }
+        it { is_expected.not_to fail_with(message) }
       end
 
       context "when the download uses GitHub releases and has an appcast" do
         let(:cask_token) { "github-with-appcast" }
 
-        it { is_expected.not_to warn_with(appcast_warning) }
+        it { is_expected.not_to fail_with(message) }
       end
 
       context "when the download uses GitHub releases and does not have an appcast" do
         let(:cask_token) { "github-without-appcast" }
 
-        it { is_expected.to warn_with(appcast_warning) }
+        it { is_expected.to fail_with(message) }
       end
 
       context "when the download is hosted on SourceForge and has an appcast" do
         let(:cask_token) { "sourceforge-with-appcast" }
 
-        it { is_expected.not_to warn_with(appcast_warning) }
+        it { is_expected.not_to fail_with(message) }
       end
 
       context "when the download is hosted on SourceForge and does not have an appcast" do
         let(:cask_token) { "sourceforge-correct-url-format" }
 
-        it { is_expected.to warn_with(appcast_warning) }
+        it { is_expected.to fail_with(message) }
       end
 
       context "when the download is hosted on DevMate and has an appcast" do
         let(:cask_token) { "devmate-with-appcast" }
 
-        it { is_expected.not_to warn_with(appcast_warning) }
+        it { is_expected.not_to fail_with(message) }
       end
 
       context "when the download is hosted on DevMate and does not have an appcast" do
         let(:cask_token) { "devmate-without-appcast" }
 
-        it { is_expected.to warn_with(appcast_warning) }
+        it { is_expected.to fail_with(message) }
       end
 
       context "when the download is hosted on HockeyApp and has an appcast" do
         let(:cask_token) { "hockeyapp-with-appcast" }
 
-        it { is_expected.not_to warn_with(appcast_warning) }
+        it { is_expected.not_to fail_with(message) }
       end
 
       context "when the download is hosted on HockeyApp and does not have an appcast" do
         let(:cask_token) { "hockeyapp-without-appcast" }
 
-        it { is_expected.to warn_with(appcast_warning) }
+        it { is_expected.to fail_with(message) }
       end
     end
 
     describe "latest with appcast checks" do
-      let(:warning_msg) { "Casks with an appcast should not use version :latest" }
+      let(:message) { "Casks with an appcast should not use version :latest" }
 
       context "when the Cask is :latest and does not have an appcast" do
         let(:cask_token) { "version-latest" }
 
-        it { is_expected.not_to warn_with(warning_msg) }
+        it { is_expected.not_to fail_with(message) }
       end
 
       context "when the Cask is versioned and has an appcast" do
         let(:cask_token) { "with-appcast" }
 
-        it { is_expected.not_to warn_with(warning_msg) }
+        it { is_expected.not_to fail_with(message) }
       end
 
       context "when the Cask is :latest and has an appcast" do
         let(:cask_token) { "latest-with-appcast" }
 
-        it { is_expected.to warn_with(warning_msg) }
+        it { is_expected.to fail_with(message) }
       end
     end
 
     describe "denylist checks" do
-      context "when the Cask isn't disallowed" do
+      context "when the Cask is not on the denylist" do
         let(:cask_token) { "adobe-air" }
 
         it { is_expected.to pass }
       end
 
-      context "when the Cask is disallowed" do
+      context "when the Cask is on the denylist" do
         context "and it's in the official Homebrew tap" do
           let(:cask_token) { "adobe-illustrator" }
 
@@ -684,64 +690,64 @@ describe Cask::Audit, :cask do
     end
 
     describe "latest with auto_updates checks" do
-      let(:warning_msg) { "Casks with `version :latest` should not use `auto_updates`" }
+      let(:message) { "Casks with `version :latest` should not use `auto_updates`" }
 
       context "when the Cask is :latest and does not have auto_updates" do
         let(:cask_token) { "version-latest" }
 
-        it { is_expected.not_to warn_with(warning_msg) }
+        it { is_expected.to pass }
       end
 
       context "when the Cask is versioned and does not have auto_updates" do
         let(:cask_token) { "basic-cask" }
 
-        it { is_expected.not_to warn_with(warning_msg) }
+        it { is_expected.to pass }
       end
 
       context "when the Cask is versioned and has auto_updates" do
         let(:cask_token) { "auto-updates" }
 
-        it { is_expected.not_to warn_with(warning_msg) }
+        it { is_expected.to pass }
       end
 
       context "when the Cask is :latest and has auto_updates" do
         let(:cask_token) { "latest-with-auto-updates" }
 
-        it { is_expected.to warn_with(warning_msg) }
+        it { is_expected.to fail_with(message) }
       end
     end
 
     describe "preferred download URL formats" do
-      let(:warning_msg) { /URL format incorrect/ }
+      let(:message) { /URL format incorrect/ }
 
       context "with incorrect SourceForge URL format" do
         let(:cask_token) { "sourceforge-incorrect-url-format" }
 
-        it { is_expected.to warn_with(warning_msg) }
+        it { is_expected.to fail_with(message) }
       end
 
       context "with correct SourceForge URL format" do
         let(:cask_token) { "sourceforge-correct-url-format" }
 
-        it { is_expected.not_to warn_with(warning_msg) }
+        it { is_expected.not_to fail_with(message) }
       end
 
       context "with correct SourceForge URL format for version :latest" do
         let(:cask_token) { "sourceforge-version-latest-correct-url-format" }
 
-        it { is_expected.not_to warn_with(warning_msg) }
+        it { is_expected.not_to fail_with(message) }
       end
 
       context "with incorrect OSDN URL format" do
         let(:cask_token) { "osdn-incorrect-url-format" }
 
-        it { is_expected.to warn_with(warning_msg) }
+        it { is_expected.to fail_with(message) }
       end
 
       context "with correct OSDN URL format" do
         let(:cask_token) { "osdn-correct-url-format" }
 
-        it { is_expected.not_to warn_with(warning_msg) }
+        it { is_expected.not_to fail_with(message) }
       end
     end
 
@@ -793,7 +799,7 @@ describe Cask::Audit, :cask do
       context "when cask token does not conflict with a core formula" do
         let(:formula_names) { %w[other-formula] }
 
-        it { is_expected.not_to warn_with(/possible duplicate/) }
+        it { is_expected.to pass }
       end
     end
 
@@ -802,27 +808,28 @@ describe Cask::Audit, :cask do
       let(:cask) { Cask::CaskLoader.load(cask_token) }
       let(:download_double) { instance_double(Cask::Download) }
       let(:verify) { class_double(Cask::Verify).as_stubbed_const }
-      let(:error_msg) { "Download Failed" }
+      let(:message) { "Download Failed" }
 
       before do
         allow(audit).to receive(:download).and_return(download_double)
+        allow(audit).to receive(:check_https_availability)
       end
 
       it "when download and verification succeed it does not fail" do
         expect(download_double).to receive(:perform)
         expect(verify).to receive(:all)
-        expect(subject).not_to fail_with(/#{error_msg}/)
+        expect(subject).to pass
       end
 
-      it "when download fails it does not fail" do
-        expect(download_double).to receive(:perform).and_raise(StandardError.new(error_msg))
-        expect(subject).to fail_with(/#{error_msg}/)
+      it "when download fails it fails" do
+        expect(download_double).to receive(:perform).and_raise(StandardError.new(message))
+        expect(subject).to fail_with(/#{message}/)
       end
 
-      it "when verification fails it does not fail" do
+      it "when verification fails it fails" do
         expect(download_double).to receive(:perform)
-        expect(verify).to receive(:all).and_raise(StandardError.new(error_msg))
-        expect(subject).to fail_with(/#{error_msg}/)
+        expect(verify).to receive(:all).and_raise(StandardError.new(message))
+        expect(subject).to fail_with(/#{message}/)
       end
     end
 
@@ -853,16 +860,16 @@ describe Cask::Audit, :cask do
       context "when `new_cask` is true" do
         let(:new_cask) { true }
 
-        it "warns" do
-          expect(subject).to warn_with(/should have a description/)
+        it "fails" do
+          expect(subject).to fail_with(/should have a description/)
         end
       end
 
-      context "when `new_cask` is true" do
+      context "when `new_cask` is false" do
         let(:new_cask) { false }
 
-        it "does not warn" do
-          expect(subject).not_to warn_with(/should have a description/)
+        it "warns" do
+          expect(subject).to warn_with(/should have a description/)
         end
       end
     end
@@ -883,8 +890,8 @@ describe Cask::Audit, :cask do
         RUBY
       end
 
-      it "does not warn" do
-        expect(subject).not_to warn_with(/should have a description/)
+      it "passes" do
+        expect(subject).to pass
       end
     end
   end
