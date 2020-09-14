@@ -59,8 +59,6 @@ module Cask
           odebug "Auditing Cask #{cask}"
           result = Auditor.audit(cask, **options)
 
-          next true if result[:warnings].empty? && result[:errors].empty?
-
           if ENV["GITHUB_ACTIONS"]
             cask_path = cask.sourcefile_path
             annotations = (result[:warnings].map { |w| [:warning, w] } + result[:errors].map { |e| [:error, e] })
@@ -71,7 +69,7 @@ module Cask
             end
           end
 
-          false
+          result[:errors].empty?
         end
 
         return if failed_casks.empty?

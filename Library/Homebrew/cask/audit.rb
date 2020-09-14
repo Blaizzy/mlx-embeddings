@@ -30,8 +30,8 @@ module Cask
       appcast = online if appcast.nil?
       download = online if download.nil?
 
-      # `strict` implies `token_conflicts`
-      token_conflicts = strict if token_conflicts.nil?
+      # `new_cask` implies `token_conflicts`
+      token_conflicts = new_cask if token_conflicts.nil?
 
       @cask = cask
       @appcast = appcast
@@ -91,7 +91,11 @@ module Cask
     end
 
     def add_warning(message)
-      warnings << message
+      if strict?
+        add_error message
+      else
+        warnings << message
+      end
     end
 
     def errors?
@@ -143,7 +147,7 @@ module Cask
 
       return unless cask.artifacts.any? { |k| k.is_a?(Artifact::Pkg) && k.stanza_options.key?(:allow_untrusted) }
 
-      add_warning "allow_untrusted is not permitted in official Homebrew Cask taps"
+      add_error "allow_untrusted is not permitted in official Homebrew Cask taps"
     end
 
     def check_stanza_requires_uninstall
@@ -152,14 +156,14 @@ module Cask
       return if cask.artifacts.none? { |k| k.is_a?(Artifact::Pkg) || k.is_a?(Artifact::Installer) }
       return if cask.artifacts.any? { |k| k.is_a?(Artifact::Uninstall) }
 
-      add_warning "installer and pkg stanzas require an uninstall stanza"
+      add_error "installer and pkg stanzas require an uninstall stanza"
     end
 
     def check_single_pre_postflight
       odebug "Auditing preflight and postflight stanzas"
 
       if cask.artifacts.count { |k| k.is_a?(Artifact::PreflightBlock) && k.directives.key?(:preflight) } > 1
-        add_warning "only a single preflight stanza is allowed"
+        add_error "only a single preflight stanza is allowed"
       end
 
       count = cask.artifacts.count do |k|
@@ -168,14 +172,14 @@ module Cask
       end
       return unless count > 1
 
-      add_warning "only a single postflight stanza is allowed"
+      add_error "only a single postflight stanza is allowed"
     end
 
     def check_single_uninstall_zap
       odebug "Auditing single uninstall_* and zap stanzas"
 
       if cask.artifacts.count { |k| k.is_a?(Artifact::Uninstall) } > 1
-        add_warning "only a single uninstall stanza is allowed"
+        add_error "only a single uninstall stanza is allowed"
       end
 
       count = cask.artifacts.count do |k|
@@ -183,18 +187,18 @@ module Cask
           k.directives.key?(:uninstall_preflight)
       end
 
-      add_warning "only a single uninstall_preflight stanza is allowed" if count > 1
+      add_error "only a single uninstall_preflight stanza is allowed" if count > 1
 
       count = cask.artifacts.count do |k|
         k.is_a?(Artifact::PostflightBlock) &&
           k.directives.key?(:uninstall_postflight)
       end
 
-      add_warning "only a single uninstall_postflight stanza is allowed" if count > 1
+      add_error "only a single uninstall_postflight stanza is allowed" if count > 1
 
       return unless cask.artifacts.count { |k| k.is_a?(Artifact::Zap) } > 1
 
-      add_warning "only a single zap stanza is allowed"
+      add_error "only a single zap stanza is allowed"
     end
 
     def check_required_stanzas
@@ -267,14 +271,14 @@ module Cask
       return unless cask.version.latest?
       return unless cask.appcast
 
-      add_warning "Casks with an appcast should not use version :latest"
+      add_error "Casks with an appcast should not use version :latest"
     end
 
     def check_latest_with_auto_updates
       return unless cask.version.latest?
       return unless cask.auto_updates
 
-      add_warning "Casks with `version :latest` should not use `auto_updates`"
+      add_error "Casks with `version :latest` should not use `auto_updates`"
     end
 
     def check_hosting_with_appcast
@@ -286,21 +290,19 @@ module Cask
       when %r{github.com/([^/]+)/([^/]+)/releases/download/(\S+)}
         return if cask.version.latest?
 
-        add_warning "Download uses GitHub releases, #{add_appcast}"
+        add_error "Download uses GitHub releases, #{add_appcast}"
       when %r{sourceforge.net/(\S+)}
         return if cask.version.latest?
 
-        add_warning "Download is hosted on SourceForge, #{add_appcast}"
+        add_error "Download is hosted on SourceForge, #{add_appcast}"
       when %r{dl.devmate.com/(\S+)}
-        add_warning "Download is hosted on DevMate, #{add_appcast}"
+        add_error "Download is hosted on DevMate, #{add_appcast}"
       when %r{rink.hockeyapp.net/(\S+)}
-        add_warning "Download is hosted on HockeyApp, #{add_appcast}"
+        add_error "Download is hosted on HockeyApp, #{add_appcast}"
       end
     end
 
     def check_desc
-      return unless new_cask?
-
       return if cask.desc.present?
 
       add_warning "Cask should have a description. Please add a `desc` stanza."
@@ -315,9 +317,9 @@ module Cask
     def check_download_url_format
       odebug "Auditing URL format"
       if bad_sourceforge_url?
-        add_warning "SourceForge URL format incorrect. See https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/stanzas/url.md#sourceforgeosdn-urls"
+        add_error "SourceForge URL format incorrect. See https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/stanzas/url.md#sourceforgeosdn-urls"
       elsif bad_osdn_url?
-        add_warning "OSDN URL format incorrect. See https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/stanzas/url.md#sourceforgeosdn-urls"
+        add_error "OSDN URL format incorrect. See https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/stanzas/url.md#sourceforgeosdn-urls"
       end
     end
 
@@ -363,42 +365,33 @@ module Cask
     end
 
     def check_token_valid
-      return unless strict?
-
-      add_warning "cask token is not lowercase" if cask.token.downcase!
-
-      add_warning "cask token contains non-ascii characters" unless cask.token.ascii_only?
-
-      add_warning "cask token + should be replaced by -plus-" if cask.token.include? "+"
-
-      add_warning "cask token @ should be replaced by -at-" if cask.token.include? "@"
-
-      add_warning "cask token whitespace should be replaced by hyphens" if cask.token.include? " "
-
-      add_warning "cask token underscores should be replaced by hyphens" if cask.token.include? "_"
+      add_error "cask token contains non-ascii characters" unless cask.token.ascii_only?
+      add_error "cask token + should be replaced by -plus-" if cask.token.include? "+"
+      add_error "cask token whitespace should be replaced by hyphens" if cask.token.include? " "
+      add_error "cask token @ should be replaced by -at-" if cask.token.include? "@"
+      add_error "cask token underscores should be replaced by hyphens" if cask.token.include? "_"
+      add_error "cask token should not contain double hyphens" if cask.token.include? "--"
 
       if cask.token.match?(/[^a-z0-9\-]/)
-        add_warning "cask token should only contain alphanumeric characters and hyphens"
+        add_error "cask token should only contain lowercase alphanumeric characters and hyphens"
       end
 
-      add_warning "cask token should not contain double hyphens" if cask.token.include? "--"
+      return unless cask.token.start_with?("-") || cask.token.end_with?("-")
 
-      return unless cask.token.end_with?("-") || cask.token.start_with?("-")
-
-      add_warning "cask token should not have leading or trailing hyphens"
+      add_error "cask token should not have leading or trailing hyphens"
     end
 
     def check_token_bad_words
-      return unless strict?
+      return unless new_cask?
 
       token = cask.token
 
-      add_warning "cask token contains .app" if token.end_with? ".app"
+      add_error "cask token contains .app" if token.end_with? ".app"
 
       if /-(?<designation>alpha|beta|rc|release-candidate)$/ =~ cask.token &&
          cask.tap&.official? &&
          cask.tap != "homebrew/cask-versions"
-        add_warning "cask token contains version designation '#{designation}'"
+        add_error "cask token contains version designation '#{designation}'"
       end
 
       add_warning "cask token mentions launcher" if token.end_with? "launcher"
@@ -433,7 +426,7 @@ module Cask
       downloaded_path = download.perform
       Verify.all(cask, downloaded_path)
     rescue => e
-      add_error "download not possible: #{e.message}"
+      add_error "download not possible: #{e}"
     end
 
     def check_appcast_contains_version
@@ -458,7 +451,7 @@ module Cask
       end
       return if appcast_contents.include? adjusted_version_stanza
 
-      add_warning "appcast at URL '#{appcast_stanza}' does not contain"\
+      add_error "appcast at URL '#{appcast_stanza}' does not contain"\
                   " the version number '#{adjusted_version_stanza}':\n#{appcast_contents}"
     end
 
