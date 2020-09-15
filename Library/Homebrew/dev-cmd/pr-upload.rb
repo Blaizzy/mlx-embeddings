@@ -92,8 +92,9 @@ module Homebrew
 
         # Ensure a release is created.
         release = begin
-          GitHub.get_release user, repo, tag
+          rel = GitHub.get_release user, repo, tag
           odebug "Existing GitHub release \"#{tag}\" found"
+          rel
         rescue GitHub::HTTPNotFoundError
           odebug "Creating new GitHub release \"#{tag}\""
           GitHub.create_or_update_release user, repo, tag
