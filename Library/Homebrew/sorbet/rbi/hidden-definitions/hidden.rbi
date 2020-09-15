@@ -20081,13 +20081,9 @@ end
 module RuboCop::AST::CollectionNode
   def extract_options!(*args, &block); end
 
-  def save_plist(*args, &block); end
-
   def to_default_s(*args, &block); end
 
   def to_formatted_s(*args, &block); end
-
-  def to_plist(*args, &block); end
 
   def to_sentence(*args, &block); end
 
@@ -20106,10 +20102,6 @@ class RuboCop::AST::Node
   def method_node(node=T.unsafe(nil)); end
 
   def val_node(node=T.unsafe(nil)); end
-end
-
-class RuboCop::AST::RegexpNode
-  include ::RuboCop::Ext::RegexpNode
 end
 
 class RuboCop::Cask::AST::CaskBlock
