@@ -32,6 +32,8 @@ def curl_args(*extra_args, show_output: false, user_agent: :default)
     user_agent
   end
 
+  args << "--header" << "Accept-Language: en"
+
   unless show_output
     args << "--fail"
     args << "--progress-bar" unless Context.current.verbose?
