@@ -193,7 +193,7 @@ module Homebrew
       sourcefile_path: cask.sourcefile_path,
       old_contents:    old_contents,
       origin_branch:   origin_branch,
-      branch_name:     "bump-#{cask.token}-#{new_version}",
+      branch_name:     "bump-#{cask.token}-#{new_version.tr(",:", "-")}",
       commit_message:  "Update #{cask.token} from #{old_version} to #{new_version}",
       previous_branch: previous_branch,
       tap:             cask.tap,
