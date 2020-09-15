@@ -89,7 +89,6 @@ module OS
       def prefix
         @prefix ||= Pathname.new("/opt/X11") if Pathname.new("/opt/X11/lib/libpng.dylib").exist?
       end
-      private_class_method :prefix
 
       def installed?
         !version.null? && !prefix.nil?
