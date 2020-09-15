@@ -133,6 +133,8 @@ module Homebrew
     formula ||= determine_formula_from_url(new_url) if new_url
     raise FormulaUnspecifiedError unless formula
 
+    odie "This formula is disabled!" if formula.disabled?
+
     tap_full_name, origin_branch, previous_branch = use_correct_linux_tap(formula, args: args)
     check_open_pull_requests(formula, tap_full_name, args: args)
 
