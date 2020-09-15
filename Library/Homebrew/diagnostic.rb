@@ -915,11 +915,11 @@ module Homebrew
             none_string
           else
             cask_count = begin
-                tap.cask_files.count
-              rescue
-                error_tap_paths << tap.path
-                0
-              end
+              tap.cask_files.count
+            rescue
+              error_tap_paths << tap.path
+              0
+            end
 
             "#{tap.path} (#{cask_count} #{"cask".pluralize(cask_count)})"
           end

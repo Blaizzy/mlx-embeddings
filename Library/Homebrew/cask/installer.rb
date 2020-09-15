@@ -276,7 +276,7 @@ module Cask
 
     def x11_dependencies
       return unless @cask.depends_on.x11
-      raise CaskX11DependencyError, @cask.token unless MacOS::X11.installed?
+      raise CaskX11DependencyError, @cask.token unless MacOS::XQuartz.installed?
     end
 
     def graph_dependencies(cask_or_formula, acc = TopologicalHash.new)
