@@ -2,7 +2,10 @@
 
 module OS
   module Mac
-    X11 = XQuartz = Module.new do # rubocop:disable Style/MutableConstant
+    # Helper module for querying XQuartz information.
+    #
+    # @api private
+    module XQuartz
       module_function
 
       DEFAULT_BUNDLE_PATH = Pathname.new("Applications/Utilities/XQuartz.app").freeze
@@ -83,12 +86,10 @@ module OS
         PKGINFO_VERSION_MAP.fetch(str, str)
       end
 
-      # This should really be private, but for compatibility reasons it must
-      # remain public. New code should use `MacOS::X11.bin`, `MacOS::X11.lib` and
-      # `MacOS::X11.include` instead, as that accounts for Xcode-only systems.
       def prefix
         @prefix ||= Pathname.new("/opt/X11") if Pathname.new("/opt/X11/lib/libpng.dylib").exist?
       end
+      private_class_method :prefix
 
       def installed?
         !version.null? && !prefix.nil?
