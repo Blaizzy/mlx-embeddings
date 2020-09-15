@@ -1085,7 +1085,7 @@ Requires write access to the repository.
 * `--no-publish`:
   Download the bottles, apply the bottle commit and upload the bottles to Bintray, but don't publish them.
 * `--no-upload`:
-  Download the bottles and apply the bottle commit, but don't upload to Bintray.
+  Download the bottles and apply the bottle commit, but don't upload to Bintray or GitHub Releases.
 * `-n`, `--dry-run`:
   Print what would be done rather than doing it.
 * `--clean`:

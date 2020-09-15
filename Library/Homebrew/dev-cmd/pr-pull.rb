@@ -4,7 +4,6 @@ require "download_strategy"
 require "cli/parser"
 require "utils/github"
 require "tmpdir"
-require "bintray"
 require "formula"
 
 module Homebrew
@@ -24,7 +23,7 @@ module Homebrew
                           "upload the bottles to Bintray, but don't publish them."
       switch "--no-upload",
              description: "Download the bottles and apply the bottle commit, "\
-                          "but don't upload to Bintray."
+                          "but don't upload to Bintray or GitHub Releases."
       switch "-n", "--dry-run",
              description: "Print what would be done rather than doing it."
       switch "--clean",
@@ -211,16 +210,9 @@ module Homebrew
   def pr_pull
     args = pr_pull_args.parse
 
-    bintray_user = ENV["HOMEBREW_BINTRAY_USER"]
-    bintray_key = ENV["HOMEBREW_BINTRAY_KEY"]
-    bintray_org = args.bintray_org || "homebrew"
-
-    if (bintray_user.blank? || bintray_key.blank?) && !args.dry_run? && !args.no_upload?
-      odie "Missing HOMEBREW_BINTRAY_USER or HOMEBREW_BINTRAY_KEY variables!"
-    end
-
     workflow = args.workflow || "tests.yml"
     artifact = args.artifact || "bottles"
+    bintray_org = args.bintray_org || "homebrew"
     mirror_repo = args.bintray_mirror || "mirror"
     tap = Tap.fetch(args.tap || CoreTap.instance.name)
 
