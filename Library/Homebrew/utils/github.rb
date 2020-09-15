@@ -175,7 +175,7 @@ module GitHub
     end
   end
 
-  def open_api(url, data: nil, request_method: nil, scopes: [].freeze, parse_json: true)
+  def open_api(url, data: nil, data_binary_path: nil, request_method: nil, scopes: [].freeze, parse_json: true)
     # This is a no-op if the user is opting out of using the GitHub API.
     return block_given? ? yield({}) : {} if Homebrew::EnvConfig.no_github_api?
 
@@ -198,6 +198,11 @@ module GitHub
       rescue JSON::ParserError => e
         raise Error, "Failed to parse JSON request:\n#{e.message}\n#{data}", e.backtrace
       end
+    end
+
+    if data_binary_path.present?
+      args += ["--data-binary", "@#{data_binary_path}"]
+      args += ["--header", "Content-Type: application/gzip"]
     end
 
     headers_tmpfile = Tempfile.new("github_api_headers", HOMEBREW_TEMP)
@@ -466,6 +471,33 @@ module GitHub
     open_api(url, data:           { ref: ref, inputs: inputs },
                   request_method: :POST,
                   scopes:         CREATE_ISSUE_FORK_OR_PR_SCOPES)
+  end
+
+  def get_release(user, repo, tag)
+    url = "#{API_URL}/repos/#{user}/#{repo}/releases/tags/#{tag}"
+    open_api(url, request_method: :GET)
+  end
+
+  def create_or_update_release(user, repo, tag, id: nil, name: nil, draft: false)
+    url = "#{API_URL}/repos/#{user}/#{repo}/releases"
+    method = if id
+      url += "/#{id}"
+      :PATCH
+    else
+      :POST
+    end
+    data = {
+      tag_name: tag,
+      name:     name || tag,
+      draft:    draft,
+    }
+    open_api(url, data: data, request_method: method, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)
+  end
+
+  def upload_release_asset(user, repo, id, local_file: nil, remote_file: nil)
+    url = "https://uploads.github.com/repos/#{user}/#{repo}/releases/#{id}/assets"
+    url += "?name=#{remote_file}" if remote_file
+    open_api(url, data_binary_path: local_file, request_method: :POST, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)
   end
 
   def get_artifact_url(user, repo, pr, workflow_id: "tests.yml", artifact_name: "bottles")

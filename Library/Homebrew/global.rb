@@ -112,6 +112,8 @@ HOMEBREW_PULL_API_REGEX =
   %r{https://api\.github\.com/repos/([\w-]+)/([\w-]+)?/pulls/(\d+)}.freeze
 HOMEBREW_PULL_OR_COMMIT_URL_REGEX =
   %r[https://github\.com/([\w-]+)/([\w-]+)?/(?:pull/(\d+)|commit/[0-9a-fA-F]{4,40})].freeze
+HOMEBREW_RELEASES_URL_REGEX =
+  %r{https://github\.com/([\w-]+)/([\w-]+)?/releases/download/(.+)}.freeze
 
 require "PATH"
 
