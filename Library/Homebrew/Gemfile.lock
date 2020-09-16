@@ -121,7 +121,7 @@ GEM
     simplecov-html (0.12.2)
     sorbet (0.5.5909)
       sorbet-static (= 0.5.5909)
-    sorbet-runtime (0.5.5909)
+    sorbet-runtime (0.5.5911)
     sorbet-static (0.5.5909-universal-darwin-14)
     spoom (1.0.4)
       colorize
