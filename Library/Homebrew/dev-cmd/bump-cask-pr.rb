@@ -27,6 +27,8 @@ module Homebrew
                           "to the cask file."
       switch "--no-audit",
              description: "Don't run `brew cask audit` before opening the PR."
+      switch "--online",
+             description: "Run `brew cask audit --online` before opening the PR."
       switch "--no-style",
              description: "Don't run `brew cask style --fix` before opening the PR."
       switch "--no-browse",
@@ -45,6 +47,7 @@ module Homebrew
              description: "Ignore duplicate open PRs."
 
       conflicts "--dry-run", "--write"
+      conflicts "--no-audit", "--online"
       named 1
     end
   end
@@ -225,6 +228,8 @@ module Homebrew
     if args.dry_run?
       if args.no_audit?
         ohai "Skipping `brew cask audit`"
+      elsif args.online?
+        ohai "brew cask audit --online #{cask.sourcefile_path.basename}"
       else
         ohai "brew cask audit #{cask.sourcefile_path.basename}"
       end
@@ -233,6 +238,9 @@ module Homebrew
     failed_audit = false
     if args.no_audit?
       ohai "Skipping `brew cask audit`"
+    elsif args.online?
+      system HOMEBREW_BREW_FILE, "cask", "audit", "--online", cask.sourcefile_path
+      failed_audit = !$CHILD_STATUS.success?
     else
       system HOMEBREW_BREW_FILE, "cask", "audit", cask.sourcefile_path
       failed_audit = !$CHILD_STATUS.success?
