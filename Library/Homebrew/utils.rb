@@ -131,11 +131,15 @@ module Kernel
 
   # Print a warning (do this rarely)
   def opoo(message)
-    $stderr.puts Formatter.warning(message, label: "Warning")
+    Tty.with($stderr) do |stderr|
+      stderr.puts Formatter.warning(message, label: "Warning")
+    end
   end
 
   def onoe(message)
-    $stderr.puts Formatter.error(message, label: "Error")
+    Tty.with($stderr) do |stderr|
+      stderr.puts Formatter.error(message, label: "Error")
+    end
   end
 
   def ofail(error)

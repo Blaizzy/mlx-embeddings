@@ -11,8 +11,7 @@ describe "brew tap", :integration_test do
     path = setup_test_tap
 
     expect { brew "tap", "--force-auto-update", "--full", "homebrew/bar", path/".git" }
-      .to output(/Tapped/).to_stdout
-      .and output(/Cloning/).to_stderr
+      .to output(/Tapped/).to_stderr
       .and be_a_success
   end
 end
