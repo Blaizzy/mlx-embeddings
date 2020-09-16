@@ -880,6 +880,8 @@ nor vice versa. It must use whichever style specification the formula already us
   Don't run `brew audit` before opening the PR.
 * `--strict`:
   Run `brew audit --strict` before opening the PR.
+* `--online`:
+  Run `brew audit --online` before opening the PR.
 * `--no-browse`:
   Print the pull request URL instead of opening in a browser.
 * `--no-fork`:

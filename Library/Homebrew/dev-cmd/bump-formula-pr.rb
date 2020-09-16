@@ -42,6 +42,8 @@ module Homebrew
              description: "Don't run `brew audit` before opening the PR."
       switch "--strict",
              description: "Run `brew audit --strict` before opening the PR."
+      switch "--online",
+             description: "Run `brew audit --online` before opening the PR."
       switch "--no-browse",
              description: "Print the pull request URL instead of opening in a browser."
       switch "--no-fork",
@@ -71,6 +73,7 @@ module Homebrew
 
       conflicts "--dry-run", "--write"
       conflicts "--no-audit", "--strict"
+      conflicts "--no-audit", "--online"
       conflicts "--url", "--tag"
       max_named 1
     end
@@ -440,11 +443,14 @@ module Homebrew
   end
 
   def run_audit(formula, alias_rename, old_contents, args:)
+    audit_args = []
+    audit_args << "--strict" if args.strict?
+    audit_args << "--online" if args.online?
     if args.dry_run?
       if args.no_audit?
         ohai "Skipping `brew audit`"
-      elsif args.strict?
-        ohai "brew audit --strict #{formula.path.basename}"
+      elsif audit_args.present?
+        ohai "brew audit #{audit_args.join(" ")} #{formula.path.basename}"
       else
         ohai "brew audit #{formula.path.basename}"
       end
@@ -454,8 +460,8 @@ module Homebrew
     failed_audit = false
     if args.no_audit?
       ohai "Skipping `brew audit`"
-    elsif args.strict?
-      system HOMEBREW_BREW_FILE, "audit", "--strict", formula.path
+    elsif audit_args.present?
+      system HOMEBREW_BREW_FILE, "audit", *audit_args, formula.path
       failed_audit = !$CHILD_STATUS.success?
     else
       system HOMEBREW_BREW_FILE, "audit", formula.path
