@@ -177,7 +177,7 @@ module Language
       def virtualenv_install_with_resources(options = {})
         python = options[:using]
         if python.nil?
-          pythons = %w[python python3 python@3 python@3.7 python@3.8 pypy pypy3]
+          pythons = %w[python python3 pypy pypy3] + Formula.names.select { |name| name.start_with? "python@" }
           wanted = pythons.select { |py| needs_python?(py) }
           raise FormulaUnknownPythonError, self if wanted.empty?
           raise FormulaAmbiguousPythonError, self if wanted.size > 1
