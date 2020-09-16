@@ -834,6 +834,8 @@ supplied by the user.
   When passed with `--write`, generate a new commit after writing changes to the cask file.
 * `--no-audit`:
   Don't run `brew cask audit` before opening the PR.
+* `--online`:
+  Run `brew cask audit --online` before opening the PR.
 * `--no-style`:
   Don't run `brew cask style --fix` before opening the PR.
 * `--no-browse`:
