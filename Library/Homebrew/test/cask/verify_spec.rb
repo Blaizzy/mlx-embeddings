@@ -31,7 +31,7 @@ module Cask
         let(:expected_sha256) { nil }
 
         it "raises an error" do
-          expect { verification }.to raise_error CaskSha256MissingError
+          expect { verification }.to raise_error(CaskSha256MissingError, /sha256 "#{computed_sha256}"/)
         end
       end
 
@@ -39,7 +39,7 @@ module Cask
         let(:expected_sha256) { "" }
 
         it "raises an error" do
-          expect { verification }.to raise_error CaskSha256MissingError
+          expect { verification }.to raise_error(CaskSha256MissingError, /sha256 "#{computed_sha256}"/)
         end
       end
 
