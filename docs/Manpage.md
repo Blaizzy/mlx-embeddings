@@ -1236,6 +1236,8 @@ Check for typechecking errors using Sorbet.
   Silence all non-critical errors.
 * `--update-definitions`:
   Update Tapioca gem definitions of recently bumped gems
+* `--prune-files-list`:
+  Remove deleted filepaths from sorbet/files.yaml
 * `--fail-if-not-changed`:
   Return a failing status code if all gems are up to date and gem definitions do not need a tapioca update
 * `--dir`:
