@@ -35,7 +35,7 @@ module Homebrew
              description: "Automatically reformat and reword commits in the pull request to our "\
                           "preferred format."
       switch "--branch-okay",
-             description: "Do not warn if pulling to a branch besides master (useful for testing)."
+             description: "Do not warn if pulling to a branch besides the repository default (useful for testing)."
       switch "--resolve",
              description: "When a patch fails to apply, leave in progress and allow user to resolve, "\
                           "instead of aborting."
@@ -291,14 +291,6 @@ module Homebrew
     Utils::Git.cherry_pick!(path, "--ff", "--allow-empty", *commits, verbose: args.verbose?, resolve: args.resolve?)
   end
 
-  def check_branch(path, ref, args:)
-    branch = Utils.popen_read("git", "-C", path, "symbolic-ref", "--short", "HEAD").strip
-
-    return if branch == ref || args.clean? || args.branch_okay?
-
-    opoo "Current branch is #{branch}: do you need to pull inside #{ref}?"
-  end
-
   def formulae_need_bottles?(tap, original_commit, args:)
     return if args.dry_run?
 
@@ -383,7 +375,12 @@ module Homebrew
       _, user, repo, pr = *url_match
       odie "Not a GitHub pull request: #{arg}" unless pr
 
-      check_branch tap.path, "master", args: args
+      current_branch = Utils::Git.current_branch(tap.path)
+      origin_branch = Utils::Git.origin_branch(tap.path).split("/").last
+
+      if current_branch != origin_branch || args.branch_okay? || args.clean?
+        opoo "Current branch is #{current_branch}: do you need to pull inside #{origin_branch}?"
+      end
 
       ohai "Fetching #{tap} pull request ##{pr}"
       Dir.mktmpdir pr do |dir|

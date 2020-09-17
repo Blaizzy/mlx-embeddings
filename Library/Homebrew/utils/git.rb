@@ -120,6 +120,10 @@ module Utils
                        "refs/remotes/origin/HEAD").chomp.presence
     end
 
+    def current_branch(repo)
+      Utils.popen_read("git", "-C", repo, "symbolic-ref", "--short", "HEAD").chomp.presence
+    end
+
     # Special case of `git cherry-pick` that permits non-verbose output and
     # optional resolution on merge conflict.
     def cherry_pick!(repo, *args, resolve: false, verbose: false)
