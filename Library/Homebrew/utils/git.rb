@@ -119,5 +119,19 @@ module Utils
       Utils.popen_read(git, "-C", repo, "symbolic-ref", "-q", "--short",
                        "refs/remotes/origin/HEAD").chomp.presence
     end
+
+    # Special case of `git cherry-pick` that permits non-verbose output and
+    # optional resolution on merge conflict.
+    def cherry_pick!(repo, *args, resolve: false, verbose: false)
+      cmd = [git, "-C", repo, "cherry-pick"] + args
+      output = Utils.popen_read(*cmd, err: :out)
+      if $CHILD_STATUS.success?
+        puts output if verbose
+        output
+      else
+        system git, "-C", repo, "cherry-pick", "--abort" unless resolve
+        raise ErrorDuringExecution.new(cmd, status: $CHILD_STATUS, output: [[:stdout, output]])
+      end
+    end
   end
 end
