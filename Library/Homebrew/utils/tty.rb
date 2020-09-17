@@ -4,7 +4,18 @@
 #
 # @api private
 module Tty
+  @stream = $stdout
+
   module_function
+
+  def with(stream)
+    previous_stream = @stream
+    @stream = stream
+
+    yield stream
+  ensure
+    @stream = previous_stream
+  end
 
   def strip_ansi(string)
     string.gsub(/\033\[\d+(;\d+)*m/, "")
@@ -78,6 +89,6 @@ module Tty
     return false if Homebrew::EnvConfig.no_color?
     return true if Homebrew::EnvConfig.color?
 
-    $stdout.tty?
+    @stream.tty?
   end
 end

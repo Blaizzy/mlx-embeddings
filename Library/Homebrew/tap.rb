@@ -256,7 +256,7 @@ class Tap
         return if !full_clone || !shallow?
       end
 
-      ohai "Unshallowing #{name}" unless quiet
+      $stderr.ohai "Unshallowing #{name}" unless quiet
       args = %w[fetch --unshallow]
       args << "-q" if quiet
       path.cd { safe_system "git", *args }
@@ -265,7 +265,7 @@ class Tap
 
     clear_cache
 
-    ohai "Tapping #{name}" unless quiet
+    $stderr.ohai "Tapping #{name}" unless quiet
     args =  %W[clone #{requested_remote} #{path}]
     args << "--depth=1" unless full_clone
     args << "-q" if quiet
@@ -291,7 +291,7 @@ class Tap
     link_completions_and_manpages
 
     formatted_contents = contents.presence&.to_sentence&.dup&.prepend(" ")
-    puts "Tapped#{formatted_contents} (#{path.abv})." unless quiet
+    $stderr.puts "Tapped#{formatted_contents} (#{path.abv})." unless quiet
     CacheStoreDatabase.use(:descriptions) do |db|
       DescriptionCacheStore.new(db)
                            .update_from_formula_names!(formula_names)
@@ -301,7 +301,7 @@ class Tap
     return unless private?
     return if quiet
 
-    puts <<~EOS
+    $stderr.puts <<~EOS
       It looks like you tapped a private repository. To avoid entering your
       credentials each time you update, you can use git HTTP credential
       caching or issue the following command:
@@ -321,7 +321,7 @@ class Tap
     require "descriptions"
     raise TapUnavailableError, name unless installed?
 
-    puts "Untapping #{name}..."
+    $stderr.puts "Untapping #{name}..."
 
     abv = path.abv
     formatted_contents = contents.presence&.to_sentence&.dup&.prepend(" ")
@@ -335,7 +335,7 @@ class Tap
     Utils::Link.unlink_completions(path)
     path.rmtree
     path.parent.rmdir_if_possible
-    puts "Untapped#{formatted_contents} (#{abv})."
+    $stderr.puts "Untapped#{formatted_contents} (#{abv})."
 
     Commands.rebuild_commands_completion_list
     clear_cache
@@ -625,7 +625,9 @@ class CoreTap < Tap
 
   def install(full_clone: true, quiet: false, clone_target: nil, force_auto_update: nil)
     remote = Homebrew::EnvConfig.core_git_remote
-    puts "HOMEBREW_CORE_GIT_REMOTE set: using #{remote} for Homebrew/core Git remote URL." if remote != default_remote
+    if remote != default_remote
+      $stderr.puts "HOMEBREW_CORE_GIT_REMOTE set: using #{remote} for Homebrew/core Git remote URL."
+    end
     super(full_clone: full_clone, quiet: quiet, clone_target: remote, force_auto_update: force_auto_update)
   end
 
