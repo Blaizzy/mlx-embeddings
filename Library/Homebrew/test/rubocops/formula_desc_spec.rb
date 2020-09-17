@@ -84,7 +84,15 @@ describe RuboCop::Cop::FormulaAudit::Desc do
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
           desc 'An aardvark'
-                ^^ Description shouldn\'t start with an indefinite article, i.e. \"An\".
+                ^^ Description shouldn\'t start with an article.
+        end
+      RUBY
+
+      expect_offense(<<~RUBY, "/homebrew-core/Formula/foo.rb")
+        class Foo < Formula
+          url 'https://brew.sh/foo-1.0.tgz'
+          desc 'The aardvark'
+                ^^^ Description shouldn\'t start with an article.
         end
       RUBY
     end

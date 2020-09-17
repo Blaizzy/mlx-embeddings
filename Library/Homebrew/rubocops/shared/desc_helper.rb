@@ -49,10 +49,8 @@ module RuboCop
           problem "Description should use \"#{c}ommand-line\" instead of \"#{match}\"."
         end
 
-        # Check if the desc starts with "A" or "An".
-        if match = regex_match_group(desc, /^(an?)(?=\s)/i)
-          problem "Description shouldn't start with an indefinite article, i.e. \"#{match}\"."
-        end
+        # Check if the desc starts with an article.
+        problem "Description shouldn't start with an article." if regex_match_group(desc, /^(the|an?)(?=\s)/i)
 
         # Check if invalid lowercase words are at the start of a desc.
         if !VALID_LOWERCASE_WORDS.include?(string_content(desc).split.first) &&
@@ -91,7 +89,7 @@ module RuboCop
           correction.gsub!(/^\s+/, "")
           correction.gsub!(/\s+$/, "")
 
-          correction.sub!(/^an?\s+/i, "")
+          correction.sub!(/^(the|an?)\s+/i, "")
 
           first_word = correction.split.first
           unless VALID_LOWERCASE_WORDS.include?(first_word)
