@@ -1096,12 +1096,16 @@ Requires write access to the repository.
   Do not amend the commits from pull requests.
 * `--keep-old`:
   If the formula specifies a rebuild version, attempt to preserve its value in the generated DSL.
+* `--autosquash`:
+  Automatically reformat and reword commits in the pull request to our preferred format.
 * `--branch-okay`:
   Do not warn if pulling to a branch besides master (useful for testing).
 * `--resolve`:
   When a patch fails to apply, leave in progress and allow user to resolve, instead of aborting.
 * `--warn-on-upload-failure`:
   Warn instead of raising an error if the bottle upload fails. Useful for repairing bottle uploads that previously failed.
+* `--message`:
+  Message to include when autosquashing revision bumps, deletions, and rebuilds.
 * `--workflow`:
   Retrieve artifacts from the specified workflow (default: `tests.yml`).
 * `--artifact`:

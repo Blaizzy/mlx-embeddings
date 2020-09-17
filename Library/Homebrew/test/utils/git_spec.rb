@@ -44,6 +44,14 @@ describe Utils::Git do
   let(:files_hash1) { [@h3[0..6], ["LICENSE.txt"]] }
   let(:files_hash2) { [@h2[0..6], ["README.md"]] }
 
+  describe "#cherry_pick!" do
+    it "aborts when cherry picking an existing hash" do
+      expect {
+        described_class.cherry_pick!(HOMEBREW_CACHE, file_hash1)
+      }.to raise_error(ErrorDuringExecution, /Merge conflict in README.md/)
+    end
+  end
+
   describe "#last_revision_commit_of_file" do
     it "gives last revision commit when before_commit is nil" do
       expect(
