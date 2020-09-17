@@ -5,7 +5,7 @@ require "language/java"
 describe Language::Java do
   describe "::java_home" do
     it "returns valid JAVA_HOME if version is specified", :needs_java do
-      java_home = described_class.java_home("1.8+")
+      java_home = described_class.java_home("1.6+")
       expect(java_home/"bin/java").to be_an_executable
     end
 
