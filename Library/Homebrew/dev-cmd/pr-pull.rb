@@ -275,22 +275,20 @@ module Homebrew
     raise
   end
 
-  def cherry_pick_pr!(pr, args:, path: ".")
+  def cherry_pick_pr!(user, repo, pr, args:, path: ".")
     if args.dry_run?
       puts <<~EOS
         git fetch --force origin +refs/pull/#{pr}/head
         git merge-base HEAD FETCH_HEAD
         git cherry-pick --ff --allow-empty $merge_base..FETCH_HEAD
       EOS
-    else
-      safe_system "git", "-C", path, "fetch", "--quiet", "--force", "origin", "+refs/pull/#{pr}/head"
-      merge_base = Utils.popen_read("git", "-C", path, "merge-base", "HEAD", "FETCH_HEAD").strip
-      commit_count = Utils.popen_read("git", "-C", path, "rev-list", "#{merge_base}..FETCH_HEAD").lines.count
-
-      ohai "Using #{commit_count} commit#{"s" unless commit_count == 1} from ##{pr}"
-      Utils::Git.cherry_pick!(path, "--ff", "--allow-empty", "#{merge_base}..FETCH_HEAD",
-                              verbose: args.verbose?, resolve: args.resolve?)
+      return
     end
+
+    commits = GitHub.pull_request_commits(user, repo, pr)
+    safe_system "git", "-C", path, "fetch", "--quiet", "--force", "origin", commits.last
+    ohai "Using #{commits.count} commit#{"s" unless commits.count == 1} from ##{pr}"
+    Utils::Git.cherry_pick!(path, "--ff", "--allow-empty", *commits, verbose: args.verbose?, resolve: args.resolve?)
   end
 
   def check_branch(path, ref, args:)
@@ -391,7 +389,7 @@ module Homebrew
       Dir.mktmpdir pr do |dir|
         cd dir do
           original_commit = Utils.popen_read("git", "-C", tap.path, "rev-parse", "HEAD").chomp
-          cherry_pick_pr!(pr, path: tap.path, args: args)
+          cherry_pick_pr!(user, repo, pr, path: tap.path, args: args)
           autosquash!(original_commit, path: tap.path, args: args) if args.autosquash?
           signoff!(pr, tap: tap, args: args) unless args.clean?
 

@@ -747,4 +747,8 @@ module GitHub
       end
     end
   end
+
+  def pull_request_commits(user, repo, pr)
+    open_api(url_to("repos", user, repo, "pulls", pr, "commits?per_page=100")).map { |c| c["sha"] }
+  end
 end
