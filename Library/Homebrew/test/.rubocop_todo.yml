@@ -96,6 +96,7 @@ RSpec/MultipleDescribes:
     - 'rubocops/deprecate_disable_spec.rb'
     - 'rubocops/formula_desc_spec.rb'
     - 'rubocops/lines_spec.rb'
+    - 'rubocops/livecheck_spec.rb'
     - 'rubocops/text_spec.rb'
     - 'rubocops/urls_spec.rb'
     - 'software_spec_spec.rb'
