@@ -15,7 +15,9 @@ module RuboCop
           return if livecheck_node.blank?
 
           skip = find_every_method_call_by_name(livecheck_node, :skip).first
-          return unless skip.present? && find_every_method_call_by_name(livecheck_node).length > 2
+          return if skip.blank?
+
+          return if find_every_method_call_by_name(livecheck_node).length < 3
 
           offending_node(livecheck_node)
           problem "Skipped formulae must not contain other livecheck information."
@@ -28,7 +30,11 @@ module RuboCop
             skip = string_content(skip) if skip.present?
             corrector.replace(
               node.source_range,
-              "livecheck do\n    skip#{" \"#{skip}\"" if skip.present?}\n  end",
+              <<~EOS.strip,
+                livecheck do
+                    skip#{" \"#{skip}\"" if skip.present?}
+                  end
+              EOS
             )
           end
         end
@@ -100,7 +106,7 @@ module RuboCop
           formula_urls = { head: head_url, stable: stable_url, homepage: homepage_url }.compact
 
           formula_urls.each do |symbol, url|
-            next unless url == livecheck_url || url == "#{livecheck_url}/" || "#{url}/" == livecheck_url
+            next if url != livecheck_url && url != "#{livecheck_url}/" && "#{url}/" != livecheck_url
 
             offending_node(livecheck_url_node)
             @offense = symbol
