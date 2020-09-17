@@ -75,7 +75,10 @@ module Homebrew
           formulae_to_check.length
         end
 
-        $stderr.puts Formatter.headline("Running checks", color: :blue)
+        Tty.with($stderr) do |stderr|
+          stderr.puts Formatter.headline("Running checks", color: :blue)
+        end
+
         progress = ProgressBar.create(
           total:          total_formulae,
           progress_mark:  "#",
@@ -182,7 +185,9 @@ module Homebrew
 
       if progress
         progress.finish
-        $stderr.print "#{Tty.up}#{Tty.erase_line}" * 2
+        Tty.with($stderr) do |stderr|
+          stderr.print "#{Tty.up}#{Tty.erase_line}" * 2
+        end
       end
 
       puts JSON.generate(formulae_checked.compact)

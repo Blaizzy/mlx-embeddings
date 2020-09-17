@@ -88,7 +88,7 @@ module Tty
 
   SPECIAL_CODES.each do |name, code|
     define_singleton_method(name) do
-      if $stdout.tty?
+      if @stream.tty?
         "\033[#{code}"
       else
         ""
