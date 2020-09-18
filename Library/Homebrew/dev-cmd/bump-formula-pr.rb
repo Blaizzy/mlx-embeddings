@@ -330,10 +330,21 @@ module Homebrew
     end
 
     unless args.dry_run?
-      PyPI.update_python_resources! formula, new_formula_version, silent: args.quiet?, ignore_non_pypi_packages: true
+      resources_checked = PyPI.update_python_resources! formula, new_formula_version,
+                                                        silent: args.quiet?, ignore_non_pypi_packages: true
     end
 
     run_audit(formula, alias_rename, old_contents, args: args)
+
+    pr_message = "Created with `brew bump-formula-pr`."
+    if resources_checked.nil? && formula.resources.present? &&
+       formula.resources.any? { |resource| resource.name != "homebrew-virtualenv" }
+      pr_message += <<~EOS
+
+
+        `resource` blocks may require updates.
+      EOS
+    end
 
     pr_info = {
       sourcefile_path:  formula.path,
@@ -345,7 +356,7 @@ module Homebrew
       previous_branch:  previous_branch,
       tap:              formula.tap,
       tap_full_name:    tap_full_name,
-      pr_message:       "Created with `brew bump-formula-pr`.",
+      pr_message:       pr_message,
     }
     GitHub.create_bump_pr(pr_info, args: args)
   end
