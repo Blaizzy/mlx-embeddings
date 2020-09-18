@@ -12,15 +12,12 @@ module PyPI
   AUTOMATIC_RESOURCE_UPDATE_BLOCKLIST = %w[
     ansible
     ansible@2.8
-    cdk8s
     cloudformation-cli
     diffoscope
     dxpy
     ipython
     molecule
-    pulumi
     salt
-    xonsh
   ].freeze
   private_constant :AUTOMATIC_RESOURCE_UPDATE_BLOCKLIST
 
@@ -67,11 +64,15 @@ module PyPI
       return
     end
 
-    # PyPI package name isn't always the same as the formula name. Try to infer from the URL.
-    pypi_name = if formula.stable.url.start_with?(PYTHONHOSTED_URL_PREFIX)
-      url_to_pypi_package_name formula.stable.url
-    else
-      formula.name
+    pypi_name = url_to_pypi_package_name formula.stable.url
+
+    if pypi_name.nil?
+      return if ignore_non_pypi_packages
+
+      odie <<~EOS
+        Could not infer PyPI package name from URL:
+          #{Formatter.url(formula.stable.url)}
+      EOS
     end
 
     version ||= formula.version
