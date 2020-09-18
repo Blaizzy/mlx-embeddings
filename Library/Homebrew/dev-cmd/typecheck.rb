@@ -54,7 +54,7 @@ module Homebrew
           end
         end
 
-        File.write(SORBET_FILES_YAML, lines_to_keep.join("\n"))
+        File.write(SORBET_FILES_YAML, "#{lines_to_keep.join("\n")}\n")
       end
 
       if args.update_definitions?
