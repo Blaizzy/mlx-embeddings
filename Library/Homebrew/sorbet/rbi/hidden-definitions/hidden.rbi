@@ -23795,9 +23795,17 @@ module Tty
 
   def self.default(); end
 
+  def self.down(); end
+
+  def self.erase_char(); end
+
+  def self.erase_line(); end
+
   def self.green(); end
 
   def self.italic(); end
+
+  def self.left(); end
 
   def self.magenta(); end
 
@@ -23807,9 +23815,13 @@ module Tty
 
   def self.reset(); end
 
+  def self.right(); end
+
   def self.strikethrough(); end
 
   def self.underline(); end
+
+  def self.up(); end
 
   def self.yellow(); end
 end
