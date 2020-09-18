@@ -166,10 +166,12 @@ module SharedEnvExtension
   # end</pre>
   def compiler
     @compiler ||= if (cc = @cc)
-      warn_about_non_apple_gcc($&) if cc =~ GNU_GCC_REGEXP
+      warn_about_non_apple_gcc(cc) if cc.match?(GNU_GCC_REGEXP)
+
       fetch_compiler(cc, "--cc")
     elsif (cc = homebrew_cc)
-      warn_about_non_apple_gcc($&) if cc =~ GNU_GCC_REGEXP
+      warn_about_non_apple_gcc(cc) if cc.match?(GNU_GCC_REGEXP)
+
       compiler = fetch_compiler(cc, "HOMEBREW_CC")
 
       if @formula

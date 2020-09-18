@@ -111,7 +111,7 @@ module Superenv
     path.append("/usr/bin", "/bin", "/usr/sbin", "/sbin")
 
     begin
-      path.append(gcc_version_formula($&).opt_bin) if homebrew_cc =~ GNU_GCC_REGEXP
+      path.append(gcc_version_formula(homebrew_cc).opt_bin) if homebrew_cc.match?(GNU_GCC_REGEXP)
     rescue FormulaUnavailableError
       # Don't fail and don't add these formulae to the path if they don't exist.
       nil

@@ -46,9 +46,9 @@ module Stdenv
 
     send(compiler)
 
-    return unless cc =~ GNU_GCC_REGEXP
+    return unless cc.match?(GNU_GCC_REGEXP)
 
-    gcc_formula = gcc_version_formula($&)
+    gcc_formula = gcc_version_formula(cc)
     append_path "PATH", gcc_formula.opt_bin.to_s
   end
   alias generic_setup_build_environment setup_build_environment
