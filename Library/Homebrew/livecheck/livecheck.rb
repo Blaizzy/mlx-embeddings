@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "livecheck/strategy"
+require "ruby-progressbar"
 
 module Homebrew
   # The `Livecheck` module consists of methods used by the `brew livecheck`
@@ -66,6 +67,27 @@ module Homebrew
       @livecheck_strategy_names.freeze
 
       has_a_newer_upstream_version = false
+
+      if args.json? && !args.quiet? && $stderr.tty?
+        total_formulae = if formulae_to_check == Formula
+          formulae_to_check.count
+        else
+          formulae_to_check.length
+        end
+
+        Tty.with($stderr) do |stderr|
+          stderr.puts Formatter.headline("Running checks", color: :blue)
+        end
+
+        progress = ProgressBar.create(
+          total:          total_formulae,
+          progress_mark:  "#",
+          remainder_mark: ".",
+          format:         " %t: [%B] %c/%C ",
+          output:         $stderr,
+        )
+      end
+
       formulae_checked = formulae_to_check.sort.map.with_index do |formula, i|
         if args.debug? && i.positive?
           puts <<~EOS
@@ -78,7 +100,7 @@ module Homebrew
         skip_result = skip_conditions(formula, args: args)
         next skip_result if skip_result != false
 
-        formula.head.downloader.shutup! if formula.head?
+        formula.head&.downloader&.shutup!
 
         current = if formula.head?
           formula.any_installed_version.version.commit
@@ -136,6 +158,7 @@ module Homebrew
         has_a_newer_upstream_version ||= true
 
         if args.json?
+          progress&.increment
           info.except!(:meta) unless args.verbose?
           next info
         end
@@ -146,6 +169,7 @@ module Homebrew
         Homebrew.failed = true
 
         if args.json?
+          progress&.increment
           status_hash(formula, "error", [e.to_s], args: args)
         elsif !args.quiet?
           onoe "#{Tty.blue}#{formula_name(formula, args: args)}#{Tty.reset}: #{e}"
@@ -157,7 +181,16 @@ module Homebrew
         puts "No newer upstream versions."
       end
 
-      puts JSON.generate(formulae_checked.compact) if args.json?
+      return unless args.json?
+
+      if progress
+        progress.finish
+        Tty.with($stderr) do |stderr|
+          stderr.print "#{Tty.up}#{Tty.erase_line}" * 2
+        end
+      end
+
+      puts JSON.generate(formulae_checked.compact)
     end
 
     # Returns the fully-qualified name of a formula if the full_name argument is
