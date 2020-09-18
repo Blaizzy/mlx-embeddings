@@ -142,6 +142,7 @@ module Homebrew
 
       outdated_dependents =
         installed_formulae.flat_map(&:runtime_installed_formula_dependents)
+                          .uniq
                           .select(&:outdated?)
       return if outdated_dependents.blank? && already_broken_dependents.blank?
 
