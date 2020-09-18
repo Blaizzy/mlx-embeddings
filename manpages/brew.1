@@ -1738,8 +1738,16 @@ Specify a comma\-separated \fIcops\fR list to check for violations of only the l
 \fB\-\-except\-cops\fR
 Specify a comma\-separated \fIcops\fR list to skip checking for violations of the listed RuboCop cops\.
 .
-.SS "\fBtap\-new\fR \fIuser\fR\fB/\fR\fIrepo\fR"
+.SS "\fBtap\-new\fR [\fIoptions\fR] \fIuser\fR\fB/\fR\fIrepo\fR"
 Generate the template files for a new tap\.
+.
+.TP
+\fB\-\-no\-git\fR
+Don\'t initialize a git repository for the tap\.
+.
+.TP
+\fB\-\-pull\-label\fR
+Label name for pull requests ready to be pulled (default \fBpr\-pull\fR)\.
 .
 .SS "\fBtest\fR [\fIoptions\fR] \fIformula\fR"
 Run the test method provided by an installed formula\. There is no standard output or return code, but generally it should notify the user if something is wrong with the installed formula\.
