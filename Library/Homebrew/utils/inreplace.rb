@@ -28,6 +28,8 @@ module Utils
     #
     # @api public
     def inreplace(paths, before = nil, after = nil, audit_result = true) # rubocop:disable Style/OptionalBooleanParameter
+      after = after.to_s if after.is_a? Symbol
+
       errors = {}
 
       errors["`paths` (first) parameter"] = ["`paths` was empty"] if paths.blank?
@@ -39,7 +41,6 @@ module Utils
         if before.nil? && after.nil?
           yield s
         else
-          after = after.to_s if after.is_a? Symbol
           s.gsub!(before, after, audit_result)
         end
 
