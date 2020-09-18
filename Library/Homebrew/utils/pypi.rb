@@ -56,6 +56,7 @@ module PyPI
     [json["info"]["name"], sdist["url"], sdist["digests"]["sha256"]]
   end
 
+  # Return true if resources were checked (even if no change)
   def update_python_resources!(formula, version = nil, print_only: false, silent: false,
                                ignore_non_pypi_packages: false)
 
@@ -160,5 +161,7 @@ module PyPI
       end
       s.sub! inreplace_regex, new_resource_blocks
     end
+
+    true
   end
 end
