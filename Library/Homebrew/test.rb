@@ -24,6 +24,11 @@ begin
 
   trap("INT", old_trap)
 
+  if Homebrew::EnvConfig.developer? || ENV["CI"].present?
+    raise "cannot find child processes without `pgrep`, please install!" unless which("pgrep")
+    raise "cannot kill child processes without `pkill`, please install!" unless which("pkill")
+  end
+
   formula = args.named.to_resolved_formulae.first
   formula.extend(Homebrew::Assertions)
   formula.extend(Homebrew::FreePort)
