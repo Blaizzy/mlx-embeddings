@@ -18,11 +18,11 @@ module Cask
 
     attr_reader :token, :sourcefile_path, :config
 
-    def self.each
+    def self.each(&block)
       return to_enum unless block_given?
 
       Tap.flat_map(&:cask_files).each do |f|
-        yield CaskLoader::FromTapPathLoader.new(f).load
+        block.call CaskLoader::FromTapPathLoader.new(f).load
       rescue CaskUnreadableError => e
         opoo e.message
       end
