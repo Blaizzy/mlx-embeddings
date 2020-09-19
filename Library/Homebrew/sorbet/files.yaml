@@ -1,7 +1,9 @@
 false:
+  - ./PATH.rb
   - ./bintray.rb
   - ./brew.rb
   - ./build.rb
+  - ./build_environment.rb
   - ./cask/artifact/abstract_artifact.rb
   - ./cask/artifact/abstract_flight_block.rb
   - ./cask/artifact/abstract_uninstall.rb
@@ -61,21 +63,26 @@ false:
   - ./cask/cmd/uninstall.rb
   - ./cask/cmd/upgrade.rb
   - ./cask/cmd/zap.rb
+  - ./cask/config.rb
   - ./cask/download.rb
   - ./cask/dsl.rb
+  - ./cask/dsl/appcast.rb
   - ./cask/dsl/base.rb
   - ./cask/dsl/caveats.rb
   - ./cask/dsl/conflicts_with.rb
+  - ./cask/dsl/container.rb
   - ./cask/dsl/depends_on.rb
   - ./cask/dsl/postflight.rb
   - ./cask/dsl/preflight.rb
   - ./cask/dsl/uninstall_preflight.rb
+  - ./cask/dsl/version.rb
   - ./cask/exceptions.rb
   - ./cask/installer.rb
   - ./cask/metadata.rb
   - ./cask/pkg.rb
   - ./cask/quarantine.rb
   - ./cask/staged.rb
+  - ./cask/topological_hash.rb
   - ./cask/utils.rb
   - ./cask/verify.rb
   - ./caveats.rb
@@ -89,6 +96,7 @@ false:
   - ./cmd/--repository.rb
   - ./cmd/--version.rb
   - ./cmd/analytics.rb
+  - ./cmd/cask.rb
   - ./cmd/cleanup.rb
   - ./cmd/commands.rb
   - ./cmd/config.rb
@@ -125,6 +133,8 @@ false:
   - ./cmd/upgrade.rb
   - ./cmd/uses.rb
   - ./commands.rb
+  - ./compat/language/haskell.rb
+  - ./compat/language/java.rb
   - ./compat/language/python.rb
   - ./cxxstdlib.rb
   - ./debrew.rb
@@ -177,17 +187,27 @@ false:
   - ./extend/ENV/shared.rb
   - ./extend/ENV/std.rb
   - ./extend/ENV/super.rb
+  - ./extend/git_repository.rb
+  - ./extend/hash_validator.rb
+  - ./extend/io.rb
+  - ./extend/module.rb
   - ./extend/os/linux/dependency_collector.rb
+  - ./extend/os/linux/diagnostic.rb
+  - ./extend/os/linux/extend/ENV/shared.rb
   - ./extend/os/linux/extend/ENV/std.rb
   - ./extend/os/linux/extend/ENV/super.rb
+  - ./extend/os/linux/formula_cellar_checks.rb
   - ./extend/os/linux/hardware/cpu.rb
   - ./extend/os/linux/install.rb
   - ./extend/os/linux/keg_relocate.rb
+  - ./extend/os/linux/linkage_checker.rb
   - ./extend/os/linux/readall.rb
+  - ./extend/os/linux/requirements/java_requirement.rb
   - ./extend/os/linux/requirements/osxfuse_requirement.rb
   - ./extend/os/linux/system_config.rb
   - ./extend/os/linux/tap.rb
   - ./extend/os/linux/utils/analytics.rb
+  - ./extend/os/mac/caveats.rb
   - ./extend/os/mac/dependency_collector.rb
   - ./extend/os/mac/development_tools.rb
   - ./extend/os/mac/diagnostic.rb
@@ -197,7 +217,12 @@ false:
   - ./extend/os/mac/extend/pathname.rb
   - ./extend/os/mac/formula_cellar_checks.rb
   - ./extend/os/mac/hardware.rb
+  - ./extend/os/mac/hardware/cpu.rb
+  - ./extend/os/mac/keg_relocate.rb
+  - ./extend/os/mac/language/java.rb
   - ./extend/os/mac/missing_formula.rb
+  - ./extend/os/mac/requirements/java_requirement.rb
+  - ./extend/os/mac/requirements/osxfuse_requirement.rb
   - ./extend/os/mac/requirements/x11_requirement.rb
   - ./extend/os/mac/search.rb
   - ./extend/os/mac/software_spec.rb
@@ -205,6 +230,8 @@ false:
   - ./extend/os/mac/unpack_strategy/zip.rb
   - ./extend/os/mac/utils/bottles.rb
   - ./extend/pathname.rb
+  - ./extend/predicable.rb
+  - ./extend/string.rb
   - ./formula.rb
   - ./formula_assertions.rb
   - ./formula_cellar_checks.rb
@@ -216,13 +243,19 @@ false:
   - ./global.rb
   - ./install.rb
   - ./keg.rb
+  - ./keg_relocate.rb
   - ./language/node.rb
   - ./language/python.rb
   - ./linkage_checker.rb
   - ./lock_file.rb
   - ./migrator.rb
   - ./missing_formula.rb
+  - ./mktemp.rb
+  - ./options.rb
+  - ./os/linux/elf.rb
+  - ./os/linux/global.rb
   - ./os/mac.rb
+  - ./os/mac/architecture_list.rb
   - ./os/mac/keg.rb
   - ./os/mac/mach.rb
   - ./os/mac/sdk.rb
@@ -230,17 +263,30 @@ false:
   - ./os/mac/xcode.rb
   - ./os/mac/xquartz.rb
   - ./patch.rb
+  - ./pkg_version.rb
   - ./postinstall.rb
   - ./readall.rb
   - ./reinstall.rb
   - ./requirement.rb
+  - ./requirements/arch_requirement.rb
+  - ./requirements/codesign_requirement.rb
   - ./requirements/java_requirement.rb
+  - ./requirements/linux_requirement.rb
   - ./requirements/macos_requirement.rb
+  - ./requirements/tuntap_requirement.rb
+  - ./requirements/x11_requirement.rb
   - ./requirements/xcode_requirement.rb
   - ./resource.rb
   - ./rubocops/cask/ast/cask_block.rb
   - ./rubocops/cask/extend/node.rb
+  - ./rubocops/cask/homepage_matches_url.rb
+  - ./rubocops/cask/homepage_url_trailing_slash.rb
+  - ./rubocops/cask/mixin/cask_help.rb
+  - ./rubocops/cask/mixin/on_desc_stanza.rb
+  - ./rubocops/cask/mixin/on_homepage_stanza.rb
+  - ./rubocops/cask/no_dsl_version.rb
   - ./rubocops/cask/stanza_grouping.rb
+  - ./rubocops/cask/stanza_order.rb
   - ./rubocops/caveats.rb
   - ./rubocops/checksum.rb
   - ./rubocops/class.rb
@@ -256,12 +302,15 @@ false:
   - ./rubocops/lines.rb
   - ./rubocops/options.rb
   - ./rubocops/patches.rb
+  - ./rubocops/shared/desc_helper.rb
+  - ./rubocops/shared/helper_functions.rb
   - ./rubocops/text.rb
   - ./rubocops/urls.rb
   - ./rubocops/uses_from_macos.rb
   - ./rubocops/version.rb
   - ./sandbox.rb
   - ./search.rb
+  - ./searchable.rb
   - ./software_spec.rb
   - ./style.rb
   - ./system_command.rb
@@ -270,8 +319,13 @@ false:
   - ./tap.rb
   - ./test.rb
   - ./test/ENV_spec.rb
+  - ./test/PATH_spec.rb
+  - ./test/bash_spec.rb
   - ./test/bintray_spec.rb
-  - ./test/cask_dependent_spec.rb
+  - ./test/bottle_filename_spec.rb
+  - ./test/build_environment_spec.rb
+  - ./test/build_options_spec.rb
+  - ./test/cache_store_spec.rb
   - ./test/cask/artifact/alt_target_spec.rb
   - ./test/cask/artifact/app_spec.rb
   - ./test/cask/artifact/binary_spec.rb
@@ -289,6 +343,8 @@ false:
   - ./test/cask/artifact/zap_spec.rb
   - ./test/cask/audit_spec.rb
   - ./test/cask/cask_loader/from__path_loader_spec.rb
+  - ./test/cask/cask_loader/from_content_loader_spec.rb
+  - ./test/cask/cask_loader/from_uri_loader_spec.rb
   - ./test/cask/cask_spec.rb
   - ./test/cask/cmd/audit_spec.rb
   - ./test/cask/cmd/cache_spec.rb
@@ -304,229 +360,52 @@ false:
   - ./test/cask/cmd/list_spec.rb
   - ./test/cask/cmd/outdated_spec.rb
   - ./test/cask/cmd/reinstall_spec.rb
+  - ./test/cask/cmd/shared_examples/invalid_option.rb
   - ./test/cask/cmd/shared_examples/requires_cask_token.rb
   - ./test/cask/cmd/style_spec.rb
   - ./test/cask/cmd/uninstall_spec.rb
   - ./test/cask/cmd/upgrade_spec.rb
   - ./test/cask/cmd/zap_spec.rb
   - ./test/cask/cmd_spec.rb
+  - ./test/cask/config_spec.rb
   - ./test/cask/conflicts_with_spec.rb
+  - ./test/cask/denylist_spec.rb
   - ./test/cask/depends_on_spec.rb
+  - ./test/cask/dsl/appcast_spec.rb
   - ./test/cask/dsl/caveats_spec.rb
   - ./test/cask/dsl/postflight_spec.rb
   - ./test/cask/dsl/preflight_spec.rb
+  - ./test/cask/dsl/shared_examples/base.rb
   - ./test/cask/dsl/shared_examples/staged.rb
   - ./test/cask/dsl/uninstall_postflight_spec.rb
   - ./test/cask/dsl/uninstall_preflight_spec.rb
+  - ./test/cask/dsl/version_spec.rb
   - ./test/cask/dsl_spec.rb
   - ./test/cask/installer_spec.rb
   - ./test/cask/macos_spec.rb
   - ./test/cask/pkg_spec.rb
   - ./test/cask/quarantine_spec.rb
   - ./test/cask/verify_spec.rb
-  - ./test/checksum_verification_spec.rb
-  - ./test/cleanup_spec.rb
-  - ./test/cli/parser_spec.rb
-  - ./test/cmd/--version_spec.rb
-  - ./test/cmd/config_spec.rb
-  - ./test/cmd/log_spec.rb
-  - ./test/cmd/readall_spec.rb
-  - ./test/cmd/uninstall_spec.rb
-  - ./test/cmd/update-report_spec.rb
-  - ./test/commands_spec.rb
-  - ./test/compiler_selector_spec.rb
-  - ./test/dependencies_spec.rb
-  - ./test/dependency_collector_spec.rb
-  - ./test/dependency_expansion_spec.rb
-  - ./test/dependency_spec.rb
-  - ./test/description_cache_store_spec.rb
-  - ./test/dev-cmd/audit_spec.rb
-  - ./test/dev-cmd/create_spec.rb
-  - ./test/dev-cmd/extract_spec.rb
-  - ./test/dev-cmd/update-license-data_spec.rb
-  - ./test/diagnostic_checks_spec.rb
-  - ./test/download_strategies_spec.rb
-  - ./test/error_during_execution_spec.rb
-  - ./test/exceptions_spec.rb
-  - ./test/formula_info_spec.rb
-  - ./test/formula_installer_bottle_spec.rb
-  - ./test/formula_installer_spec.rb
-  - ./test/formula_spec.rb
-  - ./test/formula_validation_spec.rb
-  - ./test/formulary_spec.rb
-  - ./test/keg_spec.rb
-  - ./test/language/perl/shebang_spec.rb
-  - ./test/language/python_spec.rb
-  - ./test/lock_file_spec.rb
-  - ./test/migrator_spec.rb
-  - ./test/missing_formula_spec.rb
-  - ./test/os/linux/dependency_collector_spec.rb
-  - ./test/os/mac/diagnostic_spec.rb
-  - ./test/os/mac/formula_spec.rb
-  - ./test/os/mac/software_spec_spec.rb
-  - ./test/os/mac/version_spec.rb
-  - ./test/os/mac_spec.rb
-  - ./test/patch_spec.rb
-  - ./test/patching_spec.rb
-  - ./test/requirements/macos_requirement_spec.rb
-  - ./test/resource_spec.rb
-  - ./test/rubocops/files_spec.rb
-  - ./test/rubocops/keg_only_spec.rb
-  - ./test/rubocops/urls_spec.rb
-  - ./test/sandbox_spec.rb
-  - ./test/search_spec.rb
-  - ./test/software_spec_spec.rb
-  - ./test/spec_helper.rb
-  - ./test/support/fixtures/cask/Casks/compat/with-depends-on-macos-string.rb
-  - ./test/support/fixtures/cask/Casks/with-depends-on-macos-array.rb
-  - ./test/support/fixtures/cask/Casks/with-depends-on-macos-failure.rb
-  - ./test/support/fixtures/cask/Casks/with-depends-on-macos-symbol.rb
-  - ./test/support/fixtures/testball_bottle.rb
-  - ./test/support/helper/cask/fake_system_command.rb
-  - ./test/support/helper/cask/install_helper.rb
-  - ./test/support/helper/cask/never_sudo_system_command.rb
-  - ./test/support/helper/formula.rb
-  - ./test/support/helper/integration_mocks.rb
-  - ./test/support/helper/spec/shared_context/homebrew_cask.rb
-  - ./test/support/helper/spec/shared_context/integration_test.rb
-  - ./test/support/no_seed_progress_formatter.rb
-  - ./test/system_command_spec.rb
-  - ./test/tab_spec.rb
-  - ./test/tap_spec.rb
-  - ./test/unpack_strategy/dmg_spec.rb
-  - ./test/unpack_strategy/jar_spec.rb
-  - ./test/unpack_strategy/subversion_spec.rb
-  - ./test/unpack_strategy/xar_spec.rb
-  - ./test/utils/analytics_spec.rb
-  - ./test/utils/bottles/bintray_spec.rb
-  - ./test/utils/bottles/bottles_spec.rb
-  - ./test/utils/bottles/collector_spec.rb
-  - ./test/utils/fork_spec.rb
-  - ./test/utils/user_spec.rb
-  - ./test/utils_spec.rb
-  - ./test/x11_requirement_spec.rb
-  - ./unpack_strategy.rb
-  - ./unpack_strategy/air.rb
-  - ./unpack_strategy/bazaar.rb
-  - ./unpack_strategy/bzip2.rb
-  - ./unpack_strategy/cab.rb
-  - ./unpack_strategy/compress.rb
-  - ./unpack_strategy/cvs.rb
-  - ./unpack_strategy/directory.rb
-  - ./unpack_strategy/dmg.rb
-  - ./unpack_strategy/executable.rb
-  - ./unpack_strategy/fossil.rb
-  - ./unpack_strategy/generic_unar.rb
-  - ./unpack_strategy/git.rb
-  - ./unpack_strategy/gzip.rb
-  - ./unpack_strategy/jar.rb
-  - ./unpack_strategy/lha.rb
-  - ./unpack_strategy/lua_rock.rb
-  - ./unpack_strategy/lzip.rb
-  - ./unpack_strategy/lzma.rb
-  - ./unpack_strategy/mercurial.rb
-  - ./unpack_strategy/microsoft_office_xml.rb
-  - ./unpack_strategy/otf.rb
-  - ./unpack_strategy/p7zip.rb
-  - ./unpack_strategy/pax.rb
-  - ./unpack_strategy/pkg.rb
-  - ./unpack_strategy/rar.rb
-  - ./unpack_strategy/self_extracting_executable.rb
-  - ./unpack_strategy/sit.rb
-  - ./unpack_strategy/subversion.rb
-  - ./unpack_strategy/tar.rb
-  - ./unpack_strategy/ttf.rb
-  - ./unpack_strategy/xar.rb
-  - ./unpack_strategy/xz.rb
-  - ./unpack_strategy/zip.rb
-  - ./upgrade.rb
-  - ./utils.rb
-  - ./utils/analytics.rb
-  - ./utils/curl.rb
-  - ./utils/fork.rb
-  - ./utils/formatter.rb
-  - ./utils/git.rb
-  - ./utils/github.rb
-  - ./utils/popen.rb
-
-false:
-  - ./PATH.rb
-  - ./build_environment.rb
-  - ./cask/config.rb
-  - ./cask/dsl/appcast.rb
-  - ./cask/dsl/container.rb
-  - ./cask/dsl/version.rb
-  - ./cask/topological_hash.rb
-  - ./cmd/cask.rb
-  - ./compat/language/haskell.rb
-  - ./compat/language/java.rb
-  - ./extend/git_repository.rb
-  - ./extend/hash_validator.rb
-  - ./extend/io.rb
-  - ./extend/module.rb
-  - ./extend/os/linux/diagnostic.rb
-  - ./extend/os/linux/extend/ENV/shared.rb
-  - ./extend/os/linux/formula_cellar_checks.rb
-  - ./extend/os/linux/linkage_checker.rb
-  - ./extend/os/linux/requirements/java_requirement.rb
-  - ./extend/os/mac/caveats.rb
-  - ./extend/os/mac/hardware/cpu.rb
-  - ./extend/os/mac/keg_relocate.rb
-  - ./extend/os/mac/language/java.rb
-  - ./extend/os/mac/requirements/java_requirement.rb
-  - ./extend/os/mac/requirements/osxfuse_requirement.rb
-  - ./extend/predicable.rb
-  - ./extend/string.rb
-  - ./keg_relocate.rb
-  - ./mktemp.rb
-  - ./options.rb
-  - ./os/linux/elf.rb
-  - ./os/linux/global.rb
-  - ./os/mac/architecture_list.rb
-  - ./pkg_version.rb
-  - ./requirements/arch_requirement.rb
-  - ./requirements/codesign_requirement.rb
-  - ./requirements/linux_requirement.rb
-  - ./requirements/tuntap_requirement.rb
-  - ./requirements/x11_requirement.rb
-  - ./rubocops/cask/homepage_matches_url.rb
-  - ./rubocops/cask/homepage_url_trailing_slash.rb
-  - ./rubocops/cask/mixin/cask_help.rb
-  - ./rubocops/cask/mixin/on_desc_stanza.rb
-  - ./rubocops/cask/mixin/on_homepage_stanza.rb
-  - ./rubocops/cask/no_dsl_version.rb
-  - ./rubocops/cask/stanza_order.rb
-  - ./rubocops/shared/desc_helper.rb
-  - ./rubocops/shared/helper_functions.rb
-  - ./searchable.rb
-  - ./test/PATH_spec.rb
-  - ./test/bash_spec.rb
-  - ./test/bottle_filename_spec.rb
-  - ./test/build_environment_spec.rb
-  - ./test/build_options_spec.rb
-  - ./test/cache_store_spec.rb
-  - ./test/cask/cask_loader/from_content_loader_spec.rb
-  - ./test/cask/cask_loader/from_uri_loader_spec.rb
-  - ./test/cask/cmd/shared_examples/invalid_option.rb
-  - ./test/cask/config_spec.rb
-  - ./test/cask/denylist_spec.rb
-  - ./test/cask/dsl/appcast_spec.rb
-  - ./test/cask/dsl/shared_examples/base.rb
-  - ./test/cask/dsl/version_spec.rb
+  - ./test/cask_dependent_spec.rb
   - ./test/caveats_spec.rb
   - ./test/checksum_spec.rb
+  - ./test/checksum_verification_spec.rb
   - ./test/cleaner_spec.rb
+  - ./test/cleanup_spec.rb
+  - ./test/cli/parser_spec.rb
   - ./test/cmd/--cache_spec.rb
   - ./test/cmd/--caskroom_spec.rb
   - ./test/cmd/--cellar_spec.rb
   - ./test/cmd/--env_spec.rb
   - ./test/cmd/--prefix_spec.rb
   - ./test/cmd/--repository_spec.rb
+  - ./test/cmd/--version_spec.rb
   - ./test/cmd/analytics_spec.rb
   - ./test/cmd/bundle_spec.rb
   - ./test/cmd/cask_spec.rb
   - ./test/cmd/cleanup_spec.rb
   - ./test/cmd/commands_spec.rb
+  - ./test/cmd/config_spec.rb
   - ./test/cmd/custom-external-command_spec.rb
   - ./test/cmd/deps_spec.rb
   - ./test/cmd/desc_spec.rb
@@ -540,12 +419,14 @@ false:
   - ./test/cmd/leaves_spec.rb
   - ./test/cmd/link_spec.rb
   - ./test/cmd/list_spec.rb
+  - ./test/cmd/log_spec.rb
   - ./test/cmd/migrate_spec.rb
   - ./test/cmd/missing_spec.rb
   - ./test/cmd/options_spec.rb
   - ./test/cmd/outdated_spec.rb
   - ./test/cmd/pin_spec.rb
   - ./test/cmd/postinstall_spec.rb
+  - ./test/cmd/readall_spec.rb
   - ./test/cmd/reinstall_spec.rb
   - ./test/cmd/search_spec.rb
   - ./test/cmd/services_spec.rb
@@ -553,24 +434,36 @@ false:
   - ./test/cmd/switch_spec.rb
   - ./test/cmd/tap-info_spec.rb
   - ./test/cmd/tap_spec.rb
+  - ./test/cmd/uninstall_spec.rb
   - ./test/cmd/unlink_spec.rb
   - ./test/cmd/unpin_spec.rb
   - ./test/cmd/untap_spec.rb
+  - ./test/cmd/update-report_spec.rb
   - ./test/cmd/upgrade_spec.rb
   - ./test/cmd/uses_spec.rb
+  - ./test/commands_spec.rb
   - ./test/compiler_failure_spec.rb
+  - ./test/compiler_selector_spec.rb
   - ./test/cxxstdlib_spec.rb
   - ./test/dependable_spec.rb
   - ./test/dependencies_helpers_spec.rb
+  - ./test/dependencies_spec.rb
+  - ./test/dependency_collector_spec.rb
+  - ./test/dependency_expansion_spec.rb
+  - ./test/dependency_spec.rb
+  - ./test/description_cache_store_spec.rb
   - ./test/descriptions_spec.rb
+  - ./test/dev-cmd/audit_spec.rb
   - ./test/dev-cmd/bottle_spec.rb
   - ./test/dev-cmd/bump-cask-pr_spec.rb
   - ./test/dev-cmd/bump-formula-pr_spec.rb
   - ./test/dev-cmd/bump-revision_spec.rb
   - ./test/dev-cmd/cat_spec.rb
   - ./test/dev-cmd/command_spec.rb
+  - ./test/dev-cmd/create_spec.rb
   - ./test/dev-cmd/diy_spec.rb
   - ./test/dev-cmd/edit_spec.rb
+  - ./test/dev-cmd/extract_spec.rb
   - ./test/dev-cmd/formula_spec.rb
   - ./test/dev-cmd/irb_spec.rb
   - ./test/dev-cmd/linkage_spec.rb
@@ -589,40 +482,67 @@ false:
   - ./test/dev-cmd/tap-new_spec.rb
   - ./test/dev-cmd/test_spec.rb
   - ./test/dev-cmd/unpack_spec.rb
+  - ./test/dev-cmd/update-license-data_spec.rb
   - ./test/dev-cmd/vendor-gems_spec.rb
+  - ./test/diagnostic_checks_spec.rb
+  - ./test/download_strategies_spec.rb
   - ./test/env_config_spec.rb
+  - ./test/error_during_execution_spec.rb
+  - ./test/exceptions_spec.rb
   - ./test/formatter_spec.rb
   - ./test/formula_free_port_spec.rb
+  - ./test/formula_info_spec.rb
+  - ./test/formula_installer_bottle_spec.rb
+  - ./test/formula_installer_spec.rb
   - ./test/formula_pin_spec.rb
+  - ./test/formula_spec.rb
   - ./test/formula_spec_selection_spec.rb
   - ./test/formula_support_spec.rb
+  - ./test/formula_validation_spec.rb
+  - ./test/formulary_spec.rb
   - ./test/hardware/cpu_spec.rb
   - ./test/inreplace_spec.rb
   - ./test/java_requirement_spec.rb
+  - ./test/keg_spec.rb
   - ./test/language/go_spec.rb
   - ./test/language/java_spec.rb
   - ./test/language/node_spec.rb
+  - ./test/language/perl/shebang_spec.rb
+  - ./test/language/python_spec.rb
   - ./test/lazy_object_spec.rb
   - ./test/linkage_cache_store_spec.rb
   - ./test/livecheck_spec.rb
   - ./test/locale_spec.rb
+  - ./test/lock_file_spec.rb
   - ./test/messages_spec.rb
+  - ./test/migrator_spec.rb
+  - ./test/missing_formula_spec.rb
   - ./test/options_spec.rb
+  - ./test/os/linux/dependency_collector_spec.rb
   - ./test/os/linux/diagnostic_spec.rb
   - ./test/os/linux/formula_spec.rb
   - ./test/os/linux/pathname_spec.rb
   - ./test/os/mac/dependency_collector_spec.rb
+  - ./test/os/mac/diagnostic_spec.rb
+  - ./test/os/mac/formula_spec.rb
   - ./test/os/mac/java_requirement_spec.rb
   - ./test/os/mac/keg_spec.rb
   - ./test/os/mac/mach_spec.rb
+  - ./test/os/mac/software_spec_spec.rb
+  - ./test/os/mac/version_spec.rb
+  - ./test/os/mac_spec.rb
+  - ./test/patch_spec.rb
+  - ./test/patching_spec.rb
   - ./test/pathname_spec.rb
   - ./test/pkg_version_spec.rb
   - ./test/requirement_spec.rb
   - ./test/requirements/codesign_requirement_spec.rb
   - ./test/requirements/java_requirement_spec.rb
   - ./test/requirements/linux_requirement_spec.rb
+  - ./test/requirements/macos_requirement_spec.rb
   - ./test/requirements/osxfuse_requirement_spec.rb
   - ./test/requirements_spec.rb
+  - ./test/resource_spec.rb
   - ./test/rubocop_spec.rb
   - ./test/rubocops/cask/desc_spec.rb
   - ./test/rubocops/cask/homepage_matches_url_spec.rb
@@ -638,15 +558,22 @@ false:
   - ./test/rubocops/components_redundancy_spec.rb
   - ./test/rubocops/conflicts_spec.rb
   - ./test/rubocops/dependency_order_spec.rb
+  - ./test/rubocops/files_spec.rb
   - ./test/rubocops/formula_desc_spec.rb
   - ./test/rubocops/homepage_spec.rb
+  - ./test/rubocops/keg_only_spec.rb
   - ./test/rubocops/lines_spec.rb
   - ./test/rubocops/options_spec.rb
   - ./test/rubocops/patches_spec.rb
   - ./test/rubocops/text_spec.rb
+  - ./test/rubocops/urls_spec.rb
   - ./test/rubocops/uses_from_macos_spec.rb
   - ./test/rubocops/version_spec.rb
+  - ./test/sandbox_spec.rb
+  - ./test/search_spec.rb
   - ./test/searchable_spec.rb
+  - ./test/software_spec_spec.rb
+  - ./test/spec_helper.rb
   - ./test/string_spec.rb
   - ./test/style_spec.rb
   - ./test/support/fixtures/cask/Casks/adobe-air.rb
@@ -657,6 +584,7 @@ false:
   - ./test/support/fixtures/cask/Casks/bad-checksum2.rb
   - ./test/support/fixtures/cask/Casks/basic-cask.rb
   - ./test/support/fixtures/cask/Casks/booby-trap.rb
+  - ./test/support/fixtures/cask/Casks/compat/with-depends-on-macos-string.rb
   - ./test/support/fixtures/cask/Casks/container-7z.rb
   - ./test/support/fixtures/cask/Casks/container-bzip2.rb
   - ./test/support/fixtures/cask/Casks/container-cab.rb
@@ -745,7 +673,10 @@ false:
   - ./test/support/fixtures/cask/Casks/with-depends-on-cask.rb
   - ./test/support/fixtures/cask/Casks/with-depends-on-formula-multiple.rb
   - ./test/support/fixtures/cask/Casks/with-depends-on-formula.rb
+  - ./test/support/fixtures/cask/Casks/with-depends-on-macos-array.rb
   - ./test/support/fixtures/cask/Casks/with-depends-on-macos-comparison.rb
+  - ./test/support/fixtures/cask/Casks/with-depends-on-macos-failure.rb
+  - ./test/support/fixtures/cask/Casks/with-depends-on-macos-symbol.rb
   - ./test/support/fixtures/cask/Casks/with-depends-on-x11-false.rb
   - ./test/support/fixtures/cask/Casks/with-depends-on-x11.rb
   - ./test/support/fixtures/cask/Casks/with-embedded-binary.rb
@@ -797,44 +728,111 @@ false:
   - ./test/support/fixtures/cask/Casks/without-languages.rb
   - ./test/support/fixtures/failball.rb
   - ./test/support/fixtures/testball.rb
+  - ./test/support/fixtures/testball_bottle.rb
   - ./test/support/fixtures/third-party/Casks/pharo.rb
   - ./test/support/fixtures/third-party/Casks/third-party-cask.rb
   - ./test/support/github_formatter.rb
+  - ./test/support/helper/cask/fake_system_command.rb
+  - ./test/support/helper/cask/install_helper.rb
+  - ./test/support/helper/cask/never_sudo_system_command.rb
+  - ./test/support/helper/formula.rb
+  - ./test/support/helper/integration_mocks.rb
   - ./test/support/helper/mktmpdir.rb
   - ./test/support/helper/output_as_tty.rb
+  - ./test/support/helper/spec/shared_context/homebrew_cask.rb
+  - ./test/support/helper/spec/shared_context/integration_test.rb
   - ./test/support/helper/spec/shared_examples/formulae_exist.rb
+  - ./test/support/no_seed_progress_formatter.rb
   - ./test/system_command_result_spec.rb
+  - ./test/system_command_spec.rb
+  - ./test/tab_spec.rb
+  - ./test/tap_spec.rb
   - ./test/unpack_strategy/bazaar_spec.rb
   - ./test/unpack_strategy/bzip2_spec.rb
   - ./test/unpack_strategy/cvs_spec.rb
   - ./test/unpack_strategy/directory_spec.rb
+  - ./test/unpack_strategy/dmg_spec.rb
   - ./test/unpack_strategy/git_spec.rb
   - ./test/unpack_strategy/gzip_spec.rb
+  - ./test/unpack_strategy/jar_spec.rb
   - ./test/unpack_strategy/lha_spec.rb
   - ./test/unpack_strategy/lzip_spec.rb
   - ./test/unpack_strategy/mercurial_spec.rb
   - ./test/unpack_strategy/p7zip_spec.rb
   - ./test/unpack_strategy/rar_spec.rb
   - ./test/unpack_strategy/shared_examples.rb
+  - ./test/unpack_strategy/subversion_spec.rb
   - ./test/unpack_strategy/tar_spec.rb
   - ./test/unpack_strategy/uncompressed_spec.rb
+  - ./test/unpack_strategy/xar_spec.rb
   - ./test/unpack_strategy/xz_spec.rb
   - ./test/unpack_strategy/zip_spec.rb
   - ./test/unpack_strategy_spec.rb
+  - ./test/utils/analytics_spec.rb
+  - ./test/utils/bottles/bintray_spec.rb
+  - ./test/utils/bottles/bottles_spec.rb
+  - ./test/utils/bottles/collector_spec.rb
   - ./test/utils/curl_spec.rb
+  - ./test/utils/fork_spec.rb
   - ./test/utils/git_spec.rb
-  - ./test/utils/github_spec.rb
   - ./test/utils/github/actions_spec.rb
+  - ./test/utils/github_spec.rb
   - ./test/utils/popen_spec.rb
   - ./test/utils/shell_spec.rb
   - ./test/utils/spdx_spec.rb
   - ./test/utils/svn_spec.rb
   - ./test/utils/tar_spec.rb
   - ./test/utils/tty_spec.rb
+  - ./test/utils/user_spec.rb
+  - ./test/utils_spec.rb
   - ./test/version_spec.rb
+  - ./test/x11_requirement_spec.rb
+  - ./unpack_strategy.rb
+  - ./unpack_strategy/air.rb
+  - ./unpack_strategy/bazaar.rb
+  - ./unpack_strategy/bzip2.rb
+  - ./unpack_strategy/cab.rb
+  - ./unpack_strategy/compress.rb
+  - ./unpack_strategy/cvs.rb
+  - ./unpack_strategy/directory.rb
+  - ./unpack_strategy/dmg.rb
+  - ./unpack_strategy/executable.rb
+  - ./unpack_strategy/fossil.rb
+  - ./unpack_strategy/generic_unar.rb
+  - ./unpack_strategy/git.rb
+  - ./unpack_strategy/gzip.rb
+  - ./unpack_strategy/jar.rb
+  - ./unpack_strategy/lha.rb
+  - ./unpack_strategy/lua_rock.rb
+  - ./unpack_strategy/lzip.rb
+  - ./unpack_strategy/lzma.rb
+  - ./unpack_strategy/mercurial.rb
+  - ./unpack_strategy/microsoft_office_xml.rb
+  - ./unpack_strategy/otf.rb
+  - ./unpack_strategy/p7zip.rb
+  - ./unpack_strategy/pax.rb
+  - ./unpack_strategy/pkg.rb
+  - ./unpack_strategy/rar.rb
+  - ./unpack_strategy/self_extracting_executable.rb
+  - ./unpack_strategy/sit.rb
+  - ./unpack_strategy/subversion.rb
+  - ./unpack_strategy/tar.rb
+  - ./unpack_strategy/ttf.rb
   - ./unpack_strategy/uncompressed.rb
+  - ./unpack_strategy/xar.rb
+  - ./unpack_strategy/xz.rb
+  - ./unpack_strategy/zip.rb
+  - ./upgrade.rb
+  - ./utils.rb
+  - ./utils/analytics.rb
+  - ./utils/curl.rb
+  - ./utils/fork.rb
+  - ./utils/formatter.rb
   - ./utils/gems.rb
+  - ./utils/git.rb
+  - ./utils/github.rb
   - ./utils/github/actions.rb
+  - ./utils/popen.rb
   - ./utils/pypi.rb
   - ./version.rb
 
