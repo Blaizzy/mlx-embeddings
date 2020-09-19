@@ -65,7 +65,7 @@ module RuboCop
         problem "Description shouldn't start with the #{type} name." if regex_match_group(desc, /^#{name_regex}\b/i)
 
         if type == :cask &&
-           (match = regex_match_group(desc, /\b(macOS|Mac( ?OS( ?X)?)?|OS ?X)\b/i)) &&
+           (match = regex_match_group(desc, /\b(macOS|Mac( ?OS( ?X)?)?|OS ?X)(?! virtual machines?)\b/i)) &&
            match[1] != "MAC"
           problem "Description shouldn't contain the platform."
         end
