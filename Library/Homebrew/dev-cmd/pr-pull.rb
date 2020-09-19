@@ -118,19 +118,18 @@ module Homebrew
     end
   end
 
-  def determine_bump_subject(file, original_commit, path: ".", reason: nil)
-    full_path = Pathname.new(path)/file
-    formula_name = File.basename(file.chomp(".rb"))
+  def determine_bump_subject(old_contents, new_contents, formula_path, reason: nil)
+    formula_path = Pathname(formula_path)
+    formula_name = formula_path.basename.to_s.chomp(".rb")
 
     new_formula = begin
-      Formulary::FormulaLoader.new(formula_name, full_path).get_formula(:stable)
+      Formulary.from_contents(formula_name, formula_path, new_contents, :stable)
     rescue FormulaUnavailableError
-      return "#{formula_name}: delete #{reason}"
+      return "#{formula_name}: delete #{reason}".strip
     end
 
     old_formula = begin
-      old_file = Utils.popen_read "git", "-C", path, "show", "#{original_commit}:#{file}"
-      Formulary.from_contents(formula_name, full_path, old_file, :stable)
+      Formulary.from_contents(formula_name, formula_path, old_contents, :stable)
     rescue FormulaUnavailableError
       return "#{formula_name} #{new_formula.stable.version} (new formula)"
     end
@@ -138,20 +137,25 @@ module Homebrew
     if old_formula.stable.version != new_formula.stable.version
       "#{formula_name} #{new_formula.stable.version}"
     elsif old_formula.revision != new_formula.revision
-      "#{formula_name}: revision #{reason}"
+      "#{formula_name}: revision #{reason}".strip
     else
-      "#{formula_name}: #{reason || "rebuild"}"
+      "#{formula_name}: #{reason || "rebuild"}".strip
     end
   end
 
   # Cherry picks a single commit that modifies a single file.
   # Potentially rewords this commit using `determine_bump_subject`.
   def reword_formula_commit(commit, file, args:, path: ".")
-    formula_name = File.basename(file.chomp(".rb"))
-    odebug "Cherry-picking #{file}: #{commit}"
+    formula_file = Pathname.new(path) / file
+    formula_name = formula_file.basename.to_s.chomp(".rb")
+
+    odebug "Cherry-picking #{formula_file}: #{commit}"
     Utils::Git.cherry_pick!(path, commit, verbose: args.verbose?, resolve: args.resolve?)
 
-    bump_subject = determine_bump_subject(file, "HEAD^", path: path, reason: args.message).strip
+    old_formula = Utils::Git.file_at_commit(path, file, "HEAD^")
+    new_formula = Utils::Git.file_at_commit(path, file, "HEAD")
+
+    bump_subject = determine_bump_subject(old_formula, new_formula, formula_file, reason: args.message)
     message = Utils.popen_read("git", "-C", path, "log", "-1", "--pretty=%B")
     subject, body, trailers = separate_commit_message(message)
 
@@ -201,7 +205,10 @@ module Homebrew
     Utils::Git.cherry_pick!(path, "--no-commit", *commits, verbose: args.verbose?, resolve: args.resolve?)
 
     # Determine the bump subject by comparing the original state of the tree to its current state.
-    bump_subject = determine_bump_subject(file, "#{commits.first}^", path: path, reason: args.message).strip
+    formula_file = Pathname.new(path) / file
+    old_formula = Utils::Git.file_at_commit(path, file, "#{commits.first}^")
+    new_formula = File.read(formula_file)
+    bump_subject = determine_bump_subject(old_formula, new_formula, formula_file, reason: reason)
 
     # Commit with the new subject, body, and trailers.
     safe_system("git", "-C", path, "commit", "--quiet",
