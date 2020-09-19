@@ -43,6 +43,27 @@ describe Homebrew do
     it_behaves_like "parseable arguments"
   end
 
+  describe "#autosquash!" do
+    it "squashes a formula correctly" do
+      secondary_author = "Someone Else <me@example.com>"
+      (path/"Formula").mkpath
+      formula_file.write(formula)
+      cd path do
+        safe_system Utils::Git.git, "init"
+        safe_system Utils::Git.git, "add", formula_file
+        safe_system Utils::Git.git, "commit", "-m", "foo 1.0 (new formula)"
+        original_hash = `git rev-parse HEAD`.chomp
+        File.open(formula_file, "w") { |f| f.write(formula_revision) }
+        safe_system Utils::Git.git, "commit", formula_file, "-m", "revision"
+        File.open(formula_file, "w") { |f| f.write(formula_version) }
+        safe_system Utils::Git.git, "commit", formula_file, "-m", "version", "--author=#{secondary_author}"
+        described_class.autosquash!(original_hash, path: ".")
+        expect(Utils::Git.commit_message(path)).to include("foo 2.0")
+        expect(Utils::Git.commit_message(path)).to include("Co-authored-by: #{secondary_author}")
+      end
+    end
+  end
+
   describe "#signoff!" do
     it "signs off a formula" do
       (path/"Formula").mkpath

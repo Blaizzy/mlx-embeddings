@@ -150,17 +150,17 @@ module Homebrew
 
   # Cherry picks a single commit that modifies a single file.
   # Potentially rewords this commit using `determine_bump_subject`.
-  def reword_formula_commit(commit, file, args:, path: ".")
+  def reword_formula_commit(commit, file, reason: "", verbose: false, resolve: false, path: ".")
     formula_file = Pathname.new(path) / file
     formula_name = formula_file.basename.to_s.chomp(".rb")
 
     odebug "Cherry-picking #{formula_file}: #{commit}"
-    Utils::Git.cherry_pick!(path, commit, verbose: args.verbose?, resolve: args.resolve?)
+    Utils::Git.cherry_pick!(path, commit, verbose: verbose, resolve: resolve)
 
     old_formula = Utils::Git.file_at_commit(path, file, "HEAD^")
     new_formula = Utils::Git.file_at_commit(path, file, "HEAD")
 
-    bump_subject = determine_bump_subject(old_formula, new_formula, formula_file, reason: args.message)
+    bump_subject = determine_bump_subject(old_formula, new_formula, formula_file, reason: reason).strip
     subject, body, trailers = separate_commit_message(Utils::Git.commit_message(path))
 
     if subject != bump_subject && !subject.start_with?("#{formula_name}:")
@@ -175,7 +175,7 @@ module Homebrew
   # Cherry picks multiple commits that each modify a single file.
   # Words the commit according to `determine_bump_subject` with the body
   # corresponding to all the original commit messages combined.
-  def squash_formula_commits(commits, file, args:, path: ".")
+  def squash_formula_commits(commits, file, reason: "", verbose: false, resolve: false, path: ".")
     odebug "Squashing #{file}: #{commits.join " "}"
 
     # Format commit messages into something similar to `git fmt-merge-message`.
@@ -205,7 +205,7 @@ module Homebrew
     trailers = [trailers + co_author_trailers].flatten.uniq.compact
 
     # Apply the patch series but don't commit anything yet.
-    Utils::Git.cherry_pick!(path, "--no-commit", *commits, verbose: args.verbose?, resolve: args.resolve?)
+    Utils::Git.cherry_pick!(path, "--no-commit", *commits, verbose: verbose, resolve: resolve)
 
     # Determine the bump subject by comparing the original state of the tree to its current state.
     formula_file = Pathname.new(path) / file
@@ -220,11 +220,7 @@ module Homebrew
     ohai bump_subject
   end
 
-  def autosquash!(original_commit, path: ".", args: nil)
-    # Autosquash assumes we've already modified the current state of the git repository,
-    # so just exit early if we're in a dry run.
-    return if args.dry_run?
-
+  def autosquash!(original_commit, path: ".", reason: "", verbose: false, resolve: false)
     original_head = Utils.safe_popen_read("git", "-C", path, "rev-parse", "HEAD").strip
 
     commits = Utils.safe_popen_read("git", "-C", path, "rev-list",
@@ -261,13 +257,13 @@ module Homebrew
       files = commits_to_files[commit]
       if files.length == 1 && files_to_commits[files.first].length == 1
         # If there's a 1:1 mapping of commits to files, just cherry pick and (maybe) reword.
-        reword_formula_commit(commit, files.first, path: path, args: args)
+        reword_formula_commit(commit, files.first, path: path, reason: reason, verbose: verbose, resolve: resolve)
         processed_commits << commit
       elsif files.length == 1 && files_to_commits[files.first].length > 1
         # If multiple commits modify a single file, squash them down into a single commit.
         file = files.first
         commits = files_to_commits[file]
-        squash_formula_commits(commits, file, path: path, args: args)
+        squash_formula_commits(commits, file, path: path, reason: reason, verbose: verbose, resolve: resolve)
         processed_commits += commits
       else
         # We can't split commits (yet) so just raise an error.
@@ -397,7 +393,10 @@ module Homebrew
         cd dir do
           original_commit = Utils.popen_read("git", "-C", tap.path, "rev-parse", "HEAD").chomp
           cherry_pick_pr!(user, repo, pr, path: tap.path, args: args)
-          autosquash!(original_commit, path: tap.path, args: args) if args.autosquash?
+          if args.autosquash? && !args.dry_run?
+            autosquash!(original_commit, path: tap.path,
+                        verbose: args.verbose?, resolve: args.resolve?, reason: args.message)
+          end
           signoff!(tap.path, pr: pr, dry_run: args.dry_run?) unless args.clean?
 
           unless args.no_upload?
