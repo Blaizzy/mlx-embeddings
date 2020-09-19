@@ -98,22 +98,28 @@ module Homebrew
     [subject, body, trailers]
   end
 
-  def signoff!(pr, tap:, args:)
-    subject, body, trailers = separate_commit_message(Utils::Git.commit_message(tap.path))
+  def signoff!(path, pr: nil, dry_run: false)
+    subject, body, trailers = separate_commit_message(Utils::Git.commit_message(path))
 
-    # Approving reviewers also sign-off on merge.
-    trailers += GitHub.approved_reviews(tap.user, "homebrew-#{tap.repo}", pr).map do |r|
-      "Signed-off-by: #{r["name"]} <#{r["email"]}>"
-    end.join("\n")
+    if pr
+      # This is a tap pull request and approving reviewers should also sign-off.
+      tap = Tap.from_path(path)
+      trailers += GitHub.approved_reviews(tap.user, "homebrew-#{tap.repo}", pr).map do |r|
+        "Signed-off-by: #{r["name"]} <#{r["email"]}>"
+      end.join("\n")
 
-    close_message = "Closes ##{pr}."
-    body += "\n\n#{close_message}" unless body.include? close_message
-    new_message = [subject, body, trailers].join("\n\n").strip
+      # Append the close message as well, unless the commit body already includes it.
+      close_message = "Closes ##{pr}."
+      body += "\n\n#{close_message}" unless body.include? close_message
+    end
 
-    if args.dry_run?
-      puts "git commit --amend --signoff -m $message"
+    git_args = Utils::Git.git, "-C", path, "commit", "--amend", "--signoff", "--allow-empty", "--quiet",
+               "--message", subject, "--message", body, "--message", trailers
+
+    if dry_run
+      puts(*git_args)
     else
-      safe_system "git", "-C", tap.path, "commit", "--amend", "--signoff", "--allow-empty", "-q", "-m", new_message
+      safe_system(*git_args)
     end
   end
 
@@ -392,7 +398,7 @@ module Homebrew
           original_commit = Utils.popen_read("git", "-C", tap.path, "rev-parse", "HEAD").chomp
           cherry_pick_pr!(user, repo, pr, path: tap.path, args: args)
           autosquash!(original_commit, path: tap.path, args: args) if args.autosquash?
-          signoff!(pr, tap: tap, args: args) unless args.clean?
+          signoff!(tap.path, pr: pr, dry_run: args.dry_run?) unless args.clean?
 
           unless args.no_upload?
             mirror_formulae(tap, original_commit,
