@@ -552,14 +552,14 @@ class Tap
     self.class == other.class && name == other.name
   end
 
-  def self.each
+  def self.each(&block)
     return unless TAP_DIRECTORY.directory?
 
     return to_enum unless block_given?
 
     TAP_DIRECTORY.subdirs.each do |user|
       user.subdirs.each do |repo|
-        yield fetch(user.basename.to_s, repo.basename.to_s)
+        block.call fetch(user.basename.to_s, repo.basename.to_s)
       end
     end
   end

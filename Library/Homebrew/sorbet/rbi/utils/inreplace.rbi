@@ -3,9 +3,8 @@
 module Utils::Inreplace
   include Kernel
 
-  sig { params(paths: T::Array[T.untyped], before: T.nilable(String), after: T.nilable(String), audit_result: T::Boolean).void }
+  sig { params(paths: T::Array[T.untyped], before: T.nilable(String), after: T.nilable(T.any(String, Symbol)), audit_result: T::Boolean).void }
   def inreplace(paths, before = nil, after = nil, audit_result = true); end
-
 end
 
 class StringInreplaceExtension
