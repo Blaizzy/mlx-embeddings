@@ -99,8 +99,7 @@ module Homebrew
   end
 
   def signoff!(pr, tap:, args:)
-    message = Utils.popen_read "git", "-C", tap.path, "log", "-1", "--pretty=%B"
-    subject, body, trailers = separate_commit_message(message)
+    subject, body, trailers = separate_commit_message(Utils::Git.commit_message(tap.path))
 
     # Approving reviewers also sign-off on merge.
     trailers += GitHub.approved_reviews(tap.user, "homebrew-#{tap.repo}", pr).map do |r|
@@ -156,8 +155,7 @@ module Homebrew
     new_formula = Utils::Git.file_at_commit(path, file, "HEAD")
 
     bump_subject = determine_bump_subject(old_formula, new_formula, formula_file, reason: args.message)
-    message = Utils.popen_read("git", "-C", path, "log", "-1", "--pretty=%B")
-    subject, body, trailers = separate_commit_message(message)
+    subject, body, trailers = separate_commit_message(Utils::Git.commit_message(path))
 
     if subject != bump_subject && !subject.start_with?("#{formula_name}:")
       safe_system("git", "-C", path, "commit", "--amend", "-q",
@@ -182,8 +180,7 @@ module Homebrew
     messages = []
     trailers = []
     commits.each do |commit|
-      original_message = Utils.safe_popen_read("git", "-C", path, "show", "--no-patch", "--pretty=%B", commit)
-      subject, body, trailer = separate_commit_message(original_message)
+      subject, body, trailer = separate_commit_message(Utils::Git.commit_message(path, commit))
       body = body.lines.map { |line| "  #{line.strip}" }.join("\n")
       messages << "* #{subject}\n#{body}".strip
       trailers << trailer
