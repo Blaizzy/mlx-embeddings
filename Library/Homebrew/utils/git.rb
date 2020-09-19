@@ -76,9 +76,14 @@ module Utils
 
     def last_revision_of_file(repo, file, before_commit: nil)
       relative_file = Pathname(file).relative_path_from(repo)
-
       commit_hash = last_revision_commit_of_file(repo, relative_file, before_commit: before_commit)
-      Utils.popen_read(git, "-C", repo, "show", "#{commit_hash}:#{relative_file}")
+      file_at_commit(repo, file, commit_hash)
+    end
+
+    def file_at_commit(repo, file, commit)
+      relative_file = Pathname(file)
+      relative_file = relative_file.relative_path_from(repo) if relative_file.absolute?
+      Utils.popen_read(git, "-C", repo, "show", "#{commit}:#{relative_file}")
     end
 
     def ensure_installed!

@@ -68,6 +68,17 @@ describe Utils::Git do
     end
   end
 
+  describe "#file_at_commit" do
+    it "returns file contents when file exists" do
+      expect(described_class.file_at_commit(HOMEBREW_CACHE, file, file_hash1)).to eq("README")
+    end
+
+    it "returns empty when file doesn't exist" do
+      expect(described_class.file_at_commit(HOMEBREW_CACHE, "foo.txt", file_hash1)).to eq("")
+      expect(described_class.file_at_commit(HOMEBREW_CACHE, "LICENSE.txt", file_hash1)).to eq("")
+    end
+  end
+
   describe "#last_revision_commit_of_files" do
     context "when before_commit is nil" do
       it "gives last revision commit" do
