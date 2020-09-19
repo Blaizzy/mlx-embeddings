@@ -95,6 +95,19 @@ describe RuboCop::Cop::Cask::Desc do
 
     expect_no_offenses <<~RUBY
       cask 'foo' do
+        desc 'Application for managing macOS virtual machines'
+      end
+    RUBY
+
+    expect_offense <<~RUBY
+      cask 'foo' do
+        desc 'Application for managing macOS virtual machines on macOS'
+                                                                 ^^^^^ Description shouldn\'t contain the platform.
+      end
+    RUBY
+
+    expect_no_offenses <<~RUBY
+      cask 'foo' do
         desc 'MAC address changer'
       end
     RUBY
