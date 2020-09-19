@@ -18,8 +18,8 @@ issues, or reviewing user pull requests. You should also be making contributions
 to Homebrew at least once per quarter.
 
 You should watch or regularly check Homebrew/brew and/or
-Homebrew/homebrew-core. Let us know which (or both) so we can grant you commit
-access appropriately.
+Homebrew/homebrew-core and/or Homebrew/homebrew-cask. Let us know which so we 
+can grant you commit access appropriately.
 
 If you're no longer able to perform all of these tasks, please continue to
 contribute to Homebrew, but we will ask you to step down as a maintainer.
