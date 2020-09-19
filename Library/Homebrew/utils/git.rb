@@ -86,6 +86,11 @@ module Utils
       Utils.popen_read(git, "-C", repo, "show", "#{commit}:#{relative_file}")
     end
 
+    def commit_message(repo, commit = nil)
+      commit ||= "HEAD"
+      Utils.safe_popen_read(git, "-C", repo, "log", "-1", "--pretty=%B", commit, "--", err: :out).strip
+    end
+
     def ensure_installed!
       return if available?
 

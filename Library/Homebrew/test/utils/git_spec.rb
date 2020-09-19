@@ -18,26 +18,26 @@ describe Utils::Git do
 
       File.open("README.md", "w") { |f| f.write("README") }
       system git, "add", HOMEBREW_CACHE/"README.md"
-      system git, "commit", "-m", "'File added'"
+      system git, "commit", "-m", "File added"
       @h1 = `git rev-parse HEAD`
 
       File.open("README.md", "w") { |f| f.write("# README") }
       system git, "add", HOMEBREW_CACHE/"README.md"
-      system git, "commit", "-m", "'written to File'"
+      system git, "commit", "-m", "written to File"
       @h2 = `git rev-parse HEAD`
 
       File.open("LICENSE.txt", "w") { |f| f.write("LICENCE") }
       system git, "add", HOMEBREW_CACHE/"LICENSE.txt"
-      system git, "commit", "-m", "'File added'"
+      system git, "commit", "-m", "File added"
       @h3 = `git rev-parse HEAD`
 
       File.open("LICENSE.txt", "w") { |f| f.write("LICENSE") }
       system git, "add", HOMEBREW_CACHE/"LICENSE.txt"
-      system git, "commit", "-m", "'written to File'"
+      system git, "commit", "-m", "written to File"
 
       File.open("LICENSE.txt", "w") { |f| f.write("test") }
       system git, "add", HOMEBREW_CACHE/"LICENSE.txt"
-      system git, "commit", "-m", "'written to File'"
+      system git, "commit", "-m", "written to File"
       @cherry_pick_commit = `git rev-parse HEAD`
       system git, "reset", "--hard", "HEAD^"
     end
@@ -50,6 +50,19 @@ describe Utils::Git do
   let(:files_hash1) { [@h3[0..6], ["LICENSE.txt"]] }
   let(:files_hash2) { [@h2[0..6], ["README.md"]] }
   let(:cherry_pick_commit) { @cherry_pick_commit[0..6] }
+
+  describe "#commit_message" do
+    it "returns the commit message" do
+      expect(described_class.commit_message(HOMEBREW_CACHE, file_hash1)).to eq("File added")
+      expect(described_class.commit_message(HOMEBREW_CACHE, file_hash2)).to eq("written to File")
+    end
+
+    it "errors when commit doesn't exist" do
+      expect {
+        described_class.commit_message(HOMEBREW_CACHE, "bad_refspec")
+      }.to raise_error(ErrorDuringExecution, /bad revision/)
+    end
+  end
 
   describe "#cherry_pick!" do
     it "can cherry pick a commit" do
