@@ -132,7 +132,7 @@ module UnpackStrategy
         without_eula = system_command(
           "hdiutil",
           args:         [
-            "attach", "-plist", "-nobrowse", "-readonly", "-noidme",
+            "attach", "-plist", "-nobrowse", "-readonly",
             "-mountrandom", mount_dir, path
           ],
           input:        "qn\n",
@@ -159,7 +159,7 @@ module UnpackStrategy
           with_eula = system_command!(
             "hdiutil",
             args:    [
-              "attach", "-plist", "-nobrowse", "-readonly", "-noidme",
+              "attach", "-plist", "-nobrowse", "-readonly",
               "-mountrandom", mount_dir, cdr_path
             ],
             verbose: verbose,
