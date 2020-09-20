@@ -35,6 +35,7 @@
 !**/vendor/bundle/ruby/*/gems/*/lib
 !**/vendor/bundle/ruby/*/gems/rubocop-performance-*/config
 !**/vendor/bundle/ruby/*/gems/rubocop-rspec-*/config
+!**/vendor/bundle/ruby/*/gems/rubocop-sorbet-*/config
 
 # Ignore partially included gems where we don't need all files
 **/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support.rb

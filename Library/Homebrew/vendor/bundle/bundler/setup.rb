@@ -75,6 +75,7 @@ $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/unicode-display_width
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rubocop-0.92.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rubocop-performance-1.8.1/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rubocop-rspec-1.43.2/lib"
+$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rubocop-sorbet-0.5.1/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/ruby-macho-2.2.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/sorbet-static-0.5.5942-universal-darwin-19/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/sorbet-0.5.5942/lib"

@@ -114,6 +114,8 @@ GEM
       rubocop-ast (>= 0.4.0)
     rubocop-rspec (1.43.2)
       rubocop (~> 0.87)
+    rubocop-sorbet (0.5.1)
+      rubocop
     ruby-macho (2.2.0)
     ruby-progressbar (1.10.1)
     simplecov (0.19.0)
@@ -167,6 +169,7 @@ DEPENDENCIES
   rubocop
   rubocop-performance
   rubocop-rspec
+  rubocop-sorbet
   ruby-macho
   simplecov
   sorbet
