@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "delegate"
+
 require "extend/hash_validator"
 using HashValidator
 
@@ -8,7 +10,7 @@ module Cask
     # Class corresponding to the `conflicts_with` stanza.
     #
     # @api private
-    class ConflictsWith < DelegateClass(Hash)
+    class ConflictsWith < SimpleDelegator
       VALID_KEYS = [
         :formula,
         :cask,
@@ -18,12 +20,13 @@ module Cask
         :java,
       ].freeze
 
-      def initialize(**pairs)
-        pairs.assert_valid_keys!(*VALID_KEYS)
+      def initialize(**options)
+        options.assert_valid_keys!(*VALID_KEYS)
 
-        super(pairs.transform_values { |v| Set.new(Array(v)) })
+        conflicts = options.transform_values { |v| Set.new(Array(v)) }
+        conflicts.default = Set.new
 
-        self.default = Set.new
+        super(conflicts)
       end
 
       def to_json(generator)

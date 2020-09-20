@@ -1,9 +1,11 @@
 # typed: strict
 
-class User < String
-  def gui?
-  end
+class User < SimpleDelegator
+  include Kernel
 
-  def self.current
-  end
+  sig { returns(T::Boolean) }
+  def gui?; end
+
+  sig { returns(T.nilable(T.attached_class)) }
+  def self.current; end
 end
