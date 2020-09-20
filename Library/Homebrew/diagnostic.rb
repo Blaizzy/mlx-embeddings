@@ -968,9 +968,9 @@ module Homebrew
         return if result.status.success?
 
         if result.stderr.include? "ImportError: No module named pkg_resources"
-          result = system_command "/usr/bin/python", "--version"
+          result = Utils.popen_read "/usr/bin/python", "--version", err: :out
 
-          if result.stdout.include? "Python 2.7"
+          if result.include? "Python 2.7"
             <<~EOS
               Your Python installation has a broken version of setuptools.
               To fix, reinstall macOS or run 'sudo /usr/bin/python -m pip install -I setuptools'.
