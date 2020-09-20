@@ -4,6 +4,8 @@ require_relative "load_path"
 
 require "rubocop-performance"
 require "rubocop-rspec"
+require "rubocop-sorbet"
+
 require "rubocops/formula_desc"
 require "rubocops/components_order"
 require "rubocops/components_redundancy"

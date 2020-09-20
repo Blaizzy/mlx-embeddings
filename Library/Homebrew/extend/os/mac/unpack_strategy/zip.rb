@@ -2,7 +2,7 @@
 
 module UnpackStrategy
   class Zip
-    prepend Module.new {
+    module MacOSZipExtension
       def extract_to_dir(unpack_dir, basename:, verbose:)
         if merge_xattrs && contains_extended_attributes?(path)
           # We use ditto directly, because dot_clean has issues if the __MACOSX
@@ -46,6 +46,9 @@ module UnpackStrategy
           end
         end
       end
-    }
+    end
+    private_constant :MacOSZipExtension
+
+    prepend MacOSZipExtension
   end
 end
