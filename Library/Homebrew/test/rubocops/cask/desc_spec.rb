@@ -6,7 +6,7 @@ require "test/rubocops/cask/shared_examples/cask_cop"
 describe RuboCop::Cop::Cask::Desc do
   subject(:cop) { described_class.new }
 
-  it "does not start with an indefinite article" do
+  it "does not start with an article" do
     expect_no_offenses <<~RUBY
       cask "foo" do
         desc "Bar program"
@@ -16,7 +16,14 @@ describe RuboCop::Cop::Cask::Desc do
     expect_offense <<~RUBY, "/homebrew-cask/Casks/foo.rb"
       cask 'foo' do
         desc 'A bar program'
-              ^ Description shouldn\'t start with an indefinite article, i.e. \"A\".
+              ^ Description shouldn\'t start with an article.
+      end
+    RUBY
+
+    expect_offense <<~RUBY, "/homebrew-cask/Casks/foo.rb"
+      cask 'foo' do
+        desc 'The bar program'
+              ^^^ Description shouldn\'t start with an article.
       end
     RUBY
 
