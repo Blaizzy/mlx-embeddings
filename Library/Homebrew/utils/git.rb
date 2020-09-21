@@ -76,9 +76,19 @@ module Utils
 
     def last_revision_of_file(repo, file, before_commit: nil)
       relative_file = Pathname(file).relative_path_from(repo)
-
       commit_hash = last_revision_commit_of_file(repo, relative_file, before_commit: before_commit)
-      Utils.popen_read(git, "-C", repo, "show", "#{commit_hash}:#{relative_file}")
+      file_at_commit(repo, file, commit_hash)
+    end
+
+    def file_at_commit(repo, file, commit)
+      relative_file = Pathname(file)
+      relative_file = relative_file.relative_path_from(repo) if relative_file.absolute?
+      Utils.popen_read(git, "-C", repo, "show", "#{commit}:#{relative_file}")
+    end
+
+    def commit_message(repo, commit = nil)
+      commit ||= "HEAD"
+      Utils.safe_popen_read(git, "-C", repo, "log", "-1", "--pretty=%B", commit, "--", err: :out).strip
     end
 
     def ensure_installed!
@@ -118,6 +128,10 @@ module Utils
     def origin_branch(repo)
       Utils.popen_read(git, "-C", repo, "symbolic-ref", "-q", "--short",
                        "refs/remotes/origin/HEAD").chomp.presence
+    end
+
+    def current_branch(repo)
+      Utils.popen_read("git", "-C", repo, "symbolic-ref", "--short", "HEAD").chomp.presence
     end
 
     # Special case of `git cherry-pick` that permits non-verbose output and

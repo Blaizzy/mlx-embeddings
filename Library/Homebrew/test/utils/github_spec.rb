@@ -75,4 +75,11 @@ describe GitHub do
       expect(url).to eq("https://api.github.com/repos/Homebrew/homebrew-core/actions/artifacts/3557392/zip")
     end
   end
+
+  describe "::pull_request_commits", :needs_network do
+    it "gets the correct commits hashes for a pull request" do
+      hashes = %w[188606a4a9587365d930b02c98ad6857b1d00150 25a71fe1ea1558415d6496d23834dc70778ddee5]
+      expect(subject.pull_request_commits("Homebrew", "legacy-homebrew", 50678)).to eq(hashes)
+    end
+  end
 end

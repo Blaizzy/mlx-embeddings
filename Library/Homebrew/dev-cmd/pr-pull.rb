@@ -35,7 +35,7 @@ module Homebrew
              description: "Automatically reformat and reword commits in the pull request to our "\
                           "preferred format."
       switch "--branch-okay",
-             description: "Do not warn if pulling to a branch besides master (useful for testing)."
+             description: "Do not warn if pulling to a branch besides the repository default (useful for testing)."
       switch "--resolve",
              description: "When a patch fails to apply, leave in progress and allow user to resolve, "\
                           "instead of aborting."
@@ -98,39 +98,43 @@ module Homebrew
     [subject, body, trailers]
   end
 
-  def signoff!(pr, tap:, args:)
-    message = Utils.popen_read "git", "-C", tap.path, "log", "-1", "--pretty=%B"
-    subject, body, trailers = separate_commit_message(message)
+  def signoff!(path, pr: nil, dry_run: false)
+    subject, body, trailers = separate_commit_message(Utils::Git.commit_message(path))
 
-    # Approving reviewers also sign-off on merge.
-    trailers += GitHub.approved_reviews(tap.user, "homebrew-#{tap.repo}", pr).map do |r|
-      "Signed-off-by: #{r["name"]} <#{r["email"]}>"
-    end.join("\n")
+    if pr
+      # This is a tap pull request and approving reviewers should also sign-off.
+      tap = Tap.from_path(path)
+      trailers += GitHub.approved_reviews(tap.user, "homebrew-#{tap.repo}", pr).map do |r|
+        "Signed-off-by: #{r["name"]} <#{r["email"]}>"
+      end.join("\n")
 
-    close_message = "Closes ##{pr}."
-    body += "\n\n#{close_message}" unless body.include? close_message
-    new_message = [subject, body, trailers].join("\n\n").strip
+      # Append the close message as well, unless the commit body already includes it.
+      close_message = "Closes ##{pr}."
+      body += "\n\n#{close_message}" unless body.include? close_message
+    end
 
-    if args.dry_run?
-      puts "git commit --amend --signoff -m $message"
+    git_args = Utils::Git.git, "-C", path, "commit", "--amend", "--signoff", "--allow-empty", "--quiet",
+               "--message", subject, "--message", body, "--message", trailers
+
+    if dry_run
+      puts(*git_args)
     else
-      safe_system "git", "-C", tap.path, "commit", "--amend", "--signoff", "--allow-empty", "-q", "-m", new_message
+      safe_system(*git_args)
     end
   end
 
-  def determine_bump_subject(file, original_commit, path: ".", reason: nil)
-    full_path = Pathname.new(path)/file
-    formula_name = File.basename(file.chomp(".rb"))
+  def determine_bump_subject(old_contents, new_contents, formula_path, reason: nil)
+    formula_path = Pathname(formula_path)
+    formula_name = formula_path.basename.to_s.chomp(".rb")
 
     new_formula = begin
-      Formulary::FormulaLoader.new(formula_name, full_path).get_formula(:stable)
+      Formulary.from_contents(formula_name, formula_path, new_contents, :stable)
     rescue FormulaUnavailableError
-      return "#{formula_name}: delete #{reason}"
+      return "#{formula_name}: delete #{reason}".strip
     end
 
     old_formula = begin
-      old_file = Utils.popen_read "git", "-C", path, "show", "#{original_commit}:#{file}"
-      Formulary.from_contents(formula_name, full_path, old_file, :stable)
+      Formulary.from_contents(formula_name, formula_path, old_contents, :stable)
     rescue FormulaUnavailableError
       return "#{formula_name} #{new_formula.stable.version} (new formula)"
     end
@@ -138,22 +142,26 @@ module Homebrew
     if old_formula.stable.version != new_formula.stable.version
       "#{formula_name} #{new_formula.stable.version}"
     elsif old_formula.revision != new_formula.revision
-      "#{formula_name}: revision #{reason}"
+      "#{formula_name}: revision #{reason}".strip
     else
-      "#{formula_name}: #{reason || "rebuild"}"
+      "#{formula_name}: #{reason || "rebuild"}".strip
     end
   end
 
   # Cherry picks a single commit that modifies a single file.
   # Potentially rewords this commit using `determine_bump_subject`.
-  def reword_formula_commit(commit, file, args:, path: ".")
-    formula_name = File.basename(file.chomp(".rb"))
-    odebug "Cherry-picking #{file}: #{commit}"
-    Utils::Git.cherry_pick!(path, commit, verbose: args.verbose?, resolve: args.resolve?)
+  def reword_formula_commit(commit, file, reason: "", verbose: false, resolve: false, path: ".")
+    formula_file = Pathname.new(path) / file
+    formula_name = formula_file.basename.to_s.chomp(".rb")
 
-    bump_subject = determine_bump_subject(file, "HEAD^", path: path, reason: args.message).strip
-    message = Utils.popen_read("git", "-C", path, "log", "-1", "--pretty=%B")
-    subject, body, trailers = separate_commit_message(message)
+    odebug "Cherry-picking #{formula_file}: #{commit}"
+    Utils::Git.cherry_pick!(path, commit, verbose: verbose, resolve: resolve)
+
+    old_formula = Utils::Git.file_at_commit(path, file, "HEAD^")
+    new_formula = Utils::Git.file_at_commit(path, file, "HEAD")
+
+    bump_subject = determine_bump_subject(old_formula, new_formula, formula_file, reason: reason).strip
+    subject, body, trailers = separate_commit_message(Utils::Git.commit_message(path))
 
     if subject != bump_subject && !subject.start_with?("#{formula_name}:")
       safe_system("git", "-C", path, "commit", "--amend", "-q",
@@ -167,7 +175,7 @@ module Homebrew
   # Cherry picks multiple commits that each modify a single file.
   # Words the commit according to `determine_bump_subject` with the body
   # corresponding to all the original commit messages combined.
-  def squash_formula_commits(commits, file, args:, path: ".")
+  def squash_formula_commits(commits, file, reason: "", verbose: false, resolve: false, path: ".")
     odebug "Squashing #{file}: #{commits.join " "}"
 
     # Format commit messages into something similar to `git fmt-merge-message`.
@@ -178,8 +186,7 @@ module Homebrew
     messages = []
     trailers = []
     commits.each do |commit|
-      original_message = Utils.safe_popen_read("git", "-C", path, "show", "--no-patch", "--pretty=%B", commit)
-      subject, body, trailer = separate_commit_message(original_message)
+      subject, body, trailer = separate_commit_message(Utils::Git.commit_message(path, commit))
       body = body.lines.map { |line| "  #{line.strip}" }.join("\n")
       messages << "* #{subject}\n#{body}".strip
       trailers << trailer
@@ -198,10 +205,13 @@ module Homebrew
     trailers = [trailers + co_author_trailers].flatten.uniq.compact
 
     # Apply the patch series but don't commit anything yet.
-    Utils::Git.cherry_pick!(path, "--no-commit", *commits, verbose: args.verbose?, resolve: args.resolve?)
+    Utils::Git.cherry_pick!(path, "--no-commit", *commits, verbose: verbose, resolve: resolve)
 
     # Determine the bump subject by comparing the original state of the tree to its current state.
-    bump_subject = determine_bump_subject(file, "#{commits.first}^", path: path, reason: args.message).strip
+    formula_file = Pathname.new(path) / file
+    old_formula = Utils::Git.file_at_commit(path, file, "#{commits.first}^")
+    new_formula = File.read(formula_file)
+    bump_subject = determine_bump_subject(old_formula, new_formula, formula_file, reason: reason)
 
     # Commit with the new subject, body, and trailers.
     safe_system("git", "-C", path, "commit", "--quiet",
@@ -210,11 +220,7 @@ module Homebrew
     ohai bump_subject
   end
 
-  def autosquash!(original_commit, path: ".", args: nil)
-    # Autosquash assumes we've already modified the current state of the git repository,
-    # so just exit early if we're in a dry run.
-    return if args.dry_run?
-
+  def autosquash!(original_commit, path: ".", reason: "", verbose: false, resolve: false)
     original_head = Utils.safe_popen_read("git", "-C", path, "rev-parse", "HEAD").strip
 
     commits = Utils.safe_popen_read("git", "-C", path, "rev-list",
@@ -251,13 +257,13 @@ module Homebrew
       files = commits_to_files[commit]
       if files.length == 1 && files_to_commits[files.first].length == 1
         # If there's a 1:1 mapping of commits to files, just cherry pick and (maybe) reword.
-        reword_formula_commit(commit, files.first, path: path, args: args)
+        reword_formula_commit(commit, files.first, path: path, reason: reason, verbose: verbose, resolve: resolve)
         processed_commits << commit
       elsif files.length == 1 && files_to_commits[files.first].length > 1
         # If multiple commits modify a single file, squash them down into a single commit.
         file = files.first
         commits = files_to_commits[file]
-        squash_formula_commits(commits, file, path: path, args: args)
+        squash_formula_commits(commits, file, path: path, reason: reason, verbose: verbose, resolve: resolve)
         processed_commits += commits
       else
         # We can't split commits (yet) so just raise an error.
@@ -275,30 +281,20 @@ module Homebrew
     raise
   end
 
-  def cherry_pick_pr!(pr, args:, path: ".")
+  def cherry_pick_pr!(user, repo, pr, args:, path: ".")
     if args.dry_run?
       puts <<~EOS
         git fetch --force origin +refs/pull/#{pr}/head
         git merge-base HEAD FETCH_HEAD
         git cherry-pick --ff --allow-empty $merge_base..FETCH_HEAD
       EOS
-    else
-      safe_system "git", "-C", path, "fetch", "--quiet", "--force", "origin", "+refs/pull/#{pr}/head"
-      merge_base = Utils.popen_read("git", "-C", path, "merge-base", "HEAD", "FETCH_HEAD").strip
-      commit_count = Utils.popen_read("git", "-C", path, "rev-list", "#{merge_base}..FETCH_HEAD").lines.count
-
-      ohai "Using #{commit_count} commit#{"s" unless commit_count == 1} from ##{pr}"
-      Utils::Git.cherry_pick!(path, "--ff", "--allow-empty", "#{merge_base}..FETCH_HEAD",
-                              verbose: args.verbose?, resolve: args.resolve?)
+      return
     end
-  end
 
-  def check_branch(path, ref, args:)
-    branch = Utils.popen_read("git", "-C", path, "symbolic-ref", "--short", "HEAD").strip
-
-    return if branch == ref || args.clean? || args.branch_okay?
-
-    opoo "Current branch is #{branch}: do you need to pull inside #{ref}?"
+    commits = GitHub.pull_request_commits(user, repo, pr)
+    safe_system "git", "-C", path, "fetch", "--quiet", "--force", "origin", commits.last
+    ohai "Using #{commits.count} commit#{"s" unless commits.count == 1} from ##{pr}"
+    Utils::Git.cherry_pick!(path, "--ff", "--allow-empty", *commits, verbose: args.verbose?, resolve: args.resolve?)
   end
 
   def formulae_need_bottles?(tap, original_commit, args:)
@@ -385,15 +381,23 @@ module Homebrew
       _, user, repo, pr = *url_match
       odie "Not a GitHub pull request: #{arg}" unless pr
 
-      check_branch tap.path, "master", args: args
+      current_branch = Utils::Git.current_branch(tap.path)
+      origin_branch = Utils::Git.origin_branch(tap.path).split("/").last
+
+      if current_branch != origin_branch || args.branch_okay? || args.clean?
+        opoo "Current branch is #{current_branch}: do you need to pull inside #{origin_branch}?"
+      end
 
       ohai "Fetching #{tap} pull request ##{pr}"
       Dir.mktmpdir pr do |dir|
         cd dir do
           original_commit = Utils.popen_read("git", "-C", tap.path, "rev-parse", "HEAD").chomp
-          cherry_pick_pr!(pr, path: tap.path, args: args)
-          autosquash!(original_commit, path: tap.path, args: args) if args.autosquash?
-          signoff!(pr, tap: tap, args: args) unless args.clean?
+          cherry_pick_pr!(user, repo, pr, path: tap.path, args: args)
+          if args.autosquash? && !args.dry_run?
+            autosquash!(original_commit, path: tap.path,
+                        verbose: args.verbose?, resolve: args.resolve?, reason: args.message)
+          end
+          signoff!(tap.path, pr: pr, dry_run: args.dry_run?) unless args.clean?
 
           unless args.no_upload?
             mirror_formulae(tap, original_commit,
