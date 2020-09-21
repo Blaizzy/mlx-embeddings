@@ -16,10 +16,8 @@ module Homebrew
       EOS
       switch "-q", "--quiet",
              description: "Silence all non-critical errors."
-      switch "--update-definitions",
-             description: "Update Tapioca gem definitions of recently bumped gems"
-      switch "--prune-files-list",
-             description: "Remove deleted filepaths from #{SORBET_FILES_YAML}"
+      switch "--update",
+             description: "Update RBI files and prune #{SORBET_FILES_YAML}"
       switch "--fail-if-not-changed",
              description: "Return a failing status code if all gems are up to date " \
                           "and gem definitions do not need a tapioca update"
@@ -41,7 +39,8 @@ module Homebrew
     Homebrew.install_bundler_gems!
 
     HOMEBREW_LIBRARY_PATH.cd do
-      if args.prune_files_list?
+      if args.update?
+        ohai "Checking for deleted filenames in #{SORBET_FILES_YAML}..."
         lines_to_keep = []
         sorbet_keywords = ["true:", "false:", "strict:", "strong:"]
 
@@ -52,12 +51,11 @@ module Homebrew
             filepath = line.split(" ").last
             lines_to_keep << line if File.exist?(filepath)
           end
+
+          File.write(SORBET_FILES_YAML, "#{lines_to_keep.join("\n")}\n")
         end
 
-        File.write(SORBET_FILES_YAML, "#{lines_to_keep.join("\n")}\n")
-      end
-
-      if args.update_definitions?
+        ohai "Updating Tapioca RBI files..."
         system "bundle", "exec", "tapioca", "sync"
         system "bundle", "exec", "srb", "rbi", "hidden-definitions"
         system "bundle", "exec", "srb", "rbi", "todo"
