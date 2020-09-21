@@ -43,6 +43,6 @@ module Homebrew
   end
 
   def pull
-    odisabled "brew pull", "hub checkout"
+    odisabled "brew pull", "gh pr checkout"
   end
 end
