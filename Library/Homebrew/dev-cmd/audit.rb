@@ -566,7 +566,11 @@ module Homebrew
     end
 
     CERT_ERROR_ALLOWLIST = {
-      "monero" => "https://www.getmonero.org/",
+      "hashcat"     => "https://hashcat.net/hashcat/",
+      "jinx"        => "https://www.jinx-lang.org/",
+      "lmod"        => "https://www.tacc.utexas.edu/research-development/tacc-projects/lmod",
+      "micropython" => "https://www.micropython.org/",
+      "monero"      => "https://www.getmonero.org/",
     }.freeze
 
     def audit_homepage
