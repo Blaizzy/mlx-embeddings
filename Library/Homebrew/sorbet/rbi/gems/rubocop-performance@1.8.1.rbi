@@ -238,11 +238,19 @@ class RuboCop::Cop::Performance::Detect < ::RuboCop::Cop::Base
   private
 
   def accept_first_call?(receiver, body); end
-  def autocorrect(corrector, node); end
+  def autocorrect(corrector, node, replacement); end
   def lazy?(node); end
+  def message_for_method(method, index); end
   def preferred_method; end
-  def register_offense(node, receiver, second_method); end
+  def register_offense(node, receiver, second_method, index); end
+  def replacement(method, index); end
 end
+
+RuboCop::Cop::Performance::Detect::CANDIDATE_METHODS = T.let(T.unsafe(nil), Set)
+
+RuboCop::Cop::Performance::Detect::INDEX_MSG = T.let(T.unsafe(nil), String)
+
+RuboCop::Cop::Performance::Detect::INDEX_REVERSE_MSG = T.let(T.unsafe(nil), String)
 
 RuboCop::Cop::Performance::Detect::MSG = T.let(T.unsafe(nil), String)
 
@@ -677,8 +685,8 @@ class RuboCop::Cop::Performance::Sum < ::RuboCop::Cop::Base
   def build_block_bad_method(method, init, var_acc, var_elem, body); end
   def build_block_message(send, init, var_acc, var_elem, body); end
   def build_good_method(init); end
-  def build_method_bad_method(init, method); end
-  def build_method_message(method, init); end
+  def build_method_bad_method(init, method, operation); end
+  def build_method_message(method, init, operation); end
   def sum_block_range(send, node); end
   def sum_method_range(node); end
 end
