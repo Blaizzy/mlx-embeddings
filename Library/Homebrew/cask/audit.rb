@@ -507,7 +507,7 @@ module Cask
     end
 
     def check_github_repository
-      return unless @new_cask
+      return unless new_cask?
 
       user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*})
       return if user.nil?
@@ -531,7 +531,7 @@ module Cask
     end
 
     def check_bitbucket_repository
-      return unless @new_cask
+      return unless new_cask?
 
       user, repo = get_repo_data(%r{https?://bitbucket\.org/([^/]+)/([^/]+)/?.*})
       return if user.nil?
