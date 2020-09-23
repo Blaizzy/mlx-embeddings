@@ -5,7 +5,7 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
+      interval: daily
 
   - package-ecosystem: bundler
     directory: /docs
@@ -15,4 +15,13 @@ updates:
   - package-ecosystem: bundler
     directory: /Library/Homebrew
     schedule:
+      interval: daily
+    ignore:
+      - dependency-name: sorbet*
+
+  - package-ecosystem: bundler
+    directory: /Library/Homebrew
+    schedule:
       interval: weekly
+    allow:
+      - dependency-name: sorbet*
