@@ -120,8 +120,7 @@ jobs:
     - name: Run brew audit --skip-style on all taps
       run: brew audit --skip-style
 
-    # TODO: remove --quiet when possible.
-    - run: brew typecheck --quiet
+    - run: brew typecheck
 
     - name: Run vale for docs linting
       run: |
