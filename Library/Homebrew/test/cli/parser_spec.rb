@@ -246,7 +246,7 @@ describe Homebrew::CLI::Parser do
       end
     }
 
-    it "raises exception upon Homebrew.args mutation" do
+    it "raises exception when arguments were already parsed" do
       parser.parse(["--switch-a"])
       expect { parser.parse(["--switch-b"]) }.to raise_error(RuntimeError, /Arguments were already parsed!/)
     end

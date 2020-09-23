@@ -82,7 +82,7 @@ module Homebrew
   DEFAULT_REPOSITORY = "#{DEFAULT_PREFIX}/Homebrew"
 
   class << self
-    attr_writer :failed, :raise_deprecation_exceptions, :auditing, :args
+    attr_writer :failed, :raise_deprecation_exceptions, :auditing
 
     def Homebrew.default_prefix?(prefix = HOMEBREW_PREFIX)
       prefix.to_s == DEFAULT_PREFIX
@@ -91,10 +91,6 @@ module Homebrew
     def failed?
       @failed ||= false
       @failed == true
-    end
-
-    def args
-      @args ||= CLI::Args.new
     end
 
     def messages

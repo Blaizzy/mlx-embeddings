@@ -1,14 +1,18 @@
 # typed: false
 # frozen_string_literal: true
 
+require "context"
+
 # Helper module for parsing output of `brew livecheck`.
 #
 # @api private
 module LivecheckFormula
+  extend Context
+
   module_function
 
   def init(formula)
-    ohai "Checking livecheck formula: #{formula}" if Homebrew.args.verbose?
+    ohai "Checking livecheck formula: #{formula}" if verbose?
 
     response = Utils.popen_read(HOMEBREW_BREW_FILE, "livecheck", formula, "--quiet").chomp
 
