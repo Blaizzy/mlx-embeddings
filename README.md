@@ -63,7 +63,7 @@ Homebrew's other current maintainers are [Claudia Pellegrino](https://github.com
 Former maintainers with significant contributions include [Jan Viljanen](https://github.com/javian), [JCount](https://github.com/jcount), [commitay](https://github.com/commitay), [Dominyk Tiller](https://github.com/DomT4), [Tim Smith](https://github.com/tdsmith), [Baptiste Fontaine](https://github.com/bfontaine), [Xu Cheng](https://github.com/xu-cheng), [Martin Afanasjew](https://github.com/UniqMartin), [Brett Koonce](https://github.com/asparagui), [Charlie Sharpsteen](https://github.com/Sharpie), [Jack Nagel](https://github.com/jacknagel), [Adam Vandenberg](https://github.com/adamv), [Andrew Janke](https://github.com/apjanke), [Alex Dunn](https://github.com/dunn), [neutric](https://github.com/neutric), [Tomasz Pajor](https://github.com/nijikon), [Uladzislau Shablinski](https://github.com/vladshablinsky), [Alyssa Ross](https://github.com/alyssais), [ilovezfs](https://github.com/ilovezfs), [Chongyu Zhu](https://github.com/lembacon) and Homebrew's creator: [Max Howell](https://github.com/mxcl).
 
 ## Community
-- [discourse.brew.sh (forum)](https://discourse.brew.sh)
+- [Homebrew/discussions (forum)](https://github.com/homebrew/discussions/discussions)
 - [freenode.net\#machomebrew (IRC)](irc://irc.freenode.net/#machomebrew)
 - [@MacHomebrew (Twitter)](https://twitter.com/MacHomebrew)
 
