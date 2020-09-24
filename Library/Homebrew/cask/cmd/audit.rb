@@ -54,8 +54,19 @@ module Cask
 
         options[:quarantine] = true if options[:quarantine].nil?
 
-        failed_casks = casks(alternative: -> { Cask.to_a })
-                       .reject do |cask|
+        casks = args.named.flat_map do |name|
+          if File.exist?(name)
+            name
+          elsif name.count("/") == 1
+            Tap.fetch(name).cask_files
+          else
+            name
+          end
+        end.map(&CaskLoader.public_method(:load))
+
+        casks = Cask.to_a if casks.empty?
+
+        failed_casks = casks.reject do |cask|
           odebug "Auditing Cask #{cask}"
           result = Auditor.audit(cask, **options)
 
