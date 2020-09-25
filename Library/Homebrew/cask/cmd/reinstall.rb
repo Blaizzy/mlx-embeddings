@@ -24,9 +24,9 @@ module Cask
 
       def self.reinstall_casks(
         *casks,
-        verbose: false,
-        force: false,
-        skip_cask_deps: false,
+        verbose: nil,
+        force: nil,
+        skip_cask_deps: nil,
         binaries: nil,
         require_sha: nil,
         quarantine: nil

@@ -456,6 +456,18 @@ Unless \fBHOMEBREW_NO_INSTALL_CLEANUP\fR is set, \fBbrew cleanup\fR will then be
 If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory\.
 .
 .TP
+\fB\-f\fR, \fB\-\-force\fR
+Install without checking for previously installed keg\-only or non\-migrated versions\.
+.
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Print the verification and postinstall steps\.
+.
+.TP
+\fB\-\-formula\fR
+Treat all named arguments as formulae\.
+.
+.TP
 \fB\-\-env\fR
 If \fBstd\fR is passed, use the standard build environment instead of superenv\. If \fBsuper\fR is passed, use superenv even if the formula specifies the standard build environment\.
 .
@@ -504,14 +516,6 @@ Prepare the formula for eventual bottling during installation, skipping any post
 Optimise bottles for the specified architecture rather than the oldest architecture supported by the version of macOS the bottles are built on\.
 .
 .TP
-\fB\-f\fR, \fB\-\-force\fR
-Install without checking for previously installed keg\-only or non\-migrated versions\.
-.
-.TP
-\fB\-v\fR, \fB\-\-verbose\fR
-Print the verification and postinstall steps\.
-.
-.TP
 \fB\-\-display\-times\fR
 Print install times for each formula at the end of the run\.
 .
@@ -522,6 +526,26 @@ Download and patch \fIformula\fR, then open a shell\. This allows the user to ru
 .TP
 \fB\-g\fR, \fB\-\-git\fR
 Create a Git repository, useful for creating patches to the software\.
+.
+.TP
+\fB\-\-cask\fR
+Treat all named arguments as casks\.
+.
+.TP
+\fB\-\-[no\-]binaries\fR
+Disable/enable linking of helper executables to \fB/usr/local/bin\fR\. Default: enabled
+.
+.TP
+\fB\-\-require\-sha\fR
+Require all casks to have a checksum\.
+.
+.TP
+\fB\-\-[no\-]quarantine\fR
+Disable/enable quarantining of downloads\. Default: enabled
+.
+.TP
+\fB\-\-skip\-cask\-deps\fR
+Skip installing cask dependencies\.
 .
 .SS "\fBleaves\fR"
 List installed formulae that are not dependencies of another installed formula\.

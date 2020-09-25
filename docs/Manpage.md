@@ -313,6 +313,12 @@ installed formulae or, every 30 days, for all formulae.
 
 * `-d`, `--debug`:
   If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory.
+* `-f`, `--force`:
+  Install without checking for previously installed keg-only or non-migrated versions.
+* `-v`, `--verbose`:
+  Print the verification and postinstall steps.
+* `--formula`:
+  Treat all named arguments as formulae.
 * `--env`:
   If `std` is passed, use the standard build environment instead of superenv. If `super` is passed, use superenv even if the formula specifies the standard build environment.
 * `--ignore-dependencies`:
@@ -337,16 +343,22 @@ installed formulae or, every 30 days, for all formulae.
   Prepare the formula for eventual bottling during installation, skipping any post-install steps.
 * `--bottle-arch`:
   Optimise bottles for the specified architecture rather than the oldest architecture supported by the version of macOS the bottles are built on.
-* `-f`, `--force`:
-  Install without checking for previously installed keg-only or non-migrated versions.
-* `-v`, `--verbose`:
-  Print the verification and postinstall steps.
 * `--display-times`:
   Print install times for each formula at the end of the run.
 * `-i`, `--interactive`:
   Download and patch *`formula`*, then open a shell. This allows the user to run `./configure --help` and otherwise determine how to turn the software package into a Homebrew package.
 * `-g`, `--git`:
   Create a Git repository, useful for creating patches to the software.
+* `--cask`:
+  Treat all named arguments as casks.
+* `--[no-]binaries`:
+  Disable/enable linking of helper executables to `/usr/local/bin`. Default: enabled
+* `--require-sha`:
+  Require all casks to have a checksum.
+* `--[no-]quarantine`:
+  Disable/enable quarantining of downloads. Default: enabled
+* `--skip-cask-deps`:
+  Skip installing cask dependencies.
 
 ### `leaves`
 

@@ -68,16 +68,24 @@ class MethodDeprecatedError < StandardError
   attr_accessor :issues_url
 end
 
-# Raised when a formula is not available.
-class FormulaUnavailableError < RuntimeError
+# Raised when neither a formula nor a cask with the given name is available.
+class FormulaOrCaskUnavailableError < RuntimeError
   attr_reader :name
-  attr_accessor :dependent
 
   def initialize(name)
-    super
+    super()
 
     @name = name
   end
+
+  def to_s
+    "No available formula or cask with the name \"#{name}\"."
+  end
+end
+
+# Raised when a formula is not available.
+class FormulaUnavailableError < FormulaOrCaskUnavailableError
+  attr_accessor :dependent
 
   def dependent_s
     "(dependency of #{dependent})" if dependent && dependent != name
