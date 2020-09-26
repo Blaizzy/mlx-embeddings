@@ -21,7 +21,7 @@ module Homebrew
       end
 
       def to_formulae
-        @to_formulae ||= to_formulae_and_casks.select { |o| o.is_a?(Formula) }.freeze
+        @to_formulae ||= to_formulae_and_casks(only: :formula).freeze
       end
 
       def to_formulae_and_casks(only: nil)

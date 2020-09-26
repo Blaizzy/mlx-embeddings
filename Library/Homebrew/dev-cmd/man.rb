@@ -38,9 +38,14 @@ module Homebrew
     Commands.rebuild_internal_commands_completion_list
     regenerate_man_pages(preserve_date: args.fail_if_changed?, quiet: args.quiet?)
 
-    if system "git", "-C", HOMEBREW_REPOSITORY, "diff", "--quiet", "docs/Manpage.md", "manpages", "completions"
+    diff = system_command "git", args: [
+      "-C", HOMEBREW_REPOSITORY, "diff", "--exit-code", "docs/Manpage.md", "manpages", "completions"
+    ]
+    if diff.status.success?
       puts "No changes to manpage or completions output detected."
     elsif args.fail_if_changed?
+      puts "Changes to manpage or completions detected:"
+      puts diff.stdout
       Homebrew.failed = true
     end
   end
