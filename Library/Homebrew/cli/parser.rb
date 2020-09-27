@@ -454,29 +454,18 @@ module Homebrew
 
     class MaxNamedArgumentsError < UsageError
       def initialize(maximum)
-        message = case maximum
+        super case maximum
         when 0
-          "this command does not take named arguments"
-        when 1
-          "this command does not take multiple named arguments"
+          "This command does not take named arguments."
         else
-          "this command does not take more than #{maximum} named arguments"
+          "This command does not take more than #{maximum} named #{"argument".pluralize(maximum)}"
         end
-        super message
       end
     end
 
     class MinNamedArgumentsError < UsageError
       def initialize(minimum)
-        message = case minimum
-        when 1
-          "this command requires a named argument"
-        when 2
-          "this command requires multiple named arguments"
-        else
-          "this command requires at least #{minimum} named arguments"
-        end
-        super message
+        super "This command requires at least #{minimum} named #{"argument".pluralize(minimum)}."
       end
     end
   end
