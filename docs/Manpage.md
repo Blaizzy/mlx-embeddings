@@ -313,6 +313,12 @@ installed formulae or, every 30 days, for all formulae.
 
 * `-d`, `--debug`:
   If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory.
+* `-f`, `--force`:
+  Install formulae without checking for previously installed keg-only or non-migrated versions. Overwrite existing files when installing casks.
+* `-v`, `--verbose`:
+  Print the verification and postinstall steps.
+* `--formula`:
+  Treat all named arguments as formulae.
 * `--env`:
   If `std` is passed, use the standard build environment instead of superenv. If `super` is passed, use superenv even if the formula specifies the standard build environment.
 * `--ignore-dependencies`:
@@ -337,16 +343,52 @@ installed formulae or, every 30 days, for all formulae.
   Prepare the formula for eventual bottling during installation, skipping any post-install steps.
 * `--bottle-arch`:
   Optimise bottles for the specified architecture rather than the oldest architecture supported by the version of macOS the bottles are built on.
-* `-f`, `--force`:
-  Install without checking for previously installed keg-only or non-migrated versions.
-* `-v`, `--verbose`:
-  Print the verification and postinstall steps.
 * `--display-times`:
   Print install times for each formula at the end of the run.
 * `-i`, `--interactive`:
   Download and patch *`formula`*, then open a shell. This allows the user to run `./configure --help` and otherwise determine how to turn the software package into a Homebrew package.
 * `-g`, `--git`:
   Create a Git repository, useful for creating patches to the software.
+* `--cask`:
+  Treat all named arguments as casks.
+* `--appdir`:
+  Target location for Applications. Default: `/Applications`
+* `--colorpickerdir`:
+  Target location for Color Pickers. Default: `~/Library/ColorPickers`
+* `--prefpanedir`:
+  Target location for Preference Panes. Default: `~/Library/PreferencePanes`
+* `--qlplugindir`:
+  Target location for QuickLook Plugins. Default: `~/Library/QuickLook`
+* `--mdimporterdir`:
+  Target location for Spotlight Plugins. Default: `~/Library/Spotlight`
+* `--dictionarydir`:
+  Target location for Dictionaries. Default: `~/Library/Dictionaries`
+* `--fontdir`:
+  Target location for Fonts. Default: `~/Library/Fonts`
+* `--servicedir`:
+  Target location for Services. Default: `~/Library/Services`
+* `--input_methoddir`:
+  Target location for Input Methods. Default: `~/Library/Input Methods`
+* `--internet_plugindir`:
+  Target location for Internet Plugins. Default: `~/Library/Internet Plug-Ins`
+* `--audio_unit_plugindir`:
+  Target location for Audio Unit Plugins. Default: `~/Library/Audio/Plug-Ins/Components`
+* `--vst_plugindir`:
+  Target location for VST Plugins. Default: `~/Library/Audio/Plug-Ins/VST`
+* `--vst3_plugindir`:
+  Target location for VST3 Plugins. Default: `~/Library/Audio/Plug-Ins/VST3`
+* `--screen_saverdir`:
+  Target location for Screen Savers. Default: `~/Library/Screen Savers`
+* `--language`:
+  Set language of the Cask to install. The first matching language is used, otherwise the default language on the Cask. The default value is the `language of your system`
+* `--[no-]binaries`:
+  Disable/enable linking of helper executables. Default: enabled
+* `--require-sha`:
+  Require all casks to have a checksum.
+* `--[no-]quarantine`:
+  Disable/enable quarantining of downloads. Default: enabled
+* `--skip-cask-deps`:
+  Skip installing cask dependencies.
 
 ### `leaves`
 
