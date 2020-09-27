@@ -18,10 +18,10 @@ module Homebrew
   def reinstall_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `reinstall` [<options>] <formula>
+        `reinstall` [<options>] <formula>|<cask>
 
-        Uninstall and then install <formula> using the same options it was originally
-        installed with, plus any appended brew formula options.
+        Uninstall and then reinstall a <formula> or <cask> using the same options it was
+        originally installed with, plus any appended options specific to a <formula>.
 
         Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will then be run for the
         reinstalled formulae or, every 30 days, for all formulae.
@@ -50,7 +50,7 @@ module Homebrew
              description: "Print install times for each formula at the end of the run."
       conflicts "--build-from-source", "--force-bottle"
       formula_options
-      min_named :formula
+      min_named 1
     end
   end
 
