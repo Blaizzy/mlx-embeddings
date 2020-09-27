@@ -109,12 +109,13 @@ module Homebrew
 
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `install` [<options>] <formula>
+        `install` [<options>] <formula>|<cask>
 
-        Install <formula>. Additional options specific to <formula> may be appended to the command.
+        Install a <formula> or <cask>. Additional options specific to a <formula> may be
+        appended to the command.
 
-        Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will then be run for the
-        installed formulae or, every 30 days, for all formulae.
+        Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will then be run for
+        the installed formulae or, every 30 days, for all formulae.
       EOS
       switch "-d", "--debug",
              description: "If brewing fails, open an interactive debugging session with access to IRB "\
@@ -139,7 +140,7 @@ module Homebrew
       end
 
       formula_options
-      min_named :formula
+      min_named 1
     end
   end
 

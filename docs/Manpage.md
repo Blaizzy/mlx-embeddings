@@ -304,12 +304,13 @@ If *`formula`* is provided, show summary of information about *`formula`*.
 * `-v`, `--verbose`:
   Show more verbose analytics data for *`formula`*.
 
-### `install` [*`options`*] *`formula`*
+### `install` [*`options`*] *`formula`*|*`cask`*
 
-Install *`formula`*. Additional options specific to *`formula`* may be appended to the command.
+Install a *`formula`* or *`cask`*. Additional options specific to a *`formula`* may be
+appended to the command.
 
-Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will then be run for the
-installed formulae or, every 30 days, for all formulae.
+Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will then be run for
+the installed formulae or, every 30 days, for all formulae.
 
 * `-d`, `--debug`:
   If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory.
