@@ -314,7 +314,7 @@ installed formulae or, every 30 days, for all formulae.
 * `-d`, `--debug`:
   If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory.
 * `-f`, `--force`:
-  Install without checking for previously installed keg-only or non-migrated versions.
+  Install formulae without checking for previously installed keg-only or non-migrated versions. Overwrite existing files when installing casks.
 * `-v`, `--verbose`:
   Print the verification and postinstall steps.
 * `--formula`:
@@ -351,6 +351,36 @@ installed formulae or, every 30 days, for all formulae.
   Create a Git repository, useful for creating patches to the software.
 * `--cask`:
   Treat all named arguments as casks.
+* `--appdir`:
+  Target location for Applications. Default: `/Applications`
+* `--colorpickerdir`:
+  Target location for Color Pickers. Default: `~/Library/ColorPickers`
+* `--prefpanedir`:
+  Target location for Preference Panes. Default: `~/Library/PreferencePanes`
+* `--qlplugindir`:
+  Target location for QuickLook Plugins. Default: `~/Library/QuickLook`
+* `--mdimporterdir`:
+  Target location for Spotlight Plugins. Default: `~/Library/Spotlight`
+* `--dictionarydir`:
+  Target location for Dictionaries. Default: `~/Library/Dictionaries`
+* `--fontdir`:
+  Target location for Fonts. Default: `~/Library/Fonts`
+* `--servicedir`:
+  Target location for Services. Default: `~/Library/Services`
+* `--input_methoddir`:
+  Target location for Input Methods. Default: `~/Library/Input Methods`
+* `--internet_plugindir`:
+  Target location for Internet Plugins. Default: `~/Library/Internet Plug-Ins`
+* `--audio_unit_plugindir`:
+  Target location for Audio Unit Plugins. Default: `~/Library/Audio/Plug-Ins/Components`
+* `--vst_plugindir`:
+  Target location for VST Plugins. Default: `~/Library/Audio/Plug-Ins/VST`
+* `--vst3_plugindir`:
+  Target location for VST3 Plugins. Default: `~/Library/Audio/Plug-Ins/VST3`
+* `--screen_saverdir`:
+  Target location for Screen Savers. Default: `~/Library/Screen Savers`
+* `--language`:
+  Set language of the Cask to install. The first matching language is used, otherwise the default language on the Cask. The default value is the `language of your system`
 * `--[no-]binaries`:
   Disable/enable linking of helper executables to `/usr/local/bin`. Default: enabled
 * `--require-sha`:

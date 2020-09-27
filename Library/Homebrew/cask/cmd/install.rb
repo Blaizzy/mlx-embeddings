@@ -14,12 +14,20 @@ module Cask
         "Installs the given <cask>."
       end
 
+      OPTIONS = [
+        [:switch, "--skip-cask-deps", {
+          description: "Skip installing cask dependencies.",
+        }],
+      ].freeze
+
       def self.parser(&block)
         super do
           switch "--force",
                  description: "Force overwriting existing files."
-          switch "--skip-cask-deps",
-                 description: "Skip installing cask dependencies."
+
+          OPTIONS.each do |option|
+            send(*option)
+          end
 
           instance_eval(&block) if block_given?
         end

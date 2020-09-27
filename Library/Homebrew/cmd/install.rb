@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require "cask/config"
+require "cask/cmd"
+require "cask/cmd/install"
 require "missing_formula"
 require "formula_installer"
 require "development_tools"
@@ -16,50 +18,37 @@ module Homebrew
   module_function
 
   def install_args
-    cask_only_options = {
-      ["--cask", "--casks"] => {
+    cask_only_options = [
+      [:switch, "--cask", "--casks", {
         description: "Treat all named arguments as casks.",
-      },
-      ["--[no-]binaries"]   => {
-        description: "Disable/enable linking of helper executables to `#{Cask::Config.global.binarydir}`. " \
-                     "Default: enabled",
-        env:         :cask_opts_binaries,
-      },
-      ["--require-sha"]     => {
-        description: "Require all casks to have a checksum.",
-        env:         :cask_opts_require_sha,
-      },
-      ["--[no-]quarantine"] => {
-        description: "Disable/enable quarantining of downloads. Default: enabled",
-        env:         :cask_opts_quarantine,
-      },
-      ["--skip-cask-deps"]  => {
-        description: "Skip installing cask dependencies.",
-      },
-    }.freeze
+      }],
+      *Cask::Cmd::OPTIONS,
+      *Cask::Cmd::AbstractCommand::OPTIONS,
+      *Cask::Cmd::Install::OPTIONS,
+    ]
 
-    formula_only_options = {
-      ["--formula", "--formulae"]   => {
+    formula_only_options = [
+      [:switch, "--formula", "--formulae", {
         description: "Treat all named arguments as formulae.",
-      },
-      ["--env="]                    => {
+      }],
+      [:flag, "--env=", {
         description: "If `std` is passed, use the standard build environment instead of superenv. "\
                      "If `super` is passed, use superenv even if the formula specifies the "\
                      "standard build environment.",
-      },
-      ["--ignore-dependencies"]     => {
+      }],
+      [:switch, "--ignore-dependencies", {
         description: "An unsupported Homebrew development flag to skip installing any dependencies of "\
                      "any kind. If the dependencies are not already present, the formula will have issues. "\
                      "If you're not developing Homebrew, consider adjusting your PATH rather than "\
                      "using this flag.",
 
-      },
-      ["--only-dependencies"]       => {
+      }],
+      [:switch, "--only-dependencies", {
         description: "Install the dependencies with specified options but do not install the "\
                      "formula itself.",
 
-      },
-      ["--cc="]                     => {
+      }],
+      [:flag, "--cc=", {
         description: "Attempt to compile using the specified <compiler>, which should be the "\
                      "name of the compiler's executable, e.g. `gcc-7` for GCC 7. "\
                      "In order to use LLVM's clang, specify `llvm_clang`. To use the "\
@@ -67,59 +56,56 @@ module Homebrew
                      "compilers that are provided by Homebrew or bundled with macOS. "\
                      "Please do not file issues if you encounter errors while using this option.",
 
-      },
-      ["-s", "--build-from-source"] => {
+      }],
+      [:switch, "-s", "--build-from-source", {
         description: "Compile <formula> from source even if a bottle is provided. "\
                      "Dependencies will still be installed from bottles if they are available.",
 
-      },
-      ["--force-bottle"]            => {
+      }],
+      [:switch, "--force-bottle", {
         description: "Install from a bottle if it exists for the current or newest version of "\
                      "macOS, even if it would not normally be used for installation.",
 
-      },
-      ["--include-test"]            => {
+      }],
+      [:switch, "--include-test", {
         description: "Install testing dependencies required to run `brew test` <formula>.",
 
-      },
-      ["--HEAD"]                    => {
+      }],
+      [:switch, "--HEAD", {
         description: "If <formula> defines it, install the HEAD version, aka. master, trunk, unstable.",
 
-      },
-      ["--fetch-HEAD"]              => {
+      }], [:switch, "--fetch-HEAD", {
         description: "Fetch the upstream repository to detect if the HEAD installation of the "\
                      "formula is outdated. Otherwise, the repository's HEAD will only be checked for "\
                      "updates when a new stable or development version has been released.",
 
-      },
-      ["--keep-tmp"]                => {
+      }], [:switch, "--keep-tmp", {
         description: "Retain the temporary files created during installation.",
 
-      },
-      ["--build-bottle"]            => {
+      }], [:switch, "--build-bottle", {
         description: "Prepare the formula for eventual bottling during installation, skipping any "\
                      "post-install steps.",
 
-      },
-      ["--bottle-arch="]            => {
+      }],
+      [:flag, "--bottle-arch=", {
         depends_on:  "--build-bottle",
         description: "Optimise bottles for the specified architecture rather than the oldest "\
                      "architecture supported by the version of macOS the bottles are built on.",
 
-      },
-      ["--display-times"]           => {
+      }],
+      [:switch, "--display-times", {
         env:         :display_install_times,
         description: "Print install times for each formula at the end of the run.",
-      },
-      ["-i", "--interactive"]       => {
+      }],
+      [:switch, "-i", "--interactive", {
         description: "Download and patch <formula>, then open a shell. This allows the user to "\
                      "run `./configure --help` and otherwise determine how to turn the software "\
                      "package into a Homebrew package.",
-      },
-      ["-g", "--git"]               => {
+      }],
+      [:switch, "-g", "--git", {
         description: "Create a Git repository, useful for creating patches to the software.",
-      },
-    }.freeze
+      }]
+    ]
 
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
@@ -134,27 +120,22 @@ module Homebrew
              description: "If brewing fails, open an interactive debugging session with access to IRB "\
                           "or a shell inside the temporary build directory."
       switch "-f", "--force",
-             description: "Install without checking for previously installed keg-only or "\
-                          "non-migrated versions."
+             description: "Install formulae without checking for previously installed keg-only or "\
+                          "non-migrated versions. Overwrite existing files when installing casks."
       switch "-v", "--verbose",
              description: "Print the verification and postinstall steps."
 
       conflicts "--ignore-dependencies", "--only-dependencies"
       conflicts "--build-from-source", "--build-bottle", "--force-bottle"
 
-      formula_only_options.each do |flags, **options|
-        if flags.last.end_with?("=")
-          flag(*flags, **options)
-        else
-          switch(*flags, **options)
-        end
-
-        conflicts "--cask", flags.last
+      formula_only_options.each do |options|
+        send(*options)
+        conflicts "--cask", options[-2]
       end
 
-      cask_only_options.each do |flags, **options|
-        switch(*flags, **options)
-        conflicts "--formula", flags.last
+      cask_only_options.each do |options|
+        send(*options)
+        conflicts "--formula", options[-2]
       end
 
       formula_options
@@ -187,8 +168,6 @@ module Homebrew
     formulae, casks = formulae_or_casks.partition { |formula_or_cask| formula_or_cask.is_a?(Formula) }
 
     if casks.any?
-      require "cask/cmd/install"
-
       Cask::Cmd::Install.install_casks(
         *casks,
         binaries:       args.binaries?,
