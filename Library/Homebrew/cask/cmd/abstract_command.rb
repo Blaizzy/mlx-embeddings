@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "cask/config"
 require "search"
 
 module Cask
@@ -35,8 +34,7 @@ module Cask
 
       OPTIONS = [
         [:switch, "--[no-]binaries", {
-          description: "Disable/enable linking of helper executables to `#{Config.global.binarydir}`. " \
-                       "Default: enabled",
+          description: "Disable/enable linking of helper executables. Default: enabled",
           env:         :cask_opts_binaries,
         }],
         [:switch, "--require-sha",  {

@@ -382,7 +382,7 @@ installed formulae or, every 30 days, for all formulae.
 * `--language`:
   Set language of the Cask to install. The first matching language is used, otherwise the default language on the Cask. The default value is the `language of your system`
 * `--[no-]binaries`:
-  Disable/enable linking of helper executables to `/usr/local/bin`. Default: enabled
+  Disable/enable linking of helper executables. Default: enabled
 * `--require-sha`:
   Require all casks to have a checksum.
 * `--[no-]quarantine`:
