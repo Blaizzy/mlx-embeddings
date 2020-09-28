@@ -96,6 +96,7 @@ module Homebrew
           load_formula_or_cask(name, only: only, method: method)
         end.uniq.freeze
       end
+      private :to_objects
 
       def to_formulae_paths
         to_paths(only: :formulae)
