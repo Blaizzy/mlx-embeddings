@@ -534,6 +534,12 @@ reinstalled formulae or, every 30 days, for all formulae.
 
 * `-d`, `--debug`:
   If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory.
+* `-f`, `--force`:
+  Install without checking for previously installed keg-only or non-migrated versions.
+* `-v`, `--verbose`:
+  Print the verification and postinstall steps.
+* `--formula`:
+  Treat all named arguments as formulae.
 * `-s`, `--build-from-source`:
   Compile *`formula`* from source even if a bottle is available.
 * `-i`, `--interactive`:
@@ -542,12 +548,46 @@ reinstalled formulae or, every 30 days, for all formulae.
   Install from a bottle if it exists for the current or newest version of macOS, even if it would not normally be used for installation.
 * `--keep-tmp`:
   Retain the temporary files created during installation.
-* `-f`, `--force`:
-  Install without checking for previously installed keg-only or non-migrated versions.
-* `-v`, `--verbose`:
-  Print the verification and postinstall steps.
 * `--display-times`:
   Print install times for each formula at the end of the run.
+* `--cask`:
+  Treat all named arguments as casks.
+* `--appdir`:
+  Target location for Applications. Default: `/Applications`
+* `--colorpickerdir`:
+  Target location for Color Pickers. Default: `~/Library/ColorPickers`
+* `--prefpanedir`:
+  Target location for Preference Panes. Default: `~/Library/PreferencePanes`
+* `--qlplugindir`:
+  Target location for QuickLook Plugins. Default: `~/Library/QuickLook`
+* `--mdimporterdir`:
+  Target location for Spotlight Plugins. Default: `~/Library/Spotlight`
+* `--dictionarydir`:
+  Target location for Dictionaries. Default: `~/Library/Dictionaries`
+* `--fontdir`:
+  Target location for Fonts. Default: `~/Library/Fonts`
+* `--servicedir`:
+  Target location for Services. Default: `~/Library/Services`
+* `--input_methoddir`:
+  Target location for Input Methods. Default: `~/Library/Input Methods`
+* `--internet_plugindir`:
+  Target location for Internet Plugins. Default: `~/Library/Internet Plug-Ins`
+* `--audio_unit_plugindir`:
+  Target location for Audio Unit Plugins. Default: `~/Library/Audio/Plug-Ins/Components`
+* `--vst_plugindir`:
+  Target location for VST Plugins. Default: `~/Library/Audio/Plug-Ins/VST`
+* `--vst3_plugindir`:
+  Target location for VST3 Plugins. Default: `~/Library/Audio/Plug-Ins/VST3`
+* `--screen_saverdir`:
+  Target location for Screen Savers. Default: `~/Library/Screen Savers`
+* `--language`:
+  Set language of the Cask to install. The first matching language is used, otherwise the default language on the Cask. The default value is the `language of your system`
+* `--[no-]binaries`:
+  Disable/enable linking of helper executables. Default: enabled
+* `--require-sha`:
+  Require all casks to have a checksum.
+* `--[no-]quarantine`:
+  Disable/enable quarantining of downloads. Default: enabled
 
 ### `search` [*`options`*] [*`text`*|`/`*`text`*`/`]
 
@@ -681,10 +721,14 @@ upgraded formulae or, every 30 days, for all formulae.
 
 * `-d`, `--debug`:
   If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory.
+* `-f`, `--force`:
+  Install formulae without checking for previously installed keg-only or non-migrated versions. Overwrite existing files when installing casks.
+* `-v`, `--verbose`:
+  Print the verification and postinstall steps.
+* `-n`, `--dry-run`:
+  Show what would be upgraded, but do not actually upgrade anything.
 * `--formula`:
-  Only upgrade outdated formulae.
-* `--cask`:
-  Only upgrade outdated casks.
+  Treat all named arguments as formulae. If no named argumentsare specified, upgrade only outdated formulae.
 * `-s`, `--build-from-source`:
   Compile *`formula`* from source even if a bottle is available.
 * `-i`, `--interactive`:
@@ -697,16 +741,50 @@ upgraded formulae or, every 30 days, for all formulae.
   Set a successful exit status even if pinned formulae are not upgraded.
 * `--keep-tmp`:
   Retain the temporary files created during installation.
-* `-f`, `--force`:
-  Install without checking for previously installed keg-only or non-migrated versions.
-* `-v`, `--verbose`:
-  Print the verification and postinstall steps.
 * `--display-times`:
   Print install times for each formula at the end of the run.
-* `-n`, `--dry-run`:
-  Show what would be upgraded, but do not actually upgrade anything.
+* `--cask`:
+  Treat all named arguments as casks. If no named arguments are specified, upgrade only outdated casks.
+* `--appdir`:
+  Target location for Applications. Default: `/Applications`
+* `--colorpickerdir`:
+  Target location for Color Pickers. Default: `~/Library/ColorPickers`
+* `--prefpanedir`:
+  Target location for Preference Panes. Default: `~/Library/PreferencePanes`
+* `--qlplugindir`:
+  Target location for QuickLook Plugins. Default: `~/Library/QuickLook`
+* `--mdimporterdir`:
+  Target location for Spotlight Plugins. Default: `~/Library/Spotlight`
+* `--dictionarydir`:
+  Target location for Dictionaries. Default: `~/Library/Dictionaries`
+* `--fontdir`:
+  Target location for Fonts. Default: `~/Library/Fonts`
+* `--servicedir`:
+  Target location for Services. Default: `~/Library/Services`
+* `--input_methoddir`:
+  Target location for Input Methods. Default: `~/Library/Input Methods`
+* `--internet_plugindir`:
+  Target location for Internet Plugins. Default: `~/Library/Internet Plug-Ins`
+* `--audio_unit_plugindir`:
+  Target location for Audio Unit Plugins. Default: `~/Library/Audio/Plug-Ins/Components`
+* `--vst_plugindir`:
+  Target location for VST Plugins. Default: `~/Library/Audio/Plug-Ins/VST`
+* `--vst3_plugindir`:
+  Target location for VST3 Plugins. Default: `~/Library/Audio/Plug-Ins/VST3`
+* `--screen_saverdir`:
+  Target location for Screen Savers. Default: `~/Library/Screen Savers`
+* `--language`:
+  Set language of the Cask to install. The first matching language is used, otherwise the default language on the Cask. The default value is the `language of your system`
+* `--[no-]binaries`:
+  Disable/enable linking of helper executables. Default: enabled
+* `--require-sha`:
+  Require all casks to have a checksum.
+* `--[no-]quarantine`:
+  Disable/enable quarantining of downloads. Default: enabled
+* `--skip-cask-deps`:
+  Skip installing cask dependencies.
 * `--greedy`:
-  Upgrade casks with `auto_updates` or `version :latest`
+  Also include casks with `auto_updates true` or `version :latest`.
 
 ### `uses` [*`options`*] *`formula`*
 

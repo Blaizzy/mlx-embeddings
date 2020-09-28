@@ -790,6 +790,18 @@ Unless \fBHOMEBREW_NO_INSTALL_CLEANUP\fR is set, \fBbrew cleanup\fR will then be
 If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory\.
 .
 .TP
+\fB\-f\fR, \fB\-\-force\fR
+Install without checking for previously installed keg\-only or non\-migrated versions\.
+.
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Print the verification and postinstall steps\.
+.
+.TP
+\fB\-\-formula\fR
+Treat all named arguments as formulae\.
+.
+.TP
 \fB\-s\fR, \fB\-\-build\-from\-source\fR
 Compile \fIformula\fR from source even if a bottle is available\.
 .
@@ -806,16 +818,84 @@ Install from a bottle if it exists for the current or newest version of macOS, e
 Retain the temporary files created during installation\.
 .
 .TP
-\fB\-f\fR, \fB\-\-force\fR
-Install without checking for previously installed keg\-only or non\-migrated versions\.
-.
-.TP
-\fB\-v\fR, \fB\-\-verbose\fR
-Print the verification and postinstall steps\.
-.
-.TP
 \fB\-\-display\-times\fR
 Print install times for each formula at the end of the run\.
+.
+.TP
+\fB\-\-cask\fR
+Treat all named arguments as casks\.
+.
+.TP
+\fB\-\-appdir\fR
+Target location for Applications\. Default: \fB/Applications\fR
+.
+.TP
+\fB\-\-colorpickerdir\fR
+Target location for Color Pickers\. Default: \fB~/Library/ColorPickers\fR
+.
+.TP
+\fB\-\-prefpanedir\fR
+Target location for Preference Panes\. Default: \fB~/Library/PreferencePanes\fR
+.
+.TP
+\fB\-\-qlplugindir\fR
+Target location for QuickLook Plugins\. Default: \fB~/Library/QuickLook\fR
+.
+.TP
+\fB\-\-mdimporterdir\fR
+Target location for Spotlight Plugins\. Default: \fB~/Library/Spotlight\fR
+.
+.TP
+\fB\-\-dictionarydir\fR
+Target location for Dictionaries\. Default: \fB~/Library/Dictionaries\fR
+.
+.TP
+\fB\-\-fontdir\fR
+Target location for Fonts\. Default: \fB~/Library/Fonts\fR
+.
+.TP
+\fB\-\-servicedir\fR
+Target location for Services\. Default: \fB~/Library/Services\fR
+.
+.TP
+\fB\-\-input_methoddir\fR
+Target location for Input Methods\. Default: \fB~/Library/Input Methods\fR
+.
+.TP
+\fB\-\-internet_plugindir\fR
+Target location for Internet Plugins\. Default: \fB~/Library/Internet Plug\-Ins\fR
+.
+.TP
+\fB\-\-audio_unit_plugindir\fR
+Target location for Audio Unit Plugins\. Default: \fB~/Library/Audio/Plug\-Ins/Components\fR
+.
+.TP
+\fB\-\-vst_plugindir\fR
+Target location for VST Plugins\. Default: \fB~/Library/Audio/Plug\-Ins/VST\fR
+.
+.TP
+\fB\-\-vst3_plugindir\fR
+Target location for VST3 Plugins\. Default: \fB~/Library/Audio/Plug\-Ins/VST3\fR
+.
+.TP
+\fB\-\-screen_saverdir\fR
+Target location for Screen Savers\. Default: \fB~/Library/Screen Savers\fR
+.
+.TP
+\fB\-\-language\fR
+Set language of the Cask to install\. The first matching language is used, otherwise the default language on the Cask\. The default value is the \fBlanguage of your system\fR
+.
+.TP
+\fB\-\-[no\-]binaries\fR
+Disable/enable linking of helper executables\. Default: enabled
+.
+.TP
+\fB\-\-require\-sha\fR
+Require all casks to have a checksum\.
+.
+.TP
+\fB\-\-[no\-]quarantine\fR
+Disable/enable quarantining of downloads\. Default: enabled
 .
 .SS "\fBsearch\fR [\fIoptions\fR] [\fItext\fR|\fB/\fR\fItext\fR\fB/\fR]"
 Perform a substring search of cask tokens and formula names for \fItext\fR\. If \fItext\fR is flanked by slashes, it is interpreted as a regular expression\. The search for \fItext\fR is extended online to \fBhomebrew/core\fR and \fBhomebrew/cask\fR\.
@@ -970,12 +1050,20 @@ Unless \fBHOMEBREW_NO_INSTALL_CLEANUP\fR is set, \fBbrew cleanup\fR will then be
 If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory\.
 .
 .TP
-\fB\-\-formula\fR
-Only upgrade outdated formulae\.
+\fB\-f\fR, \fB\-\-force\fR
+Install formulae without checking for previously installed keg\-only or non\-migrated versions\. Overwrite existing files when installing casks\.
 .
 .TP
-\fB\-\-cask\fR
-Only upgrade outdated casks\.
+\fB\-v\fR, \fB\-\-verbose\fR
+Print the verification and postinstall steps\.
+.
+.TP
+\fB\-n\fR, \fB\-\-dry\-run\fR
+Show what would be upgraded, but do not actually upgrade anything\.
+.
+.TP
+\fB\-\-formula\fR
+Treat all named arguments as formulae\. If no named argumentsare specified, upgrade only outdated formulae\.
 .
 .TP
 \fB\-s\fR, \fB\-\-build\-from\-source\fR
@@ -1002,24 +1090,92 @@ Set a successful exit status even if pinned formulae are not upgraded\.
 Retain the temporary files created during installation\.
 .
 .TP
-\fB\-f\fR, \fB\-\-force\fR
-Install without checking for previously installed keg\-only or non\-migrated versions\.
-.
-.TP
-\fB\-v\fR, \fB\-\-verbose\fR
-Print the verification and postinstall steps\.
-.
-.TP
 \fB\-\-display\-times\fR
 Print install times for each formula at the end of the run\.
 .
 .TP
-\fB\-n\fR, \fB\-\-dry\-run\fR
-Show what would be upgraded, but do not actually upgrade anything\.
+\fB\-\-cask\fR
+Treat all named arguments as casks\. If no named arguments are specified, upgrade only outdated casks\.
+.
+.TP
+\fB\-\-appdir\fR
+Target location for Applications\. Default: \fB/Applications\fR
+.
+.TP
+\fB\-\-colorpickerdir\fR
+Target location for Color Pickers\. Default: \fB~/Library/ColorPickers\fR
+.
+.TP
+\fB\-\-prefpanedir\fR
+Target location for Preference Panes\. Default: \fB~/Library/PreferencePanes\fR
+.
+.TP
+\fB\-\-qlplugindir\fR
+Target location for QuickLook Plugins\. Default: \fB~/Library/QuickLook\fR
+.
+.TP
+\fB\-\-mdimporterdir\fR
+Target location for Spotlight Plugins\. Default: \fB~/Library/Spotlight\fR
+.
+.TP
+\fB\-\-dictionarydir\fR
+Target location for Dictionaries\. Default: \fB~/Library/Dictionaries\fR
+.
+.TP
+\fB\-\-fontdir\fR
+Target location for Fonts\. Default: \fB~/Library/Fonts\fR
+.
+.TP
+\fB\-\-servicedir\fR
+Target location for Services\. Default: \fB~/Library/Services\fR
+.
+.TP
+\fB\-\-input_methoddir\fR
+Target location for Input Methods\. Default: \fB~/Library/Input Methods\fR
+.
+.TP
+\fB\-\-internet_plugindir\fR
+Target location for Internet Plugins\. Default: \fB~/Library/Internet Plug\-Ins\fR
+.
+.TP
+\fB\-\-audio_unit_plugindir\fR
+Target location for Audio Unit Plugins\. Default: \fB~/Library/Audio/Plug\-Ins/Components\fR
+.
+.TP
+\fB\-\-vst_plugindir\fR
+Target location for VST Plugins\. Default: \fB~/Library/Audio/Plug\-Ins/VST\fR
+.
+.TP
+\fB\-\-vst3_plugindir\fR
+Target location for VST3 Plugins\. Default: \fB~/Library/Audio/Plug\-Ins/VST3\fR
+.
+.TP
+\fB\-\-screen_saverdir\fR
+Target location for Screen Savers\. Default: \fB~/Library/Screen Savers\fR
+.
+.TP
+\fB\-\-language\fR
+Set language of the Cask to install\. The first matching language is used, otherwise the default language on the Cask\. The default value is the \fBlanguage of your system\fR
+.
+.TP
+\fB\-\-[no\-]binaries\fR
+Disable/enable linking of helper executables\. Default: enabled
+.
+.TP
+\fB\-\-require\-sha\fR
+Require all casks to have a checksum\.
+.
+.TP
+\fB\-\-[no\-]quarantine\fR
+Disable/enable quarantining of downloads\. Default: enabled
+.
+.TP
+\fB\-\-skip\-cask\-deps\fR
+Skip installing cask dependencies\.
 .
 .TP
 \fB\-\-greedy\fR
-Upgrade casks with \fBauto_updates\fR or \fBversion :latest\fR
+Also include casks with \fBauto_updates true\fR or \fBversion :latest\fR\.
 .
 .SS "\fBuses\fR [\fIoptions\fR] \fIformula\fR"
 Show formulae that specify \fIformula\fR as a dependency (i\.e\. show dependents of \fIformula\fR)\. When given multiple formula arguments, show the intersection of formulae that use \fIformula\fR\. By default, \fBuses\fR shows all formulae that specify \fIformula\fR as a required or recommended dependency for their stable builds\.
