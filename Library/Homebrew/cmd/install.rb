@@ -74,15 +74,18 @@ module Homebrew
       [:switch, "--HEAD", {
         description: "If <formula> defines it, install the HEAD version, aka. master, trunk, unstable.",
 
-      }], [:switch, "--fetch-HEAD", {
+      }],
+      [:switch, "--fetch-HEAD", {
         description: "Fetch the upstream repository to detect if the HEAD installation of the "\
                      "formula is outdated. Otherwise, the repository's HEAD will only be checked for "\
                      "updates when a new stable or development version has been released.",
 
-      }], [:switch, "--keep-tmp", {
+      }],
+      [:switch, "--keep-tmp", {
         description: "Retain the temporary files created during installation.",
 
-      }], [:switch, "--build-bottle", {
+      }],
+      [:switch, "--build-bottle", {
         description: "Prepare the formula for eventual bottling during installation, skipping any "\
                      "post-install steps.",
 
@@ -104,7 +107,7 @@ module Homebrew
       }],
       [:switch, "-g", "--git", {
         description: "Create a Git repository, useful for creating patches to the software.",
-      }]
+      }],
     ]
 
     Homebrew::CLI::Parser.new do
