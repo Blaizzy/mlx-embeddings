@@ -23,21 +23,33 @@ module Homebrew
         super(@args)
       end
 
+      def to_casks
+        @to_casks ||= to_formulae_and_casks(only: :cask).freeze
+      end
+
       def to_formulae
         @to_formulae ||= to_formulae_and_casks(only: :formula).freeze
       end
 
-      def to_formulae_and_casks(only: nil)
+      def to_formulae_and_casks(only: nil, method: nil)
         @to_formulae_and_casks ||= {}
         @to_formulae_and_casks[only] ||= begin
-          to_objects(only: only).reject { |o| o.is_a?(Tap) }.freeze
+          to_objects(only: only, method: method).reject { |o| o.is_a?(Tap) }.freeze
         end
       end
 
-      def load_formula_or_cask(name, only: nil)
+      def load_formula_or_cask(name, only: nil, method: nil)
         if only != :cask
           begin
-            formula = Formulary.factory(name, spec, force_bottle: @force_bottle, flags: @flags)
+            formula = case method
+            when nil, :factory
+              Formulary.factory(name, *spec, force_bottle: @force_bottle, flags: @flags)
+            when :resolve
+              Formulary.resolve(name, spec: spec, force_bottle: @force_bottle, flags: @flags)
+            else
+              raise
+            end
+
             warn_if_cask_conflicts(name, "formula") unless only == :formula
             return formula
           rescue FormulaUnavailableError => e
@@ -47,7 +59,7 @@ module Homebrew
 
         if only != :formula
           begin
-            return Cask::CaskLoader.load(name)
+            return Cask::CaskLoader.load(name, config: Cask::Config.from_args(@parent))
           rescue Cask::CaskUnavailableError
             raise e if only == :cask
           end
@@ -58,46 +70,30 @@ module Homebrew
       private :load_formula_or_cask
 
       def resolve_formula(name)
-        Formulary.resolve(name, spec: spec(nil), force_bottle: @force_bottle, flags: @flags)
+        Formulary.resolve(name, spec: spec, force_bottle: @force_bottle, flags: @flags)
       end
       private :resolve_formula
 
       def to_resolved_formulae
-        @to_resolved_formulae ||= (downcased_unique_named - homebrew_tap_cask_names).map do |name|
-          resolve_formula(name)
-        end.uniq(&:name).freeze
+        @to_resolved_formulae ||= to_formulae_and_casks(only: :formula, method: :resolve)
+                                  .freeze
       end
 
       def to_resolved_formulae_to_casks
-        @to_resolved_formulae_to_casks ||= begin
-          resolved_formulae = []
-          casks = []
-
-          downcased_unique_named.each do |name|
-            resolved_formulae << resolve_formula(name)
-
-            warn_if_cask_conflicts(name, "formula")
-          rescue FormulaUnavailableError
-            begin
-              casks << Cask::CaskLoader.load(name)
-            rescue Cask::CaskUnavailableError
-              raise "No available formula or cask with the name \"#{name}\""
-            end
-          end
-
-          [resolved_formulae.freeze, casks.freeze].freeze
-        end
+        @to_resolved_formulae_to_casks ||= to_formulae_and_casks(method: :resolve)
+                                           .partition { |o| o.is_a?(Formula) }
+                                           .map(&:freeze).freeze
       end
 
       # Convert named arguments to `Tap`, `Formula` or `Cask` objects.
       # If both a formula and cask exist with the same name, returns the
       # formula and prints a warning unless `only` is specified.
-      def to_objects(only: nil)
+      def to_objects(only: nil, method: nil)
         @to_objects ||= {}
         @to_objects[only] ||= downcased_unique_named.flat_map do |name|
           next Tap.fetch(name) if only == :tap || (only.nil? && name.count("/") == 1 && !name.start_with?("./", "/"))
 
-          load_formula_or_cask(name, only: only)
+          load_formula_or_cask(name, only: only, method: method)
         end.uniq.freeze
       end
 
@@ -130,12 +126,6 @@ module Homebrew
             paths.empty? ? name : paths
           end
         end.uniq.freeze
-      end
-
-      def to_casks
-        @to_casks ||= downcased_unique_named
-                      .map { |name| Cask::CaskLoader.load(name, config: Cask::Config.from_args(@parent)) }
-                      .freeze
       end
 
       def to_kegs
@@ -187,9 +177,10 @@ module Homebrew
         end.uniq
       end
 
-      def spec(default = :stable)
-        @override_spec || default
+      def spec
+        @override_spec
       end
+      private :spec
 
       def resolve_keg(name)
         raise UsageError if name.blank?
