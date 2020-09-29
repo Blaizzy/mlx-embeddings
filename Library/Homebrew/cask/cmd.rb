@@ -236,12 +236,6 @@ module Cask
 
       args = self.class.parser.parse(argv, ignore_invalid_options: true)
 
-      Config::DEFAULT_DIRS.each_key do |name|
-        Config.global.public_send(:"#{name}=", args[name]) if args[name]
-      end
-
-      Config.global.languages = args.language if args.language
-
       Tap.default_cask_tap.install unless Tap.default_cask_tap.installed?
 
       command, argv = detect_internal_command(*argv) ||

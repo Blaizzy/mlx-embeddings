@@ -23,6 +23,19 @@ describe Cask::Cmd::Cat, :cask do
         end
       RUBY
     }
+    let(:caffeine_content) {
+      <<~'RUBY'
+        cask "local-caffeine" do
+          version "1.2.3"
+          sha256 "67cdb8a02803ef37fdbf7e0be205863172e41a561ca446cd84f0d7ab35a99d94"
+
+          url "file://#{TEST_FIXTURE_DIR}/cask/caffeine.zip"
+          homepage "https://brew.sh/"
+
+          app "Caffeine.app"
+        end
+      RUBY
+    }
 
     it "displays the Cask file content about the specified Cask" do
       expect {
@@ -32,8 +45,8 @@ describe Cask::Cmd::Cat, :cask do
 
     it "can display multiple Casks" do
       expect {
-        described_class.run("basic-cask", "basic-cask")
-      }.to output(basic_cask_content * 2).to_stdout
+        described_class.run("basic-cask", "local-caffeine")
+      }.to output(basic_cask_content + caffeine_content).to_stdout
     end
   end
 

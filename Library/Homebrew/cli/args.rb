@@ -20,7 +20,7 @@ module Homebrew
 
         # Can set these because they will be overwritten by freeze_named_args!
         # (whereas other values below will only be overwritten if passed).
-        self[:named_args] = NamedArgs.new
+        self[:named_args] = NamedArgs.new(parent: self)
         self[:remaining] = []
       end
 
@@ -34,6 +34,7 @@ module Homebrew
           override_spec: spec(nil),
           force_bottle:  force_bottle?,
           flags:         flags_only,
+          parent:        self,
         )
       end
 
@@ -49,7 +50,7 @@ module Homebrew
       end
 
       def named
-        named_args || NamedArgs.new
+        named_args
       end
 
       def no_named?

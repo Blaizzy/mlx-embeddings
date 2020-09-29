@@ -106,8 +106,7 @@ module Cask
       def casks(alternative: -> { [] })
         return @casks if defined?(@casks)
 
-        casks = args.named.empty? ? alternative.call : args.named
-        @casks = casks.map { |cask| CaskLoader.load(cask) }
+        @casks = args.named.empty? ? alternative.call : args.named.to_casks
       rescue CaskUnavailableError => e
         reason = [e.reason, *suggestion_message(e.token)].join(" ")
         raise e.class.new(e.token, reason)

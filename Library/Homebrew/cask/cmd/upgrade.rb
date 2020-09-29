@@ -118,7 +118,7 @@ module Cask
         old_cask_installer =
           Installer.new(old_cask, **old_options)
 
-        new_cask.config = Config.global.merge(old_config)
+        new_cask.config = new_cask.default_config.merge(old_config)
 
         new_options = {
           binaries:       binaries,

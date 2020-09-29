@@ -195,7 +195,7 @@ describe Cask::Installer, :cask do
 
       described_class.new(nested_app).install
 
-      expect(Cask::Config.global.appdir.join("MyNestedApp.app")).to be_a_directory
+      expect(nested_app.config.appdir.join("MyNestedApp.app")).to be_a_directory
     end
 
     it "generates and finds a timestamped metadata directory for an installed Cask" do

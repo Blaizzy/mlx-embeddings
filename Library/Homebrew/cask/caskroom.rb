@@ -36,9 +36,9 @@ module Cask
         token = path.basename.to_s
 
         if tap_path = CaskLoader.tap_paths(token).first
-          CaskLoader::FromTapPathLoader.new(tap_path).load
+          CaskLoader::FromTapPathLoader.new(tap_path).load(config: nil)
         elsif caskroom_path = Pathname.glob(path.join(".metadata/*/*/*/*.rb")).first
-          CaskLoader::FromPathLoader.new(caskroom_path).load
+          CaskLoader::FromPathLoader.new(caskroom_path).load(config: nil)
         else
           CaskLoader.load(token)
         end

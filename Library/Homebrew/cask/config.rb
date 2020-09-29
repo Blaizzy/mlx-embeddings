@@ -36,20 +36,24 @@ module Cask
       }.merge(DEFAULT_DIRS).freeze
     end
 
-    def self.global
-      @global ||= new
-    end
-
-    def self.clear
-      @global = nil
-    end
-
-    def self.for_cask(cask)
-      if cask.config_path.exist?
-        from_json(File.read(cask.config_path))
-      else
-        global
-      end
+    def self.from_args(args)
+      new(explicit: {
+        appdir:               args.appdir,
+        colorpickerdir:       args.colorpickerdir,
+        prefpanedir:          args.prefpanedir,
+        qlplugindir:          args.qlplugindir,
+        mdimporterdir:        args.mdimporterdir,
+        dictionarydir:        args.dictionarydir,
+        fontdir:              args.fontdir,
+        servicedir:           args.servicedir,
+        input_methoddir:      args.input_methoddir,
+        internet_plugindir:   args.internet_plugindir,
+        audio_unit_plugindir: args.audio_unit_plugindir,
+        vst_plugindir:        args.vst_plugindir,
+        vst3_plugindir:       args.vst3_plugindir,
+        screen_saverdir:      args.screen_saverdir,
+        languages:            args.language,
+      }.compact)
     end
 
     def self.from_json(json)
@@ -95,19 +99,19 @@ module Cask
 
     def env
       @env ||= self.class.canonicalize(
-        Shellwords.shellsplit(ENV.fetch("HOMEBREW_CASK_OPTS", ""))
-                  .select { |arg| arg.include?("=") }
-                  .map { |arg| arg.split("=", 2) }
-                  .map do |(flag, value)|
-                    key = flag.sub(/^--/, "")
+        Homebrew::EnvConfig.cask_opts
+          .select { |arg| arg.include?("=") }
+          .map { |arg| arg.split("=", 2) }
+          .map do |(flag, value)|
+            key = flag.sub(/^--/, "")
 
-                    if key == "language"
-                      key = "languages"
-                      value = value.split(",")
-                    end
+            if key == "language"
+              key = "languages"
+              value = value.split(",")
+            end
 
-                    [key, value]
-                  end,
+            [key, value]
+          end,
       )
     end
 

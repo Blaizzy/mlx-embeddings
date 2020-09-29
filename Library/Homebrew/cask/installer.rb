@@ -99,7 +99,7 @@ module Cask
       opoo "macOS's Gatekeeper has been disabled for this Cask" unless quarantine?
       stage
 
-      @cask.config = Config.global.merge(old_config)
+      @cask.config = @cask.default_config.merge(old_config)
 
       install_artifacts
 
@@ -284,10 +284,11 @@ module Cask
 
       if cask_or_formula.is_a?(Cask)
         formula_deps = cask_or_formula.depends_on.formula.map { |f| Formula[f] }
-        cask_deps = cask_or_formula.depends_on.cask.map(&CaskLoader.public_method(:load))
+        cask_deps = cask_or_formula.depends_on.cask.map { |c| CaskLoader.load(c, config: nil) }
       else
         formula_deps = cask_or_formula.deps.reject(&:build?).map(&:to_formula)
-        cask_deps = cask_or_formula.requirements.map(&:cask).compact.map(&CaskLoader.public_method(:load))
+        cask_deps = cask_or_formula.requirements.map(&:cask).compact
+                                   .map { |c| CaskLoader.load(c, config: nil) }
       end
 
       acc[cask_or_formula] ||= []

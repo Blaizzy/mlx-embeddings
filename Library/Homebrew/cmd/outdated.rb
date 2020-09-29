@@ -174,7 +174,7 @@ module Homebrew
 
   def outdated_casks(args:)
     if args.named.present?
-      select_outdated(args.named.uniq.map(&Cask::CaskLoader.method(:load)), args: args)
+      select_outdated(args.named.to_casks, args: args)
     else
       select_outdated(Cask::Caskroom.casks, args: args)
     end

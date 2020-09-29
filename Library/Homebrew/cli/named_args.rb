@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
-require "cask/cask_loader"
 require "delegate"
+
+require "cask/cask_loader"
+require "cli/args"
 require "formulary"
 require "missing_formula"
 
@@ -11,11 +13,12 @@ module Homebrew
     #
     # @api private
     class NamedArgs < SimpleDelegator
-      def initialize(*args, override_spec: nil, force_bottle: false, flags: [])
+      def initialize(*args, parent: Args.new, override_spec: nil, force_bottle: false, flags: [])
         @args = args
         @override_spec = override_spec
         @force_bottle = force_bottle
         @flags = flags
+        @parent = parent
 
         super(@args)
       end
@@ -130,7 +133,9 @@ module Homebrew
       end
 
       def to_casks
-        @to_casks ||= downcased_unique_named.map(&Cask::CaskLoader.method(:load)).freeze
+        @to_casks ||= downcased_unique_named
+                      .map { |name| Cask::CaskLoader.load(name, config: Cask::Config.from_args(@parent)) }
+                      .freeze
       end
 
       def to_kegs
@@ -155,7 +160,7 @@ module Homebrew
             warn_if_cask_conflicts(name, "keg")
           rescue NoSuchKegError, FormulaUnavailableError
             begin
-              casks << Cask::CaskLoader.load(name)
+              casks << Cask::CaskLoader.load(name, config: Cask::Config.from_args(@parent))
             rescue Cask::CaskUnavailableError
               raise "No installed keg or cask with the name \"#{name}\""
             end
