@@ -136,6 +136,7 @@
 **/vendor/bundle/ruby/*/gems/sorbet-runtime-*/
 **/vendor/bundle/ruby/*/gems/spoom-*/
 **/vendor/bundle/ruby/*/gems/stackprof-*/
+**/vendor/bundle/ruby/*/gems/strscan-*/
 **/vendor/bundle/ruby/*/gems/tapioca-*/
 **/vendor/bundle/ruby/*/gems/thor-*/
 **/vendor/bundle/ruby/*/gems/unf_ext-*/
