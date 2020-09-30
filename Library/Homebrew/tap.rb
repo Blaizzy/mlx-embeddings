@@ -38,12 +38,9 @@ class Tap
 
   def self.from_path(path)
     match = File.expand_path(path).match(HOMEBREW_TAP_PATH_REGEX)
-    raise "Invalid tap path '#{path}'" unless match
+    return if match.blank? || match[:user].blank? || match[:repo].blank?
 
     fetch(match[:user], match[:repo])
-  rescue
-    # No need to error as a nil tap is sufficient to show failure.
-    nil
   end
 
   def self.default_cask_tap
