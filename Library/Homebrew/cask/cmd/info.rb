@@ -18,14 +18,38 @@ module Cask
 
       def self.parser
         super do
-          flag "--json=",
-               description: "Output information in JSON format."
+          flag   "--json=",
+                 description: "Output information in JSON format."
+          switch "--github",
+                 description: "Open the GitHub source page for <Cask> in a browser. "
+        end
+      end
+
+      def github_info(cask)
+        sourcefile_path = cask.sourcefile_path
+        dir = cask.tap.path
+        path = sourcefile_path.relative_path_from(dir)
+        remote = cask.tap.remote
+        github_remote_path(remote, path)
+      end
+
+      def github_remote_path(remote, path)
+        if remote =~ %r{^(?:https?://|git(?:@|://))github\.com[:/](.+)/(.+?)(?:\.git)?$}
+          "https://github.com/#{Regexp.last_match(1)}/#{Regexp.last_match(2)}/blob/HEAD/#{path}"
+        else
+          "#{remote}/#{path}"
         end
       end
 
       def run
         if args.json == "v1"
           puts JSON.generate(casks.map(&:to_h))
+        elsif args.github?
+          raise CaskUnspecifiedError if args.no_named?
+
+          args.named.to_formulae_and_casks.map do |cask|
+            exec_browser(github_info(cask))
+          end
         else
           casks.each_with_index do |cask, i|
             puts unless i.zero?

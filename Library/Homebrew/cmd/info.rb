@@ -86,7 +86,7 @@ module Homebrew
     elsif args.github?
       raise FormulaUnspecifiedError if args.no_named?
 
-      exec_browser(*args.named.to_formulae.map { |f| github_info(f) })
+      exec_browser(*args.named.to_formulae_and_casks.map { |f| github_info(f) })
     else
       print_info(args: args)
     end
@@ -148,7 +148,11 @@ module Homebrew
   def github_info(f)
     if f.tap
       if remote = f.tap.remote
-        path = f.path.relative_path_from(f.tap.path)
+        path = if f.class.superclass == Formula
+          f.path.relative_path_from(f.tap.path)
+        elsif f.is_a?(Cask::Cask)
+          f.sourcefile_path.relative_path_from(f.tap.path)
+        end
         github_remote_path(remote, path)
       else
         f.path
