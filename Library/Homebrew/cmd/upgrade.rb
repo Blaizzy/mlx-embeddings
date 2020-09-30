@@ -157,6 +157,7 @@ module Homebrew
       require_sha:    EnvConfig.cask_opts_require_sha?,
       skip_cask_deps: args.skip_cask_deps?,
       verbose:        args.verbose?,
+      args:           args,
     )
   end
 end

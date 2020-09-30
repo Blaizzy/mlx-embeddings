@@ -32,16 +32,17 @@ module Cask
           one:       args.public_send(:'1?'),
           full_name: args.full_name?,
           versions:  args.versions?,
+          args:      args,
         )
       end
 
-      def self.list_casks(*casks, json: false, one: false, full_name: false, versions: false)
+      def self.list_casks(*casks, args:, json: false, one: false, full_name: false, versions: false)
         output = if casks.any?
           casks.each do |cask|
             raise CaskNotInstalledError, cask unless cask.installed?
           end
         else
-          Caskroom.casks
+          Caskroom.casks(config: Config.from_args(args))
         end
 
         if json

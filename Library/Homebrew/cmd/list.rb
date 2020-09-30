@@ -172,6 +172,7 @@ module Homebrew
       one:       args.public_send(:'1?'),
       full_name: args.full_name?,
       versions:  args.versions?,
+      args:      args,
     )
   end
 end

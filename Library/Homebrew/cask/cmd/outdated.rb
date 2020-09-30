@@ -20,7 +20,7 @@ module Cask
       end
 
       def run
-        outdated_casks = casks(alternative: -> { Caskroom.casks }).select do |cask|
+        outdated_casks = casks(alternative: -> { Caskroom.casks(config: Config.from_args(args)) }).select do |cask|
           odebug "Checking update info of Cask #{cask}"
           cask.outdated?(greedy: args.greedy?)
         end
