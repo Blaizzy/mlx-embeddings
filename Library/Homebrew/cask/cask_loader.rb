@@ -19,8 +19,8 @@ module Cask
         content = ref.to_str
 
         token  = /(?:"[^"]*"|'[^']*')/
-        curly  = /\(\s*#{token}\s*\)\s*\{.*\}/
-        do_end = /\s+#{token}\s+do(?:\s*;\s*|\s+).*end/
+        curly  = /\(\s*#{token.source}\s*\)\s*\{.*\}/
+        do_end = /\s+#{token.source}\s+do(?:\s*;\s*|\s+).*end/
         regex  = /\A\s*cask(?:#{curly.source}|#{do_end.source})\s*\Z/m
 
         content.match?(regex)
@@ -30,14 +30,16 @@ module Cask
         @content = content.force_encoding("UTF-8")
       end
 
-      def load
+      def load(config:)
+        @config = config
+
         instance_eval(content, __FILE__, __LINE__)
       end
 
       private
 
       def cask(header_token, **options, &block)
-        Cask.new(header_token, **options, &block)
+        Cask.new(header_token, **options, config: @config, &block)
       end
     end
 
@@ -57,19 +59,22 @@ module Cask
         @path = path
       end
 
-      def load
+      def load(config:)
         raise CaskUnavailableError.new(token, "'#{path}' does not exist.")  unless path.exist?
         raise CaskUnavailableError.new(token, "'#{path}' is not readable.") unless path.readable?
         raise CaskUnavailableError.new(token, "'#{path}' is not a file.")   unless path.file?
 
-        @content = IO.read(path)
+        @content = path.read(encoding: "UTF-8")
+        @config = config
 
         begin
           instance_eval(content, path).tap do |cask|
             raise CaskUnreadableError.new(token, "'#{path}' does not contain a cask.") unless cask.is_a?(Cask)
           end
         rescue NameError, ArgumentError, ScriptError => e
-          raise CaskUnreadableError.new(token, e.message)
+          error = CaskUnreadableError.new(token, e.message)
+          error.set_backtrace e.backtrace
+          raise error
         end
       end
 
@@ -102,7 +107,7 @@ module Cask
         super Cache.path/File.basename(@url.path)
       end
 
-      def load
+      def load(config:)
         path.dirname.mkpath
 
         begin
@@ -147,7 +152,7 @@ module Cask
         super Tap.fetch(user, repo).cask_dir/"#{token}.rb"
       end
 
-      def load
+      def load(config:)
         tap.install unless tap.installed?
 
         super
@@ -156,8 +161,6 @@ module Cask
 
     # Loads a cask from an existing {Cask} instance.
     class FromInstanceLoader
-      attr_reader :cask
-
       def self.can_load?(ref)
         ref.is_a?(Cask)
       end
@@ -166,8 +169,8 @@ module Cask
         @cask = cask
       end
 
-      def load
-        cask
+      def load(config:)
+        @cask
       end
     end
 
@@ -182,7 +185,7 @@ module Cask
         super CaskLoader.default_path(token)
       end
 
-      def load
+      def load(config:)
         raise CaskUnavailableError.new(token, "No Cask with this name exists.")
       end
     end
@@ -191,8 +194,8 @@ module Cask
       self.for(ref).path
     end
 
-    def self.load(ref)
-      self.for(ref).load
+    def self.load(ref, config: nil)
+      self.for(ref).load(config: config)
     end
 
     def self.for(ref)

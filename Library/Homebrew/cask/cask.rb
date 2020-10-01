@@ -16,13 +16,13 @@ module Cask
     extend Searchable
     include Metadata
 
-    attr_reader :token, :sourcefile_path, :config
+    attr_reader :token, :sourcefile_path, :config, :default_config
 
     def self.each(&block)
       return to_enum unless block_given?
 
       Tap.flat_map(&:cask_files).each do |f|
-        block.call CaskLoader::FromTapPathLoader.new(f).load
+        block.call CaskLoader::FromTapPathLoader.new(f).load(config: nil)
       rescue CaskUnreadableError => e
         opoo e.message
       end
@@ -34,12 +34,19 @@ module Cask
       @tap
     end
 
-    def initialize(token, sourcefile_path: nil, tap: nil, &block)
+    def initialize(token, sourcefile_path: nil, tap: nil, config: nil, &block)
       @token = token
       @sourcefile_path = sourcefile_path
       @tap = tap
       @block = block
-      self.config = Config.for_cask(self)
+
+      @default_config = config || Config.new
+
+      self.config = if config_path.exist?
+        Config.from_json(File.read(config_path))
+      else
+        @default_config
+      end
     end
 
     def config=(config)

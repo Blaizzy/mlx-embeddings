@@ -64,7 +64,7 @@ describe Cask::Cmd::Uninstall, :cask do
     Cask::Installer.new(cask).install
 
     expect(cask).to be_installed
-    expect(Cask::Config.global.appdir.join("MyFancyApp.app")).to exist
+    expect(cask.config.appdir.join("MyFancyApp.app")).to exist
 
     expect {
       described_class.run("with-uninstall-script-app")
@@ -143,8 +143,8 @@ describe Cask::Cmd::Uninstall, :cask do
     end
   end
 
-  describe "when Casks in Taps have been renamed or removed" do
-    let(:app) { Cask::Config.global.appdir.join("ive-been-renamed.app") }
+  context "when Casks in Taps have been renamed or removed" do
+    let(:app) { Cask::Config.new.appdir.join("ive-been-renamed.app") }
     let(:caskroom_path) { Cask::Caskroom.path.join("ive-been-renamed").tap(&:mkpath) }
     let(:saved_caskfile) {
       caskroom_path.join(".metadata", "latest", "timestamp", "Casks").join("ive-been-renamed.rb")
@@ -168,7 +168,7 @@ describe Cask::Cmd::Uninstall, :cask do
       RUBY
     end
 
-    it "can still uninstall those Casks" do
+    it "can still uninstall them" do
       described_class.run("ive-been-renamed")
 
       expect(app).not_to exist

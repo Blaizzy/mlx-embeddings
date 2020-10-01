@@ -37,7 +37,6 @@ RSpec.shared_context "Homebrew Cask", :needs_macos do
 
     begin
       Cask::Config::DEFAULT_DIRS_PATHNAMES.values.each(&:mkpath)
-      Cask::Config.global.binarydir.mkpath
 
       Tap.default_cask_tap.tap do |tap|
         FileUtils.mkdir_p tap.path.dirname
@@ -52,11 +51,10 @@ RSpec.shared_context "Homebrew Cask", :needs_macos do
       example.run
     ensure
       FileUtils.rm_rf Cask::Config::DEFAULT_DIRS_PATHNAMES.values
-      FileUtils.rm_rf [Cask::Config.global.binarydir, Cask::Caskroom.path, Cask::Cache.path]
+      FileUtils.rm_rf [Cask::Config.new.binarydir, Cask::Caskroom.path, Cask::Cache.path]
       Tap.default_cask_tap.path.unlink
       third_party_tap.path.unlink
       FileUtils.rm_rf third_party_tap.path.parent
-      Cask::Config.clear
     end
   end
 end

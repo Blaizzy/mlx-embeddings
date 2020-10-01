@@ -80,11 +80,14 @@ module Cask
 
     def audit_languages(languages)
       ohai "Auditing language: #{languages.map { |lang| "'#{lang}'" }.to_sentence}"
-      localized_cask = CaskLoader.load(cask.sourcefile_path)
-      config = localized_cask.config
-      config.languages = languages
-      localized_cask.config = config
-      audit_cask_instance(localized_cask)
+
+      original_config = cask.config
+      localized_config = original_config.merge(Config.new(explicit: { languages: languages }))
+      cask.config = localized_config
+
+      audit_cask_instance(cask)
+    ensure
+      cask.config = original_config
     end
 
     def audit_cask_instance(cask)

@@ -38,11 +38,13 @@ module Cask
           require_sha:    args.require_sha?,
           skip_cask_deps: args.skip_cask_deps?,
           verbose:        verbose,
+          args:           args,
         )
       end
 
       def self.upgrade_casks(
         *casks,
+        args:,
         force: false,
         greedy: false,
         dry_run: false,
@@ -56,7 +58,7 @@ module Cask
         quarantine = true if quarantine.nil?
 
         outdated_casks = if casks.empty?
-          Caskroom.casks.select do |cask|
+          Caskroom.casks(config: Config.from_args(args)).select do |cask|
             cask.outdated?(greedy: greedy)
           end
         else
@@ -118,7 +120,7 @@ module Cask
         old_cask_installer =
           Installer.new(old_cask, **old_options)
 
-        new_cask.config = Config.global.merge(old_config)
+        new_cask.config = new_cask.default_config.merge(old_config)
 
         new_options = {
           binaries:       binaries,
