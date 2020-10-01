@@ -104,7 +104,7 @@ module Homebrew
     if pr
       # This is a tap pull request and approving reviewers should also sign-off.
       tap = Tap.from_path(path)
-      trailers += GitHub.approved_reviews(tap.user, "homebrew-#{tap.repo}", pr).map do |r|
+      trailers += GitHub.approved_reviews(tap.user, tap.full_name.split("/").last, pr).map do |r|
         "Signed-off-by: #{r["name"]} <#{r["email"]}>"
       end.join("\n")
 
