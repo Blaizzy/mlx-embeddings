@@ -60,6 +60,7 @@ module Homebrew
         #{Utils::Shell.set_variable_in_profile("HOMEBREW_GITHUB_API_TOKEN", "your_token_here")}
 
       EOS
+      odeprecated "`brew gist-logs` with a password", "HOMEBREW_GITHUB_API_TOKEN"
       login!
     end
 
