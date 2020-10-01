@@ -60,7 +60,7 @@ module Homebrew
         if only != :formula
           begin
             return Cask::CaskLoader.load(name, config: Cask::Config.from_args(@parent))
-          rescue Cask::CaskUnavailableError
+          rescue Cask::CaskUnavailableError => e
             raise e if only == :cask
           end
         end
