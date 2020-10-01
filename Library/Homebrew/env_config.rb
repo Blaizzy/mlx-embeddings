@@ -148,7 +148,7 @@ module Homebrew
       },
       HOMEBREW_GITHUB_API_PASSWORD:          {
         description: "Use this password for authentication with the GitHub API, for features " \
-                     "such as `brew search`. We strongly recommend using `HOMEBREW_GITHUB_API_TOKEN` instead.",
+                     "such as `brew search`. This is deprecated in favour of using `HOMEBREW_GITHUB_API_TOKEN`.",
       },
       HOMEBREW_GITHUB_API_TOKEN:             {
         description: "Use this personal access token for the GitHub API, for features such as " \
@@ -160,7 +160,7 @@ module Homebrew
       },
       HOMEBREW_GITHUB_API_USERNAME:          {
         description: "Use this username for authentication with the GitHub API, for features " \
-                     "such as `brew search`. We strongly recommend using `HOMEBREW_GITHUB_API_TOKEN` instead.",
+                     "such as `brew search`. This is deprecated in favour of using `HOMEBREW_GITHUB_API_TOKEN`.",
       },
       HOMEBREW_GIT_EMAIL:                    {
         description: "Set the Git author and committer name to this value.",

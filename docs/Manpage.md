@@ -1672,7 +1672,7 @@ For example, you might add something like the following to your ~/.profile, ~/.b
     If set, always use Homebrew's vendored, relocatable Ruby version even if the system version of Ruby is new enough.
 
   * `HOMEBREW_GITHUB_API_PASSWORD`:
-    Use this password for authentication with the GitHub API, for features such as `brew search`. We strongly recommend using `HOMEBREW_GITHUB_API_TOKEN` instead.
+    Use this password for authentication with the GitHub API, for features such as `brew search`. This is deprecated in favour of using `HOMEBREW_GITHUB_API_TOKEN`.
 
   * `HOMEBREW_GITHUB_API_TOKEN`:
     Use this personal access token for the GitHub API, for features such as `brew search`. You can create one at <https://github.com/settings/tokens>. If set, GitHub will allow you a greater number of API requests. For more information, see: <https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting>.
@@ -1680,7 +1680,7 @@ For example, you might add something like the following to your ~/.profile, ~/.b
     *Note:* Homebrew doesn't require permissions for any of the scopes, but some developer commands may require additional permissions.
 
   * `HOMEBREW_GITHUB_API_USERNAME`:
-    Use this username for authentication with the GitHub API, for features such as `brew search`. We strongly recommend using `HOMEBREW_GITHUB_API_TOKEN` instead.
+    Use this username for authentication with the GitHub API, for features such as `brew search`. This is deprecated in favour of using `HOMEBREW_GITHUB_API_TOKEN`.
 
   * `HOMEBREW_GIT_EMAIL`:
     Set the Git author and committer name to this value.

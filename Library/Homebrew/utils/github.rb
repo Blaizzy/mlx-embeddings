@@ -91,6 +91,8 @@ module GitHub
     return unless Homebrew::EnvConfig.github_api_username
     return unless Homebrew::EnvConfig.github_api_password
 
+    odeprecated "the GitHub API with HOMEBREW_GITHUB_API_PASSWORD", "HOMEBREW_GITHUB_API_TOKEN"
+
     [Homebrew::EnvConfig.github_api_password, Homebrew::EnvConfig.github_api_username]
   end
 
