@@ -68,7 +68,7 @@ class Options
   include Enumerable
 
   def self.create(array)
-    new array.map { |e| Option.new(e[/^--([^=]+=?)(.+)?$/, 1] || e) }
+    new Array(array).map { |e| Option.new(e[/^--([^=]+=?)(.+)?$/, 1] || e) }
   end
 
   def initialize(*args)
