@@ -49,7 +49,8 @@ module Homebrew
 
           # Example regex: `%r{href=.*?/packages.*?/example[._-]v?(\d+(?:\.\d+)*).t}i`.
           regex ||=
-            %r{href=.*?/packages.*?/#{Regexp.escape(package_name)}[._-]v?(\d+(?:\.\d+)*)#{Regexp.escape(suffix)}}i
+            %r{href=.*?/packages.*?/#{Regexp.escape(package_name)}[._-]
+               v?(\d+(?:\.\d+)*(.post\d)?)#{Regexp.escape(suffix)}}ix
 
           Homebrew::Livecheck::Strategy::PageMatch.find_versions(page_url, regex)
         end
