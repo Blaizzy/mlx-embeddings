@@ -316,23 +316,47 @@ module RuboCop
         end
       end
 
-      # This cop makes sure that git urls have both a `tag` and `revision`.
+      # This cop makes sure that git urls have both a `revision`.
       #
       # @api private
       class GitUrls < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          return unless formula_tap == "homebrew-core"
+
           find_method_calls_by_name(body_node, :url).each do |url|
             next unless string_content(parameters(url).first).match?(/\.git$/)
-
-            next if url_has_tag_and_revision?(parameters(url).last)
+            next if url_has_revision?(parameters(url).last)
 
             offending_node(url)
-            problem "Specify a `tag` and `revision` for git urls"
+            problem "Formulae in homebrew/core should specify a revision for git urls"
           end
         end
 
-        def_node_matcher :url_has_tag_and_revision?, <<~EOS
-          (hash <(pair (sym :tag) str) (pair (sym :revision) str) ...>)
+        def_node_matcher :url_has_revision?, <<~EOS
+          (hash <(pair (sym :revision) str) ...>)
+        EOS
+      end
+    end
+
+    module FormulaAuditStrict
+      # This cop makes sure that git urls have both a `tag`.
+      #
+      # @api private
+      class GitUrls < FormulaCop
+        def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          return unless formula_tap == "homebrew-core"
+
+          find_method_calls_by_name(body_node, :url).each do |url|
+            next unless string_content(parameters(url).first).match?(/\.git$/)
+            next if url_has_tag?(parameters(url).last)
+
+            offending_node(url)
+            problem "Formulae in homebrew/core should specify a tag for git urls"
+          end
+        end
+
+        def_node_matcher :url_has_tag?, <<~EOS
+          (hash <(pair (sym :tag) str) ...>)
         EOS
       end
     end

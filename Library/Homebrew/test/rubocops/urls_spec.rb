@@ -282,7 +282,7 @@ describe RuboCop::Cop::FormulaAudit::GitUrls do
 
   context "when a git URL is used" do
     it "reports no offenses with a non-git url" do
-      expect_no_offenses(<<~RUBY)
+      expect_no_offenses(<<~RUBY, "/homebrew-core/")
         class Foo < Formula
           desc "foo"
           url "https://foo.com"
@@ -291,7 +291,7 @@ describe RuboCop::Cop::FormulaAudit::GitUrls do
     end
 
     it "reports no offenses with both a tag and a revision" do
-      expect_no_offenses(<<~RUBY)
+      expect_no_offenses(<<~RUBY, "/homebrew-core/")
         class Foo < Formula
           desc "foo"
           url "https://github.com/foo/bar.git",
@@ -302,7 +302,7 @@ describe RuboCop::Cop::FormulaAudit::GitUrls do
     end
 
     it "reports no offenses with both a tag, revision and `shallow` before" do
-      expect_no_offenses(<<~RUBY)
+      expect_no_offenses(<<~RUBY, "/homebrew-core/")
         class Foo < Formula
           desc "foo"
           url "https://github.com/foo/bar.git",
@@ -314,7 +314,7 @@ describe RuboCop::Cop::FormulaAudit::GitUrls do
     end
 
     it "reports no offenses with both a tag, revision and `shallow` after" do
-      expect_no_offenses(<<~RUBY)
+      expect_no_offenses(<<~RUBY, "/homebrew-core/")
         class Foo < Formula
           desc "foo"
           url "https://github.com/foo/bar.git",
@@ -326,45 +326,43 @@ describe RuboCop::Cop::FormulaAudit::GitUrls do
     end
 
     it "reports an offense with no `revision`" do
-      expect_offense(<<~RUBY)
+      expect_offense(<<~RUBY, "/homebrew-core/")
         class Foo < Formula
           desc "foo"
           url "https://github.com/foo/bar.git",
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Specify a `tag` and `revision` for git urls
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should specify a revision for git urls
               tag: "v1.0.0"
         end
       RUBY
     end
 
     it "reports an offense with no `revision` and `shallow`" do
-      expect_offense(<<~RUBY)
+      expect_offense(<<~RUBY, "/homebrew-core/")
         class Foo < Formula
           desc "foo"
           url "https://github.com/foo/bar.git",
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Specify a `tag` and `revision` for git urls
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should specify a revision for git urls
               shallow: false,
               tag:     "v1.0.0"
         end
       RUBY
     end
 
-    it "reports an offense with no `tag`" do
-      expect_offense(<<~RUBY)
+    it "reports no offenses with no `tag`" do
+      expect_no_offenses(<<~RUBY, "/homebrew-core/")
         class Foo < Formula
           desc "foo"
           url "https://github.com/foo/bar.git",
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Specify a `tag` and `revision` for git urls
               revision: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
         end
       RUBY
     end
 
-    it "reports an offense with no `tag` and `shallow`" do
-      expect_offense(<<~RUBY)
+    it "reports no offenses with no `tag` and `shallow`" do
+      expect_no_offenses(<<~RUBY, "/homebrew-core/")
         class Foo < Formula
           desc "foo"
           url "https://github.com/foo/bar.git",
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Specify a `tag` and `revision` for git urls
               revision: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
               shallow:  false
         end
@@ -372,7 +370,7 @@ describe RuboCop::Cop::FormulaAudit::GitUrls do
     end
 
     it "reports no offenses with missing arguments in `head`" do
-      expect_no_offenses(<<~RUBY)
+      expect_no_offenses(<<~RUBY, "/homebrew-core/")
         class Foo < Formula
           desc "foo"
           url "https://foo.com"
@@ -384,13 +382,119 @@ describe RuboCop::Cop::FormulaAudit::GitUrls do
     end
 
     it "reports no offenses with missing arguments in `devel`" do
-      expect_no_offenses(<<~RUBY)
+      expect_no_offenses(<<~RUBY, "/homebrew-core/")
         class Foo < Formula
           desc "foo"
           url "https://foo.com"
           devel do
             url "https://github.com/foo/bar.git"
           end
+        end
+      RUBY
+    end
+
+    it "reports no offenses for non-core taps" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          desc "foo"
+          url "https://github.com/foo/bar.git"
+        end
+      RUBY
+    end
+  end
+end
+
+describe RuboCop::Cop::FormulaAuditStrict::GitUrls do
+  subject(:cop) { described_class.new }
+
+  context "when a git URL is used" do
+    it "reports no offenses with both a tag and a revision" do
+      expect_no_offenses(<<~RUBY, "/homebrew-core/")
+        class Foo < Formula
+          desc "foo"
+          url "https://github.com/foo/bar.git",
+              tag:      "v1.0.0",
+              revision: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        end
+      RUBY
+    end
+
+    it "reports no offenses with both a tag, revision and `shallow` before" do
+      expect_no_offenses(<<~RUBY, "/homebrew-core/")
+        class Foo < Formula
+          desc "foo"
+          url "https://github.com/foo/bar.git",
+              shallow:  false,
+              tag:      "v1.0.0",
+              revision: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        end
+      RUBY
+    end
+
+    it "reports no offenses with both a tag, revision and `shallow` after" do
+      expect_no_offenses(<<~RUBY, "/homebrew-core/")
+        class Foo < Formula
+          desc "foo"
+          url "https://github.com/foo/bar.git",
+              tag:      "v1.0.0",
+              revision: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              shallow:  false
+        end
+      RUBY
+    end
+
+    it "reports an offense with no `tag`" do
+      expect_offense(<<~RUBY, "/homebrew-core/")
+        class Foo < Formula
+          desc "foo"
+          url "https://github.com/foo/bar.git",
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should specify a tag for git urls
+              revision: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        end
+      RUBY
+    end
+
+    it "reports an offense with no `tag` and `shallow`" do
+      expect_offense(<<~RUBY, "/homebrew-core/")
+        class Foo < Formula
+          desc "foo"
+          url "https://github.com/foo/bar.git",
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should specify a tag for git urls
+              revision: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              shallow:  false
+        end
+      RUBY
+    end
+
+    it "reports no offenses with missing arguments in `head`" do
+      expect_no_offenses(<<~RUBY, "/homebrew-core/")
+        class Foo < Formula
+          desc "foo"
+          url "https://foo.com"
+          head do
+            url "https://github.com/foo/bar.git"
+          end
+        end
+      RUBY
+    end
+
+    it "reports no offenses with missing arguments in `devel`" do
+      expect_no_offenses(<<~RUBY, "/homebrew-core/")
+        class Foo < Formula
+          desc "foo"
+          url "https://foo.com"
+          devel do
+            url "https://github.com/foo/bar.git"
+          end
+        end
+      RUBY
+    end
+
+    it "reports no offenses for non-core taps" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          desc "foo"
+          url "https://github.com/foo/bar.git"
         end
       RUBY
     end
