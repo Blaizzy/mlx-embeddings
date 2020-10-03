@@ -16,9 +16,9 @@ module OS
       # CI systems have been updated.
       # This may be a beta version for a beta macOS.
       def latest_version
-        latest_stable = "11.5"
+        latest_stable = "12.0.1"
         case MacOS.version
-        when "11.0"  then "12.0"
+        when "11.0"  then "12.0.1"
         when "10.15" then latest_stable
         when "10.14" then "11.3.1"
         when "10.13" then "10.1"
@@ -180,10 +180,10 @@ module OS
         # installed CLT version. This is useful as they are packaged
         # simultaneously so workarounds need to apply to both based on their
         # comparable version.
-        latest_stable = "11.5"
+        latest_stable = "12.0"
         case (DevelopmentTools.clang_version.to_f * 10).to_i
-        when 120     then "12.0"
-        when 110     then latest_stable
+        when 120     then latest_stable
+        when 110     then "11.5"
         when 100     then "10.3"
         when 91      then "9.4"
         when 90      then "9.2"
@@ -263,8 +263,8 @@ module OS
       # and our CI systems have been updated.
       def latest_clang_version
         case MacOS.version
-        when "11.0" then "1200.0.22.7"
-        when "10.15" then "1103.0.32.59"
+        when "11.0" then "1200.0.32.2"
+        when "10.15" then "1200.0.32.2"
         when "10.14" then "1001.0.46.4"
         when "10.13" then "1000.10.44.2"
         when "10.12" then "900.0.39.2"
