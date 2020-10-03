@@ -1177,6 +1177,8 @@ Apply the bottle commit and publish bottles to Bintray or GitHub Releases.
   If the formula specifies a rebuild version, attempt to preserve its value in the generated DSL.
 * `-n`, `--dry-run`:
   Print what would be done rather than doing it.
+* `--no-commit`:
+  Do not generate a new commit before uploading.
 * `--warn-on-upload-failure`:
   Warn instead of raising an error if the bottle upload fails. Useful for repairing bottle uploads that previously failed.
 * `--bintray-org`:

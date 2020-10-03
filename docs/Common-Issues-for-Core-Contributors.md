@@ -9,6 +9,10 @@ This is a page for maintainers to diagnose certain build errors.
 ### Bottle publishes failed but the commits are correct in the git history
 
 Follow these steps to fix this issue:
+* Download and extract the bottle artifact.
+* `brew pr-upload --no-commit` in the bottle directory.
+
+Alternative instructions using `pr-pull`:
 * `git reset --hard <SHA>` in homebrew/core to reset to the commit before before all the commits created by `brew pr-pull`.
 * `brew pr-pull <options>` to upload the right bottles. Add the `--warn-on-upload-failure` flag if the bottles have been partially uploaded and you're certain that the bottle checksums will match the checksums already present in the `bottle do` block of the formula.
 * `git reset --hard origin/master` to return to the latest commit and discard the commits made by `brew pr-pull`.

@@ -20,6 +20,8 @@ module Homebrew
                           "attempt to preserve its value in the generated DSL."
       switch "-n", "--dry-run",
              description: "Print what would be done rather than doing it."
+      switch "--no-commit",
+             description: "Do not generate a new commit before uploading."
       switch "--warn-on-upload-failure",
              description: "Warn instead of raising an error if the bottle upload fails. "\
                           "Useful for repairing bottle uploads that previously failed."
@@ -66,6 +68,7 @@ module Homebrew
     bottle_args << "--debug" if args.debug?
     bottle_args << "--keep-old" if args.keep_old?
     bottle_args << "--root-url=#{args.root_url}" if args.root_url
+    bottle_args << "--no-commit" if args.no_commit?
     bottle_args += json_files
 
     if args.dry_run?
