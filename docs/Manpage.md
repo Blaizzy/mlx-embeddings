@@ -1244,9 +1244,14 @@ including core code and all formulae.
 * `--except-cops`:
   Specify a comma-separated *`cops`* list to skip checking for violations of the listed RuboCop cops.
 
-### `tap-new` *`user`*`/`*`repo`*
+### `tap-new` [*`options`*] *`user`*`/`*`repo`*
 
 Generate the template files for a new tap.
+
+* `--no-git`:
+  Don't initialize a git repository for the tap.
+* `--pull-label`:
+  Label name for pull requests ready to be pulled (default `pr-pull`).
 
 ### `test` [*`options`*] *`formula`*
 
