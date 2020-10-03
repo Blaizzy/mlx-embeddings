@@ -1119,6 +1119,10 @@ Find pull requests that can be automatically merged using `brew pr-publish`.
 Publish bottles for a pull request with GitHub Actions.
 Requires write access to the repository.
 
+* `--autosquash`:
+  If supported on the target tap, automatically reformat and reword commits in the pull request to our preferred format.
+* `--message`:
+  Message to include when autosquashing revision bumps, deletions, and rebuilds.
 * `--tap`:
   Target tap repository (default: `homebrew/core`).
 * `--workflow`:

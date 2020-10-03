@@ -14,5 +14,10 @@ If a pull request is correct and doesn't need any modifications to commit messag
 If a pull request needs its commits squashed or its commit messages reformatted to [follow our style](https://docs.brew.sh/Formula-Cookbook#commit):
 
 1. Ensure the job has already completed successfully.
-2. Run `brew pr-pull --autosquash 12345` where `12345` is the pull request number (or URL). For revision bumps, rebuilds, and formula deletions, you can optionally include a `--message` argument to explain the change.
+2. Run `brew pr-publish --autosquash 12345` where `12345` is the pull request number (or URL). For revision bumps, rebuilds, and formula deletions, you can optionally include a `--message` argument to explain the change.
+
+If a pull request needs its commit messages changed in a way that autosquash doesn't support:
+
+1. Ensure the job has already completed successfully.
+2. Run `brew pr-pull 12345` where `12345` is the pull request number (or URL).
 3. Amend any relevant commits if needed, then run `git push` to push the commits.
