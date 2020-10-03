@@ -22,7 +22,6 @@ module Homebrew
       [:switch, "--cask", "--casks", {
         description: "Treat all named arguments as casks.",
       }],
-      *Cask::Cmd::OPTIONS,
       *Cask::Cmd::AbstractCommand::OPTIONS,
       *Cask::Cmd::Install::OPTIONS,
     ]
@@ -132,17 +131,18 @@ module Homebrew
       conflicts "--ignore-dependencies", "--only-dependencies"
       conflicts "--build-from-source", "--build-bottle", "--force-bottle"
 
-      formula_only_options.each do |options|
-        send(*options)
-        conflicts "--cask", options[-2]
+      formula_only_options.each do |*args, **options|
+        send(*args, **options)
+        conflicts "--cask", args.last
       end
-
-      cask_only_options.each do |options|
-        send(*options)
-        conflicts "--formula", options[-2]
-      end
-
       formula_options
+
+      cask_only_options.each do |*args, **options|
+        send(*args, **options)
+        conflicts "--formula", args.last
+      end
+      cask_options
+
       min_named 1
     end
   end

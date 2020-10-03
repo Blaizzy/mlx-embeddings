@@ -79,70 +79,6 @@ module Cask
       EOS
     end
 
-    OPTIONS = [
-      [:flag, "--appdir=", {
-        description: "Target location for Applications. " \
-                     "Default: `#{Config::DEFAULT_DIRS[:appdir]}`",
-      }],
-      [:flag, "--colorpickerdir=", {
-        description: "Target location for Color Pickers. " \
-                     "Default: `#{Config::DEFAULT_DIRS[:colorpickerdir]}`",
-      }],
-      [:flag, "--prefpanedir=", {
-        description: "Target location for Preference Panes. " \
-                     "Default: `#{Config::DEFAULT_DIRS[:prefpanedir]}`",
-      }],
-      [:flag, "--qlplugindir=", {
-        description: "Target location for QuickLook Plugins. " \
-                     "Default: `#{Config::DEFAULT_DIRS[:qlplugindir]}`",
-      }],
-      [:flag, "--mdimporterdir=", {
-        description: "Target location for Spotlight Plugins. " \
-                     "Default: `#{Config::DEFAULT_DIRS[:mdimporterdir]}`",
-      }],
-      [:flag, "--dictionarydir=", {
-        description: "Target location for Dictionaries. " \
-                      "Default: `#{Config::DEFAULT_DIRS[:dictionarydir]}`",
-      }],
-      [:flag, "--fontdir=", {
-        description: "Target location for Fonts. " \
-                     "Default: `#{Config::DEFAULT_DIRS[:fontdir]}`",
-      }],
-      [:flag, "--servicedir=", {
-        description: "Target location for Services. " \
-                     "Default: `#{Config::DEFAULT_DIRS[:servicedir]}`",
-      }],
-      [:flag, "--input_methoddir=", {
-        description: "Target location for Input Methods. " \
-                     "Default: `#{Config::DEFAULT_DIRS[:input_methoddir]}`",
-      }],
-      [:flag, "--internet_plugindir=", {
-        description: "Target location for Internet Plugins. " \
-                     "Default: `#{Config::DEFAULT_DIRS[:internet_plugindir]}`",
-      }],
-      [:flag, "--audio_unit_plugindir=", {
-        description: "Target location for Audio Unit Plugins. " \
-                    "Default: `#{Config::DEFAULT_DIRS[:audio_unit_plugindir]}`",
-      }],
-      [:flag, "--vst_plugindir=", {
-        description: "Target location for VST Plugins. " \
-                    "Default: `#{Config::DEFAULT_DIRS[:vst_plugindir]}`",
-      }],
-      [:flag, "--vst3_plugindir=", {
-        description: "Target location for VST3 Plugins. " \
-                     "Default: `#{Config::DEFAULT_DIRS[:vst3_plugindir]}`",
-      }],
-      [:flag, "--screen_saverdir=", {
-        description: "Target location for Screen Savers. " \
-                     "Default: `#{Config::DEFAULT_DIRS[:screen_saverdir]}`",
-      }],
-      [:comma_array, "--language", {
-        description: "Set language of the Cask to install. The first matching " \
-                     "language is used, otherwise the default language on the Cask. " \
-                     "The default value is the `language of your system`",
-      }],
-    ].freeze
-
     def self.parser(&block)
       Homebrew::CLI::Parser.new do
         if block_given?
@@ -155,9 +91,7 @@ module Cask
           EOS
         end
 
-        OPTIONS.each do |option|
-          send(*option)
-        end
+        cask_options
       end
     end
 

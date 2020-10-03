@@ -20,7 +20,6 @@ module Homebrew
       [:switch, "--cask", "--casks", {
         description: "Treat all named arguments as casks.",
       }],
-      *Cask::Cmd::OPTIONS,
       *Cask::Cmd::AbstractCommand::OPTIONS,
     ]
 
@@ -73,13 +72,14 @@ module Homebrew
         send(*options)
         conflicts "--cask", options[-2]
       end
+      formula_options
 
       cask_only_options.each do |options|
         send(*options)
         conflicts "--formula", options[-2]
       end
+      cask_options
 
-      formula_options
       min_named 1
     end
   end

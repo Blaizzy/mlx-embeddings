@@ -118,37 +118,6 @@ Commands:
 
 See also: `man brew`
 
-* `--appdir`:
-  Target location for Applications. Default: `/Applications`
-* `--colorpickerdir`:
-  Target location for Color Pickers. Default: `~/Library/ColorPickers`
-* `--prefpanedir`:
-  Target location for Preference Panes. Default: `~/Library/PreferencePanes`
-* `--qlplugindir`:
-  Target location for QuickLook Plugins. Default: `~/Library/QuickLook`
-* `--mdimporterdir`:
-  Target location for Spotlight Plugins. Default: `~/Library/Spotlight`
-* `--dictionarydir`:
-  Target location for Dictionaries. Default: `~/Library/Dictionaries`
-* `--fontdir`:
-  Target location for Fonts. Default: `~/Library/Fonts`
-* `--servicedir`:
-  Target location for Services. Default: `~/Library/Services`
-* `--input_methoddir`:
-  Target location for Input Methods. Default: `~/Library/Input Methods`
-* `--internet_plugindir`:
-  Target location for Internet Plugins. Default: `~/Library/Internet Plug-Ins`
-* `--audio_unit_plugindir`:
-  Target location for Audio Unit Plugins. Default: `~/Library/Audio/Plug-Ins/Components`
-* `--vst_plugindir`:
-  Target location for VST Plugins. Default: `~/Library/Audio/Plug-Ins/VST`
-* `--vst3_plugindir`:
-  Target location for VST3 Plugins. Default: `~/Library/Audio/Plug-Ins/VST3`
-* `--screen_saverdir`:
-  Target location for Screen Savers. Default: `~/Library/Screen Savers`
-* `--language`:
-  Set language of the Cask to install. The first matching language is used, otherwise the default language on the Cask. The default value is the `language of your system`
-
 ### `cleanup` [*`options`*] [*`formula`*|*`cask`*]
 
 Remove stale lock files and outdated downloads for all formulae and casks,
@@ -352,36 +321,6 @@ the installed formulae or, every 30 days, for all formulae.
   Create a Git repository, useful for creating patches to the software.
 * `--cask`:
   Treat all named arguments as casks.
-* `--appdir`:
-  Target location for Applications. Default: `/Applications`
-* `--colorpickerdir`:
-  Target location for Color Pickers. Default: `~/Library/ColorPickers`
-* `--prefpanedir`:
-  Target location for Preference Panes. Default: `~/Library/PreferencePanes`
-* `--qlplugindir`:
-  Target location for QuickLook Plugins. Default: `~/Library/QuickLook`
-* `--mdimporterdir`:
-  Target location for Spotlight Plugins. Default: `~/Library/Spotlight`
-* `--dictionarydir`:
-  Target location for Dictionaries. Default: `~/Library/Dictionaries`
-* `--fontdir`:
-  Target location for Fonts. Default: `~/Library/Fonts`
-* `--servicedir`:
-  Target location for Services. Default: `~/Library/Services`
-* `--input_methoddir`:
-  Target location for Input Methods. Default: `~/Library/Input Methods`
-* `--internet_plugindir`:
-  Target location for Internet Plugins. Default: `~/Library/Internet Plug-Ins`
-* `--audio_unit_plugindir`:
-  Target location for Audio Unit Plugins. Default: `~/Library/Audio/Plug-Ins/Components`
-* `--vst_plugindir`:
-  Target location for VST Plugins. Default: `~/Library/Audio/Plug-Ins/VST`
-* `--vst3_plugindir`:
-  Target location for VST3 Plugins. Default: `~/Library/Audio/Plug-Ins/VST3`
-* `--screen_saverdir`:
-  Target location for Screen Savers. Default: `~/Library/Screen Savers`
-* `--language`:
-  Set language of the Cask to install. The first matching language is used, otherwise the default language on the Cask. The default value is the `language of your system`
 * `--[no-]binaries`:
   Disable/enable linking of helper executables. Default: enabled
 * `--require-sha`:
@@ -552,36 +491,6 @@ reinstalled formulae or, every 30 days, for all formulae.
   Print install times for each formula at the end of the run.
 * `--cask`:
   Treat all named arguments as casks.
-* `--appdir`:
-  Target location for Applications. Default: `/Applications`
-* `--colorpickerdir`:
-  Target location for Color Pickers. Default: `~/Library/ColorPickers`
-* `--prefpanedir`:
-  Target location for Preference Panes. Default: `~/Library/PreferencePanes`
-* `--qlplugindir`:
-  Target location for QuickLook Plugins. Default: `~/Library/QuickLook`
-* `--mdimporterdir`:
-  Target location for Spotlight Plugins. Default: `~/Library/Spotlight`
-* `--dictionarydir`:
-  Target location for Dictionaries. Default: `~/Library/Dictionaries`
-* `--fontdir`:
-  Target location for Fonts. Default: `~/Library/Fonts`
-* `--servicedir`:
-  Target location for Services. Default: `~/Library/Services`
-* `--input_methoddir`:
-  Target location for Input Methods. Default: `~/Library/Input Methods`
-* `--internet_plugindir`:
-  Target location for Internet Plugins. Default: `~/Library/Internet Plug-Ins`
-* `--audio_unit_plugindir`:
-  Target location for Audio Unit Plugins. Default: `~/Library/Audio/Plug-Ins/Components`
-* `--vst_plugindir`:
-  Target location for VST Plugins. Default: `~/Library/Audio/Plug-Ins/VST`
-* `--vst3_plugindir`:
-  Target location for VST3 Plugins. Default: `~/Library/Audio/Plug-Ins/VST3`
-* `--screen_saverdir`:
-  Target location for Screen Savers. Default: `~/Library/Screen Savers`
-* `--language`:
-  Set language of the Cask to install. The first matching language is used, otherwise the default language on the Cask. The default value is the `language of your system`
 * `--[no-]binaries`:
   Disable/enable linking of helper executables. Default: enabled
 * `--require-sha`:
@@ -745,36 +654,6 @@ upgraded formulae or, every 30 days, for all formulae.
   Print install times for each formula at the end of the run.
 * `--cask`:
   Treat all named arguments as casks. If no named arguments are specified, upgrade only outdated casks.
-* `--appdir`:
-  Target location for Applications. Default: `/Applications`
-* `--colorpickerdir`:
-  Target location for Color Pickers. Default: `~/Library/ColorPickers`
-* `--prefpanedir`:
-  Target location for Preference Panes. Default: `~/Library/PreferencePanes`
-* `--qlplugindir`:
-  Target location for QuickLook Plugins. Default: `~/Library/QuickLook`
-* `--mdimporterdir`:
-  Target location for Spotlight Plugins. Default: `~/Library/Spotlight`
-* `--dictionarydir`:
-  Target location for Dictionaries. Default: `~/Library/Dictionaries`
-* `--fontdir`:
-  Target location for Fonts. Default: `~/Library/Fonts`
-* `--servicedir`:
-  Target location for Services. Default: `~/Library/Services`
-* `--input_methoddir`:
-  Target location for Input Methods. Default: `~/Library/Input Methods`
-* `--internet_plugindir`:
-  Target location for Internet Plugins. Default: `~/Library/Internet Plug-Ins`
-* `--audio_unit_plugindir`:
-  Target location for Audio Unit Plugins. Default: `~/Library/Audio/Plug-Ins/Components`
-* `--vst_plugindir`:
-  Target location for VST Plugins. Default: `~/Library/Audio/Plug-Ins/VST`
-* `--vst3_plugindir`:
-  Target location for VST3 Plugins. Default: `~/Library/Audio/Plug-Ins/VST3`
-* `--screen_saverdir`:
-  Target location for Screen Savers. Default: `~/Library/Screen Savers`
-* `--language`:
-  Set language of the Cask to install. The first matching language is used, otherwise the default language on the Cask. The default value is the `language of your system`
 * `--[no-]binaries`:
   Disable/enable linking of helper executables. Default: enabled
 * `--require-sha`:
@@ -1439,6 +1318,55 @@ If no options are passed, use `origin/master` as the start commit.
 
 Install and commit Homebrew's vendored gems.
 
+## GLOBAL CASK OPTIONS
+
+These options are applicable to subcommands accepting a `--cask` flag and all `cask` commands.
+
+* `--appdir=`:
+  Target location for Applications. Default: `/Applications`
+
+* `--colorpickerdir=`:
+  Target location for Color Pickers. Default: `~/Library/ColorPickers`
+
+* `--prefpanedir=`:
+  Target location for Preference Panes. Default: `~/Library/PreferencePanes`
+
+* `--qlplugindir=`:
+  Target location for QuickLook Plugins. Default: `~/Library/QuickLook`
+
+* `--mdimporterdir=`:
+  Target location for Spotlight Plugins. Default: `~/Library/Spotlight`
+
+* `--dictionarydir=`:
+  Target location for Dictionaries. Default: `~/Library/Dictionaries`
+
+* `--fontdir=`:
+  Target location for Fonts. Default: `~/Library/Fonts`
+
+* `--servicedir=`:
+  Target location for Services. Default: `~/Library/Services`
+
+* `--input_methoddir=`:
+  Target location for Input Methods. Default: `~/Library/Input Methods`
+
+* `--internet_plugindir=`:
+  Target location for Internet Plugins. Default: `~/Library/Internet Plug-Ins`
+
+* `--audio_unit_plugindir=`:
+  Target location for Audio Unit Plugins. Default: `~/Library/Audio/Plug-Ins/Components`
+
+* `--vst_plugindir=`:
+  Target location for VST Plugins. Default: `~/Library/Audio/Plug-Ins/VST`
+
+* `--vst3_plugindir=`:
+  Target location for VST3 Plugins. Default: `~/Library/Audio/Plug-Ins/VST3`
+
+* `--screen_saverdir=`:
+  Target location for Screen Savers. Default: `~/Library/Screen Savers`
+
+* `--language`:
+  Set language of the Cask to install. The first matching language is used, otherwise the default language on the Cask. The default value is the `language of your system`
+
 ## GLOBAL OPTIONS
 
 These options are applicable across multiple subcommands.
@@ -1938,6 +1866,7 @@ See our issues on GitHub:
 [ESSENTIAL COMMANDS]: #ESSENTIAL-COMMANDS "ESSENTIAL COMMANDS"
 [COMMANDS]: #COMMANDS "COMMANDS"
 [DEVELOPER COMMANDS]: #DEVELOPER-COMMANDS "DEVELOPER COMMANDS"
+[GLOBAL CASK OPTIONS]: #GLOBAL-CASK-OPTIONS "GLOBAL CASK OPTIONS"
 [GLOBAL OPTIONS]: #GLOBAL-OPTIONS "GLOBAL OPTIONS"
 [OFFICIAL EXTERNAL COMMANDS]: #OFFICIAL-EXTERNAL-COMMANDS "OFFICIAL EXTERNAL COMMANDS"
 [CUSTOM EXTERNAL COMMANDS]: #CUSTOM-EXTERNAL-COMMANDS "CUSTOM EXTERNAL COMMANDS"

@@ -17,7 +17,6 @@ module Homebrew
         description: "Treat all named arguments as casks. If no named arguments " \
                      "are specified, upgrade only outdated casks.",
       }],
-      *Cask::Cmd::OPTIONS,
       *Cask::Cmd::AbstractCommand::OPTIONS,
       *Cask::Cmd::Upgrade::OPTIONS,
     ]
@@ -85,13 +84,13 @@ module Homebrew
         send(*options)
         conflicts "--cask", options[-2]
       end
+      formula_options
 
       cask_only_options.each do |options|
         send(*options)
         conflicts "--formula", options[-2]
       end
-
-      formula_options
+      cask_options
     end
   end
 
