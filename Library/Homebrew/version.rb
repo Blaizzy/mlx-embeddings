@@ -25,6 +25,7 @@ class Version
       when /\A#{RCToken::PATTERN}\z/o      then RCToken
       when /\A#{PreToken::PATTERN}\z/o     then PreToken
       when /\A#{PatchToken::PATTERN}\z/o   then PatchToken
+      when /\A#{PostToken::PATTERN}\z/o    then PostToken
       when /\A#{NumericToken::PATTERN}\z/o then NumericToken
       when /\A#{StringToken::PATTERN}\z/o  then StringToken
       end.new(val)
@@ -173,7 +174,7 @@ class Version
       case other
       when AlphaToken
         rev <=> other.rev
-      when BetaToken, RCToken, PreToken, PatchToken
+      when BetaToken, RCToken, PreToken, PatchToken, PostToken
         -1
       else
         super
@@ -193,7 +194,7 @@ class Version
         rev <=> other.rev
       when AlphaToken
         1
-      when PreToken, RCToken, PatchToken
+      when PreToken, RCToken, PatchToken, PostToken
         -1
       else
         super
@@ -213,7 +214,7 @@ class Version
         rev <=> other.rev
       when AlphaToken, BetaToken
         1
-      when RCToken, PatchToken
+      when RCToken, PatchToken, PostToken
         -1
       else
         super
@@ -233,7 +234,7 @@ class Version
         rev <=> other.rev
       when AlphaToken, BetaToken, PreToken
         1
-      when PatchToken
+      when PatchToken, PostToken
         -1
       else
         super
@@ -259,12 +260,31 @@ class Version
     end
   end
 
+  # A token representing the part of a version designating it is a post release.
+  class PostToken < CompositeToken
+    PATTERN = /.post[0-9]+/i.freeze
+
+    def <=>(other)
+      return unless other = Token.from(other)
+
+      case other
+      when PostToken
+        rev <=> other.rev
+      when AlphaToken, BetaToken, RCToken, PreToken
+        1
+      else
+        super
+      end
+    end
+  end
+
   SCAN_PATTERN = Regexp.union(
     AlphaToken::PATTERN,
     BetaToken::PATTERN,
     PreToken::PATTERN,
     RCToken::PATTERN,
     PatchToken::PATTERN,
+    PostToken::PATTERN,
     NumericToken::PATTERN,
     StringToken::PATTERN,
   ).freeze
@@ -343,6 +363,10 @@ class Version
 
     # e.g. foobar-4.5.1
     m = /-((?:\d+\.)*\d+)$/.match(stem)
+    return m.captures.first unless m.nil?
+
+    # e.g. foobar-4.5.1.post1
+    m = /-((?:\d+\.)*\d+(.post\d+)?)$/.match(stem)
     return m.captures.first unless m.nil?
 
     # e.g. foobar-4.5.1b
