@@ -1,6 +1,6 @@
 name: brew doctor
 on:
-  push:
+  pull_request:
     paths:
       - .github/workflows/doctor.yml
       - Library/Homebrew/cmd/doctor.rb
