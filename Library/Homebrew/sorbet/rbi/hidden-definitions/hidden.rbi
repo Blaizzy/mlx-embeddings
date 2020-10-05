@@ -19409,6 +19409,10 @@ class RuboCop::Cop::FormulaAudit::DeprecateDisableReason
   def reason(param0); end
 end
 
+class RuboCop::Cop::FormulaAudit::GitUrls
+  def url_has_revision?(param0=T.unsafe(nil)); end
+end
+
 class RuboCop::Cop::FormulaAudit::Miscellaneous
   def conditional_dependencies(param0); end
 
@@ -19435,6 +19439,10 @@ end
 
 class RuboCop::Cop::FormulaAudit::Text
   def prefix_path(param0); end
+end
+
+class RuboCop::Cop::FormulaAuditStrict::GitUrls
+  def url_has_tag?(param0=T.unsafe(nil)); end
 end
 
 class RuboCop::Cop::FormulaAuditStrict::Text
