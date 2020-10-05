@@ -38,6 +38,7 @@ class AbstractDownloadStrategy
     @version = version
     @cache = meta.fetch(:cache, HOMEBREW_CACHE)
     @meta = meta
+    @quiet = false
     extend Pourable if meta[:bottle]
   end
 
@@ -53,6 +54,10 @@ class AbstractDownloadStrategy
   # @api public
   def shutup!
     @quiet = true
+  end
+
+  def quiet?
+    Context.current.quiet? || @quiet
   end
 
   # Unpack {#cached_location} into the current working directory, and possibly

@@ -102,17 +102,21 @@ module Homebrew
 
         formula.head&.downloader&.shutup!
 
-        current = if formula.head?
+        # Use the `stable` version for comparison except for installed
+        # head-only formulae. A formula with `stable` and `head` that's
+        # installed using `--head` will still use the `stable` version for
+        # comparison.
+        current = if formula.head_only?
           formula.any_installed_version.version.commit
         else
-          formula.version
+          formula.stable.version
         end
 
-        latest = if formula.stable?
+        latest = if formula.head_only?
+          formula.head.downloader.fetch_last_commit
+        else
           version_info = latest_version(formula, args: args)
           version_info[:latest] if version_info.present?
-        else
-          formula.head.downloader.fetch_last_commit
         end
 
         if latest.blank?
@@ -128,7 +132,7 @@ module Homebrew
           latest = Version.new(m[1])
         end
 
-        is_outdated = if formula.head?
+        is_outdated = if formula.head_only?
           # A HEAD-only formula is considered outdated if the latest upstream
           # commit hash is different than the installed version's commit hash
           (current != latest)
@@ -150,7 +154,7 @@ module Homebrew
             livecheckable: formula.livecheckable?,
           },
         }
-        info[:meta][:head_only] = true if formula.head?
+        info[:meta][:head_only] = true if formula.head_only?
         info[:meta].merge!(version_info[:meta]) if version_info.present? && version_info.key?(:meta)
 
         next if args.newer_only? && !info[:version][:outdated]
@@ -211,7 +215,7 @@ module Homebrew
         status_hash[:meta] = {
           livecheckable: formula.livecheckable?,
         }
-        status_hash[:meta][:head_only] = true if formula.head?
+        status_hash[:meta][:head_only] = true if formula.head_only?
       end
 
       status_hash
@@ -235,7 +239,7 @@ module Homebrew
         return
       end
 
-      if formula.head? && !formula.any_version_installed?
+      if formula.head_only? && !formula.any_version_installed?
         head_only_msg = "HEAD only formula must be installed to be livecheckable"
         return status_hash(formula, "error", [head_only_msg], args: args) if args.json?
 
@@ -346,7 +350,7 @@ module Homebrew
       if args.debug?
         puts
         puts "Formula:          #{formula_name(formula, args: args)}"
-        puts "Head only?:       true" if formula.head?
+        puts "Head only?:       true" if formula.head_only?
         puts "Livecheckable?:   #{has_livecheckable ? "Yes" : "No"}"
       end
 
