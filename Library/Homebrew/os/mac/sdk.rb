@@ -11,7 +11,7 @@ module OS
       attr_reader :version, :path, :source
 
       def initialize(version, path, source)
-        @version = OS::Mac::Version.new version
+        @version = version
         @path = Pathname.new(path)
         @source = source
       end
@@ -33,7 +33,7 @@ module OS
       def latest_sdk
         return if sdk_paths.empty?
 
-        v, path = sdk_paths.max { |a, b| OS::Mac::Version.new(a[0]) <=> OS::Mac::Version.new(b[0]) }
+        v, path = sdk_paths.max(&:first)
         SDK.new v, path, source
       end
 
@@ -77,7 +77,7 @@ module OS
 
             Dir[File.join(sdk_prefix, "MacOSX*.sdk")].each do |sdk_path|
               version = sdk_path[/MacOSX(\d+\.\d+)u?\.sdk$/, 1]
-              paths[version] = sdk_path unless version.nil?
+              paths[OS::Mac::Version.new(version)] = sdk_path unless version.nil?
             end
 
             paths

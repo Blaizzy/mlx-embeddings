@@ -24,15 +24,18 @@ module OS
         new(str)
       end
 
-      def initialize(*args)
-        super
+      def initialize(value)
+        super(value)
+
+        raise MacOSVersionError, value unless value.match?(/\A1\d+(?:\.\d+){0,2}\Z/)
+
         @comparison_cache = {}
       end
 
       def <=>(other)
         @comparison_cache.fetch(other) do
           v = SYMBOLS.fetch(other) { other.to_s }
-          @comparison_cache[other] = super(Version.new(v))
+          @comparison_cache[other] = super(::Version.new(v))
         end
       end
 
