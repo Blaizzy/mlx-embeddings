@@ -324,7 +324,7 @@ class Tab < OpenStruct
   end
 
   def source_modified_time
-    Time.at(super)
+    Time.at(super || 0)
   end
 
   def to_json(options = nil)
