@@ -32,6 +32,7 @@ module SharedAudits
     "elm-format"       => "0.8.3",
     "freetube"         => :all,
     "gitless"          => "0.8.8",
+    "home-assistant"   => :all,
     "infrakit"         => "0.5",
     "pock"             => :all,
     "riff"             => "0.5.0",
