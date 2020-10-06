@@ -241,7 +241,6 @@ false:
   - ./formula_versions.rb
   - ./formulary.rb
   - ./global.rb
-  - ./install.rb
   - ./keg.rb
   - ./keg_relocate.rb
   - ./language/node.rb
@@ -266,7 +265,6 @@ false:
   - ./pkg_version.rb
   - ./postinstall.rb
   - ./readall.rb
-  - ./reinstall.rb
   - ./requirement.rb
   - ./requirements/arch_requirement.rb
   - ./requirements/codesign_requirement.rb
@@ -879,6 +877,7 @@ true:
   - ./formula_support.rb
   - ./hardware.rb
   - ./help.rb
+  - ./install.rb
   - ./install_renamed.rb
   - ./language/go.rb
   - ./language/java.rb
@@ -895,6 +894,7 @@ true:
   - ./os/linux.rb
   - ./os/linux/glibc.rb
   - ./os/linux/kernel.rb
+  - ./reinstall.rb
   - ./rubocops/cask/ast/cask_header.rb
   - ./rubocops/cask/ast/stanza.rb
   - ./rubocops/cask/constants/stanza.rb
