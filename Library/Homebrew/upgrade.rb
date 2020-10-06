@@ -135,6 +135,8 @@ module Homebrew
     end
 
     def check_installed_dependents(args:)
+      return if Homebrew::EnvConfig.no_installed_dependents_check?
+
       installed_formulae = FormulaInstaller.installed.to_a
       return if installed_formulae.empty?
 

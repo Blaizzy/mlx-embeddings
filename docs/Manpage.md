@@ -1728,6 +1728,9 @@ For example, you might add something like the following to your ~/.profile, ~/.b
   * `HOMEBREW_NO_BOTTLE_SOURCE_FALLBACK`:
     If set, fail on the failure of installation from a bottle rather than falling back to building from source.
 
+  * `HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK`:
+    If set, do not check for broken dependents after installing, upgrading or reinstalling formulae.
+
   * `HOMEBREW_NO_COLOR`:
     If set, do not print text with colour added.
 
