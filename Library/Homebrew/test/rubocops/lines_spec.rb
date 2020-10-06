@@ -681,6 +681,16 @@ describe RuboCop::Cop::FormulaAudit::Licenses do
       RUBY
     end
 
+    it "allow license exceptions" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+          license "MIT" => { with: "LLVM-exception" }
+        end
+      RUBY
+    end
+
     it "allow multiline nested license hashes" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
@@ -689,6 +699,20 @@ describe RuboCop::Cop::FormulaAudit::Licenses do
           license any_of: [
             "MIT",
             all_of: ["0BSD", "Zlib"],
+          ]
+        end
+      RUBY
+    end
+
+    it "allow multiline nested license hashes with exceptions" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+          license any_of: [
+            "MIT",
+            all_of: ["0BSD", "Zlib"],
+            "GPL-2.0-only" => { with: "LLVM-exception" },
           ]
         end
       RUBY

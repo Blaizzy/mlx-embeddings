@@ -305,14 +305,18 @@ module RuboCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           license_node = find_node_method_by_name(body_node, :license)
           return unless license_node
+          return if license_node.source.include?("\n")
 
-          license = parameters(license_node).first
-          return unless license.hash_type?
-          return unless license.each_descendant(:hash).count.positive?
-          return if license.source.include?("\n")
+          parameters(license_node).first.each_descendant(:hash).each do |license_hash|
+            next if license_exception? license_hash
 
-          problem "Split nested license declarations onto multiple lines"
+            problem "Split nested license declarations onto multiple lines"
+          end
         end
+
+        def_node_matcher :license_exception?, <<~EOS
+          (hash (pair (sym :with) str))
+        EOS
       end
 
       # This cop checks for other miscellaneous style violations.
