@@ -12,6 +12,10 @@ module Homebrew::Fetch
   def args; end
 end
 
+module Homebrew::Install
+  include Kernel
+end
+
 module Language::Perl::Shebang
   include Kernel
 end
