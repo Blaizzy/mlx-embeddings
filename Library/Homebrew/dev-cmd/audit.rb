@@ -718,7 +718,6 @@ module Homebrew
 
     # used for formulae that are unstable but need CI run without being in homebrew/core
     UNSTABLE_DEVEL_ALLOWLIST = {
-      "python@3.9" => "3.9.0rc",
     }.freeze
 
     GNOME_DEVEL_ALLOWLIST = {
