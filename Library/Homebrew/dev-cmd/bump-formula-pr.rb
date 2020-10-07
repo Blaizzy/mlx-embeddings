@@ -145,7 +145,7 @@ module Homebrew
     check_closed_pull_requests(formula, tap_full_name, version: new_version, args: args) if new_version
 
     opoo "This formula has patches that may be resolved upstream." if formula.patchlist.present?
-    if formula.resources.present? && formula.resources.any? { |resource| resource.name != "homebrew-virtualenv" }
+    if formula.resources.any? { |resource| !resource.name.start_with?("homebrew-") }
       opoo "This formula has resources that may need to be updated."
     end
 
@@ -339,8 +339,7 @@ module Homebrew
     run_audit(formula, alias_rename, old_contents, args: args)
 
     pr_message = "Created with `brew bump-formula-pr`."
-    if resources_checked.nil? && formula.resources.present? &&
-       formula.resources.any? { |resource| resource.name != "homebrew-virtualenv" }
+    if resources_checked.nil? && formula.resources.any? { |resource| !resource.name.start_with?("homebrew-") }
       pr_message += <<~EOS
 
 
