@@ -142,9 +142,8 @@ module PyPI
       return
     end
 
-    # Check whether resources already exist (excluding homebrew-virtualenv)
-    if formula.resources.blank? ||
-       (formula.resources.length == 1 && formula.resources.first.name == "homebrew-virtualenv")
+    # Check whether resources already exist (excluding virtualenv dependencies)
+    if formula.resources.all? { |resource| resource.name.start_with?("homebrew-") }
       # Place resources above install method
       inreplace_regex = /  def install/
       new_resource_blocks += "  def install"
