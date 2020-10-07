@@ -7,10 +7,8 @@ describe SoftwareSpec do
 
   describe "#uses_from_macos" do
     before do
-      sierra_os_version = OS::Mac::Version.from_symbol(:sierra)
-
       allow(OS).to receive(:mac?).and_return(true)
-      allow(OS::Mac).to receive(:version).and_return(OS::Mac::Version.new(sierra_os_version))
+      allow(OS::Mac).to receive(:version).and_return(OS::Mac::Version.from_symbol(:sierra))
     end
 
     it "adds a macOS dependency if the OS version meets requirements" do

@@ -63,8 +63,8 @@ module Cask
           else
             MacOSRequirement.new([args.first], comparator: "==")
           end
-        rescue MacOSVersionError
-          raise "invalid 'depends_on macos' value: #{args.first.inspect}"
+        rescue MacOSVersionError => e
+          raise "invalid 'depends_on macos' value: #{e}"
         end
       end
 
