@@ -818,7 +818,7 @@ _brew_update_test() {
 # install-options is copied from brew install
 _brew_upgrade() {
   _arguments \
-  '--cask[upgrade installed Casks with newer versions]'
+  '--cask[upgrade installed Casks with newer versions]' \
   '--cleanup[remove previously installed formula version(s)]' \
   '--fetch-HEAD[detect if the HEAD installation of the formula is outdated]' \
   - normal-install \
