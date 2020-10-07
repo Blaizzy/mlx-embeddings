@@ -146,15 +146,16 @@ module Homebrew
   def install
     args = install_args.parse
 
-    only = :formula if args.formula?
-    only = :cask if args.cask?
+    only = :formula if args.formula? && !args.cask?
+    only = :cask if args.cask? && !args.formula?
 
-    objects = args.named.to_objects(only: only)
+    args.named.each do |name|
+      next if File.exist?(name)
+      next if name !~ HOMEBREW_TAP_FORMULA_REGEX && name !~ HOMEBREW_CASK_TAP_CASK_REGEX
 
-    taps, formulae_or_casks = objects.partition { |o| o.is_a?(Tap) }
-    taps = (taps + formulae_or_casks.map(&:tap).compact).uniq.sort_by(&:name)
-
-    taps.reject(&:installed?).each(&:install)
+      tap = Tap.fetch(Regexp.last_match(1), Regexp.last_match(2))
+      tap.install unless tap.installed?
+    end
 
     if args.ignore_dependencies?
       opoo <<~EOS
@@ -165,7 +166,8 @@ module Homebrew
       EOS
     end
 
-    formulae, casks = formulae_or_casks.partition { |formula_or_cask| formula_or_cask.is_a?(Formula) }
+    formulae, casks = args.named.to_formulae_and_casks(only: only)
+                          .partition { |formula_or_cask| formula_or_cask.is_a?(Formula) }
 
     if casks.any?
       Cask::Cmd::Install.install_casks(
