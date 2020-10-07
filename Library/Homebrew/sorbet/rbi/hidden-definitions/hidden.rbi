@@ -8150,6 +8150,8 @@ module Homebrew::EnvConfig
 
   def self.no_install_cleanup?(); end
 
+  def self.no_installed_dependents_check?(); end
+
   def self.no_proxy(); end
 
   def self.pry?(); end
@@ -19413,6 +19415,10 @@ class RuboCop::Cop::FormulaAudit::GitUrls
   def url_has_revision?(param0=T.unsafe(nil)); end
 end
 
+class RuboCop::Cop::FormulaAudit::Licenses
+  def license_exception?(param0=T.unsafe(nil)); end
+end
+
 class RuboCop::Cop::FormulaAudit::Miscellaneous
   def conditional_dependencies(param0); end
 
@@ -20453,34 +20459,8 @@ module RubyToken
   def self.def_token(token_n, super_token=T.unsafe(nil), reading=T.unsafe(nil), *opts); end
 end
 
-module RubyVM::AbstractSyntaxTree
-end
-
 class RubyVM::AbstractSyntaxTree::Node
-  def children(); end
-
-  def first_column(); end
-
-  def first_lineno(); end
-
-  def last_column(); end
-
-  def last_lineno(); end
-
   def pretty_print_children(q, names=T.unsafe(nil)); end
-
-  def type(); end
-end
-
-class RubyVM::AbstractSyntaxTree::Node
-end
-
-module RubyVM::AbstractSyntaxTree
-  def self.of(_); end
-
-  def self.parse(_); end
-
-  def self.parse_file(_); end
 end
 
 module RubyVM::MJIT
