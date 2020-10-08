@@ -12,50 +12,6 @@ module Homebrew
   module_function
 
   def upgrade_args
-    cask_only_options = [
-      [:switch, "--cask", "--casks", {
-        description: "Treat all named arguments as casks. If no named arguments " \
-                     "are specified, upgrade only outdated casks.",
-      }],
-      *Cask::Cmd::AbstractCommand::OPTIONS,
-      *Cask::Cmd::Upgrade::OPTIONS,
-    ]
-
-    formula_only_options = [
-      [:switch, "--formula", "--formulae", {
-        description: "Treat all named arguments as formulae. If no named arguments" \
-                     "are specified, upgrade only outdated formulae.",
-      }],
-      [:switch, "-s", "--build-from-source", {
-        description: "Compile <formula> from source even if a bottle is available.",
-      }],
-      [:switch, "-i", "--interactive", {
-        description: "Download and patch <formula>, then open a shell. This allows the user to "\
-                      "run `./configure --help` and otherwise determine how to turn the software "\
-                      "package into a Homebrew package.",
-      }],
-      [:switch, "--force-bottle", {
-        description: "Install from a bottle if it exists for the current or newest version of "\
-                     "macOS, even if it would not normally be used for installation.",
-      }],
-      [:switch, "--fetch-HEAD", {
-        description: "Fetch the upstream repository to detect if the HEAD installation of the "\
-                     "formula is outdated. Otherwise, the repository's HEAD will only be checked for "\
-                     "updates when a new stable or development version has been released.",
-
-      }],
-      [:switch, "--ignore-pinned", {
-        description: "Set a successful exit status even if pinned formulae are not upgraded.",
-      }],
-      [:switch, "--keep-tmp", {
-        description: "Retain the temporary files created during installation.",
-      }],
-      [:switch, "--display-times", {
-        env:         :display_install_times,
-        description: "Print install times for each formula at the end of the run.",
-      }],
-    ]
-
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
         `upgrade` [<options>] [<formula>|<cask>]
@@ -77,20 +33,58 @@ module Homebrew
              description: "Print the verification and postinstall steps."
       switch "-n", "--dry-run",
              description: "Show what would be upgraded, but do not actually upgrade anything."
+      [
+        [:switch, "--formula", "--formulae", {
+          description: "Treat all named arguments as formulae. If no named arguments" \
+                       "are specified, upgrade only outdated formulae.",
+        }],
+        [:switch, "-s", "--build-from-source", {
+          description: "Compile <formula> from source even if a bottle is available.",
+        }],
+        [:switch, "-i", "--interactive", {
+          description: "Download and patch <formula>, then open a shell. This allows the user to "\
+                        "run `./configure --help` and otherwise determine how to turn the software "\
+                        "package into a Homebrew package.",
+        }],
+        [:switch, "--force-bottle", {
+          description: "Install from a bottle if it exists for the current or newest version of "\
+                       "macOS, even if it would not normally be used for installation.",
+        }],
+        [:switch, "--fetch-HEAD", {
+          description: "Fetch the upstream repository to detect if the HEAD installation of the "\
+                       "formula is outdated. Otherwise, the repository's HEAD will only be checked for "\
+                       "updates when a new stable or development version has been released.",
 
-      conflicts "--build-from-source", "--force-bottle"
-
-      formula_only_options.each do |options|
+        }],
+        [:switch, "--ignore-pinned", {
+          description: "Set a successful exit status even if pinned formulae are not upgraded.",
+        }],
+        [:switch, "--keep-tmp", {
+          description: "Retain the temporary files created during installation.",
+        }],
+        [:switch, "--display-times", {
+          env:         :display_install_times,
+          description: "Print install times for each formula at the end of the run.",
+        }],
+      ].each do |options|
         send(*options)
         conflicts "--cask", options[-2]
       end
       formula_options
-
-      cask_only_options.each do |options|
+      [
+        [:switch, "--cask", "--casks", {
+          description: "Treat all named arguments as casks. If no named arguments " \
+                       "are specified, upgrade only outdated casks.",
+        }],
+        *Cask::Cmd::AbstractCommand::OPTIONS,
+        *Cask::Cmd::Upgrade::OPTIONS,
+      ].each do |options|
         send(*options)
         conflicts "--formula", options[-2]
       end
       cask_options
+
+      conflicts "--build-from-source", "--force-bottle"
     end
   end
 

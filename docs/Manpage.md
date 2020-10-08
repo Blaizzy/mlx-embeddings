@@ -497,6 +497,8 @@ reinstalled formulae or, every 30 days, for all formulae.
   Require all casks to have a checksum.
 * `--[no-]quarantine`:
   Disable/enable quarantining of downloads. Default: enabled
+* `--skip-cask-deps`:
+  Skip installing cask dependencies.
 
 ### `search` [*`options`*] [*`text`*|`/`*`text`*`/`]
 
