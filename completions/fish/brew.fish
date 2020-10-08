@@ -198,7 +198,7 @@ function __fish_brew_suggest_services -d "Lists available services"
 end
 
 function __fish_brew_suggest_casks_installed -d "Lists installed casks"
-    brew cask list -1
+    brew list --cask -1
 end
 
 function __fish_brew_suggest_casks_outdated -d "Lists outdated casks with the information about potential upgrade"
