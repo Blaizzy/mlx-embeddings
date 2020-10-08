@@ -159,7 +159,10 @@ module Language
         # Find any Python bindings provided by recursive dependencies
         formula_deps = formula.recursive_dependencies
         pth_contents = formula_deps.map do |d|
-          next if d.build?
+          next if d.build? || d.test?
+          # Do not add the main site-package provided by the brewed
+          # Python formula, to keep the virtual-env's site-package pristine
+          next if python_names.include? d.name
 
           dep_site_packages = Formula[d.name].opt_prefix/Language::Python.site_packages(python)
           next unless dep_site_packages.exist?
@@ -196,8 +199,7 @@ module Language
       def virtualenv_install_with_resources(options = {})
         python = options[:using]
         if python.nil?
-          pythons = %w[python python3 pypy pypy3] + Formula.names.select { |name| name.start_with? "python@" }
-          wanted = pythons.select { |py| needs_python?(py) }
+          wanted = python_names.select { |py| needs_python?(py) }
           raise FormulaUnknownPythonError, self if wanted.empty?
           raise FormulaAmbiguousPythonError, self if wanted.size > 1
 
@@ -208,6 +210,10 @@ module Language
         venv.pip_install resources
         venv.pip_install_and_link buildpath
         venv
+      end
+
+      def python_names
+        %w[python python3 pypy pypy3] + Formula.names.select { |name| name.start_with? "python@" }
       end
 
       # Convenience wrapper for creating and installing packages into Python
