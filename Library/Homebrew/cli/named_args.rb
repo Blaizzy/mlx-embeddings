@@ -79,8 +79,8 @@ module Homebrew
                                   .freeze
       end
 
-      def to_resolved_formulae_to_casks
-        @to_resolved_formulae_to_casks ||= to_formulae_and_casks(method: :resolve)
+      def to_resolved_formulae_to_casks(only: nil)
+        @to_resolved_formulae_to_casks ||= to_formulae_and_casks(method: :resolve, only: only)
                                            .partition { |o| o.is_a?(Formula) }
                                            .map(&:freeze).freeze
       end
