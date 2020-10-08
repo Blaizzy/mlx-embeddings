@@ -13,16 +13,25 @@ module Cask
         "Upgrades all outdated casks or the specified casks."
       end
 
+      OPTIONS = [
+        [:switch, "--skip-cask-deps", {
+          description: "Skip installing cask dependencies.",
+        }],
+        [:switch, "--greedy", {
+          description: "Also include casks with `auto_updates true` or `version :latest`.",
+        }],
+      ].freeze
+
       def self.parser
         super do
           switch "--force",
                  description: "Force overwriting existing files."
-          switch "--skip-cask-deps",
-                 description: "Skip installing cask dependencies."
-          switch "--greedy",
-                 description: "Also include casks which specify `auto_updates true` or `version :latest`."
           switch "--dry-run",
                  description: "Show what would be upgraded, but do not actually upgrade anything."
+
+          OPTIONS.each do |option|
+            send(*option)
+          end
         end
       end
 

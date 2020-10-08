@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "env_config"
+require "cask/config"
 require "cli/args"
 require "optparse"
 require "set"
@@ -26,12 +27,78 @@ module Homebrew
         end
       end
 
+      def self.global_cask_options
+        [
+          [:flag, "--appdir=", {
+            description: "Target location for Applications. " \
+                         "Default: `#{Cask::Config::DEFAULT_DIRS[:appdir]}`",
+          }],
+          [:flag, "--colorpickerdir=", {
+            description: "Target location for Color Pickers. " \
+                         "Default: `#{Cask::Config::DEFAULT_DIRS[:colorpickerdir]}`",
+          }],
+          [:flag, "--prefpanedir=", {
+            description: "Target location for Preference Panes. " \
+                         "Default: `#{Cask::Config::DEFAULT_DIRS[:prefpanedir]}`",
+          }],
+          [:flag, "--qlplugindir=", {
+            description: "Target location for QuickLook Plugins. " \
+                         "Default: `#{Cask::Config::DEFAULT_DIRS[:qlplugindir]}`",
+          }],
+          [:flag, "--mdimporterdir=", {
+            description: "Target location for Spotlight Plugins. " \
+                         "Default: `#{Cask::Config::DEFAULT_DIRS[:mdimporterdir]}`",
+          }],
+          [:flag, "--dictionarydir=", {
+            description: "Target location for Dictionaries. " \
+                          "Default: `#{Cask::Config::DEFAULT_DIRS[:dictionarydir]}`",
+          }],
+          [:flag, "--fontdir=", {
+            description: "Target location for Fonts. " \
+                         "Default: `#{Cask::Config::DEFAULT_DIRS[:fontdir]}`",
+          }],
+          [:flag, "--servicedir=", {
+            description: "Target location for Services. " \
+                         "Default: `#{Cask::Config::DEFAULT_DIRS[:servicedir]}`",
+          }],
+          [:flag, "--input_methoddir=", {
+            description: "Target location for Input Methods. " \
+                         "Default: `#{Cask::Config::DEFAULT_DIRS[:input_methoddir]}`",
+          }],
+          [:flag, "--internet_plugindir=", {
+            description: "Target location for Internet Plugins. " \
+                         "Default: `#{Cask::Config::DEFAULT_DIRS[:internet_plugindir]}`",
+          }],
+          [:flag, "--audio_unit_plugindir=", {
+            description: "Target location for Audio Unit Plugins. " \
+                        "Default: `#{Cask::Config::DEFAULT_DIRS[:audio_unit_plugindir]}`",
+          }],
+          [:flag, "--vst_plugindir=", {
+            description: "Target location for VST Plugins. " \
+                        "Default: `#{Cask::Config::DEFAULT_DIRS[:vst_plugindir]}`",
+          }],
+          [:flag, "--vst3_plugindir=", {
+            description: "Target location for VST3 Plugins. " \
+                         "Default: `#{Cask::Config::DEFAULT_DIRS[:vst3_plugindir]}`",
+          }],
+          [:flag, "--screen_saverdir=", {
+            description: "Target location for Screen Savers. " \
+                         "Default: `#{Cask::Config::DEFAULT_DIRS[:screen_saverdir]}`",
+          }],
+          [:comma_array, "--language", {
+            description: "Set language of the Cask to install. The first matching " \
+                         "language is used, otherwise the default language on the Cask. " \
+                         "The default value is the `language of your system`",
+          }],
+        ]
+      end
+
       def self.global_options
         [
-          ["-d", "--debug", "Display any debugging information."],
-          ["-q", "--quiet", "Suppress any warnings."],
+          ["-d", "--debug",   "Display any debugging information."],
+          ["-q", "--quiet",   "Suppress any warnings."],
           ["-v", "--verbose", "Make some output more verbose."],
-          ["-h", "--help", "Show this message."],
+          ["-h", "--help",    "Show this message."],
         ]
       end
 
@@ -211,6 +278,8 @@ module Homebrew
               else
                 switch name, description: description
               end
+
+              conflicts "--cask", name
             end
           end
         end
@@ -252,6 +321,13 @@ module Homebrew
                  .gsub(%r{<([^\s]+?://[^\s]+?)>}) { |url| Formatter.url(url) }
                  .gsub(/<(.*?)>/m, "#{Tty.underline}\\1#{Tty.reset}")
                  .gsub(/\*(.*?)\*/m, "#{Tty.underline}\\1#{Tty.reset}")
+      end
+
+      def cask_options
+        self.class.global_cask_options.each do |method, *args, **options|
+          send(method, *args, **options)
+          conflicts "--formula", args.last
+        end
       end
 
       def formula_options
@@ -379,11 +455,13 @@ module Homebrew
       def check_named_args(args)
         min_exception = case @min_named_type
         when :cask
-          Cask::CaskUnspecifiedError.new
+          Cask::CaskUnspecifiedError
         when :formula
-          FormulaUnspecifiedError.new
+          FormulaUnspecifiedError
+        when :formula_or_cask
+          FormulaOrCaskUnspecifiedError
         when :keg
-          KegUnspecifiedError.new
+          KegUnspecifiedError
         else
           MinNamedArgumentsError.new(@min_named_args)
         end
@@ -454,29 +532,18 @@ module Homebrew
 
     class MaxNamedArgumentsError < UsageError
       def initialize(maximum)
-        message = case maximum
+        super case maximum
         when 0
-          "this command does not take named arguments"
-        when 1
-          "this command does not take multiple named arguments"
+          "This command does not take named arguments."
         else
-          "this command does not take more than #{maximum} named arguments"
+          "This command does not take more than #{maximum} named #{"argument".pluralize(maximum)}"
         end
-        super message
       end
     end
 
     class MinNamedArgumentsError < UsageError
       def initialize(minimum)
-        message = case minimum
-        when 1
-          "this command requires a named argument"
-        when 2
-          "this command requires multiple named arguments"
-        else
-          "this command requires at least #{minimum} named arguments"
-        end
-        super message
+        super "This command requires at least #{minimum} named #{"argument".pluralize(minimum)}."
       end
     end
   end

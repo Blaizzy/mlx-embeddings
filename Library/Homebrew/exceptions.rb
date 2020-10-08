@@ -27,6 +27,13 @@ class FormulaUnspecifiedError < UsageError
   end
 end
 
+# Raised when a command expects a formula or cask and none was specified.
+class FormulaOrCaskUnspecifiedError < UsageError
+  def initialize
+    super "this command requires a formula or cask argument"
+  end
+end
+
 # Raised when a command expects a keg and none was specified.
 class KegUnspecifiedError < UsageError
   def initialize

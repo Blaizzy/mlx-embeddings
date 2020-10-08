@@ -18,39 +18,61 @@ module Homebrew
   def reinstall_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `reinstall` [<options>] <formula>
+        `reinstall` [<options>] <formula>|<cask>
 
-        Uninstall and then install <formula> using the same options it was originally
-        installed with, plus any appended brew formula options.
+        Uninstall and then reinstall a <formula> or <cask> using the same options it was
+        originally installed with, plus any appended options specific to a <formula>.
 
         Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will then be run for the
         reinstalled formulae or, every 30 days, for all formulae.
       EOS
       switch "-d", "--debug",
-             description: "If brewing fails, open an interactive debugging session with access to IRB "\
+             description: "If brewing fails, open an interactive debugging session with access to IRB " \
                           "or a shell inside the temporary build directory."
-      switch "-s", "--build-from-source",
-             description: "Compile <formula> from source even if a bottle is available."
-      switch "-i", "--interactive",
-             description: "Download and patch <formula>, then open a shell. This allows the user to "\
-                          "run `./configure --help` and otherwise determine how to turn the software "\
-                          "package into a Homebrew package."
-      switch "--force-bottle",
-             description: "Install from a bottle if it exists for the current or newest version of "\
-                          "macOS, even if it would not normally be used for installation."
-      switch "--keep-tmp",
-             description: "Retain the temporary files created during installation."
       switch "-f", "--force",
-             description: "Install without checking for previously installed keg-only or "\
+             description: "Install without checking for previously installed keg-only or " \
                           "non-migrated versions."
       switch "-v", "--verbose",
              description: "Print the verification and postinstall steps."
-      switch "--display-times",
-             env:         :display_install_times,
-             description: "Print install times for each formula at the end of the run."
-      conflicts "--build-from-source", "--force-bottle"
+      [
+        [:switch, "--formula", "--formulae", { description: "Treat all named arguments as formulae." }],
+        [:switch, "-s", "--build-from-source", {
+          description: "Compile <formula> from source even if a bottle is available.",
+        }],
+        [:switch, "-i", "--interactive", {
+          description: "Download and patch <formula>, then open a shell. This allows the user to " \
+                        "run `./configure --help` and otherwise determine how to turn the software " \
+                        "package into a Homebrew package.",
+        }],
+        [:switch, "--force-bottle", {
+          description: "Install from a bottle if it exists for the current or newest version of " \
+                       "macOS, even if it would not normally be used for installation.",
+        }],
+        [:switch, "--keep-tmp", {
+          description: "Retain the temporary files created during installation.",
+        }],
+        [:switch, "--display-times", {
+          env:         :display_install_times,
+          description: "Print install times for each formula at the end of the run.",
+        }],
+      ].each do |options|
+        send(*options)
+        conflicts "--cask", options[-2]
+      end
       formula_options
-      min_named :formula
+      [
+        [:switch, "--cask", "--casks", { description: "Treat all named arguments as casks." }],
+        *Cask::Cmd::AbstractCommand::OPTIONS,
+        *Cask::Cmd::Install::OPTIONS,
+      ].each do |options|
+        send(*options)
+        conflicts "--formula", options[-2]
+      end
+      cask_options
+
+      conflicts "--build-from-source", "--force-bottle"
+
+      min_named :formula_or_cask
     end
   end
 
@@ -61,8 +83,13 @@ module Homebrew
 
     Install.perform_preinstall_checks
 
-    resolved_formulae, casks = args.named.to_resolved_formulae_to_casks
-    resolved_formulae.each do |f|
+    only = :cask if args.cask? && !args.formula?
+    only = :formula if !args.cask? && args.formula?
+
+    formulae, casks = args.named.to_formulae_and_casks(only: only, method: :resolve)
+                          .partition { |o| o.is_a?(Formula) }
+
+    formulae.each do |f|
       if f.pinned?
         onoe "#{f.full_name} is pinned. You must unpin it to reinstall."
         next
@@ -74,18 +101,18 @@ module Homebrew
 
     Upgrade.check_installed_dependents(args: args)
 
+    if casks.any?
+      Cask::Cmd::Reinstall.reinstall_casks(
+        *casks,
+        binaries:       EnvConfig.cask_opts_binaries?,
+        verbose:        args.verbose?,
+        force:          args.force?,
+        require_sha:    EnvConfig.cask_opts_require_sha?,
+        skip_cask_deps: args.skip_cask_deps?,
+        quarantine:     EnvConfig.cask_opts_quarantine?,
+      )
+    end
+
     Homebrew.messages.display_messages(display_times: args.display_times?)
-
-    return if casks.blank?
-
-    Cask::Cmd::Reinstall.reinstall_casks(
-      *casks,
-      binaries:       EnvConfig.cask_opts_binaries?,
-      verbose:        args.verbose?,
-      force:          args.force?,
-      require_sha:    EnvConfig.cask_opts_require_sha?,
-      skip_cask_deps: args.skip_cask_deps?,
-      quarantine:     EnvConfig.cask_opts_quarantine?,
-    )
   end
 end

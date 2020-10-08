@@ -66,6 +66,7 @@ module Homebrew
     variables[:developer_commands] = generate_cmd_manpages(Commands.internal_developer_commands_paths)
     variables[:official_external_commands] =
       generate_cmd_manpages(Commands.official_external_commands_paths(quiet: quiet))
+    variables[:global_cask_options] = global_cask_options_manpage
     variables[:global_options] = global_options_manpage
     variables[:environment_variables] = env_vars_manpage
 
@@ -171,7 +172,12 @@ module Homebrew
   def cmd_parser_manpage_lines(cmd_parser)
     lines = [format_usage_banner(cmd_parser.usage_banner_text)]
     lines += cmd_parser.processed_options.map do |short, long, _, desc|
-      next if !long.nil? && Homebrew::CLI::Parser.global_options.include?([short, long, desc])
+      if long.present?
+        next if Homebrew::CLI::Parser.global_options.include?([short, long, desc])
+        next if Homebrew::CLI::Parser.global_cask_options.any? do |_, option, description:, **|
+                  [long, "#{long}="].include?(option) && description == desc
+                end
+      end
 
       generate_option_doc(short, long, desc)
     end.reject(&:blank?)
@@ -201,6 +207,14 @@ module Homebrew
     end
     lines.last << "\n"
     lines
+  end
+
+  def global_cask_options_manpage
+    lines = ["These options are applicable to subcommands accepting a `--cask` flag and all `cask` commands.\n"]
+    lines += Homebrew::CLI::Parser.global_cask_options.map do |_, long, description:, **|
+      generate_option_doc(nil, long, description)
+    end
+    lines.join("\n")
   end
 
   def global_options_manpage
