@@ -80,7 +80,7 @@ module Homebrew
       end
       cask_options
 
-      min_named 1
+      min_named :formula_or_cask
     end
   end
 

@@ -455,11 +455,13 @@ module Homebrew
       def check_named_args(args)
         min_exception = case @min_named_type
         when :cask
-          Cask::CaskUnspecifiedError.new
+          Cask::CaskUnspecifiedError
         when :formula
-          FormulaUnspecifiedError.new
+          FormulaUnspecifiedError
+        when :formula_or_cask
+          FormulaOrCaskUnspecifiedError
         when :keg
-          KegUnspecifiedError.new
+          KegUnspecifiedError
         else
           MinNamedArgumentsError.new(@min_named_args)
         end
