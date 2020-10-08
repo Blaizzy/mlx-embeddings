@@ -64,27 +64,29 @@ module Homebrew
   def info
     args = info_args.parse
 
-    if args.days.present? && !VALID_DAYS.include?(args.days)
-      raise UsageError, "--days must be one of #{VALID_DAYS.join(", ")}"
-    end
-
-    if args.category.present?
-      if args.named.present? && !VALID_FORMULA_CATEGORIES.include?(args.category)
-        raise UsageError, "--category must be one of #{VALID_FORMULA_CATEGORIES.join(", ")} when querying formulae"
+    if args.analytics?
+      if args.days.present? && !VALID_DAYS.include?(args.days)
+        raise UsageError, "--days must be one of #{VALID_DAYS.join(", ")}"
       end
 
-      unless VALID_CATEGORIES.include?(args.category)
-        raise UsageError, "--category must be one of #{VALID_CATEGORIES.join(", ")}"
-      end
-    end
+      if args.category.present?
+        if args.named.present? && !VALID_FORMULA_CATEGORIES.include?(args.category)
+          raise UsageError, "--category must be one of #{VALID_FORMULA_CATEGORIES.join(", ")} when querying formulae"
+        end
 
-    if args.json
+        unless VALID_CATEGORIES.include?(args.category)
+          raise UsageError, "--category must be one of #{VALID_CATEGORIES.join(", ")}"
+        end
+      end
+
+      print_analytics(args: args)
+    elsif args.json
       raise UsageError, "invalid JSON version: #{args.json}" unless ["v1", true].include? args.json
       raise FormulaUnspecifiedError if !(args.all? || args.installed?) && args.no_named?
 
       print_json(args: args)
     elsif args.github?
-      raise FormulaUnspecifiedError if args.no_named?
+      raise FormulaOrCaskUnspecifiedError if args.no_named?
 
       exec_browser(*args.named.to_formulae_and_casks.map { |f| github_info(f) })
     else
@@ -92,7 +94,7 @@ module Homebrew
     end
   end
 
-  def print_info(args:)
+  def print_analytics(args:)
     if args.no_named?
       if args.analytics?
         Utils::Analytics.output(args: args)
@@ -100,27 +102,43 @@ module Homebrew
         count = Formula.racks.length
         puts "#{count} #{"keg".pluralize(count)}, #{HOMEBREW_CELLAR.dup.abv}"
       end
-    else
-      args.named.each_with_index do |f, i|
-        puts unless i.zero?
-        begin
-          formula = Formulary.factory(f)
-          if args.analytics?
-            Utils::Analytics.formula_output(formula, args: args)
-          else
-            info_formula(formula, args: args)
-          end
-        rescue FormulaUnavailableError => e
-          if args.analytics?
-            Utils::Analytics.output(filter: f, args: args)
-            next
-          end
-          ofail e.message
-          # No formula with this name, try a missing formula lookup
-          if (reason = MissingFormula.reason(f, show_info: true))
-            $stderr.puts reason
-          end
+
+      return
+    end
+
+    args.named.to_formulae_casks_unknowns.each_with_index do |obj, i|
+      puts unless i.zero?
+
+      case obj
+      when Formula
+        Utils::Analytics.formula_output(obj, args: args)
+      when Cask::Cask
+        Utils::Analytics.cask_output(obj, args: args)
+      when FormulaOrCaskUnavailableError
+        Utils::Analytics.output(filter: obj.name, args: args)
+      else
+        raise
+      end
+    end
+  end
+
+  def print_info(args:)
+    args.named.to_formulae_casks_unknowns(method: nil).each_with_index do |obj, i|
+      puts unless i.zero?
+
+      case obj
+      when Formula
+        info_formula(obj, args: args)
+      when Cask::Cask
+        info_cask(obj, args: args)
+      when FormulaOrCaskUnavailableError
+        ofail obj.message
+        # No formula with this name, try a missing formula lookup
+        if (reason = MissingFormula.reason(obj.name, show_info: true))
+          $stderr.puts reason
         end
+      else
+        raise
       end
     end
   end
@@ -273,5 +291,11 @@ module Homebrew
     return dep.name if dep.option_tags.empty?
 
     "#{dep.name} #{dep.option_tags.map { |o| "--#{o}" }.join(" ")}"
+  end
+
+  def info_cask(cask, args:)
+    require "cask/cmd/info"
+
+    Cask::Cmd::Info.info(cask)
   end
 end

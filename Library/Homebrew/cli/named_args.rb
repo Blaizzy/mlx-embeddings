@@ -38,6 +38,14 @@ module Homebrew
         end
       end
 
+      def to_formulae_casks_unknowns(method: nil)
+        downcased_unique_named.map do |name|
+          load_formula_or_cask(name, method: method)
+        rescue FormulaOrCaskUnavailableError => e
+          e
+        end.uniq.freeze
+      end
+
       def load_formula_or_cask(name, only: nil, method: nil)
         if only != :cask
           begin
