@@ -429,6 +429,16 @@ module Homebrew
       end
     end
 
+    # try to remove these, it's not a good user experience
+    VERSIONED_DEPENDENCIES_CONFLICTS_ALLOWLIST = %w[
+      agda
+      anjuta
+      gradio
+      predictionio
+      sqoop
+      visp
+    ].freeze
+
     def audit_deps
       @specs.each do |spec|
         # Check for things we don't like to depend on.
@@ -503,6 +513,34 @@ module Homebrew
           problem "Formulae in homebrew/core should not have optional or recommended requirements"
         end
       end
+
+      return unless @core_tap
+      return if VERSIONED_DEPENDENCIES_CONFLICTS_ALLOWLIST.include?(formula.name)
+
+      # The number of conflicts on Linux is absurd.
+      # TODO: remove this and check these there too.
+      return if OS.linux?
+
+      recursive_runtime_formulae = formula.runtime_formula_dependencies(undeclared: false)
+      version_hash = {}
+      version_conflicts = Set.new
+      recursive_runtime_formulae.each do |f|
+        name = f.name
+        unversioned_name, = name.split("@")
+        version_hash[unversioned_name] ||= Set.new
+        version_hash[unversioned_name] << name
+        next if version_hash[unversioned_name].length < 2
+
+        version_conflicts += version_hash[unversioned_name]
+      end
+
+      return if version_conflicts.empty?
+
+      problem <<~EOS
+        #{formula.full_name} contains conflicting version recursive dependencies:
+          #{version_conflicts.to_a.join ", "}
+        View these with `brew deps --tree #{formula.full_name}`.
+      EOS
     end
 
     def audit_conflicts
