@@ -37,8 +37,7 @@ git_init_if_necessary() {
     fi
     git config remote.origin.url "$HOMEBREW_BREW_GIT_REMOTE"
     git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
-    latest_tag="$(git ls-remote --tags --refs -q origin | tail -n1 | cut -f2)"
-    git fetch --force origin --shallow-since="$latest_tag"
+    git fetch --force --tags origin
     git remote set-head origin --auto >/dev/null
     git reset --hard origin/master
     SKIP_FETCH_BREW_REPOSITORY=1
@@ -60,7 +59,7 @@ git_init_if_necessary() {
     fi
     git config remote.origin.url "$HOMEBREW_CORE_GIT_REMOTE"
     git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
-    git fetch --force --depth=1 origin refs/heads/master:refs/remotes/origin/master
+    git fetch --force origin refs/heads/master:refs/remotes/origin/master
     git remote set-head origin --auto >/dev/null
     git reset --hard origin/master
     SKIP_FETCH_CORE_REPOSITORY=1
@@ -428,12 +427,7 @@ EOS
     echo "HOMEBREW_BREW_GIT_REMOTE set: using $HOMEBREW_BREW_GIT_REMOTE for Homebrew/brew Git remote."
     git remote set-url origin "$HOMEBREW_BREW_GIT_REMOTE"
     git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
-    latest_tag="$(git ls-remote --tags --refs -q origin |
-                  cut -d/ -f3 | 
-                  sort --numeric-sort --field-separator=. --key=1,1 --key=2,2 --key=3,3 |
-                  tail -n1)"
-    latest_ref="refs/tags/$latest_tag"
-    git fetch --force origin --shallow-since="$latest_ref"
+    git fetch --force --tags origin
   fi
 
   if [[ "$HOMEBREW_CORE_DEFAULT_GIT_REMOTE" != "$HOMEBREW_CORE_GIT_REMOTE" ]] &&
@@ -443,7 +437,7 @@ EOS
     echo "HOMEBREW_CORE_GIT_REMOTE set: using $HOMEBREW_CORE_GIT_REMOTE for Homebrew/brew Git remote."
     git remote set-url origin "$HOMEBREW_CORE_GIT_REMOTE"
     git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
-    git fetch --force --depth=1 origin refs/heads/master:refs/remotes/origin/master
+    git fetch --force origin refs/heads/master:refs/remotes/origin/master
   fi
 
   safe_cd "$HOMEBREW_REPOSITORY"

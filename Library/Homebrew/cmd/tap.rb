@@ -26,7 +26,7 @@ module Homebrew
       EOS
       switch "--full",
              description: "Convert a shallow clone to a full clone without untapping. Taps are only cloned as "\
-                          "shallow clones on continuous integration, or if `--shallow` was originally passed."
+                          "shallow clones if `--shallow` was originally passed."
       switch "--shallow",
              description: "Fetch tap as a shallow clone rather than a full clone. Useful for continuous integration."
       switch "--force-auto-update",
@@ -53,8 +53,6 @@ module Homebrew
     else
       full_clone = if args.full?
         true
-      elsif !args.shallow?
-        ENV["CI"].blank?
       else
         !args.shallow?
       end

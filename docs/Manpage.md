@@ -556,7 +556,7 @@ assumptions, so taps can be cloned from places other than GitHub and
 using protocols other than HTTPS, e.g. SSH, git, HTTP, FTP(S), rsync.
 
 * `--full`:
-  Convert a shallow clone to a full clone without untapping. Taps are only cloned as shallow clones on continuous integration, or if `--shallow` was originally passed.
+  Convert a shallow clone to a full clone without untapping. Taps are only cloned as shallow clones if `--shallow` was originally passed.
 * `--shallow`:
   Fetch tap as a shallow clone rather than a full clone. Useful for continuous integration.
 * `--force-auto-update`:
