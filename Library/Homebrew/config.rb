@@ -54,8 +54,7 @@ HOMEBREW_CACHE_FORMULA = (HOMEBREW_CACHE/"Formula").freeze
 HOMEBREW_LOGS = Pathname.new(get_env_or_raise("HOMEBREW_LOGS")).expand_path.freeze
 
 # Must use `/tmp` instead of `TMPDIR` because long paths break Unix domain sockets
-HOMEBREW_TEMP = begin
-  tmp = Pathname.new(get_env_or_raise("HOMEBREW_TEMP"))
+HOMEBREW_TEMP = Pathname.new(get_env_or_raise("HOMEBREW_TEMP")).yield_self do |tmp|
   tmp.mkpath unless tmp.exist?
   tmp.realpath
 end.freeze

@@ -218,8 +218,7 @@ module Formulary
     end
 
     def load_file(flags:)
-      if url =~ %r{githubusercontent.com/[\w-]+/[\w-]+/[a-f0-9]{40}(/Formula)?/([\w+-.@]+).rb}
-        formula_name = Regexp.last_match(2)
+      if %r{githubusercontent.com/[\w-]+/[\w-]+/[a-f0-9]{40}(?:/Formula)?/(?<formula_name>[\w+-.@]+).rb} =~ url # rubocop:disable Style/CaseLikeIf
         odisabled "Installation of #{formula_name} from a GitHub commit URL",
                   "'brew extract #{formula_name}' to stable tap on GitHub"
       elsif url.match?(%r{^(https?|ftp)://})
@@ -232,8 +231,8 @@ module Formulary
       curl_download url, to: path
       super
     rescue MethodDeprecatedError => e
-      if url =~ %r{github.com/([\w-]+)/([\w-]+)/}
-        e.issues_url = "https://github.com/#{Regexp.last_match(1)}/#{Regexp.last_match(2)}/issues/new"
+      if %r{github.com/(?<user>[\w-]+)/(?<repo>[\w-]+)/} =~ url
+        e.issues_url = "https://github.com/#{user}/#{repo}/issues/new"
       end
       raise
     end

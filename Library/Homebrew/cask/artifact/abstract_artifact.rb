@@ -45,7 +45,7 @@ module Cask
 
       def <=>(other)
         return unless other.class < AbstractArtifact
-        return 0 if self.class == other.class
+        return 0 if instance_of?(other.class)
 
         @@sort_order ||= [ # rubocop:disable Style/ClassVars
           PreflightBlock,

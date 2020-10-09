@@ -79,9 +79,9 @@ module RuboCop
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           find_method_with_args(body_node, :uses_from_macos, /^"(.+)"/).each do |method|
-            dep = if parameters(method).first.class == RuboCop::AST::StrNode
+            dep = if parameters(method).first.instance_of?(RuboCop::AST::StrNode)
               parameters(method).first
-            elsif parameters(method).first.class == RuboCop::AST::HashNode
+            elsif parameters(method).first.instance_of?(RuboCop::AST::HashNode)
               parameters(method).first.keys.first
             end
 

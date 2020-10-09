@@ -395,7 +395,7 @@ module RuboCop
         @offense_source_range = method_node.source_range
         params.all? do |given_param|
           method_params.any? do |method_param|
-            if given_param.class == Regexp
+            if given_param.instance_of?(Regexp)
               regex_match_group(method_param, given_param)
             else
               node_equals?(method_param, given_param)
