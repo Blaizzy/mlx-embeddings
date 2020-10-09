@@ -125,6 +125,7 @@ GEM
     sorbet (0.5.5942)
       sorbet-static (= 0.5.5942)
     sorbet-runtime (0.5.5942)
+    sorbet-runtime-stub (0.2.0)
     sorbet-static (0.5.5942-universal-darwin-14)
     spoom (1.0.4)
       colorize
@@ -174,6 +175,7 @@ DEPENDENCIES
   simplecov
   sorbet
   sorbet-runtime
+  sorbet-runtime-stub
   tapioca
 
 BUNDLED WITH
