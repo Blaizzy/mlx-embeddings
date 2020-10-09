@@ -43,15 +43,15 @@ module Cask
 
       def run
         if args.json == "v1"
-          puts JSON.generate(casks.map(&:to_h))
+          puts JSON.generate(args.named.to_casks.map(&:to_h))
         elsif args.github?
           raise CaskUnspecifiedError if args.no_named?
 
-          args.named.to_formulae_and_casks.map do |cask|
+          args.named.to_casks.map do |cask|
             exec_browser(github_info(cask))
           end
         else
-          casks.each_with_index do |cask, i|
+          args.named.to_casks.each_with_index do |cask, i|
             puts unless i.zero?
             odebug "Getting info for Cask #{cask}"
             self.class.info(cask)
