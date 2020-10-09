@@ -1,8 +1,6 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "utils/sorbet"
-
 # Class corresponding to the `url` stanza.
 #
 # @api private
