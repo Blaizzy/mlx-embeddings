@@ -16,12 +16,3 @@ updates:
     directory: /Library/Homebrew
     schedule:
       interval: daily
-    ignore:
-      - dependency-name: sorbet*
-
-  - package-ecosystem: bundler
-    directory: /Library/Homebrew
-    schedule:
-      interval: weekly
-    allow:
-      - dependency-name: sorbet*
