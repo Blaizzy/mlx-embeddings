@@ -8,6 +8,7 @@ require "utils/github"
 #
 # @api private
 module SPDX
+  include Utils::Curl
   extend Utils::Curl
 
   module_function
