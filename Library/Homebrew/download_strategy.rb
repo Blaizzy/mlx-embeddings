@@ -11,6 +11,8 @@ require "lock_file"
 require "mechanize/version"
 require "mechanize/http/content_disposition_parser"
 
+require "utils/curl"
+
 # @abstract Abstract superclass for all download strategies.
 #
 # @api private
@@ -328,6 +330,8 @@ end
 #
 # @api public
 class CurlDownloadStrategy < AbstractFileDownloadStrategy
+  include Utils::Curl
+
   attr_reader :mirrors
 
   def initialize(url, name, version, **meta)

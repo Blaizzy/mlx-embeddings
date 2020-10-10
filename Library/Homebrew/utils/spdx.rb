@@ -1,12 +1,15 @@
 # typed: true
 # frozen_string_literal: true
 
+require "utils/curl"
 require "utils/github"
 
 # Helper module for updating SPDX license data.
 #
 # @api private
 module SPDX
+  extend Utils::Curl
+
   module_function
 
   DATA_PATH = (HOMEBREW_DATA_PATH/"spdx").freeze

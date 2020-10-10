@@ -7,6 +7,9 @@ require "utils/curl"
 #
 # @api private
 module SharedAudits
+  include Utils::Curl
+  extend Utils::Curl
+
   module_function
 
   def github_repo_data(user, repo)
