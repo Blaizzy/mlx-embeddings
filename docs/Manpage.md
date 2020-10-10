@@ -1258,9 +1258,9 @@ Check for typechecking errors using Sorbet.
 * `-q`, `--quiet`:
   Silence all non-critical errors.
 * `--update`:
-  Update RBI files and prune sorbet/files.yaml
+  Update RBI files.
 * `--fail-if-not-changed`:
-  Return a failing status code if all gems are up to date and gem definitions do not need a tapioca update
+  Return a failing status code if all gems are up to date and gem definitions do not need a tapioca update.
 * `--dir`:
   Typecheck all files in a specific directory.
 * `--file`:
