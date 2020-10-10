@@ -8,7 +8,6 @@ module Utils
   #
   # @api private
   module Inreplace
-    include Kernel
     extend T::Sig
 
     # Error during replacement.

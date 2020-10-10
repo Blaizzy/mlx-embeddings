@@ -7,26 +7,25 @@ require "plist"
 require "shellwords"
 
 require "extend/io"
+require "extend/predicable"
 require "extend/hash_validator"
 using HashValidator
-
-# Make `system_command` available everywhere.
-#
-# @api private
-module Kernel
-  def system_command(*args)
-    SystemCommand.run(*args)
-  end
-
-  def system_command!(*args)
-    SystemCommand.run!(*args)
-  end
-end
 
 # Class for running sub-processes and capturing their output and exit status.
 #
 # @api private
 class SystemCommand
+  # Helper functions for calling `SystemCommand.run`.
+  module Mixin
+    def system_command(*args)
+      SystemCommand.run(*args)
+    end
+
+    def system_command!(*args)
+      SystemCommand.run!(*args)
+    end
+  end
+
   include Context
   extend Predicable
 
@@ -248,3 +247,7 @@ class SystemCommand
     private :warn_plist_garbage
   end
 end
+
+# Make `system_command` available everywhere.
+# FIXME: Include this explicitly only where it is needed.
+include SystemCommand::Mixin # rubocop:disable Style/MixinUsage

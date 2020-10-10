@@ -3,7 +3,6 @@
 
 module Utils
   module Shell
-    include Kernel
     extend T::Sig
 
     module_function

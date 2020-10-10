@@ -3,8 +3,11 @@
 
 require "formula"
 require "os/linux/glibc"
+require "system_command"
 
 module SystemConfig
+  include SystemCommand::Mixin
+
   HOST_RUBY_PATH = "/usr/bin/ruby"
 
   class << self

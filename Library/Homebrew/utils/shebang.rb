@@ -6,8 +6,6 @@ module Utils
   #
   # @api private
   module Shebang
-    include Kernel
-
     module_function
 
     # Specification on how to rewrite a given shebang.

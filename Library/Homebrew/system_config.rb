@@ -5,12 +5,15 @@ require "hardware"
 require "software_spec"
 require "development_tools"
 require "extend/ENV"
+require "system_command"
 
 # Helper module for querying information about the system configuration.
 #
 # @api private
 module SystemConfig
   class << self
+    include SystemCommand::Mixin
+
     def clang
       @clang ||= if DevelopmentTools.installed?
         DevelopmentTools.clang_version
