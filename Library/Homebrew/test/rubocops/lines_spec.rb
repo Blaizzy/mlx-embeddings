@@ -731,6 +731,146 @@ describe RuboCop::Cop::FormulaAudit::Licenses do
   end
 end
 
+describe RuboCop::Cop::FormulaAudit::PythonVersions do
+  subject(:cop) { described_class.new }
+
+  context "When auditing python versions" do
+    it "allow python with no dependency" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          def install
+            puts "python@3.8"
+          end
+        end
+      RUBY
+    end
+
+    it "allow non versioned python references" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          depends_on "python@3.9"
+
+          def install
+            puts "python"
+          end
+        end
+      RUBY
+    end
+
+    it "allow python with no version" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          depends_on "python@3.9"
+
+          def install
+            puts "python3"
+          end
+        end
+      RUBY
+    end
+
+    it "allow matching versions" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          depends_on "python@3.9"
+
+          def install
+            puts "python@3.9"
+          end
+        end
+      RUBY
+    end
+
+    it "allow matching versions without `@`" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          depends_on "python@3.9"
+
+          def install
+            puts "python3.9"
+          end
+        end
+      RUBY
+    end
+
+    it "do not allow mismatching versions" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          depends_on "python@3.9"
+
+          def install
+            puts "python@3.8"
+                 ^^^^^^^^^^^^ References to `python@3.8` should match the specified python dependency (`python@3.9`)
+          end
+        end
+      RUBY
+    end
+
+    it "do not allow mismatching versions without `@`" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          depends_on "python@3.9"
+
+          def install
+            puts "python3.8"
+                 ^^^^^^^^^^^ References to `python3.8` should match the specified python dependency (`python3.9`)
+          end
+        end
+      RUBY
+    end
+
+    it "autocorrects mismatching versions" do
+      source = <<~RUBY
+        class Foo < Formula
+          depends_on "python@3.9"
+
+          def install
+            puts "python@3.8"
+          end
+        end
+      RUBY
+
+      corrected_source = <<~RUBY
+        class Foo < Formula
+          depends_on "python@3.9"
+
+          def install
+            puts "python@3.9"
+          end
+        end
+      RUBY
+
+      new_source = autocorrect_source(source)
+      expect(new_source).to eq(corrected_source)
+    end
+
+    it "autocorrects mismatching versions without `@`" do
+      source = <<~RUBY
+        class Foo < Formula
+          depends_on "python@3.9"
+
+          def install
+            puts "python3.8"
+          end
+        end
+      RUBY
+
+      corrected_source = <<~RUBY
+        class Foo < Formula
+          depends_on "python@3.9"
+
+          def install
+            puts "python3.9"
+          end
+        end
+      RUBY
+
+      new_source = autocorrect_source(source)
+      expect(new_source).to eq(corrected_source)
+    end
+  end
+end
+
 describe RuboCop::Cop::FormulaAudit::Miscellaneous do
   subject(:cop) { described_class.new }
 
