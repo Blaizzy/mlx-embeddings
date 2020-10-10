@@ -4,7 +4,6 @@
 # typed: strong
 module ::StackProf; end
 module DependencyCollector::Compat; end
-module Homebrew::Error; end
 module OS::Mac::Version::NULL; end
 module SPDX::JSON_PATH; end
 module T::InterfaceWrapper::Helpers; end
