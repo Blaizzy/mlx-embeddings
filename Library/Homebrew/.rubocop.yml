@@ -45,10 +45,6 @@ Naming/PredicateName:
   # Can't rename these.
   AllowedMethods: is_32_bit?, is_64_bit?
 
-Style/FrozenStringLiteralComment:
-  Exclude:
-    - '**/Casks/**/*.rb'
-
 Style/HashAsLastArrayItem:
   Exclude:
     - 'test/utils/spdx_spec.rb'

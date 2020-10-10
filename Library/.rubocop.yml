@@ -12,7 +12,12 @@ AllCops:
   DisplayCopNames: false
   # enable all pending rubocops
   NewCops: enable
+  Include:
+    - '**/*.rbi'
   Exclude:
+    - 'Homebrew/sorbet/rbi/gems/**/*.rbi'
+    - 'Homebrew/sorbet/rbi/hidden-definitions/**/*.rbi'
+    - 'Homebrew/sorbet/rbi/todo.rbi'
     - 'Homebrew/bin/*'
     - 'Homebrew/vendor/**/*'
 
@@ -61,6 +66,10 @@ Metrics/ParameterLists:
 Naming/HeredocDelimiterNaming:
   ForbiddenDelimiters:
     - END, EOD, EOF
+
+Naming/MethodName:
+  IgnoredPatterns:
+    - '\AHEAD\?\Z'
 
 # Allow dashes in filenames.
 Naming/FileName:
@@ -264,9 +273,14 @@ Layout/LineLength:
                     ' "~/Library/Application Support/', '"~/Library/Caches/', '"~/Application Support',
                     ' was verified as official when first introduced to the cask']
 
-# Enable once we are using `sorbet-runtime`.
 Sorbet/FalseSigil:
-  Enabled: false
+  Exclude:
+    - 'Taps/**/*.rb'
+    - 'Homebrew/test/**/Casks/**/*.rb'
+
+Sorbet/StrictSigil:
+  Include:
+    - '**/*.rbi'
 
 # Try getting rid of these.
 Sorbet/ConstantsFromStrings:
@@ -302,6 +316,7 @@ Style/ClassVars:
 Style/Documentation:
   Exclude:
     - 'Taps/**/*'
+    - '**/*.rbi'
 
 Style/DocumentationMethod:
   Include:
@@ -313,6 +328,7 @@ Style/FrozenStringLiteralComment:
   Exclude:
     - 'Taps/*/*/{Formula,Casks,}/*.rb'
     - 'Homebrew/test/**/Casks/**/*.rb'
+    - '**/*.rbi'
 
 # TODO: remove this when possible.
 Style/GlobalVars:
