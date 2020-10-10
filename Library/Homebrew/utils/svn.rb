@@ -8,12 +8,17 @@ module Utils
   #
   # @api private
   module Svn
+    include Kernel
+    extend T::Sig
+
     module_function
 
+    sig { returns(T::Boolean) }
     def available?
       version.present?
     end
 
+    sig { returns(T.nilable(String)) }
     def version
       return @version if defined?(@version)
 
@@ -21,6 +26,7 @@ module Utils
       @version = status.success? ? stdout.chomp[/svn, version (\d+(?:\.\d+)*)/, 1] : nil
     end
 
+    sig { params(url: String).returns(T::Boolean) }
     def remote_exists?(url)
       return true unless available?
 
