@@ -10,7 +10,11 @@ require "system_command"
 #
 # @api private
 class User < SimpleDelegator
+  include Kernel
+  extend T::Sig
+
   # Return whether the user has an active GUI session.
+  sig { returns(T::Boolean) }
   def gui?
     out, _, status = system_command "who"
     return false unless status.success?
@@ -21,6 +25,7 @@ class User < SimpleDelegator
   end
 
   # Return the current user.
+  sig { returns(T.nilable(T.attached_class)) }
   def self.current
     return @current if defined?(@current)
 
