@@ -6,6 +6,8 @@ module Utils
   #
   # @api private
   module Tar
+    include Kernel
+
     module_function
 
     TAR_FILE_EXTENSIONS = %w[.tar .tb2 .tbz .tbz2 .tgz .tlz .txz .tZ].freeze

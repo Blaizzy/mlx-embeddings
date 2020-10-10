@@ -6,6 +6,8 @@ module Utils
   #
   # @api private
   module Link
+    include Kernel
+
     module_function
 
     def link_src_dst_dirs(src_dir, dst_dir, command, link_dir: false)
