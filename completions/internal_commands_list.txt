@@ -81,6 +81,7 @@ switch
 tap
 tap-info
 tap-new
+tc
 test
 tests
 typecheck

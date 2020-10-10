@@ -264,6 +264,14 @@ Layout/LineLength:
                     ' "~/Library/Application Support/', '"~/Library/Caches/', '"~/Application Support',
                     ' was verified as official when first introduced to the cask']
 
+# Enable once we are using `sorbet-runtime`.
+Sorbet/FalseSigil:
+  Enabled: false
+
+# Try getting rid of these.
+Sorbet/ConstantsFromStrings:
+  Enabled: false
+
 # Avoid false positives on modifiers used on symbols of methods
 # See https://github.com/rubocop-hq/rubocop/issues/5953
 Style/AccessModifierDeclarations:

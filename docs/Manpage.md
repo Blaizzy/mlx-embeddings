@@ -1770,6 +1770,9 @@ For example, you might add something like the following to your ~/.profile, ~/.b
   * `HOMEBREW_SKIP_OR_LATER_BOTTLES`:
     If set with `HOMEBREW_DEVELOPER`, do not use bottles from older versions of macOS. This is useful in development on new macOS versions.
 
+  * `HOMEBREW_SORBET_RUNTIME`:
+    Enable runtime typechecking using Sorbet.
+
   * `HOMEBREW_SVN`:
     Use this as the `svn`(1) binary.
 

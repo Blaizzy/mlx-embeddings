@@ -8,7 +8,7 @@ require "system_command"
 # A system user.
 #
 # @api private
-class User < DelegateClass(String)
+class User < SimpleDelegator
   # Return whether the user has an active GUI session.
   def gui?
     out, _, status = system_command "who"

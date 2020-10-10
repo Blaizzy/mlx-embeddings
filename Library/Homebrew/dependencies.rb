@@ -6,7 +6,7 @@ require "cask_dependent"
 # A collection of dependencies.
 #
 # @api private
-class Dependencies < DelegateClass(Array)
+class Dependencies < SimpleDelegator
   def initialize(*args)
     super(args)
   end
@@ -41,7 +41,7 @@ end
 # A collection of requirements.
 #
 # @api private
-class Requirements < DelegateClass(Set)
+class Requirements < SimpleDelegator
   def initialize(*args)
     super(Set.new(args))
   end

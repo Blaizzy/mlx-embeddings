@@ -27,6 +27,7 @@ module Commands
     "environment" => "--env",
     "--config"    => "config",
     "-v"          => "--version",
+    "tc"          => "typecheck",
   }.freeze
 
   def valid_internal_cmd?(cmd)

@@ -251,6 +251,10 @@ module Homebrew
                      "of macOS. This is useful in development on new macOS versions.",
         boolean:     true,
       },
+      HOMEBREW_SORBET_RUNTIME:                {
+        description: "Enable runtime typechecking using Sorbet.",
+        boolean:     true,
+      },
       HOMEBREW_SVN:                           {
         description:  "Use this as the `svn`(1) binary.",
         default_text: "A Homebrew-built Subversion (if installed), or the system-provided binary.",
