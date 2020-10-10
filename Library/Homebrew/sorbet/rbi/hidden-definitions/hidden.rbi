@@ -13239,6 +13239,9 @@ class NilClass
   def try!(method_name=T.unsafe(nil), *args); end
 end
 
+class NoSeedProgressFormatter
+end
+
 class Nokogiri::CSS::Parser
   Racc_debug_parser = ::T.let(nil, ::T.untyped)
 end
@@ -18521,24 +18524,518 @@ class REXML::XPathParser
   DEBUG = ::T.let(nil, ::T.untyped)
 end
 
+module RSpec::Core
+end
+
+class RSpec::Core::AnonymousExampleGroup
+end
+
+class RSpec::Core::AnonymousExampleGroup
+end
+
+class RSpec::Core::BacktraceFormatter
+  def backtrace_line(line); end
+
+  def exclude?(line); end
+
+  def exclusion_patterns(); end
+
+  def exclusion_patterns=(exclusion_patterns); end
+
+  def filter_gem(gem_name); end
+
+  def format_backtrace(backtrace, options=T.unsafe(nil)); end
+
+  def full_backtrace=(full_backtrace); end
+
+  def full_backtrace?(); end
+
+  def inclusion_patterns(); end
+
+  def inclusion_patterns=(inclusion_patterns); end
+end
+
+class RSpec::Core::BacktraceFormatter
+end
+
+module RSpec::Core::Bisect
+end
+
+class RSpec::Core::Bisect::BisectFailedError
+end
+
+class RSpec::Core::Bisect::BisectFailedError
+  def self.for_failed_spec_run(spec_output); end
+end
+
+class RSpec::Core::Bisect::Channel
+  def close(); end
+
+  def receive(); end
+
+  def send(message); end
+end
+
+class RSpec::Core::Bisect::Channel
+end
+
+class RSpec::Core::Bisect::ExampleSetDescriptor
+  def all_example_ids(); end
+
+  def all_example_ids=(_); end
+
+  def failed_example_ids(); end
+
+  def failed_example_ids=(_); end
+end
+
+class RSpec::Core::Bisect::ExampleSetDescriptor
+  def self.[](*_); end
+
+  def self.members(); end
+end
+
+class RSpec::Core::Bisect::Notifier
+  def initialize(formatter); end
+
+  def publish(event, *args); end
+end
+
+class RSpec::Core::Bisect::Notifier
+end
+
+module RSpec::Core::Bisect
+end
+
+class RSpec::Core::Configuration
+  include ::RSpec::Core::Hooks
+  include ::RSpec::Core::Configuration::Readers
+  def add_formatter(formatter, output=T.unsafe(nil)); end
+
+  def add_setting(name, opts=T.unsafe(nil)); end
+
+  def after(scope=T.unsafe(nil), *meta, &block); end
+
+  def alias_example_group_to(new_name, *args); end
+
+  def alias_example_to(name, *args); end
+
+  def alias_it_behaves_like_to(new_name, report_label=T.unsafe(nil)); end
+
+  def alias_it_should_behave_like_to(new_name, report_label=T.unsafe(nil)); end
+
+  def append_after(scope=T.unsafe(nil), *meta, &block); end
+
+  def append_before(scope=T.unsafe(nil), *meta, &block); end
+
+  def apply_derived_metadata_to(metadata); end
+
+  def around(scope=T.unsafe(nil), *meta, &block); end
+
+  def backtrace_exclusion_patterns(); end
+
+  def backtrace_exclusion_patterns=(patterns); end
+
+  def backtrace_formatter(); end
+
+  def backtrace_inclusion_patterns(); end
+
+  def backtrace_inclusion_patterns=(patterns); end
+
+  def before(scope=T.unsafe(nil), *meta, &block); end
+
+  def bisect_runner(); end
+
+  def bisect_runner=(value); end
+
+  def bisect_runner_class(); end
+
+  def color(); end
+
+  def color=(color); end
+
+  def color_enabled?(output=T.unsafe(nil)); end
+
+  def color_mode(); end
+
+  def color_mode=(color_mode); end
+
+  def configure_example(example, example_hooks); end
+
+  def configure_expectation_framework(); end
+
+  def configure_group(group); end
+
+  def configure_mock_framework(); end
+
+  def default_color=(default_color); end
+
+  def default_color?(); end
+
+  def default_formatter(); end
+
+  def default_formatter=(value); end
+
+  def default_path=(path); end
+
+  def default_path?(); end
+
+  def define_derived_metadata(*filters, &block); end
+
+  def deprecation_stream=(value); end
+
+  def detail_color=(detail_color); end
+
+  def detail_color?(); end
+
+  def disable_monkey_patching(); end
+
+  def disable_monkey_patching!(); end
+
+  def disable_monkey_patching=(disable_monkey_patching); end
+
+  def drb=(drb); end
+
+  def drb?(); end
+
+  def drb_port=(drb_port); end
+
+  def drb_port?(); end
+
+  def dry_run=(dry_run); end
+
+  def dry_run?(); end
+
+  def error_stream=(error_stream); end
+
+  def error_stream?(); end
+
+  def example_status_persistence_file_path=(value); end
+
+  def exclude_pattern=(value); end
+
+  def exclusion_filter(); end
+
+  def exclusion_filter=(filter); end
+
+  def expect_with(*frameworks); end
+
+  def expectation_framework=(framework); end
+
+  def expectation_frameworks(); end
+
+  def expose_current_running_example_as(method_name); end
+
+  def expose_dsl_globally=(value); end
+
+  def expose_dsl_globally?(); end
+
+  def extend(mod, *filters); end
+
+  def fail_fast=(value); end
+
+  def fail_if_no_examples=(fail_if_no_examples); end
+
+  def fail_if_no_examples?(); end
+
+  def failure_color=(failure_color); end
+
+  def failure_color?(); end
+
+  def failure_exit_code=(failure_exit_code); end
+
+  def failure_exit_code?(); end
+
+  def files_or_directories_to_run=(*files); end
+
+  def files_to_run(); end
+
+  def files_to_run=(files_to_run); end
+
+  def filter(); end
+
+  def filter=(filter); end
+
+  def filter_gems_from_backtrace(*gem_names); end
+
+  def filter_manager(); end
+
+  def filter_manager=(filter_manager); end
+
+  def filter_run(*args); end
+
+  def filter_run_excluding(*args); end
+
+  def filter_run_including(*args); end
+
+  def filter_run_when_matching(*args); end
+
+  def fixed_color=(fixed_color); end
+
+  def fixed_color?(); end
+
+  def force(hash); end
+
+  def format_docstrings(&block); end
+
+  def format_docstrings_block(); end
+
+  def formatter=(formatter, output=T.unsafe(nil)); end
+
+  def formatter_loader(); end
+
+  def formatters(); end
+
+  def full_backtrace=(true_or_false); end
+
+  def full_backtrace?(); end
+
+  def full_description(); end
+
+  def full_description=(description); end
+
+  def in_project_source_dir_regex(); end
+
+  def include(mod, *filters); end
+
+  def include_context(shared_group_name, *filters); end
+
+  def inclusion_filter(); end
+
+  def inclusion_filter=(filter); end
+
+  def last_run_statuses(); end
+
+  def libs=(libs); end
+
+  def load_spec_files(); end
+
+  def loaded_spec_files(); end
+
+  def max_displayed_failure_line_count=(max_displayed_failure_line_count); end
+
+  def max_displayed_failure_line_count?(); end
+
+  def mock_framework(); end
+
+  def mock_framework=(framework); end
+
+  def mock_with(framework); end
+
+  def on_example_group_definition(&block); end
+
+  def on_example_group_definition_callbacks(); end
+
+  def only_failures?(); end
+
+  def only_failures_but_not_configured?(); end
+
+  def order=(*args, &block); end
+
+  def ordering_manager(); end
+
+  def ordering_registry(*args, &block); end
+
+  def output_stream=(value); end
+
+  def pattern=(value); end
+
+  def pending_color=(pending_color); end
+
+  def pending_color?(); end
+
+  def prepend(mod, *filters); end
+
+  def prepend_after(scope=T.unsafe(nil), *meta, &block); end
+
+  def prepend_before(scope=T.unsafe(nil), *meta, &block); end
+
+  def profile_examples(); end
+
+  def profile_examples=(profile_examples); end
+
+  def profile_examples?(); end
+
+  def project_source_dirs=(project_source_dirs); end
+
+  def project_source_dirs?(); end
+
+  def raise_errors_for_deprecations!(); end
+
+  def raise_on_warning=(value); end
+
+  def register_ordering(*args, &block); end
+
+  def reporter(); end
+
+  def requires=(paths); end
+
+  def reset(); end
+
+  def reset_filters(); end
+
+  def reset_reporter(); end
+
+  def run_all_when_everything_filtered=(run_all_when_everything_filtered); end
+
+  def run_all_when_everything_filtered?(); end
+
+  def seed(*args, &block); end
+
+  def seed=(*args, &block); end
+
+  def seed_used?(*args, &block); end
+
+  def shared_context_metadata_behavior=(value); end
+
+  def silence_filter_announcements=(silence_filter_announcements); end
+
+  def silence_filter_announcements?(); end
+
+  def spec_files_with_failures(); end
+
+  def start_time=(start_time); end
+
+  def start_time?(); end
+
+  def static_config_filter_manager(); end
+
+  def static_config_filter_manager=(static_config_filter_manager); end
+
+  def success_color=(success_color); end
+
+  def success_color?(); end
+
+  def threadsafe=(threadsafe); end
+
+  def threadsafe?(); end
+
+  def treat_symbols_as_metadata_keys_with_true_values=(_value); end
+
+  def tty=(tty); end
+
+  def tty?(); end
+
+  def warnings=(value); end
+
+  def warnings?(); end
+
+  def when_first_matching_example_defined(*filters); end
+
+  def with_suite_hooks(); end
+
+  def world(); end
+
+  def world=(world); end
+  DEFAULT_FORMATTER = ::T.let(nil, ::T.untyped)
+  FAILED_STATUS = ::T.let(nil, ::T.untyped)
+  MOCKING_ADAPTERS = ::T.let(nil, ::T.untyped)
+  PASSED_STATUS = ::T.let(nil, ::T.untyped)
+  PENDING_STATUS = ::T.let(nil, ::T.untyped)
+  RAISE_ERROR_WARNING_NOTIFIER = ::T.let(nil, ::T.untyped)
+  UNKNOWN_STATUS = ::T.let(nil, ::T.untyped)
+  VALID_STATUSES = ::T.let(nil, ::T.untyped)
+end
+
+class RSpec::Core::Configuration::DeprecationReporterBuffer
+  def deprecation(*args); end
+
+  def play_onto(reporter); end
+end
+
+class RSpec::Core::Configuration::DeprecationReporterBuffer
+end
+
+module RSpec::Core::Configuration::ExposeCurrentExample
+end
+
+module RSpec::Core::Configuration::ExposeCurrentExample
+end
+
+class RSpec::Core::Configuration::MustBeConfiguredBeforeExampleGroupsError
+end
+
+class RSpec::Core::Configuration::MustBeConfiguredBeforeExampleGroupsError
+end
+
 module RSpec::Core::Configuration::Readers
   def clear_lets_on_failure(); end
+
+  def default_color(); end
+
+  def default_path(); end
 
   def default_retry_count(); end
 
   def default_sleep_interval(); end
 
+  def deprecation_stream(); end
+
+  def detail_color(); end
+
   def display_try_failure_messages(); end
+
+  def drb(); end
+
+  def drb_port(); end
+
+  def dry_run(); end
+
+  def error_stream(); end
+
+  def example_status_persistence_file_path(); end
 
   def exceptions_to_hard_fail(); end
 
   def exceptions_to_retry(); end
 
+  def exclude_pattern(); end
+
   def exponential_backoff(); end
+
+  def fail_fast(); end
+
+  def fail_if_no_examples(); end
+
+  def failure_color(); end
+
+  def failure_exit_code(); end
+
+  def fixed_color(); end
+
+  def libs(); end
+
+  def max_displayed_failure_line_count(); end
+
+  def only_failures(); end
+
+  def output_stream(); end
+
+  def pattern(); end
+
+  def pending_color(); end
+
+  def project_source_dirs(); end
+
+  def requires(); end
 
   def retry_callback(); end
 
   def retry_count_condition(); end
+
+  def run_all_when_everything_filtered(); end
+
+  def shared_context_metadata_behavior(); end
+
+  def silence_filter_announcements(); end
+
+  def start_time(); end
+
+  def success_color(); end
+
+  def threadsafe(); end
+
+  def tty(); end
 
   def verbose_retry(); end
 
@@ -18547,21 +19044,304 @@ module RSpec::Core::Configuration::Readers
   def wait_timeout(); end
 end
 
+module RSpec::Core::Configuration::Readers
+end
+
+class RSpec::Core::Configuration
+  def self.add_read_only_setting(name, opts=T.unsafe(nil)); end
+
+  def self.add_setting(name, opts=T.unsafe(nil)); end
+
+  def self.define_alias(name, alias_name); end
+
+  def self.define_predicate(name); end
+
+  def self.define_reader(name); end
+
+  def self.delegate_to_ordering_manager(*methods); end
+end
+
+class RSpec::Core::ConfigurationOptions
+  def args(); end
+
+  def configure(config); end
+
+  def configure_filter_manager(filter_manager); end
+
+  def initialize(args); end
+
+  def options(); end
+  OPTIONS_ORDER = ::T.let(nil, ::T.untyped)
+  UNFORCED_OPTIONS = ::T.let(nil, ::T.untyped)
+  UNPROCESSABLE_OPTIONS = ::T.let(nil, ::T.untyped)
+end
+
+class RSpec::Core::ConfigurationOptions
+end
+
+module RSpec::Core::DSL
+end
+
+module RSpec::Core::DSL
+  def self.change_global_dsl(&changes); end
+
+  def self.example_group_aliases(); end
+
+  def self.expose_example_group_alias(name); end
+
+  def self.expose_example_group_alias_globally(method_name); end
+
+  def self.expose_globally!(); end
+
+  def self.exposed_globally?(); end
+
+  def self.remove_globally!(); end
+
+  def self.top_level(); end
+
+  def self.top_level=(top_level); end
+end
+
+class RSpec::Core::DeprecationError
+end
+
+class RSpec::Core::DeprecationError
+end
+
+class RSpec::Core::DidYouMean
+  def call(); end
+
+  def initialize(relative_file_name); end
+
+  def relative_file_name(); end
+end
+
+class RSpec::Core::DidYouMean
+end
+
 class RSpec::Core::Example
   def attempts(); end
 
   def attempts=(attempts); end
 
   def clear_exception(); end
+
+  def clock(); end
+
+  def clock=(clock); end
+
+  def description(); end
+
+  def display_exception(); end
+
+  def display_exception=(ex); end
+
+  def duplicate_with(metadata_overrides=T.unsafe(nil)); end
+
+  def example_group(); end
+
+  def example_group_instance(); end
+
+  def exception(); end
+
+  def execution_result(); end
+
+  def fail_with_exception(reporter, exception); end
+
+  def file_path(); end
+
+  def full_description(); end
+
+  def id(); end
+
+  def initialize(example_group_class, description, user_metadata, example_block=T.unsafe(nil)); end
+
+  def inspect_output(); end
+
+  def instance_exec(*args, &block); end
+
+  def location(); end
+
+  def location_rerun_argument(); end
+
+  def metadata(); end
+
+  def pending(); end
+
+  def pending?(); end
+
+  def reporter(); end
+
+  def rerun_argument(); end
+
+  def run(example_group_instance, reporter); end
+
+  def set_aggregate_failures_exception(exception); end
+
+  def set_exception(exception); end
+
+  def skip(); end
+
+  def skip_with_exception(reporter, exception); end
+
+  def skipped?(); end
+
+  def update_inherited_metadata(updates); end
+end
+
+RSpec::Core::Example::AllExceptionsExcludingDangerousOnesOnRubiesThatAllowIt = RSpec::Support::AllExceptionsExceptOnesWeMustNotRescue
+
+class RSpec::Core::Example::ExecutionResult
+  include ::RSpec::Core::HashImitatable
+  def ensure_timing_set(clock); end
+
+  def example_skipped?(); end
+
+  def exception(); end
+
+  def exception=(exception); end
+
+  def finished_at(); end
+
+  def finished_at=(finished_at); end
+
+  def pending_exception(); end
+
+  def pending_exception=(pending_exception); end
+
+  def pending_fixed(); end
+
+  def pending_fixed=(pending_fixed); end
+
+  def pending_fixed?(); end
+
+  def pending_message(); end
+
+  def pending_message=(pending_message); end
+
+  def record_finished(status, finished_at); end
+
+  def run_time(); end
+
+  def run_time=(run_time); end
+
+  def started_at(); end
+
+  def started_at=(started_at); end
+
+  def status(); end
+
+  def status=(status); end
+end
+
+class RSpec::Core::Example::ExecutionResult
+  extend ::RSpec::Core::HashImitatable::ClassMethods
 end
 
 class RSpec::Core::Example::Procsy
+  def <<(*a, &b); end
+
+  def ===(*a, &b); end
+
+  def >>(*a, &b); end
+
+  def [](*a, &b); end
+
+  def arity(*a, &b); end
+
   def attempts(); end
 
+  def binding(*a, &b); end
+
+  def call(*args, &block); end
+
+  def clock(*a, &b); end
+
+  def clock=(*a, &b); end
+
+  def clone(*a, &b); end
+
+  def curry(*a, &b); end
+
+  def description(*a, &b); end
+
+  def dup(*a, &b); end
+
+  def duplicate_with(*a, &b); end
+
+  def example(); end
+
+  def example_group(*a, &b); end
+
+  def example_group_instance(*a, &b); end
+
+  def exception(*a, &b); end
+
+  def executed?(); end
+
+  def execution_result(*a, &b); end
+
+  def file_path(*a, &b); end
+
+  def full_description(*a, &b); end
+
+  def hash(*a, &b); end
+
+  def id(*a, &b); end
+
+  def initialize(example, &block); end
+
+  def inspect_output(*a, &b); end
+
+  def lambda?(*a, &b); end
+
+  def location(*a, &b); end
+
+  def location_rerun_argument(*a, &b); end
+
+  def metadata(*a, &b); end
+
+  def parameters(*a, &b); end
+
+  def pending(*a, &b); end
+
+  def pending?(*a, &b); end
+
+  def reporter(*a, &b); end
+
+  def rerun_argument(*a, &b); end
+
+  def run(*args, &block); end
+
   def run_with_retry(opts=T.unsafe(nil)); end
+
+  def skip(*a, &b); end
+
+  def skipped?(*a, &b); end
+
+  def source_location(*a, &b); end
+
+  def to_proc(); end
+
+  def update_inherited_metadata(*a, &b); end
+
+  def wrap(&block); end
+
+  def yield(*a, &b); end
+end
+
+class RSpec::Core::Example::Procsy
+end
+
+class RSpec::Core::Example
+  def self.delegate_to_metadata(key); end
+
+  def self.parse_id(id); end
 end
 
 class RSpec::Core::ExampleGroup
+  include ::RSpec::Core::MemoizedHelpers
+  include ::RSpec::Core::Pending
   include ::RSpec::Core::MockingAdapters::RSpec
   include ::RSpec::Mocks::ExampleMethods
   include ::RSpec::Mocks::ArgumentMatchers
@@ -18570,10 +19350,838 @@ class RSpec::Core::ExampleGroup
   def clear_lets(); end
 
   def clear_memoized(); end
+
+  def described_class(); end
+
+  def initialize(inspect_output=T.unsafe(nil)); end
+  INSTANCE_VARIABLE_TO_IGNORE = ::T.let(nil, ::T.untyped)
+end
+
+class RSpec::Core::ExampleGroup::WrongScopeError
+end
+
+class RSpec::Core::ExampleGroup::WrongScopeError
+end
+
+class RSpec::Core::ExampleGroup
+  extend ::RSpec::Core::Hooks
+  extend ::RSpec::Core::MemoizedHelpers::ClassMethods
+  extend ::RSpec::Core::SharedExampleGroup
+  def self.add_example(example); end
+
+  def self.before_context_ivars(); end
+
+  def self.children(); end
+
+  def self.context(*args, &example_group_block); end
+
+  def self.currently_executing_a_context_hook?(); end
+
+  def self.declaration_locations(); end
+
+  def self.define_example_group_method(name, metadata=T.unsafe(nil)); end
+
+  def self.define_example_method(name, extra_options=T.unsafe(nil)); end
+
+  def self.define_nested_shared_group_method(new_name, report_label=T.unsafe(nil)); end
+
+  def self.delegate_to_metadata(*names); end
+
+  def self.descendant_filtered_examples(); end
+
+  def self.descendants(); end
+
+  def self.describe(*args, &example_group_block); end
+
+  def self.described_class(); end
+
+  def self.description(); end
+
+  def self.each_instance_variable_for_example(group); end
+
+  def self.ensure_example_groups_are_configured(); end
+
+  def self.example(*all_args, &block); end
+
+  def self.example_group(*args, &example_group_block); end
+
+  def self.examples(); end
+
+  def self.fcontext(*args, &example_group_block); end
+
+  def self.fdescribe(*args, &example_group_block); end
+
+  def self.fexample(*all_args, &block); end
+
+  def self.file_path(); end
+
+  def self.filtered_examples(); end
+
+  def self.find_and_eval_shared(label, name, inclusion_location, *args, &customization_block); end
+
+  def self.fit(*all_args, &block); end
+
+  def self.focus(*all_args, &block); end
+
+  def self.for_filtered_examples(reporter, &block); end
+
+  def self.fspecify(*all_args, &block); end
+
+  def self.id(); end
+
+  def self.idempotently_define_singleton_method(name, &definition); end
+
+  def self.include_context(name, *args, &block); end
+
+  def self.include_examples(name, *args, &block); end
+
+  def self.it(*all_args, &block); end
+
+  def self.it_behaves_like(name, *args, &customization_block); end
+
+  def self.it_should_behave_like(name, *args, &customization_block); end
+
+  def self.location(); end
+
+  def self.metadata(); end
+
+  def self.next_runnable_index_for(file); end
+
+  def self.ordering_strategy(); end
+
+  def self.parent_groups(); end
+
+  def self.pending(*all_args, &block); end
+
+  def self.remove_example(example); end
+
+  def self.reset_memoized(); end
+
+  def self.run(reporter=T.unsafe(nil)); end
+
+  def self.run_after_context_hooks(example_group_instance); end
+
+  def self.run_before_context_hooks(example_group_instance); end
+
+  def self.run_examples(reporter); end
+
+  def self.set_it_up(description, args, registration_collection, &example_group_block); end
+
+  def self.set_ivars(instance, ivars); end
+
+  def self.skip(*all_args, &block); end
+
+  def self.specify(*all_args, &block); end
+
+  def self.store_before_context_ivars(example_group_instance); end
+
+  def self.subclass(parent, description, args, registration_collection, &example_group_block); end
+
+  def self.superclass_before_context_ivars(); end
+
+  def self.superclass_metadata(); end
+
+  def self.top_level?(); end
+
+  def self.top_level_description(); end
+
+  def self.traverse_tree_until(&block); end
+
+  def self.update_inherited_metadata(updates); end
+
+  def self.with_replaced_metadata(meta); end
+
+  def self.xcontext(*args, &example_group_block); end
+
+  def self.xdescribe(*args, &example_group_block); end
+
+  def self.xexample(*all_args, &block); end
+
+  def self.xit(*all_args, &block); end
+
+  def self.xspecify(*all_args, &block); end
+end
+
+class RSpec::Core::ExampleStatusDumper
+  def dump(); end
+
+  def initialize(examples); end
+end
+
+class RSpec::Core::ExampleStatusDumper
+  def self.dump(examples); end
+end
+
+class RSpec::Core::ExampleStatusMerger
+  def initialize(this_run, from_previous_runs); end
+
+  def merge(); end
+end
+
+class RSpec::Core::ExampleStatusMerger
+  def self.merge(this_run, from_previous_runs); end
+end
+
+class RSpec::Core::ExampleStatusParser
+  def initialize(string); end
+
+  def parse(); end
+end
+
+class RSpec::Core::ExampleStatusParser
+  def self.parse(string); end
+end
+
+class RSpec::Core::ExampleStatusPersister
+  def initialize(examples, file_name); end
+
+  def persist(); end
+end
+
+class RSpec::Core::ExampleStatusPersister
+  def self.load_from(file_name); end
+
+  def self.persist(examples, file_name); end
+end
+
+RSpec::Core::ExclusionRules = RSpec::Core::FilterRules
+
+class RSpec::Core::FilterManager
+  def add_ids(rerun_path, scoped_ids); end
+
+  def add_location(file_path, line_numbers); end
+
+  def empty?(); end
+
+  def exclude(*args); end
+
+  def exclude_only(*args); end
+
+  def exclude_with_low_priority(*args); end
+
+  def exclusions(); end
+
+  def include(*args); end
+
+  def include_only(*args); end
+
+  def include_with_low_priority(*args); end
+
+  def inclusions(); end
+
+  def prune(examples); end
+end
+
+class RSpec::Core::FilterManager
+end
+
+class RSpec::Core::FilterRules
+  def [](key); end
+
+  def add(updated); end
+
+  def add_with_low_priority(updated); end
+
+  def clear(); end
+
+  def delete(key); end
+
+  def description(); end
+
+  def each_pair(&block); end
+
+  def empty?(); end
+
+  def fetch(*args, &block); end
+
+  def include_example?(example); end
+
+  def initialize(rules=T.unsafe(nil)); end
+
+  def opposite(); end
+
+  def opposite=(opposite); end
+
+  def rules(); end
+
+  def use_only(updated); end
+  PROC_HEX_NUMBER = ::T.let(nil, ::T.untyped)
+  PROJECT_DIR = ::T.let(nil, ::T.untyped)
+end
+
+class RSpec::Core::FilterRules
+  def self.build(); end
+end
+
+module RSpec::Core::FilterableItemRepository
+end
+
+class RSpec::Core::FilterableItemRepository::QueryOptimized
+  def items_for(metadata); end
+end
+
+class RSpec::Core::FilterableItemRepository::QueryOptimized
+end
+
+class RSpec::Core::FilterableItemRepository::UpdateOptimized
+  def append(item, metadata); end
+
+  def delete(item, metadata); end
+
+  def initialize(applies_predicate); end
+
+  def items_and_filters(); end
+
+  def items_for(request_meta); end
+
+  def prepend(item, metadata); end
+end
+
+class RSpec::Core::FilterableItemRepository::UpdateOptimized
+end
+
+module RSpec::Core::FilterableItemRepository
+end
+
+module RSpec::Core::FlatMap
+end
+
+module RSpec::Core::FlatMap
+  def self.flat_map(array, &block); end
+end
+
+module RSpec::Core::Formatters
+end
+
+class RSpec::Core::Formatters::BaseBisectFormatter
+  def example_failed(notification); end
+
+  def example_finished(notification); end
+
+  def initialize(expected_failures); end
+
+  def start_dump(_notification); end
+end
+
+class RSpec::Core::Formatters::BaseBisectFormatter
+  def self.inherited(formatter); end
+end
+
+class RSpec::Core::Formatters::BaseFormatter
+  def close(_notification); end
+
+  def example_group(); end
+
+  def example_group=(example_group); end
+
+  def example_group_started(notification); end
+
+  def initialize(output); end
+
+  def output(); end
+
+  def start(notification); end
+end
+
+class RSpec::Core::Formatters::BaseFormatter
+end
+
+class RSpec::Core::Formatters::BaseTextFormatter
+  def dump_failures(notification); end
+
+  def dump_pending(notification); end
+
+  def dump_summary(summary); end
+
+  def message(notification); end
+
+  def seed(notification); end
+end
+
+class RSpec::Core::Formatters::BaseTextFormatter
+end
+
+class RSpec::Core::Formatters::BisectDRbFormatter
+  def initialize(_output); end
+
+  def notify_results(results); end
+end
+
+class RSpec::Core::Formatters::BisectDRbFormatter
+end
+
+module RSpec::Core::Formatters::ConsoleCodes
+  VT100_CODES = ::T.let(nil, ::T.untyped)
+  VT100_CODE_VALUES = ::T.let(nil, ::T.untyped)
+end
+
+module RSpec::Core::Formatters::ConsoleCodes
+  def self.config_colors_to_methods(); end
+
+  def self.console_code_for(code_or_symbol); end
+
+  def self.wrap(text, code_or_symbol); end
+end
+
+class RSpec::Core::Formatters::DeprecationFormatter
+  def count(); end
+
+  def deprecation(notification); end
+
+  def deprecation_message_for(data); end
+
+  def deprecation_stream(); end
+
+  def deprecation_summary(_notification); end
+
+  def initialize(deprecation_stream, summary_stream); end
+
+  def output(); end
+
+  def printer(); end
+
+  def summary_stream(); end
+  DEPRECATION_STREAM_NOTICE = ::T.let(nil, ::T.untyped)
+  RAISE_ERROR_CONFIG_NOTICE = ::T.let(nil, ::T.untyped)
+  TOO_MANY_WARNINGS_NOTICE = ::T.let(nil, ::T.untyped)
+end
+
+class RSpec::Core::Formatters::DeprecationFormatter::DelayedPrinter
+  def deprecation_formatter(); end
+
+  def deprecation_stream(); end
+
+  def deprecation_summary(); end
+
+  def initialize(deprecation_stream, summary_stream, deprecation_formatter); end
+
+  def print_deferred_deprecation_warnings(); end
+
+  def print_deprecation_message(data); end
+
+  def stash_deprecation_message(deprecation_message); end
+
+  def summary_stream(); end
+  TOO_MANY_USES_LIMIT = ::T.let(nil, ::T.untyped)
+end
+
+class RSpec::Core::Formatters::DeprecationFormatter::DelayedPrinter
+end
+
+class RSpec::Core::Formatters::DeprecationFormatter::FileStream
+  def initialize(file); end
+
+  def puts(*args); end
+
+  def summarize(summary_stream, deprecation_count); end
+end
+
+class RSpec::Core::Formatters::DeprecationFormatter::FileStream
+end
+
+class RSpec::Core::Formatters::DeprecationFormatter::GeneratedDeprecationMessage
+  def initialize(data); end
+
+  def too_many_warnings_message(); end
+
+  def type(); end
+
+  def type=(_); end
+end
+
+class RSpec::Core::Formatters::DeprecationFormatter::GeneratedDeprecationMessage
+  def self.[](*_); end
+
+  def self.members(); end
+end
+
+class RSpec::Core::Formatters::DeprecationFormatter::ImmediatePrinter
+  def deprecation_formatter(); end
+
+  def deprecation_stream(); end
+
+  def deprecation_summary(); end
+
+  def initialize(deprecation_stream, summary_stream, deprecation_formatter); end
+
+  def print_deprecation_message(data); end
+
+  def summary_stream(); end
+end
+
+class RSpec::Core::Formatters::DeprecationFormatter::ImmediatePrinter
+end
+
+class RSpec::Core::Formatters::DeprecationFormatter::RaiseErrorStream
+  def puts(message); end
+
+  def summarize(summary_stream, deprecation_count); end
+end
+
+class RSpec::Core::Formatters::DeprecationFormatter::RaiseErrorStream
+end
+
+class RSpec::Core::Formatters::DeprecationFormatter::SpecifiedDeprecationMessage
+  def initialize(data); end
+
+  def too_many_warnings_message(); end
+
+  def type(); end
+
+  def type=(_); end
+end
+
+class RSpec::Core::Formatters::DeprecationFormatter::SpecifiedDeprecationMessage
+  def self.[](*_); end
+
+  def self.members(); end
+end
+
+class RSpec::Core::Formatters::DeprecationFormatter
+end
+
+class RSpec::Core::Formatters::DocumentationFormatter
+  def example_failed(failure); end
+
+  def example_group_finished(_notification); end
+
+  def example_passed(passed); end
+
+  def example_pending(pending); end
+
+  def example_started(_notification); end
+end
+
+class RSpec::Core::Formatters::DocumentationFormatter
+end
+
+class RSpec::Core::Formatters::ExceptionPresenter
+  def colorized_formatted_backtrace(colorizer=T.unsafe(nil)); end
+
+  def colorized_message_lines(colorizer=T.unsafe(nil)); end
+
+  def description(); end
+
+  def example(); end
+
+  def exception(); end
+
+  def formatted_backtrace(exception=T.unsafe(nil)); end
+
+  def formatted_cause(exception); end
+
+  def fully_formatted(failure_number, colorizer=T.unsafe(nil)); end
+
+  def fully_formatted_lines(failure_number, colorizer); end
+
+  def initialize(exception, example, options=T.unsafe(nil)); end
+
+  def message_lines(); end
+  PENDING_DETAIL_FORMATTER = ::T.let(nil, ::T.untyped)
+end
+
+class RSpec::Core::Formatters::ExceptionPresenter::Factory
+  def build(); end
+
+  def initialize(example); end
+end
+
+class RSpec::Core::Formatters::ExceptionPresenter::Factory::CommonBacktraceTruncater
+  def initialize(parent); end
+
+  def with_truncated_backtrace(child); end
+end
+
+class RSpec::Core::Formatters::ExceptionPresenter::Factory::CommonBacktraceTruncater
+end
+
+module RSpec::Core::Formatters::ExceptionPresenter::Factory::EmptyBacktraceFormatter
+end
+
+module RSpec::Core::Formatters::ExceptionPresenter::Factory::EmptyBacktraceFormatter
+  def self.format_backtrace(*_); end
+end
+
+class RSpec::Core::Formatters::ExceptionPresenter::Factory
+end
+
+class RSpec::Core::Formatters::ExceptionPresenter
+end
+
+class RSpec::Core::Formatters::FailureListFormatter
+  def dump_profile(_profile); end
+
+  def example_failed(failure); end
+
+  def message(_message); end
+end
+
+class RSpec::Core::Formatters::FailureListFormatter
+end
+
+class RSpec::Core::Formatters::FallbackMessageFormatter
+  def initialize(output); end
+
+  def message(notification); end
+
+  def output(); end
+end
+
+class RSpec::Core::Formatters::FallbackMessageFormatter
+end
+
+module RSpec::Core::Formatters::Helpers
+  DEFAULT_PRECISION = ::T.let(nil, ::T.untyped)
+  SUB_SECOND_PRECISION = ::T.let(nil, ::T.untyped)
+end
+
+module RSpec::Core::Formatters::Helpers
+  def self.format_duration(duration); end
+
+  def self.format_seconds(float, precision=T.unsafe(nil)); end
+
+  def self.organize_ids(ids); end
+
+  def self.pluralize(count, string); end
+end
+
+class RSpec::Core::Formatters::HtmlFormatter
+  def dump_summary(summary); end
+
+  def example_failed(failure); end
+
+  def example_passed(passed); end
+
+  def example_pending(pending); end
+
+  def example_started(_notification); end
+
+  def start_dump(_notification); end
+end
+
+class RSpec::Core::Formatters::HtmlFormatter
+end
+
+class RSpec::Core::Formatters::HtmlPrinter
+  include ::ERB::Util
+  def flush(); end
+
+  def initialize(output); end
+
+  def make_example_group_header_red(group_id); end
+
+  def make_example_group_header_yellow(group_id); end
+
+  def make_header_red(); end
+
+  def make_header_yellow(); end
+
+  def move_progress(percent_done); end
+
+  def print_example_failed(pending_fixed, description, run_time, failure_id, exception, extra_content); end
+
+  def print_example_group_end(); end
+
+  def print_example_group_start(group_id, description, number_of_parents); end
+
+  def print_example_passed(description, run_time); end
+
+  def print_example_pending(description, pending_message); end
+
+  def print_html_start(); end
+
+  def print_summary(duration, example_count, failure_count, pending_count); end
+  GLOBAL_SCRIPTS = ::T.let(nil, ::T.untyped)
+  GLOBAL_STYLES = ::T.let(nil, ::T.untyped)
+  HTML_HEADER = ::T.let(nil, ::T.untyped)
+  REPORT_HEADER = ::T.let(nil, ::T.untyped)
+end
+
+class RSpec::Core::Formatters::HtmlPrinter
+end
+
+class RSpec::Core::Formatters::JsonFormatter
+  def dump_profile(profile); end
+
+  def dump_profile_slowest_example_groups(profile); end
+
+  def dump_profile_slowest_examples(profile); end
+
+  def dump_summary(summary); end
+
+  def message(notification); end
+
+  def output_hash(); end
+
+  def seed(notification); end
+
+  def stop(notification); end
+end
+
+class RSpec::Core::Formatters::JsonFormatter
+end
+
+class RSpec::Core::Formatters::Loader
+  def add(formatter_to_use, *paths); end
+
+  def default_formatter(); end
+
+  def default_formatter=(default_formatter); end
+
+  def formatters(); end
+
+  def initialize(reporter); end
+
+  def prepare_default(output_stream, deprecation_stream); end
+
+  def reporter(); end
+
+  def setup_default(output_stream, deprecation_stream); end
+end
+
+class RSpec::Core::Formatters::Loader
+  def self.formatters(); end
+end
+
+class RSpec::Core::Formatters::ProfileFormatter
+  def dump_profile(profile); end
+
+  def initialize(output); end
+
+  def output(); end
+end
+
+class RSpec::Core::Formatters::ProfileFormatter
+end
+
+class RSpec::Core::Formatters::ProgressFormatter
+  def example_failed(_notification); end
+
+  def example_passed(_notification); end
+
+  def example_pending(_notification); end
+
+  def start_dump(_notification); end
+end
+
+class RSpec::Core::Formatters::ProgressFormatter
+end
+
+class RSpec::Core::Formatters::SnippetExtractor
+  def beginning_line_number(); end
+
+  def expression_lines(); end
+
+  def initialize(source, beginning_line_number, max_line_count=T.unsafe(nil)); end
+
+  def max_line_count(); end
+
+  def source(); end
+end
+
+class RSpec::Core::Formatters::SnippetExtractor::NoExpressionAtLineError
+end
+
+class RSpec::Core::Formatters::SnippetExtractor::NoExpressionAtLineError
+end
+
+class RSpec::Core::Formatters::SnippetExtractor::NoSuchFileError
+end
+
+class RSpec::Core::Formatters::SnippetExtractor::NoSuchFileError
+end
+
+class RSpec::Core::Formatters::SnippetExtractor::NoSuchLineError
+end
+
+class RSpec::Core::Formatters::SnippetExtractor::NoSuchLineError
+end
+
+class RSpec::Core::Formatters::SnippetExtractor
+  def self.extract_expression_lines_at(file_path, beginning_line_number, max_line_count=T.unsafe(nil)); end
+
+  def self.extract_line_at(file_path, line_number); end
+
+  def self.least_indentation_from(lines); end
+
+  def self.source_from_file(path); end
+end
+
+class RSpec::Core::Formatters::SyntaxHighlighter
+  def highlight(lines); end
+
+  def initialize(configuration); end
+end
+
+module RSpec::Core::Formatters::SyntaxHighlighter::CodeRayImplementation
+  RESET_CODE = ::T.let(nil, ::T.untyped)
+end
+
+module RSpec::Core::Formatters::SyntaxHighlighter::CodeRayImplementation
+  def self.highlight_syntax(lines); end
+end
+
+module RSpec::Core::Formatters::SyntaxHighlighter::NoSyntaxHighlightingImplementation
+end
+
+module RSpec::Core::Formatters::SyntaxHighlighter::NoSyntaxHighlightingImplementation
+  def self.highlight_syntax(lines); end
+end
+
+RSpec::Core::Formatters::SyntaxHighlighter::WindowsImplementation = RSpec::Core::Formatters::SyntaxHighlighter::NoSyntaxHighlightingImplementation
+
+class RSpec::Core::Formatters::SyntaxHighlighter
+  def self.attempt_to_add_rspec_terms_to_coderay_keywords(); end
+end
+
+module RSpec::Core::Formatters
+  def self.register(formatter_class, *notifications); end
 end
 
 module RSpec::Core::HashImitatable
+  def <(*args, &block); end
+
+  def <=(*args, &block); end
+
+  def >(*args, &block); end
+
+  def >=(*args, &block); end
+
+  def [](key); end
+
+  def []=(key, value); end
+
+  def all?(*args, &block); end
+
+  def any?(*args, &block); end
+
   def assert_valid_keys(*args, &block); end
+
+  def assoc(*args, &block); end
+
+  def chain(*args, &block); end
+
+  def chunk(*args, &block); end
+
+  def chunk_while(*args, &block); end
+
+  def clear(*args, &block); end
+
+  def collect(*args, &block); end
+
+  def collect_concat(*args, &block); end
+
+  def compact(*args, &block); end
+
+  def compact!(*args, &block); end
+
+  def compare_by_identity(*args, &block); end
+
+  def compare_by_identity?(*args, &block); end
+
+  def count(*args, &block); end
+
+  def cycle(*args, &block); end
 
   def deep_merge(*args, &block); end
 
@@ -18591,6 +20199,48 @@ module RSpec::Core::HashImitatable
 
   def deep_transform_keys!(*args, &block); end
 
+  def default(*args, &block); end
+
+  def default=(*args, &block); end
+
+  def default_proc(*args, &block); end
+
+  def default_proc=(*args, &block); end
+
+  def delete(*args, &block); end
+
+  def delete_if(*args, &block); end
+
+  def detect(*args, &block); end
+
+  def dig(*args, &block); end
+
+  def drop(*args, &block); end
+
+  def drop_while(*args, &block); end
+
+  def each(*args, &block); end
+
+  def each_cons(*args, &block); end
+
+  def each_entry(*args, &block); end
+
+  def each_key(*args, &block); end
+
+  def each_pair(*args, &block); end
+
+  def each_slice(*args, &block); end
+
+  def each_value(*args, &block); end
+
+  def each_with_index(*args, &block); end
+
+  def each_with_object(*args, &block); end
+
+  def empty?(*args, &block); end
+
+  def entries(*args, &block); end
+
   def except(*args, &block); end
 
   def except!(*args, &block); end
@@ -18599,23 +20249,498 @@ module RSpec::Core::HashImitatable
 
   def extractable_options?(*args, &block); end
 
+  def fetch(*args, &block); end
+
+  def fetch_values(*args, &block); end
+
+  def filter(*args, &block); end
+
+  def filter!(*args, &block); end
+
+  def find(*args, &block); end
+
+  def find_all(*args, &block); end
+
+  def find_index(*args, &block); end
+
+  def first(*args, &block); end
+
+  def flat_map(*args, &block); end
+
+  def flatten(*args, &block); end
+
+  def grep(*args, &block); end
+
+  def grep_v(*args, &block); end
+
+  def group_by(*args, &block); end
+
+  def has_key?(*args, &block); end
+
+  def has_value?(*args, &block); end
+
+  def include?(*args, &block); end
+
+  def index(*args, &block); end
+
+  def inject(*args, &block); end
+
+  def invert(*args, &block); end
+
+  def keep_if(*args, &block); end
+
+  def key(*args, &block); end
+
+  def key?(*args, &block); end
+
+  def keys(*args, &block); end
+
+  def lazy(*args, &block); end
+
+  def length(*args, &block); end
+
+  def map(*args, &block); end
+
+  def max(*args, &block); end
+
+  def max_by(*args, &block); end
+
+  def member?(*args, &block); end
+
+  def merge(*args, &block); end
+
+  def merge!(*args, &block); end
+
+  def min(*args, &block); end
+
+  def min_by(*args, &block); end
+
+  def minmax(*args, &block); end
+
+  def minmax_by(*args, &block); end
+
+  def none?(*args, &block); end
+
+  def one?(*args, &block); end
+
+  def partition(*args, &block); end
+
+  def rassoc(*args, &block); end
+
+  def reduce(*args, &block); end
+
+  def rehash(*args, &block); end
+
+  def reject(*args, &block); end
+
+  def reject!(*args, &block); end
+
+  def replace(*args, &block); end
+
+  def reverse_each(*args, &block); end
+
   def save_plist(*args, &block); end
 
+  def select(*args, &block); end
+
+  def select!(*args, &block); end
+
+  def shift(*args, &block); end
+
+  def size(*args, &block); end
+
+  def slice(*args, &block); end
+
   def slice!(*args, &block); end
+
+  def slice_after(*args, &block); end
+
+  def slice_before(*args, &block); end
+
+  def slice_when(*args, &block); end
+
+  def sort(*args, &block); end
+
+  def sort_by(*args, &block); end
+
+  def store(*args, &block); end
 
   def stringify_keys(*args, &block); end
 
   def stringify_keys!(*args, &block); end
 
+  def sum(*args, &block); end
+
   def symbolize_keys(*args, &block); end
 
   def symbolize_keys!(*args, &block); end
+
+  def take(*args, &block); end
+
+  def take_while(*args, &block); end
+
+  def to_a(*args, &block); end
+
+  def to_h(); end
+
+  def to_hash(*args, &block); end
 
   def to_options(*args, &block); end
 
   def to_options!(*args, &block); end
 
   def to_plist(*args, &block); end
+
+  def to_proc(*args, &block); end
+
+  def to_set(*args, &block); end
+
+  def transform_keys(*args, &block); end
+
+  def transform_keys!(*args, &block); end
+
+  def transform_values(*args, &block); end
+
+  def transform_values!(*args, &block); end
+
+  def uniq(*args, &block); end
+
+  def update(*args, &block); end
+
+  def value?(*args, &block); end
+
+  def values(*args, &block); end
+
+  def values_at(*args, &block); end
+
+  def zip(*args, &block); end
+end
+
+module RSpec::Core::HashImitatable::ClassMethods
+  def attr_accessor(*names); end
+
+  def hash_attribute_names(); end
+end
+
+module RSpec::Core::HashImitatable::ClassMethods
+end
+
+module RSpec::Core::HashImitatable
+  def self.included(klass); end
+end
+
+module RSpec::Core::Hooks
+  def after(*args, &block); end
+
+  def append_after(*args, &block); end
+
+  def append_before(*args, &block); end
+
+  def around(*args, &block); end
+
+  def before(*args, &block); end
+
+  def hooks(); end
+
+  def prepend_after(*args, &block); end
+
+  def prepend_before(*args, &block); end
+end
+
+class RSpec::Core::Hooks::AfterContextHook
+  def run(example); end
+end
+
+class RSpec::Core::Hooks::AfterContextHook
+end
+
+class RSpec::Core::Hooks::AfterHook
+  def run(example); end
+end
+
+class RSpec::Core::Hooks::AfterHook
+end
+
+class RSpec::Core::Hooks::AroundHook
+  def execute_with(example, procsy); end
+
+  def hook_description(); end
+end
+
+class RSpec::Core::Hooks::AroundHook
+end
+
+class RSpec::Core::Hooks::BeforeHook
+  def run(example); end
+end
+
+class RSpec::Core::Hooks::BeforeHook
+end
+
+class RSpec::Core::Hooks::Hook
+  def block(); end
+
+  def block=(_); end
+
+  def options(); end
+
+  def options=(_); end
+end
+
+class RSpec::Core::Hooks::Hook
+  def self.[](*_); end
+
+  def self.members(); end
+end
+
+class RSpec::Core::Hooks::HookCollections
+  def all_hooks_for(position, scope); end
+
+  def initialize(owner, filterable_item_repo_class); end
+
+  def matching_hooks_for(position, scope, example_or_group); end
+
+  def processable_hooks_for(position, scope, host); end
+
+  def register(prepend_or_append, position, *args, &block); end
+
+  def register_global_singleton_context_hooks(example, globals); end
+
+  def register_globals(host, globals); end
+
+  def run(position, scope, example_or_group); end
+
+  def run_owned_hooks_for(position, scope, example_or_group); end
+  EMPTY_HOOK_ARRAY = ::T.let(nil, ::T.untyped)
+  HOOK_TYPES = ::T.let(nil, ::T.untyped)
+  SCOPES = ::T.let(nil, ::T.untyped)
+  SCOPE_ALIASES = ::T.let(nil, ::T.untyped)
+end
+
+class RSpec::Core::Hooks::HookCollections
+end
+
+module RSpec::Core::Hooks
+end
+
+class RSpec::Core::InclusionRules
+  def add(*args); end
+
+  def add_with_low_priority(*args); end
+
+  def split_file_scoped_rules(); end
+
+  def standalone?(); end
+end
+
+class RSpec::Core::InclusionRules
+end
+
+module RSpec::Core::Invocations
+end
+
+class RSpec::Core::Invocations::Bisect
+  def call(options, err, out); end
+end
+
+class RSpec::Core::Invocations::Bisect
+end
+
+class RSpec::Core::Invocations::DRbWithFallback
+  def call(options, err, out); end
+end
+
+class RSpec::Core::Invocations::DRbWithFallback
+end
+
+class RSpec::Core::Invocations::InitializeProject
+  def call(*_args); end
+end
+
+class RSpec::Core::Invocations::InitializeProject
+end
+
+class RSpec::Core::Invocations::PrintHelp
+  def call(_options, _err, out); end
+
+  def hidden_options(); end
+
+  def hidden_options=(_); end
+
+  def parser(); end
+
+  def parser=(_); end
+end
+
+class RSpec::Core::Invocations::PrintHelp
+  def self.[](*_); end
+
+  def self.members(); end
+end
+
+class RSpec::Core::Invocations::PrintVersion
+  def call(_options, _err, out); end
+end
+
+class RSpec::Core::Invocations::PrintVersion
+end
+
+module RSpec::Core::Invocations
+end
+
+class RSpec::Core::LegacyExampleGroupHash
+  include ::RSpec::Core::HashImitatable
+  def initialize(metadata); end
+end
+
+class RSpec::Core::LegacyExampleGroupHash
+  extend ::RSpec::Core::HashImitatable::ClassMethods
+end
+
+module RSpec::Core::MemoizedHelpers
+  def initialize(*_); end
+
+  def is_expected(); end
+
+  def should(matcher=T.unsafe(nil), message=T.unsafe(nil)); end
+
+  def should_not(matcher=T.unsafe(nil), message=T.unsafe(nil)); end
+
+  def subject(); end
+end
+
+module RSpec::Core::MemoizedHelpers::ClassMethods
+  def let(name, &block); end
+
+  def let!(name, &block); end
+
+  def subject(name=T.unsafe(nil), &block); end
+
+  def subject!(name=T.unsafe(nil), &block); end
+end
+
+module RSpec::Core::MemoizedHelpers::ClassMethods
+end
+
+class RSpec::Core::MemoizedHelpers::ContextHookMemoized
+end
+
+class RSpec::Core::MemoizedHelpers::ContextHookMemoized::After
+end
+
+class RSpec::Core::MemoizedHelpers::ContextHookMemoized::After
+  def self.article(); end
+
+  def self.hook_expression(); end
+
+  def self.hook_intention(); end
+end
+
+class RSpec::Core::MemoizedHelpers::ContextHookMemoized::Before
+end
+
+class RSpec::Core::MemoizedHelpers::ContextHookMemoized::Before
+  def self.article(); end
+
+  def self.hook_expression(); end
+
+  def self.hook_intention(); end
+end
+
+class RSpec::Core::MemoizedHelpers::ContextHookMemoized
+  def self.fetch_or_store(key, &_block); end
+
+  def self.isolate_for_context_hook(example_group_instance); end
+end
+
+class RSpec::Core::MemoizedHelpers::NonThreadSafeMemoized
+  def fetch_or_store(key); end
+end
+
+class RSpec::Core::MemoizedHelpers::NonThreadSafeMemoized
+end
+
+class RSpec::Core::MemoizedHelpers::ThreadsafeMemoized
+  def fetch_or_store(key); end
+end
+
+class RSpec::Core::MemoizedHelpers::ThreadsafeMemoized
+end
+
+module RSpec::Core::MemoizedHelpers
+  def self.define_helpers_on(example_group); end
+
+  def self.get_constant_or_yield(example_group, name); end
+
+  def self.module_for(example_group); end
+end
+
+module RSpec::Core::Metadata
+  RESERVED_KEYS = ::T.let(nil, ::T.untyped)
+end
+
+class RSpec::Core::Metadata::ExampleGroupHash
+end
+
+class RSpec::Core::Metadata::ExampleGroupHash
+  def self.backwards_compatibility_default_proc(&example_group_selector); end
+
+  def self.create(parent_group_metadata, user_metadata, example_group_index, *args, &block); end
+
+  def self.hash_with_backwards_compatibility_default_proc(); end
+end
+
+class RSpec::Core::Metadata::ExampleHash
+end
+
+class RSpec::Core::Metadata::ExampleHash
+  def self.create(group_metadata, user_metadata, index_provider, description, block); end
+end
+
+class RSpec::Core::Metadata::HashPopulator
+  def block(); end
+
+  def description_args(); end
+
+  def initialize(metadata, user_metadata, index_provider, description_args, block); end
+
+  def metadata(); end
+
+  def populate(); end
+
+  def user_metadata(); end
+end
+
+class RSpec::Core::Metadata::HashPopulator
+end
+
+module RSpec::Core::Metadata
+  def self.ascend(metadata); end
+
+  def self.ascending(metadata); end
+
+  def self.build_hash_from(args, warn_about_example_group_filtering=T.unsafe(nil)); end
+
+  def self.deep_hash_dup(object); end
+
+  def self.id_from(metadata); end
+
+  def self.location_tuple_from(metadata); end
+
+  def self.relative_path(line); end
+
+  def self.relative_path_regex(); end
+end
+
+module RSpec::Core::MetadataFilter
+end
+
+module RSpec::Core::MetadataFilter
+  def self.apply?(predicate, filters, metadata); end
+
+  def self.filter_applies?(key, filter_value, metadata); end
+
+  def self.silence_metadata_example_group_deprecations(); end
 end
 
 module RSpec::Core::MockingAdapters
@@ -18641,8 +20766,451 @@ end
 module RSpec::Core::MockingAdapters
 end
 
+class RSpec::Core::MultipleExceptionError
+  include ::RSpec::Core::MultipleExceptionError::InterfaceTag
+  def aggregation_block_label(); end
+
+  def aggregation_metadata(); end
+
+  def all_exceptions(); end
+
+  def exception_count_description(); end
+
+  def failures(); end
+
+  def initialize(*exceptions); end
+
+  def other_errors(); end
+
+  def summary(); end
+end
+
+module RSpec::Core::MultipleExceptionError::InterfaceTag
+  def add(exception); end
+end
+
+module RSpec::Core::MultipleExceptionError::InterfaceTag
+  def self.for(ex); end
+end
+
+class RSpec::Core::MultipleExceptionError
+end
+
+module RSpec::Core::Notifications
+end
+
+class RSpec::Core::Notifications::CustomNotification
+end
+
+class RSpec::Core::Notifications::CustomNotification
+  def self.for(options=T.unsafe(nil)); end
+end
+
+class RSpec::Core::Notifications::DeprecationNotification
+  def call_site(); end
+
+  def call_site=(_); end
+
+  def deprecated(); end
+
+  def deprecated=(_); end
+
+  def message(); end
+
+  def message=(_); end
+
+  def replacement(); end
+
+  def replacement=(_); end
+end
+
+class RSpec::Core::Notifications::DeprecationNotification
+  def self.[](*_); end
+
+  def self.from_hash(data); end
+
+  def self.members(); end
+end
+
+class RSpec::Core::Notifications::ExampleNotification
+  def example(); end
+
+  def example=(_); end
+end
+
+class RSpec::Core::Notifications::ExampleNotification
+  def self.[](*_); end
+
+  def self.for(example); end
+
+  def self.members(); end
+end
+
+class RSpec::Core::Notifications::ExamplesNotification
+  def examples(); end
+
+  def failed_examples(); end
+
+  def failure_notifications(); end
+
+  def fully_formatted_failed_examples(colorizer=T.unsafe(nil)); end
+
+  def fully_formatted_pending_examples(colorizer=T.unsafe(nil)); end
+
+  def initialize(reporter); end
+
+  def notifications(); end
+
+  def pending_examples(); end
+
+  def pending_notifications(); end
+end
+
+class RSpec::Core::Notifications::ExamplesNotification
+end
+
+class RSpec::Core::Notifications::FailedExampleNotification
+  def colorized_formatted_backtrace(colorizer=T.unsafe(nil)); end
+
+  def colorized_message_lines(colorizer=T.unsafe(nil)); end
+
+  def description(); end
+
+  def exception(); end
+
+  def formatted_backtrace(); end
+
+  def fully_formatted(failure_number, colorizer=T.unsafe(nil)); end
+
+  def fully_formatted_lines(failure_number, colorizer=T.unsafe(nil)); end
+
+  def initialize(example, exception_presenter=T.unsafe(nil)); end
+
+  def message_lines(); end
+end
+
+class RSpec::Core::Notifications::FailedExampleNotification
+end
+
+class RSpec::Core::Notifications::GroupNotification
+  def group(); end
+
+  def group=(_); end
+end
+
+class RSpec::Core::Notifications::GroupNotification
+  def self.[](*_); end
+
+  def self.members(); end
+end
+
+class RSpec::Core::Notifications::MessageNotification
+  def message(); end
+
+  def message=(_); end
+end
+
+class RSpec::Core::Notifications::MessageNotification
+  def self.[](*_); end
+
+  def self.members(); end
+end
+
+module RSpec::Core::Notifications::NullColorizer
+end
+
+module RSpec::Core::Notifications::NullColorizer
+  def self.wrap(line, _code_or_symbol); end
+end
+
+class RSpec::Core::Notifications::NullNotification
+end
+
+class RSpec::Core::Notifications::NullNotification
+end
+
+class RSpec::Core::Notifications::PendingExampleFailedAsExpectedNotification
+end
+
+class RSpec::Core::Notifications::PendingExampleFailedAsExpectedNotification
+end
+
+class RSpec::Core::Notifications::PendingExampleFixedNotification
+end
+
+class RSpec::Core::Notifications::PendingExampleFixedNotification
+end
+
+class RSpec::Core::Notifications::ProfileNotification
+  def duration(); end
+
+  def examples(); end
+
+  def initialize(duration, examples, number_of_examples, example_groups); end
+
+  def number_of_examples(); end
+
+  def percentage(); end
+
+  def slow_duration(); end
+
+  def slowest_examples(); end
+
+  def slowest_groups(); end
+end
+
+class RSpec::Core::Notifications::ProfileNotification
+end
+
+class RSpec::Core::Notifications::SeedNotification
+  def fully_formatted(); end
+
+  def seed(); end
+
+  def seed=(_); end
+
+  def seed_used?(); end
+
+  def used=(_); end
+end
+
+class RSpec::Core::Notifications::SeedNotification
+  def self.[](*_); end
+
+  def self.members(); end
+end
+
+class RSpec::Core::Notifications::SkippedExampleNotification
+  def fully_formatted(pending_number, colorizer=T.unsafe(nil)); end
+end
+
+class RSpec::Core::Notifications::SkippedExampleNotification
+end
+
+class RSpec::Core::Notifications::StartNotification
+  def count(); end
+
+  def count=(_); end
+
+  def load_time(); end
+
+  def load_time=(_); end
+end
+
+class RSpec::Core::Notifications::StartNotification
+  def self.[](*_); end
+
+  def self.members(); end
+end
+
+class RSpec::Core::Notifications::SummaryNotification
+  include ::RSpec::Core::ShellEscape
+  def colorized_rerun_commands(colorizer=T.unsafe(nil)); end
+
+  def colorized_totals_line(colorizer=T.unsafe(nil)); end
+
+  def duration(); end
+
+  def duration=(_); end
+
+  def errors_outside_of_examples_count(); end
+
+  def errors_outside_of_examples_count=(_); end
+
+  def example_count(); end
+
+  def examples(); end
+
+  def examples=(_); end
+
+  def failed_examples(); end
+
+  def failed_examples=(_); end
+
+  def failure_count(); end
+
+  def formatted_duration(); end
+
+  def formatted_load_time(); end
+
+  def fully_formatted(colorizer=T.unsafe(nil)); end
+
+  def load_time(); end
+
+  def load_time=(_); end
+
+  def pending_count(); end
+
+  def pending_examples(); end
+
+  def pending_examples=(_); end
+
+  def totals_line(); end
+end
+
+class RSpec::Core::Notifications::SummaryNotification
+  def self.[](*_); end
+
+  def self.members(); end
+end
+
+module RSpec::Core::Notifications
+end
+
+class RSpec::Core::NullReporter
+end
+
+class RSpec::Core::NullReporter
+end
+
+module RSpec::Core::Ordering
+end
+
+class RSpec::Core::Ordering::ConfigurationManager
+  def force(hash); end
+
+  def order=(type); end
+
+  def ordering_registry(); end
+
+  def register_ordering(name, strategy=T.unsafe(nil)); end
+
+  def seed(); end
+
+  def seed=(seed); end
+
+  def seed_used?(); end
+end
+
+class RSpec::Core::Ordering::ConfigurationManager
+end
+
+class RSpec::Core::Ordering::Custom
+  def initialize(callable); end
+
+  def order(list); end
+end
+
+class RSpec::Core::Ordering::Custom
+end
+
+class RSpec::Core::Ordering::Identity
+  def order(items); end
+end
+
+class RSpec::Core::Ordering::Identity
+end
+
+class RSpec::Core::Ordering::Random
+  def initialize(configuration); end
+
+  def order(items); end
+
+  def used?(); end
+  MAX_32_BIT = ::T.let(nil, ::T.untyped)
+end
+
+class RSpec::Core::Ordering::Random
+end
+
+class RSpec::Core::Ordering::Registry
+  def fetch(name, &fallback); end
+
+  def initialize(configuration); end
+
+  def register(sym, strategy); end
+
+  def used_random_seed?(); end
+end
+
+class RSpec::Core::Ordering::Registry
+end
+
+module RSpec::Core::Ordering
+end
+
 class RSpec::Core::OutputWrapper
+  def <<(*args, &block); end
+
+  def advise(*args, &block); end
+
   def as_json(*args, &block); end
+
+  def autoclose=(*args, &block); end
+
+  def autoclose?(*args, &block); end
+
+  def binmode(*args, &block); end
+
+  def binmode?(*args, &block); end
+
+  def bytes(*args, &block); end
+
+  def chars(*args, &block); end
+
+  def close(*args, &block); end
+
+  def close_on_exec=(*args, &block); end
+
+  def close_on_exec?(*args, &block); end
+
+  def close_read(*args, &block); end
+
+  def close_write(*args, &block); end
+
+  def closed?(*args, &block); end
+
+  def codepoints(*args, &block); end
+
+  def each(*args, &block); end
+
+  def each_byte(*args, &block); end
+
+  def each_char(*args, &block); end
+
+  def each_codepoint(*args, &block); end
+
+  def each_line(*args, &block); end
+
+  def eof(*args, &block); end
+
+  def eof?(*args, &block); end
+
+  def external_encoding(*args, &block); end
+
+  def fcntl(*args, &block); end
+
+  def fdatasync(*args, &block); end
+
+  def fileno(*args, &block); end
+
+  def flush(*args, &block); end
+
+  def fsync(*args, &block); end
+
+  def getbyte(*args, &block); end
+
+  def getc(*args, &block); end
+
+  def gets(*args, &block); end
+
+  def initialize(output); end
+
+  def inspect(*args, &block); end
+
+  def internal_encoding(*args, &block); end
+
+  def ioctl(*args, &block); end
+
+  def isatty(*args, &block); end
+
+  def lineno(*args, &block); end
+
+  def lineno=(*args, &block); end
+
+  def lines(*args, &block); end
+
+  def method_missing(name, *args, &block); end
 
   def nonblock(*args, &block); end
 
@@ -18652,21 +21220,572 @@ class RSpec::Core::OutputWrapper
 
   def nread(*args, &block); end
 
+  def output(); end
+
+  def output=(output); end
+
+  def pathconf(*args, &block); end
+
+  def pid(*args, &block); end
+
+  def pos(*args, &block); end
+
+  def pos=(*args, &block); end
+
+  def pread(*args, &block); end
+
+  def print(*args, &block); end
+
+  def printf(*args, &block); end
+
+  def putc(*args, &block); end
+
+  def puts(*args, &block); end
+
+  def pwrite(*args, &block); end
+
+  def read(*args, &block); end
+
+  def read_nonblock(*args, &block); end
+
+  def readbyte(*args, &block); end
+
+  def readchar(*args, &block); end
+
+  def readline(*args, &block); end
+
+  def readlines(*args, &block); end
+
+  def readpartial(*args, &block); end
+
   def ready?(*args, &block); end
+
+  def reopen(*args, &block); end
+
+  def respond_to?(name, priv=T.unsafe(nil)); end
+
+  def rewind(*args, &block); end
+
+  def seek(*args, &block); end
+
+  def set_encoding(*args, &block); end
+
+  def stat(*args, &block); end
+
+  def sync(*args, &block); end
+
+  def sync=(*args, &block); end
+
+  def sysread(*args, &block); end
+
+  def sysseek(*args, &block); end
+
+  def syswrite(*args, &block); end
+
+  def tell(*args, &block); end
+
+  def to_i(*args, &block); end
+
+  def to_io(*args, &block); end
+
+  def tty?(*args, &block); end
+
+  def ungetbyte(*args, &block); end
+
+  def ungetc(*args, &block); end
 
   def wait(*args, &block); end
 
   def wait_readable(*args, &block); end
 
   def wait_writable(*args, &block); end
+
+  def write(*args, &block); end
+
+  def write_nonblock(*args, &block); end
+end
+
+class RSpec::Core::OutputWrapper
+end
+
+class RSpec::Core::Parser
+  def initialize(original_args); end
+
+  def original_args(); end
+
+  def parse(source=T.unsafe(nil)); end
+end
+
+class RSpec::Core::Parser
+  def self.parse(args, source=T.unsafe(nil)); end
+end
+
+module RSpec::Core::Pending
+  def pending(message=T.unsafe(nil)); end
+
+  def skip(message=T.unsafe(nil)); end
+  NOT_YET_IMPLEMENTED = ::T.let(nil, ::T.untyped)
+  NO_REASON_GIVEN = ::T.let(nil, ::T.untyped)
+end
+
+class RSpec::Core::Pending::PendingExampleFixedError
+end
+
+class RSpec::Core::Pending::PendingExampleFixedError
+end
+
+class RSpec::Core::Pending::SkipDeclaredInExample
+  def argument(); end
+
+  def initialize(argument); end
+end
+
+class RSpec::Core::Pending::SkipDeclaredInExample
+end
+
+module RSpec::Core::Pending
+  def self.mark_fixed!(example); end
+
+  def self.mark_pending!(example, message_or_bool); end
+
+  def self.mark_skipped!(example, message_or_bool); end
+end
+
+class RSpec::Core::Profiler
+  def example_group_finished(notification); end
+
+  def example_group_started(notification); end
+
+  def example_groups(); end
+
+  def example_started(notification); end
+  NOTIFICATIONS = ::T.let(nil, ::T.untyped)
+end
+
+class RSpec::Core::Profiler
+end
+
+class RSpec::Core::Reporter
+  def abort_with(msg, exit_status); end
+
+  def close_after(); end
+
+  def deprecation(hash); end
+
+  def example_failed(example); end
+
+  def example_finished(example); end
+
+  def example_group_finished(group); end
+
+  def example_group_started(group); end
+
+  def example_passed(example); end
+
+  def example_pending(example); end
+
+  def example_started(example); end
+
+  def examples(); end
+
+  def exit_early(exit_code); end
+
+  def fail_fast_limit_met?(); end
+
+  def failed_examples(); end
+
+  def finish(); end
+
+  def initialize(configuration); end
+
+  def message(message); end
+
+  def notify(event, notification); end
+
+  def notify_non_example_exception(exception, context_description); end
+
+  def pending_examples(); end
+
+  def prepare_default(loader, output_stream, deprecation_stream); end
+
+  def publish(event, options=T.unsafe(nil)); end
+
+  def register_listener(listener, *notifications); end
+
+  def registered_listeners(notification); end
+
+  def report(expected_example_count); end
+
+  def start(expected_example_count, time=T.unsafe(nil)); end
+
+  def stop(); end
+  RSPEC_NOTIFICATIONS = ::T.let(nil, ::T.untyped)
+end
+
+class RSpec::Core::Reporter
+end
+
+module RSpec::Core::RubyProject
+end
+
+module RSpec::Core::RubyProject
+  def self.add_dir_to_load_path(dir); end
+
+  def self.add_to_load_path(*dirs); end
+
+  def self.ascend_until(); end
+
+  def self.determine_root(); end
+
+  def self.find_first_parent_containing(dir); end
+
+  def self.root(); end
+end
+
+class RSpec::Core::Runner
+  def configuration(); end
+
+  def configure(err, out); end
+
+  def initialize(options, configuration=T.unsafe(nil), world=T.unsafe(nil)); end
+
+  def options(); end
+
+  def run(err, out); end
+
+  def run_specs(example_groups); end
+
+  def setup(err, out); end
+
+  def world(); end
+end
+
+class RSpec::Core::Runner
+  def self.autorun(); end
+
+  def self.autorun_disabled?(); end
+
+  def self.disable_autorun!(); end
+
+  def self.handle_interrupt(); end
+
+  def self.installed_at_exit?(); end
+
+  def self.invoke(); end
+
+  def self.perform_at_exit(); end
+
+  def self.run(args, err=T.unsafe(nil), out=T.unsafe(nil)); end
+
+  def self.running_in_drb?(); end
+
+  def self.trap_interrupt(); end
+end
+
+class RSpec::Core::Set
+  include ::Enumerable
+  def <<(key); end
+
+  def clear(); end
+
+  def delete(key); end
+
+  def each(&block); end
+
+  def empty?(); end
+
+  def include?(key); end
+
+  def initialize(array=T.unsafe(nil)); end
+
+  def merge(values); end
+end
+
+class RSpec::Core::Set
 end
 
 module RSpec::Core::SharedContext
   include ::RSpec::Its
+  def __shared_context_recordings(); end
+
+  def after(*args, &block); end
+
+  def append_after(*args, &block); end
+
+  def append_before(*args, &block); end
+
+  def around(*args, &block); end
+
+  def before(*args, &block); end
+
+  def context(*args, &block); end
+
+  def describe(*args, &block); end
+
+  def hooks(*args, &block); end
+
+  def included(group); end
+
+  def let(*args, &block); end
+
+  def let!(*args, &block); end
+
+  def prepend_after(*args, &block); end
+
+  def prepend_before(*args, &block); end
+
+  def subject(*args, &block); end
+
+  def subject!(*args, &block); end
+end
+
+class RSpec::Core::SharedContext::Recording
+  def args(); end
+
+  def args=(_); end
+
+  def block(); end
+
+  def block=(_); end
+
+  def method_name(); end
+
+  def method_name=(_); end
+
+  def playback_onto(group); end
+end
+
+class RSpec::Core::SharedContext::Recording
+  def self.[](*_); end
+
+  def self.members(); end
+end
+
+module RSpec::Core::SharedContext
+  def self.record(methods); end
+end
+
+module RSpec::Core::SharedExampleGroup
+  def shared_context(name, *args, &block); end
+
+  def shared_examples(name, *args, &block); end
+
+  def shared_examples_for(name, *args, &block); end
+end
+
+class RSpec::Core::SharedExampleGroup::Registry
+  def add(context, name, *metadata_args, &block); end
+
+  def find(lookup_contexts, name); end
+end
+
+class RSpec::Core::SharedExampleGroup::Registry
+end
+
+module RSpec::Core::SharedExampleGroup::TopLevelDSL
+end
+
+module RSpec::Core::SharedExampleGroup::TopLevelDSL
+  def self.definitions(); end
+
+  def self.expose_globally!(); end
+
+  def self.exposed_globally?(); end
+
+  def self.remove_globally!(); end
+end
+
+module RSpec::Core::SharedExampleGroup
+end
+
+class RSpec::Core::SharedExampleGroupInclusionStackFrame
+  def description(); end
+
+  def formatted_inclusion_location(); end
+
+  def inclusion_location(); end
+
+  def initialize(shared_group_name, inclusion_location); end
+
+  def shared_group_name(); end
+end
+
+class RSpec::Core::SharedExampleGroupInclusionStackFrame
+  def self.current_backtrace(); end
+
+  def self.shared_example_group_inclusions(); end
+
+  def self.with_frame(name, location); end
+end
+
+class RSpec::Core::SharedExampleGroupModule
+  def definition(); end
+
+  def include_in(klass, inclusion_line, args, customization_block); end
+
+  def included(klass); end
+
+  def initialize(description, definition, metadata); end
+end
+
+class RSpec::Core::SharedExampleGroupModule
+end
+
+module RSpec::Core::ShellEscape
+  SHELLS_ALLOWING_UNQUOTED_IDS = ::T.let(nil, ::T.untyped)
+end
+
+module RSpec::Core::ShellEscape
+  def self.conditionally_quote(id); end
+
+  def self.escape(shell_command); end
+
+  def self.quote(argument); end
+
+  def self.shell_allows_unquoted_ids?(); end
+end
+
+class RSpec::Core::SuiteHookContext
+  def initialize(hook_description, reporter); end
+end
+
+class RSpec::Core::SuiteHookContext
+end
+
+class RSpec::Core::Time
+end
+
+class RSpec::Core::Time
+  def self.now(); end
+end
+
+module RSpec::Core::Version
+  STRING = ::T.let(nil, ::T.untyped)
+end
+
+module RSpec::Core::Version
+end
+
+module RSpec::Core::Warnings
+  def deprecate(deprecated, data=T.unsafe(nil)); end
+
+  def warn_deprecation(message, opts=T.unsafe(nil)); end
+
+  def warn_with(message, options=T.unsafe(nil)); end
+end
+
+module RSpec::Core::Warnings
+end
+
+class RSpec::Core::World
+  def all_example_groups(); end
+
+  def all_examples(); end
+
+  def announce_exclusion_filter(announcements); end
+
+  def announce_filters(); end
+
+  def announce_inclusion_filter(announcements); end
+
+  def everything_filtered_message(); end
+
+  def example_count(groups=T.unsafe(nil)); end
+
+  def example_group_counts_by_spec_file(); end
+
+  def example_groups(); end
+
+  def exclusion_filter(); end
+
+  def filter_manager(); end
+
+  def filtered_examples(); end
+
+  def inclusion_filter(); end
+
+  def initialize(configuration=T.unsafe(nil)); end
+
+  def non_example_failure(); end
+
+  def non_example_failure=(non_example_failure); end
+
+  def num_example_groups_defined_in(file); end
+
+  def ordered_example_groups(); end
+
+  def preceding_declaration_line(absolute_file_name, filter_line); end
+
+  def prepare_example_filtering(); end
+
+  def record(example_group); end
+
+  def registered_example_group_files(); end
+
+  def report_filter_message(message); end
+
+  def reporter(); end
+
+  def reset(); end
+
+  def shared_example_group_registry(); end
+
+  def source_from_file(path); end
+
+  def syntax_highlighter(); end
+
+  def traverse_example_group_trees_until(&block); end
+
+  def wants_to_quit(); end
+
+  def wants_to_quit=(wants_to_quit); end
+end
+
+module RSpec::Core::World::Null
+end
+
+module RSpec::Core::World::Null
+  def self.all_example_groups(); end
+
+  def self.example_groups(); end
+
+  def self.non_example_failure(); end
+
+  def self.non_example_failure=(_); end
+
+  def self.registered_example_group_files(); end
+
+  def self.traverse_example_group_trees_until(); end
+end
+
+class RSpec::Core::World
+end
+
+module RSpec::Core
+  def self.path_to_executable(); end
+end
+
+module RSpec::ExampleGroups
+end
+
+module RSpec::ExampleGroups
+  extend ::RSpec::Support::RecursiveConstMethods
+  def self.assign_const(group); end
+
+  def self.base_name_for(group); end
+
+  def self.constant_scope_for(group); end
+
+  def self.disambiguate(name, const_scope); end
+
+  def self.remove_all_constants(); end
 end
 
 class RSpec::Expectations::MultipleExpectationsNotMetError
   include ::RSpec::Core::MultipleExceptionError::InterfaceTag
+end
+
+class RSpec::Github::Formatter
 end
 
 module RSpec::Its
@@ -18791,6 +21910,10 @@ module RSpec::Wait
   def self.wait_for(value=T.unsafe(nil), &block); end
 
   def self.with_wait(options); end
+end
+
+module RSpec
+  extend ::RSpec::Core::Warnings
 end
 
 module Racc
