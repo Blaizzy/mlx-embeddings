@@ -14,6 +14,7 @@ class Tapioca::Cli < ::Thor
   include(::Thor::Actions)
   extend(::Thor::Actions::ClassMethods)
 
+  def __print_version; end
   def dsl(*constants); end
   def generate(*gems); end
   def generator; end
@@ -85,7 +86,7 @@ class Tapioca::Compilers::DslCompiler
   def gather_constants(requested_constants); end
   sig { params(requested_generators: T::Array[String]).returns(T::Enumerable[Tapioca::Compilers::Dsl::Base]) }
   def gather_generators(requested_generators); end
-  sig { params(requested_generators: T::Array[String]).returns(Proc) }
+  sig { params(requested_generators: T::Array[String]).returns(T.proc.params(klass: Class).returns(T::Boolean)) }
   def generator_filter(requested_generators); end
   sig { params(constant: Module).returns(T.nilable(String)) }
   def rbi_for_constant(constant); end
