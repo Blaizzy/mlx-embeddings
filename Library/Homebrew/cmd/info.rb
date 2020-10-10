@@ -81,9 +81,6 @@ module Homebrew
 
       print_analytics(args: args)
     elsif args.json
-      raise UsageError, "invalid JSON version: #{args.json}" unless ["v1", true].include? args.json
-      raise FormulaUnspecifiedError if !(args.all? || args.installed?) && args.no_named?
-
       print_json(args: args)
     elsif args.github?
       raise FormulaOrCaskUnspecifiedError if args.no_named?
@@ -143,15 +140,49 @@ module Homebrew
     end
   end
 
+  def json_version(version)
+    version_hash = {
+      true => :default,
+      "v1" => :v1,
+      "v2" => :v2,
+    }
+
+    raise UsageError, "invalid JSON version: #{version}" unless version_hash.include?(version)
+
+    version_hash[version]
+  end
+
   def print_json(args:)
-    ff = if args.all?
-      Formula.sort
-    elsif args.installed?
-      Formula.installed.sort
+    raise FormulaOrCaskUnspecifiedError if !(args.all? || args.installed?) && args.no_named?
+
+    json = case json_version(args.json)
+    when :v1, :default
+      formulae = if args.all?
+        Formula.sort
+      elsif args.installed?
+        Formula.installed.sort
+      else
+        args.named.to_formulae
+      end
+
+      formulae.map(&:to_hash)
+    when :v2
+      formulae, casks = if args.all?
+        [Formula.sort, Cask::Cask.to_a.sort_by(&:full_name)]
+      elsif args.installed?
+        [Formula.installed.sort, Cask::Caskroom.casks.sort_by(&:full_name)]
+      else
+        args.named.to_formulae_to_casks
+      end
+
+      {
+        "formulae" => formulae.map(&:to_hash),
+        "casks"    => casks.map(&:to_h),
+      }
     else
-      args.named.to_formulae
+      raise
     end
-    json = ff.map(&:to_hash)
+
     puts JSON.generate(json)
   end
 

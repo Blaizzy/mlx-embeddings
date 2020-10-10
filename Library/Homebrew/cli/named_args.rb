@@ -38,8 +38,16 @@ module Homebrew
         end
       end
 
+      def to_formulae_to_casks(method: nil, only: nil)
+        @to_formulae_to_casks ||= {}
+        @to_formulae_to_casks[[method, only]] = to_formulae_and_casks(method: method, only: only)
+                                                .partition { |o| o.is_a?(Formula) }
+                                                .map(&:freeze).freeze
+      end
+
       def to_formulae_casks_unknowns(method: nil)
-        downcased_unique_named.map do |name|
+        @to_formulae_casks_unknowns ||= {}
+        @to_formulae_casks_unknowns[method] = downcased_unique_named.map do |name|
           load_formula_or_cask(name, method: method)
         rescue FormulaOrCaskUnavailableError => e
           e
@@ -88,9 +96,7 @@ module Homebrew
       end
 
       def to_resolved_formulae_to_casks(only: nil)
-        @to_resolved_formulae_to_casks ||= to_formulae_and_casks(method: :resolve, only: only)
-                                           .partition { |o| o.is_a?(Formula) }
-                                           .map(&:freeze).freeze
+        to_formulae_to_casks(method: :resolve, only: only)
       end
 
       # Convert named arguments to `Tap`, `Formula` or `Cask` objects.
