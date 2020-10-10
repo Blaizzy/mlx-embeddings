@@ -17,8 +17,12 @@ module Homebrew
 
       switch "--no-git",
              description: "Don't initialize a git repository for the tap."
-      flag   "--pull-label",
+      flag   "--pull-label=",
              description: "Label name for pull requests ready to be pulled (default `pr-pull`)."
+      flag   "--branch=",
+             description: "Initialize git repository with the specified branch name (default `main`)."
+
+      conflicts "--no-git", "--branch"
       named 1
     end
   end
@@ -27,6 +31,7 @@ module Homebrew
     args = tap_new_args.parse
 
     label = args.pull_label || "pr-pull"
+    branch = args.branch || "main"
 
     tap_name = args.named.first
     tap = Tap.fetch(tap_name)
@@ -56,7 +61,7 @@ module Homebrew
       name: brew test-bot
       on:
         push:
-          branches: master
+          branches: #{branch}
         pull_request:
       jobs:
         test-bot:
@@ -106,7 +111,7 @@ module Homebrew
             - labeled
       jobs:
         pr-pull:
-          if: contains(github.event.pull_request.labels.*.name, #{label})
+          if: contains(github.event.pull_request.labels.*.name, '#{label}')
           runs-on: ubuntu-latest
           steps:
             - name: Set up Homebrew
@@ -114,6 +119,11 @@ module Homebrew
 
             - name: Set up git
               uses: Homebrew/actions/git-user-config@master
+
+            - name: Checkout default branch
+              env:
+                BRANCH: ${{ github.event.pull_request.head.repo.default_branch }}
+              run: git checkout $BRANCH
 
             - name: Pull bottles
               env:
@@ -125,6 +135,7 @@ module Homebrew
               uses: Homebrew/actions/git-try-push@master
               with:
                 token: ${{ github.token }}
+                branch: #{branch}
 
             - name: Delete branch
               if: github.event.pull_request.head.repo.fork == false
@@ -142,6 +153,7 @@ module Homebrew
         safe_system "git", "init"
         safe_system "git", "add", "--all"
         safe_system "git", "commit", "-m", "Create #{tap} tap"
+        safe_system "git", "branch", "-m", branch
       end
     end
 
