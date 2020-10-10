@@ -1,3 +1,4 @@
+# typed: true
 # frozen_string_literal: true
 
 # An adapter for casks to provide dependency information in a formula-like interface

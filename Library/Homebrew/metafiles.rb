@@ -1,3 +1,4 @@
+# typed: true
 # frozen_string_literal: true
 
 # Helper for checking if a file is considered a metadata file.

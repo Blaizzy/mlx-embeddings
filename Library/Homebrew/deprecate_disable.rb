@@ -1,3 +1,4 @@
+# typed: true
 # frozen_string_literal: true
 
 # Helper module for handling disable! and deprecate!

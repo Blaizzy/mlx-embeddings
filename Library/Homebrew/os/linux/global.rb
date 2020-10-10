@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # enables experimental patchelf.rb write support.

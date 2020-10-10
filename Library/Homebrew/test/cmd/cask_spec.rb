@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 describe "brew cask", :integration_test, :needs_macos, :needs_network do

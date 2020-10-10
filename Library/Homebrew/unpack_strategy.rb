@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Module containing all available strategies for unpacking archives.

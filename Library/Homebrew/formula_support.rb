@@ -1,3 +1,4 @@
+# typed: true
 # frozen_string_literal: true
 
 # Used to track formulae that cannot be installed at the same time.
