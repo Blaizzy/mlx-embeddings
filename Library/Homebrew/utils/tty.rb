@@ -5,11 +5,15 @@
 #
 # @api private
 module Tty
+  include Kernel
+  extend T::Sig
+
   @stream = $stdout
 
   module_function
 
-  def with(stream)
+  sig { params(stream: IO, _block: T.proc.params(arg0: IO).void).void }
+  def with(stream, &_block)
     previous_stream = @stream
     @stream = stream
 
@@ -18,10 +22,12 @@ module Tty
     @stream = previous_stream
   end
 
+  sig { params(string: String).returns(String) }
   def strip_ansi(string)
     string.gsub(/\033\[\d+(;\d+)*m/, "")
   end
 
+  sig { returns(Integer) }
   def width
     @width ||= begin
       _, width = `/bin/stty size 2>/dev/null`.split
@@ -31,8 +37,9 @@ module Tty
     end
   end
 
+  sig { params(string: String).returns(String) }
   def truncate(string)
-    (w = width).zero? ? string.to_s : string.to_s[0, w - 4]
+    (w = width).zero? ? string.to_s : (string.to_s[0, w - 4] || "")
   end
 
   COLOR_CODES = {
@@ -65,18 +72,21 @@ module Tty
 
   CODES = COLOR_CODES.merge(STYLE_CODES).freeze
 
+  sig { params(code: Integer).returns(T.self_type) }
   def append_to_escape_sequence(code)
     @escape_sequence ||= []
     @escape_sequence << code
     self
   end
 
+  sig { returns(String) }
   def current_escape_sequence
     return "" if @escape_sequence.nil?
 
     "\033[#{@escape_sequence.join(";")}m"
   end
 
+  sig { void }
   def reset_escape_sequence!
     @escape_sequence = nil
   end
@@ -97,6 +107,7 @@ module Tty
     end
   end
 
+  sig { returns(String) }
   def to_s
     return "" unless color?
 
@@ -105,6 +116,7 @@ module Tty
     reset_escape_sequence!
   end
 
+  sig { returns(T::Boolean) }
   def color?
     return false if Homebrew::EnvConfig.no_color?
     return true if Homebrew::EnvConfig.color?
