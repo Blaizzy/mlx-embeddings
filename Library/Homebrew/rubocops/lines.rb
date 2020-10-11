@@ -335,7 +335,7 @@ module RuboCop
           find_strings(body_node).each do |str|
             string_content = string_content(str)
 
-            next unless match = string_content.match(/^python(@)?(\d\.\d)$/)
+            next unless match = string_content.match(/^python(@)?(\d\.\d+)$/)
             next if python_version == match[2]
 
             @fix = if match[1]

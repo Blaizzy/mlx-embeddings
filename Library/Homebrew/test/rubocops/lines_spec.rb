@@ -793,6 +793,30 @@ describe RuboCop::Cop::FormulaAudit::PythonVersions do
       RUBY
     end
 
+    it "allow matching versions with two digits" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          depends_on "python@3.10"
+
+          def install
+            puts "python@3.10"
+          end
+        end
+      RUBY
+    end
+
+    it "allow matching versions without `@` with two digits" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          depends_on "python@3.10"
+
+          def install
+            puts "python3.10"
+          end
+        end
+      RUBY
+    end
+
     it "do not allow mismatching versions" do
       expect_offense(<<~RUBY)
         class Foo < Formula
@@ -814,6 +838,32 @@ describe RuboCop::Cop::FormulaAudit::PythonVersions do
           def install
             puts "python3.8"
                  ^^^^^^^^^^^ References to `python3.8` should match the specified python dependency (`python3.9`)
+          end
+        end
+      RUBY
+    end
+
+    it "do not allow mismatching versions with two digits" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          depends_on "python@3.11"
+
+          def install
+            puts "python@3.10"
+                 ^^^^^^^^^^^^^ References to `python@3.10` should match the specified python dependency (`python@3.11`)
+          end
+        end
+      RUBY
+    end
+
+    it "do not allow mismatching versions without `@` with two digits" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          depends_on "python@3.11"
+
+          def install
+            puts "python3.10"
+                 ^^^^^^^^^^^^ References to `python3.10` should match the specified python dependency (`python3.11`)
           end
         end
       RUBY
@@ -861,6 +911,56 @@ describe RuboCop::Cop::FormulaAudit::PythonVersions do
 
           def install
             puts "python3.9"
+          end
+        end
+      RUBY
+
+      new_source = autocorrect_source(source)
+      expect(new_source).to eq(corrected_source)
+    end
+
+    it "autocorrects mismatching versions with two digits" do
+      source = <<~RUBY
+        class Foo < Formula
+          depends_on "python@3.10"
+
+          def install
+            puts "python@3.9"
+          end
+        end
+      RUBY
+
+      corrected_source = <<~RUBY
+        class Foo < Formula
+          depends_on "python@3.10"
+
+          def install
+            puts "python@3.10"
+          end
+        end
+      RUBY
+
+      new_source = autocorrect_source(source)
+      expect(new_source).to eq(corrected_source)
+    end
+
+    it "autocorrects mismatching versions without `@` with two digits" do
+      source = <<~RUBY
+        class Foo < Formula
+          depends_on "python@3.11"
+
+          def install
+            puts "python3.10"
+          end
+        end
+      RUBY
+
+      corrected_source = <<~RUBY
+        class Foo < Formula
+          depends_on "python@3.11"
+
+          def install
+            puts "python3.11"
           end
         end
       RUBY
