@@ -8158,6 +8158,8 @@ module Homebrew::EnvConfig
 
   def self.skip_or_later_bottles?(); end
 
+  def self.sorbet_runtime?(); end
+
   def self.sudo_askpass(); end
 
   def self.svn(); end
@@ -10255,8 +10257,6 @@ module IRB
   def self.init_error(); end
 
   def self.load_modules(); end
-
-  def self.parse_opts(argv: T.unsafe(nil)); end
 
   def self.rc_file(ext=T.unsafe(nil)); end
 
@@ -22357,10 +22357,16 @@ class RuboCop::AST::NodePattern::Parser
 end
 
 module RuboCop::AST::NodePattern::Sets
+  SET_ABSTRACT_OVERRIDE_OVERRIDABLE_ETC = ::T.let(nil, ::T.untyped)
+  SET_ANY_ALL_NORETURN_ETC = ::T.let(nil, ::T.untyped)
+  SET_ATTR_READER_ATTR_WRITER_ATTR_ACCESSOR = ::T.let(nil, ::T.untyped)
   SET_BUILD_RECOMMENDED_TEST_OPTIONAL = ::T.let(nil, ::T.untyped)
+  SET_CONSTANTIZE_CONSTANTS_CONST_GET = ::T.let(nil, ::T.untyped)
   SET_DEPENDS_ON_USES_FROM_MACOS = ::T.let(nil, ::T.untyped)
   SET_INCLUDE_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
+  SET_PROP_CONST = ::T.let(nil, ::T.untyped)
   SET_SYSTEM_SHELL_OUTPUT_PIPE_OUTPUT = ::T.let(nil, ::T.untyped)
+  SET_TYPE_TEMPLATE_TYPE_MEMBER = ::T.let(nil, ::T.untyped)
   SET_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
 end
 
@@ -26169,35 +26175,16 @@ module URI
 end
 
 class URL
-  def branch(); end
-
-  def cookies(); end
-
-  def data(); end
-
   def path(*args, &block); end
-
-  def referer(); end
-
-  def revision(); end
-
-  def revisions(); end
 
   def scheme(*args, &block); end
 
-  def specs(); end
-
-  def tag(); end
-
   def to_s(*args, &block); end
+end
 
-  def trust_cert(); end
-
-  def uri(); end
-
-  def user_agent(); end
-
-  def using(); end
+class URL
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class UnboundMethod
@@ -26209,6 +26196,10 @@ module UnicodeNormalize
 end
 
 module UnicodeNormalize
+end
+
+class UnpackStrategy::Zip
+  include ::UnpackStrategy::Zip::MacOSZipExtension
 end
 
 class Utils::Bottles::Collector
