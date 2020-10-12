@@ -103,7 +103,7 @@ module Homebrew
       return
     end
 
-    args.named.to_formulae_casks_unknowns.each_with_index do |obj, i|
+    args.named.to_formulae_and_casks_and_unavailable.each_with_index do |obj, i|
       puts unless i.zero?
 
       case obj
@@ -120,7 +120,7 @@ module Homebrew
   end
 
   def print_info(args:)
-    args.named.to_formulae_casks_unknowns(method: nil).each_with_index do |obj, i|
+    args.named.to_formulae_and_casks_and_unavailable.each_with_index do |obj, i|
       puts unless i.zero?
 
       case obj
