@@ -124,7 +124,7 @@ GEM
     simplecov-html (0.12.3)
     sorbet (0.5.5942)
       sorbet-static (= 0.5.5942)
-    sorbet-runtime (0.5.5942)
+    sorbet-runtime (0.5.5943)
     sorbet-runtime-stub (0.2.0)
     sorbet-static (0.5.5942-universal-darwin-14)
     spoom (1.0.4)
