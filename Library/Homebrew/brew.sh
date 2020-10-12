@@ -1,43 +1,14 @@
+#####
+##### First do the essential, fast things to be able to make e.g. brew --prefix and other commands we want to be
+##### able to `source` in shell configuration quick.
+#####
+
 HOMEBREW_PROCESSOR="$(uname -m)"
 HOMEBREW_SYSTEM="$(uname -s)"
 case "$HOMEBREW_SYSTEM" in
   Darwin) HOMEBREW_MACOS="1" ;;
   Linux)  HOMEBREW_LINUX="1" ;;
 esac
-
-# Colorize output on GitHub Actions.
-if [[ -n "$GITHUB_ACTIONS" ]]; then
-  export HOMEBREW_COLOR="1"
-fi
-
-# Force UTF-8 to avoid encoding issues for users with broken locale settings.
-if [[ -n "$HOMEBREW_MACOS" ]]
-then
-  if [[ "$(locale charmap)" != "UTF-8" ]]
-  then
-    export LC_ALL="en_US.UTF-8"
-  fi
-else
-  if ! command -v locale >/dev/null
-  then
-    export LC_ALL=C
-  elif [[ "$(locale charmap)" != "UTF-8" ]]
-  then
-    locales=$(locale -a)
-    c_utf_regex='\bC\.(utf8|UTF-8)\b'
-    en_us_regex='\ben_US\.(utf8|UTF-8)\b'
-    utf_regex='\b[a-z][a-z]_[A-Z][A-Z]\.(utf8|UTF-8)\b'
-    if [[ $locales =~ $c_utf_regex || $locales =~ $en_us_regex || $locales =~ $utf_regex ]]
-    then
-      export LC_ALL=${BASH_REMATCH[0]}
-    else
-      export LC_ALL=C
-    fi
-  fi
-fi
-
-# USER isn't always set so provide a fall back for `brew` and subprocesses.
-export USER=${USER:-$(id -un)}
 
 # Where we store built products; a Cellar in HOMEBREW_PREFIX (often /usr/local
 # for bottles) unless there's already a Cellar in HOMEBREW_REPOSITORY.
@@ -48,16 +19,36 @@ else
   HOMEBREW_CELLAR="$HOMEBREW_PREFIX/Cellar"
 fi
 
+if [[ -n "$HOMEBREW_MACOS" ]]
+then
+  HOMEBREW_DEFAULT_CACHE="${HOME}/Library/Caches/Homebrew"
+  HOMEBREW_DEFAULT_LOGS="${HOME}/Library/Logs/Homebrew"
+  HOMEBREW_DEFAULT_TEMP="/private/tmp"
+else
+  CACHE_HOME="${XDG_CACHE_HOME:-${HOME}/.cache}"
+  HOMEBREW_DEFAULT_CACHE="${CACHE_HOME}/Homebrew"
+  HOMEBREW_DEFAULT_LOGS="${CACHE_HOME}/Homebrew/Logs"
+  HOMEBREW_DEFAULT_TEMP="/tmp"
+fi
+
+HOMEBREW_CACHE="${HOMEBREW_CACHE:-${HOMEBREW_DEFAULT_CACHE}}"
+HOMEBREW_LOGS="${HOMEBREW_LOGS:-${HOMEBREW_DEFAULT_LOGS}}"
+HOMEBREW_TEMP="${HOMEBREW_TEMP:-${HOMEBREW_DEFAULT_TEMP}}"
+
+# Don't need shellcheck to follow these `source`.
+# shellcheck disable=SC1090
 case "$*" in
   --prefix)            echo "$HOMEBREW_PREFIX"; exit 0 ;;
   --cellar)            echo "$HOMEBREW_CELLAR"; exit 0 ;;
   --repository|--repo) echo "$HOMEBREW_REPOSITORY"; exit 0 ;;
   --caskroom)          echo "$HOMEBREW_PREFIX/Caskroom"; exit 0 ;;
+  --cache)             echo "$HOMEBREW_CACHE"; exit 0 ;;
+  shellenv)            source "$HOMEBREW_LIBRARY/Homebrew/cmd/shellenv.sh"; homebrew-shellenv; exit 0 ;;
 esac
 
-# A depth of 1 means this command was directly invoked by a user.
-# Higher depths mean this command was invoked by another Homebrew command.
-export HOMEBREW_COMMAND_DEPTH=$((HOMEBREW_COMMAND_DEPTH + 1))
+#####
+##### Next, define all helper functions.
+#####
 
 ohai() {
   if [[ -n "$HOMEBREW_COLOR" || (-t 1 && -z "$HOMEBREW_NO_COLOR") ]] # check whether stdout is a tty.
@@ -106,11 +97,172 @@ numeric() {
   printf "%01d%02d%02d%03d" ${1//[.rc]/ } 2>/dev/null
 }
 
+check-run-command-as-root() {
+  [[ "$(id -u)" = 0 ]] || return
+
+  # Allow Azure Pipelines/GitHub Actions/Docker/Concourse/Kubernetes to do everything as root (as it's normal there)
+  [[ -f /proc/1/cgroup ]] && grep -E "azpl_job|actions_job|docker|garden|kubepods" -q /proc/1/cgroup && return
+
+  # Homebrew Services may need `sudo` for system-wide daemons.
+  [[ "$HOMEBREW_COMMAND" = "services" ]] && return
+
+  # It's fine to run this as root as it's not changing anything.
+  [[ "$HOMEBREW_COMMAND" = "--prefix" ]] && return
+
+  odie <<EOS
+Running Homebrew as root is extremely dangerous and no longer supported.
+As Homebrew does not drop privileges on installation you would be giving all
+build scripts full access to your system.
+EOS
+}
+
+check-prefix-is-not-tmpdir() {
+  [[ -z "${HOMEBREW_MACOS}" ]] && return
+
+  if [[ "${HOMEBREW_PREFIX}" = "${HOMEBREW_TEMP}"* ]]
+  then
+    odie <<EOS
+Your HOMEBREW_PREFIX is in the Homebrew temporary directory, which Homebrew
+uses to store downloads and builds. You can resolve this by installing Homebrew to
+either the standard prefix (/usr/local) or to a non-standard prefix that is not
+in the Homebrew temporary directory.
+EOS
+  fi
+}
+
+# Let user know we're still updating Homebrew if brew update --preinstall
+# exceeds 3 seconds.
+update-preinstall-timer() {
+  sleep 3
+  echo 'Updating Homebrew...' >&2
+}
+
+update-preinstall() {
+  [[ -z "$HOMEBREW_HELP" ]] || return
+  [[ -z "$HOMEBREW_NO_AUTO_UPDATE" ]] || return
+  [[ -z "$HOMEBREW_AUTO_UPDATING" ]] || return
+  [[ -z "$HOMEBREW_UPDATE_PREINSTALL" ]] || return
+  [[ -z "$HOMEBREW_AUTO_UPDATE_CHECKED" ]] || return
+
+  # If we've checked for updates, we don't need to check again.
+  export HOMEBREW_AUTO_UPDATE_CHECKED="1"
+
+  if [[ "$HOMEBREW_COMMAND" = "cask" ]]
+  then
+    if [[ "$HOMEBREW_CASK_COMMAND" != "upgrade" && $HOMEBREW_ARG_COUNT -lt 3 ]]
+    then
+      return
+    fi
+  elif [[ "$HOMEBREW_COMMAND" != "upgrade" && $HOMEBREW_ARG_COUNT -lt 2 ]]
+  then
+    return
+  fi
+
+  if [[ "$HOMEBREW_COMMAND" = "install" || "$HOMEBREW_COMMAND" = "upgrade" ||
+        "$HOMEBREW_COMMAND" = "bump-formula-pr" ||
+        "$HOMEBREW_COMMAND" = "bundle" ||
+        "$HOMEBREW_COMMAND" = "tap" && $HOMEBREW_ARG_COUNT -gt 1 ||
+        "$HOMEBREW_CASK_COMMAND" = "install" || "$HOMEBREW_CASK_COMMAND" = "upgrade" ]]
+  then
+    export HOMEBREW_AUTO_UPDATING="1"
+
+    # Skip auto-update if the cask/core tap has been updated in the
+    # last $HOMEBREW_AUTO_UPDATE_SECS.
+    if [[ "$HOMEBREW_COMMAND" = "cask" ]]
+    then
+      tap_fetch_head="$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-cask/.git/FETCH_HEAD"
+    else
+      tap_fetch_head="$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core/.git/FETCH_HEAD"
+    fi
+    if [[ -f "$tap_fetch_head" &&
+          -n "$(find "$tap_fetch_head" -type f -mtime -"${HOMEBREW_AUTO_UPDATE_SECS}"s 2>/dev/null)" ]]
+    then
+      return
+    fi
+
+    if [[ -z "$HOMEBREW_VERBOSE" ]]
+    then
+      update-preinstall-timer &
+      timer_pid=$!
+    fi
+
+    brew update --preinstall
+
+    if [[ -n "$timer_pid" ]]
+    then
+      kill "$timer_pid" 2>/dev/null
+      wait "$timer_pid" 2>/dev/null
+    fi
+
+    unset HOMEBREW_AUTO_UPDATING
+
+    # exec a new process to set any new environment variables.
+    exec "$HOMEBREW_BREW_FILE" "$@"
+  fi
+}
+
+#####
+##### Setup output so e.g. odie looks as nice as possible.
+#####
+
+# Colorize output on GitHub Actions.
+if [[ -n "$GITHUB_ACTIONS" ]]; then
+  export HOMEBREW_COLOR="1"
+fi
+
+# Force UTF-8 to avoid encoding issues for users with broken locale settings.
+if [[ -n "$HOMEBREW_MACOS" ]]
+then
+  if [[ "$(locale charmap)" != "UTF-8" ]]
+  then
+    export LC_ALL="en_US.UTF-8"
+  fi
+else
+  if ! command -v locale >/dev/null
+  then
+    export LC_ALL=C
+  elif [[ "$(locale charmap)" != "UTF-8" ]]
+  then
+    locales=$(locale -a)
+    c_utf_regex='\bC\.(utf8|UTF-8)\b'
+    en_us_regex='\ben_US\.(utf8|UTF-8)\b'
+    utf_regex='\b[a-z][a-z]_[A-Z][A-Z]\.(utf8|UTF-8)\b'
+    if [[ $locales =~ $c_utf_regex || $locales =~ $en_us_regex || $locales =~ $utf_regex ]]
+    then
+      export LC_ALL=${BASH_REMATCH[0]}
+    else
+      export LC_ALL=C
+    fi
+  fi
+fi
+
+#####
+##### odie as quickly as possible.
+#####
+
 if [[ "$HOMEBREW_PREFIX" = "/" || "$HOMEBREW_PREFIX" = "/usr" ]]
 then
   # it may work, but I only see pain this route and don't want to support it
   odie "Cowardly refusing to continue at this prefix: $HOMEBREW_PREFIX"
 fi
+
+# Many Pathname operations use getwd when they shouldn't, and then throw
+# odd exceptions. Reduce our support burden by showing a user-friendly error.
+if [[ ! -d "$(pwd)" ]]
+then
+  odie "The current working directory doesn't exist, cannot proceed."
+fi
+
+#####
+##### Now, do everything else (that may be a bit slower).
+#####
+
+# USER isn't always set so provide a fall back for `brew` and subprocesses.
+export USER=${USER:-$(id -un)}
+
+# A depth of 1 means this command was directly invoked by a user.
+# Higher depths mean this command was invoked by another Homebrew command.
+export HOMEBREW_COMMAND_DEPTH=$((HOMEBREW_COMMAND_DEPTH + 1))
 
 if [[ -n "$HOMEBREW_FORCE_BREWED_CURL" &&
       -x "$HOMEBREW_PREFIX/opt/curl/bin/curl" ]] &&
@@ -176,10 +328,6 @@ then
     HOMEBREW_FORCE_BREWED_GIT="1"
   fi
 
-  HOMEBREW_DEFAULT_CACHE="${HOME}/Library/Caches/Homebrew"
-  HOMEBREW_DEFAULT_LOGS="${HOME}/Library/Logs/Homebrew"
-  HOMEBREW_DEFAULT_TEMP="/private/tmp"
-
   # Set a variable when the macOS system Ruby is new enough to avoid spawning
   # a Ruby process unnecessarily.
   if [[ "$HOMEBREW_MACOS_VERSION_NUMERIC" -lt "101500" ]]
@@ -238,11 +386,6 @@ EOS
     fi
   fi
 
-  CACHE_HOME="${XDG_CACHE_HOME:-${HOME}/.cache}"
-  HOMEBREW_DEFAULT_CACHE="${CACHE_HOME}/Homebrew"
-  HOMEBREW_DEFAULT_LOGS="${CACHE_HOME}/Homebrew/Logs"
-  HOMEBREW_DEFAULT_TEMP="/tmp"
-
   unset HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH
 fi
 
@@ -252,14 +395,6 @@ then
 else
   HOMEBREW_BOTTLE_DEFAULT_DOMAIN="https://linuxbrew.bintray.com"
 fi
-
-HOMEBREW_CACHE="${HOMEBREW_CACHE:-${HOMEBREW_DEFAULT_CACHE}}"
-HOMEBREW_LOGS="${HOMEBREW_LOGS:-${HOMEBREW_DEFAULT_LOGS}}"
-HOMEBREW_TEMP="${HOMEBREW_TEMP:-${HOMEBREW_DEFAULT_TEMP}}"
-
-case "$*" in
-  --cache)             echo "$HOMEBREW_CACHE"; exit 0 ;;
-esac
 
 HOMEBREW_USER_AGENT="$HOMEBREW_PRODUCT/$HOMEBREW_USER_AGENT_VERSION ($HOMEBREW_SYSTEM; $HOMEBREW_PROCESSOR $HOMEBREW_OS_USER_AGENT_VERSION)"
 curl_version_output="$("$HOMEBREW_CURL" --version 2>/dev/null)"
@@ -325,13 +460,6 @@ You have not agreed to the Xcode license. Please resolve this by running:
 EOS
     fi
   fi
-fi
-
-# Many Pathname operations use getwd when they shouldn't, and then throw
-# odd exceptions. Reduce our support burden by showing a user-friendly error.
-if [[ ! -d "$(pwd)" ]]
-then
-  odie "The current working directory doesn't exist, cannot proceed."
 fi
 
 if [[ "$1" = -v ]]
@@ -448,39 +576,8 @@ then
   HOMEBREW_BASH_COMMAND="$HOMEBREW_LIBRARY/Homebrew/dev-cmd/$HOMEBREW_COMMAND.sh"
 fi
 
-check-run-command-as-root() {
-  [[ "$(id -u)" = 0 ]] || return
-
-  # Allow Azure Pipelines/GitHub Actions/Docker/Concourse/Kubernetes to do everything as root (as it's normal there)
-  [[ -f /proc/1/cgroup ]] && grep -E "azpl_job|actions_job|docker|garden|kubepods" -q /proc/1/cgroup && return
-
-  # Homebrew Services may need `sudo` for system-wide daemons.
-  [[ "$HOMEBREW_COMMAND" = "services" ]] && return
-
-  # It's fine to run this as root as it's not changing anything.
-  [[ "$HOMEBREW_COMMAND" = "--prefix" ]] && return
-
-  odie <<EOS
-Running Homebrew as root is extremely dangerous and no longer supported.
-As Homebrew does not drop privileges on installation you would be giving all
-build scripts full access to your system.
-EOS
-}
 check-run-command-as-root
 
-check-prefix-is-not-tmpdir() {
-  [[ -z "${HOMEBREW_MACOS}" ]] && return
-
-  if [[ "${HOMEBREW_PREFIX}" = "${HOMEBREW_TEMP}"* ]]
-  then
-    odie <<EOS
-Your HOMEBREW_PREFIX is in the Homebrew temporary directory, which Homebrew
-uses to store downloads and builds. You can resolve this by installing Homebrew to
-either the standard prefix (/usr/local) or to a non-standard prefix that is not
-in the Homebrew temporary directory.
-EOS
-  fi
-}
 check-prefix-is-not-tmpdir
 
 if [[ "$HOMEBREW_PREFIX" = "/usr/local" &&
@@ -500,77 +597,6 @@ fi
 # shellcheck disable=SC1090
 source "$HOMEBREW_LIBRARY/Homebrew/utils/analytics.sh"
 setup-analytics
-
-# Let user know we're still updating Homebrew if brew update --preinstall
-# exceeds 3 seconds.
-update-preinstall-timer() {
-  sleep 3
-  echo 'Updating Homebrew...' >&2
-}
-
-update-preinstall() {
-  [[ -z "$HOMEBREW_HELP" ]] || return
-  [[ -z "$HOMEBREW_NO_AUTO_UPDATE" ]] || return
-  [[ -z "$HOMEBREW_AUTO_UPDATING" ]] || return
-  [[ -z "$HOMEBREW_UPDATE_PREINSTALL" ]] || return
-  [[ -z "$HOMEBREW_AUTO_UPDATE_CHECKED" ]] || return
-
-  # If we've checked for updates, we don't need to check again.
-  export HOMEBREW_AUTO_UPDATE_CHECKED="1"
-
-  if [[ "$HOMEBREW_COMMAND" = "cask" ]]
-  then
-    if [[ "$HOMEBREW_CASK_COMMAND" != "upgrade" && $HOMEBREW_ARG_COUNT -lt 3 ]]
-    then
-      return
-    fi
-  elif [[ "$HOMEBREW_COMMAND" != "upgrade" && $HOMEBREW_ARG_COUNT -lt 2 ]]
-  then
-    return
-  fi
-
-  if [[ "$HOMEBREW_COMMAND" = "install" || "$HOMEBREW_COMMAND" = "upgrade" ||
-        "$HOMEBREW_COMMAND" = "bump-formula-pr" ||
-        "$HOMEBREW_COMMAND" = "bundle" ||
-        "$HOMEBREW_COMMAND" = "tap" && $HOMEBREW_ARG_COUNT -gt 1 ||
-        "$HOMEBREW_CASK_COMMAND" = "install" || "$HOMEBREW_CASK_COMMAND" = "upgrade" ]]
-  then
-    export HOMEBREW_AUTO_UPDATING="1"
-
-    # Skip auto-update if the cask/core tap has been updated in the
-    # last $HOMEBREW_AUTO_UPDATE_SECS.
-    if [[ "$HOMEBREW_COMMAND" = "cask" ]]
-    then
-      tap_fetch_head="$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-cask/.git/FETCH_HEAD"
-    else
-      tap_fetch_head="$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core/.git/FETCH_HEAD"
-    fi
-    if [[ -f "$tap_fetch_head" &&
-          -n "$(find "$tap_fetch_head" -type f -mtime -"${HOMEBREW_AUTO_UPDATE_SECS}"s 2>/dev/null)" ]]
-    then
-      return
-    fi
-
-    if [[ -z "$HOMEBREW_VERBOSE" ]]
-    then
-      update-preinstall-timer &
-      timer_pid=$!
-    fi
-
-    brew update --preinstall
-
-    if [[ -n "$timer_pid" ]]
-    then
-      kill "$timer_pid" 2>/dev/null
-      wait "$timer_pid" 2>/dev/null
-    fi
-
-    unset HOMEBREW_AUTO_UPDATING
-
-    # exec a new process to set any new environment variables.
-    exec "$HOMEBREW_BREW_FILE" "$@"
-  fi
-}
 
 if [[ -n "$HOMEBREW_BASH_COMMAND" ]]
 then
