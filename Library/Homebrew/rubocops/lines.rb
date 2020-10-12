@@ -319,6 +319,43 @@ module RuboCop
         EOS
       end
 
+      # This cop makes sure that python versions are consistent.
+      #
+      # @api private
+      class PythonVersions < FormulaCop
+        def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          python_formula_node = find_every_method_call_by_name(body_node, :depends_on).find do |dep|
+            string_content(parameters(dep).first).start_with? "python@"
+          end
+
+          return if python_formula_node.blank?
+
+          python_version = string_content(parameters(python_formula_node).first).split("@").last
+
+          find_strings(body_node).each do |str|
+            string_content = string_content(str)
+
+            next unless match = string_content.match(/^python(@)?(\d\.\d+)$/)
+            next if python_version == match[2]
+
+            @fix = if match[1]
+              "python@#{python_version}"
+            else
+              "python#{python_version}"
+            end
+
+            offending_node(str)
+            problem "References to `#{string_content}` should match the specified python dependency (`#{@fix}`)"
+          end
+        end
+
+        def autocorrect(node)
+          lambda do |corrector|
+            corrector.replace(node.source_range, "\"#{@fix}\"")
+          end
+        end
+      end
+
       # This cop checks for other miscellaneous style violations.
       #
       # @api private
