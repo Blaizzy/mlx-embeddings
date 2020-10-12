@@ -33,7 +33,7 @@ module OS
       def latest_sdk
         return if sdk_paths.empty?
 
-        v, path = sdk_paths.max(&:first)
+        v, path = sdk_paths.max { |(v1, _), (v2, _)| v1 <=> v2 }
         SDK.new v, path, source
       end
 
