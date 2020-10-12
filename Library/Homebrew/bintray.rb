@@ -131,21 +131,29 @@ class Bintray
     end
   end
 
-  def file_published?(repo:, remote_file:)
+  # Gets the SHA-256 checksum of the specified remote file.
+  # Returns the empty string if the file exists but doesn't have a checksum.
+  # Returns nil if the file doesn't exist.
+  def remote_checksum(repo:, remote_file:)
     url = "https://dl.bintray.com/#{@bintray_org}/#{repo}/#{remote_file}"
-    begin
-      curl "--fail", "--silent", "--head", "--output", "/dev/null", url
-    rescue ErrorDuringExecution => e
-      stderr = e.output
-                .select { |type,| type == :stderr }
-                .map { |_, line| line }
-                .join
-      raise if e.status.exitstatus != 22 && !stderr.include?("404 Not Found")
-
-      false
+    result = curl_output "--fail", "--silent", "--head", url
+    if result.success?
+      result.stdout.match(/^X-Checksum-Sha2:\s+(\h{64})\b/i)&.values_at(1)&.first || ""
     else
-      true
+      raise Error if result.status.exitstatus != 22 && !result.stderr.include?("404 Not Found")
+
+      nil
     end
+  end
+
+  def file_delete_instructions(bintray_repo, bintray_package, filename)
+    <<~EOS
+      Remove this file manually in your web browser:
+        https://bintray.com/#{@bintray_org}/#{bintray_repo}/#{bintray_package}/view#files
+      Or run:
+        curl -X DELETE -u $HOMEBREW_BINTRAY_USER:$HOMEBREW_BINTRAY_KEY \\
+        https://api.bintray.com/content/#{@bintray_org}/#{bintray_repo}/#{filename}
+    EOS
   end
 
   def upload_bottles(bottles_hash, publish_package: false, warn_on_error: false)
@@ -155,45 +163,56 @@ class Bintray
       version = ERB::Util.url_encode(bottle_hash["formula"]["pkg_version"])
       bintray_package = bottle_hash["bintray"]["package"]
       bintray_repo = bottle_hash["bintray"]["repository"]
+      bottle_count = bottle_hash["bottle"]["tags"].length
 
       bottle_hash["bottle"]["tags"].each do |_tag, tag_hash|
         filename = tag_hash["filename"] # URL encoded in Bottle::Filename#bintray
         sha256 = tag_hash["sha256"]
+        delete_instructions = file_delete_instructions(bintray_repo, bintray_package, filename)
 
         odebug "Checking remote file #{@bintray_org}/#{bintray_repo}/#{filename}"
-        if file_published? repo: bintray_repo, remote_file: filename
-          already_published = "#{filename} is already published."
+        result = remote_checksum(repo: bintray_repo, remote_file: filename)
+
+        case result
+        when nil
+          # File doesn't exist.
+          if !formula_packaged[formula_name] && !package_exists?(repo: bintray_repo, package: bintray_package)
+            odebug "Creating package #{@bintray_org}/#{bintray_repo}/#{bintray_package}"
+            create_package repo: bintray_repo, package: bintray_package
+            formula_packaged[formula_name] = true
+          end
+
+          odebug "Uploading #{@bintray_org}/#{bintray_repo}/#{bintray_package}/#{version}/#{filename}"
+          upload(tag_hash["local_filename"],
+                 repo:        bintray_repo,
+                 package:     bintray_package,
+                 version:     version,
+                 remote_file: filename,
+                 sha256:      sha256)
+        when sha256
+          # File exists, checksum matches.
+          odebug "#{filename} is already published with matching hash."
+          bottle_count -= 1
+        when ""
+          # File exists, but can't find checksum
+          failed_message = "#{filename} is already published!"
+          raise Error, "#{failed_message}\n#{delete_instructions}" unless warn_on_error
+
+          opoo failed_message
+        else
+          # File exists, but checksum either doesn't exist or is mismatched.
           failed_message = <<~EOS
-            #{already_published}
-            Please remove it manually from:
-              https://bintray.com/#{@bintray_org}/#{bintray_repo}/#{bintray_package}/view#files
-            Or run:
-              curl -X DELETE -u $HOMEBREW_BINTRAY_USER:$HOMEBREW_BINTRAY_KEY \\
-              https://api.bintray.com/content/#{@bintray_org}/#{bintray_repo}/#{filename}
+            #{filename} is already published with a mismatched hash!
+              Expected: #{sha256}
+              Actual:   #{result}
           EOS
-          raise Error, failed_message unless warn_on_error
+          raise Error, "#{failed_message}#{delete_instructions}" unless warn_on_error
 
-          opoo already_published
-          next
+          opoo failed_message
         end
-
-        if !formula_packaged[formula_name] && !package_exists?(repo: bintray_repo, package: bintray_package)
-          odebug "Creating package #{@bintray_org}/#{bintray_repo}/#{bintray_package}"
-          create_package repo: bintray_repo, package: bintray_package
-          formula_packaged[formula_name] = true
-        end
-
-        odebug "Uploading #{@bintray_org}/#{bintray_repo}/#{bintray_package}/#{version}/#{filename}"
-        upload(tag_hash["local_filename"],
-               repo:        bintray_repo,
-               package:     bintray_package,
-               version:     version,
-               remote_file: filename,
-               sha256:      sha256)
       end
       next unless publish_package
 
-      bottle_count = bottle_hash["bottle"]["tags"].length
       odebug "Publishing #{@bintray_org}/#{bintray_repo}/#{bintray_package}/#{version}"
       publish(repo:          bintray_repo,
               package:       bintray_package,
