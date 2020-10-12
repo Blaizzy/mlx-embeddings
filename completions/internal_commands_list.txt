@@ -27,6 +27,7 @@ configure
 create
 deps
 desc
+dispatch-build-bottle
 diy
 doctor
 dr

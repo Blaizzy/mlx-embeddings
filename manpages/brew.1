@@ -1363,6 +1363,29 @@ Generate the new formula within the given tap, specified as \fIuser\fR\fB/\fR\fI
 \fB\-f\fR, \fB\-\-force\fR
 Ignore errors for disallowed formula names and named that shadow aliases\.
 .
+.SS "\fBdispatch\-build\-bottle\fR [\fIoptions\fR] \fIformula\fR [\fIformula\fR \.\.\.]"
+Build bottles for these formulae with GitHub Actions\.
+.
+.TP
+\fB\-\-tap\fR
+Target tap repository (default: \fBhomebrew/core\fR)\.
+.
+.TP
+\fB\-\-issue\fR
+If specified, post a comment to this issue number if the job fails\.
+.
+.TP
+\fB\-\-macos\fR
+Version of macOS the bottle should be built for\.
+.
+.TP
+\fB\-\-workflow\fR
+Dispatch specified workflow (default: \fBdispatch\-build\-bottle\.yml\fR)\.
+.
+.TP
+\fB\-\-upload\fR
+Upload built bottles to Bintray\.
+.
 .SS "\fBdiy\fR [\fIoptions\fR]"
 Automatically determine the installation prefix for non\-Homebrew software\. Using the output from this command, you can install your own software into the Cellar and then link it into Homebrew\'s prefix with \fBbrew link\fR\.
 .

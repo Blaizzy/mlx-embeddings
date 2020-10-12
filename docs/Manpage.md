@@ -968,6 +968,21 @@ a simple example. For the complete API, see:
 * `-f`, `--force`:
   Ignore errors for disallowed formula names and named that shadow aliases.
 
+### `dispatch-build-bottle` [*`options`*] *`formula`* [*`formula`* ...]
+
+Build bottles for these formulae with GitHub Actions.
+
+* `--tap`:
+  Target tap repository (default: `homebrew/core`).
+* `--issue`:
+  If specified, post a comment to this issue number if the job fails.
+* `--macos`:
+  Version of macOS the bottle should be built for.
+* `--workflow`:
+  Dispatch specified workflow (default: `dispatch-build-bottle.yml`).
+* `--upload`:
+  Upload built bottles to Bintray.
+
 ### `diy` [*`options`*]
 
 Automatically determine the installation prefix for non-Homebrew software.
