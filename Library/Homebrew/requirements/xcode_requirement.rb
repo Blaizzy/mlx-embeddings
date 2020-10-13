@@ -49,3 +49,5 @@ class XcodeRequirement < Requirement
     "#<#{self.class.name}: #{tags.inspect} version=#{@version.inspect}>"
   end
 end
+
+require "extend/os/requirements/xcode_requirement"
