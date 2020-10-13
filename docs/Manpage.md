@@ -1081,11 +1081,13 @@ Find pull requests that can be automatically merged using `brew pr-publish`.
 * `--with-label`:
   Pull requests must have this label.
 * `--without-labels`:
-  Pull requests must not have these labels (default: `do not merge`, `new formula`).
+  Pull requests must not have these labels (default: `do not merge`, `new formula`, `automerge-skip`).
 * `--without-approval`:
   Pull requests do not require approval to be merged.
 * `--publish`:
   Run `brew pr-publish` on matching pull requests.
+* `--autosquash`:
+  Instruct `brew pr-publish` to automatically reformat and reword commits in the pull request to our preferred format.
 * `--ignore-failures`:
   Include pull requests that have failing status checks.
 
