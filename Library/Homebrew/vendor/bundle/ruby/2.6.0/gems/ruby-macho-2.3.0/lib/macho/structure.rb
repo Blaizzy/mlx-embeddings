@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module MachO
   # A general purpose pseudo-structure.
   # @abstract
@@ -5,7 +7,7 @@ module MachO
     # The String#unpack format of the data structure.
     # @return [String] the unpacking format
     # @api private
-    FORMAT = "".freeze
+    FORMAT = ""
 
     # The size of the data structure, in bytes.
     # @return [Integer] the size, in bytes

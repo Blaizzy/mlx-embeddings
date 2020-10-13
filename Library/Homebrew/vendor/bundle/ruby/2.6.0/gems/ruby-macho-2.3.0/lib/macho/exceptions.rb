@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module MachO
   # A generic Mach-O error in execution.
   class MachOError < RuntimeError
@@ -41,8 +43,8 @@ module MachO
   # Raised when a file's magic bytes are not valid Mach-O magic.
   class MagicError < NotAMachOError
     # @param num [Integer] the unknown number
-    def initialize(num)
-      super "Unrecognized Mach-O magic: 0x#{"%02x" % num}"
+    def initialize(magic)
+      super "Unrecognized Mach-O magic: 0x%02<magic>x" % { :magic => magic }
     end
   end
 
@@ -71,7 +73,7 @@ module MachO
   class CPUTypeError < MachOError
     # @param cputype [Integer] the unknown CPU type
     def initialize(cputype)
-      super "Unrecognized CPU type: 0x#{"%08x" % cputype}"
+      super "Unrecognized CPU type: 0x%08<cputype>x" % { :cputype => cputype }
     end
   end
 
@@ -80,8 +82,8 @@ module MachO
     # @param cputype [Integer] the CPU type of the unknown pair
     # @param cpusubtype [Integer] the CPU sub-type of the unknown pair
     def initialize(cputype, cpusubtype)
-      super "Unrecognized CPU sub-type: 0x#{"%08x" % cpusubtype}" \
-        " (for CPU type: 0x#{"%08x" % cputype})"
+      super "Unrecognized CPU sub-type: 0x%08<cpusubtype>x" \
+        " (for CPU type: 0x%08<cputype>x" % { :cputype => cputype, :cpusubtype => cpusubtype }
     end
   end
 
@@ -89,7 +91,7 @@ module MachO
   class FiletypeError < MachOError
     # @param num [Integer] the unknown number
     def initialize(num)
-      super "Unrecognized Mach-O filetype code: 0x#{"%02x" % num}"
+      super "Unrecognized Mach-O filetype code: 0x%02<num>x" % { :num => num }
     end
   end
 
@@ -97,7 +99,7 @@ module MachO
   class LoadCommandError < MachOError
     # @param num [Integer] the unknown number
     def initialize(num)
-      super "Unrecognized Mach-O load command: 0x#{"%02x" % num}"
+      super "Unrecognized Mach-O load command: 0x%02<num>x" % { :num => num }
     end
   end
 

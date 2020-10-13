@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "forwardable"
 
 module MachO
@@ -398,13 +400,13 @@ module MachO
       machos.each_with_index do |macho, index|
         begin
           yield macho
-        rescue RecoverableModificationError => error
-          error.macho_slice = index
+        rescue RecoverableModificationError => e
+          e.macho_slice = index
 
           # Strict mode: Immediately re-raise. Otherwise: Retain, check later.
-          raise error if strict
+          raise e if strict
 
-          errors << error
+          errors << e
         end
       end
 
