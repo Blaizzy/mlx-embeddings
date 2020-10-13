@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # A requirement on a code-signing identity.

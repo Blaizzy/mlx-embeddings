@@ -1,3 +1,4 @@
+# typed: false
 # Frozen_string_literal: true
 
 require "livecheck/livecheck"

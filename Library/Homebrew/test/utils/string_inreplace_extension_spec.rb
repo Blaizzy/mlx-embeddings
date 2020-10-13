@@ -1,11 +1,10 @@
+# typed: false
 # frozen_string_literal: true
 
-require "extend/string"
-require "tempfile"
-require "utils/inreplace"
+require "utils/string_inreplace_extension"
 
 describe StringInreplaceExtension do
-  subject { described_class.new(string.dup) }
+  subject(:string_extension) { described_class.new(string.dup) }
 
   describe "#change_make_var!" do
     context "flag" do
@@ -19,8 +18,8 @@ describe StringInreplaceExtension do
         end
 
         it "is successfully replaced" do
-          subject.change_make_var! "FLAG", "def"
-          expect(subject.inreplace_string).to eq <<~EOS
+          string_extension.change_make_var! "FLAG", "def"
+          expect(string_extension.inreplace_string).to eq <<~EOS
             OTHER=def
             FLAG=def
             FLAG2=abc
@@ -28,8 +27,8 @@ describe StringInreplaceExtension do
         end
 
         it "is successfully appended" do
-          subject.change_make_var! "FLAG", "\\1 def"
-          expect(subject.inreplace_string).to eq <<~EOS
+          string_extension.change_make_var! "FLAG", "\\1 def"
+          expect(string_extension.inreplace_string).to eq <<~EOS
             OTHER=def
             FLAG=abc def
             FLAG2=abc
@@ -46,8 +45,8 @@ describe StringInreplaceExtension do
         end
 
         it "is successfully replaced" do
-          subject.change_make_var! "CFLAGS", "-O3"
-          expect(subject.inreplace_string).to eq <<~EOS
+          string_extension.change_make_var! "CFLAGS", "-O3"
+          expect(string_extension.inreplace_string).to eq <<~EOS
             CFLAGS=-O3
             LDFLAGS\t=\t-lcrypto -lssl
           EOS
@@ -64,8 +63,8 @@ describe StringInreplaceExtension do
         end
 
         it "is successfully replaced" do
-          subject.change_make_var! "CFLAGS", "-O3"
-          expect(subject.inreplace_string).to eq <<~EOS
+          string_extension.change_make_var! "CFLAGS", "-O3"
+          expect(string_extension.inreplace_string).to eq <<~EOS
             CFLAGS=-O3
             LDFLAGS = -lcrypto -lssl
           EOS
@@ -83,8 +82,8 @@ describe StringInreplaceExtension do
       end
 
       it "is successfully replaced" do
-        subject.change_make_var! "FLAG", "def"
-        expect(subject.inreplace_string).to eq <<~EOS
+        string_extension.change_make_var! "FLAG", "def"
+        expect(string_extension.inreplace_string).to eq <<~EOS
           OTHER=def
           FLAG=def
           FLAG2=abc
@@ -101,8 +100,8 @@ describe StringInreplaceExtension do
       end
 
       it "is successfully replaced" do
-        subject.change_make_var! "FLAG", "def"
-        expect(subject.inreplace_string).to eq <<~EOS
+        string_extension.change_make_var! "FLAG", "def"
+        expect(string_extension.inreplace_string).to eq <<~EOS
           FLAG=def
           mv file_a file_b
         EOS
@@ -119,8 +118,8 @@ describe StringInreplaceExtension do
       end
 
       it "is successfully replaced" do
-        subject.change_make_var! "FLAG", "def"
-        expect(subject.inreplace_string).to eq <<~EOS
+        string_extension.change_make_var! "FLAG", "def"
+        expect(string_extension.inreplace_string).to eq <<~EOS
           OTHER=def
           FLAG=def
           FLAG2=abc
@@ -141,8 +140,8 @@ describe StringInreplaceExtension do
         end
 
         it "is successfully removed" do
-          subject.remove_make_var! "FLAG"
-          expect(subject.inreplace_string).to eq <<~EOS
+          string_extension.remove_make_var! "FLAG"
+          expect(string_extension.inreplace_string).to eq <<~EOS
             OTHER=def
             FLAG2 = def
           EOS
@@ -158,8 +157,8 @@ describe StringInreplaceExtension do
         end
 
         it "is successfully removed" do
-          subject.remove_make_var! "LDFLAGS"
-          expect(subject.inreplace_string).to eq <<~EOS
+          string_extension.remove_make_var! "LDFLAGS"
+          expect(string_extension.inreplace_string).to eq <<~EOS
             CFLAGS\t=\t-Wall -O2
           EOS
         end
@@ -175,8 +174,8 @@ describe StringInreplaceExtension do
         end
 
         it "is successfully removed" do
-          subject.remove_make_var! "CFLAGS"
-          expect(subject.inreplace_string).to eq <<~EOS
+          string_extension.remove_make_var! "CFLAGS"
+          expect(string_extension.inreplace_string).to eq <<~EOS
             LDFLAGS = -lcrypto -lssl
           EOS
         end
@@ -194,8 +193,8 @@ describe StringInreplaceExtension do
       end
 
       specify "are be successfully removed" do
-        subject.remove_make_var! ["FLAG", "FLAG2"]
-        expect(subject.inreplace_string).to eq <<~EOS
+        string_extension.remove_make_var! ["FLAG", "FLAG2"]
+        expect(string_extension.inreplace_string).to eq <<~EOS
           OTHER=def
           OTHER2=def
         EOS
@@ -213,7 +212,7 @@ describe StringInreplaceExtension do
       end
 
       it "extracts the value for a given variable" do
-        expect(subject.get_make_var("CFLAGS")).to eq("-Wall -O2")
+        expect(string_extension.get_make_var("CFLAGS")).to eq("-Wall -O2")
       end
     end
 
@@ -226,7 +225,7 @@ describe StringInreplaceExtension do
       end
 
       it "extracts the value for a given variable" do
-        expect(subject.get_make_var("CFLAGS")).to eq("-Wall -O2")
+        expect(string_extension.get_make_var("CFLAGS")).to eq("-Wall -O2")
       end
     end
 
@@ -240,7 +239,7 @@ describe StringInreplaceExtension do
       end
 
       it "extracts the value for a given variable" do
-        expect(subject.get_make_var("CFLAGS")).to match(/^-Wall -O2 \\\n +-DSOME_VAR=1$/)
+        expect(string_extension.get_make_var("CFLAGS")).to match(/^-Wall -O2 \\\n +-DSOME_VAR=1$/)
       end
     end
   end
@@ -249,8 +248,13 @@ describe StringInreplaceExtension do
     let(:string) { "foo" }
 
     it "replaces the first occurrence" do
-      subject.sub!("o", "e")
-      expect(subject.inreplace_string).to eq("feo")
+      string_extension.sub!("o", "e")
+      expect(string_extension.inreplace_string).to eq("feo")
+    end
+
+    it "adds an error to #errors when no replacement was made" do
+      string_extension.sub! "not here", "test"
+      expect(string_extension.errors).to eq(['expected replacement of "not here" with "test"'])
     end
   end
 
@@ -258,59 +262,8 @@ describe StringInreplaceExtension do
     let(:string) { "foo" }
 
     it "replaces all occurrences" do
-      subject.gsub!("o", "e") # rubocop:disable Performance/StringReplacement
-      expect(subject.inreplace_string).to eq("fee")
-    end
-  end
-end
-
-describe Utils::Inreplace do
-  let(:file) { Tempfile.new("test") }
-
-  before do
-    file.write <<~EOS
-      a
-      b
-      c
-    EOS
-  end
-
-  after { file.unlink }
-
-  it "raises error if there are no files given to replace" do
-    expect {
-      described_class.inreplace [], "d", "f"
-    }.to raise_error(Utils::Inreplace::Error)
-  end
-
-  it "raises error if there is nothing to replace" do
-    expect {
-      described_class.inreplace file.path, "d", "f"
-    }.to raise_error(Utils::Inreplace::Error)
-  end
-
-  it "raises error if there is nothing to replace in block form" do
-    expect {
-      described_class.inreplace(file.path) do |s|
-        s.gsub!("d", "f") # rubocop:disable Performance/StringReplacement
-      end
-    }.to raise_error(Utils::Inreplace::Error)
-  end
-
-  it "raises error if there is no make variables to replace" do
-    expect {
-      described_class.inreplace(file.path) do |s|
-        s.change_make_var! "VAR", "value"
-        s.remove_make_var! "VAR2"
-      end
-    }.to raise_error(Utils::Inreplace::Error)
-  end
-
-  describe "#inreplace_pairs" do
-    it "raises error if there is no old value" do
-      expect {
-        described_class.inreplace_pairs(file.path, [[nil, "f"]])
-      }.to raise_error(Utils::Inreplace::Error)
+      string_extension.gsub!("o", "e") # rubocop:disable Performance/StringReplacement
+      expect(string_extension.inreplace_string).to eq("fee")
     end
   end
 end

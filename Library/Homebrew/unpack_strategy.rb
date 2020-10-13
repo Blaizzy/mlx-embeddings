@@ -1,9 +1,14 @@
+# typed: false
 # frozen_string_literal: true
+
+require "system_command"
 
 # Module containing all available strategies for unpacking archives.
 #
 # @api private
 module UnpackStrategy
+  include SystemCommand::Mixin
+
   # Helper module for identifying the file type.
   module Magic
     # Length of the longest regex (currently Tar).

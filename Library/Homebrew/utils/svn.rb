@@ -1,3 +1,4 @@
+# typed: true
 # frozen_string_literal: true
 
 require "system_command"
@@ -7,30 +8,36 @@ module Utils
   #
   # @api private
   module Svn
-    module_function
+    class << self
+      extend T::Sig
 
-    def available?
-      version.present?
-    end
+      include SystemCommand::Mixin
 
-    def version
-      return @version if defined?(@version)
+      sig { returns(T::Boolean) }
+      def available?
+        version.present?
+      end
 
-      stdout, _, status = system_command(HOMEBREW_SHIMS_PATH/"scm/svn", args: ["--version"], print_stderr: false)
-      @version = status.success? ? stdout.chomp[/svn, version (\d+(?:\.\d+)*)/, 1] : nil
-    end
+      sig { returns(T.nilable(String)) }
+      def version
+        return @version if defined?(@version)
 
-    def remote_exists?(url)
-      return true unless available?
+        stdout, _, status = system_command(HOMEBREW_SHIMS_PATH/"scm/svn", args: ["--version"], print_stderr: false)
+        @version = status.success? ? stdout.chomp[/svn, version (\d+(?:\.\d+)*)/, 1] : nil
+      end
 
-      # OK to unconditionally trust here because we're just checking if
-      # a URL exists.
-      quiet_system "svn", "ls", url, "--depth", "empty",
-                   "--non-interactive", "--trust-server-cert"
-    end
+      sig { params(url: String).returns(T::Boolean) }
+      def remote_exists?(url)
+        return true unless available?
 
-    def clear_version_cache
-      remove_instance_variable(:@version) if defined?(@version)
+        # OK to unconditionally trust here because we're just checking if a URL exists.
+        system_command("svn", args: ["ls", url, "--depth", "empty",
+                                     "--non-interactive", "--trust-server-cert"], print_stderr: false).success?
+      end
+
+      def clear_version_cache
+        remove_instance_variable(:@version) if defined?(@version)
+      end
     end
   end
 end

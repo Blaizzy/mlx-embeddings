@@ -1,9 +1,13 @@
+# typed: true
 # frozen_string_literal: true
+
+require "system_command"
 
 module UnpackStrategy
   # Strategy for unpacking tar archives.
   class Tar
     include UnpackStrategy
+    extend SystemCommand::Mixin
 
     using Magic
 

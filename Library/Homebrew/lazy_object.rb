@@ -1,3 +1,4 @@
+# typed: true
 # frozen_string_literal: true
 
 # An object which lazily evaluates its inner block only once a method is called on it.

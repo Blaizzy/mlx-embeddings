@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Helper module for making a class searchable with both regular expressions and strings.

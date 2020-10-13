@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "download_strategy"
@@ -352,7 +353,7 @@ module Homebrew
     when :env_token
       curl_args = ["--header", "Authorization: token #{token}"]
     when :none
-      raise Error, "Credentials must be set to access the Artifacts API"
+      raise "Credentials must be set to access the Artifacts API"
     end
 
     # Download the artifact as a zip file and unpack it into `dir`. This is

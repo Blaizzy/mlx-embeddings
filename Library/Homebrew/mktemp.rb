@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Performs `Formula#mktemp`'s functionality, and tracks the results.

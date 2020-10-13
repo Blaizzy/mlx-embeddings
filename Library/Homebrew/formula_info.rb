@@ -1,3 +1,4 @@
+# typed: true
 # frozen_string_literal: true
 
 # Formula information drawn from an external `brew info --json` call.

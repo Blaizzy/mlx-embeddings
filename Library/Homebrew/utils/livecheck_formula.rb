@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Helper module for parsing output of `brew livecheck`.

@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "utils/svn"
@@ -43,17 +44,11 @@ describe Utils::Svn do
       end
 
       it "returns false when remote does not exist" do
-        expect(described_class).not_to be_remote_exists(HOMEBREW_CACHE/"install")
+        expect(described_class).not_to be_remote_exists("blah")
       end
 
       it "returns true when remote exists", :needs_network, :needs_svn do
-        HOMEBREW_CACHE.cd do
-          system HOMEBREW_SHIMS_PATH/"scm/svn", "checkout",
-                 "--non-interactive", "--trust-server-cert", "--quiet",
-                 "https://github.com/Homebrew/install"
-        end
-
-        expect(described_class).to be_remote_exists(HOMEBREW_CACHE/"install")
+        expect(described_class).to be_remote_exists("https://github.com/Homebrew/install")
       end
     end
   end

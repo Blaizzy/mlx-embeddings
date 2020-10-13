@@ -1,3 +1,4 @@
+# typed: true
 # frozen_string_literal: true
 
 # The `Livecheck` class implements the DSL methods used in a formula's

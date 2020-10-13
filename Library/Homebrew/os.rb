@@ -1,3 +1,4 @@
+# typed: true
 # frozen_string_literal: true
 
 # Helper functions for querying operating system information.

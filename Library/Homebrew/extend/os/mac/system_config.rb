@@ -1,7 +1,12 @@
+# typed: true
 # frozen_string_literal: true
+
+require "system_command"
 
 module SystemConfig
   class << self
+    include SystemCommand::Mixin
+
     undef describe_java, describe_homebrew_ruby
 
     def describe_java

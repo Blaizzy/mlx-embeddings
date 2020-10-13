@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby --enable-frozen-string-literal --disable=gems,did_you_mean,rubyopt
+# typed: true
 # frozen_string_literal: true
 
 HOMEBREW_REQUIRED_RUBY_VERSION = ARGV.first.freeze
