@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module MachO
   # A representation of some unspecified Mach-O data.
   class MachOView
