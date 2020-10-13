@@ -15,7 +15,7 @@ describe "brew list", :integration_test do
       (HOMEBREW_CELLAR/f/"1.0/somedir").mkpath
     end
 
-    expect { brew "list" }
+    expect { brew "list", "--formula" }
       .to output("#{formulae.join("\n")}\n").to_stdout
       .and not_to_output.to_stderr
       .and be_a_success

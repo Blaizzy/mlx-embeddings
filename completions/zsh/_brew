@@ -62,8 +62,15 @@ __brew_formulae() {
 
 __brew_installed_formulae() {
   local -a formulae
-  formulae=($(brew list))
+  formulae=($(brew list --formula))
   _describe -t formulae 'installed formulae' formulae
+}
+
+__brew_installed_casks() {
+  local -a list
+  local expl
+  list=( $(brew list --cask) )
+  _wanted list expl 'installed casks' compadd -a list
 }
 
 __brew_outdated_formulae() {
@@ -493,11 +500,12 @@ _brew_linkage() {
 # brew list, ls [--full-name]:
 # brew list, ls --unbrewed:
 # brew list, ls [--versions [--multiple]] [--pinned] [formulae]:
-# brew list, ls --cask:
+# brew list, ls [--cask|--formula]:
 _brew_list() {
   local state
   _arguments \
     - formulae \
+      '--formula[list install formulae]' \
       '--full-name[print formulae with fully-qualified names]' \
       '--unbrewed[files in brew --prefix not controlled by brew]' \
       '--pinned[list all versions of pinned formulae]' \
@@ -575,7 +583,7 @@ _brew_outdated() {
       '--fetch-HEAD[detect if the HEAD installation of the formula is outdated]' \
     - cask \
       '--cask[list outdated Casks]' \
-      '--greedy[also list Casks with auto_updates or version \:latest]' \
+      '--greedy[also list Casks with auto_updates or version \:latest]'
 }
 
 # brew pin formulae:

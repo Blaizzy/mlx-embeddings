@@ -34,9 +34,9 @@ module Homebrew
              description: "Show the versions of pinned formulae, or only the specified (pinned) "\
                           "formulae if <formula> are provided. See also `pin`, `unpin`."
       switch "--formula", "--formulae",
-             description: "List only formulae."
+             description: "List only formulae. `This is the default action on non TTY.`"
       switch "--cask", "--casks",
-             description: "List only casks."
+             description: "List only casks, or <cask> if provided."
       # passed through to ls
       switch "-1",
              description: "Force output to be one entry per line. " \
@@ -87,7 +87,13 @@ module Homebrew
         ls_args << "-r" if args.r?
         ls_args << "-t" if args.t?
 
-        safe_system "ls", *ls_args, HOMEBREW_CELLAR
+        if !$stdout.tty? && !args.formula?
+          odeprecated "`brew list` to only list formulae", "`brew list --formula`"
+          safe_system "ls", *ls_args, HOMEBREW_CELLAR
+        else
+          safe_system "ls", *ls_args, HOMEBREW_CELLAR
+          list_casks(args: args) unless args.formula?
+        end
       end
     elsif args.verbose? || !$stdout.tty?
       system_command! "find", args: args.named.to_kegs.map(&:to_s) + %w[-not -type d -print], print_stdout: true

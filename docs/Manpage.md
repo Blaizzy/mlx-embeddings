@@ -364,9 +364,9 @@ If *`formula`* is provided, summarise the paths within its current keg.
 * `--pinned`:
   Show the versions of pinned formulae, or only the specified (pinned) formulae if *`formula`* are provided. See also `pin`, `unpin`.
 * `--formula`:
-  List only formulae.
+  List only formulae. `This is the default action on non TTY.`
 * `--cask`:
-  List only casks.
+  List only casks, or *`cask`* if provided.
 * `-1`:
   Force output to be one entry per line. This is the default when output is not to a terminal.
 * `-l`:
