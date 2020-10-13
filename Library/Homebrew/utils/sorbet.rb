@@ -6,5 +6,8 @@ if ENV["HOMEBREW_SORBET_RUNTIME"]
   Homebrew.install_bundler_gems!
   require "sorbet-runtime"
 else
+  # Explicitly prevent `sorbet-runtime` from being loaded.
+  ENV["GEM_SKIP"] = "sorbet-runtime"
+
   require "sorbet-runtime-stub"
 end
