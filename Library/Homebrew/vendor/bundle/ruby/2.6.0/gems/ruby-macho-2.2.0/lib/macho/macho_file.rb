@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "forwardable"
 
 module MachO
@@ -478,7 +476,7 @@ module MachO
     # @raise [FatBinaryError] if the magic is for a Fat file
     # @api private
     def populate_and_check_magic
-      magic = @raw_data[0..3].unpack1("N")
+      magic = @raw_data[0..3].unpack("N").first
 
       raise MagicError, magic unless Utils.magic?(magic)
       raise FatBinaryError if Utils.fat_magic?(magic)
@@ -524,7 +522,7 @@ module MachO
 
       header.ncmds.times do
         fmt = Utils.specialize_format("L=", endianness)
-        cmd = @raw_data.slice(offset, 4).unpack1(fmt)
+        cmd = @raw_data.slice(offset, 4).unpack(fmt).first
         cmd_sym = LoadCommands::LOAD_COMMANDS[cmd]
 
         raise LoadCommandError, cmd unless cmd_sym || permissive
