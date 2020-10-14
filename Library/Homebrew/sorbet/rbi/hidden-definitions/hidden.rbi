@@ -11513,7 +11513,7 @@ class MachO::MachOView
 end
 
 class MachO::MagicError
-  def initialize(num); end
+  def initialize(magic); end
 end
 
 class MachO::MagicError
@@ -11690,6 +11690,8 @@ module MachO::Utils
 end
 
 module MachO
+  def self.codesign!(filename); end
+
   def self.open(filename); end
 end
 
@@ -22359,16 +22361,10 @@ class RuboCop::AST::NodePattern::Parser
 end
 
 module RuboCop::AST::NodePattern::Sets
-  SET_ABSTRACT_OVERRIDE_OVERRIDABLE_ETC = ::T.let(nil, ::T.untyped)
-  SET_ANY_ALL_NORETURN_ETC = ::T.let(nil, ::T.untyped)
-  SET_ATTR_READER_ATTR_WRITER_ATTR_ACCESSOR = ::T.let(nil, ::T.untyped)
   SET_BUILD_RECOMMENDED_TEST_OPTIONAL = ::T.let(nil, ::T.untyped)
-  SET_CONSTANTIZE_CONSTANTS_CONST_GET = ::T.let(nil, ::T.untyped)
   SET_DEPENDS_ON_USES_FROM_MACOS = ::T.let(nil, ::T.untyped)
   SET_INCLUDE_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
-  SET_PROP_CONST = ::T.let(nil, ::T.untyped)
   SET_SYSTEM_SHELL_OUTPUT_PIPE_OUTPUT = ::T.let(nil, ::T.untyped)
-  SET_TYPE_TEMPLATE_TYPE_MEMBER = ::T.let(nil, ::T.untyped)
   SET_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
 end
 
