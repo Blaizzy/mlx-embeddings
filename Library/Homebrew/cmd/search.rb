@@ -46,6 +46,8 @@ module Homebrew
       switch "--desc",
              description: "Search for formulae with a description matching <text> and casks with "\
                           "a name matching <text>."
+      switch "--pull-request",
+             description: "Search for GitHub pull requests for <text>."
 
       package_manager_switches = PACKAGE_MANAGERS.keys.map { |name| "--#{name}" }
       package_manager_switches.each do |s|
@@ -53,6 +55,7 @@ module Homebrew
                description: "Search for <text> in the given package manager's list."
       end
 
+      conflicts("--desc", "--pull-request")
       conflicts(*package_manager_switches)
     end
   end
@@ -83,6 +86,8 @@ module Homebrew
 
     if args.desc?
       search_descriptions(string_or_regex)
+    elsif args.pull_request?
+      GitHub.print_pull_requests_matching(query)
     else
       remote_results = search_taps(query, silent: true)
 
@@ -109,20 +114,16 @@ module Homebrew
       end
 
       count = all_formulae.count + all_casks.count
-      if $stdout.tty?
-        if (reason = MissingFormula.reason(query, silent: true)) && !local_casks.include?(query)
-          if count.positive?
-            puts
-            puts "If you meant #{query.inspect} specifically:"
-          end
-          puts reason
-        elsif count.zero?
-          puts "No formula or cask found for #{query.inspect}."
-          GitHub.print_pull_requests_matching(query)
+
+      if $stdout.tty? && (reason = MissingFormula.reason(query, silent: true)) && !local_casks.include?(query)
+        if count.positive?
+          puts
+          puts "If you meant #{query.inspect} specifically:"
         end
-      elsif count.zero?
-        $stderr.puts "No formula or cask found for #{query.inspect}."
+        puts reason
       end
+
+      raise "No formulae or casks found for #{query.inspect}." if count.zero?
     end
 
     return unless $stdout.tty?
