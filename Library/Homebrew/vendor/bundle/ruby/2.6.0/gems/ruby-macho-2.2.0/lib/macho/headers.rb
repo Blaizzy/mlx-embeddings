@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module MachO
   # Classes and constants for parsing the headers of Mach-O binaries.
   module Headers
@@ -492,7 +490,7 @@ module MachO
       # always big-endian
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "N2"
+      FORMAT = "N2".freeze
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -543,7 +541,7 @@ module MachO
       # @note Always big endian.
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L>5"
+      FORMAT = "L>5".freeze
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -589,7 +587,7 @@ module MachO
       # @note Always big endian.
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L>2Q>2L>2"
+      FORMAT = "L>2Q>2L>2".freeze
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -639,7 +637,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=7"
+      FORMAT = "L=7".freeze
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -762,7 +760,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=8"
+      FORMAT = "L=8".freeze
 
       # @see MachOStructure::SIZEOF
       # @api private

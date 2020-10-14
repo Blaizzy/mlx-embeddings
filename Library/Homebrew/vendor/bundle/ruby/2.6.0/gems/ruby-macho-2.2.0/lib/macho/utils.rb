@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module MachO
   # A collection of utility functions used throughout ruby-macho.
   module Utils
@@ -53,7 +51,7 @@ module MachO
     def self.pack_strings(fixed_offset, alignment, strings = {})
       offsets = {}
       next_offset = fixed_offset
-      payload = +""
+      payload = ""
 
       strings.each do |key, string|
         offsets[key] = next_offset
@@ -63,7 +61,7 @@ module MachO
       end
 
       payload << Utils.nullpad(padding_for(fixed_offset + payload.bytesize, alignment))
-      [payload.freeze, offsets]
+      [payload, offsets]
     end
 
     # Compares the given number to valid Mach-O magic numbers.
