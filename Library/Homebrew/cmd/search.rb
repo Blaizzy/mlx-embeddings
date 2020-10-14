@@ -108,9 +108,8 @@ module Homebrew
         puts Formatter.columns(all_casks)
       end
 
+      count = all_formulae.count + all_casks.count
       if $stdout.tty?
-        count = all_formulae.count + all_casks.count
-
         if (reason = MissingFormula.reason(query, silent: true)) && !local_casks.include?(query)
           if count.positive?
             puts
@@ -121,6 +120,8 @@ module Homebrew
           puts "No formula or cask found for #{query.inspect}."
           GitHub.print_pull_requests_matching(query)
         end
+      elsif count.zero?
+        $stderr.puts "No formula or cask found for #{query.inspect}."
       end
     end
 
