@@ -270,6 +270,7 @@ class RuboCop::AST::DefNode < ::RuboCop::AST::Node
   def argument_forwarding?; end
   def arguments; end
   def body; end
+  def endless?; end
   def method_name; end
   def receiver; end
   def void_context?; end
@@ -1333,11 +1334,17 @@ RuboCop::AST::NodePattern::Sets::SET_1_1 = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_1_2 = T.let(T.unsafe(nil), Set)
 
+RuboCop::AST::NodePattern::Sets::SET_ABSTRACT_OVERRIDE_OVERRIDABLE_ETC = T.let(T.unsafe(nil), Set)
+
 RuboCop::AST::NodePattern::Sets::SET_ADD_DEPENDENCY_ADD_RUNTIME_DEPENDENCY_ADD_DEVELOPMENT_DEPENDENCY = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_ALL_CONTEXT = T.let(T.unsafe(nil), Set)
 
+RuboCop::AST::NodePattern::Sets::SET_ANY_ALL_NORETURN_ETC = T.let(T.unsafe(nil), Set)
+
 RuboCop::AST::NodePattern::Sets::SET_ANY_INSTANCE_ALLOW_ANY_INSTANCE_OF_EXPECT_ANY_INSTANCE_OF = T.let(T.unsafe(nil), Set)
+
+RuboCop::AST::NodePattern::Sets::SET_ATTR_READER_ATTR_WRITER_ATTR_ACCESSOR = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_ATTR_READER_ATTR_WRITER_ATTR_ACCESSOR_ATTR = T.let(T.unsafe(nil), Set)
 
@@ -1368,6 +1375,8 @@ RuboCop::AST::NodePattern::Sets::SET_CLASS_MODULE = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_CLASS_MODULE_STRUCT = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_COLLECT_COMPACT_FLATTEN_ETC = T.let(T.unsafe(nil), Set)
+
+RuboCop::AST::NodePattern::Sets::SET_CONSTANTIZE_CONSTANTS_CONST_GET = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_CONTEXT_SHARED_CONTEXT = T.let(T.unsafe(nil), Set)
 
@@ -1455,6 +1464,8 @@ RuboCop::AST::NodePattern::Sets::SET_IT_SPECIFY_EXAMPLE_ETC_3 = T.let(T.unsafe(n
 
 RuboCop::AST::NodePattern::Sets::SET_KEYS_VALUES = T.let(T.unsafe(nil), Set)
 
+RuboCop::AST::NodePattern::Sets::SET_KEY_HAS_KEY_FETCH_ETC = T.let(T.unsafe(nil), Set)
+
 RuboCop::AST::NodePattern::Sets::SET_LAST_FIRST = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_LENGTH_SIZE = T.let(T.unsafe(nil), Set)
@@ -1488,6 +1499,8 @@ RuboCop::AST::NodePattern::Sets::SET_PREPEND_BEFORE_BEFORE_APPEND_BEFORE_ETC_2 =
 RuboCop::AST::NodePattern::Sets::SET_PRIVATE_PROTECTED = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_PRIVATE_PROTECTED_PUBLIC = T.let(T.unsafe(nil), Set)
+
+RuboCop::AST::NodePattern::Sets::SET_PROP_CONST = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_PRY_REMOTE_PRY_PRY_REMOTE_CONSOLE = T.let(T.unsafe(nil), Set)
 
@@ -1557,6 +1570,8 @@ RuboCop::AST::NodePattern::Sets::SET_TO_TO_NOT_NOT_TO = T.let(T.unsafe(nil), Set
 
 RuboCop::AST::NodePattern::Sets::SET_TRUE_FALSE = T.let(T.unsafe(nil), Set)
 
+RuboCop::AST::NodePattern::Sets::SET_TYPE_TEMPLATE_TYPE_MEMBER = T.let(T.unsafe(nil), Set)
+
 RuboCop::AST::NodePattern::Sets::SET_ZERO_POSITIVE_NEGATIVE = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET__ = T.let(T.unsafe(nil), Set)
@@ -1564,6 +1579,8 @@ RuboCop::AST::NodePattern::Sets::SET__ = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET__AT_SLICE = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET__EQL_ = T.let(T.unsafe(nil), Set)
+
+RuboCop::AST::NodePattern::Sets::SET__EQUAL_EQL = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET__GLOB = T.let(T.unsafe(nil), Set)
 
@@ -1837,7 +1854,10 @@ class RuboCop::AST::Token
 end
 
 module RuboCop::AST::Traversal
+  def on_(node); end
   def on___ENCODING__(node); end
+  def on___FILE__(node); end
+  def on___LINE__(node); end
   def on_alias(node); end
   def on_and(node); end
   def on_and_asgn(node); end
@@ -1897,6 +1917,7 @@ module RuboCop::AST::Traversal
   def on_ivasgn(node); end
   def on_kwarg(node); end
   def on_kwbegin(node); end
+  def on_kwnilarg(node); end
   def on_kwoptarg(node); end
   def on_kwrestarg(node); end
   def on_kwsplat(node); end
@@ -1961,6 +1982,11 @@ module RuboCop::AST::Traversal
   def walk(node); end
 end
 
+class RuboCop::AST::Traversal::DebugError < ::RuntimeError
+end
+
+RuboCop::AST::Traversal::TYPE_TO_METHOD = T.let(T.unsafe(nil), Hash)
+
 class RuboCop::AST::UntilNode < ::RuboCop::AST::Node
   include(::RuboCop::AST::ConditionalNode)
   include(::RuboCop::AST::ModifierNode)
@@ -2006,3 +2032,7 @@ RuboCop::NodePattern = RuboCop::AST::NodePattern
 RuboCop::ProcessedSource = RuboCop::AST::ProcessedSource
 
 RuboCop::Token = RuboCop::AST::Token
+
+RuboCop::AST::Traversal::CallbackCompiler::SEND = T.let(T.unsafe(nil), String)
+
+RuboCop::AST::Traversal::CallbackCompiler::TEMPLATE = T.let(T.unsafe(nil), Hash)
