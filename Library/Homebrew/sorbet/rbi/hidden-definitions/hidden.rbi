@@ -11513,7 +11513,7 @@ class MachO::MachOView
 end
 
 class MachO::MagicError
-  def initialize(magic); end
+  def initialize(num); end
 end
 
 class MachO::MagicError
@@ -11690,8 +11690,6 @@ module MachO::Utils
 end
 
 module MachO
-  def self.codesign!(filename); end
-
   def self.open(filename); end
 end
 
