@@ -18,7 +18,7 @@ class StringInreplaceExtension
   # Same as `String#sub!`, but warns if nothing was replaced.
   #
   # @api public
-  sig { params(before: String, after: String).returns(T.nilable(String)) }
+  sig { params(before: T.any(Regexp, String), after: String).returns(T.nilable(String)) }
   def sub!(before, after)
     result = inreplace_string.sub!(before, after)
     errors << "expected replacement of #{before.inspect} with #{after.inspect}" unless result
