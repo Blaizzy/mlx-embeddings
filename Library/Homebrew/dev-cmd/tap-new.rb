@@ -120,11 +120,6 @@ module Homebrew
             - name: Set up git
               uses: Homebrew/actions/git-user-config@master
 
-            - name: Checkout default branch
-              env:
-                BRANCH: ${{ github.event.pull_request.head.repo.default_branch }}
-              run: git checkout $BRANCH
-
             - name: Pull bottles
               env:
                 HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
