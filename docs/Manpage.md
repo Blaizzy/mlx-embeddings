@@ -1233,6 +1233,8 @@ Generate the template files for a new tap.
   Don't initialize a git repository for the tap.
 * `--pull-label`:
   Label name for pull requests ready to be pulled (default `pr-pull`).
+* `--branch`:
+  Initialize git repository with the specified branch name (default `main`).
 
 ### `test` [*`options`*] *`formula`*
 
