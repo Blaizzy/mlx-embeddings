@@ -352,16 +352,24 @@ module GitHub
   def print_pull_requests_matching(query)
     open_or_closed_prs = search_issues(query, type: "pr", user: "Homebrew")
 
-    open_prs = open_or_closed_prs.select { |i| i["state"] == "open" }
-    prs = if !open_prs.empty?
-      puts "Open pull requests:"
-      open_prs
-    else
-      puts "Closed pull requests:" unless open_or_closed_prs.empty?
-      open_or_closed_prs.take(20)
+    open_prs, closed_prs = open_or_closed_prs.partition { |pr| pr["state"] == "open" }
+                                             .map { |prs| prs.map { |pr| "#{pr["title"]} (#{pr["html_url"]})" } }
+
+    if open_prs.present?
+      ohai "Open pull requests"
+      open_prs.each { |pr| puts pr }
     end
 
-    prs.each { |i| puts "#{i["title"]} (#{i["html_url"]})" }
+    if closed_prs.present?
+      puts if open_prs.present?
+
+      ohai "Closed pull requests"
+      closed_prs.take(20).each { |pr| puts pr }
+
+      puts "..." if closed_prs.count > 20
+    end
+
+    puts "No pull requests found for #{query.inspect}" if open_prs.blank? && closed_prs.blank?
   end
 
   def create_fork(repo)

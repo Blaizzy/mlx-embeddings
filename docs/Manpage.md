@@ -515,6 +515,8 @@ No online search is performed.
   Without *`text`*, list all locally available casks (including tapped ones, no online search is performed). With *`text`*, search online and locally for casks.
 * `--desc`:
   Search for formulae with a description matching *`text`* and casks with a name matching *`text`*.
+* `--pull-request`:
+  Search for GitHub pull requests for *`text`*.
 * `--macports`:
   Search for *`text`* in the given package manager's list.
 * `--fink`:
