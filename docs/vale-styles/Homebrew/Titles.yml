@@ -6,5 +6,6 @@ match: $title
 style: AP
 exceptions:
   - brew(1)
+  - macOS
   - Homebrew/homebrew-core
   - Homebrew/linuxbrew-core
