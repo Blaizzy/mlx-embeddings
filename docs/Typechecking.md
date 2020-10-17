@@ -27,8 +27,8 @@ file are always passed first (if it exists), followed by arguments provided on t
 command line. We use it ignore the `Library/Homebrew/vendor` directory, which
 contains gem definitions which we do not wish to type check.
 
-- The `files.yaml` file. It contains a list of every Ruby file in the codebase
-divided into 3 strictness levels, false, true and strict. The `false` files only
+- Every Ruby file in the codebase is divided into three strictness levels: false,
+true and strict. The `false` files only
 report errors related to the syntax, constant resolution and correctness of the
 method signatures, and not type errors. We use this file to override strictness
 on a file-by-file basis. Our longtime goal is to move all `false` files to `true`
@@ -40,11 +40,12 @@ out the resulting type errors. Read more about Sorbet's strictness levels
 ## Using `brew typecheck`
 
 When run without any arguments, `brew typecheck`, will run considering the strictness levels
-set in the `files.yaml` file. However, when typecheck is run on a specific file
-or directory, more errors may show up since Sorbet can not resolve constants defined
-outside the scope of the specified file. These problems can be solved with RBI files.
-Currently `brew typecheck` provides `quiet`, `--file`, `--dir` and `--ignore` options
-but you can explore more options with `srb tc --help` and passing them with `srb tc`.
+set in each of the individual Ruby files in the core Homebrew codebase. However, when
+typecheck is run on a specific file or directory, more errors may show up since Sorbet
+cannot resolve constants defined outside the scope of the specified file. These
+problems can be solved with RBI files. Currently `brew typecheck` provides `quiet`, `--file`,
+`--dir` and `--ignore` options but you can explore more options with `srb tc --help` and
+passing them with `srb tc`.
 
 ## Resolving Type Errors
 
