@@ -1,6 +1,6 @@
 extends: capitalization
 message: "'%s' should be in title case"
-level: warning
+level: error
 scope: heading.h1
 match: $title
 style: AP
