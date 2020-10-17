@@ -43,7 +43,7 @@ When run without any arguments, `brew typecheck`, will run considering the stric
 set in each of the individual Ruby files in the core Homebrew codebase. However, when
 typecheck is run on a specific file or directory, more errors may show up since Sorbet
 cannot resolve constants defined outside the scope of the specified file. These
-problems can be solved with RBI files. Currently `brew typecheck` provides `quiet`, `--file`,
+problems can be solved with RBI files. Currently `brew typecheck` provides `--quiet`, `--file`,
 `--dir` and `--ignore` options but you can explore more options with `srb tc --help` and
 passing them with `srb tc`.
 
