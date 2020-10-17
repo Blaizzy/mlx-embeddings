@@ -1,4 +1,4 @@
-# Type Checking with Sorbet
+# Type Checking With Sorbet
 
 The majority of the code in Homebrew is written in Ruby which is a dynamic
 language. To avail the benefits of static type checking, we have set up Sorbet in
