@@ -34,7 +34,7 @@ module Utils
     # @api public
     sig do
       params(
-        paths:        T::Array[T.untyped],
+        paths:        T.any(T::Array[T.untyped], String),
         before:       T.nilable(T.any(Regexp, String)),
         after:        T.nilable(T.any(String, Symbol)),
         audit_result: T::Boolean,
