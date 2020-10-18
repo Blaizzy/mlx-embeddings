@@ -191,7 +191,7 @@ As a general rule, [`conflicts_with`](https://rubydoc.brew.sh/Formula#conflicts_
 The syntax for a conflict that can’t be worked around is:
 
 ```ruby
-conflicts_with "blueduck", :because => "yellowduck also ships a duck binary"
+conflicts_with "blueduck", because: "yellowduck also ships a duck binary"
 ```
 
 ### Formulae revisions
