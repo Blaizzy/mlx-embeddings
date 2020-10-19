@@ -44,6 +44,7 @@ module RuboCop
           mlton
           openjdk
           openjdk@11
+          openjdk@8
           pypy
           sbcl
           rust
