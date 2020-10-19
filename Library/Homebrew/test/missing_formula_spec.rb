@@ -23,8 +23,6 @@ describe Homebrew::MissingFormula do
     it { is_expected.to disallow("pil") }
     it { is_expected.to disallow("macruby") }
     it { is_expected.to disallow("lzma") }
-    it { is_expected.to disallow("gtest") }
-    it { is_expected.to disallow("gmock") }
     it { is_expected.to disallow("sshpass") }
     it { is_expected.to disallow("gsutil") }
     it { is_expected.to disallow("gfortran") }
