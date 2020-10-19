@@ -168,7 +168,7 @@ module SharedAudits
     watcher_metadata = JSON.parse(watcher_out)
     return if watcher_metadata.nil?
 
-    return if (forks_metadata["size"] < 30) && (watcher_metadata["size"] < 75)
+    return if forks_metadata["size"] >= 30 || watcher_metadata["size"] >= 75
 
     "Bitbucket repository not notable enough (<30 forks and <75 watchers)"
   end
