@@ -7,12 +7,16 @@ require "system_command"
 #
 # @api private
 module UnpackStrategy
+  extend T::Sig
+  extend T::Helpers
+
   include SystemCommand::Mixin
 
   # Helper module for identifying the file type.
   module Magic
     # Length of the longest regex (currently Tar).
     MAX_MAGIC_NUMBER_LENGTH = 262
+    private_constant :MAX_MAGIC_NUMBER_LENGTH
 
     refine Pathname do
       def magic_number
@@ -125,11 +129,16 @@ module UnpackStrategy
     @merge_xattrs = merge_xattrs
   end
 
-  def extract(to: nil, basename: nil, verbose: false)
+  abstract!
+  sig { abstract.params(unpack_dir: Pathname, basename: Pathname, verbose: T::Boolean).returns(T.untyped) }
+  def extract_to_dir(unpack_dir, basename:, verbose:); end
+  private :extract_to_dir
+
+  def extract(to: nil, basename: nil, verbose: nil)
     basename ||= path.basename
     unpack_dir = Pathname(to || Dir.pwd).expand_path
     unpack_dir.mkpath
-    extract_to_dir(unpack_dir, basename: basename, verbose: verbose)
+    extract_to_dir(unpack_dir, basename: Pathname(basename), verbose: verbose || false)
   end
 
   def extract_nestedly(to: nil, basename: nil, verbose: false, prioritise_extension: false)
