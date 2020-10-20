@@ -1,9 +1,19 @@
-# typed: false
+# typed: strict
 # frozen_string_literal: true
+
+require "system_command"
 
 module UnpackStrategy
   class Zip
     module MacOSZipExtension
+      extend T::Sig
+
+      include UnpackStrategy
+      include SystemCommand::Mixin
+
+      using Magic
+
+      sig { override.params(unpack_dir: Pathname, basename: Pathname, verbose: T::Boolean).returns(T.untyped) }
       def extract_to_dir(unpack_dir, basename:, verbose:)
         if merge_xattrs && contains_extended_attributes?(path)
           # We use ditto directly, because dot_clean has issues if the __MACOSX
@@ -16,7 +26,7 @@ module UnpackStrategy
         end
 
         result = begin
-          super
+          T.let(super, SystemCommand::Result)
         rescue ErrorDuringExecution => e
           raise unless e.stderr.include?("End-of-central-directory signature not found.")
 
@@ -46,6 +56,13 @@ module UnpackStrategy
             FileUtils.mv tmp_unpack_dir/volume, unpack_dir/volume, verbose: verbose
           end
         end
+      end
+
+      private
+
+      sig { params(path: Pathname).returns(T::Boolean) }
+      def contains_extended_attributes?(path)
+        path.zipinfo.grep(/(^__MACOSX|\._)/).any?
       end
     end
     private_constant :MacOSZipExtension

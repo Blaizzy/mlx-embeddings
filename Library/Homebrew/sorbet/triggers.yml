@@ -1,0 +1,5 @@
+ruby_extra_args:
+  - --disable-gems
+
+triggers:
+  using: sorbet/plugins/unpack_strategy_magic.rb
