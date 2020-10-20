@@ -265,6 +265,20 @@ module FormulaCellarChecks
     EOS
   end
 
+  PYTHON_SYMLINK_ALLOWED_FORMULA = "python@3.8"
+
+  def check_python_symlinks(name)
+    return unless name.start_with? "python"
+    return if name == PYTHON_SYMLINK_ALLOWED_FORMULA
+
+    return if %w[pip3 wheel3].none? do |l|
+      link = HOMEBREW_PREFIX/"bin"/l
+      link.exist? && File.realpath(link).start_with?(HOMEBREW_CELLAR/name)
+    end
+
+    "Only `#{PYTHON_SYMLINK_ALLOWED_FORMULA}` should create symlinks for `pip3` and `wheel3`"
+  end
+
   def audit_installed
     @new_formula ||= false
 
@@ -282,6 +296,7 @@ module FormulaCellarChecks
     problem_if_output(check_python_packages(formula.lib, formula.deps))
     problem_if_output(check_shim_references(formula.prefix))
     problem_if_output(check_plist(formula.prefix, formula.plist))
+    problem_if_output(check_python_symlinks(formula.name))
   end
   alias generic_audit_installed audit_installed
 
