@@ -215,6 +215,8 @@ describe RuboCop::Cop::FormulaAudit::Patches do
         "https://patch-diff.githubusercontent.com/raw/foo/foo-bar/pull/100.patch",
         "https://github.com/uber/h3/pull/362.patch?full_index=1",
         "https://gitlab.gnome.org/GNOME/gitg/-/merge_requests/142.diff",
+        "https://github.com/michaeldv/pit/commit/f64978d.diff?full_index=1",
+        "https://gitlab.gnome.org/GNOME/msitools/commit/248450a.diff",
       ]
       patch_urls.each do |patch_url|
         source = <<~RUBY
@@ -277,6 +279,26 @@ describe RuboCop::Cop::FormulaAudit::Patches do
              source:   source }]
         elsif patch_url.match?(%r{.*gitlab.*/merge_request.*})
           [{ message:  "Use a commit hash URL rather than an unstable merge request URL: #{patch_url}",
+             severity: :convention,
+             line:     5,
+             column:   9,
+             source:   source }]
+        elsif patch_url.match?(%r{https://github.com/[^/]*/[^/]*/commit/})
+          [{ message:
+                       <<~EOS.chomp,
+                         GitHub patches should end with .patch, not .diff:
+                           #{patch_url}
+                       EOS
+             severity: :convention,
+             line:     5,
+             column:   9,
+             source:   source }]
+        elsif patch_url.match?(%r{.*gitlab.*/commit/})
+          [{ message:
+                       <<~EOS.chomp,
+                         GitLab patches should end with .patch, not .diff:
+                           #{patch_url}
+                       EOS
              severity: :convention,
              line:     5,
              column:   9,
