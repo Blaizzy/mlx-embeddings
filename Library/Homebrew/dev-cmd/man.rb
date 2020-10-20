@@ -7,12 +7,15 @@ require "ostruct"
 require "cli/parser"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
   SOURCE_PATH = (HOMEBREW_LIBRARY_PATH/"manpages").freeze
   TARGET_MAN_PATH = (HOMEBREW_REPOSITORY/"manpages").freeze
   TARGET_DOC_PATH = (HOMEBREW_REPOSITORY/"docs").freeze
 
+  sig { returns(CLI::Parser) }
   def man_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
@@ -210,6 +213,7 @@ module Homebrew
     lines
   end
 
+  sig { returns(String) }
   def global_cask_options_manpage
     lines = ["These options are applicable to subcommands accepting a `--cask` flag and all `cask` commands.\n"]
     lines += Homebrew::CLI::Parser.global_cask_options.map do |_, long, description:, **|
@@ -218,6 +222,7 @@ module Homebrew
     lines.join("\n")
   end
 
+  sig { returns(String) }
   def global_options_manpage
     lines = ["These options are applicable across multiple subcommands.\n"]
     lines += Homebrew::CLI::Parser.global_options.map do |short, long, desc|
@@ -226,6 +231,7 @@ module Homebrew
     lines.join("\n")
   end
 
+  sig { returns(String) }
   def env_vars_manpage
     lines = Homebrew::EnvConfig::ENVS.flat_map do |env, hash|
       entry = "  * `#{env}`:\n    #{hash[:description]}\n"

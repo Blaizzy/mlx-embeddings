@@ -297,15 +297,9 @@ Sorbet/ConstantsFromStrings:
 Style/AccessModifierDeclarations:
   Enabled: false
 
-# don't group nicely documented or private attr_readers
+# Conflicts with type signatures on `attr_*`s.
 Style/AccessorGrouping:
-  Exclude:
-    - 'Homebrew/formula.rb'
-    - 'Homebrew/formulary.rb'
-    - 'Homebrew/migrator.rb'
-    - 'Homebrew/resource.rb'
-    - 'Homebrew/system_command.rb'
-    - 'Homebrew/tap.rb'
+  Enabled: false
 
 # make rspec formatting more flexible
 Style/BlockDelimiters:

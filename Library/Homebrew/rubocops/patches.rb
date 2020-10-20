@@ -9,6 +9,8 @@ module RuboCop
     module FormulaAudit
       # This cop audits `patch`es in formulae.
       class Patches < FormulaCop
+        extend T::Sig
+
         def audit_formula(node, _class_node, _parent_class_node, body)
           @full_source_content = source_buffer(node).source
 
@@ -121,6 +123,7 @@ module RuboCop
           (send nil? :patch (:sym :DATA))
         AST
 
+        sig { returns(T::Boolean) }
         def patch_end?
           /^__END__$/.match?(@full_source_content)
         end

@@ -13,6 +13,8 @@ module Cask
   #
   # @api private
   class Audit
+    extend T::Sig
+
     extend Predicable
 
     attr_reader :cask, :download
@@ -117,6 +119,7 @@ module Cask
       end
     end
 
+    sig { returns(String) }
     def summary
       summary = ["audit for #{cask}: #{result}"]
 
@@ -416,6 +419,7 @@ module Cask
       core_tap.formula_names
     end
 
+    sig { returns(String) }
     def core_formula_url
       "#{core_tap.default_remote}/blob/HEAD/Formula/#{cask.token}.rb"
     end

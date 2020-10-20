@@ -9,6 +9,9 @@ module Cask
     #
     # @api private
     class List < AbstractCommand
+      extend T::Sig
+
+      sig { returns(String) }
       def self.description
         "Lists installed casks or the casks provided in the arguments."
       end
@@ -26,6 +29,7 @@ module Cask
         end
       end
 
+      sig { void }
       def run
         self.class.list_casks(
           *casks,

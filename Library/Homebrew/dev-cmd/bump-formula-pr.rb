@@ -7,8 +7,11 @@ require "utils/pypi"
 require "utils/tar"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def bump_formula_pr_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS

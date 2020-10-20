@@ -6,6 +6,8 @@ require "os/mac/xcode"
 # @private
 class DevelopmentTools
   class << self
+    extend T::Sig
+
     alias generic_locate locate
     undef installed?, default_compiler, curl_handles_most_https_certificates?,
           subversion_handles_most_https_certificates?
@@ -28,22 +30,26 @@ class DevelopmentTools
       MacOS::Xcode.installed? || MacOS::CLT.installed?
     end
 
+    sig { returns(Symbol) }
     def default_compiler
       :clang
     end
 
+    sig { returns(T::Boolean) }
     def curl_handles_most_https_certificates?
       # The system Curl is too old for some modern HTTPS certificates on
       # older macOS versions.
       ENV["HOMEBREW_SYSTEM_CURL_TOO_OLD"].nil?
     end
 
+    sig { returns(T::Boolean) }
     def subversion_handles_most_https_certificates?
       # The system Subversion is too old for some HTTPS certificates on
       # older macOS versions.
       MacOS.version >= :sierra
     end
 
+    sig { returns(String) }
     def installation_instructions
       <<~EOS
         Install the Command Line Tools:
@@ -51,6 +57,7 @@ class DevelopmentTools
       EOS
     end
 
+    sig { returns(String) }
     def custom_installation_instructions
       <<~EOS
         Install GNU's GCC:

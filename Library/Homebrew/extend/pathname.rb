@@ -5,6 +5,8 @@ require "resource"
 require "metafiles"
 
 module DiskUsageExtension
+  extend T::Sig
+
   def disk_usage
     return @disk_usage if @disk_usage
 
@@ -19,6 +21,7 @@ module DiskUsageExtension
     @file_count
   end
 
+  sig { returns(String) }
   def abv
     out = +""
     compute_disk_usage
@@ -71,6 +74,8 @@ end
 # Homebrew extends Ruby's `Pathname` to make our code more readable.
 # @see https://ruby-doc.org/stdlib-2.6.3/libdoc/pathname/rdoc/Pathname.html Ruby's Pathname API
 class Pathname
+  extend T::Sig
+
   include DiskUsageExtension
 
   # @private
@@ -282,16 +287,19 @@ class Pathname
     Dir.chdir(self) { yield self }
   end
 
+  sig { returns(T::Array[Pathname]) }
   def subdirs
     children.select(&:directory?)
   end
 
   # @private
+  sig { returns(Pathname) }
   def resolved_path
     symlink? ? dirname.join(readlink) : self
   end
 
   # @private
+  sig { returns(T::Boolean) }
   def resolved_path_exists?
     link = readlink
   rescue ArgumentError
@@ -398,18 +406,22 @@ class Pathname
     end
   end
 
+  sig { returns(T::Boolean) }
   def ds_store?
     basename.to_s == ".DS_Store"
   end
 
+  sig { returns(T::Boolean) }
   def binary_executable?
     false
   end
 
+  sig { returns(T::Boolean) }
   def mach_o_bundle?
     false
   end
 
+  sig { returns(T::Boolean) }
   def dylib?
     false
   end
@@ -420,10 +432,13 @@ require "extend/os/pathname"
 # @private
 module ObserverPathnameExtension
   class << self
+    extend T::Sig
+
     include Context
 
     attr_accessor :n, :d
 
+    sig { void }
     def reset_counts!
       @n = @d = 0
       @put_verbose_trimmed_warning = false

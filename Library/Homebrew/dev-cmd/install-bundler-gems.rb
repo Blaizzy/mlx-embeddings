@@ -5,8 +5,11 @@ require "formula"
 require "cli/parser"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def install_bundler_gems_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS

@@ -253,6 +253,8 @@ end
 #
 # @api private
 class ResourceStageContext
+  extend T::Sig
+
   extend Forwardable
 
   # The {Resource} that is being staged.
@@ -268,6 +270,7 @@ class ResourceStageContext
     @staging = staging
   end
 
+  sig { returns(String) }
   def to_s
     "<#{self.class}: resource=#{resource} staging=#{staging}>"
   end

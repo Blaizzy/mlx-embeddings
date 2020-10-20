@@ -10,6 +10,8 @@ require "description_cache_store"
 require "cli/parser"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
   def update_preinstall_header(args:)
@@ -19,6 +21,7 @@ module Homebrew
     end
   end
 
+  sig { returns(CLI::Parser) }
   def update_report_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
@@ -413,10 +416,13 @@ class Reporter
 end
 
 class ReporterHub
+  extend T::Sig
+
   extend Forwardable
 
   attr_reader :reporters
 
+  sig { void }
   def initialize
     @hash = {}
     @reporters = []

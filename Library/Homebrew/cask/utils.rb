@@ -13,6 +13,8 @@ module Cask
   #
   # @api private
   module Utils
+    extend T::Sig
+
     def self.gain_permissions_remove(path, command: SystemCommand)
       if path.respond_to?(:rmtree) && path.exist?
         gain_permissions(path, ["-R"], command) do |p|
@@ -72,10 +74,12 @@ module Cask
       end
     end
 
+    sig { params(path: Pathname).returns(T::Boolean) }
     def self.path_occupied?(path)
-      File.exist?(path) || File.symlink?(path)
+      path.exist? || path.symlink?
     end
 
+    sig { returns(String) }
     def self.error_message_with_suggestions
       <<~EOS
         Follow the instructions here:

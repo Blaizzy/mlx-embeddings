@@ -7,11 +7,14 @@ require "ostruct"
 module Homebrew
   module CLI
     class Args < OpenStruct
+      extend T::Sig
+
       attr_reader :options_only, :flags_only
 
       # undefine tap to allow --tap argument
       undef tap
 
+      sig { void }
       def initialize
         super()
 
@@ -131,6 +134,7 @@ module Homebrew
         flag_with_value.delete_prefix(arg_prefix)
       end
 
+      sig { returns(Context::ContextStruct) }
       def context
         Context::ContextStruct.new(debug: debug?, quiet: quiet?, verbose: verbose?)
       end

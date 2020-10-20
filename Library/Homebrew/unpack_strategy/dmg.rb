@@ -6,6 +6,8 @@ require "tempfile"
 module UnpackStrategy
   # Strategy for unpacking disk images.
   class Dmg
+    extend T::Sig
+
     include UnpackStrategy
 
     # Helper module for listing the contents of a volume mounted from a disk image.
@@ -54,6 +56,8 @@ module UnpackStrategy
 
     # Strategy for unpacking a volume mounted from a disk image.
     class Mount
+      extend T::Sig
+
       using Bom
       include UnpackStrategy
 
@@ -82,6 +86,7 @@ module UnpackStrategy
 
       private
 
+      sig { override.params(unpack_dir: Pathname, basename: Pathname, verbose: T::Boolean).returns(T.untyped) }
       def extract_to_dir(unpack_dir, basename:, verbose:)
         Tempfile.open(["", ".bom"]) do |bomfile|
           bomfile.close
@@ -105,6 +110,7 @@ module UnpackStrategy
     end
     private_constant :Mount
 
+    sig { returns(T::Array[String]) }
     def self.extensions
       [".dmg"]
     end
@@ -116,6 +122,7 @@ module UnpackStrategy
 
     private
 
+    sig { override.params(unpack_dir: Pathname, basename: Pathname, verbose: T::Boolean).returns(T.untyped) }
     def extract_to_dir(unpack_dir, basename:, verbose:)
       mount(verbose: verbose) do |mounts|
         raise "No mounts found in '#{path}'; perhaps this is a bad disk image?" if mounts.empty?

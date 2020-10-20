@@ -9,6 +9,8 @@ module Utils
   # @api private
   module Analytics
     class << self
+      extend T::Sig
+
       include Context
 
       def report(type, metadata = {})
@@ -191,6 +193,7 @@ module Utils
         get_analytics(json, args: args)
       end
 
+      sig { returns(String) }
       def custom_prefix_label
         "custom-prefix"
       end
@@ -339,16 +342,19 @@ module Utils
         format("%<percent>.2f", percent: percent)
       end
 
+      sig { returns(String) }
       def formula_path
         "formula"
       end
       alias generic_formula_path formula_path
 
+      sig { returns(String) }
       def analytics_path
         "analytics"
       end
       alias generic_analytics_path analytics_path
 
+      sig { returns(String) }
       def cask_path
         "cask"
       end

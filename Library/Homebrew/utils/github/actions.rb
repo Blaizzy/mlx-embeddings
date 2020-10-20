@@ -17,6 +17,8 @@ module GitHub
 
     # Helper class for formatting annotations on GitHub Actions.
     class Annotation
+      extend T::Sig
+
       def self.path_relative_to_workspace(path)
         workspace = Pathname(ENV.fetch("GITHUB_WORKSPACE", Dir.pwd)).realpath
         path = Pathname(path)
@@ -35,6 +37,7 @@ module GitHub
         @column = Integer(column) if column
       end
 
+      sig { returns(String) }
       def to_s
         file = "file=#{Actions.escape(@file.to_s)}" if @file
         line = "line=#{@line}" if @line

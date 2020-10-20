@@ -5,8 +5,11 @@ require "cli/parser"
 require "utils/spdx"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def update_license_data_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS

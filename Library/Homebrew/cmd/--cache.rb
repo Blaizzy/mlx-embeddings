@@ -6,10 +6,13 @@ require "cli/parser"
 require "cask/download"
 
 module Homebrew
+  extend T::Sig
+
   extend Fetch
 
   module_function
 
+  sig { returns(CLI::Parser) }
   def __cache_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS

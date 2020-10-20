@@ -15,6 +15,8 @@ module Cask
     #
     # @api private
     class AbstractUninstall < AbstractArtifact
+      extend T::Sig
+
       ORDERED_DIRECTIVES = [
         :early_script,
         :launchctl,
@@ -53,6 +55,7 @@ module Cask
         directives.to_h
       end
 
+      sig { returns(String) }
       def summarize
         to_h.flat_map { |key, val| Array(val).map { |v| "#{key.inspect} => #{v.inspect}" } }.join(", ")
       end
@@ -128,6 +131,7 @@ module Cask
           end
       end
 
+      sig { returns(String) }
       def automation_access_instructions
         "Enable Automation Access for “Terminal > System Events” in " \
         "“System Preferences > Security > Privacy > Automation” if you haven't already."

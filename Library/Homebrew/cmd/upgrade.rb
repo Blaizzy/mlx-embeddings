@@ -10,8 +10,11 @@ require "cask/utils"
 require "cask/macos"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def upgrade_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS

@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 # Never `require` anything in this file (except English). It needs to be able to
@@ -57,7 +57,7 @@ module Homebrew
 
     # Add necessary Ruby and Gem binary directories to PATH.
     gem_bindir ||= Gem.bindir
-    paths = ENV["PATH"].split(":")
+    paths = ENV.fetch("PATH").split(":")
     paths.unshift(gem_bindir) unless paths.include?(gem_bindir)
     paths.unshift(ruby_bindir) unless paths.include?(ruby_bindir)
     ENV["PATH"] = paths.compact.join(":")
@@ -85,8 +85,8 @@ module Homebrew
   end
 
   def find_in_path(executable)
-    ENV["PATH"].split(":").find do |path|
-      File.executable?("#{path}/#{executable}")
+    ENV.fetch("PATH").split(":").find do |path|
+      File.executable?(File.join(path, executable))
     end
   end
 
@@ -104,9 +104,9 @@ module Homebrew
   def install_bundler_gems!
     install_bundler!
 
-    ENV["BUNDLE_GEMFILE"] = "#{ENV["HOMEBREW_LIBRARY"]}/Homebrew/Gemfile"
+    ENV["BUNDLE_GEMFILE"] = File.join(ENV.fetch("HOMEBREW_LIBRARY"), "Homebrew", "Gemfile")
     @bundle_installed ||= begin
-      bundle = "#{find_in_path(:bundle)}/bundle"
+      bundle = File.join(find_in_path("bundle"), "bundle")
       bundle_check_output = `#{bundle} check 2>&1`
       bundle_check_failed = !$CHILD_STATUS.success?
 

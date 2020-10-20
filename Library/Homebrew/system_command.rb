@@ -15,6 +15,8 @@ using HashValidator
 #
 # @api private
 class SystemCommand
+  extend T::Sig
+
   # Helper functions for calling {SystemCommand.run}.
   module Mixin
     def system_command(*args)
@@ -39,6 +41,7 @@ class SystemCommand
     run(command, **options, must_succeed: true)
   end
 
+  sig { returns(SystemCommand::Result) }
   def run!
     puts redact_secrets(command.shelljoin.gsub('\=', "="), @secrets) if verbose? || debug?
 

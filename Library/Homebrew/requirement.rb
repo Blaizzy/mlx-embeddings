@@ -12,6 +12,8 @@ require "build_environment"
 #
 # @api private
 class Requirement
+  extend T::Sig
+
   include Dependable
 
   attr_reader :tags, :name, :cask, :download
@@ -35,6 +37,7 @@ class Requirement
   end
 
   # The message to show when the requirement is not met.
+  sig { returns(String) }
   def message
     _, _, class_name = self.class.to_s.rpartition "::"
     s = "#{class_name} unsatisfied!\n"
@@ -121,6 +124,7 @@ class Requirement
     name.hash ^ tags.hash
   end
 
+  sig { returns(String) }
   def inspect
     "#<#{self.class.name}: #{tags.inspect}>"
   end
@@ -155,6 +159,8 @@ class Requirement
   end
 
   class << self
+    extend T::Sig
+
     include BuildEnvironment::DSL
 
     attr_reader :env_proc, :build
@@ -241,6 +247,7 @@ class Requirement
     end
 
     # Used to prune requirements when calling expand with a block.
+    sig { void }
     def prune
       throw(:prune, true)
     end

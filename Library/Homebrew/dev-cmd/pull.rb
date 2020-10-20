@@ -12,8 +12,11 @@ require "pkg_version"
 require "formula_info"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def pull_args
     Homebrew::CLI::Parser.new do
       hide_from_man_page!

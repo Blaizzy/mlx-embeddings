@@ -6,8 +6,11 @@ require_relative "uncompressed"
 module UnpackStrategy
   # Strategy for unpacking Java archives.
   class Jar < Uncompressed
+    extend T::Sig
+
     using Magic
 
+    sig { returns(T::Array[String]) }
     def self.extensions
       [".apk", ".jar"]
     end

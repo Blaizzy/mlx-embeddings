@@ -4,8 +4,11 @@
 module OS
   # Helper module for querying system information on Linux.
   module Linux
+    extend T::Sig
+
     module_function
 
+    sig { returns(String) }
     def os_version
       if which("lsb_release")
         description = Utils.popen_read("lsb_release -d")

@@ -10,10 +10,13 @@ require "tab"
 #
 # @api private
 module Formulary
+  extend T::Sig
+
   extend Cachable
 
   URL_START_REGEX = %r{(https?|ftp|file)://}.freeze
 
+  sig { void }
   def self.enable_factory_cache!
     @factory_cache = true
   end
@@ -208,8 +211,11 @@ module Formulary
 
   # Loads formulae from URLs.
   class FromUrlLoader < FormulaLoader
+    extend T::Sig
+
     attr_reader :url
 
+    sig { params(url: T.any(URI::Generic, String)).void }
     def initialize(url)
       @url = url
       uri = URI(url)

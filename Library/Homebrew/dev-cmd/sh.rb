@@ -6,8 +6,11 @@ require "formula"
 require "cli/parser"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def sh_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS

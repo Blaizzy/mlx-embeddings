@@ -5,8 +5,11 @@ require "tap"
 require "cli/parser"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def tap_new_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS

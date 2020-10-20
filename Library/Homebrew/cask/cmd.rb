@@ -38,6 +38,8 @@ module Cask
   #
   # @api private
   class Cmd
+    extend T::Sig
+
     include Context
 
     ALIASES = {
@@ -61,6 +63,7 @@ module Cask
       Cmd::Upgrade   => "brew upgrade --cask",
     }.freeze
 
+    sig { returns(String) }
     def self.description
       max_command_length = Cmd.commands.map(&:length).max
 

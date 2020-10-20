@@ -13,6 +13,8 @@ module Hardware
     PPC_64BIT_ARCHS   = [:ppc64, :ppc64le, :ppc970].freeze
 
     class << self
+      extend T::Sig
+
       def optimization_flags
         @optimization_flags ||= {
           native:             arch_flag("native"),
@@ -29,6 +31,7 @@ module Hardware
       end
       alias generic_optimization_flags optimization_flags
 
+      sig { returns(Symbol) }
       def arch_32_bit
         if arm?
           :arm
@@ -41,6 +44,7 @@ module Hardware
         end
       end
 
+      sig { returns(Symbol) }
       def arch_64_bit
         if arm?
           :arm64
@@ -70,6 +74,7 @@ module Hardware
         [arch].extend ArchitectureListExtension
       end
 
+      sig { returns(Symbol) }
       def type
         case RUBY_PLATFORM
         when /x86_64/, /i\d86/ then :intel
@@ -79,6 +84,7 @@ module Hardware
         end
       end
 
+      sig { returns(Symbol) }
       def family
         :dunno
       end
@@ -98,6 +104,7 @@ module Hardware
         end
       end
 
+      sig { returns(T::Boolean) }
       def sse4?
         RUBY_PLATFORM.to_s.include?("x86_64")
       end
@@ -156,6 +163,7 @@ module Hardware
         "-march=#{arch}"
       end
 
+      sig { returns(T::Boolean) }
       def in_rosetta2?
         false
       end

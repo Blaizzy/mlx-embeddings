@@ -9,6 +9,8 @@ module Utils
   # @api private
   module Bottles
     class << self
+      extend T::Sig
+
       def tag
         @tag ||= "#{ENV["HOMEBREW_PROCESSOR"]}_#{ENV["HOMEBREW_SYSTEM"]}".downcase.to_sym
       end
@@ -30,6 +32,7 @@ module Utils
         bottle_ext && bottle_url_ext && bottle_ext != bottle_url_ext
       end
 
+      sig { returns(Regexp) }
       def native_regex
         /(\.#{Regexp.escape(tag.to_s)}\.bottle\.(\d+\.)?tar\.gz)$/o
       end
@@ -93,10 +96,13 @@ module Utils
 
     # Collector for bottle specifications.
     class Collector
+      extend T::Sig
+
       extend Forwardable
 
       def_delegators :@checksums, :keys, :[], :[]=, :key?, :each_key
 
+      sig { void }
       def initialize
         @checksums = {}
       end

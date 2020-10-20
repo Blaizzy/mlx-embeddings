@@ -15,6 +15,8 @@ require "development_tools"
 # 7. Simpler formulae that *just work*
 # 8. Build-system agnostic configuration of the toolchain
 module Superenv
+  extend T::Sig
+
   include SharedEnvExtension
 
   # @private
@@ -103,6 +105,7 @@ module Superenv
     []
   end
 
+  sig { returns(T.nilable(PATH)) }
   def determine_path
     path = PATH.new(Superenv.bin)
 
@@ -125,6 +128,7 @@ module Superenv
     []
   end
 
+  sig { returns(T.nilable(PATH)) }
   def determine_pkg_config_path
     PATH.new(
       deps.map { |d| d.opt_lib/"pkgconfig" },
@@ -132,6 +136,7 @@ module Superenv
     ).existing
   end
 
+  sig { returns(T.nilable(PATH)) }
   def determine_pkg_config_libdir
     PATH.new(
       homebrew_extra_pkg_config_paths,
@@ -142,6 +147,7 @@ module Superenv
     []
   end
 
+  sig { returns(T.nilable(PATH)) }
   def determine_aclocal_path
     PATH.new(
       keg_only_deps.map { |d| d.opt_share/"aclocal" },
@@ -154,6 +160,7 @@ module Superenv
     []
   end
 
+  sig { returns(T.nilable(PATH)) }
   def determine_isystem_paths
     PATH.new(
       HOMEBREW_PREFIX/"include",
@@ -161,6 +168,7 @@ module Superenv
     ).existing
   end
 
+  sig { returns(T.nilable(PATH)) }
   def determine_include_paths
     PATH.new(keg_only_deps.map(&:opt_include)).existing
   end
@@ -169,6 +177,7 @@ module Superenv
     []
   end
 
+  sig { returns(T.nilable(PATH)) }
   def determine_library_paths
     paths = [
       keg_only_deps.map(&:opt_lib),
@@ -182,6 +191,7 @@ module Superenv
     deps.map(&:name).join(",")
   end
 
+  sig { returns(T.nilable(PATH)) }
   def determine_cmake_prefix_path
     PATH.new(
       keg_only_deps.map(&:opt_prefix),
@@ -193,6 +203,7 @@ module Superenv
     []
   end
 
+  sig { returns(T.nilable(PATH)) }
   def determine_cmake_include_path
     PATH.new(homebrew_extra_cmake_include_paths).existing
   end
@@ -201,6 +212,7 @@ module Superenv
     []
   end
 
+  sig { returns(T.nilable(PATH)) }
   def determine_cmake_library_path
     PATH.new(homebrew_extra_cmake_library_paths).existing
   end
@@ -209,6 +221,7 @@ module Superenv
     []
   end
 
+  sig { returns(T.nilable(PATH)) }
   def determine_cmake_frameworks_path
     PATH.new(
       deps.map(&:opt_frameworks),

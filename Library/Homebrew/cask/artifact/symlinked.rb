@@ -9,10 +9,14 @@ module Cask
     #
     # @api private
     class Symlinked < Relocated
+      extend T::Sig
+
+      sig { returns(String) }
       def self.link_type_english_name
         "Symlink"
       end
 
+      sig { returns(String) }
       def self.english_description
         "#{english_name} #{link_type_english_name}s"
       end

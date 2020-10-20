@@ -6,8 +6,11 @@ require "cli/parser"
 require "utils/tar"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def bump_cask_pr_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS

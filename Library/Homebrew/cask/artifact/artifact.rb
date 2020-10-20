@@ -12,6 +12,9 @@ module Cask
     #
     # @api private
     class Artifact < Moved
+      extend T::Sig
+
+      sig { returns(String) }
       def self.english_name
         "Generic Artifact"
       end

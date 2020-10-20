@@ -14,6 +14,8 @@ OPTION_DESC_WIDTH = 43
 module Homebrew
   module CLI
     class Parser
+      extend T::Sig
+
       attr_reader :processed_options, :hide_from_man_page
 
       def self.from_cmd_path(cmd_path)
@@ -94,6 +96,7 @@ module Homebrew
         ]
       end
 
+      sig { returns(T::Array[[String, String, String]]) }
       def self.global_options
         [
           ["-d", "--debug",   "Display any debugging information."],
@@ -103,6 +106,9 @@ module Homebrew
         ]
       end
 
+      # FIXME: Block should be `T.nilable(T.proc.bind(Parser).void)`.
+      # See https://github.com/sorbet/sorbet/issues/498.
+      sig { params(block: T.proc.bind(Parser).void).void.checked(:never) }
       def initialize(&block)
         @parser = OptionParser.new
 
@@ -331,6 +337,7 @@ module Homebrew
         end
       end
 
+      sig { void }
       def formula_options
         @formula_options = true
       end
@@ -367,6 +374,7 @@ module Homebrew
         end
       end
 
+      sig { void }
       def hide_from_man_page!
         @hide_from_man_page = true
       end
@@ -454,20 +462,24 @@ module Homebrew
       end
 
       def check_named_args(args)
-        min_exception = case @min_named_type
-        when :cask
-          Cask::CaskUnspecifiedError
-        when :formula
-          FormulaUnspecifiedError
-        when :formula_or_cask
-          FormulaOrCaskUnspecifiedError
-        when :keg
-          KegUnspecifiedError
-        else
-          MinNamedArgumentsError.new(@min_named_args)
+        exception = if @min_named_args && args.size < @min_named_args
+          case @min_named_type
+          when :cask
+            Cask::CaskUnspecifiedError
+          when :formula
+            FormulaUnspecifiedError
+          when :formula_or_cask
+            FormulaOrCaskUnspecifiedError
+          when :keg
+            KegUnspecifiedError
+          else
+            MinNamedArgumentsError.new(@min_named_args)
+          end
+        elsif @max_named_args && args.size > @max_named_args
+          MaxNamedArgumentsError.new(@max_named_args)
         end
-        raise min_exception if @min_named_args && args.size < @min_named_args
-        raise MaxNamedArgumentsError, @max_named_args if @max_named_args && args.size > @max_named_args
+
+        raise exception if exception
       end
 
       def process_option(*args)
@@ -535,6 +547,9 @@ module Homebrew
     end
 
     class MaxNamedArgumentsError < UsageError
+      extend T::Sig
+
+      sig { params(maximum: Integer).void }
       def initialize(maximum)
         super case maximum
         when 0
@@ -546,6 +561,9 @@ module Homebrew
     end
 
     class MinNamedArgumentsError < UsageError
+      extend T::Sig
+
+      sig { params(minimum: Integer).void }
       def initialize(minimum)
         super "This command requires at least #{minimum} named #{"argument".pluralize(minimum)}."
       end

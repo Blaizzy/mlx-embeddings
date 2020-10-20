@@ -70,58 +70,58 @@ Homebrew Cask provides a friendly CLI workflow for the administration of macOS a
 Commands:
 
 - `--cache`  
-  Display the file used to cache a *`cask`*
+  Display the file used to cache a *`cask`*.
 
 - `audit`  
-  Check *`cask`* for Homebrew coding style violations
+  Check *`cask`* for Homebrew coding style violations.
 
 - `cat`  
-  Dump raw source of a *`cask`* to the standard output
+  Dump raw source of a *`cask`* to the standard output.
 
 - `create`  
-  Creates the given *`cask`* and opens it in an editor
+  Creates the given *`cask`* and opens it in an editor.
 
 - `doctor`  
-  Checks for configuration issues
+  Checks for configuration issues.
 
 - `edit`  
-  Open the given *`cask`* for editing
+  Open the given *`cask`* for editing.
 
 - `fetch`  
-  Downloads remote application files to local cache
+  Downloads remote application files to local cache.
 
 - `help`  
-  Print help for `cask` commands
+  Print help for `cask` commands.
 
 - `home`  
-  Opens the homepage of the given *`cask`*
+  Opens the homepage of the given *`cask`*.
 
 - `info`  
-  Displays information about the given *`cask`*
+  Displays information about the given *`cask`*.
 
 - `install`  
-  Installs the given *`cask`*
+  Installs the given *`cask`*.
 
 - `list`  
-  Lists installed casks or the casks provided in the arguments
+  Lists installed casks or the casks provided in the arguments.
 
 - `outdated`  
-  List the outdated installed casks
+  List the outdated installed casks.
 
 - `reinstall`  
-  Reinstalls the given *`cask`*
+  Reinstalls the given *`cask`*.
 
 - `style`  
-  Checks style of the given *`cask`* using RuboCop
+  Checks style of the given *`cask`* using RuboCop.
 
 - `uninstall`  
-  Uninstalls the given *`cask`*
+  Uninstalls the given *`cask`*.
 
 - `upgrade`  
-  Upgrades all outdated casks or the specified casks
+  Upgrades all outdated casks or the specified casks.
 
 - `zap`  
-  Zaps all files associated with the given *`cask`*
+  Zaps all files associated with the given *`cask`*.
 
 See also: `man brew`
 
@@ -1279,6 +1279,8 @@ Run Homebrew's unit and integration tests.
 
 Check for typechecking errors using Sorbet.
 
+* `--fix`:
+  Automatically fix type errors.
 * `-q`, `--quiet`:
   Silence all non-critical errors.
 * `--update`:

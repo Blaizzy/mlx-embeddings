@@ -8,8 +8,11 @@ require "tmpdir"
 require "formula"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def pr_pull_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
@@ -418,6 +421,8 @@ module Homebrew
 end
 
 class GitHubArtifactDownloadStrategy < AbstractFileDownloadStrategy
+  extend T::Sig
+
   def fetch
     ohai "Downloading #{url}"
     if cached_location.exist?
@@ -441,6 +446,7 @@ class GitHubArtifactDownloadStrategy < AbstractFileDownloadStrategy
 
   private
 
+  sig { returns(String) }
   def resolved_basename
     "artifact.zip"
   end

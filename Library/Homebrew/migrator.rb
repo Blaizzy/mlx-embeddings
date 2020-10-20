@@ -9,6 +9,8 @@ require "tab"
 #
 # @api private
 class Migrator
+  extend T::Sig
+
   include Context
 
   # Error for when a migration is necessary.
@@ -155,6 +157,7 @@ class Migrator
     end
   end
 
+  sig { returns(T::Boolean) }
   def from_same_tap_user?
     formula_tap_user = formula.tap.user if formula.tap
     old_tap_user = nil

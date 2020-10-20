@@ -40,8 +40,11 @@ EOS
 MAXIMUM_STRING_MATCHES = 100
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def bottle_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS

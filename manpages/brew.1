@@ -70,109 +70,109 @@ Commands:
 \fB\-\-cache\fR
 .
 .br
-Display the file used to cache a \fIcask\fR
+Display the file used to cache a \fIcask\fR\.
 .
 .IP "\(bu" 4
 \fBaudit\fR
 .
 .br
-Check \fIcask\fR for Homebrew coding style violations
+Check \fIcask\fR for Homebrew coding style violations\.
 .
 .IP "\(bu" 4
 \fBcat\fR
 .
 .br
-Dump raw source of a \fIcask\fR to the standard output
+Dump raw source of a \fIcask\fR to the standard output\.
 .
 .IP "\(bu" 4
 \fBcreate\fR
 .
 .br
-Creates the given \fIcask\fR and opens it in an editor
+Creates the given \fIcask\fR and opens it in an editor\.
 .
 .IP "\(bu" 4
 \fBdoctor\fR
 .
 .br
-Checks for configuration issues
+Checks for configuration issues\.
 .
 .IP "\(bu" 4
 \fBedit\fR
 .
 .br
-Open the given \fIcask\fR for editing
+Open the given \fIcask\fR for editing\.
 .
 .IP "\(bu" 4
 \fBfetch\fR
 .
 .br
-Downloads remote application files to local cache
+Downloads remote application files to local cache\.
 .
 .IP "\(bu" 4
 \fBhelp\fR
 .
 .br
-Print help for \fBcask\fR commands
+Print help for \fBcask\fR commands\.
 .
 .IP "\(bu" 4
 \fBhome\fR
 .
 .br
-Opens the homepage of the given \fIcask\fR
+Opens the homepage of the given \fIcask\fR\.
 .
 .IP "\(bu" 4
 \fBinfo\fR
 .
 .br
-Displays information about the given \fIcask\fR
+Displays information about the given \fIcask\fR\.
 .
 .IP "\(bu" 4
 \fBinstall\fR
 .
 .br
-Installs the given \fIcask\fR
+Installs the given \fIcask\fR\.
 .
 .IP "\(bu" 4
 \fBlist\fR
 .
 .br
-Lists installed casks or the casks provided in the arguments
+Lists installed casks or the casks provided in the arguments\.
 .
 .IP "\(bu" 4
 \fBoutdated\fR
 .
 .br
-List the outdated installed casks
+List the outdated installed casks\.
 .
 .IP "\(bu" 4
 \fBreinstall\fR
 .
 .br
-Reinstalls the given \fIcask\fR
+Reinstalls the given \fIcask\fR\.
 .
 .IP "\(bu" 4
 \fBstyle\fR
 .
 .br
-Checks style of the given \fIcask\fR using RuboCop
+Checks style of the given \fIcask\fR using RuboCop\.
 .
 .IP "\(bu" 4
 \fBuninstall\fR
 .
 .br
-Uninstalls the given \fIcask\fR
+Uninstalls the given \fIcask\fR\.
 .
 .IP "\(bu" 4
 \fBupgrade\fR
 .
 .br
-Upgrades all outdated casks or the specified casks
+Upgrades all outdated casks or the specified casks\.
 .
 .IP "\(bu" 4
 \fBzap\fR
 .
 .br
-Zaps all files associated with the given \fIcask\fR
+Zaps all files associated with the given \fIcask\fR\.
 .
 .IP "" 0
 .
@@ -1775,6 +1775,10 @@ Randomise tests with the specified \fIvalue\fR instead of a random seed\.
 .
 .SS "\fBtypecheck\fR"
 Check for typechecking errors using Sorbet\.
+.
+.TP
+\fB\-\-fix\fR
+Automatically fix type errors\.
 .
 .TP
 \fB\-q\fR, \fB\-\-quiet\fR

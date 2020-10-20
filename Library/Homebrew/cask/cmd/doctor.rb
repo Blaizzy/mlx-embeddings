@@ -7,14 +7,19 @@ module Cask
     #
     # @api private
     class Doctor < AbstractCommand
+      extend T::Sig
+
+      sig { override.returns(T.nilable(Integer)) }
       def self.max_named
         0
       end
 
+      sig { returns(String) }
       def self.description
         "Checks for configuration issues."
       end
 
+      sig { void }
       def run
         require "diagnostic"
 

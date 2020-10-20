@@ -60,6 +60,8 @@ end
 #
 # @api private
 class EmbeddedPatch
+  extend T::Sig
+
   attr_writer :owner
   attr_reader :strip
 
@@ -67,6 +69,7 @@ class EmbeddedPatch
     @strip = strip
   end
 
+  sig { returns(T::Boolean) }
   def external?
     false
   end
@@ -79,6 +82,7 @@ class EmbeddedPatch
     Utils.safe_popen_write("patch", *args) { |p| p.write(data) }
   end
 
+  sig { returns(String) }
   def inspect
     "#<#{self.class.name}: #{strip.inspect}>"
   end
@@ -88,6 +92,8 @@ end
 #
 # @api private
 class DATAPatch < EmbeddedPatch
+  extend T::Sig
+
   attr_accessor :path
 
   def initialize(strip)
@@ -95,6 +101,7 @@ class DATAPatch < EmbeddedPatch
     @path = nil
   end
 
+  sig { returns(String) }
   def contents
     data = +""
     path.open("rb") do |f|
@@ -128,6 +135,8 @@ end
 #
 # @api private
 class ExternalPatch
+  extend T::Sig
+
   extend Forwardable
 
   attr_reader :resource, :strip
@@ -141,6 +150,7 @@ class ExternalPatch
     @resource = Resource::PatchResource.new(&block)
   end
 
+  sig { returns(T::Boolean) }
   def external?
     true
   end
@@ -181,6 +191,7 @@ class ExternalPatch
     raise BuildError.new(f, cmd, args, ENV.to_hash)
   end
 
+  sig { returns(String) }
   def inspect
     "#<#{self.class.name}: #{strip.inspect} #{url.inspect}>"
   end

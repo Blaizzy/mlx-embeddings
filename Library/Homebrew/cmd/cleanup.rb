@@ -5,8 +5,11 @@ require "cleanup"
 require "cli/parser"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def cleanup_args
     Homebrew::CLI::Parser.new do
       days = Homebrew::EnvConfig::ENVS[:HOMEBREW_CLEANUP_MAX_AGE_DAYS][:default]

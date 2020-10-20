@@ -4,10 +4,13 @@
 module UnpackStrategy
   # Strategy for unpacking Cabinet archives.
   class Cab
+    extend T::Sig
+
     include UnpackStrategy
 
     using Magic
 
+    sig { returns(T::Array[String]) }
     def self.extensions
       [".cab"]
     end
@@ -16,6 +19,7 @@ module UnpackStrategy
       path.magic_number.match?(/\AMSCF/n)
     end
 
+    sig { override.params(unpack_dir: Pathname, basename: Pathname, verbose: T::Boolean).returns(T.untyped) }
     def extract_to_dir(unpack_dir, basename:, verbose:)
       system_command! "cabextract",
                       args:    ["-d", unpack_dir, "--", path],

@@ -10,6 +10,8 @@ require "utils/shell"
 #
 # @api private
 module GitHub
+  extend T::Sig
+
   module_function
 
   API_URL = "https://api.github.com"
@@ -129,6 +131,7 @@ module GitHub
     end
   end
 
+  sig { returns(Symbol) }
   def api_credentials_type
     if Homebrew::EnvConfig.github_api_token
       :env_token

@@ -7,6 +7,8 @@ require "version/null"
 #
 # @api private
 class Version
+  extend T::Sig
+
   include Comparable
 
   def self.formula_optionally_versioned_regex(name, full: true)
@@ -15,6 +17,8 @@ class Version
 
   # A part of a {Version}.
   class Token
+    extend T::Sig
+
     include Comparable
 
     def self.create(val)
@@ -48,6 +52,7 @@ class Version
       @value = value
     end
 
+    sig { returns(String) }
     def inspect
       "#<#{self.class.name} #{value.inspect}>"
     end
@@ -69,6 +74,7 @@ class Version
     end
     alias to_str to_s
 
+    sig { returns(T::Boolean) }
     def numeric?
       false
     end
@@ -76,6 +82,8 @@ class Version
 
   # A pseudo-token representing the absence of a token.
   class NullToken < Token
+    extend T::Sig
+
     def initialize
       super(nil)
     end
@@ -95,10 +103,12 @@ class Version
       end
     end
 
+    sig { returns(T::Boolean) }
     def null?
       true
     end
 
+    sig { returns(String) }
     def inspect
       "#<#{self.class.name}>"
     end
@@ -133,6 +143,7 @@ class Version
   # A token consisting of only numbers.
   class NumericToken < Token
     PATTERN = /[0-9]+/i.freeze
+    extend T::Sig
 
     def initialize(value)
       super
@@ -153,6 +164,7 @@ class Version
       end
     end
 
+    sig { returns(T::Boolean) }
     def numeric?
       true
     end
@@ -588,6 +600,8 @@ end
 #
 # @api private
 class HeadVersion < Version
+  extend T::Sig
+
   attr_reader :commit
 
   def initialize(*)
@@ -604,6 +618,7 @@ class HeadVersion < Version
     end
   end
 
+  sig { returns(T::Boolean) }
   def head?
     true
   end

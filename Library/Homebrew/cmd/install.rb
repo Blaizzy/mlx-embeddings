@@ -14,10 +14,13 @@ require "cli/parser"
 require "upgrade"
 
 module Homebrew
+  extend T::Sig
+
   extend Search
 
   module_function
 
+  sig { returns(CLI::Parser) }
   def install_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS

@@ -114,6 +114,8 @@ module Language
 
     # Mixin module for {Formula} adding virtualenv support features.
     module Virtualenv
+      extend T::Sig
+
       def self.included(base)
         base.class_eval do
           resource "homebrew-virtualenv" do
@@ -215,6 +217,7 @@ module Language
         venv
       end
 
+      sig { returns(T::Array[String]) }
       def python_names
         %w[python python3 pypy pypy3] + Formula.names.select { |name| name.start_with? "python@" }
       end
