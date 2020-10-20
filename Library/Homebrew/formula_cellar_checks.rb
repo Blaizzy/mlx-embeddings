@@ -265,6 +265,18 @@ module FormulaCellarChecks
     EOS
   end
 
+  def check_python_symlinks(name, keg_only)
+    return unless keg_only
+    return unless name.start_with? "python"
+
+    return if %w[pip3 wheel3].none? do |l|
+      link = HOMEBREW_PREFIX/"bin"/l
+      link.exist? && File.realpath(link).start_with?(HOMEBREW_CELLAR/name)
+    end
+
+    "Python formulae that are keg-only should not create `pip3` and `wheel3` symlinks"
+  end
+
   def audit_installed
     @new_formula ||= false
 
@@ -282,6 +294,7 @@ module FormulaCellarChecks
     problem_if_output(check_python_packages(formula.lib, formula.deps))
     problem_if_output(check_shim_references(formula.prefix))
     problem_if_output(check_plist(formula.prefix, formula.plist))
+    problem_if_output(check_python_symlinks(formula.name, formula.keg_only?))
   end
   alias generic_audit_installed audit_installed
 
