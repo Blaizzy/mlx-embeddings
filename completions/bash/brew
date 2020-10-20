@@ -419,7 +419,7 @@ _brew_outdated() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--quiet --cask --json=v1 --fetch-HEAD"
+      __brewcomp "--quiet --verbose --formula --cask --json=v1 --fetch-HEAD --greedy"
       return
       ;;
   esac
