@@ -78,9 +78,14 @@ describe GitHub do
   end
 
   describe "::pull_request_commits", :needs_network do
-    it "gets the correct commits hashes for a pull request" do
-      hashes = %w[188606a4a9587365d930b02c98ad6857b1d00150 25a71fe1ea1558415d6496d23834dc70778ddee5]
+    hashes = %w[188606a4a9587365d930b02c98ad6857b1d00150 25a71fe1ea1558415d6496d23834dc70778ddee5]
+
+    it "gets commit hashes for a pull request" do
       expect(subject.pull_request_commits("Homebrew", "legacy-homebrew", 50678)).to eq(hashes)
+    end
+
+    it "gets commit hashes for a paginated pull request API response" do
+      expect(subject.pull_request_commits("Homebrew", "legacy-homebrew", 50678, per_page: 1)).to eq(hashes)
     end
   end
 end
