@@ -13,6 +13,8 @@ module GitHub
   module_function
 
   API_URL = "https://api.github.com"
+  API_MAX_PAGES = 50
+  API_MAX_ITEMS = 5000
 
   CREATE_GIST_SCOPES = ["gist"].freeze
   CREATE_ISSUE_FORK_OR_PR_SCOPES = ["public_repo"].freeze
@@ -759,7 +761,25 @@ module GitHub
     end
   end
 
-  def pull_request_commits(user, repo, pr)
-    open_api(url_to("repos", user, repo, "pulls", pr, "commits?per_page=100")).map { |c| c["sha"] }
+  def pull_request_commits(user, repo, pr, per_page: 100)
+    pr_data = open_api(url_to("repos", user, repo, "pulls", pr))
+    commits_api = pr_data["commits_url"]
+    commit_count = pr_data["commits"]
+    commits = []
+
+    if commit_count > API_MAX_ITEMS
+      raise Error, "Getting #{commit_count} commits would exceed limit of #{API_MAX_ITEMS} API items!"
+    end
+
+    (1..API_MAX_PAGES).each do |page|
+      result = open_api(commits_api + "?per_page=#{per_page}&page=#{page}")
+      commits.concat(result.map { |c| c["sha"] })
+
+      return commits if commits.length == commit_count
+
+      if result.empty? || page * per_page >= commit_count
+        raise Error, "Expected #{commit_count} commits but actually got #{commits.length}!"
+      end
+    end
   end
 end
