@@ -23,6 +23,8 @@ RSpec/RepeatedDescription:
   Enabled: false
 RSpec/RepeatedExampleGroupDescription:
   Enabled: false
+RSpec/StubbedMock:
+  Enabled: false
 
 # TODO: try to reduce these
 RSpec/ExampleLength:
