@@ -76,7 +76,23 @@ RSpec/ContextWording:
 RSpec/DescribeClass:
   Description: Check that the first argument to the top-level describe is a constant.
   Enabled: true
+  IgnoredMetadata:
+    type:
+    - channel
+    - controller
+    - helper
+    - job
+    - mailer
+    - model
+    - request
+    - routing
+    - view
+    - feature
+    - system
+    - mailbox
+    - aruba
   VersionAdded: '1.0'
+  VersionChanged: '1.44'
   StyleGuide: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/DescribeClass
 
 RSpec/DescribeMethod:
@@ -494,6 +510,12 @@ RSpec/RepeatedExampleGroupDescription:
   VersionAdded: '1.38'
   StyleGuide: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/RepeatedExampleGroupDescription
 
+RSpec/RepeatedIncludeExample:
+  Description: Check for repeated include of shared examples.
+  Enabled: true
+  VersionAdded: '1.44'
+  StyleGuide: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/RepeatedIncludeExample
+
 RSpec/ReturnFromStub:
   Description: Checks for consistent style of stub's return setting.
   Enabled: true
@@ -536,6 +558,12 @@ RSpec/SingleArgumentMessageChain:
   VersionAdded: '1.9'
   VersionChanged: '1.10'
   StyleGuide: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/SingleArgumentMessageChain
+
+RSpec/StubbedMock:
+  Description: Checks that message expectations do not have a configured response.
+  Enabled: pending
+  VersionAdded: '1.44'
+  StyleGuide: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/StubbedMock
 
 RSpec/SubjectStub:
   Description: Checks for stubbed test subjects.
