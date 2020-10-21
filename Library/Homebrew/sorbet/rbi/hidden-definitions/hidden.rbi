@@ -13629,6 +13629,11 @@ class PATH
   def each(*args, &block); end
 end
 
+class PATH
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 module ParallelTests
   RUBY_BINARY = ::T.let(nil, ::T.untyped)
   VERSION = ::T.let(nil, ::T.untyped)
@@ -26202,6 +26207,23 @@ end
 
 class UnpackStrategy::Zip
   include ::UnpackStrategy::Zip::MacOSZipExtension
+end
+
+module UnpackStrategy::Zip::MacOSZipExtension
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class UnpackStrategy::Zip
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module UnpackStrategy
+  extend ::T::Private::Abstract::Hooks
+  extend ::T::InterfaceWrapper::Helpers
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class User
