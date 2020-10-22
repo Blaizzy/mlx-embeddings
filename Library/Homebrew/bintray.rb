@@ -42,20 +42,38 @@ class Bintray
          secrets:      key)
   end
 
-  def upload(local_file, repo:, package:, version:, remote_file:, sha256: nil)
+  def upload(local_file, repo:, package:, version:, remote_file:, sha256: nil, warn_on_error: false)
+    unless File.exist? local_file
+      msg = "#{local_file} for upload doesn't exist!"
+      raise Error, msg unless warn_on_error
+
+      # Warn and return early here since we know this upload is going to fail.
+      opoo msg
+      return
+    end
+
     url = "#{API_URL}/content/#{@bintray_org}/#{repo}/#{package}/#{version}/#{remote_file}"
-    args = ["--fail", "--upload-file", local_file]
+    args = ["--upload-file", local_file]
     args += ["--header", "X-Checksum-Sha2: #{sha256}"] unless sha256.blank?
-    result = open_api url, *args
+    args << "--fail" unless warn_on_error
+    result = open_api(url, *args)
+
     json = JSON.parse(result.stdout)
-    raise "Bottle upload failed: #{json["message"]}" if json["message"] != "success"
+    if json["message"] != "success"
+      msg = "Bottle upload failed: #{json["message"]}"
+      raise msg unless warn_on_error
+
+      opoo msg
+    end
 
     result
   end
 
   def publish(repo:, package:, version:, file_count:, warn_on_error: false)
     url = "#{API_URL}/content/#{@bintray_org}/#{repo}/#{package}/#{version}/publish"
-    result = open_api url, "--request", "POST", "--fail"
+    upload_args = %w[--request POST]
+    upload_args << "--fail" unless warn_on_error
+    result = open_api(url, *upload_args)
     json = JSON.parse(result.stdout)
     if file_count.present? && json["files"] != file_count
       message = "Bottle publish failed: expected #{file_count} bottles, but published #{json["files"]} instead."
@@ -78,7 +96,7 @@ class Bintray
     status_code.start_with?("2")
   end
 
-  def mirror_formula(formula, repo: "mirror", publish_package: false)
+  def mirror_formula(formula, repo: "mirror", publish_package: false, warn_on_error: false)
     package = Utils::Bottles::Bintray.package formula.name
 
     create_package(repo: repo, package: package) unless package_exists?(repo: repo, package: package)
@@ -93,16 +111,17 @@ class Bintray
 
     upload(
       formula.downloader.cached_location,
-      repo:        repo,
-      package:     package,
-      version:     version,
-      sha256:      formula.stable.checksum,
-      remote_file: filename,
+      repo:          repo,
+      package:       package,
+      version:       version,
+      sha256:        formula.stable.checksum,
+      remote_file:   filename,
+      warn_on_error: warn_on_error,
     )
     return destination_url unless publish_package
 
     odebug "Publishing #{@bintray_org}/#{repo}/#{package}/#{version}"
-    publish(repo: repo, package: package, version: version, file_count: 1)
+    publish(repo: repo, package: package, version: version, file_count: 1, warn_on_error: warn_on_error)
 
     destination_url
   end
@@ -185,11 +204,12 @@ class Bintray
 
           odebug "Uploading #{@bintray_org}/#{bintray_repo}/#{bintray_package}/#{version}/#{filename}"
           upload(tag_hash["local_filename"],
-                 repo:        bintray_repo,
-                 package:     bintray_package,
-                 version:     version,
-                 remote_file: filename,
-                 sha256:      sha256)
+                 repo:          bintray_repo,
+                 package:       bintray_package,
+                 version:       version,
+                 remote_file:   filename,
+                 sha256:        sha256,
+                 warn_on_error: warn_on_error)
         when sha256
           # File exists, checksum matches.
           odebug "#{filename} is already published with matching hash."
