@@ -1139,7 +1139,7 @@ class FormulaInstaller
   end
 
   def forbidden_license_check
-    forbidden_licenses = Homebrew::EnvConfig.forbidden_licenses.dup
+    forbidden_licenses = Homebrew::EnvConfig.forbidden_licenses.to_s.dup
     SPDX::ALLOWED_LICENSE_SYMBOLS.each do |s|
       pattern = /#{s.to_s.tr("_", " ")}/i
       forbidden_licenses.sub!(pattern, s.to_s)
