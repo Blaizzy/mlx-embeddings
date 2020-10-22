@@ -54,7 +54,7 @@ avoid conflicts.
 ## Maintaining a tap
 
 A tap is just a Git repository so you don’t have to do anything specific when
-making modifications, apart from committing and pushing your changes.
+making modifications, apart from committing and pushing your changes.
 
 ### Updating
 
