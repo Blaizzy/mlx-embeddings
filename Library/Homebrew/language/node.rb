@@ -44,6 +44,9 @@ module Language
 
       pack = pack_for_installation
 
+      # npm 7 requires that these dirs exist before install
+      (libexec/"lib").mkpath
+
       # npm install args for global style module format installed into libexec
       args = %W[
         -ddd
