@@ -18,6 +18,12 @@ The public domain can be indicated using a symbol:
 license :public_domain
 ```
 
+If the license for a formula cannot be represented using an SPDX expression:
+
+```ruby
+license :cannot_represent
+```
+
 ## Complex SPDX License Expressions
 
 Some formulae have multiple licenses that need to be combined in different ways. In these cases, a more complex license expression can be used. These expressions are based on the [SPDX License Expression Guidelines](https://spdx.github.io/spdx-spec/appendix-IV-SPDX-license-expressions/).

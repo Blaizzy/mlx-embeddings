@@ -91,6 +91,10 @@ describe SPDX do
     it "returns :public_domain" do
       expect(described_class.parse_license_expression(:public_domain).first).to eq [:public_domain]
     end
+
+    it "returns :cannot_represent" do
+      expect(described_class.parse_license_expression(:cannot_represent).first).to eq [:cannot_represent]
+    end
   end
 
   describe ".valid_license?" do
@@ -113,6 +117,14 @@ describe SPDX do
     it "returns true for :public_domain" do
       expect(described_class.valid_license?(:public_domain)).to eq true
     end
+
+    it "returns true for :cannot_represent" do
+      expect(described_class.valid_license?(:cannot_represent)).to eq true
+    end
+
+    it "returns false for invalid symbol" do
+      expect(described_class.valid_license?(:invalid_symbol)).to eq false
+    end
   end
 
   describe ".deprecated_license?" do
@@ -130,6 +142,10 @@ describe SPDX do
 
     it "returns false for :public_domain" do
       expect(described_class.deprecated_license?(:public_domain)).to eq false
+    end
+
+    it "returns false for :cannot_represent" do
+      expect(described_class.deprecated_license?(:cannot_represent)).to eq false
     end
   end
 
@@ -187,9 +203,13 @@ describe SPDX do
     it "returns :public_domain" do
       expect(described_class.license_expression_to_string(:public_domain)).to eq "Public Domain"
     end
+
+    it "returns :cannot_represent" do
+      expect(described_class.license_expression_to_string(:cannot_represent)).to eq "Cannot Represent"
+    end
   end
 
-  describe ".license_version_info_info" do
+  describe ".license_version_info" do
     it "returns license without version" do
       expect(described_class.license_version_info("MIT")).to eq ["MIT"]
     end
