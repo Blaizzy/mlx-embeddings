@@ -39,6 +39,7 @@ module SharedAudits
     "gitless"          => "0.8.8",
     "home-assistant"   => :all,
     "infrakit"         => "0.5",
+    "nuclear"          => :all,
     "pock"             => :all,
     "riff"             => "0.5.0",
     "telegram-cli"     => "1.3.1",
