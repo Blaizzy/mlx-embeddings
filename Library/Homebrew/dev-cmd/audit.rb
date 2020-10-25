@@ -583,6 +583,7 @@ module Homebrew
       numpy@1.16
       openssl@1.1
       python@3.8
+      python@3.9
     ].freeze
 
     def audit_versioned_keg_only
