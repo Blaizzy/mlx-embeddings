@@ -64,7 +64,6 @@ Former maintainers with significant contributions include [Jan Viljanen](https:/
 
 ## Community
 - [Homebrew/discussions (forum)](https://github.com/homebrew/discussions/discussions)
-- [freenode.net\#machomebrew (IRC)](irc://irc.freenode.net/#machomebrew)
 - [@MacHomebrew (Twitter)](https://twitter.com/MacHomebrew)
 
 ## License
