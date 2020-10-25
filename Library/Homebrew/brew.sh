@@ -38,12 +38,13 @@ HOMEBREW_TEMP="${HOMEBREW_TEMP:-${HOMEBREW_DEFAULT_TEMP}}"
 # Don't need shellcheck to follow these `source`.
 # shellcheck disable=SC1090
 case "$*" in
-  --prefix)            echo "$HOMEBREW_PREFIX"; exit 0 ;;
-  --cellar)            echo "$HOMEBREW_CELLAR"; exit 0 ;;
-  --repository|--repo) echo "$HOMEBREW_REPOSITORY"; exit 0 ;;
-  --caskroom)          echo "$HOMEBREW_PREFIX/Caskroom"; exit 0 ;;
-  --cache)             echo "$HOMEBREW_CACHE"; exit 0 ;;
-  shellenv)            source "$HOMEBREW_LIBRARY/Homebrew/cmd/shellenv.sh"; homebrew-shellenv; exit 0 ;;
+  --prefix)             echo "$HOMEBREW_PREFIX"; exit 0 ;;
+  --cellar)             echo "$HOMEBREW_CELLAR"; exit 0 ;;
+  --repository|--repo)  echo "$HOMEBREW_REPOSITORY"; exit 0 ;;
+  --caskroom)           echo "$HOMEBREW_PREFIX/Caskroom"; exit 0 ;;
+  --cache)              echo "$HOMEBREW_CACHE"; exit 0 ;;
+  shellenv)             source "$HOMEBREW_LIBRARY/Homebrew/cmd/shellenv.sh"; homebrew-shellenv; exit 0 ;;
+  formulae|formulas)    source "$HOMEBREW_LIBRARY/Homebrew/cmd/formulae.sh"; homebrew-formulae; exit 0 ;;
 esac
 
 #####

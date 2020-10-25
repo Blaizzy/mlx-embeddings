@@ -54,7 +54,7 @@ __brew_formulae() {
   local -a list
   local comp_cachename=brew_formulae
   if ! _retrieve_cache $comp_cachename; then
-    list=( $(brew search) )
+    list=( $(brew formulae) )
     _store_cache $comp_cachename list
   fi
   _describe -t formulae 'all formulae' list
@@ -111,6 +111,7 @@ __brew_common_commands() {
     'edit:edit a formula'
     'fetch:download formula resources to the cache'
     'formula:the path for a formula'
+		'formulas:show a sorted list of installable formulas'
     'gist-logs:generate a gist of the full build logs'
     'home:visit the homepage of a formula or the brew project'
     'info:information about a formula'
