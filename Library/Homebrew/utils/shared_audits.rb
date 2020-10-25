@@ -38,7 +38,6 @@ module SharedAudits
     "freetube"         => :all,
     "gitless"          => "0.8.8",
     "home-assistant"   => :all,
-    "infrakit"         => "0.5",
     "nuclear"          => :all,
     "pock"             => :all,
     "riff"             => "0.5.0",
