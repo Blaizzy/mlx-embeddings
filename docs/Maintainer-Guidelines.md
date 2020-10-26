@@ -159,7 +159,7 @@ Any maintainer can revert a PR created by another maintainer after a user submit
 
 ### Give time for other maintainers to review
 
-PRs that are an "enhancement" to existing functionality i.e. not a fix to an open user issue/discussion, not a version bump, not a security fix, not a fix for CI failure, a usability improvement, a new feature etc. should wait 24h Monday - Friday before being merged. For example,
+PRs that are an "enhancement" to existing functionality i.e. not a fix to an open user issue/discussion, not a version bump, not a security fix, not a fix for CI failure, a usability improvement, a new feature, refactoring etc. should wait 24h Monday - Friday before being merged. For example,
 
 - a new feature PR submitted at 5pm on Thursday should wait until 5pm on Friday before it is merged
 - a usability fix PR submitted at 5pm on Friday should wait until 5pm on Monday before it is merged
