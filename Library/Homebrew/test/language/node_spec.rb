@@ -25,7 +25,7 @@ describe Language::Node do
   end
 
   describe "#std_npm_install_args" do
-    npm_install_arg = "libexec"
+    npm_install_arg = Pathname("libexec")
     npm_pack_cmd = "npm pack --ignore-scripts"
 
     it "raises error with non zero exitstatus" do
