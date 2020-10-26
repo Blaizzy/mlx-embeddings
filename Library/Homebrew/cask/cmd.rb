@@ -69,6 +69,7 @@ module Cask
 
       command_lines = Cmd.command_classes
                          .select(&:visible?)
+                         .reject { |command| DEPRECATED_COMMANDS.key?(command) }
                          .map do |klass|
         "  - #{"`#{klass.command_name}`".ljust(max_command_length + 2)}  #{klass.short_description}\n"
       end
