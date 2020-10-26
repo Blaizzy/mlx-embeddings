@@ -304,12 +304,6 @@ module Homebrew
       return
     end
 
-    ofail e.message
-    if (reason = MissingFormula.reason(e.name))
-      $stderr.puts reason
-      return
-    end
-
     ohai "Searching for similarly named formulae..."
     formulae_search_results = search_formulae(e.name)
     case formulae_search_results.length
@@ -325,10 +319,15 @@ module Homebrew
       puts "To install one of them, run (for example):\n  brew install #{formulae_search_results.first}"
     end
 
+    ofail e.message
+    if (reason = MissingFormula.reason(e.name))
+      $stderr.puts reason
+      return
+    end
+
     # Do not search taps if the formula name is qualified
     return if e.name.include?("/")
 
-    ohai "Searching taps..."
     taps_search_results = search_taps(e.name)[:formulae]
     case taps_search_results.length
     when 0
