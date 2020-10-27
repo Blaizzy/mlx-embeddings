@@ -186,6 +186,9 @@ module Homebrew
 
       upgrade_formulae(upgradeable_dependents, args: args)
 
+      # Refresh installed formulae after upgrading
+      installed_formulae = FormulaInstaller.installed.to_a
+
       # Assess the dependents tree again now we've upgraded.
       oh1 "Checking for dependents of upgraded formulae..." unless args.dry_run?
       broken_dependents = check_broken_dependents(installed_formulae)
