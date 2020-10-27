@@ -17,9 +17,9 @@ module OS
       # CI systems have been updated.
       # This may be a beta version for a beta macOS.
       def latest_version
-        latest_stable = "12.0.1"
+        latest_stable = "12.1"
         case MacOS.version
-        when "11.0"  then "12.0.1"
+        when "11.0"  then "12.1"
         when "10.15" then latest_stable
         when "10.14" then "11.3.1"
         when "10.13" then "10.1"
@@ -264,9 +264,9 @@ module OS
       # and our CI systems have been updated.
       def latest_clang_version
         case MacOS.version
-        when "11.0" then "1200.0.32.2"
-        when "10.15" then "1200.0.32.2"
-        when "10.14" then "1001.0.46.4"
+        when "11.0" then "1200.0.32.21"
+        when "10.15" then "1200.0.32.21"
+        when "10.14" then "1100.0.33.17"
         when "10.13" then "1000.10.44.2"
         when "10.12" then "900.0.39.2"
         when "10.11" then "800.0.42.1"
