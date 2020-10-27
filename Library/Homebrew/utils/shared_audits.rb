@@ -41,6 +41,7 @@ module SharedAudits
     "nuclear"          => :all,
     "pock"             => :all,
     "riff"             => "0.5.0",
+    "syntax-highlight" => :all,
     "telegram-cli"     => "1.3.1",
     "toggl-track"      => :all,
     "volta"            => "0.8.6",
