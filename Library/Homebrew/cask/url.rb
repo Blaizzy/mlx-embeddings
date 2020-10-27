@@ -10,7 +10,7 @@ class URL
   attr_reader :uri, :specs,
               :using,
               :tag, :branch, :revisions, :revision,
-              :trust_cert, :cookies, :referer, :user_agent,
+              :trust_cert, :cookies, :referer, :header, :user_agent,
               :data
 
   extend Forwardable
@@ -27,6 +27,7 @@ class URL
       trust_cert: T.nilable(T::Boolean),
       cookies:    T.nilable(T::Hash[String, String]),
       referer:    T.nilable(T.any(URI::Generic, String)),
+      header:     T.nilable(String),
       user_agent: T.nilable(T.any(Symbol, String)),
       data:       T.nilable(T::Hash[String, String]),
     ).returns(T.untyped)
@@ -41,6 +42,7 @@ class URL
     trust_cert: nil,
     cookies: nil,
     referer: nil,
+    header: nil,
     user_agent: nil,
     data: nil
   )
@@ -55,6 +57,7 @@ class URL
     specs[:trust_cert] = @trust_cert = trust_cert
     specs[:cookies]    = @cookies    = cookies
     specs[:referer]    = @referer    = referer
+    specs[:header]     = @header     = header
     specs[:user_agent] = @user_agent = user_agent || :default
     specs[:data]       = @data       = data
 
