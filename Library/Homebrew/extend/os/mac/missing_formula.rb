@@ -8,7 +8,10 @@ require "cask/caskroom"
 
 module Homebrew
   module MissingFormula
+    extend T::Sig
     class << self
+      extend T::Sig
+      sig { params(name: String).returns(T.nilable(String)) }
       def disallowed_reason(name)
         case name.downcase
         when "xcode"
@@ -33,12 +36,14 @@ module Homebrew
         end
       end
 
+      sig { params(name: String, silent: T::Boolean, show_info: T::Boolean).returns(T.nilable(String)) }
       def cask_reason(name, silent: false, show_info: false)
         return if silent
 
         suggest_command(name, show_info ? "info" : "install")
       end
 
+      sig { params(name: String, command: String).returns(T.nilable(String)) }
       def suggest_command(name, command)
         suggestion = <<~EOS
           Found a cask named "#{name}" instead. Try
