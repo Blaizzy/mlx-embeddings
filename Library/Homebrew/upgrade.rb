@@ -128,6 +128,7 @@ module Homebrew
                           .select do |f|
           keg = f.any_installed_keg
           next unless keg
+          next unless keg.directory?
 
           LinkageChecker.new(keg, cache_db: db)
                         .broken_library_linkage?
@@ -186,7 +187,7 @@ module Homebrew
 
       upgrade_formulae(upgradeable_dependents, args: args)
 
-      # Refresh installed formulae after upgrading
+      # Update installed formulae after upgrading
       installed_formulae = FormulaInstaller.installed.to_a
 
       # Assess the dependents tree again now we've upgraded.
