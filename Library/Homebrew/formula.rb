@@ -1477,21 +1477,10 @@ class Formula
     end
   end
 
-  # Clear cache of .racks
-  def self.clear_racks_cache
-    @racks = nil
-  end
-
-  # Clear caches of .racks and .installed.
-  def self.clear_installed_formulae_cache
-    clear_racks_cache
-    @installed = nil
-  end
-
   # An array of all racks currently installed.
   # @private
   def self.racks
-    @racks ||= if HOMEBREW_CELLAR.directory?
+    Formula.cache[:racks] ||= if HOMEBREW_CELLAR.directory?
       HOMEBREW_CELLAR.subdirs.reject do |rack|
         rack.symlink? || rack.basename.to_s.start_with?(".") || rack.subdirs.empty?
       end
@@ -1503,7 +1492,7 @@ class Formula
   # An array of all installed {Formula}
   # @private
   def self.installed
-    @installed ||= racks.flat_map do |rack|
+    Formula.cache[:installed] ||= racks.flat_map do |rack|
       Formulary.from_rack(rack)
     rescue
       []

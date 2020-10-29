@@ -854,10 +854,11 @@ class FormulaInstaller
   end
 
   def link(keg)
+    Formula.clear_cache
+
     unless link_keg
       begin
         keg.optlink(verbose: verbose?)
-        Formula.clear_cache
       rescue Keg::LinkError => e
         onoe "Failed to create #{formula.opt_prefix}"
         puts "Things that depend on #{formula.full_name} will probably not build."

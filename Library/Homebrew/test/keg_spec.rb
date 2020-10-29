@@ -36,7 +36,6 @@ describe Keg do
   end
 
   specify "::all" do
-    Formula.clear_racks_cache
     expect(described_class.all).to eq([keg])
   end
 
