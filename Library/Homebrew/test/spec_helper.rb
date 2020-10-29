@@ -189,20 +189,15 @@ RSpec.configure do |config|
       end
 
       begin
-        timeout = example.metadata.fetch(:timeout, 120)
-        inner_timeout = nil
+        timeout = example.metadata.fetch(:timeout, 60)
         Timeout.timeout(timeout) do
           example.run
-        rescue Timeout::Error => e
-          inner_timeout = e
         end
-      rescue Timeout::Error
-        raise "Example exceeded maximum runtime of #{timeout} seconds."
+      rescue Timeout::Error => e
+        example.example.set_exception(e)
       end
-
-      raise inner_timeout if inner_timeout
     rescue SystemExit => e
-      raise "Unexpected exit with status #{e.status}."
+      example.example.set_exception(e)
     ensure
       ENV.replace(@__env)
 
