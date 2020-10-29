@@ -17,6 +17,7 @@ module Homebrew
       EOS
 
       named 2
+      hide_from_man_page!
     end
   end
 
@@ -27,6 +28,8 @@ module Homebrew
     rack = Formulary.to_rack(name)
 
     odie "#{name} not found in the Cellar." unless rack.directory?
+
+    # odeprecated "`brew switch`", "`brew link` @-versioned formulae"
 
     versions = rack.subdirs
                    .map { |d| Keg.new(d).version }
