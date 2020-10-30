@@ -3,7 +3,6 @@
 
 require "ostruct"
 require "cli/parser"
-require "unlink"
 
 module Homebrew
   module_function
@@ -37,7 +36,11 @@ module Homebrew
         next
       end
 
-      Unlink.unlink(keg, dry_run: args.dry_run?, verbose: args.verbose?)
+      keg.lock do
+        print "Unlinking #{keg}... "
+        puts if args.verbose?
+        puts "#{keg.unlink(**options)} symlinks removed"
+      end
     end
   end
 end

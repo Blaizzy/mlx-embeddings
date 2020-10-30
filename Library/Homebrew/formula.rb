@@ -414,12 +414,12 @@ class Formula
     name.include?("@")
   end
 
-  # Returns any `@`-versioned formulae for any formula (including versioned formulae).
+  # Returns any `@`-versioned formulae for an non-`@`-versioned formula.
   def versioned_formulae
-    Pathname.glob(path.to_s.gsub(/(@[\d.]+)?\.rb$/, "@*.rb")).map do |versioned_path|
-      next if versioned_path == path
+    return [] if versioned_formula?
 
-      Formula[versioned_path.basename(".rb").to_s]
+    Pathname.glob(path.to_s.gsub(/\.rb$/, "@*.rb")).map do |path|
+      Formula[path.basename(".rb").to_s]
     rescue FormulaUnavailableError
       nil
     end.compact.sort_by(&:version).reverse

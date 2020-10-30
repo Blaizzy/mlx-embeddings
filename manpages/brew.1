@@ -773,6 +773,9 @@ Print export statements\. When run in a shell, this installation of Homebrew wil
 .P
 The variables \fBHOMEBREW_PREFIX\fR, \fBHOMEBREW_CELLAR\fR and \fBHOMEBREW_REPOSITORY\fR are also exported to avoid querying them multiple times\. Consider adding evaluation of this command\'s output to your dotfiles (e\.g\. \fB~/\.profile\fR, \fB~/\.bash_profile\fR, or \fB~/\.zprofile\fR) with: \fBeval $(brew shellenv)\fR
 .
+.SS "\fBswitch\fR \fIformula\fR \fIversion\fR"
+Symlink all of the specified \fIversion\fR of \fIformula\fR\'s installation into Homebrew\'s prefix\.
+.
 .SS "\fBtap\fR [\fIoptions\fR] [\fIuser\fR\fB/\fR\fIrepo\fR] [\fIURL\fR]"
 Tap a formula repository\.
 .
