@@ -335,7 +335,6 @@ class Keg
     EOS
   end
 
-  # TODO: refactor to use keyword arguments.
   def unlink(**options)
     ObserverPathnameExtension.reset_counts!
 
@@ -449,7 +448,6 @@ class Keg
     end
   end
 
-  # TODO: refactor to use keyword arguments.
   def link(**options)
     raise AlreadyLinkedError, self if linked_keg_record.directory?
 
