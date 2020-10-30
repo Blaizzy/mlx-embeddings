@@ -537,10 +537,6 @@ Print export statements. When run in a shell, this installation of Homebrew will
 The variables `HOMEBREW_PREFIX`, `HOMEBREW_CELLAR` and `HOMEBREW_REPOSITORY` are also exported to avoid querying them multiple times.
 Consider adding evaluation of this command's output to your dotfiles (e.g. `~/.profile`, `~/.bash_profile`, or `~/.zprofile`) with: `eval $(brew shellenv)`
 
-### `switch` *`formula`* *`version`*
-
-Symlink all of the specified *`version`* of *`formula`*'s installation into Homebrew's prefix.
-
 ### `tap` [*`options`*] [*`user`*`/`*`repo`*] [*`URL`*]
 
 Tap a formula repository.
