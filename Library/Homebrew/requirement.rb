@@ -122,7 +122,7 @@ class Requirement
   end
 
   def inspect
-    "#<#{self.class.name}: #{name.inspect} #{tags.inspect}>"
+    "#<#{self.class.name}: #{tags.inspect}>"
   end
 
   def display_s

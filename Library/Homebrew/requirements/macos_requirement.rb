@@ -67,7 +67,7 @@ class MacOSRequirement < Requirement
   end
 
   def inspect
-    "#<#{self.class.name}: #{tags.inspect} version#{@comparator}#{@version}>"
+    "#<#{self.class.name}: version#{@comparator}#{@version.to_s.inspect} #{tags.inspect}>"
   end
 
   def display_s

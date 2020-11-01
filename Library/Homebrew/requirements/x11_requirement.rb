@@ -48,10 +48,6 @@ class X11Requirement < Requirement
 
     0
   end
-
-  def inspect
-    "#<#{self.class.name}: #{tags.inspect}>"
-  end
 end
 
 require "extend/os/requirements/x11_requirement"

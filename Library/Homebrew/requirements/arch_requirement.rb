@@ -27,6 +27,10 @@ class ArchRequirement < Requirement
     "This formula requires an #{@arch} architecture."
   end
 
+  def inspect
+    "#<#{self.class.name}: arch=#{@arch.to_s.inspect} #{tags.inspect}>"
+  end
+
   def display_s
     "#{@arch} architecture"
   end

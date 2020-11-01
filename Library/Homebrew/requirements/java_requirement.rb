@@ -45,7 +45,7 @@ class JavaRequirement < Requirement
   end
 
   def inspect
-    "#<#{self.class.name}: #{tags.inspect} version=#{@version.inspect}>"
+    "#<#{self.class.name}: version=#{@version.inspect} #{tags.inspect}>"
   end
 
   def display_s
