@@ -434,6 +434,7 @@ module Homebrew
     VERSIONED_DEPENDENCIES_CONFLICTS_ALLOWLIST = %w[
       agda
       anjuta
+      fdroidserver
       gradio
       predictionio
       sqoop
