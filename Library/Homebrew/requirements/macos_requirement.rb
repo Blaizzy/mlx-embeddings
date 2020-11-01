@@ -71,7 +71,7 @@ class MacOSRequirement < Requirement
   end
 
   def display_s
-    return "macOS is required" unless version_specified?
+    return "macOS" unless version_specified?
 
     "macOS #{@comparator} #{@version}"
   end

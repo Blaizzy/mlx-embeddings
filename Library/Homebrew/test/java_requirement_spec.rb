@@ -23,19 +23,19 @@ describe JavaRequirement do
 
   describe "#display_s" do
     context "without specific version" do
-      its(:display_s) { is_expected.to eq("java") }
+      its(:display_s) { is_expected.to eq("Java") }
     end
 
     context "with version 1.8" do
       subject { described_class.new(%w[1.8]) }
 
-      its(:display_s) { is_expected.to eq("java = 1.8") }
+      its(:display_s) { is_expected.to eq("Java = 1.8") }
     end
 
     context "with version 1.8+" do
       subject { described_class.new(%w[1.8+]) }
 
-      its(:display_s) { is_expected.to eq("java >= 1.8") }
+      its(:display_s) { is_expected.to eq("Java >= 1.8") }
     end
   end
 

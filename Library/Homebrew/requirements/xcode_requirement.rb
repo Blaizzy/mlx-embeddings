@@ -48,6 +48,12 @@ class XcodeRequirement < Requirement
   def inspect
     "#<#{self.class.name}: #{tags.inspect} version=#{@version.inspect}>"
   end
+
+  def display_s
+    return name.capitalize unless @version
+
+    "#{name.capitalize} >= #{@version}"
+  end
 end
 
 require "extend/os/requirements/xcode_requirement"

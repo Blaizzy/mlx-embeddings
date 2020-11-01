@@ -55,9 +55,9 @@ class JavaRequirement < Requirement
       else
         ">="
       end
-      "#{name} #{op} #{version_without_plus}"
+      "#{name.capitalize} #{op} #{version_without_plus}"
     else
-      name
+      name.capitalize
     end
   end
 

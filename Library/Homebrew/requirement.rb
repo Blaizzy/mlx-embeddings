@@ -126,7 +126,7 @@ class Requirement
   end
 
   def display_s
-    name
+    name.capitalize
   end
 
   def mktemp(&block)
