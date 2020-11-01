@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require "formula"
-require "tab"
 require "cli/parser"
 
 module Homebrew
@@ -23,9 +22,7 @@ module Homebrew
   def leaves
     leaves_args.parse
 
-    installed = Formula.installed.sort
-    deps_of_installed = installed.flat_map(&:runtime_formula_dependencies)
-    leaves = installed.map(&:full_name) - deps_of_installed.map(&:full_name)
+    leaves = Formula.installed_non_deps.map(&:full_name).sort
     leaves.each(&method(:puts))
   end
 end

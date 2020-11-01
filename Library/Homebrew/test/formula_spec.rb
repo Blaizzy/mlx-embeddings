@@ -440,6 +440,80 @@ describe Formula do
     end
   end
 
+  describe "::installed_deps" do
+    let(:formula_is_dep) do
+      formula "foo" do
+        url "foo-1.1"
+      end
+    end
+
+    let(:formula_with_deps) do
+      formula "bar" do
+        url "bar-1.0"
+      end
+    end
+
+    let(:formulae) do
+      [
+        formula_with_deps,
+        formula_is_dep
+      ]
+    end    
+
+    before do
+      allow(formula_with_deps).to receive(:runtime_formula_dependencies).and_return([ formula_is_dep ])
+    end
+
+    specify "without formulae parameter" do
+      allow(described_class).to receive(:installed).and_return(formulae)
+
+      expect(described_class.installed_deps)
+          .to eq([formula_is_dep])
+    end
+
+    specify "with formulae parameter" do
+      expect(described_class.installed_deps(formulae))
+          .to eq([formula_is_dep])
+    end
+  end
+
+  describe "::installed_non_deps" do
+    let(:formula_is_dep) do
+      formula "foo" do
+        url "foo-1.1"
+      end
+    end
+
+    let(:formula_with_deps) do
+      formula "bar" do
+        url "bar-1.0"
+      end
+    end
+
+    let(:formulae) do
+      [
+        formula_with_deps,
+        formula_is_dep
+      ]
+    end
+
+    before do
+      allow(formula_with_deps).to receive(:runtime_formula_dependencies).and_return([ formula_is_dep ])
+    end
+
+    specify "without formulae parameter" do
+      allow(described_class).to receive(:installed).and_return(formulae)
+
+      expect(described_class.installed_non_deps)
+          .to eq([formula_with_deps])
+    end
+
+    specify "with formulae parameter" do
+      expect(described_class.installed_non_deps(formulae))
+          .to eq([formula_with_deps])
+    end
+  end
+
   describe "::installed_with_alias_path" do
     specify "with alias path with nil" do
       expect(described_class.installed_with_alias_path(nil)).to be_empty
