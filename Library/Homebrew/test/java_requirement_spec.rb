@@ -12,7 +12,7 @@ describe JavaRequirement do
   end
 
   describe "#message" do
-    its(:message) { is_expected.to match(/Java is required to install this formula./) }
+    its(:message) { is_expected.to match(/Java is required for this software./) }
   end
 
   describe "#inspect" do

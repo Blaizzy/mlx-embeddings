@@ -10,6 +10,6 @@ class LinuxRequirement < Requirement
   satisfy(build_env: false) { OS.linux? }
 
   def message
-    "Linux is required."
+    "Linux is required for this software."
   end
 end

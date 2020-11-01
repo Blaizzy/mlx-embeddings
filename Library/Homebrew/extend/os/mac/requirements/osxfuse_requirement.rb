@@ -21,4 +21,8 @@ class OsxfuseRequirement < Requirement
       ENV.append_path "HOMEBREW_INCLUDE_PATHS", "/usr/local/include/osxfuse"
     end
   end
+
+  def message
+    "FUSE for macOS is required for this software. #{super}"
+  end
 end

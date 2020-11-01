@@ -24,7 +24,7 @@ class ArchRequirement < Requirement
   end
 
   def message
-    "This formula requires an #{@arch} architecture."
+    "The #{@arch} architecture is required for this software."
   end
 
   def inspect

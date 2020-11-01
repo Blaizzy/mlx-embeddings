@@ -48,7 +48,7 @@ class Requirement
     if download
       s += <<~EOS
         You can download from:
-          #{download}
+          #{Formatter.url(download)}
       EOS
     end
     s

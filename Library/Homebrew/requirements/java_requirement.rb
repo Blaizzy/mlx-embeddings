@@ -39,7 +39,7 @@ class JavaRequirement < Requirement
 
   def message
     version_string = " #{@version}" if @version
-    s = "Java#{version_string} is required to install this formula.\n"
+    s = "Java#{version_string} is required for this software.\n"
     s += suggestion
     s
   end
