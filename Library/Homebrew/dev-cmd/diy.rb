@@ -56,6 +56,8 @@ module Homebrew
   def detect_name(path, version)
     basename = path.basename.to_s
     detected_name = basename[/(.*?)-?#{Regexp.escape(version)}/, 1] || basename
+    detected_name.downcase!
+
     canonical_name = Formulary.canonical_name(detected_name)
 
     odie <<~EOS if detected_name != canonical_name
