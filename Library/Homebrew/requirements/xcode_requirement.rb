@@ -46,7 +46,13 @@ class XcodeRequirement < Requirement
   end
 
   def inspect
-    "#<#{self.class.name}: #{tags.inspect} version=#{@version.inspect}>"
+    "#<#{self.class.name}: version>=#{@version.inspect} #{tags.inspect}>"
+  end
+
+  def display_s
+    return name.capitalize unless @version
+
+    "#{name.capitalize} >= #{@version}"
   end
 end
 

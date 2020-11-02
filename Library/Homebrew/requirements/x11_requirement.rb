@@ -39,7 +39,7 @@ class X11Requirement < Requirement
   end
 
   def message
-    "X11 is required to install this formula, either Xorg #{min_version} or " \
+    "X11 is required for this software, either Xorg #{min_version} or " \
     "xdpyinfo #{min_xdpyinfo_version}, or newer. #{super}"
   end
 
@@ -47,10 +47,6 @@ class X11Requirement < Requirement
     return unless other.is_a? X11Requirement
 
     0
-  end
-
-  def inspect
-    "#<#{self.class.name}: #{tags.inspect}>"
   end
 end
 

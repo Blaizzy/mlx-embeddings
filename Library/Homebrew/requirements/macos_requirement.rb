@@ -41,11 +41,11 @@ class MacOSRequirement < Requirement
   end
 
   def message(type: :formula)
-    return "macOS is required." unless version_specified?
+    return "macOS is required for this software." unless version_specified?
 
     case @comparator
     when ">="
-      "macOS #{@version.pretty_name} or newer is required."
+      "macOS #{@version.pretty_name} or newer is required for this software."
     when "<="
       case type
       when :formula
@@ -59,19 +59,19 @@ class MacOSRequirement < Requirement
     else
       if @version.respond_to?(:to_ary)
         *versions, last = @version.map(&:pretty_name)
-        return "macOS #{versions.join(", ")} or #{last} is required."
+        return "macOS #{versions.join(", ")} or #{last} is required for this software."
       end
 
-      "macOS #{@version.pretty_name} is required."
+      "macOS #{@version.pretty_name} is required for this software."
     end
   end
 
   def inspect
-    "#<#{self.class.name}: #{tags.inspect} version#{@comparator}#{@version}>"
+    "#<#{self.class.name}: version#{@comparator}#{@version.to_s.inspect} #{tags.inspect}>"
   end
 
   def display_s
-    return "macOS is required" unless version_specified?
+    return "macOS" unless version_specified?
 
     "macOS #{@comparator} #{@version}"
   end

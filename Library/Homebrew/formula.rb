@@ -1772,7 +1772,7 @@ class Formula
         "name"     => req.name,
         "cask"     => req.cask,
         "download" => req.download,
-        "version"  => req.try(:version),
+        "version"  => req.try(:version) || req.try(:arch),
         "contexts" => req.tags,
       }
     end

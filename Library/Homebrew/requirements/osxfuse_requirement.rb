@@ -7,8 +7,14 @@ require "requirement"
 #
 # @api private
 class OsxfuseRequirement < Requirement
+  extend T::Sig
   cask "osxfuse"
   fatal true
+
+  sig { returns(String) }
+  def display_s
+    "FUSE"
+  end
 end
 
 require "extend/os/requirements/osxfuse_requirement"
