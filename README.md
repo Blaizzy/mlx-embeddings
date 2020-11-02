@@ -75,14 +75,13 @@ Our macOS continuous integration infrastructure is hosted by [MacStadium's Orka]
 
 [![Powered by MacStadium](https://cloud.githubusercontent.com/assets/125011/22776032/097557ac-eea6-11e6-8ba8-eff22dfd58f1.png)](https://www.macstadium.com)
 
-
 Our bottles (binary packages) are hosted by [Bintray](https://bintray.com/homebrew).
 
 [![Downloads by Bintray](https://bintray.com/docs/images/downloads_by_bintray_96.png)](https://bintray.com/homebrew)
 
-Secure password storage and syncing is provided by [1Password for Teams](https://1password.com/teams/) by [AgileBits](https://agilebits.com).
+Secure password storage and syncing is provided by [1Password for Teams](https://1password.com/teams/).
 
-[![AgileBits](https://da36klfizjv29.cloudfront.net/assets/branding/agilebits-fcca96e9b8e815c5c48c6b3e98156cb5.png)](https://agilebits.com)
+[![1Password](https://1password.com/img/press/logo.e5bf08b08157e08a1b9112fcd58a54b6.svg)](https://1password.com)
 
 Homebrew is a member of the [Software Freedom Conservancy](https://sfconservancy.org).
 
