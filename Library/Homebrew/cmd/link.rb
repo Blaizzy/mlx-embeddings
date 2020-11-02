@@ -4,6 +4,7 @@
 require "ostruct"
 require "caveats"
 require "cli/parser"
+require "unlink"
 
 module Homebrew
   module_function
@@ -66,25 +67,26 @@ module Homebrew
         next
       end
 
+      formula = keg.to_formula
+
       if keg_only
-        if Homebrew.default_prefix?
-          f = keg.to_formula
-          if f.keg_only_reason.by_macos?
-            caveats = Caveats.new(f)
-            opoo <<~EOS
-              Refusing to link macOS provided/shadowed software: #{keg.name}
-              #{caveats.keg_only_text(skip_reason: true).strip}
-            EOS
-            next
-          end
+        if Homebrew.default_prefix? && formula.keg_only_reason.by_macos?
+          caveats = Caveats.new(formula)
+          opoo <<~EOS
+            Refusing to link macOS provided/shadowed software: #{keg.name}
+            #{caveats.keg_only_text(skip_reason: true).strip}
+          EOS
+          next
         end
 
-        unless args.force?
+        if !formula.keg_only_reason.versioned_formula? && !args.force?
           opoo "#{keg.name} is keg-only and must be linked with --force"
           puts_keg_only_path_message(keg)
           next
         end
       end
+
+      Unlink.unlink_versioned_formulae(formula, verbose: args.verbose?)
 
       keg.lock do
         print "Linking #{keg}... "
