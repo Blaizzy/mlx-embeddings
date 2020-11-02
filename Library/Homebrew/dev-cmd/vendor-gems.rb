@@ -35,10 +35,8 @@ module Homebrew
       ohai "git add vendor/bundle"
       system "git", "add", "vendor/bundle"
 
-      if Formula["gpg"].optlinked?
-        ENV["PATH"] = PATH.new(ENV["PATH"])
-                          .prepend(Formula["gpg"].opt_bin)
-      end
+      Utils::Git.set_name_email!
+      Utils::Git.setup_gpg!
 
       ohai "git commit"
       system "git", "commit", "--message", "brew vendor-gems: commit updates."

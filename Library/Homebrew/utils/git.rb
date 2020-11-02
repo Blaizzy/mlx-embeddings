@@ -126,6 +126,13 @@ module Utils
       ENV["GIT_COMMITTER_EMAIL"] = Homebrew::EnvConfig.git_email if committer
     end
 
+    def setup_gpg!
+      return unless Formula["gnupg"].optlinked?
+
+      ENV["PATH"] = PATH.new(ENV["PATH"])
+                        .prepend(Formula["gnupg"].opt_bin)
+    end
+
     def origin_branch(repo)
       Utils.popen_read(git, "-C", repo, "symbolic-ref", "-q", "--short",
                        "refs/remotes/origin/HEAD").chomp.presence

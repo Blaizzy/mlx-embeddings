@@ -549,6 +549,7 @@ module Homebrew
 
         unless args.no_commit?
           Utils::Git.set_name_email!
+          Utils::Git.setup_gpg!
 
           short_name = formula_name.split("/", -1).last
           pkg_version = bottle_hash["formula"]["pkg_version"]
