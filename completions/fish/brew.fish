@@ -104,7 +104,7 @@ function __fish_brew_suggest_formulae_all -d 'Lists all available formulae with 
 end
 
 function __fish_brew_suggest_formulae_installed
-    brew list
+    brew list --formula
 end
 
 function __fish_brew_suggest_formulae_pinned
