@@ -22,6 +22,7 @@ module RuboCop
           https://osxbook.com/book/bonus/chapter8/core/download/gcore
           https://naif.jpl.nasa.gov/pub/naif/toolkit/C/MacIntel_OSX_AppleC_64bit/packages/
           https://artifacts.videolan.org/x264/release-macos/
+          https://github.com/vifm/vifm/releases/download/v0.11/vifm-osx-0.11.tar.bz2
         ].freeze
 
         # These are formulae that, sadly, require an upstream binary to bootstrap.
