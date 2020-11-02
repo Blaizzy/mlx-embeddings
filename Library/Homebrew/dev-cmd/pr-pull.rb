@@ -64,27 +64,6 @@ module Homebrew
     end
   end
 
-  def setup_git_environment!
-    # Passthrough Git environment variables
-    ENV["GIT_COMMITTER_NAME"] = ENV["HOMEBREW_GIT_NAME"] if ENV["HOMEBREW_GIT_NAME"]
-    ENV["GIT_COMMITTER_EMAIL"] = ENV["HOMEBREW_GIT_EMAIL"] if ENV["HOMEBREW_GIT_EMAIL"]
-
-    # Depending on user configuration, git may try to invoke gpg.
-    return unless Utils.popen_read("git config --get --bool commit.gpgsign").chomp == "true"
-
-    begin
-      gnupg = Formula["gnupg"]
-    rescue FormulaUnavailableError
-      nil
-    else
-      if gnupg.any_version_installed?
-        path = PATH.new(ENV.fetch("PATH"))
-        path.prepend(gnupg.any_installed_prefix/"bin")
-        ENV["PATH"] = path
-      end
-    end
-  end
-
   # Separates a commit message into subject, body, and trailers.
   def separate_commit_message(message)
     subject = message.lines.first.strip
@@ -375,7 +354,8 @@ module Homebrew
     mirror_repo = args.bintray_mirror || "mirror"
     tap = Tap.fetch(args.tap || CoreTap.instance.name)
 
-    setup_git_environment!
+    Utils::Git.set_name_email!
+    Utils::Git.setup_gpg!
 
     args.named.uniq.each do |arg|
       arg = "#{tap.default_remote}/pull/#{arg}" if arg.to_i.positive?
