@@ -6,7 +6,7 @@
 # @api private
 module Metafiles
   LICENSES = Set.new(%w[copying copyright license licence]).freeze
-  # https://github.com/github/markup#markups
+  # {https://github.com/github/markup#markups}
   EXTENSIONS = Set.new(%w[
                          .adoc .asc .asciidoc .creole .html .markdown .md .mdown .mediawiki .mkdn
                          .org .pod .rdoc .rst .rtf .textile .txt .wiki

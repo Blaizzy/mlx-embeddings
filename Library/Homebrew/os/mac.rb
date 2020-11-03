@@ -45,14 +45,14 @@ module OS
     def latest_stable_version
       # TODO: bump version when new macOS is released and also update
       # references in docs/Installation.md and
-      # https://github.com/Homebrew/install/blob/HEAD/install
+      # https://github.com/Homebrew/install/blob/HEAD/install.sh
       Version.new "10.15"
     end
 
     def outdated_release?
       # TODO: bump version when new macOS is released and also update
       # references in docs/Installation.md and
-      # https://github.com/Homebrew/install/blob/HEAD/install
+      # https://github.com/Homebrew/install/blob/HEAD/install.sh
       version < "10.13"
     end
 
@@ -143,9 +143,9 @@ module OS
 
     # See these issues for some history:
     #
-    # - https://github.com/Homebrew/legacy-homebrew/issues/13
-    # - https://github.com/Homebrew/legacy-homebrew/issues/41
-    # - https://github.com/Homebrew/legacy-homebrew/issues/48
+    # - {https://github.com/Homebrew/legacy-homebrew/issues/13}
+    # - {https://github.com/Homebrew/legacy-homebrew/issues/41}
+    # - {https://github.com/Homebrew/legacy-homebrew/issues/48}
     def macports_or_fink
       paths = []
 

@@ -39,7 +39,7 @@ require "utils/spdx"
 # @see Pathname
 # @see https://www.rubydoc.info/stdlib/fileutils FileUtils
 # @see https://docs.brew.sh/Formula-Cookbook Formula Cookbook
-# @see https://github.com/rubocop-hq/ruby-style-guide#the-ruby-style-guide Ruby Style Guide
+# @see https://rubystyle.guide Ruby Style Guide
 #
 # <pre>class Wget < Formula
 #   homepage "https://www.gnu.org/software/wget/"
@@ -2374,7 +2374,7 @@ class Formula
     # and you haven't passed or previously used any options on this formula.
     #
     # If you maintain your own repository, you can add your own bottle links.
-    # @see https://docs.brew.sh/Bottles
+    # @see https://docs.brew.sh/Bottles Bottles
     # You can ignore this block entirely if submitting to Homebrew/homebrew-core.
     # It'll be handled for you by the Brew Test Bot.
     #
@@ -2597,6 +2597,7 @@ class Formula
     # to provide multiple embedded patches while making only some of them
     # conditional.
     # <pre>patch :p0, "..."</pre>
+    # @see https://docs.brew.sh/Formula-Cookbook#patches Patches
     def patch(strip = :p1, src = nil, &block)
       specs.each { |spec| spec.patch(strip, src, &block) }
     end
@@ -2696,7 +2697,7 @@ class Formula
     # and foo --version and foo --help are bad tests.
     # However, a bad test is better than no test at all.
     #
-    # See: https://docs.brew.sh/Formula-Cookbook#add-a-test-to-the-formula
+    # @see https://docs.brew.sh/Formula-Cookbook#add-a-test-to-the-formula Tests
     #
     # <pre>(testpath/"test.file").write <<~EOS
     #   writing some test file, if you need to
