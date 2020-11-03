@@ -508,6 +508,9 @@ module Homebrew
 
     class OptionConstraintError < UsageError
       def initialize(arg1, arg2, missing: false)
+        arg1 = "--#{arg1.tr("_", "-")}"
+        arg2 = "--#{arg2.tr("_", "-")}"
+
         message = if !missing
           "`#{arg1}` and `#{arg2}` should be passed together."
         else
