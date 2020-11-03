@@ -30,14 +30,12 @@ module Homebrew
                           "passed, other options (i.e. `-1`, `-l`, `-r` and `-t`) are passed to `ls`(1) "\
                           "which produces the actual output."
       switch "--versions",
-             depends_on:  "--formula",
              description: "Show the version number for installed formulae, or only the specified "\
                           "formulae if <formula> are provided."
       switch "--multiple",
              depends_on:  "--versions",
              description: "Only show formulae with multiple versions installed."
       switch "--pinned",
-             depends_on:  "--formula",
              description: "Show the versions of pinned formulae, or only the specified (pinned) "\
                           "formulae if <formula> are provided. See also `pin`, `unpin`."
       # passed through to ls
@@ -45,14 +43,11 @@ module Homebrew
              description: "Force output to be one entry per line. " \
                           "This is the default when output is not to a terminal."
       switch "-l",
-             depends_on:  "--formula",
              description: "List formulae in long format. If the output is to a terminal, "\
                           "a total sum for all the file sizes is printed before the long listing."
       switch "-r",
-             depends_on:  "--formula",
              description: "Reverse the order of the formulae sort to list the oldest entries first."
       switch "-t",
-             depends_on:  "--formula",
              description: "Sort formulae by time modified, listing most recently modified first."
 
       ["-1", "-l", "-r", "-t"].each do |flag|
@@ -73,7 +68,11 @@ module Homebrew
 
     return list_casks(args: args) if args.cask?
 
-    return list_unbrewed if args.unbrewed?
+    if args.unbrewed?
+      raise UsageError, "`--unbrewed` does not take a formula/cask argument." unless args.no_named?
+
+      return list_unbrewed
+    end
 
     # Unbrewed uses the PREFIX, which will exist
     # Things below use the CELLAR, which doesn't until the first formula is installed.
