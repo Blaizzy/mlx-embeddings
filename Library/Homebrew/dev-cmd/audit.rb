@@ -135,6 +135,7 @@ module Homebrew
         except:              args.except,
         spdx_license_data:   spdx_license_data,
         spdx_exception_data: spdx_exception_data,
+        audit_exceptions:    f.tap.audit_exceptions,
       }
       options[:style_offenses] = style_offenses.for_path(f.path) if style_offenses
       options[:display_cop_names] = args.display_cop_names?
@@ -247,6 +248,7 @@ module Homebrew
       @specs = %w[stable head].map { |s| formula.send(s) }.compact
       @spdx_license_data = options[:spdx_license_data]
       @spdx_exception_data = options[:spdx_exception_data]
+      @audit_exceptions = options[:audit_exceptions]
     end
 
     def audit_style
@@ -730,15 +732,6 @@ module Homebrew
       imagemagick@6
     ].freeze
 
-    THROTTLED_FORMULAE = {
-      "aws-sdk-cpp" => 10,
-      "awscli@1"    => 10,
-      "balena-cli"  => 10,
-      "gatsby-cli"  => 10,
-      "quicktype"   => 10,
-      "vim"         => 50,
-    }.freeze
-
     UNSTABLE_ALLOWLIST = {
       "aalib"           => "1.4rc",
       "automysqlbackup" => "3.0-rc",
@@ -823,7 +816,7 @@ module Homebrew
       stable_url_minor_version = stable_url_version.minor.to_i
 
       formula_suffix = stable.version.patch.to_i
-      throttled_rate = THROTTLED_FORMULAE[formula.name]
+      throttled_rate = @audit_exceptions["THROTTLED_FORMULAE"][formula.name]
       if throttled_rate && formula_suffix.modulo(throttled_rate).nonzero?
         problem "should only be updated every #{throttled_rate} releases on multiples of #{throttled_rate}"
       end
