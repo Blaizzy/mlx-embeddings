@@ -1366,6 +1366,22 @@ class Formula
     "#<Formula #{name} (#{active_spec_sym}) #{path}>"
   end
 
+  # Block only executed on macOS. No-op on Linux.
+  # <pre>on_macos do
+  #   Do something mac specific
+  # end</pre>
+  def on_macos(&_block)
+    raise "No block content defined for on_macos block" unless block_given?
+  end
+
+  # Block only executed on Linux. No-op on macOS.
+  # <pre>on_linux do
+  #   Do something linux specific
+  # end</pre>
+  def on_linux(&_block)
+    raise "No block content defined for on_linux block" unless block_given?
+  end
+
   # Standard parameters for cargo builds.
   def std_cargo_args
     ["--locked", "--root", prefix, "--path", "."]
@@ -2512,13 +2528,17 @@ class Formula
     # <pre>on_macos do
     #   depends_on "mac_only_dep"
     # end</pre>
-    def on_macos(&_block); end
+    def on_macos(&_block)
+      raise "No block content defined for on_macos block" unless block_given?
+    end
 
     # Block only executed on Linux. No-op on macOS.
     # <pre>on_linux do
     #   depends_on "linux_only_dep"
     # end</pre>
-    def on_linux(&_block); end
+    def on_linux(&_block)
+      raise "No block content defined for on_linux block" unless block_given?
+    end
 
     # @!attribute [w] option
     # Options can be used as arguments to `brew install`.
