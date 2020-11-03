@@ -148,9 +148,9 @@ module Language
       # installing packages into a Python virtualenv.
       # @param venv_root [Pathname, String] the path to the root of the virtualenv
       #   (often `libexec/"venv"`)
-      # @param python [String] which interpreter to use (e.g. "python"
-      #   or "python2")
-      # @param formula [Formula] the active Formula
+      # @param python [String] which interpreter to use (e.g. "python3"
+      #   or "python3.x")
+      # @param formula [Formula] the active {Formula}
       # @return [Virtualenv] a {Virtualenv} instance
       def virtualenv_create(venv_root, python = "python", formula = self)
         ENV.refurbish_args

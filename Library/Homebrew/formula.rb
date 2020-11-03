@@ -906,28 +906,28 @@ class Formula
   # This method can be overridden to provide a plist.
   # @see https://www.unix.com/man-page/all/5/plist/ Apple's plist(5) man page
   # <pre>def plist; <<~EOS
-  #  <?xml version="1.0" encoding="UTF-8"?>
-  #  <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-  #  <plist version="1.0">
-  #  <dict>
-  #    <key>Label</key>
-  #      <string>#{plist_name}</string>
-  #    <key>ProgramArguments</key>
-  #    <array>
-  #      <string>#{opt_bin}/example</string>
-  #      <string>--do-this</string>
-  #    </array>
-  #    <key>RunAtLoad</key>
-  #    <true/>
-  #    <key>KeepAlive</key>
-  #    <true/>
-  #    <key>StandardErrorPath</key>
-  #    <string>/dev/null</string>
-  #    <key>StandardOutPath</key>
-  #    <string>/dev/null</string>
-  #  </dict>
-  #  </plist>
-  #  EOS
+  #   <?xml version="1.0" encoding="UTF-8"?>
+  #   <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+  #   <plist version="1.0">
+  #   <dict>
+  #     <key>Label</key>
+  #       <string>#{plist_name}</string>
+  #     <key>ProgramArguments</key>
+  #     <array>
+  #       <string>#{opt_bin}/example</string>
+  #       <string>--do-this</string>
+  #     </array>
+  #     <key>RunAtLoad</key>
+  #     <true/>
+  #     <key>KeepAlive</key>
+  #     <true/>
+  #     <key>StandardErrorPath</key>
+  #     <string>/dev/null</string>
+  #     <key>StandardOutPath</key>
+  #     <string>/dev/null</string>
+  #   </dict>
+  #   </plist>
+  #   EOS
   # end</pre>
   def plist
     nil
@@ -1368,7 +1368,7 @@ class Formula
 
   # Block only executed on macOS. No-op on Linux.
   # <pre>on_macos do
-  #   Do something mac specific
+  # # Do something Mac-specific
   # end</pre>
   def on_macos(&_block)
     raise "No block content defined for on_macos block" unless block_given?
@@ -1376,7 +1376,7 @@ class Formula
 
   # Block only executed on Linux. No-op on macOS.
   # <pre>on_linux do
-  #   Do something linux specific
+  # # Do something Linux-specific
   # end</pre>
   def on_linux(&_block)
     raise "No block content defined for on_linux block" unless block_given?
@@ -1934,6 +1934,7 @@ class Formula
   # on options defined above, we usually make a list first and then
   # use the `args << if <condition>` to append to:
   # <pre>args = ["--with-option1", "--with-option2"]
+  # args << "--without-gcc" if ENV.compiler == :clang
   #
   # # Most software still uses `configure` and `make`.
   # # Check with `./configure --help` what our options are.
@@ -1941,7 +1942,7 @@ class Formula
   #                       "--disable-silent-rules", "--prefix=#{prefix}",
   #                       *args # our custom arg list (needs `*` to unpack)
   #
-  # # If there is a "make", "install" available, please use it!
+  # # If there is a "make install" available, please use it!
   # system "make", "install"</pre>
   def system(cmd, *args)
     verbose_using_dots = Homebrew::EnvConfig.verbose_using_dots?
@@ -2315,19 +2316,18 @@ class Formula
     # @!attribute [w] url
     # The URL used to download the source for the {.stable} version of the formula.
     # We prefer `https` for security and proxy reasons.
-    # If not inferrable, specify the download strategy with `:using => ...`
+    # If not inferrable, specify the download strategy with `using: ...`.
     #
     # - `:git`, `:hg`, `:svn`, `:bzr`, `:fossil`, `:cvs`,
-    # - `:curl` (normal file download. Will also extract.)
+    # - `:curl` (normal file download, will also extract)
     # - `:nounzip` (without extracting)
     # - `:post` (download via an HTTP POST)
-    # - `:s3` (download from S3 using signed request)
     #
     # <pre>url "https://packed.sources.and.we.prefer.https.example.com/archive-1.2.3.tar.bz2"</pre>
     # <pre>url "https://some.dont.provide.archives.example.com",
-    #     :using => :git,
-    #     :tag => "1.2.3",
-    #     :revision => "db8e4de5b2d6653f66aea53094624468caad15d2"</pre>
+    #     using:    :git,
+    #     tag:      "1.2.3",
+    #     revision: "db8e4de5b2d6653f66aea53094624468caad15d2"</pre>
     def url(val, specs = {})
       stable.url(val, specs)
     end
@@ -2449,11 +2449,11 @@ class Formula
     # If called as a method this provides just the {url} for the {SoftwareSpec}.
     # If a block is provided you can also add {.depends_on} and {Patch}es just to the {.head} {SoftwareSpec}.
     # The download strategies (e.g. `:using =>`) are the same as for {url}.
-    # `master` is the default branch and doesn't need stating with a `:branch` parameter.
+    # `master` is the default branch and doesn't need stating with a `branch:` parameter.
     # <pre>head "https://we.prefer.https.over.git.example.com/.git"</pre>
-    # <pre>head "https://example.com/.git", :branch => "name_of_branch", :revision => "abc123"</pre>
+    # <pre>head "https://example.com/.git", branch: "name_of_branch"</pre>
     # or (if autodetect fails):
-    # <pre>head "https://hg.is.awesome.but.git.has.won.example.com/", :using => :hg</pre>
+    # <pre>head "https://hg.is.awesome.but.git.has.won.example.com/", using: :hg</pre>
     def head(val = nil, specs = {}, &block)
       @head ||= HeadSoftwareSpec.new(flags: build_flags)
       if block_given?
@@ -2488,7 +2488,6 @@ class Formula
     # deciding if to use the system provided version or not.)
     # <pre># `:build` means this dep is only needed during build.
     # depends_on "cmake" => :build</pre>
-    # <pre>depends_on "homebrew/dupes/tcl-tk" => :optional</pre>
     # <pre># `:recommended` dependencies are built by default.
     # # But a `--without-...` option is generated to opt-out.
     # depends_on "readline" => :recommended</pre>
@@ -2502,17 +2501,17 @@ class Formula
     # <pre># Optional and enforce that boost is built with `--with-c++11`.
     # depends_on "boost" => [:optional, "with-c++11"]</pre>
     # <pre># If a dependency is only needed in certain cases:
-    # depends_on "sqlite" if MacOS.version == :catalina
-    # depends_on :xcode # If the formula really needs full Xcode.
-    # depends_on :macos => :mojave # Needs at least macOS Mojave (10.14).
-    # depends_on :x11 => :optional # X11/XQuartz components.
-    # depends_on :osxfuse # Permits the use of the upstream signed binary or our source package.
-    # depends_on :tuntap # Does the same thing as above. This is vital for Yosemite and above.</pre>
+    # depends_on "sqlite" if MacOS.version >= :catalina
+    # depends_on xcode: :build # If the formula really needs full Xcode to compile.
+    # depends_on macos: :mojave # Needs at least macOS Mojave (10.14) to run.
+    # depends_on x11: :optional # X11/XQuartz components.
+    # depends_on :osxfuse # Permits the use of the upstream signed binary or our cask.
+    # depends_on :tuntap # Does the same thing as above. This is vital for Yosemite and later.</pre>
     # <pre># It is possible to only depend on something if
     # # `build.with?` or `build.without? "another_formula"`:
     # depends_on "postgresql" if build.without? "sqlite"</pre>
-    # <pre># Python 3.x if the `--with-python` is given to `brew install example`
-    # depends_on "python3" => :optional</pre>
+    # <pre># Require Python if `--with-python` is passed to `brew install example`:
+    # depends_on "python" => :optional</pre>
     def depends_on(dep)
       specs.each { |spec| spec.depends_on(dep) }
     end
@@ -2605,13 +2604,13 @@ class Formula
     # Defines launchd plist handling.
     #
     # Does your plist need to be loaded at startup?
-    # <pre>plist_options :startup => true</pre>
+    # <pre>plist_options startup: true</pre>
     #
     # Or only when necessary or desired by the user?
-    # <pre>plist_options :manual => "foo"</pre>
+    # <pre>plist_options manual: "foo"</pre>
     #
     # Or perhaps you'd like to give the user a choice? Ooh fancy.
-    # <pre>plist_options :startup => true, :manual => "foo start"</pre>
+    # <pre>plist_options startup: true, manual: "foo start"</pre>
     def plist_options(options)
       @plist_startup = options[:startup]
       @plist_manual = options[:manual]
@@ -2622,8 +2621,8 @@ class Formula
       @conflicts ||= []
     end
 
-    # If this formula conflicts with another one.
-    # <pre>conflicts_with "imagemagick", :because => "because both install 'convert' binaries"</pre>
+    # One or more formulae that conflict with this one and why.
+    # <pre>conflicts_with "imagemagick", because: "both install `convert` binaries"</pre>
     def conflicts_with(*names)
       opts = names.last.is_a?(Hash) ? names.pop : {}
       names.each { |name| conflicts << FormulaConflict.new(name, opts[:because]) }
@@ -2759,7 +2758,7 @@ class Formula
     # shown on each installation. If the date has not yet passed the formula
     # will not be deprecated.
     # <pre>deprecate! date: "2020-08-27", because: :unmaintained</pre>
-    # <pre>deprecate! date: "2020-08-27", because: "it has been replaced by"</pre>
+    # <pre>deprecate! date: "2020-08-27", because: "has been replaced by foo"</pre>
     def deprecate!(date: nil, because: nil)
       odeprecated "`deprecate!` without a reason", "`deprecate! because: \"reason\"`" if because.blank?
 

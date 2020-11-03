@@ -127,13 +127,12 @@ module RuboCop
         end
       end
 
-      # Matches a method with a receiver.
+      # Matches a method with a receiver. Yields to a block with matching method node.
       #
-      # - e.g. to match `Formula.factory(name)`
-      #   call `find_instance_method_call(node, "Formula", :factory)`
-      # - e.g. to match `build.head?`
-      #   call `find_instance_method_call(node, :build, :head?)`
-      # - yields to a block with matching method node
+      # @example to match `Formula.factory(name)`
+      #   find_instance_method_call(node, "Formula", :factory)
+      # @example to match `build.head?`
+      #   find_instance_method_call(node, :build, :head?)
       def find_instance_method_call(node, instance, method_name)
         methods = find_every_method_call_by_name(node, method_name)
         methods.each do |method|
@@ -149,11 +148,10 @@ module RuboCop
         end
       end
 
-      # Matches receiver part of method.
+      # Matches receiver part of method. Yields to a block with parent node of receiver.
       #
-      # - e.g. to match `ARGV.<whatever>()`
-      #   call `find_instance_call(node, "ARGV")`
-      # - yields to a block with parent node of receiver
+      # @example to match `ARGV.<whatever>()`
+      #   find_instance_call(node, "ARGV")
       def find_instance_call(node, name)
         node.each_descendant(:send) do |method_node|
           next if method_node.receiver.nil?
