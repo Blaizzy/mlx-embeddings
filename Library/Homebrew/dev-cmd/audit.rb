@@ -816,7 +816,7 @@ module Homebrew
       stable_url_minor_version = stable_url_version.minor.to_i
 
       formula_suffix = stable.version.patch.to_i
-      throttled_rate = @audit_exceptions["THROTTLED_FORMULAE"][formula.name]
+      throttled_rate = audit_exception_list("THROTTLED_FORMULAE")[formula.name]
       if throttled_rate && formula_suffix.modulo(throttled_rate).nonzero?
         problem "should only be updated every #{throttled_rate} releases on multiples of #{throttled_rate}"
       end
@@ -1023,6 +1023,14 @@ module Homebrew
 
     def head_only?(formula)
       formula.head && formula.stable.nil?
+    end
+
+    def audit_exception_list(list)
+      if @audit_exceptions.key? list
+        @audit_exceptions[list]
+      else
+        {}
+      end
     end
   end
 
