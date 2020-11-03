@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "BREW" "1" "October 2020" "Homebrew" "brew"
+.TH "BREW" "1" "November 2020" "Homebrew" "brew"
 .
 .SH "NAME"
 \fBbrew\fR \- The Missing Package Manager for macOS
@@ -512,12 +512,20 @@ List all installed formulae or casks
 If \fIformula\fR is provided, summarise the paths within its current keg\.
 .
 .TP
-\fB\-\-full\-name\fR
-Print formulae with fully\-qualified names\. If \fB\-\-full\-name\fR is not passed, other options (i\.e\. \fB\-1\fR, \fB\-l\fR, \fB\-r\fR and \fB\-t\fR) are passed to \fBls\fR(1) which produces the actual output\.
+\fB\-\-formula\fR
+List only formulae\. \fBThis is the default action on non TTY\.\fR
+.
+.TP
+\fB\-\-cask\fR
+List only casks, or \fIcask\fR if provided\.
 .
 .TP
 \fB\-\-unbrewed\fR
 List files in Homebrew\'s prefix not installed by Homebrew\.
+.
+.TP
+\fB\-\-full\-name\fR
+Print formulae with fully\-qualified names\. If \fB\-\-full\-name\fR is not passed, other options (i\.e\. \fB\-1\fR, \fB\-l\fR, \fB\-r\fR and \fB\-t\fR) are passed to \fBls\fR(1) which produces the actual output\.
 .
 .TP
 \fB\-\-versions\fR
@@ -532,28 +540,20 @@ Only show formulae with multiple versions installed\.
 Show the versions of pinned formulae, or only the specified (pinned) formulae if \fIformula\fR are provided\. See also \fBpin\fR, \fBunpin\fR\.
 .
 .TP
-\fB\-\-formula\fR
-List only formulae\. \fBThis is the default action on non TTY\.\fR
-.
-.TP
-\fB\-\-cask\fR
-List only casks, or \fIcask\fR if provided\.
-.
-.TP
 \fB\-1\fR
 Force output to be one entry per line\. This is the default when output is not to a terminal\.
 .
 .TP
 \fB\-l\fR
-List in long format\. If the output is to a terminal, a total sum for all the file sizes is printed before the long listing\.
+List formulae in long format\. If the output is to a terminal, a total sum for all the file sizes is printed before the long listing\.
 .
 .TP
 \fB\-r\fR
-Reverse the order of the sort to list the oldest entries first\.
+Reverse the order of the formulae sort to list the oldest entries first\.
 .
 .TP
 \fB\-t\fR
-Sort by time modified, listing most recently modified first\.
+Sort formulae by time modified, listing most recently modified first\.
 .
 .SS "\fBlog\fR [\fIoptions\fR] [\fIformula\fR]"
 Show the \fBgit log\fR for \fIformula\fR, or show the log for the Homebrew repository if no formula is provided\.

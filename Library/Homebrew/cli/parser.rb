@@ -506,7 +506,7 @@ module Homebrew
       end
     end
 
-    class OptionConstraintError < RuntimeError
+    class OptionConstraintError < UsageError
       def initialize(arg1, arg2, missing: false)
         message = if !missing
           "`#{arg1}` and `#{arg2}` should be passed together."
@@ -517,7 +517,7 @@ module Homebrew
       end
     end
 
-    class OptionConflictError < RuntimeError
+    class OptionConflictError < UsageError
       def initialize(args)
         args_list = args.map(&Formatter.public_method(:option))
                         .join(" and ")
@@ -525,7 +525,7 @@ module Homebrew
       end
     end
 
-    class InvalidConstraintError < RuntimeError
+    class InvalidConstraintError < UsageError
       def initialize(arg1, arg2)
         super "`#{arg1}` and `#{arg2}` cannot be mutually exclusive and mutually dependent simultaneously."
       end
