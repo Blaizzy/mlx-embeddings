@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "formula"
@@ -23,13 +24,11 @@ module Homebrew
   end
 
   def get_removable_formulae(formulae)
-    removable_formulae = Formula.installed_non_deps(formulae).reject {
-      |f| Tab.for_keg(f.any_installed_keg).installed_on_request
-    }
-
-    if removable_formulae.any?
-      removable_formulae += get_removable_formulae(formulae - removable_formulae)
+    removable_formulae = Formula.installed_non_deps(formulae).reject do |f|
+      Tab.for_keg(f.any_installed_keg).installed_on_request
     end
+
+    removable_formulae += get_removable_formulae(formulae - removable_formulae) if removable_formulae.any?
 
     removable_formulae
   end
@@ -45,7 +44,7 @@ module Homebrew
 
     oh1 "Formulae that could be removed"
     puts formulae_names
-    
+
     return if args.dry_run?
 
     kegs_by_rack = removable_formulae.map(&:any_installed_keg).group_by(&:rack)

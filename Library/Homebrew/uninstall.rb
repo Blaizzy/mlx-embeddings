@@ -13,8 +13,8 @@ module Homebrew
 
     def uninstall_kegs(kegs_by_rack, force: false, ignore_dependencies: false, named_args: [])
       handle_unsatisfied_dependents(kegs_by_rack,
-        ignore_dependencies: ignore_dependencies,
-        named_args:          named_args)
+                                    ignore_dependencies: ignore_dependencies,
+                                    named_args:          named_args)
       return if Homebrew.failed?
 
       kegs_by_rack.each do |rack, kegs|
@@ -50,9 +50,9 @@ module Homebrew
               rm_pin rack
 
               if rack.directory?
-              versions = rack.subdirs.map(&:basename)
-              puts "#{keg.name} #{versions.to_sentence} #{"is".pluralize(versions.count)} still installed."
-              puts "Run `brew uninstall --force #{keg.name}` to remove all versions."
+                versions = rack.subdirs.map(&:basename)
+                puts "#{keg.name} #{versions.to_sentence} #{"is".pluralize(versions.count)} still installed."
+                puts "Run `brew uninstall --force #{keg.name}` to remove all versions."
               end
 
               next unless f
@@ -86,7 +86,7 @@ module Homebrew
 
     def handle_unsatisfied_dependents(kegs_by_rack, ignore_dependencies: false, named_args: [])
       return if ignore_dependencies
-  
+
       all_kegs = kegs_by_rack.values.flatten(1)
       check_for_dependents(all_kegs, named_args: named_args)
     rescue MethodDeprecatedError
@@ -96,37 +96,39 @@ module Homebrew
 
     def check_for_dependents(kegs, named_args: [])
       return false unless result = Keg.find_some_installed_dependents(kegs)
-  
+
       if Homebrew::EnvConfig.developer?
         DeveloperDependentsMessage.new(*result, named_args: named_args).output
       else
         NondeveloperDependentsMessage.new(*result, named_args: named_args).output
       end
-  
+
       true
     end
 
+    # @api private
     class DependentsMessage
       attr_reader :reqs, :deps, :named_args
-  
+
       def initialize(requireds, dependents, named_args: [])
         @reqs = requireds
         @deps = dependents
         @named_args = named_args
       end
-  
+
       protected
-  
+
       def sample_command
         "brew uninstall --ignore-dependencies #{named_args.join(" ")}"
       end
-  
+
       def are_required_by_deps
         "#{"is".pluralize(reqs.count)} required by #{deps.to_sentence}, " \
         "which #{"is".pluralize(deps.count)} currently installed"
       end
     end
-  
+
+    # @api private
     class DeveloperDependentsMessage < DependentsMessage
       def output
         opoo <<~EOS
@@ -136,7 +138,8 @@ module Homebrew
         EOS
       end
     end
-  
+
+    # @api private
     class NondeveloperDependentsMessage < DependentsMessage
       def output
         ofail <<~EOS
@@ -147,69 +150,11 @@ module Homebrew
         EOS
       end
     end
-  
+
     def rm_pin(rack)
       Formulary.from_rack(rack).unpin
     rescue
       nil
     end
-
-  #   def perform_preinstall_checks(all_fatal: false, cc: nil)
-  #     check_cpu
-  #     attempt_directory_creation
-  #     check_cc_argv(cc)
-  #     Diagnostic.checks(:supported_configuration_checks, fatal: all_fatal)
-  #     Diagnostic.checks(:fatal_preinstall_checks)
-  #   end
-  #   alias generic_perform_preinstall_checks perform_preinstall_checks
-  #   module_function :generic_perform_preinstall_checks
-
-  #   def perform_build_from_source_checks(all_fatal: false)
-  #     Diagnostic.checks(:fatal_build_from_source_checks)
-  #     Diagnostic.checks(:build_from_source_checks, fatal: all_fatal)
-  #   end
-
-  #   def check_cpu
-  #     return if Hardware::CPU.intel? && Hardware::CPU.is_64_bit?
-
-  #     message = "Sorry, Homebrew does not support your computer's CPU architecture!"
-  #     if Hardware::CPU.arm?
-  #       opoo message
-  #       return
-  #     elsif Hardware::CPU.ppc?
-  #       message += <<~EOS
-  #         For PowerPC Mac (PPC32/PPC64BE) support, see:
-  #           #{Formatter.url("https://github.com/mistydemeo/tigerbrew")}
-  #       EOS
-  #     end
-  #     abort message
-  #   end
-  #   private_class_method :check_cpu
-
-  #   def attempt_directory_creation
-  #     Keg::MUST_EXIST_DIRECTORIES.each do |dir|
-  #       FileUtils.mkdir_p(dir) unless dir.exist?
-
-  #       # Create these files to ensure that these directories aren't removed
-  #       # by the Catalina installer.
-  #       # (https://github.com/Homebrew/brew/issues/6263)
-  #       keep_file = dir/".keepme"
-  #       FileUtils.touch(keep_file) unless keep_file.exist?
-  #     rescue
-  #       nil
-  #     end
-  #   end
-  #   private_class_method :attempt_directory_creation
-
-  #   def check_cc_argv(cc)
-  #     return unless cc
-
-  #     @checks ||= Diagnostic::Checks.new
-  #     opoo <<~EOS
-  #       You passed `--cc=#{cc}`.
-  #       #{@checks.please_create_pull_requests}
-  #     EOS
-  #   end
-  #   private_class_method :check_cc_argv
   end
 end

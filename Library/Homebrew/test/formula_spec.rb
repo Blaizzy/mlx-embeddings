@@ -456,12 +456,12 @@ describe Formula do
     let(:formulae) do
       [
         formula_with_deps,
-        formula_is_dep
+        formula_is_dep,
       ]
-    end    
+    end
 
     before do
-      allow(formula_with_deps).to receive(:runtime_formula_dependencies).and_return([ formula_is_dep ])
+      allow(formula_with_deps).to receive(:runtime_formula_dependencies).and_return([formula_is_dep])
     end
 
     specify "without formulae parameter" do
@@ -493,12 +493,12 @@ describe Formula do
     let(:formulae) do
       [
         formula_with_deps,
-        formula_is_dep
+        formula_is_dep,
       ]
     end
 
     before do
-      allow(formula_with_deps).to receive(:runtime_formula_dependencies).and_return([ formula_is_dep ])
+      allow(formula_with_deps).to receive(:runtime_formula_dependencies).and_return([formula_is_dep])
     end
 
     specify "without formulae parameter" do

@@ -1517,13 +1517,13 @@ class Formula
 
   # An array of installed {Formula} that are dependencies of other installed {Formula}
   # @private
-  def self.installed_deps(formulae=installed)
+  def self.installed_deps(formulae = installed)
     formulae.flat_map(&:runtime_formula_dependencies).uniq(&:name)
   end
 
   # An array of all installed {Formula} that are not dependencies of other installed {Formula}
   # @private
-  def self.installed_non_deps(formulae=installed)
+  def self.installed_non_deps(formulae = installed)
     formulae - installed_deps(formulae)
   end
 
