@@ -67,10 +67,15 @@ module Homebrew
         next
       end
 
-      formula = keg.to_formula
+      formula = begin
+        keg.to_formula
+      rescue FormulaUnavailableError
+        # Not all kegs may belong to formulae e.g. with `brew diy`
+        nil
+      end
 
       if keg_only
-        if Homebrew.default_prefix? && formula.keg_only_reason.by_macos?
+        if Homebrew.default_prefix? && formula.present? && formula.keg_only_reason.by_macos?
           caveats = Caveats.new(formula)
           opoo <<~EOS
             Refusing to link macOS provided/shadowed software: #{keg.name}
@@ -79,14 +84,14 @@ module Homebrew
           next
         end
 
-        if !formula.keg_only_reason.versioned_formula? && !args.force?
+        if !args.force? && (formula.blank? || !formula.keg_only_reason.versioned_formula?)
           opoo "#{keg.name} is keg-only and must be linked with --force"
           puts_keg_only_path_message(keg)
           next
         end
       end
 
-      Unlink.unlink_versioned_formulae(formula, verbose: args.verbose?)
+      Unlink.unlink_versioned_formulae(formula, verbose: args.verbose?) if formula
 
       keg.lock do
         print "Linking #{keg}... "
