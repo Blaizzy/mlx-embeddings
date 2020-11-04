@@ -30,12 +30,24 @@ module Homebrew
   def update_test
     args = update_test_args.parse
 
+    # Avoid `update-report.rb` tapping Homebrew/homebrew-core
     ENV["HOMEBREW_UPDATE_TEST"] = "1"
+
+    # Avoid accidentally updating when we don't expect it.
+    ENV["HOMEBREW_NO_AUTO_UPDATE"] = "1"
+
+    # Use default behaviours
+    ENV["HOMEBREW_AUTO_UPDATE_SECS"] = nil
+    ENV["HOMEBREW_DEVELOPER"] = nil
+    ENV["HOMEBREW_DEV_CMD_RUN"] = nil
+    ENV["HOMEBREW_MERGE"] = nil
+    ENV["HOMEBREW_NO_UPDATE_CLEANUP"] = nil
 
     branch = if args.to_tag?
       ENV["HOMEBREW_UPDATE_TO_TAG"] = "1"
       "stable"
     else
+      ENV["HOMEBREW_UPDATE_TO_TAG"] = nil
       "master"
     end
 
@@ -98,6 +110,7 @@ module Homebrew
       safe_system "git", "clone", "#{HOMEBREW_REPOSITORY}/.git", "remote.git",
                   "--bare", "--branch", "master", "--single-branch"
       safe_system "git", "config", "remote.origin.url", "#{curdir}/remote.git"
+      ENV["HOMEBREW_BREW_GIT_REMOTE"] = "#{curdir}/remote.git"
 
       # force push origin to end_commit
       safe_system "git", "checkout", "-B", "master", end_commit
@@ -109,9 +122,12 @@ module Homebrew
       # update ENV["PATH"]
       ENV["PATH"] = PATH.new(ENV["PATH"]).prepend(curdir/"bin")
 
+      # run brew help to install portable-ruby (if needed)
+      quiet_system "brew", "help"
+
       # run brew update
       oh1 "Running brew update..."
-      safe_system "brew", "update", "--verbose"
+      safe_system "brew", "update", "--verbose", "--debug"
       actual_end_commit = Utils.popen_read("git", "rev-parse", branch).chomp
       if actual_end_commit != end_commit
         start_log = Utils.popen_read("git", "log", "-1", "--decorate", "--oneline", start_commit).chomp
