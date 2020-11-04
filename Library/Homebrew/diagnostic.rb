@@ -851,7 +851,8 @@ module Homebrew
         return if deleted_formulae.blank?
 
         <<~EOS
-          Some installed formulae were deleted!
+          Some installed kegs have no formulae!
+          This means they were either deleted or installed with `brew diy`.
           You should find replacements for the following formulae:
             #{deleted_formulae.join("\n  ")}
         EOS
