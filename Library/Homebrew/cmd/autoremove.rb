@@ -2,8 +2,11 @@
 
 require "formula"
 require "cli/parser"
+require "uninstall"
 
 module Homebrew
+  extend Uninstall
+
   module_function
 
   def autoremove_args
@@ -19,17 +22,13 @@ module Homebrew
     end
   end
 
-  def get_removable_formulae(installed_formulae)
-    removable_formulae = []
+  def get_removable_formulae(formulae)
+    removable_formulae = Formula.installed_non_deps(formulae).reject {
+      |f| Tab.for_keg(f.any_installed_keg).installed_on_request
+    }
 
-    installed_formulae.each do |formula|
-      # Reject formulae installed on request.
-      next if Tab.for_keg(formula.any_installed_keg).installed_on_request
-      # Reject formulae which are needed at runtime by other formulae.
-      next if installed_formulae.flat_map(&:runtime_formula_dependencies).include?(formula)
-
-      removable_formulae << installed_formulae.delete(formula)
-      removable_formulae += get_removable_formulae(installed_formulae)
+    if removable_formulae.any?
+      removable_formulae += get_removable_formulae(formulae - removable_formulae)
     end
 
     removable_formulae
@@ -38,17 +37,18 @@ module Homebrew
   def autoremove
     args = autoremove_args.parse
 
-    removable_formulae = get_removable_formulae(Formula.installed.sort)
+    removable_formulae = get_removable_formulae(Formula.installed)
 
     return if removable_formulae.blank?
 
-    formulae_names = removable_formulae.map(&:full_name)
+    formulae_names = removable_formulae.map(&:full_name).sort
 
     oh1 "Formulae that could be removed"
     puts formulae_names
-
+    
     return if args.dry_run?
 
-    system HOMEBREW_BREW_FILE, "rm", *formulae_names
+    kegs_by_rack = removable_formulae.map(&:any_installed_keg).group_by(&:rack)
+    uninstall_kegs(kegs_by_rack)
   end
 end
