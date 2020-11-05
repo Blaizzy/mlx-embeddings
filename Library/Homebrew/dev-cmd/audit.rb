@@ -280,8 +280,11 @@ module Homebrew
           unversioned_name = unversioned_formula.basename(".rb")
           problem "#{formula} is versioned but no #{unversioned_name} formula exists"
         end
-      elsif @build_stable && formula.stable? &&
-            (versioned_formulae = formula.versioned_formulae - [formula]).present?
+      elsif @build_stable &&
+            formula.stable? &&
+            !@versioned_formula &&
+            (versioned_formulae = formula.versioned_formulae - [formula]) &&
+            versioned_formulae.present?
         versioned_aliases = formula.aliases.grep(/.@\d/)
         _, last_alias_version = versioned_formulae.map(&:name).last.split("@")
         alias_name_major = "#{formula.name}@#{formula.version.major}"
