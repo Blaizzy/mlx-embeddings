@@ -6,7 +6,7 @@ require "rubocops/extend/formula"
 module RuboCop
   module Cop
     module FormulaAudit
-      # This cop checks for correct order of components in Formulae.
+      # This cop checks for correct order of components in formulae.
       #
       # - `component_precedence_list` has component hierarchy in a nested list
       #   where each sub array contains components' details which are at same precedence level
@@ -157,7 +157,7 @@ module RuboCop
           end
         end
 
-        # autocorrect method gets called just after component_problem method call
+        # {autocorrect} gets called just after {component_problem}.
         def autocorrect(_node)
           return if @offensive_nodes.nil?
 
@@ -192,7 +192,7 @@ module RuboCop
           corrector.remove(range_with_surrounding_space(range: node1.source_range, side: :left))
         end
 
-        # Returns precedence index and component's index to properly reorder and group during autocorrect
+        # Returns precedence index and component's index to properly reorder and group during autocorrect.
         def get_state(node1)
           @present_components.each_with_index do |comp, idx|
             return [idx, comp.index(node1), comp] if comp.member?(node1)
@@ -228,7 +228,7 @@ module RuboCop
           nil
         end
 
-        # Method to format message for reporting component precedence violations
+        # Method to format message for reporting component precedence violations.
         def component_problem(c1, c2)
           return if COMPONENT_ALLOWLIST.include?(@formula_name)
 
@@ -238,7 +238,7 @@ module RuboCop
         end
 
         # Node pattern method to match
-        # `depends_on` variants
+        # `depends_on` variants.
         def_node_matcher :depends_on_node?, <<~EOS
           {(if _ (send nil? :depends_on ...) nil?)
            (send nil? :depends_on ...)}

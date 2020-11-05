@@ -6,10 +6,11 @@ require "open-uri"
 module Homebrew
   module Livecheck
     module Strategy
-      # The `Xorg` strategy identifies versions of software at x.org by
+      # The {Xorg} strategy identifies versions of software at x.org by
       # checking directory listing pages.
       #
       # X.Org URLs take one of the following formats, among several others:
+      #
       # * `https://www.x.org/archive/individual/app/example-1.2.3.tar.bz2`
       # * `https://www.x.org/archive/individual/font/example-1.2.3.tar.bz2`
       # * `https://www.x.org/archive/individual/lib/libexample-1.2.3.tar.bz2`
@@ -17,12 +18,13 @@ module Homebrew
       # * `https://www.x.org/pub/individual/doc/example-1.2.3.tar.gz`
       #
       # The notable differences between URLs are as follows:
+      #
       # * `www.x.org` and `ftp.x.org` seem to be interchangeable (we prefer
       #   `www.x.org`).
       # * `/archive/` is the current top-level directory and `/pub/` will
-      #   redirect to the same URL using `/archive/` instead. [The strategy
-      #   handles this replacement to avoid the redirection.]
-      # * The `/individual/` directory contains a number of directories (e.g.,
+      #   redirect to the same URL using `/archive/` instead. (The strategy
+      #   handles this replacement to avoid the redirection.)
+      # * The `/individual/` directory contains a number of directories (e.g.
       #   app, data, doc, driver, font, lib, etc.) which contain a number of
       #   different archive files.
       #
@@ -31,7 +33,7 @@ module Homebrew
       # This prevents livecheck from fetching the same page more than once and
       # also dramatically speeds up these checks. Eventually we hope to
       # implement a more sophisticated page cache that all strategies using
-      # `PageMatch` can use (and we can simplify this strategy accordingly).
+      # {PageMatch} can use (allowing us to simplify this strategy accordingly).
       #
       # The default regex identifies versions in archive files found in `href`
       # attributes.
@@ -51,6 +53,7 @@ module Homebrew
         @page_data = {}
 
         # Whether the strategy can be applied to the provided URL.
+        #
         # @param url [String] the URL to match against
         # @return [Boolean]
         def self.match?(url)
@@ -61,10 +64,11 @@ module Homebrew
         # content at the URL for new versions (using the regex for matching).
         #
         # The behavior in this method for matching text in the content using a
-        # regex is copied and modified from the `PageMatch` strategy, so that
+        # regex is copied and modified from the {PageMatch} strategy, so that
         # we can add some simple page caching. If this behavior is expanded to
-        # apply to all strategies that use `PageMatch` to identify versions,
-        # then the `Xorg` strategy can be brought in line with the others.
+        # apply to all strategies that use {PageMatch} to identify versions,
+        # then this strategy can be brought in line with the others.
+        #
         # @param url [String] the URL of the content to check
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]

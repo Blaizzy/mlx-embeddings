@@ -100,7 +100,7 @@ module Homebrew
         to_formulae_to_casks(method: :resolve, only: only)
       end
 
-      # Convert named arguments to `Tap`, `Formula` or `Cask` objects.
+      # Convert named arguments to {Tap}, {Formula} or {Cask} objects.
       # If both a formula and cask exist with the same name, returns the
       # formula and prints a warning unless `only` is specified.
       def to_objects(only: nil, method: nil)

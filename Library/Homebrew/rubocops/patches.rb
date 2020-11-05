@@ -7,7 +7,7 @@ require "extend/string"
 module RuboCop
   module Cop
     module FormulaAudit
-      # This cop audits patches in Formulae.
+      # This cop audits `patch`es in formulae.
       class Patches < FormulaCop
         def audit_formula(node, _class_node, _parent_class_node, body)
           @full_source_content = source_buffer(node).source

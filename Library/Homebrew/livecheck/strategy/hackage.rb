@@ -4,14 +4,15 @@
 module Homebrew
   module Livecheck
     module Strategy
-      # The `Hackage` strategy identifies versions of software at
+      # The {Hackage} strategy identifies versions of software at
       # hackage.haskell.org by checking directory listing pages.
       #
       # Hackage URLs take one of the following formats:
+      #
       # * `https://hackage.haskell.org/package/example-1.2.3/example-1.2.3.tar.gz`
       # * `https://downloads.haskell.org/~ghc/8.10.1/ghc-8.10.1-src.tar.xz`
       #
-      # The default regex checks for the latest version an `h3` heading element
+      # The default regex checks for the latest version in an `h3` heading element
       # with a format like `<h3>example-1.2.3/</h3>`.
       #
       # @api public
@@ -20,6 +21,7 @@ module Homebrew
         URL_MATCH_REGEX = /(?:downloads|hackage)\.haskell\.org/i.freeze
 
         # Whether the strategy can be applied to the provided URL.
+        #
         # @param url [String] the URL to match against
         # @return [Boolean]
         def self.match?(url)
@@ -27,8 +29,8 @@ module Homebrew
         end
 
         # Generates a URL and regex (if one isn't provided) and passes them
-        # to the `PageMatch#find_versions` method to identify versions in the
-        # content.
+        # to {PageMatch.find_versions} to identify versions in the content.
+        #
         # @param url [String] the URL of the content to check
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]

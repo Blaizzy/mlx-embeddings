@@ -91,7 +91,7 @@ module Utils
       end
     end
 
-    # Collector for bottles specifications.
+    # Collector for bottle specifications.
     class Collector
       extend Forwardable
 

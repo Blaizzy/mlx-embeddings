@@ -5,7 +5,7 @@ require "set"
 require "cache_store"
 
 #
-# `LinkageCacheStore` provides methods to fetch and mutate linkage-specific data used
+# {LinkageCacheStore} provides methods to fetch and mutate linkage-specific data used
 # by the `brew linkage` command.
 #
 class LinkageCacheStore < CacheStore
@@ -17,7 +17,7 @@ class LinkageCacheStore < CacheStore
     super(database)
   end
 
-  # Returns `true` if the database has any value for the current `keg_path`
+  # Returns `true` if the database has any value for the current `keg_path`.
   #
   # @return [Boolean]
   def keg_exists?
@@ -25,7 +25,7 @@ class LinkageCacheStore < CacheStore
   end
 
   # Inserts dylib-related information into the cache if it does not exist or
-  # updates data into the linkage cache if it does exist
+  # updates data into the linkage cache if it does exist.
   #
   # @param hash_values [Hash] hash containing KVPs of { :type => Hash }
   # @return [nil]
@@ -41,7 +41,7 @@ class LinkageCacheStore < CacheStore
     database.set @keg_path, hash_values
   end
 
-  # @param type [Symbol] the type to fetch from the `LinkageCacheStore`
+  # @param type [Symbol] the type to fetch from the {LinkageCacheStore}
   # @raise  [TypeError] error if the type is not in `HASH_LINKAGE_TYPES`
   # @return [Hash]
   def fetch(type)
@@ -56,7 +56,7 @@ class LinkageCacheStore < CacheStore
     fetch_hash_values(type)
   end
 
-  # Delete the keg from the `LinkageCacheStore`
+  # Delete the keg from the {LinkageCacheStore}
   #
   # @return [nil]
   def delete!

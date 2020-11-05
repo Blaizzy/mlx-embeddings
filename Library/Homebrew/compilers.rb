@@ -27,10 +27,10 @@ class CompilerFailure
   end
 
   # Allows Apple compiler `fails_with` statements to keep using `build`
-  # even though `build` and `version` are the same internally
+  # even though `build` and `version` are the same internally.
   alias build version
 
-  # The cause is no longer used so we need not hold a reference to the string
+  # The cause is no longer used so we need not hold a reference to the string.
   def cause(_); end
 
   def self.for_standard(standard)

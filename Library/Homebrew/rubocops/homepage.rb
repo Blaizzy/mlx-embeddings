@@ -6,7 +6,7 @@ require "rubocops/extend/formula"
 module RuboCop
   module Cop
     module FormulaAudit
-      # This cop audits the `homepage` URL in Formulae.
+      # This cop audits the `homepage` URL in formulae.
       class Homepage < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           homepage_node = find_node_method_by_name(body_node, :homepage)
@@ -23,7 +23,7 @@ module RuboCop
           end
 
           case homepage
-          # Check for http:// GitHub homepage urls, https:// is preferred.
+          # Check for http:// GitHub homepage URLs, https:// is preferred.
           # Note: only check homepages that are repo pages, not *.github.com hosts
           when %r{^http://github.com/}
             problem "Please use https:// for #{homepage}"

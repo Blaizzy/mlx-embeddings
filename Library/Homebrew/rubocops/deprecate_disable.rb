@@ -6,7 +6,7 @@ require "rubocops/extend/formula"
 module RuboCop
   module Cop
     module FormulaAudit
-      # This cop audits deprecate! date and disable! date
+      # This cop audits `deprecate!` and `disable!` dates.
       class DeprecateDisableDate < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           [:deprecate!, :disable!].each do |method|
@@ -36,7 +36,7 @@ module RuboCop
         EOS
       end
 
-      # This cop audits deprecate! reason
+      # This cop audits `deprecate!` and `disable!` reasons.
       class DeprecateDisableReason < FormulaCop
         PUNCTUATION_MARKS = %w[. ! ?].freeze
 

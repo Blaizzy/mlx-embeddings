@@ -9,9 +9,9 @@ module Language
   # @api public
   module Go
     # Given a set of resources, stages them to a gopath for
-    # building go software.
+    # building Go software.
     # The resource names should be the import name of the package,
-    # e.g. `resource "github.com/foo/bar"`
+    # e.g. `resource "github.com/foo/bar"`.
     def self.stage_deps(resources, target)
       if resources.empty?
         if Homebrew::EnvConfig.developer?

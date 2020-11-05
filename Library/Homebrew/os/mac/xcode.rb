@@ -77,7 +77,7 @@ module OS
       end
 
       # Returns a Pathname object corresponding to Xcode.app's Developer
-      # directory or nil if Xcode.app is not installed
+      # directory or nil if Xcode.app is not installed.
       def prefix
         @prefix ||=
           begin
@@ -215,7 +215,7 @@ module OS
       MAVERICKS_NEW_PKG_ID = "com.apple.pkg.CLTools_Base" # obsolete
       PKG_PATH = "/Library/Developer/CommandLineTools"
 
-      # Returns true even if outdated tools are installed
+      # Returns true even if outdated tools are installed.
       def installed?
         !version.null?
       end
@@ -312,7 +312,7 @@ module OS
       end
 
       # Version string (a pretty long one) of the CLT package.
-      # Note, that different ways to install the CLTs lead to different
+      # Note that the different ways of installing the CLTs lead to different
       # version numbers.
       def version
         if @version ||= detect_version

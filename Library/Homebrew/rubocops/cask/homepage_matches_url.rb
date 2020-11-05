@@ -6,7 +6,7 @@ require "forwardable"
 module RuboCop
   module Cop
     module Cask
-      # This cop checks that a cask's homepage matches the download url,
+      # This cop checks that a cask's homepage matches the download URL,
       # or if it doesn't, checks if a comment in the form
       # `# example.com was verified as official when first introduced to the cask`
       # is present.

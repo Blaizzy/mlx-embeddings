@@ -4,7 +4,7 @@
 require "json"
 
 #
-# `CacheStoreDatabase` acts as an interface to a persistent storage mechanism
+# {CacheStoreDatabase} acts as an interface to a persistent storage mechanism
 # residing in the `HOMEBREW_CACHE`.
 #
 class CacheStoreDatabase
@@ -67,7 +67,7 @@ class CacheStoreDatabase
     cache_path.atomic_write(JSON.dump(@db))
   end
 
-  # Returns `true` if the cache file has been created for the given `@type`
+  # Returns `true` if the cache file has been created for the given `@type`.
   #
   # @return [Boolean]
   def created?
@@ -107,8 +107,8 @@ class CacheStoreDatabase
   private
 
   # Lazily loaded database in read/write mode. If this method is called, a
-  # database file with be created in the `HOMEBREW_CACHE` with name
-  # corresponding to the `@type` instance variable
+  # database file will be created in the `HOMEBREW_CACHE` with a name
+  # corresponding to the `@type` instance variable.
   #
   # @return [Hash] db
   def db
@@ -120,7 +120,7 @@ class CacheStoreDatabase
     @db ||= {}
   end
 
-  # Creates a CacheStoreDatabase
+  # Creates a CacheStoreDatabase.
   #
   # @param  [Symbol] type
   # @return [nil]
@@ -130,19 +130,19 @@ class CacheStoreDatabase
   end
 
   # The path where the database resides in the `HOMEBREW_CACHE` for the given
-  # `@type`
+  # `@type`.
   #
   # @return [String]
   def cache_path
     HOMEBREW_CACHE/"#{@type}.json"
   end
 
-  # Sets that the cache needs written to disk.
+  # Sets that the cache needs to be written to disk.
   def dirty!
     @dirty = true
   end
 
-  # Returns `true` if the cache needs written to disk.
+  # Returns `true` if the cache needs to be written to disk.
   #
   # @return [Boolean]
   def dirty?
@@ -151,7 +151,7 @@ class CacheStoreDatabase
 end
 
 #
-# `CacheStore` provides methods to mutate and fetch data from a persistent
+# {CacheStore} provides methods to mutate and fetch data from a persistent
 # storage mechanism.
 #
 class CacheStore
@@ -161,8 +161,7 @@ class CacheStore
     @database = database
   end
 
-  # Inserts new values or updates existing cached values to persistent storage
-  # mechanism
+  # Inserts new values or updates existing cached values to persistent storage.
   #
   # @abstract
   def update!(*)
@@ -170,14 +169,14 @@ class CacheStore
   end
 
   # Fetches cached values in persistent storage according to the type of data
-  # stored
+  # stored.
   #
   # @abstract
   def fetch(*)
     raise NotImplementedError
   end
 
-  # Deletes data from the cache based on a condition defined in a concrete class
+  # Deletes data from the cache based on a condition defined in a concrete class.
   #
   # @abstract
   def delete!(*)

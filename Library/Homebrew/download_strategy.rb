@@ -255,7 +255,7 @@ class AbstractFileDownloadStrategy < AbstractDownloadStrategy
     @symlink_location = @cache/"#{name}--#{version}#{ext}"
   end
 
-  # Path for storing the completed download .
+  # Path for storing the completed download.
   #
   # @api public
   def cached_location

@@ -6,10 +6,10 @@ require "rubocops/extend/formula"
 module RuboCop
   module Cop
     module FormulaAudit
-      # This cop checks for correct order of `depends_on` in Formulae.
+      # This cop checks for correct order of `depends_on` in formulae.
       #
       # precedence order:
-      # build-time > run-time > normal > recommended > optional
+      # build-time > test > normal > recommended > optional
       class DependencyOrder < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           check_dependency_nodes_order(body_node)
@@ -61,8 +61,8 @@ module RuboCop
         end
 
         # `depends_on :apple if build.with? "foo"` should always be defined
-        #  after `depends_on :foo`
-        # This method reorders dependencies array according to above rule
+        #  after `depends_on :foo`.
+        # This method reorders the dependencies array according to the above rule.
         def sort_conditional_dependencies!(ordered)
           length = ordered.size
           idx = 0
@@ -86,8 +86,8 @@ module RuboCop
           ordered
         end
 
-        # Verify actual order of sorted `depends_on` nodes in source code
-        # Else raise RuboCop problem
+        # Verify actual order of sorted `depends_on` nodes in source code;
+        # raise RuboCop problem otherwise.
         def verify_order_in_source(ordered)
           ordered.each_with_index do |dependency_node_1, idx|
             l1 = line_number(dependency_node_1)
@@ -104,7 +104,7 @@ module RuboCop
         end
 
         # Node pattern method to match
-        # `depends_on` variants
+        # `depends_on` variants.
         def_node_matcher :depends_on_node?, <<~EOS
           {(if _ (send nil? :depends_on ...) nil?)
            (send nil? :depends_on ...)}
@@ -168,7 +168,7 @@ module RuboCop
                   "\"#{dependency_name(c2)}\" (line #{line_number(c2)})"
         end
 
-        # Reorder two nodes in the source, using the corrector instance in autocorrect method
+        # Reorder two nodes in the source, using the corrector instance in the {autocorrect} method.
         def reorder_components(corrector, node1, node2)
           indentation = " " * (start_column(node2) - line_start_column(node2))
           line_breaks = "\n"

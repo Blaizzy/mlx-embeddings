@@ -110,7 +110,7 @@ module RuboCop
         end
       end
 
-      # This cop makes sure that options are used idiomatically.
+      # This cop makes sure that `option`s are used idiomatically.
       #
       # @api private
       class OptionDeclarations < FormulaCop
@@ -320,7 +320,7 @@ module RuboCop
         EOS
       end
 
-      # This cop makes sure that python versions are consistent.
+      # This cop makes sure that Python versions are consistent.
       #
       # @api private
       class PythonVersions < FormulaCop

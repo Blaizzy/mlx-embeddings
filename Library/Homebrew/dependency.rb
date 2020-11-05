@@ -68,7 +68,7 @@ class Dependency
     "#<#{self.class.name}: #{name.inspect} #{tags.inspect}>"
   end
 
-  # Define marshaling semantics because we cannot serialize @env_proc
+  # Define marshaling semantics because we cannot serialize @env_proc.
   def _dump(*)
     Marshal.dump([name, tags])
   end
@@ -78,7 +78,7 @@ class Dependency
   end
 
   class << self
-    # Expand the dependencies of dependent recursively, optionally yielding
+    # Expand the dependencies of each dependent recursively, optionally yielding
     # `[dependent, dep]` pairs to allow callers to apply arbitrary filters to
     # the list.
     # The default filter, which is applied when a block is not given, omits
@@ -125,17 +125,17 @@ class Dependency
       end
     end
 
-    # Prune a dependency and its dependencies recursively
+    # Prune a dependency and its dependencies recursively.
     def prune
       throw(:action, :prune)
     end
 
-    # Prune a single dependency but do not prune its dependencies
+    # Prune a single dependency but do not prune its dependencies.
     def skip
       throw(:action, :skip)
     end
 
-    # Keep a dependency, but prune its dependencies
+    # Keep a dependency, but prune its dependencies.
     def keep_but_prune_recursive_deps
       throw(:action, :keep_but_prune_recursive_deps)
     end

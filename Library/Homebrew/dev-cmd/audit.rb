@@ -760,7 +760,7 @@ module Homebrew
       "vbindiff"        => "3.0_beta",
     }.freeze
 
-    # used for formulae that are unstable but need CI run without being in homebrew/core
+    # Used for formulae that are unstable but need CI run without being in homebrew/core
     UNSTABLE_DEVEL_ALLOWLIST = {
     }.freeze
 

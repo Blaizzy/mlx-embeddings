@@ -6,7 +6,7 @@ require "rubocops/extend/formula"
 module RuboCop
   module Cop
     module FormulaAudit
-      # This cop audits `options` in Formulae.
+      # This cop audits `option`s in formulae.
       class Options < FormulaCop
         DEPRECATION_MSG = "macOS has been 64-bit only since 10.6 so 32-bit options are deprecated."
         UNI_DEPRECATION_MSG = "macOS has been 64-bit only since 10.6 so universal options are deprecated."

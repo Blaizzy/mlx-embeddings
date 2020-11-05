@@ -5,7 +5,7 @@ require "rubocops/shared/helper_functions"
 
 module RuboCop
   module Cop
-    # This module performs common checks the `desc` field in both Formulae and Casks.
+    # This module performs common checks the `desc` field in both formulae and casks.
     #
     # @api private
     module DescHelper

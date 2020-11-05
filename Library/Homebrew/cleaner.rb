@@ -13,12 +13,12 @@
 class Cleaner
   include Context
 
-  # Create a cleaner for the given formula
+  # Create a cleaner for the given formula.
   def initialize(f)
     @f = f
   end
 
-  # Clean the keg of formula @f
+  # Clean the keg of the formula.
   def clean
     ObserverPathnameExtension.reset_counts!
 

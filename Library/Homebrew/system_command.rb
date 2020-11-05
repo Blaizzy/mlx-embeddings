@@ -15,7 +15,7 @@ using HashValidator
 #
 # @api private
 class SystemCommand
-  # Helper functions for calling `SystemCommand.run`.
+  # Helper functions for calling {SystemCommand.run}.
   module Mixin
     def system_command(*args)
       SystemCommand.run(*args)

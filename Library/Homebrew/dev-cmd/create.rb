@@ -63,7 +63,7 @@ module Homebrew
     end
   end
 
-  # Create a formula from a tarball URL
+  # Create a formula from a tarball URL.
   def create
     args = create_args.parse
 

@@ -39,10 +39,10 @@ class Keg
     end
   end
 
-  # Detects the C++ dynamic libraries in place, scanning the dynamic links
+  # Detects the C++ dynamic libraries in-place, scanning the dynamic links
   # of the files within the keg.
   # Note that this doesn't attempt to distinguish between libstdc++ versions,
-  # for instance between Apple libstdc++ and GNU libstdc++
+  # for instance between Apple libstdc++ and GNU libstdc++.
   def detect_cxx_stdlibs(options = {})
     skip_executables = options.fetch(:skip_executables, false)
     results = Set.new

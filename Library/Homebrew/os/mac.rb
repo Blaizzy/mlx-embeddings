@@ -121,7 +121,7 @@ module OS
       sdk(v)
     end
 
-    # Returns the path to an SDK or nil, following the rules set by {.sdk}.
+    # Returns the path to an SDK or nil, following the rules set by {sdk}.
     def sdk_path(v = nil)
       s = sdk(v)
       s&.path

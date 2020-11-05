@@ -4,10 +4,11 @@
 module Homebrew
   module Livecheck
     module Strategy
-      # The `Bitbucket` strategy identifies versions of software at
+      # The {Bitbucket} strategy identifies versions of software at
       # bitbucket.org by checking a repository's available downloads.
       #
       # Bitbucket URLs generally take one of the following formats:
+      #
       # * `https://bitbucket.org/example/example/get/1.2.3.tar.gz`
       # * `https://bitbucket.org/example/example/downloads/example-1.2.3.tar.gz`
       #
@@ -31,6 +32,7 @@ module Homebrew
         URL_MATCH_REGEX = %r{bitbucket\.org(/[^/]+){4}\.\w+}i.freeze
 
         # Whether the strategy can be applied to the provided URL.
+        #
         # @param url [String] the URL to match against
         # @return [Boolean]
         def self.match?(url)
@@ -38,8 +40,8 @@ module Homebrew
         end
 
         # Generates a URL and regex (if one isn't provided) and passes them
-        # to the `PageMatch#find_versions` method to identify versions in the
-        # content.
+        # to {PageMatch.find_versions} to identify versions in the content.
+        #
         # @param url [String] the URL of the content to check
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]
@@ -53,7 +55,7 @@ module Homebrew
             (?<suffix>[^/]+) # Filename text after the version
           }ix =~ url
 
-          # Use `\.t` instead of specific tarball extensions (e.g., .tar.gz)
+          # Use `\.t` instead of specific tarball extensions (e.g. .tar.gz)
           suffix.sub!(/\.t(?:ar\..+|[a-z0-9]+)$/i, "\.t")
 
           # `/get/` archives are Git tag snapshots, so we need to check that tab

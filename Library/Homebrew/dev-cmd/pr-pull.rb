@@ -130,7 +130,7 @@ module Homebrew
   end
 
   # Cherry picks a single commit that modifies a single file.
-  # Potentially rewords this commit using `determine_bump_subject`.
+  # Potentially rewords this commit using {determine_bump_subject}.
   def reword_formula_commit(commit, file, reason: "", verbose: false, resolve: false, path: ".")
     formula_file = Pathname.new(path) / file
     formula_name = formula_file.basename.to_s.chomp(".rb")
@@ -154,7 +154,7 @@ module Homebrew
   end
 
   # Cherry picks multiple commits that each modify a single file.
-  # Words the commit according to `determine_bump_subject` with the body
+  # Words the commit according to {determine_bump_subject} with the body
   # corresponding to all the original commit messages combined.
   def squash_formula_commits(commits, file, reason: "", verbose: false, resolve: false, path: ".")
     odebug "Squashing #{file}: #{commits.join " "}"

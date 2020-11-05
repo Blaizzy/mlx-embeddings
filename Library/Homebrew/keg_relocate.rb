@@ -8,7 +8,7 @@ class Keg
 
   Relocation = Struct.new(:old_prefix, :old_cellar, :old_repository,
                           :new_prefix, :new_cellar, :new_repository) do
-    # Use keyword args instead of positional args for initialization
+    # Use keyword args instead of positional args for initialization.
     def initialize(**kwargs)
       super(*members.map { |k| kwargs[k] })
     end

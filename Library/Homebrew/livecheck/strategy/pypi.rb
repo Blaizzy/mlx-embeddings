@@ -4,11 +4,12 @@
 module Homebrew
   module Livecheck
     module Strategy
-      # The `Pypi` strategy identifies versions of software at pypi.org by
+      # The {Pypi} strategy identifies versions of software at pypi.org by
       # checking project pages for archive files.
       #
       # PyPI URLs have a standard format but the hexadecimal text between
       # `/packages/` and the filename varies:
+      #
       # * `https://files.pythonhosted.org/packages/<hex>/<hex>/<long_hex>/example-1.2.3.tar.gz`
       #
       # As such, the default regex only targets the filename at the end of the
@@ -22,6 +23,7 @@ module Homebrew
         URL_MATCH_REGEX = /files\.pythonhosted\.org/i.freeze
 
         # Whether the strategy can be applied to the provided URL.
+        #
         # @param url [String] the URL to match against
         # @return [Boolean]
         def self.match?(url)
@@ -29,8 +31,8 @@ module Homebrew
         end
 
         # Generates a URL and regex (if one isn't provided) and passes them
-        # to the `PageMatch#find_versions` method to identify versions in the
-        # content.
+        # to {PageMatch.find_versions} to identify versions in the content.
+        #
         # @param url [String] the URL of the content to check
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]
@@ -41,7 +43,7 @@ module Homebrew
             (?<suffix>\.tar\.[a-z0-9]+|\.[a-z0-9]+)$ # Filename extension
           /ix =~ File.basename(url)
 
-          # Use `\.t` instead of specific tarball extensions (e.g., .tar.gz)
+          # Use `\.t` instead of specific tarball extensions (e.g. .tar.gz)
           suffix.sub!(/\.t(?:ar\..+|[a-z0-9]+)$/i, "\.t")
 
           # It's not technically necessary to have the `#files` fragment at the

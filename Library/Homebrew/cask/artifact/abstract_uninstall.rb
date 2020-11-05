@@ -79,7 +79,7 @@ module Cask
 
       # Preserve prior functionality of script which runs first. Should rarely be needed.
       # :early_script should not delete files, better defer that to :script.
-      # If Cask writers never need :early_script it may be removed in the future.
+      # If cask writers never need :early_script it may be removed in the future.
       def uninstall_early_script(directives, **options)
         uninstall_script(directives, directive_name: :early_script, **options)
       end

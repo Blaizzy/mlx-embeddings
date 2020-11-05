@@ -151,25 +151,25 @@ module Cask
         begin
           oh1 "Upgrading #{Formatter.identifier(old_cask)}"
 
-          # Start new Cask's installation steps
+          # Start new cask's installation steps
           new_cask_installer.check_conflicts
 
           puts new_cask_installer.caveats if new_cask_installer.caveats
 
           new_cask_installer.fetch
 
-          # Move the old Cask's artifacts back to staging
+          # Move the old cask's artifacts back to staging
           old_cask_installer.start_upgrade
           # And flag it so in case of error
           started_upgrade = true
 
-          # Install the new Cask
+          # Install the new cask
           new_cask_installer.stage
 
           new_cask_installer.install_artifacts
           new_artifacts_installed = true
 
-          # If successful, wipe the old Cask from staging
+          # If successful, wipe the old cask from staging
           old_cask_installer.finalize_upgrade
         rescue => e
           new_cask_installer.uninstall_artifacts if new_artifacts_installed

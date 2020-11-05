@@ -15,7 +15,7 @@ module Homebrew
     CLEANUP_DEFAULT_DAYS = 30
     private_constant :CLEANUP_DEFAULT_DAYS
 
-    # `Pathname` refinement with helper functions for cleaning up files.
+    # {Pathname} refinement with helper functions for cleaning up files.
     module CleanupRefinement
       refine Pathname do
         def incomplete?

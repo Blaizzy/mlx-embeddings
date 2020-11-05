@@ -6,19 +6,19 @@ require "open3"
 module Homebrew
   module Livecheck
     module Strategy
-      # The `Git` strategy identifies versions of software in a Git repository
+      # The {Git} strategy identifies versions of software in a Git repository
       # by checking the tags using `git ls-remote --tags`.
       #
-      # Livecheck has historically prioritized the `Git` strategy over others
+      # Livecheck has historically prioritized the {Git} strategy over others
       # and this behavior was continued when the priority setup was created.
-      # This is partly related to livecheck checking formula URLs in order of
+      # This is partly related to Livecheck checking formula URLs in order of
       # `head`, `stable`, and then `homepage`. The higher priority here may
       # be removed (or altered) in the future if we reevaluate this particular
       # behavior.
       #
       # This strategy does not have a default regex. Instead, it simply removes
       # any non-digit text from the start of tags and parses the rest as a
-      # `Version`. This works for some simple situations but even one unusual
+      # {Version}. This works for some simple situations but even one unusual
       # tag can cause a bad result. It's better to provide a regex in a
       # `livecheck` block, so `livecheck` only matches what we really want.
       #
@@ -31,6 +31,7 @@ module Homebrew
         # Fetches a remote Git repository's tags using `git ls-remote --tags`
         # and parses the command's output. If a regex is provided, it will be
         # used to filter out any tags that don't match it.
+        #
         # @param url [String] the URL of the Git repository to check
         # @param regex [Regexp] the regex to use for filtering tags
         # @return [Hash]
@@ -59,6 +60,7 @@ module Homebrew
         end
 
         # Whether the strategy can be applied to the provided URL.
+        #
         # @param url [String] the URL to match against
         # @return [Boolean]
         def self.match?(url)
@@ -66,8 +68,9 @@ module Homebrew
         end
 
         # Checks the Git tags for new versions. When a regex isn't provided,
-        # the `Git` strategy simply removes non-digits from the start of tag
-        # strings and parses the remaining text as a `Version`.
+        # this strategy simply removes non-digits from the start of tag
+        # strings and parses the remaining text as a {Version}.
+        #
         # @param url [String] the URL of the Git repository to check
         # @param regex [Regexp] the regex to use for matching versions
         # @return [Hash]

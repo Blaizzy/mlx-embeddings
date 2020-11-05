@@ -48,7 +48,7 @@ module OS
         to_sym.to_s.split("_").map(&:capitalize).join(" ")
       end
 
-      # For OS::Mac::Version compatibility
+      # For {OS::Mac::Version} compatibility.
       def requires_nehalem_cpu?
         unless Hardware::CPU.intel?
           raise "Unexpected architecture: #{Hardware::CPU.arch}. This only works with Intel architecture."

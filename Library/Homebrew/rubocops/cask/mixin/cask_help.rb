@@ -4,7 +4,7 @@
 module RuboCop
   module Cop
     module Cask
-      # Common functionality for cops checking casks
+      # Common functionality for cops checking casks.
       module CaskHelp
         def on_block(block_node)
           super if defined? super

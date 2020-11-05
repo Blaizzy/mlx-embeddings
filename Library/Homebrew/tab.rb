@@ -9,9 +9,8 @@ require "development_tools"
 require "extend/cachable"
 
 # Inherit from OpenStruct to gain a generic initialization method that takes a
-# hash and creates an attribute for each key and value. `Tab.new` probably
-# should not be called directly, instead use one of the class methods like
-# `Tab.create`.
+# hash and creates an attribute for each key and value. Rather than calling
+# `new` directly, use one of the class methods like {Tab.create}.
 class Tab < OpenStruct
   extend Cachable
 
@@ -54,13 +53,13 @@ class Tab < OpenStruct
     new(attributes)
   end
 
-  # Returns the Tab for an install receipt at `path`.
+  # Returns the {Tab} for an install receipt at `path`.
   # Results are cached.
   def self.from_file(path)
     cache.fetch(path) { |p| cache[p] = from_file_content(File.read(p), p) }
   end
 
-  # Like Tab.from_file, but bypass the cache.
+  # Like {from_file}, but bypass the cache.
   def self.from_file_content(content, path)
     attributes = begin
       JSON.parse(content)
@@ -114,7 +113,7 @@ class Tab < OpenStruct
     tab
   end
 
-  # Returns a tab for the named formula's installation,
+  # Returns a {Tab} for the named formula's installation,
   # or a fake one if the formula is not installed.
   def self.for_name(name)
     for_formula(Formulary.factory(name))
@@ -131,7 +130,7 @@ class Tab < OpenStruct
     options
   end
 
-  # Returns a Tab for an already installed formula,
+  # Returns a {Tab} for an already installed formula,
   # or a fake one if the formula is not installed.
   def self.for_formula(f)
     paths = []

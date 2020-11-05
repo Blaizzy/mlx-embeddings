@@ -19,9 +19,9 @@ module Homebrew
       DEFAULT_PRIORITY = 5
       private_constant :DEFAULT_PRIORITY
 
-      # Creates and/or returns a `@strategies` `Hash` ,which maps a snake
-      # case strategy name symbol (e.g., `:page_match`) to the associated
-      # `Strategy`.
+      # Creates and/or returns a `@strategies` `Hash`, which maps a snake
+      # case strategy name symbol (e.g. `:page_match`) to the associated
+      # {Strategy}.
       #
       # At present, this should only be called after tap strategies have been
       # loaded, otherwise livecheck won't be able to use them.
@@ -39,16 +39,18 @@ module Homebrew
       end
       private_class_method :strategies
 
-      # Returns the `Strategy` that corresponds to the provided `Symbol` (or
-      # `nil` if there is no matching `Strategy`).
+      # Returns the {Strategy} that corresponds to the provided `Symbol` (or
+      # `nil` if there is no matching {Strategy}).
+      #
       # @param symbol [Symbol] the strategy name in snake case as a `Symbol`
-      #   (e.g., `:page_match`)
+      #   (e.g. `:page_match`)
       # @return [Strategy, nil]
       def from_symbol(symbol)
         strategies[symbol]
       end
 
       # Returns an array of strategies that apply to the provided URL.
+      #
       # @param url [String] the URL to check for matching strategies
       # @param regex_provided [Boolean] whether a regex is provided in a
       #   `livecheck` block

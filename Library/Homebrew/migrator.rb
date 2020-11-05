@@ -51,49 +51,49 @@ class Migrator
     end
   end
 
-  # instance of new name formula
+  # Instance of renamed formula.
   attr_reader :formula
 
-  # old name of the formula
+  # Old name of the formula.
   attr_reader :oldname
 
-  # path to oldname's cellar
+  # Path to oldname's cellar.
   attr_reader :old_cellar
 
-  # path to oldname pin
+  # Path to oldname pin.
   attr_reader :old_pin_record
 
-  # path to oldname opt
+  # Path to oldname opt.
   attr_reader :old_opt_record
 
-  # oldname linked keg
+  # Oldname linked keg.
   attr_reader :old_linked_keg
 
-  # path to oldname's linked keg
+  # Path to oldname's linked keg.
   attr_reader :old_linked_keg_record
 
-  # tabs from oldname kegs
+  # Tabs from oldname kegs.
   attr_reader :old_tabs
 
-  # tap of the old name
+  # Tap of the old name.
   attr_reader :old_tap
 
-  # resolved path to oldname pin
+  # Resolved path to oldname pin.
   attr_reader :old_pin_link_record
 
-  # new name of the formula
+  # New name of the formula.
   attr_reader :newname
 
-  # path to newname cellar according to new name
+  # Path to newname cellar according to new name.
   attr_reader :new_cellar
 
-  # true if new cellar existed at initialization time
+  # True if new cellar existed at initialization time.
   attr_reader :new_cellar_existed
 
-  # path to newname pin
+  # Path to newname pin.
   attr_reader :new_pin_record
 
-  # path to newname keg that will be linked if old_linked_keg isn't nil
+  # Path to newname keg that will be linked if old_linked_keg isn't nil.
   attr_reader :new_linked_keg_record
 
   def self.needs_migration?(formula)
@@ -147,7 +147,7 @@ class Migrator
     @old_pin_link_record = old_pin_record.readlink if @pinned
   end
 
-  # Fix INSTALL_RECEIPTs for tap-migrated formula.
+  # Fix `INSTALL_RECEIPT`s for tap-migrated formula.
   def fix_tabs
     old_tabs.each do |tab|
       tab.tap = formula.tap
@@ -170,7 +170,7 @@ class Migrator
     if formula_tap_user == old_tap_user
       true
     # Homebrew didn't use to update tabs while performing tap-migrations,
-    # so there can be INSTALL_RECEIPTs containing wrong information about tap,
+    # so there can be `INSTALL_RECEIPT`s containing wrong information about tap,
     # so we check if there is an entry about oldname migrated to tap and if
     # newname's tap is the same as tap to which oldname migrated, then we
     # can perform migrations and the taps for oldname and newname are the same.
@@ -226,7 +226,7 @@ class Migrator
     unlock
   end
 
-  # move everything from Cellar/oldname to Cellar/newname
+  # Move everything from `Cellar/oldname` to `Cellar/newname`.
   def move_to_new_directory
     return unless old_cellar.exist?
 
@@ -340,8 +340,8 @@ class Migrator
     old_opt_record.make_relative_symlink(new_linked_keg_record)
   end
 
-  # After migtaion every INSTALL_RECEIPT.json has wrong path to the formula
-  # so we must update INSTALL_RECEIPTs
+  # After migration every `INSTALL_RECEIPT.json` has the wrong path to the formula
+  # so we must update `INSTALL_RECEIPT`s.
   def update_tabs
     new_tabs = new_cellar.subdirs.map { |d| Tab.for_keg(Keg.new(d)) }
     new_tabs.each do |tab|
@@ -350,7 +350,7 @@ class Migrator
     end
   end
 
-  # Remove opt/oldname link if it belongs to newname.
+  # Remove `opt/oldname` link if it belongs to newname.
   def unlink_oldname_opt
     return unless old_opt_record
 
@@ -362,13 +362,13 @@ class Migrator
     end
   end
 
-  # Remove old_cellar if it exists
+  # Remove `Cellar/oldname` if it exists.
   def link_oldname_cellar
     old_cellar.delete if old_cellar.symlink? || old_cellar.exist?
     old_cellar.make_relative_symlink(formula.rack)
   end
 
-  # Remove Cellar/oldname link if it belongs to newname.
+  # Remove `Cellar/oldname` link if it belongs to newname.
   def unlink_oldname_cellar
     if (old_cellar.symlink? && !old_cellar.exist?) || (old_cellar.symlink? \
           && formula.rack.exist? && formula.rack.realpath == old_cellar.realpath)
@@ -376,7 +376,7 @@ class Migrator
     end
   end
 
-  # Backup everything if errors occurred while migrating.
+  # Backup everything if errors occur while migrating.
   def backup_oldname
     unlink_oldname_opt
     unlink_oldname_cellar

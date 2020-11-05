@@ -17,7 +17,6 @@ class LinkageChecker
     librt.so.1
     libthread_db.so.1
     libutil.so.1
-
     libgcc_s.so.1
     libgomp.so.1
     libstdc++.so.6

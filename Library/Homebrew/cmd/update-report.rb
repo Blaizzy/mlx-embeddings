@@ -311,7 +311,7 @@ class Reporter
         name
       end
 
-      # This means it is a Cask
+      # This means it is a cask
       if report[:DC].include? full_name
         next unless (HOMEBREW_PREFIX/"Caskroom"/new_name).exist?
 

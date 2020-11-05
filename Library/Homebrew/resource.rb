@@ -20,7 +20,7 @@ class Resource
   attr_accessor :download_strategy, :checksum
 
   # Formula name must be set after the DSL, as we have no access to the
-  # formula name before initialization of the formula
+  # formula name before initialization of the formula.
   attr_accessor :name
 
   def initialize(name = nil, &block)
@@ -45,9 +45,9 @@ class Resource
                                           mirrors: mirrors.dup, **specs)
   end
 
-  # Removes /s from resource names; this allows go package names
+  # Removes /s from resource names; this allows Go package names
   # to be used as resource names without confusing software that
-  # interacts with download_name, e.g. github.com/foo/bar
+  # interacts with {download_name}, e.g. `github.com/foo/bar`.
   def escaped_name
     name.tr("/", "-")
   end
@@ -247,7 +247,7 @@ class Resource
   end
 end
 
-# The context in which a {Resource.stage} occurs. Supports access to both
+# The context in which a {Resource#stage} occurs. Supports access to both
 # the {Resource} and associated {Mktemp} in a single block argument. The interface
 # is back-compatible with {Resource} itself as used in that context.
 #
@@ -255,9 +255,9 @@ end
 class ResourceStageContext
   extend Forwardable
 
-  # The {Resource} that is being staged
+  # The {Resource} that is being staged.
   attr_reader :resource
-  # The {Mktemp} in which {#resource} is staged
+  # The {Mktemp} in which {#resource} is staged.
   attr_reader :staging
 
   def_delegators :@resource, :version, :url, :mirrors, :specs, :using, :source_modified_time

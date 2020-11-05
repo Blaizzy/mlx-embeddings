@@ -47,7 +47,7 @@ class CxxStdlib
   # If either package doesn't use C++, all is well.
   # libstdc++ and libc++ aren't ever intercompatible.
   # libstdc++ is compatible across Apple compilers, but
-  # not between Apple and GNU compilers, or between GNU compiler versions.
+  # not between Apple and GNU compilers, nor between GNU compiler versions.
   def compatible_with?(other)
     return true if type.nil? || other.type.nil?
 
