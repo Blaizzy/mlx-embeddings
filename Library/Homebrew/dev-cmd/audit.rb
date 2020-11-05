@@ -1156,7 +1156,7 @@ module Homebrew
   end
 
   class TapAuditor
-    attr_reader :name, :path, :problems
+    attr_reader :name, :path, :tap_audit_exceptions, :problems
 
     def initialize(tap, options = {})
       @name                 = tap.name
