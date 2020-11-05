@@ -668,6 +668,8 @@ module RuboCop
       # This cop ensures that new formulae depending on Requirements are not introduced in homebrew/core.
       class CoreRequirements < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, _body_node)
+          return if formula_tap != "homebrew-core"
+
           if depends_on? :java
             problem "Formulae in homebrew/core should depend on a versioned `openjdk` instead of :java"
           end
