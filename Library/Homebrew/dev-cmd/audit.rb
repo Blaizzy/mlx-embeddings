@@ -118,6 +118,21 @@ module Homebrew
       options[:except_cops] = [:FormulaAuditStrict]
     end
 
+    # Run tap audits first
+    if args.tap
+      tap = Tap.fetch(args.tap)
+      ta = TapAuditor.new(tap, options)
+      ta.audit
+
+      if ta.problems.any?
+        tap_problem_lines = format_problem_lines(ta.problems)
+        tap_problem_count = ta.problems.size
+
+        puts "#{tap.name}:", tap_problem_lines.map { |s| "  #{s}" }
+        odie "#{tap_problem_count} #{"problem".pluralize(tap_problem_count)} in 1 tap detected"
+      end
+    end
+
     # Check style in a single batch run up front for performance
     style_offenses = Style.check_style_json(style_files, options) if style_files
     # load licenses
@@ -1142,6 +1157,57 @@ module Homebrew
 
     def problem(text)
       @problems << text
+    end
+  end
+
+  class TapAuditor
+    attr_reader :name, :path, :problems
+
+    def initialize(tap, options = {})
+      @name                 = tap.name
+      @path                 = tap.path
+      @tap_audit_exceptions = tap.audit_exceptions
+      @strict               = options[:strict]
+      @problems             = []
+    end
+
+    def audit
+      audit_json_files
+      audit_tap_audit_exceptions
+      self
+    end
+
+    def audit_json_files
+      Dir[@path/"**/*.json"].each do |file|
+        JSON.parse Pathname.new(file).read
+      rescue JSON::ParserError
+        problem "#{file.delete_prefix("#{@path}/")} contains invalid JSON"
+      end
+    end
+
+    def audit_tap_audit_exceptions
+      @tap_audit_exceptions.each do |list_name, formula_names|
+        formula_names = formula_names.keys if formula_names.is_a? Hash
+
+        invalid_formulae = []
+        formula_names.each do |name|
+          invalid_formulae.push name if Formulary.factory(name).tap != @name
+        rescue FormulaUnavailableError
+          invalid_formulae.push name
+        end
+
+        next if invalid_formulae.empty?
+
+        problem <<~EOS
+          audit_exceptions/#{list_name}.json references
+          formulae that were are found in the #{@name} tap.
+          Invalid formulae: #{invalid_formulae.join(", ")}
+        EOS
+      end
+    end
+
+    def problem(message, location: nil)
+      @problems << ({ message: message, location: location })
     end
   end
 end
