@@ -121,7 +121,7 @@ module Homebrew
     # Run tap audits first
     if args.tap
       tap = Tap.fetch(args.tap)
-      ta = TapAuditor.new(tap, options)
+      ta = TapAuditor.new(tap, strict: args.strict?)
       ta.audit
 
       if ta.problems.any?
@@ -1158,25 +1158,24 @@ module Homebrew
   class TapAuditor
     attr_reader :name, :path, :tap_audit_exceptions, :problems
 
-    def initialize(tap, options = {})
+    def initialize(tap, strict:)
       @name                 = tap.name
       @path                 = tap.path
       @tap_audit_exceptions = tap.audit_exceptions
-      @strict               = options[:strict]
+      @strict               = strict
       @problems             = []
     end
 
     def audit
       audit_json_files
       audit_tap_audit_exceptions
-      self
     end
 
     def audit_json_files
-      Dir[@path/"**/*.json"].each do |file|
-        JSON.parse Pathname.new(file).read
+      Pathname.glob(@path/"**/*.json").each do |file|
+        JSON.parse file.read
       rescue JSON::ParserError
-        problem "#{file.delete_prefix("#{@path}/")} contains invalid JSON"
+        problem "#{file.to_s.delete_prefix("#{@path}/")} contains invalid JSON"
       end
     end
 
@@ -1186,16 +1185,16 @@ module Homebrew
 
         invalid_formulae = []
         formula_names.each do |name|
-          invalid_formulae.push name if Formulary.factory(name).tap != @name
+          invalid_formulae << name if Formula[name].tap != @name
         rescue FormulaUnavailableError
-          invalid_formulae.push name
+          invalid_formulae << name
         end
 
         next if invalid_formulae.empty?
 
         problem <<~EOS
           audit_exceptions/#{list_name}.json references
-          formulae that were are found in the #{@name} tap.
+          formulae that are not found in the #{@name} tap.
           Invalid formulae: #{invalid_formulae.join(", ")}
         EOS
       end

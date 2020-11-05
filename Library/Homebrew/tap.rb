@@ -546,12 +546,12 @@ class Tap
   def audit_exceptions
     @audit_exceptions = {}
 
-    Dir[path/"audit_exceptions/*"].each do |exception_file|
-      list_name = File.basename(exception_file).chomp(".json").to_sym
+    Pathname.glob(path/"audit_exceptions/*").each do |exception_file|
+      list_name = exception_file.basename.to_s.chomp(".json").to_sym
       list_contents = begin
-        JSON.parse Pathname.new(exception_file).read
+        JSON.parse exception_file.read
       rescue JSON::ParserError
-        nil
+        opoo "#{exception_file} contains invalid JSON"
       end
 
       next if list_contents.nil?
