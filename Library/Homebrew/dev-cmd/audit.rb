@@ -742,11 +742,6 @@ module Homebrew
       [user, repo]
     end
 
-    VERSIONED_HEAD_SPEC_ALLOWLIST = %w[
-      bash-completion@2
-      imagemagick@6
-    ].freeze
-
     UNSTABLE_ALLOWLIST = {
       "aalib"           => "1.4rc",
       "automysqlbackup" => "3.0-rc",
@@ -817,9 +812,9 @@ module Homebrew
 
       return unless @core_tap
 
-      if formula.head && @versioned_formula
-        head_spec_message = "Versioned formulae should not have a `HEAD` spec"
-        problem head_spec_message unless VERSIONED_HEAD_SPEC_ALLOWLIST.include?(formula.name)
+      if formula.head && @versioned_formula &&
+         !tap_audit_exception_list(:versioned_head_spec_allowlist).include?(formula.name)
+        problem "Versioned formulae should not have a `HEAD` spec"
       end
 
       stable = formula.stable
