@@ -665,6 +665,21 @@ module RuboCop
         end
       end
 
+      # This cop ensures that new formulae depending on Requirements are not introduced in homebrew/core.
+      class CoreRequirements < FormulaCop
+        def audit_formula(_node, _class_node, _parent_class_node, _body_node)
+          if depends_on? :java
+            problem "Formulae in homebrew/core should depend on a versioned `openjdk` instead of :java"
+          end
+
+          if depends_on? :x11
+            problem "Formulae in homebrew/core should depend on specific X libraries instead of :x11"
+          end
+
+          problem ":osxfuse is deprecated in homebrew/core" if depends_on? :osxfuse
+        end
+      end
+
       # This cop makes sure that shell command arguments are separated.
       #
       # @api private
