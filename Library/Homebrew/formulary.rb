@@ -356,9 +356,10 @@ module Formulary
   # Return a Formula instance for the given rack.
   # It will auto resolve formula's spec when requested spec is nil
   #
-  # The :alias_path option will be used if the formula is found not to be
-  # installed, and discarded if it is installed because the alias_path used
-  # to install the formula will be set instead.
+  # @param spec when nil, will auto resolve the formula's spec.
+  # @param :alias_path will be used if the formula is found not to be
+  #   installed, and discarded if it is installed because the `alias_path` used
+  #   to install the formula will be set instead.
   def self.from_rack(rack, spec = nil, alias_path: nil, force_bottle: false, flags: [])
     kegs = rack.directory? ? rack.subdirs.map { |d| Keg.new(d) } : []
     keg = kegs.find(&:linked?) || kegs.find(&:optlinked?) || kegs.max_by(&:version)
@@ -378,8 +379,9 @@ module Formulary
     false
   end
 
-  # Return a Formula instance for the given keg.
-  # It will auto resolve formula's spec when requested spec is nil
+  # Return a {Formula} instance for the given keg.
+  #
+  # @param spec when nil, will auto resolve the formula's spec.
   def self.from_keg(keg, spec = nil, alias_path: nil, force_bottle: false, flags: [])
     tab = Tab.for_keg(keg)
     tap = tab.tap

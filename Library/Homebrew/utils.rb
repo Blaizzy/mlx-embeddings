@@ -482,9 +482,9 @@ module Kernel
   #   system "echo $PATH"
   # end</pre>
   #
-  # Note that this method is *not* thread-safe - other threads
-  # which happen to be scheduled during the block will also
-  # see these environment variables.
+  # @note This method is *not* thread-safe - other threads
+  #   which happen to be scheduled during the block will also
+  #   see these environment variables.
   def with_env(hash)
     old_values = {}
     begin

@@ -151,6 +151,7 @@ class Formula
   attr_reader :revision
 
   # Used to change version schemes for packages
+  # @see .version_scheme=
   attr_reader :version_scheme
 
   # The current working directory during builds.
@@ -357,34 +358,34 @@ class Formula
   end
 
   # The description of the software.
-  # @method desc
+  # @!method desc
   # @see .desc=
   delegate desc: :"self.class"
 
   # The SPDX ID of the software license.
-  # @method license
+  # @!method license
   # @see .license=
   delegate license: :"self.class"
 
   # The homepage for the software.
-  # @method homepage
+  # @!method homepage
   # @see .homepage=
   delegate homepage: :"self.class"
 
   # The livecheck specification for the software.
-  # @method livecheck
+  # @!method livecheck
   # @see .livecheck=
   delegate livecheck: :"self.class"
 
   # Is a livecheck specification defined for the software?
-  # @method livecheckable?
+  # @!method livecheckable?
   # @see .livecheckable?
   delegate livecheckable?: :"self.class"
 
   # The version for the currently active {SoftwareSpec}.
   # The version is autodetected from the URL and/or tag so only needs to be
   # declared if it cannot be autodetected correctly.
-  # @method version
+  # @!method version
   # @see .version
   delegate version: :active_spec
 
@@ -429,7 +430,7 @@ class Formula
   # Additional downloads can be defined as {#resource}s.
   # {Resource#stage} will create a temporary directory and yield to a block.
   # <pre>resource("additional_files").stage { bin.install "my/extra/tool" }</pre>
-  # @method resource
+  # @!method resource
   delegate resource: :active_spec
 
   # An old name for the formula
@@ -452,7 +453,7 @@ class Formula
   end
 
   # The {Resource}s for the currently active {SoftwareSpec}.
-  # @method resources
+  # @!method resources
   def_delegator :"active_spec.resources", :values, :resources
 
   # The {Dependency}s for the currently active {SoftwareSpec}.
@@ -483,7 +484,7 @@ class Formula
   delegate deprecated_flags: :active_spec
 
   # If a named option is defined for the currently active {SoftwareSpec}.
-  # @method option_defined?
+  # @!method option_defined?
   delegate option_defined?: :active_spec
 
   # All the {.fails_with} for the currently active {SoftwareSpec}.
@@ -1071,6 +1072,7 @@ class Formula
 
   # Rarely, you don't want your library symlinked into the main prefix.
   # See `gettext.rb` for an example.
+  # @see .keg_only
   def keg_only?
     return false unless keg_only_reason
 
@@ -1135,25 +1137,25 @@ class Formula
 
   # Whether this {Formula} is deprecated (i.e. warns on installation).
   # Defaults to false.
-  # @method deprecated?
+  # @!method deprecated?
   # @return [Boolean]
   delegate deprecated?: :"self.class"
 
   # The reason this {Formula} is deprecated.
   # Returns `nil` if no reason is specified or the formula is not deprecated.
-  # @method deprecation_reason
+  # @!method deprecation_reason
   # @return [String, Symbol]
   delegate deprecation_reason: :"self.class"
 
   # Whether this {Formula} is disabled (i.e. cannot be installed).
   # Defaults to false.
-  # @method disabled?
+  # @!method disabled?
   # @return [Boolean]
   delegate disabled?: :"self.class"
 
   # The reason this {Formula} is disabled.
   # Returns `nil` if no reason is specified or the formula is not disabled.
-  # @method disable_reason
+  # @!method disable_reason
   # @return [String, Symbol]
   delegate disable_reason: :"self.class"
 
@@ -2213,7 +2215,7 @@ class Formula
     # @private
     attr_reader :keg_only_reason
 
-    # @!attribute [w]
+    # @!attribute [w] desc
     # A one-line description of the software. Used by users to get an overview
     # of the software and Homebrew maintainers.
     # Shows when running `brew info`.
@@ -2221,7 +2223,7 @@ class Formula
     # <pre>desc "Example formula"</pre>
     attr_rw :desc
 
-    # @!attribute [w]
+    # @!attribute [w] license
     # The SPDX ID of the open-source license that the formula uses.
     # Shows when running `brew info`.
     # Use `:any_of`, `:all_of` or `:with` to describe complex license expressions.
@@ -2776,7 +2778,7 @@ class Formula
     end
 
     # The reason for deprecation of a {Formula}.
-    # Returns `nil` if no reason was provided or the formula is not deprecated.
+    # @return [nil] if no reason was provided or the formula is not deprecated.
     # @return [String, Symbol]
     attr_reader :deprecation_reason
 

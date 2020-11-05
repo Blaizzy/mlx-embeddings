@@ -433,7 +433,7 @@ module Homebrew
       end
     end
 
-    # try to remove these, it's not a good user experience
+    # TODO: try to remove these, it's not a good user experience
     VERSIONED_DEPENDENCIES_CONFLICTS_ALLOWLIST = %w[
       agda
       anjuta

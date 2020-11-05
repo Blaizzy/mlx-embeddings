@@ -583,7 +583,8 @@ class Version
   end
 end
 
-# A formula's [HEAD version](https://docs.brew.sh/Formula-Cookbook#unstable-versions-head).
+# A formula's HEAD version.
+# @see https://docs.brew.sh/Formula-Cookbook#unstable-versions-head Unstable versions (head)
 #
 # @api private
 class HeadVersion < Version

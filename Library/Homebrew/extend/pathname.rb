@@ -165,7 +165,7 @@ class Pathname
     open("a", *open_args) { |f| f.puts(content) }
   end
 
-  # NOTE: This always overwrites.
+  # @note This always overwrites.
   def atomic_write(content)
     old_stat = stat if exist?
     File.atomic_write(self) do |file|

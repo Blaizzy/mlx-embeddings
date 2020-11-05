@@ -159,12 +159,13 @@ module SharedEnvExtension
   end
 
   # Outputs the current compiler.
-  # @return [Symbol]
   # <pre># Do something only for the system clang
   # if ENV.compiler == :clang
   #   # modify CFLAGS CXXFLAGS OBJCFLAGS OBJCXXFLAGS in one go:
   #   ENV.append_to_cflags "-I ./missing/includes"
   # end</pre>
+  #
+  # @return [Symbol]
   def compiler
     @compiler ||= if (cc = @cc)
       warn_about_non_apple_gcc(cc) if cc.match?(GNU_GCC_REGEXP)

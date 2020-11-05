@@ -181,7 +181,7 @@ class Keg
     [all_required_kegs.to_a, all_dependents.sort]
   end
 
-  # if path is a file in a keg then this will return the containing Keg object
+  # @param path if this is a file in a keg, returns the containing {Keg} object.
   def self.for(path)
     original_path = path
     if original_path.exist? && (path = original_path.realpath)

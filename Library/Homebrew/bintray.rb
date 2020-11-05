@@ -152,8 +152,9 @@ class Bintray
   end
 
   # Gets the SHA-256 checksum of the specified remote file.
-  # Returns the empty string if the file exists but doesn't have a checksum.
-  # Returns nil if the file doesn't exist.
+  #
+  # @return the empty string if the file exists but doesn't have a checksum.
+  # @return [nil] if the file doesn't exist.
   def remote_checksum(repo:, remote_file:)
     url = "https://dl.bintray.com/#{@bintray_org}/#{repo}/#{remote_file}"
     result = curl_output "--fail", "--silent", "--head", url

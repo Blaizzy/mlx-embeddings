@@ -52,7 +52,7 @@ module Homebrew
         @verbose = verbose
       end
 
-      ############# HELPERS
+      ############# @!group HELPERS
       # Finds files in `HOMEBREW_PREFIX` *and* /usr/local.
       # Specify paths relative to a prefix, e.g. "include/foo.h".
       # Sets @found for your convenience.
@@ -78,7 +78,7 @@ module Homebrew
       def add_info(*args)
         ohai(*args) if @verbose
       end
-      ############# END HELPERS
+      ############# @!endgroup END HELPERS
 
       def fatal_preinstall_checks
         %w[
