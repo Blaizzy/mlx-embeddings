@@ -526,8 +526,6 @@ class Tap
 
   # Hash with tap formula renames
   def formula_renames
-    require "json"
-
     @formula_renames ||= if (rename_file = path/"formula_renames.json").file?
       JSON.parse(rename_file.read)
     else
@@ -537,8 +535,6 @@ class Tap
 
   # Hash with tap migrations
   def tap_migrations
-    require "json"
-
     @tap_migrations ||= if (migration_file = path/"tap_migrations.json").file?
       JSON.parse(migration_file.read)
     else
@@ -548,13 +544,22 @@ class Tap
 
   # Hash with audit exceptions
   def audit_exceptions
-    require "json"
+    @audit_exceptions = {}
 
-    @audit_exceptions ||= if (audit_exceptions_file = path/"audit_exceptions.json").file?
-      JSON.parse(audit_exceptions_file.read)
-    else
-      {}
+    Dir[path/"audit_exceptions/*"].each do |exception_file|
+      list_name = File.basename(exception_file).chomp(".json").to_sym
+      list_contents = begin
+        JSON.parse Pathname.new(exception_file).read
+      rescue JSON::ParserError
+        nil
+      end
+
+      next if list_contents.nil?
+
+      @audit_exceptions[list_name] = list_contents
     end
+
+    @audit_exceptions
   end
 
   def ==(other)
