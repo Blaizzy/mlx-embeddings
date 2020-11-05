@@ -11,8 +11,6 @@ require "cask/cask_loader"
 require "uninstall"
 
 module Homebrew
-  extend Uninstall
-
   module_function
 
   def uninstall_args
@@ -57,10 +55,10 @@ module Homebrew
       kegs_by_rack = all_kegs.group_by(&:rack)
     end
 
-    uninstall_kegs(kegs_by_rack,
-                   force:               args.force?,
-                   ignore_dependencies: args.ignore_dependencies?,
-                   named_args:          args.named)
+    Uninstall.uninstall_kegs(kegs_by_rack,
+                             force:               args.force?,
+                             ignore_dependencies: args.ignore_dependencies?,
+                             named_args:          args.named)
 
     return if casks.blank?
 

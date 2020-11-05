@@ -1515,16 +1515,12 @@ class Formula
     end.uniq(&:name)
   end
 
-  # An array of installed {Formula} that are dependencies of other installed {Formula}
+  # An array of all installed {Formula} without dependents
   # @private
-  def self.installed_deps(formulae = installed)
-    formulae.flat_map(&:runtime_formula_dependencies).uniq(&:name)
-  end
+  def self.installed_formulae_with_no_dependents(formulae = installed)
+    return [] if formulae.blank?
 
-  # An array of all installed {Formula} that are not dependencies of other installed {Formula}
-  # @private
-  def self.installed_non_deps(formulae = installed)
-    formulae - installed_deps(formulae)
+    formulae - formulae.flat_map(&:runtime_formula_dependencies)
   end
 
   def self.installed_with_alias_path(alias_path)

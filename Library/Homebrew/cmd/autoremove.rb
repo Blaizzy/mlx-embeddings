@@ -6,8 +6,6 @@ require "cli/parser"
 require "uninstall"
 
 module Homebrew
-  extend Uninstall
-
   module_function
 
   def autoremove_args
@@ -24,7 +22,7 @@ module Homebrew
   end
 
   def get_removable_formulae(formulae)
-    removable_formulae = Formula.installed_non_deps(formulae).reject do |f|
+    removable_formulae = Formula.installed_formulae_with_no_dependents(formulae).reject do |f|
       Tab.for_keg(f.any_installed_keg).installed_on_request
     end
 
@@ -42,12 +40,14 @@ module Homebrew
 
     formulae_names = removable_formulae.map(&:full_name).sort
 
-    oh1 "Formulae that could be removed"
+    intent = args.dry_run? ? "could" : "will"
+    oh1 "Formulae that #{intent} be removed"
     puts formulae_names
 
     return if args.dry_run?
 
+    puts
     kegs_by_rack = removable_formulae.map(&:any_installed_keg).group_by(&:rack)
-    uninstall_kegs(kegs_by_rack)
+    Uninstall.uninstall_kegs(kegs_by_rack)
   end
 end

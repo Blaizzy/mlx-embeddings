@@ -22,7 +22,6 @@ module Homebrew
   def leaves
     leaves_args.parse
 
-    leaves = Formula.installed_non_deps.map(&:full_name).sort
-    leaves.each(&method(:puts))
+    Formula.installed_formulae_with_no_dependents.map(&:full_name).sort.each(&method(:puts))
   end
 end
