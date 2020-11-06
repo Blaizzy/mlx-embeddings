@@ -24,6 +24,7 @@ module Cask
         intel:  { type: :intel, bits: 64 },
         # specific
         x86_64: { type: :intel, bits: 64 },
+        arm64:  { type: :arm, bits: 64 },
       }.freeze
 
       attr_accessor :java
