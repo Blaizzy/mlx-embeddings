@@ -6,7 +6,7 @@ cask "with-depends-on-arch" do
   homepage "https://brew.sh/with-depends-on-arch"
 
   # covers all known hardware; always succeeds
-  depends_on arch: :intel
+  depends_on arch: [:intel, :arm64]
 
   app "Caffeine.app"
 end
