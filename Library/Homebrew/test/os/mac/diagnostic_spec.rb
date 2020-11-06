@@ -6,6 +6,7 @@ require "diagnostic"
 describe Homebrew::Diagnostic::Checks do
   specify "#check_for_unsupported_macos" do
     ENV.delete("HOMEBREW_DEVELOPER")
+    allow(OS::Mac).to receive(:version).and_return(OS::Mac::Version.new("10.14"))
     allow(OS::Mac).to receive(:prerelease?).and_return(true)
 
     expect(subject.check_for_unsupported_macos)
