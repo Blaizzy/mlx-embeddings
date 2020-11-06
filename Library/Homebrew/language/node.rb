@@ -20,7 +20,7 @@ module Language
         begin
           pkg_json = JSON.parse(package.read)
         rescue JSON::ParserError
-          $stderr.puts "Could not parse package.json"
+          opoo "Could not parse package.json!"
           raise
         end
         prepare_removed = pkg_json["scripts"]&.delete("prepare")
