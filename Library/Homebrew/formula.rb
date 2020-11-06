@@ -105,10 +105,6 @@ class Formula
   # @private
   attr_reader :tap
 
-  # Whether or not to force the use of a bottle.
-  # @private
-  attr_reader :force_bottle
-
   # The stable (and default) {SoftwareSpec} for this {Formula}.
   # This contains all the attributes (e.g. URL, checksum) that apply to the
   # stable version of this formula.
@@ -186,6 +182,11 @@ class Formula
   attr_accessor :follow_installed_alias
 
   alias follow_installed_alias? follow_installed_alias
+
+  # Whether or not to force the use of a bottle.
+  # @return [Boolean]
+  # @private
+  attr_accessor :force_bottle
 
   # @private
   def initialize(name, path, spec, alias_path: nil, force_bottle: false)
