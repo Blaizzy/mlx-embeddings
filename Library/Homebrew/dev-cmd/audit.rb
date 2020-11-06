@@ -119,18 +119,21 @@ module Homebrew
     end
 
     # Run tap audits first
-    if args.tap
-      tap = Tap.fetch(args.tap)
-      ta = TapAuditor.new(tap, strict: args.strict?)
+    tap_problem_count = 0
+    tap_count = 0
+    Tap.each do |tap|
+      next if args.tap && tap != args.tap
+
+      ta = TapAuditor.new tap, strict: args.strict?
       ta.audit
 
-      if ta.problems.any?
-        tap_problem_lines = format_problem_lines(ta.problems)
-        tap_problem_count = ta.problems.size
+      next if ta.problems.empty?
 
-        puts "#{tap.name}:", tap_problem_lines.map { |s| "  #{s}" }
-        odie "#{tap_problem_count} #{"problem".pluralize(tap_problem_count)} in 1 tap detected"
-      end
+      tap_count += 1
+      tap_problem_count += ta.problems.size
+      tap_problem_lines = format_problem_lines(ta.problems)
+
+      puts "#{tap.name}:", tap_problem_lines.map { |s| "  #{s}" }
     end
 
     # Check style in a single batch run up front for performance
@@ -184,14 +187,24 @@ module Homebrew
     new_formula_problem_count += new_formula_problem_lines.size
     puts new_formula_problem_lines.map { |s| "  #{s}" }
 
-    total_problems_count = problem_count + new_formula_problem_count
+    total_problems_count = problem_count + new_formula_problem_count + tap_problem_count
+
+    return unless total_problems_count.positive?
+
     problem_plural = "#{total_problems_count} #{"problem".pluralize(total_problems_count)}"
     formula_plural = "#{formula_count} #{"formula".pluralize(formula_count)}"
+    tap_plural = "#{tap_count} #{"tap".pluralize(tap_count)}"
     corrected_problem_plural = "#{corrected_problem_count} #{"problem".pluralize(corrected_problem_count)}"
-    errors_summary = "#{problem_plural} in #{formula_plural} detected"
+    errors_summary = if tap_count.zero?
+      "#{problem_plural} in #{formula_plural} detected"
+    elsif formula_count.zero?
+      "#{problem_plural} in #{tap_plural} detected"
+    else
+      "#{problem_plural} in #{formula_plural} and #{tap_plural} detected"
+    end
     errors_summary += ", #{corrected_problem_plural} corrected" if corrected_problem_count.positive?
 
-    ofail errors_summary if problem_count.positive? || new_formula_problem_count.positive?
+    ofail errors_summary
   end
 
   def format_problem_lines(problems)
@@ -1162,7 +1175,6 @@ module Homebrew
       @name                 = tap.name
       @path                 = tap.path
       @tap_audit_exceptions = tap.audit_exceptions
-      @strict               = strict
       @problems             = []
     end
 
