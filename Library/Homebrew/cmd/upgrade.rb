@@ -137,7 +137,14 @@ module Homebrew
 
     pinned = outdated.select(&:pinned?)
     outdated -= pinned
-    formulae_to_install = outdated.map(&:latest_formula)
+    formulae_to_install = outdated.map do |f|
+      f_latest = f.latest_formula
+      if f_latest.latest_version_installed?
+        f
+      else
+        f_latest
+      end
+    end
 
     if !pinned.empty? && !args.ignore_pinned?
       ofail "Not upgrading #{pinned.count} pinned #{"package".pluralize(pinned.count)}:"

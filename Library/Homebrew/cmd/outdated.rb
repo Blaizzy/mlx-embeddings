@@ -97,7 +97,7 @@ module Homebrew
         if verbose?
           outdated_kegs = f.outdated_kegs(fetch_head: args.fetch_HEAD?)
 
-          current_version = if f.alias_changed?
+          current_version = if f.alias_changed? && !f.latest_formula.latest_version_installed?
             latest = f.latest_formula
             "#{latest.name} (#{latest.pkg_version})"
           elsif f.head? && outdated_kegs.any? { |k| k.version.to_s == f.pkg_version.to_s }
