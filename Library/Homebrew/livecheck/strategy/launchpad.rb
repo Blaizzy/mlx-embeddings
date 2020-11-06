@@ -4,22 +4,22 @@
 module Homebrew
   module Livecheck
     module Strategy
-      # The `Launchpad` strategy identifies versions of software at
+      # The {Launchpad} strategy identifies versions of software at
       # launchpad.net by checking the main page for a project.
       #
       # Launchpad URLs take a variety of formats but all the current formats
       # contain the project name as the first part of the URL path:
+      #
       # * `https://launchpad.net/example/1.2/1.2.3/+download/example-1.2.3.tar.gz`
       # * `https://launchpad.net/example/trunk/1.2.3/+download/example-1.2.3.tar.gz`
       # * `https://code.launchpad.net/example/1.2/1.2.3/+download/example-1.2.3.tar.gz`
       #
       # The default regex identifies the latest version within an HTML element
       # found on the main page for a project:
-      # ```html
-      # <div class="version">
+      #
+      # <pre><div class="version">
       #   Latest version is 1.2.3
-      # </div>
-      # ```
+      # </div></pre>
       #
       # @api public
       class Launchpad
@@ -27,6 +27,7 @@ module Homebrew
         URL_MATCH_REGEX = /launchpad\.net/i.freeze
 
         # Whether the strategy can be applied to the provided URL.
+        #
         # @param url [String] the URL to match against
         # @return [Boolean]
         def self.match?(url)
@@ -34,8 +35,8 @@ module Homebrew
         end
 
         # Generates a URL and regex (if one isn't provided) and passes them
-        # to the `PageMatch#find_versions` method to identify versions in the
-        # content.
+        # to {PageMatch.find_versions} to identify versions in the content.
+        #
         # @param url [String] the URL of the content to check
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]

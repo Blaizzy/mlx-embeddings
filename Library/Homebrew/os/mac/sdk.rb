@@ -123,7 +123,7 @@ module OS
 
       # While CLT SDKs existed prior to Xcode 10, those packages also
       # installed a traditional Unix-style header layout and we prefer
-      # using that
+      # using that.
       # As of Xcode 10, the Unix-style headers are installed via a
       # separate package, so we can't rely on their being present.
       # This will only look up SDKs on Xcode 10 or newer, and still

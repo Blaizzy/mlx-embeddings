@@ -13,7 +13,7 @@ module Cask
       #
       #     brew cask _stanza <stanza_name> [ --quiet ] [ --table | --yaml ] [ <cask_token> ... ]
       #
-      # If no tokens are given, then data for all Casks is returned.
+      # If no tokens are given, then data for all casks is returned.
       #
       # The pseudo-stanza "artifacts" is available.
       #

@@ -41,7 +41,7 @@ module RuboCop
         end
       end
 
-      # This cop ensures that a `url` is specified in the livecheck block.
+      # This cop ensures that a `url` is specified in the `livecheck` block.
       #
       # @api private
       class LivecheckUrlProvided < FormulaCop
@@ -124,7 +124,7 @@ module RuboCop
         end
       end
 
-      # This cop ensures that the `regex` call in the livecheck block uses parentheses.
+      # This cop ensures that the `regex` call in the `livecheck` block uses parentheses.
       #
       # @api private
       class LivecheckRegexParentheses < FormulaCop
@@ -188,7 +188,7 @@ module RuboCop
       end
 
       # This cop ensures that a `regex` is provided when `strategy :page_match` is specified
-      # in the livecheck block.
+      # in the `livecheck` block.
       #
       # @api private
       class LivecheckRegexIfPageMatch < FormulaCop

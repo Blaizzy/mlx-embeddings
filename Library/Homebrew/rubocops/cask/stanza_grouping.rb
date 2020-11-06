@@ -7,8 +7,7 @@ module RuboCop
   module Cop
     module Cask
       # This cop checks that a cask's stanzas are grouped correctly.
-      # See https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/readme.md#stanza-order
-      # for more info.
+      # @see https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/readme.md#stanza-order
       class StanzaGrouping < Cop
         extend Forwardable
         include CaskHelp

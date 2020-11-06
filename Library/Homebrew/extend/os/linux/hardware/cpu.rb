@@ -75,7 +75,7 @@ module Hardware
       end
 
       # Compatibility with Mac method, which returns lowercase symbols
-      # instead of strings
+      # instead of strings.
       def features
         @features ||= flags[1..].map(&:intern)
       end

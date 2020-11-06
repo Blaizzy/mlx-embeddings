@@ -299,7 +299,7 @@ class LinkageChecker
   end
 
   # Display a list of things.
-  # Things may either be an array, or a hash of (label -> array)
+  # Things may either be an array, or a hash of (label -> array).
   def display_items(label, things, puts_output: true)
     return if things.empty?
 

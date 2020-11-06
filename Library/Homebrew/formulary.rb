@@ -5,7 +5,7 @@ require "digest/md5"
 require "extend/cachable"
 require "tab"
 
-# The Formulary is responsible for creating instances of {Formula}.
+# The {Formulary} is responsible for creating instances of {Formula}.
 # It is not meant to be used directly from formulae.
 #
 # @api private
@@ -111,7 +111,7 @@ module Formulary
     class_name
   end
 
-  # A FormulaLoader returns instances of formulae.
+  # A {FormulaLoader} returns instances of formulae.
   # Subclasses implement loaders for particular sources of formulae.
   class FormulaLoader
     include Context
@@ -129,7 +129,6 @@ module Formulary
     end
 
     # Gets the formula instance.
-    #
     # `alias_path` can be overridden here in case an alias was used to refer to
     # a formula that was loaded in another way.
     def get_formula(spec, alias_path: nil, force_bottle: false, flags: [])
@@ -300,7 +299,7 @@ module Formulary
     end
   end
 
-  # Pseudo-loader which will raise a `FormulaUnavailableError` when trying to load the corresponding formula.
+  # Pseudo-loader which will raise a {FormulaUnavailableError} when trying to load the corresponding formula.
   class NullLoader < FormulaLoader
     def initialize(name)
       super name, Formulary.core_path(name)
@@ -313,7 +312,7 @@ module Formulary
 
   # Load formulae directly from their contents.
   class FormulaContentsLoader < FormulaLoader
-    # The formula's contents
+    # The formula's contents.
     attr_reader :contents
 
     def initialize(name, path, contents)
@@ -328,7 +327,7 @@ module Formulary
     end
   end
 
-  # Return a Formula instance for the given reference.
+  # Return a {Formula} instance for the given reference.
   # `ref` is a string containing:
   #
   # * a formula name
@@ -353,12 +352,12 @@ module Formulary
     formula
   end
 
-  # Return a Formula instance for the given rack.
-  # It will auto resolve formula's spec when requested spec is nil
+  # Return a {Formula} instance for the given rack.
   #
-  # The :alias_path option will be used if the formula is found not to be
-  # installed, and discarded if it is installed because the alias_path used
-  # to install the formula will be set instead.
+  # @param spec when nil, will auto resolve the formula's spec.
+  # @param :alias_path will be used if the formula is found not to be
+  #   installed, and discarded if it is installed because the `alias_path` used
+  #   to install the formula will be set instead.
   def self.from_rack(rack, spec = nil, alias_path: nil, force_bottle: false, flags: [])
     kegs = rack.directory? ? rack.subdirs.map { |d| Keg.new(d) } : []
     keg = kegs.find(&:linked?) || kegs.find(&:optlinked?) || kegs.max_by(&:version)
@@ -371,15 +370,16 @@ module Formulary
     end
   end
 
-  # Return whether given rack is keg-only
+  # Return whether given rack is keg-only.
   def self.keg_only?(rack)
     Formulary.from_rack(rack).keg_only?
   rescue FormulaUnavailableError, TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
     false
   end
 
-  # Return a Formula instance for the given keg.
-  # It will auto resolve formula's spec when requested spec is nil
+  # Return a {Formula} instance for the given keg.
+  #
+  # @param spec when nil, will auto resolve the formula's spec.
   def self.from_keg(keg, spec = nil, alias_path: nil, force_bottle: false, flags: [])
     tab = Tab.for_keg(keg)
     tap = tab.tap
@@ -404,7 +404,7 @@ module Formulary
     f
   end
 
-  # Return a Formula instance directly from contents
+  # Return a {Formula} instance directly from contents.
   def self.from_contents(name, path, contents, spec = :stable, alias_path: nil, force_bottle: false, flags: [])
     FormulaContentsLoader.new(name, path, contents)
                          .get_formula(spec, alias_path: alias_path, force_bottle: force_bottle, flags: flags)

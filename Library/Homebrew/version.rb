@@ -13,7 +13,7 @@ class Version
     /#{"^" if full}#{Regexp.escape(name)}(@\d[\d.]*)?#{"$" if full}/
   end
 
-  # A part of a `Version`.
+  # A part of a {Version}.
   class Token
     include Comparable
 
@@ -165,7 +165,7 @@ class Version
     end
   end
 
-  # A token representing the part of a version designating it is an alpha release.
+  # A token representing the part of a version designating it as an alpha release.
   class AlphaToken < CompositeToken
     PATTERN = /alpha[0-9]*|a[0-9]+/i.freeze
 
@@ -183,7 +183,7 @@ class Version
     end
   end
 
-  # A token representing the part of a version designating it is a beta release.
+  # A token representing the part of a version designating it as a beta release.
   class BetaToken < CompositeToken
     PATTERN = /beta[0-9]*|b[0-9]+/i.freeze
 
@@ -203,7 +203,7 @@ class Version
     end
   end
 
-  # A token representing the part of a version designating it is a pre-release.
+  # A token representing the part of a version designating it as a pre-release.
   class PreToken < CompositeToken
     PATTERN = /pre[0-9]*/i.freeze
 
@@ -223,7 +223,7 @@ class Version
     end
   end
 
-  # A token representing the part of a version designating it is a release-candidate.
+  # A token representing the part of a version designating it as a release candidate.
   class RCToken < CompositeToken
     PATTERN = /rc[0-9]*/i.freeze
 
@@ -243,7 +243,7 @@ class Version
     end
   end
 
-  # A token representing the part of a version designating it is a patch release.
+  # A token representing the part of a version designating it as a patch release.
   class PatchToken < CompositeToken
     PATTERN = /p[0-9]*/i.freeze
 
@@ -261,7 +261,7 @@ class Version
     end
   end
 
-  # A token representing the part of a version designating it is a post release.
+  # A token representing the part of a version designating it as a post release.
   class PostToken < CompositeToken
     PATTERN = /.post[0-9]+/i.freeze
 
@@ -583,7 +583,8 @@ class Version
   end
 end
 
-# A formula's [HEAD version](https://docs.brew.sh/Formula-Cookbook#unstable-versions-head).
+# A formula's HEAD version.
+# @see https://docs.brew.sh/Formula-Cookbook#unstable-versions-head Unstable versions (head)
 #
 # @api private
 class HeadVersion < Version

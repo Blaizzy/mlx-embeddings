@@ -6,11 +6,11 @@ require "extend/cachable"
 require "description_cache_store"
 
 # A {Tap} is used to extend the formulae provided by Homebrew core.
-# Usually, it's synced with a remote git repository. And it's likely
+# Usually, it's synced with a remote Git repository. And it's likely
 # a GitHub repository with the name of `user/homebrew-repo`. In such
-# case, `user/repo` will be used as the {#name} of this {Tap}, where
-# {#user} represents GitHub username and {#repo} represents repository
-# name without leading `homebrew-`.
+# cases, `user/repo` will be used as the {#name} of this {Tap}, where
+# {#user} represents the GitHub username and {#repo} represents the repository
+# name without the leading `homebrew-`.
 class Tap
   extend Cachable
 
@@ -54,7 +54,7 @@ class Tap
   # this {Tap}'s remote repository.
   attr_reader :user
 
-  # The repository name of this {Tap} without leading `homebrew-`.
+  # The repository name of this {Tap} without the leading `homebrew-`.
   attr_reader :repo
 
   # The name of this {Tap}. It combines {#user} and {#repo} with a slash.
@@ -83,7 +83,7 @@ class Tap
     @alias_reverse_table = nil
   end
 
-  # Clear internal cache
+  # Clear internal cache.
   def clear_cache
     @remote = nil
     @repo_var = nil
@@ -123,7 +123,7 @@ class Tap
                       .upcase
   end
 
-  # True if this {Tap} is a git repository.
+  # True if this {Tap} is a Git repository.
   def git?
     path.git?
   end
@@ -149,14 +149,14 @@ class Tap
     path.git_short_head
   end
 
-  # Time since git last commit for this {Tap}.
+  # Time since last git commit for this {Tap}.
   def git_last_commit
     raise TapUnavailableError, name unless installed?
 
     path.git_last_commit
   end
 
-  # git last commit date for this {Tap}.
+  # Last git commit date for this {Tap}.
   def git_last_commit_date
     raise TapUnavailableError, name unless installed?
 
@@ -196,7 +196,7 @@ class Tap
     @private = read_or_set_private_config
   end
 
-  # {TapConfig} of this {Tap}
+  # {TapConfig} of this {Tap}.
   def config
     @config ||= begin
       raise TapUnavailableError, name unless installed?
@@ -523,7 +523,7 @@ class Tap
     hash
   end
 
-  # Hash with tap formula renames
+  # Hash with tap formula renames.
   def formula_renames
     require "json"
 
@@ -534,7 +534,7 @@ class Tap
     end
   end
 
-  # Hash with tap migrations
+  # Hash with tap migrations.
   def tap_migrations
     require "json"
 
@@ -567,7 +567,7 @@ class Tap
     map(&:name).sort
   end
 
-  # An array of all tap cmd directory {Pathname}s
+  # An array of all tap cmd directory {Pathname}s.
   def self.cmd_directories
     Pathname.glob TAP_DIRECTORY/"*/*/cmd"
   end

@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-# Helper functions for updating PyPi resources.
+# Helper functions for updating PyPI resources.
 #
 # @api private
 module PyPI
@@ -38,7 +38,7 @@ module PyPI
     url
   end
 
-  # Get name, URL and SHA-256 checksum for a given PyPi package.
+  # Get name, URL and SHA-256 checksum for a given PyPI package.
   def get_pypi_info(package, version)
     metadata_url = "https://pypi.org/pypi/#{package}/#{version}/json"
     out, _, status = curl_output metadata_url, "--location"
@@ -57,7 +57,7 @@ module PyPI
     [json["info"]["name"], sdist["url"], sdist["digests"]["sha256"]]
   end
 
-  # Return true if resources were checked (even if no change)
+  # Return true if resources were checked (even if no change).
   def update_python_resources!(formula, version = nil, print_only: false, silent: false,
                                ignore_non_pypi_packages: false)
 

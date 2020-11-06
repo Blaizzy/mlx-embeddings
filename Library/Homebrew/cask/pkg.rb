@@ -139,7 +139,7 @@ module Cask
     end
 
     # Some packages leave broken symlinks around; we clean them out before
-    # attempting to `rmdir` to prevent extra cruft from lying around.
+    # attempting to `rmdir` to prevent extra cruft from accumulating.
     def clean_broken_symlinks(dir)
       dir.children.select(&method(:broken_symlink?)).each do |path|
         @command.run!("/bin/rm", args: ["--", path], sudo: true)

@@ -20,7 +20,7 @@ module Cask
   class Installer
     extend Predicable
     # TODO: it is unwise for Cask::Staged to be a module, when we are
-    #       dealing with both staged and unstaged Casks here. This should
+    #       dealing with both staged and unstaged casks here. This should
     #       either be a class which is only sometimes instantiated, or there
     #       should be explicit checks on whether staged state is valid in
     #       every method.

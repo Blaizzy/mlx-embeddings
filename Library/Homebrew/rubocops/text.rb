@@ -156,7 +156,7 @@ module RuboCop
           end
         end
 
-        # Check whether value starts with the formula name and then a "/", " " or EOS
+        # Check whether value starts with the formula name and then a "/", " " or EOS.
         def path_starts_with?(path, starts_with)
           path.match?(%r{^#{Regexp.escape(starts_with)}(/| |$)})
         end

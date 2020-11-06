@@ -39,7 +39,7 @@ require "utils/spdx"
 # @see Pathname
 # @see https://www.rubydoc.info/stdlib/fileutils FileUtils
 # @see https://docs.brew.sh/Formula-Cookbook Formula Cookbook
-# @see https://github.com/rubocop-hq/ruby-style-guide#the-ruby-style-guide Ruby Style Guide
+# @see https://rubystyle.guide Ruby Style Guide
 #
 # <pre>class Wget < Formula
 #   homepage "https://www.gnu.org/software/wget/"
@@ -67,7 +67,7 @@ class Formula
   # Sometimes we have to change a bit before we install. Mostly we
   # prefer a patch but if you need the `prefix` of this formula in the
   # patch you have to resort to `inreplace`, because in the patch
-  # you don't have access to any var defined by the formula. Only
+  # you don't have access to any variable defined by the formula. Only
   # `HOMEBREW_PREFIX` is available in the embedded patch.
   #
   # `inreplace` supports regular expressions:
@@ -101,7 +101,7 @@ class Formula
   attr_reader :path
 
   # The {Tap} instance associated with this {Formula}.
-  # If it's <code>nil</code>, then this formula is loaded from path or URL.
+  # If it's `nil`, then this formula is loaded from a path or URL.
   # @private
   attr_reader :tap
 
@@ -109,7 +109,7 @@ class Formula
   # @private
   attr_reader :force_bottle
 
-  # The stable (and default) {SoftwareSpec} for this {Formula}
+  # The stable (and default) {SoftwareSpec} for this {Formula}.
   # This contains all the attributes (e.g. URL, checksum) that apply to the
   # stable version of this formula.
   # @private
@@ -121,7 +121,7 @@ class Formula
   end
 
   # The HEAD {SoftwareSpec} for this {Formula}.
-  # Installed when using `brew install --HEAD`
+  # Installed when using `brew install --HEAD`.
   # This is always installed with the version `HEAD` and taken from the latest
   # commit in the version control system.
   # `nil` if there is no HEAD version.
@@ -150,7 +150,8 @@ class Formula
   # @see .revision=
   attr_reader :revision
 
-  # Used to change version schemes for packages
+  # Used to change version schemes for packages.
+  # @see .version_scheme=
   attr_reader :version_scheme
 
   # The current working directory during builds.
@@ -178,7 +179,7 @@ class Formula
   # @return [BuildOptions]
   attr_accessor :build
 
-  # A Boolean indicating whether this formula should be considered outdated
+  # Whether this formula should be considered outdated
   # if the target of the alias it was installed with has since changed.
   # Defaults to true.
   # @return [Boolean]
@@ -357,34 +358,34 @@ class Formula
   end
 
   # The description of the software.
-  # @method desc
+  # @!method desc
   # @see .desc=
   delegate desc: :"self.class"
 
   # The SPDX ID of the software license.
-  # @method license
+  # @!method license
   # @see .license=
   delegate license: :"self.class"
 
   # The homepage for the software.
-  # @method homepage
+  # @!method homepage
   # @see .homepage=
   delegate homepage: :"self.class"
 
   # The livecheck specification for the software.
-  # @method livecheck
+  # @!method livecheck
   # @see .livecheck=
   delegate livecheck: :"self.class"
 
   # Is a livecheck specification defined for the software?
-  # @method livecheckable?
+  # @!method livecheckable?
   # @see .livecheckable?
   delegate livecheckable?: :"self.class"
 
   # The version for the currently active {SoftwareSpec}.
   # The version is autodetected from the URL and/or tag so only needs to be
   # declared if it cannot be autodetected correctly.
-  # @method version
+  # @!method version
   # @see .version
   delegate version: :active_spec
 
@@ -425,14 +426,14 @@ class Formula
     end.compact.sort_by(&:version).reverse
   end
 
-  # A named Resource for the currently active {SoftwareSpec}.
+  # A named {Resource} for the currently active {SoftwareSpec}.
   # Additional downloads can be defined as {#resource}s.
   # {Resource#stage} will create a temporary directory and yield to a block.
   # <pre>resource("additional_files").stage { bin.install "my/extra/tool" }</pre>
-  # @method resource
+  # @!method resource
   delegate resource: :active_spec
 
-  # An old name for the formula
+  # An old name for the formula.
   def oldname
     @oldname ||= if tap
       formula_renames = tap.formula_renames
@@ -440,7 +441,7 @@ class Formula
     end
   end
 
-  # All aliases for the formula
+  # All aliases for the formula.
   def aliases
     @aliases ||= if tap
       tap.alias_reverse_table[full_name].to_a.map do |a|
@@ -452,7 +453,7 @@ class Formula
   end
 
   # The {Resource}s for the currently active {SoftwareSpec}.
-  # @method resources
+  # @!method resources
   def_delegator :"active_spec.resources", :values, :resources
 
   # The {Dependency}s for the currently active {SoftwareSpec}.
@@ -483,7 +484,7 @@ class Formula
   delegate deprecated_flags: :active_spec
 
   # If a named option is defined for the currently active {SoftwareSpec}.
-  # @method option_defined?
+  # @!method option_defined?
   delegate option_defined?: :active_spec
 
   # All the {.fails_with} for the currently active {SoftwareSpec}.
@@ -596,7 +597,7 @@ class Formula
   end
 
   # The parent of the prefix; the named directory in the cellar containing all
-  # installed versions of this software
+  # installed versions of this software.
   # @private
   def rack
     Pathname.new("#{HOMEBREW_CELLAR}/#{name}")
@@ -677,7 +678,7 @@ class Formula
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
   # Often one of the more specific `man` functions should be used instead,
-  # e.g. {#man1}
+  # e.g. {#man1}.
   def man
     share/"man"
   end
@@ -762,10 +763,10 @@ class Formula
   # Installing something into another custom directory?
   # <pre>(share/"concept2").install "ducks.txt"</pre>
   #
-  # Install `./example_code/simple/ones` to share/demos
+  # Install `./example_code/simple/ones` to `share/demos`:
   # <pre>(share/"demos").install "example_code/simple/ones"</pre>
   #
-  # Install `./example_code/simple/ones` to share/demos/examples
+  # Install `./example_code/simple/ones` to `share/demos/examples`:
   # <pre>(share/"demos").install "example_code/simple/ones" => "examples"</pre>
   def share
     prefix/"share"
@@ -785,7 +786,7 @@ class Formula
   # The directory where Emacs Lisp files should be installed, with the
   # formula name appended to avoid linking conflicts.
   #
-  # Install an Emacs mode included with a software package:
+  # To install an Emacs mode included with a software package:
   # <pre>elisp.install "contrib/emacs/example-mode.el"</pre>
   def elisp
     prefix/"share/emacs/site-lisp"/name
@@ -885,7 +886,7 @@ class Formula
     HOMEBREW_LOGS + name
   end
 
-  # The prefix, if any, to use in filenames for logging current activity
+  # The prefix, if any, to use in filenames for logging current activity.
   def active_log_prefix
     if active_log_type
       "#{active_log_type}."
@@ -894,7 +895,7 @@ class Formula
     end
   end
 
-  # Runs a block with the given log type in effect for its duration
+  # Runs a block with the given log type in effect for its duration.
   def with_logging(log_type)
     old_log_type = @active_log_type
     @active_log_type = log_type
@@ -906,28 +907,28 @@ class Formula
   # This method can be overridden to provide a plist.
   # @see https://www.unix.com/man-page/all/5/plist/ Apple's plist(5) man page
   # <pre>def plist; <<~EOS
-  #  <?xml version="1.0" encoding="UTF-8"?>
-  #  <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-  #  <plist version="1.0">
-  #  <dict>
-  #    <key>Label</key>
-  #      <string>#{plist_name}</string>
-  #    <key>ProgramArguments</key>
-  #    <array>
-  #      <string>#{opt_bin}/example</string>
-  #      <string>--do-this</string>
-  #    </array>
-  #    <key>RunAtLoad</key>
-  #    <true/>
-  #    <key>KeepAlive</key>
-  #    <true/>
-  #    <key>StandardErrorPath</key>
-  #    <string>/dev/null</string>
-  #    <key>StandardOutPath</key>
-  #    <string>/dev/null</string>
-  #  </dict>
-  #  </plist>
-  #  EOS
+  #   <?xml version="1.0" encoding="UTF-8"?>
+  #   <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+  #   <plist version="1.0">
+  #   <dict>
+  #     <key>Label</key>
+  #       <string>#{plist_name}</string>
+  #     <key>ProgramArguments</key>
+  #     <array>
+  #       <string>#{opt_bin}/example</string>
+  #       <string>--do-this</string>
+  #     </array>
+  #     <key>RunAtLoad</key>
+  #     <true/>
+  #     <key>KeepAlive</key>
+  #     <true/>
+  #     <key>StandardErrorPath</key>
+  #     <string>/dev/null</string>
+  #     <key>StandardOutPath</key>
+  #     <string>/dev/null</string>
+  #   </dict>
+  #   </plist>
+  #   EOS
   # end</pre>
   def plist
     nil
@@ -1001,7 +1002,7 @@ class Formula
   # Can be overridden to selectively disable bottles from formulae.
   # Defaults to true so overridden version does not have to check if bottles
   # are supported.
-  # Replaced by {.pour_bottle}'s `satisfy` method if it is specified.
+  # Replaced by {.pour_bottle?}'s `satisfy` method if it is specified.
   def pour_bottle?
     true
   end
@@ -1046,7 +1047,7 @@ class Formula
     @prefix_returns_versioned_prefix = false
   end
 
-  # Warn the user about any Homebrew-specific issues or quirks for this package
+  # Warn the user about any Homebrew-specific issues or quirks for this package.
   # These should not contain setup instructions that would apply to installation
   # through a different package manager on a different OS.
   # @return [String]
@@ -1071,6 +1072,7 @@ class Formula
 
   # Rarely, you don't want your library symlinked into the main prefix.
   # See `gettext.rb` for an example.
+  # @see .keg_only
   def keg_only?
     return false unless keg_only_reason
 
@@ -1135,25 +1137,25 @@ class Formula
 
   # Whether this {Formula} is deprecated (i.e. warns on installation).
   # Defaults to false.
-  # @method deprecated?
+  # @!method deprecated?
   # @return [Boolean]
   delegate deprecated?: :"self.class"
 
   # The reason this {Formula} is deprecated.
   # Returns `nil` if no reason is specified or the formula is not deprecated.
-  # @method deprecation_reason
+  # @!method deprecation_reason
   # @return [String, Symbol]
   delegate deprecation_reason: :"self.class"
 
   # Whether this {Formula} is disabled (i.e. cannot be installed).
   # Defaults to false.
-  # @method disabled?
+  # @!method disabled?
   # @return [Boolean]
   delegate disabled?: :"self.class"
 
   # The reason this {Formula} is disabled.
   # Returns `nil` if no reason is specified or the formula is not disabled.
-  # @method disable_reason
+  # @!method disable_reason
   # @return [String, Symbol]
   delegate disable_reason: :"self.class"
 
@@ -1174,8 +1176,8 @@ class Formula
     patchlist.each(&:apply)
   end
 
-  # yields |self,staging| with current working directory set to the uncompressed tarball
-  # where staging is a Mktemp staging context
+  # Yields |self,staging| with current working directory set to the uncompressed tarball
+  # where staging is a {Mktemp} staging context.
   # @private
   def brew(fetch: true, keep_tmp: false, interactive: false)
     @prefix_returns_versioned_prefix = true
@@ -1368,7 +1370,7 @@ class Formula
 
   # Block only executed on macOS. No-op on Linux.
   # <pre>on_macos do
-  #   Do something mac specific
+  # # Do something Mac-specific
   # end</pre>
   def on_macos(&_block)
     raise "No block content defined for on_macos block" unless block_given?
@@ -1376,7 +1378,7 @@ class Formula
 
   # Block only executed on Linux. No-op on macOS.
   # <pre>on_linux do
-  #   Do something linux specific
+  # # Do something Linux-specific
   # end</pre>
   def on_linux(&_block)
     raise "No block content defined for on_linux block" unless block_given?
@@ -1391,7 +1393,7 @@ class Formula
   # Setting `CMAKE_FIND_FRAMEWORK` to "LAST" tells CMake to search for our
   # libraries before trying to utilize Frameworks, many of which will be from
   # 3rd party installs.
-  # Note: there isn't a std_autotools variant because autotools is a lot
+  # Note that there isn't a std_autotools variant because autotools is a lot
   # less consistent and the standard parameters are more memorable.
   def std_cmake_args
     args = %W[
@@ -1609,7 +1611,7 @@ class Formula
   end
 
   # Returns a Keg for the opt_prefix or installed_prefix if they exist.
-  # If not, return nil.
+  # If not, return `nil`.
   # @private
   def any_installed_keg
     Formula.cache[:any_installed_keg] ||= {}
@@ -1652,7 +1654,7 @@ class Formula
     deps
   end
 
-  # Returns a list of Formula objects that are required at runtime.
+  # Returns a list of {Formula} objects that are required at runtime.
   # @private
   def runtime_formula_dependencies(read_from_tab: true, undeclared: true)
     cache_key = "#{full_name}-#{read_from_tab}-#{undeclared}"
@@ -1686,7 +1688,7 @@ class Formula
   end
 
   # Returns a list of formulae depended on by this formula that aren't
-  # installed
+  # installed.
   def missing_dependencies(hide: nil)
     hide ||= []
     runtime_formula_dependencies.select do |f|
@@ -1870,10 +1872,10 @@ class Formula
     HOMEBREW_LIBRARY_PATH/"test/support/fixtures"/file
   end
 
-  # This method is overridden in {Formula} subclasses to provide the installation instructions.
-  # The sources (from {.url}) are downloaded, hash-checked and
-  # Homebrew changes into a temporary directory where the
-  # archive was unpacked or repository cloned.
+  # This method is overridden in {Formula} subclasses to provide the
+  # installation instructions. The sources (from {.url}) are downloaded,
+  # hash-checked and then Homebrew changes into a temporary directory where the
+  # archive is unpacked or repository cloned.
   # <pre>def install
   #   system "./configure", "--prefix=#{prefix}"
   #   system "make", "install"
@@ -1930,18 +1932,19 @@ class Formula
   # For CMake we have some necessary defaults in {#std_cmake_args}:
   # <pre>system "cmake", ".", *std_cmake_args</pre>
   #
-  # If the arguments given to configure (or make or cmake) are depending
+  # If the arguments given to `configure` (or `make` or `cmake`) are depending
   # on options defined above, we usually make a list first and then
-  # use the `args << if <condition>` to append to:
+  # use the `args << if <condition>` to append each:
   # <pre>args = ["--with-option1", "--with-option2"]
+  # args << "--without-gcc" if ENV.compiler == :clang
   #
   # # Most software still uses `configure` and `make`.
-  # # Check with `./configure --help` what our options are.
+  # # Check with `./configure --help` for what our options are.
   # system "./configure", "--disable-debug", "--disable-dependency-tracking",
   #                       "--disable-silent-rules", "--prefix=#{prefix}",
   #                       *args # our custom arg list (needs `*` to unpack)
   #
-  # # If there is a "make", "install" available, please use it!
+  # # If there is a "make install" available, please use it!
   # system "make", "install"</pre>
   def system(cmd, *args)
     verbose_using_dots = Homebrew::EnvConfig.verbose_using_dots?
@@ -2096,7 +2099,7 @@ class Formula
     FileUtils.chdir(name, &block)
   end
 
-  # Run `xcodebuild` without Homebrew's compiler environment variables set.
+  # Runs `xcodebuild` without Homebrew's compiler environment variables set.
   def xcodebuild(*args)
     removed = ENV.remove_cc_etc
     system "xcodebuild", *args
@@ -2147,7 +2150,7 @@ class Formula
     exit! 1 # never gets here unless exec threw or failed
   end
 
-  # Common environment variables used at both build and test time
+  # Common environment variables used at both build and test time.
   def common_stage_test_env
     {
       _JAVA_OPTIONS: "-Duser.home=#{HOMEBREW_CACHE}/java_cache",
@@ -2212,7 +2215,7 @@ class Formula
     # @private
     attr_reader :keg_only_reason
 
-    # @!attribute [w]
+    # @!attribute [w] desc
     # A one-line description of the software. Used by users to get an overview
     # of the software and Homebrew maintainers.
     # Shows when running `brew info`.
@@ -2220,7 +2223,7 @@ class Formula
     # <pre>desc "Example formula"</pre>
     attr_rw :desc
 
-    # @!attribute [w]
+    # @!attribute [w] license
     # The SPDX ID of the open-source license that the formula uses.
     # Shows when running `brew info`.
     # Use `:any_of`, `:all_of` or `:with` to describe complex license expressions.
@@ -2286,7 +2289,7 @@ class Formula
 
     # @!attribute [w] revision
     # Used for creating new Homebrew versions of software without new upstream
-    # versions. For example, if we bump the major version of a library this
+    # versions. For example, if we bump the major version of a library that this
     # {Formula} {.depends_on} then we may need to update the `revision` of this
     # {Formula} to install a new version linked against the new library version.
     # `0` if unset.
@@ -2297,7 +2300,7 @@ class Formula
     # @!attribute [w] version_scheme
     # Used for creating new Homebrew version schemes. For example, if we want
     # to change version scheme from one to another, then we may need to update
-    # `version_scheme` of this {Formula} to be able to use new version scheme.
+    # `version_scheme` of this {Formula} to be able to use new version scheme,
     # e.g. to move from 20151020 scheme to 1.0.0 we need to increment
     # `version_scheme`. Without this, the prior scheme will always equate to a
     # higher version.
@@ -2315,19 +2318,18 @@ class Formula
     # @!attribute [w] url
     # The URL used to download the source for the {.stable} version of the formula.
     # We prefer `https` for security and proxy reasons.
-    # If not inferrable, specify the download strategy with `:using => ...`
+    # If not inferrable, specify the download strategy with `using: ...`.
     #
     # - `:git`, `:hg`, `:svn`, `:bzr`, `:fossil`, `:cvs`,
-    # - `:curl` (normal file download. Will also extract.)
+    # - `:curl` (normal file download, will also extract)
     # - `:nounzip` (without extracting)
     # - `:post` (download via an HTTP POST)
-    # - `:s3` (download from S3 using signed request)
     #
     # <pre>url "https://packed.sources.and.we.prefer.https.example.com/archive-1.2.3.tar.bz2"</pre>
     # <pre>url "https://some.dont.provide.archives.example.com",
-    #     :using => :git,
-    #     :tag => "1.2.3",
-    #     :revision => "db8e4de5b2d6653f66aea53094624468caad15d2"</pre>
+    #     using:    :git,
+    #     tag:      "1.2.3",
+    #     revision: "db8e4de5b2d6653f66aea53094624468caad15d2"</pre>
     def url(val, specs = {})
       stable.url(val, specs)
     end
@@ -2358,7 +2360,7 @@ class Formula
     # @!attribute [w] sha256
     # @scope class
     # To verify the cached download's integrity and security we verify the
-    # SHA-256 hash matches which we've declared in the {Formula}. To quickly fill
+    # SHA-256 hash matches what we've declared in the {Formula}. To quickly fill
     # this value you can leave it blank and run `brew fetch --force` and it'll
     # tell you the currently valid value.
     #
@@ -2374,15 +2376,15 @@ class Formula
     # and you haven't passed or previously used any options on this formula.
     #
     # If you maintain your own repository, you can add your own bottle links.
-    # @see https://docs.brew.sh/Bottles
+    # @see https://docs.brew.sh/Bottles Bottles
     # You can ignore this block entirely if submitting to Homebrew/homebrew-core.
     # It'll be handled for you by the Brew Test Bot.
     #
     # <pre>bottle do
-    #   root_url "https://example.com" # Optional root to calculate bottle URLs
+    #   root_url "https://example.com" # Optional root to calculate bottle URLs.
     #   prefix "/opt/homebrew" # Optional HOMEBREW_PREFIX in which the bottles were built.
     #   cellar "/opt/homebrew/Cellar" # Optional HOMEBREW_CELLAR in which the bottles were built.
-    #   rebuild 1 # Making the old bottle outdated without bumping the version/revision of the formula.
+    #   rebuild 1 # Marks the old bottle as outdated without bumping the version/revision of the formula.
     #   sha256 "ef65c759c5097a36323fa9c77756468649e8d1980a3a4e05695c05e39568967c" => :catalina
     #   sha256 "28f4090610946a4eb207df102d841de23ced0d06ba31cb79e040d883906dcd4f" => :mojave
     #   sha256 "91dd0caca9bd3f38c439d5a7b6f68440c4274945615fae035ff0a369264b8a2f" => :high_sierra
@@ -2421,7 +2423,7 @@ class Formula
     # @!attribute [w] stable
     # Allows adding {.depends_on} and {Patch}es just to the {.stable} {SoftwareSpec}.
     # This is required instead of using a conditional.
-    # It is preferrable to also pull the {url} and {.sha256} into the block if one is added.
+    # It is preferrable to also pull the {url} and {sha256= sha256} into the block if one is added.
     #
     # <pre>stable do
     #   url "https://example.com/foo-1.0.tar.gz"
@@ -2449,11 +2451,11 @@ class Formula
     # If called as a method this provides just the {url} for the {SoftwareSpec}.
     # If a block is provided you can also add {.depends_on} and {Patch}es just to the {.head} {SoftwareSpec}.
     # The download strategies (e.g. `:using =>`) are the same as for {url}.
-    # `master` is the default branch and doesn't need stating with a `:branch` parameter.
+    # `master` is the default branch and doesn't need stating with a `branch:` parameter.
     # <pre>head "https://we.prefer.https.over.git.example.com/.git"</pre>
-    # <pre>head "https://example.com/.git", :branch => "name_of_branch", :revision => "abc123"</pre>
+    # <pre>head "https://example.com/.git", branch: "name_of_branch"</pre>
     # or (if autodetect fails):
-    # <pre>head "https://hg.is.awesome.but.git.has.won.example.com/", :using => :hg</pre>
+    # <pre>head "https://hg.is.awesome.but.git.has.won.example.com/", using: :hg</pre>
     def head(val = nil, specs = {}, &block)
       @head ||= HeadSoftwareSpec.new(flags: build_flags)
       if block_given?
@@ -2465,7 +2467,7 @@ class Formula
       end
     end
 
-    # Additional downloads can be defined as resources and accessed in the
+    # Additional downloads can be defined as {resource}s and accessed in the
     # install method. Resources can also be defined inside a {.stable} or
     # {.head} block. This mechanism replaces ad-hoc "subformula" classes.
     # <pre>resource "additional_files" do
@@ -2485,41 +2487,40 @@ class Formula
     # The dependencies for this formula. Use strings for the names of other
     # formulae. Homebrew provides some :special dependencies for stuff that
     # requires certain extra handling (often changing some ENV vars or
-    # deciding if to use the system provided version or not.)
+    # deciding if to use the system provided version or not).
     # <pre># `:build` means this dep is only needed during build.
     # depends_on "cmake" => :build</pre>
-    # <pre>depends_on "homebrew/dupes/tcl-tk" => :optional</pre>
     # <pre># `:recommended` dependencies are built by default.
     # # But a `--without-...` option is generated to opt-out.
     # depends_on "readline" => :recommended</pre>
-    # <pre># `:optional` dependencies are NOT built by default.
-    # # But a `--with-...` options is generated.
+    # <pre># `:optional` dependencies are NOT built by default unless the
+    # # auto-generated `--with-...` option is passed.
     # depends_on "glib" => :optional</pre>
     # <pre># If you need to specify that another formula has to be built with/out
     # # certain options (note, no `--` needed before the option):
     # depends_on "zeromq" => "with-pgm"
     # depends_on "qt" => ["with-qtdbus", "developer"] # Multiple options.</pre>
-    # <pre># Optional and enforce that boost is built with `--with-c++11`.
+    # <pre># Optional and enforce that "boost" is built with `--with-c++11`.
     # depends_on "boost" => [:optional, "with-c++11"]</pre>
     # <pre># If a dependency is only needed in certain cases:
-    # depends_on "sqlite" if MacOS.version == :catalina
-    # depends_on :xcode # If the formula really needs full Xcode.
-    # depends_on :macos => :mojave # Needs at least macOS Mojave (10.14).
-    # depends_on :x11 => :optional # X11/XQuartz components.
-    # depends_on :osxfuse # Permits the use of the upstream signed binary or our source package.
-    # depends_on :tuntap # Does the same thing as above. This is vital for Yosemite and above.</pre>
+    # depends_on "sqlite" if MacOS.version >= :catalina
+    # depends_on xcode: :build # If the formula really needs full Xcode to compile.
+    # depends_on macos: :mojave # Needs at least macOS Mojave (10.14) to run.
+    # depends_on x11: :optional # X11/XQuartz components.
+    # depends_on :osxfuse # Permits the use of the upstream signed binary or our cask.
+    # depends_on :tuntap # Does the same thing as above. This is vital for Yosemite and later.</pre>
     # <pre># It is possible to only depend on something if
     # # `build.with?` or `build.without? "another_formula"`:
     # depends_on "postgresql" if build.without? "sqlite"</pre>
-    # <pre># Python 3.x if the `--with-python` is given to `brew install example`
-    # depends_on "python3" => :optional</pre>
+    # <pre># Require Python if `--with-python` is passed to `brew install example`:
+    # depends_on "python" => :optional</pre>
     def depends_on(dep)
       specs.each { |spec| spec.depends_on(dep) }
     end
 
     # Indicates use of dependencies provided by macOS.
-    # On macOS this is a no-op (as we use the system libraries there).
-    # On Linux this will act as `depends_on`.
+    # On macOS this is a no-op (as we use the provided system libraries).
+    # On Linux this will act as {.depends_on}.
     def uses_from_macos(dep, bounds = {})
       specs.each { |spec| spec.uses_from_macos(dep, bounds) }
     end
@@ -2543,7 +2544,7 @@ class Formula
     # @!attribute [w] option
     # Options can be used as arguments to `brew install`.
     # To switch features on/off: `"with-something"` or `"with-otherthing"`.
-    # To use other software: `"with-other-software"` or `"without-foo"`
+    # To use other software: `"with-other-software"` or `"without-foo"`.
     # Note that for {.depends_on} that are `:optional` or `:recommended`, options
     # are generated automatically.
     #
@@ -2552,7 +2553,7 @@ class Formula
     # - `:universal`: build a universal binary/library (e.g. on newer Intel Macs
     #   this means a combined x86_64/x86 binary/library).
     # <pre>option "with-spam", "The description goes here without a dot at the end"</pre>
-    # <pre>option "with-qt", "Text here overwrites the autogenerated one from 'depends_on "qt" => :optional'"</pre>
+    # <pre>option "with-qt", "Text here overwrites what's autogenerated by 'depends_on "qt" => :optional'"</pre>
     # <pre>option :universal</pre>
     def option(name, description = "")
       specs.each { |spec| spec.option(name, description) }
@@ -2597,6 +2598,7 @@ class Formula
     # to provide multiple embedded patches while making only some of them
     # conditional.
     # <pre>patch :p0, "..."</pre>
+    # @see https://docs.brew.sh/Formula-Cookbook#patches Patches
     def patch(strip = :p1, src = nil, &block)
       specs.each { |spec| spec.patch(strip, src, &block) }
     end
@@ -2604,13 +2606,13 @@ class Formula
     # Defines launchd plist handling.
     #
     # Does your plist need to be loaded at startup?
-    # <pre>plist_options :startup => true</pre>
+    # <pre>plist_options startup: true</pre>
     #
     # Or only when necessary or desired by the user?
-    # <pre>plist_options :manual => "foo"</pre>
+    # <pre>plist_options manual: "foo"</pre>
     #
     # Or perhaps you'd like to give the user a choice? Ooh fancy.
-    # <pre>plist_options :startup => true, :manual => "foo start"</pre>
+    # <pre>plist_options startup: true, manual: "foo start"</pre>
     def plist_options(options)
       @plist_startup = options[:startup]
       @plist_manual = options[:manual]
@@ -2621,8 +2623,8 @@ class Formula
       @conflicts ||= []
     end
 
-    # If this formula conflicts with another one.
-    # <pre>conflicts_with "imagemagick", :because => "because both install 'convert' binaries"</pre>
+    # One or more formulae that conflict with this one and why.
+    # <pre>conflicts_with "imagemagick", because: "both install `convert` binaries"</pre>
     def conflicts_with(*names)
       opts = names.last.is_a?(Hash) ? names.pop : {}
       names.each { |name| conflicts << FormulaConflict.new(name, opts[:because]) }
@@ -2651,7 +2653,7 @@ class Formula
       @keg_only_reason = KegOnlyReason.new(reason, explanation)
     end
 
-    # Pass `:skip` to this method to disable post-install stdlib checking
+    # Pass `:skip` to this method to disable post-install stdlib checking.
     def cxxstdlib_check(check_type)
       define_method(:skip_cxxstdlib_check?) { true } if check_type == :skip
     end
@@ -2692,11 +2694,11 @@ class Formula
     #
     # We want tests that don't require any user input
     # and test the basic functionality of the application.
-    # For example foo build-foo input.foo is a good test
-    # and foo --version and foo --help are bad tests.
+    # For example, `foo build-foo input.foo` is a good test
+    # and `foo --version` or `foo --help` are bad tests.
     # However, a bad test is better than no test at all.
     #
-    # See: https://docs.brew.sh/Formula-Cookbook#add-a-test-to-the-formula
+    # @see https://docs.brew.sh/Formula-Cookbook#add-a-test-to-the-formula Tests
     #
     # <pre>(testpath/"test.file").write <<~EOS
     #   writing some test file, if you need to
@@ -2721,7 +2723,7 @@ class Formula
     # Livecheck can be used to check for newer versions of the software.
     # This method evaluates the DSL specified in the livecheck block of the
     # {Formula} (if it exists) and sets the instance variables of a Livecheck
-    # object accordingly. This is used by brew livecheck to check for newer
+    # object accordingly. This is used by `brew livecheck` to check for newer
     # versions of the software.
     #
     # <pre>livecheck do
@@ -2758,7 +2760,7 @@ class Formula
     # shown on each installation. If the date has not yet passed the formula
     # will not be deprecated.
     # <pre>deprecate! date: "2020-08-27", because: :unmaintained</pre>
-    # <pre>deprecate! date: "2020-08-27", because: "it has been replaced by"</pre>
+    # <pre>deprecate! date: "2020-08-27", because: "has been replaced by foo"</pre>
     def deprecate!(date: nil, because: nil)
       odeprecated "`deprecate!` without a reason", "`deprecate! because: \"reason\"`" if because.blank?
 
@@ -2776,7 +2778,7 @@ class Formula
     end
 
     # The reason for deprecation of a {Formula}.
-    # Returns `nil` if no reason was provided or the formula is not deprecated.
+    # @return [nil] if no reason was provided or the formula is not deprecated.
     # @return [String, Symbol]
     attr_reader :deprecation_reason
 
@@ -2805,7 +2807,7 @@ class Formula
       @disabled == true
     end
 
-    # The reason for a {Formula} is disabled.
+    # The reason this {Formula} is disabled.
     # Returns `nil` if no reason was provided or the formula is not disabled.
     # @return [String, Symbol]
     attr_reader :disable_reason

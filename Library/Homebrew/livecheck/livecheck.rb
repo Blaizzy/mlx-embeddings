@@ -5,8 +5,8 @@ require "livecheck/strategy"
 require "ruby-progressbar"
 
 module Homebrew
-  # The `Livecheck` module consists of methods used by the `brew livecheck`
-  # command. These methods receive print the requested livecheck information
+  # The {Livecheck} module consists of methods used by the `brew livecheck`
+  # command. These methods print the requested livecheck information
   # for formulae.
   #
   # @api private
@@ -198,8 +198,8 @@ module Homebrew
       puts JSON.generate(formulae_checked.compact)
     end
 
-    # Returns the fully-qualified name of a formula if the full_name argument is
-    # provided, returns the name otherwise.
+    # Returns the fully-qualified name of a formula if the `full_name` argument is
+    # provided; returns the name otherwise.
     # @return [String]
     def formula_name(formula, args:)
       args.full_name? ? formula.full_name : formula.name
@@ -223,7 +223,7 @@ module Homebrew
     end
 
     # If a formula has to be skipped, it prints or returns a Hash contaning the reason
-    # for doing so, else it returns false.
+    # for doing so; returns false otherwise.
     # @return [Hash, nil, Boolean]
     def skip_conditions(formula, args:)
       if formula.deprecated? && !formula.livecheckable?

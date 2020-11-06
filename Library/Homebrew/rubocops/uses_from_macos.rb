@@ -6,11 +6,15 @@ require "rubocops/extend/formula"
 module RuboCop
   module Cop
     module FormulaAudit
-      # This cop audits `uses_from_macos` dependencies in formulae
+      # This cop audits `uses_from_macos` dependencies in formulae.
       class UsesFromMacos < FormulaCop
         # Generate with:
+        #
+        # ```
         # brew ruby -e 'puts Formula.select {|f| f.keg_only_reason&.provided_by_macos? }.map(&:name).sort.join("\n")'
-        # Not done at runtime as its too slow and RuboCop doesn't have access.
+        # ```
+        #
+        # Not done at runtime as it's too slow and RuboCop doesn't have access.
         PROVIDED_BY_MACOS_FORMULAE = %w[
           apr
           bc
@@ -57,8 +61,8 @@ module RuboCop
           zlib
         ].freeze
 
-        # These formulae aren't keg_only :provided_by_macos but are provided by
-        # macOS (or very similarly e.g. OpenSSL where system provides LibreSSL)
+        # These formulae aren't `keg_only :provided_by_macos` but are provided by
+        # macOS (or very similarly, e.g. OpenSSL where system provides LibreSSL).
         # TODO: consider making some of these keg-only.
         ALLOWED_USES_FROM_MACOS_DEPS = (PROVIDED_BY_MACOS_FORMULAE + %w[
           bash

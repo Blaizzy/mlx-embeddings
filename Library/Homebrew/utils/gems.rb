@@ -8,7 +8,7 @@
 require "English"
 
 module Homebrew
-  # Keep in sync with the Gemfile.lock's BUNDLED WITH.
+  # Keep in sync with the `Gemfile.lock`'s BUNDLED WITH.
   HOMEBREW_BUNDLER_VERSION = "1.17.3"
 
   module_function

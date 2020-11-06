@@ -210,7 +210,7 @@ class TapFormulaUnreadableError < TapFormulaUnavailableError
   end
 end
 
-# Raised when a formula with the same name is found multiple taps.
+# Raised when a formula with the same name is found in multiple taps.
 class TapFormulaAmbiguityError < RuntimeError
   attr_reader :name, :paths, :formulae
 

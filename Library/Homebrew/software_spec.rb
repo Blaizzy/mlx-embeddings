@@ -216,7 +216,7 @@ class SoftwareSpec
     end
   end
 
-  # TODO
+  # TODO: ?
   def add_legacy_patches(list)
     list = Patch.normalize_legacy_patches(list)
     list.each { |p| p.owner = self }
@@ -354,7 +354,7 @@ class BottleSpecification
     cellar == :any || cellar == :any_skip_relocation || cellar == HOMEBREW_CELLAR.to_s
   end
 
-  # Does the {Bottle} this BottleSpecification belongs to need to be relocated?
+  # Does the {Bottle} this {BottleSpecification} belongs to need to be relocated?
   def skip_relocation?
     cellar == :any_skip_relocation
   end

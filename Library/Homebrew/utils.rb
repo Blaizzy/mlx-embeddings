@@ -130,13 +130,14 @@ module Kernel
     puts Formatter.headline(title, color: :green)
   end
 
-  # Print a warning (do this rarely)
+  # Print a message prefixed with "Warning" (do this rarely).
   def opoo(message)
     Tty.with($stderr) do |stderr|
       stderr.puts Formatter.warning(message, label: "Warning")
     end
   end
 
+  # Print a message prefixed with "Error".
   def onoe(message)
     Tty.with($stderr) do |stderr|
       stderr.puts Formatter.error(message, label: "Error")
@@ -281,14 +282,14 @@ module Kernel
     with_env(LC_ALL: locale, &block)
   end
 
-  # Kernel.system but with exceptions
+  # Kernel.system but with exceptions.
   def safe_system(cmd, *args, **options)
     return if Homebrew.system(cmd, *args, **options)
 
     raise ErrorDuringExecution.new([cmd, *args], status: $CHILD_STATUS)
   end
 
-  # Prints no output
+  # Prints no output.
   def quiet_system(cmd, *args)
     Homebrew._system(cmd, *args) do
       # Redirect output streams to `/dev/null` instead of closing as some programs
@@ -359,7 +360,7 @@ module Kernel
     safe_system(browser, *args)
   end
 
-  # GZips the given paths, and returns the gzipped paths
+  # GZips the given paths, and returns the gzipped paths.
   def gzip(*paths)
     paths.map do |path|
       safe_system "gzip", path
@@ -477,14 +478,13 @@ module Kernel
 
   # Calls the given block with the passed environment variables
   # added to ENV, then restores ENV afterwards.
-  # Example:
   # <pre>with_env(PATH: "/bin") do
   #   system "echo $PATH"
   # end</pre>
   #
-  # Note that this method is *not* thread-safe - other threads
-  # which happen to be scheduled during the block will also
-  # see these environment variables.
+  # @note This method is *not* thread-safe - other threads
+  #   which happen to be scheduled during the block will also
+  #   see these environment variables.
   def with_env(hash)
     old_values = {}
     begin

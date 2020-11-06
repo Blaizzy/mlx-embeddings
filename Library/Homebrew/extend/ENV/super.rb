@@ -6,14 +6,14 @@ require "development_tools"
 
 # ### Why `superenv`?
 #
-# 1. Only specify the environment we need (NO LDFLAGS for cmake)
-# 2. Only apply compiler specific options when we are calling that compiler
-# 3. Force all incpaths and libpaths into the cc instantiation (less bugs)
+# 1. Only specify the environment we need (*NO* LDFLAGS for cmake)
+# 2. Only apply compiler-specific options when we are calling that compiler
+# 3. Force all incpaths and libpaths into the cc instantiation (fewer bugs)
 # 4. Cater toolchain usage to specific Xcode versions
 # 5. Remove flags that we don't want or that will break builds
 # 6. Simpler code
-# 7. Simpler formula that *just work*
-# 8. Build-system agnostic configuration of the tool-chain
+# 7. Simpler formulae that *just work*
+# 8. Build-system agnostic configuration of the toolchain
 module Superenv
   include SharedEnvExtension
 

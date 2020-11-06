@@ -54,8 +54,8 @@ module Hardware
         end
       end
 
-      # Returns an array that's been extended with ArchitectureListExtension,
-      # which provides helpers like #as_arch_flags and #as_cmake_arch_flags.
+      # Returns an array that's been extended with {ArchitectureListExtension},
+      # which provides helpers like `#as_arch_flags`.
       def universal_archs
         # Amazingly, this order (64, then 32) matters. It shouldn't, but it
         # does. GCC (some versions? some systems?) can blow up if the other
@@ -66,7 +66,7 @@ module Hardware
 
       # True when running under an Intel-based shell via Rosetta on an
       # Apple Silicon Mac. This can be detected via seeing if there's a
-      # conflict between what `uname` report and the underlying `sysctl` flags,
+      # conflict between what `uname` reports and the underlying `sysctl` flags,
       # since the `sysctl` flags don't change behaviour under Rosetta.
       def in_rosetta?
         intel? && physical_cpu_arm64?

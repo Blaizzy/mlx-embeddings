@@ -97,7 +97,7 @@ module SharedEnvExtension
   # This is done automatically for keg-only formulae.
   # <pre>ENV.prepend_path "PKG_CONFIG_PATH", "#{Formula["glib"].opt_lib}/pkgconfig"</pre>
   # Prepending a system path such as /usr/bin is a no-op so that requirements
-  # don't accidentally override superenv shims or formulae's `bin` directories, e.g.
+  # don't accidentally override superenv shims or formulae's `bin` directories.
   # <pre>ENV.prepend_path "PATH", which("emacs").dirname</pre>
   def prepend_path(key, path)
     return if %w[/usr/bin /bin /usr/sbin /sbin].include? path.to_s
@@ -159,12 +159,13 @@ module SharedEnvExtension
   end
 
   # Outputs the current compiler.
-  # @return [Symbol]
   # <pre># Do something only for the system clang
   # if ENV.compiler == :clang
   #   # modify CFLAGS CXXFLAGS OBJCFLAGS OBJCXXFLAGS in one go:
   #   ENV.append_to_cflags "-I ./missing/includes"
   # end</pre>
+  #
+  # @return [Symbol]
   def compiler
     @compiler ||= if (cc = @cc)
       warn_about_non_apple_gcc(cc) if cc.match?(GNU_GCC_REGEXP)

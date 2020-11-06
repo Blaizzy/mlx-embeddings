@@ -6,7 +6,7 @@ require "rubocops/extend/formula"
 module RuboCop
   module Cop
     module FormulaAudit
-      # This cop audits URLs and mirrors in Formulae.
+      # This cop audits `url`s and `mirror`s in formulae.
       #
       # @api private
       class Urls < FormulaCop
@@ -55,13 +55,13 @@ module RuboCop
           urls = find_every_func_call_by_name(body_node, :url)
           mirrors = find_every_func_call_by_name(body_node, :mirror)
 
-          # Identify livecheck urls, to skip some checks for them
+          # Identify livecheck URLs, to skip some checks for them
           livecheck_url = if (livecheck = find_every_func_call_by_name(body_node, :livecheck).first) &&
                              (livecheck_url = find_every_func_call_by_name(livecheck.parent, :url).first)
             string_content(parameters(livecheck_url).first)
           end
 
-          # GNU urls; doesn't apply to mirrors
+          # GNU URLs; doesn't apply to mirrors
           gnu_pattern = %r{^(?:https?|ftp)://ftpmirror.gnu.org/(.*)}
           audit_urls(urls, gnu_pattern) do |match, url|
             problem "Please use \"https://ftp.gnu.org/gnu/#{match[1]}\" instead of #{url}."
@@ -202,7 +202,7 @@ module RuboCop
             EOS
           end
 
-          # Check to use canonical urls for Debian packages
+          # Check to use canonical URLs for Debian packages
           noncanon_deb_pattern =
             Regexp.union([%r{^https://mirrors\.kernel\.org/debian/},
                           %r{^https://mirrors\.ocf\.berkeley\.edu/debian/},
@@ -211,26 +211,26 @@ module RuboCop
             problem "Please use https://deb.debian.org/debian/ for #{url}"
           end
 
-          # Check for new-url Google Code download urls, https:// is preferred
+          # Check for new-url Google Code download URLs, https:// is preferred
           google_code_pattern = Regexp.union([%r{^http://.*\.googlecode\.com/files.*},
                                               %r{^http://code\.google\.com/}])
           audit_urls(urls, google_code_pattern) do |_, url|
             problem "Please use https:// for #{url}"
           end
 
-          # Check for git:// GitHub repo urls, https:// is preferred.
+          # Check for git:// GitHub repo URLs, https:// is preferred.
           git_gh_pattern = %r{^git://[^/]*github\.com/}
           audit_urls(urls, git_gh_pattern) do |_, url|
             problem "Please use https:// for #{url}"
           end
 
-          # Check for git:// Gitorious repo urls, https:// is preferred.
+          # Check for git:// Gitorious repo URLs, https:// is preferred.
           git_gitorious_pattern = %r{^git://[^/]*gitorious\.org/}
           audit_urls(urls, git_gitorious_pattern) do |_, url|
             problem "Please use https:// for #{url}"
           end
 
-          # Check for http:// GitHub repo urls, https:// is preferred.
+          # Check for http:// GitHub repo URLs, https:// is preferred.
           gh_pattern = %r{^http://github\.com/.*\.git$}
           audit_urls(urls, gh_pattern) do |_, url|
             problem "Please use https:// for #{url}"
@@ -269,7 +269,7 @@ module RuboCop
             EOS
           end
 
-          # Check for Maven Central urls, prefer HTTPS redirector over specific host
+          # Check for Maven Central URLs, prefer HTTPS redirector over specific host
           maven_pattern = %r{https?://(?:central|repo\d+)\.maven\.org/maven2/(.+)$}
           audit_urls(urls, maven_pattern) do |match, url|
             problem "#{url} should be `https://search.maven.org/remotecontent?filepath=#{match[1]}`"
@@ -290,7 +290,7 @@ module RuboCop
         end
       end
 
-      # This cop makes sure that the correct format for PyPi URLs is used.
+      # This cop makes sure that the correct format for PyPI URLs is used.
       #
       # @api private
       class PyPiUrls < FormulaCop
@@ -299,13 +299,13 @@ module RuboCop
           mirrors = find_every_func_call_by_name(body_node, :mirror)
           urls += mirrors
 
-          # Check pypi urls
+          # Check pypi URLs
           pypi_pattern = %r{^https?://pypi.python.org/}
           audit_urls(urls, pypi_pattern) do |_, url|
             problem "use the `Source` url found on PyPI downloads page (`#{get_pypi_url(url)}`)"
           end
 
-          # Require long files.pythonhosted.org urls
+          # Require long files.pythonhosted.org URLs
           pythonhosted_pattern = %r{^https?://files.pythonhosted.org/packages/source/}
           audit_urls(urls, pythonhosted_pattern) do |_, url|
             problem "use the `Source` url found on PyPI downloads page (`#{get_pypi_url(url)}`)"
@@ -319,7 +319,7 @@ module RuboCop
         end
       end
 
-      # This cop makes sure that git urls have both a `revision`.
+      # This cop makes sure that git URLs have a `revision`.
       #
       # @api private
       class GitUrls < FormulaCop
@@ -342,7 +342,7 @@ module RuboCop
     end
 
     module FormulaAuditStrict
-      # This cop makes sure that git urls have both a `tag`.
+      # This cop makes sure that git URLs have a `tag`.
       #
       # @api private
       class GitUrls < FormulaCop

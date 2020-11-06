@@ -4,21 +4,21 @@
 module Homebrew
   module Livecheck
     module Strategy
-      # The `Gnu` strategy identifies versions of software at gnu.org by
+      # The {Gnu} strategy identifies versions of software at gnu.org by
       # checking directory listing pages.
       #
       # GNU URLs use a variety of formats:
       #
-      # Archive file URLs:
-      # * `https://ftp.gnu.org/gnu/example/example-1.2.3.tar.gz`
-      # * `https://ftp.gnu.org/gnu/example/1.2.3/example-1.2.3.tar.gz`
-      #
-      # Homepage URLs:
-      # * `https://www.gnu.org/software/example/`
-      # * `https://example.gnu.org`
+      # * Archive file URLs:
+      #   * `https://ftp.gnu.org/gnu/example/example-1.2.3.tar.gz`
+      #   * `https://ftp.gnu.org/gnu/example/1.2.3/example-1.2.3.tar.gz`
+      # * Homepage URLs:
+      #   * `https://www.gnu.org/software/example/`
+      #   * `https://example.gnu.org`
       #
       # There are other URL formats that this strategy currently doesn't
       # support:
+      #
       # * `https://ftp.gnu.org/non-gnu/example/source/feature/1.2.3/example-1.2.3.tar.gz`
       # * `https://savannah.nongnu.org/download/example/example-1.2.3.tar.gz`
       # * `https://download.savannah.gnu.org/releases/example/example-1.2.3.tar.gz`
@@ -46,6 +46,7 @@ module Homebrew
         ].freeze
 
         # Whether the strategy can be applied to the provided URL.
+        #
         # @param url [String] the URL to match against
         # @return [Boolean]
         def self.match?(url)
@@ -53,8 +54,8 @@ module Homebrew
         end
 
         # Generates a URL and regex (if one isn't provided) and passes them
-        # to the `PageMatch#find_versions` method to identify versions in the
-        # content.
+        # to {PageMatch.find_versions} to identify versions in the content.
+        #
         # @param url [String] the URL of the content to check
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]

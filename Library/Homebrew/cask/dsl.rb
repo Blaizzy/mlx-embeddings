@@ -212,7 +212,7 @@ module Cask
       end
     end
 
-    # depends_on uses a load method so that multiple stanzas can be merged
+    # `depends_on` uses a load method so that multiple stanzas can be merged.
     def depends_on(*args)
       @depends_on ||= DSL::DependsOn.new
       return @depends_on if args.empty?
@@ -286,7 +286,7 @@ module Cask
       end
     end
 
-    # No need to define it as its the default/superclass implementation.
+    # No need to define it as it's the default/superclass implementation.
     # rubocop:disable Style/MissingRespondToMissing
     def method_missing(method, *)
       if method

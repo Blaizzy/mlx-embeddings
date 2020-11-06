@@ -75,7 +75,7 @@ class Keg
     end
   end
 
-  # locale-specific directories have the form language[_territory][.codeset][@modifier]
+  # Locale-specific directories have the form `language[_territory][.codeset][@modifier]`
   LOCALEDIR_RX = %r{(locale|man)/([a-z]{2}|C|POSIX)(_[A-Z]{2})?(\.[a-zA-Z\-0-9]+(@.+)?)?}.freeze
   INFOFILE_RX = %r{info/([^.].*?\.info|dir)$}.freeze
   KEG_LINK_DIRECTORIES = %w[
@@ -89,7 +89,7 @@ class Keg
   ).map { |dir| HOMEBREW_PREFIX/dir }.sort.uniq.freeze
 
   # Keep relatively in sync with
-  # https://github.com/Homebrew/install/blob/HEAD/install
+  # {https://github.com/Homebrew/install/blob/HEAD/install.sh}
   MUST_EXIST_DIRECTORIES = (MUST_EXIST_SUBDIRECTORIES + [
     HOMEBREW_CELLAR,
   ].sort.uniq).freeze
@@ -181,7 +181,7 @@ class Keg
     [all_required_kegs.to_a, all_dependents.sort]
   end
 
-  # if path is a file in a keg then this will return the containing Keg object
+  # @param path if this is a file in a keg, returns the containing {Keg} object.
   def self.for(path)
     original_path = path
     if original_path.exist? && (path = original_path.realpath)

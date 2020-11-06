@@ -57,10 +57,10 @@ class BuildOptions
   # True if a {Formula} is being built with {Formula.head} instead of {Formula.stable}.
   # <pre>args << "--some-new-stuff" if build.head?</pre>
   # <pre># If there are multiple conditional arguments use a block instead of lines.
-  #  if build.head?
-  #    args << "--i-want-pizza"
-  #    args << "--and-a-cold-beer" if build.with? "cold-beer"
-  #  end</pre>
+  # if build.head?
+  #   args << "--i-want-pizza"
+  #   args << "--and-a-cold-beer" if build.with? "cold-beer"
+  # end</pre>
   def head?
     private_include? "HEAD"
   end

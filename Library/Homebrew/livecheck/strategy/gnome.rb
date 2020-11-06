@@ -4,12 +4,13 @@
 module Homebrew
   module Livecheck
     module Strategy
-      # The `Gnome` strategy identifies versions of software at gnome.org by
+      # The {Gnome} strategy identifies versions of software at gnome.org by
       # checking the available downloads found in a project's `cache.json`
       # file.
       #
-      # GNOME URLs generally follow a format like:
-      # `https://download.gnome.org/sources/example/1.2/example-1.2.3.tar.xz`.
+      # GNOME URLs generally follow a standard format:
+      #
+      # * `https://download.gnome.org/sources/example/1.2/example-1.2.3.tar.xz`
       #
       # The default regex restricts matching to filenames containing a version
       # with an even-numbered minor below 90, as these are stable releases.
@@ -22,6 +23,7 @@ module Homebrew
         URL_MATCH_REGEX = /download\.gnome\.org/i.freeze
 
         # Whether the strategy can be applied to the provided URL.
+        #
         # @param url [String] the URL to match against
         # @return [Boolean]
         def self.match?(url)
@@ -29,8 +31,8 @@ module Homebrew
         end
 
         # Generates a URL and regex (if one isn't provided) and passes them
-        # to the `PageMatch#find_versions` method to identify versions in the
-        # content.
+        # to {PageMatch.find_versions} to identify versions in the content.
+        #
         # @param url [String] the URL of the content to check
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]

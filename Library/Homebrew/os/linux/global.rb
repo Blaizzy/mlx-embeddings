@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-# enables experimental patchelf.rb write support.
+# Enables experimental `patchelf.rb` write support.
 HOMEBREW_PATCHELF_RB_WRITE = (
   ENV["HOMEBREW_NO_PATCHELF_RB_WRITE"].blank? &&
   (ENV["HOMEBREW_PATCHELF_RB_WRITE"].present? ||

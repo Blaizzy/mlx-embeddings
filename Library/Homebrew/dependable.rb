@@ -7,8 +7,8 @@ require "options"
 #
 # @api private
 module Dependable
-  # `:run` and `:linked` are no longer used but keep them here to avoid them being
-  # misused in future.
+  # `:run` and `:linked` are no longer used but keep them here to avoid their
+  # misuse in future.
   RESERVED_TAGS = [:build, :optional, :recommended, :run, :test, :linked].freeze
 
   def build?

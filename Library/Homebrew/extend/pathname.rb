@@ -69,7 +69,7 @@ module DiskUsageExtension
 end
 
 # Homebrew extends Ruby's `Pathname` to make our code more readable.
-# @see https://ruby-doc.org/stdlib-1.8.7/libdoc/pathname/rdoc/Pathname.html Ruby's Pathname API
+# @see https://ruby-doc.org/stdlib-2.6.3/libdoc/pathname/rdoc/Pathname.html Ruby's Pathname API
 class Pathname
   include DiskUsageExtension
 
@@ -150,7 +150,7 @@ class Pathname
   # @private
   alias old_write write
 
-  # We assume this pathname object is a file, obviously
+  # We assume this pathname object is a file, obviously.
   def write(content, *open_args)
     raise "Will not overwrite #{self}" if exist?
 
@@ -165,7 +165,7 @@ class Pathname
     open("a", *open_args) { |f| f.puts(content) }
   end
 
-  # NOTE: This always overwrites.
+  # @note This always overwrites.
   def atomic_write(content)
     old_stat = stat if exist?
     File.atomic_write(self) do |file|
@@ -214,7 +214,7 @@ class Pathname
   # @private
   alias extname_old extname
 
-  # Extended to support common double extensions
+  # Extended to support common double extensions.
   def extname(path = to_s)
     basename = File.basename(path)
 
@@ -230,7 +230,7 @@ class Pathname
     File.extname(basename)
   end
 
-  # For filetypes we support, basename without extension
+  # For filetypes we support, returns basename without extension.
   def stem
     File.basename((path = to_s), extname(path))
   end
@@ -329,7 +329,7 @@ class Pathname
     quiet_system "/usr/bin/install-info", "--delete", "--quiet", to_s, "#{dirname}/dir"
   end
 
-  # Writes an exec script in this folder for each target pathname
+  # Writes an exec script in this folder for each target pathname.
   def write_exec_script(*targets)
     targets.flatten!
     if targets.empty?
@@ -346,7 +346,7 @@ class Pathname
     end
   end
 
-  # Writes an exec script that sets environment variables
+  # Writes an exec script that sets environment variables.
   def write_env_script(target, args, env = nil)
     unless env
       env = args
@@ -361,7 +361,7 @@ class Pathname
     SH
   end
 
-  # Writes a wrapper env script and moves all files to the dst
+  # Writes a wrapper env script and moves all files to the dst.
   def env_script_all_files(dst, env)
     dst.mkpath
     Pathname.glob("#{self}/*") do |file|
@@ -373,7 +373,7 @@ class Pathname
     end
   end
 
-  # Writes an exec script that invokes a Java jar
+  # Writes an exec script that invokes a Java jar.
   def write_jar_script(target_jar, script_name, java_opts = "", java_version: nil)
     (self/script_name).write <<~EOS
       #!/bin/bash

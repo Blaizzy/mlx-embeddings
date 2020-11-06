@@ -58,8 +58,7 @@ module OS
         "2.7.11"
       end
 
-      # - https://xquartz.macosforge.org/trac/wiki
-      # - https://xquartz.macosforge.org/trac/wiki/Releases
+      # @see https://www.xquartz.org/releases/index.html
       def latest_version
         "2.7.11"
       end

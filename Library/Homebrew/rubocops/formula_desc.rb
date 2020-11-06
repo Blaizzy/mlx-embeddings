@@ -8,8 +8,8 @@ require "extend/string"
 module RuboCop
   module Cop
     module FormulaAudit
-      # This cop audits `desc` in Formulae.
-      # See the `DescHelper` module for details of the checks.
+      # This cop audits `desc` in formulae.
+      # See the {DescHelper} module for details of the checks.
       class Desc < FormulaCop
         include DescHelper
 

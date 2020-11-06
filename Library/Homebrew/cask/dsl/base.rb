@@ -22,7 +22,7 @@ module Cask
         @command.run!(executable, **options)
       end
 
-      # No need to define it as its the default/superclass implementation.
+      # No need to define it as it's the default/superclass implementation.
       # rubocop:disable Style/MissingRespondToMissing
       def method_missing(method, *)
         if method

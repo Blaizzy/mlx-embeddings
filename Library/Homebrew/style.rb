@@ -30,7 +30,7 @@ module Homebrew
       success
     end
 
-    # Checks style for a list of files, returning results as `Offenses`
+    # Checks style for a list of files, returning results as an {Offenses}
     # object parsed from its JSON output.
     def check_style_json(files, **options)
       check_style_impl(files, :json, **options)

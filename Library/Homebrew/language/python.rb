@@ -146,11 +146,12 @@ module Language
       # Instantiates, creates, and yields a {Virtualenv} object for use from
       # {Formula#install}, which provides helper methods for instantiating and
       # installing packages into a Python virtualenv.
+      #
       # @param venv_root [Pathname, String] the path to the root of the virtualenv
       #   (often `libexec/"venv"`)
-      # @param python [String] which interpreter to use (e.g. "python"
-      #   or "python2")
-      # @param formula [Formula] the active Formula
+      # @param python [String] which interpreter to use (e.g. "python3"
+      #   or "python3.x")
+      # @param formula [Formula] the active {Formula}
       # @return [Virtualenv] a {Virtualenv} instance
       def virtualenv_create(venv_root, python = "python", formula = self)
         ENV.refurbish_args
@@ -179,10 +180,11 @@ module Language
 
       # Returns true if a formula option for the specified python is currently
       # active or if the specified python is required by the formula. Valid
-      # inputs are "python", "python2", :python, and :python2. Note that
+      # inputs are "python", "python2", and :python3. Note that
       # "with-python", "without-python", "with-python@2", and "without-python@2"
       # formula options are handled correctly even if not associated with any
       # corresponding depends_on statement.
+      #
       # @api private
       def needs_python?(python)
         return true if build.with?(python)
@@ -193,7 +195,7 @@ module Language
       # Helper method for the common case of installing a Python application.
       # Creates a virtualenv in `libexec`, installs all `resource`s defined
       # on the formula, and then installs the formula. An options hash may be
-      # passed (e.g., `:using => "python"`) to override the default, guessed
+      # passed (e.g. `:using => "python"`) to override the default, guessed
       # formula preference for python or python@x.y, or to resolve an ambiguous
       # case where it's not clear whether python or python@x.y should be the
       # default guess.
@@ -222,10 +224,11 @@ module Language
       class Virtualenv
         # Initializes a Virtualenv instance. This does not create the virtualenv
         # on disk; {#create} does that.
-        # @param formula [Formula] the active Formula
+        #
+        # @param formula [Formula] the active {Formula}
         # @param venv_root [Pathname, String] the path to the root of the
         #   virtualenv
-        # @param python [String] which interpreter to use, i.e. "python" or
+        # @param python [String] which interpreter to use, e.g. "python" or
         #   "python2"
         def initialize(formula, venv_root, python)
           @formula = formula
@@ -233,8 +236,8 @@ module Language
           @python = python
         end
 
-        # Obtains a copy of the virtualenv library and creates a new virtualenv
-        # on disk.
+        # Obtains a copy of the virtualenv library and creates a new virtualenv on disk.
+        #
         # @return [void]
         def create
           return if (@venv_root/"bin/python").exist?
@@ -284,8 +287,9 @@ module Language
         end
 
         # Installs packages represented by `targets` into the virtualenv.
+        #
         # @param targets [String, Pathname, Resource,
-        #   Array<String, Pathname, Resource>] (A) token(s) passed to pip
+        #   Array<String, Pathname, Resource>] (A) token(s) passed to `pip`
         #   representing the object to be installed. This can be a directory
         #   containing a setup.py, a {Resource} which will be staged and
         #   installed, or a package identifier to be fetched from PyPI.
@@ -307,7 +311,8 @@ module Language
         end
 
         # Installs packages represented by `targets` into the virtualenv, but
-        #   unlike {#pip_install} also links new scripts to {Formula#bin}.
+        # unlike {#pip_install} also links new scripts to {Formula#bin}.
+        #
         # @param (see #pip_install)
         # @return (see #pip_install)
         def pip_install_and_link(targets)
