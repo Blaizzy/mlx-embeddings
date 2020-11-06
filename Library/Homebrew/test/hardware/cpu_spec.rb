@@ -22,7 +22,7 @@ describe Hardware::CPU do
   describe "::family" do
     let(:cpu_families) {
       [
-        :arm,
+        :arm_vortex_tempest,
         :arrandale,
         :atom,
         :broadwell,
