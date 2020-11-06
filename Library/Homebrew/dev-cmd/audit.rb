@@ -127,7 +127,7 @@ module Homebrew
       ta = TapAuditor.new tap, strict: args.strict?
       ta.audit
 
-      next if ta.problems.empty?
+      next if ta.problems.blank?
 
       tap_count += 1
       tap_problem_count += ta.problems.size
@@ -188,7 +188,6 @@ module Homebrew
     puts new_formula_problem_lines.map { |s| "  #{s}" }
 
     total_problems_count = problem_count + new_formula_problem_count + tap_problem_count
-
     return unless total_problems_count.positive?
 
     problem_plural = "#{total_problems_count} #{"problem".pluralize(total_problems_count)}"
@@ -1058,7 +1057,7 @@ module Homebrew
         list.include? formula
       when Hash
         return false unless list.include? formula
-        return list[formula] if value.nil?
+        return list[formula] if value.blank?
 
         list[formula] == value
       end
@@ -1191,8 +1190,15 @@ module Homebrew
       audit_tap_audit_exceptions
     end
 
+    HOMEBREW_TAP_JSON_FILES = %w[
+      formula_renames.json
+      tap_migrations.json
+      audit_exceptions/*.json
+    ].freeze
+
     def audit_json_files
-      Pathname.glob(@path/"**/*.json").each do |file|
+      json_patterns = HOMEBREW_TAP_JSON_FILES.map { |pattern| @path/pattern }
+      Pathname.glob(json_patterns).each do |file|
         JSON.parse file.read
       rescue JSON::ParserError
         problem "#{file.to_s.delete_prefix("#{@path}/")} contains invalid JSON"
