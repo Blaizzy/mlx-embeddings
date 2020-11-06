@@ -13,10 +13,10 @@ module Homebrew
       usage_banner <<~EOS
         `autoremove` [<options>]
 
-        Remove packages that weren't installed on request and are no longer needed.
+        Uninstall formulae that were only installed as a dependency of another formula and are now no longer needed.
       EOS
       switch "-n", "--dry-run",
-             description: "Just print what would be removed."
+             description: "List what would be uninstalled, but do not actually uninstall anything."
       named 0
     end
   end
@@ -26,7 +26,7 @@ module Homebrew
       Tab.for_keg(f.any_installed_keg).installed_on_request
     end
 
-    removable_formulae += get_removable_formulae(formulae - removable_formulae) if removable_formulae.any?
+    removable_formulae += get_removable_formulae(formulae - removable_formulae) if removable_formulae.present?
 
     removable_formulae
   end
@@ -35,18 +35,15 @@ module Homebrew
     args = autoremove_args.parse
 
     removable_formulae = get_removable_formulae(Formula.installed)
-
     return if removable_formulae.blank?
 
     formulae_names = removable_formulae.map(&:full_name).sort
 
-    intent = args.dry_run? ? "could" : "will"
-    oh1 "Formulae that #{intent} be removed"
-    puts formulae_names
-
+    verb = args.dry_run? ? "Would uninstall" : "Uninstalling"
+    oh1 "#{verb} #{formulae_names.count} unneeded #{"formula".pluralize(formulae_names.count)}:"
+    puts formulae_names.join("\n")
     return if args.dry_run?
 
-    puts
     kegs_by_rack = removable_formulae.map(&:any_installed_keg).group_by(&:rack)
     Uninstall.uninstall_kegs(kegs_by_rack)
   end
