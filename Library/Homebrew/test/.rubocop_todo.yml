@@ -33,6 +33,7 @@ RSpec/MultipleDescribes:
     - 'cmd/--repository_spec.rb'
     - 'cmd/--version_spec.rb'
     - 'cmd/analytics_spec.rb'
+    - 'cmd/autoremove_spec.rb'
     - 'cmd/cleanup_spec.rb'
     - 'cmd/commands_spec.rb'
     - 'cmd/config_spec.rb'

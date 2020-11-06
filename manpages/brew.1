@@ -53,6 +53,13 @@ Control Homebrew\'s anonymous aggregate user behaviour analytics\. Read more at 
 \fBbrew analytics regenerate\-uuid\fR
     Regenerate the UUID used for Homebrew\'s analytics\.
 .
+.SS "\fBautoremove\fR [\fIoptions\fR]"
+Uninstall formulae that were only installed as a dependency of another formula and are now no longer needed\.
+.
+.TP
+\fB\-n\fR, \fB\-\-dry\-run\fR
+List what would be uninstalled, but do not actually uninstall anything\.
+.
 .SS "\fBcask\fR \fIcommand\fR [\fIoptions\fR] [\fIcask\fR]"
 Homebrew Cask provides a friendly CLI workflow for the administration of macOS applications distributed as binaries\.
 .

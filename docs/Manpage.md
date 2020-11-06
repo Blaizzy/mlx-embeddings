@@ -56,6 +56,13 @@ Turn Homebrew's analytics on or off respectively.
 `brew analytics regenerate-uuid`:
 Regenerate the UUID used for Homebrew's analytics.
 
+### `autoremove` [*`options`*]
+
+Uninstall formulae that were only installed as a dependency of another formula and are now no longer needed.
+
+* `-n`, `--dry-run`:
+  List what would be uninstalled, but do not actually uninstall anything.
+
 ### `cask` *`command`* [*`options`*] [*`cask`*]
 
 Homebrew Cask provides a friendly CLI workflow for the administration of macOS applications distributed as binaries.

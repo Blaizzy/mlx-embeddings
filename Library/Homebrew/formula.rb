@@ -1518,6 +1518,14 @@ class Formula
     end.uniq(&:name)
   end
 
+  # An array of all installed {Formula} without dependents
+  # @private
+  def self.installed_formulae_with_no_dependents(formulae = installed)
+    return [] if formulae.blank?
+
+    formulae - formulae.flat_map(&:runtime_formula_dependencies)
+  end
+
   def self.installed_with_alias_path(alias_path)
     return [] if alias_path.nil?
 

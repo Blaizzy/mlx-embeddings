@@ -12,6 +12,7 @@
 abv
 analytics
 audit
+autoremove
 bottle
 bump
 bump-cask-pr
