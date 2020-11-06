@@ -16,6 +16,17 @@ module Language
       # fed to `npm install` only symlinks are created linking back to that
       # directory, consequently breaking that assumption. We require a tarball
       # because npm install creates a "real" installation when fed a tarball.
+      if (package = Pathname("package.json")) && package.exist?
+        begin
+          pkg_json = JSON.parse(package.read)
+        rescue JSON::ParserError
+          opoo "Could not parse package.json!"
+          raise
+        end
+        prepare_removed = pkg_json["scripts"]&.delete("prepare")
+        prepack_removed = pkg_json["scripts"]&.delete("prepack")
+        package.atomic_write(JSON.pretty_generate(pkg_json)) if prepare_removed || prepack_removed
+      end
       output = Utils.popen_read("npm pack --ignore-scripts")
       raise "npm failed to pack #{Dir.pwd}" if !$CHILD_STATUS.exitstatus.zero? || output.lines.empty?
 
