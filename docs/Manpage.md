@@ -58,10 +58,10 @@ Regenerate the UUID used for Homebrew's analytics.
 
 ### `autoremove` [*`options`*]
 
-Remove packages that weren't installed on request and are no longer needed.
+Uninstall formulae that were only installed as a dependency of another formula and are now no longer needed.
 
 * `-n`, `--dry-run`:
-  Just print what would be removed.
+  List what would be uninstalled, but do not actually uninstall anything.
 
 ### `cask` *`command`* [*`options`*] [*`cask`*]
 
