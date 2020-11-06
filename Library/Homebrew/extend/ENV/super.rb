@@ -295,7 +295,7 @@ module Superenv
 
   def set_x11_env_if_installed; end
 
-  def set_cpu_flags(_, _ = "", _ = {}); end
+  def set_cpu_flags(_arg0, _arg1 = "", _arg2 = {}); end
 end
 
 require "extend/os/extend/ENV/super"
