@@ -826,7 +826,7 @@ module Homebrew
       return unless @core_tap
 
       if formula.head && @versioned_formula &&
-         !tap_audit_exception_list(:versioned_head_spec_allowlist).include?(formula.name)
+         !tap_audit_exception(:versioned_head_spec_allowlist, formula.name)
         problem "Versioned formulae should not have a `HEAD` spec"
       end
 
@@ -839,7 +839,7 @@ module Homebrew
       stable_url_minor_version = stable_url_version.minor.to_i
 
       formula_suffix = stable.version.patch.to_i
-      throttled_rate = tap_audit_exception_list(:throttled_formulae)[formula.name]
+      throttled_rate = tap_audit_exception(:throttled_formulae, formula.name)
       if throttled_rate && formula_suffix.modulo(throttled_rate).nonzero?
         problem "should only be updated every #{throttled_rate} releases on multiples of #{throttled_rate}"
       end
@@ -1048,11 +1048,19 @@ module Homebrew
       formula.head && formula.stable.nil?
     end
 
-    def tap_audit_exception_list(list)
-      if @tap_audit_exceptions.key? list
-        @tap_audit_exceptions[list]
-      else
-        {}
+    def tap_audit_exception(list, formula, value = nil)
+      return false unless @tap_audit_exceptions.key? list
+
+      list = @tap_audit_exceptions[list]
+
+      case list
+      when Array
+        list.include? formula
+      when Hash
+        return false unless list.include? formula
+        return list[formula] if value.nil?
+
+        list[formula] == value
       end
     end
   end
