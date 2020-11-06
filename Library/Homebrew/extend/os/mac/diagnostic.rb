@@ -93,6 +93,9 @@ module Homebrew
       def check_for_unsupported_macos
         return if Homebrew::EnvConfig.developer?
 
+        # TODO: remove when Big Sur is released.
+        return if MacOS.version == :big_sur && ENV["HOMEBREW_GITHUB_ACTIONS_BIG_SUR_TESTING"]
+
         who = +"We"
         if OS::Mac.prerelease?
           what = "pre-release version"
