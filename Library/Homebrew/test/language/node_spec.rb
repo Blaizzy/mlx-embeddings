@@ -24,6 +24,20 @@ describe Language::Node do
     end
   end
 
+  describe "#std_pack_for_installation" do
+    npm_pack_cmd = "npm pack --ignore-scripts"
+
+    it "removes prepare and prepack scripts" do
+      path = Pathname("package.json")
+      path.atomic_write("{\"scripts\":{\"prepare\": \"ls\", \"prepack\": \"ls\", \"test\": \"ls\"}}")
+      allow(Utils).to receive(:popen_read).with(npm_pack_cmd).and_return(`echo pack.tgz`)
+      subject.pack_for_installation
+      expect(path.read).not_to include("prepare")
+      expect(path.read).not_to include("prepack")
+      expect(path.read).to include("test")
+    end
+  end
+
   describe "#std_npm_install_args" do
     npm_install_arg = Pathname("libexec")
     npm_pack_cmd = "npm pack --ignore-scripts"
