@@ -1207,6 +1207,14 @@ module Homebrew
 
     def audit_tap_audit_exceptions
       @tap_audit_exceptions.each do |list_name, formula_names|
+        unless [Hash, Array].include? formula_names.class
+          problem <<~EOS
+            audit_exceptions/#{list_name}.json should contain a JSON array
+            of formula names or a JSON object mapping formula names to values
+          EOS
+          next
+        end
+
         formula_names = formula_names.keys if formula_names.is_a? Hash
 
         invalid_formulae = []
