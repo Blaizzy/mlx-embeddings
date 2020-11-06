@@ -70,7 +70,8 @@ class FormulaInstaller
     @build_from_source_formulae = build_from_source_formulae
     @build_bottle = false
     @bottle_arch = nil
-    @force_bottle = force_bottle
+    @formula.force_bottle ||= force_bottle
+    @force_bottle = @formula.force_bottle
     @include_test_formulae = include_test_formulae
     @interactive = false
     @git = false
@@ -205,6 +206,10 @@ class FormulaInstaller
   def check_install_sanity
     raise FormulaInstallationAlreadyAttemptedError, formula if self.class.attempted.include?(formula)
 
+    if force_bottle? && !pour_bottle?
+      raise CannotInstallFormulaError, "--force-bottle passed but #{formula.full_name} has no bottle!"
+    end
+
     type, reason = DeprecateDisable.deprecate_disable_info formula
 
     if type.present?
@@ -217,10 +222,10 @@ class FormulaInstaller
         end
       when :disabled
         if reason.present?
-          odie "#{formula.full_name} has been disabled because it #{reason}!"
-        else
-          odie "#{formula.full_name} has been disabled!"
+          raise CannotInstallFormulaError, "#{formula.full_name} has been disabled because it #{reason}!"
         end
+
+        raise CannotInstallFormulaError, "#{formula.full_name} has been disabled!"
       end
     end
 
@@ -328,7 +333,7 @@ class FormulaInstaller
     return if only_deps?
 
     if build_bottle? && (arch = bottle_arch) && !Hardware::CPU.optimization_flags.include?(arch.to_sym)
-      raise "Unrecognized architecture for --bottle-arch: #{arch}"
+      raise CannotInstallFormulaError, "Unrecognized architecture for --bottle-arch: #{arch}"
     end
 
     formula.deprecated_flags.each do |deprecated_option|
@@ -367,6 +372,7 @@ class FormulaInstaller
         end
         raise if Homebrew::EnvConfig.developer? ||
                  Homebrew::EnvConfig.no_bottle_source_fallback? ||
+                 force_bottle? ||
                  e.is_a?(Interrupt)
 
         @pour_failed = true
@@ -1035,6 +1041,7 @@ class FormulaInstaller
       rescue Exception => e # rubocop:disable Lint/RescueException
         raise if Homebrew::EnvConfig.developer? ||
                  Homebrew::EnvConfig.no_bottle_source_fallback? ||
+                 force_bottle? ||
                  e.is_a?(Interrupt)
 
         @pour_failed = true
