@@ -109,10 +109,12 @@ class Tapioca::Compilers::RequiresCompiler
   def collect_files(config); end
   sig { params(file_path: String).returns(T::Enumerable[String]) }
   def collect_requires(file_path); end
-  sig { params(config: Spoom::Sorbet::Config, file: String).returns(T::Boolean) }
-  def file_ignored_by_sorbet?(config, file); end
+  sig { params(config: Spoom::Sorbet::Config, file_path: Pathname).returns(T::Boolean) }
+  def file_ignored_by_sorbet?(config, file_path); end
   sig { params(files: T::Enumerable[String], name: String).returns(T::Boolean) }
   def name_in_project?(files, name); end
+  sig { params(path: Pathname).returns(T::Array[String]) }
+  def path_parts(path); end
 end
 
 module Tapioca::Compilers::Sorbet
@@ -230,7 +232,7 @@ class Tapioca::Compilers::SymbolTable::SymbolGenerator
   def type_of(constant); end
   sig { params(name: String).returns(T::Boolean) }
   def valid_method_name?(name); end
-  sig { type_parameters(:U).params(step: Integer, _blk: T.proc.params().returns(T.type_parameter(:U))).returns(T.type_parameter(:U)) }
+  sig { type_parameters(:U).params(step: Integer, _blk: T.proc.returns(T.type_parameter(:U))).returns(T.type_parameter(:U)) }
   def with_indentation(step = T.unsafe(nil), &_blk); end
 end
 
