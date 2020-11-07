@@ -3,6 +3,7 @@
 
 require "livecheck/strategy"
 require "ruby-progressbar"
+require "uri"
 
 module Homebrew
   # The {Livecheck} module consists of methods used by the `brew livecheck`
@@ -12,20 +13,6 @@ module Homebrew
   # @api private
   module Livecheck
     module_function
-
-    GITHUB_SPECIAL_CASES = %w[
-      api.github.com
-      /latest
-      mednafen
-      camlp5
-      kotlin
-      osrm-backend
-      prometheus
-      pyenv-virtualenv
-      sysdig
-      shairport-sync
-      yuicompressor
-    ].freeze
 
     UNSTABLE_VERSION_KEYWORDS = %w[
       alpha
@@ -316,27 +303,23 @@ module Homebrew
     # Preprocesses and returns the URL used by livecheck.
     # @return [String]
     def preprocess_url(url)
-      # Check for GitHub repos on github.com, not AWS
-      url = url.sub("github.s3.amazonaws.com", "github.com") if url.include?("github")
+      uri = URI.parse url
+      host = uri.host
+      path = uri.path.delete_prefix("/").delete_suffix(".git")
 
-      # Use repo from GitHub or GitLab inferred from download URL
-      if url.include?("github.com") && GITHUB_SPECIAL_CASES.none? { |sc| url.include? sc }
-        if url.include? "archive"
-          url = url.sub(%r{/archive/.*}, ".git") if url.include? "github"
-        elsif url.include? "releases"
-          url = url.sub(%r{/releases/.*}, ".git")
-        elsif url.include? "downloads"
-          url = "#{Pathname.new(url.sub(%r{/downloads(.*)}, "\\1")).dirname}.git"
-        elsif !url.end_with?(".git")
-          # Truncate the URL at the user/repo part, if possible
-          %r{(?<github_repo_url>(?:[a-z]+://)?github.com/[^/]+/[^/#]+)} =~ url
-          url = github_repo_url if github_repo_url.present?
+      if host == "github.s3.amazonaws.com"
+        owner, repo = path.sub(%r{^downloads/}, "").split("/")
+        return "https://github.com/#{owner}/#{repo}.git"
+      end
 
-          url.delete_suffix!("/") if url.end_with?("/")
-          url += ".git"
-        end
-      elsif url.include?("/-/archive/")
-        url = url.sub(%r{/-/archive/.*$}i, ".git")
+      if ["github.com", "tildegit.org", "gitlab.com"].include? host
+        return url if path.match? %r{/releases/latest/?$}
+
+        owner, repo = path.split("/")
+        url = "https://#{host}/#{owner}/#{repo}.git"
+      elsif host == "git.sr.ht"
+        owner, repo = path.split("/")
+        url = "https://#{host}/#{owner}/#{repo}"
       end
 
       url
