@@ -492,7 +492,15 @@ module Cask
       metadata = SharedAudits.github_repo_data(user, repo)
       return if metadata.nil?
 
-      add_error "GitHub repo is archived" if metadata["archived"]
+      return unless metadata["archived"]
+
+      message = "GitHub repo is archived"
+
+      if cask.discontinued?
+        add_warning message
+      else
+        add_error message
+      end
     end
 
     def check_gitlab_repository_archived
@@ -504,7 +512,15 @@ module Cask
       metadata = SharedAudits.gitlab_repo_data(user, repo)
       return if metadata.nil?
 
-      add_error "GitLab repo is archived" if metadata["archived"]
+      return unless metadata["archived"]
+
+      message = "GitLab repo is archived"
+
+      if cask.discontinued?
+        add_warning message
+      else
+        add_error message
+      end
     end
 
     def check_github_repository
