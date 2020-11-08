@@ -80,6 +80,7 @@ module Cask
                             :url,
                             :version,
                             :appdir,
+                            :discontinued?,
                             *ORDINARY_ARTIFACT_CLASSES.map(&:dsl_key),
                             *ACTIVATABLE_ARTIFACT_CLASSES.map(&:dsl_key),
                             *ARTIFACT_BLOCK_CLASSES.flat_map { |klass| [klass.dsl_key, klass.uninstall_dsl_key] },
@@ -257,6 +258,10 @@ module Cask
         return @caveats.to_s
       end
       @caveats
+    end
+
+    def discontinued?
+      @caveats&.discontinued?
     end
 
     def auto_updates(auto_updates = nil)

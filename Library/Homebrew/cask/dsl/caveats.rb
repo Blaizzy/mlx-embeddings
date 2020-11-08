@@ -15,10 +15,15 @@ module Cask
     #
     # @api private
     class Caveats < Base
+      extend Predicable
+
+      attr_predicate :discontinued?
+
       def initialize(*args)
         super(*args)
         @built_in_caveats = {}
         @custom_caveats = []
+        @discontinued = false
       end
 
       def self.caveat(name, &block)
@@ -135,6 +140,7 @@ module Cask
       end
 
       caveat :discontinued do
+        @discontinued = true
         <<~EOS
           #{@cask} has been officially discontinued upstream.
           It may stop working correctly (or at all) in recent versions of macOS.
