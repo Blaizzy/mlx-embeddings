@@ -42,7 +42,7 @@ class StringInreplaceExtension
   # value with "new_value", or removes the definition entirely.
   #
   # @api public
-  sig { params(flag: String, new_value: String).void }
+  sig { params(flag: String, new_value: T.any(String, Pathname)).void }
   def change_make_var!(flag, new_value)
     return if gsub!(/^#{Regexp.escape(flag)}[ \t]*[\\?+:!]?=[ \t]*((?:.*\\\n)*.*)$/, "#{flag}=#{new_value}", false)
 
