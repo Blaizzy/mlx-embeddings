@@ -126,8 +126,8 @@ module Homebrew
         end
       end
       puts if args.preinstall?
-    else
-      puts "Already up-to-date." if !args.preinstall? && !ENV["HOMEBREW_UPDATE_FAILED"]
+    elsif !args.preinstall? && !ENV["HOMEBREW_UPDATE_FAILED"]
+      puts "Already up-to-date."
     end
 
     Commands.rebuild_commands_completion_list
