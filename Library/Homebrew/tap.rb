@@ -16,6 +16,16 @@ class Tap
 
   TAP_DIRECTORY = (HOMEBREW_LIBRARY/"Taps").freeze
 
+  HOMEBREW_TAP_FORMULA_RENAMES_FILE = "formula_renames.json"
+  HOMEBREW_TAP_MIGRATIONS_FILE = "tap_migrations.json"
+  HOMEBREW_TAP_AUDIT_EXCEPTIONS_DIR = "audit_exceptions"
+
+  HOMEBREW_TAP_JSON_FILES = %W[
+    #{HOMEBREW_TAP_FORMULA_RENAMES_FILE}
+    #{HOMEBREW_TAP_MIGRATIONS_FILE}
+    #{HOMEBREW_TAP_AUDIT_EXCEPTIONS_DIR}/*.json
+  ].freeze
+
   def self.fetch(*args)
     case args.length
     when 1
@@ -526,7 +536,7 @@ class Tap
 
   # Hash with tap formula renames
   def formula_renames
-    @formula_renames ||= if (rename_file = path/"formula_renames.json").file?
+    @formula_renames ||= if (rename_file = path/HOMEBREW_TAP_FORMULA_RENAMES_FILE).file?
       JSON.parse(rename_file.read)
     else
       {}
@@ -535,7 +545,7 @@ class Tap
 
   # Hash with tap migrations
   def tap_migrations
-    @tap_migrations ||= if (migration_file = path/"tap_migrations.json").file?
+    @tap_migrations ||= if (migration_file = path/HOMEBREW_TAP_MIGRATIONS_FILE).file?
       JSON.parse(migration_file.read)
     else
       {}
@@ -546,7 +556,7 @@ class Tap
   def audit_exceptions
     @audit_exceptions = {}
 
-    Pathname.glob(path/"audit_exceptions/*").each do |exception_file|
+    Pathname.glob(path/HOMEBREW_TAP_AUDIT_EXCEPTIONS_DIR/"*").each do |exception_file|
       list_name = exception_file.basename.to_s.chomp(".json").to_sym
       list_contents = begin
         JSON.parse exception_file.read

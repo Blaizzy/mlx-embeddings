@@ -1190,14 +1190,8 @@ module Homebrew
       audit_tap_audit_exceptions
     end
 
-    HOMEBREW_TAP_JSON_FILES = %w[
-      formula_renames.json
-      tap_migrations.json
-      audit_exceptions/*.json
-    ].freeze
-
     def audit_json_files
-      json_patterns = HOMEBREW_TAP_JSON_FILES.map { |pattern| @path/pattern }
+      json_patterns = Tap::HOMEBREW_TAP_JSON_FILES.map { |pattern| @path/pattern }
       Pathname.glob(json_patterns).each do |file|
         JSON.parse file.read
       rescue JSON::ParserError
