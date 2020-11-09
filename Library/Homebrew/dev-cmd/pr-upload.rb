@@ -89,7 +89,7 @@ module Homebrew
 
     # Check the bottle commits did not break `brew audit`
     unless args.no_commit?
-      audit_args = ["bottle", "--merge", "--write"]
+      audit_args = ["audit", "--skip-style"]
       audit_args << "--verbose" if args.verbose?
       audit_args << "--debug" if args.debug?
       safe_system HOMEBREW_BREW_FILE, *audit_args
