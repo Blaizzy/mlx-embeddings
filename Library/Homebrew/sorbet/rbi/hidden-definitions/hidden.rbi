@@ -5523,6 +5523,8 @@ class Cask::Cask
 
   def dictionary(&block); end
 
+  def discontinued?(&block); end
+
   def font(&block); end
 
   def homepage(&block); end
@@ -5714,6 +5716,8 @@ class Cask::DSL::Caveats
   def depends_on_java(*args); end
 
   def discontinued(*args); end
+
+  def discontinued?(); end
 
   def files_in_usr_local(*args); end
 
