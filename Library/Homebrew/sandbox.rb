@@ -77,11 +77,11 @@ class Sandbox
 
   def deny_write_homebrew_repository
     deny_write HOMEBREW_BREW_FILE
-    if HOMEBREW_PREFIX.to_s != HOMEBREW_REPOSITORY.to_s
-      deny_write_path HOMEBREW_REPOSITORY
-    else
+    if HOMEBREW_PREFIX.to_s == HOMEBREW_REPOSITORY.to_s
       deny_write_path HOMEBREW_LIBRARY
       deny_write_path HOMEBREW_REPOSITORY/".git"
+    else
+      deny_write_path HOMEBREW_REPOSITORY
     end
   end
 

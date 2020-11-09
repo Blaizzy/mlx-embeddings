@@ -933,9 +933,7 @@ class GitHubGitDownloadStrategy < GitDownloadStrategy
 
   def commit_outdated?(commit)
     @last_commit ||= github_last_commit
-    if !@last_commit
-      super
-    else
+    if @last_commit
       return true unless commit
       return true unless @last_commit.start_with?(commit)
 
@@ -945,6 +943,8 @@ class GitHubGitDownloadStrategy < GitDownloadStrategy
         version.update_commit(commit)
         false
       end
+    else
+      super
     end
   end
 end

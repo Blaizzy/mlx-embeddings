@@ -511,10 +511,10 @@ module Homebrew
         arg1 = "--#{arg1.tr("_", "-")}"
         arg2 = "--#{arg2.tr("_", "-")}"
 
-        message = if !missing
-          "`#{arg1}` and `#{arg2}` should be passed together."
-        else
+        message = if missing
           "`#{arg2}` cannot be passed without `#{arg1}`."
+        else
+          "`#{arg1}` and `#{arg2}` should be passed together."
         end
         super message
       end
