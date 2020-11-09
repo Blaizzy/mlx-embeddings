@@ -509,6 +509,12 @@ end
 # @api public
 class CurlApacheMirrorDownloadStrategy < CurlDownloadStrategy
   def mirrors
+    combined_mirrors
+  end
+
+  private
+
+  def combined_mirrors
     return @combined_mirrors if defined?(@combined_mirrors)
 
     backup_mirrors = apache_mirrors.fetch("backup", [])
@@ -516,8 +522,6 @@ class CurlApacheMirrorDownloadStrategy < CurlDownloadStrategy
 
     @combined_mirrors = [*@mirrors, *backup_mirrors]
   end
-
-  private
 
   def resolve_url_basename_time(url)
     if url == self.url

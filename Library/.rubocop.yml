@@ -197,6 +197,11 @@ Layout/RescueEnsureAlignment:
 Lint/AmbiguousBlockAssociation:
   Enabled: false
 
+# needed for lazy_object magic
+Naming/MemoizedInstanceVariableName:
+  Exclude:
+    - 'Homebrew/lazy_object.rb'
+
 # so many of these in formulae and can't be autocorrected
 # TODO: fix these as `ruby -w` complains about them.
 Lint/AmbiguousRegexpLiteral:
