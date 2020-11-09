@@ -118,6 +118,24 @@ module Homebrew
       options[:except_cops] = [:FormulaAuditStrict]
     end
 
+    # Run tap audits first
+    tap_problem_count = 0
+    tap_count = 0
+    Tap.each do |tap|
+      next if args.tap && tap != args.tap
+
+      ta = TapAuditor.new tap, strict: args.strict?
+      ta.audit
+
+      next if ta.problems.blank?
+
+      tap_count += 1
+      tap_problem_count += ta.problems.size
+      tap_problem_lines = format_problem_lines(ta.problems)
+
+      puts "#{tap.name}:", tap_problem_lines.map { |s| "  #{s}" }
+    end
+
     # Check style in a single batch run up front for performance
     style_offenses = Style.check_style_json(style_files, options) if style_files
     # load licenses
@@ -127,14 +145,15 @@ module Homebrew
     audit_formulae.sort.each do |f|
       only = only_cops ? ["style"] : args.only
       options = {
-        new_formula:         new_formula,
-        strict:              strict,
-        online:              online,
-        git:                 git,
-        only:                only,
-        except:              args.except,
-        spdx_license_data:   spdx_license_data,
-        spdx_exception_data: spdx_exception_data,
+        new_formula:          new_formula,
+        strict:               strict,
+        online:               online,
+        git:                  git,
+        only:                 only,
+        except:               args.except,
+        spdx_license_data:    spdx_license_data,
+        spdx_exception_data:  spdx_exception_data,
+        tap_audit_exceptions: f.tap.audit_exceptions,
       }
       options[:style_offenses] = style_offenses.for_path(f.path) if style_offenses
       options[:display_cop_names] = args.display_cop_names?
@@ -168,14 +187,23 @@ module Homebrew
     new_formula_problem_count += new_formula_problem_lines.size
     puts new_formula_problem_lines.map { |s| "  #{s}" }
 
-    total_problems_count = problem_count + new_formula_problem_count
+    total_problems_count = problem_count + new_formula_problem_count + tap_problem_count
+    return unless total_problems_count.positive?
+
     problem_plural = "#{total_problems_count} #{"problem".pluralize(total_problems_count)}"
     formula_plural = "#{formula_count} #{"formula".pluralize(formula_count)}"
+    tap_plural = "#{tap_count} #{"tap".pluralize(tap_count)}"
     corrected_problem_plural = "#{corrected_problem_count} #{"problem".pluralize(corrected_problem_count)}"
-    errors_summary = "#{problem_plural} in #{formula_plural} detected"
+    errors_summary = if tap_count.zero?
+      "#{problem_plural} in #{formula_plural} detected"
+    elsif formula_count.zero?
+      "#{problem_plural} in #{tap_plural} detected"
+    else
+      "#{problem_plural} in #{formula_plural} and #{tap_plural} detected"
+    end
     errors_summary += ", #{corrected_problem_plural} corrected" if corrected_problem_count.positive?
 
-    ofail errors_summary if problem_count.positive? || new_formula_problem_count.positive?
+    ofail errors_summary
   end
 
   def format_problem_lines(problems)
@@ -247,6 +275,7 @@ module Homebrew
       @specs = %w[stable head].map { |s| formula.send(s) }.compact
       @spdx_license_data = options[:spdx_license_data]
       @spdx_exception_data = options[:spdx_exception_data]
+      @tap_audit_exceptions = options[:tap_audit_exceptions]
     end
 
     def audit_style
@@ -728,20 +757,6 @@ module Homebrew
       [user, repo]
     end
 
-    VERSIONED_HEAD_SPEC_ALLOWLIST = %w[
-      bash-completion@2
-      imagemagick@6
-    ].freeze
-
-    THROTTLED_FORMULAE = {
-      "aws-sdk-cpp" => 10,
-      "awscli@1"    => 10,
-      "balena-cli"  => 10,
-      "gatsby-cli"  => 10,
-      "quicktype"   => 10,
-      "vim"         => 50,
-    }.freeze
-
     UNSTABLE_ALLOWLIST = {
       "aalib"           => "1.4rc",
       "automysqlbackup" => "3.0-rc",
@@ -812,9 +827,9 @@ module Homebrew
 
       return unless @core_tap
 
-      if formula.head && @versioned_formula
-        head_spec_message = "Versioned formulae should not have a `HEAD` spec"
-        problem head_spec_message unless VERSIONED_HEAD_SPEC_ALLOWLIST.include?(formula.name)
+      if formula.head && @versioned_formula &&
+         !tap_audit_exception(:versioned_head_spec_allowlist, formula.name)
+        problem "Versioned formulae should not have a `HEAD` spec"
       end
 
       stable = formula.stable
@@ -826,7 +841,7 @@ module Homebrew
       stable_url_minor_version = stable_url_version.minor.to_i
 
       formula_suffix = stable.version.patch.to_i
-      throttled_rate = THROTTLED_FORMULAE[formula.name]
+      throttled_rate = tap_audit_exception(:throttled_formulae, formula.name)
       if throttled_rate && formula_suffix.modulo(throttled_rate).nonzero?
         problem "should only be updated every #{throttled_rate} releases on multiples of #{throttled_rate}"
       end
@@ -1034,6 +1049,22 @@ module Homebrew
     def head_only?(formula)
       formula.head && formula.stable.nil?
     end
+
+    def tap_audit_exception(list, formula, value = nil)
+      return false unless @tap_audit_exceptions.key? list
+
+      list = @tap_audit_exceptions[list]
+
+      case list
+      when Array
+        list.include? formula
+      when Hash
+        return false unless list.include? formula
+        return list[formula] if value.blank?
+
+        list[formula] == value
+      end
+    end
   end
 
   class ResourceAuditor
@@ -1144,6 +1175,64 @@ module Homebrew
 
     def problem(text)
       @problems << text
+    end
+  end
+
+  class TapAuditor
+    attr_reader :name, :path, :tap_audit_exceptions, :problems
+
+    def initialize(tap, strict:)
+      @name                 = tap.name
+      @path                 = tap.path
+      @tap_audit_exceptions = tap.audit_exceptions
+      @problems             = []
+    end
+
+    def audit
+      audit_json_files
+      audit_tap_audit_exceptions
+    end
+
+    def audit_json_files
+      json_patterns = Tap::HOMEBREW_TAP_JSON_FILES.map { |pattern| @path/pattern }
+      Pathname.glob(json_patterns).each do |file|
+        JSON.parse file.read
+      rescue JSON::ParserError
+        problem "#{file.to_s.delete_prefix("#{@path}/")} contains invalid JSON"
+      end
+    end
+
+    def audit_tap_audit_exceptions
+      @tap_audit_exceptions.each do |list_name, formula_names|
+        unless [Hash, Array].include? formula_names.class
+          problem <<~EOS
+            audit_exceptions/#{list_name}.json should contain a JSON array
+            of formula names or a JSON object mapping formula names to values
+          EOS
+          next
+        end
+
+        formula_names = formula_names.keys if formula_names.is_a? Hash
+
+        invalid_formulae = []
+        formula_names.each do |name|
+          invalid_formulae << name if Formula[name].tap != @name
+        rescue FormulaUnavailableError
+          invalid_formulae << name
+        end
+
+        next if invalid_formulae.empty?
+
+        problem <<~EOS
+          audit_exceptions/#{list_name}.json references
+          formulae that are not found in the #{@name} tap.
+          Invalid formulae: #{invalid_formulae.join(", ")}
+        EOS
+      end
+    end
+
+    def problem(message, location: nil)
+      @problems << ({ message: message, location: location })
     end
   end
 end

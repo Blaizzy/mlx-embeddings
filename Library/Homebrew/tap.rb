@@ -16,6 +16,16 @@ class Tap
 
   TAP_DIRECTORY = (HOMEBREW_LIBRARY/"Taps").freeze
 
+  HOMEBREW_TAP_FORMULA_RENAMES_FILE = "formula_renames.json"
+  HOMEBREW_TAP_MIGRATIONS_FILE = "tap_migrations.json"
+  HOMEBREW_TAP_AUDIT_EXCEPTIONS_DIR = "audit_exceptions"
+
+  HOMEBREW_TAP_JSON_FILES = %W[
+    #{HOMEBREW_TAP_FORMULA_RENAMES_FILE}
+    #{HOMEBREW_TAP_MIGRATIONS_FILE}
+    #{HOMEBREW_TAP_AUDIT_EXCEPTIONS_DIR}/*.json
+  ].freeze
+
   def self.fetch(*args)
     case args.length
     when 1
@@ -99,6 +109,7 @@ class Tap
     @command_files = nil
     @formula_renames = nil
     @tap_migrations = nil
+    @audit_exceptions = nil
     @config = nil
     remove_instance_variable(:@private) if instance_variable_defined?(:@private)
   end
@@ -525,9 +536,7 @@ class Tap
 
   # Hash with tap formula renames.
   def formula_renames
-    require "json"
-
-    @formula_renames ||= if (rename_file = path/"formula_renames.json").file?
+    @formula_renames ||= if (rename_file = path/HOMEBREW_TAP_FORMULA_RENAMES_FILE).file?
       JSON.parse(rename_file.read)
     else
       {}
@@ -536,13 +545,31 @@ class Tap
 
   # Hash with tap migrations.
   def tap_migrations
-    require "json"
-
-    @tap_migrations ||= if (migration_file = path/"tap_migrations.json").file?
+    @tap_migrations ||= if (migration_file = path/HOMEBREW_TAP_MIGRATIONS_FILE).file?
       JSON.parse(migration_file.read)
     else
       {}
     end
+  end
+
+  # Hash with audit exceptions
+  def audit_exceptions
+    @audit_exceptions = {}
+
+    Pathname.glob(path/HOMEBREW_TAP_AUDIT_EXCEPTIONS_DIR/"*").each do |exception_file|
+      list_name = exception_file.basename.to_s.chomp(".json").to_sym
+      list_contents = begin
+        JSON.parse exception_file.read
+      rescue JSON::ParserError
+        opoo "#{exception_file} contains invalid JSON"
+      end
+
+      next if list_contents.nil?
+
+      @audit_exceptions[list_name] = list_contents
+    end
+
+    @audit_exceptions
   end
 
   def ==(other)
@@ -684,6 +711,14 @@ class CoreTap < Tap
   # @private
   def tap_migrations
     @tap_migrations ||= begin
+      self.class.ensure_installed!
+      super
+    end
+  end
+
+  # @private
+  def audit_exceptions
+    @audit_exceptions ||= begin
       self.class.ensure_installed!
       super
     end
