@@ -22,7 +22,7 @@ module Test
           return super(block) unless @tty
 
           colored_tty_block = lambda do
-            instance_eval("$#{@output}", __FILE__, __LINE__).extend(Module.new do
+            instance_eval("$#{@output}  # $stdout", __FILE__, __LINE__).extend(Module.new do
               def tty?
                 true
               end
@@ -36,17 +36,17 @@ module Test
 
           uncolored_tty_block = lambda do
             instance_eval <<-EOS, __FILE__, __LINE__ + 1
-              begin
-                captured_stream = StringIO.new
+              begin                                                       # begin
+                captured_stream = StringIO.new                            #   captured_stream = StringIO.new
 
-                original_stream = $#{@output}
-                $#{@output} = captured_stream
+                original_stream = $#{@output}                             #   original_stream = $stdout
+                $#{@output} = captured_stream                             #   $stdout = captured_stream
 
-                colored_tty_block.call
-              ensure
-                $#{@output} = original_stream
-                $#{@output}.print Tty.strip_ansi(captured_stream.string)
-              end
+                colored_tty_block.call                                    #   colored_tty_block.call
+              ensure                                                      # ensure
+                $#{@output} = original_stream                             #   $stdout = original_stream
+                $#{@output}.print Tty.strip_ansi(captured_stream.string)  #   $stdout.print Tty.strip_ansi(captured_stream.string)
+              end                                                         # end
             EOS
           end
 
