@@ -524,7 +524,7 @@ module Homebrew
 
       # The number of conflicts on Linux is absurd.
       # TODO: remove this and check these there too.
-      return if OS.linux? && !Homebrew::EnvConfig.force_homebrew_on_linux?
+      return if OS.linux?
 
       recursive_runtime_formulae = formula.runtime_formula_dependencies(undeclared: false)
       version_hash = {}
