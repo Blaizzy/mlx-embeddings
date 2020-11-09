@@ -87,6 +87,14 @@ module Homebrew
 
     safe_system HOMEBREW_BREW_FILE, *bottle_args
 
+    # Check the bottle commits did not break `brew audit`
+    unless args.no_commit?
+      audit_args = ["bottle", "--merge", "--write"]
+      audit_args << "--verbose" if args.verbose?
+      audit_args << "--debug" if args.debug?
+      safe_system HOMEBREW_BREW_FILE, *audit_args
+    end
+
     if github_releases?(bottles_hash)
       # Handle uploading to GitHub Releases.
       bottles_hash.each_value do |bottle_hash|
