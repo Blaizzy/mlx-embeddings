@@ -141,43 +141,37 @@ module GitHub
     end
   end
 
+  # Given an API response from GitHub, warn the user if their credentials
+  # have insufficient permissions.
   def api_credentials_error_message(response_headers, needed_scopes)
     return if response_headers.empty?
 
-    @api_credentials_error_message ||= begin
-      unauthorized = (response_headers["http/1.1"] == "401 Unauthorized")
-      scopes = response_headers["x-accepted-oauth-scopes"].to_s.split(", ")
-      if unauthorized && scopes.blank?
-        needed_human_scopes = needed_scopes.join(", ")
-        credentials_scopes = response_headers["x-oauth-scopes"]
-        return if needed_human_scopes.blank? && credentials_scopes.blank?
+    unauthorized = (response_headers["http/1.1"] == "401 Unauthorized")
+    scopes = response_headers["x-accepted-oauth-scopes"].to_s.split(", ")
+    return unless unauthorized && scopes.blank?
 
-        needed_human_scopes = "none" if needed_human_scopes.blank?
-        credentials_scopes = "none" if credentials_scopes.blank?
+    needed_human_scopes = needed_scopes.join(", ")
+    credentials_scopes = response_headers["x-oauth-scopes"]
+    return if needed_human_scopes.blank? && credentials_scopes.blank?
 
-        case GitHub.api_credentials_type
-        when :keychain_username_password
-          onoe <<~EOS
-            Your macOS keychain GitHub credentials do not have sufficient scope!
-            Scopes they need: #{needed_human_scopes}
-            Scopes they have: #{credentials_scopes}
-            Create a personal access token:
-              #{ALL_SCOPES_URL}
-            #{Utils::Shell.set_variable_in_profile("HOMEBREW_GITHUB_API_TOKEN", "your_token_here")}
-          EOS
-        when :env_token
-          onoe <<~EOS
-            Your HOMEBREW_GITHUB_API_TOKEN does not have sufficient scope!
-            Scopes it needs: #{needed_human_scopes}
-              Scopes it has: #{credentials_scopes}
-            Create a new personal access token:
-              #{ALL_SCOPES_URL}
-            #{Utils::Shell.set_variable_in_profile("HOMEBREW_GITHUB_API_TOKEN", "your_token_here")}
-          EOS
-        end
-      end
-      true
+    needed_human_scopes = "none" if needed_human_scopes.blank?
+    credentials_scopes = "none" if credentials_scopes.blank?
+
+    what = case GitHub.api_credentials_type
+    when :keychain_username_password
+      "macOS keychain GitHub"
+    when :env_token
+      "HOMEBREW_GITHUB_API_TOKEN"
     end
+
+    @api_credentials_error_message ||= onoe <<~EOS
+      Your #{what} credentials do not have sufficient scope!
+      Scopes required: #{needed_human_scopes}
+      Scopes present:  #{credentials_scopes}
+      Create a personal access token:
+        #{ALL_SCOPES_URL}
+      #{Utils::Shell.set_variable_in_profile("HOMEBREW_GITHUB_API_TOKEN", "your_token_here")}
+    EOS
   end
 
   def open_api(url, data: nil, data_binary_path: nil, request_method: nil, scopes: [].freeze, parse_json: true)

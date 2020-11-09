@@ -33,8 +33,10 @@ module UnpackStrategy
           system_command! "ditto",
                           args:    ["-x", "-k", path, unpack_dir],
                           verbose: verbose
-          return
+          nil
         end
+
+        return if result.blank?
 
         volumes = result.stderr.chomp
                         .split("\n")
