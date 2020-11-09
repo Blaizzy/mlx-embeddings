@@ -915,7 +915,7 @@ module Homebrew
         break if previous_version && current_version != previous_version
       end
 
-      if current_version == previous_version &&
+      if current_version == newest_committed_version &&
          current_checksum != newest_committed_checksum
         problem(
           "stable sha256 changed without the version also changing; " \
