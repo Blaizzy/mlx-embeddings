@@ -536,7 +536,11 @@ module Homebrew
                     (\n^\ {3}[\S\ ]+$)*                                           # options can be in multiple lines
                   )?|
                   (homepage|desc|sha256|version|mirror|license)\ ['"][\S\ ]+['"]| # specs with a string
-                  (license)\ [^\[]+?\[[^\]]+?\]|                                  # license may contain a list
+                  license\ (
+                    [^\[]+?\[[^\]]+?\]|                                           # license may contain a list
+                    [^{]+?{[^}]+?}|                                               # license may contain a hash
+                    :\S+                                                          # license as a symbol
+                  )|
                   (revision|version_scheme)\ \d+|                                 # revision with a number
                   (stable|livecheck)\ do(\n+^\ {4}[\S\ ]+$)*\n+^\ {2}end          # components with blocks
                 )\n+                                                              # multiple empty lines
