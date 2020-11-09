@@ -1,6 +1,8 @@
 # typed: false
 # frozen_string_literal: true
 
+# The Library/Homebrew/extend/os/software_spec.rb conditional logic will need to be more nuanced
+# if this file ever includes more than `uses_from_macos`.
 class SoftwareSpec
   undef uses_from_macos
 
