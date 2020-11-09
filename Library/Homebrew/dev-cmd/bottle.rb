@@ -536,27 +536,7 @@ module Homebrew
             odie "--keep-old was passed but there was no existing bottle block!" if args.keep_old?
             puts output
             update_or_add = "add"
-            pattern = /(
-                (\ {2}\#[^\n]*\n)*                                                # comments
-                \ {2}(                                                            # two spaces at the beginning
-                  (url|head)\ ['"][\S\ ]+['"]                                     # url or head with a string
-                  (
-                    ,[\S\ ]*$                                                     # url may have options
-                    (\n^\ {3}[\S\ ]+$)*                                           # options can be in multiple lines
-                  )?|
-                  (homepage|desc|sha256|version|mirror|license)\ ['"][\S\ ]+['"]| # specs with a string
-                  license\ (
-                    [^\[]+?\[[^\]]+?\]|                                           # license may contain a list
-                    [^{]+?{[^}]+?}|                                               # license may contain a hash
-                    :\S+                                                          # license as a symbol
-                  )|
-                  (revision|version_scheme)\ \d+|                                 # revision with a number
-                  (stable|livecheck)\ do(\n+^\ {4}[\S\ ]+$)*\n+^\ {2}end          # components with blocks
-                )\n+                                                              # multiple empty lines
-               )+
-             /mx
-            string = s.sub!(pattern, "\\0#{output}\n")
-            odie "Bottle block addition failed!" unless string
+            Utils::Bottles.add_bottle_stanza!(s.inreplace_string, output)
           end
         end
 
