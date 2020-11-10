@@ -26,7 +26,7 @@ module UnpackStrategy
         end
 
         result = begin
-          T.let(super, SystemCommand::Result)
+          T.let(super, T.nilable(SystemCommand::Result))
         rescue ErrorDuringExecution => e
           raise unless e.stderr.include?("End-of-central-directory signature not found.")
 
