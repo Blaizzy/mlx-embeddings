@@ -71,9 +71,7 @@ module OS
       def sdk_paths
         @sdk_paths ||= begin
           # Bail out if there is no SDK prefix at all
-          if !File.directory? sdk_prefix
-            {}
-          else
+          if File.directory? sdk_prefix
             paths = {}
 
             Dir[File.join(sdk_prefix, "MacOSX*.sdk")].each do |sdk_path|
@@ -82,6 +80,8 @@ module OS
             end
 
             paths
+          else
+            {}
           end
         end
       end
@@ -130,10 +130,10 @@ module OS
       # return nil SDKs for Xcode 9 and older.
       def sdk_prefix
         @sdk_prefix ||= begin
-          if !CLT.provides_sdk?
-            ""
-          else
+          if CLT.provides_sdk?
             "#{CLT::PKG_PATH}/SDKs"
+          else
+            ""
           end
         end
       end

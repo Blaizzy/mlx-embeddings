@@ -111,14 +111,18 @@ module Homebrew
     new_formula = begin
       Formulary.from_contents(formula_name, formula_path, new_contents, :stable)
     rescue FormulaUnavailableError
-      return "#{formula_name}: delete #{reason}".strip
+      nil
     end
+
+    return "#{formula_name}: delete #{reason}".strip if new_formula.blank?
 
     old_formula = begin
       Formulary.from_contents(formula_name, formula_path, old_contents, :stable)
     rescue FormulaUnavailableError
-      return "#{formula_name} #{new_formula.stable.version} (new formula)"
+      nil
     end
+
+    return "#{formula_name} #{new_formula.stable.version} (new formula)" if old_formula.blank?
 
     if old_formula.stable.version != new_formula.stable.version
       "#{formula_name} #{new_formula.stable.version}"

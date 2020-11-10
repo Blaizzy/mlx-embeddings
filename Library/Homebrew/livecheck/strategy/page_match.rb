@@ -47,7 +47,7 @@ module Homebrew
         #   content
         # @return [Array]
         def self.page_matches(url, regex)
-          page = URI.open(url).read
+          page = URI.parse(url).open.read
           matches = page.scan(regex)
           matches.map(&:first).uniq
         end

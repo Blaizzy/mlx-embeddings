@@ -36,8 +36,10 @@ module Utils
         tag_version = begin
           MacOS::Version.from_symbol(tag)
         rescue MacOSVersionError
-          return
+          nil
         end
+
+        return if tag_version.blank?
 
         keys.find do |key|
           MacOS::Version.from_symbol(key) <= tag_version

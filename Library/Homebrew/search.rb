@@ -50,8 +50,10 @@ module Homebrew
         )
       rescue GitHub::Error => e
         opoo "Error searching on GitHub: #{e}\n"
-        return results
+        nil
       end
+
+      return results if matches.blank?
 
       matches.each do |match|
         name = File.basename(match["path"], ".rb")

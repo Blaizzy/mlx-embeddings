@@ -84,8 +84,10 @@ module Homebrew
           formula = begin
             Formulary.from_rack(HOMEBREW_CELLAR/formula_name)
           rescue FormulaUnavailableError, TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
-            return false
+            nil
           end
+
+          return false if formula.blank?
 
           resource_name = basename.to_s[/\A.*?--(.*?)--?(?:#{Regexp.escape(version)})/, 1]
 
@@ -113,8 +115,10 @@ module Homebrew
           cask = begin
             Cask::CaskLoader.load(name)
           rescue Cask::CaskError
-            return false
+            nil
           end
+
+          return false if cask.blank?
 
           return true unless basename.to_s.match?(/\A#{Regexp.escape(name)}--#{Regexp.escape(cask.version)}\b/)
 

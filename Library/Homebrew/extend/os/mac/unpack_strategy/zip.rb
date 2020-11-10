@@ -26,15 +26,17 @@ module UnpackStrategy
         end
 
         result = begin
-          T.let(super, SystemCommand::Result)
+          T.let(super, T.nilable(SystemCommand::Result))
         rescue ErrorDuringExecution => e
           raise unless e.stderr.include?("End-of-central-directory signature not found.")
 
           system_command! "ditto",
                           args:    ["-x", "-k", path, unpack_dir],
                           verbose: verbose
-          return
+          nil
         end
+
+        return if result.blank?
 
         volumes = result.stderr.chomp
                         .split("\n")

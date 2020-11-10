@@ -139,8 +139,10 @@ module RuboCop
             URI(remove_non_ascii(host))
           rescue URI::InvalidURIError
             # Can't check if we can't parse.
-            return true
+            nil
           end
+
+          return true if host_uri.blank?
 
           host = if host.match?(/:\d/) && host_uri.port != 80
             "#{host_uri.host}:#{host_uri.port}"

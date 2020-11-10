@@ -2,7 +2,6 @@ inherit_from:
   - ../.rubocop.yml
   - .rubocop_todo.yml
 
-AllCops:
-  RSpec:
-    Patterns:
-    - ./*
+RSpec:
+  Include:
+  - ./*

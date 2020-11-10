@@ -87,7 +87,7 @@ module Homebrew
           match_data = { matches: {}, regex: regex, url: page_url }
 
           # Cache responses to avoid unnecessary duplicate fetches
-          @page_data[page_url] = URI.open(page_url).read unless @page_data.key?(page_url)
+          @page_data[page_url] = URI.parse(page_url).open.read unless @page_data.key?(page_url)
 
           matches = @page_data[page_url].scan(regex)
           matches.map(&:first).uniq.each do |match|
