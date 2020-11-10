@@ -101,9 +101,9 @@ module Homebrew
   def extract
     args = extract_args.parse
 
-    if args.named.first =~ HOMEBREW_TAP_FORMULA_REGEX
-      name = Regexp.last_match(3).downcase
-      source_tap = Tap.fetch(Regexp.last_match(1), Regexp.last_match(2))
+    if (match = args.named.first.match(HOMEBREW_TAP_FORMULA_REGEX))
+      name = match[3].downcase
+      source_tap = Tap.fetch(match[1], match[2])
       raise TapFormulaUnavailableError.new(source_tap, name) unless source_tap.installed?
     else
       name = args.named.first.downcase
