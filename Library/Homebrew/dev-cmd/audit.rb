@@ -928,6 +928,7 @@ module Homebrew
         end
 
         break if previous_version && current_version != previous_version
+        break if previous_revision && current_revision != previous_revision
       end
 
       if current_version == previous_version &&
