@@ -685,6 +685,23 @@ module Homebrew
           it { is_expected.to match("stable sha256 changed without the version also changing") }
         end
 
+        context "should not change with the same version when not the first commit" do
+          before do
+            formula_gsub_origin_commit(
+              'sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"',
+              'sha256 "3622d2a53236ed9ca62de0616a7e80fd477a9a3f862ba09d503da188f53ca523"',
+            )
+            formula_gsub_origin_commit "revision 2"
+            formula_gsub_origin_commit "foo-1.0.tar.gz", "foo-1.1.tar.gz"
+            formula_gsub(
+              'sha256 "3622d2a53236ed9ca62de0616a7e80fd477a9a3f862ba09d503da188f53ca523"',
+              'sha256 "e048c5e6144f5932d8672c2fade81d9073d5b3ca1517b84df006de3d25414fc1"',
+            )
+          end
+
+          it { is_expected.to match("stable sha256 changed without the version also changing") }
+        end
+
         context "can change with the different version" do
           before do
             formula_gsub_origin_commit(
