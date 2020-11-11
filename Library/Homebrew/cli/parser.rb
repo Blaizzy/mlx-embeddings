@@ -176,7 +176,7 @@ module Homebrew
 
       def usage_banner_text
         @parser.banner
-               .gsub(/^  - (`[^`]+`)\s+/, "\n- \\1  \n  ") # Format `cask` subcommands as MarkDown list.
+               .gsub(/^  - (`[^`]+`)\s+/, "\n- \\1:\n  <br>") # Format `cask` subcommands as Markdown list.
       end
 
       def comma_array(name, description: nil)

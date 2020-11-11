@@ -135,6 +135,8 @@ module Homebrew
       when "--markdown"
         ronn_output = ronn_output.gsub(%r{<var>(.*?)</var>}, "*`\\1`*")
                                  .gsub(/\n\n\n+/, "\n\n")
+                                 .gsub(/^(- `[^`]+`):/, "\\1") # drop trailing colons from definition lists
+                                 .gsub(/(?<=\n\n)([\[`].+):\n/, "\\1\n<br>") # replace colons with <br> on subcommands
       when "--roff"
         ronn_output = ronn_output.gsub(%r{<code>(.*?)</code>}, "\\fB\\1\\fR")
                                  .gsub(%r{<var>(.*?)</var>}, "\\fI\\1\\fR")
@@ -234,10 +236,10 @@ module Homebrew
   sig { returns(String) }
   def env_vars_manpage
     lines = Homebrew::EnvConfig::ENVS.flat_map do |env, hash|
-      entry = "  * `#{env}`:\n    #{hash[:description]}\n"
+      entry = "- `#{env}`:\n  <br>#{hash[:description]}\n"
       default = hash[:default_text]
       default ||= "`#{hash[:default]}`." if hash[:default]
-      entry += "\n\n    *Default:* #{default}\n" if default
+      entry += "\n\n  *Default:* #{default}\n" if default
 
       entry
     end
