@@ -54,6 +54,10 @@ class RuboCop::Cop::RSpec::AlignLeftLetBrace < ::RuboCop::Cop::RSpec::Base
 
   def on_new_investigation; end
 
+  private
+
+  def token_aligner; end
+
   class << self
     def autocorrect_incompatible_with; end
   end
@@ -65,6 +69,10 @@ class RuboCop::Cop::RSpec::AlignRightLetBrace < ::RuboCop::Cop::RSpec::Base
   extend(::RuboCop::Cop::AutoCorrector)
 
   def on_new_investigation; end
+
+  private
+
+  def token_aligner; end
 
   class << self
     def autocorrect_incompatible_with; end
@@ -97,26 +105,14 @@ RuboCop::Cop::RSpec::AroundBlock::MSG_UNUSED_ARG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::Base < ::RuboCop::Cop::Base
   include(::RuboCop::RSpec::Language)
-  include(::RuboCop::RSpec::Language::NodePattern)
+  extend(::RuboCop::RSpec::Language::NodePattern)
 
-  def relevant_file?(file); end
-
-  private
-
-  def all_cops_config; end
-  def relevant_rubocop_rspec_file?(file); end
-  def rspec_pattern; end
-  def rspec_pattern_config; end
-  def rspec_pattern_config?; end
+  def on_new_investigation; end
 
   class << self
     def inherited(subclass); end
   end
 end
-
-RuboCop::Cop::RSpec::Base::DEFAULT_CONFIGURATION = T.let(T.unsafe(nil), Hash)
-
-RuboCop::Cop::RSpec::Base::DEFAULT_PATTERN_RE = T.let(T.unsafe(nil), Regexp)
 
 class RuboCop::Cop::RSpec::Be < ::RuboCop::Cop::RSpec::Base
   def be_without_args(param0 = T.unsafe(nil)); end
@@ -226,10 +222,8 @@ end
 
 RuboCop::Cop::RSpec::ContextWording::MSG = T.let(T.unsafe(nil), String)
 
-RuboCop::Cop::RSpec::Cop = RuboCop::Cop::RSpec::Base
-
 class RuboCop::Cop::RSpec::DescribeClass < ::RuboCop::Cop::RSpec::Base
-  include(::RuboCop::RSpec::TopLevelGroup)
+  include(::RuboCop::Cop::RSpec::TopLevelGroup)
 
   def example_group_with_ignored_metadata?(param0 = T.unsafe(nil)); end
   def not_a_const_described(param0 = T.unsafe(nil)); end
@@ -246,7 +240,7 @@ end
 RuboCop::Cop::RSpec::DescribeClass::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::DescribeMethod < ::RuboCop::Cop::RSpec::Base
-  include(::RuboCop::RSpec::TopLevelGroup)
+  include(::RuboCop::Cop::RSpec::TopLevelGroup)
 
   def on_top_level_group(node); end
   def second_argument(param0 = T.unsafe(nil)); end
@@ -320,8 +314,6 @@ class RuboCop::Cop::RSpec::EmptyExampleGroup < ::RuboCop::Cop::RSpec::Base
   private
 
   def conditionals_with_examples?(body); end
-  def custom_include?(method_name); end
-  def custom_include_methods; end
   def examples_in_branches?(if_node); end
   def offensive?(body); end
 end
@@ -339,9 +331,9 @@ end
 RuboCop::Cop::RSpec::EmptyHook::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::EmptyLineAfterExample < ::RuboCop::Cop::RSpec::Base
-  include(::RuboCop::RSpec::FinalEndLocation)
+  include(::RuboCop::Cop::RSpec::FinalEndLocation)
   include(::RuboCop::Cop::RangeHelp)
-  include(::RuboCop::RSpec::EmptyLineSeparation)
+  include(::RuboCop::Cop::RSpec::EmptyLineSeparation)
   extend(::RuboCop::Cop::AutoCorrector)
 
   def allow_consecutive_one_liners?; end
@@ -355,9 +347,9 @@ end
 RuboCop::Cop::RSpec::EmptyLineAfterExample::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::EmptyLineAfterExampleGroup < ::RuboCop::Cop::RSpec::Base
-  include(::RuboCop::RSpec::FinalEndLocation)
+  include(::RuboCop::Cop::RSpec::FinalEndLocation)
   include(::RuboCop::Cop::RangeHelp)
-  include(::RuboCop::RSpec::EmptyLineSeparation)
+  include(::RuboCop::Cop::RSpec::EmptyLineSeparation)
   extend(::RuboCop::Cop::AutoCorrector)
 
   def on_block(node); end
@@ -366,9 +358,9 @@ end
 RuboCop::Cop::RSpec::EmptyLineAfterExampleGroup::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::EmptyLineAfterFinalLet < ::RuboCop::Cop::RSpec::Base
-  include(::RuboCop::RSpec::FinalEndLocation)
+  include(::RuboCop::Cop::RSpec::FinalEndLocation)
   include(::RuboCop::Cop::RangeHelp)
-  include(::RuboCop::RSpec::EmptyLineSeparation)
+  include(::RuboCop::Cop::RSpec::EmptyLineSeparation)
   extend(::RuboCop::Cop::AutoCorrector)
 
   def on_block(node); end
@@ -377,9 +369,9 @@ end
 RuboCop::Cop::RSpec::EmptyLineAfterFinalLet::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::EmptyLineAfterHook < ::RuboCop::Cop::RSpec::Base
-  include(::RuboCop::RSpec::FinalEndLocation)
+  include(::RuboCop::Cop::RSpec::FinalEndLocation)
   include(::RuboCop::Cop::RangeHelp)
-  include(::RuboCop::RSpec::EmptyLineSeparation)
+  include(::RuboCop::Cop::RSpec::EmptyLineSeparation)
   extend(::RuboCop::Cop::AutoCorrector)
 
   def on_block(node); end
@@ -388,9 +380,9 @@ end
 RuboCop::Cop::RSpec::EmptyLineAfterHook::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::EmptyLineAfterSubject < ::RuboCop::Cop::RSpec::Base
-  include(::RuboCop::RSpec::FinalEndLocation)
+  include(::RuboCop::Cop::RSpec::FinalEndLocation)
   include(::RuboCop::Cop::RangeHelp)
-  include(::RuboCop::RSpec::EmptyLineSeparation)
+  include(::RuboCop::Cop::RSpec::EmptyLineSeparation)
   extend(::RuboCop::Cop::AutoCorrector)
 
   def on_block(node); end
@@ -401,6 +393,16 @@ class RuboCop::Cop::RSpec::EmptyLineAfterSubject < ::RuboCop::Cop::RSpec::Base
 end
 
 RuboCop::Cop::RSpec::EmptyLineAfterSubject::MSG = T.let(T.unsafe(nil), String)
+
+module RuboCop::Cop::RSpec::EmptyLineSeparation
+  include(::RuboCop::Cop::RSpec::FinalEndLocation)
+  include(::RuboCop::Cop::RangeHelp)
+
+  def last_child?(node); end
+  def missing_separating_line(node); end
+  def missing_separating_line_offense(node); end
+  def offending_loc(last_line); end
+end
 
 class RuboCop::Cop::RSpec::ExampleLength < ::RuboCop::Cop::RSpec::Base
   include(::RuboCop::Cop::ConfigurableMax)
@@ -638,7 +640,7 @@ RuboCop::Cop::RSpec::FactoryBot::FactoryClassName::ALLOWED_CONSTANTS = T.let(T.u
 RuboCop::Cop::RSpec::FactoryBot::FactoryClassName::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::FilePath < ::RuboCop::Cop::RSpec::Base
-  include(::RuboCop::RSpec::TopLevelGroup)
+  include(::RuboCop::Cop::RSpec::TopLevelGroup)
 
   def const_described(param0 = T.unsafe(nil)); end
   def on_top_level_example_group(node); end
@@ -662,6 +664,10 @@ end
 
 RuboCop::Cop::RSpec::FilePath::MSG = T.let(T.unsafe(nil), String)
 
+module RuboCop::Cop::RSpec::FinalEndLocation
+  def final_end_location(start_node); end
+end
+
 class RuboCop::Cop::RSpec::Focus < ::RuboCop::Cop::RSpec::Base
   def focusable_selector?(param0 = T.unsafe(nil)); end
   def focused_block?(param0 = T.unsafe(nil)); end
@@ -679,7 +685,6 @@ class RuboCop::Cop::RSpec::HookArgument < ::RuboCop::Cop::RSpec::Base
   include(::RuboCop::Cop::ConfigurableEnforcedStyle)
   extend(::RuboCop::Cop::AutoCorrector)
 
-  def hook?(param0 = T.unsafe(nil)); end
   def on_block(node); end
   def scoped_hook(param0 = T.unsafe(nil)); end
   def unscoped_hook(param0 = T.unsafe(nil)); end
@@ -800,7 +805,7 @@ end
 RuboCop::Cop::RSpec::InstanceSpy::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::InstanceVariable < ::RuboCop::Cop::RSpec::Base
-  include(::RuboCop::RSpec::TopLevelGroup)
+  include(::RuboCop::Cop::RSpec::TopLevelGroup)
 
   def custom_matcher?(param0 = T.unsafe(nil)); end
   def dynamic_class?(param0 = T.unsafe(nil)); end
@@ -815,17 +820,6 @@ class RuboCop::Cop::RSpec::InstanceVariable < ::RuboCop::Cop::RSpec::Base
 end
 
 RuboCop::Cop::RSpec::InstanceVariable::MSG = T.let(T.unsafe(nil), String)
-
-class RuboCop::Cop::RSpec::InvalidPredicateMatcher < ::RuboCop::Cop::RSpec::Base
-  def invalid_predicate_matcher?(param0 = T.unsafe(nil)); end
-  def on_send(node); end
-
-  private
-
-  def predicate?(name); end
-end
-
-RuboCop::Cop::RSpec::InvalidPredicateMatcher::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::ItBehavesLike < ::RuboCop::Cop::RSpec::Base
   include(::RuboCop::Cop::ConfigurableEnforcedStyle)
@@ -967,7 +961,7 @@ end
 RuboCop::Cop::RSpec::MissingExampleGroupArgument::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::MultipleDescribes < ::RuboCop::Cop::RSpec::Base
-  include(::RuboCop::RSpec::TopLevelGroup)
+  include(::RuboCop::Cop::RSpec::TopLevelGroup)
 
   def on_top_level_group(node); end
 end
@@ -999,7 +993,7 @@ RuboCop::Cop::RSpec::MultipleExpectations::TRUE = T.let(T.unsafe(nil), Proc)
 
 class RuboCop::Cop::RSpec::MultipleMemoizedHelpers < ::RuboCop::Cop::RSpec::Base
   include(::RuboCop::Cop::ConfigurableMax)
-  include(::RuboCop::RSpec::Variable)
+  include(::RuboCop::Cop::RSpec::Variable)
 
   def on_block(node); end
   def on_new_investigation; end
@@ -1033,9 +1027,9 @@ end
 RuboCop::Cop::RSpec::MultipleSubjects::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::NamedSubject < ::RuboCop::Cop::RSpec::Base
+  def example_or_hook_block?(param0 = T.unsafe(nil)); end
   def ignored_shared_example?(node); end
   def on_block(node); end
-  def rspec_block?(param0 = T.unsafe(nil)); end
   def shared_example?(param0 = T.unsafe(nil)); end
   def subject_usage(param0); end
 end
@@ -1044,7 +1038,7 @@ RuboCop::Cop::RSpec::NamedSubject::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::NestedGroups < ::RuboCop::Cop::RSpec::Base
   include(::RuboCop::Cop::ConfigurableMax)
-  include(::RuboCop::RSpec::TopLevelGroup)
+  include(::RuboCop::Cop::RSpec::TopLevelGroup)
 
   def on_top_level_group(node); end
 
@@ -1102,10 +1096,6 @@ class RuboCop::Cop::RSpec::Pending < ::RuboCop::Cop::RSpec::Base
 end
 
 RuboCop::Cop::RSpec::Pending::MSG = T.let(T.unsafe(nil), String)
-
-RuboCop::Cop::RSpec::Pending::PENDING = T.let(T.unsafe(nil), RuboCop::RSpec::Language::SelectorSet)
-
-RuboCop::Cop::RSpec::Pending::SKIPPABLE = T.let(T.unsafe(nil), RuboCop::RSpec::Language::SelectorSet)
 
 class RuboCop::Cop::RSpec::PredicateMatcher < ::RuboCop::Cop::RSpec::Base
   include(::RuboCop::Cop::ConfigurableEnforcedStyle)
@@ -1379,7 +1369,7 @@ end
 RuboCop::Cop::RSpec::StubbedMock::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::SubjectStub < ::RuboCop::Cop::RSpec::Base
-  include(::RuboCop::RSpec::TopLevelGroup)
+  include(::RuboCop::Cop::RSpec::TopLevelGroup)
 
   def message_expectation?(param0 = T.unsafe(nil), param1); end
   def message_expectation_matcher?(param0); end
@@ -1394,6 +1384,21 @@ end
 
 RuboCop::Cop::RSpec::SubjectStub::MSG = T.let(T.unsafe(nil), String)
 
+module RuboCop::Cop::RSpec::TopLevelGroup
+  extend(::RuboCop::AST::NodePattern::Macros)
+
+  def on_new_investigation; end
+  def top_level_groups; end
+
+  private
+
+  def on_top_level_example_group(_node); end
+  def on_top_level_group(_node); end
+  def root_node; end
+  def top_level_group?(node); end
+  def top_level_nodes(node); end
+end
+
 class RuboCop::Cop::RSpec::UnspecifiedException < ::RuboCop::Cop::RSpec::Base
   def block_with_args?(node); end
   def empty_exception_matcher?(node); end
@@ -1403,9 +1408,19 @@ end
 
 RuboCop::Cop::RSpec::UnspecifiedException::MSG = T.let(T.unsafe(nil), String)
 
+module RuboCop::Cop::RSpec::Variable
+  extend(::RuboCop::AST::NodePattern::Macros)
+
+  def variable_definition?(param0 = T.unsafe(nil)); end
+end
+
+RuboCop::Cop::RSpec::Variable::Helpers = RuboCop::RSpec::Language::Helpers
+
+RuboCop::Cop::RSpec::Variable::Subjects = RuboCop::RSpec::Language::Subjects
+
 class RuboCop::Cop::RSpec::VariableDefinition < ::RuboCop::Cop::RSpec::Base
   include(::RuboCop::Cop::ConfigurableEnforcedStyle)
-  include(::RuboCop::RSpec::Variable)
+  include(::RuboCop::Cop::RSpec::Variable)
 
   def on_send(node); end
 
@@ -1423,7 +1438,7 @@ class RuboCop::Cop::RSpec::VariableName < ::RuboCop::Cop::RSpec::Base
   include(::RuboCop::Cop::ConfigurableFormatting)
   include(::RuboCop::Cop::ConfigurableNaming)
   include(::RuboCop::Cop::IgnoredPattern)
-  include(::RuboCop::RSpec::Variable)
+  include(::RuboCop::Cop::RSpec::Variable)
 
   def on_send(node); end
 
@@ -1487,7 +1502,7 @@ module RuboCop::RSpec
 end
 
 class RuboCop::RSpec::AlignLetBrace
-  include(::RuboCop::RSpec::Language::NodePattern)
+  include(::RuboCop::RSpec::Language)
 
   def initialize(root, token); end
 
@@ -1505,12 +1520,10 @@ class RuboCop::RSpec::AlignLetBrace
   def token; end
 end
 
-RuboCop::RSpec::CONFIG = T.let(T.unsafe(nil), Hash)
-
 class RuboCop::RSpec::Concept
   include(::RuboCop::RSpec::Language)
-  include(::RuboCop::RSpec::Language::NodePattern)
   extend(::RuboCop::AST::NodePattern::Macros)
+  extend(::RuboCop::RSpec::Language::NodePattern)
 
   def initialize(node); end
 
@@ -1529,7 +1542,7 @@ end
 
 class RuboCop::RSpec::Corrector::MoveNode
   include(::RuboCop::Cop::RangeHelp)
-  include(::RuboCop::RSpec::FinalEndLocation)
+  include(::RuboCop::Cop::RSpec::FinalEndLocation)
 
   def initialize(node, corrector, processed_source); end
 
@@ -1544,16 +1557,6 @@ class RuboCop::RSpec::Corrector::MoveNode
   def node_range(node); end
   def node_range_with_surrounding_space(node); end
   def source(node); end
-end
-
-module RuboCop::RSpec::EmptyLineSeparation
-  include(::RuboCop::RSpec::FinalEndLocation)
-  include(::RuboCop::Cop::RangeHelp)
-
-  def last_child?(node); end
-  def missing_separating_line(node); end
-  def missing_separating_line_offense(node); end
-  def offending_loc(last_line); end
 end
 
 class RuboCop::RSpec::Example < ::RuboCop::RSpec::Concept
@@ -1586,10 +1589,6 @@ module RuboCop::RSpec::FactoryBot
   end
 end
 
-module RuboCop::RSpec::FinalEndLocation
-  def final_end_location(start_node); end
-end
-
 class RuboCop::RSpec::Hook < ::RuboCop::RSpec::Concept
   def example?; end
   def extract_metadata(param0 = T.unsafe(nil)); end
@@ -1614,65 +1613,8 @@ module RuboCop::RSpec::Inject
 end
 
 module RuboCop::RSpec::Language
-end
-
-RuboCop::RSpec::Language::ALL = T.let(T.unsafe(nil), RuboCop::RSpec::Language::SelectorSet)
-
-module RuboCop::RSpec::Language::ExampleGroups
-end
-
-RuboCop::RSpec::Language::ExampleGroups::ALL = T.let(T.unsafe(nil), RuboCop::RSpec::Language::SelectorSet)
-
-RuboCop::RSpec::Language::ExampleGroups::FOCUSED = T.let(T.unsafe(nil), RuboCop::RSpec::Language::SelectorSet)
-
-RuboCop::RSpec::Language::ExampleGroups::GROUPS = T.let(T.unsafe(nil), RuboCop::RSpec::Language::SelectorSet)
-
-RuboCop::RSpec::Language::ExampleGroups::SKIPPED = T.let(T.unsafe(nil), RuboCop::RSpec::Language::SelectorSet)
-
-module RuboCop::RSpec::Language::Examples
-end
-
-RuboCop::RSpec::Language::Examples::ALL = T.let(T.unsafe(nil), RuboCop::RSpec::Language::SelectorSet)
-
-RuboCop::RSpec::Language::Examples::EXAMPLES = T.let(T.unsafe(nil), RuboCop::RSpec::Language::SelectorSet)
-
-RuboCop::RSpec::Language::Examples::FOCUSED = T.let(T.unsafe(nil), RuboCop::RSpec::Language::SelectorSet)
-
-RuboCop::RSpec::Language::Examples::PENDING = T.let(T.unsafe(nil), RuboCop::RSpec::Language::SelectorSet)
-
-RuboCop::RSpec::Language::Examples::SKIPPED = T.let(T.unsafe(nil), RuboCop::RSpec::Language::SelectorSet)
-
-module RuboCop::RSpec::Language::Expectations
-end
-
-RuboCop::RSpec::Language::Expectations::ALL = T.let(T.unsafe(nil), RuboCop::RSpec::Language::SelectorSet)
-
-module RuboCop::RSpec::Language::Helpers
-end
-
-RuboCop::RSpec::Language::Helpers::ALL = T.let(T.unsafe(nil), RuboCop::RSpec::Language::SelectorSet)
-
-module RuboCop::RSpec::Language::Hooks
-end
-
-RuboCop::RSpec::Language::Hooks::ALL = T.let(T.unsafe(nil), RuboCop::RSpec::Language::SelectorSet)
-
-module RuboCop::RSpec::Language::Hooks::Scopes
-end
-
-RuboCop::RSpec::Language::Hooks::Scopes::ALL = T.let(T.unsafe(nil), RuboCop::RSpec::Language::SelectorSet)
-
-module RuboCop::RSpec::Language::Includes
-end
-
-RuboCop::RSpec::Language::Includes::ALL = T.let(T.unsafe(nil), RuboCop::RSpec::Language::SelectorSet)
-
-RuboCop::RSpec::Language::Includes::CONTEXT = T.let(T.unsafe(nil), RuboCop::RSpec::Language::SelectorSet)
-
-RuboCop::RSpec::Language::Includes::EXAMPLES = T.let(T.unsafe(nil), RuboCop::RSpec::Language::SelectorSet)
-
-module RuboCop::RSpec::Language::NodePattern
   extend(::RuboCop::AST::NodePattern::Macros)
+  extend(::RuboCop::RSpec::Language::NodePattern)
 
   def example?(param0 = T.unsafe(nil)); end
   def example_group?(param0 = T.unsafe(nil)); end
@@ -1684,87 +1626,38 @@ module RuboCop::RSpec::Language::NodePattern
   def shared_group?(param0 = T.unsafe(nil)); end
   def spec_group?(param0 = T.unsafe(nil)); end
   def subject?(param0 = T.unsafe(nil)); end
+
+  class << self
+    def config; end
+    def config=(_arg0); end
+  end
 end
 
-module RuboCop::RSpec::Language::Runners
+module RuboCop::RSpec::Language::Helpers
+  class << self
+    def all(element); end
+  end
 end
 
-RuboCop::RSpec::Language::Runners::ALL = T.let(T.unsafe(nil), RuboCop::RSpec::Language::SelectorSet)
-
-class RuboCop::RSpec::Language::SelectorSet
-  def initialize(selectors); end
-
-  def +(other); end
-  def ==(other); end
-  def block_or_block_pass_pattern; end
-  def block_pass_pattern; end
-  def block_pattern; end
-  def include?(selector); end
-  def node_pattern; end
-  def node_pattern_union; end
-  def send_or_block_or_block_pass_pattern; end
-  def send_pattern; end
-  def to_a; end
-
-  protected
-
-  def selectors; end
+module RuboCop::RSpec::Language::HookScopes
+  class << self
+    def all(element); end
+  end
 end
 
-module RuboCop::RSpec::Language::SharedGroups
+module RuboCop::RSpec::Language::NodePattern
+  def block_pattern(string); end
+  def send_pattern(string); end
 end
 
-RuboCop::RSpec::Language::SharedGroups::ALL = T.let(T.unsafe(nil), RuboCop::RSpec::Language::SelectorSet)
-
-RuboCop::RSpec::Language::SharedGroups::CONTEXT = T.let(T.unsafe(nil), RuboCop::RSpec::Language::SelectorSet)
-
-RuboCop::RSpec::Language::SharedGroups::EXAMPLES = T.let(T.unsafe(nil), RuboCop::RSpec::Language::SelectorSet)
-
-module RuboCop::RSpec::Language::Subject
+module RuboCop::RSpec::Language::Subjects
+  class << self
+    def all(element); end
+  end
 end
-
-RuboCop::RSpec::Language::Subject::ALL = T.let(T.unsafe(nil), RuboCop::RSpec::Language::SelectorSet)
 
 module RuboCop::RSpec::Node
   def recursive_literal_or_const?; end
-end
-
-module RuboCop::RSpec::TopLevelDescribe
-  extend(::RuboCop::AST::NodePattern::Macros)
-
-  def on_send(node); end
-
-  private
-
-  def describe_statement_children(node); end
-  def root_node; end
-  def single_top_level_describe?; end
-  def top_level_describe?(node); end
-  def top_level_nodes; end
-end
-
-module RuboCop::RSpec::TopLevelGroup
-  include(::RuboCop::RSpec::Language)
-  extend(::RuboCop::AST::NodePattern::Macros)
-
-  def example_or_shared_group?(param0 = T.unsafe(nil)); end
-  def on_new_investigation; end
-  def top_level_groups; end
-
-  private
-
-  def on_top_level_example_group(_node); end
-  def on_top_level_group(_node); end
-  def root_node; end
-  def top_level_group?(node); end
-  def top_level_nodes(node); end
-end
-
-module RuboCop::RSpec::Variable
-  include(::RuboCop::RSpec::Language)
-  extend(::RuboCop::AST::NodePattern::Macros)
-
-  def variable_definition?(param0 = T.unsafe(nil)); end
 end
 
 module RuboCop::RSpec::Version
