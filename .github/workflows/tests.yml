@@ -114,7 +114,7 @@ jobs:
     - name: Run brew style on official taps
       run: brew style --display-cop-names homebrew/bundle homebrew/services homebrew/test-bot
 
-    - name: Run brew cask style on all taps
+    - name: Run brew style on cask taps
       if: matrix.os != 'ubuntu-latest'
       run: |
         brew tap homebrew/cask
@@ -122,7 +122,11 @@ jobs:
         brew tap homebrew/cask-fonts
         brew tap homebrew/cask-versions
 
-        brew cask style
+        brew style --display-cop-names \
+          homebrew/cask \
+          homebrew/cask-drivers \
+          homebrew/cask-fonts \
+          homebrew/cask-versions
 
     - name: Run brew audit --skip-style on all taps
       run: brew audit --skip-style
