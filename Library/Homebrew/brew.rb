@@ -68,7 +68,6 @@ begin
   ARGV.delete_at(help_cmd_index) if help_cmd_index
 
   args = Homebrew::CLI::Parser.new.parse(ARGV.dup.freeze, ignore_invalid_options: true)
-  Homebrew.args = args
   Context.current = args.context
 
   path = PATH.new(ENV["PATH"])
