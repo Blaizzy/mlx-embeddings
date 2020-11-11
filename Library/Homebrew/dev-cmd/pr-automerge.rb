@@ -38,7 +38,7 @@ module Homebrew
   def pr_automerge
     args = pr_automerge_args.parse
 
-    without_labels = args.without_labels || ["do not merge", "new formula", "automerge-skip"]
+    without_labels = args.without_labels || ["do not merge", "new formula", "automerge-skip", "linux-only"]
     tap = Tap.fetch(args.tap || CoreTap.instance.name)
 
     query = "is:pr is:open repo:#{tap.full_name}"
