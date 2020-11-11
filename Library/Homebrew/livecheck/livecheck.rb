@@ -14,6 +14,17 @@ module Homebrew
   module Livecheck
     module_function
 
+    GITEA_INSTANCES = %w[
+      codeberg.org
+      gitea.com
+      opendev.org
+      tildegit.org
+    ].freeze
+
+    GOGS_INSTANCES = %w[
+      lolg.it
+    ].freeze
+
     UNSTABLE_VERSION_KEYWORDS = %w[
       alpha
       beta
@@ -304,22 +315,30 @@ module Homebrew
     # @return [String]
     def preprocess_url(url)
       uri = URI.parse url
-      host = uri.host
+      host = uri.host == "github.s3.amazonaws.com" ? "github.com" : uri.host
       path = uri.path.delete_prefix("/").delete_suffix(".git")
+      scheme = uri.scheme
 
-      if host == "github.s3.amazonaws.com"
-        owner, repo = path.sub(%r{^downloads/}, "").split("/")
-        return "https://github.com/#{owner}/#{repo}.git"
-      end
+      if host == "github.com"
+        return url if path.match? %r{/releases/latest/?$}
 
-      if ["github.com", "tildegit.org", "gitlab.com"].include? host
+        owner, repo = path.delete_prefix("downloads/").split("/")
+        url = "#{scheme}://#{host}/#{owner}/#{repo}.git"
+      elsif GITEA_INSTANCES.include? host
         return url if path.match? %r{/releases/latest/?$}
 
         owner, repo = path.split("/")
-        url = "https://#{host}/#{owner}/#{repo}.git"
+        url = "#{scheme}://#{host}/#{owner}/#{repo}.git"
+      elsif GOGS_INSTANCES.include? host
+        owner, repo = path.split("/")
+        url = "#{scheme}://#{host}/#{owner}/#{repo}.git"
+      # sourcehut
       elsif host == "git.sr.ht"
         owner, repo = path.split("/")
-        url = "https://#{host}/#{owner}/#{repo}"
+        url = "#{scheme}://#{host}/#{owner}/#{repo}"
+      # gitlab
+      elsif path.include?("/-/archive/")
+        url = url.sub(%r{/-/archive/.*$}i, ".git")
       end
 
       url
