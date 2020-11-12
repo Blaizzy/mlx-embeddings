@@ -26,9 +26,9 @@ module Homebrew
       switch "-v", "--verbose",
              description: "Include detailed version information."
       switch "--formula",
-             description: "Only output outdated formulae."
+             description: "List only outdated formulae."
       switch "--cask",
-             description: "Only output outdated casks."
+             description: "List only outdated casks."
       flag   "--json",
              description: "Print output in JSON format. There are two versions: v1 and v2. " \
                           "v1 is deprecated and is currently the default if no version is specified. " \

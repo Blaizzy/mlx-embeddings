@@ -42,7 +42,7 @@ module Cask
 
       OPTIONS = [
         [:switch, "--[no-]binaries", {
-          description: "Disable/enable linking of helper executables. Default: enabled",
+          description: "Disable/enable linking of helper executables (default: enabled).",
           env:         :cask_opts_binaries,
         }],
         [:switch, "--require-sha",  {
@@ -50,7 +50,7 @@ module Cask
           env:         :cask_opts_require_sha,
         }],
         [:switch, "--[no-]quarantine", {
-          description: "Disable/enable quarantining of downloads. Default: enabled",
+          description: "Disable/enable quarantining of downloads (default: enabled).",
           env:         :cask_opts_quarantine,
         }],
       ].freeze
