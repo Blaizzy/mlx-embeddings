@@ -30,9 +30,9 @@ module Homebrew
     end
 
     def check_prefix
-      if Hardware::CPU.intel? && HOMEBREW_PREFIX == HOMEBREW_MACOS_ARM_DEFAULT_PREFIX
+      if Hardware::CPU.intel? && HOMEBREW_PREFIX.to_s == HOMEBREW_MACOS_ARM_DEFAULT_PREFIX
         odie "Cannot install in Homebrew on Intel processor in ARM default prefix (#{HOMEBREW_PREFIX})!"
-      elsif Hardware::CPU.arm? && HOMEBREW_PREFIX == HOMEBREW_DEFAULT_PREFIX
+      elsif Hardware::CPU.arm? && HOMEBREW_PREFIX.to_s == HOMEBREW_DEFAULT_PREFIX
         odie "Cannot install in Homebrew on ARM processor in Intel default prefix (#{HOMEBREW_PREFIX})!"
       end
     end
