@@ -92,6 +92,7 @@ module Homebrew
       audit_args = ["audit", "--skip-style"]
       audit_args << "--verbose" if args.verbose?
       audit_args << "--debug" if args.debug?
+      audit_args += bottles_hash.keys
       safe_system HOMEBREW_BREW_FILE, *audit_args
     end
 
