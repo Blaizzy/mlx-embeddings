@@ -40,10 +40,11 @@ module Homebrew
         description: "Use this username when accessing the Bintray API (where bottles are stored).",
       },
       HOMEBREW_BOTTLE_DOMAIN:                 {
-        description:  "Use the specified URL as the download mirror for bottles. " \
-        "For example, `HOMEBREW_BOTTLE_DOMAIN=http://localhost:8080` will cause all bottles to " \
-        "download from the prefix `http://localhost:8080/`.",
-        default_text: "macOS: `https://homebrew.bintray.com/`, Linux: `https://linuxbrew.bintray.com/`.",
+        description:  "Use this URL as the download mirror for bottles. " \
+                      "For example, `HOMEBREW_BOTTLE_DOMAIN=http://localhost:8080` will cause all bottles to " \
+                      "download from the prefix `http://localhost:8080/`.",
+        default_text: "macOS: `https://homebrew.bintray.com/`, " \
+                      "Linux: `https://linuxbrew.bintray.com/`.",
         default:      HOMEBREW_BOTTLE_DEFAULT_DOMAIN,
       },
       HOMEBREW_BREW_GIT_REMOTE:               {
@@ -62,11 +63,10 @@ module Homebrew
       },
       HOMEBREW_CASK_OPTS:                     {
         description: "Append these options to all `cask` commands. All `--*dir` options, " \
-                     "`--language`, `--require-sha`, `--no-quarantine` and `--no-binaries` are supported." \
-                     "\n" \
+                     "`--language`, `--require-sha`, `--no-quarantine` and `--no-binaries` are supported. " \
                      "For example, you might add something like the following to your " \
-                     "~/.profile, ~/.bash_profile, or ~/.zshenv:\n\n" \
-                     "`export HOMEBREW_CASK_OPTS='--appdir=~/Applications --fontdir=/Library/Fonts'`",
+                     "`~/.profile`, `~/.bash_profile`, or `~/.zshenv`:\n\n" \
+                     '    `export HOMEBREW_CASK_OPTS="--appdir=~/Applications --fontdir=/Library/Fonts"`',
       },
       HOMEBREW_CLEANUP_MAX_AGE_DAYS:          {
         description: "Cleanup all cached files older than this many days.",
@@ -107,7 +107,7 @@ module Homebrew
       },
       HOMEBREW_DISPLAY:                       {
         description:  "Use this X11 display when opening a page in a browser, for example with " \
-                     "`brew home`. Primarily useful on Linux.",
+                      "`brew home`. Primarily useful on Linux.",
         default_text: "`$DISPLAY`.",
       },
       HOMEBREW_DISPLAY_INSTALL_TIMES:         {
@@ -116,9 +116,10 @@ module Homebrew
       },
       HOMEBREW_EDITOR:                        {
         description:  "Use this editor when editing a single formula, or several formulae in the " \
-                     "same directory.\n\n    *Note:* `brew edit` will open all of Homebrew as discontinuous files " \
-                     "and directories. Visual Studio Code can handle this correctly in project mode, but many " \
-                     "editors will do strange things in this case.",
+                      "same directory." \
+                      "\n\n    *Note:* `brew edit` will open all of Homebrew as discontinuous files " \
+                      "and directories. Visual Studio Code can handle this correctly in project mode, but many " \
+                      "editors will do strange things in this case.",
         default_text: "`$EDITOR` or `$VISUAL`.",
       },
       HOMEBREW_FAIL_LOG_LINES:                {
@@ -157,9 +158,9 @@ module Homebrew
         description: "Use this personal access token for the GitHub API, for features such as " \
                      "`brew search`. You can create one at <https://github.com/settings/tokens>. If set, " \
                      "GitHub will allow you a greater number of API requests. For more information, see: " \
-                     "<https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting>.\n\n" \
-                     "    *Note:* Homebrew doesn't require permissions for any of the scopes, but some developer " \
-                     "commands may require additional permissions.",
+                     "<https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting>" \
+                     "\n\n    *Note:* Homebrew doesn't require permissions for any of the scopes, but some " \
+                     "developer commands may require additional permissions.",
       },
       HOMEBREW_GITHUB_API_USERNAME:           {
         description: "Use this username for authentication with the GitHub API, for features " \

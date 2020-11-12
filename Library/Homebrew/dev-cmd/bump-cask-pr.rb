@@ -14,7 +14,7 @@ module Homebrew
   def bump_cask_pr_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `bump-cask-pr` [<options>] [<cask>]
+        `bump-cask-pr` [<options>] <cask>
 
         Create a pull request to update <cask> with a new version.
 

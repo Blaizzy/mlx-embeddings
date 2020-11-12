@@ -73,7 +73,7 @@ module Homebrew
              depends_on:  "--tag=",
              description: "Specify the new git commit <revision> corresponding to the specified <tag>."
       switch "-f", "--force",
-             description: "Ignore duplicate open PRs. Remove all mirrors if --mirror= was not specified."
+             description: "Ignore duplicate open PRs. Remove all mirrors if `--mirror` was not specified."
 
       conflicts "--dry-run", "--write"
       conflicts "--no-audit", "--strict"

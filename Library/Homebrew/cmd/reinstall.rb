@@ -45,8 +45,8 @@ module Homebrew
         }],
         [:switch, "-i", "--interactive", {
           description: "Download and patch <formula>, then open a shell. This allows the user to " \
-                        "run `./configure --help` and otherwise determine how to turn the software " \
-                        "package into a Homebrew package.",
+                       "run `./configure --help` and otherwise determine how to turn the software " \
+                       "package into a Homebrew package.",
         }],
         [:switch, "--force-bottle", {
           description: "Install from a bottle if it exists for the current or newest version of " \
@@ -75,7 +75,6 @@ module Homebrew
       cask_options
 
       conflicts "--build-from-source", "--force-bottle"
-
       min_named :formula_or_cask
     end
   end

@@ -30,6 +30,7 @@ module Homebrew
                           "comparison without factoring in the date)."
       switch "--link",
              description: "This is now done automatically by `brew update`."
+
       max_named 0
     end
   end
@@ -219,7 +220,7 @@ module Homebrew
   def global_cask_options_manpage
     lines = ["These options are applicable to subcommands accepting a `--cask` flag and all `cask` commands.\n"]
     lines += Homebrew::CLI::Parser.global_cask_options.map do |_, long, description:, **|
-      generate_option_doc(nil, long, description)
+      generate_option_doc(nil, long.chomp("="), description)
     end
     lines.join("\n")
   end

@@ -32,6 +32,7 @@ module Homebrew
       flag   "--ignore=",
              description: "Ignores input files that contain the given string " \
                           "in their paths (relative to the input path passed to Sorbet)."
+
       conflicts "--dir", "--file"
       max_named 0
     end

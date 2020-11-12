@@ -16,6 +16,7 @@ module Homebrew
 
         Display the source of <formula>.
       EOS
+
       named :formula
     end
   end

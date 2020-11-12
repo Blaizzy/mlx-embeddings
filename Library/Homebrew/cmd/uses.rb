@@ -40,6 +40,7 @@ module Homebrew
              description: "Include all formulae that specify <formula> as `:optional` type dependency."
       switch "--skip-recommended",
              description: "Skip all formulae that specify <formula> as `:recommended` type dependency."
+
       min_named :formula
     end
   end
