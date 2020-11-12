@@ -33,7 +33,14 @@ module Homebrew
       if Hardware::CPU.intel? && HOMEBREW_PREFIX.to_s == HOMEBREW_MACOS_ARM_DEFAULT_PREFIX
         odie "Cannot install in Homebrew on Intel processor in ARM default prefix (#{HOMEBREW_PREFIX})!"
       elsif Hardware::CPU.arm? && HOMEBREW_PREFIX.to_s == HOMEBREW_DEFAULT_PREFIX
-        odie "Cannot install in Homebrew on ARM processor in Intel default prefix (#{HOMEBREW_PREFIX})!"
+        odie <<~EOS
+          Cannot install in Homebrew on ARM processor in Intel default prefix (#{HOMEBREW_PREFIX})!
+          Please create a new installation in #{HOMEBREW_MACOS_ARM_DEFAULT_PREFIX} using one of the
+          "Alternative Installs" from:
+            #{Formatter.url("https://docs.brew.sh/Installation")}
+          You can migrate your previously installed formula list with:
+            brew bundle dump
+        EOS
       end
     end
 
