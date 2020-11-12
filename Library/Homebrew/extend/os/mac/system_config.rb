@@ -51,6 +51,7 @@ module SystemConfig
       f.puts "CLT: #{clt || "N/A"}"
       f.puts "Xcode: #{xcode || "N/A"}"
       f.puts "XQuartz: #{xquartz}" if xquartz
+      f.puts "Rosetta 2: #{Hardware::CPU.in_rosetta2?}" if Hardware::CPU.physical_cpu_arm64?
     end
   end
 end

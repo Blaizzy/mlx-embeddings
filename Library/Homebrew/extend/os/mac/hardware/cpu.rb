@@ -64,11 +64,11 @@ module Hardware
         [arch_64_bit, arch_32_bit].extend ArchitectureListExtension
       end
 
-      # True when running under an Intel-based shell via Rosetta on an
+      # True when running under an Intel-based shell via Rosetta 2 on an
       # Apple Silicon Mac. This can be detected via seeing if there's a
       # conflict between what `uname` reports and the underlying `sysctl` flags,
-      # since the `sysctl` flags don't change behaviour under Rosetta.
-      def in_rosetta?
+      # since the `sysctl` flags don't change behaviour under Rosetta 2.
+      def in_rosetta2?
         intel? && physical_cpu_arm64?
       end
 
@@ -116,13 +116,13 @@ module Hardware
         sysctl_bool("hw.optional.sse4_2")
       end
 
-      private
-
       # Note: this is more reliable than checking uname.
-      # `sysctl` returns the right answer even when running in Rosetta.
+      # `sysctl` returns the right answer even when running in Rosetta 2.
       def physical_cpu_arm64?
         sysctl_bool("hw.optional.arm64")
       end
+
+      private
 
       def sysctl_bool(key)
         sysctl_int(key) == 1

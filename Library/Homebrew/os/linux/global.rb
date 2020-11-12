@@ -12,6 +12,6 @@ module Homebrew
   DEFAULT_PREFIX ||= if Homebrew::EnvConfig.force_homebrew_on_linux?
     HOMEBREW_DEFAULT_PREFIX
   else
-    LINUXBREW_DEFAULT_PREFIX
+    HOMEBREW_LINUX_DEFAULT_PREFIX
   end.freeze
 end

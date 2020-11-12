@@ -235,11 +235,16 @@ class FormulaInstaller
     recursive_formulae = recursive_deps.map(&:to_formula)
 
     recursive_dependencies = []
+    invalid_arch_dependencies = []
     recursive_formulae.each do |dep|
       dep_recursive_dependencies = dep.recursive_dependencies.map(&:to_s)
       if dep_recursive_dependencies.include?(formula.name)
         recursive_dependencies << "#{formula.full_name} depends on #{dep.full_name}"
         recursive_dependencies << "#{dep.full_name} depends on #{formula.full_name}"
+      end
+
+      if (tab = Tab.for_formula(dep)) && tab.arch.present? && tab.arch.to_s != Hardware::CPU.arch.to_s
+        invalid_arch_dependencies << "#{dep} was built for #{tab.arch}"
       end
     end
 
@@ -255,6 +260,13 @@ class FormulaInstaller
                          .include?(formula.name)
       raise CannotInstallFormulaError, <<~EOS
         #{formula.full_name} contains a recursive dependency on itself!
+      EOS
+    end
+
+    unless invalid_arch_dependencies.empty?
+      raise CannotInstallFormulaError, <<~EOS
+        #{formula.full_name} dependencies not built for the #{Hardware::CPU.arch} CPU architecture:
+          #{invalid_arch_dependencies.join("\n  ")}
       EOS
     end
 

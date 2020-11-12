@@ -31,10 +31,11 @@ Just extract (or `git clone`) Homebrew wherever you want. Just avoid:
 * `/tmp` subdirectories because Homebrew gets upset.
 * `/sw` and `/opt/local` because build scripts get confused when Homebrew is there instead of Fink or MacPorts, respectively.
 
-However do yourself a favour and install to `/usr/local`. Some things may
+However do yourself a favour and install to `/usr/local` on macOS Intel, `/opt/homebrew` on macOS ARM
+and `.home/linuxbrew/.linuxbrew` on Linux. Some things may
 not build when installed elsewhere. One of the reasons Homebrew just
 works relative to the competition is **because** we recommend installing
-to `/usr/local`. *Pick another prefix at your peril!*
+here. *Pick another prefix at your peril!*
 
 ```sh
 mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
