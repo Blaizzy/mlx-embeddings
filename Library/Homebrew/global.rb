@@ -69,7 +69,8 @@ HOMEBREW_USER_AGENT_FAKE_SAFARI =
   "(KHTML, like Gecko) Version/10.0.3 Safari/602.4.8"
 
 HOMEBREW_DEFAULT_PREFIX = "/usr/local"
-LINUXBREW_DEFAULT_PREFIX = "/home/linuxbrew/.linuxbrew"
+HOMEBREW_MACOS_ARM_DEFAULT_PREFIX = "/opt/homebrew"
+HOMEBREW_LINUX_DEFAULT_PREFIX = "/home/linuxbrew/.linuxbrew"
 
 require "fileutils"
 require "os/global"

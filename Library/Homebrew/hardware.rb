@@ -156,7 +156,7 @@ module Hardware
         "-march=#{arch}"
       end
 
-      def in_rosetta?
+      def in_rosetta2?
         false
       end
     end

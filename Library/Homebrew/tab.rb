@@ -186,6 +186,7 @@ class Tab < OpenStruct
       "compiler"                => DevelopmentTools.default_compiler,
       "aliases"                 => [],
       "runtime_dependencies"    => nil,
+      "arch"                    => nil,
       "source"                  => {
         "path"     => nil,
         "tap"      => nil,
@@ -345,6 +346,7 @@ class Tab < OpenStruct
       "aliases"                 => aliases,
       "runtime_dependencies"    => runtime_dependencies,
       "source"                  => source,
+      "arch"                    => Hardware::CPU.arch,
       "built_on"                => built_on,
     }
 
