@@ -22,6 +22,7 @@ module RuboCop
             problem "The homepage should start with http or https (URL is #{homepage})."
           end
 
+          # rubocop:disable Lint/DuplicateBranch
           case homepage
           # Check for http:// GitHub homepage URLs, https:// is preferred.
           # Note: only check homepages that are repo pages, not *.github.com hosts
@@ -88,6 +89,7 @@ module RuboCop
                %r{^http://(?:[^/]*\.)?archive\.org}
             problem "Please use https:// for #{homepage}"
           end
+          # rubocop:enable Lint/DuplicateBranch
         end
 
         def autocorrect(node)

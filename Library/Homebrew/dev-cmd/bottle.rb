@@ -450,7 +450,7 @@ module Homebrew
             "any"
           elsif cellars.include?("any_skip_relocation")
             "any_skip_relocation"
-          else
+          else # rubocop:disable Lint/DuplicateBranch
             second
           end
         else

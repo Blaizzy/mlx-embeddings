@@ -189,6 +189,7 @@ module OS
         # installed CLT version. This is useful as they are packaged
         # simultaneously so workarounds need to apply to both based on their
         # comparable version.
+        # rubocop:disable Lint/DuplicateBranch
         latest_stable = "12.0"
         case (DevelopmentTools.clang_version.to_f * 10).to_i
         when 120     then latest_stable
@@ -205,6 +206,7 @@ module OS
         when 0       then "dunno"
         else              latest_stable
         end
+        # rubocop:enable Lint/DuplicateBranch
       end
 
       def default_prefix?
@@ -274,6 +276,7 @@ module OS
 
       # Bump these when the new version is distributed through Software Update
       # and our CI systems have been updated.
+      # rubocop:disable Lint/DuplicateBranch
       sig { returns(String) }
       def latest_clang_version
         case MacOS.version
@@ -287,6 +290,7 @@ module OS
         else              "600.0.57"
         end
       end
+      # rubocop:enable Lint/DuplicateBranch
 
       # Bump these if things are badly broken (e.g. no SDK for this macOS)
       # without this. Generally this will be the first stable CLT release on
