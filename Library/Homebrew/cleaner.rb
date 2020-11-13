@@ -76,6 +76,12 @@ class Cleaner
     path.text_executable? || path.executable?
   end
 
+  # Both these files are completely unnecessary to package and cause
+  # pointless conflicts with other formulae. They are removed by Debian,
+  # Arch & MacPorts amongst other packagers as well. The files are
+  # created as part of installing any Perl module.
+  PERL_BASENAMES = Set.new(%w[perllocal.pod .packlist]).freeze
+
   # Clean a top-level (bin, sbin, lib) directory, recursively, by fixing file
   # permissions and removing .la files, unless the files (or parent
   # directories) are protected by skip_clean.
@@ -93,12 +99,7 @@ class Cleaner
 
       next if path.directory?
 
-      files_to_skip = %w[perllocal.pod .packlist]
-      if path.extname == ".la" || (!path.symlink? && files_to_skip.include?(path.basename.to_s))
-        # Both the `perllocal.pod` & `.packlist` files are completely unnecessary
-        # to package & causes pointless conflict with other formulae. They are
-        # removed by Debian, Arch & MacPorts amongst other packagers as well.
-        # The files are created as part of installing any Perl module.
+      if path.extname == ".la" || PERL_BASENAMES.include?(path.basename.to_s)
         path.unlink
       elsif path.symlink?
         # Skip it.

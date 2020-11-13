@@ -62,7 +62,9 @@ class Build
   def expand_deps
     formula.recursive_dependencies do |dependent, dep|
       build = effective_build_options_for(dependent)
-      if dep.prune_from_option?(build) || dep.prune_if_build_and_not_dependent?(dependent, formula) || dep.test?
+      if dep.prune_from_option?(build) ||
+         dep.prune_if_build_and_not_dependent?(dependent, formula) ||
+         (dep.test? && !dep.build?)
         Dependency.prune
       elsif dep.build?
         Dependency.keep_but_prune_recursive_deps

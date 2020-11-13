@@ -1271,7 +1271,7 @@ class Formula
       end
 
       if current_version ||
-         (latest_head_version && !head_version_outdated?(latest_head_version, fetch_head: fetch_head))
+         ((head_version = latest_head_version) && !head_version_outdated?(head_version, fetch_head: fetch_head))
         []
       else
         all_kegs += old_installed_formulae.flat_map(&:installed_kegs)

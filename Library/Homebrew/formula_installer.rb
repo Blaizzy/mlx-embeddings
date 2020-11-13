@@ -537,7 +537,7 @@ class FormulaInstaller
         if req.prune_from_option?(build) ||
            req.satisfied?(env: env, cc: cc, build_bottle: @build_bottle, bottle_arch: bottle_arch) ||
            ((req.build? || req.test?) && !keep_build_test) ||
-           (formula_deps_map.key?(dependent.name) && formula_deps_map[dependent.name].build?)
+           formula_deps_map[dependent.name]&.build?
           Requirement.prune
         else
           unsatisfied_reqs[dependent] << req
@@ -566,8 +566,7 @@ class FormulaInstaller
       keep_build_test ||= dep.test? && include_test? && include_test_formulae.include?(dependent.full_name)
       keep_build_test ||= dep.build? && !install_bottle_for?(dependent, build) && !dependent.latest_version_installed?
 
-      if dep.prune_from_option?(build) ||
-         ((dep.build? || dep.test?) && !keep_build_test)
+      if dep.prune_from_option?(build) || ((dep.build? || dep.test?) && !keep_build_test)
         Dependency.prune
       elsif dep.satisfied?(inherited_options[dep.name])
         Dependency.skip

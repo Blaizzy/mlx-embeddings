@@ -494,13 +494,15 @@ class Keg
            %r{^guile/},
            *SHARE_PATHS
         :mkpath
-      else :link
+      else
+        :link
       end
     end
 
     link_dir("lib", **options) do |relative_path|
       case relative_path.to_s
-      when "charset.alias" then :skip_file
+      when "charset.alias"
+        :skip_file
       when "pkgconfig", # pkg-config database gets explicitly created
            "cmake",     # cmake database gets explicitly created
            "dtrace",    # lib/language folders also get explicitly created
@@ -515,10 +517,11 @@ class Keg
            "php",
            /^python[23]\.\d/,
            /^R/,
-           /^ruby/,
+           /^ruby/
         :mkpath
-      # Everything else is symlinked to the cellar
-      else :link
+      else
+        # Everything else is symlinked to the cellar
+        :link
       end
     end
 

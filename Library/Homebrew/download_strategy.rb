@@ -1233,9 +1233,9 @@ class DownloadStrategyDetector
     when %r{^https?://(.+?\.)?googlecode\.com/svn},
          %r{^https?://svn\.},
          %r{^svn://},
-         %r{^https?://(.+?\.)?sourceforge\.net/svnroot/},
          %r{^svn\+http://},
-         %r{^http://svn\.apache\.org/repos/}
+         %r{^http://svn\.apache\.org/repos/},
+         %r{^https?://(.+?\.)?sourceforge\.net/svnroot/}
       SubversionDownloadStrategy
     when %r{^cvs://}
       CVSDownloadStrategy
