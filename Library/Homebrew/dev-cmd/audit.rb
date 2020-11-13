@@ -903,6 +903,7 @@ module Homebrew
       current_checksum = formula.stable.checksum
       current_version_scheme = formula.version_scheme
       current_revision = formula.revision
+      current_url = formula.stable.url
 
       previous_version = nil
       previous_version_scheme = nil
@@ -911,6 +912,7 @@ module Homebrew
       newest_committed_version = nil
       newest_committed_checksum = nil
       newest_committed_revision = nil
+      newest_committed_url = nil
 
       fv.rev_list("origin/master") do |rev|
         fv.formula_at_revision(rev) do |f|
@@ -925,6 +927,7 @@ module Homebrew
           newest_committed_version ||= previous_version
           newest_committed_checksum ||= previous_checksum
           newest_committed_revision ||= previous_revision
+          newest_committed_url ||= stable.url
         end
 
         break if previous_version && current_version != previous_version
@@ -932,9 +935,10 @@ module Homebrew
       end
 
       if current_version == newest_committed_version &&
+         current_url == newest_committed_url &&
          current_checksum != newest_committed_checksum
         problem(
-          "stable sha256 changed without the version also changing; " \
+          "stable sha256 changed without the url/version also changing; " \
           "please create an issue upstream to rule out malicious " \
           "circumstances and to find out why the file changed.",
         )

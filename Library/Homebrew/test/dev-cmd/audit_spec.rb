@@ -682,7 +682,7 @@ module Homebrew
             )
           end
 
-          it { is_expected.to match("stable sha256 changed without the version also changing") }
+          it { is_expected.to match("stable sha256 changed without the url/version also changing") }
         end
 
         context "should not change with the same version when not the first commit" do
@@ -699,7 +699,7 @@ module Homebrew
             )
           end
 
-          it { is_expected.to match("stable sha256 changed without the version also changing") }
+          it { is_expected.to match("stable sha256 changed without the url/version also changing") }
         end
 
         context "can change with the different version" do
