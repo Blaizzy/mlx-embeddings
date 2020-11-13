@@ -93,18 +93,15 @@ class Cleaner
 
       next if path.directory?
 
-      if path.extname == ".la"
-        path.unlink
-      elsif path.symlink?
-        # Skip it.
-      elsif path.basename.to_s == "perllocal.pod"
-        # Both this file & the .packlist one below are completely unnecessary
+      files_to_skip = %w[perllocal.pod .packlist]
+      if path.extname == ".la" || (!path.symlink? && files_to_skip.include?(path.basename.to_s))
+        # Both the `perllocal.pod` & `.packlist` files are completely unnecessary
         # to package & causes pointless conflict with other formulae. They are
         # removed by Debian, Arch & MacPorts amongst other packagers as well.
         # The files are created as part of installing any Perl module.
         path.unlink
-      elsif path.basename.to_s == ".packlist" # Hidden file, not file extension!
-        path.unlink
+      elsif path.symlink?
+        # Skip it.
       else
         # Set permissions for executables and non-executables
         perms = if executable_path?(path)

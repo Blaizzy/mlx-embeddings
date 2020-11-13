@@ -516,7 +516,7 @@ class Version
         l += 1
         r += 1
         next
-      elsif a.numeric? && b.numeric?
+      elsif a.numeric? == b.numeric?
         return a <=> b
       elsif a.numeric?
         return 1 if a > NULL_TOKEN
@@ -526,8 +526,6 @@ class Version
         return -1 if b > NULL_TOKEN
 
         r += 1
-      else
-        return a <=> b
       end
     end
 

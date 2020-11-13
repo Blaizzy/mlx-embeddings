@@ -115,8 +115,6 @@ class DependencyCollector
   def parse_string_spec(spec, tags)
     if spec.match?(HOMEBREW_TAP_FORMULA_REGEX)
       TapDependency.new(spec, tags)
-    elsif tags.empty?
-      Dependency.new(spec, tags)
     else
       Dependency.new(spec, tags)
     end
