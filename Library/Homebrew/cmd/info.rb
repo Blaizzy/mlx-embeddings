@@ -90,20 +90,23 @@ module Homebrew
       raise FormulaOrCaskUnspecifiedError if args.no_named?
 
       exec_browser(*args.named.to_formulae_and_casks.map { |f| github_info(f) })
+    elsif args.no_named?
+      print_statistics
     else
       print_info(args: args)
     end
   end
 
+  def print_statistics
+    return unless HOMEBREW_CELLAR.exist?
+
+    count = Formula.racks.length
+    puts "#{count} #{"keg".pluralize(count)}, #{HOMEBREW_CELLAR.dup.abv}"
+  end
+
   def print_analytics(args:)
     if args.no_named?
-      if args.analytics?
-        Utils::Analytics.output(args: args)
-      elsif HOMEBREW_CELLAR.exist?
-        count = Formula.racks.length
-        puts "#{count} #{"keg".pluralize(count)}, #{HOMEBREW_CELLAR.dup.abv}"
-      end
-
+      Utils::Analytics.output(args: args)
       return
     end
 
