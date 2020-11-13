@@ -8,8 +8,11 @@ require "cask/cmd"
 require "cask/caskroom"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def outdated_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS

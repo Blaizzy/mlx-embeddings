@@ -294,6 +294,8 @@ module RuboCop
       #
       # @api private
       class PyPiUrls < FormulaCop
+        extend T::Sig
+
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           urls = find_every_func_call_by_name(body_node, :url)
           mirrors = find_every_func_call_by_name(body_node, :mirror)
@@ -312,6 +314,7 @@ module RuboCop
           end
         end
 
+        sig { params(url: String).returns(String) }
         def get_pypi_url(url)
           package_file = File.basename(url)
           package_name = package_file.match(/^(.+)-[a-z0-9.]+$/)[1]

@@ -28,6 +28,8 @@ require "unlink"
 #
 # @api private
 class FormulaInstaller
+  extend T::Sig
+
   include FormulaCellarChecks
   extend Predicable
 
@@ -776,6 +778,7 @@ class FormulaInstaller
     unlock
   end
 
+  sig { returns(String) }
   def summary
     s = +""
     s << "#{Homebrew::EnvConfig.install_badge}  " unless Homebrew::EnvConfig.no_emoji?

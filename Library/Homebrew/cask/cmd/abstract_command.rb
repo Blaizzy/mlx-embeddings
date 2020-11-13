@@ -9,16 +9,22 @@ module Cask
     #
     # @api private
     class AbstractCommand
+      extend T::Sig
+      extend T::Helpers
+
       include Homebrew::Search
 
+      sig { returns(T.nilable(T.any(Integer, Symbol))) }
       def self.min_named
         nil
       end
 
+      sig { returns(T.nilable(Integer)) }
       def self.max_named
         nil
       end
 
+      sig { returns(String) }
       def self.banner_args
         if min_named == :cask && max_named != 1
           " <cask>"
@@ -29,6 +35,7 @@ module Cask
         end
       end
 
+      sig { returns(String) }
       def self.banner_headline
         "`#{command_name}` [<options>]#{banner_args}"
       end
@@ -72,24 +79,29 @@ module Cask
         end
       end
 
+      sig { returns(String) }
       def self.command_name
         @command_name ||= name.sub(/^.*:/, "").gsub(/(.)([A-Z])/, '\1_\2').downcase
       end
 
+      sig { returns(T::Boolean) }
       def self.abstract?
         name.split("::").last.match?(/^Abstract[^a-z]/)
       end
 
+      sig { returns(T::Boolean) }
       def self.visible?
         true
       end
 
+      sig { returns(String) }
       def self.help
         parser.generate_help_text
       end
 
+      sig { returns(String) }
       def self.short_description
-        description.split(".").first
+        description[/\A[^.]*\./]
       end
 
       def self.run(*args)

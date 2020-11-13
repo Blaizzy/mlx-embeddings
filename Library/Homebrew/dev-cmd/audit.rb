@@ -18,8 +18,11 @@ require "cli/parser"
 require "json"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def audit_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS

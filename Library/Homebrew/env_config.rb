@@ -6,6 +6,8 @@ module Homebrew
   #
   # @api private
   module EnvConfig
+    extend T::Sig
+
     module_function
 
     ENVS = {
@@ -358,10 +360,12 @@ module Homebrew
           .to_s
     end
 
+    sig { returns(T::Array[String]) }
     def cask_opts
       Shellwords.shellsplit(ENV.fetch("HOMEBREW_CASK_OPTS", ""))
     end
 
+    sig { returns(T::Boolean) }
     def cask_opts_binaries?
       cask_opts.reverse_each do |opt|
         return true if opt == "--binaries"
@@ -371,6 +375,7 @@ module Homebrew
       true
     end
 
+    sig { returns(T::Boolean) }
     def cask_opts_quarantine?
       cask_opts.reverse_each do |opt|
         return true if opt == "--quarantine"
@@ -380,6 +385,7 @@ module Homebrew
       true
     end
 
+    sig { returns(T::Boolean) }
     def cask_opts_require_sha?
       cask_opts.include?("--require-sha")
     end

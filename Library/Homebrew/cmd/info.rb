@@ -13,12 +13,15 @@ require "utils/spdx"
 require "deprecate_disable"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
   VALID_DAYS = %w[30 90 365].freeze
   VALID_FORMULA_CATEGORIES = %w[install install-on-request build-error].freeze
   VALID_CATEGORIES = (VALID_FORMULA_CATEGORIES + %w[cask-install os-version]).freeze
 
+  sig { returns(CLI::Parser) }
   def info_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS

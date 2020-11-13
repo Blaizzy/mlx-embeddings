@@ -7,6 +7,8 @@ require "language/java"
 #
 # @api private
 class JavaRequirement < Requirement
+  extend T::Sig
+
   fatal true
 
   attr_reader :java_home, :version
@@ -37,6 +39,7 @@ class JavaRequirement < Requirement
     @cask = suggestion.token
   end
 
+  sig { returns(String) }
   def message
     version_string = " #{@version}" if @version
     s = "Java#{version_string} is required for this software.\n"
@@ -44,6 +47,7 @@ class JavaRequirement < Requirement
     s
   end
 
+  sig { returns(String) }
   def inspect
     "#<#{self.class.name}: version=#{@version.inspect} #{tags.inspect}>"
   end
@@ -64,6 +68,9 @@ class JavaRequirement < Requirement
   private
 
   CaskSuggestion = Struct.new(:token, :title) do
+    extend T::Sig
+
+    sig { returns(String) }
     def to_str
       title_string = " #{title}" if title
       <<~EOS

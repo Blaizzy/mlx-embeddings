@@ -52,6 +52,8 @@ require "utils/spdx"
 #   end
 # end</pre>
 class Formula
+  extend T::Sig
+
   include FileUtils
   include Utils::Inreplace
   include Utils::Shebang
@@ -286,6 +288,7 @@ class Formula
     path
   end
 
+  sig { returns(T.nilable(String)) }
   def installed_alias_name
     File.basename(installed_alias_path) if installed_alias_path
   end
@@ -354,6 +357,7 @@ class Formula
 
   # The Bottle object for the currently active {SoftwareSpec}.
   # @private
+  sig { returns(T.nilable(Bottle)) }
   def bottle
     Bottle.new(self, bottle_specification) if bottled?
   end
@@ -407,6 +411,7 @@ class Formula
   end
 
   # The {PkgVersion} for this formula with {version} and {#revision} information.
+  sig { returns(PkgVersion) }
   def pkg_version
     PkgVersion.new(version, revision)
   end
@@ -600,8 +605,9 @@ class Formula
   # The parent of the prefix; the named directory in the cellar containing all
   # installed versions of this software.
   # @private
+  sig { returns(Pathname) }
   def rack
-    Pathname.new("#{HOMEBREW_CELLAR}/#{name}")
+    HOMEBREW_CELLAR/name
   end
 
   # All currently installed prefix directories.
@@ -888,6 +894,7 @@ class Formula
   end
 
   # The prefix, if any, to use in filenames for logging current activity.
+  sig { returns(String) }
   def active_log_prefix
     if active_log_type
       "#{active_log_type}."
@@ -936,6 +943,7 @@ class Formula
   end
 
   # The generated launchd {.plist} service name.
+  sig { returns(String) }
   def plist_name
     "homebrew.mxcl.#{name}"
   end
@@ -958,8 +966,9 @@ class Formula
   # This is the preferred way to refer to a formula in plists or from another
   # formula, as the path is stable even when the software is updated.
   # <pre>args << "--with-readline=#{Formula["readline"].opt_prefix}" if build.with? "readline"</pre>
+  sig { returns(Pathname) }
   def opt_prefix
-    Pathname.new("#{HOMEBREW_PREFIX}/opt/#{name}")
+    HOMEBREW_PREFIX/"opt"/name
   end
 
   def opt_bin
@@ -1004,6 +1013,7 @@ class Formula
   # Defaults to true so overridden version does not have to check if bottles
   # are supported.
   # Replaced by {.pour_bottle?}'s `satisfy` method if it is specified.
+  sig { returns(T::Boolean) }
   def pour_bottle?
     true
   end
@@ -1160,11 +1170,13 @@ class Formula
   # @return [String, Symbol]
   delegate disable_reason: :"self.class"
 
+  sig { returns(T::Boolean) }
   def skip_cxxstdlib_check?
     false
   end
 
   # @private
+  sig { returns(T::Boolean) }
   def require_universal_deps?
     false
   end
@@ -1365,6 +1377,7 @@ class Formula
   end
 
   # @private
+  sig { returns(String) }
   def inspect
     "#<Formula #{name} (#{active_spec_sym}) #{path}>"
   end
@@ -1396,6 +1409,7 @@ class Formula
   # 3rd party installs.
   # Note that there isn't a std_autotools variant because autotools is a lot
   # less consistent and the standard parameters are more memorable.
+  sig { returns(T::Array[String]) }
   def std_cmake_args
     args = %W[
       -DCMAKE_C_FLAGS_RELEASE=-DNDEBUG
@@ -1423,6 +1437,7 @@ class Formula
   end
 
   # Standard parameters for cabal-v2 builds.
+  sig { returns(T::Array[String]) }
   def std_cabal_v2_args
     # cabal-install's dependency-resolution backtracking strategy can
     # easily need more than the default 2,000 maximum number of
@@ -1434,6 +1449,7 @@ class Formula
   end
 
   # Standard parameters for meson builds.
+  sig { returns(T::Array[String]) }
   def std_meson_args
     ["--prefix=#{prefix}", "--libdir=#{lib}", "--buildtype=release", "--wrap-mode=nofallback"]
   end
@@ -1869,6 +1885,7 @@ class Formula
   end
 
   # @private
+  sig { returns(T::Boolean) }
   def test_defined?
     false
   end

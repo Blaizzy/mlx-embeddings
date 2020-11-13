@@ -9,6 +9,9 @@ module Cask
     #
     # @api private
     class Audit < AbstractCommand
+      extend T::Sig
+
+      sig { returns(String) }
       def self.description
         <<~EOS
           Check <cask> for Homebrew coding style violations. This should be run before
@@ -37,6 +40,7 @@ module Cask
         end
       end
 
+      sig { void }
       def run
         require "cask/auditor"
 

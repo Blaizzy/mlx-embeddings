@@ -10,6 +10,8 @@ require "fiddle"
 #
 # @api private
 class LinkageChecker
+  extend T::Sig
+
   attr_reader :undeclared_deps, :keg, :formula, :store
 
   def initialize(keg, formula = nil, cache_db:, rebuild_cache: false)
@@ -78,6 +80,7 @@ class LinkageChecker
     puts "Unexpected non-missing linkage detected" if unexpected_present_dylibs.present?
   end
 
+  sig { returns(T::Boolean) }
   def broken_library_linkage?
     issues = [@broken_deps, @unwanted_system_dylibs, @version_conflict_deps]
     [issues, unexpected_broken_dylibs, unexpected_present_dylibs].flatten.any?(&:present?)

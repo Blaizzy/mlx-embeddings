@@ -9,10 +9,13 @@ require "socket"
 require "cli/parser"
 
 module Homebrew
+  extend T::Sig
+
   extend Install
 
   module_function
 
+  sig { returns(CLI::Parser) }
   def gist_logs_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS

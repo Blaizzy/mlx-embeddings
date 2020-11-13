@@ -7,6 +7,8 @@ require "dependable"
 #
 # @api private
 class Dependency
+  extend T::Sig
+
   extend Forwardable
   include Dependable
 
@@ -64,6 +66,7 @@ class Dependency
     env_proc&.call
   end
 
+  sig { returns(String) }
   def inspect
     "#<#{self.class.name}: #{name.inspect} #{tags.inspect}>"
   end
@@ -78,6 +81,8 @@ class Dependency
   end
 
   class << self
+    extend T::Sig
+
     # Expand the dependencies of each dependent recursively, optionally yielding
     # `[dependent, dep]` pairs to allow callers to apply arbitrary filters to
     # the list.
@@ -126,16 +131,19 @@ class Dependency
     end
 
     # Prune a dependency and its dependencies recursively.
+    sig { void }
     def prune
       throw(:action, :prune)
     end
 
     # Prune a single dependency but do not prune its dependencies.
+    sig { void }
     def skip
       throw(:action, :skip)
     end
 
     # Keep a dependency, but prune its dependencies.
+    sig { void }
     def keep_but_prune_recursive_deps
       throw(:action, :keep_but_prune_recursive_deps)
     end

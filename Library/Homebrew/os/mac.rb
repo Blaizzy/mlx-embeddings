@@ -10,6 +10,8 @@ require "os/mac/keg"
 module OS
   # Helper module for querying system information on macOS.
   module Mac
+    extend T::Sig
+
     module_function
 
     # rubocop:disable Naming/ConstantName
@@ -81,6 +83,7 @@ module OS
       @active_developer_dir ||= Utils.popen_read("/usr/bin/xcode-select", "-print-path").strip
     end
 
+    sig { returns(T::Boolean) }
     def sdk_root_needed?
       if MacOS::CLT.installed?
         # If there's no CLT SDK, return false

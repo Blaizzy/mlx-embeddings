@@ -8,6 +8,8 @@ require "json"
 #
 # @api private
 class Bintray
+  extend T::Sig
+
   include Context
 
   API_URL = "https://api.bintray.com"
@@ -15,6 +17,7 @@ class Bintray
   class Error < RuntimeError
   end
 
+  sig { returns(String) }
   def inspect
     "#<Bintray: org=#{@bintray_org}>"
   end

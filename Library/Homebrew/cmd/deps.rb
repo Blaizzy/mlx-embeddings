@@ -8,10 +8,13 @@ require "cask/caskroom"
 require "dependencies_helpers"
 
 module Homebrew
+  extend T::Sig
+
   extend DependenciesHelpers
 
   module_function
 
+  sig { returns(CLI::Parser) }
   def deps_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS

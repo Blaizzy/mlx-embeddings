@@ -48,6 +48,8 @@ module Homebrew
 
     # Diagnostic checks.
     class Checks
+      extend T::Sig
+
       def initialize(verbose: true)
         @verbose = verbose
       end
@@ -71,6 +73,7 @@ module Homebrew
         path.gsub(ENV["HOME"], "~")
       end
 
+      sig { returns(String) }
       def none_string
         "<NONE>"
       end

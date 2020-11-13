@@ -6,10 +6,13 @@ require "fetch"
 require "cli/parser"
 
 module Homebrew
+  extend T::Sig
+
   extend Fetch
 
   module_function
 
+  sig { returns(CLI::Parser) }
   def fetch_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS

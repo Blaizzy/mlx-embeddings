@@ -12,6 +12,8 @@ require "description_cache_store"
 # {#user} represents the GitHub username and {#repo} represents the repository
 # name without the leading `homebrew-`.
 class Tap
+  extend T::Sig
+
   extend Cachable
 
   TAP_DIRECTORY = (HOMEBREW_LIBRARY/"Taps").freeze
@@ -123,6 +125,7 @@ class Tap
   end
 
   # The default remote path to this {Tap}.
+  sig { returns(String) }
   def default_remote
     "https://github.com/#{full_name}"
   end
@@ -176,6 +179,7 @@ class Tap
 
   # The issues URL of this {Tap}.
   # e.g. `https://github.com/user/homebrew-repo/issues`
+  sig { returns(T.nilable(String)) }
   def issues_url
     return unless official? || !custom_remote?
 
@@ -186,6 +190,7 @@ class Tap
     name
   end
 
+  sig { returns(String) }
   def version_string
     return "N/A" unless installed?
 
@@ -227,6 +232,7 @@ class Tap
   end
 
   # @private
+  sig { returns(T::Boolean) }
   def core_tap?
     false
   end
@@ -595,6 +601,7 @@ class Tap
   end
 
   # An array of all tap cmd directory {Pathname}s.
+  sig { returns(T::Array[Pathname]) }
   def self.cmd_directories
     Pathname.glob TAP_DIRECTORY/"*/*/cmd"
   end
@@ -633,7 +640,10 @@ end
 
 # A specialized {Tap} class for the core formulae.
 class CoreTap < Tap
+  extend T::Sig
+
   # @private
+  sig { void }
   def initialize
     super "Homebrew", "core"
   end
@@ -660,26 +670,31 @@ class CoreTap < Tap
   end
 
   # @private
+  sig { void }
   def uninstall
     raise "Tap#uninstall is not available for CoreTap"
   end
 
   # @private
+  sig { void }
   def pin
     raise "Tap#pin is not available for CoreTap"
   end
 
   # @private
+  sig { void }
   def unpin
     raise "Tap#unpin is not available for CoreTap"
   end
 
   # @private
+  sig { returns(T::Boolean) }
   def pinned?
     false
   end
 
   # @private
+  sig { returns(T::Boolean) }
   def core_tap?
     true
   end

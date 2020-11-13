@@ -9,6 +9,9 @@ module Cask
     #
     # @api private
     class Mdimporter < Moved
+      extend T::Sig
+
+      sig { returns(String) }
       def self.english_name
         "Spotlight metadata importer"
       end

@@ -7,10 +7,14 @@ module Cask
     #
     # @api private
     class Reinstall < Install
+      extend T::Sig
+
+      sig { returns(String) }
       def self.description
         "Reinstalls the given <cask>."
       end
 
+      sig { void }
       def run
         self.class.reinstall_casks(
           *casks,

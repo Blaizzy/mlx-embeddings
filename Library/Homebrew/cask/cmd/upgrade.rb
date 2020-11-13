@@ -10,6 +10,9 @@ module Cask
     #
     # @api private
     class Upgrade < AbstractCommand
+      extend T::Sig
+
+      sig { returns(String) }
       def self.description
         "Upgrades all outdated casks or the specified casks."
       end
@@ -36,6 +39,7 @@ module Cask
         end
       end
 
+      sig { void }
       def run
         verbose = ($stdout.tty? || args.verbose?) && !args.quiet?
         self.class.upgrade_casks(

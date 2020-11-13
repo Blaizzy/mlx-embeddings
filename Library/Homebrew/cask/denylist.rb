@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 module Cask
@@ -6,6 +6,9 @@ module Cask
   #
   # @api private
   module Denylist
+    extend T::Sig
+
+    sig { params(name: String).returns(T.nilable(String)) }
     def self.reason(name)
       case name
       when /^adobe-(after|illustrator|indesign|photoshop|premiere)/

@@ -8,6 +8,8 @@ require "cask_dependent"
 #
 # @api private
 class Dependencies < SimpleDelegator
+  extend T::Sig
+
   def initialize(*args)
     super(args)
   end
@@ -34,6 +36,7 @@ class Dependencies < SimpleDelegator
     build + required + recommended
   end
 
+  sig { returns(String) }
   def inspect
     "#<#{self.class.name}: #{to_a}>"
   end
@@ -43,6 +46,8 @@ end
 #
 # @api private
 class Requirements < SimpleDelegator
+  extend T::Sig
+
   def initialize(*args)
     super(Set.new(args))
   end
@@ -59,6 +64,7 @@ class Requirements < SimpleDelegator
     self
   end
 
+  sig { returns(String) }
   def inspect
     "#<#{self.class.name}: {#{to_a.join(", ")}}>"
   end

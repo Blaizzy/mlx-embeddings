@@ -7,6 +7,8 @@ module Cask
     #
     # @api private
     class AbstractArtifact
+      extend T::Sig
+
       include Comparable
       extend Predicable
 
@@ -132,6 +134,7 @@ module Cask
         cask.config
       end
 
+      sig { returns(String) }
       def to_s
         "#{summarize} (#{self.class.english_name})"
       end

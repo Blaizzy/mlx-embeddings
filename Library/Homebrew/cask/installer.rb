@@ -18,6 +18,8 @@ module Cask
   #
   # @api private
   class Installer
+    extend T::Sig
+
     extend Predicable
     # TODO: it is unwise for Cask::Staged to be a module, when we are
     #       dealing with both staged and unstaged casks here. This should
@@ -142,6 +144,7 @@ module Cask
       Installer.new(installed_cask, binaries: binaries?, verbose: verbose?, force: true, upgrade: upgrade?).uninstall
     end
 
+    sig { returns(String) }
     def summary
       s = +""
       s << "#{Homebrew::EnvConfig.install_badge}  " unless Homebrew::EnvConfig.no_emoji?

@@ -7,8 +7,11 @@ require "utils/shell"
 require "cli/parser"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def __env_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS

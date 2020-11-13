@@ -8,6 +8,8 @@ require "cli/parser"
 require "search"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
   extend Search
@@ -25,6 +27,7 @@ module Homebrew
     },
   }.freeze
 
+  sig { returns(CLI::Parser) }
   def search_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS

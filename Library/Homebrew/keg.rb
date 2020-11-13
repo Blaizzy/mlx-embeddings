@@ -11,6 +11,8 @@ require "extend/cachable"
 #
 # @api private
 class Keg
+  extend T::Sig
+
   extend Cachable
 
   # Error for when a keg is already linked.
@@ -39,6 +41,9 @@ class Keg
 
   # Error for when a file already exists or belongs to another keg.
   class ConflictError < LinkError
+    extend T::Sig
+
+    sig { returns(String) }
     def suggestion
       conflict = Keg.for(dst)
     rescue NotAKegError, Errno::ENOENT
@@ -50,6 +55,7 @@ class Keg
       EOS
     end
 
+    sig { returns(String) }
     def to_s
       s = []
       s << "Could not symlink #{src}"
@@ -67,6 +73,9 @@ class Keg
 
   # Error for when a directory is not writable.
   class DirectoryNotWritableError < LinkError
+    extend T::Sig
+
+    sig { returns(String) }
     def to_s
       <<~EOS
         Could not symlink #{src}
@@ -226,6 +235,7 @@ class Keg
 
   alias to_path to_s
 
+  sig { returns(String) }
   def inspect
     "#<#{self.class.name}:#{path}>"
   end
@@ -235,6 +245,7 @@ class Keg
   end
   alias eql? ==
 
+  sig { returns(T::Boolean) }
   def empty_installation?
     Pathname.glob("#{path}/*") do |file|
       return false if file.directory? && !file.children.reject(&:ds_store?).empty?
@@ -411,6 +422,7 @@ class Keg
     end
   end
 
+  sig { returns(T::Boolean) }
   def plist_installed?
     !Dir["#{path}/*.plist"].empty?
   end
@@ -419,10 +431,12 @@ class Keg
     (path/"lib/python2.7/site-packages").directory?
   end
 
+  sig { returns(T::Boolean) }
   def python_pth_files_installed?
     !Dir["#{path}/lib/python2.7/site-packages/*.pth"].empty?
   end
 
+  sig { returns(T::Array[Pathname]) }
   def apps
     app_prefix = optlinked? ? opt_record : path
     Pathname.glob("#{app_prefix}/{,libexec/}*.app")

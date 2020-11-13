@@ -12,6 +12,8 @@ module Cask
   #
   # @api private
   class Cask
+    extend T::Sig
+
     extend Enumerable
     extend Forwardable
     extend Searchable
@@ -64,6 +66,7 @@ module Cask
       define_method(method_name) { |&block| @dsl.send(method_name, &block) }
     end
 
+    sig { returns(T::Array[[String, String]]) }
     def timestamped_versions
       Pathname.glob(metadata_timestamped_path(version: "*", timestamp: "*"))
               .map { |p| p.relative_path_from(p.parent.parent) }
@@ -89,6 +92,7 @@ module Cask
       !versions.empty?
     end
 
+    sig { returns(T.nilable(Time)) }
     def install_time
       _, time = timestamped_versions.last
       return unless time

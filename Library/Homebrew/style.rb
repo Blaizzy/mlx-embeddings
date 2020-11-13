@@ -269,6 +269,8 @@ module Homebrew
 
     # Source location of a style offense.
     class LineLocation
+      extend T::Sig
+
       attr_reader :line, :column
 
       def initialize(json)
@@ -276,6 +278,7 @@ module Homebrew
         @column = json["column"]
       end
 
+      sig { returns(String) }
       def to_s
         "#{line}: col #{column}"
       end

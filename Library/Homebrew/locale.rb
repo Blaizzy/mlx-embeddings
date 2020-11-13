@@ -7,7 +7,9 @@
 #
 # @api private
 class Locale
-  # Error when a string cannot be parsed to a {Locale}.
+  extend T::Sig
+
+  # Error when a string cannot be parsed to a `Locale`.
   class ParserError < StandardError
   end
 
@@ -34,6 +36,7 @@ class Locale
     raise ParserError, "'#{string}' cannot be parsed to a #{self}"
   end
 
+  sig { params(string: String).returns(T.nilable(T.attached_class)) }
   def self.try_parse(string)
     return if string.blank?
 
@@ -107,6 +110,7 @@ class Locale
       locale_groups.find { |locales| locales.any? { |locale| include?(locale) } }
   end
 
+  sig { returns(String) }
   def to_s
     [@language, @region, @script].compact.join("-")
   end

@@ -6,8 +6,11 @@ require "cli/parser"
 require "cask/caskroom"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def doctor_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS

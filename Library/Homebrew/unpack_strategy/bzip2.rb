@@ -4,10 +4,13 @@
 module UnpackStrategy
   # Strategy for unpacking bzip2 archives.
   class Bzip2
+    extend T::Sig
+
     include UnpackStrategy
 
     using Magic
 
+    sig { returns(T::Array[String]) }
     def self.extensions
       [".bz2"]
     end
@@ -18,6 +21,7 @@ module UnpackStrategy
 
     private
 
+    sig { override.params(unpack_dir: Pathname, basename: Pathname, verbose: T::Boolean).returns(T.untyped) }
     def extract_to_dir(unpack_dir, basename:, verbose:)
       FileUtils.cp path, unpack_dir/basename, preserve: true
       quiet_flags = verbose ? [] : ["-q"]

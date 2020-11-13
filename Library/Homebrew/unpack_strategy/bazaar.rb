@@ -6,6 +6,8 @@ require_relative "directory"
 module UnpackStrategy
   # Strategy for unpacking Bazaar archives.
   class Bazaar < Directory
+    extend T::Sig
+
     using Magic
 
     def self.can_extract?(path)
@@ -14,11 +16,12 @@ module UnpackStrategy
 
     private
 
+    sig { override.params(unpack_dir: Pathname, basename: Pathname, verbose: T::Boolean).returns(T.untyped) }
     def extract_to_dir(unpack_dir, basename:, verbose:)
       super
 
       # The export command doesn't work on checkouts (see https://bugs.launchpad.net/bzr/+bug/897511).
-      FileUtils.rm_r unpack_dir/".bzr"
+      (unpack_dir/".bzr").rmtree
     end
   end
 end
