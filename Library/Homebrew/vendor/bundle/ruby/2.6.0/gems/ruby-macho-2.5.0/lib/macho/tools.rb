@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module MachO
   # A collection of convenient methods for common operations on Mach-O and Fat
   # binaries.

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module MachO
   # Classes and constants for parsing sections in Mach-O binaries.
   module Sections
@@ -108,7 +110,7 @@ module MachO
       attr_reader :reserved2
 
       # @see MachOStructure::FORMAT
-      FORMAT = "Z16Z16L=9".freeze
+      FORMAT = "Z16Z16L=9"
 
       # @see MachOStructure::SIZEOF
       SIZEOF = 68
@@ -116,6 +118,7 @@ module MachO
       # @api private
       def initialize(sectname, segname, addr, size, offset, align, reloff,
                      nreloc, flags, reserved1, reserved2)
+        super()
         @sectname = sectname
         @segname = segname
         @addr = addr
@@ -180,7 +183,7 @@ module MachO
       attr_reader :reserved3
 
       # @see MachOStructure::FORMAT
-      FORMAT = "Z16Z16Q=2L=8".freeze
+      FORMAT = "Z16Z16Q=2L=8"
 
       # @see MachOStructure::SIZEOF
       SIZEOF = 80
