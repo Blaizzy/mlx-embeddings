@@ -233,6 +233,13 @@ module Homebrew
         return
       end
 
+      if formula.disabled? && !formula.livecheckable?
+        return status_hash(formula, "disabled", args: args) if args.json?
+
+        puts "#{Tty.red}#{formula_name(formula, args: args)}#{Tty.reset} : disabled" unless args.quiet?
+        return
+      end
+
       if formula.versioned_formula? && !formula.livecheckable?
         return status_hash(formula, "versioned", args: args) if args.json?
 

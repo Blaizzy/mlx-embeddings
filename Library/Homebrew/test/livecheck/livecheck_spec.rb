@@ -29,6 +29,15 @@ describe Homebrew::Livecheck do
     end
   end
 
+  let(:f_disabled) do
+    formula("test_disabled") do
+      desc "Disabled test formula"
+      homepage "https://brew.sh"
+      url "https://brew.sh/test-0.0.1.tgz"
+      disable! because: :unmaintained
+    end
+  end
+
   let(:f_gist) do
     formula("test_gist") do
       desc "Gist test formula"
@@ -97,6 +106,12 @@ describe Homebrew::Livecheck do
     it "skips a deprecated formula without a livecheckable" do
       expect { livecheck.skip_conditions(f_deprecated, args: args) }
         .to output("test_deprecated : deprecated\n").to_stdout
+        .and not_to_output.to_stderr
+    end
+
+    it "skips a disabled formula without a livecheckable" do
+      expect { livecheck.skip_conditions(f_disabled, args: args) }
+        .to output("test_disabled : disabled\n").to_stdout
         .and not_to_output.to_stderr
     end
 
