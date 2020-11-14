@@ -285,8 +285,9 @@ module Homebrew
     Utils::Git.cherry_pick!(path, "--ff", "--allow-empty", *commits, verbose: args.verbose?, resolve: args.resolve?)
   end
 
-  def formulae_need_bottles?(tap, original_commit, args:)
+  def formulae_need_bottles?(tap, original_commit, user, repo, pr, args:)
     return if args.dry_run?
+    return false if GitHub.pull_request_labels(user, repo, pr).include? "CI-syntax-only"
 
     changed_formulae(tap, original_commit).any? do |f|
       !f.bottle_unneeded? && !f.bottle_disabled?
@@ -394,7 +395,7 @@ module Homebrew
                             args: args)
           end
 
-          unless formulae_need_bottles?(tap, original_commit, args: args)
+          unless formulae_need_bottles?(tap, original_commit, user, repo, pr, args: args)
             ohai "Skipping artifacts for ##{pr} as the formulae don't need bottles"
             next
           end
