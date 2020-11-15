@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module MachO
   # Classes and constants for parsing load commands in Mach-O binaries.
   module LoadCommands
@@ -60,6 +62,8 @@ module MachO
       0x30 => :LC_VERSION_MIN_WATCHOS,
       0x31 => :LC_NOTE,
       0x32 => :LC_BUILD_VERSION,
+      (0x33 | LC_REQ_DYLD) => :LC_DYLD_EXPORTS_TRIE,
+      (0x34 | LC_REQ_DYLD) => :LD_DYLD_CHAINED_FIXUPS,
     }.freeze
 
     # association of symbol representations to load command constants
@@ -145,6 +149,8 @@ module MachO
       :LC_VERSION_MIN_WATCHOS => "VersionMinCommand",
       :LC_NOTE => "NoteCommand",
       :LC_BUILD_VERSION => "BuildVersionCommand",
+      :LC_DYLD_EXPORTS_TRIE => "LinkeditDataCommand",
+      :LD_DYLD_CHAINED_FIXUPS => "LinkeditDataCommand",
     }.freeze
 
     # association of segment name symbols to names
@@ -186,7 +192,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=2".freeze
+      FORMAT = "L=2"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -225,6 +231,7 @@ module MachO
       # @param cmdsize [Integer] the size of the load command in bytes
       # @api private
       def initialize(view, cmd, cmdsize)
+        super()
         @view = view
         @cmd = cmd
         @cmdsize = cmdsize
@@ -365,7 +372,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=2a16".freeze
+      FORMAT = "L=2a16"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -379,7 +386,7 @@ module MachO
 
       # @return [String] a string representation of the UUID
       def uuid_string
-        hexes = uuid.map { |e| "%02x" % e }
+        hexes = uuid.map { |elem| "%02<elem>x" % { :elem => elem } }
         segs = [
           hexes[0..3].join, hexes[4..5].join, hexes[6..7].join,
           hexes[8..9].join, hexes[10..15].join
@@ -429,7 +436,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=2Z16L=4l=2L=2".freeze
+      FORMAT = "L=2Z16L=4l=2L=2"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -524,7 +531,7 @@ module MachO
     class SegmentCommand64 < SegmentCommand
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=2Z16Q=4l=2L=2".freeze
+      FORMAT = "L=2Z16Q=4l=2L=2"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -550,7 +557,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=6".freeze
+      FORMAT = "L=6"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -601,7 +608,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=3".freeze
+      FORMAT = "L=3"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -649,7 +656,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=5".freeze
+      FORMAT = "L=5"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -679,7 +686,7 @@ module MachO
     class ThreadCommand < LoadCommand
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=2".freeze
+      FORMAT = "L=2"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -717,7 +724,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=10".freeze
+      FORMAT = "L=10"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -758,7 +765,7 @@ module MachO
     class RoutinesCommand64 < RoutinesCommand
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=2Q=8".freeze
+      FORMAT = "L=2Q=8"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -773,7 +780,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=3".freeze
+      FORMAT = "L=3"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -801,7 +808,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=3".freeze
+      FORMAT = "L=3"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -829,7 +836,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=3".freeze
+      FORMAT = "L=3"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -857,7 +864,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=3".freeze
+      FORMAT = "L=3"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -894,7 +901,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=6".freeze
+      FORMAT = "L=6"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -979,7 +986,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=20".freeze
+      FORMAT = "L=20"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -1052,7 +1059,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=4".freeze
+      FORMAT = "L=4"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -1127,7 +1134,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=3".freeze
+      FORMAT = "L=3"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -1156,7 +1163,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=3".freeze
+      FORMAT = "L=3"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -1191,7 +1198,8 @@ module MachO
     # A load command representing the offsets and sizes of a blob of data in
     # the __LINKEDIT segment. Corresponds to LC_CODE_SIGNATURE,
     # LC_SEGMENT_SPLIT_INFO, LC_FUNCTION_STARTS, LC_DATA_IN_CODE,
-    # LC_DYLIB_CODE_SIGN_DRS, and LC_LINKER_OPTIMIZATION_HINT.
+    # LC_DYLIB_CODE_SIGN_DRS, LC_LINKER_OPTIMIZATION_HINT, LC_DYLD_EXPORTS_TRIE,
+    # or LC_DYLD_CHAINED_FIXUPS.
     class LinkeditDataCommand < LoadCommand
       # @return [Integer] offset to the data in the __LINKEDIT segment
       attr_reader :dataoff
@@ -1201,7 +1209,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=4".freeze
+      FORMAT = "L=4"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -1237,7 +1245,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=5".freeze
+      FORMAT = "L=5"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -1269,7 +1277,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=6".freeze
+      FORMAT = "L=6"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -1301,7 +1309,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=4".freeze
+      FORMAT = "L=4"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -1317,7 +1325,7 @@ module MachO
       # A string representation of the binary's minimum OS version.
       # @return [String] a string representing the minimum OS version.
       def version_string
-        binary = "%032b" % version
+        binary = "%032<version>b" % { :version => version }
         segs = [
           binary[0..15], binary[16..23], binary[24..31]
         ].map { |s| s.to_i(2) }
@@ -1328,7 +1336,7 @@ module MachO
       # A string representation of the binary's SDK version.
       # @return [String] a string representing the SDK version.
       def sdk_string
-        binary = "%032b" % sdk
+        binary = "%032<sdk>b" % { :sdk => sdk }
         segs = [
           binary[0..15], binary[16..23], binary[24..31]
         ].map { |s| s.to_i(2) }
@@ -1365,7 +1373,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=6".freeze
+      FORMAT = "L=6"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -1383,7 +1391,7 @@ module MachO
       # A string representation of the binary's minimum OS version.
       # @return [String] a string representing the minimum OS version.
       def minos_string
-        binary = "%032b" % minos
+        binary = "%032<minos>b" % { :minos => minos }
         segs = [
           binary[0..15], binary[16..23], binary[24..31]
         ].map { |s| s.to_i(2) }
@@ -1394,7 +1402,7 @@ module MachO
       # A string representation of the binary's SDK version.
       # @return [String] a string representing the SDK version.
       def sdk_string
-        binary = "%032b" % sdk
+        binary = "%032<sdk>b" % { :sdk => sdk }
         segs = [
           binary[0..15], binary[16..23], binary[24..31]
         ].map { |s| s.to_i(2) }
@@ -1494,7 +1502,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=12".freeze
+      FORMAT = "L=12"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -1542,7 +1550,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=3".freeze
+      FORMAT = "L=3"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -1572,7 +1580,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=2Q=2".freeze
+      FORMAT = "L=2Q=2"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -1602,7 +1610,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=2Q=1".freeze
+      FORMAT = "L=2Q=1"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -1617,7 +1625,7 @@ module MachO
       # A string representation of the sources used to build the binary.
       # @return [String] a string representation of the version
       def version_string
-        binary = "%064b" % version
+        binary = "%064<version>b" % { :version => version }
         segs = [
           binary[0..23], binary[24..33], binary[34..43], binary[44..53],
           binary[54..63]
@@ -1646,7 +1654,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=4".freeze
+      FORMAT = "L=4"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -1674,7 +1682,7 @@ module MachO
     class IdentCommand < LoadCommand
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=2".freeze
+      FORMAT = "L=2"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -1692,7 +1700,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=4".freeze
+      FORMAT = "L=4"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -1727,7 +1735,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=5".freeze
+      FORMAT = "L=5"
 
       # @see MachOStructure::SIZEOF
       # @api private
@@ -1764,7 +1772,7 @@ module MachO
 
       # @see MachOStructure::FORMAT
       # @api private
-      FORMAT = "L=2Z16Q=2".freeze
+      FORMAT = "L=2Z16Q=2"
 
       # @see MachOStructure::SIZEOF
       # @api private

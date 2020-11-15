@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "forwardable"
 
 module MachO
@@ -64,7 +66,7 @@ module MachO
         offset += (macho.serialize.bytesize + macho_pads[macho])
       end
 
-      machos.each do |macho|
+      machos.each do |macho| # rubocop:disable Style/CombinableLoops
         bin << Utils.nullpad(macho_pads[macho])
         bin << macho.serialize
       end
@@ -396,16 +398,14 @@ module MachO
       errors = []
 
       machos.each_with_index do |macho, index|
-        begin
-          yield macho
-        rescue RecoverableModificationError => error
-          error.macho_slice = index
+        yield macho
+      rescue RecoverableModificationError => e
+        e.macho_slice = index
 
-          # Strict mode: Immediately re-raise. Otherwise: Retain, check later.
-          raise error if strict
+        # Strict mode: Immediately re-raise. Otherwise: Retain, check later.
+        raise e if strict
 
-          errors << error
-        end
+        errors << e
       end
 
       # Non-strict mode: Raise first error if *all* Mach-O slices failed.
