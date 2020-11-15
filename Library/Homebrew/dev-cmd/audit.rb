@@ -918,19 +918,23 @@ module Homebrew
       newest_committed_url = nil
 
       fv.rev_list("origin/master") do |rev|
-        fv.formula_at_revision(rev) do |f|
-          stable = f.stable
-          next if stable.blank?
+        begin
+          fv.formula_at_revision(rev) do |f|
+            stable = f.stable
+            next if stable.blank?
 
-          previous_version = stable.version
-          previous_checksum = stable.checksum
-          previous_version_scheme = f.version_scheme
-          previous_revision = f.revision
+            previous_version = stable.version
+            previous_checksum = stable.checksum
+            previous_version_scheme = f.version_scheme
+            previous_revision = f.revision
 
-          newest_committed_version ||= previous_version
-          newest_committed_checksum ||= previous_checksum
-          newest_committed_revision ||= previous_revision
-          newest_committed_url ||= stable.url
+            newest_committed_version ||= previous_version
+            newest_committed_checksum ||= previous_checksum
+            newest_committed_revision ||= previous_revision
+            newest_committed_url ||= stable.url
+          end
+        rescue MacOSVersionError
+          break
         end
 
         break if previous_version && current_version != previous_version
