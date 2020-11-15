@@ -168,6 +168,7 @@ module Homebrew
       return false if Homebrew::EnvConfig.no_install_cleanup?
 
       unless PERIODIC_CLEAN_FILE.exist?
+        HOMEBREW_CACHE.mkpath
         FileUtils.touch PERIODIC_CLEAN_FILE
         return false
       end
