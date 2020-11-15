@@ -17,7 +17,7 @@ describe Bintray, :needs_network do
       expect(hash).to eq("449de5ea35d0e9431f367f1bb34392e450f6853cdccdc6bd04e6ad6471904ddb")
     end
 
-    it "fails on a non-existant file" do
+    it "fails on a non-existent file" do
       hash = bintray.remote_checksum(repo: "bottles", remote_file: "my-fake-bottle-1.0.snow_hyena.tar.gz")
       expect(hash).to be nil
     end
