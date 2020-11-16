@@ -13,7 +13,7 @@ module Homebrew
     # Helper class for loading formulae/casks from named arguments.
     #
     # @api private
-    class NamedArgs < SimpleDelegator
+    class NamedArgs < Array
       def initialize(*args, parent: Args.new, override_spec: nil, force_bottle: false, flags: [])
         @args = args
         @override_spec = override_spec

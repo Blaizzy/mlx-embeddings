@@ -26,6 +26,7 @@ module Cask
         }],
       ].freeze
 
+      sig { returns(Homebrew::CLI::Parser) }
       def self.parser
         super do
           switch "--force",
@@ -56,6 +57,20 @@ module Cask
         )
       end
 
+      sig do
+        params(
+          casks:          Cask,
+          args:           Homebrew::CLI::Args,
+          force:          T.nilable(T::Boolean),
+          greedy:         T.nilable(T::Boolean),
+          dry_run:        T.nilable(T::Boolean),
+          skip_cask_deps: T.nilable(T::Boolean),
+          verbose:        T.nilable(T::Boolean),
+          binaries:       T.nilable(T::Boolean),
+          quarantine:     T.nilable(T::Boolean),
+          require_sha:    T.nilable(T::Boolean),
+        ).void
+      end
       def self.upgrade_casks(
         *casks,
         args:,

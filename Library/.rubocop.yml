@@ -69,7 +69,7 @@ Naming/HeredocDelimiterNaming:
 
 Naming/MethodName:
   IgnoredPatterns:
-    - '\AHEAD\?\Z'
+    - '\A(fetch_)?HEAD\?\Z'
 
 # Allow dashes in filenames.
 Naming/FileName:

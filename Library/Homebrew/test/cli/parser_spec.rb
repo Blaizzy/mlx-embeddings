@@ -62,7 +62,7 @@ describe Homebrew::CLI::Parser do
       it "passes through invalid options" do
         args = parser.parse(["-v", "named-arg", "--not-a-valid-option"], ignore_invalid_options: true)
         expect(args.remaining).to eq ["named-arg", "--not-a-valid-option"]
-        expect(args.named_args).to be_empty
+        expect(args.named).to be_empty
       end
     end
 

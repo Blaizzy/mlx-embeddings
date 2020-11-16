@@ -92,6 +92,7 @@ module Homebrew
     end
   end
 
+  sig { void }
   def upgrade
     args = upgrade_args.parse
 
@@ -109,6 +110,7 @@ module Homebrew
     upgrade_outdated_casks(casks, args: args) unless upgrade_formulae
   end
 
+  sig { params(formulae: T::Array[Formula], args: CLI::Args).void }
   def upgrade_outdated_formulae(formulae, args:)
     return if args.cask?
 
@@ -176,6 +178,7 @@ module Homebrew
     Homebrew.messages.display_messages(display_times: args.display_times?)
   end
 
+  sig { params(casks: T::Array[Cask::Cask], args: CLI::Args).void }
   def upgrade_outdated_casks(casks, args:)
     return if args.formula?
 
