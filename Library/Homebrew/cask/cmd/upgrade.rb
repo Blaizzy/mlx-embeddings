@@ -26,6 +26,7 @@ module Cask
         }],
       ].freeze
 
+      sig { returns(Homebrew::CLI::Parser) }
       def self.parser
         super do
           switch "--force",
@@ -56,6 +57,20 @@ module Cask
         )
       end
 
+      sig do
+        params(
+          casks:          Cask,
+          args:           Homebrew::CLI::Args,
+          force:          T.nilable(T::Boolean),
+          greedy:         T.nilable(T::Boolean),
+          dry_run:        T.nilable(T::Boolean),
+          skip_cask_deps: T.nilable(T::Boolean),
+          verbose:        T.nilable(T::Boolean),
+          binaries:       T.nilable(T::Boolean),
+          quarantine:     T.nilable(T::Boolean),
+          require_sha:    T.nilable(T::Boolean),
+        ).void
+      end
       def self.upgrade_casks(
         *casks,
         args:,
@@ -85,7 +100,9 @@ module Cask
 
         return if outdated_casks.empty?
 
-        ohai "Casks with `auto_updates` or `version :latest` will not be upgraded" if casks.empty? && !greedy
+        if casks.empty? && !greedy
+          ohai "Casks with `auto_updates` or `version :latest` will not be upgraded; pass `--greedy` to upgrade them."
+        end
 
         verb = dry_run ? "Would upgrade" : "Upgrading"
         oh1 "#{verb} #{outdated_casks.count} #{"outdated package".pluralize(outdated_casks.count)}:"

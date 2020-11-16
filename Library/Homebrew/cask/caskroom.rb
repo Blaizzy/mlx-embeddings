@@ -8,6 +8,8 @@ module Cask
   #
   # @api private
   module Caskroom
+    extend T::Sig
+
     module_function
 
     def path
@@ -30,6 +32,7 @@ module Cask
       SystemCommand.run("/usr/bin/chgrp", args: ["admin", path], sudo: sudo)
     end
 
+    sig { params(config: Config).returns(T::Array[Cask]) }
     def casks(config: nil)
       return [] unless path.exist?
 

@@ -24,7 +24,7 @@ module Homebrew
 
         # Can set these because they will be overwritten by freeze_named_args!
         # (whereas other values below will only be overwritten if passed).
-        self[:named_args] = NamedArgs.new(parent: self)
+        self[:named] = NamedArgs.new(parent: self)
         self[:remaining] = []
       end
 
@@ -33,7 +33,7 @@ module Homebrew
       end
 
       def freeze_named_args!(named_args)
-        self[:named_args] = NamedArgs.new(
+        self[:named] = NamedArgs.new(
           *named_args.freeze,
           override_spec: spec(nil),
           force_bottle:  force_bottle?,
@@ -53,8 +53,9 @@ module Homebrew
         @flags_only = cli_args.select { |a| a.start_with?("--") }.freeze
       end
 
+      sig { returns(NamedArgs) }
       def named
-        named_args
+        self[:named]
       end
 
       def no_named?
