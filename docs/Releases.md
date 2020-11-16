@@ -8,7 +8,7 @@ Homebrew release:
 1. Check the [Homebrew/brew pull requests](https://github.com/homebrew/brew/pulls),
    [issues](https://github.com/homebrew/brew/issues),
    [Homebrew/core issues](https://github.com/homebrew/homebrew-core/issues) and
-   [Discourse](https://discourse.brew.sh) to see if there is
+   [Homebrew/discussions (forum)](https://github.com/homebrew/discussions/discussions) to see if there is
    anything pressing that needs to be fixed or merged before the next release.
    If so, fix and merge these changes.
 2. After no code changes have happened for at least a couple of hours (ideally 24 hours)
