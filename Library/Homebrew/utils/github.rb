@@ -779,4 +779,9 @@ module GitHub
       end
     end
   end
+
+  def pull_request_labels(user, repo, pr)
+    pr_data = open_api(url_to("repos", user, repo, "pulls", pr))
+    pr_data["labels"].map { |label| label["name"] }
+  end
 end
