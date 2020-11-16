@@ -12,7 +12,7 @@ module Homebrew
 
     ENVS = {
       HOMEBREW_ARCH:                          {
-        description: "Linux only: Pass the set value to a type name representing the compiler's `-march` option.",
+        description: "Linux only: Pass this value to a type name representing the compiler's `-march` option.",
         default:     "native",
       },
       HOMEBREW_ARTIFACT_DOMAIN:               {
@@ -30,8 +30,8 @@ module Homebrew
         boolean:     true,
       },
       HOMEBREW_BAT_CONFIG_PATH:               {
-        description:  "Use the `bat` configuration file. For example, `HOMEBREW_BAT=$HOME/.bat/config`.",
-        default_text: "$HOME/.bat/config",
+        description:  "Use this as the `bat` configuration file.",
+        default_text: "`$HOME/.bat/config`.",
       },
       HOMEBREW_BINTRAY_KEY:                   {
         description: "Use this API key when accessing the Bintray API (where bottles are stored).",
@@ -40,14 +40,15 @@ module Homebrew
         description: "Use this username when accessing the Bintray API (where bottles are stored).",
       },
       HOMEBREW_BOTTLE_DOMAIN:                 {
-        description:  "Use the specified URL as the download mirror for bottles. " \
-        "For example, `HOMEBREW_BOTTLE_DOMAIN=http://localhost:8080` will cause all bottles to " \
-        "download from the prefix `http://localhost:8080/`.",
-        default_text: "macOS: `https://homebrew.bintray.com/`, Linux: `https://linuxbrew.bintray.com/`.",
+        description:  "Use this URL as the download mirror for bottles. " \
+                      "For example, `HOMEBREW_BOTTLE_DOMAIN=http://localhost:8080` will cause all bottles to " \
+                      "download from the prefix `http://localhost:8080/`.",
+        default_text: "macOS: `https://homebrew.bintray.com/`, " \
+                      "Linux: `https://linuxbrew.bintray.com/`.",
         default:      HOMEBREW_BOTTLE_DEFAULT_DOMAIN,
       },
       HOMEBREW_BREW_GIT_REMOTE:               {
-        description: "Use the specified URL as the Homebrew/brew `git`(1) remote.",
+        description: "Use this URL as the Homebrew/brew `git`(1) remote.",
         default:     HOMEBREW_BREW_DEFAULT_GIT_REMOTE,
       },
       HOMEBREW_BROWSER:                       {
@@ -55,18 +56,17 @@ module Homebrew
         default_text: "`$BROWSER` or the OS's default browser.",
       },
       HOMEBREW_CACHE:                         {
-        description:  "Use the specified directory as the download cache.",
+        description:  "Use this directory as the download cache.",
         default_text: "macOS: `$HOME/Library/Caches/Homebrew`, " \
                       "Linux: `$XDG_CACHE_HOME/Homebrew` or `$HOME/.cache/Homebrew`.",
         default:      HOMEBREW_DEFAULT_CACHE,
       },
       HOMEBREW_CASK_OPTS:                     {
-        description: "Options which should be used for all `cask` commands. All `--*dir` options, " \
-                     "`--language`, `--require-sha`, `--no-quarantine` and `--no-binaries` are supported." \
-                     "\n" \
+        description: "Append these options to all `cask` commands. All `--*dir` options, " \
+                     "`--language`, `--require-sha`, `--no-quarantine` and `--no-binaries` are supported. " \
                      "For example, you might add something like the following to your " \
-                     "~/.profile, ~/.bash_profile, or ~/.zshenv:\n\n" \
-                     "`export HOMEBREW_CASK_OPTS='--appdir=~/Applications --fontdir=/Library/Fonts'`",
+                     "`~/.profile`, `~/.bash_profile`, or `~/.zshenv`:\n\n" \
+                     '    `export HOMEBREW_CASK_OPTS="--appdir=~/Applications --fontdir=/Library/Fonts"`',
       },
       HOMEBREW_CLEANUP_MAX_AGE_DAYS:          {
         description: "Cleanup all cached files older than this many days.",
@@ -77,7 +77,7 @@ module Homebrew
         boolean:     true,
       },
       HOMEBREW_CORE_GIT_REMOTE:               {
-        description:  "Use the specified URL as the Homebrew/homebrew-core `git`(1) remote.",
+        description:  "Use this URL as the Homebrew/homebrew-core `git`(1) remote.",
         default_text: "macOS: `https://github.com/Homebrew/homebrew-core`, " \
                       "Linux: `https://github.com/Homebrew/linuxbrew-core`.",
         default:      HOMEBREW_CORE_DEFAULT_GIT_REMOTE,
@@ -107,7 +107,7 @@ module Homebrew
       },
       HOMEBREW_DISPLAY:                       {
         description:  "Use this X11 display when opening a page in a browser, for example with " \
-                     "`brew home`. Primarily useful on Linux.",
+                      "`brew home`. Primarily useful on Linux.",
         default_text: "`$DISPLAY`.",
       },
       HOMEBREW_DISPLAY_INSTALL_TIMES:         {
@@ -116,9 +116,10 @@ module Homebrew
       },
       HOMEBREW_EDITOR:                        {
         description:  "Use this editor when editing a single formula, or several formulae in the " \
-                     "same directory.\n\n    *Note:* `brew edit` will open all of Homebrew as discontinuous files " \
-                     "and directories. Visual Studio Code can handle this correctly in project mode, but many " \
-                     "editors will do strange things in this case.",
+                      "same directory." \
+                      "\n\n    *Note:* `brew edit` will open all of Homebrew as discontinuous files " \
+                      "and directories. Visual Studio Code can handle this correctly in project mode, but many " \
+                      "editors will do strange things in this case.",
         default_text: "`$EDITOR` or `$VISUAL`.",
       },
       HOMEBREW_FAIL_LOG_LINES:                {
@@ -127,7 +128,7 @@ module Homebrew
       },
       HOMEBREW_FORBIDDEN_LICENSES:            {
         description: "A space-separated list of licenses. Homebrew will refuse to install a " \
-        "formula if that formula or any of its dependencies has a license on this list.",
+                     "formula if it or any of its dependencies has a license on this list.",
       },
       HOMEBREW_FORCE_BREWED_CURL:             {
         description: "If set, always use a Homebrew-installed `curl`(1) rather than the system version. " \
@@ -157,19 +158,19 @@ module Homebrew
         description: "Use this personal access token for the GitHub API, for features such as " \
                      "`brew search`. You can create one at <https://github.com/settings/tokens>. If set, " \
                      "GitHub will allow you a greater number of API requests. For more information, see: " \
-                     "<https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting>.\n\n" \
-                     "    *Note:* Homebrew doesn't require permissions for any of the scopes, but some developer " \
-                     "commands may require additional permissions.",
+                     "<https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting>" \
+                     "\n\n    *Note:* Homebrew doesn't require permissions for any of the scopes, but some " \
+                     "developer commands may require additional permissions.",
       },
       HOMEBREW_GITHUB_API_USERNAME:           {
         description: "Use this username for authentication with the GitHub API, for features " \
                      "such as `brew search`. This is deprecated in favour of using `HOMEBREW_GITHUB_API_TOKEN`.",
       },
       HOMEBREW_GIT_EMAIL:                     {
-        description: "Set the Git author and committer name to this value.",
+        description: "Set the Git author and committer email to this value.",
       },
       HOMEBREW_GIT_NAME:                      {
-        description: "Set the Git author and committer email to this value.",
+        description: "Set the Git author and committer name to this value.",
       },
       HOMEBREW_INSTALL_BADGE:                 {
         description:  "Print this text before the installation summary of each successful build.",
@@ -177,13 +178,13 @@ module Homebrew
         default:      "🍺",
       },
       HOMEBREW_LIVECHECK_WATCHLIST:           {
-        description: "Use this file to get the list of default Formulae to check when no Formula argument " \
-                     "is passed to `brew livecheck`",
+        description: "Consult this file for the list of formulae to check by default when no formula argument " \
+                     "is passed to `brew livecheck`.",
         default:     "$HOME/.brew_livecheck_watchlist",
       },
       HOMEBREW_LOGS:                          {
-        description:  "Use the specified directory to store log files.",
-        default_text: "macOS: `$HOME/Library/Logs/Homebrew`, "\
+        description:  "Use this directory to store log files.",
+        default_text: "macOS: `$HOME/Library/Logs/Homebrew`, " \
                       "Linux: `$XDG_CACHE_HOME/Homebrew/Logs` or `$HOME/.cache/Homebrew/Logs`.",
         default:      HOMEBREW_DEFAULT_LOGS,
       },
@@ -197,7 +198,7 @@ module Homebrew
         },
       },
       HOMEBREW_NO_ANALYTICS:                  {
-        description: "If set, do not send analytics. See: <https://docs.brew.sh/Analytics>.",
+        description: "If set, do not send analytics. For more information, see: <https://docs.brew.sh/Analytics>",
         boolean:     true,
       },
       HOMEBREW_NO_AUTO_UPDATE:                {
@@ -226,18 +227,18 @@ module Homebrew
       },
       HOMEBREW_NO_EMOJI:                      {
         description: "If set, do not print `HOMEBREW_INSTALL_BADGE` on a successful build." \
-                     "\n\n    *Note:* Only tries to print emoji on OS X Lion or newer.",
+                     "\n\n    *Note:* Will only try to print emoji on OS X Lion or newer.",
         boolean:     true,
       },
       HOMEBREW_NO_GITHUB_API:                 {
         description: "If set, do not use the GitHub API, e.g. for searches or fetching relevant issues " \
-                     "on a failed install.",
+                     "after a failed install.",
         boolean:     true,
       },
       HOMEBREW_NO_INSECURE_REDIRECT:          {
         description: "If set, forbid redirects from secure HTTPS to insecure HTTP." \
                      "\n\n    *Note:* While ensuring your downloads are fully secure, this is likely to cause " \
-                     "from-source SourceForge, some GNU & GNOME based formulae to fail to download.",
+                     "from-source SourceForge, some GNU & GNOME-hosted formulae to fail to download.",
         boolean:     true,
       },
       HOMEBREW_NO_INSTALL_CLEANUP:            {
@@ -250,12 +251,12 @@ module Homebrew
         boolean:     true,
       },
       HOMEBREW_SKIP_OR_LATER_BOTTLES:         {
-        description: "If set with `HOMEBREW_DEVELOPER`, do not use bottles from older versions " \
+        description: "If set along with `HOMEBREW_DEVELOPER`, do not use bottles from older versions " \
                      "of macOS. This is useful in development on new macOS versions.",
         boolean:     true,
       },
       HOMEBREW_SORBET_RUNTIME:                {
-        description: "Enable runtime typechecking using Sorbet.",
+        description: "If set, enable runtime typechecking using Sorbet.",
         boolean:     true,
       },
       HOMEBREW_SVN:                           {
@@ -272,7 +273,7 @@ module Homebrew
         default:      HOMEBREW_DEFAULT_TEMP,
       },
       HOMEBREW_UPDATE_REPORT_ONLY_INSTALLED:  {
-        description: "If set, `brew update` only outputs updates to installed software.",
+        description: "If set, `brew update` only lists updates to installed software.",
         boolean:     true,
       },
       HOMEBREW_UPDATE_TO_TAG:                 {
@@ -310,7 +311,7 @@ module Homebrew
                      "from proxying by `curl`(1), `git`(1) and `svn`(1) when downloading through Homebrew.",
       },
       SUDO_ASKPASS:                           {
-        description: "When this variable is set, the `-A` option is passed when calling `sudo`(8)",
+        description: "If set, pass the `-A` option when calling `sudo`(8).",
       },
     }.freeze
 

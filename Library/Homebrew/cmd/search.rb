@@ -50,7 +50,7 @@ module Homebrew
              description: "Search for formulae with a description matching <text> and casks with "\
                           "a name matching <text>."
       switch "--pull-request",
-             description: "Search for GitHub pull requests for <text>."
+             description: "Search for GitHub pull requests containing <text>."
 
       package_manager_switches = PACKAGE_MANAGERS.keys.map { |name| "--#{name}" }
       package_manager_switches.each do |s|

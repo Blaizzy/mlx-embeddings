@@ -30,6 +30,7 @@ module Homebrew
                           "comparison without factoring in the date)."
       switch "--link",
              description: "This is now done automatically by `brew update`."
+
       max_named 0
     end
   end
@@ -135,6 +136,8 @@ module Homebrew
       when "--markdown"
         ronn_output = ronn_output.gsub(%r{<var>(.*?)</var>}, "*`\\1`*")
                                  .gsub(/\n\n\n+/, "\n\n")
+                                 .gsub(/^(- `[^`]+`):/, "\\1") # drop trailing colons from definition lists
+                                 .gsub(/(?<=\n\n)([\[`].+):\n/, "\\1\n<br>") # replace colons with <br> on subcommands
       when "--roff"
         ronn_output = ronn_output.gsub(%r{<code>(.*?)</code>}, "\\fB\\1\\fR")
                                  .gsub(%r{<var>(.*?)</var>}, "\\fI\\1\\fR")
@@ -217,7 +220,7 @@ module Homebrew
   def global_cask_options_manpage
     lines = ["These options are applicable to subcommands accepting a `--cask` flag and all `cask` commands.\n"]
     lines += Homebrew::CLI::Parser.global_cask_options.map do |_, long, description:, **|
-      generate_option_doc(nil, long, description)
+      generate_option_doc(nil, long.chomp("="), description)
     end
     lines.join("\n")
   end
@@ -234,10 +237,10 @@ module Homebrew
   sig { returns(String) }
   def env_vars_manpage
     lines = Homebrew::EnvConfig::ENVS.flat_map do |env, hash|
-      entry = "  * `#{env}`:\n    #{hash[:description]}\n"
+      entry = "- `#{env}`:\n  <br>#{hash[:description]}\n"
       default = hash[:default_text]
       default ||= "`#{hash[:default]}`." if hash[:default]
-      entry += "\n\n    *Default:* #{default}\n" if default
+      entry += "\n\n  *Default:* #{default}\n" if default
 
       entry
     end

@@ -28,8 +28,9 @@ module Homebrew
              description: "Print only one commit."
       flag   "-n", "--max-count=",
              description: "Print only a specified number of commits."
-      max_named 1
+
       conflicts "-1", "--max-count"
+      max_named 1
     end
   end
 

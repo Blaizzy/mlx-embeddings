@@ -19,11 +19,11 @@ module Homebrew
       EOS
 
       switch "--no-git",
-             description: "Don't initialize a git repository for the tap."
+             description: "Don't initialize a Git repository for the tap."
       flag   "--pull-label=",
-             description: "Label name for pull requests ready to be pulled (default `pr-pull`)."
+             description: "Label name for pull requests ready to be pulled (default: `pr-pull`)."
       flag   "--branch=",
-             description: "Initialize git repository with the specified branch name (default `main`)."
+             description: "Initialize Git repository with the specified branch name (default: `main`)."
 
       conflicts "--no-git", "--branch"
       named 1

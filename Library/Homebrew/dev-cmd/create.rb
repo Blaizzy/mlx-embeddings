@@ -59,7 +59,7 @@ module Homebrew
       flag   "--tap=",
              description: "Generate the new formula within the given tap, specified as <user>`/`<repo>."
       switch "-f", "--force",
-             description: "Ignore errors for disallowed formula names and named that shadow aliases."
+             description: "Ignore errors for disallowed formula names and names that shadow aliases."
 
       conflicts "--autotools", "--cmake", "--crystal", "--go", "--meson", "--node", "--perl", "--python", "--rust"
       named 1

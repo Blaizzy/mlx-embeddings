@@ -85,7 +85,6 @@ module Homebrew
         }],
         [:switch, "--keep-tmp", {
           description: "Retain the temporary files created during installation.",
-
         }],
         [:switch, "--build-bottle", {
           description: "Prepare the formula for eventual bottling during installation, skipping any " \
@@ -125,7 +124,6 @@ module Homebrew
 
       conflicts "--ignore-dependencies", "--only-dependencies"
       conflicts "--build-from-source", "--build-bottle", "--force-bottle"
-
       min_named :formula_or_cask
     end
   end

@@ -78,7 +78,6 @@ module Cask
 
         Commands:
         #{command_lines.join}
-
         See also: `man brew`
       EOS
     end

@@ -20,6 +20,7 @@ module Homebrew
       EOS
       switch "--markdown",
              description: "Print as a Markdown list."
+
       max_named 2
     end
   end

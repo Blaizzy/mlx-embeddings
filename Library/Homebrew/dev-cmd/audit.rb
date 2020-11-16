@@ -54,7 +54,7 @@ module Homebrew
                           "make output easy to grep."
       switch "--skip-style",
              description: "Skip running non-RuboCop style checks. Useful if you plan on running "\
-                          "`brew style` separately. Default unless a formula is specified by name"
+                          "`brew style` separately. Enabled by default unless a formula is specified by name."
       switch "-D", "--audit-debug",
              description: "Enable debugging and profiling of audit methods."
       comma_array "--only",

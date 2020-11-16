@@ -17,8 +17,8 @@ module Homebrew
         Display out-of-date brew formulae and the latest version available.
         Also displays whether a pull request has been opened with the URL.
       EOS
-      flag "--limit=",
-           description: "Limit number of package results returned."
+      flag   "--limit=",
+             description: "Limit number of package results returned."
       switch :verbose
       switch :debug
     end
