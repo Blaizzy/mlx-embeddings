@@ -136,7 +136,7 @@ module Homebrew
           switch short, long, description: desc, env: option_to_name(long), method: :on_tail
         end
 
-        instance_eval(&block) if block_given?
+        instance_eval(&block) if block
       end
 
       def switch(*names, description: nil, env: nil, required_for: nil, depends_on: nil, method: :on)

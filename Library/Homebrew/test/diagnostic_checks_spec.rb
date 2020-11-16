@@ -66,7 +66,7 @@ describe Homebrew::Diagnostic::Checks do
 
   specify "#check_user_path_2" do
     ENV["PATH"] = ENV["PATH"].gsub \
-      %r{(?:^|#{File::PATH_SEPARATOR})#{HOMEBREW_PREFIX}/bin}, ""
+      %r{(?:^|#{File::PATH_SEPARATOR})#{HOMEBREW_PREFIX}/bin}o, ""
 
     expect(subject.check_user_path_1).to be nil
     expect(subject.check_user_path_2)

@@ -129,7 +129,7 @@ class LinkageChecker
   private
 
   def dylib_to_dep(dylib)
-    dylib =~ %r{#{Regexp.escape(HOMEBREW_PREFIX)}/(opt|Cellar)/([\w+-.@]+)/}
+    dylib =~ %r{#{Regexp.escape(HOMEBREW_PREFIX)}/(opt|Cellar)/([\w+-.@]+)/}o
     Regexp.last_match(2)
   end
 

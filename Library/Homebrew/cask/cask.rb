@@ -22,7 +22,7 @@ module Cask
     attr_reader :token, :sourcefile_path, :config, :default_config
 
     def self.each(&block)
-      return to_enum unless block_given?
+      return to_enum unless block
 
       Tap.flat_map(&:cask_files).each do |f|
         block.call CaskLoader::FromTapPathLoader.new(f).load(config: nil)

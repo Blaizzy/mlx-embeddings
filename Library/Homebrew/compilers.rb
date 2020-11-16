@@ -56,7 +56,7 @@ class CompilerFailure
   def initialize(name, version, &block)
     @name = name
     @version = Version.parse(version.to_s)
-    instance_eval(&block) if block_given?
+    instance_eval(&block) if block
   end
 
   def fails_with?(compiler)

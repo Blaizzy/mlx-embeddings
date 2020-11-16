@@ -586,7 +586,7 @@ class Tap
   def self.each(&block)
     return unless TAP_DIRECTORY.directory?
 
-    return to_enum unless block_given?
+    return to_enum unless block
 
     TAP_DIRECTORY.subdirs.each do |user|
       user.subdirs.each do |repo|

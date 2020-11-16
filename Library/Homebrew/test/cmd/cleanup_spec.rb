@@ -22,7 +22,7 @@ describe "brew cleanup", :integration_test do
       (HOMEBREW_CACHE/"test").write "test"
 
       expect { brew "cleanup", "--prune=all" }
-        .to output(%r{#{Regexp.escape(HOMEBREW_CACHE)}/test}).to_stdout
+        .to output(%r{#{Regexp.escape(HOMEBREW_CACHE)}/test}o).to_stdout
         .and not_to_output.to_stderr
         .and be_a_success
     end

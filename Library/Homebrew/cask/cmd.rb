@@ -84,7 +84,7 @@ module Cask
 
     def self.parser(&block)
       Homebrew::CLI::Parser.new do
-        if block_given?
+        if block
           instance_eval(&block)
         else
           usage_banner <<~EOS
