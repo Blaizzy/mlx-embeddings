@@ -154,11 +154,51 @@ describe Homebrew::Livecheck do
   end
 
   describe "::preprocess_url" do
-    let(:url) { "https://github.s3.amazonaws.com/downloads/Homebrew/brew/1.0.0.tar.gz" }
+    let(:github_git_url_with_extension) { "https://github.com/Homebrew/brew.git" }
 
-    it "returns the preprocessed URL for livecheck to use" do
-      expect(livecheck.preprocess_url(url))
-        .to eq("https://github.com/Homebrew/brew.git")
+    it "returns the unmodified URL for a GitHub URL ending in .git" do
+      expect(livecheck.preprocess_url(github_git_url_with_extension))
+        .to eq(github_git_url_with_extension)
+    end
+
+    it "returns the Git repository URL for a GitHub URL not ending in .git" do
+      expect(livecheck.preprocess_url("https://github.com/Homebrew/brew"))
+        .to eq(github_git_url_with_extension)
+    end
+
+    it "returns the unmodified URL for a GitHub /releases/latest URL" do
+      expect(livecheck.preprocess_url("https://github.com/Homebrew/brew/releases/latest"))
+        .to eq("https://github.com/Homebrew/brew/releases/latest")
+    end
+
+    it "returns the Git repository URL for a GitHub AWS URL" do
+      expect(livecheck.preprocess_url("https://github.s3.amazonaws.com/downloads/Homebrew/brew/1.0.0.tar.gz"))
+        .to eq(github_git_url_with_extension)
+    end
+
+    it "returns the Git repository URL for a github.com/downloads/... URL" do
+      expect(livecheck.preprocess_url("https://github.com/downloads/Homebrew/brew/1.0.0.tar.gz"))
+        .to eq(github_git_url_with_extension)
+    end
+
+    it "returns the Git repository URL for a GitHub tag archive URL" do
+      expect(livecheck.preprocess_url("https://github.com/Homebrew/brew/archive/1.0.0.tar.gz"))
+        .to eq(github_git_url_with_extension)
+    end
+
+    it "returns the Git repository URL for a GitHub release archive URL" do
+      expect(livecheck.preprocess_url("https://github.com/Homebrew/brew/releases/download/1.0.0/brew-1.0.0.tar.gz"))
+        .to eq(github_git_url_with_extension)
+    end
+
+    it "returns the Git repository URL for a gitlab.com archive URL" do
+      expect(livecheck.preprocess_url("https://gitlab.com/Homebrew/brew/-/archive/1.0.0/brew-1.0.0.tar.gz"))
+        .to eq("https://gitlab.com/Homebrew/brew.git")
+    end
+
+    it "returns the Git repository URL for a self-hosted GitLab archive URL" do
+      expect(livecheck.preprocess_url("https://brew.sh/Homebrew/brew/-/archive/1.0.0/brew-1.0.0.tar.gz"))
+        .to eq("https://brew.sh/Homebrew/brew.git")
     end
   end
 end
