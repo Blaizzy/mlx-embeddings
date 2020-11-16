@@ -516,13 +516,11 @@ class Version
         l += 1
         r += 1
         next
-      elsif a.numeric? && b.numeric?
-        return a <=> b
-      elsif a.numeric?
+      elsif a.numeric? && !b.numeric?
         return 1 if a > NULL_TOKEN
 
         l += 1
-      elsif b.numeric?
+      elsif !a.numeric? && b.numeric?
         return -1 if b > NULL_TOKEN
 
         r += 1

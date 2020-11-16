@@ -197,6 +197,10 @@ Layout/RescueEnsureAlignment:
 Lint/AmbiguousBlockAssociation:
   Enabled: false
 
+Lint/DuplicateBranch:
+  Exclude:
+    - 'Taps/*/*/{Formula,Casks,}/*.rb'
+
 # needed for lazy_object magic
 Naming/MemoizedInstanceVariableName:
   Exclude:

@@ -440,22 +440,14 @@ module Homebrew
         if key == "cellar"
           # Prioritize HOMEBREW_CELLAR over :any over :any_skip_relocation
           cellars = [first, second]
-          if cellars.include?(HOMEBREW_CELLAR)
-            HOMEBREW_CELLAR
-          elsif first.start_with?("/")
-            first
-          elsif second.start_with?("/")
-            second
-          elsif cellars.include?("any")
-            "any"
-          elsif cellars.include?("any_skip_relocation")
-            "any_skip_relocation"
-          else
-            second
-          end
-        else
-          second
+          next HOMEBREW_CELLAR if cellars.include?(HOMEBREW_CELLAR)
+          next first if first.start_with?("/")
+          next second if second.start_with?("/")
+          next "any" if cellars.include?("any")
+          next "any_skip_relocation" if cellars.include?("any_skip_relocation")
         end
+
+        second
       end
     end
 

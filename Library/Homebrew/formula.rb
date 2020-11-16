@@ -1270,10 +1270,8 @@ class Formula
         break
       end
 
-      if current_version
-        []
-      elsif (head_version = latest_head_version) &&
-            !head_version_outdated?(head_version, fetch_head: fetch_head)
+      if current_version ||
+         ((head_version = latest_head_version) && !head_version_outdated?(head_version, fetch_head: fetch_head))
         []
       else
         all_kegs += old_installed_formulae.flat_map(&:installed_kegs)

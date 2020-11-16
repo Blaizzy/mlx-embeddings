@@ -103,14 +103,12 @@ module Homebrew
       # We already attempted to upgrade f as part of the dependency tree of
       # another formula. In that case, don't generate an error, just move on.
       nil
-    rescue CannotInstallFormulaError => e
+    rescue CannotInstallFormulaError, DownloadError => e
       ofail e
     rescue BuildError => e
       e.dump(verbose: args.verbose?)
       puts
       Homebrew.failed = true
-    rescue DownloadError => e
-      ofail e
     ensure
       # restore previous installation state if build failed
       begin
@@ -241,14 +239,12 @@ module Homebrew
         # We already attempted to reinstall f as part of the dependency tree of
         # another formula. In that case, don't generate an error, just move on.
         nil
-      rescue CannotInstallFormulaError => e
+      rescue CannotInstallFormulaError, DownloadError => e
         ofail e
       rescue BuildError => e
         e.dump(verbose: args.verbose?)
         puts
         Homebrew.failed = true
-      rescue DownloadError => e
-        ofail e
       end
     end
 

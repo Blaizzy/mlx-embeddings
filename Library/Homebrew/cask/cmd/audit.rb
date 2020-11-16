@@ -60,13 +60,10 @@ module Cask
         options[:quarantine] = true if options[:quarantine].nil?
 
         casks = args.named.flat_map do |name|
-          if File.exist?(name)
-            name
-          elsif name.count("/") == 1
-            Tap.fetch(name).cask_files
-          else
-            name
-          end
+          next name if File.exist?(name)
+          next Tap.fetch(name).cask_files if name.count("/") == 1
+
+          name
         end
         casks = casks.map { |c| CaskLoader.load(c, config: Config.from_args(args)) }
         casks = Cask.to_a if casks.empty?

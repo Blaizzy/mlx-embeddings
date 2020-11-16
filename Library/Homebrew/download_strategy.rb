@@ -1233,22 +1233,20 @@ class DownloadStrategyDetector
     when %r{^https?://(.+?\.)?googlecode\.com/svn},
          %r{^https?://svn\.},
          %r{^svn://},
+         %r{^svn\+http://},
+         %r{^http://svn\.apache\.org/repos/},
          %r{^https?://(.+?\.)?sourceforge\.net/svnroot/}
       SubversionDownloadStrategy
     when %r{^cvs://}
       CVSDownloadStrategy
     when %r{^hg://},
-         %r{^https?://(.+?\.)?googlecode\.com/hg}
+         %r{^https?://(.+?\.)?googlecode\.com/hg},
+         %r{^https?://(.+?\.)?sourceforge\.net/hgweb/}
       MercurialDownloadStrategy
     when %r{^bzr://}
       BazaarDownloadStrategy
     when %r{^fossil://}
       FossilDownloadStrategy
-    when %r{^svn\+http://},
-         %r{^http://svn\.apache\.org/repos/}
-      SubversionDownloadStrategy
-    when %r{^https?://(.+?\.)?sourceforge\.net/hgweb/}
-      MercurialDownloadStrategy
     else
       CurlDownloadStrategy
     end

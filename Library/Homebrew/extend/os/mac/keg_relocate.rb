@@ -77,7 +77,7 @@ class Keg
         # remove all RPATHs from the file.
         if ENV["HOMEBREW_RELOCATE_METAVARS"] &&
            file.dynamically_linked_libraries.none? { |lib| lib.start_with?("@rpath") }
-          # Note: This could probably be made more efficient by reverse-sorting
+          # NOTE: This could probably be made more efficient by reverse-sorting
           # the RPATHs by offset and calling MachOFile#delete_command
           # with repopulate: false.
           file.rpaths.each { |r| file.delete_rpath(r) }

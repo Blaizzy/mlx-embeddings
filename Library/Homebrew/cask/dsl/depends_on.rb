@@ -64,7 +64,7 @@ module Cask
             MacOSRequirement.new([version.to_sym], comparator: comparator)
           elsif /^\s*(?<comparator><|>|[=<>]=)\s*(?<version>\S+)\s*$/ =~ args.first
             MacOSRequirement.new([version], comparator: comparator)
-          else
+          else # rubocop:disable Lint/DuplicateBranch
             MacOSRequirement.new([args.first], comparator: "==")
           end
         rescue MacOSVersionError => e
