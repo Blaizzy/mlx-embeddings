@@ -110,6 +110,7 @@ Style/HashAsLastArrayItem:
   Exclude:
     - 'Taps/*/*/*.rb'
     - '/**/Formula/*.rb'
+    - '**/Formula/*.rb'
 
 # Enabled now LineLength is lowish.
 Style/IfUnlessModifier:
@@ -168,6 +169,7 @@ Style/DisableCopsWithinSourceCodeDirective:
   Include:
     - 'Taps/*/*/*.rb'
     - '/**/{Formula,Casks}/*.rb'
+    - '**/{Formula,Casks}/*.rb'
 
 # make our hashes consistent
 Layout/HashAlignment:
@@ -179,6 +181,7 @@ Layout/ArgumentAlignment:
   Exclude:
     - 'Taps/*/*/*.rb'
     - '/**/Formula/*.rb'
+    - '**/Formula/*.rb'
 
 # this is a bit less "floaty"
 Layout/CaseIndentation:
@@ -204,6 +207,7 @@ Lint/DuplicateBranch:
   Exclude:
     - 'Taps/*/*/*.rb'
     - '/**/{Formula,Casks}/*.rb'
+    - '**/{Formula,Casks}/*.rb'
 
 # needed for lazy_object magic
 Naming/MemoizedInstanceVariableName:
@@ -216,6 +220,7 @@ Lint/AmbiguousRegexpLiteral:
   Exclude:
     - 'Taps/*/*/*.rb'
     - '/**/Formula/*.rb'
+    - '**/Formula/*.rb'
 
 # useful for metaprogramming in RSpec
 Lint/ConstantDefinitionInBlock:
@@ -227,36 +232,44 @@ Lint/ParenthesesAsGroupedExpression:
   Exclude:
     - 'Taps/*/*/*.rb'
     - '/**/Formula/*.rb'
+    - '**/Formula/*.rb'
 
 # Most metrics don't make sense to apply for casks/formulae/taps.
 Metrics/AbcSize:
   Exclude:
     - 'Taps/**/*'
     - '/**/{Formula,Casks}/*.rb'
+    - '**/{Formula,Casks}/*.rb'
 Metrics/BlockLength:
   Exclude:
     - 'Taps/**/*'
     - '/**/{Formula,Casks}/*.rb'
+    - '**/{Formula,Casks}/*.rb'
 Metrics/ClassLength:
   Exclude:
     - 'Taps/**/*'
     - '/**/{Formula,Casks}/*.rb'
+    - '**/{Formula,Casks}/*.rb'
 Metrics/CyclomaticComplexity:
   Exclude:
     - 'Taps/**/*'
     - '/**/{Formula,Casks}/*.rb'
+    - '**/{Formula,Casks}/*.rb'
 Metrics/MethodLength:
   Exclude:
     - 'Taps/**/*'
     - '/**/{Formula,Casks}/*.rb'
+    - '**/{Formula,Casks}/*.rb'
 Metrics/ModuleLength:
   Exclude:
     - 'Taps/**/*'
     - '/**/{Formula,Casks}/*.rb'
+    - '**/{Formula,Casks}/*.rb'
 Metrics/PerceivedComplexity:
   Exclude:
     - 'Taps/**/*'
     - '/**/{Formula,Casks}/*.rb'
+    - '**/{Formula,Casks}/*.rb'
 
 # allow those that are standard
 # TODO: try to remove some of these
@@ -299,6 +312,7 @@ Sorbet/FalseSigil:
   Exclude:
     - 'Taps/**/*'
     - '/**/{Formula,Casks}/*.rb'
+    - '**/{Formula,Casks}/*.rb'
     - 'Homebrew/test/**/Casks/**/*.rb'
 
 Sorbet/StrictSigil:
@@ -335,6 +349,7 @@ Style/Documentation:
   Exclude:
     - 'Taps/**/*'
     - '/**/{Formula,Casks}/*.rb'
+    - '**/{Formula,Casks}/*.rb'
     - '**/*.rbi'
 
 Style/DocumentationMethod:
@@ -347,6 +362,7 @@ Style/FrozenStringLiteralComment:
   Exclude:
     - 'Taps/*/*/*.rb'
     - '/**/{Formula,Casks}/*.rb'
+    - '**/{Formula,Casks}/*.rb'
     - 'Homebrew/test/**/Casks/**/*.rb'
     - '**/*.rbi'
 
@@ -360,6 +376,7 @@ Style/GuardClause:
   Exclude:
     - 'Taps/*/*/*.rb'
     - '/**/{Formula,Casks}/*.rb'
+    - '**/{Formula,Casks}/*.rb'
 
 # avoid hash rockets where possible
 Style/HashSyntax:
@@ -370,6 +387,7 @@ Style/StringConcatenation:
   Exclude:
     - 'Taps/*/*/*.rb'
     - '/**/{Formula,Casks}/*.rb'
+    - '**/{Formula,Casks}/*.rb'
 
 # ruby style guide favorite
 Style/StringLiterals:
