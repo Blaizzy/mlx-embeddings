@@ -120,6 +120,8 @@ Style/IfUnlessModifier:
 Style/NumericLiterals:
   MinDigits: 7
   Strict: true
+  Exclude:
+    - '**/Brewfile'
 
 # Zero-prefixed octal literals are widely used and understood.
 Style/NumericLiteralPrefix:
@@ -373,6 +375,7 @@ Style/FrozenStringLiteralComment:
     - '**/{Formula,Casks}/*.rb'
     - 'Homebrew/test/**/Casks/**/*.rb'
     - '**/*.rbi'
+    - '**/Brewfile'
 
 # TODO: remove this when possible.
 Style/GlobalVars:
