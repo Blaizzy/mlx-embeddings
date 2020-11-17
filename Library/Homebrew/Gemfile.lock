@@ -95,6 +95,9 @@ GEM
       rspec-support (~> 3.10.0)
     rspec-retry (0.6.2)
       rspec-core (> 3.3)
+    rspec-sorbet (1.7.0)
+      sorbet
+      sorbet-runtime
     rspec-support (3.10.0)
     rspec-wait (0.0.9)
       rspec (>= 3, < 4)
@@ -167,6 +170,7 @@ DEPENDENCIES
   rspec
   rspec-its
   rspec-retry
+  rspec-sorbet
   rspec-wait
   rubocop
   rubocop-performance
