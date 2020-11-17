@@ -78,7 +78,8 @@ RSpec.configure do |config|
     config.default_retry_count = 2
 
     config.around(:each, :needs_network) do |example|
-      example.run_with_retry retry: 3, retry_wait: 3
+      example.metadata[:timeout] ||= 120
+      example.run_with_retry retry: 5, retry_wait: 5
     end
   end
 
