@@ -165,11 +165,6 @@ module Homebrew
       "LGPL-3.0" => ["LGPL-3.0-only", "LGPL-3.0-or-later"],
     }.freeze
 
-    PERMITTED_FORMULA_LICENSE_MISMATCHES = {
-      "cmockery" => "0.1.2",
-      "scw@1"    => "1.20",
-    }.freeze
-
     def audit_license
       if formula.license.present?
         licenses, exceptions = SPDX.parse_license_expression formula.license
@@ -213,7 +208,7 @@ module Homebrew
         return unless github_license
         return if (licenses + ["NOASSERTION"]).include?(github_license)
         return if PERMITTED_LICENSE_MISMATCHES[github_license]&.any? { |license| licenses.include? license }
-        return if PERMITTED_FORMULA_LICENSE_MISMATCHES[formula.name] == formula.version
+        return if tap_audit_exception :permitted_formula_license_mismatches, formula.name
 
         problem "Formula license #{licenses} does not match GitHub license #{Array(github_license)}."
 
@@ -821,6 +816,7 @@ module Homebrew
     end
 
     def tap_audit_exception(list, formula, value = nil)
+      return false if @tap_audit_exceptions.blank?
       return false unless @tap_audit_exceptions.key? list
 
       list = @tap_audit_exceptions[list]

@@ -423,6 +423,23 @@ module Homebrew
           .to eq 'Formula license ["0BSD"] does not match GitHub license ["GPL-3.0"].'
       end
 
+      it "allows a formula-specified license that differes from its GitHub "\
+         "repository for formulae on the mismatched license allowlist" do
+        formula_text = <<~RUBY
+          class Cask < Formula
+            url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
+            head "https://github.com/cask/cask.git"
+            license "0BSD"
+          end
+        RUBY
+        fa = formula_auditor "cask", formula_text, spdx_license_data: spdx_license_data,
+                             online: true, core_tap: true, new_formula: true,
+                             tap_audit_exceptions: { permitted_formula_license_mismatches: ["cask"] }
+
+        fa.audit_license
+        expect(fa.problems).to be_empty
+      end
+
       it "checks online and detects that an array of license does not contain "\
         "what is indicated on its Github repository" do
         formula_text = <<~RUBY
