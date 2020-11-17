@@ -282,7 +282,7 @@ class Formula
   # and is specified to this instance.
   def installed_alias_path
     path = build.source["path"] if build.is_a?(Tab)
-    return unless path&.match?(%r{#{HOMEBREW_TAP_DIR_REGEX}/Aliases})
+    return unless path&.match?(%r{#{HOMEBREW_TAP_DIR_REGEX}/Aliases}o)
     return unless File.symlink?(path)
 
     path
@@ -1384,16 +1384,16 @@ class Formula
   # <pre>on_macos do
   # # Do something Mac-specific
   # end</pre>
-  def on_macos(&_block)
-    raise "No block content defined for on_macos block" unless block_given?
+  def on_macos(&block)
+    raise "No block content defined for on_macos block" unless block
   end
 
   # Block only executed on Linux. No-op on macOS.
   # <pre>on_linux do
   # # Do something Linux-specific
   # end</pre>
-  def on_linux(&_block)
-    raise "No block content defined for on_linux block" unless block_given?
+  def on_linux(&block)
+    raise "No block content defined for on_linux block" unless block
   end
 
   # Standard parameters for cargo builds.
@@ -2118,7 +2118,7 @@ class Formula
   # a block.
   def mkdir(name, &block)
     result = FileUtils.mkdir_p(name)
-    return result unless block_given?
+    return result unless block
 
     FileUtils.chdir(name, &block)
   end
@@ -2458,7 +2458,7 @@ class Formula
     # end</pre>
     def stable(&block)
       @stable ||= SoftwareSpec.new(flags: build_flags)
-      return @stable unless block_given?
+      return @stable unless block
 
       @stable.instance_eval(&block)
     end
@@ -2482,7 +2482,7 @@ class Formula
     # <pre>head "https://hg.is.awesome.but.git.has.won.example.com/", using: :hg</pre>
     def head(val = nil, specs = {}, &block)
       @head ||= HeadSoftwareSpec.new(flags: build_flags)
-      if block_given?
+      if block
         @head.instance_eval(&block)
       elsif val
         @head.url(val, specs)
@@ -2553,16 +2553,16 @@ class Formula
     # <pre>on_macos do
     #   depends_on "mac_only_dep"
     # end</pre>
-    def on_macos(&_block)
-      raise "No block content defined for on_macos block" unless block_given?
+    def on_macos(&block)
+      raise "No block content defined for on_macos block" unless block
     end
 
     # Block only executed on Linux. No-op on macOS.
     # <pre>on_linux do
     #   depends_on "linux_only_dep"
     # end</pre>
-    def on_linux(&_block)
-      raise "No block content defined for on_linux block" unless block_given?
+    def on_linux(&block)
+      raise "No block content defined for on_linux block" unless block
     end
 
     # @!attribute [w] option
@@ -2757,7 +2757,7 @@ class Formula
     # end</pre>
     def livecheck(&block)
       @livecheck ||= Livecheck.new(self)
-      return @livecheck unless block_given?
+      return @livecheck unless block
 
       @livecheckable = true
       @livecheck.instance_eval(&block)

@@ -120,9 +120,9 @@ class Dependency
       @expand_stack.pop
     end
 
-    def action(dependent, dep, &_block)
+    def action(dependent, dep, &block)
       catch(:action) do
-        if block_given?
+        if block
           yield dependent, dep
         elsif dep.optional? || dep.recommended?
           prune unless dependent.build.with?(dep)

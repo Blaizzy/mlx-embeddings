@@ -107,7 +107,7 @@ class SoftwareSpec
   end
 
   def resource(name, klass = Resource, &block)
-    if block_given?
+    if block
       raise DuplicateResourceError, name if resource_defined?(name)
 
       res = klass.new(name, &block)

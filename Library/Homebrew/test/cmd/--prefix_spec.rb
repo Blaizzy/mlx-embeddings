@@ -10,7 +10,7 @@ end
 describe "brew --prefix", :integration_test do
   it "prints a given Formula's prefix" do
     expect { brew "--prefix", testball }
-      .to output(%r{#{HOMEBREW_CELLAR}/testball}).to_stdout
+      .to output(%r{#{HOMEBREW_CELLAR}/testball}o).to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
   end

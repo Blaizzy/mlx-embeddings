@@ -68,7 +68,7 @@ module Cask
         Cmd.parser do
           usage_banner banner
 
-          instance_eval(&block) if block_given?
+          instance_eval(&block) if block
 
           OPTIONS.each do |option|
             send(*option)

@@ -32,7 +32,7 @@ class Resource
     @checksum = nil
     @using = nil
     @patches = []
-    instance_eval(&block) if block_given?
+    instance_eval(&block) if block
   end
 
   def owner=(owner)

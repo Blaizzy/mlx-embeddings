@@ -34,7 +34,7 @@ module Cask
             send(*option)
           end
 
-          instance_eval(&block) if block_given?
+          instance_eval(&block) if block
         end
       end
 

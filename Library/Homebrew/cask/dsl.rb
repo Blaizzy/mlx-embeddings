@@ -125,7 +125,7 @@ module Cask
     def language(*args, default: false, &block)
       if args.empty?
         language_eval
-      elsif block_given?
+      elsif block
         @language_blocks ||= {}
         @language_blocks[args] = block
 
@@ -248,7 +248,7 @@ module Cask
 
     def caveats(*strings, &block)
       @caveats ||= DSL::Caveats.new(cask)
-      if block_given?
+      if block
         @caveats.eval_caveats(&block)
       elsif strings.any?
         strings.each do |string|
