@@ -71,9 +71,6 @@ Homebrew Cask provides a friendly CLI workflow for the administration of macOS a
 
 Commands:
 
-- `--cache`
-  <br>Display the file used to cache a *`cask`*.
-
 - `audit`
   <br>Check *`cask`* for Homebrew coding style violations.
 
@@ -82,9 +79,6 @@ Commands:
 
 - `create`
   <br>Creates the given *`cask`* and opens it in an editor.
-
-- `doctor`
-  <br>Checks for configuration issues.
 
 - `edit`
   <br>Open the given *`cask`* for editing.
@@ -95,32 +89,17 @@ Commands:
 - `help`
   <br>Print help for `cask` commands.
 
-- `home`
-  <br>Opens the homepage of the given *`cask`*.
-
 - `info`
   <br>Displays information about the given *`cask`*.
 
 - `install`
   <br>Installs the given *`cask`*.
 
-- `list`
-  <br>Lists installed casks or the casks provided in the arguments.
-
-- `outdated`
-  <br>List the outdated installed casks.
-
-- `reinstall`
-  <br>Reinstalls the given *`cask`*.
-
 - `style`
   <br>Checks style of the given *`cask`* using RuboCop.
 
 - `uninstall`
   <br>Uninstalls the given *`cask`*.
-
-- `upgrade`
-  <br>Upgrades all outdated casks or the specified casks.
 
 - `zap`
   <br>Zaps all files associated with the given *`cask`*.
