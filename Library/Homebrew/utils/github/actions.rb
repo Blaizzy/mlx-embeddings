@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "utils/tty"
@@ -8,6 +8,9 @@ module GitHub
   #
   # @api private
   module Actions
+    extend T::Sig
+
+    sig { params(string: String).returns(String) }
     def self.escape(string)
       # See https://github.community/t/set-output-truncates-multiline-strings/16852/3.
       string.gsub("%", "%25")
@@ -19,6 +22,7 @@ module GitHub
     class Annotation
       extend T::Sig
 
+      sig { params(path: T.any(String, Pathname)).returns(T.nilable(Pathname)) }
       def self.path_relative_to_workspace(path)
         workspace = Pathname(ENV.fetch("GITHUB_WORKSPACE", Dir.pwd)).realpath
         path = Pathname(path)
@@ -27,6 +31,12 @@ module GitHub
         path.realpath.relative_path_from(workspace)
       end
 
+      sig do
+        params(
+          type: Symbol, message: String,
+          file: T.nilable(T.any(String, Pathname)), line: T.nilable(Integer), column: T.nilable(Integer)
+        ).void
+      end
       def initialize(type, message, file: nil, line: nil, column: nil)
         raise ArgumentError, "Unsupported type: #{type.inspect}" unless [:warning, :error].include?(type)
 
@@ -39,17 +49,23 @@ module GitHub
 
       sig { returns(String) }
       def to_s
-        file = "file=#{Actions.escape(@file.to_s)}" if @file
-        line = "line=#{@line}" if @line
-        column = "col=#{@column}" if @column
+        metadata = @type.to_s
 
-        metadata = [*file, *line, *column].join(",").presence&.prepend(" ")
+        if @file
+          metadata << " file=#{Actions.escape(@file.to_s)}"
 
-        "::#{@type}#{metadata}::#{Actions.escape(@message)}"
+          if @line
+            metadata << ",line=#{@line}"
+            metadata << ",col=#{@column}" if @column
+          end
+        end
+
+        "::#{metadata}::#{Actions.escape(@message)}"
       end
 
       # An annotation is only relevant if the corresponding `file` is relative to
       # the `GITHUB_WORKSPACE` directory or if no `file` is specified.
+      sig { returns(T::Boolean) }
       def relevant?
         return true if @file.nil?
 
