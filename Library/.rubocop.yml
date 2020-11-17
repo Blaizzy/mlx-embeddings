@@ -163,10 +163,6 @@ Performance/CaseWhenSplat:
 Performance/Caller:
   Enabled: false
 
-# Enable when https://github.com/Homebrew/homebrew-core/pull/64983 is merged.
-Performance/ConstantRegexp:
-  Enabled: false
-
 # Makes code less readable for minor performance increases.
 Performance/MethodObjectAsBlock:
   Enabled: false
