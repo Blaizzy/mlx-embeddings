@@ -103,8 +103,18 @@ module Hardware
 
       def arm_family
         case sysctl_int("hw.cpufamily")
+        when 0x2c91a47e             # ARMv8.0-A (Typhoon)
+          :arm_typhoon
+        when 0x92fb37c8             # ARMv8.0-A (Twister)
+          :arm_twister
+        when 0x67ceee93             # ARMv8.1-A (Hurricane, Zephyr)
+          :arm_hurricane_zephyr
+        when 0xe81e7ef6             # ARMv8.2-A (Monsoon, Mistral)
+          :arm_monsoon_mistral
         when 0x07d34b9f             # ARMv8.3-A (Vortex, Tempest)
           :arm_vortex_tempest
+        when 0x462504d2             # ARMv8.4-A (Lightning, Thunder)
+          :arm_lightning_thunder
         when 0x573b5eec, 0x1b588bb3 # ARMv8.4-A (Firestorm, Icestorm)
           :arm_firestorm_icestorm
         else
@@ -122,8 +132,8 @@ module Hardware
           :penryn
         when 0x6b5a4cd2 # Nehalem
           :nehalem
-        when 0x573b5eec # Arrandale
-          :arrandale
+        when 0x573b5eec # Westmere
+          :westmere
         when 0x5490b78c # Sandy Bridge
           :sandybridge
         when 0x1f65e835 # Ivy Bridge

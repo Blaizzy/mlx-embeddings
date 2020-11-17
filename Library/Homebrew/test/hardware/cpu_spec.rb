@@ -23,8 +23,12 @@ describe Hardware::CPU do
     let(:cpu_families) {
       [
         :arm_firestorm_icestorm,
+        :arm_hurricane_zephyr,
+        :arm_lightning_thunder,
+        :arm_monsoon_mistral,
+        :arm_twister,
+        :arm_typhoon,
         :arm_vortex_tempest,
-        :arrandale,
         :atom,
         :broadwell,
         :core,
