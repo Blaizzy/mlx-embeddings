@@ -75,9 +75,15 @@ class MacOSRequirement < Requirement
 
   sig { returns(String) }
   def display_s
-    return "macOS" unless version_specified?
-
-    "macOS #{@comparator} #{@version}"
+    if version_specified?
+      if @version.respond_to?(:to_ary)
+        "macOS #{@comparator} #{version.join(" / ")}"
+      else
+        "macOS #{@comparator} #{@version}"
+      end
+    else
+      "macOS"
+    end
   end
 
   def to_json(*args)
