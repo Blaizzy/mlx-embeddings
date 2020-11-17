@@ -47,6 +47,7 @@ module UnpackStrategy
       Tar, # Needs to be before Bzip2/Gzip/Xz/Lzma.
       Pax,
       Gzip,
+      Dmg, # Needs to be before Bzip2/Xz/Lzma.
       Lzma,
       Xz,
       Lzip,
@@ -66,7 +67,6 @@ module UnpackStrategy
       SelfExtractingExecutable, # Needs to be before `Cab`.
       Cab,
       Executable,
-      Dmg, # Needs to be before `Bzip2`.
       Bzip2,
       Fossil,
       Bazaar,
