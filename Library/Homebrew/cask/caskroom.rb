@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "utils/user"
@@ -10,13 +10,13 @@ module Cask
   module Caskroom
     extend T::Sig
 
-    module_function
-
-    def path
+    sig { returns(Pathname) }
+    def self.path
       @path ||= HOMEBREW_PREFIX.join("Caskroom")
     end
 
-    def ensure_caskroom_exists
+    sig { void }
+    def self.ensure_caskroom_exists
       return if path.exist?
 
       sudo = !path.parent.writable?
@@ -32,8 +32,8 @@ module Cask
       SystemCommand.run("/usr/bin/chgrp", args: ["admin", path], sudo: sudo)
     end
 
-    sig { params(config: Config).returns(T::Array[Cask]) }
-    def casks(config: nil)
+    sig { params(config: T.nilable(Config)).returns(T::Array[Cask]) }
+    def self.casks(config: nil)
       return [] unless path.exist?
 
       Pathname.glob(path.join("*")).sort.select(&:directory?).map do |path|
