@@ -100,14 +100,12 @@ module Homebrew
         to_formulae_to_casks(method: :resolve, only: only)
       end
 
-      # Convert named arguments to {Tap}, {Formula} or {Cask} objects.
+      # Convert named arguments to {Formula} or {Cask} objects.
       # If both a formula and cask exist with the same name, returns the
       # formula and prints a warning unless `only` is specified.
       def to_objects(only: nil, method: nil)
         @to_objects ||= {}
         @to_objects[only] ||= downcased_unique_named.flat_map do |name|
-          next Tap.fetch(name) if only == :tap || (only.nil? && name.count("/") == 1 && !name.start_with?("./", "/"))
-
           load_formula_or_cask(name, only: only, method: method)
         end.uniq.freeze
       end
