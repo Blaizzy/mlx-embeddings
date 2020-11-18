@@ -23,13 +23,13 @@ module Homebrew
             There are three versions of MacTeX.
 
             Full installation:
-              brew cask install mactex
+              brew install --cask mactex
 
             Full installation without bundled applications:
-              brew cask install mactex-no-gui
+              brew install --cask mactex-no-gui
 
             Minimal installation:
-              brew cask install basictex
+              brew install --cask basictex
           EOS
         else
           generic_disallowed_reason(name)
@@ -47,7 +47,7 @@ module Homebrew
       def suggest_command(name, command)
         suggestion = <<~EOS
           Found a cask named "#{name}" instead. Try
-            brew cask #{command} #{name}
+            brew #{command} --cask #{name}
 
         EOS
         case command

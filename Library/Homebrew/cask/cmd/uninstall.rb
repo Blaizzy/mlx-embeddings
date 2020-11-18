@@ -64,7 +64,7 @@ module Cask
 
           puts <<~EOS
             #{cask} #{versions.to_sentence} #{"is".pluralize(versions.count)} still installed.
-            Remove #{(versions.count == 1) ? "it" : "them all"} with `brew cask uninstall --force #{cask}`.
+            Remove #{(versions.count == 1) ? "it" : "them all"} with `brew uninstall --cask --force #{cask}`.
           EOS
         end
       end

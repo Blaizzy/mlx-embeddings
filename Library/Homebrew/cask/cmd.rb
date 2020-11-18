@@ -54,13 +54,23 @@ module Cask
     }.freeze
 
     DEPRECATED_COMMANDS = {
-      Cmd::Cache     => "brew --cache --cask",
+      Cmd::Cache     => "brew --cache [--cask]",
+      Cmd::Audit     => "brew audit [--cask]",
+      Cmd::Cat       => "brew cat [--cask]",
+      Cmd::Create    => "brew create --cask --set-name <name> <url>",
       Cmd::Doctor    => "brew doctor --verbose",
+      Cmd::Edit      => "brew edit [--cask]",
+      Cmd::Fetch     => "brew fetch [--cask]",
       Cmd::Home      => "brew home",
-      Cmd::List      => "brew list --cask",
-      Cmd::Outdated  => "brew outdated --cask",
-      Cmd::Reinstall => "brew reinstall",
-      Cmd::Upgrade   => "brew upgrade --cask",
+      Cmd::Info      => "brew info [--cask]",
+      Cmd::Install   => "brew install [--cask]",
+      Cmd::List      => "brew list [--cask]",
+      Cmd::Outdated  => "brew outdated [--cask]",
+      Cmd::Reinstall => "brew reinstall [--cask]",
+      Cmd::Style     => "brew style",
+      Cmd::Uninstall => "brew uninstall [--cask]",
+      Cmd::Upgrade   => "brew upgrade [--cask]",
+      Cmd::Zap       => "brew upgrade --zap [--cask]",
     }.freeze
 
     sig { returns(String) }

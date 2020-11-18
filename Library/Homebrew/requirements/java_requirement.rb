@@ -75,7 +75,7 @@ class JavaRequirement < Requirement
       title_string = " #{title}" if title
       <<~EOS
         Install#{title_string} with Homebrew Cask:
-          brew cask install #{token}
+          brew install --cask #{token}
       EOS
     end
   end

@@ -1,7 +1,8 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "cli/parser"
+require "formula"
 
 module Homebrew
   extend T::Sig
@@ -12,14 +13,15 @@ module Homebrew
   def home_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `home` [<formula>]
+        `home` [<formula>|<cask>]
 
-        Open <formula>'s homepage in a browser, or open Homebrew's own homepage
-        if no formula is provided.
+        Open a <formula> or <cask>'s homepage in a browser, or open
+        Homebrew's own homepage if no argument is provided.
       EOS
     end
   end
 
+  sig { void }
   def home
     args = home_args.parse
 
