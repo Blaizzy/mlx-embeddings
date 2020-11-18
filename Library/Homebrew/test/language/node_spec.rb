@@ -4,6 +4,8 @@
 require "language/node"
 
 describe Language::Node do
+  let(:npm_pack_cmd) { "npm pack --ignore-scripts" }
+
   describe "#setup_npm_environment" do
     it "calls prepend_path when node formula exists only during the first call" do
       node = formula "node" do
@@ -25,22 +27,21 @@ describe Language::Node do
   end
 
   describe "#std_pack_for_installation" do
-    npm_pack_cmd = "npm pack --ignore-scripts"
-
     it "removes prepare and prepack scripts" do
-      path = Pathname("package.json")
-      path.atomic_write("{\"scripts\":{\"prepare\": \"ls\", \"prepack\": \"ls\", \"test\": \"ls\"}}")
-      allow(Utils).to receive(:popen_read).with(npm_pack_cmd).and_return(`echo pack.tgz`)
-      subject.pack_for_installation
-      expect(path.read).not_to include("prepare")
-      expect(path.read).not_to include("prepack")
-      expect(path.read).to include("test")
+      mktmpdir.cd do
+        path = Pathname("package.json")
+        path.atomic_write("{\"scripts\":{\"prepare\": \"ls\", \"prepack\": \"ls\", \"test\": \"ls\"}}")
+        allow(Utils).to receive(:popen_read).with(npm_pack_cmd).and_return(`echo pack.tgz`)
+        subject.pack_for_installation
+        expect(path.read).not_to include("prepare")
+        expect(path.read).not_to include("prepack")
+        expect(path.read).to include("test")
+      end
     end
   end
 
   describe "#std_npm_install_args" do
     npm_install_arg = Pathname("libexec")
-    npm_pack_cmd = "npm pack --ignore-scripts"
 
     it "raises error with non zero exitstatus" do
       allow(Utils).to receive(:popen_read).with(npm_pack_cmd).and_return(`false`)
