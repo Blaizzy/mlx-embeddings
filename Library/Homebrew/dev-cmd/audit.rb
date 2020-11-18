@@ -943,7 +943,8 @@ module Homebrew
 
       if current_version == newest_committed_version &&
          current_url == newest_committed_url &&
-         current_checksum != newest_committed_checksum
+         current_checksum != newest_committed_checksum &&
+         current_checksum.present? && newest_committed_checksum.present?
         problem(
           "stable sha256 changed without the url/version also changing; " \
           "please create an issue upstream to rule out malicious " \

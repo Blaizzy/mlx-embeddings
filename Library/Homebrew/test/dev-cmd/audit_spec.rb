@@ -717,6 +717,19 @@ module Homebrew
 
           it { is_expected.to be_nil }
         end
+
+        context "can be removed when switching schemes" do
+          before do
+            formula_gsub_origin_commit(
+              'url "https://brew.sh/foo-1.0.tar.gz"',
+              'url "https://foo.com/brew/bar.git", tag: "1.0", revision: "f5e00e485e7aa4c5baa20355b27e3b84a6912790"',
+            )
+            formula_gsub_origin_commit('sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"',
+                                       "")
+          end
+
+          it { is_expected.to be_nil }
+        end
       end
 
       context "revisions" do
