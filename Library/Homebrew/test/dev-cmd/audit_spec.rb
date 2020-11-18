@@ -423,7 +423,7 @@ module Homebrew
           .to eq 'Formula license ["0BSD"] does not match GitHub license ["GPL-3.0"].'
       end
 
-      it "allows a formula-specified license that differes from its GitHub "\
+      it "allows a formula-specified license that differs from its GitHub "\
          "repository for formulae on the mismatched license allowlist" do
         formula_text = <<~RUBY
           class Cask < Formula
