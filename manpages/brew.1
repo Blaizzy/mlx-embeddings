@@ -1884,6 +1884,18 @@ Don\'t fail if \fIformula\fR is not a PyPI package\.
 \fB\-\-version\fR
 Use the specified \fIversion\fR when finding resources for \fIformula\fR\. If no version is specified, the current version for \fIformula\fR will be used\.
 .
+.TP
+\fB\-\-package\-name\fR
+Use the specified \fIpackage\-name\fR when finding resources for \fIformula\fR\. If no package name is specified, it will be inferred from the formula\'s stable URL\.
+.
+.TP
+\fB\-\-extra\-packages\fR
+Include these additional packages when finding resources\.
+.
+.TP
+\fB\-\-exclude\-packages\fR
+Exclude these packages when finding resources\.
+.
 .SS "\fBupdate\-test\fR [\fIoptions\fR]"
 Run a test of \fBbrew update\fR with a new repository clone\. If no options are passed, use \fBorigin/master\fR as the start commit\.
 .

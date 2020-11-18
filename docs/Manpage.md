@@ -1352,6 +1352,12 @@ Update versions for PyPI resource blocks in *`formula`*.
   Don't fail if *`formula`* is not a PyPI package.
 * `--version`:
   Use the specified *`version`* when finding resources for *`formula`*. If no version is specified, the current version for *`formula`* will be used.
+* `--package-name`:
+  Use the specified *`package-name`* when finding resources for *`formula`*. If no package name is specified, it will be inferred from the formula's stable URL.
+* `--extra-packages`:
+  Include these additional packages when finding resources.
+* `--exclude-packages`:
+  Exclude these packages when finding resources.
 
 ### `update-test` [*`options`*]
 
