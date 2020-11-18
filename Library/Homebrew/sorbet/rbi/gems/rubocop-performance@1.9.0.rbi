@@ -17,7 +17,7 @@ class RuboCop::Cop::Performance::AncestorsInclude < ::RuboCop::Cop::Base
   include(::RuboCop::Cop::RangeHelp)
   extend(::RuboCop::Cop::AutoCorrector)
 
-  def ancestors_include_candidate?(node = T.unsafe(nil)); end
+  def ancestors_include_candidate?(param0 = T.unsafe(nil)); end
   def on_send(node); end
 
   private
@@ -27,10 +27,32 @@ end
 
 RuboCop::Cop::Performance::AncestorsInclude::MSG = T.let(T.unsafe(nil), String)
 
+RuboCop::Cop::Performance::AncestorsInclude::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
+class RuboCop::Cop::Performance::ArraySemiInfiniteRangeSlice < ::RuboCop::Cop::Base
+  include(::RuboCop::Cop::RangeHelp)
+  extend(::RuboCop::Cop::AutoCorrector)
+  extend(::RuboCop::Cop::TargetRubyVersion)
+
+  def endless_range?(param0 = T.unsafe(nil)); end
+  def endless_range_slice?(param0 = T.unsafe(nil)); end
+  def on_send(node); end
+
+  private
+
+  def correction(receiver, range_node); end
+end
+
+RuboCop::Cop::Performance::ArraySemiInfiniteRangeSlice::MSG = T.let(T.unsafe(nil), String)
+
+RuboCop::Cop::Performance::ArraySemiInfiniteRangeSlice::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Set)
+
+RuboCop::Cop::Performance::ArraySemiInfiniteRangeSlice::SLICE_METHODS = T.let(T.unsafe(nil), Set)
+
 class RuboCop::Cop::Performance::BigDecimalWithNumericArgument < ::RuboCop::Cop::Base
   extend(::RuboCop::Cop::AutoCorrector)
 
-  def big_decimal_with_numeric_argument?(node = T.unsafe(nil)); end
+  def big_decimal_with_numeric_argument?(param0 = T.unsafe(nil)); end
   def on_send(node); end
 
   private
@@ -40,12 +62,14 @@ end
 
 RuboCop::Cop::Performance::BigDecimalWithNumericArgument::MSG = T.let(T.unsafe(nil), String)
 
+RuboCop::Cop::Performance::BigDecimalWithNumericArgument::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 class RuboCop::Cop::Performance::BindCall < ::RuboCop::Cop::Base
   include(::RuboCop::Cop::RangeHelp)
   extend(::RuboCop::Cop::AutoCorrector)
   extend(::RuboCop::Cop::TargetRubyVersion)
 
-  def bind_with_call_method?(node = T.unsafe(nil)); end
+  def bind_with_call_method?(param0 = T.unsafe(nil)); end
   def on_send(node); end
 
   private
@@ -57,20 +81,34 @@ end
 
 RuboCop::Cop::Performance::BindCall::MSG = T.let(T.unsafe(nil), String)
 
-class RuboCop::Cop::Performance::Caller < ::RuboCop::Cop::Base
-  def caller_with_scope_method?(node = T.unsafe(nil)); end
+RuboCop::Cop::Performance::BindCall::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
+class RuboCop::Cop::Performance::BlockGivenWithExplicitBlock < ::RuboCop::Cop::Base
+  extend(::RuboCop::Cop::AutoCorrector)
+
   def on_send(node); end
-  def slow_caller?(node = T.unsafe(nil)); end
+  def reassigns_block_arg?(param0 = T.unsafe(nil), param1); end
+end
+
+RuboCop::Cop::Performance::BlockGivenWithExplicitBlock::MSG = T.let(T.unsafe(nil), String)
+
+RuboCop::Cop::Performance::BlockGivenWithExplicitBlock::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
+class RuboCop::Cop::Performance::Caller < ::RuboCop::Cop::Base
+  extend(::RuboCop::Cop::AutoCorrector)
+
+  def caller_with_scope_method?(param0 = T.unsafe(nil)); end
+  def on_send(node); end
+  def slow_caller?(param0 = T.unsafe(nil)); end
 
   private
 
   def int_value(node); end
-  def message(node); end
 end
 
-RuboCop::Cop::Performance::Caller::MSG_BRACE = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Performance::Caller::MSG = T.let(T.unsafe(nil), String)
 
-RuboCop::Cop::Performance::Caller::MSG_FIRST = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Performance::Caller::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Performance::CaseWhenSplat < ::RuboCop::Cop::Base
   include(::RuboCop::Cop::Alignment)
@@ -103,9 +141,9 @@ RuboCop::Cop::Performance::CaseWhenSplat::MSG = T.let(T.unsafe(nil), String)
 class RuboCop::Cop::Performance::Casecmp < ::RuboCop::Cop::Base
   extend(::RuboCop::Cop::AutoCorrector)
 
-  def downcase_downcase(node = T.unsafe(nil)); end
-  def downcase_eq(node = T.unsafe(nil)); end
-  def eq_downcase(node = T.unsafe(nil)); end
+  def downcase_downcase(param0 = T.unsafe(nil)); end
+  def downcase_eq(param0 = T.unsafe(nil)); end
+  def eq_downcase(param0 = T.unsafe(nil)); end
   def on_send(node); end
 
   private
@@ -119,10 +157,12 @@ RuboCop::Cop::Performance::Casecmp::CASE_METHODS = T.let(T.unsafe(nil), Array)
 
 RuboCop::Cop::Performance::Casecmp::MSG = T.let(T.unsafe(nil), String)
 
+RuboCop::Cop::Performance::Casecmp::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 class RuboCop::Cop::Performance::ChainArrayAllocation < ::RuboCop::Cop::Base
   include(::RuboCop::Cop::RangeHelp)
 
-  def flat_map_candidate?(node = T.unsafe(nil)); end
+  def flat_map_candidate?(param0 = T.unsafe(nil)); end
   def on_send(node); end
 end
 
@@ -137,8 +177,8 @@ RuboCop::Cop::Performance::ChainArrayAllocation::RETURNS_NEW_ARRAY_WHEN_NO_BLOCK
 RuboCop::Cop::Performance::ChainArrayAllocation::RETURN_NEW_ARRAY_WHEN_ARGS = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Performance::CollectionLiteralInLoop < ::RuboCop::Cop::Base
-  def enumerable_loop?(node = T.unsafe(nil)); end
-  def kernel_loop?(node = T.unsafe(nil)); end
+  def enumerable_loop?(param0 = T.unsafe(nil)); end
+  def kernel_loop?(param0 = T.unsafe(nil)); end
   def on_send(node); end
 
   private
@@ -174,9 +214,9 @@ class RuboCop::Cop::Performance::CompareWithBlock < ::RuboCop::Cop::Base
   include(::RuboCop::Cop::RangeHelp)
   extend(::RuboCop::Cop::AutoCorrector)
 
-  def compare?(node = T.unsafe(nil)); end
+  def compare?(param0 = T.unsafe(nil)); end
   def on_block(node); end
-  def replaceable_body?(node = T.unsafe(nil), param1, param2); end
+  def replaceable_body?(param0 = T.unsafe(nil), param1, param2); end
 
   private
 
@@ -187,11 +227,25 @@ end
 
 RuboCop::Cop::Performance::CompareWithBlock::MSG = T.let(T.unsafe(nil), String)
 
+class RuboCop::Cop::Performance::ConstantRegexp < ::RuboCop::Cop::Base
+  extend(::RuboCop::Cop::AutoCorrector)
+
+  def on_regexp(node); end
+  def regexp_escape?(param0 = T.unsafe(nil)); end
+
+  private
+
+  def include_interpolated_const?(node); end
+  def within_const_assignment?(node); end
+end
+
+RuboCop::Cop::Performance::ConstantRegexp::MSG = T.let(T.unsafe(nil), String)
+
 class RuboCop::Cop::Performance::Count < ::RuboCop::Cop::Base
   include(::RuboCop::Cop::RangeHelp)
   extend(::RuboCop::Cop::AutoCorrector)
 
-  def count_candidate?(node = T.unsafe(nil)); end
+  def count_candidate?(param0 = T.unsafe(nil)); end
   def on_send(node); end
 
   private
@@ -203,12 +257,14 @@ end
 
 RuboCop::Cop::Performance::Count::MSG = T.let(T.unsafe(nil), String)
 
+RuboCop::Cop::Performance::Count::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 class RuboCop::Cop::Performance::DeletePrefix < ::RuboCop::Cop::Base
   include(::RuboCop::Cop::RegexpMetacharacter)
   extend(::RuboCop::Cop::AutoCorrector)
   extend(::RuboCop::Cop::TargetRubyVersion)
 
-  def delete_prefix_candidate?(node = T.unsafe(nil)); end
+  def delete_prefix_candidate?(param0 = T.unsafe(nil)); end
   def on_send(node); end
 end
 
@@ -216,12 +272,14 @@ RuboCop::Cop::Performance::DeletePrefix::MSG = T.let(T.unsafe(nil), String)
 
 RuboCop::Cop::Performance::DeletePrefix::PREFERRED_METHODS = T.let(T.unsafe(nil), Hash)
 
+RuboCop::Cop::Performance::DeletePrefix::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 class RuboCop::Cop::Performance::DeleteSuffix < ::RuboCop::Cop::Base
   include(::RuboCop::Cop::RegexpMetacharacter)
   extend(::RuboCop::Cop::AutoCorrector)
   extend(::RuboCop::Cop::TargetRubyVersion)
 
-  def delete_suffix_candidate?(node = T.unsafe(nil)); end
+  def delete_suffix_candidate?(param0 = T.unsafe(nil)); end
   def on_send(node); end
 end
 
@@ -229,10 +287,12 @@ RuboCop::Cop::Performance::DeleteSuffix::MSG = T.let(T.unsafe(nil), String)
 
 RuboCop::Cop::Performance::DeleteSuffix::PREFERRED_METHODS = T.let(T.unsafe(nil), Hash)
 
+RuboCop::Cop::Performance::DeleteSuffix::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 class RuboCop::Cop::Performance::Detect < ::RuboCop::Cop::Base
   extend(::RuboCop::Cop::AutoCorrector)
 
-  def detect_candidate?(node = T.unsafe(nil)); end
+  def detect_candidate?(param0 = T.unsafe(nil)); end
   def on_send(node); end
 
   private
@@ -254,14 +314,16 @@ RuboCop::Cop::Performance::Detect::INDEX_REVERSE_MSG = T.let(T.unsafe(nil), Stri
 
 RuboCop::Cop::Performance::Detect::MSG = T.let(T.unsafe(nil), String)
 
+RuboCop::Cop::Performance::Detect::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 RuboCop::Cop::Performance::Detect::REVERSE_MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Performance::DoubleStartEndWith < ::RuboCop::Cop::Base
   extend(::RuboCop::Cop::AutoCorrector)
 
-  def check_with_active_support_aliases(node = T.unsafe(nil)); end
+  def check_with_active_support_aliases(param0 = T.unsafe(nil)); end
   def on_or(node); end
-  def two_start_end_with_calls(node = T.unsafe(nil)); end
+  def two_start_end_with_calls(param0 = T.unsafe(nil)); end
 
   private
 
@@ -280,13 +342,15 @@ class RuboCop::Cop::Performance::EndWith < ::RuboCop::Cop::Base
 
   def on_match_with_lvasgn(node); end
   def on_send(node); end
-  def redundant_regex?(node = T.unsafe(nil)); end
+  def redundant_regex?(param0 = T.unsafe(nil)); end
 end
 
 RuboCop::Cop::Performance::EndWith::MSG = T.let(T.unsafe(nil), String)
 
+RuboCop::Cop::Performance::EndWith::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 class RuboCop::Cop::Performance::FixedSize < ::RuboCop::Cop::Base
-  def counter(node = T.unsafe(nil)); end
+  def counter(param0 = T.unsafe(nil)); end
   def on_send(node); end
 
   private
@@ -301,11 +365,13 @@ end
 
 RuboCop::Cop::Performance::FixedSize::MSG = T.let(T.unsafe(nil), String)
 
+RuboCop::Cop::Performance::FixedSize::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 class RuboCop::Cop::Performance::FlatMap < ::RuboCop::Cop::Base
   include(::RuboCop::Cop::RangeHelp)
   extend(::RuboCop::Cop::AutoCorrector)
 
-  def flat_map_candidate?(node = T.unsafe(nil)); end
+  def flat_map_candidate?(param0 = T.unsafe(nil)); end
   def on_send(node); end
 
   private
@@ -320,10 +386,12 @@ RuboCop::Cop::Performance::FlatMap::FLATTEN_MULTIPLE_LEVELS = T.let(T.unsafe(nil
 
 RuboCop::Cop::Performance::FlatMap::MSG = T.let(T.unsafe(nil), String)
 
+RuboCop::Cop::Performance::FlatMap::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 class RuboCop::Cop::Performance::InefficientHashSearch < ::RuboCop::Cop::Base
   extend(::RuboCop::Cop::AutoCorrector)
 
-  def inefficient_include?(node = T.unsafe(nil)); end
+  def inefficient_include?(param0 = T.unsafe(nil)); end
   def on_send(node); end
 
   private
@@ -336,13 +404,15 @@ class RuboCop::Cop::Performance::InefficientHashSearch < ::RuboCop::Cop::Base
   def use_long_method; end
 end
 
+RuboCop::Cop::Performance::InefficientHashSearch::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 class RuboCop::Cop::Performance::IoReadlines < ::RuboCop::Cop::Base
   include(::RuboCop::Cop::RangeHelp)
   extend(::RuboCop::Cop::AutoCorrector)
 
   def on_send(node); end
-  def readlines_on_class?(node = T.unsafe(nil)); end
-  def readlines_on_instance?(node = T.unsafe(nil)); end
+  def readlines_on_class?(param0 = T.unsafe(nil)); end
+  def readlines_on_instance?(param0 = T.unsafe(nil)); end
 
   private
 
@@ -351,36 +421,46 @@ class RuboCop::Cop::Performance::IoReadlines < ::RuboCop::Cop::Base
   def build_call_args(call_args_node); end
   def build_good_method(enumerable_call); end
   def correction_range(enumerable_call, readlines_call); end
-  def enumerable_method?(node); end
   def offense_range(enumerable_call, readlines_call); end
 end
 
-RuboCop::Cop::Performance::IoReadlines::ENUMERABLE_METHODS = T.let(T.unsafe(nil), Array)
-
 RuboCop::Cop::Performance::IoReadlines::MSG = T.let(T.unsafe(nil), String)
+
+RuboCop::Cop::Performance::IoReadlines::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
+class RuboCop::Cop::Performance::MethodObjectAsBlock < ::RuboCop::Cop::Base
+  def method_object_as_argument?(param0 = T.unsafe(nil)); end
+  def on_block_pass(node); end
+end
+
+RuboCop::Cop::Performance::MethodObjectAsBlock::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Performance::OpenStruct < ::RuboCop::Cop::Base
   def on_send(node); end
-  def open_struct(node = T.unsafe(nil)); end
+  def open_struct(param0 = T.unsafe(nil)); end
 end
 
 RuboCop::Cop::Performance::OpenStruct::MSG = T.let(T.unsafe(nil), String)
+
+RuboCop::Cop::Performance::OpenStruct::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Performance::RangeInclude < ::RuboCop::Cop::Base
   extend(::RuboCop::Cop::AutoCorrector)
 
   def on_send(node); end
-  def range_include(node = T.unsafe(nil)); end
+  def range_include(param0 = T.unsafe(nil)); end
 end
 
 RuboCop::Cop::Performance::RangeInclude::MSG = T.let(T.unsafe(nil), String)
 
+RuboCop::Cop::Performance::RangeInclude::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 class RuboCop::Cop::Performance::RedundantBlockCall < ::RuboCop::Cop::Base
   extend(::RuboCop::Cop::AutoCorrector)
 
-  def blockarg_assigned?(node0, param1); end
-  def blockarg_calls(node0, param1); end
-  def blockarg_def(node = T.unsafe(nil)); end
+  def blockarg_assigned?(param0, param1); end
+  def blockarg_calls(param0, param1); end
+  def blockarg_def(param0 = T.unsafe(nil)); end
   def on_def(node); end
 
   private
@@ -403,9 +483,9 @@ RuboCop::Cop::Performance::RedundantBlockCall::YIELD = T.let(T.unsafe(nil), Stri
 class RuboCop::Cop::Performance::RedundantMatch < ::RuboCop::Cop::Base
   extend(::RuboCop::Cop::AutoCorrector)
 
-  def match_call?(node = T.unsafe(nil)); end
+  def match_call?(param0 = T.unsafe(nil)); end
   def on_send(node); end
-  def only_truthiness_matters?(node = T.unsafe(nil)); end
+  def only_truthiness_matters?(param0 = T.unsafe(nil)); end
 
   private
 
@@ -414,12 +494,14 @@ end
 
 RuboCop::Cop::Performance::RedundantMatch::MSG = T.let(T.unsafe(nil), String)
 
+RuboCop::Cop::Performance::RedundantMatch::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 class RuboCop::Cop::Performance::RedundantMerge < ::RuboCop::Cop::Base
   extend(::RuboCop::Cop::AutoCorrector)
 
-  def modifier_flow_control?(node = T.unsafe(nil)); end
+  def modifier_flow_control?(param0 = T.unsafe(nil)); end
   def on_send(node); end
-  def redundant_merge_candidate(node = T.unsafe(nil)); end
+  def redundant_merge_candidate(param0 = T.unsafe(nil)); end
 
   private
 
@@ -445,7 +527,7 @@ class RuboCop::Cop::Performance::RedundantMerge::EachWithObjectInspector
 
   def initialize(node, receiver); end
 
-  def each_with_object_node(node = T.unsafe(nil)); end
+  def each_with_object_node(param0 = T.unsafe(nil)); end
   def value_used?; end
 
   private
@@ -458,6 +540,8 @@ class RuboCop::Cop::Performance::RedundantMerge::EachWithObjectInspector
 end
 
 RuboCop::Cop::Performance::RedundantMerge::MSG = T.let(T.unsafe(nil), String)
+
+RuboCop::Cop::Performance::RedundantMerge::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 RuboCop::Cop::Performance::RedundantMerge::WITH_MODIFIER_CORRECTION = T.let(T.unsafe(nil), String)
 
@@ -480,7 +564,7 @@ class RuboCop::Cop::Performance::RedundantStringChars < ::RuboCop::Cop::Base
   extend(::RuboCop::Cop::AutoCorrector)
 
   def on_send(node); end
-  def redundant_chars_call?(node = T.unsafe(nil)); end
+  def redundant_chars_call?(param0 = T.unsafe(nil)); end
 
   private
 
@@ -490,26 +574,25 @@ class RuboCop::Cop::Performance::RedundantStringChars < ::RuboCop::Cop::Base
   def build_message(method, args); end
   def correction_range(receiver, node); end
   def offense_range(receiver, node); end
-  def replaceable_method?(method_name); end
 end
 
 RuboCop::Cop::Performance::RedundantStringChars::MSG = T.let(T.unsafe(nil), String)
 
-RuboCop::Cop::Performance::RedundantStringChars::REPLACEABLE_METHODS = T.let(T.unsafe(nil), Array)
+RuboCop::Cop::Performance::RedundantStringChars::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Performance::RegexpMatch < ::RuboCop::Cop::Base
   extend(::RuboCop::Cop::AutoCorrector)
 
-  def last_matches(node0); end
-  def match_method?(node = T.unsafe(nil)); end
-  def match_node?(node = T.unsafe(nil)); end
-  def match_operator?(node = T.unsafe(nil)); end
-  def match_threequals?(node = T.unsafe(nil)); end
-  def match_with_int_arg_method?(node = T.unsafe(nil)); end
+  def last_matches(param0); end
+  def match_method?(param0 = T.unsafe(nil)); end
+  def match_node?(param0 = T.unsafe(nil)); end
+  def match_operator?(param0 = T.unsafe(nil)); end
+  def match_threequals?(param0 = T.unsafe(nil)); end
+  def match_with_int_arg_method?(param0 = T.unsafe(nil)); end
   def match_with_lvasgn?(node); end
   def on_case(node); end
   def on_if(node); end
-  def search_match_nodes(node0); end
+  def search_match_nodes(param0); end
 
   private
 
@@ -541,7 +624,7 @@ class RuboCop::Cop::Performance::ReverseEach < ::RuboCop::Cop::Base
   extend(::RuboCop::Cop::AutoCorrector)
 
   def on_send(node); end
-  def reverse_each?(node = T.unsafe(nil)); end
+  def reverse_each?(param0 = T.unsafe(nil)); end
 
   private
 
@@ -550,6 +633,8 @@ end
 
 RuboCop::Cop::Performance::ReverseEach::MSG = T.let(T.unsafe(nil), String)
 
+RuboCop::Cop::Performance::ReverseEach::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 RuboCop::Cop::Performance::ReverseEach::UNDERSCORE = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Performance::ReverseFirst < ::RuboCop::Cop::Base
@@ -557,7 +642,7 @@ class RuboCop::Cop::Performance::ReverseFirst < ::RuboCop::Cop::Base
   extend(::RuboCop::Cop::AutoCorrector)
 
   def on_send(node); end
-  def reverse_first_candidate?(node = T.unsafe(nil)); end
+  def reverse_first_candidate?(param0 = T.unsafe(nil)); end
 
   private
 
@@ -569,16 +654,20 @@ end
 
 RuboCop::Cop::Performance::ReverseFirst::MSG = T.let(T.unsafe(nil), String)
 
+RuboCop::Cop::Performance::ReverseFirst::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 class RuboCop::Cop::Performance::Size < ::RuboCop::Cop::Base
   extend(::RuboCop::Cop::AutoCorrector)
 
-  def array?(node = T.unsafe(nil)); end
-  def count?(node = T.unsafe(nil)); end
-  def hash?(node = T.unsafe(nil)); end
+  def array?(param0 = T.unsafe(nil)); end
+  def count?(param0 = T.unsafe(nil)); end
+  def hash?(param0 = T.unsafe(nil)); end
   def on_send(node); end
 end
 
 RuboCop::Cop::Performance::Size::MSG = T.let(T.unsafe(nil), String)
+
+RuboCop::Cop::Performance::Size::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Performance::SortReverse < ::RuboCop::Cop::Base
   include(::RuboCop::Cop::RangeHelp)
@@ -598,7 +687,7 @@ class RuboCop::Cop::Performance::Squeeze < ::RuboCop::Cop::Base
   extend(::RuboCop::Cop::AutoCorrector)
 
   def on_send(node); end
-  def squeeze_candidate?(node = T.unsafe(nil)); end
+  def squeeze_candidate?(param0 = T.unsafe(nil)); end
 
   private
 
@@ -609,23 +698,27 @@ RuboCop::Cop::Performance::Squeeze::MSG = T.let(T.unsafe(nil), String)
 
 RuboCop::Cop::Performance::Squeeze::PREFERRED_METHODS = T.let(T.unsafe(nil), Hash)
 
+RuboCop::Cop::Performance::Squeeze::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 class RuboCop::Cop::Performance::StartWith < ::RuboCop::Cop::Base
   include(::RuboCop::Cop::RegexpMetacharacter)
   extend(::RuboCop::Cop::AutoCorrector)
 
   def on_match_with_lvasgn(node); end
   def on_send(node); end
-  def redundant_regex?(node = T.unsafe(nil)); end
+  def redundant_regex?(param0 = T.unsafe(nil)); end
 end
 
 RuboCop::Cop::Performance::StartWith::MSG = T.let(T.unsafe(nil), String)
+
+RuboCop::Cop::Performance::StartWith::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Performance::StringInclude < ::RuboCop::Cop::Base
   extend(::RuboCop::Cop::AutoCorrector)
 
   def on_match_with_lvasgn(node); end
   def on_send(node); end
-  def redundant_regex?(node = T.unsafe(nil)); end
+  def redundant_regex?(param0 = T.unsafe(nil)); end
 
   private
 
@@ -634,12 +727,14 @@ end
 
 RuboCop::Cop::Performance::StringInclude::MSG = T.let(T.unsafe(nil), String)
 
+RuboCop::Cop::Performance::StringInclude::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 class RuboCop::Cop::Performance::StringReplacement < ::RuboCop::Cop::Base
   include(::RuboCop::Cop::RangeHelp)
   extend(::RuboCop::Cop::AutoCorrector)
 
   def on_send(node); end
-  def string_replacement?(node = T.unsafe(nil)); end
+  def string_replacement?(param0 = T.unsafe(nil)); end
 
   private
 
@@ -666,39 +761,54 @@ RuboCop::Cop::Performance::StringReplacement::DETERMINISTIC_REGEX = T.let(T.unsa
 
 RuboCop::Cop::Performance::StringReplacement::MSG = T.let(T.unsafe(nil), String)
 
+RuboCop::Cop::Performance::StringReplacement::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 RuboCop::Cop::Performance::StringReplacement::TR = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Performance::Sum < ::RuboCop::Cop::Base
   include(::RuboCop::Cop::RangeHelp)
   extend(::RuboCop::Cop::AutoCorrector)
 
-  def acc_plus_elem?(node = T.unsafe(nil), param1, param2); end
-  def elem_plus_acc?(node = T.unsafe(nil), param1, param2); end
+  def acc_plus_elem?(param0 = T.unsafe(nil), param1, param2); end
+  def elem_plus_acc?(param0 = T.unsafe(nil), param1, param2); end
   def on_block(node); end
   def on_send(node); end
-  def sum_candidate?(node = T.unsafe(nil)); end
-  def sum_with_block_candidate?(node = T.unsafe(nil)); end
+  def sum_candidate?(param0 = T.unsafe(nil)); end
+  def sum_map_candidate?(param0 = T.unsafe(nil)); end
+  def sum_with_block_candidate?(param0 = T.unsafe(nil)); end
 
   private
 
+  def array_literal?(node); end
   def autocorrect(corrector, init, range); end
+  def autocorrect_sum_map(corrector, sum, map, init); end
   def build_block_bad_method(method, init, var_acc, var_elem, body); end
   def build_block_message(send, init, var_acc, var_elem, body); end
-  def build_good_method(init); end
+  def build_good_method(init, block_pass = T.unsafe(nil)); end
   def build_method_bad_method(init, method, operation); end
-  def build_method_message(method, init, operation); end
+  def build_method_message(node, method, init, operation); end
+  def build_sum_map_message(method, init); end
+  def empty_array_literal?(node); end
+  def handle_sum_candidate(node); end
+  def handle_sum_map_candidate(node); end
+  def method_call_with_args_range(node); end
   def sum_block_range(send, node); end
+  def sum_map_range(map, sum); end
   def sum_method_range(node); end
 end
 
 RuboCop::Cop::Performance::Sum::MSG = T.let(T.unsafe(nil), String)
+
+RuboCop::Cop::Performance::Sum::MSG_IF_NO_INIT_VALUE = T.let(T.unsafe(nil), String)
+
+RuboCop::Cop::Performance::Sum::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Performance::TimesMap < ::RuboCop::Cop::Base
   extend(::RuboCop::Cop::AutoCorrector)
 
   def on_block(node); end
   def on_send(node); end
-  def times_map_call(node = T.unsafe(nil)); end
+  def times_map_call(param0 = T.unsafe(nil)); end
 
   private
 
@@ -710,22 +820,34 @@ RuboCop::Cop::Performance::TimesMap::MESSAGE = T.let(T.unsafe(nil), String)
 
 RuboCop::Cop::Performance::TimesMap::MESSAGE_ONLY_IF = T.let(T.unsafe(nil), String)
 
+RuboCop::Cop::Performance::TimesMap::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 class RuboCop::Cop::Performance::UnfreezeString < ::RuboCop::Cop::Base
-  def dup_string?(node = T.unsafe(nil)); end
+  extend(::RuboCop::Cop::AutoCorrector)
+
+  def dup_string?(param0 = T.unsafe(nil)); end
   def on_send(node); end
-  def string_new?(node = T.unsafe(nil)); end
+  def string_new?(param0 = T.unsafe(nil)); end
+
+  private
+
+  def string_value(node); end
 end
 
 RuboCop::Cop::Performance::UnfreezeString::MSG = T.let(T.unsafe(nil), String)
+
+RuboCop::Cop::Performance::UnfreezeString::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Performance::UriDefaultParser < ::RuboCop::Cop::Base
   extend(::RuboCop::Cop::AutoCorrector)
 
   def on_send(node); end
-  def uri_parser_new?(node = T.unsafe(nil)); end
+  def uri_parser_new?(param0 = T.unsafe(nil)); end
 end
 
 RuboCop::Cop::Performance::UriDefaultParser::MSG = T.let(T.unsafe(nil), String)
+
+RuboCop::Cop::Performance::UriDefaultParser::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 module RuboCop::Cop::RegexpMetacharacter
 
@@ -746,8 +868,8 @@ module RuboCop::Cop::SortBlock
   include(::RuboCop::Cop::RangeHelp)
   extend(::RuboCop::AST::NodePattern::Macros)
 
-  def replaceable_body?(node = T.unsafe(nil), param1, param2); end
-  def sort_with_block?(node = T.unsafe(nil)); end
+  def replaceable_body?(param0 = T.unsafe(nil), param1, param2); end
+  def sort_with_block?(param0 = T.unsafe(nil)); end
 
   private
 
@@ -768,6 +890,9 @@ module RuboCop::Performance::Inject
 end
 
 module RuboCop::Performance::Version
+  class << self
+    def document_version; end
+  end
 end
 
 RuboCop::Performance::Version::STRING = T.let(T.unsafe(nil), String)
