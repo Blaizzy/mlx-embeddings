@@ -33,27 +33,18 @@ class FormulaInstaller
   include FormulaCellarChecks
   extend Predicable
 
-  def self.mode_attr_accessor(*names)
-    attr_accessor(*names)
-
-    private(*names)
-    names.each do |name|
-      predicate = "#{name}?"
-      define_method(predicate) do
-        send(name) ? true : false
-      end
-      private(predicate)
-    end
-  end
-
   attr_reader :formula
   attr_accessor :cc, :env, :options, :build_bottle, :bottle_arch,
                 :build_from_source_formulae, :include_test_formulae,
                 :installed_as_dependency, :installed_on_request, :link_keg, :other_installers
 
-  mode_attr_accessor :show_summary_heading, :show_header
-  mode_attr_accessor :force_bottle, :ignore_deps, :only_deps, :interactive, :git, :force, :keep_tmp
-  mode_attr_accessor :verbose, :debug, :quiet
+  attr_predicate :show_summary_heading?, :show_header?
+  attr_writer :show_header
+
+  attr_predicate :force_bottle?, :ignore_deps?, :only_deps?, :interactive?, :git?, :force?, :keep_tmp?
+  attr_writer :force_bottle, :ignore_deps, :only_deps, :interactive, :git, :force, :keep_tmp
+
+  attr_predicate :verbose?, :debug?, :quiet?
 
   def initialize(formula,
                  force_bottle: false,
@@ -139,6 +130,7 @@ class FormulaInstaller
     !formula.bottle_disabled?
   end
 
+  sig { params(install_bottle_options: { warn: T::Boolean }).returns(T::Boolean) }
   def pour_bottle?(install_bottle_options = { warn: false })
     return false if @pour_failed
 
@@ -173,16 +165,18 @@ class FormulaInstaller
     true
   end
 
+  sig { params(dep: Formula, build: BuildOptions).returns(T::Boolean) }
   def install_bottle_for?(dep, build)
     return pour_bottle? if dep == formula
     return false if build_from_source_formulae.include?(dep.full_name)
     return false unless dep.bottle && dep.pour_bottle?
     return false unless build.used_options.empty?
-    return false unless dep.bottle.compatible_cellar?
+    return false unless dep.bottle&.compatible_cellar?
 
     true
   end
 
+  sig { void }
   def prelude
     Tab.clear_cache
     verify_deps_exist unless ignore_deps?
@@ -191,6 +185,7 @@ class FormulaInstaller
     check_install_sanity
   end
 
+  sig { void }
   def verify_deps_exist
     begin
       compute_dependencies
