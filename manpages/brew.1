@@ -793,6 +793,14 @@ Delete all installed versions of \fIformula\fR\.
 \fB\-\-ignore\-dependencies\fR
 Don\'t fail uninstall, even if \fIformula\fR is a dependency of any installed formulae\.
 .
+.TP
+\fB\-\-formula\fR
+Treat all named arguments as formulae\.
+.
+.TP
+\fB\-\-cask\fR
+Treat all named arguments as casks\.
+.
 .SS "\fBunlink\fR [\fIoptions\fR] \fIformula\fR"
 Remove symlinks for \fIformula\fR from Homebrew\'s prefix\. This can be useful for temporarily disabling a formula: \fBbrew unlink\fR \fIformula\fR \fB&&\fR \fIcommands\fR \fB&& brew link\fR \fIformula\fR
 .
