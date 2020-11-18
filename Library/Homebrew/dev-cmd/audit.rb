@@ -117,7 +117,12 @@ module Homebrew
     ENV.setup_build_environment
 
     audit_formulae, audit_casks = if args.tap
-      Tap.fetch(args.tap).formula_names.map { |name| Formula[name] }
+      Tap.fetch(args.tap).yield_self do |tap|
+        [
+          tap.formula_names.map { |name| Formula[name] },
+          tap.cask_files.map { |path| Cask::CaskLoader.load(path) },
+        ]
+      end
     elsif args.no_named?
       [Formula, Cask::Cask.to_a]
     else
