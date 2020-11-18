@@ -736,12 +736,12 @@ Print the version numbers of Homebrew, Homebrew/homebrew-core and Homebrew/homeb
 
 ## DEVELOPER COMMANDS
 
-### `audit` [*`options`*] [*`formula`*]
+### `audit` [*`options`*] [*`formula`*|*`cask`*]
 
 Check *`formula`* for Homebrew coding style violations. This should be run before
-submitting a new formula. If no *`formula`* are provided, check all locally
-available formulae and skip style checks. Will exit with a non-zero status if any
-errors are found.
+submitting a new formula or cask. If no *`formula`*|*`cask`* are provided, check all
+locally available formulae and casks and skip style checks. Will exit with a
+non-zero status if any errors are found.
 
 * `--strict`:
   Run additional, stricter style checks.
@@ -749,8 +749,8 @@ errors are found.
   Run additional, slower style checks that navigate the Git repository.
 * `--online`:
   Run additional, slower style checks that require a network connection.
-* `--new-formula`:
-  Run various additional style checks to determine if a new formula is eligible for Homebrew. This should be used when creating new formula and implies `--strict` and `--online`.
+* `--new`:
+  Run various additional style checks to determine if a new formula or cask is eligible for Homebrew. This should be used when creating new formula and implies `--strict` and `--online`.
 * `--tap`:
   Check the formulae within the given tap, specified as *`user`*`/`*`repo`*.
 * `--fix`:
@@ -771,6 +771,14 @@ errors are found.
   Specify a comma-separated *`cops`* list to check for violations of only the listed RuboCop cops.
 * `--except-cops`:
   Specify a comma-separated *`cops`* list to skip checking for violations of the listed RuboCop cops.
+* `--formula`:
+  Treat all named arguments as formulae.
+* `--cask`:
+  Treat all named arguments as casks.
+* `--[no-]appcast`:
+  Audit the appcast
+* `--token-conflicts`:
+  Audit for token conflicts
 
 ### `bottle` [*`options`*] *`formula`*
 
