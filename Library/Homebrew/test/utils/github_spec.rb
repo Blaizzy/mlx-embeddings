@@ -54,7 +54,7 @@ describe GitHub do
     it "errors on an unauthenticated token" do
       expect {
         subject.sponsors_by_tier("Homebrew")
-      }.to raise_error(/INSUFFICIENT_SCOPES|FORBIDDEN/)
+      }.to raise_error(/INSUFFICIENT_SCOPES|FORBIDDEN|token needs the 'admin:org' scope/)
     end
   end
 
