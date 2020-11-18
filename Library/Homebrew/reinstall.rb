@@ -27,21 +27,25 @@ module Homebrew
     build_from_source_formulae = args.build_from_source_formulae
     build_from_source_formulae << f.full_name if build_from_source
 
-    fi = FormulaInstaller.new(f, force_bottle:               args.force_bottle?,
-                                 build_from_source_formulae: build_from_source_formulae,
-                                 debug: args.debug?, quiet: args.quiet?, verbose: args.verbose?)
-    fi.options              = options
-    fi.force                = args.force?
-    fi.keep_tmp             = args.keep_tmp?
-    fi.build_bottle         = args.build_bottle?
-    fi.interactive          = args.interactive?
-    fi.git                  = args.git?
-    fi.link_keg           ||= keg_was_linked if keg_had_linked_opt
-    if tab
-      fi.build_bottle          ||= tab.built_bottle?
-      fi.installed_as_dependency = tab.installed_as_dependency
-      fi.installed_on_request    = tab.installed_on_request
-    end
+    fi = FormulaInstaller.new(
+      f,
+      **{
+        options:                    options,
+        link_keg:                   keg_had_linked_opt ? keg_was_linked : nil,
+        installed_as_dependency:    tab&.installed_as_dependency,
+        installed_on_request:       tab&.installed_on_request,
+        build_bottle:               args.build_bottle? || tab&.built_bottle?,
+        force_bottle:               args.force_bottle?,
+        build_from_source_formulae: build_from_source_formulae,
+        git:                        args.git?,
+        interactive:                args.interactive?,
+        keep_tmp:                   args.keep_tmp?,
+        force:                      args.force?,
+        debug:                      args.debug?,
+        quiet:                      args.quiet?,
+        verbose:                    args.verbose?,
+      }.compact,
+    )
     fi.prelude
     fi.fetch
 

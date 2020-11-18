@@ -371,15 +371,19 @@ module Cask
             force:                   false,
           ).install
         else
-          FormulaInstaller.new(cask_or_formula, verbose: verbose?).yield_self do |fi|
-            fi.installed_as_dependency = true
-            fi.installed_on_request = false
-            fi.show_header = true
-            fi.prelude
-            fi.fetch
-            fi.install
-            fi.finish
-          end
+          fi = FormulaInstaller.new(
+            cask_or_formula,
+            **{
+              show_header:             true,
+              installed_as_dependency: true,
+              installed_on_request:    false,
+              verbose:                 verbose?,
+            }.compact,
+          )
+          fi.prelude
+          fi.fetch
+          fi.install
+          fi.finish
         end
       end
     end
