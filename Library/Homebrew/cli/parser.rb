@@ -100,7 +100,7 @@ module Homebrew
       def self.global_options
         [
           ["-d", "--debug",   "Display any debugging information."],
-          ["-q", "--quiet",   "Suppress any warnings."],
+          ["-q", "--quiet",   "Make some output more quiet."],
           ["-v", "--verbose", "Make some output more verbose."],
           ["-h", "--help",    "Show this message."],
         ]
