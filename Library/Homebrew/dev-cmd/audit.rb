@@ -117,7 +117,12 @@ module Homebrew
     ENV.setup_build_environment
 
     audit_formulae, audit_casks = if args.tap
-      Tap.fetch(args.tap).formula_names.map { |name| Formula[name] }
+      Tap.fetch(args.tap).yield_self do |tap|
+        [
+          tap.formula_names.map { |name| Formula[name] },
+          tap.cask_files.map { |path| Cask::CaskLoader.load(path) },
+        ]
+      end
     elsif args.no_named?
       [Formula, Cask::Cask.to_a]
     else
@@ -188,8 +193,8 @@ module Homebrew
       formula_count += 1
       problem_count += fa.problems.size
       problem_lines = format_problem_lines(fa.problems)
-      corrected_problem_count = options[:style_offenses]&.count(&:corrected?)
-      new_formula_problem_lines = format_problem_lines(fa.new_formula_problems)
+      corrected_problem_count += options.fetch(:style_offenses, []).count(&:corrected?)
+      new_formula_problem_lines += format_problem_lines(fa.new_formula_problems)
       if args.display_filename?
         puts problem_lines.map { |s| "#{f.path}: #{s}" }
       else
