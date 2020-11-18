@@ -3,3 +3,4 @@ ruby_extra_args:
 
 triggers:
   using: sorbet/plugins/unpack_strategy_magic.rb
+  attr_predicate: sorbet/plugins/attr_predicate.rb
