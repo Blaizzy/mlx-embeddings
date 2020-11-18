@@ -29,6 +29,12 @@ module Homebrew
              description: "Don't fail uninstall, even if <formula> is a dependency of any installed "\
                           "formulae."
 
+      switch "--formula", "--formulae",
+             description: "Treat all named arguments as formulae."
+      switch "--cask", "--casks",
+             description: "Treat all named arguments as casks."
+      conflicts "--formula", "--cask"
+
       min_named :formula
     end
   end
@@ -36,25 +42,29 @@ module Homebrew
   def uninstall
     args = uninstall_args.parse
 
+    only = :formula if args.formula? && !args.cask?
+    only = :cask if args.cask? && !args.formula?
+
     if args.force?
       casks = []
       kegs_by_rack = {}
 
       args.named.each do |name|
-        rack = Formulary.to_rack(name)
+        if only != :cask
+          rack = Formulary.to_rack(name)
+          kegs_by_rack[rack] = rack.subdirs.map { |d| Keg.new(d) } if rack.directory?
+        end
 
-        if rack.directory?
-          kegs_by_rack[rack] = rack.subdirs.map { |d| Keg.new(d) }
-        else
-          begin
-            casks << Cask::CaskLoader.load(name)
-          rescue Cask::CaskUnavailableError
-            # Since the uninstall was forced, ignore any unavailable casks
-          end
+        next if only == :formula
+
+        begin
+          casks << Cask::CaskLoader.load(name)
+        rescue Cask::CaskUnavailableError
+          # Since the uninstall was forced, ignore any unavailable casks.
         end
       end
     else
-      all_kegs, casks = args.named.to_kegs_to_casks
+      all_kegs, casks = args.named.to_kegs_to_casks(only: only)
       kegs_by_rack = all_kegs.group_by(&:rack)
     end
 

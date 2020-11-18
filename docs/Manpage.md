@@ -571,6 +571,10 @@ Uninstall *`formula`*.
   Delete all installed versions of *`formula`*.
 * `--ignore-dependencies`:
   Don't fail uninstall, even if *`formula`* is a dependency of any installed formulae.
+* `--formula`:
+  Treat all named arguments as formulae.
+* `--cask`:
+  Treat all named arguments as casks.
 
 ### `unlink` [*`options`*] *`formula`*
 
