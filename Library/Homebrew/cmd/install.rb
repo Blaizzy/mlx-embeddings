@@ -289,7 +289,7 @@ module Homebrew
       Cleanup.install_formula_clean!(f)
     end
 
-    Upgrade.check_installed_dependents(args: args)
+    Upgrade.check_installed_dependents(installed_formulae, args: args)
 
     Homebrew.messages.display_messages(display_times: args.display_times?)
   rescue FormulaUnreadableError, FormulaClassUnavailableError,

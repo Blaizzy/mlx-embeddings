@@ -172,7 +172,7 @@ module Homebrew
 
     Upgrade.upgrade_formulae(formulae_to_install, args: args)
 
-    Upgrade.check_installed_dependents(args: args)
+    Upgrade.check_installed_dependents(formulae_to_install, args: args)
 
     Homebrew.messages.display_messages(display_times: args.display_times?)
   end

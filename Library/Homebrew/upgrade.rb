@@ -134,10 +134,10 @@ module Homebrew
       end
     end
 
-    def check_installed_dependents(args:)
+    def check_installed_dependents(formulae, args:)
       return if Homebrew::EnvConfig.no_installed_dependents_check?
 
-      installed_formulae = FormulaInstaller.installed.to_a
+      installed_formulae = args.dry_run? ? formulae : FormulaInstaller.installed.to_a
       return if installed_formulae.empty?
 
       already_broken_dependents = check_broken_dependents(installed_formulae)

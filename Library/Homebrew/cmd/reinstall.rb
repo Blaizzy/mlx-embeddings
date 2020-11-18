@@ -102,7 +102,7 @@ module Homebrew
       Cleanup.install_formula_clean!(f)
     end
 
-    Upgrade.check_installed_dependents(args: args)
+    Upgrade.check_installed_dependents(formulae, args: args)
 
     if casks.any?
       Cask::Cmd::Reinstall.reinstall_casks(
