@@ -560,6 +560,91 @@ module Homebrew
       end
     end
 
+    describe "#audit_specs" do
+      let(:throttle_list) { { throttled_formulae: { "foo" => 10 } } }
+      let(:versioned_head_spec_list) { { versioned_head_spec_allowlist: ["foo"] } }
+
+      it "allows versions with no throttle rate" do
+        fa = formula_auditor "bar", <<~RUBY, core_tap: true, tap_audit_exceptions: throttle_list
+          class Bar < Formula
+            url "https://brew.sh/foo-1.0.1.tgz"
+          end
+        RUBY
+
+        fa.audit_specs
+        expect(fa.problems).to be_empty
+      end
+
+      it "allows major/minor versions with throttle rate" do
+        fa = formula_auditor "foo", <<~RUBY, core_tap: true, tap_audit_exceptions: throttle_list
+          class Foo < Formula
+            url "https://brew.sh/foo-1.0.0.tgz"
+          end
+        RUBY
+
+        fa.audit_specs
+        expect(fa.problems).to be_empty
+      end
+
+      it "allows patch versions to be multiples of the throttle rate" do
+        fa = formula_auditor "foo", <<~RUBY, core_tap: true, tap_audit_exceptions: throttle_list
+          class Foo < Formula
+            url "https://brew.sh/foo-1.0.10.tgz"
+          end
+        RUBY
+
+        fa.audit_specs
+        expect(fa.problems).to be_empty
+      end
+
+      it "doesn't allow patch versions that aren't multiples of the throttle rate" do
+        fa = formula_auditor "foo", <<~RUBY, core_tap: true, tap_audit_exceptions: throttle_list
+          class Foo < Formula
+            url "https://brew.sh/foo-1.0.1.tgz"
+          end
+        RUBY
+
+        fa.audit_specs
+        expect(fa.problems.first[:message]).to match "should only be updated every 10 releases on multiples of 10"
+      end
+
+      it "allows non-versioned formulae to have a `HEAD` spec" do
+        fa = formula_auditor "bar", <<~RUBY, core_tap: true, tap_audit_exceptions: versioned_head_spec_list
+          class Bar < Formula
+            url "https://brew.sh/foo-1.0.tgz"
+            head "https://brew.sh/foo-1.0.tgz"
+          end
+        RUBY
+
+        fa.audit_specs
+        expect(fa.problems).to be_empty
+      end
+
+      it "doesn't allow versioned formulae to have a `HEAD` spec" do
+        fa = formula_auditor "bar@1", <<~RUBY, core_tap: true, tap_audit_exceptions: versioned_head_spec_list
+          class BarAT1 < Formula
+            url "https://brew.sh/foo-1.0.tgz"
+            head "https://brew.sh/foo-1.0.tgz"
+          end
+        RUBY
+
+        fa.audit_specs
+        expect(fa.problems.first[:message]).to match "Versioned formulae should not have a `HEAD` spec"
+      end
+
+      it "allows ersioned formulae on the allowlist to have a `HEAD` spec" do
+        fa = formula_auditor "foo", <<~RUBY, core_tap: true, tap_audit_exceptions: versioned_head_spec_list
+          class Foo < Formula
+            url "https://brew.sh/foo-1.0.tgz"
+            head "https://brew.sh/foo-1.0.tgz"
+          end
+        RUBY
+
+        fa.audit_specs
+        expect(fa.problems).to be_empty
+      end
+    end
+
     describe "#audit_deps" do
       describe "a dependency on a macOS-provided keg-only formula" do
         describe "which is allowlisted" do
