@@ -1384,7 +1384,7 @@ These options are applicable across multiple subcommands.
   Display any debugging information.
 
 * `-q`, `--quiet`:
-  Suppress any warnings.
+  Make some output more quiet.
 
 * `-v`, `--verbose`:
   Make some output more verbose.

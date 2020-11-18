@@ -204,7 +204,7 @@ module Homebrew
           EOS
         elsif args.only_dependencies?
           installed_formulae << f
-        else
+        elsif !args.quiet?
           opoo <<~EOS
             #{f.full_name} #{f.pkg_version} is already installed and up-to-date
             To reinstall #{f.pkg_version}, run `brew reinstall #{f.name}`
@@ -224,11 +224,14 @@ module Homebrew
         msg = "#{f.full_name} #{installed_version} is already installed"
         linked_not_equals_installed = f.linked_version != installed_version
         if f.linked? && linked_not_equals_installed
-          msg = <<~EOS
-            #{msg}
-            The currently linked version is #{f.linked_version}
-            You can use `brew switch #{f} #{installed_version}` to link this version.
-          EOS
+          msg = if args.quiet?
+            nil
+          else
+            <<~EOS
+              #{msg}
+              The currently linked version is #{f.linked_version}
+            EOS
+          end
         elsif !f.linked? || f.keg_only?
           msg = <<~EOS
             #{msg}, it's just not linked
@@ -238,10 +241,14 @@ module Homebrew
           msg = nil
           installed_formulae << f
         else
-          msg = <<~EOS
-            #{msg} and up-to-date
-            To reinstall #{f.pkg_version}, run `brew reinstall #{f.name}`
-          EOS
+          msg = if args.quiet?
+            nil
+          else
+            <<~EOS
+              #{msg} and up-to-date
+              To reinstall #{f.pkg_version}, run `brew reinstall #{f.name}`
+            EOS
+          end
         end
         opoo msg if msg
       elsif !f.any_version_installed? && old_formula = f.old_installed_formulae.first
@@ -251,8 +258,10 @@ module Homebrew
             #{msg}, it's just not linked.
             You can use `brew link #{old_formula.full_name}` to link this version.
           EOS
+        elsif args.quiet?
+          msg = nil
         end
-        opoo msg
+        opoo msg if msg
       elsif f.migration_needed? && !args.force?
         # Check if the formula we try to install is the same as installed
         # but not migrated one. If --force is passed then install anyway.

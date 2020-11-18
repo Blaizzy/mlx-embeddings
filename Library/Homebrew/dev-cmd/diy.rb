@@ -31,6 +31,8 @@ module Homebrew
   def diy
     args = diy_args.parse
 
+    # odeprecated "`brew diy`"
+
     path = Pathname.getwd
 
     version = args.version || detect_version(path)
