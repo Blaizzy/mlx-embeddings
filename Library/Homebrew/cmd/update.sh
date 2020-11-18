@@ -372,7 +372,8 @@ EOS
   if [[ -n "$HOMEBREW_FORCE_BREWED_CURL" &&
       ! -x "$HOMEBREW_PREFIX/opt/curl/bin/curl" ]]
   then
-    brew install curl
+    ohai "Installing Homebrew cURL"
+    brew install curl || odie "Failed to install cURL"
   fi
 
   if ! git --version &>/dev/null ||
@@ -380,7 +381,11 @@ EOS
       ! -x "$HOMEBREW_PREFIX/opt/git/bin/git" ]]
   then
     # we cannot install brewed git if homebrew/core is unavailable.
-    [[ -d "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core" ]] && brew install git
+    if [[ -d "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core" ]]
+    then
+      ohai "Installing Homebrew Git"
+      brew install git || odie "Failed to install Git"
+    fi
     unset GIT_EXECUTABLE
     if ! git --version &>/dev/null
     then

@@ -350,17 +350,23 @@ else
   curl_name_and_version="${curl_version_output%% (*}"
   if [[ $(numeric "${curl_name_and_version##* }") -lt $(numeric "$HOMEBREW_MINIMUM_CURL_VERSION") ]]
   then
-    if [[ -z $HOMEBREW_CURL_PATH ]]; then
+      message="Your cURL version is too old.
+Minimum required version: ${HOMEBREW_MINIMUM_CURL_VERSION}
+Your cURL version: ${curl_name_and_version##* }
+Your cURL executable: $(type -p $HOMEBREW_CURL)
+To point Homebrew to cURL ${HOMEBREW_MINIMUM_CURL_VERSION} or newer,
+enable developer mode by setting HOMEBREW_DEVELOPER to 1,
+then set HOMEBREW_CURL_PATH to the location of cURL executable."
+
+    if [[ -z $HOMEBREW_CURL_PATH || -z $HOMEBREW_DEVELOPER ]]; then
       HOMEBREW_SYSTEM_CURL_TOO_OLD=1
       HOMEBREW_FORCE_BREWED_CURL=1
+      if [[ -z $HOMEBREW_CURL_WARNING ]]; then
+        onoe "$message"
+        HOMEBREW_CURL_WARNING=1
+      fi
     else
-      odie <<EOS
-The version of cURL that you provided to Homebrew using HOMEBREW_CURL_PATH is too old.
-Minimum required version: ${HOMEBREW_MINIMUM_CURL_VERSION}.
-Your cURL version: ${curl_name_and_version##* }.
-Please point Homebrew to cURL ${HOMEBREW_MINIMUM_CURL_VERSION} or newer
-or unset HOMEBREW_CURL_PATH variable.
-EOS
+      odie "$message"
     fi
   fi
 
@@ -418,6 +424,7 @@ export HOMEBREW_TEMP
 export HOMEBREW_CELLAR
 export HOMEBREW_SYSTEM
 export HOMEBREW_CURL
+export HOMEBREW_CURL_WARNING
 export HOMEBREW_SYSTEM_CURL_TOO_OLD
 export HOMEBREW_GIT
 export HOMEBREW_MINIMUM_GIT_VERSION
