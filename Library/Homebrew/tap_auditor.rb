@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 module Homebrew
-  # Auditor for checking common violations in taps.
+  # Auditor for checking common violations in {Tap}s.
   #
   # @api private
   class TapAuditor

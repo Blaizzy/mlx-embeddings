@@ -18,7 +18,7 @@ module Count
 end
 
 module Homebrew
-  describe FormulaText do
+  describe FormulaTextAuditor do
     alias_matcher :have_data, :be_data
     alias_matcher :have_end, :be_end
     alias_matcher :have_trailing_newline, :be_trailing_newline
