@@ -997,8 +997,8 @@ Print the version numbers of Homebrew, Homebrew/homebrew\-core and Homebrew/home
 .
 .SH "DEVELOPER COMMANDS"
 .
-.SS "\fBaudit\fR [\fIoptions\fR] [\fIformula\fR]"
-Check \fIformula\fR for Homebrew coding style violations\. This should be run before submitting a new formula\. If no \fIformula\fR are provided, check all locally available formulae and skip style checks\. Will exit with a non\-zero status if any errors are found\.
+.SS "\fBaudit\fR [\fIoptions\fR] [\fIformula\fR|\fIcask\fR]"
+Check \fIformula\fR for Homebrew coding style violations\. This should be run before submitting a new formula or cask\. If no \fIformula\fR|\fIcask\fR are provided, check all locally available formulae and casks and skip style checks\. Will exit with a non\-zero status if any errors are found\.
 .
 .TP
 \fB\-\-strict\fR
@@ -1013,8 +1013,8 @@ Run additional, slower style checks that navigate the Git repository\.
 Run additional, slower style checks that require a network connection\.
 .
 .TP
-\fB\-\-new\-formula\fR
-Run various additional style checks to determine if a new formula is eligible for Homebrew\. This should be used when creating new formula and implies \fB\-\-strict\fR and \fB\-\-online\fR\.
+\fB\-\-new\fR
+Run various additional style checks to determine if a new formula or cask is eligible for Homebrew\. This should be used when creating new formula and implies \fB\-\-strict\fR and \fB\-\-online\fR\.
 .
 .TP
 \fB\-\-tap\fR
@@ -1055,6 +1055,22 @@ Specify a comma\-separated \fIcops\fR list to check for violations of only the l
 .TP
 \fB\-\-except\-cops\fR
 Specify a comma\-separated \fIcops\fR list to skip checking for violations of the listed RuboCop cops\.
+.
+.TP
+\fB\-\-formula\fR
+Treat all named arguments as formulae\.
+.
+.TP
+\fB\-\-cask\fR
+Treat all named arguments as casks\.
+.
+.TP
+\fB\-\-[no\-]appcast\fR
+Audit the appcast
+.
+.TP
+\fB\-\-token\-conflicts\fR
+Audit for token conflicts
 .
 .SS "\fBbottle\fR [\fIoptions\fR] \fIformula\fR"
 Generate a bottle (binary package) from a formula that was installed with \fB\-\-build\-bottle\fR\. If the formula specifies a rebuild version, it will be incremented in the generated DSL\. Passing \fB\-\-keep\-old\fR will attempt to keep it at its original value, while \fB\-\-no\-rebuild\fR will remove it\.

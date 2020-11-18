@@ -28,12 +28,12 @@ module Homebrew
   def audit_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `audit` [<options>] [<formula>]
+        `audit` [<options>] [<formula>|<cask>]
 
         Check <formula> for Homebrew coding style violations. This should be run before
-        submitting a new formula. If no <formula> are provided, check all locally
-        available formulae and skip style checks. Will exit with a non-zero status if any
-        errors are found.
+        submitting a new formula or cask. If no <formula>|<cask> are provided, check all
+        locally available formulae and casks and skip style checks. Will exit with a
+        non-zero status if any errors are found.
       EOS
       switch "--strict",
              description: "Run additional, stricter style checks."
@@ -41,8 +41,8 @@ module Homebrew
              description: "Run additional, slower style checks that navigate the Git repository."
       switch "--online",
              description: "Run additional, slower style checks that require a network connection."
-      switch "--new-formula",
-             description: "Run various additional style checks to determine if a new formula is eligible "\
+      switch "--new", "--new-formula", "--new-cask",
+             description: "Run various additional style checks to determine if a new formula or cask is eligible "\
                           "for Homebrew. This should be used when creating new formula and implies "\
                           "`--strict` and `--online`."
       flag   "--tap=",
@@ -72,6 +72,18 @@ module Homebrew
                   description: "Specify a comma-separated <cops> list to skip checking for violations of the listed "\
                                "RuboCop cops."
 
+      switch "--formula", "--formulae",
+             description: "Treat all named arguments as formulae."
+      switch "--cask", "--casks",
+             description: "Treat all named arguments as casks."
+
+      switch "--[no-]appcast",
+             description: "Audit the appcast"
+      switch "--token-conflicts",
+             description: "Audit for token conflicts"
+
+      conflicts "--formula", "--cask"
+
       conflicts "--only", "--except"
       conflicts "--only-cops", "--except-cops", "--strict"
       conflicts "--only-cops", "--except-cops", "--only"
@@ -81,6 +93,7 @@ module Homebrew
     end
   end
 
+  sig { void }
   def audit
     args = audit_args.parse
 
@@ -97,30 +110,34 @@ module Homebrew
     git = args.git?
     skip_style = args.skip_style? || args.no_named? || args.tap
 
+    only = :formula if args.formula? && !args.cask?
+    only = :cask if args.cask? && !args.formula?
+
     ENV.activate_extensions!
     ENV.setup_build_environment
 
-    audit_formulae = if args.tap
+    audit_formulae, audit_casks = if args.tap
       Tap.fetch(args.tap).formula_names.map { |name| Formula[name] }
     elsif args.no_named?
-      Formula
+      [Formula, Cask::Cask.to_a]
     else
-      args.named.to_resolved_formulae
+      args.named.to_formulae_and_casks(only: only)
+          .partition { |formula_or_cask| formula_or_cask.is_a?(Formula) }
     end
-    style_files = args.named.to_formulae_paths unless skip_style
+    style_files = args.named.to_paths unless skip_style
 
     only_cops = args.only_cops
     except_cops = args.except_cops
-    options = { fix: args.fix?, debug: args.debug?, verbose: args.verbose? }
+    style_options = { fix: args.fix?, debug: args.debug?, verbose: args.verbose? }
 
     if only_cops
-      options[:only_cops] = only_cops
+      style_options[:only_cops] = only_cops
     elsif args.new_formula?
       nil
     elsif except_cops
-      options[:except_cops] = except_cops
+      style_options[:except_cops] = except_cops
     elsif !strict
-      options[:except_cops] = [:FormulaAuditStrict]
+      style_options[:except_cops] = [:FormulaAuditStrict]
     end
 
     # Run tap audits first
@@ -129,7 +146,7 @@ module Homebrew
     Tap.each do |tap|
       next if args.tap && tap != args.tap
 
-      ta = TapAuditor.new tap, strict: args.strict?
+      ta = TapAuditor.new(tap, strict: args.strict?)
       ta.audit
 
       next if ta.problems.blank?
@@ -142,7 +159,7 @@ module Homebrew
     end
 
     # Check style in a single batch run up front for performance
-    style_offenses = Style.check_style_json(style_files, options) if style_files
+    style_offenses = Style.check_style_json(style_files, style_options) if style_files
     # load licenses
     spdx_license_data = SPDX.license_data
     spdx_exception_data = SPDX.exception_data
@@ -159,19 +176,19 @@ module Homebrew
         spdx_license_data:    spdx_license_data,
         spdx_exception_data:  spdx_exception_data,
         tap_audit_exceptions: f.tap.audit_exceptions,
-      }
-      options[:style_offenses] = style_offenses.for_path(f.path) if style_offenses
-      options[:display_cop_names] = args.display_cop_names?
-      options[:build_stable] = args.build_stable?
+        style_offenses:       style_offenses ? style_offenses.for_path(f.path) : nil,
+        display_cop_names:    args.display_cop_names?,
+        build_stable:         args.build_stable?,
+      }.compact
 
-      fa = FormulaAuditor.new(f, options)
+      fa = FormulaAuditor.new(f, **options)
       fa.audit
       next if fa.problems.empty? && fa.new_formula_problems.empty?
 
       formula_count += 1
       problem_count += fa.problems.size
       problem_lines = format_problem_lines(fa.problems)
-      corrected_problem_count = options[:style_offenses].count(&:corrected?) if options[:style_offenses]
+      corrected_problem_count = options[:style_offenses]&.count(&:corrected?)
       new_formula_problem_lines = format_problem_lines(fa.new_formula_problems)
       if args.display_filename?
         puts problem_lines.map { |s| "#{f.path}: #{s}" }
@@ -189,24 +206,49 @@ module Homebrew
       end
     end
 
-    new_formula_problem_count += new_formula_problem_lines.size
-    puts new_formula_problem_lines.map { |s| "  #{s}" }
+    casks_results = if audit_casks.empty?
+      []
+    else
+      require "cask/cmd/audit"
 
-    total_problems_count = problem_count + new_formula_problem_count + tap_problem_count
+      Cask::Cmd::Audit.audit_casks(
+        *audit_casks,
+        download:        nil,
+        appcast:         args.appcast?,
+        online:          args.online?,
+        strict:          args.strict?,
+        new_cask:        args.new_cask?,
+        token_conflicts: args.token_conflicts?,
+        quarantine:      nil,
+        language:        nil,
+      )
+    end
+
+    failed_casks = casks_results.reject { |_, result| result[:errors].empty? }
+
+    cask_count = failed_casks.count
+
+    cask_problem_count = failed_casks.sum { |_, result| result[:warnings].count + result[:errors].count }
+    new_formula_problem_count += new_formula_problem_lines.count
+    total_problems_count = problem_count + new_formula_problem_count + cask_problem_count + tap_problem_count
     return unless total_problems_count.positive?
 
-    problem_plural = "#{total_problems_count} #{"problem".pluralize(total_problems_count)}"
-    formula_plural = "#{formula_count} #{"formula".pluralize(formula_count)}"
-    tap_plural = "#{tap_count} #{"tap".pluralize(tap_count)}"
-    corrected_problem_plural = "#{corrected_problem_count} #{"problem".pluralize(corrected_problem_count)}"
-    errors_summary = if tap_count.zero?
-      "#{problem_plural} in #{formula_plural} detected"
-    elsif formula_count.zero?
-      "#{problem_plural} in #{tap_plural} detected"
-    else
-      "#{problem_plural} in #{formula_plural} and #{tap_plural} detected"
+    puts new_formula_problem_lines.map { |s| "  #{s}" }
+
+    errors_summary = "#{total_problems_count} #{"problem".pluralize(total_problems_count)}"
+
+    error_sources = []
+    error_sources << "#{formula_count} #{"formula".pluralize(formula_count)}" if formula_count.positive?
+    error_sources << "#{cask_count} #{"cask".pluralize(cask_count)}" if cask_count.positive?
+    error_sources << "#{tap_count} #{"tap".pluralize(tap_count)}" if tap_count.positive?
+
+    errors_summary += " in #{error_sources.to_sentence}" if error_sources.any?
+
+    errors_summary += " detected"
+
+    if corrected_problem_count.positive?
+      errors_summary += ", #{corrected_problem_count} #{"problem".pluralize(corrected_problem_count)} corrected"
     end
-    errors_summary += ", #{corrected_problem_plural} corrected" if corrected_problem_count.positive?
 
     ofail errors_summary
   end

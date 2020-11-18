@@ -51,7 +51,7 @@ module Cask
         casks = casks.map { |c| CaskLoader.load(c, config: Config.from_args(args)) }
         casks = Cask.to_a if casks.empty?
 
-        self.class.audit_casks(
+        results = self.class.audit_casks(
           *casks,
           download:        args.download?,
           appcast:         args.appcast?,
@@ -62,6 +62,13 @@ module Cask
           quarantine:      args.quarantine?,
           language:        args.language,
         )
+
+        self.class.print_annotations(results)
+
+        failed_casks = results.reject { |_, result| result[:errors].empty? }.map(&:first)
+        return if failed_casks.empty?
+
+        raise CaskError, "audit failed for casks: #{failed_casks.join(" ")}"
       end
 
       def self.audit_casks(
@@ -92,26 +99,24 @@ module Cask
 
         require "cask/auditor"
 
-        failed_casks = casks.reject do |cask|
+        casks.map do |cask|
           odebug "Auditing Cask #{cask}"
-          result = Auditor.audit(cask, **options)
+          [cask, Auditor.audit(cask, **options)]
+        end.to_h
+      end
 
-          if ENV["GITHUB_ACTIONS"]
-            cask_path = cask.sourcefile_path
-            annotations = (result[:warnings].map { |w| [:warning, w] } + result[:errors].map { |e| [:error, e] })
-                          .map { |type, message| GitHub::Actions::Annotation.new(type, message, file: cask_path) }
+      def self.print_annotations(results)
+        return unless ENV["GITHUB_ACTIONS"]
 
-            annotations.each do |annotation|
-              puts annotation if annotation.relevant?
-            end
+        results.each do |cask, result|
+          cask_path = cask.sourcefile_path
+          annotations = (result[:warnings].map { |w| [:warning, w] } + result[:errors].map { |e| [:error, e] })
+                        .map { |type, message| GitHub::Actions::Annotation.new(type, message, file: cask_path) }
+
+          annotations.each do |annotation|
+            puts annotation if annotation.relevant?
           end
-
-          result[:errors].empty?
         end
-
-        return if failed_casks.empty?
-
-        raise CaskError, "audit failed for casks: #{failed_casks.join(" ")}"
       end
     end
   end
