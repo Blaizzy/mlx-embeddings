@@ -225,6 +225,31 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
       corrected_source = autocorrect_source(source)
       expect(corrected_source).to eq(correct_source)
     end
+
+    it "When `depends_on` precedes `deprecate!`" do
+      source = <<~RUBY
+        class Foo < Formula
+          url "https://brew.sh/foo-1.0.tgz"
+
+          depends_on "openssl"
+
+          deprecate! because: "has been replaced by bar"
+        end
+      RUBY
+
+      correct_source = <<~RUBY
+        class Foo < Formula
+          url "https://brew.sh/foo-1.0.tgz"
+
+          deprecate! because: "has been replaced by bar"
+
+          depends_on "openssl"
+        end
+      RUBY
+
+      corrected_source = autocorrect_source(source)
+      expect(corrected_source).to eq(correct_source)
+    end
   end
 
   context "no on_os_block" do

@@ -38,6 +38,8 @@ module RuboCop
             [{ name: :keg_only,  type: :method_call }],
             [{ name: :option,    type: :method_call }],
             [{ name: :deprecated_option, type: :method_call }],
+            [{ name: :disable!, type: :method_call }],
+            [{ name: :deprecate!, type: :method_call }],
             [{ name: :depends_on, type: :method_call }],
             [{ name: :uses_from_macos, type: :method_call }],
             [{ name: :on_macos, type: :block_call }],
