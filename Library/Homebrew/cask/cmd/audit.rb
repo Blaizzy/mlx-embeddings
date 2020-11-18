@@ -42,23 +42,6 @@ module Cask
 
       sig { void }
       def run
-        require "cask/auditor"
-
-        Homebrew.auditing = true
-
-        options = {
-          audit_download:        args.download?,
-          audit_appcast:         args.appcast?,
-          audit_online:          args.online?,
-          audit_strict:          args.strict?,
-          audit_new_cask:        args.new_cask?,
-          audit_token_conflicts: args.token_conflicts?,
-          quarantine:            args.quarantine?,
-          language:              args.language,
-        }.compact
-
-        options[:quarantine] = true if options[:quarantine].nil?
-
         casks = args.named.flat_map do |name|
           next name if File.exist?(name)
           next Tap.fetch(name).cask_files if name.count("/") == 1
@@ -67,6 +50,47 @@ module Cask
         end
         casks = casks.map { |c| CaskLoader.load(c, config: Config.from_args(args)) }
         casks = Cask.to_a if casks.empty?
+
+        self.class.audit_casks(
+          *casks,
+          download:        args.download?,
+          appcast:         args.appcast?,
+          online:          args.online?,
+          strict:          args.strict?,
+          new_cask:        args.new_cask?,
+          token_conflicts: args.token_conflicts?,
+          quarantine:      args.quarantine?,
+          language:        args.language,
+        )
+      end
+
+      def self.audit_casks(
+        *casks,
+        download: nil,
+        appcast: nil,
+        online: nil,
+        strict: nil,
+        new_cask: nil,
+        token_conflicts: nil,
+        quarantine: nil,
+        language: nil
+      )
+        options = {
+          audit_download:        download,
+          audit_appcast:         appcast,
+          audit_online:          online,
+          audit_strict:          strict,
+          audit_new_cask:        new_cask,
+          audit_token_conflicts: token_conflicts,
+          quarantine:            quarantine,
+          language:              language,
+        }.compact
+
+        options[:quarantine] = true if options[:quarantine].nil?
+
+        Homebrew.auditing = true
+
+        require "cask/auditor"
 
         failed_casks = casks.reject do |cask|
           odebug "Auditing Cask #{cask}"
