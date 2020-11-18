@@ -10,18 +10,6 @@ module PyPI
   PYTHONHOSTED_URL_PREFIX = "https://files.pythonhosted.org/packages/"
   private_constant :PYTHONHOSTED_URL_PREFIX
 
-  AUTOMATIC_RESOURCE_UPDATE_BLOCKLIST = %w[
-    ansible
-    ansible@2.8
-    cloudformation-cli
-    diffoscope
-    dxpy
-    ipython
-    molecule
-    salt
-  ].freeze
-  private_constant :AUTOMATIC_RESOURCE_UPDATE_BLOCKLIST
-
   @pipgrip_installed = nil
 
   def url_to_pypi_package_name(url)
@@ -40,7 +28,11 @@ module PyPI
 
   # Get name, URL and SHA-256 checksum for a given PyPI package.
   def get_pypi_info(package, version)
-    metadata_url = "https://pypi.org/pypi/#{package}/#{version}/json"
+    metadata_url = if version.present?
+      "https://pypi.org/pypi/#{package}/#{version}/json"
+    else
+      "https://pypi.org/pypi/#{package}/json"
+    end
     out, _, status = curl_output metadata_url, "--location"
 
     return unless status.success?
@@ -58,17 +50,38 @@ module PyPI
   end
 
   # Return true if resources were checked (even if no change).
-  def update_python_resources!(formula, version = nil, print_only: false, silent: false,
-                               ignore_non_pypi_packages: false)
+  def update_python_resources!(formula, version: nil, package_name: nil, extra_packages: nil, exclude_packages: nil,
+                               print_only: false, silent: false, ignore_non_pypi_packages: false)
 
-    if !print_only && AUTOMATIC_RESOURCE_UPDATE_BLOCKLIST.include?(formula.full_name)
-      odie "The resources for \"#{formula.name}\" need special attention. Please update them manually."
-      return
+    auto_update_list = formula.tap.audit_exceptions[:automatic_resource_update_list]
+    if package_name.blank? && extra_packages.blank? && !print_only &&
+       auto_update_list.present? && auto_update_list.key?(formula.full_name)
+
+      list_entry = auto_update_list[formula.full_name]
+      case list_entry
+      when false
+        odie "The resources for \"#{formula.name}\" need special attention. Please update them manually."
+      when String
+        package_name = list_entry
+      when Hash
+        package_name = list_entry["package_name"]
+        extra_packages = list_entry["extra_packages"]
+        exclude_packages = list_entry["exclude_packages"]
+      end
     end
 
-    pypi_name = url_to_pypi_package_name formula.stable.url
+    package_name ||= url_to_pypi_package_name formula.stable.url
+    version ||= formula.version
+    extra_packages ||= []
+    exclude_packages ||= []
 
-    if pypi_name.nil?
+    # opoo "package_name: #{package_name}"
+    # opoo "version: #{version}"
+    # opoo "extra_packages: #{extra_packages}"
+    # opoo "exclude_packages: #{exclude_packages}"
+    # odie ""
+
+    if package_name.nil?
       return if ignore_non_pypi_packages
 
       odie <<~EOS
@@ -77,11 +90,24 @@ module PyPI
       EOS
     end
 
-    version ||= formula.version
+    input_package_names = { package_name => version }
+    extra_packages.each do |extra|
+      extra_name, extra_version = extra.split "=="
 
-    if get_pypi_info(pypi_name, version).blank?
-      odie "\"#{pypi_name}\" at version #{version} is not available on PyPI." unless ignore_non_pypi_packages
-      return
+      if input_package_names.key?(extra_name) && input_package_names[extra_name] != extra_version
+        odie "Conflicting versions specified for the `#{extra_name}` package: "\
+              "#{input_package_names[extra_name]}, #{extra_version}"
+      end
+
+      input_package_names[extra_name] = extra_version
+    end
+
+    input_package_names.each do |name, package_version|
+      name = name.split("[").first
+      next if get_pypi_info(name, package_version).present?
+
+      version_string = " at version #{package_version}" if package_version.present?
+      odie "\"#{name}\"#{version_string} is not available on PyPI." unless ignore_non_pypi_packages
     end
 
     non_pypi_resources = formula.resources.reject do |resource|
@@ -95,27 +121,43 @@ module PyPI
     @pipgrip_installed ||= Formula["pipgrip"].any_version_installed?
     odie '"pipgrip" must be installed (`brew install pipgrip`)' unless @pipgrip_installed
 
-    ohai "Retrieving PyPI dependencies for \"#{pypi_name}==#{version}\"..." if !print_only && !silent
-    pipgrip_output = Utils.popen_read Formula["pipgrip"].bin/"pipgrip", "--json", "--no-cache-dir",
-                                      "#{pypi_name}==#{version}"
-    unless $CHILD_STATUS.success?
-      odie <<~EOS
-        Unable to determine dependencies for \"#{pypi_name}\" because of a failure when running
-        `pipgrip --json --no-cache-dir #{pypi_name}==#{version}`.
-        Please update the resources for \"#{formula.name}\" manually.
-      EOS
-    end
+    found_packages = {}
+    input_package_names.each do |name, package_version|
+      pypi_package_string = if package_version.present?
+        "#{name}==#{package_version}"
+      else
+        name
+      end
 
-    packages = JSON.parse(pipgrip_output).sort.to_h
+      ohai "Retrieving PyPI dependencies for \"#{pypi_package_string}\"..." if !print_only && !silent
+      pipgrip_output = Utils.popen_read Formula["pipgrip"].bin/"pipgrip", "--json", "--no-cache-dir",
+                                        pypi_package_string
+      unless $CHILD_STATUS.success?
+        odie <<~EOS
+          Unable to determine dependencies for \"#{name}\" because of a failure when running
+          `pipgrip --json --no-cache-dir #{pypi_package_string}`.
+          Please update the resources for \"#{formula.name}\" manually.
+        EOS
+      end
+
+      found_packages.merge!(JSON.parse(pipgrip_output).sort.to_h) do |conflicting_package, old_version, new_version|
+        next old_version if old_version == new_version
+
+        odie "Conflicting versions found for the `#{conflicting_package}` resource: #{old_version}, #{new_version}"
+      end
+    end
 
     # Remove extra packages that may be included in pipgrip output
-    exclude_list = %W[#{pypi_name.downcase} argparse pip setuptools wheel wsgiref]
-    packages.delete_if do |package|
-      exclude_list.include? package
-    end
+    exclude_list = %W[#{package_name.downcase} argparse pip setuptools wheel wsgiref]
+    found_packages.delete_if { |package| exclude_list.include? package }
 
     new_resource_blocks = ""
-    packages.each do |package, package_version|
+    found_packages.each do |package, package_version|
+      if exclude_packages.include? package
+        ohai "Excluding \"#{package}==#{package_version}\"" if !print_only && !silent
+        next
+      end
+
       ohai "Getting PyPI info for \"#{package}==#{package_version}\"" if !print_only && !silent
       name, url, checksum = get_pypi_info package, package_version
       # Fail if unable to find name, url or checksum for any resource

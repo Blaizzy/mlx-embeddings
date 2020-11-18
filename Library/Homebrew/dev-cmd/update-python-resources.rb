@@ -26,6 +26,14 @@ module Homebrew
       flag   "--version=",
              description: "Use the specified <version> when finding resources for <formula>. "\
                           "If no version is specified, the current version for <formula> will be used."
+      flag   "--package-name=",
+             depends_on:  "--version",
+             description: "Use the specified <package-name> when finding resources for <formula>. "\
+                          "If no package name is specified, it will be inferred from the formula's stable URL."
+      comma_array "--extra-packages=",
+                  description: "Include these additional packages when finding resources."
+      comma_array "--exclude-packages=",
+                  description: "Exclude these packages when finding resources."
 
       min_named :formula
     end
@@ -35,7 +43,13 @@ module Homebrew
     args = update_python_resources_args.parse
 
     args.named.to_formulae.each do |formula|
-      PyPI.update_python_resources! formula, args.version, print_only: args.print_only?, silent: args.silent?,
+      PyPI.update_python_resources! formula,
+                                    version:                  args.version,
+                                    package_name:             args.package_name,
+                                    extra_packages:           args.extra_packages,
+                                    exclude_packages:         args.exclude_packages,
+                                    print_only:               args.print_only?,
+                                    silent:                   args.silent?,
                                     ignore_non_pypi_packages: args.ignore_non_pypi_packages?
     end
   end
