@@ -75,7 +75,7 @@ describe Cask::Cmd::Style, :cask do
       end
 
       it "tries to find paths for all tokens" do
-        expect(Cask::CaskLoader).to receive(:load).twice.and_return(double("cask", sourcefile_path: nil))
+        expect(Cask::CaskLoader).to receive(:load).twice.and_return(instance_double(Cask::Cask, sourcefile_path: nil))
         subject
       end
     end

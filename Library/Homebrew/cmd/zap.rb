@@ -1,11 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "keg"
-require "formula"
-require "diagnostic"
-require "migrator"
-require "cli/parser"
 require "cask/cmd"
 require "cask/cask_loader"
 require "uninstall"
@@ -16,12 +11,15 @@ module Homebrew
   module_function
 
   sig { returns(CLI::Parser) }
-  def uninstall_args
+  def zap_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `uninstall`, `rm`, `remove` [<options>] <formula>|<cask>
+        `zap` [<options>] <formula>|<cask>
 
-        Uninstall a <formula> or <cask>.
+        Remove all files associated with the given <formula> or <cask>.
+        Implicitly also performs all actions associated with `uninstall`.
+
+        *May remove files which are shared between applications.*
       EOS
       switch "-f", "--force",
              description: "Delete all installed versions of <formula>. Uninstall even if <cask> is not " \
@@ -40,8 +38,8 @@ module Homebrew
     end
   end
 
-  def uninstall
-    args = uninstall_args.parse
+  def zap
+    args = zap_args.parse
 
     only = :formula if args.formula? && !args.cask?
     only = :cask if args.cask? && !args.formula?
@@ -56,7 +54,7 @@ module Homebrew
       named_args:          args.named,
     )
 
-    Cask::Cmd::Uninstall.uninstall_casks(
+    Cask::Cmd::Zap.zap_casks(
       *casks,
       binaries: EnvConfig.cask_opts_binaries?,
       verbose:  args.verbose?,

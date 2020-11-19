@@ -782,12 +782,12 @@ Show information on each installed tap\.
 \fB\-\-json\fR
 Print a JSON representation of \fItap\fR\. Currently the default and only accepted value for \fIversion\fR is \fBv1\fR\. See the docs for examples of using the JSON output: \fIhttps://docs\.brew\.sh/Querying\-Brew\fR
 .
-.SS "\fBuninstall\fR, \fBrm\fR, \fBremove\fR [\fIoptions\fR] \fIformula\fR"
-Uninstall \fIformula\fR\.
+.SS "\fBuninstall\fR, \fBrm\fR, \fBremove\fR [\fIoptions\fR] \fIformula\fR|\fIcask\fR"
+Uninstall a \fIformula\fR or \fIcask\fR\.
 .
 .TP
 \fB\-f\fR, \fB\-\-force\fR
-Delete all installed versions of \fIformula\fR\.
+Delete all installed versions of \fIformula\fR\. Uninstall even if \fIcask\fR is not installed, overwrite existing files and ignore errors when removing files\.
 .
 .TP
 \fB\-\-ignore\-dependencies\fR
@@ -939,6 +939,28 @@ Include all formulae that specify \fIformula\fR as \fB:optional\fR type dependen
 .TP
 \fB\-\-skip\-recommended\fR
 Skip all formulae that specify \fIformula\fR as \fB:recommended\fR type dependency\.
+.
+.SS "\fBzap\fR [\fIoptions\fR] \fIformula\fR|\fIcask\fR"
+Remove all files associated with the given \fIformula\fR or \fIcask\fR\. Implicitly also performs all actions associated with \fBuninstall\fR\.
+.
+.P
+\fIMay remove files which are shared between applications\.\fR
+.
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+Delete all installed versions of \fIformula\fR\. Uninstall even if \fIcask\fR is not installed, overwrite existing files and ignore errors when removing files\.
+.
+.TP
+\fB\-\-ignore\-dependencies\fR
+Don\'t fail uninstall, even if \fIformula\fR is a dependency of any installed formulae\.
+.
+.TP
+\fB\-\-formula\fR
+Treat all named arguments as formulae\.
+.
+.TP
+\fB\-\-cask\fR
+Treat all named arguments as casks\.
 .
 .SS "\fB\-\-cache\fR [\fIoptions\fR] [\fIformula\fR|\fIcask\fR]"
 Display Homebrew\'s download cache\. See also \fBHOMEBREW_CACHE\fR\.

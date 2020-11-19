@@ -35,10 +35,10 @@ module Homebrew
         @to_formulae ||= to_formulae_and_casks(only: :formula).freeze
       end
 
-      def to_formulae_and_casks(only: nil, method: nil)
+      def to_formulae_and_casks(only: nil, ignore_unavailable: nil, method: nil)
         @to_formulae_and_casks ||= {}
         @to_formulae_and_casks[only] ||= begin
-          to_objects(only: only, method: method).reject { |o| o.is_a?(Tap) }.freeze
+          to_objects(only: only, ignore_unavailable: ignore_unavailable, method: method).freeze
         end
       end
 
@@ -58,6 +58,10 @@ module Homebrew
         end.uniq.freeze
       end
 
+      sig do
+        params(name: String, only: T.nilable(Symbol), method: T.nilable(Symbol))
+          .returns(T.any(Formula, Cask::Cask, Keg, T::Array[Keg]))
+      end
       def load_formula_or_cask(name, only: nil, method: nil)
         if only != :cask
           begin
@@ -68,6 +72,9 @@ module Homebrew
               resolve_formula(name)
             when :keg
               resolve_keg(name)
+            when :kegs
+              rack = Formulary.to_rack(name)
+              rack.directory? ? rack.subdirs.map { |d| Keg.new(d) } : []
             else
               raise
             end
@@ -108,10 +115,12 @@ module Homebrew
       # Convert named arguments to {Formula} or {Cask} objects.
       # If both a formula and cask exist with the same name, returns the
       # formula and prints a warning unless `only` is specified.
-      def to_objects(only: nil, method: nil)
+      def to_objects(only: nil, ignore_unavailable: nil, method: nil)
         @to_objects ||= {}
-        @to_objects[only] ||= downcased_unique_named.map do |name|
+        @to_objects[only] ||= downcased_unique_named.flat_map do |name|
           load_formula_or_cask(name, only: only, method: method)
+        rescue NoSuchKegError, FormulaUnavailableError, Cask::CaskUnavailableError
+          ignore_unavailable ? [] : raise
         end.uniq.freeze
       end
       private :to_objects
@@ -159,11 +168,17 @@ module Homebrew
         end
       end
 
-      sig { params(only: T.nilable(Symbol)).returns([T::Array[Keg], T::Array[Cask::Cask]]) }
-      def to_kegs_to_casks(only: nil)
-        @to_kegs_to_casks ||= to_formulae_and_casks(only: only, method: :keg)
-                              .partition { |o| o.is_a?(Keg) }
-                              .map(&:freeze).freeze
+      sig do
+        params(only: T.nilable(Symbol), ignore_unavailable: T.nilable(T::Boolean), all_kegs: T.nilable(T::Boolean))
+          .returns([T::Array[Keg], T::Array[Cask::Cask]])
+      end
+      def to_kegs_to_casks(only: nil, ignore_unavailable: nil, all_kegs: nil)
+        method = all_kegs ? :kegs : :keg
+        @to_kegs_to_casks ||= {}
+        @to_kegs_to_casks[method] ||=
+          to_formulae_and_casks(only: only, ignore_unavailable: ignore_unavailable, method: method)
+          .partition { |o| o.is_a?(Keg) }
+          .map(&:freeze).freeze
       end
 
       sig { returns(T::Array[String]) }
