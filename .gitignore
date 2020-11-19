@@ -24,6 +24,7 @@
 # Ignore Bundler files
 **/.bundle/bin
 **/.bundle/cache
+**/vendor/bundle/ruby/*/bundler.lock
 **/vendor/bundle/ruby/*/bin
 **/vendor/bundle/ruby/*/build_info/
 **/vendor/bundle/ruby/*/cache
