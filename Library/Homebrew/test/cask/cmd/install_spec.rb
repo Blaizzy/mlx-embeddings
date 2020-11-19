@@ -11,7 +11,6 @@ describe Cask::Cmd::Install, :cask do
   it "displays the installation progress" do
     output = Regexp.new <<~EOS
       ==> Downloading file:.*caffeine.zip
-      ==> Verifying SHA-256 checksum for Cask 'local-caffeine'.
       ==> Installing Cask local-caffeine
       ==> Moving App 'Caffeine.app' to '.*Caffeine.app'.
       .*local-caffeine was successfully installed!

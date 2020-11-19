@@ -199,8 +199,8 @@ an issue; just ignore this.
 
 ### `fetch` [*`options`*] *`formula`*
 
-Download a bottle (if available) or source packages for *`formula`*.
-For tarballs, also print SHA-256 checksums.
+Download a bottle (if available) or source packages for *`formula`*e
+and binaries for *`cask`*s. For files, also print SHA-256 checksums.
 
 * `--HEAD`:
   Fetch HEAD version instead of stable version.
@@ -220,6 +220,12 @@ For tarballs, also print SHA-256 checksums.
   Download source packages (for eventual bottling) rather than a bottle.
 * `--force-bottle`:
   Download a bottle if it exists for the current or newest version of macOS, even if it would not be used during installation.
+* `--[no-]quarantine`:
+  Disable/enable quarantining of downloads (default: enabled).
+* `--formula`:
+  Treat all named arguments as formulae.
+* `--cask`:
+  Treat all named arguments as casks.
 
 ### `gist-logs` [*`options`*] *`formula`*
 
