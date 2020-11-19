@@ -128,6 +128,7 @@
 **/vendor/bundle/ruby/*/gems/rspec-mocks-*/
 **/vendor/bundle/ruby/*/gems/rspec-retry-*/
 **/vendor/bundle/ruby/*/gems/rspec-support-*/
+**/vendor/bundle/ruby/*/gems/rspec-sorbet-*/
 **/vendor/bundle/ruby/*/gems/rspec-wait-*/
 **/vendor/bundle/ruby/*/gems/rubocop-1*/
 **/vendor/bundle/ruby/*/gems/rubocop-ast-*/

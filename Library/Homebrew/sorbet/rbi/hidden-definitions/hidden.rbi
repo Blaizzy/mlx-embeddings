@@ -3030,6 +3030,16 @@ class BottleSpecification
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+module BuildEnvironment::DSL
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class BuildEnvironment
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 Bundler::Deprecate = Gem::Deprecate
 
 class Bundler::Env
@@ -5479,6 +5489,11 @@ class Cask::Audit
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+module Cask::Cache
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class Cask::Cask
   def app(&block); end
 
@@ -5806,7 +5821,17 @@ class Cask::MultipleCaskErrors
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class Cask::Pkg
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 module Cask::Quarantine
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Cask::Staged
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -8046,6 +8071,11 @@ class GitHub::Actions::Annotation
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+module GitHub::Actions
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 module GitHub
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -8128,6 +8158,11 @@ module Homebrew
 end
 
 class Homebrew::CLI::Args
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Homebrew::CLI::NamedArgs
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -8283,6 +8318,11 @@ module Homebrew::Search
 end
 
 class Homebrew::Style::LineLocation
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Homebrew::TapAuditor
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -13289,8 +13329,6 @@ end
 class Net::HTTPAlreadyReported
 end
 
-Net::HTTPClientError::EXCEPTION_TYPE = Net::HTTPServerException
-
 Net::HTTPClientErrorCode = Net::HTTPClientError
 
 class Net::HTTPEarlyHints
@@ -13352,8 +13390,6 @@ end
 class Net::HTTPRangeNotSatisfiable
 end
 
-Net::HTTPRedirection::EXCEPTION_TYPE = Net::HTTPRetriableError
-
 Net::HTTPRedirectionCode = Net::HTTPRedirection
 
 Net::HTTPRequestURITooLarge = Net::HTTPURITooLong
@@ -13361,8 +13397,6 @@ Net::HTTPRequestURITooLarge = Net::HTTPURITooLong
 Net::HTTPResponceReceiver = Net::HTTPResponse
 
 Net::HTTPRetriableCode = Net::HTTPRedirection
-
-Net::HTTPServerError::EXCEPTION_TYPE = Net::HTTPFatalError
 
 Net::HTTPServerErrorCode = Net::HTTPServerError
 
@@ -25362,6 +25396,25 @@ end
 
 RSpec::SharedContext = RSpec::Core::SharedContext
 
+module RSpec::Sorbet
+end
+
+module RSpec::Sorbet::Doubles
+  def allow_doubles!(); end
+
+  def allow_instance_doubles!(); end
+  INLINE_DOUBLE_REGEX = ::T.let(nil, ::T.untyped)
+  TYPED_ARRAY_MESSAGE = ::T.let(nil, ::T.untyped)
+  VERIFYING_DOUBLE_OR_DOUBLE = ::T.let(nil, ::T.untyped)
+end
+
+module RSpec::Sorbet::Doubles
+end
+
+module RSpec::Sorbet
+  extend ::RSpec::Sorbet::Doubles
+end
+
 module RSpec::Support
   DEFAULT_FAILURE_NOTIFIER = ::T.let(nil, ::T.untyped)
   DEFAULT_WARNING_NOTIFIER = ::T.let(nil, ::T.untyped)
@@ -30736,6 +30789,16 @@ module Utils::Bottles
 end
 
 module Utils::Inreplace
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Utils::Shebang::RewriteInfo
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Utils::Shebang
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end

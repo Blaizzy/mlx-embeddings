@@ -26,6 +26,7 @@ end
 require "rspec/its"
 require "rspec/wait"
 require "rspec/retry"
+require "rspec/sorbet"
 require "rubocop"
 require "rubocop/rspec/support"
 require "find"
@@ -57,6 +58,10 @@ TEST_DIRECTORIES = [
   HOMEBREW_LOGS,
   HOMEBREW_TEMP,
 ].freeze
+
+# Make `instance_double` and `class_double`
+# work when type-checking is active.
+RSpec::Sorbet.allow_doubles!
 
 RSpec.configure do |config|
   config.order = :random
