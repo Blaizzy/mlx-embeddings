@@ -47,11 +47,10 @@ module Homebrew
       Utils::Shell.from_path(args.shell)
     end
 
-    env_keys = BuildEnvironment.keys(ENV)
     if shell.nil?
       BuildEnvironment.dump ENV
     else
-      env_keys.each do |key|
+      BuildEnvironment.keys(ENV).each do |key|
         puts Utils::Shell.export_value(key, ENV[key], shell)
       end
     end
