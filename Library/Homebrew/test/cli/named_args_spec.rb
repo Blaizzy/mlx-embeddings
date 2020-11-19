@@ -150,16 +150,16 @@ describe Homebrew::CLI::NamedArgs do
       expect(described_class.new("foo", "baz").to_paths).to eq [formula_path, cask_path]
     end
 
-    it "returns only formulae when `only: :formulae` is specified" do
+    it "returns only formulae when `only: :formula` is specified" do
       expect(Formulary).to receive(:path).with("foo").and_return(formula_path)
 
-      expect(described_class.new("foo", "baz").to_paths(only: :formulae)).to eq [formula_path, Formulary.path("baz")]
+      expect(described_class.new("foo", "baz").to_paths(only: :formula)).to eq [formula_path, Formulary.path("baz")]
     end
 
-    it "returns only casks when `only: :casks` is specified" do
+    it "returns only casks when `only: :cask` is specified" do
       expect(Cask::CaskLoader).to receive(:path).with("foo").and_return(cask_path)
 
-      expect(described_class.new("foo", "baz").to_paths(only: :casks)).to eq [cask_path, Cask::CaskLoader.path("baz")]
+      expect(described_class.new("foo", "baz").to_paths(only: :cask)).to eq [cask_path, Cask::CaskLoader.path("baz")]
     end
   end
 end

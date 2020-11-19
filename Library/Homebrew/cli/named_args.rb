@@ -117,7 +117,7 @@ module Homebrew
       private :to_objects
 
       def to_formulae_paths
-        to_paths(only: :formulae)
+        to_paths(only: :formula)
       end
 
       # Keep existing paths and try to convert others to tap, formula or cask paths.
@@ -128,11 +128,11 @@ module Homebrew
         @to_paths[only] ||= downcased_unique_named.flat_map do |name|
           if File.exist?(name)
             Pathname(name)
-          elsif name.count("/") == 1
+          elsif name.count("/") == 1 && !name.start_with?("./", "/")
             Tap.fetch(name).path
           else
-            next Formulary.path(name) if only == :formulae
-            next Cask::CaskLoader.path(name) if only == :casks
+            next Formulary.path(name) if only == :formula
+            next Cask::CaskLoader.path(name) if only == :cask
 
             formula_path = Formulary.path(name)
             cask_path = Cask::CaskLoader.path(name)
