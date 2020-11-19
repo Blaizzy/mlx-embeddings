@@ -159,7 +159,7 @@ module Homebrew
         end
       end
 
-      sig { params(only: Symbol).returns([T::Array[Keg], T::Array[Cask::Cask]]) }
+      sig { params(only: T.nilable(Symbol)).returns([T::Array[Keg], T::Array[Cask::Cask]]) }
       def to_kegs_to_casks(only: nil)
         @to_kegs_to_casks ||= to_formulae_and_casks(only: only, method: :keg)
                               .partition { |o| o.is_a?(Keg) }
