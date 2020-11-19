@@ -67,20 +67,23 @@ module Homebrew
       options |= f.build.used_options
       options &= f.options
 
-      fi = FormulaInstaller.new(f, force_bottle: args.force_bottle?,
-                                   build_from_source_formulae: args.build_from_source_formulae,
-                                   debug: args.debug?, quiet: args.quiet?, verbose: args.verbose?)
-      fi.options = options
-      fi.force = args.force?
-      fi.keep_tmp = args.keep_tmp?
-      fi.build_bottle = args.build_bottle?
-      fi.installed_on_request = args.named.present?
-      fi.link_keg           ||= keg_was_linked if keg_had_linked_opt
-      if tab
-        fi.build_bottle          ||= tab.built_bottle?
-        fi.installed_as_dependency = tab.installed_as_dependency
-        fi.installed_on_request  ||= tab.installed_on_request
-      end
+      fi = FormulaInstaller.new(
+        f,
+        **{
+          options:                    options,
+          link_keg:                   keg_had_linked_opt ? keg_was_linked : nil,
+          installed_as_dependency:    tab&.installed_as_dependency,
+          installed_on_request:       args.named.present? || tab&.installed_on_request,
+          build_bottle:               args.build_bottle? || tab&.built_bottle?,
+          force_bottle:               args.force_bottle?,
+          build_from_source_formulae: args.build_from_source_formulae,
+          keep_tmp:                   args.keep_tmp?,
+          force:                      args.force?,
+          debug:                      args.debug?,
+          quiet:                      args.quiet?,
+          verbose:                    args.verbose?,
+        }.compact,
+      )
 
       upgrade_version = if f.optlinked?
         "#{Keg.new(f.opt_prefix).version} -> #{f.pkg_version}"

@@ -357,21 +357,28 @@ module Homebrew
     f.print_tap_action
     build_options = f.build
 
-    fi = FormulaInstaller.new(f, force_bottle:               args.force_bottle?,
-                                 include_test_formulae:      args.include_test_formulae,
-                                 build_from_source_formulae: args.build_from_source_formulae,
-                                 debug: args.debug?, quiet: args.quiet?, verbose: args.verbose?)
-    fi.options              = build_options.used_options
-    fi.env                  = args.env
-    fi.force                = args.force?
-    fi.keep_tmp             = args.keep_tmp?
-    fi.ignore_deps          = args.ignore_dependencies?
-    fi.only_deps            = args.only_dependencies?
-    fi.build_bottle         = args.build_bottle?
-    fi.bottle_arch          = args.bottle_arch
-    fi.interactive          = args.interactive?
-    fi.git                  = args.git?
-    fi.cc                   = args.cc
+    fi = FormulaInstaller.new(
+      f,
+      **{
+        options:                    build_options.used_options,
+        build_bottle:               args.build_bottle?,
+        force_bottle:               args.force_bottle?,
+        bottle_arch:                args.bottle_arch,
+        ignore_deps:                args.ignore_dependencies?,
+        only_deps:                  args.only_dependencies?,
+        include_test_formulae:      args.include_test_formulae,
+        build_from_source_formulae: args.build_from_source_formulae,
+        env:                        args.env,
+        cc:                         args.cc,
+        git:                        args.git?,
+        interactive:                args.interactive?,
+        keep_tmp:                   args.keep_tmp?,
+        force:                      args.force?,
+        debug:                      args.debug?,
+        quiet:                      args.quiet?,
+        verbose:                    args.verbose?,
+      }.compact,
+    )
     fi.prelude
     fi.fetch
     fi.install

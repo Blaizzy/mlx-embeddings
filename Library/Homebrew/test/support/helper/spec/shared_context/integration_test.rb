@@ -178,8 +178,7 @@ RSpec.shared_context "integration test" do
 
   def install_test_formula(name, content = nil, build_bottle: false)
     setup_test_formula(name, content)
-    fi = FormulaInstaller.new(Formula[name])
-    fi.build_bottle = build_bottle
+    fi = FormulaInstaller.new(Formula[name], build_bottle: build_bottle)
     fi.prelude
     fi.fetch
     fi.install
