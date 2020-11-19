@@ -68,9 +68,11 @@ describe JavaRequirement do
   describe "#satisfied?" do
     subject(:requirement) { described_class.new(%w[1.8]) }
 
-    it "returns false if no `java` executable can be found" do
-      allow(File).to receive(:executable?).and_return(false)
-      expect(requirement).not_to be_satisfied
+    if !OS.mac? || MacOS.version < :big_sur
+      it "returns false if no `java` executable can be found" do
+        allow(File).to receive(:executable?).and_return(false)
+        expect(requirement).not_to be_satisfied
+      end
     end
 
     it "returns true if #preferred_java returns a path" do
