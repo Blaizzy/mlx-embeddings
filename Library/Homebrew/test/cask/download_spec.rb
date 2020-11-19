@@ -35,16 +35,16 @@ module Cask
       context "when the expected checksum is nil" do
         let(:expected_sha256) { nil }
 
-        it "raises an error" do
-          expect { verification }.to raise_error(CaskSha256MissingError, /sha256 "#{computed_sha256}"/)
+        it "outputs an error" do
+          expect { verification }.to output(/sha256 "#{computed_sha256}"/).to_stderr
         end
       end
 
       context "when the expected checksum is empty" do
         let(:expected_sha256) { Checksum.new(:sha256, "") }
 
-        it "raises an error" do
-          expect { verification }.to raise_error(CaskSha256MissingError, /sha256 "#{computed_sha256}"/)
+        it "outputs an error" do
+          expect { verification }.to output(/sha256 "#{computed_sha256}"/).to_stderr
         end
       end
 
@@ -52,7 +52,7 @@ module Cask
         let(:expected_sha256) { Checksum.new(:sha256, deadbeef) }
 
         it "raises an error" do
-          expect { verification }.to raise_error CaskSha256MismatchError
+          expect { verification }.to raise_error ChecksumMismatchError
         end
       end
     end

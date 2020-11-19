@@ -50,21 +50,20 @@ module Cask
 
     def verify_download_integrity(fn)
       if @cask.sha256 == :no_check
-        opoo "No checksum defined for Cask '#{@cask}', skipping verification."
+        opoo "No checksum defined for cask '#{@cask}', skipping verification."
         return
       end
 
-      ohai "Verifying checksum for Cask '#{@cask}'." if verbose?
-
-      expected = @cask.sha256
-      actual = fn.sha256
-
       begin
-        fn.verify_checksum(expected)
+        ohai "Verifying checksum for cask '#{@cask}'." if verbose?
+        fn.verify_checksum(@cask.sha256)
       rescue ChecksumMissingError
-        raise CaskSha256MissingError.new(@cask.token, expected, actual)
-      rescue ChecksumMismatchError
-        raise CaskSha256MismatchError.new(@cask.token, expected, actual, fn)
+        opoo <<~EOS
+          Cannot verify integrity of '#{fn.basename}'.
+          No checksum was provided for this cask.
+          For your reference, the checksum is:
+            sha256 "#{fn.sha256}"
+        EOS
       end
     end
 
