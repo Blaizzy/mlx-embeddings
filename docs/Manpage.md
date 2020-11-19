@@ -915,9 +915,14 @@ present, "revision 1" will be added.
 * `--message`:
   Append *`message`* to the default commit message.
 
-### `cat` *`formula`*
+### `cat` *`formula`*|*`cask`*
 
-Display the source of *`formula`*.
+Display the source of a *`formula`* or *`cask`*.
+
+* `--formula`:
+  Treat all named arguments as formulae.
+* `--cask`:
+  Treat all named arguments as casks.
 
 ### `command` *`cmd`*
 
