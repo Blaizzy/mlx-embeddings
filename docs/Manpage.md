@@ -1339,6 +1339,9 @@ If no options are passed, use `origin/master` as the start commit.
 
 Install and commit Homebrew's vendored gems.
 
+* `--update`:
+  Update all vendored Gems to the latest version.
+
 ## GLOBAL CASK OPTIONS
 
 These options are applicable to subcommands accepting a `--cask` flag and all `cask` commands.
