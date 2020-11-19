@@ -58,10 +58,6 @@ module Homebrew
         end.uniq.freeze
       end
 
-      sig do
-        params(name: String, only: T.nilable(Symbol), method: T.nilable(Symbol))
-          .returns(T.any(Formula, Cask::Cask, Keg, T::Array[Keg]))
-      end
       def load_formula_or_cask(name, only: nil, method: nil)
         if only != :cask
           begin

@@ -26,6 +26,10 @@ module Homebrew
       switch "-f", "--force",
              description: "Delete all installed versions of <formula>. Uninstall even if <cask> is not " \
                           "installed, overwrite existing files and ignore errors when removing files."
+      switch "--zap",
+             description: "Remove all files associated with a <cask>. " \
+                          "*May remove files which are shared between applications.*"
+      conflicts "--formula", "--zap"
       switch "--ignore-dependencies",
              description: "Don't fail uninstall, even if <formula> is a dependency of any installed "\
                           "formulae."
@@ -56,11 +60,19 @@ module Homebrew
       named_args:          args.named,
     )
 
-    Cask::Cmd::Uninstall.uninstall_casks(
-      *casks,
-      binaries: EnvConfig.cask_opts_binaries?,
-      verbose:  args.verbose?,
-      force:    args.force?,
-    )
+    if args.zap?
+      Cask::Cmd::Zap.zap_casks(
+        *casks,
+        verbose: args.verbose?,
+        force:   args.force?,
+      )
+    else
+      Cask::Cmd::Uninstall.uninstall_casks(
+        *casks,
+        binaries: EnvConfig.cask_opts_binaries?,
+        verbose:  args.verbose?,
+        force:    args.force?,
+      )
+    end
   end
 end

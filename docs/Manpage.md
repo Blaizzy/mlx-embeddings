@@ -569,6 +569,8 @@ Uninstall a *`formula`* or *`cask`*.
 
 * `-f`, `--force`:
   Delete all installed versions of *`formula`*. Uninstall even if *`cask`* is not installed, overwrite existing files and ignore errors when removing files.
+* `--zap`:
+  Remove all files associated with a *`cask`*. *May remove files which are shared between applications.*
 * `--ignore-dependencies`:
   Don't fail uninstall, even if *`formula`* is a dependency of any installed formulae.
 * `--formula`:
@@ -676,22 +678,6 @@ specify *`formula`* as a required or recommended dependency for their stable bui
   Include all formulae that specify *`formula`* as `:optional` type dependency.
 * `--skip-recommended`:
   Skip all formulae that specify *`formula`* as `:recommended` type dependency.
-
-### `zap` [*`options`*] *`formula`*|*`cask`*
-
-Remove all files associated with the given *`formula`* or *`cask`*.
-Implicitly also performs all actions associated with `uninstall`.
-
-*May remove files which are shared between applications.*
-
-* `-f`, `--force`:
-  Delete all installed versions of *`formula`*. Uninstall even if *`cask`* is not installed, overwrite existing files and ignore errors when removing files.
-* `--ignore-dependencies`:
-  Don't fail uninstall, even if *`formula`* is a dependency of any installed formulae.
-* `--formula`:
-  Treat all named arguments as formulae.
-* `--cask`:
-  Treat all named arguments as casks.
 
 ### `--cache` [*`options`*] [*`formula`*|*`cask`*]
 
