@@ -10,7 +10,7 @@ module Homebrew
 
     attr_reader :name, :path, :tap_audit_exceptions, :problems
 
-    sig { params(tap: Tap, strict: T::Boolean).void }
+    sig { params(tap: Tap, strict: T.nilable(T::Boolean)).void }
     def initialize(tap, strict:)
       @name                 = tap.name
       @path                 = tap.path
