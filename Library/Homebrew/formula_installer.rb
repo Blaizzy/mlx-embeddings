@@ -654,7 +654,7 @@ class FormulaInstaller
     @show_header = true unless deps.empty?
   end
 
-  sig { params(dep: Formula).void }
+  sig { params(dep: Dependency).void }
   def fetch_dependency(dep)
     df = dep.to_formula
     fi = FormulaInstaller.new(
@@ -675,7 +675,7 @@ class FormulaInstaller
     fi.fetch
   end
 
-  sig { params(dep: Formula, inherited_options: Options).void }
+  sig { params(dep: Dependency, inherited_options: Options).void }
   def install_dependency(dep, inherited_options)
     df = dep.to_formula
     tab = Tab.for_formula(df)
