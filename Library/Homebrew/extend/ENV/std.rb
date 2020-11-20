@@ -1,4 +1,4 @@
-# typed: false
+# typed: strict
 # frozen_string_literal: true
 
 require "hardware"
@@ -14,8 +14,16 @@ module Stdenv
   SAFE_CFLAGS_FLAGS = "-w -pipe"
 
   # @private
-  def setup_build_environment(**options)
-    super(**options)
+  sig do
+    params(
+      formula:      T.nilable(Formula),
+      cc:           T.nilable(String),
+      build_bottle: T.nilable(T::Boolean),
+      bottle_arch:  T.nilable(T::Boolean),
+    ).void
+  end
+  def setup_build_environment(formula: nil, cc: nil, build_bottle: false, bottle_arch: nil)
+    super
 
     self["HOMEBREW_ENV"] = "std"
 
@@ -49,13 +57,14 @@ module Stdenv
 
     send(compiler)
 
-    return unless cc.match?(GNU_GCC_REGEXP)
+    return unless cc&.match?(GNU_GCC_REGEXP)
 
     gcc_formula = gcc_version_formula(cc)
     append_path "PATH", gcc_formula.opt_bin.to_s
   end
   alias generic_setup_build_environment setup_build_environment
 
+  sig { returns(T::Array[Pathname]) }
   def homebrew_extra_pkg_config_paths
     []
   end
@@ -73,10 +82,11 @@ module Stdenv
   # Removes the MAKEFLAGS environment variable, causing make to use a single job.
   # This is useful for makefiles with race conditions.
   # When passed a block, MAKEFLAGS is removed only for the duration of the block and is restored after its completion.
-  def deparallelize
+  sig { params(block: T.proc.returns(T.untyped)).returns(T.untyped) }
+  def deparallelize(&block)
     old = self["MAKEFLAGS"]
     remove "MAKEFLAGS", /-j\d+/
-    if block_given?
+    if block
       begin
         yield
       ensure
@@ -89,30 +99,33 @@ module Stdenv
 
   %w[O3 O2 O1 O0 Os].each do |opt|
     define_method opt do
-      remove_from_cflags(/-O./)
-      append_to_cflags "-#{opt}"
+      send(:remove_from_cflags, /-O./)
+      send(:append_to_cflags, "-#{opt}")
     end
   end
 
-  # @private
+  sig { returns(T.any(String, Pathname)) }
   def determine_cc
     s = super
-    DevelopmentTools.locate(s) || Pathname.new(s)
+    DevelopmentTools.locate(s) || Pathname(s)
   end
+  private :determine_cc
 
-  # @private
+  sig { returns(Pathname) }
   def determine_cxx
-    dir, base = determine_cc.split
+    dir, base = Pathname(determine_cc).split
     dir/base.to_s.sub("gcc", "g++").sub("clang", "clang++")
   end
+  private :determine_cxx
 
   GNU_GCC_VERSIONS.each do |n|
     define_method(:"gcc-#{n}") do
       super()
-      set_cpu_cflags
+      send(:set_cpu_cflags)
     end
   end
 
+  sig { void }
   def clang
     super()
     replace_in_cflags(/-Xarch_#{Hardware::CPU.arch_32_bit} (-march=\S*)/, '\1')
@@ -124,16 +137,19 @@ module Stdenv
     set_cpu_cflags(map)
   end
 
+  sig { void }
   def m64
     append_to_cflags "-m64"
     append "LDFLAGS", "-arch #{Hardware::CPU.arch_64_bit}"
   end
 
+  sig { void }
   def m32
     append_to_cflags "-m32"
     append "LDFLAGS", "-arch #{Hardware::CPU.arch_32_bit}"
   end
 
+  sig { void }
   def universal_binary
     check_for_compiler_universal_support
 
@@ -141,33 +157,38 @@ module Stdenv
     append "LDFLAGS", Hardware::CPU.universal_archs.as_arch_flags
 
     return if compiler_any_clang?
-    return unless Hardware.is_32_bit?
+    return unless Hardware::CPU.is_32_bit?
 
     # Can't mix "-march" for a 32-bit CPU with "-arch x86_64"
     replace_in_cflags(/-march=\S*/, "-Xarch_#{Hardware::CPU.arch_32_bit} \\0")
   end
 
+  sig { void }
   def cxx11
     append "CXX", "-std=c++11"
     libcxx
   end
 
+  sig { void }
   def libcxx
     append "CXX", "-stdlib=libc++" if compiler == :clang
   end
 
+  sig { void }
   def libstdcxx
     append "CXX", "-stdlib=libstdc++" if compiler == :clang
   end
 
   # @private
+  sig { params(before: Regexp, after: String).void }
   def replace_in_cflags(before, after)
     CC_FLAG_VARS.each do |key|
-      self[key] = self[key].sub(before, after) if key?(key)
+      self[key] = fetch(key).sub(before, after) if key?(key)
     end
   end
 
   # Convenience method to set all C compiler flags in one shot.
+  sig { params(val: String).void }
   def define_cflags(val)
     CC_FLAG_VARS.each { |key| self[key] = val }
   end
@@ -175,6 +196,7 @@ module Stdenv
   # Sets architecture-specific flags for every environment variable
   # given in the list `flags`.
   # @private
+  sig { params(flags: T::Array[String], map: T::Hash[Symbol, String]).void }
   def set_cpu_flags(flags, map = Hardware::CPU.optimization_flags)
     cflags =~ /(-Xarch_#{Hardware::CPU.arch_32_bit} )-march=/
     xarch = Regexp.last_match(1).to_s
@@ -186,19 +208,23 @@ module Stdenv
     append flags, map.fetch(effective_arch)
   end
 
+  sig { void }
   def x11; end
 
   # @private
+  sig { params(map: T::Hash[Symbol, String]).void }
   def set_cpu_cflags(map = Hardware::CPU.optimization_flags) # rubocop:disable Naming/AccessorMethodName
     set_cpu_flags(CC_FLAG_VARS, map)
   end
 
+  sig { returns(Integer) }
   def make_jobs
     Homebrew::EnvConfig.make_jobs.to_i
   end
 
   # This method does nothing in stdenv since there's no arg refurbishment
   # @private
+  sig { void }
   def refurbish_args; end
 end
 
