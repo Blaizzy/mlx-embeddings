@@ -150,6 +150,8 @@ module RuboCop
 
             valid_node ||= child.method_name.to_s == "patch"
             valid_node ||= child.method_name.to_s == "resource"
+            valid_node ||= child.method_name.to_s == "deprecate!"
+            valid_node ||= child.method_name.to_s == "disable!"
 
             @offensive_node = on_os_block
             @offense_source_range = on_os_block.source_range
