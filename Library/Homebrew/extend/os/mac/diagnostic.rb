@@ -424,8 +424,10 @@ module Homebrew
         locator = MacOS.sdk_locator
 
         source = if locator.source == :clt
+          update_instructions = MacOS::CLT.update_instructions
           "CLT"
         else
+          update_instructions = MacOS::Xcode.update_instructions
           "Xcode"
         end
 
@@ -433,6 +435,7 @@ module Homebrew
           Your #{source} does not support macOS #{MacOS.version}.
           It is either outdated or was modified.
           Please update your #{source} or delete it if no updates are available.
+          #{update_instructions}
         EOS
       end
     end
