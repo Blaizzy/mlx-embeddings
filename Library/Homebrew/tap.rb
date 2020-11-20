@@ -21,13 +21,13 @@ class Tap
   HOMEBREW_TAP_FORMULA_RENAMES_FILE = "formula_renames.json"
   HOMEBREW_TAP_MIGRATIONS_FILE = "tap_migrations.json"
   HOMEBREW_TAP_AUDIT_EXCEPTIONS_DIR = "audit_exceptions"
-  HOMEBREW_TAP_FORMULA_LISTS_DIR = "formula_lists"
+  HOMEBREW_TAP_PYPI_FORMULA_MAPPINGS = "pypi_formula_mappings.json"
 
   HOMEBREW_TAP_JSON_FILES = %W[
     #{HOMEBREW_TAP_FORMULA_RENAMES_FILE}
     #{HOMEBREW_TAP_MIGRATIONS_FILE}
     #{HOMEBREW_TAP_AUDIT_EXCEPTIONS_DIR}/*.json
-    #{HOMEBREW_TAP_FORMULA_LISTS_DIR}/*.json
+    #{HOMEBREW_TAP_PYPI_FORMULA_MAPPINGS}
   ].freeze
 
   def self.fetch(*args)
@@ -114,7 +114,7 @@ class Tap
     @formula_renames = nil
     @tap_migrations = nil
     @audit_exceptions = nil
-    @formula_lists = nil
+    @pypi_formula_mappings = nil
     @config = nil
     remove_instance_variable(:@private) if instance_variable_defined?(:@private)
   end
@@ -562,13 +562,15 @@ class Tap
   end
 
   # Hash with audit exceptions
+  sig { returns(Hash) }
   def audit_exceptions
-    @audit_exceptions = read_formula_list_directory HOMEBREW_TAP_AUDIT_EXCEPTIONS_DIR
+    @audit_exceptions = read_formula_list_directory "#{HOMEBREW_TAP_AUDIT_EXCEPTIONS_DIR}/*"
   end
 
-  # Hash with formula lists
-  def formula_lists
-    @formula_lists = read_formula_list_directory HOMEBREW_TAP_FORMULA_LISTS_DIR
+  # Hash with pypi formula mappings
+  sig { returns(Hash) }
+  def pypi_formula_mappings
+    @pypi_formula_mappings = read_formula_list path/HOMEBREW_TAP_PYPI_FORMULA_MAPPINGS
   end
 
   def ==(other)
@@ -630,18 +632,25 @@ class Tap
     end
   end
 
+  sig { params(file: Pathname).returns(Hash) }
+  def read_formula_list(file)
+    JSON.parse file.read
+  rescue JSON::ParserError
+    opoo "#{file} contains invalid JSON"
+    {}
+  rescue Errno::ENOENT
+    {}
+  end
+
+  sig { params(directory: String).returns(Hash) }
   def read_formula_list_directory(directory)
     list = {}
 
-    Pathname.glob(path/directory/"*").each do |exception_file|
+    Pathname.glob(path/directory).each do |exception_file|
       list_name = exception_file.basename.to_s.chomp(".json").to_sym
-      list_contents = begin
-        JSON.parse exception_file.read
-      rescue JSON::ParserError
-        opoo "#{exception_file} contains invalid JSON"
-      end
+      list_contents = read_formula_list exception_file
 
-      next if list_contents.nil?
+      next if list_contents.blank?
 
       list[list_name] = list_contents
     end
@@ -751,8 +760,8 @@ class CoreTap < Tap
     end
   end
 
-  def formula_lists
-    @formula_lists ||= begin
+  def pypi_formula_mappings
+    @pypi_formula_mappings ||= begin
       self.class.ensure_installed!
       super
     end
