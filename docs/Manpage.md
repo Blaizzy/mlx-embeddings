@@ -242,7 +242,7 @@ For tarballs, also print SHA-256 checksums.
 
 ### `formulae`
 
-Prints a sorted list of locally available formulas including shortnames.
+List all locally available formulae including short names.
 
 ### `gist-logs` [*`options`*] *`formula`*
 

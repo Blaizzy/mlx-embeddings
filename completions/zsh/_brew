@@ -111,7 +111,7 @@ __brew_common_commands() {
     'edit:edit a formula'
     'fetch:download formula resources to the cache'
     'formula:the path for a formula'
-		'formulas:show a sorted list of installable formulas'
+		'formulae:show a sorted list of installable formulae'
     'gist-logs:generate a gist of the full build logs'
     'home:visit the homepage of a formula or the brew project'
     'info:information about a formula'
