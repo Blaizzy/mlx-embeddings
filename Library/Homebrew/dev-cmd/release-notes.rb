@@ -4,8 +4,11 @@
 require "cli/parser"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def release_notes_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
@@ -17,6 +20,7 @@ module Homebrew
       EOS
       switch "--markdown",
              description: "Print as a Markdown list."
+
       max_named 2
     end
   end

@@ -10,6 +10,8 @@ require "os/mac/keg"
 module OS
   # Helper module for querying system information on macOS.
   module Mac
+    extend T::Sig
+
     module_function
 
     # rubocop:disable Naming/ConstantName
@@ -39,21 +41,21 @@ module OS
 
     def latest_sdk_version
       # TODO: bump version when new Xcode macOS SDK is released
-      Version.new "10.15"
+      Version.new "11.0"
     end
 
     def latest_stable_version
       # TODO: bump version when new macOS is released and also update
       # references in docs/Installation.md and
       # https://github.com/Homebrew/install/blob/HEAD/install.sh
-      Version.new "10.15"
+      Version.new "11.0"
     end
 
     def outdated_release?
       # TODO: bump version when new macOS is released and also update
       # references in docs/Installation.md and
       # https://github.com/Homebrew/install/blob/HEAD/install.sh
-      version < "10.13"
+      version < "10.14"
     end
 
     def prerelease?
@@ -81,6 +83,7 @@ module OS
       @active_developer_dir ||= Utils.popen_read("/usr/bin/xcode-select", "-print-path").strip
     end
 
+    sig { returns(T::Boolean) }
     def sdk_root_needed?
       if MacOS::CLT.installed?
         # If there's no CLT SDK, return false

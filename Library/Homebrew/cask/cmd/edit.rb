@@ -7,14 +7,19 @@ module Cask
     #
     # @api private
     class Edit < AbstractCommand
+      extend T::Sig
+
+      sig { override.returns(T.nilable(T.any(Integer, Symbol))) }
       def self.min_named
         :cask
       end
 
+      sig { override.returns(T.nilable(Integer)) }
       def self.max_named
         1
       end
 
+      sig { returns(String) }
       def self.description
         "Open the given <cask> for editing."
       end
@@ -25,6 +30,7 @@ module Cask
         raise UsageError, "Only one cask can be edited at a time."
       end
 
+      sig { void }
       def run
         exec_editor cask_path
       rescue CaskUnavailableError => e

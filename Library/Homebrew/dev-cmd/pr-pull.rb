@@ -8,8 +8,11 @@ require "tmpdir"
 require "formula"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def pr_pull_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
@@ -59,8 +62,9 @@ module Homebrew
       flag   "--bintray-mirror=",
              description: "Use the specified Bintray repository to automatically mirror stable URLs "\
                           "defined in the formulae (default: `mirror`)."
-      min_named 1
+
       conflicts "--clean", "--autosquash"
+      min_named 1
     end
   end
 
@@ -282,8 +286,9 @@ module Homebrew
     Utils::Git.cherry_pick!(path, "--ff", "--allow-empty", *commits, verbose: args.verbose?, resolve: args.resolve?)
   end
 
-  def formulae_need_bottles?(tap, original_commit, args:)
+  def formulae_need_bottles?(tap, original_commit, user, repo, pr, args:)
     return if args.dry_run?
+    return false if GitHub.pull_request_labels(user, repo, pr).include? "CI-syntax-only"
 
     changed_formulae(tap, original_commit).any? do |f|
       !f.bottle_unneeded? && !f.bottle_disabled?
@@ -391,7 +396,7 @@ module Homebrew
                             args: args)
           end
 
-          unless formulae_need_bottles?(tap, original_commit, args: args)
+          unless formulae_need_bottles?(tap, original_commit, user, repo, pr, args: args)
             ohai "Skipping artifacts for ##{pr} as the formulae don't need bottles"
             next
           end
@@ -418,6 +423,8 @@ module Homebrew
 end
 
 class GitHubArtifactDownloadStrategy < AbstractFileDownloadStrategy
+  extend T::Sig
+
   def fetch
     ohai "Downloading #{url}"
     if cached_location.exist?
@@ -441,6 +448,7 @@ class GitHubArtifactDownloadStrategy < AbstractFileDownloadStrategy
 
   private
 
+  sig { returns(String) }
   def resolved_basename
     "artifact.zip"
   end

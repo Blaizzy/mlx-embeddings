@@ -48,6 +48,8 @@ module Homebrew
 
     # Diagnostic checks.
     class Checks
+      extend T::Sig
+
       def initialize(verbose: true)
         @verbose = verbose
       end
@@ -71,6 +73,7 @@ module Homebrew
         path.gsub(ENV["HOME"], "~")
       end
 
+      sig { returns(String) }
       def none_string
         "<NONE>"
       end
@@ -112,8 +115,8 @@ module Homebrew
         <<~EOS
           You will encounter build failures with some formulae.
           Please create pull requests instead of asking for help on Homebrew's GitHub,
-          Discourse, Twitter or any other official channels. You are responsible for
-          resolving any issues you experience while you are running this
+          Twitter or any other official channels. You are responsible for resolving
+          any issues you experience while you are running this
           #{what}.
         EOS
       end

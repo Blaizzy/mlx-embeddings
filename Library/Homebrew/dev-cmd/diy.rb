@@ -5,8 +5,11 @@ require "formula"
 require "cli/parser"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def diy_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
@@ -27,6 +30,8 @@ module Homebrew
 
   def diy
     args = diy_args.parse
+
+    # odeprecated "`brew diy`"
 
     path = Pathname.getwd
 

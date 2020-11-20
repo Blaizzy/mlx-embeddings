@@ -10,8 +10,11 @@ require "cask/utils"
 require "cask/macos"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def upgrade_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
@@ -44,8 +47,8 @@ module Homebrew
         }],
         [:switch, "-i", "--interactive", {
           description: "Download and patch <formula>, then open a shell. This allows the user to "\
-                        "run `./configure --help` and otherwise determine how to turn the software "\
-                        "package into a Homebrew package.",
+                       "run `./configure --help` and otherwise determine how to turn the software "\
+                       "package into a Homebrew package.",
         }],
         [:switch, "--force-bottle", {
           description: "Install from a bottle if it exists for the current or newest version of "\
@@ -55,7 +58,6 @@ module Homebrew
           description: "Fetch the upstream repository to detect if the HEAD installation of the "\
                        "formula is outdated. Otherwise, the repository's HEAD will only be checked for "\
                        "updates when a new stable or development version has been released.",
-
         }],
         [:switch, "--ignore-pinned", {
           description: "Set a successful exit status even if pinned formulae are not upgraded.",
@@ -89,6 +91,7 @@ module Homebrew
     end
   end
 
+  sig { void }
   def upgrade
     args = upgrade_args.parse
 
@@ -106,6 +109,7 @@ module Homebrew
     upgrade_outdated_casks(casks, args: args) unless upgrade_formulae
   end
 
+  sig { params(formulae: T::Array[Formula], args: CLI::Args).void }
   def upgrade_outdated_formulae(formulae, args:)
     return if args.cask?
 
@@ -168,11 +172,12 @@ module Homebrew
 
     Upgrade.upgrade_formulae(formulae_to_install, args: args)
 
-    Upgrade.check_installed_dependents(args: args)
+    Upgrade.check_installed_dependents(formulae_to_install, args: args)
 
     Homebrew.messages.display_messages(display_times: args.display_times?)
   end
 
+  sig { params(casks: T::Array[Cask::Cask], args: CLI::Args).void }
   def upgrade_outdated_casks(casks, args:)
     return if args.formula?
 

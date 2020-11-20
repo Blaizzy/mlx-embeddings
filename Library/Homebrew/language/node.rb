@@ -6,6 +6,9 @@ module Language
   #
   # @api public
   module Node
+    extend T::Sig
+
+    sig { returns(String) }
     def self.npm_cache_config
       "cache=#{HOMEBREW_CACHE}/npm_cache"
     end
@@ -73,6 +76,7 @@ module Language
       args
     end
 
+    sig { returns(T::Array[String]) }
     def self.local_npm_install_args
       setup_npm_environment
       # npm install args for local style module format

@@ -5,8 +5,11 @@ require "cli/parser"
 require "utils/github"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def dispatch_build_bottle_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
@@ -24,13 +27,13 @@ module Homebrew
              description: "Dispatch specified workflow (default: `dispatch-build-bottle.yml`)."
       switch "--upload",
              description: "Upload built bottles to Bintray."
+
+      min_named :formula
     end
   end
 
   def dispatch_build_bottle
     args = dispatch_build_bottle_args.parse
-
-    raise FormulaUnspecifiedError if args.named.empty?
 
     odie "Must specify --macos option" unless args.macos
 

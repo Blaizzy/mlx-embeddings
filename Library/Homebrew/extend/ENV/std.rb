@@ -6,6 +6,8 @@ require "extend/ENV/shared"
 
 # @private
 module Stdenv
+  extend T::Sig
+
   include SharedEnvExtension
 
   # @private
@@ -58,6 +60,7 @@ module Stdenv
     []
   end
 
+  sig { returns(T.nilable(PATH)) }
   def determine_pkg_config_libdir
     PATH.new(
       HOMEBREW_PREFIX/"lib/pkgconfig",

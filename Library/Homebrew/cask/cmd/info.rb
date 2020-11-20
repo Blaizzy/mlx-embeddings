@@ -9,10 +9,14 @@ module Cask
     #
     # @api private
     class Info < AbstractCommand
+      extend T::Sig
+
+      sig { override.returns(T.nilable(T.any(Integer, Symbol))) }
       def self.min_named
         :cask
       end
 
+      sig { returns(String) }
       def self.description
         "Displays information about the given <cask>."
       end
@@ -42,6 +46,7 @@ module Cask
         end
       end
 
+      sig { void }
       def run
         if args.json == "v1"
           puts JSON.generate(args.named.to_casks.map(&:to_h))

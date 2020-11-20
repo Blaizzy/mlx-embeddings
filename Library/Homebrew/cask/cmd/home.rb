@@ -7,10 +7,14 @@ module Cask
     #
     # @api private
     class Home < AbstractCommand
+      extend T::Sig
+
+      sig { returns(String) }
       def self.description
         "Opens the homepage of the given <cask>. If no cask is given, opens the Homebrew homepage."
       end
 
+      sig { void }
       def run
         if casks.none?
           odebug "Opening project homepage"

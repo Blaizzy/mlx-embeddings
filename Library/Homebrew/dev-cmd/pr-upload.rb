@@ -5,8 +5,11 @@ require "cli/parser"
 require "bintray"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def pr_upload_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS

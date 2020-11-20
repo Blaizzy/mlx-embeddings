@@ -8,13 +8,17 @@ require "tempfile"
 #
 # @api private
 class Sandbox
+  extend T::Sig
+
   SANDBOX_EXEC = "/usr/bin/sandbox-exec"
   private_constant :SANDBOX_EXEC
 
+  sig { returns(T::Boolean) }
   def self.available?
     OS.mac? && File.executable?(SANDBOX_EXEC)
   end
 
+  sig { void }
   def initialize
     @profile = SandboxProfile.new
   end
@@ -146,6 +150,8 @@ class Sandbox
 
   # Configuration profile for a sandbox.
   class SandboxProfile
+    extend T::Sig
+
     SEATBELT_ERB = <<~ERB
       (version 1)
       (debug deny) ; log all denied operations to /var/log/system.log
@@ -169,6 +175,7 @@ class Sandbox
 
     attr_reader :rules
 
+    sig { void }
     def initialize
       @rules = []
     end

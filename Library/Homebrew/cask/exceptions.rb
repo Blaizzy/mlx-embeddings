@@ -11,12 +11,15 @@ module Cask
   #
   # @api private
   class MultipleCaskErrors < CaskError
+    extend T::Sig
+
     def initialize(errors)
       super()
 
       @errors = errors
     end
 
+    sig { returns(String) }
     def to_s
       <<~EOS
         Problems with multiple casks:
@@ -29,12 +32,18 @@ module Cask
   #
   # @api private
   class AbstractCaskErrorWithToken < CaskError
-    attr_reader :token, :reason
+    extend T::Sig
+
+    sig { returns(String) }
+    attr_reader :token
+
+    sig { returns(String) }
+    attr_reader :reason
 
     def initialize(token, reason = nil)
       super()
 
-      @token = token
+      @token = token.to_s
       @reason = reason.to_s
     end
   end
@@ -43,6 +52,9 @@ module Cask
   #
   # @api private
   class CaskNotInstalledError < AbstractCaskErrorWithToken
+    extend T::Sig
+
+    sig { returns(String) }
     def to_s
       "Cask '#{token}' is not installed."
     end
@@ -52,6 +64,8 @@ module Cask
   #
   # @api private
   class CaskConflictError < AbstractCaskErrorWithToken
+    extend T::Sig
+
     attr_reader :conflicting_cask
 
     def initialize(token, conflicting_cask)
@@ -59,6 +73,7 @@ module Cask
       @conflicting_cask = conflicting_cask
     end
 
+    sig { returns(String) }
     def to_s
       "Cask '#{token}' conflicts with '#{conflicting_cask}'."
     end
@@ -68,6 +83,9 @@ module Cask
   #
   # @api private
   class CaskUnavailableError < AbstractCaskErrorWithToken
+    extend T::Sig
+
+    sig { returns(String) }
     def to_s
       "Cask '#{token}' is unavailable#{reason.empty? ? "." : ": #{reason}"}"
     end
@@ -77,6 +95,9 @@ module Cask
   #
   # @api private
   class CaskUnreadableError < CaskUnavailableError
+    extend T::Sig
+
+    sig { returns(String) }
     def to_s
       "Cask '#{token}' is unreadable#{reason.empty? ? "." : ": #{reason}"}"
     end
@@ -86,6 +107,9 @@ module Cask
   #
   # @api private
   class CaskAlreadyCreatedError < AbstractCaskErrorWithToken
+    extend T::Sig
+
+    sig { returns(String) }
     def to_s
       %Q(Cask '#{token}' already exists. Run #{Formatter.identifier("brew cask edit #{token}")} to edit it.)
     end
@@ -95,6 +119,9 @@ module Cask
   #
   # @api private
   class CaskAlreadyInstalledError < AbstractCaskErrorWithToken
+    extend T::Sig
+
+    sig { returns(String) }
     def to_s
       <<~EOS
         Cask '#{token}' is already installed.
@@ -109,6 +136,9 @@ module Cask
   #
   # @api private
   class CaskX11DependencyError < AbstractCaskErrorWithToken
+    extend T::Sig
+
+    sig { returns(String) }
     def to_s
       <<~EOS
         Cask '#{token}' requires XQuartz/X11, which can be installed using Homebrew Cask by running:
@@ -124,6 +154,9 @@ module Cask
   #
   # @api private
   class CaskCyclicDependencyError < AbstractCaskErrorWithToken
+    extend T::Sig
+
+    sig { returns(String) }
     def to_s
       "Cask '#{token}' includes cyclic dependencies on other Casks#{reason.empty? ? "." : ": #{reason}"}"
     end
@@ -133,6 +166,9 @@ module Cask
   #
   # @api private
   class CaskSelfReferencingDependencyError < CaskCyclicDependencyError
+    extend T::Sig
+
+    sig { returns(String) }
     def to_s
       "Cask '#{token}' depends on itself."
     end
@@ -142,6 +178,9 @@ module Cask
   #
   # @api private
   class CaskUnspecifiedError < CaskError
+    extend T::Sig
+
+    sig { returns(String) }
     def to_s
       "This command requires a Cask token."
     end
@@ -151,6 +190,9 @@ module Cask
   #
   # @api private
   class CaskInvalidError < AbstractCaskErrorWithToken
+    extend T::Sig
+
+    sig { returns(String) }
     def to_s
       "Cask '#{token}' definition is invalid#{reason.empty? ? "." : ": #{reason}"}"
     end
@@ -182,6 +224,9 @@ module Cask
   #
   # @api private
   class CaskSha256MissingError < CaskSha256Error
+    extend T::Sig
+
+    sig { returns(String) }
     def to_s
       <<~EOS
         Cask '#{token}' requires a checksum:
@@ -194,6 +239,8 @@ module Cask
   #
   # @api private
   class CaskSha256MismatchError < CaskSha256Error
+    extend T::Sig
+
     attr_reader :path
 
     def initialize(token, expected, actual, path)
@@ -201,6 +248,7 @@ module Cask
       @path = path
     end
 
+    sig { returns(String) }
     def to_s
       <<~EOS
         Checksum for Cask '#{token}' does not match.
@@ -218,6 +266,9 @@ module Cask
   #
   # @api private
   class CaskNoShasumError < CaskSha256Error
+    extend T::Sig
+
+    sig { returns(String) }
     def to_s
       <<~EOS
         Cask '#{token}' does not have a sha256 checksum defined and was not installed.
@@ -230,6 +281,8 @@ module Cask
   #
   # @api private
   class CaskQuarantineError < CaskError
+    extend T::Sig
+
     attr_reader :path, :reason
 
     def initialize(path, reason)
@@ -239,6 +292,7 @@ module Cask
       @reason = reason
     end
 
+    sig { returns(String) }
     def to_s
       s = +"Failed to quarantine #{path}."
 
@@ -256,6 +310,9 @@ module Cask
   #
   # @api private
   class CaskQuarantinePropagationError < CaskQuarantineError
+    extend T::Sig
+
+    sig { returns(String) }
     def to_s
       s = +"Failed to quarantine one or more files within #{path}."
 
@@ -273,6 +330,9 @@ module Cask
   #
   # @api private
   class CaskQuarantineReleaseError < CaskQuarantineError
+    extend T::Sig
+
+    sig { returns(String) }
     def to_s
       s = +"Failed to release #{path} from quarantine."
 

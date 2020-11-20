@@ -14,10 +14,13 @@ require "cli/parser"
 require "upgrade"
 
 module Homebrew
+  extend T::Sig
+
   extend Search
 
   module_function
 
+  sig { returns(CLI::Parser) }
   def install_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
@@ -82,7 +85,6 @@ module Homebrew
         }],
         [:switch, "--keep-tmp", {
           description: "Retain the temporary files created during installation.",
-
         }],
         [:switch, "--build-bottle", {
           description: "Prepare the formula for eventual bottling during installation, skipping any " \
@@ -122,7 +124,6 @@ module Homebrew
 
       conflicts "--ignore-dependencies", "--only-dependencies"
       conflicts "--build-from-source", "--build-bottle", "--force-bottle"
-
       min_named :formula_or_cask
     end
   end
@@ -203,7 +204,7 @@ module Homebrew
           EOS
         elsif args.only_dependencies?
           installed_formulae << f
-        else
+        elsif !args.quiet?
           opoo <<~EOS
             #{f.full_name} #{f.pkg_version} is already installed and up-to-date
             To reinstall #{f.pkg_version}, run `brew reinstall #{f.name}`
@@ -223,11 +224,14 @@ module Homebrew
         msg = "#{f.full_name} #{installed_version} is already installed"
         linked_not_equals_installed = f.linked_version != installed_version
         if f.linked? && linked_not_equals_installed
-          msg = <<~EOS
-            #{msg}
-            The currently linked version is #{f.linked_version}
-            You can use `brew switch #{f} #{installed_version}` to link this version.
-          EOS
+          msg = if args.quiet?
+            nil
+          else
+            <<~EOS
+              #{msg}
+              The currently linked version is #{f.linked_version}
+            EOS
+          end
         elsif !f.linked? || f.keg_only?
           msg = <<~EOS
             #{msg}, it's just not linked
@@ -237,10 +241,14 @@ module Homebrew
           msg = nil
           installed_formulae << f
         else
-          msg = <<~EOS
-            #{msg} and up-to-date
-            To reinstall #{f.pkg_version}, run `brew reinstall #{f.name}`
-          EOS
+          msg = if args.quiet?
+            nil
+          else
+            <<~EOS
+              #{msg} and up-to-date
+              To reinstall #{f.pkg_version}, run `brew reinstall #{f.name}`
+            EOS
+          end
         end
         opoo msg if msg
       elsif !f.any_version_installed? && old_formula = f.old_installed_formulae.first
@@ -250,8 +258,10 @@ module Homebrew
             #{msg}, it's just not linked.
             You can use `brew link #{old_formula.full_name}` to link this version.
           EOS
+        elsif args.quiet?
+          msg = nil
         end
-        opoo msg
+        opoo msg if msg
       elsif f.migration_needed? && !args.force?
         # Check if the formula we try to install is the same as installed
         # but not migrated one. If --force is passed then install anyway.
@@ -288,7 +298,7 @@ module Homebrew
       Cleanup.install_formula_clean!(f)
     end
 
-    Upgrade.check_installed_dependents(args: args)
+    Upgrade.check_installed_dependents(installed_formulae, args: args)
 
     Homebrew.messages.display_messages(display_times: args.display_times?)
   rescue FormulaUnreadableError, FormulaClassUnavailableError,
@@ -347,21 +357,28 @@ module Homebrew
     f.print_tap_action
     build_options = f.build
 
-    fi = FormulaInstaller.new(f, force_bottle:               args.force_bottle?,
-                                 include_test_formulae:      args.include_test_formulae,
-                                 build_from_source_formulae: args.build_from_source_formulae,
-                                 debug: args.debug?, quiet: args.quiet?, verbose: args.verbose?)
-    fi.options              = build_options.used_options
-    fi.env                  = args.env
-    fi.force                = args.force?
-    fi.keep_tmp             = args.keep_tmp?
-    fi.ignore_deps          = args.ignore_dependencies?
-    fi.only_deps            = args.only_dependencies?
-    fi.build_bottle         = args.build_bottle?
-    fi.bottle_arch          = args.bottle_arch
-    fi.interactive          = args.interactive?
-    fi.git                  = args.git?
-    fi.cc                   = args.cc
+    fi = FormulaInstaller.new(
+      f,
+      **{
+        options:                    build_options.used_options,
+        build_bottle:               args.build_bottle?,
+        force_bottle:               args.force_bottle?,
+        bottle_arch:                args.bottle_arch,
+        ignore_deps:                args.ignore_dependencies?,
+        only_deps:                  args.only_dependencies?,
+        include_test_formulae:      args.include_test_formulae,
+        build_from_source_formulae: args.build_from_source_formulae,
+        env:                        args.env,
+        cc:                         args.cc,
+        git:                        args.git?,
+        interactive:                args.interactive?,
+        keep_tmp:                   args.keep_tmp?,
+        force:                      args.force?,
+        debug:                      args.debug?,
+        quiet:                      args.quiet?,
+        verbose:                    args.verbose?,
+      }.compact,
+    )
     fi.prelude
     fi.fetch
     fi.install

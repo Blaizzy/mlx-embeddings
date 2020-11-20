@@ -4,6 +4,8 @@
 # Performs {Formula#mktemp}'s functionality, and tracks the results.
 # Each instance is only intended to be used once.
 class Mktemp
+  extend T::Sig
+
   include FileUtils
 
   # Path to the tmpdir used in this run, as a {Pathname}.
@@ -16,6 +18,7 @@ class Mktemp
   end
 
   # Instructs this {Mktemp} to retain the staged files.
+  sig { void }
   def retain!
     @retain = true
   end
@@ -26,10 +29,12 @@ class Mktemp
   end
 
   # Instructs this Mktemp to not emit messages when retention is triggered.
+  sig { void }
   def quiet!
     @quiet = true
   end
 
+  sig { returns(String) }
   def to_s
     "[Mktemp: #{tmpdir} retain=#{@retain} quiet=#{@quiet}]"
   end

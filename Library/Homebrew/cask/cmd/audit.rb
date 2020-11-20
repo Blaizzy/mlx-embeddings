@@ -9,6 +9,9 @@ module Cask
     #
     # @api private
     class Audit < AbstractCommand
+      extend T::Sig
+
+      sig { returns(String) }
       def self.description
         <<~EOS
           Check <cask> for Homebrew coding style violations. This should be run before
@@ -37,56 +40,83 @@ module Cask
         end
       end
 
+      sig { void }
       def run
-        require "cask/auditor"
-
-        Homebrew.auditing = true
-
-        options = {
-          audit_download:        args.download?,
-          audit_appcast:         args.appcast?,
-          audit_online:          args.online?,
-          audit_strict:          args.strict?,
-          audit_new_cask:        args.new_cask?,
-          audit_token_conflicts: args.token_conflicts?,
-          quarantine:            args.quarantine?,
-          language:              args.language,
-        }.compact
-
-        options[:quarantine] = true if options[:quarantine].nil?
-
         casks = args.named.flat_map do |name|
-          if File.exist?(name)
-            name
-          elsif name.count("/") == 1
-            Tap.fetch(name).cask_files
-          else
-            name
-          end
+          next name if File.exist?(name)
+          next Tap.fetch(name).cask_files if name.count("/") == 1
+
+          name
         end
         casks = casks.map { |c| CaskLoader.load(c, config: Config.from_args(args)) }
         casks = Cask.to_a if casks.empty?
 
-        failed_casks = casks.reject do |cask|
-          odebug "Auditing Cask #{cask}"
-          result = Auditor.audit(cask, **options)
+        results = self.class.audit_casks(
+          *casks,
+          download:        args.download?,
+          appcast:         args.appcast?,
+          online:          args.online?,
+          strict:          args.strict?,
+          new_cask:        args.new_cask?,
+          token_conflicts: args.token_conflicts?,
+          quarantine:      args.quarantine?,
+          language:        args.language,
+        )
 
-          if ENV["GITHUB_ACTIONS"]
-            cask_path = cask.sourcefile_path
-            annotations = (result[:warnings].map { |w| [:warning, w] } + result[:errors].map { |e| [:error, e] })
-                          .map { |type, message| GitHub::Actions::Annotation.new(type, message, file: cask_path) }
+        self.class.print_annotations(results)
 
-            annotations.each do |annotation|
-              puts annotation if annotation.relevant?
-            end
-          end
-
-          result[:errors].empty?
-        end
-
+        failed_casks = results.reject { |_, result| result[:errors].empty? }.map(&:first)
         return if failed_casks.empty?
 
         raise CaskError, "audit failed for casks: #{failed_casks.join(" ")}"
+      end
+
+      def self.audit_casks(
+        *casks,
+        download: nil,
+        appcast: nil,
+        online: nil,
+        strict: nil,
+        new_cask: nil,
+        token_conflicts: nil,
+        quarantine: nil,
+        language: nil
+      )
+        options = {
+          audit_download:        download,
+          audit_appcast:         appcast,
+          audit_online:          online,
+          audit_strict:          strict,
+          audit_new_cask:        new_cask,
+          audit_token_conflicts: token_conflicts,
+          quarantine:            quarantine,
+          language:              language,
+        }.compact
+
+        options[:quarantine] = true if options[:quarantine].nil?
+
+        Homebrew.auditing = true
+
+        require "cask/auditor"
+
+        casks.map do |cask|
+          odebug "Auditing Cask #{cask}"
+          [cask, Auditor.audit(cask, **options)]
+        end.to_h
+      end
+
+      def self.print_annotations(results)
+        return unless ENV["GITHUB_ACTIONS"]
+
+        results.each do |cask, result|
+          cask_path = cask.sourcefile_path
+          annotations = (result[:warnings].map { |w| [:warning, w] } + result[:errors].map { |e| [:error, e] })
+                        .map { |type, message| GitHub::Actions::Annotation.new(type, message, file: cask_path) }
+
+          annotations.each do |annotation|
+            puts annotation if annotation.relevant?
+          end
+        end
       end
     end
   end

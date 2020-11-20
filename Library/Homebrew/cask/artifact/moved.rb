@@ -9,6 +9,9 @@ module Cask
     #
     # @api private
     class Moved < Relocated
+      extend T::Sig
+
+      sig { returns(String) }
       def self.english_description
         "#{english_name}s"
       end

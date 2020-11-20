@@ -73,7 +73,7 @@ describe Utils::Shell do
   specify "::csh_quote" do
     expect(subject.send(:csh_quote, "")).to eq("''")
     expect(subject.send(:csh_quote, "\\")).to eq("\\\\")
-    # note this test is different than for sh
+    # NOTE: this test is different than for sh
     expect(subject.send(:csh_quote, "\n")).to eq("'\\\n'")
     expect(subject.send(:csh_quote, "$")).to eq("\\$")
     expect(subject.send(:csh_quote, "word")).to eq("word")

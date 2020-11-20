@@ -7,6 +7,8 @@ require "requirement"
 #
 # @api private
 class MacOSRequirement < Requirement
+  extend T::Sig
+
   fatal true
 
   attr_reader :comparator, :version
@@ -66,14 +68,22 @@ class MacOSRequirement < Requirement
     end
   end
 
+  sig { returns(String) }
   def inspect
     "#<#{self.class.name}: version#{@comparator}#{@version.to_s.inspect} #{tags.inspect}>"
   end
 
+  sig { returns(String) }
   def display_s
-    return "macOS" unless version_specified?
-
-    "macOS #{@comparator} #{@version}"
+    if version_specified?
+      if @version.respond_to?(:to_ary)
+        "macOS #{@comparator} #{version.join(" / ")}"
+      else
+        "macOS #{@comparator} #{@version}"
+      end
+    else
+      "macOS"
+    end
   end
 
   def to_json(*args)

@@ -7,14 +7,19 @@ module Cask
     #
     # @api private
     class Create < AbstractCommand
+      extend T::Sig
+
+      sig { override.returns(T.nilable(T.any(Integer, Symbol))) }
       def self.min_named
         :cask
       end
 
+      sig { override.returns(T.nilable(Integer)) }
       def self.max_named
         1
       end
 
+      sig { returns(String) }
       def self.description
         "Creates the given <cask> and opens it in an editor."
       end
@@ -25,6 +30,7 @@ module Cask
         raise UsageError, "Only one cask can be created at a time."
       end
 
+      sig { void }
       def run
         cask_token = args.named.first
         cask_path = CaskLoader.path(cask_token)

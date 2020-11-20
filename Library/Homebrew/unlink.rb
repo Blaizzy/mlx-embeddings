@@ -8,6 +8,7 @@ module Homebrew
 
     def unlink_versioned_formulae(formula, verbose: false)
       formula.versioned_formulae
+             .select(&:keg_only?)
              .select(&:linked?)
              .map(&:any_installed_keg)
              .compact

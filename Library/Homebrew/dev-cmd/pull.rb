@@ -12,11 +12,13 @@ require "pkg_version"
 require "formula_info"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def pull_args
     Homebrew::CLI::Parser.new do
-      hide_from_man_page!
       usage_banner <<~EOS
         `pull` [<options>] <patch>
 
@@ -40,6 +42,7 @@ module Homebrew
              description: "Do not copy anything to the system clipboard."
 
       min_named 1
+      hide_from_man_page!
     end
   end
 

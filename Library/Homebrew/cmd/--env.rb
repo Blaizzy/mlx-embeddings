@@ -7,8 +7,11 @@ require "utils/shell"
 require "cli/parser"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def __env_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
@@ -44,11 +47,10 @@ module Homebrew
       Utils::Shell.from_path(args.shell)
     end
 
-    env_keys = BuildEnvironment.keys(ENV)
     if shell.nil?
       BuildEnvironment.dump ENV
     else
-      env_keys.each do |key|
+      BuildEnvironment.keys(ENV).each do |key|
         puts Utils::Shell.export_value(key, ENV[key], shell)
       end
     end

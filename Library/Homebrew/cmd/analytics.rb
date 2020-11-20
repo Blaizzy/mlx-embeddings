@@ -4,8 +4,11 @@
 require "cli/parser"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def analytics_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
@@ -17,12 +20,13 @@ module Homebrew
         `brew analytics` [`state`]:
         Display the current state of Homebrew's analytics.
 
-        `brew analytics` [`on`|`off`]:
+        `brew analytics` (`on`|`off`):
         Turn Homebrew's analytics on or off respectively.
 
         `brew analytics regenerate-uuid`:
         Regenerate the UUID used for Homebrew's analytics.
       EOS
+
       max_named 1
     end
   end

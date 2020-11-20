@@ -5,8 +5,11 @@ require "bintray"
 require "cli/parser"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def mirror_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
@@ -21,8 +24,8 @@ module Homebrew
       switch "--no-publish",
              description: "Upload to Bintray, but don't publish."
 
-      hide_from_man_page!
       min_named :formula
+      hide_from_man_page!
     end
   end
 

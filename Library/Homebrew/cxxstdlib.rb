@@ -5,6 +5,8 @@ require "compilers"
 
 # Combination of C++ standard library and compiler.
 class CxxStdlib
+  extend T::Sig
+
   include CompilerConstants
 
   # Error for when a formula's dependency was built with a different C++ standard library.
@@ -72,6 +74,7 @@ class CxxStdlib
     type.to_s.gsub(/cxx$/, "c++")
   end
 
+  sig { returns(String) }
   def inspect
     "#<#{self.class.name}: #{compiler} #{type}>"
   end

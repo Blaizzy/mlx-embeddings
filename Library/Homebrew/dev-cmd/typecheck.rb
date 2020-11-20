@@ -4,8 +4,11 @@
 require "cli/parser"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def typecheck_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
@@ -13,6 +16,8 @@ module Homebrew
 
         Check for typechecking errors using Sorbet.
       EOS
+      switch "--fix",
+             description: "Automatically fix type errors."
       switch "-q", "--quiet",
              description: "Silence all non-critical errors."
       switch "--update",
@@ -27,6 +32,7 @@ module Homebrew
       flag   "--ignore=",
              description: "Ignores input files that contain the given string " \
                           "in their paths (relative to the input path passed to Sorbet)."
+
       conflicts "--dir", "--file"
       max_named 0
     end
@@ -51,6 +57,7 @@ module Homebrew
 
       srb_exec = %w[bundle exec srb tc]
       srb_exec << "--quiet" if args.quiet?
+      srb_exec << "--autocorrect" if args.fix?
       srb_exec += ["--ignore", args.ignore] if args.ignore.present?
       if args.file.present? || args.dir.present?
         cd("sorbet")

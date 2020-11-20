@@ -44,7 +44,7 @@ GEM
     method_source (1.0.0)
     mime-types (3.3.1)
       mime-types-data (~> 3.2015)
-    mime-types-data (3.2020.0512)
+    mime-types-data (3.2020.1104)
     mini_portile2 (2.4.0)
     minitest (5.14.2)
     mustache (1.1.1)
@@ -95,39 +95,42 @@ GEM
       rspec-support (~> 3.10.0)
     rspec-retry (0.6.2)
       rspec-core (> 3.3)
+    rspec-sorbet (1.7.0)
+      sorbet
+      sorbet-runtime
     rspec-support (3.10.0)
     rspec-wait (0.0.9)
       rspec (>= 3, < 4)
-    rubocop (1.2.0)
+    rubocop (1.3.1)
       parallel (~> 1.10)
       parser (>= 2.7.1.5)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 1.8)
       rexml
-      rubocop-ast (>= 1.0.1)
+      rubocop-ast (>= 1.1.1)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 2.0)
     rubocop-ast (1.1.1)
       parser (>= 2.7.1.5)
-    rubocop-performance (1.8.1)
-      rubocop (>= 0.87.0)
+    rubocop-performance (1.9.0)
+      rubocop (>= 0.90.0, < 2.0)
       rubocop-ast (>= 0.4.0)
     rubocop-rspec (2.0.0)
       rubocop (~> 1.0)
       rubocop-ast (>= 1.1.0)
     rubocop-sorbet (0.5.1)
       rubocop
-    ruby-macho (2.2.0)
+    ruby-macho (2.5.0)
     ruby-progressbar (1.10.1)
     simplecov (0.19.1)
       docile (~> 1.1)
       simplecov-html (~> 0.11)
     simplecov-html (0.12.3)
-    sorbet (0.5.6042)
-      sorbet-static (= 0.5.6042)
-    sorbet-runtime (0.5.6040)
+    sorbet (0.5.6076)
+      sorbet-static (= 0.5.6076)
+    sorbet-runtime (0.5.6076)
     sorbet-runtime-stub (0.2.0)
-    sorbet-static (0.5.6042-universal-darwin-14)
+    sorbet-static (0.5.6076-universal-darwin-14)
     spoom (1.0.4)
       colorize
       sorbet (~> 0.5.5)
@@ -142,14 +145,14 @@ GEM
       thor (>= 0.19.2)
     thor (1.0.1)
     thread_safe (0.3.6)
-    tzinfo (1.2.7)
+    tzinfo (1.2.8)
       thread_safe (~> 0.1)
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.7)
     unicode-display_width (1.7.0)
     webrobots (0.1.2)
-    zeitwerk (2.4.0)
+    zeitwerk (2.4.1)
 
 PLATFORMS
   ruby
@@ -167,6 +170,7 @@ DEPENDENCIES
   rspec
   rspec-its
   rspec-retry
+  rspec-sorbet
   rspec-wait
   rubocop
   rubocop-performance

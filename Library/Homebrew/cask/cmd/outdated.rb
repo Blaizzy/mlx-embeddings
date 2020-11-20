@@ -7,6 +7,9 @@ module Cask
     #
     # @api private
     class Outdated < AbstractCommand
+      extend T::Sig
+
+      sig { returns(String) }
       def self.description
         "List the outdated installed casks."
       end
@@ -20,6 +23,7 @@ module Cask
         end
       end
 
+      sig { void }
       def run
         outdated_casks = casks(alternative: -> { Caskroom.casks(config: Config.from_args(args)) }).select do |cask|
           odebug "Checking update info of Cask #{cask}"

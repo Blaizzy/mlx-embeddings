@@ -80,6 +80,8 @@ module Homebrew
 end
 
 module Kernel
+  extend T::Sig
+
   def require?(path)
     return false if path.nil?
 
@@ -383,6 +385,7 @@ module Kernel
     trap("INT", std_trap)
   end
 
+  sig { returns(String) }
   def capture_stderr
     old = $stderr
     $stderr = StringIO.new
@@ -500,6 +503,7 @@ module Kernel
     end
   end
 
+  sig { returns(String) }
   def shell_profile
     Utils::Shell.profile
   end

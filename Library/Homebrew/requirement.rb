@@ -12,6 +12,8 @@ require "build_environment"
 #
 # @api private
 class Requirement
+  extend T::Sig
+
   include Dependable
 
   attr_reader :tags, :name, :cask, :download
@@ -35,6 +37,7 @@ class Requirement
   end
 
   # The message to show when the requirement is not met.
+  sig { returns(String) }
   def message
     _, _, class_name = self.class.to_s.rpartition "::"
     s = "#{class_name} unsatisfied!\n"
@@ -79,7 +82,7 @@ class Requirement
     return unless @satisfied_result.is_a?(Pathname)
 
     parent = @satisfied_result.resolved_path.parent
-    if parent.to_s =~ %r{^#{Regexp.escape(HOMEBREW_CELLAR)}/([\w+-.@]+)/[^/]+/(s?bin)/?$}
+    if parent.to_s =~ %r{^#{Regexp.escape(HOMEBREW_CELLAR)}/([\w+-.@]+)/[^/]+/(s?bin)/?$}o
       parent = HOMEBREW_PREFIX/"opt/#{Regexp.last_match(1)}/#{Regexp.last_match(2)}"
     end
     parent
@@ -121,6 +124,7 @@ class Requirement
     name.hash ^ tags.hash
   end
 
+  sig { returns(String) }
   def inspect
     "#<#{self.class.name}: #{tags.inspect}>"
   end
@@ -155,6 +159,8 @@ class Requirement
   end
 
   class << self
+    extend T::Sig
+
     include BuildEnvironment::DSL
 
     attr_reader :env_proc, :build
@@ -162,14 +168,14 @@ class Requirement
     attr_rw :fatal, :cask, :download
 
     def satisfy(options = nil, &block)
-      return @satisfied if options.nil? && !block_given?
+      return @satisfied if options.nil? && !block
 
       options = {} if options.nil?
       @satisfied = Satisfier.new(options, &block)
     end
 
     def env(*settings, &block)
-      if block_given?
+      if block
         @env_proc = block
       else
         super
@@ -230,9 +236,9 @@ class Requirement
       reqs
     end
 
-    def prune?(dependent, req, &_block)
+    def prune?(dependent, req, &block)
       catch(:prune) do
-        if block_given?
+        if block
           yield dependent, req
         elsif req.optional? || req.recommended?
           prune unless dependent.build.with?(req)
@@ -241,6 +247,7 @@ class Requirement
     end
 
     # Used to prune requirements when calling expand with a block.
+    sig { void }
     def prune
       throw(:prune, true)
     end

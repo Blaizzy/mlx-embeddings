@@ -38,6 +38,8 @@ module Cask
   #
   # @api private
   class Cmd
+    extend T::Sig
+
     include Context
 
     ALIASES = {
@@ -61,11 +63,13 @@ module Cask
       Cmd::Upgrade   => "brew upgrade --cask",
     }.freeze
 
+    sig { returns(String) }
     def self.description
       max_command_length = Cmd.commands.map(&:length).max
 
       command_lines = Cmd.command_classes
                          .select(&:visible?)
+                         .reject { |command| DEPRECATED_COMMANDS.key?(command) }
                          .map do |klass|
         "  - #{"`#{klass.command_name}`".ljust(max_command_length + 2)}  #{klass.short_description}\n"
       end
@@ -75,14 +79,13 @@ module Cask
 
         Commands:
         #{command_lines.join}
-
         See also: `man brew`
       EOS
     end
 
     def self.parser(&block)
       Homebrew::CLI::Parser.new do
-        if block_given?
+        if block
           instance_eval(&block)
         else
           usage_banner <<~EOS

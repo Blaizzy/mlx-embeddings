@@ -11,6 +11,8 @@ require "extend/cachable"
 #
 # @api private
 class Keg
+  extend T::Sig
+
   extend Cachable
 
   # Error for when a keg is already linked.
@@ -39,6 +41,9 @@ class Keg
 
   # Error for when a file already exists or belongs to another keg.
   class ConflictError < LinkError
+    extend T::Sig
+
+    sig { returns(String) }
     def suggestion
       conflict = Keg.for(dst)
     rescue NotAKegError, Errno::ENOENT
@@ -50,6 +55,7 @@ class Keg
       EOS
     end
 
+    sig { returns(String) }
     def to_s
       s = []
       s << "Could not symlink #{src}"
@@ -67,6 +73,9 @@ class Keg
 
   # Error for when a directory is not writable.
   class DirectoryNotWritableError < LinkError
+    extend T::Sig
+
+    sig { returns(String) }
     def to_s
       <<~EOS
         Could not symlink #{src}
@@ -226,6 +235,7 @@ class Keg
 
   alias to_path to_s
 
+  sig { returns(String) }
   def inspect
     "#<#{self.class.name}:#{path}>"
   end
@@ -235,6 +245,7 @@ class Keg
   end
   alias eql? ==
 
+  sig { returns(T::Boolean) }
   def empty_installation?
     Pathname.glob("#{path}/*") do |file|
       return false if file.directory? && !file.children.reject(&:ds_store?).empty?
@@ -411,6 +422,7 @@ class Keg
     end
   end
 
+  sig { returns(T::Boolean) }
   def plist_installed?
     !Dir["#{path}/*.plist"].empty?
   end
@@ -419,10 +431,12 @@ class Keg
     (path/"lib/python2.7/site-packages").directory?
   end
 
+  sig { returns(T::Boolean) }
   def python_pth_files_installed?
     !Dir["#{path}/lib/python2.7/site-packages/*.pth"].empty?
   end
 
+  sig { returns(T::Array[Pathname]) }
   def apps
     app_prefix = optlinked? ? opt_record : path
     Pathname.glob("#{app_prefix}/{,libexec/}*.app")
@@ -468,45 +482,46 @@ class Keg
 
     link_dir("share", **options) do |relative_path|
       case relative_path.to_s
-      when "locale/locale.alias" then :skip_file
       when INFOFILE_RX then :info
-      when LOCALEDIR_RX then :mkpath
-      when %r{^icons/.*/icon-theme\.cache$} then :skip_file
-      # all icons subfolders should also mkpath
-      when %r{^icons/} then :mkpath
-      when /^zsh/ then :mkpath
-      when /^fish/ then :mkpath
-      # Lua, Lua51, Lua53 all need the same handling.
-      when %r{^lua/} then :mkpath
-      when %r{^guile/} then :mkpath
-      when *SHARE_PATHS then :mkpath
-      else :link
+      when "locale/locale.alias",
+           %r{^icons/.*/icon-theme\.cache$}
+        :skip_file
+      when LOCALEDIR_RX,
+           %r{^icons/}, # all icons subfolders should also mkpath
+           /^zsh/,
+           /^fish/,
+           %r{^lua/}, #  Lua, Lua51, Lua53 all need the same handling.
+           %r{^guile/},
+           *SHARE_PATHS
+        :mkpath
+      else
+        :link
       end
     end
 
     link_dir("lib", **options) do |relative_path|
       case relative_path.to_s
-      when "charset.alias" then :skip_file
-      # pkg-config database gets explicitly created
-      when "pkgconfig" then :mkpath
-      # cmake database gets explicitly created
-      when "cmake" then :mkpath
-      # lib/language folders also get explicitly created
-      when "dtrace" then :mkpath
-      when /^gdk-pixbuf/ then :mkpath
-      when "ghc" then :mkpath
-      when /^gio/ then :mkpath
-      when "lua" then :mkpath
-      when /^mecab/ then :mkpath
-      when /^node/ then :mkpath
-      when /^ocaml/ then :mkpath
-      when /^perl5/ then :mkpath
-      when "php" then :mkpath
-      when /^python[23]\.\d/ then :mkpath
-      when /^R/ then :mkpath
-      when /^ruby/ then :mkpath
-      # Everything else is symlinked to the cellar
-      else :link
+      when "charset.alias"
+        :skip_file
+      when "pkgconfig", # pkg-config database gets explicitly created
+           "cmake",     # cmake database gets explicitly created
+           "dtrace",    # lib/language folders also get explicitly created
+           /^gdk-pixbuf/,
+           "ghc",
+           /^gio/,
+           "lua",
+           /^mecab/,
+           /^node/,
+           /^ocaml/,
+           /^perl5/,
+           "php",
+           /^python[23]\.\d/,
+           /^R/,
+           /^ruby/
+        :mkpath
+      else
+        # Everything else is symlinked to the cellar
+        :link
       end
     end
 

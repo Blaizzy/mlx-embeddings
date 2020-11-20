@@ -164,7 +164,7 @@ rescue BuildError => e
   if e.formula.head? || e.formula.deprecated? || e.formula.disabled?
     $stderr.puts <<~EOS
       Please create pull requests instead of asking for help on Homebrew's GitHub,
-      Discourse, Twitter or any other official channels.
+      Twitter or any other official channels.
     EOS
   end
 

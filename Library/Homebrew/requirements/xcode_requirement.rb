@@ -7,6 +7,8 @@ require "requirement"
 #
 # @api private
 class XcodeRequirement < Requirement
+  extend T::Sig
+
   fatal true
 
   attr_reader :version
@@ -25,6 +27,7 @@ class XcodeRequirement < Requirement
     MacOS::Xcode.version >= @version
   end
 
+  sig { returns(String) }
   def message
     version = " #{@version}" if @version
     message = <<~EOS
@@ -45,6 +48,7 @@ class XcodeRequirement < Requirement
     end
   end
 
+  sig { returns(String) }
   def inspect
     "#<#{self.class.name}: version>=#{@version.inspect} #{tags.inspect}>"
   end

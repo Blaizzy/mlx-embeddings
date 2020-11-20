@@ -7,6 +7,8 @@ require "requirement"
 #
 # @api private
 class ArchRequirement < Requirement
+  extend T::Sig
+
   fatal true
 
   attr_reader :arch
@@ -24,6 +26,7 @@ class ArchRequirement < Requirement
     end
   end
 
+  sig { returns(String) }
   def message
     "The #{@arch} architecture is required for this software."
   end
@@ -32,6 +35,7 @@ class ArchRequirement < Requirement
     "#<#{self.class.name}: arch=#{@arch.to_s.inspect} #{tags.inspect}>"
   end
 
+  sig { returns(String) }
   def display_s
     "#{@arch} architecture"
   end

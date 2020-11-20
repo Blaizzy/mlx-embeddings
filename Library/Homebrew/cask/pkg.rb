@@ -8,19 +8,25 @@ module Cask
   #
   # @api private
   class Pkg
+    extend T::Sig
+
+    sig { params(regexp: String, command: T.class_of(SystemCommand)).returns(T::Array[Pkg]) }
     def self.all_matching(regexp, command)
       command.run("/usr/sbin/pkgutil", args: ["--pkgs=#{regexp}"]).stdout.split("\n").map do |package_id|
         new(package_id.chomp, command)
       end
     end
 
+    sig { returns(String) }
     attr_reader :package_id
 
+    sig { params(package_id: String, command: T.class_of(SystemCommand)).void }
     def initialize(package_id, command = SystemCommand)
       @package_id = package_id
       @command = command
     end
 
+    sig { void }
     def uninstall
       unless pkgutil_bom_files.empty?
         odebug "Deleting pkg files"
@@ -65,23 +71,28 @@ module Cask
       forget
     end
 
+    sig { void }
     def forget
       odebug "Unregistering pkg receipt (aka forgetting)"
       @command.run!("/usr/sbin/pkgutil", args: ["--forget", package_id], sudo: true)
     end
 
+    sig { returns(T::Array[Pathname]) }
     def pkgutil_bom_files
       @pkgutil_bom_files ||= pkgutil_bom_all.select(&:file?) - pkgutil_bom_specials
     end
 
+    sig { returns(T::Array[Pathname]) }
     def pkgutil_bom_specials
       @pkgutil_bom_specials ||= pkgutil_bom_all.select(&method(:special?))
     end
 
+    sig { returns(T::Array[Pathname]) }
     def pkgutil_bom_dirs
       @pkgutil_bom_dirs ||= pkgutil_bom_all.select(&:directory?) - pkgutil_bom_specials
     end
 
+    sig { returns(T::Array[Pathname]) }
     def pkgutil_bom_all
       @pkgutil_bom_all ||= @command.run!("/usr/sbin/pkgutil", args: ["--files", package_id])
                                    .stdout
@@ -90,6 +101,7 @@ module Cask
                                    .reject(&MacOS.public_method(:undeletable?))
     end
 
+    sig { returns(Pathname) }
     def root
       @root ||= Pathname.new(info.fetch("volume")).join(info.fetch("install-location"))
     end
@@ -101,10 +113,12 @@ module Cask
 
     private
 
+    sig { params(path: Pathname).returns(T::Boolean) }
     def special?(path)
       path.symlink? || path.chardev? || path.blockdev?
     end
 
+    sig { params(path: Pathname).void }
     def rmdir(path)
       return unless path.children.empty?
 
@@ -115,7 +129,8 @@ module Cask
       end
     end
 
-    def with_full_permissions(path)
+    sig { params(path: Pathname, _block: T.proc.void).void }
+    def with_full_permissions(path, &_block)
       original_mode = (path.stat.mode % 01000).to_s(8)
       original_flags = @command.run!("/usr/bin/stat", args: ["-f", "%Of", "--", path]).stdout.chomp
 
@@ -128,10 +143,12 @@ module Cask
       end
     end
 
+    sig { params(paths: T::Array[Pathname]).returns(T::Array[Pathname]) }
     def deepest_path_first(paths)
       paths.sort_by { |path| -path.to_s.split(File::SEPARATOR).count }
     end
 
+    sig { params(dir: Pathname).void }
     def clean_ds_store(dir)
       return unless (ds_store = dir.join(".DS_Store")).exist?
 
@@ -140,12 +157,14 @@ module Cask
 
     # Some packages leave broken symlinks around; we clean them out before
     # attempting to `rmdir` to prevent extra cruft from accumulating.
+    sig { params(dir: Pathname).void }
     def clean_broken_symlinks(dir)
       dir.children.select(&method(:broken_symlink?)).each do |path|
         @command.run!("/bin/rm", args: ["--", path], sudo: true)
       end
     end
 
+    sig { params(path: Pathname).returns(T::Boolean) }
     def broken_symlink?(path)
       path.symlink? && !path.exist?
     end

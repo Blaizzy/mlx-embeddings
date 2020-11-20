@@ -151,7 +151,7 @@ RSpec.shared_context "integration test" do
 
         # something here
       RUBY
-    when "foo"
+    when "foo", "patchelf"
       content = <<~RUBY
         url "https://brew.sh/#{name}-1.0"
       RUBY
@@ -160,11 +160,6 @@ RSpec.shared_context "integration test" do
         url "https://brew.sh/#{name}-1.0"
         depends_on "foo"
       RUBY
-    when "patchelf"
-      content = <<~RUBY
-        url "https://brew.sh/#{name}-1.0"
-      RUBY
-
     when "package_license"
       content = <<~RUBY
         url "https://brew.sh/#patchelf-1.0"
@@ -183,8 +178,7 @@ RSpec.shared_context "integration test" do
 
   def install_test_formula(name, content = nil, build_bottle: false)
     setup_test_formula(name, content)
-    fi = FormulaInstaller.new(Formula[name])
-    fi.build_bottle = build_bottle
+    fi = FormulaInstaller.new(Formula[name], build_bottle: build_bottle)
     fi.prelude
     fi.fetch
     fi.install

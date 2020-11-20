@@ -7,6 +7,9 @@ module Cask
     #
     # @api private
     class Fetch < AbstractCommand
+      extend T::Sig
+
+      sig { override.returns(T.nilable(T.any(Integer, Symbol))) }
       def self.min_named
         :cask
       end
@@ -18,10 +21,12 @@ module Cask
         end
       end
 
+      sig { returns(String) }
       def self.description
         "Downloads remote application files to local cache."
       end
 
+      sig { void }
       def run
         require "cask/download"
         require "cask/installer"

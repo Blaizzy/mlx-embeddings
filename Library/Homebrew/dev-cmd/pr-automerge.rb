@@ -5,8 +5,11 @@ require "cli/parser"
 require "utils/github"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def pr_automerge_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
@@ -18,9 +21,9 @@ module Homebrew
              description: "Target tap repository (default: `homebrew/core`)."
       flag   "--with-label=",
              description: "Pull requests must have this label."
-      comma_array "--without-labels=",
-                  description: "Pull requests must not have these labels "\
-                               "(default: `do not merge`, `new formula`, `automerge-skip`)."
+      comma_array "--without-labels",
+                  description: "Pull requests must not have these labels (default: "\
+                               "`do not merge`, `new formula`, `automerge-skip`, `linux-only`)."
       switch "--without-approval",
              description: "Pull requests do not require approval to be merged."
       switch "--publish",
@@ -38,7 +41,7 @@ module Homebrew
   def pr_automerge
     args = pr_automerge_args.parse
 
-    without_labels = args.without_labels || ["do not merge", "new formula", "automerge-skip"]
+    without_labels = args.without_labels || ["do not merge", "new formula", "automerge-skip", "linux-only"]
     tap = Tap.fetch(args.tap || CoreTap.instance.name)
 
     query = "is:pr is:open repo:#{tap.full_name}"

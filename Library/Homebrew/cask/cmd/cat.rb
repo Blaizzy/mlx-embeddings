@@ -7,14 +7,19 @@ module Cask
     #
     # @api private
     class Cat < AbstractCommand
+      extend T::Sig
+
+      sig { override.returns(T.nilable(T.any(Integer, Symbol))) }
       def self.min_named
         :cask
       end
 
+      sig { returns(String) }
       def self.description
         "Dump raw source of a <cask> to the standard output."
       end
 
+      sig { void }
       def run
         casks.each do |cask|
           if Homebrew::EnvConfig.bat?

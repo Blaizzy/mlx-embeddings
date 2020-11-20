@@ -6,6 +6,7 @@ require "delegate"
 require "cask/cask_loader"
 require "cli/args"
 require "formulary"
+require "keg"
 require "missing_formula"
 
 module Homebrew
@@ -13,7 +14,9 @@ module Homebrew
     # Helper class for loading formulae/casks from named arguments.
     #
     # @api private
-    class NamedArgs < SimpleDelegator
+    class NamedArgs < Array
+      extend T::Sig
+
       def initialize(*args, parent: Args.new, override_spec: nil, force_bottle: false, flags: [])
         @args = args
         @override_spec = override_spec
@@ -39,9 +42,9 @@ module Homebrew
         end
       end
 
-      def to_formulae_to_casks(method: nil, only: nil)
+      def to_formulae_to_casks(only: nil, method: nil)
         @to_formulae_to_casks ||= {}
-        @to_formulae_to_casks[[method, only]] = to_formulae_and_casks(method: method, only: only)
+        @to_formulae_to_casks[[method, only]] = to_formulae_and_casks(only: only, method: method)
                                                 .partition { |o| o.is_a?(Formula) }
                                                 .map(&:freeze).freeze
       end
@@ -62,14 +65,16 @@ module Homebrew
             when nil, :factory
               Formulary.factory(name, *spec, force_bottle: @force_bottle, flags: @flags)
             when :resolve
-              Formulary.resolve(name, spec: spec, force_bottle: @force_bottle, flags: @flags)
+              resolve_formula(name)
+            when :keg
+              resolve_keg(name)
             else
               raise
             end
 
             warn_if_cask_conflicts(name, "formula") unless only == :formula
             return formula
-          rescue FormulaUnavailableError => e
+          rescue NoSuchKegError, FormulaUnavailableError => e
             raise e if only == :formula
           end
         end
@@ -97,24 +102,22 @@ module Homebrew
       end
 
       def to_resolved_formulae_to_casks(only: nil)
-        to_formulae_to_casks(method: :resolve, only: only)
+        to_formulae_to_casks(only: only, method: :resolve)
       end
 
-      # Convert named arguments to {Tap}, {Formula} or {Cask} objects.
+      # Convert named arguments to {Formula} or {Cask} objects.
       # If both a formula and cask exist with the same name, returns the
       # formula and prints a warning unless `only` is specified.
       def to_objects(only: nil, method: nil)
         @to_objects ||= {}
-        @to_objects[only] ||= downcased_unique_named.flat_map do |name|
-          next Tap.fetch(name) if only == :tap || (only.nil? && name.count("/") == 1 && !name.start_with?("./", "/"))
-
+        @to_objects[only] ||= downcased_unique_named.map do |name|
           load_formula_or_cask(name, only: only, method: method)
         end.uniq.freeze
       end
       private :to_objects
 
       def to_formulae_paths
-        to_paths(only: :formulae)
+        to_paths(only: :formula)
       end
 
       # Keep existing paths and try to convert others to tap, formula or cask paths.
@@ -125,11 +128,11 @@ module Homebrew
         @to_paths[only] ||= downcased_unique_named.flat_map do |name|
           if File.exist?(name)
             Pathname(name)
-          elsif name.count("/") == 1
+          elsif name.count("/") == 1 && !name.start_with?("./", "/")
             Tap.fetch(name).path
           else
-            next Formulary.path(name) if only == :formulae
-            next Cask::CaskLoader.path(name) if only == :casks
+            next Formulary.path(name) if only == :formula
+            next Cask::CaskLoader.path(name) if only == :cask
 
             formula_path = Formulary.path(name)
             cask_path = Cask::CaskLoader.path(name)
@@ -144,44 +147,33 @@ module Homebrew
         end.uniq.freeze
       end
 
+      sig { returns(T::Array[Keg]) }
       def to_kegs
-        @to_kegs ||= downcased_unique_named.map do |name|
-          resolve_keg name
+        @to_kegs ||= begin
+          to_formulae_and_casks(only: :formula, method: :keg).freeze
         rescue NoSuchKegError => e
-          if (reason = Homebrew::MissingFormula.suggest_command(name, "uninstall"))
+          if (reason = Homebrew::MissingFormula.suggest_command(e.name, "uninstall"))
             $stderr.puts reason
           end
           raise e
-        end.freeze
-      end
-
-      def to_kegs_to_casks
-        @to_kegs_to_casks ||= begin
-          kegs = []
-          casks = []
-
-          downcased_unique_named.each do |name|
-            kegs << resolve_keg(name)
-
-            warn_if_cask_conflicts(name, "keg")
-          rescue NoSuchKegError, FormulaUnavailableError
-            begin
-              casks << Cask::CaskLoader.load(name, config: Cask::Config.from_args(@parent))
-            rescue Cask::CaskUnavailableError
-              raise "No installed keg or cask with the name \"#{name}\""
-            end
-          end
-
-          [kegs.freeze, casks.freeze].freeze
         end
       end
 
+      sig { params(only: T.nilable(Symbol)).returns([T::Array[Keg], T::Array[Cask::Cask]]) }
+      def to_kegs_to_casks(only: nil)
+        @to_kegs_to_casks ||= to_formulae_and_casks(only: only, method: :keg)
+                              .partition { |o| o.is_a?(Keg) }
+                              .map(&:freeze).freeze
+      end
+
+      sig { returns(T::Array[String]) }
       def homebrew_tap_cask_names
         downcased_unique_named.grep(HOMEBREW_CASK_TAP_CASK_REGEX)
       end
 
       private
 
+      sig { returns(T::Array[String]) }
       def downcased_unique_named
         # Only lowercase names, not paths, bottle filenames or URLs
         map do |arg|

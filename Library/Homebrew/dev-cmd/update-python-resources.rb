@@ -5,8 +5,11 @@ require "cli/parser"
 require "utils/pypi"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def update_python_resources_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
@@ -20,9 +23,10 @@ module Homebrew
              description: "Suppress any output."
       switch "--ignore-non-pypi-packages",
              description: "Don't fail if <formula> is not a PyPI package."
-      flag "--version=",
-           description: "Use the specified <version> when finding resources for <formula>. "\
-                        "If no version is specified, the current version for <formula> will be used."
+      flag   "--version=",
+             description: "Use the specified <version> when finding resources for <formula>. "\
+                          "If no version is specified, the current version for <formula> will be used."
+
       min_named :formula
     end
   end

@@ -107,12 +107,7 @@ module Homebrew
         return if Homebrew::EnvConfig.developer?
 
         who = +"We"
-        # TODO: remove when Big Sur is supported.
-        what = if MacOS.version == :big_sur
-          return if ENV["HOMEBREW_GITHUB_ACTIONS_BIG_SUR_TESTING"]
-
-          "released but not yet supported version"
-        elsif OS::Mac.prerelease?
+        what = if OS::Mac.prerelease?
           "pre-release version"
         elsif OS::Mac.outdated_release?
           who << " (and Apple)"

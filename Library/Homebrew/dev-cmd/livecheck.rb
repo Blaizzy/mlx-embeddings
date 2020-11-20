@@ -7,6 +7,8 @@ require "livecheck/livecheck"
 require "livecheck/strategy"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
   WATCHLIST_PATH = (
@@ -14,6 +16,7 @@ module Homebrew
     "#{Dir.home}/.brew_livecheck_watchlist"
   ).freeze
 
+  sig { returns(CLI::Parser) }
   def livecheck_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS

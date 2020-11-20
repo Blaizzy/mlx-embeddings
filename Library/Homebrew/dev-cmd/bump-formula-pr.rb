@@ -7,8 +7,11 @@ require "utils/pypi"
 require "utils/tar"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def bump_formula_pr_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
@@ -70,7 +73,7 @@ module Homebrew
              depends_on:  "--tag=",
              description: "Specify the new git commit <revision> corresponding to the specified <tag>."
       switch "-f", "--force",
-             description: "Ignore duplicate open PRs. Remove all mirrors if --mirror= was not specified."
+             description: "Ignore duplicate open PRs. Remove all mirrors if `--mirror` was not specified."
 
       conflicts "--dry-run", "--write"
       conflicts "--no-audit", "--strict"

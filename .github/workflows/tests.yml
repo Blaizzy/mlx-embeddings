@@ -6,7 +6,6 @@ on:
 env:
   HOMEBREW_DEVELOPER: 1
   HOMEBREW_NO_AUTO_UPDATE: 1
-  HOMEBREW_GITHUB_ACTIONS_BIG_SUR_TESTING: 1 # TODO: remove when Big Sur is released.
 jobs:
   tests:
     if: github.repository == 'Homebrew/brew'

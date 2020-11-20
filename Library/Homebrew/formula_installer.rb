@@ -28,60 +28,70 @@ require "unlink"
 #
 # @api private
 class FormulaInstaller
+  extend T::Sig
+
   include FormulaCellarChecks
   extend Predicable
 
-  def self.mode_attr_accessor(*names)
-    attr_accessor(*names)
-
-    private(*names)
-    names.each do |name|
-      predicate = "#{name}?"
-      define_method(predicate) do
-        send(name) ? true : false
-      end
-      private(predicate)
-    end
-  end
-
   attr_reader :formula
-  attr_accessor :cc, :env, :options, :build_bottle, :bottle_arch,
-                :build_from_source_formulae, :include_test_formulae,
-                :installed_as_dependency, :installed_on_request, :link_keg, :other_installers
 
-  mode_attr_accessor :show_summary_heading, :show_header
-  mode_attr_accessor :force_bottle, :ignore_deps, :only_deps, :interactive, :git, :force, :keep_tmp
-  mode_attr_accessor :verbose, :debug, :quiet
+  attr_accessor :options, :link_keg
 
-  def initialize(formula,
-                 force_bottle: false,
-                 include_test_formulae: [],
-                 build_from_source_formulae: [],
-                 cc: nil,
-                 debug: false, quiet: false, verbose: false)
+  attr_predicate :installed_as_dependency?, :installed_on_request?
+  attr_predicate :show_summary_heading?, :show_header?
+  attr_predicate :force_bottle?, :ignore_deps?, :only_deps?, :interactive?, :git?, :force?, :keep_tmp?
+  attr_predicate :verbose?, :debug?, :quiet?
+
+  # TODO: Remove when removed from `test-bot`.
+  attr_writer :build_bottle
+
+  def initialize(
+    formula,
+    link_keg: false,
+    installed_as_dependency: false,
+    installed_on_request: true,
+    show_header: false,
+    build_bottle: false,
+    force_bottle: false,
+    bottle_arch: nil,
+    ignore_deps: false,
+    only_deps: false,
+    include_test_formulae: [],
+    build_from_source_formulae: [],
+    env: nil,
+    git: false,
+    interactive: false,
+    keep_tmp: false,
+    cc: nil,
+    options: Options.new,
+    force: false,
+    debug: false,
+    quiet: false,
+    verbose: false
+  )
     @formula = formula
-    @env = nil
-    @force = false
-    @keep_tmp = false
-    @link_keg = !formula.keg_only?
-    @show_header = false
-    @ignore_deps = false
-    @only_deps = false
+    @env = env
+    @force = force
+    @keep_tmp = keep_tmp
+    @link_keg = !formula.keg_only? || link_keg
+    @show_header = show_header
+    @ignore_deps = ignore_deps
+    @only_deps = only_deps
     @build_from_source_formulae = build_from_source_formulae
-    @build_bottle = false
-    @bottle_arch = nil
+    @build_bottle = build_bottle
+    @bottle_arch = bottle_arch
     @formula.force_bottle ||= force_bottle
     @force_bottle = @formula.force_bottle
     @include_test_formulae = include_test_formulae
-    @interactive = false
-    @git = false
+    @interactive = interactive
+    @git = git
     @cc = cc
     @verbose = verbose
     @quiet = quiet
     @debug = debug
-    @installed_as_dependency = false
-    @installed_on_request = true
-    @options = Options.new
+    @installed_as_dependency = installed_as_dependency
+    @installed_on_request = installed_on_request
+    @options = options
     @requirement_messages = []
     @poured_bottle = false
     @pour_failed = false
@@ -92,6 +102,7 @@ class FormulaInstaller
     @attempted ||= Set.new
   end
 
+  sig { void }
   def self.clear_attempted
     @attempted = Set.new
   end
@@ -100,6 +111,7 @@ class FormulaInstaller
     @installed ||= Set.new
   end
 
+  sig { void }
   def self.clear_installed
     @installed = Set.new
   end
@@ -123,27 +135,31 @@ class FormulaInstaller
     raise BuildFlagsError.new(build_flags, bottled: all_bottled)
   end
 
+  sig { returns(T::Boolean) }
   def build_from_source?
-    build_from_source_formulae.include?(formula.full_name)
+    @build_from_source_formulae.include?(formula.full_name)
   end
 
+  sig { returns(T::Boolean) }
   def include_test?
-    include_test_formulae.include?(formula.full_name)
+    @include_test_formulae.include?(formula.full_name)
   end
 
+  sig { returns(T::Boolean) }
   def build_bottle?
     return false unless @build_bottle
 
     !formula.bottle_disabled?
   end
 
+  sig { params(install_bottle_options: { warn: T::Boolean }).returns(T::Boolean) }
   def pour_bottle?(install_bottle_options = { warn: false })
     return false if @pour_failed
 
     return false if !formula.bottled? && !formula.local_bottle_path
     return true  if force_bottle?
     return false if build_from_source? || build_bottle? || interactive?
-    return false if cc
+    return false if @cc
     return false unless options.empty?
     return false if formula.bottle_disabled?
 
@@ -171,16 +187,18 @@ class FormulaInstaller
     true
   end
 
+  sig { params(dep: Formula, build: BuildOptions).returns(T::Boolean) }
   def install_bottle_for?(dep, build)
     return pour_bottle? if dep == formula
-    return false if build_from_source_formulae.include?(dep.full_name)
+    return false if @build_from_source_formulae.include?(dep.full_name)
     return false unless dep.bottle && dep.pour_bottle?
     return false unless build.used_options.empty?
-    return false unless dep.bottle.compatible_cellar?
+    return false unless dep.bottle&.compatible_cellar?
 
     true
   end
 
+  sig { void }
   def prelude
     Tab.clear_cache
     verify_deps_exist unless ignore_deps?
@@ -189,6 +207,7 @@ class FormulaInstaller
     check_install_sanity
   end
 
+  sig { void }
   def verify_deps_exist
     begin
       compute_dependencies
@@ -293,6 +312,7 @@ class FormulaInstaller
     end
   end
 
+  sig { void }
   def install
     lock
 
@@ -344,7 +364,7 @@ class FormulaInstaller
 
     return if only_deps?
 
-    if build_bottle? && (arch = bottle_arch) && !Hardware::CPU.optimization_flags.include?(arch.to_sym)
+    if build_bottle? && (arch = @bottle_arch) && !Hardware::CPU.optimization_flags.include?(arch.to_sym)
       raise CannotInstallFormulaError, "Unrecognized architecture for --bottle-arch: #{arch}"
     end
 
@@ -361,7 +381,7 @@ class FormulaInstaller
       action = "#{formula.full_name} #{options}".strip
       Utils::Analytics.report_event("install", action)
 
-      Utils::Analytics.report_event("install_on_request", action) if installed_on_request
+      Utils::Analytics.report_event("install_on_request", action) if installed_on_request?
     end
 
     self.class.attempted << formula
@@ -419,8 +439,8 @@ class FormulaInstaller
 
       keg = Keg.new(formula.prefix)
       tab = Tab.for_keg(keg)
-      tab.installed_as_dependency = installed_as_dependency
-      tab.installed_on_request = installed_on_request
+      tab.installed_as_dependency = installed_as_dependency?
+      tab.installed_on_request = installed_on_request?
       tab.write
     end
 
@@ -532,13 +552,10 @@ class FormulaInstaller
         keep_build_test ||= req.test? && include_test? && dependent == f
         keep_build_test ||= req.build? && !install_bottle_for_dependent && !dependent.latest_version_installed?
 
-        if req.prune_from_option?(build)
-          Requirement.prune
-        elsif req.satisfied?(env: env, cc: cc, build_bottle: @build_bottle, bottle_arch: bottle_arch)
-          Requirement.prune
-        elsif (req.build? || req.test?) && !keep_build_test
-          Requirement.prune
-        elsif (dep = formula_deps_map[dependent.name]) && dep.build?
+        if req.prune_from_option?(build) ||
+           req.satisfied?(env: @env, cc: @cc, build_bottle: @build_bottle, bottle_arch: @bottle_arch) ||
+           ((req.build? || req.test?) && !keep_build_test) ||
+           formula_deps_map[dependent.name]&.build?
           Requirement.prune
         else
           unsatisfied_reqs[dependent] << req
@@ -564,12 +581,10 @@ class FormulaInstaller
       )
 
       keep_build_test = false
-      keep_build_test ||= dep.test? && include_test? && include_test_formulae.include?(dependent.full_name)
+      keep_build_test ||= dep.test? && include_test? && @include_test_formulae.include?(dependent.full_name)
       keep_build_test ||= dep.build? && !install_bottle_for?(dependent, build) && !dependent.latest_version_installed?
 
-      if dep.prune_from_option?(build)
-        Dependency.prune
-      elsif (dep.build? || dep.test?) && !keep_build_test
+      if dep.prune_from_option?(build) || ((dep.build? || dep.test?) && !keep_build_test)
         Dependency.prune
       elsif dep.satisfied?(inherited_options[dep.name])
         Dependency.skip
@@ -615,6 +630,7 @@ class FormulaInstaller
     options
   end
 
+  sig { params(dep: Dependency).returns(Options) }
   def inherited_options_for(dep)
     inherited_options = Options.new
     u = Option.new("universal")
@@ -624,6 +640,7 @@ class FormulaInstaller
     inherited_options
   end
 
+  sig { params(deps: T::Array[[Formula, Options]]).void }
   def install_dependencies(deps)
     if deps.empty? && only_deps?
       puts "All dependencies for #{formula.full_name} are satisfied."
@@ -637,22 +654,28 @@ class FormulaInstaller
     @show_header = true unless deps.empty?
   end
 
+  sig { params(dep: Formula).void }
   def fetch_dependency(dep)
     df = dep.to_formula
-    fi = FormulaInstaller.new(df, force_bottle:      false,
-                                  include_test_formulae:      include_test_formulae,
-                                  build_from_source_formulae: build_from_source_formulae,
-                                  debug: debug?, quiet: quiet?, verbose: verbose?)
-
-    fi.force                   = force?
-    fi.keep_tmp                = keep_tmp?
-    # When fetching we don't need to recurse the dependency tree as it's already
-    # been done for us in `compute_dependencies` and there's no requirement to
-    # fetch in a particular order.
-    fi.ignore_deps             = true
+    fi = FormulaInstaller.new(
+      df,
+      force_bottle:               false,
+      # When fetching we don't need to recurse the dependency tree as it's already
+      # been done for us in `compute_dependencies` and there's no requirement to
+      # fetch in a particular order.
+      ignore_deps:                true,
+      include_test_formulae:      @include_test_formulae,
+      build_from_source_formulae: @build_from_source_formulae,
+      keep_tmp:                   keep_tmp?,
+      force:                      force?,
+      debug:                      debug?,
+      quiet:                      quiet?,
+      verbose:                    verbose?,
+    )
     fi.fetch
   end
 
+  sig { params(dep: Formula, inherited_options: Options).void }
   def install_dependency(dep, inherited_options)
     df = dep.to_formula
     tab = Tab.for_formula(df)
@@ -678,20 +701,29 @@ class FormulaInstaller
       EOS
     end
 
-    fi = FormulaInstaller.new(df, force_bottle:      false,
-                                  include_test_formulae:      include_test_formulae,
-                                  build_from_source_formulae: build_from_source_formulae,
-                                  debug: debug?, quiet: quiet?, verbose: verbose?)
+    options = Options.new
+    options |= tab.used_options
+    options |= Tab.remap_deprecated_options(df.deprecated_options, dep.options)
+    options |= inherited_options
+    options &= df.options
 
-    fi.options                |= tab.used_options
-    fi.options                |= Tab.remap_deprecated_options(df.deprecated_options, dep.options)
-    fi.options                |= inherited_options
-    fi.options                &= df.options
-    fi.force                   = force?
-    fi.keep_tmp                = keep_tmp?
-    fi.link_keg              ||= keg_was_linked if keg_had_linked_keg
-    fi.installed_as_dependency = true
-    fi.installed_on_request    = df.any_version_installed? && tab.installed_on_request
+    fi = FormulaInstaller.new(
+      df,
+      **{
+        options:                    options,
+        link_keg:                   keg_had_linked_keg ? keg_was_linked : nil,
+        installed_as_dependency:    true,
+        installed_on_request:       df.any_version_installed? && tab.installed_on_request,
+        force_bottle:               false,
+        include_test_formulae:      @include_test_formulae,
+        build_from_source_formulae: @build_from_source_formulae,
+        keep_tmp:                   keep_tmp?,
+        force:                      force?,
+        debug:                      debug?,
+        quiet:                      quiet?,
+        verbose:                    verbose?,
+      },
+    )
     fi.prelude
     oh1 "Installing #{formula.full_name} dependency: #{Formatter.identifier(dep.name)}"
     fi.install
@@ -710,6 +742,7 @@ class FormulaInstaller
     ignore_interrupts { tmp_keg.rmtree if tmp_keg&.directory? }
   end
 
+  sig { void }
   def caveats
     return if only_deps?
 
@@ -724,6 +757,7 @@ class FormulaInstaller
     Homebrew.messages.record_caveats(formula, caveats)
   end
 
+  sig { void }
   def finish
     return if only_deps?
 
@@ -776,6 +810,7 @@ class FormulaInstaller
     unlock
   end
 
+  sig { returns(String) }
   def summary
     s = +""
     s << "#{Homebrew::EnvConfig.install_badge}  " unless Homebrew::EnvConfig.no_emoji?
@@ -788,24 +823,25 @@ class FormulaInstaller
     @build_time ||= Time.now - @start_time if @start_time && !interactive?
   end
 
+  sig { returns(T::Array[String]) }
   def sanitized_argv_options
     args = []
     args << "--ignore-dependencies" if ignore_deps?
 
     if build_bottle?
       args << "--build-bottle"
-      args << "--bottle-arch=#{bottle_arch}" if bottle_arch
+      args << "--bottle-arch=#{@bottle_arch}" if @bottle_arch
     end
 
     args << "--git" if git?
     args << "--interactive" if interactive?
     args << "--verbose" if verbose?
     args << "--debug" if debug?
-    args << "--cc=#{cc}" if cc
+    args << "--cc=#{@cc}" if @cc
     args << "--keep-tmp" if keep_tmp?
 
-    if env.present?
-      args << "--env=#{env}"
+    if @env.present?
+      args << "--env=#{@env}"
     elsif formula.env.std? || formula.deps.select(&:build?).any? { |d| d.name == "scons" }
       args << "--env=std"
     end
@@ -815,10 +851,12 @@ class FormulaInstaller
     args
   end
 
+  sig { returns(T::Array[String]) }
   def build_argv
     sanitized_argv_options + options.as_flags
   end
 
+  sig { void }
   def build
     FileUtils.rm_rf(formula.logs)
 
@@ -872,6 +910,7 @@ class FormulaInstaller
     raise e
   end
 
+  sig { params(keg: Keg).void }
   def link(keg)
     Formula.clear_cache
 
@@ -962,6 +1001,7 @@ class FormulaInstaller
     @show_summary_heading = true
   end
 
+  sig { void }
   def install_plist
     return unless formula.plist
 
@@ -975,6 +1015,7 @@ class FormulaInstaller
     Homebrew.failed = true
   end
 
+  sig { params(keg: Keg).void }
   def fix_dynamic_linkage(keg)
     keg.fix_dynamic_linkage
   rescue Exception => e # rubocop:disable Lint/RescueException
@@ -986,6 +1027,7 @@ class FormulaInstaller
     @show_summary_heading = true
   end
 
+  sig { void }
   def clean
     ohai "Cleaning" if verbose?
     Cleaner.new(formula).clean
@@ -997,6 +1039,7 @@ class FormulaInstaller
     @show_summary_heading = true
   end
 
+  sig { void }
   def post_install
     args = %W[
       nice #{RUBY_PATH}
@@ -1033,6 +1076,7 @@ class FormulaInstaller
     @show_summary_heading = true
   end
 
+  sig { void }
   def fetch_dependencies
     return if ignore_deps?
 
@@ -1042,6 +1086,7 @@ class FormulaInstaller
     deps.each { |dep, _options| fetch_dependency(dep) }
   end
 
+  sig { void }
   def fetch
     fetch_dependencies
 
@@ -1079,6 +1124,7 @@ class FormulaInstaller
     end
   end
 
+  sig { void }
   def pour
     HOMEBREW_CELLAR.cd do
       downloader.stage
@@ -1103,12 +1149,13 @@ class FormulaInstaller
     tab.time = Time.now.to_i
     tab.head = HOMEBREW_REPOSITORY.git_head
     tab.source["path"] = formula.specified_path.to_s
-    tab.installed_as_dependency = installed_as_dependency
-    tab.installed_on_request = installed_on_request
+    tab.installed_as_dependency = installed_as_dependency?
+    tab.installed_on_request = installed_on_request?
     tab.aliases = formula.aliases
     tab.write
   end
 
+  sig { params(output: T.nilable(String)).void }
   def problem_if_output(output)
     return unless output
 
@@ -1132,6 +1179,7 @@ class FormulaInstaller
 
   attr_predicate :hold_locks?
 
+  sig { void }
   def lock
     return unless self.class.locked.empty?
 
@@ -1146,6 +1194,7 @@ class FormulaInstaller
     @hold_locks = true
   end
 
+  sig { void }
   def unlock
     return unless hold_locks?
 
@@ -1161,6 +1210,7 @@ class FormulaInstaller
     $stderr.puts @requirement_messages
   end
 
+  sig { void }
   def forbidden_license_check
     forbidden_licenses = Homebrew::EnvConfig.forbidden_licenses.to_s.dup
     SPDX::ALLOWED_LICENSE_SYMBOLS.each do |s|

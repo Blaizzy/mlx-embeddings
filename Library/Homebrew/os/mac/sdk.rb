@@ -92,6 +92,9 @@ module OS
     #
     # @api private
     class XcodeSDKLocator < BaseSDKLocator
+      extend T::Sig
+
+      sig { returns(Symbol) }
       def source
         :xcode
       end
@@ -115,6 +118,9 @@ module OS
     #
     # @api private
     class CLTSDKLocator < BaseSDKLocator
+      extend T::Sig
+
+      sig { returns(Symbol) }
       def source
         :clt
       end

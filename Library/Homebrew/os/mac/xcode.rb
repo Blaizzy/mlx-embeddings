@@ -7,20 +7,23 @@ module OS
     #
     # @api private
     module Xcode
+      extend T::Sig
+
       module_function
 
-      DEFAULT_BUNDLE_PATH = Pathname.new("/Applications/Xcode.app").freeze
+      DEFAULT_BUNDLE_PATH = Pathname("/Applications/Xcode.app").freeze
       BUNDLE_ID = "com.apple.dt.Xcode"
       OLD_BUNDLE_ID = "com.apple.Xcode"
 
       # Bump these when a new version is available from the App Store and our
       # CI systems have been updated.
       # This may be a beta version for a beta macOS.
+      sig { returns(String) }
       def latest_version
         latest_stable = "12.2"
         case MacOS.version
-        when "11.0"  then "12.2"
-        when "10.15" then latest_stable
+        when "11.0"  then latest_stable
+        when "10.15" then "12.2"
         when "10.14" then "11.3.1"
         when "10.13" then "10.1"
         when "10.12" then "9.2"
@@ -39,9 +42,10 @@ module OS
       # without this. Generally this will be the first Xcode release on that
       # macOS version (which may initially be a beta if that version of macOS is
       # also in beta).
+      sig { returns(String) }
       def minimum_version
         case MacOS.version
-        when "11.0"  then "12.0"
+        when "11.0"  then "12.2"
         when "10.15" then "11.0"
         when "10.14" then "10.2"
         when "10.13" then "9.0"
@@ -93,8 +97,9 @@ module OS
           end
       end
 
+      sig { returns(Pathname) }
       def toolchain_path
-        Pathname.new("#{prefix}/Toolchains/XcodeDefault.xctoolchain")
+        Pathname("#{prefix}/Toolchains/XcodeDefault.xctoolchain")
       end
 
       def bundle_path
@@ -107,6 +112,7 @@ module OS
         MacOS.app_with_bundle_id(BUNDLE_ID, OLD_BUNDLE_ID)
       end
 
+      sig { returns(T::Boolean) }
       def installed?
         !prefix.nil?
       end
@@ -123,6 +129,7 @@ module OS
         sdk(v)&.path
       end
 
+      sig { returns(String) }
       def update_instructions
         if OS::Mac.prerelease?
           <<~EOS
@@ -174,6 +181,7 @@ module OS
         detect_version_from_clang_version
       end
 
+      sig { returns(String) }
       def detect_version_from_clang_version
         return "dunno" if DevelopmentTools.clang_version.null?
 
@@ -181,21 +189,19 @@ module OS
         # installed CLT version. This is useful as they are packaged
         # simultaneously so workarounds need to apply to both based on their
         # comparable version.
-        latest_stable = "12.0"
         case (DevelopmentTools.clang_version.to_f * 10).to_i
-        when 120     then latest_stable
-        when 110     then "11.5"
-        when 100     then "10.3"
-        when 91      then "9.4"
-        when 90      then "9.2"
-        when 81      then "8.3"
-        when 80      then "8.0"
-        when 73      then "7.3"
-        when 70      then "7.0"
-        when 61      then "6.1"
-        when 60      then "6.0"
         when 0       then "dunno"
-        else              latest_stable
+        when 60      then "6.0"
+        when 61      then "6.1"
+        when 70      then "7.0"
+        when 73      then "7.3"
+        when 80      then "8.0"
+        when 81      then "8.3"
+        when 90      then "9.2"
+        when 91      then "9.4"
+        when 100     then "10.3"
+        when 110     then "11.5"
+        else              "12.0"
         end
       end
 
@@ -208,6 +214,8 @@ module OS
     #
     # @api private
     module CLT
+      extend T::Sig
+
       module_function
 
       # The original Mavericks CLT package ID
@@ -216,6 +224,7 @@ module OS
       PKG_PATH = "/Library/Developer/CommandLineTools"
 
       # Returns true even if outdated tools are installed.
+      sig { returns(T::Boolean) }
       def installed?
         !version.null?
       end
@@ -240,6 +249,7 @@ module OS
         sdk(v)&.path
       end
 
+      sig { returns(String) }
       def update_instructions
         software_update_location = if MacOS.version >= "10.14"
           "System Preferences"
@@ -262,10 +272,10 @@ module OS
 
       # Bump these when the new version is distributed through Software Update
       # and our CI systems have been updated.
+      sig { returns(String) }
       def latest_clang_version
         case MacOS.version
-        when "11.0" then "1200.0.32.27"
-        when "10.15" then "1200.0.32.27"
+        when "11.0", "10.15" then "1200.0.32.27"
         when "10.14" then "1100.0.33.17"
         when "10.13" then "1000.10.44.2"
         when "10.12" then "900.0.39.2"
@@ -278,6 +288,7 @@ module OS
       # Bump these if things are badly broken (e.g. no SDK for this macOS)
       # without this. Generally this will be the first stable CLT release on
       # that macOS version.
+      sig { returns(String) }
       def minimum_version
         case MacOS.version
         when "11.0"  then "12.0.0"
@@ -295,6 +306,7 @@ module OS
         version < minimum_version
       end
 
+      sig { returns(T::Boolean) }
       def outdated?
         clang_version = detect_clang_version
         return false unless clang_version

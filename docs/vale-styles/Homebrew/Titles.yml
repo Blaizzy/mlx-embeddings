@@ -9,3 +9,4 @@ exceptions:
   - macOS
   - Homebrew/homebrew-core
   - Homebrew/linuxbrew-core
+  - (or Linux)

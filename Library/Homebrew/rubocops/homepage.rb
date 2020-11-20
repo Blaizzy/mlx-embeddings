@@ -23,16 +23,6 @@ module RuboCop
           end
 
           case homepage
-          # Check for http:// GitHub homepage URLs, https:// is preferred.
-          # Note: only check homepages that are repo pages, not *.github.com hosts
-          when %r{^http://github.com/}
-            problem "Please use https:// for #{homepage}"
-
-          # Savannah has full SSL/TLS support but no auto-redirect.
-          # Doesn't apply to the download URLs, only the homepage.
-          when %r{^http://savannah.nongnu.org/}
-            problem "Please use https:// for #{homepage}"
-
           # Freedesktop is complicated to handle - It has SSL/TLS, but only on certain subdomains.
           # To enable https Freedesktop change the URL from http://project.freedesktop.org/wiki to
           # https://wiki.freedesktop.org/project_name.
@@ -48,14 +38,6 @@ module RuboCop
           when %r{^https?://code\.google\.com/p/[^/]+[^/]$}
             problem "#{homepage} should end with a slash"
 
-          # People will run into mixed content sometimes, but we should enforce and then add
-          # exemptions as they are discovered. Treat mixed content on homepages as a bug.
-          # Justify each exemptions with a code comment so we can keep track here.
-
-          when %r{^http://[^/]*\.github\.io/},
-               %r{^http://[^/]*\.sourceforge\.io/}
-            problem "Please use https:// for #{homepage}"
-
           when %r{^http://([^/]*)\.(sf|sourceforge)\.net(/|$)}
             problem "#{homepage} should be `https://#{Regexp.last_match(1)}.sourceforge.io/`"
 
@@ -67,15 +49,28 @@ module RuboCop
             offending_node(parameters(homepage_node).first)
             problem "GitHub homepages (`#{homepage}`) should not end with .git"
 
-          # There's an auto-redirect here, but this mistake is incredibly common too.
-          # Only applies to the homepage and subdomains for now, not the FTP URLs.
-          when %r{^http://((?:build|cloud|developer|download|extensions|git|
-                              glade|help|library|live|nagios|news|people|
-                              projects|rt|static|wiki|www)\.)?gnome\.org}x
-            problem "Please use https:// for #{homepage}"
-
+          # People will run into mixed content sometimes, but we should enforce and then add
+          # exemptions as they are discovered. Treat mixed content on homepages as a bug.
+          # Justify each exemptions with a code comment so we can keep track here.
+          #
           # Compact the above into this list as we're able to remove detailed notations, etc over time.
-          when %r{^http://[^/]*\.apache\.org},
+          when
+               # Check for http:// GitHub homepage URLs, https:// is preferred.
+               # Note: only check homepages that are repo pages, not *.github.com hosts
+               %r{^http://github.com/},
+               %r{^http://[^/]*\.github\.io/},
+
+               # Savannah has full SSL/TLS support but no auto-redirect.
+               # Doesn't apply to the download URLs, only the homepage.
+               %r{^http://savannah.nongnu.org/},
+
+               %r{^http://[^/]*\.sourceforge\.io/},
+               # There's an auto-redirect here, but this mistake is incredibly common too.
+               # Only applies to the homepage and subdomains for now, not the FTP URLs.
+               %r{^http://((?:build|cloud|developer|download|extensions|git|
+                               glade|help|library|live|nagios|news|people|
+                               projects|rt|static|wiki|www)\.)?gnome\.org}x,
+               %r{^http://[^/]*\.apache\.org},
                %r{^http://packages\.debian\.org},
                %r{^http://wiki\.freedesktop\.org/},
                %r{^http://((?:www)\.)?gnupg\.org/},

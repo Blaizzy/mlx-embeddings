@@ -7,19 +7,22 @@ require "cli/parser"
 require "cask/cmd"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def list_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `list`, `ls` [<options>] [<formula|cask>]
+        `list`, `ls` [<options>] [<formula>|<cask>]
 
-        List all installed formulae or casks
+        List all installed formulae and casks.
 
         If <formula> is provided, summarise the paths within its current keg.
       EOS
       switch "--formula", "--formulae",
-             description: "List only formulae. `This is the default action on non TTY.`"
+             description: "List only formulae. This is the default when output is not to a terminal."
       switch "--cask", "--casks",
              description: "List only casks, or <cask> if provided."
       switch "--unbrewed",

@@ -6,8 +6,11 @@ require "formula"
 require "cli/parser"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def sh_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
@@ -23,6 +26,7 @@ module Homebrew
              description: "Use the standard `PATH` instead of superenv's when `std` is passed."
       flag   "-c=", "--cmd=",
              description: "Execute commands in a non-interactive shell."
+
       max_named 1
     end
   end

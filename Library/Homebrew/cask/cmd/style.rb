@@ -10,6 +10,9 @@ module Cask
     #
     # @api private
     class Style < AbstractCommand
+      extend T::Sig
+
+      sig { returns(String) }
       def self.description
         "Checks style of the given <cask> using RuboCop."
       end
@@ -21,6 +24,7 @@ module Cask
         end
       end
 
+      sig { void }
       def run
         success = Homebrew::Style.check_style_and_print(
           cask_paths,

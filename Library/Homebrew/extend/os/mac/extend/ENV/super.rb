@@ -2,6 +2,8 @@
 # frozen_string_literal: true
 
 module Superenv
+  extend T::Sig
+
   class << self
     undef bin
 
@@ -44,6 +46,7 @@ module Superenv
   end
 
   # @private
+  sig { returns(T::Boolean) }
   def libxml2_include_needed?
     return false if deps.any? { |d| d.name == "libxml2" }
     return false if Pathname("#{self["HOMEBREW_SDKROOT"]}/usr/include/libxml").directory?

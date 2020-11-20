@@ -7,6 +7,8 @@ module Cask
     #
     # @api private
     class Version < ::String
+      extend T::Sig
+
       DIVIDERS = {
         "." => :dots,
         "-" => :hyphens,
@@ -62,6 +64,7 @@ module Cask
 
       attr_reader :raw_version
 
+      sig { params(raw_version: T.nilable(T.any(String, Symbol))).void }
       def initialize(raw_version)
         @raw_version = raw_version
         super(raw_version.to_s)
@@ -73,6 +76,7 @@ module Cask
         raw_version.scan(INVALID_CHARACTERS)
       end
 
+      sig { returns(T::Boolean) }
       def unstable?
         return false if latest?
 
@@ -84,6 +88,7 @@ module Cask
         false
       end
 
+      sig { returns(T::Boolean) }
       def latest?
         to_s == "latest"
       end
@@ -134,6 +139,7 @@ module Cask
 
       private
 
+      sig { returns(T.self_type) }
       def version
         return self if empty? || latest?
 

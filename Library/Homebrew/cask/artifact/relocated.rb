@@ -12,6 +12,8 @@ module Cask
     #
     # @api private
     class Relocated < AbstractArtifact
+      extend T::Sig
+
       def self.from_args(cask, *args)
         source_string, target_hash = args
 
@@ -49,6 +51,7 @@ module Cask
         end
       end
 
+      sig { returns(String) }
       def summarize
         target_string = @target_string.empty? ? "" : " -> #{@target_string}"
         "#{@source_string}#{target_string}"

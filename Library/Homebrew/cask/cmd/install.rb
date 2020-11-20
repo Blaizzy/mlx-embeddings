@@ -7,10 +7,14 @@ module Cask
     #
     # @api private
     class Install < AbstractCommand
+      extend T::Sig
+
+      sig { override.returns(T.nilable(T.any(Integer, Symbol))) }
       def self.min_named
         :cask
       end
 
+      sig { returns(String) }
       def self.description
         "Installs the given <cask>."
       end
@@ -30,10 +34,11 @@ module Cask
             send(*option)
           end
 
-          instance_eval(&block) if block_given?
+          instance_eval(&block) if block
         end
       end
 
+      sig { void }
       def run
         self.class.install_casks(
           *casks,

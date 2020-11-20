@@ -6,12 +6,15 @@ require "cli/parser"
 require "utils/tar"
 
 module Homebrew
+  extend T::Sig
+
   module_function
 
+  sig { returns(CLI::Parser) }
   def bump_cask_pr_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `bump-cask-pr` [<options>] [<cask>]
+        `bump-cask-pr` [<options>] <cask>
 
         Create a pull request to update <cask> with a new version.
 
@@ -140,6 +143,7 @@ module Homebrew
                                                       silent:        true)
 
       tmp_cask = Cask::CaskLoader.load(tmp_contents)
+      tmp_config = cask.config
       tmp_url = tmp_cask.url.to_s
 
       if new_hash.nil?
@@ -151,9 +155,9 @@ module Homebrew
       cask.languages.each do |language|
         next if language == cask.language
 
-        tmp_cask.config.languages = [language]
-
+        lang_config = tmp_config.merge(Cask::Config.new(explicit: { languages: [language] }))
         lang_cask = Cask::CaskLoader.load(tmp_contents)
+        lang_cask.config = lang_config
         lang_url = lang_cask.url.to_s
         lang_old_hash = lang_cask.sha256
 

@@ -18,7 +18,7 @@ module Count
 end
 
 module Homebrew
-  describe FormulaText do
+  describe FormulaTextAuditor do
     alias_matcher :have_data, :be_data
     alias_matcher :have_end, :be_end
     alias_matcher :have_trailing_newline, :be_trailing_newline
@@ -713,6 +713,19 @@ module Homebrew
               'sha256 "3622d2a53236ed9ca62de0616a7e80fd477a9a3f862ba09d503da188f53ca523"',
               'sha256 "e048c5e6144f5932d8672c2fade81d9073d5b3ca1517b84df006de3d25414fc1"',
             )
+          end
+
+          it { is_expected.to be_nil }
+        end
+
+        context "can be removed when switching schemes" do
+          before do
+            formula_gsub_origin_commit(
+              'url "https://brew.sh/foo-1.0.tar.gz"',
+              'url "https://foo.com/brew/bar.git", tag: "1.0", revision: "f5e00e485e7aa4c5baa20355b27e3b84a6912790"',
+            )
+            formula_gsub_origin_commit('sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"',
+                                       "")
           end
 
           it { is_expected.to be_nil }

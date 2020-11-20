@@ -10,6 +10,8 @@ require "utils/shell"
 #
 # @api private
 module GitHub
+  extend T::Sig
+
   module_function
 
   API_URL = "https://api.github.com"
@@ -129,6 +131,7 @@ module GitHub
     end
   end
 
+  sig { returns(Symbol) }
   def api_credentials_type
     if Homebrew::EnvConfig.github_api_token
       :env_token
@@ -775,5 +778,10 @@ module GitHub
         raise Error, "Expected #{commit_count} commits but actually got #{commits.length}!"
       end
     end
+  end
+
+  def pull_request_labels(user, repo, pr)
+    pr_data = open_api(url_to("repos", user, repo, "pulls", pr))
+    pr_data["labels"].map { |label| label["name"] }
   end
 end

@@ -7,14 +7,19 @@ module Cask
     #
     # @api private
     class Help < AbstractCommand
+      extend T::Sig
+
+      sig { override.returns(T.nilable(Integer)) }
       def self.max_named
         1
       end
 
+      sig { returns(String) }
       def self.description
         "Print help for `cask` commands."
       end
 
+      sig { void }
       def run
         if args.named.empty?
           puts Cmd.parser.generate_help_text

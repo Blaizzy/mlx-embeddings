@@ -4,10 +4,13 @@
 require "requirement"
 
 class OsxfuseRequirement < Requirement
+  extend T::Sig
+
   download "https://osxfuse.github.io/"
 
   satisfy(build_env: false) { self.class.binary_osxfuse_installed? }
 
+  sig { returns(T::Boolean) }
   def self.binary_osxfuse_installed?
     File.exist?("/usr/local/include/osxfuse/fuse.h") &&
       !File.symlink?("/usr/local/include/osxfuse")

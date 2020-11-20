@@ -11,10 +11,13 @@ require "cask/caskroom"
 require "dependencies_helpers"
 
 module Homebrew
+  extend T::Sig
+
   extend DependenciesHelpers
 
   module_function
 
+  sig { returns(CLI::Parser) }
   def uses_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
@@ -37,6 +40,7 @@ module Homebrew
              description: "Include all formulae that specify <formula> as `:optional` type dependency."
       switch "--skip-recommended",
              description: "Skip all formulae that specify <formula> as `:recommended` type dependency."
+
       min_named :formula
     end
   end

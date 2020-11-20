@@ -18,10 +18,13 @@ require "extend/cachable"
 # This class is used by `depends_on` in the formula DSL to turn dependency
 # specifications into the proper kinds of dependencies and requirements.
 class DependencyCollector
+  extend T::Sig
+
   extend Cachable
 
   attr_reader :deps, :requirements
 
+  sig { void }
   def initialize
     @deps = Dependencies.new
     @requirements = Requirements.new
@@ -112,8 +115,6 @@ class DependencyCollector
   def parse_string_spec(spec, tags)
     if spec.match?(HOMEBREW_TAP_FORMULA_REGEX)
       TapDependency.new(spec, tags)
-    elsif tags.empty?
-      Dependency.new(spec, tags)
     else
       Dependency.new(spec, tags)
     end

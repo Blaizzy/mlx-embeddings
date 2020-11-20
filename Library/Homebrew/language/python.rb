@@ -114,6 +114,8 @@ module Language
 
     # Mixin module for {Formula} adding virtualenv support features.
     module Virtualenv
+      extend T::Sig
+
       def self.included(base)
         base.class_eval do
           resource "homebrew-virtualenv" do
@@ -215,6 +217,7 @@ module Language
         venv
       end
 
+      sig { returns(T::Array[String]) }
       def python_names
         %w[python python3 pypy pypy3] + Formula.names.select { |name| name.start_with? "python@" }
       end
@@ -267,7 +270,7 @@ module Language
             next unless f.symlink?
             next unless (rp = f.realpath.to_s).start_with? HOMEBREW_CELLAR
 
-            version = rp.match %r{^#{HOMEBREW_CELLAR}/python@(.*?)/}
+            version = rp.match %r{^#{HOMEBREW_CELLAR}/python@(.*?)/}o
             version = "@#{version.captures.first}" unless version.nil?
 
             new_target = rp.sub %r{#{HOMEBREW_CELLAR}/python#{version}/[^/]+}, Formula["python#{version}"].opt_prefix
@@ -278,7 +281,7 @@ module Language
           Pathname.glob(@venv_root/"lib/python*/orig-prefix.txt").each do |prefix_file|
             prefix_path = prefix_file.read
 
-            version = prefix_path.match %r{^#{HOMEBREW_CELLAR}/python@(.*?)/}
+            version = prefix_path.match %r{^#{HOMEBREW_CELLAR}/python@(.*?)/}o
             version = "@#{version.captures.first}" unless version.nil?
 
             prefix_path.sub! %r{^#{HOMEBREW_CELLAR}/python#{version}/[^/]+}, Formula["python#{version}"].opt_prefix
