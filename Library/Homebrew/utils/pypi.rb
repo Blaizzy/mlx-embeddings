@@ -55,13 +55,15 @@ module PyPI
                                print_only: false, silent: false, ignore_non_pypi_packages: false)
 
     auto_update_list = formula.tap.formula_lists[:pypi_automatic_resource_update_list]
-    if package_name.blank? && extra_packages.blank? && exclude_packages.blank? && !print_only &&
-       auto_update_list.present? && auto_update_list.key?(formula.full_name)
+    if auto_update_list.present? && auto_update_list.key?(formula.full_name) &&
+       package_name.blank? && extra_packages.blank? && exclude_packages.blank?
 
       list_entry = auto_update_list[formula.full_name]
       case list_entry
       when false
-        odie "The resources for \"#{formula.name}\" need special attention. Please update them manually."
+        unless print_only
+          odie "The resources for \"#{formula.name}\" need special attention. Please update them manually."
+        end
       when String
         package_name = list_entry
       when Hash
