@@ -1,6 +1,6 @@
 #:  * `formulae` [<options>]
-#:  
-#:  Prints a sorted list of locally available formulas including shortnames.
+#:
+#:  List all locally installable formulae including short names.
 #:
 
 # shellcheck disable=SC2155
