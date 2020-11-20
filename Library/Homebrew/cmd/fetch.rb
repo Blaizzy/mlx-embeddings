@@ -4,6 +4,7 @@
 require "formula"
 require "fetch"
 require "cli/parser"
+require "cask/download"
 
 module Homebrew
   extend T::Sig
@@ -18,8 +19,8 @@ module Homebrew
       usage_banner <<~EOS
         `fetch` [<options>] <formula>
 
-        Download a bottle (if available) or source packages for <formula>.
-        For tarballs, also print SHA-256 checksums.
+        Download a bottle (if available) or source packages for <formula>e
+        and binaries for <cask>s. For files, also print SHA-256 checksums.
       EOS
       switch "--HEAD",
              description: "Fetch HEAD version instead of stable version."
@@ -42,58 +43,98 @@ module Homebrew
       switch "--force-bottle",
              description: "Download a bottle if it exists for the current or newest version of macOS, "\
                           "even if it would not be used during installation."
+      switch "--[no-]quarantine",
+             description: "Disable/enable quarantining of downloads (default: enabled).",
+             env:         :cask_opts_quarantine
+
+      switch "--formula", "--formulae",
+             description: "Treat all named arguments as formulae."
+      switch "--cask", "--casks",
+             description: "Treat all named arguments as casks."
+      conflicts "--formula", "--cask"
 
       conflicts "--devel", "--HEAD"
       conflicts "--build-from-source", "--build-bottle", "--force-bottle"
-      min_named :formula
+      conflicts "--cask", "--HEAD"
+      conflicts "--cask", "--devel"
+      conflicts "--cask", "--deps"
+      conflicts "--cask", "-s"
+      conflicts "--cask", "--build-bottle"
+      conflicts "--cask", "--force-bottle"
+
+      min_named :formula_or_cask
     end
   end
 
   def fetch
     args = fetch_args.parse
 
-    if args.deps?
-      bucket = []
-      args.named.to_formulae.each do |f|
-        bucket << f
-        bucket.concat f.recursive_dependencies.map(&:to_formula)
-      end
-      bucket.uniq!
-    else
-      bucket = args.named.to_formulae
-    end
+    only = :formula if args.formula? && !args.cask?
+    only = :cask if args.cask? && !args.formula?
 
-    puts "Fetching: #{bucket * ", "}" if bucket.size > 1
-    bucket.each do |f|
-      f.print_tap_action verb: "Fetching"
+    bucket = if args.deps?
+      args.named.to_formulae_and_casks.flat_map do |formula_or_cask|
+        case formula_or_cask
+        when Formula
+          f = formula_or_cask
 
-      fetched_bottle = false
-      if fetch_bottle?(f, args: args)
-        begin
-          fetch_formula(f.bottle, args: args)
-        rescue Interrupt
-          raise
-        rescue => e
-          raise if Homebrew::EnvConfig.developer?
-
-          fetched_bottle = false
-          onoe e.message
-          opoo "Bottle fetch failed: fetching the source."
+          [f, *f.recursive_dependencies.map(&:to_formula)]
         else
-          fetched_bottle = true
+          formula_or_cask
         end
       end
+    else
+      args.named.to_formulae_and_casks(only: only)
+    end.uniq
 
-      next if fetched_bottle
+    puts "Fetching: #{bucket * ", "}" if bucket.size > 1
+    bucket.each do |formula_or_cask|
+      case formula_or_cask
+      when Formula
+        f = formula_or_cask
 
-      fetch_formula(f, args: args)
+        f.print_tap_action verb: "Fetching"
 
-      f.resources.each do |r|
-        fetch_resource(r, args: args)
-        r.patches.each { |p| fetch_patch(p, args: args) if p.external? }
+        fetched_bottle = false
+        if fetch_bottle?(f, args: args)
+          begin
+            fetch_formula(f.bottle, args: args)
+          rescue Interrupt
+            raise
+          rescue => e
+            raise if Homebrew::EnvConfig.developer?
+
+            fetched_bottle = false
+            onoe e.message
+            opoo "Bottle fetch failed: fetching the source."
+          else
+            fetched_bottle = true
+          end
+        end
+
+        next if fetched_bottle
+
+        fetch_formula(f, args: args)
+
+        f.resources.each do |r|
+          fetch_resource(r, args: args)
+          r.patches.each { |p| fetch_patch(p, args: args) if p.external? }
+        end
+
+        f.patchlist.each { |p| fetch_patch(p, args: args) if p.external? }
+      else
+        cask = formula_or_cask
+
+        options = {
+          force:      args.force?,
+          quarantine: args.quarantine?,
+        }.compact
+
+        options[:quarantine] = true if options[:quarantine].nil?
+
+        download = Cask::Download.new(cask, **options)
+        fetch_cask(download, args: args)
       end
-
-      f.patchlist.each { |p| fetch_patch(p, args: args) if p.external? }
     end
   end
 
@@ -110,6 +151,13 @@ module Homebrew
   rescue ChecksumMismatchError => e
     retry if retry_fetch?(f, args: args)
     opoo "Formula reports different #{e.hash_type}: #{e.expected}"
+  end
+
+  def fetch_cask(cask_download, args:)
+    fetch_fetchable cask_download, args: args
+  rescue ChecksumMismatchError => e
+    retry if retry_fetch?(cask_download, args: args)
+    opoo "Cask reports different #{e.hash_type}: #{e.expected}"
   end
 
   def fetch_patch(p, args:)

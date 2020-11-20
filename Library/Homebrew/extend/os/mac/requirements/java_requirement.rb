@@ -27,11 +27,13 @@ class JavaRequirement < Requirement
 
   def java_home_cmd
     # TODO: enable for all macOS versions and Linux on next minor release
-    #       but --version is broken on Big Sur today.
-    if @version && MacOS.version >= :big_sur
-      odisabled "depends_on :java",
-                '"depends_on "openjdk@11", "depends_on "openjdk@8" or "depends_on "openjdk"'
+    #       but --version with ranges is broken on Big Sur today.
+    if MacOS.version >= :big_sur && @version&.end_with?("+")
+      odisabled %Q(depends_on java: "#{@version}"),
+                'depends_on "openjdk@11", depends_on "openjdk@8" or depends_on "openjdk"'
     end
+    # odeprecated "depends_on :java",
+    #             'depends_on "openjdk@11", depends_on "openjdk@8" or depends_on "openjdk"'
 
     return unless File.executable?("/usr/libexec/java_home")
 

@@ -199,8 +199,8 @@ an issue; just ignore this.
 
 ### `fetch` [*`options`*] *`formula`*
 
-Download a bottle (if available) or source packages for *`formula`*.
-For tarballs, also print SHA-256 checksums.
+Download a bottle (if available) or source packages for *`formula`*e
+and binaries for *`cask`*s. For files, also print SHA-256 checksums.
 
 * `--HEAD`:
   Fetch HEAD version instead of stable version.
@@ -220,6 +220,12 @@ For tarballs, also print SHA-256 checksums.
   Download source packages (for eventual bottling) rather than a bottle.
 * `--force-bottle`:
   Download a bottle if it exists for the current or newest version of macOS, even if it would not be used during installation.
+* `--[no-]quarantine`:
+  Disable/enable quarantining of downloads (default: enabled).
+* `--formula`:
+  Treat all named arguments as formulae.
+* `--cask`:
+  Treat all named arguments as casks.
 
 ### `formulae`
 
@@ -242,11 +248,11 @@ error message if no logs are found.
 Open *`formula`*'s homepage in a browser, or open Homebrew's own homepage
 if no formula is provided.
 
-### `info` [*`options`*] [*`formula`*]
+### `info` [*`options`*] [*`formula`*|*`cask`*]
 
 Display brief statistics for your Homebrew installation.
 
-If *`formula`* is provided, show summary of information about *`formula`*.
+If a *`formula`* or *`cask`* is provided, show summary of information about it.
 
 * `--analytics`:
   List global Homebrew analytics data or, if specified, installation and build error data for *`formula`* (provided neither `HOMEBREW_NO_ANALYTICS` nor `HOMEBREW_NO_GITHUB_API` are set).
@@ -264,6 +270,10 @@ If *`formula`* is provided, show summary of information about *`formula`*.
   Print JSON of all available formulae.
 * `-v`, `--verbose`:
   Show more verbose analytics data for *`formula`*.
+* `--formula`:
+  Treat all named arguments as formulae.
+* `--cask`:
+  Treat all named arguments as casks.
 
 ### `install` [*`options`*] *`formula`*|*`cask`*
 
@@ -567,12 +577,14 @@ If no *`tap`* names are provided, display brief statistics for all installed tap
 * `--json`:
   Print a JSON representation of *`tap`*. Currently the default and only accepted value for *`version`* is `v1`. See the docs for examples of using the JSON output: <https://docs.brew.sh/Querying-Brew>
 
-### `uninstall`, `rm`, `remove` [*`options`*] *`formula`*
+### `uninstall`, `rm`, `remove` [*`options`*] *`formula`*|*`cask`*
 
-Uninstall *`formula`*.
+Uninstall a *`formula`* or *`cask`*.
 
 * `-f`, `--force`:
-  Delete all installed versions of *`formula`*.
+  Delete all installed versions of *`formula`*. Uninstall even if *`cask`* is not installed, overwrite existing files and ignore errors when removing files.
+* `--zap`:
+  Remove all files associated with a *`cask`*. *May remove files which are shared between applications.*
 * `--ignore-dependencies`:
   Don't fail uninstall, even if *`formula`* is a dependency of any installed formulae.
 * `--formula`:
@@ -1001,10 +1013,15 @@ the Cellar and then link it into Homebrew's prefix with `brew link`.
 * `--version`:
   Explicitly set the *`version`* of the package being installed.
 
-### `edit` [*`formula`*]
+### `edit` [*`formula`*|*`cask`*]
 
-Open *`formula`* in the editor set by `EDITOR` or `HOMEBREW_EDITOR`, or open the
-Homebrew repository for editing if no formula is provided.
+Open a *`formula`* or *`cask`* in the editor set by `EDITOR` or `HOMEBREW_EDITOR`,
+or open the Homebrew repository for editing if no formula is provided.
+
+* `--formula`:
+  Treat all named arguments as formulae.
+* `--cask`:
+  Treat all named arguments as casks.
 
 ### `extract` [*`options`*] *`formula`* *`tap`*
 

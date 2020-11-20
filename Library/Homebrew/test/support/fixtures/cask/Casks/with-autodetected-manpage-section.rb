@@ -1,6 +1,6 @@
 cask "with-autodetected-manpage-section" do
   version "1.2.3"
-  sha256 "67cdb8a02803ef37fdbf7e0be205863172e41a561ca446cd84f0d7ab35a99d94"
+  sha256 "68b7e71a2ca7585b004f52652749589941e3029ff0884e8aa3b099594e0282c0"
 
   url "file://#{TEST_FIXTURE_DIR}/cask/AppWithManpage.zip"
   homepage "https://brew.sh/with-autodetected-manpage-section"

@@ -36,7 +36,7 @@ describe Cask::Cmd::Fetch, :cask do
   end
 
   it "prevents double fetch (without nuking existing installation)" do
-    cached_location = Cask::Download.new(local_transmission).perform
+    cached_location = Cask::Download.new(local_transmission).fetch
 
     old_ctime = File.stat(cached_location).ctime
 
@@ -47,7 +47,7 @@ describe Cask::Cmd::Fetch, :cask do
   end
 
   it "allows double fetch with --force" do
-    cached_location = Cask::Download.new(local_transmission).perform
+    cached_location = Cask::Download.new(local_transmission).fetch
 
     old_ctime = File.stat(cached_location).ctime
     sleep(1)

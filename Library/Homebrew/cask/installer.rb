@@ -8,7 +8,6 @@ require "cask/topological_hash"
 require "cask/config"
 require "cask/download"
 require "cask/staged"
-require "cask/verify"
 require "cask/quarantine"
 
 require "cgi"
@@ -68,7 +67,6 @@ module Cask
       satisfy_dependencies
 
       download
-      verify
     end
 
     def stage
@@ -156,7 +154,7 @@ module Cask
       return @downloaded_path if @downloaded_path
 
       odebug "Downloading"
-      @downloaded_path = Download.new(@cask, force: false, quarantine: quarantine?).perform
+      @downloaded_path = Download.new(@cask, quarantine: quarantine?).fetch
       odebug "Downloaded to -> #{@downloaded_path}"
       @downloaded_path
     end
@@ -165,11 +163,10 @@ module Cask
       odebug "Checking cask has checksum"
       return unless @cask.sha256 == :no_check
 
-      raise CaskNoShasumError, @cask.token
-    end
-
-    def verify
-      Verify.all(@cask, @downloaded_path)
+      raise CaskError, <<~EOS
+        Cask '#{@cask}' does not have a sha256 checksum defined and was not installed.
+        This means you have the #{Formatter.identifier("--require-sha")} option set, perhaps in your HOMEBREW_CASK_OPTS.
+      EOS
     end
 
     def primary_container

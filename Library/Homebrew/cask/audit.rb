@@ -255,20 +255,20 @@ module Cask
       add_error "you should use sha256 :no_check when version is :latest"
     end
 
-    def check_sha256_actually_256(sha256: cask.sha256, stanza: "sha256")
-      odebug "Verifying #{stanza} string is a legal SHA-256 digest"
-      return unless sha256.is_a?(String)
-      return if sha256.length == 64 && sha256[/^[0-9a-f]+$/i]
+    def check_sha256_actually_256
+      odebug "Verifying sha256 string is a legal SHA-256 digest"
+      return unless cask.sha256.is_a?(Checksum)
+      return if cask.sha256.length == 64 && cask.sha256[/^[0-9a-f]+$/i]
 
-      add_error "#{stanza} string must be of 64 hexadecimal characters"
+      add_error "sha256 string must be of 64 hexadecimal characters"
     end
 
-    def check_sha256_invalid(sha256: cask.sha256, stanza: "sha256")
-      odebug "Verifying #{stanza} is not a known invalid value"
+    def check_sha256_invalid
+      odebug "Verifying sha256 is not a known invalid value"
       empty_sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-      return unless sha256 == empty_sha256
+      return unless cask.sha256 == empty_sha256
 
-      add_error "cannot use the sha256 for an empty string in #{stanza}: #{empty_sha256}"
+      add_error "cannot use the sha256 for an empty string: #{empty_sha256}"
     end
 
     def check_latest_with_appcast
@@ -428,8 +428,7 @@ module Cask
       return unless download && cask.url
 
       odebug "Auditing download"
-      downloaded_path = download.perform
-      Verify.all(cask, downloaded_path)
+      download.fetch
     rescue => e
       add_error "download not possible: #{e}"
     end

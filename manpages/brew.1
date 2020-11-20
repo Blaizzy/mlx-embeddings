@@ -254,7 +254,7 @@ List all audit methods, which can be run individually if provided as arguments\.
 Enable debugging and profiling of audit methods\.
 .
 .SS "\fBfetch\fR [\fIoptions\fR] \fIformula\fR"
-Download a bottle (if available) or source packages for \fIformula\fR\. For tarballs, also print SHA\-256 checksums\.
+Download a bottle (if available) or source packages for \fIformula\fRe and binaries for \fIcask\fRs\. For files, also print SHA\-256 checksums\.
 .
 .TP
 \fB\-\-HEAD\fR
@@ -292,6 +292,18 @@ Download source packages (for eventual bottling) rather than a bottle\.
 \fB\-\-force\-bottle\fR
 Download a bottle if it exists for the current or newest version of macOS, even if it would not be used during installation\.
 .
+.TP
+\fB\-\-[no\-]quarantine\fR
+Disable/enable quarantining of downloads (default: enabled)\.
+.
+.TP
+\fB\-\-formula\fR
+Treat all named arguments as formulae\.
+.
+.TP
+\fB\-\-cask\fR
+Treat all named arguments as casks\.
+.
 .SS "\fBformulae\fR"
 List all locally installable formulae including short names\.
 .
@@ -313,11 +325,11 @@ The Gist will be marked private and will not appear in listings but will be acce
 .SS "\fBhome\fR [\fIformula\fR]"
 Open \fIformula\fR\'s homepage in a browser, or open Homebrew\'s own homepage if no formula is provided\.
 .
-.SS "\fBinfo\fR [\fIoptions\fR] [\fIformula\fR]"
+.SS "\fBinfo\fR [\fIoptions\fR] [\fIformula\fR|\fIcask\fR]"
 Display brief statistics for your Homebrew installation\.
 .
 .P
-If \fIformula\fR is provided, show summary of information about \fIformula\fR\.
+If a \fIformula\fR or \fIcask\fR is provided, show summary of information about it\.
 .
 .TP
 \fB\-\-analytics\fR
@@ -350,6 +362,14 @@ Print JSON of all available formulae\.
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
 Show more verbose analytics data for \fIformula\fR\.
+.
+.TP
+\fB\-\-formula\fR
+Treat all named arguments as formulae\.
+.
+.TP
+\fB\-\-cask\fR
+Treat all named arguments as casks\.
 .
 .SS "\fBinstall\fR [\fIoptions\fR] \fIformula\fR|\fIcask\fR"
 Install a \fIformula\fR or \fIcask\fR\. Additional options specific to a \fIformula\fR may be appended to the command\.
@@ -785,12 +805,16 @@ Show information on each installed tap\.
 \fB\-\-json\fR
 Print a JSON representation of \fItap\fR\. Currently the default and only accepted value for \fIversion\fR is \fBv1\fR\. See the docs for examples of using the JSON output: \fIhttps://docs\.brew\.sh/Querying\-Brew\fR
 .
-.SS "\fBuninstall\fR, \fBrm\fR, \fBremove\fR [\fIoptions\fR] \fIformula\fR"
-Uninstall \fIformula\fR\.
+.SS "\fBuninstall\fR, \fBrm\fR, \fBremove\fR [\fIoptions\fR] \fIformula\fR|\fIcask\fR"
+Uninstall a \fIformula\fR or \fIcask\fR\.
 .
 .TP
 \fB\-f\fR, \fB\-\-force\fR
-Delete all installed versions of \fIformula\fR\.
+Delete all installed versions of \fIformula\fR\. Uninstall even if \fIcask\fR is not installed, overwrite existing files and ignore errors when removing files\.
+.
+.TP
+\fB\-\-zap\fR
+Remove all files associated with a \fIcask\fR\. \fIMay remove files which are shared between applications\.\fR
 .
 .TP
 \fB\-\-ignore\-dependencies\fR
@@ -1396,8 +1420,16 @@ Explicitly set the \fIname\fR of the package being installed\.
 \fB\-\-version\fR
 Explicitly set the \fIversion\fR of the package being installed\.
 .
-.SS "\fBedit\fR [\fIformula\fR]"
-Open \fIformula\fR in the editor set by \fBEDITOR\fR or \fBHOMEBREW_EDITOR\fR, or open the Homebrew repository for editing if no formula is provided\.
+.SS "\fBedit\fR [\fIformula\fR|\fIcask\fR]"
+Open a \fIformula\fR or \fIcask\fR in the editor set by \fBEDITOR\fR or \fBHOMEBREW_EDITOR\fR, or open the Homebrew repository for editing if no formula is provided\.
+.
+.TP
+\fB\-\-formula\fR
+Treat all named arguments as formulae\.
+.
+.TP
+\fB\-\-cask\fR
+Treat all named arguments as casks\.
 .
 .SS "\fBextract\fR [\fIoptions\fR] \fIformula\fR \fItap\fR"
 Look through repository history to find the most recent version of \fIformula\fR and create a copy in \fItap\fR\fB/Formula/\fR\fIformula\fR\fB@\fR\fIversion\fR\fB\.rb\fR\. If the tap is not installed yet, attempt to install/clone the tap before continuing\. To extract a formula from a tap that is not \fBhomebrew/core\fR use its fully\-qualified form of \fIuser\fR\fB/\fR\fIrepo\fR\fB/\fR\fIformula\fR\.
