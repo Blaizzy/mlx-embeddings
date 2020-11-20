@@ -21,11 +21,13 @@ class Tap
   HOMEBREW_TAP_FORMULA_RENAMES_FILE = "formula_renames.json"
   HOMEBREW_TAP_MIGRATIONS_FILE = "tap_migrations.json"
   HOMEBREW_TAP_AUDIT_EXCEPTIONS_DIR = "audit_exceptions"
+  HOMEBREW_TAP_FORMULA_LISTS_DIR = "formula_lists"
 
   HOMEBREW_TAP_JSON_FILES = %W[
     #{HOMEBREW_TAP_FORMULA_RENAMES_FILE}
     #{HOMEBREW_TAP_MIGRATIONS_FILE}
     #{HOMEBREW_TAP_AUDIT_EXCEPTIONS_DIR}/*.json
+    #{HOMEBREW_TAP_FORMULA_LISTS_DIR}/*.json
   ].freeze
 
   def self.fetch(*args)
@@ -112,6 +114,7 @@ class Tap
     @formula_renames = nil
     @tap_migrations = nil
     @audit_exceptions = nil
+    @formula_lists = nil
     @config = nil
     remove_instance_variable(:@private) if instance_variable_defined?(:@private)
   end
@@ -560,22 +563,12 @@ class Tap
 
   # Hash with audit exceptions
   def audit_exceptions
-    @audit_exceptions = {}
+    @audit_exceptions = read_formula_list_directory HOMEBREW_TAP_AUDIT_EXCEPTIONS_DIR
+  end
 
-    Pathname.glob(path/HOMEBREW_TAP_AUDIT_EXCEPTIONS_DIR/"*").each do |exception_file|
-      list_name = exception_file.basename.to_s.chomp(".json").to_sym
-      list_contents = begin
-        JSON.parse exception_file.read
-      rescue JSON::ParserError
-        opoo "#{exception_file} contains invalid JSON"
-      end
-
-      next if list_contents.nil?
-
-      @audit_exceptions[list_name] = list_contents
-    end
-
-    @audit_exceptions
+  # Hash with formula lists
+  def formula_lists
+    @formula_lists = read_formula_list_directory HOMEBREW_TAP_FORMULA_LISTS_DIR
   end
 
   def ==(other)
@@ -635,6 +628,25 @@ class Tap
         false
       end
     end
+  end
+
+  def read_formula_list_directory(directory)
+    list = {}
+
+    Pathname.glob(path/directory/"*").each do |exception_file|
+      list_name = exception_file.basename.to_s.chomp(".json").to_sym
+      list_contents = begin
+        JSON.parse exception_file.read
+      rescue JSON::ParserError
+        opoo "#{exception_file} contains invalid JSON"
+      end
+
+      next if list_contents.nil?
+
+      list[list_name] = list_contents
+    end
+
+    list
   end
 end
 
@@ -734,6 +746,13 @@ class CoreTap < Tap
   # @private
   def audit_exceptions
     @audit_exceptions ||= begin
+      self.class.ensure_installed!
+      super
+    end
+  end
+
+  def formula_lists
+    @formula_lists ||= begin
       self.class.ensure_installed!
       super
     end

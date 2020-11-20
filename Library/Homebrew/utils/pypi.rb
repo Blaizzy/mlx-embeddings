@@ -26,8 +26,9 @@ module PyPI
     url
   end
 
-  # Get name, URL and SHA-256 checksum for a given PyPI package.
-  def get_pypi_info(package, version)
+  # Get name, URL, SHA-256 checksum, and latest version for a given PyPI package.
+  def get_pypi_info(package, version = nil)
+    package = package.split("[").first
     metadata_url = if version.present?
       "https://pypi.org/pypi/#{package}/#{version}/json"
     else
@@ -46,15 +47,15 @@ module PyPI
     sdist = json["urls"].find { |url| url["packagetype"] == "sdist" }
     return json["info"]["name"] if sdist.nil?
 
-    [json["info"]["name"], sdist["url"], sdist["digests"]["sha256"]]
+    [json["info"]["name"], sdist["url"], sdist["digests"]["sha256"], json["info"]["version"]]
   end
 
   # Return true if resources were checked (even if no change).
   def update_python_resources!(formula, version: nil, package_name: nil, extra_packages: nil, exclude_packages: nil,
                                print_only: false, silent: false, ignore_non_pypi_packages: false)
 
-    auto_update_list = formula.tap.audit_exceptions[:automatic_resource_update_list]
-    if package_name.blank? && extra_packages.blank? && !print_only &&
+    auto_update_list = formula.tap.formula_lists[:pypi_automatic_resource_update_list]
+    if package_name.blank? && extra_packages.blank? && exclude_packages.blank? && !print_only &&
        auto_update_list.present? && auto_update_list.key?(formula.full_name)
 
       list_entry = auto_update_list[formula.full_name]
@@ -70,18 +71,12 @@ module PyPI
       end
     end
 
+    version ||= formula.version if package_name.blank?
     package_name ||= url_to_pypi_package_name formula.stable.url
-    version ||= formula.version
     extra_packages ||= []
     exclude_packages ||= []
 
-    # opoo "package_name: #{package_name}"
-    # opoo "version: #{version}"
-    # opoo "extra_packages: #{extra_packages}"
-    # opoo "exclude_packages: #{exclude_packages}"
-    # odie ""
-
-    if package_name.nil?
+    if package_name.blank?
       return if ignore_non_pypi_packages
 
       odie <<~EOS
@@ -140,7 +135,7 @@ module PyPI
         EOS
       end
 
-      found_packages.merge!(JSON.parse(pipgrip_output).sort.to_h) do |conflicting_package, old_version, new_version|
+      found_packages.merge!(JSON.parse(pipgrip_output).to_h) do |conflicting_package, old_version, new_version|
         next old_version if old_version == new_version
 
         odie "Conflicting versions found for the `#{conflicting_package}` resource: #{old_version}, #{new_version}"
@@ -148,11 +143,11 @@ module PyPI
     end
 
     # Remove extra packages that may be included in pipgrip output
-    exclude_list = %W[#{package_name.downcase} argparse pip setuptools wheel wsgiref]
+    exclude_list = %W[#{package_name.split("[").first.downcase} argparse pip setuptools wheel wsgiref]
     found_packages.delete_if { |package| exclude_list.include? package }
 
     new_resource_blocks = ""
-    found_packages.each do |package, package_version|
+    found_packages.sort.each do |package, package_version|
       if exclude_packages.include? package
         ohai "Excluding \"#{package}==#{package_version}\"" if !print_only && !silent
         next

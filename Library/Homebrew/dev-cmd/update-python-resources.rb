@@ -27,7 +27,6 @@ module Homebrew
              description: "Use the specified <version> when finding resources for <formula>. "\
                           "If no version is specified, the current version for <formula> will be used."
       flag   "--package-name=",
-             depends_on:  "--version",
              description: "Use the specified <package-name> when finding resources for <formula>. "\
                           "If no package name is specified, it will be inferred from the formula's stable URL."
       comma_array "--extra-packages=",

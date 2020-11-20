@@ -15,13 +15,14 @@ module Homebrew
       @name                 = tap.name
       @path                 = tap.path
       @tap_audit_exceptions = tap.audit_exceptions
+      @tap_formula_lists    = tap.formula_lists
       @problems             = []
     end
 
     sig { void }
     def audit
       audit_json_files
-      audit_tap_audit_exceptions
+      audit_tap_formula_lists
     end
 
     sig { void }
@@ -35,32 +36,38 @@ module Homebrew
     end
 
     sig { void }
-    def audit_tap_audit_exceptions
-      @tap_audit_exceptions.each do |list_name, formula_names|
-        unless [Hash, Array].include? formula_names.class
+    def audit_tap_formula_lists
+      tap_lists = {
+        audit_exceptions: @tap_audit_exceptions,
+        formula_lists:    @tap_formula_lists,
+      }
+      tap_lists.each do |list_directory, list|
+        list.each do |list_name, formula_names|
+          unless [Hash, Array].include? formula_names.class
+            problem <<~EOS
+              #{list_directory}/#{list_name}.json should contain a JSON array
+              of formula names or a JSON object mapping formula names to values
+            EOS
+            next
+          end
+
+          formula_names = formula_names.keys if formula_names.is_a? Hash
+
+          invalid_formulae = []
+          formula_names.each do |name|
+            invalid_formulae << name if Formula[name].tap != @name
+          rescue FormulaUnavailableError
+            invalid_formulae << name
+          end
+
+          next if invalid_formulae.empty?
+
           problem <<~EOS
-            audit_exceptions/#{list_name}.json should contain a JSON array
-            of formula names or a JSON object mapping formula names to values
+            #{list_directory}/#{list_name}.json references
+            formulae that are not found in the #{@name} tap.
+            Invalid formulae: #{invalid_formulae.join(", ")}
           EOS
-          next
         end
-
-        formula_names = formula_names.keys if formula_names.is_a? Hash
-
-        invalid_formulae = []
-        formula_names.each do |name|
-          invalid_formulae << name if Formula[name].tap != @name
-        rescue FormulaUnavailableError
-          invalid_formulae << name
-        end
-
-        next if invalid_formulae.empty?
-
-        problem <<~EOS
-          audit_exceptions/#{list_name}.json references
-          formulae that are not found in the #{@name} tap.
-          Invalid formulae: #{invalid_formulae.join(", ")}
-        EOS
       end
     end
 
