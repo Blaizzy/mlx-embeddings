@@ -49,10 +49,10 @@ module Homebrew
                                                 .map(&:freeze).freeze
       end
 
-      def to_formulae_and_casks_and_unavailable(method: nil)
+      def to_formulae_and_casks_and_unavailable(only: nil, method: nil)
         @to_formulae_casks_unknowns ||= {}
         @to_formulae_casks_unknowns[method] = downcased_unique_named.map do |name|
-          load_formula_or_cask(name, method: method)
+          load_formula_or_cask(name, only: only, method: method)
         rescue FormulaOrCaskUnavailableError => e
           e
         end.uniq.freeze
