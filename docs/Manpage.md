@@ -997,10 +997,15 @@ the Cellar and then link it into Homebrew's prefix with `brew link`.
 * `--version`:
   Explicitly set the *`version`* of the package being installed.
 
-### `edit` [*`formula`*]
+### `edit` [*`formula`*|*`cask`*]
 
-Open *`formula`* in the editor set by `EDITOR` or `HOMEBREW_EDITOR`, or open the
-Homebrew repository for editing if no formula is provided.
+Open a *`formula`* or *`cask`* in the editor set by `EDITOR` or `HOMEBREW_EDITOR`,
+or open the Homebrew repository for editing if no formula is provided.
+
+* `--formula`:
+  Treat all named arguments as formulae.
+* `--cask`:
+  Treat all named arguments as casks.
 
 ### `extract` [*`options`*] *`formula`* *`tap`*
 

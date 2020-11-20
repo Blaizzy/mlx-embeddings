@@ -142,7 +142,7 @@ module Homebrew
             paths << formula_path if formula_path.exist?
             paths << cask_path if cask_path.exist?
 
-            paths.empty? ? name : paths
+            paths.empty? ? Pathname(name) : paths
           end
         end.uniq.freeze
       end
