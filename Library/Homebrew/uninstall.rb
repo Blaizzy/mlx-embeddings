@@ -82,6 +82,16 @@ module Homebrew
           end
         end
       end
+    rescue MultipleVersionsInstalledError => e
+      ofail e
+    ensure
+      # If we delete Cellar/newname, then Cellar/oldname symlink
+      # can become broken and we have to remove it.
+      if HOMEBREW_CELLAR.directory?
+        HOMEBREW_CELLAR.children.each do |rack|
+          rack.unlink if rack.symlink? && !rack.resolved_path_exists?
+        end
+      end
     end
 
     def handle_unsatisfied_dependents(kegs_by_rack, ignore_dependencies: false, named_args: [])

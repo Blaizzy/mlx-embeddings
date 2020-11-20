@@ -569,12 +569,14 @@ If no *`tap`* names are provided, display brief statistics for all installed tap
 * `--json`:
   Print a JSON representation of *`tap`*. Currently the default and only accepted value for *`version`* is `v1`. See the docs for examples of using the JSON output: <https://docs.brew.sh/Querying-Brew>
 
-### `uninstall`, `rm`, `remove` [*`options`*] *`formula`*
+### `uninstall`, `rm`, `remove` [*`options`*] *`formula`*|*`cask`*
 
-Uninstall *`formula`*.
+Uninstall a *`formula`* or *`cask`*.
 
 * `-f`, `--force`:
-  Delete all installed versions of *`formula`*.
+  Delete all installed versions of *`formula`*. Uninstall even if *`cask`* is not installed, overwrite existing files and ignore errors when removing files.
+* `--zap`:
+  Remove all files associated with a *`cask`*. *May remove files which are shared between applications.*
 * `--ignore-dependencies`:
   Don't fail uninstall, even if *`formula`* is a dependency of any installed formulae.
 * `--formula`:
