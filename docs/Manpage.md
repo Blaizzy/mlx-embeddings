@@ -227,6 +227,10 @@ and binaries for *`cask`*s. For files, also print SHA-256 checksums.
 * `--cask`:
   Treat all named arguments as casks.
 
+### `formulae`
+
+List all locally installable formulae including short names.
+
 ### `gist-logs` [*`options`*] *`formula`*
 
 Upload logs for a failed build of *`formula`* to a new Gist. Presents an

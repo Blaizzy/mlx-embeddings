@@ -50,9 +50,8 @@ __brewcomp() {
 # it is too slow and is not worth it just for duplicate elimination.
 __brew_complete_formulae() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
-  local formulas="$(brew search)"
-  local shortnames="$(echo "$formulas" | \grep / | \cut -d / -f 3)"
-  COMPREPLY=($(compgen -W "$formulas $shortnames" -- "$cur"))
+  local formulae="$(brew formulae)"
+  COMPREPLY=($(compgen -W "$formulae" -- "$cur"))
 }
 
 __brew_complete_installed() {
