@@ -221,6 +221,10 @@ For tarballs, also print SHA-256 checksums.
 * `--force-bottle`:
   Download a bottle if it exists for the current or newest version of macOS, even if it would not be used during installation.
 
+### `formulae`
+
+List all locally installable formulae including short names.
+
 ### `gist-logs` [*`options`*] *`formula`*
 
 Upload logs for a failed build of *`formula`* to a new Gist. Presents an

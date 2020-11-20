@@ -37,6 +37,7 @@ environment
 extract
 fetch
 formula
+formulae
 gist-logs
 help
 home
