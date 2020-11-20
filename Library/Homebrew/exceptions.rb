@@ -617,15 +617,15 @@ class ChecksumMissingError < ArgumentError; end
 class ChecksumMismatchError < RuntimeError
   attr_reader :expected, :hash_type
 
-  def initialize(fn, expected, actual)
+  def initialize(path, expected, actual)
     @expected = expected
     @hash_type = expected.hash_type.to_s.upcase
 
     super <<~EOS
       #{@hash_type} mismatch
-      Expected: #{expected}
-        Actual: #{actual}
-       Archive: #{fn}
+      Expected: #{Formatter.success(expected.to_s)}
+        Actual: #{Formatter.error(actual.to_s)}
+          File: #{path}
       To retry an incomplete download, remove the file above.
     EOS
   end

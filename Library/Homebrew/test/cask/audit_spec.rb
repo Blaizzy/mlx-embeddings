@@ -808,7 +808,6 @@ describe Cask::Audit, :cask do
       let(:cask_token) { "with-binary" }
       let(:cask) { Cask::CaskLoader.load(cask_token) }
       let(:download_double) { instance_double(Cask::Download) }
-      let(:verify) { class_double(Cask::Verify).as_stubbed_const }
       let(:message) { "Download Failed" }
 
       before do
@@ -817,19 +816,12 @@ describe Cask::Audit, :cask do
       end
 
       it "when download and verification succeed it does not fail" do
-        expect(download_double).to receive(:perform)
-        expect(verify).to receive(:all)
+        expect(download_double).to receive(:fetch)
         expect(subject).to pass
       end
 
       it "when download fails it fails" do
-        expect(download_double).to receive(:perform).and_raise(StandardError.new(message))
-        expect(subject).to fail_with(/#{message}/)
-      end
-
-      it "when verification fails it fails" do
-        expect(download_double).to receive(:perform)
-        expect(verify).to receive(:all).and_raise(StandardError.new(message))
+        expect(download_double).to receive(:fetch).and_raise(StandardError.new(message))
         expect(subject).to fail_with(/#{message}/)
       end
     end

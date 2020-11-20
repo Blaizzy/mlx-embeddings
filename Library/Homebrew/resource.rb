@@ -146,13 +146,16 @@ class Resource
 
   def verify_download_integrity(fn)
     if fn.file?
-      ohai "Verifying #{fn.basename} checksum" if verbose?
+      ohai "Verifying checksum for '#{fn.basename}'." if verbose?
       fn.verify_checksum(checksum)
     end
   rescue ChecksumMissingError
-    opoo "Cannot verify integrity of #{fn.basename}"
-    puts "A checksum was not provided for this resource."
-    puts "For your reference the SHA-256 is: #{fn.sha256}"
+    opoo <<~EOS
+      Cannot verify integrity of '#{fn.basename}'.
+      No checksum was provided for this resource.
+      For your reference, the checksum is:
+        sha256 "#{fn.sha256}"
+    EOS
   end
 
   Checksum::TYPES.each do |type|

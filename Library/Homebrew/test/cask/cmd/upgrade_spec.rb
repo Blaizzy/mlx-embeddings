@@ -344,7 +344,7 @@ describe Cask::Cmd::Upgrade, :cask do
 
       expect {
         described_class.run("bad-checksum")
-      }.to raise_error(Cask::CaskSha256MismatchError).and(not_to_output(output_reverted).to_stderr)
+      }.to raise_error(ChecksumMismatchError).and(not_to_output(output_reverted).to_stderr)
 
       expect(bad_checksum).to be_installed
       expect(bad_checksum_path).to be_a_directory

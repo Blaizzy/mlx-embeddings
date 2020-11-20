@@ -254,7 +254,7 @@ List all audit methods, which can be run individually if provided as arguments\.
 Enable debugging and profiling of audit methods\.
 .
 .SS "\fBfetch\fR [\fIoptions\fR] \fIformula\fR"
-Download a bottle (if available) or source packages for \fIformula\fR\. For tarballs, also print SHA\-256 checksums\.
+Download a bottle (if available) or source packages for \fIformula\fRe and binaries for \fIcask\fRs\. For files, also print SHA\-256 checksums\.
 .
 .TP
 \fB\-\-HEAD\fR
@@ -291,6 +291,18 @@ Download source packages (for eventual bottling) rather than a bottle\.
 .TP
 \fB\-\-force\-bottle\fR
 Download a bottle if it exists for the current or newest version of macOS, even if it would not be used during installation\.
+.
+.TP
+\fB\-\-[no\-]quarantine\fR
+Disable/enable quarantining of downloads (default: enabled)\.
+.
+.TP
+\fB\-\-formula\fR
+Treat all named arguments as formulae\.
+.
+.TP
+\fB\-\-cask\fR
+Treat all named arguments as casks\.
 .
 .SS "\fBgist\-logs\fR [\fIoptions\fR] \fIformula\fR"
 Upload logs for a failed build of \fIformula\fR to a new Gist\. Presents an error message if no logs are found\.

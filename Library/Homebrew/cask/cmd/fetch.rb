@@ -32,7 +32,6 @@ module Cask
         require "cask/installer"
 
         options = {
-          force:      args.force?,
           quarantine: args.quarantine?,
         }.compact
 
@@ -41,8 +40,9 @@ module Cask
         casks.each do |cask|
           puts Installer.caveats(cask)
           ohai "Downloading external files for Cask #{cask}"
-          downloaded_path = Download.new(cask, **options).perform
-          Verify.all(cask, downloaded_path)
+          download = Download.new(cask, **options)
+          download.clear_cache if args.force?
+          downloaded_path = download.fetch
           ohai "Success! Downloaded to -> #{downloaded_path}"
         end
       end

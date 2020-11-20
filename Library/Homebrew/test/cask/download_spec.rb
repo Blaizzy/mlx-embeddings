@@ -2,26 +2,30 @@
 # frozen_string_literal: true
 
 module Cask
-  describe Verify, :cask do
-    describe "::all" do
-      subject(:verification) { described_class.all(cask, downloaded_path) }
+  describe Download, :cask do
+    describe "#verify_download_integrity" do
+      subject(:verification) { described_class.new(cask).verify_download_integrity(downloaded_path) }
 
       let(:cask) { instance_double(Cask, token: "cask", sha256: expected_sha256) }
       let(:cafebabe) { "cafebabecafebabecafebabecafebabecafebabecafebabecafebabecafebabe" }
       let(:deadbeef) { "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef" }
       let(:computed_sha256) { cafebabe }
-      let(:downloaded_path) { instance_double(Pathname, sha256: computed_sha256) }
+      let(:downloaded_path) { Pathname.new("cask.zip") }
+
+      before do
+        allow(downloaded_path).to receive(:sha256).and_return(computed_sha256)
+      end
 
       context "when the expected checksum is :no_check" do
         let(:expected_sha256) { :no_check }
 
         it "skips the check" do
-          expect { verification }.to output(/skipping verification/).to_stdout
+          expect { verification }.to output(/skipping verification/).to_stderr
         end
       end
 
       context "when expected and computed checksums match" do
-        let(:expected_sha256) { cafebabe }
+        let(:expected_sha256) { Checksum.new(:sha256, cafebabe) }
 
         it "does not raise an error" do
           expect { verification }.not_to raise_error
@@ -31,24 +35,24 @@ module Cask
       context "when the expected checksum is nil" do
         let(:expected_sha256) { nil }
 
-        it "raises an error" do
-          expect { verification }.to raise_error(CaskSha256MissingError, /sha256 "#{computed_sha256}"/)
+        it "outputs an error" do
+          expect { verification }.to output(/sha256 "#{computed_sha256}"/).to_stderr
         end
       end
 
       context "when the expected checksum is empty" do
-        let(:expected_sha256) { "" }
+        let(:expected_sha256) { Checksum.new(:sha256, "") }
 
-        it "raises an error" do
-          expect { verification }.to raise_error(CaskSha256MissingError, /sha256 "#{computed_sha256}"/)
+        it "outputs an error" do
+          expect { verification }.to output(/sha256 "#{computed_sha256}"/).to_stderr
         end
       end
 
       context "when expected and computed checksums do not match" do
-        let(:expected_sha256) { deadbeef }
+        let(:expected_sha256) { Checksum.new(:sha256, deadbeef) }
 
         it "raises an error" do
-          expect { verification }.to raise_error CaskSha256MismatchError
+          expect { verification }.to raise_error ChecksumMismatchError
         end
       end
     end

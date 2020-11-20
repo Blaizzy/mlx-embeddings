@@ -205,11 +205,14 @@ module Cask
 
     def sha256(arg = nil)
       set_unique_stanza(:sha256, arg.nil?) do
-        if !arg.is_a?(String) && arg != :no_check
+        case arg
+        when :no_check
+          arg
+        when String
+          Checksum.new(:sha256, arg)
+        else
           raise CaskInvalidError.new(cask, "invalid 'sha256' value: '#{arg.inspect}'")
         end
-
-        arg
       end
     end
 

@@ -31,7 +31,7 @@ describe Cask::Quarantine, :cask do
     it "quarantines Cask fetches" do
       Cask::Cmd::Fetch.run("local-transmission")
       local_transmission = Cask::CaskLoader.load(cask_path("local-transmission"))
-      cached_location = Cask::Download.new(local_transmission).perform
+      cached_location = Cask::Download.new(local_transmission).fetch
 
       expect(cached_location).to be_quarantined
     end
@@ -40,7 +40,7 @@ describe Cask::Quarantine, :cask do
       Cask::Cmd::Audit.run("local-transmission", "--download")
 
       local_transmission = Cask::CaskLoader.load(cask_path("local-transmission"))
-      cached_location = Cask::Download.new(local_transmission).perform
+      cached_location = Cask::Download.new(local_transmission).fetch
 
       expect(cached_location).to be_quarantined
     end
@@ -142,7 +142,7 @@ describe Cask::Quarantine, :cask do
     it "does not quarantine Cask fetches" do
       Cask::Cmd::Fetch.run("local-transmission", "--no-quarantine")
       local_transmission = Cask::CaskLoader.load(cask_path("local-transmission"))
-      cached_location = Cask::Download.new(local_transmission).perform
+      cached_location = Cask::Download.new(local_transmission).fetch
 
       expect(cached_location).not_to be_quarantined
     end
@@ -151,7 +151,7 @@ describe Cask::Quarantine, :cask do
       Cask::Cmd::Audit.run("local-transmission", "--download", "--no-quarantine")
 
       local_transmission = Cask::CaskLoader.load(cask_path("local-transmission"))
-      cached_location = Cask::Download.new(local_transmission).perform
+      cached_location = Cask::Download.new(local_transmission).fetch
 
       expect(cached_location).not_to be_quarantined
     end
