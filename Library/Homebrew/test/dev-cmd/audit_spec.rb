@@ -423,6 +423,23 @@ module Homebrew
           .to eq 'Formula license ["0BSD"] does not match GitHub license ["GPL-3.0"].'
       end
 
+      it "allows a formula-specified license that differs from its GitHub "\
+         "repository for formulae on the mismatched license allowlist" do
+        formula_text = <<~RUBY
+          class Cask < Formula
+            url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
+            head "https://github.com/cask/cask.git"
+            license "0BSD"
+          end
+        RUBY
+        fa = formula_auditor "cask", formula_text, spdx_license_data: spdx_license_data,
+                             online: true, core_tap: true, new_formula: true,
+                             tap_audit_exceptions: { permitted_formula_license_mismatches: ["cask"] }
+
+        fa.audit_license
+        expect(fa.problems).to be_empty
+      end
+
       it "checks online and detects that an array of license does not contain "\
         "what is indicated on its Github repository" do
         formula_text = <<~RUBY
@@ -539,6 +556,91 @@ module Homebrew
         RUBY
 
         fa.audit_bitbucket_repository
+        expect(fa.problems).to be_empty
+      end
+    end
+
+    describe "#audit_specs" do
+      let(:throttle_list) { { throttled_formulae: { "foo" => 10 } } }
+      let(:versioned_head_spec_list) { { versioned_head_spec_allowlist: ["foo"] } }
+
+      it "allows versions with no throttle rate" do
+        fa = formula_auditor "bar", <<~RUBY, core_tap: true, tap_audit_exceptions: throttle_list
+          class Bar < Formula
+            url "https://brew.sh/foo-1.0.1.tgz"
+          end
+        RUBY
+
+        fa.audit_specs
+        expect(fa.problems).to be_empty
+      end
+
+      it "allows major/minor versions with throttle rate" do
+        fa = formula_auditor "foo", <<~RUBY, core_tap: true, tap_audit_exceptions: throttle_list
+          class Foo < Formula
+            url "https://brew.sh/foo-1.0.0.tgz"
+          end
+        RUBY
+
+        fa.audit_specs
+        expect(fa.problems).to be_empty
+      end
+
+      it "allows patch versions to be multiples of the throttle rate" do
+        fa = formula_auditor "foo", <<~RUBY, core_tap: true, tap_audit_exceptions: throttle_list
+          class Foo < Formula
+            url "https://brew.sh/foo-1.0.10.tgz"
+          end
+        RUBY
+
+        fa.audit_specs
+        expect(fa.problems).to be_empty
+      end
+
+      it "doesn't allow patch versions that aren't multiples of the throttle rate" do
+        fa = formula_auditor "foo", <<~RUBY, core_tap: true, tap_audit_exceptions: throttle_list
+          class Foo < Formula
+            url "https://brew.sh/foo-1.0.1.tgz"
+          end
+        RUBY
+
+        fa.audit_specs
+        expect(fa.problems.first[:message]).to match "should only be updated every 10 releases on multiples of 10"
+      end
+
+      it "allows non-versioned formulae to have a `HEAD` spec" do
+        fa = formula_auditor "bar", <<~RUBY, core_tap: true, tap_audit_exceptions: versioned_head_spec_list
+          class Bar < Formula
+            url "https://brew.sh/foo-1.0.tgz"
+            head "https://brew.sh/foo-1.0.tgz"
+          end
+        RUBY
+
+        fa.audit_specs
+        expect(fa.problems).to be_empty
+      end
+
+      it "doesn't allow versioned formulae to have a `HEAD` spec" do
+        fa = formula_auditor "bar@1", <<~RUBY, core_tap: true, tap_audit_exceptions: versioned_head_spec_list
+          class BarAT1 < Formula
+            url "https://brew.sh/foo-1.0.tgz"
+            head "https://brew.sh/foo-1.0.tgz"
+          end
+        RUBY
+
+        fa.audit_specs
+        expect(fa.problems.first[:message]).to match "Versioned formulae should not have a `HEAD` spec"
+      end
+
+      it "allows ersioned formulae on the allowlist to have a `HEAD` spec" do
+        fa = formula_auditor "foo", <<~RUBY, core_tap: true, tap_audit_exceptions: versioned_head_spec_list
+          class Foo < Formula
+            url "https://brew.sh/foo-1.0.tgz"
+            head "https://brew.sh/foo-1.0.tgz"
+          end
+        RUBY
+
+        fa.audit_specs
         expect(fa.problems).to be_empty
       end
     end
