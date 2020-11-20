@@ -244,11 +244,11 @@ error message if no logs are found.
 Open *`formula`*'s homepage in a browser, or open Homebrew's own homepage
 if no formula is provided.
 
-### `info` [*`options`*] [*`formula`*]
+### `info` [*`options`*] [*`formula`*|*`cask`*]
 
 Display brief statistics for your Homebrew installation.
 
-If *`formula`* is provided, show summary of information about *`formula`*.
+If a *`formula`* or *`cask`* is provided, show summary of information about it.
 
 * `--analytics`:
   List global Homebrew analytics data or, if specified, installation and build error data for *`formula`* (provided neither `HOMEBREW_NO_ANALYTICS` nor `HOMEBREW_NO_GITHUB_API` are set).
@@ -266,6 +266,10 @@ If *`formula`* is provided, show summary of information about *`formula`*.
   Print JSON of all available formulae.
 * `-v`, `--verbose`:
   Show more verbose analytics data for *`formula`*.
+* `--formula`:
+  Treat all named arguments as formulae.
+* `--cask`:
+  Treat all named arguments as casks.
 
 ### `install` [*`options`*] *`formula`*|*`cask`*
 

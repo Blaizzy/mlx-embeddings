@@ -322,11 +322,11 @@ The Gist will be marked private and will not appear in listings but will be acce
 .SS "\fBhome\fR [\fIformula\fR]"
 Open \fIformula\fR\'s homepage in a browser, or open Homebrew\'s own homepage if no formula is provided\.
 .
-.SS "\fBinfo\fR [\fIoptions\fR] [\fIformula\fR]"
+.SS "\fBinfo\fR [\fIoptions\fR] [\fIformula\fR|\fIcask\fR]"
 Display brief statistics for your Homebrew installation\.
 .
 .P
-If \fIformula\fR is provided, show summary of information about \fIformula\fR\.
+If a \fIformula\fR or \fIcask\fR is provided, show summary of information about it\.
 .
 .TP
 \fB\-\-analytics\fR
@@ -359,6 +359,14 @@ Print JSON of all available formulae\.
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
 Show more verbose analytics data for \fIformula\fR\.
+.
+.TP
+\fB\-\-formula\fR
+Treat all named arguments as formulae\.
+.
+.TP
+\fB\-\-cask\fR
+Treat all named arguments as casks\.
 .
 .SS "\fBinstall\fR [\fIoptions\fR] \fIformula\fR|\fIcask\fR"
 Install a \fIformula\fR or \fIcask\fR\. Additional options specific to a \fIformula\fR may be appended to the command\.
