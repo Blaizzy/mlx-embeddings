@@ -44,7 +44,7 @@ case "$*" in
   --caskroom)           echo "$HOMEBREW_PREFIX/Caskroom"; exit 0 ;;
   --cache)              echo "$HOMEBREW_CACHE"; exit 0 ;;
   shellenv)             source "$HOMEBREW_LIBRARY/Homebrew/cmd/shellenv.sh"; homebrew-shellenv; exit 0 ;;
-  formulae|formulas)    source "$HOMEBREW_LIBRARY/Homebrew/cmd/formulae.sh"; homebrew-formulae; exit 0 ;;
+  formulae)    source "$HOMEBREW_LIBRARY/Homebrew/cmd/formulae.sh"; homebrew-formulae; exit 0 ;;
 esac
 
 #####
