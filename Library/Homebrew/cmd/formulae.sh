@@ -1,4 +1,4 @@
-#:  * `formulae` [<options>]
+#:  * `formulae`
 #:
 #:  List all locally installable formulae including short names.
 #:

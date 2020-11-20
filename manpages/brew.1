@@ -293,7 +293,13 @@ Download source packages (for eventual bottling) rather than a bottle\.
 Download a bottle if it exists for the current or newest version of macOS, even if it would not be used during installation\.
 .
 .SS "\fBformulae\fR"
+List all locally installable formulae including short names\.
+.
+.SS "\fBformulae\fR"
 Prints a sorted list of locally available formulas including shortnames\.
+.
+.SS "\fBformulae\fR [\fIoptions\fR]"
+List all locally installable formulae including short names\.
 .
 .SS "\fBgist\-logs\fR [\fIoptions\fR] \fIformula\fR"
 Upload logs for a failed build of \fIformula\fR to a new Gist\. Presents an error message if no logs are found\.
@@ -1958,17 +1964,14 @@ Bundler for non\-Ruby dependencies from Homebrew, Homebrew Cask, Mac App Store a
     Install and upgrade (by default) all dependencies from the \fBBrewfile\fR\.
 .
 .P
-You can specify the \fBBrewfile\fR location using \fB\-\-file\fR or by setting the \fBHOMEBREW_BUNDLE_FILE\fR environment variable\.
-.
-.P
-You can skip the installation of dependencies by adding space\-separated values to one or more of the following environment variables: \fBHOMEBREW_BUNDLE_BREW_SKIP\fR, \fBHOMEBREW_BUNDLE_CASK_SKIP\fR, \fBHOMEBREW_BUNDLE_MAS_SKIP\fR, \fBHOMEBREW_BUNDLE_WHALEBREW_SKIP\fR, \fBHOMEBREW_BUNDLE_TAP_SKIP\fR\.
+You can skip the installation of dependencies by adding space\-separated values to one or more of the following environment variables: \fBHOMEBREW_BUNDLE_BREW_SKIP\fR, \fBHOMEBREW_BUNDLE_CASK_SKIP\fR, \fBHOMEBREW_BUNDLE_MAS_SKIP\fR, \fBHOMEBREW_BUNDLE_WHALEBREW_SKIP\fR, \fBHOMEBREW_BUNDLE_TAP_SKIP\fR
 .
 .P
 \fBbrew bundle\fR will output a \fBBrewfile\.lock\.json\fR in the same directory as the \fBBrewfile\fR if all dependencies are installed successfully\. This contains dependency and system status information which can be useful in debugging \fBbrew bundle\fR failures and replicating a "last known good build" state\. You can opt\-out of this behaviour by setting the \fBHOMEBREW_BUNDLE_NO_LOCK\fR environment variable or passing the \fB\-\-no\-lock\fR option\. You may wish to check this file into the same version control system as your \fBBrewfile\fR (or ensure your version control system ignores it if you\'d prefer to rely on debugging information from a local machine)\.
 .
 .P
 \fBbrew bundle dump\fR
-    Write all installed casks/formulae/images/taps into a \fBBrewfile\fR in the current directory\.
+    Write all installed casks/formulae/images/taps into a \fBBrewfile\fR\.
 .
 .P
 \fBbrew bundle cleanup\fR
@@ -1979,14 +1982,14 @@ This workflow is useful for maintainers or testers who regularly install lots of
 .
 .P
 \fBbrew bundle check\fR
-    Check if all dependencies are installed from the \fBBrewfile\fR\.
+    Check if all dependencies are installed from the \fBBrewfile\fR \.
 .
 .P
 This provides a successful exit code if everything is up\-to\-date, making it useful for scripting\.
 .
 .P
 \fBbrew bundle list\fR
-    List all dependencies present in the \fBBrewfile\fR\.
+    List all dependencies present in a \fBBrewfile\fR\.
 .
 .P
 By default, only Homebrew dependencies are listed\.
@@ -2096,79 +2099,79 @@ If \fBsudo\fR is passed, operate on \fB/Library/LaunchDaemons\fR (started at boo
 \fB\-\-all\fR
 Run \fIsubcommand\fR on all services\.
 .
-.SS "\fBtest\-bot\fR [\fIoptions\fR] [\fIformula\fR]"
-Tests the full lifecycle of a Homebrew change to a tap (Git repository)\. For example, for a GitHub Actions pull request that changes a formula \fBbrew test\-bot\fR will ensure the system is cleaned and set up to test the formula, install the formula, run various tests and checks on it, bottle (package) the binaries and test formulae that depend on it to ensure they aren\'t broken by these changes\.
+.SS "\fBtest\-bot\fR [\fIoptions\fR] [\fIformula\fR]:"
+Tests the full lifecycle of a Homebrew change to a tap (Git repository)\. For example, for a GitHub Actions pull request that changes a formula \fBbrew test\-bot\fR will ensure the system is cleaned and setup to test the formula, install the formula, run various tests and checks on it, bottle (package) the binaries and test formulae that depend on it to ensure they aren\'t broken by these changes\.
 .
 .P
 Only supports GitHub Actions as a CI provider\. This is because Homebrew uses GitHub Actions and it\'s freely available for public and private use with macOS and Linux workers\.
 .
 .TP
 \fB\-\-dry\-run\fR
-Print what would be done rather than doing it\.
+print what would be done rather than doing it\.
 .
 .TP
 \fB\-\-cleanup\fR
-Clean all state from the Homebrew directory\. Use with care!
+clean all state from the Homebrew directory\. Use with care!
 .
 .TP
 \fB\-\-skip\-setup\fR
-Don\'t check if the local system is set up correctly\.
+don\'t check if the local system is set up correctly\.
 .
 .TP
 \fB\-\-keep\-old\fR
-Run \fBbrew bottle \-\-keep\-old\fR to build new bottles for a single platform\.
+run \fBbrew bottle \-\-keep\-old\fR to build new bottles for a single platform\.
 .
 .TP
 \fB\-\-skip\-relocation\fR
-Run \fBbrew bottle \-\-skip\-relocation\fR to build new bottles that don\'t require relocation\.
+run \fBbrew bottle \-\-skip\-relocation\fR to build new bottles that don\'t require relocation\.
 .
 .TP
 \fB\-\-local\fR
-Ask Homebrew to write verbose logs under \fB\./logs/\fR and set \fB$HOME\fR to \fB\./home/\fR
+ask Homebrew to write verbose logs under \fB\./logs/\fR and set \fB$HOME\fR to \fB\./home/\fR
 .
 .TP
 \fB\-\-tap\fR
-Use the Git repository of the given tap\. Defaults to the core tap for syntax checking\.
+use the \fBgit\fR repository of the given tap\. Defaults to the core tap for syntax checking\.
 .
 .TP
 \fB\-\-fail\-fast\fR
-Immediately exit on a failing step\.
+immediately exit on a failing step\.
 .
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
-Print test step output in real time\. Has the side effect of passing output as raw bytes instead of re\-encoding in UTF\-8\.
+print test step output in real time\. Has the side effect of passing output as raw bytes instead of re\-encoding in UTF\-8\.
 .
 .TP
 \fB\-\-test\-default\-formula\fR
-Use a default testing formula when not building a tap and no other formulae are specified\.
+use a default testing formula when not building a tap and no other formulae are specified\.
 .
 .TP
 \fB\-\-bintray\-org\fR
-Upload bottles to the given Bintray organisation\.
+upload to the given Bintray organisation\.
 .
 .TP
 \fB\-\-root\-url\fR
-Use the specified \fIURL\fR as the root of the bottle\'s URL instead of Homebrew\'s default\.
+use the specified \fIURL\fR as the root of the bottle\'s URL instead of Homebrew\'s default\.
 .
 .TP
 \fB\-\-git\-name\fR
-Set the Git author/committer names to the given name\.
+set the Git author/committer names to the given name\.
 .
 .TP
 \fB\-\-git\-email\fR
-Set the Git author/committer email to the given email\.
+set the Git author/committer email to the given email\.
 .
 .TP
 \fB\-\-ci\-upload\fR
-Use the Homebrew CI bottle upload options\.
+use the Homebrew CI bottle upload options\.
 .
 .TP
 \fB\-\-publish\fR
-Publish the uploaded bottles\.
+publish the uploaded bottles\.
 .
 .TP
 \fB\-\-skip\-recursive\-dependents\fR
-Only test the direct dependents\.
+only test the direct dependents\.
 .
 .TP
 \fB\-\-only\-cleanup\-before\fR
