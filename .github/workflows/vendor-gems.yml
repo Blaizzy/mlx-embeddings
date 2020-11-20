@@ -1,0 +1,59 @@
+name: Vendor Gems
+
+on:
+  pull_request_target:
+  workflow_dispatch:
+    inputs:
+      pull_request:
+        description: Pull request number
+        required: true
+
+jobs:
+  vendor-gems:
+    if: >
+      startsWith(github.repository, 'Homebrew/') && (
+        github.event_name == 'workflow_dispatch' || (
+          github.event.pull_request.user.login == 'dependabot[bot]' &&
+          contains(github.event.pull_request.title, '/Library/Homebrew')
+        )
+      )
+    runs-on: macos-latest
+    steps:
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+      - name: Configure Git user
+        uses: Homebrew/actions/git-user-config@master
+        with:
+          username: BrewTestBot
+      - name: Check out pull request
+        id: checkout_pull_request
+        run: |
+          gh pr checkout '${{ github.event.pull_request.number || github.event.inputs.pull_request }}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
+      - name: Vendor Gems
+        id: vendor
+        run: |
+          brew vendor-gems
+      - name: Update RBI files
+        id: update
+        run: |
+          branch="$(git branch --show-current)"
+          echo "::set-output name=branch::${branch}"
+
+          if brew typecheck --update --fail-if-not-changed; then
+            gem_name="$(echo "${branch}" | sed -E 's|.*/||;s|(.*)-.*$|\1|')"
+
+            if git add Library/Homebrew/sorbet; then
+              git commit -m "Update RBI files for ${gem_name}."
+            fi
+
+            git reset --hard
+          fi
+      - name: Push to pull request
+        uses: Homebrew/actions/git-try-push@master
+        with:
+          token: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
+          branch: ${{ steps.update.outputs.branch }}
+          force: true
