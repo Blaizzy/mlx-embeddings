@@ -27,26 +27,29 @@ jobs:
         with:
           username: BrewTestBot
       - name: Check out pull request
-        id: checkout_pull_request
+        id: checkout
         run: |
           gh pr checkout '${{ github.event.pull_request.number || github.event.inputs.pull_request }}'
-        env:
-          GITHUB_TOKEN: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
-      - name: Vendor Gems
-        id: vendor
-        run: |
-          brew vendor-gems
-      - name: Update RBI files
-        id: update
-        run: |
+
           branch="$(git branch --show-current)"
           echo "::set-output name=branch::${branch}"
 
+          gem_name="$(echo "${branch}" | sed -E 's|.*/||;s|(.*)-.*$|\1|')"
+          echo "::set-output name=gem_name::${gem_name}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
+      - name: Vendor Gems
+        run: |
+          if [[ '${{ steps.checkout.outputs.gem_name }}' == 'sorbet' ]]; then
+            brew vendor-gems --update sorbet,sorbet-runtime
+          else
+            brew vendor-gems
+          fi
+      - name: Update RBI files
+        run: |
           if brew typecheck --update --fail-if-not-changed; then
-            gem_name="$(echo "${branch}" | sed -E 's|.*/||;s|(.*)-.*$|\1|')"
-
             if git add Library/Homebrew/sorbet; then
-              git commit -m "Update RBI files for ${gem_name}."
+              git commit -m "Update RBI files for ${{ steps.checkout.outputs.gem_name }}."
             fi
 
             git reset --hard
@@ -55,5 +58,5 @@ jobs:
         uses: Homebrew/actions/git-try-push@master
         with:
           token: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
-          branch: ${{ steps.update.outputs.branch }}
+          branch: ${{ steps.checkout.outputs.branch }}
           force: true
