@@ -345,7 +345,7 @@ else
   : "${HOMEBREW_OS_VERSION:=$(uname -r)}"
   HOMEBREW_OS_USER_AGENT_VERSION="$HOMEBREW_OS_VERSION"
 
-  if [[ -n $HOMEBREW_FORCE_HOMEBREW_ON_LINUX && -n $HOMEBREW_DEVELOPER && -n $HOMEBREW_ON_DEBIAN7 ]]
+  if [[ -n "$HOMEBREW_FORCE_HOMEBREW_ON_LINUX" && -n "$HOMEBREW_DEVELOPER" && -n "$HOMEBREW_ON_DEBIAN7" ]]
   then
     # Special version for our debian 7 docker container used to build patchelf and binutils
     HOMEBREW_MINIMUM_CURL_VERSION="7.25.0"
