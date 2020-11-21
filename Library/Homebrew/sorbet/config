@@ -9,3 +9,6 @@
 
 --dsl-plugins
 sorbet/triggers.yml
+
+--error-black-list
+5061
