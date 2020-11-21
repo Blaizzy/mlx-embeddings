@@ -180,7 +180,7 @@ module Homebrew
         except:               args.except,
         spdx_license_data:    spdx_license_data,
         spdx_exception_data:  spdx_exception_data,
-        tap_audit_exceptions: f.tap.audit_exceptions,
+        tap_audit_exceptions: f.tap&.audit_exceptions,
         style_offenses:       style_offenses ? style_offenses.for_path(f.path) : nil,
         display_cop_names:    args.display_cop_names?,
         build_stable:         args.build_stable?,
