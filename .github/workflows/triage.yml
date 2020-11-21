@@ -1,0 +1,195 @@
+name: Triage
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - closed
+      - labeled
+      - unlabeled
+  schedule:
+    - cron: '0 */3 * * *' # every 3 hours
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    if: startsWith(github.repository, 'Homebrew/')
+    steps:
+      - name: Re-run this workflow
+        if: github.event_name == 'schedule' || github.event.action == 'closed'
+        uses: reitermarkus/rerun-workflow@cf91bee6964dfde64eccbf5600c3ea206af11359
+        with:
+          token: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
+          continuous-label: waiting for feedback
+          trigger-labels: critical
+          workflow: triage.yml
+      - name: Review pull request
+        if: >
+          (github.event_name == 'pull_request' || github.event_name == 'pull_request_target') &&
+            github.event.action != 'closed'
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
+          script: |
+            async function approvePullRequest(pullRequestNumber) {
+              const reviews = await approvalsByAuthenticatedUser(pullRequestNumber)
+
+              if (reviews.length > 0) {
+                return
+              }
+
+              await github.pulls.createReview({
+                ...context.repo,
+                pull_number: pullRequestNumber,
+                event: 'APPROVE',
+              })
+            }
+
+            async function findComment(pullRequestNumber, id) {
+              const { data: comments } = await github.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pullRequestNumber,
+              })
+
+              const regex = new RegExp(`<!--\\s*#${id}\\s*-->`)
+              return comments.filter(comment => comment.body.match(regex))[0]
+            }
+
+            async function createOrUpdateComment(pullRequestNumber, id, message) {
+              const beginComment = await findComment(pullRequestNumber, id)
+
+              const body = `<!-- #${id} -->\n\n${message}`
+              if (beginComment) {
+                await github.issues.updateComment({
+                  ...context.repo,
+                  comment_id: beginComment.id,
+                  body,
+                })
+              } else {
+                await github.issues.createComment({
+                  ...context.repo,
+                  issue_number: pullRequestNumber,
+                  body,
+                })
+              }
+            }
+
+            async function approvalsByAuthenticatedUser(pullRequestNumber) {
+              const { data: user } = await github.users.getAuthenticated()
+
+              const { data: reviews } = await github.pulls.listReviews({
+                ...context.repo,
+                pull_number: pullRequestNumber,
+              })
+
+              const approvals = reviews.filter(review => review.state == 'APPROVED')
+              return approvals.filter(review => review.user.login == user.login)
+            }
+
+            async function dismissApprovals(pullRequestNumber, message) {
+              const reviews = await approvalsByAuthenticatedUser(pullRequestNumber)
+              for (const review of reviews) {
+                await github.pulls.dismissReview({
+                  ...context.repo,
+                  pull_number: pullRequestNumber,
+                  review_id: review.id,
+                  message: message
+                });
+              }
+            }
+
+            async function reviewPullRequest(pullRequestNumber) {
+              const { data: pullRequest } = await github.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pullRequestNumber,
+              })
+
+              if (pullRequest.author_association != 'MEMBER') {
+                core.warning('Pull request author is not a member.')
+                return
+              }
+
+              const reviewLabel = 'waiting for feedback'
+              const criticalLabel = 'critical'
+
+              const labels = pullRequest.labels.map(label => label.name)
+              const hasReviewLabel = labels.includes(reviewLabel)
+              const hasCriticalLabel = labels.includes(criticalLabel)
+
+              const reviewStartDate = new Date(pullRequest.created_at)
+              const reviewEndDate = new Date(reviewStartDate)
+              switch (reviewStartDate.getDay()) {
+                // Skip from Friday to Monday and from Saturday to Tuesday.
+                case 5:
+                case 6:
+                  reviewEndDate.setDate(reviewStartDate.getDate() + 3)
+                  break
+                // Skip from Sunday to Tuesday.
+                case 0:
+                  reviewEndDate.setDate(reviewStartDate.getDate() + 2)
+                  break
+                default:
+                  reviewEndDate.setDate(reviewStartDate.getDate() + 1)
+                  break
+              }
+
+              const currentDate = new Date()
+              const reviewEnded = currentDate > reviewEndDate
+
+              function formatDate(date) {
+                return date.toISOString().replace(/\.\d+Z$/, ' UTC').replace('T', ' at ')
+              }
+
+              if (reviewEnded || hasCriticalLabel) {
+                let message
+                if (hasCriticalLabel && !reviewEnded) {
+                  if (hasReviewLabel) {
+                    message = `Review period cancelled due to \`${criticalLabel}\` label.`
+                  } else {
+                    message = `Review period skipped due to \`${criticalLabel}\` label.`
+                  }
+                } else {
+                  message = 'Review period ended.'
+                }
+
+                if (hasReviewLabel) {
+                  await github.issues.removeLabel({
+                    ...context.repo,
+                    issue_number: pullRequestNumber,
+                    name: reviewLabel,
+                  })
+                }
+
+                core.info(message)
+                await createOrUpdateComment(pullRequestNumber, 'review-period-end', message)
+                await approvePullRequest(pullRequestNumber)
+              } else {
+                const message = `Review period will end on ${formatDate(reviewEndDate)}.`
+                core.warning(message)
+
+                await dismissApprovals(pullRequestNumber, 'Review period has not ended yet.')
+                await createOrUpdateComment(pullRequestNumber, 'review-period-begin', message)
+
+                const endComment = await findComment(pullRequestNumber, 'review-period-end')
+                if (endComment) {
+                  await github.issues.deleteComment({
+                    ...context.repo,
+                    comment_id: endComment.id,
+                  })
+                }
+
+                await github.issues.addLabels({
+                  ...context.repo,
+                  issue_number: pullRequestNumber,
+                  labels: [reviewLabel],
+                })
+
+                core.setFailed('Review period has not ended yet.')
+              }
+            }
+
+            await reviewPullRequest(context.issue.number)
