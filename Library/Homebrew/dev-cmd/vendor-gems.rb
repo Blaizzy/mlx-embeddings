@@ -18,13 +18,14 @@ module Homebrew
         Install and commit Homebrew's vendored gems.
       EOS
 
-      switch "--update",
-             description: "Update all vendored Gems to the latest version."
+      comma_array "--update",
+                  description: "Update all vendored Gems to the latest version."
 
       max_named 0
     end
   end
 
+  sig { void }
   def vendor_gems
     args = vendor_gems_args.parse
 
@@ -32,9 +33,9 @@ module Homebrew
 
     ohai "cd #{HOMEBREW_LIBRARY_PATH}"
     HOMEBREW_LIBRARY_PATH.cd do
-      if args.update?
+      if args.update
         ohai "bundle update"
-        safe_system "bundle", "update"
+        safe_system "bundle", "update", *args.update
 
         ohai "git add Gemfile.lock"
         system "git", "add", "Gemfile.lock"

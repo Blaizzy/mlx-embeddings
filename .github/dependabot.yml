@@ -16,3 +16,5 @@ updates:
     directory: /Library/Homebrew
     schedule:
       interval: daily
+    ignore:
+      - dependency-name: sorbet-runtime
