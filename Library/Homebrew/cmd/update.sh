@@ -368,30 +368,27 @@ user account:
 EOS
   fi
 
-  # we may want to use a Homebrew curl
+  set -e
   if [[ -n "$HOMEBREW_FORCE_BREWED_CURL" &&
       ! -x "$HOMEBREW_PREFIX/opt/curl/bin/curl" ]]
   then
     ohai "Installing Homebrew cURL"
-    brew install curl || odie "Failed to install cURL"
+    brew install curl
   fi
 
   if ! git --version &>/dev/null ||
      [[ -n "$HOMEBREW_FORCE_BREWED_GIT" &&
       ! -x "$HOMEBREW_PREFIX/opt/git/bin/git" ]]
   then
-    # we cannot install brewed git if homebrew/core is unavailable.
-    if [[ -d "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core" ]]
-    then
-      ohai "Installing Homebrew Git"
-      brew install git || odie "Failed to install Git"
-    fi
+    ohai "Installing Homebrew Git"
+    brew install git
     unset GIT_EXECUTABLE
     if ! git --version &>/dev/null
     then
       odie "Git must be installed and in your PATH!"
     fi
   fi
+  set +e
   export GIT_TERMINAL_PROMPT="0"
   export GIT_SSH_COMMAND="ssh -oBatchMode=yes"
 
