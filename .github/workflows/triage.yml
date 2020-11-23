@@ -101,6 +101,30 @@ jobs:
               }
             }
 
+            function offsetDate(start, offsetHours, skippedDays) {
+              let end = new Date(start)
+
+              end.setUTCHours(end.getUTCHours() + (offsetHours % 24))
+
+              while (skippedDays.includes(end.getUTCDay()) || offsetHours >= 24) {
+                if (!skippedDays.includes(end.getUTCDay())) {
+                  offsetHours -= 24
+                }
+
+                end.setUTCDate(end.getUTCDate() + 1)
+              }
+
+              if (skippedDays.includes(start.getUTCDay())) {
+                end.setUTCHours(offsetHours, 0, 0)
+              }
+
+              return end
+            }
+
+            function formatDate(date) {
+              return date.toISOString().replace(/\.\d+Z$/, ' UTC').replace('T', ' at ')
+            }
+
             async function reviewPullRequest(pullRequestNumber) {
               const { data: pullRequest } = await github.pulls.get({
                 owner: context.repo.owner,
@@ -126,43 +150,21 @@ jobs:
               const hasReviewLabel = labels.includes(reviewLabel)
               const hasCriticalLabel = labels.includes(criticalLabel)
 
-              const reviewStartDate = new Date(pullRequest.created_at)
-              const reviewEndDate = new Date(reviewStartDate)
-              switch (reviewStartDate.getUTCDay()) {
-                case 5:
-                  // Skip from Friday to Monday.
-                  reviewEndDate.setUTCDate(reviewStartDate.getUTCDate() + 3)
-                  break
-                case 6:
-                  // Skip from Saturday to end of Monday.
-                  reviewEndDate.setUTCDate(reviewStartDate.getUTCDate() + 2)
-                  reviewEndDate.setUTCHours(23, 59, 59)
-                  break
-                case 0:
-                  // Skip from Sunday to end of Monday.
-                  reviewEndDate.setUTCDate(reviewStartDate.getUTCDate() + 1)
-                  reviewEndDate.setUTCHours(23, 59, 59)
-                  break
-                default:
-                  reviewEndDate.setUTCDate(reviewStartDate.getUTCDate() + 1)
-                  break
-              }
+              const offsetHours = 24
+              const skippedDays = [
+                6, // Saturday
+                0, // Sunday
+              ]
 
               const currentDate = new Date()
+              const reviewStartDate = new Date(pullRequest.created_at)
+              const reviewEndDate = offsetDate(reviewStartDate, offsetHours, skippedDays)
               const reviewEnded = currentDate > reviewEndDate
-
-              function formatDate(date) {
-                return date.toISOString().replace(/\.\d+Z$/, ' UTC').replace('T', ' at ')
-              }
 
               if (reviewEnded || hasCriticalLabel) {
                 let message
                 if (hasCriticalLabel && !reviewEnded) {
-                  if (hasReviewLabel) {
-                    message = `Review period cancelled due to \`${criticalLabel}\` label.`
-                  } else {
-                    message = `Review period skipped due to \`${criticalLabel}\` label.`
-                  }
+                  message = `Review period skipped due to \`${criticalLabel}\` label.`
                 } else {
                   message = 'Review period ended.'
                 }
@@ -180,7 +182,7 @@ jobs:
                 await approvePullRequest(pullRequestNumber)
               } else {
                 const message = `Review period will end on ${formatDate(reviewEndDate)}.`
-                core.warning(message)
+                core.info(message)
 
                 await dismissApprovals(pullRequestNumber, 'Review period has not ended yet.')
                 await createOrUpdateComment(pullRequestNumber, 'review-period-begin', message)
