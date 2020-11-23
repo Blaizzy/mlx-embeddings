@@ -54,8 +54,8 @@ GEM
     nokogiri (1.10.10)
       mini_portile2 (~> 2.4.0)
     ntlm-http (0.1.1)
-    parallel (1.20.0)
-    parallel_tests (3.3.0)
+    parallel (1.20.1)
+    parallel_tests (3.4.0)
       parallel
     parlour (4.0.1)
       commander (~> 4.5)
