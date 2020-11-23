@@ -234,7 +234,7 @@ class Migrator
     return unless old_cellar.exist?
 
     if new_cellar.exist?
-      conflicted = false
+      conflicted = T.let(false, T::Boolean)
       old_cellar.each_child do |c|
         next unless (new_cellar/c.basename).exist?
 

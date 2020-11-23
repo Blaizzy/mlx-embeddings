@@ -23,7 +23,7 @@ module Cask
       def run
         require "diagnostic"
 
-        success = true
+        success = T.let(true, T::Boolean)
 
         checks = Homebrew::Diagnostic::Checks.new(verbose: true)
         checks.cask_checks.each do |check|

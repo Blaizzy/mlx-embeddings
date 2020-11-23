@@ -64,7 +64,7 @@ module Utils
           begin
             socket = server.accept_nonblock
           rescue Errno::EAGAIN, Errno::EWOULDBLOCK, Errno::ECONNABORTED, Errno::EPROTO, Errno::EINTR
-            retry unless Process.waitpid(pid, Process::WNOHANG)
+            retry unless Process.waitpid(T.must(pid), Process::WNOHANG)
           else
             socket.send_io(write)
             socket.close
@@ -72,7 +72,7 @@ module Utils
           write.close
           data = read.read
           read.close
-          Process.wait(pid) unless socket.nil?
+          Process.wait(T.must(pid)) unless socket.nil?
 
           # 130 is the exit status for a process interrupted via Ctrl-C.
           # We handle it here because of the possibility of an interrupted process terminating
@@ -80,7 +80,7 @@ module Utils
           raise Interrupt if $CHILD_STATUS.exitstatus == 130
 
           if data && !data.empty?
-            error_hash = JSON.parse(data.lines.first)
+            error_hash = JSON.parse(T.must(data.lines.first))
 
             e = ChildProcessError.new(error_hash)
 
