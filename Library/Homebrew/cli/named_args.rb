@@ -5,6 +5,7 @@ require "delegate"
 
 require "cask/cask_loader"
 require "cli/args"
+require "formula"
 require "formulary"
 require "keg"
 require "missing_formula"
@@ -99,6 +100,7 @@ module Homebrew
       end
       private :resolve_formula
 
+      sig { returns(T::Array[Formula]) }
       def to_resolved_formulae
         @to_resolved_formulae ||= to_formulae_and_casks(only: :formula, method: :resolve)
                                   .freeze

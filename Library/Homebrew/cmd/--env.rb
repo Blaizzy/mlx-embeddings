@@ -30,6 +30,7 @@ module Homebrew
     end
   end
 
+  sig { void }
   def __env
     args = __env_args.parse
 

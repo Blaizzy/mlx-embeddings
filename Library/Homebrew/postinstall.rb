@@ -1,4 +1,4 @@
-# typed: false
+# typed: strict
 # frozen_string_literal: true
 
 old_trap = trap("INT") { exit! 130 }
@@ -17,7 +17,7 @@ begin
 
   trap("INT", old_trap)
 
-  formula = args.named.to_resolved_formulae.first
+  formula = T.must(args.named.to_resolved_formulae.first)
   formula.extend(Debrew::Formula) if args.debug?
   formula.run_post_install
 rescue Exception => e # rubocop:disable Lint/RescueException

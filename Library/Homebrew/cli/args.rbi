@@ -59,6 +59,12 @@ module Homebrew
 
       sig { returns(T.nilable(T::Boolean)) }
       def formula?; end
+
+      sig { returns(T.nilable(T::Boolean)) }
+      def zap?; end
+
+      sig { returns(T.nilable(T::Boolean)) }
+      def ignore_dependencies?; end
     end
   end
 end
