@@ -108,6 +108,12 @@ jobs:
                 pull_number: pullRequestNumber,
               })
 
+              const { data: user } = await github.users.getAuthenticated()
+              if (pullRequest.user.login == user) {
+                core.warning('Pull request author is a bot.')
+                return
+              }
+
               if (pullRequest.author_association != 'MEMBER') {
                 core.warning('Pull request author is not a member.')
                 return
