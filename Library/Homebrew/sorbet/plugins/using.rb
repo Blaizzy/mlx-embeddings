@@ -3,7 +3,8 @@
 
 source = ARGV[5]
 
-/\busing +Magic\b/.match(source) do |_|
+case source[/\Ausing\s+(.*)\Z/, 1]
+when "Magic"
   puts <<-RUBY
     # typed: strict
 
@@ -16,6 +17,15 @@ source = ARGV[5]
 
       sig { returns(T::Array[String]) }
       def zipinfo; end
+    end
+  RUBY
+when "HashValidator"
+  puts <<-RUBY
+    # typed: strict
+
+    class ::Hash
+      sig { params(valid_keys: T.untyped).void }
+      def assert_valid_keys!(*valid_keys); end
     end
   RUBY
 end
