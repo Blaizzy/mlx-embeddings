@@ -69,7 +69,7 @@ module Hardware
       # conflict between what `uname` reports and the underlying `sysctl` flags,
       # since the `sysctl` flags don't change behaviour under Rosetta 2.
       def in_rosetta2?
-        intel? && physical_cpu_arm64?
+        sysctl_bool("sysctl.proc_translated")
       end
 
       def features
