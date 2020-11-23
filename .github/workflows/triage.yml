@@ -122,18 +122,23 @@ jobs:
 
               const reviewStartDate = new Date(pullRequest.created_at)
               const reviewEndDate = new Date(reviewStartDate)
-              switch (reviewStartDate.getDay()) {
-                // Skip from Friday to Monday and from Saturday to Tuesday.
+              switch (reviewStartDate.getUTCDay()) {
                 case 5:
-                case 6:
-                  reviewEndDate.setDate(reviewStartDate.getDate() + 3)
+                  // Skip from Friday to Monday.
+                  reviewEndDate.setUTCDate(reviewStartDate.getUTCDate() + 3)
                   break
-                // Skip from Sunday to Tuesday.
+                case 6:
+                  // Skip from Saturday to end of Monday.
+                  reviewEndDate.setUTCDate(reviewStartDate.getUTCDate() + 2)
+                  reviewEndDate.setUTCHours(23, 59, 59)
+                  break
                 case 0:
-                  reviewEndDate.setDate(reviewStartDate.getDate() + 2)
+                  // Skip from Sunday to end of Monday.
+                  reviewEndDate.setUTCDate(reviewStartDate.getUTCDate() + 1)
+                  reviewEndDate.setUTCHours(23, 59, 59)
                   break
                 default:
-                  reviewEndDate.setDate(reviewStartDate.getDate() + 1)
+                  reviewEndDate.setUTCDate(reviewStartDate.getUTCDate() + 1)
                   break
               }
 
