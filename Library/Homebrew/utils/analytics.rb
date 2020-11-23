@@ -1,6 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
+require "context"
 require "erb"
 
 module Utils

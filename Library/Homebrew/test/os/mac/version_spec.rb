@@ -5,7 +5,9 @@ require "version"
 require "os/mac/version"
 
 describe OS::Mac::Version do
-  subject(:version) { described_class.new("10.14") }
+  let(:version) { described_class.new("10.14") }
+  let(:big_sur_major) { described_class.new("11.0") }
+  let(:big_sur_update) { described_class.new("11.1") }
 
   specify "comparison with Symbol" do
     expect(version).to be > :high_sierra
@@ -36,6 +38,22 @@ describe OS::Mac::Version do
     expect(version).to be == Version.create("10.14")
     expect(version).to be === Version.create("10.14") # rubocop:disable Style/CaseEquality
     expect(version).to be < Version.create("10.15")
+  end
+
+  context "after Big Sur" do
+    specify "comparison with :big_sur" do
+      expect(big_sur_major).to eq :big_sur
+      expect(big_sur_major).to be <= :big_sur
+      expect(big_sur_major).to be >= :big_sur
+      expect(big_sur_major).not_to be > :big_sur
+      expect(big_sur_major).not_to be < :big_sur
+
+      expect(big_sur_update).to eq :big_sur
+      expect(big_sur_update).to be <= :big_sur
+      expect(big_sur_update).to be >= :big_sur
+      expect(big_sur_update).not_to be > :big_sur
+      expect(big_sur_update).not_to be < :big_sur
+    end
   end
 
   describe "#new" do
