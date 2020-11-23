@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "erb"
@@ -56,12 +56,12 @@ class Sandbox
   end
 
   def allow_cvs
-    allow_write_path "#{Dir.home(ENV["USER"])}/.cvspass"
+    allow_write_path "#{Dir.home(ENV.fetch("USER"))}/.cvspass"
   end
 
   def allow_fossil
-    allow_write_path "#{Dir.home(ENV["USER"])}/.fossil"
-    allow_write_path "#{Dir.home(ENV["USER"])}/.fossil-journal"
+    allow_write_path "#{Dir.home(ENV.fetch("USER"))}/.fossil"
+    allow_write_path "#{Dir.home(ENV.fetch("USER"))}/.fossil-journal"
   end
 
   def allow_write_cellar(formula)
@@ -72,7 +72,7 @@ class Sandbox
 
   # Xcode projects expect access to certain cache/archive dirs.
   def allow_write_xcode
-    allow_write_path "#{Dir.home(ENV["USER"])}/Library/Developer"
+    allow_write_path "#{Dir.home(ENV.fetch("USER"))}/Library/Developer"
   end
 
   def allow_write_log(formula)
@@ -94,40 +94,43 @@ class Sandbox
     seatbelt.write(@profile.dump)
     seatbelt.close
     @start = Time.now
-    safe_system SANDBOX_EXEC, "-f", seatbelt.path, *args
-  rescue
-    @failed = true
-    raise
-  ensure
-    seatbelt.unlink
-    sleep 0.1 # wait for a bit to let syslog catch up the latest events.
-    syslog_args = %W[
-      -F $((Time)(local))\ $(Sender)[$(PID)]:\ $(Message)
-      -k Time ge #{@start.to_i}
-      -k Message S deny
-      -k Sender kernel
-      -o
-      -k Time ge #{@start.to_i}
-      -k Message S deny
-      -k Sender sandboxd
-    ]
-    logs = Utils.popen_read("syslog", *syslog_args)
 
-    # These messages are confusing and non-fatal, so don't report them.
-    logs = logs.lines.reject { |l| l.match(/^.*Python\(\d+\) deny file-write.*pyc$/) }.join
+    begin
+      T.unsafe(self).safe_system SANDBOX_EXEC, "-f", seatbelt.path, *args
+    rescue
+      @failed = true
+      raise
+    ensure
+      seatbelt.unlink
+      sleep 0.1 # wait for a bit to let syslog catch up the latest events.
+      syslog_args = %W[
+        -F $((Time)(local))\ $(Sender)[$(PID)]:\ $(Message)
+        -k Time ge #{@start.to_i}
+        -k Message S deny
+        -k Sender kernel
+        -o
+        -k Time ge #{@start.to_i}
+        -k Message S deny
+        -k Sender sandboxd
+      ]
+      logs = Utils.popen_read("syslog", *syslog_args)
 
-    unless logs.empty?
-      if @logfile
-        File.open(@logfile, "w") do |log|
-          log.write logs
-          log.write "\nWe use time to filter sandbox log. Therefore, unrelated logs may be recorded.\n"
+      # These messages are confusing and non-fatal, so don't report them.
+      logs = logs.lines.reject { |l| l.match(/^.*Python\(\d+\) deny file-write.*pyc$/) }.join
+
+      unless logs.empty?
+        if @logfile
+          File.open(@logfile, "w") do |log|
+            log.write logs
+            log.write "\nWe use time to filter sandbox log. Therefore, unrelated logs may be recorded.\n"
+          end
         end
-      end
 
-      if @failed && Homebrew::EnvConfig.verbose?
-        ohai "Sandbox log"
-        puts logs
-        $stdout.flush # without it, brew test-bot would fail to catch the log
+        if @failed && Homebrew::EnvConfig.verbose?
+          ohai "Sandbox log"
+          puts logs
+          $stdout.flush # without it, brew test-bot would fail to catch the log
+        end
       end
     end
   end
