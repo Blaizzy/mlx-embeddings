@@ -1,5 +1,8 @@
 # typed: strict
 
+# This file contains temporary definitions for fixes that have
+# been submitted upstream to https://github.com/sorbet/sorbet.
+
 class IO
   # https://github.com/sorbet/sorbet/pull/3722
   sig do
