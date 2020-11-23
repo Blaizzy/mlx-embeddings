@@ -5841,22 +5841,6 @@ module Cask::Utils
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class Caveats
-  def empty?(*args, &block); end
-
-  def to_s(*args, &block); end
-end
-
-class Checksum
-  def [](*args, &block); end
-
-  def empty?(*args, &block); end
-
-  def length(*args, &block); end
-
-  def to_s(*args, &block); end
-end
-
 class Class
   def any_instance(); end
 
@@ -11897,14 +11881,6 @@ module MachO
   def self.open(filename); end
 end
 
-module MachOShim
-  def delete_rpath(*args, &block); end
-
-  def dylib_id(*args, &block); end
-
-  def rpaths(*args, &block); end
-end
-
 Markdown = RDiscount
 
 module Marshal
@@ -15367,18 +15343,6 @@ end
 class Pathname
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class PkgVersion
-  def major(*args, &block); end
-
-  def major_minor(*args, &block); end
-
-  def major_minor_patch(*args, &block); end
-
-  def minor(*args, &block); end
-
-  def patch(*args, &block); end
 end
 
 class Proc
