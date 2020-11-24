@@ -30,13 +30,13 @@ begin
     raise "cannot kill child processes without `pkill`, please install!" unless which("pkill")
   end
 
-  formula = args.named.to_resolved_formulae.first
+  formula = T.must(args.named.to_resolved_formulae.first)
   formula.extend(Homebrew::Assertions)
   formula.extend(Homebrew::FreePort)
   formula.extend(Debrew::Formula) if args.debug?
 
   ENV.extend(Stdenv)
-  ENV.setup_build_environment(formula: formula)
+  T.cast(ENV, Stdenv).setup_build_environment(formula: formula)
 
   # tests can also return false to indicate failure
   Timeout.timeout TEST_TIMEOUT_SECONDS do

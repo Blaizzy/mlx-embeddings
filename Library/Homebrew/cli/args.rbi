@@ -65,6 +65,9 @@ module Homebrew
 
       sig { returns(T.nilable(T::Boolean)) }
       def ignore_dependencies?; end
+
+      sig { returns(T.nilable(T::Boolean)) }
+      def keep_tmp?; end
     end
   end
 end
