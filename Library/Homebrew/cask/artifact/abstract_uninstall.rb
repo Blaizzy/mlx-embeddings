@@ -127,7 +127,7 @@ module Cask
           .map { |line| line.chomp.split("\t") }
           .map { |pid, state, id| [pid.to_i, state.to_i, id] }
           .select do |(pid, _, id)|
-            pid.nonzero? && id.match?(/^#{Regexp.escape(bundle_id)}($|\.\d+)/)
+            pid.nonzero? && /^#{Regexp.escape(bundle_id)}($|\.\d+)/.match?(id)
           end
       end
 
