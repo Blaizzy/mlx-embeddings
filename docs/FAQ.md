@@ -104,7 +104,7 @@ It is not always straightforward to tell `gem` to look in non-standard directori
 
 ## Why does Homebrew on Linux recommend that I install to `/home/linuxbrew/.linuxbrew`?
 
-Homebrew's pre-built binary packages of most software can only be used if you install in `/home/linuxbrew/.linuxbrew`, otherwise they have to be built from source. Building from source can take a long time, is error-prone and isn't as well supported as using our binaries. Install Homebrew on Linux in `/home/linuxbrew/.linuxbrew/` if possible so that you can use our pre-built binary packages (known as bottles) for formulae. If you do not yourself have admin privileges, consider asking your admin staff to create a `linuxbrew` role account for you with home directory `/home/linuxbrew`.
+Homebrew's pre-built binary packages, called bottles, of most software can only be used if you install in `/home/linuxbrew/.linuxbrew`, otherwise they have to be built from source. Building from source takes a long time, is prone to fail, and is not supported. Install Homebrew on Linux in `/home/linuxbrew/.linuxbrew/` if possible so that you can use our pre-built binary packages. If you do not yourself have admin privileges, consider asking your admin staff to create a `linuxbrew` role account for you with home directory `/home/linuxbrew`.
 
 + https://docs.brew.sh/FAQ.html#why-do-you-compile-everything
 + https://docs.brew.sh/Installation.html#alternative-installs
