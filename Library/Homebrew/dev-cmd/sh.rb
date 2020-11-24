@@ -54,7 +54,9 @@ module Homebrew
       safe_system(ENV["SHELL"], args.named.first)
     else
       subshell = if ENV["SHELL"].include?("zsh")
-        "PS1='brew %B%F{green}%~%f%b$ ' #{ENV["SHELL"]} -d"
+        "PS1='brew %B%F{green}%~%f%b$ ' #{ENV["SHELL"]} -d -f"
+      elsif ENV["SHELL"].include?("bash")
+        "PS1=\"brew \\[\\033[1;32m\\]\\w\\[\\033[0m\\]$ \" #{ENV["SHELL"]} --noprofile --norc"
       else
         "PS1=\"brew \\[\\033[1;32m\\]\\w\\[\\033[0m\\]$ \" #{ENV["SHELL"]}"
       end
