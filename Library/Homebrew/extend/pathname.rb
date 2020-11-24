@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "resource"
@@ -7,15 +7,17 @@ require "metafiles"
 module DiskUsageExtension
   extend T::Sig
 
+  sig { returns(Integer) }
   def disk_usage
-    return @disk_usage if @disk_usage
+    return @disk_usage if defined?(@disk_usage)
 
     compute_disk_usage
     @disk_usage
   end
 
+  sig { returns(Integer) }
   def file_count
-    return @file_count if @file_count
+    return @file_count if defined?(@file_count)
 
     compute_disk_usage
     @file_count
@@ -32,6 +34,7 @@ module DiskUsageExtension
 
   private
 
+  sig { void }
   def compute_disk_usage
     if symlink? && !exist?
       @file_count = 1
@@ -82,6 +85,12 @@ class Pathname
   BOTTLE_EXTNAME_RX = /(\.[a-z0-9_]+\.bottle\.(\d+\.)?tar\.gz)$/.freeze
 
   # Moves a file from the original location to the {Pathname}'s.
+  sig do
+    params(sources: T.any(
+      Resource, Resource::Partial, String, Pathname,
+      T::Array[T.any(String, Pathname)], T::Hash[T.any(String, Pathname), String]
+    )).void
+  end
   def install(*sources)
     sources.each do |src|
       case src
@@ -107,6 +116,7 @@ class Pathname
     end
   end
 
+  sig { params(src: T.any(String, Pathname), new_basename: String).void }
   def install_p(src, new_basename)
     raise Errno::ENOENT, src.to_s unless File.symlink?(src) || File.exist?(src)
 
@@ -130,6 +140,11 @@ class Pathname
   private :install_p
 
   # Creates symlinks to sources in this folder.
+  sig do
+    params(
+      sources: T.any(String, Pathname, T::Array[T.any(String, Pathname)], T::Hash[T.any(String, Pathname), String]),
+    ).void
+  end
   def install_symlink(*sources)
     sources.each do |src|
       case src
@@ -156,21 +171,25 @@ class Pathname
   alias old_write write
 
   # We assume this pathname object is a file, obviously.
-  def write(content, *open_args)
+  sig { params(content: String, offset: Integer, open_args: T::Hash[Symbol, T.untyped]).returns(Integer) }
+  def write(content, offset = 0, open_args = {})
     raise "Will not overwrite #{self}" if exist?
 
     dirname.mkpath
-    open("w", *open_args) { |f| f.write(content) }
+
+    old_write(content, offset, open_args)
   end
 
   # Only appends to a file that is already created.
-  def append_lines(content, *open_args)
+  sig { params(content: String, open_args: T.untyped).void }
+  def append_lines(content, **open_args)
     raise "Cannot append file that doesn't exist: #{self}" unless exist?
 
-    open("a", *open_args) { |f| f.puts(content) }
+    T.unsafe(self).open("a", **open_args) { |f| f.puts(content) }
   end
 
   # @note This always overwrites.
+  sig { params(content: String).void }
   def atomic_write(content)
     old_stat = stat if exist?
     File.atomic_write(self) do |file|
@@ -220,8 +239,9 @@ class Pathname
   alias extname_old extname
 
   # Extended to support common double extensions.
-  def extname(path = to_s)
-    basename = File.basename(path)
+  sig { returns(String) }
+  def extname
+    basename = File.basename(self)
 
     bottle_ext = basename[BOTTLE_EXTNAME_RX, 1]
     return bottle_ext if bottle_ext
@@ -236,14 +256,16 @@ class Pathname
   end
 
   # For filetypes we support, returns basename without extension.
+  sig { returns(String) }
   def stem
-    File.basename((path = to_s), extname(path))
+    File.basename(self, extname)
   end
 
   # I don't trust the children.length == 0 check particularly, not to mention
   # it is slow to enumerate the whole directory just to see if it is empty,
   # instead rely on good ol' libc and the filesystem
   # @private
+  sig { returns(T::Boolean) }
   def rmdir_if_possible
     rmdir
     true
@@ -259,21 +281,25 @@ class Pathname
   end
 
   # @private
+  sig { returns(Version) }
   def version
     require "version"
     Version.parse(basename)
   end
 
   # @private
+  sig { returns(T::Boolean) }
   def text_executable?
-    /^#!\s*\S+/ =~ open("r") { |f| f.read(1024) }
+    /^#!\s*\S+/.match?(open("r") { |f| f.read(1024) })
   end
 
+  sig { returns(String) }
   def sha256
     require "digest/sha2"
     Digest::SHA256.file(self).hexdigest
   end
 
+  sig { params(expected: T.nilable(Checksum)).void }
   def verify_checksum(expected)
     raise ChecksumMissingError if expected.nil? || expected.empty?
 
@@ -283,7 +309,12 @@ class Pathname
 
   alias to_str to_s
 
-  def cd
+  sig do
+    type_parameters(:U).params(
+      _block: T.proc.params(path: Pathname).returns(T.type_parameter(:U)),
+    ).returns(T.type_parameter(:U))
+  end
+  def cd(&_block)
     Dir.chdir(self) { yield self }
   end
 
@@ -382,6 +413,14 @@ class Pathname
   end
 
   # Writes an exec script that invokes a Java jar.
+  sig do
+    params(
+      target_jar:   T.any(String, Pathname),
+      script_name:  T.any(String, Pathname),
+      java_opts:    String,
+      java_version: T.nilable(String),
+    ).returns(Integer)
+  end
   def write_jar_script(target_jar, script_name, java_opts = "", java_version: nil)
     (self/script_name).write <<~EOS
       #!/bin/bash
@@ -431,11 +470,14 @@ require "extend/os/pathname"
 
 # @private
 module ObserverPathnameExtension
+  extend T::Sig
+
   class << self
     extend T::Sig
 
     include Context
 
+    sig { returns(Integer) }
     attr_accessor :n, :d
 
     sig { void }
@@ -444,16 +486,21 @@ module ObserverPathnameExtension
       @put_verbose_trimmed_warning = false
     end
 
+    sig { returns(Integer) }
     def total
       n + d
     end
+
+    sig { returns([Integer, Integer]) }
 
     def counts
       [n, d]
     end
 
     MAXIMUM_VERBOSE_OUTPUT = 100
+    private_constant :MAXIMUM_VERBOSE_OUTPUT
 
+    sig { returns(T::Boolean) }
     def verbose?
       return super unless ENV["CI"]
       return false unless super
@@ -470,34 +517,40 @@ module ObserverPathnameExtension
     end
   end
 
+  sig { void }
   def unlink
     super
     puts "rm #{self}" if ObserverPathnameExtension.verbose?
     ObserverPathnameExtension.n += 1
   end
 
+  sig { void }
   def mkpath
     super
     puts "mkdir -p #{self}" if ObserverPathnameExtension.verbose?
   end
 
+  sig { void }
   def rmdir
     super
     puts "rmdir #{self}" if ObserverPathnameExtension.verbose?
     ObserverPathnameExtension.d += 1
   end
 
+  sig { params(src: Pathname).void }
   def make_relative_symlink(src)
     super
     puts "ln -s #{src.relative_path_from(dirname)} #{basename}" if ObserverPathnameExtension.verbose?
     ObserverPathnameExtension.n += 1
   end
 
+  sig { void }
   def install_info
     super
     puts "info #{self}" if ObserverPathnameExtension.verbose?
   end
 
+  sig { void }
   def uninstall_info
     super
     puts "uninfo #{self}" if ObserverPathnameExtension.verbose?

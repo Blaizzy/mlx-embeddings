@@ -16,6 +16,18 @@ class IO
   def self.open(fd, mode='r', opt=nil, &blk); end
 end
 
+class Pathname
+  # https://github.com/sorbet/sorbet/pull/3729
+  sig do
+    params(
+        owner: T.nilable(Integer),
+        group: T.nilable(Integer),
+    )
+    .returns(Integer)
+  end
+  def chown(owner, group); end
+end
+
 module FileUtils
   # https://github.com/sorbet/sorbet/pull/3730
   module_function
