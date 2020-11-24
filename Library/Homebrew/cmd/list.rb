@@ -20,18 +20,18 @@ module Homebrew
         List all installed formulae and casks.
 
         If <formula> is provided, summarise the paths within its current keg.
+        If <cask> is provided, list its artifacts.
       EOS
       switch "--formula", "--formulae",
-             description: "List only formulae."
+             description: "List only formulae, or treat all named arguments as formulae."
       switch "--cask", "--casks",
-             description: "List only casks, or <cask> if provided."
+             description: "List only casks, or treat all named arguments as casks."
       switch "--unbrewed",
              description: "List files in Homebrew's prefix not installed by Homebrew."
       switch "--full-name",
-             depends_on:  "--formula",
-             description: "Print formulae with fully-qualified names. If `--full-name` is not "\
-                          "passed, other options (i.e. `-1`, `-l`, `-r` and `-t`) are passed to `ls`(1) "\
-                          "which produces the actual output."
+             description: "Print formulae with fully-qualified names. Unless `--full-name`, `--versions` "\
+                          "or `--pinned` are passed, other options (i.e. `-1`, `-l`, `-r` and `-t`) are "\
+                          "passed to `ls`(1) which produces the actual output."
       switch "--versions",
              description: "Show the version number for installed formulae, or only the specified "\
                           "formulae if <formula> are provided."
@@ -39,7 +39,7 @@ module Homebrew
              depends_on:  "--versions",
              description: "Only show formulae with multiple versions installed."
       switch "--pinned",
-             description: "Show the versions of pinned formulae, or only the specified (pinned) "\
+             description: "List only pinned formulae, or only the specified (pinned) "\
                           "formulae if <formula> are provided. See also `pin`, `unpin`."
       # passed through to ls
       switch "-1",
@@ -53,14 +53,20 @@ module Homebrew
       switch "-t",
              description: "Sort formulae by time modified, listing most recently modified first."
 
-      ["-1", "-l", "-r", "-t"].each do |flag|
-        conflicts "--full-name", flag
+      conflicts "--formula", "--cask"
+      conflicts "--full-name", "--versions"
+      conflicts "--pinned", "--multiple"
+      conflicts "--cask", "--multiple"
+      ["--formula", "--cask", "--full-name", "--versions", "--pinned"].each do |flag|
         conflicts "--unbrewed", flag
-        conflicts "--pinned", flag
-        conflicts "--versions", flag
       end
-
-      ["--unbrewed", "--formula", "-l", "-r", "-t"].each do |flag|
+      ["-1", "-l", "-r", "-t"].each do |flag|
+        conflicts "--unbrewed", flag
+        conflicts "--versions", flag
+        conflicts "--pinned", flag
+      end
+      ["--pinned", "-l", "-r", "-t"].each do |flag|
+        conflicts "--full-name", flag
         conflicts "--cask", flag
       end
     end
@@ -68,8 +74,6 @@ module Homebrew
 
   def list
     args = list_args.parse
-
-    return list_casks(args: args) if args.cask?
 
     if args.unbrewed?
       raise UsageError, "`--unbrewed` does not take a formula/cask argument." unless args.no_named?
@@ -80,35 +84,47 @@ module Homebrew
     # Unbrewed uses the PREFIX, which will exist
     # Things below use the CELLAR, which doesn't until the first formula is installed.
     unless HOMEBREW_CELLAR.exist?
-      raise NoSuchKegError, args.named.first if args.named.present?
+      raise NoSuchKegError, args.named.first if args.named.present? && !args.cask?
 
       return
     end
 
-    if args.pinned? || args.versions?
+    if args.full_name?
+      unless args.cask?
+        formula_names = args.no_named? ? Formula.installed : args.named.to_resolved_formulae
+        full_formula_names = formula_names.map(&:full_name).sort(&tap_and_name_comparison)
+        full_formula_names = Formatter.columns(full_formula_names) unless args.public_send(:'1?')
+        puts full_formula_names unless full_formula_names.blank?
+      end
+      if args.cask? || (!args.formula? && args.no_named?)
+        cask_names = if args.no_named?
+          Cask::Caskroom.casks
+        else
+          args.named.to_formulae_and_casks(only: :cask, method: :resolve)
+        end
+        full_cask_names = cask_names.map(&:full_name).sort(&tap_and_name_comparison)
+        full_cask_names = Formatter.columns(full_cask_names) unless args.public_send(:'1?')
+        puts full_cask_names unless full_cask_names.blank?
+      end
+    elsif args.cask?
+      list_casks(args: args)
+    elsif args.pinned? || args.versions?
       filtered_list args: args
     elsif args.no_named?
-      if args.full_name?
-        full_names = Formula.installed.map(&:full_name).sort(&tap_and_name_comparison)
-        return if full_names.empty?
+      ENV["CLICOLOR"] = nil
 
-        puts Formatter.columns(full_names)
+      ls_args = []
+      ls_args << "-1" if args.public_send(:'1?')
+      ls_args << "-l" if args.l?
+      ls_args << "-r" if args.r?
+      ls_args << "-t" if args.t?
+
+      if !$stdout.tty? && !args.formula? && !args.cask?
+        odeprecated "`brew list` to only list formulae", "`brew list --formula`"
+        safe_system "ls", *ls_args, HOMEBREW_CELLAR
       else
-        ENV["CLICOLOR"] = nil
-
-        ls_args = []
-        ls_args << "-1" if args.public_send(:'1?')
-        ls_args << "-l" if args.l?
-        ls_args << "-r" if args.r?
-        ls_args << "-t" if args.t?
-
-        if !$stdout.tty? && !args.formula?
-          odeprecated "`brew list` to only list formulae", "`brew list --formula`"
-          safe_system "ls", *ls_args, HOMEBREW_CELLAR
-        else
-          safe_system "ls", *ls_args, HOMEBREW_CELLAR
-          list_casks(args: args) unless args.formula?
-        end
+        safe_system "ls", *ls_args, HOMEBREW_CELLAR unless args.cask?
+        list_casks(args: args) unless args.formula?
       end
     elsif args.verbose? || !$stdout.tty?
       system_command! "find", args: args.named.to_kegs.map(&:to_s) + %w[-not -type d -print], print_stdout: true
