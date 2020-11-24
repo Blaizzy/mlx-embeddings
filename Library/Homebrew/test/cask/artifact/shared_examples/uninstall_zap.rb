@@ -8,7 +8,7 @@ shared_examples "#uninstall_phase or #zap_phase" do
 
   let(:artifact_dsl_key) { described_class.dsl_key }
   let(:artifact) { cask.artifacts.find { |a| a.is_a?(described_class) } }
-  let(:fake_system_command) { FakeSystemCommand }
+  let(:fake_system_command) { class_double(SystemCommand) }
 
   context "using :launchctl" do
     let(:cask) { Cask::CaskLoader.load(cask_path("with-#{artifact_dsl_key}-launchctl")) }
@@ -31,41 +31,37 @@ shared_examples "#uninstall_phase or #zap_phase" do
     end
 
     it "works when job is owned by user" do
-      FakeSystemCommand.stubs_command(
-        launchctl_list_cmd,
-        service_info,
-      )
+      allow(fake_system_command).to receive(:run)
+        .with("/bin/launchctl", args: ["list", "my.fancy.package.service"], print_stderr: false, sudo: false)
+        .and_return(instance_double(SystemCommand::Result, stdout: service_info))
+      allow(fake_system_command).to receive(:run)
+        .with("/bin/launchctl", args: ["list", "my.fancy.package.service"], print_stderr: false, sudo: true)
+        .and_return(instance_double(SystemCommand::Result, stdout: unknown_response))
 
-      FakeSystemCommand.stubs_command(
-        sudo(launchctl_list_cmd),
-        unknown_response,
-      )
-
-      FakeSystemCommand.expects_command(launchctl_remove_cmd)
+      expect(fake_system_command).to receive(:run!)
+        .with("/bin/launchctl", args: ["remove", "my.fancy.package.service"], sudo: false)
+        .and_return(instance_double(SystemCommand::Result))
 
       subject.public_send(:"#{artifact_dsl_key}_phase", command: fake_system_command)
     end
 
     it "works when job is owned by system" do
-      FakeSystemCommand.stubs_command(
-        launchctl_list_cmd,
-        unknown_response,
-      )
+      allow(fake_system_command).to receive(:run)
+        .with("/bin/launchctl", args: ["list", "my.fancy.package.service"], print_stderr: false, sudo: false)
+        .and_return(instance_double(SystemCommand::Result, stdout: unknown_response))
+      allow(fake_system_command).to receive(:run)
+        .with("/bin/launchctl", args: ["list", "my.fancy.package.service"], print_stderr: false, sudo: true)
+        .and_return(instance_double(SystemCommand::Result, stdout: service_info))
 
-      FakeSystemCommand.stubs_command(
-        sudo(launchctl_list_cmd),
-        service_info,
-      )
-
-      FakeSystemCommand.expects_command(sudo(launchctl_remove_cmd))
+      expect(fake_system_command).to receive(:run!)
+        .with("/bin/launchctl", args: ["remove", "my.fancy.package.service"], sudo: true)
+        .and_return(instance_double(SystemCommand::Result))
 
       subject.public_send(:"#{artifact_dsl_key}_phase", command: fake_system_command)
     end
   end
 
   context "using :pkgutil" do
-    let(:fake_system_command) { class_double(SystemCommand) }
-
     let(:cask) { Cask::CaskLoader.load(cask_path("with-#{artifact_dsl_key}-pkgutil")) }
 
     let(:main_pkg_id) { "my.fancy.package.main" }

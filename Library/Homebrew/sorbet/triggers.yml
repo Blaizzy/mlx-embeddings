@@ -2,6 +2,6 @@ ruby_extra_args:
   - --disable-gems
 
 triggers:
-  using: sorbet/plugins/unpack_strategy_magic.rb
+  using: sorbet/plugins/using.rb
   attr_predicate: sorbet/plugins/attr_predicate.rb
   delegate: sorbet/plugins/delegate.rb

@@ -4,7 +4,6 @@
 require "cask/config"
 require "cask/cache"
 
-require "test/support/helper/cask/fake_system_command"
 require "test/support/helper/cask/install_helper"
 require "test/support/helper/cask/never_sudo_system_command"
 
