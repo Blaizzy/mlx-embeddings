@@ -91,8 +91,10 @@ module UnpackStrategy
         Tempfile.open(["", ".bom"]) do |bomfile|
           bomfile.close
 
+          bom = path.bom
+
           Tempfile.open(["", ".list"]) do |filelist|
-            filelist.puts(path.bom)
+            filelist.puts(bom)
             filelist.close
 
             system_command! "mkbom",
@@ -100,9 +102,14 @@ module UnpackStrategy
                             verbose: verbose
           end
 
-          system_command! "ditto",
-                          args:    ["--bom", bomfile.path, "--", path, unpack_dir],
-                          verbose: verbose
+          result = system_command! "ditto",
+                                   args:    ["--bom", bomfile.path, "--", path, unpack_dir],
+                                   verbose: verbose
+
+          odebug "BOM contents:", bom
+          if result.stderr.include?("contains no files, nothing copied")
+            odebug "Directory contents:", Pathname.glob(path/"**/*", File::FNM_DOTMATCH).map(&:to_s).join("\n")
+          end
 
           FileUtils.chmod "u+w", Pathname.glob(unpack_dir/"**/*", File::FNM_DOTMATCH).reject(&:symlink?)
         end
