@@ -1158,7 +1158,7 @@ Requires write access to the repository.
 * `--message`:
   Message to include when autosquashing revision bumps, deletions, and rebuilds.
 * `--workflow`:
-  Retrieve artifacts from the specified workflow (default: `tests.yml`).
+  Retrieve artifacts from the specified workflow (default: `tests.yml`). Legacy: use --workflows instead
 * `--artifact`:
   Download artifacts with the specified name (default: `bottles`).
 * `--bintray-org`:
@@ -1169,6 +1169,10 @@ Requires write access to the repository.
   Use the specified *`URL`* as the root of the bottle's URL instead of Homebrew's default.
 * `--bintray-mirror`:
   Use the specified Bintray repository to automatically mirror stable URLs defined in the formulae (default: `mirror`).
+* `--workflows`:
+  Retrieve artifacts from the specified workflow (default: `tests.yml`) Comma-separated list to include multiple workflows.
+* `--ignore-missing-artifacts`:
+  Comma-separated list of workflows which can be ignored if they have not been run.
 
 ### `pr-upload` [*`options`*]
 

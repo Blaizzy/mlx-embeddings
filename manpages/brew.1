@@ -1618,7 +1618,7 @@ Message to include when autosquashing revision bumps, deletions, and rebuilds\.
 .
 .TP
 \fB\-\-workflow\fR
-Retrieve artifacts from the specified workflow (default: \fBtests\.yml\fR)\.
+Retrieve artifacts from the specified workflow (default: \fBtests\.yml\fR)\. Legacy: use \-\-workflows instead
 .
 .TP
 \fB\-\-artifact\fR
@@ -1639,6 +1639,14 @@ Use the specified \fIURL\fR as the root of the bottle\'s URL instead of Homebrew
 .TP
 \fB\-\-bintray\-mirror\fR
 Use the specified Bintray repository to automatically mirror stable URLs defined in the formulae (default: \fBmirror\fR)\.
+.
+.TP
+\fB\-\-workflows\fR
+Retrieve artifacts from the specified workflow (default: \fBtests\.yml\fR) Comma\-separated list to include multiple workflows\.
+.
+.TP
+\fB\-\-ignore\-missing\-artifacts\fR
+Comma\-separated list of workflows which can be ignored if they have not been run\.
 .
 .SS "\fBpr\-upload\fR [\fIoptions\fR]"
 Apply the bottle commit and publish bottles to Bintray or GitHub Releases\.

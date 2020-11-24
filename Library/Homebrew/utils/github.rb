@@ -510,7 +510,7 @@ module GitHub
     open_api(url, data_binary_path: local_file, request_method: :POST, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)
   end
 
-  def get_artifact_url(user, repo, pr, workflow_id: "tests.yml", artifact_name: "bottles")
+  def get_workflow_run(user, repo, pr, workflow_id: "tests.yml", artifact_name: "bottles")
     scopes = CREATE_ISSUE_FORK_OR_PR_SCOPES
     base_url = "#{API_URL}/repos/#{user}/#{repo}"
     pr_payload = open_api("#{base_url}/pulls/#{pr}", scopes: scopes)
@@ -523,6 +523,11 @@ module GitHub
       run["head_sha"] == pr_sha
     end
 
+    [workflow_run, pr_sha, pr_branch, pr, workflow_id, scopes, artifact_name]
+  end
+
+  def get_artifact_url(workflow_array)
+    workflow_run, pr_sha, pr_branch, pr, workflow_id, scopes, artifact_name = *workflow_array
     if workflow_run.empty?
       raise Error, <<~EOS
         No matching workflow run found for these criteria!
