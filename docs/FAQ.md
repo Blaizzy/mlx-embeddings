@@ -102,6 +102,14 @@ hub pull someone_else
 
 It is not always straightforward to tell `gem` to look in non-standard directories for headers and libraries. If you choose `/usr/local`, many things will "just work".
 
+## Why does Homebrew on Linux recommend that I install to `/home/linuxbrew/.linuxbrew`?
+
+The precompiled binary bottles of non-relocatable bottles can only be used if you install in `/home/linuxbrew/.linuxbrew`, otherwise they have to be built from source. Install Homebrew on Linux in `/home/linuxbrew/.linuxbrew/` if possible so that you can use precompiled binary packages (known as bottles) for non-relocatable formula. If you do not yourself have admin privileges, consider asking your admin staff to create a `linuxbrew` role account for you with home directory `/home/linuxbrew`.
+
++ https://docs.brew.sh/FAQ.html#why-do-you-compile-everything
++ https://docs.brew.sh/Installation.html#alternative-installs
++ https://docs.brew.sh/Bottles.html#cellar-cellar
+
 ## Why does Homebrew say sudo is bad?
 **tl;dr** Sudo is dangerous, and you installed TextMate.app without sudo
 anyway.
