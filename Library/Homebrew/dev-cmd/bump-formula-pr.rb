@@ -336,7 +336,7 @@ module Homebrew
     end
 
     unless args.dry_run?
-      resources_checked = PyPI.update_python_resources! formula, new_formula_version,
+      resources_checked = PyPI.update_python_resources! formula, version: new_formula_version,
                                                         silent: args.quiet?, ignore_non_pypi_packages: true
     end
 
