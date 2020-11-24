@@ -946,14 +946,16 @@ Display the path to the file being used when invoking `brew` *`cmd`*.
 
 ### `create` [*`options`*] *`URL`*
 
-Generate a formula for the downloadable file at *`URL`* and open it in the editor.
-Homebrew will attempt to automatically derive the formula name and version, but
-if it fails, you'll have to make your own template. The `wget` formula serves as
-a simple example. For the complete API, see:
+Generate a formula or, with `--cask`, a cask for the downloadable file at *`URL`*
+and open it in the editor. Homebrew will attempt to automatically derive the
+formula name and version, but if it fails, you'll have to make your own template.
+The `wget` formula serves as a simple example. For the complete API, see:
 <https://rubydoc.brew.sh/Formula>
 
 * `--autotools`:
   Create a basic template for an Autotools-style build.
+* `--cask`:
+  Create a basic template for a cask.
 * `--cmake`:
   Create a basic template for a CMake-style build.
 * `--crystal`:
@@ -977,9 +979,9 @@ a simple example. For the complete API, see:
 * `--HEAD`:
   Indicate that *`URL`* points to the package's repository rather than a file.
 * `--set-name`:
-  Explicitly set the *`name`* of the new formula.
+  Explicitly set the *`name`* of the new formula or cask.
 * `--set-version`:
-  Explicitly set the *`version`* of the new formula.
+  Explicitly set the *`version`* of the new formula or cask.
 * `--set-license`:
   Explicitly set the *`license`* of the new formula.
 * `--tap`:
