@@ -95,21 +95,6 @@ module RuboCop
             end
           end
 
-          find_strings(body_node).each do |n|
-            next unless regex_match_group(n, /JAVA_HOME/i)
-
-            next if @formula_name.match?(/^openjdk(@|$)/)
-
-            next if find_every_method_call_by_name(body_node, :depends_on).any? do |dependency|
-              dependency.each_descendant(:str).count.zero? ||
-              regex_match_group(dependency.each_descendant(:str).first, /^openjdk(@|$)/) ||
-              depends_on?(:java)
-            end
-
-            offending_node(n)
-            problem "Use `depends_on :java` to set JAVA_HOME"
-          end
-
           prefix_path(body_node) do |prefix_node, path|
             next unless match = path.match(%r{^(bin|include|libexec|lib|sbin|share|Frameworks)(?:/| |$)})
 

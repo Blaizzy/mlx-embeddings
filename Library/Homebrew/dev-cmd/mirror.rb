@@ -25,7 +25,6 @@ module Homebrew
              description: "Upload to Bintray, but don't publish."
 
       min_named :formula
-      hide_from_man_page!
     end
   end
 

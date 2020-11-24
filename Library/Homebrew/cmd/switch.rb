@@ -32,7 +32,7 @@ module Homebrew
 
     odie "#{name} not found in the Cellar." unless rack.directory?
 
-    # odeprecated "`brew switch`", "`brew link` @-versioned formulae"
+    odeprecated "`brew switch`", "`brew link` @-versioned formulae"
 
     versions = rack.subdirs
                    .map { |d| Keg.new(d).version }

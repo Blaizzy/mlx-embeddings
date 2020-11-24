@@ -13,9 +13,8 @@ class BuildOptions
 
   # TODO: rename private_include? when include? is removed.
   # @deprecated
-  def include?(name)
-    odeprecated "BuildOptions#include?"
-    private_include?("--#{name}")
+  def include?(_)
+    odisabled "BuildOptions#include?"
   end
 
   # True if a {Formula} is being built with a specific option.
@@ -65,11 +64,6 @@ class BuildOptions
     private_include? "HEAD"
   end
 
-  # @private
-  def devel?
-    odisabled "BuildOptions#devel?"
-  end
-
   # True if a {Formula} is being built with {Formula.stable} instead of {Formula.head}.
   # This is the default.
   # <pre>args << "--some-beta" if build.head?</pre>
@@ -81,14 +75,12 @@ class BuildOptions
   # e.g. on newer Intel Macs this means a combined x86_64/x86 binary/library.
   # <pre>args << "--universal-binary" if build.universal?</pre>
   def universal?
-    odeprecated "BuildOptions#universal?"
-    private_include?("universal") && option_defined?("universal")
+    odisabled "BuildOptions#universal?"
   end
 
   # True if a {Formula} is being built in C++11 mode.
   def cxx11?
-    odeprecated "BuildOptions#cxx11?"
-    private_include?("c++11") && option_defined?("c++11")
+    odisabled "BuildOptions#cxx11?"
   end
 
   # True if the build has any arguments or options specified.

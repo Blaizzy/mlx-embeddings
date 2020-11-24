@@ -14,16 +14,10 @@ class MacOSRequirement < Requirement
   attr_reader :comparator, :version
 
   def initialize(tags = [], comparator: ">=")
-    begin
-      @version = if comparator == "==" && tags.first.respond_to?(:map)
-        tags.shift.map { |s| MacOS::Version.from_symbol(s) }
-      else
-        MacOS::Version.from_symbol(tags.shift) unless tags.empty?
-      end
-    rescue MacOSVersionError => e
-      raise if e.version != :mavericks
-
-      odisabled "depends_on :macos => :mavericks"
+    @version = if comparator == "==" && tags.first.respond_to?(:map)
+      tags.shift.map { |s| MacOS::Version.from_symbol(s) }
+    else
+      MacOS::Version.from_symbol(tags.shift) unless tags.empty?
     end
 
     @comparator = comparator

@@ -41,14 +41,8 @@ module Patch
     else
       {}
     end.each_pair do |strip, urls|
-      Array(urls).each do |url|
-        patch = case url
-        when :DATA
-          DATAPatch.new(strip)
-        else
-          LegacyPatch.new(strip, url)
-        end
-        patches << patch
+      Array(urls).each do
+        patches << DATAPatch.new(strip)
       end
     end
 
@@ -194,17 +188,5 @@ class ExternalPatch
   sig { returns(String) }
   def inspect
     "#<#{self.class.name}: #{strip.inspect} #{url.inspect}>"
-  end
-end
-
-# A legacy patch.
-#
-# Legacy patches have no checksum and are not cached.
-#
-# @api private
-class LegacyPatch < ExternalPatch
-  def initialize(strip, _url)
-    odisabled "legacy patches", "'patch do' blocks"
-    super(strip)
   end
 end

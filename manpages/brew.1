@@ -1413,17 +1413,6 @@ Dispatch specified workflow (default: \fBdispatch\-build\-bottle\.yml\fR)\.
 \fB\-\-upload\fR
 Upload built bottles to Bintray\.
 .
-.SS "\fBdiy\fR [\fIoptions\fR]"
-Automatically determine the installation prefix for non\-Homebrew software\. Using the output from this command, you can install your own software into the Cellar and then link it into Homebrew\'s prefix with \fBbrew link\fR\.
-.
-.TP
-\fB\-\-name\fR
-Explicitly set the \fIname\fR of the package being installed\.
-.
-.TP
-\fB\-\-version\fR
-Explicitly set the \fIversion\fR of the package being installed\.
-.
 .SS "\fBedit\fR [\fIformula\fR|\fIcask\fR]"
 Open a \fIformula\fR or \fIcask\fR in the editor set by \fBEDITOR\fR or \fBHOMEBREW_EDITOR\fR, or open the Homebrew repository for editing if no formula is provided\.
 .
@@ -1522,6 +1511,21 @@ Return a failing status code if changes are detected in the manpage outputs\. Th
 .TP
 \fB\-\-link\fR
 This is now done automatically by \fBbrew update\fR\.
+.
+.SS "\fBmirror\fR \fIformula\fR"
+Reupload the stable URL of a formula to Bintray for use as a mirror\.
+.
+.TP
+\fB\-\-bintray\-org\fR
+Upload to the specified Bintray organisation (default: \fBhomebrew\fR)\.
+.
+.TP
+\fB\-\-bintray\-repo\fR
+Upload to the specified Bintray repository (default: \fBmirror\fR)\.
+.
+.TP
+\fB\-\-no\-publish\fR
+Upload to Bintray, but don\'t publish\.
 .
 .SS "\fBpr\-automerge\fR [\fIoptions\fR]"
 Find pull requests that can be automatically merged using \fBbrew pr\-publish\fR\.
