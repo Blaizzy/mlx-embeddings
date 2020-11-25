@@ -142,7 +142,7 @@ module Cask
     def to_s
       <<~EOS
         Cask '#{token}' requires XQuartz/X11, which can be installed using Homebrew Cask by running:
-          #{Formatter.identifier("brew cask install xquartz")}
+          #{Formatter.identifier("brew install --cask xquartz")}
 
         or manually, by downloading the package from:
           #{Formatter.url("https://www.xquartz.org/")}

@@ -65,47 +65,6 @@ Uninstall formulae that were only installed as a dependency of another formula a
 * `-n`, `--dry-run`:
   List what would be uninstalled, but do not actually uninstall anything.
 
-### `cask` *`command`* [*`options`*] [*`cask`*]
-
-Homebrew Cask provides a friendly CLI workflow for the administration of macOS applications distributed as binaries.
-
-Commands:
-
-- `audit`
-  <br>Check *`cask`* for Homebrew coding style violations.
-
-- `cat`
-  <br>Dump raw source of a *`cask`* to the standard output.
-
-- `create`
-  <br>Creates the given *`cask`* and opens it in an editor.
-
-- `edit`
-  <br>Open the given *`cask`* for editing.
-
-- `fetch`
-  <br>Downloads remote application files to local cache.
-
-- `help`
-  <br>Print help for `cask` commands.
-
-- `info`
-  <br>Displays information about the given *`cask`*.
-
-- `install`
-  <br>Installs the given *`cask`*.
-
-- `style`
-  <br>Checks style of the given *`cask`* using RuboCop.
-
-- `uninstall`
-  <br>Uninstalls the given *`cask`*.
-
-- `zap`
-  <br>Zaps all files associated with the given *`cask`*.
-
-See also: `man brew`
-
 ### `cleanup` [*`options`*] [*`formula`*|*`cask`*]
 
 Remove stale lock files and outdated downloads for all formulae and casks,
@@ -243,10 +202,10 @@ error message if no logs are found.
 * `-p`, `--private`:
   The Gist will be marked private and will not appear in listings but will be accessible with its link.
 
-### `home` [*`formula`*]
+### `home` [*`formula`*|*`cask`*]
 
-Open *`formula`*'s homepage in a browser, or open Homebrew's own homepage
-if no formula is provided.
+Open a *`formula`* or *`cask`*'s homepage in a browser, or open
+Homebrew's own homepage if no argument is provided.
 
 ### `info` [*`options`*] [*`formula`*|*`cask`*]
 
@@ -849,11 +808,11 @@ supplied by the user.
 * `--commit`:
   When passed with `--write`, generate a new commit after writing changes to the cask file.
 * `--no-audit`:
-  Don't run `brew cask audit` before opening the PR.
+  Don't run `brew audit` before opening the PR.
 * `--online`:
-  Run `brew cask audit --online` before opening the PR.
+  Run `brew audit --online` before opening the PR.
 * `--no-style`:
-  Don't run `brew cask style --fix` before opening the PR.
+  Don't run `brew style --fix` before opening the PR.
 * `--no-browse`:
   Print the pull request URL instead of opening in a browser.
 * `--no-fork`:

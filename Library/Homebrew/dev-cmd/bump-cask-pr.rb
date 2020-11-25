@@ -30,11 +30,11 @@ module Homebrew
              description: "When passed with `--write`, generate a new commit after writing changes "\
                           "to the cask file."
       switch "--no-audit",
-             description: "Don't run `brew cask audit` before opening the PR."
+             description: "Don't run `brew audit` before opening the PR."
       switch "--online",
-             description: "Run `brew cask audit --online` before opening the PR."
+             description: "Run `brew audit --online` before opening the PR."
       switch "--no-style",
-             description: "Don't run `brew cask style --fix` before opening the PR."
+             description: "Don't run `brew style --fix` before opening the PR."
       switch "--no-browse",
              description: "Print the pull request URL instead of opening in a browser."
       switch "--no-fork",
@@ -232,49 +232,49 @@ module Homebrew
   def run_cask_audit(cask, old_contents, args:)
     if args.dry_run?
       if args.no_audit?
-        ohai "Skipping `brew cask audit`"
+        ohai "Skipping `brew audit`"
       elsif args.online?
-        ohai "brew cask audit --online #{cask.sourcefile_path.basename}"
+        ohai "brew audit --cask --online #{cask.sourcefile_path.basename}"
       else
-        ohai "brew cask audit #{cask.sourcefile_path.basename}"
+        ohai "brew audit --cask #{cask.sourcefile_path.basename}"
       end
       return
     end
     failed_audit = false
     if args.no_audit?
-      ohai "Skipping `brew cask audit`"
+      ohai "Skipping `brew audit`"
     elsif args.online?
-      system HOMEBREW_BREW_FILE, "cask", "audit", "--online", cask.sourcefile_path
+      system HOMEBREW_BREW_FILE, "audit", "--cask", "--online", cask.sourcefile_path
       failed_audit = !$CHILD_STATUS.success?
     else
-      system HOMEBREW_BREW_FILE, "cask", "audit", cask.sourcefile_path
+      system HOMEBREW_BREW_FILE, "audit", "--cask", cask.sourcefile_path
       failed_audit = !$CHILD_STATUS.success?
     end
     return unless failed_audit
 
     cask.sourcefile_path.atomic_write(old_contents)
-    odie "`brew cask audit` failed!"
+    odie "`brew audit` failed!"
   end
 
   def run_cask_style(cask, old_contents, args:)
     if args.dry_run?
       if args.no_style?
-        ohai "Skipping `brew cask style --fix`"
+        ohai "Skipping `brew style --fix`"
       else
-        ohai "brew cask style --fix #{cask.sourcefile_path.basename}"
+        ohai "brew style --fix #{cask.sourcefile_path.basename}"
       end
       return
     end
     failed_style = false
     if args.no_style?
-      ohai "Skipping `brew cask style --fix`"
+      ohai "Skipping `brew style --fix`"
     else
-      system HOMEBREW_BREW_FILE, "cask", "style", "--fix", cask.sourcefile_path
+      system HOMEBREW_BREW_FILE, "style", "--fix", cask.sourcefile_path
       failed_style = !$CHILD_STATUS.success?
     end
     return unless failed_style
 
     cask.sourcefile_path.atomic_write(old_contents)
-    odie "`brew cask style --fix` failed!"
+    odie "`brew style --fix` failed!"
   end
 end
