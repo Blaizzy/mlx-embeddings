@@ -5841,22 +5841,6 @@ module Cask::Utils
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class Caveats
-  def empty?(*args, &block); end
-
-  def to_s(*args, &block); end
-end
-
-class Checksum
-  def [](*args, &block); end
-
-  def empty?(*args, &block); end
-
-  def length(*args, &block); end
-
-  def to_s(*args, &block); end
-end
-
 class Class
   def any_instance(); end
 
@@ -11897,14 +11881,6 @@ module MachO
   def self.open(filename); end
 end
 
-module MachOShim
-  def delete_rpath(*args, &block); end
-
-  def dylib_id(*args, &block); end
-
-  def rpaths(*args, &block); end
-end
-
 Markdown = RDiscount
 
 module Marshal
@@ -15367,18 +15343,6 @@ end
 class Pathname
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class PkgVersion
-  def major(*args, &block); end
-
-  def major_minor(*args, &block); end
-
-  def major_minor_patch(*args, &block); end
-
-  def minor(*args, &block); end
-
-  def patch(*args, &block); end
 end
 
 class Proc
@@ -28595,6 +28559,7 @@ class Socket
   IPV6_PATHMTU = ::T.let(nil, ::T.untyped)
   IPV6_RECVPATHMTU = ::T.let(nil, ::T.untyped)
   IPV6_USE_MIN_MTU = ::T.let(nil, ::T.untyped)
+  IP_DONTFRAG = ::T.let(nil, ::T.untyped)
   IP_PORTRANGE = ::T.let(nil, ::T.untyped)
   IP_RECVDSTADDR = ::T.let(nil, ::T.untyped)
   IP_RECVIF = ::T.let(nil, ::T.untyped)
@@ -28686,6 +28651,7 @@ module Socket::Constants
   IPV6_PATHMTU = ::T.let(nil, ::T.untyped)
   IPV6_RECVPATHMTU = ::T.let(nil, ::T.untyped)
   IPV6_USE_MIN_MTU = ::T.let(nil, ::T.untyped)
+  IP_DONTFRAG = ::T.let(nil, ::T.untyped)
   IP_PORTRANGE = ::T.let(nil, ::T.untyped)
   IP_RECVDSTADDR = ::T.let(nil, ::T.untyped)
   IP_RECVIF = ::T.let(nil, ::T.untyped)
@@ -29244,6 +29210,11 @@ class SynchronizedDelegator
 end
 
 class SynchronizedDelegator
+end
+
+class SystemCommand::Result
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class SystemCommand

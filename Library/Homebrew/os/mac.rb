@@ -44,13 +44,6 @@ module OS
       Version.new "11.0"
     end
 
-    def latest_stable_version
-      # TODO: bump version when new macOS is released and also update
-      # references in docs/Installation.md and
-      # https://github.com/Homebrew/install/blob/HEAD/install.sh
-      Version.new "11.0"
-    end
-
     def outdated_release?
       # TODO: bump version when new macOS is released and also update
       # references in docs/Installation.md and
@@ -59,7 +52,10 @@ module OS
     end
 
     def prerelease?
-      version > latest_stable_version
+      # TODO: bump version when new macOS is released or announced
+      # and also update references in docs/Installation.md and
+      # https://github.com/Homebrew/install/blob/HEAD/install.sh
+      version >= "12.0"
     end
 
     def languages

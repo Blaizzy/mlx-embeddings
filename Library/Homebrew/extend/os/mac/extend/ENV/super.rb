@@ -27,7 +27,7 @@ module Superenv
 
   def homebrew_extra_paths
     paths = []
-    paths << MacOS::XQuartz.bin.to_s if x11?
+    paths << MacOS::XQuartz.bin if x11?
     paths
   end
 

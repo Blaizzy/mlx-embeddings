@@ -8,20 +8,21 @@ module Homebrew
   class TapAuditor
     extend T::Sig
 
-    attr_reader :name, :path, :tap_audit_exceptions, :problems
+    attr_reader :name, :path, :tap_audit_exceptions, :tap_pypi_formula_mappings, :problems
 
     sig { params(tap: Tap, strict: T.nilable(T::Boolean)).void }
     def initialize(tap, strict:)
-      @name                 = tap.name
-      @path                 = tap.path
-      @tap_audit_exceptions = tap.audit_exceptions
-      @problems             = []
+      @name                      = tap.name
+      @path                      = tap.path
+      @tap_audit_exceptions      = tap.audit_exceptions
+      @tap_pypi_formula_mappings = tap.pypi_formula_mappings
+      @problems                  = []
     end
 
     sig { void }
     def audit
       audit_json_files
-      audit_tap_audit_exceptions
+      audit_tap_formula_lists
     end
 
     sig { void }
@@ -35,38 +36,49 @@ module Homebrew
     end
 
     sig { void }
-    def audit_tap_audit_exceptions
-      @tap_audit_exceptions.each do |list_name, formula_names|
-        unless [Hash, Array].include? formula_names.class
-          problem <<~EOS
-            audit_exceptions/#{list_name}.json should contain a JSON array
-            of formula names or a JSON object mapping formula names to values
-          EOS
-          next
-        end
-
-        formula_names = formula_names.keys if formula_names.is_a? Hash
-
-        invalid_formulae = []
-        formula_names.each do |name|
-          invalid_formulae << name if Formula[name].tap != @name
-        rescue FormulaUnavailableError
-          invalid_formulae << name
-        end
-
-        next if invalid_formulae.empty?
-
-        problem <<~EOS
-          audit_exceptions/#{list_name}.json references
-          formulae that are not found in the #{@name} tap.
-          Invalid formulae: #{invalid_formulae.join(", ")}
-        EOS
-      end
+    def audit_tap_formula_lists
+      check_formula_list_directory "audit_exceptions", @tap_audit_exceptions
+      check_formula_list "pypi_formula_mappings", @tap_pypi_formula_mappings
     end
 
     sig { params(message: String).void }
     def problem(message)
       @problems << ({ message: message, location: nil })
+    end
+
+    private
+
+    sig { params(list_file: String, list: T.untyped).void }
+    def check_formula_list(list_file, list)
+      unless [Hash, Array].include? list.class
+        problem <<~EOS
+          #{list_file}.json should contain a JSON array
+          of formula names or a JSON object mapping formula names to values
+        EOS
+        return
+      end
+
+      invalid_formulae = []
+      list.each do |name, _|
+        invalid_formulae << name if Formula[name].tap != @name
+      rescue FormulaUnavailableError
+        invalid_formulae << name
+      end
+
+      return if invalid_formulae.empty?
+
+      problem <<~EOS
+        #{list_file}.json references
+        formulae that are not found in the #{@name} tap.
+        Invalid formulae: #{invalid_formulae.join(", ")}
+      EOS
+    end
+
+    sig { params(directory_name: String, lists: Hash).void }
+    def check_formula_list_directory(directory_name, lists)
+      lists.each do |list_name, list|
+        check_formula_list "#{directory_name}/#{list_name}", list
+      end
     end
   end
 end

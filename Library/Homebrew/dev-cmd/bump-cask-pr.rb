@@ -74,7 +74,7 @@ module Homebrew
     new_hash = args.sha256
 
     old_version = cask.version
-    old_hash = cask.sha256
+    old_hash = cask.sha256.to_s
 
     tap_full_name = cask.tap&.full_name
     origin_branch = Utils::Git.origin_branch(cask.tap.path) if cask.tap
@@ -159,7 +159,7 @@ module Homebrew
         lang_cask = Cask::CaskLoader.load(tmp_contents)
         lang_cask.config = lang_config
         lang_url = lang_cask.url.to_s
-        lang_old_hash = lang_cask.sha256
+        lang_old_hash = lang_cask.sha256.to_s
 
         resource_path = fetch_resource(cask, new_version, lang_url)
         Utils::Tar.validate_file(resource_path)

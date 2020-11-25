@@ -32,7 +32,6 @@ module SharedAudits
   end
 
   GITHUB_PRERELEASE_ALLOWLIST = {
-    "amd-power-gadget" => :all,
     "elm-format"       => "0.8.3",
     "extraterm"        => :all,
     "freetube"         => :all,

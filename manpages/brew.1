@@ -1241,11 +1241,15 @@ Treat all named arguments as casks\.
 Display the path to the file being used when invoking \fBbrew\fR \fIcmd\fR\.
 .
 .SS "\fBcreate\fR [\fIoptions\fR] \fIURL\fR"
-Generate a formula for the downloadable file at \fIURL\fR and open it in the editor\. Homebrew will attempt to automatically derive the formula name and version, but if it fails, you\'ll have to make your own template\. The \fBwget\fR formula serves as a simple example\. For the complete API, see: \fIhttps://rubydoc\.brew\.sh/Formula\fR
+Generate a formula or, with \fB\-\-cask\fR, a cask for the downloadable file at \fIURL\fR and open it in the editor\. Homebrew will attempt to automatically derive the formula name and version, but if it fails, you\'ll have to make your own template\. The \fBwget\fR formula serves as a simple example\. For the complete API, see: \fIhttps://rubydoc\.brew\.sh/Formula\fR
 .
 .TP
 \fB\-\-autotools\fR
 Create a basic template for an Autotools\-style build\.
+.
+.TP
+\fB\-\-cask\fR
+Create a basic template for a cask\.
 .
 .TP
 \fB\-\-cmake\fR
@@ -1293,11 +1297,11 @@ Indicate that \fIURL\fR points to the package\'s repository rather than a file\.
 .
 .TP
 \fB\-\-set\-name\fR
-Explicitly set the \fIname\fR of the new formula\.
+Explicitly set the \fIname\fR of the new formula or cask\.
 .
 .TP
 \fB\-\-set\-version\fR
-Explicitly set the \fIversion\fR of the new formula\.
+Explicitly set the \fIversion\fR of the new formula or cask\.
 .
 .TP
 \fB\-\-set\-license\fR
@@ -1333,17 +1337,6 @@ Dispatch specified workflow (default: \fBdispatch\-build\-bottle\.yml\fR)\.
 .TP
 \fB\-\-upload\fR
 Upload built bottles to Bintray\.
-.
-.SS "\fBdiy\fR [\fIoptions\fR]"
-Automatically determine the installation prefix for non\-Homebrew software\. Using the output from this command, you can install your own software into the Cellar and then link it into Homebrew\'s prefix with \fBbrew link\fR\.
-.
-.TP
-\fB\-\-name\fR
-Explicitly set the \fIname\fR of the package being installed\.
-.
-.TP
-\fB\-\-version\fR
-Explicitly set the \fIversion\fR of the package being installed\.
 .
 .SS "\fBedit\fR [\fIformula\fR|\fIcask\fR]"
 Open a \fIformula\fR or \fIcask\fR in the editor set by \fBEDITOR\fR or \fBHOMEBREW_EDITOR\fR, or open the Homebrew repository for editing if no formula is provided\.
@@ -1444,6 +1437,21 @@ Return a failing status code if changes are detected in the manpage outputs\. Th
 \fB\-\-link\fR
 This is now done automatically by \fBbrew update\fR\.
 .
+.SS "\fBmirror\fR \fIformula\fR"
+Reupload the stable URL of a formula to Bintray for use as a mirror\.
+.
+.TP
+\fB\-\-bintray\-org\fR
+Upload to the specified Bintray organisation (default: \fBhomebrew\fR)\.
+.
+.TP
+\fB\-\-bintray\-repo\fR
+Upload to the specified Bintray repository (default: \fBmirror\fR)\.
+.
+.TP
+\fB\-\-no\-publish\fR
+Upload to Bintray, but don\'t publish\.
+.
 .SS "\fBpr\-automerge\fR [\fIoptions\fR]"
 Find pull requests that can be automatically merged using \fBbrew pr\-publish\fR\.
 .
@@ -1539,7 +1547,7 @@ Message to include when autosquashing revision bumps, deletions, and rebuilds\.
 .
 .TP
 \fB\-\-workflow\fR
-Retrieve artifacts from the specified workflow (default: \fBtests\.yml\fR)\.
+Retrieve artifacts from the specified workflow (default: \fBtests\.yml\fR)\. Legacy: use \-\-workflows instead
 .
 .TP
 \fB\-\-artifact\fR
@@ -1560,6 +1568,14 @@ Use the specified \fIURL\fR as the root of the bottle\'s URL instead of Homebrew
 .TP
 \fB\-\-bintray\-mirror\fR
 Use the specified Bintray repository to automatically mirror stable URLs defined in the formulae (default: \fBmirror\fR)\.
+.
+.TP
+\fB\-\-workflows\fR
+Retrieve artifacts from the specified workflow (default: \fBtests\.yml\fR) Comma\-separated list to include multiple workflows\.
+.
+.TP
+\fB\-\-ignore\-missing\-artifacts\fR
+Comma\-separated list of workflows which can be ignored if they have not been run\.
 .
 .SS "\fBpr\-upload\fR [\fIoptions\fR]"
 Apply the bottle commit and publish bottles to Bintray or GitHub Releases\.
@@ -1796,6 +1812,18 @@ Don\'t fail if \fIformula\fR is not a PyPI package\.
 .TP
 \fB\-\-version\fR
 Use the specified \fIversion\fR when finding resources for \fIformula\fR\. If no version is specified, the current version for \fIformula\fR will be used\.
+.
+.TP
+\fB\-\-package\-name\fR
+Use the specified \fIpackage\-name\fR when finding resources for \fIformula\fR\. If no package name is specified, it will be inferred from the formula\'s stable URL\.
+.
+.TP
+\fB\-\-extra\-packages\fR
+Include these additional packages when finding resources\.
+.
+.TP
+\fB\-\-exclude\-packages\fR
+Exclude these packages when finding resources\.
 .
 .SS "\fBupdate\-test\fR [\fIoptions\fR]"
 Run a test of \fBbrew update\fR with a new repository clone\. If no options are passed, use \fBorigin/master\fR as the start commit\.

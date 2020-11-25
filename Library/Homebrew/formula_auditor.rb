@@ -1,6 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
+require "deprecate_disable"
 require "formula_text_auditor"
 require "resource_auditor"
 
@@ -324,6 +325,11 @@ module Homebrew
       end
 
       return if version_conflicts.empty?
+
+      return if formula.disabled?
+
+      return if formula.deprecated? &&
+                formula.deprecation_reason != DeprecateDisable::DEPRECATE_DISABLE_REASONS[:versioned_formula]
 
       problem <<~EOS
         #{formula.full_name} contains conflicting version recursive dependencies:

@@ -324,6 +324,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
           homepage "https://brew.sh"
 
           on_macos do
+            disable! because: :does_not_build
             depends_on "readline"
           end
 
@@ -341,6 +342,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
           homepage "https://brew.sh"
 
           on_linux do
+            deprecate! because: "it's deprecated"
             depends_on "readline"
           end
 

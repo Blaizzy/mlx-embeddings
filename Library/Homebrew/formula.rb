@@ -113,11 +113,6 @@ class Formula
   # @private
   attr_reader :stable
 
-  # @private
-  def devel
-    odisabled "Formula#devel"
-  end
-
   # The HEAD {SoftwareSpec} for this {Formula}.
   # Installed when using `brew install --HEAD`.
   # This is always installed with the version `HEAD` and taken from the latest
@@ -326,11 +321,6 @@ class Formula
   # @private
   def stable?
     active_spec == stable
-  end
-
-  # @private
-  def devel?
-    odisabled "Formula#devel?"
   end
 
   # Is the currently active {SoftwareSpec} a {#head} build?
@@ -2227,10 +2217,6 @@ class Formula
         raise "You cannot override Formula#brew in class #{name}"
       when :test
         define_method(:test_defined?) { true }
-      when :patches
-        odisabled "a Formula#patches definition", "'patch do' block calls"
-      when :options
-        odisabled "a Formula#options definition", "'option do' block calls"
       end
     end
 
@@ -2274,10 +2260,7 @@ class Formula
       if args.nil?
         @licenses
       else
-        if args.is_a? Array
-          odeprecated "`license [...]`", "`license any_of: [...]`"
-          args = { any_of: args }
-        end
+        odisabled "`license [...]`", "`license any_of: [...]`" if args.is_a? Array
         @licenses = args
       end
     end
@@ -2461,11 +2444,6 @@ class Formula
       return @stable unless block
 
       @stable.instance_eval(&block)
-    end
-
-    # @private
-    def devel
-      odisabled "'devel' blocks in formulae", "'head' blocks or @-versioned formulae"
     end
 
     # @!attribute [w] head

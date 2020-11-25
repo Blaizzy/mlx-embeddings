@@ -351,6 +351,7 @@ module Homebrew
     end
 
     # Needs a custom implementation.
+    sig { returns(String) }
     def make_jobs
       jobs = ENV["HOMEBREW_MAKE_JOBS"].to_i
       return jobs.to_s if jobs.positive?

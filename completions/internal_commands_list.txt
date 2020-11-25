@@ -68,7 +68,6 @@ pr-publish
 pr-pull
 pr-upload
 prof
-pull
 readall
 reinstall
 release-notes

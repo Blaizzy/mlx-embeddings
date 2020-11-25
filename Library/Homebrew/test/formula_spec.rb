@@ -794,21 +794,19 @@ describe Formula do
     f1 = formula "f1" do
       url "f1-1"
 
-      depends_on :java
       depends_on x11: :recommended
       depends_on xcode: ["1.0", :optional]
     end
     stub_formula_loader(f1)
 
-    java = JavaRequirement.new
     x11 = X11Requirement.new([:recommended])
     xcode = XcodeRequirement.new(["1.0", :optional])
 
-    expect(Set.new(f1.recursive_requirements)).to eq(Set[java, x11])
+    expect(Set.new(f1.recursive_requirements)).to eq(Set[x11])
 
     f1.build = BuildOptions.new(["--with-xcode", "--without-x11"], f1.options)
 
-    expect(Set.new(f1.recursive_requirements)).to eq(Set[java, xcode])
+    expect(Set.new(f1.recursive_requirements)).to eq(Set[xcode])
 
     f1.build = f1.stable.build
     f2 = formula "f2" do
@@ -817,14 +815,14 @@ describe Formula do
       depends_on "f1"
     end
 
-    expect(Set.new(f2.recursive_requirements)).to eq(Set[java, x11])
-    expect(Set.new(f2.recursive_requirements {})).to eq(Set[java, x11, xcode])
+    expect(Set.new(f2.recursive_requirements)).to eq(Set[x11])
+    expect(Set.new(f2.recursive_requirements {})).to eq(Set[x11, xcode])
 
     requirements = f2.recursive_requirements do |_dependent, requirement|
-      Requirement.prune if requirement.is_a?(JavaRequirement)
+      Requirement.prune if requirement.is_a?(X11Requirement)
     end
 
-    expect(Set.new(requirements)).to eq(Set[x11, xcode])
+    expect(Set.new(requirements)).to eq(Set[xcode])
   end
 
   specify "#to_hash" do

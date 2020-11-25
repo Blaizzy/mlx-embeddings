@@ -6,7 +6,8 @@ require "test/cask/dsl/shared_examples/staged"
 
 describe Cask::DSL::Preflight, :cask do
   let(:cask) { Cask::CaskLoader.load(cask_path("basic-cask")) }
-  let(:dsl) { described_class.new(cask, FakeSystemCommand) }
+  let(:fake_system_command) { class_double(SystemCommand) }
+  let(:dsl) { described_class.new(cask, fake_system_command) }
 
   it_behaves_like Cask::DSL::Base
 
