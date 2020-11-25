@@ -6,7 +6,7 @@ HOMEBREW_TAP_FORMULA_REGEX = %r{^([\w-]+)/([\w-]+)/([\w+-.@]+)$}.freeze
 # Match taps' casks, e.g. `someuser/sometap/somecask`
 HOMEBREW_TAP_CASK_REGEX = %r{^([\w-]+)/([\w-]+)/([a-z0-9\-]+)$}.freeze
 # Match taps' directory paths, e.g. `HOMEBREW_LIBRARY/Taps/someuser/sometap`
-HOMEBREW_TAP_DIR_REGEX = %r{#{Regexp.escape(HOMEBREW_LIBRARY)}/Taps/(?<user>[\w-]+)/(?<repo>[\w-]+)}.freeze
+HOMEBREW_TAP_DIR_REGEX = %r{#{Regexp.escape(HOMEBREW_LIBRARY.to_s)}/Taps/(?<user>[\w-]+)/(?<repo>[\w-]+)}.freeze
 # Match taps' formula paths, e.g. `HOMEBREW_LIBRARY/Taps/someuser/sometap/someformula`
 HOMEBREW_TAP_PATH_REGEX = Regexp.new(HOMEBREW_TAP_DIR_REGEX.source + %r{(?:/.*)?$}.source).freeze
 # Match official taps' casks, e.g. `homebrew/cask/somecask or homebrew/cask-versions/somecask`

@@ -1,6 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "exceptions"
 require "hardware"
 require "version"
 
@@ -10,8 +11,10 @@ module OS
     #
     # @api private
     class Version < ::Version
+      extend T::Sig
+
       SYMBOLS = {
-        big_sur:     "11.0",
+        big_sur:     "11",
         catalina:    "10.15",
         mojave:      "10.14",
         high_sierra: "10.13",
@@ -20,35 +23,52 @@ module OS
         yosemite:    "10.10",
       }.freeze
 
+      sig { params(sym: Symbol).returns(T.attached_class) }
       def self.from_symbol(sym)
         str = SYMBOLS.fetch(sym) { raise MacOSVersionError, sym }
         new(str)
       end
 
+      sig { params(value: T.nilable(String)).void }
       def initialize(value)
-        super(value)
+        raise MacOSVersionError, value unless /\A1\d+(?:\.\d+){0,2}\Z/.match?(value)
 
-        raise MacOSVersionError, value unless value.match?(/\A1\d+(?:\.\d+){0,2}\Z/)
+        super(value)
 
         @comparison_cache = {}
       end
 
       def <=>(other)
         @comparison_cache.fetch(other) do
-          v = SYMBOLS.fetch(other) { other.to_s }
-          @comparison_cache[other] = super(::Version.new(v))
+          if SYMBOLS.key?(other) && to_sym == other
+            0
+          else
+            v = SYMBOLS.fetch(other) { other.to_s }
+            @comparison_cache[other] = super(::Version.new(v))
+          end
         end
       end
 
+      sig { returns(Symbol) }
       def to_sym
-        SYMBOLS.invert.fetch(@version, :dunno)
+        @to_sym ||= begin
+          # Big Sur is 11.x but Catalina is 10.15.
+          major_macos = if major >= 11
+            major
+          else
+            major_minor
+          end.to_s
+          SYMBOLS.invert.fetch(major_macos, :dunno)
+        end
       end
 
+      sig { returns(String) }
       def pretty_name
-        to_sym.to_s.split("_").map(&:capitalize).join(" ")
+        @pretty_name ||= to_sym.to_s.split("_").map(&:capitalize).join(" ").freeze
       end
 
       # For {OS::Mac::Version} compatibility.
+      sig { returns(T::Boolean) }
       def requires_nehalem_cpu?
         unless Hardware::CPU.intel?
           raise "Unexpected architecture: #{Hardware::CPU.arch}. This only works with Intel architecture."

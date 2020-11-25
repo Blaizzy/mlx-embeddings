@@ -25,7 +25,7 @@ module OS
     # This can be compared to numerics, strings, or symbols
     # using the standard Ruby Comparable methods.
     def version
-      @version ||= Version.new(full_version.to_s[/^\d+\.\d+/])
+      @version ||= Version.from_symbol(full_version.to_sym)
     end
 
     # This can be compared to numerics, strings, or symbols
@@ -39,9 +39,16 @@ module OS
       @version = nil
     end
 
+    sig { returns(::Version) }
     def latest_sdk_version
       # TODO: bump version when new Xcode macOS SDK is released
-      Version.new "11.0"
+      ::Version.new("11.0")
+    end
+    private :latest_sdk_version
+
+    sig { returns(::Version) }
+    def sdk_version
+      full_version.major_minor
     end
 
     def outdated_release?
@@ -55,7 +62,7 @@ module OS
       # TODO: bump version when new macOS is released or announced
       # and also update references in docs/Installation.md and
       # https://github.com/Homebrew/install/blob/HEAD/install.sh
-      version >= "12.0"
+      version >= "12"
     end
 
     def languages

@@ -7,7 +7,7 @@ module Stdenv
   undef homebrew_extra_pkg_config_paths, x11
 
   def homebrew_extra_pkg_config_paths
-    ["#{HOMEBREW_LIBRARY}/Homebrew/os/mac/pkgconfig/#{MacOS.version}"]
+    ["#{HOMEBREW_LIBRARY}/Homebrew/os/mac/pkgconfig/#{MacOS.sdk_version}"]
   end
 
   def x11

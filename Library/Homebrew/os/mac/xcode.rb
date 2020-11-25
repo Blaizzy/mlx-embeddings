@@ -22,7 +22,7 @@ module OS
       def latest_version
         latest_stable = "12.2"
         case MacOS.version
-        when /^11\./ then latest_stable
+        when "11" then latest_stable
         when "10.15" then "12.2"
         when "10.14" then "11.3.1"
         when "10.13" then "10.1"
@@ -45,7 +45,7 @@ module OS
       sig { returns(String) }
       def minimum_version
         case MacOS.version
-        when /^11\./ then "12.2"
+        when "11" then "12.2"
         when "10.15" then "11.0"
         when "10.14" then "10.2"
         when "10.13" then "9.0"
@@ -54,28 +54,33 @@ module OS
         end
       end
 
+      sig { returns(T::Boolean) }
       def below_minimum_version?
         return false unless installed?
 
         version < minimum_version
       end
 
+      sig { returns(T::Boolean) }
       def latest_sdk_version?
-        OS::Mac.version >= OS::Mac.latest_sdk_version
+        OS::Mac.full_version >= OS::Mac.latest_sdk_version
       end
 
+      sig { returns(T::Boolean) }
       def needs_clt_installed?
         return false if latest_sdk_version?
 
         without_clt?
       end
 
+      sig { returns(T::Boolean) }
       def outdated?
         return false unless installed?
 
         version < latest_version
       end
 
+      sig { returns(T::Boolean) }
       def without_clt?
         !MacOS::CLT.installed?
       end
@@ -275,7 +280,7 @@ module OS
       sig { returns(String) }
       def latest_clang_version
         case MacOS.version
-        when /^11\./, "10.15" then "1200.0.32.27"
+        when "11", "10.15" then "1200.0.32.27"
         when "10.14" then "1100.0.33.17"
         when "10.13" then "1000.10.44.2"
         when "10.12" then "900.0.39.2"
@@ -291,7 +296,7 @@ module OS
       sig { returns(String) }
       def minimum_version
         case MacOS.version
-        when /^11\./ then "12.0.0"
+        when "11" then "12.0.0"
         when "10.15" then "11.0.0"
         when "10.14" then "10.0.0"
         when "10.13" then "9.0.0"
