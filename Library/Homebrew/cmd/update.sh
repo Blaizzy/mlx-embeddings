@@ -383,9 +383,7 @@ EOS
       ! -x "$HOMEBREW_PREFIX/opt/git/bin/git" ]]
   then
     ohai "Installing Homebrew Git"
-    [[ -d "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core" ]] && brew install git
-    unset GIT_EXECUTABLE
-    if ! git --version &>/dev/null
+    if [[ -d "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core" ]] && ! brew install git
     then
       odie "Git must be installed and in your PATH!"
     fi
