@@ -51,7 +51,15 @@ module OS
 
       sig { returns(Symbol) }
       def to_sym
-        @to_sym ||= SYMBOLS.invert.fetch((major >= 11 ? major : major_minor).to_s, :dunno)
+        @to_sym ||= begin
+          # Big Sur is 11.x but Catalina is 10.15.
+          major_macos = if major >= 11
+            major
+          else
+            major_minor
+          end.to_s
+          SYMBOLS.invert.fetch(major_macos, :dunno)
+        end
       end
 
       sig { returns(String) }
