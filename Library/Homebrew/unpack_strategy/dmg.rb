@@ -39,14 +39,25 @@ module UnpackStrategy
         end
 
         def bom
-          # rubocop:disable Style/AsciiComments
-          # We need to use `find` here instead of Ruby in order to properly handle
-          # file names containing special characters, such as “e” + “´” vs. “é”.
-          # rubocop:enable Style/AsciiComments
-          result = system_command("find", args: [".", "-print0"], chdir: self, print_stderr: false)
+          tries = 0
+          result = loop do
+            # rubocop:disable Style/AsciiComments
+            # We need to use `find` here instead of Ruby in order to properly handle
+            # file names containing special characters, such as “e” + “´” vs. “é”.
+            # rubocop:enable Style/AsciiComments
+            r = system_command("find", args: [".", "-print0"], chdir: self, print_stderr: false)
+            tries += 1
 
-          odebug "BOM `find` exit code: #{result.exit_status}"
-          odebug "BOM `find` output:", result.merged_output
+            odebug "BOM `find` output (try #{tries}):", r.merged_output
+
+            break r unless r.stderr.match?(/Interrupted system call/i)
+
+            raise "BOM `find` was interrupted." if tries >= 3
+
+            odebug "BOM `find` failed due to interrupt, retrying..."
+          end
+
+          raise "BOM `find` took #{tries} tries." if tries > 1
 
           result
             .stdout
