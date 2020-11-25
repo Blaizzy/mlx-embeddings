@@ -368,10 +368,11 @@ user account:
 EOS
   fi
 
+  # we may want to use a Homebrew curl
   if [[ -n "$HOMEBREW_FORCE_BREWED_CURL" &&
       ! -x "$HOMEBREW_PREFIX/opt/curl/bin/curl" ]]
   then
-    ohai "Installing Homebrew cURL"
+    # we cannot install a Homebrew cURL if homebrew/core is unavailable.
     if [[ -d "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core" ]] && ! brew install curl
     then
       odie "Curl must be installed and in your PATH!"
@@ -382,7 +383,7 @@ EOS
      [[ -n "$HOMEBREW_FORCE_BREWED_GIT" &&
       ! -x "$HOMEBREW_PREFIX/opt/git/bin/git" ]]
   then
-    ohai "Installing Homebrew Git"
+    # we cannot install a Homebrew Git if homebrew/core is unavailable.
     if [[ -d "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core" ]] && ! brew install git
     then
       odie "Git must be installed and in your PATH!"
