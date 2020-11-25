@@ -22,7 +22,7 @@ module Homebrew
         If <formula> is provided, summarise the paths within its current keg.
       EOS
       switch "--formula", "--formulae",
-             description: "List only formulae. This is the default when output is not to a terminal."
+             description: "List only formulae."
       switch "--cask", "--casks",
              description: "List only casks, or <cask> if provided."
       switch "--unbrewed",
