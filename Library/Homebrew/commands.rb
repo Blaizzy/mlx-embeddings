@@ -100,8 +100,11 @@ module Commands
     cmds.sort
   end
 
-  def internal_commands_paths
-    find_commands HOMEBREW_CMD_PATH
+  def internal_commands_paths(cask: true)
+    cmds = find_commands HOMEBREW_CMD_PATH
+    # can be removed when cask commands are removed and no longer odeprecated/odisabled
+    cmds.delete(HOMEBREW_CMD_PATH/"cask.rb") unless cask
+    cmds
   end
 
   def internal_developer_commands_paths

@@ -61,6 +61,7 @@ module Cask
       Cmd::Doctor    => "brew doctor --verbose",
       Cmd::Edit      => "brew edit [--cask]",
       Cmd::Fetch     => "brew fetch [--cask]",
+      Cmd::Help      => "brew help",
       Cmd::Home      => "brew home",
       Cmd::Info      => "brew info [--cask]",
       Cmd::Install   => "brew install [--cask]",
@@ -73,26 +74,6 @@ module Cask
       Cmd::Zap       => "brew upgrade --zap [--cask]",
     }.freeze
 
-    sig { returns(String) }
-    def self.description
-      max_command_length = Cmd.commands.map(&:length).max
-
-      command_lines = Cmd.command_classes
-                         .select(&:visible?)
-                         .reject { |command| DEPRECATED_COMMANDS.key?(command) }
-                         .map do |klass|
-        "  - #{"`#{klass.command_name}`".ljust(max_command_length + 2)}  #{klass.short_description}\n"
-      end
-
-      <<~EOS
-        Homebrew Cask provides a friendly CLI workflow for the administration of macOS applications distributed as binaries.
-
-        Commands:
-        #{command_lines.join}
-        See also: `man brew`
-      EOS
-    end
-
     def self.parser(&block)
       Homebrew::CLI::Parser.new do
         if block
@@ -101,7 +82,9 @@ module Cask
           usage_banner <<~EOS
             `cask` <command> [<options>] [<cask>]
 
-            #{Cmd.description}
+            Homebrew Cask provides a friendly CLI workflow for the administration of macOS applications distributed as binaries.
+
+            See also: `man brew`
           EOS
         end
 

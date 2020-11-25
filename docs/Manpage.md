@@ -65,17 +65,6 @@ Uninstall formulae that were only installed as a dependency of another formula a
 * `-n`, `--dry-run`:
   List what would be uninstalled, but do not actually uninstall anything.
 
-### `cask` *`command`* [*`options`*] [*`cask`*]
-
-Homebrew Cask provides a friendly CLI workflow for the administration of macOS applications distributed as binaries.
-
-Commands:
-
-- `help`
-  <br>Print help for `cask` commands.
-
-See also: `man brew`
-
 ### `cleanup` [*`options`*] [*`formula`*|*`cask`*]
 
 Remove stale lock files and outdated downloads for all formulae and casks,
