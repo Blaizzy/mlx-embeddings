@@ -419,9 +419,10 @@ module Homebrew
             )
             if args.ignore_missing_artifacts.present? &&
                args.ignore_missing_artifacts.include?(workflow) &&
-               workflow_run.empty?
+               workflow_run.first.blank?
               # Ignore that workflow as it was not executed and we specified
               # that we could skip it.
+              ohai "Ignoring workflow #{workflow} as requested by --ignore-missing-artifacts"
               next
             end
 
