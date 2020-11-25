@@ -350,13 +350,10 @@ else
   curl_name_and_version="${curl_version_output%% (*}"
   if [[ $(numeric "${curl_name_and_version##* }") -lt $(numeric "$HOMEBREW_MINIMUM_CURL_VERSION") ]]
   then
-      message="Your cURL version is too old.
-Minimum required version: ${HOMEBREW_MINIMUM_CURL_VERSION}
+      message="Please update your system cURL.
+Minimum required version: ${HOMEBREW_MINIMUM_CURL_VERSION}.
 Your cURL version: ${curl_name_and_version##* }
-Your cURL executable: $(type -p $HOMEBREW_CURL)
-To point Homebrew to cURL ${HOMEBREW_MINIMUM_CURL_VERSION} or newer,
-enable developer mode by setting HOMEBREW_DEVELOPER to 1,
-then set HOMEBREW_CURL_PATH to the location of cURL executable."
+Your cURL executable: $(type -p $HOMEBREW_CURL)"
 
     if [[ -z $HOMEBREW_CURL_PATH || -z $HOMEBREW_DEVELOPER ]]; then
       HOMEBREW_SYSTEM_CURL_TOO_OLD=1
