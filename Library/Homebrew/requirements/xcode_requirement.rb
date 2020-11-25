@@ -20,6 +20,7 @@ class XcodeRequirement < Requirement
     super(tags)
   end
 
+  sig { returns(T::Boolean) }
   def xcode_installed_version
     return false unless MacOS::Xcode.installed?
     return true unless @version
