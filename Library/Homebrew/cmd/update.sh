@@ -368,12 +368,14 @@ user account:
 EOS
   fi
 
-  set -e
   if [[ -n "$HOMEBREW_FORCE_BREWED_CURL" &&
       ! -x "$HOMEBREW_PREFIX/opt/curl/bin/curl" ]]
   then
     ohai "Installing Homebrew cURL"
-    brew install curl
+    if [[ -d "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core" ]] && ! brew install curl
+    then
+      odie "Curl must be installed and in your PATH!"
+    fi
   fi
 
   if ! git --version &>/dev/null ||
@@ -381,14 +383,14 @@ EOS
       ! -x "$HOMEBREW_PREFIX/opt/git/bin/git" ]]
   then
     ohai "Installing Homebrew Git"
-    brew install git
+    [[ -d "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core" ]] && brew install git
     unset GIT_EXECUTABLE
     if ! git --version &>/dev/null
     then
       odie "Git must be installed and in your PATH!"
     fi
   fi
-  set +e
+
   export GIT_TERMINAL_PROMPT="0"
   export GIT_SSH_COMMAND="ssh -oBatchMode=yes"
 
