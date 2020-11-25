@@ -1004,17 +1004,6 @@ Build bottles for these formulae with GitHub Actions.
 * `--upload`:
   Upload built bottles to Bintray.
 
-### `diy` [*`options`*]
-
-Automatically determine the installation prefix for non-Homebrew software.
-Using the output from this command, you can install your own software into
-the Cellar and then link it into Homebrew's prefix with `brew link`.
-
-* `--name`:
-  Explicitly set the *`name`* of the package being installed.
-* `--version`:
-  Explicitly set the *`version`* of the package being installed.
-
 ### `edit` [*`formula`*|*`cask`*]
 
 Open a *`formula`* or *`cask`* in the editor set by `EDITOR` or `HOMEBREW_EDITOR`,
@@ -1097,6 +1086,17 @@ Generate Homebrew's manpages.
   Return a failing status code if changes are detected in the manpage outputs. This can be used to notify CI when the manpages are out of date. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date).
 * `--link`:
   This is now done automatically by `brew update`.
+
+### `mirror` *`formula`*
+
+Reupload the stable URL of a formula to Bintray for use as a mirror.
+
+* `--bintray-org`:
+  Upload to the specified Bintray organisation (default: `homebrew`).
+* `--bintray-repo`:
+  Upload to the specified Bintray repository (default: `mirror`).
+* `--no-publish`:
+  Upload to Bintray, but don't publish.
 
 ### `pr-automerge` [*`options`*]
 

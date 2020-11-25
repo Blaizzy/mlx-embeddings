@@ -7,8 +7,7 @@ module Homebrew
 
     def args
       unless @printed_args_warning
-        odeprecated "Homebrew.args", "`args = <command>_args.parse` and pass `args` along the call chain"
-        @printed_args_warning = true
+        odisabled "Homebrew.args", "`args = <command>_args.parse` and pass `args` along the call chain"
       end
 
       @args ||= CLI::Args.new

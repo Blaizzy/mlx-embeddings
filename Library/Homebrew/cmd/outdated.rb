@@ -50,16 +50,7 @@ module Homebrew
 
     case (j = json_version(args.json))
     when :v1, :default
-      odeprecated "brew outdated --json#{j == :v1 ? "=v1" : ""}", "brew outdated --json=v2"
-
-      outdated = if args.formula? || !args.cask?
-        outdated_formulae args: args
-      else
-        outdated_casks args: args
-      end
-
-      puts JSON.generate(json_info(outdated, args: args))
-
+      odisabled "brew outdated --json#{j == :v1 ? "=v1" : ""}", "brew outdated --json=v2"
     when :v2
       formulae, casks = if args.formula?
         [outdated_formulae(args: args), []]

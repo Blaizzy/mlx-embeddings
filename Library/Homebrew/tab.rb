@@ -233,21 +233,15 @@ class Tab < OpenStruct
   end
 
   def universal?
-    odeprecated "Tab#universal?"
-    include?("universal")
+    odisabled "Tab#universal?"
   end
 
   def cxx11?
-    odeprecated "Tab#cxx11?"
-    include?("c++11")
+    odisabled "Tab#cxx11?"
   end
 
   def head?
     spec == :head
-  end
-
-  def devel?
-    odisabled "Tab#devel?"
   end
 
   def stable?
@@ -312,10 +306,6 @@ class Tab < OpenStruct
 
   def stable_version
     Version.create(versions["stable"]) if versions["stable"]
-  end
-
-  def devel_version
-    odisabled "Tab#devel_version"
   end
 
   def head_version

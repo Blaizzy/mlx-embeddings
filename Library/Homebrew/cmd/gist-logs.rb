@@ -57,16 +57,7 @@ module Homebrew
       files["00.tap.out"] = { content: tap }
     end
 
-    if GitHub.api_credentials_type == :none
-      puts <<~EOS
-        You can create a new personal access token:
-          #{GitHub::ALL_SCOPES_URL}
-        #{Utils::Shell.set_variable_in_profile("HOMEBREW_GITHUB_API_TOKEN", "your_token_here")}
-
-      EOS
-      odeprecated "`brew gist-logs` with a password", "HOMEBREW_GITHUB_API_TOKEN"
-      login!
-    end
+    odisabled "`brew gist-logs` with a password", "HOMEBREW_GITHUB_API_TOKEN" if GitHub.api_credentials_type == :none
 
     # Description formatted to work well as page title when viewing gist
     descr = if f.core_formula?
