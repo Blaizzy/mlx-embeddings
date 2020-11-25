@@ -71,7 +71,7 @@ module Cask
       Cmd::Style     => "brew style",
       Cmd::Uninstall => "brew uninstall [--cask]",
       Cmd::Upgrade   => "brew upgrade [--cask]",
-      Cmd::Zap       => "brew upgrade --zap [--cask]",
+      Cmd::Zap       => "brew uninstall --zap [--cask]",
     }.freeze
 
     def self.parser(&block)

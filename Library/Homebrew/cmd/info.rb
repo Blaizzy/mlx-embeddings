@@ -49,9 +49,9 @@ module Homebrew
              description: "Open the GitHub source page for <formula> in a browser. "\
                           "To view formula history locally: `brew log -p` <formula>"
       flag   "--json",
-             description: "Print a JSON representation of <formula>. Currently the default and only accepted "\
-                          "value for <version> is `v1`. See the docs for examples of using the JSON "\
-                          "output: <https://docs.brew.sh/Querying-Brew>"
+             description: "Print a JSON representation. Currently the default value for <version> is `v1` for "\
+                          "<formula>. For <formula> and <cask> use `v2`. See the docs for examples of using the "\
+                          "JSON output: <https://docs.brew.sh/Querying-Brew>"
       switch "--installed",
              depends_on:  "--json",
              description: "Print JSON of formulae that are currently installed."
@@ -178,6 +178,8 @@ module Homebrew
 
     json = case json_version(args.json)
     when :v1, :default
+      raise UsageError, "cannot specify --cask with --json=v1!" if args.cask?
+
       formulae = if args.all?
         Formula.sort
       elsif args.installed?
