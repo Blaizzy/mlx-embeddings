@@ -22,6 +22,9 @@ module Homebrew
              description: "Silence all non-critical errors."
       switch "--update",
              description: "Update RBI files."
+      switch "--suggest-typed",
+             description: "Try upgrading `typed` sigils.",
+             depends_on:  "--update"
       switch "--fail-if-not-changed",
              description: "Return a failing status code if all gems are up to date " \
                           "and gem definitions do not need a tapioca update."
@@ -38,6 +41,7 @@ module Homebrew
     end
   end
 
+  sig { void }
   def typecheck
     args = typecheck_args.parse
 
@@ -50,12 +54,44 @@ module Homebrew
         system "bundle", "exec", "srb", "rbi", "hidden-definitions"
         system "bundle", "exec", "srb", "rbi", "todo"
 
+        if args.suggest_typed?
+          result = system_command(
+            "bundle",
+            args:         ["exec", "--", "srb", "tc", "--suggest-typed", "--typed=strict", "--error-white-list=7022"],
+            print_stderr: false,
+          )
+
+          allowed_changes = {
+            "false" => ["true", "strict"],
+            "true"  => ["strict"],
+          }
+
+          # Workaround for `srb tc rbi suggest-typed`, which currently fails get to a converging state.
+          result.stderr.scan(/^(.*\.rb):\d+:\s+You could add `#\s*typed:\s*(.*?)`/).each do |path, new_level|
+            path = Pathname(path)
+
+            next unless path.file?
+
+            contents = path.read
+
+            next unless (match = contents.match(/\A\s*#\s*typed:\s*([^\s]+)/))
+
+            existing_level = match[1]
+
+            next unless allowed_changes.fetch(existing_level, []).include?(new_level)
+
+            puts "#{path}: #{existing_level} -> #{new_level}"
+            path.atomic_write contents.sub(/\A(\s*#\s*typed:\s*)(?:[^\s]+)/, "\\1#{new_level}")
+          end
+        end
+
         Homebrew.failed = system("git", "diff", "--stat", "--exit-code") if args.fail_if_not_changed?
 
         return
       end
 
       srb_exec = %w[bundle exec srb tc]
+      srb_exec << "--error-black-list" << "5061"
       srb_exec << "--quiet" if args.quiet?
       srb_exec << "--autocorrect" if args.fix?
       srb_exec += ["--ignore", args.ignore] if args.ignore.present?
