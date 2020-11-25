@@ -3,13 +3,9 @@
 
 source = ARGV[5]
 
-methods = if (single = source[/delegate\s+([^:]+):\s+/, 1])
-  [single]
-else
-  multiple = source[/delegate\s+\[(.*?)\]\s+=>\s+/m, 1]
-  non_comments = multiple.gsub(/\#.*$/, "")
-  non_comments.scan(/:([^:,\s]+)/).flatten
-end
+symbols = source.scan(/:[^\s,]+/)
+
+_, *methods = symbols.map { |s| s.delete_prefix(":") }
 
 methods.each do |method|
   puts <<~RUBY

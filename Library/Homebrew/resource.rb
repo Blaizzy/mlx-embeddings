@@ -12,6 +12,8 @@ require "mktemp"
 #
 # @api private
 class Resource
+  extend T::Sig
+
   include Context
   include FileUtils
 
@@ -221,8 +223,8 @@ class Resource
 
   # A resource containing a Go package.
   class Go < Resource
-    def stage(target)
-      super(target/name)
+    def stage(target, &block)
+      super(target/name, &block)
     end
   end
 

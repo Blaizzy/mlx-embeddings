@@ -4,4 +4,7 @@ ruby_extra_args:
 triggers:
   using: sorbet/plugins/using.rb
   attr_predicate: sorbet/plugins/attr_predicate.rb
+  attr_rw: sorbet/plugins/attr_rw.rb
+  def_delegator: sorbet/plugins/def_delegator.rb
+  def_delegators: sorbet/plugins/def_delegators.rb
   delegate: sorbet/plugins/delegate.rb

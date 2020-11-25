@@ -29,7 +29,9 @@ class SoftwareSpec
 
   def_delegators :@resource, :stage, :fetch, :verify_download_integrity, :source_modified_time, :download_name,
                  :cached_download, :clear_cache, :checksum, :mirrors, :specs, :using, :version, :mirror,
-                 :downloader, *Checksum::TYPES
+                 :downloader
+
+  def_delegators :@resource, *Checksum::TYPES
 
   def initialize(flags: [])
     @resource = Resource.new
