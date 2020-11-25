@@ -315,7 +315,7 @@ List all installed formulae and casks.
 If *`formula`* is provided, summarise the paths within its current keg.
 
 * `--formula`:
-  List only formulae. This is the default when output is not to a terminal.
+  List only formulae.
 * `--cask`:
   List only casks, or *`cask`* if provided.
 * `--unbrewed`:
