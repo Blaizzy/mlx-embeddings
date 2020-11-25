@@ -43,7 +43,12 @@ module UnpackStrategy
           # We need to use `find` here instead of Ruby in order to properly handle
           # file names containing special characters, such as “e” + “´” vs. “é”.
           # rubocop:enable Style/AsciiComments
-          system_command("find", args: [".", "-print0"], chdir: self, print_stderr: false)
+          result = system_command("find", args: [".", "-print0"], chdir: self, print_stderr: false)
+
+          odebug "BOM `find` exit code: #{result.exit_status}"
+          odebug "BOM `find` output:", result.merged_output
+
+          result
             .stdout
             .split("\0")
             .reject { |path| Pathname(path).dmg_metadata? }
