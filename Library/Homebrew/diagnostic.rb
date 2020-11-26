@@ -566,20 +566,30 @@ module Homebrew
         examine_git_origin(cask_tap.path, cask_tap.remote)
       end
 
-      def check_coretap_git_branch
+      sig { returns(T.nilable(String)) }
+      def check_tap_git_branch
         return if ENV["CI"]
+        return unless Utils::Git.available?
 
-        coretap_path = CoreTap.instance.path
-        return if !Utils::Git.available? || !(coretap_path/".git").exist?
+        commands = Tap.map do |tap|
+          next unless tap.path.git?
+          next if tap.path.git_origin.blank?
 
-        branch = coretap_path.git_branch
-        return if branch.blank? || branch.include?("master")
+          branch = tap.path.git_branch
+          next if branch.blank?
+
+          origin_branch = Utils::Git.origin_branch(tap.path)&.split("/")&.last
+          next if origin_branch == branch
+
+          "git -C $(brew --repo #{tap.name}) checkout #{origin_branch}"
+        end.compact
+
+        return if commands.blank?
 
         <<~EOS
-          #{CoreTap.instance.full_name} is not on the master branch.
-
-          Check out the master branch by running:
-            git -C "$(brew --repo homebrew/core)" checkout master
+          Some taps are not on the default git origin branch and may not receive
+          updates. If this is a surprise to you, check out the default branch with:
+            #{commands.join("\n  ")}
         EOS
       end
 
