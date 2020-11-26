@@ -341,7 +341,7 @@ module Homebrew
       elsif host.end_with?("git.sr.ht")
         owner, repo = path.split("/")
         url = "#{scheme}://#{host}/#{owner}/#{repo}"
-      # gitlab
+      # GitLab (gitlab.com or self-hosted)
       elsif path.include?("/-/archive/")
         url = url.sub(%r{/-/archive/.*$}i, ".git")
       end
