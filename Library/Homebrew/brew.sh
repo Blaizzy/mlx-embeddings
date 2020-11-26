@@ -377,7 +377,7 @@ Your cURL executable: $(type -p $HOMEBREW_CURL)"
   if [[ $(numeric "$major.$minor.$micro.$build") -lt $(numeric "$HOMEBREW_MINIMUM_GIT_VERSION") ]]
   then
     message="Please update your system Git.
-Minimum required version: ${HOMEBREW_MINIMUM_GIT_VERSION}.
+Minimum required version: ${HOMEBREW_MINIMUM_GIT_VERSION}
 Your Git version: $major.$minor.$micro.$build
 Your Git executable: $(unset git && type -p $HOMEBREW_GIT)"
     if [[ -z $HOMEBREW_GIT_PATH || -z $HOMEBREW_DEVELOPER ]]; then
