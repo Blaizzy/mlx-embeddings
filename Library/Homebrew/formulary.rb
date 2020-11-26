@@ -47,7 +47,6 @@ module Formulary
       mod.const_set(:BUILD_FLAGS, flags)
       mod.module_eval(contents, path)
     rescue NameError, ArgumentError, ScriptError, MethodDeprecatedError => e
-      $stderr.puts e.backtrace if Homebrew::EnvConfig.developer?
       raise FormulaUnreadableError.new(name, e)
     end
     class_name = class_s(name)
