@@ -84,6 +84,8 @@ module Homebrew
   end
 
   def bottle
+    ENV["HOMEBREW_NO_PATCHELF_RB_WRITE"] = "1" unless ENV["HOMEBREW_PATCHELF_RB_WRITE"].present?
+
     args = bottle_args.parse
 
     return merge(args: args) if args.merge?
