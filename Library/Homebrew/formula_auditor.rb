@@ -150,14 +150,6 @@ module Homebrew
       problem "Formula name conflicts with existing core formula."
     end
 
-    PROVIDED_BY_MACOS_DEPENDS_ON_ALLOWLIST = %w[
-      apr
-      apr-util
-      libressl
-      openblas
-      openssl@1.1
-    ].freeze
-
     PERMITTED_LICENSE_MISMATCHES = {
       "AGPL-3.0" => ["AGPL-3.0-only", "AGPL-3.0-or-later"],
       "GPL-2.0"  => ["GPL-2.0-only",  "GPL-2.0-or-later"],
@@ -265,7 +257,7 @@ module Homebrew
              dep_f.keg_only? &&
              dep_f.keg_only_reason.provided_by_macos? &&
              dep_f.keg_only_reason.applicable? &&
-             !PROVIDED_BY_MACOS_DEPENDS_ON_ALLOWLIST.include?(dep.name)
+             !tap_audit_exception(:provided_by_macos_depends_on_allowlist, dep.name)
             new_formula_problem(
               "Dependency '#{dep.name}' is provided by macOS; " \
               "please replace 'depends_on' with 'uses_from_macos'.",
