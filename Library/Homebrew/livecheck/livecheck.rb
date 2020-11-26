@@ -3,6 +3,7 @@
 
 require "livecheck/strategy"
 require "ruby-progressbar"
+require "uri"
 
 module Homebrew
   # The {Livecheck} module consists of methods used by the `brew livecheck`
@@ -13,18 +14,15 @@ module Homebrew
   module Livecheck
     module_function
 
-    GITHUB_SPECIAL_CASES = %w[
-      api.github.com
-      /latest
-      mednafen
-      camlp5
-      kotlin
-      osrm-backend
-      prometheus
-      pyenv-virtualenv
-      sysdig
-      shairport-sync
-      yuicompressor
+    GITEA_INSTANCES = %w[
+      codeberg.org
+      gitea.com
+      opendev.org
+      tildegit.org
+    ].freeze
+
+    GOGS_INSTANCES = %w[
+      lolg.it
     ].freeze
 
     UNSTABLE_VERSION_KEYWORDS = %w[
@@ -316,26 +314,35 @@ module Homebrew
     # Preprocesses and returns the URL used by livecheck.
     # @return [String]
     def preprocess_url(url)
-      # Check for GitHub repos on github.com, not AWS
-      url = url.sub("github.s3.amazonaws.com", "github.com") if url.include?("github")
+      begin
+        uri = URI.parse url
+      rescue URI::InvalidURIError
+        return url
+      end
 
-      # Use repo from GitHub or GitLab inferred from download URL
-      if url.include?("github.com") && GITHUB_SPECIAL_CASES.none? { |sc| url.include? sc }
-        if url.include? "archive"
-          url = url.sub(%r{/archive/.*}, ".git") if url.include? "github"
-        elsif url.include? "releases"
-          url = url.sub(%r{/releases/.*}, ".git")
-        elsif url.include? "downloads"
-          url = "#{Pathname.new(url.sub(%r{/downloads(.*)}, "\\1")).dirname}.git"
-        elsif !url.end_with?(".git")
-          # Truncate the URL at the user/repo part, if possible
-          %r{(?<github_repo_url>(?:[a-z]+://)?github.com/[^/]+/[^/#]+)} =~ url
-          url = github_repo_url if github_repo_url.present?
+      host = uri.host == "github.s3.amazonaws.com" ? "github.com" : uri.host
+      path = uri.path.delete_prefix("/").delete_suffix(".git")
+      scheme = uri.scheme
 
-          url.delete_suffix!("/") if url.end_with?("/")
-          url += ".git"
-        end
-      elsif url.include?("/-/archive/")
+      if host.end_with?("github.com")
+        return url if path.match? %r{/releases/latest/?$}
+
+        owner, repo = path.delete_prefix("downloads/").split("/")
+        url = "#{scheme}://#{host}/#{owner}/#{repo}.git"
+      elsif host.end_with?(*GITEA_INSTANCES)
+        return url if path.match? %r{/releases/latest/?$}
+
+        owner, repo = path.split("/")
+        url = "#{scheme}://#{host}/#{owner}/#{repo}.git"
+      elsif host.end_with?(*GOGS_INSTANCES)
+        owner, repo = path.split("/")
+        url = "#{scheme}://#{host}/#{owner}/#{repo}.git"
+      # sourcehut
+      elsif host.end_with?("git.sr.ht")
+        owner, repo = path.split("/")
+        url = "#{scheme}://#{host}/#{owner}/#{repo}"
+      # GitLab (gitlab.com or self-hosted)
+      elsif path.include?("/-/archive/")
         url = url.sub(%r{/-/archive/.*$}i, ".git")
       end
 
