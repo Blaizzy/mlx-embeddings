@@ -1768,6 +1768,21 @@ Typecheck a single file\.
 \fB\-\-ignore\fR
 Ignores input files that contain the given string in their paths (relative to the input path passed to Sorbet)\.
 .
+.SS "\fBunbottled\fR [\fIformula\fR]"
+Outputs the unbottled dependents of formulae\.
+.
+.TP
+\fB\-\-tag\fR
+Use the specified bottle tag (e\.g\. big_sur) instead of the current OS\.
+.
+.TP
+\fB\-\-dependents\fR
+Don\'t get analytics data and sort by number of dependents instead\.
+.
+.TP
+\fB\-\-total\fR
+Output the number of unbottled and total formulae\.
+.
 .SS "\fBunpack\fR [\fIoptions\fR] \fIformula\fR"
 Unpack the source files for \fIformula\fR into subdirectories of the current working directory\.
 .

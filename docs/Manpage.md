@@ -1278,6 +1278,17 @@ Check for typechecking errors using Sorbet.
 * `--ignore`:
   Ignores input files that contain the given string in their paths (relative to the input path passed to Sorbet).
 
+### `unbottled` [*`formula`*]
+
+Outputs the unbottled dependents of formulae.
+
+* `--tag`:
+  Use the specified bottle tag (e.g. big_sur) instead of the current OS.
+* `--dependents`:
+  Don't get analytics data and sort by number of dependents instead.
+* `--total`:
+  Output the number of unbottled and total formulae.
+
 ### `unpack` [*`options`*] *`formula`*
 
 Unpack the source files for *`formula`* into subdirectories of the current
