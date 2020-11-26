@@ -347,21 +347,6 @@ module Homebrew
       end
     end
 
-    # openssl@1.1 only needed for Linux
-    VERSIONED_KEG_ONLY_ALLOWLIST = %w[
-      autoconf@2.13
-      bash-completion@2
-      clang-format@8
-      gnupg@1.4
-      libsigc++@2
-      lua@5.1
-      numpy@1.16
-      openssl@1.1
-      python@3.8
-      python@3.9
-      cairomm@1.14
-    ].freeze
-
     def audit_versioned_keg_only
       return unless @versioned_formula
       return unless @core_tap
@@ -374,7 +359,7 @@ module Homebrew
         end
       end
 
-      return if VERSIONED_KEG_ONLY_ALLOWLIST.include?(formula.name)
+      return if tap_audit_exception :versioned_keg_only_allowlist, formula.name
       return if formula.name.start_with?("adoptopenjdk@")
       return if formula.name.start_with?("gcc@")
 

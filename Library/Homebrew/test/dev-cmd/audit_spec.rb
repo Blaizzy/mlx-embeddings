@@ -1010,7 +1010,6 @@ module Homebrew
       end
     end
 
-    # include_examples "formulae exist", described_class::VERSIONED_KEG_ONLY_ALLOWLIST
     include_examples "formulae exist", described_class::UNSTABLE_ALLOWLIST.keys
     include_examples "formulae exist", described_class::GNOME_DEVEL_ALLOWLIST.keys
   end
