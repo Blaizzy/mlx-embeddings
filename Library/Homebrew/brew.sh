@@ -357,17 +357,20 @@ else
   curl_name_and_version="${curl_version_output%% (*}"
   if [[ $(numeric "${curl_name_and_version##* }") -lt $(numeric "$HOMEBREW_MINIMUM_CURL_VERSION") ]]
   then
-    if [[ -z $HOMEBREW_CURL_PATH ]]; then
+      message="Please update your system cURL.
+Minimum required version: ${HOMEBREW_MINIMUM_CURL_VERSION}
+Your cURL version: ${curl_name_and_version##* }
+Your cURL executable: $(type -p $HOMEBREW_CURL)"
+
+    if [[ -z $HOMEBREW_CURL_PATH || -z $HOMEBREW_DEVELOPER ]]; then
       HOMEBREW_SYSTEM_CURL_TOO_OLD=1
       HOMEBREW_FORCE_BREWED_CURL=1
+      if [[ -z $HOMEBREW_CURL_WARNING ]]; then
+        onoe "$message"
+        HOMEBREW_CURL_WARNING=1
+      fi
     else
-      odie <<EOS
-The version of cURL that you provided to Homebrew using HOMEBREW_CURL_PATH is too old.
-Minimum required version: ${HOMEBREW_MINIMUM_CURL_VERSION}.
-Your cURL version: ${curl_name_and_version##* }.
-Please point Homebrew to cURL ${HOMEBREW_MINIMUM_CURL_VERSION} or newer
-or unset HOMEBREW_CURL_PATH variable.
-EOS
+      odie "$message"
     fi
   fi
 
@@ -380,16 +383,18 @@ EOS
   IFS=. read -r major minor micro build extra <<< "${git_version_output##* }"
   if [[ $(numeric "$major.$minor.$micro.$build") -lt $(numeric "$HOMEBREW_MINIMUM_GIT_VERSION") ]]
   then
-    if [[ -z $HOMEBREW_GIT_PATH ]]; then
+    message="Please update your system Git.
+Minimum required version: ${HOMEBREW_MINIMUM_GIT_VERSION}
+Your Git version: $major.$minor.$micro.$build
+Your Git executable: $(unset git && type -p $HOMEBREW_GIT)"
+    if [[ -z $HOMEBREW_GIT_PATH || -z $HOMEBREW_DEVELOPER ]]; then
       HOMEBREW_FORCE_BREWED_GIT="1"
+      if [[ -z $HOMEBREW_GIT_WARNING ]]; then
+        onoe "$message"
+        HOMEBREW_GIT_WARNING=1
+      fi
     else
-      odie <<EOS
-The version of Git that you provided to Homebrew using HOMEBREW_GIT_PATH is too old.
-Minimum required version: ${HOMEBREW_MINIMUM_GIT_VERSION}.
-Your Git version: $major.$minor.$micro.$build.
-Please point Homebrew to Git ${HOMEBREW_MINIMUM_CURL_VERSION} or newer
-or unset HOMEBREW_GIT_PATH variable.
-EOS
+      odie "$message"
     fi
   fi
 
@@ -425,8 +430,10 @@ export HOMEBREW_TEMP
 export HOMEBREW_CELLAR
 export HOMEBREW_SYSTEM
 export HOMEBREW_CURL
+export HOMEBREW_CURL_WARNING
 export HOMEBREW_SYSTEM_CURL_TOO_OLD
 export HOMEBREW_GIT
+export HOMEBREW_GIT_WARNING
 export HOMEBREW_MINIMUM_GIT_VERSION
 export HOMEBREW_PROCESSOR
 export HOMEBREW_PRODUCT
