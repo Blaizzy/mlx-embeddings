@@ -210,17 +210,6 @@ module Homebrew
       end
     end
 
-    # TODO: try to remove these, it's not a good user experience
-    VERSIONED_DEPENDENCIES_CONFLICTS_ALLOWLIST = %w[
-      agda
-      anjuta
-      fdroidserver
-      gradio
-      predictionio
-      sqoop
-      visp
-    ].freeze
-
     def audit_deps
       @specs.each do |spec|
         # Check for things we don't like to depend on.
@@ -297,7 +286,7 @@ module Homebrew
       end
 
       return unless @core_tap
-      return if VERSIONED_DEPENDENCIES_CONFLICTS_ALLOWLIST.include?(formula.name)
+      return if tap_audit_exception :versioned_dependencies_conflicts_allowlist, formula.name
 
       # The number of conflicts on Linux is absurd.
       # TODO: remove this and check these there too.
