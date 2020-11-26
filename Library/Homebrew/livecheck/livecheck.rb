@@ -314,7 +314,12 @@ module Homebrew
     # Preprocesses and returns the URL used by livecheck.
     # @return [String]
     def preprocess_url(url)
-      uri = URI.parse url
+      begin
+        uri = URI.parse url
+      rescue URI::InvalidURIError
+        return url
+      end
+
       host = uri.host == "github.s3.amazonaws.com" ? "github.com" : uri.host
       path = uri.path.delete_prefix("/").delete_suffix(".git")
       scheme = uri.scheme
