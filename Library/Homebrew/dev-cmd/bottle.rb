@@ -22,7 +22,9 @@ BOTTLE_ERB = <<-EOS
     <% end %>
     <% if cellar.is_a? Symbol %>
     cellar :<%= cellar %>
-    <% elsif ![Homebrew::DEFAULT_CELLAR, "/usr/local/Cellar"].include?(cellar) %>
+    <% elsif ![Homebrew::DEFAULT_MACOS_CELLAR,
+               Homebrew::DEFAULT_MACOS_ARM_CELLAR,
+               Homebrew::DEFAULT_LINUX_CELLAR].include?(cellar) %>
     cellar "<%= cellar %>"
     <% end %>
     <% if rebuild.positive? %>
