@@ -366,14 +366,6 @@ module Homebrew
       problem "Versioned formulae in homebrew/core should use `keg_only :versioned_formula`"
     end
 
-    CERT_ERROR_ALLOWLIST = {
-      "hashcat"     => "https://hashcat.net/hashcat/",
-      "jinx"        => "https://www.jinx-lang.org/",
-      "lmod"        => "https://www.tacc.utexas.edu/research-development/tacc-projects/lmod",
-      "micropython" => "https://www.micropython.org/",
-      "monero"      => "https://www.getmonero.org/",
-    }.freeze
-
     def audit_homepage
       homepage = formula.homepage
 
@@ -381,7 +373,7 @@ module Homebrew
 
       return unless @online
 
-      return if CERT_ERROR_ALLOWLIST[formula.name] == homepage
+      return if tap_audit_exception :cert_error_allowlist, formula.name, homepage
 
       return unless DevelopmentTools.curl_handles_most_https_certificates?
 
