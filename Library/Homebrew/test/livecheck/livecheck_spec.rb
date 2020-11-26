@@ -200,5 +200,30 @@ describe Homebrew::Livecheck do
       expect(livecheck.preprocess_url("https://brew.sh/Homebrew/brew/-/archive/1.0.0/brew-1.0.0.tar.gz"))
         .to eq("https://brew.sh/Homebrew/brew.git")
     end
+
+    it "returns the Git repository URL for a Codeberg archive URL" do
+      expect(livecheck.preprocess_url("https://codeberg.org/Homebrew/brew/archive/brew-1.0.0.tar.gz"))
+        .to eq("https://codeberg.org/Homebrew/brew.git")
+    end
+
+    it "returns the Git repository URL for a Gitea archive URL" do
+      expect(livecheck.preprocess_url("https://gitea.com/Homebrew/brew/archive/brew-1.0.0.tar.gz"))
+        .to eq("https://gitea.com/Homebrew/brew.git")
+    end
+
+    it "returns the Git repository URL for an Opendev archive URL" do
+      expect(livecheck.preprocess_url("https://opendev.org/Homebrew/brew/archive/brew-1.0.0.tar.gz"))
+        .to eq("https://opendev.org/Homebrew/brew.git")
+    end
+
+    it "returns the Git repository URL for a tildegit archive URL" do
+      expect(livecheck.preprocess_url("https://tildegit.org/Homebrew/brew/archive/brew-1.0.0.tar.gz"))
+        .to eq("https://tildegit.org/Homebrew/brew.git")
+    end
+
+    it "returns the Git repository URL for a LOL Git archive URL" do
+      expect(livecheck.preprocess_url("https://lolg.it/Homebrew/brew/archive/brew-1.0.0.tar.gz"))
+        .to eq("https://lolg.it/Homebrew/brew.git")
+    end
   end
 end
