@@ -87,6 +87,7 @@ tc
 test
 tests
 typecheck
+unbottled
 uninstal
 uninstall
 unlink
