@@ -477,24 +477,6 @@ module Homebrew
       [user, repo]
     end
 
-    UNSTABLE_ALLOWLIST = {
-      "aalib"           => "1.4rc",
-      "automysqlbackup" => "3.0-rc",
-      "aview"           => "1.3.0rc",
-      "elm-format"      => "0.6.0-alpha",
-      "ftgl"            => "2.1.3-rc",
-      "hidapi"          => "0.8.0-rc",
-      "libcaca"         => "0.99b",
-      "premake"         => "4.4-beta",
-      "pwnat"           => "0.3-beta",
-      "recode"          => "3.7-beta",
-      "speexdsp"        => "1.2rc",
-      "sqoop"           => "1.4.",
-      "tcptraceroute"   => "1.5beta",
-      "tiny-fugue"      => "5.0b",
-      "vbindiff"        => "3.0_beta",
-    }.freeze
-
     # Used for formulae that are unstable but need CI run without being in homebrew/core
     UNSTABLE_DEVEL_ALLOWLIST = {
     }.freeze
@@ -570,7 +552,7 @@ module Homebrew
       when /[\d._-](alpha|beta|rc\d)/
         matched = Regexp.last_match(1)
         version_prefix = stable_version_string.sub(/\d+$/, "")
-        return if UNSTABLE_ALLOWLIST[formula.name] == version_prefix
+        return if tap_audit_exception :unstable_allowlist, formula.name, version_prefix
         return if UNSTABLE_DEVEL_ALLOWLIST[formula.name] == version_prefix
 
         problem "Stable version URLs should not contain #{matched}"
