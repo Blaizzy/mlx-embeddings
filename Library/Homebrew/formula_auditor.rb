@@ -477,14 +477,6 @@ module Homebrew
       [user, repo]
     end
 
-    GNOME_DEVEL_ALLOWLIST = {
-      "libart"              => "2.3",
-      "gtk-mac-integration" => "2.1",
-      "gtk-doc"             => "1.31",
-      "gcab"                => "1.3",
-      "libepoxy"            => "1.5",
-    }.freeze
-
     def audit_specs
       problem "Head-only (no stable download)" if head_only?(formula)
 
@@ -554,7 +546,7 @@ module Homebrew
         problem "Stable version URLs should not contain #{matched}"
       when %r{download\.gnome\.org/sources}, %r{ftp\.gnome\.org/pub/GNOME/sources}i
         version_prefix = stable.version.major_minor
-        return if GNOME_DEVEL_ALLOWLIST[formula.name] == version_prefix
+        return if tap_audit_exception :gnome_devel_allowlist, formula.name, version_prefix
         return if stable_url_version < Version.create("1.0")
         return if stable_url_minor_version.even?
 
