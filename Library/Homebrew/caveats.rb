@@ -26,9 +26,20 @@ class Caveats
       f.build = build
     end
     caveats << keg_only_text
-    caveats << function_completion_caveats(:bash)
-    caveats << function_completion_caveats(:zsh)
-    caveats << function_completion_caveats(:fish)
+
+    valid_shells = [:bash, :zsh, :fish].freeze
+    current_shell = Utils::Shell.preferred || Utils::Shell.parent
+    shells = if current_shell.present? &&
+                (shell_sym = current_shell.to_sym) &&
+                valid_shells.include?(shell_sym)
+      [shell_sym]
+    else
+      valid_shells
+    end
+    shells.each do |shell|
+      caveats << function_completion_caveats(shell)
+    end
+
     caveats << plist_caveats
     caveats << elisp_caveats
     caveats.compact.join("\n")
@@ -117,10 +128,20 @@ class Caveats
           #{root_dir}/etc/bash_completion.d
       EOS
     when :zsh
-      <<~EOS
+      site_functions = root_dir/"share/zsh/site-functions"
+      zsh_caveats = +<<~EOS
         zsh #{installed.join(" and ")} have been installed to:
-          #{root_dir}/share/zsh/site-functions
+          #{site_functions}
       EOS
+      unless PATH.new(ENV["HOMEBREW_FPATH"]).to_a.include?(site_functions.to_s)
+        zsh_caveats << <<~EOS
+
+          #{site_functions} is not in your zsh FPATH!
+          Add it by following these steps:
+            #{Formatter.url("https://docs.brew.sh/Shell-Completion#configuring-completions-in-zsh")}
+        EOS
+      end
+      zsh_caveats.freeze
     when :fish
       fish_caveats = +"fish #{installed.join(" and ")} have been installed to:"
       fish_caveats << "\n  #{root_dir}/share/fish/vendor_completions.d" if completion_installed

@@ -188,6 +188,8 @@ describe Caveats do
       before do
         allow_any_instance_of(Pathname).to receive(:children).and_return([Pathname.new("child")])
         allow_any_instance_of(Object).to receive(:which).with(any_args).and_return(Pathname.new("shell"))
+        allow(Utils::Shell).to receive(:preferred).and_return(nil)
+        allow(Utils::Shell).to receive(:parent).and_return(nil)
       end
 
       it "gives dir where bash completions have been installed" do
