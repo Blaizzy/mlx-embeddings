@@ -324,21 +324,21 @@ module Homebrew
       path = uri.path.delete_prefix("/").delete_suffix(".git")
       scheme = uri.scheme
 
-      if host == "github.com"
+      if host.end_with?("github.com")
         return url if path.match? %r{/releases/latest/?$}
 
         owner, repo = path.delete_prefix("downloads/").split("/")
         url = "#{scheme}://#{host}/#{owner}/#{repo}.git"
-      elsif GITEA_INSTANCES.include? host
+      elsif host.end_with?(*GITEA_INSTANCES)
         return url if path.match? %r{/releases/latest/?$}
 
         owner, repo = path.split("/")
         url = "#{scheme}://#{host}/#{owner}/#{repo}.git"
-      elsif GOGS_INSTANCES.include? host
+      elsif host.end_with?(*GOGS_INSTANCES)
         owner, repo = path.split("/")
         url = "#{scheme}://#{host}/#{owner}/#{repo}.git"
       # sourcehut
-      elsif host == "git.sr.ht"
+      elsif host.end_with?("git.sr.ht")
         owner, repo = path.split("/")
         url = "#{scheme}://#{host}/#{owner}/#{repo}"
       # gitlab
