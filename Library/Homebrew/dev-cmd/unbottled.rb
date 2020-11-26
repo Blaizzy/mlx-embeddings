@@ -86,6 +86,13 @@ module Homebrew
 
       ohai "Getting analytics data..."
       analytics = Utils::Analytics.formulae_brew_sh_json("analytics/install/90d.json")
+
+      if analytics.blank?
+        raise UsageError,
+              "default sort by analytics data requires " \
+              "`HOMEBREW_NO_GITHUB_API` and `HOMEBREW_NO_ANALYTICS` to be unset"
+      end
+
       formulae = analytics["items"].map do |i|
         f = i["formula"].split.first
         next if f.include?("/")
