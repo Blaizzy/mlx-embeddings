@@ -28,16 +28,21 @@ module UnpackStrategy
       private_constant :DMG_METADATA
 
       refine Pathname do
+        extend T::Sig
+
         # Check if path is considered disk image metadata.
+        sig { returns(T::Boolean) }
         def dmg_metadata?
           DMG_METADATA.include?(cleanpath.ascend.to_a.last.to_s)
         end
 
         # Check if path is a symlink to a system directory (commonly to /Applications).
+        sig { returns(T::Boolean) }
         def system_dir_symlink?
           symlink? && MacOS.system_dir?(dirname.join(readlink))
         end
 
+        sig { returns(String) }
         def bom
           tries = 0
           result = loop do
@@ -48,20 +53,19 @@ module UnpackStrategy
             r = system_command("find", args: [".", "-print0"], chdir: self, print_stderr: false)
             tries += 1
 
-            odebug "BOM `find` output (try #{tries}):", r.merged_output
-
+            # Spurious bug on CI, which in most cases can be worked around by retrying.
             break r unless r.stderr.match?(/Interrupted system call/i)
 
-            raise "BOM `find` was interrupted." if tries >= 3
-
-            odebug "BOM `find` failed due to interrupt, retrying..."
+            raise "Command `#{r.command.shelljoin}` was interrupted." if tries >= 3
           end
 
-          raise "BOM `find` took #{tries} tries." if tries > 1
+          odebug "Command `#{result.command.shelljoin}` in '#{self}' took #{tries} tries." if tries > 1
 
-          result
-            .stdout
-            .split("\0")
+          bom_paths = result.stdout.split("\0")
+
+          raise "BOM for path '#{self}' is empty." if bom_paths.empty?
+
+          bom_paths
             .reject { |path| Pathname(path).dmg_metadata? }
             .reject { |path| (self/path).system_dir_symlink? }
             .join("\n")
@@ -107,10 +111,8 @@ module UnpackStrategy
         Tempfile.open(["", ".bom"]) do |bomfile|
           bomfile.close
 
-          bom = path.bom
-
           Tempfile.open(["", ".list"]) do |filelist|
-            filelist.puts(bom)
+            filelist.puts(path.bom)
             filelist.close
 
             system_command! "mkbom",
@@ -118,23 +120,9 @@ module UnpackStrategy
                             verbose: verbose
           end
 
-          result = system_command! "ditto",
-                                   args:    ["--bom", bomfile.path, "--", path, unpack_dir],
-                                   verbose: verbose
-
-          if result.stderr.include?("contains no files, nothing copied")
-            all_paths_find = system_command("find", args: [".", "-print0"], chdir: path, print_stderr: false)
-                             .stdout
-                             .split("\0")
-
-            all_paths_ruby = Pathname.glob(path/"**/*", File::FNM_DOTMATCH)
-                                     .map { |p| p.relative_path_from(path).to_s }
-
-            odebug "BOM contents:", bom
-            odebug "BOM contents (retry):", path.bom
-            odebug "Directory contents (find):", all_paths_find.join("\n")
-            odebug "Directory contents (Ruby):", all_paths_ruby.join("\n")
-          end
+          system_command! "ditto",
+                          args:    ["--bom", bomfile.path, "--", path, unpack_dir],
+                          verbose: verbose
 
           FileUtils.chmod "u+w", Pathname.glob(unpack_dir/"**/*", File::FNM_DOTMATCH).reject(&:symlink?)
         end
