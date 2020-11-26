@@ -101,7 +101,7 @@ module ELFShim
   def patch!(interpreter: nil, rpath: nil)
     return if interpreter.blank? && rpath.blank?
 
-    if HOMEBREW_PATCHELF_RB_WRITE && ENV["HOMEBREW_NO_PATCHELF_RB_WRITE"].blank?
+    if HOMEBREW_PATCHELF_RB_WRITE
       save_using_patchelf_rb interpreter, rpath
     else
       save_using_patchelf interpreter, rpath
