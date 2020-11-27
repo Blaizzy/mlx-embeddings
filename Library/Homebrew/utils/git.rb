@@ -4,6 +4,7 @@
 module Utils
   # Helper functions for querying Git information.
   #
+  # @see GitRepositoryExtension
   # @api private
   module Git
     module_function
