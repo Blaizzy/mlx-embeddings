@@ -69,8 +69,9 @@ module Hardware
         end
       end
 
+      # Supported CPU instructions
       def flags
-        @flags ||= cpuinfo[/^(flags|Features).*/, 0]&.split
+        @flags ||= cpuinfo[/^(?:flags|Features)\s*: (.*)/, 1]&.split
         @flags ||= []
       end
 
