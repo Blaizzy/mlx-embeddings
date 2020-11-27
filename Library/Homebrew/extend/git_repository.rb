@@ -63,6 +63,21 @@ module GitRepositoryExtension
     Utils.popen_read("git", "rev-parse", "--abbrev-ref", "HEAD", chdir: self).chomp.presence
   end
 
+  # Gets the name of the default origin HEAD branch.
+  sig { returns(T.nilable(String)) }
+  def git_origin_branch
+    return unless git? && Utils::Git.available?
+
+    Utils.popen_read("git", "symbolic-ref", "-q", "--short", "refs/remotes/origin/HEAD", chdir: self)
+         .chomp.presence&.split("/")&.last
+  end
+
+  # Returns true if the repository's current branch matches the default origin branch.
+  sig { returns(T.nilable(T::Boolean)) }
+  def git_default_origin_branch?
+    git_origin_branch == git_branch
+  end
+
   # Returns the date of the last commit, in YYYY-MM-DD format.
   sig { returns(T.nilable(String)) }
   def git_last_commit_date

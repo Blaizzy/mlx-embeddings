@@ -77,8 +77,8 @@ module Homebrew
     old_hash = cask.sha256.to_s
 
     tap_full_name = cask.tap&.full_name
-    origin_branch = Utils::Git.origin_branch(cask.tap.path) if cask.tap
-    origin_branch ||= "origin/master"
+    default_remote_branch = cask.tap.path.git_origin_branch if cask.tap
+    default_remote_branch ||= "master"
     previous_branch = "-"
 
     check_open_pull_requests(cask, tap_full_name, args: args)
@@ -200,7 +200,7 @@ module Homebrew
     pr_info = {
       sourcefile_path: cask.sourcefile_path,
       old_contents:    old_contents,
-      origin_branch:   origin_branch,
+      remote_branch:   default_remote_branch,
       branch_name:     "bump-#{cask.token}-#{new_version.tr(",:", "-")}",
       commit_message:  "Update #{cask.token} from #{old_version} to #{new_version}",
       previous_branch: previous_branch,
