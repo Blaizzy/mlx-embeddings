@@ -218,10 +218,8 @@ module RuboCop
       #
       # @api private
       class LivecheckRegexCaseInsensitive < FormulaCop
-        REGEX_CASE_SENSITIVE_ALLOWLIST = %w[].freeze
-
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
-          return if REGEX_CASE_SENSITIVE_ALLOWLIST.include?(@formula_name)
+          return if tap_style_exception? :regex_case_sensitive_allowlist
 
           livecheck_node = find_block(body_node, :livecheck)
           return if livecheck_node.blank?
