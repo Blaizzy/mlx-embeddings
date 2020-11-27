@@ -139,13 +139,19 @@ module Homebrew
         instance_eval(&block) if block
       end
 
-      def switch(*names, description: nil, env: nil, required_for: nil, depends_on: nil, method: :on)
+      def switch(*names, description: nil, replacement: nil, env: nil, required_for: nil, depends_on: nil,
+                 method: :on)
         global_switch = names.first.is_a?(Symbol)
         return if global_switch
 
         description = option_to_description(*names) if description.nil?
-        process_option(*names, description)
+        if replacement.nil?
+          process_option(*names, description)
+        else
+          description += " (disabled#{"; replaced by #{replacement}" if replacement.present?})"
+        end
         @parser.public_send(method, *names, *wrap_option_desc(description)) do |value|
+          odisabled "the `#{names.first}` switch", replacement unless replacement.nil?
           value = if names.any? { |name| name.start_with?("--[no-]") }
             value
           else
