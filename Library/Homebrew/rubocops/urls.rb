@@ -10,21 +10,6 @@ module RuboCop
       #
       # @api private
       class Urls < FormulaCop
-        # These are parts of URLs that look like binaries but actually aren't.
-        NOT_A_BINARY_URL_PREFIX_ALLOWLIST = %w[
-          https://downloads.sourceforge.net/project/astyle/astyle/
-          https://downloads.sourceforge.net/project/bittwist/
-          https://downloads.sourceforge.net/project/launch4j/
-          https://github.com/ChrisJohnsen/tmux-MacOSX-pasteboard/archive/
-          https://github.com/obihann/archey-osx
-          https://github.com/sindresorhus/macos-wallpaper/archive/
-          https://raw.githubusercontent.com/liyanage/macosx-shell-scripts/
-          https://osxbook.com/book/bonus/chapter8/core/download/gcore
-          https://naif.jpl.nasa.gov/pub/naif/toolkit/C/MacIntel_OSX_AppleC_64bit/packages/
-          https://artifacts.videolan.org/x264/release-macos/
-          https://github.com/vifm/vifm/releases/download/v0.11/vifm-osx-0.11.tar.bz2
-        ].freeze
-
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           urls = find_every_func_call_by_name(body_node, :url)
           mirrors = find_every_func_call_by_name(body_node, :mirror)
@@ -255,7 +240,7 @@ module RuboCop
           audit_urls(urls, /(darwin|macos|osx)/i) do |match, url|
             next if @formula_name.include?(match.to_s.downcase)
             next if url.match?(/.(patch|diff)(\?full_index=1)?$/)
-            next if NOT_A_BINARY_URL_PREFIX_ALLOWLIST.any? { |prefix| url.start_with?(prefix) }
+            next if tap_style_exception? :not_a_binary_url_prefix_allowlist
             next if tap_style_exception? :binary_bootstrap_formula_urls_allowlist
 
             problem "#{url} looks like a binary package, not a source archive; " \
