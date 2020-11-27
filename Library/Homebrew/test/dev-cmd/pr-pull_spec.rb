@@ -58,7 +58,7 @@ describe Homebrew do
         safe_system Utils::Git.git, "commit", formula_file, "-m", "revision"
         File.open(formula_file, "w") { |f| f.write(formula_version) }
         safe_system Utils::Git.git, "commit", formula_file, "-m", "version", "--author=#{secondary_author}"
-        described_class.autosquash!(original_hash, path: ".")
+        described_class.autosquash!(original_hash, path: path)
         expect(Utils::Git.commit_message(path)).to include("foo 2.0")
         expect(Utils::Git.commit_message(path)).to include("Co-authored-by: #{secondary_author}")
       end

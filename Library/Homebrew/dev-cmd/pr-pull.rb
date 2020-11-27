@@ -216,7 +216,8 @@ module Homebrew
   end
 
   def autosquash!(original_commit, path: ".", reason: "", verbose: false, resolve: false)
-    original_head = Utils.safe_popen_read("git", "-C", path, "rev-parse", "HEAD").strip
+    path = Pathname(path).extend(GitRepositoryExtension)
+    original_head = path.git_head
 
     commits = Utils.safe_popen_read("git", "-C", path, "rev-list",
                                     "--reverse", "#{original_commit}..HEAD").lines.map(&:strip)
@@ -394,7 +395,7 @@ module Homebrew
       ohai "Fetching #{tap} pull request ##{pr}"
       Dir.mktmpdir pr do |dir|
         cd dir do
-          original_commit = Utils.popen_read("git", "-C", tap.path, "rev-parse", "HEAD").chomp
+          original_commit = tap.path.git_head
           cherry_pick_pr!(user, repo, pr, path: tap.path, args: args)
           if args.autosquash? && !args.dry_run?
             autosquash!(original_commit, path: tap.path,
