@@ -25,32 +25,6 @@ module RuboCop
           https://github.com/vifm/vifm/releases/download/v0.11/vifm-osx-0.11.tar.bz2
         ].freeze
 
-        # These are formulae that, sadly, require an upstream binary to bootstrap.
-        BINARY_BOOTSTRAP_FORMULA_URLS_ALLOWLIST = %w[
-          clozure-cl
-          crystal
-          fpc
-          ghc
-          ghc@8.6
-          ghc@8.8
-          go
-          go@1.9
-          go@1.10
-          go@1.11
-          go@1.12
-          go@1.13
-          go@1.14
-          haskell-stack
-          ldc
-          mlton
-          openjdk
-          openjdk@11
-          openjdk@8
-          pypy
-          sbcl
-          rust
-        ].freeze
-
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           urls = find_every_func_call_by_name(body_node, :url)
           mirrors = find_every_func_call_by_name(body_node, :mirror)
@@ -282,7 +256,7 @@ module RuboCop
             next if @formula_name.include?(match.to_s.downcase)
             next if url.match?(/.(patch|diff)(\?full_index=1)?$/)
             next if NOT_A_BINARY_URL_PREFIX_ALLOWLIST.any? { |prefix| url.start_with?(prefix) }
-            next if BINARY_BOOTSTRAP_FORMULA_URLS_ALLOWLIST.include?(@formula_name)
+            next if tap_style_exception? :binary_bootstrap_formula_urls_allowlist
 
             problem "#{url} looks like a binary package, not a source archive; " \
                     "homebrew/core is source-only."
