@@ -385,7 +385,7 @@ module Homebrew
       _, user, repo, pr = *url_match
       odie "Not a GitHub pull request: #{arg}" unless pr
 
-      current_branch = Utils::Git.current_branch(tap.path)
+      current_branch = tap.path.git_branch
       origin_branch = Utils::Git.origin_branch(tap.path).split("/").last
 
       if current_branch != origin_branch || args.branch_okay? || args.clean?

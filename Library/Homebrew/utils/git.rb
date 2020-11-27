@@ -140,7 +140,8 @@ module Utils
     end
 
     def current_branch(repo)
-      Utils.popen_read("git", "-C", repo, "symbolic-ref", "--short", "HEAD").chomp.presence
+      odeprecated "Utils::Git.current_branch(repo)", "Pathname(repo).git_branch"
+      Pathname(repo).extend(GitRepositoryExtension).git_branch
     end
 
     # Special case of `git cherry-pick` that permits non-verbose output and
