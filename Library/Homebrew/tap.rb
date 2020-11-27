@@ -632,7 +632,7 @@ class Tap
     end
   end
 
-  sig { params(file: Pathname).returns(Hash) }
+  sig { params(file: Pathname).returns(T.any(T::Array[String], Hash)) }
   def read_formula_list(file)
     JSON.parse file.read
   rescue JSON::ParserError
