@@ -1479,8 +1479,6 @@ describe RuboCop::Cop::FormulaAuditStrict::MakeCheck do
       end
     RUBY
   end
-
-  include_examples "formulae exist", described_class::MAKE_CHECK_ALLOWLIST
 end
 
 describe RuboCop::Cop::FormulaAuditStrict::ShellCommands do
