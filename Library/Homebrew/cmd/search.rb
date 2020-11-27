@@ -51,18 +51,18 @@ module Homebrew
              description: "Search for GitHub pull requests containing <text>."
       switch "--open",
              depends_on:  "--pull-request",
-             description: "Search for only open GitHub pull requests"
+             description: "Search for only open GitHub pull requests."
       switch "--closed",
              depends_on:  "--pull-request",
-             description: "Search for only closed GitHub pull requests"
-      conflicts "--open", "--closed"
+             description: "Search for only closed GitHub pull requests."
       package_manager_switches = PACKAGE_MANAGERS.keys.map { |name| "--#{name}" }
       package_manager_switches.each do |s|
         switch s,
                description: "Search for <text> in the given package manager's list."
       end
 
-      conflicts("--desc", "--pull-request")
+      conflicts "--desc", "--pull-request"
+      conflicts "--open", "--closed"
       conflicts(*package_manager_switches)
 
       # TODO: (2.9) add `min: 1` when the `odeprecated`/`odisabled` for `brew search` with no arguments is removed

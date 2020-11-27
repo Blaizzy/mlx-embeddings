@@ -23,8 +23,8 @@ module Homebrew
       switch "--update",
              description: "Update RBI files."
       switch "--suggest-typed",
-             description: "Try upgrading `typed` sigils.",
-             depends_on:  "--update"
+             depends_on:  "--update",
+             description: "Try upgrading `typed` sigils."
       switch "--fail-if-not-changed",
              description: "Return a failing status code if all gems are up to date " \
                           "and gem definitions do not need a tapioca update."

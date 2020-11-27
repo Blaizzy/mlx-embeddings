@@ -43,6 +43,10 @@ module Homebrew
              description: "Run various additional style checks to determine if a new formula or cask is eligible "\
                           "for Homebrew. This should be used when creating new formula and implies "\
                           "`--strict` and `--online`."
+      switch "--[no-]appcast",
+             description: "Audit the appcast."
+      switch "--token-conflicts",
+             description: "Audit for token conflicts."
       flag   "--tap=",
              description: "Check the formulae within the given tap, specified as <user>`/`<repo>."
       switch "--fix",
@@ -69,18 +73,10 @@ module Homebrew
       comma_array "--except-cops",
                   description: "Specify a comma-separated <cops> list to skip checking for violations of the listed "\
                                "RuboCop cops."
-
       switch "--formula", "--formulae",
              description: "Treat all named arguments as formulae."
       switch "--cask", "--casks",
              description: "Treat all named arguments as casks."
-
-      switch "--[no-]appcast",
-             description: "Audit the appcast"
-      switch "--token-conflicts",
-             description: "Audit for token conflicts"
-
-      conflicts "--formula", "--cask"
 
       conflicts "--only", "--except"
       conflicts "--only-cops", "--except-cops", "--strict"
@@ -88,6 +84,7 @@ module Homebrew
       conflicts "--display-cop-names", "--skip-style"
       conflicts "--display-cop-names", "--only-cops"
       conflicts "--display-cop-names", "--except-cops"
+      conflicts "--formula", "--cask"
 
       named_args [:formula, :cask]
     end

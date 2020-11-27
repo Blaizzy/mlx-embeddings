@@ -61,6 +61,7 @@ module Homebrew
       switch "--cask", "--casks",
              depends_on:  "--installed",
              description: "Treat all named arguments as casks."
+
       conflicts "--installed", "--all"
       conflicts "--formula", "--cask"
       formula_options

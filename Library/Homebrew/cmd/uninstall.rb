@@ -27,16 +27,16 @@ module Homebrew
       switch "--zap",
              description: "Remove all files associated with a <cask>. " \
                           "*May remove files which are shared between applications.*"
-      conflicts "--formula", "--zap"
       switch "--ignore-dependencies",
              description: "Don't fail uninstall, even if <formula> is a dependency of any installed "\
                           "formulae."
-
       switch "--formula", "--formulae",
              description: "Treat all named arguments as formulae."
       switch "--cask", "--casks",
              description: "Treat all named arguments as casks."
+
       conflicts "--formula", "--cask"
+      conflicts "--formula", "--zap"
 
       named_args [:installed_formula, :installed_cask], min: 1
     end

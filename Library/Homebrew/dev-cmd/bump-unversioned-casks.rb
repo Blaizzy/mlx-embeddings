@@ -22,8 +22,8 @@ module Homebrew
       EOS
       switch "-n", "--dry-run",
              description: "Do everything except caching state and opening pull requests."
-      flag  "--limit=",
-            description: "Maximum runtime in minutes."
+      flag   "--limit=",
+             description: "Maximum runtime in minutes."
       flag   "--state-file=",
              description: "File for caching state."
 

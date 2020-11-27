@@ -58,14 +58,13 @@ module Homebrew
              description: "Print JSON of all available formulae."
       switch "-v", "--verbose",
              description: "Show more verbose analytics data for <formula>."
-
       switch "--formula", "--formulae",
              description: "Treat all named arguments as formulae."
       switch "--cask", "--casks",
              description: "Treat all named arguments as casks."
-      conflicts "--formula", "--cask"
 
       conflicts "--installed", "--all"
+      conflicts "--formula", "--cask"
 
       named_args [:formula, :cask]
     end

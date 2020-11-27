@@ -28,6 +28,7 @@ module Homebrew
              description: "Only show cache files for formulae."
       switch "--cask",
              description: "Only show cache files for casks."
+
       conflicts "--build-from-source", "--force-bottle"
       conflicts "--formula", "--cask"
 
