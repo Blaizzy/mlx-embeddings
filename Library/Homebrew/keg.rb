@@ -193,7 +193,9 @@ class Keg
   # @param path if this is a file in a keg, returns the containing {Keg} object.
   def self.for(path)
     original_path = path
-    if original_path.exist? && (path = original_path.realpath)
+    raise Errno::ENOENT, original_path.to_s unless original_path.exist?
+
+    if (path = original_path.realpath)
       until path.root?
         return Keg.new(path) if path.parent.parent == HOMEBREW_CELLAR.realpath
 

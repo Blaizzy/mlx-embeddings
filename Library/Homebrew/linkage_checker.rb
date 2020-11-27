@@ -68,16 +68,6 @@ class LinkageChecker
     display_items "Broken dependencies", @broken_deps, puts_output: puts_output
     display_items "Unwanted system libraries", @unwanted_system_dylibs, puts_output: puts_output
     display_items "Conflicting libraries", @version_conflict_deps, puts_output: puts_output
-
-    if @broken_dylibs.empty?
-      puts "No broken library linkage detected"
-    elsif unexpected_broken_dylibs.empty?
-      puts "No unexpected broken library linkage detected."
-    else
-      puts "Unexpected missing library linkage detected"
-    end
-
-    puts "Unexpected non-missing linkage detected" if unexpected_present_dylibs.present?
   end
 
   sig { returns(T::Boolean) }
