@@ -473,8 +473,9 @@ module RuboCop
         match_obj[1]
       end
 
-      # Returns whether the current formula exists in the given style exception list
-      def tap_style_exception?(list)
+      # Returns whether the given formula exists in the given style exception list.
+      # Defaults to the current formula being checked.
+      def tap_style_exception?(list, formula = nil)
         if @tap_style_exceptions.blank? && formula_tap.present?
           @tap_style_exceptions = {}
 
@@ -495,7 +496,7 @@ module RuboCop
         return false if @tap_style_exceptions.blank?
         return false unless @tap_style_exceptions.key? list
 
-        @tap_style_exceptions[list].include? @formula_name
+        @tap_style_exceptions[list].include?(formula || @formula_name)
       end
 
       private
