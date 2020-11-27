@@ -88,7 +88,7 @@ module Homebrew
   class << self
     attr_writer :failed, :raise_deprecation_exceptions, :auditing
 
-    def Homebrew.default_prefix?(prefix = HOMEBREW_PREFIX)
+    def default_prefix?(prefix = HOMEBREW_PREFIX)
       prefix.to_s == DEFAULT_PREFIX
     end
 
