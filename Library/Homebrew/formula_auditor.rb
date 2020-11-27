@@ -360,8 +360,6 @@ module Homebrew
       end
 
       return if tap_audit_exception :versioned_keg_only_allowlist, formula.name
-      return if formula.name.start_with?("adoptopenjdk@")
-      return if formula.name.start_with?("gcc@")
 
       problem "Versioned formulae in homebrew/core should use `keg_only :versioned_formula`"
     end
