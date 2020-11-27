@@ -543,7 +543,5 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
         end
       RUBY
     end
-
-    include_examples "formulae exist", described_class::COMPONENT_ALLOWLIST
   end
 end
