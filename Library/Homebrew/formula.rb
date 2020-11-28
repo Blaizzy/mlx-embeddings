@@ -1982,7 +1982,7 @@ class Formula
   #
   # # If there is a "make install" available, please use it!
   # system "make", "install"</pre>
-  sig { params(cmd: T.any(String, Pathname), args: T.any(String, Pathname)).void }
+  sig { params(cmd: T.any(String, Pathname), args: T.any(String, Pathname, Integer)).void }
   def system(cmd, *args)
     verbose_using_dots = Homebrew::EnvConfig.verbose_using_dots?
 
