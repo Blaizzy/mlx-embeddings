@@ -105,15 +105,18 @@ jobs:
         env:
           HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  more-tests-and-syntax:
+  tap-syntax:
+    name: ${{ matrix.name }}
     needs: syntax
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         include:
-          - os: ubuntu-latest
+          - name: tap syntax (Linux)
+            os: ubuntu-latest
             core-tap: "linuxbrew-core"
-          - os: macos-11.0
+          - name: tap syntax (macOS)
+            os: macos-11.0
             core-tap: "homebrew-core"
     steps:
       - name: Set up Homebrew
@@ -208,14 +211,17 @@ jobs:
           docker tag brew "homebrew/ubuntu16.04:master"
           docker push "homebrew/ubuntu16.04:master"
 
-  test-bot-default-formula:
+  test-default-formula:
+    name: ${{ matrix.name }}
     needs: syntax
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os:
-          - ubuntu-latest
-          - macos-11.0
+        include:
+          - name: test default formula (Linux)
+            os: ubuntu-latest
+          - name: test default formula (macOS)
+            os: macos-11.0
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -228,3 +234,14 @@ jobs:
       - run: brew test-bot --only-cleanup-before
 
       - run: brew test-bot --only-formulae --test-default-formula
+
+  conclusion:
+    needs:
+      - syntax
+      - tap-syntax
+      - tests
+      - docker
+      - test-default-formula
+    runs-on: ubuntu-latest
+    steps:
+      - run: true
