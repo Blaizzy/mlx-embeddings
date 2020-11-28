@@ -24,9 +24,9 @@ module Homebrew
 
   def ohai_if_defined(message)
     if defined?(ohai)
-      ohai message
+      $stderr.ohai message
     else
-      puts "==> #{message}"
+      $stderr.puts "==> #{message}"
     end
   end
 
