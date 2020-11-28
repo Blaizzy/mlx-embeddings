@@ -151,7 +151,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: 'tests (no compatibility)'
+          - name: 'tests (no-compatibility mode)'
             os: ubuntu-latest
             test-flags: --no-compat --online
           - name: 'tests (generic OS)'
