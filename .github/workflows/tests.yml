@@ -41,69 +41,6 @@ jobs:
           brew install hadolint
           hadolint Dockerfile
 
-  tests:
-    name: ${{ matrix.name }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        include:
-          - name: 'tests (no compatibility)'
-            os: ubuntu-latest
-            test-flags: --no-compat --online
-          - name: 'tests (generic OS)'
-            os: ubuntu-latest
-            test-flags: --generic --online
-          - name: tests (Linux)
-            os: ubuntu-latest
-            test-flags: --online
-          - name: tests (macOS)
-            os: macos-11.0
-            test-flags: --online --coverage
-    steps:
-      - name: Set up Homebrew
-        id: set-up-homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-
-      - name: Set up Xcode
-        if: matrix.os == 'macos-11.0'
-        run: sudo xcode-select --switch /Applications/Xcode_12.2.app/Contents/Developer
-
-      - name: Install brew tests dependencies
-        if: runner.os == 'macOS'
-        run: |
-          brew install subversion
-          Library/Homebrew/shims/scm/svn --homebrew=print-path
-          which svn
-          which svnadmin
-
-      - name: Cache Bundler RubyGems
-        uses: actions/cache@v1
-        with:
-          path: ${{ steps.set-up-homebrew.outputs.gems-path }}
-          key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
-          restore-keys: ${{ runner.os }}-rubygems-
-
-      - run: brew install-bundler-gems
-
-      - name: Run brew tests
-        run: |
-          if ${{ runner.os == 'Linux' }}; then
-            # brew tests doesn't like world writable directories
-            sudo chmod -R g-w,o-w /home/linuxbrew/.linuxbrew/Homebrew
-          fi
-
-          if ${{ runner.os == 'macOS' }}; then
-            # Set variables for coverage reporting.
-            export HOMEBREW_CODECOV_TOKEN='3ea0364c-80ce-47a3-9fba-93a940d4b5d7'
-
-            # These cannot be queried at the macOS level on GitHub Actions.
-            export HOMEBREW_LANGUAGES='en-GB'
-          fi
-
-          brew tests ${{ matrix.test-flags }}
-        env:
-          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   tap-syntax:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
@@ -207,6 +144,69 @@ jobs:
             docker login -u brewtestbot --password-stdin
           docker tag brew "homebrew/ubuntu16.04:master"
           docker push "homebrew/ubuntu16.04:master"
+
+  tests:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - name: 'tests (no compatibility)'
+            os: ubuntu-latest
+            test-flags: --no-compat --online
+          - name: 'tests (generic OS)'
+            os: ubuntu-latest
+            test-flags: --generic --online
+          - name: tests (Linux)
+            os: ubuntu-latest
+            test-flags: --online
+          - name: tests (macOS)
+            os: macos-11.0
+            test-flags: --online --coverage
+    steps:
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Set up Xcode
+        if: matrix.os == 'macos-11.0'
+        run: sudo xcode-select --switch /Applications/Xcode_12.2.app/Contents/Developer
+
+      - name: Install brew tests dependencies
+        if: runner.os == 'macOS'
+        run: |
+          brew install subversion
+          Library/Homebrew/shims/scm/svn --homebrew=print-path
+          which svn
+          which svnadmin
+
+      - name: Cache Bundler RubyGems
+        uses: actions/cache@v1
+        with:
+          path: ${{ steps.set-up-homebrew.outputs.gems-path }}
+          key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
+          restore-keys: ${{ runner.os }}-rubygems-
+
+      - run: brew install-bundler-gems
+
+      - name: Run brew tests
+        run: |
+          if ${{ runner.os == 'Linux' }}; then
+            # brew tests doesn't like world writable directories
+            sudo chmod -R g-w,o-w /home/linuxbrew/.linuxbrew/Homebrew
+          fi
+
+          if ${{ runner.os == 'macOS' }}; then
+            # Set variables for coverage reporting.
+            export HOMEBREW_CODECOV_TOKEN='3ea0364c-80ce-47a3-9fba-93a940d4b5d7'
+
+            # These cannot be queried at the macOS level on GitHub Actions.
+            export HOMEBREW_LANGUAGES='en-GB'
+          fi
+
+          brew tests ${{ matrix.test-flags }}
+        env:
+          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   test-default-formula:
     name: ${{ matrix.name }}
