@@ -85,4 +85,12 @@ module GitRepositoryExtension
 
     Utils.popen_read("git", "show", "-s", "--format=%cd", "--date=short", "HEAD", chdir: self).chomp.presence
   end
+
+  # Gets the full commit message of the specified commit, or of the HEAD commit if unspecified.
+  sig { params(commit: String).returns(T.nilable(String)) }
+  def git_commit_message(commit = "HEAD")
+    return unless git? && Utils::Git.available?
+
+    Utils.popen_read("git", "log", "-1", "--pretty=%B", commit, "--", chdir: self, err: :out).strip.presence
+  end
 end

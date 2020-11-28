@@ -89,7 +89,7 @@ module Homebrew
   end
 
   def signoff!(path, pr: nil, dry_run: false)
-    subject, body, trailers = separate_commit_message(Utils::Git.commit_message(path))
+    subject, body, trailers = separate_commit_message(path.git_commit_message)
 
     if pr
       # This is a tap pull request and approving reviewers should also sign-off.
@@ -156,7 +156,7 @@ module Homebrew
     new_formula = Utils::Git.file_at_commit(path, file, "HEAD")
 
     bump_subject = determine_bump_subject(old_formula, new_formula, formula_file, reason: reason).strip
-    subject, body, trailers = separate_commit_message(Utils::Git.commit_message(path))
+    subject, body, trailers = separate_commit_message(path.git_commit_message)
 
     if subject != bump_subject && !subject.start_with?("#{formula_name}:")
       safe_system("git", "-C", path, "commit", "--amend", "-q",
@@ -181,7 +181,7 @@ module Homebrew
     messages = []
     trailers = []
     commits.each do |commit|
-      subject, body, trailer = separate_commit_message(Utils::Git.commit_message(path, commit))
+      subject, body, trailer = separate_commit_message(path.git_commit_message(commit))
       body = body.lines.map { |line| "  #{line.strip}" }.join("\n")
       messages << "* #{subject}\n#{body}".strip
       trailers << trailer

@@ -89,8 +89,9 @@ module Utils
     end
 
     def commit_message(repo, commit = nil)
+      odeprecated "Utils::Git.commit_message(repo)", "Pathname(repo).git_commit_message"
       commit ||= "HEAD"
-      Utils.safe_popen_read(git, "-C", repo, "log", "-1", "--pretty=%B", commit, "--", err: :out).strip
+      Pathname(repo).extend(GitRepositoryExtension).git_commit_message(commit)
     end
 
     def ensure_installed!
