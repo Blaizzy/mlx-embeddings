@@ -241,5 +241,13 @@ jobs:
       - docker
       - test-default-formula
     runs-on: ubuntu-latest
+    if: always()
     steps:
-      - run: true
+      - run: >
+          ${{
+            needs.syntax.result == 'success' &&
+            needs.tap-syntax.result == 'success' &&
+            needs.docker.result == 'success' &&
+            needs.tests.result == 'success' &&
+            needs.test-default-formula.result == 'success'
+          }}
