@@ -197,11 +197,13 @@ jobs:
           fi
 
           if ${{ runner.os == 'macOS' }}; then
-            # Set variables for coverage reporting.
-            export HOMEBREW_CODECOV_TOKEN='3ea0364c-80ce-47a3-9fba-93a940d4b5d7'
-
             # These cannot be queried at the macOS level on GitHub Actions.
             export HOMEBREW_LANGUAGES='en-GB'
+          fi
+
+          if ${{ contains(matrix.test-flags, '--coverage') }}; then
+            # Set variables for coverage reporting.
+            export HOMEBREW_CODECOV_TOKEN='3ea0364c-80ce-47a3-9fba-93a940d4b5d7'
           fi
 
           brew tests ${{ matrix.test-flags }}
