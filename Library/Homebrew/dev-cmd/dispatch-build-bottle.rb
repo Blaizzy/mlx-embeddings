@@ -35,13 +35,13 @@ module Homebrew
   def dispatch_build_bottle
     args = dispatch_build_bottle_args.parse
 
-    odie "Must specify --macos option" unless args.macos
-
-    macos = begin
-      MacOS::Version.from_symbol(args.macos.to_sym)
+    macos = args.macos&.yield_self do |s|
+      MacOS::Version.from_symbol(s.to_sym)
     rescue MacOSVersionError
-      MacOS::Version.new(args.macos)
+      MacOS::Version.new(s)
     end
+
+    raise UsageError, "Must specify --macos option" unless macos
 
     tap = Tap.fetch(args.tap || CoreTap.instance.name)
     user, repo = tap.full_name.split("/")
