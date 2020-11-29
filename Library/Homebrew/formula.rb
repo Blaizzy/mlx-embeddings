@@ -1831,7 +1831,7 @@ class Formula
         bottle_info["files"] = {}
         bottle_spec.collector.each_key do |os|
           bottle_url = "#{bottle_spec.root_url}/#{Bottle::Filename.create(self, os, bottle_spec.rebuild).bintray}"
-          checksum = bottle_spec.collector[os]
+          checksum = bottle_spec.collector[os][:checksum]
           bottle_info["files"][os] = {
             "url"    => bottle_url,
             "sha256" => checksum.hexdigest,

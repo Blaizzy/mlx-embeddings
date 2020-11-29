@@ -553,7 +553,7 @@ module Homebrew
     return [mismatches, checksums] if old_keys.exclude? :sha256
 
     old_bottle_spec.collector.each_key do |tag|
-      old_value = old_bottle_spec.collector[tag].hexdigest
+      old_value = old_bottle_spec.collector[tag][:checksum].hexdigest
       new_value = new_bottle_hash.dig("tags", tag.to_s)
       if new_value.present?
         mismatches << "sha256 => #{tag}"

@@ -183,18 +183,38 @@ describe HeadSoftwareSpec do
 end
 
 describe BottleSpecification do
-  specify "#sha256" do
-    checksums = {
-      snow_leopard_32: "deadbeef" * 8,
-      snow_leopard:    "faceb00c" * 8,
-      lion:            "baadf00d" * 8,
-      mountain_lion:   "8badf00d" * 8,
-    }
+  describe "#sha256" do
+    it "works without cellar" do
+      checksums = {
+        snow_leopard_32: "deadbeef" * 8,
+        snow_leopard:    "faceb00c" * 8,
+        lion:            "baadf00d" * 8,
+        mountain_lion:   "8badf00d" * 8,
+      }
 
-    checksums.each_pair do |cat, digest|
-      subject.sha256(digest => cat)
-      checksum, = subject.checksum_for(cat)
-      expect(Checksum.new(digest)).to eq(checksum)
+      checksums.each_pair do |cat, digest|
+        subject.sha256(digest => cat)
+        checksum, = subject.checksum_for(cat)
+        expect(Checksum.new(digest)).to eq(checksum)
+      end
+    end
+
+    it "works with cellar" do
+      checksums = [
+        { digest: "deadbeef" * 8, tag: :snow_leopard_32, cellar: :any_skip_relocation },
+        { digest: "faceb00c" * 8, tag: :snow_leopard, cellar: :any },
+        { digest: "baadf00d" * 8, tag: :lion, cellar: "/usr/local/Cellar" },
+        { digest: "8badf00d" * 8, tag: :mountain_lion, cellar: Homebrew::DEFAULT_CELLAR },
+      ]
+
+      checksums.each do |checksum|
+        subject.sha256(checksum[:digest] => checksum[:tag], cellar: checksum[:cellar])
+        digest, tag, cellar = subject.checksum_for(checksum[:tag])
+        expect(Checksum.new(checksum[:digest])).to eq(digest)
+        expect(checksum[:tag]).to eq(tag)
+        checksum[:cellar] ||= Homebrew::DEFAULT_CELLAR
+        expect(checksum[:cellar]).to eq(cellar)
+      end
     end
   end
 
