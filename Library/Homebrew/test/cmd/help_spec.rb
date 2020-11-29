@@ -6,6 +6,7 @@ describe "brew", :integration_test do
     it "prints help for a documented Ruby command" do
       expect { brew "help", "cat" }
         .to output(/^Usage: brew cat/).to_stdout
+        .and not_to_output.to_stderr
         .and be_a_success
     end
   end
