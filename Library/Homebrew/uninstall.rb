@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require "keg"
-require "formula"
 
 module Homebrew
   # Helper module for uninstalling kegs.
