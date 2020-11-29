@@ -29,8 +29,7 @@ SimpleCov.start do
     # be quiet, the parent process will be in charge of output and checking coverage totals
     SimpleCov.print_error_status = false
 
-    at_exit do
-      exit_code = $ERROR_INFO.nil? ? 0 : $ERROR_INFO.status
+    SimpleCov.at_exit do
       $stdout.reopen("/dev/null")
 
       # Just save result, but don't write formatted output.
@@ -40,7 +39,7 @@ SimpleCov.start do
       simplecov_result = SimpleCov::Result.new(coverage_result)
       SimpleCov::ResultMerger.store_result(simplecov_result)
 
-      exit! exit_code
+      exit! SimpleCov.exit_status_from_exception || 0
     end
   else
     command_name "#{command_name} (#{$PROCESS_ID})"
