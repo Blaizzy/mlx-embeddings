@@ -1,6 +1,8 @@
 # typed: false
 # frozen_string_literal: true
 
+require "env_config"
+
 # Enables experimental `patchelf.rb` write support.
 HOMEBREW_PATCHELF_RB_WRITE = (
   ENV["HOMEBREW_NO_PATCHELF_RB_WRITE"].blank? &&
@@ -9,7 +11,7 @@ HOMEBREW_PATCHELF_RB_WRITE = (
 ).freeze
 
 module Homebrew
-  DEFAULT_PREFIX ||= if Homebrew::EnvConfig.force_homebrew_on_linux?
+  DEFAULT_PREFIX ||= if EnvConfig.force_homebrew_on_linux?
     HOMEBREW_DEFAULT_PREFIX
   else
     HOMEBREW_LINUX_DEFAULT_PREFIX

@@ -9,6 +9,11 @@ require "ostruct"
 require "pp"
 require "forwardable"
 
+require "rbconfig"
+
+RUBY_PATH = Pathname.new(RbConfig.ruby).freeze
+RUBY_BIN = RUBY_PATH.dirname.freeze
+
 require_relative "load_path"
 
 require "rubygems"
@@ -41,25 +46,10 @@ HOMEBREW_DEFAULT_CACHE = ENV["HOMEBREW_DEFAULT_CACHE"]
 HOMEBREW_DEFAULT_LOGS = ENV["HOMEBREW_DEFAULT_LOGS"]
 HOMEBREW_DEFAULT_TEMP = ENV["HOMEBREW_DEFAULT_TEMP"]
 HOMEBREW_REQUIRED_RUBY_VERSION = ENV["HOMEBREW_REQUIRED_RUBY_VERSION"]
-require "env_config"
-
-require "config"
-require "os"
-require "context"
-require "extend/pathname"
-require "extend/predicable"
-require "extend/module"
-require "cli/args"
-require "messages"
 
 HOMEBREW_PRODUCT = ENV["HOMEBREW_PRODUCT"]
 HOMEBREW_VERSION = ENV["HOMEBREW_VERSION"]
 HOMEBREW_WWW = "https://brew.sh"
-
-require "rbconfig"
-
-RUBY_PATH = Pathname.new(RbConfig.ruby).freeze
-RUBY_BIN = RUBY_PATH.dirname.freeze
 
 HOMEBREW_USER_AGENT_CURL = ENV["HOMEBREW_USER_AGENT_CURL"]
 HOMEBREW_USER_AGENT_RUBY =
@@ -72,8 +62,18 @@ HOMEBREW_DEFAULT_PREFIX = "/usr/local"
 HOMEBREW_MACOS_ARM_DEFAULT_PREFIX = "/opt/homebrew"
 HOMEBREW_LINUX_DEFAULT_PREFIX = "/home/linuxbrew/.linuxbrew"
 
+HOMEBREW_PULL_API_REGEX =
+  %r{https://api\.github\.com/repos/([\w-]+)/([\w-]+)?/pulls/(\d+)}.freeze
+HOMEBREW_PULL_OR_COMMIT_URL_REGEX =
+  %r[https://github\.com/([\w-]+)/([\w-]+)?/(?:pull/(\d+)|commit/[0-9a-fA-F]{4,40})].freeze
+HOMEBREW_RELEASES_URL_REGEX =
+  %r{https://github\.com/([\w-]+)/([\w-]+)?/releases/download/(.+)}.freeze
+
 require "fileutils"
+
+require "os"
 require "os/global"
+require "messages"
 
 module Homebrew
   extend FileUtils
@@ -111,12 +111,14 @@ module Homebrew
   end
 end
 
-HOMEBREW_PULL_API_REGEX =
-  %r{https://api\.github\.com/repos/([\w-]+)/([\w-]+)?/pulls/(\d+)}.freeze
-HOMEBREW_PULL_OR_COMMIT_URL_REGEX =
-  %r[https://github\.com/([\w-]+)/([\w-]+)?/(?:pull/(\d+)|commit/[0-9a-fA-F]{4,40})].freeze
-HOMEBREW_RELEASES_URL_REGEX =
-  %r{https://github\.com/([\w-]+)/([\w-]+)?/releases/download/(.+)}.freeze
+require "env_config"
+
+require "config"
+require "context"
+require "extend/pathname"
+require "extend/predicable"
+require "extend/module"
+require "cli/args"
 
 require "PATH"
 
