@@ -14,6 +14,7 @@ describe "brew", :integration_test do
     it "prints help when no argument is given" do
       expect { brew "cat" }
         .to output(/^Usage: brew cat/).to_stderr
+        .and not_to_output.to_stdout
         .and be_a_failure
     end
   end
