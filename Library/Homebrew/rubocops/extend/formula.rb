@@ -476,7 +476,7 @@ module RuboCop
       # Returns whether the given formula exists in the given style exception list.
       # Defaults to the current formula being checked.
       def tap_style_exception?(list, formula = nil)
-        if @tap_style_exceptions.blank? && formula_tap.present?
+        if @tap_style_exceptions.nil? && !formula_tap.nil?
           @tap_style_exceptions = {}
 
           style_exceptions_dir = "#{File.dirname(File.dirname(@file_path))}/style_exceptions/*.json"
@@ -487,13 +487,13 @@ module RuboCop
             rescue JSON::ParserError
               nil
             end
-            next if list_contents.blank?
+            next if list_contents.nil? || list_contents.count.zero?
 
             @tap_style_exceptions[list_name] = list_contents
           end
         end
 
-        return false if @tap_style_exceptions.blank?
+        return false if @tap_style_exceptions.nil? || @tap_style_exceptions.count.zero?
         return false unless @tap_style_exceptions.key? list
 
         @tap_style_exceptions[list].include?(formula || @formula_name)
