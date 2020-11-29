@@ -91,7 +91,7 @@ module PyPI
 
     sig { params(other: Package).returns(T::Boolean) }
     def same_package?(other)
-      @name.downcase.tr("_", "-") == other.name.downcase.tr("_", "-")
+      @name.tr("_", "-").casecmp(other.name.tr("_", "-")).zero?
     end
 
     # Compare only names so we can use .include? on a Package array
