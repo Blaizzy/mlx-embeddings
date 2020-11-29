@@ -153,13 +153,13 @@ jobs:
         include:
           - name: 'tests (no-compatibility mode)'
             os: ubuntu-latest
-            test-flags: --no-compat --online
+            test-flags: --no-compat --online --coverage
           - name: 'tests (generic OS)'
             os: ubuntu-latest
-            test-flags: --generic --online
+            test-flags: --generic --online --coverage
           - name: tests (Linux)
             os: ubuntu-latest
-            test-flags: --online
+            test-flags: --online --coverage
           - name: tests (macOS)
             os: macos-11.0
             test-flags: --online --coverage
