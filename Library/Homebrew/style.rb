@@ -40,6 +40,7 @@ module Homebrew
                          fix: false,
                          except_cops: nil, only_cops: nil,
                          display_cop_names: false,
+                         reset_cache: false,
                          debug: false, verbose: false)
       raise ArgumentError, "Invalid output type: #{output_type.inspect}" unless [:print, :json].include?(output_type)
 
@@ -54,6 +55,7 @@ module Homebrew
                     fix: fix,
                     except_cops: except_cops, only_cops: only_cops,
                     display_cop_names: display_cop_names,
+                    reset_cache: reset_cache,
                     debug: debug, verbose: verbose)
       end
 
@@ -71,7 +73,7 @@ module Homebrew
     end
 
     def run_rubocop(files, output_type,
-                    fix: false, except_cops: nil, only_cops: nil, display_cop_names: false,
+                    fix: false, except_cops: nil, only_cops: nil, display_cop_names: false, reset_cache: false,
                     debug: false, verbose: false)
       Homebrew.install_bundler_gems!
       require "rubocop"
@@ -129,6 +131,8 @@ module Homebrew
       end
 
       cache_env = { "XDG_CACHE_HOME" => "#{HOMEBREW_CACHE}/style" }
+
+      FileUtils.rm_rf cache_env["XDG_CACHE_HOME"] if reset_cache
 
       case output_type
       when :print

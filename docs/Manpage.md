@@ -1207,6 +1207,8 @@ including core code and all formulae.
   Fix style violations automatically using RuboCop's auto-correct feature.
 * `--display-cop-names`:
   Include the RuboCop cop name for each violation in the output.
+* `--reset-cache`:
+  Reset the RuboCop cache.
 * `--only-cops`:
   Specify a comma-separated *`cops`* list to check for violations of only the listed RuboCop cops.
 * `--except-cops`:
