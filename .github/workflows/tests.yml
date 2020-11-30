@@ -184,10 +184,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: 'tests (no-compatibility mode)'
+          - name: "tests (no-compatibility mode)"
             os: ubuntu-latest
             test-flags: --no-compat --online --coverage
-          - name: 'tests (generic OS)'
+          - name: "tests (generic OS)"
             os: ubuntu-latest
             test-flags: --generic --online --coverage
           - name: tests (Linux)
@@ -228,9 +228,7 @@ jobs:
           if ${{ runner.os == 'Linux' }}; then
             # brew tests doesn't like world writable directories
             sudo chmod -R g-w,o-w /home/linuxbrew/.linuxbrew/Homebrew
-          fi
-
-          if ${{ runner.os == 'macOS' }}; then
+          elif ${{ runner.os == 'macOS' }}; then
             # These cannot be queried at the macOS level on GitHub Actions.
             export HOMEBREW_LANGUAGES='en-GB'
           fi
@@ -266,24 +264,3 @@ jobs:
       - run: brew test-bot --only-cleanup-before
 
       - run: brew test-bot --only-formulae --test-default-formula
-
-  conclusion:
-    needs:
-      - syntax
-      - tap-syntax
-      - vendored-gems
-      - tests
-      - docker
-      - test-default-formula
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-      - run: >
-          ${{
-            needs.syntax.result == 'success' &&
-            needs.tap-syntax.result == 'success' &&
-            needs.vendored-gems.result == 'success' &&
-            needs.docker.result == 'success' &&
-            needs.tests.result == 'success' &&
-            needs.test-default-formula.result == 'success'
-          }}
