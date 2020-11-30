@@ -87,4 +87,4 @@ Homebrew is a member of the [Software Freedom Conservancy](https://sfconservancy
 
 [![Software Freedom Conservancy](https://sfconservancy.org/img/conservancy_64x64.png)](https://sfconservancy.org)
 
-Homebrew is generously supported by [Randy Reddig](https://github.com/ydnar) and 439 users via [GitHub Sponsors](https://github.com/sponsors/Homebrew).
+Homebrew is generously supported by [Randy Reddig](https://github.com/ydnar) and 439 other users via [GitHub Sponsors](https://github.com/sponsors/Homebrew).
