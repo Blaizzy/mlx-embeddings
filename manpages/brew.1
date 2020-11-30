@@ -420,23 +420,19 @@ Allow keg\-only formulae to be linked\.
 List all installed formulae and casks\.
 .
 .P
-If \fIformula\fR is provided, summarise the paths within its current keg\.
+If \fIformula\fR is provided, summarise the paths within its current keg\. If \fIcask\fR is provided, list its artifacts\.
 .
 .TP
 \fB\-\-formula\fR
-List only formulae\.
+List only formulae, or treat all named arguments as formulae\.
 .
 .TP
 \fB\-\-cask\fR
-List only casks, or \fIcask\fR if provided\.
-.
-.TP
-\fB\-\-unbrewed\fR
-List files in Homebrew\'s prefix not installed by Homebrew\.
+List only casks, or treat all named arguments as casks\.
 .
 .TP
 \fB\-\-full\-name\fR
-Print formulae with fully\-qualified names\. If \fB\-\-full\-name\fR is not passed, other options (i\.e\. \fB\-1\fR, \fB\-l\fR, \fB\-r\fR and \fB\-t\fR) are passed to \fBls\fR(1) which produces the actual output\.
+Print formulae with fully\-qualified names\. Unless \fB\-\-full\-name\fR, \fB\-\-versions\fR or \fB\-\-pinned\fR are passed, other options (i\.e\. \fB\-1\fR, \fB\-l\fR, \fB\-r\fR and \fB\-t\fR) are passed to \fBls\fR(1) which produces the actual output\.
 .
 .TP
 \fB\-\-versions\fR
@@ -448,7 +444,7 @@ Only show formulae with multiple versions installed\.
 .
 .TP
 \fB\-\-pinned\fR
-Show the versions of pinned formulae, or only the specified (pinned) formulae if \fIformula\fR are provided\. See also \fBpin\fR, \fBunpin\fR\.
+List only pinned formulae, or only the specified (pinned) formulae if \fIformula\fR are provided\. See also \fBpin\fR, \fBunpin\fR\.
 .
 .TP
 \fB\-1\fR
@@ -941,10 +937,25 @@ Generate a list of environment variables for the specified shell, or \fB\-\-shel
 Generate plain output even when piped\.
 .
 .SS "\fB\-\-prefix\fR [\fIformula\fR]"
-Display Homebrew\'s install path\. \fIDefault:\fR \fB/usr/local\fR on macOS and \fB/home/linuxbrew/\.linuxbrew\fR on Linux\.
+Display Homebrew\'s install path\. \fIDefault:\fR
+.
+.IP "\(bu" 4
+macOS Intel: \fB/usr/local\fR
+.
+.IP "\(bu" 4
+macOS ARM: \fB/opt/homebrew\fR
+.
+.IP "\(bu" 4
+Linux: \fB/home/linuxbrew/\.linuxbrew\fR
+.
+.IP "" 0
 .
 .P
 If \fIformula\fR is provided, display the location in the Cellar where \fIformula\fR is or would be installed\.
+.
+.TP
+\fB\-\-unbrewed\fR
+List files in Homebrew\'s prefix not installed by Homebrew\.
 .
 .SS "\fB\-\-repository\fR, \fB\-\-repo\fR [\fIuser\fR\fB/\fR\fIrepo\fR]"
 Display where Homebrew\'s \fB\.git\fR directory is located\.

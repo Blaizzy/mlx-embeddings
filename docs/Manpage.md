@@ -313,21 +313,20 @@ installations.
 List all installed formulae and casks.
 
 If *`formula`* is provided, summarise the paths within its current keg.
+If *`cask`* is provided, list its artifacts.
 
 * `--formula`:
-  List only formulae.
+  List only formulae, or treat all named arguments as formulae.
 * `--cask`:
-  List only casks, or *`cask`* if provided.
-* `--unbrewed`:
-  List files in Homebrew's prefix not installed by Homebrew.
+  List only casks, or treat all named arguments as casks.
 * `--full-name`:
-  Print formulae with fully-qualified names. If `--full-name` is not passed, other options (i.e. `-1`, `-l`, `-r` and `-t`) are passed to `ls`(1) which produces the actual output.
+  Print formulae with fully-qualified names. Unless `--full-name`, `--versions` or `--pinned` are passed, other options (i.e. `-1`, `-l`, `-r` and `-t`) are passed to `ls`(1) which produces the actual output.
 * `--versions`:
   Show the version number for installed formulae, or only the specified formulae if *`formula`* are provided.
 * `--multiple`:
   Only show formulae with multiple versions installed.
 * `--pinned`:
-  Show the versions of pinned formulae, or only the specified (pinned) formulae if *`formula`* are provided. See also `pin`, `unpin`.
+  List only pinned formulae, or only the specified (pinned) formulae if *`formula`* are provided. See also `pin`, `unpin`.
 * `-1`:
   Force output to be one entry per line. This is the default when output is not to a terminal.
 * `-l`:
@@ -696,11 +695,17 @@ the list is formatted for export to `bash`(1) unless `--plain` is passed.
 
 ### `--prefix` [*`formula`*]
 
-Display Homebrew's install path. *Default:* `/usr/local` on macOS and
-`/home/linuxbrew/.linuxbrew` on Linux.
+Display Homebrew's install path. *Default:*
+
+  - macOS Intel: `/usr/local`
+  - macOS ARM: `/opt/homebrew`
+  - Linux: `/home/linuxbrew/.linuxbrew`
 
 If *`formula`* is provided, display the location in the Cellar where *`formula`*
 is or would be installed.
+
+* `--unbrewed`:
+  List files in Homebrew's prefix not installed by Homebrew.
 
 ### `--repository`, `--repo` [*`user`*`/`*`repo`*]
 

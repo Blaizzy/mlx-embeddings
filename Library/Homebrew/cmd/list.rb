@@ -27,7 +27,8 @@ module Homebrew
       switch "--cask", "--casks",
              description: "List only casks, or treat all named arguments as casks."
       switch "--unbrewed",
-             description: "List files in Homebrew's prefix not installed by Homebrew."
+             description: "List files in Homebrew's prefix not installed by Homebrew.",
+             replacement: "`brew --prefix --unbrewed`"
       switch "--full-name",
              description: "Print formulae with fully-qualified names. Unless `--full-name`, `--versions` "\
                           "or `--pinned` are passed, other options (i.e. `-1`, `-l`, `-r` and `-t`) are "\
@@ -74,12 +75,6 @@ module Homebrew
 
   def list
     args = list_args.parse
-
-    if args.unbrewed?
-      raise UsageError, "`--unbrewed` does not take a formula/cask argument." unless args.no_named?
-
-      return list_unbrewed
-    end
 
     # Unbrewed uses the PREFIX, which will exist
     # Things below use the CELLAR, which doesn't until the first formula is installed.
@@ -131,49 +126,6 @@ module Homebrew
     else
       args.named.to_kegs.each { |keg| PrettyListing.new keg }
     end
-  end
-
-  UNBREWED_EXCLUDE_FILES = %w[.DS_Store].freeze
-  UNBREWED_EXCLUDE_PATHS = %w[
-    */.keepme
-    .github/*
-    bin/brew
-    completions/zsh/_brew
-    docs/*
-    lib/gdk-pixbuf-2.0/*
-    lib/gio/*
-    lib/node_modules/*
-    lib/python[23].[0-9]/*
-    lib/pypy/*
-    lib/pypy3/*
-    lib/ruby/gems/[12].*
-    lib/ruby/site_ruby/[12].*
-    lib/ruby/vendor_ruby/[12].*
-    manpages/brew.1
-    share/pypy/*
-    share/pypy3/*
-    share/info/dir
-    share/man/whatis
-  ].freeze
-
-  def list_unbrewed
-    dirs  = HOMEBREW_PREFIX.subdirs.map { |dir| dir.basename.to_s }
-    dirs -= %w[Library Cellar Caskroom .git]
-
-    # Exclude cache, logs, and repository, if they are located under the prefix.
-    [HOMEBREW_CACHE, HOMEBREW_LOGS, HOMEBREW_REPOSITORY].each do |dir|
-      dirs.delete dir.relative_path_from(HOMEBREW_PREFIX).to_s
-    end
-    dirs.delete "etc"
-    dirs.delete "var"
-
-    arguments = dirs.sort + %w[-type f (]
-    arguments.concat UNBREWED_EXCLUDE_FILES.flat_map { |f| %W[! -name #{f}] }
-    arguments.concat UNBREWED_EXCLUDE_PATHS.flat_map { |d| %W[! -path #{d}] }
-    arguments.concat %w[)]
-
-    cd HOMEBREW_PREFIX
-    safe_system "find", *arguments
   end
 
   def filtered_list(args:)
