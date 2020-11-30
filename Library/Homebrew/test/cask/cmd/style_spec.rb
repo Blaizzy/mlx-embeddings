@@ -3,6 +3,9 @@
 
 require "open3"
 
+require "cli/args"
+require "cli/named_args"
+
 require_relative "shared_examples/invalid_option"
 
 describe Cask::Cmd::Style, :cask do
