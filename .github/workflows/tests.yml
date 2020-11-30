@@ -50,10 +50,10 @@ jobs:
         include:
           - name: tap syntax (Linux)
             os: ubuntu-latest
-            core-tap: "linuxbrew-core"
+            core-tap: linuxbrew-core
           - name: tap syntax (macOS)
             os: macos-11.0
-            core-tap: "homebrew-core"
+            core-tap: homebrew-core
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -130,10 +130,10 @@ jobs:
         include:
           - name: vendored gems (Linux)
             os: ubuntu-latest
-            core-tap: "linuxbrew-core"
+            core-tap: linuxbrew-core
           - name: vendored gems (macOS)
             os: macos-11.0
-            core-tap: "homebrew-core"
+            core-tap: homebrew-core
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -184,10 +184,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: "tests (no-compatibility mode)"
+          - name: tests (no-compatibility mode)
             os: ubuntu-latest
             test-flags: --no-compat --online --coverage
-          - name: "tests (generic OS)"
+          - name: tests (generic OS)
             os: ubuntu-latest
             test-flags: --generic --online --coverage
           - name: tests (Linux)
