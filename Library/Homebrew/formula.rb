@@ -2010,7 +2010,7 @@ class Formula
     @exec_count += 1
     logfn = format("#{logs}/#{active_log_prefix}%02<exec_count>d.%<cmd_base>s",
                    exec_count: @exec_count,
-                   cmd_base:   File.basename(cmd).split(" ").first)
+                   cmd_base:   File.basename(cmd).split.first)
     logs.mkpath
 
     File.open(logfn, "w") do |log|

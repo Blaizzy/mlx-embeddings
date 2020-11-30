@@ -146,7 +146,7 @@ module RuboCop
 
         def autocorrect(node)
           lambda do |corrector|
-            pattern = node.source.split(" ")[1..].join
+            pattern = node.source.split[1..].join
             corrector.replace(node.source_range, "regex(#{pattern})")
           end
         end

@@ -77,7 +77,7 @@ module Hardware
           "machdep.cpu.features",
           "machdep.cpu.extfeatures",
           "machdep.cpu.leaf7_features",
-        ).split(" ").map { |s| s.downcase.to_sym }
+        ).split.map { |s| s.downcase.to_sym }
       end
 
       def sse4?

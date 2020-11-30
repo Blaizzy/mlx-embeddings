@@ -1217,7 +1217,7 @@ class FormulaInstaller
       pattern = /#{s.to_s.tr("_", " ")}/i
       forbidden_licenses.sub!(pattern, s.to_s)
     end
-    forbidden_licenses = forbidden_licenses.split(" ").to_h do |license|
+    forbidden_licenses = forbidden_licenses.split.to_h do |license|
       [license, SPDX.license_version_info(license)]
     end
 
