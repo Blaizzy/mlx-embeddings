@@ -150,14 +150,6 @@ module Homebrew
       problem "Formula name conflicts with existing core formula."
     end
 
-    PROVIDED_BY_MACOS_DEPENDS_ON_ALLOWLIST = %w[
-      apr
-      apr-util
-      libressl
-      openblas
-      openssl@1.1
-    ].freeze
-
     PERMITTED_LICENSE_MISMATCHES = {
       "AGPL-3.0" => ["AGPL-3.0-only", "AGPL-3.0-or-later"],
       "GPL-2.0"  => ["GPL-2.0-only",  "GPL-2.0-or-later"],
@@ -218,17 +210,6 @@ module Homebrew
       end
     end
 
-    # TODO: try to remove these, it's not a good user experience
-    VERSIONED_DEPENDENCIES_CONFLICTS_ALLOWLIST = %w[
-      agda
-      anjuta
-      fdroidserver
-      gradio
-      predictionio
-      sqoop
-      visp
-    ].freeze
-
     def audit_deps
       @specs.each do |spec|
         # Check for things we don't like to depend on.
@@ -265,7 +246,7 @@ module Homebrew
              dep_f.keg_only? &&
              dep_f.keg_only_reason.provided_by_macos? &&
              dep_f.keg_only_reason.applicable? &&
-             !PROVIDED_BY_MACOS_DEPENDS_ON_ALLOWLIST.include?(dep.name)
+             !tap_audit_exception(:provided_by_macos_depends_on_allowlist, dep.name)
             new_formula_problem(
               "Dependency '#{dep.name}' is provided by macOS; " \
               "please replace 'depends_on' with 'uses_from_macos'.",
@@ -305,7 +286,7 @@ module Homebrew
       end
 
       return unless @core_tap
-      return if VERSIONED_DEPENDENCIES_CONFLICTS_ALLOWLIST.include?(formula.name)
+      return if tap_audit_exception :versioned_dependencies_conflicts_allowlist, formula.name
 
       # The number of conflicts on Linux is absurd.
       # TODO: remove this and check these there too.
@@ -366,21 +347,6 @@ module Homebrew
       end
     end
 
-    # openssl@1.1 only needed for Linux
-    VERSIONED_KEG_ONLY_ALLOWLIST = %w[
-      autoconf@2.13
-      bash-completion@2
-      clang-format@8
-      gnupg@1.4
-      libsigc++@2
-      lua@5.1
-      numpy@1.16
-      openssl@1.1
-      python@3.8
-      python@3.9
-      cairomm@1.14
-    ].freeze
-
     def audit_versioned_keg_only
       return unless @versioned_formula
       return unless @core_tap
@@ -393,20 +359,10 @@ module Homebrew
         end
       end
 
-      return if VERSIONED_KEG_ONLY_ALLOWLIST.include?(formula.name)
-      return if formula.name.start_with?("adoptopenjdk@")
-      return if formula.name.start_with?("gcc@")
+      return if tap_audit_exception :versioned_keg_only_allowlist, formula.name
 
       problem "Versioned formulae in homebrew/core should use `keg_only :versioned_formula`"
     end
-
-    CERT_ERROR_ALLOWLIST = {
-      "hashcat"     => "https://hashcat.net/hashcat/",
-      "jinx"        => "https://www.jinx-lang.org/",
-      "lmod"        => "https://www.tacc.utexas.edu/research-development/tacc-projects/lmod",
-      "micropython" => "https://www.micropython.org/",
-      "monero"      => "https://www.getmonero.org/",
-    }.freeze
 
     def audit_homepage
       homepage = formula.homepage
@@ -415,7 +371,7 @@ module Homebrew
 
       return unless @online
 
-      return if CERT_ERROR_ALLOWLIST[formula.name] == homepage
+      return if tap_audit_exception :cert_error_allowlist, formula.name, homepage
 
       return unless DevelopmentTools.curl_handles_most_https_certificates?
 
@@ -519,36 +475,6 @@ module Homebrew
       [user, repo]
     end
 
-    UNSTABLE_ALLOWLIST = {
-      "aalib"           => "1.4rc",
-      "automysqlbackup" => "3.0-rc",
-      "aview"           => "1.3.0rc",
-      "elm-format"      => "0.6.0-alpha",
-      "ftgl"            => "2.1.3-rc",
-      "hidapi"          => "0.8.0-rc",
-      "libcaca"         => "0.99b",
-      "premake"         => "4.4-beta",
-      "pwnat"           => "0.3-beta",
-      "recode"          => "3.7-beta",
-      "speexdsp"        => "1.2rc",
-      "sqoop"           => "1.4.",
-      "tcptraceroute"   => "1.5beta",
-      "tiny-fugue"      => "5.0b",
-      "vbindiff"        => "3.0_beta",
-    }.freeze
-
-    # Used for formulae that are unstable but need CI run without being in homebrew/core
-    UNSTABLE_DEVEL_ALLOWLIST = {
-    }.freeze
-
-    GNOME_DEVEL_ALLOWLIST = {
-      "libart"              => "2.3",
-      "gtk-mac-integration" => "2.1",
-      "gtk-doc"             => "1.31",
-      "gcab"                => "1.3",
-      "libepoxy"            => "1.5",
-    }.freeze
-
     def audit_specs
       problem "Head-only (no stable download)" if head_only?(formula)
 
@@ -612,13 +538,13 @@ module Homebrew
       when /[\d._-](alpha|beta|rc\d)/
         matched = Regexp.last_match(1)
         version_prefix = stable_version_string.sub(/\d+$/, "")
-        return if UNSTABLE_ALLOWLIST[formula.name] == version_prefix
-        return if UNSTABLE_DEVEL_ALLOWLIST[formula.name] == version_prefix
+        return if tap_audit_exception :unstable_allowlist, formula.name, version_prefix
+        return if tap_audit_exception :unstable_devel_allowlist, formula.name, version_prefix
 
         problem "Stable version URLs should not contain #{matched}"
       when %r{download\.gnome\.org/sources}, %r{ftp\.gnome\.org/pub/GNOME/sources}i
         version_prefix = stable.version.major_minor
-        return if GNOME_DEVEL_ALLOWLIST[formula.name] == version_prefix
+        return if tap_audit_exception :gnome_devel_allowlist, formula.name, version_prefix
         return if stable_url_version < Version.create("1.0")
         return if stable_url_minor_version.even?
 
