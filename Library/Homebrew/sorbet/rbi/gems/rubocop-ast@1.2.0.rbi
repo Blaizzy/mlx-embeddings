@@ -24,9 +24,16 @@ class RuboCop::AST::AndNode < ::RuboCop::AST::Node
   def inverse_operator; end
 end
 
+class RuboCop::AST::ArgNode < ::RuboCop::AST::Node
+  def default?; end
+  def default_value; end
+  def name; end
+end
+
 class RuboCop::AST::ArgsNode < ::RuboCop::AST::Node
   include(::RuboCop::AST::CollectionNode)
 
+  def argument_list; end
   def empty_and_without_delimiters?; end
 end
 
@@ -51,6 +58,7 @@ end
 class RuboCop::AST::BlockNode < ::RuboCop::AST::Node
   include(::RuboCop::AST::MethodIdentifierPredicates)
 
+  def argument_list; end
   def arguments; end
   def arguments?; end
   def body; end
@@ -65,6 +73,10 @@ class RuboCop::AST::BlockNode < ::RuboCop::AST::Node
   def send_node; end
   def single_line?; end
   def void_context?; end
+
+  private
+
+  def numbered_arguments; end
 end
 
 class RuboCop::AST::BreakNode < ::RuboCop::AST::Node
@@ -306,6 +318,9 @@ end
 
 module RuboCop::AST::Ext::Range
   def line_span(exclude_end: T.unsafe(nil)); end
+end
+
+module RuboCop::AST::Ext::RangeMinMax
 end
 
 class RuboCop::AST::FloatNode < ::RuboCop::AST::Node
@@ -1179,10 +1194,6 @@ RuboCop::AST::NodePattern::Node::FunctionCall = RuboCop::AST::NodePattern::Node:
 
 RuboCop::AST::NodePattern::Node::MAP = T.let(T.unsafe(nil), Hash)
 
-module RuboCop::AST::NodePattern::Node::MapMinMax
-  def map_min_max(enum); end
-end
-
 class RuboCop::AST::NodePattern::Node::Predicate < ::RuboCop::AST::NodePattern::Node
   def arg_list; end
   def method_name; end
@@ -1211,15 +1222,12 @@ end
 
 class RuboCop::AST::NodePattern::Node::Subsequence < ::RuboCop::AST::NodePattern::Node
   include(::RuboCop::AST::NodePattern::Node::ForbidInSeqHead)
-  include(::RuboCop::AST::NodePattern::Node::MapMinMax)
 
   def arity; end
   def in_sequence_head; end
 end
 
 class RuboCop::AST::NodePattern::Node::Union < ::RuboCop::AST::NodePattern::Node
-  include(::RuboCop::AST::NodePattern::Node::MapMinMax)
-
   def arity; end
   def in_sequence_head; end
 end
@@ -1378,15 +1386,11 @@ RuboCop::AST::NodePattern::Sets::SET_CLASS_MODULE = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_CLASS_MODULE_STRUCT = T.let(T.unsafe(nil), Set)
 
-RuboCop::AST::NodePattern::Sets::SET_COLLECT_COMPACT_FLATTEN_ETC = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_CONSTANTIZE_CONSTANTS_CONST_GET = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_CONTEXT_SHARED_CONTEXT = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_COUNT_LENGTH_SIZE = T.let(T.unsafe(nil), Set)
-
-RuboCop::AST::NodePattern::Sets::SET_DEBUGGER_BYEBUG_REMOTE_BYEBUG = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_DEFINE_METHOD_DEFINE_SINGLETON_METHOD = T.let(T.unsafe(nil), Set)
 
@@ -1411,8 +1415,6 @@ RuboCop::AST::NodePattern::Sets::SET_EXACTLY_AT_LEAST_AT_MOST = T.let(T.unsafe(n
 RuboCop::AST::NodePattern::Sets::SET_EXPECT_ALLOW = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_FACTORYGIRL_FACTORYBOT = T.let(T.unsafe(nil), Set)
-
-RuboCop::AST::NodePattern::Sets::SET_FIRST_LAST_POP_ETC = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_FIRST_LAST__ETC = T.let(T.unsafe(nil), Set)
 
@@ -1472,8 +1474,6 @@ RuboCop::AST::NodePattern::Sets::SET_PROC_LAMBDA = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_PROP_CONST = T.let(T.unsafe(nil), Set)
 
-RuboCop::AST::NodePattern::Sets::SET_PRY_REMOTE_PRY_PRY_REMOTE_CONSOLE = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_PUBLIC_CONSTANT_PRIVATE_CONSTANT = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_PUBLIC_PROTECTED_PRIVATE_MODULE_FUNCTION = T.let(T.unsafe(nil), Set)
@@ -1497,8 +1497,6 @@ RuboCop::AST::NodePattern::Sets::SET_REDUCE_INJECT = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_REJECT_REJECT = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_REQUIRE_REQUIRE_RELATIVE = T.let(T.unsafe(nil), Set)
-
-RuboCop::AST::NodePattern::Sets::SET_SAVE_AND_OPEN_PAGE_SAVE_AND_OPEN_SCREENSHOT = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_SELECT_FILTER_FIND_ALL_REJECT = T.let(T.unsafe(nil), Set)
 
@@ -1564,6 +1562,8 @@ RuboCop::AST::NodePattern::Sets::SET___7 = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET___8 = T.let(T.unsafe(nil), Set)
 
+RuboCop::AST::NodePattern::Sets::SET___METHOD_____CALLEE__ = T.let(T.unsafe(nil), Set)
+
 RuboCop::AST::NodePattern::Sets::SET____ = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET____ETC = T.let(T.unsafe(nil), Set)
@@ -1571,10 +1571,6 @@ RuboCop::AST::NodePattern::Sets::SET____ETC = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET____ETC_2 = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET____ETC_3 = T.let(T.unsafe(nil), Set)
-
-RuboCop::AST::NodePattern::Sets::SET____ETC_4 = T.let(T.unsafe(nil), Set)
-
-RuboCop::AST::NodePattern::Sets::SET____ETC_5 = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::VAR = T.let(T.unsafe(nil), String)
 
@@ -1629,6 +1625,10 @@ module RuboCop::AST::PredicateOperatorNode
   def logical_operator?; end
   def operator; end
   def semantic_operator?; end
+end
+
+class RuboCop::AST::Procarg0Node < ::RuboCop::AST::ArgNode
+  def name; end
 end
 
 class RuboCop::AST::ProcessedSource
