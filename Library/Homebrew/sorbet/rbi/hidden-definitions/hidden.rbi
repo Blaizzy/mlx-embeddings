@@ -25753,14 +25753,6 @@ module Readline
   def self.completion_quote_character(); end
 end
 
-class Regexp::Expression::Base
-  include ::RuboCop::Ext::RegexpParser::Expression::Base
-end
-
-class Regexp::Expression::CharacterSet
-  include ::RuboCop::Ext::RegexpParser::Expression::CharacterSet
-end
-
 class Requirement
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -26145,7 +26137,6 @@ module RuboCop::AST::NodePattern::Sets
   SET_INCLUDE_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
   SET_SYSTEM_SHELL_OUTPUT_PIPE_OUTPUT = ::T.let(nil, ::T.untyped)
   SET_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
-  SET___METHOD_____CALLEE__ = ::T.let(nil, ::T.untyped)
 end
 
 class RuboCop::Cask::AST::CaskHeader
