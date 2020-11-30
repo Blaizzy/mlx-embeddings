@@ -4,8 +4,7 @@
 # Enables experimental `patchelf.rb` write support.
 HOMEBREW_PATCHELF_RB_WRITE = (
   ENV["HOMEBREW_NO_PATCHELF_RB_WRITE"].blank? &&
-  (ENV["HOMEBREW_PATCHELF_RB_WRITE"].present? ||
-   (ENV["CI"].blank? && ENV["HOMEBREW_DEVELOPER"].present?))
+  (ENV["HOMEBREW_PATCHELF_RB_WRITE"].present? || ENV["CI"].present? || ENV["HOMEBREW_DEV_CMD_RUN"].present?)
 ).freeze
 
 module Homebrew
