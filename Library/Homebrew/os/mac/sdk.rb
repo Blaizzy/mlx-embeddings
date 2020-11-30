@@ -44,8 +44,8 @@ module OS
 
       def sdk_if_applicable(v = nil)
         sdk = begin
-          if v.nil?
-            sdk_for OS::Mac.version
+          if v.blank?
+            sdk_for OS::Mac.sdk_version
           else
             sdk_for v
           end
@@ -53,7 +53,7 @@ module OS
           latest_sdk
         end
         # Only return an SDK older than the OS version if it was specifically requested
-        return unless v || (!sdk.nil? && sdk.version >= OS::Mac.version)
+        return unless v || (sdk.present? && sdk.version >= OS::Mac.sdk_version)
 
         sdk
       end
@@ -76,7 +76,7 @@ module OS
 
             Dir[File.join(sdk_prefix, "MacOSX*.sdk")].each do |sdk_path|
               version = sdk_path[/MacOSX(\d+\.\d+)u?\.sdk$/, 1]
-              paths[OS::Mac::Version.new(version)] = sdk_path unless version.nil?
+              paths[OS::Mac::Version.new(version)] = sdk_path if version.present?
             end
 
             paths
