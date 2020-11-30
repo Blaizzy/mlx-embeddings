@@ -26,18 +26,16 @@ module Hardware
         unknown = :"unknown_0x#{cpu_family.to_s(16)}_0x#{cpu_model.to_s(16)}"
         case vendor_id
         when "GenuineIntel"
-          intel_family(cpu_family, cpu_model) || unknown
+          intel_family(cpu_family, cpu_model)
         when "AuthenticAMD"
-          amd_family(cpu_family) || unknown
-        else
-          unknown
-        end
+          amd_family(cpu_family)
+        end || unknown
       end
 
-      def intel_family(family, model)
+      def intel_family(family, cpu_model)
         case family
         when 0x06
-          case model
+          case cpu_model
           when 0x3a, 0x3e
             :ivybridge
           when 0x2a, 0x2d
@@ -66,7 +64,7 @@ module Hardware
             :icelake
           end
         when 0x0f
-          case model
+          case cpu_model
           when 0x06
             :presler
           when 0x03, 0x04
