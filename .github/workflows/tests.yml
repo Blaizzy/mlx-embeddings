@@ -52,7 +52,7 @@ jobs:
             os: ubuntu-latest
             core-tap: linuxbrew-core
           - name: tap syntax (macOS)
-            os: macos-11.0
+            os: macos-latest
             core-tap: homebrew-core
     steps:
       - name: Set up Homebrew
@@ -132,7 +132,7 @@ jobs:
             os: ubuntu-latest
             core-tap: linuxbrew-core
           - name: vendored gems (macOS)
-            os: macos-11.0
+            os: macos-latest
             core-tap: homebrew-core
     steps:
       - name: Set up Homebrew
@@ -251,7 +251,7 @@ jobs:
           - name: test default formula (Linux)
             os: ubuntu-latest
           - name: test default formula (macOS)
-            os: macos-11.0
+            os: macos-latest
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
