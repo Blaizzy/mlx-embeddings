@@ -271,6 +271,7 @@ jobs:
     needs:
       - syntax
       - tap-syntax
+      - vendored-gems
       - tests
       - docker
       - test-default-formula
