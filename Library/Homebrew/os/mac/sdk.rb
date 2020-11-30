@@ -52,8 +52,20 @@ module OS
         rescue NoSDKError
           latest_sdk
         end
-        # Only return an SDK older than the OS version if it was specifically requested
-        return unless v || (sdk.present? && sdk.version >= OS::Mac.sdk_version)
+        return if sdk.blank?
+
+        # Accept an SDK for another OS version if it shares a major version
+        # with the current OS - for example, the 11.0 SDK on 11.1,
+        # or vice versa.
+        # Note that this only applies on macOS 11
+        # or greater, given the way the versioning has changed.
+        # This shortcuts the below check, since we *do* accept an older version
+        # on macOS 11 or greater if the major version matches.
+        return sdk if OS::Mac.version >= :big_sur && sdk.version.major == OS::Mac.version.major
+
+        # On OSs lower than 11, or where the major versions don't match,
+        # only return an SDK older than the OS version if it was specifically requested
+        return if v.blank? && sdk.version < OS::Mac.version
 
         sdk
       end
