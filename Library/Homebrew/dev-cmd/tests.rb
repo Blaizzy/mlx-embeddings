@@ -42,7 +42,6 @@ module Homebrew
     args = tests_args.parse
 
     Homebrew.install_bundler_gems!
-    gem_user_dir = Gem.user_dir
 
     require "byebug" if args.byebug?
 
@@ -137,6 +136,9 @@ module Homebrew
       end
 
       puts "Randomized with seed #{seed}"
+
+      # Let tests find `bundle` in the actual location.
+      ENV["HOMEBREW_TESTS_GEM_USER_DIR"] = gem_user_dir
 
       # Let `bundle` in PATH find its gem.
       ENV["GEM_PATH"] = "#{ENV["GEM_PATH"]}:#{gem_user_dir}"

@@ -13,7 +13,8 @@ RSpec.shared_context "integration test" do
   matcher :be_a_success do
     match do |actual|
       status = actual.is_a?(Proc) ? actual.call : actual
-      status.respond_to?(:success?) && status.success?
+      expect(status).to respond_to(:success?)
+      status.success?
     end
 
     def supports_block_expectations?
