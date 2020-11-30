@@ -122,9 +122,9 @@ module PyPI
       package_name:             T.nilable(String),
       extra_packages:           T.nilable(T::Array[String]),
       exclude_packages:         T.nilable(T::Array[String]),
-      print_only:               T::Boolean,
-      silent:                   T::Boolean,
-      ignore_non_pypi_packages: T::Boolean,
+      print_only:               T.nilable(T::Boolean),
+      silent:                   T.nilable(T::Boolean),
+      ignore_non_pypi_packages: T.nilable(T::Boolean),
     ).returns(T.nilable(T::Boolean))
   end
   def update_python_resources!(formula, version: nil, package_name: nil, extra_packages: nil, exclude_packages: nil,

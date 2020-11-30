@@ -10,7 +10,7 @@ require "cask/cask_loader"
 module Readall
   class << self
     def valid_ruby_syntax?(ruby_files)
-      failed = false
+      failed = T.let(false, T::Boolean)
       ruby_files.each do |ruby_file|
         # As a side effect, print syntax errors/warnings to `$stderr`.
         failed = true if syntax_errors_or_warnings?(ruby_file)
@@ -21,7 +21,7 @@ module Readall
     def valid_aliases?(alias_dir, formula_dir)
       return true unless alias_dir.directory?
 
-      failed = false
+      failed = T.let(false, T::Boolean)
       alias_dir.each_child do |f|
         if !f.symlink?
           onoe "Non-symlink alias: #{f}"
@@ -40,7 +40,7 @@ module Readall
     end
 
     def valid_formulae?(formulae)
-      success = true
+      success = T.let(true, T::Boolean)
       formulae.each do |file|
         Formulary.factory(file)
       rescue Interrupt
@@ -54,7 +54,7 @@ module Readall
     end
 
     def valid_casks?(casks)
-      success = true
+      success = T.let(true, T::Boolean)
       casks.each do |file|
         Cask::CaskLoader.load(file)
       rescue Interrupt

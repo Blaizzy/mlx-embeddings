@@ -3,11 +3,7 @@
 
 require "delegate"
 
-require "cask/cask_loader"
 require "cli/args"
-require "formulary"
-require "keg"
-require "missing_formula"
 
 module Homebrew
   module CLI
@@ -18,6 +14,12 @@ module Homebrew
       extend T::Sig
 
       def initialize(*args, parent: Args.new, override_spec: nil, force_bottle: false, flags: [])
+        require "cask/cask"
+        require "cask/cask_loader"
+        require "formulary"
+        require "keg"
+        require "missing_formula"
+
         @args = args
         @override_spec = override_spec
         @force_bottle = force_bottle
@@ -99,6 +101,7 @@ module Homebrew
       end
       private :resolve_formula
 
+      sig { returns(T::Array[Formula]) }
       def to_resolved_formulae
         @to_resolved_formulae ||= to_formulae_and_casks(only: :formula, method: :resolve)
                                   .freeze
@@ -157,7 +160,7 @@ module Homebrew
         @to_kegs ||= begin
           to_formulae_and_casks(only: :formula, method: :keg).freeze
         rescue NoSuchKegError => e
-          if (reason = Homebrew::MissingFormula.suggest_command(e.name, "uninstall"))
+          if (reason = MissingFormula.suggest_command(e.name, "uninstall"))
             $stderr.puts reason
           end
           raise e

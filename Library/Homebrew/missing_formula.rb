@@ -94,7 +94,7 @@ module Homebrew
       alias generic_disallowed_reason disallowed_reason
 
       def tap_migration_reason(name)
-        message = nil
+        message = T.let(nil, T.nilable(String))
 
         Tap.each do |old_tap|
           new_tap = old_tap.tap_migrations[name]

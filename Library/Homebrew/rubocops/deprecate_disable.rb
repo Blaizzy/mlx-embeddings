@@ -46,7 +46,7 @@ module RuboCop
 
             next if node.nil?
 
-            reason_found = false
+            reason_found = T.let(false, T::Boolean)
             reason(node) do |reason_node|
               reason_found = true
               next if reason_node.sym_type?

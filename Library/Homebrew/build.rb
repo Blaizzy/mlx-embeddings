@@ -213,7 +213,7 @@ begin
   args = Homebrew.install_args.parse
   Context.current = args.context
 
-  error_pipe = UNIXSocket.open(ENV["HOMEBREW_ERROR_PIPE"], &:recv_io)
+  error_pipe = UNIXSocket.open(ENV.fetch("HOMEBREW_ERROR_PIPE"), &:recv_io)
   error_pipe.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)
 
   trap("INT", old_trap)

@@ -34,7 +34,7 @@ module Homebrew
       end
       exit! 1 # never gets here unless exec failed
     end
-    Process.wait(pid)
+    Process.wait(T.must(pid))
     $CHILD_STATUS.success?
   end
 
@@ -58,10 +58,13 @@ module Homebrew
         method = instance_method(name)
         define_method(name) do |*args, &block|
           time = Time.now
-          method.bind(self).call(*args, &block)
-        ensure
-          $times[name] ||= 0
-          $times[name] += Time.now - time
+
+          begin
+            method.bind(self).call(*args, &block)
+          ensure
+            $times[name] ||= 0
+            $times[name] += Time.now - time
+          end
         end
       end
     end
@@ -190,7 +193,7 @@ module Kernel
       line.include?("/.metadata/")
     end
 
-    tap_message = nil
+    tap_message = T.let(nil, T.nilable(String))
 
     backtrace.each do |line|
       next unless match = line.match(HOMEBREW_TAP_PATH_REGEX)
@@ -263,12 +266,12 @@ module Kernel
       ENV["HOMEBREW_DEBUG_INSTALL"] = f.full_name
     end
 
-    if ENV["SHELL"].include?("zsh") && ENV["HOME"].start_with?(HOMEBREW_TEMP.resolved_path.to_s)
-      FileUtils.mkdir_p ENV["HOME"]
-      FileUtils.touch "#{ENV["HOME"]}/.zshrc"
+    if ENV["SHELL"].include?("zsh") && (home = ENV["HOME"])&.start_with?(HOMEBREW_TEMP.resolved_path.to_s)
+      FileUtils.mkdir_p home
+      FileUtils.touch "#{home}/.zshrc"
     end
 
-    Process.wait fork { exec ENV["SHELL"] }
+    Process.wait fork { exec ENV.fetch("SHELL") }
 
     return if $CHILD_STATUS.success?
     raise "Aborted due to non-zero exit status (#{$CHILD_STATUS.exitstatus})" if $CHILD_STATUS.exited?

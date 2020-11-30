@@ -1,6 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
+require "env_config"
+
 # Various helper functions for interacting with TTYs.
 #
 # @api private

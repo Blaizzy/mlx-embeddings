@@ -1,4 +1,4 @@
-# typed: true
+# typed: false
 # frozen_string_literal: true
 
 require "cleanup"
@@ -37,11 +37,18 @@ module Homebrew
   def cleanup
     args = cleanup_args.parse
 
-    if args.prune.present? && !Integer(args.prune, exception: false) && args.prune != "all"
-      raise UsageError, "--prune= expects an integer or 'all'."
+    days = args.prune.presence&.yield_self do |prune|
+      case prune
+      when /\A\d+\Z/
+        prune.to_i
+      when "all"
+        0
+      else
+        raise UsageError, "--prune= expects an integer or 'all'."
+      end
     end
 
-    cleanup = Cleanup.new(*args.named, dry_run: args.dry_run?, scrub: args.s?, days: args.prune&.to_i)
+    cleanup = Cleanup.new(*args.named, dry_run: args.dry_run?, scrub: args.s?, days: days)
     if args.prune_prefix?
       cleanup.prune_prefix_symlinks_and_directories
       return

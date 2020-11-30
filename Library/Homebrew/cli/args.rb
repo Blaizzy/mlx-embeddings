@@ -1,7 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "cli/named_args"
 require "ostruct"
 
 module Homebrew
@@ -16,6 +15,8 @@ module Homebrew
 
       sig { void }
       def initialize
+        require "cli/named_args"
+
         super()
 
         @processed_options = []
@@ -55,6 +56,7 @@ module Homebrew
 
       sig { returns(NamedArgs) }
       def named
+        require "formula"
         self[:named]
       end
 

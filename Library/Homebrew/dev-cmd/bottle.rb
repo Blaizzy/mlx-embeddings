@@ -261,8 +261,8 @@ module Homebrew
 
     formula_and_runtime_deps_names = [f.name] + f.runtime_dependencies.map(&:name)
     keg = Keg.new(f.prefix)
-    relocatable = false
-    skip_relocation = false
+    relocatable = T.let(false, T::Boolean)
+    skip_relocation = T.let(false, T::Boolean)
 
     keg.lock do
       original_tab = nil
@@ -472,7 +472,7 @@ module Homebrew
 
       if args.write?
         path = Pathname.new((HOMEBREW_REPOSITORY/bottle_hash["formula"]["path"]).to_s)
-        update_or_add = nil
+        update_or_add = T.let(nil, T.nilable(String))
 
         Utils::Inreplace.inreplace(path) do |s|
           if s.inreplace_string.include? "bottle do"

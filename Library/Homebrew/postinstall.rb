@@ -1,4 +1,4 @@
-# typed: false
+# typed: strict
 # frozen_string_literal: true
 
 old_trap = trap("INT") { exit! 130 }
@@ -12,12 +12,12 @@ require "cmd/postinstall"
 
 begin
   args = Homebrew.postinstall_args.parse
-  error_pipe = UNIXSocket.open(ENV["HOMEBREW_ERROR_PIPE"], &:recv_io)
+  error_pipe = UNIXSocket.open(ENV.fetch("HOMEBREW_ERROR_PIPE"), &:recv_io)
   error_pipe.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)
 
   trap("INT", old_trap)
 
-  formula = args.named.to_resolved_formulae.first
+  formula = T.must(args.named.to_resolved_formulae.first)
   formula.extend(Debrew::Formula) if args.debug?
   formula.run_post_install
 rescue Exception => e # rubocop:disable Lint/RescueException

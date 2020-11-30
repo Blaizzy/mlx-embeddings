@@ -57,7 +57,7 @@ module Homebrew
       options[:only_cops] = only_cops
     elsif except_cops
       options[:except_cops] = except_cops
-    elsif only_cops.nil? && except_cops.nil?
+    else
       options[:except_cops] = %w[FormulaAuditStrict]
     end
 

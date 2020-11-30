@@ -1,13 +1,31 @@
 # typed: strict
 
-class Pathname
-  # https://github.com/sorbet/sorbet/pull/3676
-  sig { params(p1: T.any(String, Pathname), p2: String).returns(T::Array[Pathname]) }
-  def self.glob(p1, p2 = T.unsafe(nil)); end
+# This file contains temporary definitions for fixes that have
+# been submitted upstream to https://github.com/sorbet/sorbet.
 
-  # https://github.com/sorbet/sorbet/pull/3678
-  sig { params(with_directory: T::Boolean).returns(T::Array[Pathname]) }
-  def children(with_directory = true); end
+class IO
+  # https://github.com/sorbet/sorbet/pull/3722
+  sig do
+    type_parameters(:U).params(
+      fd: T.any(String, Integer),
+      mode: T.any(Integer, String),
+      opt: T.nilable(T::Hash[Symbol, T.untyped]),
+      blk: T.proc.params(io: T.attached_class).returns(T.type_parameter(:U))
+    ).returns(T.type_parameter(:U))
+  end
+  def self.open(fd, mode='r', opt=nil, &blk); end
+end
+
+class Pathname
+  # https://github.com/sorbet/sorbet/pull/3729
+  sig do
+    params(
+        owner: T.nilable(Integer),
+        group: T.nilable(Integer),
+    )
+    .returns(Integer)
+  end
+  def chown(owner, group); end
 end
 
 module FileUtils

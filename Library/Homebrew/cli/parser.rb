@@ -264,6 +264,7 @@ module Homebrew
         [remaining, non_options]
       end
 
+      sig { params(argv: T::Array[String], ignore_invalid_options: T::Boolean).returns(Args) }
       def parse(argv = ARGV.freeze, ignore_invalid_options: false)
         raise "Arguments were already parsed!" if @args_parsed
 

@@ -20,7 +20,7 @@ begin
   args = Homebrew.test_args.parse
   Context.current = args.context
 
-  error_pipe = UNIXSocket.open(ENV["HOMEBREW_ERROR_PIPE"], &:recv_io)
+  error_pipe = UNIXSocket.open(ENV.fetch("HOMEBREW_ERROR_PIPE"), &:recv_io)
   error_pipe.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)
 
   trap("INT", old_trap)
@@ -30,13 +30,13 @@ begin
     raise "cannot kill child processes without `pkill`, please install!" unless which("pkill")
   end
 
-  formula = args.named.to_resolved_formulae.first
+  formula = T.must(args.named.to_resolved_formulae.first)
   formula.extend(Homebrew::Assertions)
   formula.extend(Homebrew::FreePort)
   formula.extend(Debrew::Formula) if args.debug?
 
   ENV.extend(Stdenv)
-  ENV.setup_build_environment(formula: formula)
+  T.cast(ENV, Stdenv).setup_build_environment(formula: formula)
 
   # tests can also return false to indicate failure
   Timeout.timeout TEST_TIMEOUT_SECONDS do

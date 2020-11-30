@@ -61,13 +61,13 @@ module Homebrew
     )
 
     if args.zap?
-      Cask::Cmd::Zap.zap_casks(
+      T.unsafe(Cask::Cmd::Zap).zap_casks(
         *casks,
         verbose: args.verbose?,
         force:   args.force?,
       )
     else
-      Cask::Cmd::Uninstall.uninstall_casks(
+      T.unsafe(Cask::Cmd::Uninstall).uninstall_casks(
         *casks,
         binaries: EnvConfig.cask_opts_binaries?,
         verbose:  args.verbose?,

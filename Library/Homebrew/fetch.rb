@@ -4,11 +4,16 @@
 module Homebrew
   # @api private
   module Fetch
+    extend T::Sig
+
+    sig { params(f: Formula, args: CLI::Args).returns(T::Boolean) }
     def fetch_bottle?(f, args:)
-      return true if args.force_bottle? && f.bottle
-      return false unless f.bottle && f.pour_bottle?
+      bottle = f.bottle
+
+      return true if args.force_bottle? && bottle
+      return false unless bottle && f.pour_bottle?
       return false if args.build_from_source_formulae.include?(f.full_name)
-      return false unless f.bottle.compatible_cellar?
+      return false unless bottle.compatible_cellar?
 
       true
     end

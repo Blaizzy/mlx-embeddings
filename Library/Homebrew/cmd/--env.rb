@@ -30,6 +30,7 @@ module Homebrew
     end
   end
 
+  sig { void }
   def __env
     args = __env_args.parse
 
@@ -51,7 +52,7 @@ module Homebrew
       BuildEnvironment.dump ENV
     else
       BuildEnvironment.keys(ENV).each do |key|
-        puts Utils::Shell.export_value(key, ENV[key], shell)
+        puts Utils::Shell.export_value(key, ENV.fetch(key), shell)
       end
     end
   end

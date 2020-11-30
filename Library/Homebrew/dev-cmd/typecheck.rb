@@ -93,7 +93,14 @@ module Homebrew
       srb_exec = %w[bundle exec srb tc]
       srb_exec << "--error-black-list" << "5061"
       srb_exec << "--quiet" if args.quiet?
-      srb_exec << "--autocorrect" if args.fix?
+
+      if args.fix?
+        # Auto-correcting method names is almost always wrong.
+        srb_exec << "--error-black-list" << "7003"
+
+        srb_exec << "--autocorrect"
+      end
+
       srb_exec += ["--ignore", args.ignore] if args.ignore.present?
       if args.file.present? || args.dir.present?
         cd("sorbet")

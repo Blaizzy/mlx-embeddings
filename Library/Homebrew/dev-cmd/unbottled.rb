@@ -33,11 +33,7 @@ module Homebrew
 
     Formulary.enable_factory_cache!
 
-    @bottle_tag = if args.tag.present?
-      args.tag.to_sym
-    else
-      Utils::Bottles.tag
-    end
+    @bottle_tag = args.tag.presence&.to_sym || Utils::Bottles.tag
 
     if args.named.blank?
       ohai "Getting formulae..."
