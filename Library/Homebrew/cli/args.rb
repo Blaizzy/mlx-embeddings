@@ -56,6 +56,7 @@ module Homebrew
 
       sig { returns(NamedArgs) }
       def named
+        require "formula"
         self[:named]
       end
 
