@@ -23,7 +23,8 @@ jobs:
           key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
           restore-keys: ${{ runner.os }}-rubygems-
 
-      - run: brew install-bundler-gems
+      - name: Install Bundler RubyGems
+        run: brew install-bundler-gems
 
       - run: brew style --display-cop-names
 
@@ -58,11 +59,6 @@ jobs:
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
 
-      - name: Configure Git user
-        uses: Homebrew/actions/git-user-config@master
-        with:
-          username: BrewTestBot
-
       - run: brew test-bot --only-cleanup-before
 
       - name: Set up Xcode
@@ -71,13 +67,15 @@ jobs:
 
       - run: brew config
 
-      # Can't cache this because we need to check that it doesn't fail the
-      # "uncommitted RubyGems" step with a cold cache.
+      - name: Cache Bundler RubyGems
+        uses: actions/cache@v1
+        with:
+          path: ${{ steps.set-up-homebrew.outputs.gems-path }}
+          key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
+          restore-keys: ${{ runner.os }}-rubygems-
+
       - name: Install Bundler RubyGems
         run: brew install-bundler-gems
-
-      - name: Check for uncommitted RubyGems
-        run: git diff --stat --exit-code Library/Homebrew/vendor/bundle/ruby
 
       - run: brew doctor
 
@@ -91,13 +89,14 @@ jobs:
       - name: Set up all Homebrew taps
         if: runner.os == 'macOS'
         run: |
-          brew update-reset Library/Taps/homebrew/homebrew-bundle \
-                            Library/Taps/homebrew/homebrew-cask \
-                            Library/Taps/homebrew/homebrew-services
           brew tap homebrew/cask
           brew tap homebrew/cask-drivers
           brew tap homebrew/cask-fonts
           brew tap homebrew/cask-versions
+          brew update-reset Library/Taps/homebrew/homebrew-bundle \
+                            Library/Taps/homebrew/homebrew-cask \
+                            Library/Taps/homebrew/homebrew-cask-versions \
+                            Library/Taps/homebrew/homebrew-services
 
       - name: Run brew readall on all taps
         run: brew readall --aliases
@@ -122,6 +121,40 @@ jobs:
 
       - name: Run brew audit --skip-style on all taps
         run: brew audit --skip-style
+
+  vendored-gems:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - name: vendored gems (Linux)
+            os: ubuntu-latest
+            core-tap: "linuxbrew-core"
+          - name: vendored gems (macOS)
+            os: macos-11.0
+            core-tap: "homebrew-core"
+    steps:
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Set up Xcode
+        if: matrix.os == 'macos-11.0'
+        run: sudo xcode-select --switch /Applications/Xcode_12.2.app/Contents/Developer
+
+      - name: Configure Git user
+        uses: Homebrew/actions/git-user-config@master
+        with:
+          username: BrewTestBot
+
+      # Can't cache this because we need to check that it doesn't fail the
+      # "uncommitted RubyGems" step with a cold cache.
+      - name: Install Bundler RubyGems
+        run: brew install-bundler-gems
+
+      - name: Check for uncommitted RubyGems
+        run: git diff --stat --exit-code Library/Homebrew/vendor/bundle/ruby
 
   docker:
     runs-on: ubuntu-latest
@@ -187,7 +220,8 @@ jobs:
           key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
           restore-keys: ${{ runner.os }}-rubygems-
 
-      - run: brew install-bundler-gems
+      - name: Install Bundler RubyGems
+        run: brew install-bundler-gems
 
       - name: Run brew tests
         run: |
@@ -247,6 +281,7 @@ jobs:
           ${{
             needs.syntax.result == 'success' &&
             needs.tap-syntax.result == 'success' &&
+            needs.vendored-gems.result == 'success' &&
             needs.docker.result == 'success' &&
             needs.tests.result == 'success' &&
             needs.test-default-formula.result == 'success'
