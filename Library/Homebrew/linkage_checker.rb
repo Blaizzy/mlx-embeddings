@@ -285,10 +285,12 @@ class LinkageChecker
   def harmless_broken_link?(dylib)
     # libgcc_s_* is referenced by programs that use the Java Service Wrapper,
     # and is harmless on x86(_64) machines
-    [
+    return true if [
       "/usr/lib/libgcc_s_ppc64.1.dylib",
       "/opt/local/lib/libgcc/libgcc_s.1.dylib",
     ].include?(dylib)
+
+    dylib.start_with?("/System/Library/Frameworks/")
   end
 
   # Display a list of things.
