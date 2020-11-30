@@ -16,7 +16,7 @@ homebrew-formulae() {
            -name vendor \
           \) \
          -prune -false -o -name '*\.rb' | \
-    sed -E -e 's/\.rb//g' \
+    sed -r -e 's/\.rb//g' \
            -e 's_.*/Taps/(.*)/(home|linux)brew-_\1/_' \
            -e 's|/Formula/|/|' \
   )"
