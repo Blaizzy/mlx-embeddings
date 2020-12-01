@@ -623,33 +623,13 @@ module RuboCop
       #
       # @api private
       class MakeCheck < FormulaCop
-        MAKE_CHECK_ALLOWLIST = %w[
-          beecrypt
-          ccrypt
-          git
-          gmp
-          gnupg
-          gnupg@1.4
-          google-sparsehash
-          jemalloc
-          jpeg-turbo
-          mpfr
-          nettle
-          open-mpi
-          openssl@1.1
-          pcre
-          protobuf
-          wolfssl
-          xz
-        ].freeze
-
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           return if formula_tap != "homebrew-core"
 
           # Avoid build-time checks in homebrew/core
           find_every_method_call_by_name(body_node, :system).each do |method|
             next if @formula_name.start_with?("lib")
-            next if MAKE_CHECK_ALLOWLIST.include?(@formula_name)
+            next if tap_style_exception? :make_check_allowlist
 
             params = parameters(method)
             next unless node_equals?(params[0], "make")

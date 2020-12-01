@@ -47,7 +47,6 @@ require "test/support/helper/output_as_tty"
 
 require "test/support/helper/spec/shared_context/homebrew_cask" if OS.mac?
 require "test/support/helper/spec/shared_context/integration_test"
-require "test/support/helper/spec/shared_examples/formulae_exist"
 
 TEST_DIRECTORIES = [
   CoreTap.instance.path/"Formula",
@@ -242,6 +241,10 @@ RSpec.configure do |config|
         CoreTap.instance.path/".git",
         CoreTap.instance.alias_dir,
         CoreTap.instance.path/"formula_renames.json",
+        CoreTap.instance.path/"tap_migrations.json",
+        CoreTap.instance.path/"audit_exceptions",
+        CoreTap.instance.path/"style_exceptions",
+        CoreTap.instance.path/"pypi_formula_mappings.json",
         *Pathname.glob("#{HOMEBREW_CELLAR}/*/"),
       ]
 

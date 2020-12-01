@@ -35,6 +35,7 @@ module RuboCop
 
         class_node, parent_class_node, @body = *node
         @formula_name = Pathname.new(@file_path).basename(".rb").to_s
+        @tap_style_exceptions = nil
         audit_formula(node, class_node, parent_class_node, @body)
       end
 
@@ -470,6 +471,32 @@ module RuboCop
         return unless match_obj = @file_path.match(%r{/(homebrew-\w+)/})
 
         match_obj[1]
+      end
+
+      # Returns whether the given formula exists in the given style exception list.
+      # Defaults to the current formula being checked.
+      def tap_style_exception?(list, formula = nil)
+        if @tap_style_exceptions.nil? && !formula_tap.nil?
+          @tap_style_exceptions = {}
+
+          style_exceptions_dir = "#{File.dirname(File.dirname(@file_path))}/style_exceptions/*.json"
+          Pathname.glob(style_exceptions_dir).each do |exception_file|
+            list_name = exception_file.basename.to_s.chomp(".json").to_sym
+            list_contents = begin
+              JSON.parse exception_file.read
+            rescue JSON::ParserError
+              nil
+            end
+            next if list_contents.nil? || list_contents.count.zero?
+
+            @tap_style_exceptions[list_name] = list_contents
+          end
+        end
+
+        return false if @tap_style_exceptions.nil? || @tap_style_exceptions.count.zero?
+        return false unless @tap_style_exceptions.key? list
+
+        @tap_style_exceptions[list].include?(formula || @formula_name)
       end
 
       private

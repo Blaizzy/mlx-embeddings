@@ -18,6 +18,8 @@ describe Tap do
 
   before do
     path.mkpath
+    (path/"audit_exceptions").mkpath
+    (path/"style_exceptions").mkpath
   end
 
   def setup_tap_files
@@ -36,6 +38,27 @@ describe Tap do
 
     (path/"tap_migrations.json").write <<~JSON
       { "removed-formula": "homebrew/foo" }
+    JSON
+
+    %w[audit_exceptions style_exceptions].each do |exceptions_directory|
+      (path/"#{exceptions_directory}/formula_list.json").write <<~JSON
+        [ "foo", "bar" ]
+      JSON
+
+      (path/"#{exceptions_directory}/formula_hash.json").write <<~JSON
+        { "foo": "foo1", "bar": "bar1" }
+      JSON
+    end
+
+    (path/"pypi_formula_mappings.json").write <<~JSON
+      {
+        "formula1": "foo",
+        "formula2": {
+          "package_name": "foo",
+          "extra_packages": ["bar"],
+          "exclude_packages": ["baz"]
+        }
+      }
     JSON
 
     [
@@ -320,6 +343,66 @@ describe Tap do
       expect(described_class.each).to be_an_instance_of(Enumerator)
     end
   end
+
+  describe "Formula Lists" do
+    describe "#formula_renames" do
+      it "returns the formula_renames hash" do
+        setup_tap_files
+
+        expected_result = { "oldname" => "foo" }
+        expect(subject.formula_renames).to eq expected_result
+      end
+    end
+
+    describe "#tap_migrations" do
+      it "returns the tap_migrations hash" do
+        setup_tap_files
+
+        expected_result = { "removed-formula" => "homebrew/foo" }
+        expect(subject.tap_migrations).to eq expected_result
+      end
+    end
+
+    describe "#audit_exceptions" do
+      it "returns the audit_exceptions hash" do
+        setup_tap_files
+
+        expected_result = {
+          formula_list: ["foo", "bar"],
+          formula_hash: { "foo" => "foo1", "bar" => "bar1" },
+        }
+        expect(subject.audit_exceptions).to eq expected_result
+      end
+    end
+
+    describe "#style_exceptions" do
+      it "returns the style_exceptions hash" do
+        setup_tap_files
+
+        expected_result = {
+          formula_list: ["foo", "bar"],
+          formula_hash: { "foo" => "foo1", "bar" => "bar1" },
+        }
+        expect(subject.style_exceptions).to eq expected_result
+      end
+    end
+
+    describe "#pypi_formula_mappings" do
+      it "returns the pypi_formula_mappings hash" do
+        setup_tap_files
+
+        expected_result = {
+          "formula1" => "foo",
+          "formula2" => {
+            "package_name"     => "foo",
+            "extra_packages"   => ["bar"],
+            "exclude_packages" => ["baz"],
+          },
+        }
+        expect(subject.pypi_formula_mappings).to eq expected_result
+      end
+    end
+  end
 end
 
 describe CoreTap do
@@ -341,12 +424,25 @@ describe CoreTap do
   end
 
   specify "files" do
+    path = Tap::TAP_DIRECTORY/"homebrew/homebrew-core"
     formula_file = subject.formula_dir/"foo.rb"
     formula_file.write <<~RUBY
       class Foo < Formula
         url "https://brew.sh/foo-1.0.tar.gz"
       end
     RUBY
+
+    formula_list_file_json = '{ "foo": "foo1", "bar": "bar1" }'
+    formula_list_file_contents = { "foo" => "foo1", "bar" => "bar1" }
+    %w[
+      formula_renames.json
+      tap_migrations.json
+      audit_exceptions/formula_list.json
+      style_exceptions/formula_hash.json
+      pypi_formula_mappings.json
+    ].each do |file|
+      (path/file).write formula_list_file_json
+    end
 
     alias_file = subject.alias_dir/"bar"
     alias_file.parent.mkpath
@@ -358,5 +454,11 @@ describe CoreTap do
     expect(subject.aliases).to eq(["bar"])
     expect(subject.alias_table).to eq("bar" => "foo")
     expect(subject.alias_reverse_table).to eq("foo" => ["bar"])
+
+    expect(subject.formula_renames).to eq formula_list_file_contents
+    expect(subject.tap_migrations).to eq formula_list_file_contents
+    expect(subject.audit_exceptions).to eq({ formula_list: formula_list_file_contents })
+    expect(subject.style_exceptions).to eq({ formula_hash: formula_list_file_contents })
+    expect(subject.pypi_formula_mappings).to eq formula_list_file_contents
   end
 end

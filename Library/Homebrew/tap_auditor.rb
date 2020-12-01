@@ -8,13 +8,14 @@ module Homebrew
   class TapAuditor
     extend T::Sig
 
-    attr_reader :name, :path, :tap_audit_exceptions, :tap_pypi_formula_mappings, :problems
+    attr_reader :name, :path, :tap_audit_exceptions, :tap_style_exceptions, :tap_pypi_formula_mappings, :problems
 
     sig { params(tap: Tap, strict: T.nilable(T::Boolean)).void }
     def initialize(tap, strict:)
       @name                      = tap.name
       @path                      = tap.path
       @tap_audit_exceptions      = tap.audit_exceptions
+      @tap_style_exceptions      = tap.style_exceptions
       @tap_pypi_formula_mappings = tap.pypi_formula_mappings
       @problems                  = []
     end
@@ -38,6 +39,7 @@ module Homebrew
     sig { void }
     def audit_tap_formula_lists
       check_formula_list_directory "audit_exceptions", @tap_audit_exceptions
+      check_formula_list_directory "style_exceptions", @tap_style_exceptions
       check_formula_list "pypi_formula_mappings", @tap_pypi_formula_mappings
     end
 

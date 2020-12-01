@@ -11,11 +11,6 @@ module RuboCop
       # - `component_precedence_list` has component hierarchy in a nested list
       #   where each sub array contains components' details which are at same precedence level
       class ComponentsOrder < FormulaCop
-        # `aspell`: options and resources should be grouped by language
-        COMPONENT_ALLOWLIST = %w[
-          aspell
-        ].freeze
-
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           component_precedence_list = [
             [{ name: :include,   type: :method_call }],
@@ -234,7 +229,7 @@ module RuboCop
 
         # Method to format message for reporting component precedence violations.
         def component_problem(c1, c2)
-          return if COMPONENT_ALLOWLIST.include?(@formula_name)
+          return if tap_style_exception? :components_order_exceptions
 
           problem "`#{format_component(c1)}` (line #{line_number(c1)}) " \
                   "should be put before `#{format_component(c2)}` " \

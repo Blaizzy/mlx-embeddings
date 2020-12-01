@@ -21,12 +21,14 @@ class Tap
   HOMEBREW_TAP_FORMULA_RENAMES_FILE = "formula_renames.json"
   HOMEBREW_TAP_MIGRATIONS_FILE = "tap_migrations.json"
   HOMEBREW_TAP_AUDIT_EXCEPTIONS_DIR = "audit_exceptions"
+  HOMEBREW_TAP_STYLE_EXCEPTIONS_DIR = "style_exceptions"
   HOMEBREW_TAP_PYPI_FORMULA_MAPPINGS = "pypi_formula_mappings.json"
 
   HOMEBREW_TAP_JSON_FILES = %W[
     #{HOMEBREW_TAP_FORMULA_RENAMES_FILE}
     #{HOMEBREW_TAP_MIGRATIONS_FILE}
     #{HOMEBREW_TAP_AUDIT_EXCEPTIONS_DIR}/*.json
+    #{HOMEBREW_TAP_STYLE_EXCEPTIONS_DIR}/*.json
     #{HOMEBREW_TAP_PYPI_FORMULA_MAPPINGS}
   ].freeze
 
@@ -114,6 +116,7 @@ class Tap
     @formula_renames = nil
     @tap_migrations = nil
     @audit_exceptions = nil
+    @style_exceptions = nil
     @pypi_formula_mappings = nil
     @config = nil
     remove_instance_variable(:@private) if instance_variable_defined?(:@private)
@@ -567,6 +570,12 @@ class Tap
     @audit_exceptions = read_formula_list_directory "#{HOMEBREW_TAP_AUDIT_EXCEPTIONS_DIR}/*"
   end
 
+  # Hash with style exceptions
+  sig { returns(Hash) }
+  def style_exceptions
+    @style_exceptions = read_formula_list_directory "#{HOMEBREW_TAP_STYLE_EXCEPTIONS_DIR}/*"
+  end
+
   # Hash with pypi formula mappings
   sig { returns(Hash) }
   def pypi_formula_mappings
@@ -760,6 +769,15 @@ class CoreTap < Tap
     end
   end
 
+  # @private
+  def style_exceptions
+    @style_exceptions ||= begin
+      self.class.ensure_installed!
+      super
+    end
+  end
+
+  # @private
   def pypi_formula_mappings
     @pypi_formula_mappings ||= begin
       self.class.ensure_installed!
