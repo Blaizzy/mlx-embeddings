@@ -81,6 +81,7 @@ describe FormulaClassUnavailableError do
   let(:mod) do
     Module.new do
       class Bar < Requirement; end
+
       class Baz < Formula; end
     end
   end
