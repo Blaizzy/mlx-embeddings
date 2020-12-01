@@ -15,3 +15,17 @@ describe "brew ruby", :integration_test do
       .and not_to_output.to_stderr
   end
 end
+
+describe "brew ruby -e 'puts \"testball\".f.path'", :integration_test do
+  let!(:target) do
+    target_path = setup_test_formula "testball"
+    { path: target_path }
+  end
+
+  it "prints the path of a test formula" do
+    expect { brew "ruby", "-e", "puts 'testball'.f.path" }
+      .to be_a_success
+      .and output(/^#{target[:path]}$/).to_stdout
+      .and not_to_output.to_stderr
+  end
+end
