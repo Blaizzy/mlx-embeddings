@@ -26,10 +26,6 @@ Cask/Desc:
   Description: 'Ensure that the desc stanza conforms to various content and style checks.'
   Enabled: true
 
-Cask/HomepageMatchesUrl:
-  Description: 'Ensure that the homepage and url match, otherwise add a comment. More info at https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/stanzas/url.md#when-url-and-homepage-hostnames-differ-add-a-comment'
-  Enabled: true
-
 Cask/HomepageUrlTrailingSlash:
   Description: 'Ensure that the homepage url has a slash after the domain name.'
   Enabled: true

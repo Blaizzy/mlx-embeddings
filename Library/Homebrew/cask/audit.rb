@@ -52,6 +52,9 @@ module Cask
       check_sha256
       check_desc
       check_url
+      check_unnecessary_verified
+      check_missing_verified
+      check_no_match
       check_generic_artifacts
       check_token_valid
       check_token_bad_words
@@ -343,6 +346,80 @@ module Cask
 
     def bad_osdn_url?
       bad_url_format?(/osd/, [%r{\Ahttps?://([^/]+.)?dl\.osdn\.jp/}])
+    end
+
+    def homepage
+      URI(cask.homepage.to_s).host
+    end
+
+    def domain
+      URI(cask.url.to_s).host
+    end
+
+    def url_match_homepage?
+      host = cask.url.to_s.downcase
+      host_uri = URI(host)
+      host = if host.match?(/:\d/) && host_uri.port != 80
+        "#{host_uri.host}:#{host_uri.port}"
+      else
+        host_uri.host
+      end
+      home = homepage.downcase
+      if (split_host = host.split(".")).length >= 3
+        host = split_host[-2..].join(".")
+      end
+      if (split_home = homepage.split(".")).length >= 3
+        home = split_home[-2..].join(".")
+      end
+      host == home
+    end
+
+    def strip_url_scheme(url)
+      url.sub(%r{^.*://(www\.)?}, "")
+    end
+
+    def url_from_verified
+      cask.url.verified.sub(%r{^https?://}, "")
+    end
+
+    def verified_matches_url?
+      strip_url_scheme(cask.url.to_s).start_with?(url_from_verified)
+    end
+
+    def verified_present?
+      cask.url.verified.present?
+    end
+
+    def url_includes_file?
+      cask.url.to_s.start_with?("file://")
+    end
+
+    def check_unnecessary_verified
+      return unless verified_present?
+      return unless url_match_homepage?
+      return unless verified_matches_url?
+
+      add_warning "The URL's #{domain} matches the homepage #{homepage}, " \
+                  "the `verified` parameter of the `url` stanza is unnecessary. " \
+                  "See https://github.com/Homebrew/homebrew-cask/blob/master/doc/cask_language_reference/stanzas/url.md#when-url-and-homepage-hostnames-differ-add-verified"
+    end
+
+    def check_missing_verified
+      return if url_includes_file?
+      return if url_match_homepage?
+      return if verified_present?
+
+      add_warning "#{domain} does not match #{homepage}, a `verified` parameter of the `url` has to be added. " \
+                  " See https://github.com/Homebrew/homebrew-cask/blob/master/doc/cask_language_reference/stanzas/url.md#when-url-and-homepage-hostnames-differ-add-verified"
+    end
+
+    def check_no_match
+      return if url_match_homepage?
+      return unless verified_present?
+      return if !url_match_homepage? && verified_matches_url?
+
+      add_warning "#{url_from_verified} does not match #{strip_url_scheme(cask.url.to_s)}. " \
+                  "See https://github.com/Homebrew/homebrew-cask/blob/master/doc/cask_language_reference/stanzas/url.md#when-url-and-homepage-hostnames-differ-add-verified"
     end
 
     def check_generic_artifacts

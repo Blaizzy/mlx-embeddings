@@ -887,5 +887,80 @@ describe Cask::Audit, :cask do
         expect(subject).to pass
       end
     end
+
+    context "when the url matches the homepage" do
+      let(:cask_token) { "foo" }
+      let(:cask) do
+        tmp_cask cask_token.to_s, <<~RUBY
+          cask '#{cask_token}' do
+            version '1.0'
+            sha256 '8dd95daa037ac02455435446ec7bc737b34567afe9156af7d20b2a83805c1d8a'
+            url 'https://foo.brew.sh/foo.zip'
+            name 'Audit'
+            desc 'Audit Description'
+            homepage 'https://foo.brew.sh'
+            app 'Audit.app'
+          end
+        RUBY
+      end
+
+      it { is_expected.to pass }
+    end
+
+    context "when the url does not match the homepage" do
+      let(:cask_token) { "foo" }
+      let(:cask) do
+        tmp_cask cask_token.to_s, <<~RUBY
+          cask '#{cask_token}' do
+            version '1.8.0_72,8.13.0.5'
+            sha256 '8dd95daa037ac02455435446ec7bc737b34567afe9156af7d20b2a83805c1d8a'
+            url 'https://brew.sh/foo.zip'
+            name 'Audit'
+            desc 'Audit Description'
+            homepage 'https://foo.example.org'
+            app 'Audit.app'
+          end
+        RUBY
+      end
+
+      it { is_expected.to warn_with(/a `verified` parameter of the `url` has to be added./) }
+    end
+
+    context "when the url does not match the homepage with verified" do
+      let(:cask_token) { "foo" }
+      let(:cask) do
+        tmp_cask cask_token.to_s, <<~RUBY
+          cask '#{cask_token}' do
+            version '1.8.0_72,8.13.0.5'
+            sha256 '8dd95daa037ac02455435446ec7bc737b34567afe9156af7d20b2a83805c1d8a'
+            url 'https://brew.sh/foo.zip', verified: 'brew.sh'
+            name 'Audit'
+            desc 'Audit Description'
+            homepage 'https://foo.example.org'
+            app 'Audit.app'
+          end
+        RUBY
+      end
+
+      it { is_expected.to pass }
+    end
+
+    context "when there is no homepage" do
+      let(:cask_token) { "foo" }
+      let(:cask) do
+        tmp_cask cask_token.to_s, <<~RUBY
+          cask '#{cask_token}' do
+            version '1.8.0_72,8.13.0.5'
+            sha256 '8dd95daa037ac02455435446ec7bc737b34567afe9156af7d20b2a83805c1d8a'
+            url 'https://brew.sh/foo.zip'
+            name 'Audit'
+            desc 'Audit Description'
+            app 'Audit.app'
+          end
+        RUBY
+      end
+
+      it { is_expected.to fail_with(/a homepage stanza is required/) }
+    end
   end
 end
