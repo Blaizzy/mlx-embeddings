@@ -424,7 +424,7 @@ describe CoreTap do
   end
 
   specify "files" do
-    path = CoreTap::TAP_DIRECTORY/"homebrew/homebrew-core"
+    path = Tap::TAP_DIRECTORY/"homebrew/homebrew-core"
     formula_file = subject.formula_dir/"foo.rb"
     formula_file.write <<~RUBY
       class Foo < Formula
