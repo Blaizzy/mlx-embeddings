@@ -185,7 +185,7 @@ module OS
       path = mdfind(*ids)
              .reject { |p| p.include?("/Backups.backupdb/") }
              .first
-      Pathname.new(path) unless path.nil? || path.empty?
+      Pathname.new(path) if path.present?
     end
 
     def mdfind(*ids)

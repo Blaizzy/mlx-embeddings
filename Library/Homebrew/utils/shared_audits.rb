@@ -107,7 +107,7 @@ module SharedAudits
 
     return if metadata.nil?
 
-    if metadata["fork"] && !GITHUB_FORK_ALLOWLIST.include?("#{user}/#{repo}")
+    if metadata["fork"] && GITHUB_FORK_ALLOWLIST.exclude?("#{user}/#{repo}")
       return "GitHub fork (not canonical repository)"
     end
 

@@ -20,7 +20,7 @@ class CxxStdlib
   end
 
   def self.create(type, compiler)
-    raise ArgumentError, "Invalid C++ stdlib type: #{type}" if type && ![:libstdcxx, :libcxx].include?(type)
+    raise ArgumentError, "Invalid C++ stdlib type: #{type}" if type && [:libstdcxx, :libcxx].exclude?(type)
 
     apple_compiler = compiler.to_s.match?(GNU_GCC_REGEXP) ? false : true
     CxxStdlib.new(type, compiler, apple_compiler)

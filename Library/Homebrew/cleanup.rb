@@ -122,7 +122,7 @@ module Homebrew
 
           return true unless basename.to_s.match?(/\A#{Regexp.escape(name)}--#{Regexp.escape(cask.version)}\b/)
 
-          return true if scrub && !cask.versions.include?(cask.version)
+          return true if scrub && cask.versions.exclude?(cask.version)
 
           if cask.version.latest?
             return mtime < CLEANUP_DEFAULT_DAYS.days.ago &&
@@ -444,7 +444,7 @@ module Homebrew
                 path.unlink
               end
             end
-          elsif path.directory? && !Keg::MUST_EXIST_SUBDIRECTORIES.include?(path)
+          elsif path.directory? && Keg::MUST_EXIST_SUBDIRECTORIES.exclude?(path)
             dirs << path
           end
         end

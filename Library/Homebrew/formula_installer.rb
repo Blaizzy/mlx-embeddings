@@ -364,7 +364,7 @@ class FormulaInstaller
 
     return if only_deps?
 
-    if build_bottle? && (arch = @bottle_arch) && !Hardware::CPU.optimization_flags.include?(arch.to_sym)
+    if build_bottle? && (arch = @bottle_arch) && Hardware::CPU.optimization_flags.exclude?(arch.to_sym)
       raise CannotInstallFormulaError, "Unrecognized architecture for --bottle-arch: #{arch}"
     end
 
@@ -537,9 +537,7 @@ class FormulaInstaller
     req_deps = []
     formulae = [formula]
     formula_deps_map = Dependency.expand(formula)
-                                 .each_with_object({}) do |dep, hash|
-      hash[dep.name] = dep
-    end
+                                 .index_by(&:name)
 
     while f = formulae.pop
       runtime_requirements = runtime_requirements(f)
@@ -594,9 +592,9 @@ class FormulaInstaller
     end
 
     if pour_bottle && !Keg.bottle_dependencies.empty?
-      bottle_deps = if !Keg.bottle_dependencies.include?(formula.name)
+      bottle_deps = if Keg.bottle_dependencies.exclude?(formula.name)
         Keg.bottle_dependencies
-      elsif !Keg.relocation_formulae.include?(formula.name)
+      elsif Keg.relocation_formulae.exclude?(formula.name)
         Keg.relocation_formulae
       else
         []

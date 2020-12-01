@@ -260,13 +260,13 @@ class Formula
   end
 
   def validate_attributes!
-    raise FormulaValidationError.new(full_name, :name, name) if name.nil? || name.empty? || name =~ /\s/
+    raise FormulaValidationError.new(full_name, :name, name) if name.blank? || name =~ /\s/
 
     url = active_spec.url
-    raise FormulaValidationError.new(full_name, :url, url) if url.nil? || url.empty? || url =~ /\s/
+    raise FormulaValidationError.new(full_name, :url, url) if url.blank? || url =~ /\s/
 
     val = version.respond_to?(:to_str) ? version.to_str : version
-    return unless val.nil? || val.empty? || val =~ /\s/
+    return unless val.blank? || val =~ /\s/
 
     raise FormulaValidationError.new(full_name, :version, val)
   end

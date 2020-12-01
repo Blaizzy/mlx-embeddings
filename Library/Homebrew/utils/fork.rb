@@ -79,7 +79,7 @@ module Utils
           # without writing its Interrupt exception to the error pipe.
           raise Interrupt if $CHILD_STATUS.exitstatus == 130
 
-          if data && !data.empty?
+          if data.present?
             error_hash = JSON.parse(T.must(data.lines.first))
 
             e = ChildProcessError.new(error_hash)

@@ -64,7 +64,7 @@ class Bintray
 
     url = "#{API_URL}/content/#{@bintray_org}/#{repo}/#{package}/#{version}/#{remote_file}"
     args = ["--upload-file", local_file]
-    args += ["--header", "X-Checksum-Sha2: #{sha256}"] unless sha256.blank?
+    args += ["--header", "X-Checksum-Sha2: #{sha256}"] if sha256.present?
     args << "--fail" unless warn_on_error
 
     result = T.unsafe(self).open_api(url, *args)
@@ -167,7 +167,7 @@ class Bintray
                 .select { |type,| type == :stderr }
                 .map { |_, line| line }
                 .join
-      raise if e.status.exitstatus != 22 && !stderr.include?("404 Not Found")
+      raise if e.status.exitstatus != 22 && stderr.exclude?("404 Not Found")
 
       false
     else
@@ -185,7 +185,7 @@ class Bintray
     if result.success?
       result.stdout.match(/^X-Checksum-Sha2:\s+(\h{64})\b/i)&.values_at(1)&.first || ""
     else
-      raise Error if result.status.exitstatus != 22 && !result.stderr.include?("404 Not Found")
+      raise Error if result.status.exitstatus != 22 && result.stderr.exclude?("404 Not Found")
 
       nil
     end

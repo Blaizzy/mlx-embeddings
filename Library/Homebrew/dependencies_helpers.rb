@@ -47,7 +47,7 @@ module DependenciesHelpers
       if dep.recommended?
         klass.prune if ignores.include?("recommended?") || dependent.build.without?(dep)
       elsif dep.optional?
-        klass.prune if !includes.include?("optional?") && !dependent.build.with?(dep)
+        klass.prune if includes.exclude?("optional?") && !dependent.build.with?(dep)
       elsif dep.build? || dep.test?
         keep = false
         keep ||= dep.test? && includes.include?("test?") && dependent == root_dependent

@@ -407,7 +407,7 @@ module Homebrew
           next
         end
 
-        if livecheck_strategy.present? && !strategies.include?(strategy)
+        if livecheck_strategy.present? && strategies.exclude?(strategy)
           odebug "#{strategy_name} strategy does not apply to this URL"
           next
         end

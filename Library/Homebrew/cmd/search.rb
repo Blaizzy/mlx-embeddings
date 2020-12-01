@@ -119,7 +119,7 @@ module Homebrew
 
       count = all_formulae.count + all_casks.count
 
-      if $stdout.tty? && (reason = MissingFormula.reason(query, silent: true)) && !local_casks.include?(query)
+      if $stdout.tty? && (reason = MissingFormula.reason(query, silent: true)) && local_casks.exclude?(query)
         if count.positive?
           puts
           puts "If you meant #{query.inspect} specifically:"

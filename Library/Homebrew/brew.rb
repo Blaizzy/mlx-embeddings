@@ -59,7 +59,7 @@ begin
       # Command-style help: `help <cmd>` is fine, but `<cmd> help` is not.
       help_flag = true
       help_cmd_index = i
-    elsif !cmd && !help_flag_list.include?(arg)
+    elsif !cmd && help_flag_list.exclude?(arg)
       cmd = ARGV.delete_at(i)
       cmd = Commands::HOMEBREW_INTERNAL_COMMAND_ALIASES.fetch(cmd, cmd)
     end

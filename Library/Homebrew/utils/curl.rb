@@ -71,7 +71,7 @@ module Utils
                               env:  { "SSL_CERT_FILE" => nil }.merge(env),
                               **command_options
 
-      if !result.success? && !args.include?("--http1.1")
+      if !result.success? && args.exclude?("--http1.1")
         # This is a workaround for https://github.com/curl/curl/issues/1618.
         if result.status.exitstatus == 56 # Unexpected EOF
           out = curl_output("-V").stdout
