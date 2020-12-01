@@ -133,7 +133,7 @@ jobs:
               })
 
               const { data: user } = await github.users.getAuthenticated()
-              if (pullRequest.user.login == user) {
+              if (pullRequest.user.login == user.login) {
                 core.warning('Pull request author is a bot.')
                 return
               }
