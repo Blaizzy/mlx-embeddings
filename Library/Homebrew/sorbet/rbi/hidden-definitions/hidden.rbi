@@ -245,6 +245,15 @@ module ActiveSupport::Cache
   def self.lookup_store(store=T.unsafe(nil), *parameters); end
 end
 
+class ActiveSupport::CachingKeyGenerator
+  def generate_key(*args); end
+
+  def initialize(key_generator); end
+end
+
+class ActiveSupport::CachingKeyGenerator
+end
+
 module ActiveSupport::Callbacks
   def run_callbacks(kind); end
   CALLBACK_FILTER_TYPES = ::T.let(nil, ::T.untyped)
@@ -1648,6 +1657,21 @@ end
 class ActiveSupport::MessageVerifier
 end
 
+module ActiveSupport::Messages
+end
+
+class ActiveSupport::Messages::Metadata
+  def initialize(message, expires_at=T.unsafe(nil), purpose=T.unsafe(nil)); end
+
+  def verify(purpose); end
+end
+
+class ActiveSupport::Messages::Metadata
+  def self.verify(message, purpose); end
+
+  def self.wrap(message, expires_at: T.unsafe(nil), expires_in: T.unsafe(nil), purpose: T.unsafe(nil)); end
+end
+
 module ActiveSupport::Messages::Rotator
   def initialize(*_, **options); end
 
@@ -1671,6 +1695,9 @@ module ActiveSupport::Messages::Rotator::Verifier
 end
 
 module ActiveSupport::Messages::Rotator
+end
+
+module ActiveSupport::Messages
 end
 
 module ActiveSupport::Multibyte
@@ -2345,6 +2372,15 @@ end
 class ActiveSupport::SafeBuffer
 end
 
+module ActiveSupport::SecurityUtils
+end
+
+module ActiveSupport::SecurityUtils
+  def self.fixed_length_secure_compare(a, b); end
+
+  def self.secure_compare(a, b); end
+end
+
 class ActiveSupport::StringInquirer
 end
 
@@ -2472,6 +2508,7 @@ ActiveSupport::TestCase::Assertion = Minitest::Assertion
 class ActiveSupport::TestCase
   extend ::ActiveSupport::Callbacks::ClassMethods
   extend ::ActiveSupport::DescendantsTracker
+  extend ::ActiveSupport::Testing::Declarative
   def self.__callbacks(); end
 
   def self.__callbacks=(val); end
@@ -2501,6 +2538,9 @@ class ActiveSupport::TestCase
   def self.test_order=(new_order); end
 end
 
+module ActiveSupport::Testing
+end
+
 module ActiveSupport::Testing::Assertions
   def assert_changes(expression, message=T.unsafe(nil), from: T.unsafe(nil), to: T.unsafe(nil), &block); end
 
@@ -2517,6 +2557,27 @@ module ActiveSupport::Testing::Assertions
 end
 
 module ActiveSupport::Testing::Assertions
+end
+
+module ActiveSupport::Testing::ConstantLookup
+end
+
+module ActiveSupport::Testing::ConstantLookup::ClassMethods
+  def determine_constant_from_test_name(test_name); end
+end
+
+module ActiveSupport::Testing::ConstantLookup::ClassMethods
+end
+
+module ActiveSupport::Testing::ConstantLookup
+  extend ::ActiveSupport::Concern
+end
+
+module ActiveSupport::Testing::Declarative
+  def test(name, &block); end
+end
+
+module ActiveSupport::Testing::Declarative
 end
 
 module ActiveSupport::Testing::Deprecation
@@ -2538,6 +2599,74 @@ module ActiveSupport::Testing::FileFixtures
   extend ::ActiveSupport::Concern
 end
 
+module ActiveSupport::Testing::Isolation
+  include ::ActiveSupport::Testing::Isolation::Forking
+  def run(); end
+end
+
+module ActiveSupport::Testing::Isolation::Forking
+  def run_in_isolation(&blk); end
+end
+
+module ActiveSupport::Testing::Isolation::Forking
+end
+
+module ActiveSupport::Testing::Isolation::Subprocess
+  def run_in_isolation(&blk); end
+  ORIG_ARGV = ::T.let(nil, ::T.untyped)
+end
+
+module ActiveSupport::Testing::Isolation::Subprocess
+end
+
+module ActiveSupport::Testing::Isolation
+  def self.forking_env?(); end
+
+  def self.included(klass); end
+end
+
+class ActiveSupport::Testing::Parallelization
+  def <<(work); end
+
+  def after_fork(worker); end
+
+  def after_fork_hooks(); end
+
+  def initialize(queue_size); end
+
+  def run_cleanup(worker); end
+
+  def run_cleanup_hooks(); end
+
+  def shutdown(); end
+
+  def start(); end
+end
+
+class ActiveSupport::Testing::Parallelization::Server
+  include ::DRb::DRbUndumped
+  def <<(o); end
+
+  def length(); end
+
+  def pop(); end
+
+  def record(reporter, result); end
+end
+
+class ActiveSupport::Testing::Parallelization::Server
+end
+
+class ActiveSupport::Testing::Parallelization
+  def self.after_fork_hook(&blk); end
+
+  def self.after_fork_hooks(); end
+
+  def self.run_cleanup_hook(&blk); end
+
+  def self.run_cleanup_hooks(); end
+end
+
 module ActiveSupport::Testing::SetupAndTeardown
   def after_teardown(); end
 
@@ -2546,6 +2675,37 @@ end
 
 module ActiveSupport::Testing::SetupAndTeardown
   def self.prepended(klass); end
+end
+
+class ActiveSupport::Testing::SimpleStubs
+  def stub_object(object, method_name, &block); end
+
+  def stubbing(object, method_name); end
+
+  def unstub_all!(); end
+end
+
+class ActiveSupport::Testing::SimpleStubs::Stub
+  def method_name(); end
+
+  def method_name=(_); end
+
+  def object(); end
+
+  def object=(_); end
+
+  def original_method(); end
+
+  def original_method=(_); end
+end
+
+class ActiveSupport::Testing::SimpleStubs::Stub
+  def self.[](*_); end
+
+  def self.members(); end
+end
+
+class ActiveSupport::Testing::SimpleStubs
 end
 
 module ActiveSupport::Testing::TaggedLogging
@@ -2572,6 +2732,9 @@ module ActiveSupport::Testing::TimeHelpers
 end
 
 module ActiveSupport::Testing::TimeHelpers
+end
+
+module ActiveSupport::Testing
 end
 
 class ActiveSupport::TimeWithZone
@@ -13076,8 +13239,6 @@ class Net::HTTP::Persistent
   def self.detect_idle_timeout(uri, max=T.unsafe(nil)); end
 end
 
-Net::HTTP::ProxyMod = Net::HTTP::ProxyDelta
-
 class Net::HTTPAlreadyReported
   HAS_BODY = ::T.let(nil, ::T.untyped)
 end
@@ -13097,8 +13258,6 @@ class Net::HTTPEarlyHints
 end
 
 Net::HTTPFatalErrorCode = Net::HTTPClientError
-
-Net::HTTPInformation::EXCEPTION_TYPE = Net::HTTPError
 
 Net::HTTPInformationCode = Net::HTTPInformation
 
@@ -13453,6 +13612,10 @@ class OpenSSL::BN
   def /(_); end
 
   def negative?(); end
+end
+
+module OpenSSL::Buffering
+  include ::ActiveSupport::ToJsonWithActiveSupportEncoder
 end
 
 module OpenSSL::KDF
@@ -25768,6 +25931,1755 @@ class Racc::Parser
   Racc_YY_Parse_Method = ::T.let(nil, ::T.untyped)
 end
 
+module Rack
+  CACHE_CONTROL = ::T.let(nil, ::T.untyped)
+  CONTENT_LENGTH = ::T.let(nil, ::T.untyped)
+  CONTENT_TYPE = ::T.let(nil, ::T.untyped)
+  DELETE = ::T.let(nil, ::T.untyped)
+  ETAG = ::T.let(nil, ::T.untyped)
+  EXPIRES = ::T.let(nil, ::T.untyped)
+  GET = ::T.let(nil, ::T.untyped)
+  HEAD = ::T.let(nil, ::T.untyped)
+  HTTPS = ::T.let(nil, ::T.untyped)
+  HTTP_COOKIE = ::T.let(nil, ::T.untyped)
+  HTTP_HOST = ::T.let(nil, ::T.untyped)
+  HTTP_PORT = ::T.let(nil, ::T.untyped)
+  HTTP_VERSION = ::T.let(nil, ::T.untyped)
+  LINK = ::T.let(nil, ::T.untyped)
+  OPTIONS = ::T.let(nil, ::T.untyped)
+  PATCH = ::T.let(nil, ::T.untyped)
+  PATH_INFO = ::T.let(nil, ::T.untyped)
+  POST = ::T.let(nil, ::T.untyped)
+  PUT = ::T.let(nil, ::T.untyped)
+  QUERY_STRING = ::T.let(nil, ::T.untyped)
+  RACK_ERRORS = ::T.let(nil, ::T.untyped)
+  RACK_HIJACK = ::T.let(nil, ::T.untyped)
+  RACK_HIJACK_IO = ::T.let(nil, ::T.untyped)
+  RACK_INPUT = ::T.let(nil, ::T.untyped)
+  RACK_IS_HIJACK = ::T.let(nil, ::T.untyped)
+  RACK_LOGGER = ::T.let(nil, ::T.untyped)
+  RACK_METHODOVERRIDE_ORIGINAL_METHOD = ::T.let(nil, ::T.untyped)
+  RACK_MULTIPART_BUFFER_SIZE = ::T.let(nil, ::T.untyped)
+  RACK_MULTIPART_TEMPFILE_FACTORY = ::T.let(nil, ::T.untyped)
+  RACK_MULTIPROCESS = ::T.let(nil, ::T.untyped)
+  RACK_MULTITHREAD = ::T.let(nil, ::T.untyped)
+  RACK_RECURSIVE_INCLUDE = ::T.let(nil, ::T.untyped)
+  RACK_REQUEST_COOKIE_HASH = ::T.let(nil, ::T.untyped)
+  RACK_REQUEST_COOKIE_STRING = ::T.let(nil, ::T.untyped)
+  RACK_REQUEST_FORM_HASH = ::T.let(nil, ::T.untyped)
+  RACK_REQUEST_FORM_INPUT = ::T.let(nil, ::T.untyped)
+  RACK_REQUEST_FORM_VARS = ::T.let(nil, ::T.untyped)
+  RACK_REQUEST_QUERY_HASH = ::T.let(nil, ::T.untyped)
+  RACK_REQUEST_QUERY_STRING = ::T.let(nil, ::T.untyped)
+  RACK_RUNONCE = ::T.let(nil, ::T.untyped)
+  RACK_SESSION = ::T.let(nil, ::T.untyped)
+  RACK_SESSION_OPTIONS = ::T.let(nil, ::T.untyped)
+  RACK_SESSION_UNPACKED_COOKIE_DATA = ::T.let(nil, ::T.untyped)
+  RACK_SHOWSTATUS_DETAIL = ::T.let(nil, ::T.untyped)
+  RACK_TEMPFILES = ::T.let(nil, ::T.untyped)
+  RACK_URL_SCHEME = ::T.let(nil, ::T.untyped)
+  RACK_VERSION = ::T.let(nil, ::T.untyped)
+  RELEASE = ::T.let(nil, ::T.untyped)
+  REQUEST_METHOD = ::T.let(nil, ::T.untyped)
+  REQUEST_PATH = ::T.let(nil, ::T.untyped)
+  SCRIPT_NAME = ::T.let(nil, ::T.untyped)
+  SERVER_NAME = ::T.let(nil, ::T.untyped)
+  SERVER_PORT = ::T.let(nil, ::T.untyped)
+  SERVER_PROTOCOL = ::T.let(nil, ::T.untyped)
+  SET_COOKIE = ::T.let(nil, ::T.untyped)
+  TRACE = ::T.let(nil, ::T.untyped)
+  TRANSFER_ENCODING = ::T.let(nil, ::T.untyped)
+  UNLINK = ::T.let(nil, ::T.untyped)
+  VERSION = ::T.let(nil, ::T.untyped)
+end
+
+module Rack::Auth
+end
+
+class Rack::Auth::AbstractHandler
+  def initialize(app, realm=T.unsafe(nil), &authenticator); end
+
+  def realm(); end
+
+  def realm=(realm); end
+end
+
+class Rack::Auth::AbstractHandler
+end
+
+class Rack::Auth::AbstractRequest
+  def initialize(env); end
+
+  def params(); end
+
+  def parts(); end
+
+  def provided?(); end
+
+  def request(); end
+
+  def scheme(); end
+
+  def valid?(); end
+  AUTHORIZATION_KEYS = ::T.let(nil, ::T.untyped)
+end
+
+class Rack::Auth::AbstractRequest
+end
+
+class Rack::Auth::Basic
+  def call(env); end
+end
+
+class Rack::Auth::Basic::Request
+  def basic?(); end
+
+  def credentials(); end
+
+  def username(); end
+end
+
+class Rack::Auth::Basic::Request
+end
+
+class Rack::Auth::Basic
+end
+
+module Rack::Auth::Digest
+end
+
+class Rack::Auth::Digest::MD5
+  def call(env); end
+
+  def initialize(app, realm=T.unsafe(nil), opaque=T.unsafe(nil), &authenticator); end
+
+  def opaque(); end
+
+  def opaque=(opaque); end
+
+  def passwords_hashed=(passwords_hashed); end
+
+  def passwords_hashed?(); end
+  QOP = ::T.let(nil, ::T.untyped)
+end
+
+class Rack::Auth::Digest::MD5
+end
+
+class Rack::Auth::Digest::Nonce
+  def digest(); end
+
+  def fresh?(); end
+
+  def initialize(timestamp=T.unsafe(nil), given_digest=T.unsafe(nil)); end
+
+  def stale?(); end
+
+  def valid?(); end
+end
+
+class Rack::Auth::Digest::Nonce
+  def self.parse(string); end
+
+  def self.private_key(); end
+
+  def self.private_key=(private_key); end
+
+  def self.time_limit(); end
+
+  def self.time_limit=(time_limit); end
+end
+
+class Rack::Auth::Digest::Params
+  def [](k); end
+
+  def []=(k, v); end
+
+  def initialize(); end
+
+  def quote(str); end
+  UNQUOTED = ::T.let(nil, ::T.untyped)
+end
+
+class Rack::Auth::Digest::Params
+  def self.dequote(str); end
+
+  def self.parse(str); end
+
+  def self.split_header_value(str); end
+end
+
+class Rack::Auth::Digest::Request
+  def correct_uri?(); end
+
+  def digest?(); end
+
+  def method(); end
+
+  def method_missing(sym, *args); end
+
+  def nonce(); end
+
+  def respond_to?(sym, *_); end
+end
+
+class Rack::Auth::Digest::Request
+end
+
+module Rack::Auth::Digest
+end
+
+module Rack::Auth
+end
+
+class Rack::BodyProxy
+  def close(); end
+
+  def closed?(); end
+
+  def initialize(body, &block); end
+
+  def method_missing(method_name, *args, &block); end
+end
+
+class Rack::BodyProxy
+end
+
+class Rack::Builder
+  def call(env); end
+
+  def freeze_app(); end
+
+  def initialize(default_app=T.unsafe(nil), &block); end
+
+  def map(path, &block); end
+
+  def run(app); end
+
+  def to_app(); end
+
+  def use(middleware, *args, &block); end
+
+  def warmup(prc=T.unsafe(nil), &block); end
+  UTF_8_BOM = ::T.let(nil, ::T.untyped)
+end
+
+class Rack::Builder
+  def self.app(default_app=T.unsafe(nil), &block); end
+
+  def self.load_file(path, opts=T.unsafe(nil)); end
+
+  def self.new_from_string(builder_script, file=T.unsafe(nil)); end
+
+  def self.parse_file(config, opts=T.unsafe(nil)); end
+end
+
+class Rack::Cascade
+  def <<(app); end
+
+  def add(app); end
+
+  def apps(); end
+
+  def call(env); end
+
+  def include?(app); end
+
+  def initialize(apps, cascade_for=T.unsafe(nil)); end
+  NotFound = ::T.let(nil, ::T.untyped)
+end
+
+class Rack::Cascade
+end
+
+class Rack::Chunked
+  include ::Rack::Utils
+  def call(env); end
+
+  def chunkable_version?(ver); end
+
+  def initialize(app); end
+end
+
+class Rack::Chunked::Body
+  def close(); end
+
+  def each(&block); end
+
+  def initialize(body); end
+  TAIL = ::T.let(nil, ::T.untyped)
+  TERM = ::T.let(nil, ::T.untyped)
+end
+
+class Rack::Chunked::Body
+end
+
+class Rack::Chunked::TrailerBody
+end
+
+class Rack::Chunked::TrailerBody
+end
+
+class Rack::Chunked
+end
+
+class Rack::CommonLogger
+  def call(env); end
+
+  def initialize(app, logger=T.unsafe(nil)); end
+  FORMAT = ::T.let(nil, ::T.untyped)
+end
+
+class Rack::CommonLogger
+end
+
+class Rack::ConditionalGet
+  def call(env); end
+
+  def initialize(app); end
+end
+
+class Rack::ConditionalGet
+end
+
+class Rack::Config
+  def call(env); end
+
+  def initialize(app, &block); end
+end
+
+class Rack::Config
+end
+
+class Rack::ContentLength
+  include ::Rack::Utils
+  def call(env); end
+
+  def initialize(app); end
+end
+
+class Rack::ContentLength
+end
+
+class Rack::ContentType
+  include ::Rack::Utils
+  def call(env); end
+
+  def initialize(app, content_type=T.unsafe(nil)); end
+end
+
+class Rack::ContentType
+end
+
+class Rack::Deflater
+  def call(env); end
+
+  def initialize(app, options=T.unsafe(nil)); end
+end
+
+class Rack::Deflater::GzipStream
+  def close(); end
+
+  def each(&block); end
+
+  def initialize(body, mtime, sync); end
+
+  def write(data); end
+end
+
+class Rack::Deflater::GzipStream
+end
+
+class Rack::Deflater
+end
+
+class Rack::Directory
+  def call(env); end
+
+  def check_bad_request(path_info); end
+
+  def check_forbidden(path_info); end
+
+  def entity_not_found(path_info); end
+
+  def filesize_format(int); end
+
+  def get(env); end
+
+  def initialize(root, app=T.unsafe(nil)); end
+
+  def list_directory(path_info, path, script_name); end
+
+  def list_path(env, path, path_info, script_name); end
+
+  def root(); end
+
+  def stat(path); end
+  DIR_FILE = ::T.let(nil, ::T.untyped)
+  DIR_PAGE_FOOTER = ::T.let(nil, ::T.untyped)
+  DIR_PAGE_HEADER = ::T.let(nil, ::T.untyped)
+  FILESIZE_FORMAT = ::T.let(nil, ::T.untyped)
+end
+
+class Rack::Directory::DirectoryBody
+end
+
+class Rack::Directory::DirectoryBody
+end
+
+class Rack::Directory
+end
+
+class Rack::ETag
+  def call(env); end
+
+  def initialize(app, no_cache_control=T.unsafe(nil), cache_control=T.unsafe(nil)); end
+  DEFAULT_CACHE_CONTROL = ::T.let(nil, ::T.untyped)
+  ETAG_STRING = ::T.let(nil, ::T.untyped)
+end
+
+class Rack::ETag
+end
+
+class Rack::Events
+  def call(env); end
+
+  def initialize(app, handlers); end
+end
+
+module Rack::Events::Abstract
+  def on_commit(req, res); end
+
+  def on_error(req, res, e); end
+
+  def on_finish(req, res); end
+
+  def on_send(req, res); end
+
+  def on_start(req, res); end
+end
+
+module Rack::Events::Abstract
+end
+
+class Rack::Events::BufferedResponse
+  def body(); end
+
+  def initialize(status, headers, body); end
+
+  def to_a(); end
+end
+
+class Rack::Events::BufferedResponse
+end
+
+class Rack::Events::EventedBodyProxy
+  def each(&blk); end
+
+  def initialize(body, request, response, handlers, &block); end
+
+  def request(); end
+
+  def response(); end
+end
+
+class Rack::Events::EventedBodyProxy
+end
+
+class Rack::Events
+end
+
+Rack::File = Rack::Files
+
+class Rack::Files
+  def call(env); end
+
+  def get(env); end
+
+  def initialize(root, headers=T.unsafe(nil), default_mime=T.unsafe(nil)); end
+
+  def root(); end
+
+  def serving(request, path); end
+  ALLOWED_VERBS = ::T.let(nil, ::T.untyped)
+  ALLOW_HEADER = ::T.let(nil, ::T.untyped)
+  MULTIPART_BOUNDARY = ::T.let(nil, ::T.untyped)
+end
+
+class Rack::Files::BaseIterator
+  def bytesize(); end
+
+  def close(); end
+
+  def each(&blk); end
+
+  def initialize(path, ranges, options); end
+
+  def options(); end
+
+  def path(); end
+
+  def ranges(); end
+end
+
+class Rack::Files::BaseIterator
+end
+
+class Rack::Files::Iterator
+  def to_path(); end
+end
+
+class Rack::Files::Iterator
+end
+
+class Rack::Files
+end
+
+class Rack::ForwardRequest
+  def env(); end
+
+  def initialize(url, env=T.unsafe(nil)); end
+
+  def url(); end
+end
+
+class Rack::ForwardRequest
+end
+
+module Rack::Handler
+end
+
+class Rack::Handler::CGI
+end
+
+class Rack::Handler::CGI
+  def self.run(app, **options); end
+
+  def self.send_body(body); end
+
+  def self.send_headers(status, headers); end
+
+  def self.serve(app); end
+end
+
+class Rack::Handler::WEBrick
+  def initialize(server, app); end
+end
+
+class Rack::Handler::WEBrick
+  def self.run(app, **options); end
+
+  def self.shutdown(); end
+
+  def self.valid_options(); end
+end
+
+module Rack::Handler
+  def self.default(); end
+
+  def self.get(server); end
+
+  def self.pick(server_names); end
+
+  def self.register(server, klass); end
+
+  def self.try_require(prefix, const_name); end
+end
+
+class Rack::Head
+  def call(env); end
+
+  def initialize(app); end
+end
+
+class Rack::Head
+end
+
+class Rack::Lint
+  include ::Rack::Lint::Assertion
+  def _call(env); end
+
+  def call(env=T.unsafe(nil)); end
+
+  def check_content_length(status, headers); end
+
+  def check_content_type(status, headers); end
+
+  def check_env(env); end
+
+  def check_error(error); end
+
+  def check_headers(header); end
+
+  def check_hijack(env); end
+
+  def check_hijack_response(headers, env); end
+
+  def check_input(input); end
+
+  def check_status(status); end
+
+  def close(); end
+
+  def each(&blk); end
+
+  def initialize(app); end
+
+  def verify_content_length(bytes); end
+end
+
+module Rack::Lint::Assertion
+  def assert(message); end
+end
+
+module Rack::Lint::Assertion
+end
+
+class Rack::Lint::ErrorWrapper
+  include ::Rack::Lint::Assertion
+  def close(*args); end
+
+  def flush(); end
+
+  def initialize(error); end
+
+  def puts(str); end
+
+  def write(str); end
+end
+
+class Rack::Lint::ErrorWrapper
+end
+
+class Rack::Lint::HijackWrapper
+  include ::Rack::Lint::Assertion
+  def close(*args, &block); end
+
+  def close_read(*args, &block); end
+
+  def close_write(*args, &block); end
+
+  def closed?(*args, &block); end
+
+  def flush(*args, &block); end
+
+  def initialize(io); end
+
+  def read(*args, &block); end
+
+  def read_nonblock(*args, &block); end
+
+  def write(*args, &block); end
+
+  def write_nonblock(*args, &block); end
+  REQUIRED_METHODS = ::T.let(nil, ::T.untyped)
+end
+
+class Rack::Lint::HijackWrapper
+  extend ::Forwardable
+end
+
+class Rack::Lint::InputWrapper
+  include ::Rack::Lint::Assertion
+  def close(*args); end
+
+  def each(*args, &blk); end
+
+  def gets(*args); end
+
+  def initialize(input); end
+
+  def read(*args); end
+
+  def rewind(*args); end
+end
+
+class Rack::Lint::InputWrapper
+end
+
+class Rack::Lint::LintError
+end
+
+class Rack::Lint::LintError
+end
+
+class Rack::Lint
+end
+
+class Rack::Lock
+  def call(env); end
+
+  def initialize(app, mutex=T.unsafe(nil)); end
+end
+
+class Rack::Lock
+end
+
+class Rack::Logger
+  def call(env); end
+
+  def initialize(app, level=T.unsafe(nil)); end
+end
+
+class Rack::Logger
+end
+
+class Rack::MediaType
+  SPLIT_PATTERN = ::T.let(nil, ::T.untyped)
+end
+
+class Rack::MediaType
+  def self.params(content_type); end
+
+  def self.type(content_type); end
+end
+
+class Rack::MethodOverride
+  def call(env); end
+
+  def initialize(app); end
+
+  def method_override(env); end
+  ALLOWED_METHODS = ::T.let(nil, ::T.untyped)
+  HTTP_METHODS = ::T.let(nil, ::T.untyped)
+  HTTP_METHOD_OVERRIDE_HEADER = ::T.let(nil, ::T.untyped)
+  METHOD_OVERRIDE_PARAM_KEY = ::T.let(nil, ::T.untyped)
+end
+
+class Rack::MethodOverride
+end
+
+module Rack::Mime
+  MIME_TYPES = ::T.let(nil, ::T.untyped)
+end
+
+module Rack::Mime
+  def self.match?(value, matcher); end
+
+  def self.mime_type(ext, fallback=T.unsafe(nil)); end
+end
+
+class Rack::MockRequest
+  def delete(uri, opts=T.unsafe(nil)); end
+
+  def get(uri, opts=T.unsafe(nil)); end
+
+  def head(uri, opts=T.unsafe(nil)); end
+
+  def initialize(app); end
+
+  def options(uri, opts=T.unsafe(nil)); end
+
+  def patch(uri, opts=T.unsafe(nil)); end
+
+  def post(uri, opts=T.unsafe(nil)); end
+
+  def put(uri, opts=T.unsafe(nil)); end
+
+  def request(method=T.unsafe(nil), uri=T.unsafe(nil), opts=T.unsafe(nil)); end
+  DEFAULT_ENV = ::T.let(nil, ::T.untyped)
+end
+
+class Rack::MockRequest::FatalWarner
+  def flush(); end
+
+  def puts(warning); end
+
+  def string(); end
+
+  def write(warning); end
+end
+
+class Rack::MockRequest::FatalWarner
+end
+
+class Rack::MockRequest::FatalWarning
+end
+
+class Rack::MockRequest::FatalWarning
+end
+
+class Rack::MockRequest
+  def self.env_for(uri=T.unsafe(nil), opts=T.unsafe(nil)); end
+
+  def self.parse_uri_rfc2396(uri); end
+end
+
+class Rack::MockResponse
+  def =~(other); end
+
+  def cookie(name); end
+
+  def cookies(); end
+
+  def errors(); end
+
+  def errors=(errors); end
+
+  def initialize(status, headers, body, errors=T.unsafe(nil)); end
+
+  def match(other); end
+
+  def original_headers(); end
+end
+
+class Rack::MockResponse
+  def self.[](*_); end
+end
+
+module Rack::Multipart
+  ATTRIBUTE = ::T.let(nil, ::T.untyped)
+  ATTRIBUTE_CHAR = ::T.let(nil, ::T.untyped)
+  BROKEN_QUOTED = ::T.let(nil, ::T.untyped)
+  BROKEN_UNQUOTED = ::T.let(nil, ::T.untyped)
+  CONDISP = ::T.let(nil, ::T.untyped)
+  DISPPARM = ::T.let(nil, ::T.untyped)
+  EOL = ::T.let(nil, ::T.untyped)
+  EXTENDED_INITIAL_NAME = ::T.let(nil, ::T.untyped)
+  EXTENDED_INITIAL_PARAMETER = ::T.let(nil, ::T.untyped)
+  EXTENDED_INITIAL_VALUE = ::T.let(nil, ::T.untyped)
+  EXTENDED_OTHER_NAME = ::T.let(nil, ::T.untyped)
+  EXTENDED_OTHER_PARAMETER = ::T.let(nil, ::T.untyped)
+  EXTENDED_OTHER_VALUE = ::T.let(nil, ::T.untyped)
+  EXTENDED_PARAMETER = ::T.let(nil, ::T.untyped)
+  MULTIPART = ::T.let(nil, ::T.untyped)
+  MULTIPART_BOUNDARY = ::T.let(nil, ::T.untyped)
+  MULTIPART_CONTENT_DISPOSITION = ::T.let(nil, ::T.untyped)
+  MULTIPART_CONTENT_ID = ::T.let(nil, ::T.untyped)
+  MULTIPART_CONTENT_TYPE = ::T.let(nil, ::T.untyped)
+  REGULAR_PARAMETER = ::T.let(nil, ::T.untyped)
+  REGULAR_PARAMETER_NAME = ::T.let(nil, ::T.untyped)
+  RFC2183 = ::T.let(nil, ::T.untyped)
+  SECTION = ::T.let(nil, ::T.untyped)
+  TOKEN = ::T.let(nil, ::T.untyped)
+  VALUE = ::T.let(nil, ::T.untyped)
+end
+
+class Rack::Multipart::Generator
+  def dump(); end
+
+  def initialize(params, first=T.unsafe(nil)); end
+end
+
+class Rack::Multipart::Generator
+end
+
+class Rack::Multipart::MultipartPartLimitError
+end
+
+class Rack::Multipart::MultipartPartLimitError
+end
+
+class Rack::Multipart::Parser
+  def initialize(boundary, tempfile, bufsize, query_parser); end
+
+  def on_read(content); end
+
+  def result(); end
+
+  def state(); end
+  BOUNDARY_REGEX = ::T.let(nil, ::T.untyped)
+  BUFSIZE = ::T.let(nil, ::T.untyped)
+  CHARSET = ::T.let(nil, ::T.untyped)
+  EMPTY = ::T.let(nil, ::T.untyped)
+  TEMPFILE_FACTORY = ::T.let(nil, ::T.untyped)
+  TEXT_PLAIN = ::T.let(nil, ::T.untyped)
+end
+
+class Rack::Multipart::Parser::BoundedIO
+  def initialize(io, content_length); end
+
+  def read(size, outbuf=T.unsafe(nil)); end
+
+  def rewind(); end
+end
+
+class Rack::Multipart::Parser::BoundedIO
+end
+
+class Rack::Multipart::Parser::Collector
+  include ::Enumerable
+  def each(&blk); end
+
+  def initialize(tempfile); end
+
+  def on_mime_body(mime_index, content); end
+
+  def on_mime_finish(mime_index); end
+
+  def on_mime_head(mime_index, head, filename, content_type, name); end
+end
+
+class Rack::Multipart::Parser::Collector::BufferPart
+  def close(); end
+
+  def file?(); end
+end
+
+class Rack::Multipart::Parser::Collector::BufferPart
+end
+
+class Rack::Multipart::Parser::Collector::MimePart
+  def get_data(); end
+end
+
+class Rack::Multipart::Parser::Collector::MimePart
+end
+
+class Rack::Multipart::Parser::Collector::TempfilePart
+  def close(); end
+
+  def file?(); end
+end
+
+class Rack::Multipart::Parser::Collector::TempfilePart
+end
+
+class Rack::Multipart::Parser::Collector
+end
+
+class Rack::Multipart::Parser::MultipartInfo
+  def params(); end
+
+  def params=(_); end
+
+  def tmp_files(); end
+
+  def tmp_files=(_); end
+end
+
+class Rack::Multipart::Parser::MultipartInfo
+  def self.[](*_); end
+
+  def self.members(); end
+end
+
+class Rack::Multipart::Parser
+  def self.parse(io, content_length, content_type, tmpfile, bufsize, qp); end
+
+  def self.parse_boundary(content_type); end
+end
+
+class Rack::Multipart::UploadedFile
+  def content_type(); end
+
+  def content_type=(content_type); end
+
+  def initialize(filepath=T.unsafe(nil), ct=T.unsafe(nil), bin=T.unsafe(nil), path: T.unsafe(nil), content_type: T.unsafe(nil), binary: T.unsafe(nil), filename: T.unsafe(nil), io: T.unsafe(nil)); end
+
+  def local_path(); end
+
+  def method_missing(method_name, *args, &block); end
+
+  def original_filename(); end
+
+  def path(); end
+
+  def respond_to?(*args); end
+end
+
+class Rack::Multipart::UploadedFile
+end
+
+module Rack::Multipart
+  def self.build_multipart(params, first=T.unsafe(nil)); end
+
+  def self.extract_multipart(req, params=T.unsafe(nil)); end
+
+  def self.parse_multipart(env, params=T.unsafe(nil)); end
+end
+
+class Rack::NullLogger
+  def <<(msg); end
+
+  def add(severity, message=T.unsafe(nil), progname=T.unsafe(nil), &block); end
+
+  def call(env); end
+
+  def close(); end
+
+  def datetime_format(); end
+
+  def datetime_format=(datetime_format); end
+
+  def debug(progname=T.unsafe(nil), &block); end
+
+  def debug?(); end
+
+  def error(progname=T.unsafe(nil), &block); end
+
+  def error?(); end
+
+  def fatal(progname=T.unsafe(nil), &block); end
+
+  def fatal?(); end
+
+  def formatter(); end
+
+  def formatter=(formatter); end
+
+  def info(progname=T.unsafe(nil), &block); end
+
+  def info?(); end
+
+  def initialize(app); end
+
+  def level(); end
+
+  def level=(level); end
+
+  def progname(); end
+
+  def progname=(progname); end
+
+  def sev_threshold(); end
+
+  def sev_threshold=(sev_threshold); end
+
+  def unknown(progname=T.unsafe(nil), &block); end
+
+  def warn(progname=T.unsafe(nil), &block); end
+
+  def warn?(); end
+end
+
+class Rack::NullLogger
+end
+
+class Rack::Recursive
+  def _call(env); end
+
+  def call(env); end
+
+  def include(env, path); end
+
+  def initialize(app); end
+end
+
+class Rack::Recursive
+end
+
+class Rack::Reloader
+  def call(env); end
+
+  def initialize(app, cooldown=T.unsafe(nil), backend=T.unsafe(nil)); end
+
+  def reload!(stderr=T.unsafe(nil)); end
+
+  def safe_load(file, mtime, stderr=T.unsafe(nil)); end
+end
+
+module Rack::Reloader::Stat
+  def figure_path(file, paths); end
+
+  def rotation(); end
+
+  def safe_stat(file); end
+end
+
+module Rack::Reloader::Stat
+end
+
+class Rack::Reloader
+end
+
+class Rack::Request
+  include ::Rack::Request::Env
+  include ::Rack::Request::Helpers
+  ALLOWED_SCHEMES = ::T.let(nil, ::T.untyped)
+  SCHEME_WHITELIST = ::T.let(nil, ::T.untyped)
+end
+
+module Rack::Request::Env
+  def add_header(key, v); end
+
+  def delete_header(name); end
+
+  def each_header(&block); end
+
+  def env(); end
+
+  def fetch_header(name, &block); end
+
+  def get_header(name); end
+
+  def has_header?(name); end
+
+  def initialize(env); end
+
+  def set_header(name, v); end
+end
+
+module Rack::Request::Env
+end
+
+module Rack::Request::Helpers
+  def GET(); end
+
+  def POST(); end
+
+  def [](key); end
+
+  def []=(key, value); end
+
+  def accept_encoding(); end
+
+  def accept_language(); end
+
+  def authority(); end
+
+  def base_url(); end
+
+  def body(); end
+
+  def content_charset(); end
+
+  def content_length(); end
+
+  def content_type(); end
+
+  def cookies(); end
+
+  def delete?(); end
+
+  def delete_param(k); end
+
+  def form_data?(); end
+
+  def forwarded_authority(); end
+
+  def forwarded_for(); end
+
+  def forwarded_port(); end
+
+  def fullpath(); end
+
+  def get?(); end
+
+  def head?(); end
+
+  def host(); end
+
+  def host_authority(); end
+
+  def host_with_port(authority=T.unsafe(nil)); end
+
+  def hostname(); end
+
+  def ip(); end
+
+  def link?(); end
+
+  def logger(); end
+
+  def media_type(); end
+
+  def media_type_params(); end
+
+  def multithread?(); end
+
+  def options?(); end
+
+  def params(); end
+
+  def parseable_data?(); end
+
+  def patch?(); end
+
+  def path(); end
+
+  def path_info(); end
+
+  def path_info=(s); end
+
+  def port(); end
+
+  def post?(); end
+
+  def put?(); end
+
+  def query_string(); end
+
+  def referer(); end
+
+  def referrer(); end
+
+  def request_method(); end
+
+  def scheme(); end
+
+  def script_name(); end
+
+  def script_name=(s); end
+
+  def server_authority(); end
+
+  def server_name(); end
+
+  def server_port(); end
+
+  def session(); end
+
+  def session_options(); end
+
+  def ssl?(); end
+
+  def trace?(); end
+
+  def trusted_proxy?(ip); end
+
+  def unlink?(); end
+
+  def update_param(k, v); end
+
+  def url(); end
+
+  def user_agent(); end
+
+  def values_at(*keys); end
+
+  def xhr?(); end
+  DEFAULT_PORTS = ::T.let(nil, ::T.untyped)
+  FORM_DATA_MEDIA_TYPES = ::T.let(nil, ::T.untyped)
+  HTTP_X_FORWARDED_FOR = ::T.let(nil, ::T.untyped)
+  HTTP_X_FORWARDED_HOST = ::T.let(nil, ::T.untyped)
+  HTTP_X_FORWARDED_PORT = ::T.let(nil, ::T.untyped)
+  HTTP_X_FORWARDED_PROTO = ::T.let(nil, ::T.untyped)
+  HTTP_X_FORWARDED_SCHEME = ::T.let(nil, ::T.untyped)
+  HTTP_X_FORWARDED_SSL = ::T.let(nil, ::T.untyped)
+  PARSEABLE_DATA_MEDIA_TYPES = ::T.let(nil, ::T.untyped)
+end
+
+module Rack::Request::Helpers
+end
+
+class Rack::Request
+  def self.ip_filter(); end
+
+  def self.ip_filter=(ip_filter); end
+end
+
+class Rack::Response
+  include ::Rack::Response::Helpers
+  def [](key); end
+
+  def []=(key, v); end
+
+  def body(); end
+
+  def body=(body); end
+
+  def chunked?(); end
+
+  def close(); end
+
+  def delete_header(key); end
+
+  def each(&callback); end
+
+  def empty?(); end
+
+  def finish(&block); end
+
+  def get_header(key); end
+
+  def has_header?(key); end
+
+  def header(); end
+
+  def headers(); end
+
+  def initialize(body=T.unsafe(nil), status=T.unsafe(nil), headers=T.unsafe(nil)); end
+
+  def length(); end
+
+  def length=(length); end
+
+  def redirect(target, status=T.unsafe(nil)); end
+
+  def set_header(key, v); end
+
+  def status(); end
+
+  def status=(status); end
+
+  def to_a(&block); end
+
+  def write(chunk); end
+  CHUNKED = ::T.let(nil, ::T.untyped)
+  STATUS_WITH_NO_ENTITY_BODY = ::T.let(nil, ::T.untyped)
+end
+
+module Rack::Response::Helpers
+  def accepted?(); end
+
+  def add_header(key, v); end
+
+  def append(chunk); end
+
+  def bad_request?(); end
+
+  def buffered_body!(); end
+
+  def cache!(duration=T.unsafe(nil), directive: T.unsafe(nil)); end
+
+  def cache_control(); end
+
+  def cache_control=(v); end
+
+  def client_error?(); end
+
+  def content_length(); end
+
+  def content_type(); end
+
+  def content_type=(content_type); end
+
+  def created?(); end
+
+  def delete_cookie(key, value=T.unsafe(nil)); end
+
+  def do_not_cache!(); end
+
+  def etag(); end
+
+  def etag=(v); end
+
+  def forbidden?(); end
+
+  def include?(header); end
+
+  def informational?(); end
+
+  def invalid?(); end
+
+  def location(); end
+
+  def location=(location); end
+
+  def media_type(); end
+
+  def media_type_params(); end
+
+  def method_not_allowed?(); end
+
+  def moved_permanently?(); end
+
+  def no_content?(); end
+
+  def not_found?(); end
+
+  def ok?(); end
+
+  def precondition_failed?(); end
+
+  def redirect?(); end
+
+  def redirection?(); end
+
+  def server_error?(); end
+
+  def set_cookie(key, value); end
+
+  def set_cookie_header(); end
+
+  def set_cookie_header=(v); end
+
+  def successful?(); end
+
+  def unauthorized?(); end
+
+  def unprocessable?(); end
+end
+
+module Rack::Response::Helpers
+end
+
+class Rack::Response::Raw
+  include ::Rack::Response::Helpers
+  def delete_header(key); end
+
+  def get_header(key); end
+
+  def has_header?(key); end
+
+  def headers(); end
+
+  def initialize(status, headers); end
+
+  def set_header(key, v); end
+
+  def status(); end
+
+  def status=(status); end
+end
+
+class Rack::Response::Raw
+end
+
+class Rack::Response
+  def self.[](status, headers, body); end
+end
+
+class Rack::RewindableInput
+  def close(); end
+
+  def each(&block); end
+
+  def gets(); end
+
+  def initialize(io); end
+
+  def read(*args); end
+
+  def rewind(); end
+end
+
+class Rack::RewindableInput
+end
+
+class Rack::Runtime
+  def call(env); end
+
+  def initialize(app, name=T.unsafe(nil)); end
+  FORMAT_STRING = ::T.let(nil, ::T.untyped)
+  HEADER_NAME = ::T.let(nil, ::T.untyped)
+end
+
+class Rack::Runtime
+end
+
+class Rack::Sendfile
+  def call(env); end
+
+  def initialize(app, variation=T.unsafe(nil), mappings=T.unsafe(nil)); end
+end
+
+class Rack::Sendfile
+end
+
+class Rack::Server
+  def app(); end
+
+  def default_options(); end
+
+  def initialize(options=T.unsafe(nil)); end
+
+  def middleware(); end
+
+  def options(); end
+
+  def options=(options); end
+
+  def server(); end
+
+  def start(&block); end
+end
+
+class Rack::Server::Options
+  def handler_opts(options); end
+
+  def parse!(args); end
+end
+
+class Rack::Server::Options
+end
+
+class Rack::Server
+  def self.default_middleware_by_environment(); end
+
+  def self.logging_middleware(); end
+
+  def self.middleware(); end
+
+  def self.start(options=T.unsafe(nil)); end
+end
+
+module Rack::Session
+end
+
+module Rack::Session::Abstract
+end
+
+class Rack::Session::Abstract::ID
+  def find_session(req, sid); end
+end
+
+class Rack::Session::Abstract::ID
+  def self.inherited(klass); end
+end
+
+class Rack::Session::Abstract::Persisted
+  def call(env); end
+
+  def commit_session(req, res); end
+
+  def context(env, app=T.unsafe(nil)); end
+
+  def default_options(); end
+
+  def initialize(app, options=T.unsafe(nil)); end
+
+  def key(); end
+
+  def sid_secure(); end
+  DEFAULT_OPTIONS = ::T.let(nil, ::T.untyped)
+end
+
+class Rack::Session::Abstract::Persisted
+end
+
+class Rack::Session::Abstract::PersistedSecure
+  def extract_session_id(*_); end
+
+  def generate_sid(*_); end
+end
+
+class Rack::Session::Abstract::PersistedSecure::SecureSessionHash
+end
+
+class Rack::Session::Abstract::PersistedSecure::SecureSessionHash
+end
+
+class Rack::Session::Abstract::PersistedSecure
+end
+
+class Rack::Session::Abstract::SessionHash
+  include ::Enumerable
+  def [](key); end
+
+  def []=(key, value); end
+
+  def clear(); end
+
+  def delete(key); end
+
+  def destroy(); end
+
+  def dig(key, *keys); end
+
+  def each(&block); end
+
+  def empty?(); end
+
+  def exists?(); end
+
+  def fetch(key, default=T.unsafe(nil), &block); end
+
+  def has_key?(key); end
+
+  def id(); end
+
+  def id=(id); end
+
+  def include?(key); end
+
+  def initialize(store, req); end
+
+  def key?(key); end
+
+  def keys(); end
+
+  def loaded?(); end
+
+  def merge!(hash); end
+
+  def options(); end
+
+  def replace(hash); end
+
+  def store(key, value); end
+
+  def to_hash(); end
+
+  def update(hash); end
+
+  def values(); end
+  Unspecified = ::T.let(nil, ::T.untyped)
+end
+
+class Rack::Session::Abstract::SessionHash
+  def self.find(req); end
+
+  def self.set(req, session); end
+
+  def self.set_options(req, options); end
+end
+
+module Rack::Session::Abstract
+end
+
+class Rack::Session::Cookie
+  def coder(); end
+end
+
+class Rack::Session::Cookie::Base64
+  def decode(str); end
+
+  def encode(str); end
+end
+
+class Rack::Session::Cookie::Base64::JSON
+  def encode(obj); end
+end
+
+class Rack::Session::Cookie::Base64::JSON
+end
+
+class Rack::Session::Cookie::Base64::Marshal
+end
+
+class Rack::Session::Cookie::Base64::Marshal
+end
+
+class Rack::Session::Cookie::Base64::ZipJSON
+  def encode(obj); end
+end
+
+class Rack::Session::Cookie::Base64::ZipJSON
+end
+
+class Rack::Session::Cookie::Base64
+end
+
+class Rack::Session::Cookie::Identity
+  def decode(str); end
+
+  def encode(str); end
+end
+
+class Rack::Session::Cookie::Identity
+end
+
+class Rack::Session::Cookie::SessionId
+  def cookie_value(); end
+
+  def initialize(session_id, cookie_value); end
+end
+
+class Rack::Session::Cookie::SessionId
+end
+
+class Rack::Session::Cookie
+end
+
+class Rack::Session::Pool
+  def delete_session(req, session_id, options); end
+
+  def find_session(req, sid); end
+
+  def generate_sid(); end
+
+  def mutex(); end
+
+  def pool(); end
+
+  def with_lock(req); end
+
+  def write_session(req, session_id, new_session, options); end
+  DEFAULT_OPTIONS = ::T.let(nil, ::T.untyped)
+end
+
+class Rack::Session::Pool
+end
+
+class Rack::Session::SessionId
+  def cookie_value(); end
+
+  def empty?(); end
+
+  def initialize(public_id); end
+
+  def private_id(); end
+
+  def public_id(); end
+  ID_VERSION = ::T.let(nil, ::T.untyped)
+end
+
+class Rack::Session::SessionId
+end
+
+module Rack::Session
+end
+
+class Rack::ShowExceptions
+  def call(env); end
+
+  def dump_exception(exception); end
+
+  def h(obj); end
+
+  def initialize(app); end
+
+  def prefers_plaintext?(env); end
+
+  def pretty(env, exception); end
+
+  def template(); end
+  CONTEXT = ::T.let(nil, ::T.untyped)
+  TEMPLATE = ::T.let(nil, ::T.untyped)
+end
+
+class Rack::ShowExceptions
+end
+
+class Rack::ShowStatus
+  def call(env); end
+
+  def h(obj); end
+
+  def initialize(app); end
+  TEMPLATE = ::T.let(nil, ::T.untyped)
+end
+
+class Rack::ShowStatus
+end
+
+class Rack::Static
+  def add_index_root?(path); end
+
+  def applicable_rules(path); end
+
+  def call(env); end
+
+  def can_serve(path); end
+
+  def initialize(app, options=T.unsafe(nil)); end
+
+  def overwrite_file_path(path); end
+
+  def route_file(path); end
+end
+
+class Rack::Static
+end
+
+class Rack::TempfileReaper
+  def call(env); end
+
+  def initialize(app); end
+end
+
+class Rack::TempfileReaper
+end
+
+class Rack::URLMap
+  def call(env); end
+
+  def initialize(map=T.unsafe(nil)); end
+
+  def remap(map); end
+end
+
+class Rack::URLMap
+end
+
+module Rack
+  def self.release(); end
+
+  def self.version(); end
+end
+
 class Random
   def self.bytes(_); end
 end
@@ -26173,10 +28085,31 @@ class RuboCop::AST::NodePattern::Parser
 end
 
 module RuboCop::AST::NodePattern::Sets
+  SET_AFTER_ACTION_APPEND_AFTER_ACTION_APPEND_AROUND_ACTION_ETC = ::T.let(nil, ::T.untyped)
+  SET_AP_P_PP_ETC = ::T.let(nil, ::T.untyped)
+  SET_BELONGS_TO_HAS_ONE_HAS_MANY_HAS_AND_BELONGS_TO_MANY = ::T.let(nil, ::T.untyped)
+  SET_BINWRITE_SYSWRITE_WRITE_WRITE_NONBLOCK = ::T.let(nil, ::T.untyped)
   SET_BUILD_RECOMMENDED_TEST_OPTIONAL = ::T.let(nil, ::T.untyped)
+  SET_CREATED_AT_UPDATED_AT = ::T.let(nil, ::T.untyped)
+  SET_CREATED_AT_UPDATED_AT_2 = ::T.let(nil, ::T.untyped)
   SET_DEPENDS_ON_USES_FROM_MACOS = ::T.let(nil, ::T.untyped)
+  SET_EXECUTE_REMOVE_BELONGS_TO = ::T.let(nil, ::T.untyped)
+  SET_FIRST_TAKE = ::T.let(nil, ::T.untyped)
+  SET_GET_POST_PUT_ETC = ::T.let(nil, ::T.untyped)
+  SET_HAS_MANY_HAS_ONE = ::T.let(nil, ::T.untyped)
+  SET_HAS_MANY_HAS_ONE_BELONGS_TO = ::T.let(nil, ::T.untyped)
   SET_INCLUDE_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
+  SET_INSERT_INSERT = ::T.let(nil, ::T.untyped)
+  SET_ONLY_EXCEPT = ::T.let(nil, ::T.untyped)
+  SET_REFERER_REFERRER = ::T.let(nil, ::T.untyped)
+  SET_RENDER_REDIRECT_TO = ::T.let(nil, ::T.untyped)
+  SET_RETURNING_UNIQUE_BY = ::T.let(nil, ::T.untyped)
+  SET_SINCE_FROM_NOW_AFTER_ETC = ::T.let(nil, ::T.untyped)
+  SET_SKIP_AFTER_ACTION_SKIP_AROUND_ACTION_SKIP_BEFORE_ACTION_SKIP_ACTION_CALLBACK = ::T.let(nil, ::T.untyped)
   SET_SYSTEM_SHELL_OUTPUT_PIPE_OUTPUT = ::T.let(nil, ::T.untyped)
+  SET_TRANSLATE_LOCALIZE = ::T.let(nil, ::T.untyped)
+  SET_TRY_TRY = ::T.let(nil, ::T.untyped)
+  SET_UNIQ_DISTINCT = ::T.let(nil, ::T.untyped)
   SET_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
 end
 
@@ -26374,6 +28307,56 @@ class RuboCop::Cop::FormulaCop
   def required_dependency?(param0); end
 
   def required_dependency_name?(param0, param1); end
+end
+
+module RuboCop::Cop::RSpec::Rails
+end
+
+class RuboCop::Cop::RSpec::Rails::HttpStatus
+  include ::RuboCop::Cop::ConfigurableEnforcedStyle
+  def http_status(param0=T.unsafe(nil)); end
+
+  def on_send(node); end
+end
+
+class RuboCop::Cop::RSpec::Rails::HttpStatus::NumericStyleChecker
+  def initialize(node); end
+
+  def message(); end
+
+  def node(); end
+
+  def offensive?(); end
+
+  def preferred_style(); end
+  ALLOWED_STATUSES = ::T.let(nil, ::T.untyped)
+  MSG = ::T.let(nil, ::T.untyped)
+end
+
+class RuboCop::Cop::RSpec::Rails::HttpStatus::NumericStyleChecker
+end
+
+class RuboCop::Cop::RSpec::Rails::HttpStatus::SymbolicStyleChecker
+  def initialize(node); end
+
+  def message(); end
+
+  def node(); end
+
+  def offensive?(); end
+
+  def preferred_style(); end
+  MSG = ::T.let(nil, ::T.untyped)
+end
+
+class RuboCop::Cop::RSpec::Rails::HttpStatus::SymbolicStyleChecker
+end
+
+class RuboCop::Cop::RSpec::Rails::HttpStatus
+  extend ::RuboCop::Cop::AutoCorrector
+end
+
+module RuboCop::Cop::RSpec::Rails
 end
 
 module RuboCop::RSpec::ExpectOffense
@@ -28277,6 +30260,7 @@ class Socket
   IPV6_PATHMTU = ::T.let(nil, ::T.untyped)
   IPV6_RECVPATHMTU = ::T.let(nil, ::T.untyped)
   IPV6_USE_MIN_MTU = ::T.let(nil, ::T.untyped)
+  IP_DONTFRAG = ::T.let(nil, ::T.untyped)
   IP_PORTRANGE = ::T.let(nil, ::T.untyped)
   IP_RECVDSTADDR = ::T.let(nil, ::T.untyped)
   IP_RECVIF = ::T.let(nil, ::T.untyped)
@@ -28368,6 +30352,7 @@ module Socket::Constants
   IPV6_PATHMTU = ::T.let(nil, ::T.untyped)
   IPV6_RECVPATHMTU = ::T.let(nil, ::T.untyped)
   IPV6_USE_MIN_MTU = ::T.let(nil, ::T.untyped)
+  IP_DONTFRAG = ::T.let(nil, ::T.untyped)
   IP_PORTRANGE = ::T.let(nil, ::T.untyped)
   IP_RECVDSTADDR = ::T.let(nil, ::T.untyped)
   IP_RECVIF = ::T.let(nil, ::T.untyped)
@@ -30600,6 +32585,46 @@ end
 class Version::Token
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+WEBrick::HTTPAuth::Authenticator::AuthException = WEBrick::HTTPStatus::Unauthorized
+
+WEBrick::HTTPAuth::ProxyAuthenticator::AuthException = WEBrick::HTTPStatus::ProxyAuthenticationRequired
+
+class WEBrick::HTTPRequest
+  def body_reader(); end
+
+  def readpartial(size, buf=T.unsafe(nil)); end
+  MAX_HEADER_LENGTH = ::T.let(nil, ::T.untyped)
+end
+
+class WEBrick::HTTPResponse
+  def _rack_setup_header(); end
+
+  def rack(); end
+
+  def rack=(rack); end
+end
+
+class WEBrick::HTTPResponse::ChunkedWrapper
+  def <<(*buf); end
+
+  def initialize(socket, resp); end
+
+  def write(buf); end
+end
+
+class WEBrick::HTTPResponse::ChunkedWrapper
+end
+
+class WEBrick::HTTPServer
+  def create_request(with_webrick_config); end
+
+  def create_response(with_webrick_config); end
+end
+
+class WEBrick::HTTPServlet::DefaultFileHandler
+  def multipart_body(body, parts, boundary, mtype, filesize); end
 end
 
 module Warning
