@@ -22,6 +22,7 @@ describe PyPI do
     let(:package_with_different_version) { described_class.new("snakemake==5.29.0") }
     let(:package_with_extra) { described_class.new("snakemake[foo]") }
     let(:package_with_extra_and_version) { described_class.new("snakemake[foo]==5.28.0") }
+    let(:package_with_different_capitalization) { described_class.new("SNAKEMAKE") }
     let(:package_from_url) { described_class.new(package_url, is_url: true) }
     let(:other_package) { described_class.new("virtualenv==20.2.0") }
 
@@ -145,6 +146,10 @@ describe PyPI do
 
       it "returns true for the same package with different versions" do
         expect(package_with_version.same_package?(package_with_different_version)).to eq true
+      end
+
+      it "returns true for the same package with different capitalization" do
+        expect(package.same_package?(package_with_different_capitalization)).to eq true
       end
     end
 

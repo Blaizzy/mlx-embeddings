@@ -91,7 +91,7 @@ module PyPI
 
     sig { params(other: Package).returns(T::Boolean) }
     def same_package?(other)
-      @name.tr("_", "-") == other.name.tr("_", "-")
+      @name.tr("_", "-").casecmp(other.name.tr("_", "-")).zero?
     end
 
     # Compare only names so we can use .include? on a Package array
@@ -231,7 +231,7 @@ module PyPI
     end
 
     # Remove extra packages that may be included in pipgrip output
-    exclude_list = %W[#{main_package.name.downcase} argparse pip setuptools wheel wsgiref].map { |p| Package.new p }
+    exclude_list = %W[#{main_package.name} argparse pip setuptools wheel wsgiref].map { |p| Package.new p }
     found_packages.delete_if { |package| exclude_list.include? package }
 
     new_resource_blocks = ""
