@@ -20,10 +20,20 @@ module Hardware
         # See https://software.intel.com/en-us/articles/intel-architecture-and-processor-identification-with-cpuid-model-and-family-numbers
         # and https://github.com/llvm-mirror/llvm/blob/HEAD/lib/Support/Host.cpp
         # and https://en.wikipedia.org/wiki/List_of_Intel_CPU_microarchitectures#Roadmap
+        vendor_id = cpuinfo[/^vendor_id\s*: (.*)/, 1]
         cpu_family = cpuinfo[/^cpu family\s*: ([0-9]+)/, 1].to_i
         cpu_model = cpuinfo[/^model\s*: ([0-9]+)/, 1].to_i
         unknown = :"unknown_0x#{cpu_family.to_s(16)}_0x#{cpu_model.to_s(16)}"
-        case cpu_family
+        case vendor_id
+        when "GenuineIntel"
+          intel_family(cpu_family, cpu_model)
+        when "AuthenticAMD"
+          amd_family(cpu_family)
+        end || unknown
+      end
+
+      def intel_family(family, cpu_model)
+        case family
         when 0x06
           case cpu_model
           when 0x3a, 0x3e
@@ -52,8 +62,6 @@ module Hardware
             :cannonlake
           when 0x6a, 0x6c, 0x7d, 0x7e
             :icelake
-          else
-            unknown
           end
         when 0x0f
           case cpu_model
@@ -61,11 +69,32 @@ module Hardware
             :presler
           when 0x03, 0x04
             :prescott
-          else
-            unknown
           end
-        else
-          unknown
+        end
+      end
+
+      def amd_family(family)
+        case family
+        when 0x06
+          :amd_k7
+        when 0x0f
+          :amd_k8
+        when 0x10
+          :amd_k10
+        when 0x11
+          :amd_k8_k10_hybrid
+        when 0x12
+          :amd_k12
+        when 0x14
+          :bobcat
+        when 0x15
+          :bulldozer
+        when 0x16
+          :jaguar
+        when 0x17
+          :zen
+        when 0x19
+          :zen3
         end
       end
 
