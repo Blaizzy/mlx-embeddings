@@ -103,7 +103,8 @@ module Homebrew
         ls_args << "-t" if args.t?
 
         if !$stdout.tty? && !args.formula?
-          odisabled "`brew list` to only list formulae", "`brew list --formula`"
+          odeprecated "`brew list` to only list formulae", "`brew list --formula`"
+          safe_system "ls", *ls_args, HOMEBREW_CELLAR
         else
           safe_system "ls", *ls_args, HOMEBREW_CELLAR
           list_casks(args: args) unless args.formula?
