@@ -22,7 +22,7 @@ homebrew-formulae() {
   )"
   local shortnames
   shortnames="$(echo "$formulae" | cut -d "/" -f 3)"
-  echo -e "$formulae \n $shortnames" | \
+  echo -e "$formulae\n$shortnames" | \
     grep -v '^homebrew/core' | \
     sort -uf
 }
