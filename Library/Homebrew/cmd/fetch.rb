@@ -125,14 +125,10 @@ module Homebrew
       else
         cask = formula_or_cask
 
-        options = {
-          force:      args.force?,
-          quarantine: args.quarantine?,
-        }.compact
+        quarantine = args.quarantine?
+        quarantine = true if quarantine.nil?
 
-        options[:quarantine] = true if options[:quarantine].nil?
-
-        download = Cask::Download.new(cask, **options)
+        download = Cask::Download.new(cask, quarantine: quarantine)
         fetch_cask(download, args: args)
       end
     end
