@@ -293,7 +293,7 @@ module Homebrew
       end
 
       it "checks online and verifies that a standard license id is the same "\
-        "as what is indicated on its Github repo" do
+        "as what is indicated on its Github repo", :needs_network do
         formula_text = <<~RUBY
           class Cask < Formula
             url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
@@ -309,7 +309,7 @@ module Homebrew
       end
 
       it "checks online and verifies that a standard license id with AND is the same "\
-        "as what is indicated on its Github repo" do
+        "as what is indicated on its Github repo", :needs_network do
         formula_text = <<~RUBY
           class Cask < Formula
             url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
@@ -325,7 +325,7 @@ module Homebrew
       end
 
       it "checks online and verifies that a standard license id with WITH is the same "\
-        "as what is indicated on its Github repo" do
+        "as what is indicated on its Github repo", :needs_network do
         formula_text = <<~RUBY
           class Cask < Formula
             url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
@@ -340,7 +340,7 @@ module Homebrew
         expect(fa.problems).to be_empty
       end
 
-      it "verifies that a license exception has standard spdx ids" do
+      it "verifies that a license exception has standard spdx ids", :needs_network do
         formula_text = <<~RUBY
           class Cask < Formula
             url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
@@ -359,7 +359,7 @@ module Homebrew
         EOS
       end
 
-      it "verifies that a license exception has non-deprecated spdx ids" do
+      it "verifies that a license exception has non-deprecated spdx ids", :needs_network do
         formula_text = <<~RUBY
           class Cask < Formula
             url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
@@ -379,7 +379,7 @@ module Homebrew
       end
 
       it "checks online and verifies that a standard license id is in the same exempted license group" \
-         "as what is indicated on its GitHub repo" do
+         "as what is indicated on its GitHub repo", :needs_network do
         fa = formula_auditor "cask", <<~RUBY, spdx_license_data: spdx_license_data, online: true, new_formula: true
           class Cask < Formula
             url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
@@ -393,7 +393,7 @@ module Homebrew
       end
 
       it "checks online and verifies that a standard license array is in the same exempted license group" \
-         "as what is indicated on its GitHub repo" do
+         "as what is indicated on its GitHub repo", :needs_network do
         fa = formula_auditor "cask", <<~RUBY, spdx_license_data: spdx_license_data, online: true, new_formula: true
           class Cask < Formula
             url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
@@ -407,7 +407,7 @@ module Homebrew
       end
 
       it "checks online and detects that a formula-specified license is not "\
-        "the same as what is indicated on its Github repository" do
+        "the same as what is indicated on its Github repository", :needs_network do
         formula_text = <<~RUBY
           class Cask < Formula
             url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
@@ -424,7 +424,7 @@ module Homebrew
       end
 
       it "allows a formula-specified license that differs from its GitHub "\
-         "repository for formulae on the mismatched license allowlist" do
+         "repository for formulae on the mismatched license allowlist", :needs_network do
         formula_text = <<~RUBY
           class Cask < Formula
             url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
@@ -441,7 +441,7 @@ module Homebrew
       end
 
       it "checks online and detects that an array of license does not contain "\
-        "what is indicated on its Github repository" do
+        "what is indicated on its Github repository", :needs_network do
         formula_text = <<~RUBY
           class Cask < Formula
             url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
@@ -458,7 +458,7 @@ module Homebrew
       end
 
       it "checks online and verifies that an array of license contains "\
-        "what is indicated on its Github repository" do
+        "what is indicated on its Github repository", :needs_network do
         formula_text = <<~RUBY
           class Cask < Formula
             url "https://github.com/cask/cask/archive/v0.8.4.tar.gz"
