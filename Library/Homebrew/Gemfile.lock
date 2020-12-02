@@ -133,12 +133,12 @@ GEM
     sorbet-runtime (0.5.6111)
     sorbet-runtime-stub (0.2.0)
     sorbet-static (0.5.6111-universal-darwin-14)
-    spoom (1.0.6)
+    spoom (1.0.7)
       colorize
       sorbet (~> 0.5.5)
       sorbet-runtime
       thor (>= 0.19.2)
-    tapioca (0.4.9)
+    tapioca (0.4.10)
       parlour (>= 2.1.0)
       pry (>= 0.12.2)
       sorbet-runtime
