@@ -11,13 +11,14 @@ module OS
     sig { returns(String) }
     def os_version
       if which("lsb_release")
-        description = Utils.popen_read("lsb_release -d")
-                           .chomp
-                           .sub("Description:\t", "")
-        codename = Utils.popen_read("lsb_release -c")
-                        .chomp
-                        .sub("Codename:\t", "")
-        "#{description} (#{codename})"
+        lsb_info = Utils.popen_read("lsb_release -a")
+        description = lsb_info[/^Description:\s*(.*)$/, 1]
+        codename = lsb_info[/^Codename:\s*(.*)$/, 1]
+        if codename.blank? || (codename == "n/a")
+          description
+        else
+          "#{description} (#{codename})"
+        end
       elsif (redhat_release = Pathname.new("/etc/redhat-release")).readable?
         redhat_release.read.chomp
       else
