@@ -63,7 +63,7 @@ module Homebrew
       end
 
       out = checks.send(method)
-      next if out.nil? || out.empty?
+      next if out.blank?
 
       if first_warning
         $stderr.puts <<~EOS

@@ -50,7 +50,7 @@ module Homebrew
         # @param url [String] the URL to match against
         # @return [Boolean]
         def self.match?(url)
-          URL_MATCH_REGEX.match?(url) && !url.include?("savannah.")
+          URL_MATCH_REGEX.match?(url) && url.exclude?("savannah.")
         end
 
         # Generates a URL and regex (if one isn't provided) and passes them

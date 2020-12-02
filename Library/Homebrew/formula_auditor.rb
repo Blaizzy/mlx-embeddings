@@ -367,7 +367,7 @@ module Homebrew
     def audit_homepage
       homepage = formula.homepage
 
-      return if homepage.nil? || homepage.empty?
+      return if homepage.blank?
 
       return unless @online
 

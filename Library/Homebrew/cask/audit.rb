@@ -483,7 +483,7 @@ module Cask
 
       add_warning "cask token mentions architecture" if token.end_with? "x86", "32_bit", "x86_64", "64_bit"
 
-      return unless token.end_with?("cocoa", "qt", "gtk", "wx", "java") && !%w[cocoa qt gtk wx java].include?(token)
+      return unless token.end_with?("cocoa", "qt", "gtk", "wx", "java") && %w[cocoa qt gtk wx java].exclude?(token)
 
       add_warning "cask token mentions framework"
     end
@@ -525,11 +525,7 @@ module Cask
       end
 
       version_stanza = cask.version.to_s
-      adjusted_version_stanza = if cask.appcast.must_contain.blank?
-        version_stanza.match(/^[[:alnum:].]+/)[0]
-      else
-        cask.appcast.must_contain
-      end
+      adjusted_version_stanza = cask.appcast.must_contain.presence || version_stanza.match(/^[[:alnum:].]+/)[0]
       return if appcast_contents.include? adjusted_version_stanza
 
       add_error "appcast at URL '#{appcast_stanza}' does not contain"\

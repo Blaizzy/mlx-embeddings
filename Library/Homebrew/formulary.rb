@@ -248,7 +248,7 @@ module Formulary
     attr_reader :tap
 
     def initialize(tapped_name, from: nil)
-      warn = ![:keg, :rack].include?(from)
+      warn = [:keg, :rack].exclude?(from)
       name, path = formula_name_path(tapped_name, warn: warn)
       super name, path
     end

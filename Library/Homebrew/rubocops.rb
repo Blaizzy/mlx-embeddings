@@ -6,6 +6,7 @@ require_relative "load_path"
 require "utils/sorbet"
 
 require "rubocop-performance"
+require "rubocop-rails"
 require "rubocop-rspec"
 require "rubocop-sorbet"
 

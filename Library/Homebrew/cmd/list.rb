@@ -89,7 +89,7 @@ module Homebrew
         formula_names = args.no_named? ? Formula.installed : args.named.to_resolved_formulae
         full_formula_names = formula_names.map(&:full_name).sort(&tap_and_name_comparison)
         full_formula_names = Formatter.columns(full_formula_names) unless args.public_send(:'1?')
-        puts full_formula_names unless full_formula_names.blank?
+        puts full_formula_names if full_formula_names.present?
       end
       if args.cask? || (!args.formula? && args.no_named?)
         cask_names = if args.no_named?
@@ -99,7 +99,7 @@ module Homebrew
         end
         full_cask_names = cask_names.map(&:full_name).sort(&tap_and_name_comparison)
         full_cask_names = Formatter.columns(full_cask_names) unless args.public_send(:'1?')
-        puts full_cask_names unless full_cask_names.blank?
+        puts full_cask_names if full_cask_names.present?
       end
     elsif args.cask?
       list_casks(args: args)

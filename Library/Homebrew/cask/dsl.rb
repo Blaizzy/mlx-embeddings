@@ -144,7 +144,7 @@ module Cask
     def language_eval
       return @language_eval if defined?(@language_eval)
 
-      return @language_eval = nil if @language_blocks.nil? || @language_blocks.empty?
+      return @language_eval = nil if @language_blocks.blank?
 
       raise CaskInvalidError.new(cask, "No default language specified.") if @language_blocks.default.nil?
 

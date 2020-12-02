@@ -301,7 +301,7 @@ class Pathname
 
   sig { params(expected: T.nilable(Checksum)).void }
   def verify_checksum(expected)
-    raise ChecksumMissingError if expected.nil? || expected.empty?
+    raise ChecksumMissingError if expected.blank?
 
     actual = Checksum.new(expected.hash_type, send(expected.hash_type).downcase)
     raise ChecksumMismatchError.new(self, expected, actual) unless expected == actual

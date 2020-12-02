@@ -35,7 +35,7 @@ module Cask
       end
 
       def self.commands
-        Cmd.command_classes.select(&:visible?).map { |klass| [klass.command_name, klass] }.to_h
+        Cmd.command_classes.select(&:visible?).index_by(&:command_name)
       end
     end
   end

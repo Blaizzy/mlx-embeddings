@@ -451,13 +451,11 @@ module GitHub
       next if commit.present? && commit != r["commit"]["oid"]
       next unless valid_associations.include? r["authorAssociation"]
 
-      email = if r["author"]["email"].blank?
-        "#{r["author"]["databaseId"]}+#{r["author"]["login"]}@users.noreply.github.com"
-      else
-        r["author"]["email"]
-      end
+      email = r["author"]["email"].presence ||
+              "#{r["author"]["databaseId"]}+#{r["author"]["login"]}@users.noreply.github.com"
 
-      name = r["author"]["name"].presence || r["author"]["login"]
+      name = r["author"]["name"].presence ||
+             r["author"]["login"]
 
       {
         "email" => email,

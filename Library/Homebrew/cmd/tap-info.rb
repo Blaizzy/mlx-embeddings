@@ -80,7 +80,7 @@ module Homebrew
           end
           info += ", private" if tap.private?
           info += "\n#{tap.path} (#{tap.path.abv})"
-          info += "\nFrom: #{tap.remote.blank? ? "N/A" : tap.remote}"
+          info += "\nFrom: #{tap.remote.presence || "N/A"}"
         else
           info += "Not installed"
         end
