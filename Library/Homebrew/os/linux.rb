@@ -14,7 +14,7 @@ module OS
         lsb_info = Utils.popen_read("lsb_release -a")
         description = lsb_info[/^Description:\s*(.*)$/, 1]
         codename = lsb_info[/^Codename:\s*(.*)$/, 1]
-        if codename == "n/a"
+        if codename.blank? || (codename == "n/a")
           description
         else
           "#{description} (#{codename})"
