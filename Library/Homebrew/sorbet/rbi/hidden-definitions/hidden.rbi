@@ -2914,8 +2914,6 @@ class Addrinfo
 end
 
 class Array
-  def excluding(*elements); end
-
   def extract_options!(); end
 
   def fifth(); end
@@ -2925,8 +2923,6 @@ class Array
   def fourth(); end
 
   def from(position); end
-
-  def including(*elements); end
 
   def second(); end
 
@@ -2949,8 +2945,6 @@ class Array
   def to_sentence(options=T.unsafe(nil)); end
 
   def to_xml(options=T.unsafe(nil)); end
-
-  def without(*elements); end
 end
 
 class Array
@@ -6835,7 +6829,23 @@ module Enumerable
 
   def chain(*_); end
 
-  def sum(*_); end
+  def exclude?(object); end
+
+  def excluding(*elements); end
+
+  def including(*elements); end
+
+  def index_by(); end
+
+  def index_with(default=T.unsafe(nil)); end
+
+  def many?(); end
+
+  def pluck(*keys); end
+
+  def sum(identity=T.unsafe(nil), &block); end
+
+  def without(*elements); end
 end
 
 class Enumerator
@@ -7949,6 +7959,11 @@ class Homebrew::CLI::Args
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class Homebrew::CLI::NamedArgs
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class Homebrew::CLI::Parser
   include ::Homebrew::CLI::Parser::Compat
 end
@@ -8084,6 +8099,11 @@ module Homebrew::EnvConfig
   def self.verbose?(); end
 
   def self.verbose_using_dots?(); end
+end
+
+module Homebrew::Fetch
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class Homebrew::FormulaCreator
@@ -13290,6 +13310,11 @@ module OS::Mac::Xcode
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+module OS
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class Object
   include ::ActiveSupport::Dependencies::Loadable
   include ::ActiveSupport::Tryable
@@ -13343,16 +13368,23 @@ class Object
   HOMEBREW_DATA_PATH = ::T.let(nil, ::T.untyped)
   HOMEBREW_DEFAULT_CACHE = ::T.let(nil, ::T.untyped)
   HOMEBREW_DEFAULT_LOGS = ::T.let(nil, ::T.untyped)
+  HOMEBREW_DEFAULT_PREFIX = ::T.let(nil, ::T.untyped)
   HOMEBREW_DEFAULT_TEMP = ::T.let(nil, ::T.untyped)
   HOMEBREW_LIBRARY = ::T.let(nil, ::T.untyped)
   HOMEBREW_LIBRARY_PATH = ::T.let(nil, ::T.untyped)
   HOMEBREW_LINKED_KEGS = ::T.let(nil, ::T.untyped)
+  HOMEBREW_LINUX_DEFAULT_PREFIX = ::T.let(nil, ::T.untyped)
   HOMEBREW_LOCKS = ::T.let(nil, ::T.untyped)
   HOMEBREW_LOGS = ::T.let(nil, ::T.untyped)
+  HOMEBREW_MACOS_ARM_DEFAULT_PREFIX = ::T.let(nil, ::T.untyped)
   HOMEBREW_OFFICIAL_REPO_PREFIXES_REGEX = ::T.let(nil, ::T.untyped)
   HOMEBREW_PATCHELF_RB_WRITE = ::T.let(nil, ::T.untyped)
   HOMEBREW_PINNED_KEGS = ::T.let(nil, ::T.untyped)
   HOMEBREW_PREFIX = ::T.let(nil, ::T.untyped)
+  HOMEBREW_PRODUCT = ::T.let(nil, ::T.untyped)
+  HOMEBREW_PULL_API_REGEX = ::T.let(nil, ::T.untyped)
+  HOMEBREW_PULL_OR_COMMIT_URL_REGEX = ::T.let(nil, ::T.untyped)
+  HOMEBREW_RELEASES_URL_REGEX = ::T.let(nil, ::T.untyped)
   HOMEBREW_REPOSITORY = ::T.let(nil, ::T.untyped)
   HOMEBREW_REQUIRED_RUBY_VERSION = ::T.let(nil, ::T.untyped)
   HOMEBREW_SHIMS_PATH = ::T.let(nil, ::T.untyped)
@@ -13361,6 +13393,11 @@ class Object
   HOMEBREW_TAP_FORMULA_REGEX = ::T.let(nil, ::T.untyped)
   HOMEBREW_TAP_PATH_REGEX = ::T.let(nil, ::T.untyped)
   HOMEBREW_TEMP = ::T.let(nil, ::T.untyped)
+  HOMEBREW_USER_AGENT_CURL = ::T.let(nil, ::T.untyped)
+  HOMEBREW_USER_AGENT_FAKE_SAFARI = ::T.let(nil, ::T.untyped)
+  HOMEBREW_USER_AGENT_RUBY = ::T.let(nil, ::T.untyped)
+  HOMEBREW_VERSION = ::T.let(nil, ::T.untyped)
+  HOMEBREW_WWW = ::T.let(nil, ::T.untyped)
   OFFICIAL_CASK_TAPS = ::T.let(nil, ::T.untyped)
   OFFICIAL_CMD_TAPS = ::T.let(nil, ::T.untyped)
   OPTION_DESC_WIDTH = ::T.let(nil, ::T.untyped)
@@ -13369,6 +13406,7 @@ class Object
   PATCH_B_SHA256 = ::T.let(nil, ::T.untyped)
   REQUIRED_RUBY_X = ::T.let(nil, ::T.untyped)
   REQUIRED_RUBY_Y = ::T.let(nil, ::T.untyped)
+  RUBY_BIN = ::T.let(nil, ::T.untyped)
   RUBY_COPYRIGHT = ::T.let(nil, ::T.untyped)
   RUBY_DESCRIPTION = ::T.let(nil, ::T.untyped)
   RUBY_ENGINE = ::T.let(nil, ::T.untyped)
@@ -13376,6 +13414,7 @@ class Object
   RUBY_FRAMEWORK = ::T.let(nil, ::T.untyped)
   RUBY_FRAMEWORK_VERSION = ::T.let(nil, ::T.untyped)
   RUBY_PATCHLEVEL = ::T.let(nil, ::T.untyped)
+  RUBY_PATH = ::T.let(nil, ::T.untyped)
   RUBY_PLATFORM = ::T.let(nil, ::T.untyped)
   RUBY_RELEASE_DATE = ::T.let(nil, ::T.untyped)
   RUBY_REVISION = ::T.let(nil, ::T.untyped)
@@ -25738,6 +25777,8 @@ class Range
 
   def entries(); end
 
+  def sum(identity=T.unsafe(nil)); end
+
   def to_a(); end
 end
 
@@ -28583,6 +28624,8 @@ class String
   def demodulize(); end
 
   def ends_with?(*_); end
+
+  def exclude?(string); end
 
   def fast_xs(); end
 
