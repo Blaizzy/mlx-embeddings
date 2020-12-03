@@ -17,11 +17,13 @@ jobs:
           contains(github.event.pull_request.title, '/Library/Homebrew')
         )
       )
-    runs-on: macos-latest
+    runs-on: macos-11.0
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
+      - name: Set up Xcode
+        run: sudo xcode-select --switch /Applications/Xcode_12.2.app/Contents/Developer
       - name: Configure Git user
         uses: Homebrew/actions/git-user-config@master
         with:
