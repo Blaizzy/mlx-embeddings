@@ -443,7 +443,7 @@ module RuboCop
             next if key.nil? || value.nil?
             next unless match = regex_match_group(value, /^(lua|perl|python|ruby)(\d*)/)
 
-            problem "#{match[1]} modules should be vendored rather than use deprecated #{method.source}`"
+            problem "#{match[1]} modules should be vendored rather than use deprecated `#{method.source}`"
           end
 
           find_every_method_call_by_name(body_node, :system).each do |method|

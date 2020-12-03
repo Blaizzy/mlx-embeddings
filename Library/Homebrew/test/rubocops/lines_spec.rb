@@ -1339,7 +1339,7 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
           desc "foo"
           url 'https://brew.sh/foo-1.0.tgz'
           depends_on "lpeg" => :lua51
-                                ^^^^^ lua modules should be vendored rather than use deprecated depends_on \"lpeg\" => :lua51`
+                                ^^^^^ lua modules should be vendored rather than use deprecated `depends_on \"lpeg\" => :lua51`
         end
       RUBY
     end
@@ -1469,13 +1469,40 @@ end
 describe RuboCop::Cop::FormulaAuditStrict::MakeCheck do
   subject(:cop) { described_class.new }
 
+  let(:path) { Tap::TAP_DIRECTORY/"homebrew/homebrew-core" }
+
+  before do
+    path.mkpath
+    (path/"style_exceptions").mkpath
+  end
+
+  def setup_style_exceptions
+    (path/"style_exceptions/make_check_allowlist.json").write <<~JSON
+      [ "bar" ]
+    JSON
+  end
+
   it "build-time checks in homebrew/core" do
-    expect_offense(<<~RUBY, "/homebrew-core/")
+    setup_style_exceptions
+
+    expect_offense(<<~RUBY, "#{path}/Formula/foo.rb")
       class Foo < Formula
         desc "foo"
         url 'https://brew.sh/foo-1.0.tgz'
         system "make", "-j1", "test"
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core (except e.g. cryptography, libraries) should not run build-time checks
+      end
+    RUBY
+  end
+
+  it "build-time checks in homebrew/core in allowlist" do
+    setup_style_exceptions
+
+    expect_no_offenses(<<~RUBY, "#{path}/Formula/bar.rb")
+      class Bar < Formula
+        desc "bar"
+        url 'https://brew.sh/bar-1.0.tgz'
+        system "make", "-j1", "test"
       end
     RUBY
   end
