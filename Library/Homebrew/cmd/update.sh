@@ -390,6 +390,26 @@ EOS
     fi
   fi
 
+  # Homebrew/homebrew-core is extremely expensive to perform shallow clones on
+  # so, on GitHub's request, don't allow it.
+  if [[ -f "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core/.git/shallow" ]]
+  then
+    odie <<EOS
+homebrew-core is a shallow clone. To \`brew update\` first run:
+  git -C "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core" fetch --unshallow
+EOS
+  fi
+
+  # Homebrew/homebrew-cask is also extremely expensive to perform shallow clones
+  # on so, on GitHub's request, don't allow it.
+  if [[ -f "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-cask/.git/shallow" ]]
+  then
+    odie <<EOS
+homebrew-cask is a shallow clone. To \`brew update\` first run:
+  git -C "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-cask" fetch --unshallow
+EOS
+  fi
+
   export GIT_TERMINAL_PROMPT="0"
   export GIT_SSH_COMMAND="ssh -oBatchMode=yes"
 
