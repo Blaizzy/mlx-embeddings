@@ -133,7 +133,8 @@ class Caveats
         zsh #{installed.join(" and ")} have been installed to:
           #{site_functions}
       EOS
-      unless PATH.new(ENV["HOMEBREW_FPATH"]).to_a.include?(site_functions.to_s)
+      zsh = which("zsh") || which("zsh", ENV["HOMEBREW_PATH"])
+      if zsh.present? && Utils.popen_read("'#{zsh}' -ic 'echo $FPATH'").exclude?(site_functions.to_s)
         zsh_caveats << <<~EOS
 
           #{site_functions} is not in your zsh FPATH!

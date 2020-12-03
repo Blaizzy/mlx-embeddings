@@ -62,7 +62,7 @@ HOMEBREW_LIBRARY="$HOMEBREW_REPOSITORY/Library"
 
 # Copy and export all HOMEBREW_* variables previously mentioned in
 # manpage or used elsewhere by Homebrew.
-for VAR in BROWSER DISPLAY EDITOR NO_COLOR PATH FPATH
+for VAR in BROWSER DISPLAY EDITOR NO_COLOR PATH
 do
   # Skip if variable value is empty.
   [[ -z "${!VAR}" ]] && continue
