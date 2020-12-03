@@ -110,8 +110,12 @@ module PyPI
   def update_pypi_url(url, version)
     package = Package.new url, is_url: true
 
+    return unless package.valid_pypi_package?
+
     _, url = package.pypi_info(version: version)
     url
+  rescue ArgumentError
+    nil
   end
 
   # Return true if resources were checked (even if no change).
