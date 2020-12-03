@@ -132,7 +132,7 @@ jobs:
             os: ubuntu-latest
             core-tap: linuxbrew-core
           - name: vendored gems (macOS)
-            os: macos-latest
+            os: macos-11.0
             core-tap: homebrew-core
     steps:
       - name: Set up Homebrew
