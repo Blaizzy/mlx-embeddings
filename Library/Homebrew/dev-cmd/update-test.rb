@@ -134,7 +134,7 @@ module Homebrew
         start_log = Utils.popen_read("git", "log", "-1", "--decorate", "--oneline", start_commit).chomp
         end_log = Utils.popen_read("git", "log", "-1", "--decorate", "--oneline", end_commit).chomp
         actual_log = Utils.popen_read("git", "log", "-1", "--decorate", "--oneline", actual_end_commit).chomp
-        raise <<~EOS
+        odie <<~EOS
           brew update didn't update #{branch}!
           Start commit:        #{start_log}
           Expected end commit: #{end_log}

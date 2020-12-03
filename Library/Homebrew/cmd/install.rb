@@ -183,14 +183,14 @@ module Homebrew
     formulae.each do |f|
       # head-only without --HEAD is an error
       if !args.HEAD? && f.stable.nil?
-        raise <<~EOS
+        odie <<~EOS
           #{f.full_name} is a head-only formula
           Install with `brew install --HEAD #{f.full_name}`
         EOS
       end
 
       # --HEAD, fail with no head defined
-      raise "No head is defined for #{f.full_name}" if args.HEAD? && f.head.nil?
+      odie "No head is defined for #{f.full_name}" if args.HEAD? && f.head.nil?
 
       installed_head_version = f.latest_head_version
       if installed_head_version &&

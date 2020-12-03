@@ -37,7 +37,7 @@ module Homebrew
     branch = args.branch || "main"
 
     tap = args.named.to_taps.first
-    raise "Invalid tap name '#{tap_name}'" unless tap.path.to_s.match?(HOMEBREW_TAP_PATH_REGEX)
+    odie "Invalid tap name '#{tap_name}'" unless tap.path.to_s.match?(HOMEBREW_TAP_PATH_REGEX)
 
     titleized_user = tap.user.dup
     titleized_repo = tap.repo.dup
@@ -169,7 +169,7 @@ module Homebrew
   def write_path(tap, filename, content)
     path = tap.path/filename
     tap.path.mkpath
-    raise "#{path} already exists" if path.exist?
+    odie "#{path} already exists" if path.exist?
 
     path.write content
   end

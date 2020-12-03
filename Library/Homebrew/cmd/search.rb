@@ -136,7 +136,7 @@ module Homebrew
         puts reason
       end
 
-      raise "No formulae or casks found for #{query.inspect}." if count.zero?
+      odie "No formulae or casks found for #{query.inspect}." if count.zero?
     end
 
     return unless $stdout.tty?

@@ -340,7 +340,7 @@ module Homebrew
   end
 
   def download_artifact(url, dir, pr)
-    raise "Credentials must be set to access the Artifacts API" if GitHub.api_credentials_type == :none
+    odie "Credentials must be set to access the Artifacts API" if GitHub.api_credentials_type == :none
 
     token = GitHub.api_credentials
     curl_args = ["--header", "Authorization: token #{token}"]

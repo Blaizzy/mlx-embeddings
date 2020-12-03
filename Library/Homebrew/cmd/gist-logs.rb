@@ -103,7 +103,7 @@ module Homebrew
         logs[file.basename.to_s] = { content: contents }
       end
     end
-    raise "No logs." if logs.empty?
+    odie "No logs." if logs.empty?
 
     logs
   end
