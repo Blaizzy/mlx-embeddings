@@ -1116,6 +1116,8 @@ RuboCop::AST::NodePattern::LexerRex::IDENTIFIER = T.let(T.unsafe(nil), Regexp)
 class RuboCop::AST::NodePattern::LexerRex::LexerError < ::StandardError
 end
 
+RuboCop::AST::NodePattern::LexerRex::NODE_TYPE = T.let(T.unsafe(nil), Regexp)
+
 RuboCop::AST::NodePattern::LexerRex::REGEXP = T.let(T.unsafe(nil), Regexp)
 
 RuboCop::AST::NodePattern::LexerRex::REGEXP_BODY = T.let(T.unsafe(nil), Regexp)
@@ -1350,6 +1352,8 @@ RuboCop::AST::NodePattern::Sets::SET_ABSTRACT_OVERRIDE_OVERRIDABLE_ETC = T.let(T
 
 RuboCop::AST::NodePattern::Sets::SET_ADD_DEPENDENCY_ADD_RUNTIME_DEPENDENCY_ADD_DEVELOPMENT_DEPENDENCY = T.let(T.unsafe(nil), Set)
 
+RuboCop::AST::NodePattern::Sets::SET_AFTER_ACTION_APPEND_AFTER_ACTION_APPEND_AROUND_ACTION_ETC = T.let(T.unsafe(nil), Set)
+
 RuboCop::AST::NodePattern::Sets::SET_ALL_CONTEXT = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_AND_RETURN_AND_RAISE_AND_THROW_ETC = T.let(T.unsafe(nil), Set)
@@ -1357,6 +1361,8 @@ RuboCop::AST::NodePattern::Sets::SET_AND_RETURN_AND_RAISE_AND_THROW_ETC = T.let(
 RuboCop::AST::NodePattern::Sets::SET_ANY_ALL_NORETURN_ETC = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_ANY_INSTANCE_ALLOW_ANY_INSTANCE_OF_EXPECT_ANY_INSTANCE_OF = T.let(T.unsafe(nil), Set)
+
+RuboCop::AST::NodePattern::Sets::SET_AP_P_PP_ETC = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_ATTR_READER_ATTR_WRITER_ATTR_ACCESSOR = T.let(T.unsafe(nil), Set)
 
@@ -1366,9 +1372,13 @@ RuboCop::AST::NodePattern::Sets::SET_BACKGROUND_SCENARIO_XSCENARIO_ETC = T.let(T
 
 RuboCop::AST::NodePattern::Sets::SET_BEFORE_AFTER = T.let(T.unsafe(nil), Set)
 
+RuboCop::AST::NodePattern::Sets::SET_BELONGS_TO_HAS_ONE_HAS_MANY_HAS_AND_BELONGS_TO_MANY = T.let(T.unsafe(nil), Set)
+
 RuboCop::AST::NodePattern::Sets::SET_BE_EQ_EQL_EQUAL = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_BE_TRUTHY_BE_FALSEY_BE_FALSY_ETC = T.let(T.unsafe(nil), Set)
+
+RuboCop::AST::NodePattern::Sets::SET_BINWRITE_SYSWRITE_WRITE_WRITE_NONBLOCK = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_CALLER_CALLER_LOCATIONS = T.let(T.unsafe(nil), Set)
 
@@ -1392,6 +1402,10 @@ RuboCop::AST::NodePattern::Sets::SET_CONTEXT_SHARED_CONTEXT = T.let(T.unsafe(nil
 
 RuboCop::AST::NodePattern::Sets::SET_COUNT_LENGTH_SIZE = T.let(T.unsafe(nil), Set)
 
+RuboCop::AST::NodePattern::Sets::SET_CREATED_AT_UPDATED_AT = T.let(T.unsafe(nil), Set)
+
+RuboCop::AST::NodePattern::Sets::SET_CREATED_AT_UPDATED_AT_2 = T.let(T.unsafe(nil), Set)
+
 RuboCop::AST::NodePattern::Sets::SET_DEFINE_METHOD_DEFINE_SINGLETON_METHOD = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_DESCRIBE_FEATURE = T.let(T.unsafe(nil), Set)
@@ -1412,11 +1426,15 @@ RuboCop::AST::NodePattern::Sets::SET_ESCAPE_ENCODE_UNESCAPE_DECODE = T.let(T.uns
 
 RuboCop::AST::NodePattern::Sets::SET_EXACTLY_AT_LEAST_AT_MOST = T.let(T.unsafe(nil), Set)
 
+RuboCop::AST::NodePattern::Sets::SET_EXECUTE_REMOVE_BELONGS_TO = T.let(T.unsafe(nil), Set)
+
 RuboCop::AST::NodePattern::Sets::SET_EXPECT_ALLOW = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_FACTORYGIRL_FACTORYBOT = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_FIRST_LAST__ETC = T.let(T.unsafe(nil), Set)
+
+RuboCop::AST::NodePattern::Sets::SET_FIRST_TAKE = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_FIXNUM_BIGNUM = T.let(T.unsafe(nil), Set)
 
@@ -1426,13 +1444,21 @@ RuboCop::AST::NodePattern::Sets::SET_FORMAT_SPRINTF_PRINTF = T.let(T.unsafe(nil)
 
 RuboCop::AST::NodePattern::Sets::SET_GEMCUTTER_RUBYGEMS_RUBYFORGE = T.let(T.unsafe(nil), Set)
 
+RuboCop::AST::NodePattern::Sets::SET_GET_POST_PUT_ETC = T.let(T.unsafe(nil), Set)
+
 RuboCop::AST::NodePattern::Sets::SET_GSUB_GSUB = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_GSUB_GSUB_SUB_SUB = T.let(T.unsafe(nil), Set)
 
+RuboCop::AST::NodePattern::Sets::SET_HAS_MANY_HAS_ONE = T.let(T.unsafe(nil), Set)
+
+RuboCop::AST::NodePattern::Sets::SET_HAS_MANY_HAS_ONE_BELONGS_TO = T.let(T.unsafe(nil), Set)
+
 RuboCop::AST::NodePattern::Sets::SET_INCLUDE_EXTEND_PREPEND = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_INCLUDE_MEMBER = T.let(T.unsafe(nil), Set)
+
+RuboCop::AST::NodePattern::Sets::SET_INSERT_INSERT = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_INSTANCE_EVAL_CLASS_EVAL_MODULE_EVAL = T.let(T.unsafe(nil), Set)
 
@@ -1464,6 +1490,8 @@ RuboCop::AST::NodePattern::Sets::SET_NEW_OPEN = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_NIL_ = T.let(T.unsafe(nil), Set)
 
+RuboCop::AST::NodePattern::Sets::SET_ONLY_EXCEPT = T.let(T.unsafe(nil), Set)
+
 RuboCop::AST::NodePattern::Sets::SET_PIPELINE_PIPELINE_R_PIPELINE_RW_ETC = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_PRIVATE_PROTECTED = T.let(T.unsafe(nil), Set)
@@ -1494,9 +1522,15 @@ RuboCop::AST::NodePattern::Sets::SET_RECEIVE_RECEIVE_MESSAGE_CHAIN = T.let(T.uns
 
 RuboCop::AST::NodePattern::Sets::SET_REDUCE_INJECT = T.let(T.unsafe(nil), Set)
 
+RuboCop::AST::NodePattern::Sets::SET_REFERER_REFERRER = T.let(T.unsafe(nil), Set)
+
 RuboCop::AST::NodePattern::Sets::SET_REJECT_REJECT = T.let(T.unsafe(nil), Set)
 
+RuboCop::AST::NodePattern::Sets::SET_RENDER_REDIRECT_TO = T.let(T.unsafe(nil), Set)
+
 RuboCop::AST::NodePattern::Sets::SET_REQUIRE_REQUIRE_RELATIVE = T.let(T.unsafe(nil), Set)
+
+RuboCop::AST::NodePattern::Sets::SET_RETURNING_UNIQUE_BY = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_SELECT_FILTER_FIND_ALL_REJECT = T.let(T.unsafe(nil), Set)
 
@@ -1505,6 +1539,10 @@ RuboCop::AST::NodePattern::Sets::SET_SELECT_SELECT = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_SEND_PUBLIC_SEND___SEND__ = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_SHOULD_SHOULD_NOT = T.let(T.unsafe(nil), Set)
+
+RuboCop::AST::NodePattern::Sets::SET_SINCE_FROM_NOW_AFTER_ETC = T.let(T.unsafe(nil), Set)
+
+RuboCop::AST::NodePattern::Sets::SET_SKIP_AFTER_ACTION_SKIP_AROUND_ACTION_SKIP_BEFORE_ACTION_SKIP_ACTION_CALLBACK = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_SKIP_PENDING = T.let(T.unsafe(nil), Set)
 
@@ -1530,9 +1568,15 @@ RuboCop::AST::NodePattern::Sets::SET_TO_ENUM_ENUM_FOR = T.let(T.unsafe(nil), Set
 
 RuboCop::AST::NodePattern::Sets::SET_TO_I_TO_F_TO_C = T.let(T.unsafe(nil), Set)
 
+RuboCop::AST::NodePattern::Sets::SET_TRANSLATE_LOCALIZE = T.let(T.unsafe(nil), Set)
+
 RuboCop::AST::NodePattern::Sets::SET_TRUE_FALSE = T.let(T.unsafe(nil), Set)
 
+RuboCop::AST::NodePattern::Sets::SET_TRY_TRY = T.let(T.unsafe(nil), Set)
+
 RuboCop::AST::NodePattern::Sets::SET_TYPE_TEMPLATE_TYPE_MEMBER = T.let(T.unsafe(nil), Set)
+
+RuboCop::AST::NodePattern::Sets::SET_UNIQ_DISTINCT = T.let(T.unsafe(nil), Set)
 
 RuboCop::AST::NodePattern::Sets::SET_ZERO_POSITIVE_NEGATIVE = T.let(T.unsafe(nil), Set)
 

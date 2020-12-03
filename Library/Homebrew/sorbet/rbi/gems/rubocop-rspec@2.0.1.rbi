@@ -1112,6 +1112,57 @@ class RuboCop::Cop::RSpec::PredicateMatcher < ::RuboCop::Cop::RSpec::Base
   def block_loc(send_node); end
 end
 
+module RuboCop::Cop::RSpec::Rails
+end
+
+class RuboCop::Cop::RSpec::Rails::HttpStatus < ::RuboCop::Cop::RSpec::Base
+  include(::RuboCop::Cop::ConfigurableEnforcedStyle)
+  extend(::RuboCop::Cop::AutoCorrector)
+
+  def http_status(param0 = T.unsafe(nil)); end
+  def on_send(node); end
+
+  private
+
+  def checker_class; end
+end
+
+class RuboCop::Cop::RSpec::Rails::HttpStatus::NumericStyleChecker
+  def initialize(node); end
+
+  def message; end
+  def node; end
+  def offensive?; end
+  def preferred_style; end
+
+  private
+
+  def allowed_symbol?; end
+  def number; end
+  def symbol; end
+end
+
+RuboCop::Cop::RSpec::Rails::HttpStatus::NumericStyleChecker::ALLOWED_STATUSES = T.let(T.unsafe(nil), Array)
+
+RuboCop::Cop::RSpec::Rails::HttpStatus::NumericStyleChecker::MSG = T.let(T.unsafe(nil), String)
+
+class RuboCop::Cop::RSpec::Rails::HttpStatus::SymbolicStyleChecker
+  def initialize(node); end
+
+  def message; end
+  def node; end
+  def offensive?; end
+  def preferred_style; end
+
+  private
+
+  def custom_http_status_code?; end
+  def number; end
+  def symbol; end
+end
+
+RuboCop::Cop::RSpec::Rails::HttpStatus::SymbolicStyleChecker::MSG = T.let(T.unsafe(nil), String)
+
 class RuboCop::Cop::RSpec::ReceiveCounts < ::RuboCop::Cop::RSpec::Base
   extend(::RuboCop::Cop::AutoCorrector)
 

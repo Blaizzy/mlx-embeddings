@@ -28085,31 +28085,10 @@ class RuboCop::AST::NodePattern::Parser
 end
 
 module RuboCop::AST::NodePattern::Sets
-  SET_AFTER_ACTION_APPEND_AFTER_ACTION_APPEND_AROUND_ACTION_ETC = ::T.let(nil, ::T.untyped)
-  SET_AP_P_PP_ETC = ::T.let(nil, ::T.untyped)
-  SET_BELONGS_TO_HAS_ONE_HAS_MANY_HAS_AND_BELONGS_TO_MANY = ::T.let(nil, ::T.untyped)
-  SET_BINWRITE_SYSWRITE_WRITE_WRITE_NONBLOCK = ::T.let(nil, ::T.untyped)
   SET_BUILD_RECOMMENDED_TEST_OPTIONAL = ::T.let(nil, ::T.untyped)
-  SET_CREATED_AT_UPDATED_AT = ::T.let(nil, ::T.untyped)
-  SET_CREATED_AT_UPDATED_AT_2 = ::T.let(nil, ::T.untyped)
   SET_DEPENDS_ON_USES_FROM_MACOS = ::T.let(nil, ::T.untyped)
-  SET_EXECUTE_REMOVE_BELONGS_TO = ::T.let(nil, ::T.untyped)
-  SET_FIRST_TAKE = ::T.let(nil, ::T.untyped)
-  SET_GET_POST_PUT_ETC = ::T.let(nil, ::T.untyped)
-  SET_HAS_MANY_HAS_ONE = ::T.let(nil, ::T.untyped)
-  SET_HAS_MANY_HAS_ONE_BELONGS_TO = ::T.let(nil, ::T.untyped)
   SET_INCLUDE_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
-  SET_INSERT_INSERT = ::T.let(nil, ::T.untyped)
-  SET_ONLY_EXCEPT = ::T.let(nil, ::T.untyped)
-  SET_REFERER_REFERRER = ::T.let(nil, ::T.untyped)
-  SET_RENDER_REDIRECT_TO = ::T.let(nil, ::T.untyped)
-  SET_RETURNING_UNIQUE_BY = ::T.let(nil, ::T.untyped)
-  SET_SINCE_FROM_NOW_AFTER_ETC = ::T.let(nil, ::T.untyped)
-  SET_SKIP_AFTER_ACTION_SKIP_AROUND_ACTION_SKIP_BEFORE_ACTION_SKIP_ACTION_CALLBACK = ::T.let(nil, ::T.untyped)
   SET_SYSTEM_SHELL_OUTPUT_PIPE_OUTPUT = ::T.let(nil, ::T.untyped)
-  SET_TRANSLATE_LOCALIZE = ::T.let(nil, ::T.untyped)
-  SET_TRY_TRY = ::T.let(nil, ::T.untyped)
-  SET_UNIQ_DISTINCT = ::T.let(nil, ::T.untyped)
   SET_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
 end
 
@@ -28307,56 +28286,6 @@ class RuboCop::Cop::FormulaCop
   def required_dependency?(param0); end
 
   def required_dependency_name?(param0, param1); end
-end
-
-module RuboCop::Cop::RSpec::Rails
-end
-
-class RuboCop::Cop::RSpec::Rails::HttpStatus
-  include ::RuboCop::Cop::ConfigurableEnforcedStyle
-  def http_status(param0=T.unsafe(nil)); end
-
-  def on_send(node); end
-end
-
-class RuboCop::Cop::RSpec::Rails::HttpStatus::NumericStyleChecker
-  def initialize(node); end
-
-  def message(); end
-
-  def node(); end
-
-  def offensive?(); end
-
-  def preferred_style(); end
-  ALLOWED_STATUSES = ::T.let(nil, ::T.untyped)
-  MSG = ::T.let(nil, ::T.untyped)
-end
-
-class RuboCop::Cop::RSpec::Rails::HttpStatus::NumericStyleChecker
-end
-
-class RuboCop::Cop::RSpec::Rails::HttpStatus::SymbolicStyleChecker
-  def initialize(node); end
-
-  def message(); end
-
-  def node(); end
-
-  def offensive?(); end
-
-  def preferred_style(); end
-  MSG = ::T.let(nil, ::T.untyped)
-end
-
-class RuboCop::Cop::RSpec::Rails::HttpStatus::SymbolicStyleChecker
-end
-
-class RuboCop::Cop::RSpec::Rails::HttpStatus
-  extend ::RuboCop::Cop::AutoCorrector
-end
-
-module RuboCop::Cop::RSpec::Rails
 end
 
 module RuboCop::RSpec::ExpectOffense
