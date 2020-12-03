@@ -47,6 +47,7 @@ require "test/support/helper/output_as_tty"
 
 require "test/support/helper/spec/shared_context/homebrew_cask" if OS.mac?
 require "test/support/helper/spec/shared_context/integration_test"
+require "test/support/helper/spec/shared_examples/formulae_exist"
 
 TEST_DIRECTORIES = [
   CoreTap.instance.path/"Formula",

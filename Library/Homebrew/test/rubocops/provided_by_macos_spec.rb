@@ -58,4 +58,6 @@ describe RuboCop::Cop::FormulaAudit::ProvidedByMacos do
       end
     RUBY
   end
+
+  include_examples "formulae exist", described_class::PROVIDED_BY_MACOS_FORMULAE
 end

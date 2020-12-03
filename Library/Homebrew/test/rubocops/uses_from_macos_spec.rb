@@ -17,4 +17,6 @@ describe RuboCop::Cop::FormulaAudit::UsesFromMacos do
       end
     RUBY
   end
+
+  include_examples "formulae exist", described_class::ALLOWED_USES_FROM_MACOS_DEPS
 end
