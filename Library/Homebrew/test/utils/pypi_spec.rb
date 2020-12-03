@@ -172,5 +172,13 @@ describe PyPI do
     it "updates url to new version" do
       expect(described_class.update_pypi_url(old_package_url, "5.29.0")).to eq package_url
     end
+
+    it "returns nil for invalid versions" do
+      expect(described_class.update_pypi_url(old_package_url, "0.0.0")).to eq nil
+    end
+
+    it "returns nil for non-pypi urls" do
+      expect(described_class.update_pypi_url("https://brew.sh/foo-1.0.tgz", "1.1")).to eq nil
+    end
   end
 end
