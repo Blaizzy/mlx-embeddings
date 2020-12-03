@@ -30,7 +30,8 @@ module Cask
     def initialize(cask, command: SystemCommand, force: false,
                    skip_cask_deps: false, binaries: true, verbose: false,
                    require_sha: false, upgrade: false,
-                   installed_as_dependency: false, quarantine: true)
+                   installed_as_dependency: false, quarantine: true,
+                   verify_download_integrity: true)
       @cask = cask
       @command = command
       @force = force
@@ -42,6 +43,7 @@ module Cask
       @upgrade = upgrade
       @installed_as_dependency = installed_as_dependency
       @quarantine = quarantine
+      @verify_download_integrity = verify_download_integrity
     end
 
     attr_predicate :binaries?, :force?, :skip_cask_deps?, :require_sha?,
@@ -150,13 +152,10 @@ module Cask
       s.freeze
     end
 
+    sig { returns(Pathname) }
     def download
-      return @downloaded_path if @downloaded_path
-
-      odebug "Downloading"
-      @downloaded_path = Download.new(@cask, quarantine: quarantine?).fetch
-      odebug "Downloaded to -> #{@downloaded_path}"
-      @downloaded_path
+      @download ||= Download.new(@cask, quarantine: quarantine?)
+                            .fetch(verify_download_integrity: @verify_download_integrity)
     end
 
     def verify_has_sha
@@ -171,15 +170,15 @@ module Cask
 
     def primary_container
       @primary_container ||= begin
-        download
-        UnpackStrategy.detect(@downloaded_path, type: @cask.container&.type, merge_xattrs: true)
+        downloaded_path = download
+        UnpackStrategy.detect(downloaded_path, type: @cask.container&.type, merge_xattrs: true)
       end
     end
 
-    def extract_primary_container
+    def extract_primary_container(to: @cask.staged_path)
       odebug "Extracting primary container"
 
-      odebug "Using container class #{primary_container.class} for #{@downloaded_path}"
+      odebug "Using container class #{primary_container.class} for #{primary_container.path}"
 
       basename = CGI.unescape(File.basename(@cask.url.path))
 
@@ -191,16 +190,16 @@ module Cask
           FileUtils.chmod_R "+rw", tmpdir/nested_container, force: true, verbose: verbose?
 
           UnpackStrategy.detect(tmpdir/nested_container, merge_xattrs: true)
-                        .extract_nestedly(to: @cask.staged_path, verbose: verbose?)
+                        .extract_nestedly(to: to, verbose: verbose?)
         end
       else
-        primary_container.extract_nestedly(to: @cask.staged_path, basename: basename, verbose: verbose?)
+        primary_container.extract_nestedly(to: to, basename: basename, verbose: verbose?)
       end
 
       return unless quarantine?
       return unless Quarantine.available?
 
-      Quarantine.propagate(from: @downloaded_path, to: @cask.staged_path)
+      Quarantine.propagate(from: primary_container.path, to: to)
     end
 
     def install_artifacts

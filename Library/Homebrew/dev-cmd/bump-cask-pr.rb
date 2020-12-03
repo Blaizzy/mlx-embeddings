@@ -72,9 +72,10 @@ module Homebrew
     new_version = Cask::DSL::Version.new(new_version)
     new_base_url = args.url
     new_hash = args.sha256
+    new_hash = :no_check if new_hash == ":no_check"
 
     old_version = cask.version
-    old_hash = cask.sha256.to_s
+    old_hash = cask.sha256
 
     tap_full_name = cask.tap&.full_name
     default_remote_branch = cask.tap.path.git_origin_branch if cask.tap
@@ -95,7 +96,7 @@ module Homebrew
     elsif old_version.latest?
       opoo "No --url= argument specified!" unless new_base_url
     elsif new_version.latest?
-      opoo "Ignoring specified --sha256= argument." if new_hash
+      opoo "Ignoring specified --sha256= argument." if new_hash && new_check != :no_check
     elsif Version.new(new_version) < Version.new(old_version)
       odie <<~EOS
         You need to bump this cask manually since changing the
@@ -136,7 +137,9 @@ module Homebrew
       ]
     end
 
-    if !new_version.latest? && (new_hash.nil? || cask.languages.present?)
+    if new_version.latest?
+      new_hash = :no_check
+    elsif new_hash.nil? || cask.languages.present?
       tmp_contents = Utils::Inreplace.inreplace_pairs(cask.sourcefile_path,
                                                       replacement_pairs.uniq.compact,
                                                       read_only_run: true,
@@ -172,15 +175,14 @@ module Homebrew
       end
     end
 
-    replacement_pairs << if old_version.latest?
+    p old_hash
+
+    replacement_pairs << if old_version.latest? || new_version.latest? || new_hash == :no_check
+      hash_regex = old_hash == :no_check ? ":no_check" : "[\"']#{Regexp.escape(old_hash.to_s)}[\"']"
+
       [
-        "sha256 :no_check",
-        "sha256 \"#{new_hash}\"",
-      ]
-    elsif new_version.latest?
-      [
-        "sha256 \"#{old_hash}\"",
-        "sha256 :no_check",
+        /sha256\s+#{hash_regex}/m,
+        "sha256 #{new_hash == :no_check ? ":no_check" : "\"#{new_hash}\""}",
       ]
     else
       [

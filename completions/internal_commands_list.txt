@@ -18,6 +18,7 @@ bump
 bump-cask-pr
 bump-formula-pr
 bump-revision
+bump-unversioned-casks
 cask
 cat
 cleanup

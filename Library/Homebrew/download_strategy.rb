@@ -356,7 +356,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
 
       ohai "Downloading #{url}"
 
-      resolved_url, _, url_time = resolve_url_basename_time(url)
+      resolved_url, _, url_time, = resolve_url_basename_time_file_size(url)
 
       fresh = if cached_location.exist? && url_time
         url_time <= cached_location.mtime
@@ -398,14 +398,19 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
     rm_rf(temporary_path)
   end
 
+  def resolved_time_file_size
+    _, _, time, file_size = resolve_url_basename_time_file_size(url)
+    [time, file_size]
+  end
+
   private
 
   def resolved_url_and_basename
-    resolved_url, basename, = resolve_url_basename_time(url)
+    resolved_url, basename, = resolve_url_basename_time_file_size(url)
     [resolved_url, basename]
   end
 
-  def resolve_url_basename_time(url)
+  def resolve_url_basename_time_file_size(url)
     @resolved_info_cache ||= {}
     return @resolved_info_cache[url] if @resolved_info_cache.include?(url)
 
@@ -458,9 +463,15 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
            .map { |t| t.match?(/^\d+$/) ? Time.at(t.to_i) : Time.parse(t) }
            .last
 
+    file_size =
+      lines.map { |line| line[/^Content-Length:\s*(\d+)/i, 1] }
+           .compact
+           .map(&:to_i)
+           .last
+
     basename = filenames.last || parse_basename(redirect_url)
 
-    @resolved_info_cache[url] = [redirect_url, basename, time]
+    @resolved_info_cache[url] = [redirect_url, basename, time, file_size]
   end
 
   def _fetch(url:, resolved_url:)
@@ -526,7 +537,7 @@ class CurlApacheMirrorDownloadStrategy < CurlDownloadStrategy
     @combined_mirrors = [*@mirrors, *backup_mirrors]
   end
 
-  def resolve_url_basename_time(url)
+  def resolve_url_basename_time_file_size(url)
     if url == self.url
       super("#{apache_mirrors["preferred"]}#{apache_mirrors["path_info"]}")
     else

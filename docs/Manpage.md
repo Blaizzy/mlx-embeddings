@@ -899,6 +899,17 @@ present, "revision 1" will be added.
 * `--message`:
   Append *`message`* to the default commit message.
 
+### `bump-unversioned-casks` [*`options`*] [*`tap`*]
+
+Check all casks with unversioned URLs in a given *`tap`* for updates.
+
+* `-n`, `--dry-run`:
+  List what would be done, but do not actually do anything.
+* `--limit`:
+  Maximum number of casks to update.
+* `--state-file`:
+  File for keeping track of state.
+
 ### `cat` *`formula`*|*`cask`*
 
 Display the source of a *`formula`* or *`cask`*.
