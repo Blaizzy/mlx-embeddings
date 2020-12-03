@@ -33,6 +33,18 @@ describe RuboCop::Cop::FormulaAudit::ProvidedByMacos do
     RUBY
   end
 
+  it "fails for homebrew-core formulae not in provided_by_macos_formulae list" do
+    expect_offense(<<~RUBY, "/homebrew-core/")
+      class Baz < Formula
+        url "https://brew.sh/baz-1.0.tgz"
+        homepage "https://brew.sh"
+
+        keg_only :provided_by_macos
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core that are `keg_only :provided_by_macos` should be added to the `PROVIDED_BY_MACOS_FORMULAE` list (in the Homebrew/brew repo)
+      end
+    RUBY
+  end
+
   it "succeeds for formulae in provided_by_macos_formulae list" do
     setup_style_exceptions
 

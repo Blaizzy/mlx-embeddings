@@ -59,8 +59,15 @@ module RuboCop
             return if PROVIDED_BY_MACOS_FORMULAE.include? @formula_name
             return if tap_style_exception? :provided_by_macos_formulae
 
-            problem "Formulae that are `keg_only :provided_by_macos` should be added to "\
-                    "`style_exceptions/provided_by_macos_formulae.json`"
+            message = if formula_tap == "homebrew-core"
+              "Formulae in homebrew/core that are `keg_only :provided_by_macos` should be "\
+              "added to the `PROVIDED_BY_MACOS_FORMULAE` list (in the Homebrew/brew repo)"
+            else
+              "Formulae that are `keg_only :provided_by_macos` should be added to "\
+              "`style_exceptions/provided_by_macos_formulae.json`"
+            end
+
+            problem message
           end
         end
       end
