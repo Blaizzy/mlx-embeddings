@@ -57,15 +57,8 @@ module Homebrew
              description: "Switch into the mode used by the `--all` option, but only list dependencies "\
                           "for each provided <formula>, one formula per line. This is used for "\
                           "debugging the `--installed`/`--all` display mode."
-      switch "--formula", "--formulae",
-             depends_on:  "--installed",
-             description: "Treat all named arguments as formulae."
-      switch "--cask", "--casks",
-             depends_on:  "--installed",
-             description: "Treat all named arguments as casks."
 
       conflicts "--installed", "--all"
-      conflicts "--formula", "--cask"
       formula_options
     end
   end
@@ -89,13 +82,7 @@ module Homebrew
       dependents = if args.named.present?
         sorted_dependents(args.named.to_formulae_and_casks)
       elsif args.installed?
-        if args.formula? && !args.cask?
-          sorted_dependents(Formula.installed)
-        elsif args.cask? && !args.formula?
-          sorted_dependents(Cask::Caskroom.casks(config: Cask::Config.from_args(args)))
-        else
-          sorted_dependents(Formula.installed + Cask::Caskroom.casks(config: Cask::Config.from_args(args)))
-        end
+        sorted_dependents(Formula.installed + Cask::Caskroom.casks(config: Cask::Config.from_args(args)))
       else
         raise FormulaUnspecifiedError
       end
@@ -113,14 +100,8 @@ module Homebrew
     if args.no_named?
       raise FormulaUnspecifiedError unless args.installed?
 
-      sorted_dependents_formulae_and_casks = if args.formula? && !args.cask?
-        sorted_dependents(Formula.installed)
-      elsif args.cask? && !args.formula?
-        sorted_dependents(Cask::Caskroom.casks(config: Cask::Config.from_args(args)))
-      else
-        sorted_dependents(Formula.installed + Cask::Caskroom.casks(config: Cask::Config.from_args(args)))
-      end
-      pus_deps sorted_dependents_formulae_and_casks, recursive: recursive, args: args
+      puts_deps sorted_dependents(Formula.installed + Cask::Caskroom.casks(config: Cask::Config.from_args(args))),
+                recursive: recursive, args: args
       return
     end
 
