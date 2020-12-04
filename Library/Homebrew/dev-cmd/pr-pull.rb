@@ -51,7 +51,9 @@ module Homebrew
              description: "Message to include when autosquashing revision bumps, deletions, and rebuilds."
       flag   "--workflow=",
              description: "Retrieve artifacts from the specified workflow (default: `tests.yml`). "\
-                          "Legacy: use --workflows instead"
+                          "*Legacy:* use `--workflows` instead."
+      # TODO: enable for next major/minor release
+      #      replacement: "`--workflows`"
       flag   "--artifact=",
              description: "Download artifacts with the specified name (default: `bottles`)."
       flag   "--bintray-org=",

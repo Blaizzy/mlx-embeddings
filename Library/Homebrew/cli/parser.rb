@@ -194,7 +194,7 @@ module Homebrew
         end
       end
 
-      def flag(*names, description: nil, required_for: nil, depends_on: nil)
+      def flag(*names, description: nil, replacement: nil, required_for: nil, depends_on: nil)
         required = if names.any? { |name| name.end_with? "=" }
           OptionParser::REQUIRED_ARGUMENT
         else
@@ -202,8 +202,13 @@ module Homebrew
         end
         names.map! { |name| name.chomp "=" }
         description = option_to_description(*names) if description.nil?
-        process_option(*names, description)
+        if replacement.nil?
+          process_option(*names, description)
+        else
+          description += " (disabled#{"; replaced by #{replacement}" if replacement.present?})"
+        end
         @parser.on(*names, *wrap_option_desc(description), required) do |option_value|
+          odisabled "the `#{names.first}` flag", replacement unless replacement.nil?
           names.each do |name|
             @args[option_to_name(name)] = option_value
           end
