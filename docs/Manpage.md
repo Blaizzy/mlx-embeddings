@@ -129,6 +129,10 @@ show the intersection of dependencies for each formula.
   List dependencies for all available formulae.
 * `--for-each`:
   Switch into the mode used by the `--all` option, but only list dependencies for each provided *`formula`*, one formula per line. This is used for debugging the `--installed`/`--all` display mode.
+* `--formula`:
+  Treat all named arguments as formulae.
+* `--cask`:
+  Treat all named arguments as casks.
 
 ### `desc` [*`options`*] (*`text`*|`/`*`text`*`/`|*`formula`*)
 
