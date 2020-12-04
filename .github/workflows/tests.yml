@@ -43,27 +43,14 @@ jobs:
           hadolint Dockerfile
 
   tap-syntax:
-    name: ${{ matrix.name }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        include:
-          - name: tap syntax (Linux)
-            os: ubuntu-latest
-            core-tap: linuxbrew-core
-          - name: tap syntax (macOS)
-            os: macos-latest
-            core-tap: homebrew-core
+    name: tap syntax (Linux)
+    runs-on: ubuntu-latest
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
 
       - run: brew test-bot --only-cleanup-before
-
-      - name: Set up Xcode
-        if: matrix.os == 'macos-11.0'
-        run: sudo xcode-select --switch /Applications/Xcode_12.2.app/Contents/Developer
 
       - run: brew config
 
@@ -86,62 +73,22 @@ jobs:
           brew update-test --to-tag
           brew update-test --commit=HEAD
 
-      - name: Set up all Homebrew taps
-        if: runner.os == 'macOS'
-        run: |
-          brew tap homebrew/cask
-          brew tap homebrew/cask-drivers
-          brew tap homebrew/cask-fonts
-          brew tap homebrew/cask-versions
-          brew update-reset Library/Taps/homebrew/homebrew-bundle \
-                            Library/Taps/homebrew/homebrew-cask \
-                            Library/Taps/homebrew/homebrew-cask-versions \
-                            Library/Taps/homebrew/homebrew-services
-
       - name: Run brew readall on all taps
         run: brew readall --aliases
 
-      - name: Run brew style on ${{ matrix.core-tap }}
+      - name: Run brew style on linuxbrew-core
         run: brew style --display-cop-names homebrew/core
-
-      - name: Run brew style on official taps
-        if: runner.os == 'macOS'
-        run: |
-          brew style --display-cop-names homebrew/bundle \
-                                         homebrew/services \
-                                         homebrew/test-bot
-
-      - name: Run brew style on cask taps
-        if: runner.os == 'macOS'
-        run: |
-          brew style --display-cop-names homebrew/cask \
-                                         homebrew/cask-drivers \
-                                         homebrew/cask-fonts \
-                                         homebrew/cask-versions
 
       - name: Run brew audit --skip-style on all taps
         run: brew audit --skip-style
 
   vendored-gems:
-    name: ${{ matrix.name }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        include:
-          - name: vendored gems (Linux)
-            os: ubuntu-latest
-            core-tap: linuxbrew-core
-          - name: vendored gems (macOS)
-            os: macos-11.0
-            core-tap: homebrew-core
+    name: vendored gems (Linux)
+    runs-on: ubuntu-latest
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
-
-      - name: Set up Xcode
-        if: matrix.os == 'macos-11.0'
-        run: sudo xcode-select --switch /Applications/Xcode_12.2.app/Contents/Developer
 
       - name: Configure Git user
         uses: Homebrew/actions/git-user-config@master
@@ -180,38 +127,20 @@ jobs:
 
   tests:
     name: ${{ matrix.name }}
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
           - name: tests (no-compatibility mode)
-            os: ubuntu-latest
             test-flags: --no-compat --online --coverage
           - name: tests (generic OS)
-            os: ubuntu-latest
             test-flags: --generic --online --coverage
           - name: tests (Linux)
-            os: ubuntu-latest
-            test-flags: --online --coverage
-          - name: tests (macOS)
-            os: macos-11.0
             test-flags: --online --coverage
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
-
-      - name: Set up Xcode
-        if: matrix.os == 'macos-11.0'
-        run: sudo xcode-select --switch /Applications/Xcode_12.2.app/Contents/Developer
-
-      - name: Install brew tests dependencies
-        if: runner.os == 'macOS'
-        run: |
-          brew install subversion
-          Library/Homebrew/shims/scm/svn --homebrew=print-path
-          which svn
-          which svnadmin
 
       - name: Cache Bundler RubyGems
         uses: actions/cache@v1
@@ -225,42 +154,105 @@ jobs:
 
       - name: Run brew tests
         run: |
-          if ${{ runner.os == 'Linux' }}; then
-            # brew tests doesn't like world writable directories
-            sudo chmod -R g-w,o-w /home/linuxbrew/.linuxbrew/Homebrew
-          elif ${{ runner.os == 'macOS' }}; then
-            # These cannot be queried at the macOS level on GitHub Actions.
-            export HOMEBREW_LANGUAGES='en-GB'
-          fi
-
-          if ${{ contains(matrix.test-flags, '--coverage') }}; then
-            # Set variables for coverage reporting.
-            export HOMEBREW_CODECOV_TOKEN='3ea0364c-80ce-47a3-9fba-93a940d4b5d7'
-          fi
+          # brew tests doesn't like world writable directories
+          sudo chmod -R g-w,o-w /home/linuxbrew/.linuxbrew/Homebrew
 
           brew tests ${{ matrix.test-flags }}
         env:
           HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HOMEBREW_CODECOV_TOKEN: 3ea0364c-80ce-47a3-9fba-93a940d4b5d7
 
-  test-default-formula:
-    name: ${{ matrix.name }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        include:
-          - name: test default formula (Linux)
-            os: ubuntu-latest
-          - name: test default formula (macOS)
-            os: macos-latest
+  test-default-formula-linux:
+    name: test default formula (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - run: brew test-bot --only-cleanup-before
+
+      - run: brew test-bot --only-formulae --test-default-formula
+
+  test-everything:
+    name: test everything (macOS)
+    runs-on: macos-11.0
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
 
       - name: Set up Xcode
-        if: matrix.os == 'macos-11.0'
         run: sudo xcode-select --switch /Applications/Xcode_12.2.app/Contents/Developer
 
       - run: brew test-bot --only-cleanup-before
+
+      - run: brew config
+
+      # Can't cache this because we need to check that it doesn't fail the
+      # "uncommitted RubyGems" step with a cold cache.
+      - name: Install Bundler RubyGems
+        run: brew install-bundler-gems
+
+      - name: Check for uncommitted RubyGems
+        run: git diff --stat --exit-code Library/Homebrew/vendor/bundle/ruby
+
+      - run: brew doctor
+
+      - name: Run brew update-tests
+        if: github.event_name == 'pull_request'
+        run: |
+          brew update-test
+          brew update-test --to-tag
+          brew update-test --commit=HEAD
+
+      - name: Set up all Homebrew taps
+        run: |
+          brew tap homebrew/cask
+          brew tap homebrew/cask-drivers
+          brew tap homebrew/cask-fonts
+          brew tap homebrew/cask-versions
+          brew update-reset Library/Taps/homebrew/homebrew-bundle \
+                            Library/Taps/homebrew/homebrew-cask \
+                            Library/Taps/homebrew/homebrew-cask-versions \
+                            Library/Taps/homebrew/homebrew-services
+
+      - name: Run brew readall on all taps
+        run: brew readall --aliases
+
+      - name: Run brew style on homebrew-core
+        run: brew style --display-cop-names homebrew/core
+
+      - name: Run brew style on official taps
+        run: |
+          brew style --display-cop-names homebrew/bundle \
+                                         homebrew/services \
+                                         homebrew/test-bot
+
+      - name: Run brew style on cask taps
+        run: |
+          brew style --display-cop-names homebrew/cask \
+                                         homebrew/cask-drivers \
+                                         homebrew/cask-fonts \
+                                         homebrew/cask-versions
+
+      - name: Run brew audit --skip-style on all taps
+        run: brew audit --skip-style
+
+      - name: Install brew tests dependencies
+        run: |
+          brew install subversion
+          Library/Homebrew/shims/scm/svn --homebrew=print-path
+          which svn
+          which svnadmin
+
+      - name: Run brew tests
+        run: brew tests --online --coverage
+        env:
+          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Set variables for coverage reporting.
+          HOMEBREW_CODECOV_TOKEN: 3ea0364c-80ce-47a3-9fba-93a940d4b5d7
+          # These cannot be queried at the macOS level on GitHub Actions.
+          HOMEBREW_LANGUAGES: en-GB
 
       - run: brew test-bot --only-formulae --test-default-formula
