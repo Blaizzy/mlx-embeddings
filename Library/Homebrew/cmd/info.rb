@@ -239,7 +239,7 @@ module Homebrew
 
     if stable = f.stable
       s = "stable #{stable.version}"
-      s += " (bottled)" if stable.bottled?
+      s += " (bottled)" if stable.bottled? && f.pour_bottle?
       specs << s
     end
 
