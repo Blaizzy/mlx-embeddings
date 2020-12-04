@@ -16,6 +16,7 @@ describe "brew ruby", :integration_test do
   end
 end
 
+# Doesn't actually need Linux but only running there as integration tests are slow.
 describe "brew ruby -e 'puts \"testball\".f.path'", :integration_test, :needs_linux do
   let!(:target) do
     target_path = setup_test_formula "testball"
