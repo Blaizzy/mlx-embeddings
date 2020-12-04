@@ -50,6 +50,7 @@ module RuboCop
           texinfo
           unifdef
           unzip
+          whois
           zip
           zlib
         ].freeze
@@ -57,17 +58,9 @@ module RuboCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           find_method_with_args(body_node, :keg_only, :provided_by_macos) do
             return if PROVIDED_BY_MACOS_FORMULAE.include? @formula_name
-            return if tap_style_exception? :provided_by_macos_formulae
 
-            message = if formula_tap == "homebrew-core"
-              "Formulae in homebrew/core that are `keg_only :provided_by_macos` should be "\
-              "added to the `PROVIDED_BY_MACOS_FORMULAE` list (in the Homebrew/brew repo)"
-            else
-              "Formulae that are `keg_only :provided_by_macos` should be added to "\
-              "`style_exceptions/provided_by_macos_formulae.json`"
-            end
-
-            problem message
+            problem "Formulae that are `keg_only :provided_by_macos` should be "\
+                    "added to the `PROVIDED_BY_MACOS_FORMULAE` list (in the Homebrew/brew repo)"
           end
         end
       end
@@ -106,8 +99,6 @@ module RuboCop
             dep_name = string_content(dep)
             next if ALLOWED_USES_FROM_MACOS_DEPS.include? dep_name
             next if ProvidedByMacos::PROVIDED_BY_MACOS_FORMULAE.include? dep_name
-            next if tap_style_exception? :provided_by_macos_formulae, dep_name
-            next if tap_style_exception? :non_keg_only_provided_by_macos_formulae, dep_name
 
             problem "`uses_from_macos` should only be used for macOS dependencies, not #{dep_name}."
           end
