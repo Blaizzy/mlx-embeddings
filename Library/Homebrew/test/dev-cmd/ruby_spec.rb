@@ -16,7 +16,7 @@ describe "brew ruby", :integration_test do
   end
 end
 
-describe "brew ruby -e 'puts \"testball\".f.path'", :integration_test do
+describe "brew ruby -e 'puts \"testball\".f.path'", :integration_test, :needs_linux do
   let!(:target) do
     target_path = setup_test_formula "testball"
     { path: target_path }
