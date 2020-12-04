@@ -36,7 +36,10 @@ module Homebrew
 
       if installed_tap_formulae.length.positive? || installed_tap_casks.length.positive?
         if args.force?
-          opoo "Untapping #{tap} even though it contains formulae or casks that are currently installed."
+          opoo <<~EOS
+            Untapping #{tap} even though it contains the following installed formulae or casks:
+            #{(installed_tap_formulae + installed_tap_casks.map(&:token)).join("\n")}
+          EOS
         else
           odie <<~EOS
             Refusing to untap #{tap} because it contains the following installed formulae or casks:
