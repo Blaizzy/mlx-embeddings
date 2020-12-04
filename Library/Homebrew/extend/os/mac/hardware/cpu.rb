@@ -22,33 +22,10 @@ module Hardware
       end
 
       def family
-        case sysctl_int("hw.cpufamily")
-        when 0x73d67300 # Yonah: Core Solo/Duo
-          :core
-        when 0x426f69ef # Merom: Core 2 Duo
-          :core2
-        when 0x78ea4fbc # Penryn
-          :penryn
-        when 0x6b5a4cd2 # Nehalem
-          :nehalem
-        when 0x573B5EEC # Arrandale
-          :arrandale
-        when 0x5490B78C # Sandy Bridge
-          :sandybridge
-        when 0x1F65E835 # Ivy Bridge
-          :ivybridge
-        when 0x10B282DC # Haswell
-          :haswell
-        when 0x582ed09c # Broadwell
-          :broadwell
-        when 0x37fc219f # Skylake
-          :skylake
-        when 0x0f817246 # Kaby Lake
-          :kabylake
-        when 0x38435547 # Ice Lake
-          :icelake
-        when 0x07d34b9f # ARMv8.3-A (Vortex, Tempest)
-          :arm_vortex_tempest
+        if arm?
+          arm_family
+        elsif intel?
+          intel_family
         else
           :dunno
         end
@@ -123,6 +100,58 @@ module Hardware
       end
 
       private
+
+      def arm_family
+        case sysctl_int("hw.cpufamily")
+        when 0x2c91a47e             # ARMv8.0-A (Typhoon)
+          :arm_typhoon
+        when 0x92fb37c8             # ARMv8.0-A (Twister)
+          :arm_twister
+        when 0x67ceee93             # ARMv8.1-A (Hurricane, Zephyr)
+          :arm_hurricane_zephyr
+        when 0xe81e7ef6             # ARMv8.2-A (Monsoon, Mistral)
+          :arm_monsoon_mistral
+        when 0x07d34b9f             # ARMv8.3-A (Vortex, Tempest)
+          :arm_vortex_tempest
+        when 0x462504d2             # ARMv8.4-A (Lightning, Thunder)
+          :arm_lightning_thunder
+        when 0x573b5eec, 0x1b588bb3 # ARMv8.4-A (Firestorm, Icestorm)
+          :arm_firestorm_icestorm
+        else
+          :dunno
+        end
+      end
+
+      def intel_family
+        case sysctl_int("hw.cpufamily")
+        when 0x73d67300 # Yonah: Core Solo/Duo
+          :core
+        when 0x426f69ef # Merom: Core 2 Duo
+          :core2
+        when 0x78ea4fbc # Penryn
+          :penryn
+        when 0x6b5a4cd2 # Nehalem
+          :nehalem
+        when 0x573b5eec # Westmere
+          :westmere
+        when 0x5490b78c # Sandy Bridge
+          :sandybridge
+        when 0x1f65e835 # Ivy Bridge
+          :ivybridge
+        when 0x10b282dc # Haswell
+          :haswell
+        when 0x582ed09c # Broadwell
+          :broadwell
+        when 0x37fc219f # Skylake
+          :skylake
+        when 0x0f817246 # Kaby Lake
+          :kabylake
+        when 0x38435547 # Ice Lake
+          :icelake
+        else
+          :dunno
+        end
+      end
 
       def sysctl_bool(key)
         sysctl_int(key) == 1
