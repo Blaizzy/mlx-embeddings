@@ -44,6 +44,7 @@ jobs:
 
   tap-syntax:
     name: tap syntax (Linux)
+    if: startsWith(github.repository, 'Homebrew/')
     runs-on: ubuntu-latest
     steps:
       - name: Set up Homebrew
