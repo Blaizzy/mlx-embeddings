@@ -23,7 +23,7 @@ module Homebrew
       switch "-n", "--dry-run",
              description: "List what would be done, but do not actually do anything."
       flag  "--limit=",
-            description: "Maximum number of casks to update."
+            description: "Maximum runtime in minutes."
       flag   "--state-file=",
              description: "File for keeping track of state."
 
@@ -44,9 +44,7 @@ module Homebrew
 
     tap = Tap.fetch(args.named.first)
 
-    old_state = state_file.exist? ? JSON.parse(state_file.read) : {}
-
-    new_state = {}
+    state = state_file.exist? ? JSON.parse(state_file.read) : {}
 
     cask_files = tap.cask_files
     unversioned_cask_files = cask_files.select do |cask_file|
@@ -60,14 +58,28 @@ module Homebrew
 
     unversioned_casks = unversioned_cask_files.map { |path| Cask::CaskLoader.load(path) }
 
-    ohai "Static Casks:"
+    ohai "Unversioned Casks:"
     puts "Total:      #{unversioned_casks.count}"
     puts "Single-App: #{unversioned_casks.count { |c| single_app_cask?(c) }}"
     puts "Single-Pkg: #{unversioned_casks.count { |c| single_pkg_cask?(c) }}"
 
-    limit = args.limit.presence&.to_i || unversioned_casks.count
+    checked, unchecked = unversioned_casks.partition { |c| state.key?(c.full_name) }
 
-    unversioned_casks.shuffle.each do |cask|
+    queue = Queue.new
+
+    unchecked.shuffle.each do |c|
+      queue.enq c
+    end
+    checked.sort_by { |c| state.dig(c.full_name, "check_time") }.each do |c|
+      queue.enq c
+    end
+
+    limit = args.limit.presence&.to_i
+    end_time = Time.now + limit.minutes if limit
+
+    until queue.empty? || (end_time && end_time < Time.now)
+      cask = queue.deq
+
       ohai "Checking #{cask.full_name}"
 
       unless single_app_cask?(cask)
@@ -83,10 +95,7 @@ module Homebrew
         next
       end
 
-      odebug "Time: #{time.inspect}"
-      odebug "Size: #{file_size.inspect}"
-
-      last_state = old_state.fetch(cask.full_name, {})
+      last_state = state.fetch(cask.full_name, {})
       last_check_time = last_state["check_time"]&.yield_self { |t| Time.parse(t) }
 
       check_time = Time.now
@@ -113,8 +122,6 @@ module Homebrew
       sha256 = cached_download.sha256
 
       if last_sha256 != sha256 && (version = guess_cask_version(cask, installer))
-        odebug "Version: #{version.inspect}"
-
         if cask.version == version
           oh1 "Cask #{cask} is up-to-date at #{version}"
         else
@@ -142,19 +149,17 @@ module Homebrew
         end
       end
 
-      unless args.dry_run?
-        new_state[cask.full_name] = {
-          "sha256"     => sha256,
-          "check_time" => check_time.iso8601,
-          "time"       => time&.iso8601,
-          "file_size"  => file_size,
-        }
-      end
+      next if args.dry_run?
 
-      break if (limit -= 1).zero?
+      state[cask.full_name] = {
+        "sha256"     => sha256,
+        "check_time" => check_time.iso8601,
+        "time"       => time&.iso8601,
+        "file_size"  => file_size,
+      }
+
+      state_file.atomic_write JSON.generate(state)
     end
-
-    state_file.atomic_write JSON.pretty_generate(old_state.merge(new_state))
   end
 
   sig { params(cask: Cask::Cask, installer: Cask::Installer).returns(T.nilable(String)) }
@@ -165,7 +170,12 @@ module Homebrew
     Dir.mktmpdir do |dir|
       dir = Pathname(dir)
 
-      installer.extract_primary_container(to: dir)
+      begin
+        installer.extract_primary_container(to: dir)
+      rescue => e
+        onoe e
+        next
+      end
 
       plists = apps.flat_map do |app|
         Pathname.glob(dir/"**"/app.source.basename/"Contents"/"Info.plist")

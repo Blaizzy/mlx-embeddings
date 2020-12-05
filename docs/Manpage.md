@@ -906,7 +906,7 @@ Check all casks with unversioned URLs in a given *`tap`* for updates.
 * `-n`, `--dry-run`:
   List what would be done, but do not actually do anything.
 * `--limit`:
-  Maximum number of casks to update.
+  Maximum runtime in minutes.
 * `--state-file`:
   File for keeping track of state.
 
