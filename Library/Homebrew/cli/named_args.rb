@@ -37,11 +37,20 @@ module Homebrew
         @to_formulae ||= to_formulae_and_casks(only: :formula).freeze
       end
 
+      # Convert named arguments to {Formula} or {Cask} objects.
+      # If both a formula and cask with the same name exist, returns
+      # the formula and prints a warning unless `only` is specified.
+      sig do
+        params(only: T.nilable(Symbol), ignore_unavailable: T.nilable(T::Boolean), method: T.nilable(Symbol))
+          .returns(T::Array[T.any(Formula, Keg, Cask::Cask)])
+      end
       def to_formulae_and_casks(only: nil, ignore_unavailable: nil, method: nil)
         @to_formulae_and_casks ||= {}
-        @to_formulae_and_casks[only] ||= begin
-          to_objects(only: only, ignore_unavailable: ignore_unavailable, method: method).freeze
-        end
+        @to_formulae_and_casks[only] ||= downcased_unique_named.flat_map do |name|
+          load_formula_or_cask(name, only: only, method: method)
+      rescue NoSuchKegError, FormulaUnavailableError, Cask::CaskUnavailableError
+        ignore_unavailable ? [] : raise
+        end.uniq.freeze
       end
 
       def to_formulae_to_casks(only: nil, method: nil)
@@ -88,6 +97,8 @@ module Homebrew
           begin
             return Cask::CaskLoader.load(name, config: Cask::Config.from_args(@parent))
           rescue Cask::CaskUnavailableError => e
+            retry if Tap.install_default_cask_tap_if_necessary
+
             raise e if only == :cask
           end
         end
@@ -110,19 +121,6 @@ module Homebrew
       def to_resolved_formulae_to_casks(only: nil)
         to_formulae_to_casks(only: only, method: :resolve)
       end
-
-      # Convert named arguments to {Formula} or {Cask} objects.
-      # If both a formula and cask exist with the same name, returns the
-      # formula and prints a warning unless `only` is specified.
-      def to_objects(only: nil, ignore_unavailable: nil, method: nil)
-        @to_objects ||= {}
-        @to_objects[only] ||= downcased_unique_named.flat_map do |name|
-          load_formula_or_cask(name, only: only, method: method)
-        rescue NoSuchKegError, FormulaUnavailableError, Cask::CaskUnavailableError
-          ignore_unavailable ? [] : raise
-        end.uniq.freeze
-      end
-      private :to_objects
 
       def to_formulae_paths
         to_paths(only: :formula)

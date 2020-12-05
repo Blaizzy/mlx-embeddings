@@ -167,7 +167,7 @@ module Cask
 
       args = self.class.parser.parse(argv, ignore_invalid_options: true)
 
-      Tap.default_cask_tap.install unless Tap.default_cask_tap.installed?
+      Tap.install_default_cask_tap_if_necessary
 
       command, argv = detect_internal_command(*argv) ||
                       detect_external_command(*argv) ||

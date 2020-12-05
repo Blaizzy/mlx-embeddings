@@ -560,10 +560,10 @@ module Homebrew
       end
 
       def check_casktap_git_origin
-        cask_tap = Tap.default_cask_tap
-        return unless cask_tap.installed?
+        default_cask_tap = Tap.default_cask_tap
+        return unless default_cask_tap.installed?
 
-        examine_git_origin(cask_tap.path, cask_tap.remote)
+        examine_git_origin(default_cask_tap.path, default_cask_tap.remote)
       end
 
       sig { returns(T.nilable(String)) }
@@ -921,12 +921,12 @@ module Homebrew
       end
 
       def check_cask_taps
-        default_tap = Tap.default_cask_tap
-        alt_taps = Tap.select { |t| t.cask_dir.exist? && t != default_tap }
+        default_cask_tap = Tap.default_cask_tap
+        alt_taps = Tap.select { |t| t.cask_dir.exist? && t != default_cask_tap }
 
         error_tap_paths = []
 
-        add_info "Homebrew Cask Taps:", ([default_tap, *alt_taps].map do |tap|
+        add_info "Homebrew Cask Taps:", ([default_cask_tap, *alt_taps].map do |tap|
           if tap.path.blank?
             none_string
           else
