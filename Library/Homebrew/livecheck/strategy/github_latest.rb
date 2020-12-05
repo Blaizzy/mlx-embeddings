@@ -7,10 +7,11 @@ module Homebrew
       # The {GithubLatest} strategy identifies versions of software at
       # github.com by checking a repository's latest release page.
       #
-      # GitHub URLs take a few differemt formats:
+      # GitHub URLs take a few different formats:
       #
-      # * `https://github.com/example/example/releases/download/1.2.3/example-1.2.3.zip`
+      # * `https://github.com/example/example/releases/download/1.2.3/example-1.2.3.tar.gz`
       # * `https://github.com/example/example/archive/v1.2.3.tar.gz`
+      # * `https://github.com/downloads/example/example/example-1.2.3.tar.gz`
       #
       # This strategy is used when latest releases are marked for software hosted
       # on GitHub. It is necessary to use `strategy :github_latest` in a `livecheck`
@@ -21,10 +22,12 @@ module Homebrew
       #
       # @api public
       class GithubLatest
-        NICE_NAME = "GitHub Latest"
+        NICE_NAME = "GitHub - Latest"
+
+        PRIORITY = 0
 
         # The `Regexp` used to determine if the strategy applies to the URL.
-        URL_MATCH_REGEX = /github.com/i.freeze
+        URL_MATCH_REGEX = %r{//github\.com(?:/downloads)?(?:/[^/]+){2}}i.freeze
 
         # Whether the strategy can be applied to the provided URL.
         #
@@ -41,7 +44,7 @@ module Homebrew
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]
         def self.find_versions(url, regex = nil)
-          %r{github\.com/(?<username>[\da-z\-]+)/(?<repository>[\da-z_\-]+)}i =~ url
+          %r{github\.com/(?:downloads/)?(?<username>[^/]+)/(?<repository>[^/]+)}i =~ url.sub(/\.git$/i, "")
 
           # The page containing the latest release
           page_url = "https://github.com/#{username}/#{repository}/releases/latest"
