@@ -60,8 +60,14 @@ class Tap
     fetch(match[:user], match[:repo])
   end
 
+  sig { returns(T.attached_class) }
   def self.default_cask_tap
     @default_cask_tap ||= fetch("Homebrew", "cask")
+  end
+
+  sig { returns(T::Boolean) }
+  def self.install_default_cask_tap_if_necessary
+    false
   end
 
   extend Enumerable
