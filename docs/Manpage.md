@@ -637,15 +637,15 @@ upgraded formulae or, every 30 days, for all formulae.
 
 ### `uses` [*`options`*] *`formula`*
 
-Show formulae that specify *`formula`* as a dependency (i.e. show dependents
+Show formulae and casks that specify *`formula`* as a dependency (i.e. show dependents
 of *`formula`*). When given multiple formula arguments, show the intersection
-of formulae that use *`formula`*. By default, `uses` shows all formulae that
+of formulae that use *`formula`*. By default, `uses` shows all formulae and casks that
 specify *`formula`* as a required or recommended dependency for their stable builds.
 
 * `--recursive`:
   Resolve more than one level of dependencies.
 * `--installed`:
-  Only list formulae that are currently installed.
+  Only list formulae and casks that are currently installed.
 * `--include-build`:
   Include all formulae that specify *`formula`* as `:build` type dependency.
 * `--include-test`:
@@ -654,6 +654,10 @@ specify *`formula`* as a required or recommended dependency for their stable bui
   Include all formulae that specify *`formula`* as `:optional` type dependency.
 * `--skip-recommended`:
   Skip all formulae that specify *`formula`* as `:recommended` type dependency.
+* `--formula`:
+  Include only formulae.
+* `--cask`:
+  Include only casks.
 
 ### `--cache` [*`options`*] [*`formula`*|*`cask`*]
 
