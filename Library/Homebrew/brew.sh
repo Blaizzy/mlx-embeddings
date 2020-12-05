@@ -10,6 +10,16 @@ case "$HOMEBREW_SYSTEM" in
   Linux)  HOMEBREW_LINUX="1" ;;
 esac
 
+# If we're running under macOS Rosetta 2, and it was requested by setting
+# HOMEBREW_CHANGE_ARCH_TO_ARM (for example in CI), then we re-exec this
+# same file under the native architecture
+if [[ "$HOMEBREW_CHANGE_ARCH_TO_ARM" = "1" ]] && \
+   [[ "$HOMEBREW_MACOS" = "1" ]] && \
+   [[ "$(sysctl -n hw.optional.arm64 2>/dev/null)" = "1" ]] && \
+   [[ "$(sysctl -n sysctl.proc_translated 2>/dev/null)" = "1" ]]; then
+  exec arch -arm64e "$HOMEBREW_BREW_FILE" "$@"
+fi
+
 # Where we store built products; a Cellar in HOMEBREW_PREFIX (often /usr/local
 # for bottles) unless there's already a Cellar in HOMEBREW_REPOSITORY.
 if [[ -d "$HOMEBREW_REPOSITORY/Cellar" ]]
