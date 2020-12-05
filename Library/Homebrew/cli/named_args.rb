@@ -48,8 +48,8 @@ module Homebrew
         @to_formulae_and_casks ||= {}
         @to_formulae_and_casks[only] ||= downcased_unique_named.flat_map do |name|
           load_formula_or_cask(name, only: only, method: method)
-      rescue NoSuchKegError, FormulaUnavailableError, Cask::CaskUnavailableError
-        ignore_unavailable ? [] : raise
+        rescue NoSuchKegError, FormulaUnavailableError, Cask::CaskUnavailableError
+          ignore_unavailable ? [] : raise
         end.uniq.freeze
       end
 
