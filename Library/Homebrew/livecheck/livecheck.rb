@@ -25,6 +25,11 @@ module Homebrew
       lolg.it
     ].freeze
 
+    STRATEGY_SYMBOLS_TO_SKIP_PREPROCESS_URL = [
+      :github_latest,
+      :page_match,
+    ].freeze
+
     UNSTABLE_VERSION_KEYWORDS = %w[
       alpha
       beta
@@ -381,8 +386,8 @@ module Homebrew
           next
         end
 
-        # Do not preprocess the URL when livecheck.strategy is set to :page_match
-        url = if livecheck_strategy == :page_match
+        # Only preprocess the URL when it's appropriate
+        url = if STRATEGY_SYMBOLS_TO_SKIP_PREPROCESS_URL.include?(livecheck_strategy)
           original_url
         else
           preprocess_url(original_url)
