@@ -52,18 +52,27 @@ module Homebrew
       # Returns an array of strategies that apply to the provided URL.
       #
       # @param url [String] the URL to check for matching strategies
-      # @param regex_provided [Boolean] whether a regex is provided in a
+      # @param livecheck_strategy [Symbol] a {Strategy} symbol from the
+      #   `livecheck` block
+      # @param regex_provided [Boolean] whether a regex is provided in the
       #   `livecheck` block
       # @return [Array]
-      def from_url(url, regex_provided = nil)
+      def from_url(url, livecheck_strategy: nil, regex_provided: nil)
         usable_strategies = strategies.values.select do |strategy|
-          # Ignore strategies with a priority of 0 or lower
-          next if strategy.const_defined?(:PRIORITY) && !strategy::PRIORITY.positive?
+          if strategy == PageMatch
+            # Only treat the `PageMatch` strategy as usable if a regex is
+            # present in the `livecheck` block
+            next unless regex_provided
+          elsif strategy.const_defined?(:PRIORITY) &&
+                !strategy::PRIORITY.positive? &&
+                from_symbol(livecheck_strategy) != strategy
+            # Ignore strategies with a priority of 0 or lower, unless the
+            # strategy is specified in the `livecheck` block
+            next
+          end
 
           strategy.respond_to?(:match?) && strategy.match?(url)
         end
-
-        usable_strategies << strategies[:page_match] if strategies.key?(:page_match) && regex_provided
 
         # Sort usable strategies in descending order by priority, using the
         # DEFAULT_PRIORITY when a strategy doesn't contain a PRIORITY constant

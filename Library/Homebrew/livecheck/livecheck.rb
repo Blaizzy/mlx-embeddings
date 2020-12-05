@@ -393,7 +393,11 @@ module Homebrew
           preprocess_url(original_url)
         end
 
-        strategies = Strategy.from_url(url, livecheck_regex.present?)
+        strategies = Strategy.from_url(
+          url,
+          livecheck_strategy: livecheck_strategy,
+          regex_provided:     livecheck_regex.present?,
+        )
         strategy = Strategy.from_symbol(livecheck_strategy)
         strategy ||= strategies.first
         strategy_name = @livecheck_strategy_names[strategy]
