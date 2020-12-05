@@ -7,7 +7,7 @@ describe Homebrew::Livecheck::Strategy::GithubLatest do
   subject(:github_latest) { described_class }
 
   let(:github_release_artifact_url) {
-    "https://github.com/example/example/releases/download/1.2.3/example-1.2.3.zip"
+    "https://github.com/example/example/releases/download/1.2.3/example-1.2.3.tar.gz"
   }
   let(:github_tag_archive_url) { "https://github.com/example/example/archive/v1.2.3.tar.gz" }
   let(:github_repository_upload_url) { "https://github.com/downloads/example/example/example-1.2.3.tar.gz" }
