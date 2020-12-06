@@ -142,7 +142,7 @@ module Homebrew
               system_command! HOMEBREW_BREW_FILE, args: bump_cask_pr_args
             rescue ErrorDuringExecution => e
               onoe e
-              Homebrew.failed = true
+              next
             end
           end
         end
