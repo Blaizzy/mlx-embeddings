@@ -16,6 +16,7 @@ describe "Homebrew.bump_unversioned_casks_args" do
       ["1.2.3", "1.2"]  => "1.2.3",
       ["1.2.3", "8312"] => "1.2.3,8312",
       ["2021", "2006"]  => "2021,2006",
+      ["1.0", "1"]      => "1.0",
     }
 
     expected_mappings.each do |(short_version, version), expected_version|

@@ -261,11 +261,15 @@ module Homebrew
     version_match = version&.match?(/\A\d+(\.\d+)+\Z/)
 
     if short_version_match && version_match
-      return version if version.length > short_version.length && version.start_with?(short_version)
-      return short_version if short_version.length > version.length && short_version.start_with?(version)
+      return version if version.length > short_version.length && version.start_with?("#{short_version}.")
+      return short_version if short_version.length > version.length && short_version.start_with?("#{version}.")
     end
 
-    return "#{short_version},#{version}" if short_version&.match?(/\A\d+(\.\d+)*\Z/) && version&.match?(/\A\d+\Z/)
+    if short_version&.match?(/\A\d+(\.\d+)*\Z/) && version&.match?(/\A\d+\Z/)
+      return short_version if short_version.start_with?("#{version}.")
+
+      return "#{short_version},#{version}"
+    end
 
     short_version || version
   end
