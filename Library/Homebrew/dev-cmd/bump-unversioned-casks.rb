@@ -198,19 +198,22 @@ module Homebrew
           .uniq
 
         if packages.count == 1
-          extract_dir = dir/pkg_path.stem
-          system_command! "pkgutil", args: ["--expand-full", pkg_path, extract_dir]
+          Dir.mktmpdir do |extract_dir|
+            extract_dir = Pathname(extract_dir)
+            FileUtils.rmdir extract_dir
 
-          package_info_path = extract_dir/"PackageInfo"
-          if package_info_path.exist?
-            if (version = version_from_package_info(cask, package_info_path))
-              return version
+            system_command! "pkgutil", args: ["--expand-full", pkg_path, extract_dir]
+
+            package_info_path = extract_dir/"PackageInfo"
+            if package_info_path.exist?
+              if (version = version_from_package_info(cask, package_info_path))
+                return version
+              end
+            else
+              onoe "#{pkg_path.basename} does not contain a `PackageInfo` file."
+              next
             end
-          else
-            onoe "#{pkg_path.basename} does not contain a `PackageInfo` file."
-            next
           end
-
         else
           opoo "Skipping, #{pkg_path.basename} contains multiple packages."
           next
