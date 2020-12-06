@@ -83,7 +83,7 @@ module Homebrew
       ohai "Checking #{cask.full_name}"
 
       unless single_app_cask?(cask) || single_pkg_cask?(cask)
-        opoo "Skipping, cask #{cask} it not a single-app or PKG cask."
+        opoo "Skipping, not a single-app or PKG cask."
         next
       end
 
@@ -202,26 +202,36 @@ module Homebrew
           .map { |package| package.fetch("Package") }
           .uniq
 
-        if packages.count == 1
-          Dir.mktmpdir do |extract_dir|
-            extract_dir = Pathname(extract_dir)
-            FileUtils.rmdir extract_dir
+        Dir.mktmpdir do |extract_dir|
+          extract_dir = Pathname(extract_dir)
+          FileUtils.rmdir extract_dir
 
+          begin
             system_command! "pkgutil", args: ["--expand-full", pkg_path, extract_dir]
+          rescue => e
+            onoe "Failed to extract #{pkg_path.basename}: #{e}"
+            next
+          end
 
+          if packages.count == 1
             package_info_path = extract_dir/"PackageInfo"
             if package_info_path.exist?
               if (version = version_from_package_info(package_info_path))
                 return version
               end
             else
-              onoe "#{pkg_path.basename} does not contain a `PackageInfo` file."
+              onoe "#{pkg_path.basename} does not contain a `PackageInfo` file:"
+              $stderr.puts Pathname.glob(extract_dir/"**/*")
               next
             end
+          else
+            opoo "Skipping, #{pkg_path.basename} contains multiple packages (#{packages.join(", ")}):"
+            $stderr.puts Pathname.glob(extract_dir/"**/*")
+            next
           end
-        else
-          opoo "Skipping, #{pkg_path.basename} contains multiple packages."
-          next
+        ensure
+          Cask::Utils.gain_permissions_remove(extract_dir)
+          extract_dir.mkpath
         end
       end
 
@@ -254,7 +264,6 @@ module Homebrew
       .returns(T.nilable(String))
   end
   def self.decide_between_versions(short_version, version)
-
     return short_version if short_version == version
 
     short_version_match = short_version&.match?(/\A\d+(\.\d+)+\Z/)
