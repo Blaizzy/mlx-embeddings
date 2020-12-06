@@ -258,8 +258,17 @@ module Homebrew
 
     return cask.version.to_s if [short_version, version].include?(cask.version.to_s)
 
-    return short_version if short_version&.match(/\A\d+(\.\d+)+\Z/)
-    return version if version&.match(/\A\d+(\.\d+)+\Z/)
+    short_version_match = short_version&.match?(/\A\d+(\.\d+)+\Z/)
+    version_match = version&.match?(/\A\d+(\.\d+)+\Z/)
+
+    if short_version_match && version_match
+      return version if version.length > short_version.length && version.start_with?(short_version)
+      return short_version if short_version.length > version.length && short_version.start_with?(version)
+    elsif short_version_match
+      return short_version
+    elsif version_match
+      return version
+    end
 
     short_version || version
   end
