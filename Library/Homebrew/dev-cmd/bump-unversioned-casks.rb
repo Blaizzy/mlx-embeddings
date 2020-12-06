@@ -82,11 +82,6 @@ module Homebrew
 
       ohai "Checking #{cask.full_name}"
 
-      unless single_app_cask?(cask)
-        opoo "Skipping, not a single-app cask."
-        next
-      end
-
       last_state = state.fetch(cask.full_name, {})
       last_check_time = last_state["check_time"]&.yield_self { |t| Time.parse(t) }
 
@@ -164,7 +159,12 @@ module Homebrew
   sig { params(cask: Cask::Cask, installer: Cask::Installer).returns(T.nilable(String)) }
   def self.guess_cask_version(cask, installer)
     apps = cask.artifacts.select { |a| a.is_a?(Cask::Artifact::App) }
-    return if apps.count != 1
+    pkgs = cask.artifacts.select { |a| a.is_a?(Cask::Artifact::Pkg) }
+
+    if apps.empty? && pkgs.empty?
+      opoo "Cask #{cask} does not contain any apps or PKG installers."
+      return
+    end
 
     Dir.mktmpdir do |dir|
       dir = Pathname(dir)
@@ -176,28 +176,84 @@ module Homebrew
         next
       end
 
-      plists = apps.flat_map do |app|
+      info_plist_paths = apps.flat_map do |app|
         Pathname.glob(dir/"**"/app.source.basename/"Contents"/"Info.plist")
       end
-      next if plists.empty?
 
-      plist = plists.first
+      info_plist_paths.each do |info_plist_path|
+        if (version = version_from_info_plist(cask, info_plist_path))
+          return version
+        end
+      end
 
-      system_command! "plutil", args: ["-convert", "xml1", plist]
-      plist = Plist.parse_xml(plist.read)
+      pkg_paths = pkgs.flat_map do |pkg|
+        Pathname.glob(dir/"**"/pkg.path.basename)
+      end
 
-      short_version = plist["CFBundleShortVersionString"]
-      version = plist["CFBundleVersion"]
+      pkg_paths.each do |pkg_path|
+        packages =
+          system_command!("installer", args: ["-plist", "-pkginfo", "-pkg", pkg_path])
+          .plist
+          .map { |package| package.fetch("Package") }
+          .uniq
 
-      return "#{short_version},#{version}" if cask.version.include?(",")
+        if packages.count == 1
+          extract_dir = dir/pkg_path.stem
+          system_command! "pkgutil", args: ["--expand-full", pkg_path, extract_dir]
 
-      return cask.version.to_s if [short_version, version].include?(cask.version.to_s)
+          package_info_path = extract_dir/"PackageInfo"
+          if package_info_path.exist?
+            if (version = version_from_package_info(cask, package_info_path))
+              return version
+            end
+          else
+            onoe "#{pkg_path.basename} does not contain a `PackageInfo` file."
+            next
+          end
 
-      return short_version if short_version&.match(/\A\d+(\.\d+)+\Z/)
-      return version if version&.match(/\A\d+(\.\d+)+\Z/)
+        else
+          opoo "Skipping, #{pkg_path.basename} contains multiple packages."
+          next
+        end
+      end
 
-      short_version || version
+      nil
     end
+  end
+
+  sig { params(cask: Cask::Cask, info_plist_path: Pathname).returns(T.nilable(String)) }
+  def self.version_from_info_plist(cask, info_plist_path)
+    plist = system_command!("plutil", args: ["-convert", "xml1", "-o", "-", info_plist_path]).plist
+
+    short_version = plist["CFBundleShortVersionString"]
+    version = plist["CFBundleVersion"]
+
+    return decide_between_versions(cask, short_version, version) if short_version && version
+  end
+
+  sig { params(cask: Cask::Cask, package_info_path: Pathname).returns(T.nilable(String)) }
+  def self.version_from_package_info(cask, package_info_path)
+    contents = package_info_path.read
+
+    short_version = contents[/CFBundleShortVersionString="([^"]*)"/, 1]
+    version = contents[/CFBundleVersion="([^"]*)"/, 1]
+
+    return decide_between_versions(cask, short_version, version) if short_version && version
+  end
+
+  sig do
+    params(cask: Cask::Cask, short_version: T.nilable(String), version: T.nilable(String))
+      .returns(T.nilable(String))
+  end
+  def self.decide_between_versions(cask, short_version, version)
+    return "#{short_version},#{version}" if short_version && version && cask.version.include?(",")
+
+    return cask.version.to_s if [short_version, version].include?(cask.version.to_s)
+
+    return short_version if short_version&.match(/\A\d+(\.\d+)+\Z/)
+    return version if version&.match(/\A\d+(\.\d+)+\Z/)
+
+    short_version || version
   end
 
   def self.single_app_cask?(cask)

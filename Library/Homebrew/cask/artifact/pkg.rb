@@ -15,7 +15,7 @@ module Cask
     #
     # @api private
     class Pkg < AbstractArtifact
-      attr_reader :pkg_relative_path, :path, :stanza_options
+      attr_reader :path, :stanza_options
 
       def self.from_args(cask, path, **stanza_options)
         stanza_options.assert_valid_keys!(:allow_untrusted, :choices)
