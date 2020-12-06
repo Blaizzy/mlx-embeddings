@@ -89,7 +89,7 @@ module Homebrew
   end
 
   def signoff!(path, pr: nil, dry_run: false)
-    subject, body, trailers = separate_commit_message(Utils::Git.commit_message(path))
+    subject, body, trailers = separate_commit_message(path.git_commit_message)
 
     if pr
       # This is a tap pull request and approving reviewers should also sign-off.
@@ -156,7 +156,7 @@ module Homebrew
     new_formula = Utils::Git.file_at_commit(path, file, "HEAD")
 
     bump_subject = determine_bump_subject(old_formula, new_formula, formula_file, reason: reason).strip
-    subject, body, trailers = separate_commit_message(Utils::Git.commit_message(path))
+    subject, body, trailers = separate_commit_message(path.git_commit_message)
 
     if subject != bump_subject && !subject.start_with?("#{formula_name}:")
       safe_system("git", "-C", path, "commit", "--amend", "-q",
@@ -181,7 +181,7 @@ module Homebrew
     messages = []
     trailers = []
     commits.each do |commit|
-      subject, body, trailer = separate_commit_message(Utils::Git.commit_message(path, commit))
+      subject, body, trailer = separate_commit_message(path.git_commit_message(commit))
       body = body.lines.map { |line| "  #{line.strip}" }.join("\n")
       messages << "* #{subject}\n#{body}".strip
       trailers << trailer
@@ -216,7 +216,8 @@ module Homebrew
   end
 
   def autosquash!(original_commit, path: ".", reason: "", verbose: false, resolve: false)
-    original_head = Utils.safe_popen_read("git", "-C", path, "rev-parse", "HEAD").strip
+    path = Pathname(path).extend(GitRepositoryExtension)
+    original_head = path.git_head
 
     commits = Utils.safe_popen_read("git", "-C", path, "rev-list",
                                     "--reverse", "#{original_commit}..HEAD").lines.map(&:strip)
@@ -384,17 +385,14 @@ module Homebrew
       _, user, repo, pr = *url_match
       odie "Not a GitHub pull request: #{arg}" unless pr
 
-      current_branch = Utils::Git.current_branch(tap.path)
-      origin_branch = Utils::Git.origin_branch(tap.path).split("/").last
-
-      if current_branch != origin_branch || args.branch_okay? || args.clean?
-        opoo "Current branch is #{current_branch}: do you need to pull inside #{origin_branch}?"
+      if !tap.path.git_default_origin_branch? || args.branch_okay? || args.clean?
+        opoo "Current branch is #{tap.path.git_branch}: do you need to pull inside #{tap.path.git_origin_branch}?"
       end
 
       ohai "Fetching #{tap} pull request ##{pr}"
       Dir.mktmpdir pr do |dir|
         cd dir do
-          original_commit = Utils.popen_read("git", "-C", tap.path, "rev-parse", "HEAD").chomp
+          original_commit = tap.path.git_head
           cherry_pick_pr!(user, repo, pr, path: tap.path, args: args)
           if args.autosquash? && !args.dry_run?
             autosquash!(original_commit, path: tap.path,

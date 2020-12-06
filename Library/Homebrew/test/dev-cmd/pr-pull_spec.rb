@@ -38,7 +38,7 @@ describe Homebrew do
     EOS
   end
   let(:formula_file) { path/"Formula/foo.rb" }
-  let(:path) { Tap::TAP_DIRECTORY/"homebrew/homebrew-foo" }
+  let(:path) { (Tap::TAP_DIRECTORY/"homebrew/homebrew-foo").extend(GitRepositoryExtension) }
 
   describe "Homebrew.pr_pull_args" do
     it_behaves_like "parseable arguments"
@@ -58,9 +58,9 @@ describe Homebrew do
         safe_system Utils::Git.git, "commit", formula_file, "-m", "revision"
         File.open(formula_file, "w") { |f| f.write(formula_version) }
         safe_system Utils::Git.git, "commit", formula_file, "-m", "version", "--author=#{secondary_author}"
-        described_class.autosquash!(original_hash, path: ".")
-        expect(Utils::Git.commit_message(path)).to include("foo 2.0")
-        expect(Utils::Git.commit_message(path)).to include("Co-authored-by: #{secondary_author}")
+        described_class.autosquash!(original_hash, path: path)
+        expect(path.git_commit_message).to include("foo 2.0")
+        expect(path.git_commit_message).to include("Co-authored-by: #{secondary_author}")
       end
     end
   end
@@ -75,7 +75,7 @@ describe Homebrew do
         safe_system Utils::Git.git, "commit", "-m", "foo 1.0 (new formula)"
       end
       described_class.signoff!(path)
-      expect(Utils::Git.commit_message(path)).to include("Signed-off-by:")
+      expect(path.git_commit_message).to include("Signed-off-by:")
     end
   end
 

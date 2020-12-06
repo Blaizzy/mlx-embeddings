@@ -84,44 +84,38 @@ module Homebrew
   end
 
   def use_correct_linux_tap(formula, args:)
-    if OS.linux? && formula.tap.core_tap?
-      tap_full_name = formula.tap.full_name.gsub("linuxbrew", "homebrew")
-      homebrew_core_url = "https://github.com/#{tap_full_name}"
-      homebrew_core_remote = "homebrew"
-      homebrew_core_branch = "master"
-      origin_branch = "#{homebrew_core_remote}/#{homebrew_core_branch}"
-      previous_branch = Utils.popen_read("git -C \"#{formula.tap.path}\" symbolic-ref -q --short HEAD").chomp
-      previous_branch = "master" if previous_branch.empty?
-      formula_path = formula.path.to_s[%r{(Formula/.*)}, 1]
+    default_origin_branch = formula.tap.path.git_origin_branch if formula.tap
 
-      if args.dry_run? || args.write?
-        ohai "git remote add #{homebrew_core_remote} #{homebrew_core_url}"
-        ohai "git fetch #{homebrew_core_remote} #{homebrew_core_branch}"
-        ohai "git cat-file -e #{origin_branch}:#{formula_path}"
-        ohai "git checkout #{origin_branch}"
-        return tap_full_name, origin_branch, previous_branch
-      else
-        formula.path.parent.cd do
-          unless Utils.popen_read("git remote -v").match?(%r{^homebrew.*Homebrew/homebrew-core.*$})
-            ohai "Adding #{homebrew_core_remote} remote"
-            safe_system "git", "remote", "add", homebrew_core_remote, homebrew_core_url
-          end
-          ohai "Fetching #{origin_branch}"
-          safe_system "git", "fetch", homebrew_core_remote, homebrew_core_branch
-          if quiet_system "git", "cat-file", "-e", "#{origin_branch}:#{formula_path}"
-            ohai "#{formula.full_name} exists in #{origin_branch}"
-            safe_system "git", "checkout", origin_branch
-            return tap_full_name, origin_branch, previous_branch
-          end
-        end
+    return formula.tap&.full_name, "origin", default_origin_branch, "-" if !OS.linux? || !formula.tap.core_tap?
+
+    tap_full_name = formula.tap.full_name.gsub("linuxbrew", "homebrew")
+    homebrew_core_url = "https://github.com/#{tap_full_name}"
+    homebrew_core_remote = "homebrew"
+    previous_branch = formula.tap.path.git_branch || "master"
+    formula_path = formula.path.relative_path_from(formula.tap.path)
+    full_origin_branch = "#{homebrew_core_remote}/#{default_origin_branch}"
+
+    if args.dry_run? || args.write?
+      ohai "git remote add #{homebrew_core_remote} #{homebrew_core_url}"
+      ohai "git fetch #{homebrew_core_remote} HEAD #{default_origin_branch}"
+      ohai "git cat-file -e #{full_origin_branch}:#{formula_path}"
+      ohai "git checkout #{full_origin_branch}"
+      return tap_full_name, homebrew_core_remote, default_origin_branch, previous_branch
+    end
+
+    formula.tap.path.cd do
+      unless Utils.popen_read("git remote -v").match?(%r{^homebrew.*Homebrew/homebrew-core.*$})
+        ohai "Adding #{homebrew_core_remote} remote"
+        safe_system "git", "remote", "add", homebrew_core_remote, homebrew_core_url
+      end
+      ohai "Fetching remote #{homebrew_core_remote}"
+      safe_system "git", "fetch", homebrew_core_remote, "HEAD", default_origin_branch
+      if quiet_system "git", "cat-file", "-e", "#{full_origin_branch}:#{formula_path}"
+        ohai "#{formula.full_name} exists in #{full_origin_branch}"
+        safe_system "git", "checkout", full_origin_branch
+        return tap_full_name, homebrew_core_remote, default_origin_branch, previous_branch
       end
     end
-    if formula.tap
-      origin_branch = Utils.popen_read("git", "-C", formula.tap.path.to_s, "symbolic-ref", "-q", "--short",
-                                       "refs/remotes/origin/HEAD").chomp.presence
-    end
-    origin_branch ||= "origin/master"
-    [formula.tap&.full_name, origin_branch, "-"]
   end
 
   def bump_formula_pr
@@ -142,7 +136,7 @@ module Homebrew
 
     odie "This formula is disabled!" if formula.disabled?
 
-    tap_full_name, origin_branch, previous_branch = use_correct_linux_tap(formula, args: args)
+    tap_full_name, remote, remote_branch, previous_branch = use_correct_linux_tap(formula, args: args)
     check_open_pull_requests(formula, tap_full_name, args: args)
 
     new_version = args.version
@@ -355,7 +349,8 @@ module Homebrew
       sourcefile_path:  formula.path,
       old_contents:     old_contents,
       additional_files: alias_rename,
-      origin_branch:    origin_branch,
+      remote:           remote,
+      remote_branch:    remote_branch,
       branch_name:      "bump-#{formula.name}-#{new_formula_version}",
       commit_message:   "#{formula.name} #{new_formula_version}",
       previous_branch:  previous_branch,

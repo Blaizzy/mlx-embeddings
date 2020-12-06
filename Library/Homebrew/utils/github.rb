@@ -679,7 +679,8 @@ module GitHub
     sourcefile_path = info[:sourcefile_path]
     old_contents = info[:old_contents]
     additional_files = info[:additional_files] || []
-    origin_branch = info[:origin_branch]
+    remote = info[:remote] || "origin"
+    remote_branch = info[:remote_branch]
     branch = info[:branch_name]
     commit_message = info[:commit_message]
     previous_branch = info[:previous_branch]
@@ -688,7 +689,6 @@ module GitHub
     pr_message = info[:pr_message]
 
     sourcefile_path.parent.cd do
-      _, base_branch = origin_branch.split("/")
       git_dir = Utils.popen_read("git rev-parse --git-dir").chomp
       shallow = !git_dir.empty? && File.exist?("#{git_dir}/shallow")
       changed_files = [sourcefile_path]
@@ -698,12 +698,12 @@ module GitHub
         ohai "try to fork repository with GitHub API" unless args.no_fork?
         ohai "git fetch --unshallow origin" if shallow
         ohai "git add #{changed_files.join(" ")}"
-        ohai "git checkout --no-track -b #{branch} #{origin_branch}"
+        ohai "git checkout --no-track -b #{branch} #{remote}/#{remote_branch}"
         ohai "git commit --no-edit --verbose --message='#{commit_message}'" \
              " -- #{changed_files.join(" ")}"
         ohai "git push --set-upstream $HUB_REMOTE #{branch}:#{branch}"
         ohai "git checkout --quiet #{previous_branch}"
-        ohai "create pull request with GitHub API (base branch: #{base_branch})"
+        ohai "create pull request with GitHub API (base branch: #{remote_branch})"
       else
 
         unless args.commit?
@@ -723,7 +723,7 @@ module GitHub
         end
 
         safe_system "git", "add", *changed_files
-        safe_system "git", "checkout", "--no-track", "-b", branch, origin_branch unless args.commit?
+        safe_system "git", "checkout", "--no-track", "-b", branch, "#{remote}/#{remote_branch}" unless args.commit?
         safe_system "git", "commit", "--no-edit", "--verbose",
                     "--message=#{commit_message}",
                     "--", *changed_files
@@ -746,7 +746,7 @@ module GitHub
 
         begin
           url = GitHub.create_pull_request(tap_full_name, commit_message,
-                                           "#{username}:#{branch}", base_branch, pr_message)["html_url"]
+                                           "#{username}:#{branch}", remote_branch, pr_message)["html_url"]
           if args.no_browse?
             puts url
           else

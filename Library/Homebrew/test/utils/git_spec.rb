@@ -52,19 +52,6 @@ describe Utils::Git do
   let(:files_hash2) { [@h2[0..6], ["README.md"]] }
   let(:cherry_pick_commit) { @cherry_pick_commit[0..6] }
 
-  describe "#commit_message" do
-    it "returns the commit message" do
-      expect(described_class.commit_message(HOMEBREW_CACHE, file_hash1)).to eq("File added")
-      expect(described_class.commit_message(HOMEBREW_CACHE, file_hash2)).to eq("written to File")
-    end
-
-    it "errors when commit doesn't exist" do
-      expect {
-        described_class.commit_message(HOMEBREW_CACHE, "bad_refspec")
-      }.to raise_error(ErrorDuringExecution, /bad revision/)
-    end
-  end
-
   describe "#cherry_pick!" do
     it "can cherry pick a commit" do
       expect(described_class.cherry_pick!(HOMEBREW_CACHE, cherry_pick_commit)).to be_truthy
