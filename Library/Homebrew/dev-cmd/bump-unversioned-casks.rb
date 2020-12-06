@@ -87,14 +87,6 @@ module Homebrew
         next
       end
 
-      download = Cask::Download.new(cask)
-      time, file_size = begin
-        download.time_file_size
-      rescue
-        opoo "Skipping, cannot get time and file size."
-        next
-      end
-
       last_state = state.fetch(cask.full_name, {})
       last_check_time = last_state["check_time"]&.yield_self { |t| Time.parse(t) }
 
@@ -108,43 +100,50 @@ module Homebrew
       last_time = last_state["time"]&.yield_self { |t| Time.parse(t) }
       last_file_size = last_state["file_size"]
 
-      next if last_time == time && last_file_size == file_size
-
-      installer = Cask::Installer.new(cask, verify_download_integrity: false)
-
-      begin
-        cached_download = installer.download
-      rescue => e
-        onoe e
-        next
+      download = Cask::Download.new(cask)
+      time, file_size = begin
+        download.time_file_size
+      rescue
+        [nil, nil]
       end
 
-      sha256 = cached_download.sha256
+      if last_time != time || last_file_size != file_size
+        installer = Cask::Installer.new(cask, verify_download_integrity: false)
 
-      if last_sha256 != sha256 && (version = guess_cask_version(cask, installer))
-        if cask.version == version
-          oh1 "Cask #{cask} is up-to-date at #{version}"
-        else
-          bump_cask_pr_args = [
-            "bump-cask-pr",
-            "--version", version.to_s,
-            "--sha256", ":no_check",
-            "--message", "Automatic update via `brew bump-unversioned-casks`.",
-            cask.sourcefile_path
-          ]
+        begin
+          cached_download = installer.download
+        rescue => e
+          onoe e
+          next
+        end
 
-          if args.dry_run?
-            bump_cask_pr_args << "--dry-run"
-            oh1 "Would bump #{cask} from #{cask.version} to #{version}"
+        sha256 = cached_download.sha256
+
+        if last_sha256 != sha256 && (version = guess_cask_version(cask, installer))
+          if cask.version == version
+            oh1 "Cask #{cask} is up-to-date at #{version}"
           else
-            oh1 "Bumping #{cask} from #{cask.version} to #{version}"
-          end
+            bump_cask_pr_args = [
+              "bump-cask-pr",
+              "--version", version.to_s,
+              "--sha256", ":no_check",
+              "--message", "Automatic update via `brew bump-unversioned-casks`.",
+              cask.sourcefile_path
+            ]
 
-          begin
-            system_command! HOMEBREW_BREW_FILE, args: bump_cask_pr_args
-          rescue ErrorDuringExecution => e
-            onoe e
-            Homebrew.failed = true
+            if args.dry_run?
+              bump_cask_pr_args << "--dry-run"
+              oh1 "Would bump #{cask} from #{cask.version} to #{version}"
+            else
+              oh1 "Bumping #{cask} from #{cask.version} to #{version}"
+            end
+
+            begin
+              system_command! HOMEBREW_BREW_FILE, args: bump_cask_pr_args
+            rescue ErrorDuringExecution => e
+              onoe e
+              Homebrew.failed = true
+            end
           end
         end
       end
