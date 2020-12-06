@@ -233,8 +233,8 @@ module Homebrew
   def self.version_from_info_plist(info_plist_path)
     plist = system_command!("plutil", args: ["-convert", "xml1", "-o", "-", info_plist_path]).plist
 
-    short_version = plist["CFBundleShortVersionString"]
-    version = plist["CFBundleVersion"]
+    short_version = plist["CFBundleShortVersionString"].presence
+    version = plist["CFBundleVersion"].presence
 
     return decide_between_versions(short_version, version) if short_version && version
   end
@@ -243,8 +243,8 @@ module Homebrew
   def self.version_from_package_info(package_info_path)
     contents = package_info_path.read
 
-    short_version = contents[/CFBundleShortVersionString="([^"]*)"/, 1]
-    version = contents[/CFBundleVersion="([^"]*)"/, 1]
+    short_version = contents[/CFBundleShortVersionString="([^"]*)"/, 1].presence
+    version = contents[/CFBundleVersion="([^"]*)"/, 1].presence
 
     return decide_between_versions(short_version, version) if short_version && version
   end
