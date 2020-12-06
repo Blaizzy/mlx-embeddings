@@ -82,6 +82,11 @@ module Homebrew
 
       ohai "Checking #{cask.full_name}"
 
+      unless single_app_cask?(cask) || single_pkg_cask?(cask)
+        opoo "Skipping, cask #{cask} it not a single-app or PKG cask."
+        next
+      end
+
       last_state = state.fetch(cask.full_name, {})
       last_check_time = last_state["check_time"]&.yield_self { |t| Time.parse(t) }
 
