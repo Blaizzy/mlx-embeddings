@@ -81,82 +81,95 @@ module Homebrew
     until queue.empty? || (end_time && end_time < Time.now)
       cask = queue.deq
 
-      ohai "Checking #{cask.full_name}"
+      key = cask.full_name
 
-      unversioned_cask_checker = UnversionedCaskChecker.new(cask)
+      new_state = bump_unversioned_cask(cask, state: state.fetch(key, {}), dry_run: args.dry_run?)
 
-      unless unversioned_cask_checker.single_app_cask? || unversioned_cask_checker.single_pkg_cask?
-        opoo "Skipping, not a single-app or PKG cask."
-        next
-      end
+      next unless new_state
 
-      last_state = state.fetch(cask.full_name, {})
-      last_check_time = last_state["check_time"]&.yield_self { |t| Time.parse(t) }
-
-      check_time = Time.now
-      if last_check_time && check_time < (last_check_time + 1.day)
-        opoo "Skipping, already checked within the last 24 hours."
-        next
-      end
-
-      last_sha256 = last_state["sha256"]
-      last_time = last_state["time"]&.yield_self { |t| Time.parse(t) }
-      last_file_size = last_state["file_size"]
-
-      download = Cask::Download.new(cask)
-      time, file_size = begin
-        download.time_file_size
-      rescue
-        [nil, nil]
-      end
-
-      if last_time != time || last_file_size != file_size
-        begin
-          cached_download = unversioned_cask_checker.installer.download
-        rescue => e
-          onoe e
-          next
-        end
-
-        sha256 = cached_download.sha256
-
-        if last_sha256 != sha256 && (version = unversioned_cask_checker.guess_cask_version)
-          if cask.version == version
-            oh1 "Cask #{cask} is up-to-date at #{version}"
-          else
-            bump_cask_pr_args = [
-              "bump-cask-pr",
-              "--version", version.to_s,
-              "--sha256", ":no_check",
-              "--message", "Automatic update via `brew bump-unversioned-casks`.",
-              cask.sourcefile_path
-            ]
-
-            if args.dry_run?
-              bump_cask_pr_args << "--dry-run"
-              oh1 "Would bump #{cask} from #{cask.version} to #{version}"
-            else
-              oh1 "Bumping #{cask} from #{cask.version} to #{version}"
-            end
-
-            begin
-              system_command! HOMEBREW_BREW_FILE, args: bump_cask_pr_args
-            rescue ErrorDuringExecution => e
-              onoe e
-              next
-            end
-          end
-        end
-      end
-
-      state[cask.full_name] = {
-        "sha256"     => sha256,
-        "check_time" => check_time.iso8601,
-        "time"       => time&.iso8601,
-        "file_size"  => file_size,
-      }
+      state[key] = new_state
 
       state_file.atomic_write JSON.generate(state) unless args.dry_run?
     end
+  end
+
+  sig do
+    params(cask: Cask::Cask, state: T::Hash[String, T.untyped], dry_run: T.nilable(T::Boolean))
+      .returns(T.nilable(T::Hash[String, T.untyped]))
+  end
+  def self.bump_unversioned_cask(cask, state:, dry_run:)
+    ohai "Checking #{cask.full_name}"
+
+    unversioned_cask_checker = UnversionedCaskChecker.new(cask)
+
+    unless unversioned_cask_checker.single_app_cask? || unversioned_cask_checker.single_pkg_cask?
+      opoo "Skipping, not a single-app or PKG cask."
+      return
+    end
+
+    last_check_time = state["check_time"]&.yield_self { |t| Time.parse(t) }
+
+    check_time = Time.now
+    if last_check_time && check_time < (last_check_time + 1.day)
+      opoo "Skipping, already checked within the last 24 hours."
+      return
+    end
+
+    last_sha256 = state["sha256"]
+    last_time = state["time"]&.yield_self { |t| Time.parse(t) }
+    last_file_size = state["file_size"]
+
+    download = Cask::Download.new(cask)
+    time, file_size = begin
+      download.time_file_size
+    rescue
+      [nil, nil]
+    end
+
+    if last_time != time || last_file_size != file_size
+      begin
+        cached_download = unversioned_cask_checker.installer.download
+      rescue => e
+        onoe e
+        return
+      end
+
+      sha256 = cached_download.sha256
+
+      if last_sha256 != sha256 && (version = unversioned_cask_checker.guess_cask_version)
+        if cask.version == version
+          oh1 "Cask #{cask} is up-to-date at #{version}"
+        else
+          bump_cask_pr_args = [
+            "bump-cask-pr",
+            "--version", version.to_s,
+            "--sha256", ":no_check",
+            "--message", "Automatic update via `brew bump-unversioned-casks`.",
+            cask.sourcefile_path
+          ]
+
+          if dry_run
+            bump_cask_pr_args << "--dry-run"
+            oh1 "Would bump #{cask} from #{cask.version} to #{version}"
+          else
+            oh1 "Bumping #{cask} from #{cask.version} to #{version}"
+          end
+
+          begin
+            system_command! HOMEBREW_BREW_FILE, args: bump_cask_pr_args
+          rescue ErrorDuringExecution => e
+            onoe e
+            return
+          end
+        end
+      end
+    end
+
+    {
+      "sha256"     => sha256,
+      "check_time" => check_time.iso8601,
+      "time"       => time&.iso8601,
+      "file_size"  => file_size,
+    }
   end
 end
