@@ -904,11 +904,11 @@ present, "revision 1" will be added.
 Check all casks with unversioned URLs in a given *`tap`* for updates.
 
 * `-n`, `--dry-run`:
-  List what would be done, but do not actually do anything.
+  Do everything except caching state and opening pull requests.
 * `--limit`:
   Maximum runtime in minutes.
 * `--state-file`:
-  File for keeping track of state.
+  File for caching state.
 
 ### `cat` *`formula`*|*`cask`*
 

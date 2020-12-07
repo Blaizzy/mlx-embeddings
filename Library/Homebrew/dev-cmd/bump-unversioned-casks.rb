@@ -6,6 +6,7 @@ require "cask/installer"
 require "cask/cask_loader"
 require "cli/parser"
 require "tap"
+require "unversioned_cask_checker"
 
 module Homebrew
   extend T::Sig
@@ -21,11 +22,11 @@ module Homebrew
         Check all casks with unversioned URLs in a given <tap> for updates.
       EOS
       switch "-n", "--dry-run",
-             description: "List what would be done, but do not actually do anything."
+             description: "Do everything except caching state and opening pull requests."
       flag  "--limit=",
             description: "Maximum runtime in minutes."
       flag   "--state-file=",
-             description: "File for keeping track of state."
+             description: "File for caching state."
 
       named 1
     end
@@ -58,18 +59,18 @@ module Homebrew
 
     unversioned_casks = unversioned_cask_files.map { |path| Cask::CaskLoader.load(path) }
 
-    ohai "Unversioned Casks:"
-    puts "Total:      #{unversioned_casks.count}"
-    puts "Single-App: #{unversioned_casks.count { |c| single_app_cask?(c) }}"
-    puts "Single-Pkg: #{unversioned_casks.count { |c| single_pkg_cask?(c) }}"
+    ohai "Unversioned Casks: #{unversioned_casks.count}"
 
     checked, unchecked = unversioned_casks.partition { |c| state.key?(c.full_name) }
 
     queue = Queue.new
 
+    # Start with random casks which have not been checked.
     unchecked.shuffle.each do |c|
       queue.enq c
     end
+
+    # Continue with previously checked casks, ordered by when they were last checked.
     checked.sort_by { |c| state.dig(c.full_name, "check_time") }.each do |c|
       queue.enq c
     end
@@ -82,7 +83,9 @@ module Homebrew
 
       ohai "Checking #{cask.full_name}"
 
-      unless single_app_cask?(cask) || single_pkg_cask?(cask)
+      unversioned_cask_checker = UnversionedCaskChecker.new(cask)
+
+      unless unversioned_cask_checker.single_app_cask? || unversioned_cask_checker.single_pkg_cask?
         opoo "Skipping, not a single-app or PKG cask."
         next
       end
@@ -108,10 +111,8 @@ module Homebrew
       end
 
       if last_time != time || last_file_size != file_size
-        installer = Cask::Installer.new(cask, verify_download_integrity: false)
-
         begin
-          cached_download = installer.download
+          cached_download = unversioned_cask_checker.installer.download
         rescue => e
           onoe e
           next
@@ -119,7 +120,7 @@ module Homebrew
 
         sha256 = cached_download.sha256
 
-        if last_sha256 != sha256 && (version = guess_cask_version(cask, installer))
+        if last_sha256 != sha256 && (version = unversioned_cask_checker.guess_cask_version)
           if cask.version == version
             oh1 "Cask #{cask} is up-to-date at #{version}"
           else
@@ -148,8 +149,6 @@ module Homebrew
         end
       end
 
-      next if args.dry_run?
-
       state[cask.full_name] = {
         "sha256"     => sha256,
         "check_time" => check_time.iso8601,
@@ -157,137 +156,7 @@ module Homebrew
         "file_size"  => file_size,
       }
 
-      state_file.atomic_write JSON.generate(state)
+      state_file.atomic_write JSON.generate(state) unless args.dry_run?
     end
-  end
-
-  sig { params(cask: Cask::Cask, installer: Cask::Installer).returns(T.nilable(String)) }
-  def self.guess_cask_version(cask, installer)
-    apps = cask.artifacts.select { |a| a.is_a?(Cask::Artifact::App) }
-    pkgs = cask.artifacts.select { |a| a.is_a?(Cask::Artifact::Pkg) }
-
-    if apps.empty? && pkgs.empty?
-      opoo "Cask #{cask} does not contain any apps or PKG installers."
-      return
-    end
-
-    Dir.mktmpdir do |dir|
-      dir = Pathname(dir)
-
-      begin
-        installer.extract_primary_container(to: dir)
-      rescue => e
-        onoe e
-        next
-      end
-
-      info_plist_paths = apps.flat_map do |app|
-        Pathname.glob(dir/"**"/app.source.basename/"Contents"/"Info.plist")
-      end
-
-      info_plist_paths.each do |info_plist_path|
-        if (version = version_from_info_plist(info_plist_path))
-          return version
-        end
-      end
-
-      pkg_paths = pkgs.flat_map do |pkg|
-        Pathname.glob(dir/"**"/pkg.path.basename)
-      end
-
-      pkg_paths.each do |pkg_path|
-        packages =
-          system_command!("installer", args: ["-plist", "-pkginfo", "-pkg", pkg_path])
-          .plist
-          .map { |package| package.fetch("Package") }
-          .uniq
-
-        Dir.mktmpdir do |extract_dir|
-          extract_dir = Pathname(extract_dir)
-          FileUtils.rmdir extract_dir
-
-          begin
-            system_command! "pkgutil", args: ["--expand-full", pkg_path, extract_dir]
-          rescue => e
-            onoe "Failed to extract #{pkg_path.basename}: #{e}"
-            next
-          end
-
-          package_info_path = extract_dir/"PackageInfo"
-          if package_info_path.exist?
-            if (version = version_from_package_info(package_info_path))
-              return version
-            end
-          elsif packages.count == 1
-            onoe "#{pkg_path.basename} does not contain a `PackageInfo` file."
-          end
-
-          opoo "#{pkg_path.basename} contains multiple packages: (#{packages.join(", ")})" if packages.count != 1
-
-          $stderr.puts Pathname.glob(extract_dir/"**/*")
-                               .map { |path|
-                                 regex = %r{\A(.*?\.(app|qlgenerator|saver|plugin|kext|bundle|osax))/.*\Z}
-                                 path.to_s.sub(regex, '\1')
-                               }.uniq
-        ensure
-          Cask::Utils.gain_permissions_remove(extract_dir)
-          extract_dir.mkpath
-        end
-      end
-
-      nil
-    end
-  end
-
-  sig { params(info_plist_path: Pathname).returns(T.nilable(String)) }
-  def self.version_from_info_plist(info_plist_path)
-    plist = system_command!("plutil", args: ["-convert", "xml1", "-o", "-", info_plist_path]).plist
-
-    short_version = plist["CFBundleShortVersionString"].presence
-    version = plist["CFBundleVersion"].presence
-
-    return decide_between_versions(short_version, version) if short_version && version
-  end
-
-  sig { params(package_info_path: Pathname).returns(T.nilable(String)) }
-  def self.version_from_package_info(package_info_path)
-    contents = package_info_path.read
-
-    short_version = contents[/CFBundleShortVersionString="([^"]*)"/, 1].presence
-    version = contents[/CFBundleVersion="([^"]*)"/, 1].presence
-
-    return decide_between_versions(short_version, version) if short_version && version
-  end
-
-  sig do
-    params(short_version: T.nilable(String), version: T.nilable(String))
-      .returns(T.nilable(String))
-  end
-  def self.decide_between_versions(short_version, version)
-    return short_version if short_version == version
-
-    short_version_match = short_version&.match?(/\A\d+(\.\d+)+\Z/)
-    version_match = version&.match?(/\A\d+(\.\d+)+\Z/)
-
-    if short_version_match && version_match
-      return version if version.length > short_version.length && version.start_with?("#{short_version}.")
-      return short_version if short_version.length > version.length && short_version.start_with?("#{version}.")
-    end
-
-    if short_version&.match?(/\A\d+(\.\d+)*\Z/) && version&.match?(/\A\d+\Z/)
-      return short_version if short_version.start_with?("#{version}.") || short_version.end_with?(".#{version}")
-
-      return "#{short_version},#{version}"
-    end
-
-    short_version || version
-  end
-
-  def self.single_app_cask?(cask)
-    cask.artifacts.count { |a| a.is_a?(Cask::Artifact::App) } == 1
-  end
-
-  def self.single_pkg_cask?(cask)
-    cask.artifacts.count { |a| a.is_a?(Cask::Artifact::Pkg) } == 1
   end
 end
