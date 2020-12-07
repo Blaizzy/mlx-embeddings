@@ -341,6 +341,8 @@ module Homebrew
       alias generic_check_tmpdir_sticky_bit check_tmpdir_sticky_bit
 
       def check_exist_directories
+        return if HOMEBREW_PREFIX.writable_real?
+
         not_exist_dirs = Keg::MUST_EXIST_DIRECTORIES.reject(&:exist?)
         return if not_exist_dirs.empty?
 
