@@ -8041,6 +8041,11 @@ module GitHub
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+module GitRepositoryExtension
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class HTTP::Cookie
   def self.parse(set_cookie, origin, options=T.unsafe(nil), &block); end
 end
