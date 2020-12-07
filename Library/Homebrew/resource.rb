@@ -5,6 +5,7 @@ require "download_strategy"
 require "checksum"
 require "version"
 require "mktemp"
+require "extend/on_os"
 
 # Resource is the fundamental representation of an external resource. The
 # primary formula download, along with other declared resources, are instances
@@ -16,6 +17,7 @@ class Resource
 
   include Context
   include FileUtils
+  include OnOS
 
   attr_reader :mirrors, :specs, :using, :source_modified_time, :patches, :owner
   attr_writer :version
@@ -189,18 +191,6 @@ class Resource
     patches << p
   end
 
-  # Block only executed on macOS. No-op on Linux.
-  # <pre>on_macos do
-  #   url "mac_only_url"
-  # end</pre>
-  def on_macos(&_block); end
-
-  # Block only executed on Linux. No-op on macOS.
-  # <pre>on_linux do
-  #   url "linux_only_url"
-  # end</pre>
-  def on_linux(&_block); end
-
   protected
 
   def mktemp(prefix, &block)
@@ -280,5 +270,3 @@ class ResourceStageContext
     "<#{self.class}: resource=#{resource} staging=#{staging}>"
   end
 end
-
-require "extend/os/resource"

@@ -25,6 +25,7 @@ require "tab"
 require "mktemp"
 require "find"
 require "utils/spdx"
+require "extend/on_os"
 
 # A formula provides instructions and metadata for Homebrew to install a piece
 # of software. Every Homebrew formula is a {Formula}.
@@ -59,6 +60,7 @@ class Formula
   include Utils::Shebang
   include Utils::Shell
   include Context
+  include OnOS
   extend Enumerable
   extend Forwardable
   extend Cachable
@@ -1389,22 +1391,6 @@ class Formula
     "#<Formula #{name} (#{active_spec_sym}) #{path}>"
   end
 
-  # Block only executed on macOS. No-op on Linux.
-  # <pre>on_macos do
-  # # Do something Mac-specific
-  # end</pre>
-  def on_macos(&block)
-    raise "No block content defined for on_macos block" unless block
-  end
-
-  # Block only executed on Linux. No-op on macOS.
-  # <pre>on_linux do
-  # # Do something Linux-specific
-  # end</pre>
-  def on_linux(&block)
-    raise "No block content defined for on_linux block" unless block
-  end
-
   # Standard parameters for cargo builds.
   def std_cargo_args
     ["--locked", "--root", prefix, "--path", "."]
@@ -2238,6 +2224,7 @@ class Formula
   # The methods below define the formula DSL.
   class << self
     include BuildEnvironment::DSL
+    include OnOS
 
     def method_added(method)
       super
@@ -2555,22 +2542,6 @@ class Formula
     # On Linux this will act as {.depends_on}.
     def uses_from_macos(dep, bounds = {})
       specs.each { |spec| spec.uses_from_macos(dep, bounds) }
-    end
-
-    # Block only executed on macOS. No-op on Linux.
-    # <pre>on_macos do
-    #   depends_on "mac_only_dep"
-    # end</pre>
-    def on_macos(&block)
-      raise "No block content defined for on_macos block" unless block
-    end
-
-    # Block only executed on Linux. No-op on macOS.
-    # <pre>on_linux do
-    #   depends_on "linux_only_dep"
-    # end</pre>
-    def on_linux(&block)
-      raise "No block content defined for on_linux block" unless block
     end
 
     # @!attribute [w] option
