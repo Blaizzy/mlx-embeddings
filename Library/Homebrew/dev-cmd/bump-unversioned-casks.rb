@@ -213,22 +213,22 @@ module Homebrew
             next
           end
 
-          if packages.count == 1
-            package_info_path = extract_dir/"PackageInfo"
-            if package_info_path.exist?
-              if (version = version_from_package_info(package_info_path))
-                return version
-              end
-            else
-              onoe "#{pkg_path.basename} does not contain a `PackageInfo` file:"
-              $stderr.puts Pathname.glob(extract_dir/"**/*")
-              next
+          package_info_path = extract_dir/"PackageInfo"
+          if package_info_path.exist?
+            if (version = version_from_package_info(package_info_path))
+              return version
             end
-          else
-            opoo "Skipping, #{pkg_path.basename} contains multiple packages (#{packages.join(", ")}):"
-            $stderr.puts Pathname.glob(extract_dir/"**/*")
-            next
+          elsif packages.count == 1
+            onoe "#{pkg_path.basename} does not contain a `PackageInfo` file."
           end
+
+          opoo "#{pkg_path.basename} contains multiple packages: (#{packages.join(", ")})" if packages.count != 1
+
+          $stderr.puts Pathname.glob(extract_dir/"**/*")
+                               .map { |path|
+                                 regex = %r{\A(.*?\.(app|qlgenerator|saver|plugin|kext|bundle|osax))/.*\Z}
+                                 path.to_s.sub(regex, '\1')
+                               }.uniq
         ensure
           Cask::Utils.gain_permissions_remove(extract_dir)
           extract_dir.mkpath
