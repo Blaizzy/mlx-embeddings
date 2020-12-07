@@ -82,21 +82,17 @@ module Homebrew
 
   def intersection_of_dependents(use_runtime_dependents, used_formulae, args:)
     recursive = args.recursive?
-    only = if args.formula?
-      :formula
-    elsif args.cask?
-      :cask
-    end
+    show_formulae_and_casks = !args.formula? && !args.cask?
     includes, ignores = args_includes_ignores(args)
 
     deps = []
     if use_runtime_dependents
-      unless only == :cask
+      if show_formulae_and_casks || args.formula?
         deps += used_formulae.map(&:runtime_installed_formula_dependents)
                              .reduce(&:&)
                              .select(&:any_version_installed?)
       end
-      unless only == :formula
+      if show_formulae_and_casks || args.cask?
         deps += select_used_dependents(
           dependents(Cask::Caskroom.casks(config: Cask::Config.from_args(args))),
           used_formulae, recursive, includes, ignores
@@ -105,10 +101,10 @@ module Homebrew
 
       deps
     else
-      unless only == :cask
+      if show_formulae_and_casks || args.formula?
         deps += args.installed? ? Formula.installed : Formula.to_a
       end
-      unless only == :formula
+      if show_formulae_and_casks || args.cask?
         deps += args.installed? ? Cask::Caskroom.casks(config: Cask::Config.from_args(args)) : Cask::Cask.to_a
       end
 
