@@ -25,7 +25,11 @@ module OS
 
       sig { params(sym: Symbol).returns(T.attached_class) }
       def self.from_symbol(sym)
-        str = SYMBOLS.fetch(sym) { raise MacOSVersionError, sym }
+        @all_archs_regex ||= /^#{Regexp.union(Hardware::CPU::ALL_ARCHS.map(&:to_s))}_/
+        sym_without_arch = sym.to_s
+                              .sub(@all_archs_regex, "")
+                              .to_sym
+        str = SYMBOLS.fetch(sym_without_arch) { raise MacOSVersionError, sym }
         new(str)
       end
 
