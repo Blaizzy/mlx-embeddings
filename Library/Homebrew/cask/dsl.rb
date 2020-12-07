@@ -173,12 +173,14 @@ module Cask
       @language_blocks.keys.flatten
     end
 
-    def url(*args)
-      set_unique_stanza(:url, args.empty? && !block_given?) do
+    def url(*args, **options)
+      caller_location = caller_locations[0]
+
+      set_unique_stanza(:url, args.empty? && options.empty? && !block_given?) do
         if block_given?
-          LazyObject.new { URL.new(*yield) }
+          LazyObject.new { URL.new(*yield, caller_location: caller_location) }
         else
-          URL.new(*args)
+          URL.new(*args, **options, caller_location: caller_location)
         end
       end
     end
