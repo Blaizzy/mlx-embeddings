@@ -40,6 +40,10 @@ module Cask
       end
     end
 
+    def time_file_size
+      downloader.resolved_time_file_size
+    end
+
     def clear_cache
       downloader.clear_cache
     end

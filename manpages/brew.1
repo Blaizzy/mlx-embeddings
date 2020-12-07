@@ -1245,6 +1245,21 @@ Print what would be done rather than doing it\.
 \fB\-\-message\fR
 Append \fImessage\fR to the default commit message\.
 .
+.SS "\fBbump\-unversioned\-casks\fR [\fIoptions\fR] [\fItap\fR]"
+Check all casks with unversioned URLs in a given \fItap\fR for updates\.
+.
+.TP
+\fB\-n\fR, \fB\-\-dry\-run\fR
+Do everything except caching state and opening pull requests\.
+.
+.TP
+\fB\-\-limit\fR
+Maximum runtime in minutes\.
+.
+.TP
+\fB\-\-state\-file\fR
+File for caching state\.
+.
 .SS "\fBcat\fR \fIformula\fR|\fIcask\fR"
 Display the source of a \fIformula\fR or \fIcask\fR\.
 .

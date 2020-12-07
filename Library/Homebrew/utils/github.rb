@@ -736,11 +736,12 @@ module GitHub
         EOS
         user_message = args.message
         if user_message
-          pr_message += <<~EOS
+          pr_message = <<~EOS
+            #{user_message}
 
             ---
 
-            #{user_message}
+            #{pr_message}
           EOS
         end
 
