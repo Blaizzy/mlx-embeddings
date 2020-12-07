@@ -58,8 +58,6 @@ module Homebrew
     else
       macos.to_s
     end
-    p macos_label
-    odie "no"
 
     tap = Tap.fetch(args.tap || CoreTap.instance.name)
     user, repo = tap.full_name.split("/")
