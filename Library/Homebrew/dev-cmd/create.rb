@@ -54,8 +54,7 @@ module Homebrew
       switch "--HEAD",
              description: "Indicate that <URL> points to the package's repository rather than a file."
       flag   "--set-name=",
-             description:  "Explicitly set the <name> of the new formula or cask.",
-             required_for: "--cask"
+             description: "Explicitly set the <name> of the new formula or cask."
       flag   "--set-version=",
              description: "Explicitly set the <version> of the new formula or cask."
       flag   "--set-license=",
@@ -139,24 +138,24 @@ module Homebrew
 
   def create_formula(args:)
     fc = FormulaCreator.new(args)
-    fc.name = args.name
-    fc.version = args.version
-    fc.license = args.license
+    fc.name = args.set_name
+    fc.version = args.set_version
+    fc.license = args.set_license
     fc.tap = Tap.fetch(args.tap || "homebrew/core")
     raise TapUnavailableError, tap unless fc.tap.installed?
 
     fc.url = args.named.first # Pull the first (and only) url from ARGV
 
-    fc.mode = if args.cmake?
-      :cmake
-    elsif args.autotools?
+    fc.mode = if args.autotools?
       :autotools
-    elsif args.meson?
-      :meson
+    elsif args.cmake?
+      :cmake
     elsif args.crystal?
       :crystal
     elsif args.go?
       :go
+    elsif args.meson?
+      :meson
     elsif args.node?
       :node
     elsif args.perl?
@@ -170,7 +169,7 @@ module Homebrew
     end
 
     if fc.name.nil? || fc.name.strip.empty?
-      stem = Pathname.new(url).stem
+      stem = Pathname.new(fc.url).stem.rpartition("=").last
       print "Formula name [#{stem}]: "
       fc.name = __gets || stem
       fc.update_path
@@ -181,18 +180,18 @@ module Homebrew
     unless args.force?
       if reason = MissingFormula.disallowed_reason(fc.name)
         raise <<~EOS
-          #{fc.name} is not allowed to be created.
+          The formula '#{fc.name}' is not allowed to be created.
           #{reason}
-          If you really want to create this formula use --force.
+          If you really want to create this formula use `--force`.
         EOS
       end
 
       if Formula.aliases.include? fc.name
         realname = Formulary.canonical_name(fc.name)
         raise <<~EOS
-          The formula #{realname} is already aliased to #{fc.name}
+          The formula '#{realname}' is already aliased to '#{fc.name}'.
           Please check that you are not creating a duplicate.
-          To force creation use --force.
+          To force creation use `--force`.
         EOS
       end
     end
