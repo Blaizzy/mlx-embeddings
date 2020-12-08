@@ -68,11 +68,15 @@ module Homebrew
 
     cask = args.named.to_casks.first
     new_version = args.version
-    new_version = "latest" if new_version == ":latest"
-    new_version = Cask::DSL::Version.new(new_version)
+    new_version = :latest if ["latest", ":latest"].include?(new_version)
+    new_version = Cask::DSL::Version.new(new_version) if new_version.present?
     new_base_url = args.url
     new_hash = args.sha256
-    new_hash = :no_check if new_hash == ":no_check"
+    new_hash = :no_check if ["no_check", ":no_check"].include? new_hash
+
+    if new_version.nil? && new_base_url.nil? && new_hash.nil?
+      raise UsageError, "No --version=/--url=/--sha256= argument specified!"
+    end
 
     old_version = cask.version
     old_hash = cask.sha256
@@ -84,44 +88,20 @@ module Homebrew
 
     check_open_pull_requests(cask, tap_full_name, args: args)
 
-    odie "#{cask}: no --version= argument specified!" if new_version.empty?
-
-    check_closed_pull_requests(cask, tap_full_name, version: new_version, args: args) unless new_version.latest?
-
-    if new_version == old_version
-      odie <<~EOS
-        You need to bump this cask manually since the new version
-        and old version are both #{new_version}.
-      EOS
-    elsif old_version.latest?
-      opoo "No --url= argument specified!" unless new_base_url
-    elsif new_version.latest?
-      opoo "Ignoring specified --sha256= argument." if new_hash && new_check != :no_check
-    elsif Version.new(new_version) < Version.new(old_version)
-      odie <<~EOS
-        You need to bump this cask manually since changing the
-        version from #{old_version} to #{new_version} would be a downgrade.
-      EOS
+    if new_version.present? && !new_version.latest?
+      check_closed_pull_requests(cask, tap_full_name, version: new_version, args: args)
     end
 
     old_contents = File.read(cask.sourcefile_path)
 
     replacement_pairs = []
 
-    replacement_pairs << if old_version.latest?
-      [
-        "version :latest",
-        "version \"#{new_version}\"",
-      ]
-    elsif new_version.latest?
-      [
-        "version \"#{old_version}\"",
-        "version :latest",
-      ]
-    else
-      [
-        old_version,
-        new_version,
+    if new_version.present?
+      old_version_regex = old_version.latest? ? ":latest" : "[\"']#{Regexp.escape(old_version.to_s)}[\"']"
+
+      replacement_pairs << [
+        /version\s+#{old_version_regex}/m,
+        "version #{new_version.latest? ? ":latest" : "\"#{new_version}\""}",
       ]
     end
 
@@ -137,57 +117,53 @@ module Homebrew
       ]
     end
 
-    if new_version.latest?
-      new_hash = :no_check
-    elsif new_hash.nil? || cask.languages.present?
-      tmp_contents = Utils::Inreplace.inreplace_pairs(cask.sourcefile_path,
-                                                      replacement_pairs.uniq.compact,
-                                                      read_only_run: true,
-                                                      silent:        true)
+    if new_version.present?
+      if new_version.latest?
+        opoo "Ignoring specified --sha256= argument." if new_hash.present?
+        new_hash = :no_check
+      elsif new_hash.nil? || cask.languages.present?
+        tmp_contents = Utils::Inreplace.inreplace_pairs(cask.sourcefile_path,
+                                                        replacement_pairs.uniq.compact,
+                                                        read_only_run: true,
+                                                        silent:        true)
 
-      tmp_cask = Cask::CaskLoader.load(tmp_contents)
-      tmp_config = cask.config
-      tmp_url = tmp_cask.url.to_s
+        tmp_cask = Cask::CaskLoader.load(tmp_contents)
+        tmp_config = cask.config
+        tmp_url = tmp_cask.url.to_s
 
-      if new_hash.nil?
-        resource_path = fetch_resource(cask, new_version, tmp_url)
-        Utils::Tar.validate_file(resource_path)
-        new_hash = resource_path.sha256
-      end
+        if new_hash.nil?
+          resource_path = fetch_resource(cask, new_version, tmp_url)
+          Utils::Tar.validate_file(resource_path)
+          new_hash = resource_path.sha256
+        end
 
-      cask.languages.each do |language|
-        next if language == cask.language
+        cask.languages.each do |language|
+          next if language == cask.language
 
-        lang_config = tmp_config.merge(Cask::Config.new(explicit: { languages: [language] }))
-        lang_cask = Cask::CaskLoader.load(tmp_contents)
-        lang_cask.config = lang_config
-        lang_url = lang_cask.url.to_s
-        lang_old_hash = lang_cask.sha256.to_s
+          lang_config = tmp_config.merge(Cask::Config.new(explicit: { languages: [language] }))
+          lang_cask = Cask::CaskLoader.load(tmp_contents)
+          lang_cask.config = lang_config
+          lang_url = lang_cask.url.to_s
+          lang_old_hash = lang_cask.sha256.to_s
 
-        resource_path = fetch_resource(cask, new_version, lang_url)
-        Utils::Tar.validate_file(resource_path)
-        lang_new_hash = resource_path.sha256
+          resource_path = fetch_resource(cask, new_version, lang_url)
+          Utils::Tar.validate_file(resource_path)
+          lang_new_hash = resource_path.sha256
 
-        replacement_pairs << [
-          lang_old_hash,
-          lang_new_hash,
-        ]
+          replacement_pairs << [
+            lang_old_hash,
+            lang_new_hash,
+          ]
+        end
       end
     end
 
-    p old_hash
-
-    replacement_pairs << if old_version.latest? || new_version.latest? || new_hash == :no_check
+    if new_hash.present?
       hash_regex = old_hash == :no_check ? ":no_check" : "[\"']#{Regexp.escape(old_hash.to_s)}[\"']"
 
-      [
+      replacement_pairs << [
         /sha256\s+#{hash_regex}/m,
         "sha256 #{new_hash == :no_check ? ":no_check" : "\"#{new_hash}\""}",
-      ]
-    else
-      [
-        old_hash,
-        new_hash,
       ]
     end
 
@@ -199,12 +175,18 @@ module Homebrew
     run_cask_audit(cask, old_contents, args: args)
     run_cask_style(cask, old_contents, args: args)
 
+    branch_name = "bump-#{cask.token}"
+    commit_message = "Update #{cask.token}"
+    if new_version.present?
+      branch_name += "-#{new_version.tr(",:", "-")}"
+      commit_message += " from #{old_version} to #{new_version}"
+    end
     pr_info = {
       sourcefile_path: cask.sourcefile_path,
       old_contents:    old_contents,
       remote_branch:   default_remote_branch,
-      branch_name:     "bump-#{cask.token}-#{new_version.tr(",:", "-")}",
-      commit_message:  "Update #{cask.token} from #{old_version} to #{new_version}",
+      branch_name:     branch_name,
+      commit_message:  commit_message,
       previous_branch: previous_branch,
       tap:             cask.tap,
       tap_full_name:   tap_full_name,
