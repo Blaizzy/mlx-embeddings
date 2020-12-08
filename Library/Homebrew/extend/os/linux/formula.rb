@@ -2,14 +2,6 @@
 # frozen_string_literal: true
 
 class Formula
-  undef on_linux
-
-  def on_linux(&block)
-    raise "No block content defined for on_linux block" unless block
-
-    yield
-  end
-
   undef shared_library
 
   def shared_library(name, version = nil)
@@ -17,14 +9,6 @@ class Formula
   end
 
   class << self
-    undef on_linux
-
-    def on_linux(&block)
-      raise "No block content defined for on_linux block" unless block
-
-      yield
-    end
-
     undef ignore_missing_libraries
 
     def ignore_missing_libraries(*libs)
