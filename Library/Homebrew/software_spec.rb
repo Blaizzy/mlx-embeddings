@@ -12,6 +12,7 @@ require "patch"
 require "compilers"
 require "global"
 require "os/mac/version"
+require "extend/on_os"
 
 class SoftwareSpec
   extend T::Sig
@@ -408,6 +409,8 @@ class BottleSpecification
 end
 
 class PourBottleCheck
+  include OnOS
+
   def initialize(formula)
     @formula = formula
   end
