@@ -109,6 +109,15 @@ module Homebrew
     install_bundler!
 
     ENV["BUNDLE_GEMFILE"] = File.join(ENV.fetch("HOMEBREW_LIBRARY"), "Homebrew", "Gemfile")
+
+    # We can't use OS.mac? because not enough has
+    # been required yet this early in the boot process
+    if ENV["HOMEBREW_SYSTEM"] == "Macintosh"
+      # This patches up some paths used by mkmf.rb
+      extend_path = File.join(ENV.fetch("HOMEBREW_LIBRARY"), "Homebrew", "extend")
+      ENV["RUBYOPT"] = "-r#{extend_path}/rbconfig_extension"
+    end
+
     @bundle_installed ||= begin
       bundle = File.join(find_in_path("bundle"), "bundle")
       bundle_check_output = `#{bundle} check 2>&1`
@@ -125,6 +134,8 @@ module Homebrew
         true
       end
     end
+
+    ENV["RUBYOPT"] = ""
 
     setup_gem_environment!
   end
