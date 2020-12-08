@@ -12,11 +12,13 @@ require "patch"
 require "compilers"
 require "global"
 require "os/mac/version"
+require "extend/on_os"
 
 class SoftwareSpec
   extend T::Sig
 
   extend Forwardable
+  include OnOS
 
   PREDEFINED_OPTIONS = {
     universal: Option.new("universal", "Build a universal binary"),
