@@ -11,6 +11,7 @@ on:
       - published
 jobs:
   ubuntu:
+    if: startsWith(github.repository, 'Homebrew/')
     runs-on: ubuntu-latest
     strategy:
       matrix:
