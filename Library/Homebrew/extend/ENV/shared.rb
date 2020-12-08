@@ -103,7 +103,7 @@ module SharedEnvExtension
     end
   end
 
-  sig { params(key: String, path: String).void }
+  sig { params(key: String, path: T.any(String, Pathname)).void }
   def append_path(key, path)
     self[key] = PATH.new(self[key]).append(path)
   end
@@ -115,7 +115,7 @@ module SharedEnvExtension
   # Prepending a system path such as /usr/bin is a no-op so that requirements
   # don't accidentally override superenv shims or formulae's `bin` directories.
   # <pre>ENV.prepend_path "PATH", which("emacs").dirname</pre>
-  sig { params(key: String, path: String).void }
+  sig { params(key: String, path: T.any(String, Pathname)).void }
   def prepend_path(key, path)
     return if %w[/usr/bin /bin /usr/sbin /sbin].include? path.to_s
 
