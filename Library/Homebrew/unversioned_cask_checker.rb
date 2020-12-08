@@ -72,18 +72,15 @@ module Homebrew
     def self.decide_between_versions(short_version, version)
       return short_version if short_version == version
 
-      short_version_match = short_version&.match?(/\A\d+(\.\d+)+\Z/)
-      version_match = version&.match?(/\A\d+(\.\d+)+\Z/)
+      if short_version && version
+        return version if version.match?(/\A\d+(\.\d+)+\Z/) && version.start_with?("#{short_version}.")
+        return short_version if short_version.match?(/\A\d+(\.\d+)+\Z/) && short_version.start_with?("#{version}.")
 
-      if short_version_match && version_match
-        return version if version.length > short_version.length && version.start_with?("#{short_version}.")
-        return short_version if short_version.length > version.length && short_version.start_with?("#{version}.")
-      end
+        if short_version.match?(/\A\d+(\.\d+)*\Z/) && version.match?(/\A\d+\Z/)
+          return short_version if short_version.start_with?("#{version}.") || short_version.end_with?(".#{version}")
 
-      if short_version&.match?(/\A\d+(\.\d+)*\Z/) && version&.match?(/\A\d+\Z/)
-        return short_version if short_version.start_with?("#{version}.") || short_version.end_with?(".#{version}")
-
-        return "#{short_version},#{version}"
+          return "#{short_version},#{version}"
+        end
       end
 
       short_version || version

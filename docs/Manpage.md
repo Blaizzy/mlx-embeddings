@@ -899,7 +899,7 @@ present, "revision 1" will be added.
 * `--message`:
   Append *`message`* to the default commit message.
 
-### `bump-unversioned-casks` [*`options`*] [*`tap`*]
+### `bump-unversioned-casks` [*`options`*] [*`cask`*|*`tap`*]
 
 Check all casks with unversioned URLs in a given *`tap`* for updates.
 

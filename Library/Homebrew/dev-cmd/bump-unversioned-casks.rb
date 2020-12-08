@@ -17,7 +17,7 @@ module Homebrew
   def self.bump_unversioned_casks_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `bump-unversioned-casks` [<options>] [<tap>]
+        `bump-unversioned-casks` [<options>] [<cask>|<tap>]
 
         Check all casks with unversioned URLs in a given <tap> for updates.
       EOS
@@ -28,7 +28,7 @@ module Homebrew
       flag   "--state-file=",
              description: "File for caching state."
 
-      named 1
+      min_named 1
     end
   end
 
@@ -43,11 +43,10 @@ module Homebrew
     end
     state_file.dirname.mkpath
 
-    tap = Tap.fetch(args.named.first)
-
     state = state_file.exist? ? JSON.parse(state_file.read) : {}
 
-    cask_files = tap.cask_files
+    cask_files = args.named.to_paths(only: :cask, recurse_tap: true)
+
     unversioned_cask_files = cask_files.select do |cask_file|
       url = cask_file.each_line do |line|
         url = line[/\s*url\s+"([^"]+)"\s*/, 1]
@@ -59,7 +58,7 @@ module Homebrew
 
     unversioned_casks = unversioned_cask_files.map { |path| Cask::CaskLoader.load(path) }
 
-    ohai "Unversioned Casks: #{unversioned_casks.count}"
+    ohai "Unversioned Casks: #{unversioned_casks.count} (#{state.size} cached)"
 
     checked, unchecked = unversioned_casks.partition { |c| state.key?(c.full_name) }
 

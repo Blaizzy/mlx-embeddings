@@ -16,6 +16,7 @@ describe Homebrew::UnversionedCaskChecker do
       ["1.0", "1"]           => "1.0",
       ["1.0", "0"]           => "1.0",
       ["1.2.3.4000", "4000"] => "1.2.3.4000",
+      ["5", "5.0.45"]        => "5.0.45",
     }
 
     expected_mappings.each do |(short_version, version), expected_version|
