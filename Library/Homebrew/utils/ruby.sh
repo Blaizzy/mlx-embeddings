@@ -32,7 +32,8 @@ unusable_ruby() {
   if [[ -n "$HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH" ]]
   then
     return 1
-  elif [[ -n "$HOMEBREW_RUBY_PATH" && -z "$HOMEBREW_FORCE_VENDOR_RUBY" ]] && test_ruby "$HOMEBREW_RUBY_PATH"
+  elif [[ -z "$HOMEBREW_MACOS" && -n "$HOMEBREW_RUBY_PATH" && -z "$HOMEBREW_FORCE_VENDOR_RUBY" ]] &&
+       test_ruby "$HOMEBREW_RUBY_PATH"
   then
     return 1
   else
