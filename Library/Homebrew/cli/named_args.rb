@@ -129,13 +129,21 @@ module Homebrew
       # Keep existing paths and try to convert others to tap, formula or cask paths.
       # If a cask and formula with the same name exist, includes both their paths
       # unless `only` is specified.
-      def to_paths(only: nil)
+      sig { params(only: T.nilable(Symbol), recurse_tap: T::Boolean).returns(T::Array[Pathname]) }
+      def to_paths(only: nil, recurse_tap: false)
         @to_paths ||= {}
         @to_paths[only] ||= downcased_unique_named.flat_map do |name|
           if File.exist?(name)
             Pathname(name)
           elsif name.count("/") == 1 && !name.start_with?("./", "/")
-            Tap.fetch(name).path
+            tap = Tap.fetch(name)
+
+            if recurse_tap
+              next tap.formula_files if only == :formula
+              next tap.cask_files if only == :cask
+            end
+
+            tap.path
           else
             next Formulary.path(name) if only == :formula
             next Cask::CaskLoader.path(name) if only == :cask
