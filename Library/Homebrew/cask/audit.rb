@@ -515,12 +515,12 @@ module Cask
       return if cask.appcast.to_s.empty?
       return if cask.appcast.must_contain == :no_check
 
-      appcast_stanza = cask.appcast.to_s
-      appcast_contents, = begin
-        curl_output("--compressed", "--user-agent", HOMEBREW_USER_AGENT_FAKE_SAFARI, "--location",
-                    "--globoff", "--max-time", "5", appcast_stanza)
+      appcast_url = cask.appcast.to_s
+      begin
+        details = curl_http_content_headers_and_checksum(appcast_url, user_agent: HOMEBREW_USER_AGENT_FAKE_SAFARI)
+        appcast_contents = details[:file]
       rescue
-        add_error "appcast at URL '#{appcast_stanza}' offline or looping"
+        add_error "appcast at URL '#{appcast_url}' offline or looping"
         return
       end
 
@@ -528,7 +528,7 @@ module Cask
       adjusted_version_stanza = cask.appcast.must_contain.presence || version_stanza.match(/^[[:alnum:].]+/)[0]
       return if appcast_contents.include? adjusted_version_stanza
 
-      add_error "appcast at URL '#{appcast_stanza}' does not contain"\
+      add_error "appcast at URL '#{appcast_url}' does not contain"\
                   " the version number '#{adjusted_version_stanza}':\n#{appcast_contents}"
     end
 
