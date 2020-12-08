@@ -11,14 +11,6 @@ module Hardware
     INTEL_64BIT_ARCHS = [:x86_64].freeze
     PPC_32BIT_ARCHS   = [:ppc, :ppc32, :ppc7400, :ppc7450, :ppc970].freeze
     PPC_64BIT_ARCHS   = [:ppc64, :ppc64le, :ppc970].freeze
-    ARM_64BIT_ARCHS   = [:arm64].freeze
-    ALL_ARCHS = [
-      *INTEL_32BIT_ARCHS,
-      *INTEL_64BIT_ARCHS,
-      *PPC_32BIT_ARCHS,
-      *PPC_64BIT_ARCHS,
-      *ARM_64BIT_ARCHS,
-    ].freeze
 
     class << self
       extend T::Sig
