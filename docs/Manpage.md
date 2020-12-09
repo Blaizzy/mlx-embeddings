@@ -1683,6 +1683,11 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 
     `export HOMEBREW_CASK_OPTS="--appdir=~/Applications --fontdir=/Library/Fonts"`
 
+- `HOMEBREW_CLEANUP_PERIODIC_FULL_DAYS`
+  <br>If set, `brew install`, `brew upgrade` and `brew reinstall` will cleanup all formulae when this number of days has passed.
+
+  *Default:* `30`.
+
 - `HOMEBREW_CLEANUP_MAX_AGE_DAYS`
   <br>Cleanup all cached files older than this many days.
 
@@ -1819,7 +1824,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
     *Note:* While ensuring your downloads are fully secure, this is likely to cause from-source SourceForge, some GNU & GNOME-hosted formulae to fail to download.
 
 - `HOMEBREW_NO_INSTALL_CLEANUP`
-  <br>If set, `brew install`, `brew upgrade` and `brew reinstall` will never automatically cleanup installed/upgraded/reinstalled formulae or all formulae every 30 days.
+  <br>If set, `brew install`, `brew upgrade` and `brew reinstall` will never automatically cleanup installed/upgraded/reinstalled formulae or all formulae every HOMEBREW_CLEANUP_PERIODIC_FULL_DAYS days.
 
 - `HOMEBREW_PRY`
   <br>If set, use Pry for the `brew irb` command.
