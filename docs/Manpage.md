@@ -572,9 +572,6 @@ See also `pin`.
 
 Remove a tapped formula repository.
 
-* `-f`, `--force`:
-  Untap even if formulae or casks from this tap are currently installed.
-
 ### `update` [*`options`*]
 
 Fetch the newest version of Homebrew and all formulae from GitHub using `git`(1) and perform any necessary migrations.
