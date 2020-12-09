@@ -70,8 +70,8 @@ module Homebrew
       flag   "--tag=",
              description: "Specify the new git commit <tag> for the formula."
       flag   "--revision=",
-             depends_on:  "--tag=",
-             description: "Specify the new git commit <revision> corresponding to the specified <tag>."
+             description: "Specify the new commit <revision> corresponding to the specified git <tag> "\
+                          "or specified <version>."
       switch "-f", "--force",
              description: "Ignore duplicate open PRs. Remove all mirrors if `--mirror` was not specified."
 
@@ -120,6 +120,10 @@ module Homebrew
 
   def bump_formula_pr
     args = bump_formula_pr_args.parse
+
+    if args.revision.present? && args.tag.nil? && args.version.nil?
+      raise UsageError, "`--revision` must be passed with either `--tag` or `--version`!"
+    end
 
     # As this command is simplifying user-run commands then let's just use a
     # user path, too.
@@ -177,21 +181,28 @@ module Homebrew
       check_closed_pull_requests(formula, tap_full_name, url: old_url, tag: new_tag, args: args) unless new_version
       false
     elsif !hash_type
-      odie "#{formula}: no --tag= or --version= argument specified!" if !new_tag && !new_version
-      new_tag ||= old_tag.gsub(old_version, new_version)
-      if new_tag == old_tag
-        odie <<~EOS
-          You need to bump this formula manually since the new tag
-          and old tag are both #{new_tag}.
-        EOS
+      if !new_tag && !new_version && !new_revision
+        raise UsageError, "#{formula}: no --tag= or --version= argument specified!"
       end
-      check_closed_pull_requests(formula, tap_full_name, url: old_url, tag: new_tag, args: args) unless new_version
-      resource_path, forced_version = fetch_resource(formula, new_version, old_url, tag: new_tag)
-      new_revision = Utils.popen_read("git -C \"#{resource_path}\" rev-parse -q --verify HEAD")
-      new_revision = new_revision.strip
+
+      if old_tag
+        new_tag ||= old_tag.gsub(old_version, new_version)
+        if new_tag == old_tag
+          odie <<~EOS
+            You need to bump this formula manually since the new tag
+            and old tag are both #{new_tag}.
+          EOS
+        end
+        check_closed_pull_requests(formula, tap_full_name, url: old_url, tag: new_tag, args: args) unless new_version
+        resource_path, forced_version = fetch_resource(formula, new_version, old_url, tag: new_tag)
+        new_revision = Utils.popen_read("git -C \"#{resource_path}\" rev-parse -q --verify HEAD")
+        new_revision = new_revision.strip
+      else
+        odie "#{formula}: the current URL requires specifying a --revision= argument." unless new_revision
+      end
       false
     elsif !new_url && !new_version
-      odie "#{formula}: no --url= or --version= argument specified!"
+      raise UsageError, "#{formula}: no --url= or --version= argument specified!"
     else
       new_url ||= PyPI.update_pypi_url(old_url, new_version)
       unless new_url
@@ -241,12 +252,30 @@ module Homebrew
           new_hash,
         ],
       ]
-    else
+    elsif new_tag
       [
         [
           formula_spec.specs[:tag],
           new_tag,
         ],
+        [
+          formula_spec.specs[:revision],
+          new_revision,
+        ],
+      ]
+    elsif new_url
+      [
+        [
+          /#{Regexp.escape(formula_spec.url)}/,
+          new_url,
+        ],
+        [
+          formula_spec.specs[:revision],
+          new_revision,
+        ],
+      ]
+    else
+      [
         [
           formula_spec.specs[:revision],
           new_revision,
@@ -312,8 +341,8 @@ module Homebrew
     if new_formula_version < old_formula_version
       formula.path.atomic_write(old_contents) unless args.dry_run?
       odie <<~EOS
-        You need to bump this formula manually since changing the
-        version from #{old_formula_version} to #{new_formula_version} would be a downgrade.
+        You need to bump this formula manually since changing the version
+        from #{old_formula_version} to #{new_formula_version} would be a downgrade.
       EOS
     elsif new_formula_version == old_formula_version
       formula.path.atomic_write(old_contents) unless args.dry_run?
