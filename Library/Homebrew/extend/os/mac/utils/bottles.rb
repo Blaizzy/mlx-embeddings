@@ -42,7 +42,10 @@ module Utils
         return if tag_version.blank?
 
         keys.find do |key|
-          MacOS::Version.from_symbol(key) <= tag_version
+          key_version = MacOS::Version.from_symbol(key)
+          next if key_version.arch != tag_version.arch
+
+          key_version <= tag_version
         rescue MacOSVersionError
           false
         end
