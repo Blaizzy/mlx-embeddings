@@ -173,6 +173,8 @@ Rails:
     - "Homebrew/rubocops/**/*"
 
 # Skip these as they only apply to actual Rails and not our ActiveSupport usage.
+Rails/ArelStar:
+  Enabled: false
 Rails/Date:
   Enabled: false
 Rails/Delegate:
