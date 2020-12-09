@@ -36,13 +36,8 @@ module Homebrew
     args = dispatch_build_bottle_args.parse
 
     # Fixup version for ARM/Apple Silicon
-    arm_regex = Regexp.union(/^arm64_/, /-arm$/)
-    arm_label = if arm_regex.match?(args.macos)
-      args.macos&.gsub!(arm_regex, "")
-      true
-    else
-      false
-    end
+    # TODO: fix label name to be 11-arm64 instead and remove this.
+    args.macos&.gsub!(/^11-arm$/, "11-arm64")
 
     macos = args.macos&.yield_self do |s|
       MacOS::Version.from_symbol(s.to_sym)
@@ -53,7 +48,8 @@ module Homebrew
     raise UsageError, "Must specify --macos option" if macos.blank?
 
     # Fixup label for ARM/Apple Silicon
-    macos_label = if arm_label
+    macos_label = if macos.arch == :arm64
+      # TODO: fix label name to be 11-arm64 instead.
       "#{macos}-arm"
     else
       macos.to_s
