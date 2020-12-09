@@ -390,9 +390,9 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
       class Foo < Formula
         url "https://brew.sh/foo-1.0.tgz"
         on_macos do
-        ^^^^^^^^^^^ `on_macos` can only include `depends_on`, `patch` and `resource` nodes.
           depends_on "readline"
           uses_from_macos "ncurses"
+          ^^^^^^^^^^^^^^^^^^^^^^^^^ `on_macos` cannot include `uses_from_macos`. [...]
         end
       end
     RUBY
@@ -403,9 +403,9 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
       class Foo < Formula
         url "https://brew.sh/foo-1.0.tgz"
         on_linux do
-        ^^^^^^^^^^^ `on_linux` can only include `depends_on`, `patch` and `resource` nodes.
           depends_on "readline"
           uses_from_macos "ncurses"
+          ^^^^^^^^^^^^^^^^^^^^^^^^^ `on_linux` cannot include `uses_from_macos`. [...]
         end
       end
     RUBY
