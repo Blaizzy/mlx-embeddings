@@ -128,21 +128,10 @@ class Caveats
           #{root_dir}/etc/bash_completion.d
       EOS
     when :zsh
-      site_functions = root_dir/"share/zsh/site-functions"
-      zsh_caveats = +<<~EOS
+      <<~EOS
         zsh #{installed.join(" and ")} have been installed to:
-          #{site_functions}
+          #{root_dir}/share/zsh/site-functions
       EOS
-      zsh = which("zsh") || which("zsh", ENV["HOMEBREW_PATH"])
-      if zsh.present? && Utils.popen_read("'#{zsh}' -ic 'echo $FPATH'").exclude?(site_functions.to_s)
-        zsh_caveats << <<~EOS
-
-          #{site_functions} is not in your zsh FPATH!
-          Add it by following these steps:
-            #{Formatter.url("https://docs.brew.sh/Shell-Completion#configuring-completions-in-zsh")}
-        EOS
-      end
-      zsh_caveats.freeze
     when :fish
       fish_caveats = +"fish #{installed.join(" and ")} have been installed to:"
       fish_caveats << "\n  #{root_dir}/share/fish/vendor_completions.d" if completion_installed
