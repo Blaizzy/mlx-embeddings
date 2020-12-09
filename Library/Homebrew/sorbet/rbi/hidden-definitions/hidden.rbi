@@ -8124,6 +8124,7 @@ class HeadVersion
 end
 
 module Homebrew
+  DEFAULT_REPOSITORY = ::T.let(nil, ::T.untyped)
   MAX_PORT = ::T.let(nil, ::T.untyped)
   MIN_PORT = ::T.let(nil, ::T.untyped)
 end
@@ -13538,14 +13539,17 @@ class Object
   HOMEBREW_DEFAULT_CACHE = ::T.let(nil, ::T.untyped)
   HOMEBREW_DEFAULT_LOGS = ::T.let(nil, ::T.untyped)
   HOMEBREW_DEFAULT_PREFIX = ::T.let(nil, ::T.untyped)
+  HOMEBREW_DEFAULT_REPOSITORY = ::T.let(nil, ::T.untyped)
   HOMEBREW_DEFAULT_TEMP = ::T.let(nil, ::T.untyped)
   HOMEBREW_LIBRARY = ::T.let(nil, ::T.untyped)
   HOMEBREW_LIBRARY_PATH = ::T.let(nil, ::T.untyped)
   HOMEBREW_LINKED_KEGS = ::T.let(nil, ::T.untyped)
   HOMEBREW_LINUX_DEFAULT_PREFIX = ::T.let(nil, ::T.untyped)
+  HOMEBREW_LINUX_DEFAULT_REPOSITORY = ::T.let(nil, ::T.untyped)
   HOMEBREW_LOCKS = ::T.let(nil, ::T.untyped)
   HOMEBREW_LOGS = ::T.let(nil, ::T.untyped)
   HOMEBREW_MACOS_ARM_DEFAULT_PREFIX = ::T.let(nil, ::T.untyped)
+  HOMEBREW_MACOS_ARM_DEFAULT_REPOSITORY = ::T.let(nil, ::T.untyped)
   HOMEBREW_OFFICIAL_REPO_PREFIXES_REGEX = ::T.let(nil, ::T.untyped)
   HOMEBREW_PATCHELF_RB_WRITE = ::T.let(nil, ::T.untyped)
   HOMEBREW_PINNED_KEGS = ::T.let(nil, ::T.untyped)

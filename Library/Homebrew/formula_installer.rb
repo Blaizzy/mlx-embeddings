@@ -156,7 +156,7 @@ class FormulaInstaller
   def pour_bottle?(install_bottle_options = { warn: false })
     return false if @pour_failed
 
-    return false if !formula.bottled? && !formula.local_bottle_path
+    return false if !formula.bottle_tag? && !formula.local_bottle_path
     return true  if force_bottle?
     return false if build_from_source? || build_bottle? || interactive?
     return false if @cc
@@ -174,11 +174,13 @@ class FormulaInstaller
     end
 
     bottle = formula.bottle_specification
-    unless bottle.compatible_cellar?
+    unless bottle.compatible_locations?
       if install_bottle_options[:warn]
         opoo <<~EOS
-          Building #{formula.full_name} from source:
-            The bottle needs a #{bottle.cellar} Cellar (yours is #{HOMEBREW_CELLAR}).
+          Building #{formula.full_name} from source as the bottle needs:
+          - HOMEBREW_CELLAR: #{bottle.cellar} (yours is #{HOMEBREW_CELLAR})
+          - HOMEBREW_PREFIX: #{bottle.prefix} (yours is #{HOMEBREW_PREFIX})
+          - HOMEBREW_REPOSITORY: #{bottle.repository} (yours is #{HOMEBREW_REPOSITORY})
         EOS
       end
       return false
@@ -193,7 +195,7 @@ class FormulaInstaller
     return false if @build_from_source_formulae.include?(dep.full_name)
     return false unless dep.bottle && dep.pour_bottle?
     return false unless build.used_options.empty?
-    return false unless dep.bottle&.compatible_cellar?
+    return false unless dep.bottle&.compatible_locations?
 
     true
   end
