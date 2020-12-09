@@ -361,6 +361,8 @@ module Homebrew
 
       use_system_ruby = if Homebrew::EnvConfig.force_vendor_ruby?
         false
+      elsif OS.mac?
+        ENV["HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH"].present?
       else
         check_ruby_version = HOMEBREW_LIBRARY_PATH/"utils/ruby_check_version_script.rb"
         rubies.uniq.any? do |ruby|
