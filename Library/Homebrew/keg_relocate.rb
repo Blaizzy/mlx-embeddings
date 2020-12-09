@@ -69,10 +69,12 @@ class Keg
       s = first.open("rb", &:read)
 
       replacements = {
-        relocation.old_prefix     => relocation.new_prefix,
-        relocation.old_cellar     => relocation.new_cellar,
-        relocation.old_repository => relocation.new_repository,
+        relocation.old_prefix => relocation.new_prefix,
+        relocation.old_cellar => relocation.new_cellar,
       }
+      # when HOMEBREW_PREFIX == HOMEBREW_REPOSITORY we should use HOMEBREW_PREFIX for all relocations to avoid
+      # being unable to differentiate between them.
+      replacements[relocation.old_repository] = relocation.new_repository if HOMEBREW_PREFIX != HOMEBREW_REPOSITORY
       changed = s.gsub!(Regexp.union(replacements.keys.sort_by(&:length).reverse), replacements)
       next unless changed
 

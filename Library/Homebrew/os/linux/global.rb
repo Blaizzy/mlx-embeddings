@@ -10,9 +10,11 @@ HOMEBREW_PATCHELF_RB_WRITE = (
 ).freeze
 
 module Homebrew
-  DEFAULT_PREFIX ||= if EnvConfig.force_homebrew_on_linux?
-    HOMEBREW_DEFAULT_PREFIX
+  if EnvConfig.force_homebrew_on_linux?
+    DEFAULT_PREFIX ||= HOMEBREW_DEFAULT_PREFIX.freeze
+    DEFAULT_REPOSITORY ||= HOMEBREW_DEFAULT_REPOSITORY.freeze
   else
-    HOMEBREW_LINUX_DEFAULT_PREFIX
-  end.freeze
+    DEFAULT_PREFIX ||= HOMEBREW_LINUX_DEFAULT_PREFIX.freeze
+    DEFAULT_REPOSITORY ||= HOMEBREW_LINUX_DEFAULT_REPOSITORY.freeze
+  end
 end

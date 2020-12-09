@@ -2,9 +2,11 @@
 # frozen_string_literal: true
 
 module Homebrew
-  DEFAULT_PREFIX ||= if Hardware::CPU.arm?
-    HOMEBREW_MACOS_ARM_DEFAULT_PREFIX
+  if Hardware::CPU.arm?
+    DEFAULT_PREFIX ||= HOMEBREW_MACOS_ARM_DEFAULT_PREFIX.freeze
+    DEFAULT_REPOSITORY ||= HOMEBREW_MACOS_ARM_DEFAULT_REPOSITORY.freeze
   else
-    HOMEBREW_DEFAULT_PREFIX
-  end.freeze
+    DEFAULT_PREFIX ||= HOMEBREW_DEFAULT_PREFIX.freeze
+    DEFAULT_REPOSITORY ||= HOMEBREW_DEFAULT_REPOSITORY.freeze
+  end
 end

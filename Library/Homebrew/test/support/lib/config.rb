@@ -50,5 +50,9 @@ TEST_SHA256 = "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
 
 # For testing's sake always assume the default prefix
 module Homebrew
+  remove_const :DEFAULT_PREFIX if defined?(DEFAULT_PREFIX)
   DEFAULT_PREFIX = HOMEBREW_PREFIX.to_s.freeze
+
+  remove_const :DEFAULT_REPOSITORY if defined?(DEFAULT_REPOSITORY)
+  DEFAULT_REPOSITORY = HOMEBREW_REPOSITORY.to_s.freeze
 end

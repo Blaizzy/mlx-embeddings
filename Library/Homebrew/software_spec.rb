@@ -93,9 +93,13 @@ class SoftwareSpec
     !bottle_specification.collector.keys.empty?
   end
 
+  def bottle_tag?
+    bottle_specification.tag?(Utils::Bottles.tag)
+  end
+
   def bottled?
-    bottle_specification.tag?(Utils::Bottles.tag) && \
-      (bottle_specification.compatible_cellar? || owner.force_bottle)
+    bottle_tag? && \
+      (bottle_specification.compatible_locations? || owner.force_bottle)
   end
 
   def bottle(disable_type = nil, disable_reason = nil, &block)
@@ -317,8 +321,8 @@ class Bottle
     @rebuild = spec.rebuild
   end
 
-  def compatible_cellar?
-    @spec.compatible_cellar?
+  def compatible_locations?
+    @spec.compatible_locations?
   end
 
   # Does the bottle need to be relocated?
@@ -341,17 +345,16 @@ end
 class BottleSpecification
   extend T::Sig
 
-  DEFAULT_PREFIX = Homebrew::DEFAULT_PREFIX
-
   attr_rw :prefix, :cellar, :rebuild
   attr_accessor :tap
-  attr_reader :checksum, :collector, :root_url_specs
+  attr_reader :checksum, :collector, :root_url_specs, :repository
 
   sig { void }
   def initialize
     @rebuild = 0
     @prefix = Homebrew::DEFAULT_PREFIX
     @cellar = Homebrew::DEFAULT_CELLAR
+    @repository = Homebrew::DEFAULT_REPOSITORY
     @collector = Utils::Bottles::Collector.new
     @root_url_specs = {}
   end
@@ -365,8 +368,23 @@ class BottleSpecification
     end
   end
 
-  def compatible_cellar?
-    cellar == :any || cellar == :any_skip_relocation || cellar == HOMEBREW_CELLAR.to_s
+  def compatible_locations?
+    compatible_cellar = cellar == :any ||
+                        cellar == :any_skip_relocation ||
+                        cellar == HOMEBREW_CELLAR.to_s
+
+    compatible_prefix = prefix == HOMEBREW_PREFIX.to_s
+
+    # Only check the repository matches if the prefix is the default.
+    # This is because the bottle DSL does not allow setting a custom repository
+    # but does allow setting a custom prefix.
+    compatible_repository = if prefix == Homebrew::DEFAULT_PREFIX
+      repository == HOMEBREW_REPOSITORY.to_s
+    else
+      true
+    end
+
+    compatible_cellar && compatible_prefix && compatible_repository
   end
 
   # Does the {Bottle} this {BottleSpecification} belongs to need to be relocated?

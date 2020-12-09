@@ -343,6 +343,7 @@ class Formula
     :bottle_disabled?,
     :bottle_disable_reason,
     :bottle_defined?,
+    :bottle_tag?,
     :bottled?,
     :bottle_specification,
     :downloader,
