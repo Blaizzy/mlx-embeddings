@@ -874,7 +874,7 @@ Skip installing cask dependencies\.
 Also include casks with \fBauto_updates true\fR or \fBversion :latest\fR\.
 .
 .SS "\fBuses\fR [\fIoptions\fR] \fIformula\fR"
-Show formulae that specify \fIformula\fR as a dependency (i\.e\. show dependents of \fIformula\fR)\. When given multiple formula arguments, show the intersection of formulae that use \fIformula\fR\. By default, \fBuses\fR shows all formulae that specify \fIformula\fR as a required or recommended dependency for their stable builds\.
+Show formulae and casks that specify \fIformula\fR as a dependency (i\.e\. show dependents of \fIformula\fR)\. When given multiple formula arguments, show the intersection of formulae that use \fIformula\fR\. By default, \fBuses\fR shows all formulae and casks that specify \fIformula\fR as a required or recommended dependency for their stable builds\.
 .
 .TP
 \fB\-\-recursive\fR
@@ -882,7 +882,7 @@ Resolve more than one level of dependencies\.
 .
 .TP
 \fB\-\-installed\fR
-Only list formulae that are currently installed\.
+Only list formulae and casks that are currently installed\.
 .
 .TP
 \fB\-\-include\-build\fR
@@ -899,6 +899,14 @@ Include all formulae that specify \fIformula\fR as \fB:optional\fR type dependen
 .TP
 \fB\-\-skip\-recommended\fR
 Skip all formulae that specify \fIformula\fR as \fB:recommended\fR type dependency\.
+.
+.TP
+\fB\-\-formula\fR
+Include only formulae\.
+.
+.TP
+\fB\-\-cask\fR
+Include only casks\.
 .
 .SS "\fB\-\-cache\fR [\fIoptions\fR] [\fIformula\fR|\fIcask\fR]"
 Display Homebrew\'s download cache\. See also \fBHOMEBREW_CACHE\fR\.
