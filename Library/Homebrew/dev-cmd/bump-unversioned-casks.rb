@@ -1,6 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
+require "timeout"
 require "cask/download"
 require "cask/installer"
 require "cask/cask_loader"
@@ -45,18 +46,9 @@ module Homebrew
 
     state = state_file.exist? ? JSON.parse(state_file.read) : {}
 
-    cask_files = args.named.to_paths(only: :cask, recurse_tap: true)
+    casks = args.named.to_paths(only: :cask, recurse_tap: true).map { |path| Cask::CaskLoader.load(path) }
 
-    unversioned_cask_files = cask_files.select do |cask_file|
-      url = cask_file.each_line do |line|
-        url = line[/\s*url\s+"([^"]+)"\s*/, 1]
-        break url if url
-      end
-
-      url.present? && url.exclude?('#{')
-    end.sort
-
-    unversioned_casks = unversioned_cask_files.map { |path| Cask::CaskLoader.load(path) }
+    unversioned_casks = casks.select { |cask| cask.url&.unversioned? }
 
     ohai "Unversioned Casks: #{unversioned_casks.count} (#{state.size} cached)"
 
@@ -126,16 +118,15 @@ module Homebrew
     end
 
     if last_time != time || last_file_size != file_size
-      begin
-        cached_download = unversioned_cask_checker.installer.download
+      sha256 = begin
+        Timeout.timeout(5.minutes) do
+          unversioned_cask_checker.installer.download.sha256
+        end
       rescue => e
         onoe e
-        return
       end
 
-      sha256 = cached_download.sha256
-
-      if last_sha256 != sha256 && (version = unversioned_cask_checker.guess_cask_version)
+      if sha256.present? && last_sha256 != sha256 && (version = unversioned_cask_checker.guess_cask_version)
         if cask.version == version
           oh1 "Cask #{cask} is up-to-date at #{version}"
         else
