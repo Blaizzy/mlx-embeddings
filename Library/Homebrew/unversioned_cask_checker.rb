@@ -104,7 +104,10 @@ module Homebrew
         end
 
         info_plist_paths = apps.flat_map do |app|
-          Pathname.glob(dir/"**"/app.source.basename/"Contents"/"Info.plist")
+          Pathname.glob(dir/"**"/app.source.basename/"Contents"/"Info.plist").reject do |info_plist_path|
+            # Ignore nested apps.
+            info_plist_path.parent.parent.parent.ascend.any? { |p| p.extname == ".app" }
+          end.sort
         end
 
         info_plist_paths.each do |info_plist_path|
@@ -114,7 +117,7 @@ module Homebrew
         end
 
         pkg_paths = pkgs.flat_map do |pkg|
-          Pathname.glob(dir/"**"/pkg.path.basename)
+          Pathname.glob(dir/"**"/pkg.path.basename).sort
         end
 
         pkg_paths.each do |pkg_path|
