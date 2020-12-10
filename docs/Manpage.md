@@ -889,7 +889,7 @@ nor vice versa. It must use whichever style specification the formula already us
 * `--tag`:
   Specify the new git commit *`tag`* for the formula.
 * `--revision`:
-  Specify the new git commit *`revision`* corresponding to the specified *`tag`*.
+  Specify the new commit *`revision`* corresponding to the specified git *`tag`* or specified *`version`*.
 * `-f`, `--force`:
   Ignore duplicate open PRs. Remove all mirrors if `--mirror` was not specified.
 
