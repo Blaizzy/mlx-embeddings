@@ -135,6 +135,7 @@ module RuboCop
         end
 
         def check_on_os_block_content(component_precedence_list, on_os_block)
+          on_os_allowed_methods = %w[depends_on patch resource deprecate! disable!]
           _, offensive_node = check_order(component_precedence_list, on_os_block.body)
           component_problem(*offensive_node) if offensive_node
           child_nodes = on_os_block.body.begin_type? ? on_os_block.body.child_nodes : [on_os_block.body]
@@ -145,16 +146,14 @@ module RuboCop
             method_type = child.send_type? || child.block_type?
             next unless method_type
 
-            valid_node ||= child.method_name.to_s == "patch"
-            valid_node ||= child.method_name.to_s == "resource"
-            valid_node ||= child.method_name.to_s == "deprecate!"
-            valid_node ||= child.method_name.to_s == "disable!"
+            valid_node ||= on_os_allowed_methods.include? child.method_name.to_s
 
-            @offensive_node = on_os_block
-            @offense_source_range = on_os_block.source_range
-            unless valid_node
-              problem "`#{on_os_block.method_name}` can only include `depends_on`, `patch` and `resource` nodes."
-            end
+            @offensive_node = child
+            @offense_source_range = child.source_range
+            next if valid_node
+
+            problem "`#{on_os_block.method_name}` cannot include `#{child.method_name}`. " \
+                    "Only #{on_os_allowed_methods.map { |m| "`#{m}`" }.to_sentence} are allowed."
           end
         end
 
