@@ -8118,7 +8118,6 @@ class HeadVersion
 end
 
 module Homebrew
-  DEFAULT_REPOSITORY = ::T.let(nil, ::T.untyped)
   MAX_PORT = ::T.let(nil, ::T.untyped)
   MIN_PORT = ::T.let(nil, ::T.untyped)
 end
