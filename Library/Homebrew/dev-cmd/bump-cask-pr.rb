@@ -131,7 +131,7 @@ module Homebrew
         tmp_config = cask.config
         tmp_url = tmp_cask.url.to_s
 
-        if new_hash.nil?
+        if new_hash.nil? && old_hash != :no_check
           resource_path = fetch_resource(cask, new_version, tmp_url)
           Utils::Tar.validate_file(resource_path)
           new_hash = resource_path.sha256
