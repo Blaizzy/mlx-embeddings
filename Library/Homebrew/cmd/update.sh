@@ -390,45 +390,23 @@ EOS
     fi
   fi
 
-  if [[ -f "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core/.git/shallow" &&
-      -f "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-cask/.git/shallow" ]]
-  then
-    odie <<EOS
-homebrew-core and homebrew-cask are shallow clones. To \`brew update\` first run:
-  git -C "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core" fetch --unshallow
-  git -C "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-cask" fetch --unshallow
-This restriction has been made on GitHub's request because updating shallow
-clones is an extremely expensive operation due to the tree layout and traffic of
-Homebrew/homebrew-core and Homebrew/homebrew-cask. We don't do this for you
-automatically to avoid repeatedly performing an expensive unshallow operation in
-CI systems (which should instead be fixed to not use shallow clones). Sorry for
-the inconvenience!
-EOS
-  fi
+  [[ -f "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core/.git/shallow" ]] && SHALLOW_CORE=1
+  [[ -f "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-cask/.git/shallow" ]] && SHALLOW_CASK=1
 
-  if [[ -f "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core/.git/shallow" ]]
+  if [[ -n $SHALLOW_CORE || -n $SHALLOW_CASK ]]
   then
     odie <<EOS
-homebrew-core is a shallow clone. To \`brew update\` first run:
-  git -C "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core" fetch --unshallow
-This restriction has been made on GitHub's request because updating shallow
-clones is an extremely expensive operation due to the tree layout and traffic of
-Homebrew/homebrew-core. We don't do this for you automatically to avoid
-repeatedly performing an expensive unshallow operation in CI systems (which
-should instead be fixed to not use shallow clones). Sorry for the inconvenience!
-EOS
-  fi
-
-  if [[ -f "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-cask/.git/shallow" ]]
-  then
-    odie <<EOS
-homebrew-cask is a shallow clone. To \`brew update\` first run:
-  git -C "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-cask" fetch --unshallow
-This restriction has been made on GitHub's request because updating shallow
-clones is an extremely expensive operation due to the tree layout and traffic of
-Homebrew/homebrew-cask. We don't do this for you automatically to avoid
-repeatedly performing an expensive unshallow operation in CI systems (which
-should instead be fixed to not use shallow clones). Sorry for the inconvenience!
+  ${SHALLOW_CORE:+homebrew-core is a shallow clone.}
+  ${SHALLOW_CASK:+homebrew-cask is a shallow clone.}
+  To \`brew update\`, first run:
+    ${SHALLOW_CORE:+git -C "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core" fetch --unshallow}
+    ${SHALLOW_CASK:+git -C "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-cask" fetch --unshallow}
+  This restriction has been made on GitHub's request because updating shallow
+  clones is an extremely expensive operation due to the tree layout and traffic of
+  Homebrew/homebrew-core and Homebrew/homebrew-cask. We don't do this for you
+  automatically to avoid repeatedly performing an expensive unshallow operation in
+  CI systems (which should instead be fixed to not use shallow clones). Sorry for
+  the inconvenience!
 EOS
   fi
 
