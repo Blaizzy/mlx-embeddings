@@ -249,7 +249,7 @@ module Utils
         final_url = location.chomp if location
       end
 
-      output_hash = Digest::SHA256.file(file.path) if hash_needed
+      file_hash = Digest::SHA256.file(file.path) if hash_needed
 
       final_url ||= url
 
@@ -260,8 +260,8 @@ module Utils
         etag:           headers[%r{ETag: ([wW]/)?"(([^"]|\\")*)"}, 2],
         content_length: headers[/Content-Length: (\d+)/, 1],
         headers:        headers,
-        file_hash:      output_hash,
-        file:           output,
+        file_hash:      file_hash,
+        file:           File.read(file.path),
       }
     ensure
       file.unlink
