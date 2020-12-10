@@ -137,11 +137,13 @@ module RuboCop
         def check_on_os_block_content(component_precedence_list, on_os_block)
           _, offensive_node = check_order(component_precedence_list, on_os_block.body)
           component_problem(*offensive_node) if offensive_node
-          on_os_block.body.child_nodes.each do |child|
+          child_nodes = on_os_block.body.begin_type? ? on_os_block.body.child_nodes : [on_os_block.body]
+          child_nodes.each do |child|
             valid_node = depends_on_node?(child)
-            # Check for RuboCop::AST::SendNode instances only, as we are checking the
-            # method_name for patches and resources.
-            next unless child.instance_of? RuboCop::AST::SendNode
+            # Check for RuboCop::AST::SendNode and RuboCop::AST::BlockNode instances
+            # only, as we are checking the method_name for `patch`, `resource`, etc.
+            method_type = child.send_type? || child.block_type?
+            next unless method_type
 
             valid_node ||= child.method_name.to_s == "patch"
             valid_node ||= child.method_name.to_s == "resource"
