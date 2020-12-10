@@ -564,10 +564,46 @@ module Homebrew
       let(:throttle_list) { { throttled_formulae: { "foo" => 10 } } }
       let(:versioned_head_spec_list) { { versioned_head_spec_allowlist: ["foo"] } }
 
+      it "doesn't allow to miss a checksum" do
+        fa = formula_auditor "foo", <<~RUBY
+          class Foo < Formula
+            url "https://brew.sh/foo-1.0.tgz"
+          end
+        RUBY
+
+        fa.audit_specs
+        expect(fa.problems.first[:message]).to match "Checksum is missing"
+      end
+
+      it "allows to miss a checksum for git strategy" do
+        fa = formula_auditor "foo", <<~RUBY
+          class Foo < Formula
+            url "https://brew.sh/foo.git", tag: "1.0", revision: "f5e00e485e7aa4c5baa20355b27e3b84a6912790"
+          end
+        RUBY
+
+        fa.audit_specs
+        expect(fa.problems).to be_empty
+      end
+
+      it "allows to miss a checksum for HEAD" do
+        fa = formula_auditor "foo", <<~RUBY
+          class Foo < Formula
+            url "https://brew.sh/foo-1.0.tgz"
+            sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"
+            head "https://brew.sh/foo.tgz"
+          end
+        RUBY
+
+        fa.audit_specs
+        expect(fa.problems).to be_empty
+      end
+
       it "allows versions with no throttle rate" do
         fa = formula_auditor "bar", <<~RUBY, core_tap: true, tap_audit_exceptions: throttle_list
           class Bar < Formula
             url "https://brew.sh/foo-1.0.1.tgz"
+            sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"
           end
         RUBY
 
@@ -579,6 +615,7 @@ module Homebrew
         fa = formula_auditor "foo", <<~RUBY, core_tap: true, tap_audit_exceptions: throttle_list
           class Foo < Formula
             url "https://brew.sh/foo-1.0.0.tgz"
+            sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"
           end
         RUBY
 
@@ -590,6 +627,7 @@ module Homebrew
         fa = formula_auditor "foo", <<~RUBY, core_tap: true, tap_audit_exceptions: throttle_list
           class Foo < Formula
             url "https://brew.sh/foo-1.0.10.tgz"
+            sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"
           end
         RUBY
 
@@ -601,6 +639,7 @@ module Homebrew
         fa = formula_auditor "foo", <<~RUBY, core_tap: true, tap_audit_exceptions: throttle_list
           class Foo < Formula
             url "https://brew.sh/foo-1.0.1.tgz"
+            sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"
           end
         RUBY
 
@@ -612,7 +651,8 @@ module Homebrew
         fa = formula_auditor "bar", <<~RUBY, core_tap: true, tap_audit_exceptions: versioned_head_spec_list
           class Bar < Formula
             url "https://brew.sh/foo-1.0.tgz"
-            head "https://brew.sh/foo-1.0.tgz"
+            sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"
+            head "https://brew.sh/foo.git"
           end
         RUBY
 
@@ -624,7 +664,8 @@ module Homebrew
         fa = formula_auditor "bar@1", <<~RUBY, core_tap: true, tap_audit_exceptions: versioned_head_spec_list
           class BarAT1 < Formula
             url "https://brew.sh/foo-1.0.tgz"
-            head "https://brew.sh/foo-1.0.tgz"
+            sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"
+            head "https://brew.sh/foo.git"
           end
         RUBY
 
@@ -632,11 +673,12 @@ module Homebrew
         expect(fa.problems.first[:message]).to match "Versioned formulae should not have a `HEAD` spec"
       end
 
-      it "allows ersioned formulae on the allowlist to have a `HEAD` spec" do
+      it "allows versioned formulae on the allowlist to have a `HEAD` spec" do
         fa = formula_auditor "foo", <<~RUBY, core_tap: true, tap_audit_exceptions: versioned_head_spec_list
           class Foo < Formula
             url "https://brew.sh/foo-1.0.tgz"
-            head "https://brew.sh/foo-1.0.tgz"
+            sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"
+            head "https://brew.sh/foo.git"
           end
         RUBY
 
