@@ -68,6 +68,11 @@ module Homebrew
                      "`~/.profile`, `~/.bash_profile`, or `~/.zshenv`:\n\n" \
                      '    `export HOMEBREW_CASK_OPTS="--appdir=~/Applications --fontdir=/Library/Fonts"`',
       },
+      HOMEBREW_CLEANUP_PERIODIC_FULL_DAYS:    {
+        description: "If set, `brew install`, `brew upgrade` and `brew reinstall` will cleanup all formulae " \
+                     "when this number of days has passed.",
+        default:     30,
+      },
       HOMEBREW_CLEANUP_MAX_AGE_DAYS:          {
         description: "Cleanup all cached files older than this many days.",
         default:     120,
@@ -243,7 +248,8 @@ module Homebrew
       },
       HOMEBREW_NO_INSTALL_CLEANUP:            {
         description: "If set, `brew install`, `brew upgrade` and `brew reinstall` will never automatically " \
-                     "cleanup installed/upgraded/reinstalled formulae or all formulae every 30 days.",
+                     "cleanup installed/upgraded/reinstalled formulae or all formulae every " \
+                     "HOMEBREW_CLEANUP_PERIODIC_FULL_DAYS days.",
         boolean:     true,
       },
       HOMEBREW_PRY:                           {

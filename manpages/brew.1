@@ -2364,6 +2364,15 @@ Append these options to all \fBcask\fR commands\. All \fB\-\-*dir\fR options, \f
 \fBexport HOMEBREW_CASK_OPTS="\-\-appdir=~/Applications \-\-fontdir=/Library/Fonts"\fR
 .
 .TP
+\fBHOMEBREW_CLEANUP_PERIODIC_FULL_DAYS\fR
+.
+.br
+If set, \fBbrew install\fR, \fBbrew upgrade\fR and \fBbrew reinstall\fR will cleanup all formulae when this number of days has passed\.
+.
+.IP
+\fIDefault:\fR \fB30\fR\.
+.
+.TP
 \fBHOMEBREW_CLEANUP_MAX_AGE_DAYS\fR
 .
 .br
@@ -2622,7 +2631,7 @@ If set, forbid redirects from secure HTTPS to insecure HTTP\.
 \fBHOMEBREW_NO_INSTALL_CLEANUP\fR
 .
 .br
-If set, \fBbrew install\fR, \fBbrew upgrade\fR and \fBbrew reinstall\fR will never automatically cleanup installed/upgraded/reinstalled formulae or all formulae every 30 days\.
+If set, \fBbrew install\fR, \fBbrew upgrade\fR and \fBbrew reinstall\fR will never automatically cleanup installed/upgraded/reinstalled formulae or all formulae every HOMEBREW_CLEANUP_PERIODIC_FULL_DAYS days\.
 .
 .TP
 \fBHOMEBREW_PRY\fR

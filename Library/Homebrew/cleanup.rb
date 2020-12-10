@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "utils/bottles"
+
 require "utils/gems"
 require "formula"
 require "cask/cask_loader"
@@ -12,7 +13,7 @@ module Homebrew
   #
   # @api private
   class Cleanup
-    CLEANUP_DEFAULT_DAYS = 30
+    CLEANUP_DEFAULT_DAYS = Homebrew::EnvConfig.cleanup_periodic_full_days.to_i.freeze
     private_constant :CLEANUP_DEFAULT_DAYS
 
     # {Pathname} refinement with helper functions for cleaning up files.
