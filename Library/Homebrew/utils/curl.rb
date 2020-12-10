@@ -236,7 +236,7 @@ module Utils
 
       max_time = hash_needed ? "600" : "25"
       output, = curl_output(
-        "--dump-header", "-", "--output", file.path, "--include", "--location",
+        "--dump-header", "-", "--output", file.path, "--location",
         "--connect-timeout", "15", "--max-time", max_time, url,
         user_agent: user_agent
       )
