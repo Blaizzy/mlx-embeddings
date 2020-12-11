@@ -264,7 +264,7 @@ module Cask
     def check_sha256_no_check_if_unversioned
       return if cask.sha256 == :no_check
 
-      add_error "Use `sha256 :no_check` when URL is unversioned." if cask.url.unversioned?
+      add_error "Use `sha256 :no_check` when URL is unversioned." if cask.url&.unversioned?
     end
 
     def check_sha256_actually_256

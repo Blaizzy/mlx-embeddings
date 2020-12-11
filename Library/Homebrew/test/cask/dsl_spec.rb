@@ -7,7 +7,7 @@ describe Cask::DSL, :cask do
 
   context "stanzas" do
     it "lets you set url, homepage, and version" do
-      expect(cask.url.to_s).to eq("https://brew.sh/TestCask.dmg")
+      expect(cask.url.to_s).to eq("https://brew.sh/TestCask-1.2.3.dmg")
       expect(cask.homepage).to eq("https://brew.sh/")
       expect(cask.version.to_s).to eq("1.2.3")
     end
@@ -66,7 +66,7 @@ describe Cask::DSL, :cask do
 
       it "does not require a DSL version in the header" do
         expect(cask.token).to eq("no-dsl-version")
-        expect(cask.url.to_s).to eq("https://brew.sh/TestCask.dmg")
+        expect(cask.url.to_s).to eq("https://brew.sh/TestCask-1.2.3.dmg")
         expect(cask.homepage).to eq("https://brew.sh/")
         expect(cask.version.to_s).to eq("1.2.3")
       end

@@ -232,14 +232,14 @@ describe Cask::Audit, :cask do
       let(:online) { false }
       let(:cask) do
         tmp_cask cask_token.to_s, <<~RUBY
-          cask '#{cask_token}' do
-            version '1.0'
-            sha256 '8dd95daa037ac02455435446ec7bc737b34567afe9156af7d20b2a83805c1d8a'
-            url "https://brew.sh/"
-            name 'Audit'
-            desc 'Cask for testing tokens'
-            homepage 'https://brew.sh/'
-            app 'Audit.app'
+          cask "#{cask_token}" do
+            version "1.0"
+            sha256 "8dd95daa037ac02455435446ec7bc737b34567afe9156af7d20b2a83805c1d8a"
+            url "https://brew.sh/v\#{version}.zip"
+            name "Audit"
+            desc "Cask for testing tokens"
+            homepage "https://brew.sh/"
+            app "Audit.app"
           end
         RUBY
       end
@@ -877,14 +877,14 @@ describe Cask::Audit, :cask do
       let(:cask_token) { "with-description" }
       let(:cask) do
         tmp_cask cask_token.to_s, <<~RUBY
-          cask '#{cask_token}' do
-            version '1.0'
-            sha256 '8dd95daa037ac02455435446ec7bc737b34567afe9156af7d20b2a83805c1d8a'
-            url "https://brew.sh/"
-            name 'Audit'
-            desc 'Cask Auditor'
-            homepage 'https://brew.sh/'
-            app 'Audit.app'
+          cask "#{cask_token}" do
+            version "1.0"
+            sha256 "8dd95daa037ac02455435446ec7bc737b34567afe9156af7d20b2a83805c1d8a"
+            url "https://brew.sh/\#{version}.zip"
+            name "Audit"
+            desc "Cask Auditor"
+            homepage "https://brew.sh/"
+            app "Audit.app"
           end
         RUBY
       end
