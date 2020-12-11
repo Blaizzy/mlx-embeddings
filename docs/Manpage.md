@@ -1044,27 +1044,31 @@ provided, check all kegs. Raises an error if run on uninstalled formulae.
 * `--cached`:
   Print the cached linkage values stored in `HOMEBREW_CACHE`, set by a previous `brew linkage` run.
 
-### `livecheck` [*`formulae`*]
+### `livecheck` [*`formulae`*|*`casks`*]
 
-Check for newer versions of formulae from upstream.
+Check for newer versions of formulae and/or casks from upstream.
 
-If no formula argument is passed, the list of formulae to check is taken from `HOMEBREW_LIVECHECK_WATCHLIST`
-or `~/.brew_livecheck_watchlist`.
+If no formula or cask argument is passed, the list of formulae and casks to check is taken from
+`HOMEBREW_LIVECHECK_WATCHLIST` or `~/.brew_livecheck_watchlist`.
 
 * `--full-name`:
-  Print formulae with fully-qualified names.
+  Print formulae/casks with fully-qualified names.
 * `--tap`:
-  Check formulae within the given tap, specified as *`user`*`/`*`repo`*.
+  Check formulae/casks within the given tap, specified as *`user`*`/`*`repo`*.
 * `--all`:
-  Check all available formulae.
+  Check all available formulae/casks.
 * `--installed`:
-  Check formulae that are currently installed.
+  Check formulae/casks that are currently installed.
 * `--newer-only`:
-  Show the latest version only if it's newer than the formula.
+  Show the latest version only if it's newer than the formula/cask.
 * `--json`:
   Output information in JSON format.
 * `-q`, `--quiet`:
   Suppress warnings, don't print a progress bar for JSON output.
+* `--formula`:
+  Only check formulae.
+* `--cask`:
+  Only check casks.
 
 ### `man` [*`options`*]
 
