@@ -113,17 +113,12 @@ module Homebrew
         # head-only formulae. A formula with `stable` and `head` that's
         # installed using `--head` will still use the `stable` version for
         # comparison.
-        livecheck_version = formula_or_cask.livecheck.version
-        current = if livecheck_version.is_a?(String)
-          Version.new(livecheck_version)
-        elsif formula
+        current = if formula
           if formula.head_only?
             formula.any_installed_version.version.commit
           else
             formula.stable.version
           end
-        elsif livecheck_version.is_a?(Symbol)
-          Version.new(Cask::DSL::Version.new(formula_or_cask.version).try(livecheck_version))
         else
           Version.new(formula_or_cask.version)
         end

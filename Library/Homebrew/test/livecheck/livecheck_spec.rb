@@ -85,7 +85,6 @@ describe Homebrew::Livecheck do
 
         livecheck do
           url "https://formulae.brew.sh/api/formula/ruby.json"
-          version :before_comma
           regex(/"stable":"(\d+(?:\.\d+)+)"/i)
         end
       end

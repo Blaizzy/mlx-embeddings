@@ -20,7 +20,6 @@ class Livecheck
     @skip_msg = nil
     @strategy = nil
     @url = nil
-    @version = nil
   end
 
   # Sets the `@regex` instance variable to the provided `Regexp` or returns the
@@ -104,16 +103,6 @@ class Livecheck
     end
   end
 
-  # TODO: documentation
-  def version(val = nil)
-    return @version if val.nil?
-    unless val.is_a?(String) || (val.is_a?(Symbol) && Cask::DSL::Version.method_defined?(val))
-      raise TypeError, "Livecheck#version expects a String or valid Symbol"
-    end
-
-    @version = val
-  end
-
   # Returns a `Hash` of all instance variable values.
   # @return [Hash]
   def to_hash
@@ -123,7 +112,6 @@ class Livecheck
       "skip_msg" => @skip_msg,
       "strategy" => @strategy,
       "url"      => @url,
-      "version"  => @version,
     }
   end
 end
