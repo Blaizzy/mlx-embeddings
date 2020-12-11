@@ -46,6 +46,11 @@ end
 begin
   trap("INT", std_trap) # restore default CTRL-C handler
 
+  if ENV["CI"]
+    $stdout.sync = true
+    $stderr.sync = true
+  end
+
   empty_argv = ARGV.empty?
   help_flag_list = %w[-h --help --usage -?]
   help_flag = !ENV["HOMEBREW_HELP"].nil?
