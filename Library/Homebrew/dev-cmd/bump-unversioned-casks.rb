@@ -126,30 +126,40 @@ module Homebrew
         onoe e
       end
 
-      if sha256.present? && last_sha256 != sha256 && (version = unversioned_cask_checker.guess_cask_version)
-        if cask.version == version
-          oh1 "Cask #{cask} is up-to-date at #{version}"
-        else
-          bump_cask_pr_args = [
-            "bump-cask-pr",
-            "--version", version.to_s,
-            "--sha256", ":no_check",
-            "--message", "Automatic update via `brew bump-unversioned-casks`.",
-            cask.sourcefile_path
-          ]
-
-          if dry_run
-            bump_cask_pr_args << "--dry-run"
-            oh1 "Would bump #{cask} from #{cask.version} to #{version}"
-          else
-            oh1 "Bumping #{cask} from #{cask.version} to #{version}"
+      if sha256.present? && last_sha256 != sha256
+        version = begin
+          Timeout.timeout(1.minute) do
+            unversioned_cask_checker.guess_cask_version
           end
+        rescue Timeout::Error
+          onoe "Timed out guessing version for cask '#{cask}'."
+        end
 
-          begin
-            system_command! HOMEBREW_BREW_FILE, args: bump_cask_pr_args
-          rescue ErrorDuringExecution => e
-            onoe e
-            return
+        if version
+          if cask.version == version
+            oh1 "Cask #{cask} is up-to-date at #{version}"
+          else
+            bump_cask_pr_args = [
+              "bump-cask-pr",
+              "--version", version.to_s,
+              "--sha256", ":no_check",
+              "--message", "Automatic update via `brew bump-unversioned-casks`.",
+              cask.sourcefile_path
+            ]
+
+            if dry_run
+              bump_cask_pr_args << "--dry-run"
+              oh1 "Would bump #{cask} from #{cask.version} to #{version}"
+            else
+              oh1 "Bumping #{cask} from #{cask.version} to #{version}"
+            end
+
+            begin
+              system_command! HOMEBREW_BREW_FILE, args: bump_cask_pr_args
+            rescue ErrorDuringExecution => e
+              onoe e
+              return
+            end
           end
         end
       end
