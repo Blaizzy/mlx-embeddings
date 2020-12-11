@@ -356,11 +356,17 @@ class FormulaInstaller
 
     check_conflicts
 
-    raise BuildToolsError, [formula] if !pour_bottle? && !formula.bottle_unneeded? && !DevelopmentTools.installed?
+    raise UnbottledError, [formula] if !pour_bottle? && !formula.bottle_unneeded? && !DevelopmentTools.installed?
 
     unless ignore_deps?
       deps = compute_dependencies
-      check_dependencies_bottled(deps) if pour_bottle? && !DevelopmentTools.installed?
+      if ((pour_bottle? && !DevelopmentTools.installed?) || build_bottle?) &&
+         (unbottled = unbottled_dependencies(deps)).presence
+        # Check that each dependency in deps has a bottle available, terminating
+        # abnormally with a UnbottledError if one or more don't.
+        raise UnbottledError, unbottled
+      end
+
       install_dependencies(deps)
     end
 
@@ -412,7 +418,7 @@ class FormulaInstaller
         @pour_failed = true
         onoe e.message
         opoo "Bottle installation failed: building from source."
-        raise BuildToolsError, [formula] unless DevelopmentTools.installed?
+        raise UnbottledError, [formula] unless DevelopmentTools.installed?
 
         compute_and_install_dependencies unless ignore_deps?
       else
@@ -490,16 +496,12 @@ class FormulaInstaller
     expand_dependencies(req_deps + formula.deps)
   end
 
-  # Check that each dependency in deps has a bottle available, terminating
-  # abnormally with a BuildToolsError if one or more don't.
-  # Only invoked when the user has no developer tools.
-  def check_dependencies_bottled(deps)
-    unbottled = deps.reject do |dep, _|
-      dep_f = dep.to_formula
-      dep_f.pour_bottle? || dep_f.bottle_unneeded?
-    end
+  def unbottled_dependencies(deps)
+    deps.map(&:first).map(&:to_formula).reject do |dep_f|
+      next false unless dep_f.pour_bottle?
 
-    raise BuildToolsError, unbottled unless unbottled.empty?
+      dep_f.bottle_unneeded? || dep_f.bottled?
+    end
   end
 
   def compute_and_install_dependencies

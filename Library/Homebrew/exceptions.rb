@@ -488,17 +488,18 @@ class BuildError < RuntimeError
   end
 end
 
-# Raised by {FormulaInstaller#check_dependencies_bottled} and
-# {FormulaInstaller#install} if the formula or its dependencies are not bottled
-# and are being installed on a system without necessary build tools.
-class BuildToolsError < RuntimeError
+# Raised if the formula or its dependencies are not bottled and are being
+# installed in a situation where a bottle is required.
+class UnbottledError < RuntimeError
   def initialize(formulae)
-    super <<~EOS
-      The following #{"formula".pluralize(formulae.count)}
+    msg = +<<~EOS
+      The following #{"formula".pluralize(formulae.count)} cannot be installed from #{"bottle".pluralize(formulae.count)} and must be
+      built from source.
         #{formulae.to_sentence}
-      cannot be installed as #{"binary package".pluralize(formulae.count)} and must be built from source.
-      #{DevelopmentTools.installation_instructions}
     EOS
+    msg += "#{DevelopmentTools.installation_instructions}\n" unless DevelopmentTools.installed?
+    msg.freeze
+    super(msg)
   end
 end
 
