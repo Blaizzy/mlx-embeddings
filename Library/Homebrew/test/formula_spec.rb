@@ -701,6 +701,38 @@ describe Formula do
     end
   end
 
+  specify "#service" do
+    f = formula do
+      url "https://brew.sh/test-1.0.tbz"
+      service do
+        run [opt_bin/"beanstalkd"]
+        run_type :immediate
+        error_log_path var/"log/beanstalkd.error.log"
+        log_path var/"log/beanstalkd.log"
+        working_dir var
+        keep_alive true
+      end
+    end
+
+    expect(f.service.run).to eq([HOMEBREW_PREFIX/"opt/bin/beanstalkd"])
+    expect(f.service.error_log_path).to eq("#{HOMEBREW_PREFIX}/var/log/beanstalkd.error.log")
+    expect(f.service.log_path).to eq("#{HOMEBREW_PREFIX}/var/log/beanstalkd.log")
+    expect(f.service.working_dir).to eq("#{HOMEBREW_PREFIX}/var")
+    expect(f.service.keep_alive).to eq(true)
+    expect(f.service.run_type).to eq("immediate")
+  end
+
+  specify "service uses simple run" do
+    f = formula do
+      url "https://brew.sh/test-1.0.tbz"
+      service do
+        run opt_bin/"beanstalkd"
+      end
+    end
+
+    expect(f.service.run).to eq([HOMEBREW_PREFIX/"opt/bin/beanstalkd"])
+  end
+
   specify "dependencies" do
     f1 = formula "f1" do
       url "f1-1.0"

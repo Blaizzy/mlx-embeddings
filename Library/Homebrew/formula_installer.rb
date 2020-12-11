@@ -21,6 +21,7 @@ require "find"
 require "utils/spdx"
 require "deprecate_disable"
 require "unlink"
+require "service"
 
 # Installer for a formula.
 #
@@ -774,7 +775,7 @@ class FormulaInstaller
 
     ohai "Finishing up" if verbose?
 
-    install_plist
+    install_service
 
     keg = Keg.new(formula.prefix)
     link(keg)
@@ -1009,13 +1010,25 @@ class FormulaInstaller
   end
 
   sig { void }
-  def install_plist
-    return unless formula.plist
+  def install_service
+    if formula.service? && formula.plist
+      ofail "Formula specified both service and plist"
+      return
+    end
 
-    formula.plist_path.atomic_write(formula.plist)
-    formula.plist_path.chmod 0644
+    plist = if formula.service?
+      formula.service.to_plist
+    elsif formula.plist
+      formula.plist
+    end
+
+    return unless plist
+
+    plist_path = formula.plist_path
+    plist_path.atomic_write(plist)
+    plist_path.chmod 0644
     log = formula.var/"log"
-    log.mkpath if formula.plist.include? log.to_s
+    log.mkpath if plist.include? log.to_s
   rescue Exception => e # rubocop:disable Lint/RescueException
     ofail "Failed to install plist file"
     odebug e, e.backtrace
