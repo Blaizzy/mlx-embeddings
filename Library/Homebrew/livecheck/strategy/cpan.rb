@@ -1,34 +1,34 @@
 # typed: false
 # frozen_string_literal: true
 
-require "uri"
-
 module Homebrew
   module Livecheck
     module Strategy
       # The {Cpan} strategy identifies versions of software at
       # cpan.metacpan.org by checking directory listing pages.
       #
-      # CPAN URLs take the following format:
+      # CPAN URLs take the following formats:
       #
-      # * `https://cpan.metacpan.org/authors/id/M/MI/MIYAGAWA/Carton-v1.0.34.tar.gz`
+      # * `https://cpan.metacpan.org/authors/id/H/HO/HOMEBREW/Brew-v1.2.3.tar.gz`
+      # * `https://cpan.metacpan.org/authors/id/H/HO/HOMEBREW/brew/brew-v1.2.3.tar.gz`
+      #
+      # In these examples, `HOMEBREW` is the author name and the preceding `H`
+      # and `HO` directories correspond to the first letter(s). Some authors
+      # also store files in subdirectories, as in the second example above.
       #
       # @api public
       class Cpan
         NICE_NAME = "CPAN"
 
-        # The allowlist used to determine if the strategy applies to the URL.
-        HOST_ALLOWLIST = ["cpan.metacpan.org"].freeze
+        # The `Regexp` used to determine if the strategy applies to the URL.
+        URL_MATCH_REGEX = %r{^https?://cpan\.metacpan\.org/authors/id(?:/[^/]+){3,}/[^/]+}i.freeze
 
         # Whether the strategy can be applied to the provided URL.
         #
         # @param url [String] the URL to match against
         # @return [Boolean]
         def self.match?(url)
-          uri = URI.parse url
-          HOST_ALLOWLIST.include? uri.host
-        rescue URI::InvalidURIError
-          false
+          URL_MATCH_REGEX.match?(url)
         end
 
         # Generates a URL and regex (if one isn't provided) and passes them
@@ -39,25 +39,20 @@ module Homebrew
         # @return [Hash]
         def self.find_versions(url, regex = nil)
           %r{
-            /authors/id/(?<author_path>(?:[^/](?:/[^/]+){2})) # The author path (e.g. M/MI/MIYAGAWA)
-            /(?<package_path>.+) # The package path (e.g. Carton-v1.0.34.tar.gz)
+            (?<path>/authors/id(?:/[^/]+){3,}/) # Path before the filename
+            (?<prefix>[^/]+) # Filename text before the version
+            -v?\d+(?:\.\d+)* # The numeric version
+            (?<suffix>[^/]+) # Filename text after the version
           }ix =~ url
 
-          # We need a Pathname because we've monkeypatched extname to support
-          # double extensions (e.g. tar.gz).
-          pathname = Pathname.new(package_path)
-
-          # Exteract package name
-          /^(?<package_name>.+)-v?\d+/ =~ pathname.basename(pathname.extname)
           # Use `\.t` instead of specific tarball extensions (e.g. .tar.gz)
-          suffix = pathname.extname.sub!(/\.t(?:ar\..+|[a-z0-9]+)$/i, "\.t")
+          suffix.sub!(/\.t(?:ar\..+|[a-z0-9]+)$/i, "\.t")
 
-          # A page containing a directory listing of the latest source tarball
-          package_dir = Pathname.new(author_path).join(pathname.dirname)
-          page_url = "https://cpan.metacpan.org/authors/id/#{package_dir}/"
+          # The directory listing page where the archive files are found
+          page_url = "https://cpan.metacpan.org#{path}"
 
-          # Example regex: `%r{href=.*?Carton-v?(\d+(?:\.\d+)*).t}i`
-          regex ||= /href=.*?#{package_name}-v?(\d+(?:\.\d+)*)#{Regexp.escape(suffix)}/i
+          # Example regex: `/href=.*?Brew[._-]v?(\d+(?:\.\d+)*)\.t/i`
+          regex ||= /href=.*?#{prefix}[._-]v?(\d+(?:\.\d+)*)#{Regexp.escape(suffix)}/i
 
           Homebrew::Livecheck::Strategy::PageMatch.find_versions(page_url, regex)
         end
