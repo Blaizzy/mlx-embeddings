@@ -1,6 +1,8 @@
 # typed: false
 # frozen_string_literal: true
 
+require "rubocop"
+
 module RuboCop
   module Cop
     # Helper functions for cops.
