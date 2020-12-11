@@ -2767,6 +2767,7 @@ class Formula
     # <pre>deprecate! date: "2020-08-27", because: "has been replaced by foo"</pre>
     def deprecate!(date: nil, because: nil)
       odeprecated "`deprecate!` without a reason", "`deprecate! because: \"reason\"`" if because.blank?
+      odeprecated "`deprecate!` without a date", "`deprecate! date: \"#{Date.today}\"`" if date.blank?
 
       return if date.present? && Date.parse(date) > Date.today
 
@@ -2793,6 +2794,7 @@ class Formula
     # <pre>disable! date: "2020-08-27", because: "has been replaced by foo"</pre>
     def disable!(date: nil, because: nil)
       odeprecated "`disable!` without a reason", "`disable! because: \"reason\"`" if because.blank?
+      odeprecated "`disable!` without a date", "`disable! date: \"#{Date.today}\"`" if date.blank?
 
       if date.present? && Date.parse(date) > Date.today
         @deprecation_reason = because if because.present?
