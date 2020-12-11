@@ -107,7 +107,7 @@ module Homebrew
         skip_result = skip_conditions(formula_or_cask, args: args)
         next skip_result if skip_result != false
 
-        formula.head&.downloader&.shutup!
+        formula&.head&.downloader&.shutup!
 
         # Use the `stable` version for comparison except for installed
         # head-only formulae. A formula with `stable` and `head` that's
