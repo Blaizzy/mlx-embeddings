@@ -61,8 +61,8 @@ module Homebrew
 
     formulae_and_casks_to_check = if args.tap
       tap = Tap.fetch(args.tap)
-      formulae = args.cask? ? [] : tap.formula_names.map { |name| Formula[name] }
-      casks = args.formula? ? [] : tap.cask_tokens.map { |token| Cask::CaskLoader.load(token) }
+      formulae = args.cask? ? [] : tap.formula_files.map { |path| Formulary.factory(path) }
+      casks = args.formula? ? [] : tap.cask_files.map { |path| Cask::CaskLoader.load(path) }
       formulae + casks
     elsif args.installed?
       formulae = args.cask? ? [] : Formula.installed
