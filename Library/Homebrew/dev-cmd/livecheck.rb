@@ -97,7 +97,7 @@ module Homebrew
         onoe e
       end
     end.sort_by do |formula_or_cask|
-      formula_or_cask.respond_to?("token") ? formula_or_cask.token : formula_or_cask.name
+      formula_or_cask.respond_to?(:token) ? formula_or_cask.token : formula_or_cask.name
     end
 
     raise UsageError, "No formulae or casks to check." if formulae_and_casks_to_check.blank?
