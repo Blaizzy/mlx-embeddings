@@ -76,6 +76,7 @@ module Utils
       end
 
       def add_bottle_stanza!(formula_contents, bottle_output)
+        Homebrew.install_bundler_gems!
         require "rubocop-ast"
 
         ruby_version = Version.new(HOMEBREW_REQUIRED_RUBY_VERSION).major_minor.to_f
