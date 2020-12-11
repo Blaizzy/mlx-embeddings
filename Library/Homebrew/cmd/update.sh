@@ -390,17 +390,17 @@ EOS
     fi
   fi
 
-  [[ -f "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core/.git/shallow" ]] && SHALLOW_CORE=1
-  [[ -f "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-cask/.git/shallow" ]] && SHALLOW_CASK=1
+  [[ -f "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core/.git/shallow" ]] && HOMEBREW_CORE_SHALLOW=1
+  [[ -f "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-cask/.git/shallow" ]] && HOMEBREW_CASK_SHALLOW=1
 
-  if [[ -n $SHALLOW_CORE || -n $SHALLOW_CASK ]]
+  if [[ -n $HOMEBREW_CORE_SHALLOW || -n $HOMEBREW_CASK_SHALLOW ]]
   then
     odie <<EOS
-  ${SHALLOW_CORE:+
-    homebrew-core is a shallow clone.}${SHALLOW_CASK:+
+  ${HOMEBREW_CORE_SHALLOW:+
+    homebrew-core is a shallow clone.}${HOMEBREW_CASK_SHALLOW:+
     homebrew-cask is a shallow clone.}
-  To \`brew update\`, first run:${SHALLOW_CORE:+
-    git -C "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core" fetch --unshallow}${SHALLOW_CASK:+
+  To \`brew update\`, first run:${HOMEBREW_CORE_SHALLOW:+
+    git -C "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core" fetch --unshallow}${HOMEBREW_CASK_SHALLOW:+
     git -C "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-cask" fetch --unshallow}
   This restriction has been made on GitHub's request because updating shallow
   clones is an extremely expensive operation due to the tree layout and traffic of
