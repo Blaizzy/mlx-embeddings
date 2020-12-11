@@ -85,7 +85,7 @@ module Homebrew
         names = Pathname.new(WATCHLIST_PATH).read.lines
                         .reject { |line| line.start_with?("#") || line.blank? }
                         .map(&:strip)
-        named_args = CLI::NamedArgs.new(*names)
+        named_args = T.unsafe(CLI::NamedArgs).new(*names)
         if args.formula?
           named_args.to_formulae
         elsif args.cask?
