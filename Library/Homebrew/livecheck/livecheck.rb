@@ -120,15 +120,15 @@ module Homebrew
           separator, method = livecheck_version
           Version.new(formula_or_cask.version.to_s.split(separator, 2).try(method))
         elsif formula
-            if formula.head_only?
-              formula.any_installed_version.version.commit
-            else
-              formula.stable.version
-            end
+          if formula.head_only?
+            formula.any_installed_version.version.commit
+          else
+            formula.stable.version
+          end
         elsif livecheck_version.is_a?(Symbol)
           Version.new(Cask::DSL::Version.new(formula_or_cask.version).try(livecheck_version))
-          else
-            Version.new(formula_or_cask.version)
+        else
+          Version.new(formula_or_cask.version)
         end
 
         latest = if formula&.stable? || cask
@@ -269,9 +269,9 @@ module Homebrew
       if formula&.deprecated? && !formula.livecheckable?
         return status_hash(formula, "deprecated", args: args) if args.json?
 
-          puts "#{Tty.red}#{formula_name(formula, args: args)}#{Tty.reset} : deprecated" unless args.quiet?
-          return
-        end
+        puts "#{Tty.red}#{formula_name(formula, args: args)}#{Tty.reset} : deprecated" unless args.quiet?
+        return
+      end
 
       if formula&.disabled? && !formula.livecheckable?
         return status_hash(formula, "disabled", args: args) if args.json?
@@ -283,17 +283,17 @@ module Homebrew
       if formula&.versioned_formula? && !formula.livecheckable?
         return status_hash(formula, "versioned", args: args) if args.json?
 
-          puts "#{Tty.red}#{formula_name(formula, args: args)}#{Tty.reset} : versioned" unless args.quiet?
-          return
-        end
+        puts "#{Tty.red}#{formula_name(formula, args: args)}#{Tty.reset} : versioned" unless args.quiet?
+        return
+      end
 
       if formula&.head_only? && !formula.any_version_installed?
         head_only_msg = "HEAD only formula must be installed to be livecheckable"
         return status_hash(formula, "error", [head_only_msg], args: args) if args.json?
 
-          puts "#{Tty.red}#{formula_name(formula, args: args)}#{Tty.reset} : #{head_only_msg}" unless args.quiet?
-          return
-        end
+        puts "#{Tty.red}#{formula_name(formula, args: args)}#{Tty.reset} : #{head_only_msg}" unless args.quiet?
+        return
+      end
 
       is_gist = formula&.stable&.url&.include?("gist.github.com")
       if formula_or_cask.livecheck.skip? || is_gist
@@ -312,7 +312,7 @@ module Homebrew
           puts "#{Tty.red}#{formula_or_cask_name(formula_or_cask, args: args)}#{Tty.reset} : skipped" \
               "#{" - #{skip_msg}" if skip_msg.present?}"
         end
-          return
+        return
       end
 
       false

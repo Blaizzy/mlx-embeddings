@@ -61,16 +61,16 @@ module Homebrew
 
     formulae_and_casks_to_check = if args.tap
       tap = Tap.fetch(args.tap)
-      formulae = !args.cask? ? tap.formula_names.map { |name| Formula[name] } : []
-      casks = !args.formula? ? tap.cask_tokens.map { |token| Cask::CaskLoader.load(token) } : []
+      formulae = args.cask? ? [] : tap.formula_names.map { |name| Formula[name] }
+      casks = args.formula? ? [] : tap.cask_tokens.map { |token| Cask::CaskLoader.load(token) }
       formulae + casks
     elsif args.installed?
-      formulae = !args.cask? ? Formula.installed : []
-      casks = !args.formula? ? Cask::Caskroom.casks : []
+      formulae = args.cask? ? [] : Formula.installed
+      casks = args.formula? ? [] : Cask::Caskroom.casks
       formulae + casks
     elsif args.all?
-      formulae = !args.cask? ? Formula.to_a : []
-      casks = !args.formula? ? Cask::Cask.to_a : []
+      formulae = args.cask? ? [] : Formula.to_a
+      casks = args.formula? ? [] : Cask::Cask.to_a
       formulae + casks
     elsif args.named.present?
       if args.formula?

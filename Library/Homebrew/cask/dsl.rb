@@ -278,7 +278,7 @@ module Cask
 
     def livecheck(&block)
       @livecheck ||= Livecheck.new(self)
-      return @livecheck unless block_given?
+      return @livecheck unless block
 
       raise CaskInvalidError.new(cask, "'livecheck' stanza may only appear once.") if @livecheckable
 
