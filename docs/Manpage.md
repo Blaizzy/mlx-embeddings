@@ -1048,8 +1048,9 @@ provided, check all kegs. Raises an error if run on uninstalled formulae.
 
 Check for newer versions of formulae and/or casks from upstream.
 
-If no formula or cask argument is passed, the list of formulae and casks to check is taken from
-`HOMEBREW_LIVECHECK_WATCHLIST` or `~/.brew_livecheck_watchlist`.
+If no formula or cask argument is passed, the list of formulae and
+casks to check is taken from `HOMEBREW_LIVECHECK_WATCHLIST` or
+`~/.brew_livecheck_watchlist`.
 
 * `--full-name`:
   Print formulae/casks with fully-qualified names.
