@@ -405,6 +405,7 @@ module Cask
     end
 
     def check_missing_verified
+      return if cask.url.from_block?
       return if url_includes_file?
       return if url_match_homepage?
       return if verified_present?
