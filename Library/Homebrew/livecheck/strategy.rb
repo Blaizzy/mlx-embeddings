@@ -80,6 +80,20 @@ module Homebrew
           (strategy.const_defined?(:PRIORITY) ? -strategy::PRIORITY : -DEFAULT_PRIORITY)
         end
       end
+
+      def self.page_headers(url)
+        @headers ||= {}
+        @headers[url] ||= curl_output("--head", "--location", url).stdout
+                                                                  .split("\r\n\r\n", 2).first
+                                                                  .split("\r\n").drop(1)
+                                                                  .map { |header| header.split(/:\s*/, 2) }
+                                                                  .to_h.transform_keys(&:downcase)
+      end
+
+      def self.page_contents(url)
+        @page_contents ||= {}
+        @page_contents[url] ||= URI.parse(url).open.read
+      end
     end
   end
 end

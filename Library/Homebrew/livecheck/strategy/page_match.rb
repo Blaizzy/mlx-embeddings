@@ -30,8 +30,8 @@ module Homebrew
         URL_MATCH_REGEX = %r{^https?://}i.freeze
 
         # Whether the strategy can be applied to the provided URL.
-        # PageMatch will technically match any HTTP URL but it's only usable
-        # when the formula has a `livecheck` block containing a regex.
+        # PageMatch will technically match any HTTP URL but is only
+        # usable with a `livecheck` block containing a regex.
         #
         # @param url [String] the URL to match against
         # @return [Boolean]
@@ -47,9 +47,8 @@ module Homebrew
         #   content
         # @return [Array]
         def self.page_matches(url, regex)
-          page = URI.parse(url).open.read
-          matches = page.scan(regex)
-          matches.map(&:first).uniq
+          page = Strategy.page_contents(url)
+          page.scan(regex).map(&:first).uniq
         end
 
         # Checks the content at the URL for new versions, using the provided
