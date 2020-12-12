@@ -31,6 +31,7 @@ class URL
       header:          T.nilable(String),
       user_agent:      T.nilable(T.any(Symbol, String)),
       data:            T.nilable(T::Hash[String, String]),
+      from_block:      T::Boolean,
       caller_location: Thread::Backtrace::Location,
     ).returns(T.untyped)
   end
@@ -48,6 +49,7 @@ class URL
     header: nil,
     user_agent: nil,
     data: nil,
+    from_block: false,
     caller_location: T.must(caller_locations).fetch(0)
   )
 
@@ -69,6 +71,7 @@ class URL
 
     @specs = specs.compact
 
+    @from_block = from_block
     @caller_location = caller_location
   end
 
@@ -92,5 +95,10 @@ class URL
     interpolated_url = interpolated_url.gsub(/\#{\s*version\s*\.major\s*}/, "") if ignore_major_version
 
     interpolated_url.exclude?('#{')
+  end
+
+  sig { returns(T::Boolean) }
+  def from_block?
+    @from_block
   end
 end
