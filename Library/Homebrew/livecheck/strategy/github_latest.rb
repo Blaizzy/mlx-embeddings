@@ -37,7 +37,7 @@ module Homebrew
         # A priority of zero causes livecheck to skip the strategy. We do this
         # for {GithubLatest} so we can selectively apply the strategy using
         # `strategy :github_latest` in a `livecheck` block.
-        PRIORITY = 0
+        PRIORITY = 8
 
         # The `Regexp` used to determine if the strategy applies to the URL.
         URL_MATCH_REGEX = %r{//github\.com(?:/downloads)?(?:/[^/]+){2}}i.freeze
