@@ -209,9 +209,10 @@ module Homebrew
     end
 
     def formula_or_cask_name(formula_or_cask, args:)
-      if formula_or_cask.is_a?(Formula)
+      case formula_or_cask
+      when Formula
         formula_name(formula_or_cask, args: args)
-      else
+      when Cask::Cask
         cask_name(formula_or_cask, args: args)
       end
     end
@@ -229,11 +230,12 @@ module Homebrew
 
     def status_hash(formula_or_cask, status_str, messages = nil, args:)
       formula = formula_or_cask if formula_or_cask.is_a?(Formula)
+      cask = formula_or_cask if formula_or_cask.is_a?(Cask::Cask)
 
       status_hash = {}
       if formula
         status_hash[:formula] = formula_name(formula, args: args)
-      else
+      elsif cask
         status_hash[:cask] = cask_name(formula_or_cask, args: args)
       end
       status_hash[:status] = status_str
@@ -393,6 +395,7 @@ module Homebrew
     # @return [Hash, nil]
     def latest_version(formula_or_cask, args:)
       formula = formula_or_cask if formula_or_cask.is_a?(Formula)
+      cask = formula_or_cask if formula_or_cask.is_a?(Cask::Cask)
 
       has_livecheckable = formula_or_cask.livecheckable?
       livecheck = formula_or_cask.livecheck
@@ -408,7 +411,7 @@ module Homebrew
         if formula
           puts "Formula:          #{formula_name(formula, args: args)}"
           puts "Head only?:       true" if formula.head_only?
-        else
+        elsif cask
           puts "Cask:             #{cask_name(formula_or_cask, args: args)}"
         end
         puts "Livecheckable?:   #{has_livecheckable ? "Yes" : "No"}"
