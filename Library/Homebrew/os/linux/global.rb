@@ -3,11 +3,8 @@
 
 require "env_config"
 
-# Enables experimental `patchelf.rb` write support.
-HOMEBREW_PATCHELF_RB_WRITE = (
-  ENV["HOMEBREW_NO_PATCHELF_RB_WRITE"].blank? &&
-  (ENV["HOMEBREW_PATCHELF_RB_WRITE"].present? || ENV["CI"].present? || ENV["HOMEBREW_DEV_CMD_RUN"].present?)
-).freeze
+# Enables `patchelf.rb` write support.
+HOMEBREW_PATCHELF_RB_WRITE = ENV["HOMEBREW_NO_PATCHELF_RB_WRITE"].blank?.freeze
 
 module Homebrew
   if EnvConfig.force_homebrew_on_linux?
