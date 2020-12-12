@@ -60,8 +60,8 @@ module Homebrew
   def pr_upload
     args = pr_upload_args.parse
 
-    json_files = Dir["*.json"]
-    odie "No JSON files found in the current working directory" if json_files.empty?
+    json_files = Dir["*.bottle.json"]
+    odie "No bottle JSON files found in the current working directory" if json_files.empty?
 
     bottles_hash = json_files.reduce({}) do |hash, json_file|
       hash.deep_merge(JSON.parse(IO.read(json_file)))
