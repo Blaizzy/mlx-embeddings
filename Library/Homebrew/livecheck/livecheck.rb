@@ -47,12 +47,12 @@ module Homebrew
     def run_checks(formulae_and_casks_to_check, args)
       # Identify any non-homebrew/core taps in use for current formulae
       non_core_taps = {}
-      formulae_and_casks_to_check.each do |fc|
-        next if fc.tap.blank?
-        next if fc.tap.name == CoreTap.instance.name
-        next if non_core_taps[fc.tap.name]
+      formulae_and_casks_to_check.each do |formula_or_cask|
+        next if formula_or_cask.tap.blank?
+        next if formula_or_cask.tap.name == CoreTap.instance.name
+        next if non_core_taps[formula_or_cask.tap.name]
 
-        non_core_taps[fc.tap.name] = fc.tap
+        non_core_taps[formula_or_cask.tap.name] = formula_or_cask.tap
       end
       non_core_taps = non_core_taps.sort.to_h
 
@@ -73,7 +73,7 @@ module Homebrew
       has_a_newer_upstream_version = false
 
       if args.json? && !args.quiet? && $stderr.tty?
-        total_formulae = if formulae_and_casks_to_check == Formula
+        formulae_and_casks_total = if formulae_and_casks_to_check == Formula
           formulae_and_casks_to_check.count
         else
           formulae_and_casks_to_check.length
@@ -84,7 +84,7 @@ module Homebrew
         end
 
         progress = ProgressBar.create(
-          total:          total_formulae,
+          total:          formulae_and_casks_total,
           progress_mark:  "#",
           remainder_mark: ".",
           format:         " %t: [%B] %c/%C ",
