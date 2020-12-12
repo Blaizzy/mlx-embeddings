@@ -123,11 +123,11 @@ module Homebrew
           Version.new(formula_or_cask.version)
         end
 
-        latest = if formula&.stable? || cask
+        latest = if formula&.head_only?
+          formula.head.downloader.fetch_last_commit
+        else
           version_info = latest_version(formula_or_cask, args: args)
           version_info[:latest] if version_info.present?
-        else
-          formula.head.downloader.fetch_last_commit
         end
 
         if latest.blank?
