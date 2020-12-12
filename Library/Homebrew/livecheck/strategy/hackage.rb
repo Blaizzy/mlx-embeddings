@@ -18,7 +18,7 @@ module Homebrew
       # @api public
       class Hackage
         # The `Regexp` used to determine if the strategy applies to the URL.
-        URL_MATCH_REGEX = /(?:downloads|hackage)\.haskell\.org/i.freeze
+        URL_MATCH_REGEX = %r{^https?://(?:downloads|hackage)\.haskell\.org(?:/[^/]+){3}}i.freeze
 
         # Whether the strategy can be applied to the provided URL.
         #

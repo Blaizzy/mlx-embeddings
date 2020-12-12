@@ -20,7 +20,7 @@ module Homebrew
         NICE_NAME = "PyPI"
 
         # The `Regexp` used to determine if the strategy applies to the URL.
-        URL_MATCH_REGEX = /files\.pythonhosted\.org/i.freeze
+        URL_MATCH_REGEX = %r{^https?://files\.pythonhosted\.org/packages(?:/[^/]+){4}i}.freeze
 
         # Whether the strategy can be applied to the provided URL.
         #

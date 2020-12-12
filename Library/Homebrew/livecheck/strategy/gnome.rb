@@ -20,7 +20,7 @@ module Homebrew
         NICE_NAME = "GNOME"
 
         # The `Regexp` used to determine if the strategy applies to the URL.
-        URL_MATCH_REGEX = /download\.gnome\.org/i.freeze
+        URL_MATCH_REGEX = %r{^https?://download\.gnome\.org/sources/[^/]+/}i.freeze
 
         # Whether the strategy can be applied to the provided URL.
         #
@@ -37,7 +37,7 @@ module Homebrew
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]
         def self.find_versions(url, regex = nil, &block)
-          %r{/sources/(?<package_name>.*?)/}i =~ url
+          %r{/sources/(?<package_name>[^/]+)/}i =~ url
 
           page_url = "https://download.gnome.org/sources/#{package_name}/cache.json"
 
