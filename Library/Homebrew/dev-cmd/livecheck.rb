@@ -20,29 +20,35 @@ module Homebrew
   def livecheck_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `livecheck` [<formulae>]
+        `livecheck` [<formulae>|<casks>]
 
-        Check for newer versions of formulae from upstream.
+        Check for newer versions of formulae and/or casks from upstream.
 
-        If no formula argument is passed, the list of formulae to check is taken from `HOMEBREW_LIVECHECK_WATCHLIST`
-        or `~/.brew_livecheck_watchlist`.
+        If no formula or cask argument is passed, the list of formulae and
+        casks to check is taken from `HOMEBREW_LIVECHECK_WATCHLIST` or
+        `~/.brew_livecheck_watchlist`.
       EOS
       switch "--full-name",
-             description: "Print formulae with fully-qualified names."
+             description: "Print formulae/casks with fully-qualified names."
       flag   "--tap=",
-             description: "Check formulae within the given tap, specified as <user>`/`<repo>."
+             description: "Check formulae/casks within the given tap, specified as <user>`/`<repo>."
       switch "--all",
-             description: "Check all available formulae."
+             description: "Check all available formulae/casks."
       switch "--installed",
-             description: "Check formulae that are currently installed."
+             description: "Check formulae/casks that are currently installed."
       switch "--newer-only",
-             description: "Show the latest version only if it's newer than the formula."
+             description: "Show the latest version only if it's newer than the formula/cask."
       switch "--json",
              description: "Output information in JSON format."
       switch "-q", "--quiet",
              description: "Suppress warnings, don't print a progress bar for JSON output."
+      switch "--formula", "--formulae",
+             description: "Only check formulae."
+      switch "--cask", "--casks",
+             description: "Only check casks."
       conflicts "--debug", "--json"
       conflicts "--tap=", "--all", "--installed"
+      conflicts "--cask", "--formula"
     end
   end
 
@@ -54,28 +60,47 @@ module Homebrew
       puts ENV["HOMEBREW_LIVECHECK_WATCHLIST"] if ENV["HOMEBREW_LIVECHECK_WATCHLIST"].present?
     end
 
-    formulae_to_check = if args.tap
-      Tap.fetch(args.tap).formula_names.map { |name| Formula[name] }
+    formulae_and_casks_to_check = if args.tap
+      tap = Tap.fetch(args.tap)
+      formulae = args.cask? ? [] : tap.formula_files.map { |path| Formulary.factory(path) }
+      casks = args.formula? ? [] : tap.cask_files.map { |path| Cask::CaskLoader.load(path) }
+      formulae + casks
     elsif args.installed?
-      Formula.installed
+      formulae = args.cask? ? [] : Formula.installed
+      casks = args.formula? ? [] : Cask::Caskroom.casks
+      formulae + casks
     elsif args.all?
-      Formula
-    elsif (formulae_args = args.named.to_formulae) && formulae_args.present?
-      formulae_args
+      formulae = args.cask? ? [] : Formula.to_a
+      casks = args.formula? ? [] : Cask::Cask.to_a
+      formulae + casks
+    elsif args.named.present?
+      if args.formula?
+        args.named.to_formulae
+      elsif args.cask?
+        args.named.to_casks
+      else
+        args.named.to_formulae_and_casks
+      end
     elsif File.exist?(WATCHLIST_PATH)
       begin
-        Pathname.new(WATCHLIST_PATH).read.lines.map do |line|
-          next if line.start_with?("#")
+        names = Pathname.new(WATCHLIST_PATH).read.lines
+                        .reject { |line| line.start_with?("#") || line.blank? }
+                        .map(&:strip)
 
-          Formula[line.strip]
-        end.compact
+        named_args = T.unsafe(CLI::NamedArgs).new(*names)
+        named_args.to_formulae_and_casks.reject do |formula_or_cask|
+          (args.formula? && !formula_or_cask.is_a?(Formula)) ||
+            (args.cask? && !formula_or_cask.is_a?(Cask::Cask))
+        end
       rescue Errno::ENOENT => e
         onoe e
       end
+    end.sort_by do |formula_or_cask|
+      formula_or_cask.respond_to?(:token) ? formula_or_cask.token : formula_or_cask.name
     end
 
-    raise UsageError, "No formulae to check." if formulae_to_check.blank?
+    raise UsageError, "No formulae or casks to check." if formulae_and_casks_to_check.blank?
 
-    Livecheck.livecheck_formulae(formulae_to_check, args)
+    Livecheck.run_checks(formulae_and_casks_to_check, args)
   end
 end

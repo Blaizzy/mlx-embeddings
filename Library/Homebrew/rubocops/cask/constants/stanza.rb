@@ -9,6 +9,7 @@ module RuboCop
         [:version, :sha256],
         [:language],
         [:url, :appcast, :name, :desc, :homepage],
+        [:livecheck],
         [
           :auto_updates,
           :conflicts_with,
