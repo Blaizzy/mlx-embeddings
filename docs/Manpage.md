@@ -211,6 +211,11 @@ error message if no logs are found.
 Open a *`formula`* or *`cask`*'s homepage in a browser, or open
 Homebrew's own homepage if no argument is provided.
 
+* `--formula`:
+  Treat all named arguments as formulae.
+* `--cask`:
+  Treat all named arguments as casks.
+
 ### `info` [*`options`*] [*`formula`*|*`cask`*]
 
 Display brief statistics for your Homebrew installation.

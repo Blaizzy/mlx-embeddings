@@ -18,6 +18,11 @@ module Homebrew
         Open a <formula> or <cask>'s homepage in a browser, or open
         Homebrew's own homepage if no argument is provided.
       EOS
+      switch "--formula", "--formulae",
+             description: "Treat all named arguments as formulae."
+      switch "--cask", "--casks",
+             description: "Treat all named arguments as casks."
+      conflicts "--formula", "--cask"
     end
   end
 
@@ -30,7 +35,9 @@ module Homebrew
       return
     end
 
-    homepages = args.named.to_formulae_and_casks.map do |formula_or_cask|
+    only = :formula if args.formula? && !args.cask?
+    only = :cask if args.cask? && !args.formula?
+    homepages = args.named.to_formulae_and_casks(only: only).map do |formula_or_cask|
       puts "Opening homepage for #{name_of(formula_or_cask)}"
       formula_or_cask.homepage
     end
