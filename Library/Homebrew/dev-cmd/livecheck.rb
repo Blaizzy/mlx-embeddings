@@ -86,13 +86,11 @@ module Homebrew
         names = Pathname.new(WATCHLIST_PATH).read.lines
                         .reject { |line| line.start_with?("#") || line.blank? }
                         .map(&:strip)
+
         named_args = T.unsafe(CLI::NamedArgs).new(*names)
-        if args.formula?
-          named_args.to_formulae
-        elsif args.cask?
-          named_args.to_casks
-        else
-          named_args.to_formulae_and_casks
+        named_args.to_formulae_and_casks.reject do |formula_or_cask|
+          (args.formula? && !formula_or_cask.is_a?(Formula)) ||
+            (args.cask? && !formula_or_cask.is_a?(Cask::Cask))
         end
       rescue Errno::ENOENT => e
         onoe e
