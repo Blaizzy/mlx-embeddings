@@ -153,19 +153,18 @@ module Homebrew
 
         is_newer_than_upstream = (formula&.stable? || cask) && (current > latest)
 
-        info = {
-          version: {
-            current:             current.to_s,
-            latest:              latest.to_s,
-            outdated:            is_outdated,
-            newer_than_upstream: is_newer_than_upstream,
-          },
-          meta:    {
-            livecheckable: formula_or_cask.livecheckable?,
-          },
-        }
+        info = {}
         info[:formula] = formula_name(formula, args: args) if formula
         info[:cask] = cask_name(cask, args: args) if cask
+        info[:version] = {
+          current:             current.to_s,
+          latest:              latest.to_s,
+          outdated:            is_outdated,
+          newer_than_upstream: is_newer_than_upstream,
+        }
+        info[:meta] = {
+          livecheckable: formula_or_cask.livecheckable?,
+        }
         info[:meta][:head_only] = true if formula&.head_only?
         info[:meta].merge!(version_info[:meta]) if version_info.present? && version_info.key?(:meta)
 
@@ -231,16 +230,14 @@ module Homebrew
     def status_hash(formula_or_cask, status_str, messages = nil, args:)
       formula = formula_or_cask if formula_or_cask.is_a?(Formula)
 
-      status_hash = {
-        status: status_str,
-      }
-      status_hash[:messages] = messages if messages.is_a?(Array)
-
+      status_hash = {}
       if formula
         status_hash[:formula] = formula_name(formula, args: args)
       else
         status_hash[:cask] = cask_name(formula_or_cask, args: args)
       end
+      status_hash[:status] = status_str
+      status_hash[:messages] = messages if messages.is_a?(Array)
 
       if args.verbose?
         status_hash[:meta] = {
