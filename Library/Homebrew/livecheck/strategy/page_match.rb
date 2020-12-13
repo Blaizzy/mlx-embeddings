@@ -48,7 +48,19 @@ module Homebrew
         # @return [Array]
         def self.page_matches(url, regex)
           page = Strategy.page_contents(url)
-          page.scan(regex).map(&:first).uniq
+
+          matches = page.scan(regex)
+
+          regex_names = regex.names.map(&:to_sym)
+
+          if regex_names.count > 1
+            matches.map do |match|
+              match_data = regex_names.zip(match).to_h
+              regex_names.sort.map { |name| match_data[name] }.join(",")
+            end.uniq
+          else
+            matches.map(&:first).uniq
+          end
         end
 
         # Checks the content at the URL for new versions, using the provided
