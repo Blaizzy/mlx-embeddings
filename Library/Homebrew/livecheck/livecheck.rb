@@ -480,7 +480,7 @@ module Homebrew
 
         next if strategy.blank?
 
-        strategy_data = strategy.find_versions(url, livecheck_regex)
+        strategy_data = strategy.find_versions(url, livecheck_regex, &livecheck.strategy_block)
         match_version_map = strategy_data[:matches]
         regex = strategy_data[:regex]
 

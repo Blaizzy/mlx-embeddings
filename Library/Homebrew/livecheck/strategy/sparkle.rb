@@ -1,6 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
+require "bundle_version"
 require_relative "page_match"
 
 module Homebrew
@@ -27,7 +28,7 @@ module Homebrew
 
         # Checks the content at the URL for new versions.
         sig { params(url: String, regex: T.nilable(Regexp)).returns(T::Hash[Symbol, T.untyped]) }
-        def self.find_versions(url, regex)
+        def self.find_versions(url, regex, &block)
           raise ArgumentError, "The #{NICE_NAME} strategy does not support regular expressions." if regex
 
           require "nokogiri"
@@ -39,14 +40,21 @@ module Homebrew
           xml = Nokogiri.parse(contents)
           xml.remove_namespaces!
 
-          match = xml.xpath("//rss//channel//item//enclosure")
-                     .map { |enclosure| [*enclosure["shortVersionString"], *enclosure["version"]].uniq }
-                     .reject(&:empty?)
-                     .uniq
-                     .max_by { |versions| versions.map { |v| Version.new(v) } }
-                     &.join(",")
+          enclosure =
+            xml.xpath("//rss//channel//item//enclosure")
+               .map { |e| { url: e["url"], version: BundleVersion.new(e["shortVersionString"], e["version"]) } }
+               .max_by { |e| e[:version] }
 
-          match_data[:matches][match] = Version.new(match) if match
+          if enclosure
+            match = if block
+              enclosure[:version] = Cask::DSL::Version.new(enclosure[:version].nice_version)
+              block.call(enclosure).to_s
+            else
+              enclosure[:version].nice_version
+            end
+
+            match_data[:matches][match] = Version.new(match)
+          end
 
           match_data
         end

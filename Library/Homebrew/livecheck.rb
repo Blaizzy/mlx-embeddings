@@ -67,7 +67,9 @@ class Livecheck
   #
   # @param symbol [Symbol] symbol for the desired strategy
   # @return [Symbol, nil]
-  def strategy(symbol = nil)
+  def strategy(symbol = nil, &block)
+    @strategy_block = block if block
+
     case symbol
     when nil
       @strategy
@@ -77,6 +79,8 @@ class Livecheck
       raise TypeError, "Livecheck#strategy expects a Symbol"
     end
   end
+
+  attr_reader :strategy_block
 
   # Sets the `@url` instance variable to the provided argument or returns the
   # `@url` instance variable when no argument is provided. The argument can be
