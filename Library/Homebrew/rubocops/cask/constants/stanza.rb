@@ -8,8 +8,7 @@ module RuboCop
       STANZA_GROUPS = [
         [:version, :sha256],
         [:language],
-        [:url, :appcast, :name, :desc, :homepage],
-        [:livecheck],
+        [:url, :appcast, :livecheck, :name, :desc, :homepage],
         [
           :auto_updates,
           :conflicts_with,
