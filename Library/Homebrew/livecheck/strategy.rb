@@ -83,11 +83,27 @@ module Homebrew
 
       def self.page_headers(url)
         @headers ||= {}
-        @headers[url] ||= curl_output("--head", "--location", url).stdout
-                                                                  .split("\r\n\r\n", 2).first
-                                                                  .split("\r\n").drop(1)
-                                                                  .map { |header| header.split(/:\s*/, 2) }
-                                                                  .to_h.transform_keys(&:downcase)
+
+        return @headers[url] if @headers.key?(url)
+
+        stdout, _, status = curl_output(
+          "--head", "--request", "GET", "--silent", "--location",
+          "--connect-timeout", 5, "--retry-max-time", 15, "--max-time", 10,
+          url
+        )
+        return {} unless status.success?
+
+        headers = {}
+
+        while stdout.match?(/\AHTTP.*\r$/)
+          h, stdout = stdout.split("\r\n\r\n", 2)
+
+          headers = headers.merge(h.split("\r\n").drop(1)
+            .map { |header| header.split(/:\s*/, 2) }
+            .to_h.transform_keys(&:downcase))
+        end
+
+        @headers[url] = headers
       end
 
       def self.page_contents(url)
