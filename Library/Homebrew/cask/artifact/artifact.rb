@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "cask/artifact/moved"
@@ -19,25 +19,26 @@ module Cask
         "Generic Artifact"
       end
 
+      sig { params(cask: Cask, args: T.untyped).returns(T.attached_class) }
       def self.from_args(cask, *args)
-        source_string, target_hash = args
+        source, options = args
 
-        raise CaskInvalidError.new(cask.token, "no source given for #{english_name}") if source_string.nil?
+        raise CaskInvalidError.new(cask.token, "No source provided for #{english_name}.") if source.blank?
 
-        unless target_hash.is_a?(Hash)
-          raise CaskInvalidError.new(cask.token, "target required for #{english_name} '#{source_string}'")
+        unless options.try(:key?, :target)
+          raise CaskInvalidError.new(cask.token, "#{english_name} '#{source}' requires a target.")
         end
 
-        target_hash.assert_valid_keys!(:target)
-
-        new(cask, source_string, **target_hash)
+        new(cask, source, **options)
       end
 
+      sig { params(target: T.any(String, Pathname)).returns(Pathname) }
       def resolve_target(target)
-        Pathname(target)
+        super(target, base_dir: nil)
       end
 
-      def initialize(cask, source, target: nil)
+      sig { params(cask: Cask, source: T.any(String, Pathname), target: T.any(String, Pathname)).void }
+      def initialize(cask, source, target:)
         super(cask, source, target: target)
       end
     end

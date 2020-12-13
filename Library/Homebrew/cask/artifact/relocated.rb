@@ -28,12 +28,23 @@ module Cask
         new(cask, source_string, **target_hash)
       end
 
-      def resolve_target(target)
-        config.public_send(self.class.dirmethod).join(target)
+      def resolve_target(target, base_dir: config.public_send(self.class.dirmethod))
+        target = Pathname(target)
+
+        if target.relative?
+          return target.expand_path if target.descend.first.to_s == "~"
+          return base_dir/target if base_dir
+        end
+
+        target
       end
 
       attr_reader :source, :target
 
+      sig do
+        params(cask: Cask, source: T.nilable(T.any(String, Pathname)), target: T.nilable(T.any(String, Pathname)))
+          .void
+      end
       def initialize(cask, source, target: nil)
         super(cask)
 
