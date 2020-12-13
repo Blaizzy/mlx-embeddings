@@ -269,11 +269,19 @@ module Homebrew
     # @return [Hash, nil, Boolean]
     def skip_conditions(formula_or_cask, json: false, full_name: false, quiet: false, verbose: false)
       formula = formula_or_cask if formula_or_cask.is_a?(Formula)
+      cask = formula_or_cask if formula_or_cask.is_a?(Cask::Cask)
 
       if formula&.deprecated? && !formula.livecheckable?
         return status_hash(formula, "deprecated", full_name: full_name, verbose: verbose) if json
 
         puts "#{Tty.red}#{formula_name(formula, full_name: full_name)}#{Tty.reset} : deprecated" unless quiet
+        return
+      end
+
+      if cask&.discontinued? && !cask.livecheckable?
+        return status_hash(cask, "discontinued", args: args) if args.json?
+
+        puts "#{Tty.red}#{cask_name(cask, args: args)}#{Tty.reset} : discontinued" unless args.quiet?
         return
       end
 
@@ -288,6 +296,20 @@ module Homebrew
         return status_hash(formula, "versioned", full_name: full_name, verbose: verbose) if json
 
         puts "#{Tty.red}#{formula_name(formula, full_name: full_name)}#{Tty.reset} : versioned" unless quiet
+        return
+      end
+
+      if cask&.version&.latest? && !cask.livecheckable?
+        return status_hash(cask, "latest", args: args) if args.json?
+
+        puts "#{Tty.red}#{cask_name(cask, args: args)}#{Tty.reset} : latest" unless args.quiet?
+        return
+      end
+
+      if cask&.url&.unversioned? && !cask.livecheckable?
+        return status_hash(cask, "unversioned", args: args) if args.json?
+
+        puts "#{Tty.red}#{cask_name(cask, args: args)}#{Tty.reset} : unversioned" unless args.quiet?
         return
       end
 
