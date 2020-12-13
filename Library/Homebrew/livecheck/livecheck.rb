@@ -29,6 +29,7 @@ module Homebrew
 
     STRATEGY_SYMBOLS_TO_SKIP_PREPROCESS_URL = [
       :github_latest,
+      :sparkle,
       :page_match,
     ].freeze
 
