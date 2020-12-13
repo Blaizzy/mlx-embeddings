@@ -30,14 +30,36 @@ module Homebrew
         # Checks the final URL for new versions after following all redirections,
         # using the provided regex for matching.
         sig { params(url: String, regex: T.nilable(Regexp)).returns(T::Hash[Symbol, T.untyped]) }
-        def self.find_versions(url, regex)
-          raise ArgumentError, "A regular expression is required for the #{NICE_NAME} strategy." if regex.nil?
-
+        def self.find_versions(url, regex, &block)
           match_data = { matches: {}, regex: regex, url: url }
 
-          if (location = Strategy.page_headers(url)["location"]) && (match = location[regex, 1])
-            match_data[:matches][match] = Version.new(match)
+          data = { headers: Strategy.page_headers(url) }
+
+          if (filename = data[:headers]["content-disposition"])
+            if regex
+              data[:version] ||= location[regex, 1]
+            else
+              v = Version.parse(filename, detected_from_url: true)
+              data[:version] ||= v.to_s unless v.null?
+            end
           end
+
+          if (location = data[:headers]["location"])
+            if regex
+              data[:version] ||= location[regex, 1]
+            else
+              v = Version.parse(location, detected_from_url: true)
+              data[:version] ||= v.to_s unless v.null?
+            end
+          end
+
+          version = if block
+            block.call(data)
+          else
+            data[:version]
+          end
+
+          match_data[:matches][version] = Version.new(version) if version
 
           match_data
         end
