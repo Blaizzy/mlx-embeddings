@@ -107,7 +107,12 @@ module Homebrew
         srb_exec += ["--file", "../#{args.file}"] if args.file
         srb_exec += ["--dir", "../#{args.dir}"] if args.dir
       end
-      Homebrew.failed = !system(*srb_exec)
+      success = system(*srb_exec)
+      return if success
+
+      $stderr.puts "Check #{Formatter.url("https://docs.brew.sh/Typechecking")} for " \
+                   "more information on how to resolve these errors."
+      Homebrew.failed = true
     end
   end
 end
