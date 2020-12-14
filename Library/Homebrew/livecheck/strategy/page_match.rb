@@ -49,6 +49,8 @@ module Homebrew
         def self.page_matches(url, regex, &block)
           page = Strategy.page_contents(url)
 
+          odebug "Page Contents", page
+
           if block
             data = { page: page }
             case (value = block.call(data))
@@ -57,7 +59,7 @@ module Homebrew
             when Array
               return value
             else
-              raise TypeError, "Return value of `strategy :page_match` block must be a string or array."
+              raise TypeError, "Return value of `strategy :page_match` block must be a string or array of strings."
             end
           end
 
