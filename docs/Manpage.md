@@ -1151,7 +1151,7 @@ Requires write access to the repository.
 * `--message`:
   Message to include when autosquashing revision bumps, deletions, and rebuilds.
 * `--workflow`:
-  Retrieve artifacts from the specified workflow (default: `tests.yml`). Legacy: use --workflows instead
+  Retrieve artifacts from the specified workflow (default: `tests.yml`). *Legacy:* use `--workflows` instead.
 * `--artifact`:
   Download artifacts with the specified name (default: `bottles`).
 * `--bintray-org`:
