@@ -49,8 +49,6 @@ module Homebrew
         def self.page_matches(url, regex, &block)
           page = Strategy.page_contents(url)
 
-          odebug "Page Contents", page
-
           if block
             data = { page: page }
             case (value = block.call(data))
