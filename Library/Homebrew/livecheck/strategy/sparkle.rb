@@ -46,20 +46,34 @@ module Homebrew
 
           contents = Strategy.page_contents(url)
 
-          xml = Nokogiri.parse(contents)
+          xml = Nokogiri::XML(contents)
           xml.remove_namespaces!
 
-          enclosure =
-            xml.xpath("//rss//channel//item//enclosure")
-               .map { |e| { url: e["url"], version: BundleVersion.new(e["shortVersionString"], e["version"]) } }
-               .max_by { |e| e[:version] }
+          items = xml.xpath("//rss//channel//item").map do |item|
+            enclosure = (item > "enclosure").first
 
-          if enclosure
+            next unless enclosure
+
+            short_version ||= enclosure["shortVersionString"]
+            version ||= enclosure["version"]
+
+            short_version ||= (item > "shortVersionString").first&.text
+            version ||= (item > "version").first&.text
+
+            {
+              url:     enclosure["url"],
+              version: BundleVersion.new(short_version, version),
+            }
+          end.compact
+
+          item = items.max_by { |e| e[:version] }
+
+          if item
             match = if block
-              enclosure[:version] = enclosure[:version].nice_version
-              block.call(enclosure).to_s
+              item[:version] = item[:version].nice_version
+              block.call(item).to_s
             else
-              enclosure[:version].nice_version
+              item[:version].nice_version
             end
 
             match_data[:matches][match] = Version.new(match)
