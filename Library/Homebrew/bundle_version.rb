@@ -80,9 +80,7 @@ module Homebrew
         end
       end
 
-      fallback = (short_version || version).sub(/\A[^\d]+/, "")
-
-      [fallback]
+      [short_version, version].compact
     end
     private :nice_parts
   end
