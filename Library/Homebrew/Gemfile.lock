@@ -169,6 +169,7 @@ DEPENDENCIES
   codecov
   concurrent-ruby
   mechanize
+  nokogiri
   parallel_tests
   patchelf
   plist

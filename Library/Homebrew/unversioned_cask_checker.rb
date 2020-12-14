@@ -57,10 +57,19 @@ module Homebrew
 
     sig { params(package_info_path: Pathname).returns(T.nilable(String)) }
     def self.version_from_package_info(package_info_path)
-      contents = package_info_path.read
+      Homebrew.install_bundler_gems!
+      require "nokogiri"
 
-      short_version = contents[/CFBundleShortVersionString="([^"]*)"/, 1].presence
-      version = contents[/CFBundleVersion="([^"]*)"/, 1].presence
+      xml = Nokogiri::XML(package_info_path.read)
+
+      bundle_id = xml.xpath("//pkg-info//bundle-version//bundle").first&.attr("id")
+      return unless bundle_id
+
+      bundle = xml.xpath("//pkg-info//bundle").find { |b| b["id"] == bundle_id }
+      return unless bundle
+
+      short_version = bundle["CFBundleShortVersionString"]
+      version = bundle["CFBundleVersion"]
 
       return decide_between_versions(short_version, version) if short_version && version
     end
