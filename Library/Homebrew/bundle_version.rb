@@ -55,8 +55,8 @@ module Homebrew
     end
 
     def <=>(other)
-      [short_version, version].map { |v| Version.new(v) } <=>
-        [other.short_version, other.version].map { |v| Version.new(v) }
+      [version, short_version].map { |v| v&.yield_self(&Version.public_method(:new)) } <=>
+        [other.version, other.short_version].map { |v| v&.yield_self(&Version.public_method(:new)) }
     end
 
     # Create a nicely formatted version (on a best effor basis).
