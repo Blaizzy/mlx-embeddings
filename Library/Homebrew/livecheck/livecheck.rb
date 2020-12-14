@@ -477,7 +477,7 @@ module Homebrew
           livecheck_strategy: livecheck_strategy,
           url_provided:       livecheck_url.present?,
           regex_provided:     livecheck_regex.present?,
-          block_provided: livecheck.strategy_block.present?,
+          block_provided:     livecheck.strategy_block.present?,
         )
         strategy = Strategy.from_symbol(livecheck_strategy)
         strategy ||= strategies.first
