@@ -17,6 +17,7 @@ describe Homebrew::BundleVersion do
       ["1.2.3.4000", "4000"]        => "1.2.3.4000",
       ["5", "5.0.45"]               => "5.0.45",
       ["XQuartz-2.7.11", "2.7.112"] => "2.7.11",
+      ["2.5.2(3329)", "3329"]       => "2.5.2,3329",
     }
 
     expected_mappings.each do |(short_version, version), expected_version|
