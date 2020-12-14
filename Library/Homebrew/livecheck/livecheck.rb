@@ -201,6 +201,7 @@ module Homebrew
           status_hash(formula_or_cask, "error", [e.to_s], full_name: full_name, verbose: verbose)
         elsif !quiet
           onoe "#{Tty.blue}#{formula_or_cask_name(formula_or_cask, full_name: full_name)}#{Tty.reset}: #{e}"
+          $stderr.puts e.backtrace if args.debug?
           nil
         end
       end
