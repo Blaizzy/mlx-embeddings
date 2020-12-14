@@ -90,24 +90,28 @@ module Homebrew
 
         return @headers[url] if @headers.key?(url)
 
-        stdout, _, status = curl_output(
-          "--head", "--request", "GET", "--silent", "--location",
-          "--connect-timeout", 5, "--retry-max-time", 15, "--max-time", 10,
-          url
-        )
-        return {} unless status.success?
-
         headers = {}
 
-        while stdout.match?(/\AHTTP.*\r$/)
-          h, stdout = stdout.split("\r\n\r\n", 2)
+        [:default, :browser].each do |user_agent|
+          stdout, _, status = curl_output(
+            "--fail", "--head", "--request", "GET", "--silent", "--location",
+            "--connect-timeout", 5, "--retry-max-time", 15, "--max-time", 10,
+            url,
+            user_agent: user_agent
+          )
 
-          headers = headers.merge(h.split("\r\n").drop(1)
-            .map { |header| header.split(/:\s*/, 2) }
-            .to_h.transform_keys(&:downcase))
+          while stdout.match?(/\AHTTP.*\r$/)
+            h, stdout = stdout.split("\r\n\r\n", 2)
+
+            headers = headers.merge(h.split("\r\n").drop(1)
+              .map { |header| header.split(/:\s*/, 2) }
+              .to_h.transform_keys(&:downcase))
+          end
+
+          return headers if status.success?
         end
 
-        @headers[url] = headers
+        headers
       end
 
       def self.page_contents(url)
