@@ -7723,6 +7723,8 @@ module Homebrew::EnvConfig
 
   def self.cleanup_max_age_days(); end
 
+  def self.cleanup_periodic_full_days(); end
+
   def self.color?(); end
 
   def self.core_git_remote(); end
@@ -27644,6 +27646,8 @@ class RuboCop::Cask::AST::Stanza
   def internet_plugin?(); end
 
   def language?(); end
+
+  def livecheck?(); end
 
   def manpage?(); end
 
