@@ -6,22 +6,23 @@ require_relative "page_match"
 module Homebrew
   module Livecheck
     module Strategy
-      # The {FollowRedirection} strategy follows all URL redirections and scans
-      # the final URL for matching text using the provided regex.
+      # The {HeaderMatch} strategy follows all URL redirections and scans
+      # the resulting headers for matching text using the provided regex.
       #
       # @api private
-      class FollowRedirection
+      class HeaderMatch
         extend T::Sig
 
-        NICE_NAME = "Follow HTTP Redirection"
+        NICE_NAME = "Match HTTP Headers"
 
         # We set the priority to zero since this cannot
         # be detected automatically.
         PRIORITY = 0
 
         # Whether the strategy can be applied to the provided URL.
-        # FollowRedirection will technically match any HTTP URL but is
-        # only usable with a `livecheck` block containing a regex.
+        # The strategy will technically match any HTTP URL but is
+        # only usable with a `livecheck` block containing a regex
+        # or block.
         sig { params(url: String).returns(T::Boolean) }
         def self.match?(url)
           url.match?(%r{^https?://})
