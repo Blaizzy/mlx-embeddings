@@ -32,7 +32,13 @@ module Homebrew
           return false unless xml
 
           contents = Strategy.page_contents(url)
-          contents.match?(%r{https?://www.andymatuschak.org/xml-namespaces/sparkle})
+
+          return true if contents.match?(%r{https?://www.andymatuschak.org/xml-namespaces/sparkle})
+
+          contents.include?("rss") &&
+            contents.include?("channel") &&
+            contents.include?("item") &&
+            contents.include?("enclosure")
         end
 
         # Checks the content at the URL for new versions.
@@ -60,23 +66,25 @@ module Homebrew
             short_version ||= (item > "shortVersionString").first&.text
             version ||= (item > "version").first&.text
 
-            {
+            data = {
               url:     enclosure["url"],
-              version: BundleVersion.new(short_version, version),
-            }
+              version: short_version || version ? BundleVersion.new(short_version, version) : nil,
+            }.compact
+
+            data unless data.empty?
           end.compact
 
           item = items.max_by { |e| e[:version] }
 
           if item
             match = if block
-              item[:version] = item[:version].nice_version
+              item[:version] = item[:version]&.nice_version
               block.call(item).to_s
             else
-              item[:version].nice_version
+              item[:version]&.nice_version
             end
 
-            match_data[:matches][match] = Version.new(match)
+            match_data[:matches][match] = Version.new(match) if match
           end
 
           match_data
