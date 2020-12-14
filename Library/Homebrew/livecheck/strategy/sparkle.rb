@@ -58,17 +58,24 @@ module Homebrew
           items = xml.xpath("//rss//channel//item").map do |item|
             enclosure = (item > "enclosure").first
 
-            next unless enclosure
+            url = enclosure&.attr("url")
+            short_version = enclosure&.attr("shortVersionString")
+            version = enclosure&.attr("version")
 
-            short_version ||= enclosure["shortVersionString"]
-            version ||= enclosure["version"]
+            url ||= (item > "link").first&.text
+            short_version ||= (item > "shortVersionString").first&.text&.strip
+            version ||= (item > "version").first&.text&.strip
 
-            short_version ||= (item > "shortVersionString").first&.text
-            version ||= (item > "version").first&.text
+            title = (item > "title").first&.text&.strip
+
+            if match = title&.match(/(\d+(?:\.\d+)*)\s*(\([^)]+\))?\Z/)
+              short_version ||= match[1]
+              version ||= match[2]
+            end
 
             data = {
-              title:   (item > "title").first&.text,
-              url:     enclosure["url"],
+              title:          title,
+              url:            url,
               bundle_version: short_version || version ? BundleVersion.new(short_version, version) : nil,
             }.compact
 
