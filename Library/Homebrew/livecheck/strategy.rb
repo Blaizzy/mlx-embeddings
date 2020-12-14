@@ -57,12 +57,16 @@ module Homebrew
       # @param regex_provided [Boolean] whether a regex is provided in the
       #   `livecheck` block
       # @return [Array]
-      def from_url(url, livecheck_strategy: nil, regex_provided: nil)
+      def from_url(url, livecheck_strategy: nil, url_provided: nil, regex_provided: nil, block_provided: nil)
         usable_strategies = strategies.values.select do |strategy|
           if strategy == PageMatch
             # Only treat the `PageMatch` strategy as usable if a regex is
             # present in the `livecheck` block
-            next unless regex_provided
+            next unless (regex_provided || block_provided)
+          elsif strategy == Sparkle && (livecheck_strategy || !url_provided)
+            # Skip the `Sparkle` strategy if a strategy is specified explicitly
+            # or if the URL is not specified explicitly.
+            next
           elsif strategy.const_defined?(:PRIORITY) &&
                 !strategy::PRIORITY.positive? &&
                 from_symbol(livecheck_strategy) != strategy

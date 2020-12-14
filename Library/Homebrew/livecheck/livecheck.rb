@@ -435,9 +435,9 @@ module Homebrew
 
       has_livecheckable = formula_or_cask.livecheckable?
       livecheck = formula_or_cask.livecheck
+      livecheck_url = livecheck.url
       livecheck_regex = livecheck.regex
       livecheck_strategy = livecheck.strategy
-      livecheck_url = livecheck.url
 
       urls = [livecheck_url] if livecheck_url.present?
       urls ||= checkable_urls(formula_or_cask)
@@ -475,7 +475,9 @@ module Homebrew
         strategies = Strategy.from_url(
           url,
           livecheck_strategy: livecheck_strategy,
+          url_provided:       livecheck_url.present?,
           regex_provided:     livecheck_regex.present?,
+          block_provided: livecheck.strategy_block.present?,
         )
         strategy = Strategy.from_symbol(livecheck_strategy)
         strategy ||= strategies.first
@@ -490,8 +492,8 @@ module Homebrew
           puts "Regex:            #{livecheck_regex.inspect}" if livecheck_regex.present?
         end
 
-        if livecheck_strategy == :page_match && livecheck_regex.blank?
-          odebug "#{strategy_name} strategy requires a regex"
+        if livecheck_strategy == :page_match && (livecheck_regex.blank? && livecheck.strategy_block.blank?)
+          odebug "#{strategy_name} strategy requires a regex or block"
           next
         end
 
