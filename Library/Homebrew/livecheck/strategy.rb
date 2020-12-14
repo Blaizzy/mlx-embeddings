@@ -100,7 +100,8 @@ module Homebrew
             *args, url,
             print_stdout: false, print_stderr: false,
             debug: false, verbose: false,
-            user_agent: user_agent, retry: false
+            user_agent: user_agent, timeout: 20,
+            retry: false
           )
 
           while stdout.match?(/\AHTTP.*\r$/)
@@ -119,6 +120,8 @@ module Homebrew
 
       # Fetches the content at the URL and returns a hash containing the
       # content and, if there are any redirections, the final URL.
+      # If `curl` encounters an error, the hash will contain a `:messages`
+      # array with the error message instead.
       #
       # @param url [String] the URL of the content to check
       # @return [Hash]
@@ -126,18 +129,61 @@ module Homebrew
       def self.page_content(url)
         original_url = url
 
-        # Manually handling `URI#open` redirections allows us to detect the
-        # resolved URL while also supporting HTTPS to HTTP redirections (which
-        # are normally forbidden by `OpenURI`).
-        begin
-          content = URI.parse(url).open(redirect: false, &:read)
-        rescue OpenURI::HTTPRedirect => e
-          url = e.uri.to_s
-          retry
+        args = curl_args(
+          "--compressed",
+          # Include HTTP response headers in output, so we can identify the
+          # final URL after any redirections
+          "--include",
+          # Follow redirections to handle mirrors, relocations, etc.
+          "--location",
+          # cURL's default timeout can be up to two minutes, so we need to
+          # set our own timeout settings to avoid a lengthy wait
+          "--connect-timeout", "10",
+          "--max-time", "15"
+        )
+
+        stdout, stderr, status = curl_with_workarounds(
+          *args, url,
+          print_stdout: false, print_stderr: false,
+          debug: false, verbose: false,
+          user_agent: :default, timeout: 20,
+          retry: false
+        )
+
+        unless status.success?
+          /^(?<error_msg>curl: \(\d+\) .+)/ =~ stderr
+          return {
+            messages: [error_msg.presence || "cURL failed without an error"],
+          }
         end
 
-        data = { content: content }
-        data[:final_url] = url unless url == original_url
+        # stdout contains the header information followed by the page content.
+        # We use #scrub here to avoid "invalid byte sequence in UTF-8" errors.
+        output = stdout.scrub
+
+        # Separate the head(s)/body and identify the final URL (after any
+        # redirections)
+        max_iterations = 5
+        iterations = 0
+        output = output.lstrip
+        while output.match?(%r{\AHTTP/[\d.]+ \d+}) && output.include?("\r\n\r\n")
+          iterations += 1
+          raise "Too many redirects (max = #{max_iterations})" if iterations > max_iterations
+
+          head_text, _, output = output.partition("\r\n\r\n")
+          output = output.lstrip
+
+          location = head_text[/^Location:\s*(.*)$/i, 1]
+          next if location.blank?
+
+          location.chomp!
+          # Convert a relative redirect URL to an absolute URL
+          location = URI.join(url, location) unless location.match?(PageMatch::URL_MATCH_REGEX)
+          final_url = location
+        end
+
+        data = { content: output }
+        data[:final_url] = final_url if final_url.present? && final_url != original_url
         data
       end
     end
