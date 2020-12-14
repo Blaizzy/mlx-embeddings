@@ -32,7 +32,7 @@ module Homebrew
           return false unless xml
 
           contents = Strategy.page_contents(url)
-          contents.include?("http://www.andymatuschak.org/xml-namespaces/sparkle")
+          contents.match?(%r{https?://www.andymatuschak.org/xml-namespaces/sparkle})
         end
 
         # Checks the content at the URL for new versions.
