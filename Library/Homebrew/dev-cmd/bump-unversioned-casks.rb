@@ -158,7 +158,6 @@ module Homebrew
               system_command! HOMEBREW_BREW_FILE, args: bump_cask_pr_args
             rescue ErrorDuringExecution => e
               onoe e
-              return
             end
           end
         end
