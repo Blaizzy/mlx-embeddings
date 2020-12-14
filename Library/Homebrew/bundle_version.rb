@@ -67,7 +67,8 @@ module Homebrew
 
     sig { returns(T::Array[String]) }
     def nice_parts
-      short_version = self.short_version&.delete_suffix("(#{version})") if version
+      short_version = self.short_version
+      short_version = short_version&.delete_suffix("(#{version})") if version
 
       return [short_version] if short_version == version
 
