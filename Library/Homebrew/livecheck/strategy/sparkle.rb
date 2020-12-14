@@ -47,7 +47,7 @@ module Homebrew
 
           if enclosure
             match = if block
-              enclosure[:version] = Cask::DSL::Version.new(enclosure[:version].nice_version)
+              enclosure[:version] = enclosure[:version].nice_version
               block.call(enclosure).to_s
             else
               enclosure[:version].nice_version
