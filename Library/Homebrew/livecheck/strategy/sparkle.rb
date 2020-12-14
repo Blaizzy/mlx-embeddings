@@ -23,10 +23,10 @@ module Homebrew
         def self.match?(url)
           return false unless url.match?(%r{^https?://})
 
-          xml = url.end_with?('.xml')
+          xml = url.end_with?(".xml")
           xml ||= begin
             headers = Strategy.page_headers(url)
-            content_type = headers["content-type"]&.split(';', 2)&.first
+            content_type = headers["content-type"]&.split(";", 2)&.first
             ["application/xml", "text/xml"].include?(content_type)
           end
           return false unless xml
