@@ -69,20 +69,21 @@ module Homebrew
             data = {
               title:   (item > "title").first&.text,
               url:     enclosure["url"],
-              version: short_version || version ? BundleVersion.new(short_version, version) : nil,
+              bundle_version: short_version || version ? BundleVersion.new(short_version, version) : nil,
             }.compact
 
             data unless data.empty?
           end.compact
 
-          item = items.max_by { |e| e[:version] }
+          item = items.max_by { |e| e[:bundle_version] }
 
           if item
             match = if block
-              item[:version] = item[:version]&.nice_version
+              item[:short_version] = item[:bundle_version]&.short_version
+              item[:version] = item[:bundle_version]&.version
               block.call(item).to_s
             else
-              item[:version]&.nice_version
+              item[:bundle_version]&.nice_version
             end
 
             match_data[:matches][match] = Version.new(match) if match
