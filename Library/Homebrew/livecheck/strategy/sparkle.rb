@@ -67,6 +67,7 @@ module Homebrew
             version ||= (item > "version").first&.text
 
             data = {
+              title:   (item > "title").first&.text,
               url:     enclosure["url"],
               version: short_version || version ? BundleVersion.new(short_version, version) : nil,
             }.compact
