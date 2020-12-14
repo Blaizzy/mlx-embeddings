@@ -46,7 +46,8 @@ module Homebrew
       next path if path.exist?
 
       raise UsageError, "#{path} doesn't exist on disk. " \
-                        "Run #{Formatter.identifier("brew create $URL")} to create a new Formula!"
+                        "Run #{Formatter.identifier("brew create --set-name #{path.basename} $URL")} " \
+                        "to create a new Formula!"
     end.presence
 
     # If no brews are listed, open the project root in an editor.
