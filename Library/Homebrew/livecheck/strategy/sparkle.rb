@@ -21,9 +21,18 @@ module Homebrew
         # Whether the strategy can be applied to the provided URL.
         sig { params(url: String).returns(T::Boolean) }
         def self.match?(url)
-          url.match?(%r{^https?://}) &&
-            ["application/xml", "text/xml"].include?(Strategy.page_headers(url)["content-type"]) &&
-            Strategy.page_contents(url).include?("http://www.andymatuschak.org/xml-namespaces/sparkle")
+          return false unless url.match?(%r{^https?://})
+
+          xml = url.end_with?('.xml')
+          xml ||= begin
+            headers = Strategy.page_headers(url)
+            content_type = headers["content-type"]&.split(';', 2)&.first
+            ["application/xml", "text/xml"].include?(content_type)
+          end
+          return false unless xml
+
+          contents = Strategy.page_contents(url)
+          contents.include?("http://www.andymatuschak.org/xml-namespaces/sparkle")
         end
 
         # Checks the content at the URL for new versions.
