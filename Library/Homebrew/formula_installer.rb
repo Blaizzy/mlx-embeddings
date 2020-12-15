@@ -347,7 +347,7 @@ class FormulaInstaller
 
     # Warn if a more recent version of this formula is available in the tap.
     begin
-      if formula.pkg_version < (v = Formulary.factory(formula.full_name).pkg_version)
+      if formula.pkg_version < (v = Formulary.factory(formula.full_name, force_bottle: force_bottle?).pkg_version)
         opoo "#{formula.full_name} #{v} is available and more recent than version #{formula.pkg_version}."
       end
     rescue FormulaUnavailableError
