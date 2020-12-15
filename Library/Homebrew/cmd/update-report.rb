@@ -66,7 +66,7 @@ module Homebrew
     HOMEBREW_REPOSITORY.cd do
       donation_message_displayed =
         Utils.popen_read("git", "config", "--get", "homebrew.donationmessage").chomp == "true"
-      unless donation_message_displayed
+      if !donation_message_displayed && !args.quiet?
         ohai "Homebrew is run entirely by unpaid volunteers. Please consider donating:"
         puts "  #{Formatter.url("https://github.com/Homebrew/brew#donations")}\n"
 
@@ -118,7 +118,7 @@ module Homebrew
 
     if updated
       if hub.empty?
-        puts "No changes to formulae."
+        puts "No changes to formulae." unless args.quiet?
       else
         hub.dump(updated_formula_report: !args.preinstall?)
         hub.reporters.each(&:migrate_tap_migration)
@@ -130,7 +130,7 @@ module Homebrew
       end
       puts if args.preinstall?
     elsif !args.preinstall? && !ENV["HOMEBREW_UPDATE_FAILED"]
-      puts "Already up-to-date."
+      puts "Already up-to-date." unless args.quiet?
     end
 
     Commands.rebuild_commands_completion_list
@@ -456,7 +456,15 @@ class ReporterHub
     dump_formula_report :R, "Renamed Formulae"
     dump_formula_report :D, "Deleted Formulae"
     dump_formula_report :AC, "New Casks"
-    dump_formula_report :MC, "Updated Casks"
+    if updated_formula_report
+      dump_formula_report :MC, "Updated Casks"
+    else
+      updated = select_formula(:MC).count
+      if updated.positive?
+        ohai "Updated Casks"
+        puts "Updated #{updated} #{"cask".pluralize(updated)}."
+      end
+    end
     dump_formula_report :DC, "Deleted Casks"
   end
 
