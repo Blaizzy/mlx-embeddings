@@ -47,10 +47,12 @@ module Homebrew
   def uninstall
     args = uninstall_args.parse
 
-    only = :formula if args.formula? && !args.cask?
-    only = :cask if args.cask? && !args.formula?
+    all_kegs, casks = args.named.to_kegs_to_casks(
+      only:               args.only_path_formula_or_cask,
+      ignore_unavailable: args.force?,
+      all_kegs:           args.force?,
+    )
 
-    all_kegs, casks = args.named.to_kegs_to_casks(only: only, ignore_unavailable: args.force?, all_kegs: args.force?)
     kegs_by_rack = all_kegs.group_by(&:rack)
 
     Uninstall.uninstall_kegs(

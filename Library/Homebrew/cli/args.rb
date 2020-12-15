@@ -133,6 +133,11 @@ module Homebrew
         Context::ContextStruct.new(debug: debug?, quiet: quiet?, verbose: verbose?)
       end
 
+      def only_path_formula_or_cask
+        return :formula if formula? && !cask?
+        return :cask if cask? && !formula?
+      end
+
       private
 
       def option_to_name(option)
