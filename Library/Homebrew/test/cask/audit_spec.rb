@@ -756,13 +756,19 @@ describe Cask::Audit, :cask do
       context "with relative target" do
         let(:cask_token) { "generic-artifact-relative-target" }
 
-        it { is_expected.to fail_with(/target must be absolute path for Generic Artifact/) }
+        it { is_expected.to fail_with(/target must be.*absolute/) }
+      end
+
+      context "with user-relative target" do
+        let(:cask_token) { "generic-artifact-user-relative-target" }
+
+        it { is_expected.not_to fail_with(/target must be.*absolute/) }
       end
 
       context "with absolute target" do
         let(:cask_token) { "generic-artifact-absolute-target" }
 
-        it { is_expected.not_to fail_with(/target required for Generic Artifact/) }
+        it { is_expected.not_to fail_with(/target must be.*absolute/) }
       end
     end
 

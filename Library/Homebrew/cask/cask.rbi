@@ -5,5 +5,7 @@ module Cask
     def artifacts; end
 
     def homepage; end
+
+    def staged_path; end
   end
 end
