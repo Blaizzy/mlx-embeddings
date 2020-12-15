@@ -48,7 +48,7 @@ module Homebrew
 
           # It's not technically necessary to have the `#files` fragment at the
           # end of the URL but it makes the debug output a bit more useful.
-          page_url = "https://pypi.org/project/#{package_name.gsub(/%20|_/, "-")}#files"
+          page_url = "https://pypi.org/project/#{package_name.gsub(/%20|_/, "-")}/#files"
 
           # Example regex: `%r{href=.*?/packages.*?/example[._-]v?(\d+(?:\.\d+)*).t}i`.
           regex ||=

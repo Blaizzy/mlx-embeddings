@@ -38,7 +38,7 @@ module Homebrew
           /^(?<package_name>.+?)-\d+/i =~ File.basename(url)
 
           # A page containing a directory listing of the latest source tarball
-          page_url = "https://hackage.haskell.org/package/#{package_name}/src"
+          page_url = "https://hackage.haskell.org/package/#{package_name}/src/"
 
           # Example regex: `%r{<h3>example-(.*?)/?</h3>}i`
           regex ||= %r{<h3>#{Regexp.escape(package_name)}-(.*?)/?</h3>}i
