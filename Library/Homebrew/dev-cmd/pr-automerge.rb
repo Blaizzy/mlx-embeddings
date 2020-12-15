@@ -44,7 +44,7 @@ module Homebrew
     without_labels = args.without_labels || ["do not merge", "new formula", "automerge-skip", "linux-only"]
     tap = Tap.fetch(args.tap || CoreTap.instance.name)
 
-    query = "is:pr is:open repo:#{tap.full_name}"
+    query = "is:pr is:open repo:#{tap.full_name} draft:false"
     query += args.ignore_failures? ? " -status:pending" : " status:success"
     query += " review:approved" unless args.without_approval?
     query += " label:\"#{args.with_label}\"" if args.with_label
