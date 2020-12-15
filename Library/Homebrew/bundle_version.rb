@@ -59,7 +59,7 @@ module Homebrew
         [other.version, other.short_version].map { |v| v&.yield_self(&Version.public_method(:new)) }
     end
 
-    # Create a nicely formatted version (on a best effor basis).
+    # Create a nicely formatted version (on a best effort basis).
     sig { returns(String) }
     def nice_version
       nice_parts.join(",")
