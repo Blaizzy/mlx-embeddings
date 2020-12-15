@@ -11477,6 +11477,79 @@ class Migrator
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class MiniPortile
+  def activate(); end
+
+  def apply_patch(patch_file); end
+
+  def compile(); end
+
+  def configure(); end
+
+  def configure_options(); end
+
+  def configure_options=(configure_options); end
+
+  def configured?(); end
+
+  def cook(); end
+
+  def download(); end
+
+  def downloaded?(); end
+
+  def extract(); end
+
+  def files(); end
+
+  def files=(files); end
+
+  def host(); end
+
+  def host=(host); end
+
+  def initialize(name, version); end
+
+  def install(); end
+
+  def installed?(); end
+
+  def logger(); end
+
+  def logger=(logger); end
+
+  def name(); end
+
+  def original_host(); end
+
+  def patch(); end
+
+  def patch_files(); end
+
+  def patch_files=(patch_files); end
+
+  def path(); end
+
+  def target(); end
+
+  def target=(target); end
+
+  def version(); end
+  KEYRING_NAME = ::T.let(nil, ::T.untyped)
+  TAR_EXECUTABLES = ::T.let(nil, ::T.untyped)
+  VERSION = ::T.let(nil, ::T.untyped)
+end
+
+class MiniPortile
+  def self.windows?(); end
+end
+
+class MiniPortileCMake
+end
+
+class MiniPortileCMake
+end
+
 MiniTest = Minitest
 
 module Minitest
@@ -13151,29 +13224,6 @@ module OpenSSL::SSL
   TLS1_1_VERSION = ::T.let(nil, ::T.untyped)
   TLS1_2_VERSION = ::T.let(nil, ::T.untyped)
   TLS1_VERSION = ::T.let(nil, ::T.untyped)
-end
-
-class OpenSSL::SSL::SSLContext
-  def add_certificate(*_); end
-
-  def alpn_protocols(); end
-
-  def alpn_protocols=(alpn_protocols); end
-
-  def alpn_select_cb(); end
-
-  def alpn_select_cb=(alpn_select_cb); end
-
-  def max_version=(version); end
-
-  def min_version=(version); end
-  DEFAULT_TMP_DH_CALLBACK = ::T.let(nil, ::T.untyped)
-end
-
-class OpenSSL::SSL::SSLSocket
-  def alpn_protocol(); end
-
-  def tmp_key(); end
 end
 
 module OpenSSL::X509
