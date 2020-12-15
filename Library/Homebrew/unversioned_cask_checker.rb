@@ -1,6 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "bundle_version"
 require "cask/cask"
 require "cask/installer"
 
@@ -45,56 +46,6 @@ module Homebrew
       pkgs.count == 1
     end
 
-    sig { params(info_plist_path: Pathname).returns(T.nilable(String)) }
-    def self.version_from_info_plist(info_plist_path)
-      plist = system_command!("plutil", args: ["-convert", "xml1", "-o", "-", info_plist_path]).plist
-
-      short_version = plist["CFBundleShortVersionString"].presence
-      version = plist["CFBundleVersion"].presence
-
-      return decide_between_versions(short_version, version) if short_version && version
-    end
-
-    sig { params(package_info_path: Pathname).returns(T.nilable(String)) }
-    def self.version_from_package_info(package_info_path)
-      Homebrew.install_bundler_gems!
-      require "nokogiri"
-
-      xml = Nokogiri::XML(package_info_path.read)
-
-      bundle_id = xml.xpath("//pkg-info//bundle-version//bundle").first&.attr("id")
-      return unless bundle_id
-
-      bundle = xml.xpath("//pkg-info//bundle").find { |b| b["id"] == bundle_id }
-      return unless bundle
-
-      short_version = bundle["CFBundleShortVersionString"]
-      version = bundle["CFBundleVersion"]
-
-      return decide_between_versions(short_version, version) if short_version && version
-    end
-
-    sig do
-      params(short_version: T.nilable(String), version: T.nilable(String))
-        .returns(T.nilable(String))
-    end
-    def self.decide_between_versions(short_version, version)
-      return short_version if short_version == version
-
-      if short_version && version
-        return version if version.match?(/\A\d+(\.\d+)+\Z/) && version.start_with?("#{short_version}.")
-        return short_version if short_version.match?(/\A\d+(\.\d+)+\Z/) && short_version.start_with?("#{version}.")
-
-        if short_version.match?(/\A\d+(\.\d+)*\Z/) && version.match?(/\A\d+\Z/)
-          return short_version if short_version.start_with?("#{version}.") || short_version.end_with?(".#{version}")
-
-          return "#{short_version},#{version}"
-        end
-      end
-
-      short_version || version
-    end
-
     sig { returns(T.nilable(String)) }
     def guess_cask_version
       if apps.empty? && pkgs.empty?
@@ -120,7 +71,7 @@ module Homebrew
         end
 
         info_plist_paths.each do |info_plist_path|
-          if (version = self.class.version_from_info_plist(info_plist_path))
+          if (version = BundleVersion.from_info_plist(info_plist_path)&.nice_version)
             return version
           end
         end
@@ -149,7 +100,7 @@ module Homebrew
 
             package_info_path = extract_dir/"PackageInfo"
             if package_info_path.exist?
-              if (version = self.class.version_from_package_info(package_info_path))
+              if (version = BundleVersion.from_package_info(package_info_path)&.nice_version)
                 return version
               end
             elsif packages.count == 1
