@@ -12,7 +12,7 @@ module Homebrew
 
     extend SystemCommand::Mixin
 
-    sig { params(info_plist_path: Pathname).returns(T.nilable(String)) }
+    sig { params(info_plist_path: Pathname).returns(T.nilable(T.attached_class)) }
     def self.from_info_plist(info_plist_path)
       plist = system_command!("plutil", args: ["-convert", "xml1", "-o", "-", info_plist_path]).plist
 
@@ -22,7 +22,7 @@ module Homebrew
       new(short_version, version) if short_version || version
     end
 
-    sig { params(package_info_path: Pathname).returns(T.nilable(String)) }
+    sig { params(package_info_path: Pathname).returns(T.nilable(T.attached_class)) }
     def self.from_package_info(package_info_path)
       Homebrew.install_bundler_gems!
       require "nokogiri"
@@ -68,9 +68,11 @@ module Homebrew
     sig { returns(T::Array[String]) }
     def nice_parts
       short_version = self.short_version
+      version = self.version
+
       short_version = short_version&.delete_suffix("(#{version})") if version
 
-      return [short_version] if short_version == version
+      return [T.must(short_version)] if short_version == version
 
       if short_version && version
         return [version] if version.match?(/\A\d+(\.\d+)+\Z/) && version.start_with?("#{short_version}.")
