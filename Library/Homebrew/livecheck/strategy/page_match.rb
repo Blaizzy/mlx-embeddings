@@ -61,7 +61,14 @@ module Homebrew
             end
           end
 
-          page.scan(regex).map(&:first).uniq
+          page.scan(regex).map do |match|
+            case match
+            when String
+              match
+            else
+              match.first
+            end
+          end.uniq
         end
 
         # Checks the content at the URL for new versions, using the provided
