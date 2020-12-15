@@ -210,6 +210,7 @@ module FormulaCellarChecks
   end
 
   def check_repository_references(prefix)
+    return if HOMEBREW_PREFIX != HOMEBREW_REPOSITORY
     return unless prefix.directory?
 
     keg = Keg.new(prefix)
