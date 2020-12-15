@@ -1564,6 +1564,8 @@ Only supports GitHub Actions as a CI provider. This is because Homebrew uses Git
   Clean all state from the Homebrew directory. Use with care!
 * `--skip-setup`:
   Don't check if the local system is set up correctly.
+* `--build-from-source`:
+  Build from source rather than building bottles.
 * `--keep-old`:
   Run `brew bottle --keep-old` to build new bottles for a single platform.
 * `--skip-relocation`:
