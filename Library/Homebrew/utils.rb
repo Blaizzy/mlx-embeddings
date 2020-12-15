@@ -188,9 +188,18 @@ module Kernel
 
     # Don't throw deprecations at all for cached, .brew or .metadata files.
     return if backtrace.any? do |line|
-      line.include?(HOMEBREW_CACHE) ||
-      line.include?("/.brew/") ||
-      line.include?("/.metadata/")
+      next true if line.include?(HOMEBREW_CACHE)
+      next true if line.include?("/.brew/")
+      next true if line.include?("/.metadata/")
+
+      next false unless line.match?(HOMEBREW_TAP_PATH_REGEX)
+
+      path = Pathname(line.split(":", 2).first)
+      next false unless path.file?
+      next false unless path.readable?
+
+      formula_contents = path.read
+      formula_contents.include?(" deprecate! ") || formula_contents.include?(" disable! ")
     end
 
     tap_message = T.let(nil, T.nilable(String))
