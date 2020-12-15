@@ -46,13 +46,30 @@ module Homebrew
         def self.find_versions(url, regex, &block)
           raise ArgumentError, "The #{NICE_NAME} strategy does not support regular expressions." if regex
 
-          require "nokogiri"
-
           match_data = { matches: {}, regex: regex, url: url }
 
           contents = Strategy.page_contents(url)
 
-          xml = Nokogiri::XML(contents)
+          if (item = item_from_content(contents))
+            match = if block
+              item[:short_version] = item[:bundle_version]&.short_version
+              item[:version] = item[:bundle_version]&.version
+              block.call(item).to_s
+            else
+              item.bundle_version&.nice_version
+            end
+
+            match_data[:matches][match] = Version.new(match) if match
+          end
+
+          match_data
+        end
+
+        sig { params(content).returns(T.nilable(Item)) }
+        def self.item_from_content(content)
+          require "nokogiri"
+
+          xml = Nokogiri::XML(content)
           xml.remove_namespaces!
 
           items = xml.xpath("//rss//channel//item").map do |item|
@@ -79,24 +96,20 @@ module Homebrew
               bundle_version: short_version || version ? BundleVersion.new(short_version, version) : nil,
             }.compact
 
-            data unless data.empty?
+            Item.new(**data) unless data.empty?
           end.compact
 
-          item = items.max_by { |e| e[:bundle_version] }
+          item = items.max_by(&:bundle_version)
+        end
+        private_class_method :item_from_content
 
-          if item
-            match = if block
-              item[:short_version] = item[:bundle_version]&.short_version
-              item[:version] = item[:bundle_version]&.version
-              block.call(item).to_s
-            else
-              item[:bundle_version]&.nice_version
-            end
+        Item = Struct.new(:title, :url, :bundle_version, :short_version, :version, keyword_init: true) do
+          extend T::Sig
 
-            match_data[:matches][match] = Version.new(match) if match
-          end
+          extend Forwardable
 
-          match_data
+          delegate version: :bundle_version
+          delegate short_version: :bundle_version
         end
       end
     end
