@@ -87,7 +87,6 @@ class Build
       ENV.keg_only_deps = keg_only_deps
       ENV.deps = formula_deps
       ENV.run_time_deps = run_time_deps
-      ENV.x11 = reqs.any? { |rq| rq.is_a?(X11Requirement) }
       ENV.setup_build_environment(
         formula:      formula,
         cc:           args.cc,

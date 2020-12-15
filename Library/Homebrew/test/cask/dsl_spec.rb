@@ -410,14 +410,6 @@ describe Cask::DSL, :cask do
   end
 
   describe "depends_on x11" do
-    context "valid" do
-      let(:token) { "with-depends-on-x11" }
-
-      it "is allowed to be specified" do
-        expect(cask.depends_on.x11).not_to be nil
-      end
-    end
-
     context "invalid depends_on x11 value" do
       let(:token) { "invalid/invalid-depends-on-x11-value" }
 

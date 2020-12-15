@@ -551,10 +551,6 @@ module RuboCop
             problem "macOS has been 64-bit only since 10.6 so ENV.universal_binary is deprecated."
           end
 
-          find_instance_method_call(body_node, "ENV", :x11) do
-            problem 'Use "depends_on :x11" instead of "ENV.x11"'
-          end
-
           find_every_method_call_by_name(body_node, :depends_on).each do |method|
             next unless method_called?(method, :new)
 

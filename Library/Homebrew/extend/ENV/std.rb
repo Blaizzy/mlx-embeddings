@@ -209,7 +209,9 @@ module Stdenv
   end
 
   sig { void }
-  def x11; end
+  def x11
+    odeprecated "ENV.x11", "depends_on specific X11 formula(e)"
+  end
 
   # @private
   sig { params(map: T::Hash[Symbol, String]).void }

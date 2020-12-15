@@ -6,6 +6,11 @@ require "requirement"
 class OsxfuseRequirement < Requirement
   extend T::Sig
 
+  def initialize(tags = [])
+    odeprecated "depends_on :osxfuse"
+    super(tags)
+  end
+
   download "https://osxfuse.github.io/"
 
   satisfy(build_env: false) { self.class.binary_osxfuse_installed? }

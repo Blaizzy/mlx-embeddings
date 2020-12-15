@@ -27,30 +27,18 @@ describe DependencyCollector do
     end
 
     specify "requirement creation" do
-      subject.add :x11
-      expect(find_requirement(X11Requirement)).to be_an_instance_of(X11Requirement)
+      subject.add :xcode
+      expect(find_requirement(XcodeRequirement)).to be_an_instance_of(XcodeRequirement)
     end
 
     it "deduplicates requirements" do
-      2.times { subject.add :x11 }
+      2.times { subject.add :xcode }
       expect(subject.requirements.count).to eq(1)
     end
 
     specify "requirement tags" do
-      subject.add :x11
       subject.add xcode: :build
-      expect(find_requirement(X11Requirement).tags).to be_empty
       expect(find_requirement(XcodeRequirement)).to be_a_build_requirement
-    end
-
-    specify "x11 without tag" do
-      subject.add :x11
-      expect(find_requirement(X11Requirement).tags).to be_empty
-    end
-
-    specify "x11 with tag" do
-      subject.add x11: :optional
-      expect(find_requirement(X11Requirement)).to be_optional
     end
 
     it "doesn't mutate the dependency spec" do

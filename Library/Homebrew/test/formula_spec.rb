@@ -794,17 +794,15 @@ describe Formula do
     f1 = formula "f1" do
       url "f1-1"
 
-      depends_on x11: :recommended
       depends_on xcode: ["1.0", :optional]
     end
     stub_formula_loader(f1)
 
-    x11 = X11Requirement.new([:recommended])
     xcode = XcodeRequirement.new(["1.0", :optional])
 
-    expect(Set.new(f1.recursive_requirements)).to eq(Set[x11])
+    expect(Set.new(f1.recursive_requirements)).to eq(Set[])
 
-    f1.build = BuildOptions.new(["--with-xcode", "--without-x11"], f1.options)
+    f1.build = BuildOptions.new(["--with-xcode"], f1.options)
 
     expect(Set.new(f1.recursive_requirements)).to eq(Set[xcode])
 
@@ -815,14 +813,14 @@ describe Formula do
       depends_on "f1"
     end
 
-    expect(Set.new(f2.recursive_requirements)).to eq(Set[x11])
-    expect(Set.new(f2.recursive_requirements {})).to eq(Set[x11, xcode])
+    expect(Set.new(f2.recursive_requirements)).to eq(Set[])
+    expect(Set.new(f2.recursive_requirements {})).to eq(Set[xcode])
 
     requirements = f2.recursive_requirements do |_dependent, requirement|
-      Requirement.prune if requirement.is_a?(X11Requirement)
+      Requirement.prune if requirement.is_a?(XcodeRequirement)
     end
 
-    expect(Set.new(requirements)).to eq(Set[xcode])
+    expect(Set.new(requirements)).to eq(Set[])
   end
 
   specify "#to_hash" do

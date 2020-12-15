@@ -1122,19 +1122,6 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
 
-    it "deprecated ENV.x11 usage" do
-      expect_offense(<<~RUBY)
-        class Foo < Formula
-          desc "foo"
-          url 'https://brew.sh/foo-1.0.tgz'
-          if build?
-             ENV.x11
-             ^^^^^^^ Use "depends_on :x11" instead of "ENV.x11"
-          end
-        end
-      RUBY
-    end
-
     it "install_name_tool usage instead of ruby-macho" do
       expect_offense(<<~RUBY)
         class Foo < Formula

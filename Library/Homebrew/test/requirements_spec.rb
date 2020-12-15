@@ -10,10 +10,8 @@ describe Requirements do
     end
 
     it "merges duplicate requirements" do
-      subject << X11Requirement.new << X11Requirement.new
+      subject << Requirement.new << Requirement.new
       expect(subject.count).to eq(1)
-      subject << Requirement.new
-      expect(subject.count).to eq(2)
     end
   end
 end

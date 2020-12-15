@@ -8,15 +8,17 @@ require "requirement"
 # @api private
 class X11Requirement < Requirement
   extend T::Sig
-
   include Comparable
+
+  def initialize(tags = [])
+    odeprecated "depends_on :x11", "depends_on specific X11 formula(e)"
+    super(tags)
+  end
 
   fatal true
 
   cask "xquartz"
   download "https://xquartz.macosforge.org"
-
-  env { ENV.x11 }
 
   sig { returns(String) }
   def min_version
