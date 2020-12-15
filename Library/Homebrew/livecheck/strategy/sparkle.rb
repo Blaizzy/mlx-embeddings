@@ -26,8 +26,8 @@ module Homebrew
           xml = url.end_with?(".xml")
           xml ||= begin
             headers = Strategy.page_headers(url)
-            content_type = headers["content-type"]&.split(";", 2)&.first
-            ["application/xml", "text/xml"].include?(content_type)
+            content_type = headers["content-type"]
+            content_type.blank? || content_type.include?("xml")
           end
           return false unless xml
 
