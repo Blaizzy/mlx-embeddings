@@ -4,6 +4,7 @@
 require "cask/denylist"
 require "cask/download"
 require "digest"
+require "livecheck/livecheck"
 require "utils/curl"
 require "utils/git"
 require "utils/shared_audits"
@@ -66,10 +67,11 @@ module Cask
       check_single_uninstall_zap
       check_untrusted_pkg
       check_hosting_with_appcast
-      check_latest_with_appcast
+      check_latest_with_appcast_or_livecheck
       check_latest_with_auto_updates
       check_stanza_requires_uninstall
       check_appcast_contains_version
+      check_livecheck_version
       check_gitlab_repository
       check_gitlab_repository_archived
       check_gitlab_prerelease_version
@@ -274,11 +276,11 @@ module Cask
       add_error "cannot use the sha256 for an empty string: #{empty_sha256}"
     end
 
-    def check_latest_with_appcast
+    def check_latest_with_appcast_or_livecheck
       return unless cask.version.latest?
-      return unless cask.appcast
 
-      add_error "Casks with an appcast should not use version :latest"
+      add_error "Casks with an appcast should not use version :latest" if cask.appcast
+      add_error "Casks with a livecheck should not use version :latest" if cask.livecheckable?
     end
 
     def check_latest_with_auto_updates
@@ -509,6 +511,18 @@ module Cask
       download.fetch
     rescue => e
       add_error "download not possible: #{e}"
+    end
+
+    def check_livecheck_version
+      return unless appcast?
+      return unless cask.livecheckable?
+      return if cask.livecheck.skip?
+      return if cask.version.latest?
+
+      latest_version = Homebrew::Livecheck.latest_version(cask)&.fetch(:latest)
+      return if cask.version.to_s == latest_version.to_s
+
+      add_error "Version '#{cask.version}' differs from '#{latest_version}' retrieved by livecheck."
     end
 
     def check_appcast_contains_version

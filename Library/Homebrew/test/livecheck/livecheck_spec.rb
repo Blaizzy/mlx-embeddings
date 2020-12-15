@@ -91,35 +91,29 @@ describe Homebrew::Livecheck do
     RUBY
   end
 
-  let(:args) { double("livecheck_args", full_name?: false, json?: false, quiet?: false, verbose?: true) }
-
   describe "::formula_name" do
     it "returns the name of the formula" do
-      expect(livecheck.formula_name(f, args: args)).to eq("test")
+      expect(livecheck.formula_name(f)).to eq("test")
     end
 
     it "returns the full name" do
-      allow(args).to receive(:full_name?).and_return(true)
-
-      expect(livecheck.formula_name(f, args: args)).to eq("test")
+      expect(livecheck.formula_name(f, full_name: true)).to eq("test")
     end
   end
 
   describe "::cask_name" do
     it "returns the token of the cask" do
-      expect(livecheck.cask_name(c, args: args)).to eq("test")
+      expect(livecheck.cask_name(c)).to eq("test")
     end
 
     it "returns the full name of the cask" do
-      allow(args).to receive(:full_name?).and_return(true)
-
-      expect(livecheck.cask_name(c, args: args)).to eq("test")
+      expect(livecheck.cask_name(c, full_name: true)).to eq("test")
     end
   end
 
   describe "::status_hash" do
     it "returns a hash containing the livecheck status" do
-      expect(livecheck.status_hash(f, "error", ["Unable to get versions"], args: args))
+      expect(livecheck.status_hash(f, "error", ["Unable to get versions"]))
         .to eq({
                  formula:  "test",
                  status:   "error",
@@ -133,47 +127,47 @@ describe Homebrew::Livecheck do
 
   describe "::skip_conditions" do
     it "skips a deprecated formula without a livecheckable" do
-      expect { livecheck.skip_conditions(f_deprecated, args: args) }
+      expect { livecheck.skip_conditions(f_deprecated) }
         .to output("test_deprecated : deprecated\n").to_stdout
         .and not_to_output.to_stderr
     end
 
     it "skips a disabled formula without a livecheckable" do
-      expect { livecheck.skip_conditions(f_disabled, args: args) }
+      expect { livecheck.skip_conditions(f_disabled) }
         .to output("test_disabled : disabled\n").to_stdout
         .and not_to_output.to_stderr
     end
 
     it "skips a versioned formula without a livecheckable" do
-      expect { livecheck.skip_conditions(f_versioned, args: args) }
+      expect { livecheck.skip_conditions(f_versioned) }
         .to output("test@0.0.1 : versioned\n").to_stdout
         .and not_to_output.to_stderr
     end
 
     it "skips a HEAD-only formula if not installed" do
-      expect { livecheck.skip_conditions(f_head_only, args: args) }
+      expect { livecheck.skip_conditions(f_head_only) }
         .to output("test_head_only : HEAD only formula must be installed to be livecheckable\n").to_stdout
         .and not_to_output.to_stderr
     end
 
     it "skips a formula with a GitHub Gist stable URL" do
-      expect { livecheck.skip_conditions(f_gist, args: args) }
+      expect { livecheck.skip_conditions(f_gist) }
         .to output("test_gist : skipped - Stable URL is a GitHub Gist\n").to_stdout
         .and not_to_output.to_stderr
     end
 
     it "skips a formula with a skip livecheckable" do
-      expect { livecheck.skip_conditions(f_skip, args: args) }
+      expect { livecheck.skip_conditions(f_skip) }
         .to output("test_skip : skipped - Not maintained\n").to_stdout
         .and not_to_output.to_stderr
     end
 
     it "returns false for a non-skippable formula" do
-      expect(livecheck.skip_conditions(f, args: args)).to eq(false)
+      expect(livecheck.skip_conditions(f)).to eq(false)
     end
 
     it "returns false for a non-skippable cask" do
-      expect(livecheck.skip_conditions(c, args: args)).to eq(false)
+      expect(livecheck.skip_conditions(c)).to eq(false)
     end
   end
 

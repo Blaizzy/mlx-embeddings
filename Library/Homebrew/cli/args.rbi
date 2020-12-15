@@ -25,6 +25,15 @@ module Homebrew
       def force_bottle?; end
 
       sig { returns(T.nilable(T::Boolean)) }
+      def newer_only?; end
+
+      sig { returns(T.nilable(T::Boolean)) }
+      def full_name?; end
+
+      sig { returns(T.nilable(T::Boolean)) }
+      def json?; end
+
+      sig { returns(T.nilable(T::Boolean)) }
       def debug?; end
 
       sig { returns(T.nilable(T::Boolean)) }
