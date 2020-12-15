@@ -8,6 +8,8 @@
 # This information is used by the `brew livecheck` command to control its
 # behavior.
 class Livecheck
+  extend Forwardable
+
   # A very brief description of why the formula/cask is skipped (e.g. `No longer
   # developed or maintained`).
   # @return [String, nil]
@@ -106,6 +108,9 @@ class Livecheck
       raise TypeError, "Livecheck#url expects a String or valid Symbol"
     end
   end
+
+  delegate version: :@formula_or_cask
+  private :version
 
   # Returns a `Hash` of all instance variable values.
   # @return [Hash]
