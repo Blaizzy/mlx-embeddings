@@ -369,16 +369,18 @@ class BottleSpecification
   end
 
   def compatible_locations?
-    compatible_cellar = cellar == :any ||
-                        cellar == :any_skip_relocation ||
-                        cellar == HOMEBREW_CELLAR.to_s
+    # this looks like it should check prefix and repository too but to be
+    # `cellar :any` actually requires no references to the cellar, prefix or
+    # repository.
+    return true if [:any, :any_skip_relocation].include?(cellar)
 
+    compatible_cellar = cellar == HOMEBREW_CELLAR.to_s
     compatible_prefix = prefix == HOMEBREW_PREFIX.to_s
 
     # Only check the repository matches if the prefix is the default.
     # This is because the bottle DSL does not allow setting a custom repository
     # but does allow setting a custom prefix.
-    compatible_repository = if prefix == Homebrew::DEFAULT_PREFIX
+    compatible_repository = if Homebrew.default_prefix?(prefix)
       repository == HOMEBREW_REPOSITORY.to_s
     else
       true
