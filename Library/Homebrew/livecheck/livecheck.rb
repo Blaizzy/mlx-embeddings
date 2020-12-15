@@ -201,7 +201,7 @@ module Homebrew
           status_hash(formula_or_cask, "error", [e.to_s], full_name: full_name, verbose: verbose)
         elsif !quiet
           onoe "#{Tty.blue}#{formula_or_cask_name(formula_or_cask, full_name: full_name)}#{Tty.reset}: #{e}"
-          $stderr.puts e.backtrace if args.debug?
+          $stderr.puts e.backtrace if debug
           nil
         end
       end
@@ -280,9 +280,9 @@ module Homebrew
       end
 
       if cask&.discontinued? && !cask.livecheckable?
-        return status_hash(cask, "discontinued", args: args) if args.json?
+        return status_hash(cask, "discontinued", full_name: full_name, verbose: verbose) if json
 
-        puts "#{Tty.red}#{cask_name(cask, args: args)}#{Tty.reset} : discontinued" unless args.quiet?
+        puts "#{Tty.red}#{cask_name(cask, full_name: full_name)}#{Tty.reset} : discontinued" unless quiet
         return
       end
 
@@ -301,16 +301,16 @@ module Homebrew
       end
 
       if cask&.version&.latest? && !cask.livecheckable?
-        return status_hash(cask, "latest", args: args) if args.json?
+        return status_hash(cask, "latest", full_name: full_name, verbose: verbose) if json
 
-        puts "#{Tty.red}#{cask_name(cask, args: args)}#{Tty.reset} : latest" unless args.quiet?
+        puts "#{Tty.red}#{cask_name(cask, full_name: full_name)}#{Tty.reset} : latest" unless quiet
         return
       end
 
       if cask&.url&.unversioned? && !cask.livecheckable?
-        return status_hash(cask, "unversioned", args: args) if args.json?
+        return status_hash(cask, "unversioned", full_name: full_name, verbose: verbose) if json
 
-        puts "#{Tty.red}#{cask_name(cask, args: args)}#{Tty.reset} : unversioned" unless args.quiet?
+        puts "#{Tty.red}#{cask_name(cask, full_name: full_name)}#{Tty.reset} : unversioned" unless quiet
         return
       end
 
