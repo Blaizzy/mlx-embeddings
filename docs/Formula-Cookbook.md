@@ -749,6 +749,40 @@ Homebrew provides two formula DSL methods for launchd plist files:
 * [`plist_name`](https://rubydoc.brew.sh/Formula#plist_name-instance_method) will return e.g. `homebrew.mxcl.<formula>`
 * [`plist_path`](https://rubydoc.brew.sh/Formula#plist_path-instance_method) will return e.g. `/usr/local/Cellar/foo/0.1/homebrew.mxcl.foo.plist`
 
+There is two ways to add plists to a formula, so that [`brew services`](https://github.com/Homebrew/homebrew-services) can pick it up:
+1. If the formula already provides a plist file the formula can install it into the prefix like so.
+
+```ruby
+prefix.install_symlink "file.plist" => "#{plist_name}.plist"
+```
+
+1. If the formula does not provide a plist you can add a plist using the following stanzas.
+This will define what the user can run manually instead of the launchd service.
+```ruby
+  plist_options manual: "#{HOMEBREW_PREFIX}/var/some/bin/stuff run"
+```
+
+This provides the actual plist file, see [Apple's plist(5) man page](https://www.unix.com/man-page/mojave/5/plist/) for more information.
+```ruby
+  def plist
+    <<~EOS
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+        <dict>
+          <key>Label</key>
+          <string>#{plist_name}</string>
+          <key>ProgramArguments</key>
+          <array>
+            <string>#{var}/some/bin/stuff</string>
+            <string>run</string>
+          </array>
+        </dict>
+      </plist>
+    EOS
+  end
+```
+
 ### Using environment variables
 
 Homebrew has multiple levels of environment variable filtering which affects variables available to formulae.
