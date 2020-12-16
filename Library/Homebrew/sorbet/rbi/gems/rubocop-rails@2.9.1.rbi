@@ -683,8 +683,7 @@ class RuboCop::Cop::Rails::FindEach < ::RuboCop::Cop::Base
 
   private
 
-  def ignored?(relation_method); end
-  def method_chain(node); end
+  def ignored?(node); end
 end
 
 RuboCop::Cop::Rails::FindEach::MSG = T.let(T.unsafe(nil), String)
@@ -723,8 +722,13 @@ RuboCop::Cop::Rails::HasManyOrHasOneDependent::MSG = T.let(T.unsafe(nil), String
 RuboCop::Cop::Rails::HasManyOrHasOneDependent::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Rails::HelperInstanceVariable < ::RuboCop::Cop::Base
+  def form_builder_class?(param0 = T.unsafe(nil)); end
   def on_ivar(node); end
   def on_ivasgn(node); end
+
+  private
+
+  def inherit_form_builder?(node); end
 end
 
 RuboCop::Cop::Rails::HelperInstanceVariable::MSG = T.let(T.unsafe(nil), String)
