@@ -7675,6 +7675,11 @@ module Homebrew
   MIN_PORT = ::T.let(nil, ::T.untyped)
 end
 
+class Homebrew::BundleVersion
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class Homebrew::CLI::Args
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -7830,6 +7835,11 @@ module Homebrew::Fetch
 end
 
 class Homebrew::FormulaCreator
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Homebrew::Livecheck
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
