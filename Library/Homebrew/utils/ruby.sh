@@ -17,7 +17,7 @@ find_ruby() {
     echo "/System/Library/Frameworks/Ruby.framework/Versions/Current/usr/bin/ruby"
   else
     IFS=$'\n' # Do word splitting on new lines only
-    for ruby_exec in $(which -a ruby) $(PATH=$HOMEBREW_PATH which -a ruby)
+    for ruby_exec in $(which -a ruby 2>/dev/null) $(PATH=$HOMEBREW_PATH which -a ruby 2>/dev/null)
     do
       if test_ruby "$ruby_exec"; then
         echo "$ruby_exec"
