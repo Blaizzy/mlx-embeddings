@@ -86,18 +86,9 @@ describe Language::Python::Virtualenv::Virtualenv do
   let(:formula) { double("formula", resource: resource, bin: formula_bin) }
 
   describe "#create" do
-    it "creates a virtual environment" do
-      expect(formula).to receive(:resource).with("homebrew-virtualenv").and_return(resource)
+    it "creates a venv" do
+      expect(formula).to receive(:system).with("python", "-m", "venv", dir)
       subject.create
-    end
-
-    specify "virtual environment creation is idempotent" do
-      expect(formula).to receive(:resource).with("homebrew-virtualenv").and_return(resource)
-      subject.create
-      FileUtils.mkdir_p dir/"bin"
-      FileUtils.touch dir/"bin/python"
-      subject.create
-      FileUtils.rm dir/"bin/python"
     end
   end
 

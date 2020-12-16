@@ -116,35 +116,6 @@ module Language
     module Virtualenv
       extend T::Sig
 
-      def self.included(base)
-        base.class_eval do
-          resource "homebrew-virtualenv" do
-            url "https://files.pythonhosted.org/packages/c6/3e/d00f1500aa0e8a69323101c33f6e6910bbc68d34df3e8a0b1e510219a956/virtualenv-20.2.2.tar.gz"
-            sha256 "b7a8ec323ee02fb2312f098b6b4c9de99559b462775bc8fe3627a73706603c1b"
-          end
-
-          resource "homebrew-appdirs" do
-            url "https://files.pythonhosted.org/packages/d7/d8/05696357e0311f5b5c316d7b95f46c669dd9c15aaeecbb48c7d0aeb88c40/appdirs-1.4.4.tar.gz"
-            sha256 "7d5d0167b2b1ba821647616af46a749d1c653740dd0d2415100fe26e27afdf41"
-          end
-
-          resource "homebrew-distlib" do
-            url "https://files.pythonhosted.org/packages/2f/83/1eba07997b8ba58d92b3e51445d5bf36f9fba9cb8166bcae99b9c3464841/distlib-0.3.1.zip"
-            sha256 "edf6116872c863e1aa9d5bb7cb5e05a022c519a4594dc703843343a9ddd9bff1"
-          end
-
-          resource "homebrew-filelock" do
-            url "https://files.pythonhosted.org/packages/14/ec/6ee2168387ce0154632f856d5cc5592328e9cf93127c5c9aeca92c8c16cb/filelock-3.0.12.tar.gz"
-            sha256 "18d82244ee114f543149c66a6e0c14e9c4f8a1044b5cdaadd0f82159d6a6ff59"
-          end
-
-          resource "homebrew-six" do
-            url "https://files.pythonhosted.org/packages/6b/34/415834bfdafca3c5f451532e8a8d9ba89a21c9743a0c59fbd0205c7f9426/six-1.15.0.tar.gz"
-            sha256 "30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259"
-          end
-        end
-      end
-
       # Instantiates, creates, and yields a {Virtualenv} object for use from
       # {Formula#install}, which provides helper methods for instantiating and
       # installing packages into a Python virtualenv.
@@ -245,25 +216,7 @@ module Language
         def create
           return if (@venv_root/"bin/python").exist?
 
-          @formula.resource("homebrew-virtualenv").stage do |stage|
-            old_pythonpath = ENV.delete "PYTHONPATH"
-            begin
-              staging = Pathname.new(stage.staging.tmpdir)
-
-              ENV.prepend_create_path "PYTHONPATH", staging/"target/vendor"/Language::Python.site_packages(@python)
-              %w[appdirs distlib filelock six].each do |virtualenv_dependency|
-                @formula.resource("homebrew-#{virtualenv_dependency}").stage do
-                  @formula.system @python, *Language::Python.setup_install_args(staging/"target/vendor")
-                end
-              end
-
-              ENV.prepend_create_path "PYTHONPATH", staging/"target"/Language::Python.site_packages(@python)
-              @formula.system @python, *Language::Python.setup_install_args(staging/"target")
-              @formula.system @python, "-s", staging/"target/bin/virtualenv", "-p", @python, @venv_root
-            ensure
-              ENV["PYTHONPATH"] = old_pythonpath
-            end
-          end
+          @formula.system @python, "-m", "venv", @venv_root
 
           # Robustify symlinks to survive python patch upgrades
           @venv_root.find do |f|
