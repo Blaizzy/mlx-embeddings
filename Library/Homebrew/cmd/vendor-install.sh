@@ -32,6 +32,25 @@ then
   esac
 fi
 
+check_ldd_version() {
+  local ldd_version
+  local ldd_version_major
+  local ldd_version_minor
+
+  if [[ $(/usr/bin/ldd --version) =~ \ [0-9]\.[0-9]+ ]]
+  then
+    ldd_version=${BASH_REMATCH[0]// /}
+    ldd_version_major=${ldd_version%.*}
+    ldd_version_minor=${ldd_version#*.}
+    if (( ldd_version_major < 2 || ldd_version_minor < 13 ))
+    then
+      odie "Vendored tools require system Glibc 2.13 or later."
+    fi
+  else
+    odie "Failed to detect system Glibc version."
+  fi
+}
+
 # Execute the specified command, and suppress stderr unless HOMEBREW_STDERR is set.
 quiet_stderr() {
   if [[ -z "$HOMEBREW_STDERR" ]]; then
@@ -220,6 +239,7 @@ homebrew-vendor-install() {
 
   [[ -z "$VENDOR_NAME" ]] && odie "This command requires a vendor target!"
   [[ -n "$HOMEBREW_DEBUG" ]] && set -x
+  [[ -n "$HOMEBREW_LINUX" ]] && check_ldd_version
 
   url_var="${VENDOR_NAME}_URL"
   url2_var="${VENDOR_NAME}_URL2"
