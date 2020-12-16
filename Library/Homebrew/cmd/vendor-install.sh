@@ -32,19 +32,27 @@ then
   esac
 fi
 
-check_ldd_version() {
-  local ldd_version
-  local ldd_version_major
-  local ldd_version_minor
+check_linux_glibc_version() {
+  if [[ -z $HOMEBREW_LINUX || -z $HOMEBREW_LINUX_MINIMUM_GLIBC_VERSION ]]
+  then
+    return 0
+  fi
+
+  local glibc_version
+  local glibc_version_major
+  local glibc_version_minor
+
+  local minimum_required_major=${HOMEBREW_LINUX_MINIMUM_GLIBC_VERSION%.*}
+  local minimum_required_minor=${HOMEBREW_LINUX_MINIMUM_GLIBC_VERSION#*.}
 
   if [[ $(/usr/bin/ldd --version) =~ \ [0-9]\.[0-9]+ ]]
   then
-    ldd_version=${BASH_REMATCH[0]// /}
-    ldd_version_major=${ldd_version%.*}
-    ldd_version_minor=${ldd_version#*.}
-    if (( ldd_version_major < 2 || ldd_version_minor < 13 ))
+    glibc_version=${BASH_REMATCH[0]// /}
+    glibc_version_major=${glibc_version%.*}
+    glibc_version_minor=${glibc_version#*.}
+    if (( glibc_version_major < minimum_required_major || glibc_version_minor < minimum_required_minor ))
     then
-      odie "Vendored tools require system Glibc 2.13 or later."
+      odie "Vendored tools require system Glibc $HOMEBREW_LINUX_MINIMUM_GLIBC_VERSION or later (yours is $glibc_version)."
     fi
   else
     odie "Failed to detect system Glibc version."
@@ -239,7 +247,7 @@ homebrew-vendor-install() {
 
   [[ -z "$VENDOR_NAME" ]] && odie "This command requires a vendor target!"
   [[ -n "$HOMEBREW_DEBUG" ]] && set -x
-  [[ -n "$HOMEBREW_LINUX" ]] && check_ldd_version
+  check_linux_glibc_version
 
   url_var="${VENDOR_NAME}_URL"
   url2_var="${VENDOR_NAME}_URL2"
