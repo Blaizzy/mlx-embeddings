@@ -95,7 +95,7 @@ module Homebrew
   def upgrade
     args = upgrade_args.parse
 
-    formulae, casks = args.named.to_resolved_formulae_to_casks(only: args.only_path_formula_or_cask)
+    formulae, casks = args.named.to_resolved_formulae_to_casks(only: args.only_formula_or_cask)
     # If one or more formulae are specified, but no casks were
     # specified, we want to make note of that so we don't
     # try to upgrade all outdated casks.

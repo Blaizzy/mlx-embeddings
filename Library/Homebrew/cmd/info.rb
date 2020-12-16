@@ -90,17 +90,17 @@ module Homebrew
         end
       end
 
-      print_analytics(args: args, only: args.only_path_formula_or_cask)
+      print_analytics(args: args, only: args.only_formula_or_cask)
     elsif args.json
-      print_json(args: args, only: args.only_path_formula_or_cask)
+      print_json(args: args, only: args.only_formula_or_cask)
     elsif args.github?
       raise FormulaOrCaskUnspecifiedError if args.no_named?
 
-      exec_browser(*args.named.to_formulae_and_casks(only: args.only_path_formula_or_cask).map { |f| github_info(f) })
+      exec_browser(*args.named.to_formulae_and_casks(only: args.only_formula_or_cask).map { |f| github_info(f) })
     elsif args.no_named?
       print_statistics
     else
-      print_info(args: args, only: args.only_path_formula_or_cask)
+      print_info(args: args, only: args.only_formula_or_cask)
     end
   end
 
@@ -119,7 +119,7 @@ module Homebrew
       return
     end
 
-    args.named.to_formulae_and_casks_and_unavailable(only: args.only_path_formula_or_cask).each_with_index do |obj, i|
+    args.named.to_formulae_and_casks_and_unavailable(only: args.only_formula_or_cask).each_with_index do |obj, i|
       puts unless i.zero?
 
       case obj
@@ -137,7 +137,7 @@ module Homebrew
 
   sig { params(args: CLI::Args, only: T.nilable(Symbol)).void }
   def print_info(args:, only: nil)
-    args.named.to_formulae_and_casks_and_unavailable(only: args.only_path_formula_or_cask).each_with_index do |obj, i|
+    args.named.to_formulae_and_casks_and_unavailable(only: args.only_formula_or_cask).each_with_index do |obj, i|
       puts unless i.zero?
 
       case obj
@@ -192,7 +192,7 @@ module Homebrew
       elsif args.installed?
         [Formula.installed.sort, Cask::Caskroom.casks.sort_by(&:full_name)]
       else
-        args.named.to_formulae_to_casks(only: args.only_path_formula_or_cask)
+        args.named.to_formulae_to_casks(only: args.only_formula_or_cask)
       end
 
       {

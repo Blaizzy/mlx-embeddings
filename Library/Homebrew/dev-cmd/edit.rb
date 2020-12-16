@@ -39,7 +39,7 @@ module Homebrew
       EOS
     end
 
-    paths = args.named.to_paths(only: args.only_path_formula_or_cask).select do |path|
+    paths = args.named.to_paths(only: args.only_formula_or_cask).select do |path|
       next path if path.exist?
 
       raise UsageError, "#{path} doesn't exist on disk. " \

@@ -148,7 +148,7 @@ module Homebrew
       EOS
     end
 
-    formulae, casks = args.named.to_formulae_and_casks(only: args.only_path_formula_or_cask)
+    formulae, casks = args.named.to_formulae_and_casks(only: args.only_formula_or_cask)
                           .partition { |formula_or_cask| formula_or_cask.is_a?(Formula) }
 
     if casks.any?

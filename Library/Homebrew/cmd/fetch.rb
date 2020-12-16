@@ -81,7 +81,7 @@ module Homebrew
         end
       end
     else
-      args.named.to_formulae_and_casks(only: args.only_path_formula_or_cask)
+      args.named.to_formulae_and_casks(only: args.only_formula_or_cask)
     end.uniq
 
     puts "Fetching: #{bucket * ", "}" if bucket.size > 1

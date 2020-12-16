@@ -48,7 +48,7 @@ module Homebrew
     args = uninstall_args.parse
 
     all_kegs, casks = args.named.to_kegs_to_casks(
-      only:               args.only_path_formula_or_cask,
+      only:               args.only_formula_or_cask,
       ignore_unavailable: args.force?,
       all_kegs:           args.force?,
     )
