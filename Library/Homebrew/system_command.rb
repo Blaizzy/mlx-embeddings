@@ -74,15 +74,14 @@ class SystemCommand
       must_succeed: T::Boolean,
       print_stdout: T::Boolean,
       print_stderr: T::Boolean,
-      debug:        T::Boolean,
-      verbose:      T::Boolean,
+      debug:        T.nilable(T::Boolean),
+      verbose:      T.nilable(T::Boolean),
       secrets:      T.any(String, T::Array[String]),
       chdir:        T.any(String, Pathname),
     ).void
   end
   def initialize(executable, args: [], sudo: false, env: {}, input: [], must_succeed: false,
-                 print_stdout: false, print_stderr: true, debug: false, verbose: false, secrets: [],
-                 chdir: T.unsafe(nil))
+                 print_stdout: false, print_stderr: true, debug: nil, verbose: nil, secrets: [], chdir: T.unsafe(nil))
     require "extend/ENV"
     @executable = executable
     @args = args
