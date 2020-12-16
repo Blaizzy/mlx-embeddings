@@ -5,6 +5,9 @@ class Keg
   PREFIX_PLACEHOLDER = "@@HOMEBREW_PREFIX@@"
   CELLAR_PLACEHOLDER = "@@HOMEBREW_CELLAR@@"
   REPOSITORY_PLACEHOLDER = "@@HOMEBREW_REPOSITORY@@"
+
+  # If the location of HOMEBREW_LIBRARY changes
+  # formula_cellar_checks.rb, test/global_spec.rb, and this constant need to change.
   LIBRARY_PLACEHOLDER = "@@HOMEBREW_REPOSITORY@@/Library"
 
   Relocation = Struct.new(:old_prefix, :old_cellar, :old_repository, :old_library,

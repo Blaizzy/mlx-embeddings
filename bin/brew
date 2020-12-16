@@ -58,6 +58,8 @@ then
   fi
 fi
 
+# If the location of HOMEBREW_LIBRARY changes
+# keg_relocate.rb, formula_cellar_checks.rb, and test/global_spec.rb need to change.
 HOMEBREW_LIBRARY="$HOMEBREW_REPOSITORY/Library"
 
 # Copy and export all HOMEBREW_* variables previously mentioned in

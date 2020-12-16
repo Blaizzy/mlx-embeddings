@@ -7,6 +7,8 @@ require "utils/shell"
 #
 # @api private
 module FormulaCellarChecks
+  # If the location of HOMEBREW_LIBRARY changes
+  # keg_relocate.rb, test/global_spec.rb, and this constant need to change.
   REPOSITORY_AND_NOT_LIBRARY_REGEX = %r{#{HOMEBREW_REPOSITORY}(?!/Library/)}.freeze
 
   def check_env_path(bin)
