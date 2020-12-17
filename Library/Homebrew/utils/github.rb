@@ -99,6 +99,9 @@ module GitHub
     odisabled "the GitHub API with HOMEBREW_GITHUB_API_PASSWORD", "HOMEBREW_GITHUB_API_TOKEN"
   end
 
+  # Gets the password field from `git-credential-osxkeychain` for github.com,
+  # but only if that password looks like a GitHub Personal Access Token.
+  sig { returns(T.nilable(String)) }
   def keychain_username_password
     github_credentials = Utils.popen(["git", "credential-osxkeychain", "get"], "w+") do |pipe|
       pipe.write "protocol=https\nhost=github.com\n"
@@ -114,7 +117,7 @@ module GitHub
     #   https://github.com/Homebrew/brew/issues/6862#issuecomment-572610344
     return unless /^[a-f0-9]{40}$/i.match?(github_password)
 
-    [github_password, github_username]
+    github_password
   rescue Errno::EPIPE
     # The above invocation via `Utils.popen` can fail, causing the pipe to be
     # prematurely closed (before we can write to it) and thus resulting in a
@@ -182,13 +185,8 @@ module GitHub
     args = ["--header", "Accept: application/vnd.github.v3+json", "--write-out", "\n%\{http_code}"]
     args += ["--header", "Accept: application/vnd.github.antiope-preview+json"]
 
-    token, username = api_credentials
-    case api_credentials_type
-    when :env_username_password, :keychain_username_password
-      args += ["--user", "#{username}:#{token}"]
-    when :env_token
-      args += ["--header", "Authorization: token #{token}"]
-    end
+    token = api_credentials
+    args += ["--header", "Authorization: token #{token}"] unless api_credentials_type == :none
 
     data_tmpfile = nil
     if data
@@ -379,12 +377,7 @@ module GitHub
   def check_fork_exists(repo)
     _, reponame = repo.split("/")
 
-    case api_credentials_type
-    when :env_username_password, :keychain_username_password
-      _, username = api_credentials
-    when :env_token
-      username = open_api(url_to("user")) { |json| json["login"] }
-    end
+    username = open_api(url_to("user")) { |json| json["login"] }
     json = open_api(url_to("repos", username, reponame))
 
     return false if json["message"] == "Not Found"
