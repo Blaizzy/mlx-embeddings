@@ -61,6 +61,6 @@ Failed to execute $arg0 $@
 
 Xcode and/or the CLT appear to be misconfigured. Try one or both of the following:
   xcodebuild -license
-  sudo xcode-select -switch /path/to/Xcode.app
+  sudo xcode-select --switch /path/to/Xcode.app
 "
 exit 1
