@@ -38,6 +38,6 @@ module Homebrew
       "cat"
     end
 
-    safe_system pager, args.named.to_paths(only: args.only_formula_or_cask).first
+    safe_system pager, args.named.to_paths.first
   end
 end

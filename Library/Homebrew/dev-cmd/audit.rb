@@ -123,7 +123,7 @@ module Homebrew
     elsif args.no_named?
       [Formula, Cask::Cask.to_a]
     else
-      args.named.to_formulae_and_casks(only: args.only_formula_or_cask)
+      args.named.to_formulae_and_casks
           .partition { |formula_or_cask| formula_or_cask.is_a?(Formula) }
     end
     style_files = args.named.to_paths unless skip_style

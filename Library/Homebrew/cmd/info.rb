@@ -90,17 +90,17 @@ module Homebrew
         end
       end
 
-      print_analytics(args: args, only: args.only_formula_or_cask)
+      print_analytics(args: args)
     elsif args.json
-      print_json(args: args, only: args.only_formula_or_cask)
+      print_json(args: args)
     elsif args.github?
       raise FormulaOrCaskUnspecifiedError if args.no_named?
 
-      exec_browser(*args.named.to_formulae_and_casks(only: args.only_formula_or_cask).map { |f| github_info(f) })
+      exec_browser(*args.named.to_formulae_and_casks.map { |f| github_info(f) })
     elsif args.no_named?
       print_statistics
     else
-      print_info(args: args, only: args.only_formula_or_cask)
+      print_info(args: args)
     end
   end
 
@@ -112,14 +112,14 @@ module Homebrew
     puts "#{count} #{"keg".pluralize(count)}, #{HOMEBREW_CELLAR.dup.abv}"
   end
 
-  sig { params(args: CLI::Args, only: T.nilable(Symbol)).void }
-  def print_analytics(args:, only: nil)
+  sig { params(args: CLI::Args).void }
+  def print_analytics(args:)
     if args.no_named?
       Utils::Analytics.output(args: args)
       return
     end
 
-    args.named.to_formulae_and_casks_and_unavailable(only: args.only_formula_or_cask).each_with_index do |obj, i|
+    args.named.to_formulae_and_casks_and_unavailable.each_with_index do |obj, i|
       puts unless i.zero?
 
       case obj
@@ -135,9 +135,9 @@ module Homebrew
     end
   end
 
-  sig { params(args: CLI::Args, only: T.nilable(Symbol)).void }
-  def print_info(args:, only: nil)
-    args.named.to_formulae_and_casks_and_unavailable(only: args.only_formula_or_cask).each_with_index do |obj, i|
+  sig { params(args: CLI::Args).void }
+  def print_info(args:)
+    args.named.to_formulae_and_casks_and_unavailable.each_with_index do |obj, i|
       puts unless i.zero?
 
       case obj
@@ -169,8 +169,8 @@ module Homebrew
     version_hash[version]
   end
 
-  sig { params(args: CLI::Args, only: T.nilable(Symbol)).void }
-  def print_json(args:, only: nil)
+  sig { params(args: CLI::Args).void }
+  def print_json(args:)
     raise FormulaOrCaskUnspecifiedError if !(args.all? || args.installed?) && args.no_named?
 
     json = case json_version(args.json)
@@ -192,7 +192,7 @@ module Homebrew
       elsif args.installed?
         [Formula.installed.sort, Cask::Caskroom.casks.sort_by(&:full_name)]
       else
-        args.named.to_formulae_to_casks(only: args.only_formula_or_cask)
+        args.named.to_formulae_to_casks
       end
 
       {
