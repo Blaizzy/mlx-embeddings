@@ -65,7 +65,7 @@ module Homebrew
           match_data
         end
 
-        sig { params(content).returns(T.nilable(Item)) }
+        sig { params(content: String).returns(T.nilable(Item)) }
         def self.item_from_content(content)
           require "nokogiri"
 
@@ -99,7 +99,7 @@ module Homebrew
             Item.new(**data) unless data.empty?
           end.compact
 
-          item = items.max_by(&:bundle_version)
+          items.max_by(&:bundle_version)
         end
         private_class_method :item_from_content
 
