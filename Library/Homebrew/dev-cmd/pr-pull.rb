@@ -343,15 +343,10 @@ module Homebrew
   end
 
   def download_artifact(url, dir, pr)
-    token, username = GitHub.api_credentials
-    case GitHub.api_credentials_type
-    when :env_username_password, :keychain_username_password
-      curl_args = ["--user", "#{username}:#{token}"]
-    when :env_token
-      curl_args = ["--header", "Authorization: token #{token}"]
-    when :none
-      raise "Credentials must be set to access the Artifacts API"
-    end
+    raise "Credentials must be set to access the Artifacts API" if GitHub.api_credentials_type == :none
+
+    token = GitHub.api_credentials
+    curl_args = ["--header", "Authorization: token #{token}"]
 
     # Download the artifact as a zip file and unpack it into `dir`. This is
     # preferred over system `curl` and `tar` as this leverages the Homebrew
