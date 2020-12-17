@@ -281,5 +281,28 @@ describe SystemCommand do
         }.to raise_error.with_message(redacted_msg).and output(redacted_msg).to_stderr
       end
     end
+
+    context "when a `SIGINT` handler is set in the parent process" do
+      it "is not interrupted" do
+        start_time = Time.now
+
+        pid = fork do
+          trap("INT") do
+            # Ignore SIGINT.
+          end
+
+          described_class.run! "sleep", args: [5]
+
+          exit!
+        end
+
+        sleep 1
+        Process.kill("INT", pid)
+
+        Process.waitpid(pid)
+
+        expect(Time.now - start_time).to be >= 5
+      end
+    end
   end
 end
