@@ -466,7 +466,7 @@ then
 Your xcode-select path is currently set to '/'.
 This causes the 'xcrun' tool to hang, and can render Homebrew unusable.
 If you are using Xcode, you should:
-  sudo xcode-select -switch /Applications/Xcode.app
+  sudo xcode-select --switch /Applications/Xcode.app
 Otherwise, you should:
   sudo rm -rf /usr/share/xcode-select
 EOS

@@ -241,7 +241,7 @@ module Homebrew
         <<~EOS
           Your Xcode is configured with an invalid path.
           You should change it to the correct path:
-            sudo xcode-select -switch #{path}
+            sudo xcode-select --switch #{path}
         EOS
       end
 
