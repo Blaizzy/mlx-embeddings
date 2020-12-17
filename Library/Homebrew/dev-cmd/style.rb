@@ -29,6 +29,10 @@ module Homebrew
              description: "Include the RuboCop cop name for each violation in the output."
       switch "--reset-cache",
              description: "Reset the RuboCop cache."
+      switch "--formula", "--formulae",
+             description: "Treat all named arguments as formulae."
+      switch "--cask", "--casks",
+             description: "Treat all named arguments as casks."
       comma_array "--only-cops",
                   description: "Specify a comma-separated <cops> list to check for violations of only the "\
                                "listed RuboCop cops."
@@ -36,6 +40,7 @@ module Homebrew
                   description: "Specify a comma-separated <cops> list to skip checking for violations of the "\
                                "listed RuboCop cops."
 
+      conflicts "--formula", "--cask"
       conflicts "--only-cops", "--except-cops"
     end
   end
@@ -43,10 +48,13 @@ module Homebrew
   def style
     args = style_args.parse
 
+    only = :formula if args.formula? && !args.cask?
+    only = :cask if args.cask? && !args.formula?
+
     target = if args.no_named?
       nil
     else
-      args.named.to_paths
+      args.named.to_paths(only: only)
     end
 
     only_cops = args.only_cops

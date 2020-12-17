@@ -1243,6 +1243,10 @@ including core code and all formulae.
   Include the RuboCop cop name for each violation in the output.
 * `--reset-cache`:
   Reset the RuboCop cache.
+* `--formula`:
+  Treat all named arguments as formulae.
+* `--cask`:
+  Treat all named arguments as casks.
 * `--only-cops`:
   Specify a comma-separated *`cops`* list to check for violations of only the listed RuboCop cops.
 * `--except-cops`:
