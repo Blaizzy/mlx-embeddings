@@ -2278,7 +2278,6 @@ class Formula
       if args.nil?
         @licenses
       else
-        odisabled "`license [...]`", "`license any_of: [...]`" if args.is_a? Array
         @licenses = args
       end
     end

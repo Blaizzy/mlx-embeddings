@@ -64,42 +64,6 @@ module Homebrew
         named.blank?
       end
 
-      def formulae
-        odisabled "args.formulae", "args.named.to_formulae"
-      end
-
-      def formulae_and_casks
-        odisabled "args.formulae_and_casks", "args.named.to_formulae_and_casks"
-      end
-
-      def resolved_formulae
-        odisabled "args.resolved_formulae", "args.named.to_resolved_formulae"
-      end
-
-      def resolved_formulae_casks
-        odisabled "args.resolved_formulae_casks", "args.named.to_resolved_formulae_to_casks"
-      end
-
-      def formulae_paths
-        odisabled "args.formulae_paths", "args.named.to_formulae_paths"
-      end
-
-      def casks
-        odisabled "args.casks", "args.named.homebrew_tap_cask_names"
-      end
-
-      def loaded_casks
-        odisabled "args.loaded_casks", "args.named.to_cask"
-      end
-
-      def kegs
-        odisabled "args.kegs", "args.named.to_kegs"
-      end
-
-      def kegs_casks
-        odisabled "args.kegs", "args.named.to_kegs_to_casks"
-      end
-
       def build_stable?
         !HEAD?
       end

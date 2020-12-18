@@ -361,7 +361,7 @@ module Homebrew
   def pr_pull
     args = pr_pull_args.parse
 
-    odeprecated "`brew pr-pull --workflow`", "`brew pr-pull --workflows=`" if args.workflow.presence
+    odisabled "`brew pr-pull --workflow`", "`brew pr-pull --workflows=`" if args.workflow.presence
 
     workflows = if args.workflow.blank?
       args.workflows.presence || ["tests.yml"]

@@ -33,13 +33,10 @@ class JavaRequirement < Requirement
     next true
   end
 
-  def initialize(tags = [])
-    odeprecated "depends_on :java",
-                '"depends_on "openjdk@11", "depends_on "openjdk@8" or "depends_on "openjdk"'
-
-    @version = tags.shift if tags.first&.match?(/^\d/)
-    super(tags)
-    @cask = suggestion.token
+  def initialize(_tags = [])
+    odisabled "depends_on :java",
+              '"depends_on "openjdk@11", "depends_on "openjdk@8" or "depends_on "openjdk"'
+    super
   end
 
   sig { returns(String) }

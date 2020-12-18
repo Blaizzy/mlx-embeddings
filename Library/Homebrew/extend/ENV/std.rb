@@ -99,6 +99,8 @@ module Stdenv
 
   %w[O3 O2 O1 O0 Os].each do |opt|
     define_method opt do
+      odeprecated "ENV.#{opt}"
+
       send(:remove_from_cflags, /-O./)
       send(:append_to_cflags, "-#{opt}")
     end
@@ -139,18 +141,24 @@ module Stdenv
 
   sig { void }
   def m64
+    odeprecated "ENV.m64"
+
     append_to_cflags "-m64"
     append "LDFLAGS", "-arch #{Hardware::CPU.arch_64_bit}"
   end
 
   sig { void }
   def m32
+    odeprecated "ENV.m32"
+
     append_to_cflags "-m32"
     append "LDFLAGS", "-arch #{Hardware::CPU.arch_32_bit}"
   end
 
   sig { void }
   def universal_binary
+    odeprecated "ENV.universal_binary"
+
     check_for_compiler_universal_support
 
     append_to_cflags Hardware::CPU.universal_archs.as_arch_flags
@@ -176,6 +184,8 @@ module Stdenv
 
   sig { void }
   def libstdcxx
+    odeprecated "ENV.libstdcxx"
+
     append "CXX", "-stdlib=libstdc++" if compiler == :clang
   end
 
