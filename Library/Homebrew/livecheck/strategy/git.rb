@@ -26,7 +26,7 @@ module Homebrew
       class Git
         # The priority of the strategy on an informal scale of 1 to 10 (from
         # lowest to highest).
-        PRIORITY = 7
+        PRIORITY = 8
 
         # Fetches a remote Git repository's tags using `git ls-remote --tags`
         # and parses the command's output. If a regex is provided, it will be
