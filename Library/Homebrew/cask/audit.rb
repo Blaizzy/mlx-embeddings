@@ -298,7 +298,7 @@ module Cask
     end
 
     def check_hosting_with_appcast
-      return if cask.appcast
+      return if cask.appcast || cask.livecheckable?
 
       add_appcast = "please add an appcast. See https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/stanzas/appcast.md"
 
