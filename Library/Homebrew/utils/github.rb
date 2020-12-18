@@ -312,7 +312,14 @@ module GitHub
   end
 
   def search_code(**qualifiers)
-    search("code", **qualifiers)
+    matches = search("code", **qualifiers)
+    return matches if matches.blank?
+
+    matches.map do |match|
+      # .sub workaround for GitHub returning preceding /
+      match["path"] = match["path"].sub(%r{^/}, "")
+      match
+    end
   end
 
   def issues_for_formula(name, tap: CoreTap.instance, tap_full_name: tap.full_name, state: nil)
