@@ -144,10 +144,12 @@ module Homebrew
 
         args << "--color" if Tty.color?
 
-        system cache_env, "rubocop", *args
+        system cache_env, RUBY_PATH, ENV["HOMEBREW_RUBY_WARNINGS"], "-S", "rubocop", *args
         $CHILD_STATUS.success?
       when :json
-        result = system_command "rubocop", args: ["--format", "json", *args], env: cache_env
+        result = system_command RUBY_PATH,
+                                args: [ENV["HOMEBREW_RUBY_WARNINGS"], "-S", "rubocop", "--format", "json", *args],
+                                env:  cache_env
         json = json_result!(result)
         json["files"]
       end
