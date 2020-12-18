@@ -165,34 +165,37 @@ RSpec.configure do |config|
 
   config.around do |example|
     def find_files
+      return [] unless File.exist?(TEST_TMPDIR)
+
       Find.find(TEST_TMPDIR)
           .reject { |f| File.basename(f) == ".DS_Store" }
+          .reject { |f| TEST_DIRECTORIES.include?(Pathname(f)) }
           .map { |f| f.sub(TEST_TMPDIR, "") }
     end
 
+    Homebrew.raise_deprecation_exceptions = true
+
+    Formulary.clear_cache
+    Tap.clear_cache
+    DependencyCollector.clear_cache
+    Formula.clear_cache
+    Keg.clear_cache
+    Tab.clear_cache
+    FormulaInstaller.clear_attempted
+    FormulaInstaller.clear_installed
+
+    TEST_DIRECTORIES.each(&:mkpath)
+
+    @__homebrew_failed = Homebrew.failed?
+
+    @__files_before_test = find_files
+
+    @__env = ENV.to_hash # dup doesn't work on ENV
+
+    @__stdout = $stdout.clone
+    @__stderr = $stderr.clone
+
     begin
-      Homebrew.raise_deprecation_exceptions = true
-
-      Formulary.clear_cache
-      Tap.clear_cache
-      DependencyCollector.clear_cache
-      Formula.clear_cache
-      Keg.clear_cache
-      Tab.clear_cache
-      FormulaInstaller.clear_attempted
-      FormulaInstaller.clear_installed
-
-      TEST_DIRECTORIES.each(&:mkpath)
-
-      @__homebrew_failed = Homebrew.failed?
-
-      @__files_before_test = find_files
-
-      @__env = ENV.to_hash # dup doesn't work on ENV
-
-      @__stdout = $stdout.clone
-      @__stderr = $stderr.clone
-
       if (example.metadata.keys & [:focus, :byebug]).empty? && !ENV.key?("VERBOSE_TESTS")
         $stdout.reopen(File::NULL)
         $stderr.reopen(File::NULL)
@@ -224,7 +227,7 @@ RSpec.configure do |config|
       Tab.clear_cache
 
       FileUtils.rm_rf [
-        TEST_DIRECTORIES.map(&:children),
+        *TEST_DIRECTORIES,
         *Keg::MUST_EXIST_SUBDIRECTORIES,
         HOMEBREW_LINKED_KEGS,
         HOMEBREW_PINNED_KEGS,

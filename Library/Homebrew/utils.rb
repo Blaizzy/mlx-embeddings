@@ -388,13 +388,30 @@ module Kernel
     Pathname.new(cmd).archs
   end
 
-  def ignore_interrupts(opt = nil)
-    std_trap = trap("INT") do
-      puts "One sec, just cleaning up" unless opt == :quietly
+  def ignore_interrupts(_opt = nil)
+    # rubocop:disable Style/GlobalVars
+    $ignore_interrupts_nesting_level = 0 unless defined?($ignore_interrupts_nesting_level)
+    $ignore_interrupts_nesting_level += 1
+
+    $ignore_interrupts_interrupted = false unless defined?($ignore_interrupts_interrupted)
+    old_sigint_handler = trap(:INT) do
+      $ignore_interrupts_interrupted = true
+      $stderr.print "\n"
+      $stderr.puts "One sec, cleaning up..."
     end
-    yield
-  ensure
-    trap("INT", std_trap)
+
+    begin
+      yield
+    ensure
+      trap(:INT, old_sigint_handler)
+
+      $ignore_interrupts_nesting_level -= 1
+      if $ignore_interrupts_nesting_level == 0 && $ignore_interrupts_interrupted
+        $ignore_interrupts_interrupted = false
+        raise Interrupt
+      end
+    end
+    # rubocop:enable Style/GlobalVars
   end
 
   sig { returns(String) }
