@@ -27,9 +27,7 @@ module Homebrew
 
           if (item = item_from_content(contents))
             match = if block
-              item[:short_version] = item[:bundle_version]&.short_version
-              item[:version] = item[:bundle_version]&.version
-              block.call(item).to_s
+              block.call(item)&.to_s
             else
               item.bundle_version&.nice_version
             end
@@ -65,10 +63,14 @@ module Homebrew
               version ||= match[2]
             end
 
+            bundle_version = BundleVersion.new(short_version, version) if short_version || version
+
             data = {
               title:          title,
               url:            url,
-              bundle_version: short_version || version ? BundleVersion.new(short_version, version) : nil,
+              bundle_version: bundle_version,
+              short_version:  bundle_version&.short_version,
+              version:        bundle_version&.version,
             }.compact
 
             Item.new(**data) unless data.empty?

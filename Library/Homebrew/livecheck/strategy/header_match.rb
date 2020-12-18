@@ -34,33 +34,33 @@ module Homebrew
         def self.find_versions(url, regex, &block)
           match_data = { matches: {}, regex: regex, url: url }
 
-          data = { headers: Strategy.page_headers(url) }
+          headers = Strategy.page_headers(url)
 
-          if (filename = data[:headers]["content-disposition"])
-            if regex
-              data[:version] ||= location[regex, 1]
-            else
-              v = Version.parse(filename, detected_from_url: true)
-              data[:version] ||= v.to_s unless v.null?
-            end
-          end
-
-          if (location = data[:headers]["location"])
-            if regex
-              data[:version] ||= location[regex, 1]
-            else
-              v = Version.parse(location, detected_from_url: true)
-              data[:version] ||= v.to_s unless v.null?
-            end
-          end
-
-          version = if block
-            block.call(data[:headers])
+          if block
+            match = block.call(headers)
           else
-            data[:version]
+            match = nil
+
+            if (filename = headers["content-disposition"])
+              if regex
+                match ||= location[regex, 1]
+              else
+                v = Version.parse(filename, detected_from_url: true)
+                match ||= v.to_s unless v.null?
+              end
+            end
+
+            if (location = headers["location"])
+              if regex
+                match ||= location[regex, 1]
+              else
+                v = Version.parse(location, detected_from_url: true)
+                match ||= v.to_s unless v.null?
+              end
+            end
           end
 
-          match_data[:matches][version] = Version.new(version) if version
+          match_data[:matches][match] = Version.new(match) if match
 
           match_data
         end
