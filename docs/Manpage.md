@@ -1150,8 +1150,6 @@ Requires write access to the repository.
   Warn instead of raising an error if the bottle upload fails. Useful for repairing bottle uploads that previously failed.
 * `--message`:
   Message to include when autosquashing revision bumps, deletions, and rebuilds.
-* `--workflow`:
-  Retrieve artifacts from the specified workflow (default: `tests.yml`). *Legacy:* use `--workflows` instead.
 * `--artifact`:
   Download artifacts with the specified name (default: `bottles`).
 * `--bintray-org`:
@@ -1163,7 +1161,7 @@ Requires write access to the repository.
 * `--bintray-mirror`:
   Use the specified Bintray repository to automatically mirror stable URLs defined in the formulae (default: `mirror`).
 * `--workflows`:
-  Retrieve artifacts from the specified workflow (default: `tests.yml`) Comma-separated list to include multiple workflows.
+  Retrieve artifacts from the specified workflow (default: `tests.yml`). Can be a comma-separated list to include multiple workflows.
 * `--ignore-missing-artifacts`:
   Comma-separated list of workflows which can be ignored if they have not been run.
 

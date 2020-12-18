@@ -50,10 +50,8 @@ module Homebrew
              depends_on:  "--autosquash",
              description: "Message to include when autosquashing revision bumps, deletions, and rebuilds."
       flag   "--workflow=",
-             description: "Retrieve artifacts from the specified workflow (default: `tests.yml`). "\
-                          "*Legacy:* use `--workflows` instead."
-      # TODO: enable for next major/minor release
-      #      replacement: "`--workflows`"
+             description: "Retrieve artifacts from the specified workflow (default: `tests.yml`).",
+             replacement: "`--workflows`"
       flag   "--artifact=",
              description: "Download artifacts with the specified name (default: `bottles`)."
       flag   "--bintray-org=",
@@ -66,8 +64,8 @@ module Homebrew
              description: "Use the specified Bintray repository to automatically mirror stable URLs "\
                           "defined in the formulae (default: `mirror`)."
       comma_array "--workflows=",
-                  description: "Retrieve artifacts from the specified workflow (default: `tests.yml`) "\
-                               "Comma-separated list to include multiple workflows."
+                  description: "Retrieve artifacts from the specified workflow (default: `tests.yml`). "\
+                               "Can be a comma-separated list to include multiple workflows."
       comma_array "--ignore-missing-artifacts=",
                   description: "Comma-separated list of workflows which can be ignored if they have not been run."
 
