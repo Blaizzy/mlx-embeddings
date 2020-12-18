@@ -55,7 +55,7 @@ module Homebrew
           end
 
           version = if block
-            block.call(data)
+            block.call(data[:headers])
           else
             data[:version]
           end
