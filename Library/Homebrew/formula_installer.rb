@@ -234,7 +234,8 @@ class FormulaInstaller
 
     if Homebrew.default_prefix? && !Homebrew::EnvConfig.developer? &&
        !build_from_source? && !build_bottle? &&
-       formula.tap&.core_tap? && !formula.bottle_unneeded? &&
+       !installed_as_dependency? &&
+       formula.tap&.core_tap? && !formula.bottle_unneeded? && !formula.any_version_installed? &&
        # Integration tests override homebrew-core locations
        ENV["HOMEBREW_TEST_TMPDIR"].nil? &&
        !pour_bottle?
@@ -684,6 +685,7 @@ class FormulaInstaller
       # been done for us in `compute_dependencies` and there's no requirement to
       # fetch in a particular order.
       ignore_deps:                true,
+      installed_as_dependency:    true,
       include_test_formulae:      @include_test_formulae,
       build_from_source_formulae: @build_from_source_formulae,
       keep_tmp:                   keep_tmp?,
