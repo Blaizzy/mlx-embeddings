@@ -317,7 +317,7 @@ module GitHub
 
     matches.map do |match|
       # .sub workaround for GitHub returning preceding /
-      match["path"] = match["path"].sub(%r{^/}, "")
+      match["path"] = match["path"].delete_prefix("/")
       match
     end
   end
