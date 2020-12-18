@@ -2526,9 +2526,6 @@ class Formula
     # depends_on "sqlite" if MacOS.version >= :catalina
     # depends_on xcode: :build # If the formula really needs full Xcode to compile.
     # depends_on macos: :mojave # Needs at least macOS Mojave (10.14) to run.
-    # depends_on x11: :optional # X11/XQuartz components.
-    # depends_on :osxfuse # Permits the use of the upstream signed binary or our cask.
-    # depends_on :tuntap # Does the same thing as above. This is vital for Yosemite and later.</pre>
     # <pre># It is possible to only depend on something if
     # # `build.with?` or `build.without? "another_formula"`:
     # depends_on "postgresql" if build.without? "sqlite"</pre>

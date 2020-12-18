@@ -4,33 +4,10 @@
 module Stdenv
   # @private
 
-  undef homebrew_extra_pkg_config_paths, x11
+  undef homebrew_extra_pkg_config_paths
 
   def homebrew_extra_pkg_config_paths
     ["#{HOMEBREW_LIBRARY}/Homebrew/os/mac/pkgconfig/#{MacOS.sdk_version}"]
-  end
-
-  def x11
-    # There are some config scripts here that should go in the PATH
-    append_path "PATH", MacOS::XQuartz.bin.to_s
-
-    # Append these to PKG_CONFIG_LIBDIR so they are searched
-    # *after* our own pkgconfig directories, as we dupe some of the
-    # libs in XQuartz.
-    append_path "PKG_CONFIG_LIBDIR", "#{MacOS::XQuartz.lib}/pkgconfig"
-    append_path "PKG_CONFIG_LIBDIR", "#{MacOS::XQuartz.share}/pkgconfig"
-
-    append "LDFLAGS", "-L#{MacOS::XQuartz.lib}"
-    append_path "CMAKE_PREFIX_PATH", MacOS::XQuartz.prefix.to_s
-    append_path "CMAKE_INCLUDE_PATH", MacOS::XQuartz.include.to_s
-    append_path "CMAKE_INCLUDE_PATH", "#{MacOS::XQuartz.include}/freetype2"
-
-    append "CPPFLAGS", "-I#{MacOS::XQuartz.include}"
-    append "CPPFLAGS", "-I#{MacOS::XQuartz.include}/freetype2"
-
-    append_path "ACLOCAL_PATH", "#{MacOS::XQuartz.share}/aclocal"
-
-    append "CFLAGS", "-I#{MacOS::XQuartz.include}" unless MacOS::CLT.installed?
   end
 
   def setup_build_environment(**options)

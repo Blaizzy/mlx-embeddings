@@ -27,8 +27,7 @@ module Cask
         arm64:  { type: :arm, bits: 64 },
       }.freeze
 
-      attr_accessor :java
-      attr_reader :arch, :cask, :formula, :macos, :x11
+      attr_reader :arch, :cask, :formula, :java, :macos, :x11
 
       def initialize
         super({})
@@ -83,8 +82,16 @@ module Cask
         @arch.concat(arches.map { |arch| VALID_ARCHES[arch] })
       end
 
+      def java=(arg)
+        odeprecated "depends_on :java", "depends_on a specific Java formula"
+
+        @java = arg
+      end
+
       def x11=(arg)
         raise "invalid 'depends_on x11' value: #{arg.inspect}" unless [true, false].include?(arg)
+
+        odeprecated "depends_on :x11", "depends_on specific X11 formula(e)"
 
         @x11 = arg
       end

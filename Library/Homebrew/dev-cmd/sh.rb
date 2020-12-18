@@ -36,10 +36,7 @@ module Homebrew
 
     ENV.activate_extensions!(env: args.env)
 
-    if superenv?(args.env)
-      ENV.set_x11_env_if_installed
-      ENV.deps = Formula.installed.select { |f| f.keg_only? && f.opt_prefix.directory? }
-    end
+    ENV.deps = Formula.installed.select { |f| f.keg_only? && f.opt_prefix.directory? } if superenv?(args.env)
     ENV.setup_build_environment
     if superenv?(args.env)
       # superenv stopped adding brew's bin but generally users will want it

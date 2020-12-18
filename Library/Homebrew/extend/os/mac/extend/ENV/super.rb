@@ -23,7 +23,7 @@ module Superenv
         homebrew_extra_cmake_include_paths,
         homebrew_extra_cmake_library_paths,
         homebrew_extra_cmake_frameworks_paths,
-        determine_cccfg, set_x11_env_if_installed
+        determine_cccfg
 
   def homebrew_extra_paths
     paths = []
@@ -103,10 +103,6 @@ module Superenv
     # Fix issue with >= Mountain Lion apr-1-config having broken paths
     s << "a"
     s.freeze
-  end
-
-  def set_x11_env_if_installed
-    ENV.x11 = MacOS::XQuartz.installed?
   end
 
   # @private

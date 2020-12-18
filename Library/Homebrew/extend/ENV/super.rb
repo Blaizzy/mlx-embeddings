@@ -343,7 +343,9 @@ module Superenv
   end
 
   sig { void }
-  def set_x11_env_if_installed; end
+  def set_x11_env_if_installed
+    odeprecated "ENV.set_x11_env_if_installed"
+  end
 end
 
 require "extend/os/extend/ENV/super"

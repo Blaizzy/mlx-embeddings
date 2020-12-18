@@ -9,6 +9,11 @@ require "requirement"
 class TuntapRequirement < Requirement
   extend T::Sig
 
+  def initialize(tags = [])
+    odeprecated "depends_on :tuntap"
+    super(tags)
+  end
+
   fatal true
   cask "tuntap"
   satisfy(build_env: false) { self.class.binary_tuntap_installed? }
