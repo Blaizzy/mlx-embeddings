@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "bundle_version"
@@ -11,35 +11,10 @@ module Homebrew
       # its contents as a Sparkle appcast in XML format.
       #
       # @api private
-      class Sparkle
+      class Sparkle < PageMatch
         extend T::Sig
 
         NICE_NAME = "Sparkle"
-
-        PRIORITY = 1
-
-        # Whether the strategy can be applied to the provided URL.
-        sig { params(url: String).returns(T::Boolean) }
-        def self.match?(url)
-          return false unless url.match?(%r{^https?://})
-
-          xml = url.end_with?(".xml")
-          xml ||= begin
-            headers = Strategy.page_headers(url)
-            content_type = headers["content-type"]
-            content_type.blank? || content_type.include?("xml")
-          end
-          return false unless xml
-
-          contents = Strategy.page_contents(url)
-
-          return true if contents.match?(%r{https?://www.andymatuschak.org/xml-namespaces/sparkle})
-
-          contents.include?("rss") &&
-            contents.include?("channel") &&
-            contents.include?("item") &&
-            contents.include?("enclosure")
-        end
 
         # Checks the content at the URL for new versions.
         sig { params(url: String, regex: T.nilable(Regexp)).returns(T::Hash[Symbol, T.untyped]) }
