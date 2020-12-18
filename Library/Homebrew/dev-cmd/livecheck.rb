@@ -96,6 +96,9 @@ module Homebrew
         rescue Errno::ENOENT => e
           onoe e
         end
+      else
+        raise UsageError, "ENV['HOMEBREW_LIVECHECK_WATCHLIST'] or ~/.brew_livecheck_watchlist is required " \
+                          "if no formula or cask argument is passed"
       end&.sort_by do |formula_or_cask|
         formula_or_cask.respond_to?(:token) ? formula_or_cask.token : formula_or_cask.name
       end
