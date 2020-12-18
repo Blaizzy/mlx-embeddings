@@ -50,8 +50,7 @@ module Homebrew
           page = Strategy.page_contents(url)
 
           if block
-            data = { page: page }
-            case (value = block.call(data))
+            case (value = block.call(page))
             when String
               return [value]
             when Array
