@@ -254,7 +254,6 @@ module Homebrew
     tar_path = Pathname.pwd/tar_filename
 
     prefix = HOMEBREW_PREFIX.to_s
-    repository = HOMEBREW_REPOSITORY.to_s
     cellar = HOMEBREW_CELLAR.to_s
 
     ohai "Bottling #{filename}..."
@@ -326,13 +325,24 @@ module Homebrew
           ignores << %r{#{Regexp.escape(HOMEBREW_CELLAR)}/#{go_regex}/[\d.]+/libexec}
         end
 
+        repository_reference = if HOMEBREW_PREFIX == HOMEBREW_REPOSITORY
+          HOMEBREW_LIBRARY
+        else
+          HOMEBREW_REPOSITORY
+        end.to_s
+        if keg_contain?(repository_reference, keg, ignores, args: args)
+          odie "Bottle contains non-relocatable reference to #{repository_reference}!"
+        end
+
         relocatable = true
         if args.skip_relocation?
           skip_relocation = true
         else
           relocatable = false if keg_contain?(prefix_check, keg, ignores, formula_and_runtime_deps_names, args: args)
-          relocatable = false if keg_contain?(repository, keg, ignores, args: args)
           relocatable = false if keg_contain?(cellar, keg, ignores, formula_and_runtime_deps_names, args: args)
+          if keg_contain?(HOMEBREW_LIBRARY.to_s, keg, ignores, formula_and_runtime_deps_names, args: args)
+            relocatable = false
+          end
           if prefix != prefix_check
             relocatable = false if keg_contain_absolute_symlink_starting_with?(prefix, keg, args: args)
             relocatable = false if keg_contain?("#{prefix}/etc", keg, ignores, args: args)

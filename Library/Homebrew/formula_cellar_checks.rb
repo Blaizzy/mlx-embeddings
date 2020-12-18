@@ -7,10 +7,6 @@ require "utils/shell"
 #
 # @api private
 module FormulaCellarChecks
-  # If the location of HOMEBREW_LIBRARY changes
-  # keg_relocate.rb, test/global_spec.rb, and this constant need to change.
-  REPOSITORY_AND_NOT_LIBRARY_REGEX = %r{#{HOMEBREW_REPOSITORY}(?!/Library/)}.freeze
-
   def check_env_path(bin)
     # warn the user if stuff was installed outside of their PATH
     return unless bin.directory?
@@ -211,26 +207,6 @@ module FormulaCellarChecks
     EOS
   end
 
-  def check_repository_references(prefix)
-    return if HOMEBREW_PREFIX != HOMEBREW_REPOSITORY
-    return unless prefix.directory?
-
-    keg = Keg.new(prefix)
-
-    matches = []
-    keg.each_unique_file_matching(HOMEBREW_REPOSITORY) do |f|
-      matches << f.relative_path_from(keg.to_path) if f.read.match? REPOSITORY_AND_NOT_LIBRARY_REGEX
-    end
-
-    return if matches.empty?
-
-    <<~EOS
-      Files were found with references to the Homebrew repository directory
-      that are outside of the Library directory. The offending files are:
-        #{matches * "\n  "}
-    EOS
-  end
-
   def check_shim_references(prefix)
     return unless prefix.directory?
 
@@ -316,7 +292,6 @@ module FormulaCellarChecks
     problem_if_output(check_elisp_dirname(formula.share, formula.name))
     problem_if_output(check_elisp_root(formula.share, formula.name))
     problem_if_output(check_python_packages(formula.lib, formula.deps))
-    problem_if_output(check_repository_references(formula.prefix))
     problem_if_output(check_shim_references(formula.prefix))
     problem_if_output(check_plist(formula.prefix, formula.plist))
     problem_if_output(check_python_symlinks(formula.name, formula.keg_only?))

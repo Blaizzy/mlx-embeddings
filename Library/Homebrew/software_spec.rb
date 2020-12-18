@@ -389,6 +389,7 @@ class BottleSpecification
     # Only check the repository matches if the prefix is the default.
     # This is because the bottle DSL does not allow setting a custom repository
     # but does allow setting a custom prefix.
+    # TODO: delete this after Homebrew 2.7.0 is released.
     compatible_repository = if Homebrew.default_prefix?(prefix)
       repository == HOMEBREW_REPOSITORY.to_s
     else
