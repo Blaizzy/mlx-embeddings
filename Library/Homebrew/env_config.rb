@@ -155,10 +155,6 @@ module Homebrew
                      "of Ruby is new enough.",
         boolean:     true,
       },
-      HOMEBREW_GITHUB_API_PASSWORD:           {
-        description: "Use this password for authentication with the GitHub API, for features " \
-                     "such as `brew search`. This is deprecated in favour of using `HOMEBREW_GITHUB_API_TOKEN`.",
-      },
       HOMEBREW_GITHUB_API_TOKEN:              {
         description: "Use this personal access token for the GitHub API, for features such as " \
                      "`brew search`. You can create one at <https://github.com/settings/tokens>. If set, " \
@@ -166,10 +162,6 @@ module Homebrew
                      "<https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting>" \
                      "\n\n    *Note:* Homebrew doesn't require permissions for any of the scopes, but some " \
                      "developer commands may require additional permissions.",
-      },
-      HOMEBREW_GITHUB_API_USERNAME:           {
-        description: "Use this username for authentication with the GitHub API, for features " \
-                     "such as `brew search`. This is deprecated in favour of using `HOMEBREW_GITHUB_API_TOKEN`.",
       },
       HOMEBREW_GIT_EMAIL:                     {
         description: "Set the Git author and committer email to this value.",

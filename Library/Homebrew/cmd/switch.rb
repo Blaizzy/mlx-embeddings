@@ -25,41 +25,8 @@ module Homebrew
   end
 
   def switch
-    args = switch_args.parse
+    switch_args.parse
 
-    name = args.named.first
-    rack = Formulary.to_rack(name)
-
-    odie "#{name} not found in the Cellar." unless rack.directory?
-
-    odeprecated "`brew switch`", "`brew link` @-versioned formulae"
-
-    versions = rack.subdirs
-                   .map { |d| Keg.new(d).version }
-                   .sort
-                   .join(", ")
-    version = args.named.second
-
-    odie <<~EOS unless (rack/version).directory?
-      #{name} does not have a version \"#{version}\" in the Cellar.
-      #{name}'s installed versions: #{versions}
-    EOS
-
-    # Unlink all existing versions
-    rack.subdirs.each do |v|
-      keg = Keg.new(v)
-      puts "Cleaning #{keg}"
-      keg.unlink
-    end
-
-    keg = Keg.new(rack/version)
-
-    # Link new version, if not keg-only
-    if Formulary.keg_only?(rack)
-      keg.optlink(verbose: args.verbose?)
-      puts "Opt link created for #{keg}"
-    else
-      puts "#{keg.link} links created for #{keg}"
-    end
+    odisabled "`brew switch`", "`brew link` @-versioned formulae"
   end
 end

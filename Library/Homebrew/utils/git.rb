@@ -88,10 +88,8 @@ module Utils
       Utils.popen_read(git, "-C", repo, "show", "#{commit}:#{relative_file}")
     end
 
-    def commit_message(repo, commit = nil)
-      odeprecated "Utils::Git.commit_message(repo)", "Pathname(repo).git_commit_message"
-      commit ||= "HEAD"
-      Pathname(repo).extend(GitRepositoryExtension).git_commit_message(commit)
+    def commit_message(_repo, _commit = nil)
+      odisabled "Utils::Git.commit_message(repo)", "Pathname(repo).git_commit_message"
     end
 
     def ensure_installed!
@@ -135,14 +133,12 @@ module Utils
                         .prepend(Formula["gnupg"].opt_bin)
     end
 
-    def origin_branch(repo)
-      odeprecated "Utils::Git.origin_branch(repo)", "Pathname(repo).git_origin_branch"
-      Pathname(repo).extend(GitRepositoryExtension).git_origin_branch
+    def origin_branch(_repo)
+      odisabled "Utils::Git.origin_branch(repo)", "Pathname(repo).git_origin_branch"
     end
 
-    def current_branch(repo)
-      odeprecated "Utils::Git.current_branch(repo)", "Pathname(repo).git_branch"
-      Pathname(repo).extend(GitRepositoryExtension).git_branch
+    def current_branch(_repo)
+      odisabled "Utils::Git.current_branch(repo)", "Pathname(repo).git_branch"
     end
 
     # Special case of `git cherry-pick` that permits non-verbose output and

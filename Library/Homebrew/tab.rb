@@ -232,14 +232,6 @@ class Tab < OpenStruct
     used_options.include? opt
   end
 
-  def universal?
-    odisabled "Tab#universal?"
-  end
-
-  def cxx11?
-    odisabled "Tab#cxx11?"
-  end
-
   def head?
     spec == :head
   end

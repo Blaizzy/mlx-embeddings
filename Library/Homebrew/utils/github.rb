@@ -92,13 +92,6 @@ module GitHub
     end
   end
 
-  def env_username_password
-    return unless Homebrew::EnvConfig.github_api_username
-    return unless Homebrew::EnvConfig.github_api_password
-
-    odisabled "the GitHub API with HOMEBREW_GITHUB_API_PASSWORD", "HOMEBREW_GITHUB_API_TOKEN"
-  end
-
   # Gets the password field from `git-credential-osxkeychain` for github.com,
   # but only if that password looks like a GitHub Personal Access Token.
   sig { returns(T.nilable(String)) }
@@ -128,7 +121,7 @@ module GitHub
 
   def api_credentials
     @api_credentials ||= begin
-      Homebrew::EnvConfig.github_api_token || env_username_password || keychain_username_password
+      Homebrew::EnvConfig.github_api_token || keychain_username_password
     end
   end
 
@@ -136,8 +129,6 @@ module GitHub
   def api_credentials_type
     if Homebrew::EnvConfig.github_api_token
       :env_token
-    elsif env_username_password
-      :env_username_password
     elsif keychain_username_password
       :keychain_username_password
     else
