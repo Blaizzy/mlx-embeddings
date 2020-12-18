@@ -64,10 +64,8 @@ module Homebrew
             # present in the `livecheck` block
             next unless regex_provided || block_provided
           elsif strategy == Sparkle
-            # Skip the `Sparkle` strategy if another strategy is specified explicitly
-            # or if the URL is not specified explicitly.
+            # Skip the `Sparkle` strategy if the URL is not specified explicitly.
             next unless url_provided
-            next if livecheck_strategy && from_symbol(livecheck_strategy) != strategy
           elsif strategy.const_defined?(:PRIORITY) &&
                 !strategy::PRIORITY.positive? &&
                 from_symbol(livecheck_strategy) != strategy
