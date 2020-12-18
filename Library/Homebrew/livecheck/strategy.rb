@@ -107,7 +107,7 @@ module Homebrew
               .to_h.transform_keys(&:downcase))
           end
 
-          return headers if status.success?
+          return (@headers[url] = headers) if status.success?
         end
 
         headers
