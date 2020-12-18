@@ -1049,6 +1049,7 @@ class Formula
 
       with_env(new_env) do
         ENV.clear_sensitive_environment!
+        ENV.activate_extensions!
 
         etc_var_dirs = [bottle_prefix/"etc", bottle_prefix/"var"]
         T.unsafe(Find).find(*etc_var_dirs.select(&:directory?)) do |path|
