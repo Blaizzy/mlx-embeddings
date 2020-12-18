@@ -25,7 +25,7 @@ describe Homebrew::Livecheck do
       desc "Deprecated test formula"
       homepage "https://brew.sh"
       url "https://brew.sh/test-0.0.1.tgz"
-      deprecate! because: :unmaintained
+      deprecate! date: "2020-06-25", because: :unmaintained
     end
   end
 
@@ -34,7 +34,7 @@ describe Homebrew::Livecheck do
       desc "Disabled test formula"
       homepage "https://brew.sh"
       url "https://brew.sh/test-0.0.1.tgz"
-      disable! because: :unmaintained
+      disable! date: "2020-06-25", because: :unmaintained
     end
   end
 
