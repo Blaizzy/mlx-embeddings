@@ -359,6 +359,15 @@ class BottleSpecification
     @root_url_specs = {}
   end
 
+  def prefix=(prefix)
+    if [HOMEBREW_DEFAULT_PREFIX,
+        HOMEBREW_MACOS_ARM_DEFAULT_PREFIX,
+        HOMEBREW_LINUX_DEFAULT_PREFIX].exclude?(prefix)
+      odeprecated "setting `prefix` for bottles"
+    end
+    @prefix = prefix
+  end
+
   def root_url(var = nil, specs = {})
     if var.nil?
       @root_url ||= "#{Homebrew::EnvConfig.bottle_domain}/#{Utils::Bottles::Bintray.repository(tap)}"
