@@ -652,11 +652,11 @@ class RuboCop::Cop::RSpec::FilePath < ::RuboCop::Cop::RSpec::Base
   def custom_transform; end
   def ensure_correct_file_path(send_node, described_class, arguments); end
   def expected_path(constant); end
-  def filename_ends_with?(glob); end
-  def glob_for(described_class, method_name); end
-  def glob_for_spec_suffix_only?; end
+  def filename_ends_with?(pattern); end
   def ignore_methods?; end
-  def name_glob(method_name); end
+  def name_pattern(method_name); end
+  def pattern_for(described_class, method_name); end
+  def pattern_for_spec_suffix_only?; end
   def relevant_rubocop_rspec_file?(_file); end
   def routing_spec?(args); end
   def spec_suffix_only?; end
@@ -669,6 +669,9 @@ module RuboCop::Cop::RSpec::FinalEndLocation
 end
 
 class RuboCop::Cop::RSpec::Focus < ::RuboCop::Cop::RSpec::Base
+  include(::RuboCop::Cop::RangeHelp)
+  extend(::RuboCop::Cop::AutoCorrector)
+
   def focusable_selector?(param0 = T.unsafe(nil)); end
   def focused_block?(param0 = T.unsafe(nil)); end
   def metadata(param0 = T.unsafe(nil)); end
@@ -676,7 +679,9 @@ class RuboCop::Cop::RSpec::Focus < ::RuboCop::Cop::RSpec::Base
 
   private
 
+  def correct_send(corrector, focus); end
   def focus_metadata(node, &block); end
+  def with_surrounding(focus); end
 end
 
 RuboCop::Cop::RSpec::Focus::MSG = T.let(T.unsafe(nil), String)
