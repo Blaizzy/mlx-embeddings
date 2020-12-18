@@ -6938,10 +6938,6 @@ module FileUtils
   extend ::FileUtils::StreamUtils_
 end
 
-class Formula
-  include ::Formula::Compat
-end
-
 module FormulaCellarChecks
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -7691,10 +7687,6 @@ class Homebrew::CLI::NamedArgs
 end
 
 class Homebrew::CLI::Parser
-  include ::Homebrew::CLI::Parser::Compat
-end
-
-class Homebrew::CLI::Parser
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -7770,11 +7762,7 @@ module Homebrew::EnvConfig
 
   def self.git_name(); end
 
-  def self.github_api_password(); end
-
   def self.github_api_token(); end
-
-  def self.github_api_username(); end
 
   def self.http_proxy(); end
 
@@ -7857,7 +7845,6 @@ end
 module Homebrew
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
-  extend ::Homebrew::Compat
 end
 
 module HostEnvironmentSimulatorHelper
