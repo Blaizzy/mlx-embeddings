@@ -15,9 +15,14 @@ module Homebrew
 
         NICE_NAME = "Header match"
 
-        # We set the priority to zero since this cannot
-        # be detected automatically.
+        # A priority of zero causes livecheck to skip the strategy. We only
+        # apply {HeaderMatch} using `strategy :header_match` in a `livecheck`
+        # block, as we can't automatically determine when this can be
+        # successfully applied to a URL.
         PRIORITY = 0
+
+        # The `Regexp` used to determine if the strategy applies to the URL.
+        URL_MATCH_REGEX = %r{^https?://}i.freeze
 
         # Whether the strategy can be applied to the provided URL.
         # The strategy will technically match any HTTP URL but is
@@ -25,7 +30,7 @@ module Homebrew
         # or block.
         sig { params(url: String).returns(T::Boolean) }
         def self.match?(url)
-          url.match?(%r{^https?://})
+          URL_MATCH_REGEX.match?(url)
         end
 
         # Checks the final URL for new versions after following all redirections,
