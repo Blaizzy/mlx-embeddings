@@ -37,8 +37,7 @@ module Homebrew
           headers = Strategy.page_headers(url)
 
           # Merge the headers from all responses into one hash
-          merged_headers = {}
-          headers.each { |resp_headers| merged_headers.merge!(resp_headers) }
+          merged_headers = headers.reduce(&:merge)
 
           if block
             match = block.call(merged_headers)
