@@ -338,8 +338,9 @@ module Homebrew
                  .sub(/^/, "#{Tty.bold}Usage: brew#{Tty.reset} ")
                  .gsub(/`(.*?)`/m, "#{Tty.bold}\\1#{Tty.reset}")
                  .gsub(%r{<([^\s]+?://[^\s]+?)>}) { |url| Formatter.url(url) }
-                 .gsub(/<(.*?)>/m, "#{Tty.underline}\\1#{Tty.reset}")
-                 .gsub(/\*(.*?)\*/m, "#{Tty.underline}\\1#{Tty.reset}")
+                 .gsub(/\*(.*?)\*|<(.*?)>/m) do |underlined|
+                   underlined[1...-1].gsub(/^(\s*)(.*?)$/, "\\1#{Tty.underline}\\2#{Tty.reset}")
+                 end
       end
 
       def cask_options
