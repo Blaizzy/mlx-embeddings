@@ -158,7 +158,7 @@ class SystemCommand
     options = {
       # Create a new process group so that we can send `SIGINT` from
       # parent to child rather than the child receiving `SIGINT` directly.
-      pgroup: true,
+      pgroup: sudo? ? nil : true,
     }
     options[:chdir] = chdir if chdir
 
@@ -174,7 +174,7 @@ class SystemCommand
 
     @status = raw_wait_thr.value
   rescue Interrupt
-    Process.kill("INT", pid) if pid
+    Process.kill("INT", pid) if pid && !sudo?
     raise Interrupt
   rescue SystemCallError => e
     @status = $CHILD_STATUS
