@@ -55,12 +55,13 @@ module Utils
     end
 
     def curl_with_workarounds(
-      *args, secrets: nil, print_stdout: nil, print_stderr: nil, verbose: nil, env: {}, **options
+      *args, secrets: nil, print_stdout: nil, print_stderr: nil, debug: nil, verbose: nil, env: {}, **options
     )
       command_options = {
         secrets:      secrets,
         print_stdout: print_stdout,
         print_stderr: print_stderr,
+        debug:        debug,
         verbose:      verbose,
       }.compact
 
