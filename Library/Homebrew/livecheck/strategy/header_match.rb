@@ -36,12 +36,16 @@ module Homebrew
 
           headers = Strategy.page_headers(url)
 
+          # Merge the headers from all responses into one hash
+          merged_headers = {}
+          headers.each { |resp_headers| merged_headers.merge!(resp_headers) }
+
           if block
-            match = block.call(headers)
+            match = block.call(merged_headers)
           else
             match = nil
 
-            if (filename = headers["content-disposition"])
+            if (filename = merged_headers["content-disposition"])
               if regex
                 match ||= location[regex, 1]
               else
@@ -50,7 +54,7 @@ module Homebrew
               end
             end
 
-            if (location = headers["location"])
+            if (location = merged_headers["location"])
               if regex
                 match ||= location[regex, 1]
               else

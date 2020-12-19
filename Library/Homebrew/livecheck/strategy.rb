@@ -86,7 +86,7 @@ module Homebrew
 
         return @headers[url] if @headers.key?(url)
 
-        headers = {}
+        headers = []
 
         [:default, :browser].each do |user_agent|
           stdout, _, status = curl_output(
@@ -99,9 +99,9 @@ module Homebrew
           while stdout.match?(/\AHTTP.*\r$/)
             h, stdout = stdout.split("\r\n\r\n", 2)
 
-            headers = headers.merge(h.split("\r\n").drop(1)
-              .map { |header| header.split(/:\s*/, 2) }
-              .to_h.transform_keys(&:downcase))
+            headers << h.split("\r\n").drop(1)
+                        .map { |header| header.split(/:\s*/, 2) }
+                        .to_h.transform_keys(&:downcase)
           end
 
           return (@headers[url] = headers) if status.success?
