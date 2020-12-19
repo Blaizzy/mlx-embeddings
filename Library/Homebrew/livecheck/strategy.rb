@@ -110,9 +110,9 @@ module Homebrew
         headers
       end
 
-      def self.page_contents(url)
-        @page_contents ||= {}
-        @page_contents[url] ||= URI.parse(url).open.read
+      def self.page_content(url)
+        @page_content ||= {}
+        @page_content[url] ||= URI.parse(url).open.read
       end
     end
   end

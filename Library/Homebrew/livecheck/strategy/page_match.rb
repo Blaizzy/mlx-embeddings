@@ -47,7 +47,7 @@ module Homebrew
         #   content
         # @return [Array]
         def self.page_matches(url, regex, &block)
-          page = Strategy.page_contents(url)
+          page = Strategy.page_content(url)
 
           if block
             case (value = block.call(page))

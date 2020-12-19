@@ -23,7 +23,7 @@ module Homebrew
 
           match_data = { matches: {}, regex: regex, url: url }
 
-          contents = Strategy.page_contents(url)
+          contents = Strategy.page_content(url)
 
           if (item = item_from_content(contents))
             match = if block
