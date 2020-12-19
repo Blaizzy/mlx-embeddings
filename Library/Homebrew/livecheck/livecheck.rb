@@ -1,6 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
+require "livecheck/error"
 require "livecheck/strategy"
 require "ruby-progressbar"
 require "uri"
@@ -145,7 +146,7 @@ module Homebrew
 
         if latest.blank?
           no_versions_msg = "Unable to get versions"
-          raise TypeError, no_versions_msg unless json
+          raise Livecheck::Error, no_versions_msg unless json
 
           next version_info if version_info.is_a?(Hash) && version_info[:status] && version_info[:messages]
 
@@ -201,7 +202,7 @@ module Homebrew
           status_hash(formula_or_cask, "error", [e.to_s], full_name: full_name, verbose: verbose)
         elsif !quiet
           onoe "#{Tty.blue}#{formula_or_cask_name(formula_or_cask, full_name: full_name)}#{Tty.reset}: #{e}"
-          $stderr.puts e.backtrace if debug
+          $stderr.puts e.backtrace if debug && !e.is_a?(Livecheck::Error)
           nil
         end
       end
