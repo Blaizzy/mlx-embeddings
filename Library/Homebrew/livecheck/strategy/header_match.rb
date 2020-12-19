@@ -47,7 +47,7 @@ module Homebrew
 
             if (filename = merged_headers["content-disposition"])
               if regex
-                match ||= location[regex, 1]
+                match ||= filename[regex, 1]
               else
                 v = Version.parse(filename, detected_from_url: true)
                 match ||= v.to_s unless v.null?
