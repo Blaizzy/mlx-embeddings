@@ -16,26 +16,13 @@ module Homebrew
 
         NICE_NAME = "Sparkle"
 
-        # Checks the content at the URL for new versions.
-        sig { params(url: String, regex: T.nilable(Regexp)).returns(T::Hash[Symbol, T.untyped]) }
-        def self.find_versions(url, regex, &block)
-          raise ArgumentError, "The #{name.demodulize} strategy does not support regular expressions." if regex
+        Item = Struct.new(:title, :url, :bundle_version, :short_version, :version, keyword_init: true) do
+          extend T::Sig
 
-          match_data = { matches: {}, regex: regex, url: url }
+          extend Forwardable
 
-          contents = Strategy.page_content(url)
-
-          if (item = item_from_content(contents))
-            match = if block
-              block.call(item)&.to_s
-            else
-              item.bundle_version&.nice_version
-            end
-
-            match_data[:matches][match] = Version.new(match) if match
-          end
-
-          match_data
+          delegate version: :bundle_version
+          delegate short_version: :bundle_version
         end
 
         sig { params(content: String).returns(T.nilable(Item)) }
@@ -80,13 +67,26 @@ module Homebrew
         end
         private_class_method :item_from_content
 
-        Item = Struct.new(:title, :url, :bundle_version, :short_version, :version, keyword_init: true) do
-          extend T::Sig
+        # Checks the content at the URL for new versions.
+        sig { params(url: String, regex: T.nilable(Regexp)).returns(T::Hash[Symbol, T.untyped]) }
+        def self.find_versions(url, regex, &block)
+          raise ArgumentError, "The #{name.demodulize} strategy does not support regular expressions." if regex
 
-          extend Forwardable
+          match_data = { matches: {}, regex: regex, url: url }
 
-          delegate version: :bundle_version
-          delegate short_version: :bundle_version
+          contents = Strategy.page_content(url)
+
+          if (item = item_from_content(contents))
+            match = if block
+              block.call(item)&.to_s
+            else
+              item.bundle_version&.nice_version
+            end
+
+            match_data[:matches][match] = Version.new(match) if match
+          end
+
+          match_data
         end
       end
     end
