@@ -89,12 +89,22 @@ module Homebrew
         headers = []
 
         [:default, :browser].each do |user_agent|
-          stdout, _, status = curl_output(
-            "--fail", "--head", "--request", "GET", "--silent", "--location",
-            "--connect-timeout", 5, "--retry-max-time", 15, "--max-time", 10,
-            url,
-            user_agent: user_agent
+          args = [
+            "--head",                 # Only work with the response headers
+            "--request", "GET",       # Use a GET request (instead of HEAD)
+            "--silent",               # Silent mode
+            "--location",             # Follow redirects
+            "--connect-timeout", "5", # Max time allowed for connection (secs)
+            "--max-time", "10"        # Max time allowed for transfer (secs)
+          ]
+
+          result = curl_with_workarounds(
+            *args, url,
+            print_stdout: false, print_stderr: false,
+            debug: false, verbose: false,
+            user_agent: user_agent, retry: false
           )
+          stdout = result.stdout
 
           while stdout.match?(/\AHTTP.*\r$/)
             h, stdout = stdout.split("\r\n\r\n", 2)
@@ -104,7 +114,7 @@ module Homebrew
                         .to_h.transform_keys(&:downcase)
           end
 
-          return (@headers[url] = headers) if status.success?
+          return (@headers[url] = headers) if result.success?
         end
 
         headers
