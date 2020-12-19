@@ -19,7 +19,7 @@ module Homebrew
         # Checks the content at the URL for new versions.
         sig { params(url: String, regex: T.nilable(Regexp)).returns(T::Hash[Symbol, T.untyped]) }
         def self.find_versions(url, regex, &block)
-          raise ArgumentError, "The #{NICE_NAME} strategy does not support regular expressions." if regex
+          raise ArgumentError, "The #{name.demodulize} strategy does not support regular expressions." if regex
 
           match_data = { matches: {}, regex: regex, url: url }
 
