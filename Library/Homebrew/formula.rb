@@ -1392,6 +1392,11 @@ class Formula
     "#<Formula #{name} (#{active_spec_sym}) #{path}>"
   end
 
+  # Standard parameters for configure builds.
+  def std_configure_args
+    ["--disable-debug", "--disable-dependency-tracking", "--prefix=#{prefix}", "--libdir=#{lib}"]
+  end
+
   # Standard parameters for cargo builds.
   def std_cargo_args
     ["--locked", "--root", prefix, "--path", "."]
