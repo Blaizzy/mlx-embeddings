@@ -14,8 +14,6 @@ module Homebrew
       class Sparkle < PageMatch
         extend T::Sig
 
-        NICE_NAME = "Sparkle"
-
         Item = Struct.new(:title, :url, :bundle_version, :short_version, :version, keyword_init: true) do
           extend T::Sig
 
