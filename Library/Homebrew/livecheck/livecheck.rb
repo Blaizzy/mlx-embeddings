@@ -498,6 +498,11 @@ module Homebrew
           next
         end
 
+        if livecheck_strategy.present? && livecheck_url.blank?
+          odebug "#{strategy_name} strategy requires a url"
+          next
+        end
+
         if livecheck_strategy.present? && strategies.exclude?(strategy)
           odebug "#{strategy_name} strategy does not apply to this URL"
           next

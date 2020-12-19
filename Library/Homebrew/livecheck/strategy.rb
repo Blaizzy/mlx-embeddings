@@ -63,9 +63,6 @@ module Homebrew
             # Only treat the `PageMatch` strategy as usable if a regex is
             # present in the `livecheck` block
             next unless regex_provided || block_provided
-          elsif strategy == Sparkle
-            # Skip the `Sparkle` strategy if the URL is not specified explicitly.
-            next unless url_provided
           elsif strategy.const_defined?(:PRIORITY) &&
                 !strategy::PRIORITY.positive? &&
                 from_symbol(livecheck_strategy) != strategy
