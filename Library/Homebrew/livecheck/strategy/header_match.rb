@@ -13,7 +13,7 @@ module Homebrew
       class HeaderMatch
         extend T::Sig
 
-        NICE_NAME = "Match HTTP Headers"
+        NICE_NAME = "Header match"
 
         # We set the priority to zero since this cannot
         # be detected automatically.
