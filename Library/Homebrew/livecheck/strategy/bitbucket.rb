@@ -56,7 +56,7 @@ module Homebrew
           match = url.match(URL_MATCH_REGEX)
 
           # Use `\.t` instead of specific tarball extensions (e.g. .tar.gz)
-          match[:suffix].sub!(/\.t(?:ar\..+|[a-z0-9]+)$/i, "\.t")
+          suffix = match[:suffix].sub(/\.t(?:ar\..+|[a-z0-9]+)$/i, "\.t")
 
           # `/get/` archives are Git tag snapshots, so we need to check that tab
           # instead of the main `/downloads/` page
@@ -69,7 +69,7 @@ module Homebrew
           # Example regexes:
           # * `/href=.*?v?(\d+(?:\.\d+)+)\.t/i`
           # * `/href=.*?example-v?(\d+(?:\.\d+)+)\.t/i`
-          regex ||= /href=.*?#{Regexp.escape(match[:prefix])}v?(\d+(?:\.\d+)+)#{Regexp.escape(match[:suffix])}/i
+          regex ||= /href=.*?#{Regexp.escape(match[:prefix])}v?(\d+(?:\.\d+)+)#{Regexp.escape(suffix)}/i
 
           Homebrew::Livecheck::Strategy::PageMatch.find_versions(page_url, regex)
         end
