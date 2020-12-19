@@ -11,8 +11,26 @@ module Homebrew
       # its contents as a Sparkle appcast in XML format.
       #
       # @api private
-      class Sparkle < PageMatch
+      class Sparkle
         extend T::Sig
+
+        # A priority of zero causes livecheck to skip the strategy. We only
+        # apply {Sparkle} using `strategy :sparkle` in a `livecheck` block,
+        # as we can't automatically determine when this can be successfully
+        # applied to a URL without fetching the content.
+        PRIORITY = 0
+
+        # The `Regexp` used to determine if the strategy applies to the URL.
+        URL_MATCH_REGEX = %r{^https?://}i.freeze
+
+        # Whether the strategy can be applied to the provided URL.
+        # The strategy will technically match any HTTP URL but is
+        # only usable with a `livecheck` block containing a regex
+        # or block.
+        sig { params(url: String).returns(T::Boolean) }
+        def self.match?(url)
+          URL_MATCH_REGEX.match?(url)
+        end
 
         Item = Struct.new(:title, :url, :bundle_version, :short_version, :version, keyword_init: true) do
           extend T::Sig
