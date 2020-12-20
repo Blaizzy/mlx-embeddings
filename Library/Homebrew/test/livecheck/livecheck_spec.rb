@@ -20,6 +20,24 @@ describe Homebrew::Livecheck do
     end
   end
 
+  let(:c) do
+    Cask::CaskLoader.load(+<<-RUBY)
+      cask "test" do
+        version "0.0.1,2"
+
+        url "https://brew.sh/test-0.0.1.tgz"
+        name "Test"
+        desc "Test cask"
+        homepage "https://brew.sh"
+
+        livecheck do
+          url "https://formulae.brew.sh/api/formula/ruby.json"
+          regex(/"stable":"(\d+(?:\.\d+)+)"/i)
+        end
+      end
+    RUBY
+  end
+
   let(:f_deprecated) do
     formula("test_deprecated") do
       desc "Deprecated test formula"
@@ -38,11 +56,11 @@ describe Homebrew::Livecheck do
     end
   end
 
-  let(:f_gist) do
-    formula("test_gist") do
-      desc "Gist test formula"
+  let(:f_versioned) do
+    formula("test@0.0.1") do
+      desc "Versioned test formula"
       homepage "https://brew.sh"
-      url "https://gist.github.com/Homebrew/0000000000"
+      url "https://brew.sh/test-0.0.1.tgz"
     end
   end
 
@@ -51,6 +69,14 @@ describe Homebrew::Livecheck do
       desc "HEAD-only test formula"
       homepage "https://brew.sh"
       head "https://github.com/Homebrew/brew.git"
+    end
+  end
+
+  let(:f_gist) do
+    formula("test_gist") do
+      desc "Gist test formula"
+      homepage "https://brew.sh"
+      url "https://gist.github.com/Homebrew/0000000000"
     end
   end
 
@@ -64,31 +90,6 @@ describe Homebrew::Livecheck do
         skip "Not maintained"
       end
     end
-  end
-
-  let(:f_versioned) do
-    formula("test@0.0.1") do
-      desc "Versioned test formula"
-      homepage "https://brew.sh"
-      url "https://brew.sh/test-0.0.1.tgz"
-    end
-  end
-
-  let(:c) do
-    Cask::CaskLoader.load(+<<-RUBY)
-      cask "test" do
-        version "0.0.1,2"
-
-        url "https://brew.sh/test-0.0.1.tgz"
-        name "Test"
-        homepage "https://brew.sh"
-
-        livecheck do
-          url "https://formulae.brew.sh/api/formula/ruby.json"
-          regex(/"stable":"(\d+(?:\.\d+)+)"/i)
-        end
-      end
-    RUBY
   end
 
   describe "::formula_name" do
