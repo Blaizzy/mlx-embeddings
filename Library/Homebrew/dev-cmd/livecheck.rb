@@ -97,8 +97,7 @@ module Homebrew
           onoe e
         end
       else
-        raise UsageError, "ENV['HOMEBREW_LIVECHECK_WATCHLIST'] or ~/.brew_livecheck_watchlist is required " \
-                          "if no formula or cask argument is passed"
+        raise UsageError, "A watchlist file is required when no arguments are given."
       end&.sort_by do |formula_or_cask|
         formula_or_cask.respond_to?(:token) ? formula_or_cask.token : formula_or_cask.name
       end
