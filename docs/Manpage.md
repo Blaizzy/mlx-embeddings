@@ -612,7 +612,7 @@ upgraded formulae or, every 30 days, for all formulae.
 * `-n`, `--dry-run`:
   Show what would be upgraded, but do not actually upgrade anything.
 * `--formula`:
-  Treat all named arguments as formulae. If no named argumentsare specified, upgrade only outdated formulae.
+  Treat all named arguments as formulae. If no named arguments are specified, upgrade only outdated formulae.
 * `-s`, `--build-from-source`:
   Compile *`formula`* from source even if a bottle is available.
 * `-i`, `--interactive`:

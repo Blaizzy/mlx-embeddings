@@ -39,7 +39,7 @@ module Homebrew
              description: "Show what would be upgraded, but do not actually upgrade anything."
       [
         [:switch, "--formula", "--formulae", {
-          description: "Treat all named arguments as formulae. If no named arguments" \
+          description: "Treat all named arguments as formulae. If no named arguments " \
                        "are specified, upgrade only outdated formulae.",
         }],
         [:switch, "-s", "--build-from-source", {
