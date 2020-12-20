@@ -30,7 +30,7 @@ module Homebrew
       class Bitbucket
         # The `Regexp` used to determine if the strategy applies to the URL.
         URL_MATCH_REGEX = %r{
-          bitbucket\.org/
+          ^https?://bitbucket\.org/
           (?<path>.+?)/ # The path leading up to the get or downloads part
           (?<dl_type>get|downloads)/ # An indicator of the file download type
           (?<prefix>(?:[^/]+?[_-])?) # Filename text before the version
