@@ -98,13 +98,12 @@ module Homebrew
             "--max-time", "10"        # Max time allowed for transfer (secs)
           ]
 
-          result = curl_with_workarounds(
+          stdout, _, status = curl_with_workarounds(
             *args, url,
             print_stdout: false, print_stderr: false,
             debug: false, verbose: false,
             user_agent: user_agent, retry: false
           )
-          stdout = result.stdout
 
           while stdout.match?(/\AHTTP.*\r$/)
             h, stdout = stdout.split("\r\n\r\n", 2)
@@ -114,7 +113,7 @@ module Homebrew
                         .to_h.transform_keys(&:downcase)
           end
 
-          return (@headers[url] = headers) if result.success?
+          return (@headers[url] = headers) if status.success?
         end
 
         headers
