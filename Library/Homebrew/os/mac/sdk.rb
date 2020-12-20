@@ -91,6 +91,14 @@ module OS
               paths[OS::Mac::Version.new(version)] = sdk_path if version.present?
             end
 
+            # Use unversioned SDK path on Big Sur to avoid issues such as:
+            # https://github.com/Homebrew/homebrew-core/issues/67075
+            if OS::Mac.version >= :big_sur
+              sdk_path = File.join(sdk_prefix, "MacOSX.sdk")
+              version = OS::Mac.full_version
+              paths[version] = sdk_path if File.directory?(sdk_path)
+            end
+
             paths
           else
             {}
