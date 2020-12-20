@@ -46,6 +46,7 @@ module SharedAudits
     "telegram-cli"     => "1.3.1",
     "toggl-track"      => :all,
     "volta"            => "0.8.6",
+    "xit"              => :all,
   }.freeze
 
   def github_release(user, repo, tag, formula: nil, cask: nil)
