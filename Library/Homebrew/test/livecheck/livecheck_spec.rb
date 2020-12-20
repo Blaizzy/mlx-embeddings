@@ -47,6 +47,24 @@ describe Homebrew::Livecheck do
     end
   end
 
+  let(:c_discontinued) do
+    Cask::CaskLoader.load(+<<-RUBY)
+      cask "test_discontinued" do
+        version "0.0.1"
+        sha256 :no_check
+
+        url "https://brew.sh/test-0.0.1.tgz"
+        name "Test Discontinued"
+        desc "Discontinued test cask"
+        homepage "https://brew.sh"
+
+        caveats do
+          discontinued
+        end
+      end
+    RUBY
+  end
+
   let(:f_disabled) do
     formula("test_disabled") do
       desc "Disabled test formula"
@@ -61,6 +79,34 @@ describe Homebrew::Livecheck do
       desc "Versioned test formula"
       homepage "https://brew.sh"
       url "https://brew.sh/test-0.0.1.tgz"
+    end
+  end
+
+  let(:c_latest) do
+    Cask::CaskLoader.load(+<<-RUBY)
+      cask "test_latest" do
+        version :latest
+        sha256 :no_check
+
+        url "https://brew.sh/test-0.0.1.tgz"
+        name "Test Latest"
+        desc "Latest test cask"
+        homepage "https://brew.sh"
+      end
+    RUBY
+  end
+
+  # `URL#unversioned?` doesn't work properly when using the
+  # `Cask::CaskLoader.load` setup above, so we use `Cask::Cask.new` instead.
+  let(:c_unversioned) do
+    Cask::Cask.new "test_unversioned" do
+      version "1.2.3"
+      sha256 :no_check
+
+      url "https://brew.sh/test.tgz"
+      name "Test Unversioned"
+      desc "Unversioned test cask"
+      homepage "https://brew.sh"
     end
   end
 
@@ -133,6 +179,12 @@ describe Homebrew::Livecheck do
         .and not_to_output.to_stderr
     end
 
+    it "skips a discontinued cask without a livecheckable" do
+      expect { livecheck.skip_conditions(c_discontinued) }
+        .to output("test_discontinued : discontinued\n").to_stdout
+        .and not_to_output.to_stderr
+    end
+
     it "skips a disabled formula without a livecheckable" do
       expect { livecheck.skip_conditions(f_disabled) }
         .to output("test_disabled : disabled\n").to_stdout
@@ -142,6 +194,18 @@ describe Homebrew::Livecheck do
     it "skips a versioned formula without a livecheckable" do
       expect { livecheck.skip_conditions(f_versioned) }
         .to output("test@0.0.1 : versioned\n").to_stdout
+        .and not_to_output.to_stderr
+    end
+
+    it "skips a cask containing `version :latest` without a livecheckable" do
+      expect { livecheck.skip_conditions(c_latest) }
+        .to output("test_latest : latest\n").to_stdout
+        .and not_to_output.to_stderr
+    end
+
+    it "skips a cask containing an unversioned URL without a livecheckable" do
+      expect { livecheck.skip_conditions(c_unversioned) }
+        .to output("test_unversioned : unversioned\n").to_stdout
         .and not_to_output.to_stderr
     end
 
