@@ -21,7 +21,7 @@ module Utils
       @curl
     end
 
-    def curl_args(*extra_args, show_output: false, user_agent: :default)
+    def curl_args(*extra_args, **options)
       args = []
 
       # do not load .curlrc unless requested (must be the first argument)
@@ -31,36 +31,37 @@ module Utils
 
       args << "--show-error"
 
-      args << "--user-agent" << case user_agent
+      args << "--user-agent" << case options[:user_agent]
       when :browser, :fake
         HOMEBREW_USER_AGENT_FAKE_SAFARI
-      when :default
+      when :default, nil
         HOMEBREW_USER_AGENT_CURL
-      else
-        user_agent
+      when String
+        options[:user_agent]
       end
 
       args << "--header" << "Accept-Language: en"
 
-      unless show_output
+      unless options[:show_output] == true
         args << "--fail"
         args << "--progress-bar" unless Context.current.verbose?
         args << "--verbose" if Homebrew::EnvConfig.curl_verbose?
         args << "--silent" unless $stdout.tty?
       end
 
-      args << "--retry" << Homebrew::EnvConfig.curl_retries
+      args << "--retry" << Homebrew::EnvConfig.curl_retries unless options[:retry] == false
 
       args + extra_args
     end
 
     def curl_with_workarounds(
-      *args, secrets: nil, print_stdout: nil, print_stderr: nil, verbose: nil, env: {}, **options
+      *args, secrets: nil, print_stdout: nil, print_stderr: nil, debug: nil, verbose: nil, env: {}, **options
     )
       command_options = {
         secrets:      secrets,
         print_stdout: print_stdout,
         print_stderr: print_stderr,
+        debug:        debug,
         verbose:      verbose,
       }.compact
 
