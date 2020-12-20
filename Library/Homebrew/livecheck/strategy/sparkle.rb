@@ -81,7 +81,6 @@ module Homebrew
 
           items.max_by(&:bundle_version)
         end
-        private_class_method :item_from_content
 
         # Checks the content at the URL for new versions.
         sig { params(url: String, regex: T.nilable(Regexp)).returns(T::Hash[Symbol, T.untyped]) }
