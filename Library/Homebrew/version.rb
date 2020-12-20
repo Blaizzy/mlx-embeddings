@@ -318,11 +318,13 @@ class Version
   end
 
   def self.parse(spec, detected_from_url: false)
-    version = _parse(spec)
+    version = _parse(spec, detected_from_url: detected_from_url)
     version.nil? ? NULL : new(version, detected_from_url: detected_from_url)
   end
 
-  def self._parse(spec)
+  def self._parse(spec, detected_from_url:)
+    spec = CGI.unescape(spec.to_s) if detected_from_url
+
     spec = Pathname.new(spec) unless spec.is_a? Pathname
 
     spec_s = spec.to_s
@@ -465,7 +467,6 @@ class Version
     m = /[-.vV]?((?:\d+\.)+\d+(?:[-_.]?(?i:alpha|beta|pre|rc)\.?\d{,2})?)/.match(spec_s)
     return m.captures.first unless m.nil?
   end
-
   private_class_method :_parse
 
   def initialize(val, detected_from_url: false)

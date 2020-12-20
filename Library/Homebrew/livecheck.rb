@@ -8,6 +8,8 @@
 # This information is used by the `brew livecheck` command to control its
 # behavior.
 class Livecheck
+  extend Forwardable
+
   # A very brief description of why the formula/cask is skipped (e.g. `No longer
   # developed or maintained`).
   # @return [String, nil]
@@ -67,7 +69,9 @@ class Livecheck
   #
   # @param symbol [Symbol] symbol for the desired strategy
   # @return [Symbol, nil]
-  def strategy(symbol = nil)
+  def strategy(symbol = nil, &block)
+    @strategy_block = block if block
+
     case symbol
     when nil
       @strategy
@@ -77,6 +81,8 @@ class Livecheck
       raise TypeError, "Livecheck#strategy expects a Symbol"
     end
   end
+
+  attr_reader :strategy_block
 
   # Sets the `@url` instance variable to the provided argument or returns the
   # `@url` instance variable when no argument is provided. The argument can be
@@ -102,6 +108,9 @@ class Livecheck
       raise TypeError, "Livecheck#url expects a String or valid Symbol"
     end
   end
+
+  delegate version: :@formula_or_cask
+  private :version
 
   # Returns a `Hash` of all instance variable values.
   # @return [Hash]

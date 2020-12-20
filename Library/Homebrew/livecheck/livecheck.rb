@@ -1,6 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
+require "livecheck/error"
 require "livecheck/strategy"
 require "ruby-progressbar"
 require "uri"
@@ -30,6 +31,7 @@ module Homebrew
     STRATEGY_SYMBOLS_TO_SKIP_PREPROCESS_URL = [
       :github_latest,
       :page_match,
+      :sparkle,
     ].freeze
 
     UNSTABLE_VERSION_KEYWORDS = %w[
@@ -144,7 +146,7 @@ module Homebrew
 
         if latest.blank?
           no_versions_msg = "Unable to get versions"
-          raise TypeError, no_versions_msg unless json
+          raise Livecheck::Error, no_versions_msg unless json
 
           next version_info if version_info.is_a?(Hash) && version_info[:status] && version_info[:messages]
 
@@ -200,6 +202,7 @@ module Homebrew
           status_hash(formula_or_cask, "error", [e.to_s], full_name: full_name, verbose: verbose)
         elsif !quiet
           onoe "#{Tty.blue}#{formula_or_cask_name(formula_or_cask, full_name: full_name)}#{Tty.reset}: #{e}"
+          $stderr.puts e.backtrace if debug && !e.is_a?(Livecheck::Error)
           nil
         end
       end
@@ -268,11 +271,19 @@ module Homebrew
     # @return [Hash, nil, Boolean]
     def skip_conditions(formula_or_cask, json: false, full_name: false, quiet: false, verbose: false)
       formula = formula_or_cask if formula_or_cask.is_a?(Formula)
+      cask = formula_or_cask if formula_or_cask.is_a?(Cask::Cask)
 
       if formula&.deprecated? && !formula.livecheckable?
         return status_hash(formula, "deprecated", full_name: full_name, verbose: verbose) if json
 
         puts "#{Tty.red}#{formula_name(formula, full_name: full_name)}#{Tty.reset} : deprecated" unless quiet
+        return
+      end
+
+      if cask&.discontinued? && !cask.livecheckable?
+        return status_hash(cask, "discontinued", full_name: full_name, verbose: verbose) if json
+
+        puts "#{Tty.red}#{cask_name(cask, full_name: full_name)}#{Tty.reset} : discontinued" unless quiet
         return
       end
 
@@ -287,6 +298,20 @@ module Homebrew
         return status_hash(formula, "versioned", full_name: full_name, verbose: verbose) if json
 
         puts "#{Tty.red}#{formula_name(formula, full_name: full_name)}#{Tty.reset} : versioned" unless quiet
+        return
+      end
+
+      if cask&.version&.latest? && !cask.livecheckable?
+        return status_hash(cask, "latest", full_name: full_name, verbose: verbose) if json
+
+        puts "#{Tty.red}#{cask_name(cask, full_name: full_name)}#{Tty.reset} : latest" unless quiet
+        return
+      end
+
+      if cask&.url&.unversioned? && !cask.livecheckable?
+        return status_hash(cask, "unversioned", full_name: full_name, verbose: verbose) if json
+
+        puts "#{Tty.red}#{cask_name(cask, full_name: full_name)}#{Tty.reset} : unversioned" unless quiet
         return
       end
 
@@ -412,9 +437,9 @@ module Homebrew
 
       has_livecheckable = formula_or_cask.livecheckable?
       livecheck = formula_or_cask.livecheck
+      livecheck_url = livecheck.url
       livecheck_regex = livecheck.regex
       livecheck_strategy = livecheck.strategy
-      livecheck_url = livecheck.url
 
       urls = [livecheck_url] if livecheck_url.present?
       urls ||= checkable_urls(formula_or_cask)
@@ -452,7 +477,9 @@ module Homebrew
         strategies = Strategy.from_url(
           url,
           livecheck_strategy: livecheck_strategy,
+          url_provided:       livecheck_url.present?,
           regex_provided:     livecheck_regex.present?,
+          block_provided:     livecheck.strategy_block.present?,
         )
         strategy = Strategy.from_symbol(livecheck_strategy)
         strategy ||= strategies.first
@@ -467,8 +494,13 @@ module Homebrew
           puts "Regex:            #{livecheck_regex.inspect}" if livecheck_regex.present?
         end
 
-        if livecheck_strategy == :page_match && livecheck_regex.blank?
-          odebug "#{strategy_name} strategy requires a regex"
+        if livecheck_strategy == :page_match && (livecheck_regex.blank? && livecheck.strategy_block.blank?)
+          odebug "#{strategy_name} strategy requires a regex or block"
+          next
+        end
+
+        if livecheck_strategy.present? && livecheck_url.blank?
+          odebug "#{strategy_name} strategy requires a url"
           next
         end
 
@@ -479,7 +511,7 @@ module Homebrew
 
         next if strategy.blank?
 
-        strategy_data = strategy.find_versions(url, livecheck_regex)
+        strategy_data = strategy.find_versions(url, livecheck_regex, &livecheck.strategy_block)
         match_version_map = strategy_data[:matches]
         regex = strategy_data[:regex]
 

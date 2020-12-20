@@ -57,12 +57,12 @@ module Homebrew
       # @param regex_provided [Boolean] whether a regex is provided in the
       #   `livecheck` block
       # @return [Array]
-      def from_url(url, livecheck_strategy: nil, regex_provided: nil)
+      def from_url(url, livecheck_strategy: nil, url_provided: nil, regex_provided: nil, block_provided: nil)
         usable_strategies = strategies.values.select do |strategy|
           if strategy == PageMatch
             # Only treat the `PageMatch` strategy as usable if a regex is
             # present in the `livecheck` block
-            next unless regex_provided
+            next unless regex_provided || block_provided
           elsif strategy.const_defined?(:PRIORITY) &&
                 !strategy::PRIORITY.positive? &&
                 from_symbol(livecheck_strategy) != strategy
@@ -80,6 +80,49 @@ module Homebrew
           (strategy.const_defined?(:PRIORITY) ? -strategy::PRIORITY : -DEFAULT_PRIORITY)
         end
       end
+
+      def self.page_headers(url)
+        @headers ||= {}
+
+        return @headers[url] if @headers.key?(url)
+
+        headers = []
+
+        [:default, :browser].each do |user_agent|
+          args = [
+            "--head",                 # Only work with the response headers
+            "--request", "GET",       # Use a GET request (instead of HEAD)
+            "--silent",               # Silent mode
+            "--location",             # Follow redirects
+            "--connect-timeout", "5", # Max time allowed for connection (secs)
+            "--max-time", "10"        # Max time allowed for transfer (secs)
+          ]
+
+          stdout, _, status = curl_with_workarounds(
+            *args, url,
+            print_stdout: false, print_stderr: false,
+            debug: false, verbose: false,
+            user_agent: user_agent, retry: false
+          )
+
+          while stdout.match?(/\AHTTP.*\r$/)
+            h, stdout = stdout.split("\r\n\r\n", 2)
+
+            headers << h.split("\r\n").drop(1)
+                        .map { |header| header.split(/:\s*/, 2) }
+                        .to_h.transform_keys(&:downcase)
+          end
+
+          return (@headers[url] = headers) if status.success?
+        end
+
+        headers
+      end
+
+      def self.page_content(url)
+        @page_content ||= {}
+        @page_content[url] ||= URI.parse(url).open.read
+      end
     end
   end
 end
@@ -92,9 +135,11 @@ require_relative "strategy/github_latest"
 require_relative "strategy/gnome"
 require_relative "strategy/gnu"
 require_relative "strategy/hackage"
+require_relative "strategy/header_match"
 require_relative "strategy/launchpad"
 require_relative "strategy/npm"
 require_relative "strategy/page_match"
 require_relative "strategy/pypi"
 require_relative "strategy/sourceforge"
+require_relative "strategy/sparkle"
 require_relative "strategy/xorg"

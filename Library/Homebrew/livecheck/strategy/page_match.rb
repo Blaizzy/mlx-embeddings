@@ -30,8 +30,8 @@ module Homebrew
         URL_MATCH_REGEX = %r{^https?://}i.freeze
 
         # Whether the strategy can be applied to the provided URL.
-        # PageMatch will technically match any HTTP URL but it's only usable
-        # when the formula has a `livecheck` block containing a regex.
+        # PageMatch will technically match any HTTP URL but is only
+        # usable with a `livecheck` block containing a regex.
         #
         # @param url [String] the URL to match against
         # @return [Boolean]
@@ -46,10 +46,28 @@ module Homebrew
         # @param regex [Regexp] a regex used for matching versions in the
         #   content
         # @return [Array]
-        def self.page_matches(url, regex)
-          page = URI.parse(url).open.read
-          matches = page.scan(regex)
-          matches.map(&:first).uniq
+        def self.page_matches(url, regex, &block)
+          page = Strategy.page_content(url)
+
+          if block
+            case (value = block.call(page))
+            when String
+              return [value]
+            when Array
+              return value
+            else
+              raise TypeError, "Return value of `strategy :page_match` block must be a string or array of strings."
+            end
+          end
+
+          page.scan(regex).map do |match|
+            case match
+            when String
+              match
+            else
+              match.first
+            end
+          end.uniq
         end
 
         # Checks the content at the URL for new versions, using the provided
@@ -58,10 +76,10 @@ module Homebrew
         # @param url [String] the URL of the content to check
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]
-        def self.find_versions(url, regex)
+        def self.find_versions(url, regex, &block)
           match_data = { matches: {}, regex: regex, url: url }
 
-          page_matches(url, regex).each do |match|
+          page_matches(url, regex, &block).each do |match|
             match_data[:matches][match] = Version.new(match)
           end
 
