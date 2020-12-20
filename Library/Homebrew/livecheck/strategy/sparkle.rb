@@ -8,7 +8,7 @@ module Homebrew
   module Livecheck
     module Strategy
       # The {Sparkle} strategy fetches content at a URL and parses
-      # its contents as a Sparkle appcast in XML format.
+      # it as a Sparkle appcast in XML format.
       #
       # @api private
       class Sparkle
@@ -90,9 +90,9 @@ module Homebrew
 
           match_data = { matches: {}, regex: regex, url: url }
 
-          contents = Strategy.page_content(url)
+          content = Strategy.page_content(url)
 
-          if (item = item_from_content(contents))
+          if (item = item_from_content(content))
             match = if block
               block.call(item)&.to_s
             else
