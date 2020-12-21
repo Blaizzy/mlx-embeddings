@@ -82,10 +82,6 @@ module Homebrew
       end
 
       def self.page_headers(url)
-        @headers ||= {}
-
-        return @headers[url] if @headers.key?(url)
-
         headers = []
 
         [:default, :browser].each do |user_agent|
@@ -113,15 +109,14 @@ module Homebrew
                         .to_h.transform_keys(&:downcase)
           end
 
-          return (@headers[url] = headers) if status.success?
+          return headers if status.success?
         end
 
         headers
       end
 
       def self.page_content(url)
-        @page_content ||= {}
-        @page_content[url] ||= URI.parse(url).open.read
+        URI.parse(url).open.read
       end
     end
   end
