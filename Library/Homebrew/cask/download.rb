@@ -52,6 +52,10 @@ module Cask
       downloader.cached_location
     end
 
+    def basename
+      downloader.basename
+    end
+
     def verify_download_integrity(fn)
       if @cask.sha256 == :no_check
         opoo "No checksum defined for cask '#{@cask}', skipping verification."
