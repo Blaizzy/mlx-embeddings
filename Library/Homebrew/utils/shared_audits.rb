@@ -31,36 +31,26 @@ module SharedAudits
     nil
   end
 
-  GITHUB_PRERELEASE_ALLOWLIST = {
-    "elm-format"       => "0.8.3",
-    "extraterm"        => :all,
-    "freetube"         => :all,
-    "gitless"          => "0.8.8",
-    "haptickey"        => :all,
-    "home-assistant"   => :all,
-    "lidarr"           => :all,
-    "nuclear"          => :all,
-    "pock"             => :all,
-    "riff"             => "0.5.0",
-    "syntax-highlight" => :all,
-    "telegram-cli"     => "1.3.1",
-    "toggl-track"      => :all,
-    "volta"            => "0.8.6",
-    "xit"              => :all,
-  }.freeze
-
   def github_release(user, repo, tag, formula: nil, cask: nil)
     release = github_release_data(user, repo, tag)
     return unless release
 
-    if cask && GITHUB_PRERELEASE_ALLOWLIST[cask.token] == :all
-      return if release["prerelease"]
-
-      return "#{tag} is not a GitHub pre-release but cask '#{cask.token}' is in GITHUB_PRERELEASE_ALLOWLIST."
+    if !release["prerelease"] && cask && tap_audit_exception(:github_prerelease_allowlist, cask.tap, cask.token)
+      return "#{tag} is not a GitHub pre-release but cask '#{cask.token}' is in the GitHub prerelease allowlist."
     end
 
     if release["prerelease"]
-      return if formula && GITHUB_PRERELEASE_ALLOWLIST[formula.name] == formula.version
+      exception = if formula
+        tap_audit_exception(:github_prerelease_allowlist, formula.tap, formula.name)
+      elsif cask
+        tap_audit_exception(:github_prerelease_allowlist, cask.tap, cask.token)
+      end
+      version = if formula
+        formula.version
+      elsif cask
+        cask.version
+      end
+      return if exception && [version, "all"].include?(exception)
 
       return "#{tag} is a GitHub pre-release."
     end
@@ -87,30 +77,33 @@ module SharedAudits
     end
   end
 
-  GITLAB_PRERELEASE_ALLOWLIST = {}.freeze
-
-  def gitlab_release(user, repo, tag, formula: nil)
+  def gitlab_release(user, repo, tag, formula: nil, cask: nil)
     release = gitlab_release_data(user, repo, tag)
     return unless release
 
     return if Date.parse(release["released_at"]) <= Date.today
-    return if formula && GITLAB_PRERELEASE_ALLOWLIST[formula.name] == formula.version
+
+    exception = if formula
+      tap_audit_exception(:gitlab_prerelease_allowlist, formula.tap, formula.name)
+    elsif cask
+      tap_audit_exception(:gitlab_prerelease_allowlist, cask.tap, cask.token)
+    end
+    version = if formula
+      formula.version
+    elsif cask
+      cask.version
+    end
+    return if exception && [version, "all"].include?(exception)
 
     "#{tag} is a GitLab pre-release."
   end
-
-  GITHUB_FORK_ALLOWLIST = %w[
-    variar/klogg
-  ].freeze
 
   def github(user, repo)
     metadata = github_repo_data(user, repo)
 
     return if metadata.nil?
 
-    if metadata["fork"] && GITHUB_FORK_ALLOWLIST.exclude?("#{user}/#{repo}")
-      return "GitHub fork (not canonical repository)"
-    end
+    return "GitHub fork (not canonical repository)" if metadata["fork"]
 
     if (metadata["forks_count"] < 30) && (metadata["subscribers_count"] < 30) &&
        (metadata["stargazers_count"] < 75)
@@ -184,5 +177,22 @@ module SharedAudits
     url.match(%r{^https://gitlab\.com/[\w-]+/[\w-]+/-/archive/([^/]+)/})
        .to_a
        .second
+  end
+
+  def tap_audit_exception(list, tap, formula_or_cask, value = nil)
+    return false if tap.audit_exceptions.blank?
+    return false unless tap.audit_exceptions.key? list
+
+    list = tap.audit_exceptions[list]
+
+    case list
+    when Array
+      list.include? formula_or_cask
+    when Hash
+      return false unless list.include? formula_or_cask
+      return list[formula_or_cask] if value.blank?
+
+      list[formula_or_cask] == value
+    end
   end
 end

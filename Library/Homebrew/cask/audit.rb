@@ -582,7 +582,7 @@ module Cask
 
       tag = SharedAudits.gitlab_tag_from_url(cask.url)
       tag ||= cask.version
-      error = SharedAudits.gitlab_release(user, repo, tag)
+      error = SharedAudits.gitlab_release(user, repo, tag, cask: cask)
       add_error error if error
     end
 

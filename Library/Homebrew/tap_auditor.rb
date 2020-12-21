@@ -8,12 +8,15 @@ module Homebrew
   class TapAuditor
     extend T::Sig
 
-    attr_reader :name, :path, :tap_audit_exceptions, :tap_style_exceptions, :tap_pypi_formula_mappings, :problems
+    attr_reader :name, :path, :formula_names, :cask_tokens, :tap_audit_exceptions, :tap_style_exceptions,
+                :tap_pypi_formula_mappings, :problems
 
     sig { params(tap: Tap, strict: T.nilable(T::Boolean)).void }
     def initialize(tap, strict:)
       @name                      = tap.name
       @path                      = tap.path
+      @formula_names             = tap.formula_names
+      @cask_tokens               = tap.cask_tokens
       @tap_audit_exceptions      = tap.audit_exceptions
       @tap_style_exceptions      = tap.style_exceptions
       @tap_pypi_formula_mappings = tap.pypi_formula_mappings
@@ -60,19 +63,17 @@ module Homebrew
         return
       end
 
-      invalid_formulae = []
-      list.each do |name, _|
-        invalid_formulae << name if Formula[name].tap != @name
-      rescue FormulaUnavailableError
-        invalid_formulae << name
+      list = list.keys if list.is_a? Hash
+      invalid_formulae = list.select do |formula_or_cask_name|
+        @formula_names.exclude?(formula_or_cask_name) && @cask_tokens.exclude?("#{@name}/#{formula_or_cask_name}")
       end
 
       return if invalid_formulae.empty?
 
       problem <<~EOS
         #{list_file}.json references
-        formulae that are not found in the #{@name} tap.
-        Invalid formulae: #{invalid_formulae.join(", ")}
+        formulae or casks that are not found in the #{@name} tap.
+        Invalid formulae or casks: #{invalid_formulae.join(", ")}
       EOS
     end
 
