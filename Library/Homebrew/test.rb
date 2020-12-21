@@ -36,7 +36,7 @@ begin
   formula.extend(Debrew::Formula) if args.debug?
 
   ENV.extend(Stdenv)
-  T.cast(ENV, Stdenv).setup_build_environment(formula: formula)
+  T.cast(ENV, Stdenv).setup_build_environment(formula: formula, testing_formula: true)
 
   # tests can also return false to indicate failure
   Timeout.timeout TEST_TIMEOUT_SECONDS do
