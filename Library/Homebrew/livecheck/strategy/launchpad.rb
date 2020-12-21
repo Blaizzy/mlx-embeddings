@@ -24,7 +24,10 @@ module Homebrew
       # @api public
       class Launchpad
         # The `Regexp` used to determine if the strategy applies to the URL.
-        URL_MATCH_REGEX = /launchpad\.net/i.freeze
+        URL_MATCH_REGEX = %r{
+          ^https?://(?:[^/]+?\.)*launchpad\.net
+          /(?<project_name>[^/]+) # The Launchpad project name
+        }ix.freeze
 
         # Whether the strategy can be applied to the provided URL.
         #
@@ -41,10 +44,10 @@ module Homebrew
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]
         def self.find_versions(url, regex = nil, &block)
-          %r{launchpad\.net/(?<project_name>[^/]+)}i =~ url
+          match = url.match(URL_MATCH_REGEX)
 
           # The main page for the project on Launchpad
-          page_url = "https://launchpad.net/#{project_name}"
+          page_url = "https://launchpad.net/#{match[:project_name]}"
 
           # The default regex is the same for all URLs using this strategy
           regex ||= %r{class="[^"]*version[^"]*"[^>]*>\s*Latest version is (.+)\s*</}

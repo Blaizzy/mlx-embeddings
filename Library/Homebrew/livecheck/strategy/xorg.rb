@@ -40,10 +40,18 @@ module Homebrew
       class Xorg
         NICE_NAME = "X.Org"
 
+        # A `Regexp` used in determining if the strategy applies to the URL and
+        # also as part of extracting the module name from the URL basename.
+        MODULE_REGEX = /(?<module_name>.+)-\d+/i.freeze
+
+        # A `Regexp` used to extract the module name from the URL basename.
+        FILENAME_REGEX = /^#{MODULE_REGEX.source.strip}/i.freeze
+
         # The `Regexp` used to determine if the strategy applies to the URL.
         URL_MATCH_REGEX = %r{
-          [/.]x\.org.*?/individual/|
-          freedesktop\.org/(?:archive|dist|software)/
+          ^https?://(?:[^/]+?\.)* # Scheme and any leading subdomains
+          (?:x\.org/(?:[^/]+/)*individual/(?:[^/]+/)*#{MODULE_REGEX.source.strip}
+          |freedesktop\.org/(?:archive|dist|software)/(?:[^/]+/)*#{MODULE_REGEX.source.strip})
         }ix.freeze
 
         # Used to cache page content, so we don't fetch the same pages
@@ -72,15 +80,15 @@ module Homebrew
         # @return [Hash]
         def self.find_versions(url, regex = nil, &block)
           file_name = File.basename(url)
-          /^(?<module_name>.+)-\d+/i =~ file_name
+          match = file_name.match(FILENAME_REGEX)
 
           # /pub/ URLs redirect to the same URL with /archive/, so we replace
           # it to avoid the redirection. Removing the filename from the end of
           # the URL gives us the relevant directory listing page.
           page_url = url.sub("x.org/pub/", "x.org/archive/").delete_suffix(file_name)
 
-          # Example regex: /href=.*?example[._-]v?(\d+(?:\.\d+)+)\.t/i
-          regex ||= /href=.*?#{Regexp.escape(module_name)}[._-]v?(\d+(?:\.\d+)+)\.t/i
+          # Example regex: `/href=.*?example[._-]v?(\d+(?:\.\d+)+)\.t/i`
+          regex ||= /href=.*?#{Regexp.escape(match[:module_name])}[._-]v?(\d+(?:\.\d+)+)\.t/i
 
           # Use the cached page content to avoid duplicate fetches
           cached_content = @page_data[page_url]

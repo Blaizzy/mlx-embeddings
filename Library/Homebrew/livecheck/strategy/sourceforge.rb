@@ -34,7 +34,12 @@ module Homebrew
         NICE_NAME = "SourceForge"
 
         # The `Regexp` used to determine if the strategy applies to the URL.
-        URL_MATCH_REGEX = /(?:sourceforge|sf)\.net/i.freeze
+        URL_MATCH_REGEX = %r{
+          ^https?://(?:[^/]+?\.)*(?:sourceforge|sf)\.net
+          (?:/projects?/(?<project_name>[^/]+)/
+          |/p/(?<project_name>[^/]+)/
+          |(?::/cvsroot)?/(?<project_name>[^/]+))
+        }ix.freeze
 
         # Whether the strategy can be applied to the provided URL.
         #
@@ -51,20 +56,14 @@ module Homebrew
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]
         def self.find_versions(url, regex = nil, &block)
-          if url.include?("/project")
-            %r{/projects?/(?<project_name>[^/]+)/}i =~ url
-          elsif url.include?(".net/p/")
-            %r{\.net/p/(?<project_name>[^/]+)/}i =~ url
-          else
-            %r{\.net(?::/cvsroot)?/(?<project_name>[^/]+)}i =~ url
-          end
+          match = url.match(URL_MATCH_REGEX)
 
-          page_url = "https://sourceforge.net/projects/#{project_name}/rss"
+          page_url = "https://sourceforge.net/projects/#{match[:project_name]}/rss"
 
           # It may be possible to improve the default regex but there's quite a
           # bit of variation between projects and it can be challenging to
           # create something that works for most URLs.
-          regex ||= %r{url=.*?/#{Regexp.escape(project_name)}/files/.*?[-_/](\d+(?:[-.]\d+)+)[-_/%.]}i
+          regex ||= %r{url=.*?/#{Regexp.escape(match[:project_name])}/files/.*?[-_/](\d+(?:[-.]\d+)+)[-_/%.]}i
 
           PageMatch.find_versions(page_url, regex, &block)
         end
