@@ -152,10 +152,14 @@ module Cask
       s.freeze
     end
 
+    sig { returns(Download) }
+    def downloader
+      @downloader ||= Download.new(@cask, quarantine: quarantine?)
+    end
+
     sig { returns(Pathname) }
     def download
-      @download ||= Download.new(@cask, quarantine: quarantine?)
-                            .fetch(verify_download_integrity: @verify_download_integrity)
+      @download ||= downloader.fetch(verify_download_integrity: @verify_download_integrity)
     end
 
     def verify_has_sha
@@ -180,7 +184,7 @@ module Cask
 
       odebug "Using container class #{primary_container.class} for #{primary_container.path}"
 
-      basename = CGI.unescape(File.basename(@cask.url.path))
+      basename = downloader.basename
 
       if nested_container = @cask.container&.nested
         Dir.mktmpdir do |tmpdir|
