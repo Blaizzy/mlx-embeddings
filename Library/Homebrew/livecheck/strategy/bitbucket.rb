@@ -29,7 +29,14 @@ module Homebrew
       # @api public
       class Bitbucket
         # The `Regexp` used to determine if the strategy applies to the URL.
-        URL_MATCH_REGEX = %r{bitbucket\.org(/[^/]+){4}\.\w+}i.freeze
+        URL_MATCH_REGEX = %r{
+          ^https?://bitbucket\.org
+          /(?<path>.+?) # The path leading up to the get or downloads part
+          /(?<dl_type>get|downloads) # An indicator of the file download type
+          /(?<prefix>(?:[^/]+?[_-])?) # Filename text before the version
+          v?\d+(?:\.\d+)+ # The numeric version
+          (?<suffix>[^/]+) # Filename text after the version
+        }ix.freeze
 
         # Whether the strategy can be applied to the provided URL.
         #
@@ -46,30 +53,23 @@ module Homebrew
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]
         def self.find_versions(url, regex = nil)
-          %r{
-            bitbucket\.org/
-            (?<path>.+?)/ # The path leading up to the get or downloads part
-            (?<dl_type>get|downloads)/ # An indicator of the file download type
-            (?<prefix>(?:[^/]+?[_-])?) # Filename text before the version
-            v?\d+(?:\.\d+)+ # The numeric version
-            (?<suffix>[^/]+) # Filename text after the version
-          }ix =~ url
+          match = url.match(URL_MATCH_REGEX)
 
           # Use `\.t` instead of specific tarball extensions (e.g. .tar.gz)
-          suffix.sub!(/\.t(?:ar\..+|[a-z0-9]+)$/i, "\.t")
+          suffix = match[:suffix].sub(/\.t(?:ar\..+|[a-z0-9]+)$/i, "\.t")
 
           # `/get/` archives are Git tag snapshots, so we need to check that tab
           # instead of the main `/downloads/` page
-          page_url = if dl_type == "get"
-            "https://bitbucket.org/#{path}/downloads/?tab=tags"
+          page_url = if match[:dl_type] == "get"
+            "https://bitbucket.org/#{match[:path]}/downloads/?tab=tags"
           else
-            "https://bitbucket.org/#{path}/downloads/"
+            "https://bitbucket.org/#{match[:path]}/downloads/"
           end
 
           # Example regexes:
           # * `/href=.*?v?(\d+(?:\.\d+)+)\.t/i`
           # * `/href=.*?example-v?(\d+(?:\.\d+)+)\.t/i`
-          regex ||= /href=.*?#{Regexp.escape(prefix)}v?(\d+(?:\.\d+)+)#{Regexp.escape(suffix)}/i
+          regex ||= /href=.*?#{Regexp.escape(match[:prefix])}v?(\d+(?:\.\d+)+)#{Regexp.escape(suffix)}/i
 
           Homebrew::Livecheck::Strategy::PageMatch.find_versions(page_url, regex)
         end
