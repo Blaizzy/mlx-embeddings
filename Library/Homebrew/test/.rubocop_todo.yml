@@ -11,6 +11,7 @@
 RSpec/ExampleLength:
   Exclude:
     - 'rubocops/patches_spec.rb'
+    - 'dev-cmd/bottle_spec.rb'
 
 # Offense count: 6
 # Configuration parameters: AssignmentOnly.
