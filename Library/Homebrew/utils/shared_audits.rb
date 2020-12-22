@@ -35,25 +35,15 @@ module SharedAudits
     release = github_release_data(user, repo, tag)
     return unless release
 
-    if !release["prerelease"] && cask && tap_audit_exception(:github_prerelease_allowlist, cask.tap, cask.token)
-      return "#{tag} is not a GitHub pre-release but cask '#{cask.token}' is in the GitHub prerelease allowlist."
+    exception, name, version = if formula
+      [tap_audit_exception(:github_prerelease_allowlist, formula.tap, formula.name), formula.name, formula.version]
+    elsif cask
+      [tap_audit_exception(:github_prerelease_allowlist, cask.tap, cask.token), cask.token, cask.version]
     end
 
-    if release["prerelease"]
-      exception = if formula
-        tap_audit_exception(:github_prerelease_allowlist, formula.tap, formula.name)
-      elsif cask
-        tap_audit_exception(:github_prerelease_allowlist, cask.tap, cask.token)
-      end
-      version = if formula
-        formula.version
-      elsif cask
-        cask.version
-      end
-      return if exception && [version, "all"].include?(exception)
+    return "#{tag} is a GitHub pre-release." if release["prerelease"] && [version, "all"].exclude?(exception)
 
-      return "#{tag} is a GitHub pre-release."
-    end
+    return "#{tag} is not a GitHub pre-release but '#{name}' is in the GitHub prerelease allowlist." if exception
 
     return "#{tag} is a GitHub draft." if release["draft"]
   end
@@ -83,17 +73,12 @@ module SharedAudits
 
     return if Date.parse(release["released_at"]) <= Date.today
 
-    exception = if formula
-      tap_audit_exception(:gitlab_prerelease_allowlist, formula.tap, formula.name)
+    exception, version = if formula
+      [tap_audit_exception(:gitlab_prerelease_allowlist, formula.tap, formula.name), formula.version]
     elsif cask
-      tap_audit_exception(:gitlab_prerelease_allowlist, cask.tap, cask.token)
+      [tap_audit_exception(:gitlab_prerelease_allowlist, cask.tap, cask.token), cask.version]
     end
-    version = if formula
-      formula.version
-    elsif cask
-      cask.version
-    end
-    return if exception && [version, "all"].include?(exception)
+    return if [version, "all"].include?(exception)
 
     "#{tag} is a GitLab pre-release."
   end
@@ -189,7 +174,7 @@ module SharedAudits
     when Array
       list.include? formula_or_cask
     when Hash
-      return false unless list.include? formula_or_cask
+      return false if list.exclude? formula_or_cask
       return list[formula_or_cask] if value.blank?
 
       list[formula_or_cask] == value

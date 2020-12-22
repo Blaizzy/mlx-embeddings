@@ -64,16 +64,16 @@ module Homebrew
       end
 
       list = list.keys if list.is_a? Hash
-      invalid_formulae = list.select do |formula_or_cask_name|
+      invalid_formulae_casks = list.select do |formula_or_cask_name|
         @formula_names.exclude?(formula_or_cask_name) && @cask_tokens.exclude?("#{@name}/#{formula_or_cask_name}")
       end
 
-      return if invalid_formulae.empty?
+      return if invalid_formulae_casks.empty?
 
       problem <<~EOS
         #{list_file}.json references
         formulae or casks that are not found in the #{@name} tap.
-        Invalid formulae or casks: #{invalid_formulae.join(", ")}
+        Invalid formulae or casks: #{invalid_formulae_casks.join(", ")}
       EOS
     end
 
