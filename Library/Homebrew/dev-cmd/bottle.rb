@@ -498,45 +498,15 @@ module Homebrew
           if s.inreplace_string.include? "bottle do"
             update_or_add = "update"
             if args.keep_old?
-              mismatches = []
-              valid_keys = %w[root_url prefix cellar rebuild sha1 sha256]
-              bottle_block_contents = s.inreplace_string[/  bottle do(.+?)end\n/m, 1]
-              bottle_block_contents.lines.each do |line|
-                line = line.strip
-                next if line.empty?
-
-                key, old_value_original, _, tag = line.split " ", 4
-                next unless valid_keys.include?(key)
-
-                old_value = old_value_original.to_s.delete "'\""
-                old_value = old_value.to_s.delete ":" if key != "root_url"
-                tag = tag.to_s.delete ":"
-
-                unless tag.empty?
-                  if bottle_hash["bottle"]["tags"][tag].present?
-                    mismatches << "#{key} => #{tag}"
-                  else
-                    bottle.send(key, old_value => tag.to_sym)
-                  end
-                  next
-                end
-
-                value_original = bottle_hash["bottle"][key]
-                value = value_original.to_s
-                next if key == "cellar" && old_value == "any" && value == "any_skip_relocation"
-                next unless old_value.empty? || value != old_value
-
-                old_value = old_value_original.inspect
-                value = value_original.inspect
-                mismatches << "#{key}: old: #{old_value}, new: #{value}"
-              end
-
-              unless mismatches.empty?
+              old_bottle_spec = Formulary.factory(path).bottle_specification
+              mismatches, checksums = merge_bottle_spec(old_bottle_spec, bottle_hash["bottle"])
+              if mismatches.present?
                 odie <<~EOS
                   --keep-old was passed but there are changes in:
                   #{mismatches.join("\n")}
                 EOS
               end
+              checksums.each { |cksum| bottle.sha256(cksum) }
               output = bottle_output bottle
             end
             puts output
@@ -567,5 +537,35 @@ module Homebrew
         puts output
       end
     end
+  end
+
+  def merge_bottle_spec(old_bottle_spec, new_bottle_hash)
+    mismatches = []
+    checksums = []
+
+    {
+      root_url: new_bottle_hash["root_url"],
+      prefix:   new_bottle_hash["prefix"],
+      cellar:   new_bottle_hash["cellar"].to_sym,
+      rebuild:  new_bottle_hash["rebuild"],
+    }.each do |key, new_value|
+      old_value = old_bottle_spec.send(key)
+      next if key == :cellar && old_value == :any && new_value == :any_skip_relocation
+      next if old_value.present? && new_value == old_value
+
+      mismatches << "#{key}: old: #{old_value.inspect}, new: #{new_value.inspect}"
+    end
+
+    old_bottle_spec.collector.each_key do |tag|
+      old_value = old_bottle_spec.collector[tag].hexdigest
+      new_value = new_bottle_hash["tags"][tag.to_s]
+      if new_value.present?
+        mismatches << "sha256 => #{tag}"
+      else
+        checksums << { old_value => tag }
+      end
+    end
+
+    [mismatches, checksums]
   end
 end
