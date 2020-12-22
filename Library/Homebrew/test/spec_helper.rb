@@ -24,6 +24,7 @@ if ENV["HOMEBREW_TESTS_COVERAGE"]
 end
 
 require "rspec/its"
+require "rspec/github"
 require "rspec/wait"
 require "rspec/retry"
 require "rspec/sorbet"
@@ -38,7 +39,6 @@ $LOAD_PATH.push(File.expand_path("#{ENV["HOMEBREW_LIBRARY"]}/Homebrew/test/suppo
 require_relative "../global"
 
 require "test/support/no_seed_progress_formatter"
-require "test/support/github_formatter"
 require "test/support/helper/cask"
 require "test/support/helper/fixtures"
 require "test/support/helper/formula"
