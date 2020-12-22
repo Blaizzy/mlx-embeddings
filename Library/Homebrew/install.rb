@@ -33,9 +33,9 @@ module Homebrew
       if (Hardware::CPU.intel? || Hardware::CPU.in_rosetta2?) &&
          HOMEBREW_PREFIX.to_s == HOMEBREW_MACOS_ARM_DEFAULT_PREFIX
         configuration = if Hardware::CPU.in_rosetta2?
-          "on Intel processor"
-        else
           "under Rosetta 2"
+        else
+          "on Intel processor"
         end
         odie "Cannot install in Homebrew #{configuration} in ARM default prefix (#{HOMEBREW_PREFIX})!"
       elsif Hardware::CPU.arm? && HOMEBREW_PREFIX.to_s == HOMEBREW_DEFAULT_PREFIX
