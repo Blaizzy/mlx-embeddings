@@ -29,6 +29,7 @@ require "active_support/core_ext/hash/deep_merge"
 require "active_support/core_ext/file/atomic"
 require "active_support/core_ext/enumerable"
 require "active_support/core_ext/string/exclude"
+require "active_support/core_ext/string/indent"
 
 I18n.backend.available_locales # Initialize locales so they can be overwritten.
 I18n.backend.store_translations :en, support: { array: { last_word_connector: " and " } }

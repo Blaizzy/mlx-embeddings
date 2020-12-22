@@ -171,7 +171,7 @@ RSpec.shared_context "integration test" do
     Formulary.core_path(name).tap do |formula_path|
       formula_path.write <<~RUBY
         class #{Formulary.class_s(name)} < Formula
-          #{content}
+        #{content.indent(2)}
         end
       RUBY
     end

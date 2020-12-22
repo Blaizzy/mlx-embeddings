@@ -17,8 +17,6 @@ describe Utils::Bottles do
 
   describe "#add_bottle_stanza!" do
     let(:bottle_output) do
-      require "active_support/core_ext/string/indent"
-
       <<~RUBY.chomp.indent(2)
         bottle do
           sha256 "f7b1fc772c79c20fddf621ccc791090bc1085fcef4da6cca03399424c66e06ca" => :sierra
