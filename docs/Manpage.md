@@ -486,6 +486,10 @@ No online search is performed.
   Search for formulae with a description matching *`text`* and casks with a name matching *`text`*.
 * `--pull-request`:
   Search for GitHub pull requests containing *`text`*.
+* `--open`:
+  Search for only open GitHub pull requests
+* `--closed`:
+  Search for only closed GitHub pull requests
 * `--macports`:
   Search for *`text`* in the given package manager's list.
 * `--fink`:
