@@ -78,6 +78,7 @@ module Homebrew
     install_core_tap_if_necessary
 
     updated = false
+    new_repository_version = nil
 
     initial_revision = ENV["HOMEBREW_UPDATE_BEFORE"].to_s
     current_revision = ENV["HOMEBREW_UPDATE_AFTER"].to_s
@@ -87,6 +88,9 @@ module Homebrew
       update_preinstall_header args: args
       puts "Updated Homebrew from #{shorten_revision(initial_revision)} to #{shorten_revision(current_revision)}."
       updated = true
+
+      tag = Utils.safe_popen_read("git", "tag", "--points-at", "HEAD")
+      new_repository_version = tag.chomp if tag.present?
     end
 
     Homebrew.failed = true if ENV["HOMEBREW_UPDATE_FAILED"]
@@ -136,6 +140,21 @@ module Homebrew
     Commands.rebuild_commands_completion_list
     link_completions_manpages_and_docs
     Tap.each(&:link_completions_and_manpages)
+
+    return if new_repository_version.blank?
+
+    ohai "Homebrew was updated to version #{new_repository_version}"
+    puts <<~EOS
+      The changelog can be found at:
+        #{Formatter.url("https://github.com/Homebrew/brew/releases/tag/#{new_repository_version}")}
+    EOS
+
+    return unless new_repository_version.split(".").last == "0"
+
+    puts <<~EOS
+      More detailed release notes are available on the Homebrew Blog:
+        #{Formatter.url("https://brew.sh/blog/")}
+    EOS
   end
 
   def shorten_revision(revision)
