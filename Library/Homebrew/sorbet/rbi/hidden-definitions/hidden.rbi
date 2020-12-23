@@ -5449,6 +5449,8 @@ class Class
   def any_instance(); end
 
   def class_attribute(*attrs, instance_accessor: T.unsafe(nil), instance_reader: T.unsafe(nil), instance_writer: T.unsafe(nil), instance_predicate: T.unsafe(nil), default: T.unsafe(nil)); end
+
+  def json_creatable?(); end
 end
 
 class Cleaner
@@ -5835,6 +5837,13 @@ module CodeRay
   def self.scan_file(filename, lang=T.unsafe(nil), options=T.unsafe(nil), &block); end
 
   def self.scanner(lang, options=T.unsafe(nil), &block); end
+end
+
+module Codecov
+  VERSION = ::T.let(nil, ::T.untyped)
+end
+
+module Codecov
 end
 
 class CompilerSelector::Compiler
@@ -6352,6 +6361,16 @@ end
 
 module Docile
   VERSION = ::T.let(nil, ::T.untyped)
+end
+
+module Docile::BacktraceFilter
+  def backtrace(); end
+
+  def backtrace_locations(); end
+  FILTER_PATTERN = ::T.let(nil, ::T.untyped)
+end
+
+module Docile::BacktraceFilter
 end
 
 class Docile::ChainingFallbackContextProxy
@@ -9956,6 +9975,12 @@ end
 class JSON::Ext::Parser
   def initialize(*_); end
 end
+
+JSON::Parser = JSON::Ext::Parser
+
+JSON::State = JSON::Ext::Generator::State
+
+JSON::UnparserError = JSON::GeneratorError
 
 class JavaRequirement::CaskSuggestion
   extend ::T::Private::Methods::MethodHooks
@@ -29264,7 +29289,6 @@ class SimpleCov::Formatter::Codecov
   SOLANO = ::T.let(nil, ::T.untyped)
   TEAMCITY = ::T.let(nil, ::T.untyped)
   TRAVIS = ::T.let(nil, ::T.untyped)
-  VERSION = ::T.let(nil, ::T.untyped)
   WERCKER = ::T.let(nil, ::T.untyped)
 end
 
