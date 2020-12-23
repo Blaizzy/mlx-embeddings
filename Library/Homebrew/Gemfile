@@ -9,6 +9,7 @@ gem "nokogiri", require: false
 gem "parallel_tests", require: false
 gem "ronn", require: false
 gem "rspec", require: false
+gem "rspec-github", require: false
 gem "rspec-its", require: false
 gem "rspec-retry", require: false
 gem "rspec-sorbet", require: false
