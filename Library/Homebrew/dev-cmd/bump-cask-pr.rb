@@ -88,10 +88,6 @@ module Homebrew
 
     check_open_pull_requests(cask, tap_full_name, args: args)
 
-    if new_version.present? && !new_version.latest?
-      check_closed_pull_requests(cask, tap_full_name, version: new_version, args: args)
-    end
-
     old_contents = File.read(cask.sourcefile_path)
 
     replacement_pairs = []
