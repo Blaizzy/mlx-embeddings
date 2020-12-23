@@ -34,7 +34,24 @@ describe Homebrew::Livecheck::Strategy::PageMatch do
       </html>
     EOS
   }
+
   let(:page_content_matches) { ["2.6.0", "2.5.0", "2.4.0", "2.3.0", "2.2.0", "2.1.0", "2.0.0", "1.9.0"] }
+  let(:find_versions_return_hash) {
+    {
+      matches: {
+        "2.6.0" => Version.new("2.6.0"),
+        "2.5.0" => Version.new("2.5.0"),
+        "2.4.0" => Version.new("2.4.0"),
+        "2.3.0" => Version.new("2.3.0"),
+        "2.2.0" => Version.new("2.2.0"),
+        "2.1.0" => Version.new("2.1.0"),
+        "2.0.0" => Version.new("2.0.0"),
+        "1.9.0" => Version.new("1.9.0"),
+      },
+      regex:   regex,
+      url:     url,
+    }
+  }
 
   describe "::match?" do
     it "returns true for any URL" do
@@ -50,6 +67,12 @@ describe Homebrew::Livecheck::Strategy::PageMatch do
     it "finds matching text in page content using a strategy block" do
       expect(page_match.page_matches(page_content, regex) { |content| content.scan(regex).map(&:first).uniq })
         .to eq(page_content_matches)
+    end
+  end
+
+  describe "::find_versions?" do
+    it "finds versions in provided_content" do
+      expect(page_match.find_versions(url, regex, page_content)).to eq(find_versions_return_hash)
     end
   end
 end
