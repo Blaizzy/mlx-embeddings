@@ -30099,6 +30099,10 @@ class String
 
   def html_safe(); end
 
+  def indent(amount, indent_string=T.unsafe(nil), indent_empty_lines=T.unsafe(nil)); end
+
+  def indent!(amount, indent_string=T.unsafe(nil), indent_empty_lines=T.unsafe(nil)); end
+
   def iseuc(); end
 
   def isjis(); end
