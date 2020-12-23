@@ -93,10 +93,11 @@ module OS
 
             # Use unversioned SDK path on Big Sur to avoid issues such as:
             # https://github.com/Homebrew/homebrew-core/issues/67075
-            if OS::Mac.version >= :big_sur
-              sdk_path = File.join(sdk_prefix, "MacOSX.sdk")
-              version = OS::Mac.full_version
-              paths[version] = sdk_path if File.directory?(sdk_path)
+            sdk_path = File.join(sdk_prefix, "MacOSX.sdk")
+            if OS::Mac.version >= :big_sur && File.directory?(sdk_path)
+              sdk_settings = File.join(sdk_path, "SDKSettings.json")
+              version = JSON.parse(File.read(sdk_settings))["Version"] if File.exist?(sdk_settings)
+              paths[OS::Mac::Version.new(version)] = sdk_path if version.present?
             end
 
             paths
