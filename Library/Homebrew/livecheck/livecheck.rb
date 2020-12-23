@@ -524,6 +524,7 @@ module Homebrew
 
         if debug
           puts "URL (strategy):   #{strategy_data[:url]}" if strategy_data[:url] != url
+          puts "URL (final):   #{strategy_data[:final_url]}" if strategy_data[:final_url]
           puts "Regex (strategy): #{strategy_data[:regex].inspect}" if strategy_data[:regex] != livecheck_regex
         end
 
@@ -564,6 +565,7 @@ module Homebrew
           }
           version_info[:meta][:url][:processed] = url if url != original_url
           version_info[:meta][:url][:strategy] = strategy_data[:url] if strategy_data[:url] != url
+          version_info[:meta][:url][:final] = strategy_data[:final_url] if strategy_data[:final_url]
           version_info[:meta][:strategies] = strategies.map { |s| livecheck_strategy_names[s] } if strategies.present?
           version_info[:meta][:regex] = regex.inspect if regex.present?
         end

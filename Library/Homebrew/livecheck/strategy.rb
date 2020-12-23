@@ -115,8 +115,27 @@ module Homebrew
         headers
       end
 
+      # Fetches the content at the URL and returns a hash containing the
+      # content and, if there are any redirections, the final URL.
+      #
+      # @param url [String] the URL of the content to check
+      # @return [Hash]
       def self.page_content(url)
-        URI.parse(url).open.read
+        original_url = url
+
+        # Manually handling `URI#open` redirections allows us to detect the
+        # resolved URL while also supporting HTTPS to HTTP redirections (which
+        # are normally forbidden by `OpenURI`).
+        begin
+          content = URI.parse(url).open(redirect: false, &:read)
+        rescue OpenURI::HTTPRedirect => e
+          url = e.uri.to_s
+          retry
+        end
+
+        data = { content: content }
+        data[:final_url] = url unless url == original_url
+        data
       end
     end
   end
