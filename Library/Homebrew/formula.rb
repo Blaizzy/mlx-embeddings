@@ -1789,7 +1789,11 @@ class Formula
       "pinned"                   => pinned?,
       "outdated"                 => outdated?,
       "deprecated"               => deprecated?,
+      "deprecation_date"         => deprecation_date,
+      "deprecation_reason"       => deprecation_reason,
       "disabled"                 => disabled?,
+      "disable_date"             => disable_date,
+      "disable_reason"           => disable_reason,
     }
 
     if stable
