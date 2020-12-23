@@ -235,8 +235,7 @@ module Homebrew
             problem "Dependency '#{dep.name}' was renamed; use new name '#{dep_f.name}'."
           end
 
-          if self.class.aliases.include?(dep.name) &&
-             dep_f.core_formula? && !dep_f.versioned_formula?
+          if self.class.aliases.include?(dep.name) && dep_f.core_formula?
             problem "Dependency '#{dep.name}' from homebrew/core is an alias; " \
             "use the canonical name '#{dep.to_formula.full_name}'."
           end
