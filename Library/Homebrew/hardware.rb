@@ -26,8 +26,9 @@ module Hardware
       def optimization_flags
         @optimization_flags ||= {
           native:             arch_flag("native"),
-          nehalem:            "-march=nehalem",
+          ivybridge:          "-march=ivybridge",
           sandybridge:        "-march=sandybridge",
+          nehalem:            "-march=nehalem",
           core2:              "-march=core2",
           core:               "-march=prescott",
           arm_vortex_tempest: "",
