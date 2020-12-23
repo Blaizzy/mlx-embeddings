@@ -550,6 +550,9 @@ module Homebrew
       rebuild:  new_bottle_hash["rebuild"],
     }.each do |key, new_value|
       old_value = old_bottle_spec.send(key)
+      next if key == :rebuild && old_value.zero?
+      next if key == :prefix && old_value == Homebrew::DEFAULT_PREFIX
+      next if key == :cellar && old_value == Homebrew::DEFAULT_REPOSITORY
       next if key == :cellar && old_value == :any && new_value == :any_skip_relocation
       next if old_value.present? && new_value == old_value
 
