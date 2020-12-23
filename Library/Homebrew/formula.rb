@@ -1165,6 +1165,12 @@ class Formula
   # @return [Boolean]
   delegate deprecated?: :"self.class"
 
+  # The date that this {Formula} was or becomes deprecated.
+  # Returns `nil` if no date is specified.
+  # @!method deprecation_date
+  # @return Date
+  delegate deprecation_date: :"self.class"
+
   # The reason this {Formula} is deprecated.
   # Returns `nil` if no reason is specified or the formula is not deprecated.
   # @!method deprecation_reason
@@ -1176,6 +1182,12 @@ class Formula
   # @!method disabled?
   # @return [Boolean]
   delegate disabled?: :"self.class"
+
+  # The date that this {Formula} was or becomes disabled.
+  # Returns `nil` if no date is specified.
+  # @!method disable_date
+  # @return Date
+  delegate disable_date: :"self.class"
 
   # The reason this {Formula} is disabled.
   # Returns `nil` if no reason is specified or the formula is not disabled.
@@ -2771,6 +2783,8 @@ class Formula
       odeprecated "`deprecate!` without a reason", "`deprecate! because: \"reason\"`" if because.blank?
       odeprecated "`deprecate!` without a date", "`deprecate! date: \"#{Date.today}\"`" if date.blank?
 
+      @deprecation_date = Date.parse(date) if date.present?
+
       return if date.present? && Date.parse(date) > Date.today
 
       @deprecation_reason = because if because.present?
@@ -2783,6 +2797,11 @@ class Formula
     def deprecated?
       @deprecated == true
     end
+
+    # The date that this {Formula} was or becomes deprecated.
+    # Returns `nil` if no date is specified.
+    # @return Date
+    attr_reader :deprecation_date
 
     # The reason for deprecation of a {Formula}.
     # @return [nil] if no reason was provided or the formula is not deprecated.
@@ -2798,7 +2817,9 @@ class Formula
       odeprecated "`disable!` without a reason", "`disable! because: \"reason\"`" if because.blank?
       odeprecated "`disable!` without a date", "`disable! date: \"#{Date.today}\"`" if date.blank?
 
-      if date.present? && Date.parse(date) > Date.today
+      @disable_date = Date.parse(date) if date.present?
+
+      if @disable_date && @disable_date > Date.today
         @deprecation_reason = because if because.present?
         @deprecated = true
         return
@@ -2814,6 +2835,11 @@ class Formula
     def disabled?
       @disabled == true
     end
+
+    # The date that this {Formula} was or becomes disabled.
+    # Returns `nil` if no date is specified.
+    # @return Date
+    attr_reader :disable_date
 
     # The reason this {Formula} is disabled.
     # Returns `nil` if no reason was provided or the formula is not disabled.
