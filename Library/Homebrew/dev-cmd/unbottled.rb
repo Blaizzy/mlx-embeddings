@@ -156,7 +156,14 @@ module Homebrew
       deps = Array(deps_hash[f.name]).reject do |dep|
         dep.bottle_specification.tag?(@bottle_tag) || dep.bottle_unneeded?
       end
-      next if deps.blank?
+
+      if deps.blank?
+        next if f.bottle_unneeded?
+
+        count = " (#{hash[f.name]} #{noun})" if noun
+        puts "#{f.name}#{count}: ready to bottle"
+        next
+      end
 
       any_found ||= true
       count = " (#{hash[f.name]} #{noun})" if noun
