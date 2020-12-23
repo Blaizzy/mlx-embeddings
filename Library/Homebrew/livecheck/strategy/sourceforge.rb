@@ -66,7 +66,7 @@ module Homebrew
           # create something that works for most URLs.
           regex ||= %r{url=.*?/#{Regexp.escape(project_name)}/files/.*?[-_/](\d+(?:[-.]\d+)+)[-_/%.]}i
 
-          Homebrew::Livecheck::Strategy::PageMatch.find_versions(page_url, regex)
+          PageMatch.find_versions(page_url, regex)
         end
       end
     end

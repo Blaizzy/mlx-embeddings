@@ -84,7 +84,7 @@ module Homebrew
 
           # Use the cached page content to avoid duplicate fetches
           cached_content = @page_data[page_url]
-          match_data = Homebrew::Livecheck::Strategy::PageMatch.find_versions(page_url, regex, cached_content)
+          match_data = PageMatch.find_versions(page_url, regex, cached_content)
 
           # Cache any new page content
           @page_data[page_url] = match_data[:content] if match_data[:content].present?

@@ -46,7 +46,7 @@ module Homebrew
           # * `%r{href=.*?/package/@example/example/v/(\d+(?:\.\d+)+)"}i`
           regex ||= %r{href=.*?/package/#{Regexp.escape(package_name)}/v/(\d+(?:\.\d+)+)"}i
 
-          Homebrew::Livecheck::Strategy::PageMatch.find_versions(page_url, regex)
+          PageMatch.find_versions(page_url, regex)
         end
       end
     end
