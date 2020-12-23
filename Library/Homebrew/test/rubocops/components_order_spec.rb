@@ -432,6 +432,28 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
       RUBY
     end
 
+    it "correctly uses an on_macos and on_linux block with versions" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          homepage "https://brew.sh"
+
+          resource do
+            on_macos do
+              url "https://brew.sh/resource1.tar.gz"
+              version "1.2.3"
+              sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
+            end
+
+            on_linux do
+              url "https://brew.sh/resource2.tar.gz"
+              version "1.2.3"
+              sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
+            end
+          end
+        end
+      RUBY
+    end
+
     it "there are two on_macos blocks, which is not allowed" do
       expect_offense(<<~RUBY)
         class Foo < Formula
@@ -508,10 +530,36 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
           url "https://brew.sh/foo-1.0.tgz"
 
           resource do
-          ^^^^^^^^^^^ only an url and a sha256 (in the right order) are allowed in a `on_macos` block within a resource block.
+          ^^^^^^^^^^^ `on_macos` blocks within resource blocks must contain only a url and sha256 or a url, version, and sha256 (in those orders).
             on_macos do
               sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
               url "https://brew.sh/resource2.tar.gz"
+            end
+
+            on_linux do
+              url "https://brew.sh/resource2.tar.gz"
+              sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
+            end
+          end
+        end
+      RUBY
+    end
+
+    it "the content of the on_macos block is wrong and not a method" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          url "https://brew.sh/foo-1.0.tgz"
+
+          resource do
+          ^^^^^^^^^^^ `on_macos` blocks within resource blocks must contain only a url and sha256 or a url, version, and sha256 (in those orders).
+            on_macos do
+              if foo == :bar
+                url "https://brew.sh/resource2.tar.gz"
+                sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
+              else
+                url "https://brew.sh/resource1.tar.gz"
+                sha256 "686372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
+              end
             end
 
             on_linux do
@@ -529,7 +577,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
           url "https://brew.sh/foo-1.0.tgz"
 
           resource do
-          ^^^^^^^^^^^ only an url and a sha256 (in the right order) are allowed in a `on_linux` block within a resource block.
+          ^^^^^^^^^^^ `on_linux` blocks within resource blocks must contain only a url and sha256 or a url, version, and sha256 (in those orders).
             on_macos do
               url "https://brew.sh/resource2.tar.gz"
               sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
@@ -538,6 +586,32 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
             on_linux do
               sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
               url "https://brew.sh/resource2.tar.gz"
+            end
+          end
+        end
+      RUBY
+    end
+
+    it "the content of the on_linux block is wrong and not a method" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          url "https://brew.sh/foo-1.0.tgz"
+
+          resource do
+          ^^^^^^^^^^^ `on_linux` blocks within resource blocks must contain only a url and sha256 or a url, version, and sha256 (in those orders).
+            on_macos do
+              url "https://brew.sh/resource2.tar.gz"
+              sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
+            end
+
+            on_linux do
+              if foo == :bar
+                url "https://brew.sh/resource2.tar.gz"
+                sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
+              else
+                url "https://brew.sh/resource1.tar.gz"
+                sha256 "686372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
+              end
             end
           end
         end

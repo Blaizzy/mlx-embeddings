@@ -106,9 +106,12 @@ module RuboCop
             if on_macos_blocks.length == 1
               on_macos_block = on_macos_blocks.first
               child_nodes = on_macos_block.body.child_nodes
-              if child_nodes[0].method_name.to_s != "url" && child_nodes[1].method_name.to_s != "sha256"
-                problem "only an url and a sha256 (in the right order) are allowed in a `on_macos` " \
-                        "block within a resource block."
+              unless child_nodes[0].method?("url") && (
+                  child_nodes[1].method?("sha256") ||
+                  (child_nodes[1].method?("version") && child_nodes[2].method?("sha256"))
+                )
+                problem "`on_macos` blocks within resource blocks must contain only a " \
+                        "url and sha256 or a url, version, and sha256 (in those orders)."
                 next
               end
             end
@@ -116,9 +119,13 @@ module RuboCop
             if on_linux_blocks.length == 1
               on_linux_block = on_linux_blocks.first
               child_nodes = on_linux_block.body.child_nodes
-              if child_nodes[0].method_name.to_s != "url" && child_nodes[1].method_name.to_s != "sha256"
-                problem "only an url and a sha256 (in the right order) are allowed in a `on_linux` " \
-                        "block within a resource block."
+              unless child_nodes[0].method?("url") && (
+                child_nodes[1].method?("sha256") ||
+                (child_nodes[1].method?("version") && child_nodes[2].method?("sha256"))
+              )
+                problem "`on_linux` blocks within resource blocks must contain only a " \
+                        "url and sha256 or a url, version, and sha256 (in those orders)."
+                next
               end
             end
 
