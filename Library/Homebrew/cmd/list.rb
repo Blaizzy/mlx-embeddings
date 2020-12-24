@@ -47,11 +47,14 @@ module Homebrew
              description: "Force output to be one entry per line. " \
                           "This is the default when output is not to a terminal."
       switch "-l",
+             depends_on:  "--formula",
              description: "List formulae in long format. If the output is to a terminal, "\
                           "a total sum for all the file sizes is printed before the long listing."
       switch "-r",
+             depends_on:  "--formula",
              description: "Reverse the order of the formulae sort to list the oldest entries first."
       switch "-t",
+             depends_on:  "--formula",
              description: "Sort formulae by time modified, listing most recently modified first."
 
       conflicts "--formula", "--cask"
