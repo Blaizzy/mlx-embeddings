@@ -63,7 +63,6 @@ module Homebrew
 
       def supported_configuration_checks
         %w[
-          check_for_unsupported_arch
           check_for_unsupported_macos
         ].freeze
       end
@@ -89,18 +88,6 @@ module Homebrew
         EOS
       rescue FormulaUnavailableError
         nil
-      end
-
-      def check_for_unsupported_arch
-        return if Homebrew::EnvConfig.developer?
-        return unless Hardware::CPU.arm?
-
-        <<~EOS
-          You are running macOS on a #{Hardware::CPU.arch} CPU architecture.
-          We do not provide support for this (yet).
-          Reinstall Homebrew under Rosetta 2 until we support it.
-          #{please_create_pull_requests}
-        EOS
       end
 
       def check_for_unsupported_macos

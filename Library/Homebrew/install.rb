@@ -51,11 +51,6 @@ module Homebrew
     end
 
     def check_cpu
-      return if Hardware::CPU.intel? && Hardware::CPU.is_64_bit?
-
-      # Handled by check_for_unsupported_arch in extend/os/mac/diagnostic.rb
-      return if Hardware::CPU.arm?
-
       return unless Hardware::CPU.ppc?
 
       odie <<~EOS
