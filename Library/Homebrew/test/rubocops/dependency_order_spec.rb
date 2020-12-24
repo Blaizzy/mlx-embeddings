@@ -6,8 +6,8 @@ require "rubocops/dependency_order"
 describe RuboCop::Cop::FormulaAudit::DependencyOrder do
   subject(:cop) { described_class.new }
 
-  context "uses_from_macos" do
-    it "wrong conditional uses_from_macos order" do
+  context "when auditing `uses_from_macos`" do
+    it "reports an offense if wrong conditional order" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           homepage "https://brew.sh"
@@ -19,7 +19,7 @@ describe RuboCop::Cop::FormulaAudit::DependencyOrder do
       RUBY
     end
 
-    it "wrong alphabetical uses_from_macos order" do
+    it "reports an offense if wrong alphabetical order" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           homepage "https://brew.sh"
@@ -43,7 +43,7 @@ describe RuboCop::Cop::FormulaAudit::DependencyOrder do
       RUBY
     end
 
-    it "wrong conditional uses_from_macos order with block" do
+    it "reports an offense if wrong conditional order with block" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           homepage "https://brew.sh"
@@ -62,7 +62,7 @@ describe RuboCop::Cop::FormulaAudit::DependencyOrder do
       RUBY
     end
 
-    it "correct uses_from_macos order for multiple tags" do
+    it "reports no offenses if correct order for multiple tags" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           homepage "https://brew.sh"
@@ -75,8 +75,8 @@ describe RuboCop::Cop::FormulaAudit::DependencyOrder do
     end
   end
 
-  context "depends_on" do
-    it "wrong conditional depends_on order" do
+  context "when auditing `depends_on`" do
+    it "reports an offense if wrong conditional order" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           homepage "https://brew.sh"
@@ -88,7 +88,7 @@ describe RuboCop::Cop::FormulaAudit::DependencyOrder do
       RUBY
     end
 
-    it "wrong alphabetical depends_on order" do
+    it "reports an offense if wrong alphabetical order" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           homepage "https://brew.sh"
@@ -112,7 +112,7 @@ describe RuboCop::Cop::FormulaAudit::DependencyOrder do
       RUBY
     end
 
-    it "wrong conditional depends_on order with block" do
+    it "reports an offense if wrong conditional order with block" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           homepage "https://brew.sh"
@@ -131,7 +131,7 @@ describe RuboCop::Cop::FormulaAudit::DependencyOrder do
       RUBY
     end
 
-    it "correct depends_on order for multiple tags" do
+    it "reports no offenses if correct order for multiple tags" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           homepage "https://brew.sh"
@@ -144,8 +144,8 @@ describe RuboCop::Cop::FormulaAudit::DependencyOrder do
     end
   end
 
-  context "autocorrect" do
-    it "wrong conditional uses_from_macos order" do
+  context "when auto-correcting" do
+    it "supports wrong conditional `uses_from_macos` order" do
       source = <<~RUBY
         class Foo < Formula
           homepage "https://brew.sh"
@@ -168,7 +168,7 @@ describe RuboCop::Cop::FormulaAudit::DependencyOrder do
       expect(corrected_source).to eq(correct_source)
     end
 
-    it "wrong conditional depends_on order" do
+    it "supports wrong conditional `depends_on` order" do
       source = <<~RUBY
         class Foo < Formula
           homepage "https://brew.sh"
