@@ -49,7 +49,7 @@ module Homebrew
         # @return [Array]
         def self.page_matches(content, regex, &block)
           if block
-            case (value = block.call(content))
+            case (value = block.call(content, regex))
             when String
               return [value]
             when Array

@@ -87,7 +87,7 @@ module Homebrew
           tags_only_debian = tags_data[:tags].all? { |tag| tag.start_with?("debian/") }
 
           if block
-            case (value = block.call(tags_data[:tags]))
+            case (value = block.call(tags_data[:tags], regex))
             when String
               match_data[:matches][value] = Version.new(value)
             when Array
