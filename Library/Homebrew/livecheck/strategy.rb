@@ -10,6 +10,8 @@ module Homebrew
     #
     # @api private
     module Strategy
+      extend T::Sig
+
       module_function
 
       # Strategy priorities informally range from 1 to 10, where 10 is the
@@ -120,6 +122,7 @@ module Homebrew
       #
       # @param url [String] the URL of the content to check
       # @return [Hash]
+      sig { params(url: String).returns(T::Hash[Symbol, T.untyped]) }
       def self.page_content(url)
         original_url = url
 
