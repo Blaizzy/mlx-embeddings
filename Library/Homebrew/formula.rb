@@ -1470,7 +1470,14 @@ class Formula
   end
 
   def shared_library(name, version = nil)
-    "#{name}.#{version}#{"." unless version.nil?}dylib"
+    return "*.dylib" if name == "*" && (version.blank? || version == "*")
+
+    infix = if version == "*"
+      "{,.*}"
+    elsif version.present?
+      ".#{version}"
+    end
+    "#{name}#{infix}.dylib"
   end
 
   # an array of all core {Formula} names
