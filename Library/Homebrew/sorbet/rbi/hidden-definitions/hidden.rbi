@@ -21869,7 +21869,34 @@ module RSpec::Expectations
   def self.fail_with(message, expected=T.unsafe(nil), actual=T.unsafe(nil)); end
 end
 
+module RSpec::Github
+  VERSION = ::T.let(nil, ::T.untyped)
+end
+
 class RSpec::Github::Formatter
+  def example_failed(failure); end
+
+  def example_pending(pending); end
+end
+
+class RSpec::Github::Formatter
+end
+
+class RSpec::Github::NotificationDecorator
+  def annotation(); end
+
+  def initialize(notification); end
+
+  def line(); end
+
+  def path(); end
+  ESCAPE_MAP = ::T.let(nil, ::T.untyped)
+end
+
+class RSpec::Github::NotificationDecorator
+end
+
+module RSpec::Github
 end
 
 module RSpec::Its
