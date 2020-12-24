@@ -50,7 +50,7 @@ module Homebrew
         # @param url [String] the URL of the content to check
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]
-        def self.find_versions(url, regex = nil)
+        def self.find_versions(url, regex = nil, &block)
           if url.include?("/project")
             %r{/projects?/(?<project_name>[^/]+)/}i =~ url
           elsif url.include?(".net/p/")
@@ -66,7 +66,7 @@ module Homebrew
           # create something that works for most URLs.
           regex ||= %r{url=.*?/#{Regexp.escape(project_name)}/files/.*?[-_/](\d+(?:[-.]\d+)+)[-_/%.]}i
 
-          PageMatch.find_versions(page_url, regex)
+          PageMatch.find_versions(page_url, regex, &block)
         end
       end
     end

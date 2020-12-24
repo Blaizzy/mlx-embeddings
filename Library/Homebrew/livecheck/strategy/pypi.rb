@@ -36,7 +36,7 @@ module Homebrew
         # @param url [String] the URL of the content to check
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]
-        def self.find_versions(url, regex = nil)
+        def self.find_versions(url, regex = nil, &block)
           /
             (?<package_name>.+)- # The package name followed by a hyphen
             .*? # The version string
@@ -55,7 +55,7 @@ module Homebrew
             %r{href=.*?/packages.*?/#{Regexp.escape(package_name)}[._-]
                v?(\d+(?:\.\d+)*(.post\d+)?)#{Regexp.escape(suffix)}}ix
 
-          PageMatch.find_versions(page_url, regex)
+          PageMatch.find_versions(page_url, regex, &block)
         end
       end
     end

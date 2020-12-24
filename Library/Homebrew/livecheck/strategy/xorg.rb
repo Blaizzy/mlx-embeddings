@@ -70,7 +70,7 @@ module Homebrew
         # @param url [String] the URL of the content to check
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]
-        def self.find_versions(url, regex)
+        def self.find_versions(url, regex = nil, &block)
           file_name = File.basename(url)
           /^(?<module_name>.+)-\d+/i =~ file_name
 
@@ -84,7 +84,7 @@ module Homebrew
 
           # Use the cached page content to avoid duplicate fetches
           cached_content = @page_data[page_url]
-          match_data = PageMatch.find_versions(page_url, regex, cached_content)
+          match_data = PageMatch.find_versions(page_url, regex, cached_content, &block)
 
           # Cache any new page content
           @page_data[page_url] = match_data[:content] if match_data[:content].present?

@@ -59,7 +59,7 @@ module Homebrew
         # @param url [String] the URL of the content to check
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]
-        def self.find_versions(url, regex = nil)
+        def self.find_versions(url, regex = nil, &block)
           project_names = PROJECT_NAME_REGEXES.map do |project_name_regex|
             m = url.match(project_name_regex)
             m["project_name"] if m
@@ -89,7 +89,7 @@ module Homebrew
           # Example regex: `%r{href=.*?example[._-]v?(\d+(?:\.\d+)*)(?:\.[a-z]+|/)}i`
           regex ||= %r{href=.*?#{project_name}[._-]v?(\d+(?:\.\d+)*)(?:\.[a-z]+|/)}i
 
-          PageMatch.find_versions(page_url, regex)
+          PageMatch.find_versions(page_url, regex, &block)
         end
       end
     end

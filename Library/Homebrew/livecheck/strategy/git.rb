@@ -74,7 +74,7 @@ module Homebrew
         # @param url [String] the URL of the Git repository to check
         # @param regex [Regexp] the regex to use for matching versions
         # @return [Hash]
-        def self.find_versions(url, regex = nil)
+        def self.find_versions(url, regex = nil, &block)
           match_data = { matches: {}, regex: regex, url: url }
 
           tags_data = tag_info(url, regex)
@@ -85,6 +85,21 @@ module Homebrew
           end
 
           tags_only_debian = tags_data[:tags].all? { |tag| tag.start_with?("debian/") }
+
+          if block
+            case (value = block.call(tags_data[:tags]))
+            when String
+              match_data[:matches][value] = Version.new(value)
+            when Array
+              value.each do |tag|
+                match_data[:matches][tag] = Version.new(tag)
+              end
+            else
+              raise TypeError, "Return value of `strategy :git` block must be a string or array of strings."
+            end
+
+            return match_data
+          end
 
           tags_data[:tags].each do |tag|
             # Skip tag if it has a 'debian/' prefix and upstream does not do

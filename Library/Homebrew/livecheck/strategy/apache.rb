@@ -38,7 +38,7 @@ module Homebrew
         # @param url [String] the URL of the content to check
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]
-        def self.find_versions(url, regex = nil)
+        def self.find_versions(url, regex = nil, &block)
           %r{
             path=
             (?<path>.+?)/ # Path to directory of files or version directories
@@ -59,7 +59,7 @@ module Homebrew
           # * `/href=["']?example-v?(\d+(?:\.\d+)+)-bin\.zip/i`
           regex ||= /href=["']?#{Regexp.escape(prefix)}v?(\d+(?:\.\d+)+)#{Regexp.escape(suffix)}/i
 
-          PageMatch.find_versions(page_url, regex)
+          PageMatch.find_versions(page_url, regex, &block)
         end
       end
     end

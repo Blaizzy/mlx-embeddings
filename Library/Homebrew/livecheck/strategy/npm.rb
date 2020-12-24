@@ -36,7 +36,7 @@ module Homebrew
         # @param url [String] the URL of the content to check
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]
-        def self.find_versions(url, regex = nil)
+        def self.find_versions(url, regex = nil, &block)
           %r{registry\.npmjs\.org/(?<package_name>.+)/-/}i =~ url
 
           page_url = "https://www.npmjs.com/package/#{package_name}?activeTab=versions"
@@ -46,7 +46,7 @@ module Homebrew
           # * `%r{href=.*?/package/@example/example/v/(\d+(?:\.\d+)+)"}i`
           regex ||= %r{href=.*?/package/#{Regexp.escape(package_name)}/v/(\d+(?:\.\d+)+)"}i
 
-          PageMatch.find_versions(page_url, regex)
+          PageMatch.find_versions(page_url, regex, &block)
         end
       end
     end
