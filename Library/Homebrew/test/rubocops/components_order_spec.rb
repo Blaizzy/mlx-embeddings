@@ -411,8 +411,8 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
     RUBY
   end
 
-  context "resource" do
-    it "correctly uses an on_macos and on_linux block" do
+  context "in a resource block" do
+    it "reports no offenses for a valid on_macos and on_linux block" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           homepage "https://brew.sh"
@@ -432,7 +432,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
       RUBY
     end
 
-    it "correctly uses an on_macos and on_linux block with versions" do
+    it "reports no offenses for a valid on_macos and on_linux block with versions" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           homepage "https://brew.sh"
@@ -454,7 +454,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
       RUBY
     end
 
-    it "there are two on_macos blocks, which is not allowed" do
+    it "reports an offense if there are two on_macos blocks" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url "https://brew.sh/foo-1.0.tgz"
@@ -475,7 +475,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
       RUBY
     end
 
-    it "there are two on_linux blocks, which is not allowed" do
+    it "reports an offense if there are two on_linux blocks" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url "https://brew.sh/foo-1.0.tgz"
@@ -496,7 +496,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
       RUBY
     end
 
-    it "there is a on_macos block but no on_linux block" do
+    it "reports no offenses if there is an on_macos block but no on_linux block" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           url "https://brew.sh/foo-1.0.tgz"
@@ -510,7 +510,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
       RUBY
     end
 
-    it "there is a on_linux block but no on_macos block" do
+    it "reports no offenses if there is an on_linux block but no on_macos block" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           url "https://brew.sh/foo-1.0.tgz"
@@ -524,7 +524,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
       RUBY
     end
 
-    it "the content of the on_macos block is wrong in a resource block" do
+    it "reports an offense if the content of an on_macos block is improperly formatted" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url "https://brew.sh/foo-1.0.tgz"
@@ -545,7 +545,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
       RUBY
     end
 
-    it "reports no offenses if the on_macos block has if-else branches and they are properly formatted" do
+    it "reports no offenses if an on_macos block has if-else branches that are properly formatted" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           url "https://brew.sh/foo-1.0.tgz"
@@ -570,7 +570,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
       RUBY
     end
 
-    it "the content of the on_macos block is wrong and not a method" do
+    it "reports an offense if an on_macos block has if-else branches that aren't properly formatted" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url "https://brew.sh/foo-1.0.tgz"
@@ -596,7 +596,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
       RUBY
     end
 
-    it "the content of the on_linux block is wrong in a resource block" do
+    it "reports an offense if the content of an on_linux block is improperly formatted" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url "https://brew.sh/foo-1.0.tgz"
@@ -617,7 +617,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
       RUBY
     end
 
-    it "reports no offenses if the on_linux block has if-else branches and they are properly formatted" do
+    it "reports no offenses if an on_linux block has if-else branches that are properly formatted" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           url "https://brew.sh/foo-1.0.tgz"
@@ -642,7 +642,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
       RUBY
     end
 
-    it "the content of the on_linux block is wrong and not a method" do
+    it "reports an offense if an on_linux block has if-else branches that aren't properly formatted" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url "https://brew.sh/foo-1.0.tgz"
