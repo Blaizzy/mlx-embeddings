@@ -339,7 +339,7 @@ If *`cask`* is provided, list its artifacts.
 * `-1`:
   Force output to be one entry per line. This is the default when output is not to a terminal.
 * `-l`:
-  List formulae in long format. If the output is to a terminal, a total sum for all the file sizes is printed before the long listing.
+  List formulae in long format.
 * `-r`:
   Reverse the order of the formulae sort to list the oldest entries first.
 * `-t`:
