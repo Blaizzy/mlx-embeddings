@@ -43,7 +43,9 @@ module SharedAudits
 
     return "#{tag} is a GitHub pre-release." if release["prerelease"] && [version, "all"].exclude?(exception)
 
-    return "#{tag} is not a GitHub pre-release but '#{name}' is in the GitHub prerelease allowlist." if exception
+    if !release["prerelease"] && exception
+      return "#{tag} is not a GitHub pre-release but '#{name}' is in the GitHub prerelease allowlist."
+    end
 
     return "#{tag} is a GitHub draft." if release["draft"]
   end
