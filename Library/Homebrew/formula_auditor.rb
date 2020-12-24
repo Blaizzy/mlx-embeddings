@@ -235,12 +235,6 @@ module Homebrew
             problem "Dependency '#{dep.name}' was renamed; use new name '#{dep_f.name}'."
           end
 
-          if self.class.aliases.include?(dep.name) &&
-             dep_f.core_formula? && !dep_f.versioned_formula?
-            problem "Dependency '#{dep.name}' from homebrew/core is an alias; " \
-            "use the canonical name '#{dep.to_formula.full_name}'."
-          end
-
           if @core_tap &&
              @new_formula &&
              dep_f.keg_only? &&
@@ -272,6 +266,10 @@ module Homebrew
           problem "Dependency '#{dep.name}' is marked as :run. Remove :run; it is a no-op." if dep.tags.include?(:run)
 
           next unless @core_tap
+
+          if self.class.aliases.include?(dep.name)
+            problem "Dependency '#{dep.name}' is an alias; use the canonical name '#{dep.to_formula.full_name}'."
+          end
 
           if dep.tags.include?(:recommended) || dep.tags.include?(:optional)
             problem "Formulae in homebrew/core should not have optional or recommended dependencies"
