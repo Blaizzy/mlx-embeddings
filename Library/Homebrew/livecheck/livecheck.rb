@@ -524,7 +524,7 @@ module Homebrew
 
         if debug
           puts "URL (strategy):   #{strategy_data[:url]}" if strategy_data[:url] != url
-          puts "URL (final):   #{strategy_data[:final_url]}" if strategy_data[:final_url]
+          puts "URL (final):      #{strategy_data[:final_url]}" if strategy_data[:final_url]
           puts "Regex (strategy): #{strategy_data[:regex].inspect}" if strategy_data[:regex] != livecheck_regex
         end
 
