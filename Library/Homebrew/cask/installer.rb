@@ -120,6 +120,11 @@ module Cask
       return unless @cask.conflicts_with
 
       @cask.conflicts_with[:cask].each do |conflicting_cask|
+        if (match = conflicting_cask.match(HOMEBREW_TAP_CASK_REGEX))
+          conflicting_cask_tap = Tap.fetch(match[1], match[2])
+          next unless conflicting_cask_tap.installed?
+        end
+
         conflicting_cask = CaskLoader.load(conflicting_cask)
         raise CaskConflictError.new(@cask, conflicting_cask) if conflicting_cask.installed?
       rescue CaskUnavailableError
