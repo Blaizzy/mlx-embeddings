@@ -7,7 +7,7 @@ module Stdenv
   undef homebrew_extra_pkg_config_paths
 
   def homebrew_extra_pkg_config_paths
-    ["#{HOMEBREW_LIBRARY}/Homebrew/os/mac/pkgconfig/#{MacOS.sdk_version}"]
+    ["#{HOMEBREW_LIBRARY}/Homebrew/os/mac/pkgconfig/#{MacOS.version}"]
   end
 
   def setup_build_environment(formula: nil, cc: nil, build_bottle: false, bottle_arch: nil, testing_formula: false)
