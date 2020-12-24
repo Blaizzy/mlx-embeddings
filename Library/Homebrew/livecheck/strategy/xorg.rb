@@ -1,8 +1,6 @@
 # typed: false
 # frozen_string_literal: true
 
-require "open-uri"
-
 module Homebrew
   module Livecheck
     module Strategy
@@ -74,7 +72,6 @@ module Homebrew
         # @return [Hash]
         def self.find_versions(url, regex)
           file_name = File.basename(url)
-
           /^(?<module_name>.+)-\d+/i =~ file_name
 
           # /pub/ URLs redirect to the same URL with /archive/, so we replace
@@ -82,17 +79,15 @@ module Homebrew
           # the URL gives us the relevant directory listing page.
           page_url = url.sub("x.org/pub/", "x.org/archive/").delete_suffix(file_name)
 
+          # Example regex: /href=.*?example[._-]v?(\d+(?:\.\d+)+)\.t/i
           regex ||= /href=.*?#{Regexp.escape(module_name)}[._-]v?(\d+(?:\.\d+)+)\.t/i
 
-          match_data = { matches: {}, regex: regex, url: page_url }
+          # Use the cached page content to avoid duplicate fetches
+          cached_content = @page_data[page_url]
+          match_data = PageMatch.find_versions(page_url, regex, cached_content)
 
-          # Cache responses to avoid unnecessary duplicate fetches
-          @page_data[page_url] = URI.parse(page_url).open.read unless @page_data.key?(page_url)
-
-          matches = @page_data[page_url].scan(regex)
-          matches.map(&:first).uniq.each do |match|
-            match_data[:matches][match] = Version.new(match)
-          end
+          # Cache any new page content
+          @page_data[page_url] = match_data[:content] if match_data[:content].present?
 
           match_data
         end

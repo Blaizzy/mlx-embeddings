@@ -54,7 +54,7 @@ module Homebrew
           # Example regex: `/href=.*?Brew[._-]v?(\d+(?:\.\d+)*)\.t/i`
           regex ||= /href=.*?#{prefix}[._-]v?(\d+(?:\.\d+)*)#{Regexp.escape(suffix)}/i
 
-          Homebrew::Livecheck::Strategy::PageMatch.find_versions(page_url, regex)
+          PageMatch.find_versions(page_url, regex)
         end
       end
     end

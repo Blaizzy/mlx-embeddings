@@ -65,7 +65,7 @@ module Homebrew
           # The default regex is the same for all URLs using this strategy
           regex ||= %r{href=.*?/tag/v?(\d+(?:\.\d+)+)["' >]}i
 
-          Homebrew::Livecheck::Strategy::PageMatch.find_versions(page_url, regex)
+          PageMatch.find_versions(page_url, regex)
         end
       end
     end

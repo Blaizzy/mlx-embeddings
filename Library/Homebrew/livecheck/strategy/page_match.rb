@@ -71,12 +71,29 @@ module Homebrew
 
         # Checks the content at the URL for new versions, using the provided
         # regex for matching.
-        sig { params(url: String, regex: T.nilable(Regexp)).returns(T::Hash[Symbol, T.untyped]) }
-        def self.find_versions(url, regex, &block)
+        #
+        # @param url [String] the URL of the content to check
+        # @param regex [Regexp] a regex used for matching versions in content
+        # @param provided_content [String] page content to use in place of
+        #   fetching via Strategy#page_content
+        # @return [Hash]
+        sig do
+          params(
+            url:              String,
+            regex:            T.nilable(Regexp),
+            provided_content: T.nilable(String),
+            block:            T.nilable(T.proc.params(arg0: String).returns(T.any(T::Array[String], String))),
+          ).returns(T::Hash[Symbol, T.untyped])
+        end
+        def self.find_versions(url, regex, provided_content = nil, &block)
           match_data = { matches: {}, regex: regex, url: url }
 
-          match_data.merge!(Strategy.page_content(url))
-          content = match_data.delete(:content)
+          content = if provided_content.present?
+            provided_content
+          else
+            match_data.merge!(Strategy.page_content(url))
+            match_data.delete(:content)
+          end
           return match_data if content.blank?
 
           page_matches(content, regex, &block).each do |match_text|

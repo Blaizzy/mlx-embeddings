@@ -43,7 +43,7 @@ module Homebrew
           # Example regex: `%r{<h3>example-(.*?)/?</h3>}i`
           regex ||= %r{<h3>#{Regexp.escape(package_name)}-(.*?)/?</h3>}i
 
-          Homebrew::Livecheck::Strategy::PageMatch.find_versions(page_url, regex)
+          PageMatch.find_versions(page_url, regex)
         end
       end
     end
