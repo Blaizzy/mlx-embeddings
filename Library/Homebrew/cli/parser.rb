@@ -432,6 +432,10 @@ module Homebrew
         @constraints.each do |primary, secondary, constraint_type|
           primary_passed = option_passed?(primary)
           secondary_passed = option_passed?(secondary)
+
+          primary = name_to_option(primary)
+          secondary = name_to_option(secondary)
+
           if :mandatory.equal?(constraint_type) && primary_passed && !secondary_passed
             raise OptionConstraintError.new(primary, secondary)
           end
@@ -533,19 +537,12 @@ module Homebrew
 
     class OptionConstraintError < UsageError
       def initialize(arg1, arg2, missing: false)
-        arg1 = dashes(arg1) + arg1.tr("_", "-")
-        arg2 = dashes(arg2) + arg2.tr("_", "-")
-
         message = if missing
           "`#{arg2}` cannot be passed without `#{arg1}`."
         else
           "`#{arg1}` and `#{arg2}` should be passed together."
         end
         super message
-      end
-
-      def dashes(arg)
-        arg.length > 1 ? "--" : "-"
       end
     end
 
