@@ -89,7 +89,8 @@ module Homebrew
 
           match_data = { matches: {}, regex: regex, url: url }
 
-          content = Strategy.page_content(url)
+          match_data.merge!(Strategy.page_content(url))
+          content = match_data.delete(:content)
 
           if (item = item_from_content(content))
             match = if block
