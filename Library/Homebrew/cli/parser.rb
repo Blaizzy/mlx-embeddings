@@ -533,8 +533,8 @@ module Homebrew
 
     class OptionConstraintError < UsageError
       def initialize(arg1, arg2, missing: false)
-        arg1 = arg1.length > 1 ? "--#{arg1.tr("_", "-")}" : "-#{arg1.tr("_", "-")}"
-        arg2 = arg2.length > 1 ? "--#{arg2.tr("_", "-")}" : "-#{arg2.tr("_", "-")}"
+        arg1 = dashes(arg1) + arg1.tr("_", "-")
+        arg2 = dashes(arg2) + arg2.tr("_", "-")
 
         message = if missing
           "`#{arg2}` cannot be passed without `#{arg1}`."
@@ -542,6 +542,10 @@ module Homebrew
           "`#{arg1}` and `#{arg2}` should be passed together."
         end
         super message
+      end
+
+      def dashes(arg)
+        arg.length > 1 ? "--" : "-"
       end
     end
 
