@@ -89,7 +89,21 @@ module Homebrew
       puts "Updated Homebrew from #{shorten_revision(initial_revision)} to #{shorten_revision(current_revision)}."
       updated = true
 
-      new_repository_version = Utils.safe_popen_read("git", "tag", "--points-at", "HEAD").chomp.presence
+      old_tag = if (HOMEBREW_REPOSITORY/".git/config").exist?
+        Utils.popen_read(
+          "git", "config", "--file=#{HOMEBREW_REPOSITORY}/.git/config", "--get", "homebrew.latesttag"
+        ).chomp.presence
+      end
+
+      new_tag = Utils.popen_read(
+        "git", "-C", HOMEBREW_REPOSITORY, "tag", "--list", "--sort=-version:refname"
+      ).lines.first.chomp
+
+      if new_tag != old_tag
+        system "git", "config", "--file=#{HOMEBREW_REPOSITORY}/.git/config",
+               "--replace-all", "homebrew.latesttag", new_tag
+        new_repository_version = new_tag
+      end
     end
 
     Homebrew.failed = true if ENV["HOMEBREW_UPDATE_FAILED"]
