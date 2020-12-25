@@ -6,15 +6,15 @@ There are many reasons why formulae may be deprecated, disabled, or removed. Thi
 
 This general rule of thumb can be followed:
 
-- `deprecate!` should be used for formulae that _should_ no longer be used
-- `disable!` should be used for formulae that _cannot_ be used
-- Formulae that have been disabled for a long time or have a more serious issue should be removed
+- `deprecate!` should be used for formulae that _should_ no longer be used.
+- `disable!` should be used for formulae that _cannot_ be used.
+- Formulae that have are not longer acceptable in homebrew/core or have been disabled for over a year should be removed.
 
 ## Deprecation
 
 If a user attempts to install a deprecated formula, they will be shown a warning message but the install will succeed.
 
-A formula should be deprecated to indicate to users that the formula should not be used and may be disabled in the future. Deprecated formulae should still be able to build from source and all bottles should continue to work. Users who choose to install deprecated formulae should not have any issues.
+A formula should be deprecated to indicate to users that the formula should not be used and may be disabled in the future. Deprecated formulae should still be able to build from source and their bottles should continue to work.
 
 The most common reasons for deprecation are when the upstream project is deprecated, unmaintained, or archived.
 
@@ -24,7 +24,7 @@ To deprecate a formula, add a `deprecate!` call. This call should include a depr
 deprecate! date: "YYYY-MM-DD", because: :reason
 ```
 
-The `date` parameter should be set to the date that the project became (or will become) deprecated. If there is no clear date but the formula needs to be deprecated, use today's date. If the `date` parameter is set to a date in the future, the formula will not become deprecated until that date. This can be useful if the upstream developers have indicated a date where the project will stop being supported.
+The `date` parameter should be set to the date that the project or version became (or will become) deprecated. If there is no clear date but the formula needs to be deprecated, use today's date. If the `date` parameter is set to a date in the future, the formula will not become deprecated until that date. This can be useful if the upstream developers have indicated a date where the project or version will stop being supported.
 
 The `because` parameter can be set to a preset reason (using a symbol) or a custom reason. See the [Deprecate and Disable Reasons](#deprecate-and-disable-reasons) section below for more details about the `because` parameter.
 
@@ -32,7 +32,7 @@ The `because` parameter can be set to a preset reason (using a symbol) or a cust
 
 If a user attempts to install a disabled formula, they will be shown an error message and the install will fail.
 
-A formula should be disabled to indicate to users that the formula cannot be used and may be removed in the future. Disabled formulae may not be able to build from source and may not have working bottles. Users who choose to attempt to install disabled formulae will likely run into issues.
+A formula should be disabled to indicate to users that the formula cannot be used and will be removed in the future. Disabled formulae may no longer be able to build from source or have working bottles.
 
 The most common reasons for disabling are when the formula cannot be built from source (meaning no bottles can be built), has been deprecated for a long time, the upstream repository has been removed, or the project has no license.
 
@@ -50,20 +50,18 @@ The `because` parameter can be set to a preset reason (using a symbol) or a cust
 
 ## Removal
 
-A formula should be removed if there is a serious issue with the formula or the formula has been disabled for a long period of time.
-
-A formula should be removed if it has been disabled for a long period of time, it has a non-open-source license, or there is another serious issue with the formula that makes it not compatible with homebrew/core.
+A formula should be removed if it does not meet our criteria for [acceptable formulae](Acceptable-Formulae.md) or [versioned formulae](Versions.md), has a non-open-source license, or has been disabled for a long period of time.
 
 **Note: disabled formulae in homebrew/core will be automatically removed one year after their disable date**
 
 ## Deprecate and Disable Reasons
 
-When a formula is deprecated or disabled, a reason explaining the action should be provided.
+When a formula is deprecated or disabled, a reason explaining the action must be provided.
 
-There are two ways to indicate the reason. The preferred way is to use a pre-existing symbol to indicate the reason. The available symbols are:
+There are two ways to indicate the reason. The preferred way is to use a pre-existing symbol to indicate the reason. The available symbols are listed below and can be found in the [`DeprecateDisable` module](https://rubydoc.brew.sh/DeprecateDisable.html#DEPRECATE_DISABLE_REASONS-constant):
 
-- `:does_not_build`: the formulae that cannot be build from source
-- `:no_license`: the formulae does not have a license
+- `:does_not_build`: the formula cannot be built from source
+- `:no_license`: the formula does not have a license
 - `:repo_archived`: the upstream repository has been archived
 - `:repo_removed`: the upstream repository has been removed
 - `:unmaintained`: the project appears to be abandoned
@@ -85,24 +83,14 @@ disable! date: "2020-01-01", because: :does_not_build
 
 If these pre-existing reasons do not fit, a custom reason can be specified. These reasons should be written to fit into the sentence `<formula> has been deprecated/disabled because it <reason>!`.
 
-Here are examples of a well-worded custom reason:
+A well-worded example of a custom reason would be:
 
 ```ruby
 # Warning: <formula> has been deprecated because it fetches unversioned dependencies at runtime!
 deprecate! date: "2020-01-01", because: "fetches unversioned dependencies at runtime"
 ```
 
-```ruby
-# Error: <formula> has been disabled because it requires Python 2.7!
-disable! date: "2020-01-01", because: "requires Python 2.7"
-```
-
-Here is an example of a poorly-worded custom reason:
-
-```ruby
-# Warning: <formula> has been deprecated because it the formula fetches unversioned dependencies at runtime!
-deprecate! date: "2020-01-01", because: "the formula fetches unversioned dependencies at runtime"
-```
+A poorly-worded example of a custom reason would be:
 
 ```ruby
 # Error: <formula> has been disabled because it invalid license!
