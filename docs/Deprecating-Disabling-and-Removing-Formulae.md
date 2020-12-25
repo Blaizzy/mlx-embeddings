@@ -12,7 +12,7 @@ This general rule of thumb can be followed:
 
 ## Deprecation
 
-If a user attempts to install a disabled formula, they will be shown a warning message but the install will succeed.
+If a user attempts to install a deprecated formula, they will be shown a warning message but the install will succeed.
 
 A formula should be deprecated to indicate to users that the formula should not be used and may be disabled in the future. Deprecated formulae should still be able to build from source and all bottles should continue to work. Users who choose to install deprecated formulae should not have any issues.
 
@@ -38,7 +38,7 @@ The most common reasons for disabling are when the formula cannot be built from 
 
 **Note: disabled formulae in homebrew/core will be automatically removed one year after their disable date**
 
-To deprecate a formula, add a `deprecate!` call. This call should include a deprecation date (in the ISO 8601 format) and a deprecation reason:
+To disable a formula, add a `disable!` call. This call should include a deprecation date (in the ISO 8601 format) and a deprecation reason:
 
 ```ruby
 disable! date: "YYYY-MM-DD", because: :reason
