@@ -89,6 +89,7 @@ module Homebrew
           match_data = { matches: {}, regex: regex, url: url }
 
           content = if provided_content.is_a?(String)
+            match_data[:cached] = true
             provided_content
           else
             match_data.merge!(Strategy.page_content(url))
