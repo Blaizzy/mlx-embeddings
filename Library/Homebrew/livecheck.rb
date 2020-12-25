@@ -87,16 +87,14 @@ class Livecheck
   # Sets the `@url` instance variable to the provided argument or returns the
   # `@url` instance variable when no argument is provided. The argument can be
   # a `String` (a URL) or a supported `Symbol` corresponding to a URL in the
-  # formula/cask (e.g. `:stable`, `:homepage`, `:head`, `:cask_url`, `:appcast`).
+  # formula/cask (e.g. `:stable`, `:homepage`, `:head`, `:url`).
   # @param val [String, Symbol] URL to check for version information
   # @return [String, nil]
   def url(val = nil)
     @url = case val
     when nil
       return @url
-    when :appcast
-      @formula_or_cask.appcast.to_s
-    when :cask_url
+    when :url
       @formula_or_cask.url.to_s
     when :head, :stable
       @formula_or_cask.send(val).url
