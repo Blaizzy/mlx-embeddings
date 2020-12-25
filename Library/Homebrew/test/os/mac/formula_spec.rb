@@ -112,6 +112,12 @@ describe Formula do
       f = Testball.new
       expect(f.shared_library("foobar")).to eq("foobar.dylib")
       expect(f.shared_library("foobar", 2)).to eq("foobar.2.dylib")
+      expect(f.shared_library("foobar", nil)).to eq("foobar.dylib")
+      expect(f.shared_library("foobar", "*")).to eq("foobar{,.*}.dylib")
+      expect(f.shared_library("*")).to eq("*.dylib")
+      expect(f.shared_library("*", 2)).to eq("*.2.dylib")
+      expect(f.shared_library("*", nil)).to eq("*.dylib")
+      expect(f.shared_library("*", "*")).to eq("*.dylib")
     end
   end
 end

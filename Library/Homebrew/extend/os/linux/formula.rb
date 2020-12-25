@@ -5,7 +5,12 @@ class Formula
   undef shared_library
 
   def shared_library(name, version = nil)
-    "#{name}.so#{"." unless version.nil?}#{version}"
+    suffix = if version == "*" || (name == "*" && version.blank?)
+      "{,.*}"
+    elsif version.present?
+      ".#{version}"
+    end
+    "#{name}.so#{suffix}"
   end
 
   class << self
