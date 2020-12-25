@@ -40,6 +40,7 @@
 - [Acceptable Formulae](Acceptable-Formulae.md)
 - [License Guidelines](License-Guidelines.md)
 - [Formulae Versions](Versions.md)
+- [Deprecating, Disabling, and Removing Formulae](Deprecating-Disabling-and-Removing-Formulae.md)
 - [Node for Formula Authors](Node-for-Formula-Authors.md)
 - [Python for Formula Authors](Python-for-Formula-Authors.md)
 - [Migrating A Formula To A Tap](Migrating-A-Formula-To-A-Tap.md)

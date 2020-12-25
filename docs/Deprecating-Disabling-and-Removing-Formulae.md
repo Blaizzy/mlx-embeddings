@@ -1,0 +1,108 @@
+# Deprecating, Disabling, and Removing Formulae
+
+There are many reasons why formulae may be deprecated, disabled, or removed. This document explains the differences between each method as well as explaining when one method should be used over another.
+
+## Overview
+
+This general rule of thumb can be followed:
+
+- `deprecate!` should be used for formulae that should no longer be used
+- `disable!` should be used for formulae that cannot be used
+- Removal should be done with formulae that have been disabled for a long time or have a more serious issue
+
+## Deprecation
+
+If a user attempts to install a disabled formula, they will be shown a warning message but the install will succeed.
+
+A formula should be deprecated to indicate to users that the formula should not be used and may be disabled in the future. Deprecated formulae should still be able to build from source and all bottles should continue to work. Users who choose to install deprecated formulae should not have any issues.
+
+The most common reasons for deprecation are when the upstream project is deprecated, unmaintained, or archived.
+
+To deprecate a formula, add a `deprecate!` call. This call should include a deprecation date (in the ISO 8601 format) and a deprecation reason:
+
+```ruby
+deprecate! date: "YYYY-MM-DD", because: :reason
+```
+
+The `date` parameter should be set to the date that the project became (or will become) deprecated. If there is no clear date but the formula needs to be deprecated, use today's date. If the `date` parameter is set to a date in the future, the formula will not become deprecated until that date. This can be useful if the upstream developers have indicated a date where the project will stop being supported.
+
+The `because` parameter can be set to a preset reason (using a symbol) or a custom reason. See the [Deprecate and Disable Reasons](#deprecate-and-disable-reasons) section below for more details about the `because` parameter.
+
+## Disabling
+
+If a user attempts to install a disabled formula, they will be shown an error message and the install will fail.
+
+A formula should be disabled to indicate to users that the formula cannot be used and may be removed in the future. Disabled formulae may not be able to build from source and may not have working bottles. Users who choose to attempt to install disabled formulae will likely run into issues.
+
+The most common reasons for disabling are when the formula cannot be built from source (meaning no bottles can be built), has been deprecated for a long time, the upstream repository has been removed, or the project has license issues that are not compatible with homebrew/core.
+
+**Note: disabled formulae in homebrew/core will be automatically removed one year after their disable date**
+
+To deprecate a formula, add a `deprecate!` call. This call should include a deprecation date (in the ISO 8601 format) and a deprecation reason:
+
+```ruby
+disable! date: "YYYY-MM-DD", because: :reason
+```
+
+The `date` parameter should be set to the date that the reason for disabling came into effect. If there is no clear date but the formula needs to be disabled, use today's date. If the `date` parameter is set to a date in the future, the formula will be deprecated until that date (on which the formula will become disabled).
+
+The `because` parameter can be set to a preset reason (using a symbol) or a custom reason. See the [Deprecate and Disable Reasons](#deprecate-and-disable-reasons) section below for more details about the `because` parameter.
+
+## Removal
+
+A formula should be removed if there is a serious issue with the formula or the formula has been disabled for a long period of time.
+
+The most common reasons for removing are when the formula has a non-open-source license or when the formula has been disabled for over a year.
+
+## Deprecate and Disable Reasons
+
+When a formula is deprecated or disabled, a reason explaining the action should be provided.
+
+There are two ways to indicate the reason. The preferred way is to use a pre-existing symbol to indicate the reason. The available symbols are:
+
+- `:does_not_build`: the formulae that cannot be build from source
+- `:no_license`: the formulae does not have a license
+- `:repo_archived`: the upstream repository has been archived
+- `:repo_removed`: the upstream repository has been removed
+- `:unmaintained`: the project appears to be abandoned
+- `:unsupported`: Homebrew's application of the software is not supported by the upstream developers (e.g. upstream only supports macOS version prior to 10.14)
+- `:deprecated_upstream`: the project is deprecated upstream
+- `:versioned_formula`: the formula is a versioned formula
+
+These reasons can be specified by their symbols (the comments show the message that will be displayed to users):
+
+```ruby
+# Warning: <formula> has been deprecated because it is deprecated upstream!
+deprecate! date: "2020-01-01", because: :deprecated_upstream
+```
+
+```ruby
+# Error: <formula> has been disabled because it does not build!
+disable! date: "2020-01-01", because: :does_not_build
+```
+
+If these pre-existing reasons do not fit, a custom reason can be specified. These reasons should be written to fit into the sentence `<formula> has been deprecated/disabled because it <reason>!`.
+
+Here are examples of a well-worded custom reason:
+
+```ruby
+# Warning: <formula> has been deprecated because it fetches unversioned dependencies at runtime!
+deprecate! date: "2020-01-01", because: "fetches unversioned dependencies at runtime"
+```
+
+```ruby
+# Error: <formula> has been disabled because it requires Python 2.7!
+disable! date: "2020-01-01", because: "requires Python 2.7"
+```
+
+Here is an example of a poorly-worded custom reason:
+
+```ruby
+# Warning: <formula> has been deprecated because it the formula fetches unversioned dependencies at runtime!
+deprecate! date: "2020-01-01", because: "the formula fetches unversioned dependencies at runtime"
+```
+
+```ruby
+# Error: <formula> has been disabled because it invalid license!
+disable! date: "2020-01-01", because: "invalid license"
+```
