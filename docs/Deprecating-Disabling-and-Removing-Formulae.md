@@ -8,13 +8,13 @@ This general rule of thumb can be followed:
 
 - `deprecate!` should be used for formulae that _should_ no longer be used.
 - `disable!` should be used for formulae that _cannot_ be used.
-- Formulae that have are not longer acceptable in homebrew/core or have been disabled for over a year should be removed.
+- Formulae that are no longer acceptable in homebrew/core or have been disabled for over a year should be removed.
 
 ## Deprecation
 
 If a user attempts to install a deprecated formula, they will be shown a warning message but the install will succeed.
 
-A formula should be deprecated to indicate to users that the formula should not be used and may be disabled in the future. Deprecated formulae should still be able to build from source and their bottles should continue to work.
+A formula should be deprecated to indicate to users that the formula should not be used and may be disabled in the future. Deprecated formulae should still build from source and their bottles should continue to work.
 
 The most common reasons for deprecation are when the upstream project is deprecated, unmaintained, or archived.
 
@@ -26,15 +26,15 @@ deprecate! date: "YYYY-MM-DD", because: :reason
 
 The `date` parameter should be set to the date that the project or version became (or will become) deprecated. If there is no clear date but the formula needs to be deprecated, use today's date. If the `date` parameter is set to a date in the future, the formula will not become deprecated until that date. This can be useful if the upstream developers have indicated a date where the project or version will stop being supported.
 
-The `because` parameter can be set to a preset reason (using a symbol) or a custom reason. See the [Deprecate and Disable Reasons](#deprecate-and-disable-reasons) section below for more details about the `because` parameter.
+The `because` parameter can be a preset reason (using a symbol) or a custom reason. See the [Deprecate and Disable Reasons](#deprecate-and-disable-reasons) section below for more details about the `because` parameter.
 
 ## Disabling
 
 If a user attempts to install a disabled formula, they will be shown an error message and the install will fail.
 
-A formula should be disabled to indicate to users that the formula cannot be used and will be removed in the future. Disabled formulae may no longer be able to build from source or have working bottles.
+A formula should be disabled to indicate to users that the formula cannot be used and will be removed in the future. Disabled formulae may no longer build from source or have working bottles.
 
-The most common reasons for disabling are when the formula cannot be built from source (meaning no bottles can be built), has been deprecated for a long time, the upstream repository has been removed, or the project has no license.
+The most common reasons for disabling are when the formula cannot be built from source (meaning no bottles can be built), the formula has been deprecated for a long time, the upstream repository has been removed, or the project has no license.
 
 **Note: disabled formulae in homebrew/core will be automatically removed one year after their disable date**
 
@@ -46,7 +46,7 @@ disable! date: "YYYY-MM-DD", because: :reason
 
 The `date` parameter should be set to the date that the reason for disabling came into effect. If there is no clear date but the formula needs to be disabled, use today's date. If the `date` parameter is set to a date in the future, the formula will be deprecated until that date (on which the formula will become disabled).
 
-The `because` parameter can be set to a preset reason (using a symbol) or a custom reason. See the [Deprecate and Disable Reasons](#deprecate-and-disable-reasons) section below for more details about the `because` parameter.
+The `because` parameter can be a preset reason (using a symbol) or a custom reason. See the [Deprecate and Disable Reasons](#deprecate-and-disable-reasons) section below for more details about the `because` parameter.
 
 ## Removal
 
