@@ -93,11 +93,9 @@ function __fish_brew_suggest_formulae_all -d 'Lists all available formulae with 
     set -q __brew_cache_path
     or set -gx __brew_cache_path (brew --cache)
 
-    # TODO: Probably drop this since I think that desc_cache.json is no longer generated. Is there a different available cache?
-    if test -f "$__brew_cache_path/desc_cache.json"
-        __fish_brew_ruby_parse_json "$__brew_cache_path/desc_cache.json" \
+    if test -f "$__brew_cache_path/descriptions.json"
+        __fish_brew_ruby_parse_json "$__brew_cache_path/descriptions.json" \
             '.each{ |k, v| puts([k, v].reject(&:nil?).join("\t")) }'
-        # backup: (note that it lists only formulae names without descriptions)
     else
         brew formulae
     end
