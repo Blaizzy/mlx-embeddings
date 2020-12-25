@@ -123,7 +123,7 @@ RSpec.shared_context "integration test" do
     end
   end
 
-  def setup_test_formula(name, content = nil, bottle_block = nil)
+  def setup_test_formula(name, content = nil, bottle_block: nil)
     case name
     when /^testball/
       tarball = if OS.linux?
