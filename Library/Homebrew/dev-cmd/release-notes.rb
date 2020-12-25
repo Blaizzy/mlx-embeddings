@@ -58,7 +58,9 @@ module Homebrew
     end
 
     $stderr.puts "Release notes between #{previous_tag} and #{end_ref}:"
-    puts "Release notes for major and minor releases can be found in the [Homebrew blog](https://brew.sh/blog/)."
+    if args.markdown? && args.named.first
+      puts "Release notes for major and minor releases can be found in the [Homebrew blog](https://brew.sh/blog/)."
+    end
     puts output
   end
 end
