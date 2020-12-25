@@ -252,6 +252,42 @@ describe Homebrew::CLI::Parser do
     end
   end
 
+  describe "test inferrability of args" do
+    subject(:parser) {
+      described_class.new do
+        switch "--switch-a"
+        switch "--switch-b"
+        switch "--foo-switch"
+        flag "--flag-foo="
+        comma_array "--comma-array-foo"
+      end
+    }
+
+    it "parses a valid switch that uses `_` instead of `-`" do
+      args = parser.parse(["--switch_a"])
+      expect(args).to be_switch_a
+    end
+
+    it "parses a valid flag that uses `_` instead of `-`" do
+      args = parser.parse(["--flag_foo=foo.txt"])
+      expect(args.flag_foo).to eq "foo.txt"
+    end
+
+    it "parses a valid comma_array that uses `_` instead of `-`" do
+      args = parser.parse(["--comma_array_foo=foo.txt,bar.txt"])
+      expect(args.comma_array_foo).to eq %w[foo.txt bar.txt]
+    end
+
+    it "raises an error when option is ambiguous" do
+      expect { parser.parse(["--switch"]) }.to raise_error(RuntimeError, /ambiguous option: --switch/)
+    end
+
+    it "inferrs the option from an abbreviated name" do
+      args = parser.parse(["--foo"])
+      expect(args).to be_foo_switch
+    end
+  end
+
   describe "test argv extensions" do
     subject(:parser) {
       described_class.new do
