@@ -6,8 +6,8 @@ require "rubocops/deprecate_disable"
 describe RuboCop::Cop::FormulaAudit::DeprecateDisableDate do
   subject(:cop) { described_class.new }
 
-  context "When auditing formula for deprecate! date:" do
-    it "deprecation date is not ISO 8601 compliant" do
+  context "when auditing `deprecate!`" do
+    it "reports an offense if `date` is not ISO 8601 compliant" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -17,7 +17,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableDate do
       RUBY
     end
 
-    it "deprecation date is not ISO 8601 compliant with reason" do
+    it "reports an offense if `date` is not ISO 8601 compliant (with `reason`)" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -27,7 +27,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableDate do
       RUBY
     end
 
-    it "deprecation date is ISO 8601 compliant" do
+    it "reports no offenses if `date` is ISO 8601 compliant" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -36,7 +36,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableDate do
       RUBY
     end
 
-    it "deprecation date is ISO 8601 compliant with reason" do
+    it "reports no offenses if `date` is ISO 8601 compliant (with `reason`)" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -45,7 +45,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableDate do
       RUBY
     end
 
-    it "no deprecation date" do
+    it "reports no offenses if no `date` is specified" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -54,7 +54,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableDate do
       RUBY
     end
 
-    it "no deprecation date with reason" do
+    it "reports no offenses if no `date` is specified (with `reason`)" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -63,7 +63,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableDate do
       RUBY
     end
 
-    it "auto corrects to ISO 8601 format" do
+    it "auto-corrects `date` to ISO 8601 format" do
       source = <<~RUBY
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -82,7 +82,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableDate do
       expect(new_source).to eq(corrected_source)
     end
 
-    it "auto corrects to ISO 8601 format with reason" do
+    it "auto-corrects `date` to ISO 8601 format (with `reason`)" do
       source = <<~RUBY
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -102,8 +102,8 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableDate do
     end
   end
 
-  context "When auditing formula for disable! date:" do
-    it "disable date is not ISO 8601 compliant" do
+  context "when auditing `disable!`" do
+    it "reports an offense if `date` is not ISO 8601 compliant" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -113,7 +113,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableDate do
       RUBY
     end
 
-    it "disable date is not ISO 8601 compliant with reason" do
+    it "reports an offense if `date` is not ISO 8601 compliant (with `reason`)" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -123,7 +123,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableDate do
       RUBY
     end
 
-    it "disable date is ISO 8601 compliant" do
+    it "reports no offenses if `date` is ISO 8601 compliant" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -132,7 +132,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableDate do
       RUBY
     end
 
-    it "disable date is ISO 8601 compliant with reason" do
+    it "reports no offenses if `date` is ISO 8601 compliant (with `reason`)" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -141,7 +141,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableDate do
       RUBY
     end
 
-    it "no disable date" do
+    it "reports no offenses if no `date` is specified" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -150,7 +150,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableDate do
       RUBY
     end
 
-    it "no disable date with reason" do
+    it "reports no offenses if no `date` is specified (with `reason`)" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -159,7 +159,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableDate do
       RUBY
     end
 
-    it "auto corrects to ISO 8601 format" do
+    it "auto-corrects `date` to ISO 8601 format" do
       source = <<~RUBY
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -178,7 +178,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableDate do
       expect(new_source).to eq(corrected_source)
     end
 
-    it "auto corrects to ISO 8601 format with reason" do
+    it "auto-corrects `date` to ISO 8601 format (with `reason`)" do
       source = <<~RUBY
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -202,8 +202,8 @@ end
 describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
   subject(:cop) { described_class.new }
 
-  context "When auditing formula for deprecate! because:" do
-    it "deprecation reason is acceptable" do
+  context "when auditing `deprecate!`" do
+    it "reports no offenses if `reason` is acceptable" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -212,7 +212,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       RUBY
     end
 
-    it "deprecation reason is acceptable as a symbol" do
+    it "reports no offenses if `reason` is acceptable as a symbol" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -221,7 +221,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       RUBY
     end
 
-    it "deprecation reason is acceptable with date" do
+    it "reports no offenses if `reason` is acceptable (with `date`)" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -230,7 +230,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       RUBY
     end
 
-    it "deprecation reason is acceptable as a symbol with date" do
+    it "reports no offenses if `reason` is acceptable as a symbol (with `date`)" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -239,7 +239,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       RUBY
     end
 
-    it "deprecation reason is absent" do
+    it "reports an offense if `reason` is absent" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -249,7 +249,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       RUBY
     end
 
-    it "deprecation reason is absent with date" do
+    it "reports an offense if `reason` is absent (with `date`)" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -259,7 +259,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       RUBY
     end
 
-    it "deprecation reason starts with `it`" do
+    it "reports an offense if `reason` starts with 'it'" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -269,7 +269,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       RUBY
     end
 
-    it "deprecation reason starts with `it` with date" do
+    it "reports an offense if `reason` starts with 'it' (with `date`)" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -279,7 +279,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       RUBY
     end
 
-    it "deprecation reason ends with a period" do
+    it "reports an offense if `reason` ends with a period" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -289,7 +289,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       RUBY
     end
 
-    it "deprecation reason ends with an exclamation point" do
+    it "reports an offense if `reason` ends with an exclamation point" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -299,7 +299,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       RUBY
     end
 
-    it "deprecation reason ends with a question mark" do
+    it "reports an offense if `reason` ends with a question mark" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -309,7 +309,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       RUBY
     end
 
-    it "deprecation reason ends with a period with date" do
+    it "reports an offense if `reason` ends with a period (with `date`)" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -319,7 +319,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       RUBY
     end
 
-    it "auto corrects to remove `it`" do
+    it "auto-corrects `reason` to remove 'it'" do
       source = <<~RUBY
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -338,7 +338,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       expect(new_source).to eq(corrected_source)
     end
 
-    it "auto corrects to remove punctuation" do
+    it "auto-corrects `reason` to remove punctuation" do
       source = <<~RUBY
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -358,8 +358,8 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
     end
   end
 
-  context "When auditing formula for disable! because:" do
-    it "disable reason is acceptable" do
+  context "when auditing `disable!`" do
+    it "reports no offenses if `reason` is acceptable" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -368,7 +368,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       RUBY
     end
 
-    it "disable reason is acceptable as a symbol" do
+    it "reports no offenses if `reason` is acceptable as a symbol" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -377,7 +377,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       RUBY
     end
 
-    it "disable reason is acceptable with date" do
+    it "reports no offenses if `reason` is acceptable (with `date`)" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -386,7 +386,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       RUBY
     end
 
-    it "disable reason is acceptable as a symbol with date" do
+    it "reports no offenses if `reason` is acceptable as a symbol (with `date`)" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -395,7 +395,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       RUBY
     end
 
-    it "disable reason is absent" do
+    it "reports an offense if `reason` is absent" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -405,7 +405,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       RUBY
     end
 
-    it "disable reason is absent with date" do
+    it "reports an offense if `reason` is absent (with `date`)" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -415,7 +415,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       RUBY
     end
 
-    it "disable reason starts with `it`" do
+    it "reports an offense if `reason` starts with 'it'" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -425,7 +425,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       RUBY
     end
 
-    it "disable reason starts with `it` with date" do
+    it "reports an offense if `reason` starts with 'it' (with `date`)" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -435,7 +435,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       RUBY
     end
 
-    it "disable reason ends with a period" do
+    it "reports an offense if `reason` ends with a period" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -445,7 +445,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       RUBY
     end
 
-    it "disable reason ends with an exclamation point" do
+    it "reports an offense if `reason` ends with an exclamation point" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -455,7 +455,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       RUBY
     end
 
-    it "disable reason ends with a question mark" do
+    it "reports an offense if `reason` ends with a question mark" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -465,7 +465,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       RUBY
     end
 
-    it "disable reason ends with a period with date" do
+    it "reports an offense if `reason` ends with a period (with `date`)" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -475,7 +475,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       RUBY
     end
 
-    it "auto corrects to remove `it`" do
+    it "auto-corrects to remove 'it'" do
       source = <<~RUBY
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -494,7 +494,7 @@ describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
       expect(new_source).to eq(corrected_source)
     end
 
-    it "auto corrects to remove punctuation" do
+    it "auto-corrects to remove punctuation" do
       source = <<~RUBY
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'

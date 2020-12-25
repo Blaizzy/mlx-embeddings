@@ -6,8 +6,8 @@ require "rubocops/components_redundancy"
 describe RuboCop::Cop::FormulaAudit::ComponentsRedundancy do
   subject(:cop) { described_class.new }
 
-  context "When auditing formula components common errors" do
-    it "When url outside stable block" do
+  context "when auditing formula components" do
+    it "reports an offense if `url` is outside `stable` block" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url "https://brew.sh/foo-1.0.tgz"
@@ -23,7 +23,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsRedundancy do
       RUBY
     end
 
-    it "When both `head` and `head do` are present" do
+    it "reports an offense if both `head` and `head do` are present" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           head "https://brew.sh/foo.git"
@@ -35,7 +35,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsRedundancy do
       RUBY
     end
 
-    it "When both `bottle :modifier` and `bottle do` are present" do
+    it "reports an offense if both `bottle :modifier` and `bottle do` are present" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url "https://brew.sh/foo-1.0.tgz"
@@ -48,7 +48,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsRedundancy do
       RUBY
     end
 
-    it "When `stable do` is present with a `head` method" do
+    it "reports no offenses if `stable do` is present with a `head` method" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           head "https://brew.sh/foo.git"
@@ -60,7 +60,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsRedundancy do
       RUBY
     end
 
-    it "When `stable do` is present with a `head do` block" do
+    it "reports no offenses if `stable do` is present with a `head do` block" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           stable do

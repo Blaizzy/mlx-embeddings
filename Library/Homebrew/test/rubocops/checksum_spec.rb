@@ -6,8 +6,8 @@ require "rubocops/checksum"
 describe RuboCop::Cop::FormulaAudit::Checksum do
   subject(:cop) { described_class.new }
 
-  context "When auditing spec checksums" do
-    it "When the checksum is empty" do
+  context "when auditing spec checksums" do
+    it "reports an offense if a checksum is empty" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -26,7 +26,7 @@ describe RuboCop::Cop::FormulaAudit::Checksum do
       RUBY
     end
 
-    it "When the checksum is not 64 characters" do
+    it "reports an offense if a checksum is not 64 characters" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -45,7 +45,7 @@ describe RuboCop::Cop::FormulaAudit::Checksum do
       RUBY
     end
 
-    it "When the checksum has invalid chars" do
+    it "reports an offense if a checksum contains invalid characters" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -69,8 +69,8 @@ end
 describe RuboCop::Cop::FormulaAudit::ChecksumCase do
   subject(:cop) { described_class.new }
 
-  context "When auditing spec checksums" do
-    it "When the checksum has upper case characters" do
+  context "when auditing spec checksums" do
+    it "reports an offense if a checksum contains uppercase letters" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -89,7 +89,7 @@ describe RuboCop::Cop::FormulaAudit::ChecksumCase do
       RUBY
     end
 
-    it "When auditing stable blocks outside spec blocks" do
+    it "reports an offense if a checksum outside a `stable` block contains uppercase letters" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -110,10 +110,8 @@ describe RuboCop::Cop::FormulaAudit::ChecksumCase do
         end
       RUBY
     end
-  end
 
-  context "When auditing checksum with autocorrect" do
-    it "When there is uppercase sha256" do
+    it "auto-corrects checksums that contain uppercase letters" do
       source = <<~RUBY
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'

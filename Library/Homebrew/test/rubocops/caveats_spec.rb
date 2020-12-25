@@ -6,8 +6,8 @@ require "rubocops/caveats"
 describe RuboCop::Cop::FormulaAudit::Caveats do
   subject(:cop) { described_class.new }
 
-  context "When auditing caveats" do
-    it "When there is setuid mentioned in caveats" do
+  context "when auditing `caveats`" do
+    it "reports an offense if `setuid` is mentioned" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           homepage "https://brew.sh/foo"
