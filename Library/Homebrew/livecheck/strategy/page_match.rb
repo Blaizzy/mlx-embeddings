@@ -92,7 +92,7 @@ module Homebrew
             provided_content
           else
             match_data.merge!(Strategy.page_content(url))
-            match_data.delete(:content)
+            match_data[:content]
           end
           return match_data if content.blank?
 
