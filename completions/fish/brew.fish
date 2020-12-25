@@ -206,7 +206,7 @@ function __fish_brew_suggest_casks_outdated -d "Lists outdated casks with the in
 end
 
 function __fish_brew_suggest_casks_all -d "Lists locally available casks"
-    brew search --cask
+    brew casks
 end
 
 
