@@ -6,9 +6,9 @@ There are many reasons why formulae may be deprecated, disabled, or removed. Thi
 
 This general rule of thumb can be followed:
 
-- `deprecate!` should be used for formulae that should no longer be used
-- `disable!` should be used for formulae that cannot be used
-- Removal should be done with formulae that have been disabled for a long time or have a more serious issue
+- `deprecate!` should be used for formulae that _should_ no longer be used
+- `disable!` should be used for formulae that _cannot_ be used
+- Formulae that have been disabled for a long time or have a more serious issue should be removed
 
 ## Deprecation
 
@@ -34,7 +34,7 @@ If a user attempts to install a disabled formula, they will be shown an error me
 
 A formula should be disabled to indicate to users that the formula cannot be used and may be removed in the future. Disabled formulae may not be able to build from source and may not have working bottles. Users who choose to attempt to install disabled formulae will likely run into issues.
 
-The most common reasons for disabling are when the formula cannot be built from source (meaning no bottles can be built), has been deprecated for a long time, the upstream repository has been removed, or the project has license issues that are not compatible with homebrew/core.
+The most common reasons for disabling are when the formula cannot be built from source (meaning no bottles can be built), has been deprecated for a long time, the upstream repository has been removed, or the project has no license.
 
 **Note: disabled formulae in homebrew/core will be automatically removed one year after their disable date**
 
@@ -52,7 +52,9 @@ The `because` parameter can be set to a preset reason (using a symbol) or a cust
 
 A formula should be removed if there is a serious issue with the formula or the formula has been disabled for a long period of time.
 
-The most common reasons for removing are when the formula has a non-open-source license or when the formula has been disabled for over a year.
+A formula should be removed if it has been disabled for a long period of time, it has a non-open-source license, or there is another serious issue with the formula that makes it not compatible with homebrew/core.
+
+**Note: disabled formulae in homebrew/core will be automatically removed one year after their disable date**
 
 ## Deprecate and Disable Reasons
 
@@ -65,7 +67,7 @@ There are two ways to indicate the reason. The preferred way is to use a pre-exi
 - `:repo_archived`: the upstream repository has been archived
 - `:repo_removed`: the upstream repository has been removed
 - `:unmaintained`: the project appears to be abandoned
-- `:unsupported`: Homebrew's application of the software is not supported by the upstream developers (e.g. upstream only supports macOS version prior to 10.14)
+- `:unsupported`: Homebrew's application of the software is not supported by the upstream developers (e.g. upstream only supports macOS versions prior to 10.14)
 - `:deprecated_upstream`: the project is deprecated upstream
 - `:versioned_formula`: the formula is a versioned formula
 
