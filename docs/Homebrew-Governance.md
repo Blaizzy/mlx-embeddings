@@ -82,7 +82,7 @@
 
 ## 6. Project Leader
 
-1. The Project Leader will represent Homebrew publicly, manage all day-to-day technical decisions and resolve disputes related to the operation of Homebrew between maintainers, members, other contributors and users.
+1. The Project Leader will represent Homebrew publicly, manage all day-to-day technical decisions, and resolve disputes related to the operation of Homebrew between maintainers, members, other contributors, and users.
 
 2. The Project Leader will be elected annually by a majority vote of Homebrew members. The PLC will nominate at least one candidate for Project Leader. Any member may nominate a candidate, or self-nominate. Nominations must be announced to the membership three weeks before the AGM.
 
