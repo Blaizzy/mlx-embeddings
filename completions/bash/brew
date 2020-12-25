@@ -799,7 +799,7 @@ _brew_cask ()
     done
 
     if [[ $i -eq $COMP_CWORD ]]; then
-        __brew_caskcomp "abv audit cat create doctor edit fetch home info install list ls outdated reinstall remove rm search style uninstall upgrade zap -S --force --verbose --appdir --colorpickerdir --prefpanedir --qlplugindir --fontdir --servicedir --input_methoddir --internet_plugindir --screen_saverdir --no-binaries --debug --version"
+        __brew_caskcomp "abv audit cat create doctor edit fetch home info install list ls outdated reinstall remove rm search style uninstall upgrade zap -S --force --verbose --appdir --colorpickerdir --prefpanedir --qlplugindir --fontdir --servicedir --input-methoddir --internet-plugindir --screen-saverdir --no-binaries --debug --version"
         return
     fi
 

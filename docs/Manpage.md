@@ -1418,22 +1418,22 @@ These options are applicable to subcommands accepting a `--cask` flag and all `c
 * `--servicedir`:
   Target location for Services (default: `~/Library/Services`).
 
-* `--input_methoddir`:
+* `--input-methoddir`:
   Target location for Input Methods (default: `~/Library/Input Methods`).
 
-* `--internet_plugindir`:
+* `--internet-plugindir`:
   Target location for Internet Plugins (default: `~/Library/Internet Plug-Ins`).
 
-* `--audio_unit_plugindir`:
+* `--audio-unit-plugindir`:
   Target location for Audio Unit Plugins (default: `~/Library/Audio/Plug-Ins/Components`).
 
-* `--vst_plugindir`:
+* `--vst-plugindir`:
   Target location for VST Plugins (default: `~/Library/Audio/Plug-Ins/VST`).
 
-* `--vst3_plugindir`:
+* `--vst3-plugindir`:
   Target location for VST3 Plugins (default: `~/Library/Audio/Plug-Ins/VST3`).
 
-* `--screen_saverdir`:
+* `--screen-saverdir`:
   Target location for Screen Savers (default: `~/Library/Screen Savers`).
 
 * `--language`:

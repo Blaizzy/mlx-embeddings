@@ -179,12 +179,12 @@ _brew_cask()
     '--dictionarydir=-:Target location for Dictionaries. The default value is ~/Library/Dictionaries.' \
     '--fontdir=-:Target location for Fonts. The default value is ~/Library/Fonts.' \
     '--servicedir=-:Target location for Services. The default value is ~/Library/Services.' \
-    '--input_methoddir=-:Target location for Input Methods. The default value is ~/Library/Input Methods.' \
-    '--internet_plugindir=-:Target location for Internet Plugins. The default value is ~/Library/Internet Plug-Ins.' \
-    '--audio_unit_plugindir=-:Target location for Audio Unit Plugins. The default value is ~/Library/Audio/Plug-Ins/Components.' \
-    '--vst_plugindir=-:Target location for VST Plugins. The default value is ~/Library/Audio/Plug-Ins/VST.' \
-    '--vst3_plugindir=-:Target location for VST3 Plugins. The default value is ~/Library/Audio/Plug-Ins/VST3.' \
-    '--screen_saverdir=-:Target location for Screen Savers. The default value is ~/Library/Screen Savers.' \
+    '--input-methoddir=-:Target location for Input Methods. The default value is ~/Library/Input Methods.' \
+    '--internet-plugindir=-:Target location for Internet Plugins. The default value is ~/Library/Internet Plug-Ins.' \
+    '--audio-unit-plugindir=-:Target location for Audio Unit Plugins. The default value is ~/Library/Audio/Plug-Ins/Components.' \
+    '--vst-plugindir=-:Target location for VST Plugins. The default value is ~/Library/Audio/Plug-Ins/VST.' \
+    '--vst3-plugindir=-:Target location for VST3 Plugins. The default value is ~/Library/Audio/Plug-Ins/VST3.' \
+    '--screen-saverdir=-:Target location for Screen Savers. The default value is ~/Library/Screen Savers.' \
     '--no-binaries:Do not link "helper" executables to /usr/local/bin.' \
     '--debug:Output debugging information of use to Cask authors and developers.' \
     ':command:->command' \
