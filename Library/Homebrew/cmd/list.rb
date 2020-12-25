@@ -48,8 +48,7 @@ module Homebrew
                           "This is the default when output is not to a terminal."
       switch "-l",
              depends_on:  "--formula",
-             description: "List formulae in long format. If the output is to a terminal, "\
-                          "a total sum for all the file sizes is printed before the long listing."
+             description: "List formulae in long format."
       switch "-r",
              depends_on:  "--formula",
              description: "Reverse the order of the formulae sort to list the oldest entries first."
