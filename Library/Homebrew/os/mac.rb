@@ -46,11 +46,6 @@ module OS
     end
     private :latest_sdk_version
 
-    sig { returns(::Version) }
-    def sdk_version
-      full_version.major_minor
-    end
-
     def outdated_release?
       # TODO: bump version when new macOS is released and also update
       # references in docs/Installation.md and
