@@ -7,8 +7,6 @@ module Hardware
   def self.oldest_cpu(version = MacOS.version)
     if CPU.arch == :arm64
       :arm_vortex_tempest
-    elsif version >= :big_sur
-      :ivybridge
     elsif version >= :mojave
       :nehalem
     else
