@@ -123,11 +123,11 @@ module Cask
 
       def running_processes(bundle_id)
         system_command!("/bin/launchctl", args: ["list"])
-          .stdout.lines
+          .stdout.lines.drop(1)
           .map { |line| line.chomp.split("\t") }
           .map { |pid, state, id| [pid.to_i, state.to_i, id] }
           .select do |(pid, _, id)|
-            pid.nonzero? && /^#{Regexp.escape(bundle_id)}($|\.\d+)/.match?(id)
+            pid.nonzero? && /\A(?:application\.)?#{Regexp.escape(bundle_id)}(?:\.\d+){0,2}\Z/.match?(id)
           end
       end
 
