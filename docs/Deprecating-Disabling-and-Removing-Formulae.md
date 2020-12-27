@@ -34,7 +34,12 @@ If a user attempts to install a disabled formula, they will be shown an error me
 
 A formula should be disabled to indicate to users that the formula cannot be used and will be removed in the future. Disabled formulae may no longer build from source or have working bottles.
 
-The most common reasons for disabling are when the formula cannot be built from source (meaning no bottles can be built), the formula has been deprecated for a long time, the upstream repository has been removed, or the project has no license.
+The most common reasons for disabling a formula are:
+
+- it cannot be built from source (meaning no bottles can be built)
+- it has been deprecated for a long time
+- the upstream repository has been removed
+- the project has no license
 
 **Note: disabled formulae in homebrew/core will be automatically removed one year after their disable date**
 
