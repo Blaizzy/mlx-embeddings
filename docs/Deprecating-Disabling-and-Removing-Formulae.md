@@ -14,7 +14,7 @@ This general rule of thumb can be followed:
 
 If a user attempts to install a deprecated formula, they will be shown a warning message but the install will proceed.
 
-A formula should be deprecated to indicate to users that the formula should not be used and may be disabled in the future. Deprecated formulae should still build from source and their bottles should continue to work. These formulae should continue to receive maintenance as needed to allow them to build.
+A formula should be deprecated to indicate to users that the formula should not be used and will be disabled in the future. Deprecated formulae should be maintained by the Homebrew maintainers so they can still build from source and their bottles continue to work (even if unmaintained upstream). If this is not possible, they should be disabled.
 
 The most common reasons for deprecation are when the upstream project is deprecated, unmaintained, or archived.
 
