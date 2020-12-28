@@ -51,7 +51,13 @@ module Homebrew
                           "a name matching <text>."
       switch "--pull-request",
              description: "Search for GitHub pull requests containing <text>."
-
+      switch "--open",
+             depends_on:  "--pull-request",
+             description: "Search for only open GitHub pull requests"
+      switch "--closed",
+             depends_on:  "--pull-request",
+             description: "Search for only closed GitHub pull requests"
+      conflicts "--open", "--closed"
       package_manager_switches = PACKAGE_MANAGERS.keys.map { |name| "--#{name}" }
       package_manager_switches.each do |s|
         switch s,
@@ -91,7 +97,13 @@ module Homebrew
     if args.desc?
       search_descriptions(string_or_regex)
     elsif args.pull_request?
-      GitHub.print_pull_requests_matching(query)
+      only = if args.open? && !args.closed?
+        "open"
+      elsif args.closed? && !args.open?
+        "closed"
+      end
+
+      GitHub.print_pull_requests_matching(query, only)
     else
       remote_results = search_taps(query, silent: true)
 

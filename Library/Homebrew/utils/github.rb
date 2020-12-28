@@ -342,8 +342,8 @@ module GitHub
     open_api(url, data: data, request_method: :PUT, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)
   end
 
-  def print_pull_requests_matching(query)
-    open_or_closed_prs = search_issues(query, type: "pr", user: "Homebrew")
+  def print_pull_requests_matching(query, only = nil)
+    open_or_closed_prs = search_issues(query, is: only, type: "pr", user: "Homebrew")
 
     open_prs, closed_prs = open_or_closed_prs.partition { |pr| pr["state"] == "open" }
                                              .map { |prs| prs.map { |pr| "#{pr["title"]} (#{pr["html_url"]})" } }
