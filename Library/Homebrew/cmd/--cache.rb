@@ -44,13 +44,7 @@ module Homebrew
       return
     end
 
-    formulae_or_casks = if args.formula?
-      args.named.to_formulae
-    elsif args.cask?
-      args.named.to_casks
-    else
-      args.named.to_formulae_and_casks
-    end
+    formulae_or_casks = args.named.to_formulae_and_casks
 
     formulae_or_casks.each do |formula_or_cask|
       if formula_or_cask.is_a? Formula
