@@ -134,6 +134,12 @@ module Homebrew
 
       FileUtils.rm_rf cache_env["XDG_CACHE_HOME"] if reset_cache
 
+      ruby_args = [
+        (ENV["HOMEBREW_RUBY_WARNINGS"] if !debug && !verbose),
+        "-S",
+        "rubocop",
+      ].compact.freeze
+
       case output_type
       when :print
         args << "--debug" if debug
@@ -144,11 +150,11 @@ module Homebrew
 
         args << "--color" if Tty.color?
 
-        system cache_env, RUBY_PATH, ENV["HOMEBREW_RUBY_WARNINGS"], "-S", "rubocop", *args
+        system cache_env, RUBY_PATH, *ruby_args, *args
         $CHILD_STATUS.success?
       when :json
         result = system_command RUBY_PATH,
-                                args: [ENV["HOMEBREW_RUBY_WARNINGS"], "-S", "rubocop", "--format", "json", *args],
+                                args: [*ruby_args, "--format", "json", *args],
                                 env:  cache_env
         json = json_result!(result)
         json["files"]
