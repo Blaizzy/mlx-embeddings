@@ -89,7 +89,7 @@ module RuboCop
           lambda do |corrector|
             return if node.nil?
 
-            homepage = string_content(node)
+            homepage = string_content(node).dup
             homepage.sub!("readthedocs.org", "readthedocs.io")
             homepage.delete_suffix!(".git") if homepage.start_with?("https://github.com")
             corrector.replace(node.source_range, "\"#{homepage}\"")
