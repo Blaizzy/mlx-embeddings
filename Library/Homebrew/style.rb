@@ -83,7 +83,7 @@ module Homebrew
         --force-exclusion
       ]
       args << if fix
-        "--auto-correct"
+        "-A"
       else
         "--parallel"
       end
