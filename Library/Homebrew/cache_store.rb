@@ -38,6 +38,15 @@ class CacheStoreDatabase
     return_value
   end
 
+  # Creates a CacheStoreDatabase.
+  #
+  # @param  [Symbol] type
+  # @return [nil]
+  def initialize(type)
+    @type = type
+    @dirty = false
+  end
+
   # Sets a value in the underlying database (and creates it if necessary).
   def set(key, value)
     dirty!
@@ -118,15 +127,6 @@ class CacheStoreDatabase
       nil
     end
     @db ||= {}
-  end
-
-  # Creates a CacheStoreDatabase.
-  #
-  # @param  [Symbol] type
-  # @return [nil]
-  def initialize(type)
-    @type = type
-    @dirty = false
   end
 
   # The path where the database resides in the `HOMEBREW_CACHE` for the given
