@@ -233,6 +233,9 @@ class FormulaInstaller
     end
 
     if Homebrew.default_prefix? && !Homebrew::EnvConfig.developer? &&
+       # TODO: re-enable this on Linux when we merge linuxbrew-core into
+       # homebrew-core and have full bottle coverage.
+       (OS.mac? || ENV["CI"]) &&
        !build_from_source? && !build_bottle? &&
        !installed_as_dependency? &&
        formula.tap&.core_tap? && !formula.bottle_unneeded? && !formula.any_version_installed? &&
