@@ -582,7 +582,7 @@ class ErrorDuringExecution < RuntimeError
     when Integer
       status
     else
-      status.exitstatus
+      status&.exitstatus
     end
 
     redacted_cmd = redact_secrets(cmd.shelljoin.gsub('\=', "="), secrets)
@@ -592,7 +592,7 @@ class ErrorDuringExecution < RuntimeError
     elsif (uncaught_signal = status.termsig)
       "was terminated by uncaught signal #{Signal.signame(uncaught_signal)}"
     else
-      raise ArgumentError, "Status does neither have `exitstatus` nor `termsig`."
+      raise ArgumentError, "Status neither has `exitstatus` nor `termsig`."
     end
 
     s = +"Failure while executing; `#{redacted_cmd}` #{reason}."
