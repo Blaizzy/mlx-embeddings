@@ -39,8 +39,8 @@ module SPDX
   end
 
   def parse_license_expression(license_expression)
-    licenses = []
-    exceptions = []
+    licenses = T.let([], T::Array[T.any(String, Symbol)])
+    exceptions = T.let([], T::Array[String])
 
     case license_expression
     when String, Symbol
