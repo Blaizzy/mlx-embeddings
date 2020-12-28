@@ -48,13 +48,10 @@ module Homebrew
   def style
     args = style_args.parse
 
-    only = :formula if args.formula? && !args.cask?
-    only = :cask if args.cask? && !args.formula?
-
     target = if args.no_named?
       nil
     else
-      args.named.to_paths(only: only)
+      args.named.to_paths
     end
 
     only_cops = args.only_cops

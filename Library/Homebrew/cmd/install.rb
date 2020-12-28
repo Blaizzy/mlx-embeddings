@@ -131,9 +131,6 @@ module Homebrew
   def install
     args = install_args.parse
 
-    only = :formula if args.formula? && !args.cask?
-    only = :cask if args.cask? && !args.formula?
-
     args.named.each do |name|
       next if File.exist?(name)
       next if name !~ HOMEBREW_TAP_FORMULA_REGEX && name !~ HOMEBREW_CASK_TAP_CASK_REGEX
@@ -151,7 +148,7 @@ module Homebrew
       EOS
     end
 
-    formulae, casks = args.named.to_formulae_and_casks(only: only)
+    formulae, casks = args.named.to_formulae_and_casks
                           .partition { |formula_or_cask| formula_or_cask.is_a?(Formula) }
 
     if casks.any?

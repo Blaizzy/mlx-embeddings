@@ -35,9 +35,7 @@ module Homebrew
       return
     end
 
-    only = :formula if args.formula? && !args.cask?
-    only = :cask if args.cask? && !args.formula?
-    homepages = args.named.to_formulae_and_casks(only: only).map do |formula_or_cask|
+    homepages = args.named.to_formulae_and_casks.map do |formula_or_cask|
       puts "Opening homepage for #{name_of(formula_or_cask)}"
       formula_or_cask.homepage
     end

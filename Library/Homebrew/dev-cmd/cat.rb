@@ -30,9 +30,6 @@ module Homebrew
   def cat
     args = cat_args.parse
 
-    only = :formula if args.formula? && !args.cask?
-    only = :cask if args.cask? && !args.formula?
-
     cd HOMEBREW_REPOSITORY
     pager = if Homebrew::EnvConfig.bat?
       ENV["BAT_CONFIG_PATH"] = Homebrew::EnvConfig.bat_config_path
@@ -41,6 +38,6 @@ module Homebrew
       "cat"
     end
 
-    safe_system pager, args.named.to_paths(only: only).first
+    safe_system pager, args.named.to_paths.first
   end
 end

@@ -31,9 +31,6 @@ module Homebrew
   def edit
     args = edit_args.parse
 
-    only = :formula if args.formula? && !args.cask?
-    only = :cask if args.cask? && !args.formula?
-
     unless (HOMEBREW_REPOSITORY/".git").directory?
       raise <<~EOS
         Changes will be lost!
@@ -42,7 +39,7 @@ module Homebrew
       EOS
     end
 
-    paths = args.named.to_paths(only: only).select do |path|
+    paths = args.named.to_paths.select do |path|
       next path if path.exist?
 
       raise UsageError, "#{path} doesn't exist on disk. " \

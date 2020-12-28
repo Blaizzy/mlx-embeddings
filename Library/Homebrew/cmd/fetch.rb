@@ -69,9 +69,6 @@ module Homebrew
   def fetch
     args = fetch_args.parse
 
-    only = :formula if args.formula? && !args.cask?
-    only = :cask if args.cask? && !args.formula?
-
     bucket = if args.deps?
       args.named.to_formulae_and_casks.flat_map do |formula_or_cask|
         case formula_or_cask
@@ -84,7 +81,7 @@ module Homebrew
         end
       end
     else
-      args.named.to_formulae_and_casks(only: only)
+      args.named.to_formulae_and_casks
     end.uniq
 
     puts "Fetching: #{bucket * ", "}" if bucket.size > 1

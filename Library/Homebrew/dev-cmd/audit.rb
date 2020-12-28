@@ -110,9 +110,6 @@ module Homebrew
     git = args.git?
     skip_style = args.skip_style? || args.no_named? || args.tap
 
-    only = :formula if args.formula? && !args.cask?
-    only = :cask if args.cask? && !args.formula?
-
     ENV.activate_extensions!
     ENV.setup_build_environment
 
@@ -126,7 +123,7 @@ module Homebrew
     elsif args.no_named?
       [Formula, Cask::Cask.to_a]
     else
-      args.named.to_formulae_and_casks(only: only)
+      args.named.to_formulae_and_casks
           .partition { |formula_or_cask| formula_or_cask.is_a?(Formula) }
     end
     style_files = args.named.to_paths unless skip_style
