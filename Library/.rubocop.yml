@@ -54,6 +54,14 @@ FormulaAudit:
 FormulaAuditStrict:
   Enabled: true
 
+# makes DSL usage ugly.
+Layout/SpaceBeforeBrackets:
+  Exclude:
+    - "**/*_spec.rb"
+    - "Taps/*/*/*.rb"
+    - "/**/{Formula,Casks}/*.rb"
+    - "**/{Formula,Casks}/*.rb"
+
 # Use `<<~` for heredocs.
 Layout/HeredocIndentation:
   Enabled: true
