@@ -1,6 +1,9 @@
 # TODO: Try getting more rules in sync.
 
-require: ./Homebrew/rubocops.rb
+require:
+  - ./Homebrew/rubocops.rb
+  - rubocop-performance
+  - rubocop-rails
 
 inherit_mode:
   merge:
