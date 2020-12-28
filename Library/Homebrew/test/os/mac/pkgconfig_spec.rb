@@ -15,7 +15,7 @@
 # For indeterminable cases, consult https://opensource.apple.com for the version used.
 describe "pkg-config" do
   def pc_version(library)
-    path = HOMEBREW_LIBRARY_PATH/"os/mac/pkgconfig/#{MacOS.sdk_version}/#{library}.pc"
+    path = HOMEBREW_LIBRARY_PATH/"os/mac/pkgconfig/#{MacOS.version}/#{library}.pc"
     version = File.foreach(path)
                   .lazy
                   .grep(/^Version:\s*?(.+)$/) { Regexp.last_match(1) }
