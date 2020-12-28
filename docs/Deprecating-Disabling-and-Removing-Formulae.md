@@ -12,9 +12,9 @@ This general rule of thumb can be followed:
 
 ## Deprecation
 
-If a user attempts to install a deprecated formula, they will be shown a warning message but the install will succeed.
+If a user attempts to install a deprecated formula, they will be shown a warning message but the install will proceed.
 
-A formula should be deprecated to indicate to users that the formula should not be used and may be disabled in the future. Deprecated formulae should still build from source and their bottles should continue to work.
+A formula should be deprecated to indicate to users that the formula should not be used and may be disabled in the future. Deprecated formulae should still build from source and their bottles should continue to work. These formulae should continue to receive maintenance as needed to allow them to build.
 
 The most common reasons for deprecation are when the upstream project is deprecated, unmaintained, or archived.
 
@@ -55,15 +55,13 @@ The `because` parameter can be a preset reason (using a symbol) or a custom reas
 
 ## Removal
 
-A formula should be removed if it does not meet our criteria for [acceptable formulae](Acceptable-Formulae.md) or [versioned formulae](Versions.md), has a non-open-source license, or has been disabled for a long period of time.
-
-**Note: disabled formulae in homebrew/core will be automatically removed one year after their disable date**
+A formula should be removed if it does not meet our criteria for [acceptable formulae](Acceptable-Formulae.md) or [versioned formulae](Versions.md), has a non-open-source license, or has been disabled for over a year.
 
 ## Deprecate and Disable Reasons
 
 When a formula is deprecated or disabled, a reason explaining the action must be provided.
 
-There are two ways to indicate the reason. The preferred way is to use a pre-existing symbol to indicate the reason. The available symbols are listed below and can be found in the [`DeprecateDisable` module](https://rubydoc.brew.sh/DeprecateDisable.html#DEPRECATE_DISABLE_REASONS-constant):
+There are two ways to indicate the reason. The preferred way is to use a pre-existing symbol to indicate the reason. The available symbols are listed below and can be found in the [`DeprecateDisable` module](https://github.com/Homebrew/brew/blob/master/Library/Homebrew/deprecate_disable.rb):
 
 - `:does_not_build`: the formula cannot be built from source
 - `:no_license`: the formula does not have a license
