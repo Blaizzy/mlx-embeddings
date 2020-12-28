@@ -41,8 +41,8 @@ module Homebrew
       raise UsageError, "cannot specify `<formula>` and `--total`."
     end
 
-    formulae, all_formulae, sort, formula_installs =
-      formulae_all_sort_installs_from_args(args)
+    formulae, all_formulae, formula_installs =
+      formulae_all_installs_from_args(args)
     deps_hash, uses_hash = deps_uses_from_formulae(all_formulae)
 
     if args.dependents?
@@ -65,10 +65,11 @@ module Homebrew
     else
       ["installs", formula_installs]
     end
-    output_unbottled(sort, formulae, deps_hash, noun, hash)
+
+    output_unbottled(formulae, deps_hash, noun, hash, args.named.present?)
   end
 
-  def formulae_all_sort_installs_from_args(args)
+  def formulae_all_installs_from_args(args)
     if args.named.present?
       formulae = all_formulae = args.named.to_formulae
     elsif args.total?
@@ -76,7 +77,7 @@ module Homebrew
     elsif args.dependents?
       formulae = all_formulae = Formula.to_a
 
-      sort = " (sorted by installs in the last 90 days)"
+      @sort = " (sorted by installs in the last 90 days)"
     else
       formula_installs = {}
 
@@ -101,12 +102,12 @@ module Homebrew
           nil
         end
       end.compact
-      sort = " (sorted by installs in the last 90 days)"
+      @sort = " (sorted by installs in the last 90 days)"
 
       all_formulae = Formula
     end
 
-    [formulae, all_formulae, sort, formula_installs]
+    [formulae, all_formulae, formula_installs]
   end
 
   def deps_uses_from_formulae(all_formulae)
@@ -146,30 +147,54 @@ module Homebrew
     puts "#{unbottled_formulae}/#{formulae.length} remaining."
   end
 
-  def output_unbottled(sort, formulae, deps_hash, noun, hash)
-    ohai "Unbottled :#{@bottle_tag} dependencies#{sort}"
+  def output_unbottled(formulae, deps_hash, noun, hash, any_named_args)
+    ohai ":#{@bottle_tag} bottle status#{@sort}"
     any_found = T.let(false, T::Boolean)
 
     formulae.each do |f|
-      next if f.bottle_specification.tag?(@bottle_tag)
+      name = f.name.downcase
+      if f.bottle_specification.tag?(@bottle_tag)
+        puts "#{Tty.bold}#{Tty.green}#{name}#{Tty.reset}: already bottled" if any_named_args
+        next
+      end
+
+      requirement_classes = f.recursive_requirements.map(&:class)
+      if @bottle_tag.to_s.end_with?("_linux")
+        if requirement_classes.include?(MacOSRequirement)
+          puts "#{Tty.bold}#{Tty.red}#{name}#{Tty.reset}: requires macOS" if any_named_args
+          next
+        end
+      elsif requirement_classes.include?(LinuxRequirement)
+        puts "#{Tty.bold}#{Tty.red}#{name}#{Tty.reset}: requires Linux" if any_named_args
+        next
+      end
+
+      if f.bottle_unneeded? || f.bottle_disabled?
+        reason = if f.bottle_unneeded?
+          "unneeded"
+        else
+          "disabled"
+        end
+        puts "#{Tty.bold}#{Tty.red}#{name}#{Tty.reset}: bottle #{reason}" if any_named_args
+        next
+      end
 
       deps = Array(deps_hash[f.name]).reject do |dep|
         dep.bottle_specification.tag?(@bottle_tag) || dep.bottle_unneeded?
       end
 
       if deps.blank?
-        next if f.bottle_unneeded?
-
         count = " (#{hash[f.name]} #{noun})" if noun
-        puts "#{f.name}#{count}: ready to bottle"
+        puts "#{Tty.bold}#{Tty.green}#{name}#{Tty.reset}#{count}: ready to bottle"
         next
       end
 
       any_found ||= true
       count = " (#{hash[f.name]} #{noun})" if noun
-      puts "#{f.name}#{count}: #{deps.join(" ")}"
+      puts "#{Tty.bold}#{Tty.yellow}#{name}#{Tty.reset}#{count}: unbottled deps: #{deps.join(" ")}"
     end
     return if any_found
+    return if any_named_args
 
     puts "No unbottled dependencies found!"
   end
