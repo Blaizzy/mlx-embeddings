@@ -390,7 +390,7 @@ end
 
 class Regexp::Expression::FreeSpace < ::Regexp::Expression::Base
   def match_length; end
-  def quantify(token, text, min = T.unsafe(nil), max = T.unsafe(nil), mode = T.unsafe(nil)); end
+  def quantify(_token, _text, _min = T.unsafe(nil), _max = T.unsafe(nil), _mode = T.unsafe(nil)); end
 end
 
 module Regexp::Expression::Group
@@ -440,6 +440,8 @@ class Regexp::Expression::Group::Options < ::Regexp::Expression::Group::Base
 end
 
 class Regexp::Expression::Group::Passive < ::Regexp::Expression::Group::Base
+  def initialize(*_arg0); end
+
   def implicit=(_arg0); end
   def implicit?; end
   def to_s(format = T.unsafe(nil)); end
@@ -528,12 +530,12 @@ class Regexp::Expression::Subexpression < ::Regexp::Expression::Base
   def at(*args, &block); end
   def dig(*indices); end
   def each(*args, &block); end
-  def each_expression(include_self = T.unsafe(nil), &block); end
+  def each_expression(include_self = T.unsafe(nil)); end
   def empty?(*args, &block); end
   def expressions; end
   def expressions=(_arg0); end
   def fetch(*args, &block); end
-  def flat_map(include_self = T.unsafe(nil), &block); end
+  def flat_map(include_self = T.unsafe(nil)); end
   def index(*args, &block); end
   def inner_match_length; end
   def join(*args, &block); end
@@ -833,7 +835,7 @@ class Regexp::MatchLength
   def initialize(exp, opts = T.unsafe(nil)); end
 
   def each(opts = T.unsafe(nil)); end
-  def endless_each(&block); end
+  def endless_each; end
   def fixed?; end
   def include?(length); end
   def inspect; end
@@ -1052,8 +1054,8 @@ end
 class Regexp::Syntax::Any < ::Regexp::Syntax::Base
   def initialize; end
 
-  def implements!(type, token); end
-  def implements?(type, token); end
+  def implements!(_type, _token); end
+  def implements?(_type, _token); end
 end
 
 class Regexp::Syntax::Base
@@ -1078,11 +1080,11 @@ class Regexp::Syntax::Base
   end
 end
 
-class Regexp::Syntax::InvalidVersionNameError < ::SyntaxError
+class Regexp::Syntax::InvalidVersionNameError < ::Regexp::Syntax::SyntaxError
   def initialize(name); end
 end
 
-class Regexp::Syntax::NotImplementedError < ::SyntaxError
+class Regexp::Syntax::NotImplementedError < ::Regexp::Syntax::SyntaxError
   def initialize(syntax, type, token); end
 end
 
@@ -1423,7 +1425,7 @@ Regexp::Syntax::Token::UnicodeProperty::V2_6_2 = T.let(T.unsafe(nil), Array)
 
 Regexp::Syntax::Token::UnicodeProperty::V2_6_3 = T.let(T.unsafe(nil), Array)
 
-class Regexp::Syntax::UnknownSyntaxNameError < ::SyntaxError
+class Regexp::Syntax::UnknownSyntaxNameError < ::Regexp::Syntax::SyntaxError
   def initialize(name); end
 end
 

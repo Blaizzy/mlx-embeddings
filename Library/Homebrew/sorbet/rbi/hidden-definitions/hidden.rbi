@@ -5873,8 +5873,6 @@ module CopHelper
 
   def inspect_source(source, file=T.unsafe(nil)); end
 
-  def inspect_source_file(source); end
-
   def parse_source(source, file=T.unsafe(nil)); end
 end
 
@@ -27709,6 +27707,12 @@ class RuboCop::AST::Node
 
   def key_node(param0=T.unsafe(nil)); end
 
+  def kwargs_type?(); end
+
+  def match_pattern_p_type?(); end
+
+  def match_pattern_type?(); end
+
   def method_node(param0=T.unsafe(nil)); end
 
   def val_node(param0=T.unsafe(nil)); end
@@ -27724,6 +27728,15 @@ module RuboCop::AST::NodePattern::Sets
   SET_INCLUDE_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
   SET_SYSTEM_SHELL_OUTPUT_PIPE_OUTPUT = ::T.let(nil, ::T.untyped)
   SET_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
+  SET___EQL = ::T.let(nil, ::T.untyped)
+end
+
+module RuboCop::AST::Traversal
+  def on_kwargs(node); end
+
+  def on_match_pattern(node); end
+
+  def on_match_pattern_p(node); end
 end
 
 class RuboCop::Cask::AST::CaskHeader
@@ -27925,7 +27938,7 @@ class RuboCop::Cop::FormulaCop
 end
 
 module RuboCop::RSpec::ExpectOffense
-  def expect_correction(correction, loop: T.unsafe(nil)); end
+  def expect_correction(correction, loop: T.unsafe(nil), source: T.unsafe(nil)); end
 
   def expect_no_corrections(); end
 
@@ -27934,6 +27947,12 @@ module RuboCop::RSpec::ExpectOffense
   def expect_offense(source, file=T.unsafe(nil), severity: T.unsafe(nil), **replacements); end
 
   def format_offense(source, **replacements); end
+
+  def parse_annotations(source, raise_error: T.unsafe(nil), **replacements); end
+
+  def parse_processed_source(source, file=T.unsafe(nil)); end
+
+  def set_formatter_options(); end
 end
 
 class RuboCop::RSpec::ExpectOffense::AnnotatedSource

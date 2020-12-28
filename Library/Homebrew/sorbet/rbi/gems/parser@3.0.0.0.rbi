@@ -76,6 +76,7 @@ class Parser::AST::Processor < ::AST::Processor
   def on_ivar(node); end
   def on_ivasgn(node); end
   def on_kwarg(node); end
+  def on_kwargs(node); end
   def on_kwbegin(node); end
   def on_kwoptarg(node); end
   def on_kwrestarg(node); end
@@ -87,6 +88,8 @@ class Parser::AST::Processor < ::AST::Processor
   def on_match_alt(node); end
   def on_match_as(node); end
   def on_match_current_line(node); end
+  def on_match_pattern(node); end
+  def on_match_pattern_p(node); end
   def on_match_rest(node); end
   def on_match_var(node); end
   def on_match_with_lvasgn(node); end
@@ -142,6 +145,7 @@ class Parser::Base < ::Racc::Parser
   def context; end
   def current_arg_stack; end
   def diagnostics; end
+  def lexer; end
   def max_numparam_stack; end
   def parse(source_buffer); end
   def parse_with_comments(source_buffer); end
@@ -226,7 +230,7 @@ class Parser::Builders::Default
   def def_sclass(class_t, lshft_t, expr, body, end_t); end
   def def_singleton(def_t, definee, dot_t, name_t, args, body, end_t); end
   def emit_file_line_as_literals; end
-  def emit_file_line_as_literals=(_); end
+  def emit_file_line_as_literals=(_arg0); end
   def false(false_t); end
   def find_pattern(lbrack_t, elements, rbrack_t); end
   def float(float_t); end
@@ -261,12 +265,13 @@ class Parser::Builders::Default
   def match_nil_pattern(dstar_t, nil_t); end
   def match_op(receiver, match_t, arg); end
   def match_pair(label_type, label, value); end
+  def match_pattern(lhs, match_t, rhs); end
+  def match_pattern_p(lhs, match_t, rhs); end
   def match_rest(star_t, name_t = T.unsafe(nil)); end
   def match_var(name_t); end
   def match_with_trailing_comma(match, comma_t); end
   def multi_assign(lhs, eql_t, rhs); end
   def multi_lhs(begin_t, items, end_t); end
-  def multi_rassign(lhs, assoc_t, rhs); end
   def nil(nil_t); end
   def not_op(not_t, begin_t = T.unsafe(nil), receiver = T.unsafe(nil), end_t = T.unsafe(nil)); end
   def nth_ref(token); end
@@ -281,14 +286,13 @@ class Parser::Builders::Default
   def pair_list_18(list); end
   def pair_quoted(begin_t, parts, end_t, value); end
   def parser; end
-  def parser=(_); end
+  def parser=(_arg0); end
   def pin(pin_t, var); end
   def postexe(postexe_t, lbrace_t, compstmt, rbrace_t); end
   def preexe(preexe_t, lbrace_t, compstmt, rbrace_t); end
   def procarg0(arg); end
   def range_exclusive(lhs, dot3_t, rhs); end
   def range_inclusive(lhs, dot2_t, rhs); end
-  def rassign(lhs, assoc_t, rhs); end
   def rational(rational_t); end
   def regexp_compose(begin_t, parts, end_t, options); end
   def regexp_options(regopt_t); end
@@ -347,6 +351,7 @@ class Parser::Builders::Default
   def keyword_map(keyword_t, begin_t, args, end_t); end
   def keyword_mod_map(pre_e, keyword_t, post_e); end
   def kwarg_map(name_t, value_e = T.unsafe(nil)); end
+  def kwargs?(node); end
   def loc(token); end
   def module_definition_map(keyword_t, name_e, operator_t, end_t); end
   def n(type, children, source_map); end
@@ -358,6 +363,7 @@ class Parser::Builders::Default
   def range_map(start_e, op_t, end_e); end
   def regexp_map(begin_t, end_t, options_e); end
   def rescue_body_map(keyword_t, exc_list_e, assoc_t, exc_var_e, then_t, compstmt_e); end
+  def rewrite_hash_args_to_kwargs(args); end
   def send_binary_op_map(lhs_e, selector_t, rhs_e); end
   def send_index_map(receiver_e, lbrack_t, rbrack_t); end
   def send_map(receiver_e, dot_t, selector_t, begin_t = T.unsafe(nil), args = T.unsafe(nil), end_t = T.unsafe(nil)); end
@@ -378,17 +384,21 @@ class Parser::Builders::Default
 
   class << self
     def emit_arg_inside_procarg0; end
-    def emit_arg_inside_procarg0=(_); end
+    def emit_arg_inside_procarg0=(_arg0); end
     def emit_encoding; end
-    def emit_encoding=(_); end
+    def emit_encoding=(_arg0); end
     def emit_forward_arg; end
-    def emit_forward_arg=(_); end
+    def emit_forward_arg=(_arg0); end
     def emit_index; end
-    def emit_index=(_); end
+    def emit_index=(_arg0); end
+    def emit_kwargs; end
+    def emit_kwargs=(_arg0); end
     def emit_lambda; end
-    def emit_lambda=(_); end
+    def emit_lambda=(_arg0); end
+    def emit_match_pattern; end
+    def emit_match_pattern=(_arg0); end
     def emit_procarg0; end
-    def emit_procarg0=(_); end
+    def emit_procarg0=(_arg0); end
     def modernize; end
   end
 end
@@ -401,6 +411,7 @@ class Parser::Context
 
   def class_definition_allowed?; end
   def dynamic_const_definition_allowed?; end
+  def empty?; end
   def in_block?; end
   def in_class?; end
   def in_dynamic_block?; end
@@ -416,6 +427,7 @@ end
 class Parser::CurrentArgStack
   def initialize; end
 
+  def empty?; end
   def pop; end
   def push(value); end
   def reset; end
@@ -428,7 +440,7 @@ Parser::CurrentRuby = Parser::Ruby26
 
 module Parser::Deprecation
   def warn_of_deprecation; end
-  def warned_of_deprecation=(_); end
+  def warned_of_deprecation=(_arg0); end
 end
 
 class Parser::Diagnostic
@@ -453,11 +465,11 @@ class Parser::Diagnostic::Engine
   def initialize(consumer = T.unsafe(nil)); end
 
   def all_errors_are_fatal; end
-  def all_errors_are_fatal=(_); end
+  def all_errors_are_fatal=(_arg0); end
   def consumer; end
-  def consumer=(_); end
+  def consumer=(_arg0); end
   def ignore_warnings; end
-  def ignore_warnings=(_); end
+  def ignore_warnings=(_arg0); end
   def process(diagnostic); end
 
   protected
@@ -473,23 +485,27 @@ class Parser::Lexer
 
   def advance; end
   def cmdarg; end
-  def cmdarg=(_); end
+  def cmdarg=(_arg0); end
+  def cmdarg_stack; end
   def command_start; end
-  def command_start=(_); end
+  def command_start=(_arg0); end
   def comments; end
-  def comments=(_); end
+  def comments=(_arg0); end
   def cond; end
-  def cond=(_); end
+  def cond=(_arg0); end
+  def cond_stack; end
   def context; end
-  def context=(_); end
+  def context=(_arg0); end
   def dedent_level; end
   def diagnostics; end
-  def diagnostics=(_); end
+  def diagnostics=(_arg0); end
   def encoding; end
   def force_utf32; end
-  def force_utf32=(_); end
+  def force_utf32=(_arg0); end
   def in_kwarg; end
-  def in_kwarg=(_); end
+  def in_kwarg=(_arg0); end
+  def lambda_stack; end
+  def paren_nest; end
   def pop_cmdarg; end
   def pop_cond; end
   def push_cmdarg; end
@@ -500,9 +516,9 @@ class Parser::Lexer
   def state; end
   def state=(state); end
   def static_env; end
-  def static_env=(_); end
+  def static_env=(_arg0); end
   def tokens; end
-  def tokens=(_); end
+  def tokens=(_arg0); end
 
   protected
 
@@ -525,78 +541,78 @@ class Parser::Lexer
 
   class << self
     def lex_en_expr_arg; end
-    def lex_en_expr_arg=(_); end
+    def lex_en_expr_arg=(_arg0); end
     def lex_en_expr_beg; end
-    def lex_en_expr_beg=(_); end
+    def lex_en_expr_beg=(_arg0); end
     def lex_en_expr_cmdarg; end
-    def lex_en_expr_cmdarg=(_); end
+    def lex_en_expr_cmdarg=(_arg0); end
     def lex_en_expr_dot; end
-    def lex_en_expr_dot=(_); end
+    def lex_en_expr_dot=(_arg0); end
     def lex_en_expr_end; end
-    def lex_en_expr_end=(_); end
+    def lex_en_expr_end=(_arg0); end
     def lex_en_expr_endarg; end
-    def lex_en_expr_endarg=(_); end
+    def lex_en_expr_endarg=(_arg0); end
     def lex_en_expr_endfn; end
-    def lex_en_expr_endfn=(_); end
+    def lex_en_expr_endfn=(_arg0); end
     def lex_en_expr_fname; end
-    def lex_en_expr_fname=(_); end
+    def lex_en_expr_fname=(_arg0); end
     def lex_en_expr_labelarg; end
-    def lex_en_expr_labelarg=(_); end
+    def lex_en_expr_labelarg=(_arg0); end
     def lex_en_expr_mid; end
-    def lex_en_expr_mid=(_); end
+    def lex_en_expr_mid=(_arg0); end
     def lex_en_expr_value; end
-    def lex_en_expr_value=(_); end
+    def lex_en_expr_value=(_arg0); end
     def lex_en_expr_variable; end
-    def lex_en_expr_variable=(_); end
+    def lex_en_expr_variable=(_arg0); end
     def lex_en_interp_backslash_delimited; end
-    def lex_en_interp_backslash_delimited=(_); end
+    def lex_en_interp_backslash_delimited=(_arg0); end
     def lex_en_interp_backslash_delimited_words; end
-    def lex_en_interp_backslash_delimited_words=(_); end
+    def lex_en_interp_backslash_delimited_words=(_arg0); end
     def lex_en_interp_string; end
-    def lex_en_interp_string=(_); end
+    def lex_en_interp_string=(_arg0); end
     def lex_en_interp_words; end
-    def lex_en_interp_words=(_); end
+    def lex_en_interp_words=(_arg0); end
     def lex_en_leading_dot; end
-    def lex_en_leading_dot=(_); end
+    def lex_en_leading_dot=(_arg0); end
     def lex_en_line_begin; end
-    def lex_en_line_begin=(_); end
+    def lex_en_line_begin=(_arg0); end
     def lex_en_line_comment; end
-    def lex_en_line_comment=(_); end
+    def lex_en_line_comment=(_arg0); end
     def lex_en_plain_backslash_delimited; end
-    def lex_en_plain_backslash_delimited=(_); end
+    def lex_en_plain_backslash_delimited=(_arg0); end
     def lex_en_plain_backslash_delimited_words; end
-    def lex_en_plain_backslash_delimited_words=(_); end
+    def lex_en_plain_backslash_delimited_words=(_arg0); end
     def lex_en_plain_string; end
-    def lex_en_plain_string=(_); end
+    def lex_en_plain_string=(_arg0); end
     def lex_en_plain_words; end
-    def lex_en_plain_words=(_); end
+    def lex_en_plain_words=(_arg0); end
     def lex_en_regexp_modifiers; end
-    def lex_en_regexp_modifiers=(_); end
+    def lex_en_regexp_modifiers=(_arg0); end
     def lex_error; end
-    def lex_error=(_); end
+    def lex_error=(_arg0); end
     def lex_start; end
-    def lex_start=(_); end
+    def lex_start=(_arg0); end
 
     private
 
     def _lex_eof_trans; end
-    def _lex_eof_trans=(_); end
+    def _lex_eof_trans=(_arg0); end
     def _lex_from_state_actions; end
-    def _lex_from_state_actions=(_); end
+    def _lex_from_state_actions=(_arg0); end
     def _lex_index_offsets; end
-    def _lex_index_offsets=(_); end
+    def _lex_index_offsets=(_arg0); end
     def _lex_indicies; end
-    def _lex_indicies=(_); end
+    def _lex_indicies=(_arg0); end
     def _lex_key_spans; end
-    def _lex_key_spans=(_); end
+    def _lex_key_spans=(_arg0); end
     def _lex_to_state_actions; end
-    def _lex_to_state_actions=(_); end
+    def _lex_to_state_actions=(_arg0); end
     def _lex_trans_actions; end
-    def _lex_trans_actions=(_); end
+    def _lex_trans_actions=(_arg0); end
     def _lex_trans_keys; end
-    def _lex_trans_keys=(_); end
+    def _lex_trans_keys=(_arg0); end
     def _lex_trans_targs; end
-    def _lex_trans_targs=(_); end
+    def _lex_trans_targs=(_arg0); end
   end
 end
 
@@ -636,7 +652,7 @@ class Parser::Lexer::Literal
   def plain_heredoc?; end
   def regexp?; end
   def saved_herebody_s; end
-  def saved_herebody_s=(_); end
+  def saved_herebody_s=(_arg0); end
   def squiggly_heredoc?; end
   def start_interp_brace; end
   def str_s; end
@@ -681,6 +697,7 @@ Parser::MESSAGES = T.let(T.unsafe(nil), Hash)
 class Parser::MaxNumparamStack
   def initialize; end
 
+  def empty?; end
   def has_numparams?; end
   def has_ordinary_params!; end
   def has_ordinary_params?; end
@@ -694,6 +711,8 @@ class Parser::MaxNumparamStack
 
   def set(value); end
 end
+
+Parser::MaxNumparamStack::ORDINARY_PARAMS = T.let(T.unsafe(nil), Integer)
 
 module Parser::Messages
   class << self
@@ -709,7 +728,7 @@ Parser::Meta::NODE_TYPES = T.let(T.unsafe(nil), Set)
 class Parser::Rewriter < ::Parser::AST::Processor
   extend(::Parser::Deprecation)
 
-  def initialize(*_); end
+  def initialize(*_arg0); end
 
   def assignment?(node); end
   def insert_after(range, content); end
@@ -1174,6 +1193,7 @@ class Parser::Source::Buffer
   def column_for_position(position); end
   def decompose_position(position); end
   def first_line; end
+  def freeze; end
   def last_line; end
   def line_for_position(position); end
   def line_range(lineno); end
@@ -1189,8 +1209,9 @@ class Parser::Source::Buffer
 
   private
 
+  def bsearch(line_begins, position); end
   def line_begins; end
-  def line_for(position); end
+  def line_index_for_position(position); end
 
   class << self
     def recognize_encoding(string); end
@@ -1224,7 +1245,7 @@ class Parser::Source::Comment::Associator
   def associate; end
   def associate_locations; end
   def skip_directives; end
-  def skip_directives=(_); end
+  def skip_directives=(_arg0); end
 
   private
 
@@ -1430,7 +1451,7 @@ class Parser::Source::Range
   def empty?; end
   def end; end
   def end_pos; end
-  def eql?(_); end
+  def eql?(_arg0); end
   def first_line; end
   def hash; end
   def inspect; end
@@ -1594,6 +1615,7 @@ class Parser::StaticEnvironment
   def declare_forward_args; end
   def declared?(name); end
   def declared_forward_args?; end
+  def empty?; end
   def extend_dynamic; end
   def extend_static; end
   def reset; end
@@ -1625,6 +1647,7 @@ class Parser::VariablesStack
 
   def declare(name); end
   def declared?(name); end
+  def empty?; end
   def pop; end
   def push; end
   def reset; end
