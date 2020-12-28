@@ -532,6 +532,14 @@ class ActiveSupport::CurrentAttributes
   def _reset_callbacks(); end
 
   def _run_reset_callbacks(&block); end
+
+  def attributes(); end
+
+  def attributes=(attributes); end
+
+  def reset(); end
+
+  def set(set_attributes); end
 end
 
 class ActiveSupport::CurrentAttributes
@@ -553,9 +561,17 @@ class ActiveSupport::CurrentAttributes
 
   def self.before_reset(&block); end
 
+  def self.clear_all(); end
+
   def self.instance(); end
 
+  def self.reset(*args, &block); end
+
+  def self.reset_all(); end
+
   def self.resets(&block); end
+
+  def self.set(*args, &block); end
 end
 
 module ActiveSupport::Dependencies
@@ -6660,8 +6676,6 @@ end
 class Errno::EBADRPC
 end
 
-Errno::ECAPMODE = Errno::NOERROR
-
 Errno::EDEADLOCK = Errno::NOERROR
 
 class Errno::EDEVERR
@@ -6682,13 +6696,6 @@ end
 
 Errno::EIPSEC = Errno::NOERROR
 
-class Errno::ELAST
-  Errno = ::T.let(nil, ::T.untyped)
-end
-
-class Errno::ELAST
-end
-
 class Errno::ENEEDAUTH
   Errno = ::T.let(nil, ::T.untyped)
 end
@@ -6709,8 +6716,6 @@ end
 
 class Errno::ENOPOLICY
 end
-
-Errno::ENOTCAPABLE = Errno::NOERROR
 
 class Errno::ENOTSUP
   Errno = ::T.let(nil, ::T.untyped)
@@ -6754,7 +6759,12 @@ end
 class Errno::EPWROFF
 end
 
-Errno::EQFULL = Errno::ELAST
+class Errno::EQFULL
+  Errno = ::T.let(nil, ::T.untyped)
+end
+
+class Errno::EQFULL
+end
 
 class Errno::ERPCMISMATCH
   Errno = ::T.let(nil, ::T.untyped)
@@ -13119,6 +13129,7 @@ class Object
   def to_query(key); end
 
   def to_yaml(options=T.unsafe(nil)); end
+  APPLE_GEM_HOME = ::T.let(nil, ::T.untyped)
   ARGF = ::T.let(nil, ::T.untyped)
   ARGV = ::T.let(nil, ::T.untyped)
   BUG_REPORTS_URL = ::T.let(nil, ::T.untyped)
@@ -13183,6 +13194,8 @@ class Object
   RUBY_DESCRIPTION = ::T.let(nil, ::T.untyped)
   RUBY_ENGINE = ::T.let(nil, ::T.untyped)
   RUBY_ENGINE_VERSION = ::T.let(nil, ::T.untyped)
+  RUBY_FRAMEWORK = ::T.let(nil, ::T.untyped)
+  RUBY_FRAMEWORK_VERSION = ::T.let(nil, ::T.untyped)
   RUBY_PATCHLEVEL = ::T.let(nil, ::T.untyped)
   RUBY_PATH = ::T.let(nil, ::T.untyped)
   RUBY_PLATFORM = ::T.let(nil, ::T.untyped)
@@ -13235,11 +13248,7 @@ class OpenSSL::KDF::KDFError
 end
 
 module OpenSSL::KDF
-  def self.hkdf(*_); end
-
   def self.pbkdf2_hmac(*_); end
-
-  def self.scrypt(*_); end
 end
 
 class OpenSSL::OCSP::Request
@@ -13248,29 +13257,20 @@ end
 
 OpenSSL::PKCS7::Signer = OpenSSL::PKCS7::SignerInfo
 
-class OpenSSL::PKey::EC
-  EXPLICIT_CURVE = ::T.let(nil, ::T.untyped)
-end
-
 class OpenSSL::PKey::EC::Point
   def to_octet_string(_); end
 end
 
 module OpenSSL::SSL
-  OP_ALLOW_NO_DHE_KEX = ::T.let(nil, ::T.untyped)
   OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION = ::T.let(nil, ::T.untyped)
   OP_CRYPTOPRO_TLSEXT_BUG = ::T.let(nil, ::T.untyped)
   OP_LEGACY_SERVER_CONNECT = ::T.let(nil, ::T.untyped)
-  OP_NO_ENCRYPT_THEN_MAC = ::T.let(nil, ::T.untyped)
-  OP_NO_RENEGOTIATION = ::T.let(nil, ::T.untyped)
-  OP_NO_TLSv1_3 = ::T.let(nil, ::T.untyped)
   OP_SAFARI_ECDHE_ECDSA_BUG = ::T.let(nil, ::T.untyped)
   OP_TLSEXT_PADDING = ::T.let(nil, ::T.untyped)
   SSL2_VERSION = ::T.let(nil, ::T.untyped)
   SSL3_VERSION = ::T.let(nil, ::T.untyped)
   TLS1_1_VERSION = ::T.let(nil, ::T.untyped)
   TLS1_2_VERSION = ::T.let(nil, ::T.untyped)
-  TLS1_3_VERSION = ::T.let(nil, ::T.untyped)
   TLS1_VERSION = ::T.let(nil, ::T.untyped)
 end
 
@@ -29818,6 +29818,7 @@ class Socket
   IPV6_PATHMTU = ::T.let(nil, ::T.untyped)
   IPV6_RECVPATHMTU = ::T.let(nil, ::T.untyped)
   IPV6_USE_MIN_MTU = ::T.let(nil, ::T.untyped)
+  IP_DONTFRAG = ::T.let(nil, ::T.untyped)
   IP_PORTRANGE = ::T.let(nil, ::T.untyped)
   IP_RECVDSTADDR = ::T.let(nil, ::T.untyped)
   IP_RECVIF = ::T.let(nil, ::T.untyped)
@@ -29909,6 +29910,7 @@ module Socket::Constants
   IPV6_PATHMTU = ::T.let(nil, ::T.untyped)
   IPV6_RECVPATHMTU = ::T.let(nil, ::T.untyped)
   IPV6_USE_MIN_MTU = ::T.let(nil, ::T.untyped)
+  IP_DONTFRAG = ::T.let(nil, ::T.untyped)
   IP_PORTRANGE = ::T.let(nil, ::T.untyped)
   IP_RECVDSTADDR = ::T.let(nil, ::T.untyped)
   IP_RECVIF = ::T.let(nil, ::T.untyped)
