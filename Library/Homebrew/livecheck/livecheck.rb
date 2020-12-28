@@ -526,6 +526,7 @@ module Homebrew
           puts "URL (strategy):   #{strategy_data[:url]}" if strategy_data[:url] != url
           puts "URL (final):      #{strategy_data[:final_url]}" if strategy_data[:final_url]
           puts "Regex (strategy): #{strategy_data[:regex].inspect}" if strategy_data[:regex] != livecheck_regex
+          puts "Cached?:          Yes" if strategy_data[:cached] == true
         end
 
         match_version_map.delete_if do |_match, version|
@@ -568,6 +569,7 @@ module Homebrew
           version_info[:meta][:url][:final] = strategy_data[:final_url] if strategy_data[:final_url]
           version_info[:meta][:strategies] = strategies.map { |s| livecheck_strategy_names[s] } if strategies.present?
           version_info[:meta][:regex] = regex.inspect if regex.present?
+          version_info[:meta][:cached] = true if strategy_data[:cached] == true
         end
 
         return version_info

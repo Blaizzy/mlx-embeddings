@@ -88,11 +88,12 @@ module Homebrew
         def self.find_versions(url, regex, provided_content = nil, &block)
           match_data = { matches: {}, regex: regex, url: url }
 
-          content = if provided_content.present?
+          content = if provided_content.is_a?(String)
+            match_data[:cached] = true
             provided_content
           else
             match_data.merge!(Strategy.page_content(url))
-            match_data.delete(:content)
+            match_data[:content]
           end
           return match_data if content.blank?
 

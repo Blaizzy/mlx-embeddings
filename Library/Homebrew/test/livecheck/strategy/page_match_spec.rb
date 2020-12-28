@@ -36,6 +36,7 @@ describe Homebrew::Livecheck::Strategy::PageMatch do
   }
 
   let(:page_content_matches) { ["2.6.0", "2.5.0", "2.4.0", "2.3.0", "2.2.0", "2.1.0", "2.0.0", "1.9.0"] }
+
   let(:find_versions_return_hash) {
     {
       matches: {
@@ -51,6 +52,12 @@ describe Homebrew::Livecheck::Strategy::PageMatch do
       regex:   regex,
       url:     url,
     }
+  }
+
+  let(:find_versions_cached_return_hash) {
+    return_hash = find_versions_return_hash
+    return_hash[:cached] = true
+    return_hash
   }
 
   describe "::match?" do
@@ -72,7 +79,7 @@ describe Homebrew::Livecheck::Strategy::PageMatch do
 
   describe "::find_versions?" do
     it "finds versions in provided_content" do
-      expect(page_match.find_versions(url, regex, page_content)).to eq(find_versions_return_hash)
+      expect(page_match.find_versions(url, regex, page_content)).to eq(find_versions_cached_return_hash)
     end
   end
 end
