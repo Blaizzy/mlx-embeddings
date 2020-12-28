@@ -76,85 +76,65 @@ describe Homebrew do
   subject(:homebrew) { described_class }
 
   let(:hello_hash_big_sur) {
-    JSON.parse(
-      stub_hash(
-        {
-          "name":           "hello",
-          "version":        "1.0",
-          "path":           "/home/hello.rb",
-          "cellar":         "any_skip_relocation",
-          "os":             "big_sur",
-          "filename":       "hello-1.0.big_sur.bottle.tar.gz",
-          "local_filename": "hello--1.0.big_sur.bottle.tar.gz",
-          "sha256":         "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f",
-        },
-      ),
+    JSON.parse stub_hash(
+      "name":           "hello",
+      "version":        "1.0",
+      "path":           "/home/hello.rb",
+      "cellar":         "any_skip_relocation",
+      "os":             "big_sur",
+      "filename":       "hello-1.0.big_sur.bottle.tar.gz",
+      "local_filename": "hello--1.0.big_sur.bottle.tar.gz",
+      "sha256":         "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f",
     )
   }
   let(:hello_hash_catalina) {
-    JSON.parse(
-      stub_hash(
-        {
-          "name":           "hello",
-          "version":        "1.0",
-          "path":           "/home/hello.rb",
-          "cellar":         "any_skip_relocation",
-          "os":             "catalina",
-          "filename":       "hello-1.0.catalina.bottle.tar.gz",
-          "local_filename": "hello--1.0.catalina.bottle.tar.gz",
-          "sha256":         "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac",
-        },
-      ),
+    JSON.parse stub_hash(
+      "name":           "hello",
+      "version":        "1.0",
+      "path":           "/home/hello.rb",
+      "cellar":         "any_skip_relocation",
+      "os":             "catalina",
+      "filename":       "hello-1.0.catalina.bottle.tar.gz",
+      "local_filename": "hello--1.0.catalina.bottle.tar.gz",
+      "sha256":         "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac",
     )
   }
   let(:unzip_hash_big_sur) {
-    JSON.parse(
-      stub_hash(
-        {
-          "name":           "unzip",
-          "version":        "2.0",
-          "path":           "/home/unzip.rb",
-          "cellar":         "any_skip_relocation",
-          "os":             "big_sur",
-          "filename":       "unzip-2.0.big_sur.bottle.tar.gz",
-          "local_filename": "unzip--2.0.big_sur.bottle.tar.gz",
-          "sha256":         "16cf230afdfcb6306c208d169549cf8773c831c8653d2c852315a048960d7e72",
-        },
-      ),
+    JSON.parse stub_hash(
+      "name":           "unzip",
+      "version":        "2.0",
+      "path":           "/home/unzip.rb",
+      "cellar":         "any_skip_relocation",
+      "os":             "big_sur",
+      "filename":       "unzip-2.0.big_sur.bottle.tar.gz",
+      "local_filename": "unzip--2.0.big_sur.bottle.tar.gz",
+      "sha256":         "16cf230afdfcb6306c208d169549cf8773c831c8653d2c852315a048960d7e72",
     )
   }
   let(:unzip_hash_catalina) {
-    JSON.parse(
-      stub_hash(
-        {
-          "name":           "unzip",
-          "version":        "2.0",
-          "path":           "/home/unzip.rb",
-          "cellar":         "any",
-          "os":             "catalina",
-          "filename":       "unzip-2.0.catalina.bottle.tar.gz",
-          "local_filename": "unzip--2.0.catalina.bottle.tar.gz",
-          "sha256":         "d9cc50eec8ac243148a121049c236cba06af4a0b1156ab397d0a2850aa79c137",
-        },
-      ),
+    JSON.parse stub_hash(
+      "name":           "unzip",
+      "version":        "2.0",
+      "path":           "/home/unzip.rb",
+      "cellar":         "any",
+      "os":             "catalina",
+      "filename":       "unzip-2.0.catalina.bottle.tar.gz",
+      "local_filename": "unzip--2.0.catalina.bottle.tar.gz",
+      "sha256":         "d9cc50eec8ac243148a121049c236cba06af4a0b1156ab397d0a2850aa79c137",
     )
   }
 
   specify "::parse_json_files" do
     Tempfile.open("hello--1.0.big_sur.bottle.json") do |f|
-      f.write(
-        stub_hash(
-          {
-            "name":           "hello",
-            "version":        "1.0",
-            "path":           "/home/hello.rb",
-            "cellar":         "any_skip_relocation",
-            "os":             "big_sur",
-            "filename":       "hello-1.0.big_sur.bottle.tar.gz",
-            "local_filename": "hello--1.0.big_sur.bottle.tar.gz",
-            "sha256":         "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f",
-          },
-        ),
+      f.write stub_hash(
+        "name":           "hello",
+        "version":        "1.0",
+        "path":           "/home/hello.rb",
+        "cellar":         "any_skip_relocation",
+        "os":             "big_sur",
+        "filename":       "hello-1.0.big_sur.bottle.tar.gz",
+        "local_filename": "hello--1.0.big_sur.bottle.tar.gz",
+        "sha256":         "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f",
       )
       f.close
       expect(
@@ -206,7 +186,7 @@ describe "brew bottle --merge", :integration_test, :needs_linux do
   end
 
   before do
-    Pathname("testball-1.0.big_sur.bottle.json").write stub_hash(
+    Pathname("#{TEST_TMPDIR}/testball-1.0.big_sur.bottle.json").write stub_hash(
       "name":           "testball",
       "version":        "1.0",
       "path":           "#{core_tap.path}/Formula/testball.rb",
@@ -217,7 +197,7 @@ describe "brew bottle --merge", :integration_test, :needs_linux do
       "sha256":         "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f",
     )
 
-    Pathname("testball-1.0.catalina.bottle.json").write stub_hash(
+    Pathname("#{TEST_TMPDIR}/testball-1.0.catalina.bottle.json").write stub_hash(
       "name":           "testball",
       "version":        "1.0",
       "path":           "#{core_tap.path}/Formula/testball.rb",
@@ -230,8 +210,8 @@ describe "brew bottle --merge", :integration_test, :needs_linux do
   end
 
   after do
-    FileUtils.rm_f "testball-1.0.catalina.bottle.json"
-    FileUtils.rm_f "testball-1.0.big_sur.bottle.json"
+    FileUtils.rm_f "#{TEST_TMPDIR}/testball-1.0.catalina.bottle.json"
+    FileUtils.rm_f "#{TEST_TMPDIR}/testball-1.0.big_sur.bottle.json"
   end
 
   it "adds the bottle block to a formula that has none" do
@@ -246,59 +226,55 @@ describe "brew bottle --merge", :integration_test, :needs_linux do
       brew "bottle",
            "--merge",
            "--write",
-           "testball-1.0.big_sur.bottle.json",
-           "testball-1.0.catalina.bottle.json"
-    }.to output(
-      <<~EOS,
-        ==> testball
-          bottle do
-            root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
-            cellar :any_skip_relocation
-            sha256 "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f" => :big_sur
-            sha256 "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac" => :catalina
-          end
-      EOS
-    ).to_stdout
-
-    expect((core_tap.path/"Formula/testball.rb").read).to eq(
-      <<~EOS,
-        class Testball < Formula
-          desc "Some test"
-          homepage "https://brew.sh/testball"
-          url "file://#{tarball}"
-          sha256 "#{tarball.sha256}"
-
-          bottle do
-            root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
-            cellar :any_skip_relocation
-            sha256 "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f" => :big_sur
-            sha256 "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac" => :catalina
-          end
-
-          option "with-foo", "Build with foo"
-
-          def install
-            (prefix/"foo"/"test").write("test") if build.with? "foo"
-            prefix.install Dir["*"]
-            (buildpath/"test.c").write \
-            "#include <stdio.h>\\nint main(){printf(\\"test\\");return 0;}"
-            bin.mkpath
-            system ENV.cc, "test.c", "-o", bin/"test"
-          end
-
-
-
-          # something here
-
+           "#{TEST_TMPDIR}/testball-1.0.big_sur.bottle.json",
+           "#{TEST_TMPDIR}/testball-1.0.catalina.bottle.json"
+    }.to output(<<~EOS).to_stdout
+      ==> testball
+        bottle do
+          root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
+          cellar :any_skip_relocation
+          sha256 "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f" => :big_sur
+          sha256 "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac" => :catalina
         end
-      EOS
-    )
+    EOS
+
+    expect((core_tap.path/"Formula/testball.rb").read).to eq <<~EOS
+      class Testball < Formula
+        desc "Some test"
+        homepage "https://brew.sh/testball"
+        url "file://#{tarball}"
+        sha256 "#{tarball.sha256}"
+
+        bottle do
+          root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
+          cellar :any_skip_relocation
+          sha256 "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f" => :big_sur
+          sha256 "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac" => :catalina
+        end
+
+        option "with-foo", "Build with foo"
+
+        def install
+          (prefix/"foo"/"test").write("test") if build.with? "foo"
+          prefix.install Dir["*"]
+          (buildpath/"test.c").write \
+          "#include <stdio.h>\\nint main(){printf(\\"test\\");return 0;}"
+          bin.mkpath
+          system ENV.cc, "test.c", "-o", bin/"test"
+        end
+
+
+
+        # something here
+
+      end
+    EOS
   end
 
   it "replaces the bottle block in a formula that already has a bottle block" do
     core_tap.path.cd do
       system "git", "init"
-      bottle_block = <<~EOS
+      setup_test_formula "testball", bottle_block: <<~EOS
 
         bottle do
           root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
@@ -307,7 +283,6 @@ describe "brew bottle --merge", :integration_test, :needs_linux do
           sha256 "16cf230afdfcb6306c208d169549cf8773c831c8653d2c852315a048960d7e72" => :catalina
         end
       EOS
-      setup_test_formula("testball", "", bottle_block)
       system "git", "add", "--all"
       system "git", "commit", "-m", "testball 0.1"
     end
@@ -316,53 +291,49 @@ describe "brew bottle --merge", :integration_test, :needs_linux do
       brew "bottle",
            "--merge",
            "--write",
-           "testball-1.0.big_sur.bottle.json",
-           "testball-1.0.catalina.bottle.json"
-    }.to output(
-      <<~EOS,
-        ==> testball
-          bottle do
-            root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
-            cellar :any_skip_relocation
-            sha256 "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f" => :big_sur
-            sha256 "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac" => :catalina
-          end
-      EOS
-    ).to_stdout
-
-    expect((core_tap.path/"Formula/testball.rb").read).to eq(
-      <<~EOS,
-        class Testball < Formula
-          desc "Some test"
-          homepage "https://brew.sh/testball"
-          url "file://#{tarball}"
-          sha256 "#{tarball.sha256}"
-
-          option "with-foo", "Build with foo"
-
-          bottle do
-            root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
-            cellar :any_skip_relocation
-            sha256 "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f" => :big_sur
-            sha256 "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac" => :catalina
-          end
-
-          def install
-            (prefix/"foo"/"test").write("test") if build.with? "foo"
-            prefix.install Dir["*"]
-            (buildpath/"test.c").write \
-            "#include <stdio.h>\\nint main(){printf(\\"test\\");return 0;}"
-            bin.mkpath
-            system ENV.cc, "test.c", "-o", bin/"test"
-          end
-
-
-
-          # something here
-
+           "#{TEST_TMPDIR}/testball-1.0.big_sur.bottle.json",
+           "#{TEST_TMPDIR}/testball-1.0.catalina.bottle.json"
+    }.to output(<<~EOS).to_stdout
+      ==> testball
+        bottle do
+          root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
+          cellar :any_skip_relocation
+          sha256 "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f" => :big_sur
+          sha256 "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac" => :catalina
         end
-      EOS
-    )
+    EOS
+
+    expect((core_tap.path/"Formula/testball.rb").read).to eq <<~EOS
+      class Testball < Formula
+        desc "Some test"
+        homepage "https://brew.sh/testball"
+        url "file://#{tarball}"
+        sha256 "#{tarball.sha256}"
+
+        option "with-foo", "Build with foo"
+
+        bottle do
+          root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
+          cellar :any_skip_relocation
+          sha256 "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f" => :big_sur
+          sha256 "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac" => :catalina
+        end
+
+        def install
+          (prefix/"foo"/"test").write("test") if build.with? "foo"
+          prefix.install Dir["*"]
+          (buildpath/"test.c").write \
+          "#include <stdio.h>\\nint main(){printf(\\"test\\");return 0;}"
+          bin.mkpath
+          system ENV.cc, "test.c", "-o", bin/"test"
+        end
+
+
+
+        # something here
+
+      end
+    EOS
   end
 
   it "fails to add the bottle block to a formula that has no bottle block when using --keep-old" do
@@ -378,15 +349,15 @@ describe "brew bottle --merge", :integration_test, :needs_linux do
            "--merge",
            "--write",
            "--keep-old",
-           "testball-1.0.big_sur.bottle.json",
-           "testball-1.0.catalina.bottle.json"
+           "#{TEST_TMPDIR}/testball-1.0.big_sur.bottle.json",
+           "#{TEST_TMPDIR}/testball-1.0.catalina.bottle.json"
     }.to output("Error: --keep-old was passed but there was no existing bottle block!\n").to_stderr
   end
 
   it "updates the bottle block in a formula that already has a bottle block when using --keep-old" do
     core_tap.path.cd do
       system "git", "init"
-      bottle_block = <<~EOS
+      setup_test_formula "testball", bottle_block: <<~EOS
 
         bottle do
           root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
@@ -394,7 +365,6 @@ describe "brew bottle --merge", :integration_test, :needs_linux do
           sha256 "6971b6eebf4c00eaaed72a1104a49be63861eabc95d679a0c84040398e320059" => :high_sierra
         end
       EOS
-      setup_test_formula("testball", "", bottle_block)
       system "git", "add", "--all"
       system "git", "commit", "-m", "testball 0.1"
     end
@@ -404,54 +374,50 @@ describe "brew bottle --merge", :integration_test, :needs_linux do
            "--merge",
            "--write",
            "--keep-old",
-           "testball-1.0.big_sur.bottle.json",
-           "testball-1.0.catalina.bottle.json"
-    }.to output(
-      <<~EOS,
-        ==> testball
-          bottle do
-            root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
-            cellar :any_skip_relocation
-            sha256 "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f" => :big_sur
-            sha256 "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac" => :catalina
-            sha256 "6971b6eebf4c00eaaed72a1104a49be63861eabc95d679a0c84040398e320059" => :high_sierra
-          end
-      EOS
-    ).to_stdout
-
-    expect((core_tap.path/"Formula/testball.rb").read).to eq(
-      <<~EOS,
-        class Testball < Formula
-          desc "Some test"
-          homepage "https://brew.sh/testball"
-          url "file://#{tarball}"
-          sha256 "#{tarball.sha256}"
-
-          option "with-foo", "Build with foo"
-
-          bottle do
-            root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
-            cellar :any_skip_relocation
-            sha256 "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f" => :big_sur
-            sha256 "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac" => :catalina
-            sha256 "6971b6eebf4c00eaaed72a1104a49be63861eabc95d679a0c84040398e320059" => :high_sierra
-          end
-
-          def install
-            (prefix/"foo"/"test").write("test") if build.with? "foo"
-            prefix.install Dir["*"]
-            (buildpath/"test.c").write \
-            "#include <stdio.h>\\nint main(){printf(\\"test\\");return 0;}"
-            bin.mkpath
-            system ENV.cc, "test.c", "-o", bin/"test"
-          end
-
-
-
-          # something here
-
+           "#{TEST_TMPDIR}/testball-1.0.big_sur.bottle.json",
+           "#{TEST_TMPDIR}/testball-1.0.catalina.bottle.json"
+    }.to output(<<~EOS).to_stdout
+      ==> testball
+        bottle do
+          root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
+          cellar :any_skip_relocation
+          sha256 "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f" => :big_sur
+          sha256 "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac" => :catalina
+          sha256 "6971b6eebf4c00eaaed72a1104a49be63861eabc95d679a0c84040398e320059" => :high_sierra
         end
-      EOS
-    )
+    EOS
+
+    expect((core_tap.path/"Formula/testball.rb").read).to eq <<~EOS
+      class Testball < Formula
+        desc "Some test"
+        homepage "https://brew.sh/testball"
+        url "file://#{tarball}"
+        sha256 "#{tarball.sha256}"
+
+        option "with-foo", "Build with foo"
+
+        bottle do
+          root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
+          cellar :any_skip_relocation
+          sha256 "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f" => :big_sur
+          sha256 "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac" => :catalina
+          sha256 "6971b6eebf4c00eaaed72a1104a49be63861eabc95d679a0c84040398e320059" => :high_sierra
+        end
+
+        def install
+          (prefix/"foo"/"test").write("test") if build.with? "foo"
+          prefix.install Dir["*"]
+          (buildpath/"test.c").write \
+          "#include <stdio.h>\\nint main(){printf(\\"test\\");return 0;}"
+          bin.mkpath
+          system ENV.cc, "test.c", "-o", bin/"test"
+        end
+
+
+
+        # something here
+
+      end
+    EOS
   end
 end
