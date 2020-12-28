@@ -45,7 +45,7 @@ module Homebrew
           merged_headers = headers.reduce(&:merge)
 
           if block
-            match = block.call(merged_headers)
+            match = block.call(merged_headers, regex)
           else
             match = nil
 

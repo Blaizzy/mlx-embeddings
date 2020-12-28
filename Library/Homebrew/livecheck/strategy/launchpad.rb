@@ -40,7 +40,7 @@ module Homebrew
         # @param url [String] the URL of the content to check
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]
-        def self.find_versions(url, regex = nil)
+        def self.find_versions(url, regex = nil, &block)
           %r{launchpad\.net/(?<project_name>[^/]+)}i =~ url
 
           # The main page for the project on Launchpad
@@ -49,7 +49,7 @@ module Homebrew
           # The default regex is the same for all URLs using this strategy
           regex ||= %r{class="[^"]*version[^"]*"[^>]*>\s*Latest version is (.+)\s*</}
 
-          PageMatch.find_versions(page_url, regex)
+          PageMatch.find_versions(page_url, regex, &block)
         end
       end
     end

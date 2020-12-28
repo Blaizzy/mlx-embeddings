@@ -52,7 +52,7 @@ module Homebrew
         # @param url [String] the URL of the content to check
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]
-        def self.find_versions(url, regex = nil)
+        def self.find_versions(url, regex = nil, &block)
           match = url.match(URL_MATCH_REGEX)
 
           # Use `\.t` instead of specific tarball extensions (e.g. .tar.gz)
@@ -71,7 +71,7 @@ module Homebrew
           # * `/href=.*?example-v?(\d+(?:\.\d+)+)\.t/i`
           regex ||= /href=.*?#{Regexp.escape(match[:prefix])}v?(\d+(?:\.\d+)+)#{Regexp.escape(suffix)}/i
 
-          PageMatch.find_versions(page_url, regex)
+          PageMatch.find_versions(page_url, regex, &block)
         end
       end
     end
