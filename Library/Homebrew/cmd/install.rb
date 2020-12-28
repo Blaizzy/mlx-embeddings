@@ -131,6 +131,11 @@ module Homebrew
   def install
     args = install_args.parse
 
+    if args.env.present?
+      # TODO: enable for Homebrew 2.8.0 and use `replacement: false` for 2.9.0.
+      # odeprecated "brew install --env", "`env :std` in specific formula files"
+    end
+
     args.named.each do |name|
       next if File.exist?(name)
       next if name !~ HOMEBREW_TAP_FORMULA_REGEX && name !~ HOMEBREW_CASK_TAP_CASK_REGEX
