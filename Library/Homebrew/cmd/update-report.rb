@@ -160,7 +160,7 @@ module Homebrew
     if new_repository_version.split(".").last == "0"
       puts <<~EOS
         More detailed release notes are available on the Homebrew Blog:
-          #{Formatter.url("https://brew.sh/blog/")}
+          #{Formatter.url("https://brew.sh/blog/#{new_repository_version}")}
       EOS
     else
       puts <<~EOS
