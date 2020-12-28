@@ -17,6 +17,10 @@ module Homebrew
         Print the merged pull requests on Homebrew/brew between two Git refs.
         If no <previous_tag> is provided it defaults to the latest tag.
         If no <end_ref> is provided it defaults to `origin/master`.
+
+        If `--markdown` and a <previous_tag> are passed, an extra line containg
+        a link to the Homebrew blog will be adding to the output. Additionally,
+        a warning will be shown if the latest minor release was less than one month ago.
       EOS
       switch "--markdown",
              description: "Print as a Markdown list."
@@ -29,6 +33,15 @@ module Homebrew
     args = release_notes_args.parse
 
     previous_tag = args.named.first
+
+    if previous_tag.present?
+
+      previous_tag_date = Date.parse Utils.popen_read(
+        "git", "-C", HOMEBREW_REPOSITORY, "log", "-1", "--format=%aI", previous_tag.sub(/\d+$/, "0")
+      )
+      opoo "The latest major/minor release was less than one month ago." if previous_tag_date > (Date.today << 1)
+    end
+
     previous_tag ||= Utils.popen_read(
       "git", "-C", HOMEBREW_REPOSITORY, "tag", "--list", "--sort=-version:refname"
     ).lines.first.chomp
