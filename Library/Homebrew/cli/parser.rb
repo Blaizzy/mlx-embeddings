@@ -64,27 +64,27 @@ module Homebrew
             description: "Target location for Services " \
                          "(default: `#{Cask::Config::DEFAULT_DIRS[:servicedir]}`).",
           }],
-          [:flag, "--input_methoddir=", {
+          [:flag, "--input-methoddir=", {
             description: "Target location for Input Methods " \
                          "(default: `#{Cask::Config::DEFAULT_DIRS[:input_methoddir]}`).",
           }],
-          [:flag, "--internet_plugindir=", {
+          [:flag, "--internet-plugindir=", {
             description: "Target location for Internet Plugins " \
                          "(default: `#{Cask::Config::DEFAULT_DIRS[:internet_plugindir]}`).",
           }],
-          [:flag, "--audio_unit_plugindir=", {
+          [:flag, "--audio-unit-plugindir=", {
             description: "Target location for Audio Unit Plugins " \
                          "(default: `#{Cask::Config::DEFAULT_DIRS[:audio_unit_plugindir]}`).",
           }],
-          [:flag, "--vst_plugindir=", {
+          [:flag, "--vst-plugindir=", {
             description: "Target location for VST Plugins " \
                          "(default: `#{Cask::Config::DEFAULT_DIRS[:vst_plugindir]}`).",
           }],
-          [:flag, "--vst3_plugindir=", {
+          [:flag, "--vst3-plugindir=", {
             description: "Target location for VST3 Plugins " \
                          "(default: `#{Cask::Config::DEFAULT_DIRS[:vst3_plugindir]}`).",
           }],
-          [:flag, "--screen_saverdir=", {
+          [:flag, "--screen-saverdir=", {
             description: "Target location for Screen Savers " \
                          "(default: `#{Cask::Config::DEFAULT_DIRS[:screen_saverdir]}`).",
           }],
