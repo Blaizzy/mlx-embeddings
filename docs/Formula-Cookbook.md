@@ -795,6 +795,10 @@ You can set environment variables in a formula's `install` method using `ENV["VA
 
 In summary, environment variables used by a formula need to conform to these filtering rules in order to be available.
 
+### Deprecating and disabling a formula
+
+See our [Deprecating, Disabling, and Removing Formulae](Deprecating-Disabling-and-Removing-Formulae.md) documentation for more information about how and when to deprecate or disable a formula.
+
 ## Updating formulae
 
 Eventually a new version of the software will be released. In this case you should update the [`url`](https://rubydoc.brew.sh/Formula#url-class_method) and [`sha256`](https://rubydoc.brew.sh/Formula#sha256%3D-class_method). If a [`revision`](https://rubydoc.brew.sh/Formula#revision%3D-class_method) line exists outside any `bottle do` block it should be removed.
