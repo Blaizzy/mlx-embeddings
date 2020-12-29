@@ -31,13 +31,6 @@ module OS
         SDK.new v, path, source
       end
 
-      def latest_sdk
-        return if sdk_paths.empty?
-
-        v, path = sdk_paths.max { |(v1, _), (v2, _)| v1 <=> v2 }
-        SDK.new v, path, source
-      end
-
       def all_sdks
         sdk_paths.map { |v, p| SDK.new v, p, source }
       end
@@ -45,7 +38,7 @@ module OS
       def sdk_if_applicable(v = nil)
         sdk = begin
           if v.blank?
-            sdk_for OS::Mac.sdk_version
+            sdk_for OS::Mac.version
           else
             sdk_for v
           end
@@ -54,16 +47,7 @@ module OS
         end
         return if sdk.blank?
 
-        # Accept an SDK for another OS version if it shares a major version
-        # with the current OS - for example, the 11.0 SDK on 11.1,
-        # or vice versa.
-        # Note that this only applies on macOS 11
-        # or greater, given the way the versioning has changed.
-        # This shortcuts the below check, since we *do* accept an older version
-        # on macOS 11 or greater if the major version matches.
-        return sdk if OS::Mac.version >= :big_sur && sdk.version.major == OS::Mac.version.major
-
-        # On OSs lower than 11, or where the major versions don't match,
+        # On OSs lower than 11, whenever the major versions don't match,
         # only return an SDK older than the OS version if it was specifically requested
         return if v.blank? && sdk.version < OS::Mac.version
 
@@ -93,11 +77,15 @@ module OS
 
             # Use unversioned SDK path on Big Sur to avoid issues such as:
             # https://github.com/Homebrew/homebrew-core/issues/67075
-            sdk_path = File.join(sdk_prefix, "MacOSX.sdk")
-            if OS::Mac.version >= :big_sur && File.directory?(sdk_path)
-              sdk_settings = File.join(sdk_path, "SDKSettings.json")
-              version = JSON.parse(File.read(sdk_settings))["Version"] if File.exist?(sdk_settings)
-              paths[OS::Mac::Version.new(version)] = sdk_path if version.present?
+            # This creates an entry in `paths` whose key is the OS major version
+            sdk_path = Pathname.new("#{sdk_prefix}/MacOSX.sdk")
+            sdk_settings = sdk_path/"SDKSettings.json"
+            if sdk_settings.exist? &&
+               (sdk_settings_string = sdk_settings.read.presence) &&
+               (sdk_settings_json = JSON.parse(sdk_settings_string).presence) &&
+               (version_string = sdk_settings_json.fetch("Version", nil).presence) &&
+               (version = version_string[/(\d+)\./, 1].presence)
+              paths[OS::Mac::Version.new(version)] = sdk_path
             end
 
             paths
@@ -105,6 +93,14 @@ module OS
             {}
           end
         end
+      end
+
+      # NOTE: This returns a versioned SDK path, even on Big Sur
+      def latest_sdk
+        return if sdk_paths.empty?
+
+        v, path = sdk_paths.max { |(v1, _), (v2, _)| v1 <=> v2 }
+        SDK.new v, path, source
       end
     end
     private_constant :BaseSDKLocator
