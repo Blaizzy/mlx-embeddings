@@ -9,18 +9,26 @@ module Utils
     class << self
       extend T::Sig
 
-      def replace_formula_stanza!(formula_contents, name:, replacement:, type: nil)
+      def replace_bottle_stanza!(formula_contents, bottle_output)
+        replace_formula_stanza!(formula_contents, :bottle, bottle_output.strip, type: :block_call)
+      end
+
+      def add_bottle_stanza!(formula_contents, bottle_output)
+        add_formula_stanza!(formula_contents, :bottle, "\n#{bottle_output.chomp}", type: :block_call)
+      end
+
+      def replace_formula_stanza!(formula_contents, name, replacement, type: nil)
         processed_source, body_node = process_formula(formula_contents)
         children = body_node.begin_type? ? body_node.children.compact : [body_node]
         stanza_node = children.find { |child| call_node_match?(child, name: name, type: type) }
         raise "Could not find #{name} stanza!" if stanza_node.nil?
 
         tree_rewriter = Parser::Source::TreeRewriter.new(processed_source.buffer)
-        tree_rewriter.replace(stanza_node.source_range, replacement.strip)
+        tree_rewriter.replace(stanza_node.source_range, replacement)
         formula_contents.replace(tree_rewriter.process)
       end
 
-      def add_formula_stanza!(formula_contents, name:, text:, type: nil)
+      def add_formula_stanza!(formula_contents, name, text, type: nil)
         processed_source, body_node = process_formula(formula_contents)
 
         preceding_component = if body_node.begin_type?

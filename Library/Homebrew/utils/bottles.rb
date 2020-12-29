@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require "tab"
-require "utils/ast"
 
 module Utils
   # Helper functions for bottles.
@@ -74,13 +73,6 @@ module Utils
         raise BottleFormulaUnavailableError.new(bottle_file, formula_path) unless $CHILD_STATUS.success?
 
         contents
-      end
-
-      def add_bottle_stanza!(formula_contents, bottle_output)
-        Utils::AST.add_formula_stanza!(formula_contents,
-                                       name: :bottle,
-                                       type: :block_call,
-                                       text: "\n#{bottle_output.chomp}")
       end
     end
 

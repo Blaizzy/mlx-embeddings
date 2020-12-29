@@ -9,6 +9,7 @@ require "formula_versions"
 require "cli/parser"
 require "utils/inreplace"
 require "erb"
+require "utils/ast"
 
 BOTTLE_ERB = <<-EOS
   bottle do
@@ -510,13 +511,12 @@ module Homebrew
               output = bottle_output bottle
             end
             puts output
-            string = s.sub!(/  bottle do.+?end\n/m, output)
-            odie "Bottle block update failed!" unless string
+            Utils::AST.replace_bottle_stanza!(s.inreplace_string, output)
           else
             odie "--keep-old was passed but there was no existing bottle block!" if args.keep_old?
             puts output
             update_or_add = "add"
-            Utils::Bottles.add_bottle_stanza!(s.inreplace_string, output)
+            Utils::AST.add_bottle_stanza!(s.inreplace_string, output)
           end
         end
 
