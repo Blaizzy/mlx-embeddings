@@ -28,7 +28,7 @@ jobs:
       - name: Review pull request
         if: >
           (github.event_name == 'pull_request' || github.event_name == 'pull_request_target') &&
-            github.event.action != 'closed'
+            github.event.action != 'closed' && github.event.pull_request.state != 'closed'
         uses: actions/github-script@v3
         with:
           github-token: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
