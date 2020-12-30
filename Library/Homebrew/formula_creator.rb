@@ -193,7 +193,7 @@ module Homebrew
             # end
 
             bin.install name
-            bin.env_script_all_files(libexec/"bin", :PERL5LIB => ENV["PERL5LIB"])
+            bin.env_script_all_files(libexec/"bin", PERL5LIB: ENV["PERL5LIB"])
         <% elsif mode == :python %>
             virtualenv_install_with_resources
         <% elsif mode == :ruby %>
@@ -201,7 +201,7 @@ module Homebrew
             system "gem", "build", "\#{name}.gemspec"
             system "gem", "install", "\#{name}-\#{version}.gem"
             bin.install libexec/"bin/\#{name}"
-            bin.env_script_all_files(libexec/"bin", :GEM_HOME => ENV["GEM_HOME"])
+            bin.env_script_all_files(libexec/"bin", GEM_HOME: ENV["GEM_HOME"])
         <% elsif mode == :rust %>
             system "cargo", "install", *std_cargo_args
         <% else %>
