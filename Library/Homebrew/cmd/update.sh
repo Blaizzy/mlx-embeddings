@@ -392,6 +392,14 @@ EOS
 
   [[ -f "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core/.git/shallow" ]] && HOMEBREW_CORE_SHALLOW=1
   [[ -f "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-cask/.git/shallow" ]] && HOMEBREW_CASK_SHALLOW=1
+  if [[ -n $HOMEBREW_CORE_SHALLOW && -n $HOMEBREW_CASK_SHALLOW ]]
+  then
+    SHALLOW_COMMAND_PHRASE="These commands"
+    SHALLOW_REPO_PHRASE="repositories"
+  else
+    SHALLOW_COMMAND_PHRASE="This command"
+    SHALLOW_REPO_PHRASE="repository"
+  fi
 
   if [[ -n $HOMEBREW_CORE_SHALLOW || -n $HOMEBREW_CASK_SHALLOW ]]
   then
@@ -402,6 +410,7 @@ ${HOMEBREW_CORE_SHALLOW:+
 To \`brew update\`, first run:${HOMEBREW_CORE_SHALLOW:+
   git -C "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core" fetch --unshallow}${HOMEBREW_CASK_SHALLOW:+
   git -C "$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-cask" fetch --unshallow}
+${SHALLOW_COMMAND_PHRASE} may take a few minutes to run due to the large size of the ${SHALLOW_REPO_PHRASE}.
 This restriction has been made on GitHub's request because updating shallow
 clones is an extremely expensive operation due to the tree layout and traffic of
 Homebrew/homebrew-core and Homebrew/homebrew-cask. We don't do this for you
