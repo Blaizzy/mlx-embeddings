@@ -218,7 +218,8 @@ module Homebrew
 
   sig { returns(String) }
   def global_cask_options_manpage
-    lines = ["These options are applicable to the `install`, `reinstall`, and `upgrade` subcommands with the `--cask` flag.\n"]
+    lines = ["These options are applicable to the `install`, `reinstall`, and `upgrade` " \
+             "subcommands with the `--cask` flag.\n"]
     lines += Homebrew::CLI::Parser.global_cask_options.map do |_, long, description:, **|
       generate_option_doc(nil, long.chomp("="), description)
     end
