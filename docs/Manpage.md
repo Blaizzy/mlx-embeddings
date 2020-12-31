@@ -1400,7 +1400,7 @@ Install and commit Homebrew's vendored gems.
 
 ## GLOBAL CASK OPTIONS
 
-These options are applicable to subcommands accepting a `--cask` flag and all `cask` commands.
+These options are applicable to the `install`, `reinstall`, and `upgrade` subcommands with the `--cask` flag.
 
 * `--appdir`:
   Target location for Applications (default: `/Applications`).

@@ -26,7 +26,7 @@ This is all that really matters:
   [pip](https://pip.pypa.io/en/stable/).
 - Ensure that any dependencies are accurate and minimal. We don't need to
   support every possible optional feature for the software.
-- Use the GitHub squash & merge workflow where bottles aren't required.
+- When bottles aren't required or affected, use the GitHub squash & merge workflow for a single-formula PR or rebase & merge workflow for a multiple-formulae PR. See [below](#how-to-merge-without-bottles) for more details.
 - Use `brew pr-publish` or `brew pr-pull` otherwise, which adds messages to auto-close pull requests and pull bottles built by the Brew Test Bot.
 - Thank people for contributing.
 
@@ -61,9 +61,12 @@ We now accept versioned formulae as long as they [meet the requirements](Version
 
 ### Merging, rebasing, cherry-picking
 
-Merging should be done in the `Homebrew/brew` repository to preserve history & GPG commit signing,
-and squash/merge via GitHub should be used for formulae where those formulae
-don't need bottles or the change does not require new bottles to be pulled.
+Merging should be done in the `Homebrew/brew` repository to preserve history and GPG commit signing.
+
+PRs modifying formulae that don't need bottles or making changes that don't
+require new bottles to be pulled should use GitHub's squash & merge or rebase & merge workflows.
+See the [table below](#how-to-merge-without-bottles) for more details.
+
 Otherwise, you should use `brew pr-pull` (or `rebase`/`cherry-pick` contributions).
 
 Don’t `rebase` until you finally `push`. Once `master` is pushed, you can’t
@@ -79,6 +82,15 @@ not confusing.
 Here’s a flowchart for managing a PR which is ready to merge:
 
 ![Flowchart for managing pull requests](assets/img/docs/managing-pull-requests.drawio.svg)
+
+#### How to merge without bottles
+
+Here are guidelines about when to use squash & merge versus rebase & merge. These options should only be used with PRs where bottles are not needed or affected.
+
+| | PR modified a single formula | PR modifies multiple formulae |
+|---|---|---|
+| **Commits look good** | rebase & merge _or_ squash & merge | rebase & merge |
+| **Commits need work** | squash & merge | manually merge using the command line |
 
 ### Testing
 
