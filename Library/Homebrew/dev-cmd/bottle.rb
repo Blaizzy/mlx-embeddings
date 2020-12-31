@@ -549,24 +549,26 @@ module Homebrew
     new_values = {
       root_url: new_bottle_hash["root_url"],
       prefix:   new_bottle_hash["prefix"],
-      cellar:   new_bottle_hash["cellar"].to_sym,
+      cellar:   new_bottle_hash["cellar"],
       rebuild:  new_bottle_hash["rebuild"],
     }
 
     old_keys.each do |key|
       next if key == :sha256
 
-      old_value = old_bottle_spec.send(key)
-      new_value = new_values[key]
-      next if key == :cellar && old_value == :any && new_value == :any_skip_relocation
+      old_value = old_bottle_spec.send(key).to_s
+      new_value = new_values[key].to_s
+      next if key == :cellar && old_value == "any" && new_value == "any_skip_relocation"
       next if old_value.present? && new_value == old_value
 
       mismatches << "#{key}: old: #{old_value.inspect}, new: #{new_value.inspect}"
     end
 
+    return [mismatches, checksums] unless old_keys.include? :sha256
+
     old_bottle_spec.collector.each_key do |tag|
       old_value = old_bottle_spec.collector[tag].hexdigest
-      new_value = new_bottle_hash["tags"][tag.to_s]
+      new_value = new_bottle_hash.dig("tags", tag.to_s)
       if new_value.present?
         mismatches << "sha256 => #{tag}"
       else
