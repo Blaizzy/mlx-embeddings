@@ -61,7 +61,7 @@ We now accept versioned formulae as long as they [meet the requirements](Version
 
 ### Merging, rebasing, cherry-picking
 
-Merging should be done in the `Homebrew/brew` repository to preserve history & GPG commit signing.
+Merging should be done in the `Homebrew/brew` repository to preserve history and GPG commit signing.
 
 PRs modifying formulae that don't need bottles or making changes that don't
 require new bottles to be pulled should use GitHub's squash & merge or rebase & merge workflows.
