@@ -141,7 +141,7 @@ module Homebrew
 
     PERIODIC_CLEAN_FILE = (HOMEBREW_CACHE/".cleaned").freeze
 
-    attr_predicate :dry_run?, :scrub?
+    attr_predicate :dry_run?, :scrub?, :prune?
     attr_reader :args, :days, :cache, :disk_cleanup_size
 
     def initialize(*args, dry_run: false, scrub: false, days: nil, cache: HOMEBREW_CACHE)
@@ -149,6 +149,7 @@ module Homebrew
       @args = args
       @dry_run = dry_run
       @scrub = scrub
+      @prune = days.present?
       @days = days || Homebrew::EnvConfig.cleanup_max_age_days.to_i
       @cache = cache
       @cleaned_up_paths = Set.new
@@ -316,7 +317,8 @@ module Homebrew
           next
         end
 
-        next cleanup_path(path) { path.unlink } if path.stale?(scrub: scrub?)
+        # If we've specifed --prune don't do the (expensive) .stale? check.
+        cleanup_path(path) { path.unlink } if !prune? && path.stale?(scrub: scrub?)
       end
 
       cleanup_unreferenced_downloads
