@@ -26,6 +26,9 @@ jobs:
       - name: Install Bundler RubyGems
         run: brew install-bundler-gems
 
+      - name: Install shellcheck
+        run: brew install shellcheck
+
       - run: brew style --display-cop-names
 
       - run: brew man --fail-if-changed
