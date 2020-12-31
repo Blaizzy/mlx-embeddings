@@ -496,11 +496,14 @@ module Homebrew
         update_or_add = T.let(nil, T.nilable(String))
 
         Utils::Inreplace.inreplace(path) do |s|
-          if s.inreplace_string.include? "bottle do"
+          formula_contents = s.inreplace_string
+          bottle_node = Utils::AST.bottle_block(formula_contents)
+          if bottle_node.present?
             update_or_add = "update"
             if args.keep_old?
+              old_keys = Utils::AST.body_children(bottle_node.body).map(&:method_name)
               old_bottle_spec = Formulary.factory(path).bottle_specification
-              mismatches, checksums = merge_bottle_spec(old_bottle_spec, bottle_hash["bottle"])
+              mismatches, checksums = merge_bottle_spec(old_keys, old_bottle_spec, bottle_hash["bottle"])
               if mismatches.present?
                 odie <<~EOS
                   --keep-old was passed but there are changes in:
@@ -511,12 +514,12 @@ module Homebrew
               output = bottle_output bottle
             end
             puts output
-            Utils::AST.replace_bottle_stanza!(s.inreplace_string, output)
+            Utils::AST.replace_bottle_stanza!(formula_contents, output)
           else
             odie "--keep-old was passed but there was no existing bottle block!" if args.keep_old?
             puts output
             update_or_add = "add"
-            Utils::AST.add_bottle_stanza!(s.inreplace_string, output)
+            Utils::AST.add_bottle_stanza!(formula_contents, output)
           end
         end
 
@@ -539,24 +542,22 @@ module Homebrew
     end
   end
 
-  def merge_bottle_spec(old_bottle_spec, new_bottle_hash)
+  def merge_bottle_spec(old_keys, old_bottle_spec, new_bottle_hash)
     mismatches = []
     checksums = []
 
-    {
+    new_values = {
       root_url: new_bottle_hash["root_url"],
       prefix:   new_bottle_hash["prefix"],
       cellar:   new_bottle_hash["cellar"].to_sym,
       rebuild:  new_bottle_hash["rebuild"],
-    }.each do |key, new_value|
+    }
+
+    old_keys.each do |key|
+      next if key == :sha256
+
       old_value = old_bottle_spec.send(key)
-      next if key == :rebuild && old_value.zero?
-      next if key == :prefix && old_value == Homebrew::DEFAULT_PREFIX
-      next if key == :cellar && [
-        Homebrew::DEFAULT_MACOS_CELLAR,
-        Homebrew::DEFAULT_MACOS_ARM_CELLAR,
-        Homebrew::DEFAULT_LINUX_CELLAR,
-      ].include?(old_value)
+      new_value = new_values[key]
       next if key == :cellar && old_value == :any && new_value == :any_skip_relocation
       next if old_value.present? && new_value == old_value
 

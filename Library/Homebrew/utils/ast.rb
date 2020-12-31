@@ -9,6 +9,25 @@ module Utils
     class << self
       extend T::Sig
 
+      def body_children(body_node)
+        if body_node.nil?
+          []
+        elsif body_node.begin_type?
+          body_node.children.compact
+        else
+          [body_node]
+        end
+      end
+
+      def bottle_block(formula_contents)
+        formula_stanza(formula_contents, :bottle, type: :block_call)
+      end
+
+      def formula_stanza(formula_contents, name, type: nil)
+        _, children = process_formula(formula_contents)
+        children.find { |child| call_node_match?(child, name: name, type: type) }
+      end
+
       def replace_bottle_stanza!(formula_contents, bottle_output)
         replace_formula_stanza!(formula_contents, :bottle, bottle_output.strip, type: :block_call)
       end
@@ -18,8 +37,7 @@ module Utils
       end
 
       def replace_formula_stanza!(formula_contents, name, replacement, type: nil)
-        processed_source, body_node = process_formula(formula_contents)
-        children = body_node.begin_type? ? body_node.children.compact : [body_node]
+        processed_source, children = process_formula(formula_contents)
         stanza_node = children.find { |child| call_node_match?(child, name: name, type: type) }
         raise "Could not find #{name} stanza!" if stanza_node.nil?
 
@@ -29,10 +47,10 @@ module Utils
       end
 
       def add_formula_stanza!(formula_contents, name, text, type: nil)
-        processed_source, body_node = process_formula(formula_contents)
+        processed_source, children = process_formula(formula_contents)
 
-        preceding_component = if body_node.begin_type?
-          body_node.children.compact.reduce do |previous_child, current_child|
+        preceding_component = if children.length > 1
+          children.reduce do |previous_child, current_child|
             if formula_component_before_target?(current_child,
                                                 target_name: name,
                                                 target_type: type)
@@ -42,7 +60,7 @@ module Utils
             end
           end
         else
-          body_node
+          children.first
         end
         preceding_component = preceding_component.last_argument if preceding_component.send_type?
 
@@ -84,10 +102,10 @@ module Utils
 
         raise "Could not find formula class!" if class_node.nil?
 
-        body_node = class_node.body
-        raise "Formula class is empty!" if body_node.nil?
+        children = body_children(class_node.body)
+        raise "Formula class is empty!" if children.empty?
 
-        [processed_source, body_node]
+        [processed_source, children]
       end
 
       def formula_component_before_target?(node, target_name:, target_type: nil)
