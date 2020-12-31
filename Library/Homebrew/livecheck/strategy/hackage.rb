@@ -17,8 +17,19 @@ module Homebrew
       #
       # @api public
       class Hackage
-        # The `Regexp` used to determine if the strategy applies to the URL.
-        URL_MATCH_REGEX = /(?:downloads|hackage)\.haskell\.org/i.freeze
+        # A `Regexp` used in determining if the strategy applies to the URL and
+        # also as part of extracting the package name from the URL basename.
+        PACKAGE_NAME_REGEX = /(?<package_name>.+?)-\d+/i.freeze
+
+        # A `Regexp` used to extract the package name from the URL basename.
+        FILENAME_REGEX = /^#{PACKAGE_NAME_REGEX.source.strip}/i.freeze
+
+        # A `Regexp` used in determining if the strategy applies to the URL.
+        URL_MATCH_REGEX = %r{
+          ^https?://(?:downloads|hackage)\.haskell\.org
+          (?:/[^/]+)+ # Path before the filename
+          #{PACKAGE_NAME_REGEX.source.strip}
+        }ix.freeze
 
         # Whether the strategy can be applied to the provided URL.
         #
@@ -35,13 +46,13 @@ module Homebrew
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]
         def self.find_versions(url, regex = nil, &block)
-          /^(?<package_name>.+?)-\d+/i =~ File.basename(url)
+          match = File.basename(url).match(FILENAME_REGEX)
 
           # A page containing a directory listing of the latest source tarball
-          page_url = "https://hackage.haskell.org/package/#{package_name}/src/"
+          page_url = "https://hackage.haskell.org/package/#{match[:package_name]}/src/"
 
           # Example regex: `%r{<h3>example-(.*?)/?</h3>}i`
-          regex ||= %r{<h3>#{Regexp.escape(package_name)}-(.*?)/?</h3>}i
+          regex ||= %r{<h3>#{Regexp.escape(match[:package_name])}-(.*?)/?</h3>}i
 
           PageMatch.find_versions(page_url, regex, &block)
         end
