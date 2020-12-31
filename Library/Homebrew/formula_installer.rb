@@ -243,7 +243,7 @@ class FormulaInstaller
        ENV["HOMEBREW_TEST_TMPDIR"].nil? &&
        !pour_bottle?
       message = <<~EOS
-        #{formula}: unable to pour bottle!
+        #{formula}: no bottle available!
       EOS
       if !formula.pour_bottle? && formula.pour_bottle_check_unsatisfied_reason
         message += formula.pour_bottle_check_unsatisfied_reason
