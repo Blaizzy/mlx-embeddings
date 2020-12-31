@@ -1,6 +1,9 @@
 # TODO: Try getting more rules in sync.
 
-require: ./Homebrew/rubocops.rb
+require:
+  - ./Homebrew/rubocops.rb
+  - rubocop-performance
+  - rubocop-rails
 
 inherit_mode:
   merge:
@@ -50,6 +53,14 @@ FormulaAudit:
 # enable all formulae strict audits
 FormulaAuditStrict:
   Enabled: true
+
+# makes DSL usage ugly.
+Layout/SpaceBeforeBrackets:
+  Exclude:
+    - "**/*_spec.rb"
+    - "Taps/*/*/*.rb"
+    - "/**/{Formula,Casks}/*.rb"
+    - "**/{Formula,Casks}/*.rb"
 
 # Use `<<~` for heredocs.
 Layout/HeredocIndentation:
