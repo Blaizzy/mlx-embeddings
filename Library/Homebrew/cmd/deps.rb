@@ -88,9 +88,10 @@ module Homebrew
       dependents = if args.named.present?
         sorted_dependents(args.named.to_formulae_and_casks)
       elsif args.installed?
-        if args.formula? && !args.cask?
+        case args.only_formula_or_cask
+        when :formula
           sorted_dependents(Formula.installed)
-        elsif args.cask? && !args.formula?
+        when :cask
           sorted_dependents(Cask::Caskroom.casks(config: Cask::Config.from_args(args)))
         else
           sorted_dependents(Formula.installed + Cask::Caskroom.casks(config: Cask::Config.from_args(args)))
@@ -112,9 +113,10 @@ module Homebrew
     if args.no_named?
       raise FormulaUnspecifiedError unless args.installed?
 
-      sorted_dependents_formulae_and_casks = if args.formula? && !args.cask?
+      sorted_dependents_formulae_and_casks = case args.only_formula_or_cask
+      when :formula
         sorted_dependents(Formula.installed)
-      elsif args.cask? && !args.formula?
+      when :cask
         sorted_dependents(Cask::Caskroom.casks(config: Cask::Config.from_args(args)))
       else
         sorted_dependents(Formula.installed + Cask::Caskroom.casks(config: Cask::Config.from_args(args)))
