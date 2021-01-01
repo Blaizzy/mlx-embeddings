@@ -615,7 +615,7 @@ describe Version do
         .to be_detected_from("https://brew.sh/dada-v2017-04-17.tar.gz")
     end
 
-    specify "devel spec version style" do
+    specify "unstable version style" do
       expect(described_class.create("1.3.0-beta.1"))
         .to be_detected_from("https://registry.npmjs.org/@angular/cli/-/cli-1.3.0-beta.1.tgz")
       expect(described_class.create("2.074.0-beta1"))

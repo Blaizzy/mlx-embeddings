@@ -4,9 +4,6 @@ module Homebrew
   module CLI
     class Args < OpenStruct
       sig { returns(T.nilable(T::Boolean)) }
-      def devel?; end
-
-      sig { returns(T.nilable(T::Boolean)) }
       def HEAD?; end
 
       sig { returns(T.nilable(T::Boolean)) }

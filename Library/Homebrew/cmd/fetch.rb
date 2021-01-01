@@ -24,8 +24,6 @@ module Homebrew
       EOS
       switch "--HEAD",
              description: "Fetch HEAD version instead of stable version."
-      switch "--devel",
-             description: "Fetch development version instead of stable version."
       switch "-f", "--force",
              description: "Remove a previously cached version and re-fetch."
       switch "-v", "--verbose",
@@ -53,10 +51,8 @@ module Homebrew
              description: "Treat all named arguments as casks."
       conflicts "--formula", "--cask"
 
-      conflicts "--devel", "--HEAD"
       conflicts "--build-from-source", "--build-bottle", "--force-bottle"
       conflicts "--cask", "--HEAD"
-      conflicts "--cask", "--devel"
       conflicts "--cask", "--deps"
       conflicts "--cask", "-s"
       conflicts "--cask", "--build-bottle"

@@ -248,11 +248,10 @@ _brew_bottle() {
       '--write'
 }
 
-# brew bump-formula-pr [--devel] [--dry-run] [--audit|--strict] --url=url --sha256=sha-256 formula
-# brew bump-formula-pr [--devel] [--dry-run] [--audit|--strict] --tag=tag --revision=revision formula
+# brew bump-formula-pr [--dry-run] [--audit|--strict] --url=url --sha256=sha-256 formula
+# brew bump-formula-pr [--dry-run] [--audit|--strict] --tag=tag --revision=revision formula
 _brew_bump_formula_pr() {
   _arguments \
-      '--devel[bump the development rather than stable version]' \
       '--dry-run[print what would be done rather than doing it]' \
       '(--strict)--audit[run brew audit before opening the PR]' \
       '(--audit)--strict[run brew audit --strict before opening the PR]' \
@@ -385,15 +384,14 @@ _brew_edit() {
     '*:: :__brew_formulae_or_ruby_files'
 }
 
-# brew fetch [--force] [--retry] [-v] [--devel|--HEAD] [--deps]
+# brew fetch [--force] [--retry] [-v] [--HEAD] [--deps]
 #   [--build-from-source|--build-bottle|--force-bottle] formulae
 _brew_fetch() {
   _arguments \
     '(--force -f)'{--force,-f}'[remove previously cached version and re-fetch]' \
     '--retry[retry if a download fails or re-download if the checksum of a previously cached version no longer matches]' \
     '(--verbose -v)'{--verbose,-v}'[verbose VCS checkout]' \
-    '(--HEAD)--devel[fetch devel version instead of stable]' \
-    '(--devel)--HEAD[fetch HEAD version instead of stable]' \
+    '--HEAD[fetch HEAD version instead of stable]' \
     '--deps[also download dependencies for any listed formulae]' \
     '(--build-from-source -s --force-bottle --build-bottle)'{--build-from-source,-s}'[download the source rather than a bottle]' \
     '(--build-from-source -s --force-bottle)--build-bottle[download the source (for eventual bottling) rather than a bottle]' \
@@ -444,7 +442,7 @@ _brew_info() {
 # brew install [--debug] [--env=std|super]
 #   [--ignore-dependencies|--only-dependencies] [--include-test]
 #   [--cc=compiler] [--build-from-source|--build-bottle|--force-fottle]
-#   [--devel|--HEAD] [--fetch-HEAD] [--bottle-arch=architecture] [--keep-tmp] formulae
+#   [--HEAD] [--fetch-HEAD] [--bottle-arch=architecture] [--keep-tmp] formulae
 # brew install --interactive [--git] formula
 _brew_install() {
   local state
@@ -459,7 +457,7 @@ _brew_install() {
       '(--build-from-source -s --force-bottle)--build-bottle[prepare the formula for eventual bottling during installation, skipping any post-install steps]' \
       '(--build-from-source -s --build-bottle)--force-bottle[install from a bottle if it exists for the current version of OS X, even if it would not normally be used for installation]' \
       '--include-test[install testing dependencies]' \
-      '(--devel --HEAD)'{--devel,--HEAD}'[install the development / HEAD version]' \
+      '--HEAD[install the HEAD version]' \
       '--fetch-HEAD[fetch the upstream repository to detect if the HEAD installation of the formula is outdated]' \
       '--bottle-arch=-[optimise bottles for the specified architecture]:architecture: ' \
       '--keep-tmp[don''t delete temporary files created during installation]' \
@@ -723,10 +721,10 @@ _brew_tap_readme() {
     ':name: '
 }
 
-# brew test [--devel|--HEAD] [--debug] [--keep-tmp] formulae:
+# brew test [--HEAD] [--debug] [--keep-tmp] formulae:
 _brew_test() {
   _arguments \
-    '(--devel --HEAD)'{--devel,--HEAD}'[use the development / head version of the formula]' \
+    '--HEAD[use the head version of the formula]' \
     '--debug[launch an interactive debugger if test fails]' \
     '--keep-tmp[don''t delete temporary files]' \
     '*:formula:__brew_formulae_or_ruby_files'
@@ -838,7 +836,7 @@ _brew_upgrade() {
     '--cc=-[attempt to compile using compiler]:compiler: ' \
     '(--build-from-source -s --force-bottle)'{--build-from-source,-s}'[compile the specified formula from source even if a bottle is provided]' \
     '(--build-from-source -s)--force-bottle[install from a bottle if it exists for the current version of OS X, even if it would not normally be used for installation]' \
-    '(--devel --HEAD)'{--devel,--HEAD}'[install the development / HEAD version]' \
+    '--HEAD[install the HEAD version]' \
     '--keep-tmp[don''t delete temporary files created during installation]' \
     '--display-times[display installation times at end of run]' \
     '*: : __brew_outdated_formulae' \
@@ -850,7 +848,7 @@ _brew_upgrade() {
 }
 
 # brew uses [--installed] [--recursive] [--include-build] [--include-optional]
-#   [--skip-recommended] [--devel|--HEAD] formulae:
+#   [--skip-recommended] [--HEAD] formulae:
 _brew_uses() {
   _arguments \
     '--installed[only list installed formulae]' \
@@ -858,7 +856,7 @@ _brew_uses() {
     '--include-build[include the :build type dependencies]' \
     '--include-optional[include the :optional dependencies]' \
     '--skip-recommended[skip :recommended type dependencies]' \
-    '(--devel --HEAD)'{--devel,--HEAD}'[find cases where formula is used by development / HEAD build]' \
+    '--HEAD[find cases where formula is used by HEAD build]' \
     '*:formula:__brew_formulae'
 }
 
