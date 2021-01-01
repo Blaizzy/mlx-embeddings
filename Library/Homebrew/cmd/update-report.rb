@@ -96,7 +96,7 @@ module Homebrew
       end
 
       new_tag = Utils.popen_read(
-        "git", "-C", HOMEBREW_REPOSITORY, "tag", "--list", "--sort=-version:refname"
+        "git", "-C", HOMEBREW_REPOSITORY, "tag", "--list", "--sort=-version:refname", "*.*"
       ).lines.first.chomp
 
       if new_tag != old_tag
