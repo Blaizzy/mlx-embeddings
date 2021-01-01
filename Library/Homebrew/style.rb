@@ -162,12 +162,13 @@ module Homebrew
     end
 
     def run_shellcheck(files, output_type)
-      shellcheck   = which("shellcheck")
+      shellcheck   = Formula["shellcheck"].opt_bin/"shellcheck" if Formula["shellcheck"].any_version_installed?
+      shellcheck ||= which("shellcheck")
       shellcheck ||= which("shellcheck", ENV["HOMEBREW_PATH"])
       shellcheck ||= begin
         ohai "Installing `shellcheck` for shell style checks..."
         safe_system HOMEBREW_BREW_FILE, "install", "shellcheck"
-        which("shellcheck") || which("shellcheck", ENV["HOMEBREW_PATH"])
+        Formula["shellcheck"].opt_bin/"shellcheck"
       end
 
       if files.empty?
