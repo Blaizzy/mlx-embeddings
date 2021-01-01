@@ -173,6 +173,66 @@ describe Homebrew do
       "d9cc50eec8ac243148a121049c236cba06af4a0b1156ab397d0a2850aa79c137",
     )
   end
+
+  describe "#merge_bottle_spec" do
+    it "allows new bottle hash to be empty" do
+      valid_keys = [:root_url, :prefix, :cellar, :rebuild, :sha256]
+      old_spec = BottleSpecification.new
+      old_spec.sha256("f59bc65c91e4e698f6f050e1efea0040f57372d4dcf0996cbb8f97ced320403b" => :big_sur)
+      expect { homebrew.merge_bottle_spec(valid_keys, old_spec, {}) }.not_to raise_error
+    end
+
+    it "checks for conflicting root URL" do
+      old_spec = BottleSpecification.new
+      old_spec.root_url("https://failbrew.bintray.com/bottles")
+      new_hash = { "root_url" => "https://testbrew.bintray.com/bottles" }
+      expect(homebrew.merge_bottle_spec([:root_url], old_spec, new_hash)).to eq [
+        ['root_url: old: "https://failbrew.bintray.com/bottles", new: "https://testbrew.bintray.com/bottles"'],
+        [],
+      ]
+    end
+
+    it "checks for conflicting prefix" do
+      old_spec = BottleSpecification.new
+      old_spec.prefix("/opt/failbrew")
+      new_hash = { "prefix" => "/opt/testbrew" }
+      expect(homebrew.merge_bottle_spec([:prefix], old_spec, new_hash)).to eq [
+        ['prefix: old: "/opt/failbrew", new: "/opt/testbrew"'],
+        [],
+      ]
+    end
+
+    it "checks for conflicting cellar" do
+      old_spec = BottleSpecification.new
+      old_spec.cellar("/opt/failbrew/Cellar")
+      new_hash = { "cellar" => "/opt/testbrew/Cellar" }
+      expect(homebrew.merge_bottle_spec([:cellar], old_spec, new_hash)).to eq [
+        ['cellar: old: "/opt/failbrew/Cellar", new: "/opt/testbrew/Cellar"'],
+        [],
+      ]
+    end
+
+    it "checks for conflicting rebuild number" do
+      old_spec = BottleSpecification.new
+      old_spec.rebuild(1)
+      new_hash = { "rebuild" => 2 }
+      expect(homebrew.merge_bottle_spec([:rebuild], old_spec, new_hash)).to eq [
+        ['rebuild: old: "1", new: "2"'],
+        [],
+      ]
+    end
+
+    it "checks for conflicting checksums" do
+      old_spec = BottleSpecification.new
+      old_spec.sha256("109c0cb581a7b5d84da36d84b221fb9dd0f8a927b3044d82611791c9907e202e" => :catalina)
+      old_spec.sha256("7571772bf7a0c9fe193e70e521318b53993bee6f351976c9b6e01e00d13d6c3f" => :mojave)
+      new_hash = { "tags" => { "catalina" => "ec6d7f08412468f28dee2be17ad8cd8b883b16b34329efcecce019b8c9736428" } }
+      expect(homebrew.merge_bottle_spec([:sha256], old_spec, new_hash)).to eq [
+        ["sha256 => catalina"],
+        [{ "7571772bf7a0c9fe193e70e521318b53993bee6f351976c9b6e01e00d13d6c3f" => :mojave }],
+      ]
+    end
+  end
 end
 
 describe "brew bottle --merge", :integration_test, :needs_linux do
