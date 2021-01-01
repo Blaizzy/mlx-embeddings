@@ -489,36 +489,21 @@ module Homebrew
         bottle.sha256 tag_hash["sha256"] => tag.to_sym
       end
 
-      output = bottle_output bottle
-
       if args.write?
         path = Pathname.new((HOMEBREW_REPOSITORY/bottle_hash["formula"]["path"]).to_s)
-        update_or_add = T.let(nil, T.nilable(String))
+        checksums = old_checksums(path, bottle_hash, args: args)
+        update_or_add = checksums.nil? ? "add" : "update"
+
+        checksums&.each(&bottle.method(:sha256))
+        output = bottle_output(bottle)
+        puts output
 
         Utils::Inreplace.inreplace(path) do |s|
           formula_contents = s.inreplace_string
-          bottle_node = Utils::AST.bottle_block(formula_contents)
-          if bottle_node.present?
-            update_or_add = "update"
-            if args.keep_old?
-              old_keys = Utils::AST.body_children(bottle_node.body).map(&:method_name)
-              old_bottle_spec = Formulary.factory(path).bottle_specification
-              mismatches, checksums = merge_bottle_spec(old_keys, old_bottle_spec, bottle_hash["bottle"])
-              if mismatches.present?
-                odie <<~EOS
-                  --keep-old was passed but there are changes in:
-                  #{mismatches.join("\n")}
-                EOS
-              end
-              checksums.each { |cksum| bottle.sha256(cksum) }
-              output = bottle_output bottle
-            end
-            puts output
+          case update_or_add
+          when "update"
             Utils::AST.replace_bottle_stanza!(formula_contents, output)
-          else
-            odie "--keep-old was passed but there was no existing bottle block!" if args.keep_old?
-            puts output
-            update_or_add = "add"
+          when "add"
             Utils::AST.add_bottle_stanza!(formula_contents, output)
           end
         end
@@ -537,7 +522,7 @@ module Homebrew
           end
         end
       else
-        puts output
+        puts bottle_output(bottle)
       end
     end
   end
@@ -564,7 +549,7 @@ module Homebrew
       mismatches << "#{key}: old: #{old_value.inspect}, new: #{new_value.inspect}"
     end
 
-    return [mismatches, checksums] unless old_keys.include? :sha256
+    return [mismatches, checksums] if old_keys.exclude? :sha256
 
     old_bottle_spec.collector.each_key do |tag|
       old_value = old_bottle_spec.collector[tag].hexdigest
@@ -577,5 +562,25 @@ module Homebrew
     end
 
     [mismatches, checksums]
+  end
+
+  def old_checksums(formula_path, bottle_hash, args:)
+    bottle_node = Utils::AST.bottle_block(formula_path.read)
+    if bottle_node.nil?
+      odie "--keep-old was passed but there was no existing bottle block!" if args.keep_old?
+      return
+    end
+    return [] unless args.keep_old?
+
+    old_keys = Utils::AST.body_children(bottle_node.body).map(&:method_name)
+    old_bottle_spec = Formulary.factory(formula_path).bottle_specification
+    mismatches, checksums = merge_bottle_spec(old_keys, old_bottle_spec, bottle_hash["bottle"])
+    if mismatches.present?
+      odie <<~EOS
+        --keep-old was passed but there are changes in:
+        #{mismatches.join("\n")}
+      EOS
+    end
+    checksums
   end
 end
