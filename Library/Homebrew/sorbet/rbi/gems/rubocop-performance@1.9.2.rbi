@@ -630,14 +630,12 @@ class RuboCop::Cop::Performance::ReverseEach < ::RuboCop::Cop::Base
 
   private
 
-  def replacement_range(node); end
+  def offense_range(node); end
 end
 
 RuboCop::Cop::Performance::ReverseEach::MSG = T.let(T.unsafe(nil), String)
 
 RuboCop::Cop::Performance::ReverseEach::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
-
-RuboCop::Cop::Performance::ReverseEach::UNDERSCORE = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Performance::ReverseFirst < ::RuboCop::Cop::Base
   include(::RuboCop::Cop::RangeHelp)
