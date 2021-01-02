@@ -225,6 +225,22 @@ describe Homebrew::Livecheck do
       end
     end
 
+    context "a formula with a Google Code Archive stable URL" do
+      let(:f_google_code_archive) do
+        formula("test_google_code_archive") do
+          desc "Google Code Archive test formula"
+          homepage "https://brew.sh"
+          url "https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/brew/brew-1.0.0.tar.gz"
+        end
+      end
+
+      it "skips" do
+        expect { livecheck.skip_conditions(f_google_code_archive) }
+          .to output("test_google_code_archive : skipped - Stable URL is from Google Code Archive\n").to_stdout
+          .and not_to_output.to_stderr
+      end
+    end
+
     context "a formula with a `livecheck` block containing `skip`" do
       let(:f_skip) do
         formula("test_skip") do

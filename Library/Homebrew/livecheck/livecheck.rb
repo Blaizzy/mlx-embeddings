@@ -354,12 +354,19 @@ module Homebrew
         return
       end
 
-      is_gist = formula&.stable&.url&.include?("gist.github.com")
-      if formula_or_cask.livecheck.skip? || is_gist
+      stable_from_google_code_archive = formula&.stable&.url&.match?(
+        %r{https?://storage\.googleapis\.com/google-code-archive-downloads/}i,
+      )
+      stable_is_gist = formula&.stable&.url&.match?(%r{https?://gist\.github(?:usercontent)?\.com/}i)
+      if formula_or_cask.livecheck.skip? ||
+         ((stable_from_google_code_archive ||
+         stable_is_gist) && !formula&.livecheckable?)
         skip_message = if formula_or_cask.livecheck.skip_msg.is_a?(String) &&
                           formula_or_cask.livecheck.skip_msg.present?
           formula_or_cask.livecheck.skip_msg.to_s.presence
-        elsif is_gist
+        elsif stable_from_google_code_archive
+          "Stable URL is from Google Code Archive"
+        elsif stable_is_gist
           "Stable URL is a GitHub Gist"
         end
 
