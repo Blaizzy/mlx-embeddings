@@ -38,106 +38,6 @@ describe Homebrew::Livecheck do
     RUBY
   end
 
-  let(:f_deprecated) do
-    formula("test_deprecated") do
-      desc "Deprecated test formula"
-      homepage "https://brew.sh"
-      url "https://brew.sh/test-0.0.1.tgz"
-      deprecate! date: "2020-06-25", because: :unmaintained
-    end
-  end
-
-  let(:c_discontinued) do
-    Cask::CaskLoader.load(+<<-RUBY)
-      cask "test_discontinued" do
-        version "0.0.1"
-        sha256 :no_check
-
-        url "https://brew.sh/test-0.0.1.tgz"
-        name "Test Discontinued"
-        desc "Discontinued test cask"
-        homepage "https://brew.sh"
-
-        caveats do
-          discontinued
-        end
-      end
-    RUBY
-  end
-
-  let(:f_disabled) do
-    formula("test_disabled") do
-      desc "Disabled test formula"
-      homepage "https://brew.sh"
-      url "https://brew.sh/test-0.0.1.tgz"
-      disable! date: "2020-06-25", because: :unmaintained
-    end
-  end
-
-  let(:f_versioned) do
-    formula("test@0.0.1") do
-      desc "Versioned test formula"
-      homepage "https://brew.sh"
-      url "https://brew.sh/test-0.0.1.tgz"
-    end
-  end
-
-  let(:c_latest) do
-    Cask::CaskLoader.load(+<<-RUBY)
-      cask "test_latest" do
-        version :latest
-        sha256 :no_check
-
-        url "https://brew.sh/test-0.0.1.tgz"
-        name "Test Latest"
-        desc "Latest test cask"
-        homepage "https://brew.sh"
-      end
-    RUBY
-  end
-
-  # `URL#unversioned?` doesn't work properly when using the
-  # `Cask::CaskLoader.load` setup above, so we use `Cask::Cask.new` instead.
-  let(:c_unversioned) do
-    Cask::Cask.new "test_unversioned" do
-      version "1.2.3"
-      sha256 :no_check
-
-      url "https://brew.sh/test.tgz"
-      name "Test Unversioned"
-      desc "Unversioned test cask"
-      homepage "https://brew.sh"
-    end
-  end
-
-  let(:f_head_only) do
-    formula("test_head_only") do
-      desc "HEAD-only test formula"
-      homepage "https://brew.sh"
-      head "https://github.com/Homebrew/brew.git"
-    end
-  end
-
-  let(:f_gist) do
-    formula("test_gist") do
-      desc "Gist test formula"
-      homepage "https://brew.sh"
-      url "https://gist.github.com/Homebrew/0000000000"
-    end
-  end
-
-  let(:f_skip) do
-    formula("test_skip") do
-      desc "Skipped test formula"
-      homepage "https://brew.sh"
-      url "https://brew.sh/test-0.0.1.tgz"
-
-      livecheck do
-        skip "Not maintained"
-      end
-    end
-  end
-
   describe "::formula_name" do
     it "returns the name of the formula" do
       expect(livecheck.formula_name(f)).to eq("test")
@@ -173,58 +73,176 @@ describe Homebrew::Livecheck do
   end
 
   describe "::skip_conditions" do
-    it "skips a deprecated formula without a livecheckable" do
-      expect { livecheck.skip_conditions(f_deprecated) }
-        .to output("test_deprecated : deprecated\n").to_stdout
-        .and not_to_output.to_stderr
+    context "a deprecated formula without a livecheckable" do
+      let(:f_deprecated) do
+        formula("test_deprecated") do
+          desc "Deprecated test formula"
+          homepage "https://brew.sh"
+          url "https://brew.sh/test-0.0.1.tgz"
+          deprecate! date: "2020-06-25", because: :unmaintained
+        end
+      end
+
+      it "skips" do
+        expect { livecheck.skip_conditions(f_deprecated) }
+          .to output("test_deprecated : deprecated\n").to_stdout
+          .and not_to_output.to_stderr
+      end
     end
 
-    it "skips a discontinued cask without a livecheckable" do
-      expect { livecheck.skip_conditions(c_discontinued) }
-        .to output("test_discontinued : discontinued\n").to_stdout
-        .and not_to_output.to_stderr
+    context "a discontinued cask without a livecheckable" do
+      let(:c_discontinued) do
+        Cask::CaskLoader.load(+<<-RUBY)
+          cask "test_discontinued" do
+            version "0.0.1"
+            sha256 :no_check
+
+            url "https://brew.sh/test-0.0.1.tgz"
+            name "Test Discontinued"
+            desc "Discontinued test cask"
+            homepage "https://brew.sh"
+
+            caveats do
+              discontinued
+            end
+          end
+        RUBY
+      end
+
+      it "skips" do
+        expect { livecheck.skip_conditions(c_discontinued) }
+          .to output("test_discontinued : discontinued\n").to_stdout
+          .and not_to_output.to_stderr
+      end
     end
 
-    it "skips a disabled formula without a livecheckable" do
-      expect { livecheck.skip_conditions(f_disabled) }
-        .to output("test_disabled : disabled\n").to_stdout
-        .and not_to_output.to_stderr
+    context "a disabled formula without a livecheckable" do
+      let(:f_disabled) do
+        formula("test_disabled") do
+          desc "Disabled test formula"
+          homepage "https://brew.sh"
+          url "https://brew.sh/test-0.0.1.tgz"
+          disable! date: "2020-06-25", because: :unmaintained
+        end
+      end
+
+      it "skips" do
+        expect { livecheck.skip_conditions(f_disabled) }
+          .to output("test_disabled : disabled\n").to_stdout
+          .and not_to_output.to_stderr
+      end
     end
 
-    it "skips a versioned formula without a livecheckable" do
-      expect { livecheck.skip_conditions(f_versioned) }
-        .to output("test@0.0.1 : versioned\n").to_stdout
-        .and not_to_output.to_stderr
+    context "a versioned formula without a livecheckable" do
+      let(:f_versioned) do
+        formula("test@0.0.1") do
+          desc "Versioned test formula"
+          homepage "https://brew.sh"
+          url "https://brew.sh/test-0.0.1.tgz"
+        end
+      end
+
+      it "skips" do
+        expect { livecheck.skip_conditions(f_versioned) }
+          .to output("test@0.0.1 : versioned\n").to_stdout
+          .and not_to_output.to_stderr
+      end
     end
 
-    it "skips a cask containing `version :latest` without a livecheckable" do
-      expect { livecheck.skip_conditions(c_latest) }
-        .to output("test_latest : latest\n").to_stdout
-        .and not_to_output.to_stderr
+    context "a cask containing `version :latest` without a livecheckable" do
+      let(:c_latest) do
+        Cask::CaskLoader.load(+<<-RUBY)
+          cask "test_latest" do
+            version :latest
+            sha256 :no_check
+
+            url "https://brew.sh/test-0.0.1.tgz"
+            name "Test Latest"
+            desc "Latest test cask"
+            homepage "https://brew.sh"
+          end
+        RUBY
+      end
+
+      it "skips" do
+        expect { livecheck.skip_conditions(c_latest) }
+          .to output("test_latest : latest\n").to_stdout
+          .and not_to_output.to_stderr
+      end
     end
 
-    it "skips a cask containing an unversioned URL without a livecheckable" do
-      expect { livecheck.skip_conditions(c_unversioned) }
-        .to output("test_unversioned : unversioned\n").to_stdout
-        .and not_to_output.to_stderr
+    context "a cask containing an unversioned URL without a livecheckable" do
+      # `URL#unversioned?` doesn't work properly when using the
+      # `Cask::CaskLoader.load` setup above, so we use `Cask::Cask.new` instead.
+      let(:c_unversioned) do
+        Cask::Cask.new "test_unversioned" do
+          version "1.2.3"
+          sha256 :no_check
+
+          url "https://brew.sh/test.tgz"
+          name "Test Unversioned"
+          desc "Unversioned test cask"
+          homepage "https://brew.sh"
+        end
+      end
+
+      it "skips" do
+        expect { livecheck.skip_conditions(c_unversioned) }
+          .to output("test_unversioned : unversioned\n").to_stdout
+          .and not_to_output.to_stderr
+      end
     end
 
-    it "skips a HEAD-only formula if not installed" do
-      expect { livecheck.skip_conditions(f_head_only) }
-        .to output("test_head_only : HEAD only formula must be installed to be livecheckable\n").to_stdout
-        .and not_to_output.to_stderr
+    context "a HEAD-only formula that is not installed" do
+      let(:f_head_only) do
+        formula("test_head_only") do
+          desc "HEAD-only test formula"
+          homepage "https://brew.sh"
+          head "https://github.com/Homebrew/brew.git"
+        end
+      end
+
+      it "skips " do
+        expect { livecheck.skip_conditions(f_head_only) }
+          .to output("test_head_only : HEAD only formula must be installed to be livecheckable\n").to_stdout
+          .and not_to_output.to_stderr
+      end
     end
 
-    it "skips a formula with a GitHub Gist stable URL" do
-      expect { livecheck.skip_conditions(f_gist) }
-        .to output("test_gist : skipped - Stable URL is a GitHub Gist\n").to_stdout
-        .and not_to_output.to_stderr
+    context "a formula with a GitHub Gist stable URL" do
+      let(:f_gist) do
+        formula("test_gist") do
+          desc "Gist test formula"
+          homepage "https://brew.sh"
+          url "https://gist.github.com/Homebrew/0000000000"
+        end
+      end
+
+      it "skips" do
+        expect { livecheck.skip_conditions(f_gist) }
+          .to output("test_gist : skipped - Stable URL is a GitHub Gist\n").to_stdout
+          .and not_to_output.to_stderr
+      end
     end
 
-    it "skips a formula with a skip livecheckable" do
-      expect { livecheck.skip_conditions(f_skip) }
-        .to output("test_skip : skipped - Not maintained\n").to_stdout
-        .and not_to_output.to_stderr
+    context "a formula with a `livecheck` block containing `skip`" do
+      let(:f_skip) do
+        formula("test_skip") do
+          desc "Skipped test formula"
+          homepage "https://brew.sh"
+          url "https://brew.sh/test-0.0.1.tgz"
+
+          livecheck do
+            skip "Not maintained"
+          end
+        end
+      end
+
+      it "skips" do
+        expect { livecheck.skip_conditions(f_skip) }
+          .to output("test_skip : skipped - Not maintained\n").to_stdout
+          .and not_to_output.to_stderr
+      end
     end
 
     it "returns false for a non-skippable formula" do
