@@ -414,7 +414,7 @@ Three commands are provided for displaying informational messages to the user:
 In particular, when a test needs to be performed before installation use `odie` to bail out gracefully. For example:
 
 ```ruby
-if build.with?("qt") && build.with("qt5")
+if build.with?("qt") && build.with?("qt5")
   odie "Options --with-qt and --with-qt5 are mutually exclusive."
 end
 system "make", "install"
