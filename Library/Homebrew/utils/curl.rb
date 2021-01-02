@@ -154,12 +154,25 @@ module Utils
     def curl_check_http_content(url, user_agents: [:default], check_content: false, strict: false)
       return unless url.start_with? "http"
 
+      secure_url = url.sub(/\Ahttp:/, "https:")
+      secure_details = nil
+      hash_needed = false
+      if url != secure_url
+        user_agents.each do |user_agent|
+          secure_details =
+            curl_http_content_headers_and_checksum(secure_url, hash_needed: true, user_agent: user_agent)
+
+          next unless http_status_ok?(secure_details[:status])
+
+          hash_needed = true
+          user_agents = [user_agent]
+          break
+        end
+      end
+
       details = nil
-      user_agent = nil
-      hash_needed = url.start_with?("http:")
-      user_agents.each do |ua|
-        details = curl_http_content_headers_and_checksum(url, hash_needed: hash_needed, user_agent: ua)
-        user_agent = ua
+      user_agents.each do |user_agent|
+        details = curl_http_content_headers_and_checksum(url, hash_needed: hash_needed, user_agent: user_agent)
         break if http_status_ok?(details[:status])
       end
 
@@ -181,16 +194,9 @@ module Utils
         return "The URL #{url} redirects back to HTTP"
       end
 
-      return unless hash_needed
+      return unless secure_details
 
-      secure_url = url.sub "http", "https"
-      secure_details =
-        curl_http_content_headers_and_checksum(secure_url, hash_needed: true, user_agent: user_agent)
-
-      if !http_status_ok?(details[:status]) ||
-         !http_status_ok?(secure_details[:status])
-        return
-      end
+      return if !http_status_ok?(details[:status]) || !http_status_ok?(secure_details[:status])
 
       etag_match = details[:etag] &&
                    details[:etag] == secure_details[:etag]
@@ -208,13 +214,12 @@ module Utils
       return unless check_content
 
       no_protocol_file_contents = %r{https?:\\?/\\?/}
-      details[:file] = details[:file].gsub(no_protocol_file_contents, "/")
-      secure_details[:file] = secure_details[:file].gsub(no_protocol_file_contents, "/")
+      http_content = details[:file]&.gsub(no_protocol_file_contents, "/")
+      https_content = secure_details[:file]&.gsub(no_protocol_file_contents, "/")
 
       # Check for the same content after removing all protocols
-      if (details[:file] == secure_details[:file]) &&
-         secure_details[:final_url].start_with?("https://") &&
-         url.start_with?("http://")
+      if (http_content && https_content) && (http_content == https_content) &&
+         url.start_with?("http://") && secure_details[:final_url].start_with?("https://")
         return "The URL #{url} should use HTTPS rather than HTTP"
       end
 
@@ -222,11 +227,11 @@ module Utils
 
       # Same size, different content after normalization
       # (typical causes: Generated ID, Timestamp, Unix time)
-      if details[:file].length == secure_details[:file].length
+      if http_content.length == https_content.length
         return "The URL #{url} may be able to use HTTPS rather than HTTP. Please verify it in a browser."
       end
 
-      lenratio = (100 * secure_details[:file].length / details[:file].length).to_i
+      lenratio = (100 * https_content.length / http_content.length).to_i
       return unless (90..110).cover?(lenratio)
 
       "The URL #{url} may be able to use HTTPS rather than HTTP. Please verify it in a browser."
@@ -236,9 +241,9 @@ module Utils
       file = Tempfile.new.tap(&:close)
 
       max_time = hash_needed ? "600" : "25"
-      output, = curl_output(
+      output, _, status = curl_output(
         "--dump-header", "-", "--output", file.path, "--location",
-        "--connect-timeout", "15", "--max-time", max_time, url,
+        "--connect-timeout", "15", "--max-time", max_time, "--retry-max-time", max_time, url,
         user_agent: user_agent
       )
 
@@ -250,7 +255,10 @@ module Utils
         final_url = location.chomp if location
       end
 
-      file_hash = Digest::SHA256.file(file.path) if hash_needed
+      if status.success?
+        file_contents = File.read(file.path)
+        file_hash = Digest::SHA2.hexdigest(file_contents) if hash_needed
+      end
 
       final_url ||= url
 
@@ -262,7 +270,7 @@ module Utils
         content_length: headers[/Content-Length: (\d+)/, 1],
         headers:        headers,
         file_hash:      file_hash,
-        file:           File.read(file.path),
+        file:           file_contents,
       }
     ensure
       file.unlink
