@@ -249,6 +249,11 @@ class Cmd
     elsif path.start_with?("/opt/local", "/opt/boxen/homebrew", "/opt/X11", "/sw", "/usr/X11")
       # ignore MacPorts, Boxen's Homebrew, X11, fink
       false
+    elsif prefix != "/usr/local" && path.start_with?("/usr/local")
+      # ignore things in /usr/local if Homebrew is in another prefix;
+      # on macOS, this probably means that the user is on ARM and has an Intel
+      # Homebrew in /usr/local
+      false
     elsif mac?
       true
     else
