@@ -241,6 +241,22 @@ describe Homebrew::Livecheck do
       end
     end
 
+    context "a formula with an Internet Archive stable URL" do
+      let(:f_internet_archive) do
+        formula("test_internet_archive") do
+          desc "Internet Archive test formula"
+          homepage "https://brew.sh"
+          url "https://web.archive.org/web/20200101000000/https://brew.sh/test-0.0.1.tgz"
+        end
+      end
+
+      it "skips" do
+        expect { livecheck.skip_conditions(f_internet_archive) }
+          .to output("test_internet_archive : skipped - Stable URL is from Internet Archive\n").to_stdout
+          .and not_to_output.to_stderr
+      end
+    end
+
     context "a formula with a `livecheck` block containing `skip`" do
       let(:f_skip) do
         formula("test_skip") do
