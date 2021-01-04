@@ -135,8 +135,8 @@ module Homebrew
     formula = args.named.to_formulae.first
 
     new_url = args.url
-    formula ||= determine_formula_from_url(new_url) if new_url
-    raise FormulaUnspecifiedError unless formula
+    formula ||= determine_formula_from_url(new_url) if new_url.present?
+    raise FormulaUnspecifiedError if formula.blank?
 
     odie "This formula is disabled!" if formula.disabled?
 
@@ -144,7 +144,7 @@ module Homebrew
     check_open_pull_requests(formula, tap_full_name, args: args)
 
     new_version = args.version
-    check_closed_pull_requests(formula, tap_full_name, version: new_version, args: args) if new_version
+    check_closed_pull_requests(formula, tap_full_name, version: new_version, args: args) if new_version.present?
 
     opoo "This formula has patches that may be resolved upstream." if formula.patchlist.present?
     if formula.resources.any? { |resource| !resource.name.start_with?("homebrew-") }
@@ -153,20 +153,20 @@ module Homebrew
 
     requested_spec = :stable
     formula_spec = formula.stable
-    odie "#{formula}: no #{requested_spec} specification found!" unless formula_spec
+    odie "#{formula}: no #{requested_spec} specification found!" if formula_spec.blank?
 
     old_mirrors = formula_spec.mirrors
     new_mirrors ||= args.mirror
     new_mirror ||= determine_mirror(new_url)
-    new_mirrors ||= [new_mirror] unless new_mirror.nil?
+    new_mirrors ||= [new_mirror] if new_mirror.present?
 
-    check_for_mirrors(formula, old_mirrors, new_mirrors, args: args) if new_url
+    check_for_mirrors(formula, old_mirrors, new_mirrors, args: args) if new_url.present?
 
     hash_type, old_hash = if (checksum = formula_spec.checksum)
       [checksum.hash_type, checksum.hexdigest]
     end
 
-    new_hash = args[hash_type] if hash_type
+    new_hash = args[hash_type] if hash_type.present?
     new_tag = args.tag
     new_revision = args.revision
     old_url = formula_spec.url
@@ -174,18 +174,18 @@ module Homebrew
     old_formula_version = formula_version(formula, requested_spec)
     old_version = old_formula_version.to_s
     forced_version = new_version.present?
-    new_url_hash = if new_url && new_hash
-      check_closed_pull_requests(formula, tap_full_name, url: new_url, args: args) unless new_version
+    new_url_hash = if new_url.present? && new_hash.present?
+      check_closed_pull_requests(formula, tap_full_name, url: new_url, args: args) if new_version.blank?
       true
     elsif new_tag && new_revision
-      check_closed_pull_requests(formula, tap_full_name, url: old_url, tag: new_tag, args: args) unless new_version
+      check_closed_pull_requests(formula, tap_full_name, url: old_url, tag: new_tag, args: args) if new_version.blank?
       false
-    elsif !hash_type
-      if !new_tag && !new_version && !new_revision
+    elsif hash_type.blank?
+      if new_tag.blank? && new_version.blank? && new_revision.blank?
         raise UsageError, "#{formula}: no --tag= or --version= argument specified!"
       end
 
-      if old_tag
+      if old_tag.present?
         new_tag ||= old_tag.gsub(old_version, new_version)
         if new_tag == old_tag
           odie <<~EOS
@@ -193,21 +193,24 @@ module Homebrew
             and old tag are both #{new_tag}.
           EOS
         end
-        check_closed_pull_requests(formula, tap_full_name, url: old_url, tag: new_tag, args: args) unless new_version
+        if new_version.blank?
+          check_closed_pull_requests(formula, tap_full_name, url: old_url, tag: new_tag,
+args: args)
+        end
         resource_path, forced_version = fetch_resource(formula, new_version, old_url, tag: new_tag)
         new_revision = Utils.popen_read("git -C \"#{resource_path}\" rev-parse -q --verify HEAD")
         new_revision = new_revision.strip
-      else
-        odie "#{formula}: the current URL requires specifying a --revision= argument." unless new_revision
+      elsif new_revision.blank?
+        odie "#{formula}: the current URL requires specifying a --revision= argument."
       end
       false
-    elsif !new_url && !new_version
+    elsif new_url.blank? && new_version.blank?
       raise UsageError, "#{formula}: no --url= or --version= argument specified!"
     else
       new_url ||= PyPI.update_pypi_url(old_url, new_version)
-      unless new_url
+      if new_url.blank?
         new_url = old_url.gsub(old_version, new_version)
-        if !new_mirrors && !old_mirrors.empty?
+        if new_mirrors.blank? && old_mirrors.present?
           new_mirrors = old_mirrors.map do |old_mirror|
             old_mirror.gsub(old_version, new_version)
           end
@@ -220,7 +223,7 @@ module Homebrew
             #{new_url}
         EOS
       end
-      check_closed_pull_requests(formula, tap_full_name, url: new_url, args: args) unless new_version
+      check_closed_pull_requests(formula, tap_full_name, url: new_url, args: args) if new_version.blank?
       resource_path, forced_version = fetch_resource(formula, new_version, new_url)
       Utils::Tar.validate_file(resource_path)
       new_hash = resource_path.sha256
@@ -241,7 +244,7 @@ module Homebrew
       ]
     end
 
-    replacement_pairs += if new_url_hash
+    replacement_pairs += if new_url_hash.present?
       [
         [
           /#{Regexp.escape(formula_spec.url)}/,
@@ -252,7 +255,7 @@ module Homebrew
           new_hash,
         ],
       ]
-    elsif new_tag
+    elsif new_tag.present?
       [
         [
           formula_spec.specs[:tag],
@@ -263,7 +266,7 @@ module Homebrew
           new_revision,
         ],
       ]
-    elsif new_url
+    elsif new_url.present?
       [
         [
           /#{Regexp.escape(formula_spec.url)}/,
@@ -285,7 +288,7 @@ module Homebrew
 
     old_contents = File.read(formula.path) unless args.dry_run?
 
-    if new_mirrors
+    if new_mirrors.present?
       replacement_pairs << [
         /^( +)(url "#{Regexp.escape(new_url)}"\n)/m,
         "\\1\\2\\1mirror \"#{new_mirrors.join("\"\n\\1mirror \"")}\"\n",
@@ -309,17 +312,17 @@ module Homebrew
           old_formula_version.to_s,
           new_version,
         ]
-      elsif new_mirrors
+      elsif new_mirrors.present?
         [
           /^( +)(mirror "#{Regexp.escape(new_mirrors.last)}"\n)/m,
           "\\1\\2\\1version \"#{new_version}\"\n",
         ]
-      elsif new_url
+      elsif new_url.present?
         [
           /^( +)(url "#{Regexp.escape(new_url)}"\n)/m,
           "\\1\\2\\1version \"#{new_version}\"\n",
         ]
-      elsif new_revision
+      elsif new_revision.present?
         [
           /^( {2})( +)(:revision => "#{new_revision}"\n)/m,
           "\\1\\2\\3\\1version \"#{new_version}\"\n",
@@ -402,7 +405,7 @@ module Homebrew
     base_url = /#{Regexp.escape(base_url)}/
     guesses = []
     Formula.each do |f|
-      guesses << f if f.stable&.url && f.stable.url.match(base_url)
+      guesses << f if f.stable&.url&.match(base_url)
     end
     return guesses.shift if guesses.count == 1
     return if guesses.count <= 1
@@ -424,7 +427,7 @@ module Homebrew
   end
 
   def check_for_mirrors(formula, old_mirrors, new_mirrors, args:)
-    return if new_mirrors || old_mirrors.empty?
+    return if new_mirrors.present? || old_mirrors.empty?
 
     if args.force?
       opoo "#{formula}: Removing all mirrors because a --mirror= argument was not specified."
@@ -442,14 +445,14 @@ module Homebrew
     resource.owner = Resource.new(formula.name)
     forced_version = new_version && new_version != resource.version
     resource.version = new_version if forced_version
-    odie "No --version= argument specified!" unless resource.version
+    odie "No --version= argument specified!" if resource.version.blank?
     [resource.fetch, forced_version]
   end
 
   def formula_version(formula, spec, contents = nil)
     name = formula.name
     path = formula.path
-    if contents
+    if contents.present?
       Formulary.from_contents(name, path, contents, spec).version
     else
       Formulary::FormulaLoader.new(name, path).get_formula(spec).version
@@ -461,9 +464,9 @@ module Homebrew
   end
 
   def check_closed_pull_requests(formula, tap_full_name, args:, version: nil, url: nil, tag: nil)
-    unless version
+    if version.nil?
       specs = {}
-      specs[:tag] = tag if tag
+      specs[:tag] = tag if tag.present?
       version = Version.detect(url, **specs)
     end
     # if we haven't already found open requests, try for an exact match across closed requests
