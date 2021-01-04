@@ -848,7 +848,7 @@ _brew_upgrade() {
 }
 
 # brew uses [--installed] [--recursive] [--include-build] [--include-optional]
-#   [--skip-recommended] [--HEAD] formulae:
+#   [--skip-recommended] formulae:
 _brew_uses() {
   _arguments \
     '--installed[only list installed formulae]' \
@@ -856,7 +856,6 @@ _brew_uses() {
     '--include-build[include the :build type dependencies]' \
     '--include-optional[include the :optional dependencies]' \
     '--skip-recommended[skip :recommended type dependencies]' \
-    '--HEAD[find cases where formula is used by HEAD build]' \
     '*:formula:__brew_formulae'
 }
 

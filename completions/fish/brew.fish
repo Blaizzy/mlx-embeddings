@@ -592,7 +592,6 @@ __fish_brew_complete_arg 'uses' -l recursive -d "Resolve more than one level of 
 __fish_brew_complete_arg 'uses' -l include-build    -d "Include the :build type dependencies"
 __fish_brew_complete_arg 'uses' -l include-optional -d "Include the :optional type dependencies"
 __fish_brew_complete_arg 'uses' -l skip-recommended -d "Skip :recommended  type  dependencies"
-__fish_brew_complete_arg 'uses' -l HEAD             -d "Find cases HEAD builds using formulae"
 
 
 __fish_brew_complete_cmd '--cache' "Display Homebrew/formula's cache location"

@@ -603,7 +603,7 @@ _brew_uses() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--installed --recursive --include-build --include-test --include-optional --skip-recommended --HEAD"
+      __brewcomp "--installed --recursive --include-build --include-test --include-optional --skip-recommended"
       return
       ;;
   esac
