@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "livecheck/error"
@@ -45,6 +45,7 @@ module Homebrew
       rc
     ].freeze
 
+    sig { returns(T::Hash[Class, String]) }
     def livecheck_strategy_names
       return @livecheck_strategy_names if defined?(@livecheck_strategy_names)
 
@@ -59,7 +60,17 @@ module Homebrew
 
     # Executes the livecheck logic for each formula/cask in the
     # `formulae_and_casks_to_check` array and prints the results.
-    # @return [nil]
+    sig do
+      params(
+        formulae_and_casks_to_check: T::Enumerable[T.any(Formula, Cask::Cask)],
+        full_name:                   T::Boolean,
+        json:                        T::Boolean,
+        newer_only:                  T::Boolean,
+        debug:                       T::Boolean,
+        quiet:                       T::Boolean,
+        verbose:                     T::Boolean,
+      ).void
+    end
     def run_checks(
       formulae_and_casks_to_check,
       full_name: false, json: false, newer_only: false, debug: false, quiet: false, verbose: false
@@ -81,14 +92,10 @@ module Homebrew
         Dir["#{tap_strategy_path}/*.rb"].sort.each(&method(:require)) if Dir.exist?(tap_strategy_path)
       end
 
-      has_a_newer_upstream_version = false
+      has_a_newer_upstream_version = T.let(false, T::Boolean)
 
       if json && !quiet && $stderr.tty?
-        formulae_and_casks_total = if formulae_and_casks_to_check == Formula
-          formulae_and_casks_to_check.count
-        else
-          formulae_and_casks_to_check.length
-        end
+        formulae_and_casks_total = formulae_and_casks_to_check.count
 
         Tty.with($stderr) do |stderr|
           stderr.puts Formatter.headline("Running checks", color: :blue)
@@ -245,6 +252,15 @@ module Homebrew
       full_name ? formula.full_name : formula.name
     end
 
+    sig do
+      params(
+        formula_or_cask: T.any(Formula, Cask::Cask),
+        status_str:      String,
+        messages:        T.nilable(T::Array[String]),
+        full_name:       T::Boolean,
+        verbose:         T::Boolean,
+      ).returns(Hash)
+    end
     def status_hash(formula_or_cask, status_str, messages = nil, full_name: false, verbose: false)
       formula = formula_or_cask if formula_or_cask.is_a?(Formula)
       cask = formula_or_cask if formula_or_cask.is_a?(Cask::Cask)
@@ -268,50 +284,64 @@ module Homebrew
 
     # If a formula has to be skipped, it prints or returns a Hash contaning the reason
     # for doing so; returns false otherwise.
-    # @return [Hash, nil, Boolean]
+    sig do
+      params(
+        formula_or_cask: T.any(Formula, Cask::Cask),
+        json:            T::Boolean,
+        full_name:       T::Boolean,
+        quiet:           T::Boolean,
+        verbose:         T::Boolean,
+      ).returns(T.nilable(T.any(Hash, T::Boolean)))
+    end
     def skip_conditions(formula_or_cask, json: false, full_name: false, quiet: false, verbose: false)
-      formula = formula_or_cask if formula_or_cask.is_a?(Formula)
-      cask = formula_or_cask if formula_or_cask.is_a?(Cask::Cask)
+      case formula_or_cask
+      when Formula
+        formula = formula_or_cask
+        name = formula_name(formula, full_name: full_name)
+      when Cask::Cask
+        cask = formula_or_cask
+        name = cask_name(cask, full_name: full_name)
+      end
 
       if formula&.deprecated? && !formula.livecheckable?
         return status_hash(formula, "deprecated", full_name: full_name, verbose: verbose) if json
 
-        puts "#{Tty.red}#{formula_name(formula, full_name: full_name)}#{Tty.reset} : deprecated" unless quiet
+        puts "#{Tty.red}#{name}#{Tty.reset} : deprecated" unless quiet
         return
       end
 
       if cask&.discontinued? && !cask.livecheckable?
         return status_hash(cask, "discontinued", full_name: full_name, verbose: verbose) if json
 
-        puts "#{Tty.red}#{cask_name(cask, full_name: full_name)}#{Tty.reset} : discontinued" unless quiet
+        puts "#{Tty.red}#{name}#{Tty.reset} : discontinued" unless quiet
         return
       end
 
       if formula&.disabled? && !formula.livecheckable?
         return status_hash(formula, "disabled", full_name: full_name, verbose: verbose) if json
 
-        puts "#{Tty.red}#{formula_name(formula, full_name: full_name)}#{Tty.reset} : disabled" unless quiet
+        puts "#{Tty.red}#{name}#{Tty.reset} : disabled" unless quiet
         return
       end
 
       if formula&.versioned_formula? && !formula.livecheckable?
         return status_hash(formula, "versioned", full_name: full_name, verbose: verbose) if json
 
-        puts "#{Tty.red}#{formula_name(formula, full_name: full_name)}#{Tty.reset} : versioned" unless quiet
+        puts "#{Tty.red}#{name}#{Tty.reset} : versioned" unless quiet
         return
       end
 
-      if cask&.version&.latest? && !cask.livecheckable?
+      if cask.present? && cask.version&.latest? && !cask.livecheckable?
         return status_hash(cask, "latest", full_name: full_name, verbose: verbose) if json
 
-        puts "#{Tty.red}#{cask_name(cask, full_name: full_name)}#{Tty.reset} : latest" unless quiet
+        puts "#{Tty.red}#{name}#{Tty.reset} : latest" unless quiet
         return
       end
 
-      if cask&.url&.unversioned? && !cask.livecheckable?
+      if cask.present? && cask.url&.unversioned? && !cask.livecheckable?
         return status_hash(cask, "unversioned", full_name: full_name, verbose: verbose) if json
 
-        puts "#{Tty.red}#{cask_name(cask, full_name: full_name)}#{Tty.reset} : unversioned" unless quiet
+        puts "#{Tty.red}#{name}#{Tty.reset} : unversioned" unless quiet
         return
       end
 
@@ -319,7 +349,7 @@ module Homebrew
         head_only_msg = "HEAD only formula must be installed to be livecheckable"
         return status_hash(formula, "error", [head_only_msg], full_name: full_name, verbose: verbose) if json
 
-        puts "#{Tty.red}#{formula_name(formula, full_name: full_name)}#{Tty.reset} : #{head_only_msg}" unless quiet
+        puts "#{Tty.red}#{name}#{Tty.reset} : #{head_only_msg}" unless quiet
         return
       end
 
@@ -337,10 +367,7 @@ module Homebrew
           return status_hash(formula_or_cask, "skipped", skip_messages, full_name: full_name, verbose: verbose)
         end
 
-        unless quiet
-          puts "#{Tty.red}#{formula_or_cask_name(formula_or_cask, full_name: full_name)}#{Tty.reset} : skipped" \
-              "#{" - #{skip_message}" if skip_message}"
-        end
+        puts "#{Tty.red}#{name}#{Tty.reset} : skipped#{" - #{skip_message}" if skip_message}" unless quiet
         return
       end
 
@@ -348,7 +375,7 @@ module Homebrew
     end
 
     # Formats and prints the livecheck result for a formula.
-    # @return [nil]
+    sig { params(info: Hash, verbose: T::Boolean).void }
     def print_latest_version(info, verbose:)
       formula_or_cask_s = "#{Tty.blue}#{info[:formula] || info[:cask]}#{Tty.reset}"
       formula_or_cask_s += " (guessed)" if !info[:meta][:livecheckable] && verbose
@@ -369,7 +396,7 @@ module Homebrew
     end
 
     # Returns an Array containing the formula/cask URLs that can be used by livecheck.
-    # @return [Array]
+    sig { params(formula_or_cask: T.any(Formula, Cask::Cask)).returns(T::Array[String]) }
     def checkable_urls(formula_or_cask)
       urls = []
 
@@ -391,7 +418,7 @@ module Homebrew
     end
 
     # Preprocesses and returns the URL used by livecheck.
-    # @return [String]
+    sig { params(url: String).returns(String) }
     def preprocess_url(url)
       begin
         uri = URI.parse url
@@ -399,8 +426,12 @@ module Homebrew
         return url
       end
 
-      host = uri.host == "github.s3.amazonaws.com" ? "github.com" : uri.host
-      path = uri.path.delete_prefix("/").delete_suffix(".git")
+      host = uri.host
+      path = uri.path
+      return url if host.nil? || path.nil?
+
+      host = "github.com" if host == "github.s3.amazonaws.com"
+      path = path.delete_prefix("/").delete_suffix(".git")
       scheme = uri.scheme
 
       if host.end_with?("github.com")
@@ -430,7 +461,15 @@ module Homebrew
 
     # Identifies the latest version of the formula and returns a Hash containing
     # the version information. Returns nil if a latest version couldn't be found.
-    # @return [Hash, nil]
+    sig do
+      params(
+        formula_or_cask: T.any(Formula, Cask::Cask),
+        json:            T::Boolean,
+        full_name:       T::Boolean,
+        verbose:         T::Boolean,
+        debug:           T::Boolean,
+      ).returns(T.nilable(Hash))
+    end
     def latest_version(formula_or_cask, json: false, full_name: false, verbose: false, debug: false)
       formula = formula_or_cask if formula_or_cask.is_a?(Formula)
       cask = formula_or_cask if formula_or_cask.is_a?(Cask::Cask)
@@ -514,12 +553,13 @@ module Homebrew
         strategy_data = strategy.find_versions(url, livecheck_regex, &livecheck.strategy_block)
         match_version_map = strategy_data[:matches]
         regex = strategy_data[:regex]
+        messages = strategy_data[:messages]
 
-        if strategy_data[:messages].is_a?(Array) && match_version_map.blank?
-          puts strategy_data[:messages] unless json
+        if messages.is_a?(Array) && match_version_map.blank?
+          puts messages unless json
           next if i + 1 < urls.length
 
-          return status_hash(formula, "error", strategy_data[:messages], full_name: full_name, verbose: verbose)
+          return status_hash(formula_or_cask, "error", messages, full_name: full_name, verbose: verbose)
         end
 
         if debug
