@@ -37,24 +37,25 @@ module Homebrew
 
     args.named.to_formulae.each do |formula|
       current_revision = formula.revision
-      text = "revision #{current_revision+1}"
+      new_revision = current_revision + 1
 
       if args.dry_run?
         unless args.quiet?
+          old_text = "revision #{current_revision}"
+          new_text = "revision #{new_revision}"
           if current_revision.zero?
-            ohai "add #{text.inspect}"
+            ohai "add #{new_text.inspect}"
           else
-            old = "revision #{current_revision}"
-            ohai "replace #{old.inspect} with #{text.inspect}"
+            ohai "replace #{old_text.inspect} with #{new_text.inspect}"
           end
         end
       else
         Utils::Inreplace.inreplace(formula.path) do |s|
           s = s.inreplace_string
           if current_revision.zero?
-            Utils::AST.add_formula_stanza!(s, :revision, text)
+            Utils::AST.add_formula_stanza!(s, :revision, new_revision)
           else
-            Utils::AST.replace_formula_stanza!(s, :revision, text)
+            Utils::AST.replace_formula_stanza!(s, :revision, new_revision)
           end
         end
       end

@@ -29,7 +29,7 @@ module Utils
       end
 
       def replace_bottle_stanza!(formula_contents, bottle_output)
-        replace_formula_stanza!(formula_contents, :bottle, bottle_output.strip, type: :block_call)
+        replace_formula_stanza!(formula_contents, :bottle, bottle_output.chomp, type: :block_call)
       end
 
       def add_bottle_stanza!(formula_contents, bottle_output)
@@ -42,11 +42,11 @@ module Utils
         raise "Could not find #{name} stanza!" if stanza_node.nil?
 
         tree_rewriter = Parser::Source::TreeRewriter.new(processed_source.buffer)
-        tree_rewriter.replace(stanza_node.source_range, replacement)
+        tree_rewriter.replace(stanza_node.source_range, stanza_text(name, replacement, indent: 2).lstrip)
         formula_contents.replace(tree_rewriter.process)
       end
 
-      def add_formula_stanza!(formula_contents, name, text, type: nil)
+      def add_formula_stanza!(formula_contents, name, value, type: nil)
         processed_source, children = process_formula(formula_contents)
 
         preceding_component = if children.length > 1
@@ -80,19 +80,35 @@ module Utils
         end
 
         tree_rewriter = Parser::Source::TreeRewriter.new(processed_source.buffer)
-        tree_rewriter.insert_after(preceding_expr, "\n#{text.match?(/\A\s+/) ? text : text.indent(2)}")
+        tree_rewriter.insert_after(preceding_expr, "\n#{stanza_text(name, value, indent: 2)}")
         formula_contents.replace(tree_rewriter.process)
+      end
+
+      sig { params(name: Symbol, value: T.any(Numeric, String, Symbol), indent: T.nilable(Integer)).returns(String) }
+      def stanza_text(name, value, indent: nil)
+        text = if value.is_a?(String)
+          _, node = process_source(value)
+          value if (node.send_type? || node.block_type?) && node.method_name == name
+        end
+        text ||= "#{name} #{value.inspect}"
+        text = text.indent(indent) if indent && !text.match?(/\A\n* +/)
+        text
       end
 
       private
 
-      def process_formula(formula_contents)
+      def process_source(source)
         Homebrew.install_bundler_gems!
         require "rubocop-ast"
 
         ruby_version = Version.new(HOMEBREW_REQUIRED_RUBY_VERSION).major_minor.to_f
-        processed_source = RuboCop::AST::ProcessedSource.new(formula_contents, ruby_version)
+        processed_source = RuboCop::AST::ProcessedSource.new(source, ruby_version)
         root_node = processed_source.ast
+        [processed_source, root_node]
+      end
+
+      def process_formula(formula_contents)
+        processed_source, root_node = process_source(formula_contents)
 
         class_node = if root_node.class_type?
           root_node
