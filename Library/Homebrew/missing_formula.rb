@@ -109,7 +109,7 @@ module Homebrew
           break if new_tap_name == CoreTap.instance.name
 
           install_cmd = if new_tap_name.start_with?("homebrew/cask")
-            "cask install"
+            "install --cask"
           else
             "install"
           end
