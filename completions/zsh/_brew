@@ -680,12 +680,14 @@ _brew_reinstall() {
 # brew search, -S:
 # brew search [--desc] text|/text/:
 # brew search (--cask|--debian|--fedora|--fink|--macports|--opensuse|--ubuntu) text:
+# brew search [--pull-request] text:
 _brew_search() {
   _arguments \
     '(--cask --debian --fedora --fink --macports --opensuse --ubuntu)--desc[include description for each package]:text: ' \
     '(--desc --cask --debian --fedora --fink --macports --opensuse --ubuntu)'{--debian,--fedora,--fink,--macports,--opensuse,--ubuntu}'[search for text in given package manager''s list]' \
-    '(--desc --cask --debian --fedora --fink --macports --opensuse 
-    --ubuntu)--cask[search for text in Casks list]'
+    '(--desc --cask --debian --fedora --fink --macports --opensuse
+    --ubuntu)--cask[search for text in Casks list]' \
+    '--pull-request[search for GitHub pull requests]:text:'\
 }
 
 # brew sh [--env=std]:
