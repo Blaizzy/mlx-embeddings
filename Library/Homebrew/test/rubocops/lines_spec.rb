@@ -1387,8 +1387,8 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
           url 'https://brew.sh/foo-1.0.tgz'
           test do
             head = ARGV.include? "--HEAD"
-                                  ^^^^^^ Use "if build.head?" instead
                    ^^^^ Use build instead of ARGV to check options
+                   ^^^^^^^^^^^^^^^^^^^^^^ Use "if build.head?" instead
           end
         end
       RUBY
