@@ -66,6 +66,19 @@ __brew_installed_formulae() {
   _describe -t formulae 'installed formulae' formulae
 }
 
+__brew_all_casks() {
+  local -a list
+  local expl
+  local comp_cachename=brew_casks
+
+  if ! _retrieve_cache $comp_cachename; then
+    list=( $(brew search --cask) )
+    _store_cache $comp_cachename list
+  fi
+
+  _wanted list expl 'all casks' compadd -a list
+}
+
 __brew_installed_casks() {
   local -a list
   local expl
@@ -221,14 +234,19 @@ _brew_aspell_dictionaries() {
 }
 
 # brew audit [--strict] [--online] [--new-formula] [--display-cop-names] [--display-filename] [formulae]
+# brew audit --cask [cask]
 _brew_audit() {
   _arguments \
-    '(--new-formula)--strict[run additional checks including RuboCop style checks]' \
-    '(--new-formula)--online[run slower checks that require a network connection]' \
-    '(--online --strict)--new-formula[check if a new formula is eligible for Homebrew. Implies --strict and --online]' \
-    '--display-cop-names[include RuboCop cop name for each violation in the output]' \
-    '--display-filename[prefix every line of output with the name of the file or formula being audited]' \
-    '*:formula:__brew_formulae_or_ruby_files'
+    --formula-opts \
+      '(--new-formula)--strict[run additional checks including RuboCop style checks]' \
+      '(--new-formula)--online[run slower checks that require a network connection]' \
+      '(--online --strict)--new-formula[check if a new formula is eligible for Homebrew. Implies --strict and --online]' \
+      '--display-cop-names[include RuboCop cop name for each violation in the output]' \
+      '--display-filename[prefix every line of output with the name of the file or formula being audited]' \
+      '*:formula:__brew_formulae_or_ruby_files' \
+    --casks-opts \
+      '--cask[audit casks]' \
+      '*:: :__brew_all_casks' \
 }
 
 # brew bottle [--verbose] [--no-rebuild] [--keep-old] [--skip-relocation] [--root-url=root_url]
@@ -425,10 +443,14 @@ _brew_home() {
 }
 
 # brew info formulae
+# brew info --cask cask
 # brew info --github formula
 # brew info --json=version (--all|--installed|formulae)
 _brew_info() {
   _arguments \
+    - cask-opts \
+      '--cask[get information on casks]' \
+      ': :__brew_all_casks' \
     - formulae-opts \
       '*: :__brew_formulae' \
     - github-opts \
@@ -446,6 +468,7 @@ _brew_info() {
 #   [--cc=compiler] [--build-from-source|--build-bottle|--force-fottle]
 #   [--devel|--HEAD] [--fetch-HEAD] [--bottle-arch=architecture] [--keep-tmp] formulae
 # brew install --interactive [--git] formula
+# brew install --cask cask
 _brew_install() {
   local state
   _arguments \
@@ -468,7 +491,10 @@ _brew_install() {
     - interactive-install \
       '--interactive[download and patch formula, then open a shell]' \
       '--git' \
-      ': : __brew_formulae'
+      ': : __brew_formulae' \
+    - cask-install \
+      '--cask[install casks]' \
+      ': :__brew_all_casks' \
 }
 
 # brew irb [--examples]
