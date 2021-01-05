@@ -22,6 +22,7 @@ module RuboCop
           flex
           gcore
           gnu-getopt
+          gperf
           icu4c
           krb5
           libarchive
