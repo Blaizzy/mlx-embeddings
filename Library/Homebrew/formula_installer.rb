@@ -242,14 +242,18 @@ class FormulaInstaller
        # Integration tests override homebrew-core locations
        ENV["HOMEBREW_TEST_TMPDIR"].nil? &&
        !pour_bottle?
-      message = <<~EOS
-        #{formula}: no bottle available!
-      EOS
-      if !formula.pour_bottle? && formula.pour_bottle_check_unsatisfied_reason
-        message += formula.pour_bottle_check_unsatisfied_reason
+      message = if !formula.pour_bottle? && formula.pour_bottle_check_unsatisfied_reason
+        formula_message = formula.pour_bottle_check_unsatisfied_reason
+        formula_message[0] = formula_message[0].downcase
+
+        "#{formula}: #{formula_message}"
+      else
+        <<~EOS
+          #{formula}: no bottle available!
+        EOS
       end
       message += <<~EOS
-        You can try to install from source with e.g.
+        You can try to install from source with:
           brew install --build-from-source #{formula}
         Please note building from source is unsupported. You will encounter build
         failures with some formulae. If you experience any issues please create pull
