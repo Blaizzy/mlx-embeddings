@@ -660,6 +660,7 @@ _brew_readall() {
 }
 
 # brew reinstall formulae:
+# brew reinstall --cask casks:
 # mostly copy from brew install
 _brew_reinstall() {
   _arguments \
@@ -672,7 +673,10 @@ _brew_reinstall() {
       '*::formula:__brew_installed_formulae' \
     - interactive-install \
       '--interactive[download and patch formula, then open a shell]' \
-      '::formula:__brew_installed_formulae'
+      '::formula:__brew_installed_formulae' \
+    - cask-install \
+      '--cask[reinstall casks]' \
+      ': :__brew_all_casks' \
 }
 
 # brew search, -S:
@@ -850,6 +854,7 @@ _brew_update_test() {
 }
 
 # brew upgrade [install-options] [--cleanup] [--fetch-HEAD] [formulae]
+# brew upgrade --cask [casks]
 # install-options is copied from brew install
 _brew_upgrade() {
   _arguments \
@@ -872,6 +877,9 @@ _brew_upgrade() {
     '--interactive[download and patch formula, then open a shell]' \
     '--git' \
     ': : __brew_outdated_formulae'
+  - cask-install \
+    '--cask[reinstall casks]' \
+    ': :__brew_all_casks' \
 
 }
 
