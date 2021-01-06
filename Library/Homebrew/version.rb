@@ -412,7 +412,6 @@ class Version
     m = /[-_](\d+\.\d+(?:\.\d+)?(?:-\d+)?)[-_.](?:i[36]86|x86|x64(?:[-_](?:32|64))?)$/.match(stem)
     return m.captures.first unless m.nil?
 
-    # devel spec
     # e.g. https://registry.npmjs.org/@angular/cli/-/cli-1.3.0-beta.1.tgz
     # e.g. https://github.com/dlang/dmd/archive/v2.074.0-beta1.tar.gz
     # e.g. https://github.com/dlang/dmd/archive/v2.074.0-rc1.tar.gz

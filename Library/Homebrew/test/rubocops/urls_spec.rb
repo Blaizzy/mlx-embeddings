@@ -211,18 +211,18 @@ describe RuboCop::Cop::FormulaAudit::Urls do
       end
     end
 
-    it "with offenses in stable/devel/head block" do
+    it "with offenses in stable/head block" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
           url "https://foo.com"
 
-          devel do
+          stable do
             url "git://github.com/foo.git",
             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Please use https:// for git://github.com/foo.git
-                :tag => "v1.0.0-alpha.1",
+                :tag => "v1.0.1",
                 :revision => "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-            version "1.0.0-alpha.1"
+            version "1.0.1"
           end
         end
       RUBY
@@ -380,18 +380,6 @@ describe RuboCop::Cop::FormulaAudit::GitUrls do
       RUBY
     end
 
-    it "reports no offenses with missing arguments in `devel`" do
-      expect_no_offenses(<<~RUBY, "/homebrew-core/")
-        class Foo < Formula
-          desc "foo"
-          url "https://foo.com"
-          devel do
-            url "https://github.com/foo/bar.git"
-          end
-        end
-      RUBY
-    end
-
     it "reports no offenses for non-core taps" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
@@ -471,18 +459,6 @@ describe RuboCop::Cop::FormulaAuditStrict::GitUrls do
           desc "foo"
           url "https://foo.com"
           head do
-            url "https://github.com/foo/bar.git"
-          end
-        end
-      RUBY
-    end
-
-    it "reports no offenses with missing arguments in `devel`" do
-      expect_no_offenses(<<~RUBY, "/homebrew-core/")
-        class Foo < Formula
-          desc "foo"
-          url "https://foo.com"
-          devel do
             url "https://github.com/foo/bar.git"
           end
         end

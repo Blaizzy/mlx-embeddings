@@ -31,7 +31,6 @@
       "spec": "stable",
       "versions": {
         "stable": "2.14",
-        "devel": "2.15",
         "head": "HEAD-0000000"
       }
   }

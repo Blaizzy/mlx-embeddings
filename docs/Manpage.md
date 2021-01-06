@@ -167,8 +167,6 @@ and binaries for *`cask`*s. For files, also print SHA-256 checksums.
 
 * `--HEAD`:
   Fetch HEAD version instead of stable version.
-* `--devel`:
-  Fetch development version instead of stable version.
 * `-f`, `--force`:
   Remove a previously cached version and re-fetch.
 * `-v`, `--verbose`:
@@ -1277,8 +1275,6 @@ user if something is wrong with the installed formula.
 
 *Example:* `brew install jruby && brew test jruby`
 
-* `--devel`:
-  Test the development version of a formula.
 * `--HEAD`:
   Test the head version of a formula.
 * `--keep-tmp`:

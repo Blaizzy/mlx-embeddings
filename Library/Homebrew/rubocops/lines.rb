@@ -473,10 +473,9 @@ module RuboCop
           end
 
           find_instance_method_call(body_node, "ARGV", :include?) do |method|
-            param = parameters(method).first
-            next unless match = regex_match_group(param, /^--(HEAD|devel)/)
+            next unless parameters_passed?(method, "--HEAD")
 
-            problem "Use \"if build.#{match[1].downcase}?\" instead"
+            problem "Use \"if build.head?\" instead"
           end
 
           find_const(body_node, "MACOS_VERSION") do

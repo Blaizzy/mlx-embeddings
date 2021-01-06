@@ -227,7 +227,7 @@ _brew_fetch() {
     -*)
       __brewcomp "
         --deps --force
-        --devel --HEAD
+        --HEAD
         --build-from-source --force-bottle --build-bottle
         --retry
         $(brew options --compact "$prv" 2>/dev/null)
@@ -268,12 +268,11 @@ _brew_install() {
     -*)
       if __brewcomp_words_include "--interactive"
       then
-        __brewcomp "--devel --git --HEAD"
+        __brewcomp "--git --HEAD"
       else
         __brewcomp "
           --build-from-source --build-bottle --force-bottle
           --debug
-          --devel
           --HEAD
           --ignore-dependencies
           --interactive
@@ -604,7 +603,7 @@ _brew_uses() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--installed --recursive --include-build --include-test --include-optional --skip-recommended --devel --HEAD"
+      __brewcomp "--installed --recursive --include-build --include-test --include-optional --skip-recommended"
       return
       ;;
   esac

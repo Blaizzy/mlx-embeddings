@@ -322,9 +322,7 @@ __fish_brew_complete_arg 'fetch' -l deps              -d "Also download dependen
 __fish_brew_complete_arg 'fetch' -l build-from-source -d "Fetch source package instead of bottle"
 __fish_brew_complete_arg 'fetch' -s v -l verbose      -d "Do a verbose VCS checkout"
 __fish_brew_complete_arg 'fetch' -l retry             -d "Retry if a download fails or re-download if the checksum has changed"
-# --HEAD and --devel are mutually exclusive:
-__fish_brew_complete_arg 'fetch; and not __fish_brew_opt --devel --HEAD' -l devel -d "Download the development version from a VCS"
-__fish_brew_complete_arg 'fetch; and not __fish_brew_opt --devel --HEAD' -l HEAD  -d "Download the HEAD version from a VCS"
+__fish_brew_complete_arg 'fetch' -l HEAD              -d "Download the HEAD version from a VCS"
 # --build-from-source and --force-bottle are mutually exclusive:
 __fish_brew_complete_arg 'fetch; and not __fish_brew_opt --force-bottle'    -s s -l build-from-source -d "Download the source rather than a bottle"
 __fish_brew_complete_arg 'fetch; and not __fish_brew_opt --build-from-source -s' -l force-bottle      -d "Download a bottle if it exists"
@@ -386,9 +384,7 @@ __fish_brew_complete_arg 'install upgrade' -l cc -d "Attempt to compile using th
 __fish_brew_complete_arg 'install upgrade; and not __fish_brew_opt --force-bottle'    -s s -l build-from-source -d "Compile the formula from source"
 # FIXME: -s misbehaves allowing --force-bottle
 __fish_brew_complete_arg 'install upgrade; and not __fish_brew_opt -s --build-from-source' -l force-bottle      -d "Install from a bottle if it exists"
-# --HEAD and --devel are mutually exclusive:
-__fish_brew_complete_arg 'install upgrade; and not __fish_brew_opt --devel --HEAD' -l devel -d "Install the development version"
-__fish_brew_complete_arg 'install upgrade; and not __fish_brew_opt --devel --HEAD' -l HEAD  -d "Install the HEAD version"
+__fish_brew_complete_arg 'install upgrade'      -l HEAD         -d "Install the HEAD version"
 __fish_brew_complete_arg 'install upgrade'      -l keep-tmp     -d "Keep temp files created during installation"
 __fish_brew_complete_arg 'install upgrade'      -l build-bottle -d "Prepare the formula for eventual bottling during installation"
 __fish_brew_complete_arg 'install upgrade' -s i -l interactive  -d "Download and patch formula, then open a shell"
@@ -596,9 +592,6 @@ __fish_brew_complete_arg 'uses' -l recursive -d "Resolve more than one level of 
 __fish_brew_complete_arg 'uses' -l include-build    -d "Include the :build type dependencies"
 __fish_brew_complete_arg 'uses' -l include-optional -d "Include the :optional type dependencies"
 __fish_brew_complete_arg 'uses' -l skip-recommended -d "Skip :recommended  type  dependencies"
-# --HEAD and --devel are mutually exclusive:
-__fish_brew_complete_arg 'uses; and not __fish_brew_opt --devel --HEAD' -l devel -d "Find cases development builds using formulae"
-__fish_brew_complete_arg 'uses; and not __fish_brew_opt --devel --HEAD' -l HEAD  -d "Find cases HEAD builds using formulae"
 
 
 __fish_brew_complete_cmd '--cache' "Display Homebrew/formula's cache location"
@@ -666,7 +659,6 @@ __fish_brew_complete_arg 'bottle; and __fish_brew_opt --write' -l no-commit -d "
 __fish_brew_complete_cmd 'bump-formula-pr' "Create a pull request to update formula with a new URL or tag"
 # FIXME: should it suggest all/installed formulae or only files with a cetain name?
 __fish_brew_complete_arg 'bump-formula-pr' -a '(__fish_brew_suggest_formulae_all)'
-__fish_brew_complete_arg 'bump-formula-pr'      -l devel   -d "Bump the development version instead of stable"
 __fish_brew_complete_arg 'bump-formula-pr' -s n -l dry-run -d "Show what would be done"
 # --write depends on --dry-run:
 __fish_brew_complete_arg 'bump-formula-pr; and __fish_brew_opt -n --dry-run' -l write -d "Write changes but not commit them"
@@ -742,9 +734,7 @@ __fish_brew_complete_cmd 'test' "Run tests for given formula"
 __fish_brew_complete_arg 'test' -a '(__fish_brew_suggest_formulae_installed)'
 __fish_brew_complete_arg 'test' -s d -l debug    -d "Test with an interative debugger"
 __fish_brew_complete_arg 'test'      -l keep-tmp -d "Don't delete temp files created for the test"
-# --HEAD and --devel are mutually exclusive:
-__fish_brew_complete_arg 'test; and not __fish_brew_opt --devel --HEAD' -l devel -d "Test the development version"
-__fish_brew_complete_arg 'test; and not __fish_brew_opt --devel --HEAD' -l HEAD  -d "Test the HEAD version"
+__fish_brew_complete_arg 'test'      -l HEAD     -d "Test the HEAD version"
 
 
 __fish_brew_complete_cmd 'tests' "Run Homebrew's unit and integration tests"

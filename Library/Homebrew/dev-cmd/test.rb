@@ -23,8 +23,6 @@ module Homebrew
 
         *Example:* `brew install jruby && brew test jruby`
       EOS
-      switch "--devel",
-             description: "Test the development version of a formula."
       switch "--HEAD",
              description: "Test the head version of a formula."
       switch "--keep-tmp",
@@ -32,7 +30,6 @@ module Homebrew
       switch "--retry",
              description: "Retry if a testing fails."
 
-      conflicts "--devel", "--HEAD"
       min_named :formula
     end
   end
