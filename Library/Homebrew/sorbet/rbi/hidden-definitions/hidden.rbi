@@ -13950,8 +13950,6 @@ end
 module Parlour
 end
 
-ParseError = Racc::ParseError
-
 class Parser::Ruby24
   def _reduce_10(val, _values, result); end
 
@@ -25536,21 +25534,6 @@ end
 class Racc::CparseParams
 end
 
-class Racc::Parser
-  Racc_Main_Parsing_Routine = ::T.let(nil, ::T.untyped)
-  Racc_Runtime_Core_Id_C = ::T.let(nil, ::T.untyped)
-  Racc_Runtime_Core_Revision = ::T.let(nil, ::T.untyped)
-  Racc_Runtime_Core_Revision_C = ::T.let(nil, ::T.untyped)
-  Racc_Runtime_Core_Revision_R = ::T.let(nil, ::T.untyped)
-  Racc_Runtime_Core_Version = ::T.let(nil, ::T.untyped)
-  Racc_Runtime_Core_Version_C = ::T.let(nil, ::T.untyped)
-  Racc_Runtime_Core_Version_R = ::T.let(nil, ::T.untyped)
-  Racc_Runtime_Revision = ::T.let(nil, ::T.untyped)
-  Racc_Runtime_Type = ::T.let(nil, ::T.untyped)
-  Racc_Runtime_Version = ::T.let(nil, ::T.untyped)
-  Racc_YY_Parse_Method = ::T.let(nil, ::T.untyped)
-end
-
 module Rack
   CACHE_CONTROL = ::T.let(nil, ::T.untyped)
   CONTENT_LENGTH = ::T.let(nil, ::T.untyped)
@@ -29788,6 +29771,12 @@ module Singleton
   def dup(); end
 end
 
+module Singleton::SingletonClassMethods
+  def _load(str); end
+
+  def clone(); end
+end
+
 module Singleton
   def self.__init__(klass); end
 end
@@ -30874,6 +30863,10 @@ end
 
 class User
   extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Utils::AST
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
