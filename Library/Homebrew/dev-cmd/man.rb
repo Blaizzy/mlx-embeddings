@@ -5,6 +5,7 @@ require "formula"
 require "erb"
 require "ostruct"
 require "cli/parser"
+require "completions"
 
 module Homebrew
   extend T::Sig
@@ -42,6 +43,7 @@ module Homebrew
 
     Commands.rebuild_internal_commands_completion_list
     regenerate_man_pages(preserve_date: args.fail_if_changed?, quiet: args.quiet?)
+    Completions.update_shell_completions!
 
     diff = system_command "git", args: [
       "-C", HOMEBREW_REPOSITORY, "diff", "--exit-code", "docs/Manpage.md", "manpages", "completions"

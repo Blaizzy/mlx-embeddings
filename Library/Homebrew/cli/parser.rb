@@ -16,7 +16,7 @@ module Homebrew
     class Parser
       extend T::Sig
 
-      attr_reader :processed_options, :hide_from_man_page
+      attr_reader :processed_options, :hide_from_man_page, :named_args_type
 
       def self.from_cmd_path(cmd_path)
         cmd_args_method_name = Commands.args_method_name(cmd_path)
@@ -539,6 +539,7 @@ module Homebrew
 
       def process_option(*args)
         option, = @parser.make_switch(args)
+        @processed_options.reject! { |existing| option.long.first.present? && existing.second == option.long.first }
         @processed_options << [option.short.first, option.long.first, option.arg, option.desc.first]
       end
 

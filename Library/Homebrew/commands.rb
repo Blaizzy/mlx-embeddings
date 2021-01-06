@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "cask/cmd"
+require "completions"
 
 # Helper functions for commands.
 #
@@ -91,10 +92,10 @@ module Commands
     path
   end
 
-  def commands(aliases: false)
+  def commands(external: true, aliases: false)
     cmds = internal_commands
     cmds += internal_developer_commands
-    cmds += external_commands
+    cmds += external_commands if external
     cmds += internal_commands_aliases if aliases
     cmds += cask_commands(aliases: aliases).map { |cmd| "cask #{cmd}" }
     cmds.sort
@@ -185,6 +186,7 @@ module Commands
 
   def rebuild_internal_commands_completion_list
     cmds = internal_commands + internal_developer_commands + internal_commands_aliases
+    cmds.reject! { |cmd| Homebrew::Completions::COMPLETIONS_EXCLUSION_LIST.include? cmd }
 
     file = HOMEBREW_REPOSITORY/"completions/internal_commands_list.txt"
     file.atomic_write("#{cmds.sort.join("\n")}\n")
@@ -194,7 +196,45 @@ module Commands
     # Ensure that the cache exists so we can build the commands list
     HOMEBREW_CACHE.mkpath
 
+    cmds = commands(aliases: true).reject do |cmd|
+      # TODO: remove the cask check when `brew cask` is removed
+      cmd.start_with?("cask ") || Homebrew::Completions::COMPLETIONS_EXCLUSION_LIST.include?(cmd)
+    end
+
     file = HOMEBREW_CACHE/"all_commands_list.txt"
-    file.atomic_write("#{commands(aliases: true).sort.join("\n")}\n")
+    file.atomic_write("#{cmds.sort.join("\n")}\n")
+  end
+
+  def command_options(command)
+    path = Commands.path(command)
+    return unless path
+
+    if cmd_parser = Homebrew::CLI::Parser.from_cmd_path(path)
+      cmd_parser.processed_options.map do |short, long, _, desc|
+        [long || short, desc]
+      end
+    else
+      options = []
+      comment_lines = path.read.lines.grep(/^#:/)
+      return options if comment_lines.empty?
+
+      # skip the comment's initial usage summary lines
+      comment_lines.slice(2..-1).each do |line|
+        if / (?<option>-[-\w]+) +(?<desc>.*)$/ =~ line
+          options << [option, desc]
+        end
+      end
+      options
+    end
+  end
+
+  def named_args_type(command)
+    path = Commands.path(command)
+    return unless path
+
+    cmd_parser = Homebrew::CLI::Parser.from_cmd_path(path)
+    return if cmd_parser.blank?
+
+    Array(cmd_parser.named_args_type)
   end
 end
