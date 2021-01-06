@@ -495,7 +495,7 @@ module Homebrew
         end
 
         next if spec.patches.empty?
-        next unless @new_formula
+        next if !@new_formula || !@core_tap
 
         new_formula_problem(
           "Formulae should not require patches to build. " \
