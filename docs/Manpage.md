@@ -1206,6 +1206,10 @@ a warning will be shown if the latest minor release was less than one month ago.
 * `--markdown`:
   Print as a Markdown list.
 
+### `rubocop`
+
+Installs, configures and runs Homebrew's `rubocop`.
+
 ### `ruby` (`-e` *`text`*|*`file`*)
 
 Run a Ruby instance with Homebrew's libraries loaded, e.g.
