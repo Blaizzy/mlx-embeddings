@@ -183,3 +183,6 @@
 
 # Unignore tests' bundle config
 !/Library/Homebrew/test/.bundle/config
+
+# Unignore vscode configuration
+!/.vscode
