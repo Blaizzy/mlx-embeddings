@@ -49,6 +49,7 @@ module Cask
           name
         end
         casks = casks.map { |c| CaskLoader.load(c, config: Config.from_args(args)) }
+        any_named_args = casks.any?
         casks = Cask.to_a if casks.empty?
 
         results = self.class.audit_casks(
@@ -60,6 +61,7 @@ module Cask
           new_cask:        args.new_cask?,
           token_conflicts: args.token_conflicts?,
           quarantine:      args.quarantine?,
+          any_named_args:  any_named_args,
           language:        args.language,
         )
 
@@ -80,6 +82,7 @@ module Cask
         new_cask: nil,
         token_conflicts: nil,
         quarantine: nil,
+        any_named_args: nil,
         language: nil
       )
         options = {
@@ -91,6 +94,7 @@ module Cask
           audit_token_conflicts: token_conflicts,
           quarantine:            quarantine,
           language:              language,
+          any_named_args:        any_named_args,
         }.compact
 
         options[:quarantine] = true if options[:quarantine].nil?
