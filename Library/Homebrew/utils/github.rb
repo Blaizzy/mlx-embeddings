@@ -628,8 +628,12 @@ module GitHub
     []
   end
 
-  def check_for_duplicate_pull_requests(query, tap_full_name, state:, args:)
+  def check_for_duplicate_pull_requests(query, tap_full_name, state:, file:, args:)
     pull_requests = fetch_pull_requests(query, tap_full_name, state: state)
+    pull_requests.select! do |pr|
+      pr_files = open_api(url_to("repos", tap_full_name, "pulls", pr["number"], "files"))
+      pr_files.any? { |f| f["filename"] == file }
+    end
     return if pull_requests.blank?
 
     duplicates_message = <<~EOS

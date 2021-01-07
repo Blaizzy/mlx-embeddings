@@ -200,13 +200,10 @@ module Homebrew
   end
 
   def check_open_pull_requests(cask, tap_full_name, args:)
-    GitHub.check_for_duplicate_pull_requests(cask.token, tap_full_name, state: "open", args: args)
-  end
-
-  def check_closed_pull_requests(cask, tap_full_name, version:, args:)
-    # if we haven't already found open requests, try for an exact match across closed requests
-    pr_title = "Update #{cask.token} from #{cask.version} to #{version}"
-    GitHub.check_for_duplicate_pull_requests(pr_title, tap_full_name, state: "closed", args: args)
+    GitHub.check_for_duplicate_pull_requests(cask.token, tap_full_name,
+                                             state: "open",
+                                             file:  cask.sourcefile_path.relative_path_from(cask.tap.path).to_s,
+                                             args:  args)
   end
 
   def run_cask_audit(cask, old_contents, args:)

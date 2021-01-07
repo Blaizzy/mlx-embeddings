@@ -460,7 +460,10 @@ args: args)
   end
 
   def check_open_pull_requests(formula, tap_full_name, args:)
-    GitHub.check_for_duplicate_pull_requests(formula.name, tap_full_name, state: "open", args: args)
+    GitHub.check_for_duplicate_pull_requests(formula.name, tap_full_name,
+                                             state: "open",
+                                             file:  formula.path.relative_path_from(formula.tap.path).to_s,
+                                             args:  args)
   end
 
   def check_closed_pull_requests(formula, tap_full_name, args:, version: nil, url: nil, tag: nil)
@@ -470,7 +473,10 @@ args: args)
       version = Version.detect(url, **specs)
     end
     # if we haven't already found open requests, try for an exact match across closed requests
-    GitHub.check_for_duplicate_pull_requests("#{formula.name} #{version}", tap_full_name, state: "closed", args: args)
+    GitHub.check_for_duplicate_pull_requests("#{formula.name} #{version}", tap_full_name,
+                                             state: "closed",
+                                             file:  formula.path.relative_path_from(formula.tap.path).to_s,
+                                             args:  args)
   end
 
   def alias_update_pair(formula, new_formula_version)
