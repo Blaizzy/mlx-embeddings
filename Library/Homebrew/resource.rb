@@ -162,8 +162,8 @@ class Resource
     EOS
   end
 
-  Checksum::TYPES.each do |type|
-    define_method(type) { |val| @checksum = Checksum.new(type, val) }
+  def sha256(val)
+    @checksum = Checksum.new(val)
   end
 
   def url(val = nil, **specs)

@@ -33,7 +33,7 @@ class SoftwareSpec
                  :cached_download, :clear_cache, :checksum, :mirrors, :specs, :using, :version, :mirror,
                  :downloader
 
-  def_delegators :@resource, *Checksum::TYPES
+  def_delegators :@resource, :sha256
 
   def initialize(flags: [])
     @resource = Resource.new
@@ -411,11 +411,9 @@ class BottleSpecification
 
   # Checksum methods in the DSL's bottle block optionally take
   # a Hash, which indicates the platform the checksum applies on.
-  Checksum::TYPES.each do |cksum|
-    define_method(cksum) do |val|
-      digest, tag = val.shift
-      collector[tag] = Checksum.new(cksum, digest)
-    end
+  def sha256(val)
+    digest, tag = val.shift
+    collector[tag] = Checksum.new(digest)
   end
 
   def checksum_for(tag)
@@ -429,13 +427,12 @@ class BottleSpecification
       # Sort non-MacOS tags below MacOS tags.
       "0.#{tag}"
     end
-    checksums = {}
+    sha256s = []
     tags.reverse_each do |tag|
       checksum = collector[tag]
-      checksums[checksum.hash_type] ||= []
-      checksums[checksum.hash_type] << { checksum => tag }
+      sha256s << { checksum => tag }
     end
-    checksums
+    { sha256: sha256s }
   end
 end
 

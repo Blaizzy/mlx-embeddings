@@ -108,7 +108,7 @@ describe Resource do
 
     it "returns the checksum set with #sha256" do
       subject.sha256(TEST_SHA256)
-      expect(subject.checksum).to eq(Checksum.new(:sha256, TEST_SHA256))
+      expect(subject.checksum).to eq(Checksum.new(TEST_SHA256))
     end
   end
 

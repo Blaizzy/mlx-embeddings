@@ -214,7 +214,7 @@ module Cask
         when :no_check
           arg
         when String
-          Checksum.new(:sha256, arg)
+          Checksum.new(arg)
         else
           raise CaskInvalidError.new(cask, "invalid 'sha256' value: '#{arg.inspect}'")
         end
