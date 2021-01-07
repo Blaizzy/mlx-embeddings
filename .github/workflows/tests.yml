@@ -181,7 +181,7 @@ jobs:
   test-everything:
     name: test everything (macOS)
     if: startsWith(github.repository, 'Homebrew/')
-    runs-on: macos-11.0
+    runs-on: macos-latest
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
