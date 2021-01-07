@@ -40,11 +40,12 @@ module GitRepositoryExtension
   end
 
   # Gets a short commit hash of the HEAD commit.
-  sig { returns(T.nilable(String)) }
-  def git_short_head
+  sig { params(length: T.nilable(Integer)).returns(T.nilable(String)) }
+  def git_short_head(length: 4)
     return unless git? && Utils::Git.available?
 
-    Utils.popen_read("git", "rev-parse", "--short=4", "--verify", "-q", "HEAD", chdir: self).chomp.presence
+    Utils.popen_read("git", "rev-parse", "--short#{length&.to_s&.prepend("=")}",
+                     "--verify", "-q", "HEAD", chdir: self).chomp.presence
   end
 
   # Gets the relative date of the last commit, e.g. "1 hour ago"
