@@ -154,7 +154,7 @@ module Cask
       return if tap.nil?
       return if tap.user != "Homebrew"
 
-      return unless cask.artifacts.any? { |k| k.is_a?(Artifact::Pkg) && k.stanza_options.key?(:allow_untrusted) }
+      return if cask.artifacts.none? { |k| k.is_a?(Artifact::Pkg) && k.stanza_options.key?(:allow_untrusted) }
 
       add_error "allow_untrusted is not permitted in official Homebrew Cask taps"
     end
@@ -472,7 +472,7 @@ module Cask
         add_error "cask token should only contain lowercase alphanumeric characters and hyphens"
       end
 
-      return unless cask.token.start_with?("-") || cask.token.end_with?("-")
+      return if !cask.token.start_with?("-") && !cask.token.end_with?("-")
 
       add_error "cask token should not have leading or trailing hyphens"
     end
@@ -498,7 +498,8 @@ module Cask
 
       add_warning "cask token mentions architecture" if token.end_with? "x86", "32_bit", "x86_64", "64_bit"
 
-      return unless token.end_with?("cocoa", "qt", "gtk", "wx", "java") && %w[cocoa qt gtk wx java].exclude?(token)
+      frameworks = %w[cocoa qt gtk wx java]
+      return if frameworks.include?(token) || !token.end_with?(*frameworks)
 
       add_warning "cask token mentions framework"
     end
@@ -517,7 +518,7 @@ module Cask
     end
 
     def check_download
-      return unless download && cask.url
+      return if download.blank? || cask.url.blank?
 
       odebug "Auditing download"
       download.fetch

@@ -24,7 +24,7 @@ module Utils
 
       def file_outdated?(f, file)
         filename = file.basename.to_s
-        return unless f.bottle && filename.match(Pathname::BOTTLE_EXTNAME_RX)
+        return if f.bottle.blank? || !filename.match?(Pathname::BOTTLE_EXTNAME_RX)
 
         bottle_ext = filename[native_regex, 1]
         bottle_url_ext = f.bottle.url[native_regex, 1]

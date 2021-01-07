@@ -414,7 +414,7 @@ module Cask
     def uninstall
       oh1 "Uninstalling Cask #{Formatter.identifier(@cask)}"
       uninstall_artifacts(clear: true)
-      remove_config_file unless reinstall? || upgrade?
+      remove_config_file if !reinstall? && !upgrade?
       purge_versioned_files
       purge_caskroom_path if force?
     end
@@ -435,7 +435,7 @@ module Cask
     end
 
     def restore_backup
-      return unless backup_path.directory? && backup_metadata_path.directory?
+      return if !backup_path.directory? || !backup_metadata_path.directory?
 
       Pathname.new(@cask.staged_path).rmtree if @cask.staged_path.exist?
       Pathname.new(@cask.metadata_versioned_path).rmtree if @cask.metadata_versioned_path.exist?

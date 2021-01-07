@@ -29,10 +29,10 @@ module PyPI
       @pypi_info = nil
 
       if is_url
-        unless package_string.start_with?(PYTHONHOSTED_URL_PREFIX) &&
-               match = File.basename(package_string).match(/^(.+)-([a-z\d.]+?)(?:.tar.gz|.zip)$/)
-          raise ArgumentError, "package should be a valid PyPI url"
+        match = if package_string.start_with?(PYTHONHOSTED_URL_PREFIX)
+          File.basename(package_string).match(/^(.+)-([a-z\d.]+?)(?:.tar.gz|.zip)$/)
         end
+        raise ArgumentError, "package should be a valid PyPI url" if match.blank?
 
         @name = match[1]
         @version = match[2]

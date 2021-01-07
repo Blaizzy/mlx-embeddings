@@ -172,7 +172,7 @@ module Homebrew
         end
       end
 
-      next unless args.verbose? && !text_matches.empty?
+      next if !args.verbose? || text_matches.empty?
 
       print_filename.call(string, file)
       text_matches.first(MAXIMUM_STRING_MATCHES).each do |match, offset|
@@ -190,7 +190,7 @@ module Homebrew
   def keg_contain_absolute_symlink_starting_with?(string, keg, args:)
     absolute_symlinks_start_with_string = []
     keg.find do |pn|
-      next unless pn.symlink? && (link = pn.readlink).absolute?
+      next if !pn.symlink? || !(link = pn.readlink).absolute?
 
       absolute_symlinks_start_with_string << pn if link.to_s.start_with?(string)
     end

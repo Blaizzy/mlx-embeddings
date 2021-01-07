@@ -41,10 +41,7 @@ module Cask
 
     def metadata_subdir(leaf, version: self.version, timestamp: :latest, create: false)
       raise CaskError, "Cannot create metadata subdir when timestamp is :latest." if create && timestamp == :latest
-
-      unless leaf.respond_to?(:empty?) && !leaf.empty?
-        raise CaskError, "Cannot create metadata subdir for empty leaf."
-      end
+      raise CaskError, "Cannot create metadata subdir for empty leaf." if !leaf.respond_to?(:empty?) || leaf.empty?
 
       parent = metadata_timestamped_path(version: version, timestamp: timestamp, create: create)
 

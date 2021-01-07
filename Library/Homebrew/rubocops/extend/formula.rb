@@ -296,7 +296,7 @@ module RuboCop
 
         node.each_child_node(:def) do |def_node|
           def_method_name = method_name(def_node)
-          next unless method_name == def_method_name || method_name.nil?
+          next if method_name != def_method_name && method_name.present?
 
           @offensive_node = def_node
           @offense_source_range = def_node.source_range

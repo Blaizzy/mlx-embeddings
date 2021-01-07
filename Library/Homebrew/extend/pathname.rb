@@ -118,9 +118,9 @@ class Pathname
 
   sig { params(src: T.any(String, Pathname), new_basename: String).void }
   def install_p(src, new_basename)
-    raise Errno::ENOENT, src.to_s unless File.symlink?(src) || File.exist?(src)
-
     src = Pathname(src)
+    raise Errno::ENOENT, src.to_s if !src.symlink? && !src.exist?
+
     dst = join(new_basename)
     dst = yield(src, dst) if block_given?
     return unless dst

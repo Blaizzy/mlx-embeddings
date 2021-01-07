@@ -193,7 +193,7 @@ class Tap
   # e.g. `https://github.com/user/homebrew-repo/issues`
   sig { returns(T.nilable(String)) }
   def issues_url
-    return unless official? || !custom_remote?
+    return if !official? && custom_remote?
 
     "#{default_remote}/issues"
   end

@@ -39,7 +39,7 @@ class Build
   def post_superenv_hacks
     # Only allow Homebrew-approved directories into the PATH, unless
     # a formula opts-in to allowing the user's path.
-    return unless formula.env.userpaths? || reqs.any? { |rq| rq.env.userpaths? }
+    return if !formula.env.userpaths? && reqs.none? { |rq| rq.env.userpaths? }
 
     ENV.userpaths!
   end

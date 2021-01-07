@@ -92,7 +92,7 @@ module Cask
           end
         else
           casks.select do |cask|
-            raise CaskNotInstalledError, cask unless cask.installed? || force
+            raise CaskNotInstalledError, cask if !cask.installed? && !force
 
             cask.outdated?(greedy: true)
           end

@@ -119,7 +119,7 @@ module Kernel
       Context.current.debug?
     end
 
-    return unless debug || always_display
+    return if !debug && !always_display
 
     puts Formatter.headline(title, color: :magenta)
     puts sput unless sput.empty?

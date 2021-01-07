@@ -113,7 +113,7 @@ class Caveats
 
     completion_installed = keg.completion_installed?(shell)
     functions_installed = keg.functions_installed?(shell)
-    return unless completion_installed || functions_installed
+    return if !completion_installed && !functions_installed
 
     installed = []
     installed << "completions" if completion_installed

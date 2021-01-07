@@ -146,7 +146,7 @@ class Keg
 
   def text_files
     text_files = []
-    return text_files unless which("file") && which("xargs")
+    return text_files if !which("file") || !which("xargs")
 
     # file has known issues with reading files on other locales. Has
     # been fixed upstream for some time, but a sufficiently new enough
