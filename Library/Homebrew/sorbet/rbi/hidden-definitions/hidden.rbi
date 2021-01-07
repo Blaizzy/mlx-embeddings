@@ -30877,6 +30877,10 @@ class User
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+module Utils::AST
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 module Utils::Analytics
   extend ::T::Private::Methods::SingletonMethodHooks
 end
