@@ -109,6 +109,7 @@ module Homebrew
     online = new_formula || args.online?
     git = args.git?
     skip_style = args.skip_style? || args.no_named? || args.tap
+    no_named_args = false
 
     ENV.activate_extensions!
     ENV.setup_build_environment
@@ -121,6 +122,7 @@ module Homebrew
         ]
       end
     elsif args.no_named?
+      no_named_args = true
       [Formula, Cask::Cask.to_a]
     else
       args.named.to_formulae_and_casks
@@ -222,6 +224,7 @@ module Homebrew
         new_cask:        args.new_cask?,
         token_conflicts: args.token_conflicts?,
         quarantine:      nil,
+        any_named_args:  !no_named_args,
         language:        nil,
       )
     end
