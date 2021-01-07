@@ -252,7 +252,7 @@ the installed formulae or, every 30 days, for all formulae.
 * `-d`, `--debug`:
   If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory.
 * `-f`, `--force`:
-  Install formulae without checking for previously installed keg-only or non-migrated versions. Overwrite existing files when installing casks.
+  Install formulae without checking for previously installed keg-only or non-migrated versions. When installing casks, overwrite existing files (binaries and symlinks are excluded, unless originally from the same cask).
 * `-v`, `--verbose`:
   Print the verification and postinstall steps.
 * `--formula`:
@@ -608,7 +608,7 @@ upgraded formulae or, every 30 days, for all formulae.
 * `-d`, `--debug`:
   If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory.
 * `-f`, `--force`:
-  Install formulae without checking for previously installed keg-only or non-migrated versions. Overwrite existing files when installing casks.
+  Install formulae without checking for previously installed keg-only or non-migrated versions. When installing casks, overwrite existing files (binaries and symlinks are excluded, unless originally from the same cask).
 * `-v`, `--verbose`:
   Print the verification and postinstall steps.
 * `-n`, `--dry-run`:
