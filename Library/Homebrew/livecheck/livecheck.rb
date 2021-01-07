@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "livecheck/error"
+require "livecheck/skip_conditions"
 require "livecheck/strategy"
 require "ruby-progressbar"
 require "uri"
@@ -114,6 +115,7 @@ module Homebrew
       formulae_checked = formulae_and_casks_to_check.map.with_index do |formula_or_cask, i|
         formula = formula_or_cask if formula_or_cask.is_a?(Formula)
         cask = formula_or_cask if formula_or_cask.is_a?(Cask::Cask)
+        name = formula_or_cask_name(formula_or_cask, full_name: full_name)
 
         if debug && i.positive?
           puts <<~EOS
@@ -123,8 +125,13 @@ module Homebrew
           EOS
         end
 
-        skip_result = skip_conditions(formula_or_cask, json: json, full_name: full_name, quiet: quiet)
-        next skip_result if skip_result != false
+        skip_info = SkipConditions.skip_information(formula_or_cask, full_name: full_name, verbose: verbose)
+        if skip_info.present?
+          next skip_info if json
+
+          SkipConditions.print_skip_information(skip_info) unless quiet
+          next
+        end
 
         formula&.head&.downloader&.shutup!
 
@@ -176,8 +183,8 @@ module Homebrew
         is_newer_than_upstream = (formula&.stable? || cask) && (current > latest)
 
         info = {}
-        info[:formula] = formula_name(formula, full_name: full_name) if formula
-        info[:cask] = cask_name(cask, full_name: full_name) if cask
+        info[:formula] = name if formula
+        info[:cask] = name if cask
         info[:version] = {
           current:             current.to_s,
           latest:              latest.to_s,
@@ -209,7 +216,7 @@ module Homebrew
           progress&.increment
           status_hash(formula_or_cask, "error", [e.to_s], full_name: full_name, verbose: verbose)
         elsif !quiet
-          onoe "#{Tty.blue}#{formula_or_cask_name(formula_or_cask, full_name: full_name)}#{Tty.reset}: #{e}"
+          onoe "#{Tty.blue}#{name}#{Tty.reset}: #{e}"
           $stderr.puts e.backtrace if debug && !e.is_a?(Livecheck::Error)
           nil
         end
@@ -281,109 +288,6 @@ module Homebrew
       status_hash[:meta][:head_only] = true if formula&.head_only?
 
       status_hash
-    end
-
-    # If a formula has to be skipped, it prints or returns a Hash contaning the reason
-    # for doing so; returns false otherwise.
-    sig do
-      params(
-        formula_or_cask: T.any(Formula, Cask::Cask),
-        json:            T::Boolean,
-        full_name:       T::Boolean,
-        quiet:           T::Boolean,
-        verbose:         T::Boolean,
-      ).returns(T.nilable(T.any(Hash, T::Boolean)))
-    end
-    def skip_conditions(formula_or_cask, json: false, full_name: false, quiet: false, verbose: false)
-      case formula_or_cask
-      when Formula
-        formula = formula_or_cask
-        name = formula_name(formula, full_name: full_name)
-      when Cask::Cask
-        cask = formula_or_cask
-        name = cask_name(cask, full_name: full_name)
-      end
-
-      if formula&.deprecated? && !formula.livecheckable?
-        return status_hash(formula, "deprecated", full_name: full_name, verbose: verbose) if json
-
-        puts "#{Tty.red}#{name}#{Tty.reset} : deprecated" unless quiet
-        return
-      end
-
-      if cask&.discontinued? && !cask.livecheckable?
-        return status_hash(cask, "discontinued", full_name: full_name, verbose: verbose) if json
-
-        puts "#{Tty.red}#{name}#{Tty.reset} : discontinued" unless quiet
-        return
-      end
-
-      if formula&.disabled? && !formula.livecheckable?
-        return status_hash(formula, "disabled", full_name: full_name, verbose: verbose) if json
-
-        puts "#{Tty.red}#{name}#{Tty.reset} : disabled" unless quiet
-        return
-      end
-
-      if formula&.versioned_formula? && !formula.livecheckable?
-        return status_hash(formula, "versioned", full_name: full_name, verbose: verbose) if json
-
-        puts "#{Tty.red}#{name}#{Tty.reset} : versioned" unless quiet
-        return
-      end
-
-      if cask.present? && cask.version&.latest? && !cask.livecheckable?
-        return status_hash(cask, "latest", full_name: full_name, verbose: verbose) if json
-
-        puts "#{Tty.red}#{name}#{Tty.reset} : latest" unless quiet
-        return
-      end
-
-      if cask.present? && cask.url&.unversioned? && !cask.livecheckable?
-        return status_hash(cask, "unversioned", full_name: full_name, verbose: verbose) if json
-
-        puts "#{Tty.red}#{name}#{Tty.reset} : unversioned" unless quiet
-        return
-      end
-
-      if formula&.head_only? && !formula.any_version_installed?
-        head_only_msg = "HEAD only formula must be installed to be livecheckable"
-        return status_hash(formula, "error", [head_only_msg], full_name: full_name, verbose: verbose) if json
-
-        puts "#{Tty.red}#{name}#{Tty.reset} : #{head_only_msg}" unless quiet
-        return
-      end
-
-      stable_from_google_code_archive = formula&.stable&.url&.match?(
-        %r{https?://storage\.googleapis\.com/google-code-archive-downloads/}i,
-      )
-      stable_from_internet_archive = formula&.stable&.url&.match?(%r{https?://web\.archive\.org/}i)
-      stable_is_gist = formula&.stable&.url&.match?(%r{https?://gist\.github(?:usercontent)?\.com/}i)
-      if formula_or_cask.livecheck.skip? ||
-         ((stable_from_google_code_archive ||
-         stable_from_internet_archive ||
-         stable_is_gist) && !formula&.livecheckable?)
-        skip_message = if formula_or_cask.livecheck.skip_msg.is_a?(String) &&
-                          formula_or_cask.livecheck.skip_msg.present?
-          formula_or_cask.livecheck.skip_msg.to_s.presence
-        elsif stable_from_google_code_archive
-          "Stable URL is from Google Code Archive"
-        elsif stable_from_internet_archive
-          "Stable URL is from Internet Archive"
-        elsif stable_is_gist
-          "Stable URL is a GitHub Gist"
-        end
-
-        if json
-          skip_messages = skip_message ? [skip_message] : nil
-          return status_hash(formula_or_cask, "skipped", skip_messages, full_name: full_name, verbose: verbose)
-        end
-
-        puts "#{Tty.red}#{name}#{Tty.reset} : skipped#{" - #{skip_message}" if skip_message}" unless quiet
-        return
-      end
-
-      false
     end
 
     # Formats and prints the livecheck result for a formula.
