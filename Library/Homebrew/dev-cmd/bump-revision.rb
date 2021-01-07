@@ -3,7 +3,6 @@
 
 require "formula"
 require "cli/parser"
-require "utils/ast"
 
 module Homebrew
   extend T::Sig
@@ -50,6 +49,9 @@ module Homebrew
           end
         end
       else
+        Homebrew.install_bundler_gems!
+        require "utils/ast"
+
         Utils::Inreplace.inreplace(formula.path) do |s|
           s = s.inreplace_string
           if current_revision.zero?
