@@ -20,7 +20,7 @@ module GitRepositoryExtension
   def git_origin
     return if !git? || !Utils::Git.available?
 
-    Utils.popen_read("git", "config", "--get", "remote.origin.url", chdir: self).chomp.presence
+    Utils.popen_read(Utils::Git.git, "config", "--get", "remote.origin.url", chdir: self).chomp.presence
   end
 
   # Sets the URL of the Git origin remote.
@@ -28,7 +28,7 @@ module GitRepositoryExtension
   def git_origin=(origin)
     return if !git? || !Utils::Git.available?
 
-    safe_system "git", "remote", "set-url", "origin", origin, chdir: self
+    safe_system Utils::Git.git, "remote", "set-url", "origin", origin, chdir: self
   end
 
   # Gets the full commit hash of the HEAD commit.
@@ -36,7 +36,7 @@ module GitRepositoryExtension
   def git_head
     return if !git? || !Utils::Git.available?
 
-    Utils.popen_read("git", "rev-parse", "--verify", "-q", "HEAD", chdir: self).chomp.presence
+    Utils.popen_read(Utils::Git.git, "rev-parse", "--verify", "-q", "HEAD", chdir: self).chomp.presence
   end
 
   # Gets a short commit hash of the HEAD commit.
@@ -45,7 +45,8 @@ module GitRepositoryExtension
     return if !git? || !Utils::Git.available?
 
     short_arg = length&.to_s&.prepend("=")
-    Utils.popen_read("git", "rev-parse", "--short#{short_arg}", "--verify", "-q", "HEAD", chdir: self).chomp.presence
+    Utils.popen_read(Utils::Git.git, "rev-parse", "--short#{short_arg}", "--verify", "-q", "HEAD", chdir: self)
+         .chomp.presence
   end
 
   # Gets the relative date of the last commit, e.g. "1 hour ago"
@@ -53,7 +54,7 @@ module GitRepositoryExtension
   def git_last_commit
     return if !git? || !Utils::Git.available?
 
-    Utils.popen_read("git", "show", "-s", "--format=%cr", "HEAD", chdir: self).chomp.presence
+    Utils.popen_read(Utils::Git.git, "show", "-s", "--format=%cr", "HEAD", chdir: self).chomp.presence
   end
 
   # Gets the name of the currently checked-out branch, or HEAD if the repository is in a detached HEAD state.
@@ -61,7 +62,7 @@ module GitRepositoryExtension
   def git_branch
     return if !git? || !Utils::Git.available?
 
-    Utils.popen_read("git", "rev-parse", "--abbrev-ref", "HEAD", chdir: self).chomp.presence
+    Utils.popen_read(Utils::Git.git, "rev-parse", "--abbrev-ref", "HEAD", chdir: self).chomp.presence
   end
 
   # Gets the name of the default origin HEAD branch.
@@ -69,7 +70,7 @@ module GitRepositoryExtension
   def git_origin_branch
     return if !git? || !Utils::Git.available?
 
-    Utils.popen_read("git", "symbolic-ref", "-q", "--short", "refs/remotes/origin/HEAD", chdir: self)
+    Utils.popen_read(Utils::Git.git, "symbolic-ref", "-q", "--short", "refs/remotes/origin/HEAD", chdir: self)
          .chomp.presence&.split("/")&.last
   end
 
@@ -84,7 +85,7 @@ module GitRepositoryExtension
   def git_last_commit_date
     return if !git? || !Utils::Git.available?
 
-    Utils.popen_read("git", "show", "-s", "--format=%cd", "--date=short", "HEAD", chdir: self).chomp.presence
+    Utils.popen_read(Utils::Git.git, "show", "-s", "--format=%cd", "--date=short", "HEAD", chdir: self).chomp.presence
   end
 
   # Gets the full commit message of the specified commit, or of the HEAD commit if unspecified.
@@ -92,6 +93,6 @@ module GitRepositoryExtension
   def git_commit_message(commit = "HEAD")
     return if !git? || !Utils::Git.available?
 
-    Utils.popen_read("git", "log", "-1", "--pretty=%B", commit, "--", chdir: self, err: :out).strip.presence
+    Utils.popen_read(Utils::Git.git, "log", "-1", "--pretty=%B", commit, "--", chdir: self, err: :out).strip.presence
   end
 end
