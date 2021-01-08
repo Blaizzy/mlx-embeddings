@@ -172,7 +172,7 @@ class Tap
   def git_short_head
     raise TapUnavailableError, name unless installed?
 
-    path.git_short_head
+    path.git_short_head(length: 4)
   end
 
   # Time since last git commit for this {Tap}.

@@ -20,6 +20,7 @@ Style/Documentation:
     - 'utils.rb'
     - 'utils/fork.rb'
     - 'utils/gems.rb'
+    - 'utils/git_repository.rb'
     - 'utils/popen.rb'
     - 'utils/shell.rb'
     - 'version.rb'

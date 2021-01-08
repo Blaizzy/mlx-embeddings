@@ -18,57 +18,59 @@ module GitRepositoryExtension
   # Gets the URL of the Git origin remote.
   sig { returns(T.nilable(String)) }
   def git_origin
-    return unless git? && Utils::Git.available?
+    return if !git? || !Utils::Git.available?
 
-    Utils.popen_read("git", "config", "--get", "remote.origin.url", chdir: self).chomp.presence
+    Utils.popen_read(Utils::Git.git, "config", "--get", "remote.origin.url", chdir: self).chomp.presence
   end
 
   # Sets the URL of the Git origin remote.
   sig { params(origin: String).returns(T.nilable(T::Boolean)) }
   def git_origin=(origin)
-    return unless git? && Utils::Git.available?
+    return if !git? || !Utils::Git.available?
 
-    safe_system "git", "remote", "set-url", "origin", origin, chdir: self
+    safe_system Utils::Git.git, "remote", "set-url", "origin", origin, chdir: self
   end
 
   # Gets the full commit hash of the HEAD commit.
   sig { returns(T.nilable(String)) }
   def git_head
-    return unless git? && Utils::Git.available?
+    return if !git? || !Utils::Git.available?
 
-    Utils.popen_read("git", "rev-parse", "--verify", "-q", "HEAD", chdir: self).chomp.presence
+    Utils.popen_read(Utils::Git.git, "rev-parse", "--verify", "-q", "HEAD", chdir: self).chomp.presence
   end
 
   # Gets a short commit hash of the HEAD commit.
-  sig { returns(T.nilable(String)) }
-  def git_short_head
-    return unless git? && Utils::Git.available?
+  sig { params(length: T.nilable(Integer)).returns(T.nilable(String)) }
+  def git_short_head(length: nil)
+    return if !git? || !Utils::Git.available?
 
-    Utils.popen_read("git", "rev-parse", "--short=4", "--verify", "-q", "HEAD", chdir: self).chomp.presence
+    short_arg = length&.to_s&.prepend("=")
+    Utils.popen_read(Utils::Git.git, "rev-parse", "--short#{short_arg}", "--verify", "-q", "HEAD", chdir: self)
+         .chomp.presence
   end
 
   # Gets the relative date of the last commit, e.g. "1 hour ago"
   sig { returns(T.nilable(String)) }
   def git_last_commit
-    return unless git? && Utils::Git.available?
+    return if !git? || !Utils::Git.available?
 
-    Utils.popen_read("git", "show", "-s", "--format=%cr", "HEAD", chdir: self).chomp.presence
+    Utils.popen_read(Utils::Git.git, "show", "-s", "--format=%cr", "HEAD", chdir: self).chomp.presence
   end
 
   # Gets the name of the currently checked-out branch, or HEAD if the repository is in a detached HEAD state.
   sig { returns(T.nilable(String)) }
   def git_branch
-    return unless git? && Utils::Git.available?
+    return if !git? || !Utils::Git.available?
 
-    Utils.popen_read("git", "rev-parse", "--abbrev-ref", "HEAD", chdir: self).chomp.presence
+    Utils.popen_read(Utils::Git.git, "rev-parse", "--abbrev-ref", "HEAD", chdir: self).chomp.presence
   end
 
   # Gets the name of the default origin HEAD branch.
   sig { returns(T.nilable(String)) }
   def git_origin_branch
-    return unless git? && Utils::Git.available?
+    return if !git? || !Utils::Git.available?
 
-    Utils.popen_read("git", "symbolic-ref", "-q", "--short", "refs/remotes/origin/HEAD", chdir: self)
+    Utils.popen_read(Utils::Git.git, "symbolic-ref", "-q", "--short", "refs/remotes/origin/HEAD", chdir: self)
          .chomp.presence&.split("/")&.last
   end
 
@@ -81,16 +83,16 @@ module GitRepositoryExtension
   # Returns the date of the last commit, in YYYY-MM-DD format.
   sig { returns(T.nilable(String)) }
   def git_last_commit_date
-    return unless git? && Utils::Git.available?
+    return if !git? || !Utils::Git.available?
 
-    Utils.popen_read("git", "show", "-s", "--format=%cd", "--date=short", "HEAD", chdir: self).chomp.presence
+    Utils.popen_read(Utils::Git.git, "show", "-s", "--format=%cd", "--date=short", "HEAD", chdir: self).chomp.presence
   end
 
   # Gets the full commit message of the specified commit, or of the HEAD commit if unspecified.
   sig { params(commit: String).returns(T.nilable(String)) }
   def git_commit_message(commit = "HEAD")
-    return unless git? && Utils::Git.available?
+    return if !git? || !Utils::Git.available?
 
-    Utils.popen_read("git", "log", "-1", "--pretty=%B", commit, "--", chdir: self, err: :out).strip.presence
+    Utils.popen_read(Utils::Git.git, "log", "-1", "--pretty=%B", commit, "--", chdir: self, err: :out).strip.presence
   end
 end
