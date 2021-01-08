@@ -16,7 +16,7 @@ describe RuboCop::Cop::Style::UnlessMultipleConditions do
 
     expect_offense <<~RUBY
       something unless foo && bar
-      ^^^^^^^^^^^^^^^^^^^^^^^^^^^ Avoid using `unless` with multiple conditions.
+                ^^^^^^^^^^^^^^^^^ Avoid using `unless` with multiple conditions.
     RUBY
   end
 
@@ -30,7 +30,7 @@ describe RuboCop::Cop::Style::UnlessMultipleConditions do
 
     expect_offense <<~RUBY
       something unless foo || bar
-      ^^^^^^^^^^^^^^^^^^^^^^^^^^^ Avoid using `unless` with multiple conditions.
+                ^^^^^^^^^^^^^^^^^ Avoid using `unless` with multiple conditions.
     RUBY
   end
 
@@ -68,5 +68,61 @@ describe RuboCop::Cop::Style::UnlessMultipleConditions do
     expect_no_offenses <<~RUBY
       something unless foo
     RUBY
+  end
+
+  it "auto-corrects `unless` with multiple `and` conditions" do
+    source = <<~RUBY
+      unless foo && (bar || baz)
+        something
+      end
+    RUBY
+
+    corrected_source = <<~RUBY
+      if !(foo) || !(bar || baz)
+        something
+      end
+    RUBY
+
+    new_source = autocorrect_source(source)
+    expect(new_source).to eq(corrected_source)
+
+    source = <<~RUBY
+      something unless foo && bar
+    RUBY
+
+    corrected_source = <<~RUBY
+      something if !(foo) || !(bar)
+    RUBY
+
+    new_source = autocorrect_source(source)
+    expect(new_source).to eq(corrected_source)
+  end
+
+  it "auto-corrects `unless` with multiple `or` conditions" do
+    source = <<~RUBY
+      unless foo || (bar && baz)
+        something
+      end
+    RUBY
+
+    corrected_source = <<~RUBY
+      if !(foo) && !(bar && baz)
+        something
+      end
+    RUBY
+
+    new_source = autocorrect_source(source)
+    expect(new_source).to eq(corrected_source)
+
+    source = <<~RUBY
+      something unless foo || bar
+    RUBY
+
+    corrected_source = <<~RUBY
+      something if !(foo) && !(bar)
+    RUBY
+
+    new_source = autocorrect_source(source)
+    expect(new_source).to eq(corrected_source)
   end
 end
