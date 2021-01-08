@@ -26570,7 +26570,6 @@ end
 
 class Resource
   include ::FileUtils::StreamUtils_
-  def sha256(val); end
 end
 
 class Resource::Partial
@@ -30072,6 +30071,11 @@ module Utils::Shell
 end
 
 module Utils::Svn
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Utils
+  extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
