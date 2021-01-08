@@ -18,7 +18,7 @@ homebrew-casks() {
          -maxdepth 4 -path '*/Casks/*.rb' | \
     sed "$sed_extended_regex_flag" \
       -e 's/\.rb//g' \
-      -e 's_.*/Taps/(.*)/(home|linux)brew-_\1/_' \
+      -e 's_.*/Taps/(.*)/homebrew-_\1/_' \
       -e 's|/Casks/|/|' \
   )"
   local shortnames
