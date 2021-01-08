@@ -30,19 +30,19 @@ class Cmd
   def initialize(arg0, args)
     @arg0 = arg0
     @args = args.freeze
-    @config = ENV.fetch("HOMEBREW_CCCFG") { "" }
+    @config = ENV.fetch("HOMEBREW_CCCFG", "")
     @prefix = ENV["HOMEBREW_PREFIX"]
     @cellar = ENV["HOMEBREW_CELLAR"]
     @cachedir = ENV["HOMEBREW_CACHE"]
     @opt = ENV["HOMEBREW_OPT"]
     @tmpdir = ENV["HOMEBREW_TEMP"]
     @sysroot = ENV["HOMEBREW_SDKROOT"]
-    @archflags = ENV.fetch("HOMEBREW_ARCHFLAGS") { "" }.split(" ")
-    @optflags = ENV.fetch("HOMEBREW_OPTFLAGS") { "" }.split(" ")
-    @deps = Set.new(ENV.fetch("HOMEBREW_DEPENDENCIES") { "" }.split(","))
+    @archflags = ENV.fetch("HOMEBREW_ARCHFLAGS", "").split
+    @optflags = ENV.fetch("HOMEBREW_OPTFLAGS", "").split
+    @deps = Set.new(ENV.fetch("HOMEBREW_DEPENDENCIES", "").split(","))
     @formula_prefix = ENV["HOMEBREW_FORMULA_PREFIX"]
     # matches opt or cellar prefix and formula name
-    @keg_regex = %r[(#{Regexp.escape(opt)}|#{Regexp.escape(cellar)})/([\w+-.@]+)]
+    @keg_regex = %r{(#{Regexp.escape(opt)}|#{Regexp.escape(cellar)})/([\w+-.@]+)}
   end
 
   def mode
@@ -51,7 +51,7 @@ class Cmd
     elsif ["ld", "ld.gold", "gold"].include? @arg0
       :ld
     elsif @args.include? "-c"
-      if @arg0 =~ /(?:c|g|clang)\+\+/
+      if /(?:c|g|clang)\+\+/.match?(@arg0)
         :cxx
       else
         :cc
@@ -60,12 +60,10 @@ class Cmd
       :cxx
     elsif @args.include? "-E"
       :ccE
+    elsif /(?:c|g|clang)\+\+/.match?(@arg0)
+      :cxxld
     else
-      if @arg0 =~ /(?:c|g|clang)\+\+/
-        :cxxld
-      else
-        :ccld
-      end
+      :ccld
     end
   end
 
@@ -75,7 +73,7 @@ class Cmd
     when "gold", "ld.gold" then "ld.gold"
     when "cpp" then "cpp"
     when /llvm_(clang(\+\+)?)/
-     "#{ENV["HOMEBREW_PREFIX"]}/opt/llvm/bin/#{$1}"
+      "#{ENV["HOMEBREW_PREFIX"]}/opt/llvm/bin/#{Regexp.last_match(1)}"
     when /\w\+\+(-\d+(\.\d)?)?$/
       case ENV["HOMEBREW_CC"]
       when /clang/
@@ -83,7 +81,7 @@ class Cmd
       when /llvm-gcc/
         "llvm-g++-4.2"
       when /(g)?cc(-\d+(\.\d)?)?$/
-        "g++" + $2.to_s
+        "g++#{Regexp.last_match(2)}"
       end
     else
       # Note that this is a universal fallback, so that we'll always invoke
@@ -104,10 +102,10 @@ class Cmd
       return @args.dup
     end
 
-    if !refurbish_args? || tool == "ld" || configure?
-      args = @args.dup
+    args = if !refurbish_args? || tool == "ld" || configure?
+      @args.dup
     else
-      args = refurbished_args
+      refurbished_args
     end
 
     if sysroot
@@ -189,10 +187,12 @@ class Cmd
       # used for -Xpreprocessor -fopenmp
       args << arg << enum.next
     when /-mmacosx-version-min=(\d+)\.(\d+)/
-      arg = "-mmacosx-version-min=10.9" if high_sierra_or_later? && $1 == "10" && $2.to_i < 9
+      if high_sierra_or_later? && Regexp.last_match(1) == "10" && Regexp.last_match(2).to_i < 9
+        arg = "-mmacosx-version-min=10.9"
+      end
       args << arg
     when "--fast-math"
-      arg = "-ffast-math" if tool =~ /^clang/
+      arg = "-ffast-math" if /^clang/.match?(tool)
       args << arg
     when "-Wno-deprecated-register"
       # older gccs don't support these flags
@@ -221,11 +221,11 @@ class Cmd
       args << "-Wl,#{arg}"
     when /^-I(.+)?/
       # Support both "-Ifoo" (one argument) and "-I foo" (two arguments)
-      val  = chuzzle($1) || enum.next
+      val  = chuzzle(Regexp.last_match(1)) || enum.next
       path = canonical_path(val)
       args << "-I#{val}" if keep?(path) && @iset.add?(path)
     when /^-L(.+)?/
-      val  = chuzzle($1) || enum.next
+      val  = chuzzle(Regexp.last_match(1)) || enum.next
       path = canonical_path(val)
       args << "-L#{val}" if keep?(path) && @lset.add?(path)
     else
@@ -264,14 +264,14 @@ class Cmd
   def cflags
     args = []
 
-    return args unless refurbish_args? || configure?
+    return args if !refurbish_args? && !configure?
 
     args << "-pipe"
     args << "-w" unless configure?
     args << "-#{ENV["HOMEBREW_OPTIMIZATION_LEVEL"]}"
     args.concat(optflags)
     args.concat(archflags)
-    args << "-std=#{@arg0}" if @arg0 =~ /c[89]9/
+    args << "-std=#{@arg0}" if /c[89]9/.match?(@arg0)
     args
   end
 
@@ -342,7 +342,7 @@ class Cmd
 
   def system_library_paths
     paths = ["#{sysroot}/usr/lib"]
-    paths << "/usr/local/lib" unless sysroot || ENV["SDKROOT"]
+    paths << "/usr/local/lib" if !sysroot && !ENV["SDKROOT"]
     paths
   end
 
@@ -393,11 +393,12 @@ class Cmd
   end
 
   def path_split(key)
-    ENV.fetch(key) { "" }.split(File::PATH_SEPARATOR)
+    ENV.fetch(key, "").split(File::PATH_SEPARATOR)
   end
 
   def chuzzle(val)
     return val if val.nil?
+
     val = val.chomp
     return val unless val.empty?
   end
@@ -435,7 +436,7 @@ if __FILE__ == $PROGRAM_NAME
 
   ####################################################################### main
 
-  dirname, basename = File.split($0)
+  dirname, basename = File.split($PROGRAM_NAME)
 
   cmd = Cmd.new(basename, ARGV)
   tool = cmd.tool
@@ -443,7 +444,7 @@ if __FILE__ == $PROGRAM_NAME
 
   log(basename, ARGV, tool, args)
 
-  args << { :close_others => false }
+  args << { close_others: false }
   if mac?
     exec "#{dirname}/xcrun", tool, *args
   else
