@@ -406,6 +406,12 @@ IO::EWOULDBLOCKWaitReadable = IO::EAGAINWaitReadable
 
 IO::EWOULDBLOCKWaitWritable = IO::EAGAINWaitWritable
 
+class IPAddr
+  include(::Comparable)
+
+  def as_json(options = T.unsafe(nil)); end
+end
+
 class Module
   def cattr_accessor(*syms, instance_reader: T.unsafe(nil), instance_writer: T.unsafe(nil), instance_accessor: T.unsafe(nil), default: T.unsafe(nil), &blk); end
   def cattr_reader(*syms, instance_reader: T.unsafe(nil), instance_accessor: T.unsafe(nil), default: T.unsafe(nil), location: T.unsafe(nil)); end
@@ -457,12 +463,6 @@ class Object < ::BasicObject
   def presence; end
   def present?; end
 end
-
-::APPLE_GEM_HOME = T.let(T.unsafe(nil), String)
-
-::RUBY_FRAMEWORK = T.let(T.unsafe(nil), TrueClass)
-
-::RUBY_FRAMEWORK_VERSION = T.let(T.unsafe(nil), String)
 
 class Pathname
   def as_json(options = T.unsafe(nil)); end
