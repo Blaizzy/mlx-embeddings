@@ -14,7 +14,7 @@ homebrew-items() {
   items="$( \
     find "$HOMEBREW_REPOSITORY/Library/Taps" \
          -type d \( \
-           -name $find_filter -o \
+           -name "$find_filter" -o \
            -name cmd -o \
            -name .github -o \
            -name lib -o \
@@ -25,11 +25,11 @@ homebrew-items() {
     sed "$sed_extended_regex_flag" \
       -e 's/\.rb//g' \
       -e 's_.*/Taps/(.*)/(home|linux)brew-_\1/_' \
-      -e $sed_filter \
+      -e "$sed_filter" \
   )"
   local shortnames
   shortnames="$(echo "$items" | cut -d "/" -f 3)"
   echo -e "$items\n$shortnames" | \
-    grep -v $grep_filter | \
+    grep -v "$grep_filter" | \
     sort -uf
 }
