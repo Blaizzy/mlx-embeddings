@@ -141,9 +141,8 @@ module GitHub
   def api_credentials_error_message(response_headers, needed_scopes)
     return if response_headers.empty?
 
-    unauthorized = (response_headers["http/1.1"] == "401 Unauthorized")
     scopes = response_headers["x-accepted-oauth-scopes"].to_s.split(", ")
-    return unless unauthorized && scopes.blank?
+    return if scopes.present?
 
     needed_human_scopes = needed_scopes.join(", ")
     credentials_scopes = response_headers["x-oauth-scopes"]
