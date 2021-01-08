@@ -62,7 +62,7 @@ module Utils
         end
       end
 
-      def report_event(category, action, label = os_prefix_ci, value = nil)
+      def report_event(category, action, label = os_arch_prefix_ci, value = nil)
         report(:event,
                ec: category,
                ea: action,
@@ -198,19 +198,30 @@ module Utils
       def custom_prefix_label
         "custom-prefix"
       end
+      alias generic_custom_prefix_label custom_prefix_label
 
-      def clear_os_prefix_ci
-        return unless instance_variable_defined?(:@os_prefix_ci)
-
-        remove_instance_variable(:@os_prefix_ci)
+      sig { returns(String) }
+      def arch_label
+        if Hardware::CPU.arm?
+          "ARM"
+        else
+          ""
+        end
       end
 
-      def os_prefix_ci
-        @os_prefix_ci ||= begin
+      def clear_os_arch_prefix_ci
+        return unless instance_variable_defined?(:@os_arch_prefix_ci)
+
+        remove_instance_variable(:@os_arch_prefix_ci)
+      end
+
+      def os_arch_prefix_ci
+        @os_arch_prefix_ci ||= begin
           os = OS_VERSION
+          arch = ", #{arch_label}" if arch_label.present?
           prefix = ", #{custom_prefix_label}" unless Homebrew.default_prefix?
           ci = ", CI" if ENV["CI"]
-          "#{os}#{prefix}#{ci}"
+          "#{os}#{arch}#{prefix}#{ci}"
         end
       end
 
