@@ -35,9 +35,9 @@ module Homebrew
     case args.named.first
     when nil, "state"
       if Completions.link_completions?
-        puts "Completions are not linked."
-      else
         puts "Completions are linked."
+      else
+        puts "Completions are not linked."
       end
     when "link"
       Completions.link!
