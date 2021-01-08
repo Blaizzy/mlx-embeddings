@@ -74,6 +74,7 @@ reinstall
 release-notes
 remove
 rm
+rubocop
 ruby
 search
 sh

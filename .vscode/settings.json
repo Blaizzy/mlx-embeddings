@@ -1,0 +1,6 @@
+{
+    "ruby.rubocop.executePath": "Library/Homebrew/shims/gems/",
+    "files.trimTrailingWhitespace": true,
+    "editor.tabSize": 2,
+    "files.insertFinalNewline": true,
+}
