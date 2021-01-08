@@ -13124,6 +13124,7 @@ class Object
   CROSS_COMPILING = ::T.let(nil, ::T.untyped)
   DEPRECATED_OFFICIAL_TAPS = ::T.let(nil, ::T.untyped)
   ENV = ::T.let(nil, ::T.untyped)
+  FORMULA_COMPONENT_PRECEDENCE_LIST = ::T.let(nil, ::T.untyped)
   HOMEBREW_BOTTLE_DEFAULT_DOMAIN = ::T.let(nil, ::T.untyped)
   HOMEBREW_BREW_DEFAULT_GIT_REMOTE = ::T.let(nil, ::T.untyped)
   HOMEBREW_BREW_FILE = ::T.let(nil, ::T.untyped)
@@ -27690,12 +27691,6 @@ class RuboCop::AST::Node
 
   def key_node(param0=T.unsafe(nil)); end
 
-  def kwargs_type?(); end
-
-  def match_pattern_p_type?(); end
-
-  def match_pattern_type?(); end
-
   def method_node(param0=T.unsafe(nil)); end
 
   def val_node(param0=T.unsafe(nil)); end
@@ -27711,15 +27706,6 @@ module RuboCop::AST::NodePattern::Sets
   SET_INCLUDE_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
   SET_SYSTEM_SHELL_OUTPUT_PIPE_OUTPUT = ::T.let(nil, ::T.untyped)
   SET_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
-  SET___EQL = ::T.let(nil, ::T.untyped)
-end
-
-module RuboCop::AST::Traversal
-  def on_kwargs(node); end
-
-  def on_match_pattern(node); end
-
-  def on_match_pattern_p(node); end
 end
 
 class RuboCop::Cask::AST::CaskHeader
