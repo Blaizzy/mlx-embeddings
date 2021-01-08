@@ -596,6 +596,12 @@ Nokogiri::PRECOMPILED_LIBRARIES = T.let(T.unsafe(nil), TrueClass)
 class Nokogiri::SyntaxError < ::StandardError
 end
 
+module Nokogiri::Test
+  class << self
+    def __foreign_error_handler; end
+  end
+end
+
 Nokogiri::VERSION = T.let(T.unsafe(nil), String)
 
 Nokogiri::VERSION_INFO = T.let(T.unsafe(nil), Hash)
