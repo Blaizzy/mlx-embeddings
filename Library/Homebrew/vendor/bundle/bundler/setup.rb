@@ -73,7 +73,7 @@ $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/sorbet-static-0.5.619
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/sorbet-0.5.6198/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rspec-sorbet-1.8.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rspec-wait-0.0.9/lib"
-$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rubocop-ast-1.3.0/lib"
+$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rubocop-ast-1.4.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/ruby-progressbar-1.11.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/unicode-display_width-1.7.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rubocop-1.7.0/lib"
