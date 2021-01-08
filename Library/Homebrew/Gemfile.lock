@@ -1,7 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (6.1.0)
+    activesupport (6.1.1)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
@@ -28,7 +28,7 @@ GEM
     hpricot (0.8.6)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
-    i18n (1.8.5)
+    i18n (1.8.7)
       concurrent-ruby (~> 1.0)
     mechanize (2.7.6)
       domain_name (~> 0.5, >= 0.5.1)
@@ -44,7 +44,7 @@ GEM
       mime-types-data (~> 3.2015)
     mime-types-data (3.2020.1104)
     mini_portile2 (2.5.0)
-    minitest (5.14.2)
+    minitest (5.14.3)
     mustache (1.1.1)
     net-http-digest_auth (1.4.1)
     net-http-persistent (4.0.0)
@@ -153,7 +153,7 @@ GEM
       spoom
       thor (>= 0.19.2)
     thor (1.0.1)
-    tzinfo (2.0.3)
+    tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
     unf (0.1.4)
       unf_ext
