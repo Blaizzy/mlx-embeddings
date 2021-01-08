@@ -303,7 +303,7 @@ class Pathname
   def verify_checksum(expected)
     raise ChecksumMissingError if expected.blank?
 
-    actual = Checksum.new(expected.hash_type, send(expected.hash_type).downcase)
+    actual = Checksum.new(sha256.downcase)
     raise ChecksumMismatchError.new(self, expected, actual) unless expected == actual
   end
 

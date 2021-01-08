@@ -94,7 +94,7 @@ module Homebrew
 
           if resource_name == "patch"
             patch_hashes = formula.stable&.patches&.select(&:external?)&.map(&:resource)&.map(&:version)
-            return true unless patch_hashes&.include?(Checksum.new(:sha256, version.to_s))
+            return true unless patch_hashes&.include?(Checksum.new(version.to_s))
           elsif resource_name && resource_version = formula.stable&.resources&.dig(resource_name)&.version
             return true if resource_version != version
           elsif version.is_a?(PkgVersion)

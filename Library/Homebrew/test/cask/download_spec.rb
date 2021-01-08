@@ -25,7 +25,7 @@ module Cask
       end
 
       context "when expected and computed checksums match" do
-        let(:expected_sha256) { Checksum.new(:sha256, cafebabe) }
+        let(:expected_sha256) { Checksum.new(cafebabe) }
 
         it "does not raise an error" do
           expect { verification }.not_to raise_error
@@ -41,7 +41,7 @@ module Cask
       end
 
       context "when the expected checksum is empty" do
-        let(:expected_sha256) { Checksum.new(:sha256, "") }
+        let(:expected_sha256) { Checksum.new("") }
 
         it "outputs an error" do
           expect { verification }.to output(/sha256 "#{computed_sha256}"/).to_stderr
@@ -49,7 +49,7 @@ module Cask
       end
 
       context "when expected and computed checksums do not match" do
-        let(:expected_sha256) { Checksum.new(:sha256, deadbeef) }
+        let(:expected_sha256) { Checksum.new(deadbeef) }
 
         it "raises an error" do
           expect { verification }.to raise_error ChecksumMismatchError

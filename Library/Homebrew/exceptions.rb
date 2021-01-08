@@ -626,14 +626,13 @@ class ChecksumMissingError < ArgumentError; end
 
 # Raised by {Pathname#verify_checksum} when verification fails.
 class ChecksumMismatchError < RuntimeError
-  attr_reader :expected, :hash_type
+  attr_reader :expected
 
   def initialize(path, expected, actual)
     @expected = expected
-    @hash_type = expected.hash_type.to_s.upcase
 
     super <<~EOS
-      #{@hash_type} mismatch
+      SHA256 mismatch
       Expected: #{Formatter.success(expected.to_s)}
         Actual: #{Formatter.error(actual.to_s)}
           File: #{path}

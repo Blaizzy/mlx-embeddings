@@ -132,28 +132,28 @@ module Homebrew
     fetch_fetchable r, args: args
   rescue ChecksumMismatchError => e
     retry if retry_fetch?(r, args: args)
-    opoo "Resource #{r.name} reports different #{e.hash_type}: #{e.expected}"
+    opoo "Resource #{r.name} reports different sha256: #{e.expected}"
   end
 
   def fetch_formula(f, args:)
     fetch_fetchable f, args: args
   rescue ChecksumMismatchError => e
     retry if retry_fetch?(f, args: args)
-    opoo "Formula reports different #{e.hash_type}: #{e.expected}"
+    opoo "Formula reports different sha256: #{e.expected}"
   end
 
   def fetch_cask(cask_download, args:)
     fetch_fetchable cask_download, args: args
   rescue ChecksumMismatchError => e
     retry if retry_fetch?(cask_download, args: args)
-    opoo "Cask reports different #{e.hash_type}: #{e.expected}"
+    opoo "Cask reports different sha256: #{e.expected}"
   end
 
   def fetch_patch(p, args:)
     fetch_fetchable p, args: args
   rescue ChecksumMismatchError => e
     Homebrew.failed = true
-    opoo "Patch reports different #{e.hash_type}: #{e.expected}"
+    opoo "Patch reports different sha256: #{e.expected}"
   end
 
   def retry_fetch?(f, args:)
@@ -183,7 +183,7 @@ module Homebrew
     return unless download.file?
 
     puts "Downloaded to: #{download}" unless already_fetched
-    puts Checksum::TYPES.map { |t| "#{t.to_s.upcase}: #{download.send(t)}" }
+    puts "SHA256: #{download.sha256}"
 
     f.verify_download_integrity(download)
   end

@@ -162,11 +162,8 @@ module Homebrew
 
     check_for_mirrors(formula, old_mirrors, new_mirrors, args: args) if new_url.present?
 
-    hash_type, old_hash = if (checksum = formula_spec.checksum)
-      [checksum.hash_type, checksum.hexdigest]
-    end
-
-    new_hash = args[hash_type] if hash_type.present?
+    old_hash = formula_spec.checksum&.hexdigest
+    new_hash = args.sha256
     new_tag = args.tag
     new_revision = args.revision
     old_url = formula_spec.url
@@ -180,7 +177,7 @@ module Homebrew
     elsif new_tag && new_revision
       check_closed_pull_requests(formula, tap_full_name, url: old_url, tag: new_tag, args: args) if new_version.blank?
       false
-    elsif hash_type.blank?
+    elsif old_hash.blank?
       if new_tag.blank? && new_version.blank? && new_revision.blank?
         raise UsageError, "#{formula}: no --tag= or --version= argument specified!"
       end
