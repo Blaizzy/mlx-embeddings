@@ -671,16 +671,16 @@ module GitHub
   end
 
   def create_bump_pr(info, args:)
+    tap = info[:tap]
     sourcefile_path = info[:sourcefile_path]
     old_contents = info[:old_contents]
     additional_files = info[:additional_files] || []
     remote = info[:remote] || "origin"
-    remote_branch = info[:remote_branch]
+    remote_branch = info[:remote_branch] || tap.path.git_origin_branch
     branch = info[:branch_name]
     commit_message = info[:commit_message]
-    previous_branch = info[:previous_branch]
-    tap = info[:tap]
-    tap_full_name = info[:tap_full_name]
+    previous_branch = info[:previous_branch] || "-"
+    tap_full_name = info[:tap_full_name] || tap.full_name
     pr_message = info[:pr_message]
 
     sourcefile_path.parent.cd do

@@ -67,6 +67,10 @@ module Homebrew
     ENV["BROWSER"] = Homebrew::EnvConfig.browser
 
     cask = args.named.to_casks.first
+
+    odie "This cask is not in a tap!" if cask.tap.blank?
+    odie "This cask's tap is not a Git repository!" unless cask.tap.git?
+
     new_version = args.version
     new_version = :latest if ["latest", ":latest"].include?(new_version)
     new_version = Cask::DSL::Version.new(new_version) if new_version.present?
@@ -81,12 +85,7 @@ module Homebrew
     old_version = cask.version
     old_hash = cask.sha256
 
-    tap_full_name = cask.tap&.full_name
-    default_remote_branch = cask.tap.path.git_origin_branch if cask.tap
-    default_remote_branch ||= "master"
-    previous_branch = "-"
-
-    check_open_pull_requests(cask, tap_full_name, args: args)
+    check_open_pull_requests(cask, args: args)
 
     old_contents = File.read(cask.sourcefile_path)
 
@@ -180,12 +179,9 @@ module Homebrew
     pr_info = {
       sourcefile_path: cask.sourcefile_path,
       old_contents:    old_contents,
-      remote_branch:   default_remote_branch,
       branch_name:     branch_name,
       commit_message:  commit_message,
-      previous_branch: previous_branch,
       tap:             cask.tap,
-      tap_full_name:   tap_full_name,
       pr_message:      "Created with `brew bump-cask-pr`.",
     }
     GitHub.create_bump_pr(pr_info, args: args)
@@ -199,8 +195,8 @@ module Homebrew
     resource.fetch
   end
 
-  def check_open_pull_requests(cask, tap_full_name, args:)
-    GitHub.check_for_duplicate_pull_requests(cask.token, tap_full_name,
+  def check_open_pull_requests(cask, args:)
+    GitHub.check_for_duplicate_pull_requests(cask.token, cask.tap.full_name,
                                              state: "open",
                                              file:  cask.sourcefile_path.relative_path_from(cask.tap.path).to_s,
                                              args:  args)

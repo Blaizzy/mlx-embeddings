@@ -84,9 +84,9 @@ module Homebrew
   end
 
   def use_correct_linux_tap(formula, args:)
-    default_origin_branch = formula.tap.path.git_origin_branch if formula.tap
+    default_origin_branch = formula.tap.path.git_origin_branch
 
-    return formula.tap&.full_name, "origin", default_origin_branch, "-" if !OS.linux? || !formula.tap.core_tap?
+    return formula.tap.full_name, "origin", default_origin_branch, "-" if !OS.linux? || !formula.tap.core_tap?
 
     tap_full_name = formula.tap.full_name.gsub("linuxbrew", "homebrew")
     homebrew_core_url = "https://github.com/#{tap_full_name}"
@@ -139,6 +139,8 @@ module Homebrew
     raise FormulaUnspecifiedError if formula.blank?
 
     odie "This formula is disabled!" if formula.disabled?
+    odie "This formula is not in a tap!" if formula.tap.blank?
+    odie "This formula's tap is not a Git repository!" unless formula.tap.git?
 
     tap_full_name, remote, remote_branch, previous_branch = use_correct_linux_tap(formula, args: args)
     check_open_pull_requests(formula, tap_full_name, args: args)
