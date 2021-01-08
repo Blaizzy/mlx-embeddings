@@ -10,13 +10,13 @@
 
 ## 2. Members
 
-1. New members will be admitted by majority vote of the Project Leadership Committee (PLC) and added to the Homebrew organisation on GitHub.
+1. New members will be admitted by an ordinary resolution of the PLC and added to the Homebrew organisation on GitHub.
 
 2. Members may vote in all general elections and resolutions, hold office for Homebrew, and participate in all other membership functions.
 
 3. Members are expected to remain active within Homebrew, and are required to affirm their continued interest in Homebrew membership annually.
 
-4. Members may be dismissed by majority vote of the Project Leadership Committee and removed from the Homebrew organisation on GitHub. Removed members may be reinstated by the usual admission process.
+4. A member may be removed from Homebrew by an ordinary resolution of the PLC. A removed member may be reinstated by the usual admission process.
 
 5. All members will follow the [Homebrew Code of Conduct](https://github.com/Homebrew/.github/blob/HEAD/CODE_OF_CONDUCT.md#code-of-conduct). Changes to the code of conduct must be approved by the PLC.
 
@@ -74,9 +74,9 @@
 
 4. The PLC will meet annually to review the status of all members and remove inactive members and those who have not affirmed a commitment to Homebrew in the past year. Voting in the AGM confirms that a member wishes to remain active with the project. After the AGM, the PLC will ask the members who did not vote whether they wish to remain active with the project. The PLC removes any members who don't respond to this second request after three weeks.
 
-5. The PLC will appoint the members of the Technical Steering Committee (TSC).
+5. The PLC will appoint the members of the TSC.
 
-6. Any member may refer any question or dispute to the PLC. All technical matters should first be referred to the TSC. Non-technical matters may be referred directly to the PLC. Members will make a good faith effort to resolve any disputes prior to referral to the PLC.
+6. Any member may refer any question or dispute to the PLC. All technical matters should first be referred to the TSC. Non-technical matters may be referred directly to the PLC. Members will make a good faith effort to resolve any disputes with compromise prior to referral to the PLC.
 
 7. The PLC may meet by any mutually agreeable means, such as text chat, voice or video call, and in person. Members of the PLC must meet at least once per quarter. Members of the PLC must meet by video call or in person at least once per year.
 
@@ -106,4 +106,4 @@
 
 4. No more than two employees of the same employer may serve on the TSC.
 
-5. A member of the TSC, except the Project Leader, may be removed by an ordinary resolution of the PLC.
+5. A member of the TSC, except the Project Leader, may be removed from the TSC by an ordinary resolution of the PLC.
