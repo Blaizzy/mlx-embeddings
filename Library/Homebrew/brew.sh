@@ -55,6 +55,7 @@ case "$*" in
   --cache)             echo "$HOMEBREW_CACHE"; exit 0 ;;
   shellenv)            source "$HOMEBREW_LIBRARY/Homebrew/cmd/shellenv.sh"; homebrew-shellenv; exit 0 ;;
   formulae)            source "$HOMEBREW_LIBRARY/Homebrew/cmd/formulae.sh"; homebrew-formulae; exit 0 ;;
+  casks)               source "$HOMEBREW_LIBRARY/Homebrew/cmd/casks.sh"; homebrew-casks; exit 0 ;;
 esac
 
 #####

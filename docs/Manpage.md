@@ -65,6 +65,10 @@ Uninstall formulae that were only installed as a dependency of another formula a
 * `-n`, `--dry-run`:
   List what would be uninstalled, but do not actually uninstall anything.
 
+### `casks`
+
+List all locally installable casks including short names.
+
 ### `cleanup` [*`options`*] [*`formula`*|*`cask`*]
 
 Remove stale lock files and outdated downloads for all formulae and casks,
