@@ -32,7 +32,8 @@ module Homebrew
                           "or a shell inside the temporary build directory."
       switch "-f", "--force",
              description: "Install formulae without checking for previously installed keg-only or "\
-                          "non-migrated versions. Overwrite existing files when installing casks."
+                          "non-migrated versions. When installing casks, overwrite existing files "\
+                          "(binaries and symlinks are excluded, unless originally from the same cask)."
       switch "-v", "--verbose",
              description: "Print the verification and postinstall steps."
       switch "-n", "--dry-run",
