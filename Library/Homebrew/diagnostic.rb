@@ -893,7 +893,7 @@ module Homebrew
 
         add_info "Homebrew Cask Staging Location", user_tilde(path.to_s)
 
-        return unless path.exist? && !path.writable?
+        return if !path.exist? || path.writable?
 
         <<~EOS
           The staging path #{user_tilde(path.to_s)} is not writable by the current user.

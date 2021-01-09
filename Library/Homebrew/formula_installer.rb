@@ -193,12 +193,12 @@ class FormulaInstaller
   sig { params(dep: Formula, build: BuildOptions).returns(T::Boolean) }
   def install_bottle_for?(dep, build)
     return pour_bottle? if dep == formula
-    return false if @build_from_source_formulae.include?(dep.full_name)
-    return false unless dep.bottle && dep.pour_bottle?
-    return false unless build.used_options.empty?
-    return false unless dep.bottle&.compatible_locations?
 
-    true
+    @build_from_source_formulae.exclude?(dep.full_name) &&
+      dep.bottle.present? &&
+      dep.pour_bottle? &&
+      build.used_options.empty? &&
+      dep.bottle&.compatible_locations?
   end
 
   sig { void }
@@ -803,7 +803,7 @@ class FormulaInstaller
     keg = Keg.new(formula.prefix)
     link(keg)
 
-    fix_dynamic_linkage(keg) unless @poured_bottle && formula.bottle_specification.skip_relocation?
+    fix_dynamic_linkage(keg) if !@poured_bottle || !formula.bottle_specification.skip_relocation?
 
     if build_bottle?
       ohai "Not running post_install as we're building a bottle"

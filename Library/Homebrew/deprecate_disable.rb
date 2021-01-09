@@ -19,14 +19,14 @@ module DeprecateDisable
   }.freeze
 
   def deprecate_disable_info(formula)
-    return unless formula.deprecated? || formula.disabled?
-
     if formula.deprecated?
       type = :deprecated
       reason = formula.deprecation_reason
-    else
+    elsif formula.disabled?
       type = :disabled
       reason = formula.disable_reason
+    else
+      return
     end
 
     reason = DEPRECATE_DISABLE_REASONS[reason] if DEPRECATE_DISABLE_REASONS.key? reason

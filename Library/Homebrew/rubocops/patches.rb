@@ -113,7 +113,7 @@ module RuboCop
         end
 
         def inline_patch_problems(patch)
-          return unless patch_data?(patch) && !patch_end?
+          return if !patch_data?(patch) || patch_end?
 
           offending_node(patch)
           problem "patch is missing '__END__'"

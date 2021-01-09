@@ -93,7 +93,7 @@ module Homebrew
 
     unversioned_cask_checker = UnversionedCaskChecker.new(cask)
 
-    unless unversioned_cask_checker.single_app_cask? || unversioned_cask_checker.single_pkg_cask?
+    if !unversioned_cask_checker.single_app_cask? && !unversioned_cask_checker.single_pkg_cask?
       opoo "Skipping, not a single-app or PKG cask."
       return
     end

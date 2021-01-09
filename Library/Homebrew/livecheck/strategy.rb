@@ -64,7 +64,7 @@ module Homebrew
           if strategy == PageMatch
             # Only treat the `PageMatch` strategy as usable if a regex is
             # present in the `livecheck` block
-            next unless regex_provided || block_provided
+            next if !regex_provided && !block_provided
           elsif strategy.const_defined?(:PRIORITY) &&
                 !strategy::PRIORITY.positive? &&
                 from_symbol(livecheck_strategy) != strategy

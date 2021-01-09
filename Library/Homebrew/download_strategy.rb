@@ -182,9 +182,7 @@ class VCSDownloadStrategy < AbstractDownloadStrategy
 
     version.update_commit(last_commit) if head?
 
-    return unless @ref_type == :tag
-    return unless @revision && current_revision
-    return if current_revision == @revision
+    return if @ref_type != :tag || @revision.blank? || current_revision.blank? || current_revision == @revision
 
     raise <<~EOS
       #{@ref} tag should be #{@revision}
@@ -827,7 +825,7 @@ class GitDownloadStrategy < VCSDownloadStrategy
   end
 
   def update_repo
-    return unless @ref_type == :branch || !ref?
+    return if @ref_type != :branch && ref?
 
     if !shallow_clone? && shallow_dir?
       command! "git",

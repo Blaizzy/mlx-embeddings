@@ -40,7 +40,7 @@ class LockFile
   private
 
   def create_lockfile
-    return unless @lockfile.nil? || @lockfile.closed?
+    return if @lockfile.present? && !@lockfile.closed?
 
     @lockfile = @path.open(File::RDWR | File::CREAT)
     @lockfile.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)

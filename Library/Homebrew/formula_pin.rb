@@ -18,7 +18,7 @@ class FormulaPin
   def pin_at(version)
     HOMEBREW_PINNED_KEGS.mkpath
     version_path = @f.rack/version
-    path.make_relative_symlink(version_path) unless pinned? || !version_path.exist?
+    path.make_relative_symlink(version_path) if !pinned? && version_path.exist?
   end
 
   def pin
