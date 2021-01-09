@@ -138,10 +138,14 @@ module Utils
       def process_formula(formula_contents)
         processed_source, root_node = process_source(formula_contents)
 
-        class_node = if root_node.class_type?
-          root_node
-        elsif root_node.begin_type?
-          root_node.children.find { |n| n.class_type? && n.parent_class&.const_name == "Formula" }
+        class_node = root_node if root_node.class_type?
+        if root_node.begin_type?
+          nodes = root_node.children.select(&:class_type?)
+          class_node = if nodes.count > 1
+            nodes.find { |n| n.parent_class&.const_name == "Formula" }
+          else
+            nodes.first
+          end
         end
 
         raise "Could not find formula class!" if class_node.nil?
