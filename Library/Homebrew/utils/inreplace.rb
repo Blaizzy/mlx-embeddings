@@ -23,14 +23,22 @@ module Utils
     module_function
 
     # Sometimes we have to change a bit before we install. Mostly we
-    # prefer a patch but if you need the `prefix` of this formula in the
-    # patch you have to resort to `inreplace`, because in the patch
-    # you don't have access to any var defined by the formula. Only
-    # `HOMEBREW_PREFIX` is available in the embedded patch.
+    # prefer a patch, but if you need the {Formula#prefix prefix} of
+    # this formula in the patch you have to resort to `inreplace`,
+    # because in the patch you don't have access to any variables
+    # defined by the formula, as only `HOMEBREW_PREFIX` is available
+    # in the {DATAPatch embedded patch}.
     #
     # `inreplace` supports regular expressions:
     # <pre>inreplace "somefile.cfg", /look[for]what?/, "replace by #{bin}/tool"</pre>
     #
+    # `inreplace` supports blocks:
+    # <pre>inreplace "Makefile" do |s|
+    #   s.gsub! "/usr/local", HOMEBREW_PREFIX.to_s
+    # end
+    # </pre>
+    #
+    # @see StringInreplaceExtension
     # @api public
     sig do
       params(
@@ -65,6 +73,7 @@ module Utils
       raise Error, errors unless errors.empty?
     end
 
+    # @api private
     def inreplace_pairs(path, replacement_pairs, read_only_run: false, silent: false)
       str = File.open(path, "rb", &:read) || ""
       contents = StringInreplaceExtension.new(str)

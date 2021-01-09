@@ -33,7 +33,6 @@ A full example:
 ```ruby
 bottle do
   root_url "https://example.com"
-  prefix "/opt/homebrew"
   cellar "/opt/homebrew/Cellar"
   rebuild 4
   sha256 "4921af80137af9cc3d38fd17c9120da882448a090b0a8a3a19af3199b415bfca" => :sierra
@@ -49,10 +48,6 @@ By default this is omitted and the Homebrew default bottle URL root is used. Thi
 ### Cellar (`cellar`)
 Optionally contains the value of `HOMEBREW_CELLAR` in which the bottles were built.
 Most compiled software contains references to its compiled location so cannot be simply relocated anywhere on disk. If this value is `:any` or `:any_skip_relocation` this means that the bottle can be safely installed in any Cellar as it did not contain any references to its installation Cellar. This can be omitted if a bottle is compiled (as all default Homebrew ones are) for the default `HOMEBREW_CELLAR` of `/usr/local/Cellar`.
-
-### Prefix (`prefix`)
-Optionally contains the value of `HOMEBREW_PREFIX` in which the bottles were built.
-See description of `cellar`. When `cellar` is `:any` or `:any_skip_relocation` the prefix should be omitted.
 
 ### Rebuild version (`rebuild`)
 Optionally contains the rebuild version of the bottle.
