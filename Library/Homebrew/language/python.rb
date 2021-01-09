@@ -287,7 +287,7 @@ module Language
           targets = Array(targets)
           @formula.system @venv_root/"bin/pip", "install",
                           "-v", "--no-deps", "--no-binary", ":all:",
-                          "--ignore-installed", *targets
+                          "--no-user", "--ignore-installed", *targets
         end
       end
     end

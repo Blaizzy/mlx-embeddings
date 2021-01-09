@@ -96,7 +96,7 @@ describe Language::Python::Virtualenv::Virtualenv do
     it "accepts a string" do
       expect(formula).to receive(:system)
         .with(dir/"bin/pip", "install", "-v", "--no-deps",
-              "--no-binary", ":all:", "--ignore-installed", "foo")
+              "--no-binary", ":all:", "--no-user", "--ignore-installed", "foo")
         .and_return(true)
       subject.pip_install "foo"
     end
@@ -104,7 +104,7 @@ describe Language::Python::Virtualenv::Virtualenv do
     it "accepts a multi-line strings" do
       expect(formula).to receive(:system)
         .with(dir/"bin/pip", "install", "-v", "--no-deps",
-              "--no-binary", ":all:", "--ignore-installed", "foo", "bar")
+              "--no-binary", ":all:", "--no-user", "--ignore-installed", "foo", "bar")
         .and_return(true)
 
       subject.pip_install <<~EOS
@@ -116,12 +116,12 @@ describe Language::Python::Virtualenv::Virtualenv do
     it "accepts an array" do
       expect(formula).to receive(:system)
         .with(dir/"bin/pip", "install", "-v", "--no-deps",
-              "--no-binary", ":all:", "--ignore-installed", "foo")
+              "--no-binary", ":all:", "--no-user", "--ignore-installed", "foo")
         .and_return(true)
 
       expect(formula).to receive(:system)
         .with(dir/"bin/pip", "install", "-v", "--no-deps",
-              "--no-binary", ":all:", "--ignore-installed", "bar")
+              "--no-binary", ":all:", "--no-user", "--ignore-installed", "bar")
         .and_return(true)
 
       subject.pip_install ["foo", "bar"]
@@ -133,7 +133,7 @@ describe Language::Python::Virtualenv::Virtualenv do
       expect(res).to receive(:stage).and_yield
       expect(formula).to receive(:system)
         .with(dir/"bin/pip", "install", "-v", "--no-deps",
-              "--no-binary", ":all:", "--ignore-installed", Pathname.pwd)
+              "--no-binary", ":all:", "--no-user", "--ignore-installed", Pathname.pwd)
         .and_return(true)
 
       subject.pip_install res
