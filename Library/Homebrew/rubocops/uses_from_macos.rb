@@ -39,6 +39,7 @@ module RuboCop
           ncompress
           ncurses
           net-snmp
+          netcat
           openldap
           openlibm
           pod2man
