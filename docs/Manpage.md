@@ -96,7 +96,7 @@ Show lists of built-in and external commands.
 
 ### `completions` [*`subcommand`*]
 
-Control whether Homebrew automatically links shell  files.
+Control whether Homebrew automatically links shell completion files.
 Read more at <https://docs.brew.sh/Shell-Completion>.
 
 `brew completions` [`state`]

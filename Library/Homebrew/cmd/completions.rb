@@ -15,7 +15,7 @@ module Homebrew
       usage_banner <<~EOS
         `completions` [<subcommand>]
 
-        Control whether Homebrew automatically links shell  files.
+        Control whether Homebrew automatically links shell completion files.
         Read more at <https://docs.brew.sh/Shell-Completion>.
 
         `brew completions` [`state`]:
