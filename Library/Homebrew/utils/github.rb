@@ -92,6 +92,14 @@ module GitHub
     end
   end
 
+  API_ERRORS = [
+    AuthenticationFailedError,
+    HTTPNotFoundError,
+    RateLimitExceededError,
+    Error,
+    JSON::ParserError,
+  ].freeze
+
   # Gets the password field from `git-credential-osxkeychain` for github.com,
   # but only if that password looks like a GitHub Personal Access Token.
   sig { returns(T.nilable(String)) }
@@ -151,7 +159,7 @@ module GitHub
     needed_human_scopes = "none" if needed_human_scopes.blank?
     credentials_scopes = "none" if credentials_scopes.blank?
 
-    what = case GitHub.api_credentials_type
+    what = case api_credentials_type
     when :keychain_username_password
       "macOS keychain GitHub"
     when :env_token
@@ -265,7 +273,7 @@ module GitHub
       raise RateLimitExceededError.new(reset, message)
     end
 
-    GitHub.api_credentials_error_message(meta, scopes)
+    api_credentials_error_message(meta, scopes)
 
     case http_code
     when "401", "403"
@@ -604,25 +612,20 @@ module GitHub
   end
 
   def get_repo_license(user, repo)
-    response = GitHub.open_api("#{GitHub::API_URL}/repos/#{user}/#{repo}/license")
+    response = open_api("#{API_URL}/repos/#{user}/#{repo}/license")
     return unless response.key?("license")
 
     response["license"]["spdx_id"]
-  rescue GitHub::HTTPNotFoundError
+  rescue HTTPNotFoundError
     nil
   end
 
-  def api_errors
-    [GitHub::AuthenticationFailedError, GitHub::HTTPNotFoundError,
-     GitHub::RateLimitExceededError, GitHub::Error, JSON::ParserError].freeze
-  end
-
   def fetch_pull_requests(query, tap_full_name, state: nil)
-    GitHub.issues_for_formula(query, tap_full_name: tap_full_name, state: state).select do |pr|
+    issues_for_formula(query, tap_full_name: tap_full_name, state: state).select do |pr|
       pr["html_url"].include?("/pull/") &&
         /(^|\s)#{Regexp.quote(query)}(:|\s|$)/i =~ pr["title"]
     end
-  rescue GitHub::RateLimitExceededError => e
+  rescue RateLimitExceededError => e
     opoo e.message
     []
   end
@@ -649,9 +652,9 @@ module GitHub
   end
 
   def forked_repo_info!(tap_full_name)
-    response = GitHub.create_fork(tap_full_name)
+    response = create_fork(tap_full_name)
     # GitHub API responds immediately but fork takes a few seconds to be ready.
-    sleep 1 until GitHub.check_fork_exists(tap_full_name)
+    sleep 1 until check_fork_exists(tap_full_name)
     remote_url = if system("git", "config", "--local", "--get-regexp", "remote\..*\.url", "git@github.com:.*")
       response.fetch("ssh_url")
     else
@@ -702,8 +705,8 @@ module GitHub
             username = tap.user
           else
             begin
-              remote_url, username = GitHub.forked_repo_info!(tap_full_name)
-            rescue *GitHub.api_errors => e
+              remote_url, username = forked_repo_info!(tap_full_name)
+            rescue *API_ERRORS => e
               sourcefile_path.atomic_write(old_contents)
               odie "Unable to fork: #{e.message}!"
             end
@@ -736,14 +739,14 @@ module GitHub
         end
 
         begin
-          url = GitHub.create_pull_request(tap_full_name, commit_message,
-                                           "#{username}:#{branch}", remote_branch, pr_message)["html_url"]
+          url = create_pull_request(tap_full_name, commit_message,
+                                    "#{username}:#{branch}", remote_branch, pr_message)["html_url"]
           if args.no_browse?
             puts url
           else
             exec_browser url
           end
-        rescue *GitHub.api_errors => e
+        rescue *API_ERRORS => e
           odie "Unable to open pull request: #{e.message}!"
         end
       end
