@@ -493,22 +493,22 @@ module Homebrew
         require "utils/ast"
 
         path = Pathname.new((HOMEBREW_REPOSITORY/bottle_hash["formula"]["path"]).to_s)
-        checksums = old_checksums(path, bottle_hash, args: args)
+        formula = Formulary.factory(path)
+        formula_ast = Utils::AST::FormulaAST.new(path.read)
+        checksums = old_checksums(formula, formula_ast, bottle_hash, args: args)
         update_or_add = checksums.nil? ? "add" : "update"
 
         checksums&.each(&bottle.method(:sha256))
         output = bottle_output(bottle)
         puts output
 
-        Utils::Inreplace.inreplace(path) do |s|
-          formula_contents = s.inreplace_string
-          case update_or_add
-          when "update"
-            Utils::AST.replace_bottle_stanza!(formula_contents, output)
-          when "add"
-            Utils::AST.add_bottle_stanza!(formula_contents, output)
-          end
+        case update_or_add
+        when "update"
+          formula_ast.replace_bottle_block(output)
+        when "add"
+          formula_ast.add_bottle_block(output)
         end
+        path.atomic_write(formula_ast.process)
 
         unless args.no_commit?
           Utils::Git.set_name_email!
@@ -566,16 +566,16 @@ module Homebrew
     [mismatches, checksums]
   end
 
-  def old_checksums(formula_path, bottle_hash, args:)
-    bottle_node = Utils::AST.bottle_block(formula_path.read)
+  def old_checksums(formula, formula_ast, bottle_hash, args:)
+    bottle_node = formula_ast.bottle_block
     if bottle_node.nil?
       odie "--keep-old was passed but there was no existing bottle block!" if args.keep_old?
       return
     end
     return [] unless args.keep_old?
 
-    old_keys = Utils::AST.body_children(bottle_node.body).map(&:method_name)
-    old_bottle_spec = Formulary.factory(formula_path).bottle_specification
+    old_keys = Utils::AST::FormulaAST.body_children(bottle_node.body).map(&:method_name)
+    old_bottle_spec = formula.bottle_specification
     mismatches, checksums = merge_bottle_spec(old_keys, old_bottle_spec, bottle_hash["bottle"])
     if mismatches.present?
       odie <<~EOS
