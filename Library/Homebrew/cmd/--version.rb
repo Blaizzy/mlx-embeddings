@@ -18,7 +18,7 @@ module Homebrew
         (if tapped) to standard output.
       EOS
 
-      max_named 0
+      named_args :none
     end
   end
 

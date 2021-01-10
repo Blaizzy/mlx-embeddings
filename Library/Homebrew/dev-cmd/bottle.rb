@@ -86,7 +86,8 @@ module Homebrew
              description: "Use the specified <URL> as the root of the bottle's URL instead of Homebrew's default."
 
       conflicts "--no-rebuild", "--keep-old"
-      min_named 1
+
+      named_args :installed_formula, min: 1
     end
   end
 

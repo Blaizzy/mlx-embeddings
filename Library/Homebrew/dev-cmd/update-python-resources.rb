@@ -34,7 +34,7 @@ module Homebrew
       comma_array "--exclude-packages=",
                   description: "Exclude these packages when finding resources."
 
-      min_named :formula
+      named_args :formula, number: 1
     end
   end
 

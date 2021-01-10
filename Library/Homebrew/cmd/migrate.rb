@@ -22,7 +22,7 @@ module Homebrew
              description: "Treat installed <formula> and provided <formula> as if they are from "\
                           "the same taps and migrate them anyway."
 
-      min_named :formula
+      named_args :installed_formula, min: 1
     end
   end
 

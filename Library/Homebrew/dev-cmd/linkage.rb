@@ -28,6 +28,8 @@ module Homebrew
       switch "--cached",
              description: "Print the cached linkage values stored in `HOMEBREW_CACHE`, set by a previous "\
                           "`brew linkage` run."
+
+      named_args :installed_formula
     end
   end
 

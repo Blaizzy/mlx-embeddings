@@ -17,6 +17,8 @@ module Homebrew
 
         Print a Markdown summary of Homebrew's GitHub Sponsors, suitable for pasting into a README.
       EOS
+
+      named_args :none
     end
   end
 

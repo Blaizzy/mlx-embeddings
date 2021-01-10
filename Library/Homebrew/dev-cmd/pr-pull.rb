@@ -70,7 +70,8 @@ module Homebrew
                   description: "Comma-separated list of workflows which can be ignored if they have not been run."
 
       conflicts "--clean", "--autosquash"
-      min_named 1
+
+      named_args number: 1
     end
   end
 

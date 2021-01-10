@@ -46,7 +46,8 @@ module Homebrew
              description: "Include only casks."
 
       conflicts "--formula", "--cask"
-      min_named :formula
+
+      named_args :formula, min: 1
     end
   end
 

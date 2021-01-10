@@ -33,7 +33,7 @@ module Homebrew
              description: "The Gist will be marked private and will not appear in listings but will "\
                           "be accessible with its link."
 
-      named :formula
+      named_args :formula, number: 1
     end
   end
 

@@ -126,9 +126,9 @@ module Homebrew
         @conflicts = []
         @switch_sources = {}
         @processed_options = []
+        @named_args_type = nil
         @max_named_args = nil
         @min_named_args = nil
-        @min_named_type = nil
         @hide_from_man_page = false
         @formula_options = false
 
@@ -355,33 +355,71 @@ module Homebrew
         @formula_options = true
       end
 
+      sig do
+        params(
+          type:   T.any(Symbol, T::Array[String], T::Array[Symbol]),
+          number: T.nilable(Integer),
+          min:    T.nilable(Integer),
+          max:    T.nilable(Integer),
+        ).void
+      end
+      def named_args(type = nil, number: nil, min: nil, max: nil)
+        if number.present? && (min.present? || max.present?)
+          raise ArgumentError, "Do not specify both `number` and `min` or `max`"
+        end
+
+        if type == :none && (number.present? || min.present? || max.present?)
+          raise ArgumentError, "Do not specify both `number`, `min` or `max` with `named_args :none`"
+        end
+
+        @named_args_type = type
+
+        if type == :none
+          @max_named_args = 0
+        elsif number.present?
+          @min_named_args = @max_named_args = number
+        elsif min.present? || max.present?
+          @min_named_args = min
+          @max_named_args = max
+        end
+      end
+
       def max_named(count)
+        # TODO: (2.8) uncomment for the next major/minor release
+        # odeprecated "`max_named`", "`named_args max:`"
+
         raise TypeError, "Unsupported type #{count.class.name} for max_named" unless count.is_a?(Integer)
 
         @max_named_args = count
       end
 
       def min_named(count_or_type)
+        # TODO: (2.8) uncomment for the next major/minor release
+        # odeprecated "`min_named`", "`named_args min:`"
+
         case count_or_type
         when Integer
           @min_named_args = count_or_type
-          @min_named_type = nil
+          @named_args_type = nil
         when Symbol
           @min_named_args = 1
-          @min_named_type = count_or_type
+          @named_args_type = count_or_type
         else
           raise TypeError, "Unsupported type #{count_or_type.class.name} for min_named"
         end
       end
 
       def named(count_or_type)
+        # TODO: (2.8) uncomment for the next major/minor release
+        # odeprecated "`named`", "`named_args`"
+
         case count_or_type
         when Integer
           @max_named_args = @min_named_args = count_or_type
-          @min_named_type = nil
+          @named_args_type = nil
         when Symbol
           @max_named_args = @min_named_args = 1
-          @min_named_type = count_or_type
+          @named_args_type = count_or_type
         else
           raise TypeError, "Unsupported type #{count_or_type.class.name} for named"
         end
@@ -480,15 +518,15 @@ module Homebrew
 
       def check_named_args(args)
         exception = if @min_named_args && args.size < @min_named_args
-          case @min_named_type
-          when :cask
-            Cask::CaskUnspecifiedError
-          when :formula
-            FormulaUnspecifiedError
-          when :formula_or_cask
-            FormulaOrCaskUnspecifiedError
-          when :keg
-            KegUnspecifiedError
+          if @named_args_type.present?
+            types = @named_args_type.is_a?(Array) ? @named_args_type : [@named_args_type]
+            if types.any? { |arg| arg.is_a? String }
+              MinNamedArgumentsError.new(@min_named_args)
+            else
+              list = types.map { |type| type.to_s.tr("_", " ") }
+              list = list.to_sentence two_words_connector: " or ", last_word_connector: " or "
+              UsageError.new("this command requires a #{list} argument")
+            end
           else
             MinNamedArgumentsError.new(@min_named_args)
           end

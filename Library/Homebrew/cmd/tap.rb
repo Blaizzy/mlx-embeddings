@@ -41,7 +41,7 @@ module Homebrew
       switch "--list-pinned",
              description: "List all pinned taps."
 
-      max_named 2
+      named_args :tap, max: 2
     end
   end
 

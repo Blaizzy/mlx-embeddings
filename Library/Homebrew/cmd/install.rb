@@ -125,7 +125,8 @@ module Homebrew
 
       conflicts "--ignore-dependencies", "--only-dependencies"
       conflicts "--build-from-source", "--build-bottle", "--force-bottle"
-      min_named :formula_or_cask
+
+      named_args [:formula, :cask], min: 1
     end
   end
 

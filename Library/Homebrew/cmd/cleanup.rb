@@ -31,6 +31,8 @@ module Homebrew
                           "If you want to delete those too: `rm -rf \"$(brew --cache)\"`"
       switch "--prune-prefix",
              description: "Only prune the symlinks and directories from the prefix and remove no other files."
+
+      named_args [:formula, :cask]
     end
   end
 

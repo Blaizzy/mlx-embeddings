@@ -49,6 +49,8 @@ module Homebrew
       conflicts "--debug", "--json"
       conflicts "--tap=", "--all", "--installed"
       conflicts "--cask", "--formula"
+
+      named_args [:formula, :cask]
     end
   end
 

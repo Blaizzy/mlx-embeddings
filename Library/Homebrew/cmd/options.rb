@@ -29,6 +29,8 @@ module Homebrew
              description: "Show options for the specified <command>."
 
       conflicts "--installed", "--all", "--command"
+
+      named_args :formula
     end
   end
 

@@ -188,6 +188,18 @@ module Homebrew
           .map(&:freeze).freeze
       end
 
+      sig { returns(T::Array[Tap]) }
+      def to_taps
+        @to_taps ||= downcased_unique_named.map { |name| Tap.fetch name }.uniq.freeze
+      end
+
+      sig { returns(T::Array[Tap]) }
+      def to_installed_taps
+        @to_installed_taps ||= to_taps.each do |tap|
+          raise TapUnavailableError, tap.name unless tap.installed?
+        end.uniq.freeze
+      end
+
       sig { returns(T::Array[String]) }
       def homebrew_tap_cask_names
         downcased_unique_named.grep(HOMEBREW_CASK_TAP_CASK_REGEX)

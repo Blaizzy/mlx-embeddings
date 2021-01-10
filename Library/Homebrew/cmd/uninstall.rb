@@ -40,7 +40,7 @@ module Homebrew
              description: "Treat all named arguments as casks."
       conflicts "--formula", "--cask"
 
-      min_named :formula_or_cask
+      named_args [:installed_formula, :installed_cask], min: 1
     end
   end
 

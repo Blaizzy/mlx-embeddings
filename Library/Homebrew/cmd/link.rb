@@ -29,7 +29,7 @@ module Homebrew
       switch "-f", "--force",
              description: "Allow keg-only formulae to be linked."
 
-      min_named :keg
+      named_args :installed_formula, min: 1
     end
   end
 

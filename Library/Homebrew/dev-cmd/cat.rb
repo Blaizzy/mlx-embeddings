@@ -23,7 +23,7 @@ module Homebrew
              description: "Treat all named arguments as casks."
       conflicts "--formula", "--cask"
 
-      named :formula_or_cask
+      named_args [:formula, :cask], number: 1
     end
   end
 

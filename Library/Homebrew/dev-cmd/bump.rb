@@ -21,6 +21,8 @@ module Homebrew
              description: "Limit number of package results returned."
       switch :verbose
       switch :debug
+
+      named_args :formula
     end
   end
 

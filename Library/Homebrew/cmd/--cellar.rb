@@ -17,6 +17,8 @@ module Homebrew
         If <formula> is provided, display the location in the Cellar where <formula>
         would be installed, without any sort of versioned directory as the last path.
       EOS
+
+      named_args :formula
     end
   end
 

@@ -17,15 +17,14 @@ module Homebrew
         Remove a tapped formula repository.
       EOS
 
-      min_named 1
+      named_args :tap, min: 1
     end
   end
 
   def untap
     args = untap_args.parse
 
-    args.named.each do |tapname|
-      tap = Tap.fetch(tapname)
+    args.named.to_installed_taps.each do |tap|
       odie "Untapping #{tap} is not allowed" if tap.core_tap?
 
       installed_tap_formulae = Formula.installed.select { |formula| formula.tap == tap }

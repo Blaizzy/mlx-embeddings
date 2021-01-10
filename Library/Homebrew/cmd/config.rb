@@ -19,7 +19,7 @@ module Homebrew
         a bug report, you will be required to provide this information.
       EOS
 
-      max_named 0
+      named_args :none
     end
   end
 

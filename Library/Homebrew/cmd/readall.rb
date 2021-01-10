@@ -24,6 +24,8 @@ module Homebrew
              description: "Verify any alias symlinks in each tap."
       switch "--syntax",
              description: "Syntax-check all of Homebrew's Ruby files (if no `<tap>` is passed)."
+
+      named_args :tap
     end
   end
 
@@ -41,7 +43,7 @@ module Homebrew
     taps = if args.no_named?
       Tap
     else
-      args.named.map { |t| Tap.fetch(t) }
+      args.named.to_installed_taps
     end
     taps.each do |tap|
       Homebrew.failed = true unless Readall.valid_tap?(tap, options)

@@ -25,7 +25,7 @@ module Homebrew
         Link or unlink Homebrew's completions.
       EOS
 
-      max_named 1
+      named_args %w[state link unlink], max: 1
     end
   end
 

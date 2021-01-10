@@ -34,7 +34,7 @@ module Homebrew
       switch "--ignore-failures",
              description: "Include pull requests that have failing status checks."
 
-      max_named 0
+      named_args :none
     end
   end
 

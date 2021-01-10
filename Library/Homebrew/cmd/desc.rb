@@ -34,7 +34,8 @@ module Homebrew
                           "it is interpreted as a regular expression."
 
       conflicts "--search", "--name", "--description"
-      min_named 1
+
+      named_args :formula
     end
   end
 
@@ -50,10 +51,14 @@ module Homebrew
     end
 
     results = if search_type.nil?
+      raise FormulaUnspecifiedError if args.no_named?
+
       desc = {}
       args.named.to_formulae.each { |f| desc[f.full_name] = f.desc }
       Descriptions.new(desc)
     else
+      raise UsageError, "this command requires a search term" if args.no_named?
+
       query = args.named.join(" ")
       string_or_regex = query_regexp(query)
       CacheStoreDatabase.use(:descriptions) do |db|

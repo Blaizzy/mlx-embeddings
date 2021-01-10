@@ -42,6 +42,8 @@ module Homebrew
 
       conflicts "--quiet", "--verbose", "--json"
       conflicts "--formula", "--cask"
+
+      named_args [:formula, :cask]
     end
   end
 

@@ -21,7 +21,7 @@ module Homebrew
              description: "Return a failing status code if current license data's version is the same as " \
                           "the upstream. This can be used to notify CI when the SPDX license data is out of date."
 
-      max_named 0
+      named_args :none
     end
   end
 

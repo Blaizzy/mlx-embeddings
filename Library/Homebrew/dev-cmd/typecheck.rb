@@ -37,7 +37,8 @@ module Homebrew
                           "in their paths (relative to the input path passed to Sorbet)."
 
       conflicts "--dir", "--file"
-      max_named 0
+
+      named_args :none
     end
   end
 

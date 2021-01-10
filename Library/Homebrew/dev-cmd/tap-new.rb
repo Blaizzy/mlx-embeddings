@@ -26,7 +26,8 @@ module Homebrew
              description: "Initialize Git repository with the specified branch name (default: `main`)."
 
       conflicts "--no-git", "--branch"
-      named 1
+
+      named_args :tap, number: 1
     end
   end
 
@@ -36,8 +37,7 @@ module Homebrew
     label = args.pull_label || "pr-pull"
     branch = args.branch || "main"
 
-    tap_name = args.named.first
-    tap = Tap.fetch(tap_name)
+    tap = args.named.to_taps.first
     raise "Invalid tap name '#{tap_name}'" unless tap.path.to_s.match?(HOMEBREW_TAP_PATH_REGEX)
 
     titleized_user = tap.user.dup

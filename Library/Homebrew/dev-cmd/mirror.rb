@@ -24,7 +24,7 @@ module Homebrew
       switch "--no-publish",
              description: "Upload to Bintray, but don't publish."
 
-      min_named :formula
+      named_args :formula, min: 1
     end
   end
 

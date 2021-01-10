@@ -42,6 +42,8 @@ module Homebrew
 
       conflicts "--formula", "--cask"
       conflicts "--only-cops", "--except-cops"
+
+      named_args [:formula, :cask, :tap]
     end
   end
 

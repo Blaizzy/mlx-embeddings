@@ -18,7 +18,7 @@ module Homebrew
       switch "-n", "--dry-run",
              description: "List what would be uninstalled, but do not actually uninstall anything."
 
-      max_named 0
+      named_args :none
     end
   end
 

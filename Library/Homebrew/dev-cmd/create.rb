@@ -69,7 +69,7 @@ module Homebrew
       conflicts "--cask", "--HEAD"
       conflicts "--cask", "--set-license"
 
-      named 1
+      named_args number: 1
     end
   end
 

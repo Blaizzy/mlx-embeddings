@@ -66,6 +66,9 @@ module Homebrew
 
       conflicts("--desc", "--pull-request")
       conflicts(*package_manager_switches)
+
+      # TODO: (2.9) uncomment when the `odeprecated`/`odisabled` for `brew search` with no arguments is removed
+      # named_args min: 1
     end
   end
 

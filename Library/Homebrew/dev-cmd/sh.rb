@@ -27,7 +27,7 @@ module Homebrew
       flag   "-c=", "--cmd=",
              description: "Execute commands in a non-interactive shell."
 
-      max_named 1
+      named_args max: 1
     end
   end
 

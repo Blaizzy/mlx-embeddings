@@ -18,7 +18,7 @@ module Homebrew
         Display the path to the file being used when invoking `brew` <cmd>.
       EOS
 
-      min_named 1
+      named_args :command, min: 1
     end
   end
 

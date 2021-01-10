@@ -18,7 +18,7 @@ module Homebrew
         List installed formulae that are not dependencies of another installed formula.
       EOS
 
-      max_named 0
+      named_args :none
     end
   end
 

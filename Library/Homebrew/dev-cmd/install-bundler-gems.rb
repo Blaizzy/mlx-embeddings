@@ -18,7 +18,7 @@ module Homebrew
         Install Homebrew's Bundler gems.
       EOS
 
-      max_named 0
+      named_args :none
     end
   end
 

@@ -28,7 +28,7 @@ module Homebrew
       switch "--upload",
              description: "Upload built bottles to Bintray."
 
-      min_named :formula
+      named_args :formula, min: 1
     end
   end
 

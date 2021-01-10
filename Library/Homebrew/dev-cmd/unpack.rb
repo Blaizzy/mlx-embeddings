@@ -30,7 +30,8 @@ module Homebrew
              description: "Overwrite the destination directory if it already exists."
 
       conflicts "--git", "--patch"
-      min_named :formula
+
+      named_args :formula, min: 1
     end
   end
 
