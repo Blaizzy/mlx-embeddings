@@ -104,12 +104,12 @@ module Homebrew
     if casks.any?
       Cask::Cmd::Reinstall.reinstall_casks(
         *casks,
-        binaries:       EnvConfig.cask_opts_binaries?,
+        binaries:       args.binaries?,
         verbose:        args.verbose?,
         force:          args.force?,
-        require_sha:    EnvConfig.cask_opts_require_sha?,
+        require_sha:    args.require_sha?,
         skip_cask_deps: args.skip_cask_deps?,
-        quarantine:     EnvConfig.cask_opts_quarantine?,
+        quarantine:     args.quarantine?,
       )
     end
 
