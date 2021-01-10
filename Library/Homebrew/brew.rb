@@ -131,6 +131,8 @@ begin
     end
     exec "brew-#{cmd}", *ARGV
   else
+    raise "command made by bash not ruby: #{cmd}" if Commands.only_bash_command_list.include?(cmd)
+
     possible_tap = OFFICIAL_CMD_TAPS.find { |_, cmds| cmds.include?(cmd) }
     possible_tap = Tap.fetch(possible_tap.first) if possible_tap
 

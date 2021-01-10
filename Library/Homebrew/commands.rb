@@ -197,4 +197,8 @@ module Commands
     file = HOMEBREW_CACHE/"all_commands_list.txt"
     file.atomic_write("#{commands(aliases: true).sort.join("\n")}\n")
   end
+
+  def only_bash_command_list
+    internal_commands.reject { |cmd| valid_internal_cmd?(cmd) }
+  end
 end
