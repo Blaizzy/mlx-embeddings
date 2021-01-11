@@ -28,7 +28,6 @@ module RuboCop
         @length = match_object.to_s.length
         @line_no = line_number(node)
         @source_buf = source_buffer(node)
-        @offense_source_range = source_range(@source_buf, @line_no, @column, @length)
         @offensive_node = node
         match_object
       end
@@ -77,8 +76,8 @@ module RuboCop
         end
       end
 
-      def problem(msg)
-        add_offense(@offensive_node, location: @offense_source_range, message: msg)
+      def problem(msg, &block)
+        add_offense(@offensive_node, message: msg, &block)
       end
     end
   end

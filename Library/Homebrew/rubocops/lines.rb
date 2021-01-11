@@ -534,7 +534,7 @@ module RuboCop
                     "Pass explicit paths to prevent Homebrew from removing empty folders."
           end
 
-          if find_method_def(@processed_source.ast)
+          if find_method_def(processed_source.ast)
             problem "Define method #{method_name(@offensive_node)} in the class body, not at the top-level"
           end
 

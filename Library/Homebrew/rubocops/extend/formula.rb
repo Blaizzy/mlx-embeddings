@@ -18,7 +18,7 @@ module RuboCop
     # Superclass for all formula cops.
     #
     # @api private
-    class FormulaCop < Cop
+    class FormulaCop < Base
       include RangeHelp
       include HelperFunctions
 
@@ -71,19 +71,16 @@ module RuboCop
           next unless method_node.method_name == method_name
 
           @offensive_node = method_node
-          @offense_source_range = method_node.source_range
           return method_node
         end
         # If not found then, parent node becomes the offensive node
         @offensive_node = node.parent
-        @offense_source_range = node.parent.source_range
         nil
       end
 
       # Sets the given node as the offending node when required in custom cops.
       def offending_node(node)
         @offensive_node = node
-        @offense_source_range = node.source_range
       end
 
       # Returns an array of method call nodes matching method_name inside node with depth first order (child nodes).
@@ -142,7 +139,6 @@ module RuboCop
           next if method.receiver.const_name != instance &&
                   !(method.receiver.send_type? && method.receiver.method_name == instance)
 
-          @offense_source_range = method.source_range
           @offensive_node = method
           return true unless block_given?
 
@@ -160,7 +156,6 @@ module RuboCop
           next if method_node.receiver.const_name != name &&
                   !(method_node.receiver.send_type? && method_node.receiver.method_name == name)
 
-          @offense_source_range = method_node.receiver.source_range
           @offensive_node = method_node.receiver
           return true unless block_given?
 
@@ -179,7 +174,6 @@ module RuboCop
         end
         return if idx.nil?
 
-        @offense_source_range = dependency_nodes[idx].source_range
         @offensive_node = dependency_nodes[idx]
       end
 
@@ -207,10 +201,7 @@ module RuboCop
           type_match = false
         end
 
-        if type_match || name_match
-          @offensive_node = node
-          @offense_source_range = node.source_range
-        end
+        @offensive_node = node if type_match || name_match
         type_match && name_match
       end
 
@@ -223,7 +214,6 @@ module RuboCop
           next unless const_node.const_name == const_name
 
           @offensive_node = const_node
-          @offense_source_range = const_node.source_range
           yield const_node if block_given?
           return true
         end
@@ -259,12 +249,10 @@ module RuboCop
           next if block_node.method_name != block_name
 
           @offensive_node = block_node
-          @offense_source_range = block_node.source_range
           return block_node
         end
         # If not found then, parent node becomes the offensive node
         @offensive_node = node.parent
-        @offense_source_range = node.parent.source_range
         nil
       end
 
@@ -299,14 +287,12 @@ module RuboCop
           next if method_name != def_method_name && method_name.present?
 
           @offensive_node = def_node
-          @offense_source_range = def_node.source_range
           return def_node
         end
         return if node.parent.nil?
 
         # If not found then, parent node becomes the offensive node
         @offensive_node = node.parent
-        @offense_source_range = node.parent.source_range
         nil
       end
 
@@ -317,7 +303,6 @@ module RuboCop
           next unless call_node.method_name == method_name
 
           @offensive_node = call_node
-          @offense_source_range = call_node.source_range
           return true
         end
         false
@@ -345,7 +330,6 @@ module RuboCop
           next unless call_node.method_name == method_name
 
           @offensive_node = call_node
-          @offense_source_range = call_node.source_range
           return true
         end
         false
@@ -365,7 +349,6 @@ module RuboCop
       def component_precedes?(first_node, next_node)
         return false if line_number(first_node) < line_number(next_node)
 
-        @offense_source_range = first_node.source_range
         @offensive_node = first_node
         true
       end
@@ -394,7 +377,6 @@ module RuboCop
       def parameters_passed?(method_node, *params)
         method_params = parameters(method_node)
         @offensive_node = method_node
-        @offense_source_range = method_node.source_range
         params.all? do |given_param|
           method_params.any? do |method_param|
             if given_param.instance_of?(Regexp)
@@ -420,9 +402,8 @@ module RuboCop
 
       # Yields to a block with comment text as parameter.
       def audit_comments
-        @processed_source.comments.each do |comment_node|
+        processed_source.comments.each do |comment_node|
           @offensive_node = comment_node
-          @offense_source_range = :expression
           yield comment_node.text
         end
       end
@@ -435,7 +416,6 @@ module RuboCop
       # Returns the class node's name, or nil if not a class node.
       def class_name(node)
         @offensive_node = node
-        @offense_source_range = node.source_range
         node.const_name
       end
 

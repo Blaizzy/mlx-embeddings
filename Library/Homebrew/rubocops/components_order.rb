@@ -27,7 +27,6 @@ module RuboCop
 
           if on_macos_blocks.length > 1
             @offensive_node = on_macos_blocks.second
-            @offense_source_range = on_macos_blocks.second.source_range
             problem "there can only be one `on_macos` block in a formula."
           end
 
@@ -37,7 +36,6 @@ module RuboCop
 
           if on_linux_blocks.length > 1
             @offensive_node = on_linux_blocks.second
-            @offense_source_range = on_linux_blocks.second.source_range
             problem "there can only be one `on_linux` block in a formula."
           end
 
@@ -58,7 +56,6 @@ module RuboCop
             end
 
             @offensive_node = resource_block
-            @offense_source_range = resource_block.source_range
 
             next if on_macos_blocks.length.zero? && on_linux_blocks.length.zero?
 
@@ -122,7 +119,6 @@ module RuboCop
             valid_node ||= on_os_allowed_methods.include? child.method_name.to_s
 
             @offensive_node = child
-            @offense_source_range = child.source_range
             next if valid_node
 
             problem "`#{on_os_block.method_name}` cannot include `#{child.method_name}`. " \
