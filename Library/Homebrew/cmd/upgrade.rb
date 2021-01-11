@@ -100,16 +100,20 @@ module Homebrew
     # If one or more formulae are specified, but no casks were
     # specified, we want to make note of that so we don't
     # try to upgrade all outdated casks.
-    upgrade_formulae = formulae.present? && casks.blank?
-    upgrade_casks = casks.present? && formulae.blank?
+    only_upgrade_formulae = formulae.present? && casks.blank?
+    only_upgrade_casks = casks.present? && formulae.blank?
 
-    upgrade_outdated_formulae(formulae, args: args) unless upgrade_casks
-    upgrade_outdated_casks(casks, args: args) unless upgrade_formulae
+    display_messages = !only_upgrade_casks && upgrade_outdated_formulae(formulae, args: args)
+    force_caveats = !only_upgrade_formulae && upgrade_outdated_casks(casks, args: args)
+
+    return unless display_messages
+
+    Homebrew.messages.display_messages(force_caveats: force_caveats, display_times: args.display_times?)
   end
 
-  sig { params(formulae: T::Array[Formula], args: CLI::Args).void }
+  sig { params(formulae: T::Array[Formula], args: CLI::Args).returns(T::Boolean) }
   def upgrade_outdated_formulae(formulae, args:)
-    return if args.cask?
+    return false if args.cask?
 
     FormulaInstaller.prevent_build_flags(args)
 
@@ -135,7 +139,7 @@ module Homebrew
       end
     end
 
-    return if outdated.blank?
+    return false if outdated.blank?
 
     pinned = outdated.select(&:pinned?)
     outdated -= pinned
@@ -172,12 +176,12 @@ module Homebrew
 
     Upgrade.check_installed_dependents(formulae_to_install, args: args)
 
-    Homebrew.messages.display_messages(display_times: args.display_times?)
+    true
   end
 
-  sig { params(casks: T::Array[Cask::Cask], args: CLI::Args).void }
+  sig { params(casks: T::Array[Cask::Cask], args: CLI::Args).returns(T::Boolean) }
   def upgrade_outdated_casks(casks, args:)
-    return if args.formula?
+    return false if args.formula?
 
     Cask::Cmd::Upgrade.upgrade_casks(
       *casks,

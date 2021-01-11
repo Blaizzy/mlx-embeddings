@@ -69,7 +69,7 @@ module Cask
           binaries:       T.nilable(T::Boolean),
           quarantine:     T.nilable(T::Boolean),
           require_sha:    T.nilable(T::Boolean),
-        ).void
+        ).returns(T::Boolean)
       end
       def self.upgrade_casks(
         *casks,
@@ -98,7 +98,7 @@ module Cask
           end
         end
 
-        return if outdated_casks.empty?
+        return false if outdated_casks.empty?
 
         if casks.empty? && !greedy
           ohai "Casks with `auto_updates` or `version :latest` will not be upgraded; pass `--greedy` to upgrade them."
@@ -114,7 +114,7 @@ module Cask
         puts upgradable_casks
           .map { |(old_cask, new_cask)| "#{new_cask.full_name} #{old_cask.version} -> #{new_cask.version}" }
           .join("\n")
-        return if dry_run
+        return true if dry_run
 
         upgradable_casks.each do |(old_cask, new_cask)|
           upgrade_cask(
@@ -127,7 +127,7 @@ module Cask
           next
         end
 
-        return if caught_exceptions.empty?
+        return true if caught_exceptions.empty?
         raise MultipleCaskErrors, caught_exceptions if caught_exceptions.count > 1
         raise caught_exceptions.first if caught_exceptions.count == 1
       end
