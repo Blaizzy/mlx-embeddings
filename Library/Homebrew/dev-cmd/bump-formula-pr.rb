@@ -84,9 +84,9 @@ module Homebrew
   end
 
   def use_correct_linux_tap(formula, args:)
-    default_origin_branch = formula.tap.path.git_origin_branch if formula.tap
+    default_origin_branch = formula.tap.path.git_origin_branch
 
-    return formula.tap&.full_name, "origin", default_origin_branch, "-" if !OS.linux? || !formula.tap.core_tap?
+    return formula.tap.full_name, "origin", default_origin_branch, "-" if !OS.linux? || !formula.tap.core_tap?
 
     tap_full_name = formula.tap.full_name.gsub("linuxbrew", "homebrew")
     homebrew_core_url = "https://github.com/#{tap_full_name}"
@@ -139,6 +139,8 @@ module Homebrew
     raise FormulaUnspecifiedError if formula.blank?
 
     odie "This formula is disabled!" if formula.disabled?
+    odie "This formula is not in a tap!" if formula.tap.blank?
+    odie "This formula's tap is not a Git repository!" unless formula.tap.git?
 
     tap_full_name, remote, remote_branch, previous_branch = use_correct_linux_tap(formula, args: args)
     check_open_pull_requests(formula, tap_full_name, args: args)
@@ -457,7 +459,10 @@ args: args)
   end
 
   def check_open_pull_requests(formula, tap_full_name, args:)
-    GitHub.check_for_duplicate_pull_requests(formula.name, tap_full_name, state: "open", args: args)
+    GitHub.check_for_duplicate_pull_requests(formula.name, tap_full_name,
+                                             state: "open",
+                                             file:  formula.path.relative_path_from(formula.tap.path).to_s,
+                                             args:  args)
   end
 
   def check_closed_pull_requests(formula, tap_full_name, args:, version: nil, url: nil, tag: nil)
@@ -467,7 +472,10 @@ args: args)
       version = Version.detect(url, **specs)
     end
     # if we haven't already found open requests, try for an exact match across closed requests
-    GitHub.check_for_duplicate_pull_requests("#{formula.name} #{version}", tap_full_name, state: "closed", args: args)
+    GitHub.check_for_duplicate_pull_requests("#{formula.name} #{version}", tap_full_name,
+                                             state: "closed",
+                                             file:  formula.path.relative_path_from(formula.tap.path).to_s,
+                                             args:  args)
   end
 
   def alias_update_pair(formula, new_formula_version)
