@@ -82,9 +82,9 @@ module Homebrew
   end
 
   def livecheck_result(formula)
-    skip_result = Livecheck.skip_conditions(formula, json: true, full_name: false, quiet: false)
-    if skip_result != false
-      return "skipped#{" - #{skip_result[:messages].join(", ")}" if skip_result[:messages].present?}"
+    skip_result = Livecheck.skip_conditions(formula, json: true, full_name: false, quiet: false).presence
+    if skip_result
+      return "#{skip_result[:status]}#{" - #{skip_result[:messages].join(", ")}" if skip_result[:messages].present?}"
     end
 
     version_info = Livecheck.latest_version(
