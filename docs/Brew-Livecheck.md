@@ -1,115 +1,137 @@
-# Brew Livecheck
+# `brew livecheck`
 
-**NOTE: This document is a work in progress and will be revised and expanded as time permits.**
+The `brew livecheck` command finds the newest version of a formula or cask's software by checking upstream. Livecheck has [strategies](https://rubydoc.brew.sh/Homebrew/Livecheck/Strategy.html) to identify versions from various sources, such as Git repositories, websites, etc.
 
-**NOTE: `livecheck` blocks are currently found in separate files in the [Homebrew/homebrew-livecheck](https://github.com/Homebrew/homebrew-livecheck) repository's `Livecheckables` folder. These will be migrated to their respective formulae in Homebrew/homebrew-core in the near future and this document is written as if this migration has already happened.**
+## Behavior
 
-The general purpose of the `brew livecheck` command is to find the newest version of a formula's software by checking an upstream source. Livecheck has [built-in strategies](#built-in-strategies) that can identify versions from some popular sources, such as Git repositories, certain websites, etc.
+When livecheck isn't given instructions for how to check for upstream versions, it does the following by default:
 
-## Default behavior
+1. For formulae: Collect the `head`, `stable`, and `homepage` URLs, in that order. For casks: Collect the `url` and `homepage` URLs, in that order.
+1. Determine if any strategies apply to the first URL. If not, try the next URL.
+1. If a strategy can be applied, use it to check for new versions.
+1. Return the newest version (or an error if versions could not be found at any available URLs).
 
-When livecheck isn't given instructions for how to check for upstream versions of a formula's software, it does the following by default:
+It's sometimes necessary to override this default behavior to create a working check for a formula/cask. If a source doesn't provide the newest version, we need to check a different one. If livecheck doesn't correctly match version text, we need to provide an appropriate regex.
 
-1. Collect the `head`, `stable`, and `homepage` URLs from the formula, in that order.
-2. Determine if any of the available strategies can be applied to the first URL. Move on to the next URL if no strategies apply.
-3. If a strategy can be applied, use it to check for new versions.
-4. Return the newest version (or an error if versions could not be found at any available URLs).
-
-This approach works fine for a number of formulae without requiring any manual intervention. However, it's sometimes necessary to change livecheck's default behavior to create a working check for a formula.
-
-It may be that the source livecheck is using doesn't provide the newest version and we need to check a different one instead. In another case, livecheck may be matching a version it shouldn't and we need to provide a regex to only match what's appropriate.
-
-## The `livecheck` block
-
-We can control livecheck's behavior by providing a `livecheck` block in the formula. Here is a simple example to check a "downloads" page for links containing a filename like `example-1.2.tar.gz`:
-
-```ruby
-livecheck do
-  url "https://www.example.com/downloads/"
-  regex(/href=.*?example[._-]v?(\d+(?:\.\d+)+)\.t/i)
-end
-```
-
-At the moment, it's only necessary to create a `livecheck` block in a formula when the default check doesn't work properly.
+This can be accomplished by adding a `livecheck` block to the formula/cask. For more information on the available methods, please refer to the [`Livecheck` class documentation](https://rubydoc.brew.sh/Livecheck.html).
 
 ## Creating a check
 
-1. **Use the debug output to understand the current situation**. Running `brew livecheck --debug <formula>` (where `<formula>` is the formula name) will provide more information about which URL livecheck is using and any strategy that applies.
+1. **Use the debug output to understand the situation**. `brew livecheck --debug <formula>|<cask>` provides information about which URLs livecheck tries, any strategies that apply, matched versions, etc.
 
-2. **Research available sources**. It's generally preferable to check for a new version at the same source as the `stable` URL, when possible. With this in mind, it may be a good idea to start by removing the file name from the `stable` URL, to see if this is a directory listing page. If that doesn't work, the website may have a downloads page we can check for versions. If it's not possible to find the newest version at this source through any means, try checking other sources from the formula (e.g. an upstream Git repository or the homepage). It's also sometimes necessary to search for other sources outside of the formula.
+1. **Research available sources to select a URL**. Try removing the file name from `stable`/`url`, to see if this is a directory listing page. If that doesn't work, try to find a page that links to the file (e.g. a download page). If it's not possible to find the newest version on the website, try checking other sources from the formula/cask. When necessary, search for other sources outside of the formula/cask.
 
-3. **Compare available versions between sources**. If the latest version is available from the `stable` source, it's best to use that. Otherwise, check the other sources to identify where the latest version is available.
+1. **Create a regex, if necessary**. If the check works without a regex and wouldn't benefit from having one, it's usually fine to omit it. More information on creating regexes can be found in the [regex guidelines](#regex-guidelines) section.
 
-4. **Select a source**. After researching and comparing sources, decide which one is the best available option and use it as the `url` in the `livecheck` block.
+### General guidelines
 
-5. **Create a regex, if necessary or beneficial**. If the check works fine without a regex and wouldn't benefit from having one, it's fine to omit it. However, when a default check isn't working properly and we need to create a `livecheck` block, a regex is almost always necessary as well. More information on creating regexes can be found in the [regex guidelines](#regex-guidelines) section.
+* **Only use `strategy` when it's necessary**. For example, if livecheck is already using `Git` for a URL, it's not necessary to use `strategy :git`. However, if `Git` applies to a URL but we need to use `PageMatch`, it's necessary to use `strategy :page_match`.
 
-6. **Verify the check is working as intended**. Run `brew livecheck --debug <formula>` again to ensure livecheck is identifying all the versions it should and properly returning the newest version at the end.
+* **Only use the `GithubLatest` strategy when it's necessary and correct**. Github.com rate limits requests and we try to minimize our use of this strategy to avoid hitting the rate limit on CI or when using `brew livecheck --tap` on large taps (e.g. homebrew/core). The `Git` strategy is often sufficient and we only need to use `GithubLatest` when the "latest" release is different than the newest version from the tags.
 
 ### URL guidelines
 
-* **A `url` is a required part of a `livecheck` block** and can either be a string containing a URL (e.g. `"https://www.example.com/downloads/"`) or a symbol referencing one of the supported formula URLs (i.e. `:stable`, `:homepage`, or `:head`).
+* **A `url` is required in a `livecheck` block**. This can be a URL string (e.g. `"https://www.example.com/downloads/"`) or a formula/cask URL symbol (i.e. `:stable`, `:url`, `:head`, `:homepage`). The exception to this rule is a `livecheck` block that only uses `skip`.
 
-* **Use a symbol for a formula URL (i.e. `:homepage`, `:stable`, and `:head`) when appropriate**, to avoid duplicating formula URLs in the livecheckable.
+* **Check for versions in the same location as the stable archive, whenever possible**.
 
-* **It's generally preferable to check for versions in the same location as the stable archive, when possible**. This preference is stronger for first-party sources (websites, repositories, etc.) and becomes weaker for third-party sources (e.g. mirrors, another software package manager, etc.).
+* **Avoid checking paginated release pages, when possible**. For example, we generally avoid checking the `release` page for a GitHub project because the latest stable version can be pushed off the first page by pre-release versions. In this scenario, it's more reliable to use the `Git` strategy, which fetches all the tags in the repository.
 
 ### Regex guidelines
 
-The regex in a `livecheck` block is used within a strategy to restrict matching to only relevant text (or strings) and to establish what part of the matched text is the version (using a capture group).
+The `livecheck` block regex restricts matches to a subset of the fetched content and uses a capture group around the version text.
 
-Creating a good regex is a balance between being too strict (breaking easily) and too loose (matching more than it should).
+* **Regexes should be made case insensitive, whenever possible**, by adding `i` at the end (e.g. `/.../i` or `%r{...}i`). This improves reliability, as the regex will handle changes in letter case without needing modifications.
 
-* For technical reasons, **the `regex` call in the `livecheck` block should always use parentheses** (e.g. `regex(/example/)`).
+* **Regexes should only use a capturing group around the version text**. For example, in `/href=.*?example-v?(\d+(?:\.\d+)+)(?:-src)?\.t/i`, we're only using a capturing group around the version test (matching a version like `1.2`, `1.2.3`, etc.) and we're using non-capturing groups elsewhere (e.g. `(?:-src)?`).
 
-* **Regex literals should follow the established Homebrew style**, where the `/.../` syntax is the default and the `%r{...}` syntax is used when a forward slash (`/`) is present.
+* **Anchor the start/end of the regex, to restrict the scope**. For example, on HTML pages we often match file names or version directories in `href` attribute URLs (e.g. `/href=.*?example[._-]v?(\d+(?:\.\d+)+)\.zip/i`). The general idea is that limiting scope will help exclude unwanted matches.
 
-* **Regexes should adequately represent their intention.** This requires an understanding of basic regex syntax, so we avoid issues like using `.` (match any character) instead of `\.` when we only want to match a period. We also try to be careful about our use of generic catch-alls like  `.*` or `.+`, as it's often better to use something non-greedy and contextually appropriate. For example, if we wanted to match a variety of characters while trying to stay within the bounds of an HTML attribute, we could use something like `[^"' >]*?`.
+* **Avoid generic catch-alls like `.*` or `.+`** in favor of something non-greedy and/or contextually appropriate. For example, to match characters within the bounds of an HTML attribute, use `[^"' >]+?`.
 
-* **Try not to be too specific in some parts of the regex.** For example, if a file name uses a hyphen (`-`) between the software name and version (e.g. `example-1.2.3.tar.gz`), we may want to use something like `example[._-]v?(\d+(?:\.\d+)+)\.t` instead. This would allow the regex to continue matching if the upstream file name format changes to `example.1.2.3.tar.gz` or `example_1.2.3.tar.gz`.
+* **Use `[._-]` in place of a period/underscore/hyphen between the software name and version in a file name**. For a file named `example-1.2.3.tar.gz`, `example[._-]v?(\d+(?:\.\d+)+)\.t` will continue matching if the upstream file name format changes to `example_1.2.3.tar.gz` or `example.1.2.3.tar.gz`.
 
-* **Regexes should be case insensitive unless case sensitivity is explicitly required for matching to work properly**. Case insensitivity is enabled by adding the `i` flag at the end of the regex literal (e.g. `/.../i` or `%r{...}i`). This helps to improve reliability and reduce maintenance, as a case-insensitive regex doesn't need to be manually updated if there are any upstream changes in letter case.
+* **Use `\.t` in place of `\.tgz`, `\.tar\.gz`, etc.** There are a variety of different file extensions for tarballs (e.g. `.tar.bz2`, `tbz2`, `.tar.gz`, `.tgz`, `.tar.xz`, `.txz`, etc.) and the upstream source may switch from one compression format to another over time. `\.t` avoids this issue by matching current and future formats starting with `t`. Outside of tarballs, we use the full file extension in the regex like `\.zip`, `\.jar`, etc.
 
-* **Regexes should only use a capturing group around the part of the matched text that corresponds to the version**. For example, in `/href=.*?example-v?(\d+(?:\.\d+)+)(?:-src)?\.t/i`, we're only using a capturing group around the version part (matching a version like `1.2`, `1.2.3`, etc.) and we're using non-capturing groups elsewhere (e.g. `(?:-src)?`). This allows livecheck to rely on the first capture group being the version string.
+## Example `livecheck` blocks
 
-* **Regexes should only match stable versions**. Regexes should be written to avoid prerelease versions like `1.2-alpha1`, `1.2-beta1`, `1.2-rc1`, etc.
+The following examples cover a number of patterns that you may encounter. These are intended to be representative samples and can be easily adapted.
 
-* **Restrict matching to `href` attributes when targeting file names in an HTML page (or `url` attributes in an RSS feed)**. Using `href=.*?` (or `url=.*?`) at the start of the regex will take care of any opening delimiter for the attribute (`"`, `'`, or nothing) as well as any leading part of the URL. This helps to keep the regex from being overly specific, reducing the need for maintenance in the future. A regex like `href=.*?example-...` is often fine but sometimes it's necessary to have something explicit before the file name to limit matching to only what's appropriate (e.g. `href=.*?/example-...` or `href=["']?example-...`). Similarly, `["' >]` can be used to target the end of the attribute, when needed.
+When in doubt, start with one of these examples instead of copy-pasting a `livecheck` block from a random formula/cask.
 
-* **Use `\.t` in place of `\.tgz`, `\.tar\.gz`, etc.** There are a number of different file extensions for tarballs (e.g. `.tar.bz2`, `tbz2`, `.tar.gz`, `.tgz`, `.tar.xz`, `.txz`, etc.) and the upstream source may switch from one compression format to another over time. `\.t` avoids this issue by matching current and future formats starting with `t`. Outside of tarballs, it's fine to use full file extensions in the regex like `\.zip`, `\.jar`, etc.
+### File names
 
-* **When matching versions like `1.2`, `1.2.3`, `v1.2`, etc., use the standard snippet for this in the regex: `v?(\d+(?:\.\d+)+)`**. This is often copy-pasted into the regex but it can also be modified to suit the circumstances. For example, if the version uses underscores instead, the standard regex could be modified to something like `v?(\d+(?:[._]\d+)+)`. [The general idea behind this standard snippet is that it better represents our intention compared to older, looser snippets that we now avoid (e.g. `[0-9.]+`).]
+```ruby
+  livecheck do
+    url "https://www.example.com/downloads/"
+    regex(/href=.*?example[._-]v?(\d+(?:\.\d+)+)\.t/i)
+  end
+```
 
-* **Similarly, when matching Git tags with a version like `1.2`, `1.2.3`, `v1.2.3`, etc., start with the standard regex for this (`/^v?(\d+(?:\.\d+)+)$/i`) and modify it as needed**. Sometimes it's necessary to modify the regex to add a prefix, like `/^example-v?(\d+(?:\.\d+)+)$/i` for an `example-1.2.3` tag format. The general idea here is that Git tags are strings, so we can avoid unrelated software by restricting the start of the string (`^`) and unstable versions by restricting the end of the string (`$`).
+When matching the version from a file name on an HTML page, we often restrict matching to `href` attributes. `href=.*?` will match the opening delimiter (`"`, `'`) as well as any part of the URL before the file name.
 
-## Built-in strategies
+We sometimes make this more explicit to exclude unwanted matches. URLs with a preceding path can use `href=.*?/` and others can use `href=["']?`. For example, this is necessary when the page also contains unwanted files with a longer prefix (`another-example-1.2.tar.gz`).
 
-Livecheck's strategies are established methods for finding versions at either a specific source or a general type of source. The available strategies are as follows:
+### Version directories
 
-* `Apache`
-* `Bitbucket`
-* `Git`
-* `Gnome`
-* `Gnu`
-* `Hackage`
-* `Launchpad`
-* `Npm`
-* `PageMatch`
-* `Pypi`
-* `Sourceforge`
+```ruby
+  livecheck do
+    url "https://www.example.com/releases/example/"
+    regex(%r{href=["']?v?(\d+(?:\.\d+)+)/?["' >]}i)
+  end
+```
 
-Each strategy has a `#match?(url)` method which determines whether the strategy can be applied to the provided URL. The `PageMatch` strategy is used as a fallback when a regex is provided and no other strategies apply. `PageMatch` simply uses the regex to match content on a page, so it's the desired strategy for URLs where a more-specific strategy doesn't apply.
+When checking a directory listing page, sometimes files are separated into version directories (e.g. `1.2.3/`). In this case, we must identify versions from the directory names.
 
-Some of the strategies generate a URL and regex internally. In these cases, the strategy often derives information from the provided URL and uses it to create the URL it will check and the regex used for matching. However, if a `regex` is provided in the `livecheck` block, it will be used instead of any generated regex.
+### Git tags
 
-Livecheck also has a simple numeric priority system, where 5 is the default unless a strategy has defined its own `PRIORITY` constant. Currently, the `Git` strategy has a higher priority (8) and the `PageMatch` strategy has a low priority (0). In practice, this means that when more than one strategy applies to a URL (usually a specific strategy and `PageMatch`), the higher priority strategy is the one that's used.
+```ruby
+  livecheck do
+    url :stable
+    regex(/^v?(\d+(?:\.\d+)+)$/i)
+  end
+```
 
-### Tap strategies
+When the `stable` URL uses the `Git` strategy, the regex above will only match tags like `1.2`/`v1.2`, etc.
 
-Taps can add strategies to apply to their formulae by creating a `livecheck_strategy` folder in the root directory and placing strategy files within. At a minimum, strategies must provide a `#match?(url)` method and a `#find_versions(url, regex)` method.
+If tags include the software name as a prefix (e.g. `example-1.2.3`), it's easy to modify the regex accordingly: `/^example[._-]v?(\d+(?:\.\d+)+)$/i`
 
-The `#match?(url)` method takes a URL string and returns `true` or `false` to indicate whether the strategy can be applied to the URL.
+### `PageMatch` `strategy` block
 
-`#find_versions(url, regex)` takes a URL and an optional regex and returns a `Hash` with a format like `{ :matches => {}, :regex => regex, :url => url }`. The `:matches` `Hash` uses version strings as the keys (e.g. `"1.2.3"`) and `Version` objects as the values. `:regex` is either the strategy-generated regex (if applicable), the regex provided as an argument, or `nil`. The `:url` is either the strategy-generated URL (if applicable) or the original URL provided.
+```ruby
+  livecheck do
+    url :homepage
+    regex(/href=.*?example[._-]v?(\d{4}-\d{2}-\d{2})\.t/i)
+    strategy :page_match do |page, regex|
+      page.scan(regex).map { |match| match&.first&.gsub(/\D/, "") }
+    end
+  end
+```
 
-The built-in strategies in Homebrew's `livecheck_strategy` folder may serve as examples to follow when creating tap strategies. Many of the built-in strategies simply generate a URL and regex before using the `PageMatch` strategy to do the heavy lifting (e.g. `PageMatch.find_versions(page_url, regex)`). When a strategy is checking a text page of some sort (e.g. HTML, RSS, etc.), it may be able to do the same thing. If a strategy needs to do something more complex, the `Git` and `PageMatch` strategies can be referenced as standalone examples.
+When necessary, a `strategy` block allows us to have greater flexibility in how upstream version information is matched and processed. Currently, they're only used when the upstream version format needs to be manipulated to match the formula/cask format. In the example above, we're converting a date format like `2020-01-01` into `20200101`.
+
+The `PageMatch` `strategy` block style seen here also applies to any strategy that uses `PageMatch` internally.
+
+### `Git` `strategy` block
+
+```ruby
+  livecheck do
+    url :stable
+    regex(/^(\d{4}-\d{2}-\d{2})$/i)
+    strategy :git do |tags, regex|
+      tags.map { |tag| tag[regex, 1]&.gsub(/\D/, "") }.compact
+    end
+  end
+```
+
+A `strategy` block for `Git` is a bit different, as the block receives an array of tag strings instead of a page content string. Similar to the `PageMatch` example, this is converting tags with a date format like `2020-01-01` into `20200101`.
+
+### Skip
+
+```ruby
+  livecheck do
+    skip "No version information available"
+  end
+```
+
+Livecheck automatically skips some formulae/casks for a number of reasons (deprecated, disabled, discontinued, etc.). However, on rare occasions we need to use a `livecheck` block to do a manual skip. The `skip` method takes a string containing a very brief reason for skipping.

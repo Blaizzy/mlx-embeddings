@@ -545,6 +545,19 @@ Instead of `git diff | pbcopy`, for some editors `git diff >> path/to/your/formu
 
 If anything isn’t clear, you can usually figure it out by `grep`ping the `$(brew --repo homebrew/core)` directory. Please submit a pull request to amend this document if you think it will help!
 
+### `livecheck` blocks
+
+When `brew livecheck` is unable to identify versions for a formula, we can control its behavior using a `livecheck` block. Here is a simple example to check a page for links containing a filename like `example-1.2.tar.gz`:
+
+```ruby
+livecheck do
+  url "https://www.example.com/downloads/"
+  regex(/href=.*?example[._-]v?(\d+(?:\.\d+)+)\.t/i)
+end
+```
+
+For `url`/`regex` guidelines and additional `livecheck` block examples, refer to the [`brew livecheck` documentation](Brew-Livecheck.md). For more technical information on the methods used in a `livecheck` block, please refer to the [`Livecheck` class documentation](https://rubydoc.brew.sh/Livecheck.html).
+
 ### Unstable versions (`head`)
 
 Formulae can specify an alternate download for the upstream project’s [`head`](https://rubydoc.brew.sh/Formula#head-class_method) (`master`/`trunk`).
