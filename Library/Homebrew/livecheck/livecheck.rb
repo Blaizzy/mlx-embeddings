@@ -60,6 +60,30 @@ module Homebrew
       @livecheck_strategy_names.freeze
     end
 
+    # Identify taps other than homebrew/core and homebrew/cask in use
+    # for current formulae and casks and load additional Strategy
+    # files them.
+    sig do
+      params(formulae_and_casks_to_check: T::Enumerable[T.any(Formula, Cask::Cask)]).void
+    end
+    def load_other_tap_strategies(formulae_and_casks_to_check)
+      other_taps = {}
+      formulae_and_casks_to_check.each do |formula_or_cask|
+        next if formula_or_cask.tap.blank?
+        next if formula_or_cask.tap.name == CoreTap.instance.name
+        next if formula_or_cask.tap.name == "homebrew/cask"
+        next if other_taps[formula_or_cask.tap.name]
+
+        other_taps[formula_or_cask.tap.name] = formula_or_cask.tap
+      end
+      other_taps = other_taps.sort.to_h
+
+      other_taps.each_value do |tap|
+        tap_strategy_path = "#{tap.path}/livecheck/strategy"
+        Dir["#{tap_strategy_path}/*.rb"].sort.each(&method(:require)) if Dir.exist?(tap_strategy_path)
+      end
+    end
+
     # Executes the livecheck logic for each formula/cask in the
     # `formulae_and_casks_to_check` array and prints the results.
     sig {
@@ -77,22 +101,7 @@ module Homebrew
       formulae_and_casks_to_check,
       full_name: false, json: false, newer_only: false, debug: false, quiet: false, verbose: false
     )
-      # Identify any non-homebrew/core taps in use for current formulae
-      non_core_taps = {}
-      formulae_and_casks_to_check.each do |formula_or_cask|
-        next if formula_or_cask.tap.blank?
-        next if formula_or_cask.tap.name == CoreTap.instance.name
-        next if non_core_taps[formula_or_cask.tap.name]
-
-        non_core_taps[formula_or_cask.tap.name] = formula_or_cask.tap
-      end
-      non_core_taps = non_core_taps.sort.to_h
-
-      # Load additional Strategy files from taps
-      non_core_taps.each_value do |tap|
-        tap_strategy_path = "#{tap.path}/livecheck/strategy"
-        Dir["#{tap_strategy_path}/*.rb"].sort.each(&method(:require)) if Dir.exist?(tap_strategy_path)
-      end
+      load_other_tap_strategies(formulae_and_casks_to_check)
 
       has_a_newer_upstream_version = T.let(false, T::Boolean)
 
@@ -450,12 +459,6 @@ module Homebrew
           else
             puts "URL:              #{original_url}"
           end
-        end
-
-        # Skip Gists until/unless we create a method of identifying revisions
-        if original_url.include?("gist.github.com")
-          odebug "Skipping: GitHub Gists are not supported"
-          next
         end
 
         # Only preprocess the URL when it's appropriate
