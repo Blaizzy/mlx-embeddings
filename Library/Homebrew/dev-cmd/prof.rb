@@ -26,6 +26,8 @@ module Homebrew
 
     brew_rb = (HOMEBREW_LIBRARY_PATH/"brew.rb").resolved_path
     FileUtils.mkdir_p "prof"
+    cmd = args.named.first
+    raise UsageError, "#{cmd} is a Bash command!" if Commands.path(cmd).extname == ".sh"
 
     if args.stackprof?
       Homebrew.install_gem_setup_path! "stackprof"
