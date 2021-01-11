@@ -88,6 +88,7 @@ describe Tap do
     HOMEBREW_REPOSITORY.cd do
       system "git", "init"
       system "git", "config", "--replace-all", "homebrew.linkcompletions", link
+      system "git", "config", "--replace-all", "homebrew.completionsmessageshown", "yes"
     end
   end
 
@@ -316,11 +317,11 @@ describe Tap do
     (HOMEBREW_PREFIX/"share").rmtree if (HOMEBREW_PREFIX/"share").exist?
   end
 
-  specify "#link_completions_and_manpages when completions are enabled" do
+  specify "#link_completions_and_manpages when completions are enabled for non-official tap" do
     setup_tap_files
     setup_git_repo
     setup_completion link: "yes"
-    tap = described_class.new("Homebrew", "baz")
+    tap = described_class.new("NotHomebrew", "baz")
     tap.install clone_target: subject.path/".git"
     (HOMEBREW_PREFIX/"share/man/man1/brew-tap-cmd.1").delete
     (HOMEBREW_PREFIX/"etc/bash_completion.d/brew-tap-cmd").delete
@@ -337,11 +338,11 @@ describe Tap do
     (HOMEBREW_PREFIX/"share").rmtree if (HOMEBREW_PREFIX/"share").exist?
   end
 
-  specify "#link_completions_and_manpages when completions are disabled" do
+  specify "#link_completions_and_manpages when completions are disabled for non-official tap" do
     setup_tap_files
     setup_git_repo
     setup_completion link: "no"
-    tap = described_class.new("Homebrew", "baz")
+    tap = described_class.new("NotHomebrew", "baz")
     tap.install clone_target: subject.path/".git"
     (HOMEBREW_PREFIX/"share/man/man1/brew-tap-cmd.1").delete
     tap.link_completions_and_manpages
@@ -349,6 +350,27 @@ describe Tap do
     expect(HOMEBREW_PREFIX/"etc/bash_completion.d/brew-tap-cmd").not_to be_a_file
     expect(HOMEBREW_PREFIX/"share/zsh/site-functions/_brew-tap-cmd").not_to be_a_file
     expect(HOMEBREW_PREFIX/"share/fish/vendor_completions.d/brew-tap-cmd.fish").not_to be_a_file
+    tap.uninstall
+  ensure
+    (HOMEBREW_PREFIX/"etc").rmtree if (HOMEBREW_PREFIX/"etc").exist?
+    (HOMEBREW_PREFIX/"share").rmtree if (HOMEBREW_PREFIX/"share").exist?
+  end
+
+  specify "#link_completions_and_manpages when completions are enabled for official tap" do
+    setup_tap_files
+    setup_git_repo
+    setup_completion link: "no"
+    tap = described_class.new("Homebrew", "baz")
+    tap.install clone_target: subject.path/".git"
+    (HOMEBREW_PREFIX/"share/man/man1/brew-tap-cmd.1").delete
+    (HOMEBREW_PREFIX/"etc/bash_completion.d/brew-tap-cmd").delete
+    (HOMEBREW_PREFIX/"share/zsh/site-functions/_brew-tap-cmd").delete
+    (HOMEBREW_PREFIX/"share/fish/vendor_completions.d/brew-tap-cmd.fish").delete
+    tap.link_completions_and_manpages
+    expect(HOMEBREW_PREFIX/"share/man/man1/brew-tap-cmd.1").to be_a_file
+    expect(HOMEBREW_PREFIX/"etc/bash_completion.d/brew-tap-cmd").to be_a_file
+    expect(HOMEBREW_PREFIX/"share/zsh/site-functions/_brew-tap-cmd").to be_a_file
+    expect(HOMEBREW_PREFIX/"share/fish/vendor_completions.d/brew-tap-cmd.fish").to be_a_file
     tap.uninstall
   ensure
     (HOMEBREW_PREFIX/"etc").rmtree if (HOMEBREW_PREFIX/"etc").exist?

@@ -1,8 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "completions"
-
 module Utils
   # Helper functions for creating symlinks.
   #
@@ -66,11 +64,6 @@ module Utils
     end
 
     def link_completions(path, command)
-      unless Completions.link_completions?
-        unlink_completions path
-        return
-      end
-
       link_src_dst_dirs(path/"completions/bash", HOMEBREW_PREFIX/"etc/bash_completion.d", command)
       link_src_dst_dirs(path/"completions/zsh", HOMEBREW_PREFIX/"share/zsh/site-functions", command)
       link_src_dst_dirs(path/"completions/fish", HOMEBREW_PREFIX/"share/fish/vendor_completions.d", command)

@@ -18,11 +18,5 @@ describe "brew completions", :integration_test do
       .to output(/Completions are linked/).to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
-
-    brew "completions", "unlink"
-    expect { brew "completions" }
-    .to output(/Completions are not linked/).to_stdout
-    .and not_to_output.to_stderr
-    .and be_a_success
   end
 end

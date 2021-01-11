@@ -8,7 +8,6 @@ require "descriptions"
 require "cleanup"
 require "description_cache_store"
 require "cli/parser"
-require "completions"
 
 module Homebrew
   extend T::Sig
@@ -151,15 +150,6 @@ module Homebrew
       puts "Already up-to-date." unless args.quiet?
     end
 
-    if Completions.read_completions_option.empty?
-      ohai "Homebrew completions are unlinked by default!"
-      puts <<~EOS
-        To opt-in to automatically linking Homebrew shell competion files, run:
-          brew completions link
-        Then, follow the directions at #{Formatter.url("https://docs.brew.sh/Shell-Completion")}
-      EOS
-    end
-
     Commands.rebuild_commands_completion_list
     link_completions_manpages_and_docs
     Tap.each(&:link_completions_and_manpages)
@@ -198,8 +188,7 @@ module Homebrew
 
   def link_completions_manpages_and_docs(repository = HOMEBREW_REPOSITORY)
     command = "brew update"
-
-    Completions.link_if_allowed! command: command
+    Utils::Link.link_completions(repository, command)
     Utils::Link.link_manpages(repository, command)
     Utils::Link.link_docs(repository, command)
   rescue => e

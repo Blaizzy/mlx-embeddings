@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "commands"
+require "completions"
 require "extend/cachable"
 require "description_cache_store"
 
@@ -340,7 +341,13 @@ class Tap
   def link_completions_and_manpages
     command = "brew tap --repair"
     Utils::Link.link_manpages(path, command)
-    Utils::Link.link_completions(path, command)
+
+    Completions.show_completions_message_if_needed
+    if official? || Completions.link_completions?
+      Utils::Link.link_completions(path, command)
+    else
+      Utils::Link.unlink_completions(path)
+    end
   end
 
   # Uninstall this {Tap}.
