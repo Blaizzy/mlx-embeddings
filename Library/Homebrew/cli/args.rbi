@@ -226,6 +226,48 @@ module Homebrew
 
       sig { returns(T.nilable(T::Boolean)) }
       def s?; end
+
+      sig { returns(T.nilable(String)) }
+      def appdir; end
+
+      sig { returns(T.nilable(String)) }
+      def fontdir; end
+
+      sig { returns(T.nilable(String)) }
+      def colorpickerdir; end
+
+      sig { returns(T.nilable(String)) }
+      def prefpanedir; end
+
+      sig { returns(T.nilable(String)) }
+      def qlplugindir; end
+
+      sig { returns(T.nilable(String)) }
+      def dictionarydir; end
+
+      sig { returns(T.nilable(String)) }
+      def servicedir; end
+
+      sig { returns(T.nilable(String)) }
+      def input_methoddir; end
+
+      sig { returns(T.nilable(String)) }
+      def mdimporterdir; end
+
+      sig { returns(T.nilable(String)) }
+      def internet_plugindir; end
+
+      sig { returns(T.nilable(String)) }
+      def audio_unit_plugindir; end
+
+      sig { returns(T.nilable(String)) }
+      def vst_plugindir; end
+
+      sig { returns(T.nilable(String)) }
+      def vst3_plugindir; end
+
+      sig { returns(T.nilable(String)) }
+      def screen_saverdir; end
     end
   end
 end
