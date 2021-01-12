@@ -72,4 +72,32 @@ describe Utils do
       EOS
     end
   end
+
+  describe "::safe_popen_read" do
+    it "does not raise an error if the command succeeds" do
+      expect(subject.safe_popen_read("sh", "-c", "true")).to eq("")
+      expect($CHILD_STATUS).to be_a_success
+    end
+
+    it "raises an error if the command fails" do
+      expect { subject.safe_popen_read("sh", "-c", "false") }.to raise_error(ErrorDuringExecution)
+      expect($CHILD_STATUS).to be_a_failure
+    end
+  end
+
+  describe "::safe_popen_write" do
+    it "does not raise an error if the command succeeds" do
+      expect(
+        subject.safe_popen_write("grep", "success") { |pipe| pipe.write "success\n" }.chomp,
+      ).to eq("success")
+      expect($CHILD_STATUS).to be_a_success
+    end
+
+    it "raises an error if the command fails" do
+      expect {
+        subject.safe_popen_write("grep", "success") { |pipe| pipe.write "failure\n" }
+      }.to raise_error(ErrorDuringExecution)
+      expect($CHILD_STATUS).to be_a_failure
+    end
+  end
 end
