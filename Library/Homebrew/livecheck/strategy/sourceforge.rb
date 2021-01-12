@@ -21,7 +21,7 @@ module Homebrew
       # pushed out of the feed (especially if it hasn't been updated recently).
       #
       # Usually we address this situation by adding a `livecheck` block to
-      # the formula that checks the page for the relevant directory in the
+      # the formula/cask that checks the page for the relevant directory in the
       # project instead. In this situation, it's necessary to use
       # `strategy :page_match` to prevent the {Sourceforge} stratgy from
       # being used.

@@ -6,7 +6,8 @@
 # also return the related instance variable when no argument is provided.
 #
 # This information is used by the `brew livecheck` command to control its
-# behavior.
+# behavior. Example `livecheck` blocks can be found in the
+# [`brew livecheck` documentation](https://docs.brew.sh/Brew-Livecheck).
 class Livecheck
   extend Forwardable
 
