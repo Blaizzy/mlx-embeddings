@@ -12,6 +12,8 @@ module RuboCop
       # - `component_precedence_list` has component hierarchy in a nested list
       #   where each sub array contains components' details which are at same precedence level
       class ComponentsOrder < FormulaCop
+        extend AutoCorrector
+
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           @present_components, @offensive_nodes = check_order(FORMULA_COMPONENT_PRECEDENCE_LIST, body_node)
 
@@ -126,17 +128,6 @@ module RuboCop
           end
         end
 
-        # {autocorrect} gets called just after {component_problem}.
-        def autocorrect(_node)
-          return if @offensive_nodes.nil?
-
-          succeeding_node = @offensive_nodes[0]
-          preceding_node = @offensive_nodes[1]
-          lambda do |corrector|
-            reorder_components(corrector, succeeding_node, preceding_node)
-          end
-        end
-
         # Reorder two nodes in the source, using the corrector instance in autocorrect method.
         # Components of same type are grouped together when rewriting the source.
         # Linebreaks are introduced if components are of two different methods/blocks/multilines.
@@ -197,13 +188,15 @@ module RuboCop
           nil
         end
 
-        # Method to format message for reporting component precedence violations.
+        # Method to report and correct component precedence violations.
         def component_problem(c1, c2)
           return if tap_style_exception? :components_order_exceptions
 
           problem "`#{format_component(c1)}` (line #{line_number(c1)}) " \
-                  "should be put before `#{format_component(c2)}` " \
-                  "(line #{line_number(c2)})"
+            "should be put before `#{format_component(c2)}` " \
+            "(line #{line_number(c2)})" do |corrector|
+            reorder_components(corrector, c1, c2)
+          end
         end
 
         # Node pattern method to match
