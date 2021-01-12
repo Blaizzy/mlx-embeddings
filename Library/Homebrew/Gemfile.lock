@@ -104,7 +104,7 @@ GEM
     rspec-support (3.10.0)
     rspec-wait (0.0.9)
       rspec (>= 3, < 4)
-    rubocop (1.8.0)
+    rubocop (1.8.1)
       parallel (~> 1.10)
       parser (>= 3.0.0.0)
       rainbow (>= 2.2.2, < 4.0)
