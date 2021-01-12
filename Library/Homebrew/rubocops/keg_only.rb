@@ -10,6 +10,8 @@ module RuboCop
       #
       # @api private
       class KegOnly < FormulaCop
+        extend AutoCorrector
+
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           keg_only_node = find_node_method_by_name(body_node, :keg_only)
           return unless keg_only_node
@@ -33,12 +35,17 @@ module RuboCop
           first_word = reason.split.first
 
           if reason =~ /\A[A-Z]/ && !reason.start_with?(*allowlist)
-            problem "'#{first_word}' from the `keg_only` reason should be '#{first_word.downcase}'."
+            problem "'#{first_word}' from the `keg_only` reason should be '#{first_word.downcase}'." do |corrector|
+              reason[0] = reason[0].downcase
+              corrector.replace(@offensive_node.source_range, "\"#{reason}\"")
+            end
           end
 
           return unless reason.end_with?(".")
 
-          problem "`keg_only` reason should not end with a period."
+          problem "`keg_only` reason should not end with a period." do |corrector|
+            corrector.replace(@offensive_node.source_range, "\"#{reason.chop}\"")
+          end
         end
 
         def autocorrect(node)
