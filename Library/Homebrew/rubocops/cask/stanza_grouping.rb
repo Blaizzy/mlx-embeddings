@@ -8,8 +8,9 @@ module RuboCop
     module Cask
       # This cop checks that a cask's stanzas are grouped correctly.
       # @see https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/readme.md#stanza-order
-      class StanzaGrouping < Cop
+      class StanzaGrouping < Base
         extend Forwardable
+        extend AutoCorrector
         include CaskHelp
         include RangeHelp
 
@@ -23,17 +24,6 @@ module RuboCop
           @cask_block = cask_block
           @line_ops = {}
           add_offenses
-        end
-
-        def autocorrect(range)
-          lambda do |corrector|
-            case line_ops[range.line - 1]
-            when :insert
-              corrector.insert_before(range, "\n")
-            when :remove
-              corrector.remove(range)
-            end
-          end
         end
 
         private
@@ -79,20 +69,24 @@ module RuboCop
         def add_offense_missing_line(stanza)
           line_index = index_of_line_after(stanza)
           line_ops[line_index] = :insert
-          add_offense(line_index, message: MISSING_LINE_MSG)
+          add_offense(line_index, message: MISSING_LINE_MSG) do |corrector|
+            corrector.insert_before(@range, "\n")
+          end
         end
 
         def add_offense_extra_line(stanza)
           line_index = index_of_line_after(stanza)
           line_ops[line_index] = :remove
-          add_offense(line_index, message: EXTRA_LINE_MSG)
+          add_offense(line_index, message: EXTRA_LINE_MSG) do |corrector|
+            corrector.remove(@range)
+          end
         end
 
         def add_offense(line_index, message:)
           line_length = [processed_source[line_index].size, 1].max
-          range = source_range(processed_source.buffer, line_index + 1, 0,
-                               line_length)
-          super(range, location: range, message: message)
+          @range = source_range(processed_source.buffer, line_index + 1, 0,
+                                line_length)
+          super(@range, message: message)
         end
       end
     end
