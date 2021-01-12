@@ -30038,7 +30038,8 @@ class User
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-module Utils::AST
+class Utils::AST::FormulaAST
+  extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
