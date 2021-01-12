@@ -11,6 +11,8 @@ module RuboCop
       #
       # @api private
       class LivecheckSkip < FormulaCop
+        extend AutoCorrector
+
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           livecheck_node = find_block(body_node, :livecheck)
           return if livecheck_node.blank?
@@ -21,16 +23,12 @@ module RuboCop
           return if find_every_method_call_by_name(livecheck_node).length < 3
 
           offending_node(livecheck_node)
-          problem "Skipped formulae must not contain other livecheck information."
-        end
-
-        def autocorrect(node)
-          lambda do |corrector|
-            skip = find_every_method_call_by_name(node, :skip).first
+          problem "Skipped formulae must not contain other livecheck information." do |corrector|
+            skip = find_every_method_call_by_name(livecheck_node, :skip).first
             skip = find_strings(skip).first
             skip = string_content(skip) if skip.present?
             corrector.replace(
-              node.source_range,
+              livecheck_node.source_range,
               <<~EOS.strip,
                 livecheck do
                     skip#{" \"#{skip}\"" if skip.present?}
@@ -65,7 +63,7 @@ module RuboCop
       #
       # @api private
       class LivecheckUrlSymbol < FormulaCop
-        @offense = nil
+        extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           livecheck_node = find_block(body_node, :livecheck)
@@ -110,16 +108,10 @@ module RuboCop
             next if url != livecheck_url && url != "#{livecheck_url}/" && "#{url}/" != livecheck_url
 
             offending_node(livecheck_url_node)
-            @offense = symbol
-            problem "Use `url :#{symbol}`"
+            problem "Use `url :#{symbol}`" do |corrector|
+              corrector.replace(livecheck_url_node.source_range, "url :#{symbol}")
+            end
             break
-          end
-        end
-
-        def autocorrect(node)
-          lambda do |corrector|
-            corrector.replace(node.source_range, "url :#{@offense}")
-            @offense = nil
           end
         end
       end
@@ -128,6 +120,8 @@ module RuboCop
       #
       # @api private
       class LivecheckRegexParentheses < FormulaCop
+        extend AutoCorrector
+
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           livecheck_node = find_block(body_node, :livecheck)
           return if livecheck_node.blank?
@@ -141,13 +135,9 @@ module RuboCop
           return if parentheses?(livecheck_regex_node)
 
           offending_node(livecheck_regex_node)
-          problem "The `regex` call should always use parentheses."
-        end
-
-        def autocorrect(node)
-          lambda do |corrector|
-            pattern = node.source.split[1..].join
-            corrector.replace(node.source_range, "regex(#{pattern})")
+          problem "The `regex` call should always use parentheses." do |corrector|
+            pattern = livecheck_regex_node.source.split[1..].join
+            corrector.replace(livecheck_regex_node.source_range, "regex(#{pattern})")
           end
         end
       end
@@ -157,6 +147,8 @@ module RuboCop
       #
       # @api private
       class LivecheckRegexExtension < FormulaCop
+        extend AutoCorrector
+
         TAR_PATTERN = /\\?\.t(ar|(g|l|x)z$|[bz2]{2,4}$)(\\?\.((g|l|x)z)|[bz2]{2,4}|Z)?$/i.freeze
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
@@ -175,12 +167,8 @@ module RuboCop
           return if match.blank?
 
           offending_node(regex_node)
-          problem "Use `\\.t` instead of `#{match}`"
-        end
-
-        def autocorrect(node)
-          lambda do |corrector|
-            node = find_strings(node).first
+          problem "Use `\\.t` instead of `#{match}`" do |corrector|
+            node = find_strings(regex_node).first
             correct = node.source.gsub(TAR_PATTERN, "\\.t")
             corrector.replace(node.source_range, correct)
           end
@@ -218,6 +206,10 @@ module RuboCop
       #
       # @api private
       class LivecheckRegexCaseInsensitive < FormulaCop
+        extend AutoCorrector
+
+        MSG = "Regexes should be case-insensitive unless sensitivity is explicitly required for proper matching."
+
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           return if tap_style_exception? :regex_case_sensitive_allowlist
 
@@ -235,12 +227,8 @@ module RuboCop
           return if options_node.source.include?("i")
 
           offending_node(regex_node)
-          problem "Regexes should be case-insensitive unless sensitivity is explicitly required for proper matching."
-        end
-
-        def autocorrect(node)
-          lambda do |corrector|
-            node = node.regopt
+          problem MSG do |corrector|
+            node = regex_node.regopt
             corrector.replace(node.source_range, "i#{node.source}".chars.sort.join)
           end
         end
