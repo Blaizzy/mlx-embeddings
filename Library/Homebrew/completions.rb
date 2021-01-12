@@ -56,7 +56,7 @@ module Completions
 
     T.unsafe(self).ohai "Homebrew completions for external commands are unlinked by default!"
     T.unsafe(self).puts <<~EOS
-      To opt-in to automatically linking Homebrew shell competion files, run:
+      To opt-in to automatically linking external tap shell competion files, run:
         brew completions link
       Then, follow the directions at #{Formatter.url("https://docs.brew.sh/Shell-Completion")}
     EOS
