@@ -68,6 +68,8 @@ module Homebrew
 
             bundle_version = BundleVersion.new(short_version, version) if short_version || version
 
+            next if (os = enclosure&.attr("os")) && os != "osx"
+
             data = {
               title:          title,
               url:            url,
