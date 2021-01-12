@@ -200,9 +200,9 @@ describe RuboCop::Cop::FormulaAudit::Urls do
                                column:   formula["col"],
                                source:   source }]
 
-        inspect_source(source)
+        offenses = inspect_source(source)
 
-        expected_offenses.zip(cop.offenses.reverse).each do |expected, actual|
+        expected_offenses.zip(offenses.reverse).each do |expected, actual|
           expect(actual.message).to eq(expected[:message])
           expect(actual.severity).to eq(expected[:severity])
           expect(actual.line).to eq(expected[:line])
