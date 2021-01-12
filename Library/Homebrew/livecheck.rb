@@ -92,17 +92,11 @@ class Livecheck
   # @param val [String, Symbol] URL to check for version information
   # @return [String, nil]
   def url(val = nil)
-    @url = case val
+    case val
     when nil
-      return @url
-    when :url
-      @formula_or_cask.url.to_s
-    when :head, :stable
-      @formula_or_cask.send(val).url
-    when :homepage
-      @formula_or_cask.homepage
-    when String
-      val
+      @url
+    when String, :head, :homepage, :stable, :url
+      @url = val
     else
       raise TypeError, "Livecheck#url expects a String or valid Symbol"
     end

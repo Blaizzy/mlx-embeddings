@@ -6,15 +6,21 @@ require "livecheck/livecheck"
 describe Homebrew::Livecheck do
   subject(:livecheck) { described_class }
 
+  CASK_URL = "https://brew.sh/test-0.0.1.dmg"
+  HEAD_URL = "https://github.com/Homebrew/brew.git"
+  HOMEPAGE_URL = "https://brew.sh"
+  LIVECHECK_URL = "https://formulae.brew.sh/api/formula/ruby.json"
+  STABLE_URL = "https://brew.sh/test-0.0.1.tgz"
+
   let(:f) do
     formula("test") do
       desc "Test formula"
-      homepage "https://brew.sh"
-      url "https://brew.sh/test-0.0.1.tgz"
-      head "https://github.com/Homebrew/brew.git"
+      homepage HOMEPAGE_URL
+      url STABLE_URL
+      head HEAD_URL
 
       livecheck do
-        url "https://formulae.brew.sh/api/formula/ruby.json"
+        url LIVECHECK_URL
         regex(/"stable":"(\d+(?:\.\d+)+)"/i)
       end
     end
@@ -25,13 +31,13 @@ describe Homebrew::Livecheck do
       cask "test" do
         version "0.0.1,2"
 
-        url "https://brew.sh/test-0.0.1.tgz"
+        url CASK_URL
         name "Test"
         desc "Test cask"
-        homepage "https://brew.sh"
+        homepage HOMEPAGE_URL
 
         livecheck do
-          url "https://formulae.brew.sh/api/formula/ruby.json"
+          url LIVECHECK_URL
           regex(/"stable":"(\d+(?:\.\d+)+)"/i)
         end
       end
@@ -72,13 +78,63 @@ describe Homebrew::Livecheck do
     end
   end
 
+  describe "::livecheck_url_to_string" do
+    let(:f_livecheck_url) do
+      formula("test_livecheck_url") do
+        desc "Test Livecheck URL formula"
+        homepage HOMEPAGE_URL
+        url STABLE_URL
+        head HEAD_URL
+      end
+    end
+
+    let(:c_livecheck_url) do
+      Cask::CaskLoader.load(+<<-RUBY)
+        cask "test_livecheck_url" do
+          version "0.0.1,2"
+
+          url CASK_URL
+          name "Test"
+          desc "Test Livecheck URL cask"
+          homepage HOMEPAGE_URL
+        end
+      RUBY
+    end
+
+    it "returns a URL string when given a livecheck_url string" do
+      f_livecheck_url.livecheck.url(LIVECHECK_URL)
+      expect(livecheck.livecheck_url_to_string(LIVECHECK_URL, f_livecheck_url)).to eq(LIVECHECK_URL)
+    end
+
+    it "returns a URL symbol when given a valid livecheck_url symbol" do
+      f_livecheck_url.livecheck.url(:head)
+      expect(livecheck.livecheck_url_to_string(HEAD_URL, f_livecheck_url)).to eq(HEAD_URL)
+
+      f_livecheck_url.livecheck.url(:homepage)
+      expect(livecheck.livecheck_url_to_string(HOMEPAGE_URL, f_livecheck_url)).to eq(HOMEPAGE_URL)
+
+      c_livecheck_url.livecheck.url(:homepage)
+      expect(livecheck.livecheck_url_to_string(HOMEPAGE_URL, c_livecheck_url)).to eq(HOMEPAGE_URL)
+
+      f_livecheck_url.livecheck.url(:stable)
+      expect(livecheck.livecheck_url_to_string(STABLE_URL, f_livecheck_url)).to eq(STABLE_URL)
+
+      c_livecheck_url.livecheck.url(:url)
+      expect(livecheck.livecheck_url_to_string(CASK_URL, c_livecheck_url)).to eq(CASK_URL)
+    end
+
+    it "returns nil when not given a string or valid symbol" do
+      expect(livecheck.livecheck_url_to_string(nil, f_livecheck_url)).to eq(nil)
+      expect(livecheck.livecheck_url_to_string(nil, c_livecheck_url)).to eq(nil)
+      expect(livecheck.livecheck_url_to_string(:invalid_symbol, f_livecheck_url)).to eq(nil)
+      expect(livecheck.livecheck_url_to_string(:invalid_symbol, c_livecheck_url)).to eq(nil)
+    end
+  end
+
   describe "::checkable_urls" do
     it "returns the list of URLs to check" do
-      expect(livecheck.checkable_urls(f))
-        .to eq(
-          ["https://github.com/Homebrew/brew.git", "https://brew.sh/test-0.0.1.tgz", "https://brew.sh"],
-        )
-      expect(livecheck.checkable_urls(c)).to eq(["https://brew.sh/test-0.0.1.tgz", "https://brew.sh"])
+      expect(livecheck.checkable_urls(f)).to eq([HEAD_URL, STABLE_URL, HOMEPAGE_URL])
+      expect(livecheck.checkable_urls(c)).to eq([CASK_URL, HOMEPAGE_URL])
     end
   end
 
