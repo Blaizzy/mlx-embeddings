@@ -25,6 +25,8 @@ def linux?
 end
 
 class Cmd
+  CXX_REGEX = /(?:c|g|clang)\+\+/.freeze
+
   attr_reader :config, :prefix, :cellar, :opt, :cachedir, :tmpdir, :sysroot, :deps
   attr_reader :archflags, :optflags, :keg_regex, :formula_prefix
 
@@ -52,7 +54,7 @@ class Cmd
     elsif ["ld", "ld.gold", "gold"].include? @arg0
       :ld
     elsif @args.include? "-c"
-      if /(?:c|g|clang)\+\+/.match?(@arg0)
+      if CXX_REGEX.match?(@arg0)
         :cxx
       else
         :cc
@@ -61,7 +63,7 @@ class Cmd
       :cxx
     elsif @args.include? "-E"
       :ccE
-    elsif /(?:c|g|clang)\+\+/.match?(@arg0)
+    elsif CXX_REGEX.match?(@arg0)
       :cxxld
     else
       :ccld
