@@ -21,16 +21,19 @@ module Repology
   end
 
   def single_package_query(name)
-    url = "https://repology.org/api/v1/project/#{name}"
+    url = %W[
+      https://repology.org/tools/project-by?repo=homebrew&
+      name_type=srcname&target_page=api_v1_project&name=#{name}
+    ].join
 
-    output, _errors, _status = curl_output(url.to_s)
-    data = JSON.parse(output)
+    output, _errors, _status = curl_output("--location", url.to_s)
 
-    homebrew = data.select do |repo|
-      repo["repo"] == "homebrew"
+    begin
+      data = JSON.parse(output)
+      { name => data }
+    rescue
+      nil
     end
-
-    homebrew.empty? ? nil : { name => data }
   end
 
   def parse_api_response(limit = nil)
@@ -59,7 +62,8 @@ module Repology
   end
 
   def latest_version(repositories)
-    # TODO: explain unique
+    # The status is "unique" when the package is present only in Homebrew, so Repology
+    # has no way of knowing if the package is up-to-date.
     is_unique = repositories.find do |repo|
       repo["status"] == "unique"
     end.present?
@@ -70,7 +74,7 @@ module Repology
       repo["status"] == "newest"
     end
 
-    # TODO: explain when latest can be blank
+    # Repology cannot identify "newest" versions for packages without a version scheme
     return "no latest version" if latest_version.blank?
 
     latest_version["version"]

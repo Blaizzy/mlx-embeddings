@@ -62,7 +62,7 @@ module Homebrew
           repo["repo"] == "homebrew"
         end
 
-        next if homebrew_repo.blank? # TODO: check if/when this ever happens
+        next if homebrew_repo.blank?
 
         formula = begin
           Formula[homebrew_repo["srcname"]]
