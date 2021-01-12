@@ -29,6 +29,7 @@ module RuboCop
         @line_no = line_number(node)
         @source_buf = source_buffer(node)
         @offensive_node = node
+        @offensive_source_range = source_range(@source_buf, @line_no, @column, @length)
         match_object
       end
 
