@@ -20,6 +20,10 @@ describe Utils do
     it "returns the revision at HEAD" do
       expect(described_class.git_head(HOMEBREW_CACHE)).to eq(head_revision)
       expect(described_class.git_head(HOMEBREW_CACHE, length: 5)).to eq(head_revision[0...5])
+      HOMEBREW_CACHE.cd do
+        expect(described_class.git_head).to eq(head_revision)
+        expect(described_class.git_head(length: 5)).to eq(head_revision[0...5])
+      end
     end
   end
 
@@ -27,6 +31,10 @@ describe Utils do
     it "returns the short revision at HEAD" do
       expect(described_class.git_short_head(HOMEBREW_CACHE)).to eq(short_head_revision)
       expect(described_class.git_short_head(HOMEBREW_CACHE, length: 5)).to eq(head_revision[0...5])
+      HOMEBREW_CACHE.cd do
+        expect(described_class.git_short_head).to eq(short_head_revision)
+        expect(described_class.git_short_head(length: 5)).to eq(head_revision[0...5])
+      end
     end
   end
 end
