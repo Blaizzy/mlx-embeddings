@@ -4,7 +4,7 @@
 require "hardware"
 require "extend/ENV/shared"
 
-# @private
+# @api private
 module Stdenv
   extend T::Sig
 

@@ -67,15 +67,6 @@ class Formula
   extend Predicable
 
   # @!method inreplace(paths, before = nil, after = nil)
-  # Actually implemented in {Utils::Inreplace.inreplace}.
-  # Sometimes we have to change a bit before we install. Mostly we
-  # prefer a patch but if you need the `prefix` of this formula in the
-  # patch you have to resort to `inreplace`, because in the patch
-  # you don't have access to any variable defined by the formula. Only
-  # `HOMEBREW_PREFIX` is available in the embedded patch.
-  #
-  # `inreplace` supports regular expressions:
-  # <pre>inreplace "somefile.cfg", /look[for]what?/, "replace by #{bin}/tool"</pre>
   # @see Utils::Inreplace.inreplace
 
   # The name of this {Formula}.
@@ -590,6 +581,7 @@ class Formula
   end
 
   # {PkgVersion} of the linked keg for the formula.
+  sig { returns(T.nilable(PkgVersion)) }
   def linked_version
     return unless linked?
 
@@ -668,9 +660,12 @@ class Formula
 
   # The directory where the formula's binaries should be installed.
   # This is not symlinked into `HOMEBREW_PREFIX`.
-  # It is also commonly used to install files that we do not wish to be
+  # It is commonly used to install files that we do not wish to be
   # symlinked into `HOMEBREW_PREFIX` from one of the other directories and
   # instead manually create symlinks or wrapper scripts into e.g. {#bin}.
+  # <pre>libexec.install "foo.jar"
+  # bin.write_jar_script libexec/"foo.jar", "foo"
+  # </pre>
   def libexec
     prefix/"libexec"
   end
@@ -1104,14 +1099,9 @@ class Formula
   # @private
   delegate keg_only_reason: :"self.class"
 
-  # sometimes the formula cleaner breaks things
-  # skip cleaning paths in a formula with a class method like this:
-  #   skip_clean "bin/foo", "lib/bar"
-  # keep .la files with:
-  #   skip_clean :la
+  # @see .skip_clean
   # @private
   sig { params(path: Pathname).returns(T::Boolean) }
-
   def skip_clean?(path)
     return true if path.extname == ".la" && self.class.skip_clean_paths.include?(:la)
 
@@ -1119,11 +1109,7 @@ class Formula
     self.class.skip_clean_paths.include? to_check
   end
 
-  # Sometimes we accidentally install files outside prefix. After we fix that,
-  # users will get nasty link conflict error. So we create an allowlist here to
-  # allow overwriting certain files. e.g.
-  #   link_overwrite "bin/foo", "lib/bar"
-  #   link_overwrite "share/man/man1/baz-*"
+  # @see .link_overwrite
   # @private
   def link_overwrite?(path)
     # Don't overwrite files not created by Homebrew.
@@ -1163,36 +1149,42 @@ class Formula
   # Defaults to false.
   # @!method deprecated?
   # @return [Boolean]
+  # @see .deprecate!
   delegate deprecated?: :"self.class"
 
   # The date that this {Formula} was or becomes deprecated.
   # Returns `nil` if no date is specified.
   # @!method deprecation_date
   # @return Date
+  # @see .deprecate!
   delegate deprecation_date: :"self.class"
 
   # The reason this {Formula} is deprecated.
   # Returns `nil` if no reason is specified or the formula is not deprecated.
   # @!method deprecation_reason
   # @return [String, Symbol]
+  # @see .deprecate!
   delegate deprecation_reason: :"self.class"
 
   # Whether this {Formula} is disabled (i.e. cannot be installed).
   # Defaults to false.
   # @!method disabled?
   # @return [Boolean]
+  # @see .disable!
   delegate disabled?: :"self.class"
 
   # The date that this {Formula} was or becomes disabled.
   # Returns `nil` if no date is specified.
   # @!method disable_date
   # @return Date
+  # @see .disable!
   delegate disable_date: :"self.class"
 
   # The reason this {Formula} is disabled.
   # Returns `nil` if no reason is specified or the formula is not disabled.
   # @!method disable_reason
   # @return [String, Symbol]
+  # @see .disable!
   delegate disable_reason: :"self.class"
 
   sig { returns(T::Boolean) }
@@ -1406,21 +1398,22 @@ class Formula
   end
 
   # Standard parameters for configure builds.
+  sig { returns(T::Array[String]) }
   def std_configure_args
     ["--disable-debug", "--disable-dependency-tracking", "--prefix=#{prefix}", "--libdir=#{lib}"]
   end
 
   # Standard parameters for cargo builds.
+  sig { returns(T::Array[T.any(String, Pathname)]) }
   def std_cargo_args
     ["--locked", "--root", prefix, "--path", "."]
   end
 
   # Standard parameters for CMake builds.
+  #
   # Setting `CMAKE_FIND_FRAMEWORK` to "LAST" tells CMake to search for our
   # libraries before trying to utilize Frameworks, many of which will be from
   # 3rd party installs.
-  # Note that there isn't a std_autotools variant because autotools is a lot
-  # less consistent and the standard parameters are more memorable.
   sig { returns(T::Array[String]) }
   def std_cmake_args
     args = %W[
@@ -1445,6 +1438,7 @@ class Formula
   end
 
   # Standard parameters for Go builds.
+  sig { returns(T::Array[T.any(String, Pathname)]) }
   def std_go_args
     ["-trimpath", "-o", bin/name]
   end
@@ -1469,6 +1463,20 @@ class Formula
     ["--prefix=#{prefix}", "--libdir=#{lib}", "--buildtype=release", "--wrap-mode=nofallback"]
   end
 
+  # Shared library names according to platform conventions.
+  #
+  # Optionally specify a `version` to restrict the shared library to a specific
+  # version. The special string "*" matches any version.
+  #
+  # If `name` is specified as "*", match any shared library of any version.
+  #
+  # <pre>
+  # shared_library("foo")      #=> foo.dylib
+  # shared_library("foo", 1)   #=> foo.1.dylib
+  # shared_library("foo", "*") #=> foo.2.dylib, foo.1.dylib, foo.dylib
+  # shared_library("*")        #=> foo.dylib, bar.dylib
+  # </pre>
+  sig { params(name: String, version: T.nilable(T.any(String, Integer))).returns(String) }
   def shared_library(name, version = nil)
     return "*.dylib" if name == "*" && (version.blank? || version == "*")
 
@@ -1675,6 +1683,8 @@ class Formula
     end
   end
 
+  # Returns the {PkgVersion} for this formula if it is installed.
+  # If not, return `nil`.
   def any_installed_version
     any_installed_keg&.version
   end
@@ -1981,7 +1991,8 @@ class Formula
   # has to be opened first.
   # <pre>system "./bootstrap.sh", "--arg1", "--prefix=#{prefix}"</pre>
   #
-  # For CMake we have some necessary defaults in {#std_cmake_args}:
+  # For CMake and other build systems we have some necessary defaults in e.g.
+  # {#std_cmake_args}:
   # <pre>system "cmake", ".", *std_cmake_args</pre>
   #
   # If the arguments given to `configure` (or `make` or `cmake`) are depending
@@ -2435,7 +2446,6 @@ class Formula
     #
     # <pre>bottle do
     #   root_url "https://example.com" # Optional root to calculate bottle URLs.
-    #   prefix "/opt/homebrew" # Optional HOMEBREW_PREFIX in which the bottles were built.
     #   cellar "/opt/homebrew/Cellar" # Optional HOMEBREW_CELLAR in which the bottles were built.
     #   rebuild 1 # Marks the old bottle as outdated without bumping the version/revision of the formula.
     #   sha256 "ef65c759c5097a36323fa9c77756468649e8d1980a3a4e05695c05e39568967c" => :catalina
@@ -2443,16 +2453,12 @@ class Formula
     #   sha256 "91dd0caca9bd3f38c439d5a7b6f68440c4274945615fae035ff0a369264b8a2f" => :high_sierra
     # end</pre>
     #
-    # Only formulae where the upstream URL breaks or moves frequently, require compiling
-    # or have a reasonable amount of patches/resources should be bottled.
-    # Formulae which do not meet the above requirements should not be bottled.
+    # Homebrew maintainers aim to bottle all formulae that require compilation.
     #
-    # Formulae which should not be bottled and can be installed without any compile
-    # required should be tagged with:
+    # Formulae that can be installed without compilation should be tagged with:
     # <pre>bottle :unneeded</pre>
     #
-    # Otherwise formulae which do not meet the above requirements and should not
-    # be bottled should be tagged with:
+    # Formulae which should not be bottled should be tagged with:
     # <pre>bottle :disable, "reasons"</pre>
     def bottle(*args, &block)
       stable.bottle(*args, &block)
@@ -2533,32 +2539,41 @@ class Formula
     end
 
     # The dependencies for this formula. Use strings for the names of other
-    # formulae. Homebrew provides some :special dependencies for stuff that
-    # requires certain extra handling (often changing some ENV vars or
-    # deciding if to use the system provided version or not).
-    # <pre># `:build` means this dep is only needed during build.
-    # depends_on "cmake" => :build</pre>
-    # <pre># `:recommended` dependencies are built by default.
-    # # But a `--without-...` option is generated to opt-out.
-    # depends_on "readline" => :recommended</pre>
-    # <pre># `:optional` dependencies are NOT built by default unless the
-    # # auto-generated `--with-...` option is passed.
-    # depends_on "glib" => :optional</pre>
-    # <pre># If you need to specify that another formula has to be built with/out
-    # # certain options (note, no `--` needed before the option):
-    # depends_on "zeromq" => "with-pgm"
+    # formulae. Homebrew provides some `:special` {Requirement}s for stuff
+    # that needs extra handling (often changing some ENV vars or
+    # deciding whether to use the system provided version).
+    #
+    # `:build` means this dependency is only needed during build.
+    # <pre>depends_on "cmake" => :build</pre>
+    #
+    # `:test` means this dependency is only needed during testing.
+    # <pre>depends_on "node" => :test</pre>
+    #
+    # `:recommended` dependencies are built by default.
+    # But a `--without-...` option is generated to opt-out.
+    # <pre>depends_on "readline" => :recommended</pre>
+    #
+    # `:optional` dependencies are NOT built by default unless the
+    # auto-generated `--with-...` option is passed.
+    # <pre>depends_on "glib" => :optional</pre>
+    #
+    # If you need to specify that another formula has to be built with/out
+    # certain options (note, no `--` needed before the option):
+    # <pre>depends_on "zeromq" => "with-pgm"
     # depends_on "qt" => ["with-qtdbus", "developer"] # Multiple options.</pre>
-    # <pre># Optional and enforce that "boost" is built with `--with-c++11`.
-    # depends_on "boost" => [:optional, "with-c++11"]</pre>
-    # <pre># If a dependency is only needed in certain cases:
-    # depends_on "sqlite" if MacOS.version >= :catalina
+    #
+    # Optional and enforce that "boost" is built with `--with-c++11`.
+    # <pre>depends_on "boost" => [:optional, "with-c++11"]</pre>
+    #
+    # If a dependency is only needed in certain cases:
+    # <pre>depends_on "sqlite" if MacOS.version >= :catalina
     # depends_on xcode: :build # If the formula really needs full Xcode to compile.
     # depends_on macos: :mojave # Needs at least macOS Mojave (10.14) to run.
-    # <pre># It is possible to only depend on something if
-    # # `build.with?` or `build.without? "another_formula"`:
-    # depends_on "postgresql" if build.without? "sqlite"</pre>
-    # <pre># Require Python if `--with-python` is passed to `brew install example`:
-    # depends_on "python" => :optional</pre>
+    # </pre>
+    #
+    # It is possible to only depend on something if
+    # `build.with?` or `build.without? "another_formula"`:
+    # <pre>depends_on "postgresql" if build.without? "sqlite"</pre>
     def depends_on(dep)
       specs.each { |spec| spec.depends_on(dep) }
     end
@@ -2659,6 +2674,13 @@ class Formula
       names.each { |name| conflicts << FormulaConflict.new(name, opts[:because]) }
     end
 
+    # Skip cleaning paths in a formula.
+    #
+    # Sometimes the formula {Cleaner cleaner} breaks things.
+    # Preserve cleaned paths with:
+    # <pre>skip_clean "bin/foo", "lib/bar"</pre>
+    # Keep .la files with:
+    # <pre>skip_clean :la</pre>
     def skip_clean(*paths)
       paths.flatten!
       # Specifying :all is deprecated and will become an error
@@ -2670,13 +2692,16 @@ class Formula
       @skip_clean_paths ||= Set.new
     end
 
-    # Software that will not be symlinked into the `brew --prefix` will only
-    # live in its Cellar. Other formulae can depend on it and then brew will
-    # add the necessary includes and libs (etc.) during the brewing of that
-    # other formula. But generally, keg-only formulae are not in your PATH
-    # and not seen by compilers if you build your own software outside of
-    # Homebrew. This way, we don't shadow software provided by macOS.
+    # Software that will not be symlinked into the `brew --prefix` and will
+    # only live in its Cellar. Other formulae can depend on it and Homebrew
+    # will add the necessary includes, libraries, and other paths while
+    # building that other formula.
+    #
+    # Keg-only formulae are not in your PATH and are not seen by compilers
+    # if you build your own software outside of Homebrew. This way, we
+    # don't shadow software provided by macOS.
     # <pre>keg_only :provided_by_macos</pre>
+    # <pre>keg_only :versioned_formulae</pre>
     # <pre>keg_only "because I want it so"</pre>
     def keg_only(reason, explanation = "")
       @keg_only_reason = KegOnlyReason.new(reason, explanation)
@@ -2712,6 +2737,15 @@ class Formula
       specs.each { |spec| spec.fails_with(compiler, &block) }
     end
 
+    # Marks the {Formula} as needing a certain standard, so Homebrew
+    # will fall back to other compilers if the default compiler
+    # does not implement that standard.
+    #
+    # We generally prefer to {.depends_on} a desired compiler and to
+    # explicitly use that compiler in a formula's {#install} block,
+    # rather than implicitly finding a suitable compiler with `needs`.
+    #
+    # @see #fails_with
     def needs(*standards)
       specs.each { |spec| spec.needs(*standards) }
     end
@@ -2749,9 +2783,9 @@ class Formula
     end
 
     # @!attribute [w] livecheck
-    # Livecheck can be used to check for newer versions of the software.
+    # {Livecheck} can be used to check for newer versions of the software.
     # This method evaluates the DSL specified in the livecheck block of the
-    # {Formula} (if it exists) and sets the instance variables of a Livecheck
+    # {Formula} (if it exists) and sets the instance variables of a {Livecheck}
     # object accordingly. This is used by `brew livecheck` to check for newer
     # versions of the software.
     #
@@ -2790,6 +2824,8 @@ class Formula
     # will not be deprecated.
     # <pre>deprecate! date: "2020-08-27", because: :unmaintained</pre>
     # <pre>deprecate! date: "2020-08-27", because: "has been replaced by foo"</pre>
+    # @see https://docs.brew.sh/Deprecating-Disabling-and-Removing-Formulae
+    # @see DeprecateDisable::DEPRECATE_DISABLE_REASONS
     def deprecate!(date: nil, because: nil)
       odeprecated "`deprecate!` without a reason", "`deprecate! because: \"reason\"`" if because.blank?
       odeprecated "`deprecate!` without a date", "`deprecate! date: \"#{Date.today}\"`" if date.blank?
@@ -2805,6 +2841,7 @@ class Formula
     # Whether this {Formula} is deprecated (i.e. warns on installation).
     # Defaults to false.
     # @return [Boolean]
+    # @see .deprecate!
     def deprecated?
       @deprecated == true
     end
@@ -2812,18 +2849,22 @@ class Formula
     # The date that this {Formula} was or becomes deprecated.
     # Returns `nil` if no date is specified.
     # @return Date
+    # @see .deprecate!
     attr_reader :deprecation_date
 
     # The reason for deprecation of a {Formula}.
     # @return [nil] if no reason was provided or the formula is not deprecated.
     # @return [String, Symbol]
+    # @see .deprecate!
     attr_reader :deprecation_reason
 
-    # Disables a {Formula}  (on a given date, if provided) so it cannot be
+    # Disables a {Formula} (on a given date, if provided) so it cannot be
     # installed. If the date has not yet passed the formula
     # will be deprecated instead of disabled.
     # <pre>disable! date: "2020-08-27", because: :does_not_build</pre>
     # <pre>disable! date: "2020-08-27", because: "has been replaced by foo"</pre>
+    # @see https://docs.brew.sh/Deprecating-Disabling-and-Removing-Formulae
+    # @see DeprecateDisable::DEPRECATE_DISABLE_REASONS
     def disable!(date: nil, because: nil)
       odeprecated "`disable!` without a reason", "`disable! because: \"reason\"`" if because.blank?
       odeprecated "`disable!` without a date", "`disable! date: \"#{Date.today}\"`" if date.blank?
@@ -2843,6 +2884,7 @@ class Formula
     # Whether this {Formula} is disabled (i.e. cannot be installed).
     # Defaults to false.
     # @return [Boolean]
+    # @see .disable!
     def disabled?
       @disabled == true
     end
@@ -2850,14 +2892,21 @@ class Formula
     # The date that this {Formula} was or becomes disabled.
     # Returns `nil` if no date is specified.
     # @return Date
+    # @see .disable!
     attr_reader :disable_date
 
     # The reason this {Formula} is disabled.
     # Returns `nil` if no reason was provided or the formula is not disabled.
     # @return [String, Symbol]
+    # @see .disable!
     attr_reader :disable_reason
 
-    # @private
+    # Permit overwriting certain files while linking.
+    #
+    # Sometimes we accidentally install files outside prefix. Once we fix that,
+    # users will get a link conflict error. Overwrite those files with:
+    # <pre>link_overwrite "bin/foo", "lib/bar"</pre>
+    # <pre>link_overwrite "share/man/man1/baz-*"</pre>
     def link_overwrite(*paths)
       paths.flatten!
       link_overwrite_paths.merge(paths)
@@ -2868,6 +2917,7 @@ class Formula
       @link_overwrite_paths ||= Set.new
     end
 
+    # Permit links to certain libraries that don't exist. Available on Linux only.
     def ignore_missing_libraries(*)
       raise FormulaSpecificationError, "#{__method__} is available on Linux only"
     end
