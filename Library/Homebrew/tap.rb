@@ -5,6 +5,7 @@ require "commands"
 require "completions"
 require "extend/cachable"
 require "description_cache_store"
+require "settings"
 
 # A {Tap} is used to extend the formulae provided by Homebrew core.
 # Usually, it's synced with a remote Git repository. And it's likely
@@ -821,18 +822,14 @@ class TapConfig
     return unless tap.git?
     return unless Utils::Git.available?
 
-    tap.path.cd do
-      Utils.popen_read("git", "config", "--get", "homebrew.#{key}").chomp.presence
-    end
+    Settings.read key, repo: tap.path
   end
 
   def []=(key, value)
     return unless tap.git?
     return unless Utils::Git.available?
 
-    tap.path.cd do
-      safe_system "git", "config", "--replace-all", "homebrew.#{key}", value.to_s
-    end
+    Settings.write key, value.to_s, repo: tap.path
   end
 end
 

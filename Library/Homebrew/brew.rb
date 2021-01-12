@@ -85,16 +85,14 @@ begin
   ENV["PATH"] = path
 
   require "commands"
+  require "settings"
 
   if cmd
     internal_cmd = Commands.valid_internal_cmd?(cmd)
     internal_cmd ||= begin
       internal_dev_cmd = Commands.valid_internal_dev_cmd?(cmd)
       if internal_dev_cmd && !Homebrew::EnvConfig.developer?
-        if (HOMEBREW_REPOSITORY/".git/config").exist?
-          system "git", "config", "--file=#{HOMEBREW_REPOSITORY}/.git/config",
-                 "--replace-all", "homebrew.devcmdrun", "true"
-        end
+        Settings.write "devcmdrun", true
         ENV["HOMEBREW_DEV_CMD_RUN"] = "1"
       end
       internal_dev_cmd

@@ -87,8 +87,8 @@ describe Tap do
   def setup_completion(link:)
     HOMEBREW_REPOSITORY.cd do
       system "git", "init"
-      system "git", "config", "--replace-all", "homebrew.linkcompletions", link
-      system "git", "config", "--replace-all", "homebrew.completionsmessageshown", "yes"
+      system "git", "config", "--replace-all", "homebrew.linkcompletions", link.to_s
+      system "git", "config", "--replace-all", "homebrew.completionsmessageshown", "true"
     end
   end
 
@@ -293,7 +293,7 @@ describe Tap do
   specify "#install and #uninstall" do
     setup_tap_files
     setup_git_repo
-    setup_completion link: "yes"
+    setup_completion link: true
 
     tap = described_class.new("Homebrew", "bar")
 
@@ -320,7 +320,7 @@ describe Tap do
   specify "#link_completions_and_manpages when completions are enabled for non-official tap" do
     setup_tap_files
     setup_git_repo
-    setup_completion link: "yes"
+    setup_completion link: true
     tap = described_class.new("NotHomebrew", "baz")
     tap.install clone_target: subject.path/".git"
     (HOMEBREW_PREFIX/"share/man/man1/brew-tap-cmd.1").delete
@@ -341,7 +341,7 @@ describe Tap do
   specify "#link_completions_and_manpages when completions are disabled for non-official tap" do
     setup_tap_files
     setup_git_repo
-    setup_completion link: "no"
+    setup_completion link: false
     tap = described_class.new("NotHomebrew", "baz")
     tap.install clone_target: subject.path/".git"
     (HOMEBREW_PREFIX/"share/man/man1/brew-tap-cmd.1").delete
@@ -359,7 +359,7 @@ describe Tap do
   specify "#link_completions_and_manpages when completions are enabled for official tap" do
     setup_tap_files
     setup_git_repo
-    setup_completion link: "no"
+    setup_completion link: false
     tap = described_class.new("Homebrew", "baz")
     tap.install clone_target: subject.path/".git"
     (HOMEBREW_PREFIX/"share/man/man1/brew-tap-cmd.1").delete

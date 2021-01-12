@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "utils/link"
+require "settings"
 
 # Helper functions for generating shell completions.
 #
@@ -13,7 +14,7 @@ module Completions
 
   sig { void }
   def link!
-    write_completions_option "yes"
+    Settings.write :linkcompletions, true
     Tap.each do |tap|
       Utils::Link.link_completions tap.path, "brew completions link"
     end
@@ -21,7 +22,7 @@ module Completions
 
   sig { void }
   def unlink!
-    write_completions_option "no"
+    Settings.write :linkcompletions, false
     Tap.each do |tap|
       next if tap.official?
 
@@ -31,7 +32,7 @@ module Completions
 
   sig { returns(T::Boolean) }
   def link_completions?
-    read_completions_option == "yes"
+    Settings.read(:linkcompletions) == "true"
   end
 
   sig { returns(T::Boolean) }
@@ -48,23 +49,9 @@ module Completions
     false
   end
 
-  sig { params(option: String).returns(String) }
-  def read_completions_option(option: "linkcompletions")
-    HOMEBREW_REPOSITORY.cd do
-      Utils.popen_read("git", "config", "--get", "homebrew.#{option}").chomp
-    end
-  end
-
-  sig { params(state: String, option: String).void }
-  def write_completions_option(state, option: "linkcompletions")
-    HOMEBREW_REPOSITORY.cd do
-      T.unsafe(self).safe_system "git", "config", "--replace-all", "homebrew.#{option}", state.to_s
-    end
-  end
-
   sig { void }
   def show_completions_message_if_needed
-    return if read_completions_option(option: "completionsmessageshown") == "yes"
+    return if Settings.read(:completionsmessageshown) == "true"
     return unless completions_to_link?
 
     T.unsafe(self).ohai "Homebrew completions for external commands are unlinked by default!"
@@ -74,6 +61,6 @@ module Completions
       Then, follow the directions at #{Formatter.url("https://docs.brew.sh/Shell-Completion")}
     EOS
 
-    write_completions_option("yes", option: "completionsmessageshown")
+    Settings.write :completionsmessageshown, true
   end
 end
