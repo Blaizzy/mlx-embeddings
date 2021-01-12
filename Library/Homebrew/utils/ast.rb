@@ -9,11 +9,71 @@ module Utils
   #
   # @api private
   module AST
+    extend T::Sig
+
     Node = RuboCop::AST::Node
     SendNode = RuboCop::AST::SendNode
     BlockNode = RuboCop::AST::BlockNode
     ProcessedSource = RuboCop::AST::ProcessedSource
     TreeRewriter = Parser::Source::TreeRewriter
+
+    module_function
+
+    sig { params(body_node: Node).returns(T::Array[Node]) }
+    def body_children(body_node)
+      if body_node.blank?
+        []
+      elsif body_node.begin_type?
+        body_node.children.compact
+      else
+        [body_node]
+      end
+    end
+
+    sig { params(name: Symbol, value: T.any(Numeric, String, Symbol), indent: T.nilable(Integer)).returns(String) }
+    def stanza_text(name, value, indent: nil)
+      text = if value.is_a?(String)
+        _, node = process_source(value)
+        value if (node.is_a?(SendNode) || node.is_a?(BlockNode)) && node.method_name == name
+      end
+      text ||= "#{name} #{value.inspect}"
+      text = text.indent(indent) if indent && !text.match?(/\A\n* +/)
+      text
+    end
+
+    sig { params(source: String).returns([ProcessedSource, Node]) }
+    def process_source(source)
+      ruby_version = Version.new(HOMEBREW_REQUIRED_RUBY_VERSION).major_minor.to_f
+      processed_source = ProcessedSource.new(source, ruby_version)
+      root_node = processed_source.ast
+      [processed_source, root_node]
+    end
+
+    sig do
+      params(
+        component_name: Symbol,
+        component_type: Symbol,
+        target_name:    Symbol,
+        target_type:    T.nilable(Symbol),
+      ).returns(T::Boolean)
+    end
+    def component_match?(component_name:, component_type:, target_name:, target_type: nil)
+      component_name == target_name && (target_type.nil? || component_type == target_type)
+    end
+
+    sig { params(node: Node, name: Symbol, type: T.nilable(Symbol)).returns(T::Boolean) }
+    def call_node_match?(node, name:, type: nil)
+      node_type = case node
+      when SendNode then :method_call
+      when BlockNode then :block_call
+      else return false
+      end
+
+      component_match?(component_name: node.method_name,
+                       component_type: node_type,
+                       target_name:    name,
+                       target_type:    type)
+    end
 
     # Helper class for editing formulae.
     #
@@ -21,6 +81,7 @@ module Utils
     class FormulaAST
       extend T::Sig
       extend Forwardable
+      include AST
 
       delegate process: :tree_rewriter
 
@@ -31,17 +92,6 @@ module Utils
         @processed_source = T.let(processed_source, ProcessedSource)
         @children = T.let(children, T::Array[Node])
         @tree_rewriter = T.let(TreeRewriter.new(processed_source.buffer), TreeRewriter)
-      end
-
-      sig { params(body_node: Node).returns(T::Array[Node]) }
-      def self.body_children(body_node)
-        if body_node.nil?
-          []
-        elsif body_node.begin_type?
-          body_node.children.compact
-        else
-          [body_node]
-        end
       end
 
       sig { returns(T.nilable(Node)) }
@@ -66,10 +116,10 @@ module Utils
 
       sig { params(name: Symbol, replacement: T.any(Numeric, String, Symbol), type: T.nilable(Symbol)).void }
       def replace_stanza(name, replacement, type: nil)
-        stanza_node = children.find { |child| call_node_match?(child, name: name, type: type) }
-        raise "Could not find #{name} stanza!" if stanza_node.nil?
+        stanza_node = stanza(name, type: type)
+        raise "Could not find `#{name}` stanza!" if stanza_node.blank?
 
-        tree_rewriter.replace(stanza_node.source_range, self.class.stanza_text(name, replacement, indent: 2).lstrip)
+        tree_rewriter.replace(stanza_node.source_range, stanza_text(name, replacement, indent: 2).lstrip)
       end
 
       sig { params(name: Symbol, value: T.any(Numeric, String, Symbol), type: T.nilable(Symbol)).void }
@@ -104,26 +154,7 @@ module Utils
           end
         end
 
-        tree_rewriter.insert_after(preceding_expr, "\n#{self.class.stanza_text(name, value, indent: 2)}")
-      end
-
-      sig { params(name: Symbol, value: T.any(Numeric, String, Symbol), indent: T.nilable(Integer)).returns(String) }
-      def self.stanza_text(name, value, indent: nil)
-        text = if value.is_a?(String)
-          _, node = process_source(value)
-          value if (node.is_a?(SendNode) || node.is_a?(BlockNode)) && node.method_name == name
-        end
-        text ||= "#{name} #{value.inspect}"
-        text = text.indent(indent) if indent && !text.match?(/\A\n* +/)
-        text
-      end
-
-      sig { params(source: String).returns([ProcessedSource, Node]) }
-      def self.process_source(source)
-        ruby_version = Version.new(HOMEBREW_REQUIRED_RUBY_VERSION).major_minor.to_f
-        processed_source = ProcessedSource.new(source, ruby_version)
-        root_node = processed_source.ast
-        [processed_source, root_node]
+        tree_rewriter.insert_after(preceding_expr, "\n#{stanza_text(name, value, indent: 2)}")
       end
 
       private
@@ -142,7 +173,7 @@ module Utils
 
       sig { returns([ProcessedSource, T::Array[Node]]) }
       def process_formula
-        processed_source, root_node = self.class.process_source(formula_contents)
+        processed_source, root_node = process_source(formula_contents)
 
         class_node = root_node if root_node.class_type?
         if root_node.begin_type?
@@ -156,7 +187,7 @@ module Utils
 
         raise "Could not find formula class!" if class_node.nil?
 
-        children = self.class.body_children(class_node.body)
+        children = body_children(class_node.body)
         raise "Formula class is empty!" if children.empty?
 
         [processed_source, children]
@@ -177,32 +208,6 @@ module Utils
         end
 
         false
-      end
-
-      sig do
-        params(
-          component_name: Symbol,
-          component_type: Symbol,
-          target_name:    Symbol,
-          target_type:    T.nilable(Symbol),
-        ).returns(T::Boolean)
-      end
-      def component_match?(component_name:, component_type:, target_name:, target_type: nil)
-        component_name == target_name && (target_type.nil? || component_type == target_type)
-      end
-
-      sig { params(node: Node, name: Symbol, type: T.nilable(Symbol)).returns(T::Boolean) }
-      def call_node_match?(node, name:, type: nil)
-        node_type = case node
-        when SendNode then :method_call
-        when BlockNode then :block_call
-        else return false
-        end
-
-        component_match?(component_name: node.method_name,
-                         component_type: node_type,
-                         target_name:    name,
-                         target_type:    type)
       end
     end
   end
