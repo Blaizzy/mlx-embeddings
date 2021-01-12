@@ -10,6 +10,7 @@ exec "$HOMEBREW_RUBY_PATH" --enable-frozen-string-literal --disable=gems,did_you
 
 require "pathname"
 require "set"
+require "English"
 
 def mac?
   RUBY_PLATFORM[/darwin/]
