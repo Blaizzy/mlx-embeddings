@@ -142,6 +142,9 @@ module Homebrew
     odie "This formula is not in a tap!" if formula.tap.blank?
     odie "This formula's tap is not a Git repository!" unless formula.tap.git?
 
+    formula_spec = formula.stable
+    odie "#{formula}: no stable specification found!" if formula_spec.blank?
+
     tap_full_name, remote, remote_branch, previous_branch = use_correct_linux_tap(formula, args: args)
     check_open_pull_requests(formula, tap_full_name, args: args)
 
@@ -152,10 +155,6 @@ module Homebrew
     if formula.resources.any? { |resource| !resource.name.start_with?("homebrew-") }
       opoo "This formula has resources that may need to be updated."
     end
-
-    requested_spec = :stable
-    formula_spec = formula.stable
-    odie "#{formula}: no #{requested_spec} specification found!" if formula_spec.blank?
 
     old_mirrors = formula_spec.mirrors
     new_mirrors ||= args.mirror
@@ -170,13 +169,13 @@ module Homebrew
     new_revision = args.revision
     old_url = formula_spec.url
     old_tag = formula_spec.specs[:tag]
-    old_formula_version = formula_version(formula, requested_spec)
+    old_formula_version = formula_version(formula)
     old_version = old_formula_version.to_s
     forced_version = new_version.present?
     new_url_hash = if new_url.present? && new_hash.present?
       check_closed_pull_requests(formula, tap_full_name, url: new_url, args: args) if new_version.blank?
       true
-    elsif new_tag && new_revision
+    elsif new_tag.present? && new_revision.present?
       check_closed_pull_requests(formula, tap_full_name, url: old_url, tag: new_tag, args: args) if new_version.blank?
       false
     elsif old_hash.blank?
@@ -193,8 +192,7 @@ module Homebrew
           EOS
         end
         if new_version.blank?
-          check_closed_pull_requests(formula, tap_full_name, url: old_url, tag: new_tag,
-args: args)
+          check_closed_pull_requests(formula, tap_full_name, url: old_url, tag: new_tag, args: args)
         end
         resource_path, forced_version = fetch_resource(formula, new_version, old_url, tag: new_tag)
         new_revision = Utils.popen_read("git -C \"#{resource_path}\" rev-parse -q --verify HEAD")
@@ -229,7 +227,7 @@ args: args)
     end
 
     replacement_pairs = []
-    if requested_spec == :stable && formula.revision.nonzero?
+    if formula.revision.nonzero?
       replacement_pairs << [
         /^  revision \d+\n(\n(  head "))?/m,
         "\\2",
@@ -285,7 +283,7 @@ args: args)
       ]
     end
 
-    old_contents = File.read(formula.path) unless args.dry_run?
+    old_contents = formula.path.read
 
     if new_mirrors.present?
       replacement_pairs << [
@@ -297,8 +295,7 @@ args: args)
     # When bumping a linux-only formula, one needs to also delete the
     # sha256 linux bottle line if it exists. That's because of running
     # test-bot with --keep-old option in linuxbrew-core.
-    formula_contents = formula.path.read
-    if formula_contents.include?("depends_on :linux") && formula_contents.include?("=> :x86_64_linux")
+    if old_contents.include?("depends_on :linux") && old_contents.include?("=> :x86_64_linux")
       replacement_pairs << [
         /^    sha256 ".+" => :x86_64_linux\n/m,
         "\\2",
@@ -306,7 +303,7 @@ args: args)
     end
 
     if forced_version && new_version != "0"
-      replacement_pairs << if File.read(formula.path).include?("version \"#{old_formula_version}\"")
+      replacement_pairs << if old_contents.include?("version \"#{old_formula_version}\"")
         [
           old_formula_version.to_s,
           new_version,
@@ -338,7 +335,7 @@ args: args)
                                                     read_only_run: args.dry_run?,
                                                     silent:        args.quiet?)
 
-    new_formula_version = formula_version(formula, requested_spec, new_contents)
+    new_formula_version = formula_version(formula, new_contents)
 
     if new_formula_version < old_formula_version
       formula.path.atomic_write(old_contents) unless args.dry_run?
@@ -448,7 +445,8 @@ args: args)
     [resource.fetch, forced_version]
   end
 
-  def formula_version(formula, spec, contents = nil)
+  def formula_version(formula, contents = nil)
+    spec = :stable
     name = formula.name
     path = formula.path
     if contents.present?
