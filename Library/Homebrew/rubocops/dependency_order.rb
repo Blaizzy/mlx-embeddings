@@ -11,6 +11,8 @@ module RuboCop
       # precedence order:
       # build-time > test > normal > recommended > optional
       class DependencyOrder < FormulaCop
+        extend AutoCorrector
+
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           check_dependency_nodes_order(body_node)
           check_uses_from_macos_nodes_order(body_node)
@@ -89,17 +91,26 @@ module RuboCop
         # Verify actual order of sorted `depends_on` nodes in source code;
         # raise RuboCop problem otherwise.
         def verify_order_in_source(ordered)
-          ordered.each_with_index do |dependency_node_1, idx|
-            l1 = line_number(dependency_node_1)
-            dependency_node_2 = nil
-            ordered.drop(idx+1).each do |node2|
-              l2 = line_number(node2)
-              dependency_node_2 = node2 if l2 < l1
+          ordered.each_with_index do |node_1, idx|
+            l1 = line_number(node_1)
+            l2 = nil
+            node_2 = nil
+            ordered.drop(idx + 1).each do |test_node|
+              l2 = line_number(test_node)
+              node_2 = test_node if l2 < l1
             end
-            next unless dependency_node_2
+            next unless node_2
 
-            @offensive_nodes = [dependency_node_1, dependency_node_2]
-            component_problem dependency_node_1, dependency_node_2
+            offending_node(node_1)
+
+            problem "dependency \"#{dependency_name(node_1)}\" (line #{l1}) should be put before dependency "\
+                    "\"#{dependency_name(node_2)}\" (line #{l2})" do |corrector|
+              indentation = " " * (start_column(node_2) - line_start_column(node_2))
+              line_breaks = "\n"
+              corrector.insert_before(node_2.source_range,
+                                      node_1.source + line_breaks + indentation)
+              corrector.remove(range_with_surrounding_space(range: node_1.source_range, side: :left))
+            end
           end
         end
 
@@ -149,31 +160,6 @@ module RuboCop
         def dependency_name(dependency_node)
           match_node = dependency_name_node(dependency_node).to_a.first
           string_content(match_node) if match_node
-        end
-
-        def autocorrect(_node)
-          succeeding_node = @offensive_nodes[0]
-          preceding_node = @offensive_nodes[1]
-          lambda do |corrector|
-            reorder_components(corrector, succeeding_node, preceding_node)
-          end
-        end
-
-        private
-
-        def component_problem(c1, c2)
-          offending_node(c1)
-          problem "dependency \"#{dependency_name(c1)}\" " \
-                  "(line #{line_number(c1)}) should be put before dependency "\
-                  "\"#{dependency_name(c2)}\" (line #{line_number(c2)})"
-        end
-
-        # Reorder two nodes in the source, using the corrector instance in the {autocorrect} method.
-        def reorder_components(corrector, node1, node2)
-          indentation = " " * (start_column(node2) - line_start_column(node2))
-          line_breaks = "\n"
-          corrector.insert_before(node2.source_range, node1.source + line_breaks + indentation)
-          corrector.remove(range_with_surrounding_space(range: node1.source_range, side: :left))
         end
       end
     end
