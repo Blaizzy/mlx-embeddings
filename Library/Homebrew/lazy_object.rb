@@ -18,4 +18,9 @@ class LazyObject < Delegator
   def __setobj__(callable)
     @__callable__ = callable
   end
+
+  # Forward to the inner object to make lazy objects type-checkable.
+  def is_a?(klass)
+    __getobj__.is_a?(klass) || super
+  end
 end
