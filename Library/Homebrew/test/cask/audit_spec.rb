@@ -647,7 +647,7 @@ describe Cask::Audit, :cask do
     end
 
     describe "latest with appcast checks" do
-      let(:message) { "Casks with an appcast should not use version :latest" }
+      let(:message) { "Casks with an `appcast` should not use `version :latest`." }
 
       context "when the Cask is :latest and does not have an appcast" do
         let(:cask_token) { "version-latest" }
@@ -691,7 +691,7 @@ describe Cask::Audit, :cask do
     end
 
     describe "latest with auto_updates checks" do
-      let(:message) { "Casks with `version :latest` should not use `auto_updates`" }
+      let(:message) { "Casks with `version :latest` should not use `auto_updates`." }
 
       context "when the Cask is :latest and does not have auto_updates" do
         let(:cask_token) { "version-latest" }

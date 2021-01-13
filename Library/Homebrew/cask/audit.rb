@@ -67,6 +67,7 @@ module Cask
       check_single_uninstall_zap
       check_untrusted_pkg
       check_hosting_with_appcast
+      check_appcast_and_livecheck
       check_latest_with_appcast_or_livecheck
       check_latest_with_auto_updates
       check_stanza_requires_uninstall
@@ -283,18 +284,24 @@ module Cask
       add_error "cannot use the sha256 for an empty string: #{empty_sha256}"
     end
 
+    def check_appcast_and_livecheck
+      return unless cask.appcast
+
+      add_error "Cask has a `livecheck`, the `appcast` should be removed." if cask.livecheckable?
+    end
+
     def check_latest_with_appcast_or_livecheck
       return unless cask.version.latest?
 
-      add_error "Casks with an appcast should not use version :latest" if cask.appcast
-      add_error "Casks with a livecheck should not use version :latest" if cask.livecheckable?
+      add_error "Casks with an `appcast` should not use `version :latest`." if cask.appcast
+      add_error "Casks with a `livecheck` should not use `version :latest`." if cask.livecheckable?
     end
 
     def check_latest_with_auto_updates
       return unless cask.version.latest?
       return unless cask.auto_updates
 
-      add_error "Casks with `version :latest` should not use `auto_updates`"
+      add_error "Casks with `version :latest` should not use `auto_updates`."
     end
 
     def check_hosting_with_appcast
