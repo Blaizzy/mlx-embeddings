@@ -574,7 +574,7 @@ module Homebrew
     end
     return [] unless args.keep_old?
 
-    old_keys = Utils::AST::FormulaAST.body_children(bottle_node.body).map(&:method_name)
+    old_keys = Utils::AST.body_children(bottle_node.body).map(&:method_name)
     old_bottle_spec = formula.bottle_specification
     mismatches, checksums = merge_bottle_spec(old_keys, old_bottle_spec, bottle_hash["bottle"])
     if mismatches.present?
