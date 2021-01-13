@@ -3,7 +3,7 @@
 
 require "completions"
 
-describe Completions do
+describe Homebrew::Completions do
   let(:internal_path) { HOMEBREW_REPOSITORY/"Library/Taps/homebrew/homebrew-bar" }
   let(:external_path) { HOMEBREW_REPOSITORY/"Library/Taps/foo/homebrew-bar" }
 
@@ -132,12 +132,9 @@ describe Completions do
       setup_completions external: true
       delete_completions_setting setting: :completionsmessageshown
 
-      # This will fail because the method calls `puts`.
-      # If we output the `ohai` andcatch the error, we can be usre that the message is showing.
-      error_message = "private method `puts' called for Completions:Module"
+      message = /Homebrew completions for external commands are unlinked by default!/
       expect { described_class.show_completions_message_if_needed }
-        .to output.to_stdout
-        .and raise_error(NoMethodError, error_message)
+        .to output(message).to_stdout
     end
   end
 end

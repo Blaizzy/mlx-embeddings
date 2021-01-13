@@ -343,8 +343,8 @@ class Tap
     command = "brew tap --repair"
     Utils::Link.link_manpages(path, command)
 
-    Completions.show_completions_message_if_needed
-    if official? || Completions.link_completions?
+    Homebrew::Completions.show_completions_message_if_needed
+    if official? || Homebrew::Completions.link_completions?
       Utils::Link.link_completions(path, command)
     else
       Utils::Link.unlink_completions(path)
@@ -822,14 +822,14 @@ class TapConfig
     return unless tap.git?
     return unless Utils::Git.available?
 
-    Settings.read key, repo: tap.path
+    Homebrew::Settings.read key, repo: tap.path
   end
 
   def []=(key, value)
     return unless tap.git?
     return unless Utils::Git.available?
 
-    Settings.write key, value.to_s, repo: tap.path
+    Homebrew::Settings.write key, value.to_s, repo: tap.path
   end
 end
 

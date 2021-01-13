@@ -1,39 +1,41 @@
 # typed: true
 # frozen_string_literal: true
 
-# Helper functions for reading and writing settings.
-#
-# @api private
-module Settings
-  extend T::Sig
+module Homebrew
+  # Helper functions for reading and writing settings.
+  #
+  # @api private
+  module Settings
+    extend T::Sig
 
-  module_function
+    module_function
 
-  sig { params(setting: T.any(String, Symbol), repo: Pathname).returns(T.nilable(String)) }
-  def read(setting, repo: HOMEBREW_REPOSITORY)
-    return unless (repo/".git/config").exist?
+    sig { params(setting: T.any(String, Symbol), repo: Pathname).returns(T.nilable(String)) }
+    def read(setting, repo: HOMEBREW_REPOSITORY)
+      return unless (repo/".git/config").exist?
 
-    repo.cd do
-      Utils.popen_read("git", "config", "--get", "homebrew.#{setting}").chomp.presence
+      repo.cd do
+        Utils.popen_read("git", "config", "--get", "homebrew.#{setting}").chomp.presence
+      end
     end
-  end
 
-  sig { params(setting: T.any(String, Symbol), value: T.any(String, T::Boolean), repo: Pathname).void }
-  def write(setting, value, repo: HOMEBREW_REPOSITORY)
-    return unless (repo/".git/config").exist?
+    sig { params(setting: T.any(String, Symbol), value: T.any(String, T::Boolean), repo: Pathname).void }
+    def write(setting, value, repo: HOMEBREW_REPOSITORY)
+      return unless (repo/".git/config").exist?
 
-    repo.cd do
-      T.unsafe(self).safe_system "git", "config", "--replace-all", "homebrew.#{setting}", value.to_s
+      repo.cd do
+        safe_system "git", "config", "--replace-all", "homebrew.#{setting}", value.to_s
+      end
     end
-  end
 
-  sig { params(setting: T.any(String, Symbol), repo: Pathname).void }
-  def delete(setting, repo: HOMEBREW_REPOSITORY)
-    return unless (repo/".git/config").exist?
-    return if read(setting, repo: repo).blank?
+    sig { params(setting: T.any(String, Symbol), repo: Pathname).void }
+    def delete(setting, repo: HOMEBREW_REPOSITORY)
+      return unless (repo/".git/config").exist?
+      return if read(setting, repo: repo).blank?
 
-    repo.cd do
-      T.unsafe(self).safe_system "git", "config", "--unset-all", "homebrew.#{setting}"
+      repo.cd do
+        safe_system "git", "config", "--unset-all", "homebrew.#{setting}"
+      end
     end
   end
 end

@@ -3,7 +3,7 @@
 
 require "settings"
 
-describe Settings do
+describe Homebrew::Settings do
   before do
     HOMEBREW_REPOSITORY.cd do
       system "git", "init"

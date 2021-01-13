@@ -92,7 +92,7 @@ begin
     internal_cmd ||= begin
       internal_dev_cmd = Commands.valid_internal_dev_cmd?(cmd)
       if internal_dev_cmd && !Homebrew::EnvConfig.developer?
-        Settings.write "devcmdrun", true
+        Homebrew::Settings.write "devcmdrun", true
         ENV["HOMEBREW_DEV_CMD_RUN"] = "1"
       end
       internal_dev_cmd

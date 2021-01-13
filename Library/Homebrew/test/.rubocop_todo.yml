@@ -22,7 +22,7 @@ RSpec/InstanceVariable:
     - 'utils/git_spec.rb'
     - 'version_spec.rb'
 
-# Offense count: 81
+# Offense count: 76
 RSpec/MultipleDescribes:
   Exclude:
     - 'ENV_spec.rb'
@@ -37,7 +37,6 @@ RSpec/MultipleDescribes:
     - 'cmd/autoremove_spec.rb'
     - 'cmd/cleanup_spec.rb'
     - 'cmd/commands_spec.rb'
-    - 'cmd/completions_spec.rb'
     - 'cmd/config_spec.rb'
     - 'cmd/deps_spec.rb'
     - 'cmd/desc_spec.rb'

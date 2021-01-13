@@ -103,27 +103,27 @@ module Utils
       end
 
       def uuid
-        Settings.read :analyticsuuid
+        Homebrew::Settings.read :analyticsuuid
       end
 
       def messages_displayed!
-        Settings.write :analyticsmessage, true
-        Settings.write :caskanalyticsmessage, true
+        Homebrew::Settings.write :analyticsmessage, true
+        Homebrew::Settings.write :caskanalyticsmessage, true
       end
 
       def enable!
-        Settings.write :analyticsdisabled, false
+        Homebrew::Settings.write :analyticsdisabled, false
         messages_displayed!
       end
 
       def disable!
-        Settings.write :analyticsdisabled, true
+        Homebrew::Settings.write :analyticsdisabled, true
         regenerate_uuid!
       end
 
       def regenerate_uuid!
         # it will be regenerated in next run unless disabled.
-        Settings.delete :analyticsuuid
+        Homebrew::Settings.delete :analyticsuuid
       end
 
       def output(args:, filter: nil)
@@ -314,7 +314,7 @@ module Utils
       end
 
       def config_true?(key)
-        Settings.read(key) == "true"
+        Homebrew::Settings.read(key) == "true"
       end
 
       def formulae_brew_sh_json(endpoint)
