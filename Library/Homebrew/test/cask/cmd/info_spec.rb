@@ -158,6 +158,7 @@ describe Cask::Cmd::Info, :cask do
   end
 
   it "can run be run with a url twice and returns analytics", :needs_network do
+    skip "Receiving a 416 when fetching docker.rb"
     analytics = {
       "analytics" => {
         "install" => {
