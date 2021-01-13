@@ -651,7 +651,7 @@ class Keg
     # formula. The `AlreadyLinkedError` above won't catch
     # this if a formula is missing an optlink. In that case,
     # delete the symlink and retry.
-    if dst.symlink? && Keg.for(dst).name == name
+    if dst.symlink? && dst.exist? && Keg.for(dst).name == name
       dst.unlink
       retry
     end
