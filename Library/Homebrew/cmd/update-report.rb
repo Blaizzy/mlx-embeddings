@@ -8,6 +8,7 @@ require "descriptions"
 require "cleanup"
 require "description_cache_store"
 require "cli/parser"
+require "settings"
 
 module Homebrew
   extend T::Sig
@@ -63,16 +64,12 @@ module Homebrew
       Utils::Analytics.messages_displayed! if $stdout.tty?
     end
 
-    HOMEBREW_REPOSITORY.cd do
-      donation_message_displayed =
-        Utils.popen_read("git", "config", "--get", "homebrew.donationmessage").chomp == "true"
-      if !donation_message_displayed && !args.quiet?
-        ohai "Homebrew is run entirely by unpaid volunteers. Please consider donating:"
-        puts "  #{Formatter.url("https://github.com/Homebrew/brew#donations")}\n"
+    if Settings.read("donationmessage") != "true" && !args.quiet?
+      ohai "Homebrew is run entirely by unpaid volunteers. Please consider donating:"
+      puts "  #{Formatter.url("https://github.com/Homebrew/brew#donations")}\n"
 
-        # Consider the message possibly missed if not a TTY.
-        safe_system "git", "config", "--replace-all", "homebrew.donationmessage", "true" if $stdout.tty?
-      end
+      # Consider the message possibly missed if not a TTY.
+      Settings.write "donationmessage", true if $stdout.tty?
     end
 
     install_core_tap_if_necessary
@@ -89,19 +86,14 @@ module Homebrew
       puts "Updated Homebrew from #{shorten_revision(initial_revision)} to #{shorten_revision(current_revision)}."
       updated = true
 
-      old_tag = if (HOMEBREW_REPOSITORY/".git/config").exist?
-        Utils.popen_read(
-          "git", "config", "--file=#{HOMEBREW_REPOSITORY}/.git/config", "--get", "homebrew.latesttag"
-        ).chomp.presence
-      end
+      old_tag = Settings.read "latesttag"
 
       new_tag = Utils.popen_read(
         "git", "-C", HOMEBREW_REPOSITORY, "tag", "--list", "--sort=-version:refname", "*.*"
       ).lines.first.chomp
 
       if new_tag != old_tag
-        system "git", "config", "--file=#{HOMEBREW_REPOSITORY}/.git/config",
-               "--replace-all", "homebrew.latesttag", new_tag
+        Settings.write "latesttag", new_tag
         new_repository_version = new_tag
       end
     end

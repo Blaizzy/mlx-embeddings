@@ -3,6 +3,7 @@
 
 require "context"
 require "erb"
+require "settings"
 
 module Utils
   # Helper module for fetching and reporting analytics data.
@@ -102,27 +103,27 @@ module Utils
       end
 
       def uuid
-        config_get(:analyticsuuid)
+        Homebrew::Settings.read :analyticsuuid
       end
 
       def messages_displayed!
-        config_set(:analyticsmessage, true)
-        config_set(:caskanalyticsmessage, true)
+        Homebrew::Settings.write :analyticsmessage, true
+        Homebrew::Settings.write :caskanalyticsmessage, true
       end
 
       def enable!
-        config_set(:analyticsdisabled, false)
+        Homebrew::Settings.write :analyticsdisabled, false
         messages_displayed!
       end
 
       def disable!
-        config_set(:analyticsdisabled, true)
+        Homebrew::Settings.write :analyticsdisabled, true
         regenerate_uuid!
       end
 
       def regenerate_uuid!
         # it will be regenerated in next run unless disabled.
-        config_delete(:analyticsuuid)
+        Homebrew::Settings.delete :analyticsuuid
       end
 
       def output(args:, filter: nil)
@@ -313,25 +314,7 @@ module Utils
       end
 
       def config_true?(key)
-        config_get(key) == "true"
-      end
-
-      def config_get(key)
-        HOMEBREW_REPOSITORY.cd do
-          Utils.popen_read("git", "config", "--get", "homebrew.#{key}").chomp
-        end
-      end
-
-      def config_set(key, value)
-        HOMEBREW_REPOSITORY.cd do
-          safe_system "git", "config", "--replace-all", "homebrew.#{key}", value.to_s
-        end
-      end
-
-      def config_delete(key)
-        HOMEBREW_REPOSITORY.cd do
-          system "git", "config", "--unset-all", "homebrew.#{key}"
-        end
+        Homebrew::Settings.read(key) == "true"
       end
 
       def formulae_brew_sh_json(endpoint)

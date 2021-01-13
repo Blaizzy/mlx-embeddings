@@ -94,6 +94,17 @@ Show lists of built-in and external commands.
 * `--include-aliases`:
   Include aliases of internal commands.
 
+### `completions` [*`subcommand`*]
+
+Control whether Homebrew automatically links external tap shell completion files.
+Read more at <https://docs.brew.sh/Shell-Completion>.
+
+`brew completions` [`state`]
+<br>Display the current state of Homebrew's completions.
+
+`brew completions` (`link`|`unlink`)
+<br>Link or unlink Homebrew's completions.
+
 ### `config`
 
 Show Homebrew and system configuration info useful for debugging. If you file

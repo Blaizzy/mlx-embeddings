@@ -93,6 +93,17 @@ List only the names of commands without category headers\.
 \fB\-\-include\-aliases\fR
 Include aliases of internal commands\.
 .
+.SS "\fBcompletions\fR [\fIsubcommand\fR]"
+Control whether Homebrew automatically links external tap shell completion files\. Read more at \fIhttps://docs\.brew\.sh/Shell\-Completion\fR\.
+.
+.P
+\fBbrew completions\fR [\fBstate\fR]
+    Display the current state of Homebrew\'s completions\.
+.
+.P
+\fBbrew completions\fR (\fBlink\fR|\fBunlink\fR)
+    Link or unlink Homebrew\'s completions\.
+.
 .SS "\fBconfig\fR"
 Show Homebrew and system configuration info useful for debugging\. If you file a bug report, you will be required to provide this information\.
 .
