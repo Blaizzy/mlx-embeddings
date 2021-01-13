@@ -5,16 +5,11 @@ require "formula"
 require "livecheck"
 
 describe Livecheck do
-  HOMEPAGE_URL = "https://example.com/"
-  STABLE_URL = "https://example.com/example-1.2.3.tar.gz"
-  HEAD_URL = "https://example.com/example.git"
-  CASK_URL = "https://example.com/example-1.2.3.dmg"
-
   let(:f) do
     formula do
-      homepage HOMEPAGE_URL
-      url STABLE_URL
-      head HEAD_URL
+      homepage "https://brew.sh"
+      url "https://brew.sh/test-0.0.1.tgz"
+      head "https://github.com/Homebrew/brew.git"
     end
   end
   let(:livecheckable_f) { described_class.new(f) }
@@ -24,10 +19,10 @@ describe Livecheck do
       cask "test" do
         version "0.0.1,2"
 
-        url CASK_URL
+        url "https://brew.sh/test-0.0.1.dmg"
         name "Test"
         desc "Test cask"
-        homepage HOMEPAGE_URL
+        homepage "https://brew.sh"
       end
     RUBY
   end
@@ -97,13 +92,15 @@ describe Livecheck do
   end
 
   describe "#url" do
+    let(:url_string) { "https://brew.sh" }
+
     it "returns nil if not set" do
       expect(livecheckable_f.url).to be nil
     end
 
     it "returns a string when set to a string" do
-      livecheckable_f.url("https://brew.sh")
-      expect(livecheckable_f.url).to eq("https://brew.sh")
+      livecheckable_f.url(url_string)
+      expect(livecheckable_f.url).to eq(url_string)
     end
 
     it "returns the URL symbol if valid" do
