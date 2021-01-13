@@ -8,6 +8,7 @@ module RuboCop
   module Cop
     module FormulaAudit
       # This cop audits `patch`es in formulae.
+      # TODO: Many of these could be auto-corrected.
       class Patches < FormulaCop
         extend T::Sig
 
@@ -26,7 +27,7 @@ module RuboCop
 
           if inline_patches.empty? && patch_end?
             offending_patch_end_node(node)
-            problem "patch is missing 'DATA'"
+            add_offense(@offense_source_range, message: "patch is missing 'DATA'")
           end
 
           patches_node = find_method_def(body, :patches)

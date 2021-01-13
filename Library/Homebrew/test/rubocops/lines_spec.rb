@@ -6,76 +6,80 @@ require "rubocops/lines"
 describe RuboCop::Cop::FormulaAudit::Lines do
   subject(:cop) { described_class.new }
 
-  it "reports an offense when using depends_on :automake" do
-    expect_offense(<<~RUBY)
-      class Foo < Formula
-        url 'https://brew.sh/foo-1.0.tgz'
-        depends_on :automake
-        ^^^^^^^^^^^^^^^^^^^^ :automake is deprecated. Usage should be \"automake\".
-      end
-    RUBY
-  end
+  context "when auditing deprecated special dependencies" do
+    it "reports an offense when using depends_on :automake" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          url 'https://brew.sh/foo-1.0.tgz'
+          depends_on :automake
+          ^^^^^^^^^^^^^^^^^^^^ :automake is deprecated. Usage should be \"automake\".
+        end
+      RUBY
+    end
 
-  it "reports an offense when using depends_on :autoconf" do
-    expect_offense(<<~RUBY)
-      class Foo < Formula
-        url 'https://brew.sh/foo-1.0.tgz'
-        depends_on :autoconf
-        ^^^^^^^^^^^^^^^^^^^^ :autoconf is deprecated. Usage should be \"autoconf\".
-      end
-    RUBY
-  end
+    it "reports an offense when using depends_on :autoconf" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          url 'https://brew.sh/foo-1.0.tgz'
+          depends_on :autoconf
+          ^^^^^^^^^^^^^^^^^^^^ :autoconf is deprecated. Usage should be \"autoconf\".
+        end
+      RUBY
+    end
 
-  it "reports an offense when using depends_on :libtool" do
-    expect_offense(<<~RUBY)
-      class Foo < Formula
-        url 'https://brew.sh/foo-1.0.tgz'
-        depends_on :libtool
-        ^^^^^^^^^^^^^^^^^^^ :libtool is deprecated. Usage should be \"libtool\".
-      end
-    RUBY
-  end
+    it "reports an offense when using depends_on :libtool" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          url 'https://brew.sh/foo-1.0.tgz'
+          depends_on :libtool
+          ^^^^^^^^^^^^^^^^^^^ :libtool is deprecated. Usage should be \"libtool\".
+        end
+      RUBY
+    end
 
-  it "reports an offense when using depends_on :apr" do
-    expect_offense(<<~RUBY)
-      class Foo < Formula
-        url 'https://brew.sh/foo-1.0.tgz'
-        depends_on :apr
-        ^^^^^^^^^^^^^^^ :apr is deprecated. Usage should be \"apr-util\".
-      end
-    RUBY
-  end
+    it "reports an offense when using depends_on :apr" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          url 'https://brew.sh/foo-1.0.tgz'
+          depends_on :apr
+          ^^^^^^^^^^^^^^^ :apr is deprecated. Usage should be \"apr-util\".
+        end
+      RUBY
+    end
 
-  it "reports an offense when using depends_on :tex" do
-    expect_offense(<<~RUBY)
-      class Foo < Formula
-        url 'https://brew.sh/foo-1.0.tgz'
-        depends_on :tex
-        ^^^^^^^^^^^^^^^ :tex is deprecated.
-      end
-    RUBY
+    it "reports an offense when using depends_on :tex" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          url 'https://brew.sh/foo-1.0.tgz'
+          depends_on :tex
+          ^^^^^^^^^^^^^^^ :tex is deprecated.
+        end
+      RUBY
+    end
   end
 end
 
 describe RuboCop::Cop::FormulaAudit::ClassInheritance do
   subject(:cop) { described_class.new }
 
-  it "reports an offense when not using spaces for class inheritance" do
-    expect_offense(<<~RUBY, "/homebrew-core/Formula/foo.rb")
-      class Foo<Formula
-                ^^^^^^^ Use a space in class inheritance: class Foo < Formula
-        desc "foo"
-        url 'https://brew.sh/foo-1.0.tgz'
-      end
-    RUBY
+  context "auditing formula class inheritance" do
+    it "reports an offense when not using spaces for class inheritance" do
+      expect_offense(<<~RUBY, "/homebrew-core/Formula/foo.rb")
+        class Foo<Formula
+                  ^^^^^^^ Use a space in class inheritance: class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+        end
+      RUBY
+    end
   end
 end
 
 describe RuboCop::Cop::FormulaAudit::Comments do
   subject(:cop) { described_class.new }
 
-  context "When auditing formula" do
-    it "commented cmake call" do
+  context "auditing comment text" do
+    it "reports an offense when commented cmake calls exist" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -86,7 +90,7 @@ describe RuboCop::Cop::FormulaAudit::Comments do
       RUBY
     end
 
-    it "default template comments" do
+    it "reports an offense when default template comments exist" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           # PLEASE REMOVE
@@ -97,7 +101,7 @@ describe RuboCop::Cop::FormulaAudit::Comments do
       RUBY
     end
 
-    it "commented out depends_on" do
+    it "reports an offense when `depends_on` is commented" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -108,7 +112,7 @@ describe RuboCop::Cop::FormulaAudit::Comments do
       RUBY
     end
 
-    it "citation tags" do
+    it "reports an offense if citation tags are present" do
       expect_offense(<<~RUBY, "/homebrew-core/")
         class Foo < Formula
           desc "foo"
@@ -128,209 +132,213 @@ end
 describe RuboCop::Cop::FormulaAudit::AssertStatements do
   subject(:cop) { described_class.new }
 
-  it "assert ...include usage" do
-    expect_offense(<<~RUBY)
-      class Foo < Formula
-        desc "foo"
-        url 'https://brew.sh/foo-1.0.tgz'
-        assert File.read("inbox").include?("Sample message 1")
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Use `assert_match` instead of `assert ...include?`
-      end
-    RUBY
-  end
+  context "auditing formula assertions" do
+    it "reports an offense when assert ... include is used" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+          assert File.read("inbox").include?("Sample message 1")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Use `assert_match` instead of `assert ...include?`
+        end
+      RUBY
+    end
 
-  it "assert ...exist? without a negation" do
-    expect_offense(<<~RUBY)
-      class Foo < Formula
-        desc "foo"
-        url 'https://brew.sh/foo-1.0.tgz'
-        assert File.exist? "default.ini"
-               ^^^^^^^^^^^^^^^^^^^^^^^^^ Use `assert_predicate <path_to_file>, :exist?` instead of `assert File.exist? "default.ini"`
-      end
-    RUBY
-  end
+    it "reports an offense when assert ... exist? is used without a negation" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+          assert File.exist? "default.ini"
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^ Use `assert_predicate <path_to_file>, :exist?` instead of `assert File.exist? "default.ini"`
+        end
+      RUBY
+    end
 
-  it "assert ...exist? with a negation" do
-    expect_offense(<<~RUBY)
-      class Foo < Formula
-        desc "foo"
-        url 'https://brew.sh/foo-1.0.tgz'
-        assert !File.exist?("default.ini")
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^ Use `refute_predicate <path_to_file>, :exist?` instead of `assert !File.exist?("default.ini")`
-      end
-    RUBY
-  end
+    it "reports an offense when assert ... exist? is used with a negation" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+          assert !File.exist?("default.ini")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^ Use `refute_predicate <path_to_file>, :exist?` instead of `assert !File.exist?("default.ini")`
+        end
+      RUBY
+    end
 
-  it "assert ...executable? without a negation" do
-    expect_offense(<<~RUBY)
-      class Foo < Formula
-        desc "foo"
-        url 'https://brew.sh/foo-1.0.tgz'
-        assert File.executable? f
-               ^^^^^^^^^^^^^^^^^^ Use `assert_predicate <path_to_file>, :executable?` instead of `assert File.executable? f`
-      end
-    RUBY
+    it "reports an offense when assert ... executable? is used without a negation" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+          assert File.executable? f
+                 ^^^^^^^^^^^^^^^^^^ Use `assert_predicate <path_to_file>, :executable?` instead of `assert File.executable? f`
+        end
+      RUBY
+    end
   end
 end
 
 describe RuboCop::Cop::FormulaAudit::OptionDeclarations do
   subject(:cop) { described_class.new }
 
-  it "build.without? in homebrew/core" do
-    expect_offense(<<~RUBY, "/homebrew-core/")
-      class Foo < Formula
-        desc "foo"
-        url 'https://brew.sh/foo-1.0.tgz'
-        def install
-          build.without? "bar"
-          ^^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should not use `build.without?`.
+  context "auditing options" do
+    it "reports an offense when `build.without?` is used in homebrew/core" do
+      expect_offense(<<~RUBY, "/homebrew-core/")
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+          def install
+            build.without? "bar"
+            ^^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should not use `build.without?`.
+          end
         end
-      end
-    RUBY
-  end
+      RUBY
+    end
 
-  it "build.with? in homebrew/core" do
-    expect_offense(<<~RUBY, "/homebrew-core/")
-      class Foo < Formula
-        desc "foo"
-        url 'https://brew.sh/foo-1.0.tgz'
-        def install
-          build.with? "bar"
-          ^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should not use `build.with?`.
+    it "reports an offense when `build.with?` is used in homebrew/core" do
+      expect_offense(<<~RUBY, "/homebrew-core/")
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+          def install
+            build.with? "bar"
+            ^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should not use `build.with?`.
+          end
         end
-      end
-    RUBY
-  end
+      RUBY
+    end
 
-  it "build.without? in dependencies" do
-    expect_offense(<<~RUBY)
-      class Foo < Formula
-        depends_on "bar" if build.without?("baz")
-                            ^^^^^^^^^^^^^^^^^^^^^ Use `:optional` or `:recommended` instead of `if build.without?("baz")`
-      end
-    RUBY
-  end
-
-  it "build.with? in dependencies" do
-    expect_offense(<<~RUBY)
-      class Foo < Formula
-        depends_on "bar" if build.with?("baz")
-                            ^^^^^^^^^^^^^^^^^^ Use `:optional` or `:recommended` instead of `if build.with?("baz")`
-      end
-    RUBY
-  end
-
-  it "unless build.without? conditional" do
-    expect_offense(<<~RUBY)
-      class Foo < Formula
-        desc "foo"
-        url 'https://brew.sh/foo-1.0.tgz'
-        def post_install
-          return unless build.without? "bar"
-                        ^^^^^^^^^^^^^^^^^^^^ Use if build.with? "bar" instead of unless build.without? "bar"
+    it "reports an offense when `build.without?` is used for a conditional dependency" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          depends_on "bar" if build.without?("baz")
+                              ^^^^^^^^^^^^^^^^^^^^^ Use `:optional` or `:recommended` instead of `if build.without?("baz")`
         end
-      end
-    RUBY
-  end
+      RUBY
+    end
 
-  it "unless build.with? conditional" do
-    expect_offense(<<~RUBY)
-      class Foo < Formula
-        desc "foo"
-        url 'https://brew.sh/foo-1.0.tgz'
-        def post_install
-          return unless build.with? "bar"
-                        ^^^^^^^^^^^^^^^^^ Use if build.without? "bar" instead of unless build.with? "bar"
+    it "reports an offense when `build.without?` is used for a conditional dependency" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          depends_on "bar" if build.with?("baz")
+                              ^^^^^^^^^^^^^^^^^^ Use `:optional` or `:recommended` instead of `if build.with?("baz")`
         end
-      end
-    RUBY
-  end
+      RUBY
+    end
 
-  it "negated build.with? conditional" do
-    expect_offense(<<~RUBY)
-      class Foo < Formula
-        desc "foo"
-        url 'https://brew.sh/foo-1.0.tgz'
-        def post_install
-          return if !build.with? "bar"
-                    ^^^^^^^^^^^^^^^^^^ Don't negate 'build.with?': use 'build.without?'
+    it "reports an offense when `build.without?` is used with `unless`" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+          def post_install
+            return unless build.without? "bar"
+                          ^^^^^^^^^^^^^^^^^^^^ Use if build.with? "bar" instead of unless build.without? "bar"
+          end
         end
-      end
-    RUBY
-  end
+      RUBY
+    end
 
-  it "negated build.without? conditional" do
-    expect_offense(<<~RUBY)
-      class Foo < Formula
-        desc "foo"
-        url 'https://brew.sh/foo-1.0.tgz'
-        def post_install
-          return if !build.without? "bar"
-                    ^^^^^^^^^^^^^^^^^^^^^ Don't negate 'build.without?': use 'build.with?'
+    it "reports an offense when `build.with?` is used with `unless`" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+          def post_install
+            return unless build.with? "bar"
+                          ^^^^^^^^^^^^^^^^^ Use if build.without? "bar" instead of unless build.with? "bar"
+          end
         end
-      end
-    RUBY
-  end
+      RUBY
+    end
 
-  it "unnecessary build.without? conditional" do
-    expect_offense(<<~RUBY)
-      class Foo < Formula
-        desc "foo"
-        url 'https://brew.sh/foo-1.0.tgz'
-        def post_install
-          return if build.without? "--without-bar"
-                                    ^^^^^^^^^^^^^ Don't duplicate 'without': Use `build.without? \"bar\"` to check for \"--without-bar\"
+    it "reports an offense when `build.with?` is negated" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+          def post_install
+            return if !build.with? "bar"
+                      ^^^^^^^^^^^^^^^^^^ Don't negate 'build.with?': use 'build.without?'
+          end
         end
-      end
-    RUBY
-  end
+      RUBY
+    end
 
-  it "unnecessary build.with? conditional" do
-    expect_offense(<<~RUBY)
-      class Foo < Formula
-        desc "foo"
-        url 'https://brew.sh/foo-1.0.tgz'
-        def post_install
-          return if build.with? "--with-bar"
-                                 ^^^^^^^^^^ Don't duplicate 'with': Use `build.with? \"bar\"` to check for \"--with-bar\"
+    it "reports an offense when `build.without?` is negated" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+          def post_install
+            return if !build.without? "bar"
+                      ^^^^^^^^^^^^^^^^^^^^^ Don't negate 'build.without?': use 'build.with?'
+          end
         end
-      end
-    RUBY
-  end
+      RUBY
+    end
 
-  it "build.include? deprecated" do
-    expect_offense(<<~RUBY)
-      class Foo < Formula
-        desc "foo"
-        url 'https://brew.sh/foo-1.0.tgz'
-        def post_install
-          return if build.include? "foo"
-                    ^^^^^^^^^^^^^^^^^^^^ `build.include?` is deprecated
+    it "reports an offense when a `build.without?` conditional is unnecessary" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+          def post_install
+            return if build.without? "--without-bar"
+                                     ^^^^^^^^^^^^^^^ Don't duplicate 'without': Use `build.without? \"bar\"` to check for \"--without-bar\"
+          end
         end
-      end
-    RUBY
-  end
+      RUBY
+    end
 
-  it "def options usage" do
-    expect_offense(<<~RUBY)
-      class Foo < Formula
-        desc "foo"
-        url 'https://brew.sh/foo-1.0.tgz'
-
-        def options
-        ^^^^^^^^^^^ Use new-style option definitions
-          [["--bar", "desc"]]
+    it "reports an offense when a `build.with?` conditional is unnecessary" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+          def post_install
+            return if build.with? "--with-bar"
+                                  ^^^^^^^^^^^^ Don't duplicate 'with': Use `build.with? \"bar\"` to check for \"--with-bar\"
+          end
         end
-      end
-    RUBY
+      RUBY
+    end
+
+    it "reports an offense when `build.include?` is used" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+          def post_install
+            return if build.include? "foo"
+                      ^^^^^^^^^^^^^^^^^^^^ `build.include?` is deprecated
+          end
+        end
+      RUBY
+    end
+
+    it "reports an offense when `def option` is used" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+
+          def options
+          ^^^^^^^^^^^ Use new-style option definitions
+            [["--bar", "desc"]]
+          end
+        end
+      RUBY
+    end
   end
 end
 
 describe RuboCop::Cop::FormulaAudit::MpiCheck do
   subject(:cop) { described_class.new }
 
-  context "When auditing formula" do
-    it "reports an offense when using depends_on \"mpich\"" do
+  context "when auditing MPI dependencies" do
+    it "reports and corrects an offense when using depends_on \"mpich\" in homebrew/core" do
       expect_offense(<<~RUBY, "/homebrew-core/")
         class Foo < Formula
           desc "foo"
@@ -354,8 +362,8 @@ end
 describe RuboCop::Cop::FormulaAudit::SafePopenCommands do
   subject(:cop) { described_class.new }
 
-  context "When auditing popen commands" do
-    it "Utils.popen_read should become Utils.safe_popen_read" do
+  context "when auditing popen commands" do
+    it "reports and corrects `Utils.popen_read` usage" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           def install
@@ -364,9 +372,17 @@ describe RuboCop::Cop::FormulaAudit::SafePopenCommands do
           end
         end
       RUBY
+
+      expect_correction(<<~RUBY)
+        class Foo < Formula
+          def install
+            Utils.safe_popen_read "foo"
+          end
+        end
+      RUBY
     end
 
-    it "Utils.safe_popen_write should become Utils.popen_write" do
+    it "reports and corrects `Utils.popen_write` usage" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           def install
@@ -375,9 +391,17 @@ describe RuboCop::Cop::FormulaAudit::SafePopenCommands do
           end
         end
       RUBY
+
+      expect_correction(<<~RUBY)
+        class Foo < Formula
+          def install
+            Utils.safe_popen_write "foo"
+          end
+        end
+      RUBY
     end
 
-    it "does not correct Utils.popen_read in test block" do
+    it "does not report an offense when `Utils.popen_read` is used in a test block" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           def install; end
@@ -386,62 +410,6 @@ describe RuboCop::Cop::FormulaAudit::SafePopenCommands do
           end
         end
       RUBY
-    end
-
-    it "corrects Utils.popen_read to Utils.safe_popen_read" do
-      source = <<~RUBY
-        class Foo < Formula
-          def install
-            Utils.popen_read "foo"
-          end
-        end
-      RUBY
-
-      corrected_source = <<~RUBY
-        class Foo < Formula
-          def install
-            Utils.safe_popen_read "foo"
-          end
-        end
-      RUBY
-
-      new_source = autocorrect_source(source)
-      expect(new_source).to eq(corrected_source)
-    end
-
-    it "corrects Utils.popen_write to Utils.safe_popen_write" do
-      source = <<~RUBY
-        class Foo < Formula
-          def install
-            Utils.popen_write "foo"
-          end
-        end
-      RUBY
-
-      corrected_source = <<~RUBY
-        class Foo < Formula
-          def install
-            Utils.safe_popen_write "foo"
-          end
-        end
-      RUBY
-
-      new_source = autocorrect_source(source)
-      expect(new_source).to eq(corrected_source)
-    end
-
-    it "does not correct to Utils.safe_popen_read in test block" do
-      source = <<~RUBY
-        class Foo < Formula
-          def install; end
-          test do
-            Utils.popen_write "foo"
-          end
-        end
-      RUBY
-
-      new_source = autocorrect_source(source)
-      expect(new_source).to eq(source)
     end
   end
 end
@@ -450,132 +418,80 @@ describe RuboCop::Cop::FormulaAudit::ShellVariables do
   subject(:cop) { described_class.new }
 
   context "When auditing shell variables" do
-    it "Shell variables should be expanded in Utils.popen" do
+    it "reports and corrects unexpanded shell variables in `Utils.popen`" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           def install
             Utils.popen "SHELL=bash foo"
-                         ^^^^^^^^^^^^^^ Use `Utils.popen({ "SHELL" => "bash" }, "foo")` instead of `Utils.popen "SHELL=bash foo"`
+                        ^^^^^^^^^^^^^^^^ Use `Utils.popen({ "SHELL" => "bash" }, "foo")` instead of `Utils.popen "SHELL=bash foo"`
+          end
+        end
+      RUBY
+
+      expect_correction(<<~RUBY)
+        class Foo < Formula
+          def install
+            Utils.popen { "SHELL" => "bash" }, "foo"
           end
         end
       RUBY
     end
 
-    it "Shell variables should be expanded in Utils.safe_popen_read" do
+    it "reports and corrects unexpanded shell variables in `Utils.safe_popen_read`" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           def install
             Utils.safe_popen_read "SHELL=bash foo"
-                                   ^^^^^^^^^^^^^^ Use `Utils.safe_popen_read({ "SHELL" => "bash" }, "foo")` instead of `Utils.safe_popen_read "SHELL=bash foo"`
+                                  ^^^^^^^^^^^^^^^^ Use `Utils.safe_popen_read({ "SHELL" => "bash" }, "foo")` instead of `Utils.safe_popen_read "SHELL=bash foo"`
+          end
+        end
+      RUBY
+
+      expect_correction(<<~RUBY)
+        class Foo < Formula
+          def install
+            Utils.safe_popen_read { "SHELL" => "bash" }, "foo"
           end
         end
       RUBY
     end
 
-    it "Shell variables should be expanded in Utils.safe_popen_write" do
+    it "reports and corrects unexpanded shell variables in `Utils.safe_popen_write`" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           def install
             Utils.safe_popen_write "SHELL=bash foo"
-                                    ^^^^^^^^^^^^^^ Use `Utils.safe_popen_write({ "SHELL" => "bash" }, "foo")` instead of `Utils.safe_popen_write "SHELL=bash foo"`
+                                   ^^^^^^^^^^^^^^^^ Use `Utils.safe_popen_write({ "SHELL" => "bash" }, "foo")` instead of `Utils.safe_popen_write "SHELL=bash foo"`
+          end
+        end
+      RUBY
+
+      expect_correction(<<~RUBY)
+        class Foo < Formula
+          def install
+            Utils.safe_popen_write { "SHELL" => "bash" }, "foo"
           end
         end
       RUBY
     end
 
-    it "Shell variables should be expanded and keep inline string variables in the arguments" do
+    it "reports and corrects unexpanded shell variables while preserving string interpolation" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           def install
             Utils.popen "SHELL=bash \#{bin}/foo"
-                         ^^^^^^^^^^^^^^^^^^^^^ Use `Utils.popen({ "SHELL" => "bash" }, "\#{bin}/foo")` instead of `Utils.popen "SHELL=bash \#{bin}/foo"`
+                        ^^^^^^^^^^^^^^^^^^^^^^^ Use `Utils.popen({ "SHELL" => "bash" }, "\#{bin}/foo")` instead of `Utils.popen "SHELL=bash \#{bin}/foo"`
           end
         end
       RUBY
-    end
 
-    it "corrects shell variables in Utils.popen" do
-      source = <<~RUBY
+      expect_correction(<<~RUBY)
         class Foo < Formula
           def install
-            Utils.popen("SHELL=bash foo")
+            Utils.popen { "SHELL" => "bash" }, "\#{bin}/foo"
           end
         end
       RUBY
-
-      corrected_source = <<~RUBY
-        class Foo < Formula
-          def install
-            Utils.popen({ "SHELL" => "bash" }, "foo")
-          end
-        end
-      RUBY
-
-      new_source = autocorrect_source(source)
-      expect(new_source).to eq(corrected_source)
-    end
-
-    it "corrects shell variables in Utils.safe_popen_read" do
-      source = <<~RUBY
-        class Foo < Formula
-          def install
-            Utils.safe_popen_read("SHELL=bash foo")
-          end
-        end
-      RUBY
-
-      corrected_source = <<~RUBY
-        class Foo < Formula
-          def install
-            Utils.safe_popen_read({ "SHELL" => "bash" }, "foo")
-          end
-        end
-      RUBY
-
-      new_source = autocorrect_source(source)
-      expect(new_source).to eq(corrected_source)
-    end
-
-    it "corrects shell variables in Utils.safe_popen_write" do
-      source = <<~RUBY
-        class Foo < Formula
-          def install
-            Utils.safe_popen_write("SHELL=bash foo")
-          end
-        end
-      RUBY
-
-      corrected_source = <<~RUBY
-        class Foo < Formula
-          def install
-            Utils.safe_popen_write({ "SHELL" => "bash" }, "foo")
-          end
-        end
-      RUBY
-
-      new_source = autocorrect_source(source)
-      expect(new_source).to eq(corrected_source)
-    end
-
-    it "corrects shell variables with inline string variable in arguments" do
-      source = <<~RUBY
-        class Foo < Formula
-          def install
-            Utils.popen("SHELL=bash \#{bin}/foo")
-          end
-        end
-      RUBY
-
-      corrected_source = <<~RUBY
-        class Foo < Formula
-          def install
-            Utils.popen({ "SHELL" => "bash" }, "\#{bin}/foo")
-          end
-        end
-      RUBY
-
-      new_source = autocorrect_source(source)
-      expect(new_source).to eq(corrected_source)
     end
   end
 end
@@ -583,8 +499,8 @@ end
 describe RuboCop::Cop::FormulaAudit::LicenseArrays do
   subject(:cop) { described_class.new }
 
-  context "When auditing licenses" do
-    it "allow license strings" do
+  context "When auditing license arrays" do
+    it "reports no offenses for license strings" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -594,7 +510,7 @@ describe RuboCop::Cop::FormulaAudit::LicenseArrays do
       RUBY
     end
 
-    it "allow license symbols" do
+    it "reports no offenses for license symbols" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -604,7 +520,7 @@ describe RuboCop::Cop::FormulaAudit::LicenseArrays do
       RUBY
     end
 
-    it "allow license hashes" do
+    it "reports no offenses for license hashes" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -614,7 +530,7 @@ describe RuboCop::Cop::FormulaAudit::LicenseArrays do
       RUBY
     end
 
-    it "require using :any_of instead of a license array" do
+    it "reports and corrects use of a license array" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -623,27 +539,14 @@ describe RuboCop::Cop::FormulaAudit::LicenseArrays do
           ^^^^^^^^^^^^^^^^^^^^^^^ Use `license any_of: ["MIT", "0BSD"]` instead of `license ["MIT", "0BSD"]`
         end
       RUBY
-    end
 
-    it "corrects license arrays to hash with :any_of" do
-      source = <<~RUBY
-        class Foo < Formula
-          desc "foo"
-          url 'https://brew.sh/foo-1.0.tgz'
-          license ["MIT", "0BSD"]
-        end
-      RUBY
-
-      corrected_source = <<~RUBY
+      expect_correction(<<~RUBY)
         class Foo < Formula
           desc "foo"
           url 'https://brew.sh/foo-1.0.tgz'
           license any_of: ["MIT", "0BSD"]
         end
       RUBY
-
-      new_source = autocorrect_source(source)
-      expect(new_source).to eq(corrected_source)
     end
   end
 end
@@ -652,7 +555,7 @@ describe RuboCop::Cop::FormulaAudit::Licenses do
   subject(:cop) { described_class.new }
 
   context "When auditing licenses" do
-    it "allow license strings" do
+    it "reports no offenses for license strings" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -662,7 +565,7 @@ describe RuboCop::Cop::FormulaAudit::Licenses do
       RUBY
     end
 
-    it "allow license symbols" do
+    it "reports no offenses for license symbols" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -672,7 +575,7 @@ describe RuboCop::Cop::FormulaAudit::Licenses do
       RUBY
     end
 
-    it "allow license hashes" do
+    it "reports no offenses for license hashes" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -682,7 +585,7 @@ describe RuboCop::Cop::FormulaAudit::Licenses do
       RUBY
     end
 
-    it "allow license exceptions" do
+    it "reports no offenses for license exceptions" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -692,7 +595,7 @@ describe RuboCop::Cop::FormulaAudit::Licenses do
       RUBY
     end
 
-    it "allow multiline nested license hashes" do
+    it "reports no offenses for multiline nested license hashes" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -705,7 +608,7 @@ describe RuboCop::Cop::FormulaAudit::Licenses do
       RUBY
     end
 
-    it "allow multiline nested license hashes with exceptions" do
+    it "reports no offenses for multiline nested license hashes with exceptions" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -719,7 +622,7 @@ describe RuboCop::Cop::FormulaAudit::Licenses do
       RUBY
     end
 
-    it "require multiple lines for nested license hashes" do
+    it "reports an offense for nested license hashes on a single line" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -735,8 +638,8 @@ end
 describe RuboCop::Cop::FormulaAudit::PythonVersions do
   subject(:cop) { described_class.new }
 
-  context "When auditing python versions" do
-    it "allow python with no dependency" do
+  context "When auditing Python versions" do
+    it "reports no offenses for Python with no dependency" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           def install
@@ -746,7 +649,7 @@ describe RuboCop::Cop::FormulaAudit::PythonVersions do
       RUBY
     end
 
-    it "allow non versioned python references" do
+    it "reports no offenses for unversioned Python references" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           depends_on "python@3.9"
@@ -758,7 +661,7 @@ describe RuboCop::Cop::FormulaAudit::PythonVersions do
       RUBY
     end
 
-    it "allow python with no version" do
+    it "reports no offenses for Python with no version" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           depends_on "python@3.9"
@@ -770,7 +673,7 @@ describe RuboCop::Cop::FormulaAudit::PythonVersions do
       RUBY
     end
 
-    it "allow matching versions" do
+    it "reports no offenses when a Python reference matches its dependency" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           depends_on "python@3.9"
@@ -782,7 +685,7 @@ describe RuboCop::Cop::FormulaAudit::PythonVersions do
       RUBY
     end
 
-    it "allow matching versions without `@`" do
+    it "reports no offenses when a Pytohn reference matches its dependency without `@`" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           depends_on "python@3.9"
@@ -794,7 +697,7 @@ describe RuboCop::Cop::FormulaAudit::PythonVersions do
       RUBY
     end
 
-    it "allow matching versions with two digits" do
+    it "reports no offenses when a Python reference matches its two-digit dependency" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           depends_on "python@3.10"
@@ -806,7 +709,7 @@ describe RuboCop::Cop::FormulaAudit::PythonVersions do
       RUBY
     end
 
-    it "allow matching versions without `@` with two digits" do
+    it "reports no offenses when a Python reference matches its two-digit dependency without `@`" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           depends_on "python@3.10"
@@ -818,7 +721,7 @@ describe RuboCop::Cop::FormulaAudit::PythonVersions do
       RUBY
     end
 
-    it "do not allow mismatching versions" do
+    it "reports and corrects Python references with mismatched versions" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           depends_on "python@3.9"
@@ -829,9 +732,19 @@ describe RuboCop::Cop::FormulaAudit::PythonVersions do
           end
         end
       RUBY
+
+      expect_correction(<<~RUBY)
+        class Foo < Formula
+          depends_on "python@3.9"
+
+          def install
+            puts "python@3.9"
+          end
+        end
+      RUBY
     end
 
-    it "do not allow mismatching versions without `@`" do
+    it "reports and corrects Python references with mismatched versions without `@`" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           depends_on "python@3.9"
@@ -842,9 +755,19 @@ describe RuboCop::Cop::FormulaAudit::PythonVersions do
           end
         end
       RUBY
+
+      expect_correction(<<~RUBY)
+        class Foo < Formula
+          depends_on "python@3.9"
+
+          def install
+            puts "python3.9"
+          end
+        end
+      RUBY
     end
 
-    it "do not allow mismatching versions with two digits" do
+    it "reports and corrects Python references with mismatched two-digit versions" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           depends_on "python@3.11"
@@ -855,9 +778,19 @@ describe RuboCop::Cop::FormulaAudit::PythonVersions do
           end
         end
       RUBY
+
+      expect_correction(<<~RUBY)
+        class Foo < Formula
+          depends_on "python@3.11"
+
+          def install
+            puts "python@3.11"
+          end
+        end
+      RUBY
     end
 
-    it "do not allow mismatching versions without `@` with two digits" do
+    it "reports and corrects Python references with mismatched two-digit versions without `@`" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           depends_on "python@3.11"
@@ -868,95 +801,8 @@ describe RuboCop::Cop::FormulaAudit::PythonVersions do
           end
         end
       RUBY
-    end
 
-    it "autocorrects mismatching versions" do
-      source = <<~RUBY
-        class Foo < Formula
-          depends_on "python@3.9"
-
-          def install
-            puts "python@3.8"
-          end
-        end
-      RUBY
-
-      corrected_source = <<~RUBY
-        class Foo < Formula
-          depends_on "python@3.9"
-
-          def install
-            puts "python@3.9"
-          end
-        end
-      RUBY
-
-      new_source = autocorrect_source(source)
-      expect(new_source).to eq(corrected_source)
-    end
-
-    it "autocorrects mismatching versions without `@`" do
-      source = <<~RUBY
-        class Foo < Formula
-          depends_on "python@3.9"
-
-          def install
-            puts "python3.8"
-          end
-        end
-      RUBY
-
-      corrected_source = <<~RUBY
-        class Foo < Formula
-          depends_on "python@3.9"
-
-          def install
-            puts "python3.9"
-          end
-        end
-      RUBY
-
-      new_source = autocorrect_source(source)
-      expect(new_source).to eq(corrected_source)
-    end
-
-    it "autocorrects mismatching versions with two digits" do
-      source = <<~RUBY
-        class Foo < Formula
-          depends_on "python@3.10"
-
-          def install
-            puts "python@3.9"
-          end
-        end
-      RUBY
-
-      corrected_source = <<~RUBY
-        class Foo < Formula
-          depends_on "python@3.10"
-
-          def install
-            puts "python@3.10"
-          end
-        end
-      RUBY
-
-      new_source = autocorrect_source(source)
-      expect(new_source).to eq(corrected_source)
-    end
-
-    it "autocorrects mismatching versions without `@` with two digits" do
-      source = <<~RUBY
-        class Foo < Formula
-          depends_on "python@3.11"
-
-          def install
-            puts "python3.10"
-          end
-        end
-      RUBY
-
-      corrected_source = <<~RUBY
+      expect_correction(<<~RUBY)
         class Foo < Formula
           depends_on "python@3.11"
 
@@ -965,9 +811,6 @@ describe RuboCop::Cop::FormulaAudit::PythonVersions do
           end
         end
       RUBY
-
-      new_source = autocorrect_source(source)
-      expect(new_source).to eq(corrected_source)
     end
   end
 end
@@ -975,8 +818,8 @@ end
 describe RuboCop::Cop::FormulaAudit::Miscellaneous do
   subject(:cop) { described_class.new }
 
-  context "When auditing formula" do
-    it "FileUtils usage" do
+  context "When auditing formula miscellany" do
+    it "reports an offense for unneeded `FileUtils` usage" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -987,7 +830,7 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
 
-    it "long inreplace block vars" do
+    it "reports an offense for long `inreplace` block variable names" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -1000,7 +843,7 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
 
-    it "an invalid rebuild statement" do
+    it "reports an offense for invalid `rebuild` numbers" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -1014,7 +857,7 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
 
-    it "OS.linux? check" do
+    it "reports an offense when `OS.linux?` is used in homebrew/core" do
       expect_offense(<<~RUBY, "/homebrew-core/")
         class Foo < Formula
           desc "foo"
@@ -1030,7 +873,7 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
 
-    it "fails_with :llvm block" do
+    it "reports an offense when a useless `fails_with :llvm` is used" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -1047,7 +890,7 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
 
-    it "def test's deprecated usage" do
+    it "reports an offense when `def test` is used" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -1061,7 +904,7 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
 
-    it "with deprecated skip_clean call" do
+    it "reports an offense when `skip_clean` is used" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -1072,7 +915,7 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
 
-    it "build.universal? deprecated usage" do
+    it "reports an offense when `build.universal?` is used" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -1085,7 +928,7 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
 
-    it "build.universal? deprecation exempted formula" do
+    it "reports no offenses when `build.universal?` is used in an exempt formula" do
       expect_no_offenses(<<~RUBY, "/homebrew-core/Formula/wine.rb")
         class Wine < Formula
           desc "foo"
@@ -1097,7 +940,7 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
 
-    it "deprecated ENV.universal_binary usage" do
+    it "reports an offense when `ENV.universal_binary` is used" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -1110,7 +953,7 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
 
-    it "ENV.universal_binary deprecation exempted formula" do
+    it "reports no offenses when `ENV.universal_binary` is used in an exempt formula" do
       expect_no_offenses(<<~RUBY, "/homebrew-core/Formula/wine.rb")
         class Wine < Formula
           desc "foo"
@@ -1122,18 +965,18 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
 
-    it "install_name_tool usage instead of ruby-macho" do
+    it "reports an offense when `install_name_tool` is called" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
           url 'https://brew.sh/foo-1.0.tgz'
           system "install_name_tool", "-id"
-                  ^^^^^^^^^^^^^^^^^ Use ruby-macho instead of calling "install_name_tool"
+                 ^^^^^^^^^^^^^^^^^^^ Use ruby-macho instead of calling "install_name_tool"
         end
       RUBY
     end
 
-    it "npm install without language::Node args" do
+    it "reports an offense when `npm install` is called without Language::Node arguments" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -1144,7 +987,7 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
 
-    it "npm install without language::Node args in kibana(exempted formula)" do
+    it "reports no offenses when `npm install` is called without Language::Node arguments in an exempt formula" do
       expect_no_offenses(<<~RUBY, "/homebrew-core/Formula/kibana@4.4.rb")
         class KibanaAT44 < Formula
           desc "foo"
@@ -1154,7 +997,7 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
 
-    it "depends_on with an instance as argument" do
+    it "reports an offense when `depends_on` is called with an instance" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -1165,30 +1008,30 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
 
-    it "non glob DIR usage" do
+    it "reports an offense when `Dir` is called without a globbing argument" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
           url 'https://brew.sh/foo-1.0.tgz'
           rm_rf Dir["src/{llvm,test,librustdoc,etc/snapshot.pyc}"]
           rm_rf Dir["src/snapshot.pyc"]
-                     ^^^^^^^^^^^^^^^^ Dir(["src/snapshot.pyc"]) is unnecessary; just use "src/snapshot.pyc"
+                    ^^^^^^^^^^^^^^^^^^ Dir(["src/snapshot.pyc"]) is unnecessary; just use "src/snapshot.pyc"
         end
       RUBY
     end
 
-    it "system call to fileUtils Method" do
+    it "reports an offense when executing a system command for which there is a Ruby FileUtils equivalent" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
           url 'https://brew.sh/foo-1.0.tgz'
           system "mkdir", "foo"
-                  ^^^^^ Use the `mkdir` Ruby method instead of `system "mkdir", "foo"`
+                 ^^^^^^^ Use the `mkdir` Ruby method instead of `system "mkdir", "foo"`
         end
       RUBY
     end
 
-    it "top-level function def outside class body" do
+    it "reports an offense when top-level functions are defined outside of a class body" do
       expect_offense(<<~RUBY)
         def test
         ^^^^^^^^ Define method test in the class body, not at the top-level
@@ -1201,173 +1044,171 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
 
-    it 'man+"man8" usage' do
+    it 'reports an offense when `man+"man8"` is used' do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
           url 'https://brew.sh/foo-1.0.tgz'
           def install
             man1.install man+"man8" => "faad.1"
-                              ^^^^ "man+"man8"" should be "man8"
+                             ^^^^^^ "man+"man8"" should be "man8"
           end
         end
       RUBY
     end
 
-    it "hardcoded gcc compiler system" do
+    it "reports an offense when a hard-coded `gcc` is referenced" do
       expect_offense(<<~'RUBY')
         class Foo < Formula
           desc "foo"
           url 'https://brew.sh/foo-1.0.tgz'
           def install
             system "/usr/bin/gcc", "foo"
-                    ^^^^^^^^^^^^ Use "#{ENV.cc}" instead of hard-coding "gcc"
+                   ^^^^^^^^^^^^^^ Use "#{ENV.cc}" instead of hard-coding "gcc"
           end
         end
       RUBY
     end
 
-    it "hardcoded g++ compiler system" do
+    it "reports an offense when a hard-coded `g++` is referenced" do
       expect_offense(<<~'RUBY')
         class Foo < Formula
           desc "foo"
           url 'https://brew.sh/foo-1.0.tgz'
           def install
             system "/usr/bin/g++", "-o", "foo", "foo.cc"
-                    ^^^^^^^^^^^^ Use "#{ENV.cxx}" instead of hard-coding "g++"
+                   ^^^^^^^^^^^^^^ Use "#{ENV.cxx}" instead of hard-coding "g++"
           end
         end
       RUBY
     end
 
-    it "hardcoded llvm-g++ compiler COMPILER_PATH" do
+    it "reports an offense when a hard-coded `llvm-g++` is set as COMPILER_PATH" do
       expect_offense(<<~'RUBY')
         class Foo < Formula
           desc "foo"
           url 'https://brew.sh/foo-1.0.tgz'
           def install
             ENV["COMPILER_PATH"] = "/usr/bin/llvm-g++"
-                                    ^^^^^^^^^^^^^^^^^ Use "#{ENV.cxx}" instead of hard-coding "llvm-g++"
+                                   ^^^^^^^^^^^^^^^^^^^ Use "#{ENV.cxx}" instead of hard-coding "llvm-g++"
           end
         end
       RUBY
     end
 
-    it "hardcoded gcc compiler COMPILER_PATH" do
+    it "reports an offense when a hard-coded `gcc` is set as COMPILER_PATH" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
           url 'https://brew.sh/foo-1.0.tgz'
           def install
             ENV["COMPILER_PATH"] = "/usr/bin/gcc"
-                                    ^^^^^^^^^^^^ Use \"\#{ENV.cc}\" instead of hard-coding \"gcc\"
+                                   ^^^^^^^^^^^^^^ Use \"\#{ENV.cc}\" instead of hard-coding \"gcc\"
           end
         end
       RUBY
     end
 
-    it "formula path shortcut : man" do
+    it "reports an offense when the formula path shortcut `man` could be used" do
       expect_offense(<<~'RUBY')
         class Foo < Formula
           desc "foo"
           url 'https://brew.sh/foo-1.0.tgz'
           def install
             mv "#{share}/man", share
-                         ^^^^ "#{share}/man" should be "#{man}"
+                        ^^^^ "#{share}/man" should be "#{man}"
           end
         end
       RUBY
     end
 
-    it "formula path shortcut : libexec" do
+    it "reports an offense when the formula path shortcut `libexec` could be used" do
       expect_offense(<<~'RUBY')
         class Foo < Formula
           desc "foo"
           url 'https://brew.sh/foo-1.0.tgz'
           def install
             mv "#{prefix}/libexec", share
-                          ^^^^^^^^ "#{prefix}/libexec" should be "#{libexec}"
+                         ^^^^^^^^ "#{prefix}/libexec" should be "#{libexec}"
           end
         end
       RUBY
     end
 
-    it "formula path shortcut : info" do
+    it "reports an offense when the formula path shortcut `info` could be used" do
       expect_offense(<<~'RUBY')
         class Foo < Formula
           desc "foo"
           url 'https://brew.sh/foo-1.0.tgz'
           def install
             system "./configure", "--INFODIR=#{prefix}/share/info"
-                                                       ^^^^^^ "#{prefix}/share" should be "#{share}"
-                                                       ^^^^^^^^^^^ "#{prefix}/share/info" should be "#{info}"
+                                                      ^^^^^^^^^^^ "#{prefix}/share/info" should be "#{info}"
           end
         end
       RUBY
     end
 
-    it "formula path shortcut : man8" do
+    it "reports an offense when the formula path shortcut `man8` could be used" do
       expect_offense(<<~'RUBY')
         class Foo < Formula
           desc "foo"
           url 'https://brew.sh/foo-1.0.tgz'
           def install
             system "./configure", "--MANDIR=#{prefix}/share/man/man8"
-                                                      ^^^^^^ "#{prefix}/share" should be "#{share}"
-                                                      ^^^^^^^^^^^^^^^ "#{prefix}/share/man/man8" should be "#{man8}"
+                                                     ^^^^^^^^^^^^^^^ "#{prefix}/share/man/man8" should be "#{man8}"
           end
         end
       RUBY
     end
 
-    it "dependencies which have to vendored" do
+    it "reports an offense when unvendored lua modules are used" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
           url 'https://brew.sh/foo-1.0.tgz'
           depends_on "lpeg" => :lua51
-                                ^^^^^ lua modules should be vendored rather than use deprecated `depends_on \"lpeg\" => :lua51`
+                               ^^^^^^ lua modules should be vendored rather than use deprecated `depends_on \"lpeg\" => :lua51`
         end
       RUBY
     end
 
-    it "manually setting env" do
+    it "reports an offense when `export` is used to set environment variables" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
           url 'https://brew.sh/foo-1.0.tgz'
           system "export", "var=value"
-                  ^^^^^^ Use ENV instead of invoking 'export' to modify the environment
+                 ^^^^^^^^ Use ENV instead of invoking 'export' to modify the environment
         end
       RUBY
     end
 
-    it "dependencies with invalid options which lead to force rebuild" do
+    it "reports an offense when dependencies with invalid options are used" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
           url 'https://brew.sh/foo-1.0.tgz'
           depends_on "foo" => "with-bar"
-                               ^^^^^^^^ Dependency foo should not use option with-bar
+                              ^^^^^^^^^^ Dependency foo should not use option with-bar
         end
       RUBY
     end
 
-    it "dependencies with invalid options in array value which lead to force rebuild" do
+    it "reports an offense when dependencies with invalid options are used in an array" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
           url 'https://brew.sh/foo-1.0.tgz'
           depends_on "httpd" => [:build, :test]
           depends_on "foo" => [:optional, "with-bar"]
-                                           ^^^^^^^^ Dependency foo should not use option with-bar
+                                          ^^^^^^^^^^ Dependency foo should not use option with-bar
           depends_on "icu4c" => [:optional, "c++11"]
-                                             ^^^^^ Dependency icu4c should not use option c++11
+                                            ^^^^^^^ Dependency icu4c should not use option c++11
         end
       RUBY
     end
 
-    it "inspecting version manually" do
+    it "reports an offense when `build.head?` could be used instead of checking `version`" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -1380,7 +1221,7 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
 
-    it "deprecated ARGV.include? (--HEAD) usage" do
+    it "reports an offense when `ARGV.include? (--HEAD)` is used" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -1394,7 +1235,7 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
 
-    it "deprecated needs :openmp usage" do
+    it "reports an offense when `needs :openmp` is used" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -1405,7 +1246,7 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
 
-    it "deprecated MACOS_VERSION const usage" do
+    it "reports an offense when `MACOS_VERSION` is used" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -1418,7 +1259,7 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
 
-    it "deprecated if build.with? conditional dependency" do
+    it "reports an offense when `build.with?` is used for a conditional dependency" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -1429,7 +1270,7 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
 
-    it "unless conditional dependency with build.without?" do
+    it "reports an offense when `build.without?` is used for a negated conditional dependency" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -1440,7 +1281,7 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
 
-    it "unless conditional dependency with build.include?" do
+    it "reports an offense when `build.include?` is used for a negated conditional dependency" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -1469,7 +1310,7 @@ describe RuboCop::Cop::FormulaAuditStrict::MakeCheck do
     JSON
   end
 
-  it "build-time checks in homebrew/core" do
+  it "reports an offense when formulae in homebrew/core run build-time checks" do
     setup_style_exceptions
 
     expect_offense(<<~RUBY, "#{path}/Formula/foo.rb")
@@ -1482,7 +1323,7 @@ describe RuboCop::Cop::FormulaAuditStrict::MakeCheck do
     RUBY
   end
 
-  it "build-time checks in homebrew/core in allowlist" do
+  it "reports no offenses when exempted formulae in homebrew/core run build-time checks" do
     setup_style_exceptions
 
     expect_no_offenses(<<~RUBY, "#{path}/Formula/bar.rb")
@@ -1499,7 +1340,7 @@ describe RuboCop::Cop::FormulaAuditStrict::ShellCommands do
   subject(:cop) { described_class.new }
 
   context "When auditing shell commands" do
-    it "system arguments should be separated" do
+    it "reports and corrects an offense when `system` arguments should be separated" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           def install
@@ -1508,9 +1349,17 @@ describe RuboCop::Cop::FormulaAuditStrict::ShellCommands do
           end
         end
       RUBY
+
+      expect_correction(<<~RUBY)
+        class Foo < Formula
+          def install
+            system "foo", "bar"
+          end
+        end
+      RUBY
     end
 
-    it "system arguments with string interpolation should be separated" do
+    it "reports and corrects an offense when `system` arguments with string interpolation should be separated" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           def install
@@ -1519,9 +1368,17 @@ describe RuboCop::Cop::FormulaAuditStrict::ShellCommands do
           end
         end
       RUBY
+
+      expect_correction(<<~RUBY)
+        class Foo < Formula
+          def install
+            system "\#{bin}/foo", "bar"
+          end
+        end
+      RUBY
     end
 
-    it "system arguments with metacharacters should not be separated" do
+    it "reports no offenses when `system` with metacharacter arguments are called" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           def install
@@ -1531,7 +1388,7 @@ describe RuboCop::Cop::FormulaAuditStrict::ShellCommands do
       RUBY
     end
 
-    it "only the first system argument should be separated" do
+    it "reports no offenses when trailing arguments to `system` are unseparated" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           def install
@@ -1541,7 +1398,7 @@ describe RuboCop::Cop::FormulaAuditStrict::ShellCommands do
       RUBY
     end
 
-    it "Utils.popen arguments should not be separated" do
+    it "reports no offenses when `Utils.popen` arguments are unseparated" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           def install
@@ -1551,7 +1408,7 @@ describe RuboCop::Cop::FormulaAuditStrict::ShellCommands do
       RUBY
     end
 
-    it "Utils.popen_read arguments should be separated" do
+    it "reports and corrects an offense when `Utils.popen_read` arguments are unseparated" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           def install
@@ -1560,9 +1417,17 @@ describe RuboCop::Cop::FormulaAuditStrict::ShellCommands do
           end
         end
       RUBY
+
+      expect_correction(<<~RUBY)
+        class Foo < Formula
+          def install
+            Utils.popen_read("foo", "bar")
+          end
+        end
+      RUBY
     end
 
-    it "Utils.safe_popen_read arguments should be separated" do
+    it "reports and corrects an offense when `Utils.safe_popen_read` arguments are unseparated" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           def install
@@ -1571,9 +1436,17 @@ describe RuboCop::Cop::FormulaAuditStrict::ShellCommands do
           end
         end
       RUBY
+
+      expect_correction(<<~RUBY)
+        class Foo < Formula
+          def install
+            Utils.safe_popen_read("foo", "bar")
+          end
+        end
+      RUBY
     end
 
-    it "Utils.popen_write arguments should be separated" do
+    it "reports and corrects an offense when `Utils.popen_write` arguments are unseparated" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           def install
@@ -1582,9 +1455,17 @@ describe RuboCop::Cop::FormulaAuditStrict::ShellCommands do
           end
         end
       RUBY
+
+      expect_correction(<<~RUBY)
+        class Foo < Formula
+          def install
+            Utils.popen_write("foo", "bar")
+          end
+        end
+      RUBY
     end
 
-    it "Utils.safe_popen_write arguments should be separated" do
+    it "reports and corrects an offense when `Utils.safe_popen_write` arguments are unseparated" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           def install
@@ -1593,9 +1474,17 @@ describe RuboCop::Cop::FormulaAuditStrict::ShellCommands do
           end
         end
       RUBY
+
+      expect_correction(<<~RUBY)
+        class Foo < Formula
+          def install
+            Utils.safe_popen_write("foo", "bar")
+          end
+        end
+      RUBY
     end
 
-    it "Utils.popen_read arguments with string interpolation should be separated" do
+    it "reports and corrects an offense when `Utils.popen_read` arguments with interpolation are unseparated" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           def install
@@ -1604,9 +1493,17 @@ describe RuboCop::Cop::FormulaAuditStrict::ShellCommands do
           end
         end
       RUBY
+
+      expect_correction(<<~RUBY)
+        class Foo < Formula
+          def install
+            Utils.popen_read("\#{bin}/foo", "bar")
+          end
+        end
+      RUBY
     end
 
-    it "Utils.popen_read arguments with metacharacters should not be separated" do
+    it "reports no offenses when `Utils.popen_read` arguments with metacharacters are unseparated" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           def install
@@ -1616,7 +1513,7 @@ describe RuboCop::Cop::FormulaAuditStrict::ShellCommands do
       RUBY
     end
 
-    it "only the first Utils.popen_read argument should be separated" do
+    it "reports no offenses when trailing arguments to `Utils.popen_read` are unseparated" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           def install
@@ -1626,7 +1523,7 @@ describe RuboCop::Cop::FormulaAuditStrict::ShellCommands do
       RUBY
     end
 
-    it "Utils.popen_read arguments should be separated following a shell variable" do
+    it "reports and corrects an offense when `Utils.popen_read` arguments are unseparated after a shell variable" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           def install
@@ -1635,111 +1532,14 @@ describe RuboCop::Cop::FormulaAuditStrict::ShellCommands do
           end
         end
       RUBY
-    end
 
-    it "separates shell commands in system" do
-      source = <<~RUBY
+      expect_correction(<<~RUBY)
         class Foo < Formula
           def install
-            system "foo bar"
+            Utils.popen_read({ "SHELL" => "bash"}, "foo", "bar")
           end
         end
       RUBY
-
-      corrected_source = <<~RUBY
-        class Foo < Formula
-          def install
-            system "foo", "bar"
-          end
-        end
-      RUBY
-
-      new_source = autocorrect_source(source)
-      expect(new_source).to eq(corrected_source)
-    end
-
-    it "separates shell commands with string interpolation in system" do
-      source = <<~RUBY
-        class Foo < Formula
-          def install
-            system "\#{foo}/bar baz"
-          end
-        end
-      RUBY
-
-      corrected_source = <<~RUBY
-        class Foo < Formula
-          def install
-            system "\#{foo}/bar", "baz"
-          end
-        end
-      RUBY
-
-      new_source = autocorrect_source(source)
-      expect(new_source).to eq(corrected_source)
-    end
-
-    it "separates shell commands in Utils.popen_read" do
-      source = <<~RUBY
-        class Foo < Formula
-          def install
-            Utils.popen_read("foo bar")
-          end
-        end
-      RUBY
-
-      corrected_source = <<~RUBY
-        class Foo < Formula
-          def install
-            Utils.popen_read("foo", "bar")
-          end
-        end
-      RUBY
-
-      new_source = autocorrect_source(source)
-      expect(new_source).to eq(corrected_source)
-    end
-
-    it "separates shell commands with string interpolation in Utils.popen_read" do
-      source = <<~RUBY
-        class Foo < Formula
-          def install
-            Utils.popen_read("\#{foo}/bar baz")
-          end
-        end
-      RUBY
-
-      corrected_source = <<~RUBY
-        class Foo < Formula
-          def install
-            Utils.popen_read("\#{foo}/bar", "baz")
-          end
-        end
-      RUBY
-
-      new_source = autocorrect_source(source)
-      expect(new_source).to eq(corrected_source)
-    end
-
-    it "separates shell commands following a shell variable in Utils.popen_read" do
-      source = <<~RUBY
-        class Foo < Formula
-          def install
-            Utils.popen_read({ "SHELL" => "bash" }, "foo bar")
-          end
-        end
-      RUBY
-
-      corrected_source = <<~RUBY
-        class Foo < Formula
-          def install
-            Utils.popen_read({ "SHELL" => "bash" }, "foo", "bar")
-          end
-        end
-      RUBY
-
-      new_source = autocorrect_source(source)
-      expect(new_source).to eq(corrected_source)
     end
   end
 end

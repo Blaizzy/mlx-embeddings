@@ -16,6 +16,13 @@ describe RuboCop::Cop::FormulaAudit::Text do
           homepage "https://brew.sh"
         end
       RUBY
+
+      expect_correction(<<~RUBY)
+        class Foo < Formula
+          url "https://brew.sh/foo-1.0.tgz"
+          homepage "https://brew.sh"
+        end
+      RUBY
     end
 
     it "with both openssl and libressl optional dependencies" do

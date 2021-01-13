@@ -7,7 +7,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
   subject(:cop) { described_class.new }
 
   context "When auditing legacy patches" do
-    it "When there is no legacy patch" do
+    it "reports no offenses when there is no legacy patch" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -15,7 +15,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
       RUBY
     end
 
-    it "Formula with `def patches`" do
+    it "reports an offense if `def patches` is present" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           homepage "ftp://brew.sh/foo"
@@ -28,7 +28,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
       RUBY
     end
 
-    it "Patch URLs" do
+    it "reports an offense for various patch URLs" do
       patch_urls = [
         "https://raw.github.com/mogaal/sendemail",
         "https://mirrors.ustc.edu.cn/macports/trunk/",
@@ -48,7 +48,6 @@ describe RuboCop::Cop::FormulaAudit::Patches do
           end
         EOS
 
-        inspect_source(source)
         expected_offense = if patch_url.include?("/raw.github.com/")
           [{ message:
                        <<~EOS.chomp,
@@ -57,7 +56,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
                        EOS
              severity: :convention,
              line:     5,
-             column:   12,
+             column:   4,
              source:   source }]
         elsif patch_url.include?("macports/trunk")
           [{ message:
@@ -67,7 +66,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
                        EOS
              severity: :convention,
              line:     5,
-             column:   33,
+             column:   4,
              source:   source }]
         elsif patch_url.start_with?("http://trac.macports.org")
           [{ message:
@@ -77,7 +76,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
                        EOS
              severity: :convention,
              line:     5,
-             column:   5,
+             column:   4,
              source:   source }]
         elsif patch_url.start_with?("http://bugs.debian.org")
           [{ message:
@@ -87,7 +86,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
                        EOS
              severity: :convention,
              line:     5,
-             column:   5,
+             column:   4,
              source:   source }]
         # rubocop:disable Layout/LineLength
         elsif patch_url.match?(%r{https?://patch-diff\.githubusercontent\.com/raw/(.+)/(.+)/pull/(.+)\.(?:diff|patch)})
@@ -95,7 +94,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
           [{ message:  "Use a commit hash URL rather than patch-diff: #{patch_url}",
              severity: :convention,
              line:     5,
-             column:   5,
+             column:   4,
              source:   source }]
         elsif patch_url.match?(%r{https?://github\.com/.+/.+/(?:commit|pull)/[a-fA-F0-9]*.(?:patch|diff)})
           [{ message:
@@ -105,10 +104,10 @@ describe RuboCop::Cop::FormulaAudit::Patches do
                        EOS
              severity: :convention,
              line:     5,
-             column:   5,
+             column:   4,
              source:   source }]
         end
-        expected_offense.zip([cop.offenses.last]).each do |expected, actual|
+        expected_offense.zip([inspect_source(source).last]).each do |expected, actual|
           expect(actual.message).to eq(expected[:message])
           expect(actual.severity).to eq(expected[:severity])
           expect(actual.line).to eq(expected[:line])
@@ -117,7 +116,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
       end
     end
 
-    it "Formula with nested `def patches`" do
+    it "reports an offense with nested `def patches`" do
       source = <<~RUBY
         class Foo < Formula
           homepage "ftp://brew.sh/foo"
@@ -144,12 +143,10 @@ describe RuboCop::Cop::FormulaAudit::Patches do
                                        EOS
                              severity: :convention,
                              line:     8,
-                             column:   26,
+                             column:   25,
                              source:   source }]
 
-      inspect_source(source)
-
-      expected_offenses.zip(cop.offenses).each do |expected, actual|
+      expected_offenses.zip(inspect_source(source)).each do |expected, actual|
         expect(actual.message).to eq(expected[:message])
         expect(actual.severity).to eq(expected[:severity])
         expect(actual.line).to eq(expected[:line])
@@ -206,7 +203,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
   end
 
   context "When auditing external patches" do
-    it "Patch URLs" do
+    it "reports an offense for various patch URLs" do
       patch_urls = [
         "https://raw.github.com/mogaal/sendemail",
         "https://mirrors.ustc.edu.cn/macports/trunk/",
@@ -230,7 +227,6 @@ describe RuboCop::Cop::FormulaAudit::Patches do
           end
         RUBY
 
-        inspect_source(source)
         expected_offense = if patch_url.include?("/raw.github.com/")
           [{ message:
                        <<~EOS.chomp,
@@ -239,7 +235,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
                        EOS
              severity: :convention,
              line:     5,
-             column:   16,
+             column:   8,
              source:   source }]
         elsif patch_url.include?("macports/trunk")
           [{ message:
@@ -249,7 +245,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
                        EOS
              severity: :convention,
              line:     5,
-             column:   37,
+             column:   8,
              source:   source }]
         elsif patch_url.start_with?("http://trac.macports.org")
           [{ message:
@@ -259,7 +255,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
                        EOS
              severity: :convention,
              line:     5,
-             column:   9,
+             column:   8,
              source:   source }]
         elsif patch_url.start_with?("http://bugs.debian.org")
           [{ message:
@@ -269,19 +265,19 @@ describe RuboCop::Cop::FormulaAudit::Patches do
                        EOS
              severity: :convention,
              line:     5,
-             column:   9,
+             column:   8,
              source:   source }]
         elsif patch_url.match?(%r{https://github.com/[^/]*/[^/]*/pull})
           [{ message:  "Use a commit hash URL rather than an unstable pull request URL: #{patch_url}",
              severity: :convention,
              line:     5,
-             column:   9,
+             column:   8,
              source:   source }]
         elsif patch_url.match?(%r{.*gitlab.*/merge_request.*})
           [{ message:  "Use a commit hash URL rather than an unstable merge request URL: #{patch_url}",
              severity: :convention,
              line:     5,
-             column:   9,
+             column:   8,
              source:   source }]
         elsif patch_url.match?(%r{https://github.com/[^/]*/[^/]*/commit/})
           [{ message:
@@ -291,7 +287,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
                        EOS
              severity: :convention,
              line:     5,
-             column:   9,
+             column:   8,
              source:   source }]
         elsif patch_url.match?(%r{.*gitlab.*/commit/})
           [{ message:
@@ -301,7 +297,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
                        EOS
              severity: :convention,
              line:     5,
-             column:   9,
+             column:   8,
              source:   source }]
         # rubocop:disable Layout/LineLength
         elsif patch_url.match?(%r{https?://patch-diff\.githubusercontent\.com/raw/(.+)/(.+)/pull/(.+)\.(?:diff|patch)})
@@ -309,10 +305,10 @@ describe RuboCop::Cop::FormulaAudit::Patches do
           [{ message:  "Use a commit hash URL rather than patch-diff: #{patch_url}",
              severity: :convention,
              line:     5,
-             column:   9,
+             column:   8,
              source:   source }]
         end
-        expected_offense.zip([cop.offenses.last]).each do |expected, actual|
+        expected_offense.zip([inspect_source(source).last]).each do |expected, actual|
           expect(actual.message).to eq(expected[:message])
           expect(actual.severity).to eq(expected[:severity])
           expect(actual.line).to eq(expected[:line])

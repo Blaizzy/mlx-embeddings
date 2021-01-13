@@ -12,12 +12,12 @@ describe RuboCop::Cop::FormulaAudit::Options do
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
           option "with-32-bit"
-                       ^^^^^^ macOS has been 64-bit only since 10.6 so 32-bit options are deprecated.
+                 ^^^^^^^^^^^^^ macOS has been 64-bit only since 10.6 so 32-bit options are deprecated.
         end
       RUBY
     end
 
-    it "with universal" do
+    it "reports an offense when using `:universal`" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -27,7 +27,7 @@ describe RuboCop::Cop::FormulaAudit::Options do
       RUBY
     end
 
-    it "with bad option names" do
+    it "reports an offense when using bad option names" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -38,7 +38,7 @@ describe RuboCop::Cop::FormulaAudit::Options do
       RUBY
     end
 
-    it "with without-check option name" do
+    it "reports an offense when using `without-check` option names" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -48,7 +48,7 @@ describe RuboCop::Cop::FormulaAudit::Options do
       RUBY
     end
 
-    it "with deprecated_optionss" do
+    it "reports an offense when using `deprecated_option` in homebrew/core" do
       expect_offense(<<~RUBY, "/homebrew-core/")
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -58,7 +58,7 @@ describe RuboCop::Cop::FormulaAudit::Options do
       RUBY
     end
 
-    it "with options" do
+    it "reports an offense when using `option` in homebrew/core" do
       expect_offense(<<~RUBY, "/homebrew-core/")
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'

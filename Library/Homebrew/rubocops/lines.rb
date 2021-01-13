@@ -197,20 +197,17 @@ module RuboCop
       #
       # @api private
       class MpiCheck < FormulaCop
+        extend AutoCorrector
+
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           # Enforce use of OpenMPI for MPI dependency in core
           return unless formula_tap == "homebrew-core"
 
           find_method_with_args(body_node, :depends_on, "mpich") do
             problem "Formulae in homebrew/core should use 'depends_on \"open-mpi\"' " \
-            "instead of '#{@offensive_node.source}'."
-          end
-        end
-
-        def autocorrect(node)
-          # The dependency nodes may need to be re-sorted because of this
-          lambda do |corrector|
-            corrector.replace(node.source_range, "depends_on \"open-mpi\"")
+            "instead of '#{@offensive_node.source}'." do |corrector|
+              corrector.replace(@offensive_node.source_range, "depends_on \"open-mpi\"")
+            end
           end
         end
       end
@@ -219,6 +216,8 @@ module RuboCop
       #
       # @api private
       class SafePopenCommands < FormulaCop
+        extend AutoCorrector
+
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           test = find_block(body_node, :test)
 
@@ -233,15 +232,11 @@ module RuboCop
 
             find_instance_method_call(body_node, "Utils", unsafe_command) do |method|
               unless test_methods.include?(method.source_range)
-                problem "Use `Utils.safe_#{unsafe_command}` instead of `Utils.#{unsafe_command}`"
+                problem "Use `Utils.safe_#{unsafe_command}` instead of `Utils.#{unsafe_command}`" do |corrector|
+                  corrector.replace(@offensive_node.loc.selector, "safe_#{@offensive_node.method_name}")
+                end
               end
             end
-          end
-        end
-
-        def autocorrect(node)
-          lambda do |corrector|
-            corrector.replace(node.loc.selector, "safe_#{node.method_name}")
           end
         end
       end
@@ -250,6 +245,8 @@ module RuboCop
       #
       # @api private
       class ShellVariables < FormulaCop
+        extend AutoCorrector
+
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           popen_commands = [
             :popen,
@@ -265,15 +262,11 @@ module RuboCop
 
               good_args = "Utils.#{command}({ \"#{match[1]}\" => \"#{match[2]}\" }, \"#{match[3]}\")"
 
-              problem "Use `#{good_args}` instead of `#{method.source}`"
+              problem "Use `#{good_args}` instead of `#{method.source}`" do |corrector|
+                corrector.replace(@offensive_node.source_range,
+                                  "{ \"#{match[1]}\" => \"#{match[2]}\" }, \"#{match[3]}\"")
+              end
             end
-          end
-        end
-
-        def autocorrect(node)
-          lambda do |corrector|
-            match = regex_match_group(node, /^([^"' ]+)=([^"' ]+)(?: (.*))?$/)
-            corrector.replace(node.source_range, "{ \"#{match[1]}\" => \"#{match[2]}\" }, \"#{match[3]}\"")
           end
         end
       end
@@ -282,6 +275,8 @@ module RuboCop
       #
       # @api private
       class LicenseArrays < FormulaCop
+        extend AutoCorrector
+
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           license_node = find_node_method_by_name(body_node, :license)
           return unless license_node
@@ -289,12 +284,8 @@ module RuboCop
           license = parameters(license_node).first
           return unless license.array_type?
 
-          problem "Use `license any_of: #{license.source}` instead of `license #{license.source}`"
-        end
-
-        def autocorrect(node)
-          lambda do |corrector|
-            corrector.replace(node.source_range, "license any_of: #{parameters(node).first.source}")
+          problem "Use `license any_of: #{license.source}` instead of `license #{license.source}`" do |corrector|
+            corrector.replace(license_node.source_range, "license any_of: #{parameters(license_node).first.source}")
           end
         end
       end
@@ -324,6 +315,8 @@ module RuboCop
       #
       # @api private
       class PythonVersions < FormulaCop
+        extend AutoCorrector
+
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           python_formula_node = find_every_method_call_by_name(body_node, :depends_on).find do |dep|
             string_content(parameters(dep).first).start_with? "python@"
@@ -334,25 +327,22 @@ module RuboCop
           python_version = string_content(parameters(python_formula_node).first).split("@").last
 
           find_strings(body_node).each do |str|
-            string_content = string_content(str)
+            content = string_content(str)
 
-            next unless match = string_content.match(/^python(@)?(\d\.\d+)$/)
+            next unless match = content.match(/^python(@)?(\d\.\d+)$/)
             next if python_version == match[2]
 
-            @fix = if match[1]
+            fix = if match[1]
               "python@#{python_version}"
             else
               "python#{python_version}"
             end
 
             offending_node(str)
-            problem "References to `#{string_content}` should match the specified python dependency (`#{@fix}`)"
-          end
-        end
-
-        def autocorrect(node)
-          lambda do |corrector|
-            corrector.replace(node.source_range, "\"#{@fix}\"")
+            problem "References to `#{content}` should "\
+            "match the specified python dependency (`#{fix}`)" do |corrector|
+              corrector.replace(str.source_range, "\"#{fix}\"")
+            end
           end
         end
       end
@@ -534,7 +524,7 @@ module RuboCop
                     "Pass explicit paths to prevent Homebrew from removing empty folders."
           end
 
-          if find_method_def(@processed_source.ast)
+          if find_method_def(processed_source.ast)
             problem "Define method #{method_name(@offensive_node)} in the class body, not at the top-level"
           end
 
@@ -661,6 +651,8 @@ module RuboCop
       #
       # @api private
       class ShellCommands < FormulaCop
+        extend AutoCorrector
+
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           # Match shell commands separated by spaces in the same string
           shell_cmd_with_spaces_regex = /[^"' ]*(?:\s[^"' ]*)+/
@@ -682,7 +674,9 @@ module RuboCop
 
             good_args = match[0].gsub(" ", "\", \"")
             offending_node(parameters(method).first)
-            problem "Separate `system` commands into `\"#{good_args}\"`"
+            problem "Separate `system` commands into `\"#{good_args}\"`" do |corrector|
+              corrector.replace(@offensive_node.source_range, @offensive_node.source.gsub(" ", "\", \""))
+            end
           end
 
           popen_commands.each do |command|
@@ -696,15 +690,11 @@ module RuboCop
 
               good_args = match[0].gsub(" ", "\", \"")
               offending_node(parameters(method)[index])
-              problem "Separate `Utils.#{command}` commands into `\"#{good_args}\"`"
+              problem "Separate `Utils.#{command}` commands into `\"#{good_args}\"`" do |corrector|
+                good_args = @offensive_node.source.gsub(" ", "\", \"")
+                corrector.replace(@offensive_node.source_range, good_args)
+              end
             end
-          end
-        end
-
-        def autocorrect(node)
-          lambda do |corrector|
-            good_args = node.source.gsub(" ", "\", \"")
-            corrector.replace(node.source_range, good_args)
           end
         end
       end

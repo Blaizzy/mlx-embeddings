@@ -11,19 +11,15 @@ module RuboCop
     module Cask
       # This cop audits `desc` in casks.
       # See the {DescHelper} module for details of the checks.
-      class Desc < Cop
+      class Desc < Base
         include OnDescStanza
         include DescHelper
+        extend AutoCorrector
 
         def on_desc_stanza(stanza)
-          name = cask_block.header.cask_token
+          @name = cask_block.header.cask_token
           desc_call = stanza.stanza_node
-          audit_desc(:cask, name, desc_call)
-        end
-
-        def autocorrect(node)
-          name = cask_block.header.cask_token
-          autocorrect_desc(node, name)
+          audit_desc(:cask, @name, desc_call)
         end
       end
     end

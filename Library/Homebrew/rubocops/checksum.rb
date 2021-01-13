@@ -28,7 +28,6 @@ module RuboCop
           return if checksum.nil?
 
           if regex_match_group(checksum, /^$/)
-            @offense_source_range = @offensive_node.source_range
             problem "sha256 is empty"
             return
           end
@@ -39,7 +38,7 @@ module RuboCop
 
           return unless regex_match_group(checksum, /[^a-f0-9]+/i)
 
-          problem "sha256 contains invalid characters"
+          add_offense(@offensive_source_range, message: "sha256 contains invalid characters")
         end
       end
 
@@ -47,6 +46,8 @@ module RuboCop
       #
       # @api private
       class ChecksumCase < FormulaCop
+        extend AutoCorrector
+
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           return if body_node.nil?
 
@@ -56,15 +57,11 @@ module RuboCop
             next if checksum.nil?
             next unless regex_match_group(checksum, /[A-F]+/)
 
-            problem "sha256 should be lowercase"
-          end
-        end
-
-        def autocorrect(node)
-          lambda do |corrector|
-            correction = node.source.downcase
-            corrector.insert_before(node.source_range, correction)
-            corrector.remove(node.source_range)
+            add_offense(@offensive_source_range, message: "sha256 should be lowercase") do |corrector|
+              correction = @offensive_node.source.downcase
+              corrector.insert_before(@offensive_node.source_range, correction)
+              corrector.remove(@offensive_node.source_range)
+            end
           end
         end
       end

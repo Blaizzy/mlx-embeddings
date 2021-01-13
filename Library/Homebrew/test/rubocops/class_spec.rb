@@ -6,55 +6,47 @@ require "rubocops/class"
 describe RuboCop::Cop::FormulaAudit::ClassName do
   subject(:cop) { described_class.new }
 
-  it "reports an offense when using ScriptFileFormula" do
+  corrected_source = <<~RUBY
+    class Foo < Formula
+      url 'https://brew.sh/foo-1.0.tgz'
+    end
+  RUBY
+
+  it "reports and corrects an offense when using ScriptFileFormula" do
     expect_offense(<<~RUBY)
       class Foo < ScriptFileFormula
                   ^^^^^^^^^^^^^^^^^ ScriptFileFormula is deprecated, use Formula instead
         url 'https://brew.sh/foo-1.0.tgz'
       end
     RUBY
+    expect_correction(corrected_source)
   end
 
-  it "reports an offense when using GithubGistFormula" do
+  it "reports and corrects an offense when using GithubGistFormula" do
     expect_offense(<<~RUBY)
       class Foo < GithubGistFormula
                   ^^^^^^^^^^^^^^^^^ GithubGistFormula is deprecated, use Formula instead
         url 'https://brew.sh/foo-1.0.tgz'
       end
     RUBY
+    expect_correction(corrected_source)
   end
 
-  it "reports an offense when using AmazonWebServicesFormula" do
+  it "reports and corrects an offense when using AmazonWebServicesFormula" do
     expect_offense(<<~RUBY)
       class Foo < AmazonWebServicesFormula
                   ^^^^^^^^^^^^^^^^^^^^^^^^ AmazonWebServicesFormula is deprecated, use Formula instead
         url 'https://brew.sh/foo-1.0.tgz'
       end
     RUBY
-  end
-
-  it "supports auto-correcting deprecated parent classes" do
-    source = <<~RUBY
-      class Foo < AmazonWebServicesFormula
-        url 'https://brew.sh/foo-1.0.tgz'
-      end
-    RUBY
-
-    corrected_source = <<~RUBY
-      class Foo < Formula
-        url 'https://brew.sh/foo-1.0.tgz'
-      end
-    RUBY
-
-    new_source = autocorrect_source(source)
-    expect(new_source).to eq(corrected_source)
+    expect_correction(corrected_source)
   end
 end
 
 describe RuboCop::Cop::FormulaAudit::Test do
   subject(:cop) { described_class.new }
 
-  it "reports an offense when /usr/local/bin is found in test calls" do
+  it "reports and corrects an offense when /usr/local/bin is found in test calls" do
     expect_offense(<<~RUBY)
       class Foo < Formula
         url 'https://brew.sh/foo-1.0.tgz'
@@ -65,9 +57,19 @@ describe RuboCop::Cop::FormulaAudit::Test do
         end
       end
     RUBY
+
+    expect_correction(<<~RUBY)
+      class Foo < Formula
+        url 'https://brew.sh/foo-1.0.tgz'
+
+        test do
+          system "\#{bin}/test"
+        end
+      end
+    RUBY
   end
 
-  it "reports an offense when passing 0 as the second parameter to shell_output" do
+  it "reports and corrects an offense when passing 0 as the second parameter to shell_output" do
     expect_offense(<<~RUBY)
       class Foo < Formula
         url 'https://brew.sh/foo-1.0.tgz'
@@ -75,6 +77,16 @@ describe RuboCop::Cop::FormulaAudit::Test do
         test do
           shell_output("\#{bin}/test", 0)
                                       ^ Passing 0 to shell_output() is redundant
+        end
+      end
+    RUBY
+
+    expect_correction(<<~RUBY)
+      class Foo < Formula
+        url 'https://brew.sh/foo-1.0.tgz'
+
+        test do
+          shell_output("\#{bin}/test")
         end
       end
     RUBY
@@ -103,31 +115,6 @@ describe RuboCop::Cop::FormulaAudit::Test do
         end
       end
     RUBY
-  end
-
-  it "supports auto-correcting test calls" do
-    source = <<~RUBY
-      class Foo < Formula
-        url 'https://brew.sh/foo-1.0.tgz'
-
-        test do
-          shell_output("/usr/local/sbin/test", 0)
-        end
-      end
-    RUBY
-
-    corrected_source = <<~RUBY
-      class Foo < Formula
-        url 'https://brew.sh/foo-1.0.tgz'
-
-        test do
-          shell_output("\#{sbin}/test")
-        end
-      end
-    RUBY
-
-    new_source = autocorrect_source(source)
-    expect(new_source).to eq(corrected_source)
   end
 end
 

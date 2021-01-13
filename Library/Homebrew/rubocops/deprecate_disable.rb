@@ -8,6 +8,8 @@ module RuboCop
     module FormulaAudit
       # This cop audits `deprecate!` and `disable!` dates.
       class DeprecateDisableDate < FormulaCop
+        extend AutoCorrector
+
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           [:deprecate!, :disable!].each do |method|
             node = find_node_method_by_name(body_node, method)
@@ -19,15 +21,10 @@ module RuboCop
             rescue ArgumentError
               fixed_date_string = Date.parse(string_content(date_node)).iso8601
               offending_node(date_node)
-              problem "Use `#{fixed_date_string}` to comply with ISO 8601"
+              problem "Use `#{fixed_date_string}` to comply with ISO 8601" do |corrector|
+                corrector.replace(date_node.source_range, "\"#{fixed_date_string}\"")
+              end
             end
-          end
-        end
-
-        def autocorrect(node)
-          lambda do |corrector|
-            fixed_fixed_date_string = Date.parse(string_content(node)).iso8601
-            corrector.replace(node.source_range, "\"#{fixed_fixed_date_string}\"")
           end
         end
 
@@ -38,6 +35,8 @@ module RuboCop
 
       # This cop audits `deprecate!` and `disable!` reasons.
       class DeprecateDisableReason < FormulaCop
+        extend AutoCorrector
+
         PUNCTUATION_MARKS = %w[. ! ?].freeze
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
@@ -54,9 +53,17 @@ module RuboCop
               offending_node(reason_node)
               reason_string = string_content(reason_node)
 
-              problem "Do not start the reason with `it`" if reason_string.start_with?("it ")
+              if reason_string.start_with?("it ")
+                problem "Do not start the reason with `it`" do |corrector|
+                  corrector.replace(@offensive_node.source_range, "\"#{reason_string[3..]}\"")
+                end
+              end
 
-              problem "Do not end the reason with a punctuation mark" if PUNCTUATION_MARKS.include?(reason_string[-1])
+              if PUNCTUATION_MARKS.include?(reason_string[-1])
+                problem "Do not end the reason with a punctuation mark" do |corrector|
+                  corrector.replace(@offensive_node.source_range, "\"#{reason_string.chop}\"")
+                end
+              end
             end
 
             next if reason_found
@@ -67,17 +74,6 @@ module RuboCop
             when :disable!
               problem 'Add a reason for disabling: `disable! because: "..."`'
             end
-          end
-        end
-
-        def autocorrect(node)
-          return unless node.str_type?
-
-          lambda do |corrector|
-            reason = string_content(node)
-            reason = reason[3..] if reason.start_with?("it ")
-            reason.chop! if PUNCTUATION_MARKS.include?(reason[-1])
-            corrector.replace(node.source_range, "\"#{reason}\"")
           end
         end
 

@@ -7,8 +7,9 @@ module RuboCop
       # This cop checks that `unless` is not used with multiple conditions.
       #
       # @api private
-      class UnlessMultipleConditions < Cop
+      class UnlessMultipleConditions < Base
         extend T::Sig
+        extend AutoCorrector
 
         MSG = "Avoid using `unless` with multiple conditions."
 
@@ -16,12 +17,7 @@ module RuboCop
         def on_if(node)
           return if !node.unless? || (!node.condition.and_type? && !node.condition.or_type?)
 
-          add_offense(node, location: node.condition.source_range.with(begin_pos: node.loc.keyword.begin_pos))
-        end
-
-        sig { params(node: RuboCop::AST::IfNode).returns(T.proc.params(arg0: RuboCop::Cop::Corrector).void) }
-        def autocorrect(node)
-          lambda do |corrector|
+          add_offense(node.condition.source_range.with(begin_pos: node.loc.keyword.begin_pos)) do |corrector|
             corrector.replace(node.loc.keyword, "if")
             corrector.replace(node.condition.loc.operator, node.condition.inverse_operator)
             [node.condition.lhs, node.condition.rhs].each do |subcondition|

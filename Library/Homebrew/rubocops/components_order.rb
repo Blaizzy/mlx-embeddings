@@ -12,6 +12,8 @@ module RuboCop
       # - `component_precedence_list` has component hierarchy in a nested list
       #   where each sub array contains components' details which are at same precedence level
       class ComponentsOrder < FormulaCop
+        extend AutoCorrector
+
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           @present_components, @offensive_nodes = check_order(FORMULA_COMPONENT_PRECEDENCE_LIST, body_node)
 
@@ -27,7 +29,6 @@ module RuboCop
 
           if on_macos_blocks.length > 1
             @offensive_node = on_macos_blocks.second
-            @offense_source_range = on_macos_blocks.second.source_range
             problem "there can only be one `on_macos` block in a formula."
           end
 
@@ -37,7 +38,6 @@ module RuboCop
 
           if on_linux_blocks.length > 1
             @offensive_node = on_linux_blocks.second
-            @offense_source_range = on_linux_blocks.second.source_range
             problem "there can only be one `on_linux` block in a formula."
           end
 
@@ -58,7 +58,6 @@ module RuboCop
             end
 
             @offensive_node = resource_block
-            @offense_source_range = resource_block.source_range
 
             next if on_macos_blocks.length.zero? && on_linux_blocks.length.zero?
 
@@ -122,22 +121,10 @@ module RuboCop
             valid_node ||= on_os_allowed_methods.include? child.method_name.to_s
 
             @offensive_node = child
-            @offense_source_range = child.source_range
             next if valid_node
 
             problem "`#{on_os_block.method_name}` cannot include `#{child.method_name}`. " \
                     "Only #{on_os_allowed_methods.map { |m| "`#{m}`" }.to_sentence} are allowed."
-          end
-        end
-
-        # {autocorrect} gets called just after {component_problem}.
-        def autocorrect(_node)
-          return if @offensive_nodes.nil?
-
-          succeeding_node = @offensive_nodes[0]
-          preceding_node = @offensive_nodes[1]
-          lambda do |corrector|
-            reorder_components(corrector, succeeding_node, preceding_node)
           end
         end
 
@@ -201,13 +188,15 @@ module RuboCop
           nil
         end
 
-        # Method to format message for reporting component precedence violations.
+        # Method to report and correct component precedence violations.
         def component_problem(c1, c2)
           return if tap_style_exception? :components_order_exceptions
 
           problem "`#{format_component(c1)}` (line #{line_number(c1)}) " \
-                  "should be put before `#{format_component(c2)}` " \
-                  "(line #{line_number(c2)})"
+            "should be put before `#{format_component(c2)}` " \
+            "(line #{line_number(c2)})" do |corrector|
+            reorder_components(corrector, c1, c2)
+          end
         end
 
         # Node pattern method to match

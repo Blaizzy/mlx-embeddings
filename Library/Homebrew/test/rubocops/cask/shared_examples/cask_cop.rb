@@ -21,14 +21,13 @@ module CaskCop
   end
 
   def expect_no_offenses(source)
-    inspect_source(source)
-    expect(cop.offenses).to be_empty
+    expect(inspect_source(source)).to be_empty
   end
 
   def expect_reported_offenses(source, expected_offenses)
-    inspect_source(source)
-    expect(cop.offenses.size).to eq(expected_offenses.size)
-    expected_offenses.zip(cop.offenses).each do |expected, actual|
+    offenses = inspect_source(source)
+    expect(offenses.size).to eq(expected_offenses.size)
+    expected_offenses.zip(offenses).each do |expected, actual|
       expect_offense(expected, actual)
     end
   end

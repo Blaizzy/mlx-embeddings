@@ -14,7 +14,7 @@ describe RuboCop::Cop::FormulaAudit::Caveats do
           url "https://brew.sh/foo-1.0.tgz"
            def caveats
             "setuid"
-             ^^^^^^ Don\'t recommend setuid in the caveats, suggest sudo instead.
+            ^^^^^^^^ Don\'t recommend setuid in the caveats, suggest sudo instead.
           end
         end
       RUBY
