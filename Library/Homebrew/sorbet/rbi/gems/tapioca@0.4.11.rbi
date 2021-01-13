@@ -146,6 +146,8 @@ class Tapioca::Compilers::SymbolTable::SymbolGenerator
   def add_to_alias_namespace(name); end
   sig { params(name: String).returns(T::Boolean) }
   def alias_namespaced?(name); end
+  sig { params(constant: Module).returns(T::Array[Module]) }
+  def ancestors_of(constant); end
   sig { params(constant: Module, other: BasicObject).returns(T::Boolean) }
   def are_equal?(constant, other); end
   sig { params(constant: BasicObject).returns(Class) }
@@ -194,7 +196,11 @@ class Tapioca::Compilers::SymbolTable::SymbolGenerator
   def get_file_candidates(constant); end
   sig { params(str: String).returns(String) }
   def indented(str); end
+  sig { params(constant: Module).returns(T::Array[Module]) }
+  def inherited_ancestors_of(constant); end
   def initialize_method_for(constant); end
+  sig { params(constant: Module).returns(T::Array[Module]) }
+  def interesting_ancestors_of(constant); end
   sig { params(name: String).void }
   def mark_seen(name); end
   sig { params(method: UnboundMethod).returns(T::Boolean) }
@@ -205,6 +211,8 @@ class Tapioca::Compilers::SymbolTable::SymbolGenerator
   def name_of(constant); end
   sig { params(constant: Module).returns(T.nilable(String)) }
   def name_of_proxy_target(constant); end
+  sig { params(object: Object).returns(T::Boolean) }
+  def object_id_of(object); end
   def parent_declares_constant?(name); end
   sig { params(constant: Module).returns(T::Boolean) }
   def public_module?(constant); end
@@ -212,13 +220,13 @@ class Tapioca::Compilers::SymbolTable::SymbolGenerator
   def qualified_name_of(constant); end
   sig { params(constant: Module).returns(T.nilable(String)) }
   def raw_name_of(constant); end
-  sig { params(symbol: String).returns(BasicObject) }
-  def resolve_constant(symbol); end
+  sig { params(symbol: String, inherit: T::Boolean).returns(BasicObject) }
+  def resolve_constant(symbol, inherit: T.unsafe(nil)); end
   sig { params(name: String).returns(T::Boolean) }
   def seen?(name); end
   sig { params(method: T.any(Method, UnboundMethod)).returns(T.untyped) }
   def signature_of(method); end
-  sig { params(constant: BasicObject).returns(Class) }
+  sig { params(constant: Module).returns(Class) }
   def singleton_class_of(constant); end
   sig { params(constant: Module, method_name: String).returns(T::Boolean) }
   def struct_method?(constant, method_name); end
