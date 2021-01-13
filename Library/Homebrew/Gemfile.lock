@@ -56,7 +56,7 @@ GEM
     parallel (1.20.1)
     parallel_tests (3.4.0)
       parallel
-    parlour (4.0.1)
+    parlour (5.0.0)
       commander (~> 4.5)
       parser
       rainbow (~> 3.0)
@@ -145,7 +145,7 @@ GEM
       sorbet (~> 0.5.5)
       sorbet-runtime
       thor (>= 0.19.2)
-    tapioca (0.4.10)
+    tapioca (0.4.11)
       parlour (>= 2.1.0)
       pry (>= 0.12.2)
       sorbet-runtime
