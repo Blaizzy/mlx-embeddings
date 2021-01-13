@@ -647,6 +647,15 @@ class Keg
     dst.delete if options[:overwrite] && (dst.exist? || dst.symlink?)
     dst.make_relative_symlink(src)
   rescue Errno::EEXIST => e
+    # Retry if we're linking a different version of the same
+    # formula. The `AlreadyLinkedError` above won't catch
+    # this if a formula is missing an optlink. In that case,
+    # delete the symlink and retry.
+    if dst.symlink? && dst.exist? && Keg.for(dst).name == name
+      dst.unlink
+      retry
+    end
+
     raise ConflictError.new(self, src.relative_path_from(path), dst, e) if dst.exist?
 
     if dst.symlink?
