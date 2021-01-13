@@ -71,6 +71,10 @@ Layout/HeredocIndentation:
 Metrics/ParameterLists:
   CountKeywordArgs: false
 
+# Allow dashes in filenames.
+Naming/FileName:
+  Regex: !ruby/regexp /^[\w\@\-\+\.]+(\.rb)?$/
+
 # Implicitly allow EOS as we use it everywhere.
 Naming/HeredocDelimiterNaming:
   ForbiddenDelimiters:
@@ -79,10 +83,6 @@ Naming/HeredocDelimiterNaming:
 Naming/MethodName:
   IgnoredPatterns:
     - '\A(fetch_)?HEAD\?\Z'
-
-# Allow dashes in filenames.
-Naming/FileName:
-  Regex: !ruby/regexp /^[\w\@\-\+\.]+(\.rb)?$/
 
 # Both styles are used depending on context,
 # e.g. `sha256` and `something_countable_1`.

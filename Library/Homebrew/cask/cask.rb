@@ -46,7 +46,7 @@ module Cask
       @default_config = config || Config.new
 
       self.config = if config_path.exist?
-        Config.from_json(File.read(config_path))
+        Config.from_json(File.read(config_path), ignore_invalid_keys: true)
       else
         @default_config
       end
