@@ -301,28 +301,16 @@ class Keg
       # versioned aliases are handled below
       next if a.match?(/.+@./)
 
-      alias_opt_symlink = opt/a
-      if alias_opt_symlink.symlink? && alias_opt_symlink.exist?
-        alias_opt_symlink.delete if alias_opt_symlink.realpath == opt_record.realpath
-      elsif alias_opt_symlink.symlink? || alias_opt_symlink.exist?
-        alias_opt_symlink.delete
-      end
-
-      alias_linkedkegs_symlink = linkedkegs/a
-      alias_linkedkegs_symlink.delete if alias_linkedkegs_symlink.symlink? || alias_linkedkegs_symlink.exist?
+      remove_alias_symlink(opt/a, opt_record)
+      remove_alias_symlink(linkedkegs/a, linked_keg_record)
     end
 
     Pathname.glob("#{opt_record}@*").each do |a|
       a = a.basename.to_s
       next if aliases.include?(a)
 
-      alias_opt_symlink = opt/a
-      if alias_opt_symlink.symlink? && alias_opt_symlink.exist? && rack == alias_opt_symlink.realpath.parent
-        alias_opt_symlink.delete
-      end
-
-      alias_linkedkegs_symlink = linkedkegs/a
-      alias_linkedkegs_symlink.delete if alias_linkedkegs_symlink.symlink? || alias_linkedkegs_symlink.exist?
+      remove_alias_symlink(opt/a, rack)
+      remove_alias_symlink(linkedkegs/a, rack)
     end
   end
 
@@ -341,6 +329,7 @@ class Keg
     path.rmtree
     path.parent.rmdir_if_possible
     remove_opt_record if optlinked?
+    remove_linked_keg_record if linked?
     remove_old_aliases
     remove_oldname_opt_record
   rescue Errno::EACCES, Errno::ENOTEMPTY
@@ -377,12 +366,12 @@ class Keg
 
         dst.uninstall_info if dst.to_s.match?(INFOFILE_RX)
         dst.unlink
-        remove_old_aliases
         Find.prune if src.directory?
       end
     end
 
     unless options[:dry_run]
+      remove_old_aliases
       remove_linked_keg_record if linked?
       dirs.reverse_each(&:rmdir_if_possible)
     end
@@ -657,6 +646,14 @@ class Keg
     raise DirectoryNotWritableError.new(self, src.relative_path_from(path), dst, e)
   rescue SystemCallError => e
     raise LinkError.new(self, src.relative_path_from(path), dst, e)
+  end
+
+  def remove_alias_symlink(alias_symlink, alias_match_path)
+    if alias_symlink.symlink? && alias_symlink.exist?
+      alias_symlink.delete if alias_symlink.realpath == alias_match_path.realpath
+    elsif alias_symlink.symlink? || alias_symlink.exist?
+      alias_symlink.delete
+    end
   end
 
   protected
