@@ -33,14 +33,19 @@ module Homebrew
       if (Hardware::CPU.intel? || Hardware::CPU.in_rosetta2?) &&
          HOMEBREW_PREFIX.to_s == HOMEBREW_MACOS_ARM_DEFAULT_PREFIX
         if Hardware::CPU.in_rosetta2?
-          configuration = "under Rosetta 2"
           odie <<~EOS
-            Cannot install in Homebrew #{configuration} in ARM default prefix (#{HOMEBREW_PREFIX})!
-            Try `arch -arm64 brew install ...`
+                   This invocation of Homebrew is being translated by Rosetta2 however it is
+            installed in the ARM default prefix (#{HOMEBREW_PREFIX})! Are you are using an
+            x86_64 build of your terminal emulator? All invocations of this Homebrew
+            installation must be native arm64.
+            Use:
+                arch -arm64 brew install ...
+
+            to invoke Homebrew natively. Alternatively, if indeed you want x86_64 packages,
+            setup a separate x86_64 Homebrew installation and invoke that one.
           EOS
         else
-          configuration = "on Intel processor"
-          odie "Cannot install in Homebrew #{configuration} in ARM default prefix (#{HOMEBREW_PREFIX})!"
+          odie "Cannot install on Intel processor in ARM default prefix (#{HOMEBREW_PREFIX})!"
         end
       elsif Hardware::CPU.arm? && HOMEBREW_PREFIX.to_s == HOMEBREW_DEFAULT_PREFIX
         odie <<~EOS
