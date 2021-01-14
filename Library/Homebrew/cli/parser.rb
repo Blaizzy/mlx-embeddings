@@ -519,7 +519,7 @@ module Homebrew
       def check_named_args(args)
         exception = if @min_named_args && args.size < @min_named_args
           if @named_args_type.present?
-            types = @named_args_type.is_a?(Array) ? @named_args_type : [@named_args_type]
+            types = Array(@named_args_type)
             if types.any? { |arg| arg.is_a? String }
               MinNamedArgumentsError.new(@min_named_args)
             else
