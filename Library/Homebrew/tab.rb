@@ -58,7 +58,12 @@ class Tab < OpenStruct
   # Returns the {Tab} for an install receipt at `path`.
   # Results are cached.
   def self.from_file(path)
-    cache.fetch(path) { |p| cache[p] = from_file_content(File.read(p), p) }
+    cache.fetch(path) do |p|
+      content = File.read(p)
+      return empty if content.blank?
+
+      cache[p] = from_file_content(content, p)
+    end
   end
 
   # Like {from_file}, but bypass the cache.
