@@ -29,25 +29,6 @@ module Patch
       raise ArgumentError, "unexpected value #{strip.inspect} for strip"
     end
   end
-
-  def self.normalize_legacy_patches(list)
-    patches = []
-
-    case list
-    when Hash
-      list
-    when Array, String, :DATA
-      { p1: list }
-    else
-      {}
-    end.each_pair do |strip, urls|
-      Array(urls).each do
-        patches << DATAPatch.new(strip)
-      end
-    end
-
-    patches
-  end
 end
 
 # An abstract class representing a patch embedded into a formula.
