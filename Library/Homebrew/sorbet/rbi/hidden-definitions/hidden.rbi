@@ -5346,6 +5346,11 @@ class Cask::Config
   def vst_plugindir=(path); end
 end
 
+class Cask::Config
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class Cask::DSL::Caveats
   def depends_on_java(*args); end
 
@@ -7698,6 +7703,11 @@ class Homebrew::CLI::Parser
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+module Homebrew::Completions
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 module Homebrew::EnvConfig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -7834,6 +7844,11 @@ class Homebrew::FormulaCreator
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+module Homebrew::Livecheck::SkipConditions
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class Homebrew::Livecheck::Strategy::HeaderMatch
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -7861,6 +7876,11 @@ module Homebrew::Livecheck::Strategy
 end
 
 module Homebrew::Livecheck
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Homebrew::Settings
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
