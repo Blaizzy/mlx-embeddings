@@ -75,17 +75,20 @@ module RuboCop
             message = nil
             allowed_methods = [
               [:url, :sha256],
+              [:url, :mirror, :sha256],
               [:url, :version, :sha256],
+              [:url, :mirror, :version, :sha256],
             ]
 
+            # TODO: Refactor this to point to the actual offending methods rather than the entire block.
             on_os_bodies.each do |method_name, on_os_body|
               child_nodes = on_os_body.begin_type? ? on_os_body.child_nodes : [on_os_body]
               if child_nodes.all? { |n| n.send_type? || n.block_type? }
                 method_names = child_nodes.map(&:method_name)
                 next if allowed_methods.include? method_names
               end
-              message = "`#{method_name}` blocks within resource blocks must contain only a " \
-                        "url and sha256 or a url, version, and sha256 (in those orders)."
+              message = "`#{method_name}` blocks within `resource` blocks must contain at least "\
+                        "`url` and `mirror` and at most `url`, `mirror`, `version`, `sha256` (in order)."
               break
             end
 
