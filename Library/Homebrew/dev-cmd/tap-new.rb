@@ -148,7 +148,9 @@ module Homebrew
 
     unless args.no_git?
       cd tap.path do
-        safe_system "git", "init"
+        # Would be nice to use --initial-branch here but it's not available in
+        # older versions of Git that we support.
+        safe_system "git", "-c", "init.defaultBranch=#{branch}", "init"
         safe_system "git", "add", "--all"
         safe_system "git", "commit", "-m", "Create #{tap} tap"
         safe_system "git", "branch", "-m", branch
