@@ -5,16 +5,18 @@
 - PLC: Project Leadership Committee
 - TSC: Technical Steering Committee
 - AGM: Annual General Meeting
+- An ordinary resolution requires a majority of the votes cast.
+- A special resolution requires a two-thirds supermajority of the votes cast.
 
 ## 2. Members
 
-1. New members will be admitted by majority vote of the Project Leadership Committee (PLC) and added to the Homebrew organisation on GitHub.
+1. New members will be admitted by an ordinary resolution of the PLC and added to the Homebrew organisation on GitHub.
 
 2. Members may vote in all general elections and resolutions, hold office for Homebrew, and participate in all other membership functions.
 
 3. Members are expected to remain active within Homebrew, and are required to affirm their continued interest in Homebrew membership annually.
 
-4. Members may be dismissed by majority vote of the Project Leadership Committee and removed from the Homebrew organisation on GitHub. Removed members may be reinstated by the usual admission process.
+4. A member may be removed from Homebrew by an ordinary resolution of the PLC. A removed member may be reinstated by the usual admission process.
 
 5. All members will follow the [Homebrew Code of Conduct](https://github.com/Homebrew/.github/blob/HEAD/CODE_OF_CONDUCT.md#code-of-conduct). Changes to the code of conduct must be approved by the PLC.
 
@@ -24,7 +26,7 @@
 
 ## 3. General Meetings of Members
 
-1. A general meeting of the members may be called by the PLC with at least three weeks notice.
+1. A general meeting of the members may be called by either an ordinary resolution of the PLC or a majority of the entire membership. The membership must be given at least three weeks notice of a general meeting.
 
 2. The quorum to vote on resolutions and elections at a general meeting is 3 voting members or 10% of the voting members, whichever is greater.
 
@@ -38,7 +40,7 @@
 
 ### 3.1. Amendments to these bylaws
 
-1. These bylaws may be amended by a special resolution at a general meeting of the members. A special resolution requires a two-thirds supermajority.
+1. These bylaws may be amended by a special resolution at a general meeting of the members.
 
 2. Any member may propose an amendment via pull request on GitHub against this document.
 
@@ -60,6 +62,8 @@
 
 5. No more than two employees of the same employer may serve on the PLC.
 
+6. A member of the PLC may be removed from the PLC by a special resolution of the membership.
+
 ## 5. Meetings of the Project Leadership Committee
 
 1. A meeting of the PLC may be called by any two of its members with at least three weeks notice, unless all PLC members agree to a shorter notice period.
@@ -70,28 +74,36 @@
 
 4. The PLC will meet annually to review the status of all members and remove inactive members and those who have not affirmed a commitment to Homebrew in the past year. Voting in the AGM confirms that a member wishes to remain active with the project. After the AGM, the PLC will ask the members who did not vote whether they wish to remain active with the project. The PLC removes any members who don't respond to this second request after three weeks.
 
-5. The PLC will appoint the members of the Technical Steering Committee (TSC).
+5. The PLC will appoint the members of the TSC.
 
-6. Any member may refer any question or dispute to the PLC. All technical matters should first be referred to the TSC. Non-technical matters may be referred directly to the PLC. Members will make a good faith effort to resolve any disputes prior to referral to the PLC.
+6. Any member may refer any question or dispute to the PLC. All technical matters should first be referred to the TSC. Non-technical matters may be referred directly to the PLC. Members will make a good faith effort to resolve any disputes with compromise prior to referral to the PLC.
 
 7. The PLC may meet by any mutually agreeable means, such as text chat, voice or video call, and in person. Members of the PLC must meet at least once per quarter. Members of the PLC must meet by video call or in person at least once per year.
 
 ## 6. Project Leader
 
-1. The Project Leader will represent Homebrew publicly, and manage all day-to-day technical decisions related to the operation of Homebrew.
+1. The Project Leader will represent Homebrew publicly, manage all day-to-day technical decisions, and resolve disputes related to the operation of Homebrew between maintainers, members, other contributors, and users.
 
 2. The Project Leader will be elected annually by a majority vote of Homebrew members. The PLC will nominate at least one candidate for Project Leader. Any member may nominate a candidate, or self-nominate. Nominations must be announced to the membership three weeks before the AGM.
 
 3. Any vacancy of the Project Leader will be filled by appointment of the PLC.
 
-4. After March 1, 2020, the Project Leader may not be a member of the PLC.
+4. The Project Leader may not be a member of the PLC.
+
+5. A technical decision of the Project Leader may be overruled by an ordinary resolution of the TSC.
+
+6. A non-technical decision of the Project Leader may be overruled by an ordinary resolution of the PLC.
+
+7. The Project Leader may be removed from the position by a special resolution of the membership.
 
 ## 7. Technical Steering Committee
 
-1. The TSC has the authority to decide on any technical matter, including technical disputes between Homebrew members. The TSC will also decide the long-term roadmap of Homebrew, including large features or major changes to the Homebrew software.
+1. The TSC has the authority to decide on any technical matter, including technical disputes between Homebrew members.
 
-2. The PLC will appoint between three and five members to the TSC. The Project Leader must be one of these appointees. Appointed TSC members will serve a term of one year or until the member's successor is appointed.
+2. The PLC will appoint between three and five members to the TSC. The Project Leader must be one of these appointees. After the 2021 AGM, PLC members should not be any of these appointees. Appointed TSC members will serve a term of one year or until the member's successor is appointed.
 
-3. Any member may refer any technical question or dispute to the TSC. Members will make a good faith effort to resolve any disputes prior to referral to the TSC.
+3. Any member may refer any technical question or dispute to the TSC. Members will make a good faith effort to resolve any disputes with compromise prior to referral to the TSC.
 
 4. No more than two employees of the same employer may serve on the TSC.
+
+5. A member of the TSC, except the Project Leader, may be removed from the TSC by an ordinary resolution of the PLC.
