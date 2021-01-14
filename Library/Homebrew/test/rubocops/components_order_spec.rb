@@ -614,10 +614,31 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
             url "https://brew.sh/foo-1.0.tgz"
 
             resource do
-            ^^^^^^^^^^^ `on_macos` blocks within resource blocks must contain only a url and sha256 or a url, version, and sha256 (in those orders).
+            ^^^^^^^^^^^ `on_macos` blocks within `resource` blocks must contain at least `url` and `mirror` and at most `url`, `mirror`, `version`, `sha256` (in order).
               on_macos do
                 sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
                 url "https://brew.sh/resource2.tar.gz"
+              end
+
+              on_linux do
+                url "https://brew.sh/resource2.tar.gz"
+                sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
+              end
+            end
+          end
+        RUBY
+      end
+
+      it "reports no offenses if the content of an `on_macos` block in a resource contains a mirror" do
+        expect_no_offenses(<<~RUBY)
+          class Foo < Formula
+            url "https://brew.sh/foo-1.0.tgz"
+
+            resource do
+              on_macos do
+                url "https://brew.sh/resource2.tar.gz"
+                mirror "https://brew.sh/mirror/resource2.tar.gz"
+                sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
               end
 
               on_linux do
@@ -660,7 +681,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
             url "https://brew.sh/foo-1.0.tgz"
 
             resource do
-            ^^^^^^^^^^^ `on_macos` blocks within resource blocks must contain only a url and sha256 or a url, version, and sha256 (in those orders).
+            ^^^^^^^^^^^ `on_macos` blocks within `resource` blocks must contain at least `url` and `mirror` and at most `url`, `mirror`, `version`, `sha256` (in order).
               on_macos do
                 if foo == :bar
                   url "https://brew.sh/resource2.tar.gz"
@@ -686,7 +707,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
             url "https://brew.sh/foo-1.0.tgz"
 
             resource do
-            ^^^^^^^^^^^ `on_linux` blocks within resource blocks must contain only a url and sha256 or a url, version, and sha256 (in those orders).
+            ^^^^^^^^^^^ `on_linux` blocks within `resource` blocks must contain at least `url` and `mirror` and at most `url`, `mirror`, `version`, `sha256` (in order).
               on_macos do
                 url "https://brew.sh/resource2.tar.gz"
                 sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
@@ -732,7 +753,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
             url "https://brew.sh/foo-1.0.tgz"
 
             resource do
-            ^^^^^^^^^^^ `on_linux` blocks within resource blocks must contain only a url and sha256 or a url, version, and sha256 (in those orders).
+            ^^^^^^^^^^^ `on_linux` blocks within `resource` blocks must contain at least `url` and `mirror` and at most `url`, `mirror`, `version`, `sha256` (in order).
               on_macos do
                 url "https://brew.sh/resource2.tar.gz"
                 sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
