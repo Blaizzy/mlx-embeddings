@@ -15,7 +15,7 @@ module Homebrew
   def options_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `options` [<options>] [<formula>]
+        `options` [<options>] [<formula>] [<formula> ...]
 
         Show install options specific to <formula>.
       EOS

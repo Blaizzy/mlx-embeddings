@@ -13,7 +13,7 @@ module Homebrew
   def readall_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `readall` [<options>] [<tap>]
+        `readall` [<options>] [<tap>] [<tap> ...]
 
         Import all items from the specified <tap>, or from all installed taps if none is provided.
         This can be useful for debugging issues across all items when making

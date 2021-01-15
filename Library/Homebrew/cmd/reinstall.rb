@@ -22,7 +22,7 @@ module Homebrew
   def reinstall_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `reinstall` [<options>] <formula>|<cask>
+        `reinstall` [<options>] <formula>|<cask> [<formula>|<cask> ...]
 
         Uninstall and then reinstall a <formula> or <cask> using the same options it was
         originally installed with, plus any appended options specific to a <formula>.

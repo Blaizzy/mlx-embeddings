@@ -14,7 +14,7 @@ module Homebrew
   def postinstall_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `postinstall` <formula>
+        `postinstall` <formula> [<formula> ...]
 
         Rerun the post-install steps for <formula>.
       EOS

@@ -12,7 +12,7 @@ module Homebrew
   def bump_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `bump` [<options>] [<formula>]
+        `bump` [<options>] [<formula>] [<formula> ...]
 
         Display out-of-date brew formulae and the latest version available.
         Also displays whether a pull request has been opened with the URL.

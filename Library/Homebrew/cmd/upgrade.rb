@@ -18,7 +18,7 @@ module Homebrew
   def upgrade_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `upgrade` [<options>] [<formula>|<cask>]
+        `upgrade` [<options>] [<formula>|<cask>] [<formula>|<cask> ...]
 
         Upgrade outdated casks and outdated, unpinned formulae using the same options they were originally
         installed with, plus any appended brew formula options. If <cask> or <formula> are specified,

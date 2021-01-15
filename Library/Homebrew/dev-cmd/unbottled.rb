@@ -13,7 +13,7 @@ module Homebrew
   def unbottled_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `unbottled` [<formula>]
+        `unbottled` [<formula>] [<formula> ...]
 
         Outputs the unbottled dependents of formulae.
       EOS

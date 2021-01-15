@@ -18,7 +18,7 @@ module Homebrew
   def deps_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `deps` [<options>] [<formula>]
+        `deps` [<options>] [<formula>] [<formula> ...]
 
         Show dependencies for <formula>. Additional options specific to <formula>
         may be appended to the command. When given multiple formula arguments,

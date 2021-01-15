@@ -15,7 +15,7 @@ module Homebrew
   def list_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `list`, `ls` [<options>] [<formula>|<cask>]
+        `list`, `ls` [<options>] [<formula>|<cask>] [<formula>|<cask> ...]
 
         List all installed formulae and casks.
 

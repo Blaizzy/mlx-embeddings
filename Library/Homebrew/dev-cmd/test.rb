@@ -15,7 +15,7 @@ module Homebrew
   def test_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `test` [<options>] <formula>
+        `test` [<options>] <formula> [<formula> ...]
 
         Run the test method provided by an installed formula.
         There is no standard output or return code, but generally it should notify the

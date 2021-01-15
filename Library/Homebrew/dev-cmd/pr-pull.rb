@@ -71,7 +71,7 @@ module Homebrew
 
       conflicts "--clean", "--autosquash"
 
-      named_args number: 1
+      named_args min: 1
     end
   end
 

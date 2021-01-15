@@ -31,7 +31,7 @@ module Homebrew
   def search_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `search` [<options>] [<text>|`/`<text>`/`]
+        `search` [<options>] [<text>|`/`<text>`/`] [<text>|`/`<text>`/` ...]
 
         Perform a substring search of cask tokens and formula names for <text>. If <text>
         is flanked by slashes, it is interpreted as a regular expression.
