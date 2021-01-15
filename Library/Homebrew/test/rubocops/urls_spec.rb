@@ -6,7 +6,7 @@ require "rubocops/urls"
 describe RuboCop::Cop::FormulaAudit::Urls do
   subject(:cop) { described_class.new }
 
-  let(:formulae) {
+  let(:offense_list) {
     [{
       "url" => "https://ftpmirror.gnu.org/lightning/lightning-2.1.0.tar.gz",
       "msg" => 'Please use "https://ftp.gnu.org/gnu/lightning/lightning-2.1.0.tar.gz" instead of https://ftpmirror.gnu.org/lightning/lightning-2.1.0.tar.gz.',
@@ -184,20 +184,20 @@ describe RuboCop::Cop::FormulaAudit::Urls do
   }
 
   context "when auditing URLs" do
-    it "reports any offenses" do
-      formulae.each do |formula|
+    it "reports all offenses in `offense_list`" do
+      offense_list.each do |offense_info|
         allow_any_instance_of(RuboCop::Cop::FormulaCop).to receive(:formula_tap)
-                                                       .and_return(formula["formula_tap"])
+                                                       .and_return(offense_info["formula_tap"])
         source = <<~RUBY
           class Foo < Formula
             desc "foo"
-            url "#{formula["url"]}"
+            url "#{offense_info["url"]}"
           end
         RUBY
-        expected_offenses = [{ message:  formula["msg"],
+        expected_offenses = [{ message:  offense_info["msg"],
                                severity: :convention,
                                line:     3,
-                               column:   formula["col"],
+                               column:   offense_info["col"],
                                source:   source }]
 
         offenses = inspect_source(source)
