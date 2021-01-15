@@ -65,11 +65,8 @@ module RuboCop
 
             (on_macos_blocks + on_linux_blocks).each do |on_os_block|
               on_os_body = on_os_block.body
-              if on_os_body.if_type?
-                on_os_bodies += on_os_body.branches.map { |branch| [on_os_block.method_name, branch] }
-              else
-                on_os_bodies << [on_os_block.method_name, on_os_body]
-              end
+              branches = on_os_body.if_type? ? on_os_body.branches : [on_os_body]
+              on_os_bodies += branches.map { |branch| [on_os_block, branch] }
             end
 
             message = nil
@@ -79,16 +76,19 @@ module RuboCop
               [:url, :version, :sha256],
               [:url, :mirror, :version, :sha256],
             ]
+            minimum_methods = allowed_methods.first.map { |m| "`#{m}`" }.to_sentence
+            maximum_methods = allowed_methods.last.map { |m| "`#{m}`" }.to_sentence
 
-            # TODO: Refactor this to point to the actual offending methods rather than the entire block.
-            on_os_bodies.each do |method_name, on_os_body|
+            on_os_bodies.each do |on_os_block, on_os_body|
+              method_name = on_os_block.method_name
               child_nodes = on_os_body.begin_type? ? on_os_body.child_nodes : [on_os_body]
               if child_nodes.all? { |n| n.send_type? || n.block_type? }
                 method_names = child_nodes.map(&:method_name)
                 next if allowed_methods.include? method_names
               end
+              offending_node(on_os_block)
               message = "`#{method_name}` blocks within `resource` blocks must contain at least "\
-                        "`url` and `mirror` and at most `url`, `mirror`, `version`, `sha256` (in order)."
+                        "#{minimum_methods} and at most #{maximum_methods} (in order)."
               break
             end
 
