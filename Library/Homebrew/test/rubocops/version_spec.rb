@@ -6,8 +6,8 @@ require "rubocops/version"
 describe RuboCop::Cop::FormulaAudit::Version do
   subject(:cop) { described_class.new }
 
-  context "When auditing version" do
-    it "version should not be an empty string" do
+  context "when auditing version" do
+    it "reports an offense if `version` is an empty string" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -17,7 +17,7 @@ describe RuboCop::Cop::FormulaAudit::Version do
       RUBY
     end
 
-    it "version should not have a leading 'v'" do
+    it "reports an offense if `version` has a leading 'v'" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -27,7 +27,7 @@ describe RuboCop::Cop::FormulaAudit::Version do
       RUBY
     end
 
-    it "version should not end with underline and number" do
+    it "reports an offense if `version` ends with an underline and a number" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'

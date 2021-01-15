@@ -183,8 +183,8 @@ describe RuboCop::Cop::FormulaAudit::Urls do
     }]
   }
 
-  context "When auditing urls" do
-    it "with offenses" do
+  context "when auditing URLs" do
+    it "reports any offenses" do
       formulae.each do |formula|
         allow_any_instance_of(RuboCop::Cop::FormulaCop).to receive(:formula_tap)
                                                        .and_return(formula["formula_tap"])
@@ -211,7 +211,7 @@ describe RuboCop::Cop::FormulaAudit::Urls do
       end
     end
 
-    it "with offenses in stable/head block" do
+    it "reports an offense for GitHub repositories with git:// prefix" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
@@ -228,7 +228,7 @@ describe RuboCop::Cop::FormulaAudit::Urls do
       RUBY
     end
 
-    it "with duplicate mirror" do
+    it "reports an offense if `url` is the same as `mirror`" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           desc "foo"
