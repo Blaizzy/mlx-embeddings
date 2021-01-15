@@ -11,9 +11,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def __version_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `--version`
-
+      description <<~EOS
         Print the version numbers of Homebrew, Homebrew/homebrew-core and Homebrew/homebrew-cask
         (if tapped) to standard output.
       EOS

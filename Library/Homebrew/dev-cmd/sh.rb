@@ -13,9 +13,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def sh_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `sh` [<options>] [<file>]
-
+      description <<~EOS
         Homebrew build environment that uses years-battle-hardened
         build logic to help your `./configure && make && make install`
         and even your `gem install` succeed. Especially handy if you run Homebrew
@@ -27,7 +25,7 @@ module Homebrew
       flag   "-c=", "--cmd=",
              description: "Execute commands in a non-interactive shell."
 
-      named_args max: 1
+      named_args :file, max: 1
     end
   end
 

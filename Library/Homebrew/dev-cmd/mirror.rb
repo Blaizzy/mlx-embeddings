@@ -12,9 +12,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def mirror_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `mirror` <formula> [<formula> ...]
-
+      description <<~EOS
         Reupload the stable URL of a formula to Bintray for use as a mirror.
       EOS
       flag   "--bintray-org=",

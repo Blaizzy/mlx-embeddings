@@ -8,9 +8,7 @@ module Homebrew
 
   def __cellar_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `--cellar` [<formula>] [<formula> ...]
-
+      description <<~EOS
         Display Homebrew's Cellar path. *Default:* `$(brew --prefix)/Cellar`, or if
         that directory doesn't exist, `$(brew --repository)/Cellar`.
 

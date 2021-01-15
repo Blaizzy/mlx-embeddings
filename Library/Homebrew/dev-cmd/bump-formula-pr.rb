@@ -14,9 +14,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def bump_formula_pr_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `bump-formula-pr` [<options>] [<formula>]
-
+      description <<~EOS
         Create a pull request to update <formula> with a new URL or a new tag.
 
         If a <URL> is specified, the <SHA-256> checksum of the new download should also

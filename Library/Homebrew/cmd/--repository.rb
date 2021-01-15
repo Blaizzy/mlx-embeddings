@@ -11,9 +11,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def __repository_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `--repository`, `--repo` [<user>`/`<repo>] [<user>`/`<repo> ...]
-
+      description <<~EOS
         Display where Homebrew's `.git` directory is located.
 
         If <user>`/`<repo> are provided, display where tap <user>`/`<repo>'s directory is located.

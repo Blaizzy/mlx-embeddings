@@ -16,9 +16,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def desc_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `desc` [<options>] <text>|`/`<text>`/`|<formula> [<text>|`/`<text>`/`|<formula> ...]
-
+      description <<~EOS
         Display <formula>'s name and one-line description.
         Formula descriptions are cached; the cache is created on the
         first search, making that search slower than subsequent ones.
@@ -35,7 +33,7 @@ module Homebrew
 
       conflicts "--search", "--name", "--description"
 
-      named_args :formula, min: 1
+      named_args [:formula, :text_or_regex], min: 1
     end
   end
 

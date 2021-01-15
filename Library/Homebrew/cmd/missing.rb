@@ -14,9 +14,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def missing_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `missing` [<options>] [<formula>] [<formula> ...]
-
+      description <<~EOS
         Check the given <formula> kegs for missing dependencies. If no <formula> are
         provided, check all kegs. Will exit with a non-zero status if any kegs are found
         to be missing dependencies.

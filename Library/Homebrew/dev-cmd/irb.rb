@@ -24,9 +24,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def irb_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `irb` [<options>]
-
+      description <<~EOS
         Enter the interactive Homebrew Ruby shell.
       EOS
       switch "--examples",

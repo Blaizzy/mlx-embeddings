@@ -23,9 +23,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def install_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `install` [<options>] <formula>|<cask> [<formula>|<cask> ...]
-
+      description <<~EOS
         Install a <formula> or <cask>. Additional options specific to a <formula> may be
         appended to the command.
 

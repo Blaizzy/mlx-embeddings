@@ -11,9 +11,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def untap_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `untap` <tap> [<tap> ...]
-
+      description <<~EOS
         Remove a tapped formula repository.
       EOS
 

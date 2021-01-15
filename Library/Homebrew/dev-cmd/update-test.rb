@@ -11,9 +11,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def update_test_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `update-test` [<options>]
-
+      description <<~EOS
         Run a test of `brew update` with a new repository clone.
         If no options are passed, use `origin/master` as the start commit.
       EOS

@@ -12,9 +12,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def pin_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `pin` <formula> [<formula> ...]
-
+      description <<~EOS
         Pin the specified <formula>, preventing them from being upgraded when
         issuing the `brew upgrade` <formula> command. See also `unpin`.
       EOS

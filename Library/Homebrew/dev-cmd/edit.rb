@@ -12,9 +12,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def edit_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `edit` [<formula>|<cask>] [<formula>|<cask> ...]
-
+      description <<~EOS
         Open a <formula> or <cask> in the editor set by `EDITOR` or `HOMEBREW_EDITOR`,
         or open the Homebrew repository for editing if no formula is provided.
       EOS

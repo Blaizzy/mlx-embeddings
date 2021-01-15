@@ -9,9 +9,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def __caskroom_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `--caskroom` [<cask>] [<cask> ...]
-
+      description <<~EOS
         Display Homebrew's Caskroom path.
 
         If <cask> is provided, display the location in the Caskroom where <cask>

@@ -16,9 +16,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def create_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `create` [<options>] <URL>
-
+      description <<~EOS
         Generate a formula or, with `--cask`, a cask for the downloadable file at <URL>
         and open it in the editor. Homebrew will attempt to automatically derive the
         formula name and version, but if it fails, you'll have to make your own template.
@@ -69,7 +67,7 @@ module Homebrew
       conflicts "--cask", "--HEAD"
       conflicts "--cask", "--set-license"
 
-      named_args number: 1
+      named_args :url, number: 1
     end
   end
 

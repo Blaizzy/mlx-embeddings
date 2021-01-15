@@ -21,9 +21,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def reinstall_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `reinstall` [<options>] <formula>|<cask> [<formula>|<cask> ...]
-
+      description <<~EOS
         Uninstall and then reinstall a <formula> or <cask> using the same options it was
         originally installed with, plus any appended options specific to a <formula>.
 

@@ -24,9 +24,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def info_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `info` [<options>] [<formula>|<cask>] [<formula>|<cask> ...]
-
+      description <<~EOS
         Display brief statistics for your Homebrew installation.
 
         If a <formula> or <cask> is provided, show summary of information about it.

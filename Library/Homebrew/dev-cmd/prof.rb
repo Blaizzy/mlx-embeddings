@@ -11,9 +11,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def prof_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `prof` [<command>]
-
+      description <<~EOS
         Run Homebrew with a Ruby profiler, e.g. `brew prof readall`.
       EOS
       switch "--stackprof",

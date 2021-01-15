@@ -12,9 +12,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def options_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `options` [<options>] [<formula>] [<formula> ...]
-
+      description <<~EOS
         Show install options specific to <formula>.
       EOS
       switch "--compact",

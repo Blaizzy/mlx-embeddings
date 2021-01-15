@@ -12,9 +12,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def dispatch_build_bottle_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `dispatch-build-bottle` [<options>] <formula> [<formula> ...]
-
+      description <<~EOS
         Build bottles for these formulae with GitHub Actions.
       EOS
       flag   "--tap=",

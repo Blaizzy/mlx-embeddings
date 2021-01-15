@@ -30,9 +30,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def search_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `search` [<options>] [<text>|`/`<text>`/`] [<text>|`/`<text>`/` ...]
-
+      description <<~EOS
         Perform a substring search of cask tokens and formula names for <text>. If <text>
         is flanked by slashes, it is interpreted as a regular expression.
         The search for <text> is extended online to `homebrew/core` and `homebrew/cask`.
@@ -67,8 +65,8 @@ module Homebrew
       conflicts("--desc", "--pull-request")
       conflicts(*package_manager_switches)
 
-      # TODO: (2.9) uncomment when the `odeprecated`/`odisabled` for `brew search` with no arguments is removed
-      # named_args min: 1
+      # TODO: (2.9) add `min: 1` when the `odeprecated`/`odisabled` for `brew search` with no arguments is removed
+      named_args :text_or_regex
     end
   end
 

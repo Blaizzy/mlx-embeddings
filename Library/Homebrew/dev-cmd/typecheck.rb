@@ -11,9 +11,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def typecheck_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `typecheck`
-
+      description <<~EOS
         Check for typechecking errors using Sorbet.
       EOS
       switch "--fix",
