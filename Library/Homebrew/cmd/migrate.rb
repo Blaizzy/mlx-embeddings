@@ -13,7 +13,7 @@ module Homebrew
   def migrate_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `migrate` [<options>] <formula>
+        `migrate` [<options>] <formula> [<formula> ...]
 
         Migrate renamed packages to new names, where <formula> are old names of
         packages.

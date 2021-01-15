@@ -13,7 +13,7 @@ module Homebrew
   def home_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `home` [<formula>|<cask>]
+        `home` [<formula>|<cask>] [<formula>|<cask> ...]
 
         Open a <formula> or <cask>'s homepage in a browser, or open
         Homebrew's own homepage if no argument is provided.

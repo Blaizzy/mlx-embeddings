@@ -12,7 +12,7 @@ module Homebrew
   def __repository_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `--repository`, `--repo` [<user>`/`<repo>]
+        `--repository`, `--repo` [<user>`/`<repo>] [<user>`/`<repo> ...]
 
         Display where Homebrew's `.git` directory is located.
 

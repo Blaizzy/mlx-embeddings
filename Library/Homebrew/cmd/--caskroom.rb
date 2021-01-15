@@ -10,7 +10,7 @@ module Homebrew
   def __caskroom_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `--caskroom` [<cask>]
+        `--caskroom` [<cask>] [<cask> ...]
 
         Display Homebrew's Caskroom path.
 

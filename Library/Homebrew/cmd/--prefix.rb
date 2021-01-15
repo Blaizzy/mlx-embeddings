@@ -12,7 +12,7 @@ module Homebrew
   def __prefix_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `--prefix` [<formula>]
+        `--prefix` [<formula>] [<formula> ...]
 
         Display Homebrew's install path. *Default:*
 

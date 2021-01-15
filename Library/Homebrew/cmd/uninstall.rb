@@ -19,7 +19,7 @@ module Homebrew
   def uninstall_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `uninstall`, `rm`, `remove` [<options>] <formula>|<cask>
+        `uninstall`, `rm`, `remove` [<options>] <formula>|<cask> [<formula>|<cask> ...]
 
         Uninstall a <formula> or <cask>.
       EOS

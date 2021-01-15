@@ -17,7 +17,7 @@ module Homebrew
   def desc_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `desc` [<options>] (<text>|`/`<text>`/`|<formula>)
+        `desc` [<options>] <text>|`/`<text>`/`|<formula> [<text>|`/`<text>`/`|<formula> ...]
 
         Display <formula>'s name and one-line description.
         Formula descriptions are cached; the cache is created on the
@@ -35,7 +35,7 @@ module Homebrew
 
       conflicts "--search", "--name", "--description"
 
-      named_args :formula
+      named_args :formula, min: 1
     end
   end
 
@@ -51,14 +51,10 @@ module Homebrew
     end
 
     results = if search_type.nil?
-      raise FormulaUnspecifiedError if args.no_named?
-
       desc = {}
       args.named.to_formulae.each { |f| desc[f.full_name] = f.desc }
       Descriptions.new(desc)
     else
-      raise UsageError, "this command requires a search term" if args.no_named?
-
       query = args.named.join(" ")
       string_or_regex = query_regexp(query)
       CacheStoreDatabase.use(:descriptions) do |db|

@@ -12,7 +12,7 @@ module Homebrew
   def tap_info_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `tap-info` [<options>] [<tap>]
+        `tap-info` [<options>] [<tap>] [<tap> ...]
 
         Show detailed information about one or more <tap>s.
 

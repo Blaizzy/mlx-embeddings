@@ -14,7 +14,7 @@ module Homebrew
   def unlink_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `unlink` [<options>] <formula>
+        `unlink` [<options>] <formula> [<formula> ...]
 
         Remove symlinks for <formula> from Homebrew's prefix. This can be useful
         for temporarily disabling a formula:

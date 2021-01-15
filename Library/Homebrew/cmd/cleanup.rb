@@ -14,7 +14,7 @@ module Homebrew
     Homebrew::CLI::Parser.new do
       days = Homebrew::EnvConfig::ENVS[:HOMEBREW_CLEANUP_MAX_AGE_DAYS][:default]
       usage_banner <<~EOS
-        `cleanup` [<options>] [<formula>|<cask>]
+        `cleanup` [<options>] [<formula>|<cask>] [<formula>|<cask> ...]
 
         Remove stale lock files and outdated downloads for all formulae and casks,
         and remove old versions of installed formulae. If arguments are specified,
