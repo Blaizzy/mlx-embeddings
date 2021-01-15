@@ -650,7 +650,7 @@ class Keg
 
   def remove_alias_symlink(alias_symlink, alias_match_path)
     if alias_symlink.symlink? && alias_symlink.exist?
-      alias_symlink.delete if alias_symlink.realpath == alias_match_path.realpath
+      alias_symlink.delete if alias_match_path.exist? && alias_symlink.realpath == alias_match_path.realpath
     elsif alias_symlink.symlink? || alias_symlink.exist?
       alias_symlink.delete
     end
