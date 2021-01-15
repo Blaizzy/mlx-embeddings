@@ -3,6 +3,7 @@
 
 require "cli/parser"
 require "livecheck/livecheck"
+require "livecheck/skip_conditions"
 
 module Homebrew
   extend T::Sig
@@ -18,6 +19,8 @@ module Homebrew
       EOS
       flag   "--limit=",
              description: "Limit number of package results returned."
+
+      named_args :formula
     end
   end
 
@@ -82,8 +85,8 @@ module Homebrew
   end
 
   def livecheck_result(formula)
-    skip_result = Livecheck.skip_conditions(formula, json: true, full_name: false, quiet: false).presence
-    if skip_result
+    skip_result = Livecheck::SkipConditions.skip_information(formula)
+    if skip_result.present?
       return "#{skip_result[:status]}#{" - #{skip_result[:messages].join(", ")}" if skip_result[:messages].present?}"
     end
 
