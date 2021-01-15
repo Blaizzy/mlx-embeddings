@@ -311,6 +311,25 @@ module Homebrew
       puts "#{formula_or_cask_s} : #{current_s} ==> #{latest_s}"
     end
 
+    sig do
+      params(
+        livecheck_url:   T.any(String, Symbol),
+        formula_or_cask: T.any(Formula, Cask::Cask),
+      ).returns(T.nilable(String))
+    end
+    def livecheck_url_to_string(livecheck_url, formula_or_cask)
+      case livecheck_url
+      when String
+        livecheck_url
+      when :url
+        formula_or_cask.url&.to_s if formula_or_cask.is_a?(Cask::Cask)
+      when :head, :stable
+        formula_or_cask.send(livecheck_url)&.url if formula_or_cask.is_a?(Formula)
+      when :homepage
+        formula_or_cask.homepage
+      end
+    end
+
     # Returns an Array containing the formula/cask URLs that can be used by livecheck.
     sig { params(formula_or_cask: T.any(Formula, Cask::Cask)).returns(T::Array[String]) }
     def checkable_urls(formula_or_cask)
@@ -396,7 +415,9 @@ module Homebrew
       livecheck_regex = livecheck.regex
       livecheck_strategy = livecheck.strategy
 
-      urls = [livecheck_url] if livecheck_url.present?
+      livecheck_url_string = livecheck_url_to_string(livecheck_url, formula_or_cask)
+
+      urls = [livecheck_url_string] if livecheck_url_string
       urls ||= checkable_urls(formula_or_cask)
 
       if debug
@@ -413,7 +434,12 @@ module Homebrew
       urls.each_with_index do |original_url, i|
         if debug
           puts
-          puts "URL:              #{original_url}"
+          if livecheck_url.is_a?(Symbol)
+            # This assumes the URL symbol will fit within the available space
+            puts "URL (#{livecheck_url}):".ljust(18, " ") + original_url
+          else
+            puts "URL:              #{original_url}"
+          end
         end
 
         # Skip Gists until/unless we create a method of identifying revisions
@@ -514,15 +540,16 @@ module Homebrew
         }
 
         if json && verbose
-          version_info[:meta] = {
-            url:      {
-              original: original_url,
-            },
-            strategy: strategy.blank? ? nil : strategy_name,
-          }
+          version_info[:meta] = {}
+
+          version_info[:meta][:url] = {}
+          version_info[:meta][:url][:symbol] = livecheck_url if livecheck_url.is_a?(Symbol) && livecheck_url_string
+          version_info[:meta][:url][:original] = original_url
           version_info[:meta][:url][:processed] = url if url != original_url
           version_info[:meta][:url][:strategy] = strategy_data[:url] if strategy_data[:url] != url
           version_info[:meta][:url][:final] = strategy_data[:final_url] if strategy_data[:final_url]
+
+          version_info[:meta][:strategy] = strategy.present? ? strategy_name : nil
           version_info[:meta][:strategies] = strategies.map { |s| livecheck_strategy_names[s] } if strategies.present?
           version_info[:meta][:regex] = regex.inspect if regex.present?
           version_info[:meta][:cached] = true if strategy_data[:cached] == true

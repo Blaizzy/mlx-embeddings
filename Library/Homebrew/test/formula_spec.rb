@@ -695,7 +695,7 @@ describe Formula do
         end
       end
 
-      expect(f.livecheck.url).to eq("https://brew.sh/test")
+      expect(f.livecheck.url).to eq(:homepage)
     end
   end
 
