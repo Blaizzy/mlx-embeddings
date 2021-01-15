@@ -49,7 +49,7 @@ describe RuboCop::Cop::FormulaAudit::Text do
       RUBY
     end
 
-    it "reports an offense if veclibfort is used instead of OpenBLAS" do
+    it "reports an offense if veclibfort is used instead of OpenBLAS (in homebrew/core)" do
       expect_offense(<<~RUBY, "/homebrew-core/")
         class Foo < Formula
           url "https://brew.sh/foo-1.0.tgz"
@@ -60,7 +60,7 @@ describe RuboCop::Cop::FormulaAudit::Text do
       RUBY
     end
 
-    it "repots an offense if lapack is used instead of OpenBLAS" do
+    it "reports an offense if lapack is used instead of OpenBLAS (in homebrew/core)" do
       expect_offense(<<~RUBY, "/homebrew-core/")
         class Foo < Formula
           url "https://brew.sh/foo-1.0.tgz"
@@ -83,9 +83,7 @@ describe RuboCop::Cop::FormulaAudit::Text do
           end
         end
       RUBY
-    end
 
-    it "reports an offense if xcodebuild is called without any args" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           url "https://brew.sh/foo-1.0.tgz"
@@ -280,7 +278,7 @@ end
 describe RuboCop::Cop::FormulaAuditStrict::Text do
   subject(:cop) { described_class.new }
 
-  context "when auditing formula text" do
+  context "when auditing formula text in homebrew/core" do
     it "reports an offense if `env :userpaths` is present" do
       expect_offense(<<~RUBY)
         class Foo < Formula
@@ -292,7 +290,7 @@ describe RuboCop::Cop::FormulaAuditStrict::Text do
       RUBY
     end
 
-    it "reports an offense if `env :std` is present" do
+    it "reports an offense if `env :std` is present in homebrew/core" do
       expect_offense(<<~RUBY, "/homebrew-core/")
         class Foo < Formula
           url "https://brew.sh/foo-1.0.tgz"
