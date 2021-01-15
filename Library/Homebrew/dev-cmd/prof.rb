@@ -18,6 +18,8 @@ module Homebrew
       EOS
       switch "--stackprof",
              description: "Use `stackprof` instead of `ruby-prof` (the default)."
+
+      named_args :command
     end
   end
 

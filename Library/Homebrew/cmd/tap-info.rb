@@ -24,6 +24,8 @@ module Homebrew
              description: "Print a JSON representation of <tap>. Currently the default and only accepted "\
                           "value for <version> is `v1`. See the docs for examples of using the JSON "\
                           "output: <https://docs.brew.sh/Querying-Brew>"
+
+      named_args :tap
     end
   end
 
@@ -33,9 +35,7 @@ module Homebrew
     taps = if args.installed?
       Tap
     else
-      args.named.sort.map do |name|
-        Tap.fetch(name)
-      end
+      args.named.to_taps
     end
 
     if args.json

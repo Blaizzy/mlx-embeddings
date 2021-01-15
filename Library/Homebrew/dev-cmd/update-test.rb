@@ -26,7 +26,7 @@ module Homebrew
       flag   "--before=",
              description: "Use the commit at the specified <date> as the start commit."
 
-      max_named 0
+      named_args :none
     end
   end
 

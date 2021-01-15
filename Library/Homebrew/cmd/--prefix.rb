@@ -25,6 +25,8 @@ module Homebrew
       EOS
       switch "--unbrewed",
              description: "List files in Homebrew's prefix not installed by Homebrew."
+
+      named_args :formula
     end
   end
 

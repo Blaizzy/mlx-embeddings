@@ -19,7 +19,7 @@ module Homebrew
         Rerun the post-install steps for <formula>.
       EOS
 
-      min_named :keg
+      named_args :installed_formula, min: 1
     end
   end
 

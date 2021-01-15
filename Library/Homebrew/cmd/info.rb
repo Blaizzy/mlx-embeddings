@@ -68,6 +68,8 @@ module Homebrew
       conflicts "--formula", "--cask"
 
       conflicts "--installed", "--all"
+
+      named_args [:formula, :cask]
     end
   end
 

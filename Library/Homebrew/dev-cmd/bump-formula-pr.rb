@@ -79,7 +79,8 @@ module Homebrew
       conflicts "--no-audit", "--strict"
       conflicts "--no-audit", "--online"
       conflicts "--url", "--tag"
-      max_named 1
+
+      named_args :formula, max: 1
     end
   end
 

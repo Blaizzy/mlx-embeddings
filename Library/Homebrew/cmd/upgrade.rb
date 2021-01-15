@@ -89,6 +89,8 @@ module Homebrew
       cask_options
 
       conflicts "--build-from-source", "--force-bottle"
+
+      named_args [:installed_formula, :installed_cask]
     end
   end
 

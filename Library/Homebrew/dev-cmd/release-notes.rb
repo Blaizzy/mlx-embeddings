@@ -25,7 +25,7 @@ module Homebrew
       switch "--markdown",
              description: "Print as a Markdown list."
 
-      max_named 2
+      named_args max: 2
     end
   end
 

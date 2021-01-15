@@ -72,6 +72,8 @@ module Homebrew
         conflicts "--full-name", flag
         conflicts "--cask", flag
       end
+
+      named_args [:installed_formula, :installed_cask]
     end
   end
 

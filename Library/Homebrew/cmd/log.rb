@@ -30,7 +30,8 @@ module Homebrew
              description: "Print only a specified number of commits."
 
       conflicts "-1", "--max-count"
-      max_named 1
+
+      named_args :formula, max: 1
     end
   end
 

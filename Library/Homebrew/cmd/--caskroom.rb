@@ -17,6 +17,8 @@ module Homebrew
         If <cask> is provided, display the location in the Caskroom where <cask>
         would be installed, without any sort of versioned directory as the last path.
       EOS
+
+      named_args :cask
     end
   end
 

@@ -24,6 +24,8 @@ module Homebrew
       switch "--total",
              description: "Output the number of unbottled and total formulae."
       conflicts "--dependents", "--total"
+
+      named_args :formula
     end
   end
 

@@ -29,7 +29,7 @@ module Homebrew
       flag   "--state-file=",
              description: "File for caching state."
 
-      min_named 1
+      named_args [:cask, :tap], min: 1
     end
   end
 

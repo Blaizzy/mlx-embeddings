@@ -22,7 +22,7 @@ module Homebrew
              depends_on:  "--quiet",
              description: "Include aliases of internal commands."
 
-      max_named 0
+      named_args :none
     end
   end
 

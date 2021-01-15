@@ -32,6 +32,8 @@ module Homebrew
              description: "Only show cache files for casks."
       conflicts "--build-from-source", "--force-bottle"
       conflicts "--formula", "--cask"
+
+      named_args [:formula, :cask]
     end
   end
 

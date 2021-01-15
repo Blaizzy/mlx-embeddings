@@ -34,7 +34,7 @@ module Homebrew
       flag   "--seed=",
              description: "Randomise tests with the specified <value> instead of a random seed."
 
-      max_named 0
+      named_args :none
     end
   end
 

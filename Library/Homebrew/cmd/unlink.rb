@@ -24,7 +24,7 @@ module Homebrew
              description: "List files which would be unlinked without actually unlinking or "\
                           "deleting any files."
 
-      min_named :keg
+      named_args :installed_formula, min: 1
     end
   end
 

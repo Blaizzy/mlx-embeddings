@@ -27,6 +27,8 @@ module Homebrew
                           "or `--shell=auto` to detect the current shell."
       switch "--plain",
              description: "Generate plain output even when piped."
+
+      named_args :formula
     end
   end
 

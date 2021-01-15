@@ -27,7 +27,7 @@ module Homebrew
         Regenerate the UUID used for Homebrew's analytics.
       EOS
 
-      max_named 1
+      named_args %w[state on off regenerate-uuid], max: 1
     end
   end
 

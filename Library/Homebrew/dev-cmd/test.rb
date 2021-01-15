@@ -30,7 +30,7 @@ module Homebrew
       switch "--retry",
              description: "Retry if a testing fails."
 
-      min_named :formula
+      named_args :installed_formula, min: 1
     end
   end
 

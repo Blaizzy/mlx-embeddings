@@ -24,6 +24,8 @@ module Homebrew
       comma_array "--hide",
                   description: "Act as if none of the specified <hidden> are installed. <hidden> should be "\
                                "a comma-separated list of formulae."
+
+      named_args :formula
     end
   end
 

@@ -90,6 +90,8 @@ module Homebrew
       conflicts "--display-cop-names", "--skip-style"
       conflicts "--display-cop-names", "--only-cops"
       conflicts "--display-cop-names", "--except-cops"
+
+      named_args [:formula, :cask]
     end
   end
 

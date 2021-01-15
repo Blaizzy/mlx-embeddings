@@ -27,6 +27,8 @@ module Homebrew
                           "if provided as arguments."
       switch "-D", "--audit-debug",
              description: "Enable debugging and profiling of audit methods."
+
+      named_args :diagnostic_check
     end
   end
 

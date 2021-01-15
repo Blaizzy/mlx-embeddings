@@ -18,6 +18,8 @@ module Homebrew
 
         If <user>`/`<repo> are provided, display where tap <user>`/`<repo>'s directory is located.
       EOS
+
+      named_args :tap
     end
   end
 
@@ -27,7 +29,7 @@ module Homebrew
     if args.no_named?
       puts HOMEBREW_REPOSITORY
     else
-      puts args.named.map { |tap| Tap.fetch(tap).path }
+      puts args.named.to_taps.map(&:path)
     end
   end
 end

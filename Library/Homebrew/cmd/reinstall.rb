@@ -75,7 +75,8 @@ module Homebrew
       cask_options
 
       conflicts "--build-from-source", "--force-bottle"
-      min_named :formula_or_cask
+
+      named_args [:formula, :cask], min: 1
     end
   end
 

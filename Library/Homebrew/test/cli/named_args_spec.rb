@@ -162,4 +162,37 @@ describe Homebrew::CLI::NamedArgs do
       expect(described_class.new("foo", "baz").to_paths(only: :cask)).to eq [cask_path, Cask::CaskLoader.path("baz")]
     end
   end
+
+  describe "#to_taps" do
+    it "returns taps" do
+      taps = described_class.new("homebrew/foo", "bar/baz")
+      expect(taps.to_taps.map(&:name)).to eq %w[homebrew/foo bar/baz]
+    end
+
+    it "raises an error for invalid tap" do
+      taps = described_class.new("homebrew/foo", "barbaz")
+      expect { taps.to_taps }.to raise_error(RuntimeError, /Invalid tap name/)
+    end
+  end
+
+  describe "#to_installed_taps" do
+    before do
+      (HOMEBREW_REPOSITORY/"Library/Taps/homebrew/homebrew-foo").mkpath
+    end
+
+    it "returns installed taps" do
+      taps = described_class.new("homebrew/foo")
+      expect(taps.to_installed_taps.map(&:name)).to eq %w[homebrew/foo]
+    end
+
+    it "raises an error for uninstalled tap" do
+      taps = described_class.new("homebrew/foo", "bar/baz")
+      expect { taps.to_installed_taps }.to raise_error(TapUnavailableError)
+    end
+
+    it "raises an error for invalid tap" do
+      taps = described_class.new("homebrew/foo", "barbaz")
+      expect { taps.to_installed_taps }.to raise_error(RuntimeError, /Invalid tap name/)
+    end
+  end
 end

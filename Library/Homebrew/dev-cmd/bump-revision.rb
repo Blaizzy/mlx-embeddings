@@ -23,7 +23,7 @@ module Homebrew
       flag   "--message=",
              description: "Append <message> to the default commit message."
 
-      min_named :formula
+      named_args :formula, min: 1
     end
   end
 

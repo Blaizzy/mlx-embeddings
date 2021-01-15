@@ -21,7 +21,7 @@ module Homebrew
       comma_array "--update",
                   description: "Update all vendored Gems to the latest version."
 
-      max_named 0
+      named_args :none
     end
   end
 

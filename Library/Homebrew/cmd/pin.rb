@@ -19,7 +19,7 @@ module Homebrew
         issuing the `brew upgrade` <formula> command. See also `unpin`.
       EOS
 
-      min_named :formula
+      named_args :installed_formula, min: 1
     end
   end
 

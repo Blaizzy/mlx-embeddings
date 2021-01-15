@@ -31,7 +31,7 @@ module Homebrew
       switch "--link",
              description: "This is now done automatically by `brew update`."
 
-      max_named 0
+      named_args :none
     end
   end
 
