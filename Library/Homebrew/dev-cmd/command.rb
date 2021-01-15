@@ -13,7 +13,7 @@ module Homebrew
   def command_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `command` <cmd>
+        `command` <cmd> [<cmd> ...]
 
         Display the path to the file being used when invoking `brew` <cmd>.
       EOS

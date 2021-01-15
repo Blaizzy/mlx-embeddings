@@ -13,7 +13,7 @@ module Homebrew
   def update_python_resources_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `update-python-resources` [<options>] <formula>
+        `update-python-resources` [<options>] <formula> [<formula> ...]
 
         Update versions for PyPI resource blocks in <formula>.
       EOS
@@ -34,7 +34,7 @@ module Homebrew
       comma_array "--exclude-packages=",
                   description: "Exclude these packages when finding resources."
 
-      named_args :formula, number: 1
+      named_args :formula, min: 1
     end
   end
 

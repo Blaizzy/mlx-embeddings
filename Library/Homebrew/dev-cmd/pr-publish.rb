@@ -29,7 +29,7 @@ module Homebrew
       flag   "--workflow=",
              description: "Target workflow filename (default: `publish-commit-bottles.yml`)."
 
-      named_args number: 1
+      named_args min: 1
     end
   end
 

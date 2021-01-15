@@ -20,7 +20,7 @@ module Homebrew
   def livecheck_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `livecheck` [<formulae>|<casks>]
+        `livecheck` [<formula>|<cask>] [<formula>|<cask> ...]
 
         Check for newer versions of formulae and/or casks from upstream.
 

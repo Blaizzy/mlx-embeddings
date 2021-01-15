@@ -15,7 +15,7 @@ module Homebrew
   def style_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `style` [<options>] [<file>|<tap>|<formula>]
+        `style` [<options>] [<file>|<tap>|<formula>|<cask>] [<file>|<tap>|<formula>|<cask> ...]
 
         Check formulae or files for conformance to Homebrew style guidelines.
 

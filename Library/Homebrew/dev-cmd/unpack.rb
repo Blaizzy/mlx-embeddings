@@ -14,7 +14,7 @@ module Homebrew
   def unpack_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `unpack` [<options>] <formula>
+        `unpack` [<options>] <formula> [<formula ...>]
 
         Unpack the source files for <formula> into subdirectories of the current
         working directory.
