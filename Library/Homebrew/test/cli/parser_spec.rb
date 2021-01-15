@@ -397,6 +397,13 @@ describe Homebrew::CLI::Parser do
       expect { parser.parse([]) }.to raise_error(Homebrew::CLI::MinNamedArgumentsError)
     end
 
+    it "treats a symbol as a single argument of the specified type" do
+      formula_parser = described_class.new do
+        named :formula
+      end
+      expect { formula_parser.parse([]) }.to raise_error(UsageError, /this command requires a formula argument/)
+    end
+
     it "doesn't allow more than the specified number of arguments" do
       expect { parser.parse(["foo", "bar"]) }.to raise_error(Homebrew::CLI::MaxNamedArgumentsError)
     end
