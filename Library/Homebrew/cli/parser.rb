@@ -122,6 +122,8 @@ module Homebrew
 
         @args = Homebrew::CLI::Args.new
 
+        @command_name = caller_locations(2, 1).first.label.chomp("_args")
+
         @constraints = []
         @conflicts = []
         @switch_sources = {}
@@ -129,6 +131,8 @@ module Homebrew
         @named_args_type = nil
         @max_named_args = nil
         @min_named_args = nil
+        @description = nil
+        @usage_banner = nil
         @hide_from_man_page = false
         @formula_options = false
 
@@ -137,6 +141,8 @@ module Homebrew
         end
 
         instance_eval(&block) if block
+
+        generate_banner
       end
 
       def switch(*names, description: nil, replacement: nil, env: nil, required_for: nil, depends_on: nil,
@@ -176,8 +182,12 @@ module Homebrew
         Homebrew::EnvConfig.try(:"#{env}?")
       end
 
+      def description(text)
+        @description = text.chomp
+      end
+
       def usage_banner(text)
-        @parser.banner = "#{text}\n"
+        @usage_banner, @description = text.chomp.split("\n\n", 2)
       end
 
       def usage_banner_text
@@ -431,6 +441,70 @@ module Homebrew
       end
 
       private
+
+      SYMBOL_TO_USAGE_MAPPING = {
+        text_or_regex: "<text>|`/`<regex>`/`",
+        url:           "<URL>",
+      }.freeze
+
+      def generate_usage_banner
+        command_names = ["`#{@command_name.tr("_", "-")}`"]
+        aliases_to_skip = %w[instal uninstal]
+        command_names += Commands::HOMEBREW_INTERNAL_COMMAND_ALIASES.map do |command_alias, command|
+          next if aliases_to_skip.include? command_alias
+
+          "`#{command_alias.tr("_", "-")}`" if command == @command_name
+        end.compact.sort
+
+        options = if @processed_options.any?
+          " [<options>]"
+        else
+          ""
+        end
+
+        named_args = ""
+        if @named_args_type.present? && @named_args_type != :none
+          arg_type = if @named_args_type.is_a? Array
+            types = @named_args_type.map do |type|
+              next unless type.is_a? Symbol
+              next SYMBOL_TO_USAGE_MAPPING[type] if SYMBOL_TO_USAGE_MAPPING.key?(type)
+
+              "<#{type}>"
+            end.compact
+            types << "<subcommand>" if @named_args_type.any? { |type| type.is_a? String }
+            types.join("|")
+          elsif SYMBOL_TO_USAGE_MAPPING.key? @named_args_type
+            SYMBOL_TO_USAGE_MAPPING[@named_args_type]
+          else
+            "<#{@named_args_type}>"
+          end
+
+          named_args = if @min_named_args.blank? && @max_named_args == 1
+            " [#{arg_type}]"
+          elsif @min_named_args.blank?
+            " [#{arg_type} ...]"
+          elsif @min_named_args == 1 && @max_named_args == 1
+            " #{arg_type}"
+          elsif @min_named_args == 1
+            " #{arg_type} [...]"
+          else
+            " #{arg_type} ..."
+          end
+        end
+
+        "#{command_names.join(", ")}#{options}#{named_args}"
+      end
+
+      def generate_banner
+        @usage_banner ||= generate_usage_banner
+
+        @parser.banner = <<~BANNER
+          #{@usage_banner}
+
+          #{@description}
+
+        BANNER
+      end
 
       def set_switch(*names, value:, from:)
         names.each do |name|
