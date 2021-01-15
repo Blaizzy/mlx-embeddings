@@ -34,8 +34,6 @@ module Homebrew
       switch "--pry",
              env:         :pry,
              description: "Use Pry instead of IRB. Implied if `HOMEBREW_PRY` is set."
-
-      named_args :none
     end
   end
 
