@@ -197,7 +197,7 @@ module Commands
     HOMEBREW_CACHE.mkpath
 
     cmds = commands(aliases: true).reject do |cmd|
-      # TODO: remove the cask check when `brew cask` is removed
+      # TODO: (2.8) remove the cask check when `brew cask` is removed
       cmd.start_with?("cask ") || Homebrew::Completions::COMPLETIONS_EXCLUSION_LIST.include?(cmd)
     end
 
@@ -206,8 +206,8 @@ module Commands
   end
 
   def command_options(command)
-    path = Commands.path(command)
-    return unless path
+    path = self.path(command)
+    return if path.blank?
 
     if cmd_parser = Homebrew::CLI::Parser.from_cmd_path(path)
       cmd_parser.processed_options.map do |short, long, _, desc|
@@ -229,8 +229,8 @@ module Commands
   end
 
   def named_args_type(command)
-    path = Commands.path(command)
-    return unless path
+    path = self.path(command)
+    return if path.blank?
 
     cmd_parser = Homebrew::CLI::Parser.from_cmd_path(path)
     return if cmd_parser.blank?

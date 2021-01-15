@@ -539,7 +539,7 @@ module Homebrew
 
       def process_option(*args)
         option, = @parser.make_switch(args)
-        @processed_options.reject! { |existing| option.long.first.present? && existing.second == option.long.first }
+        @processed_options.reject! { |existing| existing.second == option.long.first } if option.long.first.present?
         @processed_options << [option.short.first, option.long.first, option.arg, option.desc.first]
       end
 
