@@ -70,7 +70,7 @@ Install any `gem` package into a self-contained Homebrew Cellar location: <https
 Note this can also be installed with `brew install brew-gem`.
 
 ## External commands in taps
-External commands can be hosted in a [tap](Taps.md) to allow users to easy install and use the command. See [How to Create and Maintain a Tap](How-to-Create-and-Maintain-a-Tap.md) for more details about creating and maintaining a tap.
+External commands can be hosted in a [tap](Taps.md) to allow users to easily install and use them. See [How to Create and Maintain a Tap](How-to-Create-and-Maintain-a-Tap.md) for more details about creating and maintaining a tap.
 
 External commands should be added to a `cmd` directory in the tap. An external command `extcmd` implemented as a Ruby command should live in `cmd/extcmd.rb` (don't forget to `chmod +x`).
 
@@ -109,7 +109,7 @@ module Homebrew
 end
 ```
 
-Using the above will generate the appropriate help text:
+Using the above will generate appropriate help text:
 
 ```console
 $ brew foo --help
@@ -127,7 +127,7 @@ Do something. Place a description here.
   -h, --help                       Show this message.
 ```
 
-Use the `named_args` method to specify the type and number of named arguments that are expected. Pass a symbol to indicate the type of argument expected. Pass an array of symbols to indicate that multiple types should be expected. Pass an array of strings to specify the specific options that should be expected (see the [`brew analytics`](https://github.com/Homebrew/brew/blob/HEAD/Library/Homebrew/cmd/analytics.rb) command for an example of this).
+Use the `named_args` method to specify the type and number of named arguments that are expected. Pass either a symbol to indicate the type of argument expected, an array of symbols to indicate that multiple types should be expected, or an array of strings to specify which specific options should be expected (see the [`brew analytics`](https://github.com/Homebrew/brew/blob/HEAD/Library/Homebrew/cmd/analytics.rb) command for an example of this).
 
 Pass an integer to the `number`, `min`, or `max` parameter of `named_args` to specify the number of named arguments that are expected. See the following examples:
 
