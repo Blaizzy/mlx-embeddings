@@ -38,7 +38,7 @@ Perform a substring search of cask tokens and formula names for \fItext\fR\. If 
 .
 .SH "COMMANDS"
 .
-.SS "\fBanalytics\fR [\fIoptions\fR] [\fIsubcommand\fR]"
+.SS "\fBanalytics\fR [\fIsubcommand\fR]"
 Control Homebrew\'s anonymous aggregate user behaviour analytics\. Read more at \fIhttps://docs\.brew\.sh/Analytics\fR\.
 .
 .P
@@ -53,7 +53,7 @@ Control Homebrew\'s anonymous aggregate user behaviour analytics\. Read more at 
 \fBbrew analytics regenerate\-uuid\fR
     Regenerate the UUID used for Homebrew\'s analytics\.
 .
-.SS "\fBautoremove\fR [\fIoptions\fR]"
+.SS "\fBautoremove\fR [\fI\-\-dry\-run\fR]"
 Uninstall formulae that were only installed as a dependency of another formula and are now no longer needed\.
 .
 .TP
@@ -82,7 +82,7 @@ Scrub the cache, including downloads for even the latest versions\. Note downloa
 \fB\-\-prune\-prefix\fR
 Only prune the symlinks and directories from the prefix and remove no other files\.
 .
-.SS "\fBcommands\fR [\fIoptions\fR]"
+.SS "\fBcommands\fR [\fI\-\-quiet\fR] [\fI\-\-include\-aliases\fR]"
 Show lists of built\-in and external commands\.
 .
 .TP
@@ -93,7 +93,7 @@ List only the names of commands without category headers\.
 \fB\-\-include\-aliases\fR
 Include aliases of internal commands\.
 .
-.SS "\fBcompletions\fR [\fIoptions\fR] [\fIsubcommand\fR]"
+.SS "\fBcompletions\fR [\fIsubcommand\fR]"
 Control whether Homebrew automatically links external tap shell completion files\. Read more at \fIhttps://docs\.brew\.sh/Shell\-Completion\fR\.
 .
 .P
@@ -104,7 +104,7 @@ Control whether Homebrew automatically links external tap shell completion files
 \fBbrew completions\fR (\fBlink\fR|\fBunlink\fR)
     Link or unlink Homebrew\'s completions\.
 .
-.SS "\fBconfig\fR, \fB\-\-config\fR [\fIoptions\fR]"
+.SS "\fBconfig\fR, \fB\-\-config\fR"
 Show Homebrew and system configuration info useful for debugging\. If you file a bug report, you will be required to provide this information\.
 .
 .SS "\fBdeps\fR [\fIoptions\fR] [\fIformula\fR|\fIcask\fR \.\.\.]"
@@ -189,7 +189,7 @@ Search just names for \fItext\fR\. If \fItext\fR is flanked by slashes, it is in
 \fB\-d\fR, \fB\-\-description\fR
 Search just descriptions for \fItext\fR\. If \fItext\fR is flanked by slashes, it is interpreted as a regular expression\.
 .
-.SS "\fBdoctor\fR, \fBdr\fR [\fIoptions\fR] [\fIdiagnostic_check\fR \.\.\.]"
+.SS "\fBdoctor\fR, \fBdr\fR [\fI\-\-list\-checks\fR] [\fI\-\-audit\-debug\fR] [\fIdiagnostic_check\fR \.\.\.]"
 Check your system for potential problems\. Will exit with a non\-zero status if any potential problems are found\. Please note that these warnings are just used to help the Homebrew maintainers with debugging if you file an issue\. If everything you use Homebrew for is working fine: please don\'t worry or file an issue; just ignore this\.
 .
 .TP
@@ -265,7 +265,7 @@ Automatically create a new issue in the appropriate GitHub repository after crea
 \fB\-p\fR, \fB\-\-private\fR
 The Gist will be marked private and will not appear in listings but will be accessible with its link\.
 .
-.SS "\fBhome\fR, \fBhomepage\fR [\fIoptions\fR] [\fIformula\fR|\fIcask\fR \.\.\.]"
+.SS "\fBhome\fR, \fBhomepage\fR [\fI\-\-formula\fR] [\fI\-\-cask\fR] [\fIformula\fR|\fIcask\fR \.\.\.]"
 Open a \fIformula\fR or \fIcask\fR\'s homepage in a browser, or open Homebrew\'s own homepage if no argument is provided\.
 .
 .TP
@@ -424,7 +424,7 @@ Disable/enable quarantining of downloads (default: enabled)\.
 \fB\-\-skip\-cask\-deps\fR
 Skip installing cask dependencies\.
 .
-.SS "\fBleaves\fR [\fIoptions\fR]"
+.SS "\fBleaves\fR"
 List installed formulae that are not dependencies of another installed formula\.
 .
 .SS "\fBlink\fR, \fBln\fR [\fIoptions\fR] \fIinstalled_formula\fR [\.\.\.]"
@@ -511,14 +511,14 @@ Print only one commit\.
 \fB\-n\fR, \fB\-\-max\-count\fR
 Print only a specified number of commits\.
 .
-.SS "\fBmigrate\fR [\fIoptions\fR] \fIinstalled_formula\fR [\.\.\.]"
+.SS "\fBmigrate\fR [\fI\-\-force\fR] \fIinstalled_formula\fR [\.\.\.]"
 Migrate renamed packages to new names, where \fIformula\fR are old names of packages\.
 .
 .TP
 \fB\-f\fR, \fB\-\-force\fR
 Treat installed \fIformula\fR and provided \fIformula\fR as if they are from the same taps and migrate them anyway\.
 .
-.SS "\fBmissing\fR [\fIoptions\fR] [\fIformula\fR \.\.\.]"
+.SS "\fBmissing\fR [\fI\-\-hide\fR\fB=\fR\fIhide\fR] [\fIformula\fR \.\.\.]"
 Check the given \fIformula\fR kegs for missing dependencies\. If no \fIformula\fR are provided, check all kegs\. Will exit with a non\-zero status if any kegs are found to be missing dependencies\.
 .
 .TP
@@ -575,13 +575,13 @@ Fetch the upstream repository to detect if the HEAD installation of the formula 
 \fB\-\-greedy\fR
 Print outdated casks with \fBauto_updates\fR or \fBversion :latest\fR\.
 .
-.SS "\fBpin\fR [\fIoptions\fR] \fIinstalled_formula\fR [\.\.\.]"
+.SS "\fBpin\fR \fIinstalled_formula\fR [\.\.\.]"
 Pin the specified \fIformula\fR, preventing them from being upgraded when issuing the \fBbrew upgrade\fR \fIformula\fR command\. See also \fBunpin\fR\.
 .
-.SS "\fBpostinstall\fR [\fIoptions\fR] \fIinstalled_formula\fR [\.\.\.]"
+.SS "\fBpostinstall\fR \fIinstalled_formula\fR [\.\.\.]"
 Rerun the post\-install steps for \fIformula\fR\.
 .
-.SS "\fBreadall\fR [\fIoptions\fR] [\fItap\fR \.\.\.]"
+.SS "\fBreadall\fR [\fI\-\-aliases\fR] [\fI\-\-syntax\fR] [\fItap\fR \.\.\.]"
 Import all items from the specified \fItap\fR, or from all installed taps if none is provided\. This can be useful for debugging issues across all items when making significant changes to \fBformula\.rb\fR, testing the performance of loading all items or checking if any current formulae/casks have Ruby issues\.
 .
 .TP
@@ -746,7 +746,7 @@ Migrate tapped formulae from symlink\-based to directory\-based structure\.
 \fB\-\-list\-pinned\fR
 List all pinned taps\.
 .
-.SS "\fBtap\-info\fR [\fIoptions\fR] [\fItap\fR \.\.\.]"
+.SS "\fBtap\-info\fR [\fI\-\-installed\fR] [\fI\-\-json\fR\fB=\fR\fIjson\fR] [\fItap\fR \.\.\.]"
 Show detailed information about one or more \fItap\fRs\.
 .
 .P
@@ -783,17 +783,17 @@ Treat all named arguments as formulae\.
 \fB\-\-cask\fR
 Treat all named arguments as casks\.
 .
-.SS "\fBunlink\fR [\fIoptions\fR] \fIinstalled_formula\fR [\.\.\.]"
+.SS "\fBunlink\fR [\fI\-\-dry\-run\fR] \fIinstalled_formula\fR [\.\.\.]"
 Remove symlinks for \fIformula\fR from Homebrew\'s prefix\. This can be useful for temporarily disabling a formula: \fBbrew unlink\fR \fIformula\fR \fB&&\fR \fIcommands\fR \fB&& brew link\fR \fIformula\fR
 .
 .TP
 \fB\-n\fR, \fB\-\-dry\-run\fR
 List files which would be unlinked without actually unlinking or deleting any files\.
 .
-.SS "\fBunpin\fR [\fIoptions\fR] \fIinstalled_formula\fR [\.\.\.]"
+.SS "\fBunpin\fR \fIinstalled_formula\fR [\.\.\.]"
 Unpin \fIformula\fR, allowing them to be upgraded by \fBbrew upgrade\fR \fIformula\fR\. See also \fBpin\fR\.
 .
-.SS "\fBuntap\fR [\fIoptions\fR] \fItap\fR [\.\.\.]"
+.SS "\fBuntap\fR \fItap\fR [\.\.\.]"
 Remove a tapped formula repository\.
 .
 .SS "\fBupdate\fR [\fIoptions\fR]"
@@ -952,19 +952,19 @@ Only show cache files for formulae\.
 \fB\-\-cask\fR
 Only show cache files for casks\.
 .
-.SS "\fB\-\-caskroom\fR [\fIoptions\fR] [\fIcask\fR \.\.\.]"
+.SS "\fB\-\-caskroom\fR [\fIcask\fR \.\.\.]"
 Display Homebrew\'s Caskroom path\.
 .
 .P
 If \fIcask\fR is provided, display the location in the Caskroom where \fIcask\fR would be installed, without any sort of versioned directory as the last path\.
 .
-.SS "\fB\-\-cellar\fR [\fIoptions\fR] [\fIformula\fR \.\.\.]"
+.SS "\fB\-\-cellar\fR [\fIformula\fR \.\.\.]"
 Display Homebrew\'s Cellar path\. \fIDefault:\fR \fB$(brew \-\-prefix)/Cellar\fR, or if that directory doesn\'t exist, \fB$(brew \-\-repository)/Cellar\fR\.
 .
 .P
 If \fIformula\fR is provided, display the location in the Cellar where \fIformula\fR would be installed, without any sort of versioned directory as the last path\.
 .
-.SS "\fB\-\-env\fR [\fIoptions\fR] [\fIformula\fR \.\.\.]"
+.SS "\fB\-\-env\fR [\fI\-\-shell\fR\fB=\fR\fIshell\fR] [\fI\-\-plain\fR] [\fIformula\fR \.\.\.]"
 Summarise Homebrew\'s build environment as a plain list\.
 .
 .P
@@ -978,7 +978,7 @@ Generate a list of environment variables for the specified shell, or \fB\-\-shel
 \fB\-\-plain\fR
 Generate plain output even when piped\.
 .
-.SS "\fB\-\-prefix\fR [\fIoptions\fR] [\fIformula\fR \.\.\.]"
+.SS "\fB\-\-prefix\fR [\fI\-\-unbrewed\fR] [\fIformula\fR \.\.\.]"
 Display Homebrew\'s install path\. \fIDefault:\fR
 .
 .IP "\(bu" 4
@@ -999,13 +999,13 @@ If \fIformula\fR is provided, display the location in the Cellar where \fIformul
 \fB\-\-unbrewed\fR
 List files in Homebrew\'s prefix not installed by Homebrew\.
 .
-.SS "\fB\-\-repository\fR [\fIoptions\fR] [\fItap\fR \.\.\.]"
+.SS "\fB\-\-repository\fR [\fItap\fR \.\.\.]"
 Display where Homebrew\'s \fB\.git\fR directory is located\.
 .
 .P
 If \fIuser\fR\fB/\fR\fIrepo\fR are provided, display where tap \fIuser\fR\fB/\fR\fIrepo\fR\'s directory is located\.
 .
-.SS "\fB\-\-version\fR [\fIoptions\fR]"
+.SS "\fB\-\-version\fR"
 Print the version numbers of Homebrew, Homebrew/homebrew\-core and Homebrew/homebrew\-cask (if tapped) to standard output\.
 .
 .SH "DEVELOPER COMMANDS"
@@ -1124,7 +1124,7 @@ When passed with \fB\-\-write\fR, a new commit will not generated after writing 
 \fB\-\-root\-url\fR
 Use the specified \fIURL\fR as the root of the bottle\'s URL instead of Homebrew\'s default\.
 .
-.SS "\fBbump\fR [\fIoptions\fR] [\fIformula\fR \.\.\.]"
+.SS "\fBbump\fR [\fI\-\-limit\fR\fB=\fR\fIlimit\fR] [\fIformula\fR \.\.\.]"
 Display out\-of\-date brew formulae and the latest version available\. Also displays whether a pull request has been opened with the URL\.
 .
 .TP
@@ -1268,7 +1268,7 @@ Specify the new commit \fIrevision\fR corresponding to the specified git \fItag\
 \fB\-f\fR, \fB\-\-force\fR
 Ignore duplicate open PRs\. Remove all mirrors if \fB\-\-mirror\fR was not specified\.
 .
-.SS "\fBbump\-revision\fR [\fIoptions\fR] \fIformula\fR [\.\.\.]"
+.SS "\fBbump\-revision\fR [\fI\-\-dry\-run\fR] [\fI\-\-message\fR\fB=\fR\fImessage\fR] \fIformula\fR [\.\.\.]"
 Create a commit to increment the revision of \fIformula\fR\. If no revision is present, "revision 1" will be added\.
 .
 .TP
@@ -1294,7 +1294,7 @@ Maximum runtime in minutes\.
 \fB\-\-state\-file\fR
 File for caching state\.
 .
-.SS "\fBcat\fR [\fIoptions\fR] \fIformula\fR|\fIcask\fR"
+.SS "\fBcat\fR [\fI\-\-formula\fR] [\fI\-\-cask\fR] \fIformula\fR|\fIcask\fR"
 Display the source of a \fIformula\fR or \fIcask\fR\.
 .
 .TP
@@ -1305,7 +1305,7 @@ Treat all named arguments as formulae\.
 \fB\-\-cask\fR
 Treat all named arguments as casks\.
 .
-.SS "\fBcommand\fR [\fIoptions\fR] \fIcommand\fR [\.\.\.]"
+.SS "\fBcommand\fR \fIcommand\fR [\.\.\.]"
 Display the path to the file being used when invoking \fBbrew\fR \fIcmd\fR\.
 .
 .SS "\fBcreate\fR [\fIoptions\fR] \fIURL\fR"
@@ -1406,7 +1406,7 @@ Dispatch specified workflow (default: \fBdispatch\-build\-bottle\.yml\fR)\.
 \fB\-\-upload\fR
 Upload built bottles to Bintray\.
 .
-.SS "\fBedit\fR [\fIoptions\fR] [\fIformula\fR|\fIcask\fR \.\.\.]"
+.SS "\fBedit\fR [\fI\-\-formula\fR] [\fI\-\-cask\fR] [\fIformula\fR|\fIcask\fR \.\.\.]"
 Open a \fIformula\fR or \fIcask\fR in the editor set by \fBEDITOR\fR or \fBHOMEBREW_EDITOR\fR, or open the Homebrew repository for editing if no formula is provided\.
 .
 .TP
@@ -1417,7 +1417,7 @@ Treat all named arguments as formulae\.
 \fB\-\-cask\fR
 Treat all named arguments as casks\.
 .
-.SS "\fBextract\fR [\fIoptions\fR] \fIformula\fR \.\.\."
+.SS "\fBextract\fR [\fI\-\-version\fR\fB=\fR\fIversion\fR] [\fI\-\-force\fR] \fIformula\fR \.\.\."
 Look through repository history to find the most recent version of \fIformula\fR and create a copy in \fItap\fR\fB/Formula/\fR\fIformula\fR\fB@\fR\fIversion\fR\fB\.rb\fR\. If the tap is not installed yet, attempt to install/clone the tap before continuing\. To extract a formula from a tap that is not \fBhomebrew/core\fR use its fully\-qualified form of \fIuser\fR\fB/\fR\fIrepo\fR\fB/\fR\fIformula\fR\.
 .
 .TP
@@ -1428,13 +1428,13 @@ Extract the specified \fIversion\fR of \fIformula\fR instead of the most recent\
 \fB\-f\fR, \fB\-\-force\fR
 Overwrite the destination formula if it already exists\.
 .
-.SS "\fBformula\fR [\fIoptions\fR] \fIformula\fR [\.\.\.]"
+.SS "\fBformula\fR \fIformula\fR [\.\.\.]"
 Display the path where \fIformula\fR is located\.
 .
-.SS "\fBinstall\-bundler\-gems\fR [\fIoptions\fR]"
+.SS "\fBinstall\-bundler\-gems\fR"
 Install Homebrew\'s Bundler gems\.
 .
-.SS "\fBirb\fR [\fIoptions\fR]"
+.SS "\fBirb\fR [\fI\-\-examples\fR] [\fI\-\-pry\fR]"
 Enter the interactive Homebrew Ruby shell\.
 .
 .TP
@@ -1502,7 +1502,7 @@ Only check formulae\.
 \fB\-\-cask\fR
 Only check casks\.
 .
-.SS "\fBman\fR [\fIoptions\fR]"
+.SS "\fBman\fR [\fI\-\-fail\-if\-changed\fR] [\fI\-\-link\fR]"
 Generate Homebrew\'s manpages\.
 .
 .TP
@@ -1676,7 +1676,7 @@ Upload to the specified Bintray organisation (default: \fBhomebrew\fR)\.
 \fB\-\-root\-url\fR
 Use the specified \fIURL\fR as the root of the bottle\'s URL instead of Homebrew\'s default\.
 .
-.SS "\fBprof\fR [\fIoptions\fR] [\fIcommand\fR \.\.\.]"
+.SS "\fBprof\fR [\fI\-\-stackprof\fR] [\fIcommand\fR \.\.\.]"
 Run Homebrew with a Ruby profiler, e\.g\. \fBbrew prof readall\fR\.
 .
 .TP
@@ -1707,7 +1707,7 @@ Load a library using \fBrequire\fR\.
 \fB\-e\fR
 Execute the given text string as a script\.
 .
-.SS "\fBsh\fR [\fIoptions\fR] [\fIfile\fR]"
+.SS "\fBsh\fR [\fI\-\-env\fR\fB=\fR\fIenv\fR] [\fI\-\-cmd\fR\fB=\fR\fIcmd\fR] [\fIfile\fR]"
 Homebrew build environment that uses years\-battle\-hardened build logic to help your \fB\./configure && make && make install\fR and even your \fBgem install\fR succeed\. Especially handy if you run Homebrew in an Xcode\-only configuration since it adds tools like \fBmake\fR to your \fBPATH\fR which build systems would not find otherwise\.
 .
 .TP
@@ -1718,7 +1718,7 @@ Use the standard \fBPATH\fR instead of superenv\'s when \fBstd\fR is passed\.
 \fB\-c\fR, \fB\-\-cmd\fR
 Execute commands in a non\-interactive shell\.
 .
-.SS "\fBsponsors\fR [\fIoptions\fR]"
+.SS "\fBsponsors\fR"
 Print a Markdown summary of Homebrew\'s GitHub Sponsors, suitable for pasting into a README\.
 .
 .SS "\fBstyle\fR [\fIoptions\fR] [\fIfile\fR|\fItap\fR|\fIformula\fR|\fIcask\fR \.\.\.]"
@@ -1888,7 +1888,7 @@ Initialise a Git repository in the unpacked source\. This is useful for creating
 \fB\-f\fR, \fB\-\-force\fR
 Overwrite the destination directory if it already exists\.
 .
-.SS "\fBupdate\-license\-data\fR [\fIoptions\fR]"
+.SS "\fBupdate\-license\-data\fR [\fI\-\-fail\-if\-not\-changed\fR]"
 Update SPDX license data in the Homebrew repository\.
 .
 .TP
@@ -1945,7 +1945,7 @@ Use the specified \fIcommit\fR as the start commit\.
 \fB\-\-before\fR
 Use the commit at the specified \fIdate\fR as the start commit\.
 .
-.SS "\fBvendor\-gems\fR [\fIoptions\fR]"
+.SS "\fBvendor\-gems\fR [\fI\-\-update\fR\fB=\fR\fIupdate\fR]"
 Install and commit Homebrew\'s vendored gems\.
 .
 .TP

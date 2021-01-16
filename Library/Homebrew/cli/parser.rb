@@ -128,6 +128,7 @@ module Homebrew
         @conflicts = []
         @switch_sources = {}
         @processed_options = []
+        @non_global_processed_options = []
         @named_args_type = nil
         @max_named_args = nil
         @min_named_args = nil
@@ -152,7 +153,7 @@ module Homebrew
 
         description = option_to_description(*names) if description.nil?
         if replacement.nil?
-          process_option(*names, description)
+          process_option(*names, description, type: :switch)
         else
           description += " (disabled#{"; replaced by #{replacement}" if replacement.present?})"
         end
@@ -198,7 +199,7 @@ module Homebrew
       def comma_array(name, description: nil)
         name = name.chomp "="
         description = option_to_description(name) if description.nil?
-        process_option(name, description)
+        process_option(name, description, type: :comma_array)
         @parser.on(name, OptionParser::REQUIRED_ARGUMENT, Array, *wrap_option_desc(description)) do |list|
           @args[option_to_name(name)] = list
         end
@@ -213,7 +214,7 @@ module Homebrew
         names.map! { |name| name.chomp "=" }
         description = option_to_description(*names) if description.nil?
         if replacement.nil?
-          process_option(*names, description)
+          process_option(*names, description, type: :flag)
         else
           description += " (disabled#{"; replaced by #{replacement}" if replacement.present?})"
         end
@@ -456,10 +457,16 @@ module Homebrew
           "`#{command_alias.tr("_", "-")}`" if command == @command_name
         end.compact.sort
 
-        options = if @processed_options.any?
+        options = if @non_global_processed_options.empty?
+          ""
+        elsif @non_global_processed_options.count > 2
           " [<options>]"
         else
-          ""
+          @non_global_processed_options.map do |option, type|
+            next " [<#{option}>]" if type == :switch
+
+            " [<#{option}>`=`<#{option_to_name(option)}>]"
+          end.join
         end
 
         named_args = ""
@@ -611,10 +618,14 @@ module Homebrew
         raise exception if exception
       end
 
-      def process_option(*args)
+      def process_option(*args, type:)
         option, = @parser.make_switch(args)
         @processed_options.reject! { |existing| existing.second == option.long.first } if option.long.first.present?
         @processed_options << [option.short.first, option.long.first, option.arg, option.desc.first]
+
+        return if self.class.global_options.include? [option.short.first, option.long.first, option.desc.first]
+
+        @non_global_processed_options << [option.long.first || option.short.first, type]
       end
 
       def split_non_options(argv)
