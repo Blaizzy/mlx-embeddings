@@ -1,10 +1,5 @@
 # Bash completion script for brew(1)
 
-# Indicates there are no completions
-__brewcomp_null() {
-  COMPREPLY=""
-}
-
 __brewcomp_words_include() {
   local i=1
   while [[ "$i" -lt "$COMP_CWORD" ]]
@@ -43,7 +38,7 @@ __brewcomp() {
   done
 
   IFS="$sep"
-  COMPREPLY=($(compgen -W "$list" -- "$cur"))
+  COMPREPLY+=($(compgen -W "$list" -- "$cur"))
 }
 
 # Don't use __brewcomp() in any of the __brew_complete_foo functions, as
@@ -51,37 +46,37 @@ __brewcomp() {
 __brew_complete_formulae() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   local formulae="$(brew formulae)"
-  COMPREPLY=($(compgen -W "$formulae" -- "$cur"))
+  COMPREPLY+=($(compgen -W "$formulae" -- "$cur"))
 }
 
 __brew_complete_casks() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   local casks="$(brew casks)"
-  COMPREPLY=($(compgen -W "$casks" -- "$cur"))
+  COMPREPLY+=($(compgen -W "$casks" -- "$cur"))
 }
 
 __brew_complete_installed_formulae() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   local installed_formulae="$(command ls "$(brew --cellar)" 2>/dev/null)"
-  COMPREPLY=($(compgen -W "$installed_formulae" -- "$cur"))
+  COMPREPLY+=($(compgen -W "$installed_formulae" -- "$cur"))
 }
 
 __brew_complete_installed_casks() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   local installed_casks="$(command ls "$(brew --caskroom)" 2>/dev/null)"
-  COMPREPLY=($(compgen -W "$installed_casks" -- "$cur"))
+  COMPREPLY+=($(compgen -W "$installed_casks" -- "$cur"))
 }
 
 __brew_complete_outdated_formulae() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   local outdated_formulae="$(brew outdated --formula --quiet)"
-  COMPREPLY=($(compgen -W "$outdated_formulae" -- "$cur"))
+  COMPREPLY+=($(compgen -W "$outdated_formulae" -- "$cur"))
 }
 
 __brew_complete_outdated_casks() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   local outdated_casks="$(brew outdated --cask --quiet)"
-  COMPREPLY=($(compgen -W "$outdated_casks" -- "$cur"))
+  COMPREPLY+=($(compgen -W "$outdated_casks" -- "$cur"))
 }
 
 __brew_complete_tapped() {
@@ -106,7 +101,7 @@ __brew_complete_commands() {
   [[ -f "$HOMEBREW_CACHE/all_commands_list.txt" ]] &&
     local cmds="$(cat "$HOMEBREW_CACHE/all_commands_list.txt" | \grep -v instal$)" ||
     local cmds="$(cat "$HOMEBREW_REPOSITORY/completions/internal_commands_list.txt" | \grep -v instal$)"
-  COMPREPLY=($(compgen -W "$cmds" -- "$cur"))
+  COMPREPLY+=($(compgen -W "$cmds" -- "$cur"))
 }
 
 _brew___cache() {
