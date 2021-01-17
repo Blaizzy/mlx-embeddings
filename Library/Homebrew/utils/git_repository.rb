@@ -5,7 +5,11 @@ module Utils
   extend T::Sig
 
   sig do
-    params(repo: T.any(String, Pathname), length: T.nilable(Integer), safe: T::Boolean).returns(T.nilable(String))
+    params(
+      repo:   T.any(String, Pathname),
+      length: T.nilable(Integer),
+      safe:   T::Boolean,
+    ).returns(T.nilable(String))
   end
   def self.git_head(repo = Pathname.pwd, length: nil, safe: true)
     return git_short_head(repo, length: length) if length.present?
@@ -15,7 +19,11 @@ module Utils
   end
 
   sig do
-    params(repo: T.any(String, Pathname), length: T.nilable(Integer), safe: T::Boolean).returns(T.nilable(String))
+    params(
+      repo:   T.any(String, Pathname),
+      length: T.nilable(Integer),
+      safe:   T::Boolean,
+    ).returns(T.nilable(String))
   end
   def self.git_short_head(repo = Pathname.pwd, length: nil, safe: true)
     repo = Pathname(repo).extend(GitRepositoryExtension)

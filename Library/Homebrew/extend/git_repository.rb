@@ -34,20 +34,14 @@ module GitRepositoryExtension
   # Gets the full commit hash of the HEAD commit.
   sig { params(safe: T::Boolean).returns(T.nilable(String)) }
   def git_head(safe: false)
-    return if !git? || !Utils::Git.available?
-
-    Utils.popen_read(Utils::Git.git, "rev-parse", "--verify", "-q", "HEAD", safe: safe, chdir: self).chomp.presence
+    popen_git("rev-parse", "--verify", "-q", "HEAD", safe: safe)
   end
 
   # Gets a short commit hash of the HEAD commit.
   sig { params(length: T.nilable(Integer), safe: T::Boolean).returns(T.nilable(String)) }
   def git_short_head(length: nil, safe: false)
-    return if !git? || !Utils::Git.available?
-
-    git = Utils::Git.git
-    short_arg = length&.to_s&.prepend("=")
-    Utils.popen_read(git, "rev-parse", "--short#{short_arg}", "--verify", "-q", "HEAD", safe: safe, chdir: self)
-         .chomp.presence
+    short_arg = length.present? ? "--short=#{length}" : "--short"
+    popen_git("rev-parse", short_arg, "--verify", "-q", "HEAD", safe: safe)
   end
 
   # Gets the relative date of the last commit, e.g. "1 hour ago"
@@ -95,5 +89,24 @@ module GitRepositoryExtension
     return if !git? || !Utils::Git.available?
 
     Utils.popen_read(Utils::Git.git, "log", "-1", "--pretty=%B", commit, "--", chdir: self, err: :out).strip.presence
+  end
+
+  private
+
+  sig { params(args: T.untyped, safe: T::Boolean).returns(T.nilable(String)) }
+  def popen_git(*args, safe: false)
+    unless git?
+      return unless safe
+
+      raise "Not a Git repository: #{self}"
+    end
+
+    unless Utils::Git.available?
+      return unless safe
+
+      raise "Git is unavailable"
+    end
+
+    T.unsafe(Utils).popen_read(Utils::Git.git, *args, safe: safe, chdir: self).chomp.presence
   end
 end
