@@ -28,17 +28,12 @@ module Homebrew
                           "can be used to notify CI when the manpages are out of date. Additionally, "\
                           "the date used in new manpages will match those in the existing manpages (to allow "\
                           "comparison without factoring in the date)."
-      switch "--link",
-             description: "This is now done automatically by `brew update`."
-
       named_args :none
     end
   end
 
   def man
     args = man_args.parse
-
-    odie "`brew man --link` is now done automatically by `brew update`." if args.link?
 
     Commands.rebuild_internal_commands_completion_list
     regenerate_man_pages(preserve_date: args.fail_if_changed?, quiet: args.quiet?)
