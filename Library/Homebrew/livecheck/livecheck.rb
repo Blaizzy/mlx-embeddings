@@ -149,6 +149,9 @@ module Homebrew
           Version.new(formula_or_cask.version)
         end
 
+        current_str = current.to_s
+        current = actual_version(formula_or_cask, current)
+
         latest = if formula&.head_only?
           formula.head.downloader.fetch_last_commit
         else
@@ -172,6 +175,9 @@ module Homebrew
           latest = Version.new(m[1])
         end
 
+        latest_str = latest.to_s
+        latest = actual_version(formula_or_cask, latest)
+
         is_outdated = if formula&.head_only?
           # A HEAD-only formula is considered outdated if the latest upstream
           # commit hash is different than the installed version's commit hash
@@ -186,8 +192,8 @@ module Homebrew
         info[:formula] = name if formula
         info[:cask] = name if cask
         info[:version] = {
-          current:             current.to_s,
-          latest:              latest.to_s,
+          current:             current_str,
+          latest:              latest_str,
           outdated:            is_outdated,
           newer_than_upstream: is_newer_than_upstream,
         }
@@ -243,6 +249,8 @@ module Homebrew
         formula_name(formula_or_cask, full_name: full_name)
       when Cask::Cask
         cask_name(formula_or_cask, full_name: full_name)
+      else
+        T.absurd(formula_or_cask)
       end
     end
 
@@ -347,6 +355,8 @@ module Homebrew
         urls << formula_or_cask.appcast.to_s if formula_or_cask.appcast
         urls << formula_or_cask.url.to_s if formula_or_cask.url
         urls << formula_or_cask.homepage if formula_or_cask.homepage
+      else
+        T.absurd(formula_or_cask)
       end
 
       urls.compact
@@ -536,7 +546,7 @@ module Homebrew
         next if match_version_map.blank?
 
         version_info = {
-          latest: Version.new(match_version_map.values.max),
+          latest: Version.new(match_version_map.values.max_by { |v| actual_version(formula_or_cask, v) }),
         }
 
         if json && verbose
@@ -559,6 +569,18 @@ module Homebrew
       end
 
       nil
+    end
+
+    sig { params(formula_or_cask: T.any(Formula, Cask::Cask), version: Version).returns(Version) }
+    def actual_version(formula_or_cask, version)
+      case formula_or_cask
+      when Formula
+        version
+      when Cask::Cask
+        Version.new(Cask::DSL::Version.new(version.to_s).before_comma)
+      else
+        T.absurd(formula_or_cask)
+      end
     end
   end
 end
