@@ -6,7 +6,7 @@
 #:  Consider adding evaluation of this command's output to your dotfiles (e.g. `~/.profile`, `~/.bash_profile`, or `~/.zprofile`) with: `eval $(brew shellenv)`
 
 homebrew-shellenv() {
-  case "$(/bin/ps -p $PPID -o comm=)" in
+  case "$(/bin/ps -p ${PPID:-$fish_pid} -c -o comm=)" in
     fish|-fish)
       echo "set -gx HOMEBREW_PREFIX \"$HOMEBREW_PREFIX\";"
       echo "set -gx HOMEBREW_CELLAR \"$HOMEBREW_CELLAR\";"
