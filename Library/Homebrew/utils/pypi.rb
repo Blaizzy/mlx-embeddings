@@ -182,6 +182,9 @@ module PyPI
 
     extra_packages = (extra_packages || []).map { |p| Package.new p }
     exclude_packages = (exclude_packages || []).map { |p| Package.new p }
+    exclude_packages += %W[#{main_package.name} argparse pip setuptools wheel wsgiref].map { |p| Package.new p }
+    # remove packages from the exclude list if we've explicitly requested them as an extra package
+    exclude_packages.delete_if { |package| extra_packages.include?(package) }
 
     input_packages = [main_package]
     extra_packages.each do |extra_package|
@@ -222,10 +225,6 @@ module PyPI
     found_packages = JSON.parse(pipgrip_output).to_h.map do |new_name, new_version|
       Package.new("#{new_name}==#{new_version}")
     end
-
-    # Remove extra packages that may be included in pipgrip output
-    exclude_list = %W[#{main_package.name} argparse pip setuptools wheel wsgiref].map { |p| Package.new p }
-    found_packages.delete_if { |package| exclude_list.include? package }
 
     new_resource_blocks = ""
     found_packages.sort.each do |package|
