@@ -6,7 +6,7 @@ require "rubocops/homepage"
 describe RuboCop::Cop::FormulaAudit::Homepage do
   subject(:cop) { described_class.new }
 
-  context "When auditing homepage" do
+  context "when auditing homepage" do
     it "reports an offense when there is no homepage" do
       expect_offense(<<~RUBY)
         class Foo < Formula

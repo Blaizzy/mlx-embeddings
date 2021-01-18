@@ -6,7 +6,7 @@ require "rubocops/options"
 describe RuboCop::Cop::FormulaAudit::Options do
   subject(:cop) { described_class.new }
 
-  context "When auditing options" do
+  context "when auditing options" do
     it "reports an offense when using the 32-bit option" do
       expect_offense(<<~RUBY)
         class Foo < Formula

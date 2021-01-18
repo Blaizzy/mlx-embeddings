@@ -62,7 +62,7 @@ end
 describe RuboCop::Cop::FormulaAudit::ClassInheritance do
   subject(:cop) { described_class.new }
 
-  context "auditing formula class inheritance" do
+  context "when auditing formula class inheritance" do
     it "reports an offense when not using spaces for class inheritance" do
       expect_offense(<<~RUBY, "/homebrew-core/Formula/foo.rb")
         class Foo<Formula
@@ -78,7 +78,7 @@ end
 describe RuboCop::Cop::FormulaAudit::Comments do
   subject(:cop) { described_class.new }
 
-  context "auditing comment text" do
+  context "when auditing comment text" do
     it "reports an offense when commented cmake calls exist" do
       expect_offense(<<~RUBY)
         class Foo < Formula
@@ -132,7 +132,7 @@ end
 describe RuboCop::Cop::FormulaAudit::AssertStatements do
   subject(:cop) { described_class.new }
 
-  context "auditing formula assertions" do
+  context "when auditing formula assertions" do
     it "reports an offense when assert ... include is used" do
       expect_offense(<<~RUBY)
         class Foo < Formula
@@ -182,7 +182,7 @@ end
 describe RuboCop::Cop::FormulaAudit::OptionDeclarations do
   subject(:cop) { described_class.new }
 
-  context "auditing options" do
+  context "when auditing options" do
     it "reports an offense when `build.without?` is used in homebrew/core" do
       expect_offense(<<~RUBY, "/homebrew-core/")
         class Foo < Formula
@@ -417,7 +417,7 @@ end
 describe RuboCop::Cop::FormulaAudit::ShellVariables do
   subject(:cop) { described_class.new }
 
-  context "When auditing shell variables" do
+  context "when auditing shell variables" do
     it "reports and corrects unexpanded shell variables in `Utils.popen`" do
       expect_offense(<<~RUBY)
         class Foo < Formula
@@ -499,7 +499,7 @@ end
 describe RuboCop::Cop::FormulaAudit::LicenseArrays do
   subject(:cop) { described_class.new }
 
-  context "When auditing license arrays" do
+  context "when auditing license arrays" do
     it "reports no offenses for license strings" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
@@ -554,7 +554,7 @@ end
 describe RuboCop::Cop::FormulaAudit::Licenses do
   subject(:cop) { described_class.new }
 
-  context "When auditing licenses" do
+  context "when auditing licenses" do
     it "reports no offenses for license strings" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
@@ -638,7 +638,7 @@ end
 describe RuboCop::Cop::FormulaAudit::PythonVersions do
   subject(:cop) { described_class.new }
 
-  context "When auditing Python versions" do
+  context "when auditing Python versions" do
     it "reports no offenses for Python with no dependency" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
@@ -685,7 +685,7 @@ describe RuboCop::Cop::FormulaAudit::PythonVersions do
       RUBY
     end
 
-    it "reports no offenses when a Pytohn reference matches its dependency without `@`" do
+    it "reports no offenses when a Python reference matches its dependency without `@`" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           depends_on "python@3.9"
@@ -818,7 +818,7 @@ end
 describe RuboCop::Cop::FormulaAudit::Miscellaneous do
   subject(:cop) { described_class.new }
 
-  context "When auditing formula miscellany" do
+  context "when auditing formula miscellany" do
     it "reports an offense for unneeded `FileUtils` usage" do
       expect_offense(<<~RUBY)
         class Foo < Formula
@@ -1339,7 +1339,7 @@ end
 describe RuboCop::Cop::FormulaAuditStrict::ShellCommands do
   subject(:cop) { described_class.new }
 
-  context "When auditing shell commands" do
+  context "when auditing shell commands" do
     it "reports and corrects an offense when `system` arguments should be separated" do
       expect_offense(<<~RUBY)
         class Foo < Formula

@@ -6,8 +6,8 @@ require "rubocops/files"
 describe RuboCop::Cop::FormulaAudit::Files do
   subject(:cop) { described_class.new }
 
-  context "When auditing files" do
-    it "when the permissions are invalid" do
+  context "when auditing files" do
+    it "reports an offense when the permissions are invalid" do
       filename = Formulary.core_path("test_formula")
       File.open(filename, "w") do |file|
         FileUtils.chmod "-rwx", filename

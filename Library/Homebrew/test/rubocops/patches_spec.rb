@@ -6,8 +6,8 @@ require "rubocops/patches"
 describe RuboCop::Cop::FormulaAudit::Patches do
   subject(:cop) { described_class.new }
 
-  context "When auditing legacy patches" do
-    it "reports no offenses when there is no legacy patch" do
+  context "when auditing legacy patches" do
+    it "reports no offenses if there is no legacy patch" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
@@ -155,7 +155,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
     end
   end
 
-  context "When auditing inline patches" do
+  context "when auditing inline patches" do
     it "reports no offenses for valid inline patches" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
@@ -202,7 +202,7 @@ describe RuboCop::Cop::FormulaAudit::Patches do
     end
   end
 
-  context "When auditing external patches" do
+  context "when auditing external patches" do
     it "reports an offense for various patch URLs" do
       patch_urls = [
         "https://raw.github.com/mogaal/sendemail",

@@ -6,7 +6,7 @@ require "rubocops/components_order"
 describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
   subject(:cop) { described_class.new }
 
-  context "When auditing formula components order" do
+  context "when auditing formula components order" do
     it "reports and corrects an offense when `uses_from_macos` precedes `depends_on`" do
       expect_offense(<<~RUBY)
         class Foo < Formula
@@ -337,8 +337,8 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
     RUBY
   end
 
-  context "no on_os_block" do
-    it "does not fail when there is no on_os block" do
+  context "when formula has no OS-specific blocks" do
+    it "reports no offenses" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           homepage "https://brew.sh"
@@ -352,8 +352,8 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
     end
   end
 
-  context "on_os_block" do
-    it "correctly uses on_macos and on_linux blocks" do
+  context "when formula has OS-specific block(s)" do
+    it "reports no offenses when `on_macos` and `on_linux` are used correctly" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           homepage "https://brew.sh"
@@ -400,10 +400,8 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
         end
       RUBY
     end
-  end
 
-  context "on_macos_block" do
-    it "correctly uses as single on_macos block" do
+    it "reports no offenses when `on_macos` is used correctly" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           homepage "https://brew.sh"
@@ -418,10 +416,8 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
         end
       RUBY
     end
-  end
 
-  context "on_linux_block" do
-    it "correctly uses as single on_linux block" do
+    it "reports no offenses when `on_linux` is used correctly" do
       expect_no_offenses(<<~RUBY)
         class Foo < Formula
           homepage "https://brew.sh"
@@ -516,7 +512,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
         RUBY
       end
 
-      it "reports no offenses for a valid `on_macos` and `on_linux` block with versions" do
+      it "reports no offenses for a valid `on_macos` and `on_linux` block (with `version`)" do
         expect_no_offenses(<<~RUBY)
           class Foo < Formula
             homepage "https://brew.sh"
