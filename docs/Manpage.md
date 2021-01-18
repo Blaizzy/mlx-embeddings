@@ -711,7 +711,7 @@ that directory doesn't exist, `$(brew --repository)/Cellar`.
 If *`formula`* is provided, display the location in the Cellar where *`formula`*
 would be installed, without any sort of versioned directory as the last path.
 
-### `--env` [*`--shell`*`=`] [*`--plain`*] [*`formula`* ...]
+### `--env`, `environment` [*`--shell`*`=`] [*`--plain`*] [*`formula`* ...]
 
 Summarise Homebrew's build environment as a plain list.
 
@@ -737,13 +737,13 @@ is or would be installed.
 * `--unbrewed`:
   List files in Homebrew's prefix not installed by Homebrew.
 
-### `--repository` [*`tap`* ...]
+### `--repository`, `--repo` [*`tap`* ...]
 
 Display where Homebrew's `.git` directory is located.
 
 If *`user`*`/`*`repo`* are provided, display where tap *`user`*`/`*`repo`*'s directory is located.
 
-### `--version`
+### `--version`, `-v`
 
 Print the version numbers of Homebrew, Homebrew/homebrew-core and Homebrew/homebrew-cask
 (if tapped) to standard output.

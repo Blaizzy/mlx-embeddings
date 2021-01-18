@@ -122,7 +122,7 @@ module Homebrew
 
         @args = Homebrew::CLI::Args.new
 
-        @command_name = caller_locations(2, 1).first.label.chomp("_args")
+        @command_name = caller_locations(2, 1).first.label.chomp("_args").tr("_", "-")
 
         @constraints = []
         @conflicts = []
@@ -449,12 +449,12 @@ module Homebrew
       }.freeze
 
       def generate_usage_banner
-        command_names = ["`#{@command_name.tr("_", "-")}`"]
+        command_names = ["`#{@command_name}`"]
         aliases_to_skip = %w[instal uninstal]
         command_names += Commands::HOMEBREW_INTERNAL_COMMAND_ALIASES.map do |command_alias, command|
           next if aliases_to_skip.include? command_alias
 
-          "`#{command_alias.tr("_", "-")}`" if command == @command_name
+          "`#{command_alias}`" if command == @command_name
         end.compact.sort
 
         options = if @non_global_processed_options.empty?
