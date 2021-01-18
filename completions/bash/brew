@@ -1,10 +1,5 @@
 # Bash completion script for brew(1)
 
-# Indicates there are no completions
-__brewcomp_null() {
-  COMPREPLY=""
-}
-
 __brewcomp_words_include() {
   local i=1
   while [[ "$i" -lt "$COMP_CWORD" ]]
@@ -43,7 +38,7 @@ __brewcomp() {
   done
 
   IFS="$sep"
-  COMPREPLY=($(compgen -W "$list" -- "$cur"))
+  COMPREPLY+=($(compgen -W "$list" -- "$cur"))
 }
 
 # Don't use __brewcomp() in any of the __brew_complete_foo functions, as
@@ -51,32 +46,37 @@ __brewcomp() {
 __brew_complete_formulae() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   local formulae="$(brew formulae)"
-  COMPREPLY=($(compgen -W "$formulae" -- "$cur"))
+  COMPREPLY+=($(compgen -W "$formulae" -- "$cur"))
 }
 
-__brew_complete_installed() {
+__brew_complete_casks() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
-  local inst="$(command ls "$(brew --cellar)" 2>/dev/null)"
-  COMPREPLY=($(compgen -W "$inst" -- "$cur"))
+  local casks="$(brew casks)"
+  COMPREPLY+=($(compgen -W "$casks" -- "$cur"))
 }
 
-__brew_complete_outdated() {
+__brew_complete_installed_formulae() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
-  local od="$(brew outdated --quiet)"
-  COMPREPLY=($(compgen -W "$od" -- "$cur"))
+  local installed_formulae="$(command ls "$(brew --cellar)" 2>/dev/null)"
+  COMPREPLY+=($(compgen -W "$installed_formulae" -- "$cur"))
 }
 
-__brew_complete_versions() {
-  local formula="$1"
-  local versions="$(brew list --versions "$formula")"
+__brew_complete_installed_casks() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
-  COMPREPLY=($(compgen -W "$versions" -X "$formula" -- "$cur"))
+  local installed_casks="$(command ls "$(brew --caskroom)" 2>/dev/null)"
+  COMPREPLY+=($(compgen -W "$installed_casks" -- "$cur"))
 }
 
-__brew_complete_logs() {
+__brew_complete_outdated_formulae() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
-  local logs="$(command ls "${HOMEBREW_LOGS:-${HOME}/Library/Logs/Homebrew/}" 2>/dev/null)"
-  COMPREPLY=($(compgen -W "$logs" -- "$cur"))
+  local outdated_formulae="$(brew outdated --formula --quiet)"
+  COMPREPLY+=($(compgen -W "$outdated_formulae" -- "$cur"))
+}
+
+__brew_complete_outdated_casks() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  local outdated_casks="$(brew outdated --cask --quiet)"
+  COMPREPLY+=($(compgen -W "$outdated_casks" -- "$cur"))
 }
 
 __brew_complete_tapped() {
@@ -101,12 +101,292 @@ __brew_complete_commands() {
   [[ -f "$HOMEBREW_CACHE/all_commands_list.txt" ]] &&
     local cmds="$(cat "$HOMEBREW_CACHE/all_commands_list.txt" | \grep -v instal$)" ||
     local cmds="$(cat "$HOMEBREW_REPOSITORY/completions/internal_commands_list.txt" | \grep -v instal$)"
-  COMPREPLY=($(compgen -W "$cmds" -- "$cur"))
+  COMPREPLY+=($(compgen -W "$cmds" -- "$cur"))
+}
+
+_brew___cache() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --build-from-source
+      --cask
+      --debug
+      --force-bottle
+      --formula
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_formulae
+  __brew_complete_casks
+}
+
+_brew___caskroom() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_casks
+}
+
+_brew___cellar() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_formulae
+}
+
+_brew___config() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+}
+
+_brew___env() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --plain
+      --quiet
+      --shell
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_formulae
+}
+
+_brew___prefix() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --unbrewed
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_formulae
+}
+
+_brew___repo() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_tapped
+}
+
+_brew___repository() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_tapped
+}
+
+_brew___version() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+}
+
+_brew__s() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --cask
+      --closed
+      --debian
+      --debug
+      --desc
+      --fedora
+      --fink
+      --formula
+      --help
+      --macports
+      --open
+      --opensuse
+      --pull-request
+      --quiet
+      --ubuntu
+      --verbose
+      "
+      return
+      ;;
+  esac
+}
+
+_brew__v() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+}
+
+_brew_abv() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --all
+      --analytics
+      --cask
+      --category
+      --days
+      --debug
+      --formula
+      --github
+      --help
+      --installed
+      --json
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_formulae
+  __brew_complete_casks
 }
 
 _brew_analytics() {
-  case "$COMP_CWORD" in
-    2)  __brewcomp "off on regenerate-uuid state" ;;
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brewcomp "state on off regenerate-uuid"
+}
+
+_brew_audit() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --appcast
+      --audit-debug
+      --cask
+      --debug
+      --display-cop-names
+      --display-filename
+      --except
+      --except-cops
+      --fix
+      --formula
+      --git
+      --help
+      --new
+      --no-appcast
+      --online
+      --only
+      --only-cops
+      --quiet
+      --skip-style
+      --strict
+      --tap
+      --token-conflicts
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_formulae
+  __brew_complete_casks
+}
+
+_brew_autoremove() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --dry-run
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
   esac
 }
 
@@ -115,24 +395,189 @@ _brew_bottle() {
   case "$cur" in
     -*)
       __brewcomp "
-        --debug
-        --force-core-tap
-        --help
-        --json
-        --keep-old
-        --merge
-        --no-commit
-        --no-rebuild
-        --or-later
-        --root-url
-        --skip-relocation
-        --verbose
-        --write
-        "
+      --debug
+      --force-core-tap
+      --help
+      --json
+      --keep-old
+      --merge
+      --no-commit
+      --no-rebuild
+      --quiet
+      --root-url
+      --skip-relocation
+      --verbose
+      --write
+      "
       return
       ;;
   esac
-  __brew_complete_installed
+  __brew_complete_installed_formulae
+}
+
+_brew_bump() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --limit
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_formulae
+}
+
+_brew_bump_cask_pr() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --commit
+      --debug
+      --dry-run
+      --force
+      --help
+      --message
+      --no-audit
+      --no-browse
+      --no-fork
+      --no-style
+      --online
+      --quiet
+      --sha256
+      --url
+      --verbose
+      --version
+      --write
+      "
+      return
+      ;;
+  esac
+  __brew_complete_casks
+}
+
+_brew_bump_formula_pr() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --commit
+      --debug
+      --dry-run
+      --force
+      --help
+      --message
+      --mirror
+      --no-audit
+      --no-browse
+      --no-fork
+      --online
+      --quiet
+      --revision
+      --sha256
+      --strict
+      --tag
+      --url
+      --verbose
+      --version
+      --write
+      "
+      return
+      ;;
+  esac
+  __brew_complete_formulae
+}
+
+_brew_bump_revision() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --dry-run
+      --help
+      --message
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_formulae
+}
+
+_brew_bump_unversioned_casks() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --dry-run
+      --help
+      --limit
+      --quiet
+      --state-file
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_casks
+  __brew_complete_tapped
+}
+
+_brew_cask() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --appdir
+      --audio-unit-plugindir
+      --colorpickerdir
+      --debug
+      --dictionarydir
+      --fontdir
+      --help
+      --input-methoddir
+      --internet-plugindir
+      --language
+      --mdimporterdir
+      --prefpanedir
+      --qlplugindir
+      --quiet
+      --screen-saverdir
+      --servicedir
+      --verbose
+      --vst-plugindir
+      --vst3-plugindir
+      "
+      return
+      ;;
+  esac
+}
+
+_brew_cat() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --cask
+      --debug
+      --formula
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_formulae
+  __brew_complete_casks
 }
 
 _brew_cleanup() {
@@ -140,17 +585,100 @@ _brew_cleanup() {
   case "$cur" in
     -*)
       __brewcomp "
-        --debug
-        --dry-run
-        --prune
-        --help
-        --verbose
-        -s
-        "
+      --debug
+      --dry-run
+      --help
+      --prune
+      --prune-prefix
+      --quiet
+      --verbose
+      -s
+      "
       return
       ;;
   esac
-  __brew_complete_installed
+  __brew_complete_formulae
+  __brew_complete_casks
+}
+
+_brew_command() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_commands
+}
+
+_brew_commands() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --include-aliases
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+}
+
+_brew_completions() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brewcomp "state link unlink"
+}
+
+_brew_config() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+}
+
+_brew_configure() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --name
+      --quiet
+      --verbose
+      --version
+      "
+      return
+      ;;
+  esac
 }
 
 _brew_create() {
@@ -160,6 +688,7 @@ _brew_create() {
       __brewcomp "
       --HEAD
       --autotools
+      --cask
       --cmake
       --crystal
       --debug
@@ -171,8 +700,10 @@ _brew_create() {
       --node
       --perl
       --python
+      --quiet
       --ruby
       --rust
+      --set-license
       --set-name
       --set-version
       --tap
@@ -187,18 +718,69 @@ _brew_deps() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--1 --all --tree"
+      __brewcomp "
+      --1
+      --all
+      --annotate
+      --cask
+      --debug
+      --for-each
+      --formula
+      --full-name
+      --help
+      --include-build
+      --include-optional
+      --include-requirements
+      --include-test
+      --installed
+      --quiet
+      --skip-recommended
+      --tree
+      --union
+      --verbose
+      -n
+      "
       return
       ;;
   esac
   __brew_complete_formulae
+  __brew_complete_casks
 }
 
 _brew_desc() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--search --name --description"
+      __brewcomp "
+      --debug
+      --description
+      --help
+      --name
+      --quiet
+      --search
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_formulae
+}
+
+_brew_dispatch_build_bottle() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --issue
+      --macos
+      --quiet
+      --tap
+      --upload
+      --verbose
+      --workflow
+      "
       return
       ;;
   esac
@@ -209,7 +791,14 @@ _brew_diy() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--set-name --set-version"
+      __brewcomp "
+      --debug
+      --help
+      --name
+      --quiet
+      --verbose
+      --version
+      "
       return
       ;;
   esac
@@ -217,21 +806,133 @@ _brew_diy() {
 
 _brew_doctor() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --audit-debug
+      --debug
+      --help
+      --list-checks
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
   __brewcomp "$(brew doctor --list-checks)"
+}
+
+_brew_dr() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --audit-debug
+      --debug
+      --help
+      --list-checks
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brewcomp "$(brew doctor --list-checks)"
+}
+
+_brew_edit() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --cask
+      --debug
+      --formula
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_formulae
+  __brew_complete_casks
+}
+
+_brew_environment() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --plain
+      --quiet
+      --shell
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_formulae
+}
+
+_brew_extract() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --force
+      --help
+      --quiet
+      --verbose
+      --version
+      "
+      return
+      ;;
+  esac
+  __brew_complete_formulae
 }
 
 _brew_fetch() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
-  local prv="$(__brewcomp_prev)"
   case "$cur" in
     -*)
       __brewcomp "
-        --deps --force
-        --HEAD
-        --build-from-source --force-bottle --build-bottle
-        --retry
-        $(brew options --compact "$prv" 2>/dev/null)
-        "
+      --HEAD
+      --build-bottle
+      --build-from-source
+      --cask
+      --debug
+      --deps
+      --force
+      --force-bottle
+      --formula
+      --help
+      --no-quarantine
+      --quarantine
+      --quiet
+      --retry
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_formulae
+  __brew_complete_casks
+}
+
+_brew_formula() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --verbose
+      "
       return
       ;;
   esac
@@ -242,57 +943,239 @@ _brew_gist_logs() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--new-issue"
+      __brewcomp "
+      --debug
+      --help
+      --new-issue
+      --private
+      --quiet
+      --verbose
+      --with-hostname
+      "
       return
       ;;
   esac
-  __brew_complete_logs
+  __brew_complete_formulae
+}
+
+_brew_home() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --cask
+      --debug
+      --formula
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_formulae
+  __brew_complete_casks
+}
+
+_brew_homepage() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --cask
+      --debug
+      --formula
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_formulae
+  __brew_complete_casks
 }
 
 _brew_info() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--all --github --installed --json=v1"
+      __brewcomp "
+      --all
+      --analytics
+      --cask
+      --category
+      --days
+      --debug
+      --formula
+      --github
+      --help
+      --installed
+      --json
+      --quiet
+      --verbose
+      "
       return
       ;;
   esac
   __brew_complete_formulae
+  __brew_complete_casks
+}
+
+_brew_instal() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --HEAD
+      --appdir
+      --audio-unit-plugindir
+      --binaries
+      --bottle-arch
+      --build-bottle
+      --build-from-source
+      --cask
+      --cc
+      --colorpickerdir
+      --debug
+      --dictionarydir
+      --display-times
+      --env
+      --fetch-HEAD
+      --fontdir
+      --force
+      --force-bottle
+      --formula
+      --git
+      --help
+      --ignore-dependencies
+      --include-test
+      --input-methoddir
+      --interactive
+      --internet-plugindir
+      --keep-tmp
+      --language
+      --mdimporterdir
+      --no-binaries
+      --no-quarantine
+      --only-dependencies
+      --prefpanedir
+      --qlplugindir
+      --quarantine
+      --quiet
+      --require-sha
+      --screen-saverdir
+      --servicedir
+      --skip-cask-deps
+      --verbose
+      --vst-plugindir
+      --vst3-plugindir
+      "
+      return
+      ;;
+  esac
+  __brew_complete_formulae
+  __brew_complete_casks
 }
 
 _brew_install() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
-  local prv="$(__brewcomp_prev)"
-
   case "$cur" in
     -*)
-      if __brewcomp_words_include "--interactive"
-      then
-        __brewcomp "--git --HEAD"
-      else
-        __brewcomp "
-          --build-from-source --build-bottle --force-bottle
-          --debug
-          --HEAD
-          --ignore-dependencies
-          --interactive
-          --only-dependencies
-          --verbose
-          --display-times
-          $(brew options --compact "$prv" 2>/dev/null)
-          "
-      fi
+      __brewcomp "
+      --HEAD
+      --appdir
+      --audio-unit-plugindir
+      --binaries
+      --bottle-arch
+      --build-bottle
+      --build-from-source
+      --cask
+      --cc
+      --colorpickerdir
+      --debug
+      --dictionarydir
+      --display-times
+      --env
+      --fetch-HEAD
+      --fontdir
+      --force
+      --force-bottle
+      --formula
+      --git
+      --help
+      --ignore-dependencies
+      --include-test
+      --input-methoddir
+      --interactive
+      --internet-plugindir
+      --keep-tmp
+      --language
+      --mdimporterdir
+      --no-binaries
+      --no-quarantine
+      --only-dependencies
+      --prefpanedir
+      --qlplugindir
+      --quarantine
+      --quiet
+      --require-sha
+      --screen-saverdir
+      --servicedir
+      --skip-cask-deps
+      --verbose
+      --vst-plugindir
+      --vst3-plugindir
+      "
       return
       ;;
   esac
   __brew_complete_formulae
+  __brew_complete_casks
+}
+
+_brew_install_bundler_gems() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
 }
 
 _brew_irb() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--examples"
+      __brewcomp "
+      --debug
+      --examples
+      --help
+      --pry
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+}
+
+_brew_leaves() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --verbose
+      "
       return
       ;;
   esac
@@ -302,52 +1185,65 @@ _brew_link() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--dry-run --overwrite --force"
+      __brewcomp "
+      --debug
+      --dry-run
+      --force
+      --help
+      --overwrite
+      --quiet
+      --verbose
+      "
       return
       ;;
   esac
-  __brew_complete_installed
+  __brew_complete_installed_formulae
+}
+
+_brew_linkage() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --cached
+      --debug
+      --help
+      --quiet
+      --reverse
+      --test
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_installed_formulae
 }
 
 _brew_list() {
-  local allopts="--unbrewed --verbose --pinned --versions --multiple --cask"
   local cur="${COMP_WORDS[COMP_CWORD]}"
-
   case "$cur" in
     -*)
-      # most options to brew-list are mutually exclusive
-      if __brewcomp_words_include "--unbrewed"
-      then
-        return
-      elif __brewcomp_words_include "--verbose"
-      then
-        return
-      elif __brewcomp_words_include "--pinned"
-      then
-        return
-      # --multiple only applies with --versions
-      elif __brewcomp_words_include "--multiple"
-      then
-        __brewcomp "--versions"
-        return
-      elif __brewcomp_words_include "--versions"
-      then
-        __brewcomp "--multiple"
-        return
-      else
-        __brewcomp "$allopts"
-        return
-      fi
+      __brewcomp "
+      --cask
+      --debug
+      --formula
+      --full-name
+      --help
+      --multiple
+      --pinned
+      --quiet
+      --verbose
+      --versions
+      -1
+      -l
+      -r
+      -t
+      "
+      return
       ;;
   esac
-
-  # --multiple excludes formulae and *implies* --versions...
-  if __brewcomp_words_include "--multiple"
-  then
-    __brewcomp "--versions"
-  else
-    __brew_complete_installed
-  fi
+  __brew_complete_installed_formulae
+  __brew_complete_installed_casks
 }
 
 _brew_livecheck() {
@@ -355,58 +1251,177 @@ _brew_livecheck() {
   case "$cur" in
     -*)
       __brewcomp "
-        --full-name
-        --tap
-        --all
-        --installed
-        --newer-only
-        --json
-        --quiet
-        --debug
-        --verbose
-        --help
-        "
+      --all
+      --cask
+      --debug
+      --formula
+      --full-name
+      --help
+      --installed
+      --json
+      --newer-only
+      --quiet
+      --tap
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_formulae
+  __brew_complete_casks
+}
+
+_brew_ln() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --dry-run
+      --force
+      --help
+      --overwrite
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_installed_formulae
+}
+
+_brew_log() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --max-count
+      --oneline
+      --patch
+      --quiet
+      --stat
+      --verbose
+      -1
+      "
       return
       ;;
   esac
   __brew_complete_formulae
 }
 
-_brew_log() {
-  # if git-completion is loaded, then we complete git-log options
-  declare -F _git_log >/dev/null || return
+_brew_ls() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
       __brewcomp "
-        $__git_log_common_options
-        $__git_log_shortlog_options
-        $__git_log_gitk_options
-        $__git_diff_common_options
-        --walk-reflogs --graph --decorate
-        --abbrev-commit --oneline --reverse
-        "
+      --cask
+      --debug
+      --formula
+      --full-name
+      --help
+      --multiple
+      --pinned
+      --quiet
+      --verbose
+      --versions
+      -1
+      -l
+      -r
+      -t
+      "
       return
       ;;
   esac
-  __brew_complete_formulae
+  __brew_complete_installed_formulae
+  __brew_complete_installed_casks
 }
 
 _brew_man() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--link --server --verbose"
+      __brewcomp "
+      --debug
+      --fail-if-changed
+      --help
+      --link
+      --quiet
+      --verbose
+      "
       return
       ;;
   esac
+}
+
+_brew_migrate() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --force
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_installed_formulae
+}
+
+_brew_mirror() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --bintray-org
+      --bintray-repo
+      --debug
+      --help
+      --no-publish
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_formulae
+}
+
+_brew_missing() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --hide
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_formulae
 }
 
 _brew_options() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--all --compact --installed"
+      __brewcomp "
+      --all
+      --command
+      --compact
+      --debug
+      --help
+      --installed
+      --quiet
+      --verbose
+      "
       return
       ;;
   esac
@@ -417,85 +1432,405 @@ _brew_outdated() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--quiet --verbose --formula --cask --json=v1 --fetch-HEAD --greedy"
+      __brewcomp "
+      --cask
+      --debug
+      --fetch-HEAD
+      --formula
+      --greedy
+      --help
+      --json
+      --quiet
+      --verbose
+      "
       return
       ;;
   esac
-  __brewcomp_null
+  __brew_complete_formulae
+  __brew_complete_casks
+}
+
+_brew_pin() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_installed_formulae
 }
 
 _brew_postinstall() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--debug --verbose --force --help"
-      return
-      ;;
-  esac
-  __brew_complete_installed
-}
-
-_brew_pull() {
-  local cur="${COMP_WORDS[COMP_CWORD]}"
-  case "$cur" in
-    -*)
       __brewcomp "
-        --bintray-org
-        --bottle
-        --branch-okay
-        --bump
-        --clean
-        --ignore-whitespace
-        --no-pbcopy
-        --no-publish
-        --resolve
-        --test-bot-user
-        --warn-on-publish-failure
+      --debug
+      --help
+      --quiet
+      --verbose
       "
       return
       ;;
   esac
-  __brew_complete_formulae
+  __brew_complete_installed_formulae
+}
+
+_brew_pr_automerge() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --autosquash
+      --debug
+      --help
+      --ignore-failures
+      --publish
+      --quiet
+      --tap
+      --verbose
+      --with-label
+      --without-approval
+      --without-labels
+      "
+      return
+      ;;
+  esac
+}
+
+_brew_pr_publish() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --autosquash
+      --debug
+      --help
+      --message
+      --quiet
+      --tap
+      --verbose
+      --workflow
+      "
+      return
+      ;;
+  esac
+}
+
+_brew_pr_pull() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --artifact
+      --autosquash
+      --bintray-mirror
+      --bintray-org
+      --branch-okay
+      --clean
+      --debug
+      --dry-run
+      --help
+      --ignore-missing-artifacts
+      --keep-old
+      --message
+      --no-publish
+      --no-upload
+      --quiet
+      --resolve
+      --root-url
+      --tap
+      --verbose
+      --warn-on-upload-failure
+      --workflows
+      "
+      return
+      ;;
+  esac
+}
+
+_brew_pr_upload() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --bintray-org
+      --debug
+      --dry-run
+      --help
+      --keep-old
+      --no-commit
+      --no-publish
+      --quiet
+      --root-url
+      --verbose
+      --warn-on-upload-failure
+      "
+      return
+      ;;
+  esac
+}
+
+_brew_prof() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --stackprof
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_commands
 }
 
 _brew_readall() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--aliases --syntax"
+      __brewcomp "
+      --aliases
+      --debug
+      --help
+      --quiet
+      --syntax
+      --verbose
+      "
       return
       ;;
   esac
   __brew_complete_tapped
 }
 
+_brew_reinstall() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --appdir
+      --audio-unit-plugindir
+      --binaries
+      --build-from-source
+      --cask
+      --colorpickerdir
+      --debug
+      --dictionarydir
+      --display-times
+      --fontdir
+      --force
+      --force-bottle
+      --formula
+      --help
+      --input-methoddir
+      --interactive
+      --internet-plugindir
+      --keep-tmp
+      --language
+      --mdimporterdir
+      --no-binaries
+      --no-quarantine
+      --prefpanedir
+      --qlplugindir
+      --quarantine
+      --quiet
+      --require-sha
+      --screen-saverdir
+      --servicedir
+      --skip-cask-deps
+      --verbose
+      --vst-plugindir
+      --vst3-plugindir
+      "
+      return
+      ;;
+  esac
+  __brew_complete_formulae
+  __brew_complete_casks
+}
+
+_brew_release_notes() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --markdown
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+}
+
+_brew_remove() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --cask
+      --debug
+      --force
+      --formula
+      --help
+      --ignore-dependencies
+      --quiet
+      --verbose
+      --zap
+      "
+      return
+      ;;
+  esac
+  __brew_complete_installed_formulae
+  __brew_complete_installed_casks
+}
+
+_brew_rm() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --cask
+      --debug
+      --force
+      --formula
+      --help
+      --ignore-dependencies
+      --quiet
+      --verbose
+      --zap
+      "
+      return
+      ;;
+  esac
+  __brew_complete_installed_formulae
+  __brew_complete_installed_casks
+}
+
+_brew_ruby() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --verbose
+      -e
+      -r
+      "
+      return
+      ;;
+  esac
+}
+
 _brew_search() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--cask --debian --desc --fedora --fink --macports --opensuse --ubuntu"
+      __brewcomp "
+      --cask
+      --closed
+      --debian
+      --debug
+      --desc
+      --fedora
+      --fink
+      --formula
+      --help
+      --macports
+      --open
+      --opensuse
+      --pull-request
+      --quiet
+      --ubuntu
+      --verbose
+      "
       return
       ;;
   esac
-  __brewcomp_null
+}
+
+_brew_sh() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --cmd
+      --debug
+      --env
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+}
+
+_brew_sponsors() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
 }
 
 _brew_style() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--fix --display-cop-names --only-cops --except-cops"
+      __brewcomp "
+      --cask
+      --debug
+      --display-cop-names
+      --except-cops
+      --fix
+      --formula
+      --help
+      --only-cops
+      --quiet
+      --reset-cache
+      --verbose
+      "
       return
       ;;
   esac
   __brew_complete_formulae
+  __brew_complete_casks
+  __brew_complete_tapped
 }
 
 _brew_switch() {
-  case "$COMP_CWORD" in
-    2)  __brew_complete_installed ;;
-    3)  __brew_complete_versions "${COMP_WORDS[COMP_CWORD-1]}" ;;
-    *)  ;;
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
   esac
 }
 
@@ -503,18 +1838,35 @@ _brew_tap() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--full --force-auto-update --repair --list-pinned"
+      __brewcomp "
+      --debug
+      --force-auto-update
+      --full
+      --help
+      --list-pinned
+      --quiet
+      --repair
+      --shallow
+      --verbose
+      "
       return
       ;;
   esac
-  __brewcomp_null
+  __brew_complete_tapped
 }
 
 _brew_tap_info() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--installed --json=v1"
+      __brewcomp "
+      --debug
+      --help
+      --installed
+      --json
+      --quiet
+      --verbose
+      "
       return
       ;;
   esac
@@ -525,53 +1877,342 @@ _brew_tap_new() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--verbose"
+      __brewcomp "
+      --branch
+      --debug
+      --help
+      --no-git
+      --pull-label
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_tapped
+}
+
+_brew_tc() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --dir
+      --fail-if-not-changed
+      --file
+      --fix
+      --help
+      --ignore
+      --quiet
+      --suggest-typed
+      --update
+      --verbose
+      "
       return
       ;;
   esac
 }
 
-_brew_tap_unpin() {
-  __brewcomp "$(brew tap --list-pinned)"
+_brew_test() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --HEAD
+      --debug
+      --help
+      --keep-tmp
+      --quiet
+      --retry
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_installed_formulae
 }
 
 _brew_tests() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--verbose"
+      __brewcomp "
+      --byebug
+      --coverage
+      --debug
+      --generic
+      --help
+      --no-compat
+      --online
+      --only
+      --quiet
+      --seed
+      --verbose
+      "
       return
       ;;
   esac
 }
 
-_brew_uninstall() {
+_brew_typecheck() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--force"
+      __brewcomp "
+      --debug
+      --dir
+      --fail-if-not-changed
+      --file
+      --fix
+      --help
+      --ignore
+      --quiet
+      --suggest-typed
+      --update
+      --verbose
+      "
       return
       ;;
   esac
-  __brew_complete_installed
 }
 
-_brew_unpack() {
+_brew_unbottled() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--git --patch --destdir="
+      __brewcomp "
+      --debug
+      --dependents
+      --help
+      --quiet
+      --tag
+      --total
+      --verbose
+      "
       return
       ;;
   esac
   __brew_complete_formulae
 }
 
+_brew_uninstal() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --cask
+      --debug
+      --force
+      --formula
+      --help
+      --ignore-dependencies
+      --quiet
+      --verbose
+      --zap
+      "
+      return
+      ;;
+  esac
+  __brew_complete_installed_formulae
+  __brew_complete_installed_casks
+}
+
+_brew_uninstall() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --cask
+      --debug
+      --force
+      --formula
+      --help
+      --ignore-dependencies
+      --quiet
+      --verbose
+      --zap
+      "
+      return
+      ;;
+  esac
+  __brew_complete_installed_formulae
+  __brew_complete_installed_casks
+}
+
+_brew_unlink() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --dry-run
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_installed_formulae
+}
+
+_brew_unpack() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --destdir
+      --force
+      --git
+      --help
+      --patch
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_formulae
+}
+
+_brew_unpin() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_installed_formulae
+}
+
+_brew_untap() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+  __brew_complete_tapped
+}
+
+_brew_up() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --force
+      --help
+      --merge
+      --preinstall
+      --verbose
+      "
+      return
+      ;;
+  esac
+}
+
 _brew_update() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--rebase --verbose"
+      __brewcomp "
+      --debug
+      --force
+      --help
+      --merge
+      --preinstall
+      --verbose
+      "
+      return
+      ;;
+  esac
+}
+
+_brew_update_license_data() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --fail-if-not-changed
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+}
+
+_brew_update_python_resources() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --exclude-packages
+      --extra-packages
+      --help
+      --ignore-non-pypi-packages
+      --package-name
+      --print-only
+      --quiet
+      --silent
+      --verbose
+      --version
+      "
+      return
+      ;;
+  esac
+  __brew_complete_formulae
+}
+
+_brew_update_report() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --force
+      --help
+      --preinstall
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+}
+
+_brew_update_test() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --before
+      --commit
+      --debug
+      --help
+      --keep-tmp
+      --quiet
+      --to-tag
+      --verbose
+      "
       return
       ;;
   esac
@@ -579,248 +2220,92 @@ _brew_update() {
 
 _brew_upgrade() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
-  local prv="$(__brewcomp_prev)"
-
   case "$cur" in
     -*)
       __brewcomp "
-        --all
-        --build-from-source --build-bottle --force-bottle
-        --cleanup
-        --cask
-        --debug
-        --verbose
-        --fetch-HEAD
-        --display-times
-        "
+      --appdir
+      --audio-unit-plugindir
+      --binaries
+      --build-from-source
+      --cask
+      --colorpickerdir
+      --debug
+      --dictionarydir
+      --display-times
+      --dry-run
+      --fetch-HEAD
+      --fontdir
+      --force
+      --force-bottle
+      --formula
+      --greedy
+      --help
+      --ignore-pinned
+      --input-methoddir
+      --interactive
+      --internet-plugindir
+      --keep-tmp
+      --language
+      --mdimporterdir
+      --no-binaries
+      --no-quarantine
+      --prefpanedir
+      --qlplugindir
+      --quarantine
+      --quiet
+      --require-sha
+      --screen-saverdir
+      --servicedir
+      --skip-cask-deps
+      --verbose
+      --vst-plugindir
+      --vst3-plugindir
+      "
       return
       ;;
   esac
-  __brew_complete_outdated
+  __brew_complete_outdated_formulae
+  __brew_complete_outdated_casks
 }
 
 _brew_uses() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
     -*)
-      __brewcomp "--installed --recursive --include-build --include-test --include-optional --skip-recommended"
+      __brewcomp "
+      --cask
+      --debug
+      --formula
+      --help
+      --include-build
+      --include-optional
+      --include-test
+      --installed
+      --quiet
+      --recursive
+      --skip-recommended
+      --verbose
+      "
       return
       ;;
   esac
   __brew_complete_formulae
 }
 
-__brew_caskcomp_words_include ()
-{
-    local i=1
-    while [[ $i -lt $COMP_CWORD ]]; do
-        if [[ "${COMP_WORDS[i]}" = "$1" ]]; then
-            return 0
-        fi
-        (( i++ ))
-    done
-    return 1
-}
-
-# Find the previous non-switch word
-__brew_caskcomp_prev ()
-{
-    local idx=$((COMP_CWORD - 1))
-    local prv="${COMP_WORDS[idx]}"
-    while [[ $prv == -* ]]; do
-        (( idx-- ))
-        prv="${COMP_WORDS[idx]}"
-    done
-    echo "$prv"
-}
-
-__brew_caskcomp ()
-{
-    # break $1 on space, tab, and newline characters,
-    # and turn it into a newline separated list of words
-    local list s sep=$'\n' IFS=$' \t\n'
-    local cur="${COMP_WORDS[COMP_CWORD]}"
-
-    for s in $1; do
-        __brew_caskcomp_words_include "$s" && continue
-        list="$list$s$sep"
-    done
-
-    IFS="$sep"
-    COMPREPLY=($(compgen -W "$list" -- "$cur"))
-}
-
-# Don't use __brew_caskcomp() in any of the __brew_cask_complete_foo functions, as
-# it is too slow and is not worth it just for duplicate elimination.
-__brew_cask_complete_formulae ()
-{
-    local cur="${COMP_WORDS[COMP_CWORD]}"
-    local casks=$(brew casks)
-
-    COMPREPLY=($(compgen -W "$casks" -- "$cur"))
-}
-
-__brew_cask_complete_installed ()
-{
-    local cur="${COMP_WORDS[COMP_CWORD]}"
-    local inst=$(brew list --cask -1)
-    COMPREPLY=($(compgen -W "$inst" -- "$cur"))
-}
-
-__brew_cask_complete_caskroom ()
-{
-    local cur="${COMP_WORDS[COMP_CWORD]}"
-    local caskroom_dir="$(brew --prefix)/Caskroom/"
-    local files=$(\ls ${caskroom_dir} 2>/dev/null)
-    COMPREPLY=($(compgen -W "$files" -- "$cur"))
-}
-
-__brew_cask_complete_outdated ()
-{
-    local cur="${COMP_WORDS[COMP_CWORD]}"
-    local greedy=$(__brew_caskcomp_words_include "--greedy" && echo "--greedy")
-    local outdated=$(brew outdated --cask --quiet $greedy)
-    COMPREPLY=($(compgen -W "$outdated" -- "$cur"))
-}
-
-_brew_cask_fetch ()
-{
-    local cur="${COMP_WORDS[COMP_CWORD]}"
-    local prv=$(__brew_caskcomp_prev)
-    case "$cur" in
+_brew_vendor_gems() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
     -*)
-        __brew_caskcomp "--force"
-        return
-        ;;
-    esac
-    __brew_cask_complete_formulae
-}
-
-_brew_cask_install ()
-{
-    local cur="${COMP_WORDS[COMP_CWORD]}"
-    local prv=$(__brew_caskcomp_prev)
-    case "$cur" in
-    -*)
-        __brew_caskcomp "--force --skip-cask-deps --require-sha --language"
-        return
-        ;;
-    esac
-    __brew_cask_complete_formulae
-}
-
-_brew_cask_list ()
-{
-    local cur="${COMP_WORDS[COMP_CWORD]}"
-    case "$cur" in
-    -*)
-        __brew_caskcomp "-1 --versions"
-        return
-        ;;
-    esac
-
-    __brew_cask_complete_installed
-}
-
-_brew_cask_outdated ()
-{
-    local cur="${COMP_WORDS[COMP_CWORD]}"
-    case "$cur" in
-    -*)
-        __brew_caskcomp "--greedy --verbose --quiet"
-        return
-        ;;
-    esac
-    __brew_cask_complete_installed
-}
-
-_brew_cask_style ()
-{
-    local cur="${COMP_WORDS[COMP_CWORD]}"
-    case "$cur" in
-    -*)
-        __brew_caskcomp "--fix"
-        return
-        ;;
-    esac
-    __brew_cask_complete_installed
-}
-
-_brew_cask_uninstall ()
-{
-    local cur="${COMP_WORDS[COMP_CWORD]}"
-    case "$cur" in
-    -*)
-        __brew_caskcomp "--force"
-        return
-        ;;
-    esac
-    __brew_cask_complete_installed
-}
-
-_brew_cask_upgrade ()
-{
-    local cur="${COMP_WORDS[COMP_CWORD]}"
-    case "$cur" in
-    -*)
-        __brew_caskcomp "--force --greedy"
-        return
-        ;;
-    esac
-    __brew_cask_complete_outdated
-}
-
-_brew_cask ()
-{
-    local i=1 cmd
-
-    # find the subcommand
-    while [[ $i -lt $COMP_CWORD ]]; do
-        local s="${COMP_WORDS[i]}"
-        case "$s" in
-        --*)
-            cmd="$s"
-            break
-            ;;
-        -*)
-            ;;
-        cask)
-            ;;
-        *)
-            cmd="$s"
-            break
-            ;;
-        esac
-        (( i++ ))
-    done
-
-    if [[ $i -eq $COMP_CWORD ]]; then
-        __brew_caskcomp "abv audit cat create doctor edit fetch home info install list ls outdated reinstall remove rm search style uninstall upgrade zap -S --force --verbose --appdir --colorpickerdir --prefpanedir --qlplugindir --fontdir --servicedir --input-methoddir --internet-plugindir --screen-saverdir --no-binaries --debug --version"
-        return
-    fi
-
-    # subcommands have their own completion functions
-    case "$cmd" in
-      --version)              __brewcomp_null ;;
-      audit)                  __brew_cask_complete_formulae ;;
-      cat)                    __brew_cask_complete_formulae ;;
-      create)                 ;;
-      doctor)                 __brewcomp_null ;;
-      edit)                   __brew_cask_complete_formulae ;;
-      fetch)                  _brew_cask_fetch ;;
-      home)                   __brew_cask_complete_formulae ;;
-      info|abv)               __brew_cask_complete_formulae ;;
-      install|instal)         _brew_cask_install ;;
-      list|ls)                _brew_cask_list ;;
-      outdated)               _brew_cask_outdated ;;
-      reinstall)              __brew_cask_complete_installed ;;
-      search)                 __brewcomp_null ;;
-      style)                  _brew_cask_style ;;
-      uninstall|remove|rm)    _brew_cask_uninstall ;;
-      upgrade)                _brew_cask_upgrade ;;
-      zap)                    __brew_cask_complete_caskroom ;;
-      *)                      ;;
-    esac
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --update
+      --verbose
+      "
+      return
+      ;;
+  esac
 }
 
 _brew() {
@@ -853,61 +2338,111 @@ _brew() {
 
   # subcommands have their own completion functions
   case "$cmd" in
-    --cache)                    __brew_complete_formulae ;;
-    --cellar)                   __brew_complete_formulae ;;
-    --prefix)                   __brew_complete_formulae ;;
-    analytics)                  _brew_analytics ;;
-    audit)                      __brew_complete_formulae ;;
-    bottle)                     _brew_bottle ;;
-    cask)                       _brew_cask ;;
-    cat)                        __brew_complete_formulae ;;
-    cleanup)                    _brew_cleanup ;;
-    command)                    __brew_complete_commands ;;
-    create)                     _brew_create ;;
-    deps)                       _brew_deps ;;
-    desc)                       _brew_desc ;;
-    diy|configure)              _brew_diy ;;
-    doctor|dr)                  _brew_doctor ;;
-    edit)                       __brew_complete_formulae ;;
-    fetch)                      _brew_fetch ;;
-    gist-logs)                  _brew_gist_logs ;;
-    help)                       __brew_complete_commands ;;
-    home|homepage)              __brew_complete_formulae ;;
-    info|abv)                   _brew_info ;;
-    install|instal)             _brew_install ;;
-    irb)                        _brew_irb ;;
-    link|ln)                    _brew_link ;;
-    list|ls)                    _brew_list ;;
-    livecheck)                  _brew_livecheck ;;
-    log)                        _brew_log ;;
-    man)                        _brew_man ;;
-    missing)                    __brew_complete_formulae ;;
-    options)                    _brew_options ;;
-    outdated)                   _brew_outdated ;;
-    pin)                        __brew_complete_formulae ;;
-    postinstall)                _brew_postinstall ;;
-    prof)                       __brew_complete_commands ;;
-    pull)                       _brew_pull ;;
-    readall)                    _brew_readall ;;
-    reinstall)                  _brew_install ;;
-    search|-S)                  _brew_search ;;
-    style)                      _brew_style ;;
-    switch)                     _brew_switch ;;
-    tap)                        _brew_tap ;;
-    tap-info)                   _brew_tap_info ;;
-    tap-new)                    _brew_tap_new ;;
-    tap-unpin)                  _brew_tap_unpin ;;
-    test)                       __brew_complete_installed ;;
-    tests)                      _brew_tests ;;
-    uninstall|remove|rm)        _brew_uninstall ;;
-    unlink)                     __brew_complete_installed ;;
-    unpack)                     _brew_unpack ;;
-    unpin)                      __brew_complete_formulae ;;
-    untap)                      __brew_complete_tapped ;;
-    update|up)                  _brew_update ;;
-    upgrade)                    _brew_upgrade ;;
-    uses)                       _brew_uses ;;
-    *)                          ;;
+    --cache) _brew___cache ;;
+    --caskroom) _brew___caskroom ;;
+    --cellar) _brew___cellar ;;
+    --config) _brew___config ;;
+    --env) _brew___env ;;
+    --prefix) _brew___prefix ;;
+    --repo) _brew___repo ;;
+    --repository) _brew___repository ;;
+    --version) _brew___version ;;
+    -S) _brew__s ;;
+    -v) _brew__v ;;
+    abv) _brew_abv ;;
+    analytics) _brew_analytics ;;
+    audit) _brew_audit ;;
+    autoremove) _brew_autoremove ;;
+    bottle) _brew_bottle ;;
+    bump) _brew_bump ;;
+    bump-cask-pr) _brew_bump_cask_pr ;;
+    bump-formula-pr) _brew_bump_formula_pr ;;
+    bump-revision) _brew_bump_revision ;;
+    bump-unversioned-casks) _brew_bump_unversioned_casks ;;
+    cask) _brew_cask ;;
+    cat) _brew_cat ;;
+    cleanup) _brew_cleanup ;;
+    command) _brew_command ;;
+    commands) _brew_commands ;;
+    completions) _brew_completions ;;
+    config) _brew_config ;;
+    configure) _brew_configure ;;
+    create) _brew_create ;;
+    deps) _brew_deps ;;
+    desc) _brew_desc ;;
+    dispatch-build-bottle) _brew_dispatch_build_bottle ;;
+    diy) _brew_diy ;;
+    doctor) _brew_doctor ;;
+    dr) _brew_dr ;;
+    edit) _brew_edit ;;
+    environment) _brew_environment ;;
+    extract) _brew_extract ;;
+    fetch) _brew_fetch ;;
+    formula) _brew_formula ;;
+    gist-logs) _brew_gist_logs ;;
+    home) _brew_home ;;
+    homepage) _brew_homepage ;;
+    info) _brew_info ;;
+    instal) _brew_instal ;;
+    install) _brew_install ;;
+    install-bundler-gems) _brew_install_bundler_gems ;;
+    irb) _brew_irb ;;
+    leaves) _brew_leaves ;;
+    link) _brew_link ;;
+    linkage) _brew_linkage ;;
+    list) _brew_list ;;
+    livecheck) _brew_livecheck ;;
+    ln) _brew_ln ;;
+    log) _brew_log ;;
+    ls) _brew_ls ;;
+    man) _brew_man ;;
+    migrate) _brew_migrate ;;
+    mirror) _brew_mirror ;;
+    missing) _brew_missing ;;
+    options) _brew_options ;;
+    outdated) _brew_outdated ;;
+    pin) _brew_pin ;;
+    postinstall) _brew_postinstall ;;
+    pr-automerge) _brew_pr_automerge ;;
+    pr-publish) _brew_pr_publish ;;
+    pr-pull) _brew_pr_pull ;;
+    pr-upload) _brew_pr_upload ;;
+    prof) _brew_prof ;;
+    readall) _brew_readall ;;
+    reinstall) _brew_reinstall ;;
+    release-notes) _brew_release_notes ;;
+    remove) _brew_remove ;;
+    rm) _brew_rm ;;
+    ruby) _brew_ruby ;;
+    search) _brew_search ;;
+    sh) _brew_sh ;;
+    sponsors) _brew_sponsors ;;
+    style) _brew_style ;;
+    switch) _brew_switch ;;
+    tap) _brew_tap ;;
+    tap-info) _brew_tap_info ;;
+    tap-new) _brew_tap_new ;;
+    tc) _brew_tc ;;
+    test) _brew_test ;;
+    tests) _brew_tests ;;
+    typecheck) _brew_typecheck ;;
+    unbottled) _brew_unbottled ;;
+    uninstal) _brew_uninstal ;;
+    uninstall) _brew_uninstall ;;
+    unlink) _brew_unlink ;;
+    unpack) _brew_unpack ;;
+    unpin) _brew_unpin ;;
+    untap) _brew_untap ;;
+    up) _brew_up ;;
+    update) _brew_update ;;
+    update-license-data) _brew_update_license_data ;;
+    update-python-resources) _brew_update_python_resources ;;
+    update-report) _brew_update_report ;;
+    update-test) _brew_update_test ;;
+    upgrade) _brew_upgrade ;;
+    uses) _brew_uses ;;
+    vendor-gems) _brew_vendor_gems ;;
+    *) ;;
   esac
 }
 

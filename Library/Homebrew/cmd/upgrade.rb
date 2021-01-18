@@ -90,7 +90,7 @@ module Homebrew
 
       conflicts "--build-from-source", "--force-bottle"
 
-      named_args [:installed_formula, :installed_cask]
+      named_args [:outdated_formula, :outdated_cask]
     end
   end
 

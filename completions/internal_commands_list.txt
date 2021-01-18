@@ -46,7 +46,6 @@ help
 home
 homepage
 info
-instal
 install
 install-bundler-gems
 irb
@@ -92,7 +91,6 @@ test
 tests
 typecheck
 unbottled
-uninstal
 uninstall
 unlink
 unpack
@@ -102,7 +100,6 @@ up
 update
 update-license-data
 update-python-resources
-update-report
 update-reset
 update-test
 upgrade
