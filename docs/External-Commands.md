@@ -84,9 +84,7 @@ module Homebrew
 
   def foo_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `foo` [<options>] <formula|cask>
-
+      description <<~EOS
         Do something. Place a description here.
       EOS
       switch "-f", "--force",
@@ -113,7 +111,7 @@ Using the above will generate appropriate help text:
 
 ```console
 $ brew foo --help
-Usage: brew foo [options] formula|cask
+Usage: brew foo [options] formula|cask [...]
 
 Do something. Place a description here.
 
@@ -126,6 +124,8 @@ Do something. Place a description here.
   -v, --verbose                    Make some output more verbose.
   -h, --help                       Show this message.
 ```
+
+The usage string is automatically generated based on the specified number and type of named arguments (see below for more details on specifying named arguments). The generated usage string can be overridden by passing the correct usage string to the `usage_banner` method (placed just before the `description` method). See the [`brew tap` command](https://github.com/Homebrew/brew/blob/HEAD/Library/Homebrew/cmd/tap.rb) for an example.
 
 Use the `named_args` method to specify the type and number of named arguments that are expected. Pass either a symbol to indicate the type of argument expected, an array of symbols to indicate that multiple types should be expected, or an array of strings to specify which specific options should be expected (see the [`brew analytics`](https://github.com/Homebrew/brew/blob/HEAD/Library/Homebrew/cmd/analytics.rb) command for an example of this).
 
