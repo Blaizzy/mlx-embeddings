@@ -117,6 +117,11 @@ __brew_complete_commands() {
   COMPREPLY+=($(compgen -W "$cmds" -- "$cur"))
 }
 
+# compopt is only available in newer versions of bash
+__brew_complete_files() {
+  command -v compopt &> /dev/null && compopt -o default
+}
+
 <%= completion_functions.join("\n") %>
 
 _brew() {
