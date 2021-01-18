@@ -208,30 +208,19 @@ module PyPI
     @pipgrip_installed ||= Formula["pipgrip"].any_version_installed?
     odie '"pipgrip" must be installed (`brew install pipgrip`)' unless @pipgrip_installed
 
-    found_packages = []
-    input_packages.each do |package|
-      ohai "Retrieving PyPI dependencies for \"#{package}\"..." if !print_only && !silent
-      pipgrip_output = Utils.popen_read Formula["pipgrip"].bin/"pipgrip", "--json", "--no-cache-dir", package.to_s
-      unless $CHILD_STATUS.success?
-        odie <<~EOS
-          Unable to determine dependencies for \"#{package}\" because of a failure when running
-          `pipgrip --json --no-cache-dir #{package}`.
-          Please update the resources for \"#{formula.name}\" manually.
-        EOS
-      end
+    ohai "Retrieving PyPI dependencies for \"#{input_packages.join(" ")}\"..." if !print_only && !silent
+    command = [Formula["pipgrip"].bin/"pipgrip", "--json", "--no-cache-dir", *input_packages.map(&:to_s)]
+    pipgrip_output = Utils.popen_read(*command)
+    unless $CHILD_STATUS.success?
+      odie <<~EOS
+        Unable to determine dependencies for \"#{input_packages.join(" ")}\" because of a failure when running
+        `#{command.join(" ")}`.
+        Please update the resources for \"#{formula.name}\" manually.
+      EOS
+    end
 
-      JSON.parse(pipgrip_output).to_h.each do |new_name, new_version|
-        new_package = Package.new("#{new_name}==#{new_version}")
-
-        found_packages.each do |existing_package|
-          if existing_package.same_package?(new_package) && existing_package.version != new_package.version
-            odie "Conflicting versions found for the `#{new_package.name}` resource: "\
-                 "#{existing_package.version}, #{new_package.version}"
-          end
-        end
-
-        found_packages << new_package unless found_packages.include? new_package
-      end
+    found_packages = JSON.parse(pipgrip_output).to_h.map do |new_name, new_version|
+      Package.new("#{new_name}==#{new_version}")
     end
 
     # Remove extra packages that may be included in pipgrip output
