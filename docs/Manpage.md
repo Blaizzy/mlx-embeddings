@@ -382,7 +382,7 @@ packages.
 * `-f`, `--force`:
   Treat installed *`formula`* and provided *`formula`* as if they are from the same taps and migrate them anyway.
 
-### `missing` [*`--hide`*`=`*`hide`*] [*`formula`* ...]
+### `missing` [*`--hide`*`=`] [*`formula`* ...]
 
 Check the given *`formula`* kegs for missing dependencies. If no *`formula`* are
 provided, check all kegs. Will exit with a non-zero status if any kegs are found
@@ -550,7 +550,7 @@ using protocols other than HTTPS, e.g. SSH, git, HTTP, FTP(S), rsync.
 * `--list-pinned`:
   List all pinned taps.
 
-### `tap-info` [*`--installed`*] [*`--json`*`=`*`json`*] [*`tap`* ...]
+### `tap-info` [*`--installed`*] [*`--json`*] [*`tap`* ...]
 
 Show detailed information about one or more *`tap`*s.
 
@@ -711,7 +711,7 @@ that directory doesn't exist, `$(brew --repository)/Cellar`.
 If *`formula`* is provided, display the location in the Cellar where *`formula`*
 would be installed, without any sort of versioned directory as the last path.
 
-### `--env` [*`--shell`*`=`*`shell`*] [*`--plain`*] [*`formula`* ...]
+### `--env` [*`--shell`*`=`] [*`--plain`*] [*`formula`* ...]
 
 Summarise Homebrew's build environment as a plain list.
 
@@ -821,7 +821,7 @@ value, while `--no-rebuild` will remove it.
 * `--root-url`:
   Use the specified *`URL`* as the root of the bottle's URL instead of Homebrew's default.
 
-### `bump` [*`--limit`*`=`*`limit`*] [*`formula`* ...]
+### `bump` [*`--limit`*`=`] [*`formula`* ...]
 
 Display out-of-date brew formulae and the latest version available.
 Also displays whether a pull request has been opened with the URL.
@@ -915,7 +915,7 @@ nor vice versa. It must use whichever style specification the formula already us
 * `-f`, `--force`:
   Ignore duplicate open PRs. Remove all mirrors if `--mirror` was not specified.
 
-### `bump-revision` [*`--dry-run`*] [*`--message`*`=`*`message`*] *`formula`* [...]
+### `bump-revision` [*`--dry-run`*] [*`--message`*`=`] *`formula`* [...]
 
 Create a commit to increment the revision of *`formula`*. If no revision is
 present, "revision 1" will be added.
@@ -1019,7 +1019,7 @@ or open the Homebrew repository for editing if no formula is provided.
 * `--cask`:
   Treat all named arguments as casks.
 
-### `extract` [*`--version`*`=`*`version`*] [*`--force`*] *`formula`* ...
+### `extract` [*`--version`*`=`] [*`--force`*] *`formula`* ...
 
 Look through repository history to find the most recent version of *`formula`* and
 create a copy in *`tap`*`/Formula/`*`formula`*`@`*`version`*`.rb`. If the tap is not
@@ -1233,7 +1233,7 @@ Run a Ruby instance with Homebrew's libraries loaded, e.g.
 * `-e`:
   Execute the given text string as a script.
 
-### `sh` [*`--env`*`=`*`env`*] [*`--cmd`*`=`*`cmd`*] [*`file`*]
+### `sh` [*`--env`*`=`] [*`--cmd`*`=`] [*`file`*]
 
 Homebrew build environment that uses years-battle-hardened
 build logic to help your `./configure && make && make install`
@@ -1404,7 +1404,7 @@ If no options are passed, use `origin/master` as the start commit.
 * `--before`:
   Use the commit at the specified *`date`* as the start commit.
 
-### `vendor-gems` [*`--update`*`=`*`update`*]
+### `vendor-gems` [*`--update`*`=`]
 
 Install and commit Homebrew's vendored gems.
 

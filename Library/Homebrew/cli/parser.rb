@@ -206,15 +206,15 @@ module Homebrew
       end
 
       def flag(*names, description: nil, replacement: nil, required_for: nil, depends_on: nil)
-        required = if names.any? { |name| name.end_with? "=" }
-          OptionParser::REQUIRED_ARGUMENT
+        required, flag_type = if names.any? { |name| name.end_with? "=" }
+          [OptionParser::REQUIRED_ARGUMENT, :required_flag]
         else
-          OptionParser::OPTIONAL_ARGUMENT
+          [OptionParser::OPTIONAL_ARGUMENT, :optional_flag]
         end
         names.map! { |name| name.chomp "=" }
         description = option_to_description(*names) if description.nil?
         if replacement.nil?
-          process_option(*names, description, type: :flag)
+          process_option(*names, description, type: flag_type)
         else
           description += " (disabled#{"; replaced by #{replacement}" if replacement.present?})"
         end
@@ -462,10 +462,11 @@ module Homebrew
         elsif @non_global_processed_options.count > 2
           " [<options>]"
         else
+          required_argument_types = [:required_flag, :comma_array]
           @non_global_processed_options.map do |option, type|
-            next " [<#{option}>]" if type == :switch
+            next " [<#{option}>`=`]" if required_argument_types.include? type
 
-            " [<#{option}>`=`<#{option_to_name(option)}>]"
+            " [<#{option}>]"
           end.join
         end
 

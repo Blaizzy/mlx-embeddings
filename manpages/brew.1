@@ -518,7 +518,7 @@ Migrate renamed packages to new names, where \fIformula\fR are old names of pack
 \fB\-f\fR, \fB\-\-force\fR
 Treat installed \fIformula\fR and provided \fIformula\fR as if they are from the same taps and migrate them anyway\.
 .
-.SS "\fBmissing\fR [\fI\-\-hide\fR\fB=\fR\fIhide\fR] [\fIformula\fR \.\.\.]"
+.SS "\fBmissing\fR [\fI\-\-hide\fR\fB=\fR] [\fIformula\fR \.\.\.]"
 Check the given \fIformula\fR kegs for missing dependencies\. If no \fIformula\fR are provided, check all kegs\. Will exit with a non\-zero status if any kegs are found to be missing dependencies\.
 .
 .TP
@@ -746,7 +746,7 @@ Migrate tapped formulae from symlink\-based to directory\-based structure\.
 \fB\-\-list\-pinned\fR
 List all pinned taps\.
 .
-.SS "\fBtap\-info\fR [\fI\-\-installed\fR] [\fI\-\-json\fR\fB=\fR\fIjson\fR] [\fItap\fR \.\.\.]"
+.SS "\fBtap\-info\fR [\fI\-\-installed\fR] [\fI\-\-json\fR] [\fItap\fR \.\.\.]"
 Show detailed information about one or more \fItap\fRs\.
 .
 .P
@@ -964,7 +964,7 @@ Display Homebrew\'s Cellar path\. \fIDefault:\fR \fB$(brew \-\-prefix)/Cellar\fR
 .P
 If \fIformula\fR is provided, display the location in the Cellar where \fIformula\fR would be installed, without any sort of versioned directory as the last path\.
 .
-.SS "\fB\-\-env\fR [\fI\-\-shell\fR\fB=\fR\fIshell\fR] [\fI\-\-plain\fR] [\fIformula\fR \.\.\.]"
+.SS "\fB\-\-env\fR [\fI\-\-shell\fR\fB=\fR] [\fI\-\-plain\fR] [\fIformula\fR \.\.\.]"
 Summarise Homebrew\'s build environment as a plain list\.
 .
 .P
@@ -1124,7 +1124,7 @@ When passed with \fB\-\-write\fR, a new commit will not generated after writing 
 \fB\-\-root\-url\fR
 Use the specified \fIURL\fR as the root of the bottle\'s URL instead of Homebrew\'s default\.
 .
-.SS "\fBbump\fR [\fI\-\-limit\fR\fB=\fR\fIlimit\fR] [\fIformula\fR \.\.\.]"
+.SS "\fBbump\fR [\fI\-\-limit\fR\fB=\fR] [\fIformula\fR \.\.\.]"
 Display out\-of\-date brew formulae and the latest version available\. Also displays whether a pull request has been opened with the URL\.
 .
 .TP
@@ -1268,7 +1268,7 @@ Specify the new commit \fIrevision\fR corresponding to the specified git \fItag\
 \fB\-f\fR, \fB\-\-force\fR
 Ignore duplicate open PRs\. Remove all mirrors if \fB\-\-mirror\fR was not specified\.
 .
-.SS "\fBbump\-revision\fR [\fI\-\-dry\-run\fR] [\fI\-\-message\fR\fB=\fR\fImessage\fR] \fIformula\fR [\.\.\.]"
+.SS "\fBbump\-revision\fR [\fI\-\-dry\-run\fR] [\fI\-\-message\fR\fB=\fR] \fIformula\fR [\.\.\.]"
 Create a commit to increment the revision of \fIformula\fR\. If no revision is present, "revision 1" will be added\.
 .
 .TP
@@ -1417,7 +1417,7 @@ Treat all named arguments as formulae\.
 \fB\-\-cask\fR
 Treat all named arguments as casks\.
 .
-.SS "\fBextract\fR [\fI\-\-version\fR\fB=\fR\fIversion\fR] [\fI\-\-force\fR] \fIformula\fR \.\.\."
+.SS "\fBextract\fR [\fI\-\-version\fR\fB=\fR] [\fI\-\-force\fR] \fIformula\fR \.\.\."
 Look through repository history to find the most recent version of \fIformula\fR and create a copy in \fItap\fR\fB/Formula/\fR\fIformula\fR\fB@\fR\fIversion\fR\fB\.rb\fR\. If the tap is not installed yet, attempt to install/clone the tap before continuing\. To extract a formula from a tap that is not \fBhomebrew/core\fR use its fully\-qualified form of \fIuser\fR\fB/\fR\fIrepo\fR\fB/\fR\fIformula\fR\.
 .
 .TP
@@ -1707,7 +1707,7 @@ Load a library using \fBrequire\fR\.
 \fB\-e\fR
 Execute the given text string as a script\.
 .
-.SS "\fBsh\fR [\fI\-\-env\fR\fB=\fR\fIenv\fR] [\fI\-\-cmd\fR\fB=\fR\fIcmd\fR] [\fIfile\fR]"
+.SS "\fBsh\fR [\fI\-\-env\fR\fB=\fR] [\fI\-\-cmd\fR\fB=\fR] [\fIfile\fR]"
 Homebrew build environment that uses years\-battle\-hardened build logic to help your \fB\./configure && make && make install\fR and even your \fBgem install\fR succeed\. Especially handy if you run Homebrew in an Xcode\-only configuration since it adds tools like \fBmake\fR to your \fBPATH\fR which build systems would not find otherwise\.
 .
 .TP
@@ -1945,7 +1945,7 @@ Use the specified \fIcommit\fR as the start commit\.
 \fB\-\-before\fR
 Use the commit at the specified \fIdate\fR as the start commit\.
 .
-.SS "\fBvendor\-gems\fR [\fI\-\-update\fR\fB=\fR\fIupdate\fR]"
+.SS "\fBvendor\-gems\fR [\fI\-\-update\fR\fB=\fR]"
 Install and commit Homebrew\'s vendored gems\.
 .
 .TP
