@@ -14,14 +14,14 @@ module Stdenv
   SAFE_CFLAGS_FLAGS = "-w -pipe"
 
   # @private
-  sig do
+  sig {
     params(
       formula:      T.nilable(Formula),
       cc:           T.nilable(String),
       build_bottle: T.nilable(T::Boolean),
       bottle_arch:  T.nilable(T::Boolean),
     ).void
-  end
+  }
   def setup_build_environment(formula: nil, cc: nil, build_bottle: false, bottle_arch: nil)
     super
 

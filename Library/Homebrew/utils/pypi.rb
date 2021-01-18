@@ -119,7 +119,7 @@ module PyPI
   end
 
   # Return true if resources were checked (even if no change).
-  sig do
+  sig {
     params(
       formula:                  Formula,
       version:                  T.nilable(String),
@@ -130,7 +130,7 @@ module PyPI
       silent:                   T.nilable(T::Boolean),
       ignore_non_pypi_packages: T.nilable(T::Boolean),
     ).returns(T.nilable(T::Boolean))
-  end
+  }
   def update_python_resources!(formula, version: nil, package_name: nil, extra_packages: nil, exclude_packages: nil,
                                print_only: false, silent: false, ignore_non_pypi_packages: false)
 

@@ -41,10 +41,10 @@ module Cask
 
       attr_reader :source, :target
 
-      sig do
+      sig {
         params(cask: Cask, source: T.nilable(T.any(String, Pathname)), target: T.nilable(T.any(String, Pathname)))
           .void
-      end
+      }
       def initialize(cask, source, target: nil)
         super(cask)
 

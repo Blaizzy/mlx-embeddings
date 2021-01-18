@@ -22,10 +22,10 @@ module UnpackStrategy
 
     private
 
-    sig do
+    sig {
       override.params(unpack_dir: Pathname, basename: Pathname, verbose: T::Boolean)
               .returns(SystemCommand::Result)
-    end
+    }
     def extract_to_dir(unpack_dir, basename:, verbose:)
       quiet_flags = verbose ? [] : ["-qq"]
       result = system_command! "unzip",

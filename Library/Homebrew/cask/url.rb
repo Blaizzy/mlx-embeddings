@@ -16,7 +16,7 @@ class URL
   extend Forwardable
   def_delegators :uri, :path, :scheme, :to_s
 
-  sig do
+  sig {
     params(
       uri:             T.any(URI::Generic, String),
       verified:        T.nilable(String),
@@ -34,7 +34,7 @@ class URL
       from_block:      T::Boolean,
       caller_location: Thread::Backtrace::Location,
     ).returns(T.untyped)
-  end
+  }
   def initialize(
     uri,
     verified: nil,

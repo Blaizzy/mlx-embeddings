@@ -14,14 +14,14 @@ module Homebrew
 
       module_function
 
-      sig do
+      sig {
         params(
           formula_or_cask: T.any(Formula, Cask::Cask),
           livecheckable:   T::Boolean,
           full_name:       T::Boolean,
           verbose:         T::Boolean,
         ).returns(Hash)
-      end
+      }
       def formula_or_cask_skip(formula_or_cask, livecheckable, full_name: false, verbose: false)
         formula = formula_or_cask if formula_or_cask.is_a?(Formula)
 
@@ -51,14 +51,14 @@ module Homebrew
         Livecheck.status_hash(formula_or_cask, "skipped", skip_messages, full_name: full_name, verbose: verbose)
       end
 
-      sig do
+      sig {
         params(
           formula:        Formula,
           _livecheckable: T::Boolean,
           full_name:      T::Boolean,
           verbose:        T::Boolean,
         ).returns(Hash)
-      end
+      }
       def formula_head_only(formula, _livecheckable, full_name: false, verbose: false)
         return {} if !formula.head_only? || formula.any_version_installed?
 
@@ -71,84 +71,84 @@ module Homebrew
         )
       end
 
-      sig do
+      sig {
         params(
           formula:       Formula,
           livecheckable: T::Boolean,
           full_name:     T::Boolean,
           verbose:       T::Boolean,
         ).returns(Hash)
-      end
+      }
       def formula_deprecated(formula, livecheckable, full_name: false, verbose: false)
         return {} if !formula.deprecated? || livecheckable
 
         Livecheck.status_hash(formula, "deprecated", full_name: full_name, verbose: verbose)
       end
 
-      sig do
+      sig {
         params(
           formula:       Formula,
           livecheckable: T::Boolean,
           full_name:     T::Boolean,
           verbose:       T::Boolean,
         ).returns(Hash)
-      end
+      }
       def formula_disabled(formula, livecheckable, full_name: false, verbose: false)
         return {} if !formula.disabled? || livecheckable
 
         Livecheck.status_hash(formula, "disabled", full_name: full_name, verbose: verbose)
       end
 
-      sig do
+      sig {
         params(
           formula:       Formula,
           livecheckable: T::Boolean,
           full_name:     T::Boolean,
           verbose:       T::Boolean,
         ).returns(Hash)
-      end
+      }
       def formula_versioned(formula, livecheckable, full_name: false, verbose: false)
         return {} if !formula.versioned_formula? || livecheckable
 
         Livecheck.status_hash(formula, "versioned", full_name: full_name, verbose: verbose)
       end
 
-      sig do
+      sig {
         params(
           cask:          Cask::Cask,
           livecheckable: T::Boolean,
           full_name:     T::Boolean,
           verbose:       T::Boolean,
         ).returns(Hash)
-      end
+      }
       def cask_discontinued(cask, livecheckable, full_name: false, verbose: false)
         return {} if !cask.discontinued? || livecheckable
 
         Livecheck.status_hash(cask, "discontinued", full_name: full_name, verbose: verbose)
       end
 
-      sig do
+      sig {
         params(
           cask:          Cask::Cask,
           livecheckable: T::Boolean,
           full_name:     T::Boolean,
           verbose:       T::Boolean,
         ).returns(Hash)
-      end
+      }
       def cask_version_latest(cask, livecheckable, full_name: false, verbose: false)
         return {} if !(cask.present? && cask.version&.latest?) || livecheckable
 
         Livecheck.status_hash(cask, "latest", full_name: full_name, verbose: verbose)
       end
 
-      sig do
+      sig {
         params(
           cask:          Cask::Cask,
           livecheckable: T::Boolean,
           full_name:     T::Boolean,
           verbose:       T::Boolean,
         ).returns(Hash)
-      end
+      }
       def cask_url_unversioned(cask, livecheckable, full_name: false, verbose: false)
         return {} if !(cask.present? && cask.url&.unversioned?) || livecheckable
 
@@ -175,13 +175,13 @@ module Homebrew
       # If a formula/cask should be skipped, we return a hash from
       # `Livecheck#status_hash`, which contains a `status` type and sometimes
       # error `messages`.
-      sig do
+      sig {
         params(
           formula_or_cask: T.any(Formula, Cask::Cask),
           full_name:       T::Boolean,
           verbose:         T::Boolean,
         ).returns(Hash)
-      end
+      }
       def skip_information(formula_or_cask, full_name: false, verbose: false)
         livecheckable = formula_or_cask.livecheckable?
 

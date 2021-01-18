@@ -24,10 +24,10 @@ module EnvMethods
   sig { params(key: String).returns(T.nilable(String)) }
   def delete(key); end
 
-  sig do
+  sig {
     params(other: T.any(T::Hash[String, String], Sorbet::Private::Static::ENVClass))
       .returns(Sorbet::Private::Static::ENVClass)
-  end
+  }
   def replace(other); end
 
   sig { returns(T::Hash[String, String]) }

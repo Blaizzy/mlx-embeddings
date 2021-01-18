@@ -42,10 +42,10 @@ module Homebrew
       # Convert named arguments to {Formula} or {Cask} objects.
       # If both a formula and cask with the same name exist, returns
       # the formula and prints a warning unless `only` is specified.
-      sig do
+      sig {
         params(only: T.nilable(Symbol), ignore_unavailable: T.nilable(T::Boolean), method: T.nilable(Symbol))
           .returns(T::Array[T.any(Formula, Keg, Cask::Cask)])
-      end
+      }
       def to_formulae_and_casks(only: parent&.only_formula_or_cask, ignore_unavailable: nil, method: nil)
         @to_formulae_and_casks ||= {}
         @to_formulae_and_casks[only] ||= downcased_unique_named.flat_map do |name|
@@ -175,10 +175,10 @@ module Homebrew
         end
       end
 
-      sig do
+      sig {
         params(only: T.nilable(Symbol), ignore_unavailable: T.nilable(T::Boolean), all_kegs: T.nilable(T::Boolean))
           .returns([T::Array[Keg], T::Array[Cask::Cask]])
-      end
+      }
       def to_kegs_to_casks(only: parent&.only_formula_or_cask, ignore_unavailable: nil, all_kegs: nil)
         method = all_kegs ? :kegs : :keg
         @to_kegs_to_casks ||= {}

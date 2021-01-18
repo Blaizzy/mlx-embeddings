@@ -62,7 +62,7 @@ module Homebrew
 
     # Executes the livecheck logic for each formula/cask in the
     # `formulae_and_casks_to_check` array and prints the results.
-    sig do
+    sig {
       params(
         formulae_and_casks_to_check: T::Enumerable[T.any(Formula, Cask::Cask)],
         full_name:                   T::Boolean,
@@ -72,7 +72,7 @@ module Homebrew
         quiet:                       T::Boolean,
         verbose:                     T::Boolean,
       ).void
-    end
+    }
     def run_checks(
       formulae_and_casks_to_check,
       full_name: false, json: false, newer_only: false, debug: false, quiet: false, verbose: false
@@ -260,7 +260,7 @@ module Homebrew
       full_name ? formula.full_name : formula.name
     end
 
-    sig do
+    sig {
       params(
         formula_or_cask: T.any(Formula, Cask::Cask),
         status_str:      String,
@@ -268,7 +268,7 @@ module Homebrew
         full_name:       T::Boolean,
         verbose:         T::Boolean,
       ).returns(Hash)
-    end
+    }
     def status_hash(formula_or_cask, status_str, messages = nil, full_name: false, verbose: false)
       formula = formula_or_cask if formula_or_cask.is_a?(Formula)
       cask = formula_or_cask if formula_or_cask.is_a?(Cask::Cask)
@@ -311,12 +311,12 @@ module Homebrew
       puts "#{formula_or_cask_s} : #{current_s} ==> #{latest_s}"
     end
 
-    sig do
+    sig {
       params(
         livecheck_url:   T.any(String, Symbol),
         formula_or_cask: T.any(Formula, Cask::Cask),
       ).returns(T.nilable(String))
-    end
+    }
     def livecheck_url_to_string(livecheck_url, formula_or_cask)
       case livecheck_url
       when String
@@ -396,7 +396,7 @@ module Homebrew
 
     # Identifies the latest version of the formula and returns a Hash containing
     # the version information. Returns nil if a latest version couldn't be found.
-    sig do
+    sig {
       params(
         formula_or_cask: T.any(Formula, Cask::Cask),
         json:            T::Boolean,
@@ -404,7 +404,7 @@ module Homebrew
         verbose:         T::Boolean,
         debug:           T::Boolean,
       ).returns(T.nilable(Hash))
-    end
+    }
     def latest_version(formula_or_cask, json: false, full_name: false, verbose: false, debug: false)
       formula = formula_or_cask if formula_or_cask.is_a?(Formula)
       cask = formula_or_cask if formula_or_cask.is_a?(Cask::Cask)

@@ -84,10 +84,10 @@ module Homebrew
     end
   end
 
-  sig do
+  sig {
     params(cask: Cask::Cask, state: T::Hash[String, T.untyped], dry_run: T.nilable(T::Boolean))
       .returns(T.nilable(T::Hash[String, T.untyped]))
-  end
+  }
   def self.bump_unversioned_cask(cask, state:, dry_run:)
     ohai "Checking #{cask.full_name}"
 

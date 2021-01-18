@@ -64,7 +64,7 @@ class SystemCommand
     result
   end
 
-  sig do
+  sig {
     params(
       executable:   T.any(String, Pathname),
       args:         T::Array[T.any(String, Integer, Float, URI::Generic)],
@@ -79,7 +79,7 @@ class SystemCommand
       secrets:      T.any(String, T::Array[String]),
       chdir:        T.any(String, Pathname),
     ).void
-  end
+  }
   def initialize(executable, args: [], sudo: false, env: {}, input: [], must_succeed: false,
                  print_stdout: false, print_stderr: true, debug: nil, verbose: nil, secrets: [], chdir: T.unsafe(nil))
     require "extend/ENV"
@@ -224,14 +224,14 @@ class SystemCommand
 
     attr_accessor :command, :status, :exit_status
 
-    sig do
+    sig {
       params(
         command: T::Array[String],
         output:  T::Array[[Symbol, String]],
         status:  Process::Status,
         secrets: T::Array[String],
       ).void
-    end
+    }
     def initialize(command, output, status, secrets:)
       @command       = command
       @output        = output
