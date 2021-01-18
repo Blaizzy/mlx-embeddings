@@ -97,7 +97,7 @@ module Homebrew
 
     sig { params(command: String).returns(T::Boolean) }
     def command_gets_completions?(command)
-      return false if command.start_with? "cask " # TODO: remove when `brew cask` commands are removed
+      return false if command.start_with? "cask " # TODO: (2.8) remove when `brew cask` commands are removed
 
       command_options(command).any?
     end
