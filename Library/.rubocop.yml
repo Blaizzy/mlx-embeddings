@@ -89,6 +89,11 @@ Naming/MethodName:
 Naming/VariableNumber:
   Enabled: false
 
+# Require &&/|| instead of and/or
+Style/AndOr:
+  Enabled: true
+  EnforcedStyle: always
+
 # Avoid leaking resources.
 Style/AutoResourceCleanup:
   Enabled: true
