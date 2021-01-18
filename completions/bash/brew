@@ -1813,9 +1813,9 @@ _brew_style() {
       return
       ;;
   esac
+  __brew_complete_tapped
   __brew_complete_formulae
   __brew_complete_casks
-  __brew_complete_tapped
 }
 
 _brew_switch() {
