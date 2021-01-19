@@ -1346,7 +1346,6 @@ _brew_man() {
       --debug
       --fail-if-changed
       --help
-      --link
       --quiet
       --verbose
       "
