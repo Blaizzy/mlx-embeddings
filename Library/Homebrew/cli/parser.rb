@@ -366,14 +366,14 @@ module Homebrew
         @formula_options = true
       end
 
-      sig do
+      sig {
         params(
           type:   T.any(Symbol, T::Array[String], T::Array[Symbol]),
           number: T.nilable(Integer),
           min:    T.nilable(Integer),
           max:    T.nilable(Integer),
         ).void
-      end
+      }
       def named_args(type = nil, number: nil, min: nil, max: nil)
         if number.present? && (min.present? || max.present?)
           raise ArgumentError, "Do not specify both `number` and `min` or `max`"

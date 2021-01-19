@@ -43,7 +43,7 @@ class Bintray
     curl(*args, url, print_stdout: false, secrets: key)
   end
 
-  sig do
+  sig {
     params(local_file:    String,
            repo:          String,
            package:       String,
@@ -51,7 +51,7 @@ class Bintray
            remote_file:   String,
            sha256:        T.nilable(String),
            warn_on_error: T.nilable(T::Boolean)).void
-  end
+  }
   def upload(local_file, repo:, package:, version:, remote_file:, sha256: nil, warn_on_error: false)
     unless File.exist? local_file
       msg = "#{local_file} for upload doesn't exist!"
@@ -78,13 +78,13 @@ class Bintray
     opoo msg
   end
 
-  sig do
+  sig {
     params(repo:          String,
            package:       String,
            version:       String,
            file_count:    T.nilable(Integer),
            warn_on_error: T.nilable(T::Boolean)).void
-  end
+  }
   def publish(repo:, package:, version:, file_count:, warn_on_error: false)
     url = "#{API_URL}/content/#{@bintray_org}/#{repo}/#{package}/#{version}/publish"
     upload_args = %w[--request POST]
@@ -113,12 +113,12 @@ class Bintray
     status_code.start_with?("2")
   end
 
-  sig do
+  sig {
     params(formula:         Formula,
            repo:            String,
            publish_package: T::Boolean,
            warn_on_error:   T::Boolean).returns(String)
-  end
+  }
   def mirror_formula(formula, repo: "mirror", publish_package: false, warn_on_error: false)
     package = Utils::Bottles::Bintray.package formula.name
 
@@ -202,11 +202,11 @@ class Bintray
     EOS
   end
 
-  sig do
+  sig {
     params(bottles_hash:    T::Hash[String, T.untyped],
            publish_package: T::Boolean,
            warn_on_error:   T.nilable(T::Boolean)).void
-  end
+  }
   def upload_bottles(bottles_hash, publish_package: false, warn_on_error: false)
     formula_packaged = {}
 

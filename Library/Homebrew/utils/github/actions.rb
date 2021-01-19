@@ -31,12 +31,12 @@ module GitHub
         path.realpath.relative_path_from(workspace)
       end
 
-      sig do
+      sig {
         params(
           type: Symbol, message: String,
           file: T.nilable(T.any(String, Pathname)), line: T.nilable(Integer), column: T.nilable(Integer)
         ).void
-      end
+      }
       def initialize(type, message, file: nil, line: nil, column: nil)
         raise ArgumentError, "Unsupported type: #{type.inspect}" unless [:warning, :error].include?(type)
 

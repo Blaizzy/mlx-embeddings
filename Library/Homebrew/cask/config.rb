@@ -72,10 +72,10 @@ module Cask
       )
     end
 
-    sig do
+    sig {
       params(config: T::Enumerable[[T.any(String, Symbol), T.any(String, Pathname, T::Array[String])]])
         .returns(T::Hash[Symbol, T.any(String, Pathname, T::Array[String])])
-    end
+    }
     def self.canonicalize(config)
       config.map do |k, v|
         key = k.to_sym
@@ -91,14 +91,14 @@ module Cask
     sig { returns(T::Hash[Symbol, T.any(String, Pathname, T::Array[String])]) }
     attr_accessor :explicit
 
-    sig do
+    sig {
       params(
         default:             T.nilable(T::Hash[Symbol, T.any(String, Pathname, T::Array[String])]),
         env:                 T.nilable(T::Hash[Symbol, T.any(String, Pathname, T::Array[String])]),
         explicit:            T::Hash[Symbol, T.any(String, Pathname, T::Array[String])],
         ignore_invalid_keys: T::Boolean,
       ).void
-    end
+    }
     def initialize(default: nil, env: nil, explicit: {}, ignore_invalid_keys: false)
       @default = self.class.canonicalize(self.class.defaults.merge(default)) if default
       @env = self.class.canonicalize(env) if env

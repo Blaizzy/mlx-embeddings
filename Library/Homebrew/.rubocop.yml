@@ -51,3 +51,7 @@ Naming/PredicateName:
 Style/HashAsLastArrayItem:
   Exclude:
     - 'test/utils/spdx_spec.rb'
+
+Style/BlockDelimiters:
+  BracesRequiredMethods:
+    - 'sig'

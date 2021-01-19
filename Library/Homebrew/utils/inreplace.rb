@@ -40,14 +40,14 @@ module Utils
     #
     # @see StringInreplaceExtension
     # @api public
-    sig do
+    sig {
       params(
         paths:        T.any(T::Array[T.untyped], String, Pathname),
         before:       T.nilable(T.any(Regexp, String)),
         after:        T.nilable(T.any(String, Symbol)),
         audit_result: T::Boolean,
       ).void
-    end
+    }
     def inreplace(paths, before = nil, after = nil, audit_result = true) # rubocop:disable Style/OptionalBooleanParameter
       after = after.to_s if after.is_a? Symbol
 

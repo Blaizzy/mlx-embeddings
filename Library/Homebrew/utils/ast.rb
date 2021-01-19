@@ -49,14 +49,14 @@ module Utils
       [processed_source, root_node]
     end
 
-    sig do
+    sig {
       params(
         component_name: Symbol,
         component_type: Symbol,
         target_name:    Symbol,
         target_type:    T.nilable(Symbol),
       ).returns(T::Boolean)
-    end
+    }
     def component_match?(component_name:, component_type:, target_name:, target_type: nil)
       component_name == target_name && (target_type.nil? || component_type == target_type)
     end

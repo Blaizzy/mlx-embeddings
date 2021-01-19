@@ -57,7 +57,7 @@ module Cask
         )
       end
 
-      sig do
+      sig {
         params(
           casks:          Cask,
           args:           Homebrew::CLI::Args,
@@ -70,7 +70,7 @@ module Cask
           quarantine:     T.nilable(T::Boolean),
           require_sha:    T.nilable(T::Boolean),
         ).returns(T::Boolean)
-      end
+      }
       def self.upgrade_casks(
         *casks,
         args:,

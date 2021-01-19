@@ -28,10 +28,10 @@ class StringInreplaceExtension
   # Same as `String#gsub!`, but warns if nothing was replaced.
   #
   # @api public
-  sig do
+  sig {
     params(before: T.any(Regexp, String), after: T.nilable(String), audit_result: T::Boolean)
       .returns(T.nilable(String))
-  end
+  }
   def gsub!(before, after, audit_result = true) # rubocop:disable Style/OptionalBooleanParameter
     result = inreplace_string.gsub!(before, after)
     errors << "expected replacement of #{before.inspect} with #{after.inspect}" if audit_result && result.nil?
