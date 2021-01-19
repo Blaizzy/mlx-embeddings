@@ -22,7 +22,7 @@ module OS
 
       sig { returns(Version) }
       def minimum_version
-        Version.new ENV["HOMEBREW_LINUX_MINIMUM_GLIBC_VERSION"]
+        Version.new(ENV.fetch("HOMEBREW_LINUX_MINIMUM_GLIBC_VERSION"))
       end
 
       def below_minimum_version?

@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "version/null"
@@ -11,6 +11,7 @@ class Version
 
   include Comparable
 
+  sig { params(name: T.any(String, Symbol), full: T::Boolean).returns(Regexp) }
   def self.formula_optionally_versioned_regex(name, full: true)
     /#{"^" if full}#{Regexp.escape(name)}(@\d[\d.]*)?#{"$" if full}/
   end
@@ -18,9 +19,12 @@ class Version
   # A part of a {Version}.
   class Token
     extend T::Sig
+    extend T::Helpers
+    abstract!
 
     include Comparable
 
+    sig { params(val: String).returns(Token) }
     def self.create(val)
       raise TypeError, "Token value must be a string; got a #{val.class} (#{val})" unless val.respond_to?(:to_str)
 
@@ -36,39 +40,49 @@ class Version
       end.new(val)
     end
 
+    sig { params(val: T.untyped).returns(T.nilable(Token)) }
     def self.from(val)
+      return NULL_TOKEN if val.nil? || (val.respond_to?(:null?) && val.null?)
+
       case val
       when Token   then val
       when String  then Token.create(val)
       when Integer then Token.create(val.to_s)
-      when nil     then NULL_TOKEN
-      else NULL_TOKEN if val.respond_to?(:null?) && val.null?
       end
     end
 
+    sig { returns(T.nilable(T.any(String, Integer))) }
     attr_reader :value
 
+    sig { params(value: T.nilable(T.any(String, Integer))).void }
     def initialize(value)
-      @value = value
+      @value = T.let(value, T.untyped)
     end
+
+    sig { abstract.params(other: T.untyped).returns(T.nilable(Integer)) }
+    def <=>(other); end
 
     sig { returns(String) }
     def inspect
       "#<#{self.class.name} #{value.inspect}>"
     end
 
+    sig { returns(Integer) }
     def hash
       value.hash
     end
 
+    sig { returns(Float) }
     def to_f
       value.to_f
     end
 
+    sig { returns(Integer) }
     def to_i
       value.to_i
     end
 
+    sig { returns(String) }
     def to_s
       value.to_s
     end
@@ -78,16 +92,26 @@ class Version
     def numeric?
       false
     end
+
+    sig { returns(T::Boolean) }
+    def null?
+      false
+    end
   end
 
   # A pseudo-token representing the absence of a token.
   class NullToken < Token
     extend T::Sig
 
+    sig { override.returns(NilClass) }
+    attr_reader :value
+
+    sig { void }
     def initialize
       super(nil)
     end
 
+    sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
       return unless other = Token.from(other)
 
@@ -103,12 +127,12 @@ class Version
       end
     end
 
-    sig { returns(T::Boolean) }
+    sig { override.returns(T::Boolean) }
     def null?
       true
     end
 
-    sig { returns(String) }
+    sig { override.returns(String) }
     def inspect
       "#<#{self.class.name}>"
     end
@@ -122,12 +146,15 @@ class Version
   class StringToken < Token
     PATTERN = /[a-z]+/i.freeze
 
-    def initialize(value)
-      super
+    sig { override.returns(String) }
+    attr_reader :value
 
-      @value = value.to_s
+    sig { params(value: String).void }
+    def initialize(value)
+      super(value.to_s)
     end
 
+    sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
       return unless other = Token.from(other)
 
@@ -135,7 +162,7 @@ class Version
       when StringToken
         value <=> other.value
       when NumericToken, NullToken
-        -Integer(other <=> self)
+        -T.must(other <=> self)
       end
     end
   end
@@ -145,12 +172,15 @@ class Version
     PATTERN = /[0-9]+/i.freeze
     extend T::Sig
 
-    def initialize(value)
-      super
+    sig { override.returns(Integer) }
+    attr_reader :value
 
-      @value = value.to_i
+    sig { params(value: T.any(String, Integer)).void }
+    def initialize(value)
+      super(value.to_i)
     end
 
+    sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
       return unless other = Token.from(other)
 
@@ -160,11 +190,11 @@ class Version
       when StringToken
         1
       when NullToken
-        -Integer(other <=> self)
+        -T.must(other <=> self)
       end
     end
 
-    sig { returns(T::Boolean) }
+    sig { override.returns(T::Boolean) }
     def numeric?
       true
     end
@@ -172,6 +202,7 @@ class Version
 
   # A token consisting of an alphabetic and a numeric part.
   class CompositeToken < StringToken
+    sig { returns(Integer) }
     def rev
       value[/[0-9]+/].to_i
     end
@@ -181,6 +212,7 @@ class Version
   class AlphaToken < CompositeToken
     PATTERN = /alpha[0-9]*|a[0-9]+/i.freeze
 
+    sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
       return unless other = Token.from(other)
 
@@ -199,6 +231,7 @@ class Version
   class BetaToken < CompositeToken
     PATTERN = /beta[0-9]*|b[0-9]+/i.freeze
 
+    sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
       return unless other = Token.from(other)
 
@@ -219,6 +252,7 @@ class Version
   class PreToken < CompositeToken
     PATTERN = /pre[0-9]*/i.freeze
 
+    sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
       return unless other = Token.from(other)
 
@@ -239,6 +273,7 @@ class Version
   class RCToken < CompositeToken
     PATTERN = /rc[0-9]*/i.freeze
 
+    sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
       return unless other = Token.from(other)
 
@@ -259,6 +294,7 @@ class Version
   class PatchToken < CompositeToken
     PATTERN = /p[0-9]*/i.freeze
 
+    sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
       return unless other = Token.from(other)
 
@@ -277,6 +313,7 @@ class Version
   class PostToken < CompositeToken
     PATTERN = /.post[0-9]+/i.freeze
 
+    sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
       return unless other = Token.from(other)
 
@@ -303,10 +340,12 @@ class Version
   ).freeze
   private_constant :SCAN_PATTERN
 
+  sig { params(url: T.any(String, Pathname), specs: T.untyped).returns(Version) }
   def self.detect(url, **specs)
     parse(specs.fetch(:tag, url), detected_from_url: true)
   end
 
+  sig { params(val: String).returns(Version) }
   def self.create(val)
     raise TypeError, "Version value must be a string; got a #{val.class} (#{val})" unless val.respond_to?(:to_str)
 
@@ -317,11 +356,13 @@ class Version
     end
   end
 
+  sig { params(spec: T.any(String, Pathname), detected_from_url: T::Boolean).returns(Version) }
   def self.parse(spec, detected_from_url: false)
     version = _parse(spec, detected_from_url: detected_from_url)
     version.nil? ? NULL : new(version, detected_from_url: detected_from_url)
   end
 
+  sig { params(spec: T.any(String, Pathname), detected_from_url: T::Boolean).returns(T.nilable(String)) }
   def self._parse(spec, detected_from_url:)
     spec = CGI.unescape(spec.to_s) if detected_from_url
 
@@ -330,11 +371,11 @@ class Version
     spec_s = spec.to_s
 
     stem = if spec.directory?
-      spec.basename
+      spec.basename.to_s
     elsif spec_s.match?(%r{((?:sourceforge\.net|sf\.net)/.*)/download$})
-      Pathname.new(spec.dirname).stem
-    elsif spec_s.match?(/\.[^a-zA-Z]+$/)
-      Pathname.new(spec_s).basename
+      spec.dirname.stem
+    elsif spec_s.match?(/\.[^a-zA-Z]+$/) # rubocop:disable Lint/DuplicateBranch
+      spec.basename.to_s
     else
       spec.stem
     end
@@ -358,7 +399,7 @@ class Version
 
     # e.g. boost_1_39_0
     m = /((?:\d+_)+\d+)$/.match(stem)
-    return m.captures.first.tr("_", ".") unless m.nil?
+    return T.must(m.captures.first).tr("_", ".") unless m.nil?
 
     # e.g. foobar-4.5.1-1
     # e.g. unrtf_0.20.4-1
@@ -468,6 +509,7 @@ class Version
   end
   private_class_method :_parse
 
+  sig { params(val: T.any(String, Version), detected_from_url: T::Boolean).void }
   def initialize(val, detected_from_url: false)
     raise TypeError, "Version value must be a string; got a #{val.class} (#{val})" unless val.respond_to?(:to_str)
 
@@ -475,18 +517,22 @@ class Version
     @detected_from_url = detected_from_url
   end
 
+  sig { returns(T::Boolean) }
   def detected_from_url?
     @detected_from_url
   end
 
+  sig { returns(T::Boolean) }
   def head?
     false
   end
 
+  sig { returns(T::Boolean) }
   def null?
     false
   end
 
+  sig { params(other: T.untyped).returns(T.nilable(Integer)) }
   def <=>(other)
     # Needed to retain API compatibility with older string comparisons
     # for compiler versions, etc.
@@ -533,42 +579,52 @@ class Version
   end
   alias eql? ==
 
+  sig { returns(T.nilable(Token)) }
   def major
     tokens.first
   end
 
+  sig { returns(T.nilable(Token)) }
   def minor
     tokens.second
   end
 
+  sig { returns(T.nilable(Token)) }
   def patch
     tokens.third
   end
 
+  sig { returns(Version) }
   def major_minor
     Version.new([major, minor].compact.join("."))
   end
 
+  sig { returns(Version) }
   def major_minor_patch
     Version.new([major, minor, patch].compact.join("."))
   end
 
+  sig { returns(T::Boolean) }
   def empty?
     version.empty?
   end
 
+  sig { returns(Integer) }
   def hash
     version.hash
   end
 
+  sig { returns(Float) }
   def to_f
     version.to_f
   end
 
+  sig { returns(Integer) }
   def to_i
     version.to_i
   end
 
+  sig { returns(String) }
   def to_s
     version.dup
   end
@@ -576,20 +632,24 @@ class Version
 
   protected
 
+  sig { returns(String) }
   attr_reader :version
 
+  sig { returns(T::Array[Token]) }
   def tokens
     @tokens ||= tokenize
   end
 
   private
 
+  sig { params(a: Integer, b: Integer).returns(Integer) }
   def max(a, b)
     (a > b) ? a : b
   end
 
+  sig { returns(T::Array[Token]) }
   def tokenize
-    version.scan(SCAN_PATTERN).map { |token| Token.create(token) }
+    version.scan(SCAN_PATTERN).map { |token| Token.create(T.cast(token, String)) }
   end
 end
 
@@ -600,6 +660,7 @@ end
 class HeadVersion < Version
   extend T::Sig
 
+  sig { returns(T.nilable(String)) }
   attr_reader :commit
 
   def initialize(*)
@@ -607,6 +668,7 @@ class HeadVersion < Version
     @commit = @version[/^HEAD-(.+)$/, 1]
   end
 
+  sig { params(commit: T.nilable(String)).void }
   def update_commit(commit)
     @commit = commit
     @version = if commit
