@@ -37,13 +37,17 @@ module OS
       def self.version_arch(value)
         @all_archs_regex ||= begin
           all_archs = Hardware::CPU::ALL_ARCHS.map(&:to_s)
-          /^((#{Regexp.union(all_archs)})_)?([\w.]+)(-(#{Regexp.union(all_archs)}))?$/
+          /
+            ^((?<prefix_arch>#{Regexp.union(all_archs)})_)?
+            (?<version>[\w.]+)
+            (-(?<suffix_arch>#{Regexp.union(all_archs)}))?$
+          /x
         end
         match = @all_archs_regex.match(value)
         return [] unless match
 
-        version = match[3]
-        arch = match[2] || match[5]
+        version = match[:version]
+        arch = match[:prefix_arch] || match[:suffix_arch]
         [version, arch]
       end
 
