@@ -597,18 +597,6 @@ describe Cask::Audit, :cask do
         it { is_expected.not_to fail_with(message) }
       end
 
-      context "when the download uses GitHub releases and has an appcast" do
-        let(:cask_token) { "github-with-appcast" }
-
-        it { is_expected.not_to fail_with(message) }
-      end
-
-      context "when the download uses GitHub releases and does not have an appcast" do
-        let(:cask_token) { "github-without-appcast" }
-
-        it { is_expected.to fail_with(message) }
-      end
-
       context "when the download is hosted on SourceForge and has an appcast" do
         let(:cask_token) { "sourceforge-with-appcast" }
 

@@ -310,10 +310,6 @@ module Cask
       add_appcast = "please add an appcast. See https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/stanzas/appcast.md"
 
       case cask.url.to_s
-      when %r{github.com/([^/]+)/([^/]+)/releases/download/(\S+)}
-        return if cask.version.latest?
-
-        add_error "Download uses GitHub releases, #{add_appcast}"
       when %r{sourceforge.net/(\S+)}
         return if cask.version.latest?
 
