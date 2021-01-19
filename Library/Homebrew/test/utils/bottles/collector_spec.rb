@@ -8,9 +8,9 @@ describe Utils::Bottles::Collector do
 
   describe "#fetch_checksum_for" do
     it "returns passed tags" do
-      collector[:mojave] = "foo"
-      collector[:catalina] = "bar"
-      expect(collector.fetch_checksum_for(:catalina)).to eq(["bar", :catalina])
+      collector[:mojave] = { checksum: Checksum.new("foo_checksum"), cellar: "foo_cellar" }
+      collector[:catalina] = { checksum: Checksum.new("bar_checksum"), cellar: "bar_cellar" }
+      expect(collector.fetch_checksum_for(:catalina)).to eq(["bar_checksum", :catalina, "bar_cellar"])
     end
 
     it "returns nil if empty" do
