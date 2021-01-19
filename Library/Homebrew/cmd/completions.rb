@@ -12,9 +12,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def completions_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `completions` [<subcommand>]
-
+      description <<~EOS
         Control whether Homebrew automatically links external tap shell completion files.
         Read more at <https://docs.brew.sh/Shell-Completion>.
 

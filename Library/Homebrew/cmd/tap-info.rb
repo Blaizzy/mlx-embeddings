@@ -11,9 +11,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def tap_info_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `tap-info` [<options>] [<tap>] [<tap> ...]
-
+      description <<~EOS
         Show detailed information about one or more <tap>s.
 
         If no <tap> names are provided, display brief statistics for all installed taps.

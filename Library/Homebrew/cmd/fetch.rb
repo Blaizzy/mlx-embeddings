@@ -16,9 +16,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def fetch_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `fetch` [<options>] <formula>|<cask> [<formula>|<cask> ...]
-
+      description <<~EOS
         Download a bottle (if available) or source packages for <formula>e
         and binaries for <cask>s. For files, also print SHA-256 checksums.
       EOS

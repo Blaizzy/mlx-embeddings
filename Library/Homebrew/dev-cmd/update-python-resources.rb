@@ -12,9 +12,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def update_python_resources_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `update-python-resources` [<options>] <formula> [<formula> ...]
-
+      description <<~EOS
         Update versions for PyPI resource blocks in <formula>.
       EOS
       switch "-p", "--print-only",

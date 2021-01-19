@@ -13,9 +13,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def doctor_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `doctor` [<options>]
-
+      description <<~EOS
         Check your system for potential problems. Will exit with a non-zero status
         if any potential problems are found. Please note that these warnings are just
         used to help the Homebrew maintainers with debugging if you file an issue. If

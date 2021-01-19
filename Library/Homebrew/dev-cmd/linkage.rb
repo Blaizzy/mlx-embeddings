@@ -13,9 +13,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def linkage_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `linkage` [<options>] [<formula>] [<formula> ...]
-
+      description <<~EOS
         Check the library links from the given <formula> kegs. If no <formula> are
         provided, check all kegs. Raises an error if run on uninstalled formulae.
       EOS

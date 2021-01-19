@@ -11,9 +11,8 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def ruby_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `ruby` (`-e` <text>|<file>)
-
+      usage_banner "`ruby` [<options>] (`-e` <text>|<file>)"
+      description <<~EOS
         Run a Ruby instance with Homebrew's libraries loaded, e.g.
         `brew ruby -e "puts :gcc.f.deps"` or `brew ruby script.rb`.
       EOS

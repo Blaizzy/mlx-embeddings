@@ -11,9 +11,8 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def release_notes_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `release-notes` [<options>] [<previous_tag>] [<end_ref>]
-
+      usage_banner "`release-notes` [<options>] [<previous_tag>] [<end_ref>]"
+      description <<~EOS
         Print the merged pull requests on Homebrew/brew between two Git refs.
         If no <previous_tag> is provided it defaults to the latest tag.
         If no <end_ref> is provided it defaults to `origin/master`.

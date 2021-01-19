@@ -20,9 +20,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def uses_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `uses` [<options>] <formula> [<formula> ...]
-
+      description <<~EOS
         Show formulae and casks that specify <formula> as a dependency (i.e. show dependents
         of <formula>). When given multiple formula arguments, show the intersection
         of formulae that use <formula>. By default, `uses` shows all formulae and casks that

@@ -12,9 +12,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def config_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `config`
-
+      description <<~EOS
         Show Homebrew and system configuration info useful for debugging. If you file
         a bug report, you will be required to provide this information.
       EOS

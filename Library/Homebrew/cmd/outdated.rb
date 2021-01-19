@@ -15,9 +15,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def outdated_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `outdated` [<options>] [<formula>|<cask>] [<formula>|<cask> ...]
-
+      description <<~EOS
         List installed casks and formulae that have an updated version available. By default, version
         information is displayed in interactive shells, and suppressed otherwise.
       EOS

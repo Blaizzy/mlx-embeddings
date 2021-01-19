@@ -13,9 +13,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def bump_cask_pr_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `bump-cask-pr` [<options>] <cask>
-
+      description <<~EOS
         Create a pull request to update <cask> with a new version.
 
         A best effort to determine the <SHA-256> will be made if the value is not

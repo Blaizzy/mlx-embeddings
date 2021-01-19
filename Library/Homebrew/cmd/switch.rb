@@ -13,9 +13,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def switch_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `switch` <formula> <version>
-
+      description <<~EOS
         Symlink all of the specified <version> of <formula>'s installation into Homebrew's prefix.
       EOS
 

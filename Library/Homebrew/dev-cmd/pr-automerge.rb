@@ -12,9 +12,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def pr_automerge_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `pr-automerge` [<options>]
-
+      description <<~EOS
         Find pull requests that can be automatically merged using `brew pr-publish`.
       EOS
       flag   "--tap=",

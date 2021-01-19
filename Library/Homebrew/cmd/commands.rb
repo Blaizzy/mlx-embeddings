@@ -11,9 +11,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def commands_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `commands` [<options>]
-
+      description <<~EOS
         Show lists of built-in and external commands.
       EOS
       switch "-q", "--quiet",

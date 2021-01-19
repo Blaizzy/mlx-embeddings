@@ -12,9 +12,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def bump_revision_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `bump-revision` [<options>] <formula> [<formula> ...]
-
+      description <<~EOS
         Create a commit to increment the revision of <formula>. If no revision is
         present, "revision 1" will be added.
       EOS

@@ -12,9 +12,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def vendor_gems_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `vendor-gems`
-
+      description <<~EOS
         Install and commit Homebrew's vendored gems.
       EOS
 

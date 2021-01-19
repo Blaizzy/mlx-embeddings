@@ -19,9 +19,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def livecheck_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `livecheck` [<formula>|<cask>] [<formula>|<cask> ...]
-
+      description <<~EOS
         Check for newer versions of formulae and/or casks from upstream.
 
         If no formula or cask argument is passed, the list of formulae and

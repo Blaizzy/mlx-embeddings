@@ -49,9 +49,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def bottle_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `bottle` [<options>] <formula> [<formula> ...]
-
+      description <<~EOS
         Generate a bottle (binary package) from a formula that was installed with
         `--build-bottle`.
         If the formula specifies a rebuild version, it will be incremented in the

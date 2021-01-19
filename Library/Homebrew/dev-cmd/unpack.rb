@@ -13,9 +13,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def unpack_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `unpack` [<options>] <formula> [<formula ...>]
-
+      description <<~EOS
         Unpack the source files for <formula> into subdirectories of the current
         working directory.
       EOS

@@ -19,9 +19,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def man_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `man` [<options>]
-
+      description <<~EOS
         Generate Homebrew's manpages.
       EOS
       switch "--fail-if-changed",

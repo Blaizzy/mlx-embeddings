@@ -318,6 +318,114 @@ describe Homebrew::CLI::Parser do
     end
   end
 
+  describe "usage banner generation" do
+    it "includes `[options]` if more than two non-global options are available" do
+      parser = described_class.new do
+        switch "--foo"
+        switch "--baz"
+        switch "--bar"
+      end
+      expect(parser.generate_help_text).to match(/\[options\]/)
+    end
+
+    it "includes individual options if less than two non-global options are available" do
+      parser = described_class.new do
+        switch "--foo"
+        switch "--bar"
+      end
+      expect(parser.generate_help_text).to match(/\[--foo\] \[--bar\]/)
+    end
+
+    it "formats flags correctly when less than two non-global options are available" do
+      parser = described_class.new do
+        flag "--foo"
+        flag "--bar="
+      end
+      expect(parser.generate_help_text).to match(/\[--foo\] \[--bar=\]/)
+    end
+
+    it "formats comma arrays correctly when less than two non-global options are available" do
+      parser = described_class.new do
+        comma_array "--foo"
+      end
+      expect(parser.generate_help_text).to match(/\[--foo=\]/)
+    end
+
+    it "doesn't include `[options]` if non non-global options are available" do
+      parser = described_class.new
+      expect(parser.generate_help_text).not_to match(/\[options\]/)
+    end
+
+    it "includes a description" do
+      parser = described_class.new do
+        description <<~EOS
+          This command does something
+        EOS
+      end
+      expect(parser.generate_help_text).to match(/This command does something/)
+    end
+
+    it "allows the usage banner to be overriden" do
+      parser = described_class.new do
+        usage_banner "`test` [foo] <bar>"
+      end
+      expect(parser.generate_help_text).to match(/test \[foo\] bar/)
+    end
+
+    it "allows a usage banner and a description to be overriden" do
+      parser = described_class.new do
+        usage_banner "`test` [foo] <bar>"
+        description <<~EOS
+          This command does something
+        EOS
+      end
+      expect(parser.generate_help_text).to match(/test \[foo\] bar/)
+      expect(parser.generate_help_text).to match(/This command does something/)
+    end
+
+    it "shows the correct usage for no named argument" do
+      parser = described_class.new do
+        named_args :none
+      end
+      expect(parser.generate_help_text).to match(/^Usage: [^\[]+$/s)
+    end
+
+    it "shows the correct usage for a single typed argument" do
+      parser = described_class.new do
+        named_args :formula, number: 1
+      end
+      expect(parser.generate_help_text).to match(/^Usage: .* formula$/s)
+    end
+
+    it "shows the correct usage for a subcommand argument with a maximum" do
+      parser = described_class.new do
+        named_args %w[off on], max: 1
+      end
+      expect(parser.generate_help_text).to match(/^Usage: .* \[subcommand\]$/s)
+    end
+
+    it "shows the correct usage for multiple typed argument with no maximum or minimum" do
+      parser = described_class.new do
+        named_args [:tap, :command]
+      end
+      expect(parser.generate_help_text).to match(/^Usage: .* \[tap|command ...\]$/s)
+    end
+
+    it "shows the correct usage for a subcommand argument with a minimum of 1" do
+      parser = described_class.new do
+        named_args :installed_formula, min: 1
+      end
+      expect(parser.generate_help_text).to match(/^Usage: .* installed_formula \[...\]$/s)
+    end
+
+    it "shows the correct usage for a subcommand argument with a minimum greater than 1" do
+      parser = described_class.new do
+        named_args :installed_formula, min: 2
+      end
+      expect(parser.generate_help_text).to match(/^Usage: .* installed_formula ...$/s)
+    end
+  end
+
   describe "named_args" do
     let(:parser_none) {
       described_class.new do

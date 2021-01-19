@@ -12,9 +12,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def unpin_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `unpin` <formula> [<formula> ...]
-
+      description <<~EOS
         Unpin <formula>, allowing them to be upgraded by `brew upgrade` <formula>.
         See also `pin`.
       EOS

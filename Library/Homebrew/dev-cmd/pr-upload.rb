@@ -12,9 +12,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def pr_upload_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `pr-upload` [<options>]
-
+      description <<~EOS
         Apply the bottle commit and publish bottles to Bintray or GitHub Releases.
       EOS
       switch "--no-publish",

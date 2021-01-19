@@ -12,9 +12,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def pr_publish_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `pr-publish` [<options>] <pull_request> [<pull_request> ...]
-
+      description <<~EOS
         Publish bottles for a pull request with GitHub Actions.
         Requires write access to the repository.
       EOS
@@ -29,7 +27,7 @@ module Homebrew
       flag   "--workflow=",
              description: "Target workflow filename (default: `publish-commit-bottles.yml`)."
 
-      named_args min: 1
+      named_args :pull_request, min: 1
     end
   end
 

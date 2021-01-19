@@ -17,9 +17,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def self.bump_unversioned_casks_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `bump-unversioned-casks` [<options>] <cask>|<tap> [<cask>|<tap> ...]
-
+      description <<~EOS
         Check all casks with unversioned URLs in a given <tap> for updates.
       EOS
       switch "-n", "--dry-run",

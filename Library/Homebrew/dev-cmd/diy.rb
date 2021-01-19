@@ -12,9 +12,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def diy_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `diy` [<options>]
-
+      description <<~EOS
         Automatically determine the installation prefix for non-Homebrew software.
         Using the output from this command, you can install your own software into
         the Cellar and then link it into Homebrew's prefix with `brew link`.

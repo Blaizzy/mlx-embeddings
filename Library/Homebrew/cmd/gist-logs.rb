@@ -18,9 +18,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def gist_logs_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `gist-logs` [<options>] <formula>
-
+      description <<~EOS
         Upload logs for a failed build of <formula> to a new Gist. Presents an
         error message if no logs are found.
       EOS

@@ -12,9 +12,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def install_bundler_gems_args
     Homebrew::CLI::Parser.new do
-      usage_banner <<~EOS
-        `install-bundler-gems`
-
+      description <<~EOS
         Install Homebrew's Bundler gems.
       EOS
 
