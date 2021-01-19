@@ -326,6 +326,17 @@ class Tap
                            .update_from_formula_names!(formula_names)
     end
 
+    if official?
+      untapped = Homebrew::Settings.read(:untapped)&.split(";") || []
+      untapped -= [name]
+
+      if untapped.empty?
+        Homebrew::Settings.delete :untapped
+      else
+        Homebrew::Settings.write :untapped, untapped.join(";")
+      end
+    end
+
     return if clone_target
     return unless private?
     return if quiet
@@ -374,6 +385,15 @@ class Tap
 
     Commands.rebuild_commands_completion_list
     clear_cache
+
+    return unless official?
+
+    untapped = Homebrew::Settings.read(:untapped)&.split(";") || []
+
+    return if untapped.include? name
+
+    untapped << name
+    Homebrew::Settings.write :untapped, untapped.join(";")
   end
 
   # True if the {#remote} of {Tap} is customized.
