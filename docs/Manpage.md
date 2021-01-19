@@ -1088,7 +1088,7 @@ casks to check is taken from `HOMEBREW_LIVECHECK_WATCHLIST` or
 * `--cask`:
   Only check casks.
 
-### `man` [*`--fail-if-changed`*] [*`--link`*]
+### `man` [*`--fail-if-changed`*]
 
 Generate Homebrew's manpages.
 
