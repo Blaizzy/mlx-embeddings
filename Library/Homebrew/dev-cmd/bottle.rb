@@ -20,19 +20,11 @@ BOTTLE_ERB = <<-EOS
             HOMEBREW_LINUX_DEFAULT_PREFIX].include?(prefix) %>
     prefix "<%= prefix %>"
     <% end %>
-    <% if cellar.is_a? Symbol %>
-    cellar :<%= cellar %>
-    <% elsif ![Homebrew::DEFAULT_MACOS_CELLAR,
-               Homebrew::DEFAULT_MACOS_ARM_CELLAR,
-               Homebrew::DEFAULT_LINUX_CELLAR].include?(cellar) %>
-    cellar "<%= cellar %>"
-    <% end %>
     <% if rebuild.positive? %>
     rebuild <%= rebuild %>
     <% end %>
-    <% checksums.each do |checksum_value| %>
-    <% checksum, macos = checksum_value.shift %>
-    sha256 "<%= checksum %>" => :<%= macos %>
+    <% sha256_lines.each do |line| %>
+    <%= line %>
     <% end %>
   end
 EOS
@@ -202,9 +194,29 @@ module Homebrew
     !absolute_symlinks_start_with_string.empty?
   end
 
+  def generate_sha256_line(tag, digest, cellar)
+    line = %Q(sha256 "#{digest}" => :#{tag})
+    return line if cellar.blank?
+    return "#{line}, :cellar => :#{cellar}" if cellar.is_a? Symbol
+
+    default_cellars = [
+      Homebrew::DEFAULT_MACOS_CELLAR,
+      Homebrew::DEFAULT_MACOS_ARM_CELLAR,
+      Homebrew::DEFAULT_LINUX_CELLAR,
+    ]
+    return %Q(#{line}, :cellar => "#{cellar}") if default_cellars.exclude?(cellar)
+
+    line
+  end
+
   def bottle_output(bottle)
+    sha256_lines = bottle.checksums.map do |checksum|
+      generate_sha256_line(checksum["tag"], checksum["digest"], checksum["cellar"])
+    end
+    erb_binding = bottle.instance_eval { binding }
+    erb_binding.local_variable_set(:sha256_lines, sha256_lines)
     erb = ERB.new BOTTLE_ERB
-    erb.result(bottle.instance_eval { binding }).gsub(/^\s*$\n/, "")
+    erb.result(erb_binding).gsub(/^\s*$\n/, "")
   end
 
   def sudo_purge
@@ -451,19 +463,14 @@ module Homebrew
 
   def merge_json_files(json_files)
     json_files.reduce({}) do |hash, json_file|
-      hash.deep_merge(json_file) do |key, first, second|
-        if key == "cellar"
-          # Prioritize HOMEBREW_CELLAR over :any over :any_skip_relocation
-          cellars = [first, second]
-          next HOMEBREW_CELLAR if cellars.include?(HOMEBREW_CELLAR)
-          next first if first.start_with?("/")
-          next second if second.start_with?("/")
-          next "any" if cellars.include?("any")
-          next "any_skip_relocation" if cellars.include?("any_skip_relocation")
+      json_file.each_value do |json_hash|
+        json_bottle = json_hash["bottle"]
+        cellar = json_bottle.delete("cellar")
+        json_bottle["tags"].each_value do |json_platform|
+          json_platform["cellar"] ||= cellar
         end
-
-        second
       end
+      hash.deep_merge(json_file)
     end
   end
 
@@ -476,13 +483,13 @@ module Homebrew
 
       bottle = BottleSpecification.new
       bottle.root_url bottle_hash["bottle"]["root_url"]
-      cellar = bottle_hash["bottle"]["cellar"]
-      cellar = cellar.to_sym if any_cellars.include?(cellar)
-      bottle.cellar cellar
       bottle.prefix bottle_hash["bottle"]["prefix"]
       bottle.rebuild bottle_hash["bottle"]["rebuild"]
       bottle_hash["bottle"]["tags"].each do |tag, tag_hash|
-        bottle.sha256 tag_hash["sha256"] => tag.to_sym
+        cellar = tag_hash["cellar"]
+        cellar = cellar.to_sym if any_cellars.include?(cellar)
+        sha256_hash = { tag_hash["sha256"] => tag.to_sym, :cellar => cellar }
+        bottle.sha256 sha256_hash
       end
 
       if args.write?
@@ -533,16 +540,16 @@ module Homebrew
     new_values = {
       root_url: new_bottle_hash["root_url"],
       prefix:   new_bottle_hash["prefix"],
-      cellar:   new_bottle_hash["cellar"],
       rebuild:  new_bottle_hash["rebuild"],
     }
 
+    skip_keys = [:sha256, :cellar]
     old_keys.each do |key|
-      next if key == :sha256
+      next if skip_keys.include?(key)
 
       old_value = old_bottle_spec.send(key).to_s
       new_value = new_values[key].to_s
-      next if key == :cellar && old_value == "any" && new_value == "any_skip_relocation"
+
       next if old_value.present? && new_value == old_value
 
       mismatches << "#{key}: old: #{old_value.inspect}, new: #{new_value.inspect}"
@@ -551,12 +558,14 @@ module Homebrew
     return [mismatches, checksums] if old_keys.exclude? :sha256
 
     old_bottle_spec.collector.each_key do |tag|
-      old_value = old_bottle_spec.collector[tag][:checksum].hexdigest
+      old_checksum_hash = old_bottle_spec.collector[tag]
+      old_hexdigest = old_checksum_hash[:checksum].hexdigest
+      old_cellar = old_checksum_hash[:cellar]
       new_value = new_bottle_hash.dig("tags", tag.to_s)
       if new_value.present?
         mismatches << "sha256 => #{tag}"
       else
-        checksums << { old_value => tag }
+        checksums << { old_hexdigest => tag, :cellar => old_cellar }
       end
     end
 
