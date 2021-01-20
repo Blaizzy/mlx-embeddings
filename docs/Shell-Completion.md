@@ -47,7 +47,7 @@ This must be done before `compinit` is called. Note that if you are using Oh My 
 
 ```diff
   eval $(/opt/homebrew/bin/brew shellenv)
-+ export FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
++ FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
 ```
 
 You may also need to forcibly rebuild `zcompdump`:
