@@ -104,6 +104,11 @@ __brew_complete_commands() {
   COMPREPLY+=($(compgen -W "$cmds" -- "$cur"))
 }
 
+# compopt is only available in newer versions of bash
+__brew_complete_files() {
+  command -v compopt &> /dev/null && compopt -o default
+}
+
 _brew___cache() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
@@ -413,6 +418,7 @@ _brew_bottle() {
       ;;
   esac
   __brew_complete_installed_formulae
+  __brew_complete_files
 }
 
 _brew_bump() {
@@ -1732,6 +1738,7 @@ _brew_ruby() {
       return
       ;;
   esac
+  __brew_complete_files
 }
 
 _brew_search() {
@@ -1776,6 +1783,7 @@ _brew_sh() {
       return
       ;;
   esac
+  __brew_complete_files
 }
 
 _brew_sponsors() {
@@ -1813,6 +1821,7 @@ _brew_style() {
       return
       ;;
   esac
+  __brew_complete_files
   __brew_complete_tapped
   __brew_complete_formulae
   __brew_complete_casks

@@ -85,7 +85,7 @@ module Homebrew
 
       conflicts "--no-rebuild", "--keep-old"
 
-      named_args :installed_formula, min: 1
+      named_args [:installed_formula, :file], min: 1
     end
   end
 

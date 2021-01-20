@@ -794,7 +794,7 @@ non-zero status if any errors are found.
 * `--token-conflicts`:
   Audit for token conflicts
 
-### `bottle` [*`options`*] *`installed_formula`* [...]
+### `bottle` [*`options`*] *`installed_formula`*|*`file`* [...]
 
 Generate a bottle (binary package) from a formula that was installed with
 `--build-bottle`.

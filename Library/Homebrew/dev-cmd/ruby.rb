@@ -20,6 +20,8 @@ module Homebrew
            description: "Load a library using `require`."
       flag "-e=",
            description: "Execute the given text string as a script."
+
+      named_args :file
     end
   end
 

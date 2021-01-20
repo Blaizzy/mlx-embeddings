@@ -35,6 +35,7 @@ module Homebrew
       installed_tap:     "__brew_complete_tapped",
       command:           "__brew_complete_commands",
       diagnostic_check:  '__brewcomp "$(brew doctor --list-checks)"',
+      file:              "__brew_complete_files",
     }.freeze
 
     sig { void }
