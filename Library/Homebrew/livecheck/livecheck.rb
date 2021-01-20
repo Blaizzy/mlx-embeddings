@@ -4,6 +4,7 @@
 require "livecheck/error"
 require "livecheck/skip_conditions"
 require "livecheck/strategy"
+require "livecheck/version"
 require "ruby-progressbar"
 require "uri"
 
@@ -150,7 +151,7 @@ module Homebrew
         end
 
         current_str = current.to_s
-        current = actual_version(formula_or_cask, current)
+        current = LivecheckVersion.create(formula_or_cask, current)
 
         latest = if formula&.head_only?
           formula.head.downloader.fetch_last_commit
@@ -176,7 +177,7 @@ module Homebrew
         end
 
         latest_str = latest.to_s
-        latest = actual_version(formula_or_cask, latest)
+        latest = LivecheckVersion.create(formula_or_cask, latest)
 
         is_outdated = if formula&.head_only?
           # A HEAD-only formula is considered outdated if the latest upstream
@@ -546,7 +547,7 @@ module Homebrew
         next if match_version_map.blank?
 
         version_info = {
-          latest: Version.new(match_version_map.values.max_by { |v| actual_version(formula_or_cask, v) }),
+          latest: Version.new(match_version_map.values.max_by { |v| LivecheckVersion.create(formula_or_cask, v) }),
         }
 
         if json && verbose
@@ -569,18 +570,6 @@ module Homebrew
       end
 
       nil
-    end
-
-    sig { params(formula_or_cask: T.any(Formula, Cask::Cask), version: Version).returns(Version) }
-    def actual_version(formula_or_cask, version)
-      case formula_or_cask
-      when Formula
-        version
-      when Cask::Cask
-        Version.new(Cask::DSL::Version.new(version.to_s).before_comma)
-      else
-        T.absurd(formula_or_cask)
-      end
     end
   end
 end
