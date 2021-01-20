@@ -43,7 +43,11 @@ if type brew &>/dev/null; then
 fi
 ```
 
-This must be done before `compinit` is called. Note that if you are using Oh My Zsh, it will call `compinit` for you, so this must be done before you call `oh-my-zsh.sh`.
+This must be done before `compinit` is called. Note that if you are using Oh My Zsh, it will call `compinit` for you, so this must be done before you call `oh-my-zsh.sh`. This may be done by appending the following line to your `~/.zprofile` after Homebrew's initialization, instead of modifying your `~/.zshrc` as above:
+
+```sh
+FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
+```
 
 You may also need to forcibly rebuild `zcompdump`:
 
