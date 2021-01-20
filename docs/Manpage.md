@@ -1208,6 +1208,22 @@ Run Homebrew with a Ruby profiler, e.g. `brew prof readall`.
 * `--stackprof`:
   Use `stackprof` instead of `ruby-prof` (the default).
 
+### `release` [*`--major`*] [*`--minor`*]
+
+Create a new draft Homebrew/brew release with the appropriate version number and release notes.
+
+By default, `brew release` will bump the patch version number. Pass
+`--major` or `--minor` to bump the major or minor version numbers, respectively.
+The command will fail if the previous major or minor release was made less than
+one month ago.
+
+Requires write access to the Homebrew/brew repository.
+
+* `--major`:
+  Create a major release.
+* `--minor`:
+  Create a minor release.
+
 ### `release-notes` [*`options`*] [*`previous_tag`*] [*`end_ref`*]
 
 Print the merged pull requests on Homebrew/brew between two Git refs.

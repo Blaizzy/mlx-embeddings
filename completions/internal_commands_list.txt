@@ -72,6 +72,7 @@ pr-upload
 prof
 readall
 reinstall
+release
 release-notes
 remove
 rm

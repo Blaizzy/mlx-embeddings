@@ -482,7 +482,12 @@ module GitHub
     open_api(url, request_method: :GET)
   end
 
-  def create_or_update_release(user, repo, tag, id: nil, name: nil, draft: false)
+  def get_latest_release(user, repo)
+    url = "#{API_URL}/repos/#{user}/#{repo}/releases/latest"
+    open_api(url, request_method: :GET)
+  end
+
+  def create_or_update_release(user, repo, tag, id: nil, name: nil, body: nil, draft: false)
     url = "#{API_URL}/repos/#{user}/#{repo}/releases"
     method = if id
       url += "/#{id}"
@@ -495,6 +500,7 @@ module GitHub
       name:     name || tag,
       draft:    draft,
     }
+    data[:body] = body if body.present?
     open_api(url, data: data, request_method: method, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)
   end
 
