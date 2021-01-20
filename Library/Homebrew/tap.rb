@@ -67,8 +67,8 @@ class Tap
     @default_cask_tap ||= fetch("Homebrew", "cask")
   end
 
-  sig { returns(T::Boolean) }
-  def self.install_default_cask_tap_if_necessary
+  sig { params(force: T::Boolean).returns(T::Boolean) }
+  def self.install_default_cask_tap_if_necessary(force: false)
     false
   end
 
