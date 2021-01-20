@@ -148,14 +148,13 @@ class Foo < Formula
   depends_on "readline" => :recommended
   depends_on "gtk+" => :optional
   depends_on "httpd" => [:build, :test]
-  depends_on :x11 => :optional
   depends_on :xcode => "9.3"
 end
 ```
 
 A String (e.g. `"jpeg"`) specifies a formula dependency.
 
-A Symbol (e.g. `:x11`) specifies a [`Requirement`](https://rubydoc.brew.sh/Requirement) which can be fulfilled by one or more formulae, casks or other system-wide installed software (e.g. X11).
+A Symbol (e.g. `:xcode`) specifies a [`Requirement`](https://rubydoc.brew.sh/Requirement) which can be fulfilled by one or more formulae, casks or other system-wide installed software (e.g. Xcode).
 
 A Hash (e.g. `=>`) adds information to a dependency. Given a String or Symbol, the value can be one or more of the following values:
 
