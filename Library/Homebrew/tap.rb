@@ -327,7 +327,7 @@ class Tap
     end
 
     if official?
-      untapped = Homebrew::Settings.read(:untapped)&.split(";") || []
+      untapped = self.class.untapped_official_taps
       untapped -= [name]
 
       if untapped.empty?
@@ -388,8 +388,7 @@ class Tap
 
     return unless official?
 
-    untapped = Homebrew::Settings.read(:untapped)&.split(";") || []
-
+    untapped = self.class.untapped_official_taps
     return if untapped.include? name
 
     untapped << name
@@ -642,6 +641,12 @@ class Tap
   sig { returns(T::Array[Pathname]) }
   def self.cmd_directories
     Pathname.glob TAP_DIRECTORY/"*/*/cmd"
+  end
+
+  # An array of official taps that have been manually untapped
+  sig { returns(T::Array[String]) }
+  def self.untapped_official_taps
+    Homebrew::Settings.read(:untapped)&.split(";") || []
   end
 
   # @private

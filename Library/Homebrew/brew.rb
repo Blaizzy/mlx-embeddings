@@ -132,8 +132,7 @@ begin
     possible_tap = OFFICIAL_CMD_TAPS.find { |_, cmds| cmds.include?(cmd) }
     possible_tap = Tap.fetch(possible_tap.first) if possible_tap
 
-    untapped_official_taps = Homebrew::Settings.read(:untapped)&.split(";") || []
-    if !possible_tap || possible_tap.installed? || untapped_official_taps.include?(possible_tap.name)
+    if !possible_tap || possible_tap.installed? || Tap.untapped_official_taps.include?(possible_tap.name)
       odie "Unknown command: #{cmd}"
     end
 
