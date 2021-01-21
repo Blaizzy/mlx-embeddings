@@ -363,7 +363,7 @@ class Tap
   end
 
   # Uninstall this {Tap}.
-  def uninstall
+  def uninstall(manual: false)
     require "descriptions"
     raise TapUnavailableError, name unless installed?
 
@@ -386,7 +386,7 @@ class Tap
     Commands.rebuild_commands_completion_list
     clear_cache
 
-    return unless official?
+    return if !manual || !official?
 
     untapped = self.class.untapped_official_taps
     return if untapped.include? name

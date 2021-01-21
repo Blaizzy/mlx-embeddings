@@ -43,7 +43,7 @@ module Homebrew
         end
       end
 
-      tap.uninstall
+      tap.uninstall manual: true
     end
   end
 end
