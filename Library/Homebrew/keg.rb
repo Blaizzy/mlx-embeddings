@@ -319,7 +319,7 @@ class Keg
     opt_record.parent.rmdir_if_possible
   end
 
-  def uninstall
+  def uninstall(raise_failures: false)
     CacheStoreDatabase.use(:linkage) do |db|
       break unless db.created?
 
@@ -333,6 +333,8 @@ class Keg
     remove_old_aliases
     remove_oldname_opt_record
   rescue Errno::EACCES, Errno::ENOTEMPTY
+    raise if raise_failures
+
     odie <<~EOS
       Could not remove #{name} keg! Do so manually:
         sudo rm -rf #{path}
