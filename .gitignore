@@ -85,6 +85,7 @@
 
 # Ignore dependencies we don't wish to vendor
 **/vendor/bundle/ruby/*/gems/ast-*/
+**/vendor/bundle/ruby/*/gems/bootsnap-*/
 **/vendor/bundle/ruby/*/gems/bundler-*/
 **/vendor/bundle/ruby/*/gems/byebug-*/
 **/vendor/bundle/ruby/*/gems/coderay-*/
@@ -105,6 +106,7 @@
 **/vendor/bundle/ruby/*/gems/mime-types-*/
 **/vendor/bundle/ruby/*/gems/mini_portile2-*/
 **/vendor/bundle/ruby/*/gems/minitest-*/
+**/vendor/bundle/ruby/*/gems/msgpack-*/
 **/vendor/bundle/ruby/*/gems/mustache-*/
 **/vendor/bundle/ruby/*/gems/net-http-digest_auth-*/
 **/vendor/bundle/ruby/*/gems/net-http-persistent-*/
