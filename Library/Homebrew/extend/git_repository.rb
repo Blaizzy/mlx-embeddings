@@ -18,9 +18,7 @@ module GitRepositoryExtension
   # Gets the URL of the Git origin remote.
   sig { returns(T.nilable(String)) }
   def git_origin
-    return if !git? || !Utils::Git.available?
-
-    Utils.popen_read(Utils::Git.git, "config", "--get", "remote.origin.url", chdir: self).chomp.presence
+    popen_git("config", "--get", "remote.origin.url")
   end
 
   # Sets the URL of the Git origin remote.
@@ -47,26 +45,19 @@ module GitRepositoryExtension
   # Gets the relative date of the last commit, e.g. "1 hour ago"
   sig { returns(T.nilable(String)) }
   def git_last_commit
-    return if !git? || !Utils::Git.available?
-
-    Utils.popen_read(Utils::Git.git, "show", "-s", "--format=%cr", "HEAD", chdir: self).chomp.presence
+    popen_git("show", "-s", "--format=%cr", "HEAD")
   end
 
   # Gets the name of the currently checked-out branch, or HEAD if the repository is in a detached HEAD state.
-  sig { returns(T.nilable(String)) }
-  def git_branch
-    return if !git? || !Utils::Git.available?
-
-    Utils.popen_read(Utils::Git.git, "rev-parse", "--abbrev-ref", "HEAD", chdir: self).chomp.presence
+  sig { params(safe: T::Boolean).returns(T.nilable(String)) }
+  def git_branch(safe: false)
+    popen_git("rev-parse", "--abbrev-ref", "HEAD", safe: safe)
   end
 
   # Gets the name of the default origin HEAD branch.
   sig { returns(T.nilable(String)) }
   def git_origin_branch
-    return if !git? || !Utils::Git.available?
-
-    Utils.popen_read(Utils::Git.git, "symbolic-ref", "-q", "--short", "refs/remotes/origin/HEAD", chdir: self)
-         .chomp.presence&.split("/")&.last
+    popen_git("symbolic-ref", "-q", "--short", "refs/remotes/origin/HEAD")&.split("/")&.last
   end
 
   # Returns true if the repository's current branch matches the default origin branch.
@@ -78,23 +69,19 @@ module GitRepositoryExtension
   # Returns the date of the last commit, in YYYY-MM-DD format.
   sig { returns(T.nilable(String)) }
   def git_last_commit_date
-    return if !git? || !Utils::Git.available?
-
-    Utils.popen_read(Utils::Git.git, "show", "-s", "--format=%cd", "--date=short", "HEAD", chdir: self).chomp.presence
+    popen_git("show", "-s", "--format=%cd", "--date=short", "HEAD")
   end
 
   # Gets the full commit message of the specified commit, or of the HEAD commit if unspecified.
-  sig { params(commit: String).returns(T.nilable(String)) }
-  def git_commit_message(commit = "HEAD")
-    return if !git? || !Utils::Git.available?
-
-    Utils.popen_read(Utils::Git.git, "log", "-1", "--pretty=%B", commit, "--", chdir: self, err: :out).strip.presence
+  sig { params(commit: String, safe: T::Boolean).returns(T.nilable(String)) }
+  def git_commit_message(commit = "HEAD", safe: false)
+    popen_git("log", "-1", "--pretty=%B", commit, "--", safe: safe, err: :out)&.strip
   end
 
   private
 
-  sig { params(args: T.untyped, safe: T::Boolean).returns(T.nilable(String)) }
-  def popen_git(*args, safe: false)
+  sig { params(args: T.untyped, safe: T::Boolean, err: T.nilable(Symbol)).returns(T.nilable(String)) }
+  def popen_git(*args, safe: false, err: nil)
     unless git?
       return unless safe
 
@@ -107,6 +94,6 @@ module GitRepositoryExtension
       raise "Git is unavailable"
     end
 
-    T.unsafe(Utils).popen_read(Utils::Git.git, *args, safe: safe, chdir: self).chomp.presence
+    T.unsafe(Utils).popen_read(Utils::Git.git, *args, safe: safe, chdir: self, err: err).chomp.presence
   end
 end
