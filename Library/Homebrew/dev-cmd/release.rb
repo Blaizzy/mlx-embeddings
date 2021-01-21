@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "cli/parser"
+require "release_notes"
 
 module Homebrew
   extend T::Sig
@@ -59,31 +60,24 @@ module Homebrew
     end
 
     new_version = if args.major?
-      Version.new [latest_version.major.to_i + 1, 0, 0].join(".")
+      Version.new "#{latest_version.major.to_i + 1}.0.0"
     elsif args.minor?
-      Version.new [latest_version.major, latest_version.minor.to_i + 1, 0].join(".")
+      Version.new "#{latest_version.major}.#{latest_version.minor.to_i + 1}.0"
     else
-      Version.new [latest_version.major, latest_version.minor, latest_version.patch.to_i + 1].join(".")
+      Version.new "#{latest_version.major}.#{latest_version.minor}.#{latest_version.patch.to_i + 1}"
     end.to_s
 
     ohai "Creating draft release for version #{new_version}"
+
     release_notes = if args.major? || args.minor?
-      ["Release notes for this release can be found on the [Homebrew blog](https://brew.sh/blog/#{new_version})."]
+      "Release notes for this release can be found on the [Homebrew blog](https://brew.sh/blog/#{new_version}).\n"
     else
-      []
+      ""
     end
-    release_notes += Utils.popen_read(
-      "git", "-C", HOMEBREW_REPOSITORY, "log", "--pretty=format:'%s >> - %b%n'", "#{latest_version}..origin/HEAD"
-    ).lines.grep(/Merge pull request/).map! do |s|
-      pr = s.gsub(%r{.*Merge pull request #(\d+) from ([^/]+)/[^>]*(>>)*},
-                  "https://github.com/Homebrew/brew/pull/\\1 (@\\2)")
-      /(.*\d)+ \(@(.+)\) - (.*)/ =~ pr
-      "- [#{Regexp.last_match(3)}](#{Regexp.last_match(1)}) (@#{Regexp.last_match(2)})"
-    end
+    release_notes += ReleaseNotes.generate_release_notes latest_version, "origin/HEAD", markdown: true
 
     begin
-      release = GitHub.create_or_update_release "Homebrew", "brew", new_version,
-                                                body: release_notes.join("\n"), draft: true
+      release = GitHub.create_or_update_release "Homebrew", "brew", new_version, body: release_notes, draft: true
     rescue *GitHub::API_ERRORS => e
       odie "Unable to create release: #{e.message}!"
     end
