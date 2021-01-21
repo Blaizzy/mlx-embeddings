@@ -4,6 +4,34 @@
 require "utils/git_repository"
 
 describe Utils do
+  shared_examples "git_repository helper function" do |method_name|
+    context "when directory is not a Git repository" do
+      it "returns nil if `safe` parameter is `false`" do
+        expect(described_class.public_send(method_name, TEST_TMPDIR, safe: false)).to eq(nil)
+      end
+
+      it "raises an error if `safe` parameter is `true`" do
+        expect { described_class.public_send(method_name, TEST_TMPDIR, safe: true) }
+          .to raise_error("Not a Git repository: #{TEST_TMPDIR}")
+      end
+    end
+
+    context "when Git is unavailable" do
+      before do
+        allow(Utils::Git).to receive(:available?).and_return(false)
+      end
+
+      it "returns nil if `safe` parameter is `false`" do
+        expect(described_class.public_send(method_name, HOMEBREW_CACHE, safe: false)).to eq(nil)
+      end
+
+      it "raises an error if `safe` parameter is `true`" do
+        expect { described_class.public_send(method_name, HOMEBREW_CACHE, safe: true) }
+          .to raise_error("Git is unavailable")
+      end
+    end
+  end
+
   before do
     HOMEBREW_CACHE.cd do
       system "git", "init"
@@ -29,31 +57,7 @@ describe Utils do
       end
     end
 
-    context "when directory is not a Git repository" do
-      it "returns nil if `safe` parameter is `false`" do
-        expect(described_class.git_head(TEST_TMPDIR, safe: false)).to eq(nil)
-      end
-
-      it "raises an error if `safe` parameter is `true`" do
-        expect { described_class.git_head(TEST_TMPDIR, safe: true) }
-          .to raise_error("Not a Git repository: #{TEST_TMPDIR}")
-      end
-    end
-
-    context "when Git is unavailable" do
-      before do
-        allow(Utils::Git).to receive(:available?).and_return(false)
-      end
-
-      it "returns nil if `safe` parameter is `false`" do
-        expect(described_class.git_head(HOMEBREW_CACHE, safe: false)).to eq(nil)
-      end
-
-      it "raises an error if `safe` parameter is `true`" do
-        expect { described_class.git_head(HOMEBREW_CACHE, safe: true) }
-          .to raise_error("Git is unavailable")
-      end
-    end
+    include_examples "git_repository helper function", :git_head
   end
 
   describe ".git_short_head" do
@@ -69,30 +73,6 @@ describe Utils do
       end
     end
 
-    context "when directory is not a Git repository" do
-      it "returns nil if `safe` parameter is `false`" do
-        expect(described_class.git_short_head(TEST_TMPDIR, safe: false)).to eq(nil)
-      end
-
-      it "raises an error if `safe` parameter is `true`" do
-        expect { described_class.git_short_head(TEST_TMPDIR, safe: true) }
-          .to raise_error("Not a Git repository: #{TEST_TMPDIR}")
-      end
-    end
-
-    context "when Git is unavailable" do
-      before do
-        allow(Utils::Git).to receive(:available?).and_return(false)
-      end
-
-      it "returns nil if `safe` parameter is `false`" do
-        expect(described_class.git_short_head(HOMEBREW_CACHE, safe: false)).to eq(nil)
-      end
-
-      it "raises an error if `safe` parameter is `true`" do
-        expect { described_class.git_short_head(HOMEBREW_CACHE, safe: true) }
-          .to raise_error("Git is unavailable")
-      end
-    end
+    include_examples "git_repository helper function", :git_short_head
   end
 end
