@@ -342,11 +342,6 @@ EOS
     fi
   fi
 
-  if [[ -z "$HOMEBREW_AUTO_UPDATE_SECS" ]]
-  then
-    HOMEBREW_AUTO_UPDATE_SECS="300"
-  fi
-
   # check permissions
   if [[ -e "$HOMEBREW_CELLAR" && ! -w "$HOMEBREW_CELLAR" ]]
   then
