@@ -589,7 +589,7 @@ class ErrorDuringExecution < RuntimeError
 
     reason = if exitstatus
       "exited with #{exitstatus}"
-    elsif (uncaught_signal = status.termsig)
+    elsif (uncaught_signal = status&.termsig)
       "was terminated by uncaught signal #{Signal.signame(uncaught_signal)}"
     else
       raise ArgumentError, "Status neither has `exitstatus` nor `termsig`."
