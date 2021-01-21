@@ -132,7 +132,9 @@ begin
     possible_tap = OFFICIAL_CMD_TAPS.find { |_, cmds| cmds.include?(cmd) }
     possible_tap = Tap.fetch(possible_tap.first) if possible_tap
 
-    odie "Unknown command: #{cmd}" if !possible_tap || possible_tap.installed?
+    if !possible_tap || possible_tap.installed? || Tap.untapped_official_taps.include?(possible_tap.name)
+      odie "Unknown command: #{cmd}"
+    end
 
     # Unset HOMEBREW_HELP to avoid confusing the tap
     with_env HOMEBREW_HELP: nil do

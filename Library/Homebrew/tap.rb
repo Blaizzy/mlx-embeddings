@@ -67,8 +67,8 @@ class Tap
     @default_cask_tap ||= fetch("Homebrew", "cask")
   end
 
-  sig { returns(T::Boolean) }
-  def self.install_default_cask_tap_if_necessary
+  sig { params(force: T::Boolean).returns(T::Boolean) }
+  def self.install_default_cask_tap_if_necessary(force: false)
     false
   end
 
@@ -326,6 +326,17 @@ class Tap
                            .update_from_formula_names!(formula_names)
     end
 
+    if official?
+      untapped = self.class.untapped_official_taps
+      untapped -= [name]
+
+      if untapped.empty?
+        Homebrew::Settings.delete :untapped
+      else
+        Homebrew::Settings.write :untapped, untapped.join(";")
+      end
+    end
+
     return if clone_target
     return unless private?
     return if quiet
@@ -352,7 +363,7 @@ class Tap
   end
 
   # Uninstall this {Tap}.
-  def uninstall
+  def uninstall(manual: false)
     require "descriptions"
     raise TapUnavailableError, name unless installed?
 
@@ -374,6 +385,14 @@ class Tap
 
     Commands.rebuild_commands_completion_list
     clear_cache
+
+    return if !manual || !official?
+
+    untapped = self.class.untapped_official_taps
+    return if untapped.include? name
+
+    untapped << name
+    Homebrew::Settings.write :untapped, untapped.join(";")
   end
 
   # True if the {#remote} of {Tap} is customized.
@@ -622,6 +641,12 @@ class Tap
   sig { returns(T::Array[Pathname]) }
   def self.cmd_directories
     Pathname.glob TAP_DIRECTORY/"*/*/cmd"
+  end
+
+  # An array of official taps that have been manually untapped
+  sig { returns(T::Array[String]) }
+  def self.untapped_official_taps
+    Homebrew::Settings.read(:untapped)&.split(";") || []
   end
 
   # @private

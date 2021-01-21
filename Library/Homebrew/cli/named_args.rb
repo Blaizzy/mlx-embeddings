@@ -99,8 +99,6 @@ module Homebrew
           begin
             return Cask::CaskLoader.load(name, config: Cask::Config.from_args(@parent))
           rescue Cask::CaskUnavailableError => e
-            retry if Tap.install_default_cask_tap_if_necessary
-
             raise e if only == :cask
           end
         end
