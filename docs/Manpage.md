@@ -1040,8 +1040,6 @@ Display the path where *`formula`* is located.
 
 Install Homebrew's Bundler gems.
 
-Not (yet) working on Apple Silicon.
-
 ### `irb` [*`--examples`*] [*`--pry`*]
 
 Enter the interactive Homebrew Ruby shell.
