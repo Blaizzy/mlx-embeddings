@@ -3,7 +3,7 @@ require 'rbconfig'
 ruby_engine = defined?(RUBY_ENGINE) ? RUBY_ENGINE : 'ruby'
 ruby_version = RbConfig::CONFIG["ruby_version"]
 path = File.expand_path('..', __FILE__)
-$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/concurrent-ruby-1.1.7/lib/concurrent-ruby"
+$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/concurrent-ruby-1.1.8/lib/concurrent-ruby"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/i18n-1.8.7/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/minitest-5.14.3/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/tzinfo-2.0.4/lib"
