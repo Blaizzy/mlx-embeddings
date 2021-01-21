@@ -9,5 +9,9 @@ $LOAD_PATH.push HOMEBREW_LIBRARY_PATH.to_s
 
 require "vendor/bundle/bundler/setup"
 
-$LOAD_PATH.select! { |d| Pathname(d).directory? }
-$LOAD_PATH.uniq!
+if ENV["HOMEBREW_BOOTSNAP"]
+  require "bootsnap"
+else
+  $LOAD_PATH.select! { |d| Pathname(d).directory? }
+  $LOAD_PATH.uniq!
+end

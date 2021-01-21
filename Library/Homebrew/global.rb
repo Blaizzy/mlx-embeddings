@@ -1,6 +1,8 @@
 # typed: false
 # frozen_string_literal: true
 
+require_relative "load_path"
+
 require "English"
 require "json"
 require "json/add/exception"
@@ -13,8 +15,6 @@ require "rbconfig"
 
 RUBY_PATH = Pathname.new(RbConfig.ruby).freeze
 RUBY_BIN = RUBY_PATH.dirname.freeze
-
-require_relative "load_path"
 
 require "rubygems"
 # Only require "core_ext" here to ensure we're only requiring the minimum of
