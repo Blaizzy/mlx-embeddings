@@ -249,7 +249,7 @@ module Homebrew
     end
 
     def cleanup_keg(keg)
-      cleanup_path(keg) { keg.uninstall }
+      cleanup_path(keg) { keg.uninstall(raise_failures: true) }
     rescue Errno::EACCES => e
       opoo e.message
       unremovable_kegs << keg
