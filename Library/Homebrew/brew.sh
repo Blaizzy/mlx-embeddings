@@ -178,6 +178,11 @@ update-preinstall() {
   then
     export HOMEBREW_AUTO_UPDATING="1"
 
+    if [[ -z "$HOMEBREW_AUTO_UPDATE_SECS" ]]
+    then
+      HOMEBREW_AUTO_UPDATE_SECS="300"
+    fi
+
     # Skip auto-update if the cask/core tap has been updated in the
     # last $HOMEBREW_AUTO_UPDATE_SECS.
     if [[ "$HOMEBREW_COMMAND" = "cask" ]]
