@@ -370,7 +370,7 @@ Sorbet/FalseSigil:
     - "/**/{Formula,Casks}/*.rb"
     - "**/{Formula,Casks}/*.rb"
     - "Homebrew/test/**/Casks/**/*.rb"
-    - "Homebrew/bootsnap.rb"
+    - "Homebrew/homebrew_bootsnap.rb"
 
 Sorbet/StrictSigil:
   Enabled: true
