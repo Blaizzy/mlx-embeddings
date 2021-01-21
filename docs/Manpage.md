@@ -1040,6 +1040,8 @@ Display the path where *`formula`* is located.
 
 Install Homebrew's Bundler gems.
 
+Not (yet) working on Apple Silicon.
+
 ### `irb` [*`--examples`*] [*`--pry`*]
 
 Enter the interactive Homebrew Ruby shell.
@@ -1091,6 +1093,8 @@ casks to check is taken from `HOMEBREW_LIVECHECK_WATCHLIST` or
 ### `man` [*`--fail-if-changed`*]
 
 Generate Homebrew's manpages.
+
+Not (yet) working on Apple Silicon.
 
 * `--fail-if-changed`:
   Return a failing status code if changes are detected in the manpage outputs. This can be used to notify CI when the manpages are out of date. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date).
@@ -1321,6 +1325,8 @@ Run Homebrew's unit and integration tests.
 ### `typecheck`, `tc` [*`options`*]
 
 Check for typechecking errors using Sorbet.
+
+Not (yet) working on Apple Silicon.
 
 * `--fix`:
   Automatically fix type errors.

@@ -14,6 +14,8 @@ module Homebrew
     Homebrew::CLI::Parser.new do
       description <<~EOS
         Install Homebrew's Bundler gems.
+
+        Not (yet) working on Apple Silicon.
       EOS
 
       named_args :none
@@ -21,6 +23,9 @@ module Homebrew
   end
 
   def install_bundler_gems
+    # TODO: update description above if removing this.
+    raise UsageError, "not (yet) working on Apple Silicon!" if Hardware::CPU.arm?
+
     install_bundler_gems_args.parse
 
     Homebrew.install_bundler_gems!
