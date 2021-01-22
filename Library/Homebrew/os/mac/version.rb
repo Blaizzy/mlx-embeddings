@@ -13,6 +13,7 @@ module OS
     class Version < ::Version
       extend T::Sig
 
+      sig { returns(Symbol) }
       attr_reader :arch
 
       SYMBOLS = {
@@ -33,7 +34,7 @@ module OS
         new(str, arch: arch)
       end
 
-      sig { params(value: T.any(String, Symbol)).returns(T::Array[String]) }
+      sig { params(value: T.any(String, Symbol)).returns(T.any([], [String, T.nilable(String)])) }
       def self.version_arch(value)
         @all_archs_regex ||= begin
           all_archs = Hardware::CPU::ALL_ARCHS.map(&:to_s)
@@ -43,7 +44,7 @@ module OS
             (-(?<suffix_arch>#{Regexp.union(all_archs)}))?$
           /x
         end
-        match = @all_archs_regex.match(value)
+        match = @all_archs_regex.match(value.to_s)
         return [] unless match
 
         version = match[:version]
@@ -65,6 +66,7 @@ module OS
         @comparison_cache = {}
       end
 
+      sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
       def <=>(other)
         @comparison_cache.fetch(other) do
           if SYMBOLS.key?(other) && to_sym == other
