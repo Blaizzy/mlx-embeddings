@@ -37,20 +37,21 @@ describe Utils do
       system "git", "init"
       Pathname("README.md").write("README")
       system "git", "add", "README.md"
-      system "git", "commit", "-m", "File added"
+      system "git", "commit", "-m", commit_message
+      system "git", "checkout", "-b", branch_name
     end
   end
+
+  let(:commit_message) { "File added" }
+  let(:branch_name) { "test-branch" }
 
   let(:head_revision) { HOMEBREW_CACHE.cd { `git rev-parse HEAD`.chomp } }
   let(:short_head_revision) { HOMEBREW_CACHE.cd { `git rev-parse --short HEAD`.chomp } }
 
-  describe ".git_head" do
-    it "returns the revision at HEAD if repo parameter is specified" do
+  describe "::git_head" do
+    it "returns the revision at HEAD" do
       expect(described_class.git_head(HOMEBREW_CACHE)).to eq(head_revision)
       expect(described_class.git_head(HOMEBREW_CACHE, length: 5)).to eq(head_revision[0...5])
-    end
-
-    it "returns the revision at HEAD if repo parameter is omitted" do
       HOMEBREW_CACHE.cd do
         expect(described_class.git_head).to eq(head_revision)
         expect(described_class.git_head(length: 5)).to eq(head_revision[0...5])
@@ -60,13 +61,10 @@ describe Utils do
     include_examples "git_repository helper function", :git_head
   end
 
-  describe ".git_short_head" do
-    it "returns the short revision at HEAD if repo parameter is specified" do
+  describe "::git_short_head" do
+    it "returns the short revision at HEAD" do
       expect(described_class.git_short_head(HOMEBREW_CACHE)).to eq(short_head_revision)
       expect(described_class.git_short_head(HOMEBREW_CACHE, length: 5)).to eq(head_revision[0...5])
-    end
-
-    it "returns the short revision at HEAD if repo parameter is omitted" do
       HOMEBREW_CACHE.cd do
         expect(described_class.git_short_head).to eq(short_head_revision)
         expect(described_class.git_short_head(length: 5)).to eq(head_revision[0...5])
@@ -74,5 +72,29 @@ describe Utils do
     end
 
     include_examples "git_repository helper function", :git_short_head
+  end
+
+  describe "::git_branch" do
+    include_examples "git_repository helper function", :git_branch
+
+    it "returns the current Git branch" do
+      expect(described_class.git_branch(HOMEBREW_CACHE)).to eq(branch_name)
+      HOMEBREW_CACHE.cd do
+        expect(described_class.git_branch).to eq(branch_name)
+      end
+    end
+  end
+
+  describe "::git_commit_message" do
+    include_examples "git_repository helper function", :git_commit_message
+
+    it "returns the commit message of HEAD" do
+      expect(described_class.git_commit_message(HOMEBREW_CACHE)).to eq(commit_message)
+      expect(described_class.git_commit_message(HOMEBREW_CACHE, commit: head_revision)).to eq(commit_message)
+      HOMEBREW_CACHE.cd do
+        expect(described_class.git_commit_message).to eq(commit_message)
+        expect(described_class.git_commit_message(commit: head_revision)).to eq(commit_message)
+      end
+    end
   end
 end
