@@ -27,7 +27,7 @@ class Version
 
     sig { override.params(spec: Pathname).returns(T.nilable(String)) }
     def parse(spec)
-      match = @regex.match(process_spec(spec))
+      match = @regex.match(self.class.process_spec(spec))
       return if match.blank?
 
       version = match.captures.first
@@ -38,7 +38,7 @@ class Version
     end
 
     sig { abstract.params(spec: Pathname).returns(String) }
-    def process_spec(spec); end
+    def self.process_spec(spec); end
   end
 
   # @api private
@@ -46,7 +46,7 @@ class Version
     extend T::Sig
 
     sig { override.params(spec: Pathname).returns(String) }
-    def process_spec(spec)
+    def self.process_spec(spec)
       spec.to_s
     end
   end
@@ -55,11 +55,11 @@ class Version
   class StemParser < RegexParser
     extend T::Sig
 
-    SOURCEFORGE_DOWNLOAD_REGEX = %r{((?:sourceforge\.net|sf\.net)/.*)/download$}.freeze
+    SOURCEFORGE_DOWNLOAD_REGEX = %r{(?:sourceforge\.net|sf\.net)/.*/download$}.freeze
     NO_FILE_EXTENSION_REGEX = /\.[^a-zA-Z]+$/.freeze
 
     sig { override.params(spec: Pathname).returns(String) }
-    def process_spec(spec)
+    def self.process_spec(spec)
       return spec.basename.to_s if spec.directory?
 
       spec_s = spec.to_s
