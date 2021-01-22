@@ -180,6 +180,7 @@ jobs:
 
   test-everything:
     name: test everything (macOS)
+    needs: syntax
     if: startsWith(github.repository, 'Homebrew/')
     runs-on: macos-latest
     steps:
