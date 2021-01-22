@@ -1,6 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "pkg_version"
 require "version/null"
 
 # A formula's version.
@@ -509,7 +510,7 @@ class Version
   end
   private_class_method :_parse
 
-  sig { params(val: T.any(String, Version), detected_from_url: T::Boolean).void }
+  sig { params(val: T.any(PkgVersion, String, Version), detected_from_url: T::Boolean).void }
   def initialize(val, detected_from_url: false)
     raise TypeError, "Version value must be a string; got a #{val.class} (#{val})" unless val.respond_to?(:to_str)
 
