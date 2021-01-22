@@ -77,7 +77,7 @@ only do this for the given formulae and casks. Removes all downloads more than
 120 days old. This can be adjusted with `HOMEBREW_CLEANUP_MAX_AGE_DAYS`.
 
 * `--prune`:
-  Remove all cache files older than specified *`days`*.
+  Remove all cache files older than specified *`days`*. If you want to remove everything, use `--prune=all`.
 * `-n`, `--dry-run`:
   Show what would be removed, but do not actually remove anything.
 * `-s`:

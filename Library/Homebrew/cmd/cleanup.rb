@@ -20,7 +20,8 @@ module Homebrew
         #{days} days old. This can be adjusted with `HOMEBREW_CLEANUP_MAX_AGE_DAYS`.
       EOS
       flag   "--prune=",
-             description: "Remove all cache files older than specified <days>."
+             description: "Remove all cache files older than specified <days>. "\
+                          "If you want to remove everything, use `--prune=all`."
       switch "-n", "--dry-run",
              description: "Show what would be removed, but do not actually remove anything."
       switch "-s",
