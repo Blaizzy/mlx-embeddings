@@ -30,11 +30,9 @@ BOTTLE_ERB = <<-EOS
     <% if rebuild.positive? %>
     rebuild <%= rebuild %>
     <% end %>
-    <% checksums.each do |checksum_type, checksum_values| %>
-    <% checksum_values.each do |checksum_value| %>
+    <% checksums.each do |checksum_value| %>
     <% checksum, macos = checksum_value.shift %>
-    <%= checksum_type %> "<%= checksum %>" => :<%= macos %>
-    <% end %>
+    sha256 "<%= checksum %>" => :<%= macos %>
     <% end %>
   end
 EOS
