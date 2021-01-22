@@ -439,13 +439,12 @@ class BottleSpecification
       # Sort non-MacOS tags below MacOS tags.
       "0.#{tag}"
     end
-    sha256s = tags.reverse.map do |tag|
+    tags.reverse.map do |tag|
       {
         collector[tag][:checksum] => tag,
         cellar: collector[tag][:cellar],
       }
     end
-    { sha256: sha256s }
   end
 end
 
