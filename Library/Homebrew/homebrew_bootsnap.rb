@@ -7,7 +7,21 @@
 raise "Needs HOMEBREW_BOOTSNAP!" unless ENV["HOMEBREW_BOOTSNAP"]
 
 require "rubygems"
-require "bootsnap"
+
+begin
+  require "bootsnap"
+rescue LoadError
+  raise if ENV["HOMEBREW_BOOTSNAP_RETRY"]
+
+  Dir.chdir(HOMEBREW_LIBRARY_PATH) do
+    system "bundle", "install", "--standalone"
+  end
+
+  ENV["HOMEBREW_BOOTSNAP_RETRY"] = "1"
+  exec ENV["HOMEBREW_BREW_FILE"], *ARGV
+end
+
+ENV.delete("HOMEBREW_BOOTSNAP_RETRY")
 
 Bootsnap.setup(
   cache_dir:            "#{ENV["HOMEBREW_TEMP"]}/homebrew-bootsnap",
