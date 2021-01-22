@@ -2,9 +2,9 @@
 # frozen_string_literal: true
 
 require "livecheck/error"
+require "livecheck/livecheck_version"
 require "livecheck/skip_conditions"
 require "livecheck/strategy"
-require "livecheck/version"
 require "ruby-progressbar"
 require "uri"
 
