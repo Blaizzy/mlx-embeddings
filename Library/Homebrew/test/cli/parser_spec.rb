@@ -455,11 +455,11 @@ describe Homebrew::CLI::Parser do
     end
 
     it "doesn't accept fewer than the passed number of arguments" do
-      expect { parser_number.parse([]) }.to raise_error(Homebrew::CLI::MinNamedArgumentsError)
+      expect { parser_number.parse([]) }.to raise_error(Homebrew::CLI::NumberOfNamedArgumentsError)
     end
 
     it "doesn't accept more than the passed number of arguments" do
-      expect { parser_number.parse(["foo", "bar"]) }.to raise_error(Homebrew::CLI::MaxNamedArgumentsError)
+      expect { parser_number.parse(["foo", "bar"]) }.to raise_error(Homebrew::CLI::NumberOfNamedArgumentsError)
     end
 
     it "accepts the passed number of arguments" do
@@ -489,7 +489,7 @@ describe Homebrew::CLI::Parser do
         named_args number: 2
       end
       expect { parser.parse([]) }.to raise_error(
-        Homebrew::CLI::MinNamedArgumentsError, /This command requires exactly 2 named arguments/
+        Homebrew::CLI::NumberOfNamedArgumentsError, /This command requires exactly 2 named arguments/
       )
     end
 
@@ -507,7 +507,7 @@ describe Homebrew::CLI::Parser do
         named_args %w[on off], number: 1
       end
       expect { parser.parse([]) }.to raise_error(
-        Homebrew::CLI::MinNamedArgumentsError, /This command requires exactly 1 subcommand/
+        Homebrew::CLI::NumberOfNamedArgumentsError, /This command requires exactly 1 subcommand/
       )
     end
 
@@ -542,7 +542,7 @@ describe Homebrew::CLI::Parser do
     end
 
     it "doesn't allow less than the specified number of arguments" do
-      expect { parser.parse([]) }.to raise_error(Homebrew::CLI::MinNamedArgumentsError)
+      expect { parser.parse([]) }.to raise_error(Homebrew::CLI::NumberOfNamedArgumentsError)
     end
 
     it "treats a symbol as a single argument of the specified type" do
@@ -550,12 +550,12 @@ describe Homebrew::CLI::Parser do
         named :formula
       end
       expect { formula_parser.parse([]) }.to raise_error(
-        Homebrew::CLI::MinNamedArgumentsError, /This command requires exactly 1 formula argument/
+        Homebrew::CLI::NumberOfNamedArgumentsError, /This command requires exactly 1 formula argument/
       )
     end
 
     it "doesn't allow more than the specified number of arguments" do
-      expect { parser.parse(["foo", "bar"]) }.to raise_error(Homebrew::CLI::MaxNamedArgumentsError)
+      expect { parser.parse(["foo", "bar"]) }.to raise_error(Homebrew::CLI::NumberOfNamedArgumentsError)
     end
   end
 

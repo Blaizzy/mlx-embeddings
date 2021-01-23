@@ -898,6 +898,8 @@ _brew_extract() {
       return
       ;;
   esac
+  __brew_complete_formulae
+  __brew_complete_tapped
 }
 
 _brew_fetch() {

@@ -605,8 +605,11 @@ module Homebrew
           :subcommand
         end.compact.uniq
 
-        exception = if @min_named_args && args.size < @min_named_args
-          MinNamedArgumentsError.new(@min_named_args, types: types, exact: @min_named_args == @max_named_args)
+        exception = if @min_named_args && @max_named_args && @min_named_args == @max_named_args &&
+                       args.size != @max_named_args
+          NumberOfNamedArgumentsError.new(@min_named_args, types: types)
+        elsif @min_named_args && args.size < @min_named_args
+          MinNamedArgumentsError.new(@min_named_args, types: types)
         elsif @max_named_args && args.size > @max_named_args
           MaxNamedArgumentsError.new(@max_named_args, types: types)
         end
@@ -701,15 +704,26 @@ module Homebrew
     class MinNamedArgumentsError < UsageError
       extend T::Sig
 
-      sig { params(minimum: Integer, types: T::Array[Symbol], exact: T::Boolean).void }
-      def initialize(minimum, types: [], exact: false)
-        number_phrase = exact ? "exactly" : "at least"
-
+      sig { params(minimum: Integer, types: T::Array[Symbol]).void }
+      def initialize(minimum, types: [])
         types << :named if types.empty?
         arg_types = types.map { |type| type.to_s.tr("_", " ") }
                          .to_sentence two_words_connector: " or ", last_word_connector: " or "
 
-        super "This command requires #{number_phrase} #{minimum} #{arg_types} #{"argument".pluralize(minimum)}."
+        super "This command requires at least #{minimum} #{arg_types} #{"argument".pluralize(minimum)}."
+      end
+    end
+
+    class NumberOfNamedArgumentsError < UsageError
+      extend T::Sig
+
+      sig { params(minimum: Integer, types: T::Array[Symbol]).void }
+      def initialize(minimum, types: [])
+        types << :named if types.empty?
+        arg_types = types.map { |type| type.to_s.tr("_", " ") }
+                         .to_sentence two_words_connector: " or ", last_word_connector: " or "
+
+        super "This command requires exactly #{minimum} #{arg_types} #{"argument".pluralize(minimum)}."
       end
     end
   end
