@@ -10,7 +10,7 @@ module ReleaseNotes
   module_function
 
   sig {
-    params(start_ref: T.any(String, Version), end_ref: T.any(String, Version), markdown: T::Boolean)
+    params(start_ref: T.any(String, Version), end_ref: T.any(String, Version), markdown: T.nilable(T::Boolean))
       .returns(String)
   }
   def generate_release_notes(start_ref, end_ref, markdown: false)

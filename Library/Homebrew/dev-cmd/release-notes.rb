@@ -32,6 +32,9 @@ module Homebrew
   def release_notes
     args = release_notes_args.parse
 
+    # TODO: (2.8) Deprecate this command now that the `brew release` command exists.
+    # odeprecated "`brew release-notes`"
+
     previous_tag = args.named.first
 
     if previous_tag.present?
@@ -56,7 +59,7 @@ module Homebrew
       odie "Ref #{ref} does not exist!"
     end
 
-    release_notes = ReleaseNotes.generate_release_notes previous_tag, end_ref, markdown: T.must(args.markdown?)
+    release_notes = ReleaseNotes.generate_release_notes previous_tag, end_ref, markdown: args.markdown?
 
     $stderr.puts "Release notes between #{previous_tag} and #{end_ref}:"
     puts release_notes
