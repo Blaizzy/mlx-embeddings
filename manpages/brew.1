@@ -1686,6 +1686,23 @@ Run Homebrew with a Ruby profiler, e\.g\. \fBbrew prof readall\fR\.
 \fB\-\-stackprof\fR
 Use \fBstackprof\fR instead of \fBruby\-prof\fR (the default)\.
 .
+.SS "\fBrelease\fR [\fI\-\-major\fR] [\fI\-\-minor\fR]"
+Create a new draft Homebrew/brew release with the appropriate version number and release notes\.
+.
+.P
+By default, \fBbrew release\fR will bump the patch version number\. Pass \fB\-\-major\fR or \fB\-\-minor\fR to bump the major or minor version numbers, respectively\. The command will fail if the previous major or minor release was made less than one month ago\.
+.
+.P
+Requires write access to the Homebrew/brew repository\.
+.
+.TP
+\fB\-\-major\fR
+Create a major release\.
+.
+.TP
+\fB\-\-minor\fR
+Create a minor release\.
+.
 .SS "\fBrelease\-notes\fR [\fIoptions\fR] [\fIprevious_tag\fR] [\fIend_ref\fR]"
 Print the merged pull requests on Homebrew/brew between two Git refs\. If no \fIprevious_tag\fR is provided it defaults to the latest tag\. If no \fIend_ref\fR is provided it defaults to \fBorigin/master\fR\.
 .

@@ -11,16 +11,12 @@ Homebrew release:
    [Homebrew/discussions (forum)](https://github.com/homebrew/discussions/discussions) to see if there is
    anything pressing that needs to be fixed or merged before the next release.
    If so, fix and merge these changes.
-2. After no code changes have happened for at least a couple of hours (ideally 24 hours)
-   and you are confident there's no major regressions on the current `master`
-   branch you can create a new Git tag. Ideally this should be signed with your
-   GPG key. This can then be pushed to GitHub.
-3. Use `brew release-notes --markdown $PREVIOUS_TAG` to generate the release
-   notes for the release.
-4. [Create a new release on GitHub](https://github.com/Homebrew/brew/releases/new)
-   based on the new tag.
-
-You can watch a video of the above process [on YouTube](https://youtu.be/dQCpLaXOf6k)
+2. Ensure that no code changes have happened for at least a couple of hours (ideally 24 hours)
+   and that you are confident there are no major regressions on the current `master`
+   branch.
+3. Run `brew release` to create a new draft release. For major or minor version bumps,
+   pass `--major` or `--minor`, respectively.
+4. Publish the draft release on [GitHub](https://github.com/Homebrew/brew/releases).
 
 If this is a major or minor release (e.g. X.0.0 or X.Y.0) then there are a few more steps:
 

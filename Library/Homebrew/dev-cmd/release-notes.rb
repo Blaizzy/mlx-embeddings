@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "cli/parser"
+require "release_notes"
 
 module Homebrew
   extend T::Sig
@@ -31,6 +32,9 @@ module Homebrew
   def release_notes
     args = release_notes_args.parse
 
+    # TODO: (2.8) Deprecate this command now that the `brew release` command exists.
+    # odeprecated "`brew release-notes`"
+
     previous_tag = args.named.first
 
     if previous_tag.present?
@@ -55,25 +59,9 @@ module Homebrew
       odie "Ref #{ref} does not exist!"
     end
 
-    output = Utils.popen_read(
-      "git", "-C", HOMEBREW_REPOSITORY, "log", "--pretty=format:'%s >> - %b%n'", "#{previous_tag}..#{end_ref}"
-    ).lines.grep(/Merge pull request/)
-
-    output.map! do |s|
-      s.gsub(%r{.*Merge pull request #(\d+) from ([^/]+)/[^>]*(>>)*},
-             "https://github.com/Homebrew/brew/pull/\\1 (@\\2)")
-    end
-    if args.markdown?
-      output.map! do |s|
-        /(.*\d)+ \(@(.+)\) - (.*)/ =~ s
-        "- [#{Regexp.last_match(3)}](#{Regexp.last_match(1)}) (@#{Regexp.last_match(2)})"
-      end
-    end
+    release_notes = ReleaseNotes.generate_release_notes previous_tag, end_ref, markdown: args.markdown?
 
     $stderr.puts "Release notes between #{previous_tag} and #{end_ref}:"
-    if args.markdown? && args.named.first
-      puts "Release notes for major and minor releases can be found in the [Homebrew blog](https://brew.sh/blog/)."
-    end
-    puts output
+    puts release_notes
   end
 end

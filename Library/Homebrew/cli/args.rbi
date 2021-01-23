@@ -138,6 +138,12 @@ module Homebrew
       sig { returns(T.nilable(T::Boolean)) }
       def reset_cache?; end
 
+      sig { returns(T.nilable(T::Boolean)) }
+      def major?; end
+
+      sig { returns(T.nilable(T::Boolean)) }
+      def minor?; end
+
       sig { returns(T.nilable(String)) }
       def tag; end
 
