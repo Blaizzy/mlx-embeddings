@@ -47,7 +47,7 @@ describe Cask::Cmd::Create, :cask do
   it "raises an exception when more than one Cask is given" do
     expect {
       described_class.run("additional-cask", "another-cask")
-    }.to raise_error(UsageError, /Only one cask can be created at a time\./)
+    }.to raise_error(Homebrew::CLI::NumberOfNamedArgumentsError)
   end
 
   it "raises an exception when the Cask already exists" do
