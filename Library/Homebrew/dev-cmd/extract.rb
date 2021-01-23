@@ -96,7 +96,7 @@ module Homebrew
       switch "-f", "--force",
              description: "Overwrite the destination formula if it already exists."
 
-      named_args number: 2
+      named_args [:formula, :tap], number: 2
     end
   end
 
