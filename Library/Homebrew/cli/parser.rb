@@ -599,21 +599,16 @@ module Homebrew
       end
 
       def check_named_args(args)
+        types = Array(@named_args_type).map do |type|
+          next type if type.is_a? Symbol
+
+          :subcommand
+        end.compact.uniq
+
         exception = if @min_named_args && args.size < @min_named_args
-          if @named_args_type.present?
-            types = Array(@named_args_type)
-            if types.any? { |arg| arg.is_a? String }
-              MinNamedArgumentsError.new(@min_named_args)
-            else
-              list = types.map { |type| type.to_s.tr("_", " ") }
-              list = list.to_sentence two_words_connector: " or ", last_word_connector: " or "
-              UsageError.new("this command requires a #{list} argument")
-            end
-          else
-            MinNamedArgumentsError.new(@min_named_args)
-          end
+          MinNamedArgumentsError.new(@min_named_args, types: types, exact: @min_named_args == @max_named_args)
         elsif @max_named_args && args.size > @max_named_args
-          MaxNamedArgumentsError.new(@max_named_args)
+          MaxNamedArgumentsError.new(@max_named_args, types: types)
         end
 
         raise exception if exception
@@ -688,13 +683,17 @@ module Homebrew
     class MaxNamedArgumentsError < UsageError
       extend T::Sig
 
-      sig { params(maximum: Integer).void }
-      def initialize(maximum)
+      sig { params(maximum: Integer, types: T::Array[Symbol]).void }
+      def initialize(maximum, types: [])
         super case maximum
         when 0
           "This command does not take named arguments."
         else
-          "This command does not take more than #{maximum} named #{"argument".pluralize(maximum)}"
+          types << :named if types.empty?
+          arg_types = types.map { |type| type.to_s.tr("_", " ") }
+                           .to_sentence two_words_connector: " or ", last_word_connector: " or "
+
+          "This command does not take more than #{maximum} #{arg_types} #{"argument".pluralize(maximum)}."
         end
       end
     end
@@ -702,9 +701,15 @@ module Homebrew
     class MinNamedArgumentsError < UsageError
       extend T::Sig
 
-      sig { params(minimum: Integer).void }
-      def initialize(minimum)
-        super "This command requires at least #{minimum} named #{"argument".pluralize(minimum)}."
+      sig { params(minimum: Integer, types: T::Array[Symbol], exact: T::Boolean).void }
+      def initialize(minimum, types: [], exact: false)
+        number_phrase = exact ? "exactly" : "at least"
+
+        types << :named if types.empty?
+        arg_types = types.map { |type| type.to_s.tr("_", " ") }
+                         .to_sentence two_words_connector: " or ", last_word_connector: " or "
+
+        super "This command requires #{number_phrase} #{minimum} #{arg_types} #{"argument".pluralize(minimum)}."
       end
     end
   end
