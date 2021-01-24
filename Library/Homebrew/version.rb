@@ -580,26 +580,31 @@ class Version
   end
   alias eql? ==
 
+  # @api public
   sig { returns(T.nilable(Token)) }
   def major
     tokens.first
   end
 
+  # @api public
   sig { returns(T.nilable(Token)) }
   def minor
     tokens.second
   end
 
+  # @api public
   sig { returns(T.nilable(Token)) }
   def patch
     tokens.third
   end
 
+  # @api public
   sig { returns(Version) }
   def major_minor
     Version.new([major, minor].compact.join("."))
   end
 
+  # @api public
   sig { returns(Version) }
   def major_minor_patch
     Version.new([major, minor, patch].compact.join("."))

@@ -93,46 +93,68 @@ module Cask
         to_s == "latest"
       end
 
+      # @api public
+      sig { returns(T.self_type) }
       def major
         version { slice(MAJOR_MINOR_PATCH_REGEX, 1) }
       end
 
+      # @api public
+      sig { returns(T.self_type) }
       def minor
         version { slice(MAJOR_MINOR_PATCH_REGEX, 2) }
       end
 
+      # @api public
+      sig { returns(T.self_type) }
       def patch
         version { slice(MAJOR_MINOR_PATCH_REGEX, 3) }
       end
 
+      # @api public
+      sig { returns(T.self_type) }
       def major_minor
         version { [major, minor].reject(&:empty?).join(".") }
       end
 
+      # @api public
+      sig { returns(T.self_type) }
       def major_minor_patch
         version { [major, minor, patch].reject(&:empty?).join(".") }
       end
 
+      # @api public
+      sig { returns(T.self_type) }
       def minor_patch
         version { [minor, patch].reject(&:empty?).join(".") }
       end
 
+      # @api public
+      sig { returns(T.self_type) }
       def before_comma
         version { split(",", 2).first }
       end
 
+      # @api public
+      sig { returns(T.self_type) }
       def after_comma
         version { split(",", 2).second }
       end
 
+      # @api public
+      sig { returns(T.self_type) }
       def before_colon
         version { split(":", 2).first }
       end
 
+      # @api public
+      sig { returns(T.self_type) }
       def after_colon
         version { split(":", 2).second }
       end
 
+      # @api public
+      sig { returns(T.self_type) }
       def no_dividers
         version { gsub(DIVIDER_REGEX, "") }
       end
