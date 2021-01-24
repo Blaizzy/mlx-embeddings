@@ -50,6 +50,12 @@ module Homebrew
         @to_formulae_and_casks ||= {}
         @to_formulae_and_casks[only] ||= downcased_unique_named.flat_map do |name|
           load_formula_or_cask(name, only: only, method: method)
+        rescue FormulaUnreadableError, FormulaClassUnavailableError,
+               TapFormulaUnreadableError, TapFormulaClassUnavailableError,
+               Cask::CaskUnreadableError
+          # Need to rescue before `*UnavailableError` (superclass of this)
+          # The formula/cask was found, but there's a problem with its implementation
+          raise
         rescue NoSuchKegError, FormulaUnavailableError, Cask::CaskUnavailableError
           ignore_unavailable ? [] : raise
         end.uniq.freeze
@@ -72,6 +78,8 @@ module Homebrew
       end
 
       def load_formula_or_cask(name, only: nil, method: nil)
+        unreadable_errors = []
+
         if only != :cask
           begin
             formula = case method
@@ -90,6 +98,11 @@ module Homebrew
 
             warn_if_cask_conflicts(name, "formula") unless only == :formula
             return formula
+          rescue FormulaUnreadableError, FormulaClassUnavailableError,
+                 TapFormulaUnreadableError, TapFormulaClassUnavailableError => e
+            # Need to rescue before `FormulaUnavailableError` (superclass of this)
+            # The formula was found, but there's a problem with its implementation
+            unreadable_errors << e
           rescue NoSuchKegError, FormulaUnavailableError => e
             raise e if only == :formula
           end
@@ -98,10 +111,16 @@ module Homebrew
         if only != :formula
           begin
             return Cask::CaskLoader.load(name, config: Cask::Config.from_args(@parent))
+          rescue Cask::CaskUnreadableError => e
+            # Need to rescue before `CaskUnavailableError` (superclass of this)
+            # The cask was found, but there's a problem with its implementation
+            unreadable_errors << e
           rescue Cask::CaskUnavailableError => e
             raise e if only == :cask
           end
         end
+
+        raise unreadable_errors.first if unreadable_errors.count == 1
 
         raise FormulaOrCaskUnavailableError, name
       end
