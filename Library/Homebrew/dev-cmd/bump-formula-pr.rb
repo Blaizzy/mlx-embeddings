@@ -138,6 +138,7 @@ module Homebrew
     raise FormulaUnspecifiedError if formula.blank?
 
     odie "This formula is disabled!" if formula.disabled?
+    odie "This formula is deprecated and does not build!" if formula.deprecation_reason == :does_not_build
     odie "This formula is not in a tap!" if formula.tap.blank?
     odie "This formula's tap is not a Git repository!" unless formula.tap.git?
 
@@ -148,7 +149,7 @@ module Homebrew
     check_open_pull_requests(formula, tap_full_name, args: args)
 
     new_version = args.version
-    check_closed_pull_requests(formula, tap_full_name, version: new_version, args: args) if new_version.present?
+    check_new_version(formula, tap_full_name, version: new_version, args: args) if new_version.present?
 
     opoo "This formula has patches that may be resolved upstream." if formula.patchlist.present?
     if formula.resources.any? { |resource| !resource.name.start_with?("homebrew-") }
@@ -172,10 +173,10 @@ module Homebrew
     old_version = old_formula_version.to_s
     forced_version = new_version.present?
     new_url_hash = if new_url.present? && new_hash.present?
-      check_closed_pull_requests(formula, tap_full_name, url: new_url, args: args) if new_version.blank?
+      check_new_version(formula, tap_full_name, url: new_url, args: args) if new_version.blank?
       true
     elsif new_tag.present? && new_revision.present?
-      check_closed_pull_requests(formula, tap_full_name, url: old_url, tag: new_tag, args: args) if new_version.blank?
+      check_new_version(formula, tap_full_name, url: old_url, tag: new_tag, args: args) if new_version.blank?
       false
     elsif old_hash.blank?
       if new_tag.blank? && new_version.blank? && new_revision.blank?
@@ -190,9 +191,7 @@ module Homebrew
             and old tag are both #{new_tag}.
           EOS
         end
-        if new_version.blank?
-          check_closed_pull_requests(formula, tap_full_name, url: old_url, tag: new_tag, args: args)
-        end
+        check_new_version(formula, tap_full_name, url: old_url, tag: new_tag, args: args) if new_version.blank?
         resource_path, forced_version = fetch_resource(formula, new_version, old_url, tag: new_tag)
         new_revision = Utils.popen_read("git -C \"#{resource_path}\" rev-parse -q --verify HEAD")
         new_revision = new_revision.strip
@@ -219,7 +218,7 @@ module Homebrew
             #{new_url}
         EOS
       end
-      check_closed_pull_requests(formula, tap_full_name, url: new_url, args: args) if new_version.blank?
+      check_new_version(formula, tap_full_name, url: new_url, args: args) if new_version.blank?
       resource_path, forced_version = fetch_resource(formula, new_version, new_url)
       Utils::Tar.validate_file(resource_path)
       new_hash = resource_path.sha256
@@ -462,17 +461,33 @@ module Homebrew
                                              args:  args)
   end
 
-  def check_closed_pull_requests(formula, tap_full_name, args:, version: nil, url: nil, tag: nil)
+  def check_new_version(formula, tap_full_name, args:, version: nil, url: nil, tag: nil)
     if version.nil?
       specs = {}
       specs[:tag] = tag if tag.present?
       version = Version.detect(url, **specs)
     end
+    check_throttle(formula, version)
+    check_closed_pull_requests(formula, tap_full_name, args: args, version: version)
+  end
+
+  def check_throttle(formula, new_version)
+    throttled_rate = formula.tap.audit_exceptions.dig(:throttled_formulae, formula.name)
+    return if throttled_rate.blank?
+
+    formula_suffix = Version.new(new_version).patch.to_i
+    return if formula_suffix.modulo(throttled_rate).zero?
+
+    odie "#{formula} should only be updated every #{throttled_rate} releases on multiples of #{throttled_rate}"
+  end
+
+  def check_closed_pull_requests(formula, tap_full_name, args:, version:)
     # if we haven't already found open requests, try for an exact match across closed requests
-    GitHub.check_for_duplicate_pull_requests("#{formula.name} #{version}", tap_full_name,
-                                             state: "closed",
-                                             file:  formula.path.relative_path_from(formula.tap.path).to_s,
-                                             args:  args)
+    GitHub.check_for_duplicate_pull_requests(formula.name, tap_full_name,
+                                             version: version,
+                                             state:   "closed",
+                                             file:    formula.path.relative_path_from(formula.tap.path).to_s,
+                                             args:    args)
   end
 
   def alias_update_pair(formula, new_formula_version)
