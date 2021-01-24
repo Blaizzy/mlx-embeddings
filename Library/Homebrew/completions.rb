@@ -123,22 +123,22 @@ module Homebrew
       description.gsub("'", "'\\\\''").gsub(/[<>]/, "").tr("\n", " ").chomp(".")
     end
 
-    sig { params(command: String).returns(T::Array[T::Array[String]]) }
+    sig { params(command: String).returns(T::Hash[String, String]) }
     def command_options(command)
-      options = []
+      options = {}
       Commands.command_options(command)&.each do |option|
         next if option.blank?
 
         name = option.first
         desc = format_description option.second
         if name.start_with? "--[no-]"
-          options << [name.remove("[no-]"), desc]
-          options << [name.sub("[no-]", "no-"), desc]
+          options[name.remove("[no-]")] = desc
+          options[name.sub("[no-]", "no-")] = desc
         else
-          options << [name, desc]
+          options[name] = desc
         end
-      end&.compact
-      options.sort
+      end
+      options
     end
 
     sig { params(command: String).returns(T.nilable(String)) }
@@ -164,7 +164,7 @@ module Homebrew
           case "$cur" in
             -*)
               __brewcomp "
-              #{command_options(command).map(&:first).join("\n      ")}
+              #{command_options(command).keys.sort.join("\n      ")}
               "
               return
               ;;
@@ -194,7 +194,7 @@ module Homebrew
     def generate_zsh_subcommand_completion(command)
       return unless command_gets_completions? command
 
-      options = command_options(command).map do |opt, desc|
+      options = command_options(command).sort.map do |opt, desc|
         next opt if desc.blank?
 
         "#{opt}[#{desc}]"

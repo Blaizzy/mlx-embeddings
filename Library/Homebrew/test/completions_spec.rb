@@ -153,37 +153,72 @@ describe Homebrew::Completions do
       end
     end
 
+    describe ".format_description" do
+      it "escapes single quotes for shells" do
+        expect(described_class.format_description("Homebrew's")).to eq "Homebrew'\\''s"
+      end
+
+      it "removes angle brackets" do
+        expect(described_class.format_description("<formula>")).to eq "formula"
+      end
+
+      it "replaces newlines with spaces" do
+        expect(described_class.format_description("Homebrew\ncommand")).to eq "Homebrew command"
+      end
+
+      it "removes trailing period" do
+        expect(described_class.format_description("Homebrew.")).to eq "Homebrew"
+      end
+    end
+
     describe ".command_options" do
       it "returns an array of options for a ruby command" do
-        expected_options = %w[--debug --help --hide --quiet --verbose]
+        expected_options = {
+          "--debug"   => "Display any debugging information",
+          "--help"    => "Show this message",
+          "--hide"    => "Act as if none of the specified hidden are installed. hidden should be " \
+                         "a comma-separated list of formulae",
+          "--quiet"   => "Make some output more quiet",
+          "--verbose" => "Make some output more verbose",
+        }
         expect(described_class.command_options("missing")).to eq expected_options
       end
 
       it "returns an array of options for a shell command" do
-        expected_options = %w[--debug --force --help --merge --preinstall --verbose]
+        expected_options = {
+          "--debug"      => "Display a trace of all shell commands as they are executed",
+          "--force"      => "Always do a slower, full update check (even if unnecessary)",
+          "--help"       => "Show this message",
+          "--merge"      => "Use `git merge` to apply updates (rather than `git rebase`)",
+          "--preinstall" => "Run on auto-updates (e.g. before `brew install`). Skips some slower steps",
+          "--verbose"    => "Print the directories checked and `git` operations performed",
+        }
         expect(described_class.command_options("update")).to eq expected_options
       end
 
       it "handles --[no]- options correctly" do
         options = described_class.command_options("audit")
-        expect(options.include?("--appcast")).to eq true
-        expect(options.include?("--no-appcast")).to eq true
+        expect(options.key?("--appcast")).to eq true
+        expect(options.key?("--no-appcast")).to eq true
+        expect(options["--appcast"] == options["--no-appcast"]).to eq true
       end
 
       it "return an empty array if command is not found" do
-        expect(described_class.command_options("foobar")).to eq []
+        expect(described_class.command_options("foobar")).to eq({})
       end
 
       it "return an empty array for a command with no options" do
-        expect(described_class.command_options("help")).to eq []
+        expect(described_class.command_options("help")).to eq({})
       end
 
       it "will list global options only once if overriden" do
-        count = 0
-        described_class.command_options("upgrade").each do |opt|
-          count += 1 if opt == "--verbose"
-        end
-        expect(count).to eq 1
+        # count = 0
+        options = described_class.command_options("upgrade")
+        # options.each_key do |opt|
+        #   count += 1 if opt == "--verbose"
+        # end
+        # expect(count).to eq 1
+        expect(options["--verbose"]).to eq "Print the verification and postinstall steps"
       end
     end
 
@@ -208,16 +243,46 @@ describe Homebrew::Completions do
 
       it "returns appropriate completion for a ruby command" do
         completion = described_class.generate_bash_subcommand_completion("missing")
-        expect(completion).to match(/^_brew_missing\(\) {/)
-        expect(completion).to match(/__brewcomp "\n +--debug\n +--help\n +--hide\n +--quiet\n +--verbose/s)
-        expect(completion).to match(/__brew_complete_formulae\n}$/)
+        expect(completion).to eq <<~COMPLETION
+          _brew_missing() {
+            local cur="${COMP_WORDS[COMP_CWORD]}"
+            case "$cur" in
+              -*)
+                __brewcomp "
+                --debug
+                --help
+                --hide
+                --quiet
+                --verbose
+                "
+                return
+                ;;
+            esac
+            __brew_complete_formulae
+          }
+        COMPLETION
       end
 
       it "returns appropriate completion for a shell command" do
         completion = described_class.generate_bash_subcommand_completion("update")
-        options_regex = /__brewcomp "\n +--debug\n +--force\n +--help\n +--merge\n +--preinstall\n +--verbose/
-        expect(completion).to match(/^_brew_update\(\) {/)
-        expect(completion).to match(options_regex)
+        expect(completion).to eq <<~COMPLETION
+          _brew_update() {
+            local cur="${COMP_WORDS[COMP_CWORD]}"
+            case "$cur" in
+              -*)
+                __brewcomp "
+                --debug
+                --force
+                --help
+                --merge
+                --preinstall
+                --verbose
+                "
+                return
+                ;;
+            esac
+          }
+        COMPLETION
       end
 
       it "returns appropriate completion for a command with multiple named arg types" do
@@ -238,6 +303,67 @@ describe Homebrew::Completions do
         expect(file).to match(/^ {4}missing\) _brew_missing ;;/)
         expect(file).to match(/^ {4}update\) _brew_update ;;/)
         expect(file).to match(/^complete -o bashdefault -o default -F _brew brew$/)
+      end
+    end
+
+    describe ".generate_zsh_subcommand_completion" do
+      it "returns nil if completions aren't needed" do
+        expect(described_class.generate_zsh_subcommand_completion("help")).to be_nil
+      end
+
+      it "returns appropriate completion for a ruby command" do
+        completion = described_class.generate_zsh_subcommand_completion("missing")
+        expect(completion).to eq <<~COMPLETION
+          # brew missing
+          _brew_missing() {
+            _arguments \\
+              '--debug[Display any debugging information]' \\
+              '--help[Show this message]' \\
+              '--hide[Act as if none of the specified hidden are installed. hidden should be a comma-separated list of formulae]' \\
+              '--quiet[Make some output more quiet]' \\
+              '--verbose[Make some output more verbose]' \\
+              '::formula:__brew_formulae'
+          }
+        COMPLETION
+      end
+
+      it "returns appropriate completion for a shell command" do
+        completion = described_class.generate_zsh_subcommand_completion("update")
+        expect(completion).to eq <<~COMPLETION
+          # brew update
+          _brew_update() {
+            _arguments \\
+              '--debug[Display a trace of all shell commands as they are executed]' \\
+              '--force[Always do a slower, full update check (even if unnecessary)]' \\
+              '--help[Show this message]' \\
+              '--merge[Use `git merge` to apply updates (rather than `git rebase`)]' \\
+              '--preinstall[Run on auto-updates (e.g. before `brew install`). Skips some slower steps]' \\
+              '--verbose[Print the directories checked and `git` operations performed]'
+          }
+        COMPLETION
+      end
+
+      it "returns appropriate completion for a command with multiple named arg types" do
+        completion = described_class.generate_zsh_subcommand_completion("upgrade")
+        expect(completion).to match(
+          /'::outdated_formula:__brew_outdated_formulae' \\\n    '::outdated_cask:__brew_outdated_casks'\n}$/,
+        )
+      end
+    end
+
+    describe ".generate_zsh_completion_file" do
+      it "returns the correct completion file" do
+        file = described_class.generate_zsh_completion_file(%w[install missing update])
+        expect(file).to match(/^__brew_list_aliases\(\) {$/)
+        expect(file).to match(/^    up update$/)
+        expect(file).to match(/^__brew_internal_commands\(\) {$/)
+        expect(file).to match(/^    'install:Install a formula or cask'$/)
+        expect(file).to match(/^    'missing:Check the given formula kegs for missing dependencies'$/)
+        expect(file).to match(/^    'update:Fetch the newest version of Homebrew and all formulae from GitHub .*'$/)
+        expect(file).to match(/^_brew_install\(\) {$/)
+        expect(file).to match(/^_brew_missing\(\) {$/)
+        expect(file).to match(/^_brew_update\(\) {$/)
+        expect(file).to match(/^_brew "\$@"$/)
       end
     end
   end
