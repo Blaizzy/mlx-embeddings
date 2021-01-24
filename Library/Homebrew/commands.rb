@@ -201,8 +201,10 @@ module Commands
       cmd.start_with?("cask ") || Homebrew::Completions::COMPLETIONS_EXCLUSION_LIST.include?(cmd)
     end
 
-    file = HOMEBREW_CACHE/"all_commands_list.txt"
-    file.atomic_write("#{cmds.sort.join("\n")}\n")
+    all_commands_file = HOMEBREW_CACHE/"all_commands_list.txt"
+    external_commands_file = HOMEBREW_CACHE/"external_commands_list.txt"
+    all_commands_file.atomic_write("#{cmds.sort.join("\n")}\n")
+    external_commands_file.atomic_write("#{external_commands.sort.join("\n")}\n")
   end
 
   def command_options(command)
@@ -225,6 +227,25 @@ module Commands
         end
       end
       options
+    end
+  end
+
+  def command_description(command)
+    path = self.path(command)
+    return if path.blank?
+
+    if cmd_parser = Homebrew::CLI::Parser.from_cmd_path(path)
+      cmd_parser.description
+    else
+      comment_lines = path.read.lines.grep(/^#:/)
+
+      # skip the comment's initial usage summary lines
+      comment_lines.slice(2..-1)&.each do |line|
+        if /^#:  (?<desc>\w.*+)$/ =~ line
+          return desc
+        end
+      end
+      []
     end
   end
 
