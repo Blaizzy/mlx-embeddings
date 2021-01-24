@@ -180,7 +180,7 @@ __brew_internal_commands() {
     'rubocop:Installs, configures and runs Homebrew'\''s `rubocop`'
     'ruby:Run a Ruby instance with Homebrew'\''s libraries loaded'
     'search:Perform a substring search of cask tokens and formula names for text'
-    'sh:Homebrew'\''s build environment'
+    'sh:Enter an interactive shell for Homebrew'\''s build environment'
     'shellenv:Print export statements'
     'sponsors:Print a Markdown summary of Homebrew'\''s GitHub Sponsors, suitable for pasting into a README'
     'style:Check formulae or files for conformance to Homebrew style guidelines'
@@ -204,7 +204,7 @@ __brew_internal_commands() {
     'update-reset:Fetch and reset Homebrew and all tap repositories (or any specified repository) using `git`(1) to their latest `origin/master`'
     'update-test:Run a test of `brew update` with a new repository clone'
     'upgrade:Upgrade outdated casks and outdated, unpinned formulae using the same options they were originally installed with, plus any appended brew formula options'
-    'uses:Show formulae and casks that specify formula as a dependency'
+    'uses:Show formulae and casks that specify formula as a dependency; that is, show dependents of formula'
     'vendor-gems:Install and commit Homebrew'\''s vendored gems'
     'vendor-install:Install Homebrew'\''s portable Ruby'
   )

@@ -659,7 +659,7 @@ upgraded formulae or, every 30 days, for all formulae.
 
 ### `uses` [*`options`*] *`formula`* [...]
 
-Show formulae and casks that specify *`formula`* as a dependency. That is, show dependents
+Show formulae and casks that specify *`formula`* as a dependency; that is, show dependents
 of *`formula`*. When given multiple formula arguments, show the intersection
 of formulae that use *`formula`*. By default, `uses` shows all formulae and casks that
 specify *`formula`* as a required or recommended dependency for their stable builds.
@@ -1254,7 +1254,7 @@ Run a Ruby instance with Homebrew's libraries loaded. For example,
 
 ### `sh` [*`--env`*`=`] [*`--cmd`*`=`] [*`file`*]
 
-Homebrew's build environment. This environment uses years-battle-hardened
+Enter an interactive shell for Homebrew's build environment. Use years-battle-hardened
 build logic to help your `./configure && make && make install`
 and even your `gem install` succeed. Especially handy if you run Homebrew
 in an Xcode-only configuration since it adds tools like `make` to your `PATH`

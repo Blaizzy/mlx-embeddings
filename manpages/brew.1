@@ -896,7 +896,7 @@ Skip installing cask dependencies\.
 Also include casks with \fBauto_updates true\fR or \fBversion :latest\fR\.
 .
 .SS "\fBuses\fR [\fIoptions\fR] \fIformula\fR [\.\.\.]"
-Show formulae and casks that specify \fIformula\fR as a dependency\. That is, show dependents of \fIformula\fR\. When given multiple formula arguments, show the intersection of formulae that use \fIformula\fR\. By default, \fBuses\fR shows all formulae and casks that specify \fIformula\fR as a required or recommended dependency for their stable builds\.
+Show formulae and casks that specify \fIformula\fR as a dependency; that is, show dependents of \fIformula\fR\. When given multiple formula arguments, show the intersection of formulae that use \fIformula\fR\. By default, \fBuses\fR shows all formulae and casks that specify \fIformula\fR as a required or recommended dependency for their stable builds\.
 .
 .TP
 \fB\-\-recursive\fR
@@ -1728,7 +1728,7 @@ Load a library using \fBrequire\fR\.
 Execute the given text string as a script\.
 .
 .SS "\fBsh\fR [\fI\-\-env\fR\fB=\fR] [\fI\-\-cmd\fR\fB=\fR] [\fIfile\fR]"
-Homebrew\'s build environment\. This environment uses years\-battle\-hardened build logic to help your \fB\./configure && make && make install\fR and even your \fBgem install\fR succeed\. Especially handy if you run Homebrew in an Xcode\-only configuration since it adds tools like \fBmake\fR to your \fBPATH\fR which build systems would not find otherwise\.
+Enter an interactive shell for Homebrew\'s build environment\. Use years\-battle\-hardened build logic to help your \fB\./configure && make && make install\fR and even your \fBgem install\fR succeed\. Especially handy if you run Homebrew in an Xcode\-only configuration since it adds tools like \fBmake\fR to your \fBPATH\fR which build systems would not find otherwise\.
 .
 .TP
 \fB\-\-env\fR
