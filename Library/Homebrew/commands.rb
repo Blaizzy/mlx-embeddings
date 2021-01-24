@@ -230,22 +230,27 @@ module Commands
     end
   end
 
-  def command_description(command)
+  def command_description(command, short: false)
     path = self.path(command)
     return if path.blank?
 
     if cmd_parser = Homebrew::CLI::Parser.from_cmd_path(path)
-      cmd_parser.description
+      if short
+        cmd_parser.description.split(".").first
+      else
+        cmd_parser.description
+      end
     else
       comment_lines = path.read.lines.grep(/^#:/)
 
       # skip the comment's initial usage summary lines
       comment_lines.slice(2..-1)&.each do |line|
         if /^#:  (?<desc>\w.*+)$/ =~ line
+          return desc.split(".").first if short
+
           return desc
         end
       end
-      []
     end
   end
 

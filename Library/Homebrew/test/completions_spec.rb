@@ -154,7 +154,7 @@ describe Homebrew::Completions do
     end
 
     describe ".format_description" do
-      it "escapes single quotes for shells" do
+      it "escapes single quotes" do
         expect(described_class.format_description("Homebrew's")).to eq "Homebrew'\\''s"
       end
 
@@ -174,24 +174,24 @@ describe Homebrew::Completions do
     describe ".command_options" do
       it "returns an array of options for a ruby command" do
         expected_options = {
-          "--debug"   => "Display any debugging information",
-          "--help"    => "Show this message",
-          "--hide"    => "Act as if none of the specified hidden are installed. hidden should be " \
-                         "a comma-separated list of formulae",
-          "--quiet"   => "Make some output more quiet",
-          "--verbose" => "Make some output more verbose",
+          "--debug"   => "Display any debugging information.",
+          "--help"    => "Show this message.",
+          "--hide"    => "Act as if none of the specified <hidden> are installed. <hidden> should be " \
+                         "a comma-separated list of formulae.",
+          "--quiet"   => "Make some output more quiet.",
+          "--verbose" => "Make some output more verbose.",
         }
         expect(described_class.command_options("missing")).to eq expected_options
       end
 
       it "returns an array of options for a shell command" do
         expected_options = {
-          "--debug"      => "Display a trace of all shell commands as they are executed",
-          "--force"      => "Always do a slower, full update check (even if unnecessary)",
-          "--help"       => "Show this message",
-          "--merge"      => "Use `git merge` to apply updates (rather than `git rebase`)",
-          "--preinstall" => "Run on auto-updates (e.g. before `brew install`). Skips some slower steps",
-          "--verbose"    => "Print the directories checked and `git` operations performed",
+          "--debug"      => "Display a trace of all shell commands as they are executed.",
+          "--force"      => "Always do a slower, full update check (even if unnecessary).",
+          "--help"       => "Show this message.",
+          "--merge"      => "Use `git merge` to apply updates (rather than `git rebase`).",
+          "--preinstall" => "Run on auto-updates (e.g. before `brew install`). Skips some slower steps.",
+          "--verbose"    => "Print the directories checked and `git` operations performed.",
         }
         expect(described_class.command_options("update")).to eq expected_options
       end
@@ -211,14 +211,9 @@ describe Homebrew::Completions do
         expect(described_class.command_options("help")).to eq({})
       end
 
-      it "will list global options only once if overriden" do
-        # count = 0
+      it "will override global options with local descriptions" do
         options = described_class.command_options("upgrade")
-        # options.each_key do |opt|
-        #   count += 1 if opt == "--verbose"
-        # end
-        # expect(count).to eq 1
-        expect(options["--verbose"]).to eq "Print the verification and postinstall steps"
+        expect(options["--verbose"]).to eq "Print the verification and postinstall steps."
       end
     end
 

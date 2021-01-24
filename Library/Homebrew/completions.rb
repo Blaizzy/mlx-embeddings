@@ -107,6 +107,8 @@ module Homebrew
     def update_shell_completions!
       commands = Commands.commands(external: false, aliases: true).sort
 
+      puts "Writing completions to #{COMPLETIONS_DIR}"
+
       (COMPLETIONS_DIR/"bash/brew").atomic_write generate_bash_completion_file(commands)
       (COMPLETIONS_DIR/"zsh/_brew").atomic_write generate_zsh_completion_file(commands)
     end
@@ -130,7 +132,7 @@ module Homebrew
         next if option.blank?
 
         name = option.first
-        desc = format_description option.second
+        desc = option.second
         if name.start_with? "--[no-]"
           options[name.remove("[no-]")] = desc
           options[name.sub("[no-]", "no-")] = desc
@@ -197,7 +199,7 @@ module Homebrew
       options = command_options(command).sort.map do |opt, desc|
         next opt if desc.blank?
 
-        "#{opt}[#{desc}]"
+        "#{opt}[#{format_description desc}]"
       end
       if types = Commands.named_args_type(command)
         named_args_strings, named_args_types = types.partition { |type| type.is_a? String }
@@ -233,10 +235,10 @@ module Homebrew
       variables[:builtin_command_descriptions] = commands.map do |command|
         next if Commands::HOMEBREW_INTERNAL_COMMAND_ALIASES.key? command
 
-        description = Commands.command_description(command)
+        description = Commands.command_description(command, short: true)
         next if description.blank?
 
-        description = format_description description.split(".").first
+        description = format_description description
         "'#{command}:#{description}'"
       end.compact
 
