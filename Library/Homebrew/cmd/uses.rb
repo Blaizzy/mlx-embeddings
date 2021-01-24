@@ -21,8 +21,8 @@ module Homebrew
   def uses_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
-        Show formulae and casks that specify <formula> as a dependency (i.e. show dependents
-        of <formula>). When given multiple formula arguments, show the intersection
+        Show formulae and casks that specify <formula> as a dependency. That is, show dependents
+        of <formula>. When given multiple formula arguments, show the intersection
         of formulae that use <formula>. By default, `uses` shows all formulae and casks that
         specify <formula> as a required or recommended dependency for their stable builds.
       EOS

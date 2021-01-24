@@ -14,7 +14,7 @@ module Homebrew
   def sh_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
-        Homebrew build environment that uses years-battle-hardened
+        Homebrew's build environment. This environment uses years-battle-hardened
         build logic to help your `./configure && make && make install`
         and even your `gem install` succeed. Especially handy if you run Homebrew
         in an Xcode-only configuration since it adds tools like `make` to your `PATH`
