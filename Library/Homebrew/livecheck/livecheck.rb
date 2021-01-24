@@ -60,12 +60,9 @@ module Homebrew
       @livecheck_strategy_names.freeze
     end
 
-    # Identify taps other than homebrew/core and homebrew/cask in use
-    # for current formulae and casks and load additional Strategy
-    # files them.
-    sig do
-      params(formulae_and_casks_to_check: T::Enumerable[T.any(Formula, Cask::Cask)]).void
-    end
+    # Uses `formulae_and_casks_to_check` to identify taps in use other than
+    # homebrew/core and homebrew/cask and loads strategies from them.
+    sig { params(formulae_and_casks_to_check: T::Enumerable[T.any(Formula, Cask::Cask)]).void }
     def load_other_tap_strategies(formulae_and_casks_to_check)
       other_taps = {}
       formulae_and_casks_to_check.each do |formula_or_cask|

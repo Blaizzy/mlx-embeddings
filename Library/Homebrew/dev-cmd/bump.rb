@@ -3,7 +3,6 @@
 
 require "cli/parser"
 require "livecheck/livecheck"
-require "livecheck/skip_conditions"
 
 module Homebrew
   extend T::Sig
@@ -28,7 +27,6 @@ module Homebrew
     args = bump_args.parse
 
     requested_formulae = args.named.to_formulae.presence
-
     requested_limit = args.limit.to_i if args.limit.present?
 
     if requested_formulae
@@ -96,7 +94,7 @@ module Homebrew
     )
     latest = version_info[:latest] if version_info.present?
 
-    return "not found" if latest.blank?
+    return "unable to get versions" if latest.blank?
 
     latest.to_s
   end
@@ -118,7 +116,8 @@ module Homebrew
   end
 
   def display(formula, current_version, repology_latest, livecheck_latest, pull_requests)
-    title = if up_to_date?(current_version, repology_latest, livecheck_latest)
+    title = if current_version == repology_latest &&
+               current_version == livecheck_latest
       "#{formula} is up to date!"
     else
       formula.name

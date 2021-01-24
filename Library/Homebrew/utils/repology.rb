@@ -21,10 +21,8 @@ module Repology
   end
 
   def single_package_query(name)
-    url = %W[
-      https://repology.org/tools/project-by?repo=homebrew&
-      name_type=srcname&target_page=api_v1_project&name=#{name}
-    ].join
+    url = "https://repology.org/tools/project-by?repo=homebrew&" \
+          "name_type=srcname&target_page=api_v1_project&name=#{name}"
 
     output, _errors, _status = curl_output("--location", url.to_s)
 
@@ -62,8 +60,8 @@ module Repology
   end
 
   def latest_version(repositories)
-    # The status is "unique" when the package is present only in Homebrew, so Repology
-    # has no way of knowing if the package is up-to-date.
+    # The status is "unique" when the package is present only in Homebrew, so
+    # Repology has no way of knowing if the package is up-to-date.
     is_unique = repositories.find do |repo|
       repo["status"] == "unique"
     end.present?
@@ -74,7 +72,8 @@ module Repology
       repo["status"] == "newest"
     end
 
-    # Repology cannot identify "newest" versions for packages without a version scheme
+    # Repology cannot identify "newest" versions for packages without a version
+    # scheme
     return "no latest version" if latest_version.blank?
 
     latest_version["version"]
