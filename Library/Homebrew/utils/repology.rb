@@ -21,16 +21,17 @@ module Repology
   end
 
   def single_package_query(name)
-    url = "https://repology.org/api/v1/project/#{name}"
+    url = "https://repology.org/tools/project-by?repo=homebrew&" \
+          "name_type=srcname&target_page=api_v1_project&name=#{name}"
 
-    output, _errors, _status = curl_output(url.to_s)
-    data = JSON.parse(output)
+    output, _errors, _status = curl_output("--location", url.to_s)
 
-    homebrew = data.select do |repo|
-      repo["repo"] == "homebrew"
+    begin
+      data = JSON.parse(output)
+      { name => data }
+    rescue
+      nil
     end
-
-    homebrew.empty? ? nil : { name => data }
   end
 
   def parse_api_response(limit = nil)
@@ -58,63 +59,23 @@ module Repology
     outdated_packages
   end
 
-  def validate_and_format_packages(outdated_repology_packages, limit)
-    if outdated_repology_packages.size > 10 && (limit.blank? || limit > 10)
-      ohai "Verifying outdated repology packages"
+  def latest_version(repositories)
+    # The status is "unique" when the package is present only in Homebrew, so
+    # Repology has no way of knowing if the package is up-to-date.
+    is_unique = repositories.find do |repo|
+      repo["status"] == "unique"
+    end.present?
+
+    return "present only in Homebrew" if is_unique
+
+    latest_version = repositories.find do |repo|
+      repo["status"] == "newest"
     end
 
-    packages = {}
+    # Repology cannot identify "newest" versions for packages without a version
+    # scheme
+    return "no latest version" if latest_version.blank?
 
-    outdated_repology_packages.each do |_name, repositories|
-      repology_homebrew_repo = repositories.find do |repo|
-        repo["repo"] == "homebrew"
-      end
-
-      next if repology_homebrew_repo.blank?
-
-      latest_version = repositories.find { |repo| repo["status"] == "newest" }
-
-      next if latest_version.blank?
-
-      latest_version = latest_version["version"]
-      srcname = repology_homebrew_repo["srcname"]
-      package_details = format_package(srcname, latest_version)
-      packages[srcname] = package_details unless package_details.nil?
-
-      break if limit && packages.size >= limit
-    end
-
-    packages
-  end
-
-  def format_package(package_name, latest_version)
-    formula = formula_data(package_name)
-
-    return if formula.blank?
-
-    formula_name = formula.to_s
-    tap_full_name = formula.tap&.full_name
-    current_version = formula.version.to_s
-    livecheck_response = LivecheckFormula.init(package_name)
-    pull_requests = GitHub.fetch_pull_requests(formula_name, tap_full_name, state: "open")
-
-    if pull_requests.try(:any?)
-      pull_requests = pull_requests.map { |pr| "#{pr["title"]} (#{Formatter.url(pr["html_url"])})" }.join(", ")
-    end
-
-    pull_requests = "none" if pull_requests.blank?
-
-    {
-      repology_latest_version:  latest_version || "not found",
-      current_formula_version:  current_version.to_s,
-      livecheck_latest_version: livecheck_response[:livecheck_version] || "not found",
-      open_pull_requests:       pull_requests,
-    }
-  end
-
-  def formula_data(package_name)
-    Formula[package_name]
-  rescue
-    nil
+    latest_version["version"]
   end
 end

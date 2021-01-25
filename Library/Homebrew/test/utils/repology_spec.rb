@@ -4,12 +4,6 @@
 require "utils/repology"
 
 describe Repology do
-  describe "formula_data" do
-    it "returns nil for invalid Homebrew Formula" do
-      expect(described_class.formula_data("invalidName")).to be_nil
-    end
-  end
-
   describe "single_package_query", :needs_network do
     it "returns nil for non-existent package" do
       response = described_class.single_package_query("invalidName")
