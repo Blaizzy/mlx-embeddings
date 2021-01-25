@@ -185,7 +185,8 @@ module Homebrew
       if !args.HEAD? && f.stable.nil?
         odie <<~EOS
           #{f.full_name} is a head-only formula
-          Install with `brew install --HEAD #{f.full_name}`
+          To install it, run:
+            brew install --HEAD #{f.full_name}
         EOS
       end
 
@@ -208,14 +209,16 @@ module Homebrew
           optlinked_version = Keg.for(f.opt_prefix).version
           onoe <<~EOS
             #{f.full_name} #{optlinked_version} is already installed
-            To upgrade to #{f.version}, run `brew upgrade #{f.full_name}`
+            To upgrade to #{f.version}, run:
+              brew upgrade #{f.full_name}
           EOS
         elsif args.only_dependencies?
           installed_formulae << f
         elsif !args.quiet?
           opoo <<~EOS
             #{f.full_name} #{f.pkg_version} is already installed and up-to-date
-            To reinstall #{f.pkg_version}, run `brew reinstall #{f.name}`
+            To reinstall #{f.pkg_version}, run:
+              brew reinstall #{f.name}
           EOS
         end
       elsif (args.HEAD? && new_head_installed) || prefix_installed
@@ -243,7 +246,8 @@ module Homebrew
         elsif !f.linked? || f.keg_only?
           msg = <<~EOS
             #{msg}, it's just not linked
-            You can use `brew link #{f}` to link this version.
+            To link this version, run:
+              brew link #{f}
           EOS
         elsif args.only_dependencies?
           msg = nil
@@ -254,7 +258,8 @@ module Homebrew
           else
             <<~EOS
               #{msg} and up-to-date
-              To reinstall #{f.pkg_version}, run `brew reinstall #{f.name}`
+              To reinstall #{f.pkg_version}, run:
+                brew reinstall #{f.name}
             EOS
           end
         end
@@ -264,7 +269,8 @@ module Homebrew
         if !old_formula.linked? && !old_formula.keg_only?
           msg = <<~EOS
             #{msg}, it's just not linked.
-            You can use `brew link #{old_formula.full_name}` to link this version.
+            To link this version, run:
+              brew link #{old_formula.full_name}
           EOS
         elsif args.quiet?
           msg = nil
@@ -275,8 +281,10 @@ module Homebrew
         # but not migrated one. If --force is passed then install anyway.
         opoo <<~EOS
           #{f.oldname} is already installed, it's just not migrated
-          You can migrate this formula with `brew migrate #{f}`
-          Or you can force install it with `brew install #{f} --force`
+          To migrate this formula, run:
+            brew migrate #{f}
+          Or to force-install it, run:
+            brew install #{f} --force
         EOS
       else
         # If none of the above is true and the formula is linked, then

@@ -18,7 +18,7 @@ describe Cask::Artifact::Installer, :cask do
       it "shows a message prompting to run the installer manually" do
         expect {
           installer.install_phase(command: command)
-        }.to output(%r{run the installer at:\s+'#{staged_path}/installer'}).to_stdout
+        }.to output(%r{run the installer at:\s+#{staged_path}/installer}).to_stdout
       end
     end
 

@@ -362,14 +362,16 @@ class FormulaInstaller
       EOS
       if formula.outdated? && !formula.head?
         message += <<~EOS
-          To upgrade to #{formula.pkg_version}, run `brew upgrade #{formula.full_name}`.
+          To upgrade to #{formula.pkg_version}, run:
+            brew upgrade #{formula.full_name}
         EOS
       elsif only_deps?
         message = nil
       else
         # some other version is already installed *and* linked
         message += <<~EOS
-          To install #{formula.pkg_version}, first run `brew unlink #{formula.name}`.
+          To install #{formula.pkg_version}, first run:
+            brew unlink #{formula.name}
         EOS
       end
       raise CannotInstallFormulaError, message if message
@@ -805,7 +807,8 @@ class FormulaInstaller
 
     if build_bottle?
       ohai "Not running post_install as we're building a bottle"
-      puts "You can run it manually using `brew postinstall #{formula.full_name}`"
+      puts "You can run it manually using:"
+      puts "  brew postinstall #{formula.full_name}"
     else
       post_install
     end
@@ -1097,7 +1100,8 @@ class FormulaInstaller
     end
   rescue Exception => e # rubocop:disable Lint/RescueException
     opoo "The post-install step did not complete successfully"
-    puts "You can try again using `brew postinstall #{formula.full_name}`"
+    puts "You can try again using:"
+    puts "  brew postinstall #{formula.full_name}"
     odebug e, e.backtrace, always_display: Homebrew::EnvConfig.developer?
     Homebrew.failed = true
     @show_summary_heading = true

@@ -40,10 +40,12 @@ module Homebrew
     args = irb_args.parse(ARGV.dup.freeze)
 
     if args.examples?
-      puts "'v8'.f # => instance of the v8 formula"
-      puts ":hub.f.latest_version_installed?"
-      puts ":lua.f.methods - 1.methods"
-      puts ":mpd.f.recursive_dependencies.reject(&:installed?)"
+      puts <<~EOS
+        'v8'.f # => instance of the v8 formula
+        :hub.f.latest_version_installed?
+        :lua.f.methods - 1.methods
+        :mpd.f.recursive_dependencies.reject(&:installed?)
+      EOS
       return
     end
 

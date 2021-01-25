@@ -95,8 +95,10 @@ module Homebrew
       end
     end
 
-    puts "Start commit: #{start_commit}"
-    puts "  End commit: #{end_commit}"
+    puts <<~EOS
+      Start commit: #{start_commit}
+        End commit: #{end_commit}
+    EOS
 
     mkdir "update-test"
     chdir "update-test" do

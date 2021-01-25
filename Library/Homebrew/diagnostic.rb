@@ -335,7 +335,8 @@ module Homebrew
 
         <<~EOS
           #{HOMEBREW_TEMP} is world-writable but does not have the sticky bit set.
-          Please execute `sudo chmod +t #{HOMEBREW_TEMP}` in your Terminal.
+          To set it, run the following command:
+            sudo chmod +t #{HOMEBREW_TEMP}
         EOS
       end
       alias generic_check_tmpdir_sticky_bit check_tmpdir_sticky_bit
@@ -897,7 +898,8 @@ module Homebrew
 
         <<~EOS
           The staging path #{user_tilde(path.to_s)} is not writable by the current user.
-          To fix, run \'sudo chown -R $(whoami):staff #{user_tilde(path.to_s)}'
+          To fix, run:
+            sudo chown -R $(whoami):staff #{user_tilde(path.to_s)}
         EOS
       end
 
@@ -970,12 +972,14 @@ module Homebrew
           if result.include? "Python 2.7"
             <<~EOS
               Your Python installation has a broken version of setuptools.
-              To fix, reinstall macOS or run 'sudo /usr/bin/python -m pip install -I setuptools'.
+              To fix, reinstall macOS or run:
+                sudo /usr/bin/python -m pip install -I setuptools
             EOS
           else
             <<~EOS
               The system Python version is wrong.
-              To fix, run 'defaults write com.apple.versioner.python Version 2.7'.
+              To fix, run:
+                defaults write com.apple.versioner.python Version 2.7
             EOS
           end
         elsif result.stderr.include? "pkg_resources.DistributionNotFound"

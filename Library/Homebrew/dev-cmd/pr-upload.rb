@@ -81,8 +81,11 @@ module Homebrew
       else
         "Bintray"
       end
-      puts "brew #{bottle_args.join " "}"
-      puts "Upload bottles described by these JSON files to #{service}:\n  #{json_files.join("\n  ")}"
+      puts <<~EOS
+        brew #{bottle_args.join " "}
+        Upload bottles described by these JSON files to #{service}:
+          #{json_files.join("\n  ")}
+      EOS
       return
     end
 

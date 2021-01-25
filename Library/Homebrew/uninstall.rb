@@ -50,8 +50,11 @@ module Homebrew
 
               if rack.directory?
                 versions = rack.subdirs.map(&:basename)
-                puts "#{keg.name} #{versions.to_sentence} #{"is".pluralize(versions.count)} still installed."
-                puts "Run `brew uninstall --force #{keg.name}` to remove all versions."
+                puts <<~EOS
+                  #{keg.name} #{versions.to_sentence} #{"is".pluralize(versions.count)} still installed.
+                  To remove all versions, run:
+                    brew uninstall --force #{keg.name}
+                EOS
               end
 
               next unless f

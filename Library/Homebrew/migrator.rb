@@ -17,8 +17,8 @@ class Migrator
   class MigrationNeededError < RuntimeError
     def initialize(formula)
       super <<~EOS
-        #{formula.oldname} was renamed to #{formula.name} and needs to be migrated.
-        Please run `brew migrate #{formula.oldname}`
+        #{formula.oldname} was renamed to #{formula.name} and needs to be migrated by running:
+          brew migrate #{formula.oldname}
       EOS
     end
   end
@@ -48,7 +48,8 @@ class Migrator
 
       super <<~EOS
         #{formula.name} from #{formula.tap} is given, but old name #{formula.oldname} was installed from #{tap || "path or url"}.
-        #{msg}To force migration use `brew migrate --force #{formula.oldname}`.
+        #{msg}To force migration, run:
+          brew migrate --force #{formula.oldname}
       EOS
     end
   end
