@@ -541,7 +541,7 @@ EOS
         UPSTREAM_SHA_HTTP_CODE="$("$HOMEBREW_CURL" \
            "${CURL_DISABLE_CURLRC_ARGS[@]}" \
            --silent --max-time 3 \
-           --location --output /dev/null --write-out "%{http_code}" \
+           --location --no-remote-time --output /dev/null --write-out "%{http_code}" \
            --dump-header "$DIR/.git/GITHUB_HEADERS" \
            --user-agent "$HOMEBREW_USER_AGENT_CURL" \
            --header "Accept: $GITHUB_API_ACCEPT" \
