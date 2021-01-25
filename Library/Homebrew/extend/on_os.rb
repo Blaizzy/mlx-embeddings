@@ -7,7 +7,7 @@ module OnOS
   # # Do something Mac-specific
   # end</pre>
   def on_macos(&block)
-    raise "No block content defined for on_macos block" unless block
+    raise "No block content defined for 'on_macos' block" unless block
   end
 
   # Block only executed on Linux. No-op on macOS.
@@ -15,7 +15,7 @@ module OnOS
   # # Do something Linux-specific
   # end</pre>
   def on_linux(&block)
-    raise "No block content defined for on_linux block" unless block
+    raise "No block content defined for 'on_linux' block" unless block
   end
 end
 
