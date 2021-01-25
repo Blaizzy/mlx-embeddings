@@ -3,6 +3,7 @@
 
 require "pkg_version"
 require "version/null"
+require "version/parser"
 
 # A formula's version.
 #
@@ -369,105 +370,86 @@ class Version
 
     spec = Pathname.new(spec) unless spec.is_a? Pathname
 
-    spec_s = spec.to_s
-
-    stem = if spec.directory?
-      spec.basename.to_s
-    elsif spec_s.match?(%r{((?:sourceforge\.net|sf\.net)/.*)/download$})
-      spec.dirname.stem
-    elsif spec_s.match?(/\.[^a-zA-Z]+$/) # rubocop:disable Lint/DuplicateBranch
-      spec.basename.to_s
-    else
-      spec.stem
+    VERSION_PARSERS.each do |parser|
+      version = parser.parse(spec)
+      return version if version.present?
     end
 
+    nil
+  end
+  private_class_method :_parse
+
+  VERSION_PARSERS = [
     # date-based versioning
     # e.g. ltopers-v2017-04-14.tar.gz
-    m = /-v?(\d{4}-\d{2}-\d{2})/.match(stem)
-    return m.captures.first unless m.nil?
+    StemParser.new(/-v?(\d{4}-\d{2}-\d{2})/),
 
     # GitHub tarballs
     # e.g. https://github.com/foo/bar/tarball/v1.2.3
     # e.g. https://github.com/sam-github/libnet/tarball/libnet-1.1.4
     # e.g. https://github.com/isaacs/npm/tarball/v0.2.5-1
     # e.g. https://github.com/petdance/ack/tarball/1.93_02
-    m = %r{github\.com/.+/(?:zip|tar)ball/(?:v|\w+-)?((?:\d+[-._])+\d*)$}.match(spec_s)
-    return m.captures.first unless m.nil?
+    UrlParser.new(%r{github\.com/.+/(?:zip|tar)ball/(?:v|\w+-)?((?:\d+[-._])+\d*)$}),
 
     # e.g. https://github.com/erlang/otp/tarball/OTP_R15B01 (erlang style)
-    m = /[-_]([Rr]\d+[AaBb]\d*(?:-\d+)?)/.match(spec_s)
-    return m.captures.first unless m.nil?
+    UrlParser.new(/[-_]([Rr]\d+[AaBb]\d*(?:-\d+)?)/),
 
     # e.g. boost_1_39_0
-    m = /((?:\d+_)+\d+)$/.match(stem)
-    return T.must(m.captures.first).tr("_", ".") unless m.nil?
+    StemParser.new(/((?:\d+_)+\d+)$/) { |s| s.tr("_", ".") },
 
     # e.g. foobar-4.5.1-1
     # e.g. unrtf_0.20.4-1
     # e.g. ruby-1.9.1-p243
-    m = /[-_]((?:\d+\.)*\d+\.\d+-(?:p|rc|RC)?\d+)(?:[-._](?i:bin|dist|stable|src|sources?|final|full))?$/.match(stem)
-    return m.captures.first unless m.nil?
+    StemParser.new(/[-_]((?:\d+\.)*\d+\.\d+-(?:p|rc|RC)?\d+)(?:[-._](?i:bin|dist|stable|src|sources?|final|full))?$/),
 
     # URL with no extension
     # e.g. https://waf.io/waf-1.8.12
     # e.g. https://codeload.github.com/gsamokovarov/jump/tar.gz/v0.7.1
-    m = /[-v]((?:\d+\.)*\d+)$/.match(spec_s)
-    return m.captures.first unless m.nil?
+    UrlParser.new(/[-v]((?:\d+\.)*\d+)$/),
 
     # e.g. lame-398-1
-    m = /-(\d+-\d+)/.match(stem)
-    return m.captures.first unless m.nil?
+    StemParser.new(/-(\d+-\d+)/),
 
     # e.g. foobar-4.5.1
-    m = /-((?:\d+\.)*\d+)$/.match(stem)
-    return m.captures.first unless m.nil?
+    StemParser.new(/-((?:\d+\.)*\d+)$/),
 
     # e.g. foobar-4.5.1.post1
-    m = /-((?:\d+\.)*\d+(.post\d+)?)$/.match(stem)
-    return m.captures.first unless m.nil?
+    StemParser.new(/-((?:\d+\.)*\d+(.post\d+)?)$/),
 
     # e.g. foobar-4.5.1b
-    m = /-((?:\d+\.)*\d+(?:[abc]|rc|RC)\d*)$/.match(stem)
-    return m.captures.first unless m.nil?
+    StemParser.new(/-((?:\d+\.)*\d+(?:[abc]|rc|RC)\d*)$/),
 
     # e.g. foobar-4.5.0-alpha5, foobar-4.5.0-beta1, or foobar-4.50-beta
-    m = /-((?:\d+\.)*\d+-(?:alpha|beta|rc)\d*)$/.match(stem)
-    return m.captures.first unless m.nil?
+    StemParser.new(/-((?:\d+\.)*\d+-(?:alpha|beta|rc)\d*)$/),
 
     # e.g. https://ftpmirror.gnu.org/libidn/libidn-1.29-win64.zip
     # e.g. https://ftpmirror.gnu.org/libmicrohttpd/libmicrohttpd-0.9.17-w32.zip
-    m = /-(\d+\.\d+(?:\.\d+)?)-w(?:in)?(?:32|64)$/.match(stem)
-    return m.captures.first unless m.nil?
+    StemParser.new(/-(\d+\.\d+(?:\.\d+)?)-w(?:in)?(?:32|64)$/),
 
     # Opam packages
     # e.g. https://opam.ocaml.org/archives/sha.1.9+opam.tar.gz
     # e.g. https://opam.ocaml.org/archives/lablgtk.2.18.3+opam.tar.gz
     # e.g. https://opam.ocaml.org/archives/easy-format.1.0.2+opam.tar.gz
-    m = /\.(\d+\.\d+(?:\.\d+)?)\+opam$/.match(stem)
-    return m.captures.first unless m.nil?
+    StemParser.new(/\.(\d+\.\d+(?:\.\d+)?)\+opam$/),
 
     # e.g. https://ftpmirror.gnu.org/mtools/mtools-4.0.18-1.i686.rpm
     # e.g. https://ftpmirror.gnu.org/autogen/autogen-5.5.7-5.i386.rpm
     # e.g. https://ftpmirror.gnu.org/libtasn1/libtasn1-2.8-x86.zip
     # e.g. https://ftpmirror.gnu.org/libtasn1/libtasn1-2.8-x64.zip
     # e.g. https://ftpmirror.gnu.org/mtools/mtools_4.0.18_i386.deb
-    m = /[-_](\d+\.\d+(?:\.\d+)?(?:-\d+)?)[-_.](?:i[36]86|x86|x64(?:[-_](?:32|64))?)$/.match(stem)
-    return m.captures.first unless m.nil?
+    StemParser.new(/[-_](\d+\.\d+(?:\.\d+)?(?:-\d+)?)[-_.](?:i[36]86|x86|x64(?:[-_](?:32|64))?)$/),
 
     # e.g. https://registry.npmjs.org/@angular/cli/-/cli-1.3.0-beta.1.tgz
     # e.g. https://github.com/dlang/dmd/archive/v2.074.0-beta1.tar.gz
     # e.g. https://github.com/dlang/dmd/archive/v2.074.0-rc1.tar.gz
     # e.g. https://github.com/premake/premake-core/releases/download/v5.0.0-alpha10/premake-5.0.0-alpha10-src.zip
-    m = /[-.vV]?((?:\d+\.)+\d+[-_.]?(?i:alpha|beta|pre|rc)\.?\d{,2})/.match(stem)
-    return m.captures.first unless m.nil?
+    StemParser.new(/[-.vV]?((?:\d+\.)+\d+[-_.]?(?i:alpha|beta|pre|rc)\.?\d{,2})/),
 
     # e.g. foobar4.5.1
-    m = /((?:\d+\.)*\d+)$/.match(stem)
-    return m.captures.first unless m.nil?
+    StemParser.new(/((?:\d+\.)*\d+)$/),
 
     # e.g. foobar-4.5.0-bin
-    m = /[-vV]((?:\d+\.)+\d+[abc]?)[-._](?i:bin|dist|stable|src|sources?|final|full)$/.match(stem)
-    return m.captures.first unless m.nil?
+    StemParser.new(/[-vV]((?:\d+\.)+\d+[abc]?)[-._](?i:bin|dist|stable|src|sources?|final|full)$/),
 
     # dash version style
     # e.g. http://www.antlr.org/download/antlr-3.4-complete.jar
@@ -475,20 +457,16 @@ class Version
     # e.g. https://search.maven.org/remotecontent?filepath=com/facebook/presto/presto-cli/0.181/presto-cli-0.181-executable.jar
     # e.g. https://search.maven.org/remotecontent?filepath=org/fusesource/fuse-extra/fusemq-apollo-mqtt/1.3/fusemq-apollo-mqtt-1.3-uber.jar
     # e.g. https://search.maven.org/remotecontent?filepath=org/apache/orc/orc-tools/1.2.3/orc-tools-1.2.3-uber.jar
-    m = /-((?:\d+\.)+\d+)-/.match(stem)
-    return m.captures.first unless m.nil?
+    StemParser.new(/-((?:\d+\.)+\d+)-/),
 
     # e.g. dash_0.5.5.1.orig.tar.gz (Debian style)
-    m = /_((?:\d+\.)+\d+[abc]?)[.]orig$/.match(stem)
-    return m.captures.first unless m.nil?
+    StemParser.new(/_((?:\d+\.)+\d+[abc]?)[.]orig$/),
 
     # e.g. https://www.openssl.org/source/openssl-0.9.8s.tar.gz
-    m = /-v?(\d[^-]+)/.match(stem)
-    return m.captures.first unless m.nil?
+    StemParser.new(/-v?(\d[^-]+)/),
 
     # e.g. astyle_1.23_macosx.tar.gz
-    m = /_v?(\d[^_]+)/.match(stem)
-    return m.captures.first unless m.nil?
+    StemParser.new(/_v?(\d[^_]+)/),
 
     # e.g. http://mirrors.jenkins-ci.org/war/1.486/jenkins.war
     # e.g. https://github.com/foo/bar/releases/download/0.10.11/bar.phar
@@ -497,18 +475,15 @@ class Version
     # e.g. https://wwwlehre.dhbw-stuttgart.de/~sschulz/WORK/E_DOWNLOAD/V_1.9/E.tgz
     # e.g. https://github.com/JustArchi/ArchiSteamFarm/releases/download/2.3.2.0/ASF.zip
     # e.g. https://people.gnome.org/~newren/eg/download/1.7.5.2/eg
-    m = %r{/([rvV]_?)?(\d+\.\d+(\.\d+){,2})}.match(spec_s)
-    return m.captures.second unless m.nil?
+    UrlParser.new(%r{/(?:[rvV]_?)?(\d+\.\d+(?:\.\d+){,2})}),
 
     # e.g. https://www.ijg.org/files/jpegsrc.v8d.tar.gz
-    m = /\.v(\d+[a-z]?)/.match(stem)
-    return m.captures.first unless m.nil?
+    StemParser.new(/\.v(\d+[a-z]?)/),
 
     # e.g. https://secure.php.net/get/php-7.1.10.tar.bz2/from/this/mirror
-    m = /[-.vV]?((?:\d+\.)+\d+(?:[-_.]?(?i:alpha|beta|pre|rc)\.?\d{,2})?)/.match(spec_s)
-    return m.captures.first unless m.nil?
-  end
-  private_class_method :_parse
+    UrlParser.new(/[-.vV]?((?:\d+\.)+\d+(?:[-_.]?(?i:alpha|beta|pre|rc)\.?\d{,2})?)/),
+  ].freeze
+  private_constant :VERSION_PARSERS
 
   sig { params(val: T.any(PkgVersion, String, Version), detected_from_url: T::Boolean).void }
   def initialize(val, detected_from_url: false)
