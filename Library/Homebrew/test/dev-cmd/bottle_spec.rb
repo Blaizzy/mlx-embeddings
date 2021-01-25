@@ -263,7 +263,7 @@ describe Homebrew do
   end
 end
 
-describe "brew bottle --merge", :integration_test, :needs_linux do
+describe "brew bottle --merge", :integration_test do
   let(:core_tap) { CoreTap.new }
   let(:tarball) do
     if OS.linux?
