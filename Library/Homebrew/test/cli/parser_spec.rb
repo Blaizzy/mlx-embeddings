@@ -455,11 +455,11 @@ describe Homebrew::CLI::Parser do
     end
 
     it "doesn't accept fewer than the passed number of arguments" do
-      expect { parser_number.parse([]) }.to raise_error(Homebrew::CLI::MinNamedArgumentsError)
+      expect { parser_number.parse([]) }.to raise_error(Homebrew::CLI::NumberOfNamedArgumentsError)
     end
 
     it "doesn't accept more than the passed number of arguments" do
-      expect { parser_number.parse(["foo", "bar"]) }.to raise_error(Homebrew::CLI::MaxNamedArgumentsError)
+      expect { parser_number.parse(["foo", "bar"]) }.to raise_error(Homebrew::CLI::NumberOfNamedArgumentsError)
     end
 
     it "accepts the passed number of arguments" do
@@ -475,18 +475,58 @@ describe Homebrew::CLI::Parser do
       expect { parser_none.parse([]) }.not_to raise_error
     end
 
+    it "displays the correct error message with no arg types and min" do
+      parser = described_class.new do
+        named_args min: 2
+      end
+      expect { parser.parse([]) }.to raise_error(
+        Homebrew::CLI::MinNamedArgumentsError, /This command requires at least 2 named arguments/
+      )
+    end
+
+    it "displays the correct error message with no arg types and number" do
+      parser = described_class.new do
+        named_args number: 2
+      end
+      expect { parser.parse([]) }.to raise_error(
+        Homebrew::CLI::NumberOfNamedArgumentsError, /This command requires exactly 2 named arguments/
+      )
+    end
+
+    it "displays the correct error message with no arg types and max" do
+      parser = described_class.new do
+        named_args max: 1
+      end
+      expect { parser.parse(%w[foo bar]) }.to raise_error(
+        Homebrew::CLI::MaxNamedArgumentsError, /This command does not take more than 1 named argument/
+      )
+    end
+
     it "displays the correct error message with an array of strings" do
       parser = described_class.new do
-        named_args %w[on off], min: 1
+        named_args %w[on off], number: 1
       end
-      expect { parser.parse([]) }.to raise_error(Homebrew::CLI::MinNamedArgumentsError)
+      expect { parser.parse([]) }.to raise_error(
+        Homebrew::CLI::NumberOfNamedArgumentsError, /This command requires exactly 1 subcommand/
+      )
     end
 
     it "displays the correct error message with an array of symbols" do
       parser = described_class.new do
         named_args [:formula, :cask], min: 1
       end
-      expect { parser.parse([]) }.to raise_error(UsageError, /this command requires a formula or cask argument/)
+      expect { parser.parse([]) }.to raise_error(
+        Homebrew::CLI::MinNamedArgumentsError, /This command requires at least 1 formula or cask argument/
+      )
+    end
+
+    it "displays the correct error message with an array of symbols and max" do
+      parser = described_class.new do
+        named_args [:formula, :cask], max: 1
+      end
+      expect { parser.parse(%w[foo bar]) }.to raise_error(
+        Homebrew::CLI::MaxNamedArgumentsError, /This command does not take more than 1 formula or cask argument/
+      )
     end
   end
 
@@ -502,18 +542,20 @@ describe Homebrew::CLI::Parser do
     end
 
     it "doesn't allow less than the specified number of arguments" do
-      expect { parser.parse([]) }.to raise_error(Homebrew::CLI::MinNamedArgumentsError)
+      expect { parser.parse([]) }.to raise_error(Homebrew::CLI::NumberOfNamedArgumentsError)
     end
 
     it "treats a symbol as a single argument of the specified type" do
       formula_parser = described_class.new do
         named :formula
       end
-      expect { formula_parser.parse([]) }.to raise_error(UsageError, /this command requires a formula argument/)
+      expect { formula_parser.parse([]) }.to raise_error(
+        Homebrew::CLI::NumberOfNamedArgumentsError, /This command requires exactly 1 formula argument/
+      )
     end
 
     it "doesn't allow more than the specified number of arguments" do
-      expect { parser.parse(["foo", "bar"]) }.to raise_error(Homebrew::CLI::MaxNamedArgumentsError)
+      expect { parser.parse(["foo", "bar"]) }.to raise_error(Homebrew::CLI::NumberOfNamedArgumentsError)
     end
   end
 

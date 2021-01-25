@@ -1019,7 +1019,7 @@ or open the Homebrew repository for editing if no formula is provided.
 * `--cask`:
   Treat all named arguments as casks.
 
-### `extract` [*`--version`*`=`] [*`--force`*] *`formula`* ...
+### `extract` [*`--version`*`=`] [*`--force`*] *`formula`* *`tap`*
 
 Look through repository history to find the most recent version of *`formula`* and
 create a copy in *`tap`*`/Formula/`*`formula`*`@`*`version`*`.rb`. If the tap is not
