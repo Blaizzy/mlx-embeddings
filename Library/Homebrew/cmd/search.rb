@@ -85,7 +85,7 @@ module Homebrew
 
         puts Formatter.columns(Cask::Cask.to_a.map(&:full_name).sort)
       else
-        odeprecated "'brew search' with no arguments to output formulae", "'brew formulae'"
+        odeprecated "`brew search` with no arguments to output formulae", "`brew formulae`"
         puts Formatter.columns(Formula.full_names.sort)
       end
 

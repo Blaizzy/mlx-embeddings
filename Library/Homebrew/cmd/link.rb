@@ -86,7 +86,7 @@ module Homebrew
         end
 
         if !args.force? && (formula.blank? || !formula.keg_only_reason.versioned_formula?)
-          opoo "#{keg.name} is keg-only and must be linked with --force"
+          opoo "#{keg.name} is keg-only and must be linked with `--force`."
           puts_keg_only_path_message(keg)
           next
         end

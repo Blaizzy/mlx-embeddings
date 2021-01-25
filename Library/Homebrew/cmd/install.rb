@@ -146,7 +146,7 @@ module Homebrew
 
     if args.ignore_dependencies?
       opoo <<~EOS
-        #{Tty.bold}--ignore-dependencies is an unsupported Homebrew developer flag!#{Tty.reset}
+        #{Tty.bold}`--ignore-dependencies` is an unsupported Homebrew developer flag!#{Tty.reset}
         Adjust your PATH to put any preferred versions of applications earlier in the
         PATH rather than using this unsupported flag!
 

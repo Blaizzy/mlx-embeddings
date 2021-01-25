@@ -31,7 +31,7 @@ module FormulaCellarChecks
     <<~EOS
       A top-level "man" directory was found
       Homebrew requires that man pages live under share.
-      This can often be fixed by passing "--mandir=\#{man}" to configure.
+      This can often be fixed by passing `--mandir=\#{man}` to `configure`.
     EOS
   end
 
@@ -42,7 +42,7 @@ module FormulaCellarChecks
     <<~EOS
       A top-level "info" directory was found
       Homebrew suggests that info pages live under share.
-      This can often be fixed by passing "--infodir=\#{info}" to configure.
+      This can often be fixed by passing `--infodir=\#{info}` to `configure`.
     EOS
   end
 

@@ -983,7 +983,7 @@ module Homebrew
             EOS
           end
         elsif result.stderr.include? "pkg_resources.DistributionNotFound"
-          "Your Python installation is unable to find xattr."
+          "Your Python installation is unable to find `xattr`."
         else
           "unknown xattr error: #{result.stderr.split("\n").last}"
         end
@@ -994,7 +994,7 @@ module Homebrew
         when :quarantine_available
           nil
         when :xattr_broken
-          "There's not a working version of xattr."
+          "There's no working version of `xattr` on this system."
         when :no_swift
           "Swift is not available on this system."
         when :no_quarantine

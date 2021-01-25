@@ -482,7 +482,7 @@ module Cask
     end
 
     def zap
-      ohai %Q(Implied "brew uninstall --cask #{@cask}")
+      ohai "Implied `brew uninstall --cask #{@cask}`"
       uninstall_artifacts
       if (zap_stanzas = @cask.artifacts.select { |a| a.is_a?(Artifact::Zap) }).empty?
         opoo "No zap stanza present for Cask '#{@cask}'"

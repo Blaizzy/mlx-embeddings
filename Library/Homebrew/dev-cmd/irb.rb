@@ -61,7 +61,7 @@ module Homebrew
     require "keg"
     require "cask"
 
-    ohai "Interactive Homebrew Shell", "Example commands available with: brew irb --examples"
+    ohai "Interactive Homebrew Shell", "Example commands available with: `brew irb --examples`"
     if args.pry?
       Pry.start
     else

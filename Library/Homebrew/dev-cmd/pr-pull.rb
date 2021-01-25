@@ -414,7 +414,7 @@ module Homebrew
                workflow_run.first.blank?
               # Ignore that workflow as it was not executed and we specified
               # that we could skip it.
-              ohai "Ignoring workflow #{workflow} as requested by --ignore-missing-artifacts"
+              ohai "Ignoring workflow #{workflow} as requested by `--ignore-missing-artifacts`"
               next
             end
 

@@ -400,7 +400,7 @@ module Homebrew
         end
 
         odie <<~EOS
-          --keep-old was passed but there are changes in:
+          `--keep-old` was passed but there are changes in:
           #{mismatches.join("\n")}
         EOS
       end
@@ -566,7 +566,7 @@ module Homebrew
   def old_checksums(formula, formula_ast, bottle_hash, args:)
     bottle_node = formula_ast.bottle_block
     if bottle_node.nil?
-      odie "--keep-old was passed but there was no existing bottle block!" if args.keep_old?
+      odie "`--keep-old` was passed but there was no existing bottle block!" if args.keep_old?
       return
     end
     return [] unless args.keep_old?
@@ -576,7 +576,7 @@ module Homebrew
     mismatches, checksums = merge_bottle_spec(old_keys, old_bottle_spec, bottle_hash["bottle"])
     if mismatches.present?
       odie <<~EOS
-        --keep-old was passed but there are changes in:
+        `--keep-old` was passed but there are changes in:
         #{mismatches.join("\n")}
       EOS
     end

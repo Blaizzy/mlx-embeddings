@@ -196,7 +196,7 @@ module Homebrew
         new_revision = Utils.popen_read("git -C \"#{resource_path}\" rev-parse -q --verify HEAD")
         new_revision = new_revision.strip
       elsif new_revision.blank?
-        odie "#{formula}: the current URL requires specifying a --revision= argument."
+        odie "#{formula}: the current URL requires specifying a `--revision=` argument."
       end
       false
     elsif new_url.blank? && new_version.blank?
@@ -424,11 +424,11 @@ module Homebrew
     return if new_mirrors.present? || old_mirrors.empty?
 
     if args.force?
-      opoo "#{formula}: Removing all mirrors because a --mirror= argument was not specified."
+      opoo "#{formula}: Removing all mirrors because a `--mirror=` argument was not specified."
     else
       odie <<~EOS
-        #{formula}: a --mirror= argument for updating the mirror URL(s) was not specified.
-        Use --force to remove all mirrors.
+        #{formula}: a `--mirror=` argument for updating the mirror URL(s) was not specified.
+        Use `--force` to remove all mirrors.
       EOS
     end
   end
@@ -439,7 +439,7 @@ module Homebrew
     resource.owner = Resource.new(formula.name)
     forced_version = new_version && new_version != resource.version
     resource.version = new_version if forced_version
-    odie "No --version= argument specified!" if resource.version.blank?
+    odie "No `--version=` argument specified!" if resource.version.blank?
     [resource.fetch, forced_version]
   end
 

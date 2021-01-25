@@ -241,7 +241,7 @@ module Homebrew
       HOMEBREW_NO_INSTALL_CLEANUP:            {
         description: "If set, `brew install`, `brew upgrade` and `brew reinstall` will never automatically " \
                      "cleanup installed/upgraded/reinstalled formulae or all formulae every " \
-                     "HOMEBREW_CLEANUP_PERIODIC_FULL_DAYS days.",
+                     "`HOMEBREW_CLEANUP_PERIODIC_FULL_DAYS` days.",
         boolean:     true,
       },
       HOMEBREW_PRY:                           {
