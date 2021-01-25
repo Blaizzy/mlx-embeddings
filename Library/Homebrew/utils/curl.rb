@@ -151,7 +151,7 @@ module Utils
         details[:headers].match?(/^Set-Cookie: incap_ses_/i)
     end
 
-    def curl_check_http_content(url, user_agents: [:default], check_content: false, strict: false)
+    def curl_check_http_content(url, specs: {}, user_agents: [:default], check_content: false, strict: false)
       return unless url.start_with? "http"
 
       secure_url = url.sub(/\Ahttp:/, "https:")
@@ -160,7 +160,8 @@ module Utils
       if url != secure_url
         user_agents.each do |user_agent|
           secure_details =
-            curl_http_content_headers_and_checksum(secure_url, hash_needed: true, user_agent: user_agent)
+            curl_http_content_headers_and_checksum(secure_url, specs: specs, hash_needed: true,
+                                                   user_agent: user_agent)
 
           next unless http_status_ok?(secure_details[:status])
 
@@ -172,7 +173,8 @@ module Utils
 
       details = nil
       user_agents.each do |user_agent|
-        details = curl_http_content_headers_and_checksum(url, hash_needed: hash_needed, user_agent: user_agent)
+        details =
+          curl_http_content_headers_and_checksum(url, specs: specs, hash_needed: hash_needed, user_agent: user_agent)
         break if http_status_ok?(details[:status])
       end
 
@@ -237,12 +239,13 @@ module Utils
       "The URL #{url} may be able to use HTTPS rather than HTTP. Please verify it in a browser."
     end
 
-    def curl_http_content_headers_and_checksum(url, hash_needed: false, user_agent: :default)
+    def curl_http_content_headers_and_checksum(url, specs: {}, hash_needed: false, user_agent: :default)
       file = Tempfile.new.tap(&:close)
 
+      specs = specs.flat_map { |option, argument| ["--#{option.to_s.tr("_", "-")}", argument] }
       max_time = hash_needed ? "600" : "25"
       output, _, status = curl_output(
-        "--dump-header", "-", "--output", file.path, "--location",
+        *specs, "--dump-header", "-", "--output", file.path, "--location",
         "--connect-timeout", "15", "--max-time", max_time, "--retry-max-time", max_time, url,
         user_agent: user_agent
       )
