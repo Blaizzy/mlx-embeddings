@@ -175,7 +175,7 @@ module Cask
         "url"            => url,
         "appcast"        => appcast,
         "version"        => version,
-        "installed"      => versions,
+        "installed"      => versions.last,
         "outdated"       => outdated?,
         "sha256"         => sha256,
         "artifacts"      => artifacts.map(&method(:to_h_gsubs)),
