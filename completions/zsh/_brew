@@ -88,8 +88,14 @@ __brew_installed_casks() {
 
 __brew_outdated_formulae() {
   local -a formulae
-  formulae=($(brew outdated))
+  formulae=($(brew outdated --formula))
   _describe -t formulae 'outdated formulae' formulae
+}
+
+__brew_outdated_casks() {
+  local -a casks
+  casks=($(brew outdated --cask))
+  _describe -t casks 'outdated casks' casks
 }
 
 __brew_installed_taps() {
@@ -676,7 +682,7 @@ _brew_reinstall() {
       '::formula:__brew_installed_formulae' \
     - cask-install \
       '--cask[reinstall casks]' \
-      ': :__brew_all_casks' \
+      ': :__brew_installed_casks' \
 }
 
 # brew search, -S:
@@ -879,7 +885,7 @@ _brew_upgrade() {
     ': : __brew_outdated_formulae' \
   - cask-install \
     '--cask[reinstall casks]' \
-    ': :__brew_all_casks' \
+    ': : __brew_outdated_casks' \
 
 }
 
