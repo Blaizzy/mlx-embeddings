@@ -1,7 +1,6 @@
 # typed: false
 # frozen_string_literal: true
 
-require "cask/cmd"
 require "completions"
 
 # Helper functions for commands.
@@ -97,15 +96,11 @@ module Commands
     cmds += internal_developer_commands
     cmds += external_commands if external
     cmds += internal_commands_aliases if aliases
-    cmds += cask_commands(aliases: aliases).map { |cmd| "cask #{cmd}" }
     cmds.sort
   end
 
-  def internal_commands_paths(cask: true)
-    cmds = find_commands HOMEBREW_CMD_PATH
-    # can be removed when cask commands are removed and no longer odeprecated/odisabled
-    cmds.delete(HOMEBREW_CMD_PATH/"cask.rb") unless cask
-    cmds
+  def internal_commands_paths
+    find_commands HOMEBREW_CMD_PATH
   end
 
   def internal_developer_commands_paths
@@ -146,34 +141,6 @@ module Commands
        .sort
   end
 
-  def cask_commands(aliases: false)
-    cmds = cask_internal_commands
-    cmds += cask_internal_command_aliases if aliases
-    cmds += cask_external_commands
-    cmds
-  end
-
-  def cask_internal_commands
-    Cask::Cmd.commands
-  end
-
-  def cask_internal_command_aliases
-    Cask::Cmd.aliases.keys
-  end
-
-  def cask_external_commands
-    PATH.new(Tap.cmd_directories, ENV["HOMEBREW_PATH"]).flat_map do |search_path|
-      find_commands(search_path).map do |possible_command|
-        path = possible_command.to_path
-        command_name = path.match(/brewcask-(.*)\.rb/) { |data| data[1].delete_suffix(".rb") }
-        if command_name.blank? && possible_command.executable?
-          command_name = path.match(/brewcask-(.*)/) { |data| data[1] }
-        end
-        command_name
-      end.compact
-    end
-  end
-
   def basename_without_extension(path)
     path.basename(path.extname)
   end
@@ -196,10 +163,7 @@ module Commands
     # Ensure that the cache exists so we can build the commands list
     HOMEBREW_CACHE.mkpath
 
-    cmds = commands(aliases: true).reject do |cmd|
-      # TODO: (2.8) remove the cask check when `brew cask` is removed
-      cmd.start_with?("cask ") || Homebrew::Completions::COMPLETIONS_EXCLUSION_LIST.include?(cmd)
-    end
+    cmds = commands(aliases: true) - Homebrew::Completions::COMPLETIONS_EXCLUSION_LIST
 
     all_commands_file = HOMEBREW_CACHE/"all_commands_list.txt"
     external_commands_file = HOMEBREW_CACHE/"external_commands_list.txt"

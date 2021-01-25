@@ -3,27 +3,17 @@
 
 module Cask
   class Cmd
-    # Implementation of the `brew cask fetch` command.
+    # Cask implementation of the `brew fetch` command.
     #
     # @api private
     class Fetch < AbstractCommand
       extend T::Sig
-
-      sig { override.returns(T.nilable(T.any(Integer, Symbol))) }
-      def self.min_named
-        :cask
-      end
 
       def self.parser
         super do
           switch "--force",
                  description: "Force redownloading even if files already exist in local cache."
         end
-      end
-
-      sig { returns(String) }
-      def self.description
-        "Downloads remote application files to local cache."
       end
 
       sig { void }

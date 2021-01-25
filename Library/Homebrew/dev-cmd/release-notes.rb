@@ -26,14 +26,15 @@ module Homebrew
              description: "Print as a Markdown list."
 
       named_args max: 2
+
+      hide_from_man_page!
     end
   end
 
   def release_notes
     args = release_notes_args.parse
 
-    # TODO: (2.8) Deprecate this command now that the `brew release` command exists.
-    # odeprecated "`brew release-notes`"
+    odeprecated "`brew release-notes`", "`brew release`"
 
     previous_tag = args.named.first
 

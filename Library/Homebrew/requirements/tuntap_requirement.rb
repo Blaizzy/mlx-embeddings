@@ -10,7 +10,7 @@ class TuntapRequirement < Requirement
   extend T::Sig
 
   def initialize(tags = [])
-    odeprecated "depends_on :tuntap"
+    odisabled "depends_on :tuntap"
     super(tags)
   end
 

@@ -1,8 +1,6 @@
 # typed: false
 # frozen_string_literal: true
 
-require_relative "shared_examples/invalid_option"
-
 describe Cask::Cmd::Upgrade, :cask do
   let(:version_latest_path_2) { version_latest.config.appdir.join("Caffeine Pro.app") }
   let(:version_latest_path_1) { version_latest.config.appdir.join("Caffeine Mini.app") }
@@ -13,8 +11,6 @@ describe Cask::Cmd::Upgrade, :cask do
   let(:local_transmission) { Cask::CaskLoader.load("local-transmission") }
   let(:local_caffeine_path) { local_caffeine.config.appdir.join("Caffeine.app") }
   let(:local_caffeine) { Cask::CaskLoader.load("local-caffeine") }
-
-  it_behaves_like "a command that handles invalid options"
 
   context "successful upgrade" do
     let(:installed) {

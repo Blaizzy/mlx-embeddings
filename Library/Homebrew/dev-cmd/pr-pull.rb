@@ -47,9 +47,6 @@ module Homebrew
       flag   "--message=",
              depends_on:  "--autosquash",
              description: "Message to include when autosquashing revision bumps, deletions, and rebuilds."
-      flag   "--workflow=",
-             description: "Retrieve artifacts from the specified workflow (default: `tests.yml`).",
-             replacement: "`--workflows`"
       flag   "--artifact=",
              description: "Download artifacts with the specified name (default: `bottles`)."
       flag   "--bintray-org=",
@@ -358,13 +355,7 @@ module Homebrew
   def pr_pull
     args = pr_pull_args.parse
 
-    odisabled "`brew pr-pull --workflow`", "`brew pr-pull --workflows=`" if args.workflow.presence
-
-    workflows = if args.workflow.blank?
-      args.workflows.presence || ["tests.yml"]
-    else
-      [args.workflow].compact.presence || ["tests.yml"]
-    end
+    workflows = args.workflows.presence || ["tests.yml"]
     artifact = args.artifact || "bottles"
     bintray_org = args.bintray_org || "homebrew"
     mirror_repo = args.bintray_mirror || "mirror"

@@ -145,7 +145,6 @@ __brew_internal_commands() {
     'bump-formula-pr:Create a pull request to update formula with a new URL or a new tag'
     'bump-revision:Create a commit to increment the revision of formula'
     'bump-unversioned-casks:Check all casks with unversioned URLs in a given tap for updates'
-    'cask:Homebrew Cask provides a friendly CLI workflow for the administration of macOS applications distributed as binaries'
     'casks:List all locally installable casks including short names'
     'cat:Display the source of a formula or cask'
     'cleanup:Remove stale lock files and outdated downloads for all formulae and casks, and remove old versions of installed formulae'
@@ -157,7 +156,6 @@ __brew_internal_commands() {
     'deps:Show dependencies for formula'
     'desc:Display formula'\''s name and one-line description'
     'dispatch-build-bottle:Build bottles for these formulae with GitHub Actions'
-    'diy:Automatically determine the installation prefix for non-Homebrew software'
     'doctor:Check your system for potential problems'
     'edit:Open a formula or cask in the editor set by `EDITOR` or `HOMEBREW_EDITOR`, or open the Homebrew repository for editing if no formula is provided'
     'extract:Look through repository history to find the most recent version of formula and create a copy in tap'
@@ -200,7 +198,6 @@ __brew_internal_commands() {
     'shellenv:Print export statements'
     'sponsors:Print a Markdown summary of Homebrew'\''s GitHub Sponsors, suitable for pasting into a README'
     'style:Check formulae or files for conformance to Homebrew style guidelines'
-    'switch:Symlink all of the specified version of formula'\''s installation into Homebrew'\''s prefix'
     'tap:Tap a formula repository'
     'tap-info:Show detailed information about one or more taps'
     'tap-new:Generate the template files for a new tap'
@@ -553,30 +550,6 @@ _brew_bump_unversioned_casks() {
     '::tap:__brew_any_tap'
 }
 
-# brew cask
-_brew_cask() {
-  _arguments \
-    '(--formula)--appdir[Target location for Applications (default: `/Applications`)]' \
-    '(--formula)--audio-unit-plugindir[Target location for Audio Unit Plugins (default: `~/Library/Audio/Plug-Ins/Components`)]' \
-    '(--formula)--colorpickerdir[Target location for Color Pickers (default: `~/Library/ColorPickers`)]' \
-    '--debug[Display any debugging information]' \
-    '(--formula)--dictionarydir[Target location for Dictionaries (default: `~/Library/Dictionaries`)]' \
-    '(--formula)--fontdir[Target location for Fonts (default: `~/Library/Fonts`)]' \
-    '--help[Show this message]' \
-    '(--formula)--input-methoddir[Target location for Input Methods (default: `~/Library/Input Methods`)]' \
-    '(--formula)--internet-plugindir[Target location for Internet Plugins (default: `~/Library/Internet Plug-Ins`)]' \
-    '(--formula)--language[Comma-separated list of language codes to prefer for cask installation. The first matching language is used, otherwise it reverts to the cask'\''s default language. The default value is the language of your system]' \
-    '(--formula)--mdimporterdir[Target location for Spotlight Plugins (default: `~/Library/Spotlight`)]' \
-    '(--formula)--prefpanedir[Target location for Preference Panes (default: `~/Library/PreferencePanes`)]' \
-    '(--formula)--qlplugindir[Target location for QuickLook Plugins (default: `~/Library/QuickLook`)]' \
-    '--quiet[Make some output more quiet]' \
-    '(--formula)--screen-saverdir[Target location for Screen Savers (default: `~/Library/Screen Savers`)]' \
-    '(--formula)--servicedir[Target location for Services (default: `~/Library/Services`)]' \
-    '--verbose[Make some output more verbose]' \
-    '(--formula)--vst-plugindir[Target location for VST Plugins (default: `~/Library/Audio/Plug-Ins/VST`)]' \
-    '(--formula)--vst3-plugindir[Target location for VST3 Plugins (default: `~/Library/Audio/Plug-Ins/VST3`)]'
-}
-
 # brew cat
 _brew_cat() {
   _arguments \
@@ -642,17 +615,6 @@ _brew_config() {
     '--help[Show this message]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]'
-}
-
-# brew configure
-_brew_configure() {
-  _arguments \
-    '--debug[Display any debugging information]' \
-    '--help[Show this message]' \
-    '--name[Explicitly set the name of the package being installed]' \
-    '--quiet[Make some output more quiet]' \
-    '--verbose[Make some output more verbose]' \
-    '--version[Explicitly set the version of the package being installed]'
 }
 
 # brew create
@@ -735,17 +697,6 @@ _brew_dispatch_build_bottle() {
     '--verbose[Make some output more verbose]' \
     '--workflow[Dispatch specified workflow (default: `dispatch-build-bottle.yml`)]' \
     '::formula:__brew_formulae'
-}
-
-# brew diy
-_brew_diy() {
-  _arguments \
-    '--debug[Display any debugging information]' \
-    '--help[Show this message]' \
-    '--name[Explicitly set the name of the package being installed]' \
-    '--quiet[Make some output more quiet]' \
-    '--verbose[Make some output more verbose]' \
-    '--version[Explicitly set the version of the package being installed]'
 }
 
 # brew doctor
@@ -1499,15 +1450,6 @@ _brew_style() {
     '::tap:__brew_any_tap' \
     '::formula:__brew_formulae' \
     '::cask:__brew_casks'
-}
-
-# brew switch
-_brew_switch() {
-  _arguments \
-    '--debug[Display any debugging information]' \
-    '--help[Show this message]' \
-    '--quiet[Make some output more quiet]' \
-    '--verbose[Make some output more verbose]'
 }
 
 # brew tap

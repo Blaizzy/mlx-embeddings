@@ -1225,19 +1225,6 @@ Requires write access to the Homebrew/brew repository.
 * `--minor`:
   Create a minor release.
 
-### `release-notes` [*`options`*] [*`previous_tag`*] [*`end_ref`*]
-
-Print the merged pull requests on Homebrew/brew between two Git refs.
-If no *`previous_tag`* is provided it defaults to the latest tag.
-If no *`end_ref`* is provided it defaults to `origin/master`.
-
-If `--markdown` and a *`previous_tag`* are passed, an extra line containing
-a link to the Homebrew blog will be adding to the output. Additionally,
-a warning will be shown if the latest minor release was less than one month ago.
-
-* `--markdown`:
-  Print as a Markdown list.
-
 ### `rubocop`
 
 Installs, configures and runs Homebrew's `rubocop`.

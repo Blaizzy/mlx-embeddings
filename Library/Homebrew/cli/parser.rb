@@ -195,7 +195,6 @@ module Homebrew
 
       def usage_banner_text
         @parser.banner
-               .gsub(/^  - (`[^`]+`)\s+/, "\n- \\1:\n  <br>") # Format `cask` subcommands as Markdown list.
       end
 
       def comma_array(name, description: nil)
@@ -344,10 +343,7 @@ module Homebrew
       end
 
       def generate_help_text
-        Formatter.wrap(
-          @parser.to_s.gsub(/^  - (`[^`]+`\s+)/, "  \\1"), # Remove `-` from `cask` subcommand listing.
-          COMMAND_DESC_WIDTH,
-        )
+        Formatter.wrap(@parser.to_s, COMMAND_DESC_WIDTH)
                  .sub(/^/, "#{Tty.bold}Usage: brew#{Tty.reset} ")
                  .gsub(/`(.*?)`/m, "#{Tty.bold}\\1#{Tty.reset}")
                  .gsub(%r{<([^\s]+?://[^\s]+?)>}) { |url| Formatter.url(url) }
@@ -398,8 +394,7 @@ module Homebrew
       end
 
       def max_named(count)
-        # TODO: (2.8) uncomment for the next major/minor release
-        # odeprecated "`max_named`", "`named_args max:`"
+        odeprecated "`max_named`", "`named_args max:`"
 
         raise TypeError, "Unsupported type #{count.class.name} for max_named" unless count.is_a?(Integer)
 
@@ -407,8 +402,7 @@ module Homebrew
       end
 
       def min_named(count_or_type)
-        # TODO: (2.8) uncomment for the next major/minor release
-        # odeprecated "`min_named`", "`named_args min:`"
+        odeprecated "`min_named`", "`named_args min:`"
 
         case count_or_type
         when Integer
@@ -423,8 +417,7 @@ module Homebrew
       end
 
       def named(count_or_type)
-        # TODO: (2.8) uncomment for the next major/minor release
-        # odeprecated "`named`", "`named_args`"
+        odeprecated "`named`", "`named_args`"
 
         case count_or_type
         when Integer

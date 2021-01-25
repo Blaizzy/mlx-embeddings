@@ -65,7 +65,7 @@ module Homebrew
       conflicts "--open", "--closed"
       conflicts(*package_manager_switches)
 
-      # TODO: (2.9) add `min: 1` when the `odeprecated`/`odisabled` for `brew search` with no arguments is removed
+      # TODO: (3.1) add `min: 1` when the `odeprecated`/`odisabled` for `brew search` with no arguments is removed
       named_args :text_or_regex
     end
   end
@@ -85,7 +85,7 @@ module Homebrew
 
         puts Formatter.columns(Cask::Cask.to_a.map(&:full_name).sort)
       else
-        odeprecated "`brew search` with no arguments to output formulae", "`brew formulae`"
+        odisabled "`brew search` with no arguments to output formulae", "`brew formulae`"
         puts Formatter.columns(Formula.full_names.sort)
       end
 

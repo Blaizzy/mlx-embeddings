@@ -1,13 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-require_relative "shared_examples/requires_cask_token"
-require_relative "shared_examples/invalid_option"
-
 describe Cask::Cmd::Zap, :cask do
-  it_behaves_like "a command that requires a Cask token"
-  it_behaves_like "a command that handles invalid options"
-
   it "shows an error when a bad Cask is provided" do
     expect { described_class.run("notacask") }
       .to raise_error(Cask::CaskUnavailableError, /is unavailable/)

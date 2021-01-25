@@ -5,21 +5,11 @@ require "utils/github/actions"
 
 module Cask
   class Cmd
-    # Implementation of the `brew cask audit` command.
+    # Cask implementation of the `brew audit` command.
     #
     # @api private
     class Audit < AbstractCommand
       extend T::Sig
-
-      sig { returns(String) }
-      def self.description
-        <<~EOS
-          Check <cask> for Homebrew coding style violations. This should be run before
-          submitting a new cask. If no <cask> is provided, checks all locally
-          available casks. Will exit with a non-zero status if any errors are
-          found, which can be useful for implementing pre-commit hooks.
-        EOS
-      end
 
       def self.parser
         super do

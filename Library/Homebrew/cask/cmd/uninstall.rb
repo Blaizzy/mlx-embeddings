@@ -3,21 +3,11 @@
 
 module Cask
   class Cmd
-    # Implementation of the `brew cask uninstall` command.
+    # Cask implementation of the `brew uninstall` command.
     #
     # @api private
     class Uninstall < AbstractCommand
       extend T::Sig
-
-      sig { override.returns(T.nilable(T.any(Integer, Symbol))) }
-      def self.min_named
-        :cask
-      end
-
-      sig { returns(String) }
-      def self.description
-        "Uninstalls the given <cask>."
-      end
 
       def self.parser
         super do

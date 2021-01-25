@@ -67,7 +67,7 @@ module Homebrew
     template = (SOURCE_PATH/"brew.1.md.erb").read
     variables = OpenStruct.new
 
-    variables[:commands] = generate_cmd_manpages(Commands.internal_commands_paths(cask: false))
+    variables[:commands] = generate_cmd_manpages(Commands.internal_commands_paths)
     variables[:developer_commands] = generate_cmd_manpages(Commands.internal_developer_commands_paths)
     variables[:official_external_commands] =
       generate_cmd_manpages(Commands.official_external_commands_paths(quiet: quiet))

@@ -5,7 +5,7 @@ require "search"
 
 module Cask
   class Cmd
-    # Abstract superclass for all `brew cask` commands.
+    # Abstract superclass for all Cask implementations of commands.
     #
     # @api private
     class AbstractCommand
@@ -13,32 +13,6 @@ module Cask
       extend T::Helpers
 
       include Homebrew::Search
-
-      sig { returns(T.nilable(T.any(Integer, Symbol))) }
-      def self.min_named
-        nil
-      end
-
-      sig { returns(T.nilable(Integer)) }
-      def self.max_named
-        nil
-      end
-
-      sig { returns(String) }
-      def self.banner_args
-        if min_named == :cask && max_named != 1
-          " <cask>"
-        elsif max_named&.zero?
-          ""
-        else
-          " [<cask>]"
-        end
-      end
-
-      sig { returns(String) }
-      def self.banner_headline
-        "`#{command_name}` [<options>]#{banner_args}"
-      end
 
       OPTIONS = [
         [:switch, "--[no-]binaries", {
@@ -56,26 +30,12 @@ module Cask
       ].freeze
 
       def self.parser(&block)
-        banner = <<~EOS
-          `cask` #{banner_headline}
-
-          #{description}
-        EOS
-
-        min_n = min_named
-        max_n = max_named
-
         Cmd.parser do
-          usage_banner banner
-
           instance_eval(&block) if block
 
           OPTIONS.each do |option|
             send(*option)
           end
-
-          min_named min_n unless min_n.nil?
-          max_named max_n unless max_n.nil?
         end
       end
 
