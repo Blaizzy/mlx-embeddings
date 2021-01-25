@@ -876,7 +876,7 @@ _brew_upgrade() {
   - interactive-install \
     '--interactive[download and patch formula, then open a shell]' \
     '--git' \
-    ': : __brew_outdated_formulae'
+    ': : __brew_outdated_formulae' \
   - cask-install \
     '--cask[reinstall casks]' \
     ': :__brew_all_casks' \
