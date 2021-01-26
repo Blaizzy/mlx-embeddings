@@ -5832,6 +5832,92 @@ module Codecov
   VERSION = ::T.let(nil, ::T.untyped)
 end
 
+module Codecov::SimpleCov
+end
+
+class Codecov::SimpleCov::Formatter
+end
+
+class Codecov::SimpleCov::Formatter
+  def self.black(str); end
+
+  def self.file_network(); end
+
+  def self.file_to_codecov(file); end
+
+  def self.format(report); end
+
+  def self.green(str); end
+
+  def self.red(str); end
+
+  def self.result_to_codecov(result); end
+
+  def self.result_to_codecov_coverage(result); end
+
+  def self.result_to_codecov_messages(result); end
+
+  def self.result_to_codecov_report(result); end
+
+  def self.shortened_filename(file); end
+end
+
+module Codecov::SimpleCov
+end
+
+class Codecov::Uploader
+  APPVEYOR = ::T.let(nil, ::T.untyped)
+  AZUREPIPELINES = ::T.let(nil, ::T.untyped)
+  BITBUCKET = ::T.let(nil, ::T.untyped)
+  BITRISE = ::T.let(nil, ::T.untyped)
+  BUILDKITE = ::T.let(nil, ::T.untyped)
+  CIRCLE = ::T.let(nil, ::T.untyped)
+  CODEBUILD = ::T.let(nil, ::T.untyped)
+  CODESHIP = ::T.let(nil, ::T.untyped)
+  DRONEIO = ::T.let(nil, ::T.untyped)
+  GITHUB = ::T.let(nil, ::T.untyped)
+  GITLAB = ::T.let(nil, ::T.untyped)
+  HEROKU = ::T.let(nil, ::T.untyped)
+  JENKINS = ::T.let(nil, ::T.untyped)
+  RECOGNIZED_CIS = ::T.let(nil, ::T.untyped)
+  SEMAPHORE = ::T.let(nil, ::T.untyped)
+  SHIPPABLE = ::T.let(nil, ::T.untyped)
+  SOLANO = ::T.let(nil, ::T.untyped)
+  TEAMCITY = ::T.let(nil, ::T.untyped)
+  TRAVIS = ::T.let(nil, ::T.untyped)
+  WERCKER = ::T.let(nil, ::T.untyped)
+end
+
+class Codecov::Uploader
+  def self.black(str); end
+
+  def self.build_params(ci); end
+
+  def self.detect_ci(); end
+
+  def self.display_header(); end
+
+  def self.green(str); end
+
+  def self.gzip_report(report); end
+
+  def self.handle_report_response(report); end
+
+  def self.net_blockers(switch); end
+
+  def self.red(str); end
+
+  def self.retry_request(req, https); end
+
+  def self.upload(report, disable_net_blockers=T.unsafe(nil)); end
+
+  def self.upload_to_codecov(ci, report); end
+
+  def self.upload_to_v2(url, report, query, query_without_token); end
+
+  def self.upload_to_v4(url, report, query, query_without_token); end
+end
+
 module Codecov
 end
 
@@ -7835,6 +7921,11 @@ module Homebrew::Fetch
 end
 
 class Homebrew::FormulaCreator
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Homebrew::Livecheck::LivecheckVersion
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -26135,6 +26226,11 @@ module Readline
   def self.completion_quote_character(); end
 end
 
+module ReleaseNotes
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class Requirement
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -28101,47 +28197,7 @@ module SimpleCov::Formatter
 end
 
 class SimpleCov::Formatter::Codecov
-  def build_params(ci); end
-
-  def create_report(report); end
-
-  def detect_ci(); end
-
-  def display_header(); end
-
   def format(result, disable_net_blockers=T.unsafe(nil)); end
-
-  def gzip_report(report); end
-
-  def handle_report_response(report); end
-
-  def retry_request(req, https); end
-
-  def upload_to_codecov(ci, report); end
-
-  def upload_to_v2(url, report, query, query_without_token); end
-
-  def upload_to_v4(url, report, query, query_without_token); end
-  APPVEYOR = ::T.let(nil, ::T.untyped)
-  AZUREPIPELINES = ::T.let(nil, ::T.untyped)
-  BITBUCKET = ::T.let(nil, ::T.untyped)
-  BITRISE = ::T.let(nil, ::T.untyped)
-  BUILDKITE = ::T.let(nil, ::T.untyped)
-  CIRCLE = ::T.let(nil, ::T.untyped)
-  CODEBUILD = ::T.let(nil, ::T.untyped)
-  CODESHIP = ::T.let(nil, ::T.untyped)
-  DRONEIO = ::T.let(nil, ::T.untyped)
-  GITHUB = ::T.let(nil, ::T.untyped)
-  GITLAB = ::T.let(nil, ::T.untyped)
-  HEROKU = ::T.let(nil, ::T.untyped)
-  JENKINS = ::T.let(nil, ::T.untyped)
-  RECOGNIZED_CIS = ::T.let(nil, ::T.untyped)
-  SEMAPHORE = ::T.let(nil, ::T.untyped)
-  SHIPPABLE = ::T.let(nil, ::T.untyped)
-  SOLANO = ::T.let(nil, ::T.untyped)
-  TEAMCITY = ::T.let(nil, ::T.untyped)
-  TRAVIS = ::T.let(nil, ::T.untyped)
-  WERCKER = ::T.let(nil, ::T.untyped)
 end
 
 class SimpleCov::Formatter::Codecov
@@ -29727,6 +29783,17 @@ module Utils::Svn
 end
 
 module Utils
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Version::Parser
+  def initialize(*args, &blk); end
+end
+
+class Version::Parser
+  extend ::T::Private::Abstract::Hooks
+  extend ::T::InterfaceWrapper::Helpers
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
