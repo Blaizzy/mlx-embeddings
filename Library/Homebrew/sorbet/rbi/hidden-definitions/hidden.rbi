@@ -7839,6 +7839,11 @@ class Homebrew::FormulaCreator
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class Homebrew::Livecheck::LivecheckVersion
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 module Homebrew::Livecheck::SkipConditions
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -26135,6 +26140,11 @@ module Readline
   def self.completion_quote_character(); end
 end
 
+module ReleaseNotes
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class Requirement
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -29727,6 +29737,17 @@ module Utils::Svn
 end
 
 module Utils
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Version::Parser
+  def initialize(*args, &blk); end
+end
+
+class Version::Parser
+  extend ::T::Private::Abstract::Hooks
+  extend ::T::InterfaceWrapper::Helpers
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end

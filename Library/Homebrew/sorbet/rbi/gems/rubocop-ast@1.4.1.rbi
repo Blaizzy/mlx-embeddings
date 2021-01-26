@@ -309,6 +309,10 @@ module RuboCop::AST::Descendence
   def visit_descendants(types, &block); end
 end
 
+class RuboCop::AST::DstrNode < ::RuboCop::AST::StrNode
+  def value; end
+end
+
 class RuboCop::AST::EnsureNode < ::RuboCop::AST::Node
   def body; end
 end
