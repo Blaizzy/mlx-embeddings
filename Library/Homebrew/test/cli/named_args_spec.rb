@@ -3,6 +3,20 @@
 
 require "cli/named_args"
 
+def setup_unredable_formula(name)
+  error = FormulaUnreadableError.new(name, "testing")
+  allow(Formulary).to receive(:factory).with(name, force_bottle: false, flags: []).and_raise(error)
+end
+
+def setup_unredable_cask(name)
+  error = Cask::CaskUnreadableError.new(name, "testing")
+  allow(Cask::CaskLoader).to receive(:load).with(name).and_raise(error)
+
+  config = instance_double(Cask::Config)
+  allow(Cask::Config).to receive(:from_args).and_return(config)
+  allow(Cask::CaskLoader).to receive(:load).with(name, config: config).and_raise(error)
+end
+
 describe Homebrew::CLI::NamedArgs do
   let(:foo) do
     formula "foo" do
@@ -21,6 +35,14 @@ describe Homebrew::CLI::NamedArgs do
   let(:baz) do
     Cask::CaskLoader.load(+<<~RUBY)
       cask "baz" do
+        version "1.0"
+      end
+    RUBY
+  end
+
+  let(:foo_cask) do
+    Cask::CaskLoader.load(+<<~RUBY)
+      cask "foo" do
         version "1.0"
       end
     RUBY
@@ -49,6 +71,76 @@ describe Homebrew::CLI::NamedArgs do
       stub_cask_loader baz, call_original: true
 
       expect(described_class.new("foo", "baz").to_formulae_and_casks).to eq [foo, baz]
+    end
+
+    context "when both formula and cask are present" do
+      before do
+        stub_formula_loader foo
+        stub_cask_loader foo_cask
+      end
+
+      it "returns formula by default" do
+        expect(described_class.new("foo").to_formulae_and_casks).to eq [foo]
+      end
+
+      it "returns formula if loading formula only" do
+        expect(described_class.new("foo").to_formulae_and_casks(only: :formula)).to eq [foo]
+      end
+
+      it "returns cask if loading cask only" do
+        expect(described_class.new("foo").to_formulae_and_casks(only: :cask)).to eq [foo_cask]
+      end
+    end
+
+    context "when both formula and cask are unreadable" do
+      before do
+        setup_unredable_formula "foo"
+        setup_unredable_cask "foo"
+      end
+
+      it "raises an error" do
+        expect { described_class.new("foo").to_formulae_and_casks }.to raise_error(FormulaOrCaskUnavailableError)
+      end
+
+      it "raises an error if loading formula only" do
+        expect { described_class.new("foo").to_formulae_and_casks(only: :formula) }
+          .to raise_error(FormulaUnreadableError)
+      end
+
+      it "raises an error if loading cask only" do
+        expect { described_class.new("foo").to_formulae_and_casks(only: :cask) }
+          .to raise_error(Cask::CaskUnreadableError)
+      end
+    end
+
+    it "raises an error when neither formula nor cask is present" do
+      expect { described_class.new("foo").to_formulae_and_casks }.to raise_error(FormulaOrCaskUnavailableError)
+    end
+
+    it "returns formula when formula is present and cask is unreadable" do
+      stub_formula_loader foo
+      setup_unredable_cask "foo"
+
+      expect(described_class.new("foo").to_formulae_and_casks).to eq [foo]
+    end
+
+    it "returns cask when formula is unreadable and cask is present" do
+      setup_unredable_formula "foo"
+      stub_cask_loader foo_cask
+
+      expect(described_class.new("foo").to_formulae_and_casks).to eq [foo_cask]
+    end
+
+    it "raises an error when formula is absent and cask is unreadable" do
+      setup_unredable_cask "foo"
+
+      expect { described_class.new("foo").to_formulae_and_casks }.to raise_error(Cask::CaskUnreadableError)
+    end
+
+    it "raises an error when formula is unreadable and cask is absent" do
+      setup_unredable_formula "foo"
+
+      expect { described_class.new("foo").to_formulae_and_casks }.to raise_error(FormulaUnreadableError)
     end
   end
 
