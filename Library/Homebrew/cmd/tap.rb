@@ -50,6 +50,7 @@ module Homebrew
 
     if args.repair?
       Tap.each(&:link_completions_and_manpages)
+      Tap.each(&:fix_remote_configuration)
     elsif args.list_pinned?
       puts Tap.select(&:pinned?).map(&:name)
     elsif args.no_named?
