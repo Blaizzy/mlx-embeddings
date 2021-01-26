@@ -28022,6 +28022,8 @@ module SimpleCov::Configuration
 
   def nocov_token(nocov_token=T.unsafe(nil)); end
 
+  def primary_coverage(criterion=T.unsafe(nil)); end
+
   def print_error_status(); end
 
   def print_error_status=(print_error_status); end
@@ -28030,7 +28032,9 @@ module SimpleCov::Configuration
 
   def project_name(new_name=T.unsafe(nil)); end
 
-  def refuse_coverage_drop(); end
+  def raise_on_invalid_coverage(coverage, coverage_setting); end
+
+  def refuse_coverage_drop(*criteria); end
 
   def root(root=T.unsafe(nil)); end
 
@@ -28090,6 +28094,7 @@ class SimpleCov::ExitCodes::MaximumCoverageDropCheck
   def initialize(result, maximum_coverage_drop); end
 
   def report(); end
+  MAX_DROP_ACCURACY = ::T.let(nil, ::T.untyped)
 end
 
 class SimpleCov::ExitCodes::MaximumCoverageDropCheck
@@ -28131,6 +28136,8 @@ class SimpleCov::FileList
   def count(*args, &block); end
 
   def coverage_statistics(); end
+
+  def coverage_statistics_by_file(); end
 
   def covered_branches(); end
 
@@ -28302,6 +28309,8 @@ class SimpleCov::Result
 
   def coverage_statistics(*args, &block); end
 
+  def coverage_statistics_by_file(*args, &block); end
+
   def covered_branches(*args, &block); end
 
   def covered_lines(*args, &block); end
@@ -28336,8 +28345,6 @@ class SimpleCov::Result
 
   def source_files(); end
 
-  def time_since_creation(); end
-
   def to_hash(); end
 
   def total_branches(*args, &block); end
@@ -28366,17 +28373,31 @@ module SimpleCov::ResultMerger
 end
 
 module SimpleCov::ResultMerger
-  def self.clear_resultset(); end
+  def self.adapt_pre_simplecov_0_18_result(result); end
 
-  def self.merge_and_store(*results); end
+  def self.adapt_result(result); end
 
-  def self.merge_results(*results); end
+  def self.create_result(command_names, coverage); end
+
+  def self.merge_and_store(*file_paths, ignore_timeout: T.unsafe(nil)); end
+
+  def self.merge_coverage(*results); end
+
+  def self.merge_results(*file_paths, ignore_timeout: T.unsafe(nil)); end
+
+  def self.merge_valid_results(results, ignore_timeout: T.unsafe(nil)); end
 
   def self.merged_result(); end
 
-  def self.results(); end
+  def self.parse_file(path); end
 
-  def self.resultset(); end
+  def self.parse_json(content); end
+
+  def self.pre_simplecov_0_18_result?(result); end
+
+  def self.read_file(path); end
+
+  def self.read_resultset(); end
 
   def self.resultset_path(); end
 
@@ -28384,9 +28405,13 @@ module SimpleCov::ResultMerger
 
   def self.store_result(result); end
 
-  def self.stored_data(); end
-
   def self.synchronize_resultset(); end
+
+  def self.time_since_result_creation(data); end
+
+  def self.valid_results(file_path, ignore_timeout: T.unsafe(nil)); end
+
+  def self.within_merge_timeout?(data); end
 end
 
 module SimpleCov::SimulateCoverage
@@ -28545,7 +28570,7 @@ module SimpleCov
 
   def self.clear_result(); end
 
-  def self.collate(result_filenames, profile=T.unsafe(nil), &block); end
+  def self.collate(result_filenames, profile=T.unsafe(nil), ignore_timeout: T.unsafe(nil), &block); end
 
   def self.exit_and_report_previous_error(exit_status); end
 
