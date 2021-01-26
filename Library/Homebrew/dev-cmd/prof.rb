@@ -12,7 +12,7 @@ module Homebrew
   def prof_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
-        Run Homebrew with a Ruby profiler, e.g. `brew prof readall`.
+        Run Homebrew with a Ruby profiler. For example, `brew prof readall`.
       EOS
       switch "--stackprof",
              description: "Use `stackprof` instead of `ruby-prof` (the default)."

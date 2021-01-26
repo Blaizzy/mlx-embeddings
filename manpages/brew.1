@@ -896,7 +896,7 @@ Skip installing cask dependencies\.
 Also include casks with \fBauto_updates true\fR or \fBversion :latest\fR\.
 .
 .SS "\fBuses\fR [\fIoptions\fR] \fIformula\fR [\.\.\.]"
-Show formulae and casks that specify \fIformula\fR as a dependency (i\.e\. show dependents of \fIformula\fR)\. When given multiple formula arguments, show the intersection of formulae that use \fIformula\fR\. By default, \fBuses\fR shows all formulae and casks that specify \fIformula\fR as a required or recommended dependency for their stable builds\.
+Show formulae and casks that specify \fIformula\fR as a dependency; that is, show dependents of \fIformula\fR\. When given multiple formula arguments, show the intersection of formulae that use \fIformula\fR\. By default, \fBuses\fR shows all formulae and casks that specify \fIformula\fR as a required or recommended dependency for their stable builds\.
 .
 .TP
 \fB\-\-recursive\fR
@@ -1000,7 +1000,7 @@ If \fIformula\fR is provided, display the location in the Cellar where \fIformul
 List files in Homebrew\'s prefix not installed by Homebrew\.
 .
 .SS "\fB\-\-repository\fR, \fB\-\-repo\fR [\fItap\fR \.\.\.]"
-Display where Homebrew\'s \fB\.git\fR directory is located\.
+Display where Homebrew\'s git repository is located\.
 .
 .P
 If \fIuser\fR\fB/\fR\fIrepo\fR are provided, display where tap \fIuser\fR\fB/\fR\fIrepo\fR\'s directory is located\.
@@ -1418,7 +1418,7 @@ Treat all named arguments as formulae\.
 Treat all named arguments as casks\.
 .
 .SS "\fBextract\fR [\fI\-\-version\fR\fB=\fR] [\fI\-\-force\fR] \fIformula\fR \fItap\fR"
-Look through repository history to find the most recent version of \fIformula\fR and create a copy in \fItap\fR\fB/Formula/\fR\fIformula\fR\fB@\fR\fIversion\fR\fB\.rb\fR\. If the tap is not installed yet, attempt to install/clone the tap before continuing\. To extract a formula from a tap that is not \fBhomebrew/core\fR use its fully\-qualified form of \fIuser\fR\fB/\fR\fIrepo\fR\fB/\fR\fIformula\fR\.
+Look through repository history to find the most recent version of \fIformula\fR and create a copy in \fItap\fR\. Specifically, the command will create the new formula file at \fItap\fR\fB/Formula/\fR\fIformula\fR\fB@\fR\fIversion\fR\fB\.rb\fR\. If the tap is not installed yet, attempt to install/clone the tap before continuing\. To extract a formula from a tap that is not \fBhomebrew/core\fR use its fully\-qualified form of \fIuser\fR\fB/\fR\fIrepo\fR\fB/\fR\fIformula\fR\.
 .
 .TP
 \fB\-\-version\fR
@@ -1680,7 +1680,7 @@ Upload to the specified Bintray organisation (default: \fBhomebrew\fR)\.
 Use the specified \fIURL\fR as the root of the bottle\'s URL instead of Homebrew\'s default\.
 .
 .SS "\fBprof\fR [\fI\-\-stackprof\fR] [\fIcommand\fR \.\.\.]"
-Run Homebrew with a Ruby profiler, e\.g\. \fBbrew prof readall\fR\.
+Run Homebrew with a Ruby profiler\. For example, \fBbrew prof readall\fR\.
 .
 .TP
 \fB\-\-stackprof\fR
@@ -1717,7 +1717,7 @@ Print as a Markdown list\.
 Installs, configures and runs Homebrew\'s \fBrubocop\fR\.
 .
 .SS "\fBruby\fR [\fIoptions\fR] (\fB\-e\fR \fItext\fR|\fIfile\fR)"
-Run a Ruby instance with Homebrew\'s libraries loaded, e\.g\. \fBbrew ruby \-e "puts :gcc\.f\.deps"\fR or \fBbrew ruby script\.rb\fR\.
+Run a Ruby instance with Homebrew\'s libraries loaded\. For example, \fBbrew ruby \-e "puts :gcc\.f\.deps"\fR or \fBbrew ruby script\.rb\fR\.
 .
 .TP
 \fB\-r\fR
@@ -1728,7 +1728,7 @@ Load a library using \fBrequire\fR\.
 Execute the given text string as a script\.
 .
 .SS "\fBsh\fR [\fI\-\-env\fR\fB=\fR] [\fI\-\-cmd\fR\fB=\fR] [\fIfile\fR]"
-Homebrew build environment that uses years\-battle\-hardened build logic to help your \fB\./configure && make && make install\fR and even your \fBgem install\fR succeed\. Especially handy if you run Homebrew in an Xcode\-only configuration since it adds tools like \fBmake\fR to your \fBPATH\fR which build systems would not find otherwise\.
+Enter an interactive shell for Homebrew\'s build environment\. Use years\-battle\-hardened build logic to help your \fB\./configure && make && make install\fR and even your \fBgem install\fR succeed\. Especially handy if you run Homebrew in an Xcode\-only configuration since it adds tools like \fBmake\fR to your \fBPATH\fR which build systems would not find otherwise\.
 .
 .TP
 \fB\-\-env\fR

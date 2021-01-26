@@ -659,8 +659,8 @@ upgraded formulae or, every 30 days, for all formulae.
 
 ### `uses` [*`options`*] *`formula`* [...]
 
-Show formulae and casks that specify *`formula`* as a dependency (i.e. show dependents
-of *`formula`*). When given multiple formula arguments, show the intersection
+Show formulae and casks that specify *`formula`* as a dependency; that is, show dependents
+of *`formula`*. When given multiple formula arguments, show the intersection
 of formulae that use *`formula`*. By default, `uses` shows all formulae and casks that
 specify *`formula`* as a required or recommended dependency for their stable builds.
 
@@ -739,7 +739,7 @@ is or would be installed.
 
 ### `--repository`, `--repo` [*`tap`* ...]
 
-Display where Homebrew's `.git` directory is located.
+Display where Homebrew's git repository is located.
 
 If *`user`*`/`*`repo`* are provided, display where tap *`user`*`/`*`repo`*'s directory is located.
 
@@ -1022,7 +1022,8 @@ or open the Homebrew repository for editing if no formula is provided.
 ### `extract` [*`--version`*`=`] [*`--force`*] *`formula`* *`tap`*
 
 Look through repository history to find the most recent version of *`formula`* and
-create a copy in *`tap`*`/Formula/`*`formula`*`@`*`version`*`.rb`. If the tap is not
+create a copy in *`tap`*. Specifically, the command will create the new
+formula file at *`tap`*`/Formula/`*`formula`*`@`*`version`*`.rb`. If the tap is not
 installed yet, attempt to install/clone the tap before continuing. To extract
 a formula from a tap that is not `homebrew/core` use its fully-qualified form of
 *`user`*`/`*`repo`*`/`*`formula`*.
@@ -1203,7 +1204,7 @@ Apply the bottle commit and publish bottles to Bintray or GitHub Releases.
 
 ### `prof` [*`--stackprof`*] [*`command`* ...]
 
-Run Homebrew with a Ruby profiler, e.g. `brew prof readall`.
+Run Homebrew with a Ruby profiler. For example, `brew prof readall`.
 
 * `--stackprof`:
   Use `stackprof` instead of `ruby-prof` (the default).
@@ -1243,7 +1244,7 @@ Installs, configures and runs Homebrew's `rubocop`.
 
 ### `ruby` [*`options`*] (`-e` *`text`*|*`file`*)
 
-Run a Ruby instance with Homebrew's libraries loaded, e.g.
+Run a Ruby instance with Homebrew's libraries loaded. For example,
 `brew ruby -e "puts :gcc.f.deps"` or `brew ruby script.rb`.
 
 * `-r`:
@@ -1253,7 +1254,7 @@ Run a Ruby instance with Homebrew's libraries loaded, e.g.
 
 ### `sh` [*`--env`*`=`] [*`--cmd`*`=`] [*`file`*]
 
-Homebrew build environment that uses years-battle-hardened
+Enter an interactive shell for Homebrew's build environment. Use years-battle-hardened
 build logic to help your `./configure && make && make install`
 and even your `gem install` succeed. Especially handy if you run Homebrew
 in an Xcode-only configuration since it adds tools like `make` to your `PATH`

@@ -13,7 +13,7 @@ module Homebrew
     Homebrew::CLI::Parser.new do
       usage_banner "`ruby` [<options>] (`-e` <text>|<file>)"
       description <<~EOS
-        Run a Ruby instance with Homebrew's libraries loaded, e.g.
+        Run a Ruby instance with Homebrew's libraries loaded. For example,
         `brew ruby -e "puts :gcc.f.deps"` or `brew ruby script.rb`.
       EOS
       flag "-r=",

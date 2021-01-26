@@ -183,7 +183,9 @@ module Homebrew
         Homebrew::EnvConfig.try(:"#{env}?")
       end
 
-      def description(text)
+      def description(text = nil)
+        return @description if text.blank?
+
         @description = text.chomp
       end
 
