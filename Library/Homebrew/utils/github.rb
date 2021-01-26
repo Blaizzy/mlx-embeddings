@@ -626,19 +626,24 @@ module GitHub
     nil
   end
 
-  def fetch_pull_requests(query, tap_full_name, state: nil)
+  def fetch_pull_requests(name, tap_full_name, state: nil, version: nil)
+    if version.present?
+      query = "#{name} #{version}"
+      regex = /(^|\s)#{Regexp.quote(name)}(:|,|\s)(.*\s)?#{Regexp.quote(version)}(:|,|\s|$)/i
+    else
+      query = name
+      regex = /(^|\s)#{Regexp.quote(name)}(:|,|\s|$)/i
+    end
     issues_for_formula(query, tap_full_name: tap_full_name, state: state).select do |pr|
-      pr["html_url"].include?("/pull/") &&
-        /(^|\s)#{Regexp.quote(query)}(:|\s|$)/i =~ pr["title"]
+      pr["html_url"].include?("/pull/") && regex.match?(pr["title"])
     end
   rescue RateLimitExceededError => e
     opoo e.message
     []
   end
 
-  def check_for_duplicate_pull_requests(query, tap_full_name, state:, file:, args:)
-    pull_requests = fetch_pull_requests(query, tap_full_name, state: state)
-    pull_requests.select! do |pr|
+  def check_for_duplicate_pull_requests(name, tap_full_name, state:, file:, args:, version: nil)
+    pull_requests = fetch_pull_requests(name, tap_full_name, state: state, version: version).select do |pr|
       pr_files = open_api(url_to("repos", tap_full_name, "pulls", pr["number"], "files"))
       pr_files.any? { |f| f["filename"] == file }
     end
