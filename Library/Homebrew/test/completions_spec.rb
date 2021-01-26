@@ -158,6 +158,10 @@ describe Homebrew::Completions do
         expect(described_class.format_description("Homebrew's")).to eq "Homebrew'\\''s"
       end
 
+      it "escapes single quotes for fish" do
+        expect(described_class.format_description("Homebrew's", fish: true)).to eq "Homebrew\\'s"
+      end
+
       it "removes angle brackets" do
         expect(described_class.format_description("<formula>")).to eq "formula"
       end
@@ -359,6 +363,56 @@ describe Homebrew::Completions do
         expect(file).to match(/^_brew_missing\(\) {$/)
         expect(file).to match(/^_brew_update\(\) {$/)
         expect(file).to match(/^_brew "\$@"$/)
+      end
+    end
+
+    describe ".generate_fish_subcommand_completion" do
+      it "returns nil if completions aren't needed" do
+        expect(described_class.generate_fish_subcommand_completion("help")).to be_nil
+      end
+
+      it "returns appropriate completion for a ruby command" do
+        completion = described_class.generate_fish_subcommand_completion("missing")
+        expect(completion).to eq <<~COMPLETION
+          __fish_brew_complete_cmd 'missing' 'Check the given formula kegs for missing dependencies'
+          __fish_brew_complete_arg 'missing' -l debug -d 'Display any debugging information'
+          __fish_brew_complete_arg 'missing' -l help -d 'Show this message'
+          __fish_brew_complete_arg 'missing' -l hide -d 'Act as if none of the specified hidden are installed. hidden should be a comma-separated list of formulae'
+          __fish_brew_complete_arg 'missing' -l quiet -d 'Make some output more quiet'
+          __fish_brew_complete_arg 'missing' -l verbose -d 'Make some output more verbose'
+          __fish_brew_complete_arg 'missing' -a '(__fish_brew_suggest_formulae_all)'
+        COMPLETION
+      end
+
+      it "returns appropriate completion for a shell command" do
+        completion = described_class.generate_fish_subcommand_completion("update")
+        expect(completion).to eq <<~COMPLETION
+          __fish_brew_complete_cmd 'update' 'Fetch the newest version of Homebrew and all formulae from GitHub using `git`(1) and perform any necessary migrations'
+          __fish_brew_complete_arg 'update' -l debug -d 'Display a trace of all shell commands as they are executed'
+          __fish_brew_complete_arg 'update' -l force -d 'Always do a slower, full update check (even if unnecessary)'
+          __fish_brew_complete_arg 'update' -l help -d 'Show this message'
+          __fish_brew_complete_arg 'update' -l merge -d 'Use `git merge` to apply updates (rather than `git rebase`)'
+          __fish_brew_complete_arg 'update' -l preinstall -d 'Run on auto-updates (e.g. before `brew install`). Skips some slower steps'
+          __fish_brew_complete_arg 'update' -l verbose -d 'Print the directories checked and `git` operations performed'
+        COMPLETION
+      end
+
+      it "returns appropriate completion for a command with multiple named arg types" do
+        completion = described_class.generate_fish_subcommand_completion("upgrade")
+        expect(completion).to match(
+          /__fish_brew_complete_arg 'upgrade' -a '\(__fish_brew_suggest_formulae_outdated\)'/,
+        )
+        expect(completion).to match(/__fish_brew_complete_arg 'upgrade' -a '\(__fish_brew_suggest_casks_outdated\)'/)
+      end
+    end
+
+    describe ".generate_fish_completion_file" do
+      it "returns the correct completion file" do
+        file = described_class.generate_fish_completion_file(%w[install missing update])
+        expect(file).to match(/^function __fish_brew_complete_cmd/)
+        expect(file).to match(/^__fish_brew_complete_cmd 'install' 'Install a formula or cask'$/)
+        expect(file).to match(/^__fish_brew_complete_cmd 'missing' 'Check the given formula kegs for .*'$/)
+        expect(file).to match(/^__fish_brew_complete_cmd 'update' 'Fetch the newest version of Homebrew .*'$/)
       end
     end
   end
