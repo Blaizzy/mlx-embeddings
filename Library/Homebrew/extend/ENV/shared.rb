@@ -241,6 +241,8 @@ module SharedEnvExtension
   # Currently only used by aalib in core.
   sig { void }
   def ncurses_define
+    # odeprecated "ENV.ncurses_define"
+
     append "CPPFLAGS", "-DNCURSES_OPAQUE=0"
   end
 
