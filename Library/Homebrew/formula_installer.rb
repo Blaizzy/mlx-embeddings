@@ -175,13 +175,11 @@ class FormulaInstaller
 
     bottle = formula.bottle_specification
     unless bottle.compatible_locations?
-      # TODO: delete HOMEBREW_REPOSITORY reference after Homebrew 2.7.0 is released.
       if output_warning
         opoo <<~EOS
           Building #{formula.full_name} from source as the bottle needs:
           - HOMEBREW_CELLAR: #{bottle.cellar} (yours is #{HOMEBREW_CELLAR})
           - HOMEBREW_PREFIX: #{bottle.prefix} (yours is #{HOMEBREW_PREFIX})
-          - HOMEBREW_REPOSITORY: #{bottle.repository} (yours is #{HOMEBREW_REPOSITORY})
         EOS
       end
       return false

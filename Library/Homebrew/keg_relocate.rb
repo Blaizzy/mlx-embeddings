@@ -7,13 +7,8 @@ class Keg
   REPOSITORY_PLACEHOLDER = "@@HOMEBREW_REPOSITORY@@"
   LIBRARY_PLACEHOLDER = "@@HOMEBREW_LIBRARY@@"
 
-  # TODO: delete this after Homebrew 2.7.0 is released.
-  REPOSITORY_LIBRARY_PLACEHOLDER = "#{REPOSITORY_PLACEHOLDER}/Library"
-
   Relocation = Struct.new(:old_prefix, :old_cellar, :old_repository, :old_library,
-                          :new_prefix, :new_cellar, :new_repository, :new_library,
-                          # TODO: delete these after Homebrew 2.7.0 is released.
-                          :old_repository_library, :new_repository_library) do
+                          :new_prefix, :new_cellar, :new_repository, :new_library) do
     # Use keyword args instead of positional args for initialization.
     def initialize(**kwargs)
       super(*members.map { |k| kwargs[k] })
@@ -47,14 +42,10 @@ class Keg
       old_cellar:     HOMEBREW_CELLAR.to_s,
       new_prefix:     PREFIX_PLACEHOLDER,
       new_cellar:     CELLAR_PLACEHOLDER,
-      # TODO: delete these after Homebrew 2.7.0 is released.
-      old_library:    HOMEBREW_LIBRARY.to_s,
-      new_library:    REPOSITORY_LIBRARY_PLACEHOLDER,
       old_repository: HOMEBREW_REPOSITORY.to_s,
       new_repository: REPOSITORY_PLACEHOLDER,
-      # TODO: add these after Homebrew 2.7.0 is released.
-      # old_library:    HOMEBREW_LIBRARY.to_s,
-      # new_library:    LIBRARY_PLACEHOLDER,
+      old_library:    HOMEBREW_LIBRARY.to_s,
+      new_library:    LIBRARY_PLACEHOLDER,
     )
     relocate_dynamic_linkage(relocation)
     replace_text_in_files(relocation)
@@ -62,17 +53,14 @@ class Keg
 
   def replace_placeholders_with_locations(files, skip_linkage: false)
     relocation = Relocation.new(
-      old_prefix:             PREFIX_PLACEHOLDER,
-      old_cellar:             CELLAR_PLACEHOLDER,
-      old_repository:         REPOSITORY_PLACEHOLDER,
-      old_library:            LIBRARY_PLACEHOLDER,
-      new_prefix:             HOMEBREW_PREFIX.to_s,
-      new_cellar:             HOMEBREW_CELLAR.to_s,
-      new_repository:         HOMEBREW_REPOSITORY.to_s,
-      new_library:            HOMEBREW_LIBRARY.to_s,
-      # TODO: delete these after Homebrew 2.7.0 is released.
-      old_repository_library: REPOSITORY_LIBRARY_PLACEHOLDER,
-      new_repository_library: HOMEBREW_LIBRARY.to_s,
+      old_prefix:     PREFIX_PLACEHOLDER,
+      old_cellar:     CELLAR_PLACEHOLDER,
+      old_repository: REPOSITORY_PLACEHOLDER,
+      old_library:    LIBRARY_PLACEHOLDER,
+      new_prefix:     HOMEBREW_PREFIX.to_s,
+      new_cellar:     HOMEBREW_CELLAR.to_s,
+      new_repository: HOMEBREW_REPOSITORY.to_s,
+      new_library:    HOMEBREW_LIBRARY.to_s,
     )
     relocate_dynamic_linkage(relocation) unless skip_linkage
     replace_text_in_files(relocation, files: files)
@@ -86,11 +74,9 @@ class Keg
       s = first.open("rb", &:read)
 
       replacements = {
-        relocation.old_prefix             => relocation.new_prefix,
-        relocation.old_cellar             => relocation.new_cellar,
-        relocation.old_library            => relocation.new_library,
-        # TODO: delete this after Homebrew 2.7.0 is released.
-        relocation.old_repository_library => relocation.new_repository_library,
+        relocation.old_prefix  => relocation.new_prefix,
+        relocation.old_cellar  => relocation.new_cellar,
+        relocation.old_library => relocation.new_library,
       }.compact
       # when HOMEBREW_PREFIX == HOMEBREW_REPOSITORY we should use HOMEBREW_PREFIX for all relocations to avoid
       # being unable to differentiate between them.
