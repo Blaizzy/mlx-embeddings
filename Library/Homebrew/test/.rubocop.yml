@@ -4,4 +4,4 @@ inherit_from:
 
 RSpec:
   Include:
-  - ./*
+    - ./*
