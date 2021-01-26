@@ -41,18 +41,8 @@ module Homebrew
           next
         end
 
-        current_version = formula.stable.version.to_s
-
         package_data = Repology.single_package_query(formula.name)
-        repology_latest = if package_data.present?
-          Repology.latest_version(package_data.values.first)
-        else
-          "not found"
-        end
-
-        livecheck_latest = livecheck_result(formula)
-        pull_requests = retrieve_pull_requests(formula)
-        display(formula, current_version, repology_latest, livecheck_latest, pull_requests)
+        retrieve_and_display_info(formula, package_data&.values&.first)
       end
     else
       outdated_packages = Repology.parse_api_response(requested_limit)
@@ -71,11 +61,7 @@ module Homebrew
           next
         end
 
-        current_version = formula.stable.version.to_s
-        repology_latest = Repology.latest_version(repositories)
-        livecheck_latest = livecheck_result(formula)
-        pull_requests = retrieve_pull_requests(formula)
-        display(formula, current_version, repology_latest, livecheck_latest, pull_requests)
+        retrieve_and_display_info(formula, repositories)
 
         break if requested_limit && i >= requested_limit
       end
@@ -110,12 +96,18 @@ module Homebrew
     pull_requests
   end
 
-  def up_to_date?(current_version, repology_latest, livecheck_latest)
-    current_version == repology_latest &&
-      current_version == livecheck_latest
-  end
+  def retrieve_and_display_info(formula, repositories)
+    current_version = formula.stable.version.to_s
 
-  def display(formula, current_version, repology_latest, livecheck_latest, pull_requests)
+    repology_latest = if repositories.present?
+      Repology.latest_version(repositories)
+    else
+      "not found"
+    end
+
+    livecheck_latest = livecheck_result(formula)
+    pull_requests = retrieve_pull_requests(formula)
+
     title = if current_version == repology_latest &&
                current_version == livecheck_latest
       "#{formula} is up to date!"
