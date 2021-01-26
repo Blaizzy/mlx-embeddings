@@ -228,7 +228,7 @@ describe Homebrew do
     end
   end
 
-  describe "::generate_sha256_line", :needs_linux do
+  describe "::generate_sha256_line" do
     it "generates a string without cellar" do
       expect(homebrew.generate_sha256_line(:catalina, "deadbeef", nil)).to eq(
         <<~RUBY.chomp,
