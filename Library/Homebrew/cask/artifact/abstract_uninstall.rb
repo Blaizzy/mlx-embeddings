@@ -303,7 +303,7 @@ module Cask
           message = "uninstall script #{executable} does not exist"
           raise CaskError, "#{message}." unless force
 
-          opoo "#{message}, skipping."
+          opoo "#{message}; skipping."
           return
         end
 
@@ -398,7 +398,7 @@ module Cask
           false
         end
 
-        opoo "The following files could not trashed, please do so manually:"
+        opoo "The following files could not be trashed, please do so manually:"
         $stderr.puts untrashable
 
         [trashed, untrashable]

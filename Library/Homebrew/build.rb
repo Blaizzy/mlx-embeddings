@@ -152,7 +152,7 @@ class Build
           system "git", "add", "-A"
         end
         if args.interactive?
-          ohai "Entering interactive mode"
+          ohai "Entering interactive mode..."
           puts <<~EOS
             Type `exit` to return and finalize the installation.
             Install to this prefix: #{formula.prefix}

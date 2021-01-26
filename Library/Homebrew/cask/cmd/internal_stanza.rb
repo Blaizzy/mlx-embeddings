@@ -80,7 +80,7 @@ module Cask
         return if DSL::DSL_METHODS.include?(stanza)
 
         raise UsageError, <<~EOS
-          Unknown/unsupported stanza: '#{stanza}'
+          Unknown/unsupported stanza '#{stanza}'.
           Check cask reference for supported stanzas.
         EOS
       end

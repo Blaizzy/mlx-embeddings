@@ -48,7 +48,7 @@ module Homebrew
                         "to create a new formula!"
     end.presence
 
-    # If no brews are listed, open the project root in an editor.
+    # If no formulae are listed, open the project root in an editor.
     paths ||= [HOMEBREW_REPOSITORY]
 
     exec_editor(*paths)

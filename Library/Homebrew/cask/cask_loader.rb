@@ -115,7 +115,7 @@ module Cask
         path.dirname.mkpath
 
         begin
-          ohai "Downloading #{url}."
+          ohai "Downloading #{url}"
           curl_download url, to: path
         rescue ErrorDuringExecution
           raise CaskUnavailableError.new(token, "Failed to download #{Formatter.url(url)}.")

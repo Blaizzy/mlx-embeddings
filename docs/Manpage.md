@@ -418,7 +418,7 @@ information is displayed in interactive shells, and suppressed otherwise.
 * `--cask`:
   List only outdated casks.
 * `--json`:
-  Print output in JSON format. There are two versions: v1 and v2. v1 is deprecated and is currently the default if no version is specified. v2 prints outdated formulae and casks. 
+  Print output in JSON format. There are two versions: `v1` and `v2`. `v1` is deprecated and is currently the default if no version is specified. `v2` prints outdated formulae and casks. 
 * `--fetch-HEAD`:
   Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository's HEAD will only be checked for updates when a new stable or development version has been released.
 * `--greedy`:
@@ -500,9 +500,9 @@ No online search is performed.
 * `--pull-request`:
   Search for GitHub pull requests containing *`text`*.
 * `--open`:
-  Search for only open GitHub pull requests
+  Search for only open GitHub pull requests.
 * `--closed`:
-  Search for only closed GitHub pull requests
+  Search for only closed GitHub pull requests.
 * `--macports`:
   Search for *`text`* in the given package manager's list.
 * `--fink`:
@@ -765,6 +765,10 @@ non-zero status if any errors are found.
   Run additional, slower style checks that require a network connection.
 * `--new`:
   Run various additional style checks to determine if a new formula or cask is eligible for Homebrew. This should be used when creating new formula and implies `--strict` and `--online`.
+* `--[no-]appcast`:
+  Audit the appcast.
+* `--token-conflicts`:
+  Audit for token conflicts.
 * `--tap`:
   Check the formulae within the given tap, specified as *`user`*`/`*`repo`*.
 * `--fix`:
@@ -789,10 +793,6 @@ non-zero status if any errors are found.
   Treat all named arguments as formulae.
 * `--cask`:
   Treat all named arguments as casks.
-* `--[no-]appcast`:
-  Audit the appcast
-* `--token-conflicts`:
-  Audit for token conflicts
 
 ### `bottle` [*`options`*] *`installed_formula`*|*`file`* [...]
 
@@ -1093,7 +1093,7 @@ casks to check is taken from `HOMEBREW_LIVECHECK_WATCHLIST` or
 
 Generate Homebrew's manpages.
 
-Not (yet) working on Apple Silicon.
+*Note:* Not (yet) working on Apple Silicon.
 
 * `--fail-if-changed`:
   Return a failing status code if changes are detected in the manpage outputs. This can be used to notify CI when the manpages are out of date. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date).
@@ -1362,14 +1362,14 @@ Not (yet) working on Apple Silicon.
 
 ### `unbottled` [*`options`*] [*`formula`* ...]
 
-Outputs the unbottled dependents of formulae.
+Show the unbottled dependents of formulae.
 
 * `--tag`:
-  Use the specified bottle tag (e.g. big_sur) instead of the current OS.
+  Use the specified bottle tag (e.g. `big_sur`) instead of the current OS.
 * `--dependents`:
-  Don't get analytics data and sort by number of dependents instead.
+  Skip getting analytics data and sort by number of dependents instead.
 * `--total`:
-  Output the number of unbottled and total formulae.
+  Print the number of unbottled and total formulae.
 
 ### `unpack` [*`options`*] *`formula`* [...]
 
@@ -1676,7 +1676,7 @@ can take several different forms:
   * An arbitrary file:
     Homebrew can install formulae from a local path. It can point to either a
     formula file or a bottle.
-    Prefix relative paths with `./` to prevent them being interpreted as a
+    Prefix relative paths with `./` to prevent them from being interpreted as a
     formula or tap name.
 
 ## SPECIFYING CASKS
@@ -1697,7 +1697,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
   *Default:* `native`.
 
 - `HOMEBREW_ARTIFACT_DOMAIN`
-  <br>Prefix all download URLs, including those for bottles, with this variable. For example, `HOMEBREW_ARTIFACT_DOMAIN=http://localhost:8080` will cause a formula with the URL `https://example.com/foo.tar.gz` to instead download from `http://localhost:8080/example.com/foo.tar.gz`.
+  <br>Prefix all download URLs, including those for bottles, with this value. For example, `HOMEBREW_ARTIFACT_DOMAIN=http://localhost:8080` will cause a formula with the URL `https://example.com/foo.tar.gz` to instead download from `http://localhost:8080/example.com/foo.tar.gz`.
 
 - `HOMEBREW_AUTO_UPDATE_SECS`
   <br>Automatically check for updates once per this seconds interval.
@@ -1878,7 +1878,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
     *Note:* While ensuring your downloads are fully secure, this is likely to cause from-source SourceForge, some GNU & GNOME-hosted formulae to fail to download.
 
 - `HOMEBREW_NO_INSTALL_CLEANUP`
-  <br>If set, `brew install`, `brew upgrade` and `brew reinstall` will never automatically cleanup installed/upgraded/reinstalled formulae or all formulae every HOMEBREW_CLEANUP_PERIODIC_FULL_DAYS days.
+  <br>If set, `brew install`, `brew upgrade` and `brew reinstall` will never automatically cleanup installed/upgraded/reinstalled formulae or all formulae every `HOMEBREW_CLEANUP_PERIODIC_FULL_DAYS` days.
 
 - `HOMEBREW_PRY`
   <br>If set, use Pry for the `brew irb` command.

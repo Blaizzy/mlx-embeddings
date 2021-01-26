@@ -13,14 +13,15 @@ module Homebrew
   def unbottled_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
-        Outputs the unbottled dependents of formulae.
+        Show the unbottled dependents of formulae.
       EOS
-      flag "--tag=",
-           description: "Use the specified bottle tag (e.g. big_sur) instead of the current OS."
+      flag   "--tag=",
+             description: "Use the specified bottle tag (e.g. `big_sur`) instead of the current OS."
       switch "--dependents",
-             description: "Don't get analytics data and sort by number of dependents instead."
+             description: "Skip getting analytics data and sort by number of dependents instead."
       switch "--total",
-             description: "Output the number of unbottled and total formulae."
+             description: "Print the number of unbottled and total formulae."
+
       conflicts "--dependents", "--total"
 
       named_args :formula

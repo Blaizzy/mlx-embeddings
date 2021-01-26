@@ -24,7 +24,7 @@ module Homebrew
       keg.lock do
         print "Unlinking #{keg}... "
         puts if verbose
-        puts "#{keg.unlink(**options)} symlinks removed"
+        puts "#{keg.unlink(**options)} symlinks removed."
       end
     end
   end

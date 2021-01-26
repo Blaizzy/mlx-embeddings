@@ -104,7 +104,7 @@ module Homebrew
           puts
           raise
         else
-          puts "#{n} symlinks created"
+          puts "#{n} symlinks created."
         end
 
         puts_keg_only_path_message(keg) if keg_only && !Homebrew::EnvConfig.developer?

@@ -22,7 +22,7 @@ module Homebrew
       description <<~EOS
         Generate Homebrew's manpages.
 
-        Not (yet) working on Apple Silicon.
+        *Note:* Not (yet) working on Apple Silicon.
       EOS
       switch "--fail-if-changed",
              description: "Return a failing status code if changes are detected in the manpage outputs. This "\

@@ -54,7 +54,7 @@ module Homebrew
       puts <<~EOS
         #{Tty.bold}Read the analytics documentation (and how to opt-out) here:
           #{Formatter.url("https://docs.brew.sh/Analytics")}#{Tty.reset}
-        No analytics have been recorded yet (or will be during this `brew` run).
+        No analytics have been recorded yet (nor will be during this `brew` run).
 
       EOS
 
@@ -343,7 +343,7 @@ class Reporter
         new_tap = Tap.fetch(new_tap_name)
         new_tap.install unless new_tap.installed?
         ohai "#{name} has been moved to Homebrew.", <<~EOS
-          To uninstall the cask run:
+          To uninstall the cask, run:
             brew uninstall --cask --force #{name}
         EOS
         next if (HOMEBREW_CELLAR/new_name.split("/").last).directory?
@@ -384,7 +384,7 @@ class Reporter
           EOS
         else
           ohai "#{name} has been moved to Homebrew Cask.", <<~EOS
-            To uninstall the formula and install the cask run:
+            To uninstall the formula and install the cask, run:
               brew uninstall --force #{name}
               brew tap #{new_tap_name}
               brew install --cask #{new_name}

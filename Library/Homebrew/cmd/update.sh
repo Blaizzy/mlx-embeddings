@@ -114,8 +114,8 @@ pop_stash() {
 
 pop_stash_message() {
   [[ -z "$STASHED" ]] && return
-  echo "To restore the stashed changes to $DIR run:"
-  echo "  'cd $DIR && git stash pop'"
+  echo "To restore the stashed changes to $DIR, run:"
+  echo "  cd $DIR && git stash pop"
   unset STASHED
 }
 

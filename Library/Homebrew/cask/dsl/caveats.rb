@@ -92,7 +92,7 @@ module Cask
       caveat :zsh_path_helper do |path|
         <<~EOS
           To use #{@cask}, zsh users may need to add the following line to their
-          ~/.zprofile.  (Among other effects, #{path} will be added to the
+          ~/.zprofile. (Among other effects, #{path} will be added to the
           PATH environment variable):
             eval `/usr/libexec/path_helper -s`
         EOS

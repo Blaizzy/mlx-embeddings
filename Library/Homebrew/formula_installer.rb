@@ -1026,10 +1026,10 @@ class FormulaInstaller
 
     return if link_overwrite_backup.empty?
 
-    opoo "These files were overwritten during `brew link` step:"
+    opoo "These files were overwritten during the `brew link` step:"
     puts link_overwrite_backup.keys
     puts
-    puts "They have been backed up in #{backup_dir}"
+    puts "They have been backed up to: #{backup_dir}"
     @show_summary_heading = true
   end
 
@@ -1063,7 +1063,7 @@ class FormulaInstaller
     Cleaner.new(formula).clean
   rescue Exception => e # rubocop:disable Lint/RescueException
     opoo "The cleaning step did not complete successfully"
-    puts "Still, the installation was successful, so we will link it into your prefix"
+    puts "Still, the installation was successful, so we will link it into your prefix."
     odebug e, e.backtrace
     Homebrew.failed = true
     @show_summary_heading = true

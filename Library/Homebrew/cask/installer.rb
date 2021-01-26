@@ -280,7 +280,7 @@ module Cask
       raise CaskError,
             "Cask #{@cask} depends on hardware architecture being one of " \
             "[#{@cask.depends_on.arch.map(&:to_s).join(", ")}], " \
-            "but you are running #{@current_arch}"
+            "but you are running #{@current_arch}."
     end
 
     def x11_dependencies

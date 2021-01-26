@@ -110,7 +110,7 @@ module Homebrew
       ohai "Fetching remote #{homebrew_core_remote}"
       safe_system "git", "fetch", homebrew_core_remote, "HEAD", default_origin_branch
       if quiet_system "git", "cat-file", "-e", "#{full_origin_branch}:#{formula_path}"
-        ohai "#{formula.full_name} exists in #{full_origin_branch}"
+        ohai "#{formula.full_name} exists in #{full_origin_branch}."
         safe_system "git", "checkout", full_origin_branch
         return tap_full_name, homebrew_core_remote, default_origin_branch, previous_branch
       end

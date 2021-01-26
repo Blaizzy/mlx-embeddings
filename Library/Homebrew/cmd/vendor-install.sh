@@ -133,7 +133,7 @@ fetch() {
       odie <<EOS
 Failed to download $VENDOR_URL and $VENDOR_URL2!
 
-Do not file an issue on GitHub about this: you will need to figure out for
+Do not file an issue on GitHub about this; you will need to figure out for
 yourself what issue with your internet connection restricts your access to
 both Bintray (used for Homebrew bottles/binary packages) and GitHub
 (used for Homebrew updates).

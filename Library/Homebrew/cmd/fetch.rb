@@ -96,7 +96,7 @@ module Homebrew
 
             fetched_bottle = false
             onoe e.message
-            opoo "Bottle fetch failed: fetching the source."
+            opoo "Bottle fetch failed, fetching the source instead."
           else
             fetched_bottle = true
           end

@@ -129,7 +129,7 @@ module Cask
         matches = search_casks(cask_token)
 
         if matches.one?
-          "Did you mean “#{matches.first}”?"
+          "Did you mean '#{matches.first}'?"
         elsif !matches.empty?
           "Did you mean one of these?\n#{Formatter.columns(matches.take(20))}"
         end

@@ -141,7 +141,7 @@ module Homebrew
             ohai "Searching for a previously deleted formula (in the last month)..."
             if (tap.path/".git/shallow").exist?
               opoo <<~EOS
-                #{tap} is shallow clone. To get complete history run:
+                #{tap} is shallow clone. To get its complete history, run:
                   git -C "$(brew --repo #{tap})" fetch --unshallow
 
               EOS
@@ -168,10 +168,10 @@ module Homebrew
             #{name} was deleted from #{tap.name} in commit #{short_hash}:
               #{commit_message}
 
-            To show the formula before removal run:
+            To show the formula before removal, run:
               git -C "$(brew --repo #{tap})" show #{short_hash}^:#{relative_path}
 
-            If you still use this formula consider creating your own tap:
+            If you still use this formula, consider creating your own tap:
               #{Formatter.url("https://docs.brew.sh/How-to-Create-and-Maintain-a-Tap")}
           EOS
         end

@@ -19,7 +19,7 @@ module FormulaCellarChecks
     return if ORIGINAL_PATHS.include? prefix_bin
 
     <<~EOS
-      #{prefix_bin} is not in your PATH
+      "#{prefix_bin}" is not in your PATH.
       You can amend this by altering your #{Utils::Shell.profile} file.
     EOS
   end
@@ -29,8 +29,8 @@ module FormulaCellarChecks
     return unless (formula.prefix/"man").directory?
 
     <<~EOS
-      A top-level "man" directory was found
-      Homebrew requires that man pages live under share.
+      A top-level "man" directory was found.
+      Homebrew requires that man pages live under "share".
       This can often be fixed by passing `--mandir=\#{man}` to `configure`.
     EOS
   end
@@ -40,8 +40,8 @@ module FormulaCellarChecks
     return unless (formula.prefix/"info").directory?
 
     <<~EOS
-      A top-level "info" directory was found
-      Homebrew suggests that info pages live under share.
+      A top-level "info" directory was found.
+      Homebrew suggests that info pages live under "share".
       This can often be fixed by passing `--infodir=\#{info}` to `configure`.
     EOS
   end
@@ -53,11 +53,11 @@ module FormulaCellarChecks
     return if jars.empty?
 
     <<~EOS
-      JARs were installed to "#{formula.lib}"
+      JARs were installed to "#{formula.lib}".
       Installing JARs to "lib" can cause conflicts between packages.
       For Java software, it is typically better for the formula to
       install to "libexec" and then symlink or wrap binaries into "bin".
-      See "activemq", "jruby", etc. for examples.
+      See formulae 'activemq', 'jruby', etc. for examples.
       The offending files are:
         #{jars * "\n        "}
     EOS
@@ -81,7 +81,7 @@ module FormulaCellarChecks
     return if non_libraries.empty?
 
     <<~EOS
-      Non-libraries were installed to "#{formula.lib}"
+      Non-libraries were installed to "#{formula.lib}".
       Installing non-libraries to "lib" is discouraged.
       The offending files are:
         #{non_libraries * "\n        "}
@@ -95,7 +95,7 @@ module FormulaCellarChecks
     return if non_exes.empty?
 
     <<~EOS
-      Non-executables were installed to "#{bin}"
+      Non-executables were installed to "#{bin}".
       The offending files are:
         #{non_exes * "\n  "}
     EOS
@@ -109,11 +109,10 @@ module FormulaCellarChecks
     return if generics.empty?
 
     <<~EOS
-      Generic binaries were installed to "#{bin}"
-      Binaries with generic names are likely to conflict with other software,
-      and suggest that this software should be installed to "libexec" and then
+      Generic binaries were installed to "#{bin}".
+      Binaries with generic names are likely to conflict with other software.
+      Homebrew suggests that this software is installed to "libexec" and then
       symlinked as needed.
-
       The offending files are:
         #{generics * "\n        "}
     EOS
@@ -124,9 +123,9 @@ module FormulaCellarChecks
     return if pth_found.empty?
 
     <<~EOS
-      easy-install.pth files were found
-      These .pth files are likely to cause link conflicts. Please invoke
-      setup.py using Language::Python.setup_install_args.
+      'easy-install.pth' files were found.
+      These '.pth' files are likely to cause link conflicts.
+      Please invoke `setup.py` using 'Language::Python.setup_install_args'.
       The offending files are:
         #{pth_found * "\n        "}
     EOS
@@ -144,7 +143,7 @@ module FormulaCellarChecks
     return unless bad_dir_name
 
     <<~EOS
-      Emacs Lisp files were installed into the wrong site-lisp subdirectory.
+      Emacs Lisp files were installed into the wrong "site-lisp" subdirectory.
       They should be installed into:
         #{share}/emacs/site-lisp/#{name}
     EOS
@@ -161,11 +160,10 @@ module FormulaCellarChecks
     return if elisps.empty?
 
     <<~EOS
-      Emacs Lisp files were linked directly to #{HOMEBREW_PREFIX}/share/emacs/site-lisp
+      Emacs Lisp files were linked directly to "#{HOMEBREW_PREFIX}/share/emacs/site-lisp".
       This may cause conflicts with other packages.
       They should instead be installed into:
         #{share}/emacs/site-lisp/#{name}
-
       The offending files are:
         #{elisps * "\n        "}
     EOS
@@ -251,7 +249,7 @@ module FormulaCellarChecks
     Dir.chdir("/") do
       unless File.exist?(program_location)
         return <<~EOS
-          The plist #{key} does not exist:
+          The plist "#{key}" does not exist:
             #{program_location}
         EOS
       end
@@ -260,7 +258,7 @@ module FormulaCellarChecks
     end
 
     <<~EOS
-      The plist #{key} is not executable:
+      The plist "#{key}" is not executable:
         #{program_location}
     EOS
   end
@@ -274,7 +272,7 @@ module FormulaCellarChecks
       link.exist? && File.realpath(link).start_with?(HOMEBREW_CELLAR/name)
     end
 
-    "Python formulae that are keg-only should not create `pip3` and `wheel3` symlinks"
+    "Python formulae that are keg-only should not create `pip3` and `wheel3` symlinks."
   end
 
   def audit_installed

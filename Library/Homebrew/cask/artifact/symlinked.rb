@@ -65,14 +65,14 @@ module Cask
           end
         end
 
-        ohai "Linking #{self.class.english_name} '#{source.basename}' to '#{target}'."
+        ohai "Linking #{self.class.english_name} '#{source.basename}' to '#{target}'"
         create_filesystem_link(**options)
       end
 
       def unlink(**)
         return unless target.symlink?
 
-        ohai "Unlinking #{self.class.english_name} '#{target}'."
+        ohai "Unlinking #{self.class.english_name} '#{target}'"
         target.delete
       end
 
