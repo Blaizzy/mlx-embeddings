@@ -160,7 +160,7 @@ module ELFShim
 
   def save_using_patchelf(new_interpreter, new_rpath)
     patchelf = DevelopmentTools.locate "patchelf"
-    odie "Could not locate patchelf, please: brew install patchelf." if patchelf.blank?
+    odie "Could not locate `patchelf`; please run `brew install patchelf`" if patchelf.blank?
     args = []
     args << "--set-interpreter" << new_interpreter if new_interpreter.present?
     args << "--force-rpath" << "--set-rpath" << new_rpath if new_rpath.present?

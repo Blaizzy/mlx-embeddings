@@ -31,7 +31,8 @@ module Homebrew
       if f.oldname
         rack = HOMEBREW_CELLAR/f.oldname
         raise NoSuchKegError, f.oldname if !rack.exist? || rack.subdirs.empty?
-        raise "#{rack} is a symlink" if rack.symlink?
+
+        odie "#{rack} is a symlink" if rack.symlink?
       end
 
       migrator = Migrator.new(f, force: args.force?)

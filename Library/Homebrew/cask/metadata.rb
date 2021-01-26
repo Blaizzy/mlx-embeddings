@@ -32,7 +32,7 @@ module Cask
       end
 
       if create && !path.directory?
-        odebug "Creating metadata directory #{path}."
+        odebug "Creating metadata directory: #{path}"
         path.mkpath
       end
 
@@ -50,7 +50,7 @@ module Cask
       subdir = parent.join(leaf)
 
       if create && !subdir.directory?
-        odebug "Creating metadata subdirectory #{subdir}."
+        odebug "Creating metadata subdirectory: #{subdir}"
         subdir.mkpath
       end
 

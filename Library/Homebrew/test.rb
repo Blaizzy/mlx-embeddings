@@ -26,8 +26,8 @@ begin
   trap("INT", old_trap)
 
   if Homebrew::EnvConfig.developer? || ENV["CI"].present?
-    raise "cannot find child processes without `pgrep`, please install!" unless which("pgrep")
-    raise "cannot kill child processes without `pkill`, please install!" unless which("pkill")
+    raise "Cannot find child processes without `pgrep`, please install!" unless which("pgrep")
+    raise "Cannot kill child processes without `pkill`, please install!" unless which("pkill")
   end
 
   formula = T.must(args.named.to_resolved_formulae.first)

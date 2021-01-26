@@ -54,7 +54,7 @@ module Homebrew
       puts <<~EOS
         #{Tty.bold}Read the analytics documentation (and how to opt-out) here:
           #{Formatter.url("https://docs.brew.sh/Analytics")}#{Tty.reset}
-        No analytics have been recorded yet (or will be during this `brew` run).
+        No analytics have been recorded yet (nor will be during this `brew` run).
 
       EOS
 
@@ -343,7 +343,7 @@ class Reporter
         new_tap = Tap.fetch(new_tap_name)
         new_tap.install unless new_tap.installed?
         ohai "#{name} has been moved to Homebrew.", <<~EOS
-          To uninstall the cask run:
+          To uninstall the cask, run:
             brew uninstall --cask --force #{name}
         EOS
         next if (HOMEBREW_CELLAR/new_name.split("/").last).directory?
@@ -384,7 +384,7 @@ class Reporter
           EOS
         else
           ohai "#{name} has been moved to Homebrew Cask.", <<~EOS
-            To uninstall the formula and install the cask run:
+            To uninstall the formula and install the cask, run:
               brew uninstall --force #{name}
               brew tap #{new_tap_name}
               brew install --cask #{new_name}
@@ -470,10 +470,7 @@ class ReporterHub
       dump_formula_report :M, "Updated Formulae"
     else
       updated = select_formula(:M).count
-      if updated.positive?
-        ohai "Updated Formulae"
-        puts "Updated #{updated} #{"formula".pluralize(updated)}."
-      end
+      ohai "Updated Formulae", "Updated #{updated} #{"formula".pluralize(updated)}." if updated.positive?
     end
     dump_formula_report :R, "Renamed Formulae"
     dump_formula_report :D, "Deleted Formulae"
@@ -482,10 +479,7 @@ class ReporterHub
       dump_formula_report :MC, "Updated Casks"
     else
       updated = select_formula(:MC).count
-      if updated.positive?
-        ohai "Updated Casks"
-        puts "Updated #{updated} #{"cask".pluralize(updated)}."
-      end
+      ohai "Updated Casks", "Updated #{updated} #{"cask".pluralize(updated)}." if updated.positive?
     end
     dump_formula_report :DC, "Deleted Casks"
   end
@@ -525,8 +519,7 @@ class ReporterHub
     return if formulae.empty?
 
     # Dump formula list.
-    ohai title
-    puts Formatter.columns(formulae.sort)
+    ohai title, Formatter.columns(formulae.sort)
   end
 
   def installed?(formula)

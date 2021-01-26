@@ -15,9 +15,9 @@ module Language
     def self.stage_deps(resources, target)
       if resources.empty?
         if Homebrew::EnvConfig.developer?
-          odie "tried to stage empty Language::Go resources array"
+          odie "Tried to stage empty Language::Go resources array"
         else
-          opoo "tried to stage empty Language::Go resources array"
+          opoo "Tried to stage empty Language::Go resources array"
         end
       end
       resources.grep(Resource::Go) { |resource| resource.stage(target) }

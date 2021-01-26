@@ -17,8 +17,8 @@ class Migrator
   class MigrationNeededError < RuntimeError
     def initialize(formula)
       super <<~EOS
-        #{formula.oldname} was renamed to #{formula.name} and needs to be migrated.
-        Please run `brew migrate #{formula.oldname}`
+        #{formula.oldname} was renamed to #{formula.name} and needs to be migrated by running:
+          brew migrate #{formula.oldname}
       EOS
     end
   end
@@ -48,7 +48,8 @@ class Migrator
 
       super <<~EOS
         #{formula.name} from #{formula.tap} is given, but old name #{formula.oldname} was installed from #{tap || "path or url"}.
-        #{msg}To force migration use `brew migrate --force #{formula.oldname}`.
+        #{msg}To force migration, run:
+          brew migrate --force #{formula.oldname}
       EOS
     end
   end
@@ -220,7 +221,7 @@ class Migrator
   rescue Interrupt
     ignore_interrupts { backup_oldname }
   rescue Exception => e # rubocop:disable Lint/RescueException
-    onoe "Error occurred while migrating."
+    onoe "The migration did not complete successfully."
     puts e
     puts e.backtrace if debug?
     puts "Backing up..."
@@ -314,14 +315,14 @@ class Migrator
     begin
       new_keg.link(overwrite: true, verbose: verbose?)
     rescue Keg::ConflictError => e
-      onoe "Error while executing `brew link` step on #{newname}"
+      onoe "The `brew link` step did not complete successfully."
       puts e
       puts
       puts "Possible conflicting files are:"
       new_keg.link(dry_run: true, overwrite: true, verbose: verbose?)
       raise
     rescue Keg::LinkError => e
-      onoe "Error while linking"
+      onoe "The `brew link` step did not complete successfully."
       puts e
       puts
       puts "You can try again using:"

@@ -92,7 +92,7 @@ odie() {
 }
 
 safe_cd() {
-  cd "$@" >/dev/null || odie "Error: failed to cd to $*!"
+  cd "$@" >/dev/null || odie "Failed to cd to $*!"
 }
 
 brew() {
@@ -382,10 +382,10 @@ else
   curl_name_and_version="${curl_version_output%% (*}"
   if [[ $(numeric "${curl_name_and_version##* }") -lt $(numeric "$HOMEBREW_MINIMUM_CURL_VERSION") ]]
   then
-      message="Please update your system cURL.
+      message="Please update your system curl.
 Minimum required version: ${HOMEBREW_MINIMUM_CURL_VERSION}
-Your cURL version: ${curl_name_and_version##* }
-Your cURL executable: $(type -p $HOMEBREW_CURL)"
+Your curl version: ${curl_name_and_version##* }
+Your curl executable: $(type -p $HOMEBREW_CURL)"
 
     if [[ -z $HOMEBREW_CURL_PATH || -z $HOMEBREW_DEVELOPER ]]; then
       HOMEBREW_SYSTEM_CURL_TOO_OLD=1

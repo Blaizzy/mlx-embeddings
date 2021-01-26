@@ -194,7 +194,7 @@ describe Tap do
       expect(services_tap).not_to be_private
     end
 
-    it "returns nil if the Tap is not a Git repo" do
+    it "returns nil if the Tap is not a Git repository" do
       expect(subject.remote).to be nil
     end
 

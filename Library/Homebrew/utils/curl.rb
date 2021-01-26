@@ -16,7 +16,7 @@ module Utils
         which("curl"),
         "/usr/bin/curl",
       ].compact.map { |c| Pathname(c) }.find(&:executable?)
-      raise "no executable curl was found" unless @curl
+      raise "No executable `curl` was found" unless @curl
 
       @curl
     end

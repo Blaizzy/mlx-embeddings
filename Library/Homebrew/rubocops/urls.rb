@@ -293,7 +293,7 @@ module RuboCop
             next if url_has_revision?(parameters(url).last)
 
             offending_node(url)
-            problem "Formulae in homebrew/core should specify a revision for git urls"
+            problem "Formulae in homebrew/core should specify a revision for git URLs"
           end
         end
 
@@ -316,7 +316,7 @@ module RuboCop
             next if url_has_tag?(parameters(url).last)
 
             offending_node(url)
-            problem "Formulae in homebrew/core should specify a tag for git urls"
+            problem "Formulae in homebrew/core should specify a tag for git URLs"
           end
         end
 

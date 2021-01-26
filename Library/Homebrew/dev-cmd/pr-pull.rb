@@ -340,7 +340,7 @@ module Homebrew
   end
 
   def download_artifact(url, dir, pr)
-    raise "Credentials must be set to access the Artifacts API" if GitHub.api_credentials_type == :none
+    odie "Credentials must be set to access the Artifacts API" if GitHub.api_credentials_type == :none
 
     token = GitHub.api_credentials
     curl_args = ["--header", "Authorization: token #{token}"]
@@ -414,7 +414,7 @@ module Homebrew
                workflow_run.first.blank?
               # Ignore that workflow as it was not executed and we specified
               # that we could skip it.
-              ohai "Ignoring workflow #{workflow} as requested by --ignore-missing-artifacts"
+              ohai "Ignoring workflow #{workflow} as requested by `--ignore-missing-artifacts`"
               next
             end
 

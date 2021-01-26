@@ -201,7 +201,7 @@ module Cask
     def version(arg = nil)
       set_unique_stanza(:version, arg.nil?) do
         if !arg.is_a?(String) && arg != :latest
-          raise CaskInvalidError.new(cask, "invalid 'version' value: '#{arg.inspect}'")
+          raise CaskInvalidError.new(cask, "invalid 'version' value: #{arg.inspect}")
         end
 
         DSL::Version.new(arg)
@@ -216,7 +216,7 @@ module Cask
         when String
           Checksum.new(arg)
         else
-          raise CaskInvalidError.new(cask, "invalid 'sha256' value: '#{arg.inspect}'")
+          raise CaskInvalidError.new(cask, "invalid 'sha256' value: #{arg.inspect}")
         end
       end
     end

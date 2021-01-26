@@ -82,7 +82,7 @@ module Cask
       check_bitbucket_repository
       self
     rescue => e
-      odebug "#{e.message}\n#{e.backtrace.join("\n")}"
+      odebug e, e.backtrace
       add_error "exception while auditing #{cask}: #{e.message}"
       self
     end
@@ -416,7 +416,7 @@ module Cask
       return unless verified_matches_url?
 
       add_error "The URL's domain #{domain} matches the homepage domain #{homepage}, " \
-                "the `verified` parameter of the `url` stanza is unnecessary. " \
+                "the 'verified' parameter of the 'url' stanza is unnecessary. " \
                 "See https://github.com/Homebrew/homebrew-cask/blob/master/doc/cask_language_reference/stanzas/url.md#when-url-and-homepage-hostnames-differ-add-verified"
     end
 
@@ -427,7 +427,7 @@ module Cask
       return if verified_present?
 
       add_error "The URL's domain #{domain} does not match the homepage domain #{homepage}, " \
-                "a `verified` parameter has to be added to the `url` stanza. " \
+                "a 'verified' parameter has to be added to the 'url' stanza. " \
                 "See https://github.com/Homebrew/homebrew-cask/blob/master/doc/cask_language_reference/stanzas/url.md#when-url-and-homepage-hostnames-differ-add-verified"
     end
 

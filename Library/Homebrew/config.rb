@@ -56,7 +56,7 @@ HOMEBREW_CELLAR = Pathname(EnvVar["HOMEBREW_CELLAR"]).freeze
 # Where downloads (bottles, source tarballs, etc.) are cached
 HOMEBREW_CACHE = Pathname(EnvVar["HOMEBREW_CACHE"]).freeze
 
-# Where brews installed via URL are cached
+# Where formulae installed via URL are cached
 HOMEBREW_CACHE_FORMULA = (HOMEBREW_CACHE/"Formula").freeze
 
 # Where build, postinstall, and test logs of formulae are written to

@@ -116,9 +116,11 @@ module Homebrew
     end
 
     ohai title
-    puts "Current formula version:  #{current_version}"
-    puts "Latest Repology version:  #{repology_latest}"
-    puts "Latest livecheck version: #{livecheck_latest}"
-    puts "Open pull requests:       #{pull_requests}"
+    puts <<~EOS
+      Current formula version:  #{current_version}
+      Latest Repology version:  #{repology_latest}
+      Latest livecheck version: #{livecheck_latest}
+      Open pull requests:       #{pull_requests}
+    EOS
   end
 end

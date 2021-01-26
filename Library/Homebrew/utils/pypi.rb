@@ -32,7 +32,7 @@ module PyPI
         match = if package_string.start_with?(PYTHONHOSTED_URL_PREFIX)
           File.basename(package_string).match(/^(.+)-([a-z\d.]+?)(?:.tar.gz|.zip)$/)
         end
-        raise ArgumentError, "package should be a valid PyPI url" if match.blank?
+        raise ArgumentError, "package should be a valid PyPI URL" if match.blank?
 
         @name = match[1]
         @version = match[2]

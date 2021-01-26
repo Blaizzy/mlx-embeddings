@@ -21,6 +21,7 @@ module Homebrew
              description: "Treat all named arguments as formulae."
       switch "--cask", "--casks",
              description: "Treat all named arguments as casks."
+
       conflicts "--formula", "--cask"
 
       named_args [:formula, :cask]
@@ -32,7 +33,7 @@ module Homebrew
     args = edit_args.parse
 
     unless (HOMEBREW_REPOSITORY/".git").directory?
-      raise <<~EOS
+      odie <<~EOS
         Changes will be lost!
         The first time you `brew update`, all local changes will be lost; you should
         thus `brew update` before you `brew edit`!
@@ -44,10 +45,10 @@ module Homebrew
 
       raise UsageError, "#{path} doesn't exist on disk. " \
                         "Run #{Formatter.identifier("brew create --set-name #{path.basename} $URL")} " \
-                        "to create a new Formula!"
+                        "to create a new formula!"
     end.presence
 
-    # If no brews are listed, open the project root in an editor.
+    # If no formulae are listed, open the project root in an editor.
     paths ||= [HOMEBREW_REPOSITORY]
 
     exec_editor(*paths)

@@ -221,13 +221,13 @@ module Homebrew
             # Don't complain about missing cross-tap dependencies
             next
           rescue FormulaUnavailableError
-            problem "Can't find dependency #{dep.name.inspect}."
+            problem "Can't find dependency '#{dep.name.inspect}'."
             next
           rescue TapFormulaAmbiguityError
-            problem "Ambiguous dependency #{dep.name.inspect}."
+            problem "Ambiguous dependency '#{dep.name.inspect}'."
             next
           rescue TapFormulaWithOldnameAmbiguityError
-            problem "Ambiguous oldname dependency #{dep.name.inspect}."
+            problem "Ambiguous oldname dependency '#{dep.name.inspect}'."
             next
           end
 
@@ -258,10 +258,10 @@ module Homebrew
               end
             end
 
-            problem "Dependency #{dep} does not define option #{opt.name.inspect}"
+            problem "Dependency '#{dep}' does not define option #{opt.name.inspect}"
           end
 
-          problem "Don't use git as a dependency (it's always available)" if @new_formula && dep.name == "git"
+          problem "Don't use 'git' as a dependency (it's always available)" if @new_formula && dep.name == "git"
 
           problem "Dependency '#{dep.name}' is marked as :run. Remove :run; it is a no-op." if dep.tags.include?(:run)
 

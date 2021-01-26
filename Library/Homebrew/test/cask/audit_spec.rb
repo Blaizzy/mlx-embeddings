@@ -917,7 +917,7 @@ describe Cask::Audit, :cask do
         RUBY
       end
 
-      it { is_expected.to fail_with(/a `verified` parameter has to be added/) }
+      it { is_expected.to fail_with(/a 'verified' parameter has to be added/) }
     end
 
     context "when the url does not match the homepage with verified" do

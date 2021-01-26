@@ -45,13 +45,13 @@ module Homebrew
       unpack_dir = Pathname.pwd
     end
 
-    raise "Cannot write to #{unpack_dir}" unless unpack_dir.writable_real?
+    odie "Cannot write to #{unpack_dir}" unless unpack_dir.writable_real?
 
     formulae.each do |f|
       stage_dir = unpack_dir/"#{f.name}-#{f.version}"
 
       if stage_dir.exist?
-        raise "Destination #{stage_dir} already exists!" unless args.force?
+        odie "Destination #{stage_dir} already exists!" unless args.force?
 
         rm_rf stage_dir
       end
@@ -68,7 +68,7 @@ module Homebrew
 
       next unless args.git?
 
-      ohai "Setting up git repository"
+      ohai "Setting up Git repository"
       cd stage_dir
       system "git", "init", "-q"
       system "git", "add", "-A"

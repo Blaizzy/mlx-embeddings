@@ -51,18 +51,18 @@ module Homebrew
              description: "Search for GitHub pull requests containing <text>."
       switch "--open",
              depends_on:  "--pull-request",
-             description: "Search for only open GitHub pull requests"
+             description: "Search for only open GitHub pull requests."
       switch "--closed",
              depends_on:  "--pull-request",
-             description: "Search for only closed GitHub pull requests"
-      conflicts "--open", "--closed"
+             description: "Search for only closed GitHub pull requests."
       package_manager_switches = PACKAGE_MANAGERS.keys.map { |name| "--#{name}" }
       package_manager_switches.each do |s|
         switch s,
                description: "Search for <text> in the given package manager's list."
       end
 
-      conflicts("--desc", "--pull-request")
+      conflicts "--desc", "--pull-request"
+      conflicts "--open", "--closed"
       conflicts(*package_manager_switches)
 
       # TODO: (2.9) add `min: 1` when the `odeprecated`/`odisabled` for `brew search` with no arguments is removed
@@ -85,7 +85,7 @@ module Homebrew
 
         puts Formatter.columns(Cask::Cask.to_a.map(&:full_name).sort)
       else
-        odeprecated "'brew search' with no arguments to output formulae", "'brew formulae'"
+        odeprecated "`brew search` with no arguments to output formulae", "`brew formulae`"
         puts Formatter.columns(Formula.full_names.sort)
       end
 
@@ -119,15 +119,11 @@ module Homebrew
       print_casks = args.cask?
       print_formulae = print_casks = true if !print_formulae && !print_casks
 
-      if print_formulae && all_formulae.any?
-        ohai "Formulae"
-        puts Formatter.columns(all_formulae)
-      end
+      ohai "Formulae", Formatter.columns(all_formulae) if print_formulae && all_formulae.any?
 
       if print_casks && all_casks.any?
         puts if args.formula? && all_formulae.any?
-        ohai "Casks"
-        puts Formatter.columns(all_casks)
+        ohai "Casks", Formatter.columns(all_casks)
       end
 
       count = all_formulae.count + all_casks.count
@@ -140,7 +136,7 @@ module Homebrew
         puts reason
       end
 
-      raise "No formulae or casks found for #{query.inspect}." if count.zero?
+      odie "No formulae or casks found for #{query.inspect}." if count.zero?
     end
 
     return unless $stdout.tty?

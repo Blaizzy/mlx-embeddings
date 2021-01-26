@@ -89,7 +89,7 @@ class SystemCommand
     env.each_key do |name|
       next if /^[\w&&\D]\w*$/.match?(name)
 
-      raise ArgumentError, "Invalid variable name: '#{name}'"
+      raise ArgumentError, "Invalid variable name: #{name}"
     end
     @env = env
     @input = Array(input)

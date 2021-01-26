@@ -152,14 +152,18 @@ class Build
           system "git", "add", "-A"
         end
         if args.interactive?
-          ohai "Entering interactive mode"
-          puts "Type `exit` to return and finalize the installation."
-          puts "Install to this prefix: #{formula.prefix}"
+          ohai "Entering interactive mode..."
+          puts <<~EOS
+            Type `exit` to return and finalize the installation.
+            Install to this prefix: #{formula.prefix}
+          EOS
 
           if args.git?
-            puts "This directory is now a git repo. Make your changes and then use:"
-            puts "  git diff | pbcopy"
-            puts "to copy the diff to the clipboard."
+            puts <<~EOS
+              This directory is now a Git repository. Make your changes and then use:
+                git diff | pbcopy
+              to copy the diff to the clipboard.
+            EOS
           end
 
           interactive_shell(formula)

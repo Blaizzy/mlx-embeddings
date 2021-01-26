@@ -50,7 +50,7 @@ class FormulaVersions
   rescue *IGNORED_EXCEPTIONS => e
     # We rescue these so that we can skip bad versions and
     # continue walking the history
-    odebug "#{e} in #{name} at revision #{rev}", e.backtrace if debug?
+    odebug "#{e} in #{name} at revision #{rev}", e.backtrace
   rescue FormulaUnavailableError
     nil
   ensure
@@ -69,7 +69,7 @@ class FormulaVersions
       end
       return map if versions_seen > MAX_VERSIONS_DEPTH
     rescue MacOSVersionError => e
-      odebug "#{e} in #{name} at revision #{rev}" if debug?
+      odebug "#{e} in #{name} at revision #{rev}"
       break
     end
     map

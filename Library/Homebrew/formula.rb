@@ -828,7 +828,7 @@ class Formula
     HOMEBREW_PREFIX/"var"
   end
 
-  # The directory where the formula's ZSH function files should be
+  # The directory where the formula's zsh function files should be
   # installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
@@ -852,7 +852,7 @@ class Formula
     prefix/"etc/bash_completion.d"
   end
 
-  # The directory where the formula's ZSH completion files should be
+  # The directory where the formula's zsh completion files should be
   # installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
@@ -1705,7 +1705,7 @@ class Formula
       deps ||= declared_runtime_dependencies unless undeclared
       deps ||= (declared_runtime_dependencies | undeclared_runtime_dependencies)
     rescue FormulaUnavailableError
-      onoe "could not get runtime dependencies from #{path}!"
+      onoe "Could not get runtime dependencies from #{path}!"
       deps ||= []
     end
     deps

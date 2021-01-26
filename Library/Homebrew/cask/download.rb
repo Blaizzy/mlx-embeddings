@@ -63,7 +63,7 @@ module Cask
       end
 
       begin
-        ohai "Verifying checksum for cask '#{@cask}'." if verbose?
+        ohai "Verifying checksum for cask '#{@cask}'" if verbose?
         fn.verify_checksum(@cask.sha256)
       rescue ChecksumMissingError
         opoo <<~EOS

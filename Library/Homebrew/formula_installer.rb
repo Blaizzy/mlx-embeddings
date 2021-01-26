@@ -362,14 +362,16 @@ class FormulaInstaller
       EOS
       if formula.outdated? && !formula.head?
         message += <<~EOS
-          To upgrade to #{formula.pkg_version}, run `brew upgrade #{formula.full_name}`.
+          To upgrade to #{formula.pkg_version}, run:
+            brew upgrade #{formula.full_name}
         EOS
       elsif only_deps?
         message = nil
       else
         # some other version is already installed *and* linked
         message += <<~EOS
-          To install #{formula.pkg_version}, first run `brew unlink #{formula.name}`.
+          To install #{formula.pkg_version}, first run:
+            brew unlink #{formula.name}
         EOS
       end
       raise CannotInstallFormulaError, message if message
@@ -804,8 +806,9 @@ class FormulaInstaller
     fix_dynamic_linkage(keg) if !@poured_bottle || !formula.bottle_specification.skip_relocation?
 
     if build_bottle?
-      ohai "Not running post_install as we're building a bottle"
-      puts "You can run it manually using `brew postinstall #{formula.full_name}`"
+      ohai "Not running 'post_install' as we're building a bottle"
+      puts "You can run it manually using:"
+      puts "  brew postinstall #{formula.full_name}"
     else
       post_install
     end
@@ -951,10 +954,9 @@ class FormulaInstaller
       begin
         keg.optlink(verbose: verbose?)
       rescue Keg::LinkError => e
-        onoe "Failed to create #{formula.opt_prefix}"
+        ofail "Failed to create #{formula.opt_prefix}"
         puts "Things that depend on #{formula.full_name} will probably not build."
         puts e
-        Homebrew.failed = true
       end
       return
     end
@@ -991,25 +993,23 @@ class FormulaInstaller
         link_overwrite_backup[conflict_file] = backup_file
         retry
       end
-      onoe "The `brew link` step did not complete successfully"
+      ofail "The `brew link` step did not complete successfully"
       puts "The formula built, but is not symlinked into #{HOMEBREW_PREFIX}"
       puts e
       puts
       puts "Possible conflicting files are:"
       keg.link(dry_run: true, overwrite: true, verbose: verbose?)
       @show_summary_heading = true
-      Homebrew.failed = true
     rescue Keg::LinkError => e
-      onoe "The `brew link` step did not complete successfully"
+      ofail "The `brew link` step did not complete successfully"
       puts "The formula built, but is not symlinked into #{HOMEBREW_PREFIX}"
       puts e
       puts
       puts "You can try again using:"
       puts "  brew link #{formula.name}"
       @show_summary_heading = true
-      Homebrew.failed = true
     rescue Exception => e # rubocop:disable Lint/RescueException
-      onoe "An unexpected error occurred during the `brew link` step"
+      ofail "An unexpected error occurred during the `brew link` step"
       puts "The formula built, but is not symlinked into #{HOMEBREW_PREFIX}"
       puts e
       puts e.backtrace if debug?
@@ -1021,16 +1021,15 @@ class FormulaInstaller
           FileUtils.mv backup, origin
         end
       end
-      Homebrew.failed = true
       raise
     end
 
     return if link_overwrite_backup.empty?
 
-    opoo "These files were overwritten during `brew link` step:"
+    opoo "These files were overwritten during the `brew link` step:"
     puts link_overwrite_backup.keys
     puts
-    puts "They have been backed up in #{backup_dir}"
+    puts "They have been backed up to: #{backup_dir}"
     @show_summary_heading = true
   end
 
@@ -1043,20 +1042,18 @@ class FormulaInstaller
     log = formula.var/"log"
     log.mkpath if formula.plist.include? log.to_s
   rescue Exception => e # rubocop:disable Lint/RescueException
-    onoe "Failed to install plist file"
+    ofail "Failed to install plist file"
     odebug e, e.backtrace
-    Homebrew.failed = true
   end
 
   sig { params(keg: Keg).void }
   def fix_dynamic_linkage(keg)
     keg.fix_dynamic_linkage
   rescue Exception => e # rubocop:disable Lint/RescueException
-    onoe "Failed to fix install linkage"
+    ofail "Failed to fix install linkage"
     puts "The formula built, but you may encounter issues using it or linking other"
     puts "formulae against it."
     odebug e, e.backtrace
-    Homebrew.failed = true
     @show_summary_heading = true
   end
 
@@ -1066,7 +1063,7 @@ class FormulaInstaller
     Cleaner.new(formula).clean
   rescue Exception => e # rubocop:disable Lint/RescueException
     opoo "The cleaning step did not complete successfully"
-    puts "Still, the installation was successful, so we will link it into your prefix"
+    puts "Still, the installation was successful, so we will link it into your prefix."
     odebug e, e.backtrace
     Homebrew.failed = true
     @show_summary_heading = true
@@ -1103,7 +1100,8 @@ class FormulaInstaller
     end
   rescue Exception => e # rubocop:disable Lint/RescueException
     opoo "The post-install step did not complete successfully"
-    puts "You can try again using `brew postinstall #{formula.full_name}`"
+    puts "You can try again using:"
+    puts "  brew postinstall #{formula.full_name}"
     odebug e, e.backtrace, always_display: Homebrew::EnvConfig.developer?
     Homebrew.failed = true
     @show_summary_heading = true

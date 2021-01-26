@@ -9,7 +9,7 @@ describe RuboCop::Cop::Cask::HomepageUrlTrailingSlash do
 
   subject(:cop) { described_class.new }
 
-  context "when the homepage url ends with a slash" do
+  context "when the homepage URL ends with a slash" do
     let(:source) do
       <<-CASK.undent
         cask 'foo' do
@@ -21,7 +21,7 @@ describe RuboCop::Cop::Cask::HomepageUrlTrailingSlash do
     include_examples "does not report any offenses"
   end
 
-  context "when the homepage url does not end with a slash but has a path" do
+  context "when the homepage URL does not end with a slash but has a path" do
     let(:source) do
       <<-CASK.undent
         cask 'foo' do
@@ -33,7 +33,7 @@ describe RuboCop::Cop::Cask::HomepageUrlTrailingSlash do
     include_examples "does not report any offenses"
   end
 
-  context "when the homepage url does not end with a slash and has no path" do
+  context "when the homepage URL does not end with a slash and has no path" do
     let(:source) do
       <<-CASK.undent
         cask 'foo' do

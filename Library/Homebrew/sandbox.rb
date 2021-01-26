@@ -127,8 +127,7 @@ class Sandbox
         end
 
         if @failed && Homebrew::EnvConfig.verbose?
-          ohai "Sandbox log"
-          puts logs
+          ohai "Sandbox Log", logs
           $stdout.flush # without it, brew test-bot would fail to catch the log
         end
       end

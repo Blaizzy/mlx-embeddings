@@ -16,8 +16,8 @@ module Homebrew
         default:     "native",
       },
       HOMEBREW_ARTIFACT_DOMAIN:               {
-        description: "Prefix all download URLs, including those for bottles, with this " \
-                     "variable. For example, `HOMEBREW_ARTIFACT_DOMAIN=http://localhost:8080` will cause a " \
+        description: "Prefix all download URLs, including those for bottles, with this value. " \
+                     "For example, `HOMEBREW_ARTIFACT_DOMAIN=http://localhost:8080` will cause a " \
                      "formula with the URL `https://example.com/foo.tar.gz` to instead download from " \
                      "`http://localhost:8080/example.com/foo.tar.gz`.",
       },
@@ -241,7 +241,7 @@ module Homebrew
       HOMEBREW_NO_INSTALL_CLEANUP:            {
         description: "If set, `brew install`, `brew upgrade` and `brew reinstall` will never automatically " \
                      "cleanup installed/upgraded/reinstalled formulae or all formulae every " \
-                     "HOMEBREW_CLEANUP_PERIODIC_FULL_DAYS days.",
+                     "`HOMEBREW_CLEANUP_PERIODIC_FULL_DAYS` days.",
         boolean:     true,
       },
       HOMEBREW_PRY:                           {

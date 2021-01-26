@@ -89,8 +89,8 @@ describe Cask::Artifact::App, :cask do
         describe "target is both writable and user-owned" do
           it "overwrites the existing app" do
             stdout = <<~EOS
-              ==> Removing App '#{target_path}'.
-              ==> Moving App 'Caffeine.app' to '#{target_path}'.
+              ==> Removing App '#{target_path}'
+              ==> Moving App 'Caffeine.app' to '#{target_path}'
             EOS
 
             stderr = <<~EOS
@@ -137,8 +137,8 @@ describe Cask::Artifact::App, :cask do
             ).and_call_original
 
             stdout = <<~EOS
-              ==> Removing App '#{target_path}'.
-              ==> Moving App 'Caffeine.app' to '#{target_path}'.
+              ==> Removing App '#{target_path}'
+              ==> Moving App 'Caffeine.app' to '#{target_path}'
             EOS
 
             stderr = <<~EOS
@@ -180,8 +180,8 @@ describe Cask::Artifact::App, :cask do
 
         it "overwrites the existing app" do
           stdout = <<~EOS
-            ==> Removing App '#{target_path}'.
-            ==> Moving App 'Caffeine.app' to '#{target_path}'.
+            ==> Removing App '#{target_path}'
+            ==> Moving App 'Caffeine.app' to '#{target_path}'
           EOS
 
           stderr = <<~EOS

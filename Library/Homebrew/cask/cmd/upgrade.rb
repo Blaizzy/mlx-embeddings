@@ -101,7 +101,7 @@ module Cask
         return false if outdated_casks.empty?
 
         if casks.empty? && !greedy
-          ohai "Casks with `auto_updates` or `version :latest` will not be upgraded; pass `--greedy` to upgrade them."
+          ohai "Casks with 'auto_updates' or 'version :latest' will not be upgraded; pass `--greedy` to upgrade them."
         end
 
         verb = dry_run ? "Would upgrade" : "Upgrading"

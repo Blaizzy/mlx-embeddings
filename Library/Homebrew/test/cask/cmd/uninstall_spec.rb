@@ -15,8 +15,8 @@ describe Cask::Cmd::Uninstall, :cask do
 
     output = Regexp.new <<~EOS
       ==> Uninstalling Cask local-caffeine
-      ==> Backing App 'Caffeine.app' up to '.*Caffeine.app'.
-      ==> Removing App '.*Caffeine.app'.
+      ==> Backing App 'Caffeine.app' up to '.*Caffeine.app'
+      ==> Removing App '.*Caffeine.app'
       ==> Purging files for version 1.2.3 of Cask local-caffeine
     EOS
 

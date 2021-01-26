@@ -145,7 +145,7 @@ module Homebrew
     fc.tap = Tap.fetch(args.tap || "homebrew/core")
     raise TapUnavailableError, args.tap unless fc.tap.installed?
 
-    fc.url = args.named.first # Pull the first (and only) url from ARGV
+    fc.url = args.named.first # Pull the first (and only) URL from ARGV
 
     fc.mode = if args.autotools?
       :autotools
@@ -180,7 +180,7 @@ module Homebrew
     # unless --force is specified.
     unless args.force?
       if reason = MissingFormula.disallowed_reason(fc.name)
-        raise <<~EOS
+        odie <<~EOS
           The formula '#{fc.name}' is not allowed to be created.
           #{reason}
           If you really want to create this formula use `--force`.
@@ -189,7 +189,7 @@ module Homebrew
 
       if Formula.aliases.include? fc.name
         realname = Formulary.canonical_name(fc.name)
-        raise <<~EOS
+        odie <<~EOS
           The formula '#{realname}' is already aliased to '#{fc.name}'.
           Please check that you are not creating a duplicate.
           To force creation use `--force`.

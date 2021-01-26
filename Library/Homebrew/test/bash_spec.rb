@@ -25,7 +25,7 @@ describe "Bash" do
   end
 
   context "every `.sh` file" do
-    it "has valid bash syntax" do
+    it "has valid Bash syntax" do
       Pathname.glob("#{HOMEBREW_LIBRARY_PATH}/**/*.sh").each do |path|
         relative_path = path.relative_path_from(HOMEBREW_LIBRARY_PATH)
         next if relative_path.to_s.start_with?("shims/", "test/", "vendor/")
@@ -42,7 +42,7 @@ describe "Bash" do
   end
 
   context "every shim script" do
-    it "has valid bash syntax" do
+    it "has valid Bash syntax" do
       # These have no file extension, but can be identified by their shebang.
       (HOMEBREW_LIBRARY_PATH/"shims").find do |path|
         next if path.directory?

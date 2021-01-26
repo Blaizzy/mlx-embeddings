@@ -1,6 +1,6 @@
 export HOMEBREW_REQUIRED_RUBY_VERSION=2.6.3
 
-test_ruby () {
+test_ruby() {
   if [[ ! -x $1 ]]
   then
     return 1

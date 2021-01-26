@@ -65,9 +65,6 @@ class Mktemp
       ignore_interrupts { rm_rf(tmpdir) } unless retain?
     end
   ensure
-    if retain? && !@tmpdir.nil? && !@quiet
-      ohai "Kept temporary files"
-      puts "Temporary files retained at #{@tmpdir}"
-    end
+    ohai "Temporary files retained at:", @tmpdir.to_s if retain? && !@tmpdir.nil? && !@quiet
   end
 end

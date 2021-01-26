@@ -48,7 +48,7 @@ module Cask
           raise CaskError, "It seems the #{self.class.english_name} source '#{source}' is not there."
         end
 
-        ohai "Moving #{self.class.english_name} '#{source.basename}' to '#{target}'."
+        ohai "Moving #{self.class.english_name} '#{source.basename}' to '#{target}'"
         if target.dirname.ascend.find(&:directory?).writable?
           target.dirname.mkpath
         else
@@ -84,7 +84,7 @@ module Cask
           raise CaskError, "It seems the #{self.class.english_name} source '#{target}' is not there."
         end
 
-        ohai "Backing #{self.class.english_name} '#{target.basename}' up to '#{source}'."
+        ohai "Backing #{self.class.english_name} '#{target.basename}' up to '#{source}'"
         source.dirname.mkpath
 
         # We need to preserve extended attributes between copies.
@@ -94,7 +94,7 @@ module Cask
       end
 
       def delete(target, force: false, command: nil, **_)
-        ohai "Removing #{self.class.english_name} '#{target}'."
+        ohai "Removing #{self.class.english_name} '#{target}'"
         raise CaskError, "Cannot remove undeletable #{self.class.english_name}." if MacOS.undeletable?(target)
 
         return unless Utils.path_occupied?(target)

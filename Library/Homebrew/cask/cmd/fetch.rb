@@ -43,7 +43,7 @@ module Cask
           download = Download.new(cask, **options)
           download.clear_cache if args.force?
           downloaded_path = download.fetch
-          ohai "Success! Downloaded to -> #{downloaded_path}"
+          ohai "Success! Downloaded to: #{downloaded_path}"
         end
       end
     end

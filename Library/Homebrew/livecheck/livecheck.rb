@@ -492,7 +492,7 @@ module Homebrew
         end
 
         if livecheck_strategy.present? && livecheck_url.blank?
-          odebug "#{strategy_name} strategy requires a url"
+          odebug "#{strategy_name} strategy requires a URL"
           next
         end
 

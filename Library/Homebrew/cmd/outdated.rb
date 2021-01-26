@@ -28,9 +28,9 @@ module Homebrew
       switch "--cask",
              description: "List only outdated casks."
       flag   "--json",
-             description: "Print output in JSON format. There are two versions: v1 and v2. " \
-                          "v1 is deprecated and is currently the default if no version is specified. " \
-                          "v2 prints outdated formulae and casks. "
+             description: "Print output in JSON format. There are two versions: `v1` and `v2`. " \
+                          "`v1` is deprecated and is currently the default if no version is specified. " \
+                          "`v2` prints outdated formulae and casks. "
       switch "--fetch-HEAD",
              description: "Fetch the upstream repository to detect if the HEAD installation of the "\
                           "formula is outdated. Otherwise, the repository's HEAD will only be checked for "\
@@ -50,7 +50,7 @@ module Homebrew
 
     case (j = json_version(args.json))
     when :v1
-      odisabled "brew outdated --json#{j == :v1 ? "=v1" : ""}", "brew outdated --json=v2"
+      odisabled "`brew outdated --json#{j == :v1 ? "=v1" : ""}`", "`brew outdated --json=v2`"
     when :v2, :default
       formulae, casks = if args.formula?
         [outdated_formulae(args: args), []]

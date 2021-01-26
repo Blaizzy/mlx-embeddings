@@ -150,7 +150,7 @@ class Resource
 
   def verify_download_integrity(fn)
     if fn.file?
-      ohai "Verifying checksum for '#{fn.basename}'." if verbose?
+      ohai "Verifying checksum for '#{fn.basename}'" if verbose?
       fn.verify_checksum(checksum)
     end
   rescue ChecksumMissingError

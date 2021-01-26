@@ -49,7 +49,7 @@ module Homebrew
       _, user, repo, issue = *url_match
       odie "Not a GitHub pull request: #{arg}" unless issue
       if args.tap.present? && !"#{user}/#{repo}".casecmp(tap.full_name).zero?
-        odie "Pull request URL is for #{user}/#{repo} but --tap=#{tap.full_name}!"
+        odie "Pull request URL is for #{user}/#{repo} but `--tap=#{tap.full_name}` was specified!"
       end
 
       ohai "Dispatching #{tap} pull request ##{issue}"

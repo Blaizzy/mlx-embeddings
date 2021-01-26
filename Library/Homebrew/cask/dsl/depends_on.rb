@@ -52,7 +52,7 @@ module Cask
       end
 
       def macos=(*args)
-        raise "Only a single 'depends_on macos:' is allowed." if defined?(@macos)
+        raise "Only a single 'depends_on macos' is allowed." if defined?(@macos)
 
         begin
           @macos = if args.count > 1

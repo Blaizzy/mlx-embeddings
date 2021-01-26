@@ -42,12 +42,10 @@ module Homebrew
       switch "--[no-]quarantine",
              description: "Disable/enable quarantining of downloads (default: enabled).",
              env:         :cask_opts_quarantine
-
       switch "--formula", "--formulae",
              description: "Treat all named arguments as formulae."
       switch "--cask", "--casks",
              description: "Treat all named arguments as casks."
-      conflicts "--formula", "--cask"
 
       conflicts "--build-from-source", "--build-bottle", "--force-bottle"
       conflicts "--cask", "--HEAD"
@@ -55,6 +53,7 @@ module Homebrew
       conflicts "--cask", "-s"
       conflicts "--cask", "--build-bottle"
       conflicts "--cask", "--force-bottle"
+      conflicts "--formula", "--cask"
 
       named_args [:formula, :cask], min: 1
     end
@@ -97,7 +96,7 @@ module Homebrew
 
             fetched_bottle = false
             onoe e.message
-            opoo "Bottle fetch failed: fetching the source."
+            opoo "Bottle fetch failed, fetching the source instead."
           else
             fetched_bottle = true
           end
@@ -150,8 +149,8 @@ module Homebrew
   def fetch_patch(p, args:)
     fetch_fetchable p, args: args
   rescue ChecksumMismatchError => e
-    Homebrew.failed = true
     opoo "Patch reports different sha256: #{e.expected}"
+    Homebrew.failed = true
   end
 
   def retry_fetch?(f, args:)

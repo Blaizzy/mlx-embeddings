@@ -603,7 +603,7 @@ class Keg
     begin
       keg = Keg.for(src)
     rescue NotAKegError
-      puts "Won't resolve conflicts for symlink #{dst} as it doesn't resolve into the Cellar" if verbose
+      puts "Won't resolve conflicts for symlink #{dst} as it doesn't resolve into the Cellar." if verbose
       return
     end
 

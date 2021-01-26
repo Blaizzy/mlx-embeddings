@@ -44,6 +44,7 @@ module Homebrew
              description: "Only check formulae."
       switch "--cask", "--casks",
              description: "Only check casks."
+
       conflicts "--debug", "--json"
       conflicts "--tap=", "--all", "--installed"
       conflicts "--cask", "--formula"

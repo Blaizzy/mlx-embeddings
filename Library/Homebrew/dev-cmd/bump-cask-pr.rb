@@ -113,7 +113,7 @@ module Homebrew
 
     if new_version.present?
       if new_version.latest?
-        opoo "Ignoring specified --sha256= argument." if new_hash.present?
+        opoo "Ignoring specified `--sha256=` argument." if new_hash.present?
         new_hash = :no_check
       elsif new_hash.nil? || cask.languages.present?
         tmp_contents = Utils::Inreplace.inreplace_pairs(cask.sourcefile_path,

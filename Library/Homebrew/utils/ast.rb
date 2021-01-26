@@ -117,7 +117,7 @@ module Utils
       sig { params(name: Symbol, replacement: T.any(Numeric, String, Symbol), type: T.nilable(Symbol)).void }
       def replace_stanza(name, replacement, type: nil)
         stanza_node = stanza(name, type: type)
-        raise "Could not find `#{name}` stanza!" if stanza_node.blank?
+        raise "Could not find '#{name}' stanza!" if stanza_node.blank?
 
         tree_rewriter.replace(stanza_node.source_range, stanza_text(name, replacement, indent: 2).lstrip)
       end

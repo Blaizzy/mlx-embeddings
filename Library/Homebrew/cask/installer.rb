@@ -212,11 +212,11 @@ module Cask
     end
 
     def install_artifacts
+      artifacts = @cask.artifacts
       already_installed_artifacts = []
 
       odebug "Installing artifacts"
-      artifacts = @cask.artifacts
-      odebug "#{artifacts.length} artifact/s defined", artifacts
+      odebug "#{artifacts.length} #{"artifact".pluralize(artifacts.length)} defined", artifacts
 
       artifacts.each do |artifact|
         next unless artifact.respond_to?(:install_phase)
@@ -280,7 +280,7 @@ module Cask
       raise CaskError,
             "Cask #{@cask} depends on hardware architecture being one of " \
             "[#{@cask.depends_on.arch.map(&:to_s).join(", ")}], " \
-            "but you are running #{@current_arch}"
+            "but you are running #{@current_arch}."
     end
 
     def x11_dependencies
@@ -356,7 +356,7 @@ module Cask
       missing_formulae_and_casks = missing_cask_and_formula_dependencies
 
       if missing_formulae_and_casks.empty?
-        puts "All Formula dependencies satisfied."
+        puts "All formula dependencies satisfied."
         return
       end
 
@@ -459,10 +459,10 @@ module Cask
     end
 
     def uninstall_artifacts(clear: false)
-      odebug "Uninstalling artifacts"
       artifacts = @cask.artifacts
 
-      odebug "#{artifacts.length} artifact/s defined", artifacts
+      odebug "Uninstalling artifacts"
+      odebug "#{artifacts.length} #{"artifact".pluralize(artifacts.length)} defined", artifacts
 
       artifacts.each do |artifact|
         if artifact.respond_to?(:uninstall_phase)
@@ -482,7 +482,7 @@ module Cask
     end
 
     def zap
-      ohai %Q(Implied "brew uninstall --cask #{@cask}")
+      ohai "Implied `brew uninstall --cask #{@cask}`"
       uninstall_artifacts
       if (zap_stanzas = @cask.artifacts.select { |a| a.is_a?(Artifact::Zap) }).empty?
         opoo "No zap stanza present for Cask '#{@cask}'"

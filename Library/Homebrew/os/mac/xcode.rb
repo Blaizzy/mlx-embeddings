@@ -266,7 +266,7 @@ module OS
           Update them from Software Update in #{software_update_location} or run:
             softwareupdate --all --install --force
 
-          If that doesn't show you an update run:
+          If that doesn't show you any updates, run:
             sudo rm -rf /Library/Developer/CommandLineTools
             sudo xcode-select --install
 

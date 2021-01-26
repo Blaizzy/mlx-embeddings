@@ -191,7 +191,7 @@ __brew_internal_commands() {
     'test:Run the test method provided by an installed formula'
     'tests:Run Homebrew'\''s unit and integration tests'
     'typecheck:Check for typechecking errors using Sorbet'
-    'unbottled:Outputs the unbottled dependents of formulae'
+    'unbottled:Show the unbottled dependents of formulae'
     'uninstall:Uninstall a formula or cask'
     'unlink:Remove symlinks for formula from Homebrew'\''s prefix'
     'unpack:Unpack the source files for formula into subdirectories of the current working directory'
@@ -1197,7 +1197,7 @@ _brew_outdated() {
     '--formula[List only outdated formulae]' \
     '--greedy[Print outdated casks with `auto_updates` or `version :latest`]' \
     '--help[Show this message]' \
-    '--json[Print output in JSON format. There are two versions: v1 and v2. v1 is deprecated and is currently the default if no version is specified. v2 prints outdated formulae and casks. ]' \
+    '--json[Print output in JSON format. There are two versions: `v1` and `v2`. `v1` is deprecated and is currently the default if no version is specified. `v2` prints outdated formulae and casks. ]' \
     '--quiet[List only the names of outdated kegs (takes precedence over `--verbose`)]' \
     '--verbose[Include detailed version information]' \
     '::formula:__brew_formulae' \
@@ -1599,11 +1599,11 @@ _brew_typecheck() {
 _brew_unbottled() {
   _arguments \
     '--debug[Display any debugging information]' \
-    '--dependents[Don'\''t get analytics data and sort by number of dependents instead]' \
+    '--dependents[Skip getting analytics data and sort by number of dependents instead]' \
     '--help[Show this message]' \
     '--quiet[Make some output more quiet]' \
-    '--tag[Use the specified bottle tag (e.g. big_sur) instead of the current OS]' \
-    '--total[Output the number of unbottled and total formulae]' \
+    '--tag[Use the specified bottle tag (e.g. `big_sur`) instead of the current OS]' \
+    '--total[Print the number of unbottled and total formulae]' \
     '--verbose[Make some output more verbose]' \
     '::formula:__brew_formulae'
 }

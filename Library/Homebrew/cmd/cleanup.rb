@@ -45,7 +45,7 @@ module Homebrew
       when "all"
         0
       else
-        raise UsageError, "--prune= expects an integer or 'all'."
+        raise UsageError, "`--prune=` expects an integer or `all`."
       end
     end
 

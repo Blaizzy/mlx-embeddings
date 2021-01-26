@@ -12,7 +12,7 @@ describe Cask::Cmd::Install, :cask do
     output = Regexp.new <<~EOS
       ==> Downloading file:.*caffeine.zip
       ==> Installing Cask local-caffeine
-      ==> Moving App 'Caffeine.app' to '.*Caffeine.app'.
+      ==> Moving App 'Caffeine.app' to '.*Caffeine.app'
       .*local-caffeine was successfully installed!
     EOS
 
@@ -118,7 +118,7 @@ describe Cask::Cmd::Install, :cask do
     }.to raise_error(
       Cask::CaskUnavailableError,
       "Cask 'localcaffeine' is unavailable: No Cask with this name exists. "\
-      "Did you mean “local-caffeine”?",
+      "Did you mean 'local-caffeine'?",
     )
   end
 

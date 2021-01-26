@@ -192,7 +192,7 @@ describe Caveats do
         allow(Utils::Shell).to receive(:parent).and_return(nil)
       end
 
-      it "gives dir where bash completions have been installed" do
+      it "gives dir where Bash completions have been installed" do
         (path/"etc/bash_completion.d").mkpath
         expect(caveats).to include(HOMEBREW_PREFIX/"etc/bash_completion.d")
       end

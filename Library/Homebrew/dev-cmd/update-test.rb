@@ -95,8 +95,10 @@ module Homebrew
       end
     end
 
-    puts "Start commit: #{start_commit}"
-    puts "  End commit: #{end_commit}"
+    puts <<~EOS
+      Start commit: #{start_commit}
+        End commit: #{end_commit}
+    EOS
 
     mkdir "update-test"
     chdir "update-test" do
@@ -127,15 +129,15 @@ module Homebrew
       quiet_system "brew", "help"
 
       # run brew update
-      oh1 "Running brew update..."
+      oh1 "Running `brew update`..."
       safe_system "brew", "update", "--verbose", "--debug"
       actual_end_commit = Utils.popen_read("git", "rev-parse", branch).chomp
       if actual_end_commit != end_commit
         start_log = Utils.popen_read("git", "log", "-1", "--decorate", "--oneline", start_commit).chomp
         end_log = Utils.popen_read("git", "log", "-1", "--decorate", "--oneline", end_commit).chomp
         actual_log = Utils.popen_read("git", "log", "-1", "--decorate", "--oneline", actual_end_commit).chomp
-        raise <<~EOS
-          brew update didn't update #{branch}!
+        odie <<~EOS
+          `brew update` didn't update #{branch}!
           Start commit:        #{start_log}
           Expected end commit: #{end_log}
           Actual end commit:   #{actual_log}

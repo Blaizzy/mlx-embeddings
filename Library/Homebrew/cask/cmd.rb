@@ -174,7 +174,7 @@ module Cask
                       [args.remaining.empty? ? NullCommand : UnknownSubcommand.new(args.remaining.first), argv]
 
       if (replacement = DEPRECATED_COMMANDS[command])
-        odisabled "brew cask #{command.command_name}", replacement
+        odisabled "`brew cask #{command.command_name}`", replacement
       end
 
       if args.help?

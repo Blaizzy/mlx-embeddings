@@ -19,6 +19,7 @@ module Homebrew
              description: "Treat all named arguments as formulae."
       switch "--cask", "--casks",
              description: "Treat all named arguments as casks."
+
       conflicts "--formula", "--cask"
 
       named_args [:formula, :cask], number: 1

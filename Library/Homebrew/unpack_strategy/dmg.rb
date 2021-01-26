@@ -194,8 +194,7 @@ module UnpackStrategy
           )
 
           if verbose && !(eula_text = without_eula.stdout).empty?
-            ohai "Software License Agreement for '#{path}':"
-            puts eula_text
+            ohai "Software License Agreement for '#{path}':", eula_text
           end
 
           with_eula.plist

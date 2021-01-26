@@ -36,8 +36,7 @@ module Homebrew
           upgrade_formula(f, args: args)
           Cleanup.install_formula_clean!(f)
         rescue UnsatisfiedRequirements => e
-          Homebrew.failed = true
-          onoe "#{f}: #{e}"
+          ofail "#{f}: #{e}"
         end
       end
     end

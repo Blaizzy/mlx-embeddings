@@ -70,7 +70,7 @@ describe Homebrew::Diagnostic::Checks do
 
     expect(subject.check_user_path_1).to be nil
     expect(subject.check_user_path_2)
-      .to match("Homebrew's bin was not found in your PATH.")
+      .to match("Homebrew's \"bin\" was not found in your PATH.")
   end
 
   specify "#check_user_path_3" do
@@ -83,7 +83,7 @@ describe Homebrew::Diagnostic::Checks do
     expect(subject.check_user_path_1).to be nil
     expect(subject.check_user_path_2).to be nil
     expect(subject.check_user_path_3)
-      .to match("Homebrew's sbin was not found in your PATH")
+      .to match("Homebrew's \"sbin\" was not found in your PATH")
   ensure
     sbin.rmtree
   end
