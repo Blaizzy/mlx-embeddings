@@ -35,7 +35,7 @@ module Homebrew
         if Hardware::CPU.in_rosetta2?
           odie <<~EOS
             Cannot install under Rosetta 2 in ARM default prefix (#{HOMEBREW_PREFIX})!
-            To rerun under ARM use: 
+            To rerun under ARM use:
                 arch -arm64 brew install ...
             To install under x86_64, install Homebrew into #{HOMEBREW_DEFAULT_PREFIX}.
           EOS
