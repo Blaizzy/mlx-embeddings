@@ -11,12 +11,20 @@ describe "brew --cache", :integration_test do
   it "prints all cache files for a given Formula" do
     expect { brew "--cache", testball }
       .to output(%r{#{HOMEBREW_CACHE}/downloads/[\da-f]{64}--testball-}o).to_stdout
+      .and output(/Treating #{Regexp.escape(testball)} as a formula/).to_stderr
+      .and be_a_success
+    expect { brew "--cache", "--formula", testball }
+      .to output(%r{#{HOMEBREW_CACHE}/downloads/[\da-f]{64}--testball-}o).to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
   end
 
   it "prints the cache files for a given Cask" do
     expect { brew "--cache", cask_path("local-caffeine") }
+      .to output(%r{#{HOMEBREW_CACHE}/downloads/[\da-f]{64}--caffeine\.zip}o).to_stdout
+      .and output(/Treating #{Regexp.escape(cask_path("local-caffeine"))} as a cask/).to_stderr
+      .and be_a_success
+    expect { brew "--cache", "--cask", cask_path("local-caffeine") }
       .to output(%r{#{HOMEBREW_CACHE}/downloads/[\da-f]{64}--caffeine\.zip}o).to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
@@ -30,7 +38,7 @@ describe "brew --cache", :integration_test do
           #{HOMEBREW_CACHE}/downloads/[\da-f]{64}--caffeine\.zip
         }xo,
       ).to_stdout
-      .and not_to_output.to_stderr
+      .and output(/(Treating .* as a formula).*(Treating .* as a cask)/m).to_stderr
       .and be_a_success
   end
 end

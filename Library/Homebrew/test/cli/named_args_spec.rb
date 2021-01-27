@@ -122,6 +122,7 @@ describe Homebrew::CLI::NamedArgs do
       setup_unredable_cask "foo"
 
       expect(described_class.new("foo").to_formulae_and_casks).to eq [foo]
+      expect { described_class.new("foo").to_formulae_and_casks }.to output(/Failed to load cask: foo/).to_stderr
     end
 
     it "returns cask when formula is unreadable and cask is present" do
@@ -129,6 +130,7 @@ describe Homebrew::CLI::NamedArgs do
       stub_cask_loader foo_cask
 
       expect(described_class.new("foo").to_formulae_and_casks).to eq [foo_cask]
+      expect { described_class.new("foo").to_formulae_and_casks }.to output(/Failed to load formula: foo/).to_stderr
     end
 
     it "raises an error when formula is absent and cask is unreadable" do

@@ -110,7 +110,17 @@ module Homebrew
 
         if only != :formula
           begin
-            return Cask::CaskLoader.load(name, config: Cask::Config.from_args(@parent))
+            cask = Cask::CaskLoader.load(name, config: Cask::Config.from_args(@parent))
+
+            if unreadable_error.present?
+              onoe <<~EOS
+                Failed to load formula: #{name}
+                #{unreadable_error}
+              EOS
+              opoo "Treating #{name} as a cask."
+            end
+
+            return cask
           rescue Cask::CaskUnreadableError => e
             # Need to rescue before `CaskUnavailableError` (superclass of this)
             # The cask was found, but there's a problem with its implementation
@@ -287,12 +297,22 @@ module Homebrew
       end
 
       def warn_if_cask_conflicts(ref, loaded_type)
-        cask = Cask::CaskLoader.load ref
         message = "Treating #{ref} as a #{loaded_type}."
-        message += " For the cask, use #{cask.tap.name}/#{cask.token}" if cask.tap.present?
+        begin
+          cask = Cask::CaskLoader.load ref
+          message += " For the cask, use #{cask.tap.name}/#{cask.token}" if cask.tap.present?
+        rescue Cask::CaskUnreadableError => e
+          # Need to rescue before `CaskUnavailableError` (superclass of this)
+          # The cask was found, but there's a problem with its implementation
+          onoe <<~EOS
+            Failed to load cask: #{ref}
+            #{e}
+          EOS
+        rescue Cask::CaskUnavailableError
+          # No ref conflict with a cask, do nothing
+          return
+        end
         opoo message.freeze
-      rescue Cask::CaskUnavailableError
-        # No ref conflict with a cask, do nothing
       end
     end
   end
