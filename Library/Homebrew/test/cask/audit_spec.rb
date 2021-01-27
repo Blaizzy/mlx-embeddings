@@ -37,7 +37,6 @@ describe Cask::Audit, :cask do
   let(:token_conflicts) { nil }
   let(:audit) {
     described_class.new(cask, online:          online,
-
                               strict:          strict,
                               new_cask:        new_cask,
                               token_conflicts: token_conflicts)
@@ -313,6 +312,32 @@ describe Cask::Audit, :cask do
 
         it "does not fail" do
           expect(subject).to pass
+        end
+      end
+
+      context "when cask token is in tap_migrations.json" do
+        let(:cask_token) { "token-migrated" }
+        let(:tap) { Tap.fetch("homebrew/cask") }
+
+        before do
+          allow(tap).to receive(:tap_migrations).and_return({ cask_token => "homebrew/core" })
+          allow(cask).to receive(:tap).and_return(tap)
+        end
+
+        context "and `new_cask` is true" do
+          let(:new_cask) { true }
+
+          it "fails" do
+            expect(subject).to fail_with("#{cask_token} is listed in tap_migrations.json")
+          end
+        end
+
+        context "and `new_cask` is false" do
+          let(:new_cask) { false }
+
+          it "does not fail" do
+            expect(subject).to pass
+          end
         end
       end
     end

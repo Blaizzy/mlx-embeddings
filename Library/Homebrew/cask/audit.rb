@@ -48,6 +48,7 @@ module Cask
 
     def run!
       check_denylist
+      check_reverse_migration
       check_required_stanzas
       check_version
       check_sha256
@@ -680,10 +681,20 @@ module Cask
     end
 
     def check_denylist
-      return unless cask.tap&.official?
+      return unless cask.tap
+      return unless cask.tap.official?
       return unless reason = Denylist.reason(cask.token)
 
       add_error "#{cask.token} is not allowed: #{reason}"
+    end
+
+    def check_reverse_migration
+      return unless new_cask?
+      return unless cask.tap
+      return unless cask.tap.official?
+      return unless cask.tap.tap_migrations.key?(cask.token)
+
+      add_error "#{cask.token} is listed in tap_migrations.json"
     end
 
     def check_https_availability
