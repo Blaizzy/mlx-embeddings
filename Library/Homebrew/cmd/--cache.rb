@@ -29,7 +29,7 @@ module Homebrew
       switch "--cask",
              description: "Only show cache files for casks."
 
-      conflicts "--build-from-source", "--force-bottle"
+      conflicts "--build-from-source", "--force-bottle", "--cask"
       conflicts "--formula", "--cask"
 
       named_args [:formula, :cask]
