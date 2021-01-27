@@ -48,7 +48,6 @@ module Homebrew
       ENV.delete("HOMEBREW_NO_COLOR")
       ENV.delete("HOMEBREW_VERBOSE")
       ENV.delete("HOMEBREW_DEBUG")
-      ENV.delete("VERBOSE")
       ENV.delete("HOMEBREW_CASK_OPTS")
       ENV.delete("HOMEBREW_TEMP")
       ENV.delete("HOMEBREW_NO_GITHUB_API")
@@ -67,6 +66,9 @@ module Homebrew
       # Avoid local configuration messing with tests, e.g. git being configured
       # to use GPG to sign by default
       ENV["HOME"] = "#{HOMEBREW_LIBRARY_PATH}/test"
+
+      # Print verbose output when requesting debug or verbose output.
+      ENV["HOMEBREW_VERBOSE_TESTS"] = "1" if args.debug? || args.verbose?
 
       if args.coverage?
         ENV["HOMEBREW_TESTS_COVERAGE"] = "1"

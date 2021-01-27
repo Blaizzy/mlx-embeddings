@@ -201,7 +201,7 @@ RSpec.configure do |config|
     @__stderr = $stderr.clone
 
     begin
-      if (example.metadata.keys & [:focus, :byebug]).empty? && !ENV.key?("VERBOSE_TESTS")
+      if (example.metadata.keys & [:focus, :byebug]).empty? && !ENV.key?("HOMEBREW_VERBOSE_TESTS")
         $stdout.reopen(File::NULL)
         $stderr.reopen(File::NULL)
       end
