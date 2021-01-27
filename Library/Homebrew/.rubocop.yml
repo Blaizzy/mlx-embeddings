@@ -5,7 +5,7 @@ inherit_from:
 # make rspec formatting more flexible
 Layout/MultilineMethodCallIndentation:
   Exclude:
-    - '**/*_spec.rb'
+    - "**/*_spec.rb"
 
 # TODO: add parentheses for these and remove
 Lint/AssignmentInCondition:
@@ -14,7 +14,7 @@ Lint/AssignmentInCondition:
 # `formula do` uses nested method definitions
 Lint/NestedMethodDefinition:
   Exclude:
-    - 'test/**/*'
+    - "test/**/*"
 
 # TODO: Try to bring down all metrics maximums.
 Metrics/AbcSize:
@@ -22,14 +22,14 @@ Metrics/AbcSize:
 Metrics/BlockLength:
   Max: 100
   Exclude:
-    - 'test/**/*'
+    - "test/**/*"
 Metrics/BlockNesting:
   Max: 5
 Metrics/ClassLength:
   Max: 800
   Exclude:
-    - 'formula.rb'
-    - 'formula_installer.rb'
+    - "formula.rb"
+    - "formula_installer.rb"
 Metrics/CyclomaticComplexity:
   Max: 80
 Metrics/PerceivedComplexity:
@@ -39,7 +39,7 @@ Metrics/MethodLength:
 Metrics/ModuleLength:
   Max: 600
   Exclude:
-    - 'test/**/*'
+    - "test/**/*"
 
 Naming/PredicateName:
   # Can't rename these.
@@ -50,8 +50,8 @@ Naming/PredicateName:
 
 Style/HashAsLastArrayItem:
   Exclude:
-    - 'test/utils/spdx_spec.rb'
+    - "test/utils/spdx_spec.rb"
 
 Style/BlockDelimiters:
   BracesRequiredMethods:
-    - 'sig'
+    - "sig"

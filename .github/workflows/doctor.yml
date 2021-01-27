@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
     runs-on: ${{ matrix.version }}
     env:
-      PATH: '/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+      PATH: "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
