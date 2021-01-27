@@ -392,7 +392,7 @@ class Version
     UrlParser.new(%r{github\.com/.+/(?:zip|tar)ball/(?:v|\w+-)?((?:\d+[._-])+\d*)$}),
 
     # e.g. https://github.com/erlang/otp/tarball/OTP_R15B01 (erlang style)
-    UrlParser.new(/[-_]([Rr]\d+[AaBb]\d*(?:-\d+)?)/),
+    UrlParser.new(/[_-]([Rr]\d+[AaBb]\d*(?:-\d+)?)/),
 
     # e.g. boost_1_39_0
     StemParser.new(/((?:\d+_)+\d+)$/) { |s| s.tr("_", ".") },
@@ -400,7 +400,7 @@ class Version
     # e.g. foobar-4.5.1-1
     # e.g. unrtf_0.20.4-1
     # e.g. ruby-1.9.1-p243
-    StemParser.new(/[-_]((?:\d+\.)*\d+\.\d+-(?:p|rc|RC)?\d+)(?:[._-](?i:bin|dist|stable|src|sources?|final|full))?$/),
+    StemParser.new(/[_-]((?:\d+\.)*\d+\.\d+-(?:p|rc|RC)?\d+)(?:[._-](?i:bin|dist|stable|src|sources?|final|full))?$/),
 
     # URL with no extension
     # e.g. https://waf.io/waf-1.8.12
@@ -437,7 +437,7 @@ class Version
     # e.g. https://ftpmirror.gnu.org/libtasn1/libtasn1-2.8-x86.zip
     # e.g. https://ftpmirror.gnu.org/libtasn1/libtasn1-2.8-x64.zip
     # e.g. https://ftpmirror.gnu.org/mtools/mtools_4.0.18_i386.deb
-    StemParser.new(/[-_](\d+\.\d+(?:\.\d+)?(?:-\d+)?)[._-](?:i[36]86|x86|x64(?:[-_](?:32|64))?)$/),
+    StemParser.new(/[_-](\d+\.\d+(?:\.\d+)?(?:-\d+)?)[._-](?:i[36]86|x86|x64(?:[_-](?:32|64))?)$/),
 
     # e.g. https://registry.npmjs.org/@angular/cli/-/cli-1.3.0-beta.1.tgz
     # e.g. https://github.com/dlang/dmd/archive/v2.074.0-beta1.tar.gz
