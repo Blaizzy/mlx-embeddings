@@ -460,7 +460,7 @@ class Version
     StemParser.new(/-((?:\d+\.)+\d+)-/),
 
     # e.g. dash_0.5.5.1.orig.tar.gz (Debian style)
-    StemParser.new(/_((?:\d+\.)+\d+[abc]?)[.]orig$/),
+    StemParser.new(/_((?:\d+\.)+\d+[abc]?)\.orig$/),
 
     # e.g. https://www.openssl.org/source/openssl-0.9.8s.tar.gz
     StemParser.new(/-v?(\d[^-]+)/),
