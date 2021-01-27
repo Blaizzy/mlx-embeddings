@@ -199,7 +199,8 @@ module Homebrew
       options = command_options(command).sort.map do |opt, desc|
         next opt if desc.blank?
 
-        "#{opt}[#{format_description desc}]"
+        conflicts = generate_zsh_option_exclusions(command, opt)
+        "#{conflicts}#{opt}[#{format_description desc}]"
       end
       if types = Commands.named_args_type(command)
         named_args_strings, named_args_types = types.partition { |type| type.is_a? String }
@@ -220,6 +221,13 @@ module Homebrew
             #{options.map! { |opt| "'#{opt}'" }.join(" \\\n    ")}
         }
       COMPLETION
+    end
+
+    def generate_zsh_option_exclusions(command, option)
+      conflicts = Commands.option_conflicts(command, option.gsub(/^--/, ""))
+      return "" unless conflicts.presence
+
+      "(#{conflicts.map { |conflict| "--#{conflict}" }.join(" ")})"
     end
 
     sig { params(commands: T::Array[String]).returns(String) }

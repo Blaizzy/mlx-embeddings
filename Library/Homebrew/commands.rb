@@ -263,4 +263,18 @@ module Commands
 
     Array(cmd_parser.named_args_type)
   end
+
+  # Returns the conflicts of a given `option` for `command`.
+  def option_conflicts(command, option)
+    path = self.path(command)
+    return if path.blank?
+
+    cmd_parser = Homebrew::CLI::Parser.from_cmd_path(path)
+    return if cmd_parser.blank?
+
+    cmd_parser.conflicts.map do |set|
+      set.map! { |s| s.tr "_", "-" }
+      set - [option] if set.include? option
+    end.flatten.compact
+  end
 end
