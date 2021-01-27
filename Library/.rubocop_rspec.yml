@@ -35,3 +35,7 @@ RSpec/NestedGroups:
   Max: 5
 RSpec/MultipleMemoizedHelpers:
   Max: 12
+
+# Annoying to have these autoremoved.
+RSpec/Focus:
+  AutoCorrect: false
