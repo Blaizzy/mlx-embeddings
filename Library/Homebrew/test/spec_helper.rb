@@ -80,6 +80,8 @@ RSpec.configure do |config|
   if ENV["CI"]
     config.verbose_retry = true
     config.display_try_failure_messages = true
+    config.default_retry_count = 2
+    config.default_sleep_interval = 1
 
     config.around(:each, :integration_test) do |example|
       example.metadata[:timeout] ||= 120
@@ -88,7 +90,10 @@ RSpec.configure do |config|
 
     config.around(:each, :needs_network) do |example|
       example.metadata[:timeout] ||= 120
-      example.run_with_retry retry: 5, retry_wait: 5
+      example.metadata[:retry] ||= 4
+      example.metadata[:retry_wait] ||= 2
+      example.metadata[:exponential_backoff] ||= true
+      example.run
     end
   end
 
