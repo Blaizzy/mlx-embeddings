@@ -52,6 +52,19 @@ module Homebrew
       file:              "__brew_formulae_or_ruby_files",
     }.freeze
 
+    FISH_NAMED_ARGS_COMPLETION_FUNCTION_MAPPING = {
+      formula:           "__fish_brew_suggest_formulae_all",
+      installed_formula: "__fish_brew_suggest_formulae_installed",
+      outdated_formula:  "__fish_brew_suggest_formulae_outdated",
+      cask:              "__fish_brew_suggest_casks_all",
+      installed_cask:    "__fish_brew_suggest_casks_installed",
+      outdated_cask:     "__fish_brew_suggest_casks_outdated",
+      tap:               "__fish_brew_suggest_taps_installed",
+      installed_tap:     "__fish_brew_suggest_taps_installed",
+      command:           "__fish_brew_suggest_commands",
+      diagnostic_check:  "__fish_brew_suggest_diagnostic_checks",
+    }.freeze
+
     sig { void }
     def link!
       Settings.write :linkcompletions, true
@@ -111,6 +124,7 @@ module Homebrew
 
       (COMPLETIONS_DIR/"bash/brew").atomic_write generate_bash_completion_file(commands)
       (COMPLETIONS_DIR/"zsh/_brew").atomic_write generate_zsh_completion_file(commands)
+      (COMPLETIONS_DIR/"fish/brew.fish").atomic_write generate_fish_completion_file(commands)
     end
 
     sig { params(command: String).returns(T::Boolean) }
@@ -120,9 +134,14 @@ module Homebrew
       command_options(command).any?
     end
 
-    sig { params(description: String).returns(String) }
-    def format_description(description)
-      description.gsub("'", "'\\\\''").gsub(/[<>]/, "").tr("\n", " ").chomp(".")
+    sig { params(description: String, fish: T::Boolean).returns(String) }
+    def format_description(description, fish: false)
+      description = if fish
+        description.gsub("'", "\\\\'")
+      else
+        description.gsub("'", "'\\\\''")
+      end
+      description.gsub(/[<>]/, "").tr("\n", " ").chomp(".")
     end
 
     sig { params(command: String).returns(T::Hash[String, String]) }
@@ -247,6 +266,53 @@ module Homebrew
       end.compact
 
       ERB.new((TEMPLATE_DIR/"zsh.erb").read, trim_mode: ">").result(variables.instance_eval { binding })
+    end
+
+    sig { params(command: String).returns(T.nilable(String)) }
+    def generate_fish_subcommand_completion(command)
+      return unless command_gets_completions? command
+
+      command_description = format_description Commands.command_description(command, short: true), fish: true
+      lines = ["__fish_brew_complete_cmd '#{command}' '#{command_description}'"]
+
+      options = command_options(command).sort.map do |opt, desc|
+        arg_line = "__fish_brew_complete_arg '#{command}' -l #{opt.sub(/^-+/, "")}"
+        arg_line += " -d '#{format_description desc, fish: true}'" if desc.present?
+        arg_line
+      end.compact
+
+      subcommands = []
+      named_args = []
+      if types = Commands.named_args_type(command)
+        named_args_strings, named_args_types = types.partition { |type| type.is_a? String }
+
+        named_args_types.each do |type|
+          next unless FISH_NAMED_ARGS_COMPLETION_FUNCTION_MAPPING.key? type
+
+          named_arg_function = FISH_NAMED_ARGS_COMPLETION_FUNCTION_MAPPING[type]
+          named_args << "__fish_brew_complete_arg '#{command}' -a '(#{named_arg_function})'"
+        end
+
+        named_args_strings.each do |subcommand|
+          subcommands << "__fish_brew_complete_sub_cmd '#{command}' '#{subcommand}'"
+        end
+      end
+
+      lines += subcommands + options + named_args
+      <<~COMPLETION
+        #{lines.join("\n").chomp}
+      COMPLETION
+    end
+
+    sig { params(commands: T::Array[String]).returns(String) }
+    def generate_fish_completion_file(commands)
+      variables = OpenStruct.new
+
+      variables[:completion_functions] = commands.map do |command|
+        generate_fish_subcommand_completion command
+      end.compact
+
+      ERB.new((TEMPLATE_DIR/"fish.erb").read, trim_mode: ">").result(variables.instance_eval { binding })
     end
   end
 end
