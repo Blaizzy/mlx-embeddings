@@ -99,7 +99,7 @@ describe Homebrew::CLI::NamedArgs do
       end
 
       it "raises an error" do
-        expect { described_class.new("foo").to_formulae_and_casks }.to raise_error(FormulaOrCaskUnavailableError)
+        expect { described_class.new("foo").to_formulae_and_casks }.to raise_error(FormulaUnreadableError)
       end
 
       it "raises an error if loading formula only" do

@@ -78,7 +78,7 @@ module Homebrew
       end
 
       def load_formula_or_cask(name, only: nil, method: nil)
-        unreadable_errors = []
+        unreadable_error = nil
 
         if only != :cask
           begin
@@ -102,7 +102,7 @@ module Homebrew
                  TapFormulaUnreadableError, TapFormulaClassUnavailableError => e
             # Need to rescue before `FormulaUnavailableError` (superclass of this)
             # The formula was found, but there's a problem with its implementation
-            unreadable_errors << e
+            unreadable_error ||= e
           rescue NoSuchKegError, FormulaUnavailableError => e
             raise e if only == :formula
           end
@@ -114,13 +114,13 @@ module Homebrew
           rescue Cask::CaskUnreadableError => e
             # Need to rescue before `CaskUnavailableError` (superclass of this)
             # The cask was found, but there's a problem with its implementation
-            unreadable_errors << e
+            unreadable_error ||= e
           rescue Cask::CaskUnavailableError => e
             raise e if only == :cask
           end
         end
 
-        raise unreadable_errors.first if unreadable_errors.count == 1
+        raise unreadable_error if unreadable_error.present?
 
         raise FormulaOrCaskUnavailableError, name
       end
