@@ -5836,30 +5836,11 @@ module Codecov::SimpleCov
 end
 
 class Codecov::SimpleCov::Formatter
+  def format(report); end
+  RESULT_FILE_NAME = ::T.let(nil, ::T.untyped)
 end
 
 class Codecov::SimpleCov::Formatter
-  def self.black(str); end
-
-  def self.file_network(); end
-
-  def self.file_to_codecov(file); end
-
-  def self.format(report); end
-
-  def self.green(str); end
-
-  def self.red(str); end
-
-  def self.result_to_codecov(result); end
-
-  def self.result_to_codecov_coverage(result); end
-
-  def self.result_to_codecov_messages(result); end
-
-  def self.result_to_codecov_report(result); end
-
-  def self.shortened_filename(file); end
 end
 
 module Codecov::SimpleCov
