@@ -389,7 +389,7 @@ class Version
     # e.g. https://github.com/sam-github/libnet/tarball/libnet-1.1.4
     # e.g. https://github.com/isaacs/npm/tarball/v0.2.5-1
     # e.g. https://github.com/petdance/ack/tarball/1.93_02
-    UrlParser.new(%r{github\.com/.+/(?:zip|tar)ball/(?:v|\w+-)?((?:\d+[-._])+\d*)$}),
+    UrlParser.new(%r{github\.com/.+/(?:zip|tar)ball/(?:v|\w+-)?((?:\d+[._-])+\d*)$}),
 
     # e.g. https://github.com/erlang/otp/tarball/OTP_R15B01 (erlang style)
     UrlParser.new(/[-_]([Rr]\d+[AaBb]\d*(?:-\d+)?)/),
@@ -400,7 +400,7 @@ class Version
     # e.g. foobar-4.5.1-1
     # e.g. unrtf_0.20.4-1
     # e.g. ruby-1.9.1-p243
-    StemParser.new(/[-_]((?:\d+\.)*\d+\.\d+-(?:p|rc|RC)?\d+)(?:[-._](?i:bin|dist|stable|src|sources?|final|full))?$/),
+    StemParser.new(/[-_]((?:\d+\.)*\d+\.\d+-(?:p|rc|RC)?\d+)(?:[._-](?i:bin|dist|stable|src|sources?|final|full))?$/),
 
     # URL with no extension
     # e.g. https://waf.io/waf-1.8.12
@@ -437,19 +437,19 @@ class Version
     # e.g. https://ftpmirror.gnu.org/libtasn1/libtasn1-2.8-x86.zip
     # e.g. https://ftpmirror.gnu.org/libtasn1/libtasn1-2.8-x64.zip
     # e.g. https://ftpmirror.gnu.org/mtools/mtools_4.0.18_i386.deb
-    StemParser.new(/[-_](\d+\.\d+(?:\.\d+)?(?:-\d+)?)[-_.](?:i[36]86|x86|x64(?:[-_](?:32|64))?)$/),
+    StemParser.new(/[-_](\d+\.\d+(?:\.\d+)?(?:-\d+)?)[._-](?:i[36]86|x86|x64(?:[-_](?:32|64))?)$/),
 
     # e.g. https://registry.npmjs.org/@angular/cli/-/cli-1.3.0-beta.1.tgz
     # e.g. https://github.com/dlang/dmd/archive/v2.074.0-beta1.tar.gz
     # e.g. https://github.com/dlang/dmd/archive/v2.074.0-rc1.tar.gz
     # e.g. https://github.com/premake/premake-core/releases/download/v5.0.0-alpha10/premake-5.0.0-alpha10-src.zip
-    StemParser.new(/[-.vV]?((?:\d+\.)+\d+[-_.]?(?i:alpha|beta|pre|rc)\.?\d{,2})/),
+    StemParser.new(/[-.vV]?((?:\d+\.)+\d+[._-]?(?i:alpha|beta|pre|rc)\.?\d{,2})/),
 
     # e.g. foobar4.5.1
     StemParser.new(/((?:\d+\.)*\d+)$/),
 
     # e.g. foobar-4.5.0-bin
-    StemParser.new(/[-vV]((?:\d+\.)+\d+[abc]?)[-._](?i:bin|dist|stable|src|sources?|final|full)$/),
+    StemParser.new(/[-vV]((?:\d+\.)+\d+[abc]?)[._-](?i:bin|dist|stable|src|sources?|final|full)$/),
 
     # dash version style
     # e.g. http://www.antlr.org/download/antlr-3.4-complete.jar
@@ -481,7 +481,7 @@ class Version
     StemParser.new(/\.v(\d+[a-z]?)/),
 
     # e.g. https://secure.php.net/get/php-7.1.10.tar.bz2/from/this/mirror
-    UrlParser.new(/[-.vV]?((?:\d+\.)+\d+(?:[-_.]?(?i:alpha|beta|pre|rc)\.?\d{,2})?)/),
+    UrlParser.new(/[-.vV]?((?:\d+\.)+\d+(?:[._-]?(?i:alpha|beta|pre|rc)\.?\d{,2})?)/),
   ].freeze
   private_constant :VERSION_PARSERS
 
