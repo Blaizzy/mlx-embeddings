@@ -201,14 +201,14 @@ describe BottleSpecification do
 
     it "works with cellar" do
       checksums = [
-        { digest: "deadbeef" * 8, tag: :snow_leopard_32, cellar: :any_skip_relocation },
-        { digest: "faceb00c" * 8, tag: :snow_leopard, cellar: :any },
-        { digest: "baadf00d" * 8, tag: :lion, cellar: "/usr/local/Cellar" },
-        { digest: "8badf00d" * 8, tag: :mountain_lion, cellar: Homebrew::DEFAULT_CELLAR },
+        { cellar: :any_skip_relocation, tag: :snow_leopard_32, digest: "deadbeef" * 8 },
+        { cellar: :any, tag: :snow_leopard, digest: "faceb00c" * 8 },
+        { cellar: "/usr/local/Cellar", tag: :lion, digest: "baadf00d" * 8 },
+        { cellar: Homebrew::DEFAULT_CELLAR, tag: :mountain_lion, digest: "8badf00d" * 8 },
       ]
 
       checksums.each do |checksum|
-        subject.sha256(checksum[:digest] => checksum[:tag], cellar: checksum[:cellar])
+        subject.sha256(checksum[:tag] => checksum[:digest], cellar: checksum[:cellar])
         digest, tag, cellar = subject.checksum_for(checksum[:tag])
         expect(Checksum.new(checksum[:digest])).to eq(digest)
         expect(checksum[:tag]).to eq(tag)

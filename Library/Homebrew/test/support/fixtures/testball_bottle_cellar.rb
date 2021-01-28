@@ -10,7 +10,7 @@ class TestballBottleCellar < Formula
       hexdigest = "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149"
       stable.bottle do
         root_url "file://#{TEST_FIXTURE_DIR}/bottles"
-        sha256 hexdigest => Utils::Bottles.tag, :cellar => :any_skip_relocation
+        sha256 cellar: :any_skip_relocation, Utils::Bottles.tag => hexdigest
       end
       cxxstdlib_check :skip
     end
