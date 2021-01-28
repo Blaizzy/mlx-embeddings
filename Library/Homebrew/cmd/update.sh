@@ -483,9 +483,9 @@ EOS
   trap '{ /usr/bin/pkill -P $$; wait; exit 130; }' SIGINT
 
   local update_failed_file="$HOMEBREW_REPOSITORY/.git/UPDATE_FAILED"
-  local failed_fetch_dirs_file="$HOMEBREW_REPOSITORY/.git/FAILED_FETCH_DIRS"
+  local missing_remote_ref_dirs_file="$HOMEBREW_REPOSITORY/.git/FAILED_FETCH_DIRS"
   rm -f "$update_failed_file"
-  rm -f "$failed_fetch_dirs_file"
+  rm -f "$missing_remote_ref_dirs_file"
 
   for DIR in "$HOMEBREW_REPOSITORY" "$HOMEBREW_LIBRARY"/Taps/*/*
   do
@@ -593,7 +593,7 @@ EOS
             if [[ -f "$tmp_failure_file" ]] &&
                [[ "$(<"$tmp_failure_file")" = "fatal: couldn't find remote ref refs/heads/$UPSTREAM_BRANCH_DIR" ]]
             then
-              echo "$DIR" >>"$failed_fetch_dirs_file"
+              echo "$DIR" >>"$missing_remote_ref_dirs_file"
             fi
           fi
         fi
@@ -613,11 +613,11 @@ EOS
     export HOMEBREW_UPDATE_FAILED="1"
   fi
 
-  if [[ -f "$failed_fetch_dirs_file" ]]
+  if [[ -f "$missing_remote_ref_dirs_file" ]]
   then
-    HOMEBREW_FAILED_FETCH_DIRS="$(<"$failed_fetch_dirs_file")"
-    rm -f "$failed_fetch_dirs_file"
-    export HOMEBREW_FAILED_FETCH_DIRS
+    HOMEBREW_MISSING_REMOTE_REF_DIRS="$(<"$missing_remote_ref_dirs_file")"
+    rm -f "$missing_remote_ref_dirs_file"
+    export HOMEBREW_MISSING_REMOTE_REF_DIRS
   fi
 
   for DIR in "$HOMEBREW_REPOSITORY" "$HOMEBREW_LIBRARY"/Taps/*/*

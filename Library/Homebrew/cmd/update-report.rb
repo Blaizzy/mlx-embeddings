@@ -152,7 +152,7 @@ module Homebrew
       puts <<~EOS
         The following taps can not read their remote branches:
           #{failed_fetch_taps.join("\n  ")}
-        This may be happening because the remote branch was renamed.
+        This is happening because the remote branch was renamed or deleted.
         Reset taps to point to the correct remote branches by running `brew tap --repair`
       EOS
     end
