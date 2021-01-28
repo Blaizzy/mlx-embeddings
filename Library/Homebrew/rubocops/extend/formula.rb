@@ -126,7 +126,17 @@ module RuboCop
           parameters(call).first
         # sha256 is passed as a key-value pair in bottle blocks
         elsif parameters(call).first.hash_type?
-          parameters(call).first.keys.first
+          if parameters(call).first.keys.first.value == :cellar
+            # sha256 :cellar :any, :tag "hexdigest"
+            parameters(call).first.values.last
+          elsif parameters(call).first.keys.first.is_a?(RuboCop::AST::SymbolNode)
+            # sha256 :tag "hexdigest"
+            parameters(call).first.values.first
+          else
+            # Legacy bottle block syntax
+            # sha256 "hexdigest" => :tag
+            parameters(call).first.keys.first
+          end
         end
       end
 
