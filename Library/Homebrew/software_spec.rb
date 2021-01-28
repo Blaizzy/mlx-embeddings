@@ -403,17 +403,28 @@ class BottleSpecification
   # a Hash, which indicates the platform the checksum applies on.
   # Example bottle block syntax:
   # bottle do
-  #  sha256 "69489ae397e4645..." => :big_sur, :cellar => :any_skip_relocation
-  #  sha256 "449de5ea35d0e94..." => :catalina, :cellar => :any
+  #  sha256 cellar: :any_skip_relocation, big_sur: "69489ae397e4645..."
+  #  sha256 cellar: :any, catalina: "449de5ea35d0e94..."
   # end
-  # Example args:
-  # {"69489ae397e4645..."=> :big_sur, :cellar=>:any_skip_relocation}
   def sha256(hash)
     sha256_regex = /^[a-f0-9]{64}$/i
-    digest, tag = hash.find do |key, value|
-      key.is_a?(String) && value.is_a?(Symbol) && key.match?(sha256_regex)
+
+    # find new `sha256 big_sur: "69489ae397e4645..."` format
+    tag, digest = hash.find do |key, value|
+      key.is_a?(Symbol) && value.is_a?(String) && value.match?(sha256_regex)
     end
-    cellar = hash[:cellar] || all_tags_cellar
+
+    if digest && tag
+      # the cellar hash key only exists on the new format
+      cellar = hash[:cellar]
+    else
+      # otherwise, find old `sha256 "69489ae397e4645..." => :big_sur` format
+      digest, tag = hash.find do |key, value|
+        key.is_a?(String) && value.is_a?(Symbol) && key.match?(sha256_regex)
+      end
+    end
+
+    cellar ||= all_tags_cellar
     collector[tag] = { checksum: Checksum.new(digest), cellar: cellar }
   end
 
