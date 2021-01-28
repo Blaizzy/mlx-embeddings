@@ -91,12 +91,6 @@ module Homebrew
           valid_alias_names.map! { |a| "#{formula.tap}/#{a}" }
         end
 
-        # Fix naming based on what people expect.
-        if alias_name_major_minor == "adoptopenjdk@1.8"
-          valid_alias_names << "adoptopenjdk@8"
-          valid_alias_names.delete "adoptopenjdk@1"
-        end
-
         valid_versioned_aliases = versioned_aliases & valid_alias_names
         invalid_versioned_aliases = versioned_aliases - valid_alias_names
 
