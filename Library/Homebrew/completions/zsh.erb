@@ -49,6 +49,8 @@ __brew_completion_caching_policy() {
 }
 
 __brew_formulae() {
+  [[ -prefix '-' ]] && return 0
+
   local -a list
   local comp_cachename=brew_formulae
   if ! _retrieve_cache $comp_cachename; then
@@ -59,18 +61,24 @@ __brew_formulae() {
 }
 
 __brew_installed_formulae() {
+  [[ -prefix '-' ]] && return 0
+
   local -a formulae
   formulae=($(brew list --formula))
   _describe -t formulae 'installed formulae' formulae
 }
 
 __brew_outdated_formulae() {
+  [[ -prefix '-' ]] && return 0
+
   local -a formulae
   formulae=($(brew outdated --formula))
   _describe -t formulae 'outdated formulae' formulae
 }
 
 __brew_casks() {
+  [[ -prefix '-' ]] && return 0
+
   local -a list
   local expl
   local comp_cachename=brew_casks
@@ -84,6 +92,8 @@ __brew_casks() {
 }
 
 __brew_installed_casks() {
+  [[ -prefix '-' ]] && return 0
+
   local -a list
   local expl
   list=( $(brew list --cask) )
@@ -91,18 +101,24 @@ __brew_installed_casks() {
 }
 
 __brew_outdated_casks() {
+  [[ -prefix '-' ]] && return 0
+
   local -a casks
   casks=($(brew outdated --cask))
   _describe -t casks 'outdated casks' casks
 }
 
 __brew_installed_taps() {
+  [[ -prefix '-' ]] && return 0
+
   local -a taps
   taps=($(brew tap))
   _describe -t installed-taps 'installed taps' taps
 }
 
 __brew_any_tap() {
+  [[ -prefix '-' ]] && return 0
+
   _alternative \
     'installed-taps:installed taps:__brew_installed_taps'
 }
