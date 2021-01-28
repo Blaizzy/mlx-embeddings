@@ -607,7 +607,7 @@ Fetch the newest version of Homebrew and all formulae from GitHub using `git`(1)
 
 ### `update-reset` [*`repository`* ...]
 
-Fetch and reset Homebrew and all tap repositories (or any specified *`repository`*) using `git`(1) to their latest `origin/master`.
+Fetch and reset Homebrew and all tap repositories (or any specified *`repository`*) using `git`(1) to their latest `origin/HEAD`.
 
 *Note:* this will destroy all your uncommitted or committed changes.
 

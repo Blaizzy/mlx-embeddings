@@ -483,7 +483,9 @@ EOS
   trap '{ /usr/bin/pkill -P $$; wait; exit 130; }' SIGINT
 
   local update_failed_file="$HOMEBREW_REPOSITORY/.git/UPDATE_FAILED"
+  local missing_remote_ref_dirs_file="$HOMEBREW_REPOSITORY/.git/FAILED_FETCH_DIRS"
   rm -f "$update_failed_file"
+  rm -f "$missing_remote_ref_dirs_file"
 
   for DIR in "$HOMEBREW_REPOSITORY" "$HOMEBREW_LIBRARY"/Taps/*/*
   do
@@ -566,23 +568,38 @@ EOS
         echo "Fetching $DIR..."
       fi
 
+      local tmp_failure_file="$HOMEBREW_REPOSITORY/.git/TMP_FETCH_FAILURES"
+      rm -f "$tmp_failure_file"
+
       if [[ -n "$HOMEBREW_UPDATE_PREINSTALL" ]]
       then
         git fetch --tags --force "${QUIET_ARGS[@]}" origin \
           "refs/heads/$UPSTREAM_BRANCH_DIR:refs/remotes/origin/$UPSTREAM_BRANCH_DIR" 2>/dev/null
       else
+        # Capture stderr to tmp_failure_file
         if ! git fetch --tags --force "${QUIET_ARGS[@]}" origin \
-          "refs/heads/$UPSTREAM_BRANCH_DIR:refs/remotes/origin/$UPSTREAM_BRANCH_DIR"
+          "refs/heads/$UPSTREAM_BRANCH_DIR:refs/remotes/origin/$UPSTREAM_BRANCH_DIR" 2>>"$tmp_failure_file"
         then
+          # Reprint fetch errors to stderr
+          [[ -f "$tmp_failure_file" ]] && cat "$tmp_failure_file" 1>&2
+
           if [[ "$UPSTREAM_SHA_HTTP_CODE" = "404" ]]
           then
             TAP="${DIR#$HOMEBREW_LIBRARY/Taps/}"
             echo "$TAP does not exist! Run \`brew untap $TAP\` to remove it." >>"$update_failed_file"
           else
             echo "Fetching $DIR failed!" >>"$update_failed_file"
+
+            if [[ -f "$tmp_failure_file" ]] &&
+               [[ "$(<"$tmp_failure_file")" = "fatal: couldn't find remote ref refs/heads/$UPSTREAM_BRANCH_DIR" ]]
+            then
+              echo "$DIR" >>"$missing_remote_ref_dirs_file"
+            fi
           fi
         fi
       fi
+
+      rm -f "$tmp_failure_file"
     ) &
   done
 
@@ -594,6 +611,13 @@ EOS
     onoe <"$update_failed_file"
     rm -f "$update_failed_file"
     export HOMEBREW_UPDATE_FAILED="1"
+  fi
+
+  if [[ -f "$missing_remote_ref_dirs_file" ]]
+  then
+    HOMEBREW_MISSING_REMOTE_REF_DIRS="$(<"$missing_remote_ref_dirs_file")"
+    rm -f "$missing_remote_ref_dirs_file"
+    export HOMEBREW_MISSING_REMOTE_REF_DIRS
   fi
 
   for DIR in "$HOMEBREW_REPOSITORY" "$HOMEBREW_LIBRARY"/Taps/*/*
@@ -629,6 +653,7 @@ EOS
 
   if [[ -n "$HOMEBREW_UPDATED" ||
         -n "$HOMEBREW_UPDATE_FAILED" ||
+        -n "$HOMEBREW_FAILED_FETCH_DIRS" ||
         -n "$HOMEBREW_UPDATE_FORCE" ||
         -d "$HOMEBREW_LIBRARY/LinkedKegs" ||
         ! -f "$HOMEBREW_CACHE/all_commands_list.txt" ||

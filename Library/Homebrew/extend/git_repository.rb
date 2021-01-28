@@ -54,6 +54,18 @@ module GitRepositoryExtension
     popen_git("rev-parse", "--abbrev-ref", "HEAD", safe: safe)
   end
 
+  # Change the name of a local branch
+  sig { params(old: String, new: String).void }
+  def git_rename_branch(old:, new:)
+    popen_git("branch", "-m", old, new)
+  end
+
+  # Set an upstream branch for a local branch to track
+  sig { params(local: String, origin: String).void }
+  def git_branch_set_upstream(local:, origin:)
+    popen_git("branch", "-u", "origin/#{origin}", local)
+  end
+
   # Gets the name of the default origin HEAD branch.
   sig { returns(T.nilable(String)) }
   def git_origin_branch
@@ -70,6 +82,17 @@ module GitRepositoryExtension
   sig { returns(T.nilable(String)) }
   def git_last_commit_date
     popen_git("show", "-s", "--format=%cd", "--date=short", "HEAD")
+  end
+
+  # Returns true if the given branch exists on origin
+  sig { params(branch: String).returns(T::Boolean) }
+  def git_origin_has_branch?(branch)
+    popen_git("ls-remote", "--heads", "origin", branch).present?
+  end
+
+  sig { void }
+  def git_origin_set_head_auto
+    popen_git("remote", "set-head", "origin", "--auto")
   end
 
   # Gets the full commit message of the specified commit, or of the HEAD commit if unspecified.
