@@ -63,6 +63,32 @@ describe RuboCop::Cop::FormulaAudit::Checksum do
         end
       RUBY
     end
+
+    it "reports an offense if a checksum is not 64 characters in a bottle block without cellar" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          url 'https://brew.sh/foo-1.0.tgz'
+
+          bottle do
+            sha256 catalina: "5cf6e1ae0a645b426c0474cc7cd3f7d1605ffa1ac5756a39a8b2268ddc7ea0e9ad"
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ sha256 should be 64 characters
+          end
+        end
+      RUBY
+    end
+
+    it "reports an offense if a checksum is not 64 characters in a bottle block" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          url 'https://brew.sh/foo-1.0.tgz'
+
+          bottle do
+            sha256 cellar: :any, catalina: "5cf6e1ae0a645b426c0474cc7cd3f7d1605ffa1ac5756a39a8b2268ddc7ea0e9ad"
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ sha256 should be 64 characters
+          end
+        end
+      RUBY
+    end
   end
 end
 

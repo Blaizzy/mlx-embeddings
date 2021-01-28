@@ -32,11 +32,7 @@ module RuboCop
             return
           end
 
-          checksum_string = string_content(checksum)
-
-          return if checksum_string == "cellar"
-
-          if checksum_string.size != 64 && regex_match_group(checksum, /^\w*$/)
+          if string_content(checksum).size != 64 && regex_match_group(checksum, /^\w*$/)
             problem "sha256 should be 64 characters"
           end
 
