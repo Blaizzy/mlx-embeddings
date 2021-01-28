@@ -216,10 +216,10 @@ describe Homebrew do
 
     it "checks for conflicting checksums" do
       old_spec = BottleSpecification.new
-      old_spec.sha256("109c0cb581a7b5d84da36d84b221fb9dd0f8a927b3044d82611791c9907e202e" => :catalina)
-      old_spec.sha256("7571772bf7a0c9fe193e70e521318b53993bee6f351976c9b6e01e00d13d6c3f" => :mojave)
+      old_spec.sha256(catalina: "109c0cb581a7b5d84da36d84b221fb9dd0f8a927b3044d82611791c9907e202e")
+      old_spec.sha256(mojave: "7571772bf7a0c9fe193e70e521318b53993bee6f351976c9b6e01e00d13d6c3f")
       new_hash = { "tags" => { "catalina" => "ec6d7f08412468f28dee2be17ad8cd8b883b16b34329efcecce019b8c9736428" } }
-      expected_checksum_hash = { "7571772bf7a0c9fe193e70e521318b53993bee6f351976c9b6e01e00d13d6c3f" => :mojave }
+      expected_checksum_hash = { mojave: "7571772bf7a0c9fe193e70e521318b53993bee6f351976c9b6e01e00d13d6c3f" }
       expected_checksum_hash[:cellar] = Homebrew::DEFAULT_CELLAR
       expect(homebrew.merge_bottle_spec([:sha256], old_spec, new_hash)).to eq [
         ["sha256 => catalina"],
@@ -232,7 +232,7 @@ describe Homebrew do
     it "generates a string without cellar" do
       expect(homebrew.generate_sha256_line(:catalina, "deadbeef", nil)).to eq(
         <<~RUBY.chomp,
-          sha256 "deadbeef" => :catalina
+          sha256 catalina: "deadbeef"
         RUBY
       )
     end
@@ -240,7 +240,7 @@ describe Homebrew do
     it "generates a string with cellar symbol" do
       expect(homebrew.generate_sha256_line(:catalina, "deadbeef", :any)).to eq(
         <<~RUBY.chomp,
-          sha256 "deadbeef" => :catalina, :cellar => :any
+          sha256 cellar: :any, catalina: "deadbeef"
         RUBY
       )
     end
@@ -248,7 +248,7 @@ describe Homebrew do
     it "generates a string with default cellar path" do
       expect(homebrew.generate_sha256_line(:catalina, "deadbeef", Homebrew::DEFAULT_LINUX_CELLAR)).to eq(
         <<~RUBY.chomp,
-          sha256 "deadbeef" => :catalina
+          sha256 catalina: "deadbeef"
         RUBY
       )
     end
@@ -256,7 +256,7 @@ describe Homebrew do
     it "generates a string with non-default cellar path" do
       expect(homebrew.generate_sha256_line(:catalina, "deadbeef", "/home/test")).to eq(
         <<~RUBY.chomp,
-          sha256 "deadbeef" => :catalina, :cellar => "/home/test"
+          sha256 cellar: "/home/test", catalina: "deadbeef"
         RUBY
       )
     end
@@ -320,8 +320,8 @@ describe "brew bottle --merge", :integration_test do
       ==> testball
         bottle do
           root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
-          sha256 "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f" => :big_sur, :cellar => :any_skip_relocation
-          sha256 "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac" => :catalina, :cellar => :any_skip_relocation
+          sha256 cellar: :any_skip_relocation, big_sur: "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
+          sha256 cellar: :any_skip_relocation, catalina: "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
         end
     EOS
 
@@ -334,8 +334,8 @@ describe "brew bottle --merge", :integration_test do
 
         bottle do
           root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
-          sha256 "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f" => :big_sur, :cellar => :any_skip_relocation
-          sha256 "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac" => :catalina, :cellar => :any_skip_relocation
+          sha256 cellar: :any_skip_relocation, big_sur: "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
+          sha256 cellar: :any_skip_relocation, catalina: "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
         end
 
         option "with-foo", "Build with foo"
@@ -365,8 +365,8 @@ describe "brew bottle --merge", :integration_test do
         bottle do
           root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
           cellar :any_skip_relocation
-          sha256 "6b276491297d4052538bd2fd22d5129389f27d90a98f831987236a5b90511b98" => :big_sur
-          sha256 "16cf230afdfcb6306c208d169549cf8773c831c8653d2c852315a048960d7e72" => :catalina
+          sha256 big_sur: "6b276491297d4052538bd2fd22d5129389f27d90a98f831987236a5b90511b98"
+          sha256 catalina: "16cf230afdfcb6306c208d169549cf8773c831c8653d2c852315a048960d7e72"
         end
       EOS
       system "git", "add", "--all"
@@ -383,8 +383,8 @@ describe "brew bottle --merge", :integration_test do
       ==> testball
         bottle do
           root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
-          sha256 "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f" => :big_sur, :cellar => :any_skip_relocation
-          sha256 "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac" => :catalina, :cellar => :any_skip_relocation
+          sha256 cellar: :any_skip_relocation, big_sur: "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
+          sha256 cellar: :any_skip_relocation, catalina: "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
         end
     EOS
 
@@ -399,8 +399,8 @@ describe "brew bottle --merge", :integration_test do
 
         bottle do
           root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
-          sha256 "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f" => :big_sur, :cellar => :any_skip_relocation
-          sha256 "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac" => :catalina, :cellar => :any_skip_relocation
+          sha256 cellar: :any_skip_relocation, big_sur: "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
+          sha256 cellar: :any_skip_relocation, catalina: "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
         end
 
         def install
@@ -464,9 +464,9 @@ describe "brew bottle --merge", :integration_test do
       ==> testball
         bottle do
           root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
-          sha256 "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f" => :big_sur, :cellar => :any_skip_relocation
-          sha256 "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac" => :catalina, :cellar => :any_skip_relocation
-          sha256 "6971b6eebf4c00eaaed72a1104a49be63861eabc95d679a0c84040398e320059" => :high_sierra, :cellar => :any
+          sha256 cellar: :any_skip_relocation, big_sur: "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
+          sha256 cellar: :any_skip_relocation, catalina: "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
+          sha256 cellar: :any, high_sierra: "6971b6eebf4c00eaaed72a1104a49be63861eabc95d679a0c84040398e320059"
         end
     EOS
 
@@ -481,9 +481,9 @@ describe "brew bottle --merge", :integration_test do
 
         bottle do
           root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
-          sha256 "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f" => :big_sur, :cellar => :any_skip_relocation
-          sha256 "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac" => :catalina, :cellar => :any_skip_relocation
-          sha256 "6971b6eebf4c00eaaed72a1104a49be63861eabc95d679a0c84040398e320059" => :high_sierra, :cellar => :any
+          sha256 cellar: :any_skip_relocation, big_sur: "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
+          sha256 cellar: :any_skip_relocation, catalina: "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
+          sha256 cellar: :any, high_sierra: "6971b6eebf4c00eaaed72a1104a49be63861eabc95d679a0c84040398e320059"
         end
 
         def install

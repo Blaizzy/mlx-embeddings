@@ -195,18 +195,18 @@ module Homebrew
   end
 
   def generate_sha256_line(tag, digest, cellar)
-    line = %Q(sha256 "#{digest}" => :#{tag})
-    return line if cellar.blank?
-    return "#{line}, :cellar => :#{cellar}" if cellar.is_a? Symbol
-
     default_cellars = [
       Homebrew::DEFAULT_MACOS_CELLAR,
       Homebrew::DEFAULT_MACOS_ARM_CELLAR,
       Homebrew::DEFAULT_LINUX_CELLAR,
     ]
-    return %Q(#{line}, :cellar => "#{cellar}") if default_cellars.exclude?(cellar)
-
-    line
+    if cellar.is_a?(Symbol)
+      %Q(sha256 cellar: :#{cellar}, #{tag}: "#{digest}")
+    elsif cellar.present? && default_cellars.exclude?(cellar)
+      %Q(sha256 cellar: "#{cellar}", #{tag}: "#{digest}")
+    else
+      %Q(sha256 #{tag}: "#{digest}")
+    end
   end
 
   def bottle_output(bottle)
@@ -488,7 +488,7 @@ module Homebrew
       bottle_hash["bottle"]["tags"].each do |tag, tag_hash|
         cellar = tag_hash["cellar"]
         cellar = cellar.to_sym if any_cellars.include?(cellar)
-        sha256_hash = { tag_hash["sha256"] => tag.to_sym, :cellar => cellar }
+        sha256_hash = { cellar: cellar, tag.to_sym => tag_hash["sha256"] }
         bottle.sha256 sha256_hash
       end
 
@@ -565,7 +565,7 @@ module Homebrew
       if new_value.present?
         mismatches << "sha256 => #{tag}"
       else
-        checksums << { old_hexdigest => tag, :cellar => old_cellar }
+        checksums << { cellar: old_cellar, tag => old_hexdigest }
       end
     end
 
