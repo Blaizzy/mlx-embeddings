@@ -144,6 +144,19 @@ module Homebrew
     link_completions_manpages_and_docs
     Tap.each(&:link_completions_and_manpages)
 
+    failed_fetch_dirs = ENV["HOMEBREW_FAILED_FETCH_DIRS"]&.split("\n")
+    if failed_fetch_dirs.present?
+      failed_fetch_taps = failed_fetch_dirs.map { |dir| Tap.from_path(dir) }
+
+      puts Formatter.headline "Some taps failed to update!", color: :red
+      puts <<~EOS
+        The following taps can not read their remote branches:
+          #{failed_fetch_taps.join("\n  ")}
+        This may be happening because the remote branch was renamed.
+        Reset taps to point to the correct remote branches by running `brew tap --repair`
+      EOS
+    end
+
     return if new_repository_version.blank?
 
     ohai "Homebrew was updated to version #{new_repository_version}"
