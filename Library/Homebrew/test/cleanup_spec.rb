@@ -199,8 +199,11 @@ describe Homebrew::Cleanup do
   describe "::cleanup_logs" do
     let(:path) { (HOMEBREW_LOGS/"delete_me") }
 
-    it "cleans all logs if prune is 0" do
+    before do
       path.mkpath
+    end
+
+    it "cleans all logs if prune is 0" do
       described_class.new(days: 0).cleanup_logs
       expect(path).not_to exist
     end
@@ -208,7 +211,6 @@ describe Homebrew::Cleanup do
     it "cleans up logs if older than 30 days" do
       allow_any_instance_of(Pathname).to receive(:ctime).and_return(31.days.ago)
       allow_any_instance_of(Pathname).to receive(:mtime).and_return(31.days.ago)
-      path.mkpath
       subject.cleanup_logs
       expect(path).not_to exist
     end
@@ -216,7 +218,6 @@ describe Homebrew::Cleanup do
     it "does not clean up logs less than 30 days old" do
       allow_any_instance_of(Pathname).to receive(:ctime).and_return(15.days.ago)
       allow_any_instance_of(Pathname).to receive(:mtime).and_return(15.days.ago)
-      path.mkpath
       subject.cleanup_logs
       expect(path).to exist
     end
