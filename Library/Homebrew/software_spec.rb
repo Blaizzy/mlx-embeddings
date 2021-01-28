@@ -442,8 +442,9 @@ class BottleSpecification
     end
     tags.reverse.map do |tag|
       {
-        collector[tag][:checksum] => tag,
-        cellar: collector[tag][:cellar],
+        "tag"    => tag,
+        "digest" => collector[tag][:checksum],
+        "cellar" => collector[tag][:cellar],
       }
     end
   end
