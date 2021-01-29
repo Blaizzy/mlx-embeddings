@@ -106,7 +106,7 @@ function __fish_brew_suggest_formulae_installed
 end
 
 function __fish_brew_suggest_formulae_outdated -d "List of outdated formulae with the information about potential upgrade"
-    brew outdated --verbose \
+    brew outdated --formula --verbose \
         # replace first space with tab to make the following a description in the completions list:
         | string replace -r '\s' '\t'
 end
@@ -132,7 +132,7 @@ function __fish_brew_suggest_casks_installed -d "Lists installed casks"
 end
 
 function __fish_brew_suggest_casks_outdated -d "Lists outdated casks with the information about potential upgrade"
-    brew cask outdated --verbose \
+    brew outdated --cask --verbose \
         # replace first space with tab to make the following a description in the completions list:
         | string replace -r '\s' '\t'
 end
