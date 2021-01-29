@@ -77,64 +77,64 @@ describe Homebrew do
 
   let(:hello_hash_big_sur) {
     JSON.parse stub_hash(
-      "name":           "hello",
-      "version":        "1.0",
-      "path":           "/home/hello.rb",
-      "cellar":         "any_skip_relocation",
-      "os":             "big_sur",
-      "filename":       "hello-1.0.big_sur.bottle.tar.gz",
-      "local_filename": "hello--1.0.big_sur.bottle.tar.gz",
-      "sha256":         "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f",
+      name:           "hello",
+      version:        "1.0",
+      path:           "/home/hello.rb",
+      cellar:         "any_skip_relocation",
+      os:             "big_sur",
+      filename:       "hello-1.0.big_sur.bottle.tar.gz",
+      local_filename: "hello--1.0.big_sur.bottle.tar.gz",
+      sha256:         "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f",
     )
   }
   let(:hello_hash_catalina) {
     JSON.parse stub_hash(
-      "name":           "hello",
-      "version":        "1.0",
-      "path":           "/home/hello.rb",
-      "cellar":         "any_skip_relocation",
-      "os":             "catalina",
-      "filename":       "hello-1.0.catalina.bottle.tar.gz",
-      "local_filename": "hello--1.0.catalina.bottle.tar.gz",
-      "sha256":         "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac",
+      name:           "hello",
+      version:        "1.0",
+      path:           "/home/hello.rb",
+      cellar:         "any_skip_relocation",
+      os:             "catalina",
+      filename:       "hello-1.0.catalina.bottle.tar.gz",
+      local_filename: "hello--1.0.catalina.bottle.tar.gz",
+      sha256:         "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac",
     )
   }
   let(:unzip_hash_big_sur) {
     JSON.parse stub_hash(
-      "name":           "unzip",
-      "version":        "2.0",
-      "path":           "/home/unzip.rb",
-      "cellar":         "any_skip_relocation",
-      "os":             "big_sur",
-      "filename":       "unzip-2.0.big_sur.bottle.tar.gz",
-      "local_filename": "unzip--2.0.big_sur.bottle.tar.gz",
-      "sha256":         "16cf230afdfcb6306c208d169549cf8773c831c8653d2c852315a048960d7e72",
+      name:           "unzip",
+      version:        "2.0",
+      path:           "/home/unzip.rb",
+      cellar:         "any_skip_relocation",
+      os:             "big_sur",
+      filename:       "unzip-2.0.big_sur.bottle.tar.gz",
+      local_filename: "unzip--2.0.big_sur.bottle.tar.gz",
+      sha256:         "16cf230afdfcb6306c208d169549cf8773c831c8653d2c852315a048960d7e72",
     )
   }
   let(:unzip_hash_catalina) {
     JSON.parse stub_hash(
-      "name":           "unzip",
-      "version":        "2.0",
-      "path":           "/home/unzip.rb",
-      "cellar":         "any",
-      "os":             "catalina",
-      "filename":       "unzip-2.0.catalina.bottle.tar.gz",
-      "local_filename": "unzip--2.0.catalina.bottle.tar.gz",
-      "sha256":         "d9cc50eec8ac243148a121049c236cba06af4a0b1156ab397d0a2850aa79c137",
+      name:           "unzip",
+      version:        "2.0",
+      path:           "/home/unzip.rb",
+      cellar:         "any",
+      os:             "catalina",
+      filename:       "unzip-2.0.catalina.bottle.tar.gz",
+      local_filename: "unzip--2.0.catalina.bottle.tar.gz",
+      sha256:         "d9cc50eec8ac243148a121049c236cba06af4a0b1156ab397d0a2850aa79c137",
     )
   }
 
   specify "::parse_json_files" do
     Tempfile.open("hello--1.0.big_sur.bottle.json") do |f|
       f.write stub_hash(
-        "name":           "hello",
-        "version":        "1.0",
-        "path":           "/home/hello.rb",
-        "cellar":         "any_skip_relocation",
-        "os":             "big_sur",
-        "filename":       "hello-1.0.big_sur.bottle.tar.gz",
-        "local_filename": "hello--1.0.big_sur.bottle.tar.gz",
-        "sha256":         "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f",
+        name:           "hello",
+        version:        "1.0",
+        path:           "/home/hello.rb",
+        cellar:         "any_skip_relocation",
+        os:             "big_sur",
+        filename:       "hello-1.0.big_sur.bottle.tar.gz",
+        local_filename: "hello--1.0.big_sur.bottle.tar.gz",
+        sha256:         "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f",
       )
       f.close
       expect(
@@ -275,25 +275,25 @@ describe "brew bottle --merge", :integration_test do
 
   before do
     Pathname("#{TEST_TMPDIR}/testball-1.0.big_sur.bottle.json").write stub_hash(
-      "name":           "testball",
-      "version":        "1.0",
-      "path":           "#{core_tap.path}/Formula/testball.rb",
-      "cellar":         "any_skip_relocation",
-      "os":             "big_sur",
-      "filename":       "hello-1.0.big_sur.bottle.tar.gz",
-      "local_filename": "hello--1.0.big_sur.bottle.tar.gz",
-      "sha256":         "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f",
+      name:           "testball",
+      version:        "1.0",
+      path:           "#{core_tap.path}/Formula/testball.rb",
+      cellar:         "any_skip_relocation",
+      os:             "big_sur",
+      filename:       "hello-1.0.big_sur.bottle.tar.gz",
+      local_filename: "hello--1.0.big_sur.bottle.tar.gz",
+      sha256:         "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f",
     )
 
     Pathname("#{TEST_TMPDIR}/testball-1.0.catalina.bottle.json").write stub_hash(
-      "name":           "testball",
-      "version":        "1.0",
-      "path":           "#{core_tap.path}/Formula/testball.rb",
-      "cellar":         "any_skip_relocation",
-      "os":             "catalina",
-      "filename":       "testball-1.0.catalina.bottle.tar.gz",
-      "local_filename": "testball--1.0.catalina.bottle.tar.gz",
-      "sha256":         "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac",
+      name:           "testball",
+      version:        "1.0",
+      path:           "#{core_tap.path}/Formula/testball.rb",
+      cellar:         "any_skip_relocation",
+      os:             "catalina",
+      filename:       "testball-1.0.catalina.bottle.tar.gz",
+      local_filename: "testball--1.0.catalina.bottle.tar.gz",
+      sha256:         "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac",
     )
   end
 
