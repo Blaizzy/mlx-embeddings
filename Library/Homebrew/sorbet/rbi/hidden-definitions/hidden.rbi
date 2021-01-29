@@ -26819,7 +26819,7 @@ module RuboCop::RSpec::ExpectOffense
 
   def expect_no_offenses(source, file=T.unsafe(nil)); end
 
-  def expect_offense(source, file=T.unsafe(nil), severity: T.unsafe(nil), **replacements); end
+  def expect_offense(source, file=T.unsafe(nil), severity: T.unsafe(nil), chomp: T.unsafe(nil), **replacements); end
 
   def format_offense(source, **replacements); end
 
