@@ -89,11 +89,8 @@ module Homebrew
                           .reject { |line| line.start_with?("#") || line.blank? }
                           .map(&:strip)
 
-          named_args = T.unsafe(CLI::NamedArgs).new(*names)
-          named_args.to_formulae_and_casks.reject do |formula_or_cask|
-            (args.formula? && !formula_or_cask.is_a?(Formula)) ||
-              (args.cask? && !formula_or_cask.is_a?(Cask::Cask))
-          end
+          named_args = T.unsafe(CLI::NamedArgs).new(*names, parent: args)
+          named_args.to_formulae_and_casks(ignore_unavailable: true)
         rescue Errno::ENOENT => e
           onoe e
         end
