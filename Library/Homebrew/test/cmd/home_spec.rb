@@ -40,6 +40,10 @@ describe "brew home", :integration_test do
   it "opens the homepage for a given Cask" do
     expect { brew "home", local_caffeine_path, "HOMEBREW_BROWSER" => "echo" }
       .to output(/#{local_caffeine_homepage}/).to_stdout
+      .and output(/Treating #{Regexp.escape(local_caffeine_path)} as a cask/).to_stderr
+      .and be_a_success
+    expect { brew "home", "--cask", local_caffeine_path, "HOMEBREW_BROWSER" => "echo" }
+      .to output(/#{local_caffeine_homepage}/).to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
   end
@@ -49,7 +53,7 @@ describe "brew home", :integration_test do
 
     expect { brew "home", "testballhome", local_caffeine_path, "HOMEBREW_BROWSER" => "echo" }
       .to output(/#{testballhome_homepage} #{local_caffeine_homepage}/).to_stdout
-      .and not_to_output.to_stderr
+      .and output(/Treating #{Regexp.escape(local_caffeine_path)} as a cask/).to_stderr
       .and be_a_success
   end
 end
