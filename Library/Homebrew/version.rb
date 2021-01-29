@@ -379,11 +379,11 @@ class Version
   end
   private_class_method :_parse
 
-  DOT_OPTIONAL = /(?:\d+(?:\.\d+)*)/.source.freeze
-  private_constant :DOT_OPTIONAL
+  NUMERIC_WITH_OPTIONAL_DOTS = /(?:\d+(?:\.\d+)*)/.source.freeze
+  private_constant :NUMERIC_WITH_OPTIONAL_DOTS
 
-  DOT_REQUIRED = /(?:\d+(?:\.\d+)+)/.source.freeze
-  private_constant :DOT_REQUIRED
+  NUMERIC_WITH_DOTS = /(?:\d+(?:\.\d+)+)/.source.freeze
+  private_constant :NUMERIC_WITH_DOTS
 
   MINOR_OR_PATCH = /(?:\d+(?:\.\d+){1,2})/.source.freeze
   private_constant :MINOR_OR_PATCH
@@ -415,27 +415,27 @@ class Version
     # e.g. foobar-4.5.1-1
     # e.g. unrtf_0.20.4-1
     # e.g. ruby-1.9.1-p243
-    StemParser.new(/[_-](#{DOT_REQUIRED}-(?:p|rc|RC)?\d+)#{CONTENT_SUFFIX}?$/),
+    StemParser.new(/[_-](#{NUMERIC_WITH_DOTS}-(?:p|rc|RC)?\d+)#{CONTENT_SUFFIX}?$/),
 
     # URL with no extension
     # e.g. https://waf.io/waf-1.8.12
     # e.g. https://codeload.github.com/gsamokovarov/jump/tar.gz/v0.7.1
-    UrlParser.new(/[-v](#{DOT_OPTIONAL})$/),
+    UrlParser.new(/[-v](#{NUMERIC_WITH_OPTIONAL_DOTS})$/),
 
     # e.g. lame-398-1
     StemParser.new(/-(\d+-\d+)/),
 
     # e.g. foobar-4.5.1
-    StemParser.new(/-(#{DOT_OPTIONAL})$/),
+    StemParser.new(/-(#{NUMERIC_WITH_OPTIONAL_DOTS})$/),
 
     # e.g. foobar-4.5.1.post1
-    StemParser.new(/-(#{DOT_OPTIONAL}(.post\d+)?)$/),
+    StemParser.new(/-(#{NUMERIC_WITH_OPTIONAL_DOTS}(.post\d+)?)$/),
 
     # e.g. foobar-4.5.1b
-    StemParser.new(/-(#{DOT_OPTIONAL}(?:[abc]|rc|RC)\d*)$/),
+    StemParser.new(/-(#{NUMERIC_WITH_OPTIONAL_DOTS}(?:[abc]|rc|RC)\d*)$/),
 
     # e.g. foobar-4.5.0-alpha5, foobar-4.5.0-beta1, or foobar-4.50-beta
-    StemParser.new(/-(#{DOT_OPTIONAL}-(?:alpha|beta|rc)\d*)$/),
+    StemParser.new(/-(#{NUMERIC_WITH_OPTIONAL_DOTS}-(?:alpha|beta|rc)\d*)$/),
 
     # e.g. https://ftpmirror.gnu.org/libidn/libidn-1.29-win64.zip
     # e.g. https://ftpmirror.gnu.org/libmicrohttpd/libmicrohttpd-0.9.17-w32.zip
@@ -458,13 +458,13 @@ class Version
     # e.g. https://github.com/dlang/dmd/archive/v2.074.0-beta1.tar.gz
     # e.g. https://github.com/dlang/dmd/archive/v2.074.0-rc1.tar.gz
     # e.g. https://github.com/premake/premake-core/releases/download/v5.0.0-alpha10/premake-5.0.0-alpha10-src.zip
-    StemParser.new(/[.-vV]?(#{DOT_REQUIRED}#{PRERELEASE_SUFFIX})/),
+    StemParser.new(/[.-vV]?(#{NUMERIC_WITH_DOTS}#{PRERELEASE_SUFFIX})/),
 
     # e.g. foobar4.5.1
-    StemParser.new(/(#{DOT_OPTIONAL})$/),
+    StemParser.new(/(#{NUMERIC_WITH_OPTIONAL_DOTS})$/),
 
     # e.g. foobar-4.5.0-bin
-    StemParser.new(/[-vV](#{DOT_REQUIRED}[abc]?)#{CONTENT_SUFFIX}$/),
+    StemParser.new(/[-vV](#{NUMERIC_WITH_DOTS}[abc]?)#{CONTENT_SUFFIX}$/),
 
     # dash version style
     # e.g. http://www.antlr.org/download/antlr-3.4-complete.jar
@@ -472,10 +472,10 @@ class Version
     # e.g. https://search.maven.org/remotecontent?filepath=com/facebook/presto/presto-cli/0.181/presto-cli-0.181-executable.jar
     # e.g. https://search.maven.org/remotecontent?filepath=org/fusesource/fuse-extra/fusemq-apollo-mqtt/1.3/fusemq-apollo-mqtt-1.3-uber.jar
     # e.g. https://search.maven.org/remotecontent?filepath=org/apache/orc/orc-tools/1.2.3/orc-tools-1.2.3-uber.jar
-    StemParser.new(/-(#{DOT_REQUIRED})-/),
+    StemParser.new(/-(#{NUMERIC_WITH_DOTS})-/),
 
     # e.g. dash_0.5.5.1.orig.tar.gz (Debian style)
-    StemParser.new(/_(#{DOT_REQUIRED}[abc]?)\.orig$/),
+    StemParser.new(/_(#{NUMERIC_WITH_DOTS}[abc]?)\.orig$/),
 
     # e.g. https://www.openssl.org/source/openssl-0.9.8s.tar.gz
     StemParser.new(/-v?(\d[^-]+)/),
@@ -496,7 +496,7 @@ class Version
     StemParser.new(/\.v(\d+[a-z]?)/),
 
     # e.g. https://secure.php.net/get/php-7.1.10.tar.bz2/from/this/mirror
-    UrlParser.new(/[.-vV]?(#{DOT_REQUIRED}#{PRERELEASE_SUFFIX}?)/),
+    UrlParser.new(/[.-vV]?(#{NUMERIC_WITH_DOTS}#{PRERELEASE_SUFFIX}?)/),
   ].freeze
   private_constant :VERSION_PARSERS
 
