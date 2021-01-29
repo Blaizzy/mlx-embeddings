@@ -135,7 +135,6 @@ module Homebrew
       FileUtils.rm_rf cache_env["XDG_CACHE_HOME"] if reset_cache
 
       ruby_args = [
-        (ENV["HOMEBREW_RUBY_WARNINGS"] if !debug && !verbose),
         "-S",
         "rubocop",
       ].compact.freeze
