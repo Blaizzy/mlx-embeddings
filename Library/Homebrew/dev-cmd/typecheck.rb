@@ -97,12 +97,15 @@ module Homebrew
       end
 
       srb_exec = %w[bundle exec srb tc]
-      srb_exec << "--error-black-list" << "5061"
+
+      # TODO: comment explaining why?
+      srb_exec << "--suppress-error-code" << "5061"
+
       srb_exec << "--quiet" if args.quiet?
 
       if args.fix?
         # Auto-correcting method names is almost always wrong.
-        srb_exec << "--error-black-list" << "7003"
+        srb_exec << "--suppress-error-code" << "7003"
 
         srb_exec << "--autocorrect"
       end
