@@ -305,10 +305,12 @@ module Cask
       add_error "Casks with `version :latest` should not use `auto_updates`."
     end
 
+    APPCAST_REFERENCE_URL = "https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/stanzas/appcast.md"
+
     def check_hosting_with_appcast
       return if cask.appcast || cask.livecheckable?
 
-      add_appcast = "please add an appcast. See https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/stanzas/appcast.md"
+      add_appcast = "please add an appcast. See #{Formatter.url(APPCAST_REFERENCE_URL)}"
 
       case cask.url.to_s
       when %r{sourceforge.net/(\S+)}
@@ -334,12 +336,14 @@ module Cask
       check_download_url_format
     end
 
+    SOURCEFORGE_OSDN_REFERENCE_URL = "https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/stanzas/url.md#sourceforgeosdn-urls"
+
     def check_download_url_format
       odebug "Auditing URL format"
       if bad_sourceforge_url?
-        add_error "SourceForge URL format incorrect. See https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/stanzas/url.md#sourceforgeosdn-urls"
+        add_error "SourceForge URL format incorrect. See #{Formatter.url(SOURCEFORGE_OSDN_REFERENCE_URL)}"
       elsif bad_osdn_url?
-        add_error "OSDN URL format incorrect. See https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/stanzas/url.md#sourceforgeosdn-urls"
+        add_error "OSDN URL format incorrect. See #{Formatter.url(SOURCEFORGE_OSDN_REFERENCE_URL)}"
       end
     end
 
@@ -411,14 +415,16 @@ module Cask
       URI(cask.url.to_s).scheme == "file"
     end
 
+    VERIFIED_URL_REFERENCE_URL = "https://github.com/Homebrew/homebrew-cask/blob/master/doc/cask_language_reference/stanzas/url.md#when-url-and-homepage-hostnames-differ-add-verified"
+
     def check_unnecessary_verified
       return unless verified_present?
       return unless url_match_homepage?
       return unless verified_matches_url?
 
-      add_error "The URL's domain #{domain} matches the homepage domain #{homepage}, " \
-                "the 'verified' parameter of the 'url' stanza is unnecessary. " \
-                "See https://github.com/Homebrew/homebrew-cask/blob/master/doc/cask_language_reference/stanzas/url.md#when-url-and-homepage-hostnames-differ-add-verified"
+      add_error "The URL's domain #{Formatter.url(domain)} matches the homepage domain " \
+                "#{Formatter.url(homepage)}, the 'verified' parameter of the 'url' stanza is unnecessary. " \
+                "See #{Formatter.url(VERIFIED_URL_REFERENCE_URL)}"
     end
 
     def check_missing_verified
@@ -427,9 +433,9 @@ module Cask
       return if url_match_homepage?
       return if verified_present?
 
-      add_error "The URL's domain #{domain} does not match the homepage domain #{homepage}, " \
-                "a 'verified' parameter has to be added to the 'url' stanza. " \
-                "See https://github.com/Homebrew/homebrew-cask/blob/master/doc/cask_language_reference/stanzas/url.md#when-url-and-homepage-hostnames-differ-add-verified"
+      add_error "The URL's domain #{Formatter.url(domain)} does not match the homepage domain " \
+                "#{Formatter.url(homepage)}, a 'verified' parameter has to be added to the 'url' stanza. " \
+                "See #{Formatter.url(VERIFIED_URL_REFERENCE_URL)}"
     end
 
     def check_no_match
@@ -437,8 +443,9 @@ module Cask
       return unless verified_present?
       return if !url_match_homepage? && verified_matches_url?
 
-      add_error "Verified URL #{url_from_verified} does not match URL #{strip_url_scheme(cask.url.to_s)}. " \
-                "See https://github.com/Homebrew/homebrew-cask/blob/master/doc/cask_language_reference/stanzas/url.md#when-url-and-homepage-hostnames-differ-add-verified"
+      add_error "Verified URL #{Formatter.url(url_from_verified)} does not match URL " \
+                "#{Formatter.url(strip_url_scheme(cask.url.to_s))}. " \
+                "See #{Formatter.url(VERIFIED_URL_REFERENCE_URL)}"
     end
 
     def check_generic_artifacts
@@ -461,7 +468,8 @@ module Cask
       return unless token_conflicts?
       return unless core_formula_names.include?(cask.token)
 
-      add_warning "possible duplicate, cask token conflicts with Homebrew core formula: #{core_formula_url}"
+      add_warning "possible duplicate, cask token conflicts with Homebrew core formula: " \
+                  "#{Formatter.url(core_formula_url)}"
     end
 
     def check_token_valid
@@ -552,7 +560,7 @@ module Cask
         details = curl_http_content_headers_and_checksum(appcast_url, user_agent: HOMEBREW_USER_AGENT_FAKE_SAFARI)
         appcast_contents = details[:file]
       rescue
-        add_error "appcast at URL '#{appcast_url}' offline or looping"
+        add_error "appcast at URL '#{Formatter.url(appcast_url)}' offline or looping"
         return
       end
 
@@ -560,8 +568,11 @@ module Cask
       adjusted_version_stanza = cask.appcast.must_contain.presence || version_stanza.match(/^[[:alnum:].]+/)[0]
       return if appcast_contents.include? adjusted_version_stanza
 
-      add_error "appcast at URL '#{appcast_url}' does not contain"\
-                  " the version number '#{adjusted_version_stanza}':\n#{appcast_contents}"
+      add_error <<~EOS.chomp
+        appcast at URL '#{Formatter.url(appcast_url)}' does not contain \
+        the version number '#{adjusted_version_stanza}':
+        #{appcast_contents}
+      EOS
     end
 
     def check_github_prerelease_version
