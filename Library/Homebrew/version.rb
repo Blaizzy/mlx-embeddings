@@ -388,11 +388,11 @@ class Version
   MINOR_OR_PATCH = /(?:\d+(?:\.\d+){1,2})/.source.freeze
   private_constant :MINOR_OR_PATCH
 
-  BIN_SUFFIX = /(?:[._-](?i:bin|dist|stable|src|sources?|final|full))/.source.freeze
-  private_constant :BIN_SUFFIX
+  CONTENT_SUFFIX = /(?:[._-](?i:bin|dist|stable|src|sources?|final|full))/.source.freeze
+  private_constant :CONTENT_SUFFIX
 
-  PREREL_SUFFIX = /(?:[._-]?(?i:alpha|beta|pre|rc)\.?\d{,2})/.source.freeze
-  private_constant :PREREL_SUFFIX
+  PRERELEASE_SUFFIX = /(?:[._-]?(?i:alpha|beta|pre|rc)\.?\d{,2})/.source.freeze
+  private_constant :PRERELEASE_SUFFIX
 
   VERSION_PARSERS = [
     # date-based versioning
@@ -415,7 +415,7 @@ class Version
     # e.g. foobar-4.5.1-1
     # e.g. unrtf_0.20.4-1
     # e.g. ruby-1.9.1-p243
-    StemParser.new(/[_-](#{DOT_REQUIRED}-(?:p|rc|RC)?\d+)#{BIN_SUFFIX}?$/),
+    StemParser.new(/[_-](#{DOT_REQUIRED}-(?:p|rc|RC)?\d+)#{CONTENT_SUFFIX}?$/),
 
     # URL with no extension
     # e.g. https://waf.io/waf-1.8.12
@@ -458,13 +458,13 @@ class Version
     # e.g. https://github.com/dlang/dmd/archive/v2.074.0-beta1.tar.gz
     # e.g. https://github.com/dlang/dmd/archive/v2.074.0-rc1.tar.gz
     # e.g. https://github.com/premake/premake-core/releases/download/v5.0.0-alpha10/premake-5.0.0-alpha10-src.zip
-    StemParser.new(/[.-vV]?(#{DOT_REQUIRED}#{PREREL_SUFFIX})/),
+    StemParser.new(/[.-vV]?(#{DOT_REQUIRED}#{PRERELEASE_SUFFIX})/),
 
     # e.g. foobar4.5.1
     StemParser.new(/(#{DOT_OPTIONAL})$/),
 
     # e.g. foobar-4.5.0-bin
-    StemParser.new(/[-vV](#{DOT_REQUIRED}[abc]?)#{BIN_SUFFIX}$/),
+    StemParser.new(/[-vV](#{DOT_REQUIRED}[abc]?)#{CONTENT_SUFFIX}$/),
 
     # dash version style
     # e.g. http://www.antlr.org/download/antlr-3.4-complete.jar
@@ -496,7 +496,7 @@ class Version
     StemParser.new(/\.v(\d+[a-z]?)/),
 
     # e.g. https://secure.php.net/get/php-7.1.10.tar.bz2/from/this/mirror
-    UrlParser.new(/[.-vV]?(#{DOT_REQUIRED}#{PREREL_SUFFIX}?)/),
+    UrlParser.new(/[.-vV]?(#{DOT_REQUIRED}#{PRERELEASE_SUFFIX}?)/),
   ].freeze
   private_constant :VERSION_PARSERS
 
