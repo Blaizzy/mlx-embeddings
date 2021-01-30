@@ -433,9 +433,8 @@ module Cask
     end
 
     def check_no_match
-      return if url_match_homepage?
       return unless verified_present?
-      return if !url_match_homepage? && verified_matches_url?
+      return if verified_matches_url?
 
       add_error "Verified URL #{url_from_verified} does not match URL #{strip_url_scheme(cask.url.to_s)}. " \
                 "See https://github.com/Homebrew/homebrew-cask/blob/master/doc/cask_language_reference/stanzas/url.md#when-url-and-homepage-hostnames-differ-add-verified"
