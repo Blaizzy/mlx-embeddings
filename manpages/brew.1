@@ -978,7 +978,7 @@ Generate a list of environment variables for the specified shell, or \fB\-\-shel
 \fB\-\-plain\fR
 Generate plain output even when piped\.
 .
-.SS "\fB\-\-prefix\fR [\fI\-\-unbrewed\fR] [\fIformula\fR \.\.\.]"
+.SS "\fB\-\-prefix\fR [\fI\-\-unbrewed\fR] [\fI\-\-installed\fR] [\fIformula\fR \.\.\.]"
 Display Homebrew\'s install path\. \fIDefault:\fR
 .
 .IP "\(bu" 4
@@ -998,6 +998,10 @@ If \fIformula\fR is provided, display the location in the Cellar where \fIformul
 .TP
 \fB\-\-unbrewed\fR
 List files in Homebrew\'s prefix not installed by Homebrew\.
+.
+.TP
+\fB\-\-installed\fR
+Outputs nothing and returns a failing status code if \fIformula\fR is not installed\.
 .
 .SS "\fB\-\-repository\fR, \fB\-\-repo\fR [\fItap\fR \.\.\.]"
 Display where Homebrew\'s git repository is located\.
