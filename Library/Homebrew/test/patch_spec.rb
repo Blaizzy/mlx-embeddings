@@ -75,32 +75,32 @@ describe Patch do
       expect(patch.patch_files.count).to eq(7)
     end
   end
-end
 
-describe EmbeddedPatch do
-  describe "#new" do
-    subject { described_class.new(:p1) }
+  describe EmbeddedPatch do
+    describe "#new" do
+      subject { described_class.new(:p1) }
 
-    its(:inspect) { is_expected.to eq("#<EmbeddedPatch: :p1>") }
-  end
-end
-
-describe ExternalPatch do
-  subject(:patch) { described_class.new(:p1) { url "file:///my.patch" } }
-
-  describe "#url" do
-    its(:url) { is_expected.to eq("file:///my.patch") }
+      its(:inspect) { is_expected.to eq("#<EmbeddedPatch: :p1>") }
+    end
   end
 
-  describe "#inspect" do
-    its(:inspect) { is_expected.to eq('#<ExternalPatch: :p1 "file:///my.patch">') }
-  end
+  describe ExternalPatch do
+    subject(:patch) { described_class.new(:p1) { url "file:///my.patch" } }
 
-  describe "#cached_download" do
-    before do
-      allow(patch.resource).to receive(:cached_download).and_return("/tmp/foo.tar.gz")
+    describe "#url" do
+      its(:url) { is_expected.to eq("file:///my.patch") }
     end
 
-    its(:cached_download) { is_expected.to eq("/tmp/foo.tar.gz") }
+    describe "#inspect" do
+      its(:inspect) { is_expected.to eq('#<ExternalPatch: :p1 "file:///my.patch">') }
+    end
+
+    describe "#cached_download" do
+      before do
+        allow(patch.resource).to receive(:cached_download).and_return("/tmp/foo.tar.gz")
+      end
+
+      its(:cached_download) { is_expected.to eq("/tmp/foo.tar.gz") }
+    end
   end
 end

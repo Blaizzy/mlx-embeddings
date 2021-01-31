@@ -452,64 +452,64 @@ describe Tap do
       end
     end
   end
-end
 
-describe CoreTap do
-  subject(:core_tap) { described_class.new }
+  describe CoreTap do
+    subject(:core_tap) { described_class.new }
 
-  specify "attributes" do
-    expect(core_tap.user).to eq("Homebrew")
-    expect(core_tap.repo).to eq("core")
-    expect(core_tap.name).to eq("homebrew/core")
-    expect(core_tap.command_files).to eq([])
-    expect(core_tap).to be_installed
-    expect(core_tap).not_to be_pinned
-    expect(core_tap).to be_official
-    expect(core_tap).to be_a_core_tap
-  end
-
-  specify "forbidden operations" do
-    expect { core_tap.uninstall }.to raise_error(RuntimeError)
-    expect { core_tap.pin }.to raise_error(RuntimeError)
-    expect { core_tap.unpin }.to raise_error(RuntimeError)
-  end
-
-  specify "files" do
-    path = Tap::TAP_DIRECTORY/"homebrew/homebrew-core"
-    formula_file = core_tap.formula_dir/"foo.rb"
-    formula_file.write <<~RUBY
-      class Foo < Formula
-        url "https://brew.sh/foo-1.0.tar.gz"
-      end
-    RUBY
-
-    formula_list_file_json = '{ "foo": "foo1", "bar": "bar1" }'
-    formula_list_file_contents = { "foo" => "foo1", "bar" => "bar1" }
-    %w[
-      formula_renames.json
-      tap_migrations.json
-      audit_exceptions/formula_list.json
-      style_exceptions/formula_hash.json
-      pypi_formula_mappings.json
-    ].each do |file|
-      (path/file).write formula_list_file_json
+    specify "attributes" do
+      expect(core_tap.user).to eq("Homebrew")
+      expect(core_tap.repo).to eq("core")
+      expect(core_tap.name).to eq("homebrew/core")
+      expect(core_tap.command_files).to eq([])
+      expect(core_tap).to be_installed
+      expect(core_tap).not_to be_pinned
+      expect(core_tap).to be_official
+      expect(core_tap).to be_a_core_tap
     end
 
-    alias_file = core_tap.alias_dir/"bar"
-    alias_file.parent.mkpath
-    ln_s formula_file, alias_file
+    specify "forbidden operations" do
+      expect { core_tap.uninstall }.to raise_error(RuntimeError)
+      expect { core_tap.pin }.to raise_error(RuntimeError)
+      expect { core_tap.unpin }.to raise_error(RuntimeError)
+    end
 
-    expect(core_tap.formula_files).to eq([formula_file])
-    expect(core_tap.formula_names).to eq(["foo"])
-    expect(core_tap.alias_files).to eq([alias_file])
-    expect(core_tap.aliases).to eq(["bar"])
-    expect(core_tap.alias_table).to eq("bar" => "foo")
-    expect(core_tap.alias_reverse_table).to eq("foo" => ["bar"])
+    specify "files" do
+      path = Tap::TAP_DIRECTORY/"homebrew/homebrew-core"
+      formula_file = core_tap.formula_dir/"foo.rb"
+      formula_file.write <<~RUBY
+        class Foo < Formula
+          url "https://brew.sh/foo-1.0.tar.gz"
+        end
+      RUBY
 
-    expect(core_tap.formula_renames).to eq formula_list_file_contents
-    expect(core_tap.tap_migrations).to eq formula_list_file_contents
-    expect(core_tap.audit_exceptions).to eq({ formula_list: formula_list_file_contents })
-    expect(core_tap.style_exceptions).to eq({ formula_hash: formula_list_file_contents })
-    expect(core_tap.pypi_formula_mappings).to eq formula_list_file_contents
+      formula_list_file_json = '{ "foo": "foo1", "bar": "bar1" }'
+      formula_list_file_contents = { "foo" => "foo1", "bar" => "bar1" }
+      %w[
+        formula_renames.json
+        tap_migrations.json
+        audit_exceptions/formula_list.json
+        style_exceptions/formula_hash.json
+        pypi_formula_mappings.json
+      ].each do |file|
+        (path/file).write formula_list_file_json
+      end
+
+      alias_file = core_tap.alias_dir/"bar"
+      alias_file.parent.mkpath
+      ln_s formula_file, alias_file
+
+      expect(core_tap.formula_files).to eq([formula_file])
+      expect(core_tap.formula_names).to eq(["foo"])
+      expect(core_tap.alias_files).to eq([alias_file])
+      expect(core_tap.aliases).to eq(["bar"])
+      expect(core_tap.alias_table).to eq("bar" => "foo")
+      expect(core_tap.alias_reverse_table).to eq("foo" => ["bar"])
+
+      expect(core_tap.formula_renames).to eq formula_list_file_contents
+      expect(core_tap.tap_migrations).to eq formula_list_file_contents
+      expect(core_tap.audit_exceptions).to eq({ formula_list: formula_list_file_contents })
+      expect(core_tap.style_exceptions).to eq({ formula_hash: formula_list_file_contents })
+      expect(core_tap.pypi_formula_mappings).to eq formula_list_file_contents
+    end
   end
 end

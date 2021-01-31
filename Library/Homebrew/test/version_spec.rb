@@ -7,70 +7,68 @@ describe Version do
   specify ".formula_optionally_versioned_regex" do
     expect(described_class.formula_optionally_versioned_regex("foo")).to match("foo@1.2")
   end
-end
 
-describe Version::Token do
-  specify "#inspect" do
-    expect(described_class.new("foo").inspect).to eq('#<Version::Token "foo">')
-  end
+  describe Version::Token do
+    specify "#inspect" do
+      expect(described_class.new("foo").inspect).to eq('#<Version::Token "foo">')
+    end
 
-  specify "#to_s" do
-    expect(described_class.new("foo").to_s).to eq("foo")
-  end
+    specify "#to_s" do
+      expect(described_class.new("foo").to_s).to eq("foo")
+    end
 
-  it "can be compared against nil" do
-    expect(described_class.create("2")).to be > nil
-    expect(described_class.create("p194")).to be > nil
-  end
+    it "can be compared against nil" do
+      expect(described_class.create("2")).to be > nil
+      expect(described_class.create("p194")).to be > nil
+    end
 
-  it "can be compared against Version::NULL_TOKEN" do
-    expect(described_class.create("2")).to be > Version::NULL_TOKEN
-    expect(described_class.create("p194")).to be > Version::NULL_TOKEN
-  end
+    it "can be compared against Version::NULL_TOKEN" do
+      expect(described_class.create("2")).to be > Version::NULL_TOKEN
+      expect(described_class.create("p194")).to be > Version::NULL_TOKEN
+    end
 
-  it "can be compared against strings" do
-    expect(described_class.create("2")).to be == "2"
-    expect(described_class.create("p194")).to be == "p194"
-    expect(described_class.create("1")).to be == 1
-  end
+    it "can be compared against strings" do
+      expect(described_class.create("2")).to be == "2"
+      expect(described_class.create("p194")).to be == "p194"
+      expect(described_class.create("1")).to be == 1
+    end
 
-  specify "comparison returns nil for non-token" do
-    v = described_class.create("1")
-    expect(v <=> Object.new).to be nil
-    expect { v > Object.new }.to raise_error(ArgumentError)
-  end
+    specify "comparison returns nil for non-token" do
+      v = described_class.create("1")
+      expect(v <=> Object.new).to be nil
+      expect { v > Object.new }.to raise_error(ArgumentError)
+    end
 
-  describe "#to_str" do
-    it "implicitly converts token to string" do
-      expect(String.try_convert(described_class.new("foo"))).not_to be nil
+    describe "#to_str" do
+      it "implicitly converts token to string" do
+        expect(String.try_convert(described_class.new("foo"))).not_to be nil
+      end
     end
   end
-end
 
-describe Version::NULL do
-  it "is always smaller" do
-    expect(described_class).to be < Version.create("1")
+  describe Version::NULL do
+    it "is always smaller" do
+      expect(described_class).to be < Version.create("1")
+    end
+
+    it "is never greater" do
+      expect(described_class).not_to be > Version.create("0")
+    end
+
+    it "isn't equal to itself" do
+      expect(described_class).not_to eql(described_class)
+    end
+
+    it "creates an empty string" do
+      expect(described_class.to_s).to eq("")
+    end
+
+    it "produces NaN as a Float" do
+      # Float::NAN is not equal to itself so compare object IDs
+      expect(described_class.to_f.object_id).to eql(Float::NAN.object_id)
+    end
   end
 
-  it "is never greater" do
-    expect(described_class).not_to be > Version.create("0")
-  end
-
-  it "isn't equal to itself" do
-    expect(described_class).not_to eql(described_class)
-  end
-
-  it "creates an empty string" do
-    expect(described_class.to_s).to eq("")
-  end
-
-  it "produces NaN as a Float" do
-    # Float::NAN is not equal to itself so compare object IDs
-    expect(described_class.to_f.object_id).to eql(Float::NAN.object_id)
-  end
-end
-
-describe Version do
   describe "::NULL_TOKEN" do
     subject(:null_version) { described_class::NULL_TOKEN }
 
@@ -853,12 +851,12 @@ describe Version do
         .to be_detected_from("https://github.com/foo/bar.git", tag: "v1.2.3-beta1")
     end
   end
-end
 
-describe Pathname do
-  specify "#version" do
-    d = HOMEBREW_CELLAR/"foo-0.1.9"
-    d.mkpath
-    expect(d.version).to eq(Version.create("0.1.9"))
+  describe Pathname do
+    specify "#version" do
+      d = HOMEBREW_CELLAR/"foo-0.1.9"
+      d.mkpath
+      expect(d.version).to eq(Version.create("0.1.9"))
+    end
   end
 end

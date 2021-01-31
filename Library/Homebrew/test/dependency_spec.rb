@@ -100,16 +100,16 @@ describe Dependency do
     expect(foo1).not_to eq(foo3)
     expect(foo1).not_to eql(foo3)
   end
-end
 
-describe TapDependency do
-  subject(:dependency) { described_class.new("foo/bar/dog") }
+  describe TapDependency do
+    subject(:dependency) { described_class.new("foo/bar/dog") }
 
-  specify "#tap" do
-    expect(dependency.tap).to eq(Tap.new("foo", "bar"))
-  end
+    specify "#tap" do
+      expect(dependency.tap).to eq(Tap.new("foo", "bar"))
+    end
 
-  specify "#option_names" do
-    expect(dependency.option_names).to eq(%w[dog])
+    specify "#option_names" do
+      expect(dependency.option_names).to eq(%w[dog])
+    end
   end
 end

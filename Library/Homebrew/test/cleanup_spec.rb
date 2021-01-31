@@ -8,28 +8,6 @@ require "fileutils"
 
 using Homebrew::Cleanup::CleanupRefinement
 
-describe Homebrew::Cleanup::CleanupRefinement do
-  describe "::prune?" do
-    alias_matcher :be_pruned, :be_prune
-
-    subject(:path) { HOMEBREW_CACHE/"foo" }
-
-    before do
-      path.mkpath
-    end
-
-    it "returns true when ctime and mtime < days_default" do
-      allow_any_instance_of(Pathname).to receive(:ctime).and_return(2.days.ago)
-      allow_any_instance_of(Pathname).to receive(:mtime).and_return(2.days.ago)
-      expect(path.prune?(1)).to be true
-    end
-
-    it "returns false when ctime and mtime >= days_default" do
-      expect(path.prune?(2)).to be false
-    end
-  end
-end
-
 describe Homebrew::Cleanup do
   subject(:cleanup) { described_class.new }
 
@@ -47,6 +25,26 @@ describe Homebrew::Cleanup do
     FileUtils.rm_f ds_store
     FileUtils.rm_f lock_file
     FileUtils.rm_rf HOMEBREW_LIBRARY/"Homebrew"
+  end
+
+  describe "::CleanupRefinement::prune?" do
+    alias_matcher :be_pruned, :be_prune
+
+    subject(:path) { HOMEBREW_CACHE/"foo" }
+
+    before do
+      path.mkpath
+    end
+
+    it "returns true when ctime and mtime < days_default" do
+      allow_any_instance_of(Pathname).to receive(:ctime).and_return(2.days.ago)
+      allow_any_instance_of(Pathname).to receive(:mtime).and_return(2.days.ago)
+      expect(path.prune?(1)).to be true
+    end
+
+    it "returns false when ctime and mtime >= days_default" do
+      expect(path.prune?(2)).to be false
+    end
   end
 
   describe "::cleanup" do

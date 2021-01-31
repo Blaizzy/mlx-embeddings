@@ -3,229 +3,231 @@
 
 require "exceptions"
 
-describe MultipleVersionsInstalledError do
-  subject {
-    described_class.new <<~EOS
-      foo has multiple installed versions
-      Run `brew uninstall --force foo` to remove all versions.
-    EOS
-  }
-
-  its(:to_s) {
-    is_expected.to eq <<~EOS
-      foo has multiple installed versions
-      Run `brew uninstall --force foo` to remove all versions.
-    EOS
-  }
-end
-
-describe NoSuchKegError do
-  subject { described_class.new("foo") }
-
-  its(:to_s) { is_expected.to eq("No such keg: #{HOMEBREW_CELLAR}/foo") }
-end
-
-describe FormulaValidationError do
-  subject(:error) { described_class.new("foo", "sha257", "magic") }
-
-  its(:to_s) {
-    expect(error.to_s).to eq(%q(invalid attribute for formula 'foo': sha257 ("magic")))
-  }
-end
-
-describe FormulaUnavailableError do
-  subject(:error) { described_class.new("foo") }
-
-  describe "#dependent_s" do
-    it "returns nil if there is no dependent" do
-      expect(error.dependent_s).to be nil
-    end
-
-    it "returns nil if it depended on by itself" do
-      error.dependent = "foo"
-      expect(error.dependent_s).to be nil
-    end
-
-    it "returns a string if there is a dependent" do
-      error.dependent = "foobar"
-      expect(error.dependent_s).to eq(" (dependency of foobar)")
-    end
-  end
-
-  context "without a dependent" do
-    its(:to_s) { is_expected.to eq('No available formula with the name "foo".') }
-  end
-
-  context "with a dependent" do
-    before do
-      error.dependent = "foobar"
-    end
-
-    its(:to_s) {
-      expect(error.to_s).to eq('No available formula with the name "foo" (dependency of foobar).')
+describe "Exception" do
+  describe MultipleVersionsInstalledError do
+    subject {
+      described_class.new <<~EOS
+        foo has multiple installed versions
+        Run `brew uninstall --force foo` to remove all versions.
+      EOS
     }
-  end
-end
-
-describe TapFormulaUnavailableError do
-  subject { described_class.new(tap, "foo") }
-
-  let(:tap) { double(Tap, user: "u", repo: "r", to_s: "u/r", installed?: false) }
-
-  its(:to_s) { is_expected.to match(%r{Please tap it and then try again: brew tap u/r}) }
-end
-
-describe FormulaClassUnavailableError do
-  subject(:error) { described_class.new("foo", "foo.rb", "Foo", list) }
-
-  let(:mod) do
-    Module.new do
-      class Bar < Requirement; end
-
-      class Baz < Formula; end
-    end
-  end
-
-  context "no classes" do
-    let(:list) { [] }
 
     its(:to_s) {
-      expect(error.to_s).to match(/Expected to find class Foo, but found no classes\./)
+      is_expected.to eq <<~EOS
+        foo has multiple installed versions
+        Run `brew uninstall --force foo` to remove all versions.
+      EOS
     }
   end
 
-  context "class not derived from Formula" do
-    let(:list) { [mod.const_get(:Bar)] }
+  describe NoSuchKegError do
+    subject { described_class.new("foo") }
+
+    its(:to_s) { is_expected.to eq("No such keg: #{HOMEBREW_CELLAR}/foo") }
+  end
+
+  describe FormulaValidationError do
+    subject(:error) { described_class.new("foo", "sha257", "magic") }
 
     its(:to_s) {
-      expect(error.to_s).to match(/Expected to find class Foo, but only found: Bar \(not derived from Formula!\)\./)
+      expect(error.to_s).to eq(%q(invalid attribute for formula 'foo': sha257 ("magic")))
     }
   end
 
-  context "class derived from Formula" do
-    let(:list) { [mod.const_get(:Baz)] }
+  describe FormulaUnavailableError do
+    subject(:error) { described_class.new("foo") }
 
-    its(:to_s) { is_expected.to match(/Expected to find class Foo, but only found: Baz\./) }
-  end
-end
+    describe "#dependent_s" do
+      it "returns nil if there is no dependent" do
+        expect(error.dependent_s).to be nil
+      end
 
-describe FormulaUnreadableError do
-  subject { described_class.new("foo", formula_error) }
+      it "returns nil if it depended on by itself" do
+        error.dependent = "foo"
+        expect(error.dependent_s).to be nil
+      end
 
-  let(:formula_error) { LoadError.new("bar") }
+      it "returns a string if there is a dependent" do
+        error.dependent = "foobar"
+        expect(error.dependent_s).to eq(" (dependency of foobar)")
+      end
+    end
 
-  its(:to_s) { is_expected.to eq("foo: bar") }
-end
+    context "without a dependent" do
+      its(:to_s) { is_expected.to eq('No available formula with the name "foo".') }
+    end
 
-describe TapUnavailableError do
-  subject { described_class.new("foo") }
+    context "with a dependent" do
+      before do
+        error.dependent = "foobar"
+      end
 
-  its(:to_s) { is_expected.to eq("No available tap foo.\n") }
-end
-
-describe TapAlreadyTappedError do
-  subject { described_class.new("foo") }
-
-  its(:to_s) { is_expected.to eq("Tap foo already tapped.\n") }
-end
-
-describe BuildError do
-  subject { described_class.new(formula, "badprg", %w[arg1 arg2], {}) }
-
-  let(:formula) { double(Formula, name: "foo") }
-
-  its(:to_s) { is_expected.to eq("Failed executing: badprg arg1 arg2") }
-end
-
-describe OperationInProgressError do
-  subject { described_class.new("foo") }
-
-  its(:to_s) { is_expected.to match(/Operation already in progress for foo/) }
-end
-
-describe FormulaInstallationAlreadyAttemptedError do
-  subject { described_class.new(formula) }
-
-  let(:formula) { double(Formula, full_name: "foo/bar") }
-
-  its(:to_s) { is_expected.to eq("Formula installation already attempted: foo/bar") }
-end
-
-describe FormulaConflictError do
-  subject { described_class.new(formula, [conflict]) }
-
-  let(:formula) { double(Formula, full_name: "foo/qux") }
-  let(:conflict) { double(name: "bar", reason: "I decided to") }
-
-  its(:to_s) { is_expected.to match(/Please `brew unlink bar` before continuing\./) }
-end
-
-describe CompilerSelectionError do
-  subject { described_class.new(formula) }
-
-  let(:formula) { double(Formula, full_name: "foo") }
-
-  its(:to_s) { is_expected.to match(/foo cannot be built with any available compilers\./) }
-end
-
-describe CurlDownloadStrategyError do
-  context "file does not exist" do
-    subject { described_class.new("file:///tmp/foo") }
-
-    its(:to_s) { is_expected.to eq("File does not exist: /tmp/foo") }
+      its(:to_s) {
+        expect(error.to_s).to eq('No available formula with the name "foo" (dependency of foobar).')
+      }
+    end
   end
 
-  context "download failed" do
-    subject { described_class.new("https://brew.sh") }
+  describe TapFormulaUnavailableError do
+    subject { described_class.new(tap, "foo") }
 
-    its(:to_s) { is_expected.to eq("Download failed: https://brew.sh") }
+    let(:tap) { double(Tap, user: "u", repo: "r", to_s: "u/r", installed?: false) }
+
+    its(:to_s) { is_expected.to match(%r{Please tap it and then try again: brew tap u/r}) }
   end
-end
 
-describe ErrorDuringExecution do
-  subject { described_class.new(["badprg", "arg1", "arg2"], status: status) }
+  describe FormulaClassUnavailableError do
+    subject(:error) { described_class.new("foo", "foo.rb", "Foo", list) }
 
-  let(:status) { instance_double(Process::Status, exitstatus: 17) }
+    let(:mod) do
+      Module.new do
+        class Bar < Requirement; end
 
-  its(:to_s) { is_expected.to eq("Failure while executing; `badprg arg1 arg2` exited with 17.") }
-end
+        class Baz < Formula; end
+      end
+    end
 
-describe ChecksumMismatchError do
-  subject { described_class.new("/file.tar.gz", hash1, hash2) }
+    context "no classes" do
+      let(:list) { [] }
 
-  let(:hash1) { double(hash_type: "sha256", to_s: "deadbeef") }
-  let(:hash2) { double(hash_type: "sha256", to_s: "deadcafe") }
+      its(:to_s) {
+        expect(error.to_s).to match(/Expected to find class Foo, but found no classes\./)
+      }
+    end
 
-  its(:to_s) { is_expected.to match(/SHA256 mismatch/) }
-end
+    context "class not derived from Formula" do
+      let(:list) { [mod.const_get(:Bar)] }
 
-describe ResourceMissingError do
-  subject { described_class.new(formula, resource) }
+      its(:to_s) {
+        expect(error.to_s).to match(/Expected to find class Foo, but only found: Bar \(not derived from Formula!\)\./)
+      }
+    end
 
-  let(:formula) { double(Formula, full_name: "bar") }
-  let(:resource) { double(inspect: "<resource foo>") }
+    context "class derived from Formula" do
+      let(:list) { [mod.const_get(:Baz)] }
 
-  its(:to_s) { is_expected.to eq("bar does not define resource <resource foo>") }
-end
+      its(:to_s) { is_expected.to match(/Expected to find class Foo, but only found: Baz\./) }
+    end
+  end
 
-describe DuplicateResourceError do
-  subject { described_class.new(resource) }
+  describe FormulaUnreadableError do
+    subject { described_class.new("foo", formula_error) }
 
-  let(:resource) { double(inspect: "<resource foo>") }
+    let(:formula_error) { LoadError.new("bar") }
 
-  its(:to_s) { is_expected.to eq("Resource <resource foo> is defined more than once") }
-end
+    its(:to_s) { is_expected.to eq("foo: bar") }
+  end
 
-describe BottleFormulaUnavailableError do
-  subject { described_class.new("/foo.bottle.tar.gz", "foo/1.0/.brew/foo.rb") }
+  describe TapUnavailableError do
+    subject { described_class.new("foo") }
 
-  let(:formula) { double(Formula, full_name: "foo") }
+    its(:to_s) { is_expected.to eq("No available tap foo.\n") }
+  end
 
-  its(:to_s) { is_expected.to match(/This bottle does not contain the formula file/) }
-end
+  describe TapAlreadyTappedError do
+    subject { described_class.new("foo") }
 
-describe BuildFlagsError do
-  subject { described_class.new(["-s"]) }
+    its(:to_s) { is_expected.to eq("Tap foo already tapped.\n") }
+  end
 
-  its(:to_s) { is_expected.to match(/flag:\s+-s\nrequires building tools/) }
+  describe BuildError do
+    subject { described_class.new(formula, "badprg", %w[arg1 arg2], {}) }
+
+    let(:formula) { double(Formula, name: "foo") }
+
+    its(:to_s) { is_expected.to eq("Failed executing: badprg arg1 arg2") }
+  end
+
+  describe OperationInProgressError do
+    subject { described_class.new("foo") }
+
+    its(:to_s) { is_expected.to match(/Operation already in progress for foo/) }
+  end
+
+  describe FormulaInstallationAlreadyAttemptedError do
+    subject { described_class.new(formula) }
+
+    let(:formula) { double(Formula, full_name: "foo/bar") }
+
+    its(:to_s) { is_expected.to eq("Formula installation already attempted: foo/bar") }
+  end
+
+  describe FormulaConflictError do
+    subject { described_class.new(formula, [conflict]) }
+
+    let(:formula) { double(Formula, full_name: "foo/qux") }
+    let(:conflict) { double(name: "bar", reason: "I decided to") }
+
+    its(:to_s) { is_expected.to match(/Please `brew unlink bar` before continuing\./) }
+  end
+
+  describe CompilerSelectionError do
+    subject { described_class.new(formula) }
+
+    let(:formula) { double(Formula, full_name: "foo") }
+
+    its(:to_s) { is_expected.to match(/foo cannot be built with any available compilers\./) }
+  end
+
+  describe CurlDownloadStrategyError do
+    context "file does not exist" do
+      subject { described_class.new("file:///tmp/foo") }
+
+      its(:to_s) { is_expected.to eq("File does not exist: /tmp/foo") }
+    end
+
+    context "download failed" do
+      subject { described_class.new("https://brew.sh") }
+
+      its(:to_s) { is_expected.to eq("Download failed: https://brew.sh") }
+    end
+  end
+
+  describe ErrorDuringExecution do
+    subject { described_class.new(["badprg", "arg1", "arg2"], status: status) }
+
+    let(:status) { instance_double(Process::Status, exitstatus: 17) }
+
+    its(:to_s) { is_expected.to eq("Failure while executing; `badprg arg1 arg2` exited with 17.") }
+  end
+
+  describe ChecksumMismatchError do
+    subject { described_class.new("/file.tar.gz", hash1, hash2) }
+
+    let(:hash1) { double(hash_type: "sha256", to_s: "deadbeef") }
+    let(:hash2) { double(hash_type: "sha256", to_s: "deadcafe") }
+
+    its(:to_s) { is_expected.to match(/SHA256 mismatch/) }
+  end
+
+  describe ResourceMissingError do
+    subject { described_class.new(formula, resource) }
+
+    let(:formula) { double(Formula, full_name: "bar") }
+    let(:resource) { double(inspect: "<resource foo>") }
+
+    its(:to_s) { is_expected.to eq("bar does not define resource <resource foo>") }
+  end
+
+  describe DuplicateResourceError do
+    subject { described_class.new(resource) }
+
+    let(:resource) { double(inspect: "<resource foo>") }
+
+    its(:to_s) { is_expected.to eq("Resource <resource foo> is defined more than once") }
+  end
+
+  describe BottleFormulaUnavailableError do
+    subject { described_class.new("/foo.bottle.tar.gz", "foo/1.0/.brew/foo.rb") }
+
+    let(:formula) { double(Formula, full_name: "foo") }
+
+    its(:to_s) { is_expected.to match(/This bottle does not contain the formula file/) }
+  end
+
+  describe BuildFlagsError do
+    subject { described_class.new(["-s"]) }
+
+    its(:to_s) { is_expected.to match(/flag:\s+-s\nrequires building tools/) }
+  end
 end
