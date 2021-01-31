@@ -4,136 +4,138 @@
 require "options"
 
 describe Option do
-  subject { described_class.new("foo") }
+  subject(:option) { described_class.new("foo") }
 
   specify "#to_s" do
-    expect(subject.to_s).to eq("--foo")
+    expect(option.to_s).to eq("--foo")
   end
 
   specify "equality" do
     foo = described_class.new("foo")
     bar = described_class.new("bar")
-    expect(subject).to eq(foo)
-    expect(subject).not_to eq(bar)
-    expect(subject).to eql(foo)
-    expect(subject).not_to eql(bar)
+    expect(option).to eq(foo)
+    expect(option).not_to eq(bar)
+    expect(option).to eql(foo)
+    expect(option).not_to eql(bar)
   end
 
   specify "#description" do
-    expect(subject.description).to be_empty
+    expect(option.description).to be_empty
     expect(described_class.new("foo", "foo").description).to eq("foo")
   end
 
   specify "#inspect" do
-    expect(subject.inspect).to eq("#<Option: \"--foo\">")
+    expect(option.inspect).to eq("#<Option: \"--foo\">")
   end
 end
 
 describe DeprecatedOption do
-  subject { described_class.new("foo", "bar") }
+  subject(:option) { described_class.new("foo", "bar") }
 
   specify "#old" do
-    expect(subject.old).to eq("foo")
+    expect(option.old).to eq("foo")
   end
 
   specify "#old_flag" do
-    expect(subject.old_flag).to eq("--foo")
+    expect(option.old_flag).to eq("--foo")
   end
 
   specify "#current" do
-    expect(subject.current).to eq("bar")
+    expect(option.current).to eq("bar")
   end
 
   specify "#current_flag" do
-    expect(subject.current_flag).to eq("--bar")
+    expect(option.current_flag).to eq("--bar")
   end
 
   specify "equality" do
     foobar = described_class.new("foo", "bar")
     boofar = described_class.new("boo", "far")
-    expect(foobar).to eq(subject)
-    expect(subject).to eq(foobar)
-    expect(boofar).not_to eq(subject)
-    expect(subject).not_to eq(boofar)
+    expect(foobar).to eq(option)
+    expect(option).to eq(foobar)
+    expect(boofar).not_to eq(option)
+    expect(option).not_to eq(boofar)
   end
 end
 
 describe Options do
+  subject(:options) { described_class.new }
+
   it "removes duplicate options" do
-    subject << Option.new("foo")
-    subject << Option.new("foo")
-    expect(subject).to include("--foo")
-    expect(subject.count).to eq(1)
+    options << Option.new("foo")
+    options << Option.new("foo")
+    expect(options).to include("--foo")
+    expect(options.count).to eq(1)
   end
 
   it "preserves existing member when adding a duplicate" do
     a = Option.new("foo", "bar")
     b = Option.new("foo", "qux")
-    subject << a << b
-    expect(subject.count).to eq(1)
-    expect(subject.first).to be(a)
-    expect(subject.first.description).to eq(a.description)
+    options << a << b
+    expect(options.count).to eq(1)
+    expect(options.first).to be(a)
+    expect(options.first.description).to eq(a.description)
   end
 
   specify "#include?" do
-    subject << Option.new("foo")
-    expect(subject).to include("--foo")
-    expect(subject).to include("foo")
-    expect(subject).to include(Option.new("foo"))
+    options << Option.new("foo")
+    expect(options).to include("--foo")
+    expect(options).to include("foo")
+    expect(options).to include(Option.new("foo"))
   end
 
   describe "#+" do
     it "returns options" do
-      expect(subject + described_class.new).to be_an_instance_of(described_class)
+      expect(options + described_class.new).to be_an_instance_of(described_class)
     end
   end
 
   describe "#-" do
     it "returns options" do
-      expect(subject - described_class.new).to be_an_instance_of(described_class)
+      expect(options - described_class.new).to be_an_instance_of(described_class)
     end
   end
 
   specify "#&" do
     foo, bar, baz = %w[foo bar baz].map { |o| Option.new(o) }
-    options = described_class.new << foo << bar
-    subject << foo << baz
-    expect((subject & options).to_a).to eq([foo])
+    other_options = described_class.new << foo << bar
+    options << foo << baz
+    expect((options & other_options).to_a).to eq([foo])
   end
 
   specify "#|" do
     foo, bar, baz = %w[foo bar baz].map { |o| Option.new(o) }
-    options = described_class.new << foo << bar
-    subject << foo << baz
-    expect((subject | options).sort).to eq([foo, bar, baz].sort)
+    other_options = described_class.new << foo << bar
+    options << foo << baz
+    expect((options | other_options).sort).to eq([foo, bar, baz].sort)
   end
 
   specify "#*" do
-    subject << Option.new("aa") << Option.new("bb") << Option.new("cc")
-    expect((subject * "XX").split("XX").sort).to eq(%w[--aa --bb --cc])
+    options << Option.new("aa") << Option.new("bb") << Option.new("cc")
+    expect((options * "XX").split("XX").sort).to eq(%w[--aa --bb --cc])
   end
 
   describe "<<" do
     it "returns itself" do
-      expect(subject << Option.new("foo")).to be subject
+      expect(options << Option.new("foo")).to be options
     end
   end
 
   specify "#as_flags" do
-    subject << Option.new("foo")
-    expect(subject.as_flags).to eq(%w[--foo])
+    options << Option.new("foo")
+    expect(options.as_flags).to eq(%w[--foo])
   end
 
   specify "#to_a" do
     option = Option.new("foo")
-    subject << option
-    expect(subject.to_a).to eq([option])
+    options << option
+    expect(options.to_a).to eq([option])
   end
 
   specify "#to_ary" do
     option = Option.new("foo")
-    subject << option
-    expect(subject.to_ary).to eq([option])
+    options << option
+    expect(options.to_ary).to eq([option])
   end
 
   specify "::create_with_array" do
@@ -144,8 +146,8 @@ describe Options do
   end
 
   specify "#inspect" do
-    expect(subject.inspect).to eq("#<Options: []>")
-    subject << Option.new("foo")
-    expect(subject.inspect).to eq("#<Options: [#<Option: \"--foo\">]>")
+    expect(options.inspect).to eq("#<Options: []>")
+    options << Option.new("foo")
+    expect(options.inspect).to eq("#<Options: [#<Option: \"--foo\">]>")
   end
 end

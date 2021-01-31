@@ -4,7 +4,7 @@
 require "download_strategy"
 
 describe AbstractDownloadStrategy do
-  subject { described_class.new(url, name, version, **specs) }
+  subject(:strategy) { described_class.new(url, name, version, **specs) }
 
   let(:specs) { {} }
   let(:name) { "foo" }
@@ -17,7 +17,7 @@ describe AbstractDownloadStrategy do
       FileUtils.touch "foo", mtime: Time.now - 10
       FileUtils.touch "bar", mtime: Time.now - 100
       FileUtils.ln_s "not-exist", "baz"
-      expect(subject.source_modified_time).to eq(File.mtime("foo"))
+      expect(strategy.source_modified_time).to eq(File.mtime("foo"))
     end
   end
 
@@ -25,13 +25,13 @@ describe AbstractDownloadStrategy do
     let(:specs) { { bottle: true } }
 
     it "extends Pourable" do
-      expect(subject).to be_a_kind_of(AbstractDownloadStrategy::Pourable)
+      expect(strategy).to be_a_kind_of(AbstractDownloadStrategy::Pourable)
     end
   end
 
   context "without specs[:bottle]" do
     it "is does not extend Pourable" do
-      expect(subject).not_to be_a_kind_of(AbstractDownloadStrategy::Pourable)
+      expect(strategy).not_to be_a_kind_of(AbstractDownloadStrategy::Pourable)
     end
   end
 end
@@ -50,20 +50,20 @@ describe VCSDownloadStrategy do
 end
 
 describe GitHubGitDownloadStrategy do
-  subject { described_class.new(url, name, version) }
+  subject(:strategy) { described_class.new(url, name, version) }
 
   let(:name) { "brew" }
   let(:url) { "https://github.com/homebrew/brew.git" }
   let(:version) { nil }
 
   it "parses the URL and sets the corresponding instance variables" do
-    expect(subject.instance_variable_get(:@user)).to eq("homebrew")
-    expect(subject.instance_variable_get(:@repo)).to eq("brew")
+    expect(strategy.instance_variable_get(:@user)).to eq("homebrew")
+    expect(strategy.instance_variable_get(:@repo)).to eq("brew")
   end
 end
 
 describe GitDownloadStrategy do
-  subject { described_class.new(url, name, version) }
+  subject(:strategy) { described_class.new(url, name, version) }
 
   let(:name) { "baz" }
   let(:url) { "https://github.com/homebrew/foo" }
@@ -93,7 +93,7 @@ describe GitDownloadStrategy do
       cached_location.cd do
         setup_git_repo
       end
-      expect(subject.source_modified_time.to_i).to eq(1_485_115_153)
+      expect(strategy.source_modified_time.to_i).to eq(1_485_115_153)
     end
   end
 
@@ -103,7 +103,7 @@ describe GitDownloadStrategy do
       FileUtils.touch "LICENSE"
       git_commit_all
     end
-    expect(subject.last_commit).to eq("f68266e")
+    expect(strategy.last_commit).to eq("f68266e")
   end
 
   describe "#fetch_last_commit" do
@@ -122,13 +122,13 @@ describe GitDownloadStrategy do
         git_commit_all
       end
 
-      expect(subject.fetch_last_commit).to eq("f68266e")
+      expect(strategy.fetch_last_commit).to eq("f68266e")
     end
   end
 end
 
 describe CurlDownloadStrategy do
-  subject { described_class.new(url, name, version, **specs) }
+  subject(:strategy) { described_class.new(url, name, version, **specs) }
 
   let(:name) { "foo" }
   let(:url) { "https://example.com/foo.tar.gz" }
@@ -136,15 +136,15 @@ describe CurlDownloadStrategy do
   let(:specs) { { user: "download:123456" } }
 
   it "parses the opts and sets the corresponding args" do
-    expect(subject.send(:_curl_args)).to eq(["--user", "download:123456"])
+    expect(strategy.send(:_curl_args)).to eq(["--user", "download:123456"])
   end
 
   describe "#cached_location" do
-    subject { described_class.new(url, name, version, **specs).cached_location }
+    subject(:location) { described_class.new(url, name, version, **specs).cached_location }
 
     context "when URL ends with file" do
       it {
-        expect(subject).to eq(
+        expect(location).to eq(
           HOMEBREW_CACHE/"downloads/3d1c0ae7da22be9d83fb1eb774df96b7c4da71d3cf07e1cb28555cf9a5e5af70--foo.tar.gz",
         )
       }
@@ -154,7 +154,7 @@ describe CurlDownloadStrategy do
       let(:url) { "https://example.com/foo.tar.gz/from/this/mirror" }
 
       it {
-        expect(subject).to eq(
+        expect(location).to eq(
           HOMEBREW_CACHE/"downloads/1ab61269ba52c83994510b1e28dd04167a2f2e8393a35a9c50c1f7d33fd8f619--foo.tar.gz",
         )
       }
@@ -163,12 +163,12 @@ describe CurlDownloadStrategy do
 
   describe "#fetch" do
     before do
-      subject.temporary_path.dirname.mkpath
-      FileUtils.touch subject.temporary_path
+      strategy.temporary_path.dirname.mkpath
+      FileUtils.touch strategy.temporary_path
     end
 
     it "calls curl with default arguments" do
-      expect(subject).to receive(:curl).with(
+      expect(strategy).to receive(:curl).with(
         "--location",
         "--remote-time",
         "--continue-at", "0",
@@ -177,21 +177,21 @@ describe CurlDownloadStrategy do
         an_instance_of(Hash)
       )
 
-      subject.fetch
+      strategy.fetch
     end
 
     context "with an explicit user agent" do
       let(:specs) { { user_agent: "Mozilla/25.0.1" } }
 
       it "adds the appropriate curl args" do
-        expect(subject).to receive(:system_command).with(
+        expect(strategy).to receive(:system_command).with(
           /curl/,
           hash_including(args: array_including_cons("--user-agent", "Mozilla/25.0.1")),
         )
         .at_least(:once)
         .and_return(instance_double(SystemCommand::Result, success?: true, stdout: "", assert_success!: nil))
 
-        subject.fetch
+        strategy.fetch
       end
     end
 
@@ -201,7 +201,7 @@ describe CurlDownloadStrategy do
       let(:specs) { { user_agent: :fake } }
 
       it "adds the appropriate curl args" do
-        expect(subject).to receive(:system_command).with(
+        expect(strategy).to receive(:system_command).with(
           /curl/,
           hash_including(args: array_including_cons(
             "--user-agent",
@@ -211,7 +211,7 @@ describe CurlDownloadStrategy do
         .at_least(:once)
         .and_return(instance_double(SystemCommand::Result, success?: true, stdout: "", assert_success!: nil))
 
-        subject.fetch
+        strategy.fetch
       end
     end
 
@@ -226,14 +226,14 @@ describe CurlDownloadStrategy do
       }
 
       it "adds the appropriate curl args and does not URL-encode the cookies" do
-        expect(subject).to receive(:system_command).with(
+        expect(strategy).to receive(:system_command).with(
           /curl/,
           hash_including(args: array_including_cons("-b", "coo=k/e;mon=ster")),
         )
         .at_least(:once)
         .and_return(instance_double(SystemCommand::Result, success?: true, stdout: "", assert_success!: nil))
 
-        subject.fetch
+        strategy.fetch
       end
     end
 
@@ -241,14 +241,14 @@ describe CurlDownloadStrategy do
       let(:specs) { { referer: "https://somehost/also" } }
 
       it "adds the appropriate curl args" do
-        expect(subject).to receive(:system_command).with(
+        expect(strategy).to receive(:system_command).with(
           /curl/,
           hash_including(args: array_including_cons("-e", "https://somehost/also")),
         )
         .at_least(:once)
         .and_return(instance_double(SystemCommand::Result, success?: true, stdout: "", assert_success!: nil))
 
-        subject.fetch
+        strategy.fetch
       end
     end
 
@@ -258,14 +258,14 @@ describe CurlDownloadStrategy do
       let(:specs) { { headers: ["foo", "bar"] } }
 
       it "adds the appropriate curl args" do
-        expect(subject).to receive(:system_command).with(
+        expect(strategy).to receive(:system_command).with(
           /curl/,
           hash_including(args: array_including_cons("--header", "foo").and(array_including_cons("--header", "bar"))),
         )
         .at_least(:once)
         .and_return(instance_double(SystemCommand::Result, success?: true, stdout: "", assert_success!: nil))
 
-        subject.fetch
+        strategy.fetch
       end
     end
   end
@@ -315,7 +315,7 @@ describe CurlDownloadStrategy do
 end
 
 describe CurlPostDownloadStrategy do
-  subject { described_class.new(url, name, version, **specs) }
+  subject(:strategy) { described_class.new(url, name, version, **specs) }
 
   let(:name) { "foo" }
   let(:url) { "https://example.com/foo.tar.gz" }
@@ -324,8 +324,8 @@ describe CurlPostDownloadStrategy do
 
   describe "#fetch" do
     before do
-      subject.temporary_path.dirname.mkpath
-      FileUtils.touch subject.temporary_path
+      strategy.temporary_path.dirname.mkpath
+      FileUtils.touch strategy.temporary_path
     end
 
     context "with :using and :data specified" do
@@ -340,14 +340,14 @@ describe CurlPostDownloadStrategy do
       }
 
       it "adds the appropriate curl args" do
-        expect(subject).to receive(:system_command).with(
+        expect(strategy).to receive(:system_command).with(
           /curl/,
           hash_including(args: array_including_cons("-d", "form=data").and(array_including_cons("-d", "is=good"))),
         )
         .at_least(:once)
         .and_return(instance_double(SystemCommand::Result, success?: true, stdout: "", assert_success!: nil))
 
-        subject.fetch
+        strategy.fetch
       end
     end
 
@@ -355,21 +355,21 @@ describe CurlPostDownloadStrategy do
       let(:specs) { { using: :post } }
 
       it "adds the appropriate curl args" do
-        expect(subject).to receive(:system_command).with(
+        expect(strategy).to receive(:system_command).with(
           /curl/,
           hash_including(args: array_including_cons("-X", "POST")),
         )
         .at_least(:once)
         .and_return(instance_double(SystemCommand::Result, success?: true, stdout: "", assert_success!: nil))
 
-        subject.fetch
+        strategy.fetch
       end
     end
   end
 end
 
 describe SubversionDownloadStrategy do
-  subject { described_class.new(url, name, version, **specs) }
+  subject(:strategy) { described_class.new(url, name, version, **specs) }
 
   let(:name) { "foo" }
   let(:url) { "https://example.com/foo.tar.gz" }
@@ -381,9 +381,9 @@ describe SubversionDownloadStrategy do
       let(:specs) { { trust_cert: true } }
 
       it "adds the appropriate svn args" do
-        expect(subject).to receive(:system_command!)
+        expect(strategy).to receive(:system_command!)
           .with("svn", hash_including(args: array_including("--trust-server-cert", "--non-interactive")))
-        subject.fetch
+        strategy.fetch
       end
     end
 
@@ -391,10 +391,10 @@ describe SubversionDownloadStrategy do
       let(:specs) { { revision: "10" } }
 
       it "adds svn arguments for :revision" do
-        expect(subject).to receive(:system_command!)
+        expect(strategy).to receive(:system_command!)
           .with("svn", hash_including(args: array_including_cons("-r", "10")))
 
-        subject.fetch
+        strategy.fetch
       end
     end
   end
@@ -402,7 +402,7 @@ end
 
 describe DownloadStrategyDetector do
   describe "::detect" do
-    subject { described_class.detect(url, strategy) }
+    subject(:strategy_detector) { described_class.detect(url, strategy) }
 
     let(:url) { Object.new }
     let(:strategy) { nil }
@@ -420,7 +420,7 @@ describe DownloadStrategyDetector do
     end
 
     it "defaults to curl" do
-      expect(subject).to eq(CurlDownloadStrategy)
+      expect(strategy_detector).to eq(CurlDownloadStrategy)
     end
 
     it "raises an error when passed an unrecognized strategy" do

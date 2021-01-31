@@ -4,9 +4,9 @@
 require "extend/ENV"
 
 shared_examples EnvActivation do
-  subject { env.extend(described_class) }
+  subject(:env) { env_activation.extend(described_class) }
 
-  let(:env) { {}.extend(EnvActivation) }
+  let(:env_activation) { {}.extend(EnvActivation) }
 
   it "supports switching compilers" do
     subject.clang
@@ -180,28 +180,28 @@ describe Superenv do
   include_examples EnvActivation
 
   it "initializes deps" do
-    expect(subject.deps).to eq([])
-    expect(subject.keg_only_deps).to eq([])
+    expect(env.deps).to eq([])
+    expect(env.keg_only_deps).to eq([])
   end
 
   describe "#cxx11" do
     it "supports gcc-5" do
-      subject["HOMEBREW_CC"] = "gcc-5"
-      subject.cxx11
-      expect(subject["HOMEBREW_CCCFG"]).to include("x")
+      env["HOMEBREW_CC"] = "gcc-5"
+      env.cxx11
+      expect(env["HOMEBREW_CCCFG"]).to include("x")
     end
 
     example "supports gcc-6" do
-      subject["HOMEBREW_CC"] = "gcc-6"
-      subject.cxx11
-      expect(subject["HOMEBREW_CCCFG"]).to include("x")
+      env["HOMEBREW_CC"] = "gcc-6"
+      env.cxx11
+      expect(env["HOMEBREW_CCCFG"]).to include("x")
     end
 
     it "supports clang" do
-      subject["HOMEBREW_CC"] = "clang"
-      subject.cxx11
-      expect(subject["HOMEBREW_CCCFG"]).to include("x")
-      expect(subject["HOMEBREW_CCCFG"]).to include("g")
+      env["HOMEBREW_CC"] = "clang"
+      env.cxx11
+      expect(env["HOMEBREW_CCCFG"]).to include("x")
+      expect(env["HOMEBREW_CCCFG"]).to include("g")
     end
   end
 end

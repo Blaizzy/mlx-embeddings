@@ -5,17 +5,17 @@ require "formula"
 require "caveats"
 
 describe Caveats do
-  subject { described_class.new(f) }
+  subject(:caveats) { described_class.new(f) }
 
   let(:f) { formula { url "foo-1.0" } }
 
   specify "#f" do
-    expect(subject.f).to eq(f)
+    expect(caveats.f).to eq(f)
   end
 
   describe "#empty?" do
     it "returns true if the Formula has no caveats" do
-      expect(subject).to be_empty
+      expect(caveats).to be_empty
     end
 
     it "returns false if the Formula has caveats" do

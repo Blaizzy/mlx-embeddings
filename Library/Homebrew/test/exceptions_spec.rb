@@ -26,29 +26,29 @@ describe NoSuchKegError do
 end
 
 describe FormulaValidationError do
-  subject { described_class.new("foo", "sha257", "magic") }
+  subject(:error) { described_class.new("foo", "sha257", "magic") }
 
   its(:to_s) {
-    expect(subject.to_s).to eq(%q(invalid attribute for formula 'foo': sha257 ("magic")))
+    expect(error.to_s).to eq(%q(invalid attribute for formula 'foo': sha257 ("magic")))
   }
 end
 
 describe FormulaUnavailableError do
-  subject { described_class.new("foo") }
+  subject(:error) { described_class.new("foo") }
 
   describe "#dependent_s" do
     it "returns nil if there is no dependent" do
-      expect(subject.dependent_s).to be nil
+      expect(error.dependent_s).to be nil
     end
 
     it "returns nil if it depended on by itself" do
-      subject.dependent = "foo"
-      expect(subject.dependent_s).to be nil
+      error.dependent = "foo"
+      expect(error.dependent_s).to be nil
     end
 
     it "returns a string if there is a dependent" do
-      subject.dependent = "foobar"
-      expect(subject.dependent_s).to eq(" (dependency of foobar)")
+      error.dependent = "foobar"
+      expect(error.dependent_s).to eq(" (dependency of foobar)")
     end
   end
 
@@ -58,11 +58,11 @@ describe FormulaUnavailableError do
 
   context "with a dependent" do
     before do
-      subject.dependent = "foobar"
+      error.dependent = "foobar"
     end
 
     its(:to_s) {
-      expect(subject.to_s).to eq('No available formula with the name "foo" (dependency of foobar).')
+      expect(error.to_s).to eq('No available formula with the name "foo" (dependency of foobar).')
     }
   end
 end
@@ -76,7 +76,7 @@ describe TapFormulaUnavailableError do
 end
 
 describe FormulaClassUnavailableError do
-  subject { described_class.new("foo", "foo.rb", "Foo", list) }
+  subject(:error) { described_class.new("foo", "foo.rb", "Foo", list) }
 
   let(:mod) do
     Module.new do
@@ -90,7 +90,7 @@ describe FormulaClassUnavailableError do
     let(:list) { [] }
 
     its(:to_s) {
-      expect(subject.to_s).to match(/Expected to find class Foo, but found no classes\./)
+      expect(error.to_s).to match(/Expected to find class Foo, but found no classes\./)
     }
   end
 
@@ -98,7 +98,7 @@ describe FormulaClassUnavailableError do
     let(:list) { [mod.const_get(:Bar)] }
 
     its(:to_s) {
-      expect(subject.to_s).to match(/Expected to find class Foo, but only found: Bar \(not derived from Formula!\)\./)
+      expect(error.to_s).to match(/Expected to find class Foo, but only found: Bar \(not derived from Formula!\)\./)
     }
   end
 

@@ -8,7 +8,7 @@ describe BuildOptions do
   alias_matcher :be_built_with, :be_with
   alias_matcher :be_built_without, :be_without
 
-  subject { described_class.new(args, opts) }
+  subject(:build_options) { described_class.new(args, opts) }
 
   let(:bad_build) { described_class.new(bad_args, opts) }
   let(:args) { Options.create(%w[--with-foo --with-bar --without-qux]) }
@@ -16,22 +16,22 @@ describe BuildOptions do
   let(:bad_args) { Options.create(%w[--with-foo --with-bar --without-bas --without-qux --without-abc]) }
 
   specify "#with?" do
-    expect(subject).to be_built_with("foo")
-    expect(subject).to be_built_with("bar")
-    expect(subject).to be_built_with("baz")
+    expect(build_options).to be_built_with("foo")
+    expect(build_options).to be_built_with("bar")
+    expect(build_options).to be_built_with("baz")
   end
 
   specify "#without?" do
-    expect(subject).to be_built_without("qux")
-    expect(subject).to be_built_without("xyz")
+    expect(build_options).to be_built_without("qux")
+    expect(build_options).to be_built_without("xyz")
   end
 
   specify "#used_options" do
-    expect(subject.used_options).to include("--with-foo")
-    expect(subject.used_options).to include("--with-bar")
+    expect(build_options.used_options).to include("--with-foo")
+    expect(build_options.used_options).to include("--with-bar")
   end
 
   specify "#unused_options" do
-    expect(subject.unused_options).to include("--without-baz")
+    expect(build_options.unused_options).to include("--without-baz")
   end
 end

@@ -8,28 +8,28 @@ require "utils/shebang"
 describe Language::Python, :needs_python do
   describe "#major_minor_version" do
     it "returns a Version for Python 2" do
-      expect(subject).to receive(:major_minor_version).and_return(Version)
-      subject.major_minor_version("python")
+      expect(described_class).to receive(:major_minor_version).and_return(Version)
+      described_class.major_minor_version("python")
     end
   end
 
   describe "#site_packages" do
     it "gives a different location between PyPy and Python 2" do
-      expect(subject.site_packages("python")).not_to eql(subject.site_packages("pypy"))
+      expect(described_class.site_packages("python")).not_to eql(described_class.site_packages("pypy"))
     end
   end
 
   describe "#homebrew_site_packages" do
     it "returns the Homebrew site packages location" do
-      expect(subject).to receive(:site_packages).and_return(Pathname)
-      subject.site_packages("python")
+      expect(described_class).to receive(:site_packages).and_return(Pathname)
+      described_class.site_packages("python")
     end
   end
 
   describe "#user_site_packages" do
     it "can determine user site packages location" do
-      expect(subject).to receive(:user_site_packages).and_return(Pathname)
-      subject.user_site_packages("python")
+      expect(described_class).to receive(:user_site_packages).and_return(Pathname)
+      described_class.user_site_packages("python")
     end
   end
 end
@@ -77,7 +77,7 @@ describe Language::Python::Shebang do
 end
 
 describe Language::Python::Virtualenv::Virtualenv do
-  subject { described_class.new(formula, dir, "python") }
+  subject(:virtualenv) { described_class.new(formula, dir, "python") }
 
   let(:dir) { mktmpdir }
 
@@ -88,7 +88,7 @@ describe Language::Python::Virtualenv::Virtualenv do
   describe "#create" do
     it "creates a venv" do
       expect(formula).to receive(:system).with("python", "-m", "venv", dir)
-      subject.create
+      virtualenv.create
     end
   end
 
@@ -98,7 +98,7 @@ describe Language::Python::Virtualenv::Virtualenv do
         .with(dir/"bin/pip", "install", "-v", "--no-deps",
               "--no-binary", ":all:", "--no-user", "--ignore-installed", "foo")
         .and_return(true)
-      subject.pip_install "foo"
+      virtualenv.pip_install "foo"
     end
 
     it "accepts a multi-line strings" do
@@ -107,7 +107,7 @@ describe Language::Python::Virtualenv::Virtualenv do
               "--no-binary", ":all:", "--no-user", "--ignore-installed", "foo", "bar")
         .and_return(true)
 
-      subject.pip_install <<~EOS
+      virtualenv.pip_install <<~EOS
         foo
         bar
       EOS
@@ -124,7 +124,7 @@ describe Language::Python::Virtualenv::Virtualenv do
               "--no-binary", ":all:", "--no-user", "--ignore-installed", "bar")
         .and_return(true)
 
-      subject.pip_install ["foo", "bar"]
+      virtualenv.pip_install ["foo", "bar"]
     end
 
     it "accepts a Resource" do
@@ -136,7 +136,7 @@ describe Language::Python::Virtualenv::Virtualenv do
               "--no-binary", ":all:", "--no-user", "--ignore-installed", Pathname.pwd)
         .and_return(true)
 
-      subject.pip_install res
+      virtualenv.pip_install res
     end
   end
 
@@ -155,10 +155,10 @@ describe Language::Python::Virtualenv::Virtualenv do
       FileUtils.touch src_bin/"kilroy"
       bin_after = Dir.glob(src_bin/"*")
 
-      expect(subject).to receive(:pip_install).with("foo")
+      expect(virtualenv).to receive(:pip_install).with("foo")
       expect(Dir).to receive(:[]).with(src_bin/"*").twice.and_return(bin_before, bin_after)
 
-      subject.pip_install_and_link "foo"
+      virtualenv.pip_install_and_link "foo"
 
       expect(src_bin/"kilroy").to exist
       expect(dest_bin/"kilroy").to exist

@@ -58,11 +58,11 @@ describe Locale do
   end
 
   describe "#eql?" do
-    subject { described_class.new("zh", "CN", "Hans") }
+    subject(:locale) { described_class.new("zh", "CN", "Hans") }
 
     context "all parts match" do
       it { is_expected.to eql("zh-CN-Hans") }
-      it { is_expected.to eql(subject) }
+      it { is_expected.to eql(locale) }
     end
 
     context "only some parts match" do
@@ -74,8 +74,8 @@ describe Locale do
     end
 
     it "does not raise if 'other' cannot be parsed" do
-      expect { subject.eql?("zh_CN_Hans") }.not_to raise_error
-      expect(subject.eql?("zh_CN_Hans")).to be false
+      expect { locale.eql?("zh_CN_Hans") }.not_to raise_error
+      expect(locale.eql?("zh_CN_Hans")).to be false
     end
   end
 

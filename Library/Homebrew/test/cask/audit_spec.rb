@@ -106,7 +106,7 @@ describe Cask::Audit, :cask do
   end
 
   describe "#run!" do
-    subject { audit.run! }
+    subject(:run) { audit.run! }
 
     def tmp_cask(name, text)
       path = Pathname.new "#{dir}/#{name}.rb"
@@ -149,7 +149,7 @@ describe Cask::Audit, :cask do
         let(:cask_token) { "Upper-Case" }
 
         it "fails" do
-          expect(subject).to fail_with(/lowercase/)
+          expect(run).to fail_with(/lowercase/)
         end
       end
 
@@ -157,7 +157,7 @@ describe Cask::Audit, :cask do
         let(:cask_token) { "ascii⌘" }
 
         it "fails" do
-          expect(subject).to fail_with(/contains non-ascii characters/)
+          expect(run).to fail_with(/contains non-ascii characters/)
         end
       end
 
@@ -165,7 +165,7 @@ describe Cask::Audit, :cask do
         let(:cask_token) { "app++" }
 
         it "fails" do
-          expect(subject).to fail_with(/\+ should be replaced by -plus-/)
+          expect(run).to fail_with(/\+ should be replaced by -plus-/)
         end
       end
 
@@ -173,7 +173,7 @@ describe Cask::Audit, :cask do
         let(:cask_token) { "app@stuff" }
 
         it "fails" do
-          expect(subject).to fail_with(/@ should be replaced by -at-/)
+          expect(run).to fail_with(/@ should be replaced by -at-/)
         end
       end
 
@@ -181,7 +181,7 @@ describe Cask::Audit, :cask do
         let(:cask_token) { "app stuff" }
 
         it "fails" do
-          expect(subject).to fail_with(/whitespace should be replaced by hyphens/)
+          expect(run).to fail_with(/whitespace should be replaced by hyphens/)
         end
       end
 
@@ -189,7 +189,7 @@ describe Cask::Audit, :cask do
         let(:cask_token) { "app_stuff" }
 
         it "fails" do
-          expect(subject).to fail_with(/underscores should be replaced by hyphens/)
+          expect(run).to fail_with(/underscores should be replaced by hyphens/)
         end
       end
 
@@ -197,7 +197,7 @@ describe Cask::Audit, :cask do
         let(:cask_token) { "app(stuff)" }
 
         it "fails" do
-          expect(subject).to fail_with(/alphanumeric characters and hyphens/)
+          expect(run).to fail_with(/alphanumeric characters and hyphens/)
         end
       end
 
@@ -205,7 +205,7 @@ describe Cask::Audit, :cask do
         let(:cask_token) { "app--stuff" }
 
         it "fails" do
-          expect(subject).to fail_with(/should not contain double hyphens/)
+          expect(run).to fail_with(/should not contain double hyphens/)
         end
       end
 
@@ -213,7 +213,7 @@ describe Cask::Audit, :cask do
         let(:cask_token) { "-app" }
 
         it "fails" do
-          expect(subject).to fail_with(/should not have leading or trailing hyphens/)
+          expect(run).to fail_with(/should not have leading or trailing hyphens/)
         end
       end
 
@@ -221,7 +221,7 @@ describe Cask::Audit, :cask do
         let(:cask_token) { "app-" }
 
         it "fails" do
-          expect(subject).to fail_with(/should not have leading or trailing hyphens/)
+          expect(run).to fail_with(/should not have leading or trailing hyphens/)
         end
       end
     end
@@ -247,7 +247,7 @@ describe Cask::Audit, :cask do
         let(:cask_token) { "token.app" }
 
         it "fails" do
-          expect(subject).to fail_with(/token contains .app/)
+          expect(run).to fail_with(/token contains .app/)
         end
       end
 
@@ -257,13 +257,13 @@ describe Cask::Audit, :cask do
         it "fails if the cask is from an official tap" do
           allow(cask).to receive(:tap).and_return(Tap.fetch("homebrew/cask"))
 
-          expect(subject).to fail_with(/token contains version designation/)
+          expect(run).to fail_with(/token contains version designation/)
         end
 
         it "does not fail if the cask is from the `cask-versions` tap" do
           allow(cask).to receive(:tap).and_return(Tap.fetch("homebrew/cask-versions"))
 
-          expect(subject).to pass
+          expect(run).to pass
         end
       end
 
@@ -271,7 +271,7 @@ describe Cask::Audit, :cask do
         let(:cask_token) { "token-launcher" }
 
         it "fails" do
-          expect(subject).to fail_with(/token mentions launcher/)
+          expect(run).to fail_with(/token mentions launcher/)
         end
       end
 
@@ -279,7 +279,7 @@ describe Cask::Audit, :cask do
         let(:cask_token) { "token-desktop" }
 
         it "fails" do
-          expect(subject).to fail_with(/token mentions desktop/)
+          expect(run).to fail_with(/token mentions desktop/)
         end
       end
 
@@ -287,7 +287,7 @@ describe Cask::Audit, :cask do
         let(:cask_token) { "token-osx" }
 
         it "fails" do
-          expect(subject).to fail_with(/token mentions platform/)
+          expect(run).to fail_with(/token mentions platform/)
         end
       end
 
@@ -295,7 +295,7 @@ describe Cask::Audit, :cask do
         let(:cask_token) { "token-x86" }
 
         it "fails" do
-          expect(subject).to fail_with(/token mentions architecture/)
+          expect(run).to fail_with(/token mentions architecture/)
         end
       end
 
@@ -303,7 +303,7 @@ describe Cask::Audit, :cask do
         let(:cask_token) { "token-java" }
 
         it "fails" do
-          expect(subject).to fail_with(/cask token mentions framework/)
+          expect(run).to fail_with(/cask token mentions framework/)
         end
       end
 
@@ -311,7 +311,7 @@ describe Cask::Audit, :cask do
         let(:cask_token) { "java" }
 
         it "does not fail" do
-          expect(subject).to pass
+          expect(run).to pass
         end
       end
 
@@ -328,7 +328,7 @@ describe Cask::Audit, :cask do
           let(:new_cask) { true }
 
           it "fails" do
-            expect(subject).to fail_with("#{cask_token} is listed in tap_migrations.json")
+            expect(run).to fail_with("#{cask_token} is listed in tap_migrations.json")
           end
         end
 
@@ -336,7 +336,7 @@ describe Cask::Audit, :cask do
           let(:new_cask) { false }
 
           it "does not fail" do
-            expect(subject).to pass
+            expect(run).to pass
           end
         end
       end
@@ -382,9 +382,9 @@ describe Cask::Audit, :cask do
 
       context "when cask locale is invalid" do
         it "error with invalid locale" do
-          expect(subject).to fail_with(/Locale 'ZH-CN' is invalid\./)
-          expect(subject).to fail_with(/Locale 'zh-' is invalid\./)
-          expect(subject).to fail_with(/Locale 'zh-cn' is invalid\./)
+          expect(run).to fail_with(/Locale 'ZH-CN' is invalid\./)
+          expect(run).to fail_with(/Locale 'zh-' is invalid\./)
+          expect(run).to fail_with(/Locale 'zh-cn' is invalid\./)
         end
       end
     end
@@ -797,7 +797,7 @@ describe Cask::Audit, :cask do
 
         context "when doing the audit" do
           it "evaluates the block" do
-            expect(subject).to fail_with(/Boom/)
+            expect(run).to fail_with(/Boom/)
           end
         end
       end
@@ -812,7 +812,7 @@ describe Cask::Audit, :cask do
 
         it "warns about duplicates" do
           expect(audit).to receive(:core_formula_names).and_return(formula_names)
-          expect(subject).to warn_with(/possible duplicate/)
+          expect(run).to warn_with(/possible duplicate/)
         end
       end
 
@@ -836,12 +836,12 @@ describe Cask::Audit, :cask do
 
       it "when download and verification succeed it does not fail" do
         expect(download_double).to receive(:fetch)
-        expect(subject).to pass
+        expect(run).to pass
       end
 
       it "when download fails it fails" do
         expect(download_double).to receive(:fetch).and_raise(StandardError.new(message))
-        expect(subject).to fail_with(/#{message}/)
+        expect(run).to fail_with(/#{message}/)
       end
     end
 
@@ -850,7 +850,7 @@ describe Cask::Audit, :cask do
 
       it "fails the audit" do
         expect(cask).to receive(:tap).and_raise(StandardError.new)
-        expect(subject).to fail_with(/exception while auditing/)
+        expect(run).to fail_with(/exception while auditing/)
       end
     end
 
@@ -873,7 +873,7 @@ describe Cask::Audit, :cask do
         let(:new_cask) { true }
 
         it "fails" do
-          expect(subject).to fail_with(/should have a description/)
+          expect(run).to fail_with(/should have a description/)
         end
       end
 
@@ -881,7 +881,7 @@ describe Cask::Audit, :cask do
         let(:new_cask) { false }
 
         it "warns" do
-          expect(subject).to warn_with(/should have a description/)
+          expect(run).to warn_with(/should have a description/)
         end
       end
     end
@@ -903,7 +903,7 @@ describe Cask::Audit, :cask do
       end
 
       it "passes" do
-        expect(subject).to pass
+        expect(run).to pass
       end
     end
 

@@ -103,13 +103,13 @@ describe Dependency do
 end
 
 describe TapDependency do
-  subject { described_class.new("foo/bar/dog") }
+  subject(:dependency) { described_class.new("foo/bar/dog") }
 
   specify "#tap" do
-    expect(subject.tap).to eq(Tap.new("foo", "bar"))
+    expect(dependency.tap).to eq(Tap.new("foo", "bar"))
   end
 
   specify "#option_names" do
-    expect(subject.option_names).to eq(%w[dog])
+    expect(dependency.option_names).to eq(%w[dog])
   end
 end

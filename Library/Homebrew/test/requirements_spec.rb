@@ -4,14 +4,16 @@
 require "requirements"
 
 describe Requirements do
+  subject(:requirements) { described_class.new }
+
   describe "#<<" do
     it "returns itself" do
-      expect(subject << Object.new).to be(subject)
+      expect(requirements << Object.new).to be(requirements)
     end
 
     it "merges duplicate requirements" do
-      subject << Requirement.new << Requirement.new
-      expect(subject.count).to eq(1)
+      requirements << Requirement.new << Requirement.new
+      expect(requirements.count).to eq(1)
     end
   end
 end

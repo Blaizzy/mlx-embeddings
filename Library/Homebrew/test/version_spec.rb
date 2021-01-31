@@ -72,14 +72,14 @@ end
 
 describe Version do
   describe "::NULL_TOKEN" do
-    subject { described_class::NULL_TOKEN }
+    subject(:null_version) { described_class::NULL_TOKEN }
 
     specify "#inspect" do
-      expect(subject.inspect).to eq("#<Version::NullToken>")
+      expect(null_version.inspect).to eq("#<Version::NullToken>")
     end
 
     it "is equal to itself" do
-      expect(subject).to be == described_class::NULL_TOKEN
+      expect(null_version).to be == described_class::NULL_TOKEN
     end
   end
 

@@ -4,17 +4,17 @@
 require "lock_file"
 
 describe LockFile do
-  subject { described_class.new("foo") }
+  subject(:lock_file) { described_class.new("foo") }
 
   describe "#lock" do
     it "does not raise an error when already locked" do
-      subject.lock
+      lock_file.lock
 
-      expect { subject.lock }.not_to raise_error
+      expect { lock_file.lock }.not_to raise_error
     end
 
     it "raises an error if a lock already exists" do
-      subject.lock
+      lock_file.lock
 
       expect {
         described_class.new("foo").lock
@@ -24,12 +24,12 @@ describe LockFile do
 
   describe "#unlock" do
     it "does not raise an error when already unlocked" do
-      expect { subject.unlock }.not_to raise_error
+      expect { lock_file.unlock }.not_to raise_error
     end
 
     it "unlocks when locked" do
-      subject.lock
-      subject.unlock
+      lock_file.lock
+      lock_file.unlock
 
       expect { described_class.new("foo").lock }.not_to raise_error
     end

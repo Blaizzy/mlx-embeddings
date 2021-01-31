@@ -31,6 +31,8 @@ describe Homebrew::Cleanup::CleanupRefinement do
 end
 
 describe Homebrew::Cleanup do
+  subject(:cleanup) { described_class.new }
+
   let(:ds_store) { Pathname.new("#{HOMEBREW_CELLAR}/.DS_Store") }
   let(:lock_file) { Pathname.new("#{HOMEBREW_LOCKS}/foo") }
 
@@ -49,7 +51,7 @@ describe Homebrew::Cleanup do
 
   describe "::cleanup" do
     it "removes .DS_Store and lock files" do
-      subject.clean!
+      cleanup.clean!
 
       expect(ds_store).not_to exist
       expect(lock_file).not_to exist
@@ -65,7 +67,7 @@ describe Homebrew::Cleanup do
     it "doesn't remove the lock file if it is locked" do
       lock_file.open(File::RDWR | File::CREAT).flock(File::LOCK_EX | File::LOCK_NB)
 
-      subject.clean!
+      cleanup.clean!
 
       expect(lock_file).to exist
     end
@@ -89,13 +91,13 @@ describe Homebrew::Cleanup do
       end
 
       it "doesn't remove any kegs" do
-        subject.cleanup_formula f2
+        cleanup.cleanup_formula f2
         expect(f1.installed_kegs.size).to eq(2)
       end
 
       it "lists the unremovable kegs" do
-        subject.cleanup_formula f2
-        expect(subject.unremovable_kegs).to contain_exactly(f1.installed_kegs[0])
+        cleanup.cleanup_formula f2
+        expect(cleanup.unremovable_kegs).to contain_exactly(f1.installed_kegs[0])
       end
     end
   end
@@ -133,7 +135,7 @@ describe Homebrew::Cleanup do
     expect(f3).to be_latest_version_installed
     expect(f4).to be_latest_version_installed
 
-    subject.cleanup_formula f3
+    cleanup.cleanup_formula f3
 
     expect(f1).not_to be_latest_version_installed
     expect(f2).not_to be_latest_version_installed
@@ -154,7 +156,7 @@ describe Homebrew::Cleanup do
 
         FileUtils.touch download
 
-        subject.cleanup_cask(cask)
+        cleanup.cleanup_cask(cask)
 
         expect(download).not_to exist
       end
@@ -164,7 +166,7 @@ describe Homebrew::Cleanup do
 
         FileUtils.touch download
 
-        subject.cleanup_cask(cask)
+        cleanup.cleanup_cask(cask)
 
         expect(download).to exist
       end
@@ -178,7 +180,7 @@ describe Homebrew::Cleanup do
 
         FileUtils.touch download
 
-        subject.cleanup_cask(cask)
+        cleanup.cleanup_cask(cask)
 
         expect(download).to exist
       end
@@ -189,7 +191,7 @@ describe Homebrew::Cleanup do
         allow(download).to receive(:ctime).and_return(30.days.ago - 1.hour)
         allow(download).to receive(:mtime).and_return(30.days.ago - 1.hour)
 
-        subject.cleanup_cask(cask)
+        cleanup.cleanup_cask(cask)
 
         expect(download).not_to exist
       end
@@ -211,14 +213,14 @@ describe Homebrew::Cleanup do
     it "cleans up logs if older than 30 days" do
       allow_any_instance_of(Pathname).to receive(:ctime).and_return(31.days.ago)
       allow_any_instance_of(Pathname).to receive(:mtime).and_return(31.days.ago)
-      subject.cleanup_logs
+      cleanup.cleanup_logs
       expect(path).not_to exist
     end
 
     it "does not clean up logs less than 30 days old" do
       allow_any_instance_of(Pathname).to receive(:ctime).and_return(15.days.ago)
       allow_any_instance_of(Pathname).to receive(:mtime).and_return(15.days.ago)
-      subject.cleanup_logs
+      cleanup.cleanup_logs
       expect(path).to exist
     end
   end
@@ -228,7 +230,7 @@ describe Homebrew::Cleanup do
       incomplete = (HOMEBREW_CACHE/"something.incomplete")
       incomplete.mkpath
 
-      subject.cleanup_cache
+      cleanup.cleanup_cache
 
       expect(incomplete).not_to exist
     end
@@ -237,7 +239,7 @@ describe Homebrew::Cleanup do
       cargo_cache = (HOMEBREW_CACHE/"cargo_cache")
       cargo_cache.mkpath
 
-      subject.cleanup_cache
+      cleanup.cleanup_cache
 
       expect(cargo_cache).not_to exist
     end
@@ -246,7 +248,7 @@ describe Homebrew::Cleanup do
       go_cache = (HOMEBREW_CACHE/"go_cache")
       go_cache.mkpath
 
-      subject.cleanup_cache
+      cleanup.cleanup_cache
 
       expect(go_cache).not_to exist
     end
@@ -255,7 +257,7 @@ describe Homebrew::Cleanup do
       glide_home = (HOMEBREW_CACHE/"glide_home")
       glide_home.mkpath
 
-      subject.cleanup_cache
+      cleanup.cleanup_cache
 
       expect(glide_home).not_to exist
     end
@@ -264,7 +266,7 @@ describe Homebrew::Cleanup do
       java_cache = (HOMEBREW_CACHE/"java_cache")
       java_cache.mkpath
 
-      subject.cleanup_cache
+      cleanup.cleanup_cache
 
       expect(java_cache).not_to exist
     end
@@ -273,7 +275,7 @@ describe Homebrew::Cleanup do
       npm_cache = (HOMEBREW_CACHE/"npm_cache")
       npm_cache.mkpath
 
-      subject.cleanup_cache
+      cleanup.cleanup_cache
 
       expect(npm_cache).not_to exist
     end
@@ -282,7 +284,7 @@ describe Homebrew::Cleanup do
       gclient_cache = (HOMEBREW_CACHE/"gclient_cache")
       gclient_cache.mkpath
 
-      subject.cleanup_cache
+      cleanup.cleanup_cache
 
       expect(gclient_cache).not_to exist
     end
@@ -343,7 +345,7 @@ describe Homebrew::Cleanup do
 
       it "cleans up file if outdated" do
         allow(Utils::Bottles).to receive(:file_outdated?).with(any_args).and_return(true)
-        subject.cleanup_cache
+        cleanup.cleanup_cache
         expect(bottle).not_to exist
         expect(testball).not_to exist
         expect(testball_resource).not_to exist
@@ -357,7 +359,7 @@ describe Homebrew::Cleanup do
       end
 
       it "cleans up file if stale" do
-        subject.cleanup_cache
+        cleanup.cleanup_cache
         expect(bottle).not_to exist
         expect(testball).not_to exist
         expect(testball_resource).not_to exist
