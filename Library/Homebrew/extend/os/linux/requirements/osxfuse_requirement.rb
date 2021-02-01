@@ -7,7 +7,7 @@ class OsxfuseRequirement < Requirement
   extend T::Sig
 
   def initialize(tags = [])
-    odeprecated "depends_on :osxfuse", 'on_linux do; depends_on "libfuse"; end'
+    odisabled "depends_on :osxfuse", 'on_linux do; depends_on "libfuse"; end'
     super(tags)
   end
 

@@ -537,36 +537,6 @@ _brew_bump_unversioned_casks() {
   __brew_complete_tapped
 }
 
-_brew_cask() {
-  local cur="${COMP_WORDS[COMP_CWORD]}"
-  case "$cur" in
-    -*)
-      __brewcomp "
-      --appdir
-      --audio-unit-plugindir
-      --colorpickerdir
-      --debug
-      --dictionarydir
-      --fontdir
-      --help
-      --input-methoddir
-      --internet-plugindir
-      --language
-      --mdimporterdir
-      --prefpanedir
-      --qlplugindir
-      --quiet
-      --screen-saverdir
-      --servicedir
-      --verbose
-      --vst-plugindir
-      --vst3-plugindir
-      "
-      return
-      ;;
-  esac
-}
-
 _brew_cat() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
@@ -664,23 +634,6 @@ _brew_config() {
       --help
       --quiet
       --verbose
-      "
-      return
-      ;;
-  esac
-}
-
-_brew_configure() {
-  local cur="${COMP_WORDS[COMP_CWORD]}"
-  case "$cur" in
-    -*)
-      __brewcomp "
-      --debug
-      --help
-      --name
-      --quiet
-      --verbose
-      --version
       "
       return
       ;;
@@ -791,23 +744,6 @@ _brew_dispatch_build_bottle() {
       ;;
   esac
   __brew_complete_formulae
-}
-
-_brew_diy() {
-  local cur="${COMP_WORDS[COMP_CWORD]}"
-  case "$cur" in
-    -*)
-      __brewcomp "
-      --debug
-      --help
-      --name
-      --quiet
-      --verbose
-      --version
-      "
-      return
-      ;;
-  esac
 }
 
 _brew_doctor() {
@@ -1845,21 +1781,6 @@ _brew_style() {
   __brew_complete_casks
 }
 
-_brew_switch() {
-  local cur="${COMP_WORDS[COMP_CWORD]}"
-  case "$cur" in
-    -*)
-      __brewcomp "
-      --debug
-      --help
-      --quiet
-      --verbose
-      "
-      return
-      ;;
-  esac
-}
-
 _brew_tap() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
@@ -2385,19 +2306,16 @@ _brew() {
     bump-formula-pr) _brew_bump_formula_pr ;;
     bump-revision) _brew_bump_revision ;;
     bump-unversioned-casks) _brew_bump_unversioned_casks ;;
-    cask) _brew_cask ;;
     cat) _brew_cat ;;
     cleanup) _brew_cleanup ;;
     command) _brew_command ;;
     commands) _brew_commands ;;
     completions) _brew_completions ;;
     config) _brew_config ;;
-    configure) _brew_configure ;;
     create) _brew_create ;;
     deps) _brew_deps ;;
     desc) _brew_desc ;;
     dispatch-build-bottle) _brew_dispatch_build_bottle ;;
-    diy) _brew_diy ;;
     doctor) _brew_doctor ;;
     dr) _brew_dr ;;
     edit) _brew_edit ;;
@@ -2445,7 +2363,6 @@ _brew() {
     sh) _brew_sh ;;
     sponsors) _brew_sponsors ;;
     style) _brew_style ;;
-    switch) _brew_switch ;;
     tap) _brew_tap ;;
     tap-info) _brew_tap_info ;;
     tap-new) _brew_tap_new ;;

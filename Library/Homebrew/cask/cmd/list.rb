@@ -5,16 +5,11 @@ require "cask/artifact/relocated"
 
 module Cask
   class Cmd
-    # Implementation of the `brew cask list` command.
+    # Cask implementation of the `brew list` command.
     #
     # @api private
     class List < AbstractCommand
       extend T::Sig
-
-      sig { returns(String) }
-      def self.description
-        "Lists installed casks or the casks provided in the arguments."
-      end
 
       def self.parser
         super do

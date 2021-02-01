@@ -356,7 +356,7 @@ class BottleSpecification
     if [HOMEBREW_DEFAULT_PREFIX,
         HOMEBREW_MACOS_ARM_DEFAULT_PREFIX,
         HOMEBREW_LINUX_DEFAULT_PREFIX].exclude?(prefix)
-      odeprecated "setting 'prefix' for bottles"
+      odisabled "setting 'prefix' for bottles"
     end
     @prefix = prefix
   end

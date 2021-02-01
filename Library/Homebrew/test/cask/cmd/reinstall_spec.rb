@@ -1,11 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-require_relative "shared_examples/invalid_option"
-
 describe Cask::Cmd::Reinstall, :cask do
-  it_behaves_like "a command that handles invalid options"
-
   it "displays the reinstallation progress" do
     caffeine = Cask::CaskLoader.load(cask_path("local-caffeine"))
 

@@ -1,14 +1,11 @@
 # typed: false
 # frozen_string_literal: true
 
-require_relative "shared_examples/invalid_option"
 require "cask/auditor"
 
 describe Cask::Cmd::Audit, :cask do
   let(:cask) { Cask::Cask.new("cask") }
   let(:result) { { warnings: Set.new, errors: Set.new } }
-
-  it_behaves_like "a command that handles invalid options"
 
   describe "selection of Casks to audit" do
     it "audits all Casks if no tokens are given" do

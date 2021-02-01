@@ -241,7 +241,7 @@ module SharedEnvExtension
   # Currently only used by aalib in core.
   sig { void }
   def ncurses_define
-    # odeprecated "ENV.ncurses_define"
+    odeprecated "ENV.ncurses_define"
 
     append "CPPFLAGS", "-DNCURSES_OPAQUE=0"
   end
@@ -249,6 +249,8 @@ module SharedEnvExtension
   # @private
   sig { void }
   def userpaths!
+    odeprecated "ENV.userpaths!"
+
     path = PATH.new(self["PATH"]).select do |p|
       # put Superenv.bin and opt path at the first
       p.start_with?("#{HOMEBREW_REPOSITORY}/Library/ENV", "#{HOMEBREW_PREFIX}/opt")
@@ -343,9 +345,10 @@ module SharedEnvExtension
   sig { void }
   def permit_arch_flags; end
 
-  # A no-op until we enable this by default again (which we may never do).
   sig { void }
-  def permit_weak_imports; end
+  def permit_weak_imports
+    odeprecated "ENV.permit_weak_imports"
+  end
 
   # @private
   sig { params(cc: T.any(Symbol, String)).returns(T::Boolean) }

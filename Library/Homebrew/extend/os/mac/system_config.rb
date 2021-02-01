@@ -7,17 +7,7 @@ module SystemConfig
   class << self
     include SystemCommand::Mixin
 
-    undef describe_java, describe_homebrew_ruby
-
-    def describe_java
-      # java_home doesn't exist on all macOSs; it might be missing on older versions.
-      return "N/A" unless File.executable? "/usr/libexec/java_home"
-
-      result = system_command("/usr/libexec/java_home", args: ["--xml", "--failfast"], print_stderr: false)
-      return "N/A" unless result.success?
-
-      result.plist.map { |jvm| jvm["JVMVersion"] }.uniq.join(", ")
-    end
+    undef describe_homebrew_ruby
 
     def describe_homebrew_ruby
       s = describe_homebrew_ruby_version

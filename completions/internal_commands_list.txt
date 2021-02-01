@@ -19,7 +19,6 @@ bump-cask-pr
 bump-formula-pr
 bump-revision
 bump-unversioned-casks
-cask
 casks
 cat
 cleanup
@@ -32,7 +31,6 @@ create
 deps
 desc
 dispatch-build-bottle
-diy
 doctor
 dr
 edit
@@ -83,7 +81,6 @@ sh
 shellenv
 sponsors
 style
-switch
 tap
 tap-info
 tap-new

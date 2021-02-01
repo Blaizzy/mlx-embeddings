@@ -1,11 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-require_relative "shared_examples/invalid_option"
-
 describe Cask::Cmd::List, :cask do
-  it_behaves_like "a command that handles invalid options"
-
   it "lists the installed Casks in a pretty fashion" do
     casks = %w[local-caffeine local-transmission].map { |c| Cask::CaskLoader.load(c) }
 

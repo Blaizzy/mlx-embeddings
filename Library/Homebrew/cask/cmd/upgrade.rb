@@ -6,16 +6,11 @@ require "cask/config"
 
 module Cask
   class Cmd
-    # Implementation of the `brew cask upgrade` command.
+    # Cask implementation of the `brew upgrade` command.
     #
     # @api private
     class Upgrade < AbstractCommand
       extend T::Sig
-
-      sig { returns(String) }
-      def self.description
-        "Upgrades all outdated casks or the specified casks."
-      end
 
       OPTIONS = [
         [:switch, "--skip-cask-deps", {

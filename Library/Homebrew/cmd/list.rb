@@ -116,12 +116,8 @@ module Homebrew
       ls_args << "-r" if args.r?
       ls_args << "-t" if args.t?
 
-      if !$stdout.tty? && !args.formula? && !args.cask?
-        odisabled "`brew list` to only list formulae", "`brew list --formula`"
-      else
-        safe_system "ls", *ls_args, HOMEBREW_CELLAR unless args.cask?
-        list_casks(args: args) unless args.formula?
-      end
+      safe_system "ls", *ls_args, HOMEBREW_CELLAR unless args.cask?
+      list_casks(args: args) unless args.formula?
     elsif args.verbose? || !$stdout.tty?
       system_command! "find", args: args.named.to_kegs.map(&:to_s) + %w[-not -type d -print], print_stdout: true
     else

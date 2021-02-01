@@ -11,7 +11,7 @@ class X11Requirement < Requirement
   include Comparable
 
   def initialize(tags = [])
-    odeprecated "depends_on :x11", "depends_on specific X11 formula(e)"
+    odisabled "depends_on :x11", "depends_on specific X11 formula(e)"
     super(tags)
   end
 

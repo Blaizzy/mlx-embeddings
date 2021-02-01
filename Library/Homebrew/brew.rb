@@ -72,6 +72,7 @@ begin
 
   ARGV.delete_at(help_cmd_index) if help_cmd_index
 
+  require "cli/parser"
   args = Homebrew::CLI::Parser.new.parse(ARGV.dup.freeze, ignore_invalid_options: true)
   Context.current = args.context
 
@@ -111,8 +112,7 @@ begin
   # - a help flag is passed AND a command is matched
   # - a help flag is passed AND there is no command specified
   # - no arguments are passed
-  # - if cmd is Cask, let Cask handle the help command instead
-  if (empty_argv || help_flag) && cmd != "cask"
+  if empty_argv || help_flag
     require "help"
     Homebrew::Help.help cmd, remaining_args: args.remaining, empty_argv: empty_argv
     # `Homebrew::Help.help` never returns, except for unknown commands.

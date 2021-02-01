@@ -3,16 +3,11 @@
 
 module Cask
   class Cmd
-    # Implementation of the `brew cask reinstall` command.
+    # Cask implementation of the `brew reinstall` command.
     #
     # @api private
     class Reinstall < Install
       extend T::Sig
-
-      sig { returns(String) }
-      def self.description
-        "Reinstalls the given <cask>."
-      end
 
       sig { void }
       def run

@@ -28,13 +28,7 @@ module Language
     private_class_method :find_openjdk_formula
 
     def self.java_home(version = nil)
-      f = find_openjdk_formula(version)
-      return f.opt_libexec if f
-
-      req = JavaRequirement.new Array(version)
-      raise UnsatisfiedRequirements, req.message unless req.satisfied?
-
-      req.java_home
+      find_openjdk_formula(version)&.opt_libexec
     end
 
     def self.java_home_shell(version = nil)
@@ -51,5 +45,3 @@ module Language
     end
   end
 end
-
-require "extend/os/language/java"

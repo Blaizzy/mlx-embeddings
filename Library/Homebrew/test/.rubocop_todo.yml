@@ -107,7 +107,6 @@ RSpec/NamedSubject:
     - "cache_store_spec.rb"
     - "cask/audit_spec.rb"
     - "cask/cmd/style_spec.rb"
-    - "cask/cmd_spec.rb"
     - "cask/dsl/appcast_spec.rb"
     - "caveats_spec.rb"
     - "cleaner_spec.rb"

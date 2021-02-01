@@ -123,13 +123,7 @@ RSpec.configure do |config|
   end
 
   config.before(:each, :needs_java) do
-    java_installed = if OS.mac?
-      Utils.popen_read("/usr/libexec/java_home", "--failfast")
-      $CHILD_STATUS.success?
-    else
-      which("java")
-    end
-    skip "Java is not installed." unless java_installed
+    skip "Java is not installed." unless which("java")
   end
 
   config.before(:each, :needs_python) do

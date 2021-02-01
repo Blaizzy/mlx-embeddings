@@ -461,28 +461,6 @@ __fish_brew_complete_arg 'bump-unversioned-casks' -a '(__fish_brew_suggest_casks
 __fish_brew_complete_arg 'bump-unversioned-casks' -a '(__fish_brew_suggest_taps_installed)'
 
 
-__fish_brew_complete_cmd 'cask' 'Homebrew Cask provides a friendly CLI workflow for the administration of macOS applications distributed as binaries'
-__fish_brew_complete_arg 'cask' -l appdir -d 'Target location for Applications (default: `/Applications`)'
-__fish_brew_complete_arg 'cask' -l audio-unit-plugindir -d 'Target location for Audio Unit Plugins (default: `~/Library/Audio/Plug-Ins/Components`)'
-__fish_brew_complete_arg 'cask' -l colorpickerdir -d 'Target location for Color Pickers (default: `~/Library/ColorPickers`)'
-__fish_brew_complete_arg 'cask' -l debug -d 'Display any debugging information'
-__fish_brew_complete_arg 'cask' -l dictionarydir -d 'Target location for Dictionaries (default: `~/Library/Dictionaries`)'
-__fish_brew_complete_arg 'cask' -l fontdir -d 'Target location for Fonts (default: `~/Library/Fonts`)'
-__fish_brew_complete_arg 'cask' -l help -d 'Show this message'
-__fish_brew_complete_arg 'cask' -l input-methoddir -d 'Target location for Input Methods (default: `~/Library/Input Methods`)'
-__fish_brew_complete_arg 'cask' -l internet-plugindir -d 'Target location for Internet Plugins (default: `~/Library/Internet Plug-Ins`)'
-__fish_brew_complete_arg 'cask' -l language -d 'Comma-separated list of language codes to prefer for cask installation. The first matching language is used, otherwise it reverts to the cask\'s default language. The default value is the language of your system'
-__fish_brew_complete_arg 'cask' -l mdimporterdir -d 'Target location for Spotlight Plugins (default: `~/Library/Spotlight`)'
-__fish_brew_complete_arg 'cask' -l prefpanedir -d 'Target location for Preference Panes (default: `~/Library/PreferencePanes`)'
-__fish_brew_complete_arg 'cask' -l qlplugindir -d 'Target location for QuickLook Plugins (default: `~/Library/QuickLook`)'
-__fish_brew_complete_arg 'cask' -l quiet -d 'Make some output more quiet'
-__fish_brew_complete_arg 'cask' -l screen-saverdir -d 'Target location for Screen Savers (default: `~/Library/Screen Savers`)'
-__fish_brew_complete_arg 'cask' -l servicedir -d 'Target location for Services (default: `~/Library/Services`)'
-__fish_brew_complete_arg 'cask' -l verbose -d 'Make some output more verbose'
-__fish_brew_complete_arg 'cask' -l vst-plugindir -d 'Target location for VST Plugins (default: `~/Library/Audio/Plug-Ins/VST`)'
-__fish_brew_complete_arg 'cask' -l vst3-plugindir -d 'Target location for VST3 Plugins (default: `~/Library/Audio/Plug-Ins/VST3`)'
-
-
 __fish_brew_complete_cmd 'cat' 'Display the source of a formula or cask'
 __fish_brew_complete_arg 'cat' -l cask -d 'Treat all named arguments as casks'
 __fish_brew_complete_arg 'cat' -l debug -d 'Display any debugging information'
@@ -538,15 +516,6 @@ __fish_brew_complete_arg 'config' -l debug -d 'Display any debugging information
 __fish_brew_complete_arg 'config' -l help -d 'Show this message'
 __fish_brew_complete_arg 'config' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'config' -l verbose -d 'Make some output more verbose'
-
-
-__fish_brew_complete_cmd 'configure' 'Automatically determine the installation prefix for non-Homebrew software'
-__fish_brew_complete_arg 'configure' -l debug -d 'Display any debugging information'
-__fish_brew_complete_arg 'configure' -l help -d 'Show this message'
-__fish_brew_complete_arg 'configure' -l name -d 'Explicitly set the name of the package being installed'
-__fish_brew_complete_arg 'configure' -l quiet -d 'Make some output more quiet'
-__fish_brew_complete_arg 'configure' -l verbose -d 'Make some output more verbose'
-__fish_brew_complete_arg 'configure' -l version -d 'Explicitly set the version of the package being installed'
 
 
 __fish_brew_complete_cmd 'create' 'Generate a formula or, with `--cask`, a cask for the downloadable file at URL and open it in the editor'
@@ -621,15 +590,6 @@ __fish_brew_complete_arg 'dispatch-build-bottle' -l upload -d 'Upload built bott
 __fish_brew_complete_arg 'dispatch-build-bottle' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'dispatch-build-bottle' -l workflow -d 'Dispatch specified workflow (default: `dispatch-build-bottle.yml`)'
 __fish_brew_complete_arg 'dispatch-build-bottle' -a '(__fish_brew_suggest_formulae_all)'
-
-
-__fish_brew_complete_cmd 'diy' 'Automatically determine the installation prefix for non-Homebrew software'
-__fish_brew_complete_arg 'diy' -l debug -d 'Display any debugging information'
-__fish_brew_complete_arg 'diy' -l help -d 'Show this message'
-__fish_brew_complete_arg 'diy' -l name -d 'Explicitly set the name of the package being installed'
-__fish_brew_complete_arg 'diy' -l quiet -d 'Make some output more quiet'
-__fish_brew_complete_arg 'diy' -l verbose -d 'Make some output more verbose'
-__fish_brew_complete_arg 'diy' -l version -d 'Explicitly set the version of the package being installed'
 
 
 __fish_brew_complete_cmd 'doctor' 'Check your system for potential problems'
@@ -1286,13 +1246,6 @@ __fish_brew_complete_arg 'style' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'style' -a '(__fish_brew_suggest_taps_installed)'
 __fish_brew_complete_arg 'style' -a '(__fish_brew_suggest_formulae_all)'
 __fish_brew_complete_arg 'style' -a '(__fish_brew_suggest_casks_all)'
-
-
-__fish_brew_complete_cmd 'switch' 'Symlink all of the specified version of formula\'s installation into Homebrew\'s prefix'
-__fish_brew_complete_arg 'switch' -l debug -d 'Display any debugging information'
-__fish_brew_complete_arg 'switch' -l help -d 'Show this message'
-__fish_brew_complete_arg 'switch' -l quiet -d 'Make some output more quiet'
-__fish_brew_complete_arg 'switch' -l verbose -d 'Make some output more verbose'
 
 
 __fish_brew_complete_cmd 'tap' 'Tap a formula repository'
