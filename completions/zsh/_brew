@@ -309,8 +309,9 @@ _brew___prefix() {
   _arguments \
     '--debug[Display any debugging information]' \
     '--help[Show this message]' \
+    '(--unbrewed)--installed[Outputs nothing and returns a failing status code if formula is not installed]' \
     '--quiet[Make some output more quiet]' \
-    '--unbrewed[List files in Homebrew'\''s prefix not installed by Homebrew]' \
+    '(--installed)--unbrewed[List files in Homebrew'\''s prefix not installed by Homebrew]' \
     '--verbose[Make some output more verbose]' \
     '::formula:__brew_formulae'
 }

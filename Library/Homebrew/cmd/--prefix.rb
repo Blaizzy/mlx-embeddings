@@ -23,6 +23,9 @@ module Homebrew
       EOS
       switch "--unbrewed",
              description: "List files in Homebrew's prefix not installed by Homebrew."
+      switch "--installed",
+             description: "Outputs nothing and returns a failing status code if <formula> is not installed."
+      conflicts "--unbrewed", "--installed"
 
       named_args :formula
     end
@@ -31,6 +34,8 @@ module Homebrew
   def __prefix
     args = __prefix_args.parse
 
+    raise UsageError, "`--installed` requires a formula argument." if args.installed? && args.no_named?
+
     if args.unbrewed?
       raise UsageError, "`--unbrewed` does not take a formula argument." unless args.no_named?
 
@@ -38,9 +43,27 @@ module Homebrew
     elsif args.no_named?
       puts HOMEBREW_PREFIX
     else
-      puts args.named.to_resolved_formulae.map { |f|
-        f.opt_prefix.exist? ? f.opt_prefix : f.latest_installed_prefix
-      }
+      formulae = args.named.to_resolved_formulae
+      prefixes = formulae.map do |f|
+        if f.opt_prefix.exist?
+          f.opt_prefix
+        elsif args.installed?
+          nil
+        else
+          f.latest_installed_prefix
+        end
+      end.compact
+      puts prefixes
+      if args.installed?
+        missing_formulae = formulae.reject(&:optlinked?)
+                                   .map(&:name)
+        return if missing_formulae.blank?
+
+        raise NotAKegError, <<~EOS
+          The following formulae are not installed:
+          #{missing_formulae.join(" ")}
+        EOS
+      end
     end
   end
 

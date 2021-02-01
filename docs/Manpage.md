@@ -723,7 +723,7 @@ the list is formatted for export to `bash`(1) unless `--plain` is passed.
 * `--plain`:
   Generate plain output even when piped.
 
-### `--prefix` [*`--unbrewed`*] [*`formula`* ...]
+### `--prefix` [*`--unbrewed`*] [*`--installed`*] [*`formula`* ...]
 
 Display Homebrew's install path. *Default:*
 
@@ -736,6 +736,8 @@ is or would be installed.
 
 * `--unbrewed`:
   List files in Homebrew's prefix not installed by Homebrew.
+* `--installed`:
+  Outputs nothing and returns a failing status code if *`formula`* is not installed.
 
 ### `--repository`, `--repo` [*`tap`* ...]
 
