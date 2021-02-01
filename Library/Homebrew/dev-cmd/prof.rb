@@ -32,7 +32,7 @@ module Homebrew
     if args.stackprof?
       Homebrew.install_gem_setup_path! "stackprof"
       with_env HOMEBREW_STACKPROF: "1" do
-        safe_system ENV["HOMEBREW_RUBY_PATH"], brew_rb, *args.named
+        system ENV["HOMEBREW_RUBY_PATH"], brew_rb, *args.named
       end
       output_filename = "prof/d3-flamegraph.html"
       safe_system "stackprof --d3-flamegraph prof/stackprof.dump > #{output_filename}"
