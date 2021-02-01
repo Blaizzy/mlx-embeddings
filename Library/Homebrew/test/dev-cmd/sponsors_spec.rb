@@ -3,6 +3,6 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.sponsors_args" do
+describe "brew sponsors" do
   it_behaves_like "parseable arguments"
 end

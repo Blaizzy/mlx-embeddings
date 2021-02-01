@@ -3,12 +3,10 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.outdated_args" do
+describe "brew outdated" do
   it_behaves_like "parseable arguments"
-end
 
-describe "brew outdated", :integration_test do
-  it "outputs JSON" do
+  it "outputs JSON", :integration_test do
     setup_test_formula "testball"
     (HOMEBREW_CELLAR/"testball/0.0.1/foo").mkpath
 

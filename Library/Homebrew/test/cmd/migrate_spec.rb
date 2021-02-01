@@ -3,12 +3,10 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.migrate_args" do
+describe "brew migrate" do
   it_behaves_like "parseable arguments"
-end
 
-describe "brew migrate", :integration_test do
-  it "migrates a renamed Formula" do
+  it "migrates a renamed Formula", :integration_test do
     setup_test_formula "testball1"
     setup_test_formula "testball2"
     install_and_rename_coretap_formula "testball1", "testball2"

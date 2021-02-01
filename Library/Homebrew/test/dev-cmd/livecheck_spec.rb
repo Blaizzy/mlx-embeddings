@@ -3,12 +3,10 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.livecheck_args" do
+describe "brew livecheck" do
   it_behaves_like "parseable arguments"
-end
 
-describe "brew livecheck", :integration_test do
-  it "reports the latest version of a Formula", :needs_network do
+  it "reports the latest version of a Formula", :integration_test, :needs_network do
     content = <<~RUBY
       desc "Some test"
       homepage "https://github.com/Homebrew/brew"
@@ -22,7 +20,7 @@ describe "brew livecheck", :integration_test do
       .and be_a_success
   end
 
-  it "gives an error when no arguments are given and there's no watchlist" do
+  it "gives an error when no arguments are given and there's no watchlist", :integration_test do
     expect { brew "livecheck" }
       .to output(/Invalid usage: A watchlist file is required when no arguments are given\./).to_stderr
       .and not_to_output.to_stdout

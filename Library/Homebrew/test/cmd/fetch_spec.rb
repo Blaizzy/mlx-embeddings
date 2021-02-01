@@ -3,12 +3,10 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.fetch_args" do
+describe "brew fetch" do
   it_behaves_like "parseable arguments"
-end
 
-describe "brew fetch", :integration_test do
-  it "downloads the Formula's URL" do
+  it "downloads the Formula's URL", :integration_test do
     setup_test_formula "testball"
 
     expect { brew "fetch", "testball" }.to be_a_success

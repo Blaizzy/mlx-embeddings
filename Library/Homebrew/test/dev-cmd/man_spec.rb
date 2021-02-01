@@ -3,6 +3,6 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.man_args" do
+describe "brew man" do
   it_behaves_like "parseable arguments"
 end

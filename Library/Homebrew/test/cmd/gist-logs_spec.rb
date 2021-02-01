@@ -3,6 +3,6 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.gist_logs_args" do
+describe "brew gist-logs" do
   it_behaves_like "parseable arguments"
 end

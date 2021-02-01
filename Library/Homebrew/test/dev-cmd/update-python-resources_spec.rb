@@ -3,6 +3,6 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew pr-publish" do
+describe "brew update-python-resources" do
   it_behaves_like "parseable arguments"
 end

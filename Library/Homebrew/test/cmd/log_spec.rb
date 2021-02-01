@@ -3,12 +3,10 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.log_args" do
+describe "brew log" do
   it_behaves_like "parseable arguments"
-end
 
-describe "brew log", :integration_test do
-  it "shows the Git log for a given Formula" do
+  it "shows the Git log for a given Formula", :integration_test do
     setup_test_formula "testball"
 
     core_tap = CoreTap.new

@@ -3,6 +3,6 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.dispatch_build_bottle_args" do
+describe "brew dispatch-build-bottle" do
   it_behaves_like "parseable arguments"
 end

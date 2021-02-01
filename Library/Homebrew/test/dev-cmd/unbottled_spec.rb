@@ -3,6 +3,6 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.unbottled_args" do
+describe "brew unbottled" do
   it_behaves_like "parseable arguments"
 end

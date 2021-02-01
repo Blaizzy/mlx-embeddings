@@ -3,6 +3,6 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.pr_automerge_args" do
+describe "brew pr-automerge" do
   it_behaves_like "parseable arguments"
 end

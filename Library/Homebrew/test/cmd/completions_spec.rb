@@ -4,9 +4,7 @@
 require "cmd/shared_examples/args_parse"
 
 describe "brew completions" do
-  describe "Homebrew.completions_args" do
-    it_behaves_like "parseable arguments"
-  end
+  it_behaves_like "parseable arguments"
 
   it "runs the status subcommand correctly", :integration_test do
     HOMEBREW_REPOSITORY.cd do

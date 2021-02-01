@@ -3,12 +3,10 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.uses_args" do
+describe "brew uses" do
   it_behaves_like "parseable arguments"
-end
 
-describe "brew uses", :integration_test do
-  it "prints the Formulae a given Formula is used by" do
+  it "prints the Formulae a given Formula is used by", :integration_test do
     setup_test_formula "foo"
     setup_test_formula "bar"
     setup_test_formula "baz", <<~RUBY

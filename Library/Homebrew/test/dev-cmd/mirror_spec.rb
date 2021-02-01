@@ -3,6 +3,6 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.mirror_args" do
+describe "brew mirror" do
   it_behaves_like "parseable arguments"
 end
