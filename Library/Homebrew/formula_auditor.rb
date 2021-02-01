@@ -335,7 +335,7 @@ module Homebrew
         Formula[previous_formula_name]
       rescue FormulaUnavailableError
         problem "Versioned #{previous_formula_name} in homebrew/core must be created for " \
-                "`brew-postgresql-upgrade-database` and `pg_upgrade` to work."
+                "`brew postgresql-upgrade-database` and `pg_upgrade` to work."
       end
     end
 
