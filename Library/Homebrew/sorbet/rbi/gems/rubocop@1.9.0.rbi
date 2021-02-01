@@ -67,6 +67,8 @@ RuboCop::CLI::Command::AutoGenerateConfig::PHASE_1_OVERRIDDEN = T.let(T.unsafe(n
 
 RuboCop::CLI::Command::AutoGenerateConfig::PHASE_2 = T.let(T.unsafe(nil), String)
 
+RuboCop::CLI::Command::AutoGenerateConfig::YAML_OPTIONAL_DOC_START = T.let(T.unsafe(nil), Regexp)
+
 class RuboCop::CLI::Command::Base
   def initialize(env); end
 
@@ -285,7 +287,7 @@ class RuboCop::Config
   def target_rails_version_from_bundler_lock_file; end
 
   class << self
-    def create(hash, path); end
+    def create(hash, path, check: T.unsafe(nil)); end
   end
 end
 
@@ -314,7 +316,7 @@ class RuboCop::ConfigLoader
     def add_missing_namespaces(path, hash); end
     def clear_options; end
     def configuration_file_for(target_dir); end
-    def configuration_from_file(config_file); end
+    def configuration_from_file(config_file, check: T.unsafe(nil)); end
     def debug; end
     def debug=(_arg0); end
     def debug?; end
@@ -327,7 +329,7 @@ class RuboCop::ConfigLoader
     def ignore_parent_exclusion; end
     def ignore_parent_exclusion=(_arg0); end
     def ignore_parent_exclusion?; end
-    def load_file(file); end
+    def load_file(file, check: T.unsafe(nil)); end
     def load_yaml_configuration(absolute_path); end
     def loaded_features; end
     def merge(base_hash, derived_hash); end
@@ -551,6 +553,9 @@ class RuboCop::ConfigStore
   def for_pwd; end
   def force_default_config!; end
   def options_config=(options_config); end
+  def unvalidated; end
+  def validated; end
+  def validated?; end
 end
 
 class RuboCop::ConfigValidator
@@ -4769,10 +4774,14 @@ class RuboCop::Cop::Lint::NumberConversion < ::RuboCop::Cop::Base
 
   def on_send(node); end
   def to_method(param0 = T.unsafe(nil)); end
+  def to_method_symbol(param0 = T.unsafe(nil)); end
 
   private
 
   def correct_method(node, receiver); end
+  def correct_sym_method(to_method); end
+  def handle_as_symbol(node); end
+  def handle_conversion_method(node); end
   def ignore_receiver?(receiver); end
   def ignored_class?(name); end
   def ignored_classes; end
@@ -4781,9 +4790,27 @@ end
 
 RuboCop::Cop::Lint::NumberConversion::CONVERSION_METHOD_CLASS_MAPPING = T.let(T.unsafe(nil), Hash)
 
+RuboCop::Cop::Lint::NumberConversion::METHODS = T.let(T.unsafe(nil), String)
+
 RuboCop::Cop::Lint::NumberConversion::MSG = T.let(T.unsafe(nil), String)
 
-RuboCop::Cop::Lint::NumberConversion::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+class RuboCop::Cop::Lint::NumberedParameterAssignment < ::RuboCop::Cop::Base
+  def on_lvasgn(node); end
+end
+
+RuboCop::Cop::Lint::NumberedParameterAssignment::LVAR_MSG = T.let(T.unsafe(nil), String)
+
+RuboCop::Cop::Lint::NumberedParameterAssignment::NUMBERED_PARAMETER_RANGE = T.let(T.unsafe(nil), Range)
+
+RuboCop::Cop::Lint::NumberedParameterAssignment::NUM_PARAM_MSG = T.let(T.unsafe(nil), String)
+
+class RuboCop::Cop::Lint::OrAssignmentToConstant < ::RuboCop::Cop::Base
+  extend(::RuboCop::Cop::AutoCorrector)
+
+  def on_or_asgn(node); end
+end
+
+RuboCop::Cop::Lint::OrAssignmentToConstant::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Lint::OrderedMagicComments < ::RuboCop::Cop::Base
   include(::RuboCop::Cop::FrozenStringLiteral)
@@ -5329,6 +5356,26 @@ end
 
 RuboCop::Cop::Lint::SuppressedException::MSG = T.let(T.unsafe(nil), String)
 
+class RuboCop::Cop::Lint::SymbolConversion < ::RuboCop::Cop::Base
+  extend(::RuboCop::Cop::AutoCorrector)
+
+  def on_send(node); end
+  def on_sym(node); end
+
+  private
+
+  def correct_hash_key(node); end
+  def hash_key?(node); end
+  def in_alias?(node); end
+  def in_percent_literal_array?(node); end
+  def properly_quoted?(source, value); end
+  def register_offense(node, correction:, message: T.unsafe(nil)); end
+end
+
+RuboCop::Cop::Lint::SymbolConversion::MSG = T.let(T.unsafe(nil), String)
+
+RuboCop::Cop::Lint::SymbolConversion::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 class RuboCop::Cop::Lint::Syntax < ::RuboCop::Cop::Base
   def on_other_file; end
 
@@ -5385,6 +5432,18 @@ class RuboCop::Cop::Lint::TrailingCommaInAttributeDeclaration < ::RuboCop::Cop::
 end
 
 RuboCop::Cop::Lint::TrailingCommaInAttributeDeclaration::MSG = T.let(T.unsafe(nil), String)
+
+class RuboCop::Cop::Lint::TripleQuotes < ::RuboCop::Cop::Base
+  extend(::RuboCop::Cop::AutoCorrector)
+
+  def on_dstr(node); end
+
+  private
+
+  def empty_str_nodes(node); end
+end
+
+RuboCop::Cop::Lint::TripleQuotes::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Lint::UnderscorePrefixedVariableName < ::RuboCop::Cop::Base
   def after_leaving_scope(scope, _variable_table); end
@@ -6402,10 +6461,13 @@ class RuboCop::Cop::Naming::RescuedExceptionsVariableName < ::RuboCop::Cop::Base
 
   private
 
+  def correct_node(corrector, node, offending_name, preferred_name); end
+  def correct_reassignment(corrector, node, offending_name, preferred_name); end
   def message(node); end
   def offense_range(resbody); end
   def preferred_name(variable_name); end
   def variable_name(node); end
+  def variable_name_matches?(node, name); end
 end
 
 RuboCop::Cop::Naming::RescuedExceptionsVariableName::MSG = T.let(T.unsafe(nil), String)
@@ -7779,10 +7841,15 @@ class RuboCop::Cop::Style::DisableCopsWithinSourceCodeDirective < ::RuboCop::Cop
 
   private
 
-  def rubocop_directive_comment?(comment); end
+  def allowed_cops; end
+  def any_cops_allowed?; end
+  def directive_cops(comment); end
+  def register_offense(comment, directive_cops, disallowed_cops); end
 end
 
 RuboCop::Cop::Style::DisableCopsWithinSourceCodeDirective::MSG = T.let(T.unsafe(nil), String)
+
+RuboCop::Cop::Style::DisableCopsWithinSourceCodeDirective::MSG_FOR_COPS = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Style::DocumentDynamicEvalDefinition < ::RuboCop::Cop::Base
   def on_send(node); end
@@ -8079,16 +8146,19 @@ RuboCop::Cop::Style::EndlessMethod::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Style::EndlessMethod::MSG_MULTI_LINE = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Style::EvalWithLocation < ::RuboCop::Cop::Base
-  def eval_without_location?(param0 = T.unsafe(nil)); end
   def line_with_offset?(param0 = T.unsafe(nil), param1, param2); end
   def on_send(node); end
+  def valid_eval_receiver?(param0 = T.unsafe(nil)); end
 
   private
 
-  def add_offense_for_different_line(_node, line_node, line_diff); end
-  def add_offense_for_same_line(_node, line_node); end
-  def message_incorrect_line(actual, sign, line_diff); end
-  def on_with_lineno(node, code); end
+  def add_offense_for_different_line(node, line_node, line_diff); end
+  def add_offense_for_same_line(node, line_node); end
+  def check_file(node, file_node); end
+  def check_line(node, code); end
+  def file_and_line(node); end
+  def message_incorrect_line(method_name, actual, sign, line_diff); end
+  def register_offense(node); end
   def special_file_keyword?(node); end
   def special_line_keyword?(node); end
   def string_first_line(str_node); end
@@ -8096,6 +8166,10 @@ class RuboCop::Cop::Style::EvalWithLocation < ::RuboCop::Cop::Base
 end
 
 RuboCop::Cop::Style::EvalWithLocation::MSG = T.let(T.unsafe(nil), String)
+
+RuboCop::Cop::Style::EvalWithLocation::MSG_EVAL = T.let(T.unsafe(nil), String)
+
+RuboCop::Cop::Style::EvalWithLocation::MSG_INCORRECT_FILE = T.let(T.unsafe(nil), String)
 
 RuboCop::Cop::Style::EvalWithLocation::MSG_INCORRECT_LINE = T.let(T.unsafe(nil), String)
 
@@ -8247,6 +8321,8 @@ RuboCop::Cop::Style::FormatString::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array
 
 class RuboCop::Cop::Style::FormatStringToken < ::RuboCop::Cop::Base
   include(::RuboCop::Cop::ConfigurableEnforcedStyle)
+  include(::RuboCop::Cop::IgnoredMethods)
+  extend(::RuboCop::Cop::IgnoredMethods::Config)
 
   def format_string_in_typical_context?(param0 = T.unsafe(nil)); end
   def on_str(node); end
@@ -8255,6 +8331,7 @@ class RuboCop::Cop::Style::FormatStringToken < ::RuboCop::Cop::Base
 
   def allowed_unannotated?(detections); end
   def collect_detections(node); end
+  def format_string_token?(node); end
   def max_unannotated_placeholders_allowed; end
   def message(detected_style); end
   def message_text(style); end
@@ -8262,6 +8339,7 @@ class RuboCop::Cop::Style::FormatStringToken < ::RuboCop::Cop::Base
   def token_ranges(contents); end
   def tokens(str_node, &block); end
   def unannotated_format?(node, detected_style); end
+  def use_ignored_method?(node); end
 end
 
 class RuboCop::Cop::Style::FrozenStringLiteralComment < ::RuboCop::Cop::Base
@@ -8527,6 +8605,7 @@ class RuboCop::Cop::Style::IfInsideElse < ::RuboCop::Cop::Base
   def correct_to_elsif_from_if_inside_else_form(corrector, node, condition); end
   def correct_to_elsif_from_modifier_form(corrector, node); end
   def find_end_range(node); end
+  def if_condition_range(node, condition); end
 end
 
 RuboCop::Cop::Style::IfInsideElse::MSG = T.let(T.unsafe(nil), String)
@@ -8573,6 +8652,24 @@ class RuboCop::Cop::Style::IfUnlessModifierOfIfUnless < ::RuboCop::Cop::Base
 end
 
 RuboCop::Cop::Style::IfUnlessModifierOfIfUnless::MSG = T.let(T.unsafe(nil), String)
+
+class RuboCop::Cop::Style::IfWithBooleanLiteralBranches < ::RuboCop::Cop::Base
+  extend(::RuboCop::Cop::AutoCorrector)
+
+  def double_negative?(param0 = T.unsafe(nil)); end
+  def if_with_boolean_literal_branches?(param0 = T.unsafe(nil)); end
+  def on_if(node); end
+
+  private
+
+  def assume_boolean_value?(condition); end
+  def opposite_condition?(node); end
+  def replacement_condition(node, condition); end
+  def require_parentheses?(condition); end
+  def return_boolean_value?(condition); end
+end
+
+RuboCop::Cop::Style::IfWithBooleanLiteralBranches::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Style::IfWithSemicolon < ::RuboCop::Cop::Base
   include(::RuboCop::Cop::OnNormalIfUnless)
@@ -9383,11 +9480,16 @@ class RuboCop::Cop::Style::NonNilCheck < ::RuboCop::Cop::Base
   def autocorrect_comparison(corrector, node); end
   def autocorrect_non_nil(corrector, node, inner_node); end
   def autocorrect_unless_nil(corrector, node, receiver); end
-  def find_offense_node(node); end
   def include_semantic_changes?; end
   def message(node); end
+  def nil_comparison_style; end
+  def register_offense?(node); end
   def unless_and_nil_check?(send_node); end
 end
+
+RuboCop::Cop::Style::NonNilCheck::MSG_FOR_REDUNDANCY = T.let(T.unsafe(nil), String)
+
+RuboCop::Cop::Style::NonNilCheck::MSG_FOR_REPLACEMENT = T.let(T.unsafe(nil), String)
 
 RuboCop::Cop::Style::NonNilCheck::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
@@ -10579,12 +10681,15 @@ class RuboCop::Cop::Style::SoleNestedConditional < ::RuboCop::Cop::Base
   private
 
   def allow_modifier?; end
+  def arguments_range(node); end
   def autocorrect(corrector, node, if_branch); end
   def correct_for_basic_condition_style(corrector, node, if_branch, and_operator); end
   def correct_for_comment(corrector, node, if_branch); end
   def correct_for_guard_condition_style(corrector, node, if_branch, and_operator); end
+  def correct_outer_condition(corrector, condition); end
   def offending_branch?(branch); end
   def replacement_condition(and_operator, condition); end
+  def requrie_parentheses?(condition); end
   def wrap_condition?(node); end
 end
 
@@ -12312,7 +12417,10 @@ class RuboCop::MagicComment
   def frozen_string_literal; end
   def frozen_string_literal?; end
   def frozen_string_literal_specified?; end
+  def shareable_constant_value; end
+  def shareable_constant_value_specified?; end
   def valid_literal_value?; end
+  def valid_shareable_constant_value?; end
 
   private
 
@@ -12338,6 +12446,7 @@ class RuboCop::MagicComment::EmacsComment < ::RuboCop::MagicComment::EditorComme
   private
 
   def extract_frozen_string_literal; end
+  def extract_shareable_constant_value; end
 end
 
 RuboCop::MagicComment::EmacsComment::FORMAT = T.let(T.unsafe(nil), Regexp)
@@ -12352,6 +12461,7 @@ class RuboCop::MagicComment::SimpleComment < ::RuboCop::MagicComment
   private
 
   def extract_frozen_string_literal; end
+  def extract_shareable_constant_value; end
 end
 
 RuboCop::MagicComment::TOKEN = T.let(T.unsafe(nil), Regexp)
@@ -12359,6 +12469,7 @@ RuboCop::MagicComment::TOKEN = T.let(T.unsafe(nil), Regexp)
 class RuboCop::MagicComment::VimComment < ::RuboCop::MagicComment::EditorComment
   def encoding; end
   def frozen_string_literal; end
+  def shareable_constant_value; end
 end
 
 RuboCop::MagicComment::VimComment::FORMAT = T.let(T.unsafe(nil), Regexp)

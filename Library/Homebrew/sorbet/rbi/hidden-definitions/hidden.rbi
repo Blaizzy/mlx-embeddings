@@ -12420,7 +12420,6 @@ class Object
   HOMEBREW_MACOS_ARM_DEFAULT_PREFIX = ::T.let(nil, ::T.untyped)
   HOMEBREW_MACOS_ARM_DEFAULT_REPOSITORY = ::T.let(nil, ::T.untyped)
   HOMEBREW_OFFICIAL_REPO_PREFIXES_REGEX = ::T.let(nil, ::T.untyped)
-  HOMEBREW_PATCHELF_RB_WRITE = ::T.let(nil, ::T.untyped)
   HOMEBREW_PINNED_KEGS = ::T.let(nil, ::T.untyped)
   HOMEBREW_PREFIX = ::T.let(nil, ::T.untyped)
   HOMEBREW_PRODUCT = ::T.let(nil, ::T.untyped)
@@ -26819,7 +26818,7 @@ module RuboCop::RSpec::ExpectOffense
 
   def expect_no_offenses(source, file=T.unsafe(nil)); end
 
-  def expect_offense(source, file=T.unsafe(nil), severity: T.unsafe(nil), **replacements); end
+  def expect_offense(source, file=T.unsafe(nil), severity: T.unsafe(nil), chomp: T.unsafe(nil), **replacements); end
 
   def format_offense(source, **replacements); end
 

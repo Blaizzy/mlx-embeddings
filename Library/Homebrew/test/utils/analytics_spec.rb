@@ -17,6 +17,7 @@ describe Utils::Analytics do
       end
 
       it "does not include prefix when HOMEBREW_PREFIX is the default prefix" do
+        allow(Homebrew).to receive(:default_prefix?).and_return(true)
         expect(described_class.os_arch_prefix_ci).not_to include(described_class.custom_prefix_label)
       end
 

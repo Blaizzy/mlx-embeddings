@@ -78,14 +78,23 @@ HOMEBREW_RELEASES_URL_REGEX =
 require "fileutils"
 
 require "os"
-require "os/global"
+require "env_config"
 require "messages"
 
 module Homebrew
   extend FileUtils
 
-  DEFAULT_PREFIX ||= HOMEBREW_DEFAULT_PREFIX
-  DEFAULT_REPOSITORY ||= HOMEBREW_DEFAULT_REPOSITORY
+  remove_const :DEFAULT_PREFIX if defined?(DEFAULT_PREFIX)
+  remove_const :DEFAULT_REPOSITORY if defined?(DEFAULT_REPOSITORY)
+
+  DEFAULT_PREFIX, DEFAULT_REPOSITORY = if OS.mac? && Hardware::CPU.arm?
+    [HOMEBREW_MACOS_ARM_DEFAULT_PREFIX, HOMEBREW_MACOS_ARM_DEFAULT_REPOSITORY]
+  elsif OS.linux? && !EnvConfig.force_homebrew_on_linux?
+    [HOMEBREW_LINUX_DEFAULT_PREFIX, HOMEBREW_LINUX_DEFAULT_REPOSITORY]
+  else
+    [HOMEBREW_DEFAULT_PREFIX, HOMEBREW_DEFAULT_REPOSITORY]
+  end.freeze
+
   DEFAULT_CELLAR = "#{DEFAULT_PREFIX}/Cellar"
   DEFAULT_MACOS_CELLAR = "#{HOMEBREW_DEFAULT_PREFIX}/Cellar"
   DEFAULT_MACOS_ARM_CELLAR = "#{HOMEBREW_MACOS_ARM_DEFAULT_PREFIX}/Cellar"
@@ -117,8 +126,6 @@ module Homebrew
   end
 end
 
-require "env_config"
-
 require "config"
 require "context"
 require "extend/pathname"
@@ -148,3 +155,6 @@ require "tap"
 require "tap_constants"
 
 require "compat" unless Homebrew::EnvConfig.no_compat?
+
+# Enables `patchelf.rb` write support.
+HOMEBREW_PATCHELF_RB_WRITE = ENV["HOMEBREW_NO_PATCHELF_RB_WRITE"].blank?.freeze
