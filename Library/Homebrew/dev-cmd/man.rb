@@ -35,7 +35,9 @@ module Homebrew
 
   def man
     # TODO: update description above if removing this.
-    raise UsageError, "not (yet) working on Apple Silicon!" if Hardware::CPU.arm?
+    if !ENV["HOMEBREW_SILICON_DEVELOPER"] && Hardware::CPU.arm?
+      raise UsageError, "not (yet) working on Apple Silicon!"
+    end
 
     args = man_args.parse
 
