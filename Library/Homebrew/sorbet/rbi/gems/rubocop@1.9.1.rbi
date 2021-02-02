@@ -726,6 +726,7 @@ class RuboCop::Cop::Base
   include(::RuboCop::Cop::AutocorrectLogic)
   extend(::RuboCop::AST::Sexp)
   extend(::RuboCop::AST::NodePattern::Macros)
+  extend(::RuboCop::ExcludeLimit)
 
   def initialize(config = T.unsafe(nil), options = T.unsafe(nil)); end
 
@@ -929,8 +930,9 @@ module RuboCop::Cop::CheckLineBreakable
 end
 
 module RuboCop::Cop::CodeLength
-  include(::RuboCop::Cop::ConfigurableMax)
+  extend(::RuboCop::ExcludeLimit)
 
+  def max=(value); end
 
   private
 
@@ -2223,28 +2225,31 @@ class RuboCop::Cop::Layout::EmptyLineBetweenDefs < ::RuboCop::Cop::Base
   include(::RuboCop::Cop::RangeHelp)
   extend(::RuboCop::Cop::AutoCorrector)
 
-  def autocorrect(corrector, prev_def, node); end
+  def autocorrect(corrector, prev_def, node, count); end
   def check_defs(nodes); end
   def on_begin(node); end
 
   private
 
+  def allowance_range?; end
   def autocorrect_insert_lines(corrector, newline_pos, count); end
   def autocorrect_remove_lines(corrector, newline_pos, count); end
-  def blank_lines_between?(first_def_node, second_def_node); end
   def blank_lines_count_between(first_def_node, second_def_node); end
   def candidate?(node); end
   def class_candidate?(node); end
   def def_end(node); end
   def def_start(node); end
   def end_loc(node); end
+  def expected_lines; end
+  def line_count_allowed?(count); end
   def lines_between_defs(first_def_node, second_def_node); end
   def maximum_empty_lines; end
-  def message(node); end
+  def message(node, count: T.unsafe(nil)); end
   def method_candidate?(node); end
   def minimum_empty_lines; end
   def module_candidate?(node); end
   def multiple_blank_lines_groups?(first_def_node, second_def_node); end
+  def node_type(node); end
 
   class << self
     def autocorrect_incompatible_with; end
@@ -2556,10 +2561,12 @@ class RuboCop::Cop::Layout::FirstArgumentIndentation < ::RuboCop::Cop::Cop
 
   private
 
+  def argument_alignment_config; end
   def base_indentation(node); end
   def base_range(send_node, arg_node); end
   def column_of(range); end
   def comment_lines; end
+  def enforce_first_argument_with_fixed_indentation?; end
   def message(arg_node); end
   def on_new_investigation; end
   def previous_code_line(line_number); end
@@ -2924,12 +2931,12 @@ RuboCop::Cop::Layout::LeadingEmptyLines::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Layout::LineLength < ::RuboCop::Cop::Base
   include(::RuboCop::Cop::CheckLineBreakable)
-  include(::RuboCop::Cop::ConfigurableMax)
   include(::RuboCop::Cop::IgnoredPattern)
   include(::RuboCop::Cop::RangeHelp)
   include(::RuboCop::Cop::LineLengthHelp)
   extend(::RuboCop::Cop::AutoCorrector)
 
+  def max=(value); end
   def on_array(node); end
   def on_block(node); end
   def on_hash(node); end
@@ -3487,6 +3494,7 @@ class RuboCop::Cop::Layout::SpaceBeforeBrackets < ::RuboCop::Cop::Base
   private
 
   def offense_range(node, begin_pos); end
+  def offense_range_for_assignment(node, begin_pos); end
   def reference_variable_with_brackets?(node); end
   def register_offense(range); end
 end
@@ -5828,15 +5836,16 @@ class RuboCop::Cop::MessageAnnotator
 end
 
 module RuboCop::Cop::MethodComplexity
-  include(::RuboCop::Cop::ConfigurableMax)
   include(::RuboCop::Cop::IgnoredMethods)
   include(::RuboCop::Cop::Metrics::Utils::RepeatedCsendDiscount)
   extend(::RuboCop::Cop::IgnoredMethods::Config)
   extend(::RuboCop::AST::NodePattern::Macros)
+  extend(::RuboCop::ExcludeLimit)
 
   mixes_in_class_methods(::RuboCop::Cop::IgnoredMethods::Config)
 
   def define_method?(param0 = T.unsafe(nil)); end
+  def max=(value); end
   def on_block(node); end
   def on_def(node); end
   def on_defs(node); end
@@ -5864,7 +5873,6 @@ module RuboCop::Cop::Metrics
 end
 
 class RuboCop::Cop::Metrics::AbcSize < ::RuboCop::Cop::Base
-  include(::RuboCop::Cop::ConfigurableMax)
   include(::RuboCop::Cop::IgnoredMethods)
   include(::RuboCop::Cop::Metrics::Utils::RepeatedCsendDiscount)
   include(::RuboCop::Cop::MethodComplexity)
@@ -5879,7 +5887,6 @@ end
 RuboCop::Cop::Metrics::AbcSize::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Metrics::BlockLength < ::RuboCop::Cop::Base
-  include(::RuboCop::Cop::ConfigurableMax)
   include(::RuboCop::Cop::CodeLength)
   include(::RuboCop::Cop::IgnoredMethods)
   extend(::RuboCop::Cop::IgnoredMethods::Config)
@@ -5895,8 +5902,7 @@ end
 RuboCop::Cop::Metrics::BlockLength::LABEL = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Metrics::BlockNesting < ::RuboCop::Cop::Base
-  include(::RuboCop::Cop::ConfigurableMax)
-
+  def max=(value); end
   def on_new_investigation; end
 
   private
@@ -5910,7 +5916,6 @@ end
 RuboCop::Cop::Metrics::BlockNesting::NESTING_BLOCKS = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Metrics::ClassLength < ::RuboCop::Cop::Base
-  include(::RuboCop::Cop::ConfigurableMax)
   include(::RuboCop::Cop::CodeLength)
 
   def on_casgn(node); end
@@ -5922,7 +5927,6 @@ class RuboCop::Cop::Metrics::ClassLength < ::RuboCop::Cop::Base
 end
 
 class RuboCop::Cop::Metrics::CyclomaticComplexity < ::RuboCop::Cop::Base
-  include(::RuboCop::Cop::ConfigurableMax)
   include(::RuboCop::Cop::IgnoredMethods)
   include(::RuboCop::Cop::Metrics::Utils::RepeatedCsendDiscount)
   include(::RuboCop::Cop::MethodComplexity)
@@ -5942,7 +5946,6 @@ RuboCop::Cop::Metrics::CyclomaticComplexity::COUNTED_NODES = T.let(T.unsafe(nil)
 RuboCop::Cop::Metrics::CyclomaticComplexity::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Metrics::MethodLength < ::RuboCop::Cop::Base
-  include(::RuboCop::Cop::ConfigurableMax)
   include(::RuboCop::Cop::CodeLength)
   include(::RuboCop::Cop::IgnoredMethods)
   extend(::RuboCop::Cop::IgnoredMethods::Config)
@@ -5959,7 +5962,6 @@ end
 RuboCop::Cop::Metrics::MethodLength::LABEL = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Metrics::ModuleLength < ::RuboCop::Cop::Base
-  include(::RuboCop::Cop::ConfigurableMax)
   include(::RuboCop::Cop::CodeLength)
 
   def module_definition?(param0 = T.unsafe(nil)); end
@@ -5972,9 +5974,9 @@ class RuboCop::Cop::Metrics::ModuleLength < ::RuboCop::Cop::Base
 end
 
 class RuboCop::Cop::Metrics::ParameterLists < ::RuboCop::Cop::Base
-  include(::RuboCop::Cop::ConfigurableMax)
-
   def argument_to_lambda_or_proc?(param0 = T.unsafe(nil)); end
+  def max=(value); end
+  def max_optional_parameters=(value); end
   def on_args(node); end
   def on_def(node); end
   def on_defs(node); end
@@ -8654,6 +8656,7 @@ end
 RuboCop::Cop::Style::IfUnlessModifierOfIfUnless::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Style::IfWithBooleanLiteralBranches < ::RuboCop::Cop::Base
+  include(::RuboCop::Cop::AllowedMethods)
   extend(::RuboCop::Cop::AutoCorrector)
 
   def double_negative?(param0 = T.unsafe(nil)); end
@@ -8663,6 +8666,8 @@ class RuboCop::Cop::Style::IfWithBooleanLiteralBranches < ::RuboCop::Cop::Base
   private
 
   def assume_boolean_value?(condition); end
+  def message(node, keyword); end
+  def offense_range_with_keyword(node, condition); end
   def opposite_condition?(node); end
   def replacement_condition(node, condition); end
   def require_parentheses?(condition); end
@@ -8670,6 +8675,8 @@ class RuboCop::Cop::Style::IfWithBooleanLiteralBranches < ::RuboCop::Cop::Base
 end
 
 RuboCop::Cop::Style::IfWithBooleanLiteralBranches::MSG = T.let(T.unsafe(nil), String)
+
+RuboCop::Cop::Style::IfWithBooleanLiteralBranches::MSG_FOR_ELSIF = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Style::IfWithSemicolon < ::RuboCop::Cop::Base
   include(::RuboCop::Cop::OnNormalIfUnless)
@@ -9555,10 +9562,10 @@ RuboCop::Cop::Style::NumericLiteralPrefix::OCTAL_ZERO_ONLY_MSG = T.let(T.unsafe(
 RuboCop::Cop::Style::NumericLiteralPrefix::OCTAL_ZERO_ONLY_REGEX = T.let(T.unsafe(nil), Regexp)
 
 class RuboCop::Cop::Style::NumericLiterals < ::RuboCop::Cop::Base
-  include(::RuboCop::Cop::ConfigurableMax)
   include(::RuboCop::Cop::IntegerNode)
   extend(::RuboCop::Cop::AutoCorrector)
 
+  def min_digits=(value); end
   def on_float(node); end
   def on_int(node); end
 
@@ -9567,7 +9574,6 @@ class RuboCop::Cop::Style::NumericLiterals < ::RuboCop::Cop::Base
   def check(node); end
   def format_int_part(int_part); end
   def format_number(node); end
-  def max_parameter_name; end
   def min_digits; end
   def register_offense(node); end
   def short_group_regex; end
@@ -11981,6 +11987,14 @@ class RuboCop::ErrorWithAnalyzedFileLocation < ::RuboCop::Error
   def cop; end
   def line; end
   def message; end
+end
+
+module RuboCop::ExcludeLimit
+  def exclude_limit(parameter_name, method_name: T.unsafe(nil)); end
+
+  private
+
+  def transform(parameter_name); end
 end
 
 module RuboCop::Ext
