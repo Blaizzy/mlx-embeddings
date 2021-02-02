@@ -6,15 +6,6 @@ inputs:
   - type: description
     attributes:
       value: Please note we will close your issue without comment if you do not fill out the issue checklist below and provide ALL the requested information. If you repeatedly fail to use the issue template, we will block you from ever submitting issues to Homebrew again.
-  - type: checkboxes
-    attributes:
-      label: Contributor Checklist
-      description: Please verify that you've followed these steps
-      choices:
-        - label: I ran `brew update` and can still reproduce the problem?
-          required: true
-        - label: I ran `brew doctor`, fixed all issues and can still reproduce the problem?
-          required: true
   - type: textarea
     attributes:
       label: "`brew config` output"
@@ -23,6 +14,12 @@ inputs:
     attributes:
       label: "`brew doctor` output"
       required: true
+  - type: checkboxes
+    attributes:
+      description: Please verify that you've followed these steps
+      choices:
+        - label: The `brew doctor` above contains no "Warning" lines.
+          required: true
   - type: textarea
     attributes:
       label: What were you trying to do (and why)?
