@@ -27,10 +27,9 @@ tmp = ENV["HOMEBREW_TEMP"] || ENV["HOMEBREW_DEFAULT_TEMP"]
 raise "Needs HOMEBREW_TEMP or HOMEBREW_DEFAULT_TEMP!" unless tmp
 
 Bootsnap.setup(
-  cache_dir:            "#{tmp}/homebrew-bootsnap",
-  development_mode:     false, # TODO: use ENV["HOMEBREW_DEVELOPER"]?,
-  load_path_cache:      true,
-  autoload_paths_cache: true,
-  compile_cache_iseq:   true,
-  compile_cache_yaml:   true,
+  cache_dir:          "#{tmp}/homebrew-bootsnap",
+  development_mode:   false, # TODO: use ENV["HOMEBREW_DEVELOPER"]?,
+  load_path_cache:    true,
+  compile_cache_iseq: true,
+  compile_cache_yaml: true,
 )
