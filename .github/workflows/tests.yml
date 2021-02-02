@@ -169,6 +169,8 @@ jobs:
   test-default-formula-linux:
     name: test default formula (Linux)
     runs-on: ubuntu-latest
+    env:
+      HOMEBREW_BOOTSNAP: 1
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -183,6 +185,8 @@ jobs:
     needs: syntax
     if: startsWith(github.repository, 'Homebrew/')
     runs-on: macos-latest
+    env:
+      HOMEBREW_BOOTSNAP: 1
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
