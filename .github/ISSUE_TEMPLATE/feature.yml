@@ -5,7 +5,7 @@ issue_body: false
 inputs:
   - type: description
     attributes:
-      value: Please note we will close your issue without comment if do not fill out the issue checklist below and provide ALL the requested information. If you repeatedly fail to use the issue template, we will block you from ever submitting issues to Homebrew again.
+      value: Please note we will close your issue without comment if you do not fill out the issue checklist below and provide ALL the requested information. If you repeatedly fail to use the issue template, we will block you from ever submitting issues to Homebrew again.
   - type: textarea
     attributes:
       label: Provide a detailed description of the proposed feature
