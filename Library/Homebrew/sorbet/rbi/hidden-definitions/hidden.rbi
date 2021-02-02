@@ -9251,14 +9251,6 @@ JSON::State = JSON::Ext::Generator::State
 
 JSON::UnparserError = JSON::GeneratorError
 
-class JavaRequirement::CaskSuggestion
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-  def self.[](*_); end
-
-  def self.members(); end
-end
-
 module Kconv
   AUTO = ::T.let(nil, ::T.untyped)
   NOCONV = ::T.let(nil, ::T.untyped)
@@ -29227,6 +29219,11 @@ class TZInfo::TransitionRule
 end
 
 class Tab
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Tap
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
