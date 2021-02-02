@@ -1,6 +1,8 @@
 # typed: false
 # frozen_string_literal: true
 
+# TODO: (3.2) remove this module when the linked deprecated functions are removed.
+
 require "hardware"
 
 module ArchitectureListExtension

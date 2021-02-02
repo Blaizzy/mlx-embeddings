@@ -80,6 +80,8 @@ module Hardware
       end
 
       def universal_archs
+        odeprecated "Hardware::CPU.universal_archs"
+
         [arch].extend ArchitectureListExtension
       end
 
