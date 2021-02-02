@@ -532,6 +532,14 @@ class ActiveSupport::CurrentAttributes
   def _reset_callbacks(); end
 
   def _run_reset_callbacks(&block); end
+
+  def attributes(); end
+
+  def attributes=(attributes); end
+
+  def reset(); end
+
+  def set(set_attributes); end
 end
 
 class ActiveSupport::CurrentAttributes
@@ -553,9 +561,17 @@ class ActiveSupport::CurrentAttributes
 
   def self.before_reset(&block); end
 
+  def self.clear_all(); end
+
   def self.instance(); end
 
+  def self.reset(*args, &block); end
+
+  def self.reset_all(); end
+
   def self.resets(&block); end
+
+  def self.set(*args, &block); end
 end
 
 module ActiveSupport::Dependencies
@@ -2690,6 +2706,7 @@ class Addrinfo
 end
 
 class Array
+  include ::MessagePack::CoreExt
   def compact_blank!(); end
 
   def extract_options!(); end
@@ -2792,6 +2809,376 @@ end
 class Bintray
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Bootsnap
+  def bundler?(); end
+  VERSION = ::T.let(nil, ::T.untyped)
+end
+
+module Bootsnap::CompileCache
+end
+
+class Bootsnap::CompileCache::Error
+end
+
+class Bootsnap::CompileCache::Error
+end
+
+module Bootsnap::CompileCache::ISeq
+end
+
+module Bootsnap::CompileCache::ISeq::InstructionSequenceMixin
+  def compile_option=(hash); end
+
+  def load_iseq(path); end
+end
+
+module Bootsnap::CompileCache::ISeq::InstructionSequenceMixin
+end
+
+module Bootsnap::CompileCache::ISeq
+  def self.cache_dir(); end
+
+  def self.cache_dir=(cache_dir); end
+
+  def self.compile_option_updated(); end
+
+  def self.fetch(path, cache_dir: T.unsafe(nil)); end
+
+  def self.input_to_output(_data, _kwargs); end
+
+  def self.input_to_storage(_, path); end
+
+  def self.install!(cache_dir); end
+
+  def self.precompile(path, cache_dir: T.unsafe(nil)); end
+
+  def self.storage_to_output(binary, _args); end
+end
+
+module Bootsnap::CompileCache::Native
+end
+
+module Bootsnap::CompileCache::Native
+  def self.compile_option_crc32=(compile_option_crc32); end
+
+  def self.coverage_running?(); end
+
+  def self.fetch(_, _1, _2, _3); end
+
+  def self.precompile(_, _1, _2); end
+end
+
+class Bootsnap::CompileCache::PermissionError
+end
+
+class Bootsnap::CompileCache::PermissionError
+end
+
+class Bootsnap::CompileCache::Uncompilable
+end
+
+class Bootsnap::CompileCache::Uncompilable
+end
+
+module Bootsnap::CompileCache::YAML
+end
+
+module Bootsnap::CompileCache::YAML::Patch
+  def load_file(path, *args); end
+end
+
+module Bootsnap::CompileCache::YAML::Patch
+end
+
+module Bootsnap::CompileCache::YAML
+  def self.cache_dir(); end
+
+  def self.cache_dir=(cache_dir); end
+
+  def self.init!(); end
+
+  def self.input_to_output(data, kwargs); end
+
+  def self.input_to_storage(contents, _); end
+
+  def self.install!(cache_dir); end
+
+  def self.msgpack_factory(); end
+
+  def self.msgpack_factory=(msgpack_factory); end
+
+  def self.precompile(path, cache_dir: T.unsafe(nil)); end
+
+  def self.storage_to_output(data, kwargs); end
+
+  def self.supported_options(); end
+
+  def self.supported_options=(supported_options); end
+end
+
+module Bootsnap::CompileCache
+  def self.permission_error(path); end
+
+  def self.setup(cache_dir:, iseq:, yaml:); end
+
+  def self.supported?(); end
+end
+
+module Bootsnap::ExplicitRequire
+  ARCHDIR = ::T.let(nil, ::T.untyped)
+  DLEXT = ::T.let(nil, ::T.untyped)
+  RUBYLIBDIR = ::T.let(nil, ::T.untyped)
+end
+
+module Bootsnap::ExplicitRequire
+  def self.from_archdir(feature); end
+
+  def self.from_rubylibdir(feature); end
+
+  def self.from_self(feature); end
+
+  def self.with_gems(*gems); end
+end
+
+class Bootsnap::InvalidConfiguration
+end
+
+class Bootsnap::InvalidConfiguration
+end
+
+module Bootsnap::LoadPathCache
+  CACHED_EXTENSIONS = ::T.let(nil, ::T.untyped)
+  DLEXT = ::T.let(nil, ::T.untyped)
+  DLEXT2 = ::T.let(nil, ::T.untyped)
+  DL_EXTENSIONS = ::T.let(nil, ::T.untyped)
+  DOT_RB = ::T.let(nil, ::T.untyped)
+  DOT_SO = ::T.let(nil, ::T.untyped)
+  ERROR_TAG_IVAR = ::T.let(nil, ::T.untyped)
+  SLASH = ::T.let(nil, ::T.untyped)
+end
+
+class Bootsnap::LoadPathCache::Cache
+  def absolute_path?(path); end
+
+  def find(feature); end
+
+  def initialize(store, path_obj, development_mode: T.unsafe(nil)); end
+
+  def load_dir(dir); end
+
+  def push_paths(sender, *paths); end
+
+  def reinitialize(path_obj=T.unsafe(nil)); end
+
+  def unshift_paths(sender, *paths); end
+  AGE_THRESHOLD = ::T.let(nil, ::T.untyped)
+  BUILTIN_FEATURES = ::T.let(nil, ::T.untyped)
+end
+
+class Bootsnap::LoadPathCache::Cache
+end
+
+module Bootsnap::LoadPathCache::ChangeObserver
+end
+
+module Bootsnap::LoadPathCache::ChangeObserver::ArrayMixin
+  def <<(entry); end
+
+  def []=(*args, &block); end
+
+  def clear(*args, &block); end
+
+  def collect!(*args, &block); end
+
+  def compact!(*args, &block); end
+
+  def concat(entries); end
+
+  def delete(*args, &block); end
+
+  def delete_at(*args, &block); end
+
+  def delete_if(*args, &block); end
+
+  def fill(*args, &block); end
+
+  def flatten!(*args, &block); end
+
+  def insert(*args, &block); end
+
+  def keep_if(*args, &block); end
+
+  def map!(*args, &block); end
+
+  def pop(*args, &block); end
+
+  def push(*entries); end
+
+  def reject!(*args, &block); end
+
+  def replace(*args, &block); end
+
+  def reverse!(*args, &block); end
+
+  def rotate!(*args, &block); end
+
+  def select!(*args, &block); end
+
+  def shift(*args, &block); end
+
+  def shuffle!(*args, &block); end
+
+  def slice!(*args, &block); end
+
+  def sort!(*args, &block); end
+
+  def sort_by!(*args, &block); end
+
+  def uniq!(*args); end
+
+  def unshift(*entries); end
+end
+
+module Bootsnap::LoadPathCache::ChangeObserver::ArrayMixin
+end
+
+module Bootsnap::LoadPathCache::ChangeObserver
+  def self.register(observer, arr); end
+end
+
+module Bootsnap::LoadPathCache::CoreExt
+end
+
+module Bootsnap::LoadPathCache::CoreExt
+  def self.make_load_error(path); end
+end
+
+class Bootsnap::LoadPathCache::FallbackScan
+end
+
+class Bootsnap::LoadPathCache::FallbackScan
+end
+
+class Bootsnap::LoadPathCache::LoadedFeaturesIndex
+  def key?(feature); end
+
+  def purge(feature); end
+
+  def purge_multi(features); end
+
+  def register(short, long=T.unsafe(nil)); end
+end
+
+class Bootsnap::LoadPathCache::LoadedFeaturesIndex
+end
+
+class Bootsnap::LoadPathCache::Path
+  def entries_and_dirs(store); end
+
+  def expanded_path(); end
+
+  def initialize(path); end
+
+  def non_directory?(); end
+
+  def path(); end
+
+  def relative?(); end
+
+  def stable?(); end
+
+  def volatile?(); end
+  RUBY_LIBDIR = ::T.let(nil, ::T.untyped)
+  RUBY_SITEDIR = ::T.let(nil, ::T.untyped)
+  STABLE = ::T.let(nil, ::T.untyped)
+  VOLATILE = ::T.let(nil, ::T.untyped)
+end
+
+class Bootsnap::LoadPathCache::Path
+end
+
+module Bootsnap::LoadPathCache::PathScanner
+  ALTERNATIVE_NATIVE_EXTENSIONS_PATTERN = ::T.let(nil, ::T.untyped)
+  BUNDLE_PATH = ::T.let(nil, ::T.untyped)
+  NORMALIZE_NATIVE_EXTENSIONS = ::T.let(nil, ::T.untyped)
+  REQUIRABLE_EXTENSIONS = ::T.let(nil, ::T.untyped)
+end
+
+module Bootsnap::LoadPathCache::PathScanner
+  def self.call(path); end
+
+  def self.walk(absolute_dir_path, relative_dir_path, &block); end
+end
+
+class Bootsnap::LoadPathCache::RealpathCache
+  def call(*key); end
+end
+
+class Bootsnap::LoadPathCache::RealpathCache
+end
+
+class Bootsnap::LoadPathCache::ReturnFalse
+end
+
+class Bootsnap::LoadPathCache::ReturnFalse
+end
+
+class Bootsnap::LoadPathCache::Store
+  def fetch(key); end
+
+  def get(key); end
+
+  def initialize(store_path); end
+
+  def set(key, value); end
+
+  def transaction(); end
+end
+
+class Bootsnap::LoadPathCache::Store::NestedTransactionError
+end
+
+class Bootsnap::LoadPathCache::Store::NestedTransactionError
+end
+
+class Bootsnap::LoadPathCache::Store::SetOutsideTransactionNotAllowed
+end
+
+class Bootsnap::LoadPathCache::Store::SetOutsideTransactionNotAllowed
+end
+
+class Bootsnap::LoadPathCache::Store
+end
+
+module Bootsnap::LoadPathCache
+  def self.load_path_cache(); end
+
+  def self.loaded_features_index(); end
+
+  def self.realpath_cache(); end
+
+  def self.setup(cache_path:, development_mode:); end
+
+  def self.supported?(); end
+end
+
+module Bootsnap
+  extend ::Bootsnap
+  def self._instrument(event, path); end
+
+  def self.default_setup(); end
+
+  def self.instrumentation=(callback); end
+
+  def self.log!(); end
+
+  def self.logger(); end
+
+  def self.logger=(logger); end
+
+  def self.setup(cache_dir:, development_mode: T.unsafe(nil), load_path_cache: T.unsafe(nil), autoload_paths_cache: T.unsafe(nil), disable_trace: T.unsafe(nil), compile_cache_iseq: T.unsafe(nil), compile_cache_yaml: T.unsafe(nil)); end
 end
 
 class BottleSpecification
@@ -5288,6 +5675,15 @@ module Cask::Caskroom
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class Cask::Cmd::AbstractCommand
+  include ::Homebrew::Search::Extension
+end
+
+class Cask::Cmd::AbstractCommand
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class Cask::Config
   def appdir(); end
 
@@ -6730,8 +7126,6 @@ end
 class Errno::EBADRPC
 end
 
-Errno::ECAPMODE = Errno::NOERROR
-
 Errno::EDEADLOCK = Errno::NOERROR
 
 class Errno::EDEVERR
@@ -6752,13 +7146,6 @@ end
 
 Errno::EIPSEC = Errno::NOERROR
 
-class Errno::ELAST
-  Errno = ::T.let(nil, ::T.untyped)
-end
-
-class Errno::ELAST
-end
-
 class Errno::ENEEDAUTH
   Errno = ::T.let(nil, ::T.untyped)
 end
@@ -6779,8 +7166,6 @@ end
 
 class Errno::ENOPOLICY
 end
-
-Errno::ENOTCAPABLE = Errno::NOERROR
 
 class Errno::ENOTSUP
   Errno = ::T.let(nil, ::T.untyped)
@@ -6824,7 +7209,12 @@ end
 class Errno::EPWROFF
 end
 
-Errno::EQFULL = Errno::ELAST
+class Errno::EQFULL
+  Errno = ::T.let(nil, ::T.untyped)
+end
+
+class Errno::EQFULL
+end
 
 class Errno::ERPCMISMATCH
   Errno = ::T.let(nil, ::T.untyped)
@@ -6956,6 +7346,10 @@ class ExternalPatch
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class FalseClass
+  include ::MessagePack::CoreExt
+end
+
 class Fiber
   def transfer(*_); end
 end
@@ -7015,6 +7409,10 @@ end
 
 module FileUtils
   extend ::FileUtils::StreamUtils_
+end
+
+class Float
+  include ::MessagePack::CoreExt
 end
 
 module FormulaCellarChecks
@@ -7701,6 +8099,7 @@ module Hardware
 end
 
 class Hash
+  include ::MessagePack::CoreExt
   def assert_valid_keys(*valid_keys); end
 
   def compact_blank!(); end
@@ -7789,6 +8188,8 @@ module Homebrew::EnvConfig
 
   def self.bintray_user(); end
 
+  def self.bootsnap?(); end
+
   def self.bottle_domain(); end
 
   def self.brew_git_remote(); end
@@ -7856,6 +8257,8 @@ module Homebrew::EnvConfig
   def self.no_analytics?(); end
 
   def self.no_auto_update?(); end
+
+  def self.no_bootsnap?(); end
 
   def self.no_bottle_source_fallback?(); end
 
@@ -7945,6 +8348,14 @@ end
 module Homebrew::Livecheck
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Homebrew::MissingFormula
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Homebrew::Search
+  include ::Homebrew::Search::Extension
 end
 
 module Homebrew::Settings
@@ -9234,6 +9645,7 @@ module IRB
 end
 
 class Integer
+  include ::MessagePack::CoreExt
   def to_bn(); end
 end
 
@@ -9302,11 +9714,13 @@ module Kernel
   extend ::T::Private::Methods::SingletonMethodHooks
   def self.at_exit(); end
 
+  def self.autoload(_, _1); end
+
   def self.fork(); end
 
   def self.gem(dep, *reqs); end
 
-  def self.load(*_); end
+  def self.load(path, wrap=T.unsafe(nil)); end
 
   def self.require(path); end
 end
@@ -10672,6 +11086,52 @@ end
 
 Markdown = RDiscount
 
+module MessagePack
+  DEFAULT_EMPTY_PARAMS = ::T.let(nil, ::T.untyped)
+end
+
+class MessagePack::Packer
+  def write_bin(_); end
+
+  def write_bin_header(_); end
+end
+
+module MessagePack::Time
+  Packer = ::T.let(nil, ::T.untyped)
+  TIME_AT_3_AVAILABLE = ::T.let(nil, ::T.untyped)
+  Unpacker = ::T.let(nil, ::T.untyped)
+end
+
+module MessagePack::Time
+end
+
+class MessagePack::Timestamp
+  def ==(other); end
+
+  def initialize(sec, nsec); end
+
+  def nsec(); end
+
+  def sec(); end
+
+  def to_msgpack_ext(); end
+  TIMESTAMP32_MAX_SEC = ::T.let(nil, ::T.untyped)
+  TIMESTAMP64_MAX_SEC = ::T.let(nil, ::T.untyped)
+  TYPE = ::T.let(nil, ::T.untyped)
+end
+
+class MessagePack::Timestamp
+  def self.from_msgpack_ext(data); end
+
+  def self.to_msgpack_ext(sec, nsec); end
+end
+
+class MessagePack::Unpacker
+  def feed_reference(_); end
+
+  def freeze?(); end
+end
+
 class Messages
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -11570,6 +12030,8 @@ class Module
 
   def anonymous?(); end
 
+  def autoload_without_bootsnap(_, _1); end
+
   def context(*a, &b); end
 
   def deprecate(*method_names); end
@@ -12029,6 +12491,7 @@ class Net::WriteTimeout
 end
 
 class NilClass
+  include ::MessagePack::CoreExt
   def to_d(); end
 
   def try(_method_name=T.unsafe(nil), *_); end
@@ -12161,6 +12624,7 @@ class Object
   def to_query(key); end
 
   def to_yaml(options=T.unsafe(nil)); end
+  APPLE_GEM_HOME = ::T.let(nil, ::T.untyped)
   ARGF = ::T.let(nil, ::T.untyped)
   ARGV = ::T.let(nil, ::T.untyped)
   BUG_REPORTS_URL = ::T.let(nil, ::T.untyped)
@@ -12225,6 +12689,8 @@ class Object
   RUBY_DESCRIPTION = ::T.let(nil, ::T.untyped)
   RUBY_ENGINE = ::T.let(nil, ::T.untyped)
   RUBY_ENGINE_VERSION = ::T.let(nil, ::T.untyped)
+  RUBY_FRAMEWORK = ::T.let(nil, ::T.untyped)
+  RUBY_FRAMEWORK_VERSION = ::T.let(nil, ::T.untyped)
   RUBY_PATCHLEVEL = ::T.let(nil, ::T.untyped)
   RUBY_PATH = ::T.let(nil, ::T.untyped)
   RUBY_PLATFORM = ::T.let(nil, ::T.untyped)
@@ -12277,11 +12743,7 @@ class OpenSSL::KDF::KDFError
 end
 
 module OpenSSL::KDF
-  def self.hkdf(*_); end
-
   def self.pbkdf2_hmac(*_); end
-
-  def self.scrypt(*_); end
 end
 
 class OpenSSL::OCSP::Request
@@ -12290,29 +12752,20 @@ end
 
 OpenSSL::PKCS7::Signer = OpenSSL::PKCS7::SignerInfo
 
-class OpenSSL::PKey::EC
-  EXPLICIT_CURVE = ::T.let(nil, ::T.untyped)
-end
-
 class OpenSSL::PKey::EC::Point
   def to_octet_string(_); end
 end
 
 module OpenSSL::SSL
-  OP_ALLOW_NO_DHE_KEX = ::T.let(nil, ::T.untyped)
   OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION = ::T.let(nil, ::T.untyped)
   OP_CRYPTOPRO_TLSEXT_BUG = ::T.let(nil, ::T.untyped)
   OP_LEGACY_SERVER_CONNECT = ::T.let(nil, ::T.untyped)
-  OP_NO_ENCRYPT_THEN_MAC = ::T.let(nil, ::T.untyped)
-  OP_NO_RENEGOTIATION = ::T.let(nil, ::T.untyped)
-  OP_NO_TLSv1_3 = ::T.let(nil, ::T.untyped)
   OP_SAFARI_ECDHE_ECDSA_BUG = ::T.let(nil, ::T.untyped)
   OP_TLSEXT_PADDING = ::T.let(nil, ::T.untyped)
   SSL2_VERSION = ::T.let(nil, ::T.untyped)
   SSL3_VERSION = ::T.let(nil, ::T.untyped)
   TLS1_1_VERSION = ::T.let(nil, ::T.untyped)
   TLS1_2_VERSION = ::T.let(nil, ::T.untyped)
-  TLS1_3_VERSION = ::T.let(nil, ::T.untyped)
   TLS1_VERSION = ::T.let(nil, ::T.untyped)
 end
 
@@ -16821,6 +17274,7 @@ module Psych
 end
 
 module Psych
+  extend ::Bootsnap::CompileCache::YAML::Patch
   def self.add_builtin_type(type_tag, &block); end
 
   def self.add_domain_type(domain, type_tag, &block); end
@@ -18823,6 +19277,8 @@ module RSpec::Core::HashImitatable
   def to_h(); end
 
   def to_hash(*args, &block); end
+
+  def to_msgpack(*args, &block); end
 
   def to_plist(*args, &block); end
 
@@ -26352,6 +26808,8 @@ module RuboCop::AST::CollectionNode
 
   def pluck(*args, &block); end
 
+  def to_msgpack(*args, &block); end
+
   def without(*args, &block); end
 end
 
@@ -27586,6 +28044,10 @@ class RubyVM::AbstractSyntaxTree::Node
   def pretty_print_children(q, names=T.unsafe(nil)); end
 end
 
+class RubyVM::InstructionSequence
+  extend ::Bootsnap::CompileCache::ISeq::InstructionSequenceMixin
+end
+
 module RubyVM::MJIT
 end
 
@@ -28475,6 +28937,7 @@ class Socket
   IPV6_PATHMTU = ::T.let(nil, ::T.untyped)
   IPV6_RECVPATHMTU = ::T.let(nil, ::T.untyped)
   IPV6_USE_MIN_MTU = ::T.let(nil, ::T.untyped)
+  IP_DONTFRAG = ::T.let(nil, ::T.untyped)
   IP_PORTRANGE = ::T.let(nil, ::T.untyped)
   IP_RECVDSTADDR = ::T.let(nil, ::T.untyped)
   IP_RECVIF = ::T.let(nil, ::T.untyped)
@@ -28566,6 +29029,7 @@ module Socket::Constants
   IPV6_PATHMTU = ::T.let(nil, ::T.untyped)
   IPV6_RECVPATHMTU = ::T.let(nil, ::T.untyped)
   IPV6_USE_MIN_MTU = ::T.let(nil, ::T.untyped)
+  IP_DONTFRAG = ::T.let(nil, ::T.untyped)
   IP_PORTRANGE = ::T.let(nil, ::T.untyped)
   IP_RECVDSTADDR = ::T.let(nil, ::T.untyped)
   IP_RECVIF = ::T.let(nil, ::T.untyped)
@@ -28793,6 +29257,7 @@ class Spoom::Timeline
 end
 
 class String
+  include ::MessagePack::CoreExt
   def black(); end
 
   def blink(); end
@@ -28961,6 +29426,15 @@ end
 module Superenv
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Symbol
+  include ::MessagePack::CoreExt
+  def to_msgpack_ext(); end
+end
+
+class Symbol
+  def self.from_msgpack_ext(data); end
 end
 
 class SystemCommand::Result
@@ -29246,6 +29720,10 @@ class TracePoint
   def instruction_sequence(); end
 
   def parameters(); end
+end
+
+class TrueClass
+  include ::MessagePack::CoreExt
 end
 
 module Tty

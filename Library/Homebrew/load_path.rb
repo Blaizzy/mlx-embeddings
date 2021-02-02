@@ -8,10 +8,9 @@ HOMEBREW_LIBRARY_PATH = Pathname(__dir__).realpath.freeze
 $LOAD_PATH.push HOMEBREW_LIBRARY_PATH.to_s
 
 require "vendor/bundle/bundler/setup"
+require "homebrew_bootsnap"
 
-if ENV["HOMEBREW_BOOTSNAP"]
-  require "homebrew_bootsnap"
-else
+unless defined?(Bootsnap)
   $LOAD_PATH.select! { |d| Pathname(d).directory? }
   $LOAD_PATH.uniq!
 end

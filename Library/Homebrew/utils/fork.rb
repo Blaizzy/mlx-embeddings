@@ -29,12 +29,15 @@ module Utils
     error
   end
 
-  def self.safe_fork(&_block)
+  def self.safe_fork
     Dir.mktmpdir("homebrew", HOMEBREW_TEMP) do |tmpdir|
       UNIXServer.open("#{tmpdir}/socket") do |server|
         read, write = IO.pipe
 
         pid = fork do
+          # bootsnap doesn't like these forked processes
+          ENV["HOMEBREW_NO_BOOTSNAP"] = "1"
+
           ENV["HOMEBREW_ERROR_PIPE"] = server.path
           server.close
           read.close
@@ -56,7 +59,7 @@ module Utils
           write.close
 
           exit!
-        else # rubocop:disable Layout/ElseAlignment
+        else
           exit!(true)
         end
 

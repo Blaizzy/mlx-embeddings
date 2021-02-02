@@ -209,6 +209,7 @@ module Homebrew
         return if periodic
 
         cleanup_portable_ruby
+        cleanup_bootsnap
       else
         args.each do |arg|
           formula = begin
@@ -397,6 +398,17 @@ module Homebrew
       return if dry_run?
 
       FileUtils.rm_rf portable_rubies_to_remove
+    end
+
+    def cleanup_bootsnap
+      bootsnap = cache/"bootsnap"
+      return unless bootsnap.exist?
+
+      if dry_run?
+        puts "Would remove: #{bootsnap} (#{bootsnap.abv})"
+      else
+        FileUtils.rm_rf bootsnap
+      end
     end
 
     def cleanup_cache_db(rack = nil)

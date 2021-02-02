@@ -3,7 +3,7 @@
 source "https://rubygems.org"
 
 # installed gems (should all be require: false)
-gem "bootsnap", require: false if ENV["HOMEBREW_BOOTSNAP"]
+gem "bootsnap", require: false
 gem "byebug", require: false
 gem "codecov", require: false
 gem "nokogiri", require: false

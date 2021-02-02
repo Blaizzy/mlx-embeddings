@@ -1707,6 +1707,9 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 - `HOMEBREW_BINTRAY_USER`
   <br>Use this username when accessing the Bintray API (where bottles are stored).
 
+- `HOMEBREW_BOOTSNAP`
+  <br>If set, use Bootsnap to speed up repeated `brew` calls.
+
 - `HOMEBREW_BOTTLE_DOMAIN`
   <br>Use this URL as the download mirror for bottles. For example, `HOMEBREW_BOTTLE_DOMAIN=http://localhost:8080` will cause all bottles to download from the prefix `http://localhost:8080/`.
 
@@ -1838,6 +1841,9 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 
 - `HOMEBREW_NO_AUTO_UPDATE`
   <br>If set, do not automatically update before running `brew install`, `brew upgrade` or `brew tap`.
+
+- `HOMEBREW_NO_BOOTSNAP`
+  <br>If set, do not use Bootsnap to speed up repeated `brew` calls.
 
 - `HOMEBREW_NO_BOTTLE_SOURCE_FALLBACK`
   <br>If set, fail on the failure of installation from a bottle rather than falling back to building from source.

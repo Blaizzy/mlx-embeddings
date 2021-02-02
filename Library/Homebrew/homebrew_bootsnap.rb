@@ -1,35 +1,37 @@
-# typed: ignore
+# typed: false
 # frozen_string_literal: true
 
-# TODO: make this `typed: true` when HOMEBREW_BOOTSNAP is enabled by
-# default and/or we vendor bootsnap and the RBI file.
+if !ENV["HOMEBREW_NO_BOOTSNAP"] &&
+   ENV["HOMEBREW_BOOTSNAP"] &&
+   # portable ruby doesn't play nice with bootsnap
+   !ENV["HOMEBREW_FORCE_VENDOR_RUBY"] &&
+   (!ENV["HOMEBREW_MACOS_VERSION"] || ENV["HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH"])
 
-raise "Needs HOMEBREW_BOOTSNAP!" unless ENV["HOMEBREW_BOOTSNAP"]
+  require "rubygems"
 
-require "rubygems"
+  begin
+    require "bootsnap"
+  rescue LoadError
+    raise if ENV["HOMEBREW_BOOTSNAP_RETRY"]
 
-begin
-  require "bootsnap"
-rescue LoadError
-  raise if ENV["HOMEBREW_BOOTSNAP_RETRY"]
+    Dir.chdir(HOMEBREW_LIBRARY_PATH) do
+      system "bundle", "install", "--standalone"
+    end
 
-  Dir.chdir(HOMEBREW_LIBRARY_PATH) do
-    system "bundle", "install", "--standalone"
+    ENV["HOMEBREW_BOOTSNAP_RETRY"] = "1"
+    exec ENV["HOMEBREW_BREW_FILE"], *ARGV
   end
 
-  ENV["HOMEBREW_BOOTSNAP_RETRY"] = "1"
-  exec ENV["HOMEBREW_BREW_FILE"], *ARGV
+  ENV.delete("HOMEBREW_BOOTSNAP_RETRY")
+
+  cache = ENV["HOMEBREW_CACHE"] || ENV["HOMEBREW_DEFAULT_CACHE"]
+  # Can't use .blank? here because we haven't required active_support yet.
+  raise "Needs HOMEBREW_CACHE or HOMEBREW_DEFAULT_CACHE!" if cache.nil? || cache.empty? # rubocop:disable Rails/Blank
+
+  Bootsnap.setup(
+    cache_dir:          cache,
+    load_path_cache:    true,
+    compile_cache_iseq: true,
+    compile_cache_yaml: true,
+  )
 end
-
-ENV.delete("HOMEBREW_BOOTSNAP_RETRY")
-
-tmp = ENV["HOMEBREW_TEMP"] || ENV["HOMEBREW_DEFAULT_TEMP"]
-raise "Needs HOMEBREW_TEMP or HOMEBREW_DEFAULT_TEMP!" unless tmp
-
-Bootsnap.setup(
-  cache_dir:          "#{tmp}/homebrew-bootsnap",
-  development_mode:   false, # TODO: use ENV["HOMEBREW_DEVELOPER"]?,
-  load_path_cache:    true,
-  compile_cache_iseq: true,
-  compile_cache_yaml: true,
-)
