@@ -4,7 +4,10 @@
 module Language
   module Java
     def self.java_home(version = nil)
-      find_openjdk_formula(version)&.opt_libexec&.join("openjdk.jdk/Contents/Home")
+      openjdk = find_openjdk_formula(version)
+      return unless openjdk
+
+      openjdk.opt_libexec/"openjdk.jdk/Contents/Home"
     end
   end
 end
