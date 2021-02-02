@@ -1,8 +1,6 @@
-# typed: ignore
+# typed: false
 # frozen_string_literal: true
 
-# TODO: make this `typed: true` when HOMEBREW_BOOTSNAP is enabled by
-# default and/or we vendor bootsnap and the RBI file.
 if !ENV["HOMEBREW_NO_BOOTSNAP"] &&
    ENV["HOMEBREW_BOOTSNAP"] &&
    # portable ruby doesn't play nice with bootsnap
