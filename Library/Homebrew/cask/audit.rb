@@ -327,6 +327,9 @@ module Cask
     def check_desc
       return if cask.desc.present?
 
+      # Fonts seldom benefit from descriptions and requiring them disproportionately increases the maintenance burden
+      return if cask.tap == "homebrew/cask-fonts"
+
       add_warning "Cask should have a description. Please add a `desc` stanza."
     end
 
