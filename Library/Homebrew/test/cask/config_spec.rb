@@ -60,10 +60,21 @@ describe Cask::Config, :cask do
   end
 
   describe "#explicit" do
-    let(:config) { described_class.new(explicit: { appdir: "/explicit/path/to/apps" }) }
+    let(:config) {
+      described_class.new(explicit: { appdir:    "/explicit/path/to/apps",
+                                      languages: ["zh-TW", "en"] })
+    }
 
     it "returns directories explicitly given as arguments" do
       expect(config.explicit[:appdir]).to eq(Pathname("/explicit/path/to/apps"))
+    end
+
+    it "returns array of preferred languages" do
+      expect(config.explicit[:languages]).to eq(["zh-TW", "en"])
+    end
+
+    it "returns string of explicit config keys and values" do
+      expect(config.explicit_s).to eq('appdir: "/explicit/path/to/apps", language: "zh-TW,en"')
     end
   end
 

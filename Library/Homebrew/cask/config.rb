@@ -127,7 +127,7 @@ module Cask
           .map { |arg| T.cast(arg.split("=", 2), [String, String]) }
           .map do |(flag, value)|
             key = flag.sub(/^--/, "")
-
+            # converts --language flag to :languages config key
             if key == "language"
               key = "languages"
               value = value.split(",")
@@ -180,6 +180,18 @@ module Cask
     sig { params(other: Config).returns(T.self_type) }
     def merge(other)
       self.class.new(explicit: other.explicit.merge(explicit))
+    end
+
+    sig { returns(String) }
+    def explicit_s
+      explicit.map do |key, value|
+        # inverse of #env - converts :languages config key back to --language flag
+        if key == :languages
+          key = "language"
+          value = languages.join(",")
+        end
+        "#{key}: \"#{value.to_s.sub(/^#{ENV['HOME']}/, "~")}\""
+      end.join(", ")
     end
 
     sig { params(options: T.untyped).returns(String) }
