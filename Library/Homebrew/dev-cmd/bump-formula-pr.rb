@@ -503,7 +503,7 @@ module Homebrew
   end
 
   def run_audit(formula, alias_rename, old_contents, args:)
-    audit_args = []
+    audit_args = ["--formula"]
     audit_args << "--strict" if args.strict?
     audit_args << "--online" if args.online?
     if args.dry_run?
