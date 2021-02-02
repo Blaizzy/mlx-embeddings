@@ -14,9 +14,8 @@ if !ENV["HOMEBREW_NO_BOOTSNAP"] &&
   rescue LoadError
     raise if ENV["HOMEBREW_BOOTSNAP_RETRY"]
 
-    Dir.chdir(HOMEBREW_LIBRARY_PATH) do
-      system "bundle", "install", "--standalone"
-    end
+    require "utils/gems"
+    Homebrew.install_bundler_gems!
 
     ENV["HOMEBREW_BOOTSNAP_RETRY"] = "1"
     exec ENV["HOMEBREW_BREW_FILE"], *ARGV
