@@ -45,3 +45,5 @@ module Language
     end
   end
 end
+
+require "extend/os/language/java"
