@@ -39,6 +39,10 @@ module Homebrew
       HOMEBREW_BINTRAY_USER:                  {
         description: "Use this username when accessing the Bintray API (where bottles are stored).",
       },
+      HOMEBREW_BOOTSNAP:                      {
+        description: "If set, use Bootsnap to speed up repeated `brew` calls.",
+        boolean:     true,
+      },
       HOMEBREW_BOTTLE_DOMAIN:                 {
         description:  "Use this URL as the download mirror for bottles. " \
                       "For example, `HOMEBREW_BOTTLE_DOMAIN=http://localhost:8080` will cause all bottles to " \
@@ -201,6 +205,10 @@ module Homebrew
       HOMEBREW_NO_AUTO_UPDATE:                {
         description: "If set, do not automatically update before running " \
                      "`brew install`, `brew upgrade` or `brew tap`.",
+        boolean:     true,
+      },
+      HOMEBREW_NO_BOOTSNAP:                   {
+        description: "If set, do not use Bootsnap to speed up repeated `brew` calls.",
         boolean:     true,
       },
       HOMEBREW_NO_BOTTLE_SOURCE_FALLBACK:     {
