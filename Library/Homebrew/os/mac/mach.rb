@@ -67,6 +67,7 @@ module MachOShim
   end
 
   def archs
+    # TODO: (3.2) remove ArchitectureListExtension
     mach_data.map { |m| m.fetch :arch }.extend(ArchitectureListExtension)
   end
 
