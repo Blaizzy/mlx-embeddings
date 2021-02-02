@@ -54,12 +54,6 @@ FormulaAudit:
 FormulaAuditStrict:
   Enabled: true
 
-# TODO: try to re-enable in RuboCop >=1.9.1
-Lint/SymbolConversion:
-  Enabled: false
-Style/EvalWithLocation:
-  Enabled: false
-
 # makes DSL usage ugly.
 Layout/SpaceBeforeBrackets:
   Exclude:
@@ -212,8 +206,7 @@ Rails/TimeZone:
 
 # Don't allow cops to be disabled in casks and formulae.
 Style/DisableCopsWithinSourceCodeDirective:
-  # TODO: try to re-enable in RuboCop >=1.9.1
-  Enabled: false
+  Enabled: true
   Include:
     - "Taps/*/*/*.rb"
     - "/**/{Formula,Casks}/*.rb"
