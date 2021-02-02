@@ -30,7 +30,7 @@ GEM
       domain_name (~> 0.5)
     i18n (1.8.7)
       concurrent-ruby (~> 1.0)
-    mechanize (2.7.6)
+    mechanize (2.7.7)
       domain_name (~> 0.5, >= 0.5.1)
       http-cookie (~> 1.0)
       mime-types (>= 1.17.2)
@@ -38,6 +38,7 @@ GEM
       net-http-persistent (>= 2.5.2)
       nokogiri (~> 1.6)
       ntlm-http (~> 0.1, >= 0.1.1)
+      webrick (~> 1.7)
       webrobots (>= 0.0.9, < 0.2)
     method_source (1.0.0)
     mime-types (3.3.1)
@@ -47,7 +48,7 @@ GEM
     minitest (5.14.3)
     mustache (1.1.1)
     net-http-digest_auth (1.4.1)
-    net-http-persistent (4.0.0)
+    net-http-persistent (4.0.1)
       connection_pool (~> 2.2)
     nokogiri (1.11.1)
       mini_portile2 (~> 2.5.0)
@@ -159,6 +160,7 @@ GEM
       unf_ext
     unf_ext (0.0.7.7)
     unicode-display_width (2.0.0)
+    webrick (1.7.0)
     webrobots (0.1.2)
     zeitwerk (2.4.2)
 

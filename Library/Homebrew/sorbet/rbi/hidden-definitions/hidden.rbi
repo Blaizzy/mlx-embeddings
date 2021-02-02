@@ -9251,14 +9251,6 @@ JSON::State = JSON::Ext::Generator::State
 
 JSON::UnparserError = JSON::GeneratorError
 
-class JavaRequirement::CaskSuggestion
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-  def self.[](*_); end
-
-  def self.members(); end
-end
-
 module Kconv
   AUTO = ::T.let(nil, ::T.untyped)
   NOCONV = ::T.let(nil, ::T.untyped)
@@ -11909,226 +11901,7 @@ class Net::HTTP
 end
 
 class Net::HTTP::Persistent
-  def ca_file(); end
-
-  def ca_file=(file); end
-
-  def ca_path(); end
-
-  def ca_path=(path); end
-
-  def cert(); end
-
-  def cert=(certificate); end
-
-  def cert_store(); end
-
-  def cert_store=(store); end
-
-  def certificate(); end
-
-  def certificate=(certificate); end
-
-  def ciphers(); end
-
-  def ciphers=(ciphers); end
-
-  def connection_for(uri); end
-
-  def debug_output(); end
-
-  def debug_output=(debug_output); end
-
-  def escape(str); end
-
-  def expired?(connection); end
-
-  def finish(connection); end
-
-  def generation(); end
-
-  def headers(); end
-
-  def http_version(uri); end
-
-  def http_versions(); end
-
-  def idle_timeout(); end
-
-  def idle_timeout=(idle_timeout); end
-
-  def initialize(name: T.unsafe(nil), proxy: T.unsafe(nil), pool_size: T.unsafe(nil)); end
-
-  def keep_alive(); end
-
-  def keep_alive=(keep_alive); end
-
-  def key(); end
-
-  def key=(key); end
-
-  def max_requests(); end
-
-  def max_requests=(max_requests); end
-
-  def max_retries(); end
-
-  def max_retries=(retries); end
-
-  def max_version(); end
-
-  def max_version=(max_version); end
-
-  def min_version(); end
-
-  def min_version=(min_version); end
-
-  def name(); end
-
-  def no_proxy(); end
-
-  def normalize_uri(uri); end
-
-  def open_timeout(); end
-
-  def open_timeout=(open_timeout); end
-
-  def override_headers(); end
-
-  def pipeline(uri, requests, &block); end
-
-  def pool(); end
-
-  def private_key(); end
-
-  def private_key=(key); end
-
-  def proxy=(proxy); end
-
-  def proxy_bypass?(host, port); end
-
-  def proxy_from_env(); end
-
-  def proxy_uri(); end
-
-  def read_timeout(); end
-
-  def read_timeout=(read_timeout); end
-
-  def reconnect(); end
-
-  def reconnect_ssl(); end
-
-  def request(uri, req=T.unsafe(nil), &block); end
-
-  def request_setup(req_or_uri); end
-
-  def reset(connection); end
-
-  def reuse_ssl_sessions(); end
-
-  def reuse_ssl_sessions=(reuse_ssl_sessions); end
-
-  def shutdown(); end
-
-  def socket_options(); end
-
-  def ssl(connection); end
-
-  def ssl_generation(); end
-
-  def ssl_timeout(); end
-
-  def ssl_timeout=(ssl_timeout); end
-
-  def ssl_version(); end
-
-  def ssl_version=(ssl_version); end
-
-  def start(http); end
-
-  def timeout_key(); end
-
-  def unescape(str); end
-
-  def verify_callback(); end
-
-  def verify_callback=(callback); end
-
-  def verify_depth(); end
-
-  def verify_depth=(verify_depth); end
-
-  def verify_mode(); end
-
-  def verify_mode=(verify_mode); end
-
-  def write_timeout(); end
-
-  def write_timeout=(write_timeout); end
-  DEFAULT_POOL_SIZE = ::T.let(nil, ::T.untyped)
-  EPOCH = ::T.let(nil, ::T.untyped)
   HAVE_OPENSSL = ::T.let(nil, ::T.untyped)
-  VERSION = ::T.let(nil, ::T.untyped)
-end
-
-class Net::HTTP::Persistent::Connection
-  def finish(); end
-
-  def http(); end
-
-  def http=(http); end
-
-  def initialize(http_class, http_args, ssl_generation); end
-
-  def last_use(); end
-
-  def last_use=(last_use); end
-
-  def requests(); end
-
-  def requests=(requests); end
-
-  def reset(); end
-
-  def ressl(ssl_generation); end
-
-  def ssl_generation(); end
-
-  def ssl_generation=(ssl_generation); end
-end
-
-class Net::HTTP::Persistent::Connection
-end
-
-class Net::HTTP::Persistent::Error
-end
-
-class Net::HTTP::Persistent::Error
-end
-
-class Net::HTTP::Persistent::Pool
-  def checkin(net_http_args); end
-
-  def checkout(net_http_args); end
-
-  def key(); end
-
-  def shutdown(); end
-end
-
-class Net::HTTP::Persistent::Pool
-end
-
-class Net::HTTP::Persistent::TimedStackMulti
-end
-
-class Net::HTTP::Persistent::TimedStackMulti
-  def self.hash_of_arrays(); end
-end
-
-class Net::HTTP::Persistent
-  def self.detect_idle_timeout(uri, max=T.unsafe(nil)); end
 end
 
 class Net::HTTPAlreadyReported
@@ -29231,6 +29004,11 @@ class Tab
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class Tap
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class Tapioca::Compilers::Dsl::Base
   extend ::T::Sig
   extend ::T::Helpers
@@ -29829,9 +29607,13 @@ end
 class WEBrick::HTTPResponse
   def _rack_setup_header(); end
 
+  def make_body_tempfile(); end
+
   def rack(); end
 
   def rack=(rack); end
+
+  def remove_body_tempfile(); end
 end
 
 class WEBrick::HTTPResponse::ChunkedWrapper
@@ -29851,8 +29633,16 @@ class WEBrick::HTTPServer
   def create_response(with_webrick_config); end
 end
 
+class WEBrick::HTTPServlet::CGIHandler
+  CGIRunnerArray = ::T.let(nil, ::T.untyped)
+end
+
 class WEBrick::HTTPServlet::DefaultFileHandler
   def multipart_body(body, parts, boundary, mtype, filesize); end
+end
+
+class WEBrick::HTTPServlet::FileHandler
+  def set_filesystem_encoding(str); end
 end
 
 module Warning
