@@ -5,7 +5,7 @@ require "compilers"
 require "software_spec"
 
 describe CompilerSelector do
-  subject { described_class.new(software_spec, versions, compilers) }
+  subject(:selector) { described_class.new(software_spec, versions, compilers) }
 
   let(:compilers) { [:clang, :gnu] }
   let(:software_spec) { SoftwareSpec.new }
@@ -29,23 +29,23 @@ describe CompilerSelector do
 
   describe "#compiler" do
     it "defaults to cc" do
-      expect(subject.compiler).to eq(cc)
+      expect(selector.compiler).to eq(cc)
     end
 
     it "returns clang if it fails with non-Apple gcc" do
       software_spec.fails_with(gcc: "7")
-      expect(subject.compiler).to eq(:clang)
+      expect(selector.compiler).to eq(:clang)
     end
 
     it "still returns gcc-7 if it fails with gcc without a specific version" do
       software_spec.fails_with(:clang)
-      expect(subject.compiler).to eq("gcc-7")
+      expect(selector.compiler).to eq("gcc-7")
     end
 
     it "returns gcc-6 if gcc formula offers gcc-6" do
       software_spec.fails_with(:clang)
       allow(Formulary).to receive(:factory).with("gcc").and_return(double(version: "6.0"))
-      expect(subject.compiler).to eq("gcc-6")
+      expect(selector.compiler).to eq("gcc-6")
     end
 
     it "raises an error when gcc or llvm is missing" do
@@ -53,7 +53,7 @@ describe CompilerSelector do
       software_spec.fails_with(gcc: "7")
       software_spec.fails_with(gcc: "6")
 
-      expect { subject.compiler }.to raise_error(CompilerSelectionError)
+      expect { selector.compiler }.to raise_error(CompilerSelectionError)
     end
   end
 end

@@ -3,6 +3,6 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.autoremove_args" do
+describe "brew autoremove" do
   it_behaves_like "parseable arguments"
 end

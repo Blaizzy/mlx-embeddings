@@ -3,12 +3,10 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.deps_args" do
+describe "brew deps" do
   it_behaves_like "parseable arguments"
-end
 
-describe "brew deps", :integration_test do
-  it "outputs all of a Formula's dependencies and their dependencies on separate lines" do
+  it "outputs all of a Formula's dependencies and their dependencies on separate lines", :integration_test do
     setup_test_formula "foo"
     setup_test_formula "bar"
     setup_test_formula "baz", <<~RUBY

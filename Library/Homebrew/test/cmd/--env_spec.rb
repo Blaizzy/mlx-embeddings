@@ -3,12 +3,10 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.__env_args" do
+describe "brew --env" do
   it_behaves_like "parseable arguments"
-end
 
-describe "brew --env", :integration_test do
-  describe "--shell=bash" do
+  describe "--shell=bash", :integration_test do
     it "prints the Homebrew build environment variables in Bash syntax" do
       expect { brew "--env", "--shell=bash" }
         .to output(/export CMAKE_PREFIX_PATH="#{Regexp.quote(HOMEBREW_PREFIX)}"/).to_stdout

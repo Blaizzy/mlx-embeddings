@@ -4,9 +4,11 @@
 require "diagnostic"
 
 describe Homebrew::Diagnostic::Checks do
+  subject(:checks) { described_class.new }
+
   specify "#inject_file_list" do
-    expect(subject.inject_file_list([], "foo:\n")).to eq("foo:\n")
-    expect(subject.inject_file_list(%w[/a /b], "foo:\n")).to eq("foo:\n  /a\n  /b\n")
+    expect(checks.inject_file_list([], "foo:\n")).to eq("foo:\n")
+    expect(checks.inject_file_list(%w[/a /b], "foo:\n")).to eq("foo:\n  /a\n  /b\n")
   end
 
   specify "#check_for_anaconda" do
@@ -22,7 +24,7 @@ describe Homebrew::Diagnostic::Checks do
 
       ENV["PATH"] = "#{path}#{File::PATH_SEPARATOR}#{ENV["PATH"]}"
 
-      expect(subject.check_for_anaconda).to match("Anaconda")
+      expect(checks.check_for_anaconda).to match("Anaconda")
     end
   end
 
@@ -40,7 +42,7 @@ describe Homebrew::Diagnostic::Checks do
       dirs.each do |dir|
         modes[dir] = dir.stat.mode & 0777
         dir.chmod 0555
-        expect(subject.check_access_directories).to match(dir.to_s)
+        expect(checks.check_access_directories).to match(dir.to_s)
       end
     ensure
       modes.each do |dir, mode|
@@ -60,7 +62,7 @@ describe Homebrew::Diagnostic::Checks do
     # HOMEBREW_PREFIX/bin/
     (bin/File.basename(Dir["/usr/bin/*"].first)).mkpath
 
-    expect(subject.check_user_path_1)
+    expect(checks.check_user_path_1)
       .to match("/usr/bin occurs before #{HOMEBREW_PREFIX}/bin")
   end
 
@@ -68,8 +70,8 @@ describe Homebrew::Diagnostic::Checks do
     ENV["PATH"] = ENV["PATH"].gsub \
       %r{(?:^|#{File::PATH_SEPARATOR})#{HOMEBREW_PREFIX}/bin}o, ""
 
-    expect(subject.check_user_path_1).to be nil
-    expect(subject.check_user_path_2)
+    expect(checks.check_user_path_1).to be nil
+    expect(checks.check_user_path_2)
       .to match("Homebrew's \"bin\" was not found in your PATH.")
   end
 
@@ -80,9 +82,9 @@ describe Homebrew::Diagnostic::Checks do
       ENV["HOMEBREW_PATH"].gsub(/(?:^|#{Regexp.escape(File::PATH_SEPARATOR)})#{Regexp.escape(sbin)}/, "")
     (sbin/"something").mkpath
 
-    expect(subject.check_user_path_1).to be nil
-    expect(subject.check_user_path_2).to be nil
-    expect(subject.check_user_path_3)
+    expect(checks.check_user_path_1).to be nil
+    expect(checks.check_user_path_2).to be nil
+    expect(checks.check_user_path_3)
       .to match("Homebrew's \"sbin\" was not found in your PATH")
   ensure
     sbin.rmtree
@@ -96,7 +98,7 @@ describe Homebrew::Diagnostic::Checks do
       ENV["HOMEBREW_PATH"] = ENV["PATH"] =
         "#{path}#{File::PATH_SEPARATOR}#{ENV["PATH"]}"
 
-      expect(subject.check_for_config_scripts)
+      expect(checks.check_for_config_scripts)
         .to match('"config" scripts exist')
     end
   end
@@ -107,7 +109,7 @@ describe Homebrew::Diagnostic::Checks do
     mktmpdir do |path|
       FileUtils.ln_s path, HOMEBREW_CELLAR
 
-      expect(subject.check_for_symlinked_cellar).to match(path)
+      expect(checks.check_for_symlinked_cellar).to match(path)
     end
   ensure
     HOMEBREW_CELLAR.unlink
@@ -116,7 +118,7 @@ describe Homebrew::Diagnostic::Checks do
 
   specify "#check_tmpdir" do
     ENV["TMPDIR"] = "/i/don/t/exis/t"
-    expect(subject.check_tmpdir).to match("doesn't exist")
+    expect(checks.check_tmpdir).to match("doesn't exist")
   end
 
   specify "#check_for_external_cmd_name_conflict" do
@@ -130,7 +132,7 @@ describe Homebrew::Diagnostic::Checks do
 
         allow(Tap).to receive(:cmd_directories).and_return([path1, path2])
 
-        expect(subject.check_for_external_cmd_name_conflict)
+        expect(checks.check_for_external_cmd_name_conflict)
           .to match("brew-foo")
       end
     end
@@ -138,7 +140,7 @@ describe Homebrew::Diagnostic::Checks do
 
   specify "#check_homebrew_prefix" do
     allow(Homebrew).to receive(:default_prefix?).and_return(false)
-    expect(subject.check_homebrew_prefix)
+    expect(checks.check_homebrew_prefix)
       .to match("Your Homebrew's prefix is not #{Homebrew::DEFAULT_PREFIX}")
   end
 end

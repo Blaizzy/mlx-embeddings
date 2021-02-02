@@ -3,12 +3,10 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.cat_args" do
+describe "brew cat" do
   it_behaves_like "parseable arguments"
-end
 
-describe "brew cat", :integration_test do
-  it "prints the content of a given Formula" do
+  it "prints the content of a given Formula", :integration_test do
     formula_file = setup_test_formula "testball"
     content = formula_file.read
 

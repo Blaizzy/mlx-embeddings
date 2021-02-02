@@ -6,6 +6,10 @@ require "rubocops/patches"
 describe RuboCop::Cop::FormulaAudit::Patches do
   subject(:cop) { described_class.new }
 
+  def expect_offense_hash(message:, severity:, line:, column:, source:)
+    [{ message: message, severity: severity, line: line, column: column, source: source }]
+  end
+
   context "when auditing legacy patches" do
     it "reports no offenses if there is no legacy patch" do
       expect_no_offenses(<<~RUBY)
@@ -49,63 +53,35 @@ describe RuboCop::Cop::FormulaAudit::Patches do
         EOS
 
         expected_offense = if patch_url.include?("/raw.github.com/")
-          [{ message:
-                       <<~EOS.chomp,
-                         GitHub/Gist patches should specify a revision:
-                           #{patch_url}
-                       EOS
-             severity: :convention,
-             line:     5,
-             column:   4,
-             source:   source }]
+          expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 4, source: source
+            GitHub/Gist patches should specify a revision:
+              #{patch_url}
+          EOS
         elsif patch_url.include?("macports/trunk")
-          [{ message:
-                       <<~EOS.chomp,
-                         MacPorts patches should specify a revision instead of trunk:
-                           #{patch_url}
-                       EOS
-             severity: :convention,
-             line:     5,
-             column:   4,
-             source:   source }]
+          expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 4, source: source
+            MacPorts patches should specify a revision instead of trunk:
+              #{patch_url}
+          EOS
         elsif patch_url.start_with?("http://trac.macports.org")
-          [{ message:
-                       <<~EOS.chomp,
-                         Patches from MacPorts Trac should be https://, not http:
-                           #{patch_url}
-                       EOS
-             severity: :convention,
-             line:     5,
-             column:   4,
-             source:   source }]
+          expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 4, source: source
+            Patches from MacPorts Trac should be https://, not http:
+              #{patch_url}
+          EOS
         elsif patch_url.start_with?("http://bugs.debian.org")
-          [{ message:
-                       <<~EOS.chomp,
-                         Patches from Debian should be https://, not http:
-                           #{patch_url}
-                       EOS
-             severity: :convention,
-             line:     5,
-             column:   4,
-             source:   source }]
+          expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 4, source: source
+            Patches from Debian should be https://, not http:
+              #{patch_url}
+          EOS
         # rubocop:disable Layout/LineLength
         elsif patch_url.match?(%r{https?://patch-diff\.githubusercontent\.com/raw/(.+)/(.+)/pull/(.+)\.(?:diff|patch)})
           # rubocop:enable Layout/LineLength
-          [{ message:  "Use a commit hash URL rather than patch-diff: #{patch_url}",
-             severity: :convention,
-             line:     5,
-             column:   4,
-             source:   source }]
+          expect_offense_hash message: "Use a commit hash URL rather than patch-diff: #{patch_url}",
+                              severity: :convention, line: 5, column: 4, source: source
         elsif patch_url.match?(%r{https?://github\.com/.+/.+/(?:commit|pull)/[a-fA-F0-9]*.(?:patch|diff)})
-          [{ message:
-                       <<~EOS,
-                         GitHub patches should use the full_index parameter:
-                           #{patch_url}?full_index=1
-                       EOS
-             severity: :convention,
-             line:     5,
-             column:   4,
-             source:   source }]
+          expect_offense_hash message: <<~EOS, severity: :convention, line: 5, column: 4, source: source
+            GitHub patches should use the full_index parameter:
+              #{patch_url}?full_index=1
+          EOS
         end
         expected_offense.zip([inspect_source(source).last]).each do |expected, actual|
           expect(actual.message).to eq(expected[:message])
@@ -228,85 +204,48 @@ describe RuboCop::Cop::FormulaAudit::Patches do
         RUBY
 
         expected_offense = if patch_url.include?("/raw.github.com/")
-          [{ message:
-                       <<~EOS.chomp,
-                         GitHub/Gist patches should specify a revision:
-                           #{patch_url}
-                       EOS
-             severity: :convention,
-             line:     5,
-             column:   8,
-             source:   source }]
+          expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 8, source: source
+            GitHub/Gist patches should specify a revision:
+              #{patch_url}
+          EOS
         elsif patch_url.include?("macports/trunk")
-          [{ message:
-                       <<~EOS.chomp,
-                         MacPorts patches should specify a revision instead of trunk:
-                           #{patch_url}
-                       EOS
-             severity: :convention,
-             line:     5,
-             column:   8,
-             source:   source }]
+          expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 8, source: source
+            MacPorts patches should specify a revision instead of trunk:
+              #{patch_url}
+          EOS
         elsif patch_url.start_with?("http://trac.macports.org")
-          [{ message:
-                       <<~EOS.chomp,
-                         Patches from MacPorts Trac should be https://, not http:
-                           #{patch_url}
-                       EOS
-             severity: :convention,
-             line:     5,
-             column:   8,
-             source:   source }]
+          expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 8, source: source
+            Patches from MacPorts Trac should be https://, not http:
+              #{patch_url}
+          EOS
         elsif patch_url.start_with?("http://bugs.debian.org")
-          [{ message:
-                       <<~EOS.chomp,
-                         Patches from Debian should be https://, not http:
-                           #{patch_url}
-                       EOS
-             severity: :convention,
-             line:     5,
-             column:   8,
-             source:   source }]
+          expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 8, source: source
+            Patches from Debian should be https://, not http:
+              #{patch_url}
+          EOS
         elsif patch_url.match?(%r{https://github.com/[^/]*/[^/]*/pull})
-          [{ message:  "Use a commit hash URL rather than an unstable pull request URL: #{patch_url}",
-             severity: :convention,
-             line:     5,
-             column:   8,
-             source:   source }]
+          expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 8, source: source
+            Use a commit hash URL rather than an unstable pull request URL: #{patch_url}
+          EOS
         elsif patch_url.match?(%r{.*gitlab.*/merge_request.*})
-          [{ message:  "Use a commit hash URL rather than an unstable merge request URL: #{patch_url}",
-             severity: :convention,
-             line:     5,
-             column:   8,
-             source:   source }]
+          expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 8, source: source
+            Use a commit hash URL rather than an unstable merge request URL: #{patch_url}
+          EOS
         elsif patch_url.match?(%r{https://github.com/[^/]*/[^/]*/commit/})
-          [{ message:
-                       <<~EOS.chomp,
-                         GitHub patches should end with .patch, not .diff:
-                           #{patch_url}
-                       EOS
-             severity: :convention,
-             line:     5,
-             column:   8,
-             source:   source }]
+          expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 8, source: source
+            GitHub patches should end with .patch, not .diff:
+              #{patch_url}
+          EOS
         elsif patch_url.match?(%r{.*gitlab.*/commit/})
-          [{ message:
-                       <<~EOS.chomp,
-                         GitLab patches should end with .patch, not .diff:
-                           #{patch_url}
-                       EOS
-             severity: :convention,
-             line:     5,
-             column:   8,
-             source:   source }]
+          expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 8, source: source
+            GitLab patches should end with .patch, not .diff:
+              #{patch_url}
+          EOS
         # rubocop:disable Layout/LineLength
         elsif patch_url.match?(%r{https?://patch-diff\.githubusercontent\.com/raw/(.+)/(.+)/pull/(.+)\.(?:diff|patch)})
           # rubocop:enable Layout/LineLength
-          [{ message:  "Use a commit hash URL rather than patch-diff: #{patch_url}",
-             severity: :convention,
-             line:     5,
-             column:   8,
-             source:   source }]
+          expect_offense_hash message:  "Use a commit hash URL rather than patch-diff: #{patch_url}",
+                              severity: :convention, line: 5, column: 8, source: source
         end
         expected_offense.zip([inspect_source(source).last]).each do |expected, actual|
           expect(actual.message).to eq(expected[:message])

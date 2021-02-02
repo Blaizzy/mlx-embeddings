@@ -3,12 +3,10 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.readall_args" do
+describe "brew readall" do
   it_behaves_like "parseable arguments"
-end
 
-describe "brew readall", :integration_test do
-  it "imports all Formulae for a given Tap" do
+  it "imports all Formulae for a given Tap", :integration_test do
     formula_file = setup_test_formula "testball"
 
     alias_file = CoreTap.new.alias_dir/"foobar"

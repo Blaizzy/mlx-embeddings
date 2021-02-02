@@ -3,12 +3,10 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.__cellar_args" do
+describe "brew --cellar" do
   it_behaves_like "parseable arguments"
-end
 
-describe "brew --cellar", :integration_test do
-  it "returns the Cellar subdirectory for a given Formula" do
+  it "returns the Cellar subdirectory for a given Formula", :integration_test do
     expect { brew "--cellar", testball }
       .to output(%r{#{HOMEBREW_CELLAR}/testball}o).to_stdout
       .and not_to_output.to_stderr

@@ -6,7 +6,7 @@ require "utils/tty"
 
 describe Formatter do
   describe "::columns" do
-    subject { described_class.columns(input) }
+    subject(:columns) { described_class.columns(input) }
 
     let(:input) {
       %w[
@@ -21,7 +21,7 @@ describe Formatter do
       allow_any_instance_of(IO).to receive(:tty?).and_return(false)
       allow(Tty).to receive(:width).and_return(10)
 
-      expect(subject).to eq(
+      expect(columns).to eq(
         "aa\n" \
         "bbb\n" \
         "ccc\n" \
@@ -34,7 +34,7 @@ describe Formatter do
         allow_any_instance_of(IO).to receive(:tty?).and_return(true)
         allow(Tty).to receive(:width).and_return(10)
 
-        expect(subject).to eq(
+        expect(columns).to eq(
           "aa    ccc\n" \
           "bbb   dd\n",
         )
@@ -44,7 +44,7 @@ describe Formatter do
         allow_any_instance_of(IO).to receive(:tty?).and_return(true)
         allow(Tty).to receive(:width).and_return(20)
 
-        expect(subject).to eq(
+        expect(columns).to eq(
           "aa   bbb  ccc  dd\n",
         )
       end

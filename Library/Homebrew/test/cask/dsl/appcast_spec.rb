@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 describe Cask::DSL::Appcast do
-  subject { described_class.new(url, params) }
+  subject(:appcast) { described_class.new(url, params) }
 
   let(:url) { "https://brew.sh" }
   let(:uri) { URI(url) }
@@ -10,7 +10,7 @@ describe Cask::DSL::Appcast do
 
   describe "#to_s" do
     it "returns the parsed URI string" do
-      expect(subject.to_s).to eq("https://brew.sh")
+      expect(appcast.to_s).to eq("https://brew.sh")
     end
   end
 
@@ -19,7 +19,7 @@ describe Cask::DSL::Appcast do
 
     context "with empty parameters" do
       it "returns an YAML serialized array composed of the URI and parameters" do
-        expect(subject.to_yaml).to eq(yaml)
+        expect(appcast.to_yaml).to eq(yaml)
       end
     end
   end

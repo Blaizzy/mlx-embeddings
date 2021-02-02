@@ -3,6 +3,6 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.bump_cask_pr_args" do
+describe "brew bump-cask-pr" do
   it_behaves_like "parseable arguments"
 end

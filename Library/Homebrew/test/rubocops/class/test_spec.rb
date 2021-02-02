@@ -3,46 +3,6 @@
 
 require "rubocops/class"
 
-describe RuboCop::Cop::FormulaAudit::ClassName do
-  subject(:cop) { described_class.new }
-
-  corrected_source = <<~RUBY
-    class Foo < Formula
-      url 'https://brew.sh/foo-1.0.tgz'
-    end
-  RUBY
-
-  it "reports and corrects an offense when using ScriptFileFormula" do
-    expect_offense(<<~RUBY)
-      class Foo < ScriptFileFormula
-                  ^^^^^^^^^^^^^^^^^ ScriptFileFormula is deprecated, use Formula instead
-        url 'https://brew.sh/foo-1.0.tgz'
-      end
-    RUBY
-    expect_correction(corrected_source)
-  end
-
-  it "reports and corrects an offense when using GithubGistFormula" do
-    expect_offense(<<~RUBY)
-      class Foo < GithubGistFormula
-                  ^^^^^^^^^^^^^^^^^ GithubGistFormula is deprecated, use Formula instead
-        url 'https://brew.sh/foo-1.0.tgz'
-      end
-    RUBY
-    expect_correction(corrected_source)
-  end
-
-  it "reports and corrects an offense when using AmazonWebServicesFormula" do
-    expect_offense(<<~RUBY)
-      class Foo < AmazonWebServicesFormula
-                  ^^^^^^^^^^^^^^^^^^^^^^^^ AmazonWebServicesFormula is deprecated, use Formula instead
-        url 'https://brew.sh/foo-1.0.tgz'
-      end
-    RUBY
-    expect_correction(corrected_source)
-  end
-end
-
 describe RuboCop::Cop::FormulaAudit::Test do
   subject(:cop) { described_class.new }
 
@@ -113,19 +73,6 @@ describe RuboCop::Cop::FormulaAudit::Test do
         ^^^^^^^ `test do` should contain a real test
           true
         end
-      end
-    RUBY
-  end
-end
-
-describe RuboCop::Cop::FormulaAuditStrict::TestPresent do
-  subject(:cop) { described_class.new }
-
-  it "reports an offense when there is no test block" do
-    expect_offense(<<~RUBY)
-      class Foo < Formula
-      ^^^^^^^^^^^^^^^^^^^ A `test do` test block should be added
-        url 'https://brew.sh/foo-1.0.tgz'
       end
     RUBY
   end

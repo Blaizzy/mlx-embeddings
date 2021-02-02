@@ -3,12 +3,10 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.irb_args" do
+describe "brew irb" do
   it_behaves_like "parseable arguments"
-end
 
-describe "brew irb", :integration_test do
-  it "starts an interactive Homebrew shell session" do
+  it "starts an interactive Homebrew shell session", :integration_test do
     setup_test_formula "testball"
 
     irb_test = HOMEBREW_TEMP/"irb-test.rb"

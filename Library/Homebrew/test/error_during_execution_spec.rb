@@ -47,7 +47,7 @@ describe ErrorDuringExecution do
       end
 
       its(:to_s) {
-        expect(subject.to_s).to eq <<~EOS
+        expect(error.to_s).to eq <<~EOS
           Failure while executing; `false` exited with 1. Here's the output:
           This still worked.
           #{Formatter.error("Here something went wrong.\n")}
@@ -59,7 +59,7 @@ describe ErrorDuringExecution do
       let(:command) { ["env", "PATH=/bin", "cat", "with spaces"] }
 
       its(:to_s) {
-        expect(subject.to_s)
+        expect(error.to_s)
           .to eq 'Failure while executing; `env PATH=/bin cat with\ spaces` exited with 1.'
       }
     end

@@ -5,12 +5,10 @@ require "cmd/uninstall"
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.uninstall_args" do
+describe "brew uninstall" do
   it_behaves_like "parseable arguments"
-end
 
-describe "brew uninstall", :integration_test do
-  it "uninstalls a given Formula" do
+  it "uninstalls a given Formula", :integration_test do
     install_test_formula "testball"
 
     expect { brew "uninstall", "--force", "testball" }

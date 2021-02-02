@@ -3,12 +3,10 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.leaves_args" do
+describe "brew leaves" do
   it_behaves_like "parseable arguments"
-end
 
-describe "brew leaves", :integration_test do
-  context "when there are no installed Formulae" do
+  context "when there are no installed Formulae", :integration_test do
     it "prints nothing" do
       setup_test_formula "foo"
       setup_test_formula "bar"
@@ -20,7 +18,7 @@ describe "brew leaves", :integration_test do
     end
   end
 
-  context "when there are only installed Formulae without dependencies" do
+  context "when there are only installed Formulae without dependencies", :integration_test do
     it "prints all installed Formulae" do
       setup_test_formula "foo"
       setup_test_formula "bar"
@@ -33,7 +31,7 @@ describe "brew leaves", :integration_test do
     end
   end
 
-  context "when there are installed Formulae" do
+  context "when there are installed Formulae", :integration_test do
     it "prints all installed Formulae that are not dependencies of another installed Formula" do
       setup_test_formula "foo"
       setup_test_formula "bar"

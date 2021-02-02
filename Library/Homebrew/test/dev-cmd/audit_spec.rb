@@ -6,7 +6,7 @@ require "formulary"
 require "cmd/shared_examples/args_parse"
 require "utils/spdx"
 
-describe "Homebrew.audit_args" do
+describe "brew audit" do
   it_behaves_like "parseable arguments"
 end
 

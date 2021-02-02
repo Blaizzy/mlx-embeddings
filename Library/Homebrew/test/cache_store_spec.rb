@@ -4,7 +4,7 @@
 require "cache_store"
 
 describe CacheStoreDatabase do
-  subject { described_class.new(:sample) }
+  subject(:sample_db) { described_class.new(:sample) }
 
   describe "self.use" do
     let(:type) { :test }
@@ -22,12 +22,12 @@ describe CacheStoreDatabase do
 
     it "sets the value in the `CacheStoreDatabase`" do
       allow(File).to receive(:write)
-      allow(subject).to receive(:created?).and_return(true)
-      allow(subject).to receive(:db).and_return(db)
+      allow(sample_db).to receive(:created?).and_return(true)
+      allow(sample_db).to receive(:db).and_return(db)
 
       expect(db).to receive(:has_key?).with(:foo).and_return(false)
       expect(db).not_to have_key(:foo)
-      subject.set(:foo, "bar")
+      sample_db.set(:foo, "bar")
     end
   end
 
@@ -36,11 +36,11 @@ describe CacheStoreDatabase do
       let(:db) { double("db", :[] => "bar") }
 
       it "gets value in the `CacheStoreDatabase` corresponding to the key" do
-        allow(subject).to receive(:created?).and_return(true)
+        allow(sample_db).to receive(:created?).and_return(true)
         expect(db).to receive(:has_key?).with(:foo).and_return(true)
-        allow(subject).to receive(:db).and_return(db)
+        allow(sample_db).to receive(:db).and_return(db)
         expect(db).to have_key(:foo)
-        expect(subject.get(:foo)).to eq("bar")
+        expect(sample_db.get(:foo)).to eq("bar")
       end
     end
 
@@ -48,17 +48,17 @@ describe CacheStoreDatabase do
       let(:db) { double("db", :[] => nil) }
 
       before do
-        allow(subject).to receive(:created?).and_return(false)
-        allow(subject).to receive(:db).and_return(db)
+        allow(sample_db).to receive(:created?).and_return(false)
+        allow(sample_db).to receive(:db).and_return(db)
       end
 
       it "does not get value in the `CacheStoreDatabase` corresponding to key" do
-        expect(subject.get(:foo)).not_to be("bar")
+        expect(sample_db.get(:foo)).not_to be("bar")
       end
 
       it "does not call `db[]` if `CacheStoreDatabase.created?` is `false`" do
         expect(db).not_to receive(:[])
-        subject.get(:foo)
+        sample_db.get(:foo)
       end
     end
   end
@@ -68,13 +68,13 @@ describe CacheStoreDatabase do
       let(:db) { double("db", :[] => { foo: "bar" }) }
 
       before do
-        allow(subject).to receive(:created?).and_return(true)
-        allow(subject).to receive(:db).and_return(db)
+        allow(sample_db).to receive(:created?).and_return(true)
+        allow(sample_db).to receive(:db).and_return(db)
       end
 
       it "deletes value in the `CacheStoreDatabase` corresponding to the key" do
         expect(db).to receive(:delete).with(:foo)
-        subject.delete(:foo)
+        sample_db.delete(:foo)
       end
     end
 
@@ -82,13 +82,13 @@ describe CacheStoreDatabase do
       let(:db) { double("db", delete: nil) }
 
       before do
-        allow(subject).to receive(:created?).and_return(false)
-        allow(subject).to receive(:db).and_return(db)
+        allow(sample_db).to receive(:created?).and_return(false)
+        allow(sample_db).to receive(:db).and_return(db)
       end
 
       it "does not call `db.delete` if `CacheStoreDatabase.created?` is `false`" do
         expect(db).not_to receive(:delete)
-        subject.delete(:foo)
+        sample_db.delete(:foo)
       end
     end
   end
@@ -96,17 +96,17 @@ describe CacheStoreDatabase do
   describe "#write_if_dirty!" do
     context "database open" do
       it "does not raise an error when `close` is called on the database" do
-        expect { subject.write_if_dirty! }.not_to raise_error(NoMethodError)
+        expect { sample_db.write_if_dirty! }.not_to raise_error(NoMethodError)
       end
     end
 
     context "database not open" do
       before do
-        subject.instance_variable_set(:@db, nil)
+        sample_db.instance_variable_set(:@db, nil)
       end
 
       it "does not raise an error when `close` is called on the database" do
-        expect { subject.write_if_dirty! }.not_to raise_error(NoMethodError)
+        expect { sample_db.write_if_dirty! }.not_to raise_error(NoMethodError)
       end
     end
   end
@@ -115,7 +115,7 @@ describe CacheStoreDatabase do
     let(:cache_path) { Pathname("path/to/homebrew/cache/sample.json") }
 
     before do
-      allow(subject).to receive(:cache_path).and_return(cache_path)
+      allow(sample_db).to receive(:cache_path).and_return(cache_path)
     end
 
     context "`cache_path.exist?` returns `true`" do
@@ -124,7 +124,7 @@ describe CacheStoreDatabase do
       end
 
       it "returns `true`" do
-        expect(subject.created?).to be(true)
+        expect(sample_db.created?).to be(true)
       end
     end
 
@@ -134,7 +134,7 @@ describe CacheStoreDatabase do
       end
 
       it "returns `false`" do
-        expect(subject.created?).to be(false)
+        expect(sample_db.created?).to be(false)
       end
     end
   end

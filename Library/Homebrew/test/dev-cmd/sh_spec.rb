@@ -3,12 +3,10 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.sh_args" do
+describe "brew sh" do
   it_behaves_like "parseable arguments"
-end
 
-describe "brew sh", :integration_test do
-  it "runs a shell with the Homebrew environment" do
+  it "runs a shell with the Homebrew environment", :integration_test do
     expect { brew "sh", "SHELL" => which("true") }
       .to output(/Your shell has been configured/).to_stdout
       .and not_to_output.to_stderr

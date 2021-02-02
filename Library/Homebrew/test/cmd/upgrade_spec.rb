@@ -3,12 +3,10 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.upgrade_args" do
+describe "brew upgrade" do
   it_behaves_like "parseable arguments"
-end
 
-describe "brew upgrade", :integration_test do
-  it "upgrades a Formula and cleans up old versions" do
+  it "upgrades a Formula and cleans up old versions", :integration_test do
     setup_test_formula "testball"
     (HOMEBREW_CELLAR/"testball/0.0.1/foo").mkpath
 

@@ -4,9 +4,7 @@
 require "cmd/shared_examples/args_parse"
 
 describe "brew bump" do
-  describe "Homebrew.bump_args" do
-    it_behaves_like "parseable arguments"
-  end
+  it_behaves_like "parseable arguments"
 
   describe "formula", :integration_test, :needs_network do
     it "returns data for single valid specified formula" do

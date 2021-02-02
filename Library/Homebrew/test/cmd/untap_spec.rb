@@ -3,12 +3,10 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.untap_args" do
+describe "brew untap" do
   it_behaves_like "parseable arguments"
-end
 
-describe "brew untap", :integration_test do
-  it "untaps a given Tap" do
+  it "untaps a given Tap", :integration_test do
     setup_test_tap
 
     expect { brew "untap", "homebrew/foo" }

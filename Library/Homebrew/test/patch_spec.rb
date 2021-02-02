@@ -53,54 +53,54 @@ describe Patch do
   end
 
   describe "#patch_files" do
-    subject { described_class.create(:p2, nil) }
+    subject(:patch) { described_class.create(:p2, nil) }
 
     context "empty patch" do
       its(:resource) { is_expected.to be_kind_of Resource::PatchResource }
-      its(:patch_files) { is_expected.to eq(subject.resource.patch_files) }
+      its(:patch_files) { is_expected.to eq(patch.resource.patch_files) }
       its(:patch_files) { is_expected.to eq([]) }
     end
 
     it "returns applied patch files" do
-      subject.resource.apply("patch1.diff")
-      expect(subject.patch_files).to eq(["patch1.diff"])
+      patch.resource.apply("patch1.diff")
+      expect(patch.patch_files).to eq(["patch1.diff"])
 
-      subject.resource.apply("patch2.diff", "patch3.diff")
-      expect(subject.patch_files).to eq(["patch1.diff", "patch2.diff", "patch3.diff"])
+      patch.resource.apply("patch2.diff", "patch3.diff")
+      expect(patch.patch_files).to eq(["patch1.diff", "patch2.diff", "patch3.diff"])
 
-      subject.resource.apply(["patch4.diff", "patch5.diff"])
-      expect(subject.patch_files.count).to eq(5)
+      patch.resource.apply(["patch4.diff", "patch5.diff"])
+      expect(patch.patch_files.count).to eq(5)
 
-      subject.resource.apply("patch4.diff", ["patch5.diff", "patch6.diff"], "patch7.diff")
-      expect(subject.patch_files.count).to eq(7)
+      patch.resource.apply("patch4.diff", ["patch5.diff", "patch6.diff"], "patch7.diff")
+      expect(patch.patch_files.count).to eq(7)
     end
   end
-end
 
-describe EmbeddedPatch do
-  describe "#new" do
-    subject { described_class.new(:p1) }
+  describe EmbeddedPatch do
+    describe "#new" do
+      subject { described_class.new(:p1) }
 
-    its(:inspect) { is_expected.to eq("#<EmbeddedPatch: :p1>") }
-  end
-end
-
-describe ExternalPatch do
-  subject { described_class.new(:p1) { url "file:///my.patch" } }
-
-  describe "#url" do
-    its(:url) { is_expected.to eq("file:///my.patch") }
+      its(:inspect) { is_expected.to eq("#<EmbeddedPatch: :p1>") }
+    end
   end
 
-  describe "#inspect" do
-    its(:inspect) { is_expected.to eq('#<ExternalPatch: :p1 "file:///my.patch">') }
-  end
+  describe ExternalPatch do
+    subject(:patch) { described_class.new(:p1) { url "file:///my.patch" } }
 
-  describe "#cached_download" do
-    before do
-      allow(subject.resource).to receive(:cached_download).and_return("/tmp/foo.tar.gz")
+    describe "#url" do
+      its(:url) { is_expected.to eq("file:///my.patch") }
     end
 
-    its(:cached_download) { is_expected.to eq("/tmp/foo.tar.gz") }
+    describe "#inspect" do
+      its(:inspect) { is_expected.to eq('#<ExternalPatch: :p1 "file:///my.patch">') }
+    end
+
+    describe "#cached_download" do
+      before do
+        allow(patch.resource).to receive(:cached_download).and_return("/tmp/foo.tar.gz")
+      end
+
+      its(:cached_download) { is_expected.to eq("/tmp/foo.tar.gz") }
+    end
   end
 end

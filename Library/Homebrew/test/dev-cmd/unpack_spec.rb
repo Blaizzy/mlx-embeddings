@@ -3,12 +3,10 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.unpack_args" do
+describe "brew unpack" do
   it_behaves_like "parseable arguments"
-end
 
-describe "brew unpack", :integration_test do
-  it "unpacks a given Formula's archive" do
+  it "unpacks a given Formula's archive", :integration_test do
     setup_test_formula "testball"
 
     mktmpdir do |path|

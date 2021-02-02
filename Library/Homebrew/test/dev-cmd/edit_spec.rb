@@ -3,12 +3,10 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.edit_args" do
+describe "brew edit" do
   it_behaves_like "parseable arguments"
-end
 
-describe "brew edit", :integration_test do
-  it "opens a given Formula in an editor" do
+  it "opens a given Formula in an editor", :integration_test do
     HOMEBREW_REPOSITORY.cd do
       system "git", "init"
     end

@@ -3,15 +3,13 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.create_args" do
-  it_behaves_like "parseable arguments"
-end
-
-describe "brew create", :integration_test do
+describe "brew create" do
   let(:url) { "file://#{TEST_FIXTURE_DIR}/tarballs/testball-0.1.tbz" }
   let(:formula_file) { CoreTap.new.formula_dir/"testball.rb" }
 
-  it "creates a new Formula file for a given URL" do
+  it_behaves_like "parseable arguments"
+
+  it "creates a new Formula file for a given URL", :integration_test do
     brew "create", url, "HOMEBREW_EDITOR" => "/bin/cat"
 
     expect(formula_file).to exist

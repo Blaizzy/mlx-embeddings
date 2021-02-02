@@ -3,12 +3,10 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "Homebrew.install_args" do
+describe "brew install" do
   it_behaves_like "parseable arguments"
-end
 
-describe "brew install", :integration_test do
-  it "installs formulae" do
+  it "installs formulae", :integration_test do
     setup_test_formula "testball1"
 
     expect { brew "install", "testball1" }
@@ -18,7 +16,7 @@ describe "brew install", :integration_test do
     expect(HOMEBREW_CELLAR/"testball1/0.1/foo/test").not_to be_a_file
   end
 
-  it "installs formulae with options" do
+  it "installs formulae with options", :integration_test do
     setup_test_formula "testball1"
 
     expect { brew "install", "testball1", "--with-foo" }
@@ -28,7 +26,7 @@ describe "brew install", :integration_test do
     expect(HOMEBREW_CELLAR/"testball1/0.1/foo/test").to be_a_file
   end
 
-  it "can install keg-only Formulae" do
+  it "can install keg-only Formulae", :integration_test do
     setup_test_formula "testball1", <<~RUBY
       version "1.0"
 
@@ -42,7 +40,7 @@ describe "brew install", :integration_test do
     expect(HOMEBREW_CELLAR/"testball1/1.0/foo/test").not_to be_a_file
   end
 
-  it "can install HEAD Formulae" do
+  it "can install HEAD Formulae", :integration_test do
     repo_path = HOMEBREW_CACHE.join("repo")
     repo_path.join("bin").mkpath
 
