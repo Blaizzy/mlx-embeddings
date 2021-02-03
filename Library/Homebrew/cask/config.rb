@@ -188,7 +188,7 @@ module Cask
         # inverse of #env - converts :languages config key back to --language flag
         if key == :languages
           key = "language"
-          value = languages.join(",")
+          value = T.cast(explicit.fetch(:languages, []), T::Array[String]).join(",")
         end
         "#{key}: \"#{value.to_s.sub(/^#{ENV['HOME']}/, "~")}\""
       end.join(", ")
