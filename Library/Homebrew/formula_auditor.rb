@@ -399,7 +399,7 @@ module Homebrew
     end
 
     def audit_github_repository_archived
-      return if formula.deprecated?
+      return if formula.deprecated? || formula.disabled?
 
       user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @online
       return if user.blank?
@@ -411,7 +411,7 @@ module Homebrew
     end
 
     def audit_gitlab_repository_archived
-      return if formula.deprecated?
+      return if formula.deprecated? || formula.disabled?
 
       user, repo = get_repo_data(%r{https?://gitlab\.com/([^/]+)/([^/]+)/?.*}) if @online
       return if user.blank?
