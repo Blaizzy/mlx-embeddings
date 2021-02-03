@@ -67,6 +67,17 @@ module Homebrew
       Version.new "#{latest_version.major}.#{latest_version.minor}.#{latest_version.patch.to_i + 1}"
     end.to_s
 
+    if args.major? || args.minor?
+      latest_major_minor_version = "#{latest_version.major}.#{latest_version.minor.to_i}.0"
+      ohai "Release notes since #{latest_major_minor_version} for #{new_version} blog post:"
+      # release notes without username suffix or dependabot bumps
+      puts ReleaseNotes.generate_release_notes(latest_major_minor_version, "origin/HEAD", markdown: true)
+                       .lines
+                       .reject { |l| l.include?(" (@Homebrew)") }
+                       .map { |l| l.gsub(/ \(@[\w-]+\)$/, "") }
+                       .sort
+    end
+
     ohai "Creating draft release for version #{new_version}"
 
     release_notes = if args.major? || args.minor?
