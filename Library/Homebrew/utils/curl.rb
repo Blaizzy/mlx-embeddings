@@ -72,24 +72,23 @@ module Utils
                               env:  { "SSL_CERT_FILE" => nil }.merge(env),
                               **command_options
 
-      if !result.success? && args.exclude?("--http1.1")
-        # This is a workaround for https://github.com/curl/curl/issues/1618.
-        if result.status.exitstatus == 56 # Unexpected EOF
-          out = curl_output("-V").stdout
+      return result if result.success? || !args.exclude?("--http1.1")
 
-          # If `curl` doesn't support HTTP2, the exception is unrelated to this bug.
-          return result unless out.include?("HTTP2")
+      # Error in the HTTP2 framing layer
+      return curl_with_workarounds(*args, "--http1.1", **command_options, **options) if result.status.exitstatus == 16
 
-          # The bug is fixed in `curl` >= 7.60.0.
-          curl_version = out[/curl (\d+(\.\d+)+)/, 1]
-          return result if Gem::Version.new(curl_version) >= Gem::Version.new("7.60.0")
+      # This is a workaround for https://github.com/curl/curl/issues/1618.
+      if result.status.exitstatus == 56 # Unexpected EOF
+        out = curl_output("-V").stdout
 
-          return curl_with_workarounds(*args, "--http1.1", **command_options, **options)
-        end
+        # If `curl` doesn't support HTTP2, the exception is unrelated to this bug.
+        return result unless out.include?("HTTP2")
 
-        if result.status.exitstatus == 16 # Error in the HTTP2 framing layer
-          return curl_with_workarounds(*args, "--http1.1", **command_options, **options)
-        end
+        # The bug is fixed in `curl` >= 7.60.0.
+        curl_version = out[/curl (\d+(\.\d+)+)/, 1]
+        return result if Gem::Version.new(curl_version) >= Gem::Version.new("7.60.0")
+
+        return curl_with_workarounds(*args, "--http1.1", **command_options, **options)
       end
 
       result
