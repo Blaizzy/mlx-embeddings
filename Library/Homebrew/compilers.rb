@@ -78,6 +78,7 @@ end
 #
 # @api private
 class CompilerSelector
+  extend T::Sig
   include CompilerConstants
 
   Compiler = Struct.new(:name, :version)
@@ -111,9 +112,14 @@ class CompilerSelector
 
   private
 
+  sig { returns(String) }
+  def preferred_gcc
+    "gcc"
+  end
+
   def gnu_gcc_versions
     # prioritize gcc version provided by gcc formula.
-    v = Formulary.factory("gcc").version.to_s.slice(/\d+/)
+    v = Formulary.factory(preferred_gcc).version.to_s.slice(/\d+/)
     GNU_GCC_VERSIONS - [v] + [v] # move the version to the end of the list
   rescue FormulaUnavailableError
     GNU_GCC_VERSIONS
@@ -150,3 +156,5 @@ class CompilerSelector
     end
   end
 end
+
+require "extend/os/compilers"
