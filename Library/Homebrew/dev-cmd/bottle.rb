@@ -194,24 +194,50 @@ module Homebrew
     !absolute_symlinks_start_with_string.empty?
   end
 
-  def generate_sha256_line(tag, digest, cellar)
+  def cellar_parameter_needed?(cellar)
     default_cellars = [
       Homebrew::DEFAULT_MACOS_CELLAR,
       Homebrew::DEFAULT_MACOS_ARM_CELLAR,
       Homebrew::DEFAULT_LINUX_CELLAR,
     ]
+    cellar.present? && default_cellars.exclude?(cellar)
+  end
+
+  def generate_sha256_line(tag, digest, cellar, tag_column, digest_column)
+    line = "sha256 "
+    tag_column += line.length
+    digest_column += line.length
     if cellar.is_a?(Symbol)
-      %Q(sha256 cellar: :#{cellar}, #{tag}: "#{digest}")
-    elsif cellar.present? && default_cellars.exclude?(cellar)
-      %Q(sha256 cellar: "#{cellar}", #{tag}: "#{digest}")
-    else
-      %Q(sha256 #{tag}: "#{digest}")
+      line += "cellar: :#{cellar},"
+    elsif cellar_parameter_needed?(cellar)
+      line += %Q(cellar: "#{cellar}",)
     end
+    line += " " * (tag_column - line.length)
+    line += "#{tag}:"
+    line += " " * (digest_column - line.length)
+    %Q(#{line}"#{digest}")
   end
 
   def bottle_output(bottle)
+    cellars = bottle.checksums.map do |checksum|
+      cellar = checksum["cellar"]
+      next unless cellar_parameter_needed? cellar
+
+      case cellar
+      when String
+        %Q("#{cellar}")
+      when Symbol
+        ":#{cellar}"
+      end
+    end.compact
+    tag_column = cellars.empty? ? 0 : "cellar: #{cellars.max_by(&:length)}, ".length
+
+    tags = bottle.checksums.map { |checksum| checksum["tag"] }
+    # Start where the tag ends, add the max length of the tag, add two for the `: `
+    digest_column = tag_column + tags.max_by(&:length).length + 2
+
     sha256_lines = bottle.checksums.map do |checksum|
-      generate_sha256_line(checksum["tag"], checksum["digest"], checksum["cellar"])
+      generate_sha256_line(checksum["tag"], checksum["digest"], checksum["cellar"], tag_column, digest_column)
     end
     erb_binding = bottle.instance_eval { binding }
     erb_binding.local_variable_set(:sha256_lines, sha256_lines)

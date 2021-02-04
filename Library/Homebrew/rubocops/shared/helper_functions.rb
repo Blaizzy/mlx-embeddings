@@ -113,7 +113,12 @@ module RuboCop
       def find_method_calls_by_name(node, method_name)
         return if node.nil?
 
-        node.each_child_node(:send).select { |method_node| method_name == method_node.method_name }
+        nodes = node.each_child_node(:send).select { |method_node| method_name == method_node.method_name }
+
+        # The top level node can be a method
+        nodes << node if node.send_type? && node.method_name == method_name
+
+        nodes
       end
 
       # Returns an array of method call nodes matching method_name in every descendant of node.

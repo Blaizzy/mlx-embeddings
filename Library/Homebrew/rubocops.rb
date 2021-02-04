@@ -12,6 +12,8 @@ require "rubocop-rails"
 require "rubocop-rspec"
 require "rubocop-sorbet"
 
+require "rubocops/unless_multiple_conditions"
+
 require "rubocops/formula_desc"
 require "rubocops/components_order"
 require "rubocops/components_redundancy"
@@ -32,6 +34,6 @@ require "rubocops/files"
 require "rubocops/keg_only"
 require "rubocops/version"
 require "rubocops/deprecate_disable"
-require "rubocops/unless_multiple_conditions"
+require "rubocops/bottle"
 
 require "rubocops/rubocop-cask"
