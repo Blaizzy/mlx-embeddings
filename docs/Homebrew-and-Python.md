@@ -13,6 +13,12 @@ Homebrew provided a `python@2` formula until the end of 2019, at which point it 
 ## Python 3.x
 Homebrew provides a formula for Python 3.x (`python@3.x`).
 
+**Important:** Homebrew does not guarantee that Python 3, once installed, remains the same version.
+In particular, Homebrew may choose to upgrade the minor or patch version of Python 3, which may in
+turn break any custom virtual environments that use the Homebrewed Python. Python developers
+who expect virtual environment stability should consider using a Python version manager rather than
+the Homebrewed Python.
+
 The executables are organised as follows:
 
 * `python3` points to Homebrew's Python 3.x (if installed)
