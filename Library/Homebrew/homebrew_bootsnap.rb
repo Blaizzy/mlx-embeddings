@@ -5,7 +5,9 @@ if !ENV["HOMEBREW_NO_BOOTSNAP"] &&
    ENV["HOMEBREW_BOOTSNAP"] &&
    # portable ruby doesn't play nice with bootsnap
    !ENV["HOMEBREW_FORCE_VENDOR_RUBY"] &&
-   (!ENV["HOMEBREW_MACOS_VERSION"] || ENV["HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH"])
+   (!ENV["HOMEBREW_MACOS_VERSION"] || ENV["HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH"]) &&
+   # Apple Silicon doesn't play nice with bootsnap
+   (ENV["HOMEBREW_PROCESSOR"] == "Intel")
 
   require "rubygems"
 
