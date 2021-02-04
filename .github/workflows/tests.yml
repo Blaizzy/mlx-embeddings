@@ -164,7 +164,8 @@ jobs:
           brew tests ${{ matrix.test-flags }}
         env:
           HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          HOMEBREW_CODECOV_TOKEN: 3ea0364c-80ce-47a3-9fba-93a940d4b5d7
+
+      - uses: codecov/codecov-action@v1
 
   test-default-formula-linux:
     name: test default formula (Linux)
