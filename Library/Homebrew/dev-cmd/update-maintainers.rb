@@ -45,7 +45,7 @@ module Homebrew
                   "\\1 is #{sentences[0]}.")
     content.gsub!(/(Homebrew's \[Technical Steering Committee.*) is .*\./,
                   "\\1 is #{sentences[1]}.")
-    content.gsub!(%r{(Homebrew/brew's Linux maintainers are).*\.},
+    content.gsub!(/(Homebrew's Linux maintainers are).*\./,
                   "\\1 #{sentences[2]}.")
     content.gsub!(/(Homebrew's other current maintainers are).*\./,
                   "\\1 #{sentences[3]}.")

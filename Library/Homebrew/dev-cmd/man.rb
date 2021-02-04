@@ -88,7 +88,7 @@ module Homebrew
       readme.read[/(Homebrew's \[Technical Steering Committee.*\.)/, 1]
             .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1')
     variables[:linux] =
-      readme.read[%r{(Homebrew/brew's Linux maintainers .*\.)}, 1]
+      readme.read[/(Homebrew's Linux maintainers .*\.)/, 1]
             .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1')
     variables[:maintainers] =
       readme.read[/(Homebrew's other current maintainers .*\.)/, 1]
