@@ -116,125 +116,125 @@ describe RuboCop::Cop::FormulaAudit::BottleOrder do
     RUBY
   end
 
-  it "reports and corrects arm bottles below intel bottles" do
-    expect_offense(<<~RUBY)
-      class Foo < Formula
-        url "https://brew.sh/foo-1.0.tgz"
+  # it "reports and corrects arm bottles below intel bottles" do
+  #   expect_offense(<<~RUBY)
+  #     class Foo < Formula
+  #       url "https://brew.sh/foo-1.0.tgz"
 
-        bottle do
-        ^^^^^^^^^ ARM bottles should be listed before Intel bottles
-          rebuild 4
-          sha256 big_sur: "faceb00c"
-          sha256 catalina: "deadbeef"
-          sha256 arm64_big_sur: "aaaaaaaa"
-        end
-      end
-    RUBY
+  #       bottle do
+  #       ^^^^^^^^^ ARM bottles should be listed before Intel bottles
+  #         rebuild 4
+  #         sha256 big_sur: "faceb00c"
+  #         sha256 catalina: "deadbeef"
+  #         sha256 arm64_big_sur: "aaaaaaaa"
+  #       end
+  #     end
+  #   RUBY
 
-    expect_correction(<<~RUBY)
-      class Foo < Formula
-        url "https://brew.sh/foo-1.0.tgz"
+  #   expect_correction(<<~RUBY)
+  #     class Foo < Formula
+  #       url "https://brew.sh/foo-1.0.tgz"
 
-        bottle do
-          rebuild 4
-          sha256 arm64_big_sur: "aaaaaaaa"
-          sha256 big_sur: "faceb00c"
-          sha256 catalina: "deadbeef"
-        end
-      end
-    RUBY
-  end
+  #       bottle do
+  #         rebuild 4
+  #         sha256 arm64_big_sur: "aaaaaaaa"
+  #         sha256 big_sur: "faceb00c"
+  #         sha256 catalina: "deadbeef"
+  #       end
+  #     end
+  #   RUBY
+  # end
 
-  it "reports and corrects multiple arm bottles below intel bottles" do
-    expect_offense(<<~RUBY)
-      class Foo < Formula
-        url "https://brew.sh/foo-1.0.tgz"
+  # it "reports and corrects multiple arm bottles below intel bottles" do
+  #   expect_offense(<<~RUBY)
+  #     class Foo < Formula
+  #       url "https://brew.sh/foo-1.0.tgz"
 
-        bottle do
-        ^^^^^^^^^ ARM bottles should be listed before Intel bottles
-          rebuild 4
-          sha256 big_sur: "faceb00c"
-          sha256 arm64_catalina: "aaaaaaaa"
-          sha256 catalina: "deadbeef"
-          sha256 arm64_big_sur: "aaaaaaaa"
-        end
-      end
-    RUBY
+  #       bottle do
+  #       ^^^^^^^^^ ARM bottles should be listed before Intel bottles
+  #         rebuild 4
+  #         sha256 big_sur: "faceb00c"
+  #         sha256 arm64_catalina: "aaaaaaaa"
+  #         sha256 catalina: "deadbeef"
+  #         sha256 arm64_big_sur: "aaaaaaaa"
+  #       end
+  #     end
+  #   RUBY
 
-    expect_correction(<<~RUBY)
-      class Foo < Formula
-        url "https://brew.sh/foo-1.0.tgz"
+  #   expect_correction(<<~RUBY)
+  #     class Foo < Formula
+  #       url "https://brew.sh/foo-1.0.tgz"
 
-        bottle do
-          rebuild 4
-          sha256 arm64_catalina: "aaaaaaaa"
-          sha256 arm64_big_sur: "aaaaaaaa"
-          sha256 big_sur: "faceb00c"
-          sha256 catalina: "deadbeef"
-        end
-      end
-    RUBY
-  end
+  #       bottle do
+  #         rebuild 4
+  #         sha256 arm64_catalina: "aaaaaaaa"
+  #         sha256 arm64_big_sur: "aaaaaaaa"
+  #         sha256 big_sur: "faceb00c"
+  #         sha256 catalina: "deadbeef"
+  #       end
+  #     end
+  #   RUBY
+  # end
 
-  it "reports and corrects arm bottles with cellars below intel bottles" do
-    expect_offense(<<~RUBY)
-      class Foo < Formula
-        url "https://brew.sh/foo-1.0.tgz"
+  # it "reports and corrects arm bottles with cellars below intel bottles" do
+  #   expect_offense(<<~RUBY)
+  #     class Foo < Formula
+  #       url "https://brew.sh/foo-1.0.tgz"
 
-        bottle do
-        ^^^^^^^^^ ARM bottles should be listed before Intel bottles
-          rebuild 4
-          sha256 cellar: "/usr/local/Cellar",  big_sur:        "faceb00c"
-          sha256                               catalina:       "deadbeef"
-          sha256 cellar: :any,                 arm64_big_sur:  "aaaaaaaa"
-          sha256 cellar: :any_skip_relocation, arm64_catalina: "aaaaaaaa"
-        end
-      end
-    RUBY
+  #       bottle do
+  #       ^^^^^^^^^ ARM bottles should be listed before Intel bottles
+  #         rebuild 4
+  #         sha256 cellar: "/usr/local/Cellar",  big_sur:        "faceb00c"
+  #         sha256                               catalina:       "deadbeef"
+  #         sha256 cellar: :any,                 arm64_big_sur:  "aaaaaaaa"
+  #         sha256 cellar: :any_skip_relocation, arm64_catalina: "aaaaaaaa"
+  #       end
+  #     end
+  #   RUBY
 
-    expect_correction(<<~RUBY)
-      class Foo < Formula
-        url "https://brew.sh/foo-1.0.tgz"
+  #   expect_correction(<<~RUBY)
+  #     class Foo < Formula
+  #       url "https://brew.sh/foo-1.0.tgz"
 
-        bottle do
-          rebuild 4
-          sha256 cellar: :any,                 arm64_big_sur:  "aaaaaaaa"
-          sha256 cellar: :any_skip_relocation, arm64_catalina: "aaaaaaaa"
-          sha256 cellar: "/usr/local/Cellar",  big_sur:        "faceb00c"
-          sha256                               catalina:       "deadbeef"
-        end
-      end
-    RUBY
-  end
+  #       bottle do
+  #         rebuild 4
+  #         sha256 cellar: :any,                 arm64_big_sur:  "aaaaaaaa"
+  #         sha256 cellar: :any_skip_relocation, arm64_catalina: "aaaaaaaa"
+  #         sha256 cellar: "/usr/local/Cellar",  big_sur:        "faceb00c"
+  #         sha256                               catalina:       "deadbeef"
+  #       end
+  #     end
+  #   RUBY
+  # end
 
-  it "reports and corrects arm bottles below intel bottles with old bottle syntax" do
-    expect_offense(<<~RUBY)
-      class Foo < Formula
-        url "https://brew.sh/foo-1.0.tgz"
+  # it "reports and corrects arm bottles below intel bottles with old bottle syntax" do
+  #   expect_offense(<<~RUBY)
+  #     class Foo < Formula
+  #       url "https://brew.sh/foo-1.0.tgz"
 
-        bottle do
-        ^^^^^^^^^ ARM bottles should be listed before Intel bottles
-          cellar :any
-          sha256 "faceb00c" => :big_sur
-          sha256 "aaaaaaaa" => :arm64_big_sur
-          sha256 "aaaaaaaa" => :arm64_catalina
-          sha256 "deadbeef" => :catalina
-        end
-      end
-    RUBY
+  #       bottle do
+  #       ^^^^^^^^^ ARM bottles should be listed before Intel bottles
+  #         cellar :any
+  #         sha256 "faceb00c" => :big_sur
+  #         sha256 "aaaaaaaa" => :arm64_big_sur
+  #         sha256 "aaaaaaaa" => :arm64_catalina
+  #         sha256 "deadbeef" => :catalina
+  #       end
+  #     end
+  #   RUBY
 
-    expect_correction(<<~RUBY)
-      class Foo < Formula
-        url "https://brew.sh/foo-1.0.tgz"
+  #   expect_correction(<<~RUBY)
+  #     class Foo < Formula
+  #       url "https://brew.sh/foo-1.0.tgz"
 
-        bottle do
-          cellar :any
-          sha256 "aaaaaaaa" => :arm64_big_sur
-          sha256 "aaaaaaaa" => :arm64_catalina
-          sha256 "faceb00c" => :big_sur
-          sha256 "deadbeef" => :catalina
-        end
-      end
-    RUBY
-  end
+  #       bottle do
+  #         cellar :any
+  #         sha256 "aaaaaaaa" => :arm64_big_sur
+  #         sha256 "aaaaaaaa" => :arm64_catalina
+  #         sha256 "faceb00c" => :big_sur
+  #         sha256 "deadbeef" => :catalina
+  #       end
+  #     end
+  #   RUBY
+  # end
 end
