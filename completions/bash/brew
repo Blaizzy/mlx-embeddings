@@ -2047,6 +2047,7 @@ _brew_untap() {
     -*)
       __brewcomp "
       --debug
+      --force
       --help
       --quiet
       --verbose
