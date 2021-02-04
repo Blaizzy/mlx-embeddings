@@ -590,9 +590,12 @@ for temporarily disabling a formula:
 Unpin *`formula`*, allowing them to be upgraded by `brew upgrade` *`formula`*.
 See also `pin`.
 
-### `untap` *`tap`* [...]
+### `untap` [*`--force`*] *`tap`* [...]
 
 Remove a tapped formula repository.
+
+* `-f`, `--force`:
+  Untap even if formulae or casks from this tap are currently installed.
 
 ### `update` [*`options`*]
 

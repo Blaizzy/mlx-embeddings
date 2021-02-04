@@ -793,8 +793,12 @@ List files which would be unlinked without actually unlinking or deleting any fi
 .SS "\fBunpin\fR \fIinstalled_formula\fR [\.\.\.]"
 Unpin \fIformula\fR, allowing them to be upgraded by \fBbrew upgrade\fR \fIformula\fR\. See also \fBpin\fR\.
 .
-.SS "\fBuntap\fR \fItap\fR [\.\.\.]"
+.SS "\fBuntap\fR [\fI\-\-force\fR] \fItap\fR [\.\.\.]"
 Remove a tapped formula repository\.
+.
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+Untap even if formulae or casks from this tap are currently installed\.
 .
 .SS "\fBupdate\fR [\fIoptions\fR]"
 Fetch the newest version of Homebrew and all formulae from GitHub using \fBgit\fR(1) and perform any necessary migrations\.
