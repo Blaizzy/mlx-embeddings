@@ -50,6 +50,17 @@ describe "brew bottle" do
     end
 
     before do
+      Pathname("#{TEST_TMPDIR}/testball-1.0.arm64_big_sur.bottle.json").write stub_hash(
+        name:           "testball",
+        version:        "1.0",
+        path:           "#{core_tap.path}/Formula/testball.rb",
+        cellar:         "any_skip_relocation",
+        os:             "arm64_big_sur",
+        filename:       "testball-1.0.arm64_big_sur.bottle.tar.gz",
+        local_filename: "testball--1.0.arm64_big_sur.bottle.tar.gz",
+        sha256:         "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149",
+      )
+
       Pathname("#{TEST_TMPDIR}/testball-1.0.big_sur.bottle.json").write stub_hash(
         name:           "testball",
         version:        "1.0",
@@ -74,6 +85,7 @@ describe "brew bottle" do
     end
 
     after do
+      FileUtils.rm_f "#{TEST_TMPDIR}/testball-1.0.arm64_big_sur.bottle.json"
       FileUtils.rm_f "#{TEST_TMPDIR}/testball-1.0.catalina.bottle.json"
       FileUtils.rm_f "#{TEST_TMPDIR}/testball-1.0.big_sur.bottle.json"
     end
@@ -90,14 +102,16 @@ describe "brew bottle" do
         brew "bottle",
              "--merge",
              "--write",
+             "#{TEST_TMPDIR}/testball-1.0.arm64_big_sur.bottle.json",
              "#{TEST_TMPDIR}/testball-1.0.big_sur.bottle.json",
              "#{TEST_TMPDIR}/testball-1.0.catalina.bottle.json"
       }.to output(<<~EOS).to_stdout
         ==> testball
           bottle do
             root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
-            sha256 cellar: :any_skip_relocation, big_sur:  "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
-            sha256 cellar: :any_skip_relocation, catalina: "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
+            sha256 cellar: :any_skip_relocation, arm64_big_sur: "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149"
+            sha256 cellar: :any_skip_relocation, big_sur:       "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
+            sha256 cellar: :any_skip_relocation, catalina:      "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
           end
       EOS
 
@@ -110,8 +124,9 @@ describe "brew bottle" do
 
           bottle do
             root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
-            sha256 cellar: :any_skip_relocation, big_sur:  "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
-            sha256 cellar: :any_skip_relocation, catalina: "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
+            sha256 cellar: :any_skip_relocation, arm64_big_sur: "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149"
+            sha256 cellar: :any_skip_relocation, big_sur:       "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
+            sha256 cellar: :any_skip_relocation, catalina:      "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
           end
 
           option "with-foo", "Build with foo"
@@ -141,8 +156,9 @@ describe "brew bottle" do
           bottle do
             root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
             cellar :any_skip_relocation
-            sha256 big_sur: "6b276491297d4052538bd2fd22d5129389f27d90a98f831987236a5b90511b98"
-            sha256 catalina: "16cf230afdfcb6306c208d169549cf8773c831c8653d2c852315a048960d7e72"
+            sha256 "6b276491297d4052538bd2fd22d5129389f27d90a98f831987236a5b90511b98" => :big_sur
+            sha256 "c3c650d75f5188f5d6edd351dd3215e141b73b8ec1cf9144f30e39cbc45de72e" => :arm64_big_sur
+            sha256 "16cf230afdfcb6306c208d169549cf8773c831c8653d2c852315a048960d7e72" => :catalina
           end
         EOS
         system "git", "add", "--all"
@@ -153,14 +169,16 @@ describe "brew bottle" do
         brew "bottle",
              "--merge",
              "--write",
+             "#{TEST_TMPDIR}/testball-1.0.arm64_big_sur.bottle.json",
              "#{TEST_TMPDIR}/testball-1.0.big_sur.bottle.json",
              "#{TEST_TMPDIR}/testball-1.0.catalina.bottle.json"
       }.to output(<<~EOS).to_stdout
         ==> testball
           bottle do
             root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
-            sha256 cellar: :any_skip_relocation, big_sur:  "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
-            sha256 cellar: :any_skip_relocation, catalina: "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
+            sha256 cellar: :any_skip_relocation, arm64_big_sur: "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149"
+            sha256 cellar: :any_skip_relocation, big_sur:       "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
+            sha256 cellar: :any_skip_relocation, catalina:      "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
           end
       EOS
 
@@ -175,8 +193,9 @@ describe "brew bottle" do
 
           bottle do
             root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
-            sha256 cellar: :any_skip_relocation, big_sur:  "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
-            sha256 cellar: :any_skip_relocation, catalina: "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
+            sha256 cellar: :any_skip_relocation, arm64_big_sur: "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149"
+            sha256 cellar: :any_skip_relocation, big_sur:       "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
+            sha256 cellar: :any_skip_relocation, catalina:      "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
           end
 
           def install
@@ -203,8 +222,9 @@ describe "brew bottle" do
 
           bottle do
             root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
-            sha256 cellar: :any_skip_relocation, big_sur:  "6b276491297d4052538bd2fd22d5129389f27d90a98f831987236a5b90511b98"
-            sha256 cellar: :any_skip_relocation, catalina: "16cf230afdfcb6306c208d169549cf8773c831c8653d2c852315a048960d7e72"
+            sha256 cellar: :any_skip_relocation, arm64_big_sur: "c3c650d75f5188f5d6edd351dd3215e141b73b8ec1cf9144f30e39cbc45de72e"
+            sha256 cellar: :any_skip_relocation, big_sur:       "6b276491297d4052538bd2fd22d5129389f27d90a98f831987236a5b90511b98"
+            sha256 cellar: :any_skip_relocation, catalina:      "16cf230afdfcb6306c208d169549cf8773c831c8653d2c852315a048960d7e72"
           end
         EOS
         system "git", "add", "--all"
@@ -215,14 +235,16 @@ describe "brew bottle" do
         brew "bottle",
              "--merge",
              "--write",
+             "#{TEST_TMPDIR}/testball-1.0.arm64_big_sur.bottle.json",
              "#{TEST_TMPDIR}/testball-1.0.big_sur.bottle.json",
              "#{TEST_TMPDIR}/testball-1.0.catalina.bottle.json"
       }.to output(<<~EOS).to_stdout
         ==> testball
           bottle do
             root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
-            sha256 cellar: :any_skip_relocation, big_sur:  "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
-            sha256 cellar: :any_skip_relocation, catalina: "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
+            sha256 cellar: :any_skip_relocation, arm64_big_sur: "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149"
+            sha256 cellar: :any_skip_relocation, big_sur:       "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
+            sha256 cellar: :any_skip_relocation, catalina:      "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
           end
       EOS
 
@@ -237,8 +259,9 @@ describe "brew bottle" do
 
           bottle do
             root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
-            sha256 cellar: :any_skip_relocation, big_sur:  "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
-            sha256 cellar: :any_skip_relocation, catalina: "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
+            sha256 cellar: :any_skip_relocation, arm64_big_sur: "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149"
+            sha256 cellar: :any_skip_relocation, big_sur:       "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
+            sha256 cellar: :any_skip_relocation, catalina:      "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
           end
 
           def install
@@ -271,6 +294,7 @@ describe "brew bottle" do
              "--merge",
              "--write",
              "--keep-old",
+             "#{TEST_TMPDIR}/testball-1.0.arm64_big_sur.bottle.json",
              "#{TEST_TMPDIR}/testball-1.0.big_sur.bottle.json",
              "#{TEST_TMPDIR}/testball-1.0.catalina.bottle.json"
       }.to output("Error: `--keep-old` was passed but there was no existing bottle block!\n").to_stderr
@@ -296,15 +320,17 @@ describe "brew bottle" do
              "--merge",
              "--write",
              "--keep-old",
+             "#{TEST_TMPDIR}/testball-1.0.arm64_big_sur.bottle.json",
              "#{TEST_TMPDIR}/testball-1.0.big_sur.bottle.json",
              "#{TEST_TMPDIR}/testball-1.0.catalina.bottle.json"
       }.to output(<<~EOS).to_stdout
         ==> testball
           bottle do
             root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
-            sha256 cellar: :any_skip_relocation, big_sur:     "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
-            sha256 cellar: :any_skip_relocation, catalina:    "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
-            sha256 cellar: :any,                 high_sierra: "6971b6eebf4c00eaaed72a1104a49be63861eabc95d679a0c84040398e320059"
+            sha256 cellar: :any_skip_relocation, arm64_big_sur: "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149"
+            sha256 cellar: :any_skip_relocation, big_sur:       "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
+            sha256 cellar: :any_skip_relocation, catalina:      "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
+            sha256 cellar: :any,                 high_sierra:   "6971b6eebf4c00eaaed72a1104a49be63861eabc95d679a0c84040398e320059"
           end
       EOS
 
@@ -319,9 +345,10 @@ describe "brew bottle" do
 
           bottle do
             root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
-            sha256 cellar: :any_skip_relocation, big_sur:     "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
-            sha256 cellar: :any_skip_relocation, catalina:    "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
-            sha256 cellar: :any,                 high_sierra: "6971b6eebf4c00eaaed72a1104a49be63861eabc95d679a0c84040398e320059"
+            sha256 cellar: :any_skip_relocation, arm64_big_sur: "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149"
+            sha256 cellar: :any_skip_relocation, big_sur:       "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
+            sha256 cellar: :any_skip_relocation, catalina:      "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
+            sha256 cellar: :any,                 high_sierra:   "6971b6eebf4c00eaaed72a1104a49be63861eabc95d679a0c84040398e320059"
           end
 
           def install
@@ -360,15 +387,17 @@ describe "brew bottle" do
              "--merge",
              "--write",
              "--keep-old",
+             "#{TEST_TMPDIR}/testball-1.0.arm64_big_sur.bottle.json",
              "#{TEST_TMPDIR}/testball-1.0.big_sur.bottle.json",
              "#{TEST_TMPDIR}/testball-1.0.catalina.bottle.json"
       }.to output(<<~EOS).to_stdout
         ==> testball
           bottle do
             root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
-            sha256 cellar: :any_skip_relocation, big_sur:     "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
-            sha256 cellar: :any_skip_relocation, catalina:    "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
-            sha256 cellar: :any,                 high_sierra: "6971b6eebf4c00eaaed72a1104a49be63861eabc95d679a0c84040398e320059"
+            sha256 cellar: :any_skip_relocation, arm64_big_sur: "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149"
+            sha256 cellar: :any_skip_relocation, big_sur:       "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
+            sha256 cellar: :any_skip_relocation, catalina:      "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
+            sha256 cellar: :any,                 high_sierra:   "6971b6eebf4c00eaaed72a1104a49be63861eabc95d679a0c84040398e320059"
           end
       EOS
 
@@ -383,9 +412,10 @@ describe "brew bottle" do
 
           bottle do
             root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
-            sha256 cellar: :any_skip_relocation, big_sur:     "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
-            sha256 cellar: :any_skip_relocation, catalina:    "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
-            sha256 cellar: :any,                 high_sierra: "6971b6eebf4c00eaaed72a1104a49be63861eabc95d679a0c84040398e320059"
+            sha256 cellar: :any_skip_relocation, arm64_big_sur: "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149"
+            sha256 cellar: :any_skip_relocation, big_sur:       "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
+            sha256 cellar: :any_skip_relocation, catalina:      "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
+            sha256 cellar: :any,                 high_sierra:   "6971b6eebf4c00eaaed72a1104a49be63861eabc95d679a0c84040398e320059"
           end
 
           def install
