@@ -6105,80 +6105,6 @@ module CodeRay
   def self.scanner(lang, options=T.unsafe(nil), &block); end
 end
 
-module Codecov
-  VERSION = ::T.let(nil, ::T.untyped)
-end
-
-module Codecov::SimpleCov
-end
-
-class Codecov::SimpleCov::Formatter
-  def format(report); end
-  RESULT_FILE_NAME = ::T.let(nil, ::T.untyped)
-end
-
-class Codecov::SimpleCov::Formatter
-end
-
-module Codecov::SimpleCov
-end
-
-class Codecov::Uploader
-  APPVEYOR = ::T.let(nil, ::T.untyped)
-  AZUREPIPELINES = ::T.let(nil, ::T.untyped)
-  BITBUCKET = ::T.let(nil, ::T.untyped)
-  BITRISE = ::T.let(nil, ::T.untyped)
-  BUILDKITE = ::T.let(nil, ::T.untyped)
-  CIRCLE = ::T.let(nil, ::T.untyped)
-  CODEBUILD = ::T.let(nil, ::T.untyped)
-  CODESHIP = ::T.let(nil, ::T.untyped)
-  DRONEIO = ::T.let(nil, ::T.untyped)
-  GITHUB = ::T.let(nil, ::T.untyped)
-  GITLAB = ::T.let(nil, ::T.untyped)
-  HEROKU = ::T.let(nil, ::T.untyped)
-  JENKINS = ::T.let(nil, ::T.untyped)
-  RECOGNIZED_CIS = ::T.let(nil, ::T.untyped)
-  SEMAPHORE = ::T.let(nil, ::T.untyped)
-  SHIPPABLE = ::T.let(nil, ::T.untyped)
-  SOLANO = ::T.let(nil, ::T.untyped)
-  TEAMCITY = ::T.let(nil, ::T.untyped)
-  TRAVIS = ::T.let(nil, ::T.untyped)
-  WERCKER = ::T.let(nil, ::T.untyped)
-end
-
-class Codecov::Uploader
-  def self.black(str); end
-
-  def self.build_params(ci); end
-
-  def self.detect_ci(); end
-
-  def self.display_header(); end
-
-  def self.green(str); end
-
-  def self.gzip_report(report); end
-
-  def self.handle_report_response(report); end
-
-  def self.net_blockers(switch); end
-
-  def self.red(str); end
-
-  def self.retry_request(req, https); end
-
-  def self.upload(report, disable_net_blockers=T.unsafe(nil)); end
-
-  def self.upload_to_codecov(ci, report); end
-
-  def self.upload_to_v2(url, report, query, query_without_token); end
-
-  def self.upload_to_v4(url, report, query, query_without_token); end
-end
-
-module Codecov
-end
-
 class CompilerSelector::Compiler
   def self.[](*_); end
 
@@ -28304,13 +28230,6 @@ class SimpleCov::Filter
 end
 
 module SimpleCov::Formatter
-end
-
-class SimpleCov::Formatter::Codecov
-  def format(result, disable_net_blockers=T.unsafe(nil)); end
-end
-
-class SimpleCov::Formatter::Codecov
 end
 
 class SimpleCov::Formatter::HTMLFormatter
