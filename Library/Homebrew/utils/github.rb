@@ -24,6 +24,11 @@ module GitHub
   ALL_SCOPES_URL = Formatter.url(
     "https://github.com/settings/tokens/new?scopes=#{ALL_SCOPES.join(",")}&description=Homebrew",
   ).freeze
+  CREATE_GITHUB_PAT_MESSAGE = <<~EOS
+    Create a GitHub personal access token:
+        #{ALL_SCOPES_URL}
+      #{Utils::Shell.set_variable_in_profile("HOMEBREW_GITHUB_API_TOKEN", "your_token_here")}
+  EOS
 
   # Generic API error.
   class Error < RuntimeError
@@ -76,6 +81,15 @@ module GitHub
         EOS
       end
       super message.freeze
+    end
+  end
+
+  # Error when the user has no GitHub API credentials set at all (macOS keychain or envvar).
+  class MissingAuthenticationError < Error
+    def initialize
+      message = +"No GitHub credentials found in Keychain or environment.\n"
+      message << CREATE_GITHUB_PAT_MESSAGE
+      super message
     end
   end
 
@@ -277,6 +291,8 @@ module GitHub
     when "401", "403"
       raise AuthenticationFailedError, message
     when "404"
+      raise MissingAuthenticationError if api_credentials_type == :none && scopes.present?
+
       raise HTTPNotFoundError, message
     when "422"
       errors = json&.[]("errors") || []
