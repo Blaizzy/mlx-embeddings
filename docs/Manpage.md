@@ -1384,6 +1384,10 @@ Update SPDX license data in the Homebrew repository.
 * `--fail-if-not-changed`:
   Return a failing status code if current license data's version is the same as the upstream. This can be used to notify CI when the SPDX license data is out of date.
 
+### `update-maintainers`
+
+Update the list of maintainers in the `Homebrew/brew` README.
+
 ### `update-python-resources` [*`options`*] *`formula`* [...]
 
 Update versions for PyPI resource blocks in *`formula`*.

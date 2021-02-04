@@ -1439,6 +1439,13 @@ __fish_brew_complete_arg 'update-license-data' -l quiet -d 'Make some output mor
 __fish_brew_complete_arg 'update-license-data' -l verbose -d 'Make some output more verbose'
 
 
+__fish_brew_complete_cmd 'update-maintainers' 'Update the list of maintainers in the `Homebrew/brew` README'
+__fish_brew_complete_arg 'update-maintainers' -l debug -d 'Display any debugging information'
+__fish_brew_complete_arg 'update-maintainers' -l help -d 'Show this message'
+__fish_brew_complete_arg 'update-maintainers' -l quiet -d 'Make some output more quiet'
+__fish_brew_complete_arg 'update-maintainers' -l verbose -d 'Make some output more verbose'
+
+
 __fish_brew_complete_cmd 'update-python-resources' 'Update versions for PyPI resource blocks in formula'
 __fish_brew_complete_arg 'update-python-resources' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'update-python-resources' -l exclude-packages -d 'Exclude these packages when finding resources'
