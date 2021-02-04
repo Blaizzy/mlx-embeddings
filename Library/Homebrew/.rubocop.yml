@@ -37,7 +37,7 @@ Metrics/PerceivedComplexity:
 Metrics/MethodLength:
   Max: 260
 Metrics/ModuleLength:
-  Max: 600
+  Max: 650
   Exclude:
     - "test/**/*"
 
