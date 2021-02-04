@@ -1,5 +1,5 @@
 fixes:
-  - "::Library/Homebrew/"
+  - "/home/linuxbrew/.linuxbrew/Homebrew/::"
 coverage:
   round: nearest
   status:
