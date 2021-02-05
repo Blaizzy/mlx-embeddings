@@ -577,7 +577,7 @@ module GitHub
     members = []
 
     (1..API_MAX_PAGES).each do |page|
-      result = open_api(url + "&page=#{page}").map { |m| m["login"] }
+      result = open_api("#{url}&page=#{page}").map { |member| member["login"] }
       members.concat(result)
 
       return members if result.length < per_page
@@ -587,6 +587,11 @@ module GitHub
   def members_by_team(org, team)
     query = <<~EOS
         { organization(login: "#{org}") {
+          teams(first: 100) {
+            nodes {
+              ... on Team { name }
+            }
+          }
           team(slug: "#{team}") {
             members(first: 100) {
               nodes {
@@ -598,7 +603,14 @@ module GitHub
       }
     EOS
     result = open_graphql(query, scopes: ["read:org", "user"])
-    result["organization"]["team"]["members"]["nodes"].map { |m| [m["login"], m["name"]] }.to_h
+
+    if result["organization"]["teams"]["nodes"].blank?
+      raise Error,
+            "Your token needs the 'read:org' scope to access this API"
+    end
+    raise Error, "The team #{org}/#{team} does not exist" if result["organization"]["team"].blank?
+
+    result["organization"]["team"]["members"]["nodes"].map { |member| [member["login"], member["name"]] }.to_h
   end
 
   def sponsors_by_tier(user)

@@ -26,29 +26,32 @@ module Homebrew
     # We assume that only public members wish to be included in the README
     public_members = GitHub.public_member_usernames("Homebrew")
 
-    plc = GitHub.members_by_team("Homebrew", "plc")
-    tsc = GitHub.members_by_team("Homebrew", "tsc")
-    linux = GitHub.members_by_team("Homebrew", "linux")
-    other = GitHub.members_by_team("Homebrew", "maintainers")
-    other.except!(*[plc, tsc, linux].map(&:keys).flatten.uniq)
+    members = {
+      plc:   GitHub.members_by_team("Homebrew", "plc"),
+      tsc:   GitHub.members_by_team("Homebrew", "tsc"),
+      linux: GitHub.members_by_team("Homebrew", "linux"),
+    }
+    members[:other] = GitHub.members_by_team("Homebrew", "maintainers")
+                            .except(*members.values.map(&:keys).flatten.uniq)
 
-    sentences = [plc, tsc, linux, other].map do |h|
-      h.slice!(*public_members)
-      h.each { |k, v| h[k] = "[#{v}](https://github.com/#{k})" }
-      h.values.sort.to_sentence
+    sentences = {}
+    members.each do |group, hash|
+      hash.slice!(*public_members)
+      hash.each { |login, name| hash[login] = "[#{name}](https://github.com/#{login})" }
+      sentences[group] = hash.values.sort.to_sentence
     end
 
     readme = HOMEBREW_REPOSITORY/"README.md"
 
     content = readme.read
     content.gsub!(/(Homebrew's \[Project Leadership Committee.*) is .*\./,
-                  "\\1 is #{sentences[0]}.")
+                  "\\1 is #{sentences[:plc]}.")
     content.gsub!(/(Homebrew's \[Technical Steering Committee.*) is .*\./,
-                  "\\1 is #{sentences[1]}.")
+                  "\\1 is #{sentences[:tsc]}.")
     content.gsub!(/(Homebrew's Linux maintainers are).*\./,
-                  "\\1 #{sentences[2]}.")
+                  "\\1 #{sentences[:linux]}.")
     content.gsub!(/(Homebrew's other current maintainers are).*\./,
-                  "\\1 #{sentences[3]}.")
+                  "\\1 #{sentences[:other]}.")
 
     File.open(readme, "w+") { |f| f.write(content) }
 

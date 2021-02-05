@@ -36,8 +36,9 @@ Metrics/PerceivedComplexity:
   Max: 90
 Metrics/MethodLength:
   Max: 260
+# TODO: Reduce to 600 after refactoring utils/github
 Metrics/ModuleLength:
-  Max: 650
+  Max: 620
   Exclude:
     - "test/**/*"
 
