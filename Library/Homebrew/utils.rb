@@ -111,6 +111,22 @@ module Kernel
     puts sput
   end
 
+  def ohai_stdout_or_stderr(message)
+    if $stdout.tty?
+      ohai(message)
+    else
+      $stderr.puts(ohai_title(message))
+    end
+  end
+
+  def puts_stdout_or_stderr(message)
+    if $stdout.tty?
+      puts(message)
+    else
+      $stderr.puts(message)
+    end
+  end
+
   def odebug(title, *sput, always_display: false)
     debug = if respond_to?(:debug)
       debug?
