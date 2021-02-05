@@ -24,6 +24,11 @@ module GitHub
   ALL_SCOPES_URL = Formatter.url(
     "https://github.com/settings/tokens/new?scopes=#{ALL_SCOPES.join(",")}&description=Homebrew",
   ).freeze
+  CREATE_GITHUB_PAT_MESSAGE = <<~EOS
+    Create a GitHub personal access token:
+        #{ALL_SCOPES_URL}
+      #{Utils::Shell.set_variable_in_profile("HOMEBREW_GITHUB_API_TOKEN", "your_token_here")}
+  EOS
 
   # Generic API error.
   class Error < RuntimeError
@@ -44,9 +49,8 @@ module GitHub
       @github_message = github_message
       super <<~EOS
         GitHub API Error: #{github_message}
-        Try again in #{pretty_ratelimit_reset(reset)}, or create a personal access token:
-          #{ALL_SCOPES_URL}
-        #{Utils::Shell.set_variable_in_profile("HOMEBREW_GITHUB_API_TOKEN", "your_token_here")}
+        Try again in #{pretty_ratelimit_reset(reset)}, or:
+        #{CREATE_GITHUB_PAT_MESSAGE}
       EOS
     end
 
@@ -70,12 +74,19 @@ module GitHub
           The GitHub credentials in the macOS keychain may be invalid.
           Clear them with:
             printf "protocol=https\\nhost=github.com\\n" | git credential-osxkeychain erase
-          Or create a personal access token:
-            #{ALL_SCOPES_URL}
-          #{Utils::Shell.set_variable_in_profile("HOMEBREW_GITHUB_API_TOKEN", "your_token_here")}
+          #{CREATE_GITHUB_PAT_MESSAGE}
         EOS
       end
       super message.freeze
+    end
+  end
+
+  # Error when the user has no GitHub API credentials set at all (macOS keychain or envvar).
+  class MissingAuthenticationError < Error
+    def initialize
+      message = +"No GitHub credentials found in macOS Keychain or environment.\n"
+      message << CREATE_GITHUB_PAT_MESSAGE
+      super message
     end
   end
 
@@ -168,9 +179,7 @@ module GitHub
       Your #{what} credentials do not have sufficient scope!
       Scopes required: #{needed_scopes}
       Scopes present:  #{credentials_scopes}
-      Create a personal access token:
-        #{ALL_SCOPES_URL}
-      #{Utils::Shell.set_variable_in_profile("HOMEBREW_GITHUB_API_TOKEN", "your_token_here")}
+      #{CREATE_GITHUB_PAT_MESSAGE}
     EOS
   end
 
@@ -277,6 +286,8 @@ module GitHub
     when "401", "403"
       raise AuthenticationFailedError, message
     when "404"
+      raise MissingAuthenticationError if api_credentials_type == :none && scopes.present?
+
       raise HTTPNotFoundError, message
     when "422"
       errors = json&.[]("errors") || []
