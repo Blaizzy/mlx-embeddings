@@ -111,15 +111,16 @@ module Kernel
     puts sput
   end
 
-  def ohai_stdout_or_stderr(message)
+  def ohai_stdout_or_stderr(message, *sput)
     if $stdout.tty?
-      ohai(message)
+      ohai(message, *sput)
     else
       $stderr.puts(ohai_title(message))
+      $stderr.puts(sput)
     end
   end
 
-  def puts_stdout_or_stderr(message)
+  def puts_stdout_or_stderr(*message)
     if $stdout.tty?
       puts(message)
     else
