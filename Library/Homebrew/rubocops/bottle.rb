@@ -167,15 +167,15 @@ module RuboCop
 
           return if sha256_order(sha256_nodes) == sha256_order(arm64_nodes + intel_nodes)
 
-          # offending_node(bottle_node)
-          # problem "ARM bottles should be listed before Intel bottles" do |corrector|
-          #   lines = ["bottle do"]
-          #   lines += non_sha256_nodes.map { |node| "    #{node.source}" }
-          #   lines += arm64_nodes.map { |node| "    #{node.source}" }
-          #   lines += intel_nodes.map { |node| "    #{node.source}" }
-          #   lines << "  end"
-          #   corrector.replace(bottle_node.source_range, lines.join("\n"))
-          # end
+          offending_node(bottle_node)
+          problem "ARM bottles should be listed before Intel bottles" do |corrector|
+            lines = ["bottle do"]
+            lines += non_sha256_nodes.map { |node| "    #{node.source}" }
+            lines += arm64_nodes.map { |node| "    #{node.source}" }
+            lines += intel_nodes.map { |node| "    #{node.source}" }
+            lines << "  end"
+            corrector.replace(bottle_node.source_range, lines.join("\n"))
+          end
         end
 
         def sha256_order(nodes)
