@@ -169,6 +169,7 @@ module Cask
     def to_h
       {
         "token"          => token,
+        "full_token"     => "#{tap.name}/#{token}",
         "name"           => name,
         "desc"           => desc,
         "homepage"       => homepage,
