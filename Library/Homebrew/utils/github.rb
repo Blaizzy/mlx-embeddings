@@ -84,7 +84,7 @@ module GitHub
   # Error when the user has no GitHub API credentials set at all (macOS keychain or envvar).
   class MissingAuthenticationError < Error
     def initialize
-      message = +"No GitHub credentials found in Keychain or environment.\n"
+      message = +"No GitHub credentials found in macOS Keychain or environment.\n"
       message << CREATE_GITHUB_PAT_MESSAGE
       super message
     end
