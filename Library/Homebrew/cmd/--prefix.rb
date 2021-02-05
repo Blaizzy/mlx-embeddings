@@ -88,6 +88,8 @@ module Homebrew
     share/pypy3/*
     share/info/dir
     share/man/whatis
+    share/mime/*
+    texlive/*
   ].freeze
 
   def list_unbrewed
