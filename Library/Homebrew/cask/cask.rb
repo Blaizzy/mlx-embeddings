@@ -170,6 +170,7 @@ module Cask
       {
         "token"          => token,
         "full_token"     => "#{tap.name}/#{token}",
+        "tap"            => tap.name,
         "name"           => name,
         "desc"           => desc,
         "homepage"       => homepage,
