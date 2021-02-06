@@ -352,11 +352,11 @@ module Homebrew
 
       case formula_or_cask
       when Formula
-        urls << formula_or_cask.head.url if formula_or_cask.head
         if formula_or_cask.stable
           urls << formula_or_cask.stable.url
           urls.concat(formula_or_cask.stable.mirrors)
         end
+        urls << formula_or_cask.head.url if formula_or_cask.head
         urls << formula_or_cask.homepage if formula_or_cask.homepage
       when Cask::Cask
         urls << formula_or_cask.appcast.to_s if formula_or_cask.appcast
