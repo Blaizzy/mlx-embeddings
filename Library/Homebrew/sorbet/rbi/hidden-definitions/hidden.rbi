@@ -3062,6 +3062,8 @@ module Bootsnap
 
   def self.instrumentation=(callback); end
 
+  def self.iseq_cache_supported?(); end
+
   def self.log!(); end
 
   def self.logger(); end
