@@ -64,6 +64,7 @@ module Homebrew
           check_clt_minimum_version
           check_if_xcode_needs_clt_installed
           check_if_supported_sdk_available
+          check_broken_sdks
         ].freeze
       end
 
@@ -425,7 +426,7 @@ module Homebrew
 
         source = if locator.source == :clt
           update_instructions = MacOS::CLT.update_instructions
-          "CLT"
+          "Command Line Tools (CLT)"
         else
           update_instructions = MacOS::Xcode.update_instructions
           "Xcode"
@@ -436,6 +437,40 @@ module Homebrew
           It is either outdated or was modified.
           Please update your #{source} or delete it if no updates are available.
           #{update_instructions}
+        EOS
+      end
+
+      # The CLT 10.x -> 11.x upgrade process on 10.14 contained a bug which broke the SDKs.
+      # Notably, MacOSX10.14.sdk would indirectly symlink to MacOSX10.15.sdk.
+      # This diagnostic was introduced to check for this and recommend a full reinstall.
+      def check_broken_sdks
+        locator = MacOS.sdk_locator
+
+        return if locator.all_sdks.all? do |sdk|
+          path_version = sdk.path.basename.to_s[MacOS::SDK::VERSIONED_SDK_REGEX, 1]
+          next true if path_version.blank?
+
+          sdk.version == MacOS::Version.new(path_version).strip_patch
+        end
+
+        if locator.source == :clt
+          source = "Command Line Tools (CLT)"
+          path_to_remove = MacOS::CLT::PKG_PATH
+          installation_instructions = MacOS::CLT.installation_instructions
+        else
+          source = "Xcode"
+          path_to_remove = MacOS::Xcode.bundle_path
+          installation_instructions = MacOS::Xcode.installation_instructions
+        end
+
+        <<~EOS
+          The contents of the SDKs in your #{source} installation do not match the SDK folder names.
+          A clean reinstall of #{source} should fix this.
+
+          Remove the broken installation before reinstalling:
+            sudo rm -rf #{path_to_remove}
+
+          #{installation_instructions}
         EOS
       end
     end
