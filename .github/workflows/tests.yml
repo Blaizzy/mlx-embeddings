@@ -40,11 +40,6 @@ jobs:
           brew install vale
           vale docs/
 
-      - name: Lint Dockerfile
-        run: |
-          brew install hadolint
-          hadolint Dockerfile
-
   tap-syntax:
     name: tap syntax (Linux)
     if: startsWith(github.repository, 'Homebrew/')
