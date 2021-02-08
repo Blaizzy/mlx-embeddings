@@ -1766,6 +1766,7 @@ class Formula
     hsh = {
       "name"                     => name,
       "full_name"                => full_name,
+      "tap"                      => tap&.name,
       "oldname"                  => oldname,
       "aliases"                  => aliases.sort,
       "versioned_formulae"       => versioned_formulae.map(&:name),
