@@ -1,6 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "compilers"
 require "os/linux/glibc"
 require "system_command"
 
@@ -46,7 +47,7 @@ module SystemConfig
       out.puts "Host glibc: #{host_glibc_version}"
       out.puts "/usr/bin/gcc: #{host_gcc_version}"
       out.puts "/usr/bin/ruby: #{host_ruby_version}" if RUBY_PATH != HOST_RUBY_PATH
-      ["glibc", "gcc", "xorg"].each do |f|
+      ["glibc", CompilerSelector.preferred_gcc, "xorg"].each do |f|
         out.puts "#{f}: #{formula_linked_version(f)}"
       end
     end
