@@ -97,10 +97,17 @@ module Stdenv
     old
   end
 
-  %w[O3 O2 O1 O0 Os].each do |opt|
+  %w[O3 O2 Os].each do |opt|
     define_method opt do
       odisabled "ENV.#{opt}"
 
+      send(:remove_from_cflags, /-O./)
+      send(:append_to_cflags, "-#{opt}")
+    end
+  end
+
+  %w[O1 O0].each do |opt|
+    define_method opt do
       send(:remove_from_cflags, /-O./)
       send(:append_to_cflags, "-#{opt}")
     end

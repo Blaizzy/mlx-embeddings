@@ -238,7 +238,6 @@ module SharedEnvExtension
 
   # Snow Leopard defines an NCURSES value the opposite of most distros.
   # @see https://bugs.python.org/issue6848
-  # Currently only used by aalib in core.
   sig { void }
   def ncurses_define
     odeprecated "ENV.ncurses_define"
