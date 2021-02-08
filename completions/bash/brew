@@ -2108,6 +2108,21 @@ _brew_update_license_data() {
   esac
 }
 
+_brew_update_maintainers() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "$cur" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+  esac
+}
+
 _brew_update_python_resources() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
@@ -2382,6 +2397,7 @@ _brew() {
     up) _brew_up ;;
     update) _brew_update ;;
     update-license-data) _brew_update_license_data ;;
+    update-maintainers) _brew_update_maintainers ;;
     update-python-resources) _brew_update_python_resources ;;
     update-report) _brew_update_report ;;
     update-test) _brew_update_test ;;
