@@ -78,17 +78,19 @@ module OS
         end
       end
 
+      sig { returns(T.self_type) }
+      def strip_patch
+        # Big Sur is 11.x but Catalina is 10.15.x.
+        if major >= 11
+          self.class.new(major.to_s)
+        else
+          major_minor
+        end
+      end
+
       sig { returns(Symbol) }
       def to_sym
-        @to_sym ||= begin
-          # Big Sur is 11.x but Catalina is 10.15.
-          major_macos = if major >= 11
-            major
-          else
-            major_minor
-          end.to_s
-          SYMBOLS.invert.fetch(major_macos, :dunno)
-        end
+        @to_sym ||= SYMBOLS.invert.fetch(strip_patch.to_s, :dunno)
       end
 
       sig { returns(String) }
