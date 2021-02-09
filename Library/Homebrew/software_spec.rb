@@ -371,6 +371,14 @@ class BottleSpecification
   end
 
   def cellar(val = nil)
+    # TODO: (3.1) uncomment to deprecate the old bottle syntax
+    # if val.present?
+    #   odeprecated(
+    #     "`cellar` in a bottle block",
+    #     "`brew style --fix` on the formula to update the style or use `sha256` with a `cellar:` argument",
+    #   )
+    # end
+
     return collector.dig(Utils::Bottles.tag, :cellar) || @all_tags_cellar if val.nil?
 
     @all_tags_cellar = val
@@ -422,6 +430,14 @@ class BottleSpecification
       digest, tag = hash.find do |key, value|
         key.is_a?(String) && value.is_a?(Symbol) && key.match?(sha256_regex)
       end
+
+      # TODO: (3.1) uncomment to deprecate the old bottle syntax
+      # if digest && tag
+      #   odeprecated(
+      #     '`sha256 "digest" => :tag` in a bottle block',
+      #     '`brew style --fix` on the formula to update the style or use `sha256 tag: "digest"`',
+      #   )
+      # end
     end
 
     cellar ||= all_tags_cellar

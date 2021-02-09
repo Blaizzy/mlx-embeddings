@@ -2448,11 +2448,11 @@ class Formula
     #
     # <pre>bottle do
     #   root_url "https://example.com" # Optional root to calculate bottle URLs.
-    #   cellar "/opt/homebrew/Cellar" # Optional HOMEBREW_CELLAR in which the bottles were built.
     #   rebuild 1 # Marks the old bottle as outdated without bumping the version/revision of the formula.
-    #   sha256 "ef65c759c5097a36323fa9c77756468649e8d1980a3a4e05695c05e39568967c" => :catalina
-    #   sha256 "28f4090610946a4eb207df102d841de23ced0d06ba31cb79e040d883906dcd4f" => :mojave
-    #   sha256 "91dd0caca9bd3f38c439d5a7b6f68440c4274945615fae035ff0a369264b8a2f" => :high_sierra
+    #   # Optionally specify the HOMEBREW_CELLAR in which the bottles were built.
+    #   sha256 cellar: "/brew/Cellar", catalina:    "ef65c759c5097a36323fa9c77756468649e8d1980a3a4e05695c05e39568967c"
+    #   sha256 cellar: :any,           mojave:      "28f4090610946a4eb207df102d841de23ced0d06ba31cb79e040d883906dcd4f"
+    #   sha256                         high_sierra: "91dd0caca9bd3f38c439d5a7b6f68440c4274945615fae035ff0a369264b8a2f"
     # end</pre>
     #
     # Homebrew maintainers aim to bottle all formulae that require compilation.
