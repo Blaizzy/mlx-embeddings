@@ -6187,6 +6187,11 @@ class CompilerSelector::Compiler
   def self.members(); end
 end
 
+class CompilerSelector
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class Concurrent::Promises::AbstractEventFuture
   include ::Concurrent::Promises::InternalStates
 end
