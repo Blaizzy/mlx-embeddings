@@ -589,15 +589,15 @@ class Version
   end
 
   # @api public
-  sig { returns(Version) }
+  sig { returns(T.self_type) }
   def major_minor
-    Version.new([major, minor].compact.join("."))
+    self.class.new([major, minor].compact.join("."))
   end
 
   # @api public
-  sig { returns(Version) }
+  sig { returns(T.self_type) }
   def major_minor_patch
-    Version.new([major, minor, patch].compact.join("."))
+    self.class.new([major, minor, patch].compact.join("."))
   end
 
   sig { returns(T::Boolean) }
