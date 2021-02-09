@@ -2999,6 +2999,8 @@ end
 module Bootsnap::LoadPathCache::PathScanner
   def self.call(path); end
 
+  def self.os_path(path); end
+
   def self.walk(absolute_dir_path, relative_dir_path, &block); end
 end
 
@@ -6185,6 +6187,11 @@ class CompilerSelector::Compiler
   def self.[](*_); end
 
   def self.members(); end
+end
+
+class CompilerSelector
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class Concurrent::Promises::AbstractEventFuture
