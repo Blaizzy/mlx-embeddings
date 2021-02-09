@@ -2999,6 +2999,8 @@ end
 module Bootsnap::LoadPathCache::PathScanner
   def self.call(path); end
 
+  def self.os_path(path); end
+
   def self.walk(absolute_dir_path, relative_dir_path, &block); end
 end
 
