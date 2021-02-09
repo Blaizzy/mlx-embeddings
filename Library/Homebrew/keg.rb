@@ -190,6 +190,57 @@ class Keg
     [all_required_kegs.to_a, all_dependents.sort]
   end
 
+  # Given an array of kegs, this method finds casks dependent on them
+  # except those included in the `casks` array. If it does, it returns:
+  #
+  # - kegs in the passed array that have dependent casks
+  # - installed casks dependent on them.
+  #
+  # If it doesn't, it returns nil.
+  #
+  # If all dependent casks are included in the `casks` array, the value
+  # returned is nil.
+  def self.find_cask_dependents(kegs, casks)
+    return if kegs.blank?
+
+    casks_to_check = Cask::Caskroom.casks - casks
+    return if casks_to_check.blank?
+
+    kegs_by_source = kegs.group_by do |keg|
+      f = keg.to_formula
+      [f.name, f.tap]
+    rescue
+      [keg.name, keg.tab.tap]
+    end
+
+    all_required_kegs = Set.new
+    all_dependents = []
+
+    casks_to_check.each do |dependent|
+      dependencies = CaskDependent.new(dependent).runtime_dependencies
+      next if dependencies.blank?
+
+      required = dependencies.map(&:to_formula)
+
+      required_kegs = required.map do |f|
+        f_kegs = kegs_by_source[[f.name, f.tap]]
+        next unless f_kegs
+
+        f_kegs.max_by(&:version)
+      end.compact
+
+      next if required_kegs.blank?
+
+      all_required_kegs += required_kegs
+      all_dependents << dependent.to_s
+    end
+
+    return if all_required_kegs.blank?
+    return if all_dependents.blank?
+
+    [all_required_kegs.to_a, all_dependents.sort]
+  end
+
   # @param path if this is a file in a keg, returns the containing {Keg} object.
   def self.for(path)
     original_path = path

@@ -5,31 +5,42 @@ require "uninstall"
 
 describe Homebrew::Uninstall do
   let(:dependency) { formula("dependency") { url "f-1" } }
-  let(:dependent) do
-    formula("dependent") do
+
+  let(:dependent_formula) do
+    formula("dependent_formula") do
       url "f-1"
       depends_on "dependency"
     end
   end
 
+  let(:dependent_cask) do
+    Cask::CaskLoader.load(+<<-RUBY)
+      cask "dependent_cask" do
+        url "c-1"
+        depends_on formula: "dependency"
+      end
+    RUBY
+  end
+
   let(:kegs_by_rack) { { dependency.rack => [Keg.new(dependency.latest_installed_prefix)] } }
 
   before do
-    [dependency, dependent].each do |f|
+    [dependency, dependent_formula].each do |f|
       f.latest_installed_prefix.mkpath
       Keg.new(f.latest_installed_prefix).optlink
     end
 
     tab = Tab.empty
     tab.homebrew_version = "1.1.6"
-    tab.tabfile = dependent.latest_installed_prefix/Tab::FILENAME
+    tab.tabfile = dependent_formula.latest_installed_prefix/Tab::FILENAME
     tab.runtime_dependencies = [
       { "full_name" => "dependency", "version" => "1" },
     ]
     tab.write
 
     stub_formula_loader dependency
-    stub_formula_loader dependent
+    stub_formula_loader dependent_formula
+    stub_cask_loader dependent_cask
   end
 
   describe "::handle_unsatisfied_dependents" do
