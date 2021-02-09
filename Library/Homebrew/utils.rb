@@ -121,6 +121,7 @@ module Kernel
   end
 
   def puts_stdout_or_stderr(*message)
+    message = "\n" if message.empty?
     if $stdout.tty?
       puts(message)
     else

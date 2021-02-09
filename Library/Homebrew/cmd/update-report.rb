@@ -136,8 +136,28 @@ module Homebrew
           DescriptionCacheStore.new(db)
                                .update_from_report!(hub)
         end
+
+        unless args.preinstall?
+          outdated_formulae = Formula.installed.count(&:outdated?)
+          outdated_casks = Cask::Caskroom.casks.count(&:outdated?)
+          msg = ""
+          if outdated_formulae.positive?
+            msg += "#{Tty.bold}#{outdated_formulae}#{Tty.reset} outdated #{"formula".pluralize(outdated_formulae)}"
+          end
+          if outdated_casks.positive?
+            msg += " and " if msg.present?
+            msg += "#{Tty.bold}#{outdated_casks}#{Tty.reset} outdated #{"cask".pluralize(outdated_casks)}"
+          end
+          if msg.present?
+            puts_stdout_or_stderr
+            puts_stdout_or_stderr <<~EOS
+              You have #{msg} installed.
+              You can update them with #{Tty.bold}brew upgrade#{Tty.reset}.
+            EOS
+          end
+        end
       end
-      puts if args.preinstall?
+      puts_stdout_or_stderr if args.preinstall?
     elsif !args.preinstall? && !ENV["HOMEBREW_UPDATE_FAILED"]
       puts_stdout_or_stderr "Already up-to-date." unless args.quiet?
     end
@@ -161,6 +181,7 @@ module Homebrew
 
     return if new_repository_version.blank?
 
+    puts_stdout_or_stderr
     ohai_stdout_or_stderr "Homebrew was updated to version #{new_repository_version}"
     if new_repository_version.split(".").last == "0"
       puts_stdout_or_stderr <<~EOS
