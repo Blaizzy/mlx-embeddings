@@ -16,6 +16,8 @@ describe Homebrew::Uninstall do
   let(:dependent_cask) do
     Cask::CaskLoader.load(+<<-RUBY)
       cask "dependent_cask" do
+        version "1.0.0"
+
         url "c-1"
         depends_on formula: "dependency"
       end
@@ -37,6 +39,8 @@ describe Homebrew::Uninstall do
       { "full_name" => "dependency", "version" => "1" },
     ]
     tab.write
+
+    Cask::Caskroom.path.join("dependent_cask", dependent_cask.version).mkpath
 
     stub_formula_loader dependency
     stub_formula_loader dependent_formula
