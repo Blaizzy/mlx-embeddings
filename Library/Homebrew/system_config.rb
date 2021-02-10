@@ -114,16 +114,6 @@ module SystemConfig
     end
 
     sig { returns(String) }
-    def describe_java
-      return "N/A" unless which "java"
-
-      _, err, status = system_command("java", args: ["-version"], print_stderr: false)
-      return "N/A" unless status.success?
-
-      err[/java version "([\d._]+)"/, 1] || "N/A"
-    end
-
-    sig { returns(String) }
     def describe_git
       return "N/A" unless Utils::Git.available?
 
@@ -132,7 +122,7 @@ module SystemConfig
 
     sig { returns(String) }
     def describe_curl
-      out, = system_command(curl_executable, args: ["--version"])
+      out, = system_command(curl_executable, args: ["--version"], verbose: false)
 
       if /^curl (?<curl_version>[\d.]+)/ =~ out
         "#{curl_version} => #{curl_executable}"
@@ -194,7 +184,6 @@ module SystemConfig
       f.puts "Clang: #{describe_clang}"
       f.puts "Git: #{describe_git}"
       f.puts "Curl: #{describe_curl}"
-      f.puts "Java: #{describe_java}" if describe_java != "N/A"
     end
 
     def dump_verbose_config(f = $stdout)
