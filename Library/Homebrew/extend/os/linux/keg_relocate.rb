@@ -1,6 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
+require "compilers"
+
 class Keg
   def relocate_dynamic_linkage(relocation)
     # Patching the dynamic linker of glibc breaks it.
@@ -84,7 +86,7 @@ class Keg
   def self.bottle_dependencies
     @bottle_dependencies ||= begin
       formulae = relocation_formulae
-      gcc = Formula["gcc"]
+      gcc = Formulary.factory(CompilerSelector.preferred_gcc)
       if !Homebrew::EnvConfig.force_homebrew_on_linux? &&
          DevelopmentTools.non_apple_gcc_version("gcc") < gcc.version.to_i
         formulae += gcc.recursive_dependencies.map(&:name)
