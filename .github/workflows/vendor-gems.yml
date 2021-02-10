@@ -41,17 +41,25 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
       - name: Vendor Gems
+        env:
+          GEM_NAME: ${{ steps.checkout.outputs.gem_name }}
         run: |
-          if [[ '${{ steps.checkout.outputs.gem_name }}' == 'sorbet' ]]; then
+          set -u
+
+          if [[ "${GEM_NAME}" == 'sorbet' ]]; then
             brew vendor-gems --update sorbet,sorbet-runtime
           else
             brew vendor-gems
           fi
       - name: Update RBI files
+        env:
+          GEM_NAME: ${{ steps.checkout.outputs.gem_name }}
         run: |
+          set -u
+
           if brew typecheck --update --fail-if-not-changed; then
             if git add Library/Homebrew/sorbet; then
-              git commit -m "Update RBI files for ${{ steps.checkout.outputs.gem_name }}."
+              git commit -m "Update RBI files for ${GEM_NAME}."
             fi
 
             git reset --hard

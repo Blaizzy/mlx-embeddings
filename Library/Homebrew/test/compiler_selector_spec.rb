@@ -22,6 +22,7 @@ describe CompilerSelector do
       case name
       when "gcc-7" then Version.create("7.1")
       when "gcc-6" then Version.create("6.1")
+      when "gcc-5" then Version.create("5.1")
       else Version::NULL
       end
     end
@@ -42,9 +43,23 @@ describe CompilerSelector do
       expect(selector.compiler).to eq("gcc-7")
     end
 
-    it "returns gcc-6 if gcc formula offers gcc-6" do
+    it "returns gcc-6 if gcc formula offers gcc-6 on mac", :needs_macos do
       software_spec.fails_with(:clang)
       allow(Formulary).to receive(:factory).with("gcc").and_return(double(version: "6.0"))
+      expect(selector.compiler).to eq("gcc-6")
+    end
+
+    it "returns gcc-5 if gcc formula offers gcc-5 on linux", :needs_linux do
+      software_spec.fails_with(:clang)
+      allow(Formulary).to receive(:factory).with("gcc@5").and_return(double(version: "5.0"))
+      expect(selector.compiler).to eq("gcc-5")
+    end
+
+    it "returns gcc-6 if gcc formula offers gcc-6 and fails with gcc-5 and gcc-7 on linux", :needs_linux do
+      software_spec.fails_with(:clang)
+      software_spec.fails_with(gcc: "5")
+      software_spec.fails_with(gcc: "7")
+      allow(Formulary).to receive(:factory).with("gcc@5").and_return(double(version: "5.0"))
       expect(selector.compiler).to eq("gcc-6")
     end
 
@@ -52,6 +67,7 @@ describe CompilerSelector do
       software_spec.fails_with(:clang)
       software_spec.fails_with(gcc: "7")
       software_spec.fails_with(gcc: "6")
+      software_spec.fails_with(gcc: "5")
 
       expect { selector.compiler }.to raise_error(CompilerSelectionError)
     end

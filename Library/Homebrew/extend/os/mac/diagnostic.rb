@@ -42,8 +42,20 @@ module Homebrew
     end
 
     class Checks
-      undef fatal_build_from_source_checks, fatal_setup_build_environment_checks,
-            supported_configuration_checks, build_from_source_checks
+      undef fatal_preinstall_checks, fatal_build_from_source_checks,
+            fatal_setup_build_environment_checks, supported_configuration_checks,
+            build_from_source_checks
+
+      def fatal_preinstall_checks
+        checks = %w[
+          check_access_directories
+        ]
+
+        # We need the developer tools for `codesign`.
+        checks << "check_for_installed_developer_tools" if Hardware::CPU.arm?
+
+        checks.freeze
+      end
 
       def fatal_build_from_source_checks
         %w[
@@ -405,6 +417,7 @@ module Homebrew
       end
 
       def check_if_supported_sdk_available
+        return unless DevelopmentTools.installed?
         return unless MacOS.sdk_root_needed?
         return if MacOS.sdk
 

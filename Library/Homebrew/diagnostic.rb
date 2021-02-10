@@ -872,7 +872,6 @@ module Homebrew
             "N/A"
           end
         end
-        add_info "Java", SystemConfig.describe_java
 
         nil
       end

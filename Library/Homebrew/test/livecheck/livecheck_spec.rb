@@ -133,7 +133,7 @@ describe Homebrew::Livecheck do
 
   describe "::checkable_urls" do
     it "returns the list of URLs to check" do
-      expect(livecheck.checkable_urls(f)).to eq([head_url, stable_url, homepage_url])
+      expect(livecheck.checkable_urls(f)).to eq([stable_url, head_url, homepage_url])
       expect(livecheck.checkable_urls(c)).to eq([cask_url, homepage_url])
     end
   end

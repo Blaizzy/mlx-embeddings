@@ -212,6 +212,7 @@ __brew_internal_commands() {
     'untap:Remove a tapped formula repository'
     'update:Fetch the newest version of Homebrew and all formulae from GitHub using `git`(1) and perform any necessary migrations'
     'update-license-data:Update SPDX license data in the Homebrew repository'
+    'update-maintainers:Update the list of maintainers in the `Homebrew/brew` README'
     'update-python-resources:Update versions for PyPI resource blocks in formula'
     'update-report:The Ruby implementation of `brew update`'
     'update-reset:Fetch and reset Homebrew and all tap repositories (or any specified repository) using `git`(1) to their latest `origin/HEAD`'
@@ -1638,6 +1639,7 @@ _brew_unpin() {
 _brew_untap() {
   _arguments \
     '--debug[Display any debugging information]' \
+    '--force[Untap even if formulae or casks from this tap are currently installed]' \
     '--help[Show this message]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]' \
@@ -1671,6 +1673,15 @@ _brew_update_license_data() {
   _arguments \
     '--debug[Display any debugging information]' \
     '--fail-if-not-changed[Return a failing status code if current license data'\''s version is the same as the upstream. This can be used to notify CI when the SPDX license data is out of date]' \
+    '--help[Show this message]' \
+    '--quiet[Make some output more quiet]' \
+    '--verbose[Make some output more verbose]'
+}
+
+# brew update-maintainers
+_brew_update_maintainers() {
+  _arguments \
+    '--debug[Display any debugging information]' \
     '--help[Show this message]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]'

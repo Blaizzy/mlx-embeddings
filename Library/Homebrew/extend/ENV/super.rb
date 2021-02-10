@@ -344,10 +344,16 @@ module Superenv
     append_to_cccfg "O"
   end
 
-  %w[O3 O2 O1 O0 Os].each do |opt|
+  %w[O3 O2 Os].each do |opt|
     define_method opt do
       odisabled "ENV.#{opt}"
 
+      send(:[]=, "HOMEBREW_OPTIMIZATION_LEVEL", opt)
+    end
+  end
+
+  %w[O1 O0].each do |opt|
+    define_method opt do
       send(:[]=, "HOMEBREW_OPTIMIZATION_LEVEL", opt)
     end
   end

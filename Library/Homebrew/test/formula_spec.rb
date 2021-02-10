@@ -838,6 +838,7 @@ describe Formula do
     expect(h).to be_a(Hash)
     expect(h["name"]).to eq("foo")
     expect(h["full_name"]).to eq("foo")
+    expect(h["tap"]).to eq("homebrew/core")
     expect(h["versions"]["stable"]).to eq("1.0")
     expect(h["versions"]["bottle"]).to be_truthy
   end

@@ -14,6 +14,8 @@ module Homebrew
       description <<~EOS
         Remove a tapped formula repository.
       EOS
+      switch "-f", "--force",
+             description: "Untap even if formulae or casks from this tap are currently installed."
 
       named_args :tap, min: 1
     end

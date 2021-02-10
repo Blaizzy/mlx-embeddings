@@ -1766,6 +1766,7 @@ class Formula
     hsh = {
       "name"                     => name,
       "full_name"                => full_name,
+      "tap"                      => tap&.name,
       "oldname"                  => oldname,
       "aliases"                  => aliases.sort,
       "versioned_formulae"       => versioned_formulae.map(&:name),
@@ -1821,25 +1822,7 @@ class Formula
         "revision" => stable.specs[:revision],
       }
 
-      if bottle_defined?
-        bottle_spec = stable.bottle_specification
-        bottle_info = {
-          "rebuild"  => bottle_spec.rebuild,
-          "cellar"   => (cellar = bottle_spec.cellar).is_a?(Symbol) ? cellar.inspect : cellar,
-          "prefix"   => bottle_spec.prefix,
-          "root_url" => bottle_spec.root_url,
-        }
-        bottle_info["files"] = {}
-        bottle_spec.collector.each_key do |os|
-          bottle_url = "#{bottle_spec.root_url}/#{Bottle::Filename.create(self, os, bottle_spec.rebuild).bintray}"
-          checksum = bottle_spec.collector[os][:checksum]
-          bottle_info["files"][os] = {
-            "url"    => bottle_url,
-            "sha256" => checksum.hexdigest,
-          }
-        end
-        hsh["bottle"]["stable"] = bottle_info
-      end
+      hsh["bottle"]["stable"] = bottle_hash if bottle_defined?
     end
 
     hsh["options"] = options.map do |opt|
@@ -1871,6 +1854,27 @@ class Formula
     end
 
     hsh
+  end
+
+  # Returns the bottle information for a formula
+  def bottle_hash
+    bottle_spec = stable.bottle_specification
+    hash = {
+      "rebuild"  => bottle_spec.rebuild,
+      "cellar"   => (cellar = bottle_spec.cellar).is_a?(Symbol) ? cellar.inspect : cellar,
+      "prefix"   => bottle_spec.prefix,
+      "root_url" => bottle_spec.root_url,
+      "files"    => {},
+    }
+    bottle_spec.collector.each_key do |os|
+      bottle_url = "#{bottle_spec.root_url}/#{Bottle::Filename.create(self, os, bottle_spec.rebuild).bintray}"
+      checksum = bottle_spec.collector[os][:checksum]
+      hash["files"][os] = {
+        "url"    => bottle_url,
+        "sha256" => checksum.hexdigest,
+      }
+    end
+    hash
   end
 
   # @private
@@ -2447,11 +2451,11 @@ class Formula
     #
     # <pre>bottle do
     #   root_url "https://example.com" # Optional root to calculate bottle URLs.
-    #   cellar "/opt/homebrew/Cellar" # Optional HOMEBREW_CELLAR in which the bottles were built.
     #   rebuild 1 # Marks the old bottle as outdated without bumping the version/revision of the formula.
-    #   sha256 "ef65c759c5097a36323fa9c77756468649e8d1980a3a4e05695c05e39568967c" => :catalina
-    #   sha256 "28f4090610946a4eb207df102d841de23ced0d06ba31cb79e040d883906dcd4f" => :mojave
-    #   sha256 "91dd0caca9bd3f38c439d5a7b6f68440c4274945615fae035ff0a369264b8a2f" => :high_sierra
+    #   # Optionally specify the HOMEBREW_CELLAR in which the bottles were built.
+    #   sha256 cellar: "/brew/Cellar", catalina:    "ef65c759c5097a36323fa9c77756468649e8d1980a3a4e05695c05e39568967c"
+    #   sha256 cellar: :any,           mojave:      "28f4090610946a4eb207df102d841de23ced0d06ba31cb79e040d883906dcd4f"
+    #   sha256                         high_sierra: "91dd0caca9bd3f38c439d5a7b6f68440c4274945615fae035ff0a369264b8a2f"
     # end</pre>
     #
     # Homebrew maintainers aim to bottle all formulae that require compilation.

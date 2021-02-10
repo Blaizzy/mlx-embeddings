@@ -793,8 +793,12 @@ List files which would be unlinked without actually unlinking or deleting any fi
 .SS "\fBunpin\fR \fIinstalled_formula\fR [\.\.\.]"
 Unpin \fIformula\fR, allowing them to be upgraded by \fBbrew upgrade\fR \fIformula\fR\. See also \fBpin\fR\.
 .
-.SS "\fBuntap\fR \fItap\fR [\.\.\.]"
+.SS "\fBuntap\fR [\fI\-\-force\fR] \fItap\fR [\.\.\.]"
 Remove a tapped formula repository\.
+.
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+Untap even if formulae or casks from this tap are currently installed\.
 .
 .SS "\fBupdate\fR [\fIoptions\fR]"
 Fetch the newest version of Homebrew and all formulae from GitHub using \fBgit\fR(1) and perform any necessary migrations\.
@@ -1912,6 +1916,9 @@ Update SPDX license data in the Homebrew repository\.
 \fB\-\-fail\-if\-not\-changed\fR
 Return a failing status code if current license data\'s version is the same as the upstream\. This can be used to notify CI when the SPDX license data is out of date\.
 .
+.SS "\fBupdate\-maintainers\fR"
+Update the list of maintainers in the \fBHomebrew/brew\fR README\.
+.
 .SS "\fBupdate\-python\-resources\fR [\fIoptions\fR] \fIformula\fR [\.\.\.]"
 Update versions for PyPI resource blocks in \fIformula\fR\.
 .
@@ -2836,16 +2843,16 @@ Homebrew API: \fIhttps://rubydoc\.brew\.sh\fR
 Homebrew\'s Project Leader is Mike McQuaid\.
 .
 .P
-Homebrew\'s Project Leadership Committee is Misty De Meo, Shaun Jackman, Jonathan Chang, Sean Molenaar and Markus Reiter\.
+Homebrew\'s Project Leadership Committee is Jonathan Chang, Markus Reiter, Misty De Meo, Sean Molenaar and Shaun Jackman\.
 .
 .P
-Homebrew\'s Technical Steering Committee is Michka Popoff, FX Coudert, Markus Reiter, Misty De Meo and Mike McQuaid\.
+Homebrew\'s Technical Steering Committee is FX Coudert, Markus Reiter, Michka Popoff, Mike McQuaid and Misty De Meo\.
 .
 .P
-Homebrew/brew\'s Linux maintainers are Michka Popoff, Shaun Jackman, Dawid Dziurla, Issy Long and Maxim Belkin\.
+Homebrew\'s Linux maintainers are Daniel Nachun, Dawid Dziurla, Issy Long, Jonathan Chang, Michka Popoff and Shaun Jackman\.
 .
 .P
-Homebrew\'s other current maintainers are Claudia Pellegrino, Zach Auten, Rui Chen, Vitor Galvao, Caleb Xu, Gautham Goli, Steven Peters, Bo Anderson, William Woodruff, Igor Kapkov, Sam Ford, Alexander Bayandin, Izaak Beekman, Eric Knibbe, Viktor Szakats, Thierry Moisan, Steven Peters, Tom Schoonjans, Issy Long, CoreCode, Randall, Rylan Polster, SeekingMeaning, William Ma and Dustin Rodrigues\.
+Homebrew\'s other current maintainers are Alexander Bayandin, Bo Anderson, Caleb Xu, Carlo Cabrera, Claudia Pellegrino, Dustin Rodrigues, Eric Knibbe, Maxim Belkin, Miccal Matthews, Nanda H Krishna, Randall, Rylan Polster, Sam Ford, Seeker, Steve Peters, Thierry Moisan, Tom Schoonjans, Vítor Galvão and rui\.
 .
 .P
 Former maintainers with significant contributions include Jan Viljanen, JCount, commitay, Dominyk Tiller, Tim Smith, Baptiste Fontaine, Xu Cheng, Martin Afanasjew, Brett Koonce, Charlie Sharpsteen, Jack Nagel, Adam Vandenberg, Andrew Janke, Alex Dunn, neutric, Tomasz Pajor, Uladzislau Shablinski, Alyssa Ross, ilovezfs, Chongyu Zhu and Homebrew\'s creator: Max Howell\.

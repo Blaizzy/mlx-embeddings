@@ -17,7 +17,7 @@ module Homebrew
 
   def update_preinstall_header(args:)
     @update_preinstall_header ||= begin
-      ohai "Auto-updated Homebrew!" if args.preinstall?
+      ohai_stdout_or_stderr "Auto-updated Homebrew!" if args.preinstall?
       true
     end
   end
@@ -50,8 +50,8 @@ module Homebrew
       print "\a"
 
       # Use an extra newline and bold to avoid this being missed.
-      ohai "Homebrew has enabled anonymous aggregate formula and cask analytics."
-      puts <<~EOS
+      ohai_stdout_or_stderr "Homebrew has enabled anonymous aggregate formula and cask analytics."
+      puts_stdout_or_stderr <<~EOS
         #{Tty.bold}Read the analytics documentation (and how to opt-out) here:
           #{Formatter.url("https://docs.brew.sh/Analytics")}#{Tty.reset}
         No analytics have been recorded yet (nor will be during this `brew` run).
@@ -63,8 +63,8 @@ module Homebrew
     end
 
     if Settings.read("donationmessage") != "true" && !args.quiet?
-      ohai "Homebrew is run entirely by unpaid volunteers. Please consider donating:"
-      puts "  #{Formatter.url("https://github.com/Homebrew/brew#donations")}\n"
+      ohai_stdout_or_stderr "Homebrew is run entirely by unpaid volunteers. Please consider donating:"
+      puts_stdout_or_stderr "  #{Formatter.url("https://github.com/Homebrew/brew#donations")}\n"
 
       # Consider the message possibly missed if not a TTY.
       Settings.write "donationmessage", true if $stdout.tty?
@@ -81,7 +81,8 @@ module Homebrew
 
     if initial_revision != current_revision
       update_preinstall_header args: args
-      puts "Updated Homebrew from #{shorten_revision(initial_revision)} to #{shorten_revision(current_revision)}."
+      puts_stdout_or_stderr \
+        "Updated Homebrew from #{shorten_revision(initial_revision)} to #{shorten_revision(current_revision)}."
       updated = true
 
       old_tag = Settings.read "latesttag"
@@ -119,13 +120,14 @@ module Homebrew
 
     unless updated_taps.empty?
       update_preinstall_header args: args
-      puts "Updated #{updated_taps.count} #{"tap".pluralize(updated_taps.count)} (#{updated_taps.to_sentence})."
+      puts_stdout_or_stderr \
+        "Updated #{updated_taps.count} #{"tap".pluralize(updated_taps.count)} (#{updated_taps.to_sentence})."
       updated = true
     end
 
     if updated
       if hub.empty?
-        puts "No changes to formulae." unless args.quiet?
+        puts_stdout_or_stderr "No changes to formulae." unless args.quiet?
       else
         hub.dump(updated_formula_report: !args.preinstall?)
         hub.reporters.each(&:migrate_tap_migration)
@@ -137,7 +139,7 @@ module Homebrew
       end
       puts if args.preinstall?
     elsif !args.preinstall? && !ENV["HOMEBREW_UPDATE_FAILED"]
-      puts "Already up-to-date." unless args.quiet?
+      puts_stdout_or_stderr "Already up-to-date." unless args.quiet?
     end
 
     Commands.rebuild_commands_completion_list
@@ -148,8 +150,8 @@ module Homebrew
     if failed_fetch_dirs.present?
       failed_fetch_taps = failed_fetch_dirs.map { |dir| Tap.from_path(dir) }
 
-      puts Formatter.headline "Some taps failed to update!", color: :red
-      puts <<~EOS
+      ofail <<~EOS
+        Some taps failed to update!
         The following taps can not read their remote branches:
           #{failed_fetch_taps.join("\n  ")}
         This is happening because the remote branch was renamed or deleted.
@@ -159,14 +161,14 @@ module Homebrew
 
     return if new_repository_version.blank?
 
-    ohai "Homebrew was updated to version #{new_repository_version}"
+    ohai_stdout_or_stderr "Homebrew was updated to version #{new_repository_version}"
     if new_repository_version.split(".").last == "0"
-      puts <<~EOS
+      puts_stdout_or_stderr <<~EOS
         More detailed release notes are available on the Homebrew Blog:
           #{Formatter.url("https://brew.sh/blog/#{new_repository_version}")}
       EOS
     else
-      puts <<~EOS
+      puts_stdout_or_stderr <<~EOS
         The changelog can be found at:
           #{Formatter.url("https://github.com/Homebrew/brew/releases/tag/#{new_repository_version}")}
       EOS
@@ -355,13 +357,13 @@ class Reporter
 
         new_tap = Tap.fetch(new_tap_name)
         new_tap.install unless new_tap.installed?
-        ohai "#{name} has been moved to Homebrew.", <<~EOS
+        ohai_stdout_or_stderr "#{name} has been moved to Homebrew.", <<~EOS
           To uninstall the cask, run:
             brew uninstall --cask --force #{name}
         EOS
         next if (HOMEBREW_CELLAR/new_name.split("/").last).directory?
 
-        ohai "Installing #{new_name}..."
+        ohai_stdout_or_stderr "Installing #{new_name}..."
         system HOMEBREW_BREW_FILE, "install", new_full_name
         begin
           unless Formulary.factory(new_full_name).keg_only?
@@ -382,12 +384,12 @@ class Reporter
       # For formulae migrated to cask: Auto-install cask or provide install instructions.
       if new_tap_name.start_with?("homebrew/cask")
         if new_tap.installed? && (HOMEBREW_PREFIX/"Caskroom").directory?
-          ohai "#{name} has been moved to Homebrew Cask."
-          ohai "brew unlink #{name}"
+          ohai_stdout_or_stderr "#{name} has been moved to Homebrew Cask."
+          ohai_stdout_or_stderr "brew unlink #{name}"
           system HOMEBREW_BREW_FILE, "unlink", name
-          ohai "brew cleanup"
+          ohai_stdout_or_stderr "brew cleanup"
           system HOMEBREW_BREW_FILE, "cleanup"
-          ohai "brew install --cask #{new_name}"
+          ohai_stdout_or_stderr "brew install --cask #{new_name}"
           system HOMEBREW_BREW_FILE, "install", "--cask", new_name
           ohai <<~EOS
             #{name} has been moved to Homebrew Cask.
@@ -396,7 +398,7 @@ class Reporter
               brew uninstall --force #{name}
           EOS
         else
-          ohai "#{name} has been moved to Homebrew Cask.", <<~EOS
+          ohai_stdout_or_stderr "#{name} has been moved to Homebrew Cask.", <<~EOS
             To uninstall the formula and install the cask, run:
               brew uninstall --force #{name}
               brew tap #{new_tap_name}
@@ -483,7 +485,10 @@ class ReporterHub
       dump_formula_report :M, "Updated Formulae"
     else
       updated = select_formula(:M).count
-      ohai "Updated Formulae", "Updated #{updated} #{"formula".pluralize(updated)}." if updated.positive?
+      if updated.positive?
+        ohai_stdout_or_stderr "Updated Formulae",
+                              "Updated #{updated} #{"formula".pluralize(updated)}."
+      end
     end
     dump_formula_report :R, "Renamed Formulae"
     dump_formula_report :D, "Deleted Formulae"
@@ -492,7 +497,10 @@ class ReporterHub
       dump_formula_report :MC, "Updated Casks"
     else
       updated = select_formula(:MC).count
-      ohai "Updated Casks", "Updated #{updated} #{"cask".pluralize(updated)}." if updated.positive?
+      if updated.positive?
+        ohai_stdout_or_stderr "Updated Casks",
+                              "Updated #{updated} #{"cask".pluralize(updated)}."
+      end
     end
     dump_formula_report :DC, "Deleted Casks"
   end
