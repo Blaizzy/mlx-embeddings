@@ -455,5 +455,31 @@ describe Keg do
       dependencies [{ "full_name" => "foo", "version" => "1.1" }] # different version
       expect(described_class.find_some_installed_dependents([keg])).to eq([[keg], ["bar"]])
     end
+
+    def stub_cask_name(name, version, dependency)
+      c = Cask::CaskLoader.load(+<<-RUBY)
+        cask "#{name}" do
+          version "#{version}"
+
+          url "c-1"
+          depends_on formula: "#{dependency}"
+        end
+      RUBY
+
+      stub_cask_loader c
+      c
+    end
+
+    def setup_test_cask(name, version, dependency)
+      c = stub_cask_name(name, version, dependency)
+      Cask::Caskroom.path.join(name, c.version).mkpath
+      c
+    end
+
+    specify "identify dependent casks" do
+      setup_test_cask("qux", "1.0.0", "foo")
+      dependents = described_class.find_some_installed_dependents([keg]).last
+      expect(dependents.include?("qux")).to eq(true)
+    end
   end
 end
