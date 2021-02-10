@@ -29580,7 +29580,7 @@ end
 class Time
   def self.===(other); end
 
-  def self.at_with_coercion(*args); end
+  def self.at_with_coercion(*args, **kwargs); end
 
   def self.at_without_coercion(*_); end
 
