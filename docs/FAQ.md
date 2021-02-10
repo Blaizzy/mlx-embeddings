@@ -193,3 +193,51 @@ You can still link in the formula if you need to with `brew link <formula>`, tho
 ## How can I specify different configure arguments for a formula?
 `brew edit <formula>` and edit the formula. Currently there is no
 other way to do this.
+
+
+## The app can’t be opened because it is from an unidentified developer
+Chances are that certain apps will give you a popup message like this:
+
+<img src="https://i.imgur.com/CnEEATG.png" width="532" alt="Gatekeeper message">
+
+This is a [security feature from Apple](https://support.apple.com/en-us/HT202491). The single most important thing to know is that **you can allow individual apps to be exempt from that feature.** This allows the app to run while the rest of the system remains under protection.
+
+**Always leave system-wide protection enabled,** and disable it only for specific apps as needed.
+
+If you are sure you want to trust the app, you can disable protection for that app by right-clicking its icon and choosing `Open`:
+
+<img src="https://i.imgur.com/69xc2WK.png" width="312" alt="Right-click the app and choose Open">
+
+Finally, click the `Open` button if you want macOS to permanently allow the app to run on this Mac. **Don’t do this unless you’re sure you trust the app.**
+
+<img src="https://i.imgur.com/xppa4Qv.png" width="532" alt="Gatekeeper message">
+
+Alternatively, you may provide the [`--no-quarantine` flag](https://github.com/Homebrew/homebrew-cask/blob/HEAD/USAGE.md#options) at install time to not add this feature to a specific app.
+
+
+## Why some apps aren’t included in `upgrade`
+After running `brew upgrade`, you may notice some casks you think should be upgrading, aren’t.
+
+As you’re likely aware, a lot of macOS software can upgrade itself:
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/c/c0/Sparkle_Test_App_Software_Update.png" width="532" alt="Sparkle update window">
+
+That could cause conflicts when used in tandem with Homebrew Cask’s `upgrade` mechanism.
+
+If you upgrade software through it’s built-in mechanism, that happens without Homebrew Cask’s knowledge so both versions get out of sync. If you then upgraded through Homebrew Cask and we have a lower version on the software on record, you’d get a downgrade.
+
+There are a few ideas to fix this problem:
+
+* Try to prevent the software’s automated updates. That won’t be a universal solution and may cause it to break. Most software on Homebrew Cask is closed-source, so we’d be guessing. This is also why pinning casks to a version isn’t available.
+* Try to extract the installed software’s version and compare it to the cask, deciding what to do at that time. That’s a complicated solution that breaks other parts of our methodology, such as using versions to interpolate in `url`s (a definite win for maintainability). That solution also isn’t universal, as many software developers are inconsistent in their versioning schemes (and app bundles are meant to have two version strings) and it doesn’t work for all types of software we support.
+
+So we let software be. Installing it with Homebrew Cask should make it behave the same as if you had installed it manually. But we also want to support software that does not auto-upgrade, so we add [`auto_updates true`](https://github.com/Homebrew/homebrew-cask/blob/62c0495b254845a481dacac6ea7c8005e27a3fb0/Casks/alfred.rb#L10) to casks of software that can do it, which excludes them from `brew upgrade`.
+
+Casks which use [`version :latest`](https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/stanzas/version.md#version-latest) are also excluded, because we have no way to track the version they’re in. It helps to ask the developers of such software to provide versioned releases (i.e. have the version in the path of the download `url`).
+
+If you still want to force software to be upgraded via Homebrew Cask, you can:
+
+* Reference it specifically in the `upgrade` command: `brew upgrade {{cask_name}}`.
+* Use the `--greedy` flag: `brew upgrade --greedy`.
+
+Refer to the `upgrade` section of the `brew` manual page by running `man -P 'less --pattern "^ {3}upgrade"' brew`.
