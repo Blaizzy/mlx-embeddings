@@ -108,16 +108,7 @@ module Homebrew
     end
 
     def check_for_dependents(kegs, casks: [], named_args: [])
-      result_kegs = Keg.find_some_installed_dependents(kegs)
-      result_casks = Keg.find_cask_dependents(kegs, casks)
-
-      return false if result_kegs.blank? && result_casks.blank?
-
-      result = if result_kegs.present? && result_casks.present?
-        [(result_kegs[0] + result_casks[0]).uniq, result_kegs[1] + result_casks[1]]
-      else
-        result_kegs || result_casks
-      end
+      return false unless result = Keg.find_some_installed_dependents(kegs, casks: casks)
 
       if Homebrew::EnvConfig.developer?
         DeveloperDependentsMessage.new(*result, named_args: named_args).output
