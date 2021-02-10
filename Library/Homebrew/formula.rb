@@ -1822,25 +1822,7 @@ class Formula
         "revision" => stable.specs[:revision],
       }
 
-      if bottle_defined?
-        bottle_spec = stable.bottle_specification
-        bottle_info = {
-          "rebuild"  => bottle_spec.rebuild,
-          "cellar"   => (cellar = bottle_spec.cellar).is_a?(Symbol) ? cellar.inspect : cellar,
-          "prefix"   => bottle_spec.prefix,
-          "root_url" => bottle_spec.root_url,
-        }
-        bottle_info["files"] = {}
-        bottle_spec.collector.each_key do |os|
-          bottle_url = "#{bottle_spec.root_url}/#{Bottle::Filename.create(self, os, bottle_spec.rebuild).bintray}"
-          checksum = bottle_spec.collector[os][:checksum]
-          bottle_info["files"][os] = {
-            "url"    => bottle_url,
-            "sha256" => checksum.hexdigest,
-          }
-        end
-        hsh["bottle"]["stable"] = bottle_info
-      end
+      hsh["bottle"]["stable"] = bottle_hash if bottle_defined?
     end
 
     hsh["options"] = options.map do |opt|
@@ -1872,6 +1854,27 @@ class Formula
     end
 
     hsh
+  end
+
+  # Returns the bottle information for a formula
+  def bottle_hash
+    bottle_spec = stable.bottle_specification
+    hash = {
+      "rebuild"  => bottle_spec.rebuild,
+      "cellar"   => (cellar = bottle_spec.cellar).is_a?(Symbol) ? cellar.inspect : cellar,
+      "prefix"   => bottle_spec.prefix,
+      "root_url" => bottle_spec.root_url,
+      "files"    => {},
+    }
+    bottle_spec.collector.each_key do |os|
+      bottle_url = "#{bottle_spec.root_url}/#{Bottle::Filename.create(self, os, bottle_spec.rebuild).bintray}"
+      checksum = bottle_spec.collector[os][:checksum]
+      hash["files"][os] = {
+        "url"    => bottle_url,
+        "sha256" => checksum.hexdigest,
+      }
+    end
+    hash
   end
 
   # @private
