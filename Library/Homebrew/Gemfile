@@ -21,6 +21,7 @@ gem "simplecov", require: false
 gem "sorbet", require: false
 gem "sorbet-runtime", require: false
 gem "tapioca", require: false
+gem "warning", require: false
 
 # vendored gems
 gem "activesupport"

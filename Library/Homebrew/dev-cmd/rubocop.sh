@@ -18,8 +18,6 @@ homebrew-rubocop() {
   export GEM_HOME
   export PATH="$GEM_HOME/bin:$PATH"
 
-  # Unconditional -W0 to avoid printing e.g.:
-  # warning: parser/current is loading parser/ruby26, which recognizes
-  # warning: 2.6.6-compliant syntax, but you are running 2.6.3.
-  exec "$HOMEBREW_RUBY_PATH" "$RUBY_DISABLE_OPTIONS" -W0 -S rubocop "$@"
+  RUBOCOP="$HOMEBREW_LIBRARY/Homebrew/utils/rubocop.rb"
+  exec "$HOMEBREW_RUBY_PATH" "$RUBOCOP" "$@"
 }
