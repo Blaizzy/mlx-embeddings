@@ -5,9 +5,9 @@
 require "warning"
 
 warnings = [
-  "warning: parser/current is loading parser/ruby26, which recognizes",
-  "warning: 2.6.6-compliant syntax, but you are running 2.6.3.",
-  "warning: please see https://github.com/whitequark/parser#compatibility-with-ruby-mri.",
+  %r{warning: parser/current is loading parser/ruby\d+, which recognizes},
+  /warning: \d+\.\d+\.\d+-compliant syntax, but you are running \d+\.\d+\.\d+\./,
+  %r{warning: please see https://github\.com/whitequark/parser#compatibility-with-ruby-mri\.},
 ]
 
 warnings.each do |warning|
