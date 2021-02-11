@@ -11,7 +11,7 @@ warnings = [
 ]
 
 warnings.each do |warning|
-  Warning.ignore Regexp.new(warning)
+  Warning.ignore warning
 end
 
 require "rubocop"
