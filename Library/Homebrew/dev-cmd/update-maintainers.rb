@@ -3,6 +3,7 @@
 
 require "cli/parser"
 require "utils/github"
+require "dev-cmd/man"
 
 module Homebrew
   extend T::Sig
@@ -61,7 +62,8 @@ module Homebrew
     if diff.status.success?
       puts "No changes to list of maintainers."
     else
-      puts "List of maintainers updated in README."
+      Homebrew.regenerate_man_pages(preserve_date: true, quiet: true)
+      puts "List of maintainers updated in the README and the generated man pages."
     end
   end
 end
