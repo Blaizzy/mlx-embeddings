@@ -576,7 +576,7 @@ fi
 
 if [[ -z "$HOMEBREW_RUBY_WARNINGS" ]]
 then
-  export HOMEBREW_RUBY_WARNINGS="-W0"
+  export HOMEBREW_RUBY_WARNINGS="-W1"
 fi
 
 if [[ -z "$HOMEBREW_BOTTLE_DOMAIN" ]]
