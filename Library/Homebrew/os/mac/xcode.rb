@@ -134,6 +134,19 @@ module OS
         sdk(v)&.path
       end
 
+      def installation_instructions
+        if OS::Mac.prerelease?
+          <<~EOS
+            Xcode can be installed from:
+              #{Formatter.url("https://developer.apple.com/download/more/")}
+          EOS
+        else
+          <<~EOS
+            Xcode can be installed from the App Store.
+          EOS
+        end
+      end
+
       sig { returns(String) }
       def update_instructions
         if OS::Mac.prerelease?
@@ -252,6 +265,21 @@ module OS
 
       def sdk_path(v = nil)
         sdk(v)&.path
+      end
+
+      def installation_instructions
+        if MacOS.version == "10.14"
+          # This is not available from `xcode-select`
+          <<~EOS
+            Install the Command Line Tools for Xcode 11.3.1 from:
+              #{Formatter.url("https://developer.apple.com/download/more/")}
+          EOS
+        else
+          <<~EOS
+            Install the Command Line Tools:
+              xcode-select --install
+          EOS
+        end
       end
 
       sig { returns(String) }
