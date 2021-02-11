@@ -58,10 +58,10 @@ class Keg
     # Try signing again
     odebug "Codesigning (2nd try) #{file}"
     result = system_command("codesign", args: [
-                              "--sign", "-", "--force",
-                              "--preserve-metadata=entitlements,requirements,flags,runtime",
-                              file
-                            ], print_stderr: false)
+      "--sign", "-", "--force",
+      "--preserve-metadata=entitlements,requirements,flags,runtime",
+      file
+    ], print_stderr: false)
     return if result.success?
 
     # If it fails again, error out

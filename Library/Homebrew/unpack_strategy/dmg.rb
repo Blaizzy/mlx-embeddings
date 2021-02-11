@@ -13,18 +13,18 @@ module UnpackStrategy
     # Helper module for listing the contents of a volume mounted from a disk image.
     module Bom
       DMG_METADATA = Set.new(%w[
-                               .background
-                               .com.apple.timemachine.donotpresent
-                               .com.apple.timemachine.supported
-                               .DocumentRevisions-V100
-                               .DS_Store
-                               .fseventsd
-                               .MobileBackups
-                               .Spotlight-V100
-                               .TemporaryItems
-                               .Trashes
-                               .VolumeIcon.icns
-                             ]).freeze
+        .background
+        .com.apple.timemachine.donotpresent
+        .com.apple.timemachine.supported
+        .DocumentRevisions-V100
+        .DS_Store
+        .fseventsd
+        .MobileBackups
+        .Spotlight-V100
+        .TemporaryItems
+        .Trashes
+        .VolumeIcon.icns
+      ]).freeze
       private_constant :DMG_METADATA
 
       refine Pathname do
