@@ -546,6 +546,15 @@ module RuboCop
             problem "`depends_on` can take requirement classes instead of instances"
           end
 
+          find_instance_method_call(body_node, "ENV", :[]) do |method|
+            next unless modifier?(method.parent)
+
+            param = parameters(method).first
+            next unless node_equals?(param, "CI")
+
+            problem 'Don\'t use ENV["CI"] for Homebrew CI checks.'
+          end
+
           find_instance_method_call(body_node, "Dir", :[]) do |method|
             next unless parameters(method).size == 1
 
