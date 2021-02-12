@@ -62,6 +62,7 @@ module Homebrew
 
     markup = build_man_page(quiet: quiet)
     convert_man_page(markup, TARGET_DOC_PATH/"Manpage.md", preserve_date: preserve_date)
+    markup = I18n.transliterate(markup, locale: :en)
     convert_man_page(markup, TARGET_MAN_PATH/"brew.1", preserve_date: preserve_date)
   end
 
