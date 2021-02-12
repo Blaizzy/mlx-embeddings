@@ -42,7 +42,7 @@ module PyPI
       @name = package_string
       @name, @version = @name.split("==") if @name.include? "=="
 
-      return unless match = @name.match(/^(.*?)\[(.+)\]$/)
+      return unless (match = @name.match(/^(.*?)\[(.+)\]$/))
 
       @name = match[1]
       @extras = match[2].split ","

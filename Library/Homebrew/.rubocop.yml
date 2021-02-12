@@ -7,10 +7,6 @@ Layout/MultilineMethodCallIndentation:
   Exclude:
     - "**/*_spec.rb"
 
-# TODO: add parentheses for these and remove
-Lint/AssignmentInCondition:
-  Enabled: false
-
 # `formula do` uses nested method definitions
 Lint/NestedMethodDefinition:
   Exclude:

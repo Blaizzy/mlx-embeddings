@@ -105,7 +105,7 @@ module Homebrew
           # pull request.
           next if url.match?(%r{^https://dl.bintray.com/homebrew/mirror/})
 
-          if http_content_problem = curl_check_http_content(url, specs: specs)
+          if (http_content_problem = curl_check_http_content(url, specs: specs))
             problem http_content_problem
           end
         elsif strategy <= GitDownloadStrategy

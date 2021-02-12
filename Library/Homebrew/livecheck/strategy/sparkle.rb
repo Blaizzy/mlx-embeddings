@@ -61,7 +61,7 @@ module Homebrew
 
             title = (item > "title").first&.text&.strip
 
-            if match = title&.match(/(\d+(?:\.\d+)*)\s*(\([^)]+\))?\Z/)
+            if (match = title&.match(/(\d+(?:\.\d+)*)\s*(\([^)]+\))?\Z/))
               short_version ||= match[1]
               version ||= match[2]
             end

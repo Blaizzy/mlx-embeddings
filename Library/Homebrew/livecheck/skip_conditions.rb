@@ -25,7 +25,7 @@ module Homebrew
       def formula_or_cask_skip(formula_or_cask, livecheckable, full_name: false, verbose: false)
         formula = formula_or_cask if formula_or_cask.is_a?(Formula)
 
-        if stable_url = formula&.stable&.url
+        if (stable_url = formula&.stable&.url)
           stable_is_gist = stable_url.match?(%r{https?://gist\.github(?:usercontent)?\.com/}i)
           stable_from_google_code_archive = stable_url.match?(
             %r{https?://storage\.googleapis\.com/google-code-archive-downloads/}i,

@@ -696,7 +696,7 @@ module Cask
     def check_denylist
       return unless cask.tap
       return unless cask.tap.official?
-      return unless reason = Denylist.reason(cask.token)
+      return unless (reason = Denylist.reason(cask.token))
 
       add_error "#{cask.token} is not allowed: #{reason}"
     end

@@ -179,7 +179,7 @@ module Homebrew
     # Check for disallowed formula, or names that shadow aliases,
     # unless --force is specified.
     unless args.force?
-      if reason = MissingFormula.disallowed_reason(fc.name)
+      if (reason = MissingFormula.disallowed_reason(fc.name))
         odie <<~EOS
           The formula '#{fc.name}' is not allowed to be created.
           #{reason}

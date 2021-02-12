@@ -115,7 +115,7 @@ class Version
 
     sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
-      return unless other = Token.from(other)
+      return unless (other = Token.from(other))
 
       case other
       when NullToken
@@ -158,7 +158,7 @@ class Version
 
     sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
-      return unless other = Token.from(other)
+      return unless (other = Token.from(other))
 
       case other
       when StringToken
@@ -184,7 +184,7 @@ class Version
 
     sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
-      return unless other = Token.from(other)
+      return unless (other = Token.from(other))
 
       case other
       when NumericToken
@@ -216,7 +216,7 @@ class Version
 
     sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
-      return unless other = Token.from(other)
+      return unless (other = Token.from(other))
 
       case other
       when AlphaToken
@@ -235,7 +235,7 @@ class Version
 
     sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
-      return unless other = Token.from(other)
+      return unless (other = Token.from(other))
 
       case other
       when BetaToken
@@ -256,7 +256,7 @@ class Version
 
     sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
-      return unless other = Token.from(other)
+      return unless (other = Token.from(other))
 
       case other
       when PreToken
@@ -277,7 +277,7 @@ class Version
 
     sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
-      return unless other = Token.from(other)
+      return unless (other = Token.from(other))
 
       case other
       when RCToken
@@ -298,7 +298,7 @@ class Version
 
     sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
-      return unless other = Token.from(other)
+      return unless (other = Token.from(other))
 
       case other
       when PatchToken
@@ -317,7 +317,7 @@ class Version
 
     sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
-      return unless other = Token.from(other)
+      return unless (other = Token.from(other))
 
       case other
       when PostToken

@@ -164,7 +164,7 @@ module Homebrew
     # preserve existing manpage order
     cmd_paths.sort_by(&method(:sort_key_for_path))
              .each do |cmd_path|
-      cmd_man_page_lines = if cmd_parser = CLI::Parser.from_cmd_path(cmd_path)
+      cmd_man_page_lines = if (cmd_parser = CLI::Parser.from_cmd_path(cmd_path))
         next if cmd_parser.hide_from_man_page
 
         cmd_parser_manpage_lines(cmd_parser).join

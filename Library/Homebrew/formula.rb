@@ -2061,7 +2061,7 @@ class Formula
 
           if verbose_using_dots
             last_dot = Time.at(0)
-            while buf = rd.gets
+            while (buf = rd.gets)
               log.puts buf
               # make sure dots printed with interval of at least 1 min.
               next unless (Time.now - last_dot) > 60
@@ -2072,7 +2072,7 @@ class Formula
             end
             puts
           else
-            while buf = rd.gets
+            while (buf = rd.gets)
               log.puts buf
               puts buf
             end

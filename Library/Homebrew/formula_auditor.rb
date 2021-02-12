@@ -133,7 +133,7 @@ module Homebrew
         return
       end
 
-      if oldname = CoreTap.instance.formula_renames[name]
+      if (oldname = CoreTap.instance.formula_renames[name])
         problem "'#{name}' is reserved as the old name of #{oldname} in homebrew/core."
         return
       end
@@ -367,10 +367,10 @@ module Homebrew
 
       return unless DevelopmentTools.curl_handles_most_https_certificates?
 
-      if http_content_problem = curl_check_http_content(homepage,
-                                                        user_agents:   [:browser, :default],
-                                                        check_content: true,
-                                                        strict:        @strict)
+      if (http_content_problem = curl_check_http_content(homepage,
+                                                         user_agents:   [:browser, :default],
+                                                         check_content: true,
+                                                         strict:        @strict))
         problem http_content_problem
       end
     end
@@ -472,7 +472,7 @@ module Homebrew
 
       %w[Stable HEAD].each do |name|
         spec_name = name.downcase.to_sym
-        next unless spec = formula.send(spec_name)
+        next unless (spec = formula.send(spec_name))
 
         ra = ResourceAuditor.new(spec, spec_name, online: @online, strict: @strict).audit
         ra.problems.each do |message|
@@ -497,7 +497,7 @@ module Homebrew
         )
       end
 
-      if stable = formula.stable
+      if (stable = formula.stable)
         version = stable.version
         problem "Stable: version (#{version}) is set to a string without a digit" if version.to_s !~ /\d/
         if version.to_s.start_with?("HEAD")

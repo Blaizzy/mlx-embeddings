@@ -15,7 +15,7 @@ module RuboCop
         def audit_formula(node, _class_node, _parent_class_node, body_node)
           full_source_content = source_buffer(node).source
 
-          if match = full_source_content.match(/^require ['"]formula['"]$/)
+          if (match = full_source_content.match(/^require ['"]formula['"]$/))
             range = source_range(source_buffer(node), match.pre_match.count("\n") + 1, 0, match[0].length)
             add_offense(range, message: "`#{match}` is now unnecessary") do |corrector|
               corrector.remove(range_with_surrounding_space(range: range))
@@ -95,7 +95,7 @@ module RuboCop
           end
 
           prefix_path(body_node) do |prefix_node, path|
-            next unless match = path.match(%r{^(bin|include|libexec|lib|sbin|share|Frameworks)(?:/| |$)})
+            next unless (match = path.match(%r{^(bin|include|libexec|lib|sbin|share|Frameworks)(?:/| |$)}))
 
             offending_node(prefix_node)
             problem "Use `#{match[1].downcase}` instead of `prefix + \"#{match[1]}\"`"

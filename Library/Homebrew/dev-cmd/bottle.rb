@@ -254,7 +254,7 @@ module Homebrew
   def bottle_formula(f, args:)
     return ofail "Formula not installed or up-to-date: #{f.full_name}" unless f.latest_version_installed?
 
-    unless tap = f.tap
+    unless (tap = f.tap)
       return ofail "Formula not from core or any installed taps: #{f.full_name}" unless args.force_core_tap?
 
       tap = CoreTap.instance

@@ -108,7 +108,7 @@ module Homebrew
     end
 
     def check_for_dependents(kegs, casks: [], named_args: [])
-      return false unless result = InstalledDependents.find_some_installed_dependents(kegs, casks: casks)
+      return false unless (result = InstalledDependents.find_some_installed_dependents(kegs, casks: casks))
 
       if Homebrew::EnvConfig.developer?
         DeveloperDependentsMessage.new(*result, named_args: named_args).output

@@ -453,7 +453,7 @@ class BuildError < RuntimeError
     if formula.tap && defined?(OS::ISSUES_URL)
       if formula.tap.official?
         puts Formatter.error(Formatter.url(OS::ISSUES_URL), label: "READ THIS")
-      elsif issues_url = formula.tap.issues_url
+      elsif (issues_url = formula.tap.issues_url)
         puts <<~EOS
           If reporting this issue please do so at (not Homebrew/brew or Homebrew/core):
             #{Formatter.url(issues_url)}
