@@ -80,8 +80,8 @@ describe Cask::DSL, :cask do
       end
 
       expect(cask.name).to eq([
-                                "Proper Name",
-                              ])
+        "Proper Name",
+      ])
     end
 
     it "Accepts an array value to the name stanza" do
@@ -90,9 +90,9 @@ describe Cask::DSL, :cask do
       end
 
       expect(cask.name).to eq([
-                                "Proper Name",
-                                "Alternate Name",
-                              ])
+        "Proper Name",
+        "Alternate Name",
+      ])
     end
 
     it "Accepts multiple name stanzas" do
@@ -102,9 +102,9 @@ describe Cask::DSL, :cask do
       end
 
       expect(cask.name).to eq([
-                                "Proper Name",
-                                "Alternate Name",
-                              ])
+        "Proper Name",
+        "Alternate Name",
+      ])
     end
   end
 
@@ -497,8 +497,8 @@ describe Cask::DSL, :cask do
 
     it "does not include a trailing slash" do
       config = Cask::Config.new(explicit: {
-                                  appdir: "/Applications/",
-                                })
+        appdir: "/Applications/",
+      })
 
       cask = Cask::Cask.new("appdir-trailing-slash", config: config) do
         binary "#{appdir}/some/path"

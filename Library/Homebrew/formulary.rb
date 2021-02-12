@@ -502,11 +502,11 @@ module Formulary
     name = name.to_s.downcase
     taps.map do |tap|
       Pathname.glob([
-                      "#{tap}Formula/#{name}.rb",
-                      "#{tap}HomebrewFormula/#{name}.rb",
-                      "#{tap}#{name}.rb",
-                      "#{tap}Aliases/#{name}",
-                    ]).find(&:file?)
+        "#{tap}Formula/#{name}.rb",
+        "#{tap}HomebrewFormula/#{name}.rb",
+        "#{tap}#{name}.rb",
+        "#{tap}Aliases/#{name}",
+      ]).find(&:file?)
     end.compact
   end
 end

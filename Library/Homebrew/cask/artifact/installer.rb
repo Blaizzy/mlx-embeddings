@@ -13,9 +13,9 @@ module Cask
     # @api private
     class Installer < AbstractArtifact
       VALID_KEYS = Set.new([
-                             :manual,
-                             :script,
-                           ]).freeze
+        :manual,
+        :script,
+      ]).freeze
 
       # Extension module for manual installers.
       module ManualInstaller

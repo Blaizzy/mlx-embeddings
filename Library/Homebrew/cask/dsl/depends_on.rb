@@ -12,13 +12,13 @@ module Cask
     # @api private
     class DependsOn < SimpleDelegator
       VALID_KEYS = Set.new([
-                             :formula,
-                             :cask,
-                             :macos,
-                             :arch,
-                             :x11,
-                             :java,
-                           ]).freeze
+        :formula,
+        :cask,
+        :macos,
+        :arch,
+        :x11,
+        :java,
+      ]).freeze
 
       VALID_ARCHES = {
         intel:  { type: :intel, bits: 64 },

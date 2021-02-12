@@ -240,6 +240,12 @@ Layout/SpaceAroundOperators:
 Layout/RescueEnsureAlignment:
   Enabled: false
 
+# significantly less indentation involved; more consistent
+Layout/FirstArrayElementIndentation:
+  EnforcedStyle: consistent
+Layout/FirstHashElementIndentation:
+  EnforcedStyle: consistent
+
 # favour parens-less DSL-style arguments
 Lint/AmbiguousBlockAssociation:
   Enabled: false
