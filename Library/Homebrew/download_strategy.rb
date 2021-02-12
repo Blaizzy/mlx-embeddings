@@ -71,25 +71,29 @@ class AbstractDownloadStrategy
   # Unlike {Resource#stage}, this does not take a block.
   #
   # @api public
-  def stage
+  def stage(&block)
     UnpackStrategy.detect(cached_location,
                           prioritise_extension: true,
                           ref_type: @ref_type, ref: @ref)
                   .extract_nestedly(basename:             basename,
                                     prioritise_extension: true,
                                     verbose:              verbose? && !quiet?)
-    chdir
+    chdir(&block)
   end
 
-  def chdir
+  def chdir(&block)
     entries = Dir["*"]
     raise "Empty archive" if entries.length.zero?
-    return if entries.length != 1
 
-    begin
-      Dir.chdir entries.first
-    rescue
-      nil
+    if entries.length != 1
+      yield if block
+      return
+    end
+
+    if File.directory? entries.first
+      Dir.chdir(entries.first, &block)
+    elsif block
+      yield
     end
   end
   private :chdir
