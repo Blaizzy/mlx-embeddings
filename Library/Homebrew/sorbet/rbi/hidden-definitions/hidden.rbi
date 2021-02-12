@@ -30018,8 +30018,27 @@ class WEBrick::HTTPServlet::FileHandler
   def set_filesystem_encoding(str); end
 end
 
+module Warning::Processor
+  def clear(); end
+
+  def dedup(); end
+
+  def freeze(); end
+
+  def ignore(regexp, path=T.unsafe(nil)); end
+
+  def process(path=T.unsafe(nil), actions=T.unsafe(nil), &block); end
+
+  def warn(str); end
+  IGNORE_MAP = ::T.let(nil, ::T.untyped)
+end
+
+module Warning::Processor
+end
+
 module Warning
   extend ::Warning
+  extend ::Warning::Processor
 end
 
 class WeakRef
