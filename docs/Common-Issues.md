@@ -116,4 +116,4 @@ brew upgrade
 
 ### Local build failures
 
-Build failures on one machine, but not similarly equipped machines (check issues for other projects too), can indicate that the install is borked. If `brew doctor` doesn’t, reinstalling may help.  That is, `brew bundle dump`, [uninstall](https://docs.brew.sh/FAQ#how-do-i-uninstall-homebrew), [reinstall](https://docs.brew.sh/Installation), and `brew bundle install`.
+Build failures on one machine, but not similarly equipped machines (check issues for other projects too), can indicate that the install is borked. If `brew doctor` doesn’t, reinstalling may help. That is, `brew bundle dump`, [uninstall](https://docs.brew.sh/FAQ#how-do-i-uninstall-homebrew), [reinstall](https://docs.brew.sh/Installation), and `brew bundle install`.
