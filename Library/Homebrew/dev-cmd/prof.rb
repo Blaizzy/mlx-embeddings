@@ -17,7 +17,7 @@ module Homebrew
       switch "--stackprof",
              description: "Use `stackprof` instead of `ruby-prof` (the default)."
 
-      named_args :command
+      named_args :command, min: 1
     end
   end
 
