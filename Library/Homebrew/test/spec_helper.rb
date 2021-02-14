@@ -23,12 +23,17 @@ if ENV["HOMEBREW_TESTS_COVERAGE"]
   SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new(formatters)
 end
 
+require_relative "../warnings"
+
+Warnings.ignore :parser_syntax do
+  require "rubocop"
+end
+
 require "rspec/its"
 require "rspec/github"
 require "rspec/wait"
 require "rspec/retry"
 require "rspec/sorbet"
-require "rubocop"
 require "rubocop/rspec/support"
 require "find"
 require "byebug"
