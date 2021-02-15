@@ -14099,8 +14099,6 @@ class Pry::CLI
 
   def self.add_options(&block); end
 
-  def self.add_plugin_options(); end
-
   def self.input_args(); end
 
   def self.input_args=(input_args); end
@@ -15386,10 +15384,6 @@ class Pry::Config
 
   def should_load_local_rc=(should_load_local_rc); end
 
-  def should_load_plugins(); end
-
-  def should_load_plugins=(should_load_plugins); end
-
   def should_load_rc(); end
 
   def should_load_rc=(should_load_rc); end
@@ -16519,66 +16513,6 @@ end
 class Pry::Pager
 end
 
-class Pry::PluginManager
-  def load_plugins(); end
-
-  def locate_plugins(); end
-
-  def plugins(); end
-  PRY_PLUGIN_PREFIX = ::T.let(nil, ::T.untyped)
-end
-
-class Pry::PluginManager::NoPlugin
-  def initialize(name); end
-end
-
-class Pry::PluginManager::NoPlugin
-end
-
-class Pry::PluginManager::Plugin
-  def activate!(); end
-
-  def active(); end
-
-  def active=(active); end
-
-  def active?(); end
-
-  def disable!(); end
-
-  def enable!(); end
-
-  def enabled(); end
-
-  def enabled=(enabled); end
-
-  def enabled?(); end
-
-  def gem_name(); end
-
-  def gem_name=(gem_name); end
-
-  def initialize(name, gem_name, spec, enabled); end
-
-  def load_cli_options(); end
-
-  def name(); end
-
-  def name=(name); end
-
-  def spec(); end
-
-  def spec=(spec); end
-
-  def supported?(); end
-end
-
-class Pry::PluginManager::Plugin
-end
-
-class Pry::PluginManager
-end
-
 class Pry::Prompt
   def [](key); end
 
@@ -16817,29 +16751,17 @@ end
 class Pry::Slop::Option
   def accepts_optional_argument?(); end
 
-  def argument?(); end
-
   def argument_in_value(); end
 
   def argument_in_value=(argument_in_value); end
 
-  def as?(); end
-
-  def autocreated?(); end
-
   def call(*objects); end
-
-  def callback?(); end
 
   def config(); end
 
   def count(); end
 
   def count=(count); end
-
-  def default?(); end
-
-  def delimiter?(); end
 
   def description(); end
 
@@ -16851,21 +16773,9 @@ class Pry::Slop::Option
 
   def key(); end
 
-  def limit?(); end
-
   def long(); end
 
-  def match?(); end
-
-  def optional?(); end
-
-  def optional_argument?(); end
-
-  def required?(); end
-
   def short(); end
-
-  def tail?(); end
 
   def types(); end
 
@@ -17114,8 +17024,6 @@ class Pry
 
   def self.load_history(); end
 
-  def self.load_plugins(*args, &block); end
-
   def self.load_rc_files(); end
 
   def self.load_requires(); end
@@ -17123,8 +17031,6 @@ class Pry
   def self.load_traps(); end
 
   def self.load_win32console(); end
-
-  def self.locate_plugins(*args, &block); end
 
   def self.main(); end
 
@@ -17139,8 +17045,6 @@ class Pry
   def self.pager(*args, &block); end
 
   def self.pager=(*args, &block); end
-
-  def self.plugins(*args, &block); end
 
   def self.print(*args, &block); end
 
@@ -29127,6 +29031,12 @@ class Spoom::Sorbet::Errors::Parser
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+module Spoom::Sorbet::Errors
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 module Spoom::Sorbet::MetricsParser
   extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
@@ -29140,12 +29050,16 @@ module Spoom::Sorbet::Sigils
 end
 
 module Spoom::Sorbet
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::Timeline
   extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class Spoom::Timeline
+module Spoom
   extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
