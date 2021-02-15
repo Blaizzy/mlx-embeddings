@@ -78,7 +78,13 @@ module Homebrew
                     fix: false, except_cops: nil, only_cops: nil, display_cop_names: false, reset_cache: false,
                     debug: false, verbose: false)
       Homebrew.install_bundler_gems!
-      require "rubocop"
+
+      require "warnings"
+
+      Warnings.ignore :parser_syntax do
+        require "rubocop"
+      end
+
       require "rubocops"
 
       args = %w[

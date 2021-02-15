@@ -2,18 +2,10 @@
 # typed: false
 # frozen_string_literal: true
 
-require "warning"
+require_relative "../warnings"
 
-warnings = [
-  %r{warning: parser/current is loading parser/ruby\d+, which recognizes},
-  /warning: \d+\.\d+\.\d+-compliant syntax, but you are running \d+\.\d+\.\d+\./,
-  %r{warning: please see https://github\.com/whitequark/parser#compatibility-with-ruby-mri\.},
-]
-
-warnings.each do |warning|
-  Warning.ignore warning
+Warnings.ignore :parser_syntax do
+  require "rubocop"
 end
-
-require "rubocop"
 
 exit RuboCop::CLI.new.run
