@@ -1259,7 +1259,7 @@ which build systems would not find otherwise.
 
 ### `sponsors`
 
-Print a Markdown summary of Homebrew's GitHub Sponsors, suitable for pasting into a README.
+Update the list of GitHub Sponsors in the `Homebrew/brew` README.
 
 ### `style` [*`options`*] [*`file`*|*`tap`*|*`formula`*|*`cask`* ...]
 

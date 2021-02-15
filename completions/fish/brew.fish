@@ -1225,7 +1225,7 @@ __fish_brew_complete_arg 'sh' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'sh' -l verbose -d 'Make some output more verbose'
 
 
-__fish_brew_complete_cmd 'sponsors' 'Print a Markdown summary of Homebrew\'s GitHub Sponsors, suitable for pasting into a README'
+__fish_brew_complete_cmd 'sponsors' 'Update the list of GitHub Sponsors in the `Homebrew/brew` README'
 __fish_brew_complete_arg 'sponsors' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'sponsors' -l help -d 'Show this message'
 __fish_brew_complete_arg 'sponsors' -l quiet -d 'Make some output more quiet'
