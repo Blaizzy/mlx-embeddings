@@ -162,7 +162,7 @@ module RuboCop
 
           find_instance_method_call(body_node, :build, :without?) do |method|
             arg = parameters(method).first
-            next unless match = regex_match_group(arg, /^-?-?without-(.*)/)
+            next unless (match = regex_match_group(arg, /^-?-?without-(.*)/))
 
             problem "Don't duplicate 'without': " \
                     "Use `build.without? \"#{match[1]}\"` to check for \"--without-#{match[1]}\""
@@ -170,7 +170,7 @@ module RuboCop
 
           find_instance_method_call(body_node, :build, :with?) do |method|
             arg = parameters(method).first
-            next unless match = regex_match_group(arg, /^-?-?with-(.*)/)
+            next unless (match = regex_match_group(arg, /^-?-?with-(.*)/))
 
             problem "Don't duplicate 'with': Use `build.with? \"#{match[1]}\"` to check for \"--with-#{match[1]}\""
           end
@@ -258,7 +258,7 @@ module RuboCop
 
           popen_commands.each do |command|
             find_instance_method_call(body_node, "Utils", command) do |method|
-              next unless match = regex_match_group(parameters(method).first, /^([^"' ]+)=([^"' ]+)(?: (.*))?$/)
+              next unless (match = regex_match_group(parameters(method).first, /^([^"' ]+)=([^"' ]+)(?: (.*))?$/))
 
               good_args = "Utils.#{command}({ \"#{match[1]}\" => \"#{match[2]}\" }, \"#{match[3]}\")"
 
@@ -329,7 +329,7 @@ module RuboCop
           find_strings(body_node).each do |str|
             content = string_content(str)
 
-            next unless match = content.match(/^python(@)?(\d\.\d+)$/)
+            next unless (match = content.match(/^python(@)?(\d\.\d+)$/))
             next if python_version == match[2]
 
             fix = if match[1]
@@ -385,7 +385,7 @@ module RuboCop
           end
 
           find_instance_method_call(body_node, :man, :+) do |method|
-            next unless match = regex_match_group(parameters(method).first, /^man[1-8]$/)
+            next unless (match = regex_match_group(parameters(method).first, /^man[1-8]$/))
 
             problem "\"#{method.source}\" should be \"#{match[0]}\""
           end
@@ -393,37 +393,37 @@ module RuboCop
           # Avoid hard-coding compilers
           find_every_method_call_by_name(body_node, :system).each do |method|
             param = parameters(method).first
-            if match = regex_match_group(param, %r{^(/usr/bin/)?(gcc|llvm-gcc|clang)(\s|$)})
+            if (match = regex_match_group(param, %r{^(/usr/bin/)?(gcc|llvm-gcc|clang)(\s|$)}))
               problem "Use \"\#{ENV.cc}\" instead of hard-coding \"#{match[2]}\""
-            elsif match = regex_match_group(param, %r{^(/usr/bin/)?((g|llvm-g|clang)\+\+)(\s|$)})
+            elsif (match = regex_match_group(param, %r{^(/usr/bin/)?((g|llvm-g|clang)\+\+)(\s|$)}))
               problem "Use \"\#{ENV.cxx}\" instead of hard-coding \"#{match[2]}\""
             end
           end
 
           find_instance_method_call(body_node, "ENV", :[]=) do |method|
             param = parameters(method)[1]
-            if match = regex_match_group(param, %r{^(/usr/bin/)?(gcc|llvm-gcc|clang)(\s|$)})
+            if (match = regex_match_group(param, %r{^(/usr/bin/)?(gcc|llvm-gcc|clang)(\s|$)}))
               problem "Use \"\#{ENV.cc}\" instead of hard-coding \"#{match[2]}\""
-            elsif match = regex_match_group(param, %r{^(/usr/bin/)?((g|llvm-g|clang)\+\+)(\s|$)})
+            elsif (match = regex_match_group(param, %r{^(/usr/bin/)?((g|llvm-g|clang)\+\+)(\s|$)}))
               problem "Use \"\#{ENV.cxx}\" instead of hard-coding \"#{match[2]}\""
             end
           end
 
           # Prefer formula path shortcuts in strings
           formula_path_strings(body_node, :share) do |p|
-            next unless match = regex_match_group(p, %r{^(/(man))/?})
+            next unless (match = regex_match_group(p, %r{^(/(man))/?}))
 
             problem "\"\#{share}#{match[1]}\" should be \"\#{#{match[2]}}\""
           end
 
           formula_path_strings(body_node, :prefix) do |p|
-            if match = regex_match_group(p, %r{^(/share/(info|man))$})
+            if (match = regex_match_group(p, %r{^(/share/(info|man))$}))
               problem "\"\#\{prefix}#{match[1]}\" should be \"\#{#{match[2]}}\""
             end
-            if match = regex_match_group(p, %r{^((/share/man/)(man[1-8]))})
+            if (match = regex_match_group(p, %r{^((/share/man/)(man[1-8]))}))
               problem "\"\#\{prefix}#{match[1]}\" should be \"\#{#{match[3]}}\""
             end
-            if match = regex_match_group(p, %r{^(/(bin|include|libexec|lib|sbin|share|Frameworks))}i)
+            if (match = regex_match_group(p, %r{^(/(bin|include|libexec|lib|sbin|share|Frameworks))}i))
               problem "\"\#\{prefix}#{match[1]}\" should be \"\#{#{match[2].downcase}}\""
             end
           end
@@ -431,13 +431,13 @@ module RuboCop
           find_every_method_call_by_name(body_node, :depends_on).each do |method|
             key, value = destructure_hash(parameters(method).first)
             next if key.nil? || value.nil?
-            next unless match = regex_match_group(value, /^(lua|perl|python|ruby)(\d*)/)
+            next unless (match = regex_match_group(value, /^(lua|perl|python|ruby)(\d*)/))
 
             problem "#{match[1]} modules should be vendored rather than use deprecated `#{method.source}`"
           end
 
           find_every_method_call_by_name(body_node, :system).each do |method|
-            next unless match = regex_match_group(parameters(method).first, /^(env|export)(\s+)?/)
+            next unless (match = regex_match_group(parameters(method).first, /^(env|export)(\s+)?/))
 
             problem "Use ENV instead of invoking '#{match[1]}' to modify the environment"
           end
@@ -449,7 +449,7 @@ module RuboCop
 
             option_child_nodes.each do |option|
               find_strings(option).each do |dependency|
-                next unless match = regex_match_group(dependency, /(with(out)?-\w+|c\+\+11)/)
+                next unless (match = regex_match_group(dependency, /(with(out)?-\w+|c\+\+11)/))
 
                 problem "Dependency #{string_content(dep)} should not use option #{match[0]}"
               end
@@ -560,7 +560,7 @@ module RuboCop
 
             path = parameters(method).first
             next unless path.str_type?
-            next unless match = regex_match_group(path, /^[^*{},]+$/)
+            next unless (match = regex_match_group(path, /^[^*{},]+$/))
 
             problem "Dir([\"#{string_content(path)}\"]) is unnecessary; just use \"#{match[0]}\""
           end
@@ -572,7 +572,7 @@ module RuboCop
           )
           find_every_method_call_by_name(body_node, :system).each do |method|
             param = parameters(method).first
-            next unless match = regex_match_group(param, fileutils_methods)
+            next unless (match = regex_match_group(param, fileutils_methods))
 
             problem "Use the `#{match}` Ruby method instead of `#{method.source}`"
           end
@@ -672,7 +672,7 @@ module RuboCop
             # Only separate when no shell metacharacters are present
             next if shell_metacharacters.any? { |meta| string_content(parameters(method).first).include?(meta) }
 
-            next unless match = regex_match_group(parameters(method).first, shell_cmd_with_spaces_regex)
+            next unless (match = regex_match_group(parameters(method).first, shell_cmd_with_spaces_regex))
 
             good_args = match[0].gsub(" ", "\", \"")
             offending_node(parameters(method).first)
@@ -688,7 +688,7 @@ module RuboCop
               # Only separate when no shell metacharacters are present
               next if shell_metacharacters.any? { |meta| string_content(parameters(method)[index]).include?(meta) }
 
-              next unless match = regex_match_group(parameters(method)[index], shell_cmd_with_spaces_regex)
+              next unless (match = regex_match_group(parameters(method)[index], shell_cmd_with_spaces_regex))
 
               good_args = match[0].gsub(" ", "\", \"")
               offending_node(parameters(method)[index])

@@ -47,7 +47,7 @@ module RuboCop
 
           test_calls(test) do |node, params|
             p1, p2 = params
-            if match = string_content(p1).match(%r{(/usr/local/(s?bin))})
+            if (match = string_content(p1).match(%r{(/usr/local/(s?bin))}))
               offending_node(p1)
               problem "use \#{#{match[2]}} instead of #{match[1]} in #{node}" do |corrector|
                 corrector.replace(p1.source_range, p1.source.sub(match[1], "\#{#{match[2]}}"))

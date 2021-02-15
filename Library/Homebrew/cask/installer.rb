@@ -191,7 +191,7 @@ module Cask
 
       basename = downloader.basename
 
-      if nested_container = @cask.container&.nested
+      if (nested_container = @cask.container&.nested)
         Dir.mktmpdir do |tmpdir|
           tmpdir = Pathname(tmpdir)
           primary_container.extract(to: tmpdir, basename: basename, verbose: verbose?)

@@ -10,7 +10,7 @@ module Homebrew
   # @api private
   module Search
     def query_regexp(query)
-      if m = query.match(%r{^/(.*)/$})
+      if (m = query.match(%r{^/(.*)/$}))
         Regexp.new(m[1])
       else
         query

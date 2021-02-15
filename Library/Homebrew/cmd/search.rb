@@ -73,7 +73,7 @@ module Homebrew
   def search
     args = search_args.parse
 
-    if package_manager = PACKAGE_MANAGERS.find { |name,| args[:"#{name}?"] }
+    if (package_manager = PACKAGE_MANAGERS.find { |name,| args[:"#{name}?"] })
       _, url = package_manager
       exec_browser url.call(URI.encode_www_form_component(args.named.join(" ")))
       return

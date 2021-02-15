@@ -31,12 +31,12 @@ class X11Requirement < Requirement
   end
 
   satisfy build_env: false do
-    if which_xorg = which("Xorg")
+    if (which_xorg = which("Xorg"))
       version = Utils.popen_read(which_xorg, "-version", err: :out)[/X Server (\d+\.\d+\.\d+)/, 1]
       next true if $CHILD_STATUS.success? && version && Version.new(version) >= min_version
     end
 
-    if which_xdpyinfo = which("xdpyinfo")
+    if (which_xdpyinfo = which("xdpyinfo"))
       version = Utils.popen_read(which_xdpyinfo, "-version")[/^xdpyinfo (\d+\.\d+\.\d+)/, 1]
       next true if $CHILD_STATUS.success? && version && Version.new(version) >= min_xdpyinfo_version
     end

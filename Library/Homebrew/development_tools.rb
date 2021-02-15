@@ -43,7 +43,7 @@ class DevelopmentTools
     def clang_version
       @clang_version ||= begin
         if (path = locate("clang")) &&
-           build_version = `#{path} --version`[/(?:clang|LLVM) version (\d+\.\d)/, 1]
+           (build_version = `#{path} --version`[/(?:clang|LLVM) version (\d+\.\d)/, 1])
           Version.new build_version
         else
           Version::NULL
@@ -54,7 +54,7 @@ class DevelopmentTools
     def clang_build_version
       @clang_build_version ||= begin
         if (path = locate("clang")) &&
-           build_version = `#{path} --version`[%r{clang(-| version [^ ]+ \(tags/RELEASE_)(\d{2,})}, 2]
+           (build_version = `#{path} --version`[%r{clang(-| version [^ ]+ \(tags/RELEASE_)(\d{2,})}, 2])
           Version.new build_version
         else
           Version::NULL
@@ -66,7 +66,7 @@ class DevelopmentTools
       @llvm_clang_build_version ||= begin
         path = Formulary.factory("llvm").opt_prefix/"bin/clang"
         if path.executable? &&
-           build_version = `#{path} --version`[/clang version (\d\.\d\.\d)/, 1]
+           (build_version = `#{path} --version`[/clang version (\d\.\d\.\d)/, 1])
           Version.new build_version
         else
           Version::NULL
@@ -79,7 +79,7 @@ class DevelopmentTools
         path = HOMEBREW_PREFIX/"opt/#{CompilerSelector.preferred_gcc}/bin"/cc
         path = locate(cc) unless path.exist?
         version = if path &&
-                     build_version = `#{path} --version`[/gcc(?:(?:-\d+(?:\.\d)?)? \(.+\))? (\d+\.\d\.\d)/, 1]
+                     (build_version = `#{path} --version`[/gcc(?:(?:-\d+(?:\.\d)?)? \(.+\))? (\d+\.\d\.\d)/, 1])
           Version.new build_version
         else
           Version::NULL

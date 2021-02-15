@@ -445,11 +445,11 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
     content_disposition_parser = Mechanize::HTTP::ContentDispositionParser.new
 
     parse_content_disposition = lambda do |line|
-      next unless content_disposition = content_disposition_parser.parse(line.sub(/; *$/, ""), true)
+      next unless (content_disposition = content_disposition_parser.parse(line.sub(/; *$/, ""), true))
 
       filename = nil
 
-      if filename_with_encoding = content_disposition.parameters["filename*"]
+      if (filename_with_encoding = content_disposition.parameters["filename*"])
         encoding, encoded_filename = filename_with_encoding.split("''", 2)
         filename = URI.decode_www_form_component(encoded_filename).encode(encoding) if encoding && encoded_filename
       end

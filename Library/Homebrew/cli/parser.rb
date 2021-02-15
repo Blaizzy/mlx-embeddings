@@ -623,7 +623,7 @@ module Homebrew
       end
 
       def split_non_options(argv)
-        if sep = argv.index("--")
+        if (sep = argv.index("--"))
           [argv.take(sep), argv.drop(sep + 1)]
         else
           [argv, []]

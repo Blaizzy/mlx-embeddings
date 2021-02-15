@@ -16,7 +16,7 @@ module Context
   end
 
   def self.current
-    if current_context = Thread.current[:context]
+    if (current_context = Thread.current[:context])
       return current_context
     end
 

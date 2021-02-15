@@ -575,7 +575,7 @@ class FormulaInstaller
     formula_deps_map = Dependency.expand(formula)
                                  .index_by(&:name)
 
-    while f = formulae.pop
+    while (f = formulae.pop)
       runtime_requirements = runtime_requirements(f)
       f.recursive_requirements do |dependent, req|
         build = effective_build_options_for(dependent)
