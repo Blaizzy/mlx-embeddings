@@ -362,23 +362,27 @@ class Tapioca::Gemfile
   sig { void }
   def initialize; end
 
+  sig { returns(Bundler::Definition) }
+  def definition; end
   sig { returns(T::Array[Tapioca::Gemfile::Gem]) }
   def dependencies; end
   sig { params(gem_name: String).returns(T.nilable(Tapioca::Gemfile::Gem)) }
   def gem(gem_name); end
+  sig { returns(T::Array[String]) }
+  def missing_specs; end
   sig { void }
   def require; end
 
   private
 
-  sig { returns(Bundler::Definition) }
-  def definition; end
   sig { returns(String) }
   def dir; end
   sig { returns(File) }
   def gemfile; end
   sig { returns(T::Array[Symbol]) }
   def groups; end
+  sig { returns([T::Array[Tapioca::Gemfile::Gem], T::Array[String]]) }
+  def load_dependencies; end
   def lockfile; end
   sig { returns(Bundler::Runtime) }
   def runtime; end
