@@ -39,7 +39,7 @@ module Homebrew
 
     begin
       latest_release = GitHub.get_latest_release "Homebrew", "brew"
-    rescue GitHub::HTTPNotFoundError
+    rescue GitHub::API::HTTPNotFoundError
       odie "No existing releases found!"
     end
     latest_version = Version.new latest_release["tag_name"]
@@ -48,7 +48,7 @@ module Homebrew
       one_month_ago = Date.today << 1
       latest_major_minor_release = begin
         GitHub.get_release "Homebrew", "brew", "#{latest_version.major_minor}.0"
-      rescue GitHub::HTTPNotFoundError
+      rescue GitHub::API::HTTPNotFoundError
         nil
       end
 
@@ -89,7 +89,7 @@ module Homebrew
 
     begin
       release = GitHub.create_or_update_release "Homebrew", "brew", new_version, body: release_notes, draft: true
-    rescue *GitHub::API_ERRORS => e
+    rescue *GitHub::API::API_ERRORS => e
       odie "Unable to create release: #{e.message}!"
     end
 

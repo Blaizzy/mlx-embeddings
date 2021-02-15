@@ -55,7 +55,7 @@ module Homebrew
       files["00.tap.out"] = { content: tap }
     end
 
-    odie "`brew gist-logs` requires HOMEBREW_GITHUB_API_TOKEN to be set!" if GitHub.api_credentials_type == :none
+    odie "`brew gist-logs` requires HOMEBREW_GITHUB_API_TOKEN to be set!" if GitHub::API.api_credentials_type == :none
 
     # Description formatted to work well as page title when viewing gist
     descr = if f.core_formula?
@@ -63,9 +63,9 @@ module Homebrew
     else
       "#{f.name} (#{f.full_name}) on #{OS_VERSION} - Homebrew build logs"
     end
-    url = create_gist(files, descr, private: args.private?)
+    url = GitHub.create_gist(files, descr, private: args.private?)
 
-    url = create_issue(f.tap, "#{f.name} failed to build on #{MacOS.full_version}", url) if args.new_issue?
+    url = GitHub.create_issue(f.tap, "#{f.name} failed to build on #{MacOS.full_version}", url) if args.new_issue?
 
     puts url if url
   end
@@ -106,20 +106,6 @@ module Homebrew
     odie "No logs." if logs.empty?
 
     logs
-  end
-
-  def create_gist(files, description, private:)
-    url = "https://api.github.com/gists"
-    data = { "public" => !private, "files" => files, "description" => description }
-    scopes = GitHub::CREATE_GIST_SCOPES
-    GitHub.open_api(url, data: data, scopes: scopes)["html_url"]
-  end
-
-  def create_issue(repo, title, body)
-    url = "https://api.github.com/repos/#{repo}/issues"
-    data = { "title" => title, "body" => body }
-    scopes = GitHub::CREATE_ISSUE_FORK_OR_PR_SCOPES
-    GitHub.open_api(url, data: data, scopes: scopes)["html_url"]
   end
 
   def gist_logs

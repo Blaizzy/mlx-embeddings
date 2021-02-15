@@ -692,9 +692,9 @@ class Tap
         else
           GitHub.private_repo?(full_name)
         end
-      rescue GitHub::HTTPNotFoundError
+      rescue GitHub::API::HTTPNotFoundError
         true
-      rescue GitHub::Error
+      rescue GitHub::API::Error
         false
       end
     end

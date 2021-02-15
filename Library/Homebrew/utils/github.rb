@@ -30,6 +30,18 @@ module GitHub
     search("issues", query, **qualifiers)
   end
 
+  def create_gist(files, description, private:)
+    url = "https://api.github.com/gists"
+    data = { "public" => !private, "files" => files, "description" => description }
+    API.open_api(url, data: data, scopes: CREATE_GIST_SCOPES)["html_url"]
+  end
+
+  def create_issue(repo, title, body)
+    url = "https://api.github.com/repos/#{repo}/issues"
+    data = { "title" => title, "body" => body }
+    API.open_api(url, data: data, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)["html_url"]
+  end
+
   def repository(user, repo)
     API.open_api(url_to("repos", user, repo))
   end

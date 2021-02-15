@@ -114,7 +114,7 @@ module Homebrew
           rel = GitHub.get_release user, repo, tag
           odebug "Existing GitHub release \"#{tag}\" found"
           rel
-        rescue GitHub::HTTPNotFoundError
+        rescue GitHub::API::HTTPNotFoundError
           odebug "Creating new GitHub release \"#{tag}\""
           GitHub.create_or_update_release user, repo, tag
         end

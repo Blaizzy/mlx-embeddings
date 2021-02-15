@@ -79,7 +79,7 @@ module Homebrew
             @desc = metadata["description"]
             @homepage = metadata["homepage"]
             @license = metadata["license"]["spdx_id"] if metadata["license"]
-          rescue GitHub::HTTPNotFoundError
+          rescue GitHub::API::HTTPNotFoundError
             # If there was no repository found assume the network connection is at
             # fault rather than the input URL.
             nil

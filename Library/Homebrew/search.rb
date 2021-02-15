@@ -48,7 +48,7 @@ module Homebrew
           filename:  query,
           extension: "rb",
         )
-      rescue GitHub::Error => e
+      rescue GitHub::API::Error => e
         opoo "Error searching on GitHub: #{e}\n"
         nil
       end
