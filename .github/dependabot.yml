@@ -10,10 +10,14 @@ updates:
     directory: /docs
     schedule:
       interval: weekly
+    allow:
+      - dependency-type: all
 
   - package-ecosystem: bundler
     directory: /Library/Homebrew
     schedule:
       interval: daily
+    allow:
+      - dependency-type: all
     ignore:
       - dependency-name: sorbet-runtime
