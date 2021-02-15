@@ -1207,7 +1207,7 @@ Apply the bottle commit and publish bottles to Bintray or GitHub Releases.
 * `--root-url`:
   Use the specified *`URL`* as the root of the bottle's URL instead of Homebrew's default.
 
-### `prof` [*`--stackprof`*] [*`command`* ...]
+### `prof` [*`--stackprof`*] *`command`* [...]
 
 Run Homebrew with a Ruby profiler. For example, `brew prof readall`.
 
