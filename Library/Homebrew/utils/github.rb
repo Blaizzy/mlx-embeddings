@@ -13,6 +13,12 @@ module GitHub
 
   module_function
 
+  def open_api(url, data: nil, data_binary_path: nil, request_method: nil, scopes: [].freeze, parse_json: true)
+    odeprecated "GitHub.open_api", "GitHub::API.open_api"
+    API.open_api(url, data: data, data_binary_path: data_binary_path, request_method: request_method,
+                 scopes: scopes, parse_json: parse_json)
+  end
+
   def check_runs(repo: nil, commit: nil, pr: nil)
     if pr
       repo = pr.fetch("base").fetch("repo").fetch("full_name")
