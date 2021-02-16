@@ -130,6 +130,8 @@ module Homebrew
     return "unable to get versions" if latest.blank?
 
     latest.to_s
+  rescue => e
+    "error: #{e}"
   end
 
   def retrieve_pull_requests(formula_or_cask, name)
