@@ -178,7 +178,7 @@ class SoftwareSpec
   end
 
   def uses_from_macos(spec, _bounds = {})
-    spec = Hash[*spec.first] if spec.is_a?(Hash)
+    spec = spec.dup.shift if spec.is_a?(Hash)
     depends_on(spec)
   end
 
