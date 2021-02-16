@@ -196,7 +196,7 @@ __brew_internal_commands() {
     'search:Perform a substring search of cask tokens and formula names for text'
     'sh:Enter an interactive shell for Homebrew'\''s build environment'
     'shellenv:Print export statements'
-    'sponsors:Print a Markdown summary of Homebrew'\''s GitHub Sponsors, suitable for pasting into a README'
+    'sponsors:Update the list of GitHub Sponsors in the `Homebrew/brew` README'
     'style:Check formulae or files for conformance to Homebrew style guidelines'
     'tap:Tap a formula repository'
     'tap-info:Show detailed information about one or more taps'
