@@ -110,7 +110,7 @@ module SPDX
       else
         bracket = false
         license_expression.each do |expression|
-          expressions.push license_expression_to_string(Hash[*expression], bracket: true)
+          expressions.push license_expression_to_string([expression].to_h, bracket: true)
         end
       end
 

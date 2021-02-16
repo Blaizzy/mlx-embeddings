@@ -9,7 +9,7 @@ class SoftwareSpec
 
     if deps.is_a?(Hash)
       bounds = deps.dup
-      deps = Hash[*bounds.shift]
+      deps = bounds.shift
     end
 
     bounds = bounds.transform_values { |v| MacOS::Version.from_symbol(v) }
