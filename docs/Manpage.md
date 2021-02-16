@@ -1847,7 +1847,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
   <br>If set, do not send analytics. For more information, see: <https://docs.brew.sh/Analytics>
 
 - `HOMEBREW_NO_AUTO_UPDATE`
-  <br>If set, do not automatically update before running `brew install`, `brew upgrade` or `brew tap`.
+  <br>If set, do not automatically update before running some commands e.g. `brew install`, `brew upgrade` and `brew tap`.
 
 - `HOMEBREW_NO_BOOTSNAP`
   <br>If set, do not use Bootsnap to speed up repeated `brew` calls.
