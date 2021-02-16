@@ -387,12 +387,16 @@ __fish_brew_complete_arg 'bottle' -a '(__fish_brew_suggest_formulae_installed)'
 
 
 __fish_brew_complete_cmd 'bump' 'Display out-of-date brew formulae and the latest version available'
+__fish_brew_complete_arg 'bump' -l cask -d 'Check only casks'
 __fish_brew_complete_arg 'bump' -l debug -d 'Display any debugging information'
+__fish_brew_complete_arg 'bump' -l formula -d 'Check only formulae'
 __fish_brew_complete_arg 'bump' -l help -d 'Show this message'
 __fish_brew_complete_arg 'bump' -l limit -d 'Limit number of package results returned'
+__fish_brew_complete_arg 'bump' -l no-pull-requests -d 'Do not retrieve pull requests from GitHub'
 __fish_brew_complete_arg 'bump' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'bump' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'bump' -a '(__fish_brew_suggest_formulae_all)'
+__fish_brew_complete_arg 'bump' -a '(__fish_brew_suggest_casks_all)'
 
 
 __fish_brew_complete_cmd 'bump-cask-pr' 'Create a pull request to update cask with a new version'
