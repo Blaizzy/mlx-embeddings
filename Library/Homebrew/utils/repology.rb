@@ -7,6 +7,9 @@ require "utils/curl"
 #
 # @api private
 module Repology
+  HOMEBREW_CORE = "homebrew"
+  HOMEBREW_CASK = "homebrew_casks"
+
   module_function
 
   MAX_PAGINATION = 15
@@ -36,9 +39,9 @@ module Repology
 
   def parse_api_response(limit = nil, repository:)
     package_term = case repository
-    when "homebrew"
+    when HOMEBREW_CORE
       "formula"
-    when "homebrew_casks"
+    when HOMEBREW_CASK
       "cask"
     else
       "package"

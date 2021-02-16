@@ -62,9 +62,9 @@ module Homebrew
             next
           end
 
-          "homebrew"
+          Repology::HOMEBREW_CORE
         else
-          "homebrew_casks"
+          Repology::HOMEBREW_CASK
         end
 
         package_data = Repology.single_package_query(name, repository: repository)
@@ -72,14 +72,20 @@ module Homebrew
       end
     else
       api_response = {}
-      api_response[:formulae] = Repology.parse_api_response(limit, repository: "homebrew") unless args.cask?
-      api_response[:casks] = Repology.parse_api_response(limit, repository: "homebrew_casks") unless args.formula?
+      unless args.cask?
+        api_response[:formulae] =
+          Repology.parse_api_response(limit, repository: Repology::HOMEBREW_CORE)
+      end
+      unless args.formula?
+        api_response[:casks] =
+          Repology.parse_api_response(limit, repository: Repology::HOMEBREW_CASK)
+      end
 
       api_response.each do |package_type, outdated_packages|
         repository = if package_type == :formulae
-          "homebrew"
+          Repology::HOMEBREW_CORE
         else
-          "homebrew_casks"
+          Repology::HOMEBREW_CASK
         end
 
         outdated_packages.each_with_index do |(_name, repositories), i|
@@ -90,7 +96,7 @@ module Homebrew
           next if homebrew_repo.blank?
 
           formula_or_cask = begin
-            if repository == "homebrew"
+            if repository == Repology::HOMEBREW_CORE
               Formula[homebrew_repo["srcname"]]
             else
               Cask::CaskLoader.load(homebrew_repo["srcname"])
