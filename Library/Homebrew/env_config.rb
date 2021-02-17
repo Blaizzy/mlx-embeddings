@@ -212,11 +212,6 @@ module Homebrew
         description: "If set, do not use Bootsnap to speed up repeated `brew` calls.",
         boolean:     true,
       },
-      HOMEBREW_NO_BOTTLE_SOURCE_FALLBACK:     {
-        description: "If set, fail on the failure of installation from a bottle rather than " \
-                     "falling back to building from source.",
-        boolean:     true,
-      },
       HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: {
         description: "If set, do not check for broken dependents after installing, upgrading or reinstalling " \
                      "formulae.",
