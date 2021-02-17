@@ -9,6 +9,9 @@ module Homebrew
 
   module_function
 
+  NAMED_TIER_AMOUNT = 100
+  URL_TIER_AMOUNT = 1000
+
   sig { returns(CLI::Parser) }
   def sponsors_args
     Homebrew::CLI::Parser.new do
@@ -39,13 +42,13 @@ module Homebrew
     logo_sponsors = []
 
     GitHub.sponsors_by_tier("Homebrew").each do |tier|
-      if tier["tier"] >= 100
+      if tier["tier"] >= NAMED_TIER_AMOUNT
         named_sponsors += tier["sponsors"].map do |s|
           "[#{sponsor_name(s)}](#{sponsor_url(s)})"
         end
       end
 
-      next unless tier["tier"] >= 1000
+      next if tier["tier"] < URL_TIER_AMOUNT
 
       logo_sponsors += tier["sponsors"].map do |s|
         "[![#{sponsor_name(s)}](#{sponsor_logo(s)})](#{sponsor_url(s)})"
