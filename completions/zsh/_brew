@@ -469,12 +469,16 @@ _brew_bottle() {
 # brew bump
 _brew_bump() {
   _arguments \
+    '(--formula)--cask[Check only casks]' \
     '--debug[Display any debugging information]' \
+    '(--cask)--formula[Check only formulae]' \
     '--help[Show this message]' \
     '--limit[Limit number of package results returned]' \
+    '--no-pull-requests[Do not retrieve pull requests from GitHub]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]' \
-    '::formula:__brew_formulae'
+    '::formula:__brew_formulae' \
+    '::cask:__brew_casks'
 }
 
 # brew bump-cask-pr

@@ -427,9 +427,12 @@ _brew_bump() {
   case "$cur" in
     -*)
       __brewcomp "
+      --cask
       --debug
+      --formula
       --help
       --limit
+      --no-pull-requests
       --quiet
       --verbose
       "
@@ -437,6 +440,7 @@ _brew_bump() {
       ;;
   esac
   __brew_complete_formulae
+  __brew_complete_casks
 }
 
 _brew_bump_cask_pr() {

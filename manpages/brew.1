@@ -1132,8 +1132,20 @@ When passed with \fB\-\-write\fR, a new commit will not generated after writing 
 \fB\-\-root\-url\fR
 Use the specified \fIURL\fR as the root of the bottle\'s URL instead of Homebrew\'s default\.
 .
-.SS "\fBbump\fR [\fI\-\-limit\fR\fB=\fR] [\fIformula\fR \.\.\.]"
+.SS "\fBbump\fR [\fIoptions\fR] [\fIformula\fR|\fIcask\fR \.\.\.]"
 Display out\-of\-date brew formulae and the latest version available\. Also displays whether a pull request has been opened with the URL\.
+.
+.TP
+\fB\-\-no\-pull\-requests\fR
+Do not retrieve pull requests from GitHub\.
+.
+.TP
+\fB\-\-formula\fR
+Check only formulae\.
+.
+.TP
+\fB\-\-cask\fR
+Check only casks\.
 .
 .TP
 \fB\-\-limit\fR
