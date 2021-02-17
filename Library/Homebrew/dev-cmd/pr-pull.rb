@@ -337,9 +337,9 @@ module Homebrew
   end
 
   def download_artifact(url, dir, pr)
-    odie "Credentials must be set to access the Artifacts API" if GitHub.api_credentials_type == :none
+    odie "Credentials must be set to access the Artifacts API" if GitHub::API.credentials_type == :none
 
-    token = GitHub.api_credentials
+    token = GitHub::API.credentials
     curl_args = ["--header", "Authorization: token #{token}"]
 
     # Download the artifact as a zip file and unpack it into `dir`. This is

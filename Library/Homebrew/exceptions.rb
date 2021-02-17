@@ -423,7 +423,7 @@ class BuildError < RuntimeError
 
   def fetch_issues
     GitHub.issues_for_formula(formula.name, tap: formula.tap, state: "open")
-  rescue GitHub::RateLimitExceededError => e
+  rescue GitHub::API::RateLimitExceededError => e
     opoo e.message
     []
   end
