@@ -4,7 +4,7 @@ module Warning
   module Processor
     # Map of symbols to regexps for warning messages to ignore.
     IGNORE_MAP = {
-      ambiguous_slash: /: warning: ambiguous first argument; put parentheses or a space even after `\/' operator\n\z/,
+      ambiguous_slash: /: warning: ambiguous first argument; put parentheses or a space even after `\/' operator\n\z|: warning: ambiguity between regexp and two divisions: wrap regexp in parentheses or add a space after `\/' operator\n\z/,
       arg_prefix: /: warning: `[&\*]' interpreted as argument prefix\n\z/,
       bignum: /: warning: constant ::Bignum is deprecated\n\z/,
       fixnum: /: warning: constant ::Fixnum is deprecated\n\z/,
@@ -17,8 +17,9 @@ module Warning
       useless_operator: /: warning: possibly useless use of [><!=]+ in void context\n\z/,
       keyword_separation: /: warning: (?:Using the last argument (?:for `.+' )?as keyword parameters is deprecated; maybe \*\* should be added to the call|Passing the keyword argument (?:for `.+' )?as the last hash parameter is deprecated|Splitting the last argument (?:for `.+' )?into positional and keyword parameters is deprecated|The called method (?:`.+' )?is defined here)\n\z/,
       safe: /: warning: (?:rb_safe_level_2_warning|rb_safe_level|rb_set_safe_level_force|rb_set_safe_level|rb_secure|rb_insecure_operation|rb_check_safe_obj|\$SAFE) will (?:be removed|become a normal global variable) in Ruby 3\.0\n\z/,
-      taint: /: warning: (?:rb_error_untrusted|rb_check_trusted|Pathname#taint|Pathname#untaint|rb_env_path_tainted|Object#tainted\?|Object#taint|Object#untaint|Object#untrusted\?|Object#untrust|Object#trust|rb_obj_infect|rb_tainted_str_new|rb_tainted_str_new_cstr) is deprecated and will be removed in Ruby 3\.2\.\n\z/,
+      taint: /: warning: (?:rb_error_untrusted|rb_check_trusted|Pathname#taint|Pathname#untaint|rb_env_path_tainted|Object#tainted\?|Object#taint|Object#untaint|Object#untrusted\?|Object#untrust|Object#trust|rb_obj_infect|rb_tainted_str_new|rb_tainted_str_new_cstr) is deprecated and will be removed in Ruby 3\.2\.?\n\z/,
       mismatched_indentations: /: warning: mismatched indentations at '.+' with '.+' at \d+\n\z/,
+      void_context: /possibly useless use of :: in void context/,
     }
 
     # Map of action symbols to procs that return the symbol
@@ -75,6 +76,8 @@ module Warning
     # :unused_var :: Ignore warnings for unused variables.
     # :useless_operator :: Ignore warnings when using operators such as == and > when the
     #                      result is not used.
+    # :void_context :: Ignore warnings for :: to reference constants when the result is not
+    #                  used (often used to trigger autoload).
     #
     # Examples:
     #
@@ -126,7 +129,7 @@ module Warning
     # Instead of passing a block, you can pass a hash of actions to take for specific
     # warnings, using regexp as keys and a callable objects as values:
     #
-    #   Warning.ignore(__FILE__,
+    #   Warning.process(__FILE__,
     #     /instance variable @\w+ not initialized/ => proc do |warning|
     #       LOGGER.warning(warning)
     #     end,
@@ -166,57 +169,63 @@ module Warning
       nil
     end
 
-    # Handle ignored warnings and warning processors.  If the warning is
-    # not ignored, is not a duplicate warning (if checking for duplicates)
-    # and there is no warning processor setup for the warning
-    # string, then use the default behavior of writing to $stderr.
-    def warn(str)
-      synchronize{@ignore.dup}.each do |path, regexp|
-        if str.start_with?(path) && str =~ regexp
-          return
-        end
-      end
 
-      if @dedup
-        if synchronize{@dedup[str]}
-          return
-        end
+    if RUBY_VERSION >= '3.0'
+      method_args = ', category: nil'
+      super_ = "category ? super : super(str)"
+    else
+      super_ = "super"
+    end
 
-        synchronize{@dedup[str] = true}
-      end
-
-      action = catch(:action) do
-        synchronize{@process.dup}.each do |path, block|
-          if str.start_with?(path)
-            if block.is_a?(Hash)
-              block.each do |regexp, blk|
-                if str =~ regexp
-                  throw :action, blk.call(str)
-                end
-              end
-            else
-              throw :action, block.call(str)
-            end
+    class_eval(<<-END, __FILE__, __LINE__+1)
+      def warn(str#{method_args})
+        synchronize{@ignore.dup}.each do |path, regexp|
+          if str.start_with?(path) && str =~ regexp
+            return
           end
         end
 
-        :default
-      end
+        if @dedup
+          if synchronize{@dedup[str]}
+            return
+          end
 
-      case action
-      when :default
-        super
-      when :backtrace
-        super
-        $stderr.puts caller
-      when :raise
-        raise str
-      else
-        # nothing
-      end
+          synchronize{@dedup[str] = true}
+        end
 
-      nil
-    end
+        action = catch(:action) do
+          synchronize{@process.dup}.each do |path, block|
+            if str.start_with?(path)
+              if block.is_a?(Hash)
+                block.each do |regexp, blk|
+                  if str =~ regexp
+                    throw :action, blk.call(str)
+                  end
+                end
+              else
+                throw :action, block.call(str)
+              end
+            end
+          end
+
+          :default
+        end
+
+        case action
+        when :default
+          #{super_}
+        when :backtrace
+          #{super_}
+          $stderr.puts caller
+        when :raise
+          raise str
+        else
+          # nothing
+        end
+
+        nil
+      end
+    END
 
     private
 
