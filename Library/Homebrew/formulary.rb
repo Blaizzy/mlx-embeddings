@@ -60,6 +60,7 @@ module Formulary
       mod.const_set(:BUILD_FLAGS, flags)
       mod.module_eval(contents, path)
     rescue NameError, ArgumentError, ScriptError, MethodDeprecatedError => e
+      remove_const(namespace)
       raise FormulaUnreadableError.new(name, e)
     end
     class_name = class_s(name)
@@ -71,6 +72,7 @@ module Formulary
                       .map { |const_name| mod.const_get(const_name) }
                       .select { |const| const.is_a?(Class) }
       new_exception = FormulaClassUnavailableError.new(name, path, class_name, class_list)
+      remove_const(namespace)
       raise new_exception, "", e.backtrace
     end
   end
