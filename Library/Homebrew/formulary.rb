@@ -33,6 +33,19 @@ module Formulary
     cache.fetch(path)
   end
 
+  def self.clear_cache
+    cache.each do |key, klass|
+      next if key == :formulary_factory
+
+      namespace = klass.name.deconstantize
+      next if namespace.deconstantize != name
+
+      remove_const(namespace.demodulize)
+    end
+
+    super
+  end
+
   def self.load_formula(name, path, contents, namespace, flags:)
     raise "Formula loading disabled by HOMEBREW_DISABLE_LOAD_FORMULA!" if Homebrew::EnvConfig.disable_load_formula?
 
