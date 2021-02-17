@@ -216,7 +216,7 @@ describe Tap do
   end
 
   specify "#private?" do
-    skip "HOMEBREW_GITHUB_API_TOKEN is required" unless GitHub::API.api_credentials
+    skip "HOMEBREW_GITHUB_API_TOKEN is required" unless GitHub::API.credentials
     expect(homebrew_foo_tap).to be_private
   end
 

@@ -103,7 +103,7 @@ module GitHub
       end
     end
 
-    API_ERRORS = [
+    ERRORS = [
       AuthenticationFailedError,
       HTTPNotFoundError,
       RateLimitExceededError,
@@ -138,14 +138,14 @@ module GitHub
       nil
     end
 
-    def api_credentials
-      @api_credentials ||= begin
+    def credentials
+      @credentials ||= begin
         Homebrew::EnvConfig.github_api_token || keychain_username_password
       end
     end
 
     sig { returns(Symbol) }
-    def api_credentials_type
+    def credentials_type
       if Homebrew::EnvConfig.github_api_token
         :env_token
       elsif keychain_username_password
@@ -157,7 +157,7 @@ module GitHub
 
     # Given an API response from GitHub, warn the user if their credentials
     # have insufficient permissions.
-    def api_credentials_error_message(response_headers, needed_scopes)
+    def credentials_error_message(response_headers, needed_scopes)
       return if response_headers.empty?
 
       scopes = response_headers["x-accepted-oauth-scopes"].to_s.split(", ")
@@ -168,14 +168,14 @@ module GitHub
       needed_scopes = needed_scopes.to_a.join(", ").presence || "none"
       credentials_scopes = "none" if credentials_scopes.blank?
 
-      what = case api_credentials_type
+      what = case credentials_type
       when :keychain_username_password
         "macOS keychain GitHub"
       when :env_token
         "HOMEBREW_GITHUB_API_TOKEN"
       end
 
-      @api_credentials_error_message ||= onoe <<~EOS
+      @credentials_error_message ||= onoe <<~EOS
         Your #{what} credentials do not have sufficient scope!
         Scopes required: #{needed_scopes}
         Scopes present:  #{credentials_scopes}
@@ -183,15 +183,15 @@ module GitHub
       EOS
     end
 
-    def open_api(url, data: nil, data_binary_path: nil, request_method: nil, scopes: [].freeze, parse_json: true)
+    def open_rest(url, data: nil, data_binary_path: nil, request_method: nil, scopes: [].freeze, parse_json: true)
       # This is a no-op if the user is opting out of using the GitHub API.
       return block_given? ? yield({}) : {} if Homebrew::EnvConfig.no_github_api?
 
       args = ["--header", "Accept: application/vnd.github.v3+json", "--write-out", "\n%\{http_code}"]
       args += ["--header", "Accept: application/vnd.github.antiope-preview+json"]
 
-      token = api_credentials
-      args += ["--header", "Authorization: token #{token}"] unless api_credentials_type == :none
+      token = credentials
+      args += ["--header", "Authorization: token #{token}"] unless credentials_type == :none
 
       data_tmpfile = nil
       if data
@@ -234,7 +234,7 @@ module GitHub
       end
 
       begin
-        raise_api_error(output, errors, http_code, headers, scopes) if !http_code.start_with?("2") || !status.success?
+        raise_error(output, errors, http_code, headers, scopes) if !http_code.start_with?("2") || !status.success?
 
         return if http_code == "204" # No Content
 
@@ -251,7 +251,7 @@ module GitHub
 
     def open_graphql(query, scopes: [].freeze)
       data = { query: query }
-      result = open_api("https://api.github.com/graphql", scopes: scopes, data: data, request_method: "POST")
+      result = open_rest("https://api.github.com/graphql", scopes: scopes, data: data, request_method: "POST")
 
       if result["errors"].present?
         raise Error, result["errors"].map { |e|
@@ -262,7 +262,7 @@ module GitHub
       result["data"]
     end
 
-    def raise_api_error(output, errors, http_code, headers, scopes)
+    def raise_error(output, errors, http_code, headers, scopes)
       json = begin
         JSON.parse(output)
       rescue
@@ -284,13 +284,13 @@ module GitHub
         raise RateLimitExceededError.new(reset, message)
       end
 
-      api_credentials_error_message(meta, scopes)
+      credentials_error_message(meta, scopes)
 
       case http_code
       when "401", "403"
         raise AuthenticationFailedError, message
       when "404"
-        raise MissingAuthenticationError if api_credentials_type == :none && scopes.present?
+        raise MissingAuthenticationError if credentials_type == :none && scopes.present?
 
         raise HTTPNotFoundError, message
       when "422"

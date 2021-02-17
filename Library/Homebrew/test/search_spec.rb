@@ -21,7 +21,7 @@ describe Homebrew::Search do
     end
 
     it "does not raise if the network fails" do
-      allow(GitHub::API).to receive(:open_api).and_raise(GitHub::API::Error)
+      allow(GitHub::API).to receive(:open_rest).and_raise(GitHub::API::Error)
 
       expect(mod.search_taps("some-formula"))
         .to match(formulae: [], casks: [])
@@ -45,7 +45,7 @@ describe Homebrew::Search do
         ],
       }
 
-      allow(GitHub::API).to receive(:open_api).and_yield(json_response)
+      allow(GitHub::API).to receive(:open_rest).and_yield(json_response)
 
       expect(mod.search_taps("some-formula"))
         .to match(formulae: ["homebrew/foo/some-formula"], casks: ["homebrew/bar/some-cask"])

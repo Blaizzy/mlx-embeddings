@@ -23,8 +23,9 @@ module SharedAudits
 
   def github_release_data(user, repo, tag)
     id = "#{user}/#{repo}/#{tag}"
+    url = "#{GitHub::API_URL}/repos/#{user}/#{repo}/releases/tags/#{tag}"
     @github_release_data ||= {}
-    @github_release_data[id] ||= GitHub::API.open_api("#{GitHub::API_URL}/repos/#{user}/#{repo}/releases/tags/#{tag}")
+    @github_release_data[id] ||= GitHub::API.open_rest(url)
 
     @github_release_data[id]
   rescue GitHub::API::HTTPNotFoundError

@@ -14,9 +14,9 @@ module GitHub
   module_function
 
   def open_api(url, data: nil, data_binary_path: nil, request_method: nil, scopes: [].freeze, parse_json: true)
-    odeprecated "GitHub.open_api", "GitHub::API.open_api"
-    API.open_api(url, data: data, data_binary_path: data_binary_path, request_method: request_method,
-                 scopes: scopes, parse_json: parse_json)
+    odeprecated "GitHub.open_api", "GitHub::API.open_rest"
+    API.open_rest(url, data: data, data_binary_path: data_binary_path, request_method: request_method,
+                  scopes: scopes, parse_json: parse_json)
   end
 
   def check_runs(repo: nil, commit: nil, pr: nil)
@@ -25,11 +25,11 @@ module GitHub
       commit = pr.fetch("head").fetch("sha")
     end
 
-    API.open_api(url_to("repos", repo, "commits", commit, "check-runs"))
+    API.open_rest(url_to("repos", repo, "commits", commit, "check-runs"))
   end
 
   def create_check_run(repo:, data:)
-    API.open_api(url_to("repos", repo, "check-runs"), data: data)
+    API.open_rest(url_to("repos", repo, "check-runs"), data: data)
   end
 
   def search_issues(query, **qualifiers)
@@ -39,17 +39,17 @@ module GitHub
   def create_gist(files, description, private:)
     url = "https://api.github.com/gists"
     data = { "public" => !private, "files" => files, "description" => description }
-    API.open_api(url, data: data, scopes: CREATE_GIST_SCOPES)["html_url"]
+    API.open_rest(url, data: data, scopes: CREATE_GIST_SCOPES)["html_url"]
   end
 
   def create_issue(repo, title, body)
     url = "https://api.github.com/repos/#{repo}/issues"
     data = { "title" => title, "body" => body }
-    API.open_api(url, data: data, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)["html_url"]
+    API.open_rest(url, data: data, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)["html_url"]
   end
 
   def repository(user, repo)
-    API.open_api(url_to("repos", user, repo))
+    API.open_rest(url_to("repos", user, repo))
   end
 
   def search_code(**qualifiers)
@@ -68,11 +68,11 @@ module GitHub
   end
 
   def user
-    @user ||= API.open_api("#{API_URL}/user")
+    @user ||= API.open_rest("#{API_URL}/user")
   end
 
   def permission(repo, user)
-    API.open_api("#{API_URL}/repos/#{repo}/collaborators/#{user}/permission")
+    API.open_rest("#{API_URL}/repos/#{repo}/collaborators/#{user}/permission")
   end
 
   def write_access?(repo, user = nil)
@@ -82,14 +82,14 @@ module GitHub
 
   def pull_requests(repo, **options)
     url = "#{API_URL}/repos/#{repo}/pulls?#{URI.encode_www_form(options)}"
-    API.open_api(url)
+    API.open_rest(url)
   end
 
   def merge_pull_request(repo, number:, sha:, merge_method:, commit_message: nil)
     url = "#{API_URL}/repos/#{repo}/pulls/#{number}/merge"
     data = { sha: sha, merge_method: merge_method }
     data[:commit_message] = commit_message if commit_message
-    API.open_api(url, data: data, request_method: :PUT, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)
+    API.open_rest(url, data: data, request_method: :PUT, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)
   end
 
   def print_pull_requests_matching(query, only = nil)
@@ -119,14 +119,14 @@ module GitHub
     url = "#{API_URL}/repos/#{repo}/forks"
     data = {}
     scopes = CREATE_ISSUE_FORK_OR_PR_SCOPES
-    API.open_api(url, data: data, scopes: scopes)
+    API.open_rest(url, data: data, scopes: scopes)
   end
 
   def check_fork_exists(repo)
     _, reponame = repo.split("/")
 
-    username = API.open_api(url_to("user")) { |json| json["login"] }
-    json = API.open_api(url_to("repos", username, reponame))
+    username = API.open_rest(url_to("user")) { |json| json["login"] }
+    json = API.open_rest(url_to("repos", username, reponame))
 
     return false if json["message"] == "Not Found"
 
@@ -137,12 +137,12 @@ module GitHub
     url = "#{API_URL}/repos/#{repo}/pulls"
     data = { title: title, head: head, base: base, body: body }
     scopes = CREATE_ISSUE_FORK_OR_PR_SCOPES
-    API.open_api(url, data: data, scopes: scopes)
+    API.open_rest(url, data: data, scopes: scopes)
   end
 
   def private_repo?(full_name)
     uri = url_to "repos", full_name
-    API.open_api(uri) { |json| json["private"] }
+    API.open_rest(uri) { |json| json["private"] }
   end
 
   def query_string(*main_params, **qualifiers)
@@ -162,7 +162,7 @@ module GitHub
   def search(entity, *queries, **qualifiers)
     uri = url_to "search", entity
     uri.query = query_string(*queries, **qualifiers)
-    API.open_api(uri) { |json| json.fetch("items", []) }
+    API.open_rest(uri) { |json| json.fetch("items", []) }
   end
 
   def approved_reviews(user, repo, pr, commit: nil)
@@ -208,26 +208,26 @@ module GitHub
 
   def dispatch_event(user, repo, event, **payload)
     url = "#{API_URL}/repos/#{user}/#{repo}/dispatches"
-    API.open_api(url, data:           { event_type: event, client_payload: payload },
-                      request_method: :POST,
-                      scopes:         CREATE_ISSUE_FORK_OR_PR_SCOPES)
+    API.open_rest(url, data:           { event_type: event, client_payload: payload },
+                       request_method: :POST,
+                       scopes:         CREATE_ISSUE_FORK_OR_PR_SCOPES)
   end
 
   def workflow_dispatch_event(user, repo, workflow, ref, **inputs)
     url = "#{API_URL}/repos/#{user}/#{repo}/actions/workflows/#{workflow}/dispatches"
-    API.open_api(url, data:           { ref: ref, inputs: inputs },
-                      request_method: :POST,
-                      scopes:         CREATE_ISSUE_FORK_OR_PR_SCOPES)
+    API.open_rest(url, data:           { ref: ref, inputs: inputs },
+                       request_method: :POST,
+                       scopes:         CREATE_ISSUE_FORK_OR_PR_SCOPES)
   end
 
   def get_release(user, repo, tag)
     url = "#{API_URL}/repos/#{user}/#{repo}/releases/tags/#{tag}"
-    API.open_api(url, request_method: :GET)
+    API.open_rest(url, request_method: :GET)
   end
 
   def get_latest_release(user, repo)
     url = "#{API_URL}/repos/#{user}/#{repo}/releases/latest"
-    API.open_api(url, request_method: :GET)
+    API.open_rest(url, request_method: :GET)
   end
 
   def create_or_update_release(user, repo, tag, id: nil, name: nil, body: nil, draft: false)
@@ -244,24 +244,24 @@ module GitHub
       draft:    draft,
     }
     data[:body] = body if body.present?
-    API.open_api(url, data: data, request_method: method, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)
+    API.open_rest(url, data: data, request_method: method, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)
   end
 
   def upload_release_asset(user, repo, id, local_file: nil, remote_file: nil)
     url = "https://uploads.github.com/repos/#{user}/#{repo}/releases/#{id}/assets"
     url += "?name=#{remote_file}" if remote_file
-    API.open_api(url, data_binary_path: local_file, request_method: :POST, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)
+    API.open_rest(url, data_binary_path: local_file, request_method: :POST, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)
   end
 
   def get_workflow_run(user, repo, pr, workflow_id: "tests.yml", artifact_name: "bottles")
     scopes = CREATE_ISSUE_FORK_OR_PR_SCOPES
     base_url = "#{API_URL}/repos/#{user}/#{repo}"
-    pr_payload = API.open_api("#{base_url}/pulls/#{pr}", scopes: scopes)
+    pr_payload = API.open_rest("#{base_url}/pulls/#{pr}", scopes: scopes)
     pr_sha = pr_payload["head"]["sha"]
     pr_branch = URI.encode_www_form_component(pr_payload["head"]["ref"])
     parameters = "event=pull_request&branch=#{pr_branch}"
 
-    workflow = API.open_api("#{base_url}/actions/workflows/#{workflow_id}/runs?#{parameters}", scopes: scopes)
+    workflow = API.open_rest("#{base_url}/actions/workflows/#{workflow_id}/runs?#{parameters}", scopes: scopes)
     workflow_run = workflow["workflow_runs"].select do |run|
       run["head_sha"] == pr_sha
     end
@@ -289,7 +289,7 @@ module GitHub
       EOS
     end
 
-    artifacts = API.open_api(workflow_run.first["artifacts_url"], scopes: scopes)
+    artifacts = API.open_rest(workflow_run.first["artifacts_url"], scopes: scopes)
 
     artifact = artifacts["artifacts"].select do |art|
       art["name"] == artifact_name
@@ -310,7 +310,7 @@ module GitHub
     members = []
 
     (1..API_MAX_PAGES).each do |page|
-      result = API.open_api("#{url}&page=#{page}").map { |member| member["login"] }
+      result = API.open_rest("#{url}&page=#{page}").map { |member| member["login"] }
       members.concat(result)
 
       return members if result.length < per_page
@@ -402,7 +402,7 @@ module GitHub
   end
 
   def get_repo_license(user, repo)
-    response = API.open_api("#{API_URL}/repos/#{user}/#{repo}/license")
+    response = API.open_rest("#{API_URL}/repos/#{user}/#{repo}/license")
     return unless response.key?("license")
 
     response["license"]["spdx_id"]
@@ -428,7 +428,7 @@ module GitHub
 
   def check_for_duplicate_pull_requests(name, tap_full_name, state:, file:, args:, version: nil)
     pull_requests = fetch_pull_requests(name, tap_full_name, state: state, version: version).select do |pr|
-      pr_files = API.open_api(url_to("repos", tap_full_name, "pulls", pr["number"], "files"))
+      pr_files = API.open_rest(url_to("repos", tap_full_name, "pulls", pr["number"], "files"))
       pr_files.any? { |f| f["filename"] == file }
     end
     return if pull_requests.blank?
@@ -505,7 +505,7 @@ module GitHub
           else
             begin
               remote_url, username = forked_repo_info!(tap_full_name)
-            rescue *API::API_ERRORS => e
+            rescue *API::ERRORS => e
               sourcefile_path.atomic_write(old_contents)
               odie "Unable to fork: #{e.message}!"
             end
@@ -545,7 +545,7 @@ module GitHub
           else
             exec_browser url
           end
-        rescue *API::API_ERRORS => e
+        rescue *API::ERRORS => e
           odie "Unable to open pull request: #{e.message}!"
         end
       end
@@ -553,7 +553,7 @@ module GitHub
   end
 
   def pull_request_commits(user, repo, pr, per_page: 100)
-    pr_data = API.open_api(url_to("repos", user, repo, "pulls", pr))
+    pr_data = API.open_rest(url_to("repos", user, repo, "pulls", pr))
     commits_api = pr_data["commits_url"]
     commit_count = pr_data["commits"]
     commits = []
@@ -563,7 +563,7 @@ module GitHub
     end
 
     (1..API_MAX_PAGES).each do |page|
-      result = API.open_api(commits_api + "?per_page=#{per_page}&page=#{page}")
+      result = API.open_rest(commits_api + "?per_page=#{per_page}&page=#{page}")
       commits.concat(result.map { |c| c["sha"] })
 
       return commits if commits.length == commit_count
@@ -575,7 +575,7 @@ module GitHub
   end
 
   def pull_request_labels(user, repo, pr)
-    pr_data = API.open_api(url_to("repos", user, repo, "pulls", pr))
+    pr_data = API.open_rest(url_to("repos", user, repo, "pulls", pr))
     pr_data["labels"].map { |label| label["name"] }
   end
 end

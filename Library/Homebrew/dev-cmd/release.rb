@@ -89,7 +89,7 @@ module Homebrew
 
     begin
       release = GitHub.create_or_update_release "Homebrew", "brew", new_version, body: release_notes, draft: true
-    rescue *GitHub::API::API_ERRORS => e
+    rescue *GitHub::API::ERRORS => e
       odie "Unable to create release: #{e.message}!"
     end
 
