@@ -33,6 +33,19 @@ module Formulary
     cache.fetch(path)
   end
 
+  def self.clear_cache
+    cache.each do |key, klass|
+      next if key == :formulary_factory
+
+      namespace = klass.name.deconstantize
+      next if namespace.deconstantize != name
+
+      remove_const(namespace.demodulize)
+    end
+
+    super
+  end
+
   def self.load_formula(name, path, contents, namespace, flags:)
     raise "Formula loading disabled by HOMEBREW_DISABLE_LOAD_FORMULA!" if Homebrew::EnvConfig.disable_load_formula?
 
@@ -47,6 +60,7 @@ module Formulary
       mod.const_set(:BUILD_FLAGS, flags)
       mod.module_eval(contents, path)
     rescue NameError, ArgumentError, ScriptError, MethodDeprecatedError => e
+      remove_const(namespace)
       raise FormulaUnreadableError.new(name, e)
     end
     class_name = class_s(name)
@@ -58,6 +72,7 @@ module Formulary
                       .map { |const_name| mod.const_get(const_name) }
                       .select { |const| const.is_a?(Class) }
       new_exception = FormulaClassUnavailableError.new(name, path, class_name, class_list)
+      remove_const(namespace)
       raise new_exception, "", e.backtrace
     end
   end
