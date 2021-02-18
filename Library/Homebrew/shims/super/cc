@@ -303,6 +303,12 @@ class Cmd
   end
 
   def ldflags_linux(args)
+    # Remove $HOMEBREW_PREFIX/lib from the args because it is already provided by the GCC specs,
+    # and breaks linkage to GCC runtime libraries.
+    # Don't remove it when using clang, which does not use specs like GCC does.
+    # https://github.com/Homebrew/brew/pull/10606
+    args.pop() if tool !~ /^clang/
+
     unless mode == :ld
       wl = "-Wl,"
       args << "-B#{@opt}/glibc/lib"
