@@ -88,6 +88,7 @@ module Homebrew
       params(
         formulae_and_casks_to_check: T::Enumerable[T.any(Formula, Cask::Cask)],
         full_name:                   T::Boolean,
+        handle_name_conflict:        T::Boolean,
         json:                        T::Boolean,
         newer_only:                  T::Boolean,
         debug:                       T::Boolean,
@@ -97,7 +98,8 @@ module Homebrew
     }
     def run_checks(
       formulae_and_casks_to_check,
-      full_name: false, json: false, newer_only: false, debug: false, quiet: false, verbose: false
+      full_name: false, handle_name_conflict: false, json: false, newer_only: false,
+      debug: false, quiet: false, verbose: false
     )
       load_other_tap_strategies(formulae_and_casks_to_check)
 
@@ -123,6 +125,12 @@ module Homebrew
         formula = formula_or_cask if formula_or_cask.is_a?(Formula)
         cask = formula_or_cask if formula_or_cask.is_a?(Cask::Cask)
         name = formula_or_cask_name(formula_or_cask, full_name: full_name)
+        print_name = begin
+          "#{name} (cask)" if cask && Formula[name] && handle_name_conflict
+        rescue FormulaUnavailableError
+          nil
+        end
+        print_name ||= name
 
         if debug && i.positive?
           puts <<~EOS
@@ -130,6 +138,8 @@ module Homebrew
             ----------
 
           EOS
+        elsif debug
+          puts
         end
 
         skip_info = SkipConditions.skip_information(formula_or_cask, full_name: full_name, verbose: verbose)
@@ -220,6 +230,7 @@ module Homebrew
           next info
         end
 
+        info[:cask] = print_name
         print_latest_version(info, verbose: verbose)
         nil
       rescue => e
@@ -229,7 +240,7 @@ module Homebrew
           progress&.increment
           status_hash(formula_or_cask, "error", [e.to_s], full_name: full_name, verbose: verbose)
         elsif !quiet
-          onoe "#{Tty.blue}#{name}#{Tty.reset}: #{e}"
+          onoe "#{Tty.blue}#{print_name}#{Tty.reset}: #{e}"
           $stderr.puts e.backtrace if debug && !e.is_a?(Livecheck::Error)
           nil
         end
@@ -438,7 +449,6 @@ module Homebrew
       urls ||= checkable_urls(formula_or_cask)
 
       if debug
-        puts
         if formula
           puts "Formula:          #{formula_name(formula, full_name: full_name)}"
           puts "Head only?:       true" if formula.head_only?
