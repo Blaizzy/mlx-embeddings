@@ -518,10 +518,10 @@ end
 
 class String
   include(::Comparable)
-  include(::JSON::Ext::Generator::GeneratorMethods::String)
   include(::Colorize::InstanceMethods)
-  extend(::JSON::Ext::Generator::GeneratorMethods::String::Extend)
+  include(::JSON::Ext::Generator::GeneratorMethods::String)
   extend(::Colorize::ClassMethods)
+  extend(::JSON::Ext::Generator::GeneratorMethods::String::Extend)
 
   def acts_like_string?; end
   def as_json(options = T.unsafe(nil)); end
