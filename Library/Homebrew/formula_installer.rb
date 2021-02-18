@@ -94,7 +94,6 @@ class FormulaInstaller
     @options = options
     @requirement_messages = []
     @poured_bottle = false
-    @pour_failed = false
     @start_time = nil
   end
 
@@ -154,8 +153,6 @@ class FormulaInstaller
 
   sig { params(output_warning: T::Boolean).returns(T::Boolean) }
   def pour_bottle?(output_warning: false)
-    return false if @pour_failed
-
     return false if !formula.bottle_tag? && !formula.local_bottle_path
     return true  if force_bottle?
     return false if build_from_source? || build_bottle? || interactive?
@@ -235,8 +232,7 @@ class FormulaInstaller
        # homebrew-core and have full bottle coverage.
        (OS.mac? || ENV["CI"]) &&
        !build_from_source? && !build_bottle? &&
-       !installed_as_dependency? &&
-       formula.tap&.core_tap? && !formula.bottle_unneeded? && !formula.any_version_installed? &&
+       formula.tap&.core_tap? && !formula.bottle_unneeded? &&
        # Integration tests override homebrew-core locations
        ENV["HOMEBREW_TEST_TMPDIR"].nil? &&
        !pour_bottle?
@@ -244,21 +240,29 @@ class FormulaInstaller
         formula_message = formula.pour_bottle_check_unsatisfied_reason
         formula_message[0] = formula_message[0].downcase
 
-        "#{formula}: #{formula_message}"
-      else
+        <<~EOS
+          #{formula}: #{formula_message}
+        EOS
+      # don't want to complain about no bottle available if doing an
+      # upgrade/reinstall/dependency install (but do in the case the bottle
+      # check fails)
+      elsif !installed_as_dependency? && !formula.any_version_installed?
         <<~EOS
           #{formula}: no bottle available!
         EOS
       end
-      message += <<~EOS
-        You can try to install from source with:
-          brew install --build-from-source #{formula}
-        Please note building from source is unsupported. You will encounter build
-        failures with some formulae. If you experience any issues please create pull
-        requests instead of asking for help on Homebrew's GitHub, Twitter or any other
-        official channels.
-      EOS
-      raise CannotInstallFormulaError, message
+
+      if message
+        message += <<~EOS
+          You can try to install from source with:
+            brew install --build-from-source #{formula}
+          Please note building from source is unsupported. You will encounter build
+          failures with some formulae. If you experience any issues please create pull
+          requests instead of asking for help on Homebrew's GitHub, Twitter or any other
+          official channels.
+        EOS
+        raise CannotInstallFormulaError, message
+      end
     end
 
     type, reason = DeprecateDisable.deprecate_disable_info formula
@@ -429,7 +433,7 @@ class FormulaInstaller
     if pour_bottle?
       begin
         pour
-      rescue Exception => e # rubocop:disable Lint/RescueException
+      rescue Exception # rubocop:disable Lint/RescueException
         # any exceptions must leave us with nothing installed
         ignore_interrupts do
           begin
@@ -442,17 +446,7 @@ class FormulaInstaller
           end
           formula.rack.rmdir_if_possible
         end
-        raise if Homebrew::EnvConfig.developer? ||
-                 Homebrew::EnvConfig.no_bottle_source_fallback? ||
-                 force_bottle? ||
-                 e.is_a?(Interrupt)
-
-        @pour_failed = true
-        onoe e.message
-        opoo "Bottle installation failed: building from source."
-        raise UnbottledError, [formula] unless DevelopmentTools.installed?
-
-        compute_and_install_dependencies unless ignore_deps?
+        raise
       else
         @poured_bottle = true
       end
@@ -513,7 +507,7 @@ class FormulaInstaller
 
       $stderr.puts "Please report this issue to the #{formula.tap} tap (not Homebrew/brew or Homebrew/core)!"
       false
-    else # rubocop:disable Layout/ElseAlignment
+    else
       f.linked_keg.exist? && f.opt_prefix.exist?
     end
 
@@ -1123,25 +1117,10 @@ class FormulaInstaller
 
     return if only_deps?
 
-    if pour_bottle?(output_warning: true)
-      begin
-        downloader.fetch
-      rescue Exception => e # rubocop:disable Lint/RescueException
-        raise if Homebrew::EnvConfig.developer? ||
-                 Homebrew::EnvConfig.no_bottle_source_fallback? ||
-                 force_bottle? ||
-                 e.is_a?(Interrupt)
-
-        @pour_failed = true
-        onoe e.message
-        opoo "Bottle installation failed: building from source."
-        fetch_dependencies
-      end
+    unless pour_bottle?(output_warning: true)
+      formula.fetch_patches
+      formula.resources.each(&:fetch)
     end
-    return if pour_bottle?
-
-    formula.fetch_patches
-    formula.resources.each(&:fetch)
     downloader.fetch
   end
 
