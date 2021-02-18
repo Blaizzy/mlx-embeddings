@@ -81,6 +81,53 @@ jobs:
       - name: Run brew audit --skip-style on all taps
         run: brew audit --skip-style
 
+      - name: Set up all Homebrew taps
+        run: |
+          HOMEBREW_REPOSITORY="$(brew --repo)"
+          HOMEBREW_CORE_REPOSITORY="$HOMEBREW_REPOSITORY/Library/Taps/homebrew/homebrew-core"
+          git -C "$HOMEBREW_CORE_REPOSITORY" remote add homebrew_core https://github.com/Homebrew/homebrew-core
+          git -C "$HOMEBREW_CORE_REPOSITORY" fetch homebrew_core || git -C "$HOMEBREW_CORE_REPOSITORY" fetch homebrew_core
+          git -C "$HOMEBREW_CORE_REPOSITORY" checkout --force -B master homebrew_core/master
+
+          brew tap homebrew/aliases
+          brew tap homebrew/bundle
+          brew tap homebrew/cask
+          brew tap homebrew/cask-drivers
+          brew tap homebrew/cask-fonts
+          brew tap homebrew/cask-versions
+          brew tap homebrew/command-not-found
+          brew tap homebrew/formula-analytics
+          brew tap homebrew/linux-dev
+          brew tap homebrew/portable-ruby
+          brew tap homebrew/services
+
+          brew update-reset Library/Taps/homebrew/homebrew-bundle
+
+          # brew style doesn't like world writable directories
+          sudo chmod -R g-w,o-w "$HOMEBREW_REPOSITORY/Library/Taps"
+
+      - name: Run brew style on homebrew-core
+        run: brew style --display-cop-names homebrew/core
+
+      - name: Run brew style on official taps
+        run: |
+          brew style --display-cop-names homebrew/bundle \
+                                         homebrew/services \
+                                         homebrew/test-bot
+
+          brew style --display-cop-names homebrew/aliases\
+                                         homebrew/command-not-found \
+                                         homebrew/formula-analytics \
+                                         homebrew/linux-dev \
+                                         homebrew/portable-ruby
+
+      - name: Run brew style on cask taps
+        run: |
+          brew style --display-cop-names homebrew/cask \
+                                         homebrew/cask-drivers \
+                                         homebrew/cask-fonts \
+                                         homebrew/cask-versions
+
   vendored-gems:
     name: vendored gems (Linux)
     runs-on: ubuntu-latest
@@ -224,22 +271,6 @@ jobs:
 
       - name: Run brew readall on all taps
         run: brew readall --aliases
-
-      - name: Run brew style on homebrew-core
-        run: brew style --display-cop-names homebrew/core
-
-      - name: Run brew style on official taps
-        run: |
-          brew style --display-cop-names homebrew/bundle \
-                                         homebrew/services \
-                                         homebrew/test-bot
-
-      - name: Run brew style on cask taps
-        run: |
-          brew style --display-cop-names homebrew/cask \
-                                         homebrew/cask-drivers \
-                                         homebrew/cask-fonts \
-                                         homebrew/cask-versions
 
       - name: Run brew audit --skip-style on all taps
         run: brew audit --skip-style
