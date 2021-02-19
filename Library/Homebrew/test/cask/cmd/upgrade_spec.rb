@@ -12,7 +12,7 @@ describe Cask::Cmd::Upgrade, :cask do
   let(:local_caffeine_path) { local_caffeine.config.appdir.join("Caffeine.app") }
   let(:local_caffeine) { Cask::CaskLoader.load("local-caffeine") }
 
-  context "successful upgrade" do
+  context "when the upgrade is successful" do
     let(:installed) {
       [
         "outdated/local-caffeine",
@@ -149,7 +149,7 @@ describe Cask::Cmd::Upgrade, :cask do
     end
   end
 
-  context "dry run upgrade" do
+  context "when the upgrade is a dry run" do
     let(:installed) {
       [
         "outdated/local-caffeine",
@@ -294,7 +294,7 @@ describe Cask::Cmd::Upgrade, :cask do
     end
   end
 
-  context "failed upgrade" do
+  context "when an upgrade failed" do
     let(:installed) {
       [
         "outdated/bad-checksum",
@@ -349,7 +349,7 @@ describe Cask::Cmd::Upgrade, :cask do
     end
   end
 
-  context "multiple failures" do
+  context "when there were multiple failures" do
     let(:installed) {
       [
         "outdated/bad-checksum",

@@ -96,7 +96,7 @@ describe Cask::Artifact::Binary, :cask do
     expect(expected_path.exist?).to be true
   end
 
-  context "binary is inside an app package" do
+  context "when the binary is inside an app package" do
     let(:cask) {
       Cask::CaskLoader.load(cask_path("with-embedded-binary")).tap do |cask|
         InstallHelper.install_without_artifacts(cask)

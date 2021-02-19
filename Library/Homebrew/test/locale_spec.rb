@@ -16,7 +16,7 @@ describe Locale do
       expect(described_class.parse("es-419")).to eql(described_class.new("es", "419", nil))
     end
 
-    context "raises a ParserError when given" do
+    describe "raises a ParserError when given" do
       it "an empty string" do
         expect { described_class.parse("") }.to raise_error(Locale::ParserError)
       end
@@ -60,12 +60,12 @@ describe Locale do
   describe "#eql?" do
     subject(:locale) { described_class.new("zh", "CN", "Hans") }
 
-    context "all parts match" do
+    context "when all parts match" do
       it { is_expected.to eql("zh-CN-Hans") }
       it { is_expected.to eql(locale) }
     end
 
-    context "only some parts match" do
+    context "when only some parts match" do
       it { is_expected.not_to eql("zh") }
       it { is_expected.not_to eql("zh-CN") }
       it { is_expected.not_to eql("CN") }

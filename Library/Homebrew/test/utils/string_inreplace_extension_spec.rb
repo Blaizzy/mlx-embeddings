@@ -7,7 +7,7 @@ describe StringInreplaceExtension do
   subject(:string_extension) { described_class.new(string.dup) }
 
   describe "#change_make_var!" do
-    context "flag" do
+    context "with a flag" do
       context "with spaces" do
         let(:string) do
           <<~EOS
@@ -72,7 +72,7 @@ describe StringInreplaceExtension do
       end
     end
 
-    context "empty flag between other flags" do
+    context "with an empty flag between other flags" do
       let(:string) do
         <<~EOS
           OTHER=def
@@ -91,7 +91,7 @@ describe StringInreplaceExtension do
       end
     end
 
-    context "empty flag" do
+    context "with an empty flag" do
       let(:string) do
         <<~EOS
           FLAG =
@@ -108,7 +108,7 @@ describe StringInreplaceExtension do
       end
     end
 
-    context "shell-style variable" do
+    context "with shell-style variable" do
       let(:string) do
         <<~EOS
           OTHER=def
@@ -129,7 +129,7 @@ describe StringInreplaceExtension do
   end
 
   describe "#remove_make_var!" do
-    context "flag" do
+    context "with a flag" do
       context "with spaces" do
         let(:string) do
           <<~EOS
@@ -182,7 +182,7 @@ describe StringInreplaceExtension do
       end
     end
 
-    context "multiple flags" do
+    context "with multiple flags" do
       let(:string) do
         <<~EOS
           OTHER=def

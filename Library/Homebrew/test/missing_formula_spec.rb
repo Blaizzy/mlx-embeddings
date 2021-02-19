@@ -118,7 +118,7 @@ describe Homebrew::MissingFormula do
   describe "::suggest_command", :cask do
     subject { described_class.suggest_command(name, command) }
 
-    context "brew install" do
+    context "when installing" do
       let(:name) { "local-caffeine" }
       let(:command) { "install" }
 
@@ -126,7 +126,7 @@ describe Homebrew::MissingFormula do
       it { is_expected.to match(/Try\n  brew install --cask local-caffeine/) }
     end
 
-    context "brew uninstall" do
+    context "when uninstalling" do
       let(:name) { "local-caffeine" }
       let(:command) { "uninstall" }
 
@@ -142,7 +142,7 @@ describe Homebrew::MissingFormula do
       end
     end
 
-    context "brew info" do
+    context "when getting info" do
       let(:name) { "local-caffeine" }
       let(:command) { "info" }
 

@@ -6,7 +6,7 @@ require "rubocops/formula_desc"
 describe RuboCop::Cop::FormulaAudit::Desc do
   subject(:cop) { described_class.new }
 
-  context "When auditing formula `desc` methods" do
+  context "when auditing formula `desc` methods" do
     it "reports an offense when there is no `desc`" do
       expect_offense(<<~RUBY)
         class Foo < Formula
@@ -48,7 +48,7 @@ describe RuboCop::Cop::FormulaAudit::Desc do
     end
   end
 
-  context "When auditing formula description texts" do
+  context "when auditing formula description texts" do
     it "reports an offense when the description starts with a leading space" do
       expect_offense(<<~RUBY, "/homebrew-core/Formula/foo.rb")
         class Foo < Formula
