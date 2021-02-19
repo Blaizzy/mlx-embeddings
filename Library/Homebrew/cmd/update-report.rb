@@ -140,6 +140,11 @@ module Homebrew
         unless args.preinstall?
           outdated_formulae = Formula.installed.count(&:outdated?)
           outdated_casks = Cask::Caskroom.casks.count(&:outdated?)
+          update_pronoun = if (outdated_formulae + outdated_casks) == 1
+            "it"
+          else
+            "them"
+          end
           msg = ""
           if outdated_formulae.positive?
             msg += "#{Tty.bold}#{outdated_formulae}#{Tty.reset} outdated #{"formula".pluralize(outdated_formulae)}"
@@ -152,7 +157,7 @@ module Homebrew
             puts_stdout_or_stderr
             puts_stdout_or_stderr <<~EOS
               You have #{msg} installed.
-              You can update them with #{Tty.bold}brew upgrade#{Tty.reset}.
+              You can update #{update_pronoun} with #{Tty.bold}brew upgrade#{Tty.reset}.
             EOS
           end
         end
