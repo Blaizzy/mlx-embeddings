@@ -8156,8 +8156,6 @@ module Homebrew::EnvConfig
 
   def self.no_bootsnap?(); end
 
-  def self.no_bottle_source_fallback?(); end
-
   def self.no_color?(); end
 
   def self.no_compat?(); end
@@ -23397,6 +23395,8 @@ class RSpec::Mocks::Proxy
   def build_expectation(method_name); end
 
   def check_for_unexpected_arguments(expectation); end
+
+  def ensure_can_be_proxied!(object); end
 
   def ensure_implemented(*_args); end
 
