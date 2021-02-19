@@ -11,8 +11,6 @@ RSpec/SubjectStub:
   Enabled: false
 
 # TODO: try to enable these
-RSpec/ContextWording:
-  Enabled: false
 RSpec/DescribeClass:
   Enabled: false
 RSpec/LeakyConstantDeclaration:
