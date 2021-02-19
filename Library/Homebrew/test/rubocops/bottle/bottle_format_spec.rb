@@ -65,7 +65,7 @@ describe RuboCop::Cop::FormulaAudit::BottleFormat do
     RUBY
   end
 
-  it "reports and corrects old `sha256` syntax in `bottle` block without cellars" do
+  it "reports and corrects old `sha256` syntax in `bottle` block with cellars" do
     expect_offense(<<~RUBY)
       class Foo < Formula
         url "https://brew.sh/foo-1.0.tgz"
