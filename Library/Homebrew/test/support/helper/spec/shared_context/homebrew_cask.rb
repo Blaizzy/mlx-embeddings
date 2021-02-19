@@ -31,7 +31,7 @@ module Cask
   end
 end
 
-RSpec.shared_context "Homebrew Cask", :needs_macos do
+RSpec.shared_context "Homebrew Cask", :needs_macos do # rubocop:disable RSpec/ContextWording
   around do |example|
     third_party_tap = Tap.fetch("third-party", "tap")
 
