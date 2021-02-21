@@ -21,8 +21,6 @@ RSpec/MessageSpies:
   Enabled: false
 RSpec/RepeatedDescription:
   Enabled: false
-RSpec/RepeatedExampleGroupDescription:
-  Enabled: false
 RSpec/StubbedMock:
   Enabled: false
 
