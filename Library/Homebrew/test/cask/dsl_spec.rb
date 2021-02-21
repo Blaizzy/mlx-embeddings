@@ -168,37 +168,37 @@ describe Cask::DSL, :cask do
         cask.config = config
       end
 
-      context "when it is 'zh'" do
+      describe "to 'zh'" do
         let(:languages) { ["zh"] }
 
         it { is_expected.to be_the_chinese_version }
       end
 
-      context "when it is 'zh-XX'" do
+      describe "to 'zh-XX'" do
         let(:languages) { ["zh-XX"] }
 
         it { is_expected.to be_the_chinese_version }
       end
 
-      context "when it is 'en'" do
+      describe "to 'en'" do
         let(:languages) { ["en"] }
 
         it { is_expected.to be_the_english_version }
       end
 
-      context "when it is 'xx-XX'" do
+      describe "to 'xx-XX'" do
         let(:languages) { ["xx-XX"] }
 
         it { is_expected.to be_the_english_version }
       end
 
-      context "when it is 'xx-XX,zh,en'" do
+      describe "to 'xx-XX,zh,en'" do
         let(:languages) { ["xx-XX", "zh", "en"] }
 
         it { is_expected.to be_the_chinese_version }
       end
 
-      context "when it is 'xx-XX,en-US,zh'" do
+      describe "to 'xx-XX,en-US,zh'" do
         let(:languages) { ["xx-XX", "en-US", "zh"] }
 
         it { is_expected.to be_the_english_version }

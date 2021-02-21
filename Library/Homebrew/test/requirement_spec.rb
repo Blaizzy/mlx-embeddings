@@ -148,7 +148,7 @@ describe Requirement do
   end
 
   describe "#build?" do
-    context "when :build tag is specified" do
+    context "when the :build tag is specified" do
       subject { described_class.new([:build]) }
 
       it { is_expected.to be_a_build_requirement }
