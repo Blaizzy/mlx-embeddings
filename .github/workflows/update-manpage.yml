@@ -50,9 +50,7 @@ jobs:
             brew update-maintainers
           fi
 
-          brew man
-
-          if [ -n "$(git status --porcelain=v1 2>/dev/null)" ]; then
+          if brew man --fail-if-not-changed; then
             git add "$GITHUB_WORKSPACE/README.md" \
                     "$GITHUB_WORKSPACE/docs/Manpage.md" \
                     "$GITHUB_WORKSPACE/manpages/brew.1" \

@@ -24,9 +24,9 @@ module Homebrew
 
         *Note:* Not (yet) working on Apple Silicon.
       EOS
-      switch "--fail-if-changed",
-             description: "Return a failing status code if changes are detected in the manpage outputs. This "\
-                          "can be used to notify CI when the manpages are out of date. Additionally, "\
+      switch "--fail-if-not-changed",
+             description: "Return a failing status code if no changes are detected in the manpage outputs. "\
+                          "This can be used to notify CI when the manpages are out of date. Additionally, "\
                           "the date used in new manpages will match those in the existing manpages (to allow "\
                           "comparison without factoring in the date)."
       named_args :none
@@ -42,19 +42,17 @@ module Homebrew
     args = man_args.parse
 
     Commands.rebuild_internal_commands_completion_list
-    regenerate_man_pages(preserve_date: args.fail_if_changed?, quiet: args.quiet?)
+    regenerate_man_pages(preserve_date: args.fail_if_not_changed?, quiet: args.quiet?)
     Completions.update_shell_completions!
 
     diff = system_command "git", args: [
       "-C", HOMEBREW_REPOSITORY, "diff", "--exit-code", "docs/Manpage.md", "manpages", "completions"
     ]
-    if diff.status.success?
-      puts "No changes to manpage or completions output detected."
-    elsif args.fail_if_changed?
-      puts "Changes to manpage or completions detected:"
-      puts diff.stdout
-      Homebrew.failed = true
-    end
+
+    return unless diff.status.success?
+
+    puts "No changes to manpage or completions output detected."
+    Homebrew.failed = true if args.fail_if_not_changed?
   end
 
   def regenerate_man_pages(preserve_date:, quiet:)
