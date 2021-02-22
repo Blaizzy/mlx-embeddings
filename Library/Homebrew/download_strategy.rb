@@ -586,6 +586,7 @@ class NoUnzipCurlDownloadStrategy < CurlDownloadStrategy
     UnpackStrategy::Uncompressed.new(cached_location)
                                 .extract(basename: basename,
                                          verbose:  verbose? && !quiet?)
+    yield if block_given?
   end
 end
 
