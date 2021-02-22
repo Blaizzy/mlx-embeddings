@@ -15,6 +15,10 @@ module Homebrew
         description: "Linux only: Pass this value to a type name representing the compiler's `-march` option.",
         default:     "native",
       },
+      HOMEBREW_ARCHIVE_KEY:                   {
+        description: "Use this API key when accessing the Archive.org API (where bottles are stored). " \
+                     "The format is access:secret. See https://archive.org/account/s3.php",
+      },
       HOMEBREW_ARTIFACT_DOMAIN:               {
         description: "Prefix all download URLs, including those for bottles, with this value. " \
                      "For example, `HOMEBREW_ARTIFACT_DOMAIN=http://localhost:8080` will cause a " \

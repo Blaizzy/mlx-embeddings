@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "cli/parser"
+require "archive"
 require "bintray"
 
 module Homebrew
@@ -27,6 +28,8 @@ module Homebrew
       switch "--warn-on-upload-failure",
              description: "Warn instead of raising an error if the bottle upload fails. "\
                           "Useful for repairing bottle uploads that previously failed."
+      flag   "--archive-item=",
+             description: "Upload to the specified Archive item (default: `homebrew`)."
       flag   "--bintray-org=",
              description: "Upload to the specified Bintray organisation (default: `homebrew`)."
       flag   "--root-url=",
@@ -44,6 +47,18 @@ module Homebrew
       next if formula_version == bottle_version
 
       odie "Bottles are for #{name} #{bottle_version} but formula is version #{formula_version}!"
+    end
+  end
+
+  def archive?(bottles_hash)
+    @archive ||= bottles_hash.values.all? do |bottle_hash|
+      bottle_hash["bottle"]["root_url"].start_with? "https://archive.com/"
+    end
+  end
+
+  def bintray?(bottles_hash)
+    @bintray ||= bottles_hash.values.all? do |bottle_hash|
+      bottle_hash["bottle"]["root_url"].match? %r{^https://[\w-]+\.bintray\.com/}
     end
   end
 
@@ -76,11 +91,16 @@ module Homebrew
     bottle_args += json_files
 
     if args.dry_run?
-      service = if github_releases?(bottles_hash)
-        "GitHub Releases"
-      else
-        "Bintray"
-      end
+      service =
+        if archive?(bottles_hash)
+          "Archive.org"
+        elsif bintray?(bottles_hash)
+          "Bintray"
+        elsif github_releases?(bottles_hash)
+          "GitHub Releases"
+        else
+          odie "Service specified by root_url is not recognized"
+        end
       puts <<~EOS
         brew #{bottle_args.join " "}
         Upload bottles described by these JSON files to #{service}:
@@ -102,7 +122,20 @@ module Homebrew
       safe_system HOMEBREW_BREW_FILE, *audit_args
     end
 
-    if github_releases?(bottles_hash)
+    if archive?(bottles_hash)
+      # Handle uploading to Archive.org.
+      archive_item = args.archive_item || "homebrew"
+      archive = Archive.new(item: archive_item)
+      archive.upload_bottles(bottles_hash,
+                             warn_on_error: args.warn_on_upload_failure?)
+    elsif bintray?(bottles_hash)
+      # Handle uploading to Bintray.
+      bintray_org = args.bintray_org || "homebrew"
+      bintray = Bintray.new(org: bintray_org)
+      bintray.upload_bottles(bottles_hash,
+                             publish_package: !args.no_publish?,
+                             warn_on_error:   args.warn_on_upload_failure?)
+    elsif github_releases?(bottles_hash)
       # Handle uploading to GitHub Releases.
       bottles_hash.each_value do |bottle_hash|
         root_url = bottle_hash["bottle"]["root_url"]
@@ -128,12 +161,7 @@ module Homebrew
         end
       end
     else
-      # Handle uploading to Bintray.
-      bintray_org = args.bintray_org || "homebrew"
-      bintray = Bintray.new(org: bintray_org)
-      bintray.upload_bottles(bottles_hash,
-                             publish_package: !args.no_publish?,
-                             warn_on_error:   args.warn_on_upload_failure?)
+      odie "Service specified by root_url is not recognized"
     end
   end
 end
