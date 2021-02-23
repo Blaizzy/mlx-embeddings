@@ -69,9 +69,8 @@ module Homebrew
     else
       T.unsafe(Cask::Cmd::Uninstall).uninstall_casks(
         *casks,
-        binaries: EnvConfig.cask_opts_binaries?,
-        verbose:  args.verbose?,
-        force:    args.force?,
+        verbose: args.verbose?,
+        force:   args.force?,
       )
     end
   end
