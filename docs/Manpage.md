@@ -1182,7 +1182,7 @@ Requires write access to the repository.
 * `--artifact`:
   Download artifacts with the specified name (default: `bottles`).
 * `--archive-item`:
-  Upload to the specified Archive item (default: `homebrew`).
+  Upload to the specified Internet Archive item (default: `homebrew`).
 * `--bintray-org`:
   Upload to the specified Bintray organisation (default: `homebrew`).
 * `--tap`:
@@ -1211,7 +1211,7 @@ Apply the bottle commit and publish bottles to Bintray or GitHub Releases.
 * `--warn-on-upload-failure`:
   Warn instead of raising an error if the bottle upload fails. Useful for repairing bottle uploads that previously failed.
 * `--archive-item`:
-  Upload to the specified Archive item (default: `homebrew`).
+  Upload to the specified Internet Archive item (default: `homebrew`).
 * `--bintray-org`:
   Upload to the specified Bintray organisation (default: `homebrew`).
 * `--root-url`:
@@ -1702,9 +1702,6 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 
   *Default:* `native`.
 
-- `HOMEBREW_ARCHIVE_KEY`
-  <br>Use this API key when accessing the Archive.org API (where bottles are stored). The format is access:secret. See https://archive.org/account/s3.php
-
 - `HOMEBREW_ARTIFACT_DOMAIN`
   <br>Prefix all download URLs, including those for bottles, with this value. For example, `HOMEBREW_ARTIFACT_DOMAIN=http://localhost:8080` will cause a formula with the URL `https://example.com/foo.tar.gz` to instead download from `http://localhost:8080/example.com/foo.tar.gz`.
 
@@ -1840,6 +1837,9 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
   <br>Print this text before the installation summary of each successful build.
 
   *Default:* The "Beer Mug" emoji.
+
+- `HOMEBREW_INTERNET_ARCHIVE_KEY`
+  <br>Use this API key when accessing the Internet Archive S3 API, where bottles are stored. The format is access:secret. See https://archive.org/account/s3.php
 
 - `HOMEBREW_LIVECHECK_WATCHLIST`
   <br>Consult this file for the list of formulae to check by default when no formula argument is passed to `brew livecheck`.

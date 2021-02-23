@@ -1229,7 +1229,7 @@ _brew_pr_publish() {
 # brew pr-pull
 _brew_pr_pull() {
   _arguments \
-    '(--bintray-org)--archive-item[Upload to the specified Archive item (default: `homebrew`)]' \
+    '(--bintray-org)--archive-item[Upload to the specified Internet Archive item (default: `homebrew`)]' \
     '--artifact[Download artifacts with the specified name (default: `bottles`)]' \
     '(--clean)--autosquash[Automatically reformat and reword commits in the pull request to our preferred format]' \
     '--bintray-mirror[Use the specified Bintray repository to automatically mirror stable URLs defined in the formulae (default: `mirror`)]' \
@@ -1256,7 +1256,7 @@ _brew_pr_pull() {
 # brew pr-upload
 _brew_pr_upload() {
   _arguments \
-    '--archive-item[Upload to the specified Archive item (default: `homebrew`)]' \
+    '--archive-item[Upload to the specified Internet Archive item (default: `homebrew`)]' \
     '--bintray-org[Upload to the specified Bintray organisation (default: `homebrew`)]' \
     '--debug[Display any debugging information]' \
     '--dry-run[Print what would be done rather than doing it]' \
