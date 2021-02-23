@@ -47,11 +47,11 @@ class Archive
 
   sig {
     params(local_file:    String,
-           dir:           String,
+           directory:     String,
            remote_file:   String,
            warn_on_error: T.nilable(T::Boolean)).void
   }
-  def upload(local_file, dir:, remote_file:, warn_on_error: false)
+  def upload(local_file, directory:, remote_file:, warn_on_error: false)
     unless File.exist? local_file
       msg = "#{local_file} for upload doesn't exist!"
       raise Error, msg unless warn_on_error
@@ -62,7 +62,7 @@ class Archive
     end
 
     md5_base64 = Digest::MD5.base64digest(File.read(local_file))
-    url = "https://#{@archive_item}.s3.us.archive.org/#{dir}/#{remote_file}"
+    url = "https://#{@archive_item}.s3.us.archive.org/#{directory}/#{remote_file}"
     args = ["--upload-file", local_file, "--header", "Content-MD5: #{md5_base64}"]
     args << "--fail" unless warn_on_error
     result = T.unsafe(self).open_api(url, *args)
@@ -83,20 +83,20 @@ class Archive
 
   sig {
     params(formula:       Formula,
-           dir:           String,
+           directory:     String,
            warn_on_error: T::Boolean).returns(String)
   }
-  def mirror_formula(formula, dir: "mirror", warn_on_error: false)
+  def mirror_formula(formula, directory: "mirror", warn_on_error: false)
     formula.downloader.fetch
 
     filename = ERB::Util.url_encode(formula.downloader.basename)
-    destination_url = "https://archive.org/download/#{@archive_item}/#{dir}/#{filename}"
+    destination_url = "https://archive.org/download/#{@archive_item}/#{directory}/#{filename}"
 
     odebug "Uploading to #{destination_url}"
 
     upload(
       formula.downloader.cached_location,
-      dir:           dir,
+      directory:     directory,
       remote_file:   filename,
       warn_on_error: warn_on_error,
     )
@@ -107,9 +107,9 @@ class Archive
   # Gets the MD5 hash of the specified remote file.
   #
   # @return the hash, the empty string (if the file doesn't have a hash), nil (if the file doesn't exist)
-  sig { params(dir: String, remote_file: String).returns(T.nilable(String)) }
-  def remote_md5(dir:, remote_file:)
-    url = "https://#{@archive_item}.s3.us.archive.org/#{dir}/#{remote_file}"
+  sig { params(directory: String, remote_file: String).returns(T.nilable(String)) }
+  def remote_md5(directory:, remote_file:)
+    url = "https://#{@archive_item}.s3.us.archive.org/#{directory}/#{remote_file}"
     result = curl_output "--fail", "--silent", "--head", "--location", url
     if result.success?
       result.stdout.match(/^ETag: "(\h{32})"/)&.values_at(1)&.first || ""
@@ -147,13 +147,13 @@ class Archive
         md5 = Digest::MD5.hexdigest(File.read(local_filename))
 
         odebug "Checking remote file #{@archive_item}/#{directory}/#{filename}"
-        result = remote_md5(dir: directory, remote_file: filename)
+        result = remote_md5(directory: directory, remote_file: filename)
         case result
         when nil
           # File doesn't exist.
           odebug "Uploading #{@archive_item}/#{directory}/#{filename}"
           upload(local_filename,
-                 dir:           directory,
+                 directory:     directory,
                  remote_file:   filename,
                  warn_on_error: warn_on_error)
         when md5
