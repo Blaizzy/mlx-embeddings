@@ -1475,6 +1475,7 @@ _brew_pr_pull() {
   case "$cur" in
     -*)
       __brewcomp "
+      --archive-item
       --artifact
       --autosquash
       --bintray-mirror
