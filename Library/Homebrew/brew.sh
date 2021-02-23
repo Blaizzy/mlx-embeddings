@@ -584,6 +584,11 @@ then
   export HOMEBREW_BOTTLE_DOMAIN="$HOMEBREW_BOTTLE_DEFAULT_DOMAIN"
 fi
 
+if [[ -n "$HOMEBREW_DEVELOPER" || -n "$HOMEBREW_DEV_CMD_RUN" ]]
+then
+  export HOMEBREW_BOOTSNAP="1"
+fi
+
 export HOMEBREW_BREW_DEFAULT_GIT_REMOTE="https://github.com/Homebrew/brew"
 if [[ -z "$HOMEBREW_BREW_GIT_REMOTE" ]]
 then
