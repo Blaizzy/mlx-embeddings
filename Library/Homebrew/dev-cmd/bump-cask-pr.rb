@@ -134,18 +134,7 @@ module Homebrew
 
           if tmp_contents.include?("Hardware::CPU.intel?")
             other_contents = tmp_contents.gsub("Hardware::CPU.intel?", (!Hardware::CPU.intel?).to_s)
-            other_cask = Cask::CaskLoader.load(other_contents)
-            other_url = other_cask.url.to_s
-            other_old_hash = other_cask.sha256.to_s
-
-            resource_path = fetch_resource(cask, new_version, other_url)
-            Utils::Tar.validate_file(resource_path)
-            other_new_hash = resource_path.sha256
-
-            replacement_pairs << [
-              other_old_hash,
-              other_new_hash,
-            ]
+            replacement_pairs << fetch_cask(other_contents, new_version)
           end
         end
 
@@ -153,19 +142,7 @@ module Homebrew
           next if language == cask.language
 
           lang_config = tmp_config.merge(Cask::Config.new(explicit: { languages: [language] }))
-          lang_cask = Cask::CaskLoader.load(tmp_contents)
-          lang_cask.config = lang_config
-          lang_url = lang_cask.url.to_s
-          lang_old_hash = lang_cask.sha256.to_s
-
-          resource_path = fetch_resource(cask, new_version, lang_url)
-          Utils::Tar.validate_file(resource_path)
-          lang_new_hash = resource_path.sha256
-
-          replacement_pairs << [
-            lang_old_hash,
-            lang_new_hash,
-          ]
+          replacement_pairs << fetch_cask(tmp_contents, new_version, config: lang_config)
         end
       end
     end
@@ -204,12 +181,25 @@ module Homebrew
     GitHub.create_bump_pr(pr_info, args: args)
   end
 
-  def fetch_resource(cask, new_version, url, **specs)
+  def fetch_resource(cask, version, url, **specs)
     resource = Resource.new
     resource.url(url, specs)
     resource.owner = Resource.new(cask.token)
-    resource.version = new_version
+    resource.version = version
     resource.fetch
+  end
+
+  def fetch_cask(contents, version, config: nil)
+    cask = Cask::CaskLoader.load(contents)
+    cask.config = config if config.present?
+    url = cask.url.to_s
+    old_hash = cask.sha256.to_s
+
+    resource_path = fetch_resource(cask, version, url)
+    Utils::Tar.validate_file(resource_path)
+    new_hash = resource_path.sha256
+
+    [old_hash, new_hash]
   end
 
   def check_open_pull_requests(cask, args:)
