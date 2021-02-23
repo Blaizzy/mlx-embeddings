@@ -132,8 +132,16 @@ describe SPDX do
       expect(described_class.deprecated_license?("GPL-1.0")).to eq true
     end
 
+    it "returns true for deprecated license identifier with plus" do
+      expect(described_class.deprecated_license?("GPL-1.0+")).to eq true
+    end
+
     it "returns false for non-deprecated license identifier" do
       expect(described_class.deprecated_license?("MIT")).to eq false
+    end
+
+    it "returns false for non-deprecated license identifier with plus" do
+      expect(described_class.deprecated_license?("EPL-1.0+")).to eq false
     end
 
     it "returns false for invalid license identifier" do
