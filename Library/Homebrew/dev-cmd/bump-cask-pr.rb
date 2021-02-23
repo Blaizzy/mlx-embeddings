@@ -125,10 +125,28 @@ module Homebrew
         tmp_config = cask.config
         tmp_url = tmp_cask.url.to_s
 
-        if new_hash.nil? && old_hash != :no_check
-          resource_path = fetch_resource(cask, new_version, tmp_url)
-          Utils::Tar.validate_file(resource_path)
-          new_hash = resource_path.sha256
+        if old_hash != :no_check
+          if new_hash.nil?
+            resource_path = fetch_resource(cask, new_version, tmp_url)
+            Utils::Tar.validate_file(resource_path)
+            new_hash = resource_path.sha256
+          end
+
+          if tmp_contents.include?("Hardware::CPU.intel?")
+            other_contents = tmp_contents.gsub("Hardware::CPU.intel?", (!Hardware::CPU.intel?).to_s)
+            other_cask = Cask::CaskLoader.load(other_contents)
+            other_url = other_cask.url.to_s
+            other_old_hash = other_cask.sha256.to_s
+
+            resource_path = fetch_resource(cask, new_version, other_url)
+            Utils::Tar.validate_file(resource_path)
+            other_new_hash = resource_path.sha256
+
+            replacement_pairs << [
+              other_old_hash,
+              other_new_hash,
+            ]
+          end
         end
 
         cask.languages.each do |language|
