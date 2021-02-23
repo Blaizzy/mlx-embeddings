@@ -1077,6 +1077,7 @@ __fish_brew_complete_arg 'pr-pull' -l workflows -d 'Retrieve artifacts from the 
 
 
 __fish_brew_complete_cmd 'pr-upload' 'Apply the bottle commit and publish bottles to Bintray or GitHub Releases'
+__fish_brew_complete_arg 'pr-upload' -l archive-item -d 'Upload to the specified Archive item (default: `homebrew`)'
 __fish_brew_complete_arg 'pr-upload' -l bintray-org -d 'Upload to the specified Bintray organisation (default: `homebrew`)'
 __fish_brew_complete_arg 'pr-upload' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'pr-upload' -l dry-run -d 'Print what would be done rather than doing it'

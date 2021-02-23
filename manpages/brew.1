@@ -1692,6 +1692,10 @@ Do not generate a new commit before uploading\.
 Warn instead of raising an error if the bottle upload fails\. Useful for repairing bottle uploads that previously failed\.
 .
 .TP
+\fB\-\-archive\-item\fR
+Upload to the specified Archive item (default: \fBhomebrew\fR)\.
+.
+.TP
 \fB\-\-bintray\-org\fR
 Upload to the specified Bintray organisation (default: \fBhomebrew\fR)\.
 .
@@ -2351,6 +2355,12 @@ Linux only: Pass this value to a type name representing the compiler\'s \fB\-mar
 .
 .IP
 \fIDefault:\fR \fBnative\fR\.
+.
+.TP
+\fBHOMEBREW_ARCHIVE_KEY\fR
+.
+.br
+Use this API key when accessing the Archive\.org API (where bottles are stored)\. The format is access:secret\. See https://archive\.org/account/s3\.php
 .
 .TP
 \fBHOMEBREW_ARTIFACT_DOMAIN\fR

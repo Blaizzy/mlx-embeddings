@@ -1255,6 +1255,7 @@ _brew_pr_pull() {
 # brew pr-upload
 _brew_pr_upload() {
   _arguments \
+    '--archive-item[Upload to the specified Archive item (default: `homebrew`)]' \
     '--bintray-org[Upload to the specified Bintray organisation (default: `homebrew`)]' \
     '--debug[Display any debugging information]' \
     '--dry-run[Print what would be done rather than doing it]' \

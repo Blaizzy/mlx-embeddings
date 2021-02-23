@@ -1507,6 +1507,7 @@ _brew_pr_upload() {
   case "$cur" in
     -*)
       __brewcomp "
+      --archive-item
       --bintray-org
       --debug
       --dry-run
