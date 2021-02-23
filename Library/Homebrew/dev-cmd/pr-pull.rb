@@ -50,7 +50,7 @@ module Homebrew
       flag   "--artifact=",
              description: "Download artifacts with the specified name (default: `bottles`)."
       flag   "--archive-item=",
-             description: "Upload to the specified Archive item (default: `homebrew`)."
+             description: "Upload to the specified Internet Archive item (default: `homebrew`)."
       flag   "--bintray-org=",
              description: "Upload to the specified Bintray organisation (default: `homebrew`)."
       flag   "--tap=",

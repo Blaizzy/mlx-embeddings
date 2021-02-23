@@ -29,7 +29,7 @@ module Homebrew
              description: "Warn instead of raising an error if the bottle upload fails. "\
                           "Useful for repairing bottle uploads that previously failed."
       flag   "--archive-item=",
-             description: "Upload to the specified Archive item (default: `homebrew`)."
+             description: "Upload to the specified Internet Archive item (default: `homebrew`)."
       flag   "--bintray-org=",
              description: "Upload to the specified Bintray organisation (default: `homebrew`)."
       flag   "--root-url=",
@@ -93,7 +93,7 @@ module Homebrew
     if args.dry_run?
       service =
         if archive?(bottles_hash)
-          "Archive.org"
+          "Internet Archive"
         elsif bintray?(bottles_hash)
           "Bintray"
         elsif github_releases?(bottles_hash)
@@ -123,7 +123,7 @@ module Homebrew
     end
 
     if archive?(bottles_hash)
-      # Handle uploading to Archive.org.
+      # Handle uploading to the Internet Archive.
       archive_item = args.archive_item || "homebrew"
       archive = Archive.new(item: archive_item)
       archive.upload_bottles(bottles_hash,

@@ -4,7 +4,7 @@
 require "digest/md5"
 require "utils/curl"
 
-# Archive API client.
+# The Internet Archive API client.
 #
 # @api private
 class Archive
@@ -23,20 +23,18 @@ class Archive
 
   sig { params(item: T.nilable(String)).void }
   def initialize(item: "homebrew")
+    raise UsageError, "Must set the Archive item!" unless item
+
     @archive_item = item
-
-    raise UsageError, "Must set the Archive item!" unless @archive_item
-
-    ENV["HOMEBREW_FORCE_HOMEBREW_ON_LINUX"] = "1" if @archive_item == "homebrew" && !OS.mac?
   end
 
   def open_api(url, *args, auth: true)
     if auth
-      raise UsageError, "HOMEBREW_ARCHIVE_KEY is unset." unless (key = Homebrew::EnvConfig.archive_key)
+      key = Homebrew::EnvConfig.internet_archive_key
+      raise UsageError, "HOMEBREW_INTERNET_ARCHIVE_KEY is unset." if key.blank?
 
       if key.exclude?(":")
-        raise UsageError,
-              "Use HOMEBREW_ARCHIVE_KEY=access:secret. See https://archive.org/account/s3.php"
+        raise UsageError, "Use HOMEBREW_INTERNET_ARCHIVE_KEY=access:secret. See https://archive.org/account/s3.php"
       end
 
       args += ["--header", "Authorization: AWS #{key}"]
@@ -52,7 +50,8 @@ class Archive
            warn_on_error: T.nilable(T::Boolean)).void
   }
   def upload(local_file, directory:, remote_file:, warn_on_error: false)
-    unless File.exist? local_file
+    local_file = Pathname.new(local_file)
+    unless local_file.exist?
       msg = "#{local_file} for upload doesn't exist!"
       raise Error, msg unless warn_on_error
 
@@ -61,7 +60,7 @@ class Archive
       return
     end
 
-    md5_base64 = Digest::MD5.base64digest(File.read(local_file))
+    md5_base64 = Digest::MD5.base64digest(local_file.read)
     url = "https://#{@archive_item}.s3.us.archive.org/#{directory}/#{remote_file}"
     args = ["--upload-file", local_file, "--header", "Content-MD5: #{md5_base64}"]
     args << "--fail" unless warn_on_error
@@ -72,13 +71,6 @@ class Archive
     raise msg unless warn_on_error
 
     opoo msg
-  end
-
-  sig { params(url: String).returns(T::Boolean) }
-  def stable_mirrored?(url)
-    headers, = curl_output("--connect-timeout", "15", "--location", "--head", url)
-    status_code = headers.scan(%r{^HTTP/.* (\d+)}).last.first
-    status_code.start_with?("2")
   end
 
   sig {
@@ -124,7 +116,7 @@ class Archive
   def file_delete_instructions(directory, filename)
     <<~EOS
       Run:
-        curl -X DELETE -H "Authorization: AWS $HOMEBREW_ARCHIVE_KEY" https://#{@archive_item}.s3.us.archive.org/#{directory}/#{filename}
+        curl -X DELETE -H "Authorization: AWS $HOMEBREW_INTERNET_ARCHIVE_KEY" https://#{@archive_item}.s3.us.archive.org/#{directory}/#{filename}
       Or run:
         ia delete #{@archive_item} #{directory}/#{filename}
     EOS
@@ -139,7 +131,7 @@ class Archive
       directory = bottle_hash["bintray"]["repository"]
       bottle_count = bottle_hash["bottle"]["tags"].length
 
-      bottle_hash["bottle"]["tags"].each do |_tag, tag_hash|
+      bottle_hash["bottle"]["tags"].each_value do |tag_hash|
         filename = tag_hash["filename"] # URL encoded in Bottle::Filename#archive
         delete_instructions = file_delete_instructions(directory, filename)
 
