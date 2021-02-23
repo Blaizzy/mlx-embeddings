@@ -5,7 +5,7 @@ describe ErrorDuringExecution do
   subject(:error) { described_class.new(command, status: status, output: output) }
 
   let(:command) { ["false"] }
-  let(:status) { instance_double(Process::Status, exitstatus: exitstatus) }
+  let(:status) { instance_double(Process::Status, exitstatus: exitstatus, termsig: nil) }
   let(:exitstatus) { 1 }
   let(:output) { nil }
 
