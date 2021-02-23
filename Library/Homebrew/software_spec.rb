@@ -402,9 +402,9 @@ class BottleSpecification
     cellar == :any_skip_relocation
   end
 
-  sig { params(tag: Symbol).returns(T::Boolean) }
-  def tag?(tag)
-    checksum_for(tag) ? true : false
+  sig { params(tag: Symbol, exact: T::Boolean).returns(T::Boolean) }
+  def tag?(tag, exact: false)
+    checksum_for(tag, exact: exact) ? true : false
   end
 
   # Checksum methods in the DSL's bottle block take
@@ -444,9 +444,9 @@ class BottleSpecification
     collector[tag] = { checksum: Checksum.new(digest), cellar: cellar }
   end
 
-  sig { params(tag: Symbol).returns(T.nilable([Checksum, Symbol, T.any(Symbol, String)])) }
-  def checksum_for(tag)
-    collector.fetch_checksum_for(tag)
+  sig { params(tag: Symbol, exact: T::Boolean).returns(T.nilable([Checksum, Symbol, T.any(Symbol, String)])) }
+  def checksum_for(tag, exact: false)
+    collector.fetch_checksum_for(tag, exact: exact)
   end
 
   def checksums
