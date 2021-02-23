@@ -146,7 +146,7 @@ module Cask
       installed_cask = installed_caskfile.exist? ? CaskLoader.load(installed_caskfile) : @cask
 
       # Always force uninstallation, ignore method parameter
-      Installer.new(installed_cask, binaries: binaries?, verbose: verbose?, force: true, upgrade: upgrade?).uninstall
+      Installer.new(installed_cask, verbose: verbose?, force: true, upgrade: upgrade?).uninstall
     end
 
     sig { returns(String) }
