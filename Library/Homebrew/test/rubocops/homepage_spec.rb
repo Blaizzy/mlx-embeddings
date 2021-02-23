@@ -80,7 +80,7 @@ describe RuboCop::Cop::FormulaAudit::Homepage do
       RUBY
     end
 
-    context "for Sourceforge" do
+    describe "for Sourceforge" do
       correct_formula = <<~RUBY
         class Foo < Formula
           homepage "https://foo.sourceforge.io/"

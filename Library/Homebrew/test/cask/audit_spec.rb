@@ -315,7 +315,7 @@ describe Cask::Audit, :cask do
         end
       end
 
-      context "when cask token is in tap_migrations.json" do
+      context "when cask token is in tap_migrations.json and" do
         let(:cask_token) { "token-migrated" }
         let(:tap) { Tap.fetch("homebrew/cask") }
 
@@ -324,7 +324,7 @@ describe Cask::Audit, :cask do
           allow(cask).to receive(:tap).and_return(tap)
         end
 
-        context "and `new_cask` is true" do
+        context "when `new_cask` is true" do
           let(:new_cask) { true }
 
           it "fails" do
@@ -332,7 +332,7 @@ describe Cask::Audit, :cask do
           end
         end
 
-        context "and `new_cask` is false" do
+        context "when `new_cask` is false" do
           let(:new_cask) { false }
 
           it "does not fail" do
@@ -688,14 +688,14 @@ describe Cask::Audit, :cask do
         it { is_expected.to pass }
       end
 
-      context "when the Cask is on the denylist" do
-        context "and it's in the official Homebrew tap" do
+      context "when the Cask is on the denylist and" do
+        context "when it's in the official Homebrew tap" do
           let(:cask_token) { "adobe-illustrator" }
 
           it { is_expected.to fail_with(/#{cask_token} is not allowed: \w+/) }
         end
 
-        context "and it isn't in the official Homebrew tap" do
+        context "when it isn't in the official Homebrew tap" do
           let(:cask_token) { "pharo" }
 
           it { is_expected.to pass }
@@ -786,7 +786,7 @@ describe Cask::Audit, :cask do
     end
 
     describe "url checks" do
-      context "given a block" do
+      context "with a block" do
         let(:cask_token) { "booby-trap" }
 
         context "when loading the cask" do

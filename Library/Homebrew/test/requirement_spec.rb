@@ -14,25 +14,25 @@ describe Requirement do
   describe "#tags" do
     subject { described_class.new(tags) }
 
-    context "single tag" do
+    context "with a single tag" do
       let(:tags) { ["bar"] }
 
       its(:tags) { are_expected.to eq(tags) }
     end
 
-    context "multiple tags" do
+    context "with multiple tags" do
       let(:tags) { ["bar", "baz"] }
 
       its(:tags) { are_expected.to eq(tags) }
     end
 
-    context "symbol tags" do
+    context "with symbol tags" do
       let(:tags) { [:build] }
 
       its(:tags) { are_expected.to eq(tags) }
     end
 
-    context "symbol and string tags" do
+    context "with symbol and string tags" do
       let(:tags) { [:build, "bar"] }
 
       its(:tags) { are_expected.to eq(tags) }
@@ -148,7 +148,7 @@ describe Requirement do
   end
 
   describe "#build?" do
-    context ":build tag is specified" do
+    context "when the :build tag is specified" do
       subject { described_class.new([:build]) }
 
       it { is_expected.to be_a_build_requirement }

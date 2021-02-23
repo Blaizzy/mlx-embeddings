@@ -37,7 +37,7 @@ describe Searchable do
         expect(searchable_collection.search("foo")).to eq "foo" => "bar"
       end
 
-      context "containing nil" do
+      context "with a nil value" do
         let(:collection) { { "foo" => nil } }
 
         it "does not raise an error" do

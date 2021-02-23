@@ -35,7 +35,7 @@ describe Cask::Pkg, :cask do
       expect(root_dir).not_to exist
     end
 
-    context "pkgutil" do
+    describe "pkgutil" do
       it "forgets the pkg" do
         allow(fake_system_command).to receive(:run!).with(
           "/usr/sbin/pkgutil",

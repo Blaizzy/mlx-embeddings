@@ -32,7 +32,7 @@ describe CacheStoreDatabase do
   end
 
   describe "#get" do
-    context "database created" do
+    context "with a database created" do
       let(:db) { double("db", :[] => "bar") }
 
       it "gets value in the `CacheStoreDatabase` corresponding to the key" do
@@ -44,7 +44,7 @@ describe CacheStoreDatabase do
       end
     end
 
-    context "database not created" do
+    context "without a database created" do
       let(:db) { double("db", :[] => nil) }
 
       before do
@@ -64,7 +64,7 @@ describe CacheStoreDatabase do
   end
 
   describe "#delete" do
-    context "database created" do
+    context "with a database created" do
       let(:db) { double("db", :[] => { foo: "bar" }) }
 
       before do
@@ -78,7 +78,7 @@ describe CacheStoreDatabase do
       end
     end
 
-    context "database not created" do
+    context "without a database created" do
       let(:db) { double("db", delete: nil) }
 
       before do
@@ -94,13 +94,13 @@ describe CacheStoreDatabase do
   end
 
   describe "#write_if_dirty!" do
-    context "database open" do
+    context "with an open database" do
       it "does not raise an error when `close` is called on the database" do
         expect { sample_db.write_if_dirty! }.not_to raise_error(NoMethodError)
       end
     end
 
-    context "database not open" do
+    context "without an open database" do
       before do
         sample_db.instance_variable_set(:@db, nil)
       end
@@ -118,7 +118,7 @@ describe CacheStoreDatabase do
       allow(sample_db).to receive(:cache_path).and_return(cache_path)
     end
 
-    context "`cache_path.exist?` returns `true`" do
+    context "when `cache_path.exist?` returns `true`" do
       before do
         allow(cache_path).to receive(:exist?).and_return(true)
       end
@@ -128,7 +128,7 @@ describe CacheStoreDatabase do
       end
     end
 
-    context "`cache_path.exist?` returns `false`" do
+    context "when `cache_path.exist?` returns `false`" do
       before do
         allow(cache_path).to receive(:exist?).and_return(false)
       end

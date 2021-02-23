@@ -155,7 +155,7 @@ describe SystemCommand::Result do
       end
     end
 
-    context "given a hdiutil stdout" do
+    context "when there's a hdiutil stdout" do
       let(:stdout) { plist }
 
       it "successfully parses it" do

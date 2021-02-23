@@ -56,7 +56,7 @@ describe Formula do
       expect { klass.new }.to raise_error(ArgumentError)
     end
 
-    context "in a Tap" do
+    context "when in a Tap" do
       let(:tap) { Tap.new("foo", "bar") }
       let(:path) { (tap.path/"Formula/#{name}.rb") }
       let(:full_name) { "#{tap.user}/#{tap.repo}/#{name}" }

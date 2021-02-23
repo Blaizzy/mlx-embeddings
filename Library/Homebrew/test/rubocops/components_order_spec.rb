@@ -491,7 +491,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
       RUBY
     end
 
-    context "in a resource block" do
+    context "when in a resource block" do
       it "reports no offenses for a valid `on_macos` and `on_linux` block" do
         expect_no_offenses(<<~RUBY)
           class Foo < Formula

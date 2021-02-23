@@ -3,7 +3,7 @@
 
 require "commands"
 
-RSpec.shared_context "custom internal commands" do
+RSpec.shared_context "custom internal commands" do # rubocop:disable RSpec/ContextWording
   let(:cmds) do
     [
       # internal commands

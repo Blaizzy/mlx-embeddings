@@ -5,7 +5,7 @@ require "patch"
 
 describe Patch do
   describe "#create" do
-    context "simple patch" do
+    context "with a simple patch" do
       subject { described_class.create(:p2, nil) }
 
       it { is_expected.to be_kind_of ExternalPatch }
@@ -13,28 +13,28 @@ describe Patch do
       its(:strip) { is_expected.to eq(:p2) }
     end
 
-    context "string patch" do
+    context "with a string patch" do
       subject { described_class.create(:p0, "foo") }
 
       it { is_expected.to be_kind_of StringPatch }
       its(:strip) { is_expected.to eq(:p0) }
     end
 
-    context "string patch without strip" do
+    context "with a string patch without strip" do
       subject { described_class.create("foo", nil) }
 
       it { is_expected.to be_kind_of StringPatch }
       its(:strip) { is_expected.to eq(:p1) }
     end
 
-    context "data patch" do
+    context "with a data patch" do
       subject { described_class.create(:p0, :DATA) }
 
       it { is_expected.to be_kind_of DATAPatch }
       its(:strip) { is_expected.to eq(:p0) }
     end
 
-    context "data patch without strip" do
+    context "with a data patch without strip" do
       subject { described_class.create(:DATA, nil) }
 
       it { is_expected.to be_kind_of DATAPatch }
@@ -55,7 +55,7 @@ describe Patch do
   describe "#patch_files" do
     subject(:patch) { described_class.create(:p2, nil) }
 
-    context "empty patch" do
+    context "when the patch is empty" do
       its(:resource) { is_expected.to be_kind_of Resource::PatchResource }
       its(:patch_files) { is_expected.to eq(patch.resource.patch_files) }
       its(:patch_files) { is_expected.to eq([]) }

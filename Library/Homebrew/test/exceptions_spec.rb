@@ -87,7 +87,7 @@ describe "Exception" do
       end
     end
 
-    context "no classes" do
+    context "when there are no classes" do
       let(:list) { [] }
 
       its(:to_s) {
@@ -95,7 +95,7 @@ describe "Exception" do
       }
     end
 
-    context "class not derived from Formula" do
+    context "when the class is not derived from Formula" do
       let(:list) { [mod.const_get(:Bar)] }
 
       its(:to_s) {
@@ -103,7 +103,7 @@ describe "Exception" do
       }
     end
 
-    context "class derived from Formula" do
+    context "when the class is derived from Formula" do
       let(:list) { [mod.const_get(:Baz)] }
 
       its(:to_s) { is_expected.to match(/Expected to find class Foo, but only found: Baz\./) }
@@ -170,13 +170,13 @@ describe "Exception" do
   end
 
   describe CurlDownloadStrategyError do
-    context "file does not exist" do
+    context "when the file does not exist" do
       subject { described_class.new("file:///tmp/foo") }
 
       its(:to_s) { is_expected.to eq("File does not exist: /tmp/foo") }
     end
 
-    context "download failed" do
+    context "when the download failed" do
       subject { described_class.new("https://brew.sh") }
 
       its(:to_s) { is_expected.to eq("Download failed: https://brew.sh") }
