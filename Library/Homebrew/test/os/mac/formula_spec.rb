@@ -61,9 +61,7 @@ describe Formula do
       expect(f.class.stable.deps[1].name).to eq("hello_macos")
       expect(f.class.stable.deps[2]).to eq(nil)
     end
-  end
 
-  describe "#on_macos" do
     it "adds a patch on Mac only" do
       f = formula do
         homepage "https://brew.sh"
@@ -86,9 +84,7 @@ describe Formula do
       expect(f.patchlist.first.strip).to eq(:p1)
       expect(f.patchlist.first.url).to eq("patch_macos")
     end
-  end
 
-  describe "#on_macos" do
     it "uses on_macos within a resource block" do
       f = formula do
         homepage "https://brew.sh"
