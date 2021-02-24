@@ -568,11 +568,11 @@ then
   # Don't allow non-developers to customise Ruby warnings.
   unset HOMEBREW_RUBY_WARNINGS
 
-  # Disable Ruby options we don't need. RubyGems provides a decent speedup.
-  RUBY_DISABLE_OPTIONS="--disable=gems,did_you_mean,rubyopt"
+  # Disable Ruby options we don't need.
+  RUBY_DISABLE_OPTIONS="--disable=did_you_mean,rubyopt"
 else
   # Don't disable did_you_mean for developers as it's useful.
-  RUBY_DISABLE_OPTIONS="--disable=gems,rubyopt"
+  RUBY_DISABLE_OPTIONS="--disable=rubyopt"
 fi
 
 if [[ -z "$HOMEBREW_RUBY_WARNINGS" ]]

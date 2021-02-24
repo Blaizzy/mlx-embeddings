@@ -16,7 +16,6 @@ require "rbconfig"
 RUBY_PATH = Pathname.new(RbConfig.ruby).freeze
 RUBY_BIN = RUBY_PATH.dirname.freeze
 
-require "rubygems"
 # Only require "core_ext" here to ensure we're only requiring the minimum of
 # what we need.
 require "active_support/core_ext/object/blank"
