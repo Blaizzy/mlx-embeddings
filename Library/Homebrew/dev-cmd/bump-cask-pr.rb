@@ -126,14 +126,11 @@ module Homebrew
         tmp_url = tmp_cask.url.to_s
 
         if old_hash != :no_check
-          if new_hash.nil?
-            resource_path = fetch_resource(cask, new_version, tmp_url)
-            Utils::Tar.validate_file(resource_path)
-            new_hash = resource_path.sha256
-          end
+          new_hash = fetch_resource(cask, new_version, tmp_url) if new_hash.nil?
 
           if tmp_contents.include?("Hardware::CPU.intel?")
-            other_contents = tmp_contents.gsub("Hardware::CPU.intel?", (!Hardware::CPU.intel?).to_s)
+            other_intel = !Hardware::CPU.intel?
+            other_contents = tmp_contents.gsub("Hardware::CPU.intel?", other_intel.to_s)
             replacement_pairs << fetch_cask(other_contents, new_version)
           end
         end
@@ -186,7 +183,10 @@ module Homebrew
     resource.url(url, specs)
     resource.owner = Resource.new(cask.token)
     resource.version = version
-    resource.fetch
+
+    resource_path = resource.fetch
+    Utils::Tar.validate_file(resource_path)
+    resource_path.sha256
   end
 
   def fetch_cask(contents, version, config: nil)
@@ -194,11 +194,7 @@ module Homebrew
     cask.config = config if config.present?
     url = cask.url.to_s
     old_hash = cask.sha256.to_s
-
-    resource_path = fetch_resource(cask, version, url)
-    Utils::Tar.validate_file(resource_path)
-    new_hash = resource_path.sha256
-
+    new_hash = fetch_resource(cask, version, url)
     [old_hash, new_hash]
   end
 
