@@ -1725,7 +1725,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
   <br>Use this username when accessing the Bintray API (where bottles are stored).
 
 - `HOMEBREW_BOOTSNAP`
-  <br>If set, use Bootsnap to speed up repeated `brew` calls. A no-op when using Homebrew's vendored, relocatable Ruby on macOS (as it doesn't work).
+  <br>If set, use Bootsnap to speed up repeated `brew` calls. A no-op in various configurations where it doesn't work. Enabled by default if HOMEBREW_DEVELOPER is set or a developer command has been run.
 
 - `HOMEBREW_BOTTLE_DOMAIN`
   <br>Use this URL as the download mirror for bottles. For example, `HOMEBREW_BOTTLE_DOMAIN=http://localhost:8080` will cause all bottles to download from the prefix `http://localhost:8080/`.
