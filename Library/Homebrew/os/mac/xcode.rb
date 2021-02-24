@@ -18,10 +18,10 @@ module OS
       # Bump these when a new version is available from the App Store and our
       # CI systems have been updated.
       # This may be a beta version for a beta macOS.
-      sig { returns(String) }
-      def latest_version
+      sig { params(macos: MacOS::Version).returns(String) }
+      def latest_version(macos: MacOS.version)
         latest_stable = "12.4"
-        case MacOS.version
+        case macos
         when "11" then latest_stable
         when "10.15" then "12.4"
         when "10.14" then "11.3.1"

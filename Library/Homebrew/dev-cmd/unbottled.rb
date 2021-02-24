@@ -78,7 +78,7 @@ module Homebrew
     elsif args.dependents?
       formulae = all_formulae = Formula.to_a
 
-      @sort = " (sorted by installs in the last 90 days)"
+      @sort = " (sorted by number of dependents)"
     else
       formula_installs = {}
 
@@ -103,7 +103,7 @@ module Homebrew
           nil
         end
       end.compact
-      @sort = " (sorted by installs in the last 90 days)"
+      @sort = " (sorted by installs in the last 90 days; top 10,000 only)"
 
       all_formulae = Formula
     end
@@ -154,20 +154,51 @@ module Homebrew
 
     formulae.each do |f|
       name = f.name.downcase
-      if f.bottle_specification.tag?(@bottle_tag)
+      if f.bottle_specification.tag?(@bottle_tag, exact: true)
         puts "#{Tty.bold}#{Tty.green}#{name}#{Tty.reset}: already bottled" if any_named_args
         next
       end
 
-      requirement_classes = f.recursive_requirements.map(&:class)
+      if f.disabled?
+        puts "#{Tty.bold}#{Tty.green}#{name}#{Tty.reset}: formula disabled" if any_named_args
+        next
+      end
+
+      requirements = f.recursive_requirements
       if @bottle_tag.to_s.end_with?("_linux")
-        if requirement_classes.include?(MacOSRequirement)
+        if requirements.any? { |r| r.is_a?(MacOSRequirement) }
           puts "#{Tty.bold}#{Tty.red}#{name}#{Tty.reset}: requires macOS" if any_named_args
           next
         end
-      elsif requirement_classes.include?(LinuxRequirement)
+      elsif requirements.any? { |r| r.is_a?(LinuxRequirement) }
         puts "#{Tty.bold}#{Tty.red}#{name}#{Tty.reset}: requires Linux" if any_named_args
         next
+      else
+        macos_version = MacOS::Version.from_symbol(@bottle_tag)
+        macos_satisfied = requirements.all? do |r|
+          case r
+          when MacOSRequirement
+            next true unless r.version_specified?
+
+            macos_version.public_send(r.comparator, r.version)
+          when XcodeRequirement
+            next true unless r.version
+
+            Version.new(MacOS::Xcode.latest_version(macos: macos_version)) >= r.version
+          when ArchRequirement
+            arch = r.arch
+            arch = :intel if arch == :x86_64
+            arch = :arm64 if arch == :arm
+
+            arch == macos_version.arch
+          else
+            true
+          end
+        end
+        unless macos_satisfied
+          puts "#{Tty.bold}#{Tty.red}#{name}#{Tty.reset}: doesn't support this macOS" if any_named_args
+          next
+        end
       end
 
       if f.bottle_unneeded? || f.bottle_disabled?
@@ -181,7 +212,7 @@ module Homebrew
       end
 
       deps = Array(deps_hash[f.name]).reject do |dep|
-        dep.bottle_specification.tag?(@bottle_tag) || dep.bottle_unneeded?
+        dep.bottle_specification.tag?(@bottle_tag, exact: true) || dep.bottle_unneeded?
       end
 
       if deps.blank?

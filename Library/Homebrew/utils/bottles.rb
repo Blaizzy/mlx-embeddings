@@ -107,15 +107,15 @@ module Utils
         @checksums = {}
       end
 
-      sig { params(tag: Symbol).returns(T.nilable([Checksum, Symbol, T.any(Symbol, String)])) }
-      def fetch_checksum_for(tag)
-        tag = find_matching_tag(tag)
+      sig { params(tag: Symbol, exact: T::Boolean).returns(T.nilable([Checksum, Symbol, T.any(Symbol, String)])) }
+      def fetch_checksum_for(tag, exact: false)
+        tag = find_matching_tag(tag, exact: exact)
         return self[tag][:checksum], tag, self[tag][:cellar] if tag
       end
 
       private
 
-      def find_matching_tag(tag)
+      def find_matching_tag(tag, exact: false)
         tag if key?(tag)
       end
     end
