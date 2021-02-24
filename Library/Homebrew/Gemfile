@@ -6,6 +6,7 @@ source "https://rubygems.org"
 gem "bootsnap", require: false
 gem "byebug", require: false
 gem "codecov", require: false
+gem "minitest", require: false
 gem "nokogiri", require: false
 gem "parallel_tests", require: false
 gem "ronn", require: false
