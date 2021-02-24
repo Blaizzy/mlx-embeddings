@@ -52,7 +52,7 @@ module Homebrew
 
   def archive?(bottles_hash)
     @archive ||= bottles_hash.values.all? do |bottle_hash|
-      bottle_hash["bottle"]["root_url"].start_with? "https://archive.com/"
+      bottle_hash["bottle"]["root_url"].start_with? "https://archive.org/"
     end
   end
 
