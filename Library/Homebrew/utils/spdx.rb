@@ -78,6 +78,7 @@ module SPDX
     return false if ALLOWED_LICENSE_SYMBOLS.include? license
     return false unless valid_license?(license)
 
+    license = license.delete_suffix "+"
     license_data["licenses"].none? do |spdx_license|
       spdx_license["licenseId"] == license && !spdx_license["isDeprecatedLicenseId"]
     end
