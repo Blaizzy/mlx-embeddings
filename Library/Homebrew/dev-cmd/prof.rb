@@ -13,6 +13,8 @@ module Homebrew
     Homebrew::CLI::Parser.new do
       description <<~EOS
         Run Homebrew with a Ruby profiler. For example, `brew prof readall`.
+
+        *Note:* Not (yet) working on Apple Silicon.
       EOS
       switch "--stackprof",
              description: "Use `stackprof` instead of `ruby-prof` (the default)."
@@ -22,6 +24,8 @@ module Homebrew
   end
 
   def prof
+    raise UsageError, "not (yet) working on Apple Silicon!" if Hardware::CPU.arm?
+
     args = prof_args.parse
 
     brew_rb = (HOMEBREW_LIBRARY_PATH/"brew.rb").resolved_path
