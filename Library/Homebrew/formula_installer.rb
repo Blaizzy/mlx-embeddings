@@ -707,10 +707,10 @@ class FormulaInstaller
   sig { params(dep: Dependency, inherited_options: Options).void }
   def install_dependency(dep, inherited_options)
     df = dep.to_formula
-    tab = Tab.for_formula(df)
 
     if df.linked_keg.directory?
       linked_keg = Keg.new(df.linked_keg.resolved_path)
+      tab = Tab.for_keg(linked_keg)
       keg_had_linked_keg = true
       keg_was_linked = linked_keg.linked?
       linked_keg.unlink
@@ -718,12 +718,13 @@ class FormulaInstaller
 
     if df.latest_version_installed?
       installed_keg = Keg.new(df.prefix)
+      tab ||= Tab.for_keg(linked_keg)
       tmp_keg = Pathname.new("#{installed_keg}.tmp")
       installed_keg.rename(tmp_keg)
     end
 
-    tab_tap = tab.source["tap"]
-    if tab_tap.present? && df.tap.present? && df.tap.to_s != tab_tap.to_s
+    if df.tap.present? && tab.present? && (tab_tap = tab.source["tap"].presence) &&
+       df.tap.to_s != tab_tap.to_s
       odie <<~EOS
         #{df} is already installed from #{tab_tap}!
         Please `brew uninstall #{df}` first."
@@ -731,7 +732,7 @@ class FormulaInstaller
     end
 
     options = Options.new
-    options |= tab.used_options
+    options |= tab.used_options if tab.present?
     options |= Tab.remap_deprecated_options(df.deprecated_options, dep.options)
     options |= inherited_options
     options &= df.options
@@ -742,7 +743,7 @@ class FormulaInstaller
         options:                    options,
         link_keg:                   keg_had_linked_keg ? keg_was_linked : nil,
         installed_as_dependency:    true,
-        installed_on_request:       df.any_version_installed? && tab.installed_on_request,
+        installed_on_request:       df.any_version_installed? && tab.present? && tab.installed_on_request,
         force_bottle:               false,
         include_test_formulae:      @include_test_formulae,
         build_from_source_formulae: @build_from_source_formulae,
