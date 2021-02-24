@@ -1645,6 +1645,10 @@ Message to include when autosquashing revision bumps, deletions, and rebuilds\.
 Download artifacts with the specified name (default: \fBbottles\fR)\.
 .
 .TP
+\fB\-\-archive\-item\fR
+Upload to the specified Internet Archive item (default: \fBhomebrew\fR)\.
+.
+.TP
 \fB\-\-bintray\-org\fR
 Upload to the specified Bintray organisation (default: \fBhomebrew\fR)\.
 .
@@ -1690,6 +1694,10 @@ Do not generate a new commit before uploading\.
 .TP
 \fB\-\-warn\-on\-upload\-failure\fR
 Warn instead of raising an error if the bottle upload fails\. Useful for repairing bottle uploads that previously failed\.
+.
+.TP
+\fB\-\-archive\-item\fR
+Upload to the specified Internet Archive item (default: \fBhomebrew\fR)\.
 .
 .TP
 \fB\-\-bintray\-org\fR
@@ -2606,6 +2614,12 @@ Print this text before the installation summary of each successful build\.
 .
 .IP
 \fIDefault:\fR The "Beer Mug" emoji\.
+.
+.TP
+\fBHOMEBREW_INTERNET_ARCHIVE_KEY\fR
+.
+.br
+Use this API key when accessing the Internet Archive S3 API, where bottles are stored\. The format is access:secret\. See https://archive\.org/account/s3\.php
 .
 .TP
 \fBHOMEBREW_LIVECHECK_WATCHLIST\fR

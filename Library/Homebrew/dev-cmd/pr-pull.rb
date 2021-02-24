@@ -49,6 +49,8 @@ module Homebrew
              description: "Message to include when autosquashing revision bumps, deletions, and rebuilds."
       flag   "--artifact=",
              description: "Download artifacts with the specified name (default: `bottles`)."
+      flag   "--archive-item=",
+             description: "Upload to the specified Internet Archive item (default: `homebrew`)."
       flag   "--bintray-org=",
              description: "Upload to the specified Bintray organisation (default: `homebrew`)."
       flag   "--tap=",
@@ -65,6 +67,7 @@ module Homebrew
                   description: "Comma-separated list of workflows which can be ignored if they have not been run."
 
       conflicts "--clean", "--autosquash"
+      conflicts "--archive-item", "--bintray-org"
 
       named_args :pull_request, min: 1
     end
@@ -357,6 +360,7 @@ module Homebrew
 
     workflows = args.workflows.presence || ["tests.yml"]
     artifact = args.artifact || "bottles"
+    archive_item = args.archive_item
     bintray_org = args.bintray_org || "homebrew"
     mirror_repo = args.bintray_mirror || "mirror"
     tap = Tap.fetch(args.tap || CoreTap.instance.name)
@@ -424,7 +428,11 @@ module Homebrew
           upload_args << "--keep-old" if args.keep_old?
           upload_args << "--warn-on-upload-failure" if args.warn_on_upload_failure?
           upload_args << "--root-url=#{args.root_url}" if args.root_url
-          upload_args << "--bintray-org=#{bintray_org}"
+          upload_args << if archive_item.present?
+            "--archive-item=#{archive_item}"
+          else
+            "--bintray-org=#{bintray_org}"
+          end
           safe_system HOMEBREW_BREW_FILE, *upload_args
         end
       end
