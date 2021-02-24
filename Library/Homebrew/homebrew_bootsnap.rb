@@ -1,14 +1,24 @@
 # typed: false
 # frozen_string_literal: true
 
-if !ENV["HOMEBREW_NO_BOOTSNAP"] &&
-   ENV["HOMEBREW_BOOTSNAP"] &&
-   # portable ruby doesn't play nice with bootsnap
-   !ENV["HOMEBREW_FORCE_VENDOR_RUBY"] &&
-   (!ENV["HOMEBREW_MACOS_VERSION"] || ENV["HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH"]) &&
-   # Apple Silicon doesn't play nice with bootsnap
-   (ENV["HOMEBREW_PROCESSOR"] == "Intel")
+homebrew_bootsnap_enabled = !ENV["HOMEBREW_NO_BOOTSNAP"] &&
+                            ENV["HOMEBREW_BOOTSNAP"] &&
+                            # portable ruby doesn't play nice with bootsnap
+                            !ENV["HOMEBREW_FORCE_VENDOR_RUBY"] &&
+                            (!ENV["HOMEBREW_MACOS_VERSION"] || ENV["HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH"]) &&
+                            # Apple Silicon doesn't play nice with bootsnap
+                            (ENV["HOMEBREW_PROCESSOR"] == "Intel")
 
+# we need some development tools to build bootsnap native code
+development_tools_installed = if !homebrew_bootsnap_enabled
+  false
+elsif RbConfig::CONFIG["host_os"].include? "darwin"
+  File.directory?("/Applications/Xcode.app") || File.directory?("/Library/Developer/CommandLineTools")
+else
+  File.executable?("/usr/bin/clang") || File.executable?("/usr/bin/gcc")
+end
+
+if homebrew_bootsnap_enabled && development_tools_installed
   require "rubygems"
 
   begin
