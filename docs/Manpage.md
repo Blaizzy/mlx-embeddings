@@ -734,8 +734,7 @@ Display Homebrew's install path. *Default:*
   - macOS ARM: `/opt/homebrew`
   - Linux: `/home/linuxbrew/.linuxbrew`
 
-If *`formula`* is provided, display the location in the Cellar where *`formula`*
-is or would be installed.
+If *`formula`* is provided, display the location where *`formula`* is or would be installed.
 
 * `--unbrewed`:
   List files in Homebrew's prefix not installed by Homebrew.
