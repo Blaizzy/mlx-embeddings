@@ -1221,6 +1221,8 @@ Apply the bottle commit and publish bottles to Bintray or GitHub Releases.
 
 Run Homebrew with a Ruby profiler. For example, `brew prof readall`.
 
+*Note:* Not (yet) working on Apple Silicon.
+
 * `--stackprof`:
   Use `stackprof` instead of `ruby-prof` (the default).
 
