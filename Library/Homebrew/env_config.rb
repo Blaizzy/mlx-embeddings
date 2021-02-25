@@ -40,9 +40,8 @@ module Homebrew
         description: "Use this username when accessing the Bintray API (where bottles are stored).",
       },
       HOMEBREW_BOOTSNAP:                      {
-        description: "If set, use Bootsnap to speed up repeated `brew` calls. " \
-                     "A no-op in various configurations where it doesn't work. " \
-                     "Enabled by default if HOMEBREW_DEVELOPER is set or a developer command has been run.",
+        description: "If set, use Bootsnap to speed up repeated `brew` calls. "\
+                     "A no-op when using Homebrew's vendored, relocatable Ruby on macOS (as it doesn't work).",
         boolean:     true,
       },
       HOMEBREW_BOTTLE_DOMAIN:                 {
