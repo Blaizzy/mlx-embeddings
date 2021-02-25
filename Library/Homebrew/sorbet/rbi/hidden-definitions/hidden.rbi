@@ -12781,7 +12781,6 @@ end
 module ParallelTests
   RUBY_BINARY = ::T.let(nil, ::T.untyped)
   VERSION = ::T.let(nil, ::T.untyped)
-  Version = ::T.let(nil, ::T.untyped)
   WINDOWS = ::T.let(nil, ::T.untyped)
 end
 
