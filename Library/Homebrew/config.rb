@@ -67,3 +67,9 @@ HOMEBREW_TEMP = Pathname(EnvVar["HOMEBREW_TEMP"]).yield_self do |tmp|
   tmp.mkpath unless tmp.exist?
   tmp.realpath
 end.freeze
+
+# The Ruby path and args to use for forked Ruby calls
+HOMEBREW_RUBY_EXEC_ARGS = [
+  RUBY_PATH,
+  ENV["HOMEBREW_RUBY_WARNINGS"],
+].freeze

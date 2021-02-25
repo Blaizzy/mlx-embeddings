@@ -6,7 +6,7 @@
 
 old_trap = trap("INT") { exit! 130 }
 
-require "global"
+require_relative "global"
 require "build_options"
 require "cxxstdlib"
 require "keg"

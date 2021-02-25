@@ -77,10 +77,7 @@ module Homebrew
       env = ENV.to_hash
 
       begin
-        exec_args = %W[
-          #{RUBY_PATH}
-          #{ENV["HOMEBREW_RUBY_WARNINGS"]}
-          -I #{$LOAD_PATH.join(File::PATH_SEPARATOR)}
+        exec_args = HOMEBREW_RUBY_EXEC_ARGS + %W[
           --
           #{HOMEBREW_LIBRARY_PATH}/test.rb
           #{f.path}

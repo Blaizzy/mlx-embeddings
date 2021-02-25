@@ -37,6 +37,11 @@ HOMEBREW_LOCKS         = (HOMEBREW_PREFIX.parent/"locks").freeze
 HOMEBREW_CELLAR        = (HOMEBREW_PREFIX.parent/"cellar").freeze
 HOMEBREW_LOGS          = (HOMEBREW_PREFIX.parent/"logs").freeze
 HOMEBREW_TEMP          = (HOMEBREW_PREFIX.parent/"temp").freeze
+HOMEBREW_RUBY_EXEC_ARGS = [
+  RUBY_PATH,
+  ENV["HOMEBREW_RUBY_WARNINGS"],
+  "-I", HOMEBREW_LIBRARY_PATH/"test/support/lib"
+].freeze
 
 TEST_FIXTURE_DIR = (HOMEBREW_LIBRARY_PATH/"test/support/fixtures").freeze
 
