@@ -105,7 +105,7 @@ module Homebrew
       rescue Exception => e # rubocop:disable Lint/RescueException
         retry if retry_test?(f, args: args)
         ofail "#{f.full_name}: failed"
-        puts e, e.backtrace
+        $stderr.puts e, e.backtrace
       ensure
         ENV.replace(env)
       end
