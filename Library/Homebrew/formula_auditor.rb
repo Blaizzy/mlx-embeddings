@@ -339,6 +339,18 @@ module Homebrew
       end
     end
 
+    def audit_glibc
+      return if formula.name != "glibc"
+      return unless @core_tap
+
+      version = formula.version.to_s
+      return if version == "2.23"
+
+      problem "The glibc version must be #{version}, as this is the version used by our CI on Linux. " \
+              "Glibc is for users who have a system Glibc with a lower version, " \
+              "which allows them to use our Linux bottles, which were compiled against system Glibc on CI."
+    end
+
     def audit_versioned_keg_only
       return unless @versioned_formula
       return unless @core_tap
