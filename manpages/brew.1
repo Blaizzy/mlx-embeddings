@@ -2415,7 +2415,7 @@ If set, use Bootsnap to speed up repeated \fBbrew\fR calls\. A no\-op when using
 \fBHOMEBREW_BOTTLE_DOMAIN\fR
 .
 .br
-Use this URL as the download mirror for bottles\. For example, \fBHOMEBREW_BOTTLE_DOMAIN=http://localhost:8080\fR will cause all bottles to download from the prefix \fBhttp://localhost:8080/\fR\.
+Use this URL as the download mirror for bottles\. If bottles at that URL are temporarily unavailable, the default bottle domain will be used as a fallback mirror\. For example, \fBHOMEBREW_BOTTLE_DOMAIN=http://localhost:8080\fR will cause all bottles to download from the prefix \fBhttp://localhost:8080/\fR\. If bottles are not available at \fBHOMEBREW_BOTTLE_DOMAIN\fR they will be downloaded from the default bottle domain\.
 .
 .IP
 \fIDefault:\fR macOS: \fBhttps://homebrew\.bintray\.com/\fR, Linux: \fBhttps://linuxbrew\.bintray\.com/\fR\.
