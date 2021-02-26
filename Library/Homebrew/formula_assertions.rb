@@ -41,6 +41,11 @@ module Homebrew
       end
     end
 
+    def assert_true(act, msg = nil)
+      # odeprecated "assert_true", "assert(...) or assert_equal(true, ...)"
+      assert_equal(true, act, msg)
+    end
+
     # Returns the output of running cmd, and asserts the exit status.
     # @api public
     def shell_output(cmd, result = 0)
