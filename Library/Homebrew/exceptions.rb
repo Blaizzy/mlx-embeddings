@@ -579,19 +579,32 @@ class ErrorDuringExecution < RuntimeError
     @status = status
     @output = output
 
+    raise ArgumentError, "Status cannot be nil." if status.nil?
+
     exitstatus = case status
     when Integer
       status
+    when Hash
+      status["exitstatus"]
     else
-      status&.exitstatus
+      status.exitstatus
+    end
+
+    termsig = case status
+    when Integer
+      nil
+    when Hash
+      status["termsig"]
+    else
+      status.termsig
     end
 
     redacted_cmd = redact_secrets(cmd.shelljoin.gsub('\=', "="), secrets)
 
     reason = if exitstatus
       "exited with #{exitstatus}"
-    elsif (uncaught_signal = status&.termsig)
-      "was terminated by uncaught signal #{Signal.signame(uncaught_signal)}"
+    elsif termsig
+      "was terminated by uncaught signal #{Signal.signame(termsig)}"
     else
       raise ArgumentError, "Status neither has `exitstatus` nor `termsig`."
     end

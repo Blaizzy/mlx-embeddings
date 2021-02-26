@@ -186,7 +186,7 @@ describe "Exception" do
   describe ErrorDuringExecution do
     subject { described_class.new(["badprg", "arg1", "arg2"], status: status) }
 
-    let(:status) { instance_double(Process::Status, exitstatus: 17) }
+    let(:status) { instance_double(Process::Status, exitstatus: 17, termsig: nil) }
 
     its(:to_s) { is_expected.to eq("Failure while executing; `badprg arg1 arg2` exited with 17.") }
   end
