@@ -1292,7 +1292,7 @@ _brew_man() {
     -*)
       __brewcomp "
       --debug
-      --fail-if-changed
+      --fail-if-not-changed
       --help
       --quiet
       --verbose

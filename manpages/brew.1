@@ -1522,15 +1522,15 @@ Only check formulae\.
 \fB\-\-cask\fR
 Only check casks\.
 .
-.SS "\fBman\fR [\fI\-\-fail\-if\-changed\fR]"
+.SS "\fBman\fR [\fI\-\-fail\-if\-not\-changed\fR]"
 Generate Homebrew\'s manpages\.
 .
 .P
 \fINote:\fR Not (yet) working on Apple Silicon\.
 .
 .TP
-\fB\-\-fail\-if\-changed\fR
-Return a failing status code if changes are detected in the manpage outputs\. This can be used to notify CI when the manpages are out of date\. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date)\.
+\fB\-\-fail\-if\-not\-changed\fR
+Return a failing status code if no changes are detected in the manpage outputs\. This can be used to notify CI when the manpages are out of date\. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date)\.
 .
 .SS "\fBmirror\fR [\fIoptions\fR] \fIformula\fR [\.\.\.]"
 Reupload the stable URL of a formula to Bintray for use as a mirror\.
