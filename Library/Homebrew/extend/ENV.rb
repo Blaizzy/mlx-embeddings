@@ -35,7 +35,7 @@ module EnvActivation
     params(
       env:          T.nilable(String),
       cc:           T.nilable(String),
-      build_bottle: T.nilable(T::Boolean),
+      build_bottle: T::Boolean,
       bottle_arch:  T.nilable(String),
       _block:       T.proc.returns(T.untyped),
     ).returns(T.untyped)

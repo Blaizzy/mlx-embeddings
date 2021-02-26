@@ -17,13 +17,10 @@ else
 end
 
 if homebrew_bootsnap_enabled
-  require "rubygems"
-
   begin
     require "bootsnap"
   rescue LoadError
     unless ENV["HOMEBREW_BOOTSNAP_RETRY"]
-      require "utils/gems"
       Homebrew.install_bundler_gems!(only_warn_on_failure: true)
 
       ENV["HOMEBREW_BOOTSNAP_RETRY"] = "1"

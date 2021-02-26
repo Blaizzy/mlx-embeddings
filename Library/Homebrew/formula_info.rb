@@ -16,13 +16,11 @@ class FormulaInfo
   # Returns nil if formula is absent or if there was an error reading it.
   def self.lookup(name)
     json = Utils.popen_read(
-      RUBY_PATH,
-      ENV["HOMEBREW_RUBY_WARNINGS"],
-      "-I", $LOAD_PATH.join(File::PATH_SEPARATOR),
+      *HOMEBREW_RUBY_EXEC_ARGS,
       HOMEBREW_LIBRARY_PATH/"brew.rb",
       "info",
       "--json=v1",
-      name
+      name,
     )
 
     return unless $CHILD_STATUS.success?

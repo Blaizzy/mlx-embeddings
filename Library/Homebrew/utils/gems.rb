@@ -22,7 +22,6 @@ module Homebrew
   end
 
   def gem_user_bindir
-    require "rubygems"
     "#{gem_user_dir}/bin"
   end
 
@@ -51,13 +50,11 @@ module Homebrew
     end
   end
 
-  def setup_gem_environment!(gem_home: nil, gem_bindir: nil)
-    require "rubygems"
-
+  def setup_gem_environment!(gem_home: nil, gem_bindir: nil, setup_path: true)
     # Match where our bundler gems are.
     gem_home ||= "#{ENV["HOMEBREW_LIBRARY"]}/Homebrew/vendor/bundle/ruby/#{RbConfig::CONFIG["ruby_version"]}"
     ENV["GEM_HOME"] = gem_home
-    ENV["GEM_PATH"] = "#{ENV["GEM_HOME"]}:#{Gem.default_dir}"
+    ENV["GEM_PATH"] = gem_home
 
     # Set TMPDIR so Xcode's `make` doesn't fall back to `/var/tmp/`,
     # which may be not user-writable.
@@ -66,6 +63,8 @@ module Homebrew
     # Make RubyGems notice environment changes.
     Gem.clear_paths
     Gem::Specification.reset
+
+    return unless setup_path
 
     # Add necessary Ruby and Gem binary directories to `PATH`.
     gem_bindir ||= Gem.bindir
@@ -103,7 +102,6 @@ module Homebrew
   end
 
   def install_bundler!
-    require "rubygems"
     setup_gem_environment!(gem_home: gem_user_dir, gem_bindir: gem_user_bindir)
     install_gem_setup_path!(
       "bundler",

@@ -896,13 +896,12 @@ class FormulaInstaller
     # 1. formulae can modify ENV, so we must ensure that each
     #    installation has a pristine ENV when it starts, forking now is
     #    the easiest way to do this
-    args = %W[
-      nice #{RUBY_PATH}
-      #{ENV["HOMEBREW_RUBY_WARNINGS"]}
-      -I #{$LOAD_PATH.join(File::PATH_SEPARATOR)}
-      --
-      #{HOMEBREW_LIBRARY_PATH}/build.rb
-      #{formula.specified_path}
+    args = [
+      "nice",
+      *HOMEBREW_RUBY_EXEC_ARGS,
+      "--",
+      HOMEBREW_LIBRARY_PATH/"build.rb",
+      formula.specified_path,
     ].concat(build_argv)
 
     Utils.safe_fork do

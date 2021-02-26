@@ -11,7 +11,6 @@ require "dependency_collector"
 require "utils/bottles"
 require "patch"
 require "compilers"
-require "global"
 require "os/mac/version"
 require "extend/on_os"
 

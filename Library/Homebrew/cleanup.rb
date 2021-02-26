@@ -3,7 +3,6 @@
 
 require "utils/bottles"
 
-require "utils/gems"
 require "formula"
 require "cask/cask_loader"
 require "set"

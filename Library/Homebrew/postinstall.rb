@@ -3,7 +3,7 @@
 
 old_trap = trap("INT") { exit! 130 }
 
-require "global"
+require_relative "global"
 require "debrew"
 require "fcntl"
 require "socket"
