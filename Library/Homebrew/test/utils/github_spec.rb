@@ -7,7 +7,7 @@ describe GitHub do
   describe "::search_code", :needs_network do
     it "queries GitHub code with the passed parameters" do
       results = described_class.search_code(repo: "Homebrew/brew", path: "/",
-                                            filename: "readme", language: "markdown")
+                                            filename: "readme", extension: "md")
 
       expect(results.count).to eq(1)
       expect(results.first["name"]).to eq("README.md")
