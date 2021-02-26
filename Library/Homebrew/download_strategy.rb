@@ -66,9 +66,13 @@ class AbstractDownloadStrategy
     Context.current.quiet? || @quiet
   end
 
-  # Unpack {#cached_location} into the current working directory, and possibly
-  # chdir into the newly-unpacked directory.
-  # Unlike {Resource#stage}, this does not take a block.
+  # Unpack {#cached_location} into the current working directory.
+  #
+  # Additionally, if a block is given, the working directory was previously empty
+  # and a single directory is extracted from the archive, the block will be called
+  # with the working directory changed to that directory. Otherwise this method
+  # will return, or the block will be called, without changing the current working
+  # directory.
   #
   # @api public
   def stage(&block)
@@ -78,7 +82,7 @@ class AbstractDownloadStrategy
                   .extract_nestedly(basename:             basename,
                                     prioritise_extension: true,
                                     verbose:              verbose? && !quiet?)
-    chdir(&block)
+    chdir(&block) if block
   end
 
   def chdir(&block)
@@ -86,13 +90,13 @@ class AbstractDownloadStrategy
     raise "Empty archive" if entries.length.zero?
 
     if entries.length != 1
-      yield if block
+      yield
       return
     end
 
     if File.directory? entries.first
       Dir.chdir(entries.first, &block)
-    elsif block
+    else
       yield
     end
   end
