@@ -48,7 +48,6 @@ HOMEBREW_TEMP="${HOMEBREW_TEMP:-${HOMEBREW_DEFAULT_TEMP}}"
 # Don't need shellcheck to follow these `source`.
 # shellcheck disable=SC1090
 case "$*" in
-  --prefix)            echo "$HOMEBREW_PREFIX"; exit 0 ;;
   --cellar)            echo "$HOMEBREW_CELLAR"; exit 0 ;;
   --repository|--repo) echo "$HOMEBREW_REPOSITORY"; exit 0 ;;
   --caskroom)          echo "$HOMEBREW_PREFIX/Caskroom"; exit 0 ;;
@@ -56,6 +55,8 @@ case "$*" in
   shellenv)            source "$HOMEBREW_LIBRARY/Homebrew/cmd/shellenv.sh"; homebrew-shellenv; exit 0 ;;
   formulae)            source "$HOMEBREW_LIBRARY/Homebrew/cmd/formulae.sh"; homebrew-formulae; exit 0 ;;
   casks)               source "$HOMEBREW_LIBRARY/Homebrew/cmd/casks.sh"; homebrew-casks; exit 0 ;;
+  # falls back to cmd/prefix.rb on a non-zero return
+  --prefix*)           source "$HOMEBREW_LIBRARY/Homebrew/prefix.sh"; homebrew-prefix "$@" && exit 0 ;;
 esac
 
 #####
