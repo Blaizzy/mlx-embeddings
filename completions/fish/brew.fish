@@ -950,7 +950,7 @@ __fish_brew_complete_arg 'ls' -a '(__fish_brew_suggest_casks_installed)'
 
 __fish_brew_complete_cmd 'man' 'Generate Homebrew\'s manpages'
 __fish_brew_complete_arg 'man' -l debug -d 'Display any debugging information'
-__fish_brew_complete_arg 'man' -l fail-if-changed -d 'Return a failing status code if changes are detected in the manpage outputs. This can be used to notify CI when the manpages are out of date. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date)'
+__fish_brew_complete_arg 'man' -l fail-if-not-changed -d 'Return a failing status code if no changes are detected in the manpage outputs. This can be used to notify CI when the manpages are out of date. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date)'
 __fish_brew_complete_arg 'man' -l help -d 'Show this message'
 __fish_brew_complete_arg 'man' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'man' -l verbose -d 'Make some output more verbose'
