@@ -34,6 +34,14 @@ module Homebrew
     end
   end
 
+  def opoo_if_defined(message)
+    if defined?(opoo)
+      $stderr.opoo message
+    else
+      $stderr.puts "Warning: #{message}"
+    end
+  end
+
   def odie_if_defined(message)
     if defined?(odie)
       odie message
@@ -105,7 +113,7 @@ module Homebrew
     )
   end
 
-  def install_bundler_gems!
+  def install_bundler_gems!(only_warn_on_failure: false)
     install_bundler!
 
     ENV["BUNDLE_GEMFILE"] = File.join(ENV.fetch("HOMEBREW_LIBRARY"), "Homebrew", "Gemfile")
@@ -117,9 +125,14 @@ module Homebrew
       # for some reason sometimes the exit code lies so check the output too.
       if bundle_check_failed || bundle_check_output.include?("Install missing gems")
         unless system bundle, "install"
-          odie_if_defined <<~EOS
+          message = <<~EOS
             failed to run `#{bundle} install`!
           EOS
+          if only_warn_on_failure
+            opoo_if_defined message
+          else
+            odie_if_defined message
+          end
         end
       else
         true
