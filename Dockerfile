@@ -14,6 +14,7 @@ RUN apt-get update \
     file \
     fonts-dejavu-core \
     g++ \
+    gawk \
     git \
     less \
     libz-dev \
