@@ -161,18 +161,17 @@ module Homebrew
     livecheck_latest = livecheck_result(formula_or_cask)
     pull_requests = retrieve_pull_requests(formula_or_cask, name) unless args.no_pull_requests?
 
-    print_name = begin
-      "#{name} (cask)" if formula_or_cask.is_a?(Cask::Cask) && Formula[name] && !args.cask?
+    name += begin
+      (" (cask)" if formula_or_cask.is_a?(Cask::Cask) && !args.cask? && Formula[name]).to_s
     rescue FormulaUnavailableError
-      nil
+      ""
     end
-    print_name ||= name
 
     title = if current_version == repology_latest &&
                current_version == livecheck_latest
-      "#{print_name} is up to date!"
+      "#{name} is up to date!"
     else
-      print_name
+      name
     end
 
     ohai title

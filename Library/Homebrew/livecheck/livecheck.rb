@@ -125,12 +125,6 @@ module Homebrew
         formula = formula_or_cask if formula_or_cask.is_a?(Formula)
         cask = formula_or_cask if formula_or_cask.is_a?(Cask::Cask)
         name = formula_or_cask_name(formula_or_cask, full_name: full_name)
-        print_name = begin
-          "#{name} (cask)" if cask && Formula[name] && handle_name_conflict
-        rescue FormulaUnavailableError
-          nil
-        end
-        print_name ||= name
 
         if debug && i.positive?
           puts <<~EOS
@@ -230,8 +224,7 @@ module Homebrew
           next info
         end
 
-        info[:cask] = print_name
-        print_latest_version(info, verbose: verbose)
+        print_latest_version(info, verbose: verbose, handle_name_conflict: handle_name_conflict)
         nil
       rescue => e
         Homebrew.failed = true
@@ -240,7 +233,14 @@ module Homebrew
           progress&.increment
           status_hash(formula_or_cask, "error", [e.to_s], full_name: full_name, verbose: verbose)
         elsif !quiet
-          onoe "#{Tty.blue}#{print_name}#{Tty.reset}: #{e}"
+          name = formula_or_cask_name(formula_or_cask, full_name: full_name)
+          name += begin
+            (" (cask)" if cask && handle_name_conflict && Formula[name]).to_s
+          rescue FormulaUnavailableError
+            ""
+          end
+
+          onoe "#{Tty.blue}#{name}#{Tty.reset}: #{e}"
           $stderr.puts e.backtrace if debug && !e.is_a?(Livecheck::Error)
           nil
         end
@@ -317,9 +317,14 @@ module Homebrew
     end
 
     # Formats and prints the livecheck result for a formula.
-    sig { params(info: Hash, verbose: T::Boolean).void }
-    def print_latest_version(info, verbose:)
+    sig { params(info: Hash, verbose: T::Boolean, handle_name_conflict: T::Boolean).void }
+    def print_latest_version(info, verbose:, handle_name_conflict: false)
       formula_or_cask_s = "#{Tty.blue}#{info[:formula] || info[:cask]}#{Tty.reset}"
+      formula_or_cask_s += begin
+        (" (cask)" if info[:cask] && handle_name_conflict && Formula[info[:cask]]).to_s
+      rescue FormulaUnavailableError
+        ""
+      end
       formula_or_cask_s += " (guessed)" if !info[:meta][:livecheckable] && verbose
 
       current_s = if info[:version][:newer_than_upstream]
