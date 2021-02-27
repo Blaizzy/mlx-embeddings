@@ -90,11 +90,15 @@ RSpec.shared_context "integration test" do # rubocop:disable RSpec/ContextWordin
       ruby_args = HOMEBREW_RUBY_EXEC_ARGS.dup
       if ENV["HOMEBREW_TESTS_COVERAGE"]
         simplecov_spec = Gem.loaded_specs["simplecov"]
-        specs = [simplecov_spec]
-        simplecov_spec.runtime_dependencies.each do |dep|
-          specs += dep.to_specs
-        rescue Gem::LoadError => e
-          onoe e
+        parallel_tests_spec = Gem.loaded_specs["parallel_tests"]
+        specs = []
+        [simplecov_spec, parallel_tests_spec].each do |spec|
+          specs << spec
+          spec.runtime_dependencies.each do |dep|
+            specs += dep.to_specs
+          rescue Gem::LoadError => e
+            onoe e
+          end
         end
         libs = specs.flat_map do |spec|
           full_gem_path = spec.full_gem_path
