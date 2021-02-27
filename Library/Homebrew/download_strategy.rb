@@ -458,7 +458,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
         filename = URI.decode_www_form_component(encoded_filename).encode(encoding) if encoding && encoded_filename
       end
 
-      filename || content_disposition.filename
+      (filename || content_disposition.filename).rpartition("/")[-1]
     end
 
     filenames = lines.map(&parse_content_disposition).compact
