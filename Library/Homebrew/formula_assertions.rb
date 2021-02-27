@@ -28,6 +28,7 @@ module Homebrew
       assert_not_includes:    :refute_includes,
       assert_not_instance_of: :refute_instance_of,
       assert_not_kind_of:     :refute_kind_of,
+      assert_not_match:       :refute_match,
       assert_no_match:        :refute_match,
       assert_not_nil:         :refute_nil,
       assert_not_operator:    :refute_operator,
