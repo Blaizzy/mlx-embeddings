@@ -52,8 +52,8 @@ module Homebrew
                       "download from the prefix `http://localhost:8080/`. " \
                       "If bottles are not available at `HOMEBREW_BOTTLE_DOMAIN` " \
                       "they will be downloaded from the default bottle domain.",
-        default_text: "macOS: `https://homebrew.bintray.com/`, " \
-                      "Linux: `https://linuxbrew.bintray.com/`.",
+        default_text: "macOS: `https://dl.bintray.com/homebrew`, " \
+                      "Linux: `https://dl.bintray.com/linuxbrew`.",
         default:      HOMEBREW_BOTTLE_DEFAULT_DOMAIN,
       },
       HOMEBREW_BREW_GIT_REMOTE:               {
