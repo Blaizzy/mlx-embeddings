@@ -70,15 +70,31 @@ module Homebrew
     paths.unshift(gem_bindir) unless paths.include?(gem_bindir)
     paths.unshift(ruby_bindir) unless paths.include?(ruby_bindir)
     ENV["PATH"] = paths.compact.join(":")
+
+    # Set envs so the above binaries can be invoked.
+    # We don't do this unless requested as some formulae may invoke system Ruby instead of ours.
+    ENV["GEM_HOME"] = gem_home
+    ENV["GEM_PATH"] = gem_home
   end
 
   def install_gem!(name, version: nil, setup_gem_environment: true)
     setup_gem_environment! if setup_gem_environment
-    return unless Gem::Specification.find_all_by_name(name, version).empty?
 
-    ohai_if_defined "Installing '#{name}' gem"
-    # document: [] , is equivalent to --no-document
-    Gem.install name, version, document: []
+    specs = Gem::Specification.find_all_by_name(name, version)
+
+    if specs.empty?
+      ohai_if_defined "Installing '#{name}' gem"
+      # document: [] , is equivalent to --no-document
+      specs = Gem.install name, version, document: []
+    end
+
+    # Add the new specs to the $LOAD_PATH.
+    specs.each do |spec|
+      spec.require_paths.each do |path|
+        full_path = File.join(spec.full_gem_path, path)
+        $LOAD_PATH.unshift full_path unless $LOAD_PATH.include?(full_path)
+      end
+    end
   rescue Gem::UnsatisfiableDependencyError
     odie_if_defined "failed to install the '#{name}' gem."
   end
