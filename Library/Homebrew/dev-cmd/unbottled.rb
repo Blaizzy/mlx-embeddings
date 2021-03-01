@@ -166,11 +166,11 @@ module Homebrew
 
       requirements = f.recursive_requirements
       if @bottle_tag.to_s.end_with?("_linux")
-        if requirements.any? { |r| r.is_a?(MacOSRequirement) }
+        if requirements.any?(MacOSRequirement)
           puts "#{Tty.bold}#{Tty.red}#{name}#{Tty.reset}: requires macOS" if any_named_args
           next
         end
-      elsif requirements.any? { |r| r.is_a?(LinuxRequirement) }
+      elsif requirements.any?(LinuxRequirement)
         puts "#{Tty.bold}#{Tty.red}#{name}#{Tty.reset}: requires Linux" if any_named_args
         next
       else
