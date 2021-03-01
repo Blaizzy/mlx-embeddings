@@ -1304,7 +1304,7 @@ Generate the template files for a new tap.
 * `--pull-label`:
   Label name for pull requests ready to be pulled (default: `pr-pull`).
 * `--branch`:
-  Initialize Git repository with the specified branch name (default: `main`).
+  Initialize Git repository and setup GitHub Actions workflows with the specified branch name (default: `main`).
 
 ### `test` [*`options`*] *`installed_formula`* [...]
 
