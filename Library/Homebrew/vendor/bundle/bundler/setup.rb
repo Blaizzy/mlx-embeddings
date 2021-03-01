@@ -5,7 +5,7 @@ ruby_version = RbConfig::CONFIG["ruby_version"]
 path = File.expand_path('..', __FILE__)
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/concurrent-ruby-1.1.8/lib/concurrent-ruby"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/i18n-1.8.9/lib"
-$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/minitest-5.14.3/lib"
+$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/minitest-5.14.4/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/tzinfo-2.0.4/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/zeitwerk-2.4.2/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/activesupport-6.1.3/lib"
