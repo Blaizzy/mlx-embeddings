@@ -10,7 +10,7 @@ Performance/AncestorsInclude:
 Performance/ArraySemiInfiniteRangeSlice:
   Description: 'Identifies places where slicing arrays with semi-infinite ranges can be replaced by `Array#take` and `Array#drop`.'
   # This cop was created due to a mistake in microbenchmark.
-  # Refer https://github.com/rubocop-hq/rubocop-performance/pull/175#issuecomment-731892717
+  # Refer https://github.com/rubocop/rubocop-performance/pull/175#issuecomment-731892717
   Enabled: false
   # Unsafe for string slices because strings do not have `#take` and `#drop` methods.
   Safe: false
@@ -80,6 +80,7 @@ Performance/ConstantRegexp:
   Description: 'Finds regular expressions with dynamic components that are all constants.'
   Enabled: pending
   VersionAdded: '1.9'
+  VersionChanged: '1.10'
 
 Performance/Count:
   Description: >-
@@ -136,11 +137,10 @@ Performance/EndWith:
   # object. Switching these methods has to be done with knowledge of the types
   # of the variables which rubocop doesn't have.
   SafeAutoCorrect: false
-  AutoCorrect: false
   Enabled: true
   SafeMultiline: true
   VersionAdded: '0.36'
-  VersionChanged: '1.6'
+  VersionChanged: '1.10'
 
 Performance/FixedSize:
   Description: 'Do not compute the size of statically sized objects except in constants.'
@@ -200,6 +200,15 @@ Performance/RedundantBlockCall:
   Enabled: true
   VersionAdded: '0.36'
 
+Performance/RedundantEqualityComparisonBlock:
+  Description: >-
+                  Checks for uses `Enumerable#all?`, `Enumerable#any?`, `Enumerable#one?`,
+                  or `Enumerable#none?` are compared with `===` or similar methods in block.
+  Reference: 'https://github.com/rails/rails/pull/41363'
+  Enabled: pending
+  Safe: false
+  VersionAdded: '1.10'
+
 Performance/RedundantMatch:
   Description: >-
                   Use `=~` instead of `String#match` or `Regexp#match` in a context where the
@@ -219,6 +228,11 @@ Performance/RedundantSortBlock:
   Description: 'Use `sort` instead of `sort { |a, b| a <=> b }`.'
   Enabled: 'pending'
   VersionAdded: '1.7'
+
+Performance/RedundantSplitRegexpArgument:
+  Description: 'This cop identifies places where `split` argument can be replaced from a deterministic regexp to a string.'
+  Enabled: pending
+  VersionAdded: '1.10'
 
 Performance/RedundantStringChars:
   Description: 'Checks for redundant `String#chars`.'
@@ -270,11 +284,10 @@ Performance/StartWith:
   # object. Switching these methods has to be done with knowledge of the types
   # of the variables which rubocop doesn't have.
   SafeAutoCorrect: false
-  AutoCorrect: false
   Enabled: true
   SafeMultiline: true
   VersionAdded: '0.36'
-  VersionChanged: '1.6'
+  VersionChanged: '1.10'
 
 Performance/StringInclude:
   Description: 'Use `String#include?` instead of a regex match with literal-only pattern.'
@@ -304,7 +317,7 @@ Performance/TimesMap:
   Enabled: true
   VersionAdded: '0.36'
   VersionChanged: '0.50'
-  SafeAutoCorrect: false # see https://github.com/rubocop-hq/rubocop/issues/4658
+  SafeAutoCorrect: false # see https://github.com/rubocop/rubocop/issues/4658
 
 Performance/UnfreezeString:
   Description: 'Use unary plus to get an unfrozen string literal.'

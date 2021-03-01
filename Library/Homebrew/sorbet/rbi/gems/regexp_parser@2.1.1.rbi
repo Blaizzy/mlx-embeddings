@@ -84,6 +84,10 @@ class Regexp::Expression::Backreference::Base < ::Regexp::Expression::Base
   def match_length; end
   def referenced_expression; end
   def referenced_expression=(_arg0); end
+
+  private
+
+  def initialize_copy(orig); end
 end
 
 class Regexp::Expression::Backreference::Name < ::Regexp::Expression::Backreference::Base
@@ -198,7 +202,7 @@ class Regexp::Expression::Base
 
   private
 
-  def initialize_clone(orig); end
+  def initialize_copy(orig); end
 end
 
 class Regexp::Expression::CharacterSet < ::Regexp::Expression::Subexpression
@@ -292,6 +296,10 @@ class Regexp::Expression::Conditional::Condition < ::Regexp::Expression::Base
   def reference; end
   def referenced_expression; end
   def referenced_expression=(_arg0); end
+
+  private
+
+  def initialize_copy(orig); end
 end
 
 class Regexp::Expression::Conditional::Expression < ::Regexp::Expression::Subexpression
@@ -306,9 +314,13 @@ class Regexp::Expression::Conditional::Expression < ::Regexp::Expression::Subexp
   def referenced_expression; end
   def referenced_expression=(_arg0); end
   def to_s(format = T.unsafe(nil)); end
+
+  private
+
+  def initialize_copy(orig); end
 end
 
-class Regexp::Expression::Conditional::TooManyBranches < ::StandardError
+class Regexp::Expression::Conditional::TooManyBranches < ::Regexp::Parser::Error
   def initialize; end
 end
 
@@ -431,12 +443,16 @@ class Regexp::Expression::Group::Named < ::Regexp::Expression::Group::Capture
 
   private
 
-  def initialize_clone(orig); end
+  def initialize_copy(orig); end
 end
 
 class Regexp::Expression::Group::Options < ::Regexp::Expression::Group::Base
   def option_changes; end
   def option_changes=(_arg0); end
+
+  private
+
+  def initialize_copy(orig); end
 end
 
 class Regexp::Expression::Group::Passive < ::Regexp::Expression::Group::Base
@@ -486,7 +502,7 @@ class Regexp::Expression::Quantifier
 
   private
 
-  def initialize_clone(orig); end
+  def initialize_copy(orig); end
 end
 
 Regexp::Expression::Quantifier::MODES = T.let(T.unsafe(nil), Array)
@@ -553,7 +569,7 @@ class Regexp::Expression::Subexpression < ::Regexp::Expression::Base
 
   private
 
-  def initialize_clone(orig); end
+  def initialize_copy(orig); end
 end
 
 module Regexp::Expression::UnicodeProperty
@@ -867,7 +883,6 @@ end
 
 class Regexp::Parser
   include(::Regexp::Expression)
-  include(::Regexp::Syntax)
   include(::Regexp::Expression::UnicodeProperty)
 
   def parse(input, syntax = T.unsafe(nil), options: T.unsafe(nil), &block); end
@@ -898,6 +913,7 @@ class Regexp::Parser
   def intersection(token); end
   def interval(target_node, token); end
   def keep(token); end
+  def literal(token); end
   def meta(token); end
   def negate_set; end
   def nest(exp); end
@@ -933,10 +949,15 @@ end
 
 Regexp::Parser::ENC_FLAGS = T.let(T.unsafe(nil), Array)
 
+class Regexp::Parser::Error < ::StandardError
+end
+
 Regexp::Parser::MOD_FLAGS = T.let(T.unsafe(nil), Array)
 
-class Regexp::Parser::ParserError < ::StandardError
+class Regexp::Parser::ParserError < ::Regexp::Parser::Error
 end
+
+Regexp::Parser::UPTokens = Regexp::Syntax::Token::UnicodeProperty
 
 class Regexp::Parser::UnknownTokenError < ::Regexp::Parser::ParserError
   def initialize(type, token); end
@@ -1005,20 +1026,18 @@ class Regexp::Scanner::InvalidSequenceError < ::Regexp::Scanner::ValidationError
   def initialize(what = T.unsafe(nil), where = T.unsafe(nil)); end
 end
 
-Regexp::Scanner::PROP_MAPS_DIR = T.let(T.unsafe(nil), String)
-
 class Regexp::Scanner::PrematureEndError < ::Regexp::Scanner::ScannerError
   def initialize(where = T.unsafe(nil)); end
 end
 
-class Regexp::Scanner::ScannerError < ::StandardError
+class Regexp::Scanner::ScannerError < ::Regexp::Parser::Error
 end
 
 class Regexp::Scanner::UnknownUnicodePropertyError < ::Regexp::Scanner::ValidationError
   def initialize(name); end
 end
 
-class Regexp::Scanner::ValidationError < ::StandardError
+class Regexp::Scanner::ValidationError < ::Regexp::Parser::Error
   def initialize(reason); end
 end
 
@@ -1088,7 +1107,7 @@ class Regexp::Syntax::NotImplementedError < ::Regexp::Syntax::SyntaxError
   def initialize(syntax, type, token); end
 end
 
-class Regexp::Syntax::SyntaxError < ::StandardError
+class Regexp::Syntax::SyntaxError < ::Regexp::Parser::Error
 end
 
 module Regexp::Syntax::Token

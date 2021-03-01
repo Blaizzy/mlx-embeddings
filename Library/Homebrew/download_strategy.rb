@@ -1052,7 +1052,7 @@ class CVSDownloadStrategy < VCSDownloadStrategy
   end
 
   def split_url(in_url)
-    parts = in_url.split(/:/)
+    parts = in_url.split(":")
     mod = parts.pop
     url = parts.join(":")
     [mod, url]

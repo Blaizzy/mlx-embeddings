@@ -165,7 +165,7 @@ module Cask
       odebug "Auditing stanzas which require an uninstall"
 
       return if cask.artifacts.none? { |k| k.is_a?(Artifact::Pkg) || k.is_a?(Artifact::Installer) }
-      return if cask.artifacts.any? { |k| k.is_a?(Artifact::Uninstall) }
+      return if cask.artifacts.any?(Artifact::Uninstall)
 
       add_error "installer and pkg stanzas require an uninstall stanza"
     end
