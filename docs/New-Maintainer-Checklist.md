@@ -18,7 +18,7 @@ issues, or reviewing user pull requests. You should also be making contributions
 to Homebrew at least once per quarter.
 
 You should watch or regularly check Homebrew/brew and/or
-Homebrew/homebrew-core and/or Homebrew/homebrew-cask. Let us know which so we 
+Homebrew/homebrew-core and/or Homebrew/homebrew-cask. Let us know which so we
 can grant you commit access appropriately.
 
 If you're no longer able to perform all of these tasks, please continue to
@@ -63,7 +63,6 @@ If they accept, follow a few steps to get them set up:
 - Invite them to the [`machomebrew` private maintainers Slack](https://machomebrew.slack.com/admin/invites) (and ensure they've read the [communication guidelines](Maintainer-Guidelines.md#communication)) and ask them to use their real name there (rather than a pseudonym they may use on e.g. GitHub).
 - Ask them to disable SMS as a 2FA device or fallback on their GitHub account in favour of using one of the other authentication methods.
 - Ask them to (regularly) review remove any unneeded [GitHub personal access tokens](https://github.com/settings/tokens).
-- Add them to Homebrew/brew's README, run `brew man` and commit the changes.
 - Start the process to [add them as Homebrew members](#members), for formal voting rights and the ability to hold office for Homebrew.
 
 If they are interested in doing system administration work:
@@ -77,7 +76,7 @@ If they are elected to the Homebrew's [Project Leadership Committee](https://doc
 - Email their name, email and employer to the [Software Freedom Conservancy](https://sfconservancy.org) at homebrew@sfconservancy.org
 - Make them [owners on the Homebrew GitHub organisation](https://github.com/orgs/Homebrew/people)
 - Invite them to the [**@Homebrew/plc** team](https://github.com/orgs/Homebrew/teams/plc/members)
-- Invite them to [Google Analytics](https://analytics.google.com/analytics/web/#management/Settings/a76679469w115400090p120682403/%3Fm.page%3DAccountUsers/) and add them to the relevant section of the [Homebrew/brew's README](https://github.com/Homebrew/brew/edit/master/README.md).
+- Invite them to [Google Analytics](https://analytics.google.com/analytics/web/#management/Settings/a76679469w115400090p120682403/%3Fm.page%3DAccountUsers/).
 - Invite them to the [`homebrew` private 1Password](https://homebrew.1password.com/people).
 - Make them owners on the [`machomebrew` private maintainers Slack](https://machomebrew.slack.com/admin)).
 
