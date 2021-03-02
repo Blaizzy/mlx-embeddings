@@ -5,7 +5,7 @@
 
 if [ -z "$HOMEBREW_LIBRARY" ]
 then
-  echo "${0##*/}: This shim is internal and must be run via `brew`." >&2
+  echo "${0##*/}: This shim is internal and must be run via brew." >&2
   exit 1
 fi
 
