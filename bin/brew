@@ -75,6 +75,11 @@ do
   export "$VAR_NEW"="${!VAR}"
 done
 
+export HOMEBREW_BREW_FILE
+export HOMEBREW_PREFIX
+export HOMEBREW_REPOSITORY
+export HOMEBREW_LIBRARY
+
 # Use VISUAL if HOMEBREW_EDITOR and EDITOR are unset.
 if [[ -z "$HOMEBREW_EDITOR" && -n "$VISUAL" ]]
 then
