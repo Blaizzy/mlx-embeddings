@@ -718,7 +718,7 @@ class FormulaInstaller
 
     if df.latest_version_installed?
       installed_keg = Keg.new(df.prefix)
-      tab ||= Tab.for_keg(linked_keg)
+      tab ||= Tab.for_keg(installed_keg)
       tmp_keg = Pathname.new("#{installed_keg}.tmp")
       installed_keg.rename(tmp_keg)
     end
