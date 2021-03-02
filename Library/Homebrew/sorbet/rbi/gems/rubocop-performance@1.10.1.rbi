@@ -492,10 +492,13 @@ class RuboCop::Cop::Performance::RedundantEqualityComparisonBlock < ::RuboCop::C
 
   def new_argument(block_argument, block_body); end
   def offense_range(node); end
+  def same_block_argument_and_is_a_argument?(block_body, block_argument); end
   def use_equality_comparison_block?(block_body); end
 end
 
 RuboCop::Cop::Performance::RedundantEqualityComparisonBlock::COMPARISON_METHODS = T.let(T.unsafe(nil), Array)
+
+RuboCop::Cop::Performance::RedundantEqualityComparisonBlock::IS_A_METHODS = T.let(T.unsafe(nil), Array)
 
 RuboCop::Cop::Performance::RedundantEqualityComparisonBlock::MSG = T.let(T.unsafe(nil), String)
 
@@ -588,9 +591,8 @@ class RuboCop::Cop::Performance::RedundantSplitRegexpArgument < ::RuboCop::Cop::
 
   private
 
-  def autocorrect(corrector, node); end
-  def determinist_regexp?(first_argument); end
-  def replacement(node); end
+  def determinist_regexp?(regexp_node); end
+  def replacement(regexp_node); end
 end
 
 RuboCop::Cop::Performance::RedundantSplitRegexpArgument::DETERMINISTIC_REGEX = T.let(T.unsafe(nil), Regexp)
