@@ -56,8 +56,10 @@ module RuboCop
             problem "GitHub patches should end with .patch, not .diff: #{patch_url}"
           end
 
-          if regex_match_group(patch_url_node, %r{.*gitlab.*/commit/[a-fA-F0-9]*\.diff})
-            problem "GitLab patches should end with .patch, not .diff: #{patch_url}"
+          # Only .diff passes `--full-index` to `git diff` and there is no documented way
+          # to get .patch to behave the same for GitLab.
+          if regex_match_group(patch_url_node, %r{.*gitlab.*/commit/[a-fA-F0-9]*\.patch})
+            problem "GitLab patches should end with .diff, not .patch: #{patch_url}"
           end
 
           gh_patch_param_pattern = %r{https?://github\.com/.+/.+/(?:commit|pull)/[a-fA-F0-9]*.(?:patch|diff)}
