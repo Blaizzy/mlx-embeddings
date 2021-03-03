@@ -2572,6 +2572,7 @@ class RuboCop::Cop::Layout::FirstArgumentIndentation < ::RuboCop::Cop::Cop
   private
 
   def argument_alignment_config; end
+  def bare_operator?(node); end
   def base_indentation(node); end
   def base_range(send_node, arg_node); end
   def column_of(range); end
@@ -8482,8 +8483,10 @@ class RuboCop::Cop::Style::HashConversion < ::RuboCop::Cop::Base
 
   private
 
+  def allowed_splat_argument?; end
   def args_to_hash(args); end
   def multi_argument(node); end
+  def requires_parens?(node); end
   def single_argument(node); end
 end
 
@@ -9295,7 +9298,9 @@ class RuboCop::Cop::Style::MultipleComparison < ::RuboCop::Cop::Base
   def comparison?(node); end
   def nested_comparison?(node); end
   def nested_variable_comparison?(node); end
+  def reset_comparison; end
   def root_of_or_node(or_node); end
+  def switch_comparison?(node); end
   def variable_name(node); end
   def variables_in_node(node); end
   def variables_in_simple_node(node); end
@@ -10019,6 +10024,7 @@ class RuboCop::Cop::Style::RedundantBegin < ::RuboCop::Cop::Base
   private
 
   def contain_rescue_or_ensure?(node); end
+  def empty_begin?(node); end
   def register_offense(node); end
   def valid_context_using_only_begin?(node); end
 end
@@ -11020,6 +11026,7 @@ class RuboCop::Cop::Style::SymbolProc < ::RuboCop::Cop::Base
 
   private
 
+  def allow_if_method_has_argument?(node); end
   def autocorrect(corrector, node); end
   def autocorrect_with_args(corrector, node, args, method_name); end
   def autocorrect_without_args(corrector, node); end
@@ -11258,6 +11265,25 @@ class RuboCop::Cop::Style::UnlessElse < ::RuboCop::Cop::Base
 end
 
 RuboCop::Cop::Style::UnlessElse::MSG = T.let(T.unsafe(nil), String)
+
+class RuboCop::Cop::Style::UnlessLogicalOperators < ::RuboCop::Cop::Base
+  include(::RuboCop::Cop::ConfigurableEnforcedStyle)
+
+  def and_with_or?(param0 = T.unsafe(nil)); end
+  def logical_operator?(param0 = T.unsafe(nil)); end
+  def on_if(node); end
+  def or_with_and?(param0 = T.unsafe(nil)); end
+
+  private
+
+  def mixed_logical_operator?(node); end
+  def mixed_precedence_and?(node); end
+  def mixed_precedence_or?(node); end
+end
+
+RuboCop::Cop::Style::UnlessLogicalOperators::FORBID_LOGICAL_OPERATORS = T.let(T.unsafe(nil), String)
+
+RuboCop::Cop::Style::UnlessLogicalOperators::FORBID_MIXED_LOGICAL_OPERATORS = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Style::UnpackFirst < ::RuboCop::Cop::Base
   extend(::RuboCop::Cop::AutoCorrector)
@@ -12861,12 +12887,13 @@ class RuboCop::TargetRuby::GemspecFile < ::RuboCop::TargetRuby::Source
 
   private
 
+  def find_minimal_known_ruby(right_hand_side); end
   def find_version; end
   def gemspec_filename; end
   def gemspec_filepath; end
   def version_from_array(array); end
   def version_from_gemspec_file(file); end
-  def version_from_str(str); end
+  def version_from_right_hand_side(right_hand_side); end
 end
 
 RuboCop::TargetRuby::GemspecFile::GEMSPEC_EXTENSION = T.let(T.unsafe(nil), String)
