@@ -460,6 +460,11 @@ Style/StringLiteralsInInterpolation:
 Style/TernaryParentheses:
   EnforcedStyle: require_parentheses_when_complex
 
+# `unless ... ||` and `unless ... &&` are hard to mentally parse
+Style/UnlessLogicalOperators:
+  Enabled: true
+  EnforcedStyle: forbid_logical_operators
+
 # a bit confusing to non-Rubyists but useful for longer arrays
 Style/WordArray:
   MinSize: 4
