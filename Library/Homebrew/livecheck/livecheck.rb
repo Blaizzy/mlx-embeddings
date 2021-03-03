@@ -63,7 +63,7 @@ module Homebrew
 
     # Uses `formulae_and_casks_to_check` to identify taps in use other than
     # homebrew/core and homebrew/cask and loads strategies from them.
-    sig { params(formulae_and_casks_to_check: T::Enumerable[T.any(Formula, Cask::Cask)]).void }
+    sig { params(formulae_and_casks_to_check: T::Array[T.any(Formula, Cask::Cask)]).void }
     def load_other_tap_strategies(formulae_and_casks_to_check)
       other_taps = {}
       formulae_and_casks_to_check.each do |formula_or_cask|
@@ -86,7 +86,7 @@ module Homebrew
     # `formulae_and_casks_to_check` array and prints the results.
     sig {
       params(
-        formulae_and_casks_to_check: T::Enumerable[T.any(Formula, Cask::Cask)],
+        formulae_and_casks_to_check: T::Array[T.any(Formula, Cask::Cask)],
         full_name:                   T::Boolean,
         handle_name_conflict:        T::Boolean,
         json:                        T::Boolean,
@@ -102,6 +102,15 @@ module Homebrew
       debug: false, quiet: false, verbose: false
     )
       load_other_tap_strategies(formulae_and_casks_to_check)
+
+      ambiguous_casks = []
+      if handle_name_conflict
+        ambiguous_casks = formulae_and_casks_to_check
+                          .group_by { |item| formula_or_cask_name(item, full_name: true) }
+                          .select { |_name, items| items.length > 1 }
+                          .values.flatten
+                          .select { |item| item.is_a?(Cask::Cask) }
+      end
 
       has_a_newer_upstream_version = T.let(false, T::Boolean)
 
@@ -224,7 +233,7 @@ module Homebrew
           next info
         end
 
-        print_latest_version(info, verbose: verbose, handle_name_conflict: handle_name_conflict)
+        print_latest_version(info, verbose: verbose, ambiguous_cask: ambiguous_casks.include?(formula_or_cask))
         nil
       rescue => e
         Homebrew.failed = true
@@ -234,11 +243,7 @@ module Homebrew
           status_hash(formula_or_cask, "error", [e.to_s], full_name: full_name, verbose: verbose)
         elsif !quiet
           name = formula_or_cask_name(formula_or_cask, full_name: full_name)
-          name += begin
-            (" (cask)" if cask && handle_name_conflict && Formula[name]).to_s
-          rescue FormulaUnavailableError
-            ""
-          end
+          name += " (cask)" if ambiguous_casks.include?(formula_or_cask)
 
           onoe "#{Tty.blue}#{name}#{Tty.reset}: #{e}"
           $stderr.puts e.backtrace if debug && !e.is_a?(Livecheck::Error)
@@ -317,14 +322,10 @@ module Homebrew
     end
 
     # Formats and prints the livecheck result for a formula.
-    sig { params(info: Hash, verbose: T::Boolean, handle_name_conflict: T::Boolean).void }
-    def print_latest_version(info, verbose:, handle_name_conflict: false)
+    sig { params(info: Hash, verbose: T::Boolean, ambiguous_cask: T::Boolean).void }
+    def print_latest_version(info, verbose:, ambiguous_cask: false)
       formula_or_cask_s = "#{Tty.blue}#{info[:formula] || info[:cask]}#{Tty.reset}"
-      formula_or_cask_s += begin
-        (" (cask)" if info[:cask] && handle_name_conflict && Formula[info[:cask]]).to_s
-      rescue FormulaUnavailableError
-        ""
-      end
+      formula_or_cask_s += " (cask)" if ambiguous_cask
       formula_or_cask_s += " (guessed)" if !info[:meta][:livecheckable] && verbose
 
       current_s = if info[:version][:newer_than_upstream]

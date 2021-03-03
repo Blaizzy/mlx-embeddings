@@ -105,7 +105,7 @@ module Homebrew
     options = {
       json:                 args.json?,
       full_name:            args.full_name?,
-      handle_name_conflict: !args.cask?,
+      handle_name_conflict: !args.formula? && !args.cask?,
       newer_only:           args.newer_only?,
       quiet:                args.quiet?,
       debug:                args.debug?,
