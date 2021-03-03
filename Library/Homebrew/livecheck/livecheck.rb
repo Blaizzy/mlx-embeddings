@@ -112,6 +112,14 @@ module Homebrew
                           .select { |item| item.is_a?(Cask::Cask) }
       end
 
+      ambiguous_names = []
+      unless full_name
+        ambiguous_names = (formulae_and_casks_to_check - ambiguous_casks)
+                          .group_by { |item| formula_or_cask_name(item) }
+                          .select { |_name, items| items.length > 1 }
+                          .values.flatten
+      end
+
       has_a_newer_upstream_version = T.let(false, T::Boolean)
 
       if json && !quiet && $stderr.tty?
@@ -133,7 +141,9 @@ module Homebrew
       formulae_checked = formulae_and_casks_to_check.map.with_index do |formula_or_cask, i|
         formula = formula_or_cask if formula_or_cask.is_a?(Formula)
         cask = formula_or_cask if formula_or_cask.is_a?(Cask::Cask)
-        name = formula_or_cask_name(formula_or_cask, full_name: full_name)
+
+        use_full_name = full_name || ambiguous_names.include?(formula_or_cask)
+        name = formula_or_cask_name(formula_or_cask, full_name: use_full_name)
 
         if debug && i.positive?
           puts <<~EOS
@@ -145,7 +155,7 @@ module Homebrew
           puts
         end
 
-        skip_info = SkipConditions.skip_information(formula_or_cask, full_name: full_name, verbose: verbose)
+        skip_info = SkipConditions.skip_information(formula_or_cask, full_name: use_full_name, verbose: verbose)
         if skip_info.present?
           next skip_info if json
 
@@ -177,7 +187,7 @@ module Homebrew
         else
           version_info = latest_version(
             formula_or_cask,
-            json: json, full_name: full_name, verbose: verbose, debug: debug,
+            json: json, full_name: use_full_name, verbose: verbose, debug: debug,
           )
           version_info[:latest] if version_info.present?
         end
@@ -188,7 +198,7 @@ module Homebrew
 
           next version_info if version_info.is_a?(Hash) && version_info[:status] && version_info[:messages]
 
-          next status_hash(formula_or_cask, "error", [no_versions_msg], full_name: full_name, verbose: verbose)
+          next status_hash(formula_or_cask, "error", [no_versions_msg], full_name: use_full_name, verbose: verbose)
         end
 
         if (m = latest.to_s.match(/(.*)-release$/)) && !current.to_s.match(/.*-release$/)
@@ -237,12 +247,13 @@ module Homebrew
         nil
       rescue => e
         Homebrew.failed = true
+        use_full_name = full_name || ambiguous_names.include?(formula_or_cask)
 
         if json
           progress&.increment
-          status_hash(formula_or_cask, "error", [e.to_s], full_name: full_name, verbose: verbose)
+          status_hash(formula_or_cask, "error", [e.to_s], full_name: use_full_name, verbose: verbose)
         elsif !quiet
-          name = formula_or_cask_name(formula_or_cask, full_name: full_name)
+          name = formula_or_cask_name(formula_or_cask, full_name: use_full_name)
           name += " (cask)" if ambiguous_casks.include?(formula_or_cask)
 
           onoe "#{Tty.blue}#{name}#{Tty.reset}: #{e}"

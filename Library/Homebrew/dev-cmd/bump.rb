@@ -16,6 +16,8 @@ module Homebrew
         Display out-of-date brew formulae and the latest version available.
         Also displays whether a pull request has been opened with the URL.
       EOS
+      switch "--full-name",
+             description: "Print formulae/casks with fully-qualified names."
       switch "--no-pull-requests",
              description: "Do not retrieve pull requests from GitHub."
       switch "--formula", "--formulae",
@@ -63,10 +65,19 @@ module Homebrew
                           .select { |item| item.is_a?(Cask::Cask) }
       end
 
+      ambiguous_names = []
+      unless args.full_name?
+        ambiguous_names = (formulae_and_casks - ambiguous_casks)
+                          .group_by { |item| Livecheck.formula_or_cask_name(item) }
+                          .select { |_name, items| items.length > 1 }
+                          .values.flatten
+      end
+
       formulae_and_casks.each_with_index do |formula_or_cask, i|
         puts if i.positive?
 
-        name = Livecheck.formula_or_cask_name(formula_or_cask)
+        use_full_name = args.full_name? || ambiguous_names.include?(formula_or_cask)
+        name = Livecheck.formula_or_cask_name(formula_or_cask, full_name: use_full_name)
         repository = if formula_or_cask.is_a?(Formula)
           if formula_or_cask.head_only?
             ohai name
