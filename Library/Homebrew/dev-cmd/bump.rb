@@ -38,13 +38,16 @@ module Homebrew
       raise UsageError, "`--limit` must be used with either `--formula` or `--cask`."
     end
 
-    formulae_and_casks = if args.formula?
-      args.named.to_formulae.presence
-    elsif args.cask?
-      args.named.to_casks.presence
-    else
-      args.named.to_formulae_and_casks.presence
-    end
+    formulae_and_casks =
+      if args.formula?
+        args.named.to_formulae
+      elsif args.cask?
+        args.named.to_casks
+      else
+        args.named.to_formulae_and_casks
+      end&.sort_by do |formula_or_cask|
+        formula_or_cask.respond_to?(:token) ? formula_or_cask.token : formula_or_cask.name
+      end
 
     limit = args.limit.to_i if args.limit.present?
 
