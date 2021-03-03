@@ -124,6 +124,15 @@ RSpec.shared_context "integration test" do # rubocop:disable RSpec/ContextWordin
     end
   end
 
+  def brew_sh(*args)
+    Bundler.with_clean_env do
+      stdout, stderr, status = Open3.capture3("#{ENV["HOMEBREW_PREFIX"]}/bin/brew", *args)
+      $stdout.print stdout
+      $stderr.print stderr
+      status
+    end
+  end
+
   def setup_test_formula(name, content = nil, bottle_block: nil)
     case name
     when /^testball/

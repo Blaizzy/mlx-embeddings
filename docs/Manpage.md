@@ -749,8 +749,7 @@ If *`user`*`/`*`repo`* are provided, display where tap *`user`*`/`*`repo`*'s dir
 
 ### `--version`, `-v`
 
-Print the version numbers of Homebrew, Homebrew/homebrew-core and Homebrew/homebrew-cask
-(if tapped) to standard output.
+Print the version numbers of Homebrew, Homebrew/homebrew-core and Homebrew/homebrew-cask (if tapped) to standard output.
 
 ## DEVELOPER COMMANDS
 
