@@ -6,9 +6,16 @@ require "cmd/shared_examples/args_parse"
 describe "brew --prefix" do
   it_behaves_like "parseable arguments"
 
-  it "prints a given Formula's prefix", :integration_test do
-    expect { brew "--prefix", testball }
-      .to output("#{HOMEBREW_PREFIX}/opt/testball\n").to_stdout
+  it "prints Homebrew's prefix", :integration_test do
+    expect { brew_sh "--prefix" }
+      .to output("#{ENV["HOMEBREW_PREFIX"]}\n").to_stdout
+      .and not_to_output.to_stderr
+      .and be_a_success
+  end
+
+  it "prints the prefix for a Formula", :integration_test do
+    expect { brew_sh "--prefix", "wget" }
+      .to output("#{ENV["HOMEBREW_PREFIX"]}/opt/wget\n").to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
   end
