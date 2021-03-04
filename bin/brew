@@ -108,6 +108,8 @@ then
 
   exec /usr/bin/env -i "${FILTERED_ENV[@]}" /bin/bash "$HOMEBREW_LIBRARY/Homebrew/brew.sh" "$@"
 else
+  echo "Warning: HOMEBREW_NO_ENV_FILTERING is undocumented, deprecated and will be removed in a future Homebrew release (because it breaks many things)!" >&2
+
   # Don't need shellcheck to follow this `source`.
   # shellcheck disable=SC1090
   source "$HOMEBREW_LIBRARY/Homebrew/brew.sh"
