@@ -449,13 +449,6 @@ curl_version_output="$("$HOMEBREW_CURL" --version 2>/dev/null)"
 curl_name_and_version="${curl_version_output%% (*}"
 HOMEBREW_USER_AGENT_CURL="$HOMEBREW_USER_AGENT ${curl_name_and_version// //}"
 
-# Declared in bin/brew
-export HOMEBREW_BREW_FILE
-export HOMEBREW_PREFIX
-export HOMEBREW_REPOSITORY
-export HOMEBREW_LIBRARY
-
-# Declared in brew.sh
 export HOMEBREW_VERSION
 export HOMEBREW_DEFAULT_CACHE
 export HOMEBREW_CACHE
