@@ -708,6 +708,7 @@ _brew_dispatch_build_bottle() {
       --debug
       --help
       --issue
+      --linux
       --macos
       --quiet
       --tap
