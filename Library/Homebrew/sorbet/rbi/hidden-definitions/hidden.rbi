@@ -6118,6 +6118,15 @@ module Codecov
   VERSION = ::T.let(nil, ::T.untyped)
 end
 
+module Codecov::Configuration
+  def pass_ci_if_error(); end
+
+  def pass_ci_if_error=(pass_ci_if_error); end
+end
+
+module Codecov::Configuration
+end
+
 module Codecov::SimpleCov
 end
 
@@ -6186,6 +6195,7 @@ class Codecov::Uploader
 end
 
 module Codecov
+  extend ::Codecov::Configuration
 end
 
 class CompilerSelector::Compiler
