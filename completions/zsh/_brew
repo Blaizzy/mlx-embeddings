@@ -678,7 +678,8 @@ _brew_dispatch_build_bottle() {
     '--debug[Display any debugging information]' \
     '--help[Show this message]' \
     '--issue[If specified, post a comment to this issue number if the job fails]' \
-    '--macos[Version of macOS the bottle should be built for]' \
+    '(--macos)--linux[Dispatch bottle for Linux (using GitHub runners)]' \
+    '(--linux)--macos[Version of macOS the bottle should be built for]' \
     '--quiet[Make some output more quiet]' \
     '--tap[Target tap repository (default: `homebrew/core`)]' \
     '--upload[Upload built bottles to Bintray]' \
