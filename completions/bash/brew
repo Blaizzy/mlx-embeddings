@@ -245,21 +245,6 @@ _brew___repository() {
   __brew_complete_tapped
 }
 
-_brew___version() {
-  local cur="${COMP_WORDS[COMP_CWORD]}"
-  case "$cur" in
-    -*)
-      __brewcomp "
-      --debug
-      --help
-      --quiet
-      --verbose
-      "
-      return
-      ;;
-  esac
-}
-
 _brew__s() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "$cur" in
@@ -280,21 +265,6 @@ _brew__s() {
       --pull-request
       --quiet
       --ubuntu
-      --verbose
-      "
-      return
-      ;;
-  esac
-}
-
-_brew__v() {
-  local cur="${COMP_WORDS[COMP_CWORD]}"
-  case "$cur" in
-    -*)
-      __brewcomp "
-      --debug
-      --help
-      --quiet
       --verbose
       "
       return
@@ -2316,9 +2286,7 @@ _brew() {
     --prefix) _brew___prefix ;;
     --repo) _brew___repo ;;
     --repository) _brew___repository ;;
-    --version) _brew___version ;;
     -S) _brew__s ;;
-    -v) _brew__v ;;
     abv) _brew_abv ;;
     analytics) _brew_analytics ;;
     audit) _brew_audit ;;

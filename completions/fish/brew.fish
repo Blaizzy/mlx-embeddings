@@ -271,13 +271,6 @@ __fish_brew_complete_arg '--repository' -l verbose -d 'Make some output more ver
 __fish_brew_complete_arg '--repository' -a '(__fish_brew_suggest_taps_installed)'
 
 
-__fish_brew_complete_cmd '--version' 'Print the version numbers of Homebrew, Homebrew/homebrew-core and Homebrew/homebrew-cask (if tapped) to standard output'
-__fish_brew_complete_arg '--version' -l debug -d 'Display any debugging information'
-__fish_brew_complete_arg '--version' -l help -d 'Show this message'
-__fish_brew_complete_arg '--version' -l quiet -d 'Make some output more quiet'
-__fish_brew_complete_arg '--version' -l verbose -d 'Make some output more verbose'
-
-
 __fish_brew_complete_cmd '-S' 'Perform a substring search of cask tokens and formula names for text'
 __fish_brew_complete_arg '-S' -l cask -d 'Without text, list all locally available casks (including tapped ones, no online search is performed). With text, search online and locally for casks'
 __fish_brew_complete_arg '-S' -l closed -d 'Search for only closed GitHub pull requests'
@@ -295,13 +288,6 @@ __fish_brew_complete_arg '-S' -l pull-request -d 'Search for GitHub pull request
 __fish_brew_complete_arg '-S' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg '-S' -l ubuntu -d 'Search for text in the given package manager\'s list'
 __fish_brew_complete_arg '-S' -l verbose -d 'Make some output more verbose'
-
-
-__fish_brew_complete_cmd '-v' 'Print the version numbers of Homebrew, Homebrew/homebrew-core and Homebrew/homebrew-cask (if tapped) to standard output'
-__fish_brew_complete_arg '-v' -l debug -d 'Display any debugging information'
-__fish_brew_complete_arg '-v' -l help -d 'Show this message'
-__fish_brew_complete_arg '-v' -l quiet -d 'Make some output more quiet'
-__fish_brew_complete_arg '-v' -l verbose -d 'Make some output more verbose'
 
 
 __fish_brew_complete_cmd 'abv' 'Display brief statistics for your Homebrew installation'

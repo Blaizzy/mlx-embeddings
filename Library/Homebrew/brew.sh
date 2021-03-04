@@ -188,9 +188,9 @@ update-preinstall() {
     # last $HOMEBREW_AUTO_UPDATE_SECS.
     if [[ "$HOMEBREW_COMMAND" = "cask" ]]
     then
-      tap_fetch_head="$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-cask/.git/FETCH_HEAD"
+      tap_fetch_head="$HOMEBREW_CASK_REPOSITORY/.git/FETCH_HEAD"
     else
-      tap_fetch_head="$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core/.git/FETCH_HEAD"
+      tap_fetch_head="$HOMEBREW_CORE_REPOSITORY/.git/FETCH_HEAD"
     fi
     if [[ -f "$tap_fetch_head" &&
           -n "$(find "$tap_fetch_head" -type f -mtime -"${HOMEBREW_AUTO_UPDATE_SECS}"s 2>/dev/null)" ]]
@@ -313,6 +313,15 @@ then
   HOMEBREW_VERSION=">=2.5.0 (shallow or no git repository)"
   HOMEBREW_USER_AGENT_VERSION="2.X.Y"
 fi
+
+HOMEBREW_CASK_REPOSITORY="$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-cask"
+HOMEBREW_CORE_REPOSITORY="$HOMEBREW_LIBRARY/Taps/homebrew/homebrew-core"
+
+# Don't need shellcheck to follow these `source`.
+# shellcheck disable=SC1090
+case "$*" in
+  --version|-v) source "$HOMEBREW_LIBRARY/Homebrew/cmd/--version.sh"; homebrew-version; exit 0 ;;
+esac
 
 if [[ -n "$HOMEBREW_MACOS" ]]
 then

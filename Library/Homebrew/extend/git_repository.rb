@@ -32,14 +32,14 @@ module GitRepositoryExtension
   # Gets the full commit hash of the HEAD commit.
   sig { params(safe: T::Boolean).returns(T.nilable(String)) }
   def git_head(safe: false)
-    popen_git("rev-parse", "--verify", "-q", "HEAD", safe: safe)
+    popen_git("rev-parse", "--verify", "--quiet", "HEAD", safe: safe)
   end
 
   # Gets a short commit hash of the HEAD commit.
   sig { params(length: T.nilable(Integer), safe: T::Boolean).returns(T.nilable(String)) }
   def git_short_head(length: nil, safe: false)
     short_arg = length.present? ? "--short=#{length}" : "--short"
-    popen_git("rev-parse", short_arg, "--verify", "-q", "HEAD", safe: safe)
+    popen_git("rev-parse", short_arg, "--verify", "--quiet", "HEAD", safe: safe)
   end
 
   # Gets the relative date of the last commit, e.g. "1 hour ago"
