@@ -105,19 +105,20 @@ module Homebrew
 
       ambiguous_casks = []
       if handle_name_conflict
-        ambiguous_casks = formulae_and_casks_to_check
-                          .group_by { |item| formula_or_cask_name(item, full_name: true) }
-                          .select { |_name, items| items.length > 1 }
-                          .values.flatten
-                          .select { |item| item.is_a?(Cask::Cask) }
+        ambiguous_casks = formulae_and_casks_to_check.group_by { |item| formula_or_cask_name(item, full_name: true) }
+                                                     .values
+                                                     .select { |items| items.length > 1 }
+                                                     .flatten
+                                                     .select { |item| item.is_a?(Cask::Cask) }
       end
 
       ambiguous_names = []
       unless full_name
-        ambiguous_names = (formulae_and_casks_to_check - ambiguous_casks)
-                          .group_by { |item| formula_or_cask_name(item) }
-                          .select { |_name, items| items.length > 1 }
-                          .values.flatten
+        ambiguous_names =
+          (formulae_and_casks_to_check - ambiguous_casks).group_by { |item| formula_or_cask_name(item) }
+                                                         .values
+                                                         .select { |items| items.length > 1 }
+                                                         .flatten
       end
 
       has_a_newer_upstream_version = T.let(false, T::Boolean)

@@ -40,16 +40,16 @@ module Homebrew
       raise UsageError, "`--limit` must be used with either `--formula` or `--cask`."
     end
 
-    formulae_and_casks =
-      if args.formula?
-        args.named.to_formulae
-      elsif args.cask?
-        args.named.to_casks
-      else
-        args.named.to_formulae_and_casks
-      end&.sort_by do |formula_or_cask|
-        formula_or_cask.respond_to?(:token) ? formula_or_cask.token : formula_or_cask.name
-      end
+    formulae_and_casks = if args.formula?
+      args.named.to_formulae
+    elsif args.cask?
+      args.named.to_casks
+    else
+      args.named.to_formulae_and_casks
+    end
+    formulae_and_casks = formulae_and_casks&.sort_by do |formula_or_cask|
+      formula_or_cask.respond_to?(:token) ? formula_or_cask.token : formula_or_cask.name
+    end
 
     limit = args.limit.to_i if args.limit.present?
 
@@ -58,19 +58,20 @@ module Homebrew
 
       ambiguous_casks = []
       if !args.formula? && !args.cask?
-        ambiguous_casks = formulae_and_casks
-                          .group_by { |item| Livecheck.formula_or_cask_name(item, full_name: true) }
-                          .select { |_name, items| items.length > 1 }
-                          .values.flatten
-                          .select { |item| item.is_a?(Cask::Cask) }
+        ambiguous_casks = formulae_and_casks.group_by { |item| Livecheck.formula_or_cask_name(item, full_name: true) }
+                                            .values
+                                            .select { |items| items.length > 1 }
+                                            .flatten
+                                            .select { |item| item.is_a?(Cask::Cask) }
       end
 
       ambiguous_names = []
       unless args.full_name?
-        ambiguous_names = (formulae_and_casks - ambiguous_casks)
-                          .group_by { |item| Livecheck.formula_or_cask_name(item) }
-                          .select { |_name, items| items.length > 1 }
-                          .values.flatten
+        ambiguous_names =
+          (formulae_and_casks - ambiguous_casks).group_by { |item| Livecheck.formula_or_cask_name(item) }
+                                                .values
+                                                .select { |items| items.length > 1 }
+                                                .flatten
       end
 
       formulae_and_casks.each_with_index do |formula_or_cask, i|
@@ -135,7 +136,7 @@ module Homebrew
           end
           name = Livecheck.formula_or_cask_name(formula_or_cask)
           ambiguous_cask = begin
-            formula_or_cask.is_a?(Cask::Cask) && !args.cask? && Formula[name] ? true : false
+            formula_or_cask.is_a?(Cask::Cask) && !args.cask? && Formula[name]
           rescue FormulaUnavailableError
             false
           end
