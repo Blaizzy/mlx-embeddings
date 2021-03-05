@@ -11,6 +11,7 @@ module RuboCop
       # TODO: Many of these could be auto-corrected.
       class Patches < FormulaCop
         extend T::Sig
+        extend AutoCorrector
 
         def audit_formula(node, _class_node, _parent_class_node, body)
           @full_source_content = source_buffer(node).source
@@ -40,37 +41,36 @@ module RuboCop
 
         private
 
-        def patch_problems(patch)
-          patch_url = string_content(patch)
+        def patch_problems(patch_url_node)
+          patch_url = string_content(patch_url_node)
 
-          if regex_match_group(patch, %r{https://github.com/[^/]*/[^/]*/pull})
+          if regex_match_group(patch_url_node, %r{https://github.com/[^/]*/[^/]*/pull})
             problem "Use a commit hash URL rather than an unstable pull request URL: #{patch_url}"
           end
 
-          if regex_match_group(patch, %r{.*gitlab.*/merge_request.*})
+          if regex_match_group(patch_url_node, %r{.*gitlab.*/merge_request.*})
             problem "Use a commit hash URL rather than an unstable merge request URL: #{patch_url}"
           end
 
-          if regex_match_group(patch, %r{https://github.com/[^/]*/[^/]*/commit/[a-fA-F0-9]*\.diff})
-            problem <<~EOS.chomp
-              GitHub patches should end with .patch, not .diff:
-                #{patch_url}
-            EOS
+          if regex_match_group(patch_url_node, %r{https://github.com/[^/]*/[^/]*/commit/[a-fA-F0-9]*\.diff})
+            problem "GitHub patches should end with .patch, not .diff: #{patch_url}" do |corrector|
+              correct = patch_url_node.source.gsub(/\.diff/, ".patch")
+              corrector.replace(patch_url_node.source_range, correct)
+            end
           end
 
-          if regex_match_group(patch, %r{.*gitlab.*/commit/[a-fA-F0-9]*\.diff})
-            problem <<~EOS.chomp
-              GitLab patches should end with .patch, not .diff:
-                #{patch_url}
-            EOS
+          if regex_match_group(patch_url_node, %r{.*gitlab.*/commit/[a-fA-F0-9]*\.diff})
+            problem "GitLab patches should end with .patch, not .diff: #{patch_url}" do |corrector|
+              correct = patch_url_node.source.gsub(/\.diff/, ".patch")
+              corrector.replace(patch_url_node.source_range, correct)
+            end
           end
 
           gh_patch_param_pattern = %r{https?://github\.com/.+/.+/(?:commit|pull)/[a-fA-F0-9]*.(?:patch|diff)}
-          if regex_match_group(patch, gh_patch_param_pattern) && !patch_url.match?(/\?full_index=\w+$/)
-            problem <<~EOS
-              GitHub patches should use the full_index parameter:
-                #{patch_url}?full_index=1
-            EOS
+          if regex_match_group(patch_url_node, gh_patch_param_pattern) && !patch_url.match?(/\?full_index=\w+$/)
+            problem "GitHub patches should use the full_index parameter: #{patch_url}?full_index=1" do |corrector|
+              corrector.replace(patch_url_node.source_range, "#{patch_url}?full_index=1")
+            end
           end
 
           gh_patch_patterns = Regexp.union([%r{/raw\.github\.com/},
@@ -78,39 +78,33 @@ module RuboCop
                                             %r{gist\.github\.com/raw},
                                             %r{gist\.github\.com/.+/raw},
                                             %r{gist\.githubusercontent\.com/.+/raw}])
-          if regex_match_group(patch, gh_patch_patterns) && !patch_url.match?(%r{/[a-fA-F0-9]{6,40}/})
-            problem <<~EOS.chomp
-              GitHub/Gist patches should specify a revision:
-                #{patch_url}
-            EOS
+          if regex_match_group(patch_url_node, gh_patch_patterns) && !patch_url.match?(%r{/[a-fA-F0-9]{6,40}/})
+            problem "GitHub/Gist patches should specify a revision: #{patch_url}"
           end
 
           gh_patch_diff_pattern =
             %r{https?://patch-diff\.githubusercontent\.com/raw/(.+)/(.+)/pull/(.+)\.(?:diff|patch)}
-          if regex_match_group(patch, gh_patch_diff_pattern)
+          if regex_match_group(patch_url_node, gh_patch_diff_pattern)
             problem "Use a commit hash URL rather than patch-diff: #{patch_url}"
           end
 
-          if regex_match_group(patch, %r{macports/trunk})
-            problem <<~EOS.chomp
-              MacPorts patches should specify a revision instead of trunk:
-                #{patch_url}
-            EOS
+          if regex_match_group(patch_url_node, %r{macports/trunk})
+            problem "MacPorts patches should specify a revision instead of trunk: #{patch_url}"
           end
 
-          if regex_match_group(patch, %r{^http://trac\.macports\.org})
-            problem <<~EOS.chomp
-              Patches from MacPorts Trac should be https://, not http:
-                #{patch_url}
-            EOS
+          if regex_match_group(patch_url_node, %r{^http://trac\.macports\.org})
+            problem "Patches from MacPorts Trac should be https://, not http: #{patch_url}" do |corrector|
+              correct = patch_url_node.source.gsub(%r{^http://}, "https://")
+              corrector.replace(patch_url_node.source_range, correct)
+            end
           end
 
-          return unless regex_match_group(patch, %r{^http://bugs\.debian\.org})
+          return unless regex_match_group(patch_url_node, %r{^http://bugs\.debian\.org})
 
-          problem <<~EOS.chomp
-            Patches from Debian should be https://, not http:
-              #{patch_url}
-          EOS
+          problem "Patches from Debian should be https://, not http: #{patch_url}" do |corrector|
+            correct = patch_url_node.source.gsub(%r{^http://}, "https://")
+            corrector.replace(patch_url_node.source_range, correct)
+          end
         end
 
         def inline_patch_problems(patch)
