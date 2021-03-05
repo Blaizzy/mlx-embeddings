@@ -262,7 +262,7 @@ module Homebrew
       },
       HOMEBREW_SIMULATE_MACOS_ON_LINUX:       {
         description: "If set, running Homebrew on Linux will simulate certain macOS code paths. This is useful " \
-                     "when auditing macOS formulae while on Linux.",
+                     "when auditing macOS formulae while on Linux. Implies `HOMEBREW_FORCE_HOMEBREW_ON_LINUX`.",
         boolean:     true,
       },
       HOMEBREW_SKIP_OR_LATER_BOTTLES:         {

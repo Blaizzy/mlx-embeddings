@@ -323,6 +323,11 @@ case "$*" in
   --version|-v) source "$HOMEBREW_LIBRARY/Homebrew/cmd/--version.sh"; homebrew-version; exit 0 ;;
 esac
 
+if [[ -n "$HOMEBREW_SIMULATE_MACOS_ON_LINUX" ]]
+then
+  export HOMEBREW_FORCE_HOMEBREW_ON_LINUX="1"
+fi
+
 if [[ -n "$HOMEBREW_MACOS" ]]
 then
   HOMEBREW_PRODUCT="Homebrew"
