@@ -12,8 +12,6 @@ require "rubocop-rails"
 require "rubocop-rspec"
 require "rubocop-sorbet"
 
-require "rubocops/unless_multiple_conditions"
-
 require "rubocops/formula_desc"
 require "rubocops/components_order"
 require "rubocops/components_redundancy"
