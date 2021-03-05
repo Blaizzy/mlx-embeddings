@@ -18,6 +18,18 @@ it does it too. You have to confirm everything it will do before it starts.
   [Xcode](https://itunes.apple.com/us/app/xcode/id497799835) <sup>[3](#3)</sup>
 * A Bourne-compatible shell for installation (e.g. `bash` or `zsh`) <sup>[4](#4)</sup>
 
+## Git Remote Mirroring
+
+You can set `HOMEBREW_BREW_GIT_REMOTE` and/or `HOMEBREW_CORE_GIT_REMOTE` in your shell environment to use geolocalized Git mirrors to speed up Homebrew's installation with this script and, after installation, `brew update`.
+
+```bash
+export HOMEBREW_BREW_GIT_REMOTE="..."  # put your Git mirror of Homebrew/brew here
+export HOMEBREW_CORE_GIT_REMOTE="..."  # put your Git mirror of Homebrew/homebrew-core here
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+```
+
+The default Git remote will be used if the corresponding environment variable is unset.
+
 ## Alternative Installs
 
 ### Linux or Windows 10 Subsystem for Linux
