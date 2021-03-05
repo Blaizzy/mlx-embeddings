@@ -8234,6 +8234,8 @@ module Homebrew::EnvConfig
 
   def self.pry?(); end
 
+  def self.simulate_macos_on_linux?(); end
+
   def self.skip_or_later_bottles?(); end
 
   def self.sorbet_runtime?(); end

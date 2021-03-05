@@ -260,6 +260,11 @@ module Homebrew
         description: "If set, use Pry for the `brew irb` command.",
         boolean:     true,
       },
+      HOMEBREW_SIMULATE_MACOS_ON_LINUX:       {
+        description: "If set, running Homebrew on Linux will simulate certain macOS code paths. This is useful " \
+                     "when auditing macOS formulae while on Linux. Implies `HOMEBREW_FORCE_HOMEBREW_ON_LINUX`.",
+        boolean:     true,
+      },
       HOMEBREW_SKIP_OR_LATER_BOTTLES:         {
         description: "If set along with `HOMEBREW_DEVELOPER`, do not use bottles from older versions " \
                      "of macOS. This is useful in development on new macOS versions.",

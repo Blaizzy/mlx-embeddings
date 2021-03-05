@@ -282,7 +282,7 @@ module Homebrew
 
       # The number of conflicts on Linux is absurd.
       # TODO: remove this and check these there too.
-      return if OS.linux?
+      return if OS.linux? && !Homebrew::EnvConfig.simulate_macos_on_linux?
 
       recursive_runtime_formulae = formula.runtime_formula_dependencies(undeclared: false)
       version_hash = {}
