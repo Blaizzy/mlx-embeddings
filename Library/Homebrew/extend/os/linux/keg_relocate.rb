@@ -80,7 +80,11 @@ class Keg
   end
 
   def self.relocation_formulae
-    ["patchelf"]
+    @relocation_formulae ||= if HOMEBREW_PATCHELF_RB_WRITE
+      []
+    else
+      ["patchelf"]
+    end.freeze
   end
 
   def self.bottle_dependencies
