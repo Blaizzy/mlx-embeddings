@@ -17,10 +17,13 @@ homebrew-prefix() {
   [ -z "$formula" ] && echo "$HOMEBREW_PREFIX" && return 0
 
   local formula_path
-  if [ -f "$HOMEBREW_REPOSITORY/Library/Taps/homebrew/homebrew-core/${formula}.rb" ]; then
-    formula_path="$HOMEBREW_REPOSITORY/Library/Taps/homebrew/homebrew-core/${formula}.rb"
+  if [ -f "$HOMEBREW_REPOSITORY/Library/Taps/homebrew/homebrew-core/Formula/${formula}.rb" ]; then
+    formula_path="$HOMEBREW_REPOSITORY/Library/Taps/homebrew/homebrew-core/Formula/${formula}.rb"
   else
-    formula_path="$(find "$HOMEBREW_REPOSITORY/Library/Taps" -name "${formula}.rb" -print -quit)"
+    formula_path="$(
+      shopt -s nullglob
+      echo "$HOMEBREW_REPOSITORY/Library/Taps"/*/*/{Formula/,HomebrewFormula/,}"${formula}.rb"
+    )"
   fi
   [ -z "$formula_path" ] && return 1
 
