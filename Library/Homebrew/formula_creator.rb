@@ -156,10 +156,7 @@ module Homebrew
             system "cmake", ".", *std_cmake_args
         <% elsif mode == :autotools %>
             # Remove unrecognized options if warned by configure
-            system "./configure", "--disable-debug",
-                                  "--disable-dependency-tracking",
-                                  "--disable-silent-rules",
-                                  "--prefix=\#{prefix}"
+            system "./configure", *std_configure_args, "--disable-silent-rules"
         <% elsif mode == :crystal %>
             system "shards", "build", "--release"
             bin.install "bin/#{name}"
@@ -206,10 +203,7 @@ module Homebrew
             system "cargo", "install", *std_cargo_args
         <% else %>
             # Remove unrecognized options if warned by configure
-            system "./configure", "--disable-debug",
-                                  "--disable-dependency-tracking",
-                                  "--disable-silent-rules",
-                                  "--prefix=\#{prefix}"
+            system "./configure", *std_configure_args, "--disable-silent-rules"
             # system "cmake", ".", *std_cmake_args
         <% end %>
         <% if mode == :autotools || mode == :cmake %>
