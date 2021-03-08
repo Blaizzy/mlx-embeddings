@@ -517,9 +517,11 @@ class FormulaInstaller
   # Compute and collect the dependencies needed by the formula currently
   # being installed.
   def compute_dependencies
-    req_map, req_deps = expand_requirements
-    check_requirements(req_map)
-    expand_dependencies(req_deps + formula.deps)
+    @compute_dependencies ||= begin
+      req_map, req_deps = expand_requirements
+      check_requirements(req_map)
+      expand_dependencies(req_deps + formula.deps)
+    end
   end
 
   def unbottled_dependencies(deps)
@@ -1232,10 +1234,9 @@ class FormulaInstaller
     end
 
     return if forbidden_licenses.blank?
+    return if ignore_deps?
 
     compute_dependencies.each do |dep, _|
-      next if @ignore_deps
-
       dep_f = dep.to_formula
       next unless SPDX.licenses_forbid_installation? dep_f.license, forbidden_licenses
 
@@ -1244,7 +1245,8 @@ class FormulaInstaller
           #{SPDX.license_expression_to_string dep_f.license}.
       EOS
     end
-    return if @only_deps
+
+    return if only_deps?
 
     return unless SPDX.licenses_forbid_installation? formula.license, forbidden_licenses
 
