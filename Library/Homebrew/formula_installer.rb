@@ -227,7 +227,7 @@ class FormulaInstaller
       raise CannotInstallFormulaError, "--force-bottle passed but #{formula.full_name} has no bottle!"
     end
 
-    if Homebrew.default_prefix? && !Homebrew::EnvConfig.developer? &&
+    if Homebrew.default_prefix? &&
        # TODO: re-enable this on Linux when we merge linuxbrew-core into
        # homebrew-core and have full bottle coverage.
        (OS.mac? || ENV["CI"]) &&
@@ -246,7 +246,7 @@ class FormulaInstaller
       # don't want to complain about no bottle available if doing an
       # upgrade/reinstall/dependency install (but do in the case the bottle
       # check fails)
-      elsif !installed_as_dependency? && !formula.any_version_installed?
+      elsif !Homebrew::EnvConfig.developer? && (!installed_as_dependency? || !formula.any_version_installed?)
         <<~EOS
           #{formula}: no bottle available!
         EOS
@@ -701,6 +701,7 @@ class FormulaInstaller
       quiet:                      quiet?,
       verbose:                    verbose?,
     )
+    fi.prelude
     fi.fetch
   end
 
@@ -754,7 +755,6 @@ class FormulaInstaller
         verbose:                    verbose?,
       },
     )
-    fi.prelude
     oh1 "Installing #{formula.full_name} dependency: #{Formatter.identifier(dep.name)}"
     fi.install
     fi.finish
