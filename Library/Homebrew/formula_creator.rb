@@ -156,6 +156,7 @@ module Homebrew
             system "cmake", ".", *std_cmake_args
         <% elsif mode == :autotools %>
             # Remove unrecognized options if warned by configure
+            # https://rubydoc.brew.sh/Formula.html#std_configure_args-instance_method
             system "./configure", *std_configure_args, "--disable-silent-rules"
         <% elsif mode == :crystal %>
             system "shards", "build", "--release"
@@ -203,6 +204,7 @@ module Homebrew
             system "cargo", "install", *std_cargo_args
         <% else %>
             # Remove unrecognized options if warned by configure
+            # https://rubydoc.brew.sh/Formula.html#std_configure_args-instance_method
             system "./configure", *std_configure_args, "--disable-silent-rules"
             # system "cmake", ".", *std_cmake_args
         <% end %>
