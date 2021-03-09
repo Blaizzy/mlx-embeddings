@@ -286,47 +286,49 @@ class FormulaInstaller
 
     return if ignore_deps?
 
-    recursive_deps = formula.recursive_dependencies
-    recursive_formulae = recursive_deps.map(&:to_formula)
+    if Homebrew::EnvConfig.developer?
+      # `recursive_dependencies` trims cyclic dependencies, so we do one level and take the recursive deps of that.
+      # Mapping direct dependencies to deeper dependencies in a hash is also useful for the cyclic output below.
+      recursive_dep_map = formula.deps.to_h { |dep| [dep, dep.to_formula.recursive_dependencies] }
 
-    recursive_dependencies = []
-    invalid_arch_dependencies = []
-    recursive_formulae.each do |dep|
-      dep_recursive_dependencies = dep.recursive_dependencies.map(&:to_s)
-      if dep_recursive_dependencies.include?(formula.name)
-        recursive_dependencies << "#{formula.full_name} depends on #{dep.full_name}"
-        recursive_dependencies << "#{dep.full_name} depends on #{formula.full_name}"
+      cyclic_dependencies = []
+      recursive_dep_map.each do |dep, recursive_deps|
+        if [formula.name, formula.full_name].include?(dep.name)
+          cyclic_dependencies << "#{formula.full_name} depends on itself directly"
+        elsif recursive_deps.any? { |rdep| [formula.name, formula.full_name].include?(rdep.name) }
+          cyclic_dependencies << "#{formula.full_name} depends on itself via #{dep.name}"
+        end
       end
 
-      if (tab = Tab.for_formula(dep)) && tab.arch.present? && tab.arch.to_s != Hardware::CPU.arch.to_s
+      if cyclic_dependencies.present?
+        raise CannotInstallFormulaError, <<~EOS
+          #{formula.full_name} contains a recursive dependency on itself:
+            #{cyclic_dependencies.join("\n  ")}
+        EOS
+      end
+
+      # Merge into one list
+      recursive_deps = recursive_dep_map.flat_map { |dep, rdeps| [dep] + rdeps }
+      Dependency.merge_repeats(recursive_deps)
+    else
+      recursive_deps = formula.recursive_dependencies
+    end
+
+    invalid_arch_dependencies = []
+    pinned_unsatisfied_deps = []
+    recursive_deps.each do |dep|
+      if (tab = Tab.for_formula(dep.to_formula)) && tab.arch.present? && tab.arch.to_s != Hardware::CPU.arch.to_s
         invalid_arch_dependencies << "#{dep} was built for #{tab.arch}"
       end
+
+      pinned_unsatisfied_deps << dep if dep.to_formula.pinned? && !dep.satisfied?(inherited_options_for(dep))
     end
 
-    unless recursive_dependencies.empty?
-      raise CannotInstallFormulaError, <<~EOS
-        #{formula.full_name} contains a recursive dependency on itself:
-          #{recursive_dependencies.join("\n  ")}
-      EOS
-    end
-
-    if recursive_formulae.flat_map(&:recursive_dependencies)
-                         .map(&:to_s)
-                         .include?(formula.name)
-      raise CannotInstallFormulaError, <<~EOS
-        #{formula.full_name} contains a recursive dependency on itself!
-      EOS
-    end
-
-    unless invalid_arch_dependencies.empty?
+    if invalid_arch_dependencies.present?
       raise CannotInstallFormulaError, <<~EOS
         #{formula.full_name} dependencies not built for the #{Hardware::CPU.arch} CPU architecture:
           #{invalid_arch_dependencies.join("\n  ")}
       EOS
-    end
-
-    pinned_unsatisfied_deps = recursive_deps.select do |dep|
-      dep.to_formula.pinned? && !dep.satisfied?(inherited_options_for(dep))
     end
 
     return if pinned_unsatisfied_deps.empty?
@@ -1151,10 +1153,12 @@ class FormulaInstaller
 
     tab = Tab.for_keg(keg)
 
-    CxxStdlib.check_compatibility(
-      formula, formula.recursive_dependencies,
-      Keg.new(formula.prefix), tab.compiler
-    )
+    unless ignore_deps?
+      CxxStdlib.check_compatibility(
+        formula, formula.recursive_dependencies,
+        Keg.new(formula.prefix), tab.compiler
+      )
+    end
 
     tab.tap = formula.tap
     tab.poured_from_bottle = true
