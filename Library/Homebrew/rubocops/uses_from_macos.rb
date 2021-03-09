@@ -42,6 +42,7 @@ module RuboCop
           netcat
           openldap
           openlibm
+          pcsc-lite
           pod2man
           rpcgen
           ruby
