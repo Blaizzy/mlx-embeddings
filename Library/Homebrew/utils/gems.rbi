@@ -22,6 +22,6 @@ module Homebrew
   sig { void }
   def install_bundler!; end
 
-  sig { params(only_warn_on_failure: T::Boolean).void }
-  def install_bundler_gems!(only_warn_on_failure: false); end
+  sig { params(only_warn_on_failure: T::Boolean, setup_path: T::Boolean).void }
+  def install_bundler_gems!(only_warn_on_failure: false, setup_path: false); end
 end
