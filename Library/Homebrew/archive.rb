@@ -16,6 +16,9 @@ class Archive
   class Error < RuntimeError
   end
 
+  URL_PREFIX = "https://archive.org"
+  S3_DOMAIN = "s3.us.archive.org"
+
   sig { returns(String) }
   def inspect
     "#<Archive: item=#{@archive_item}>"
@@ -34,7 +37,7 @@ class Archive
       raise UsageError, "HOMEBREW_INTERNET_ARCHIVE_KEY is unset." if key.blank?
 
       if key.exclude?(":")
-        raise UsageError, "Use HOMEBREW_INTERNET_ARCHIVE_KEY=access:secret. See https://archive.org/account/s3.php"
+        raise UsageError, "Use HOMEBREW_INTERNET_ARCHIVE_KEY=access:secret. See #{URL_PREFIX}/account/s3.php"
       end
 
       args += ["--header", "Authorization: AWS #{key}"]
@@ -61,7 +64,7 @@ class Archive
     end
 
     md5_base64 = Digest::MD5.base64digest(local_file.read)
-    url = "https://#{@archive_item}.s3.us.archive.org/#{directory}/#{remote_file}"
+    url = "https://#{@archive_item}.#{S3_DOMAIN}/#{directory}/#{remote_file}"
     args = ["--upload-file", local_file, "--header", "Content-MD5: #{md5_base64}"]
     args << "--fail" unless warn_on_error
     result = T.unsafe(self).open_api(url, *args)
@@ -82,7 +85,7 @@ class Archive
     formula.downloader.fetch
 
     filename = ERB::Util.url_encode(formula.downloader.basename)
-    destination_url = "https://archive.org/download/#{@archive_item}/#{directory}/#{filename}"
+    destination_url = "#{URL_PREFIX}/download/#{@archive_item}/#{directory}/#{filename}"
 
     odebug "Uploading to #{destination_url}"
 
@@ -101,7 +104,7 @@ class Archive
   # @return the hash, the empty string (if the file doesn't have a hash), nil (if the file doesn't exist)
   sig { params(directory: String, remote_file: String).returns(T.nilable(String)) }
   def remote_md5(directory:, remote_file:)
-    url = "https://#{@archive_item}.s3.us.archive.org/#{directory}/#{remote_file}"
+    url = "https://#{@archive_item}.#{S3_DOMAIN}/#{directory}/#{remote_file}"
     result = curl_output "--fail", "--silent", "--head", "--location", url
     if result.success?
       result.stdout.match(/^ETag: "(\h{32})"/)&.values_at(1)&.first || ""
@@ -116,7 +119,7 @@ class Archive
   def file_delete_instructions(directory, filename)
     <<~EOS
       Run:
-        curl -X DELETE -H "Authorization: AWS $HOMEBREW_INTERNET_ARCHIVE_KEY" https://#{@archive_item}.s3.us.archive.org/#{directory}/#{filename}
+        curl -X DELETE -H "Authorization: AWS $HOMEBREW_INTERNET_ARCHIVE_KEY" https://#{@archive_item}.#{S3_DOMAIN}/#{directory}/#{filename}
       Or run:
         ia delete #{@archive_item} #{directory}/#{filename}
     EOS

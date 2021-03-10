@@ -1198,7 +1198,7 @@ Requires write access to the repository.
 
 ### `pr-upload` [*`options`*]
 
-Apply the bottle commit and publish bottles to Bintray or GitHub Releases.
+Apply the bottle commit and publish bottles to a host.
 
 * `--no-publish`:
   Apply the bottle commit and upload the bottles, but don't publish them.
