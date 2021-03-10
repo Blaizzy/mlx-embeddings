@@ -126,6 +126,8 @@ module Tapioca::Compilers::Sorbet
   end
 end
 
+Tapioca::Compilers::Sorbet::EXE_PATH_ENV_VAR = T.let(T.unsafe(nil), String)
+
 Tapioca::Compilers::Sorbet::SORBET = T.let(T.unsafe(nil), Pathname)
 
 module Tapioca::Compilers::SymbolTable
@@ -162,6 +164,8 @@ class Tapioca::Compilers::SymbolTable::SymbolGenerator
   def compile_constant(name, constant); end
   sig { params(module_name: String, mod: Module, for_visibility: T::Array[Symbol]).returns(String) }
   def compile_directly_owned_methods(module_name, mod, for_visibility = T.unsafe(nil)); end
+  sig { params(constant: Module).returns(String) }
+  def compile_enums(constant); end
   sig { params(symbol_name: String, constant: Module, method: T.nilable(UnboundMethod)).returns(T.nilable(String)) }
   def compile_method(symbol_name, constant, method); end
   sig { params(name: String, constant: Module).returns(T.nilable(String)) }
@@ -449,7 +453,7 @@ class Tapioca::Generator < ::Thor::Shell::Color
   def added_rbis; end
   sig { returns(Tapioca::Gemfile) }
   def bundle; end
-  sig { params(constant: Module, contents: String).void }
+  sig { params(constant: Module, contents: String).returns(T.nilable(Pathname)) }
   def compile_dsl_rbi(constant, contents); end
   sig { params(gem: Tapioca::Gemfile::Gem).void }
   def compile_gem_rbi(gem); end
@@ -457,8 +461,12 @@ class Tapioca::Generator < ::Thor::Shell::Color
   def compiler; end
   sig { params(constant_names: T::Array[String]).returns(T::Array[Module]) }
   def constantize(constant_names); end
+  sig { params(constant_name: String).returns(Pathname) }
+  def dsl_rbi_filename(constant_name); end
   sig { params(gem_name: String).returns(Pathname) }
   def existing_rbi(gem_name); end
+  sig { params(requested_constants: T::Array[String]).returns(T::Set[Pathname]) }
+  def existing_rbi_filenames(requested_constants); end
   sig { returns(T::Hash[String, String]) }
   def existing_rbis; end
   sig { params(gem_name: String).returns(Pathname) }
