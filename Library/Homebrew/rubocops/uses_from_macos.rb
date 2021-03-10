@@ -15,6 +15,7 @@ module RuboCop
           bzip2
           cups
           curl
+          cyrus-sasl
           dyld-headers
           ed
           expat
