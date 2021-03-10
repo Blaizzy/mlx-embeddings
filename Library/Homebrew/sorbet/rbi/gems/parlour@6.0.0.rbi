@@ -420,8 +420,8 @@ class Parlour::RbiGenerator::Namespace < ::Parlour::RbiGenerator::RbiObject
   def merge_into_self(others); end
   sig { overridable.override.params(others: T::Array[Parlour::RbiGenerator::RbiObject]).returns(T::Boolean) }
   def mergeable?(others); end
-  sig { params(object: T.untyped, block: T.proc.params(x: Parlour::RbiGenerator::Namespace).void).void }
-  def path(object, &block); end
+  sig { params(constant: Module, block: T.proc.params(x: Parlour::RbiGenerator::Namespace).void).void }
+  def path(constant, &block); end
   sig { returns(T::Boolean) }
   def sealed; end
   def type_aliases(*args, &blk); end
