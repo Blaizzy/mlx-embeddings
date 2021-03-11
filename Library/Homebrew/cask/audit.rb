@@ -717,7 +717,12 @@ module Cask
 
       check_url_for_https_availability(cask.appcast, check_content: true) if cask.appcast && appcast?
 
-      check_url_for_https_availability(cask.homepage, check_content: true, user_agents: [:browser]) if cask.homepage
+      return unless cask.homepage
+
+      check_url_for_https_availability(cask.homepage,
+                                       user_agents:   [:browser, :default],
+                                       check_content: true,
+                                       strict:        strict?)
     end
 
     def check_url_for_https_availability(url_to_check, **options)
