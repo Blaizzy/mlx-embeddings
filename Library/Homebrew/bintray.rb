@@ -14,6 +14,7 @@ class Bintray
   include Utils::Curl
 
   API_URL = "https://api.bintray.com"
+  URL_REGEX = %r{^https://[\w-]+\.bintray\.com/}.freeze
 
   class Error < RuntimeError
   end
