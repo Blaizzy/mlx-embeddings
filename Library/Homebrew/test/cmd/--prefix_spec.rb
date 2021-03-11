@@ -21,7 +21,7 @@ describe "brew --prefix" do
   end
 
   it "errors if the given Formula doesn't exist", :integration_test do
-    expect { brew "--prefix", "--installed", "nonexistent" }
+    expect { brew "--prefix", "nonexistent" }
       .to output(/No available formula/).to_stderr
       .and not_to_output.to_stdout
       .and be_a_failure
