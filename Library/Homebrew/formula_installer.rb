@@ -246,7 +246,9 @@ class FormulaInstaller
       # don't want to complain about no bottle available if doing an
       # upgrade/reinstall/dependency install (but do in the case the bottle
       # check fails)
-      elsif !Homebrew::EnvConfig.developer? && (!installed_as_dependency? || !formula.any_version_installed?)
+      elsif !Homebrew::EnvConfig.developer? &&
+            (!installed_as_dependency? || !formula.any_version_installed?) &&
+            (!OS.mac? || !OS::Mac.outdated_release?)
         <<~EOS
           #{formula}: no bottle available!
         EOS
