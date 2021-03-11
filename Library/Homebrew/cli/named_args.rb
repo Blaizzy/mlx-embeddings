@@ -132,6 +132,12 @@ module Homebrew
 
         raise unreadable_error if unreadable_error.present?
 
+        user, repo, short_name = name.downcase.split("/", 3)
+        if repo.present? && short_name.present?
+          tap = Tap.fetch(user, repo)
+          raise TapFormulaOrCaskUnavailableError.new(tap, short_name)
+        end
+
         raise FormulaOrCaskUnavailableError, name
       end
       private :load_formula_or_cask
