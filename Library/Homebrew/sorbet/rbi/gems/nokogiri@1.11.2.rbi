@@ -621,9 +621,11 @@ class Nokogiri::VersionInfo
   def libxml2_using_system?; end
   def loaded_libxml_version; end
   def loaded_libxslt_version; end
+  def ruby_minor; end
   def to_hash; end
   def to_markdown; end
   def warnings; end
+  def windows?; end
 
   class << self
     def instance; end
@@ -1405,10 +1407,6 @@ class Nokogiri::XML::Reader
   def value?; end
   def xml_version; end
 
-  private
-
-  def attr_nodes; end
-
   class << self
     def from_io(*_arg0); end
     def from_memory(*_arg0); end
@@ -1620,9 +1618,7 @@ Nokogiri::XML::XML_C14N_1_1 = T.let(T.unsafe(nil), Integer)
 
 Nokogiri::XML::XML_C14N_EXCLUSIVE_1_0 = T.let(T.unsafe(nil), Integer)
 
-class Nokogiri::XML::XPath
-  def document; end
-  def document=(_arg0); end
+module Nokogiri::XML::XPath
 end
 
 class Nokogiri::XML::XPath::SyntaxError < ::Nokogiri::XML::SyntaxError
