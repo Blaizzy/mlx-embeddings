@@ -34,6 +34,14 @@ describe "Exception" do
     }
   end
 
+  describe TapFormulaOrCaskUnavailableError do
+    subject(:error) { described_class.new(tap, "foo") }
+
+    let(:tap) { double(Tap, user: "u", repo: "r", to_s: "u/r", installed?: false) }
+
+    its(:to_s) { is_expected.to match(%r{Please tap it and then try again: brew tap u/r}) }
+  end
+
   describe FormulaUnavailableError do
     subject(:error) { described_class.new("foo") }
 
