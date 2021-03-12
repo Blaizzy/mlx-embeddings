@@ -981,5 +981,35 @@ describe Cask::Audit, :cask do
 
       it { is_expected.to fail_with(/a homepage stanza is required/) }
     end
+
+    context "when url is lazy" do
+      let(:strict) { true }
+      let(:cask_token) { "with-lazy" }
+      let(:cask) do
+        tmp_cask cask_token.to_s, <<~RUBY
+          cask '#{cask_token}' do
+            version '1.8.0_72,8.13.0.5'
+            sha256 '8dd95daa037ac02455435446ec7bc737b34567afe9156af7d20b2a83805c1d8a'
+            url do
+              ['https://brew.sh/foo.zip', {referer: 'https://example.com', cookies: {'foo' => 'bar'}}]
+            end
+            name 'Audit'
+            desc 'Audit Description'
+            homepage 'https://brew.sh'
+            app 'Audit.app'
+          end
+        RUBY
+      end
+
+      it { is_expected.to pass }
+
+      it "receives a referer" do
+        expect(audit.cask.url.referer).to eq "https://example.com"
+      end
+
+      it "receives cookies" do
+        expect(audit.cask.url.cookies).to eq "foo" => "bar"
+      end
+    end
   end
 end
