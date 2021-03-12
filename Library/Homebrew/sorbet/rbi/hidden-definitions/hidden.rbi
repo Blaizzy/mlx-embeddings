@@ -7990,6 +7990,11 @@ module GitHub::Actions
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class GitHubReleases
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 module GitRepositoryExtension
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
