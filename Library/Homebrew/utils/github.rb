@@ -306,11 +306,11 @@ module GitHub
   end
 
   def public_member_usernames(org, per_page: 100)
-    url = "#{API_URL}/orgs/#{org}/public_members?per_page=#{per_page}"
+    url = "#{API_URL}/orgs/#{org}/public_members"
     members = []
 
-    (1..API_MAX_PAGES).each do |page|
-      result = API.open_rest("#{url}&page=#{page}").map { |member| member["login"] }
+    API.paginate_rest(url, per_page: per_page) do |result|
+      result = result.map { |member| member["login"] }
       members.concat(result)
 
       return members if result.length < per_page
@@ -562,8 +562,7 @@ module GitHub
       raise API::Error, "Getting #{commit_count} commits would exceed limit of #{API_MAX_ITEMS} API items!"
     end
 
-    (1..API_MAX_PAGES).each do |page|
-      result = API.open_rest(commits_api + "?per_page=#{per_page}&page=#{page}")
+    API.paginate_rest(commits_api, per_page: per_page) do |result, page|
       commits.concat(result.map { |c| c["sha"] })
 
       return commits if commits.length == commit_count

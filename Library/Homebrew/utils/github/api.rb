@@ -249,6 +249,13 @@ module GitHub
       end
     end
 
+    def paginate_rest(url, per_page: 100)
+      (1..API_MAX_PAGES).each do |page|
+        result = API.open_rest("#{url}?per_page=#{per_page}&page=#{page}")
+        yield(result, page)
+      end
+    end
+
     def open_graphql(query, scopes: [].freeze)
       data = { query: query }
       result = open_rest("https://api.github.com/graphql", scopes: scopes, data: data, request_method: "POST")
