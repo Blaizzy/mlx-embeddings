@@ -1069,6 +1069,7 @@ __fish_brew_complete_arg 'pr-upload' -l archive-item -d 'Upload to the specified
 __fish_brew_complete_arg 'pr-upload' -l bintray-org -d 'Upload to the specified Bintray organisation (default: `homebrew`)'
 __fish_brew_complete_arg 'pr-upload' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'pr-upload' -l dry-run -d 'Print what would be done rather than doing it'
+__fish_brew_complete_arg 'pr-upload' -l github-org -d 'Upload to the specified GitHub organisation\'s GitHub Packages (default: `homebrew`)'
 __fish_brew_complete_arg 'pr-upload' -l help -d 'Show this message'
 __fish_brew_complete_arg 'pr-upload' -l keep-old -d 'If the formula specifies a rebuild version, attempt to preserve its value in the generated DSL'
 __fish_brew_complete_arg 'pr-upload' -l no-commit -d 'Do not generate a new commit before uploading'

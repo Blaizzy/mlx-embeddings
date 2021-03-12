@@ -1483,6 +1483,7 @@ _brew_pr_upload() {
       --bintray-org
       --debug
       --dry-run
+      --github-org
       --help
       --keep-old
       --no-commit

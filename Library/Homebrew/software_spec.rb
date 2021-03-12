@@ -316,12 +316,16 @@ class Bottle
 
   def fetch(verify_download_integrity: true)
     # add the default bottle domain as a fallback mirror
+    # TODO: this may need adjusted when if we use GitHub Packages by default
     if @resource.download_strategy == CurlDownloadStrategy &&
        @resource.url.start_with?(Homebrew::EnvConfig.bottle_domain)
       fallback_url = @resource.url
                               .sub(/^#{Regexp.escape(Homebrew::EnvConfig.bottle_domain)}/,
                                    HOMEBREW_BOTTLE_DEFAULT_DOMAIN)
       @resource.mirror(fallback_url) if [@resource.url, *@resource.mirrors].exclude?(fallback_url)
+    elsif @resource.download_strategy == CurlGitHubPackagesDownloadStrategy
+      @resource.downloader.name = @name
+      @resource.downloader.checksum = @resource.checksum.hexdigest
     end
     @resource.fetch(verify_download_integrity: verify_download_integrity)
   end

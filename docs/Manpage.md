@@ -1214,6 +1214,8 @@ Apply the bottle commit and publish bottles to a host.
   Upload to the specified Internet Archive item (default: `homebrew`).
 * `--bintray-org`:
   Upload to the specified Bintray organisation (default: `homebrew`).
+* `--github-org`:
+  Upload to the specified GitHub organisation's GitHub Packages (default: `homebrew`).
 * `--root-url`:
   Use the specified *`URL`* as the root of the bottle's URL instead of Homebrew's default.
 
@@ -1828,6 +1830,12 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
   <br>Use this personal access token for the GitHub API, for features such as `brew search`. You can create one at <https://github.com/settings/tokens>. If set, GitHub will allow you a greater number of API requests. For more information, see: <https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting>
 
     *Note:* Homebrew doesn't require permissions for any of the scopes, but some developer commands may require additional permissions.
+
+- `HOMEBREW_GITHUB_PACKAGES_TOKEN`
+  <br>Use this GitHub personal access token when accessing the GitHub Packages Registry (where bottles may be stored).
+
+- `HOMEBREW_GITHUB_PACKAGES_USER`
+  <br>Use this username when accessing the GitHub Packages Registry (where bottles may be stored).
 
 - `HOMEBREW_GIT_EMAIL`
   <br>Set the Git author and committer email to this value.

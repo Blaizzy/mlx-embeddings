@@ -4,6 +4,7 @@
 require "cli/parser"
 require "archive"
 require "bintray"
+require "github_packages"
 require "github_releases"
 
 module Homebrew
@@ -33,6 +34,8 @@ module Homebrew
              description: "Upload to the specified Internet Archive item (default: `homebrew`)."
       flag   "--bintray-org=",
              description: "Upload to the specified Bintray organisation (default: `homebrew`)."
+      flag   "--github-org=",
+             description: "Upload to the specified GitHub organisation's GitHub Packages (default: `homebrew`)."
       flag   "--root-url=",
              description: "Use the specified <URL> as the root of the bottle's URL instead of Homebrew's default."
 
@@ -73,6 +76,12 @@ module Homebrew
     end
   end
 
+  def github_packages?(bottles_hash)
+    @github_packages ||= bottles_hash.values.all? do |bottle_hash|
+      bottle_hash["bottle"]["root_url"].match? GitHubPackages::URL_REGEX
+    end
+  end
+
   def pr_upload
     args = pr_upload_args.parse
 
@@ -99,6 +108,8 @@ module Homebrew
           "Bintray"
         elsif github_releases?(bottles_hash)
           "GitHub Releases"
+        elsif github_packages?(bottles_hash)
+          "GitHub Packages"
         else
           odie "Service specified by root_url is not recognized"
         end
@@ -137,6 +148,10 @@ module Homebrew
     elsif github_releases?(bottles_hash)
       github_releases = GitHubReleases.new
       github_releases.upload_bottles(bottles_hash)
+    elsif github_packages?(bottles_hash)
+      github_org = args.github_org || "homebrew"
+      github_packages = GitHubPackages.new(org: github_org)
+      github_packages.upload_bottles(bottles_hash)
     else
       odie "Service specified by root_url is not recognized"
     end

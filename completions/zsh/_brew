@@ -1243,6 +1243,7 @@ _brew_pr_upload() {
     '--bintray-org[Upload to the specified Bintray organisation (default: `homebrew`)]' \
     '--debug[Display any debugging information]' \
     '--dry-run[Print what would be done rather than doing it]' \
+    '--github-org[Upload to the specified GitHub organisation'\''s GitHub Packages (default: `homebrew`)]' \
     '--help[Show this message]' \
     '--keep-old[If the formula specifies a rebuild version, attempt to preserve its value in the generated DSL]' \
     '--no-commit[Do not generate a new commit before uploading]' \
