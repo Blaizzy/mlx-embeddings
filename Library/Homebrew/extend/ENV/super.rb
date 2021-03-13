@@ -199,10 +199,23 @@ module Superenv
 
   sig { returns(T.nilable(PATH)) }
   def determine_library_paths
-    paths = [
-      keg_only_deps.map(&:opt_lib),
-      HOMEBREW_PREFIX/"lib",
-    ]
+    paths = []
+    if compiler.match?(GNU_GCC_REGEXP)
+      # Add path to GCC runtime libs for version being used to compile,
+      # so that the linker will find those libs before any that may be linked in $HOMEBREW_PREFIX/lib.
+      # https://github.com/Homebrew/brew/pull/11459#issuecomment-851075936
+      begin
+        f = gcc_version_formula(compiler.to_s)
+      rescue FormulaUnavailableError
+        nil
+      else
+        paths << f.opt_lib/"gcc"/f.version.major if f.any_version_installed?
+      end
+    end
+
+    paths << keg_only_deps.map(&:opt_lib)
+    paths << HOMEBREW_PREFIX/"lib"
+
     paths += homebrew_extra_library_paths
     PATH.new(paths).existing
   end
