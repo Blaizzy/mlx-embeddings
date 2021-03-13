@@ -181,7 +181,11 @@ module Cask
 
       set_unique_stanza(:url, args.empty? && options.empty? && !block_given?) do
         if block_given?
-          LazyObject.new { URL.new(*yield, from_block: true, caller_location: caller_location) }
+          LazyObject.new do
+            *args = yield
+            options = args.last.is_a?(Hash) ? args.pop : {}
+            URL.new(*args, **options, from_block: true, caller_location: caller_location)
+          end
         else
           URL.new(*args, **options, caller_location: caller_location)
         end
