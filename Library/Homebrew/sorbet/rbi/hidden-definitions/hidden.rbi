@@ -7990,6 +7990,11 @@ module GitHub::Actions
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class GitHubPackages
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class GitHubReleases
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -8202,6 +8207,10 @@ module Homebrew::EnvConfig
   def self.git_name(); end
 
   def self.github_api_token(); end
+
+  def self.github_packages_token(); end
+
+  def self.github_packages_user(); end
 
   def self.http_proxy(); end
 
