@@ -213,29 +213,51 @@ module Homebrew
     def generate_zsh_subcommand_completion(command)
       return unless command_gets_completions? command
 
-      options = command_options(command).sort.map do |opt, desc|
-        next opt if desc.blank?
+      options = command_options(command)
 
-        conflicts = generate_zsh_option_exclusions(command, opt)
-        "#{conflicts}#{opt}[#{format_description desc}]"
-      end
+      args_options = []
       if (types = Commands.named_args_type(command))
         named_args_strings, named_args_types = types.partition { |type| type.is_a? String }
 
         named_args_types.each do |type|
           next unless ZSH_NAMED_ARGS_COMPLETION_FUNCTION_MAPPING.key? type
 
-          options << "::#{type}:#{ZSH_NAMED_ARGS_COMPLETION_FUNCTION_MAPPING[type]}"
+          args_options << "- #{type}"
+          opt = "--#{type}"
+          if options.key?(opt)
+            desc = options[opt]
+
+            if desc.blank?
+              args_options << opt
+            else
+              conflicts = generate_zsh_option_exclusions(command, opt)
+              args_options << "#{conflicts}#{opt}[#{format_description desc}]"
+            end
+
+            options.delete(opt)
+          end
+          args_options << "*::#{type}:#{ZSH_NAMED_ARGS_COMPLETION_FUNCTION_MAPPING[type]}"
         end
 
-        options << "::subcommand:(#{named_args_strings.join(" ")})" if named_args_strings.any?
+        if named_args_strings.any?
+          args_options << "- subcommand"
+          args_options << "*::subcommand:(#{named_args_strings.join(" ")})"
+        end
       end
+
+      options = options.sort.map do |opt, desc|
+        next opt if desc.blank?
+
+        conflicts = generate_zsh_option_exclusions(command, opt)
+        "#{conflicts}#{opt}[#{format_description desc}]"
+      end
+      options += args_options
 
       <<~COMPLETION
         # brew #{command}
         _brew_#{Commands.method_name command}() {
           _arguments \\
-            #{options.map! { |opt| "'#{opt}'" }.join(" \\\n    ")}
+            #{options.map! { |opt| opt.start_with?("- ") ? opt : "'#{opt}'" }.join(" \\\n    ")}
         }
       COMPLETION
     end
