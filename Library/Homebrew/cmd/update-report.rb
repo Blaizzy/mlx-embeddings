@@ -129,7 +129,7 @@ module Homebrew
       if hub.empty?
         puts_stdout_or_stderr "No changes to formulae." unless args.quiet?
       else
-        hub.dump(updated_formula_report: !args.preinstall?)
+        hub.dump(updated_formula_report: !args.preinstall?) unless args.quiet?
         hub.reporters.each(&:migrate_tap_migration)
         hub.reporters.each { |r| r.migrate_formula_rename(force: args.force?, verbose: args.verbose?) }
         CacheStoreDatabase.use(:descriptions) do |db|
@@ -137,7 +137,7 @@ module Homebrew
                                .update_from_report!(hub)
         end
 
-        unless args.preinstall?
+        if !args.preinstall? && !args.quiet?
           outdated_formulae = Formula.installed.count(&:outdated?)
           outdated_casks = Cask::Caskroom.casks.count(&:outdated?)
           update_pronoun = if (outdated_formulae + outdated_casks) == 1
