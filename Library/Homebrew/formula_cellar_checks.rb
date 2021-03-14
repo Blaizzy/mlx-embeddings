@@ -275,6 +275,47 @@ module FormulaCellarChecks
     "Python formulae that are keg-only should not create `pip3` and `wheel3` symlinks."
   end
 
+  INVALID_EMPTY_FILE_NAMES = %w[AUTHORS ChangeLog changes COPYING NEWS README TODO].freeze
+  INVALID_EMPTY_FILE_EXTENSIONS = %w[.html .md .rst .txt].freeze
+  INVALID_EMPTY_FILE_LOCATIONS = %w[bin libexec share/man share/doc].freeze
+  # Names and extensions to ignore, even if they are in a location within prefix given above
+  VALID_EMPTY_FILE_NAMES = %w[__init__.py REQUESTED].freeze
+  VALID_EMPTY_FILE_EXTENSIONS = %w[.stamp].freeze
+
+  def check_empty_files(prefix)
+    return unless prefix.directory?
+
+    empty_files = []
+    prefix.children.each do |f|
+      next if INVALID_EMPTY_FILE_NAMES.none?(File.basename(f)) &&
+              INVALID_EMPTY_FILE_EXTENSIONS.none?(File.extname(f))
+      next unless File.zero?(f)
+
+      empty_files << f
+    end
+
+    INVALID_EMPTY_FILE_LOCATIONS.each do |loc|
+      next unless (prefix/loc).directory?
+
+      # search all directories in INVALID_EMPTY_FILE_LOCATIONS and their subdirectories
+      Dir.glob(prefix/loc/"**/*").each do |f|
+        next if VALID_EMPTY_FILE_NAMES.any?(File.basename(f)) ||
+                VALID_EMPTY_FILE_EXTENSIONS.any?(File.extname(f))
+        next unless File.zero?(f)
+
+        empty_files << f
+      end
+    end
+
+    return if empty_files.empty?
+
+    <<~EOS
+      Suspicious empty files were installed.
+      The offending files are:
+        #{empty_files * "\n  "}
+    EOS
+  end
+
   def audit_installed
     @new_formula ||= false
 
@@ -293,6 +334,7 @@ module FormulaCellarChecks
     problem_if_output(check_shim_references(formula.prefix))
     problem_if_output(check_plist(formula.prefix, formula.plist))
     problem_if_output(check_python_symlinks(formula.name, formula.keg_only?))
+    problem_if_output(check_empty_files(formula.prefix))
   end
   alias generic_audit_installed audit_installed
 
