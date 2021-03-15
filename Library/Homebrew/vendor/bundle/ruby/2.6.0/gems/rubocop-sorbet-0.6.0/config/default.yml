@@ -53,6 +53,13 @@ Sorbet/FalseSigil:
   - db/**/*.rb
   - script/**/*
 
+Sorbet/ForbidExtendTSigHelpersInShims:
+  Description: 'Forbid the use of `extend T::Sig` and `extend T::Helpers` in RBI shims'
+  Enabled: true
+  VersionAdded: '0.6.0'
+  Include:
+  - "**/*.rbi"
+
 Sorbet/ForbidIncludeConstLiteral:
   Description: 'Forbids include of non-literal constants.'
   Enabled: false
@@ -92,6 +99,11 @@ Sorbet/KeywordArgumentOrdering:
   Enabled: true
   VersionAdded: 0.2.0
 
+Sorbet/OnedAncestorPerLine:
+  Description: 'Enforces one ancestor per call to requires_ancestor'
+  Enabled: false
+  VersionAdded: '0.6.0'
+
 Sorbet/ParametersOrderingInSignature:
   Description: 'Enforces same parameter order between a method and its signature.'
   Enabled: true
@@ -106,6 +118,13 @@ Sorbet/SignatureBuildOrder:
                   such as: `abstract.params(...).returns(...).soft`.'
   Enabled: true
   VersionAdded: 0.3.0
+
+Sorbet/SingleLineRbiClassModuleDefinitions:
+  Description: 'Empty class and module definitions in RBI must be on a single line.'
+  Enabled: false
+  VersionAdded: '0.6.0'
+  Include:
+  - "**/*.rbi"
 
 Sorbet/StrictSigil:
   Description: 'All files must be at least at strictness `strict`.'

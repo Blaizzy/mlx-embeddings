@@ -27,6 +27,11 @@ module RuboCop
       # * `ParameterTypePlaceholder`: placeholders used for parameter types (default: 'T.untyped')
       # * `ReturnTypePlaceholder`: placeholders used for return types (default: 'T.untyped')
       class EnforceSignatures < SignatureCop
+        def initialize(config = nil, options = nil)
+          super(config, options)
+          @last_sig_for_scope = {}
+        end
+
         def_node_matcher(:accessor?, <<-PATTERN)
           (send nil? {:attr_reader :attr_writer :attr_accessor} ...)
         PATTERN
@@ -40,8 +45,11 @@ module RuboCop
         end
 
         def on_send(node)
-          return unless accessor?(node)
-          check_node(node)
+          check_node(node) if accessor?(node)
+        end
+
+        def on_block(node)
+          @last_sig_for_scope[scope(node)] = node if signature?(node)
         end
 
         def autocorrect(node)
@@ -63,22 +71,23 @@ module RuboCop
           end
         end
 
+        def scope(node)
+          return nil unless node.parent
+          return node.parent if [:begin, :block, :class, :module].include?(node.parent.type)
+          scope(node.parent)
+        end
+
         private
 
         def check_node(node)
-          prev = previous_node(node)
-          unless signature?(prev)
+          scope = self.scope(node)
+          unless @last_sig_for_scope[scope]
             add_offense(
               node,
               message: "Each method is required to have a signature."
             )
           end
-        end
-
-        def previous_node(node)
-          parent = node.parent
-          return nil unless parent
-          parent.children[node.sibling_index - 1]
+          @last_sig_for_scope[scope] = nil
         end
 
         def param_type_placeholder
