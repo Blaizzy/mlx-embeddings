@@ -275,42 +275,43 @@ module FormulaCellarChecks
     "Python formulae that are keg-only should not create `pip3` and `wheel3` symlinks."
   end
 
-  INVALID_EMPTY_FILE_NAMES = %w[AUTHORS ChangeLog changes COPYING NEWS README TODO].freeze
+  INVALID_EMPTY_FILE_NAMES = %w[AUTHORS ChangeLog changes COPYING LICENSE NEWS README TODO].freeze
   INVALID_EMPTY_FILE_EXTENSIONS = %w[.html .md .rst .txt].freeze
-  INVALID_EMPTY_FILE_LOCATIONS = %w[bin libexec share/man share/doc].freeze
+  INVALID_EMPTY_FILE_DIRECTORIES = %w[bin libexec share/man share/doc].freeze
   # Names and extensions to ignore, even if they are in a location within prefix given above
-  VALID_EMPTY_FILE_NAMES = %w[__init__.py REQUESTED].freeze
-  VALID_EMPTY_FILE_EXTENSIONS = %w[.stamp].freeze
+  VALID_EMPTY_FILE_NAMES = %w[__init__ empty REQUESTED].freeze
+  VALID_EMPTY_FILE_EXTENSIONS = %w[.gitkeep .keep .keepme .stamp .typed].freeze
 
   def check_empty_files(prefix)
     return unless prefix.directory?
 
-    empty_files = []
-    prefix.children.each do |f|
-      next if INVALID_EMPTY_FILE_NAMES.none?(File.basename(f)) &&
-              INVALID_EMPTY_FILE_EXTENSIONS.none?(File.extname(f))
+    empty_files = prefix.children.select do |f|
+      next if INVALID_EMPTY_FILE_NAMES.exclude?(f.basename(".*").to_s) &&
+              INVALID_EMPTY_FILE_EXTENSIONS.exclude?(f.extname)
       next unless File.zero?(f)
 
-      empty_files << f
+      true
     end
 
-    INVALID_EMPTY_FILE_LOCATIONS.each do |loc|
-      next unless (prefix/loc).directory?
+    INVALID_EMPTY_FILE_DIRECTORIES.each do |dir|
+      path = prefix/dir
+      next unless path.directory?
 
       # search all directories in INVALID_EMPTY_FILE_LOCATIONS and their subdirectories
-      Dir.glob(prefix/loc/"**/*").each do |f|
-        next if VALID_EMPTY_FILE_NAMES.any?(File.basename(f)) ||
-                VALID_EMPTY_FILE_EXTENSIONS.any?(File.extname(f))
-        next unless File.zero?(f)
+      Pathname.glob(path/"**/*").each do |p|
+        # Any files in the "valid" list should be skipped because they are expected to be empty
+        next if VALID_EMPTY_FILE_NAMES.include?(p.basename(".*").to_s)
+        next if VALID_EMPTY_FILE_EXTENSIONS.include?(p.extname)
+        next unless File.zero?(p)
 
-        empty_files << f
+        empty_files << p
       end
     end
 
     return if empty_files.empty?
 
     <<~EOS
-      Suspicious empty files were installed.
+      Unexpected empty files were installed.
       The offending files are:
         #{empty_files * "\n  "}
     EOS
