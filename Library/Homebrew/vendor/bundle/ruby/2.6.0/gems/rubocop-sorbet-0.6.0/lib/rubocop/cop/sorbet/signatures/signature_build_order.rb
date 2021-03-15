@@ -55,7 +55,7 @@ module RuboCop
           return nil unless can_autocorrect?
 
           lambda do |corrector|
-            tree = call_chain(node_with_index_sends(node))
+            tree = call_chain(node_reparsed_with_modern_features(node))
               .sort_by { |call| ORDER[call.method_name] }
               .reduce(nil) do |receiver, caller|
                 caller.updated(nil, [receiver] + caller.children.drop(1))
@@ -68,16 +68,25 @@ module RuboCop
           end
         end
 
+        # Create a subclass of AST Builder that has modern features turned on
+        class ModernBuilder < RuboCop::AST::Builder
+          modernize
+        end
+        private_constant :ModernBuilder
+
         private
 
-        def node_with_index_sends(node)
-          # This is really dirty hack to reparse the current node with index send
-          # emitting enabled, which is necessary to unparse them back as index accessors.
-          emit_index_value = RuboCop::AST::Builder.emit_index
-          RuboCop::AST::Builder.emit_index = true
-          RuboCop::AST::ProcessedSource.new(node.source, target_ruby_version, processed_source.path).ast
-        ensure
-          RuboCop::AST::Builder.emit_index = emit_index_value
+        # This method exists to reparse the current node with modern features enabled.
+        # Modern features include "index send" emitting, which is necessary to unparse
+        # "index sends" (i.e. `[]` calls) back to index accessors (i.e. as `foo[bar]``).
+        # Otherwise, we would get the unparsed node as `foo.[](bar)`.
+        def node_reparsed_with_modern_features(node)
+          # Create a new parser with a modern builder class instance
+          parser = Parser::CurrentRuby.new(ModernBuilder.new)
+          # Create a new source buffer with the node source
+          buffer = Parser::Source::Buffer.new(processed_source.path, source: node.source)
+          # Re-parse the buffer
+          parser.parse(buffer)
         end
 
         def can_autocorrect?
