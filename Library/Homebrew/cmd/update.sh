@@ -308,6 +308,7 @@ homebrew-update() {
       -\?|-h|--help|--usage)          brew help update; exit $? ;;
       --verbose)                      HOMEBREW_VERBOSE=1 ;;
       --debug)                        HOMEBREW_DEBUG=1 ;;
+      --quiet)                        HOMEBREW_QUIET=1 ;;
       --merge)                        HOMEBREW_MERGE=1 ;;
       --force)                        HOMEBREW_UPDATE_FORCE=1 ;;
       --simulate-from-current-branch) HOMEBREW_SIMULATE_FROM_CURRENT_BRANCH=1 ;;
@@ -315,6 +316,7 @@ homebrew-update() {
       --*)                            ;;
       -*)
         [[ "$option" = *v* ]] && HOMEBREW_VERBOSE=1
+        [[ "$option" = *q* ]] && HOMEBREW_QUIET=1
         [[ "$option" = *d* ]] && HOMEBREW_DEBUG=1
         [[ "$option" = *f* ]] && HOMEBREW_UPDATE_FORCE=1
         ;;
@@ -661,7 +663,8 @@ EOS
   then
     brew update-report "$@"
     return $?
-  elif [[ -z "$HOMEBREW_UPDATE_PREINSTALL" ]]
+  elif [[ -z "$HOMEBREW_UPDATE_PREINSTALL" &&
+	  -z "$HOMEBREW_QUIET" ]]
   then
     echo "Already up-to-date."
   fi
