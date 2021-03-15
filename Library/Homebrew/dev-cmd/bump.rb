@@ -16,6 +16,8 @@ module Homebrew
         Display out-of-date brew formulae and the latest version available.
         Also displays whether a pull request has been opened with the URL.
       EOS
+      switch "--full-name",
+             description: "Print formulae/casks with fully-qualified names."
       switch "--no-pull-requests",
              description: "Do not retrieve pull requests from GitHub."
       switch "--formula", "--formulae",
@@ -39,11 +41,14 @@ module Homebrew
     end
 
     formulae_and_casks = if args.formula?
-      args.named.to_formulae.presence
+      args.named.to_formulae
     elsif args.cask?
-      args.named.to_casks.presence
+      args.named.to_casks
     else
-      args.named.to_formulae_and_casks.presence
+      args.named.to_formulae_and_casks
+    end
+    formulae_and_casks = formulae_and_casks&.sort_by do |formula_or_cask|
+      formula_or_cask.respond_to?(:token) ? formula_or_cask.token : formula_or_cask.name
     end
 
     limit = args.limit.to_i if args.limit.present?
@@ -51,10 +56,29 @@ module Homebrew
     if formulae_and_casks
       Livecheck.load_other_tap_strategies(formulae_and_casks)
 
+      ambiguous_casks = []
+      if !args.formula? && !args.cask?
+        ambiguous_casks = formulae_and_casks.group_by { |item| Livecheck.formula_or_cask_name(item, full_name: true) }
+                                            .values
+                                            .select { |items| items.length > 1 }
+                                            .flatten
+                                            .select { |item| item.is_a?(Cask::Cask) }
+      end
+
+      ambiguous_names = []
+      unless args.full_name?
+        ambiguous_names =
+          (formulae_and_casks - ambiguous_casks).group_by { |item| Livecheck.formula_or_cask_name(item) }
+                                                .values
+                                                .select { |items| items.length > 1 }
+                                                .flatten
+      end
+
       formulae_and_casks.each_with_index do |formula_or_cask, i|
         puts if i.positive?
 
-        name = Livecheck.formula_or_cask_name(formula_or_cask)
+        use_full_name = args.full_name? || ambiguous_names.include?(formula_or_cask)
+        name = Livecheck.formula_or_cask_name(formula_or_cask, full_name: use_full_name)
         repository = if formula_or_cask.is_a?(Formula)
           if formula_or_cask.head_only?
             ohai name
@@ -68,7 +92,13 @@ module Homebrew
         end
 
         package_data = Repology.single_package_query(name, repository: repository)
-        retrieve_and_display_info(formula_or_cask, name, package_data&.values&.first, args: args)
+        retrieve_and_display_info(
+          formula_or_cask,
+          name,
+          package_data&.values&.first,
+          args:           args,
+          ambiguous_cask: ambiguous_casks.include?(formula_or_cask),
+        )
       end
     else
       api_response = {}
@@ -105,9 +135,14 @@ module Homebrew
             next
           end
           name = Livecheck.formula_or_cask_name(formula_or_cask)
+          ambiguous_cask = begin
+            formula_or_cask.is_a?(Cask::Cask) && !args.cask? && Formula[name]
+          rescue FormulaUnavailableError
+            false
+          end
 
           puts if i.positive?
-          retrieve_and_display_info(formula_or_cask, name, repositories, args: args)
+          retrieve_and_display_info(formula_or_cask, name, repositories, args: args, ambiguous_cask: ambiguous_cask)
 
           break if limit && i >= limit
         end
@@ -145,7 +180,7 @@ module Homebrew
     pull_requests
   end
 
-  def retrieve_and_display_info(formula_or_cask, name, repositories, args:)
+  def retrieve_and_display_info(formula_or_cask, name, repositories, args:, ambiguous_cask: false)
     current_version = if formula_or_cask.is_a?(Formula)
       formula_or_cask.stable.version
     else
@@ -161,6 +196,7 @@ module Homebrew
     livecheck_latest = livecheck_result(formula_or_cask)
     pull_requests = retrieve_pull_requests(formula_or_cask, name) unless args.no_pull_requests?
 
+    name += " (cask)" if ambiguous_cask
     title = if current_version == repology_latest &&
                current_version == livecheck_latest
       "#{name} is up to date!"
