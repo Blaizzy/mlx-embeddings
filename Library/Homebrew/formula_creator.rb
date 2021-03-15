@@ -153,11 +153,14 @@ module Homebrew
           def install
             # ENV.deparallelize  # if your formula fails when building in parallel
         <% if mode == :cmake %>
-            system "cmake", ".", *std_cmake_args
+            system "cmake", "-S", ".", "-B", "build", *std_cmake_args
+            system "cmake", "--build", "build"
+            system "cmake", "--install", "build"
         <% elsif mode == :autotools %>
             # Remove unrecognized options if warned by configure
             # https://rubydoc.brew.sh/Formula.html#std_configure_args-instance_method
             system "./configure", *std_configure_args, "--disable-silent-rules"
+            system "make", "install" # if this fails, try separate make/make install steps
         <% elsif mode == :crystal %>
             system "shards", "build", "--release"
             bin.install "bin/#{name}"
@@ -206,10 +209,7 @@ module Homebrew
             # Remove unrecognized options if warned by configure
             # https://rubydoc.brew.sh/Formula.html#std_configure_args-instance_method
             system "./configure", *std_configure_args, "--disable-silent-rules"
-            # system "cmake", ".", *std_cmake_args
-        <% end %>
-        <% if mode == :autotools || mode == :cmake %>
-            system "make", "install" # if this fails, try separate make/make install steps
+            # system "cmake", "-S", ".", "-B", "build", *std_cmake_args
         <% end %>
           end
 
