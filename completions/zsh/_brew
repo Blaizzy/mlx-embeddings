@@ -1054,9 +1054,7 @@ _brew_linkage() {
 # brew list
 _brew_list() {
   _arguments \
-    '(--formula --multiple --unbrewed --pinned --l --r --t)--cask[List only casks, or treat all named arguments as casks]' \
     '--debug[Display any debugging information]' \
-    '(--cask --unbrewed)--formula[List only formulae, or treat all named arguments as formulae]' \
     '(--versions --unbrewed --pinned --l --r --t)--full-name[Print formulae with fully-qualified names. Unless `--full-name`, `--versions` or `--pinned` are passed, other options (i.e. `-1`, `-l`, `-r` and `-t`) are passed to `ls`(1) which produces the actual output]' \
     '--help[Show this message]' \
     '(--pinned --cask)--multiple[Only show formulae with multiple versions installed]' \
@@ -1069,8 +1067,10 @@ _brew_list() {
     '-r[Reverse the order of the formulae sort to list the oldest entries first]' \
     '-t[Sort formulae by time modified, listing most recently modified first]' \
     - installed_formula \
+    '(--cask --unbrewed)--formula[List only formulae, or treat all named arguments as formulae]' \
     '*::installed_formula:__brew_installed_formulae' \
     - installed_cask \
+    '(--formula --multiple --unbrewed --pinned --l --r --t)--cask[List only casks, or treat all named arguments as casks]' \
     '*::installed_cask:__brew_installed_casks'
 }
 
@@ -1128,9 +1128,7 @@ _brew_log() {
 # brew ls
 _brew_ls() {
   _arguments \
-    '(--formula --multiple --unbrewed --pinned --l --r --t)--cask[List only casks, or treat all named arguments as casks]' \
     '--debug[Display any debugging information]' \
-    '(--cask --unbrewed)--formula[List only formulae, or treat all named arguments as formulae]' \
     '(--versions --unbrewed --pinned --l --r --t)--full-name[Print formulae with fully-qualified names. Unless `--full-name`, `--versions` or `--pinned` are passed, other options (i.e. `-1`, `-l`, `-r` and `-t`) are passed to `ls`(1) which produces the actual output]' \
     '--help[Show this message]' \
     '(--pinned --cask)--multiple[Only show formulae with multiple versions installed]' \
@@ -1143,8 +1141,10 @@ _brew_ls() {
     '-r[Reverse the order of the formulae sort to list the oldest entries first]' \
     '-t[Sort formulae by time modified, listing most recently modified first]' \
     - installed_formula \
+    '(--cask --unbrewed)--formula[List only formulae, or treat all named arguments as formulae]' \
     '*::installed_formula:__brew_installed_formulae' \
     - installed_cask \
+    '(--formula --multiple --unbrewed --pinned --l --r --t)--cask[List only casks, or treat all named arguments as casks]' \
     '*::installed_cask:__brew_installed_casks'
 }
 
@@ -1416,36 +1416,36 @@ _brew_release_notes() {
 # brew remove
 _brew_remove() {
   _arguments \
-    '(--formula)--cask[Treat all named arguments as casks]' \
     '--debug[Display any debugging information]' \
     '--force[Delete all installed versions of formula. Uninstall even if cask is not installed, overwrite existing files and ignore errors when removing files]' \
-    '(--cask --zap)--formula[Treat all named arguments as formulae]' \
     '--help[Show this message]' \
     '--ignore-dependencies[Don'\''t fail uninstall, even if formula is a dependency of any installed formulae]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]' \
     '(--formula)--zap[Remove all files associated with a cask. *May remove files which are shared between applications.*]' \
     - installed_formula \
+    '(--cask --zap)--formula[Treat all named arguments as formulae]' \
     '*::installed_formula:__brew_installed_formulae' \
     - installed_cask \
+    '(--formula)--cask[Treat all named arguments as casks]' \
     '*::installed_cask:__brew_installed_casks'
 }
 
 # brew rm
 _brew_rm() {
   _arguments \
-    '(--formula)--cask[Treat all named arguments as casks]' \
     '--debug[Display any debugging information]' \
     '--force[Delete all installed versions of formula. Uninstall even if cask is not installed, overwrite existing files and ignore errors when removing files]' \
-    '(--cask --zap)--formula[Treat all named arguments as formulae]' \
     '--help[Show this message]' \
     '--ignore-dependencies[Don'\''t fail uninstall, even if formula is a dependency of any installed formulae]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]' \
     '(--formula)--zap[Remove all files associated with a cask. *May remove files which are shared between applications.*]' \
     - installed_formula \
+    '(--cask --zap)--formula[Treat all named arguments as formulae]' \
     '*::installed_formula:__brew_installed_formulae' \
     - installed_cask \
+    '(--formula)--cask[Treat all named arguments as casks]' \
     '*::installed_cask:__brew_installed_casks'
 }
 
@@ -1651,36 +1651,36 @@ _brew_unbottled() {
 # brew uninstal
 _brew_uninstal() {
   _arguments \
-    '(--formula)--cask[Treat all named arguments as casks]' \
     '--debug[Display any debugging information]' \
     '--force[Delete all installed versions of formula. Uninstall even if cask is not installed, overwrite existing files and ignore errors when removing files]' \
-    '(--cask --zap)--formula[Treat all named arguments as formulae]' \
     '--help[Show this message]' \
     '--ignore-dependencies[Don'\''t fail uninstall, even if formula is a dependency of any installed formulae]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]' \
     '(--formula)--zap[Remove all files associated with a cask. *May remove files which are shared between applications.*]' \
     - installed_formula \
+    '(--cask --zap)--formula[Treat all named arguments as formulae]' \
     '*::installed_formula:__brew_installed_formulae' \
     - installed_cask \
+    '(--formula)--cask[Treat all named arguments as casks]' \
     '*::installed_cask:__brew_installed_casks'
 }
 
 # brew uninstall
 _brew_uninstall() {
   _arguments \
-    '(--formula)--cask[Treat all named arguments as casks]' \
     '--debug[Display any debugging information]' \
     '--force[Delete all installed versions of formula. Uninstall even if cask is not installed, overwrite existing files and ignore errors when removing files]' \
-    '(--cask --zap)--formula[Treat all named arguments as formulae]' \
     '--help[Show this message]' \
     '--ignore-dependencies[Don'\''t fail uninstall, even if formula is a dependency of any installed formulae]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]' \
     '(--formula)--zap[Remove all files associated with a cask. *May remove files which are shared between applications.*]' \
     - installed_formula \
+    '(--cask --zap)--formula[Treat all named arguments as formulae]' \
     '*::installed_formula:__brew_installed_formulae' \
     - installed_cask \
+    '(--formula)--cask[Treat all named arguments as casks]' \
     '*::installed_cask:__brew_installed_casks'
 }
 
@@ -1824,7 +1824,6 @@ _brew_upgrade() {
     '(--formula)--audio-unit-plugindir[Target location for Audio Unit Plugins (default: `~/Library/Audio/Plug-Ins/Components`)]' \
     '(--formula)--binaries[Disable/enable linking of helper executables (default: enabled)]' \
     '(--cask --force-bottle)--build-from-source[Compile formula from source even if a bottle is available]' \
-    '(--formulae --build-from-source --interactive --force-bottle --fetch-HEAD --ignore-pinned --keep-tmp --display-times)--cask[Treat all named arguments as casks. If no named arguments are specified, upgrade only outdated casks]' \
     '(--formula)--colorpickerdir[Target location for Color Pickers (default: `~/Library/ColorPickers`)]' \
     '--debug[If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory]' \
     '(--formula)--dictionarydir[Target location for Dictionaries (default: `~/Library/Dictionaries`)]' \
@@ -1834,7 +1833,6 @@ _brew_upgrade() {
     '(--formula)--fontdir[Target location for Fonts (default: `~/Library/Fonts`)]' \
     '--force[Install formulae without checking for previously installed keg-only or non-migrated versions. When installing casks, overwrite existing files (binaries and symlinks are excluded, unless originally from the same cask)]' \
     '(--cask --build-from-source)--force-bottle[Install from a bottle if it exists for the current or newest version of macOS, even if it would not normally be used for installation]' \
-    '(--casks --binaries --require-sha --quarantine --skip-cask-deps --greedy --appdir --colorpickerdir --prefpanedir --qlplugindir --mdimporterdir --dictionarydir --fontdir --servicedir --input-methoddir --internet-plugindir --audio-unit-plugindir --vst-plugindir --vst3-plugindir --screen-saverdir --language)--formula[Treat all named arguments as formulae. If no named arguments are specified, upgrade only outdated formulae]' \
     '(--formula)--greedy[Also include casks with `auto_updates true` or `version :latest`]' \
     '--help[Show this message]' \
     '(--cask)--ignore-pinned[Set a successful exit status even if pinned formulae are not upgraded]' \
@@ -1858,8 +1856,10 @@ _brew_upgrade() {
     '(--formula)--vst-plugindir[Target location for VST Plugins (default: `~/Library/Audio/Plug-Ins/VST`)]' \
     '(--formula)--vst3-plugindir[Target location for VST3 Plugins (default: `~/Library/Audio/Plug-Ins/VST3`)]' \
     - outdated_formula \
+    '(--casks --binaries --require-sha --quarantine --skip-cask-deps --greedy --appdir --colorpickerdir --prefpanedir --qlplugindir --mdimporterdir --dictionarydir --fontdir --servicedir --input-methoddir --internet-plugindir --audio-unit-plugindir --vst-plugindir --vst3-plugindir --screen-saverdir --language)--formula[Treat all named arguments as formulae. If no named arguments are specified, upgrade only outdated formulae]' \
     '*::outdated_formula:__brew_outdated_formulae' \
     - outdated_cask \
+    '(--formulae --build-from-source --interactive --force-bottle --fetch-HEAD --ignore-pinned --keep-tmp --display-times)--cask[Treat all named arguments as casks. If no named arguments are specified, upgrade only outdated casks]' \
     '*::outdated_cask:__brew_outdated_casks'
 }
 
