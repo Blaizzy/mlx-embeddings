@@ -10,13 +10,15 @@ require "extend/io"
 require "extend/predicable"
 require "extend/hash_validator"
 
+require "extend/time"
+
 # Class for running sub-processes and capturing their output and exit status.
 #
 # @api private
 class SystemCommand
   extend T::Sig
 
-  using HashValidator
+  using TimeRemaining
 
   # Helper functions for calling {SystemCommand.run}.
   module Mixin
@@ -78,10 +80,24 @@ class SystemCommand
       verbose:      T.nilable(T::Boolean),
       secrets:      T.any(String, T::Array[String]),
       chdir:        T.any(String, Pathname),
+      timeout:      T.nilable(T.any(Integer, Float)),
     ).void
   }
-  def initialize(executable, args: [], sudo: false, env: {}, input: [], must_succeed: false,
-                 print_stdout: false, print_stderr: true, debug: nil, verbose: nil, secrets: [], chdir: T.unsafe(nil))
+  def initialize(
+    executable,
+    args: [],
+    sudo: false,
+    env: {},
+    input: [],
+    must_succeed: false,
+    print_stdout: false,
+    print_stderr: true,
+    debug: nil,
+    verbose: false,
+    secrets: [],
+    chdir: T.unsafe(nil),
+    timeout: nil
+  )
     require "extend/ENV"
     @executable = executable
     @args = args
@@ -100,6 +116,7 @@ class SystemCommand
     @verbose = verbose
     @secrets = (Array(secrets) + ENV.sensitive_environment.values).uniq
     @chdir = chdir
+    @timeout = timeout
   end
 
   sig { returns(T::Array[String]) }
@@ -197,10 +214,14 @@ class SystemCommand
 
   sig { params(sources: T::Array[IO], _block: T.proc.params(type: Symbol, line: String).void).void }
   def each_line_from(sources, &_block)
-    loop do
-      readable_sources, = IO.select(sources)
+    end_time = Time.now + @timeout if @timeout
 
-      readable_sources = T.must(readable_sources).reject(&:eof?)
+    loop do
+      select_timeout = end_time&.remaining!
+      readable_sources, = IO.select(sources, [], [], select_timeout)
+      raise Timeout::Error if readable_sources.nil?
+
+      readable_sources = readable_sources.reject(&:eof?)
 
       break if readable_sources.empty?
 
