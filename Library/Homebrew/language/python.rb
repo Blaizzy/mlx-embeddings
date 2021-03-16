@@ -256,8 +256,6 @@ module Language
           targets = Array(targets)
           targets.each do |t|
             if t.respond_to? :stage
-              next if t.name.start_with? "homebrew-"
-
               t.stage { do_install Pathname.pwd }
             else
               t = t.lines.map(&:strip) if t.respond_to?(:lines) && t.include?("\n")
