@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 module Homebrew
@@ -19,7 +19,7 @@ module Homebrew
         PRIORITY = 0
 
         # The `Regexp` used to determine if the strategy applies to the URL.
-        URL_MATCH_REGEX = %r{^https?://.+?/.+?\.yml}i.freeze
+        URL_MATCH_REGEX = %r{^https?://.+/.+\.ya?ml$}i.freeze
 
         # Whether the strategy can be applied to the provided URL.
         #
@@ -34,13 +34,25 @@ module Homebrew
         #
         # @param content [String] the content to check
         # @return [String]
-        sig { params(content: String).returns(T.nilable(String)) }
-        def self.version_from_content(content)
+        sig {
+          params(
+            content: String,
+            block:   T.nilable(T.proc.params(arg0: Hash).returns(String)),
+          ).returns(T.nilable(String))
+        }
+        def self.version_from_content(content, &block)
           require "yaml"
 
-          return unless (item = YAML.safe_load(content))
+          return unless (yaml = YAML.safe_load(content))
 
-          item["version"]
+          if block
+            value = block.call(yaml)
+            return value if value.is_a?(String)
+
+            raise TypeError, "Return value of `strategy :electron_builder` block must be a string."
+          end
+
+          yaml["version"]
         end
 
         # Checks the content at the URL for new versions.
@@ -48,7 +60,13 @@ module Homebrew
         # @param url [String] the URL of the content to check
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]
-        sig { params(url: String, regex: T.nilable(Regexp)).returns(T::Hash[Symbol, T.untyped]) }
+        sig {
+          params(
+            url:   String,
+            regex: T.nilable(Regexp),
+            block: T.nilable(T.proc.params(arg0: Hash).returns(String)),
+          ).returns(T::Hash[Symbol, T.untyped])
+        }
         def self.find_versions(url, regex = nil, &block)
           raise ArgumentError, "The #{T.must(name).demodulize} strategy does not support a regex." if regex
 
@@ -57,15 +75,8 @@ module Homebrew
           match_data.merge!(Strategy.page_content(url))
           content = match_data.delete(:content)
 
-          if (item = version_from_content(content))
-            match = if block
-              block.call(item)&.to_s
-            else
-              item
-            end
-
-            match_data[:matches][match] = Version.new(match) if match
-          end
+          version = version_from_content(content, &block)
+          match_data[:matches][version] = Version.new(version) if version
 
           match_data
         end

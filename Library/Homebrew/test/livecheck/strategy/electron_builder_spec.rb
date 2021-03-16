@@ -7,7 +7,7 @@ describe Homebrew::Livecheck::Strategy::ElectronBuilder do
   subject(:electron_builder) { described_class }
 
   let(:valid_url) { "https://www.example.com/example/latest-mac.yml" }
-  let(:invalid_url) { "https://www.example.com/example/example" }
+  let(:invalid_url) { "https://brew.sh/test" }
 
   let(:electron_builder_yaml) {
     <<~EOS
@@ -45,6 +45,14 @@ describe Homebrew::Livecheck::Strategy::ElectronBuilder do
 
     it "returns a version string when given YAML data" do
       expect(version_from_electron_builder_yaml).to be_a(String)
+    end
+
+    it "returns a version string when given YAML data and a block" do
+      version = electron_builder.version_from_content(electron_builder_yaml) do |yaml|
+        yaml["version"].sub("3", "4")
+      end
+
+      expect(version).to eq "1.2.4"
     end
   end
 end
