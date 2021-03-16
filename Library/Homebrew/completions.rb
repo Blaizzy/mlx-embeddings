@@ -223,7 +223,7 @@ module Homebrew
           next unless ZSH_NAMED_ARGS_COMPLETION_FUNCTION_MAPPING.key? type
 
           args_options << "- #{type}"
-          opt = "--#{type}"
+          opt = "--#{type.to_s.gsub(/(installed|outdated)_/, "")}"
           if options.key?(opt)
             desc = options[opt]
 
