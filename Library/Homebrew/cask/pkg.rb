@@ -135,6 +135,8 @@ module Cask
 
     sig { params(path: T.any(Pathname, T::Array[Pathname])).void }
     def rmdir(path)
+      return unless path.exist?
+
       @command.run!(
         "/usr/bin/xargs",
         args:  ["-0", "--", "/bin/bash", "-c", RMDIR_SH, "--"],
