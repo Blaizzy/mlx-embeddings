@@ -93,6 +93,15 @@ describe Cask::Pkg, :cask do
       allow(pkg).to receive(:root).and_return(fake_root)
       allow(pkg).to receive(:forget)
 
+      # This is expected to fail in tests since we don't use `sudo`.
+      allow(fake_system_command).to receive(:run!).and_call_original
+      expect(fake_system_command).to receive(:run!).with(
+        "/usr/bin/xargs",
+        args:  ["-0", "--", "/bin/bash", "-c", a_string_including("/bin/rmdir"), "--"],
+        input: [fake_dir].join("\0"),
+        sudo:  true,
+      ).and_return(instance_double(SystemCommand::Result, stdout: ""))
+
       pkg.uninstall
 
       expect(fake_dir).to be_a_directory
