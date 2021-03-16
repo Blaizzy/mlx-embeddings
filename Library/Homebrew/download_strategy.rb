@@ -313,7 +313,7 @@ class AbstractFileDownloadStrategy < AbstractDownloadStrategy
         query_params = CGI.parse(uri.query)
         query_params["response-content-disposition"].each do |param|
           query_basename = param[/attachment;\s*filename=(["']?)(.+)\1/i, 2]
-          return query_basename if query_basename
+          return File.basename(query_basename) if query_basename
         end
       end
 
@@ -463,7 +463,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
       # Servers may include '/' in their Content-Disposition filename header. Take only the basename of this, because:
       # - Unpacking code assumes this is a single file - not something living in a subdirectory.
       # - Directory traversal attacks are possible without limiting this to just the basename.
-      (filename || content_disposition.filename).rpartition("/")[-1]
+      File.basename(filename || content_disposition.filename)
     end
 
     filenames = lines.map(&parse_content_disposition).compact
