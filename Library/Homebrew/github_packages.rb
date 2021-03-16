@@ -13,7 +13,8 @@ class GitHubPackages
   include Context
   include Utils::Curl
 
-  URL_REGEX = %r{https://ghcr.io/v2/([\w-]+)/([\w-]+)}.freeze
+  URL_PREFIX = "https://ghcr.io/v2/"
+  URL_REGEX = %r{#{Regexp.escape(URL_PREFIX)}([\w-]+)/([\w-]+)}.freeze
 
   sig { returns(String) }
   def inspect
