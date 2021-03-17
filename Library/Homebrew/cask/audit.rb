@@ -603,7 +603,8 @@ module Cask
 
       version_stanza = cask.version.to_s
       adjusted_version_stanza = cask.appcast.must_contain.presence || version_stanza.match(/^[[:alnum:].]+/)[0]
-      return if appcast_contents.include? adjusted_version_stanza
+      return if appcast_contents.blank?
+      return if appcast_contents.include?(adjusted_version_stanza)
 
       add_error <<~EOS.chomp
         appcast at URL '#{Formatter.url(appcast_url)}' does not contain \
