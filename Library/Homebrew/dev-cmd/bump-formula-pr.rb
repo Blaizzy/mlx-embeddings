@@ -103,7 +103,7 @@ module Homebrew
     end
 
     formula.tap.path.cd do
-      unless Utils.popen_read("git remote -v").match?(%r{^homebrew.*Homebrew/homebrew-core.*$})
+      unless Utils.popen_read("git", "remote", "-v").match?(%r{^homebrew.*Homebrew/homebrew-core.*$})
         ohai "Adding #{homebrew_core_remote} remote"
         safe_system "git", "remote", "add", homebrew_core_remote, homebrew_core_url
       end
@@ -193,7 +193,7 @@ module Homebrew
         end
         check_new_version(formula, tap_full_name, url: old_url, tag: new_tag, args: args) if new_version.blank?
         resource_path, forced_version = fetch_resource(formula, new_version, old_url, tag: new_tag)
-        new_revision = Utils.popen_read("git -C \"#{resource_path}\" rev-parse -q --verify HEAD")
+        new_revision = Utils.popen_read("git", "-C", resource_path.to_s, "rev-parse", "-q", "--verify", "HEAD")
         new_revision = new_revision.strip
       elsif new_revision.blank?
         odie "#{formula}: the current URL requires specifying a `--revision=` argument."

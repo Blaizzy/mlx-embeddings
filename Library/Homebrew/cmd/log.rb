@@ -51,7 +51,7 @@ module Homebrew
 
   def git_log(cd_dir, path = nil, tap = nil, args:)
     cd cd_dir
-    repo = Utils.popen_read("git rev-parse --show-toplevel").chomp
+    repo = Utils.popen_read("git", "rev-parse", "--show-toplevel").chomp
     if tap
       name = tap.to_s
       git_cd = "$(brew --repo #{tap})"

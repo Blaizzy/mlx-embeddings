@@ -85,9 +85,9 @@ module Homebrew
 
   # Causes some terminals to display secure password entry indicators.
   def noecho_gets
-    system "stty -echo"
+    system "stty", "-echo"
     result = $stdin.gets
-    system "stty echo"
+    system "stty", "echo"
     puts
     result
   end
