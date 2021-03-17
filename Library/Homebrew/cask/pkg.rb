@@ -111,6 +111,10 @@ module Cask
       set -euo pipefail
 
       for path in "${@}"; do
+        if [[ ! -e "${path}" ]]; then
+          continue
+        fi
+
         if [[ -e "${path}/.DS_Store" ]]; then
           /bin/rm -f "${path}/.DS_Store"
         fi
@@ -135,8 +139,6 @@ module Cask
 
     sig { params(path: T.any(Pathname, T::Array[Pathname])).void }
     def rmdir(path)
-      return unless path.exist?
-
       @command.run!(
         "/usr/bin/xargs",
         args:  ["-0", "--", "/bin/bash", "-c", RMDIR_SH, "--"],
