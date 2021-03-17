@@ -68,6 +68,15 @@ module RuboCop
             end
           end
           content
+        when :send
+          if node.method?(:+) && (node.receiver.str_type? || node.receiver.dstr_type?)
+            content = string_content(node.receiver)
+            arg = node.arguments.first
+            content += string_content(arg) if arg
+            content
+          else
+            ""
+          end
         when :const
           node.const_name
         when :sym
