@@ -467,6 +467,7 @@ _brew_bottle() {
 _brew_bump() {
   _arguments \
     '--debug[Display any debugging information]' \
+    '--full-name[Print formulae/casks with fully-qualified names]' \
     '--help[Show this message]' \
     '--limit[Limit number of package results returned]' \
     '--no-pull-requests[Do not retrieve pull requests from GitHub]' \

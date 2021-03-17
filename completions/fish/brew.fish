@@ -376,6 +376,7 @@ __fish_brew_complete_cmd 'bump' 'Display out-of-date brew formulae and the lates
 __fish_brew_complete_arg 'bump' -l cask -d 'Check only casks'
 __fish_brew_complete_arg 'bump' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'bump' -l formula -d 'Check only formulae'
+__fish_brew_complete_arg 'bump' -l full-name -d 'Print formulae/casks with fully-qualified names'
 __fish_brew_complete_arg 'bump' -l help -d 'Show this message'
 __fish_brew_complete_arg 'bump' -l limit -d 'Limit number of package results returned'
 __fish_brew_complete_arg 'bump' -l no-pull-requests -d 'Do not retrieve pull requests from GitHub'
