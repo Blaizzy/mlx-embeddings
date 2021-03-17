@@ -111,6 +111,10 @@ module Cask
       set -euo pipefail
 
       for path in "${@}"; do
+        if [[ ! -e "${path}" ]]; then
+          continue
+        fi
+
         if [[ -e "${path}/.DS_Store" ]]; then
           /bin/rm -f "${path}/.DS_Store"
         fi
