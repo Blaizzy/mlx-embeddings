@@ -400,6 +400,7 @@ _brew_bump() {
       --cask
       --debug
       --formula
+      --full-name
       --help
       --limit
       --no-pull-requests

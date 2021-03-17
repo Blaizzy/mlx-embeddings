@@ -829,6 +829,8 @@ value, while `--no-rebuild` will remove it.
 Display out-of-date brew formulae and the latest version available.
 Also displays whether a pull request has been opened with the URL.
 
+* `--full-name`:
+  Print formulae/casks with fully-qualified names.
 * `--no-pull-requests`:
   Do not retrieve pull requests from GitHub.
 * `--formula`:
