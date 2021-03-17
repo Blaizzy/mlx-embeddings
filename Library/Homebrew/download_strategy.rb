@@ -461,27 +461,16 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
       url = url.sub(%r{^(https?://#{GitHubPackages::URL_DOMAIN}/)?}o, "#{domain.chomp("/")}/")
     end
 
-    out, _, status= curl_output("--location", "--silent", "--head", "--request", "GET", url.to_s, timeout: timeout)
+    output, _, _status = curl_output(
+      "--location", "--silent", "--head", "--request", "GET", url.to_s,
+      timeout: timeout
+    )
+    parsed_output = parse_curl_output(output)
 
-    lines = status.success? ? out.lines.map(&:chomp) : []
+    lines = output.to_s.lines.map(&:chomp)
 
-    locations = lines.map { |line| line[/^Location:\s*(.*)$/i, 1] }
-                     .compact
-
-    redirect_url = locations.reduce(url) do |current_url, location|
-      if location.start_with?("//")
-        uri = URI(current_url)
-        "#{uri.scheme}:#{location}"
-      elsif location.start_with?("/")
-        uri = URI(current_url)
-        "#{uri.scheme}://#{uri.host}#{location}"
-      elsif location.start_with?("./")
-        uri = URI(current_url)
-        "#{uri.scheme}://#{uri.host}#{Pathname(uri.path).dirname/location}"
-      else
-        location
-      end
-    end
+    final_url = curl_response_last_location(parsed_output[:responses], absolutize: true, base_url: url)
+    final_url ||= url
 
     content_disposition_parser = Mechanize::HTTP::ContentDispositionParser.new
 
@@ -515,10 +504,10 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
            .map(&:to_i)
            .last
 
-    is_redirection = url != redirect_url
-    basename = filenames.last || parse_basename(redirect_url, search_query: !is_redirection)
+    is_redirection = url != final_url
+    basename = filenames.last || parse_basename(final_url, search_query: !is_redirection)
 
-    @resolved_info_cache[url] = [redirect_url, basename, time, file_size, is_redirection]
+    @resolved_info_cache[url] = [final_url, basename, time, file_size, is_redirection]
   end
 
   def _fetch(url:, resolved_url:, timeout:)
