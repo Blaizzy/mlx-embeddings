@@ -14,6 +14,11 @@ module Utils
 
     using TimeRemaining
 
+    # This regex is used to extract the part of an ETag within quotation marks,
+    # ignoring any leading weak validator indicator (`W/`). This simplifies
+    # ETag comparison in `#curl_check_http_content`.
+    ETAG_VALUE_REGEX = %r{^(?:[wW]/)?"((?:[^"]|\\")*)"}.freeze
+
     # HTTP responses and body content are typically separated by a double
     # `CRLF` (whereas HTTP header lines are separated by a single `CRLF`).
     # In rare cases, this can also be a double newline (`\n\n`).
@@ -23,7 +28,7 @@ module Utils
     # the status code and any following descriptive text (e.g., `Not Found`).
     HTTP_STATUS_LINE_REGEX = %r{^HTTP/.* (?<code>\d+)(?: (?<text>[^\r\n]+))?}.freeze
 
-    private_constant :HTTP_RESPONSE_BODY_SEPARATOR, :HTTP_STATUS_LINE_REGEX
+    private_constant :ETAG_VALUE_REGEX, :HTTP_RESPONSE_BODY_SEPARATOR, :HTTP_STATUS_LINE_REGEX
 
     module_function
 
@@ -156,23 +161,19 @@ module Utils
       result
     end
 
-    def parse_headers(headers)
-      return {} if headers.blank?
-
-      # Skip status code
-      headers.split("\r\n")[1..].to_h do |h|
-        name, content = h.split(": ")
-        [name.downcase, content]
-      end
-    end
-
     def curl_download(*args, to: nil, try_partial: true, **options)
       destination = Pathname(to)
       destination.dirname.mkpath
 
       if try_partial
         range_stdout = curl_output("--location", "--head", *args, **options).stdout
-        headers = parse_headers(range_stdout.split("\r\n\r\n").first)
+        parsed_output = parse_curl_output(range_stdout)
+
+        headers = if parsed_output[:responses].present?
+          parsed_output[:responses].last[:headers]
+        else
+          {}
+        end
 
         # Any value for `accept-ranges` other than none indicates that the server supports partial requests.
         # Its absence indicates no support.
@@ -198,6 +199,8 @@ module Utils
 
     # Check if a URL is protected by CloudFlare (e.g. badlion.net and jaxx.io).
     def url_protected_by_cloudflare?(details)
+      return false if details[:headers].blank?
+
       [403, 503].include?(details[:status].to_i) &&
         details[:headers].match?(/^Set-Cookie: (__cfduid|__cf_bm)=/i) &&
         details[:headers].match?(/^Server: cloudflare/i)
@@ -205,6 +208,8 @@ module Utils
 
     # Check if a URL is protected by Incapsula (e.g. corsair.com).
     def url_protected_by_incapsula?(details)
+      return false if details[:headers].blank?
+
       details[:status].to_i == 403 &&
         details[:headers].match?(/^Set-Cookie: visid_incap_/i) &&
         details[:headers].match?(/^Set-Cookie: incap_ses_/i)
@@ -266,7 +271,7 @@ module Utils
       end
 
       if url.start_with?("https://") && Homebrew::EnvConfig.no_insecure_redirect? &&
-         !details[:final_url].start_with?("https://")
+         (details[:final_url].present? && !details[:final_url].start_with?("https://"))
         return "The #{url_type} #{url} redirects back to HTTP"
       end
 
@@ -281,9 +286,11 @@ module Utils
         details[:content_length] == secure_details[:content_length]
       file_match = details[:file_hash] == secure_details[:file_hash]
 
-      if (etag_match || content_length_match || file_match) &&
-         secure_details[:final_url].start_with?("https://") &&
-         url.start_with?("http://")
+      http_with_https_available =
+        url.start_with?("http://") &&
+        (secure_details[:final_url].present? && secure_details[:final_url].start_with?("https://"))
+
+      if (etag_match || content_length_match || file_match) && http_with_https_available
         return "The #{url_type} #{url} should use HTTPS rather than HTTP"
       end
 
@@ -294,8 +301,7 @@ module Utils
       https_content = secure_details[:file]&.gsub(no_protocol_file_contents, "/")
 
       # Check for the same content after removing all protocols
-      if (http_content && https_content) && (http_content == https_content) &&
-         url.start_with?("http://") && secure_details[:final_url].start_with?("https://")
+      if (http_content && https_content) && (http_content == https_content) && http_with_https_available
         return "The #{url_type} #{url} should use HTTPS rather than HTTP"
       end
 
@@ -339,30 +345,33 @@ module Utils
         user_agent:        user_agent
       )
 
-      status_code = :unknown
-      while status_code == :unknown || status_code.to_s.start_with?("3")
-        headers, _, output = output.partition("\r\n\r\n")
-        status_code = headers[%r{HTTP/.* (\d+)}, 1]
-        location = headers[/^Location:\s*(.*)$/i, 1]
-        final_url = location.chomp if location
-      end
-
       if status.success?
+        parsed_output = parse_curl_output(output)
+        responses = parsed_output[:responses]
+
+        final_url = curl_response_last_location(responses)
+        headers = if responses.last.present?
+          status_code = responses.last[:status_code]
+          responses.last[:headers]
+        else
+          {}
+        end
+        etag = headers["etag"][ETAG_VALUE_REGEX, 1] if headers["etag"].present?
+        content_length = headers["content-length"]
+
         file_contents = File.read(file.path)
         file_hash = Digest::SHA2.hexdigest(file_contents) if hash_needed
       end
-
-      final_url ||= url
 
       {
         url:            url,
         final_url:      final_url,
         status:         status_code,
-        etag:           headers[%r{ETag: ([wW]/)?"(([^"]|\\")*)"}, 2],
-        content_length: headers[/Content-Length: (\d+)/, 1],
         headers:        headers,
-        file_hash:      file_hash,
+        etag:           etag,
+        content_length: content_length,
         file:           file_contents,
+        file_hash:      file_hash,
       }
     ensure
       file.unlink
