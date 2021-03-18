@@ -27,7 +27,7 @@ class Build
     @formula.build = BuildOptions.new(options, formula.options)
     @args = args
 
-    if args.ignore_deps?
+    if args.ignore_dependencies?
       @deps = []
       @reqs = []
     else

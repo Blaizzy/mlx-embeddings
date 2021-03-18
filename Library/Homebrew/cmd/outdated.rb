@@ -171,7 +171,7 @@ module Homebrew
     if args.named.present?
       select_outdated(args.named.to_casks, args: args)
     else
-      select_outdated(Cask::Caskroom.casks(config: Cask::Config.from_args(args)), args: args)
+      select_outdated(Cask::Caskroom.casks, args: args)
     end
   end
 
@@ -180,7 +180,7 @@ module Homebrew
 
     if formulae.blank? && casks.blank?
       formulae = Formula.installed
-      casks = Cask::Caskroom.casks(config: Cask::Config.from_args(args))
+      casks = Cask::Caskroom.casks
     end
 
     [select_outdated(formulae, args: args).sort, select_outdated(casks, args: args)]

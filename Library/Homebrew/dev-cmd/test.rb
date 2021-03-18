@@ -21,6 +21,8 @@ module Homebrew
 
         *Example:* `brew install jruby && brew test jruby`
       EOS
+      switch "-f", "--force",
+             description: "Test formulae even if they are unlinked."
       switch "--HEAD",
              description: "Test the head version of a formula."
       switch "--keep-tmp",
