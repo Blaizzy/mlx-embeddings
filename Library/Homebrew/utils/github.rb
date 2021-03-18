@@ -481,7 +481,7 @@ module GitHub
     pr_message = info[:pr_message]
 
     sourcefile_path.parent.cd do
-      git_dir = Utils.popen_read("git rev-parse --git-dir").chomp
+      git_dir = Utils.popen_read("git", "rev-parse", "--git-dir").chomp
       shallow = !git_dir.empty? && File.exist?("#{git_dir}/shallow")
       changed_files = [sourcefile_path]
       changed_files += additional_files if additional_files.present?
@@ -500,7 +500,7 @@ module GitHub
 
         unless args.commit?
           if args.no_fork?
-            remote_url = Utils.popen_read("git remote get-url --push origin").chomp
+            remote_url = Utils.popen_read("git", "remote", "get-url", "--push", "origin").chomp
             username = tap.user
           else
             begin

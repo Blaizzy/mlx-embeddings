@@ -1,9 +1,9 @@
 # typed: false
 # frozen_string_literal: true
 
-require "rubocops/lines"
+require "rubocops/shell_commands"
 
-describe RuboCop::Cop::FormulaAuditStrict::ShellCommands do
+describe RuboCop::Cop::Style::ShellCommands do
   subject(:cop) { described_class.new }
 
   context "when auditing shell commands" do

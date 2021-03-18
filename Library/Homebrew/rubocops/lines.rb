@@ -648,58 +648,6 @@ module RuboCop
           problem "Formulae should not depend on :tuntap" if depends_on? :tuntap
         end
       end
-
-      # This cop makes sure that shell command arguments are separated.
-      #
-      # @api private
-      class ShellCommands < FormulaCop
-        extend AutoCorrector
-
-        def audit_formula(_node, _class_node, _parent_class_node, body_node)
-          # Match shell commands separated by spaces in the same string
-          shell_cmd_with_spaces_regex = /[^"' ]*(?:\s[^"' ]*)+/
-
-          popen_commands = [
-            :popen_read,
-            :safe_popen_read,
-            :popen_write,
-            :safe_popen_write,
-          ]
-
-          shell_metacharacters = %w[> < < | ; : & * $ ? : ~ + @ !` ( ) [ ]]
-
-          find_every_method_call_by_name(body_node, :system).each do |method|
-            # Only separate when no shell metacharacters are present
-            next if shell_metacharacters.any? { |meta| string_content(parameters(method).first).include?(meta) }
-
-            next unless (match = regex_match_group(parameters(method).first, shell_cmd_with_spaces_regex))
-
-            good_args = match[0].gsub(" ", "\", \"")
-            offending_node(parameters(method).first)
-            problem "Separate `system` commands into `\"#{good_args}\"`" do |corrector|
-              corrector.replace(@offensive_node.source_range, @offensive_node.source.gsub(" ", "\", \""))
-            end
-          end
-
-          popen_commands.each do |command|
-            find_instance_method_call(body_node, "Utils", command) do |method|
-              index = parameters(method).first.hash_type? ? 1 : 0
-
-              # Only separate when no shell metacharacters are present
-              next if shell_metacharacters.any? { |meta| string_content(parameters(method)[index]).include?(meta) }
-
-              next unless (match = regex_match_group(parameters(method)[index], shell_cmd_with_spaces_regex))
-
-              good_args = match[0].gsub(" ", "\", \"")
-              offending_node(parameters(method)[index])
-              problem "Separate `Utils.#{command}` commands into `\"#{good_args}\"`" do |corrector|
-                good_args = @offensive_node.source.gsub(" ", "\", \"")
-                corrector.replace(@offensive_node.source_range, good_args)
-              end
-            end
-          end
-        end
-      end
     end
   end
 end
