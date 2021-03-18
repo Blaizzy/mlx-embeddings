@@ -110,6 +110,12 @@ module Cask
     RMDIR_SH = <<~'BASH'
       set -euo pipefail
 
+      # Try removing as many empty directories as possible with a single
+      # `rmdir` call to avoid or at least speed up the loop below.
+      if /bin/rmdir -- "${@}" &>/dev/null; then
+        exit
+      fi
+
       for path in "${@}"; do
         symlink=true
         [[ -L "${path}" ]] || symlink=false
