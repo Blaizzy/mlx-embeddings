@@ -70,7 +70,9 @@ Sorbet/ForbidSuperclassConstLiteral:
   Description: 'Forbid superclasses which are non-literal constants.'
   Enabled: false
   VersionAdded: 0.2.0
-  VersionChanged: 0.5.0
+  VersionChanged: 0.6.1
+  Exclude:
+  - db/migrate/*.rb
 
 Sorbet/ForbidUntypedStructProps:
   Description: >-
@@ -99,7 +101,7 @@ Sorbet/KeywordArgumentOrdering:
   Enabled: true
   VersionAdded: 0.2.0
 
-Sorbet/OnedAncestorPerLine:
+Sorbet/OneAncestorPerLine:
   Description: 'Enforces one ancestor per call to requires_ancestor'
   Enabled: false
   VersionAdded: '0.6.0'
