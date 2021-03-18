@@ -664,7 +664,7 @@ EOS
     brew update-report "$@"
     return $?
   elif [[ -z "$HOMEBREW_UPDATE_PREINSTALL" &&
-	  -z "$HOMEBREW_QUIET" ]]
+          -z "$HOMEBREW_QUIET" ]]
   then
     echo "Already up-to-date."
   fi
