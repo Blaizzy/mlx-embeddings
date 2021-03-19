@@ -11,6 +11,7 @@ class Dependency
 
   extend Forwardable
   include Dependable
+  extend Cachable
 
   attr_reader :name, :tags, :env_proc, :option_names
 
@@ -87,11 +88,16 @@ class Dependency
     # `[dependent, dep]` pairs to allow callers to apply arbitrary filters to
     # the list.
     # The default filter, which is applied when a block is not given, omits
-    # optionals and recommendeds based on what the dependent has asked for.
-    def expand(dependent, deps = dependent.deps, &block)
+    # optionals and recommendeds based on what the dependent has asked for
+    def expand(dependent, deps = dependent.deps, cache_key: nil, &block)
       # Keep track dependencies to avoid infinite cyclic dependency recursion.
       @expand_stack ||= []
       @expand_stack.push dependent.name
+
+      if cache_key.present?
+        cache[cache_key] ||= {}
+        return cache[cache_key][dependent.full_name].dup if cache[cache_key][dependent.full_name]
+      end
 
       expanded_deps = []
 
@@ -104,18 +110,20 @@ class Dependency
         when :skip
           next if @expand_stack.include? dep.name
 
-          expanded_deps.concat(expand(dep.to_formula, &block))
+          expanded_deps.concat(expand(dep.to_formula, cache_key: cache_key, &block))
         when :keep_but_prune_recursive_deps
           expanded_deps << dep
         else
           next if @expand_stack.include? dep.name
 
-          expanded_deps.concat(expand(dep.to_formula, &block))
+          expanded_deps.concat(expand(dep.to_formula, cache_key: cache_key, &block))
           expanded_deps << dep
         end
       end
 
-      merge_repeats(expanded_deps)
+      expanded_deps = merge_repeats(expanded_deps)
+      cache[cache_key][dependent.full_name] = expanded_deps.dup if cache_key.present?
+      expanded_deps
     ensure
       @expand_stack.pop
     end

@@ -15,6 +15,7 @@ class Requirement
   extend T::Sig
 
   include Dependable
+  extend Cachable
 
   attr_reader :tags, :name, :cask, :download
 
@@ -219,7 +220,12 @@ class Requirement
     # the list.
     # The default filter, which is applied when a block is not given, omits
     # optionals and recommendeds based on what the dependent has asked for.
-    def expand(dependent, &block)
+    def expand(dependent, cache_key: nil, &block)
+      if cache_key.present?
+        cache[cache_key] ||= {}
+        return cache[cache_key][dependent.full_name].dup if cache[cache_key][dependent.full_name]
+      end
+
       reqs = Requirements.new
 
       formulae = dependent.recursive_dependencies.map(&:to_formula)
@@ -233,6 +239,7 @@ class Requirement
         end
       end
 
+      cache[cache_key][dependent.full_name] = reqs.dup if cache_key.present?
       reqs
     end
 

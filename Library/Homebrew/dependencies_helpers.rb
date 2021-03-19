@@ -35,15 +35,11 @@ module DependenciesHelpers
   end
 
   def recursive_includes(klass, root_dependent, includes, ignores)
-    type = if klass == Dependency
-      :dependencies
-    elsif klass == Requirement
-      :requirements
-    else
-      raise ArgumentError, "Invalid class argument: #{klass}"
-    end
+    raise ArgumentError, "Invalid class argument: #{klass}" if klass != Dependency && klass != Requirement
 
-    root_dependent.send("recursive_#{type}") do |dependent, dep|
+    cache_key = "recursive_includes_#{includes}_#{ignores}"
+
+    klass.expand(root_dependent, cache_key: cache_key) do |dependent, dep|
       if dep.recommended?
         klass.prune if ignores.include?("recommended?") || dependent.build.without?(dep)
       elsif dep.optional?
@@ -57,7 +53,7 @@ module DependenciesHelpers
 
       # If a tap isn't installed, we can't find the dependencies of one of
       # its formulae, and an exception will be thrown if we try.
-      if type == :dependencies &&
+      if klass == Dependency &&
          dep.is_a?(TapDependency) &&
          !dep.tap.installed?
         Dependency.keep_but_prune_recursive_deps

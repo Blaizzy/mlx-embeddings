@@ -572,8 +572,8 @@ class FormulaInstaller
     unsatisfied_reqs = Hash.new { |h, k| h[k] = [] }
     req_deps = []
     formulae = [formula]
-    formula_deps_map = Dependency.expand(formula)
-                                 .index_by(&:name)
+    formula_deps_map = formula.recursive_dependencies
+                              .index_by(&:name)
 
     while (f = formulae.pop)
       runtime_requirements = runtime_requirements(f)

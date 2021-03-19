@@ -166,8 +166,7 @@ describe Formula do
     end
 
     build_values_with_no_installed_alias = [
-      nil,
-      BuildOptions.new({}, {}),
+      BuildOptions.new(Options.new, f.options),
       Tab.new(source: { "path" => f.path.to_s }),
     ]
     build_values_with_no_installed_alias.each do |build|
@@ -201,7 +200,10 @@ describe Formula do
       url "foo-1.0"
     end
 
-    build_values_with_no_installed_alias = [nil, BuildOptions.new({}, {}), Tab.new(source: { "path" => f.path })]
+    build_values_with_no_installed_alias = [
+      BuildOptions.new(Options.new, f.options),
+      Tab.new(source: { "path" => f.path }),
+    ]
     build_values_with_no_installed_alias.each do |build|
       f.build = build
       expect(f.installed_alias_path).to be nil
@@ -405,7 +407,7 @@ describe Formula do
       f = formula alias_path: alias_path do
         url "foo-1.0"
       end
-      f.build = BuildOptions.new({}, {})
+      f.build = BuildOptions.new(Options.new, f.options)
 
       expect(f.alias_path).to eq(alias_path)
       expect(f.installed_alias_path).to be nil
@@ -802,7 +804,7 @@ describe Formula do
 
     expect(Set.new(f1.recursive_requirements)).to eq(Set[])
 
-    f1.build = BuildOptions.new(["--with-xcode"], f1.options)
+    f1.build = BuildOptions.new(Options.create(["--with-xcode"]), f1.options)
 
     expect(Set.new(f1.recursive_requirements)).to eq(Set[xcode])
 
