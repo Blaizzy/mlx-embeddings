@@ -50,7 +50,7 @@ module Utils
 
         yield pipe
       else
-        options[:err] ||= :close unless ENV["HOMEBREW_STDERR"]
+        options[:err] ||= "/dev/null" unless ENV["HOMEBREW_STDERR"]
         begin
           exec(*args, options)
         rescue Errno::ENOENT
