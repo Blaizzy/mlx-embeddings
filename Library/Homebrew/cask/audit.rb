@@ -126,8 +126,10 @@ module Cask
       end
     end
 
-    sig { returns(String) }
-    def summary
+    sig { params(include_passed: T::Boolean).returns(String) }
+    def summary(include_passed: false)
+      return if success? && !include_passed
+
       summary = ["audit for #{cask}: #{result}"]
 
       errors.each do |error|

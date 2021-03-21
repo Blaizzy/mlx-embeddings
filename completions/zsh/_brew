@@ -406,6 +406,7 @@ _brew_audit() {
     '--audit-debug[Enable debugging and profiling of audit methods]' \
     '--debug[Display any debugging information]' \
     '(--skip-style --only-cops --except-cops)--display-cop-names[Include the RuboCop cop name for each violation in the output]' \
+    '--display-failures-only[Only display casks that fail the audit. This is the default for formulae]' \
     '--display-filename[Prefix every line of output with the file or formula name being audited, to make output easy to grep]' \
     '(--only)--except[Specify a comma-separated method list to skip running the methods named `audit_`method]' \
     '(--only-cops --strict --only-cops --only --display-cop-names)--except-cops[Specify a comma-separated cops list to skip checking for violations of the listed RuboCop cops]' \

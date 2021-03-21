@@ -325,6 +325,7 @@ __fish_brew_complete_arg 'audit' -l audit-debug -d 'Enable debugging and profili
 __fish_brew_complete_arg 'audit' -l cask -d 'Treat all named arguments as casks'
 __fish_brew_complete_arg 'audit' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'audit' -l display-cop-names -d 'Include the RuboCop cop name for each violation in the output'
+__fish_brew_complete_arg 'audit' -l display-failures-only -d 'Only display casks that fail the audit. This is the default for formulae'
 __fish_brew_complete_arg 'audit' -l display-filename -d 'Prefix every line of output with the file or formula name being audited, to make output easy to grep'
 __fish_brew_complete_arg 'audit' -l except -d 'Specify a comma-separated method list to skip running the methods named `audit_`method'
 __fish_brew_complete_arg 'audit' -l except-cops -d 'Specify a comma-separated cops list to skip checking for violations of the listed RuboCop cops'

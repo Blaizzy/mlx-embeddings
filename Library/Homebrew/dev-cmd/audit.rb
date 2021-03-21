@@ -56,6 +56,8 @@ module Homebrew
       switch "--display-filename",
              description: "Prefix every line of output with the file or formula name being audited, to "\
                           "make output easy to grep."
+      switch "--display-failures-only",
+             description: "Only display casks that fail the audit. This is the default for formulae."
       switch "--skip-style",
              description: "Skip running non-RuboCop style checks. Useful if you plan on running "\
                           "`brew style` separately. Enabled by default unless a formula is specified by name."
@@ -213,15 +215,17 @@ module Homebrew
 
       Cask::Cmd::Audit.audit_casks(
         *audit_casks,
-        download:        nil,
-        appcast:         args.appcast?,
-        online:          args.online?,
-        strict:          args.strict?,
-        new_cask:        args.new_cask?,
-        token_conflicts: args.token_conflicts?,
-        quarantine:      nil,
-        any_named_args:  !no_named_args,
-        language:        nil,
+        download:              nil,
+        appcast:               args.appcast?,
+        online:                args.online?,
+        strict:                args.strict?,
+        new_cask:              args.new_cask?,
+        token_conflicts:       args.token_conflicts?,
+        quarantine:            nil,
+        any_named_args:        !no_named_args,
+        language:              nil,
+        display_passes:        args.verbose? || args.named.count == 1,
+        display_failures_only: args.display_failures_only?,
       )
     end
 
