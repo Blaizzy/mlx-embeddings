@@ -32,7 +32,7 @@ describe "Satisfy Dependencies and Requirements", :cask do
   end
 
   describe "depends_on macos" do
-    context "given an array" do
+    context "with an array" do
       let(:cask) { Cask::CaskLoader.load(cask_path("with-depends-on-macos-array")) }
 
       it "does not raise an error" do
@@ -40,7 +40,7 @@ describe "Satisfy Dependencies and Requirements", :cask do
       end
     end
 
-    context "given a comparison" do
+    context "with a comparison" do
       let(:cask) { Cask::CaskLoader.load(cask_path("with-depends-on-macos-comparison")) }
 
       it "does not raise an error" do
@@ -48,7 +48,7 @@ describe "Satisfy Dependencies and Requirements", :cask do
       end
     end
 
-    context "given a symbol" do
+    context "with a symbol" do
       let(:cask) { Cask::CaskLoader.load(cask_path("with-depends-on-macos-symbol")) }
 
       it "does not raise an error" do

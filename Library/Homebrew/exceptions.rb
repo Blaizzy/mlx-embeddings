@@ -97,6 +97,25 @@ class FormulaOrCaskUnavailableError < RuntimeError
   end
 end
 
+# Raised when a formula or cask in a specific tap is not available.
+class TapFormulaOrCaskUnavailableError < FormulaOrCaskUnavailableError
+  extend T::Sig
+
+  attr_reader :tap
+
+  def initialize(tap, name)
+    super "#{tap}/#{name}"
+    @tap = tap
+  end
+
+  sig { returns(String) }
+  def to_s
+    s = super
+    s += "\nPlease tap it and then try again: brew tap #{tap}" unless tap.installed?
+    s
+  end
+end
+
 # Raised when a formula is not available.
 class FormulaUnavailableError < FormulaOrCaskUnavailableError
   extend T::Sig
@@ -423,7 +442,7 @@ class BuildError < RuntimeError
 
   def fetch_issues
     GitHub.issues_for_formula(formula.name, tap: formula.tap, state: "open")
-  rescue GitHub::RateLimitExceededError => e
+  rescue GitHub::API::RateLimitExceededError => e
     opoo e.message
     []
   end
@@ -453,7 +472,7 @@ class BuildError < RuntimeError
     if formula.tap && defined?(OS::ISSUES_URL)
       if formula.tap.official?
         puts Formatter.error(Formatter.url(OS::ISSUES_URL), label: "READ THIS")
-      elsif issues_url = formula.tap.issues_url
+      elsif (issues_url = formula.tap.issues_url)
         puts <<~EOS
           If reporting this issue please do so at (not Homebrew/brew or Homebrew/core):
             #{Formatter.url(issues_url)}
@@ -579,19 +598,32 @@ class ErrorDuringExecution < RuntimeError
     @status = status
     @output = output
 
+    raise ArgumentError, "Status cannot be nil." if status.nil?
+
     exitstatus = case status
     when Integer
       status
+    when Hash
+      status["exitstatus"]
     else
-      status&.exitstatus
+      status.exitstatus
+    end
+
+    termsig = case status
+    when Integer
+      nil
+    when Hash
+      status["termsig"]
+    else
+      status.termsig
     end
 
     redacted_cmd = redact_secrets(cmd.shelljoin.gsub('\=', "="), secrets)
 
     reason = if exitstatus
       "exited with #{exitstatus}"
-    elsif (uncaught_signal = status&.termsig)
-      "was terminated by uncaught signal #{Signal.signame(uncaught_signal)}"
+    elsif termsig
+      "was terminated by uncaught signal #{Signal.signame(termsig)}"
     else
       raise ArgumentError, "Status neither has `exitstatus` nor `termsig`."
     end

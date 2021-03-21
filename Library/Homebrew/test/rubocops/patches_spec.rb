@@ -54,23 +54,19 @@ describe RuboCop::Cop::FormulaAudit::Patches do
 
         expected_offense = if patch_url.include?("/raw.github.com/")
           expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 4, source: source
-            GitHub/Gist patches should specify a revision:
-              #{patch_url}
+            GitHub/Gist patches should specify a revision: #{patch_url}
           EOS
         elsif patch_url.include?("macports/trunk")
           expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 4, source: source
-            MacPorts patches should specify a revision instead of trunk:
-              #{patch_url}
+            MacPorts patches should specify a revision instead of trunk: #{patch_url}
           EOS
         elsif patch_url.start_with?("http://trac.macports.org")
           expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 4, source: source
-            Patches from MacPorts Trac should be https://, not http:
-              #{patch_url}
+            Patches from MacPorts Trac should be https://, not http: #{patch_url}
           EOS
         elsif patch_url.start_with?("http://bugs.debian.org")
           expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 4, source: source
-            Patches from Debian should be https://, not http:
-              #{patch_url}
+            Patches from Debian should be https://, not http: #{patch_url}
           EOS
         # rubocop:disable Layout/LineLength
         elsif patch_url.match?(%r{https?://patch-diff\.githubusercontent\.com/raw/(.+)/(.+)/pull/(.+)\.(?:diff|patch)})
@@ -78,9 +74,8 @@ describe RuboCop::Cop::FormulaAudit::Patches do
           expect_offense_hash message: "Use a commit hash URL rather than patch-diff: #{patch_url}",
                               severity: :convention, line: 5, column: 4, source: source
         elsif patch_url.match?(%r{https?://github\.com/.+/.+/(?:commit|pull)/[a-fA-F0-9]*.(?:patch|diff)})
-          expect_offense_hash message: <<~EOS, severity: :convention, line: 5, column: 4, source: source
-            GitHub patches should use the full_index parameter:
-              #{patch_url}?full_index=1
+          expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 4, source: source
+            GitHub patches should use the full_index parameter: #{patch_url}?full_index=1
           EOS
         end
         expected_offense.zip([inspect_source(source).last]).each do |expected, actual|
@@ -112,11 +107,8 @@ describe RuboCop::Cop::FormulaAudit::Patches do
                              line:     4,
                              column:   2,
                              source:   source },
-                           { message:
-                                       <<~EOS.chomp,
-                                         Patches from MacPorts Trac should be https://, not http:
-                                           http://trac.macports.org/export/68507/trunk/dports/net/trafshow/files/
-                                       EOS
+                           { message:  "Patches from MacPorts Trac should be https://, not http: " \
+                                       "http://trac.macports.org/export/68507/trunk/dports/net/trafshow/files/",
                              severity: :convention,
                              line:     8,
                              column:   25,
@@ -205,23 +197,19 @@ describe RuboCop::Cop::FormulaAudit::Patches do
 
         expected_offense = if patch_url.include?("/raw.github.com/")
           expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 8, source: source
-            GitHub/Gist patches should specify a revision:
-              #{patch_url}
+            GitHub/Gist patches should specify a revision: #{patch_url}
           EOS
         elsif patch_url.include?("macports/trunk")
           expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 8, source: source
-            MacPorts patches should specify a revision instead of trunk:
-              #{patch_url}
+            MacPorts patches should specify a revision instead of trunk: #{patch_url}
           EOS
         elsif patch_url.start_with?("http://trac.macports.org")
           expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 8, source: source
-            Patches from MacPorts Trac should be https://, not http:
-              #{patch_url}
+            Patches from MacPorts Trac should be https://, not http: #{patch_url}
           EOS
         elsif patch_url.start_with?("http://bugs.debian.org")
           expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 8, source: source
-            Patches from Debian should be https://, not http:
-              #{patch_url}
+            Patches from Debian should be https://, not http: #{patch_url}
           EOS
         elsif patch_url.match?(%r{https://github.com/[^/]*/[^/]*/pull})
           expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 8, source: source
@@ -233,13 +221,11 @@ describe RuboCop::Cop::FormulaAudit::Patches do
           EOS
         elsif patch_url.match?(%r{https://github.com/[^/]*/[^/]*/commit/})
           expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 8, source: source
-            GitHub patches should end with .patch, not .diff:
-              #{patch_url}
+            GitHub patches should end with .patch, not .diff: #{patch_url}
           EOS
         elsif patch_url.match?(%r{.*gitlab.*/commit/})
           expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 8, source: source
-            GitLab patches should end with .patch, not .diff:
-              #{patch_url}
+            GitLab patches should end with .patch, not .diff: #{patch_url}
           EOS
         # rubocop:disable Layout/LineLength
         elsif patch_url.match?(%r{https?://patch-diff\.githubusercontent\.com/raw/(.+)/(.+)/pull/(.+)\.(?:diff|patch)})

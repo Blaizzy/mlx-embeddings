@@ -176,7 +176,7 @@ describe Caveats do
       end
     end
 
-    context "shell completions" do
+    describe "shell completions" do
       let(:f) {
         formula do
           url "foo-1.0"

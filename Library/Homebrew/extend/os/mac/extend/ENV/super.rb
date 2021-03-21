@@ -98,8 +98,6 @@ module Superenv
 
   def determine_cccfg
     s = +""
-    # Fix issue with sed barfing on unicode characters on Mountain Lion
-    s << "s"
     # Fix issue with >= Mountain Lion apr-1-config having broken paths
     s << "a"
     s.freeze
@@ -121,7 +119,10 @@ module Superenv
       self["HOMEBREW_SDKROOT"] = nil
       self["HOMEBREW_DEVELOPER_DIR"] = nil
     end
-    generic_setup_build_environment(formula: formula, cc: cc, build_bottle: build_bottle, bottle_arch: bottle_arch)
+    generic_setup_build_environment(
+      formula: formula, cc: cc, build_bottle: build_bottle,
+      bottle_arch: bottle_arch, testing_formula: testing_formula
+    )
 
     # Filter out symbols known not to be defined since GNU Autotools can't
     # reliably figure this out with Xcode 8 and above.

@@ -22,9 +22,8 @@ module Homebrew
       flag   "--pull-label=",
              description: "Label name for pull requests ready to be pulled (default: `pr-pull`)."
       flag   "--branch=",
-             description: "Initialize Git repository with the specified branch name (default: `main`)."
-
-      conflicts "--no-git", "--branch"
+             description: "Initialize Git repository and setup GitHub Actions workflows with the " \
+                          "specified branch name (default: `main`)."
 
       named_args :tap, number: 1
     end
@@ -50,11 +49,13 @@ module Homebrew
       # #{titleized_user} #{titleized_repo}
 
       ## How do I install these formulae?
+
       `brew install #{tap}/<formula>`
 
       Or `brew tap #{tap}` and then `brew install <formula>`.
 
       ## Documentation
+
       `brew help`, `man brew` or check [Homebrew's documentation](https://docs.brew.sh).
     MARKDOWN
     write_path(tap, "README.md", readme)
@@ -63,13 +64,14 @@ module Homebrew
       name: brew test-bot
       on:
         push:
-          branches: #{branch}
+          branches:
+            - #{branch}
         pull_request:
       jobs:
         test-bot:
           strategy:
             matrix:
-              os: [ubuntu-latest, macOS-latest]
+              os: [ubuntu-latest, macos-latest]
           runs-on: ${{ matrix.os }}
           steps:
             - name: Set up Homebrew

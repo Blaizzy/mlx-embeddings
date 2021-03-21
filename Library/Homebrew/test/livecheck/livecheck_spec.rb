@@ -68,13 +68,13 @@ describe Homebrew::Livecheck do
     it "returns a hash containing the livecheck status" do
       expect(livecheck.status_hash(f, "error", ["Unable to get versions"]))
         .to eq({
-                 formula:  "test",
-                 status:   "error",
-                 messages: ["Unable to get versions"],
-                 meta:     {
-                   livecheckable: true,
-                 },
-               })
+          formula:  "test",
+          status:   "error",
+          messages: ["Unable to get versions"],
+          meta:     {
+            livecheckable: true,
+          },
+        })
     end
   end
 

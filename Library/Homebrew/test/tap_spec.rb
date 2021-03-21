@@ -210,13 +210,11 @@ describe Tap do
     setup_git_repo
 
     expect(homebrew_foo_tap.git_head).to eq("0453e16c8e3fac73104da50927a86221ca0740c2")
-    expect(homebrew_foo_tap.git_short_head).to eq("0453")
     expect(homebrew_foo_tap.git_last_commit).to match(/\A\d+ .+ ago\Z/)
-    expect(homebrew_foo_tap.git_last_commit_date).to eq("2017-01-22")
   end
 
   specify "#private?" do
-    skip "HOMEBREW_GITHUB_API_TOKEN is required" unless GitHub.api_credentials
+    skip "HOMEBREW_GITHUB_API_TOKEN is required" unless GitHub::API.credentials
     expect(homebrew_foo_tap).to be_private
   end
 

@@ -11,7 +11,7 @@ describe Cask::Artifact::Uninstall, :cask do
   describe "#post_uninstall_phase" do
     subject(:artifact) { cask.artifacts.find { |a| a.is_a?(described_class) } }
 
-    context "using :rmdir" do
+    context "when using :rmdir" do
       let(:fake_system_command) { NeverSudoSystemCommand }
       let(:cask) { Cask::CaskLoader.load(cask_path("with-uninstall-rmdir")) }
       let(:empty_directory) { Pathname.new("#{TEST_TMPDIR}/empty_directory_path") }

@@ -18,13 +18,13 @@ describe "Bash" do
     end
   end
 
-  context "brew" do
+  describe "brew" do
     subject { HOMEBREW_LIBRARY_PATH.parent.parent/"bin/brew" }
 
     it { is_expected.to have_valid_bash_syntax }
   end
 
-  context "every `.sh` file" do
+  describe "every `.sh` file" do
     it "has valid Bash syntax" do
       Pathname.glob("#{HOMEBREW_LIBRARY_PATH}/**/*.sh").each do |path|
         relative_path = path.relative_path_from(HOMEBREW_LIBRARY_PATH)
@@ -35,13 +35,13 @@ describe "Bash" do
     end
   end
 
-  context "Bash completion" do
+  describe "Bash completion" do
     subject { HOMEBREW_LIBRARY_PATH.parent.parent/"completions/bash/brew" }
 
     it { is_expected.to have_valid_bash_syntax }
   end
 
-  context "every shim script" do
+  describe "every shim script" do
     it "has valid Bash syntax" do
       # These have no file extension, but can be identified by their shebang.
       (HOMEBREW_LIBRARY_PATH/"shims").find do |path|

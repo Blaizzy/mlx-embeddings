@@ -62,13 +62,15 @@ module Cask
       EOS
     end
 
-    def fetch
+    sig { params(quiet: T.nilable(T::Boolean), timeout: T.nilable(T.any(Integer, Float))).void }
+    def fetch(quiet: nil, timeout: nil)
       odebug "Cask::Installer#fetch"
 
       verify_has_sha if require_sha? && !force?
-      satisfy_dependencies
 
-      download
+      download(quiet: quiet, timeout: timeout)
+
+      satisfy_dependencies
     end
 
     def stage
@@ -146,7 +148,7 @@ module Cask
       installed_cask = installed_caskfile.exist? ? CaskLoader.load(installed_caskfile) : @cask
 
       # Always force uninstallation, ignore method parameter
-      Installer.new(installed_cask, binaries: binaries?, verbose: verbose?, force: true, upgrade: upgrade?).uninstall
+      Installer.new(installed_cask, verbose: verbose?, force: true, upgrade: upgrade?).uninstall
     end
 
     sig { returns(String) }
@@ -162,9 +164,10 @@ module Cask
       @downloader ||= Download.new(@cask, quarantine: quarantine?)
     end
 
-    sig { returns(Pathname) }
-    def download
-      @download ||= downloader.fetch(verify_download_integrity: @verify_download_integrity)
+    sig { params(quiet: T.nilable(T::Boolean), timeout: T.nilable(T.any(Integer, Float))).returns(Pathname) }
+    def download(quiet: nil, timeout: nil)
+      @download ||= downloader.fetch(quiet: quiet, verify_download_integrity: @verify_download_integrity,
+timeout: timeout)
     end
 
     def verify_has_sha
@@ -179,7 +182,7 @@ module Cask
 
     def primary_container
       @primary_container ||= begin
-        downloaded_path = download
+        downloaded_path = download(quiet: true)
         UnpackStrategy.detect(downloaded_path, type: @cask.container&.type, merge_xattrs: true)
       end
     end
@@ -191,7 +194,7 @@ module Cask
 
       basename = downloader.basename
 
-      if nested_container = @cask.container&.nested
+      if (nested_container = @cask.container&.nested)
         Dir.mktmpdir do |tmpdir|
           tmpdir = Pathname(tmpdir)
           primary_container.extract(to: tmpdir, basename: basename, verbose: verbose?)

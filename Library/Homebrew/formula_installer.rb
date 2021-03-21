@@ -94,7 +94,6 @@ class FormulaInstaller
     @options = options
     @requirement_messages = []
     @poured_bottle = false
-    @pour_failed = false
     @start_time = nil
   end
 
@@ -154,8 +153,6 @@ class FormulaInstaller
 
   sig { params(output_warning: T::Boolean).returns(T::Boolean) }
   def pour_bottle?(output_warning: false)
-    return false if @pour_failed
-
     return false if !formula.bottle_tag? && !formula.local_bottle_path
     return true  if force_bottle?
     return false if build_from_source? || build_bottle? || interactive?
@@ -230,13 +227,12 @@ class FormulaInstaller
       raise CannotInstallFormulaError, "--force-bottle passed but #{formula.full_name} has no bottle!"
     end
 
-    if Homebrew.default_prefix? && !Homebrew::EnvConfig.developer? &&
+    if Homebrew.default_prefix? &&
        # TODO: re-enable this on Linux when we merge linuxbrew-core into
        # homebrew-core and have full bottle coverage.
        (OS.mac? || ENV["CI"]) &&
-       !build_from_source? && !build_bottle? &&
-       !installed_as_dependency? &&
-       formula.tap&.core_tap? && !formula.bottle_unneeded? && !formula.any_version_installed? &&
+       !build_from_source? && !build_bottle? && !formula.head? &&
+       formula.tap&.core_tap? && !formula.bottle_unneeded? &&
        # Integration tests override homebrew-core locations
        ENV["HOMEBREW_TEST_TMPDIR"].nil? &&
        !pour_bottle?
@@ -244,21 +240,31 @@ class FormulaInstaller
         formula_message = formula.pour_bottle_check_unsatisfied_reason
         formula_message[0] = formula_message[0].downcase
 
-        "#{formula}: #{formula_message}"
-      else
+        <<~EOS
+          #{formula}: #{formula_message}
+        EOS
+      # don't want to complain about no bottle available if doing an
+      # upgrade/reinstall/dependency install (but do in the case the bottle
+      # check fails)
+      elsif !Homebrew::EnvConfig.developer? &&
+            (!installed_as_dependency? || !formula.any_version_installed?) &&
+            (!OS.mac? || !OS::Mac.outdated_release?)
         <<~EOS
           #{formula}: no bottle available!
         EOS
       end
-      message += <<~EOS
-        You can try to install from source with:
-          brew install --build-from-source #{formula}
-        Please note building from source is unsupported. You will encounter build
-        failures with some formulae. If you experience any issues please create pull
-        requests instead of asking for help on Homebrew's GitHub, Twitter or any other
-        official channels.
-      EOS
-      raise CannotInstallFormulaError, message
+
+      if message
+        message += <<~EOS
+          You can try to install from source with:
+            brew install --build-from-source #{formula}
+          Please note building from source is unsupported. You will encounter build
+          failures with some formulae. If you experience any issues please create pull
+          requests instead of asking for help on Homebrew's GitHub, Twitter or any other
+          official channels.
+        EOS
+        raise CannotInstallFormulaError, message
+      end
     end
 
     type, reason = DeprecateDisable.deprecate_disable_info formula
@@ -282,47 +288,49 @@ class FormulaInstaller
 
     return if ignore_deps?
 
-    recursive_deps = formula.recursive_dependencies
-    recursive_formulae = recursive_deps.map(&:to_formula)
+    if Homebrew::EnvConfig.developer?
+      # `recursive_dependencies` trims cyclic dependencies, so we do one level and take the recursive deps of that.
+      # Mapping direct dependencies to deeper dependencies in a hash is also useful for the cyclic output below.
+      recursive_dep_map = formula.deps.to_h { |dep| [dep, dep.to_formula.recursive_dependencies] }
 
-    recursive_dependencies = []
-    invalid_arch_dependencies = []
-    recursive_formulae.each do |dep|
-      dep_recursive_dependencies = dep.recursive_dependencies.map(&:to_s)
-      if dep_recursive_dependencies.include?(formula.name)
-        recursive_dependencies << "#{formula.full_name} depends on #{dep.full_name}"
-        recursive_dependencies << "#{dep.full_name} depends on #{formula.full_name}"
+      cyclic_dependencies = []
+      recursive_dep_map.each do |dep, recursive_deps|
+        if [formula.name, formula.full_name].include?(dep.name)
+          cyclic_dependencies << "#{formula.full_name} depends on itself directly"
+        elsif recursive_deps.any? { |rdep| [formula.name, formula.full_name].include?(rdep.name) }
+          cyclic_dependencies << "#{formula.full_name} depends on itself via #{dep.name}"
+        end
       end
 
-      if (tab = Tab.for_formula(dep)) && tab.arch.present? && tab.arch.to_s != Hardware::CPU.arch.to_s
+      if cyclic_dependencies.present?
+        raise CannotInstallFormulaError, <<~EOS
+          #{formula.full_name} contains a recursive dependency on itself:
+            #{cyclic_dependencies.join("\n  ")}
+        EOS
+      end
+
+      # Merge into one list
+      recursive_deps = recursive_dep_map.flat_map { |dep, rdeps| [dep] + rdeps }
+      Dependency.merge_repeats(recursive_deps)
+    else
+      recursive_deps = formula.recursive_dependencies
+    end
+
+    invalid_arch_dependencies = []
+    pinned_unsatisfied_deps = []
+    recursive_deps.each do |dep|
+      if (tab = Tab.for_formula(dep.to_formula)) && tab.arch.present? && tab.arch.to_s != Hardware::CPU.arch.to_s
         invalid_arch_dependencies << "#{dep} was built for #{tab.arch}"
       end
+
+      pinned_unsatisfied_deps << dep if dep.to_formula.pinned? && !dep.satisfied?(inherited_options_for(dep))
     end
 
-    unless recursive_dependencies.empty?
-      raise CannotInstallFormulaError, <<~EOS
-        #{formula.full_name} contains a recursive dependency on itself:
-          #{recursive_dependencies.join("\n  ")}
-      EOS
-    end
-
-    if recursive_formulae.flat_map(&:recursive_dependencies)
-                         .map(&:to_s)
-                         .include?(formula.name)
-      raise CannotInstallFormulaError, <<~EOS
-        #{formula.full_name} contains a recursive dependency on itself!
-      EOS
-    end
-
-    unless invalid_arch_dependencies.empty?
+    if invalid_arch_dependencies.present?
       raise CannotInstallFormulaError, <<~EOS
         #{formula.full_name} dependencies not built for the #{Hardware::CPU.arch} CPU architecture:
           #{invalid_arch_dependencies.join("\n  ")}
       EOS
-    end
-
-    pinned_unsatisfied_deps = recursive_deps.select do |dep|
-      dep.to_formula.pinned? && !dep.satisfied?(inherited_options_for(dep))
     end
 
     return if pinned_unsatisfied_deps.empty?
@@ -429,7 +437,7 @@ class FormulaInstaller
     if pour_bottle?
       begin
         pour
-      rescue Exception => e # rubocop:disable Lint/RescueException
+      rescue Exception # rubocop:disable Lint/RescueException
         # any exceptions must leave us with nothing installed
         ignore_interrupts do
           begin
@@ -442,17 +450,7 @@ class FormulaInstaller
           end
           formula.rack.rmdir_if_possible
         end
-        raise if Homebrew::EnvConfig.developer? ||
-                 Homebrew::EnvConfig.no_bottle_source_fallback? ||
-                 force_bottle? ||
-                 e.is_a?(Interrupt)
-
-        @pour_failed = true
-        onoe e.message
-        opoo "Bottle installation failed: building from source."
-        raise UnbottledError, [formula] unless DevelopmentTools.installed?
-
-        compute_and_install_dependencies unless ignore_deps?
+        raise
       else
         @poured_bottle = true
       end
@@ -513,7 +511,7 @@ class FormulaInstaller
 
       $stderr.puts "Please report this issue to the #{formula.tap} tap (not Homebrew/brew or Homebrew/core)!"
       false
-    else # rubocop:disable Layout/ElseAlignment
+    else
       f.linked_keg.exist? && f.opt_prefix.exist?
     end
 
@@ -523,9 +521,11 @@ class FormulaInstaller
   # Compute and collect the dependencies needed by the formula currently
   # being installed.
   def compute_dependencies
-    req_map, req_deps = expand_requirements
-    check_requirements(req_map)
-    expand_dependencies(req_deps + formula.deps)
+    @compute_dependencies ||= begin
+      req_map, req_deps = expand_requirements
+      check_requirements(req_map)
+      expand_dependencies(req_deps + formula.deps)
+    end
   end
 
   def unbottled_dependencies(deps)
@@ -575,7 +575,7 @@ class FormulaInstaller
     formula_deps_map = Dependency.expand(formula)
                                  .index_by(&:name)
 
-    while f = formulae.pop
+    while (f = formulae.pop)
       runtime_requirements = runtime_requirements(f)
       f.recursive_requirements do |dependent, req|
         build = effective_build_options_for(dependent)
@@ -707,16 +707,17 @@ class FormulaInstaller
       quiet:                      quiet?,
       verbose:                    verbose?,
     )
+    fi.prelude
     fi.fetch
   end
 
   sig { params(dep: Dependency, inherited_options: Options).void }
   def install_dependency(dep, inherited_options)
     df = dep.to_formula
-    tab = Tab.for_formula(df)
 
     if df.linked_keg.directory?
       linked_keg = Keg.new(df.linked_keg.resolved_path)
+      tab = Tab.for_keg(linked_keg)
       keg_had_linked_keg = true
       keg_was_linked = linked_keg.linked?
       linked_keg.unlink
@@ -724,12 +725,13 @@ class FormulaInstaller
 
     if df.latest_version_installed?
       installed_keg = Keg.new(df.prefix)
+      tab ||= Tab.for_keg(installed_keg)
       tmp_keg = Pathname.new("#{installed_keg}.tmp")
       installed_keg.rename(tmp_keg)
     end
 
-    tab_tap = tab.source["tap"]
-    if tab_tap.present? && df.tap.present? && df.tap.to_s != tab_tap.to_s
+    if df.tap.present? && tab.present? && (tab_tap = tab.source["tap"].presence) &&
+       df.tap.to_s != tab_tap.to_s
       odie <<~EOS
         #{df} is already installed from #{tab_tap}!
         Please `brew uninstall #{df}` first."
@@ -737,7 +739,7 @@ class FormulaInstaller
     end
 
     options = Options.new
-    options |= tab.used_options
+    options |= tab.used_options if tab.present?
     options |= Tab.remap_deprecated_options(df.deprecated_options, dep.options)
     options |= inherited_options
     options &= df.options
@@ -748,7 +750,7 @@ class FormulaInstaller
         options:                    options,
         link_keg:                   keg_had_linked_keg ? keg_was_linked : nil,
         installed_as_dependency:    true,
-        installed_on_request:       df.any_version_installed? && tab.installed_on_request,
+        installed_on_request:       df.any_version_installed? && tab.present? && tab.installed_on_request,
         force_bottle:               false,
         include_test_formulae:      @include_test_formulae,
         build_from_source_formulae: @build_from_source_formulae,
@@ -759,7 +761,6 @@ class FormulaInstaller
         verbose:                    verbose?,
       },
     )
-    fi.prelude
     oh1 "Installing #{formula.full_name} dependency: #{Formatter.identifier(dep.name)}"
     fi.install
     fi.finish
@@ -901,13 +902,12 @@ class FormulaInstaller
     # 1. formulae can modify ENV, so we must ensure that each
     #    installation has a pristine ENV when it starts, forking now is
     #    the easiest way to do this
-    args = %W[
-      nice #{RUBY_PATH}
-      #{ENV["HOMEBREW_RUBY_WARNINGS"]}
-      -I #{$LOAD_PATH.join(File::PATH_SEPARATOR)}
-      --
-      #{HOMEBREW_LIBRARY_PATH}/build.rb
-      #{formula.specified_path}
+    args = [
+      "nice",
+      *HOMEBREW_RUBY_EXEC_ARGS,
+      "--",
+      HOMEBREW_LIBRARY_PATH/"build.rb",
+      formula.specified_path,
     ].concat(build_argv)
 
     Utils.safe_fork do
@@ -1123,25 +1123,10 @@ class FormulaInstaller
 
     return if only_deps?
 
-    if pour_bottle?(output_warning: true)
-      begin
-        downloader.fetch
-      rescue Exception => e # rubocop:disable Lint/RescueException
-        raise if Homebrew::EnvConfig.developer? ||
-                 Homebrew::EnvConfig.no_bottle_source_fallback? ||
-                 force_bottle? ||
-                 e.is_a?(Interrupt)
-
-        @pour_failed = true
-        onoe e.message
-        opoo "Bottle installation failed: building from source."
-        fetch_dependencies
-      end
+    unless pour_bottle?(output_warning: true)
+      formula.fetch_patches
+      formula.resources.each(&:fetch)
     end
-    return if pour_bottle?
-
-    formula.fetch_patches
-    formula.resources.each(&:fetch)
     downloader.fetch
   end
 
@@ -1170,10 +1155,12 @@ class FormulaInstaller
 
     tab = Tab.for_keg(keg)
 
-    CxxStdlib.check_compatibility(
-      formula, formula.recursive_dependencies,
-      Keg.new(formula.prefix), tab.compiler
-    )
+    unless ignore_deps?
+      CxxStdlib.check_compatibility(
+        formula, formula.recursive_dependencies,
+        Keg.new(formula.prefix), tab.compiler
+      )
+    end
 
     tab.tap = formula.tap
     tab.poured_from_bottle = true
@@ -1253,10 +1240,9 @@ class FormulaInstaller
     end
 
     return if forbidden_licenses.blank?
+    return if ignore_deps?
 
     compute_dependencies.each do |dep, _|
-      next if @ignore_deps
-
       dep_f = dep.to_formula
       next unless SPDX.licenses_forbid_installation? dep_f.license, forbidden_licenses
 
@@ -1265,7 +1251,8 @@ class FormulaInstaller
           #{SPDX.license_expression_to_string dep_f.license}.
       EOS
     end
-    return if @only_deps
+
+    return if only_deps?
 
     return unless SPDX.licenses_forbid_installation? formula.license, forbidden_licenses
 

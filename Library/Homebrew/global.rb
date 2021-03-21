@@ -16,7 +16,6 @@ require "rbconfig"
 RUBY_PATH = Pathname.new(RbConfig.ruby).freeze
 RUBY_BIN = RUBY_PATH.dirname.freeze
 
-require "rubygems"
 # Only require "core_ext" here to ensure we're only requiring the minimum of
 # what we need.
 require "active_support/core_ext/object/blank"
@@ -72,8 +71,6 @@ HOMEBREW_PULL_API_REGEX =
   %r{https://api\.github\.com/repos/([\w-]+)/([\w-]+)?/pulls/(\d+)}.freeze
 HOMEBREW_PULL_OR_COMMIT_URL_REGEX =
   %r[https://github\.com/([\w-]+)/([\w-]+)?/(?:pull/(\d+)|commit/[0-9a-fA-F]{4,40})].freeze
-HOMEBREW_RELEASES_URL_REGEX =
-  %r{https://github\.com/([\w-]+)/([\w-]+)?/releases/download/(.+)}.freeze
 
 require "fileutils"
 

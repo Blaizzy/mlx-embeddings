@@ -132,6 +132,12 @@ module Homebrew
 
         raise unreadable_error if unreadable_error.present?
 
+        user, repo, short_name = name.downcase.split("/", 3)
+        if repo.present? && short_name.present?
+          tap = Tap.fetch(user, repo)
+          raise TapFormulaOrCaskUnavailableError.new(tap, short_name)
+        end
+
         raise FormulaOrCaskUnavailableError, name
       end
       private :load_formula_or_cask
@@ -265,28 +271,24 @@ module Homebrew
         opt_prefix = HOMEBREW_PREFIX/"opt/#{rack.basename}"
 
         begin
-          if opt_prefix.symlink? && opt_prefix.directory?
-            Keg.new(opt_prefix.resolved_path)
-          elsif linked_keg_ref.symlink? && linked_keg_ref.directory?
-            Keg.new(linked_keg_ref.resolved_path)
-          elsif dirs.length == 1
-            Keg.new(dirs.first)
+          return Keg.new(opt_prefix.resolved_path) if opt_prefix.symlink? && opt_prefix.directory?
+          return Keg.new(linked_keg_ref.resolved_path) if linked_keg_ref.symlink? && linked_keg_ref.directory?
+          return Keg.new(dirs.first) if dirs.length == 1
+
+          f = if name.include?("/") || File.exist?(name)
+            Formulary.factory(name)
           else
-            f = if name.include?("/") || File.exist?(name)
-              Formulary.factory(name)
-            else
-              Formulary.from_rack(rack)
-            end
-
-            unless (prefix = f.latest_installed_prefix).directory?
-              raise MultipleVersionsInstalledError, <<~EOS
-                #{rack.basename} has multiple installed versions
-                Run `brew uninstall --force #{rack.basename}` to remove all versions.
-              EOS
-            end
-
-            Keg.new(prefix)
+            Formulary.from_rack(rack)
           end
+
+          unless (prefix = f.latest_installed_prefix).directory?
+            raise MultipleVersionsInstalledError, <<~EOS
+              #{rack.basename} has multiple installed versions
+              Run `brew uninstall --force #{rack.basename}` to remove all versions.
+            EOS
+          end
+
+          Keg.new(prefix)
         rescue FormulaUnavailableError
           raise MultipleVersionsInstalledError, <<~EOS
             Multiple kegs installed to #{rack}

@@ -121,6 +121,7 @@ module Kernel
   end
 
   def puts_stdout_or_stderr(*message)
+    message = "\n" if message.empty?
     if $stdout.tty?
       puts(message)
     else
@@ -222,7 +223,7 @@ module Kernel
     tap_message = T.let(nil, T.nilable(String))
 
     backtrace.each do |line|
-      next unless match = line.match(HOMEBREW_TAP_PATH_REGEX)
+      next unless (match = line.match(HOMEBREW_TAP_PATH_REGEX))
 
       tap = Tap.fetch(match[:user], match[:repo])
       tap_message = +"\nPlease report this issue to the #{tap} tap (not Homebrew/brew or Homebrew/core)"

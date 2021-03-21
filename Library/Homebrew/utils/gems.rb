@@ -22,7 +22,6 @@ module Homebrew
   end
 
   def gem_user_bindir
-    require "rubygems"
     "#{gem_user_dir}/bin"
   end
 
@@ -31,6 +30,14 @@ module Homebrew
       $stderr.ohai message
     else
       $stderr.puts "==> #{message}"
+    end
+  end
+
+  def opoo_if_defined(message)
+    if defined?(opoo)
+      $stderr.opoo message
+    else
+      $stderr.puts "Warning: #{message}"
     end
   end
 
@@ -43,21 +50,19 @@ module Homebrew
     end
   end
 
-  def setup_gem_environment!(gem_home: nil, gem_bindir: nil)
-    require "rubygems"
-
+  def setup_gem_environment!(gem_home: nil, gem_bindir: nil, setup_path: true)
     # Match where our bundler gems are.
     gem_home ||= "#{ENV["HOMEBREW_LIBRARY"]}/Homebrew/vendor/bundle/ruby/#{RbConfig::CONFIG["ruby_version"]}"
-    ENV["GEM_HOME"] = gem_home
-    ENV["GEM_PATH"] = "#{ENV["GEM_HOME"]}:#{Gem.default_dir}"
+    Gem.paths = {
+      "GEM_HOME" => gem_home,
+      "GEM_PATH" => gem_home,
+    }
 
     # Set TMPDIR so Xcode's `make` doesn't fall back to `/var/tmp/`,
     # which may be not user-writable.
     ENV["TMPDIR"] = ENV["HOMEBREW_TEMP"]
 
-    # Make RubyGems notice environment changes.
-    Gem.clear_paths
-    Gem::Specification.reset
+    return unless setup_path
 
     # Add necessary Ruby and Gem binary directories to `PATH`.
     gem_bindir ||= Gem.bindir
@@ -65,15 +70,31 @@ module Homebrew
     paths.unshift(gem_bindir) unless paths.include?(gem_bindir)
     paths.unshift(ruby_bindir) unless paths.include?(ruby_bindir)
     ENV["PATH"] = paths.compact.join(":")
+
+    # Set envs so the above binaries can be invoked.
+    # We don't do this unless requested as some formulae may invoke system Ruby instead of ours.
+    ENV["GEM_HOME"] = gem_home
+    ENV["GEM_PATH"] = gem_home
   end
 
   def install_gem!(name, version: nil, setup_gem_environment: true)
     setup_gem_environment! if setup_gem_environment
-    return unless Gem::Specification.find_all_by_name(name, version).empty?
 
-    ohai_if_defined "Installing '#{name}' gem"
-    # document: [] , is equivalent to --no-document
-    Gem.install name, version, document: []
+    specs = Gem::Specification.find_all_by_name(name, version)
+
+    if specs.empty?
+      ohai_if_defined "Installing '#{name}' gem"
+      # document: [] , is equivalent to --no-document
+      specs = Gem.install name, version, document: []
+    end
+
+    # Add the new specs to the $LOAD_PATH.
+    specs.each do |spec|
+      spec.require_paths.each do |path|
+        full_path = File.join(spec.full_gem_path, path)
+        $LOAD_PATH.unshift full_path unless $LOAD_PATH.include?(full_path)
+      end
+    end
   rescue Gem::UnsatisfiableDependencyError
     odie_if_defined "failed to install the '#{name}' gem."
   end
@@ -95,7 +116,6 @@ module Homebrew
   end
 
   def install_bundler!
-    require "rubygems"
     setup_gem_environment!(gem_home: gem_user_dir, gem_bindir: gem_user_bindir)
     install_gem_setup_path!(
       "bundler",
@@ -105,7 +125,11 @@ module Homebrew
     )
   end
 
-  def install_bundler_gems!
+  def install_bundler_gems!(only_warn_on_failure: false, setup_path: true)
+    old_path = ENV["PATH"]
+    old_gem_path = ENV["GEM_PATH"]
+    old_gem_home = ENV["GEM_HOME"]
+
     install_bundler!
 
     ENV["BUNDLE_GEMFILE"] = File.join(ENV.fetch("HOMEBREW_LIBRARY"), "Homebrew", "Gemfile")
@@ -117,9 +141,14 @@ module Homebrew
       # for some reason sometimes the exit code lies so check the output too.
       if bundle_check_failed || bundle_check_output.include?("Install missing gems")
         unless system bundle, "install"
-          odie_if_defined <<~EOS
+          message = <<~EOS
             failed to run `#{bundle} install`!
           EOS
+          if only_warn_on_failure
+            opoo_if_defined message
+          else
+            odie_if_defined message
+          end
         end
       else
         true
@@ -127,5 +156,12 @@ module Homebrew
     end
 
     setup_gem_environment!
+  ensure
+    unless setup_path
+      # Reset the paths. We need to have at least temporarily changed them while invoking `bundle`.
+      ENV["PATH"] = old_path
+      ENV["GEM_PATH"] = old_gem_path
+      ENV["GEM_HOME"] = old_gem_home
+    end
   end
 end

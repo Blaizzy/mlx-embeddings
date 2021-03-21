@@ -39,9 +39,9 @@ module Cask
       Pathname.glob(path.join("*")).sort.select(&:directory?).map do |path|
         token = path.basename.to_s
 
-        if tap_path = CaskLoader.tap_paths(token).first
+        if (tap_path = CaskLoader.tap_paths(token).first)
           CaskLoader::FromTapPathLoader.new(tap_path).load(config: config)
-        elsif caskroom_path = Pathname.glob(path.join(".metadata/*/*/*/*.rb")).first
+        elsif (caskroom_path = Pathname.glob(path.join(".metadata/*/*/*/*.rb")).first)
           CaskLoader::FromPathLoader.new(caskroom_path).load(config: config)
         else
           CaskLoader.load(token, config: config)

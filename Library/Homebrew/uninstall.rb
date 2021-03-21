@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-require "keg"
+require "installed_dependents"
 
 module Homebrew
   # Helper module for uninstalling kegs.
@@ -10,8 +10,9 @@ module Homebrew
   module Uninstall
     module_function
 
-    def uninstall_kegs(kegs_by_rack, force: false, ignore_dependencies: false, named_args: [])
+    def uninstall_kegs(kegs_by_rack, casks: [], force: false, ignore_dependencies: false, named_args: [])
       handle_unsatisfied_dependents(kegs_by_rack,
+                                    casks:               casks,
                                     ignore_dependencies: ignore_dependencies,
                                     named_args:          named_args)
       return if Homebrew.failed?
@@ -96,18 +97,18 @@ module Homebrew
       end
     end
 
-    def handle_unsatisfied_dependents(kegs_by_rack, ignore_dependencies: false, named_args: [])
+    def handle_unsatisfied_dependents(kegs_by_rack, casks: [], ignore_dependencies: false, named_args: [])
       return if ignore_dependencies
 
       all_kegs = kegs_by_rack.values.flatten(1)
-      check_for_dependents(all_kegs, named_args: named_args)
+      check_for_dependents(all_kegs, casks: casks, named_args: named_args)
     rescue MethodDeprecatedError
       # Silently ignore deprecations when uninstalling.
       nil
     end
 
-    def check_for_dependents(kegs, named_args: [])
-      return false unless result = Keg.find_some_installed_dependents(kegs)
+    def check_for_dependents(kegs, casks: [], named_args: [])
+      return false unless (result = InstalledDependents.find_some_installed_dependents(kegs, casks: casks))
 
       if Homebrew::EnvConfig.developer?
         DeveloperDependentsMessage.new(*result, named_args: named_args).output

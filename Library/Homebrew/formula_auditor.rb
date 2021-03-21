@@ -133,7 +133,7 @@ module Homebrew
         return
       end
 
-      if oldname = CoreTap.instance.formula_renames[name]
+      if (oldname = CoreTap.instance.formula_renames[name])
         problem "'#{name}' is reserved as the old name of #{oldname} in homebrew/core."
         return
       end
@@ -282,7 +282,7 @@ module Homebrew
 
       # The number of conflicts on Linux is absurd.
       # TODO: remove this and check these there too.
-      return if OS.linux?
+      return if OS.linux? && !Homebrew::EnvConfig.simulate_macos_on_linux?
 
       recursive_runtime_formulae = formula.runtime_formula_dependencies(undeclared: false)
       version_hash = {}
@@ -339,6 +339,18 @@ module Homebrew
       end
     end
 
+    def audit_glibc
+      return if formula.name != "glibc"
+      return unless @core_tap
+
+      version = formula.version.to_s
+      return if version == "2.23"
+
+      problem "The glibc version must be #{version}, as this is the version used by our CI on Linux. " \
+              "Glibc is for users who have a system Glibc with a lower version, " \
+              "which allows them to use our Linux bottles, which were compiled against system Glibc on CI."
+    end
+
     def audit_versioned_keg_only
       return unless @versioned_formula
       return unless @core_tap
@@ -367,10 +379,10 @@ module Homebrew
 
       return unless DevelopmentTools.curl_handles_most_https_certificates?
 
-      if http_content_problem = curl_check_http_content(homepage,
-                                                        user_agents:   [:browser, :default],
-                                                        check_content: true,
-                                                        strict:        @strict)
+      if (http_content_problem = curl_check_http_content(homepage,
+                                                         user_agents:   [:browser, :default],
+                                                         check_content: true,
+                                                         strict:        @strict))
         problem http_content_problem
       end
     end
@@ -472,7 +484,7 @@ module Homebrew
 
       %w[Stable HEAD].each do |name|
         spec_name = name.downcase.to_sym
-        next unless spec = formula.send(spec_name)
+        next unless (spec = formula.send(spec_name))
 
         ra = ResourceAuditor.new(spec, spec_name, online: @online, strict: @strict).audit
         ra.problems.each do |message|
@@ -497,7 +509,7 @@ module Homebrew
         )
       end
 
-      if stable = formula.stable
+      if (stable = formula.stable)
         version = stable.version
         problem "Stable: version (#{version}) is set to a string without a digit" if version.to_s !~ /\d/
         if version.to_s.start_with?("HEAD")

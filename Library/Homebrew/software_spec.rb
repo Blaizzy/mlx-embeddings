@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "resource"
+require "download_strategy"
 require "checksum"
 require "version"
 require "options"
@@ -10,7 +11,6 @@ require "dependency_collector"
 require "utils/bottles"
 require "patch"
 require "compilers"
-require "global"
 require "os/mac/version"
 require "extend/on_os"
 
@@ -178,7 +178,7 @@ class SoftwareSpec
   end
 
   def uses_from_macos(spec, _bounds = {})
-    spec = Hash[*spec.first] if spec.is_a?(Hash)
+    spec = spec.dup.shift if spec.is_a?(Hash)
     depends_on(spec)
   end
 
@@ -292,7 +292,7 @@ class Bottle
 
   attr_reader :name, :resource, :prefix, :cellar, :rebuild
 
-  def_delegators :resource, :url, :fetch, :verify_download_integrity
+  def_delegators :resource, :url, :verify_download_integrity
   def_delegators :resource, :cached_download, :clear_cache
 
   def initialize(formula, spec)
@@ -312,6 +312,22 @@ class Bottle
     @prefix = spec.prefix
     @cellar = cellar
     @rebuild = spec.rebuild
+  end
+
+  def fetch(verify_download_integrity: true)
+    # add the default bottle domain as a fallback mirror
+    # TODO: this may need adjusted when if we use GitHub Packages by default
+    if @resource.download_strategy == CurlDownloadStrategy &&
+       @resource.url.start_with?(Homebrew::EnvConfig.bottle_domain)
+      fallback_url = @resource.url
+                              .sub(/^#{Regexp.escape(Homebrew::EnvConfig.bottle_domain)}/,
+                                   HOMEBREW_BOTTLE_DEFAULT_DOMAIN)
+      @resource.mirror(fallback_url) if [@resource.url, *@resource.mirrors].exclude?(fallback_url)
+    elsif @resource.download_strategy == CurlGitHubPackagesDownloadStrategy
+      @resource.downloader.name = @name
+      @resource.downloader.checksum = @resource.checksum.hexdigest
+    end
+    @resource.fetch(verify_download_integrity: verify_download_integrity)
   end
 
   def compatible_locations?
@@ -363,7 +379,11 @@ class BottleSpecification
 
   def root_url(var = nil, specs = {})
     if var.nil?
-      @root_url ||= "#{Homebrew::EnvConfig.bottle_domain}/#{Utils::Bottles::Bintray.repository(tap)}"
+      @root_url ||= if Homebrew::EnvConfig.bottle_domain.start_with?(GitHubPackages::URL_PREFIX)
+        "#{GitHubPackages::URL_PREFIX}#{tap.full_name}"
+      else
+        "#{Homebrew::EnvConfig.bottle_domain}/#{Utils::Bottles::Bintray.repository(tap)}"
+      end
     else
       @root_url = var
       @root_url_specs.merge!(specs)
@@ -402,9 +422,9 @@ class BottleSpecification
     cellar == :any_skip_relocation
   end
 
-  sig { params(tag: Symbol).returns(T::Boolean) }
-  def tag?(tag)
-    checksum_for(tag) ? true : false
+  sig { params(tag: Symbol, exact: T::Boolean).returns(T::Boolean) }
+  def tag?(tag, exact: false)
+    checksum_for(tag, exact: exact) ? true : false
   end
 
   # Checksum methods in the DSL's bottle block take
@@ -444,9 +464,9 @@ class BottleSpecification
     collector[tag] = { checksum: Checksum.new(digest), cellar: cellar }
   end
 
-  sig { params(tag: Symbol).returns(T.nilable([Checksum, Symbol, T.any(Symbol, String)])) }
-  def checksum_for(tag)
-    collector.fetch_checksum_for(tag)
+  sig { params(tag: Symbol, exact: T::Boolean).returns(T.nilable([Checksum, Symbol, T.any(Symbol, String)])) }
+  def checksum_for(tag, exact: false)
+    collector.fetch_checksum_for(tag, exact: exact)
   end
 
   def checksums

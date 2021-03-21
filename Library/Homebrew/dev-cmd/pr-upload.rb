@@ -2,7 +2,10 @@
 # frozen_string_literal: true
 
 require "cli/parser"
+require "archive"
 require "bintray"
+require "github_packages"
+require "github_releases"
 
 module Homebrew
   extend T::Sig
@@ -13,7 +16,7 @@ module Homebrew
   def pr_upload_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
-        Apply the bottle commit and publish bottles to Bintray or GitHub Releases.
+        Apply the bottle commit and publish bottles to a host.
       EOS
       switch "--no-publish",
              description: "Apply the bottle commit and upload the bottles, but don't publish them."
@@ -27,8 +30,12 @@ module Homebrew
       switch "--warn-on-upload-failure",
              description: "Warn instead of raising an error if the bottle upload fails. "\
                           "Useful for repairing bottle uploads that previously failed."
+      flag   "--archive-item=",
+             description: "Upload to the specified Internet Archive item (default: `homebrew`)."
       flag   "--bintray-org=",
              description: "Upload to the specified Bintray organisation (default: `homebrew`)."
+      flag   "--github-org=",
+             description: "Upload to the specified GitHub organisation's GitHub Packages (default: `homebrew`)."
       flag   "--root-url=",
              description: "Use the specified <URL> as the root of the bottle's URL instead of Homebrew's default."
 
@@ -47,13 +54,31 @@ module Homebrew
     end
   end
 
+  def internet_archive?(bottles_hash)
+    @internet_archive ||= bottles_hash.values.all? do |bottle_hash|
+      bottle_hash["bottle"]["root_url"].start_with? "#{Archive::URL_PREFIX}/"
+    end
+  end
+
+  def bintray?(bottles_hash)
+    @bintray ||= bottles_hash.values.all? do |bottle_hash|
+      bottle_hash["bottle"]["root_url"].match? Bintray::URL_REGEX
+    end
+  end
+
   def github_releases?(bottles_hash)
     @github_releases ||= bottles_hash.values.all? do |bottle_hash|
       root_url = bottle_hash["bottle"]["root_url"]
-      url_match = root_url.match HOMEBREW_RELEASES_URL_REGEX
+      url_match = root_url.match GitHubReleases::URL_REGEX
       _, _, _, tag = *url_match
 
       tag
+    end
+  end
+
+  def github_packages?(bottles_hash)
+    @github_packages ||= bottles_hash.values.all? do |bottle_hash|
+      bottle_hash["bottle"]["root_url"].match? GitHubPackages::URL_REGEX
     end
   end
 
@@ -76,11 +101,18 @@ module Homebrew
     bottle_args += json_files
 
     if args.dry_run?
-      service = if github_releases?(bottles_hash)
-        "GitHub Releases"
-      else
-        "Bintray"
-      end
+      service =
+        if internet_archive?(bottles_hash)
+          "Internet Archive"
+        elsif bintray?(bottles_hash)
+          "Bintray"
+        elsif github_releases?(bottles_hash)
+          "GitHub Releases"
+        elsif github_packages?(bottles_hash)
+          "GitHub Packages"
+        else
+          odie "Service specified by root_url is not recognized"
+        end
       puts <<~EOS
         brew #{bottle_args.join " "}
         Upload bottles described by these JSON files to #{service}:
@@ -102,38 +134,26 @@ module Homebrew
       safe_system HOMEBREW_BREW_FILE, *audit_args
     end
 
-    if github_releases?(bottles_hash)
-      # Handle uploading to GitHub Releases.
-      bottles_hash.each_value do |bottle_hash|
-        root_url = bottle_hash["bottle"]["root_url"]
-        url_match = root_url.match HOMEBREW_RELEASES_URL_REGEX
-        _, user, repo, tag = *url_match
-
-        # Ensure a release is created.
-        release = begin
-          rel = GitHub.get_release user, repo, tag
-          odebug "Existing GitHub release \"#{tag}\" found"
-          rel
-        rescue GitHub::HTTPNotFoundError
-          odebug "Creating new GitHub release \"#{tag}\""
-          GitHub.create_or_update_release user, repo, tag
-        end
-
-        # Upload bottles as release assets.
-        bottle_hash["bottle"]["tags"].each_value do |tag_hash|
-          remote_file = tag_hash["filename"]
-          local_file = tag_hash["local_filename"]
-          odebug "Uploading #{remote_file}"
-          GitHub.upload_release_asset user, repo, release["id"], local_file: local_file, remote_file: remote_file
-        end
-      end
-    else
-      # Handle uploading to Bintray.
+    if internet_archive?(bottles_hash)
+      archive_item = args.archive_item || "homebrew"
+      archive = Archive.new(item: archive_item)
+      archive.upload_bottles(bottles_hash,
+                             warn_on_error: args.warn_on_upload_failure?)
+    elsif bintray?(bottles_hash)
       bintray_org = args.bintray_org || "homebrew"
       bintray = Bintray.new(org: bintray_org)
       bintray.upload_bottles(bottles_hash,
                              publish_package: !args.no_publish?,
                              warn_on_error:   args.warn_on_upload_failure?)
+    elsif github_releases?(bottles_hash)
+      github_releases = GitHubReleases.new
+      github_releases.upload_bottles(bottles_hash)
+    elsif github_packages?(bottles_hash)
+      github_org = args.github_org || "homebrew"
+      github_packages = GitHubPackages.new(org: github_org)
+      github_packages.upload_bottles(bottles_hash)
+    else
+      odie "Service specified by root_url is not recognized"
     end
   end
 end

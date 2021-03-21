@@ -64,30 +64,30 @@ module Cask
     ].freeze
 
     DSL_METHODS = Set.new([
-                            :appcast,
-                            :artifacts,
-                            :auto_updates,
-                            :caveats,
-                            :conflicts_with,
-                            :container,
-                            :desc,
-                            :depends_on,
-                            :homepage,
-                            :language,
-                            :languages,
-                            :name,
-                            :sha256,
-                            :staged_path,
-                            :url,
-                            :version,
-                            :appdir,
-                            :discontinued?,
-                            :livecheck,
-                            :livecheckable?,
-                            *ORDINARY_ARTIFACT_CLASSES.map(&:dsl_key),
-                            *ACTIVATABLE_ARTIFACT_CLASSES.map(&:dsl_key),
-                            *ARTIFACT_BLOCK_CLASSES.flat_map { |klass| [klass.dsl_key, klass.uninstall_dsl_key] },
-                          ]).freeze
+      :appcast,
+      :artifacts,
+      :auto_updates,
+      :caveats,
+      :conflicts_with,
+      :container,
+      :desc,
+      :depends_on,
+      :homepage,
+      :language,
+      :languages,
+      :name,
+      :sha256,
+      :staged_path,
+      :url,
+      :version,
+      :appdir,
+      :discontinued?,
+      :livecheck,
+      :livecheckable?,
+      *ORDINARY_ARTIFACT_CLASSES.map(&:dsl_key),
+      *ACTIVATABLE_ARTIFACT_CLASSES.map(&:dsl_key),
+      *ARTIFACT_BLOCK_CLASSES.flat_map { |klass| [klass.dsl_key, klass.uninstall_dsl_key] },
+    ]).freeze
 
     attr_reader :cask, :token
 
@@ -181,7 +181,11 @@ module Cask
 
       set_unique_stanza(:url, args.empty? && options.empty? && !block_given?) do
         if block_given?
-          LazyObject.new { URL.new(*yield, from_block: true, caller_location: caller_location) }
+          LazyObject.new do
+            *args = yield
+            options = args.last.is_a?(Hash) ? args.pop : {}
+            URL.new(*args, **options, from_block: true, caller_location: caller_location)
+          end
         else
           URL.new(*args, **options, caller_location: caller_location)
         end

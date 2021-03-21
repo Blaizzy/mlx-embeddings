@@ -54,9 +54,9 @@ module Homebrew
 
     start_commit, end_commit = nil
     cd HOMEBREW_REPOSITORY do
-      start_commit = if commit = args.commit
+      start_commit = if (commit = args.commit)
         commit
-      elsif date = args.before
+      elsif (date = args.before)
         Utils.popen_read("git", "rev-list", "-n1", "--before=#{date}", "origin/master").chomp
       elsif args.to_tag?
         tags = Utils.popen_read("git", "tag", "--list", "--sort=-version:refname")

@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "BREW" "1" "February 2021" "Homebrew" "brew"
+.TH "BREW" "1" "March 2021" "Homebrew" "brew"
 .
 .SH "NAME"
 \fBbrew\fR \- The Missing Package Manager for macOS (or Linux)
@@ -997,7 +997,7 @@ Linux: \fB/home/linuxbrew/\.linuxbrew\fR
 .IP "" 0
 .
 .P
-If \fIformula\fR is provided, display the location in the Cellar where \fIformula\fR is or would be installed\.
+If \fIformula\fR is provided, display the location where \fIformula\fR is or would be installed\.
 .
 .TP
 \fB\-\-unbrewed\fR
@@ -1132,8 +1132,24 @@ When passed with \fB\-\-write\fR, a new commit will not generated after writing 
 \fB\-\-root\-url\fR
 Use the specified \fIURL\fR as the root of the bottle\'s URL instead of Homebrew\'s default\.
 .
-.SS "\fBbump\fR [\fI\-\-limit\fR\fB=\fR] [\fIformula\fR \.\.\.]"
+.SS "\fBbump\fR [\fIoptions\fR] [\fIformula\fR|\fIcask\fR \.\.\.]"
 Display out\-of\-date brew formulae and the latest version available\. Also displays whether a pull request has been opened with the URL\.
+.
+.TP
+\fB\-\-full\-name\fR
+Print formulae/casks with fully\-qualified names\.
+.
+.TP
+\fB\-\-no\-pull\-requests\fR
+Do not retrieve pull requests from GitHub\.
+.
+.TP
+\fB\-\-formula\fR
+Check only formulae\.
+.
+.TP
+\fB\-\-cask\fR
+Check only casks\.
 .
 .TP
 \fB\-\-limit\fR
@@ -1414,6 +1430,10 @@ Dispatch specified workflow (default: \fBdispatch\-build\-bottle\.yml\fR)\.
 \fB\-\-upload\fR
 Upload built bottles to Bintray\.
 .
+.TP
+\fB\-\-linux\fR
+Dispatch bottle for Linux (using GitHub runners)\.
+.
 .SS "\fBedit\fR [\fI\-\-formula\fR] [\fI\-\-cask\fR] [\fIformula\fR|\fIcask\fR \.\.\.]"
 Open a \fIformula\fR or \fIcask\fR in the editor set by \fBEDITOR\fR or \fBHOMEBREW_EDITOR\fR, or open the Homebrew repository for editing if no formula is provided\.
 .
@@ -1510,15 +1530,15 @@ Only check formulae\.
 \fB\-\-cask\fR
 Only check casks\.
 .
-.SS "\fBman\fR [\fI\-\-fail\-if\-changed\fR]"
+.SS "\fBman\fR [\fI\-\-fail\-if\-not\-changed\fR]"
 Generate Homebrew\'s manpages\.
 .
 .P
 \fINote:\fR Not (yet) working on Apple Silicon\.
 .
 .TP
-\fB\-\-fail\-if\-changed\fR
-Return a failing status code if changes are detected in the manpage outputs\. This can be used to notify CI when the manpages are out of date\. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date)\.
+\fB\-\-fail\-if\-not\-changed\fR
+Return a failing status code if no changes are detected in the manpage outputs\. This can be used to notify CI when the manpages are out of date\. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date)\.
 .
 .SS "\fBmirror\fR [\fIoptions\fR] \fIformula\fR [\.\.\.]"
 Reupload the stable URL of a formula to Bintray for use as a mirror\.
@@ -1633,6 +1653,10 @@ Message to include when autosquashing revision bumps, deletions, and rebuilds\.
 Download artifacts with the specified name (default: \fBbottles\fR)\.
 .
 .TP
+\fB\-\-archive\-item\fR
+Upload to the specified Internet Archive item (default: \fBhomebrew\fR)\.
+.
+.TP
 \fB\-\-bintray\-org\fR
 Upload to the specified Bintray organisation (default: \fBhomebrew\fR)\.
 .
@@ -1657,7 +1681,7 @@ Retrieve artifacts from the specified workflow (default: \fBtests\.yml\fR)\. Can
 Comma\-separated list of workflows which can be ignored if they have not been run\.
 .
 .SS "\fBpr\-upload\fR [\fIoptions\fR]"
-Apply the bottle commit and publish bottles to Bintray or GitHub Releases\.
+Apply the bottle commit and publish bottles to a host\.
 .
 .TP
 \fB\-\-no\-publish\fR
@@ -1680,15 +1704,26 @@ Do not generate a new commit before uploading\.
 Warn instead of raising an error if the bottle upload fails\. Useful for repairing bottle uploads that previously failed\.
 .
 .TP
+\fB\-\-archive\-item\fR
+Upload to the specified Internet Archive item (default: \fBhomebrew\fR)\.
+.
+.TP
 \fB\-\-bintray\-org\fR
 Upload to the specified Bintray organisation (default: \fBhomebrew\fR)\.
+.
+.TP
+\fB\-\-github\-org\fR
+Upload to the specified GitHub organisation\'s GitHub Packages (default: \fBhomebrew\fR)\.
 .
 .TP
 \fB\-\-root\-url\fR
 Use the specified \fIURL\fR as the root of the bottle\'s URL instead of Homebrew\'s default\.
 .
-.SS "\fBprof\fR [\fI\-\-stackprof\fR] [\fIcommand\fR \.\.\.]"
+.SS "\fBprof\fR [\fI\-\-stackprof\fR] \fIcommand\fR [\.\.\.]"
 Run Homebrew with a Ruby profiler\. For example, \fBbrew prof readall\fR\.
+.
+.P
+\fINote:\fR Not (yet) working on Apple Silicon\.
 .
 .TP
 \fB\-\-stackprof\fR
@@ -1737,7 +1772,7 @@ Use the standard \fBPATH\fR instead of superenv\'s when \fBstd\fR is passed\.
 Execute commands in a non\-interactive shell\.
 .
 .SS "\fBsponsors\fR"
-Print a Markdown summary of Homebrew\'s GitHub Sponsors, suitable for pasting into a README\.
+Update the list of GitHub Sponsors in the \fBHomebrew/brew\fR README\.
 .
 .SS "\fBstyle\fR [\fIoptions\fR] [\fIfile\fR|\fItap\fR|\fIformula\fR|\fIcask\fR \.\.\.]"
 Check formulae or files for conformance to Homebrew style guidelines\.
@@ -1786,7 +1821,7 @@ Label name for pull requests ready to be pulled (default: \fBpr\-pull\fR)\.
 .
 .TP
 \fB\-\-branch\fR
-Initialize Git repository with the specified branch name (default: \fBmain\fR)\.
+Initialize Git repository and setup GitHub Actions workflows with the specified branch name (default: \fBmain\fR)\.
 .
 .SS "\fBtest\fR [\fIoptions\fR] \fIinstalled_formula\fR [\.\.\.]"
 Run the test method provided by an installed formula\. There is no standard output or return code, but generally it should notify the user if something is wrong with the installed formula\.
@@ -2392,7 +2427,7 @@ If set, use Bootsnap to speed up repeated \fBbrew\fR calls\. A no\-op when using
 \fBHOMEBREW_BOTTLE_DOMAIN\fR
 .
 .br
-Use this URL as the download mirror for bottles\. For example, \fBHOMEBREW_BOTTLE_DOMAIN=http://localhost:8080\fR will cause all bottles to download from the prefix \fBhttp://localhost:8080/\fR\.
+Use this URL as the download mirror for bottles\. If bottles at that URL are temporarily unavailable, the default bottle domain will be used as a fallback mirror\. For example, \fBHOMEBREW_BOTTLE_DOMAIN=http://localhost:8080\fR will cause all bottles to download from the prefix \fBhttp://localhost:8080/\fR\. If bottles are not available at \fBHOMEBREW_BOTTLE_DOMAIN\fR they will be downloaded from the default bottle domain\.
 .
 .IP
 \fIDefault:\fR macOS: \fBhttps://homebrew\.bintray\.com/\fR, Linux: \fBhttps://linuxbrew\.bintray\.com/\fR\.
@@ -2575,6 +2610,18 @@ Use this personal access token for the GitHub API, for features such as \fBbrew 
 \fINote:\fR Homebrew doesn\'t require permissions for any of the scopes, but some developer commands may require additional permissions\.
 .
 .TP
+\fBHOMEBREW_GITHUB_PACKAGES_TOKEN\fR
+.
+.br
+Use this GitHub personal access token when accessing the GitHub Packages Registry (where bottles may be stored)\.
+.
+.TP
+\fBHOMEBREW_GITHUB_PACKAGES_USER\fR
+.
+.br
+Use this username when accessing the GitHub Packages Registry (where bottles may be stored)\.
+.
+.TP
 \fBHOMEBREW_GIT_EMAIL\fR
 .
 .br
@@ -2594,6 +2641,12 @@ Print this text before the installation summary of each successful build\.
 .
 .IP
 \fIDefault:\fR The "Beer Mug" emoji\.
+.
+.TP
+\fBHOMEBREW_INTERNET_ARCHIVE_KEY\fR
+.
+.br
+Use this API key when accessing the Internet Archive S3 API, where bottles are stored\. The format is access:secret\. See https://archive\.org/account/s3\.php
 .
 .TP
 \fBHOMEBREW_LIVECHECK_WATCHLIST\fR
@@ -2632,19 +2685,13 @@ If set, do not send analytics\. For more information, see: \fIhttps://docs\.brew
 \fBHOMEBREW_NO_AUTO_UPDATE\fR
 .
 .br
-If set, do not automatically update before running \fBbrew install\fR, \fBbrew upgrade\fR or \fBbrew tap\fR\.
+If set, do not automatically update before running some commands e\.g\. \fBbrew install\fR, \fBbrew upgrade\fR and \fBbrew tap\fR\.
 .
 .TP
 \fBHOMEBREW_NO_BOOTSNAP\fR
 .
 .br
 If set, do not use Bootsnap to speed up repeated \fBbrew\fR calls\.
-.
-.TP
-\fBHOMEBREW_NO_BOTTLE_SOURCE_FALLBACK\fR
-.
-.br
-If set, fail on the failure of installation from a bottle rather than falling back to building from source\.
 .
 .TP
 \fBHOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK\fR
@@ -2702,6 +2749,12 @@ If set, \fBbrew install\fR, \fBbrew upgrade\fR and \fBbrew reinstall\fR will nev
 .
 .br
 If set, use Pry for the \fBbrew irb\fR command\.
+.
+.TP
+\fBHOMEBREW_SIMULATE_MACOS_ON_LINUX\fR
+.
+.br
+If set, running Homebrew on Linux will simulate certain macOS code paths\. This is useful when auditing macOS formulae while on Linux\. Implies \fBHOMEBREW_FORCE_HOMEBREW_ON_LINUX\fR\.
 .
 .TP
 \fBHOMEBREW_SKIP_OR_LATER_BOTTLES\fR
@@ -2843,16 +2896,16 @@ Homebrew API: \fIhttps://rubydoc\.brew\.sh\fR
 Homebrew\'s Project Leader is Mike McQuaid\.
 .
 .P
-Homebrew\'s Project Leadership Committee is Jonathan Chang, Markus Reiter, Misty De Meo, Sean Molenaar and Shaun Jackman\.
+Homebrew\'s Project Leadership Committee is Issy Long, Jonathan Chang, Markus Reiter, Misty De Meo and Sean Molenaar\.
 .
 .P
-Homebrew\'s Technical Steering Committee is FX Coudert, Markus Reiter, Michka Popoff, Mike McQuaid and Misty De Meo\.
+Homebrew\'s Technical Steering Committee is Bo Anderson, FX Coudert, Michka Popoff, Mike McQuaid and Rylan Polster\.
 .
 .P
 Homebrew\'s Linux maintainers are Daniel Nachun, Dawid Dziurla, Issy Long, Jonathan Chang, Michka Popoff and Shaun Jackman\.
 .
 .P
-Homebrew\'s other current maintainers are Alexander Bayandin, Bo Anderson, Caleb Xu, Carlo Cabrera, Claudia Pellegrino, Dustin Rodrigues, Eric Knibbe, Maxim Belkin, Miccal Matthews, Nanda H Krishna, Randall, Rylan Polster, Sam Ford, Seeker, Steve Peters, Thierry Moisan, Tom Schoonjans, Vítor Galvão and rui\.
+Homebrew\'s other current maintainers are Alexander Bayandin, Caleb Xu, Carlo Cabrera, Claudia Pellegrino, Dustin Rodrigues, Eric Knibbe, Maxim Belkin, Miccal Matthews, Nanda H Krishna, Randall, Sam Ford, Seeker, Steve Peters, Thierry Moisan, Tom Schoonjans, Vitor Galvao and rui\.
 .
 .P
 Former maintainers with significant contributions include Jan Viljanen, JCount, commitay, Dominyk Tiller, Tim Smith, Baptiste Fontaine, Xu Cheng, Martin Afanasjew, Brett Koonce, Charlie Sharpsteen, Jack Nagel, Adam Vandenberg, Andrew Janke, Alex Dunn, neutric, Tomasz Pajor, Uladzislau Shablinski, Alyssa Ross, ilovezfs, Chongyu Zhu and Homebrew\'s creator: Max Howell\.

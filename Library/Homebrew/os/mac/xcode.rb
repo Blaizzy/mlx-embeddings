@@ -18,10 +18,10 @@ module OS
       # Bump these when a new version is available from the App Store and our
       # CI systems have been updated.
       # This may be a beta version for a beta macOS.
-      sig { returns(String) }
-      def latest_version
+      sig { params(macos: MacOS::Version).returns(String) }
+      def latest_version(macos: MacOS.version)
         latest_stable = "12.4"
-        case MacOS.version
+        case macos
         when "11" then latest_stable
         when "10.15" then "12.4"
         when "10.14" then "11.3.1"
@@ -132,6 +132,19 @@ module OS
 
       def sdk_path(v = nil)
         sdk(v)&.path
+      end
+
+      def installation_instructions
+        if OS::Mac.prerelease?
+          <<~EOS
+            Xcode can be installed from:
+              #{Formatter.url("https://developer.apple.com/download/more/")}
+          EOS
+        else
+          <<~EOS
+            Xcode can be installed from the App Store.
+          EOS
+        end
       end
 
       sig { returns(String) }
@@ -254,6 +267,21 @@ module OS
         sdk(v)&.path
       end
 
+      def installation_instructions
+        if MacOS.version == "10.14"
+          # This is not available from `xcode-select`
+          <<~EOS
+            Install the Command Line Tools for Xcode 11.3.1 from:
+              #{Formatter.url("https://developer.apple.com/download/more/")}
+          EOS
+        else
+          <<~EOS
+            Install the Command Line Tools:
+              xcode-select --install
+          EOS
+        end
+      end
+
       sig { returns(String) }
       def update_instructions
         software_update_location = if MacOS.version >= "10.14"
@@ -320,7 +348,7 @@ module OS
       end
 
       def detect_clang_version
-        version_output = Utils.popen_read("#{PKG_PATH}/usr/bin/clang --version")
+        version_output = Utils.popen_read("#{PKG_PATH}/usr/bin/clang", "--version")
         version_output[/clang-(\d+\.\d+\.\d+(\.\d+)?)/, 1]
       end
 

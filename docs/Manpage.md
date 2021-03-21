@@ -734,8 +734,7 @@ Display Homebrew's install path. *Default:*
   - macOS ARM: `/opt/homebrew`
   - Linux: `/home/linuxbrew/.linuxbrew`
 
-If *`formula`* is provided, display the location in the Cellar where *`formula`*
-is or would be installed.
+If *`formula`* is provided, display the location where *`formula`* is or would be installed.
 
 * `--unbrewed`:
   List files in Homebrew's prefix not installed by Homebrew.
@@ -750,8 +749,7 @@ If *`user`*`/`*`repo`* are provided, display where tap *`user`*`/`*`repo`*'s dir
 
 ### `--version`, `-v`
 
-Print the version numbers of Homebrew, Homebrew/homebrew-core and Homebrew/homebrew-cask
-(if tapped) to standard output.
+Print the version numbers of Homebrew, Homebrew/homebrew-core and Homebrew/homebrew-cask (if tapped) to standard output.
 
 ## DEVELOPER COMMANDS
 
@@ -826,11 +824,19 @@ value, while `--no-rebuild` will remove it.
 * `--root-url`:
   Use the specified *`URL`* as the root of the bottle's URL instead of Homebrew's default.
 
-### `bump` [*`--limit`*`=`] [*`formula`* ...]
+### `bump` [*`options`*] [*`formula`*|*`cask`* ...]
 
 Display out-of-date brew formulae and the latest version available.
 Also displays whether a pull request has been opened with the URL.
 
+* `--full-name`:
+  Print formulae/casks with fully-qualified names.
+* `--no-pull-requests`:
+  Do not retrieve pull requests from GitHub.
+* `--formula`:
+  Check only formulae.
+* `--cask`:
+  Check only casks.
 * `--limit`:
   Limit number of package results returned.
 
@@ -1013,6 +1019,8 @@ Build bottles for these formulae with GitHub Actions.
   Dispatch specified workflow (default: `dispatch-build-bottle.yml`).
 * `--upload`:
   Upload built bottles to Bintray.
+* `--linux`:
+  Dispatch bottle for Linux (using GitHub runners).
 
 ### `edit` [*`--formula`*] [*`--cask`*] [*`formula`*|*`cask`* ...]
 
@@ -1094,14 +1102,14 @@ casks to check is taken from `HOMEBREW_LIVECHECK_WATCHLIST` or
 * `--cask`:
   Only check casks.
 
-### `man` [*`--fail-if-changed`*]
+### `man` [*`--fail-if-not-changed`*]
 
 Generate Homebrew's manpages.
 
 *Note:* Not (yet) working on Apple Silicon.
 
-* `--fail-if-changed`:
-  Return a failing status code if changes are detected in the manpage outputs. This can be used to notify CI when the manpages are out of date. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date).
+* `--fail-if-not-changed`:
+  Return a failing status code if no changes are detected in the manpage outputs. This can be used to notify CI when the manpages are out of date. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date).
 
 ### `mirror` [*`options`*] *`formula`* [...]
 
@@ -1175,6 +1183,8 @@ Requires write access to the repository.
   Message to include when autosquashing revision bumps, deletions, and rebuilds.
 * `--artifact`:
   Download artifacts with the specified name (default: `bottles`).
+* `--archive-item`:
+  Upload to the specified Internet Archive item (default: `homebrew`).
 * `--bintray-org`:
   Upload to the specified Bintray organisation (default: `homebrew`).
 * `--tap`:
@@ -1190,7 +1200,7 @@ Requires write access to the repository.
 
 ### `pr-upload` [*`options`*]
 
-Apply the bottle commit and publish bottles to Bintray or GitHub Releases.
+Apply the bottle commit and publish bottles to a host.
 
 * `--no-publish`:
   Apply the bottle commit and upload the bottles, but don't publish them.
@@ -1202,14 +1212,20 @@ Apply the bottle commit and publish bottles to Bintray or GitHub Releases.
   Do not generate a new commit before uploading.
 * `--warn-on-upload-failure`:
   Warn instead of raising an error if the bottle upload fails. Useful for repairing bottle uploads that previously failed.
+* `--archive-item`:
+  Upload to the specified Internet Archive item (default: `homebrew`).
 * `--bintray-org`:
   Upload to the specified Bintray organisation (default: `homebrew`).
+* `--github-org`:
+  Upload to the specified GitHub organisation's GitHub Packages (default: `homebrew`).
 * `--root-url`:
   Use the specified *`URL`* as the root of the bottle's URL instead of Homebrew's default.
 
-### `prof` [*`--stackprof`*] [*`command`* ...]
+### `prof` [*`--stackprof`*] *`command`* [...]
 
 Run Homebrew with a Ruby profiler. For example, `brew prof readall`.
+
+*Note:* Not (yet) working on Apple Silicon.
 
 * `--stackprof`:
   Use `stackprof` instead of `ruby-prof` (the default).
@@ -1259,7 +1275,7 @@ which build systems would not find otherwise.
 
 ### `sponsors`
 
-Print a Markdown summary of Homebrew's GitHub Sponsors, suitable for pasting into a README.
+Update the list of GitHub Sponsors in the `Homebrew/brew` README.
 
 ### `style` [*`options`*] [*`file`*|*`tap`*|*`formula`*|*`cask`* ...]
 
@@ -1293,7 +1309,7 @@ Generate the template files for a new tap.
 * `--pull-label`:
   Label name for pull requests ready to be pulled (default: `pr-pull`).
 * `--branch`:
-  Initialize Git repository with the specified branch name (default: `main`).
+  Initialize Git repository and setup GitHub Actions workflows with the specified branch name (default: `main`).
 
 ### `test` [*`options`*] *`installed_formula`* [...]
 
@@ -1718,7 +1734,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
   <br>If set, use Bootsnap to speed up repeated `brew` calls. A no-op when using Homebrew's vendored, relocatable Ruby on macOS (as it doesn't work).
 
 - `HOMEBREW_BOTTLE_DOMAIN`
-  <br>Use this URL as the download mirror for bottles. For example, `HOMEBREW_BOTTLE_DOMAIN=http://localhost:8080` will cause all bottles to download from the prefix `http://localhost:8080/`.
+  <br>Use this URL as the download mirror for bottles. If bottles at that URL are temporarily unavailable, the default bottle domain will be used as a fallback mirror. For example, `HOMEBREW_BOTTLE_DOMAIN=http://localhost:8080` will cause all bottles to download from the prefix `http://localhost:8080/`. If bottles are not available at `HOMEBREW_BOTTLE_DOMAIN` they will be downloaded from the default bottle domain.
 
   *Default:* macOS: `https://homebrew.bintray.com/`, Linux: `https://linuxbrew.bintray.com/`.
 
@@ -1817,6 +1833,12 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 
     *Note:* Homebrew doesn't require permissions for any of the scopes, but some developer commands may require additional permissions.
 
+- `HOMEBREW_GITHUB_PACKAGES_TOKEN`
+  <br>Use this GitHub personal access token when accessing the GitHub Packages Registry (where bottles may be stored).
+
+- `HOMEBREW_GITHUB_PACKAGES_USER`
+  <br>Use this username when accessing the GitHub Packages Registry (where bottles may be stored).
+
 - `HOMEBREW_GIT_EMAIL`
   <br>Set the Git author and committer email to this value.
 
@@ -1827,6 +1849,9 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
   <br>Print this text before the installation summary of each successful build.
 
   *Default:* The "Beer Mug" emoji.
+
+- `HOMEBREW_INTERNET_ARCHIVE_KEY`
+  <br>Use this API key when accessing the Internet Archive S3 API, where bottles are stored. The format is access:secret. See https://archive.org/account/s3.php
 
 - `HOMEBREW_LIVECHECK_WATCHLIST`
   <br>Consult this file for the list of formulae to check by default when no formula argument is passed to `brew livecheck`.
@@ -1847,13 +1872,10 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
   <br>If set, do not send analytics. For more information, see: <https://docs.brew.sh/Analytics>
 
 - `HOMEBREW_NO_AUTO_UPDATE`
-  <br>If set, do not automatically update before running `brew install`, `brew upgrade` or `brew tap`.
+  <br>If set, do not automatically update before running some commands e.g. `brew install`, `brew upgrade` and `brew tap`.
 
 - `HOMEBREW_NO_BOOTSNAP`
   <br>If set, do not use Bootsnap to speed up repeated `brew` calls.
-
-- `HOMEBREW_NO_BOTTLE_SOURCE_FALLBACK`
-  <br>If set, fail on the failure of installation from a bottle rather than falling back to building from source.
 
 - `HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK`
   <br>If set, do not check for broken dependents after installing, upgrading or reinstalling formulae.
@@ -1884,6 +1906,9 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 
 - `HOMEBREW_PRY`
   <br>If set, use Pry for the `brew irb` command.
+
+- `HOMEBREW_SIMULATE_MACOS_ON_LINUX`
+  <br>If set, running Homebrew on Linux will simulate certain macOS code paths. This is useful when auditing macOS formulae while on Linux. Implies `HOMEBREW_FORCE_HOMEBREW_ON_LINUX`.
 
 - `HOMEBREW_SKIP_OR_LATER_BOTTLES`
   <br>If set along with `HOMEBREW_DEVELOPER`, do not use bottles from older versions of macOS. This is useful in development on new macOS versions.
@@ -1961,13 +1986,13 @@ Homebrew API: <https://rubydoc.brew.sh>
 
 Homebrew's Project Leader is Mike McQuaid.
 
-Homebrew's Project Leadership Committee is Jonathan Chang, Markus Reiter, Misty De Meo, Sean Molenaar and Shaun Jackman.
+Homebrew's Project Leadership Committee is Issy Long, Jonathan Chang, Markus Reiter, Misty De Meo and Sean Molenaar.
 
-Homebrew's Technical Steering Committee is FX Coudert, Markus Reiter, Michka Popoff, Mike McQuaid and Misty De Meo.
+Homebrew's Technical Steering Committee is Bo Anderson, FX Coudert, Michka Popoff, Mike McQuaid and Rylan Polster.
 
 Homebrew's Linux maintainers are Daniel Nachun, Dawid Dziurla, Issy Long, Jonathan Chang, Michka Popoff and Shaun Jackman.
 
-Homebrew's other current maintainers are Alexander Bayandin, Bo Anderson, Caleb Xu, Carlo Cabrera, Claudia Pellegrino, Dustin Rodrigues, Eric Knibbe, Maxim Belkin, Miccal Matthews, Nanda H Krishna, Randall, Rylan Polster, Sam Ford, Seeker, Steve Peters, Thierry Moisan, Tom Schoonjans, Vítor Galvão and rui.
+Homebrew's other current maintainers are Alexander Bayandin, Caleb Xu, Carlo Cabrera, Claudia Pellegrino, Dustin Rodrigues, Eric Knibbe, Maxim Belkin, Miccal Matthews, Nanda H Krishna, Randall, Sam Ford, Seeker, Steve Peters, Thierry Moisan, Tom Schoonjans, Vítor Galvão and rui.
 
 Former maintainers with significant contributions include Jan Viljanen, JCount, commitay, Dominyk Tiller, Tim Smith, Baptiste Fontaine, Xu Cheng, Martin Afanasjew, Brett Koonce, Charlie Sharpsteen, Jack Nagel, Adam Vandenberg, Andrew Janke, Alex Dunn, neutric, Tomasz Pajor, Uladzislau Shablinski, Alyssa Ross, ilovezfs, Chongyu Zhu and Homebrew's creator: Max Howell.
 

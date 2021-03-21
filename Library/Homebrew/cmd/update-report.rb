@@ -129,15 +129,40 @@ module Homebrew
       if hub.empty?
         puts_stdout_or_stderr "No changes to formulae." unless args.quiet?
       else
-        hub.dump(updated_formula_report: !args.preinstall?)
+        hub.dump(updated_formula_report: !args.preinstall?) unless args.quiet?
         hub.reporters.each(&:migrate_tap_migration)
         hub.reporters.each { |r| r.migrate_formula_rename(force: args.force?, verbose: args.verbose?) }
         CacheStoreDatabase.use(:descriptions) do |db|
           DescriptionCacheStore.new(db)
                                .update_from_report!(hub)
         end
+
+        if !args.preinstall? && !args.quiet?
+          outdated_formulae = Formula.installed.count(&:outdated?)
+          outdated_casks = Cask::Caskroom.casks.count(&:outdated?)
+          update_pronoun = if (outdated_formulae + outdated_casks) == 1
+            "it"
+          else
+            "them"
+          end
+          msg = ""
+          if outdated_formulae.positive?
+            msg += "#{Tty.bold}#{outdated_formulae}#{Tty.reset} outdated #{"formula".pluralize(outdated_formulae)}"
+          end
+          if outdated_casks.positive?
+            msg += " and " if msg.present?
+            msg += "#{Tty.bold}#{outdated_casks}#{Tty.reset} outdated #{"cask".pluralize(outdated_casks)}"
+          end
+          if msg.present?
+            puts_stdout_or_stderr
+            puts_stdout_or_stderr <<~EOS
+              You have #{msg} installed.
+              You can update #{update_pronoun} with #{Tty.bold}brew upgrade#{Tty.reset}.
+            EOS
+          end
+        end
       end
-      puts if args.preinstall?
+      puts_stdout_or_stderr if args.preinstall?
     elsif !args.preinstall? && !ENV["HOMEBREW_UPDATE_FAILED"]
       puts_stdout_or_stderr "Already up-to-date." unless args.quiet?
     end
@@ -161,6 +186,7 @@ module Homebrew
 
     return if new_repository_version.blank?
 
+    puts_stdout_or_stderr
     ohai_stdout_or_stderr "Homebrew was updated to version #{new_repository_version}"
     if new_repository_version.split(".").last == "0"
       puts_stdout_or_stderr <<~EOS

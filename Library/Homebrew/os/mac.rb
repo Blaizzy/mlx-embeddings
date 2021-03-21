@@ -25,7 +25,7 @@ module OS
     # This can be compared to numerics, strings, or symbols
     # using the standard Ruby Comparable methods.
     def version
-      @version ||= Version.from_symbol(full_version.to_sym)
+      @version ||= full_version.strip_patch
     end
 
     # This can be compared to numerics, strings, or symbols

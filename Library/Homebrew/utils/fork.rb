@@ -51,7 +51,14 @@ module Utils
           # to rescue them further down.
           if e.is_a?(ErrorDuringExecution)
             error_hash["cmd"] = e.cmd
-            error_hash["status"] = e.status.exitstatus
+            error_hash["status"] = if e.status.is_a?(Process::Status)
+              {
+                exitstatus: e.status.exitstatus,
+                termsig:    e.status.termsig,
+              }
+            else
+              e.status
+            end
             error_hash["output"] = e.output
           end
 

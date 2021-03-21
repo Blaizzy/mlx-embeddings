@@ -10,9 +10,9 @@ module Cask
     # @api private
     class Container
       VALID_KEYS = Set.new([
-                             :type,
-                             :nested,
-                           ]).freeze
+        :type,
+        :nested,
+      ]).freeze
 
       attr_accessor(*VALID_KEYS, :pairs)
 

@@ -474,7 +474,7 @@ module Homebrew
 
               "<#{type}>"
             end.compact
-            types << "<subcommand>" if @named_args_type.any? { |type| type.is_a? String }
+            types << "<subcommand>" if @named_args_type.any?(String)
             types.join("|")
           elsif SYMBOL_TO_USAGE_MAPPING.key? @named_args_type
             SYMBOL_TO_USAGE_MAPPING[@named_args_type]
@@ -623,7 +623,7 @@ module Homebrew
       end
 
       def split_non_options(argv)
-        if sep = argv.index("--")
+        if (sep = argv.index("--"))
           [argv.take(sep), argv.drop(sep + 1)]
         else
           [argv, []]

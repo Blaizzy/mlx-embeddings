@@ -46,8 +46,12 @@ module Homebrew
       },
       HOMEBREW_BOTTLE_DOMAIN:                 {
         description:  "Use this URL as the download mirror for bottles. " \
+                      "If bottles at that URL are temporarily unavailable, " \
+                      "the default bottle domain will be used as a fallback mirror. " \
                       "For example, `HOMEBREW_BOTTLE_DOMAIN=http://localhost:8080` will cause all bottles to " \
-                      "download from the prefix `http://localhost:8080/`.",
+                      "download from the prefix `http://localhost:8080/`. " \
+                      "If bottles are not available at `HOMEBREW_BOTTLE_DOMAIN` " \
+                      "they will be downloaded from the default bottle domain.",
         default_text: "macOS: `https://homebrew.bintray.com/`, " \
                       "Linux: `https://linuxbrew.bintray.com/`.",
         default:      HOMEBREW_BOTTLE_DEFAULT_DOMAIN,
@@ -168,6 +172,13 @@ module Homebrew
                      "\n\n    *Note:* Homebrew doesn't require permissions for any of the scopes, but some " \
                      "developer commands may require additional permissions.",
       },
+      HOMEBREW_GITHUB_PACKAGES_TOKEN:         {
+        description: "Use this GitHub personal access token when accessing the GitHub Packages Registry "\
+                     "(where bottles may be stored).",
+      },
+      HOMEBREW_GITHUB_PACKAGES_USER:          {
+        description: "Use this username when accessing the GitHub Packages Registry (where bottles may be stored).",
+      },
       HOMEBREW_GIT_EMAIL:                     {
         description: "Set the Git author and committer email to this value.",
       },
@@ -178,6 +189,10 @@ module Homebrew
         description:  "Print this text before the installation summary of each successful build.",
         default_text: 'The "Beer Mug" emoji.',
         default:      "🍺",
+      },
+      HOMEBREW_INTERNET_ARCHIVE_KEY:          {
+        description: "Use this API key when accessing the Internet Archive S3 API, where bottles are stored. " \
+                     "The format is access:secret. See https://archive.org/account/s3.php",
       },
       HOMEBREW_LIVECHECK_WATCHLIST:           {
         description: "Consult this file for the list of formulae to check by default when no formula argument " \
@@ -204,17 +219,12 @@ module Homebrew
         boolean:     true,
       },
       HOMEBREW_NO_AUTO_UPDATE:                {
-        description: "If set, do not automatically update before running " \
-                     "`brew install`, `brew upgrade` or `brew tap`.",
+        description: "If set, do not automatically update before running some commands e.g. " \
+                     "`brew install`, `brew upgrade` and `brew tap`.",
         boolean:     true,
       },
       HOMEBREW_NO_BOOTSNAP:                   {
         description: "If set, do not use Bootsnap to speed up repeated `brew` calls.",
-        boolean:     true,
-      },
-      HOMEBREW_NO_BOTTLE_SOURCE_FALLBACK:     {
-        description: "If set, fail on the failure of installation from a bottle rather than " \
-                     "falling back to building from source.",
         boolean:     true,
       },
       HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: {
@@ -255,6 +265,11 @@ module Homebrew
       },
       HOMEBREW_PRY:                           {
         description: "If set, use Pry for the `brew irb` command.",
+        boolean:     true,
+      },
+      HOMEBREW_SIMULATE_MACOS_ON_LINUX:       {
+        description: "If set, running Homebrew on Linux will simulate certain macOS code paths. This is useful " \
+                     "when auditing macOS formulae while on Linux. Implies `HOMEBREW_FORCE_HOMEBREW_ON_LINUX`.",
         boolean:     true,
       },
       HOMEBREW_SKIP_OR_LATER_BOTTLES:         {

@@ -34,6 +34,14 @@ describe "Exception" do
     }
   end
 
+  describe TapFormulaOrCaskUnavailableError do
+    subject(:error) { described_class.new(tap, "foo") }
+
+    let(:tap) { double(Tap, user: "u", repo: "r", to_s: "u/r", installed?: false) }
+
+    its(:to_s) { is_expected.to match(%r{Please tap it and then try again: brew tap u/r}) }
+  end
+
   describe FormulaUnavailableError do
     subject(:error) { described_class.new("foo") }
 
@@ -87,7 +95,7 @@ describe "Exception" do
       end
     end
 
-    context "no classes" do
+    context "when there are no classes" do
       let(:list) { [] }
 
       its(:to_s) {
@@ -95,7 +103,7 @@ describe "Exception" do
       }
     end
 
-    context "class not derived from Formula" do
+    context "when the class is not derived from Formula" do
       let(:list) { [mod.const_get(:Bar)] }
 
       its(:to_s) {
@@ -103,7 +111,7 @@ describe "Exception" do
       }
     end
 
-    context "class derived from Formula" do
+    context "when the class is derived from Formula" do
       let(:list) { [mod.const_get(:Baz)] }
 
       its(:to_s) { is_expected.to match(/Expected to find class Foo, but only found: Baz\./) }
@@ -170,13 +178,13 @@ describe "Exception" do
   end
 
   describe CurlDownloadStrategyError do
-    context "file does not exist" do
+    context "when the file does not exist" do
       subject { described_class.new("file:///tmp/foo") }
 
       its(:to_s) { is_expected.to eq("File does not exist: /tmp/foo") }
     end
 
-    context "download failed" do
+    context "when the download failed" do
       subject { described_class.new("https://brew.sh") }
 
       its(:to_s) { is_expected.to eq("Download failed: https://brew.sh") }
@@ -186,7 +194,7 @@ describe "Exception" do
   describe ErrorDuringExecution do
     subject { described_class.new(["badprg", "arg1", "arg2"], status: status) }
 
-    let(:status) { instance_double(Process::Status, exitstatus: 17) }
+    let(:status) { instance_double(Process::Status, exitstatus: 17, termsig: nil) }
 
     its(:to_s) { is_expected.to eq("Failure while executing; `badprg arg1 arg2` exited with 17.") }
   end

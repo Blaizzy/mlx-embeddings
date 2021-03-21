@@ -54,6 +54,7 @@ module Homebrew
 
     Uninstall.uninstall_kegs(
       kegs_by_rack,
+      casks:               casks,
       force:               args.force?,
       ignore_dependencies: args.ignore_dependencies?,
       named_args:          args.named,
@@ -68,9 +69,8 @@ module Homebrew
     else
       T.unsafe(Cask::Cmd::Uninstall).uninstall_casks(
         *casks,
-        binaries: EnvConfig.cask_opts_binaries?,
-        verbose:  args.verbose?,
-        force:    args.force?,
+        verbose: args.verbose?,
+        force:   args.force?,
       )
     end
   end

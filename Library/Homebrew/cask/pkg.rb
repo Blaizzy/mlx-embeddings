@@ -32,9 +32,7 @@ module Cask
         odebug "Deleting pkg files"
         @command.run!(
           "/usr/bin/xargs",
-          args:  [
-            "-0", "--", "/bin/rm", "--"
-          ],
+          args:  ["-0", "--", "/bin/rm", "--"],
           input: pkgutil_bom_files.join("\0"),
           sudo:  true,
         )
@@ -44,9 +42,7 @@ module Cask
         odebug "Deleting pkg symlinks and special files"
         @command.run!(
           "/usr/bin/xargs",
-          args:  [
-            "-0", "--", "/bin/rm", "--"
-          ],
+          args:  ["-0", "--", "/bin/rm", "--"],
           input: pkgutil_bom_specials.join("\0"),
           sudo:  true,
         )
@@ -54,19 +50,10 @@ module Cask
 
       unless pkgutil_bom_dirs.empty?
         odebug "Deleting pkg directories"
-        deepest_path_first(pkgutil_bom_dirs).each do |dir|
-          with_full_permissions(dir) do
-            clean_broken_symlinks(dir)
-            clean_ds_store(dir)
-            rmdir(dir)
-          end
-        end
+        rmdir(deepest_path_first(pkgutil_bom_dirs))
       end
 
-      if root.directory? && !MacOS.undeletable?(root)
-        clean_ds_store(root)
-        rmdir(root)
-      end
+      rmdir(root) unless MacOS.undeletable?(root)
 
       forget
     end
@@ -118,55 +105,51 @@ module Cask
       path.symlink? || path.chardev? || path.blockdev?
     end
 
-    sig { params(path: Pathname).void }
+    # Helper script to delete empty directories after deleting `.DS_Store` files and broken symlinks.
+    # Needed in order to execute all file operations with `sudo`.
+    RMDIR_SH = <<~'BASH'
+      set -euo pipefail
+
+      for path in "${@}"; do
+        if [[ ! -e "${path}" ]]; then
+          continue
+        fi
+
+        if [[ -e "${path}/.DS_Store" ]]; then
+          /bin/rm -f "${path}/.DS_Store"
+        fi
+
+        # Some packages leave broken symlinks around; we clean them out before
+        # attempting to `rmdir` to prevent extra cruft from accumulating.
+        /usr/bin/find "${path}" -mindepth 1 -maxdepth 1 -type l ! -exec /bin/test -e {} \; -delete
+
+        if [[ -L "${path}" ]]; then
+          # Delete directory symlink.
+          /bin/rm "${path}"
+        elif [[ -d "${path}" ]]; then
+          # Delete directory if empty.
+          /usr/bin/find "${path}" -maxdepth 0 -type d -empty -exec /bin/rmdir {} \;
+        else
+          # Try `rmdir` anyways to show a proper error.
+          /bin/rmdir "${path}"
+        fi
+      done
+    BASH
+    private_constant :RMDIR_SH
+
+    sig { params(path: T.any(Pathname, T::Array[Pathname])).void }
     def rmdir(path)
-      return unless path.children.empty?
-
-      if path.symlink?
-        @command.run!("/bin/rm", args: ["-f", "--", path], sudo: true)
-      else
-        @command.run!("/bin/rmdir", args: ["--", path], sudo: true)
-      end
-    end
-
-    sig { params(path: Pathname, _block: T.proc.void).void }
-    def with_full_permissions(path, &_block)
-      original_mode = (path.stat.mode % 01000).to_s(8)
-      original_flags = @command.run!("/usr/bin/stat", args: ["-f", "%Of", "--", path]).stdout.chomp
-
-      @command.run!("/bin/chmod", args: ["--", "777", path], sudo: true)
-      yield
-    ensure
-      if path.exist? # block may have removed dir
-        @command.run!("/bin/chmod", args: ["--", original_mode, path], sudo: true)
-        @command.run!("/usr/bin/chflags", args: ["--", original_flags, path], sudo: true)
-      end
+      @command.run!(
+        "/usr/bin/xargs",
+        args:  ["-0", "--", "/bin/bash", "-c", RMDIR_SH, "--"],
+        input: Array(path).join("\0"),
+        sudo:  true,
+      )
     end
 
     sig { params(paths: T::Array[Pathname]).returns(T::Array[Pathname]) }
     def deepest_path_first(paths)
       paths.sort_by { |path| -path.to_s.split(File::SEPARATOR).count }
-    end
-
-    sig { params(dir: Pathname).void }
-    def clean_ds_store(dir)
-      return unless (ds_store = dir.join(".DS_Store")).exist?
-
-      @command.run!("/bin/rm", args: ["--", ds_store], sudo: true)
-    end
-
-    # Some packages leave broken symlinks around; we clean them out before
-    # attempting to `rmdir` to prevent extra cruft from accumulating.
-    sig { params(dir: Pathname).void }
-    def clean_broken_symlinks(dir)
-      dir.children.select(&method(:broken_symlink?)).each do |path|
-        @command.run!("/bin/rm", args: ["--", path], sudo: true)
-      end
-    end
-
-    sig { params(path: Pathname).returns(T::Boolean) }
-    def broken_symlink?(path)
-      path.symlink? && !path.exist?
     end
   end
 end

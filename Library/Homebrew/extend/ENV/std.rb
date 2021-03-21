@@ -16,13 +16,14 @@ module Stdenv
   # @private
   sig {
     params(
-      formula:      T.nilable(Formula),
-      cc:           T.nilable(String),
-      build_bottle: T.nilable(T::Boolean),
-      bottle_arch:  T.nilable(T::Boolean),
+      formula:         T.nilable(Formula),
+      cc:              T.nilable(String),
+      build_bottle:    T.nilable(T::Boolean),
+      bottle_arch:     T.nilable(String),
+      testing_formula: T::Boolean,
     ).void
   }
-  def setup_build_environment(formula: nil, cc: nil, build_bottle: false, bottle_arch: nil)
+  def setup_build_environment(formula: nil, cc: nil, build_bottle: false, bottle_arch: nil, testing_formula: false)
     super
 
     self["HOMEBREW_ENV"] = "std"

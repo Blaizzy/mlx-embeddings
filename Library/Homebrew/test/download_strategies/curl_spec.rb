@@ -15,28 +15,6 @@ describe CurlDownloadStrategy do
     expect(strategy.send(:_curl_args)).to eq(["--user", "download:123456"])
   end
 
-  describe "#cached_location" do
-    subject(:location) { described_class.new(url, name, version, **specs).cached_location }
-
-    context "when URL ends with file" do
-      it {
-        expect(location).to eq(
-          HOMEBREW_CACHE/"downloads/3d1c0ae7da22be9d83fb1eb774df96b7c4da71d3cf07e1cb28555cf9a5e5af70--foo.tar.gz",
-        )
-      }
-    end
-
-    context "when URL file is in middle" do
-      let(:url) { "https://example.com/foo.tar.gz/from/this/mirror" }
-
-      it {
-        expect(location).to eq(
-          HOMEBREW_CACHE/"downloads/1ab61269ba52c83994510b1e28dd04167a2f2e8393a35a9c50c1f7d33fd8f619--foo.tar.gz",
-        )
-      }
-    end
-  end
-
   describe "#fetch" do
     before do
       strategy.temporary_path.dirname.mkpath
@@ -147,22 +125,48 @@ describe CurlDownloadStrategy do
   end
 
   describe "#cached_location" do
+    subject(:cached_location) { described_class.new(url, name, version, **specs).cached_location }
+
+    context "when URL ends with file" do
+      it {
+        expect(cached_location).to eq(
+          HOMEBREW_CACHE/"downloads/3d1c0ae7da22be9d83fb1eb774df96b7c4da71d3cf07e1cb28555cf9a5e5af70--foo.tar.gz",
+        )
+      }
+    end
+
+    context "when URL file is in middle" do
+      let(:url) { "https://example.com/foo.tar.gz/from/this/mirror" }
+
+      it {
+        expect(cached_location).to eq(
+          HOMEBREW_CACHE/"downloads/1ab61269ba52c83994510b1e28dd04167a2f2e8393a35a9c50c1f7d33fd8f619--foo.tar.gz",
+        )
+      }
+    end
+
     context "with a file name trailing the URL path" do
       let(:url) { "https://example.com/cask.dmg" }
 
-      its("cached_location.extname") { is_expected.to eq(".dmg") }
+      it {
+        expect(cached_location.extname).to eq(".dmg")
+      }
     end
 
     context "with a file name trailing the first query parameter" do
       let(:url) { "https://example.com/download?file=cask.zip&a=1" }
 
-      its("cached_location.extname") { is_expected.to eq(".zip") }
+      it {
+        expect(cached_location.extname).to eq(".zip")
+      }
     end
 
     context "with a file name trailing the second query parameter" do
       let(:url) { "https://example.com/dl?a=1&file=cask.zip&b=2" }
 
-      its("cached_location.extname") { is_expected.to eq(".zip") }
+      it {
+        expect(cached_location.extname).to eq(".zip")
+      }
     end
 
     context "with an unusually long query string" do
@@ -184,8 +188,10 @@ describe CurlDownloadStrategy do
         ].join
       end
 
-      its("cached_location.extname") { is_expected.to eq(".zip") }
-      its("cached_location.to_path.length") { is_expected.to be_between(0, 255) }
+      it {
+        expect(cached_location.extname).to eq(".zip")
+        expect(cached_location.to_path.length).to be_between(0, 255)
+      }
     end
   end
 end

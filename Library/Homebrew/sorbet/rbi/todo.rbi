@@ -9,5 +9,3 @@ module T::InterfaceWrapper::Helpers; end
 module T::Private::Abstract::Hooks; end
 module T::Private::Methods::MethodHooks; end
 module T::Private::Methods::SingletonMethodHooks; end
-module Test::Unit::AssertionFailedError; end
-module Test::Unit::Assertions; end

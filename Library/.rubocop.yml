@@ -240,6 +240,12 @@ Layout/SpaceAroundOperators:
 Layout/RescueEnsureAlignment:
   Enabled: false
 
+# significantly less indentation involved; more consistent
+Layout/FirstArrayElementIndentation:
+  EnforcedStyle: consistent
+Layout/FirstHashElementIndentation:
+  EnforcedStyle: consistent
+
 # favour parens-less DSL-style arguments
 Lint/AmbiguousBlockAssociation:
   Enabled: false
@@ -254,14 +260,6 @@ Lint/DuplicateBranch:
 Naming/MemoizedInstanceVariableName:
   Exclude:
     - "Homebrew/lazy_object.rb"
-
-# so many of these in formulae and can't be autocorrected
-# TODO: fix these as `ruby -w` complains about them.
-Lint/AmbiguousRegexpLiteral:
-  Exclude:
-    - "Taps/*/*/*.rb"
-    - "/**/Formula/*.rb"
-    - "**/Formula/*.rb"
 
 # useful for metaprogramming in RSpec
 Lint/ConstantDefinitionInBlock:
@@ -461,6 +459,11 @@ Style/StringLiteralsInInterpolation:
 # make things a bit easier to read
 Style/TernaryParentheses:
   EnforcedStyle: require_parentheses_when_complex
+
+# `unless ... ||` and `unless ... &&` are hard to mentally parse
+Style/UnlessLogicalOperators:
+  Enabled: true
+  EnforcedStyle: forbid_logical_operators
 
 # a bit confusing to non-Rubyists but useful for longer arrays
 Style/WordArray:

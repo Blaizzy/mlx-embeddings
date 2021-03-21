@@ -9,55 +9,68 @@ module Homebrew
 
   module_function
 
+  NAMED_TIER_AMOUNT = 100
+  URL_TIER_AMOUNT = 1000
+
   sig { returns(CLI::Parser) }
   def sponsors_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
-        Print a Markdown summary of Homebrew's GitHub Sponsors, suitable for pasting into a README.
+        Update the list of GitHub Sponsors in the `Homebrew/brew` README.
       EOS
 
       named_args :none
     end
   end
 
+  def sponsor_name(s)
+    s["name"] || s["login"]
+  end
+
+  def sponsor_logo(s)
+    "https://github.com/#{s["login"]}.png?size=64"
+  end
+
+  def sponsor_url(s)
+    "https://github.com/#{s["login"]}"
+  end
+
   def sponsors
     sponsors_args.parse
 
-    sponsors = {
-      "named" => [],
-      "users" => 0,
-      "orgs"  => 0,
-    }
+    named_sponsors = []
+    logo_sponsors = []
 
     GitHub.sponsors_by_tier("Homebrew").each do |tier|
-      sponsors["named"] += tier["sponsors"] if tier["tier"] >= 100
-      sponsors["users"] += tier["count"]
-      sponsors["orgs"] += tier["sponsors"].count { |s| s["type"] == "organization" }
+      if tier["tier"] >= NAMED_TIER_AMOUNT
+        named_sponsors += tier["sponsors"].map do |s|
+          "[#{sponsor_name(s)}](#{sponsor_url(s)})"
+        end
+      end
+
+      next if tier["tier"] < URL_TIER_AMOUNT
+
+      logo_sponsors += tier["sponsors"].map do |s|
+        "[![#{sponsor_name(s)}](#{sponsor_logo(s)})](#{sponsor_url(s)})"
+      end
     end
 
-    items = []
-    items += sponsors["named"].map { |s| "[#{s["name"]}](https://github.com/#{s["login"]})" }
+    named_sponsors << "many other users and organisations via [GitHub Sponsors](https://github.com/sponsors/Homebrew)"
 
-    anon_users = sponsors["users"] - sponsors["named"].length - sponsors["orgs"]
+    readme = HOMEBREW_REPOSITORY/"README.md"
+    content = readme.read
+    content.gsub!(/(Homebrew is generously supported by) .*\Z/m, "\\1 #{named_sponsors.to_sentence}.\n")
+    content << "\n#{logo_sponsors.join}\n" if logo_sponsors.presence
 
-    items << if items.length > 1
-      "#{anon_users} other users"
+    File.open(readme, "w+") { |f| f.write(content) }
+
+    diff = system_command "git", args: [
+      "-C", HOMEBREW_REPOSITORY, "diff", "--exit-code", "README.md"
+    ]
+    if diff.status.success?
+      puts "No changes to list of sponsors."
     else
-      "#{anon_users} users"
+      puts "List of sponsors updated in the README."
     end
-
-    if sponsors["orgs"] == 1
-      items << "#{sponsors["orgs"]} organization"
-    elsif sponsors["orgs"] > 1
-      items << "#{sponsors["orgs"]} organizations"
-    end
-
-    sponsor_text = if items.length > 2
-      items[0..-2].join(", ") + " and #{items.last}"
-    else
-      items.join(" and ")
-    end
-
-    puts "Homebrew is generously supported by #{sponsor_text} via [GitHub Sponsors](https://github.com/sponsors/Homebrew)."
   end
 end

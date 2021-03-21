@@ -7,10 +7,6 @@ Layout/MultilineMethodCallIndentation:
   Exclude:
     - "**/*_spec.rb"
 
-# TODO: add parentheses for these and remove
-Lint/AssignmentInCondition:
-  Enabled: false
-
 # `formula do` uses nested method definitions
 Lint/NestedMethodDefinition:
   Exclude:
@@ -36,9 +32,8 @@ Metrics/PerceivedComplexity:
   Max: 90
 Metrics/MethodLength:
   Max: 260
-# TODO: Reduce to 600 after refactoring utils/github
 Metrics/ModuleLength:
-  Max: 620
+  Max: 600
   Exclude:
     - "test/**/*"
 

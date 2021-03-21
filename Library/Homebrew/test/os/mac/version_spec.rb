@@ -40,7 +40,7 @@ describe OS::Mac::Version do
     expect(version).to be < Version.create("10.15")
   end
 
-  context "after Big Sur" do
+  describe "after Big Sur" do
     specify "comparison with :big_sur" do
       expect(big_sur_major).to eq :big_sur
       expect(big_sur_major).to be <= :big_sur

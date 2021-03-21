@@ -165,7 +165,7 @@ module Cask
       odebug "Auditing stanzas which require an uninstall"
 
       return if cask.artifacts.none? { |k| k.is_a?(Artifact::Pkg) || k.is_a?(Artifact::Installer) }
-      return if cask.artifacts.any? { |k| k.is_a?(Artifact::Uninstall) }
+      return if cask.artifacts.any?(Artifact::Uninstall)
 
       add_error "installer and pkg stanzas require an uninstall stanza"
     end
@@ -696,7 +696,7 @@ module Cask
     def check_denylist
       return unless cask.tap
       return unless cask.tap.official?
-      return unless reason = Denylist.reason(cask.token)
+      return unless (reason = Denylist.reason(cask.token))
 
       add_error "#{cask.token} is not allowed: #{reason}"
     end
@@ -717,7 +717,12 @@ module Cask
 
       check_url_for_https_availability(cask.appcast, check_content: true) if cask.appcast && appcast?
 
-      check_url_for_https_availability(cask.homepage, check_content: true, user_agents: [:browser]) if cask.homepage
+      return unless cask.homepage
+
+      check_url_for_https_availability(cask.homepage,
+                                       user_agents:   [:browser, :default],
+                                       check_content: true,
+                                       strict:        strict?)
     end
 
     def check_url_for_https_availability(url_to_check, **options)

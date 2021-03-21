@@ -321,7 +321,8 @@ describe Homebrew::Completions do
               '--hide[Act as if none of the specified hidden are installed. hidden should be a comma-separated list of formulae]' \\
               '--quiet[Make some output more quiet]' \\
               '--verbose[Make some output more verbose]' \\
-              '::formula:__brew_formulae'
+              - formula \\
+              '*::formula:__brew_formulae'
           }
         COMPLETION
       end
@@ -343,9 +344,12 @@ describe Homebrew::Completions do
       end
 
       it "returns appropriate completion for a command with multiple named arg types" do
-        completion = described_class.generate_zsh_subcommand_completion("upgrade")
+        completion = described_class.generate_zsh_subcommand_completion("livecheck")
         expect(completion).to match(
-          /'::outdated_formula:__brew_outdated_formulae' \\\n    '::outdated_cask:__brew_outdated_casks'\n}$/,
+          /'*::formula:__brew_formulae'/,
+        )
+        expect(completion).to match(
+          /'*::cask:__brew_casks'\n}$/,
         )
       end
     end

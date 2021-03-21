@@ -227,7 +227,7 @@ module Homebrew
   def info_formula(f, args:)
     specs = []
 
-    if stable = f.stable
+    if (stable = f.stable)
       s = "stable #{stable.version}"
       s += " (bottled)" if stable.bottled? && f.pour_bottle?
       specs << s
@@ -338,6 +338,7 @@ module Homebrew
   end
 
   def info_cask(cask, args:)
+    require "cask/cmd"
     require "cask/cmd/info"
 
     Cask::Cmd::Info.info(cask)

@@ -15,6 +15,7 @@ module RuboCop
           bzip2
           cups
           curl
+          cyrus-sasl
           dyld-headers
           ed
           expat
@@ -42,6 +43,7 @@ module RuboCop
           netcat
           openldap
           openlibm
+          pcsc-lite
           pod2man
           rpcgen
           ruby

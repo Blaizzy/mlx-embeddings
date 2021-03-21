@@ -42,7 +42,7 @@ module PyPI
       @name = package_string
       @name, @version = @name.split("==") if @name.include? "=="
 
-      return unless match = @name.match(/^(.*?)\[(.+)\]$/)
+      return unless (match = @name.match(/^(.*?)\[(.+)\]$/))
 
       @name = match[1]
       @extras = match[2].split ","
@@ -182,7 +182,7 @@ module PyPI
 
     extra_packages = (extra_packages || []).map { |p| Package.new p }
     exclude_packages = (exclude_packages || []).map { |p| Package.new p }
-    exclude_packages += %W[#{main_package.name} argparse pip setuptools wheel wsgiref].map { |p| Package.new p }
+    exclude_packages += %W[#{main_package.name} argparse pip setuptools wsgiref].map { |p| Package.new p }
     # remove packages from the exclude list if we've explicitly requested them as an extra package
     exclude_packages.delete_if { |package| extra_packages.include?(package) }
 

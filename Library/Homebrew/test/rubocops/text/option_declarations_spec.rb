@@ -42,7 +42,7 @@ describe RuboCop::Cop::FormulaAudit::OptionDeclarations do
       RUBY
     end
 
-    it "reports an offense when `build.without?` is used for a conditional dependency" do
+    it "reports an offense when `build.with?` is used for a conditional dependency" do
       expect_offense(<<~RUBY)
         class Foo < Formula
           depends_on "bar" if build.with?("baz")

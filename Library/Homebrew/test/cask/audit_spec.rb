@@ -315,7 +315,7 @@ describe Cask::Audit, :cask do
         end
       end
 
-      context "when cask token is in tap_migrations.json" do
+      context "when cask token is in tap_migrations.json and" do
         let(:cask_token) { "token-migrated" }
         let(:tap) { Tap.fetch("homebrew/cask") }
 
@@ -324,7 +324,7 @@ describe Cask::Audit, :cask do
           allow(cask).to receive(:tap).and_return(tap)
         end
 
-        context "and `new_cask` is true" do
+        context "when `new_cask` is true" do
           let(:new_cask) { true }
 
           it "fails" do
@@ -332,7 +332,7 @@ describe Cask::Audit, :cask do
           end
         end
 
-        context "and `new_cask` is false" do
+        context "when `new_cask` is false" do
           let(:new_cask) { false }
 
           it "does not fail" do
@@ -688,14 +688,14 @@ describe Cask::Audit, :cask do
         it { is_expected.to pass }
       end
 
-      context "when the Cask is on the denylist" do
-        context "and it's in the official Homebrew tap" do
+      context "when the Cask is on the denylist and" do
+        context "when it's in the official Homebrew tap" do
           let(:cask_token) { "adobe-illustrator" }
 
           it { is_expected.to fail_with(/#{cask_token} is not allowed: \w+/) }
         end
 
-        context "and it isn't in the official Homebrew tap" do
+        context "when it isn't in the official Homebrew tap" do
           let(:cask_token) { "pharo" }
 
           it { is_expected.to pass }
@@ -786,7 +786,7 @@ describe Cask::Audit, :cask do
     end
 
     describe "url checks" do
-      context "given a block" do
+      context "with a block" do
         let(:cask_token) { "booby-trap" }
 
         context "when loading the cask" do
@@ -980,6 +980,55 @@ describe Cask::Audit, :cask do
       end
 
       it { is_expected.to fail_with(/a homepage stanza is required/) }
+    end
+
+    context "when url is lazy" do
+      let(:strict) { true }
+      let(:cask_token) { "with-lazy" }
+      let(:cask) do
+        tmp_cask cask_token.to_s, <<~RUBY
+          cask '#{cask_token}' do
+            version '1.8.0_72,8.13.0.5'
+            sha256 '8dd95daa037ac02455435446ec7bc737b34567afe9156af7d20b2a83805c1d8a'
+            url do
+              ['https://brew.sh/foo.zip', {referer: 'https://example.com', cookies: {'foo' => 'bar'}}]
+            end
+            name 'Audit'
+            desc 'Audit Description'
+            homepage 'https://brew.sh'
+            app 'Audit.app'
+          end
+        RUBY
+      end
+
+      it { is_expected.to pass }
+
+      it "receives a referer" do
+        expect(audit.cask.url.referer).to eq "https://example.com"
+      end
+
+      it "receives cookies" do
+        expect(audit.cask.url.cookies).to eq "foo" => "bar"
+      end
+    end
+
+    context "when the version contains a slash" do
+      let(:cask_token) { "foo" }
+      let(:cask) do
+        tmp_cask cask_token.to_s, <<~RUBY
+          cask '#{cask_token}' do
+            version '0.1,../../directory/traversal'
+            sha256 '8dd95daa037ac02455435446ec7bc737b34567afe9156af7d20b2a83805c1d8a'
+            url 'https://brew.sh/foo.zip'
+            name 'Audit'
+            desc 'Audit Description'
+            homepage 'https://brew.sh'
+            app 'Audit.app'
+          end
+        RUBY
+      end
+
+      it { is_expected.to fail_with(%r{version should not contain '/'}) }
     end
   end
 end

@@ -29,7 +29,7 @@ class Locale
   private_constant :LOCALE_REGEX
 
   def self.parse(string)
-    if locale = try_parse(string)
+    if (locale = try_parse(string))
       return locale
     end
 
@@ -42,12 +42,12 @@ class Locale
 
     scanner = StringScanner.new(string)
 
-    if language = scanner.scan(LANGUAGE_REGEX)
+    if (language = scanner.scan(LANGUAGE_REGEX))
       sep = scanner.scan(/-/)
       return if (sep && scanner.eos?) || (sep.nil? && !scanner.eos?)
     end
 
-    if region = scanner.scan(REGION_REGEX)
+    if (region = scanner.scan(REGION_REGEX))
       sep = scanner.scan(/-/)
       return if (sep && scanner.eos?) || (sep.nil? && !scanner.eos?)
     end

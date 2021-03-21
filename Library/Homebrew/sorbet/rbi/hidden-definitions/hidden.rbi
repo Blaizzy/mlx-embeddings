@@ -2689,6 +2689,11 @@ class Addrinfo
   def connect_internal(local_addrinfo, timeout=T.unsafe(nil)); end
 end
 
+class Archive
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class Array
   include ::MessagePack::CoreExt
   def compact_blank!(); end
@@ -7886,6 +7891,11 @@ end
 module GetText
 end
 
+module GitHub::API
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class GitHub::Actions::Annotation
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -7896,7 +7906,12 @@ module GitHub::Actions
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-module GitHub
+class GitHubPackages
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class GitHubReleases
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -7964,6 +7979,49 @@ end
 module Homebrew
   MAX_PORT = ::T.let(nil, ::T.untyped)
   MIN_PORT = ::T.let(nil, ::T.untyped)
+end
+
+module Homebrew::Assertions
+  include ::Minitest::Assertions
+  def assert_include(*args); end
+
+  def assert_no_match(*args); end
+
+  def assert_not_empty(*args); end
+
+  def assert_not_equal(*args); end
+
+  def assert_not_in_delta(*args); end
+
+  def assert_not_in_epsilon(*args); end
+
+  def assert_not_include(*args); end
+
+  def assert_not_includes(*args); end
+
+  def assert_not_instance_of(*args); end
+
+  def assert_not_kind_of(*args); end
+
+  def assert_not_match(*args); end
+
+  def assert_not_nil(*args); end
+
+  def assert_not_operator(*args); end
+
+  def assert_not_predicate(*args); end
+
+  def assert_not_respond_to(*args); end
+
+  def assert_not_same(*args); end
+
+  def assert_path_exist(*args); end
+
+  def assert_path_not_exist(*args); end
+
+  def assert_raise(*args); end
+
+  def assert_throw(*args); end
 end
 
 class Homebrew::BundleVersion
@@ -8066,11 +8124,17 @@ module Homebrew::EnvConfig
 
   def self.github_api_token(); end
 
+  def self.github_packages_token(); end
+
+  def self.github_packages_user(); end
+
   def self.http_proxy(); end
 
   def self.https_proxy(); end
 
   def self.install_badge(); end
+
+  def self.internet_archive_key(); end
 
   def self.livecheck_watchlist(); end
 
@@ -8081,8 +8145,6 @@ module Homebrew::EnvConfig
   def self.no_auto_update?(); end
 
   def self.no_bootsnap?(); end
-
-  def self.no_bottle_source_fallback?(); end
 
   def self.no_color?(); end
 
@@ -8101,6 +8163,8 @@ module Homebrew::EnvConfig
   def self.no_proxy(); end
 
   def self.pry?(); end
+
+  def self.simulate_macos_on_linux?(); end
 
   def self.skip_or_later_bottles?(); end
 
@@ -12479,9 +12543,9 @@ class Object
   HOMEBREW_PRODUCT = ::T.let(nil, ::T.untyped)
   HOMEBREW_PULL_API_REGEX = ::T.let(nil, ::T.untyped)
   HOMEBREW_PULL_OR_COMMIT_URL_REGEX = ::T.let(nil, ::T.untyped)
-  HOMEBREW_RELEASES_URL_REGEX = ::T.let(nil, ::T.untyped)
   HOMEBREW_REPOSITORY = ::T.let(nil, ::T.untyped)
   HOMEBREW_REQUIRED_RUBY_VERSION = ::T.let(nil, ::T.untyped)
+  HOMEBREW_RUBY_EXEC_ARGS = ::T.let(nil, ::T.untyped)
   HOMEBREW_SHIMS_PATH = ::T.let(nil, ::T.untyped)
   HOMEBREW_TAP_CASK_REGEX = ::T.let(nil, ::T.untyped)
   HOMEBREW_TAP_DIR_REGEX = ::T.let(nil, ::T.untyped)
@@ -12702,7 +12766,6 @@ end
 module ParallelTests
   RUBY_BINARY = ::T.let(nil, ::T.untyped)
   VERSION = ::T.let(nil, ::T.untyped)
-  Version = ::T.let(nil, ::T.untyped)
   WINDOWS = ::T.let(nil, ::T.untyped)
 end
 
@@ -14025,8 +14088,6 @@ class Pry::CLI
 
   def self.add_options(&block); end
 
-  def self.add_plugin_options(); end
-
   def self.input_args(); end
 
   def self.input_args=(input_args); end
@@ -15312,10 +15373,6 @@ class Pry::Config
 
   def should_load_local_rc=(should_load_local_rc); end
 
-  def should_load_plugins(); end
-
-  def should_load_plugins=(should_load_plugins); end
-
   def should_load_rc(); end
 
   def should_load_rc=(should_load_rc); end
@@ -16445,66 +16502,6 @@ end
 class Pry::Pager
 end
 
-class Pry::PluginManager
-  def load_plugins(); end
-
-  def locate_plugins(); end
-
-  def plugins(); end
-  PRY_PLUGIN_PREFIX = ::T.let(nil, ::T.untyped)
-end
-
-class Pry::PluginManager::NoPlugin
-  def initialize(name); end
-end
-
-class Pry::PluginManager::NoPlugin
-end
-
-class Pry::PluginManager::Plugin
-  def activate!(); end
-
-  def active(); end
-
-  def active=(active); end
-
-  def active?(); end
-
-  def disable!(); end
-
-  def enable!(); end
-
-  def enabled(); end
-
-  def enabled=(enabled); end
-
-  def enabled?(); end
-
-  def gem_name(); end
-
-  def gem_name=(gem_name); end
-
-  def initialize(name, gem_name, spec, enabled); end
-
-  def load_cli_options(); end
-
-  def name(); end
-
-  def name=(name); end
-
-  def spec(); end
-
-  def spec=(spec); end
-
-  def supported?(); end
-end
-
-class Pry::PluginManager::Plugin
-end
-
-class Pry::PluginManager
-end
-
 class Pry::Prompt
   def [](key); end
 
@@ -16743,29 +16740,17 @@ end
 class Pry::Slop::Option
   def accepts_optional_argument?(); end
 
-  def argument?(); end
-
   def argument_in_value(); end
 
   def argument_in_value=(argument_in_value); end
 
-  def as?(); end
-
-  def autocreated?(); end
-
   def call(*objects); end
-
-  def callback?(); end
 
   def config(); end
 
   def count(); end
 
   def count=(count); end
-
-  def default?(); end
-
-  def delimiter?(); end
 
   def description(); end
 
@@ -16777,21 +16762,9 @@ class Pry::Slop::Option
 
   def key(); end
 
-  def limit?(); end
-
   def long(); end
 
-  def match?(); end
-
-  def optional?(); end
-
-  def optional_argument?(); end
-
-  def required?(); end
-
   def short(); end
-
-  def tail?(); end
 
   def types(); end
 
@@ -17040,8 +17013,6 @@ class Pry
 
   def self.load_history(); end
 
-  def self.load_plugins(*args, &block); end
-
   def self.load_rc_files(); end
 
   def self.load_requires(); end
@@ -17049,8 +17020,6 @@ class Pry
   def self.load_traps(); end
 
   def self.load_win32console(); end
-
-  def self.locate_plugins(*args, &block); end
 
   def self.main(); end
 
@@ -17065,8 +17034,6 @@ class Pry
   def self.pager(*args, &block); end
 
   def self.pager=(*args, &block); end
-
-  def self.plugins(*args, &block); end
 
   def self.print(*args, &block); end
 
@@ -23420,6 +23387,8 @@ class RSpec::Mocks::Proxy
 
   def check_for_unexpected_arguments(expectation); end
 
+  def ensure_can_be_proxied!(object); end
+
   def ensure_implemented(*_args); end
 
   def has_negative_expectation?(message); end
@@ -26864,11 +26833,6 @@ class RuboCop::Cop::FormulaCop
   def required_dependency_name?(param0, param1); end
 end
 
-class RuboCop::Cop::Style::UnlessMultipleConditions
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 module RuboCop::RSpec::ExpectOffense
   def expect_correction(correction, loop: T.unsafe(nil), source: T.unsafe(nil)); end
 
@@ -29046,6 +29010,12 @@ class Spoom::Sorbet::Errors::Parser
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+module Spoom::Sorbet::Errors
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 module Spoom::Sorbet::MetricsParser
   extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
@@ -29059,12 +29029,16 @@ module Spoom::Sorbet::Sigils
 end
 
 module Spoom::Sorbet
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::Timeline
   extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class Spoom::Timeline
+module Spoom
   extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -29937,8 +29911,27 @@ class WEBrick::HTTPServlet::FileHandler
   def set_filesystem_encoding(str); end
 end
 
+module Warning::Processor
+  def clear(); end
+
+  def dedup(); end
+
+  def freeze(); end
+
+  def ignore(regexp, path=T.unsafe(nil)); end
+
+  def process(path=T.unsafe(nil), actions=T.unsafe(nil), &block); end
+
+  def warn(str); end
+  IGNORE_MAP = ::T.let(nil, ::T.untyped)
+end
+
+module Warning::Processor
+end
+
 module Warning
   extend ::Warning
+  extend ::Warning::Processor
 end
 
 class WeakRef

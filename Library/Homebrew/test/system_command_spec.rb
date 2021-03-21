@@ -79,7 +79,7 @@ describe SystemCommand do
   context "when the exit code is 1" do
     let(:command) { "false" }
 
-    context "and the command must succeed" do
+    context "with a command that must succeed" do
       it "throws an error" do
         expect {
           described_class.run!(command)
@@ -87,7 +87,7 @@ describe SystemCommand do
       end
     end
 
-    context "and the command does not have to succeed" do
+    context "with a command that does not have to succeed" do
       describe "its result" do
         subject { described_class.run(command) }
 

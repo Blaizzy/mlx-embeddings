@@ -84,7 +84,7 @@ class DATAPatch < EmbeddedPatch
         line = f.gets
         break if line.nil? || line =~ /^__END__$/
       end
-      while line = f.gets
+      while (line = f.gets)
         data << line
       end
     end

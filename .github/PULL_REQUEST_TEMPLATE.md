@@ -5,6 +5,5 @@
 - [ ] Have you successfully run `brew style` with your changes locally?
 - [ ] Have you successfully run `brew typecheck` with your changes locally?
 - [ ] Have you successfully run `brew tests` with your changes locally?
-- [ ] Have you successfully run `brew man` locally and committed any changes?
 
 -----

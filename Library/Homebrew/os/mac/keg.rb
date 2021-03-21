@@ -57,13 +57,17 @@ class Keg
 
     # Try signing again
     odebug "Codesigning (2nd try) #{file}"
-    return if quiet_system("codesign", "--sign", "-", "--force",
-                           "--preserve-metadata=entitlements,requirements,flags,runtime",
-                           file)
+    result = system_command("codesign", args: [
+      "--sign", "-", "--force",
+      "--preserve-metadata=entitlements,requirements,flags,runtime",
+      file
+    ], print_stderr: false)
+    return if result.success?
 
     # If it fails again, error out
     onoe <<~EOS
-      Failed applying an ad-hoc signature to #{file}
+      Failed applying an ad-hoc signature to #{file}:
+      #{result.stderr}
     EOS
   end
 end

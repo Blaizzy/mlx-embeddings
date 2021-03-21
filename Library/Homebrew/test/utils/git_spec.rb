@@ -58,6 +58,7 @@ describe Utils::Git do
     end
 
     it "aborts when cherry picking an existing hash" do
+      ENV["GIT_MERGE_VERBOSITY"] = "5" # Consistent output across git versions
       expect {
         described_class.cherry_pick!(HOMEBREW_CACHE, file_hash1)
       }.to raise_error(ErrorDuringExecution, /Merge conflict in README.md/)

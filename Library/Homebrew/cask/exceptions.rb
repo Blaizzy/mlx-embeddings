@@ -103,6 +103,27 @@ module Cask
     end
   end
 
+  # Error when a cask in a specific tap is not available.
+  #
+  # @api private
+  class TapCaskUnavailableError < CaskUnavailableError
+    extend T::Sig
+
+    attr_reader :tap
+
+    def initialize(tap, token)
+      super("#{tap}/#{token}")
+      @tap = tap
+    end
+
+    sig { returns(String) }
+    def to_s
+      s = super
+      s += "\nPlease tap it and then try again: brew tap #{tap}" unless tap.installed?
+      s
+    end
+  end
+
   # Error when a cask already exists.
   #
   # @api private

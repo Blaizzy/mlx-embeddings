@@ -170,25 +170,11 @@ class Tap
     path.git_head
   end
 
-  # git HEAD in short format for this {Tap}.
-  def git_short_head
-    raise TapUnavailableError, name unless installed?
-
-    path.git_short_head(length: 4)
-  end
-
   # Time since last git commit for this {Tap}.
   def git_last_commit
     raise TapUnavailableError, name unless installed?
 
     path.git_last_commit
-  end
-
-  # Last git commit date for this {Tap}.
-  def git_last_commit_date
-    raise TapUnavailableError, name unless installed?
-
-    path.git_last_commit_date
   end
 
   # The issues URL of this {Tap}.
@@ -202,16 +188,6 @@ class Tap
 
   def to_s
     name
-  end
-
-  sig { returns(String) }
-  def version_string
-    return "N/A" unless installed?
-
-    pretty_revision = git_short_head
-    return "(no Git repository)" unless pretty_revision
-
-    "(git revision #{pretty_revision}; last commit #{git_last_commit_date})"
   end
 
   # True if this {Tap} is an official Homebrew tap.
@@ -692,9 +668,9 @@ class Tap
         else
           GitHub.private_repo?(full_name)
         end
-      rescue GitHub::HTTPNotFoundError
+      rescue GitHub::API::HTTPNotFoundError
         true
-      rescue GitHub::Error
+      rescue GitHub::API::Error
         false
       end
     end

@@ -35,6 +35,8 @@ module Homebrew
   def test
     args = test_args.parse
 
+    Homebrew.install_bundler_gems!(setup_path: false)
+
     require "formula_assertions"
     require "formula_free_port"
 
@@ -75,10 +77,7 @@ module Homebrew
       env = ENV.to_hash
 
       begin
-        exec_args = %W[
-          #{RUBY_PATH}
-          #{ENV["HOMEBREW_RUBY_WARNINGS"]}
-          -I #{$LOAD_PATH.join(File::PATH_SEPARATOR)}
+        exec_args = HOMEBREW_RUBY_EXEC_ARGS + %W[
           --
           #{HOMEBREW_LIBRARY_PATH}/test.rb
           #{f.path}
@@ -106,7 +105,7 @@ module Homebrew
       rescue Exception => e # rubocop:disable Lint/RescueException
         retry if retry_test?(f, args: args)
         ofail "#{f.full_name}: failed"
-        puts e, e.backtrace
+        $stderr.puts e, e.backtrace
       ensure
         ENV.replace(env)
       end

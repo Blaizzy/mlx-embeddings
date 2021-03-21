@@ -175,7 +175,7 @@ module Commands
     path = self.path(command)
     return if path.blank?
 
-    if cmd_parser = Homebrew::CLI::Parser.from_cmd_path(path)
+    if (cmd_parser = Homebrew::CLI::Parser.from_cmd_path(path))
       cmd_parser.processed_options.map do |short, long, _, desc|
         [long || short, desc]
       end
@@ -198,7 +198,7 @@ module Commands
     path = self.path(command)
     return if path.blank?
 
-    if cmd_parser = Homebrew::CLI::Parser.from_cmd_path(path)
+    if (cmd_parser = Homebrew::CLI::Parser.from_cmd_path(path))
       if short
         cmd_parser.description.split(".").first
       else

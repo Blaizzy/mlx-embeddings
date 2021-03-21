@@ -38,7 +38,7 @@ module Homebrew
 
     formulae = args.named.to_formulae
 
-    if dir = args.destdir
+    if (dir = args.destdir)
       unpack_dir = Pathname.new(dir).expand_path
       unpack_dir.mkpath
     else

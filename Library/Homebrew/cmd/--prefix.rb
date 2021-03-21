@@ -18,8 +18,7 @@ module Homebrew
           - macOS ARM: `#{HOMEBREW_MACOS_ARM_DEFAULT_PREFIX}`
           - Linux: `#{HOMEBREW_LINUX_DEFAULT_PREFIX}`
 
-        If <formula> is provided, display the location in the Cellar where <formula>
-        is or would be installed.
+        If <formula> is provided, display the location where <formula> is or would be installed.
       EOS
       switch "--unbrewed",
              description: "List files in Homebrew's prefix not installed by Homebrew."
@@ -45,13 +44,10 @@ module Homebrew
     else
       formulae = args.named.to_resolved_formulae
       prefixes = formulae.map do |f|
-        if f.opt_prefix.exist?
-          f.opt_prefix
-        elsif args.installed?
-          nil
-        else
-          f.latest_installed_prefix
-        end
+        next nil if args.installed? && !f.opt_prefix.exist?
+
+        # this case wil be short-circuited by brew.sh logic for a single formula
+        f.opt_prefix
       end.compact
       puts prefixes
       if args.installed?

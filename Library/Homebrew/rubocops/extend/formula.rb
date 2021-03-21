@@ -155,7 +155,7 @@ module RuboCop
 
       # Returns the formula tap.
       def formula_tap
-        return unless match_obj = @file_path.match(%r{/(homebrew-\w+)/})
+        return unless (match_obj = @file_path.match(%r{/(homebrew-\w+)/}))
 
         match_obj[1]
       end

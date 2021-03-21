@@ -33,6 +33,19 @@ module Formulary
     cache.fetch(path)
   end
 
+  def self.clear_cache
+    cache.each do |key, klass|
+      next if key == :formulary_factory
+
+      namespace = klass.name.deconstantize
+      next if namespace.deconstantize != name
+
+      remove_const(namespace.demodulize)
+    end
+
+    super
+  end
+
   def self.load_formula(name, path, contents, namespace, flags:)
     raise "Formula loading disabled by HOMEBREW_DISABLE_LOAD_FORMULA!" if Homebrew::EnvConfig.disable_load_formula?
 
@@ -47,6 +60,7 @@ module Formulary
       mod.const_set(:BUILD_FLAGS, flags)
       mod.module_eval(contents, path)
     rescue NameError, ArgumentError, ScriptError, MethodDeprecatedError => e
+      remove_const(namespace)
       raise FormulaUnreadableError.new(name, e)
     end
     class_name = class_s(name)
@@ -58,6 +72,7 @@ module Formulary
                       .map { |const_name| mod.const_get(const_name) }
                       .select { |const| const.is_a?(Class) }
       new_exception = FormulaClassUnavailableError.new(name, path, class_name, class_list)
+      remove_const(namespace)
       raise new_exception, "", e.backtrace
     end
   end
@@ -467,14 +482,14 @@ module Formulary
       return FormulaLoader.new(name, path)
     end
 
-    if newref = CoreTap.instance.formula_renames[ref]
+    if (newref = CoreTap.instance.formula_renames[ref])
       formula_with_that_oldname = core_path(newref)
       return FormulaLoader.new(newref, formula_with_that_oldname) if formula_with_that_oldname.file?
     end
 
     possible_tap_newname_formulae = []
     Tap.each do |tap|
-      if newref = tap.formula_renames[ref]
+      if (newref = tap.formula_renames[ref])
         possible_tap_newname_formulae << "#{tap.name}/#{newref}"
       end
     end
@@ -502,11 +517,11 @@ module Formulary
     name = name.to_s.downcase
     taps.map do |tap|
       Pathname.glob([
-                      "#{tap}Formula/#{name}.rb",
-                      "#{tap}HomebrewFormula/#{name}.rb",
-                      "#{tap}#{name}.rb",
-                      "#{tap}Aliases/#{name}",
-                    ]).find(&:file?)
+        "#{tap}Formula/#{name}.rb",
+        "#{tap}HomebrewFormula/#{name}.rb",
+        "#{tap}#{name}.rb",
+        "#{tap}Aliases/#{name}",
+      ]).find(&:file?)
     end.compact
   end
 end

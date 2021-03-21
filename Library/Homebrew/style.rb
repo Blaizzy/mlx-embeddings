@@ -72,11 +72,19 @@ module Homebrew
       end
     end
 
+    RUBOCOP = (HOMEBREW_LIBRARY_PATH/"utils/rubocop.rb").freeze
+
     def run_rubocop(files, output_type,
                     fix: false, except_cops: nil, only_cops: nil, display_cop_names: false, reset_cache: false,
                     debug: false, verbose: false)
       Homebrew.install_bundler_gems!
-      require "rubocop"
+
+      require "warnings"
+
+      Warnings.ignore :parser_syntax do
+        require "rubocop"
+      end
+
       require "rubocops"
 
       args = %w[
@@ -134,11 +142,6 @@ module Homebrew
 
       FileUtils.rm_rf cache_env["XDG_CACHE_HOME"] if reset_cache
 
-      ruby_args = [
-        "-S",
-        "rubocop",
-      ].compact.freeze
-
       case output_type
       when :print
         args << "--debug" if debug
@@ -149,11 +152,11 @@ module Homebrew
 
         args << "--color" if Tty.color?
 
-        system cache_env, RUBY_PATH, *ruby_args, *args
+        system cache_env, RUBY_PATH, RUBOCOP, *args
         $CHILD_STATUS.success?
       when :json
         result = system_command RUBY_PATH,
-                                args: [*ruby_args, "--format", "json", *args],
+                                args: [RUBOCOP, "--format", "json", *args],
                                 env:  cache_env
         json = json_result!(result)
         json["files"]

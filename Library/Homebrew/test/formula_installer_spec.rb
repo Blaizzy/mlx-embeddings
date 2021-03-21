@@ -96,40 +96,97 @@ describe FormulaInstaller do
     end
   end
 
-  specify "check installation sanity pinned dependency" do
-    dep_name = "dependency"
-    dep_path = CoreTap.new.formula_dir/"#{dep_name}.rb"
-    dep_path.write <<~RUBY
-      class #{Formulary.class_s(dep_name)} < Formula
-        url "foo"
-        version "0.2"
-      end
-    RUBY
+  describe "#check_install_sanity" do
+    it "raises on direct cyclic dependency" do
+      ENV["HOMEBREW_DEVELOPER"] = "1"
 
-    Formulary.cache.delete(dep_path)
-    dependency = Formulary.factory(dep_name)
+      dep_name = "homebrew-test-cyclic"
+      dep_path = CoreTap.new.formula_dir/"#{dep_name}.rb"
+      dep_path.write <<~RUBY
+        class #{Formulary.class_s(dep_name)} < Formula
+          url "foo"
+          version "0.1"
+          depends_on "#{dep_name}"
+        end
+      RUBY
+      Formulary.cache.delete(dep_path)
+      f = Formulary.factory(dep_name)
 
-    dependent = formula do
-      url "foo"
-      version "0.5"
-      depends_on dependency.name.to_s
+      fi = described_class.new(f)
+
+      expect {
+        fi.check_install_sanity
+      }.to raise_error(CannotInstallFormulaError)
     end
 
-    (dependency.prefix("0.1")/"bin"/"a").mkpath
-    HOMEBREW_PINNED_KEGS.mkpath
-    FileUtils.ln_s dependency.prefix("0.1"), HOMEBREW_PINNED_KEGS/dep_name
+    it "raises on indirect cyclic dependency" do
+      ENV["HOMEBREW_DEVELOPER"] = "1"
 
-    dependency_keg = Keg.new(dependency.prefix("0.1"))
-    dependency_keg.link
+      formula1_name = "homebrew-test-formula1"
+      formula2_name = "homebrew-test-formula2"
+      formula1_path = CoreTap.new.formula_dir/"#{formula1_name}.rb"
+      formula1_path.write <<~RUBY
+        class #{Formulary.class_s(formula1_name)} < Formula
+          url "foo"
+          version "0.1"
+          depends_on "#{formula2_name}"
+        end
+      RUBY
+      Formulary.cache.delete(formula1_path)
+      formula1 = Formulary.factory(formula1_name)
 
-    expect(dependency_keg).to be_linked
-    expect(dependency).to be_pinned
+      formula2_path = CoreTap.new.formula_dir/"#{formula2_name}.rb"
+      formula2_path.write <<~RUBY
+        class #{Formulary.class_s(formula2_name)} < Formula
+          url "foo"
+          version "0.1"
+          depends_on "#{formula1_name}"
+        end
+      RUBY
+      Formulary.cache.delete(formula2_path)
 
-    fi = described_class.new(dependent)
+      fi = described_class.new(formula1)
 
-    expect {
-      fi.check_install_sanity
-    }.to raise_error(CannotInstallFormulaError)
+      expect {
+        fi.check_install_sanity
+      }.to raise_error(CannotInstallFormulaError)
+    end
+
+    it "raises on pinned dependency" do
+      dep_name = "homebrew-test-dependency"
+      dep_path = CoreTap.new.formula_dir/"#{dep_name}.rb"
+      dep_path.write <<~RUBY
+        class #{Formulary.class_s(dep_name)} < Formula
+          url "foo"
+          version "0.2"
+        end
+      RUBY
+
+      Formulary.cache.delete(dep_path)
+      dependency = Formulary.factory(dep_name)
+
+      dependent = formula do
+        url "foo"
+        version "0.5"
+        depends_on dependency.name.to_s
+      end
+
+      (dependency.prefix("0.1")/"bin"/"a").mkpath
+      HOMEBREW_PINNED_KEGS.mkpath
+      FileUtils.ln_s dependency.prefix("0.1"), HOMEBREW_PINNED_KEGS/dep_name
+
+      dependency_keg = Keg.new(dependency.prefix("0.1"))
+      dependency_keg.link
+
+      expect(dependency_keg).to be_linked
+      expect(dependency).to be_pinned
+
+      fi = described_class.new(dependent)
+
+      expect {
+        fi.check_install_sanity
+      }.to raise_error(CannotInstallFormulaError)
+    end
   end
 
   specify "install fails with BuildError when a system() call fails" do

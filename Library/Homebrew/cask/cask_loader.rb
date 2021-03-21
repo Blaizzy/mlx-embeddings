@@ -157,7 +157,7 @@ module Cask
       end
 
       def load(config:)
-        tap.install unless tap.installed?
+        raise TapCaskUnavailableError.new(tap, token) unless tap.installed?
 
         super
       end

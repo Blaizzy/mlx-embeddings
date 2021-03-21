@@ -79,7 +79,7 @@ module Homebrew
             @desc = metadata["description"]
             @homepage = metadata["homepage"]
             @license = metadata["license"]["spdx_id"] if metadata["license"]
-          rescue GitHub::HTTPNotFoundError
+          rescue GitHub::API::HTTPNotFoundError
             # If there was no repository found assume the network connection is at
             # fault rather than the input URL.
             nil
@@ -153,13 +153,14 @@ module Homebrew
           def install
             # ENV.deparallelize  # if your formula fails when building in parallel
         <% if mode == :cmake %>
-            system "cmake", ".", *std_cmake_args
+            system "cmake", "-S", ".", "-B", "build", *std_cmake_args
+            system "cmake", "--build", "build"
+            system "cmake", "--install", "build"
         <% elsif mode == :autotools %>
             # Remove unrecognized options if warned by configure
-            system "./configure", "--disable-debug",
-                                  "--disable-dependency-tracking",
-                                  "--disable-silent-rules",
-                                  "--prefix=\#{prefix}"
+            # https://rubydoc.brew.sh/Formula.html#std_configure_args-instance_method
+            system "./configure", *std_configure_args, "--disable-silent-rules"
+            system "make", "install" # if this fails, try separate make/make install steps
         <% elsif mode == :crystal %>
             system "shards", "build", "--release"
             bin.install "bin/#{name}"
@@ -206,14 +207,9 @@ module Homebrew
             system "cargo", "install", *std_cargo_args
         <% else %>
             # Remove unrecognized options if warned by configure
-            system "./configure", "--disable-debug",
-                                  "--disable-dependency-tracking",
-                                  "--disable-silent-rules",
-                                  "--prefix=\#{prefix}"
-            # system "cmake", ".", *std_cmake_args
-        <% end %>
-        <% if mode == :autotools || mode == :cmake %>
-            system "make", "install" # if this fails, try separate make/make install steps
+            # https://rubydoc.brew.sh/Formula.html#std_configure_args-instance_method
+            system "./configure", *std_configure_args, "--disable-silent-rules"
+            # system "cmake", "-S", ".", "-B", "build", *std_cmake_args
         <% end %>
           end
 
