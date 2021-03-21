@@ -126,9 +126,10 @@ module Cask
       end
     end
 
-    sig { params(include_passed: T::Boolean).returns(String) }
-    def summary(include_passed: false)
+    sig { params(include_passed: T::Boolean, include_warnings: T::Boolean).returns(String) }
+    def summary(include_passed: false, include_warnings: true)
       return if success? && !include_passed
+      return if warnings? && !errors? && !include_warnings
 
       summary = ["audit for #{cask}: #{result}"]
 
@@ -136,8 +137,10 @@ module Cask
         summary << " #{Formatter.error("-")} #{error}"
       end
 
-      warnings.each do |warning|
-        summary << " #{Formatter.warning("-")} #{warning}"
+      if include_warnings
+        warnings.each do |warning|
+          summary << " #{Formatter.warning("-")} #{warning}"
+        end
       end
 
       summary.join("\n")
