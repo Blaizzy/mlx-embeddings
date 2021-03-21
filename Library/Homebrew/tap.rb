@@ -138,6 +138,14 @@ class Tap
     @remote ||= path.git_origin
   end
 
+  # The remote repository name of this {Tap}.
+  # e.g. `user/homebrew-repo`
+  def remote_repo
+    raise TapUnavailableError, name unless installed?
+
+    @remote_repo ||= remote&.sub(%r{^https://github\.com/}, "")&.sub(/\.git$/, "")
+  end
+
   # The default remote path to this {Tap}.
   sig { returns(String) }
   def default_remote

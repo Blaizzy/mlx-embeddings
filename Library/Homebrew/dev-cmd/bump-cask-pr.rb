@@ -199,7 +199,8 @@ module Homebrew
   end
 
   def check_open_pull_requests(cask, args:)
-    GitHub.check_for_duplicate_pull_requests(cask.token, cask.tap.full_name,
+    tap_remote_repo = cask.tap.remote_repo || cask.tap.full_name
+    GitHub.check_for_duplicate_pull_requests(cask.token, tap_remote_repo,
                                              state: "open",
                                              file:  cask.sourcefile_path.relative_path_from(cask.tap.path).to_s,
                                              args:  args)
