@@ -143,7 +143,10 @@ class Tap
   def remote_repo
     raise TapUnavailableError, name unless installed?
 
-    @remote_repo ||= remote&.sub(%r{^https://github\.com/}, "")&.sub(/\.git$/, "")
+    return unless remote
+
+    @remote_repo ||= remote.delete_prefix("https://github.com/")
+                           .delete_suffix(".git")
   end
 
   # The default remote path to this {Tap}.
