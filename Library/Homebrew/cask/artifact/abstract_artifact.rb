@@ -30,6 +30,7 @@ module Cask
 
       def staged_path_join_executable(path)
         path = Pathname(path)
+        path = path.expand_path if path.to_s.start_with?("~")
 
         absolute_path = if path.absolute?
           path

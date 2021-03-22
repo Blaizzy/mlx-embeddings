@@ -90,6 +90,30 @@ describe Cask::Cmd::Uninstall, :cask do
     expect(cask).not_to be_installed
   end
 
+  context "when Casks use script path with `~` as `HOME`" do
+    let(:home_dir) { mktmpdir }
+    let(:app) { Pathname.new("#{home_dir}/MyFancyApp.app") }
+    let(:cask) { Cask::CaskLoader.load(cask_path("with-uninstall-script-user-relative")) }
+
+    before do
+      ENV["HOME"] = home_dir
+    end
+
+    it "can still uninstall them" do
+      Cask::Installer.new(cask).install
+
+      expect(cask).to be_installed
+      expect(app).to exist
+
+      expect {
+        described_class.run("with-uninstall-script-user-relative")
+      }.not_to raise_error
+
+      expect(cask).not_to be_installed
+      expect(app).not_to exist
+    end
+  end
+
   describe "when multiple versions of a cask are installed" do
     let(:token) { "versioned-cask" }
     let(:first_installed_version) { "1.2.3" }
