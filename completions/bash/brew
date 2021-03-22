@@ -1848,6 +1848,7 @@ _brew_test() {
       __brewcomp "
       --HEAD
       --debug
+      --force
       --help
       --keep-tmp
       --quiet

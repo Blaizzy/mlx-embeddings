@@ -1319,6 +1319,8 @@ user if something is wrong with the installed formula.
 
 *Example:* `brew install jruby && brew test jruby`
 
+* `-f`, `--force`:
+  Test formulae even if they are unlinked.
 * `--HEAD`:
   Test the head version of a formula.
 * `--keep-tmp`:

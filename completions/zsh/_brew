@@ -1594,6 +1594,7 @@ _brew_test() {
   _arguments \
     '--HEAD[Test the head version of a formula]' \
     '--debug[Display any debugging information]' \
+    '--force[Test formulae even if they are unlinked]' \
     '--help[Show this message]' \
     '--keep-tmp[Retain the temporary files created for the test]' \
     '--quiet[Make some output more quiet]' \
