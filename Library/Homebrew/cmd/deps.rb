@@ -93,9 +93,9 @@ module Homebrew
         when :formula
           sorted_dependents(Formula.installed)
         when :cask
-          sorted_dependents(Cask::Caskroom.casks(config: Cask::Config.from_args(args)))
+          sorted_dependents(Cask::Caskroom.casks)
         else
-          sorted_dependents(Formula.installed + Cask::Caskroom.casks(config: Cask::Config.from_args(args)))
+          sorted_dependents(Formula.installed + Cask::Caskroom.casks)
         end
       else
         raise FormulaUnspecifiedError
@@ -118,9 +118,9 @@ module Homebrew
       when :formula
         sorted_dependents(Formula.installed)
       when :cask
-        sorted_dependents(Cask::Caskroom.casks(config: Cask::Config.from_args(args)))
+        sorted_dependents(Cask::Caskroom.casks)
       else
-        sorted_dependents(Formula.installed + Cask::Caskroom.casks(config: Cask::Config.from_args(args)))
+        sorted_dependents(Formula.installed + Cask::Caskroom.casks)
       end
       puts_deps sorted_dependents_formulae_and_casks, recursive: recursive, args: args
       return
