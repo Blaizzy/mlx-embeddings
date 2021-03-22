@@ -81,12 +81,14 @@ module Homebrew
   def reinstall
     args = reinstall_args.parse
 
-    FormulaInstaller.prevent_build_flags(args)
-
-    Install.perform_preinstall_checks
-
     formulae, casks = args.named.to_formulae_and_casks(method: :resolve)
                           .partition { |o| o.is_a?(Formula) }
+
+    if args.build_from_source? && !DevelopmentTools.installed?
+      raise BuildFlagsError.new(["--build-from-source"], bottled: formulae.all?(&:bottled?))
+    end
+
+    Install.perform_preinstall_checks
 
     formulae.each do |formula|
       if formula.pinned?
