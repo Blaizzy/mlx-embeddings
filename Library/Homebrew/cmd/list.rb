@@ -116,8 +116,16 @@ module Homebrew
       ls_args << "-r" if args.r?
       ls_args << "-t" if args.t?
 
-      safe_system "ls", *ls_args, HOMEBREW_CELLAR unless args.cask?
-      list_casks(args: args) unless args.formula?
+      ohai "Formulae" if $stdout.tty? && !args.formula?
+      safe_system "ls", *ls_args, HOMEBREW_CELLAR
+
+      unless args.formula?
+        if $stdout.tty?
+          puts
+          ohai "Casks"
+        end
+        list_casks(args: args)
+      end
     elsif args.verbose? || !$stdout.tty?
       system_command! "find", args: args.named.to_kegs.map(&:to_s) + %w[-not -type d -print], print_stdout: true
     else
