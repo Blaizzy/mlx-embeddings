@@ -93,7 +93,7 @@ module Homebrew
       end
       if show_formulae_and_casks || args.cask?
         deps += select_used_dependents(
-          dependents(Cask::Caskroom.casks(config: Cask::Config.from_args(args))),
+          dependents(Cask::Caskroom.casks),
           used_formulae, recursive, includes, ignores
         )
       end
@@ -104,7 +104,7 @@ module Homebrew
         deps += args.installed? ? Formula.installed : Formula.to_a
       end
       if show_formulae_and_casks || args.cask?
-        deps += args.installed? ? Cask::Caskroom.casks(config: Cask::Config.from_args(args)) : Cask::Cask.to_a
+        deps += args.installed? ? Cask::Caskroom.casks : Cask::Cask.to_a
       end
 
       select_used_dependents(dependents(deps), used_formulae, recursive, includes, ignores)
