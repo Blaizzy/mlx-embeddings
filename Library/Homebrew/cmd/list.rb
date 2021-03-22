@@ -119,7 +119,7 @@ module Homebrew
       ohai "Formulae" if $stdout.tty? && !args.formula?
       safe_system "ls", *ls_args, HOMEBREW_CELLAR
 
-      unless args.formula?
+      if !args.formula? && Cask::Caskroom.casks.any?
         if $stdout.tty?
           puts
           ohai "Casks"
