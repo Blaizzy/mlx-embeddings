@@ -115,7 +115,9 @@ module Homebrew
   def upgrade_outdated_formulae(formulae, args:)
     return false if args.cask?
 
-    FormulaInstaller.prevent_build_flags(args)
+    if args.build_from_source? && !DevelopmentTools.installed?
+      raise BuildFlagsError.new(["--build-from-source"], bottled: formulae.all?(&:bottled?))
+    end
 
     Install.perform_preinstall_checks
 
