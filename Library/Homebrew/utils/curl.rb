@@ -176,9 +176,12 @@ module Utils
       hash_needed = false
       if url != secure_url
         user_agents.each do |user_agent|
-          secure_details =
+          secure_details = begin
             curl_http_content_headers_and_checksum(secure_url, specs: specs, hash_needed: true,
                                                    user_agent: user_agent)
+          rescue Timeout::Error
+            next
+          end
 
           next unless http_status_ok?(secure_details[:status])
 
