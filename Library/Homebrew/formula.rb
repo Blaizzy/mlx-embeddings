@@ -165,7 +165,7 @@ class Formula
   # during the installation of a {Formula}. This is annoying but the result of
   # state that we're trying to eliminate.
   # @return [BuildOptions]
-  attr_accessor :build
+  attr_reader :build
 
   # Whether this formula should be considered outdated
   # if the target of the alias it was installed with has since changed.
@@ -222,10 +222,28 @@ class Formula
     spec = send(spec_sym)
     raise FormulaSpecificationError, "#{spec_sym} spec is not available for #{full_name}" unless spec
 
+    old_spec_sym = @active_spec_sym
     @active_spec = spec
     @active_spec_sym = spec_sym
     validate_attributes!
     @build = active_spec.build
+
+    return if spec_sym == old_spec_sym
+
+    Dependency.clear_cache
+    Requirement.clear_cache
+  end
+
+  # @private
+  def build=(build_options)
+    old_options = @build
+    @build = build_options
+
+    return if old_options.used_options == build_options.used_options &&
+              old_options.unused_options == build_options.unused_options
+
+    Dependency.clear_cache
+    Requirement.clear_cache
   end
 
   private
@@ -1657,13 +1675,15 @@ class Formula
   # means if a depends on b then b will be ordered before a in this list
   # @private
   def recursive_dependencies(&block)
-    Dependency.expand(self, &block)
+    cache_key = "Formula#recursive_dependencies" unless block
+    Dependency.expand(self, cache_key: cache_key, &block)
   end
 
   # The full set of Requirements for this formula's dependency tree.
   # @private
   def recursive_requirements(&block)
-    Requirement.expand(self, &block)
+    cache_key = "Formula#recursive_requirements" unless block
+    Requirement.expand(self, cache_key: cache_key, &block)
   end
 
   # Returns a Keg for the opt_prefix or installed_prefix if they exist.

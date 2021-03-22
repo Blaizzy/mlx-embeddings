@@ -310,6 +310,8 @@ module Homebrew
         Formula.clear_cache
         Keg.clear_cache
         Tab.clear_cache
+        Dependency.clear_cache
+        Requirement.clear_cache
         tab = Tab.for_keg(keg)
         original_tab = tab.dup
         tab.poured_from_bottle = false

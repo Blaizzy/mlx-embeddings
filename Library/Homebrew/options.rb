@@ -114,6 +114,12 @@ class Options
     @options.to_a * other
   end
 
+  def ==(other)
+    instance_of?(other.class) &&
+      to_a == other.to_a
+  end
+  alias eql? ==
+
   def empty?
     @options.empty?
   end

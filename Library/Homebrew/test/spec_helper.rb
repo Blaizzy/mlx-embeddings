@@ -185,6 +185,8 @@ RSpec.configure do |config|
     Formula.clear_cache
     Keg.clear_cache
     Tab.clear_cache
+    Dependency.clear_cache
+    Requirement.clear_cache
     FormulaInstaller.clear_attempted
     FormulaInstaller.clear_installed
 
@@ -229,6 +231,8 @@ RSpec.configure do |config|
       Formula.clear_cache
       Keg.clear_cache
       Tab.clear_cache
+      Dependency.clear_cache
+      Requirement.clear_cache
 
       FileUtils.rm_rf [
         *TEST_DIRECTORIES,
