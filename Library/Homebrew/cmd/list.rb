@@ -116,8 +116,10 @@ module Homebrew
       ls_args << "-r" if args.r?
       ls_args << "-t" if args.t?
 
-      ohai "Formulae" if $stdout.tty? && !args.formula?
-      safe_system "ls", *ls_args, HOMEBREW_CELLAR
+      if HOMEBREW_CELLAR.exist? && HOMEBREW_CELLAR.children.any?
+        ohai "Formulae" if $stdout.tty? && !args.formula?
+        safe_system "ls", *ls_args, HOMEBREW_CELLAR
+      end
 
       if !args.formula? && Cask::Caskroom.casks.any?
         if $stdout.tty?
