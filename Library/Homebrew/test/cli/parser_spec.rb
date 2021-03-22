@@ -23,6 +23,11 @@ describe Homebrew::CLI::Parser do
         end
       }
 
+      it "does not create no_positive?" do
+        args = parser.parse(["--no-positive"])
+        expect { args.no_positive? }.to raise_error(NoMethodError)
+      end
+
       it "sets the positive name to false if the negative flag is passed" do
         args = parser.parse(["--no-positive"])
         expect(args).not_to be_positive
@@ -31,6 +36,11 @@ describe Homebrew::CLI::Parser do
       it "sets the positive name to true if the positive flag is passed" do
         args = parser.parse(["--positive"])
         expect(args).to be_positive
+      end
+
+      it "does not set the positive name if the positive flag is not passed" do
+        args = parser.parse([])
+        expect(args.positive?).to be nil
       end
     end
 
@@ -43,7 +53,7 @@ describe Homebrew::CLI::Parser do
 
       it "does not set the positive name" do
         args = parser.parse(["--no-positive"])
-        expect(args.positive?).to be nil
+        expect { args.positive? }.to raise_error(NoMethodError)
       end
 
       it "fails when using the positive name" do
@@ -82,10 +92,10 @@ describe Homebrew::CLI::Parser do
       expect(args.named).to eq %w[unnamed args]
     end
 
-    it "parses a single option and checks other options to be nil" do
+    it "parses a single option and checks other options to be false" do
       args = parser.parse(["--verbose"])
       expect(args).to be_verbose
-      expect(args.more_verbose?).to be nil
+      expect(args.more_verbose?).to be false
     end
 
     it "raises an exception and outputs help text when an invalid option is passed" do
@@ -227,7 +237,7 @@ describe Homebrew::CLI::Parser do
       allow(Homebrew::EnvConfig).to receive(:switch_a?).and_return(true)
       allow(Homebrew::EnvConfig).to receive(:switch_b?).and_return(false)
       args = parser.parse(["--switch-b"])
-      expect(args.switch_a).to be_falsy
+      expect(args.switch_a?).to be false
       expect(args).to be_switch_b
     end
 
