@@ -470,6 +470,7 @@ class RuboCop::Cop::Performance::RedundantBlockCall < ::RuboCop::Cop::Base
   def args_include_block_pass?(blockcall); end
   def autocorrect(corrector, node); end
   def calls_to_report(argname, body); end
+  def shadowed_block_argument?(body, block_argument_of_method_signature); end
 end
 
 RuboCop::Cop::Performance::RedundantBlockCall::CLOSE_PAREN = T.let(T.unsafe(nil), String)
@@ -492,6 +493,7 @@ class RuboCop::Cop::Performance::RedundantEqualityComparisonBlock < ::RuboCop::C
 
   def new_argument(block_argument, block_body); end
   def offense_range(node); end
+  def one_block_argument?(block_arguments); end
   def same_block_argument_and_is_a_argument?(block_body, block_argument); end
   def use_equality_comparison_block?(block_body); end
 end
@@ -673,6 +675,7 @@ class RuboCop::Cop::Performance::ReverseEach < ::RuboCop::Cop::Base
   private
 
   def offense_range(node); end
+  def use_return_value?(node); end
 end
 
 RuboCop::Cop::Performance::ReverseEach::MSG = T.let(T.unsafe(nil), String)

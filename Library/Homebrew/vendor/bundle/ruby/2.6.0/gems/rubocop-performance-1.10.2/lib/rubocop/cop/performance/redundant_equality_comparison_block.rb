@@ -35,7 +35,8 @@ module RuboCop
         IS_A_METHODS = %i[is_a? kind_of?].freeze
 
         def on_block(node)
-          return unless TARGET_METHODS.include?(node.method_name) && node.arguments.one?
+          return unless TARGET_METHODS.include?(node.method_name)
+          return unless one_block_argument?(node.arguments)
 
           block_argument = node.arguments.first
           block_body = node.body
@@ -53,14 +54,22 @@ module RuboCop
 
         private
 
+        def one_block_argument?(block_arguments)
+          block_arguments.one? && !block_arguments.source.include?(',')
+        end
+
         def use_equality_comparison_block?(block_body)
           block_body.send_type? && COMPARISON_METHODS.include?(block_body.method_name)
         end
 
         def same_block_argument_and_is_a_argument?(block_body, block_argument)
-          return false unless IS_A_METHODS.include?(block_body.method_name)
-
-          block_argument.source == block_body.first_argument.source
+          if block_body.method?(:===)
+            block_argument.source != block_body.children[2].source
+          elsif IS_A_METHODS.include?(block_body.method_name)
+            block_argument.source == block_body.first_argument.source
+          else
+            false
+          end
         end
 
         def new_argument(block_argument, block_body)
