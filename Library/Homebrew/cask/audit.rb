@@ -546,12 +546,20 @@ module Cask
 
     def check_livecheck_version
       return unless appcast?
-      return unless cask.livecheckable?
       return if cask.livecheck.skip?
       return if cask.version.latest?
 
       latest_version = Homebrew::Livecheck.latest_version(cask)&.fetch(:latest)
-      return if cask.version.to_s == latest_version.to_s
+      if cask.version.to_s == latest_version.to_s
+        if cask.appcast
+          add_error "Version '#{latest_version}' was automatically detected by livecheck; " \
+                    "the appcast should be removed."
+        end
+
+        return
+      end
+
+      return if cask.appcast && !cask.livecheckable?
 
       add_error "Version '#{cask.version}' differs from '#{latest_version}' retrieved by livecheck."
     end
