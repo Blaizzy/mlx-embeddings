@@ -324,6 +324,7 @@ _brew_audit() {
       --cask
       --debug
       --display-cop-names
+      --display-failures-only
       --display-filename
       --except
       --except-cops

@@ -18,7 +18,9 @@ module Cask
       audit_token_conflicts: nil,
       quarantine: nil,
       any_named_args: nil,
-      language: nil
+      language: nil,
+      display_passes: nil,
+      display_failures_only: nil
     )
       new(
         cask,
@@ -31,6 +33,8 @@ module Cask
         quarantine:            quarantine,
         any_named_args:        any_named_args,
         language:              language,
+        display_passes:        display_passes,
+        display_failures_only: display_failures_only,
       ).audit
     end
 
@@ -46,7 +50,9 @@ module Cask
       audit_new_cask: nil,
       quarantine: nil,
       any_named_args: nil,
-      language: nil
+      language: nil,
+      display_passes: nil,
+      display_failures_only: nil
     )
       @cask = cask
       @audit_download = audit_download
@@ -58,6 +64,8 @@ module Cask
       @audit_token_conflicts = audit_token_conflicts
       @any_named_args = any_named_args
       @language = language
+      @display_passes = display_passes
+      @display_failures_only = display_failures_only
     end
 
     def audit
@@ -67,13 +75,18 @@ module Cask
       if !language && language_blocks
         language_blocks.each_key do |l|
           audit = audit_languages(l)
-          puts audit.summary if output_summary?(audit)
+          summary = audit.summary(include_passed: output_passed?, include_warnings: output_warnings?)
+          if summary.present? && output_summary?(audit)
+            ohai "Auditing language: #{l.map { |lang| "'#{lang}'" }.to_sentence}" if output_summary?
+            puts summary
+          end
           warnings += audit.warnings
           errors += audit.errors
         end
       else
         audit = audit_cask_instance(cask)
-        puts audit.summary if output_summary?(audit)
+        summary = audit.summary(include_passed: output_passed?, include_warnings: output_warnings?)
+        puts summary if summary.present? && output_summary?(audit)
         warnings += audit.warnings
         errors += audit.errors
       end
@@ -91,9 +104,20 @@ module Cask
       audit.errors?
     end
 
-    def audit_languages(languages)
-      ohai "Auditing language: #{languages.map { |lang| "'#{lang}'" }.to_sentence}" if output_summary?
+    def output_passed?
+      return false if @display_failures_only.present?
+      return true if @display_passes.present?
 
+      false
+    end
+
+    def output_warnings?
+      return false if @display_failures_only.present?
+
+      true
+    end
+
+    def audit_languages(languages)
       original_config = cask.config
       localized_config = original_config.merge(Config.new(explicit: { languages: languages }))
       cask.config = localized_config

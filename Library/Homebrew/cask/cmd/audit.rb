@@ -27,6 +27,8 @@ module Cask
                  description: "Run various additional style checks to determine if a new cask is eligible " \
                               "for Homebrew. This should be used when creating new casks and implies " \
                               "`--strict` and `--online`"
+          switch "--display-failures-only",
+                 description: "Only display casks that fail the audit. This is the default for formulae."
         end
       end
 
@@ -44,15 +46,17 @@ module Cask
 
         results = self.class.audit_casks(
           *casks,
-          download:        args.download?,
-          appcast:         args.appcast?,
-          online:          args.online?,
-          strict:          args.strict?,
-          new_cask:        args.new_cask?,
-          token_conflicts: args.token_conflicts?,
-          quarantine:      args.quarantine?,
-          any_named_args:  any_named_args,
-          language:        args.language,
+          download:              args.download?,
+          appcast:               args.appcast?,
+          online:                args.online?,
+          strict:                args.strict?,
+          new_cask:              args.new_cask?,
+          token_conflicts:       args.token_conflicts?,
+          quarantine:            args.quarantine?,
+          any_named_args:        any_named_args,
+          language:              args.language,
+          display_passes:        args.verbose? || args.named.count == 1,
+          display_failures_only: args.display_failures_only?,
         )
 
         self.class.print_annotations(results)
@@ -73,7 +77,9 @@ module Cask
         token_conflicts: nil,
         quarantine: nil,
         any_named_args: nil,
-        language: nil
+        language: nil,
+        display_passes: nil,
+        display_failures_only: nil
       )
         options = {
           audit_download:        download,
@@ -85,6 +91,8 @@ module Cask
           quarantine:            quarantine,
           language:              language,
           any_named_args:        any_named_args,
+          display_passes:        display_passes,
+          display_failures_only: display_failures_only,
         }.compact
 
         options[:quarantine] = true if options[:quarantine].nil?

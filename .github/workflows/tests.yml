@@ -77,7 +77,7 @@ jobs:
         run: brew style --display-cop-names homebrew/core
 
       - name: Run brew audit --skip-style on all taps
-        run: brew audit --skip-style
+        run: brew audit --skip-style --display-failures-only
 
       - name: Set up all Homebrew taps
         run: |
@@ -277,10 +277,10 @@ jobs:
 
       - name: Run brew audit --skip-style on Cask taps
         run: |
-          brew audit --skip-style --tap=homebrew/cask
-          brew audit --skip-style --tap=homebrew/cask-drivers
-          brew audit --skip-style --tap=homebrew/cask-fonts
-          brew audit --skip-style --tap=homebrew/cask-versions
+          brew audit --skip-style --display-failures-only --tap=homebrew/cask
+          brew audit --skip-style --display-failures-only --tap=homebrew/cask-drivers
+          brew audit --skip-style --display-failures-only --tap=homebrew/cask-fonts
+          brew audit --skip-style --display-failures-only --tap=homebrew/cask-versions
 
       - name: Install brew tests dependencies
         run: |
