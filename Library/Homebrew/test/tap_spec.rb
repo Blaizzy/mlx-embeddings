@@ -205,6 +205,33 @@ describe Tap do
     end
   end
 
+  describe "#remote_repo" do
+    it "returns the remote repository" do
+      setup_git_repo
+
+      expect(homebrew_foo_tap.remote_repo).to eq("Homebrew/homebrew-foo")
+      expect { described_class.new("Homebrew", "bar").remote_repo }.to raise_error(TapUnavailableError)
+
+      services_tap = described_class.new("Homebrew", "services")
+      services_tap.path.mkpath
+      services_tap.path.cd do
+        system "git", "init"
+        system "git", "remote", "add", "origin", "https://github.com/Homebrew/homebrew-bar"
+      end
+      expect(services_tap.remote_repo).to eq("Homebrew/homebrew-bar")
+    end
+
+    it "returns nil if the Tap is not a Git repository" do
+      expect(homebrew_foo_tap.remote_repo).to be nil
+    end
+
+    it "returns nil if Git is not available" do
+      setup_git_repo
+      allow(Utils::Git).to receive(:available?).and_return(false)
+      expect(homebrew_foo_tap.remote_repo).to be nil
+    end
+  end
+
   specify "Git variant" do
     touch path/"README"
     setup_git_repo
