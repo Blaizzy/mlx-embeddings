@@ -8289,6 +8289,11 @@ module Homebrew::Livecheck::SkipConditions
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class Homebrew::Livecheck::Strategy::ElectronBuilder
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class Homebrew::Livecheck::Strategy::HeaderMatch
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
