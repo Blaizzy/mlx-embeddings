@@ -288,7 +288,11 @@ module Cask
     def check_appcast_and_livecheck
       return unless cask.appcast
 
-      add_error "Cask has a `livecheck`, the `appcast` should be removed." if cask.livecheckable?
+      if cask.livecheckable?
+        add_error "Cask has a `livecheck`, the `appcast` should be removed."
+      elsif new_cask?
+        add_error "New casks should use a `livecheck` instead of an `appcast`."
+      end
     end
 
     def check_latest_with_appcast_or_livecheck
