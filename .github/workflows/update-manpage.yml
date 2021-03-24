@@ -31,6 +31,11 @@ jobs:
         with:
           username: BrewTestBot
 
+      - name: Set up commit signing
+        uses: Homebrew/actions/setup-commit-signing@master
+        with:
+          signing_key: ${{ secrets.BREWTESTBOT_GPG_SIGNING_SUBKEY }}
+
       - name: Update maintainers, manpage and completions
         id: update
         run: |
@@ -65,6 +70,7 @@ jobs:
           fi
         env:
           HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
+          GPG_PASSPHRASE: ${{ secrets.BREWTESTBOT_GPG_SIGNING_SUBKEY_PASSPHRASE }}
 
       - name: Push commits
         if: steps.update.outputs.committed == 'true'
