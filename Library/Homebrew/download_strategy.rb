@@ -537,14 +537,14 @@ class CurlGitHubPackagesDownloadStrategy < CurlDownloadStrategy
 
   private
 
-  def _fetch(url:, resolved_url:, timeout:)
+  def _fetch(url:, resolved_url:)
     raise "Empty checksum" if checksum.blank?
     raise "Empty name" if name.blank?
 
     _, org, repo, = *url.match(GitHubPackages::URL_REGEX)
 
     blob_url = "https://ghcr.io/v2/#{org}/#{repo}/#{name}/blobs/sha256:#{checksum}"
-    curl_download(blob_url, "--header", "Authorization: Bearer", to: temporary_path, timeout: timeout)
+    curl_download(blob_url, "--header", "Authorization: Bearer", to: temporary_path)
   end
 end
 
