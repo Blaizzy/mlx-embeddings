@@ -91,7 +91,7 @@ module Homebrew
         "git", "-C", HOMEBREW_REPOSITORY, "tag", "--list", "--sort=-version:refname", "*.*"
       ).lines.first.chomp
 
-      new_repository_version = new_tag unless new_tag == old_tag
+      new_repository_version = new_tag if new_tag != old_tag
     end
 
     Homebrew.failed = true if ENV["HOMEBREW_UPDATE_FAILED"]
