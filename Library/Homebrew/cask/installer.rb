@@ -62,15 +62,13 @@ module Cask
       EOS
     end
 
-    sig { params(quiet: T.nilable(T::Boolean), timeout: T.nilable(T.any(Integer, Float))).void }
-    def fetch(quiet: nil, timeout: nil)
+    def fetch
       odebug "Cask::Installer#fetch"
 
       verify_has_sha if require_sha? && !force?
-
-      download(quiet: quiet, timeout: timeout)
-
       satisfy_dependencies
+
+      download
     end
 
     def stage
@@ -164,10 +162,9 @@ module Cask
       @downloader ||= Download.new(@cask, quarantine: quarantine?)
     end
 
-    sig { params(quiet: T.nilable(T::Boolean), timeout: T.nilable(T.any(Integer, Float))).returns(Pathname) }
-    def download(quiet: nil, timeout: nil)
-      @download ||= downloader.fetch(quiet: quiet, verify_download_integrity: @verify_download_integrity,
-timeout: timeout)
+    sig { returns(Pathname) }
+    def download
+      @download ||= downloader.fetch(verify_download_integrity: @verify_download_integrity)
     end
 
     def verify_has_sha
@@ -182,7 +179,7 @@ timeout: timeout)
 
     def primary_container
       @primary_container ||= begin
-        downloaded_path = download(quiet: true)
+        downloaded_path = download
         UnpackStrategy.detect(downloaded_path, type: @cask.container&.type, merge_xattrs: true)
       end
     end

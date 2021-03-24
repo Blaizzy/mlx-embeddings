@@ -19,10 +19,9 @@ module Cask
       @quarantine = quarantine
     end
 
-    def fetch(quiet: nil, verify_download_integrity: true, timeout: nil)
+    def fetch(verify_download_integrity: true)
       downloaded_path = begin
-        downloader.shutup! if quiet
-        downloader.fetch(timeout: timeout)
+        downloader.fetch
         downloader.cached_location
       rescue => e
         error = CaskError.new("Download failed on Cask '#{cask}' with message: #{e}")
@@ -41,8 +40,8 @@ module Cask
       end
     end
 
-    def time_file_size(timeout: nil)
-      downloader.resolved_time_file_size(timeout: timeout)
+    def time_file_size
+      downloader.resolved_time_file_size
     end
 
     def clear_cache
