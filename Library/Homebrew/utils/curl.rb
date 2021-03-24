@@ -3,15 +3,11 @@
 
 require "open3"
 
-require "extend/time"
-
 module Utils
   # Helper function for interacting with `curl`.
   #
   # @api private
   module Curl
-    using TimeRemaining
-
     module_function
 
     def curl_executable
@@ -53,20 +49,14 @@ module Utils
         args << "--silent" unless $stdout.tty?
       end
 
-      args << "--connect-timeout" << connect_timeout.round(3) if options[:connect_timeout]
-      args << "--max-time" << max_time.round(3) if options[:max_time]
       args << "--retry" << Homebrew::EnvConfig.curl_retries unless options[:retry] == false
-      args << "--retry-max-time" << retry_max_time.round if options[:retry_max_time]
 
       args + extra_args
     end
 
     def curl_with_workarounds(
-      *args,
-      secrets: nil, print_stdout: nil, print_stderr: nil, debug: nil, verbose: nil, env: {}, timeout: nil, **options
+      *args, secrets: nil, print_stdout: nil, print_stderr: nil, debug: nil, verbose: nil, env: {}, **options
     )
-      end_time = Time.now + timeout if timeout
-
       command_options = {
         secrets:      secrets,
         print_stdout: print_stdout,
@@ -78,22 +68,14 @@ module Utils
       # SSL_CERT_FILE can be incorrectly set by users or portable-ruby and screw
       # with SSL downloads so unset it here.
       result = system_command curl_executable,
-                              args:    curl_args(*args, **options),
-                              env:     { "SSL_CERT_FILE" => nil }.merge(env),
-                              timeout: end_time&.remaining,
+                              args: curl_args(*args, **options),
+                              env:  { "SSL_CERT_FILE" => nil }.merge(env),
                               **command_options
 
       return result if result.success? || !args.exclude?("--http1.1")
 
-      raise Timeout::Error, result.stderr.chomp if result.status.exitstatus == 28
-
       # Error in the HTTP2 framing layer
-      if result.status.exitstatus == 16
-        return curl_with_workarounds(
-          *args, "--http1.1",
-          timeout: end_time&.remaining, **command_options, **options
-        )
-      end
+      return curl_with_workarounds(*args, "--http1.1", **command_options, **options) if result.status.exitstatus == 16
 
       # This is a workaround for https://github.com/curl/curl/issues/1618.
       if result.status.exitstatus == 56 # Unexpected EOF
