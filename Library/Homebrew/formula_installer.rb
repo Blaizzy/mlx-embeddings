@@ -179,6 +179,24 @@ class FormulaInstaller
 
   sig { void }
   def prelude
+    type, reason = DeprecateDisable.deprecate_disable_info formula
+    if type.present?
+      case type
+      when :deprecated
+        if reason.present?
+          opoo "#{formula.full_name} has been deprecated because it #{reason}!"
+        else
+          opoo "#{formula.full_name} has been deprecated!"
+        end
+      when :disabled
+        if reason.present?
+          raise CannotInstallFormulaError, "#{formula.full_name} has been disabled because it #{reason}!"
+        end
+
+        raise CannotInstallFormulaError, "#{formula.full_name} has been disabled!"
+      end
+    end
+
     Tab.clear_cache
     verify_deps_exist unless ignore_deps?
     forbidden_license_check
@@ -245,25 +263,6 @@ class FormulaInstaller
           official channels.
         EOS
         raise CannotInstallFormulaError, message
-      end
-    end
-
-    type, reason = DeprecateDisable.deprecate_disable_info formula
-
-    if type.present?
-      case type
-      when :deprecated
-        if reason.present?
-          opoo "#{formula.full_name} has been deprecated because it #{reason}!"
-        else
-          opoo "#{formula.full_name} has been deprecated!"
-        end
-      when :disabled
-        if reason.present?
-          raise CannotInstallFormulaError, "#{formula.full_name} has been disabled because it #{reason}!"
-        end
-
-        raise CannotInstallFormulaError, "#{formula.full_name} has been disabled!"
       end
     end
 
