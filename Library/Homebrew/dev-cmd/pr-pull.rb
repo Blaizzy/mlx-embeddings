@@ -455,7 +455,7 @@ end
 class GitHubArtifactDownloadStrategy < AbstractFileDownloadStrategy
   extend T::Sig
 
-  def fetch
+  def fetch(timeout: nil)
     ohai "Downloading #{url}"
     if cached_location.exist?
       puts "Already downloaded: #{cached_location}"
@@ -463,7 +463,8 @@ class GitHubArtifactDownloadStrategy < AbstractFileDownloadStrategy
       begin
         curl "--location", "--create-dirs", "--output", temporary_path, url,
              *meta.fetch(:curl_args, []),
-             secrets: meta.fetch(:secrets, [])
+             secrets: meta.fetch(:secrets, []),
+             timeout: timeout
       rescue ErrorDuringExecution
         raise CurlDownloadStrategyError, url
       end

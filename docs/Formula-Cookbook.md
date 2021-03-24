@@ -630,7 +630,9 @@ If you need more control over the way files are downloaded and staged, you can c
 
 ```ruby
 class MyDownloadStrategy < SomeHomebrewDownloadStrategy
-  def fetch
+  def fetch(timeout: nil, **options)
+    opoo "Unhandled options in #{self.class}#fetch: #{options.keys.join(", ")}" unless options.empty?
+    
     # downloads output to `temporary_path`
   end
 end

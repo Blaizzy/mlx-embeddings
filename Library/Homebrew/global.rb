@@ -4,6 +4,7 @@
 require_relative "load_path"
 
 require "English"
+require "fileutils"
 require "json"
 require "json/add/exception"
 require "pathname"
@@ -39,8 +40,6 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.irregular "it", "they"
 end
 
-require "utils/sorbet"
-
 HOMEBREW_BOTTLE_DEFAULT_DOMAIN = ENV["HOMEBREW_BOTTLE_DEFAULT_DOMAIN"]
 HOMEBREW_BREW_DEFAULT_GIT_REMOTE = ENV["HOMEBREW_BREW_DEFAULT_GIT_REMOTE"]
 HOMEBREW_CORE_DEFAULT_GIT_REMOTE = ENV["HOMEBREW_CORE_DEFAULT_GIT_REMOTE"]
@@ -73,10 +72,11 @@ HOMEBREW_PULL_OR_COMMIT_URL_REGEX =
   %r[https://github\.com/([\w-]+)/([\w-]+)?/(?:pull/(\d+)|commit/[0-9a-fA-F]{4,40})].freeze
 HOMEBREW_BOTTLES_EXTNAME_REGEX = /\.([a-z0-9_]+)\.bottle\.(?:(\d+)\.)?tar\.gz$/.freeze
 
-require "fileutils"
+require "utils/sorbet"
 
-require "os"
 require "env_config"
+require "compat" unless Homebrew::EnvConfig.no_compat?
+require "os"
 require "messages"
 
 module Homebrew
@@ -151,8 +151,6 @@ require "utils"
 require "official_taps"
 require "tap"
 require "tap_constants"
-
-require "compat" unless Homebrew::EnvConfig.no_compat?
 
 # Enables `patchelf.rb` write support.
 HOMEBREW_PATCHELF_RB_WRITE = ENV["HOMEBREW_NO_PATCHELF_RB_WRITE"].blank?.freeze
