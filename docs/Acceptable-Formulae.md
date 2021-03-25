@@ -25,7 +25,7 @@ with an [Debian Free Software Guidelines license](https://wiki.debian.org/DFSGLi
 from source or produce cross-platform binaries (e.g. Java, Mono). Binary-only
 formulae should go to [homebrew/cask](https://github.com/Homebrew/homebrew-cask).
 
-Additionally, [homebrew/core](https://github.com/Homebrew/homebrew-core) formulae must also not depend on proprietary software/casks.
+Additionally, [homebrew/core](https://github.com/Homebrew/homebrew-core) formulae must also not depend on casks or any other proprietary software.
 
 This includes automatic installation of casks at runtime.
 
