@@ -91,8 +91,8 @@ module Homebrew
             when :keg
               resolve_keg(name)
             when :kegs
-              _, kegs = resolve_kegs(name)
-              kegs
+              rack = Formulary.to_rack(name)
+              rack.directory? ? rack.subdirs.map { |d| Keg.new(d) } : []
             else
               raise
             end
@@ -259,21 +259,15 @@ module Homebrew
       end
       private :spec
 
-      def resolve_kegs(name)
+      def resolve_keg(name)
         raise UsageError if name.blank?
 
         require "keg"
 
         rack = Formulary.to_rack(name.downcase)
 
-        kegs = rack.directory? ? rack.subdirs.map { |d| Keg.new(d) } : []
-        raise NoSuchKegError, rack.basename if kegs.none?
-
-        [rack, kegs]
-      end
-
-      def resolve_keg(name)
-        rack, kegs = resolve_kegs(name)
+        dirs = rack.directory? ? rack.subdirs : []
+        raise NoSuchKegError, rack.basename if dirs.empty?
 
         linked_keg_ref = HOMEBREW_LINKED_KEGS/rack.basename
         opt_prefix = HOMEBREW_PREFIX/"opt/#{rack.basename}"
@@ -281,7 +275,7 @@ module Homebrew
         begin
           return Keg.new(opt_prefix.resolved_path) if opt_prefix.symlink? && opt_prefix.directory?
           return Keg.new(linked_keg_ref.resolved_path) if linked_keg_ref.symlink? && linked_keg_ref.directory?
-          return kegs.first if kegs.length == 1
+          return Keg.new(dirs.first) if dirs.length == 1
 
           f = if name.include?("/") || File.exist?(name)
             Formulary.factory(name)
