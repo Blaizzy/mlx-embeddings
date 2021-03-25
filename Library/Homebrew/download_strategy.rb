@@ -38,7 +38,19 @@ class AbstractDownloadStrategy
     end
   end
 
-  attr_reader :cache, :cached_location, :url, :meta, :name, :version
+  # The download URL.
+  #
+  # @api public
+  sig { returns(String) }
+  attr_reader :url
+
+  # Location of the cached download.
+  #
+  # @api public
+  sig { returns(Pathname) }
+  attr_reader :cached_location
+
+  attr_reader :cache, :meta, :name, :version
 
   private :meta, :name, :version
 
@@ -111,6 +123,7 @@ class AbstractDownloadStrategy
   # Returns the most recent modified time for all files in the current working directory after stage.
   #
   # @api public
+  sig { returns(Time) }
   def source_modified_time
     Pathname.pwd.to_enum(:find).select(&:file?).map(&:mtime).max
   end
@@ -219,10 +232,12 @@ class VCSDownloadStrategy < AbstractDownloadStrategy
     version.respond_to?(:head?) && version.head?
   end
 
+  # @!attribute [r] last_commit
   # Return last commit's unique identifier for the repository.
   # Return most recent modified timestamp unless overridden.
   #
   # @api public
+  sig { returns(String) }
   def last_commit
     source_modified_time.to_i.to_s
   end
@@ -659,7 +674,8 @@ class SubversionDownloadStrategy < VCSDownloadStrategy
     super
   end
 
-  # (see AbstractDownloadStrategy#source_modified_time)
+  # @see AbstractDownloadStrategy#source_modified_time
+  # @api public
   sig { returns(Time) }
   def source_modified_time
     time = if Version.create(Utils::Svn.version) >= Version.create("1.9")
@@ -672,7 +688,9 @@ class SubversionDownloadStrategy < VCSDownloadStrategy
     Time.parse time
   end
 
-  # (see VCSDownloadStrategy#source_modified_time)
+  # @see VCSDownloadStrategy#last_commit
+  # @api public
+  sig { returns(String) }
   def last_commit
     out, = silent_command("svn", args: ["info", "--show-item", "revision"], chdir: cached_location)
     out.strip
@@ -771,14 +789,17 @@ class GitDownloadStrategy < VCSDownloadStrategy
     @shallow = meta.fetch(:shallow, true)
   end
 
-  # (see AbstractDownloadStrategy#source_modified_time)
+  # @see AbstractDownloadStrategy#source_modified_time
+  # @api public
   sig { returns(Time) }
   def source_modified_time
     out, = silent_command("git", args: ["--git-dir", git_dir, "show", "-s", "--format=%cD"])
     Time.parse(out)
   end
 
-  # (see VCSDownloadStrategy#source_modified_time)
+  # @see VCSDownloadStrategy#last_commit
+  sig { returns(String) }
+  # @api public
   def last_commit
     out, = silent_command("git", args: ["--git-dir", git_dir, "rev-parse", "--short=7", "HEAD"])
     out.chomp
@@ -1051,7 +1072,8 @@ class CVSDownloadStrategy < VCSDownloadStrategy
     end
   end
 
-  # (see AbstractDownloadStrategy#source_modified_time)
+  # @see AbstractDownloadStrategy#source_modified_time
+  # @api public
   sig { returns(Time) }
   def source_modified_time
     # Filter CVS's files because the timestamp for each of them is the moment
@@ -1124,7 +1146,8 @@ class MercurialDownloadStrategy < VCSDownloadStrategy
     @url = @url.sub(%r{^hg://}, "")
   end
 
-  # (see AbstractDownloadStrategy#source_modified_time)
+  # @see AbstractDownloadStrategy#source_modified_time
+  # @api public
   sig { returns(Time) }
   def source_modified_time
     out, = silent_command("hg",
@@ -1133,7 +1156,9 @@ class MercurialDownloadStrategy < VCSDownloadStrategy
     Time.parse(out)
   end
 
-  # (see VCSDownloadStrategy#source_modified_time)
+  # @see VCSDownloadStrategy#last_commit
+  # @api public
+  sig { returns(String) }
   def last_commit
     out, = silent_command("hg", args: ["parent", "--template", "{node|short}", "-R", cached_location])
     out.chomp
@@ -1185,7 +1210,8 @@ class BazaarDownloadStrategy < VCSDownloadStrategy
     @url.sub!(%r{^bzr://}, "")
   end
 
-  # (see AbstractDownloadStrategy#source_modified_time)
+  # @see AbstractDownloadStrategy#source_modified_time
+  # @api public
   sig { returns(Time) }
   def source_modified_time
     out, = silent_command("bzr", args: ["log", "-l", "1", "--timezone=utc", cached_location])
@@ -1195,7 +1221,9 @@ class BazaarDownloadStrategy < VCSDownloadStrategy
     Time.parse(timestamp)
   end
 
-  # (see VCSDownloadStrategy#source_modified_time)
+  # @see VCSDownloadStrategy#last_commit
+  # @api public
+  sig { returns(String) }
   def last_commit
     out, = silent_command("bzr", args: ["revno", cached_location])
     out.chomp
@@ -1247,14 +1275,17 @@ class FossilDownloadStrategy < VCSDownloadStrategy
     @url = @url.sub(%r{^fossil://}, "")
   end
 
-  # (see AbstractDownloadStrategy#source_modified_time)
+  # @see AbstractDownloadStrategy#source_modified_time
+  # @api public
   sig { returns(Time) }
   def source_modified_time
     out, = silent_command("fossil", args: ["info", "tip", "-R", cached_location])
     Time.parse(out[/^uuid: +\h+ (.+)$/, 1])
   end
 
-  # (see VCSDownloadStrategy#source_modified_time)
+  # @see VCSDownloadStrategy#last_commit
+  # @api public
+  sig { returns(String) }
   def last_commit
     out, = silent_command("fossil", args: ["info", "tip", "-R", cached_location])
     out[/^uuid: +(\h+) .+$/, 1]
