@@ -1457,9 +1457,11 @@ class Formula
   end
 
   # Standard parameters for Go builds.
-  sig { returns(T::Array[T.any(String, Pathname)]) }
-  def std_go_args
-    ["-trimpath", "-o", bin/name]
+  sig { params(ldflags: T.nilable(String)).returns(T::Array[String]) }
+  def std_go_args(ldflags: nil)
+    args = ["-trimpath", "-o=#{bin/name}"]
+    args += ["-ldflags=#{ldflags}"] if ldflags
+    args
   end
 
   # Standard parameters for cabal-v2 builds.
