@@ -312,7 +312,7 @@ module Cask
       end
 
       def uninstall_pkgutil(*pkgs, command: nil, **_)
-        ohai "Uninstalling packages:"
+        ohai "Uninstalling packages (your password may be necessary):"
         pkgs.each do |regex|
           ::Cask::Pkg.all_matching(regex, command).each do |pkg|
             puts pkg.package_id
