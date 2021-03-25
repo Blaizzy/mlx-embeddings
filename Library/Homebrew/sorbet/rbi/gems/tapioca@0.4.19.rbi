@@ -554,6 +554,8 @@ module Tapioca::GenericTypeRegistry
 
     private
 
+    sig { params(constant: Module, name: String).returns(Module) }
+    def create_generic_type(constant, name); end
     sig { params(constant: Module).returns(T::Hash[Integer, String]) }
     def lookup_or_initialize_type_variables(constant); end
     sig { params(constant: Module).returns(T.nilable(String)) }
