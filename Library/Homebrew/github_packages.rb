@@ -259,7 +259,7 @@ class GitHubPackages
     image_tag = "#{org_prefix}/#{package_name}:#{version_rebuild}"
     puts
     system_command!(skopeo, verbose: true, print_stdout: true, args: [
-      "copy", "--dest-creds=#{user}:#{token}",
+      "copy", "--all", "--dest-creds=#{user}:#{token}",
       "oci:#{root}", "docker://#{image_tag}"
     ])
     ohai "Uploaded to https://github.com/orgs/Homebrew/packages/container/package/#{package_name}"
