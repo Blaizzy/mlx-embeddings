@@ -57,7 +57,7 @@ module Homebrew
           # Need to rescue before `*UnavailableError` (superclass of this)
           # The formula/cask was found, but there's a problem with its implementation
           raise
-        rescue NoSuchKegError, FormulaUnavailableError, Cask::CaskUnavailableError
+        rescue NoSuchKegError, FormulaUnavailableError, Cask::CaskUnavailableError, FormulaOrCaskUnavailableError
           ignore_unavailable ? [] : raise
         end.uniq.freeze
       end
