@@ -45,12 +45,64 @@ class GitHubPackages
       skopeo = Formula["skopeo"].opt_bin/"skopeo"
     end
 
+    # TODO: these dependencies are installed but cannot be required automatically.
+    Homebrew.install_gem!("public_suffix")
+    Homebrew.install_gem!("addressable")
+    Homebrew.install_gem!("json-schema")
+    require "json-schema"
+
+    load_schemas!
+
     bottles_hash.each do |formula_name, bottle_hash|
       upload_bottle(user, token, skopeo, formula_name, bottle_hash)
     end
   end
 
   private
+
+  IMAGE_CONFIG_SCHEMA_URI = "https://opencontainers.org/schema/image/config"
+  IMAGE_INDEX_SCHEMA_URI = "https://opencontainers.org/schema/image/index"
+  IMAGE_LAYOUT_SCHEMA_URI = "https://opencontainers.org/schema/image/layout"
+  IMAGE_MANIFEST_SCHEMA_URI = "https://opencontainers.org/schema/image/manifest"
+
+  def load_schemas!
+    schema_uri("content-descriptor",
+               "https://opencontainers.org/schema/image/content-descriptor.json")
+    schema_uri("defs", %w[
+      https://opencontainers.org/schema/defs.json
+      https://opencontainers.org/schema/descriptor/defs.json
+      https://opencontainers.org/schema/image/defs.json
+      https://opencontainers.org/schema/image/descriptor/defs.json
+      https://opencontainers.org/schema/image/index/defs.json
+      https://opencontainers.org/schema/image/manifest/defs.json
+    ])
+    schema_uri("defs-descriptor", %w[
+      https://opencontainers.org/schema/descriptor.json
+      https://opencontainers.org/schema/defs-descriptor.json
+      https://opencontainers.org/schema/descriptor/defs-descriptor.json
+      https://opencontainers.org/schema/image/defs-descriptor.json
+      https://opencontainers.org/schema/image/descriptor/defs-descriptor.json
+      https://opencontainers.org/schema/image/index/defs-descriptor.json
+      https://opencontainers.org/schema/image/manifest/defs-descriptor.json
+      https://opencontainers.org/schema/index/defs-descriptor.json
+    ])
+    schema_uri("config-schema", IMAGE_CONFIG_SCHEMA_URI)
+    schema_uri("image-index-schema", IMAGE_INDEX_SCHEMA_URI)
+    schema_uri("image-layout-schema", IMAGE_LAYOUT_SCHEMA_URI)
+    schema_uri("image-manifest-schema", IMAGE_MANIFEST_SCHEMA_URI)
+  end
+
+  def schema_uri(basename, uris)
+    url = "https://raw.githubusercontent.com/opencontainers/image-spec/master/schema/#{basename}.json"
+    out, = curl_output(url)
+    json = JSON.parse(out)
+
+    Array(uris).each do |uri|
+      schema = JSON::Schema.new(json, uri)
+      schema.uri = uri
+      JSON::Validator.add_schema(schema)
+    end
+  end
 
   def upload_bottle(user, token, skopeo, formula_name, bottle_hash)
     _, org, repo, = *bottle_hash["bottle"]["root_url"].match(URL_REGEX)
@@ -64,8 +116,9 @@ class GitHubPackages
     end
     version_rebuild = "#{version}#{rebuild}"
     root = Pathname("#{formula_name}-#{version_rebuild}")
+    FileUtils.rm_rf root
 
-    write_oci_layout(root)
+    write_image_layout(root)
 
     blobs = root/"blobs/sha256"
     blobs.mkpath
@@ -129,7 +182,7 @@ class GitHubPackages
         Utils.safe_popen_read("gunzip", "--stdout", "--decompress", local_file),
       )
 
-      config_json_sha256, config_json_size = write_config(platform_hash, tar_sha256, blobs)
+      config_json_sha256, config_json_size = write_image_config(platform_hash, tar_sha256, blobs)
 
       created_time = tab.source_modified_time
       created_time ||= Time.now
@@ -147,7 +200,7 @@ class GitHubPackages
         annotations_hash.delete(key) if value.blank?
       end
 
-      manifest_json_sha256, manifest_json_size = write_hash(blobs, {
+      image_manifest = {
         schemaVersion: 2,
         config:        {
           mediaType: "application/vnd.oci.image.config.v1+json",
@@ -159,21 +212,24 @@ class GitHubPackages
           digest:      "sha256:#{tar_gz_sha256}",
           size:        File.size(local_file),
           annotations: {
-            "org.opencontainers.image.title": local_file,
+            "org.opencontainers.image.title" => local_file,
           },
         }],
         annotations:   annotations_hash,
-      })
+      }
+      JSON::Validator.validate!(IMAGE_MANIFEST_SCHEMA_URI, image_manifest)
+      manifest_json_sha256, manifest_json_size = write_hash(blobs, image_manifest)
 
       {
-        mediaType: "application/vnd.oci.image.manifest.v1+json",
-        digest:    "sha256:#{manifest_json_sha256}",
-        size:      manifest_json_size,
-        platform:  platform_hash,
+        mediaType:   "application/vnd.oci.image.manifest.v1+json",
+        digest:      "sha256:#{manifest_json_sha256}",
+        size:        manifest_json_size,
+        platform:    platform_hash,
+        annotations: {},
       }
     end
 
-    index_json_sha256, index_json_size = write_index(manifests, blobs)
+    index_json_sha256, index_json_size = write_image_index(manifests, blobs)
 
     write_index_json(index_json_sha256, index_json_size, root)
 
@@ -186,8 +242,10 @@ class GitHubPackages
     ])
   end
 
-  def write_oci_layout(root)
-    write_hash(root, { imageLayoutVersion: "1.0.0" }, "oci-layout")
+  def write_image_layout(root)
+    image_layout = { imageLayoutVersion: "1.0.0" }
+    JSON::Validator.validate!(IMAGE_LAYOUT_SCHEMA_URI, image_layout)
+    write_hash(root, image_layout, "oci-layout")
   end
 
   def write_tar_gz(local_file, blobs)
@@ -197,37 +255,47 @@ class GitHubPackages
     tar_gz_sha256
   end
 
-  def write_config(platform_hash, tar_sha256, blobs)
-    write_hash(blobs, platform_hash.merge({
+  def write_image_config(platform_hash, tar_sha256, blobs)
+    image_config = platform_hash.merge({
       rootfs: {
         type:     "layers",
         diff_ids: ["sha256:#{tar_sha256}"],
       },
-    }))
+    })
+    JSON::Validator.validate!(IMAGE_CONFIG_SCHEMA_URI, image_config)
+    write_hash(blobs, image_config)
   end
 
-  def write_index(manifests, blobs)
-    write_hash(blobs, {
+  def write_image_index(manifests, blobs)
+    image_index = {
       schemaVersion: 2,
       manifests:     manifests,
-    })
+      annotations:   {},
+    }
+    JSON::Validator.validate!(IMAGE_INDEX_SCHEMA_URI, image_index)
+    write_hash(blobs, image_index)
   end
 
   def write_index_json(index_json_sha256, index_json_size, root)
-    write_hash(root, {
+    index_json = {
       schemaVersion: 2,
       manifests:     [{
-        mediaType: "application/vnd.oci.image.index.v1+json",
-        digest:    "sha256:#{index_json_sha256}",
-        size:      index_json_size,
+        mediaType:   "application/vnd.oci.image.index.v1+json",
+        digest:      "sha256:#{index_json_sha256}",
+        size:        index_json_size,
+        annotations: {},
       }],
-    }, "index.json")
+      annotations:   {},
+    }
+    JSON::Validator.validate!(IMAGE_INDEX_SCHEMA_URI, index_json)
+    write_hash(root, index_json, "index.json")
   end
 
-  def write_hash(directory, hash, _filename = nil)
-    json = hash.to_json
+  def write_hash(directory, hash, filename = nil)
+    json = JSON.pretty_generate(hash)
     sha256 = Digest::SHA256.hexdigest(json)
-    path = directory/sha256
+    filename ||= sha256
+    path = directory/filename
     path.unlink if path.exist?
     path.write(json)
 
