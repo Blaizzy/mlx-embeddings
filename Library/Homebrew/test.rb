@@ -39,8 +39,13 @@ begin
   T.cast(ENV, Stdenv).setup_build_environment(formula: formula, testing_formula: true)
 
   # tests can also return false to indicate failure
-  Timeout.timeout TEST_TIMEOUT_SECONDS do
+  run_test = proc do
     raise "test returned false" if formula.run_test(keep_tmp: args.keep_tmp?) == false
+  end
+  if args.debug? # --debug is interactive
+    run_test.call
+  else
+    Timeout.timeout(TEST_TIMEOUT_SECONDS, &run_test)
   end
 rescue Exception => e # rubocop:disable Lint/RescueException
   error_pipe.puts e.to_json
