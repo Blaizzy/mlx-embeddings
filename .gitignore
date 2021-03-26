@@ -84,6 +84,7 @@
 **/vendor/bundle/ruby/*/gems/thread_safe-*/lib/thread_safe/util
 
 # Ignore dependencies we don't wish to vendor
+**/vendor/bundle/ruby/*/gems/addressable-*/
 **/vendor/bundle/ruby/*/gems/ast-*/
 **/vendor/bundle/ruby/*/gems/bootsnap-*/
 **/vendor/bundle/ruby/*/gems/bundler-*/
@@ -119,6 +120,7 @@
 **/vendor/bundle/ruby/*/gems/powerpack-*/
 **/vendor/bundle/ruby/*/gems/psych-*/
 **/vendor/bundle/ruby/*/gems/pry-*/
+**/vendor/bundle/ruby/*/gems/public_suffix-*/
 **/vendor/bundle/ruby/*/gems/racc-*/
 **/vendor/bundle/ruby/*/gems/rainbow-*/
 **/vendor/bundle/ruby/*/gems/rdiscount-*/
