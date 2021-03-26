@@ -57,6 +57,7 @@ module Homebrew
       conflicts "--formula", "--cask"
       conflicts "--full-name", "--versions"
       conflicts "--pinned", "--multiple"
+      conflicts "--pinned", "--cask"
       conflicts "--cask", "--multiple"
       ["--formula", "--cask", "--full-name", "--versions", "--pinned"].each do |flag|
         conflicts "--unbrewed", flag
@@ -68,7 +69,6 @@ module Homebrew
       end
       ["--pinned", "-l", "-r", "-t"].each do |flag|
         conflicts "--full-name", flag
-        conflicts "--cask", flag
       end
 
       named_args [:installed_formula, :installed_cask]
