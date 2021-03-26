@@ -21,7 +21,8 @@ module Homebrew
              description: "Pull requests must have this label."
       comma_array "--without-labels",
                   description: "Pull requests must not have these labels (default: "\
-                               "`do not merge`, `new formula`, `automerge-skip`, `linux-only`)."
+                               "`do not merge`, `new formula`, `automerge-skip`, `linux-only`, "\
+                               "`linux to homebrew-core`)."
       switch "--without-approval",
              description: "Pull requests do not require approval to be merged."
       switch "--publish",
@@ -39,7 +40,13 @@ module Homebrew
   def pr_automerge
     args = pr_automerge_args.parse
 
-    without_labels = args.without_labels || ["do not merge", "new formula", "automerge-skip", "linux-only"]
+    without_labels = args.without_labels || [
+      "do not merge",
+      "new formula",
+      "automerge-skip",
+      "linux-only",
+      "linux to homebrew-core",
+    ]
     tap = Tap.fetch(args.tap || CoreTap.instance.name)
 
     query = "is:pr is:open repo:#{tap.full_name} draft:false"
