@@ -41,24 +41,21 @@ class DevelopmentTools
     end
 
     def clang_version
-      @clang_version ||= begin
-        if (path = locate("clang")) &&
-           (build_version = `#{path} --version`[/(?:clang|LLVM) version (\d+\.\d)/, 1])
-          Version.new build_version
-        else
-          Version::NULL
-        end
+      @clang_version ||= if (path = locate("clang")) &&
+                            (build_version = `#{path} --version`[/(?:clang|LLVM) version (\d+\.\d)/, 1])
+        Version.new build_version
+      else
+        Version::NULL
       end
     end
 
     def clang_build_version
-      @clang_build_version ||= begin
-        if (path = locate("clang")) &&
-           (build_version = `#{path} --version`[%r{clang(-| version [^ ]+ \(tags/RELEASE_)(\d{2,})}, 2])
-          Version.new build_version
-        else
-          Version::NULL
-        end
+      @clang_build_version ||= if (path = locate("clang")) &&
+                                  (build_version = `#{path} --version`[
+%r{clang(-| version [^ ]+ \(tags/RELEASE_)(\d{2,})}, 2])
+        Version.new build_version
+      else
+        Version::NULL
       end
     end
 

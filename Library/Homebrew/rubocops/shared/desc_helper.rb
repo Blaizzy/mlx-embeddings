@@ -59,7 +59,7 @@ module RuboCop
         end
 
         # Check if the desc starts with the formula's or cask's name.
-        name_regex = name.delete("-").split("").join('[\s\-]?')
+        name_regex = name.delete("-").chars.join('[\s\-]?')
         if regex_match_group(desc, /^#{name_regex}\b/i)
           desc_problem "Description shouldn't start with the #{type} name."
         end

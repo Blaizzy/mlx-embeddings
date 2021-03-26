@@ -13,9 +13,7 @@ module MachOShim
   delegate [:dylib_id, :rpaths, :delete_rpath] => :macho
 
   def macho
-    @macho ||= begin
-      MachO.open(to_s)
-    end
+    @macho ||= MachO.open(to_s)
   end
   private :macho
 

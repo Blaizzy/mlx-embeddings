@@ -170,12 +170,10 @@ module OS
       # This will only look up SDKs on Xcode 10 or newer, and still
       # return nil SDKs for Xcode 9 and older.
       def sdk_prefix
-        @sdk_prefix ||= begin
-          if CLT.provides_sdk?
-            "#{CLT::PKG_PATH}/SDKs"
-          else
-            ""
-          end
+        @sdk_prefix ||= if CLT.provides_sdk?
+          "#{CLT::PKG_PATH}/SDKs"
+        else
+          ""
         end
       end
     end
