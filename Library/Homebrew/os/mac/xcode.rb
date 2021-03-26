@@ -353,7 +353,7 @@ module OS
       end
 
       def detect_version_from_clang_version
-        detect_clang_version&.sub(/^(\d+)00\./, "\\1.")
+        detect_clang_version&.sub(/^(\d+)0(\d)\./, "\\1.\\2.")
       end
 
       # Version string (a pretty long one) of the CLT package.
