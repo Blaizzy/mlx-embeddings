@@ -45,14 +45,14 @@ module Homebrew
              description: "Force output to be one entry per line. " \
                           "This is the default when output is not to a terminal."
       switch "-l",
-             depends_on:  "--formula",
-             description: "List formulae in long format."
+             description: "List formulae and/or casks in long format. " \
+                          "Has no effect when a formula or cask name is passed as an argument."
       switch "-r",
-             depends_on:  "--formula",
-             description: "Reverse the order of the formulae sort to list the oldest entries first."
+             description: "Reverse the order of the formulae and/or casks sort to list the oldest entries first. " \
+                          "Has no effect when a formula or cask name is passed as an argument."
       switch "-t",
-             depends_on:  "--formula",
-             description: "Sort formulae by time modified, listing most recently modified first."
+             description: "Sort formulae and/or casks by time modified, listing most recently modified first. " \
+                          "Has no effect when a formula or cask name is passed as an argument."
 
       conflicts "--formula", "--cask"
       conflicts "--full-name", "--versions"
@@ -126,7 +126,7 @@ module Homebrew
           puts
           ohai "Casks"
         end
-        list_casks(args: args)
+        safe_system "ls", *ls_args, Cask::Caskroom.path
       end
     elsif args.verbose? || !$stdout.tty?
       system_command! "find", args: args.named.to_kegs.map(&:to_s) + %w[-not -type d -print], print_stdout: true
