@@ -139,9 +139,7 @@ module GitHub
     end
 
     def credentials
-      @credentials ||= begin
-        Homebrew::EnvConfig.github_api_token || keychain_username_password
-      end
+      @credentials ||= Homebrew::EnvConfig.github_api_token || keychain_username_password
     end
 
     sig { returns(Symbol) }

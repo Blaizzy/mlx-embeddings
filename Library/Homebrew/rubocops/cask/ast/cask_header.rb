@@ -33,12 +33,10 @@ module RuboCop
         end
 
         def cask_token
-          @cask_token ||= begin
-            if dsl_version?
-              pair_node.val_node.children.first
-            else
-              method_node.first_argument.str_content
-            end
+          @cask_token ||= if dsl_version?
+            pair_node.val_node.children.first
+          else
+            method_node.first_argument.str_content
           end
         end
 

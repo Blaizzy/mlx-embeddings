@@ -20,10 +20,8 @@ class CaskDependent
   end
 
   def deps
-    @deps ||= begin
-      @cask.depends_on.formula.map do |f|
-        Dependency.new f
-      end
+    @deps ||= @cask.depends_on.formula.map do |f|
+      Dependency.new f
     end
   end
 
