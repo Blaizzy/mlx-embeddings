@@ -46,10 +46,8 @@ class GitHubPackages
     end
 
     # TODO: these dependencies are installed but cannot be required automatically.
-    Homebrew.install_gem!("public_suffix")
-    Homebrew.install_gem!("addressable")
-    Homebrew.install_gem!("json-schema")
-    require "json-schema"
+    Homebrew.install_gem!("json_schemer")
+    require "json_schemer"
 
     load_schemas!
 
@@ -97,11 +95,28 @@ class GitHubPackages
     out, = curl_output(url)
     json = JSON.parse(out)
 
+    @schema_json ||= {}
     Array(uris).each do |uri|
-      schema = JSON::Schema.new(json, uri)
-      schema.uri = uri
-      JSON::Validator.add_schema(schema)
+      @schema_json[uri] = json
     end
+  end
+
+  def schema_resolver(uri)
+    @schema_json[uri.to_s.gsub(/#.*/, "")]
+  end
+
+  def validate_schema!(schema_uri, json)
+    schema = JSONSchemer.schema(@schema_json[schema_uri], ref_resolver: method(:schema_resolver))
+    json = json.deep_stringify_keys
+    return if schema.valid?(json)
+
+    puts
+    ofail "#{Formatter.url(schema_uri)} JSON schema validation failed!"
+    oh1 "Errors"
+    pp schema.validate(json).to_a
+    oh1 "JSON"
+    pp json
+    exit 1
   end
 
   def upload_bottle(user, token, skopeo, formula_name, bottle_hash)
@@ -217,7 +232,7 @@ class GitHubPackages
         }],
         annotations:   annotations_hash,
       }
-      JSON::Validator.validate!(IMAGE_MANIFEST_SCHEMA_URI, image_manifest)
+      validate_schema!(IMAGE_MANIFEST_SCHEMA_URI, image_manifest)
       manifest_json_sha256, manifest_json_size = write_hash(blobs, image_manifest)
 
       {
@@ -244,7 +259,7 @@ class GitHubPackages
 
   def write_image_layout(root)
     image_layout = { imageLayoutVersion: "1.0.0" }
-    JSON::Validator.validate!(IMAGE_LAYOUT_SCHEMA_URI, image_layout)
+    validate_schema!(IMAGE_LAYOUT_SCHEMA_URI, image_layout)
     write_hash(root, image_layout, "oci-layout")
   end
 
@@ -262,7 +277,7 @@ class GitHubPackages
         diff_ids: ["sha256:#{tar_sha256}"],
       },
     })
-    JSON::Validator.validate!(IMAGE_CONFIG_SCHEMA_URI, image_config)
+    validate_schema!(IMAGE_CONFIG_SCHEMA_URI, image_config)
     write_hash(blobs, image_config)
   end
 
@@ -272,7 +287,7 @@ class GitHubPackages
       manifests:     manifests,
       annotations:   {},
     }
-    JSON::Validator.validate!(IMAGE_INDEX_SCHEMA_URI, image_index)
+    validate_schema!(IMAGE_INDEX_SCHEMA_URI, image_index)
     write_hash(blobs, image_index)
   end
 
@@ -287,7 +302,7 @@ class GitHubPackages
       }],
       annotations:   {},
     }
-    JSON::Validator.validate!(IMAGE_INDEX_SCHEMA_URI, index_json)
+    validate_schema!(IMAGE_INDEX_SCHEMA_URI, index_json)
     write_hash(root, index_json, "index.json")
   end
 
