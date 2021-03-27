@@ -280,7 +280,6 @@ jobs:
           brew audit --skip-style --display-failures-only --tap=homebrew/cask
           brew audit --skip-style --display-failures-only --tap=homebrew/cask-drivers
           brew audit --skip-style --display-failures-only --tap=homebrew/cask-fonts
-          brew audit --skip-style --display-failures-only --tap=homebrew/cask-versions
 
       - name: Install brew tests dependencies
         run: |
