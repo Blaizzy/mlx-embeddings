@@ -106,7 +106,6 @@ module Homebrew
     new_formula = args.new_formula?
     strict = new_formula || args.strict?
     online = new_formula || args.online?
-    git = args.git?
     skip_style = args.skip_style? || args.no_named? || args.tap
     no_named_args = false
 
@@ -173,7 +172,7 @@ module Homebrew
         new_formula:          new_formula,
         strict:               strict,
         online:               online,
-        git:                  git,
+        git:                  args.git?,
         only:                 only,
         except:               args.except,
         spdx_license_data:    spdx_license_data,
