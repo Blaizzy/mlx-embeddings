@@ -1981,6 +1981,9 @@ class Formula
       import site; site.addsitedir("#{HOMEBREW_PREFIX}/lib/python2.7/site-packages")
       import sys, os; sys.path = (os.environ["PYTHONPATH"].split(os.pathsep) if "PYTHONPATH" in os.environ else []) + ["#{HOMEBREW_PREFIX}/lib/python2.7/site-packages"] + sys.path
     PYTHON
+
+    # Don't let bazel write to tmp directories we don't control or clean.
+    (home/".bazelrc").write "startup --output_user_root=#{home}/_bazel"
   end
 
   # Returns a list of Dependency objects that are declared in the formula.
