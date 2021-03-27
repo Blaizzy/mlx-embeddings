@@ -129,6 +129,7 @@ module Homebrew
     old_path = ENV["PATH"]
     old_gem_path = ENV["GEM_PATH"]
     old_gem_home = ENV["GEM_HOME"]
+    old_bundle_gemfile = ENV["BUNDLE_GEMFILE"]
 
     install_bundler!
 
@@ -162,6 +163,7 @@ module Homebrew
       ENV["PATH"] = old_path
       ENV["GEM_PATH"] = old_gem_path
       ENV["GEM_HOME"] = old_gem_home
+      ENV["BUNDLE_GEMFILE"] = old_bundle_gemfile
     end
   end
 end
