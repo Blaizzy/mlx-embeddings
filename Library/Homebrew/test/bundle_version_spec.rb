@@ -26,4 +26,10 @@ describe Homebrew::BundleVersion do
       end
     end
   end
+
+  describe "#<=>" do
+    it "does not fail when a `version` is nil" do
+      expect(described_class.new("1.06", nil)).to be < described_class.new("1.12", "1.12")
+    end
+  end
 end
