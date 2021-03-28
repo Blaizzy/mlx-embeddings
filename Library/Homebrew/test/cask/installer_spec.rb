@@ -16,13 +16,27 @@ describe Cask::Installer, :cask do
       expect(caffeine.config.appdir.join("Caffeine.app")).to be_a_directory
     end
 
-    it "works with dmg-based Casks" do
-      asset = Cask::CaskLoader.load(cask_path("container-dmg"))
+    [
+      ["HFS+", "container-dmg"],
+      ["APFS", "container-apfs-dmg"],
+    ].each do |filesystem, cask|
+      it "works with #{filesystem} dmg-based Casks" do
+        asset = Cask::CaskLoader.load(cask_path(cask))
+        diskutil_list_command = "diskutil list | grep '/dev'"
 
-      described_class.new(asset).install
+        sleep(1)
+        original_diskutil_list = `#{diskutil_list_command}`
 
-      expect(Cask::Caskroom.path.join("container-dmg", asset.version)).to be_a_directory
-      expect(asset.config.appdir.join("container")).to be_a_file
+        described_class.new(asset).install
+
+        expect(Cask::Caskroom.path.join(cask, asset.version)).to be_a_directory
+        expect(asset.config.appdir.join("container")).to be_a_file
+
+        sleep(2)
+        expect { system diskutil_list_command }
+          .to output(original_diskutil_list)
+          .to_stdout_from_any_process
+      end
     end
 
     it "works with tar-gz-based Casks" do

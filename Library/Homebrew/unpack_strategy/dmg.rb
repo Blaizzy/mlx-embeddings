@@ -87,10 +87,31 @@ module UnpackStrategy
         return unless path.exist?
 
         if tries > 1
-          system_command! "diskutil",
-                          args:         ["eject", path],
-                          print_stderr: false,
-                          verbose:      verbose
+          disk_info = system_command!(
+            "diskutil",
+            args:         ["info", "-plist", path],
+            print_stderr: false,
+            verbose:      verbose,
+          )
+
+          # For HFS, just use <mount-path>
+          # For APFS, find the <physical-store> corresponding to <mount-path>
+          eject_paths = if disk_info.success?
+            disk_info.plist
+                     .fetch("APFSPhysicalStores", [])
+                     .map { |store| store["APFSPhysicalStore"] }
+                     .compact
+                     .presence || [path]
+          else
+            [path]
+          end
+
+          eject_paths.each do |eject_path|
+            system_command! "diskutil",
+                            args:         ["eject", eject_path],
+                            print_stderr: false,
+                            verbose:      verbose
+          end
         else
           system_command! "diskutil",
                           args:         ["unmount", "force", path],
