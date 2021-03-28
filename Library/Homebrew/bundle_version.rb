@@ -10,6 +10,8 @@ module Homebrew
   class BundleVersion
     extend T::Sig
 
+    include Comparable
+
     extend SystemCommand::Mixin
 
     sig { params(info_plist_path: Pathname).returns(T.nilable(T.attached_class)) }
@@ -55,9 +57,14 @@ module Homebrew
     end
 
     def <=>(other)
-      [version, short_version].map { |v| v&.yield_self(&Version.public_method(:new)) } <=>
-        [other.version, other.short_version].map { |v| v&.yield_self(&Version.public_method(:new)) }
+      [version, short_version].map { |v| v&.yield_self(&Version.public_method(:new)) || Version::NULL } <=>
+        [other.version, other.short_version].map { |v| v&.yield_self(&Version.public_method(:new)) || Version::NULL }
     end
+
+    def ==(other)
+      instance_of?(other.class) && short_version == other.short_version && version == other.version
+    end
+    alias eql? ==
 
     # Create a nicely formatted version (on a best effort basis).
     sig { returns(String) }
