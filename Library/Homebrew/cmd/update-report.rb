@@ -91,10 +91,7 @@ module Homebrew
         "git", "-C", HOMEBREW_REPOSITORY, "tag", "--list", "--sort=-version:refname", "*.*"
       ).lines.first.chomp
 
-      if new_tag != old_tag
-        Settings.write "latesttag", new_tag
-        new_repository_version = new_tag
-      end
+      new_repository_version = new_tag if new_tag != old_tag
     end
 
     Homebrew.failed = true if ENV["HOMEBREW_UPDATE_FAILED"]
@@ -189,11 +186,13 @@ module Homebrew
     puts_stdout_or_stderr
     ohai_stdout_or_stderr "Homebrew was updated to version #{new_repository_version}"
     if new_repository_version.split(".").last == "0"
+      Settings.write "latesttag", new_repository_version
       puts_stdout_or_stderr <<~EOS
         More detailed release notes are available on the Homebrew Blog:
           #{Formatter.url("https://brew.sh/blog/#{new_repository_version}")}
       EOS
-    else
+    elsif !args.quiet?
+      Settings.write "latesttag", new_repository_version
       puts_stdout_or_stderr <<~EOS
         The changelog can be found at:
           #{Formatter.url("https://github.com/Homebrew/brew/releases/tag/#{new_repository_version}")}
