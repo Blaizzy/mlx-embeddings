@@ -1133,7 +1133,7 @@ Find pull requests that can be automatically merged using `brew pr-publish`.
 * `--with-label`:
   Pull requests must have this label.
 * `--without-labels`:
-  Pull requests must not have these labels (default: `do not merge`, `new formula`, `automerge-skip`, `linux-only`).
+  Pull requests must not have these labels (default: `do not merge`, `new formula`, `automerge-skip`, `linux-only`, `linux to homebrew-core`).
 * `--without-approval`:
   Pull requests do not require approval to be merged.
 * `--publish`:
