@@ -502,9 +502,8 @@ class FormulaInstaller
   # being installed.
   def compute_dependencies
     @compute_dependencies ||= begin
-      req_map, req_deps = expand_requirements
-      check_requirements(req_map)
-      expand_dependencies(req_deps + formula.deps)
+      check_requirements(expand_requirements)
+      expand_dependencies
     end
   end
 
@@ -550,7 +549,6 @@ class FormulaInstaller
 
   def expand_requirements
     unsatisfied_reqs = Hash.new { |h, k| h[k] = [] }
-    req_deps = []
     formulae = [formula]
     formula_deps_map = formula.recursive_dependencies
                               .index_by(&:name)
@@ -577,17 +575,16 @@ class FormulaInstaller
       end
     end
 
-    # Merge the repeated dependencies, which may have different tags.
-    req_deps = Dependency.merge_repeats(req_deps)
-
-    [unsatisfied_reqs, req_deps]
+    unsatisfied_reqs
   end
 
-  def expand_dependencies(deps)
+  def expand_dependencies
     inherited_options = Hash.new { |hash, key| hash[key] = Options.new }
     pour_bottle = pour_bottle?
 
-    expanded_deps = Dependency.expand(formula, deps) do |dependent, dep|
+    # Cache for this expansion only. FormulaInstaller has a lot of inputs which can alter expansion.
+    cache_key = "FormulaInstaller-#{formula.full_name}-#{Time.now.to_f}"
+    expanded_deps = Dependency.expand(formula, cache_key: cache_key) do |dependent, dep|
       inherited_options[dep.name] |= inherited_options_for(dep)
       build = effective_build_options_for(
         dependent,
