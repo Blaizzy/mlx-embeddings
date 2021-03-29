@@ -549,6 +549,9 @@ module Homebrew
         version_prefix = stable.version.major_minor
         return if tap_audit_exception :gnome_devel_allowlist, formula.name, version_prefix
         return if stable_url_version < Version.create("1.0")
+        # All minor versions are stable in the new GNOME version scheme (which starts at version 40.0)
+        # https://discourse.gnome.org/t/new-gnome-versioning-scheme/4235
+        return if stable_url_version >= Version.create("40.0")
         return if stable_url_minor_version.even?
 
         problem "#{stable.version} is a development release"
