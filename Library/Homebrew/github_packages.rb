@@ -51,8 +51,8 @@ class GitHubPackages
 
     load_schemas!
 
-    bottles_hash.each do |formula_name, bottle_hash|
-      upload_bottle(user, token, skopeo, formula_name, bottle_hash)
+    bottles_hash.each_value do |bottle_hash|
+      upload_bottle(user, token, skopeo, bottle_hash)
     end
   end
 
@@ -119,7 +119,11 @@ class GitHubPackages
     exit 1
   end
 
-  def upload_bottle(user, token, skopeo, formula_name, bottle_hash)
+  def upload_bottle(user, token, skopeo, bottle_hash)
+    formula_path = HOMEBREW_REPOSITORY/bottle_hash["formula"]["path"]
+    formula = Formulary.factory(formula_path)
+    formula_name = formula.name
+
     _, org, repo, = *bottle_hash["bottle"]["root_url"].match(URL_REGEX)
 
     # docker/skopeo insist on lowercase org ("repository name")
@@ -138,9 +142,6 @@ class GitHubPackages
     blobs = root/"blobs/sha256"
     blobs.mkpath
 
-    formula_path = HOMEBREW_REPOSITORY/bottle_hash["formula"]["path"]
-    formula = Formulary.factory(formula_path)
-
     # TODO: ideally most/all of these attributes would be stored in the
     # bottle JSON rather than reading them from the formula.
     git_revision = formula.tap.git_head
@@ -148,6 +149,7 @@ class GitHubPackages
     source = "https://github.com/#{org}/#{repo}/blob/#{git_revision}/#{git_path}"
 
     formula_annotations_hash = {
+      "org.opencontainers.image.created"     => Time.now.strftime("%F"),
       "org.opencontainers.image.description" => formula.desc,
       "org.opencontainers.image.license"     => formula.license,
       "org.opencontainers.image.revision"    => git_revision,
@@ -156,6 +158,9 @@ class GitHubPackages
       "org.opencontainers.image.vendor"      => org,
       "org.opencontainers.image.version"     => version,
     }
+    formula_annotations_hash.each do |key, value|
+      formula_annotations_hash.delete(key) if value.blank?
+    end
 
     manifests = bottle_hash["bottle"]["tags"].map do |bottle_tag, tag_hash|
       local_file = tag_hash["local_filename"]
@@ -174,7 +179,7 @@ class GitHubPackages
 
       # TODO: ideally most/all of these attributes would be stored in the
       # bottle JSON rather than reading them from the formula.
-      os, arch, formulae_dir = if @bottle_tag.to_s.end_with?("_linux")
+      os, arch, formulae_dir = if bottle_tag.to_s.end_with?("_linux")
         ["linux", "amd64", "formula-linux"]
       else
         os = "darwin"
@@ -240,11 +245,13 @@ class GitHubPackages
         digest:      "sha256:#{manifest_json_sha256}",
         size:        manifest_json_size,
         platform:    platform_hash,
-        annotations: {},
+        annotations: {
+          "org.opencontainers.image.ref.name" => tag,
+        },
       }
     end
 
-    index_json_sha256, index_json_size = write_image_index(manifests, blobs)
+    index_json_sha256, index_json_size = write_image_index(manifests, blobs, formula_annotations_hash)
 
     write_index_json(index_json_sha256, index_json_size, root)
 
@@ -281,11 +288,12 @@ class GitHubPackages
     write_hash(blobs, image_config)
   end
 
-  def write_image_index(manifests, blobs)
+  def write_image_index(manifests, blobs, annotations)
     image_index = {
+      mediaType:     "application/vnd.docker.distribution.manifest.list.v2+json",
       schemaVersion: 2,
       manifests:     manifests,
-      annotations:   {},
+      annotations:   annotations,
     }
     validate_schema!(IMAGE_INDEX_SCHEMA_URI, image_index)
     write_hash(blobs, image_index)
