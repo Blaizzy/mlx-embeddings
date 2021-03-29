@@ -105,7 +105,7 @@ class Cmd
       return @args.dup
     end
 
-    args = if !refurbish_args? || tool == "ld" || configure?
+    args = if !refurbish_args? || mode == :ld || configure?
       @args.dup
     else
       refurbished_args
