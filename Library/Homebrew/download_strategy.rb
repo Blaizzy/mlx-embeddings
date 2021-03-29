@@ -543,7 +543,7 @@ class CurlGitHubPackagesDownloadStrategy < CurlDownloadStrategy
 
     _, org, repo, = *url.match(GitHubPackages::URL_REGEX)
 
-    blob_url = "https://ghcr.io/v2/#{org}/#{repo}/#{name}/blobs/sha256:#{checksum}"
+    blob_url = "#{GitHubPackages::URL_PREFIX}#{org}/#{repo}/#{name}/blobs/sha256:#{checksum}"
     curl_download(blob_url, "--header", "Authorization: Bearer", to: temporary_path)
   end
 end
