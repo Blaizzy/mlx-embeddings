@@ -84,7 +84,6 @@
 **/vendor/bundle/ruby/*/gems/thread_safe-*/lib/thread_safe/util
 
 # Ignore dependencies we don't wish to vendor
-**/vendor/bundle/ruby/*/gems/addressable-*/
 **/vendor/bundle/ruby/*/gems/ast-*/
 **/vendor/bundle/ruby/*/gems/bootsnap-*/
 **/vendor/bundle/ruby/*/gems/bundler-*/
@@ -97,11 +96,14 @@
 **/vendor/bundle/ruby/*/gems/diff-lcs-*/
 **/vendor/bundle/ruby/*/gems/docile-*/
 **/vendor/bundle/ruby/*/gems/domain_name-*/
+**/vendor/bundle/ruby/*/gems/ecma-re-validator-*/
+**/vendor/bundle/ruby/*/gems/hana-*/
 **/vendor/bundle/ruby/*/gems/highline-*/
 **/vendor/bundle/ruby/*/gems/http-cookie-*/
 **/vendor/bundle/ruby/*/gems/hpricot-*/
 **/vendor/bundle/ruby/*/gems/jaro_winkler-*/
 **/vendor/bundle/ruby/*/gems/json-*/
+**/vendor/bundle/ruby/*/gems/json_schemer-*/
 **/vendor/bundle/ruby/*/gems/method_source-*/
 **/vendor/bundle/ruby/*/gems/mime-types-data-*/
 **/vendor/bundle/ruby/*/gems/mime-types-*/
@@ -120,7 +122,6 @@
 **/vendor/bundle/ruby/*/gems/powerpack-*/
 **/vendor/bundle/ruby/*/gems/psych-*/
 **/vendor/bundle/ruby/*/gems/pry-*/
-**/vendor/bundle/ruby/*/gems/public_suffix-*/
 **/vendor/bundle/ruby/*/gems/racc-*/
 **/vendor/bundle/ruby/*/gems/rainbow-*/
 **/vendor/bundle/ruby/*/gems/rdiscount-*/
@@ -152,6 +153,7 @@
 **/vendor/bundle/ruby/*/gems/unf_ext-*/
 **/vendor/bundle/ruby/*/gems/unf-*/
 **/vendor/bundle/ruby/*/gems/unicode-display_width-*/
+**/vendor/bundle/ruby/*/gems/uri_template-*/
 **/vendor/bundle/ruby/*/gems/webrobots-*/
 
 # Ignore `bin` contents (again).

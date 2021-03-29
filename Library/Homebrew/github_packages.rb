@@ -46,15 +46,13 @@ class GitHubPackages
     end
 
     # TODO: these dependencies are installed but cannot be required automatically.
-    Homebrew.install_gem!("public_suffix")
-    Homebrew.install_gem!("addressable")
-    Homebrew.install_gem!("json-schema")
-    require "json-schema"
+    Homebrew.install_gem!("json_schemer")
+    require "json_schemer"
 
     load_schemas!
 
-    bottles_hash.each do |formula_name, bottle_hash|
-      upload_bottle(user, token, skopeo, formula_name, bottle_hash)
+    bottles_hash.each_value do |bottle_hash|
+      upload_bottle(user, token, skopeo, bottle_hash)
     end
   end
 
@@ -97,18 +95,36 @@ class GitHubPackages
     out, = curl_output(url)
     json = JSON.parse(out)
 
+    @schema_json ||= {}
     Array(uris).each do |uri|
-      schema = JSON::Schema.new(json, uri)
-      schema.uri = uri
-      JSON::Validator.add_schema(schema)
+      @schema_json[uri] = json
     end
   end
 
-  def upload_bottle(user, token, skopeo, formula_name, bottle_hash)
-    _, org, repo, = *bottle_hash["bottle"]["root_url"].match(URL_REGEX)
+  def schema_resolver(uri)
+    @schema_json[uri.to_s.gsub(/#.*/, "")]
+  end
 
-    # docker/skopeo insist on lowercase org ("repository name")
-    org = org.downcase
+  def validate_schema!(schema_uri, json)
+    schema = JSONSchemer.schema(@schema_json[schema_uri], ref_resolver: method(:schema_resolver))
+    json = json.deep_stringify_keys
+    return if schema.valid?(json)
+
+    puts
+    ofail "#{Formatter.url(schema_uri)} JSON schema validation failed!"
+    oh1 "Errors"
+    pp schema.validate(json).to_a
+    oh1 "JSON"
+    pp json
+    exit 1
+  end
+
+  def upload_bottle(user, token, skopeo, bottle_hash)
+    formula_path = HOMEBREW_REPOSITORY/bottle_hash["formula"]["path"]
+    formula = Formulary.factory(formula_path)
+    formula_name = formula.name
+
+    _, org, repo, = *bottle_hash["bottle"]["root_url"].match(URL_REGEX)
 
     version = bottle_hash["formula"]["pkg_version"]
     rebuild = if (rebuild = bottle_hash["bottle"]["rebuild"]).positive?
@@ -123,9 +139,6 @@ class GitHubPackages
     blobs = root/"blobs/sha256"
     blobs.mkpath
 
-    formula_path = HOMEBREW_REPOSITORY/bottle_hash["formula"]["path"]
-    formula = Formulary.factory(formula_path)
-
     # TODO: ideally most/all of these attributes would be stored in the
     # bottle JSON rather than reading them from the formula.
     git_revision = formula.tap.git_head
@@ -133,6 +146,7 @@ class GitHubPackages
     source = "https://github.com/#{org}/#{repo}/blob/#{git_revision}/#{git_path}"
 
     formula_annotations_hash = {
+      "org.opencontainers.image.created"     => Time.now.strftime("%F"),
       "org.opencontainers.image.description" => formula.desc,
       "org.opencontainers.image.license"     => formula.license,
       "org.opencontainers.image.revision"    => git_revision,
@@ -141,6 +155,9 @@ class GitHubPackages
       "org.opencontainers.image.vendor"      => org,
       "org.opencontainers.image.version"     => version,
     }
+    formula_annotations_hash.each do |key, value|
+      formula_annotations_hash.delete(key) if value.blank?
+    end
 
     manifests = bottle_hash["bottle"]["tags"].map do |bottle_tag, tag_hash|
       local_file = tag_hash["local_filename"]
@@ -159,7 +176,7 @@ class GitHubPackages
 
       # TODO: ideally most/all of these attributes would be stored in the
       # bottle JSON rather than reading them from the formula.
-      os, arch, formulae_dir = if @bottle_tag.to_s.end_with?("_linux")
+      os, arch, formulae_dir = if bottle_tag.to_s.end_with?("_linux")
         ["linux", "amd64", "formula-linux"]
       else
         os = "darwin"
@@ -217,7 +234,7 @@ class GitHubPackages
         }],
         annotations:   annotations_hash,
       }
-      JSON::Validator.validate!(IMAGE_MANIFEST_SCHEMA_URI, image_manifest)
+      validate_schema!(IMAGE_MANIFEST_SCHEMA_URI, image_manifest)
       manifest_json_sha256, manifest_json_size = write_hash(blobs, image_manifest)
 
       {
@@ -225,26 +242,32 @@ class GitHubPackages
         digest:      "sha256:#{manifest_json_sha256}",
         size:        manifest_json_size,
         platform:    platform_hash,
-        annotations: {},
+        annotations: {
+          "org.opencontainers.image.ref.name" => tag,
+        },
       }
     end
 
-    index_json_sha256, index_json_size = write_image_index(manifests, blobs)
+    index_json_sha256, index_json_size = write_image_index(manifests, blobs, formula_annotations_hash)
 
     write_index_json(index_json_sha256, index_json_size, root)
 
-    image = "#{URL_DOMAIN}/#{org}/#{repo}/#{formula_name}"
-    image_tag = "#{image}:#{version_rebuild}"
+    # docker/skopeo insist on lowercase org ("repository name")
+    org_prefix = "#{URL_DOMAIN}/#{org.downcase}"
+    # remove redundant repo prefix for a shorter name
+    package_name = "#{repo.delete_prefix("homebrew-")}/#{formula_name}"
+    image_tag = "#{org_prefix}/#{package_name}:#{version_rebuild}"
     puts
     system_command!(skopeo, verbose: true, print_stdout: true, args: [
       "copy", "--dest-creds=#{user}:#{token}",
       "oci:#{root}", "docker://#{image_tag}"
     ])
+    ohai "Uploaded to https://github.com/orgs/Homebrew/packages/container/package/#{package_name}"
   end
 
   def write_image_layout(root)
     image_layout = { imageLayoutVersion: "1.0.0" }
-    JSON::Validator.validate!(IMAGE_LAYOUT_SCHEMA_URI, image_layout)
+    validate_schema!(IMAGE_LAYOUT_SCHEMA_URI, image_layout)
     write_hash(root, image_layout, "oci-layout")
   end
 
@@ -262,17 +285,19 @@ class GitHubPackages
         diff_ids: ["sha256:#{tar_sha256}"],
       },
     })
-    JSON::Validator.validate!(IMAGE_CONFIG_SCHEMA_URI, image_config)
+    validate_schema!(IMAGE_CONFIG_SCHEMA_URI, image_config)
     write_hash(blobs, image_config)
   end
 
-  def write_image_index(manifests, blobs)
+  def write_image_index(manifests, blobs, annotations)
     image_index = {
+      # Currently needed for correct multi-arch display in GitHub Packages UI
+      mediaType:     "application/vnd.docker.distribution.manifest.list.v2+json",
       schemaVersion: 2,
       manifests:     manifests,
-      annotations:   {},
+      annotations:   annotations,
     }
-    JSON::Validator.validate!(IMAGE_INDEX_SCHEMA_URI, image_index)
+    validate_schema!(IMAGE_INDEX_SCHEMA_URI, image_index)
     write_hash(blobs, image_index)
   end
 
@@ -287,7 +312,7 @@ class GitHubPackages
       }],
       annotations:   {},
     }
-    JSON::Validator.validate!(IMAGE_INDEX_SCHEMA_URI, index_json)
+    validate_schema!(IMAGE_INDEX_SCHEMA_URI, index_json)
     write_hash(root, index_json, "index.json")
   end
 

@@ -88,7 +88,10 @@ module Homebrew
       specs = Gem.install name, version, document: []
     end
 
-    # Add the new specs to the $LOAD_PATH.
+    specs += specs.flat_map(&:runtime_dependencies)
+                  .flat_map(&:to_specs)
+
+    # Add the specs to the $LOAD_PATH.
     specs.each do |spec|
       spec.require_paths.each do |path|
         full_path = File.join(spec.full_gem_path, path)
