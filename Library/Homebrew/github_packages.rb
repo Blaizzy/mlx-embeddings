@@ -290,6 +290,7 @@ class GitHubPackages
 
   def write_image_index(manifests, blobs, annotations)
     image_index = {
+      # Currently needed for correct multi-arch display in GitHub Packages UI
       mediaType:     "application/vnd.docker.distribution.manifest.list.v2+json",
       schemaVersion: 2,
       manifests:     manifests,
