@@ -14,7 +14,8 @@ class GitHubPackages
 
   URL_DOMAIN = "ghcr.io"
   URL_PREFIX = "https://#{URL_DOMAIN}/v2/"
-  URL_REGEX = %r{#{Regexp.escape(URL_PREFIX)}([\w-]+)/([\w-]+)}.freeze
+  DOCKER_PREFIX = "docker://#{URL_DOMAIN}/"
+  URL_REGEX = %r{(?:#{Regexp.escape(URL_PREFIX)}|#{Regexp.escape(DOCKER_PREFIX)})([\w-]+)/([\w-]+)}.freeze
 
   sig { returns(String) }
   def inspect
@@ -30,8 +31,8 @@ class GitHubPackages
     ENV["HOMEBREW_FORCE_HOMEBREW_ON_LINUX"] = "1" if @github_org == "homebrew" && !OS.mac?
   end
 
-  sig { params(bottles_hash: T::Hash[String, T.untyped]).void }
-  def upload_bottles(bottles_hash)
+  sig { params(bottles_hash: T::Hash[String, T.untyped], dry_run: T::Boolean).void }
+  def upload_bottles(bottles_hash, dry_run:)
     user = Homebrew::EnvConfig.github_packages_user
     token = Homebrew::EnvConfig.github_packages_token
 
@@ -52,7 +53,7 @@ class GitHubPackages
     load_schemas!
 
     bottles_hash.each_value do |bottle_hash|
-      upload_bottle(user, token, skopeo, bottle_hash)
+      upload_bottle(user, token, skopeo, bottle_hash, dry_run: dry_run)
     end
   end
 
@@ -119,7 +120,7 @@ class GitHubPackages
     exit 1
   end
 
-  def upload_bottle(user, token, skopeo, bottle_hash)
+  def upload_bottle(user, token, skopeo, bottle_hash, dry_run:)
     formula_path = HOMEBREW_REPOSITORY/bottle_hash["formula"]["path"]
     formula = Formulary.factory(formula_path)
     formula_name = formula.name
@@ -131,7 +132,7 @@ class GitHubPackages
       ".#{rebuild}"
     end
     version_rebuild = "#{version}#{rebuild}"
-    root = Pathname("#{formula_name}-#{version_rebuild}")
+    root = Pathname("#{formula_name}--#{version_rebuild}")
     FileUtils.rm_rf root
 
     write_image_layout(root)
@@ -144,21 +145,30 @@ class GitHubPackages
     git_revision = formula.tap.git_head
     git_path = formula_path.to_s.delete_prefix("#{formula.tap.path}/")
     source = "https://github.com/#{org}/#{repo}/blob/#{git_revision}/#{git_path}"
+    documentation = if formula.tap.core_tap?
+      "https://formulae.brew.sh/formula/#{formula_name}"
+    else
+      formula.tap.remote
+    end
 
     formula_annotations_hash = {
-      "org.opencontainers.image.created"     => Time.now.strftime("%F"),
-      "org.opencontainers.image.description" => formula.desc,
-      "org.opencontainers.image.license"     => formula.license,
-      "org.opencontainers.image.revision"    => git_revision,
-      "org.opencontainers.image.source"      => source,
-      "org.opencontainers.image.url"         => formula.homepage,
-      "org.opencontainers.image.vendor"      => org,
-      "org.opencontainers.image.version"     => version,
+      "org.opencontainers.image.created"       => Time.now.strftime("%F"),
+      "org.opencontainers.image.description"   => formula.desc,
+      "org.opencontainers.image.documentation" => documentation,
+      "org.opencontainers.image.license"       => formula.license,
+      "org.opencontainers.image.ref.name"      => version_rebuild,
+      "org.opencontainers.image.revision"      => git_revision,
+      "org.opencontainers.image.source"        => source,
+      "org.opencontainers.image.title"         => formula.full_name,
+      "org.opencontainers.image.url"           => formula.homepage,
+      "org.opencontainers.image.vendor"        => org,
+      "org.opencontainers.image.version"       => version,
     }
     formula_annotations_hash.each do |key, value|
       formula_annotations_hash.delete(key) if value.blank?
     end
 
+    created_times = []
     manifests = bottle_hash["bottle"]["tags"].map do |bottle_tag, tag_hash|
       local_file = tag_hash["local_filename"]
       odebug "Uploading #{local_file}"
@@ -203,6 +213,7 @@ class GitHubPackages
 
       created_time = tab.source_modified_time
       created_time ||= Time.now
+      created_times << created_time
       documentation = "https://formulae.brew.sh/#{formulae_dir}/#{formula_name}" if formula.tap.core_tap?
       tag = "#{version}.#{bottle_tag}#{rebuild}"
       title = "#{formula.full_name} #{tag}"
@@ -258,11 +269,14 @@ class GitHubPackages
     package_name = "#{repo.delete_prefix("homebrew-")}/#{formula_name}"
     image_tag = "#{org_prefix}/#{package_name}:#{version_rebuild}"
     puts
-    system_command!(skopeo, verbose: true, print_stdout: true, args: [
-      "copy", "--dest-creds=#{user}:#{token}",
-      "oci:#{root}", "docker://#{image_tag}"
-    ])
-    ohai "Uploaded to https://github.com/orgs/Homebrew/packages/container/package/#{package_name}"
+    args = ["copy", "--all", "oci:#{root}", image_tag.to_s]
+    if dry_run
+      puts "#{skopeo} #{args.join(" ")} --dest-creds=#{user}:$HOMEBREW_GITHUB_PACKAGES_TOKEN"
+    else
+      args << "--dest-creds=#{user}:#{token}"
+      system_command!(skopeo, verbose: true, print_stdout: true, args: args)
+      ohai "Uploaded to https://github.com/orgs/Homebrew/packages/container/package/#{package_name}"
+    end
   end
 
   def write_image_layout(root)

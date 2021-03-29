@@ -118,7 +118,7 @@ module Homebrew
         Upload bottles described by these JSON files to #{service}:
           #{json_files.join("\n  ")}
       EOS
-      return
+      return unless github_packages?(bottles_hash)
     end
 
     check_bottled_formulae(bottles_hash)
@@ -151,7 +151,7 @@ module Homebrew
     elsif github_packages?(bottles_hash)
       github_org = args.github_org || "homebrew"
       github_packages = GitHubPackages.new(org: github_org)
-      github_packages.upload_bottles(bottles_hash)
+      github_packages.upload_bottles(bottles_hash, dry_run: args.dry_run?)
     else
       odie "Service specified by root_url is not recognized"
     end
