@@ -352,11 +352,11 @@ If *`cask`* is provided, list its artifacts.
 * `-1`:
   Force output to be one entry per line. This is the default when output is not to a terminal.
 * `-l`:
-  List formulae in long format.
+  List formulae and/or casks in long format. Has no effect when a formula or cask name is passed as an argument.
 * `-r`:
-  Reverse the order of the formulae sort to list the oldest entries first.
+  Reverse the order of the formulae and/or casks sort to list the oldest entries first. Has no effect when a formula or cask name is passed as an argument.
 * `-t`:
-  Sort formulae by time modified, listing most recently modified first.
+  Sort formulae and/or casks by time modified, listing most recently modified first. Has no effect when a formula or cask name is passed as an argument.
 
 ### `log` [*`options`*] [*`formula`*]
 

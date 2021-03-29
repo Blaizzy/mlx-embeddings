@@ -1060,19 +1060,19 @@ _brew_list() {
     '(--versions --unbrewed --pinned --l --r --t)--full-name[Print formulae with fully-qualified names. Unless `--full-name`, `--versions` or `--pinned` are passed, other options (i.e. `-1`, `-l`, `-r` and `-t`) are passed to `ls`(1) which produces the actual output]' \
     '--help[Show this message]' \
     '(--pinned --cask)--multiple[Only show formulae with multiple versions installed]' \
-    '(--multiple --unbrewed --1 --l --r --t --full-name --cask)--pinned[List only pinned formulae, or only the specified (pinned) formulae if formula are provided. See also `pin`, `unpin`]' \
+    '(--multiple --cask --unbrewed --1 --l --r --t --full-name)--pinned[List only pinned formulae, or only the specified (pinned) formulae if formula are provided. See also `pin`, `unpin`]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]' \
     '(--full-name --unbrewed --1 --l --r --t)--versions[Show the version number for installed formulae, or only the specified formulae if formula are provided]' \
     '-1[Force output to be one entry per line. This is the default when output is not to a terminal]' \
-    '-l[List formulae in long format]' \
-    '-r[Reverse the order of the formulae sort to list the oldest entries first]' \
-    '-t[Sort formulae by time modified, listing most recently modified first]' \
+    '-l[List formulae and/or casks in long format. Has no effect when a formula or cask name is passed as an argument]' \
+    '-r[Reverse the order of the formulae and/or casks sort to list the oldest entries first. Has no effect when a formula or cask name is passed as an argument]' \
+    '-t[Sort formulae and/or casks by time modified, listing most recently modified first. Has no effect when a formula or cask name is passed as an argument]' \
     - installed_formula \
     '(--cask --unbrewed)--formula[List only formulae, or treat all named arguments as formulae]' \
     '*::installed_formula:__brew_installed_formulae' \
     - installed_cask \
-    '(--formula --multiple --unbrewed --pinned --l --r --t)--cask[List only casks, or treat all named arguments as casks]' \
+    '(--formula --pinned --multiple --unbrewed)--cask[List only casks, or treat all named arguments as casks]' \
     '*::installed_cask:__brew_installed_casks'
 }
 
@@ -1134,19 +1134,19 @@ _brew_ls() {
     '(--versions --unbrewed --pinned --l --r --t)--full-name[Print formulae with fully-qualified names. Unless `--full-name`, `--versions` or `--pinned` are passed, other options (i.e. `-1`, `-l`, `-r` and `-t`) are passed to `ls`(1) which produces the actual output]' \
     '--help[Show this message]' \
     '(--pinned --cask)--multiple[Only show formulae with multiple versions installed]' \
-    '(--multiple --unbrewed --1 --l --r --t --full-name --cask)--pinned[List only pinned formulae, or only the specified (pinned) formulae if formula are provided. See also `pin`, `unpin`]' \
+    '(--multiple --cask --unbrewed --1 --l --r --t --full-name)--pinned[List only pinned formulae, or only the specified (pinned) formulae if formula are provided. See also `pin`, `unpin`]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]' \
     '(--full-name --unbrewed --1 --l --r --t)--versions[Show the version number for installed formulae, or only the specified formulae if formula are provided]' \
     '-1[Force output to be one entry per line. This is the default when output is not to a terminal]' \
-    '-l[List formulae in long format]' \
-    '-r[Reverse the order of the formulae sort to list the oldest entries first]' \
-    '-t[Sort formulae by time modified, listing most recently modified first]' \
+    '-l[List formulae and/or casks in long format. Has no effect when a formula or cask name is passed as an argument]' \
+    '-r[Reverse the order of the formulae and/or casks sort to list the oldest entries first. Has no effect when a formula or cask name is passed as an argument]' \
+    '-t[Sort formulae and/or casks by time modified, listing most recently modified first. Has no effect when a formula or cask name is passed as an argument]' \
     - installed_formula \
     '(--cask --unbrewed)--formula[List only formulae, or treat all named arguments as formulae]' \
     '*::installed_formula:__brew_installed_formulae' \
     - installed_cask \
-    '(--formula --multiple --unbrewed --pinned --l --r --t)--cask[List only casks, or treat all named arguments as casks]' \
+    '(--formula --pinned --multiple --unbrewed)--cask[List only casks, or treat all named arguments as casks]' \
     '*::installed_cask:__brew_installed_casks'
 }
 
