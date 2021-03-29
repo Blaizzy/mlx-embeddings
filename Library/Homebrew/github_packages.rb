@@ -126,9 +126,6 @@ class GitHubPackages
 
     _, org, repo, = *bottle_hash["bottle"]["root_url"].match(URL_REGEX)
 
-    # docker/skopeo insist on lowercase org ("repository name")
-    org = org.downcase
-
     version = bottle_hash["formula"]["pkg_version"]
     rebuild = if (rebuild = bottle_hash["bottle"]["rebuild"]).positive?
       ".#{rebuild}"
@@ -255,13 +252,17 @@ class GitHubPackages
 
     write_index_json(index_json_sha256, index_json_size, root)
 
-    image = "#{URL_DOMAIN}/#{org}/#{repo}/#{formula_name}"
-    image_tag = "#{image}:#{version_rebuild}"
+    # docker/skopeo insist on lowercase org ("repository name")
+    org_prefix = "#{URL_DOMAIN}/#{org.downcase}"
+    # remove redundant repo prefix for a shorter name
+    package_name = "#{repo.delete_prefix("homebrew-")}/#{formula_name}"
+    image_tag = "#{org_prefix}/#{package_name}:#{version_rebuild}"
     puts
     system_command!(skopeo, verbose: true, print_stdout: true, args: [
       "copy", "--dest-creds=#{user}:#{token}",
       "oci:#{root}", "docker://#{image_tag}"
     ])
+    ohai "Uploaded to https://github.com/orgs/Homebrew/packages/container/package/#{package_name}"
   end
 
   def write_image_layout(root)
