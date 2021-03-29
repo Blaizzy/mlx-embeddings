@@ -1,4 +1,5 @@
 #!/bin/bash
+
 # Historically, xcrun has had various bugs, and in some cases it didn't
 # work at all (e.g. CLT-only in the Xcode 4.3 era). This script emulates
 # it and attempts to avoid these issues.
@@ -27,10 +28,10 @@ arg0=$1
 shift
 
 exe="/usr/bin/${arg0}"
-if [ -x "$exe" ]; then
-  if [ -n "$HOMEBREW_PREFER_CLT_PROXIES" ]; then
+if [[ -x "$exe" ]]; then
+  if [[ -n "$HOMEBREW_PREFER_CLT_PROXIES" ]]; then
     exec "$exe" "$@"
-  elif [ -z "$HOMEBREW_SDKROOT" -o ! -d "$HOMEBREW_SDKROOT" ]; then
+  elif [[ -z "$HOMEBREW_SDKROOT" || ! -d "$HOMEBREW_SDKROOT" ]]; then
     exec "$exe" "$@"
   fi
 fi
@@ -38,7 +39,7 @@ fi
 SUPERBIN=$(cd "${0%/*}" && pwd -P)
 
 exe=$(/usr/bin/xcrun --find "$arg0" 2>/dev/null)
-if [ -x "$exe" -a "${exe%/*}" != "$SUPERBIN" ]; then
+if [[ -x "$exe" && "${exe%/*}" != "$SUPERBIN" ]]; then
   exec "$exe" "$@"
 fi
 
@@ -57,7 +58,7 @@ done
 IFS=$old_IFS
 
 echo >&2 "
-Failed to execute $arg0 $@
+Failed to execute ${arg0} ${*}
 
 Xcode and/or the CLT appear to be misconfigured. Try one or both of the following:
   xcodebuild -license

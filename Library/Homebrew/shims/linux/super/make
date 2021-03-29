@@ -7,7 +7,7 @@ pathremove() {
                   NEWPATH=${NEWPATH:+$NEWPATH:}$DIR
                 fi
         done
-        export $PATHVARIABLE="$NEWPATH"
+        export "$PATHVARIABLE"="$NEWPATH"
 }
 
 if [[ -n "$HOMEBREW_MAKE" && "$HOMEBREW_MAKE" != "make" ]]
@@ -16,7 +16,8 @@ then
 else
   SAVED_PATH="$PATH"
   pathremove "$HOMEBREW_LIBRARY/Homebrew/shims/linux/super"
-  export MAKE="$(which make)"
+  MAKE="$(which make)"
+  export MAKE
   export PATH="$SAVED_PATH"
 fi
 

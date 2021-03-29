@@ -177,13 +177,16 @@ module Homebrew
         files = [
           HOMEBREW_BREW_FILE,
           # TODO: HOMEBREW_REPOSITORY/"completions/bash/brew",
-          *Pathname.glob("#{HOMEBREW_LIBRARY}/Homebrew/*.sh"),
-          *Pathname.glob("#{HOMEBREW_LIBRARY}/Homebrew/cmd/*.sh"),
-          *Pathname.glob("#{HOMEBREW_LIBRARY}/Homebrew/utils/*.sh"),
+          *HOMEBREW_LIBRARY.glob("Homebrew/*.sh"),
+          *HOMEBREW_LIBRARY.glob("Homebrew/shims/**/*").map(&:realpath).uniq
+                           .reject { |path| path.directory? || path.basename.to_s == "cc" },
+          *HOMEBREW_LIBRARY.glob("Homebrew/{dev-,}cmd/*.sh"),
+          *HOMEBREW_LIBRARY.glob("Homebrew/{cask/,}utils/*.sh"),
         ]
       end
 
-      args = ["--shell=bash", "--", *files] # TODO: Add `--enable=all` to check for more problems.
+      # TODO: Add `--enable=all` to check for more problems.
+      args = ["--shell=bash", "--external-sources", "--", *files]
 
       case output_type
       when :print
