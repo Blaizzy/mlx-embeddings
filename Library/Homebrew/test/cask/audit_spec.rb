@@ -1011,24 +1011,5 @@ describe Cask::Audit, :cask do
         expect(audit.cask.url.cookies).to eq "foo" => "bar"
       end
     end
-
-    context "when the version contains a slash" do
-      let(:cask_token) { "foo" }
-      let(:cask) do
-        tmp_cask cask_token.to_s, <<~RUBY
-          cask '#{cask_token}' do
-            version '0.1,../../directory/traversal'
-            sha256 '8dd95daa037ac02455435446ec7bc737b34567afe9156af7d20b2a83805c1d8a'
-            url 'https://brew.sh/foo.zip'
-            name 'Audit'
-            desc 'Audit Description'
-            homepage 'https://brew.sh'
-            app 'Audit.app'
-          end
-        RUBY
-      end
-
-      it { is_expected.to fail_with(%r{version should not contain '/'}) }
-    end
   end
 end

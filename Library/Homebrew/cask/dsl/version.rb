@@ -19,7 +19,7 @@ module Cask
 
       MAJOR_MINOR_PATCH_REGEX = /^([^.,:]+)(?:.([^.,:]+)(?:.([^.,:]+))?)?/.freeze
 
-      INVALID_CHARACTERS = /[^0-9a-zA-Z.,:\-_]/.freeze
+      INVALID_CHARACTERS = /[^0-9a-zA-Z.,:\-_+% ]/.freeze
 
       class << self
         private
@@ -68,10 +68,13 @@ module Cask
       def initialize(raw_version)
         @raw_version = raw_version
         super(raw_version.to_s)
+
+        invalid = invalid_characters
+        raise TypeError, "#{raw_version} contains invalid characters: #{invalid.uniq.join}!" if invalid.present?
       end
 
       def invalid_characters
-        return [] if latest?
+        return [] if raw_version.blank? || latest?
 
         raw_version.scan(INVALID_CHARACTERS)
       end
