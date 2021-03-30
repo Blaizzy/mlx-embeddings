@@ -1,0 +1,12 @@
+--title "Homebrew Ruby API"
+--main README.md
+--markup markdown
+--no-private
+--load yard/ignore_directives.rb
+--template-path yard/templates
+--exclude test/
+--exclude vendor/
+--exclude compat/
+**/*.rb
+-
+*.md
