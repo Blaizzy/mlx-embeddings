@@ -19,7 +19,7 @@ module Cask
 
       MAJOR_MINOR_PATCH_REGEX = /^([^.,:]+)(?:.([^.,:]+)(?:.([^.,:]+))?)?/.freeze
 
-      INVALID_CHARACTERS = /[^0-9a-zA-Z.,:\-_+% ]/.freeze
+      INVALID_CHARACTERS = /[^0-9a-zA-Z.,:\-_+ ]/.freeze
 
       class << self
         private
