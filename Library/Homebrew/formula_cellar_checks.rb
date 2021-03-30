@@ -275,48 +275,6 @@ module FormulaCellarChecks
     "Python formulae that are keg-only should not create `pip3` and `wheel3` symlinks."
   end
 
-  INVALID_EMPTY_FILE_NAMES = %w[AUTHORS ChangeLog changes COPYING LICENSE NEWS README TODO].freeze
-  INVALID_EMPTY_FILE_EXTENSIONS = %w[.html .md .rst .txt].freeze
-  INVALID_EMPTY_FILE_DIRECTORIES = %w[bin libexec share/man share/doc].freeze
-  # Names and extensions to ignore, even if they are in a location within prefix given above
-  VALID_EMPTY_FILE_NAMES = %w[__init__ empty REQUESTED].freeze
-  VALID_EMPTY_FILE_EXTENSIONS = %w[.gitkeep .keep .keepme .stamp .typed].freeze
-
-  def check_empty_files(prefix)
-    return unless prefix.directory?
-
-    empty_files = prefix.children.select do |f|
-      next if INVALID_EMPTY_FILE_NAMES.exclude?(f.basename(".*").to_s) &&
-              INVALID_EMPTY_FILE_EXTENSIONS.exclude?(f.extname)
-      next unless File.zero?(f)
-
-      true
-    end
-
-    INVALID_EMPTY_FILE_DIRECTORIES.each do |dir|
-      path = prefix/dir
-      next unless path.directory?
-
-      # search all directories in INVALID_EMPTY_FILE_LOCATIONS and their subdirectories
-      Pathname.glob(path/"**/*").each do |p|
-        # Any files in the "valid" list should be skipped because they are expected to be empty
-        next if VALID_EMPTY_FILE_NAMES.include?(p.basename(".*").to_s)
-        next if VALID_EMPTY_FILE_EXTENSIONS.include?(p.extname)
-        next unless File.zero?(p)
-
-        empty_files << p
-      end
-    end
-
-    return if empty_files.empty?
-
-    <<~EOS
-      Unexpected empty files were installed.
-      The offending files are:
-        #{empty_files * "\n  "}
-    EOS
-  end
-
   def audit_installed
     @new_formula ||= false
 
@@ -335,7 +293,6 @@ module FormulaCellarChecks
     problem_if_output(check_shim_references(formula.prefix))
     problem_if_output(check_plist(formula.prefix, formula.plist))
     problem_if_output(check_python_symlinks(formula.name, formula.keg_only?))
-    problem_if_output(check_empty_files(formula.prefix))
   end
   alias generic_audit_installed audit_installed
 
