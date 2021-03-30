@@ -46,7 +46,6 @@ class GitHubPackages
       skopeo = Formula["skopeo"].opt_bin/"skopeo"
     end
 
-    # TODO: these dependencies are installed but cannot be required automatically.
     Homebrew.install_gem!("json_schemer")
     require "json_schemer"
 
@@ -147,8 +146,8 @@ class GitHubPackages
     source = "https://github.com/#{org}/#{repo}/blob/#{git_revision}/#{git_path}"
     documentation = if formula.tap.core_tap?
       "https://formulae.brew.sh/formula/#{formula_name}"
-    else
-      formula.tap.remote
+    elsif (remote = formula.tap.remote) && remote.start_with?("https://github.com/")
+      remote
     end
 
     formula_annotations_hash = {
