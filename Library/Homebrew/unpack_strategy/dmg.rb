@@ -96,15 +96,11 @@ module UnpackStrategy
 
           # For HFS, just use <mount-path>
           # For APFS, find the <physical-store> corresponding to <mount-path>
-          eject_paths = if disk_info.success?
-            disk_info.plist
-                     .fetch("APFSPhysicalStores", [])
-                     .map { |store| store["APFSPhysicalStore"] }
-                     .compact
-                     .presence || [path]
-          else
-            [path]
-          end
+          eject_paths = disk_info.plist
+                                 .fetch("APFSPhysicalStores", [])
+                                 .map { |store| store["APFSPhysicalStore"] }
+                                 .compact
+                                 .presence || [path]
 
           eject_paths.each do |eject_path|
             system_command! "diskutil",

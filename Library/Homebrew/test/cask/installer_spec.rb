@@ -16,27 +16,31 @@ describe Cask::Installer, :cask do
       expect(caffeine.config.appdir.join("Caffeine.app")).to be_a_directory
     end
 
-    [
-      ["HFS+", "container-dmg"],
-      ["APFS", "container-apfs-dmg"],
-    ].each do |filesystem, cask|
-      it "works with #{filesystem} dmg-based Casks" do
-        asset = Cask::CaskLoader.load(cask_path(cask))
-        diskutil_list_command = "diskutil list | grep '/dev'"
+    it "works with HFS+ dmg-based Casks" do
+      asset = Cask::CaskLoader.load(cask_path("container-dmg"))
 
-        sleep(1)
-        original_diskutil_list = `#{diskutil_list_command}`
+      described_class.new(asset).install
 
-        described_class.new(asset).install
+      expect(Cask::Caskroom.path.join("container-dmg", asset.version)).to be_a_directory
+      expect(asset.config.appdir.join("container")).to be_a_file
+    end
 
-        expect(Cask::Caskroom.path.join(cask, asset.version)).to be_a_directory
-        expect(asset.config.appdir.join("container")).to be_a_file
+    it "works with APFS dmg-based Casks" do
+      asset = Cask::CaskLoader.load(cask_path("container-apfs-dmg"))
+      diskutil_list_command = "diskutil list | grep '/dev'"
 
-        sleep(2)
-        expect { system diskutil_list_command }
-          .to output(original_diskutil_list)
-          .to_stdout_from_any_process
-      end
+      sleep 5
+      original_diskutil_list = `#{diskutil_list_command}`
+
+      described_class.new(asset).install
+
+      expect(Cask::Caskroom.path.join("container-apfs-dmg", asset.version)).to be_a_directory
+      expect(asset.config.appdir.join("container")).to be_a_file
+
+      sleep 5
+      expect { system diskutil_list_command }
+        .to output(original_diskutil_list)
+        .to_stdout_from_any_process
     end
 
     it "works with tar-gz-based Casks" do
