@@ -101,24 +101,27 @@ module Homebrew
     bottle_args += json_files
 
     if args.dry_run?
-      service =
-        if internet_archive?(bottles_hash)
-          "Internet Archive"
-        elsif bintray?(bottles_hash)
-          "Bintray"
-        elsif github_releases?(bottles_hash)
-          "GitHub Releases"
-        elsif github_packages?(bottles_hash)
-          "GitHub Packages"
-        else
-          odie "Service specified by root_url is not recognized"
-        end
-      puts <<~EOS
-        brew #{bottle_args.join " "}
-        Upload bottles described by these JSON files to #{service}:
-          #{json_files.join("\n  ")}
-      EOS
-      return unless github_packages?(bottles_hash)
+      dry_run_service = if github_packages?(bottles_hash)
+        # GitHub Packages has its own --dry-run handling.
+        nil
+      elsif internet_archive?(bottles_hash)
+        "Internet Archive"
+      elsif bintray?(bottles_hash)
+        "Bintray"
+      elsif github_releases?(bottles_hash)
+        "GitHub Releases"
+      else
+        odie "Service specified by root_url is not recognized"
+      end
+
+      if dry_run_service
+        puts <<~EOS
+          brew #{bottle_args.join " "}
+          Upload bottles described by these JSON files to #{dry_run_service}:
+            #{json_files.join("\n  ")}
+        EOS
+        return
+      end
     end
 
     check_bottled_formulae(bottles_hash)

@@ -543,6 +543,8 @@ class CurlGitHubPackagesDownloadStrategy < CurlDownloadStrategy
 
     _, org, repo, = *url.match(GitHubPackages::URL_REGEX)
 
+    # remove redundant repo prefix for a shorter name
+    repo = repo.delete_prefix("homebrew-")
     blob_url = "#{GitHubPackages::URL_PREFIX}#{org}/#{repo}/#{name}/blobs/sha256:#{checksum}"
     curl_download(blob_url, "--header", "Authorization: Bearer", to: temporary_path)
   end
