@@ -51,8 +51,7 @@ describe FormulaInstaller do
   specify "basic installation" do
     temporary_install(Testball.new) do |f|
       # Test that things made it into the Keg
-      # "readme" is empty, so it should not be installed
-      expect(f.prefix/"readme").not_to exist
+      expect(f.prefix/"readme").to exist
 
       expect(f.bin).to be_a_directory
       expect(f.bin.children.count).to eq(3)
