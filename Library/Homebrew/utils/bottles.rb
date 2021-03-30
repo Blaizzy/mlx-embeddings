@@ -24,14 +24,22 @@ module Utils
 
       def file_outdated?(f, file)
         filename = file.basename.to_s
-        return if f.bottle.blank? || !filename.match?(Pathname::BOTTLE_EXTNAME_RX)
+        return false if f.bottle.blank?
 
-        bottle_ext = filename[native_regex, 1]
-        bottle_url_ext = f.bottle.url[native_regex, 1]
+        bottle_ext, bottle_tag, = extname_tag_rebuild(filename)
+        return false if bottle_ext.blank?
+        return false if bottle_tag != tag.to_s
+
+        bottle_url_ext, = extname_tag_rebuild(f.bottle.url)
 
         bottle_ext && bottle_url_ext && bottle_ext != bottle_url_ext
       end
 
+      def extname_tag_rebuild(filename)
+        HOMEBREW_BOTTLES_EXTNAME_REGEX.match(filename).to_a
+      end
+
+      # TODO: remove when removed from brew-test-bot
       sig { returns(Regexp) }
       def native_regex
         /(\.#{Regexp.escape(tag.to_s)}\.bottle\.(\d+\.)?tar\.gz)$/o

@@ -92,6 +92,12 @@ module Homebrew
       hash.deep_merge(JSON.parse(IO.read(json_file)))
     end
 
+    if args.root_url
+      bottles_hash.each_value do |bottle_hash|
+        bottle_hash["bottle"]["root_url"] = args.root_url
+      end
+    end
+
     bottle_args = ["bottle", "--merge", "--write"]
     bottle_args << "--verbose" if args.verbose?
     bottle_args << "--debug" if args.debug?

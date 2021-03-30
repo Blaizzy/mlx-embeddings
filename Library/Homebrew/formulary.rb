@@ -4,6 +4,7 @@
 require "digest/md5"
 require "extend/cachable"
 require "tab"
+require "utils/bottles"
 
 # The {Formulary} is responsible for creating instances of {Formula}.
 # It is not meant to be used directly from formulae.
@@ -458,7 +459,7 @@ module Formulary
 
   def self.loader_for(ref, from: nil)
     case ref
-    when Pathname::BOTTLE_EXTNAME_RX
+    when HOMEBREW_BOTTLES_EXTNAME_REGEX
       return BottleLoader.new(ref)
     when URL_START_REGEX
       return FromUrlLoader.new(ref)

@@ -42,6 +42,8 @@ describe Tab do
           "head"   => "HEAD-1111111",
         },
       },
+      "arch"                 => Hardware::CPU.arch,
+      "built_on"             => DevelopmentTools.build_system_info,
     )
   }
 
@@ -360,6 +362,7 @@ describe Tab do
 
   specify "#to_json" do
     json_tab = described_class.new(JSON.parse(tab.to_json))
+    expect(json_tab.homebrew_version).to eq(tab.homebrew_version)
     expect(json_tab.used_options.sort).to eq(tab.used_options.sort)
     expect(json_tab.unused_options.sort).to eq(tab.unused_options.sort)
     expect(json_tab.built_as_bottle).to eq(tab.built_as_bottle)
@@ -368,13 +371,26 @@ describe Tab do
     expect(json_tab.tap).to eq(tab.tap)
     expect(json_tab.spec).to eq(tab.spec)
     expect(json_tab.time).to eq(tab.time)
-    expect(json_tab.HEAD).to eq(tab.HEAD)
     expect(json_tab.compiler).to eq(tab.compiler)
     expect(json_tab.stdlib).to eq(tab.stdlib)
     expect(json_tab.runtime_dependencies).to eq(tab.runtime_dependencies)
     expect(json_tab.stable_version).to eq(tab.stable_version)
     expect(json_tab.head_version).to eq(tab.head_version)
     expect(json_tab.source["path"]).to eq(tab.source["path"])
+    expect(json_tab.arch).to eq(tab.arch.to_s)
+    expect(json_tab.built_on["os"]).to eq(tab.built_on["os"])
+  end
+
+  specify "#to_bottle_hash" do
+    json_tab = described_class.new(JSON.parse(tab.to_bottle_hash.to_json))
+    expect(json_tab.homebrew_version).to eq(tab.homebrew_version)
+    expect(json_tab.changed_files).to eq(tab.changed_files)
+    expect(json_tab.source_modified_time).to eq(tab.source_modified_time)
+    expect(json_tab.stdlib).to eq(tab.stdlib)
+    expect(json_tab.compiler).to eq(tab.compiler)
+    expect(json_tab.runtime_dependencies).to eq(tab.runtime_dependencies)
+    expect(json_tab.arch).to eq(tab.arch.to_s)
+    expect(json_tab.built_on["os"]).to eq(tab.built_on["os"])
   end
 
   specify "::remap_deprecated_options" do

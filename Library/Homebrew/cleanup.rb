@@ -64,7 +64,7 @@ module Homebrew
         def stale_formula?(scrub)
           return false unless HOMEBREW_CELLAR.directory?
 
-          version = if to_s.match?(Pathname::BOTTLE_EXTNAME_RX)
+          version = if HOMEBREW_BOTTLES_EXTNAME_REGEX.match?(to_s)
             begin
               Utils::Bottles.resolve_version(self)
             rescue

@@ -380,6 +380,7 @@ _brew_bottle() {
       --merge
       --no-commit
       --no-rebuild
+      --only-json-tab
       --quiet
       --root-url
       --skip-relocation

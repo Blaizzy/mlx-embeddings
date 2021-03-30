@@ -14,7 +14,7 @@ Lint/NestedMethodDefinition:
 
 # TODO: Try to bring down all metrics maximums.
 Metrics/AbcSize:
-  Max: 250
+  Max: 275
 Metrics/BlockLength:
   Max: 100
   Exclude:

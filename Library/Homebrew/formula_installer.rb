@@ -1139,14 +1139,21 @@ class FormulaInstaller
       )
     end
 
-    tab.tap = formula.tap
+    # fill in missing/outdated parts of the tab
+    # keep in sync with Tab#to_bottle_json
+    tab.used_options = []
+    tab.unused_options = []
+    tab.built_as_bottle = true
     tab.poured_from_bottle = true
-    tab.time = Time.now.to_i
-    tab.head = HOMEBREW_REPOSITORY.git_head
-    tab.source["path"] = formula.specified_path.to_s
     tab.installed_as_dependency = installed_as_dependency?
     tab.installed_on_request = installed_on_request?
+    tab.time = Time.now.to_i
     tab.aliases = formula.aliases
+    tab.arch = Hardware::CPU.arch
+    tab.source["versions"]["stable"] = formula.stable.version.to_s
+    tab.source["path"] = formula.specified_path.to_s
+    tab.source["tap_git_head"] = formula.tap&.git_head
+    tab.tap = formula.tap
     tab.write
   end
 

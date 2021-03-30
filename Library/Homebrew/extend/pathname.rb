@@ -81,9 +81,6 @@ class Pathname
 
   include DiskUsageExtension
 
-  # @private
-  BOTTLE_EXTNAME_RX = /(\.[a-z0-9_]+\.bottle\.(\d+\.)?tar\.gz)$/.freeze
-
   # Moves a file from the original location to the {Pathname}'s.
   sig {
     params(sources: T.any(
@@ -243,7 +240,7 @@ class Pathname
   def extname
     basename = File.basename(self)
 
-    bottle_ext = basename[BOTTLE_EXTNAME_RX, 1]
+    bottle_ext, = HOMEBREW_BOTTLES_EXTNAME_REGEX.match(basename).to_a
     return bottle_ext if bottle_ext
 
     archive_ext = basename[/(\.(tar|cpio|pax)\.(gz|bz2|lz|xz|Z))\Z/, 1]
