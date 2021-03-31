@@ -538,6 +538,7 @@ module Homebrew
           "prefix"   => bottle.prefix,
           "cellar"   => bottle.cellar.to_s,
           "rebuild"  => bottle.rebuild,
+          "date"     => Time.now.strftime("%F"),
           "tags"     => {
             bottle_tag.to_s => {
               "filename"              => filename.bintray,

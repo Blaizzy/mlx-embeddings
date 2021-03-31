@@ -177,8 +177,9 @@ class GitHubPackages
       remote
     end
 
+    created_date = bottle_hash["bottle"]["date"]
     formula_annotations_hash = {
-      "org.opencontainers.image.created"       => Time.now.strftime("%F"),
+      "org.opencontainers.image.created"       => created_date,
       "org.opencontainers.image.description"   => bottle_hash["formula"]["desc"],
       "org.opencontainers.image.documentation" => documentation,
       "org.opencontainers.image.license"       => bottle_hash["formula"]["license"],
@@ -225,7 +226,7 @@ class GitHubPackages
       tag = "#{version}.#{bottle_tag}#{rebuild}"
 
       annotations_hash = formula_annotations_hash.merge({
-        "org.opencontainers.image.created"       => Time.at(tag_hash["tab"]["source_modified_time"]).strftime("%F"),
+        "org.opencontainers.image.created"       => created_date,
         "org.opencontainers.image.documentation" => documentation,
         "org.opencontainers.image.ref.name"      => tag,
         "org.opencontainers.image.title"         => "#{formula_full_name} #{tag}",
