@@ -304,9 +304,18 @@ class Bottle
 
     checksum, tag, cellar = spec.checksum_for(Utils::Bottles.tag)
 
-    filename = Filename.create(formula, tag, spec.rebuild)
-    @resource.url("#{spec.root_url}/#{filename.bintray}",
-                  select_download_strategy(spec.root_url_specs))
+    filename = Filename.create(formula, tag, spec.rebuild).bintray
+
+    # TODO: this will need adjusted when if we use GitHub Packages by default
+    path, resolved_basename = if (bottle_domain = Homebrew::EnvConfig.bottle_domain.presence) &&
+                                 bottle_domain.start_with?(GitHubPackages::URL_PREFIX)
+      ["#{@name}/blobs/sha256:#{checksum}", filename]
+    else
+      filename
+    end
+
+    @resource.url("#{spec.root_url}/#{path}", select_download_strategy(spec.root_url_specs))
+    @resource.downloader.resolved_basename = resolved_basename if resolved_basename.present?
     @resource.version = formula.pkg_version
     @resource.checksum = checksum
     @prefix = spec.prefix
@@ -316,16 +325,12 @@ class Bottle
 
   def fetch(verify_download_integrity: true)
     # add the default bottle domain as a fallback mirror
-    # TODO: this may need adjusted when if we use GitHub Packages by default
     if @resource.download_strategy == CurlDownloadStrategy &&
        @resource.url.start_with?(Homebrew::EnvConfig.bottle_domain)
       fallback_url = @resource.url
                               .sub(/^#{Regexp.escape(Homebrew::EnvConfig.bottle_domain)}/,
                                    HOMEBREW_BOTTLE_DEFAULT_DOMAIN)
       @resource.mirror(fallback_url) if [@resource.url, *@resource.mirrors].exclude?(fallback_url)
-    elsif @resource.download_strategy == CurlGitHubPackagesDownloadStrategy
-      @resource.downloader.name = @name
-      @resource.downloader.checksum = @resource.checksum.hexdigest
     end
     @resource.fetch(verify_download_integrity: verify_download_integrity)
   end
@@ -380,7 +385,7 @@ class BottleSpecification
   def root_url(var = nil, specs = {})
     if var.nil?
       @root_url ||= if Homebrew::EnvConfig.bottle_domain.start_with?(GitHubPackages::URL_PREFIX)
-        "#{GitHubPackages::URL_PREFIX}#{tap.full_name}"
+        GitHubPackages.root_url(tap.user, tap.repo).to_s
       else
         "#{Homebrew::EnvConfig.bottle_domain}/#{Utils::Bottles::Bintray.repository(tap)}"
       end
