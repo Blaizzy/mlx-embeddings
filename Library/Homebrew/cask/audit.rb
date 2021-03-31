@@ -67,13 +67,13 @@ module Cask
       check_single_pre_postflight
       check_single_uninstall_zap
       check_untrusted_pkg
-      check_hosting_with_appcast
+      livecheck_result = check_livecheck_version
+      check_hosting_with_livecheck(livecheck_result: livecheck_result)
       check_appcast_and_livecheck
       check_latest_with_appcast_or_livecheck
       check_latest_with_auto_updates
       check_stanza_requires_uninstall
       check_appcast_contains_version
-      check_livecheck_version
       check_gitlab_repository
       check_gitlab_repository_archived
       check_gitlab_prerelease_version
@@ -305,22 +305,23 @@ module Cask
       add_error "Casks with `version :latest` should not use `auto_updates`."
     end
 
-    APPCAST_REFERENCE_URL = "https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/stanzas/appcast.md"
+    LIVECHECK_REFERENCE_URL = "https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/stanzas/livecheck.md"
 
-    def check_hosting_with_appcast
+    def check_hosting_with_livecheck(livecheck_result:)
       return if cask.appcast || cask.livecheckable?
+      return if livecheck_result == :auto_detected
 
-      add_appcast = "please add an appcast. See #{Formatter.url(APPCAST_REFERENCE_URL)}"
+      add_livecheck = "please add a livecheck. See #{Formatter.url(LIVECHECK_REFERENCE_URL)}"
 
       case cask.url.to_s
       when %r{sourceforge.net/(\S+)}
         return if cask.version.latest?
 
-        add_error "Download is hosted on SourceForge, #{add_appcast}"
+        add_error "Download is hosted on SourceForge, #{add_livecheck}"
       when %r{dl.devmate.com/(\S+)}
-        add_error "Download is hosted on DevMate, #{add_appcast}"
+        add_error "Download is hosted on DevMate, #{add_livecheck}"
       when %r{rink.hockeyapp.net/(\S+)}
-        add_error "Download is hosted on HockeyApp, #{add_appcast}"
+        add_error "Download is hosted on HockeyApp, #{add_livecheck}"
       end
     end
 
@@ -542,8 +543,8 @@ module Cask
 
     def check_livecheck_version
       return unless appcast?
-      return if cask.livecheck.skip?
-      return if cask.version.latest?
+      return :skip if cask.livecheck.skip?
+      return :latest if cask.version.latest?
 
       latest_version = Homebrew::Livecheck.latest_version(cask)&.fetch(:latest)
       if cask.version.to_s == latest_version.to_s
@@ -552,12 +553,14 @@ module Cask
                     "the appcast should be removed."
         end
 
-        return
+        return :auto_detected
       end
 
-      return if cask.appcast && !cask.livecheckable?
+      return :appcast if cask.appcast && !cask.livecheckable?
 
       add_error "Version '#{cask.version}' differs from '#{latest_version}' retrieved by livecheck."
+
+      false
     end
 
     def check_appcast_contains_version
