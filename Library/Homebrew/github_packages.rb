@@ -17,6 +17,12 @@ class GitHubPackages
   DOCKER_PREFIX = "docker://#{URL_DOMAIN}/"
   URL_REGEX = %r{(?:#{Regexp.escape(URL_PREFIX)}|#{Regexp.escape(DOCKER_PREFIX)})([\w-]+)/([\w-]+)}.freeze
 
+  # Translate Homebrew built_on.os to OCI platform.os
+  BUILT_ON_OS_TO_PLATFORM_OS = {
+    "Linux"     => "linux",
+    "Macintosh" => "darwin",
+  }.freeze
+
   sig { returns(String) }
   def inspect
     "#<GitHubPackages: org=#{@github_org}>"
@@ -173,9 +179,12 @@ class GitHubPackages
       tar_gz_sha256 = write_tar_gz(local_file, blobs)
 
       tab = tag_hash["tab"]
+      os = BUILT_ON_OS_TO_PLATFORM_OS[tab["built_on"]["os"]]
+      raise TypeError, "unknown tab['built_on']['os']: #{tab["built_on"]["os"]}" if os.blank?
+
       platform_hash = {
         architecture: tab["arch"],
-        os: tab["built_on"]["os"],
+        os: os,
         "os.version" => tab["built_on"]["os_version"],
       }
       tar_sha256 = Digest::SHA256.hexdigest(
