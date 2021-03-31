@@ -365,6 +365,7 @@ __fish_brew_complete_arg 'bottle' -l keep-old -d 'If the formula specifies a reb
 __fish_brew_complete_arg 'bottle' -l merge -d 'Generate an updated bottle block for a formula and optionally merge it into the formula file. Instead of a formula name, requires the path to a JSON file generated with `brew bottle --json` formula'
 __fish_brew_complete_arg 'bottle' -l no-commit -d 'When passed with `--write`, a new commit will not generated after writing changes to the formula file'
 __fish_brew_complete_arg 'bottle' -l no-rebuild -d 'If the formula specifies a rebuild version, remove it from the generated DSL'
+__fish_brew_complete_arg 'bottle' -l only-json-tab -d 'When passed with `--json`, the tab will be written to the JSON file but not the bottle'
 __fish_brew_complete_arg 'bottle' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'bottle' -l root-url -d 'Use the specified URL as the root of the bottle\'s URL instead of Homebrew\'s default'
 __fish_brew_complete_arg 'bottle' -l skip-relocation -d 'Do not check if the bottle can be marked as relocatable'

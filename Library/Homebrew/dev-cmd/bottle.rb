@@ -70,6 +70,9 @@ module Homebrew
              depends_on:  "--write",
              description: "When passed with `--write`, a new commit will not generated after writing changes "\
                           "to the formula file."
+      switch "--only-json-tab",
+             depends_on:  "--json",
+             description: "When passed with `--json`, the tab will be written to the JSON file but not the bottle."
       flag   "--root-url=",
              description: "Use the specified <URL> as the root of the bottle's URL instead of Homebrew's default."
 
@@ -252,9 +255,15 @@ module Homebrew
   end
 
   def bottle_formula(f, args:)
-    return ofail "Formula not installed or up-to-date: #{f.full_name}" unless f.latest_version_installed?
+    local_bottle_json = args.json? && f.local_bottle_path.present?
 
-    unless (tap = f.tap)
+    unless local_bottle_json
+      return ofail "Formula not installed or up-to-date: #{f.full_name}" unless f.latest_version_installed?
+      return ofail "Formula was not installed with --build-bottle: #{f.full_name}" unless Utils::Bottles.built_as? f
+    end
+
+    tap = f.tap
+    if tap.nil?
       return ofail "Formula not from core or any installed taps: #{f.full_name}" unless args.force_core_tap?
 
       tap = CoreTap.instance
@@ -266,39 +275,95 @@ module Homebrew
       return
     end
 
-    return ofail "Formula was not installed with --build-bottle: #{f.full_name}" unless Utils::Bottles.built_as? f
-
     return ofail "Formula has no stable version: #{f.full_name}" unless f.stable
 
-    if args.no_rebuild? || !f.tap
-      rebuild = 0
+    bottle_tag, rebuild = if local_bottle_json
+      _, tag_string, rebuild_string = Utils::Bottles.extname_tag_rebuild(f.local_bottle_path.to_s)
+      [tag_string.to_sym, rebuild_string.to_i]
+    end
+
+    bottle_tag ||= Utils::Bottles.tag
+
+    rebuild ||= if args.no_rebuild? || !tap
+      0
     elsif args.keep_old?
-      rebuild = f.bottle_specification.rebuild
+      f.bottle_specification.rebuild
     else
       ohai "Determining #{f.full_name} bottle rebuild..."
       versions = FormulaVersions.new(f)
       rebuilds = versions.bottle_version_map("origin/master")[f.pkg_version]
       rebuilds.pop if rebuilds.last.to_i.positive?
-      rebuild = rebuilds.empty? ? 0 : rebuilds.max.to_i + 1
+      rebuilds.empty? ? 0 : rebuilds.max.to_i + 1
     end
 
-    filename = Bottle::Filename.create(f, Utils::Bottles.tag, rebuild)
+    filename = Bottle::Filename.create(f, bottle_tag, rebuild)
+    local_filename = filename.to_s
     bottle_path = Pathname.pwd/filename
 
-    tar_filename = filename.to_s.sub(/.gz$/, "")
-    tar_path = Pathname.pwd/tar_filename
+    tab = nil
+    keg = nil
+
+    tap_path = tap.path
+    tap_git_revision = tap.git_head
+    tap_git_remote = tap.remote
+
+    root_url = args.root_url
+
+    formulae_brew_sh_path = Utils::Analytics.formula_path
+
+    relocatable = T.let(false, T::Boolean)
+    skip_relocation = T.let(false, T::Boolean)
 
     prefix = HOMEBREW_PREFIX.to_s
     cellar = HOMEBREW_CELLAR.to_s
 
-    ohai "Bottling #{filename}..."
+    if local_bottle_json
+      bottle_path = f.local_bottle_path
+      local_filename = bottle_path.basename.to_s
+
+      tab_path = Utils::Bottles.receipt_path(f.local_bottle_path)
+      tab_json = Utils.safe_popen_read("tar", "xfO", f.local_bottle_path, tab_path)
+      tab = Tab.from_file_content(tab_json, tab_path)
+
+      # TODO: most of this logic can be removed when we're done with bulk GitHub Packages bottle uploading
+      tap_git_revision = tab["source"]["tap_git_head"]
+      if tap.core_tap?
+        if bottle_tag.to_s.end_with?("_linux")
+          tap_git_remote = "https://github.com/Homebrew/linuxbrew-core"
+          formulae_brew_sh_path = "formula-linux"
+        else
+          tap_git_remote = "https://github.com/Homebrew/homebrew-core"
+          formulae_brew_sh_path = "formula"
+        end
+      end
+
+      _, _, bottle_cellar = Formula[f.name].bottle_specification.checksum_for(bottle_tag, exact: true)
+      relocatable = [:any, :any_skip_relocation].include?(bottle_cellar)
+      skip_relocation = bottle_cellar == :any_skip_relocation
+
+      if bottle_tag.to_s.end_with?("_linux")
+        prefix = HOMEBREW_LINUX_DEFAULT_PREFIX.to_s
+        cellar = Homebrew::DEFAULT_LINUX_CELLAR
+      elsif bottle_tag.to_s.start_with?("arm64_")
+        prefix = HOMEBREW_MACOS_ARM_DEFAULT_PREFIX.to_s
+        cellar = Homebrew::DEFAULT_MACOS_ARM_CELLAR
+      else
+        prefix = HOMEBREW_DEFAULT_PREFIX.to_s
+        cellar = Homebrew::DEFAULT_MACOS_CELLAR
+      end
+    else
+      tar_filename = filename.to_s.sub(/.gz$/, "")
+      tar_path = Pathname.pwd/tar_filename
+
+      keg = Keg.new(f.prefix)
+    end
+
+    ohai "Bottling #{local_filename}..."
 
     formula_and_runtime_deps_names = [f.name] + f.runtime_dependencies.map(&:name)
-    keg = Keg.new(f.prefix)
-    relocatable = T.let(false, T::Boolean)
-    skip_relocation = T.let(false, T::Boolean)
 
-    keg.lock do
+    # this will be nil when using a local bottle
+    keg&.lock do
       original_tab = nil
       changed_files = nil
 
@@ -318,7 +383,11 @@ module Homebrew
         tab.HEAD = nil
         tab.time = nil
         tab.changed_files = changed_files
-        tab.write
+        if args.only_json_tab?
+          tab.tabfile.unlink
+        else
+          tab.write
+        end
 
         keg.find do |file|
           if file.symlink?
@@ -342,7 +411,7 @@ module Homebrew
           mv "#{relocatable_tar_path}.gz", bottle_path
         end
 
-        ohai "Detecting if #{filename} is relocatable..." if bottle_path.size > 1 * 1024 * 1024
+        ohai "Detecting if #{local_filename} is relocatable..." if bottle_path.size > 1 * 1024 * 1024
 
         prefix_check = if Homebrew.default_prefix?(prefix)
           File.join(prefix, "opt")
@@ -400,8 +469,6 @@ module Homebrew
       end
     end
 
-    root_url = args.root_url
-
     bottle = BottleSpecification.new
     bottle.tap = tap
     bottle.root_url(root_url) if root_url
@@ -417,7 +484,7 @@ module Homebrew
     end
     bottle.rebuild rebuild
     sha256 = bottle_path.sha256
-    bottle.sha256 sha256 => Utils::Bottles.tag
+    bottle.sha256 sha256 => bottle_tag
 
     old_spec = f.bottle_specification
     if args.keep_old? && !old_spec.checksums.empty?
@@ -448,7 +515,7 @@ module Homebrew
 
     output = bottle_output bottle
 
-    puts "./#{filename}"
+    puts "./#{local_filename}"
     puts output
 
     return unless args.json?
@@ -456,8 +523,15 @@ module Homebrew
     json = {
       f.full_name => {
         "formula" => {
-          "pkg_version" => f.pkg_version.to_s,
-          "path"        => f.path.to_s.delete_prefix("#{HOMEBREW_REPOSITORY}/"),
+          "name"             => f.name,
+          "pkg_version"      => f.pkg_version.to_s,
+          "path"             => f.path.to_s.delete_prefix("#{HOMEBREW_REPOSITORY}/"),
+          "tap_git_path"     => f.path.to_s.delete_prefix("#{tap_path}/"),
+          "tap_git_revision" => tap_git_revision,
+          "tap_git_remote"   => tap_git_remote,
+          "desc"             => f.desc,
+          "license"          => f.license,
+          "homepage"         => f.homepage,
         },
         "bottle"  => {
           "root_url" => bottle.root_url,
@@ -465,10 +539,12 @@ module Homebrew
           "cellar"   => bottle.cellar.to_s,
           "rebuild"  => bottle.rebuild,
           "tags"     => {
-            Utils::Bottles.tag.to_s => {
-              "filename"       => filename.bintray,
-              "local_filename" => filename.to_s,
-              "sha256"         => sha256,
+            bottle_tag.to_s => {
+              "filename"              => filename.bintray,
+              "local_filename"        => local_filename,
+              "sha256"                => sha256,
+              "formulae_brew_sh_path" => formulae_brew_sh_path,
+              "tab"                   => tab.to_bottle_hash,
             },
           },
         },
@@ -479,7 +555,7 @@ module Homebrew
       },
     }
     File.open(filename.json, "w") do |file|
-      file.write JSON.generate json
+      file.write JSON.pretty_generate json
     end
   end
 

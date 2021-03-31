@@ -823,6 +823,8 @@ value, while `--no-rebuild` will remove it.
   Write changes to the formula file. A new commit will be generated unless `--no-commit` is passed.
 * `--no-commit`:
   When passed with `--write`, a new commit will not generated after writing changes to the formula file.
+* `--only-json-tab`:
+  When passed with `--json`, the tab will be written to the JSON file but not the bottle.
 * `--root-url`:
   Use the specified *`URL`* as the root of the bottle's URL instead of Homebrew's default.
 

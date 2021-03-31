@@ -33,17 +33,17 @@ class Tab < OpenStruct
       "poured_from_bottle"      => false,
       "time"                    => Time.now.to_i,
       "source_modified_time"    => formula.source_modified_time.to_i,
-      "HEAD"                    => HOMEBREW_REPOSITORY.git_head,
       "compiler"                => compiler,
       "stdlib"                  => stdlib,
       "aliases"                 => formula.aliases,
       "runtime_dependencies"    => Tab.runtime_deps_hash(runtime_deps),
       "arch"                    => Hardware::CPU.arch,
       "source"                  => {
-        "path"     => formula.specified_path.to_s,
-        "tap"      => formula.tap&.name,
-        "spec"     => formula.active_spec_sym.to_s,
-        "versions" => {
+        "path"         => formula.specified_path.to_s,
+        "tap"          => formula.tap&.name,
+        "tap_git_head" => formula.tap&.git_head,
+        "spec"         => formula.active_spec_sym.to_s,
+        "versions"     => {
           "stable"         => formula.stable&.version.to_s,
           "head"           => formula.head&.version.to_s,
           "version_scheme" => formula.version_scheme,
@@ -188,17 +188,17 @@ class Tab < OpenStruct
       "poured_from_bottle"      => false,
       "time"                    => nil,
       "source_modified_time"    => 0,
-      "HEAD"                    => nil,
       "stdlib"                  => nil,
       "compiler"                => DevelopmentTools.default_compiler,
       "aliases"                 => [],
       "runtime_dependencies"    => nil,
       "arch"                    => nil,
       "source"                  => {
-        "path"     => nil,
-        "tap"      => nil,
-        "spec"     => "stable",
-        "versions" => {
+        "path"         => nil,
+        "tap"          => nil,
+        "tap_git_head" => nil,
+        "spec"         => "stable",
+        "versions"     => {
           "stable"         => nil,
           "head"           => nil,
           "version_scheme" => 0,
@@ -330,17 +330,33 @@ class Tab < OpenStruct
       "changed_files"           => changed_files&.map(&:to_s),
       "time"                    => time,
       "source_modified_time"    => source_modified_time.to_i,
-      "HEAD"                    => self.HEAD,
       "stdlib"                  => stdlib&.to_s,
       "compiler"                => compiler&.to_s,
       "aliases"                 => aliases,
       "runtime_dependencies"    => runtime_dependencies,
       "source"                  => source,
-      "arch"                    => Hardware::CPU.arch,
+      "arch"                    => arch,
       "built_on"                => built_on,
     }
+    attributes.delete("stdlib") if attributes["stdlib"].blank?
 
-    JSON.generate(attributes, options)
+    JSON.pretty_generate(attributes, options)
+  end
+
+  # a subset of to_json that we care about for bottles
+  def to_bottle_hash
+    attributes = {
+      "homebrew_version"     => homebrew_version,
+      "changed_files"        => changed_files&.map(&:to_s),
+      "source_modified_time" => source_modified_time.to_i,
+      "stdlib"               => stdlib&.to_s,
+      "compiler"             => compiler&.to_s,
+      "runtime_dependencies" => runtime_dependencies,
+      "arch"                 => arch,
+      "built_on"             => built_on,
+    }
+    attributes.delete("stdlib") if attributes["stdlib"].blank?
+    attributes
   end
 
   def write

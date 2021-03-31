@@ -453,6 +453,7 @@ _brew_bottle() {
     '--merge[Generate an updated bottle block for a formula and optionally merge it into the formula file. Instead of a formula name, requires the path to a JSON file generated with `brew bottle --json` formula]' \
     '--no-commit[When passed with `--write`, a new commit will not generated after writing changes to the formula file]' \
     '(--keep-old)--no-rebuild[If the formula specifies a rebuild version, remove it from the generated DSL]' \
+    '--only-json-tab[When passed with `--json`, the tab will be written to the JSON file but not the bottle]' \
     '--quiet[Make some output more quiet]' \
     '--root-url[Use the specified URL as the root of the bottle'\''s URL instead of Homebrew'\''s default]' \
     '--skip-relocation[Do not check if the bottle can be marked as relocatable]' \

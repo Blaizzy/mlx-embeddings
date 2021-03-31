@@ -538,8 +538,8 @@ class CurlGitHubPackagesDownloadStrategy < CurlDownloadStrategy
   private
 
   def _fetch(url:, resolved_url:)
-    raise "Empty checksum" if checksum.blank?
-    raise "Empty name" if name.blank?
+    raise CurlDownloadStrategyError, "Empty checksum" if checksum.blank?
+    raise CurlDownloadStrategyError, "Empty name" if name.blank?
 
     _, org, repo, = *url.match(GitHubPackages::URL_REGEX)
 
