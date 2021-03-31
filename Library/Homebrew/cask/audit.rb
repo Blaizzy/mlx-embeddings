@@ -308,7 +308,7 @@ module Cask
     LIVECHECK_REFERENCE_URL = "https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/stanzas/livecheck.md"
 
     def check_hosting_with_livecheck(livecheck_result:)
-      return if cask.appcast || cask.livecheckable?
+      return if block_url_offline? || cask.appcast || cask.livecheckable?
       return if livecheck_result == :auto_detected
 
       add_livecheck = "please add a livecheck. See #{Formatter.url(LIVECHECK_REFERENCE_URL)}"
@@ -419,9 +419,16 @@ module Cask
       URI(cask.url.to_s).scheme == "file"
     end
 
+    def block_url_offline?
+      return false if online?
+
+      cask.url.from_block?
+    end
+
     VERIFIED_URL_REFERENCE_URL = "https://github.com/Homebrew/homebrew-cask/blob/master/doc/cask_language_reference/stanzas/url.md#when-url-and-homepage-hostnames-differ-add-verified"
 
     def check_unnecessary_verified
+      return if block_url_offline?
       return unless verified_present?
       return unless url_match_homepage?
       return unless verified_matches_url?
@@ -432,7 +439,7 @@ module Cask
     end
 
     def check_missing_verified
-      return if cask.url.from_block?
+      return if block_url_offline?
       return if file_url?
       return if url_match_homepage?
       return if verified_present?
@@ -443,6 +450,7 @@ module Cask
     end
 
     def check_no_match
+      return if block_url_offline?
       return unless verified_present?
       return if verified_matches_url?
 
@@ -592,7 +600,7 @@ module Cask
       return if cask.tap == "homebrew/cask-versions"
 
       odebug "Auditing GitHub prerelease"
-      user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @online
+      user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if online?
       return if user.nil?
 
       tag = SharedAudits.github_tag_from_url(cask.url)
@@ -604,7 +612,7 @@ module Cask
     def check_gitlab_prerelease_version
       return if cask.tap == "homebrew/cask-versions"
 
-      user, repo = get_repo_data(%r{https?://gitlab\.com/([^/]+)/([^/]+)/?.*}) if @online
+      user, repo = get_repo_data(%r{https?://gitlab\.com/([^/]+)/([^/]+)/?.*}) if online?
       return if user.nil?
 
       odebug "Auditing GitLab prerelease"
@@ -616,7 +624,7 @@ module Cask
     end
 
     def check_github_repository_archived
-      user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if @online
+      user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if online?
       return if user.nil?
 
       odebug "Auditing GitHub repo archived"
@@ -636,7 +644,7 @@ module Cask
     end
 
     def check_gitlab_repository_archived
-      user, repo = get_repo_data(%r{https?://gitlab\.com/([^/]+)/([^/]+)/?.*}) if @online
+      user, repo = get_repo_data(%r{https?://gitlab\.com/([^/]+)/([^/]+)/?.*}) if online?
       return if user.nil?
 
       odebug "Auditing GitLab repo archived"
