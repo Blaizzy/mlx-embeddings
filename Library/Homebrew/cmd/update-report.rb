@@ -154,6 +154,7 @@ module Homebrew
             puts_stdout_or_stderr
             puts_stdout_or_stderr <<~EOS
               You have #{msg} installed.
+              You can check #{update_pronoun} with #{Tty.bold}brew outdated#{Tty.reset}.
               You can update #{update_pronoun} with #{Tty.bold}brew upgrade#{Tty.reset}.
             EOS
           end
