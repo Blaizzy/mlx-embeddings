@@ -68,6 +68,24 @@ class GitHubPackages
     end
   end
 
+  def self.version_rebuild(version, rebuild)
+    return version.to_s unless rebuild.to_i.positive?
+
+    "#{version}.#{rebuild}"
+  end
+
+  def self.repo_without_prefix(repo)
+    # remove redundant repo prefix for a shorter name
+    repo.delete_prefix("homebrew-")
+  end
+
+  def self.root_url(org, repo, prefix = URL_PREFIX)
+    # docker/skopeo insist on lowercase org ("repository name")
+    org = org.downcase
+
+    "#{prefix}#{org}/#{repo_without_prefix(repo)}"
+  end
+
   private
 
   IMAGE_CONFIG_SCHEMA_URI = "https://opencontainers.org/schema/image/config"
@@ -138,10 +156,8 @@ class GitHubPackages
     repo = "homebrew-#{repo}" unless HOMEBREW_OFFICIAL_REPO_PREFIXES_REGEX.match?(repo)
 
     version = bottle_hash["formula"]["pkg_version"]
-    rebuild = if (rebuild = bottle_hash["bottle"]["rebuild"]).positive?
-      ".#{rebuild}"
-    end
-    version_rebuild = "#{version}#{rebuild}"
+    rebuild = bottle_hash["bottle"]["rebuild"]
+    version_rebuild = GitHubPackages.version_rebuild(version, rebuild)
     root = Pathname("#{formula_name}--#{version_rebuild}")
     FileUtils.rm_rf root
 
@@ -205,6 +221,7 @@ class GitHubPackages
       formulae_dir = tag_hash["formulae_brew_sh_path"]
       documentation = "https://formulae.brew.sh/#{formulae_dir}/#{formula_name}" if formula_core_tap
 
+      rebuild = ".#{rebuild}" if rebuild.to_i.positive?
       tag = "#{version}.#{bottle_tag}#{rebuild}"
 
       annotations_hash = formula_annotations_hash.merge({
@@ -255,11 +272,8 @@ class GitHubPackages
     write_index_json(index_json_sha256, index_json_size, root,
                      "org.opencontainers.image.ref.name" => version_rebuild)
 
-    # docker/skopeo insist on lowercase org ("repository name")
-    org_prefix = "#{DOCKER_PREFIX}#{org.downcase}"
-    # remove redundant repo prefix for a shorter name
-    package_name = "#{repo.delete_prefix("homebrew-")}/#{formula_name}"
-    image_tag = "#{org_prefix}/#{package_name}:#{version_rebuild}"
+    image_tag = "#{GitHubPackages.root_url(org, repo, DOCKER_PREFIX)}/#{formula_name}:#{version_rebuild}"
+
     puts
     args = ["copy", "--all", "oci:#{root}", image_tag.to_s]
     if dry_run
@@ -267,6 +281,7 @@ class GitHubPackages
     else
       args << "--dest-creds=#{user}:#{token}"
       system_command!(skopeo, verbose: true, print_stdout: true, args: args)
+      package_name = "#{GitHubPackages.repo_without_prefix(repo)}/#{formula_name}"
       ohai "Uploaded to https://github.com/orgs/Homebrew/packages/container/package/#{package_name}"
     end
   end
