@@ -52,6 +52,7 @@ module Formulary
     require "formula"
 
     mod = Module.new
+    remove_const(namespace) if const_defined?(namespace)
     const_set(namespace, mod)
 
     begin
