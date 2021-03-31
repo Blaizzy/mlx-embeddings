@@ -23,6 +23,7 @@ describe CompilerSelector do
       when "gcc-7" then Version.create("7.1")
       when "gcc-6" then Version.create("6.1")
       when "gcc-5" then Version.create("5.1")
+      when "gcc-4.9" then Version.create("4.9.1")
       else Version::NULL
       end
     end
@@ -45,29 +46,56 @@ describe CompilerSelector do
 
     it "returns gcc-6 if gcc formula offers gcc-6 on mac", :needs_macos do
       software_spec.fails_with(:clang)
-      allow(Formulary).to receive(:factory).with("gcc").and_return(double(version: "6.0"))
+      allow(Formulary).to receive(:factory).with("gcc").and_return(double(version: Version.new("6.0")))
       expect(selector.compiler).to eq("gcc-6")
     end
 
     it "returns gcc-5 if gcc formula offers gcc-5 on linux", :needs_linux do
       software_spec.fails_with(:clang)
-      allow(Formulary).to receive(:factory).with("gcc@5").and_return(double(version: "5.0"))
+      allow(Formulary).to receive(:factory).with("gcc@5").and_return(double(version: Version.new("5.0")))
       expect(selector.compiler).to eq("gcc-5")
     end
 
-    it "returns gcc-6 if gcc formula offers gcc-6 and fails with gcc-5 and gcc-7 on linux", :needs_linux do
+    it "returns gcc-6 if gcc formula offers gcc-5 and fails with gcc-5 and gcc-7 on linux", :needs_linux do
       software_spec.fails_with(:clang)
       software_spec.fails_with(gcc: "5")
       software_spec.fails_with(gcc: "7")
-      allow(Formulary).to receive(:factory).with("gcc@5").and_return(double(version: "5.0"))
+      allow(Formulary).to receive(:factory).with("gcc@5").and_return(double(version: Version.new("5.0")))
       expect(selector.compiler).to eq("gcc-6")
     end
 
-    it "raises an error when gcc or llvm is missing" do
+    it "returns gcc-7 if gcc formula offers gcc-5 and fails with gcc <= 6 on linux", :needs_linux do
+      software_spec.fails_with(:clang)
+      software_spec.fails_with(:gcc) { version "6" }
+      allow(Formulary).to receive(:factory).with("gcc@5").and_return(double(version: Version.new("5.0")))
+      expect(selector.compiler).to eq("gcc-7")
+    end
+
+    it "returns gcc-7 if gcc-7 is version 7.1 but spec fails with gcc-7 <= 7.0" do
+      software_spec.fails_with(:clang)
+      software_spec.fails_with(gcc: "7") { version "7.0" }
+      expect(selector.compiler).to eq("gcc-7")
+    end
+
+    it "returns gcc-6 if gcc-7 is version 7.1 but spec fails with gcc-7 <= 7.1" do
+      software_spec.fails_with(:clang)
+      software_spec.fails_with(gcc: "7") { version "7.1" }
+      expect(selector.compiler).to eq("gcc-6")
+    end
+
+    it "raises an error when gcc or llvm is missing (hash syntax)" do
       software_spec.fails_with(:clang)
       software_spec.fails_with(gcc: "7")
       software_spec.fails_with(gcc: "6")
       software_spec.fails_with(gcc: "5")
+      software_spec.fails_with(gcc: "4.9")
+
+      expect { selector.compiler }.to raise_error(CompilerSelectionError)
+    end
+
+    it "raises an error when gcc or llvm is missing (symbol syntax)" do
+      software_spec.fails_with(:clang)
+      software_spec.fails_with(:gcc)
 
       expect { selector.compiler }.to raise_error(CompilerSelectionError)
     end
