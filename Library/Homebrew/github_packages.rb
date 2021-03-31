@@ -17,6 +17,12 @@ class GitHubPackages
   DOCKER_PREFIX = "docker://#{URL_DOMAIN}/"
   URL_REGEX = %r{(?:#{Regexp.escape(URL_PREFIX)}|#{Regexp.escape(DOCKER_PREFIX)})([\w-]+)/([\w-]+)}.freeze
 
+  # Translate Homebrew tab.arch to OCI platform.architecture
+  TAB_ARCH_TO_PLATFORM_ARCHITECTURE = {
+    "arm64"  => "arm64",
+    "x86_64" => "amd64",
+  }.freeze
+
   # Translate Homebrew built_on.os to OCI platform.os
   BUILT_ON_OS_TO_PLATFORM_OS = {
     "Linux"     => "linux",
@@ -179,11 +185,14 @@ class GitHubPackages
       tar_gz_sha256 = write_tar_gz(local_file, blobs)
 
       tab = tag_hash["tab"]
+      architecture = TAB_ARCH_TO_PLATFORM_ARCHITECTURE[tab["arch"]]
+      raise TypeError, "unknown tab['arch']: #{tab["arch"]}" if architecture.blank?
+
       os = BUILT_ON_OS_TO_PLATFORM_OS[tab["built_on"]["os"]]
       raise TypeError, "unknown tab['built_on']['os']: #{tab["built_on"]["os"]}" if os.blank?
 
       platform_hash = {
-        architecture: tab["arch"],
+        architecture: architecture,
         os: os,
         "os.version" => tab["built_on"]["os_version"],
       }
