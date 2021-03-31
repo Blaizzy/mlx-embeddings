@@ -348,7 +348,61 @@ class Bottle
     resource.downloader.stage
   end
 
+  def fetch_tab
+    # a checksum is used later identifying the correct tab but we do not have the checksum for the manifest/tab
+    github_packages_manifest_resource&.fetch(verify_download_integrity: false)
+  end
+
+  def tab_attributes
+    return {} unless github_packages_manifest_resource&.downloaded?
+
+    manifest_json = github_packages_manifest_resource.cached_download.read
+
+    json = begin
+      JSON.parse(manifest_json)
+    rescue JSON::ParserError
+      raise ArgumentError, "Couldn't parse manifest JSON."
+    end
+
+    manifests = json["manifests"]
+    raise ArgumentError, "Missing 'manifests' section." if manifests.blank?
+
+    manifests_annotations = manifests.map { |m| m["annotations"] }
+    raise ArgumentError, "Missing 'annotations' section." if manifests_annotations.blank?
+
+    bottle_checksum = @resource.checksum.hexdigest
+    manifest_annotations = manifests_annotations.find do |m|
+      m["sh.brew.bottle.checksum"] == bottle_checksum
+    end
+    raise ArgumentError, "Couldn't find manifest matching bottle checksum." if manifest_annotations.blank?
+
+    tab = manifest_annotations["sh.brew.tab"]
+    raise ArgumentError, "Couldn't find tab from manifest." if tab.blank?
+
+    begin
+      JSON.parse(tab)
+    rescue JSON::ParserError
+      raise ArgumentError, "Couldn't parse tab JSON."
+    end
+  end
+
   private
+
+  def github_packages_manifest_resource
+    return if @resource.download_strategy != CurlGitHubPackagesDownloadStrategy
+
+    @github_packages_manifest_resource ||= begin
+      resource = Resource.new("#{name}_bottle_manifest")
+
+      version_rebuild = GitHubPackages.version_rebuild(@resource.version, rebuild)
+      resource.version(version_rebuild)
+
+      resource.url("#{@spec.root_url}/#{name}/manifests/#{version_rebuild}",
+                   using: CurlGitHubPackagesDownloadStrategy)
+      resource.downloader.resolved_basename = "#{name}-#{version_rebuild}.bottle_manifest.json"
+      resource
+    end
+  end
 
   def select_download_strategy(specs)
     specs[:using] ||= DownloadStrategyDetector.detect(@spec.root_url)
