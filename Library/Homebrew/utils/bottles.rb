@@ -39,12 +39,6 @@ module Utils
         HOMEBREW_BOTTLES_EXTNAME_REGEX.match(filename).to_a
       end
 
-      # TODO: remove when removed from brew-test-bot
-      sig { returns(Regexp) }
-      def native_regex
-        /(\.#{Regexp.escape(tag.to_s)}\.bottle\.(\d+\.)?tar\.gz)$/o
-      end
-
       def receipt_path(bottle_file)
         path = Utils.popen_read("tar", "-tzf", bottle_file).lines.map(&:chomp).find do |line|
           line =~ %r{.+/.+/INSTALL_RECEIPT.json}
