@@ -233,7 +233,8 @@ class GitHubPackages
 
     index_json_sha256, index_json_size = write_image_index(manifests, blobs, formula_annotations_hash)
 
-    write_index_json(index_json_sha256, index_json_size, root)
+    write_index_json(index_json_sha256, index_json_size, root,
+                     "org.opencontainers.image.ref.name" => version_rebuild)
 
     # docker/skopeo insist on lowercase org ("repository name")
     org_prefix = "#{DOCKER_PREFIX}#{org.downcase}"
@@ -287,16 +288,15 @@ class GitHubPackages
     write_hash(blobs, image_index)
   end
 
-  def write_index_json(index_json_sha256, index_json_size, root)
+  def write_index_json(index_json_sha256, index_json_size, root, annotations)
     index_json = {
       schemaVersion: 2,
       manifests:     [{
         mediaType:   "application/vnd.oci.image.index.v1+json",
         digest:      "sha256:#{index_json_sha256}",
         size:        index_json_size,
-        annotations: {},
+        annotations: annotations,
       }],
-      annotations:   {},
     }
     validate_schema!(IMAGE_INDEX_SCHEMA_URI, index_json)
     write_hash(root, index_json, "index.json")
