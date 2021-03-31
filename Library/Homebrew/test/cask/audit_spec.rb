@@ -795,7 +795,17 @@ describe Cask::Audit, :cask do
           end
         end
 
-        context "when doing the audit" do
+        context "when doing an offline audit" do
+          let(:online) { false }
+
+          it "does not evaluate the block" do
+            expect(run).not_to pass
+          end
+        end
+
+        context "when doing and online audit" do
+          let(:online) { true }
+
           it "evaluates the block" do
             expect(run).to fail_with(/Boom/)
           end
