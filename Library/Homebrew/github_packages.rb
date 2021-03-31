@@ -137,8 +137,9 @@ class GitHubPackages
     blobs = root/"blobs/sha256"
     blobs.mkpath
 
-    git_revision = bottle_hash["formula"]["tap_git_head"]
     git_path = bottle_hash["formula"]["tap_git_path"]
+    git_revision = bottle_hash["formula"]["tap_git_revision"]
+    git_revision ||= "HEAD"
     source = "https://github.com/#{org}/#{repo}/blob/#{git_revision}/#{git_path}"
 
     formula_core_tap = formula_full_name.exclude?("/")
