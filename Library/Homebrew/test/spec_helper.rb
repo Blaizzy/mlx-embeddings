@@ -3,9 +3,12 @@
 
 if ENV["HOMEBREW_TESTS_COVERAGE"]
   require "simplecov"
-  require "simplecov_json_formatter"
+  require 'simplecov-cobertura'
 
-  formatters = [SimpleCov::Formatter::HTMLFormatter, SimpleCov::Formatter::JSONFormatter]
+  formatters = [
+    SimpleCov::Formatter::HTMLFormatter,
+    SimpleCov::Formatter::CoberturaFormater,
+  ]
   SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new(formatters)
 
   if RUBY_PLATFORM[/darwin/] && ENV["TEST_ENV_NUMBER"]
