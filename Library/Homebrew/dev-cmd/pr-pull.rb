@@ -435,7 +435,7 @@ module Homebrew
           upload_args << "--dry-run" if args.dry_run?
           upload_args << "--keep-old" if args.keep_old?
           upload_args << "--warn-on-upload-failure" if args.warn_on_upload_failure?
-          upload_args << "--committer='#{args.committer}'" if args.committer
+          upload_args << "--committer=#{args.committer}" if args.committer
           upload_args << "--root-url=#{args.root_url}" if args.root_url
           upload_args << if archive_item.present?
             "--archive-item=#{archive_item}"
