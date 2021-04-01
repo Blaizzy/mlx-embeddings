@@ -30,6 +30,8 @@ module Homebrew
       switch "--warn-on-upload-failure",
              description: "Warn instead of raising an error if the bottle upload fails. "\
                           "Useful for repairing bottle uploads that previously failed."
+      flag   "--committer=",
+             description: "Specify a committer name and email in `git`'s standard author format."
       flag   "--archive-item=",
              description: "Upload to the specified Internet Archive item (default: `homebrew`)."
       flag   "--bintray-org=",
@@ -103,6 +105,7 @@ module Homebrew
     bottle_args << "--debug" if args.debug?
     bottle_args << "--keep-old" if args.keep_old?
     bottle_args << "--root-url=#{args.root_url}" if args.root_url
+    bottle_args << "--committer='#{args.committer}'" if args.committer
     bottle_args << "--no-commit" if args.no_commit?
     bottle_args += json_files
 

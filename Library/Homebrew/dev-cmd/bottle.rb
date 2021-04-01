@@ -73,6 +73,8 @@ module Homebrew
       switch "--only-json-tab",
              depends_on:  "--json",
              description: "When passed with `--json`, the tab will be written to the JSON file but not the bottle."
+      flag   "--committer=",
+             description: "Specify a committer name and email in `git`'s standard author format."
       flag   "--root-url=",
              description: "Use the specified <URL> as the root of the bottle's URL instead of Homebrew's default."
 
@@ -619,8 +621,14 @@ module Homebrew
         path.atomic_write(formula_ast.process)
 
         unless args.no_commit?
-          Utils::Git.set_name_email!
+          Utils::Git.set_name_email!(committer: args.committer.blank?)
           Utils::Git.setup_gpg!
+
+          if (committer = args.committer)
+            committer = Utils.parse_author!(committer)
+            ENV["GIT_COMMITTER_NAME"] = committer[:name]
+            ENV["GIT_COMMITTER_EMAIL"] = committer[:email]
+          end
 
           short_name = formula_name.split("/", -1).last
           pkg_version = bottle_hash["formula"]["pkg_version"]
