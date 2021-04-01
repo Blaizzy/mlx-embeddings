@@ -105,7 +105,7 @@ module Homebrew
     bottle_args << "--debug" if args.debug?
     bottle_args << "--keep-old" if args.keep_old?
     bottle_args << "--root-url=#{args.root_url}" if args.root_url
-    bottle_args << "--committer='#{args.committer}'" if args.committer
+    bottle_args << "--committer=#{args.committer}" if args.committer
     bottle_args << "--no-commit" if args.no_commit?
     bottle_args += json_files
 
