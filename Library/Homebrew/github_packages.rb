@@ -210,16 +210,34 @@ class GitHubPackages
       tar_gz_sha256 = write_tar_gz(local_file, blobs)
 
       tab = tag_hash["tab"]
-      architecture = TAB_ARCH_TO_PLATFORM_ARCHITECTURE[tab["arch"]]
+      architecture = if tab["arch"].present?
+        TAB_ARCH_TO_PLATFORM_ARCHITECTURE[tab["arch"]]
+      elsif bottle_tag.to_s.start_with?("arm64")
+        "arm64"
+      else
+        "amd64"
+      end
       raise TypeError, "unknown tab['arch']: #{tab["arch"]}" if architecture.blank?
 
-      os = BUILT_ON_OS_TO_PLATFORM_OS[tab["built_on"]["os"]]
+      os = if tab["built_on"].present? && tab["built_on"]["os"].present?
+        BUILT_ON_OS_TO_PLATFORM_OS[tab["built_on"]["os"]]
+      elsif bottle_tag.to_s.end_with?("_linux")
+        "linux"
+      else
+        "darwin"
+      end
       raise TypeError, "unknown tab['built_on']['os']: #{tab["built_on"]["os"]}" if os.blank?
+
+      os_version = if tab["built_on"].present? && tab["built_on"]["os_version"].present?
+        tab["built_on"]["os_version"]
+      else
+        MacOS::Version.from_symbol(bottle_tag).to_s
+      end
 
       platform_hash = {
         architecture: architecture,
         os: os,
-        "os.version" => tab["built_on"]["os_version"],
+        "os.version" => os_version,
       }
       tar_sha256 = Digest::SHA256.hexdigest(
         Utils.safe_popen_read("gunzip", "--stdout", "--decompress", local_file),
