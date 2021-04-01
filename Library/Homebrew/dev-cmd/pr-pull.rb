@@ -44,6 +44,8 @@ module Homebrew
       switch "--warn-on-upload-failure",
              description: "Warn instead of raising an error if the bottle upload fails. "\
                           "Useful for repairing bottle uploads that previously failed."
+      flag   "--committer=",
+             description: "Specify a committer name and email in `git`'s standard author format."
       flag   "--message=",
              depends_on:  "--autosquash",
              description: "Message to include when autosquashing revision bumps, deletions, and rebuilds."
@@ -365,8 +367,14 @@ module Homebrew
     mirror_repo = args.bintray_mirror || "mirror"
     tap = Tap.fetch(args.tap || CoreTap.instance.name)
 
-    Utils::Git.set_name_email!
+    Utils::Git.set_name_email!(committer: args.committer.blank?)
     Utils::Git.setup_gpg!
+
+    if (committer = args.committer)
+      committer = Utils.parse_author!(committer)
+      ENV["GIT_COMMITTER_NAME"] = committer[:name]
+      ENV["GIT_COMMITTER_EMAIL"] = committer[:email]
+    end
 
     args.named.uniq.each do |arg|
       arg = "#{tap.default_remote}/pull/#{arg}" if arg.to_i.positive?

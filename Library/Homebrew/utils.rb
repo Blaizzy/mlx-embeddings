@@ -467,6 +467,13 @@ module Kernel
     end.uniq.compact
   end
 
+  def parse_author!(author)
+    /^(?<name>[^<]+?)[ \t]*<(?<email>[^>]+?)>$/ =~ author
+    raise "Unable to parse name and email." if name.blank? && email.blank?
+
+    { name: name, email: email }
+  end
+
   def disk_usage_readable(size_in_bytes)
     if size_in_bytes >= 1_073_741_824
       size = size_in_bytes.to_f / 1_073_741_824

@@ -210,6 +210,19 @@ describe "globally-scoped helper methods" do
     end
   end
 
+  specify "#parse_author!" do
+    parse_error_msg = /Unable to parse name and email/
+
+    expect(parse_author!("John Doe <john.doe@example.com>"))
+      .to eq({ name: "John Doe", email: "john.doe@example.com" })
+    expect { parse_author!("") }
+      .to raise_error(parse_error_msg)
+    expect { parse_author!("John Doe") }
+      .to raise_error(parse_error_msg)
+    expect { parse_author!("<john.doe@example.com>") }
+      .to raise_error(parse_error_msg)
+  end
+
   specify "#disk_usage_readable" do
     expect(disk_usage_readable(1)).to eq("1B")
     expect(disk_usage_readable(1000)).to eq("1000B")
