@@ -197,10 +197,10 @@ class SystemCommand
 
   sig { params(sources: T::Array[IO], _block: T.proc.params(type: Symbol, line: String).void).void }
   def each_line_from(sources, &_block)
-    loop do
-      readable_sources, = IO.select(sources)
-
-      readable_sources = T.must(readable_sources).reject(&:eof?)
+    sources_remaining = sources.dup
+    while sources_remaining.present?
+      readable_sources, = IO.select(sources_remaining)
+      readable_sources = T.must(readable_sources)
 
       break if readable_sources.empty?
 
@@ -208,12 +208,15 @@ class SystemCommand
         line = source.readline_nonblock || ""
         type = (source == sources[0]) ? :stdout : :stderr
         yield(type, line)
-      rescue IO::WaitReadable, EOFError
+      rescue EOFError
+        source.close_read
+        sources_remaining.delete(source)
+      rescue IO::WaitReadable
         next
       end
     end
 
-    sources.each(&:close_read)
+    sources_remaining.each(&:close_read)
   end
 
   # Result containing the output and exit status of a finished sub-process.
