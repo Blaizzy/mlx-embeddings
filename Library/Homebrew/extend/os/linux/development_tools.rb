@@ -21,13 +21,7 @@ class DevelopmentTools
     end
 
     def build_system_info
-      brewed_glibc_version = begin
-        Formula["glibc"].any_installed_version
-      rescue FormulaUnavailableError
-        nil
-      end
-      glibc_version = brewed_glibc_version || OS::Linux::Glibc.system_version
-      generic_build_system_info.merge "glibc_version" => glibc_version
+      generic_build_system_info.merge "glibc_version" => OS::Linux::Glibc.system_version
     end
   end
 end
