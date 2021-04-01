@@ -201,6 +201,13 @@ jobs:
       - name: Install Bundler RubyGems
         run: brew install-bundler-gems
 
+      - name: Cache parallel tests log
+        uses: actions/cache@v1
+        with:
+          path: /tests/parallel_runtime_rspec.log
+          key: ${{ runner.os }}-parallel_runtime_rspec-${{ hashFiles('**/parallel_runtime_rspec.log') }}
+          restore-keys: ${{ runner.os }}-parallel_runtime_rspec.log
+
       - name: Run brew tests
         run: |
           # brew tests doesn't like world writable directories

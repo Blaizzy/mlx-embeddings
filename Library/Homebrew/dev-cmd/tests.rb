@@ -98,10 +98,17 @@ module Homebrew
         Dir.glob("test/**/*_spec.rb")
       end
 
+      parallel_rspec_log_path =if ENV["CI"]
+        "/tests/parallel_runtime_rspec.log"
+      else
+        "#{HOMEBREW_CACHE}/tests/parallel_runtime_rspec.log"
+      end
+
       parallel_args = if ENV["CI"]
-        %w[
+        %W[
           --combine-stderr
           --serialize-stdout
+          --runtime-log "#{parallel_rspec_log_path}"
         ]
       else
         %w[
@@ -120,7 +127,7 @@ module Homebrew
         --require spec_helper
         --format NoSeedProgressFormatter
         --format ParallelTests::RSpec::RuntimeLogger
-        --out #{HOMEBREW_CACHE}/tests/parallel_runtime_rspec.log
+        --out #{parallel_rspec_log_path}
       ]
 
       bundle_args << "--format" << "RSpec::Github::Formatter" if ENV["GITHUB_ACTIONS"]
