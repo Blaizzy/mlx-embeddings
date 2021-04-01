@@ -357,6 +357,7 @@ __fish_brew_complete_arg 'autoremove' -l verbose -d 'Make some output more verbo
 
 
 __fish_brew_complete_cmd 'bottle' 'Generate a bottle (binary package) from a formula that was installed with `--build-bottle`'
+__fish_brew_complete_arg 'bottle' -l committer -d 'Specify a committer name and email in `git`\'s standard author format'
 __fish_brew_complete_arg 'bottle' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'bottle' -l force-core-tap -d 'Build a bottle even if formula is not in `homebrew/core` or any installed taps'
 __fish_brew_complete_arg 'bottle' -l help -d 'Show this message'
@@ -1050,6 +1051,7 @@ __fish_brew_complete_arg 'pr-pull' -l bintray-mirror -d 'Use the specified Bintr
 __fish_brew_complete_arg 'pr-pull' -l bintray-org -d 'Upload to the specified Bintray organisation (default: `homebrew`)'
 __fish_brew_complete_arg 'pr-pull' -l branch-okay -d 'Do not warn if pulling to a branch besides the repository default (useful for testing)'
 __fish_brew_complete_arg 'pr-pull' -l clean -d 'Do not amend the commits from pull requests'
+__fish_brew_complete_arg 'pr-pull' -l committer -d 'Specify a committer name and email in `git`\'s standard author format'
 __fish_brew_complete_arg 'pr-pull' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'pr-pull' -l dry-run -d 'Print what would be done rather than doing it'
 __fish_brew_complete_arg 'pr-pull' -l help -d 'Show this message'
@@ -1070,6 +1072,7 @@ __fish_brew_complete_arg 'pr-pull' -l workflows -d 'Retrieve artifacts from the 
 __fish_brew_complete_cmd 'pr-upload' 'Apply the bottle commit and publish bottles to a host'
 __fish_brew_complete_arg 'pr-upload' -l archive-item -d 'Upload to the specified Internet Archive item (default: `homebrew`)'
 __fish_brew_complete_arg 'pr-upload' -l bintray-org -d 'Upload to the specified Bintray organisation (default: `homebrew`)'
+__fish_brew_complete_arg 'pr-upload' -l committer -d 'Specify a committer name and email in `git`\'s standard author format'
 __fish_brew_complete_arg 'pr-upload' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'pr-upload' -l dry-run -d 'Print what would be done rather than doing it'
 __fish_brew_complete_arg 'pr-upload' -l github-org -d 'Upload to the specified GitHub organisation\'s GitHub Packages (default: `homebrew`)'

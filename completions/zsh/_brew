@@ -445,6 +445,7 @@ _brew_autoremove() {
 # brew bottle
 _brew_bottle() {
   _arguments \
+    '--committer[Specify a committer name and email in `git`'\''s standard author format]' \
     '--debug[Display any debugging information]' \
     '--force-core-tap[Build a bottle even if formula is not in `homebrew/core` or any installed taps]' \
     '--help[Show this message]' \
@@ -1293,6 +1294,7 @@ _brew_pr_pull() {
     '(--archive-item)--bintray-org[Upload to the specified Bintray organisation (default: `homebrew`)]' \
     '--branch-okay[Do not warn if pulling to a branch besides the repository default (useful for testing)]' \
     '(--autosquash)--clean[Do not amend the commits from pull requests]' \
+    '--committer[Specify a committer name and email in `git`'\''s standard author format]' \
     '--debug[Display any debugging information]' \
     '--dry-run[Print what would be done rather than doing it]' \
     '--help[Show this message]' \
@@ -1315,6 +1317,7 @@ _brew_pr_upload() {
   _arguments \
     '--archive-item[Upload to the specified Internet Archive item (default: `homebrew`)]' \
     '--bintray-org[Upload to the specified Bintray organisation (default: `homebrew`)]' \
+    '--committer[Specify a committer name and email in `git`'\''s standard author format]' \
     '--debug[Display any debugging information]' \
     '--dry-run[Print what would be done rather than doing it]' \
     '--github-org[Upload to the specified GitHub organisation'\''s GitHub Packages (default: `homebrew`)]' \
