@@ -201,13 +201,6 @@ jobs:
       - name: Install Bundler RubyGems
         run: brew install-bundler-gems
 
-      - name: Cache parallel tests log
-        uses: actions/cache@v1
-        with:
-          path: /tmp/parallel_runtime_rspec.log
-          key: ${{ runner.os }}-parallel_runtime_rspec-${{ hashFiles('**/parallel_runtime_rspec.log') }}
-          restore-keys: ${{ runner.os }}-parallel_runtime_rspec.log
-
       - name: Run brew tests
         run: |
           # brew tests doesn't like world writable directories
@@ -218,6 +211,13 @@ jobs:
           HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: codecov/codecov-action@e156083f13aff6830c92fc5faa23505779fbf649 # v1.2.1
+
+      - name: Cache parallel tests log
+        uses: actions/cache@v1
+        with:
+          path: /tmp/parallel_runtime_rspec.log
+          key: ${{ runner.os }}-parallel_runtime_rspec-${{ hashFiles('**/parallel_runtime_rspec.log') }}
+          restore-keys: ${{ runner.os }}-parallel_runtime_rspec.log
 
   test-default-formula-linux:
     name: test default formula (Linux)
