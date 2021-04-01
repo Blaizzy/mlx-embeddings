@@ -469,7 +469,7 @@ module Kernel
 
   def parse_author!(author)
     /^(?<name>[^<]+?)[ \t]*<(?<email>[^>]+?)>$/ =~ author
-    raise "Unable to parse name and email." if name.blank? && email.blank?
+    raise UsageError, "Unable to parse name and email." if name.blank? && email.blank?
 
     { name: name, email: email }
   end
