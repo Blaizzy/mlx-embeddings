@@ -825,6 +825,8 @@ value, while `--no-rebuild` will remove it.
   When passed with `--write`, a new commit will not generated after writing changes to the formula file.
 * `--only-json-tab`:
   When passed with `--json`, the tab will be written to the JSON file but not the bottle.
+* `--committer`:
+  Specify a committer name and email in `git`'s standard author format.
 * `--root-url`:
   Use the specified *`URL`* as the root of the bottle's URL instead of Homebrew's default.
 
@@ -1183,6 +1185,8 @@ Requires write access to the repository.
   When a patch fails to apply, leave in progress and allow user to resolve, instead of aborting.
 * `--warn-on-upload-failure`:
   Warn instead of raising an error if the bottle upload fails. Useful for repairing bottle uploads that previously failed.
+* `--committer`:
+  Specify a committer name and email in `git`'s standard author format.
 * `--message`:
   Message to include when autosquashing revision bumps, deletions, and rebuilds.
 * `--artifact`:
@@ -1216,6 +1220,8 @@ Apply the bottle commit and publish bottles to a host.
   Do not generate a new commit before uploading.
 * `--warn-on-upload-failure`:
   Warn instead of raising an error if the bottle upload fails. Useful for repairing bottle uploads that previously failed.
+* `--committer`:
+  Specify a committer name and email in `git`'s standard author format.
 * `--archive-item`:
   Upload to the specified Internet Archive item (default: `homebrew`).
 * `--bintray-org`:
