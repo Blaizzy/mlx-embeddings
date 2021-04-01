@@ -1137,6 +1137,10 @@ When passed with \fB\-\-write\fR, a new commit will not generated after writing 
 When passed with \fB\-\-json\fR, the tab will be written to the JSON file but not the bottle\.
 .
 .TP
+\fB\-\-committer\fR
+Specify a committer name and email in \fBgit\fR\'s standard author format\.
+.
+.TP
 \fB\-\-root\-url\fR
 Use the specified \fIURL\fR as the root of the bottle\'s URL instead of Homebrew\'s default\.
 .
@@ -1653,6 +1657,10 @@ When a patch fails to apply, leave in progress and allow user to resolve, instea
 Warn instead of raising an error if the bottle upload fails\. Useful for repairing bottle uploads that previously failed\.
 .
 .TP
+\fB\-\-committer\fR
+Specify a committer name and email in \fBgit\fR\'s standard author format\.
+.
+.TP
 \fB\-\-message\fR
 Message to include when autosquashing revision bumps, deletions, and rebuilds\.
 .
@@ -1710,6 +1718,10 @@ Do not generate a new commit before uploading\.
 .TP
 \fB\-\-warn\-on\-upload\-failure\fR
 Warn instead of raising an error if the bottle upload fails\. Useful for repairing bottle uploads that previously failed\.
+.
+.TP
+\fB\-\-committer\fR
+Specify a committer name and email in \fBgit\fR\'s standard author format\.
 .
 .TP
 \fB\-\-archive\-item\fR
