@@ -68,10 +68,18 @@ class GitHubPackages
     end
   end
 
-  def self.version_rebuild(version, rebuild)
-    return version.to_s unless rebuild.to_i.positive?
+  def self.version_rebuild(version, rebuild, bottle_tag = nil)
+    bottle_tag = (".#{bottle_tag}" if bottle_tag.present?)
 
-    "#{version}.#{rebuild}"
+    rebuild = if rebuild.to_i.positive?
+      if bottle_tag
+        ".#{rebuild}"
+      else
+        "-#{rebuild}"
+      end
+    end
+
+    "#{version}#{bottle_tag}#{rebuild}"
   end
 
   def self.repo_without_prefix(repo)
@@ -222,8 +230,7 @@ class GitHubPackages
       formulae_dir = tag_hash["formulae_brew_sh_path"]
       documentation = "https://formulae.brew.sh/#{formulae_dir}/#{formula_name}" if formula_core_tap
 
-      rebuild = ".#{rebuild}" if rebuild.to_i.positive?
-      tag = "#{version}.#{bottle_tag}#{rebuild}"
+      tag = GitHubPackages.version_rebuild(version, rebuild, bottle_tag)
 
       annotations_hash = formula_annotations_hash.merge({
         "org.opencontainers.image.created"       => created_date,
