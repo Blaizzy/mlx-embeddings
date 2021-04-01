@@ -100,9 +100,10 @@ class DevelopmentTools
 
     def build_system_info
       {
-        "os"         => ENV["HOMEBREW_SYSTEM"],
-        "os_version" => OS_VERSION,
-        "cpu_family" => Hardware::CPU.family,
+        "os"                => ENV["HOMEBREW_SYSTEM"],
+        "os_version"        => OS_VERSION,
+        "cpu_family"        => Hardware::CPU.family,
+        "oldest_cpu_family" => Hardware.oldest_cpu,
       }
     end
     alias generic_build_system_info build_system_info
