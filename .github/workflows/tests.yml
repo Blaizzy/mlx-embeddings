@@ -216,7 +216,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: /tmp/parallel_runtime_rspec.log
-          key: ${{ runner.os }}-parallel_runtime_rspec-${{ hashFiles('**/parallel_runtime_rspec.log') }}
+          key: ${{ runner.os }}-parallel_runtime_rspec.log
           restore-keys: ${{ runner.os }}-parallel_runtime_rspec.log
 
   test-default-formula-linux:
