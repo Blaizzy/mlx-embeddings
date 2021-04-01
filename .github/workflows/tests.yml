@@ -275,12 +275,6 @@ jobs:
       - name: Run brew readall on all taps
         run: brew readall --aliases
 
-      - name: Run brew audit --skip-style on Cask taps
-        run: |
-          brew audit --skip-style --display-failures-only --tap=homebrew/cask
-          brew audit --skip-style --display-failures-only --tap=homebrew/cask-drivers
-          brew audit --skip-style --display-failures-only --tap=homebrew/cask-fonts
-
       - name: Install brew tests dependencies
         run: |
           brew install subversion
