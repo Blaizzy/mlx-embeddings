@@ -5,7 +5,6 @@ source "https://rubygems.org"
 # installed gems (should all be require: false)
 gem "bootsnap", require: false
 gem "byebug", require: false
-gem "codecov", require: false
 gem "minitest", require: false
 gem "nokogiri", require: false
 gem "parallel_tests", require: false
@@ -19,6 +18,7 @@ gem "rspec-wait", require: false
 gem "rubocop", require: false
 gem "rubocop-ast", require: false
 gem "simplecov", require: false
+gem "simplecov-cobertura", require: false
 gem "sorbet", require: false
 gem "sorbet-runtime", require: false
 gem "tapioca", require: false

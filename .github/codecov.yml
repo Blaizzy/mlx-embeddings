@@ -1,5 +1,3 @@
-fixes:
-  - "::Library/Homebrew/"
 coverage:
   round: nearest
   status:

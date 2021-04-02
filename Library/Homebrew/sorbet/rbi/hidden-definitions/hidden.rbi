@@ -532,6 +532,14 @@ class ActiveSupport::CurrentAttributes
   def _reset_callbacks(); end
 
   def _run_reset_callbacks(&block); end
+
+  def attributes(); end
+
+  def attributes=(attributes); end
+
+  def reset(); end
+
+  def set(set_attributes); end
 end
 
 class ActiveSupport::CurrentAttributes
@@ -553,9 +561,17 @@ class ActiveSupport::CurrentAttributes
 
   def self.before_reset(&block); end
 
+  def self.clear_all(); end
+
   def self.instance(); end
 
+  def self.reset(*args, &block); end
+
+  def self.reset_all(); end
+
   def self.resets(&block); end
+
+  def self.set(*args, &block); end
 end
 
 module ActiveSupport::Dependencies
@@ -2912,10 +2928,97 @@ end
 class Bootsnap::CompileCache::Error
 end
 
+module Bootsnap::CompileCache::ISeq
+end
+
+module Bootsnap::CompileCache::ISeq::InstructionSequenceMixin
+  def compile_option=(hash); end
+
+  def load_iseq(path); end
+end
+
+module Bootsnap::CompileCache::ISeq::InstructionSequenceMixin
+end
+
+module Bootsnap::CompileCache::ISeq
+  def self.cache_dir(); end
+
+  def self.cache_dir=(cache_dir); end
+
+  def self.compile_option_updated(); end
+
+  def self.fetch(path, cache_dir: T.unsafe(nil)); end
+
+  def self.input_to_output(_data, _kwargs); end
+
+  def self.input_to_storage(_, path); end
+
+  def self.install!(cache_dir); end
+
+  def self.precompile(path, cache_dir: T.unsafe(nil)); end
+
+  def self.storage_to_output(binary, _args); end
+end
+
+module Bootsnap::CompileCache::Native
+end
+
+module Bootsnap::CompileCache::Native
+  def self.compile_option_crc32=(compile_option_crc32); end
+
+  def self.coverage_running?(); end
+
+  def self.fetch(_, _1, _2, _3); end
+
+  def self.precompile(_, _1, _2); end
+end
+
 class Bootsnap::CompileCache::PermissionError
 end
 
 class Bootsnap::CompileCache::PermissionError
+end
+
+class Bootsnap::CompileCache::Uncompilable
+end
+
+class Bootsnap::CompileCache::Uncompilable
+end
+
+module Bootsnap::CompileCache::YAML
+end
+
+module Bootsnap::CompileCache::YAML::Patch
+  def load_file(path, *args); end
+end
+
+module Bootsnap::CompileCache::YAML::Patch
+end
+
+module Bootsnap::CompileCache::YAML
+  def self.cache_dir(); end
+
+  def self.cache_dir=(cache_dir); end
+
+  def self.init!(); end
+
+  def self.input_to_output(data, kwargs); end
+
+  def self.input_to_storage(contents, _); end
+
+  def self.install!(cache_dir); end
+
+  def self.msgpack_factory(); end
+
+  def self.msgpack_factory=(msgpack_factory); end
+
+  def self.precompile(path, cache_dir: T.unsafe(nil)); end
+
+  def self.storage_to_output(data, kwargs); end
+
+  def self.supported_options(); end
+
+  def self.supported_options=(supported_options); end
 end
 
 module Bootsnap::CompileCache
@@ -3046,6 +3149,13 @@ end
 
 module Bootsnap::LoadPathCache::ChangeObserver
   def self.register(observer, arr); end
+end
+
+module Bootsnap::LoadPathCache::CoreExt
+end
+
+module Bootsnap::LoadPathCache::CoreExt
+  def self.make_load_error(path); end
 end
 
 class Bootsnap::LoadPathCache::FallbackScan
@@ -5672,6 +5782,15 @@ module Cask::Caskroom
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class Cask::Cmd::AbstractCommand
+  include ::Homebrew::Search::Extension
+end
+
+class Cask::Cmd::AbstractCommand
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class Cask::Config
   def appdir(); end
 
@@ -6210,90 +6329,6 @@ module CodeRay
   def self.scan_file(filename, lang=T.unsafe(nil), options=T.unsafe(nil), &block); end
 
   def self.scanner(lang, options=T.unsafe(nil), &block); end
-end
-
-module Codecov
-  VERSION = ::T.let(nil, ::T.untyped)
-end
-
-module Codecov::Configuration
-  def pass_ci_if_error(); end
-
-  def pass_ci_if_error=(pass_ci_if_error); end
-end
-
-module Codecov::Configuration
-end
-
-module Codecov::SimpleCov
-end
-
-class Codecov::SimpleCov::Formatter
-  def format(report); end
-  RESULT_FILE_NAME = ::T.let(nil, ::T.untyped)
-end
-
-class Codecov::SimpleCov::Formatter
-end
-
-module Codecov::SimpleCov
-end
-
-class Codecov::Uploader
-  APPVEYOR = ::T.let(nil, ::T.untyped)
-  AZUREPIPELINES = ::T.let(nil, ::T.untyped)
-  BITBUCKET = ::T.let(nil, ::T.untyped)
-  BITRISE = ::T.let(nil, ::T.untyped)
-  BUILDKITE = ::T.let(nil, ::T.untyped)
-  CIRCLE = ::T.let(nil, ::T.untyped)
-  CODEBUILD = ::T.let(nil, ::T.untyped)
-  CODESHIP = ::T.let(nil, ::T.untyped)
-  DRONEIO = ::T.let(nil, ::T.untyped)
-  GITHUB = ::T.let(nil, ::T.untyped)
-  GITLAB = ::T.let(nil, ::T.untyped)
-  HEROKU = ::T.let(nil, ::T.untyped)
-  JENKINS = ::T.let(nil, ::T.untyped)
-  RECOGNIZED_CIS = ::T.let(nil, ::T.untyped)
-  SEMAPHORE = ::T.let(nil, ::T.untyped)
-  SHIPPABLE = ::T.let(nil, ::T.untyped)
-  SOLANO = ::T.let(nil, ::T.untyped)
-  TEAMCITY = ::T.let(nil, ::T.untyped)
-  TRAVIS = ::T.let(nil, ::T.untyped)
-  WERCKER = ::T.let(nil, ::T.untyped)
-end
-
-class Codecov::Uploader
-  def self.black(str); end
-
-  def self.build_params(ci); end
-
-  def self.detect_ci(); end
-
-  def self.display_header(); end
-
-  def self.green(str); end
-
-  def self.gzip_report(report); end
-
-  def self.handle_report_response(report); end
-
-  def self.net_blockers(switch); end
-
-  def self.red(str); end
-
-  def self.retry_request(req, https); end
-
-  def self.upload(report, disable_net_blockers=T.unsafe(nil)); end
-
-  def self.upload_to_codecov(ci, report); end
-
-  def self.upload_to_v2(url, report, query, query_without_token); end
-
-  def self.upload_to_v4(url, report, query, query_without_token); end
-end
-
-module Codecov
-  extend ::Codecov::Configuration
 end
 
 class CompilerSelector::Compiler
@@ -7129,8 +7164,6 @@ end
 class Errno::EBADRPC
 end
 
-Errno::ECAPMODE = Errno::NOERROR
-
 Errno::EDEADLOCK = Errno::NOERROR
 
 class Errno::EDEVERR
@@ -7151,13 +7184,6 @@ end
 
 Errno::EIPSEC = Errno::NOERROR
 
-class Errno::ELAST
-  Errno = ::T.let(nil, ::T.untyped)
-end
-
-class Errno::ELAST
-end
-
 class Errno::ENEEDAUTH
   Errno = ::T.let(nil, ::T.untyped)
 end
@@ -7178,8 +7204,6 @@ end
 
 class Errno::ENOPOLICY
 end
-
-Errno::ENOTCAPABLE = Errno::NOERROR
 
 class Errno::ENOTSUP
   Errno = ::T.let(nil, ::T.untyped)
@@ -7223,7 +7247,12 @@ end
 class Errno::EPWROFF
 end
 
-Errno::EQFULL = Errno::ELAST
+class Errno::EQFULL
+  Errno = ::T.let(nil, ::T.untyped)
+end
+
+class Errno::EQFULL
+end
 
 class Errno::ERPCMISMATCH
   Errno = ::T.let(nil, ::T.untyped)
@@ -8421,6 +8450,14 @@ end
 module Homebrew::Livecheck
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Homebrew::MissingFormula
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Homebrew::Search
+  include ::Homebrew::Search::Extension
 end
 
 module Homebrew::Settings
@@ -9773,11 +9810,13 @@ module Kernel
   extend ::T::Private::Methods::SingletonMethodHooks
   def self.at_exit(); end
 
+  def self.autoload(_, _1); end
+
   def self.fork(); end
 
   def self.gem(dep, *reqs); end
 
-  def self.load(*_); end
+  def self.load(path, wrap=T.unsafe(nil)); end
 
   def self.require(path); end
 end
@@ -12087,6 +12126,8 @@ class Module
 
   def anonymous?(); end
 
+  def autoload_without_bootsnap(_, _1); end
+
   def context(*a, &b); end
 
   def deprecate(*method_names); end
@@ -12428,8 +12469,6 @@ end
 class Net::HTTPAlreadyReported
 end
 
-Net::HTTPClientError::EXCEPTION_TYPE = Net::HTTPServerException
-
 Net::HTTPClientErrorCode = Net::HTTPClientError
 
 class Net::HTTPEarlyHints
@@ -12491,8 +12530,6 @@ end
 class Net::HTTPRangeNotSatisfiable
 end
 
-Net::HTTPRedirection::EXCEPTION_TYPE = Net::HTTPRetriableError
-
 Net::HTTPRedirectionCode = Net::HTTPRedirection
 
 Net::HTTPRequestURITooLarge = Net::HTTPURITooLong
@@ -12500,8 +12537,6 @@ Net::HTTPRequestURITooLarge = Net::HTTPURITooLong
 Net::HTTPResponceReceiver = Net::HTTPResponse
 
 Net::HTTPRetriableCode = Net::HTTPRedirection
-
-Net::HTTPServerError::EXCEPTION_TYPE = Net::HTTPFatalError
 
 Net::HTTPServerErrorCode = Net::HTTPServerError
 
@@ -12679,6 +12714,7 @@ class Object
   def to_query(key); end
 
   def to_yaml(options=T.unsafe(nil)); end
+  APPLE_GEM_HOME = ::T.let(nil, ::T.untyped)
   ARGF = ::T.let(nil, ::T.untyped)
   ARGV = ::T.let(nil, ::T.untyped)
   BUG_REPORTS_URL = ::T.let(nil, ::T.untyped)
@@ -12744,6 +12780,8 @@ class Object
   RUBY_DESCRIPTION = ::T.let(nil, ::T.untyped)
   RUBY_ENGINE = ::T.let(nil, ::T.untyped)
   RUBY_ENGINE_VERSION = ::T.let(nil, ::T.untyped)
+  RUBY_FRAMEWORK = ::T.let(nil, ::T.untyped)
+  RUBY_FRAMEWORK_VERSION = ::T.let(nil, ::T.untyped)
   RUBY_PATCHLEVEL = ::T.let(nil, ::T.untyped)
   RUBY_PATH = ::T.let(nil, ::T.untyped)
   RUBY_PLATFORM = ::T.let(nil, ::T.untyped)
@@ -12796,11 +12834,7 @@ class OpenSSL::KDF::KDFError
 end
 
 module OpenSSL::KDF
-  def self.hkdf(*_); end
-
   def self.pbkdf2_hmac(*_); end
-
-  def self.scrypt(*_); end
 end
 
 class OpenSSL::OCSP::Request
@@ -12809,29 +12843,20 @@ end
 
 OpenSSL::PKCS7::Signer = OpenSSL::PKCS7::SignerInfo
 
-class OpenSSL::PKey::EC
-  EXPLICIT_CURVE = ::T.let(nil, ::T.untyped)
-end
-
 class OpenSSL::PKey::EC::Point
   def to_octet_string(_); end
 end
 
 module OpenSSL::SSL
-  OP_ALLOW_NO_DHE_KEX = ::T.let(nil, ::T.untyped)
   OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION = ::T.let(nil, ::T.untyped)
   OP_CRYPTOPRO_TLSEXT_BUG = ::T.let(nil, ::T.untyped)
   OP_LEGACY_SERVER_CONNECT = ::T.let(nil, ::T.untyped)
-  OP_NO_ENCRYPT_THEN_MAC = ::T.let(nil, ::T.untyped)
-  OP_NO_RENEGOTIATION = ::T.let(nil, ::T.untyped)
-  OP_NO_TLSv1_3 = ::T.let(nil, ::T.untyped)
   OP_SAFARI_ECDHE_ECDSA_BUG = ::T.let(nil, ::T.untyped)
   OP_TLSEXT_PADDING = ::T.let(nil, ::T.untyped)
   SSL2_VERSION = ::T.let(nil, ::T.untyped)
   SSL3_VERSION = ::T.let(nil, ::T.untyped)
   TLS1_1_VERSION = ::T.let(nil, ::T.untyped)
   TLS1_2_VERSION = ::T.let(nil, ::T.untyped)
-  TLS1_3_VERSION = ::T.let(nil, ::T.untyped)
   TLS1_VERSION = ::T.let(nil, ::T.untyped)
 end
 
@@ -17243,6 +17268,7 @@ module Psych
 end
 
 module Psych
+  extend ::Bootsnap::CompileCache::YAML::Patch
   def self.add_builtin_type(type_tag, &block); end
 
   def self.add_domain_type(domain, type_tag, &block); end
@@ -28009,6 +28035,10 @@ class RubyVM::AbstractSyntaxTree::Node
   def pretty_print_children(q, names=T.unsafe(nil)); end
 end
 
+class RubyVM::InstructionSequence
+  extend ::Bootsnap::CompileCache::ISeq::InstructionSequenceMixin
+end
+
 module RubyVM::MJIT
 end
 
@@ -28379,11 +28409,14 @@ end
 module SimpleCov::Formatter
 end
 
-class SimpleCov::Formatter::Codecov
-  def format(result, disable_net_blockers=T.unsafe(nil)); end
+class SimpleCov::Formatter::CoberturaFormatter
+  def format(result); end
+  DTD_URL = ::T.let(nil, ::T.untyped)
+  RESULT_FILE_NAME = ::T.let(nil, ::T.untyped)
+  VERSION = ::T.let(nil, ::T.untyped)
 end
 
-class SimpleCov::Formatter::Codecov
+class SimpleCov::Formatter::CoberturaFormatter
 end
 
 class SimpleCov::Formatter::HTMLFormatter
@@ -28898,6 +28931,7 @@ class Socket
   IPV6_PATHMTU = ::T.let(nil, ::T.untyped)
   IPV6_RECVPATHMTU = ::T.let(nil, ::T.untyped)
   IPV6_USE_MIN_MTU = ::T.let(nil, ::T.untyped)
+  IP_DONTFRAG = ::T.let(nil, ::T.untyped)
   IP_PORTRANGE = ::T.let(nil, ::T.untyped)
   IP_RECVDSTADDR = ::T.let(nil, ::T.untyped)
   IP_RECVIF = ::T.let(nil, ::T.untyped)
@@ -28989,6 +29023,7 @@ module Socket::Constants
   IPV6_PATHMTU = ::T.let(nil, ::T.untyped)
   IPV6_RECVPATHMTU = ::T.let(nil, ::T.untyped)
   IPV6_USE_MIN_MTU = ::T.let(nil, ::T.untyped)
+  IP_DONTFRAG = ::T.let(nil, ::T.untyped)
   IP_PORTRANGE = ::T.let(nil, ::T.untyped)
   IP_RECVDSTADDR = ::T.let(nil, ::T.untyped)
   IP_RECVIF = ::T.let(nil, ::T.untyped)
