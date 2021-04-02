@@ -32,6 +32,9 @@
 **/vendor/bundle/ruby/*/gems/*/*
 **/vendor/bundle/ruby/*/specifications
 
+# Ignore YARD files
+**/.yardoc
+
 # Unignore vendored gems
 !**/vendor/bundle/ruby/*/gems/*/lib
 !**/vendor/bundle/ruby/*/gems/rubocop-performance-*/config

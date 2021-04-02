@@ -1,6 +1,6 @@
-# Homebrew's Formula API
+# Homebrew Ruby API
 
-This is the public API for Homebrew.
+This is the public API for [Homebrew](https://github.com/Homebrew).
 
 The main class you should look at is the {Formula} class (and classes linked from there). That's the class that's used to create Homebrew formulae (i.e. package descriptions). Assume anything else you stumble upon is private.
 
