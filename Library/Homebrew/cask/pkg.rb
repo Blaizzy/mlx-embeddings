@@ -107,41 +107,14 @@ module Cask
 
     # Helper script to delete empty directories after deleting `.DS_Store` files and broken symlinks.
     # Needed in order to execute all file operations with `sudo`.
-    RMDIR_SH = <<~'BASH'
-      set -euo pipefail
-
-      for path in "${@}"; do
-        if [[ ! -e "${path}" ]]; then
-          continue
-        fi
-
-        if [[ -e "${path}/.DS_Store" ]]; then
-          /bin/rm -f "${path}/.DS_Store"
-        fi
-
-        # Some packages leave broken symlinks around; we clean them out before
-        # attempting to `rmdir` to prevent extra cruft from accumulating.
-        /usr/bin/find "${path}" -mindepth 1 -maxdepth 1 -type l ! -exec /bin/test -e {} \; -delete
-
-        if [[ -L "${path}" ]]; then
-          # Delete directory symlink.
-          /bin/rm "${path}"
-        elif [[ -d "${path}" ]]; then
-          # Delete directory if empty.
-          /usr/bin/find "${path}" -maxdepth 0 -type d -empty -exec /bin/rmdir {} \;
-        else
-          # Try `rmdir` anyways to show a proper error.
-          /bin/rmdir "${path}"
-        fi
-      done
-    BASH
+    RMDIR_SH = (HOMEBREW_LIBRARY_PATH/"cask/utils/rmdir.sh").freeze
     private_constant :RMDIR_SH
 
     sig { params(path: T.any(Pathname, T::Array[Pathname])).void }
     def rmdir(path)
       @command.run!(
         "/usr/bin/xargs",
-        args:  ["-0", "--", "/bin/bash", "-c", RMDIR_SH, "--"],
+        args:  ["-0", "--", RMDIR_SH.to_s],
         input: Array(path).join("\0"),
         sudo:  true,
       )

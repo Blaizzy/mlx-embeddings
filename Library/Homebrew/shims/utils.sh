@@ -60,8 +60,10 @@ safe_exec() {
   fi
   if [[ "$HOMEBREW" = "print-path" ]]
   then
-    local dir="$(quiet_safe_cd "${arg0%/*}/" && pwd)"
-    local path="$(dirbasepath "$dir" "$arg0")"
+    local dir
+    dir="$(quiet_safe_cd "${arg0%/*}/" && pwd)"
+    local path
+    path="$(dirbasepath "$dir" "$arg0")"
     echo "$path"
     exit
   fi

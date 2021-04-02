@@ -97,7 +97,7 @@ describe Cask::Pkg, :cask do
       allow(fake_system_command).to receive(:run!).and_call_original
       expect(fake_system_command).to receive(:run!).with(
         "/usr/bin/xargs",
-        args:  ["-0", "--", "/bin/bash", "-c", a_string_including("/bin/rmdir"), "--"],
+        args:  ["-0", "--", a_string_including("rmdir")],
         input: [fake_dir].join("\0"),
         sudo:  true,
       ).and_return(instance_double(SystemCommand::Result, stdout: ""))
