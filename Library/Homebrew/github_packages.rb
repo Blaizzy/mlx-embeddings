@@ -58,6 +58,8 @@ class GitHubPackages
       HOMEBREW_PREFIX/"bin/skopeo",
     ].compact.first
     unless skopeo.exist?
+      odie "no `skoepeo` and HOMEBREW_FORCE_HOMEBREW_ON_LINUX is set!" if Homebrew::EnvConfig.force_homebrew_on_linux?
+
       ohai "Installing `skopeo` for upload..."
       safe_system HOMEBREW_BREW_FILE, "install", "--formula", "skopeo"
       skopeo = Formula["skopeo"].opt_bin/"skopeo"
