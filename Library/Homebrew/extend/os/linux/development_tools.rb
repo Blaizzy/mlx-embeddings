@@ -21,7 +21,7 @@ class DevelopmentTools
     end
 
     def build_system_info
-      generic_build_system_info.merge "glibc_version" => OS::Linux::Glibc.system_version
+      generic_build_system_info.merge "glibc_version" => OS::Linux::Glibc.version
     end
   end
 end

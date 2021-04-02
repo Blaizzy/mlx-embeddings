@@ -20,6 +20,16 @@ module OS
         @system_version = Version.new version
       end
 
+      def version
+        return @version if @version
+
+        ldd = HOMEBREW_PREFIX/"opt/glibc/bin/ldd"
+        version = Utils.popen_read(ldd, "--version")[/ (\d+\.\d+)/, 1] if ldd.executable?
+        return system_version unless version
+
+        @version = Version.new version
+      end
+
       sig { returns(Version) }
       def minimum_version
         Version.new(ENV.fetch("HOMEBREW_LINUX_MINIMUM_GLIBC_VERSION"))
