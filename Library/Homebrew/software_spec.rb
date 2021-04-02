@@ -370,9 +370,9 @@ class Bottle
     manifests_annotations = manifests.map { |m| m["annotations"] }
     raise ArgumentError, "Missing 'annotations' section." if manifests_annotations.blank?
 
-    bottle_checksum = @resource.checksum.hexdigest
+    bottle_digest = @resource.checksum.hexdigest
     manifest_annotations = manifests_annotations.find do |m|
-      m["sh.brew.bottle.checksum"] == bottle_checksum
+      m["sh.brew.bottle.digest"] == bottle_digest
     end
     raise ArgumentError, "Couldn't find manifest matching bottle checksum." if manifest_annotations.blank?
 
