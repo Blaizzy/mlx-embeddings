@@ -2685,6 +2685,104 @@ module ActiveSupport
   def self.version(); end
 end
 
+class Addressable::Template
+  def ==(template); end
+
+  def eql?(template); end
+
+  def expand(mapping, processor=T.unsafe(nil), normalize_values=T.unsafe(nil)); end
+
+  def extract(uri, processor=T.unsafe(nil)); end
+
+  def generate(params=T.unsafe(nil), recall=T.unsafe(nil), options=T.unsafe(nil)); end
+
+  def initialize(pattern); end
+
+  def keys(); end
+
+  def match(uri, processor=T.unsafe(nil)); end
+
+  def named_captures(); end
+
+  def names(); end
+
+  def partial_expand(mapping, processor=T.unsafe(nil), normalize_values=T.unsafe(nil)); end
+
+  def pattern(); end
+
+  def source(); end
+
+  def to_regexp(); end
+
+  def variable_defaults(); end
+
+  def variables(); end
+  EXPRESSION = ::T.let(nil, ::T.untyped)
+  JOINERS = ::T.let(nil, ::T.untyped)
+  LEADERS = ::T.let(nil, ::T.untyped)
+  RESERVED = ::T.let(nil, ::T.untyped)
+  UNRESERVED = ::T.let(nil, ::T.untyped)
+  VARIABLE_LIST = ::T.let(nil, ::T.untyped)
+  VARNAME = ::T.let(nil, ::T.untyped)
+  VARSPEC = ::T.let(nil, ::T.untyped)
+end
+
+class Addressable::Template::InvalidTemplateOperatorError
+end
+
+class Addressable::Template::InvalidTemplateOperatorError
+end
+
+class Addressable::Template::InvalidTemplateValueError
+end
+
+class Addressable::Template::InvalidTemplateValueError
+end
+
+class Addressable::Template::MatchData
+  def [](key, len=T.unsafe(nil)); end
+
+  def captures(); end
+
+  def initialize(uri, template, mapping); end
+
+  def keys(); end
+
+  def mapping(); end
+
+  def names(); end
+
+  def post_match(); end
+
+  def pre_match(); end
+
+  def string(); end
+
+  def template(); end
+
+  def to_a(); end
+
+  def uri(); end
+
+  def values(); end
+
+  def values_at(*indexes); end
+
+  def variables(); end
+end
+
+class Addressable::Template::MatchData
+end
+
+class Addressable::Template::TemplateOperatorAbortedError
+end
+
+class Addressable::Template::TemplateOperatorAbortedError
+end
+
+class Addressable::Template
+end
+
 class Addrinfo
   def connect_internal(local_addrinfo, timeout=T.unsafe(nil)); end
 end
@@ -9630,12 +9728,6 @@ JSON::State = JSON::Ext::Generator::State
 
 JSON::UnparserError = JSON::GeneratorError
 
-module Kconv
-  AUTO = ::T.let(nil, ::T.untyped)
-  NOCONV = ::T.let(nil, ::T.untyped)
-  UNKNOWN = ::T.let(nil, ::T.untyped)
-end
-
 class Keg::ConflictError
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -12349,13 +12441,9 @@ end
 
 Net::HTTPFatalErrorCode = Net::HTTPClientError
 
-class Net::HTTPInformation
-end
+Net::HTTPInformation::EXCEPTION_TYPE = Net::HTTPError
 
-Net::HTTPInformationCode::EXCEPTION_TYPE = Net::HTTPError
-
-class Net::HTTPInformation
-end
+Net::HTTPInformationCode = Net::HTTPInformation
 
 class Net::HTTPLoopDetected
   HAS_BODY = ::T.let(nil, ::T.untyped)
@@ -12419,13 +12507,9 @@ Net::HTTPServerErrorCode = Net::HTTPServerError
 
 Net::HTTPSession = Net::HTTP
 
-class Net::HTTPSuccess
-end
+Net::HTTPSuccess::EXCEPTION_TYPE = Net::HTTPError
 
-Net::HTTPSuccessCode::EXCEPTION_TYPE = Net::HTTPError
-
-class Net::HTTPSuccess
-end
+Net::HTTPSuccessCode = Net::HTTPSuccess
 
 class Net::HTTPURITooLong
   HAS_BODY = ::T.let(nil, ::T.untyped)
@@ -29167,17 +29251,7 @@ class String
 
   def indent!(amount, indent_string=T.unsafe(nil), indent_empty_lines=T.unsafe(nil)); end
 
-  def iseuc(); end
-
-  def isjis(); end
-
-  def issjis(); end
-
-  def isutf8(); end
-
   def italic(); end
-
-  def kconv(to_enc, from_enc=T.unsafe(nil)); end
 
   def light_black(); end
 
@@ -29258,20 +29332,6 @@ class String
   def to_nfkd(); end
 
   def to_time(form=T.unsafe(nil)); end
-
-  def toeuc(); end
-
-  def tojis(); end
-
-  def tolocale(); end
-
-  def tosjis(); end
-
-  def toutf16(); end
-
-  def toutf32(); end
-
-  def toutf8(); end
 
   def truncate(truncate_at, options=T.unsafe(nil)); end
 
@@ -29671,6 +29731,21 @@ end
 module URI
   extend ::URI::Escape
   def self.get_encoding(label); end
+end
+
+module URL::BlockDSL::PageWithURL
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class URL::BlockDSL
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class URL::DSL
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class URL
