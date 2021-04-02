@@ -113,3 +113,7 @@ Following a macOS upgrade it may be necessary to reinstall the Xcode Command Lin
 xcode-select --install
 brew upgrade
 ```
+
+### Other local issues
+
+If your Homebrew installation gets messed up (and fixing the issues found by `brew doctor` doesn't solve the problem), reinstalling Homebrew may help to reset to a normal state. To easily reinstall Homebrew, use [Homebrew Bundle](https://github.com/Homebrew/homebrew-bundle) to automatically restore your installed formulae and casks. To do so, run `brew bundle dump`, [uninstall](https://docs.brew.sh/FAQ#how-do-i-uninstall-homebrew), [reinstall](https://docs.brew.sh/Installation), and run `brew bundle install`.
