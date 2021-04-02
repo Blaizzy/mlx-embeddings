@@ -21,13 +21,14 @@ module OS
       end
 
       def version
-        return @version if @version
-
-        ldd = HOMEBREW_PREFIX/"opt/glibc/bin/ldd"
-        version = Utils.popen_read(ldd, "--version")[/ (\d+\.\d+)/, 1] if ldd.executable?
-        return system_version unless version
-
-        @version = Version.new version
+        @version ||= begin
+          ldd = HOMEBREW_PREFIX/"opt/glibc/bin/ldd"
+          version = Utils.popen_read(ldd, "--version")[/ (\d+\.\d+)/, 1] if ldd.executable?
+          if version
+            Version.new version
+          else
+            system_version
+          end
       end
 
       sig { returns(Version) }
