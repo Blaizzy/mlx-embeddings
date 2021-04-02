@@ -162,7 +162,7 @@ RSpec.shared_context "integration test" do # rubocop:disable RSpec/ContextWordin
 
         # something here
       RUBY
-    when "foo", "patchelf"
+    when "foo", "gnupg", "patchelf"
       content = <<~RUBY
         url "https://brew.sh/#{name}-1.0"
       RUBY
