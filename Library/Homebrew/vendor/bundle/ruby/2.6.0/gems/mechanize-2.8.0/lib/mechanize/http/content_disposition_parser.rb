@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # coding: BINARY
 
 require 'strscan'
@@ -16,6 +17,7 @@ end
 # * Missing disposition-type
 # * Multiple semicolons
 # * Whitespace around semicolons
+# * Dates in ISO 8601 format
 
 class Mechanize::HTTP::ContentDispositionParser
 
@@ -93,7 +95,17 @@ class Mechanize::HTTP::ContentDispositionParser
               when /^filename$/ then
                 rfc_2045_value
               when /^(creation|modification|read)-date$/ then
-                Time.rfc822 rfc_2045_quoted_string
+                date = rfc_2045_quoted_string
+
+                begin
+                  Time.rfc822 date
+                rescue ArgumentError
+                  begin
+                    Time.iso8601 date
+                  rescue ArgumentError
+                    nil
+                  end
+                end
               when /^size$/ then
                 rfc_2045_value.to_i(10)
               else
@@ -125,7 +137,7 @@ class Mechanize::HTTP::ContentDispositionParser
   def rfc_2045_quoted_string
     return nil unless @scanner.scan(/"/)
 
-    text = ''
+    text = String.new
 
     while true do
       chunk = @scanner.scan(/[\000-\014\016-\041\043-\133\135-\177]+/) # not \r "
