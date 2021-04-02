@@ -12,12 +12,25 @@ module OS
       module_function
 
       def system_version
-        return @system_version if @system_version
+        @system_version ||= begin
+          version = Utils.popen_read("/usr/bin/ldd", "--version")[/ (\d+\.\d+)/, 1]
+          if version
+            Version.new version
+          else
+            Version::NULL
+          end
+        end
+      end
 
-        version = Utils.popen_read("/usr/bin/ldd", "--version")[/ (\d+\.\d+)/, 1]
-        return Version::NULL unless version
-
-        @system_version = Version.new version
+      def version
+        @version ||= begin
+          version = Utils.popen_read(HOMEBREW_PREFIX/"opt/glibc/bin/ldd", "--version")[/ (\d+\.\d+)/, 1]
+          if version
+            Version.new version
+          else
+            system_version
+          end
+        end
       end
 
       sig { returns(Version) }

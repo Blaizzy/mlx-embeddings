@@ -19,5 +19,9 @@ class DevelopmentTools
     def default_compiler
       :gcc
     end
+
+    def build_system_info
+      generic_build_system_info.merge "glibc_version" => OS::Linux::Glibc.version
+    end
   end
 end
