@@ -7,7 +7,7 @@ if ENV["HOMEBREW_TESTS_COVERAGE"]
 
   formatters = [
     SimpleCov::Formatter::HTMLFormatter,
-    SimpleCov::Formatter::CoberturaFormater,
+    SimpleCov::Formatter::CoberturaFormatter,
   ]
   SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new(formatters)
 
