@@ -293,7 +293,7 @@ class Bottle
   attr_reader :name, :resource, :prefix, :cellar, :rebuild
 
   def_delegators :resource, :url, :verify_download_integrity
-  def_delegators :resource, :cached_download, :clear_cache
+  def_delegators :resource, :cached_download
 
   def initialize(formula, spec)
     @name = formula.name
@@ -333,6 +333,11 @@ class Bottle
       @resource.mirror(fallback_url) if [@resource.url, *@resource.mirrors].exclude?(fallback_url)
     end
     @resource.fetch(verify_download_integrity: verify_download_integrity)
+  end
+
+  def clear_cache
+    @resource.clear_cache
+    github_packages_manifest_resource&.clear_cache
   end
 
   def compatible_locations?
