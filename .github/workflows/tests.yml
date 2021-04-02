@@ -210,9 +210,6 @@ jobs:
         env:
           HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Show coverage files
-        run: ls -al /home/linuxbrew/.linuxbrew/Homebrew/Library/Homebrew/test/coverage
-
       - uses: codecov/codecov-action@e156083f13aff6830c92fc5faa23505779fbf649 # v1.2.1
 
   test-default-formula-linux:
