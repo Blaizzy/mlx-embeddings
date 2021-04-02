@@ -460,8 +460,8 @@ class Tapioca::Generator < ::Thor::Shell::Color
   sig { params(config: Tapioca::Config).void }
   def initialize(config); end
 
-  sig { params(requested_constants: T::Array[String], should_verify: T::Boolean).void }
-  def build_dsl(requested_constants, should_verify: T.unsafe(nil)); end
+  sig { params(requested_constants: T::Array[String], should_verify: T::Boolean, quiet: T::Boolean).void }
+  def build_dsl(requested_constants, should_verify: T.unsafe(nil), quiet: T.unsafe(nil)); end
   sig { params(gem_names: T::Array[String]).void }
   def build_gem_rbis(gem_names); end
   sig { void }
@@ -479,10 +479,12 @@ class Tapioca::Generator < ::Thor::Shell::Color
   def add(filename); end
   sig { returns(T::Array[String]) }
   def added_rbis; end
+  sig { params(cause: Symbol, files: T::Array[String]).returns(String) }
+  def build_error_for_files(cause, files); end
   sig { returns(Tapioca::Gemfile) }
   def bundle; end
-  sig { params(constant: Module, contents: String, outpath: Pathname).returns(T.nilable(Pathname)) }
-  def compile_dsl_rbi(constant, contents, outpath: T.unsafe(nil)); end
+  sig { params(constant_name: String, contents: String, outpath: Pathname, quiet: T::Boolean).returns(T.nilable(Pathname)) }
+  def compile_dsl_rbi(constant_name, contents, outpath: T.unsafe(nil), quiet: T.unsafe(nil)); end
   sig { params(gem: Tapioca::Gemfile::Gem).void }
   def compile_gem_rbi(gem); end
   sig { returns(Tapioca::Compilers::SymbolTableCompiler) }
@@ -519,12 +521,14 @@ class Tapioca::Generator < ::Thor::Shell::Color
   def move(old_filename, new_filename); end
   sig { void }
   def perform_additions; end
-  sig { params(dir: String).void }
-  def perform_dsl_verification(dir); end
+  sig { params(dir: Pathname, constant_lookup: T::Hash[String, String]).void }
+  def perform_dsl_verification(dir, constant_lookup); end
   sig { void }
   def perform_removals; end
   sig { params(files: T::Set[Pathname]).void }
   def purge_stale_dsl_rbi_files(files); end
+  sig { params(path: Pathname).returns(T::Array[Pathname]) }
+  def rbi_files_in(path); end
   sig { params(command: String, reason: T.nilable(String), strictness: T.nilable(String)).returns(String) }
   def rbi_header(command, reason: T.unsafe(nil), strictness: T.unsafe(nil)); end
   sig { params(filename: Pathname).void }
@@ -535,7 +539,7 @@ class Tapioca::Generator < ::Thor::Shell::Color
   def require_gem_file; end
   sig { params(message: String, color: T.any(Symbol, T::Array[Symbol])).void }
   def say_error(message = T.unsafe(nil), *color); end
-  sig { params(tmp_dir: Pathname).returns(T.nilable(String)) }
+  sig { params(tmp_dir: Pathname).returns(T::Hash[String, Symbol]) }
   def verify_dsl_rbi(tmp_dir:); end
 end
 
@@ -556,6 +560,8 @@ module Tapioca::GenericTypeRegistry
 
     sig { params(constant: Module, name: String).returns(Module) }
     def create_generic_type(constant, name); end
+    sig { params(constant: Class).returns(Class) }
+    def create_sealed_safe_subclass(constant); end
     sig { params(constant: Module).returns(T::Hash[Integer, String]) }
     def lookup_or_initialize_type_variables(constant); end
     sig { params(constant: Module).returns(T.nilable(String)) }
