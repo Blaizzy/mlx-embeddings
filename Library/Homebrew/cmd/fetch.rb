@@ -88,6 +88,7 @@ module Homebrew
         fetched_bottle = false
         if fetch_bottle?(f, args: args)
           begin
+            f.clear_cache if args.force?
             f.fetch_bottle_tab
             fetch_formula(f.bottle, args: args)
           rescue Interrupt
