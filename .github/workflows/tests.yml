@@ -301,3 +301,5 @@ jobs:
           HOMEBREW_LANGUAGES: en-GB
 
       - run: brew test-bot --only-formulae --test-default-formula
+
+      - uses: codecov/codecov-action@e156083f13aff6830c92fc5faa23505779fbf649 # v1.2.1
