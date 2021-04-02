@@ -63,7 +63,7 @@ module GitHub
     class AuthenticationFailedError < Error
       def initialize(github_message)
         @github_message = github_message
-        message = +"GitHub #{github_message}:"
+        message = +"GitHub API Error: #{github_message}\n"
         message << if Homebrew::EnvConfig.github_api_token
           <<~EOS
             HOMEBREW_GITHUB_API_TOKEN may be invalid or expired; check:
@@ -115,10 +115,8 @@ module GitHub
     # but only if that password looks like a GitHub Personal Access Token.
     sig { returns(T.nilable(String)) }
     def keychain_username_password
-      github_credentials = Utils.popen(["git", "credential-osxkeychain", "get"], "w+") do |pipe|
+      github_credentials = Utils.popen_write("git", "credential-osxkeychain", "get") do |pipe|
         pipe.write "protocol=https\nhost=github.com\n"
-        pipe.close_write
-        pipe.read
       end
       github_username = github_credentials[/username=(.+)/, 1]
       github_password = github_credentials[/password=(.+)/, 1]
@@ -284,15 +282,17 @@ module GitHub
         meta[key] = value.strip
       end
 
-      if meta.fetch("x-ratelimit-remaining", 1).to_i <= 0
-        reset = meta.fetch("x-ratelimit-reset").to_i
-        raise RateLimitExceededError.new(reset, message)
-      end
-
       credentials_error_message(meta, scopes)
 
       case http_code
-      when "401", "403"
+      when "401"
+        raise AuthenticationFailedError, message
+      when "403"
+        if meta.fetch("x-ratelimit-remaining", 1).to_i <= 0
+          reset = meta.fetch("x-ratelimit-reset").to_i
+          raise RateLimitExceededError.new(reset, message)
+        end
+
         raise AuthenticationFailedError, message
       when "404"
         raise MissingAuthenticationError if credentials_type == :none && scopes.present?
