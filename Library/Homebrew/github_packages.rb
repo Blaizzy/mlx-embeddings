@@ -263,12 +263,12 @@ class GitHubPackages
       image_manifest = {
         schemaVersion: 2,
         config:        {
-          mediaType: "application/vnd.homebrew.formula.config.v1+json",
+          mediaType: "application/vnd.oci.image.config.v1+json",
           digest:    "sha256:#{config_json_sha256}",
           size:      config_json_size,
         },
         layers:        [{
-          mediaType:   "application/vnd.homebrew.bottle.layer.v1.tar+gzip",
+          mediaType:   "application/vnd.oci.image.layer.v1.tar+gzip",
           digest:      "sha256:#{tar_gz_sha256}",
           size:        File.size(local_file),
           annotations: {
