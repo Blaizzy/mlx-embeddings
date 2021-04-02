@@ -16,6 +16,7 @@ class GitHubPackages
   URL_PREFIX = "https://#{URL_DOMAIN}/v2/"
   DOCKER_PREFIX = "docker://#{URL_DOMAIN}/"
   URL_REGEX = %r{(?:#{Regexp.escape(URL_PREFIX)}|#{Regexp.escape(DOCKER_PREFIX)})([\w-]+)/([\w-]+)}.freeze
+  GITHUB_PACKAGE_TYPE = "homebrew_bottle"
 
   # Translate Homebrew tab.arch to OCI platform.architecture
   TAB_ARCH_TO_PLATFORM_ARCHITECTURE = {
@@ -255,6 +256,7 @@ class GitHubPackages
         "org.opencontainers.image.documentation" => documentation,
         "org.opencontainers.image.ref.name"      => tag,
         "org.opencontainers.image.title"         => "#{formula_full_name} #{tag}",
+        "com.github.package.type"                => GITHUB_PACKAGE_TYPE,
       }).sort.to_h
       annotations_hash.each do |key, value|
         annotations_hash.delete(key) if value.blank?
