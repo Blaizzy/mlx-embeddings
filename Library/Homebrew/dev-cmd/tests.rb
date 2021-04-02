@@ -99,7 +99,7 @@ module Homebrew
       end
 
       parallel_rspec_log_path =if ENV["CI"]
-        "/tmp/parallel_runtime_rspec.log"
+        "parallel_runtime_rspec.log"
       else
         "#{HOMEBREW_CACHE}/tests/parallel_runtime_rspec.log"
       end
