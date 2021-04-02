@@ -235,10 +235,18 @@ class GitHubPackages
       end
       raise TypeError, "unknown tab['built_on']['os']: #{tab["built_on"]["os"]}" if os.blank?
 
-      os_version = if tab["built_on"].present? && tab["built_on"]["os_version"].present?
-        tab["built_on"]["os_version"]
+      os_version = tab["built_on"]["os_version"] if tab["built_on"].present?
+      os_version = case os
+      when "darwin"
+        os_version || "macOS #{MacOS::Version.from_symbol(bottle_tag)}"
+      when "linux"
+        glibc_version = tab["built_on"]["glibc_version"] if tab["built_on"].present?
+        os_version ||= "Ubuntu 16.04.7"
+        glibc_version ||= "2.23"
+        os_version = os_version.delete_suffix " LTS"
+        "#{os_version} glibc #{glibc_version}"
       else
-        MacOS::Version.from_symbol(bottle_tag).to_s
+        os_version
       end
 
       platform_hash = {
