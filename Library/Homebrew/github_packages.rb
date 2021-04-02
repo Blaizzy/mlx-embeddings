@@ -68,6 +68,32 @@ class GitHubPackages
     end
   end
 
+  def self.version_rebuild(version, rebuild, bottle_tag = nil)
+    bottle_tag = (".#{bottle_tag}" if bottle_tag.present?)
+
+    rebuild = if rebuild.to_i.positive?
+      if bottle_tag
+        ".#{rebuild}"
+      else
+        "-#{rebuild}"
+      end
+    end
+
+    "#{version}#{bottle_tag}#{rebuild}"
+  end
+
+  def self.repo_without_prefix(repo)
+    # remove redundant repo prefix for a shorter name
+    repo.delete_prefix("homebrew-")
+  end
+
+  def self.root_url(org, repo, prefix = URL_PREFIX)
+    # docker/skopeo insist on lowercase org ("repository name")
+    org = org.downcase
+
+    "#{prefix}#{org}/#{repo_without_prefix(repo)}"
+  end
+
   private
 
   IMAGE_CONFIG_SCHEMA_URI = "https://opencontainers.org/schema/image/config"
@@ -138,10 +164,8 @@ class GitHubPackages
     repo = "homebrew-#{repo}" unless HOMEBREW_OFFICIAL_REPO_PREFIXES_REGEX.match?(repo)
 
     version = bottle_hash["formula"]["pkg_version"]
-    rebuild = if (rebuild = bottle_hash["bottle"]["rebuild"]).positive?
-      ".#{rebuild}"
-    end
-    version_rebuild = "#{version}#{rebuild}"
+    rebuild = bottle_hash["bottle"]["rebuild"]
+    version_rebuild = GitHubPackages.version_rebuild(version, rebuild)
     root = Pathname("#{formula_name}--#{version_rebuild}")
     FileUtils.rm_rf root
 
@@ -161,8 +185,9 @@ class GitHubPackages
       remote
     end
 
+    created_date = bottle_hash["bottle"]["date"]
     formula_annotations_hash = {
-      "org.opencontainers.image.created"       => Time.now.strftime("%F"),
+      "org.opencontainers.image.created"       => created_date,
       "org.opencontainers.image.description"   => bottle_hash["formula"]["desc"],
       "org.opencontainers.image.documentation" => documentation,
       "org.opencontainers.image.license"       => bottle_hash["formula"]["license"],
@@ -185,16 +210,34 @@ class GitHubPackages
       tar_gz_sha256 = write_tar_gz(local_file, blobs)
 
       tab = tag_hash["tab"]
-      architecture = TAB_ARCH_TO_PLATFORM_ARCHITECTURE[tab["arch"]]
+      architecture = if tab["arch"].present?
+        TAB_ARCH_TO_PLATFORM_ARCHITECTURE[tab["arch"]]
+      elsif bottle_tag.to_s.start_with?("arm64")
+        "arm64"
+      else
+        "amd64"
+      end
       raise TypeError, "unknown tab['arch']: #{tab["arch"]}" if architecture.blank?
 
-      os = BUILT_ON_OS_TO_PLATFORM_OS[tab["built_on"]["os"]]
+      os = if tab["built_on"].present? && tab["built_on"]["os"].present?
+        BUILT_ON_OS_TO_PLATFORM_OS[tab["built_on"]["os"]]
+      elsif bottle_tag.to_s.end_with?("_linux")
+        "linux"
+      else
+        "darwin"
+      end
       raise TypeError, "unknown tab['built_on']['os']: #{tab["built_on"]["os"]}" if os.blank?
+
+      os_version = if tab["built_on"].present? && tab["built_on"]["os_version"].present?
+        tab["built_on"]["os_version"]
+      else
+        MacOS::Version.from_symbol(bottle_tag).to_s
+      end
 
       platform_hash = {
         architecture: architecture,
         os: os,
-        "os.version" => tab["built_on"]["os_version"],
+        "os.version" => os_version,
       }
       tar_sha256 = Digest::SHA256.hexdigest(
         Utils.safe_popen_read("gunzip", "--stdout", "--decompress", local_file),
@@ -205,10 +248,10 @@ class GitHubPackages
       formulae_dir = tag_hash["formulae_brew_sh_path"]
       documentation = "https://formulae.brew.sh/#{formulae_dir}/#{formula_name}" if formula_core_tap
 
-      tag = "#{version}.#{bottle_tag}#{rebuild}"
+      tag = GitHubPackages.version_rebuild(version, rebuild, bottle_tag)
 
       annotations_hash = formula_annotations_hash.merge({
-        "org.opencontainers.image.created"       => Time.at(tag_hash["tab"]["source_modified_time"]).strftime("%F"),
+        "org.opencontainers.image.created"       => created_date,
         "org.opencontainers.image.documentation" => documentation,
         "org.opencontainers.image.ref.name"      => tag,
         "org.opencontainers.image.title"         => "#{formula_full_name} #{tag}",
@@ -255,11 +298,8 @@ class GitHubPackages
     write_index_json(index_json_sha256, index_json_size, root,
                      "org.opencontainers.image.ref.name" => version_rebuild)
 
-    # docker/skopeo insist on lowercase org ("repository name")
-    org_prefix = "#{DOCKER_PREFIX}#{org.downcase}"
-    # remove redundant repo prefix for a shorter name
-    package_name = "#{repo.delete_prefix("homebrew-")}/#{formula_name}"
-    image_tag = "#{org_prefix}/#{package_name}:#{version_rebuild}"
+    image_tag = "#{GitHubPackages.root_url(org, repo, DOCKER_PREFIX)}/#{formula_name}:#{version_rebuild}"
+
     puts
     args = ["copy", "--all", "oci:#{root}", image_tag.to_s]
     if dry_run
@@ -267,6 +307,7 @@ class GitHubPackages
     else
       args << "--dest-creds=#{user}:#{token}"
       system_command!(skopeo, verbose: true, print_stdout: true, args: args)
+      package_name = "#{GitHubPackages.repo_without_prefix(repo)}/#{formula_name}"
       ohai "Uploaded to https://github.com/orgs/Homebrew/packages/container/package/#{package_name}"
     end
   end

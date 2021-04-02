@@ -304,9 +304,18 @@ class Bottle
 
     checksum, tag, cellar = spec.checksum_for(Utils::Bottles.tag)
 
-    filename = Filename.create(formula, tag, spec.rebuild)
-    @resource.url("#{spec.root_url}/#{filename.bintray}",
-                  select_download_strategy(spec.root_url_specs))
+    filename = Filename.create(formula, tag, spec.rebuild).bintray
+
+    # TODO: this will need adjusted when if we use GitHub Packages by default
+    path, resolved_basename = if (bottle_domain = Homebrew::EnvConfig.bottle_domain.presence) &&
+                                 bottle_domain.start_with?(GitHubPackages::URL_PREFIX)
+      ["#{@name}/blobs/sha256:#{checksum}", filename]
+    else
+      filename
+    end
+
+    @resource.url("#{spec.root_url}/#{path}", select_download_strategy(spec.root_url_specs))
+    @resource.downloader.resolved_basename = resolved_basename if resolved_basename.present?
     @resource.version = formula.pkg_version
     @resource.checksum = checksum
     @prefix = spec.prefix
@@ -316,16 +325,12 @@ class Bottle
 
   def fetch(verify_download_integrity: true)
     # add the default bottle domain as a fallback mirror
-    # TODO: this may need adjusted when if we use GitHub Packages by default
     if @resource.download_strategy == CurlDownloadStrategy &&
        @resource.url.start_with?(Homebrew::EnvConfig.bottle_domain)
       fallback_url = @resource.url
                               .sub(/^#{Regexp.escape(Homebrew::EnvConfig.bottle_domain)}/,
                                    HOMEBREW_BOTTLE_DEFAULT_DOMAIN)
       @resource.mirror(fallback_url) if [@resource.url, *@resource.mirrors].exclude?(fallback_url)
-    elsif @resource.download_strategy == CurlGitHubPackagesDownloadStrategy
-      @resource.downloader.name = @name
-      @resource.downloader.checksum = @resource.checksum.hexdigest
     end
     @resource.fetch(verify_download_integrity: verify_download_integrity)
   end
@@ -343,7 +348,61 @@ class Bottle
     resource.downloader.stage
   end
 
+  def fetch_tab
+    # a checksum is used later identifying the correct tab but we do not have the checksum for the manifest/tab
+    github_packages_manifest_resource&.fetch(verify_download_integrity: false)
+  end
+
+  def tab_attributes
+    return {} unless github_packages_manifest_resource&.downloaded?
+
+    manifest_json = github_packages_manifest_resource.cached_download.read
+
+    json = begin
+      JSON.parse(manifest_json)
+    rescue JSON::ParserError
+      raise ArgumentError, "Couldn't parse manifest JSON."
+    end
+
+    manifests = json["manifests"]
+    raise ArgumentError, "Missing 'manifests' section." if manifests.blank?
+
+    manifests_annotations = manifests.map { |m| m["annotations"] }
+    raise ArgumentError, "Missing 'annotations' section." if manifests_annotations.blank?
+
+    bottle_checksum = @resource.checksum.hexdigest
+    manifest_annotations = manifests_annotations.find do |m|
+      m["sh.brew.bottle.checksum"] == bottle_checksum
+    end
+    raise ArgumentError, "Couldn't find manifest matching bottle checksum." if manifest_annotations.blank?
+
+    tab = manifest_annotations["sh.brew.tab"]
+    raise ArgumentError, "Couldn't find tab from manifest." if tab.blank?
+
+    begin
+      JSON.parse(tab)
+    rescue JSON::ParserError
+      raise ArgumentError, "Couldn't parse tab JSON."
+    end
+  end
+
   private
+
+  def github_packages_manifest_resource
+    return if @resource.download_strategy != CurlGitHubPackagesDownloadStrategy
+
+    @github_packages_manifest_resource ||= begin
+      resource = Resource.new("#{name}_bottle_manifest")
+
+      version_rebuild = GitHubPackages.version_rebuild(@resource.version, rebuild)
+      resource.version(version_rebuild)
+
+      resource.url("#{@spec.root_url}/#{name}/manifests/#{version_rebuild}",
+                   using: CurlGitHubPackagesDownloadStrategy)
+      resource.downloader.resolved_basename = "#{name}-#{version_rebuild}.bottle_manifest.json"
+      resource
+    end
+  end
 
   def select_download_strategy(specs)
     specs[:using] ||= DownloadStrategyDetector.detect(@spec.root_url)
@@ -380,7 +439,7 @@ class BottleSpecification
   def root_url(var = nil, specs = {})
     if var.nil?
       @root_url ||= if Homebrew::EnvConfig.bottle_domain.start_with?(GitHubPackages::URL_PREFIX)
-        "#{GitHubPackages::URL_PREFIX}#{tap.full_name}"
+        GitHubPackages.root_url(tap.user, tap.repo).to_s
       else
         "#{Homebrew::EnvConfig.bottle_domain}/#{Utils::Bottles::Bintray.repository(tap)}"
       end

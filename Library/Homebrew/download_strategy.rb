@@ -426,7 +426,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
       url = url.sub(%r{^((ht|f)tps?://)?}, "#{domain.chomp("/")}/")
     end
 
-    out, _, status= curl_output("--location", "--silent", "--head", "--request", "GET", url.to_s)
+    out, _, status = curl_output("--location", "--silent", "--head", "--request", "GET", url.to_s)
 
     lines = status.success? ? out.lines.map(&:chomp) : []
 
@@ -533,20 +533,18 @@ end
 #
 # @api public
 class CurlGitHubPackagesDownloadStrategy < CurlDownloadStrategy
-  attr_accessor :checksum, :name
+  attr_writer :resolved_basename
+
+  def initialize(url, name, version, **meta)
+    meta ||= {}
+    meta[:header] = "Authorization: Bearer"
+    super(url, name, version, meta)
+  end
 
   private
 
-  def _fetch(url:, resolved_url:)
-    raise CurlDownloadStrategyError, "Empty checksum" if checksum.blank?
-    raise CurlDownloadStrategyError, "Empty name" if name.blank?
-
-    _, org, repo, = *url.match(GitHubPackages::URL_REGEX)
-
-    # remove redundant repo prefix for a shorter name
-    repo = repo.delete_prefix("homebrew-")
-    blob_url = "#{GitHubPackages::URL_PREFIX}#{org}/#{repo}/#{name}/blobs/sha256:#{checksum}"
-    curl_download(blob_url, "--header", "Authorization: Bearer", to: temporary_path)
+  def resolved_basename
+    @resolved_basename.presence || super
   end
 end
 

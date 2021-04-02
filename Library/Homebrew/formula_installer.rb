@@ -1100,7 +1100,9 @@ class FormulaInstaller
 
     return if only_deps?
 
-    unless pour_bottle?(output_warning: true)
+    if pour_bottle?(output_warning: true)
+      formula.fetch_bottle_tab
+    else
       formula.fetch_patches
       formula.resources.each(&:fetch)
     end
@@ -1124,13 +1126,16 @@ class FormulaInstaller
     end
 
     keg = Keg.new(formula.prefix)
-    tab = Tab.for_keg(keg)
     Tab.clear_cache
+
+    tab = if (tab_attributes = formula.bottle_tab_attributes.presence)
+      Tab.from_file_content(tab_attributes.to_json, keg/Tab::FILENAME)
+    else
+      Tab.for_keg(keg)
+    end
 
     skip_linkage = formula.bottle_specification.skip_relocation?
     keg.replace_placeholders_with_locations tab.changed_files, skip_linkage: skip_linkage
-
-    tab = Tab.for_keg(keg)
 
     unless ignore_deps?
       CxxStdlib.check_compatibility(

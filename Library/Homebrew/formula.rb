@@ -2211,6 +2211,20 @@ class Formula
     patchlist.select(&:external?).each(&:fetch)
   end
 
+  sig { void }
+  def fetch_bottle_tab
+    return unless bottled?
+
+    T.must(bottle).fetch_tab
+  end
+
+  sig { returns(Hash) }
+  def bottle_tab_attributes
+    return {} unless bottled?
+
+    T.must(bottle).tab_attributes
+  end
+
   private
 
   def prepare_patches
