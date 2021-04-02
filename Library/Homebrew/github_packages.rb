@@ -287,7 +287,7 @@ class GitHubPackages
         platform:    platform_hash,
         annotations: {
           "org.opencontainers.image.ref.name" => tag,
-          "sh.brew.bottle.checksum"           => tar_gz_sha256,
+          "sh.brew.bottle.digest"             => tar_gz_sha256,
           "sh.brew.tab"                       => tab.to_json,
         },
       }
