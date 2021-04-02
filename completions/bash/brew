@@ -1464,6 +1464,7 @@ _brew_pr_pull() {
       --ignore-missing-artifacts
       --keep-old
       --message
+      --no-commit
       --no-publish
       --no-upload
       --quiet

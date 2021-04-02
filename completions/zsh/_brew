@@ -1301,8 +1301,9 @@ _brew_pr_pull() {
     '--ignore-missing-artifacts[Comma-separated list of workflows which can be ignored if they have not been run]' \
     '--keep-old[If the formula specifies a rebuild version, attempt to preserve its value in the generated DSL]' \
     '--message[Message to include when autosquashing revision bumps, deletions, and rebuilds]' \
-    '--no-publish[Download the bottles, apply the bottle commit and upload the bottles to Bintray, but don'\''t publish them]' \
-    '--no-upload[Download the bottles and apply the bottle commit, but don'\''t upload to Bintray or GitHub Releases]' \
+    '--no-commit[Do not generate a new commit before uploading]' \
+    '--no-publish[Download the bottles, apply the bottle commit and upload the bottles, but don'\''t publish them]' \
+    '--no-upload[Download the bottles and apply the bottle commit, but don'\''t upload]' \
     '--quiet[Make some output more quiet]' \
     '--resolve[When a patch fails to apply, leave in progress and allow user to resolve, instead of aborting]' \
     '--root-url[Use the specified URL as the root of the bottle'\''s URL instead of Homebrew'\''s default]' \
