@@ -51,7 +51,11 @@ class GitHubPackages
     raise UsageError, "HOMEBREW_GITHUB_PACKAGES_USER is unset." if user.blank?
     raise UsageError, "HOMEBREW_GITHUB_PACKAGES_TOKEN is unset." if token.blank?
 
-    skopeo = HOMEBREW_PREFIX/"bin/skopeo"
+    skopeo = [
+      which("skopeo"),
+      which("skopeo", ENV["HOMEBREW_PATH"]),
+      HOMEBREW_PREFIX/"bin/skopeo",
+    ].compact.first
     unless skopeo.exist?
       ohai "Installing `skopeo` for upload..."
       safe_system HOMEBREW_BREW_FILE, "install", "--formula", "skopeo"

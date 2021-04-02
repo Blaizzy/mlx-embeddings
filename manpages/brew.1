@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "BREW" "1" "March 2021" "Homebrew" "brew"
+.TH "BREW" "1" "April 2021" "Homebrew" "brew"
 .
 .SH "NAME"
 \fBbrew\fR \- The Missing Package Manager for macOS (or Linux)
@@ -1622,11 +1622,15 @@ Download and publish bottles, and apply the bottle commit from a pull request wi
 .
 .TP
 \fB\-\-no\-publish\fR
-Download the bottles, apply the bottle commit and upload the bottles to Bintray, but don\'t publish them\.
+Download the bottles, apply the bottle commit and upload the bottles, but don\'t publish them\.
 .
 .TP
 \fB\-\-no\-upload\fR
-Download the bottles and apply the bottle commit, but don\'t upload to Bintray or GitHub Releases\.
+Download the bottles and apply the bottle commit, but don\'t upload\.
+.
+.TP
+\fB\-\-no\-commit\fR
+Do not generate a new commit before uploading\.
 .
 .TP
 \fB\-n\fR, \fB\-\-dry\-run\fR
