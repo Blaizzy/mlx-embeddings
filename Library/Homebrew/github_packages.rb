@@ -205,10 +205,7 @@ class GitHubPackages
       "org.opencontainers.image.url"           => bottle_hash["formula"]["homepage"],
       "org.opencontainers.image.vendor"        => org,
       "org.opencontainers.image.version"       => version,
-    }
-    formula_annotations_hash.each do |key, value|
-      formula_annotations_hash.delete(key) if value.blank?
-    end
+    }.compact
 
     manifests = bottle_hash["bottle"]["tags"].map do |bottle_tag, tag_hash|
       local_file = tag_hash["local_filename"]
@@ -272,10 +269,7 @@ class GitHubPackages
         "org.opencontainers.image.title"         => "#{formula_full_name} #{tag}",
         "com.github.package.type"                => GITHUB_PACKAGE_TYPE,
         "sh.brew.bottle.glibc.version"           => glibc_version,
-      }).sort.to_h
-      annotations_hash.each do |key, value|
-        annotations_hash.delete(key) if value.blank?
-      end
+      }).compact.sort.to_h
 
       image_manifest = {
         schemaVersion: 2,
