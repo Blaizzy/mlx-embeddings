@@ -240,13 +240,13 @@ class GitHubPackages
       when "darwin"
         os_version || "macOS #{MacOS::Version.from_symbol(bottle_tag)}"
       when "linux"
-        glibc_version = tab["built_on"]["glibc_version"] if tab["built_on"].present?
-        os_version ||= "Ubuntu 16.04.7"
-        glibc_version ||= "2.23"
-        os_version = os_version.delete_suffix " LTS"
-        "#{os_version} glibc #{glibc_version}"
+        (os_version || "Ubuntu 16.04.7").delete_suffix " LTS"
       else
         os_version
+      end
+
+      glibc_version = if os == "linux"
+        (tab["built_on"]["glibc_version"] if tab["built_on"].present?) || "2.23"
       end
 
       platform_hash = {
@@ -271,6 +271,7 @@ class GitHubPackages
         "org.opencontainers.image.ref.name"      => tag,
         "org.opencontainers.image.title"         => "#{formula_full_name} #{tag}",
         "com.github.package.type"                => GITHUB_PACKAGE_TYPE,
+        "sh.brew.bottle.glibc.version"           => glibc_version,
       }).sort.to_h
       annotations_hash.each do |key, value|
         annotations_hash.delete(key) if value.blank?
@@ -304,8 +305,9 @@ class GitHubPackages
         annotations: {
           "org.opencontainers.image.ref.name" => tag,
           "sh.brew.bottle.digest"             => tar_gz_sha256,
+          "sh.brew.bottle.glibc.version"      => glibc_version,
           "sh.brew.tab"                       => tab.to_json,
-        },
+        }.compact,
       }
     end
 
