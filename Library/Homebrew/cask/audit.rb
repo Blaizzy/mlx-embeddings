@@ -96,15 +96,15 @@ module Cask
       @warnings ||= []
     end
 
-    def add_error(message)
-      errors << message
+    def add_error(message, location: nil)
+      errors << ({ message: message, location: location })
     end
 
-    def add_warning(message)
+    def add_warning(message, location: nil)
       if strict?
-        add_error message
+        add_error message, location: location
       else
-        warnings << message
+        warnings << ({ message: message, location: location })
       end
     end
 
@@ -134,12 +134,12 @@ module Cask
       summary = ["audit for #{cask}: #{result}"]
 
       errors.each do |error|
-        summary << " #{Formatter.error("-")} #{error}"
+        summary << " #{Formatter.error("-")} #{error[:message]}"
       end
 
       if include_warnings
         warnings.each do |warning|
-          summary << " #{Formatter.warning("-")} #{warning}"
+          summary << " #{Formatter.warning("-")} #{warning[:message]}"
         end
       end
 

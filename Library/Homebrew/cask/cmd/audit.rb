@@ -59,8 +59,6 @@ module Cask
           display_failures_only: args.display_failures_only?,
         )
 
-        self.class.print_annotations(results)
-
         failed_casks = results.reject { |_, result| result[:errors].empty? }.map(&:first)
         return if failed_casks.empty?
 
@@ -103,22 +101,8 @@ module Cask
 
         casks.map do |cask|
           odebug "Auditing Cask #{cask}"
-          [cask, Auditor.audit(cask, **options)]
+          [cask.sourcefile_path, Auditor.audit(cask, **options)]
         end.to_h
-      end
-
-      def self.print_annotations(results)
-        return unless ENV["GITHUB_ACTIONS"]
-
-        results.each do |cask, result|
-          cask_path = cask.sourcefile_path
-          annotations = (result[:warnings].map { |w| [:warning, w] } + result[:errors].map { |e| [:error, e] })
-                        .map { |type, message| GitHub::Actions::Annotation.new(type, message, file: cask_path) }
-
-          annotations.each do |annotation|
-            puts annotation if annotation.relevant?
-          end
-        end
       end
     end
   end

@@ -4,11 +4,11 @@
 require "cask/audit"
 
 describe Cask::Audit, :cask do
-  def include_msg?(messages, msg)
+  def include_msg?(problems, msg)
     if msg.is_a?(Regexp)
-      Array(messages).any? { |m| m =~ msg }
+      Array(problems).any? { |problem| problem[:message] =~ msg }
     else
-      Array(messages).include?(msg)
+      Array(problems).any? { |problem| problem[:message] == msg }
     end
   end
 
