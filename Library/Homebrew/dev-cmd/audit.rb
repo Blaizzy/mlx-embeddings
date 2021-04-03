@@ -166,7 +166,7 @@ module Homebrew
     spdx_license_data = SPDX.license_data
     spdx_exception_data = SPDX.exception_data
     new_formula_problem_lines = []
-    audit_formulae.sort.each do |f|
+    formula_results = audit_formulae.sort.map do |f|
       only = only_cops ? ["style"] : args.only
       options = {
         new_formula:          new_formula,
@@ -184,31 +184,25 @@ module Homebrew
 
       fa = FormulaAuditor.new(f, **options)
       fa.audit
-      next if fa.problems.empty? && fa.new_formula_problems.empty?
 
-      formula_count += 1
-      problem_count += fa.problems.size
-      problem_lines = format_problem_lines(fa.problems)
-      corrected_problem_count += options.fetch(:style_offenses, []).count(&:corrected?)
-      new_formula_problem_lines += format_problem_lines(fa.new_formula_problems)
-      if args.display_filename?
-        puts problem_lines.map { |s| "#{f.path}: #{s}" }
-      else
-        puts "#{f.full_name}:", problem_lines.map { |s| "  #{s}" }
+      if fa.problems.any? || fa.new_formula_problems.any?
+        formula_count += 1
+        problem_count += fa.problems.size
+        problem_lines = format_problem_lines(fa.problems)
+        corrected_problem_count += options.fetch(:style_offenses, []).count(&:corrected?)
+        new_formula_problem_lines += format_problem_lines(fa.new_formula_problems)
+        if args.display_filename?
+          puts problem_lines.map { |s| "#{f.path}: #{s}" }
+        else
+          puts "#{f.full_name}:", problem_lines.map { |s| "  #{s}" }
+        end
       end
 
-      next unless ENV["GITHUB_ACTIONS"]
+      [f.path, { errors: fa.problems + fa.new_formula_problems, warnings: [] }]
+    end.to_h
 
-      (fa.problems + fa.new_formula_problems).each do |message:, location:|
-        annotation = GitHub::Actions::Annotation.new(
-          :error, message, file: f.path, line: location&.line, column: location&.column
-        )
-        puts annotation if annotation.relevant?
-      end
-    end
-
-    casks_results = if audit_casks.empty?
-      []
+    cask_results = if audit_casks.empty?
+      {}
     else
       require "cask/cmd/audit"
 
@@ -228,33 +222,55 @@ module Homebrew
       )
     end
 
-    failed_casks = casks_results.reject { |_, result| result[:errors].empty? }
+    failed_casks = cask_results.reject { |_, result| result[:errors].empty? }
 
     cask_count = failed_casks.count
 
     cask_problem_count = failed_casks.sum { |_, result| result[:warnings].count + result[:errors].count }
     new_formula_problem_count += new_formula_problem_lines.count
     total_problems_count = problem_count + new_formula_problem_count + cask_problem_count + tap_problem_count
-    return unless total_problems_count.positive?
 
-    puts new_formula_problem_lines.map { |s| "  #{s}" }
+    if total_problems_count.positive?
+      puts new_formula_problem_lines.map { |s| "  #{s}" }
 
-    errors_summary = "#{total_problems_count} #{"problem".pluralize(total_problems_count)}"
+      errors_summary = "#{total_problems_count} #{"problem".pluralize(total_problems_count)}"
 
-    error_sources = []
-    error_sources << "#{formula_count} #{"formula".pluralize(formula_count)}" if formula_count.positive?
-    error_sources << "#{cask_count} #{"cask".pluralize(cask_count)}" if cask_count.positive?
-    error_sources << "#{tap_count} #{"tap".pluralize(tap_count)}" if tap_count.positive?
+      error_sources = []
+      error_sources << "#{formula_count} #{"formula".pluralize(formula_count)}" if formula_count.positive?
+      error_sources << "#{cask_count} #{"cask".pluralize(cask_count)}" if cask_count.positive?
+      error_sources << "#{tap_count} #{"tap".pluralize(tap_count)}" if tap_count.positive?
 
-    errors_summary += " in #{error_sources.to_sentence}" if error_sources.any?
+      errors_summary += " in #{error_sources.to_sentence}" if error_sources.any?
 
-    errors_summary += " detected"
+      errors_summary += " detected"
 
-    if corrected_problem_count.positive?
-      errors_summary += ", #{corrected_problem_count} #{"problem".pluralize(corrected_problem_count)} corrected"
+      if corrected_problem_count.positive?
+        errors_summary += ", #{corrected_problem_count} #{"problem".pluralize(corrected_problem_count)} corrected"
+      end
+
+      ofail errors_summary
     end
 
-    ofail errors_summary
+    return unless ENV["GITHUB_ACTIONS"]
+
+    annotations = formula_results.merge(cask_results).flat_map do |path, result|
+      (
+        result[:warnings].map { |w| [:warning, w] } +
+        result[:errors].map { |e| [:error, e] }
+      ).map do |type, problem|
+        GitHub::Actions::Annotation.new(
+          type,
+          problem[:message],
+          file:   path,
+          line:   problem[:location]&.line,
+          column: problem[:location]&.column,
+        )
+      end
+    end
+
+    annotations.each do |annotation|
+      puts annotation if annotation.relevant?
+    end
   end
 
   def format_problem_lines(problems)
