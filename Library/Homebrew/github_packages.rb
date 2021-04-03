@@ -205,10 +205,7 @@ class GitHubPackages
       "org.opencontainers.image.url"           => bottle_hash["formula"]["homepage"],
       "org.opencontainers.image.vendor"        => org,
       "org.opencontainers.image.version"       => version,
-    }
-    formula_annotations_hash.each do |key, value|
-      formula_annotations_hash.delete(key) if value.blank?
-    end
+    }.compact
 
     manifests = bottle_hash["bottle"]["tags"].map do |bottle_tag, tag_hash|
       local_file = tag_hash["local_filename"]
@@ -235,10 +232,18 @@ class GitHubPackages
       end
       raise TypeError, "unknown tab['built_on']['os']: #{tab["built_on"]["os"]}" if os.blank?
 
-      os_version = if tab["built_on"].present? && tab["built_on"]["os_version"].present?
-        tab["built_on"]["os_version"]
+      os_version = tab["built_on"]["os_version"] if tab["built_on"].present?
+      os_version = case os
+      when "darwin"
+        os_version || "macOS #{MacOS::Version.from_symbol(bottle_tag)}"
+      when "linux"
+        (os_version || "Ubuntu 16.04.7").delete_suffix " LTS"
       else
-        MacOS::Version.from_symbol(bottle_tag).to_s
+        os_version
+      end
+
+      glibc_version = if os == "linux"
+        (tab["built_on"]["glibc_version"] if tab["built_on"].present?) || "2.23"
       end
 
       platform_hash = {
@@ -263,10 +268,8 @@ class GitHubPackages
         "org.opencontainers.image.ref.name"      => tag,
         "org.opencontainers.image.title"         => "#{formula_full_name} #{tag}",
         "com.github.package.type"                => GITHUB_PACKAGE_TYPE,
-      }).sort.to_h
-      annotations_hash.each do |key, value|
-        annotations_hash.delete(key) if value.blank?
-      end
+        "sh.brew.bottle.glibc.version"           => glibc_version,
+      }).compact.sort.to_h
 
       image_manifest = {
         schemaVersion: 2,
@@ -296,8 +299,9 @@ class GitHubPackages
         annotations: {
           "org.opencontainers.image.ref.name" => tag,
           "sh.brew.bottle.digest"             => tar_gz_sha256,
+          "sh.brew.bottle.glibc.version"      => glibc_version,
           "sh.brew.tab"                       => tab.to_json,
-        },
+        }.compact,
       }
     end
 
