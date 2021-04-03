@@ -272,6 +272,7 @@ class GitHubPackages
         "org.opencontainers.image.title"         => "#{formula_full_name} #{tag}",
         "com.github.package.type"                => GITHUB_PACKAGE_TYPE,
         "sh.brew.bottle.glibc.version"           => glibc_version,
+        "sh.brew.tab"                            => tab.to_json,
       }).compact.sort.to_h
 
       image_manifest = {
