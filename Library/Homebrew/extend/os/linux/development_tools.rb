@@ -21,7 +21,10 @@ class DevelopmentTools
     end
 
     def build_system_info
-      generic_build_system_info.merge "glibc_version" => OS::Linux::Glibc.version
+      generic_build_system_info.merge({
+        "glibc_version"     => OS::Linux::Glibc.version,
+        "oldest_cpu_family" => Hardware.oldest_cpu,
+      })
     end
   end
 end

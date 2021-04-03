@@ -246,11 +246,14 @@ class GitHubPackages
         (tab["built_on"]["glibc_version"] if tab["built_on"].present?) || "2.23"
       end
 
+      variant = tab["oldest_cpu_family"] || "core2" if os == "linux"
+
       platform_hash = {
         architecture: architecture,
+        variant: variant,
         os: os,
         "os.version" => os_version,
-      }
+      }.compact
       tar_sha256 = Digest::SHA256.hexdigest(
         Utils.safe_popen_read("gunzip", "--stdout", "--decompress", local_file),
       )
