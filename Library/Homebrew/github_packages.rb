@@ -246,24 +246,14 @@ class GitHubPackages
         (tab["built_on"]["glibc_version"] if tab["built_on"].present?) || "2.23"
       end
 
-      variant = if architecture == "arm64"
-        "v8"
-      elsif tab["oldest_cpu_family"]
-        tab["oldest_cpu_family"]
-      elsif architecture == "amd64"
-        if os == "darwin"
-          Hardware.oldest_cpu(OS::Mac::Version.new(os_version[/macOS ([0-9]+\.[0-9]+)/, 1])).to_s
-        else
-          "core2"
-        end
-      end
+      variant = tab["oldest_cpu_family"] || "core2" if os == "linux"
 
       platform_hash = {
         architecture: architecture,
         variant: variant,
         os: os,
         "os.version" => os_version,
-      }
+      }.compact
       tar_sha256 = Digest::SHA256.hexdigest(
         Utils.safe_popen_read("gunzip", "--stdout", "--decompress", local_file),
       )
