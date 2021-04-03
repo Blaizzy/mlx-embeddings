@@ -215,30 +215,30 @@ class SystemCommand
   sig { params(sources: T::Array[IO], _block: T.proc.params(type: Symbol, line: String).void).void }
   def each_line_from(sources, &_block)
     end_time = Time.now + @timeout if @timeout
-    sources_remaining = sources.dup
+
+    sources = {
+      sources[0] => :stdout,
+      sources[1] => :stderr,
+    }
 
     loop do
-      readable_sources, = IO.select(sources_remaining, [], [], end_time&.remaining!)
+      readable_sources, = IO.select(sources.keys, [], [], end_time&.remaining!)
       raise Timeout::Error if readable_sources.nil?
 
-      readable_sources = T.must(readable_sources)
-
-      break if readable_sources.empty?
-
-      readable_sources.each do |source|
+      break if readable_sources.none? do |source|
         line = source.readline_nonblock || ""
-        type = (source == sources[0]) ? :stdout : :stderr
-        yield(type, line)
+        yield(sources.fetch(source), line)
+        true
       rescue EOFError
         source.close_read
-        sources_remaining.delete(source)
-        return if sources_remaining.empty?
+        sources.delete(source)
+        sources.any?
       rescue IO::WaitReadable
-        next
+        true
       end
     end
 
-    sources_remaining.each(&:close_read)
+    sources.each_key(&:close_read)
   end
 
   # Result containing the output and exit status of a finished sub-process.
