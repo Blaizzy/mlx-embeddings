@@ -28,4 +28,16 @@ when "HashValidator"
       def assert_valid_keys!(*valid_keys); end
     end
   RUBY
+when "TimeRemaining"
+  puts <<-RUBY
+    # typed: strict
+
+    class ::Time
+      sig { returns(T.any(Integer, Float)) }
+      def remaining; end
+
+      sig { returns(T.any(Integer, Float)) }
+      def remaining!; end
+    end
+  RUBY
 end

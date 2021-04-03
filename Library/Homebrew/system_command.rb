@@ -10,13 +10,15 @@ require "extend/io"
 require "extend/predicable"
 require "extend/hash_validator"
 
+require "extend/time"
+
 # Class for running sub-processes and capturing their output and exit status.
 #
 # @api private
 class SystemCommand
   extend T::Sig
 
-  using HashValidator
+  using TimeRemaining
 
   # Helper functions for calling {SystemCommand.run}.
   module Mixin
@@ -78,10 +80,24 @@ class SystemCommand
       verbose:      T.nilable(T::Boolean),
       secrets:      T.any(String, T::Array[String]),
       chdir:        T.any(String, Pathname),
+      timeout:      T.nilable(T.any(Integer, Float)),
     ).void
   }
-  def initialize(executable, args: [], sudo: false, env: {}, input: [], must_succeed: false,
-                 print_stdout: false, print_stderr: true, debug: nil, verbose: nil, secrets: [], chdir: T.unsafe(nil))
+  def initialize(
+    executable,
+    args: [],
+    sudo: false,
+    env: {},
+    input: [],
+    must_succeed: false,
+    print_stdout: false,
+    print_stderr: true,
+    debug: nil,
+    verbose: false,
+    secrets: [],
+    chdir: T.unsafe(nil),
+    timeout: nil
+  )
     require "extend/ENV"
     @executable = executable
     @args = args
@@ -100,6 +116,7 @@ class SystemCommand
     @verbose = verbose
     @secrets = (Array(secrets) + ENV.sensitive_environment.values).uniq
     @chdir = chdir
+    @timeout = timeout
   end
 
   sig { returns(T::Array[String]) }
@@ -197,26 +214,31 @@ class SystemCommand
 
   sig { params(sources: T::Array[IO], _block: T.proc.params(type: Symbol, line: String).void).void }
   def each_line_from(sources, &_block)
-    sources_remaining = sources.dup
-    while sources_remaining.present?
-      readable_sources, = IO.select(sources_remaining)
-      readable_sources = T.must(readable_sources)
+    end_time = Time.now + @timeout if @timeout
 
-      break if readable_sources.empty?
+    sources = {
+      sources[0] => :stdout,
+      sources[1] => :stderr,
+    }
 
-      readable_sources.each do |source|
+    loop do
+      readable_sources, = IO.select(sources.keys, [], [], end_time&.remaining!)
+      raise Timeout::Error if readable_sources.nil?
+
+      break if readable_sources.none? do |source|
         line = source.readline_nonblock || ""
-        type = (source == sources[0]) ? :stdout : :stderr
-        yield(type, line)
+        yield(sources.fetch(source), line)
+        true
       rescue EOFError
         source.close_read
-        sources_remaining.delete(source)
+        sources.delete(source)
+        sources.any?
       rescue IO::WaitReadable
-        next
+        true
       end
     end
 
-    sources_remaining.each(&:close_read)
+    sources.each_key(&:close_read)
   end
 
   # Result containing the output and exit status of a finished sub-process.
