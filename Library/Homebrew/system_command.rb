@@ -220,6 +220,7 @@ class SystemCommand
     loop do
       readable_sources, = IO.select(sources_remaining, [], [], end_time&.remaining!)
       raise Timeout::Error if readable_sources.nil?
+
       readable_sources = T.must(readable_sources)
 
       break if readable_sources.empty?

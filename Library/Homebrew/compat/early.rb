@@ -1,4 +1,4 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "compat/download_strategy"
+require_relative "early/download_strategy"

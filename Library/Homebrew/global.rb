@@ -75,7 +75,7 @@ HOMEBREW_BOTTLES_EXTNAME_REGEX = /\.([a-z0-9_]+)\.bottle\.(?:(\d+)\.)?tar\.gz$/.
 require "utils/sorbet"
 
 require "env_config"
-require "compat" unless Homebrew::EnvConfig.no_compat?
+require "compat/early" unless Homebrew::EnvConfig.no_compat?
 require "os"
 require "messages"
 
@@ -154,3 +154,5 @@ require "tap_constants"
 
 # Enables `patchelf.rb` write support.
 HOMEBREW_PATCHELF_RB_WRITE = ENV["HOMEBREW_NO_PATCHELF_RB_WRITE"].blank?.freeze
+
+require "compat/late" unless Homebrew::EnvConfig.no_compat?
