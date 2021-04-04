@@ -306,9 +306,7 @@ class Bottle
 
     filename = Filename.create(formula, tag, spec.rebuild).bintray
 
-    # TODO: this will need adjusted when if we use GitHub Packages by default
-    path, resolved_basename = if (bottle_domain = Homebrew::EnvConfig.bottle_domain.presence) &&
-                                 bottle_domain.start_with?(GitHubPackages::URL_PREFIX)
+    path, resolved_basename = if spec.root_url.match?(GitHubPackages::URL_REGEX)
       ["#{@name}/blobs/sha256:#{checksum}", filename]
     else
       filename
@@ -443,13 +441,18 @@ class BottleSpecification
 
   def root_url(var = nil, specs = {})
     if var.nil?
-      @root_url ||= if Homebrew::EnvConfig.bottle_domain.start_with?(GitHubPackages::URL_PREFIX)
+      @root_url ||= if Homebrew::EnvConfig.bottle_domain.match?(GitHubPackages::URL_REGEX)
         GitHubPackages.root_url(tap.user, tap.repo).to_s
       else
         "#{Homebrew::EnvConfig.bottle_domain}/#{Utils::Bottles::Bintray.repository(tap)}"
       end
     else
-      @root_url = var
+      @root_url = if var.to_s.start_with? "docker://"
+        _, registry, org, repo = *var.match(%r{docker://([\w.-]+)/([\w-]+)/([\w-]+)})
+        GitHubPackages.root_url(org, repo, "https://#{registry}/v2/").to_s
+      else
+        var
+      end
       @root_url_specs.merge!(specs)
     end
   end
