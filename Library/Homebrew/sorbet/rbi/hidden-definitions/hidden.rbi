@@ -6252,6 +6252,10 @@ module CopHelper
   extend ::RSpec::Its
 end
 
+class CurlDownloadStrategy
+  include ::AbstractDownloadStrategy::Compat_Fetch
+end
+
 class CxxStdlib
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
