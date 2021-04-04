@@ -44,7 +44,7 @@ __brew_completion_caching_policy() {
   (( $#tmp )) || return 0
 
   # otherwise, invalidate if latest tap index file is missing or newer than cache file
-  tmp=( ${HOMEBREW_REPOSITORY:-/usr/local/Homebrew}/Library/Taps/*/*/.git/index(om[1]N) )
+  tmp=( $(brew --repository)/Library/Taps/*/*/.git/index(om[1]N) )
   [[ -z $tmp || $tmp -nt $1 ]]
 }
 
