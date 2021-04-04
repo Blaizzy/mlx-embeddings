@@ -17,6 +17,8 @@ module Homebrew
       #
       # @api public
       class Hackage
+        extend T::Sig
+
         # A `Regexp` used in determining if the strategy applies to the URL and
         # also as part of extracting the package name from the URL basename.
         PACKAGE_NAME_REGEX = /(?<package_name>.+?)-\d+/i.freeze
@@ -45,7 +47,15 @@ module Homebrew
         # @param url [String] the URL of the content to check
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]
-        def self.find_versions(url, regex = nil, &block)
+        sig {
+          params(
+            url:   String,
+            regex: T.nilable(Regexp),
+            cask:  T.nilable(Cask::Cask),
+            block: T.nilable(T.proc.params(arg0: String).returns(T.any(T::Array[String], String))),
+          ).returns(T::Hash[Symbol, T.untyped])
+        }
+        def self.find_versions(url, regex, cask: nil, &block)
           match = File.basename(url).match(FILENAME_REGEX)
 
           # A page containing a directory listing of the latest source tarball
@@ -54,7 +64,7 @@ module Homebrew
           # Example regex: `%r{<h3>example-(.*?)/?</h3>}i`
           regex ||= %r{<h3>#{Regexp.escape(match[:package_name])}-(.*?)/?</h3>}i
 
-          PageMatch.find_versions(page_url, regex, &block)
+          PageMatch.find_versions(page_url, regex, cask: cask, &block)
         end
       end
     end

@@ -35,8 +35,16 @@ module Homebrew
 
         # Checks the final URL for new versions after following all redirections,
         # using the provided regex for matching.
-        sig { params(url: String, regex: T.nilable(Regexp)).returns(T::Hash[Symbol, T.untyped]) }
-        def self.find_versions(url, regex, &block)
+        sig {
+          params(
+            url:   String,
+            regex: T.nilable(Regexp),
+            cask:  T.nilable(Cask::Cask),
+            block: T.nilable(T.proc.params(arg0: T::Hash[String, String])
+            .returns(T.any(T::Array[String], String))),
+          ).returns(T::Hash[Symbol, T.untyped])
+        }
+        def self.find_versions(url, regex, cask: nil, &block)
           match_data = { matches: {}, regex: regex, url: url }
 
           headers = Strategy.page_headers(url)
@@ -45,7 +53,7 @@ module Homebrew
           merged_headers = headers.reduce(&:merge)
 
           if block
-            match = block.call(merged_headers, regex)
+            match = yield merged_headers, regex
           else
             match = nil
 

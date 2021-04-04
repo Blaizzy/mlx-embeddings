@@ -17,7 +17,11 @@ module Homebrew
     sig { params(info_plist_path: Pathname).returns(T.nilable(T.attached_class)) }
     def self.from_info_plist(info_plist_path)
       plist = system_command!("plutil", args: ["-convert", "xml1", "-o", "-", info_plist_path]).plist
+      from_info_plist_content(plist)
+    end
 
+    sig { params(plist: T::Hash[String, T.untyped]).returns(T.nilable(T.attached_class)) }
+    def self.from_info_plist_content(plist)
       short_version = plist["CFBundleShortVersionString"].presence
       version = plist["CFBundleVersion"].presence
 

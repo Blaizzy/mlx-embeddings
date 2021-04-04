@@ -79,7 +79,8 @@ describe Homebrew::Livecheck::Strategy::PageMatch do
 
   describe "::find_versions?" do
     it "finds versions in provided_content" do
-      expect(page_match.find_versions(url, regex, page_content)).to eq(find_versions_cached_return_hash)
+      expect(page_match.find_versions(url, regex, provided_content: page_content))
+        .to eq(find_versions_cached_return_hash)
     end
   end
 end

@@ -501,8 +501,7 @@ module Homebrew
           regex_provided:     livecheck_regex.present?,
           block_provided:     livecheck.strategy_block.present?,
         )
-        strategy = Strategy.from_symbol(livecheck_strategy)
-        strategy ||= strategies.first
+        strategy = Strategy.from_symbol(livecheck_strategy) || strategies.first
         strategy_name = livecheck_strategy_names[strategy]
 
         if debug
@@ -514,24 +513,29 @@ module Homebrew
           puts "Regex:            #{livecheck_regex.inspect}" if livecheck_regex.present?
         end
 
-        if livecheck_strategy == :page_match && (livecheck_regex.blank? && livecheck.strategy_block.blank?)
-          odebug "#{strategy_name} strategy requires a regex or block"
-          next
-        end
-
-        if livecheck_strategy.present? && livecheck_url.blank?
-          odebug "#{strategy_name} strategy requires a URL"
-          next
-        end
-
-        if livecheck_strategy.present? && strategies.exclude?(strategy)
-          odebug "#{strategy_name} strategy does not apply to this URL"
-          next
+        if livecheck_strategy.present?
+          if livecheck_strategy == :page_match && (livecheck_regex.blank? && livecheck.strategy_block.blank?)
+            odebug "#{strategy_name} strategy requires a regex or block"
+            next
+          elsif livecheck_url.blank?
+            odebug "#{strategy_name} strategy requires a URL"
+            next
+          elsif strategies.exclude?(strategy)
+            odebug "#{strategy_name} strategy does not apply to this URL"
+            next
+          end
         end
 
         next if strategy.blank?
 
-        strategy_data = strategy.find_versions(url, livecheck_regex, &livecheck.strategy_block)
+        strategy_data = begin
+          strategy.find_versions(url, livecheck_regex, cask: cask, &livecheck.strategy_block)
+        rescue ArgumentError => e
+          raise unless e.message.include?("unknown keyword: cask")
+
+          odeprecated "`def self.find_versions` in `#{strategy}` without a `cask` parameter"
+          strategy.find_versions(url, livecheck_regex, &livecheck.strategy_block)
+        end
         match_version_map = strategy_data[:matches]
         regex = strategy_data[:regex]
         messages = strategy_data[:messages]
@@ -559,7 +563,9 @@ module Homebrew
           end
         end
 
-        if debug && match_version_map.present?
+        next if match_version_map.blank?
+
+        if debug
           puts
           puts "Matched Versions:"
 
@@ -571,8 +577,6 @@ module Homebrew
             puts match_version_map.values.join(", ")
           end
         end
-
-        next if match_version_map.blank?
 
         version_info = {
           latest: Version.new(match_version_map.values.max_by { |v| LivecheckVersion.create(formula_or_cask, v) }),

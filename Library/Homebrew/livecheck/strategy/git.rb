@@ -24,6 +24,8 @@ module Homebrew
       #
       # @api public
       class Git
+        extend T::Sig
+
         # The priority of the strategy on an informal scale of 1 to 10 (from
         # lowest to highest).
         PRIORITY = 8
@@ -74,7 +76,16 @@ module Homebrew
         # @param url [String] the URL of the Git repository to check
         # @param regex [Regexp] the regex to use for matching versions
         # @return [Hash]
-        def self.find_versions(url, regex = nil, &block)
+        sig {
+          params(
+            url:   String,
+            regex: T.nilable(Regexp),
+            cask:  T.nilable(Cask::Cask),
+            block: T.nilable(T.proc.params(arg0: T::Array[String])
+            .returns(T.any(T::Array[String], String))),
+          ).returns(T::Hash[Symbol, T.untyped])
+        }
+        def self.find_versions(url, regex, cask: nil, &block)
           match_data = { matches: {}, regex: regex, url: url }
 
           tags_data = tag_info(url, regex)

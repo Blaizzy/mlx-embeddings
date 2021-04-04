@@ -17,6 +17,8 @@ module Homebrew
       #
       # @api public
       class Pypi
+        extend T::Sig
+
         NICE_NAME = "PyPI"
 
         # The `Regexp` used to extract the package name and suffix (e.g., file
@@ -49,7 +51,15 @@ module Homebrew
         # @param url [String] the URL of the content to check
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]
-        def self.find_versions(url, regex = nil, &block)
+        sig {
+          params(
+            url:   String,
+            regex: T.nilable(Regexp),
+            cask:  T.nilable(Cask::Cask),
+            block: T.nilable(T.proc.params(arg0: String).returns(T.any(T::Array[String], String))),
+          ).returns(T::Hash[Symbol, T.untyped])
+        }
+        def self.find_versions(url, regex, cask: nil, &block)
           match = File.basename(url).match(FILENAME_REGEX)
 
           # Use `\.t` instead of specific tarball extensions (e.g. .tar.gz)
@@ -64,7 +74,7 @@ module Homebrew
           re_suffix = Regexp.escape(suffix)
           regex ||= %r{href=.*?/packages.*?/#{re_package_name}[._-]v?(\d+(?:\.\d+)*(?:[._-]post\d+)?)#{re_suffix}}i
 
-          PageMatch.find_versions(page_url, regex, &block)
+          PageMatch.find_versions(page_url, regex, cask: cask, &block)
         end
       end
     end

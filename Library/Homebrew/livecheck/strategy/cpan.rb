@@ -18,6 +18,8 @@ module Homebrew
       #
       # @api public
       class Cpan
+        extend T::Sig
+
         NICE_NAME = "CPAN"
 
         # The `Regexp` used to determine if the strategy applies to the URL.
@@ -43,7 +45,15 @@ module Homebrew
         # @param url [String] the URL of the content to check
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]
-        def self.find_versions(url, regex = nil, &block)
+        sig {
+          params(
+            url:   String,
+            regex: T.nilable(Regexp),
+            cask:  T.nilable(Cask::Cask),
+            block: T.nilable(T.proc.params(arg0: String).returns(T.any(T::Array[String], String))),
+          ).returns(T::Hash[Symbol, T.untyped])
+        }
+        def self.find_versions(url, regex, cask: nil, &block)
           match = url.match(URL_MATCH_REGEX)
 
           # Use `\.t` instead of specific tarball extensions (e.g. .tar.gz)
@@ -55,7 +65,7 @@ module Homebrew
           # Example regex: `/href=.*?Brew[._-]v?(\d+(?:\.\d+)*)\.t/i`
           regex ||= /href=.*?#{match[:prefix]}[._-]v?(\d+(?:\.\d+)*)#{Regexp.escape(suffix)}/i
 
-          PageMatch.find_versions(page_url, regex, &block)
+          PageMatch.find_versions(page_url, regex, cask: cask, &block)
         end
       end
     end
