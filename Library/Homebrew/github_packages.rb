@@ -194,6 +194,7 @@ class GitHubPackages
 
     created_date = bottle_hash["bottle"]["date"]
     formula_annotations_hash = {
+      "com.github.package.type"                => GITHUB_PACKAGE_TYPE,
       "org.opencontainers.image.created"       => created_date,
       "org.opencontainers.image.description"   => bottle_hash["formula"]["desc"],
       "org.opencontainers.image.documentation" => documentation,
@@ -233,24 +234,17 @@ class GitHubPackages
       raise TypeError, "unknown tab['built_on']['os']: #{tab["built_on"]["os"]}" if os.blank?
 
       os_version = tab["built_on"]["os_version"] if tab["built_on"].present?
-      os_version = case os
+      case os
       when "darwin"
-        os_version || "macOS #{MacOS::Version.from_symbol(bottle_tag)}"
+        os_version ||= "macOS #{MacOS::Version.from_symbol(bottle_tag)}"
       when "linux"
-        (os_version || "Ubuntu 16.04.7").delete_suffix " LTS"
-      else
-        os_version
+        os_version = (os_version || "Ubuntu 16.04.7").delete_suffix " LTS"
+        glibc_version = (tab["built_on"]["glibc_version"] if tab["built_on"].present?) || "2.23"
+        cpu_variant = tab["oldest_cpu_family"] || "core2"
       end
-
-      glibc_version = if os == "linux"
-        (tab["built_on"]["glibc_version"] if tab["built_on"].present?) || "2.23"
-      end
-
-      variant = tab["oldest_cpu_family"] || "core2" if os == "linux"
 
       platform_hash = {
         architecture: architecture,
-        variant: variant,
         os: os,
         "os.version" => os_version,
       }.compact
@@ -265,14 +259,21 @@ class GitHubPackages
 
       tag = GitHubPackages.version_rebuild(version, rebuild, bottle_tag)
 
-      annotations_hash = formula_annotations_hash.merge({
-        "org.opencontainers.image.created"       => created_date,
-        "org.opencontainers.image.documentation" => documentation,
-        "org.opencontainers.image.ref.name"      => tag,
-        "org.opencontainers.image.title"         => "#{formula_full_name} #{tag}",
-        "com.github.package.type"                => GITHUB_PACKAGE_TYPE,
-        "sh.brew.bottle.glibc.version"           => glibc_version,
-      }).compact.sort.to_h
+      descriptor_annotations_hash = {
+        "org.opencontainers.image.ref.name" => tag,
+        "sh.brew.bottle.cpu.variant"        => cpu_variant,
+        "sh.brew.bottle.digest"             => tar_gz_sha256,
+        "sh.brew.bottle.glibc.version"      => glibc_version,
+        "sh.brew.tab"                       => tab.to_json,
+      }.compact
+
+      annotations_hash = formula_annotations_hash.merge(descriptor_annotations_hash).merge(
+        {
+          "org.opencontainers.image.created"       => created_date,
+          "org.opencontainers.image.documentation" => documentation,
+          "org.opencontainers.image.title"         => "#{formula_full_name} #{tag}",
+        },
+      ).compact.sort.to_h
 
       image_manifest = {
         schemaVersion: 2,
@@ -299,12 +300,7 @@ class GitHubPackages
         digest:      "sha256:#{manifest_json_sha256}",
         size:        manifest_json_size,
         platform:    platform_hash,
-        annotations: {
-          "org.opencontainers.image.ref.name" => tag,
-          "sh.brew.bottle.digest"             => tar_gz_sha256,
-          "sh.brew.bottle.glibc.version"      => glibc_version,
-          "sh.brew.tab"                       => tab.to_json,
-        }.compact,
+        annotations: descriptor_annotations_hash,
       }
     end
 
