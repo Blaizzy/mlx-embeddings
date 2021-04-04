@@ -563,7 +563,7 @@ class CurlGitHubPackagesDownloadStrategy < CurlDownloadStrategy
 
   def initialize(url, name, version, **meta)
     meta ||= {}
-    meta[:header] = "Authorization: Bearer"
+    meta[:header] = ["Authorization: Bearer", "Accept: application/vnd.oci.image.index.v1+json"]
     super(url, name, version, meta)
   end
 
