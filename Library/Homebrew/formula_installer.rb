@@ -1,7 +1,6 @@
 # typed: false
 # frozen_string_literal: true
 
-require "cxxstdlib"
 require "formula"
 require "keg"
 require "tab"
@@ -1136,13 +1135,6 @@ class FormulaInstaller
 
     skip_linkage = formula.bottle_specification.skip_relocation?
     keg.replace_placeholders_with_locations tab.changed_files, skip_linkage: skip_linkage
-
-    unless ignore_deps?
-      CxxStdlib.check_compatibility(
-        formula, formula.recursive_dependencies,
-        Keg.new(formula.prefix), tab.compiler
-      )
-    end
 
     # fill in missing/outdated parts of the tab
     # keep in sync with Tab#to_bottle_json

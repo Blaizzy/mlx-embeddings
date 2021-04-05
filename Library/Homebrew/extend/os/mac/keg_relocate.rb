@@ -16,7 +16,7 @@ class Keg
     end
   end
 
-  undef relocate_dynamic_linkage, detect_cxx_stdlibs
+  undef relocate_dynamic_linkage
 
   def relocate_dynamic_linkage(relocation)
     mach_o_files.each do |file|
@@ -37,25 +37,6 @@ class Keg
         end
       end
     end
-  end
-
-  # Detects the C++ dynamic libraries in-place, scanning the dynamic links
-  # of the files within the keg.
-  # Note that this doesn't attempt to distinguish between libstdc++ versions,
-  # for instance between Apple libstdc++ and GNU libstdc++.
-  def detect_cxx_stdlibs(options = {})
-    skip_executables = options.fetch(:skip_executables, false)
-    results = Set.new
-
-    mach_o_files.each do |file|
-      next if file.mach_o_executable? && skip_executables
-
-      dylibs = file.dynamically_linked_libraries
-      results << :libcxx unless dylibs.grep(/libc\+\+.+\.dylib/).empty?
-      results << :libstdcxx unless dylibs.grep(/libstdc\+\+.+\.dylib/).empty?
-    end
-
-    results.to_a
   end
 
   def fix_dynamic_linkage

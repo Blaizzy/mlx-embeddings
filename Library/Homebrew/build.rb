@@ -8,7 +8,6 @@ old_trap = trap("INT") { exit! 130 }
 
 require_relative "global"
 require "build_options"
-require "cxxstdlib"
 require "keg"
 require "extend/ENV"
 require "debrew"
@@ -174,7 +173,7 @@ class Build
             "#{formula.full_name} #{formula.build.used_options.sort.join(" ")}".strip
           formula.install
 
-          stdlibs = detect_stdlibs(ENV.compiler)
+          stdlibs = detect_stdlibs
           tab = Tab.create(formula, ENV.compiler, stdlibs.first)
           tab.write
 
@@ -186,9 +185,8 @@ class Build
     end
   end
 
-  def detect_stdlibs(compiler)
+  def detect_stdlibs
     keg = Keg.new(formula.prefix)
-    CxxStdlib.check_compatibility(formula, deps, keg, compiler)
 
     # The stdlib recorded in the install receipt is used during dependency
     # compatibility checks, so we only care about the stdlib that libraries
