@@ -92,7 +92,7 @@ Our bottles (binary packages) are hosted by [Bintray](https://bintray.com/homebr
 
 Secure password storage and syncing is provided by [1Password for Teams](https://1password.com/teams/).
 
-[![1Password](https://1password.com/img/press/logo.e5bf08b08157e08a1b9112fcd58a54b6.svg)](https://1password.com)
+[![1Password](https://1password.com/img/redesign/logo-light-bg.svg)](https://1password.com)
 
 Homebrew is a member of the [Software Freedom Conservancy](https://sfconservancy.org).
 
