@@ -149,6 +149,9 @@ module Homebrew
 
     unless args.no_git?
       cd tap.path do
+        Utils::Git.set_name_email!
+        Utils::Git.setup_gpg!
+
         # Would be nice to use --initial-branch here but it's not available in
         # older versions of Git that we support.
         safe_system "git", "-c", "init.defaultBranch=#{branch}", "init"
