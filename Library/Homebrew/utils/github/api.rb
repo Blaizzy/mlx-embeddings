@@ -21,7 +21,7 @@ module GitHub
         #{ALL_SCOPES_URL}
       #{Utils::Shell.set_variable_in_profile("HOMEBREW_GITHUB_API_TOKEN", "your_token_here")}
   EOS
-  GITHUB_PAT_REGEX = /^(?:[a-f0-9]{40}|gp1_[A-Za-z0-9_]{40,255})$/.freeze
+  GITHUB_PERSONAL_ACCESS_TOKEN_REGEX = /^(?:[a-f0-9]{40}|ghp_\w{36,251})$/.freeze
 
   # Helper functions to access the GitHub API.
   #
@@ -128,7 +128,7 @@ module GitHub
       # Don't use passwords from the keychain unless they look like
       # GitHub Personal Access Tokens:
       #   https://github.com/Homebrew/brew/issues/6862#issuecomment-572610344
-      return unless GITHUB_PAT_REGEX.match?(github_password)
+      return unless GITHUB_PERSONAL_ACCESS_TOKEN_REGEX.match?(github_password)
 
       github_password
     rescue Errno::EPIPE
