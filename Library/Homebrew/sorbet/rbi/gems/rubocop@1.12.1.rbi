@@ -2180,6 +2180,8 @@ class RuboCop::Cop::Layout::EmptyLineAfterGuardClause < ::RuboCop::Cop::Base
   def last_argument_is_heredoc?(node); end
   def last_heredoc_argument(node); end
   def next_line_empty?(line); end
+  def next_line_empty_or_enable_directive_comment?(line); end
+  def next_line_enable_directive_comment?(line); end
   def next_line_rescue_or_ensure?(node); end
   def next_sibling_empty_or_guard_clause?(node); end
   def next_sibling_parent_empty_or_else?(node); end
@@ -3144,6 +3146,7 @@ class RuboCop::Cop::Layout::MultilineMethodCallIndentation < ::RuboCop::Cop::Bas
   def receiver_alignment_base(node); end
   def relative_to_receiver_message(rhs); end
   def relevant_node?(send_node); end
+  def right_hand_side(send_node); end
   def semantic_alignment_base(node, rhs); end
   def semantic_alignment_node(node); end
   def should_align_with_base?; end
@@ -3185,6 +3188,7 @@ class RuboCop::Cop::Layout::MultilineOperationIndentation < ::RuboCop::Cop::Base
   def message(node, lhs, rhs); end
   def offending_range(node, lhs, rhs, given_style); end
   def relevant_node?(node); end
+  def right_hand_side(send_node); end
   def should_align?(node, rhs, given_style); end
 end
 
@@ -6206,8 +6210,6 @@ module RuboCop::Cop::MultilineExpressionIndentation
   def part_of_assignment_rhs(node, candidate); end
   def part_of_block_body?(candidate, block_node); end
   def postfix_conditional?(node); end
-  def regular_method_right_hand_side(send_node); end
-  def right_hand_side(send_node); end
   def valid_method_rhs_candidate?(candidate, node); end
   def valid_rhs?(candidate, ancestor); end
   def valid_rhs_candidate?(candidate, node); end
@@ -9301,6 +9303,7 @@ class RuboCop::Cop::Style::MultilineMethodSignature < ::RuboCop::Cop::Base
   def correction_exceeds_max_line_length?(node); end
   def definition_width(node); end
   def indentation_width(node); end
+  def last_line_source_of_arguments(arguments); end
   def max_line_length; end
   def opening_line(node); end
 end
@@ -10082,6 +10085,7 @@ class RuboCop::Cop::Style::RedundantBegin < ::RuboCop::Cop::Base
   def empty_begin?(node); end
   def register_offense(node); end
   def replace_begin_with_statement(corrector, offense_range, node); end
+  def restore_removed_comments(corrector, offense_range, node, first_child); end
   def valid_begin_assignment?(node); end
   def valid_context_using_only_begin?(node); end
 end
@@ -12123,6 +12127,7 @@ class RuboCop::DirectiveComment
   def cop_names; end
   def cops; end
   def disabled?; end
+  def enabled?; end
   def enabled_all?; end
   def line_number; end
   def match?(cop_names); end
