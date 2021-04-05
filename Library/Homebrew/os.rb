@@ -37,6 +37,8 @@ module OS
 
   ::OS_VERSION = ENV["HOMEBREW_OS_VERSION"]
 
+  GLIBC_CI_VERSION = "2.23"
+
   if OS.mac?
     require "os/mac"
     # Don't tell people to report issues on unsupported configurations.
