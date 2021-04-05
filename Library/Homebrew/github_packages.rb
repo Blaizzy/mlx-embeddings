@@ -58,7 +58,7 @@ class GitHubPackages
       HOMEBREW_PREFIX/"bin/skopeo",
     ].compact.first
     unless skopeo.exist?
-      odie "no `skoepeo` and HOMEBREW_FORCE_HOMEBREW_ON_LINUX is set!" if Homebrew::EnvConfig.force_homebrew_on_linux?
+      odie "no `skopeo` and HOMEBREW_FORCE_HOMEBREW_ON_LINUX is set!" if Homebrew::EnvConfig.force_homebrew_on_linux?
 
       ohai "Installing `skopeo` for upload..."
       safe_system HOMEBREW_BREW_FILE, "install", "--formula", "skopeo"
@@ -206,7 +206,8 @@ class GitHubPackages
       "org.opencontainers.image.url"           => bottle_hash["formula"]["homepage"],
       "org.opencontainers.image.vendor"        => org,
       "org.opencontainers.image.version"       => version,
-    }.compact
+    }
+    delete_blank_hash_values(formula_annotations_hash)
 
     manifests = bottle_hash["bottle"]["tags"].map do |bottle_tag, tag_hash|
       local_file = tag_hash["local_filename"]
@@ -239,15 +240,17 @@ class GitHubPackages
         os_version ||= "macOS #{MacOS::Version.from_symbol(bottle_tag)}"
       when "linux"
         os_version = (os_version || "Ubuntu 16.04.7").delete_suffix " LTS"
-        glibc_version = (tab["built_on"]["glibc_version"] if tab["built_on"].present?) || "2.23"
-        cpu_variant = tab["oldest_cpu_family"] || "core2"
+        glibc_version = (tab["built_on"]["glibc_version"] if tab["built_on"].present?) || OS::GLIBC_CI_VERSION
+        cpu_variant = tab["oldest_cpu_family"] || Hardware::CPU::INTEL_64BIT_OLDEST_CPU.to_s
       end
 
       platform_hash = {
         architecture: architecture,
         os: os,
         "os.version" => os_version,
-      }.compact
+      }
+      delete_blank_hash_values(platform_hash)
+
       tar_sha256 = Digest::SHA256.hexdigest(
         Utils.safe_popen_read("gunzip", "--stdout", "--decompress", local_file),
       )
@@ -265,7 +268,8 @@ class GitHubPackages
         "sh.brew.bottle.digest"             => tar_gz_sha256,
         "sh.brew.bottle.glibc.version"      => glibc_version,
         "sh.brew.tab"                       => tab.to_json,
-      }.compact
+      }
+      delete_blank_hash_values(descriptor_annotations_hash)
 
       annotations_hash = formula_annotations_hash.merge(descriptor_annotations_hash).merge(
         {
@@ -273,7 +277,8 @@ class GitHubPackages
           "org.opencontainers.image.documentation" => documentation,
           "org.opencontainers.image.title"         => "#{formula_full_name} #{tag}",
         },
-      ).compact.sort.to_h
+      ).sort.to_h
+      delete_blank_hash_values(annotations_hash)
 
       image_manifest = {
         schemaVersion: 2,
@@ -380,5 +385,11 @@ class GitHubPackages
     path.write(json)
 
     [sha256, json.size]
+  end
+
+  def delete_blank_hash_values(hash)
+    hash.each do |key, value|
+      hash.delete(key) if value.blank?
+    end
   end
 end

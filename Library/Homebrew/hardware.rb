@@ -20,6 +20,8 @@ module Hardware
       *ARM_64BIT_ARCHS,
     ].freeze
 
+    INTEL_64BIT_OLDEST_CPU = :core2
+
     class << self
       extend T::Sig
 
@@ -198,7 +200,7 @@ module Hardware
     def oldest_cpu(_version = nil)
       if Hardware::CPU.intel?
         if Hardware::CPU.is_64_bit?
-          :core2
+          Hardware::CPU::INTEL_64BIT_OLDEST_CPU
         else
           :core
         end

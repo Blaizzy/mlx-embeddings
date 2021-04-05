@@ -343,7 +343,7 @@ module Homebrew
       return unless @core_tap
 
       version = formula.version.to_s
-      return if version == "2.23"
+      return if version == OS::GLIBC_CI_VERSION
 
       problem "The glibc version must be #{version}, as this is the version used by our CI on Linux. " \
               "Glibc is for users who have a system Glibc with a lower version, " \
