@@ -532,7 +532,7 @@ module Homebrew
           "tap_git_revision" => tap_git_revision,
           "tap_git_remote"   => tap_git_remote,
           "desc"             => f.desc,
-          "license"          => f.license,
+          "license"          => SPDX.license_expression_to_string(f.license),
           "homepage"         => f.homepage,
         },
         "bottle"  => {
