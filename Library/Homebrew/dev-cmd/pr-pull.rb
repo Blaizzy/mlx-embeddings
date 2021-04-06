@@ -391,18 +391,21 @@ module Homebrew
       ohai "Fetching #{tap} pull request ##{pr}"
       Dir.mktmpdir pr do |dir|
         cd dir do
-          original_commit = tap.path.git_head
-          cherry_pick_pr!(user, repo, pr, path: tap.path, args: args)
-          if args.autosquash? && !args.dry_run?
-            autosquash!(original_commit, path: tap.path,
-                        verbose: args.verbose?, resolve: args.resolve?, reason: args.message)
-          end
-          signoff!(tap.path, pr: pr, dry_run: args.dry_run?) unless args.clean?
+          original_commit = ENV["GITHUB_SHA"].presence || tap.path.git_head
 
-          unless args.no_upload?
-            mirror_formulae(tap, original_commit,
-                            org: bintray_org, repo: mirror_repo, publish: !args.no_publish?,
-                            args: args)
+          unless args.no_commit?
+            cherry_pick_pr!(user, repo, pr, path: tap.path, args: args)
+            if args.autosquash? && !args.dry_run?
+              autosquash!(original_commit, path: tap.path,
+                          verbose: args.verbose?, resolve: args.resolve?, reason: args.message)
+            end
+            signoff!(tap.path, pr: pr, dry_run: args.dry_run?) unless args.clean?
+
+            unless args.no_upload?
+              mirror_formulae(tap, original_commit,
+                              org: bintray_org, repo: mirror_repo, publish: !args.no_publish?,
+                              args: args)
+            end
           end
 
           unless formulae_need_bottles?(tap, original_commit, user, repo, pr, args: args)
