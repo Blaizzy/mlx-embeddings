@@ -21,7 +21,7 @@ jobs:
         if: github.event_name == 'schedule' || github.event.action == 'closed'
         uses: reitermarkus/rerun-workflow@64cba9e834916060e77b7dad424d086837fdd0a6
         with:
-          token: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
+          token: ${{ secrets.HOMEBREW_GITHUB_PUBLIC_REPO_TOKEN }}
           continuous-label: waiting for feedback
           trigger-labels: critical
           workflow: triage.yml
@@ -31,7 +31,7 @@ jobs:
             github.event.action != 'closed' && github.event.pull_request.state != 'closed'
         uses: actions/github-script@v3
         with:
-          github-token: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
+          github-token: ${{ secrets.HOMEBREW_GITHUB_PUBLIC_REPO_TOKEN }}
           script: |
             async function approvePullRequest(pullRequestNumber) {
               const reviews = await approvalsByAuthenticatedUser(pullRequestNumber)
