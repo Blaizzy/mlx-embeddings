@@ -37,7 +37,8 @@ module OS
 
   ::OS_VERSION = ENV["HOMEBREW_OS_VERSION"]
 
-  GLIBC_CI_VERSION = "2.23"
+  CI_GLIBC_VERSION = "2.23"
+  CI_OS_VERSION = "Ubuntu 16.04"
 
   if OS.mac?
     require "os/mac"
