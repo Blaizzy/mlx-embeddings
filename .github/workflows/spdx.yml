@@ -29,8 +29,6 @@ jobs:
       - name: Update SPDX license data
         id: update
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HOMEBREW_GPG_PASSPHRASE: ${{ secrets.BREWTESTBOT_GPG_SIGNING_SUBKEY_PASSPHRASE }}
         run: |
           git fetch origin
@@ -59,7 +57,7 @@ jobs:
         if: steps.update.outputs.committed == 'true'
         uses: Homebrew/actions/git-try-push@master
         with:
-          token: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
+          token: ${{ secrets.HOMEBREW_GITHUB_PUBLIC_REPO_TOKEN }}
           branch: ${{ steps.update.outputs.branch }}
           force: true
           origin_branch: "master"
@@ -68,4 +66,4 @@ jobs:
         if: steps.update.outputs.pull_request == 'true'
         run: hub pull-request --no-edit
         env:
-          GITHUB_TOKEN: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.HOMEBREW_GITHUB_PUBLIC_REPO_TOKEN }}

@@ -61,7 +61,7 @@ jobs:
         if: steps.update.outputs.committed == 'true'
         uses: Homebrew/actions/git-try-push@master
         with:
-          token: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
+          token: ${{ secrets.HOMEBREW_GITHUB_PUBLIC_REPO_TOKEN }}
           branch: ${{ steps.update.outputs.branch }}
           force: true
           origin_branch: "master"
@@ -70,4 +70,4 @@ jobs:
         if: steps.update.outputs.pull_request == 'true'
         run: hub pull-request --no-edit
         env:
-          GITHUB_TOKEN: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.HOMEBREW_GITHUB_PUBLIC_REPO_TOKEN }}

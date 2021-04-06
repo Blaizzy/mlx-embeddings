@@ -43,7 +43,7 @@ jobs:
           gem_name="$(echo "${branch}" | sed -E 's|.*/||;s|(.*)-.*$|\1|')"
           echo "::set-output name=gem_name::${gem_name}"
         env:
-          GITHUB_TOKEN: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Vendor Gems
         env:
           GEM_NAME: ${{ steps.checkout.outputs.gem_name }}
@@ -73,6 +73,6 @@ jobs:
       - name: Push to pull request
         uses: Homebrew/actions/git-try-push@master
         with:
-          token: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
+          token: ${{ secrets.HOMEBREW_GITHUB_PUBLIC_REPO_TOKEN }}
           branch: ${{ steps.checkout.outputs.branch }}
           force: true
