@@ -40,7 +40,7 @@ class Mktemp
   end
 
   def run
-    @tmpdir = Pathname.new(Dir.mktmpdir("#{@prefix.tr "@", "-"}-", HOMEBREW_TEMP))
+    @tmpdir = Pathname.new(Dir.mktmpdir("#{@prefix.tr "@", "AT"}-", HOMEBREW_TEMP))
 
     # Make sure files inside the temporary directory have the same group as the
     # brew instance.

@@ -101,6 +101,10 @@ class GitHubPackages
     "#{prefix}#{org}/#{repo_without_prefix(repo)}"
   end
 
+  def self.image_formula_name(formula_name)
+    formula_name.tr("@", "/")
+  end
+
   private
 
   IMAGE_CONFIG_SCHEMA_URI = "https://opencontainers.org/schema/image/config"
@@ -312,7 +316,8 @@ class GitHubPackages
     write_index_json(index_json_sha256, index_json_size, root,
                      "org.opencontainers.image.ref.name" => version_rebuild)
 
-    image_tag = "#{GitHubPackages.root_url(org, repo, DOCKER_PREFIX)}/#{formula_name}:#{version_rebuild}"
+    image_formula_name = GitHubPackages.image_formula_name(formula_name)
+    image_tag = "#{GitHubPackages.root_url(org, repo, DOCKER_PREFIX)}/#{image_formula_name}:#{version_rebuild}"
 
     puts
     args = ["copy", "--all", "oci:#{root}", image_tag.to_s]
@@ -321,7 +326,7 @@ class GitHubPackages
     else
       args << "--dest-creds=#{user}:#{token}"
       system_command!(skopeo, verbose: true, print_stdout: true, args: args)
-      package_name = "#{GitHubPackages.repo_without_prefix(repo)}/#{formula_name}"
+      package_name = "#{GitHubPackages.repo_without_prefix(repo)}/#{image_formula_name}"
       ohai "Uploaded to https://github.com/orgs/Homebrew/packages/container/package/#{package_name}"
     end
   end
