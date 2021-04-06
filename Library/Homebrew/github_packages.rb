@@ -206,8 +206,7 @@ class GitHubPackages
       "org.opencontainers.image.url"           => bottle_hash["formula"]["homepage"],
       "org.opencontainers.image.vendor"        => org,
       "org.opencontainers.image.version"       => version,
-    }
-    delete_blank_hash_values(formula_annotations_hash)
+    }.reject { |_, v| v.blank? }
 
     manifests = bottle_hash["bottle"]["tags"].map do |bottle_tag, tag_hash|
       local_file = tag_hash["local_filename"]
@@ -250,8 +249,7 @@ class GitHubPackages
         architecture: architecture,
         os: os,
         "os.version" => os_version,
-      }
-      delete_blank_hash_values(platform_hash)
+      }.reject { |_, v| v.blank? }
 
       tar_sha256 = Digest::SHA256.hexdigest(
         Utils.safe_popen_read("gunzip", "--stdout", "--decompress", local_file),
@@ -270,8 +268,7 @@ class GitHubPackages
         "sh.brew.bottle.digest"             => tar_gz_sha256,
         "sh.brew.bottle.glibc.version"      => glibc_version,
         "sh.brew.tab"                       => tab.to_json,
-      }
-      delete_blank_hash_values(descriptor_annotations_hash)
+      }.reject { |_, v| v.blank? }
 
       annotations_hash = formula_annotations_hash.merge(descriptor_annotations_hash).merge(
         {
@@ -279,8 +276,7 @@ class GitHubPackages
           "org.opencontainers.image.documentation" => documentation,
           "org.opencontainers.image.title"         => "#{formula_full_name} #{tag}",
         },
-      ).sort.to_h
-      delete_blank_hash_values(annotations_hash)
+      ).reject { |_, v| v.blank? }.sort.to_h
 
       image_manifest = {
         schemaVersion: 2,
@@ -387,11 +383,5 @@ class GitHubPackages
     path.write(json)
 
     [sha256, json.size]
-  end
-
-  def delete_blank_hash_values(hash)
-    hash.each do |key, value|
-      hash.delete(key) if value.blank?
-    end
   end
 end
