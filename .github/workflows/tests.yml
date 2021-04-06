@@ -207,9 +207,8 @@ jobs:
       - name: Cache parallel tests log
         uses: actions/cache@v1
         with:
-          path: tests/parallel_runtime_rspec.log
-          key: ${{ runner.os }}-parallel_runtime_rspec.log
-          restore-keys: ${{ runner.os }}-parallel_runtime_rspec.log
+          path: tests
+          key: ${{ runner.os }}-${{ matrix.test-flags }}-parallel_runtime_rspec
 
       - name: Run brew tests
         run: |
@@ -299,9 +298,8 @@ jobs:
       - name: Cache parallel tests log
         uses: actions/cache@v1
         with:
-          path: tests/parallel_runtime_rspec.log
+          path: tests
           key: ${{ runner.os }}-parallel_runtime_rspec.log
-          restore-keys: ${{ runner.os }}-parallel_runtime_rspec.log
 
       - name: Run brew tests
         run: brew tests --online --coverage

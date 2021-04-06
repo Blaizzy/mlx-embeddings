@@ -98,10 +98,16 @@ module Homebrew
         Dir.glob("test/**/*_spec.rb")
       end
 
+      parallel_rspec_log_name = "parallel_runtime_rspec"
+      parallel_rspec_log_name = "#{parallel_rspec_log_name}.no_compat" if args.no_compat?
+      parallel_rspec_log_name = "#{parallel_rspec_log_name}.generic" if args.generic?
+      parallel_rspec_log_name = "#{parallel_rspec_log_name}.online" if args.online?
+      parallel_rspec_log_name = "#{parallel_rspec_log_name}.log"
+
       parallel_rspec_log_path = if ENV["CI"]
-        "tests/parallel_runtime_rspec.log"
+        "tests/#{parallel_rspec_log_name}"
       else
-        "#{HOMEBREW_CACHE}/tests/parallel_runtime_rspec.log"
+        "#{HOMEBREW_CACHE}/#{parallel_rspec_log_name}"
       end
 
       parallel_args = if ENV["CI"]
