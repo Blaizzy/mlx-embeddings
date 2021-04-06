@@ -308,7 +308,8 @@ class Bottle
 
     # TODO: this will need adjusted when if we use GitHub Packages by default
     path, resolved_basename = if spec.root_url.match?(GitHubPackages::URL_REGEX)
-      ["#{@name}/blobs/sha256:#{checksum}", filename]
+      image_name = GitHubPackages.image_formula_name(@name)
+      ["#{image_name}/blobs/sha256:#{checksum}", filename]
     else
       filename
     end
@@ -401,7 +402,8 @@ class Bottle
       version_rebuild = GitHubPackages.version_rebuild(@resource.version, rebuild)
       resource.version(version_rebuild)
 
-      resource.url("#{@spec.root_url}/#{name}/manifests/#{version_rebuild}", {
+      image_name = GitHubPackages.image_formula_name(@name)
+      resource.url("#{@spec.root_url}/#{image_name}/manifests/#{version_rebuild}", {
         using:   CurlGitHubPackagesDownloadStrategy,
         headers: ["Accept: application/vnd.oci.image.index.v1+json"],
       })
