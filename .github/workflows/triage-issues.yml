@@ -24,7 +24,7 @@ jobs:
       - name: Mark/Close Stale Issues and Pull Requests
         uses: actions/stale@v3
         with:
-          repo-token: ${{ secrets.HOMEBREW_GITHUB_PUBLIC_REPO_TOKEN }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
           days-before-stale: 21
           days-before-close: 7
           stale-issue-message: >
