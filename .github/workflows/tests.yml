@@ -208,7 +208,8 @@ jobs:
         uses: actions/cache@v1
         with:
           path: tests
-          key: ${{ runner.os }}-${{ matrix.test-flags }}-parallel_runtime_rspec
+          key: ${{ runner.os }}-${{ matrix.test-flags }}-parallel_runtime_rspec-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-${{ matrix.test-flags }}-parallel_runtime_rspec
 
       - name: Run brew tests
         run: |
@@ -299,7 +300,8 @@ jobs:
         uses: actions/cache@v1
         with:
           path: tests
-          key: ${{ runner.os }}-parallel_runtime_rspec.log
+          key: ${{ runner.os }}-parallel_runtime_rspec-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-parallel_runtime_rspec
 
       - name: Run brew tests
         run: brew tests --online --coverage
