@@ -3,6 +3,10 @@
 
 require "mutex_m"
 require "debrew/irb"
+require "warnings"
+Warnings.ignore(/warning: callcc is obsolete; use Fiber instead/) do
+  require "continuation"
+end
 
 # Helper module for debugging formulae.
 #
@@ -10,15 +14,26 @@ require "debrew/irb"
 module Debrew
   extend Mutex_m
 
-  Ignorable = Module.new.freeze
+  # Marks exceptions which can be ignored and provides
+  # the ability to jump back to where it was raised.
+  module Ignorable
+    attr_accessor :continuation
+
+    def ignore
+      continuation.call
+    end
+  end
 
   # Module for allowing to ignore exceptions.
   module Raise
     def raise(*)
-      super
-    rescue Exception => e # rubocop:disable Lint/RescueException
-      e.extend(Ignorable)
-      super(e) unless Debrew.debug(e) == :ignore
+      callcc do |continuation|
+        super
+      rescue Exception => e # rubocop:disable Lint/RescueException
+        e.extend(Ignorable)
+        e.continuation = continuation
+        super(e)
+      end
     end
 
     alias fail raise
@@ -105,7 +120,7 @@ module Debrew
     rescue SystemExit
       original_raise
     rescue Exception => e # rubocop:disable Lint/RescueException
-      debug(e)
+      e.ignore if debug(e) == :ignore # execution jumps back to where the exception was thrown
     ensure
       @active = false
     end
