@@ -32,12 +32,24 @@ module Homebrew
           URL_MATCH_REGEX.match?(url)
         end
 
-        Item = Struct.new(:title, :url, :bundle_version, :short_version, :version, keyword_init: true) do
+        # @api private
+        Item = Struct.new(
+          # @api public
+          :title,
+          # @api public
+          :url,
+          # @api private
+          :bundle_version,
+          keyword_init: true,
+        ) do
           extend T::Sig
 
           extend Forwardable
 
+          # @api public
           delegate version: :bundle_version
+
+          # @api public
           delegate short_version: :bundle_version
         end
 
@@ -74,8 +86,6 @@ module Homebrew
               title:          title,
               url:            url,
               bundle_version: bundle_version,
-              short_version:  bundle_version&.short_version,
-              version:        bundle_version&.version,
             }.compact
 
             Item.new(**data) unless data.empty?
@@ -85,8 +95,15 @@ module Homebrew
         end
 
         # Checks the content at the URL for new versions.
-        sig { params(url: String, regex: T.nilable(Regexp)).returns(T::Hash[Symbol, T.untyped]) }
-        def self.find_versions(url, regex, &block)
+        sig {
+          params(
+            url:   String,
+            regex: T.nilable(Regexp),
+            cask:  T.nilable(Cask::Cask),
+            block: T.nilable(T.proc.params(arg0: Item).returns(String)),
+          ).returns(T::Hash[Symbol, T.untyped])
+        }
+        def self.find_versions(url, regex, cask: nil, &block)
           raise ArgumentError, "The #{T.must(name).demodulize} strategy does not support a regex." if regex
 
           match_data = { matches: {}, regex: regex, url: url }
@@ -96,7 +113,13 @@ module Homebrew
 
           if (item = item_from_content(content))
             match = if block
-              block.call(item)&.to_s
+              value = block.call(item)
+
+              unless T.unsafe(value).is_a?(String)
+                raise TypeError, "Return value of `strategy :sparkle` block must be a string."
+              end
+
+              value
             else
               item.bundle_version&.nice_version
             end

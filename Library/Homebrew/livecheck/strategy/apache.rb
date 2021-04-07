@@ -21,6 +21,8 @@ module Homebrew
       #
       # @api public
       class Apache
+        extend T::Sig
+
         # The `Regexp` used to determine if the strategy applies to the URL.
         URL_MATCH_REGEX = %r{
           ^https?://www\.apache\.org
@@ -45,7 +47,15 @@ module Homebrew
         # @param url [String] the URL of the content to check
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]
-        def self.find_versions(url, regex = nil, &block)
+        sig {
+          params(
+            url:   String,
+            regex: T.nilable(Regexp),
+            cask:  T.nilable(Cask::Cask),
+            block: T.nilable(T.proc.params(arg0: String).returns(T.any(T::Array[String], String))),
+          ).returns(T::Hash[Symbol, T.untyped])
+        }
+        def self.find_versions(url, regex, cask: nil, &block)
           match = url.match(URL_MATCH_REGEX)
 
           # Use `\.t` instead of specific tarball extensions (e.g. .tar.gz)
@@ -60,7 +70,7 @@ module Homebrew
           # * `/href=["']?example-v?(\d+(?:\.\d+)+)-bin\.zip/i`
           regex ||= /href=["']?#{Regexp.escape(match[:prefix])}v?(\d+(?:\.\d+)+)#{Regexp.escape(suffix)}/i
 
-          PageMatch.find_versions(page_url, regex, &block)
+          PageMatch.find_versions(page_url, regex, cask: cask, &block)
         end
       end
     end

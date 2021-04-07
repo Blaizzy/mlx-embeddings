@@ -64,10 +64,11 @@ module Homebrew
           params(
             url:   String,
             regex: T.nilable(Regexp),
+            cask:  T.nilable(Cask::Cask),
             block: T.nilable(T.proc.params(arg0: Hash).returns(String)),
           ).returns(T::Hash[Symbol, T.untyped])
         }
-        def self.find_versions(url, regex = nil, &block)
+        def self.find_versions(url, regex, cask: nil, &block)
           raise ArgumentError, "The #{T.must(name).demodulize} strategy does not support a regex." if regex
 
           match_data = { matches: {}, regex: regex, url: url }

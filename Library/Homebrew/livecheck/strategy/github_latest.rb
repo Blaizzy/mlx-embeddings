@@ -32,6 +32,8 @@ module Homebrew
       #
       # @api public
       class GithubLatest
+        extend T::Sig
+
         NICE_NAME = "GitHub - Latest"
 
         # A priority of zero causes livecheck to skip the strategy. We do this
@@ -60,7 +62,15 @@ module Homebrew
         # @param url [String] the URL of the content to check
         # @param regex [Regexp] a regex used for matching versions in content
         # @return [Hash]
-        def self.find_versions(url, regex = nil, &block)
+        sig {
+          params(
+            url:   String,
+            regex: T.nilable(Regexp),
+            cask:  T.nilable(Cask::Cask),
+            block: T.nilable(T.proc.params(arg0: String).returns(T.any(T::Array[String], String))),
+          ).returns(T::Hash[Symbol, T.untyped])
+        }
+        def self.find_versions(url, regex, cask: nil, &block)
           match = url.sub(/\.git$/i, "").match(URL_MATCH_REGEX)
 
           # Example URL: `https://github.com/example/example/releases/latest`
@@ -69,7 +79,7 @@ module Homebrew
           # The default regex is the same for all URLs using this strategy
           regex ||= %r{href=.*?/tag/v?(\d+(?:\.\d+)+)["' >]}i
 
-          PageMatch.find_versions(page_url, regex, &block)
+          PageMatch.find_versions(page_url, regex, cask: cask, &block)
         end
       end
     end

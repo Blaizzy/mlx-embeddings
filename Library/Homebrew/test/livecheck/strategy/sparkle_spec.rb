@@ -10,24 +10,11 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
 
   let(:appcast_data) {
     {
-      title:          "Version 1.2.3",
-      url:            "https://www.example.com/example/example.tar.gz",
-      bundle_version: Homebrew::BundleVersion.new("1.2.3", "1234"),
-      short_version:  "1.2.3",
-      version:        "1234",
+      title:         "Version 1.2.3",
+      url:           "https://www.example.com/example/example.tar.gz",
+      short_version: "1.2.3",
+      version:       "1234",
     }
-  }
-
-  let(:appcast_item) {
-    Homebrew::Livecheck::Strategy::Sparkle::Item.new(
-      {
-        title:          appcast_data[:title],
-        url:            appcast_data[:url],
-        bundle_version: appcast_data[:bundle_version],
-        short_version:  appcast_data[:bundle_version]&.short_version,
-        version:        appcast_data[:bundle_version]&.version,
-      },
-    )
   }
 
   let(:appcast_xml) {
@@ -65,10 +52,10 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
 
     it "returns an Item when given XML data" do
       expect(item_from_appcast_xml).to be_a(Homebrew::Livecheck::Strategy::Sparkle::Item)
-      expect(item_from_appcast_xml.title).to eq(appcast_item.title)
-      expect(item_from_appcast_xml.url).to eq(appcast_item.url)
-      expect(item_from_appcast_xml.bundle_version.short_version).to eq(appcast_item.bundle_version.short_version)
-      expect(item_from_appcast_xml.bundle_version.version).to eq(appcast_item.bundle_version.version)
+      expect(item_from_appcast_xml.title).to eq(appcast_data[:title])
+      expect(item_from_appcast_xml.url).to eq(appcast_data[:url])
+      expect(item_from_appcast_xml.short_version).to eq(appcast_data[:short_version])
+      expect(item_from_appcast_xml.version).to eq(appcast_data[:version])
     end
   end
 end
