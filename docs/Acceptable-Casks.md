@@ -2,8 +2,7 @@
 
 Some casks should not go in
 [homebrew/cask](https://github.com/Homebrew/homebrew-cask). But there are
-additional [Interesting Taps and Forks](Interesting-Taps-and-Forks.md) and anyone can [start their
-own](Taps.md)!
+additional [Interesting Taps and Forks](Interesting-Taps-and-Forks.md) and anyone can [start their own](Taps.md)!
 
 ## Finding a Home For Your Cask
 
