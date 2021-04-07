@@ -44,8 +44,8 @@ class GitHubPackages
     ENV["HOMEBREW_FORCE_HOMEBREW_ON_LINUX"] = "1" if @github_org == "homebrew" && !OS.mac?
   end
 
-  sig { params(bottles_hash: T::Hash[String, T.untyped], dry_run: T::Boolean).void }
-  def upload_bottles(bottles_hash, dry_run:)
+  sig { params(bottles_hash: T::Hash[String, T.untyped], dry_run: T::Boolean, warn_on_error: T::Boolean).void }
+  def upload_bottles(bottles_hash, dry_run:, warn_on_error:)
     user = Homebrew::EnvConfig.github_packages_user
     token = Homebrew::EnvConfig.github_packages_token
 
@@ -71,7 +71,8 @@ class GitHubPackages
     load_schemas!
 
     bottles_hash.each do |formula_full_name, bottle_hash|
-      upload_bottle(user, token, skopeo, formula_full_name, bottle_hash, dry_run: dry_run)
+      upload_bottle(user, token, skopeo, formula_full_name, bottle_hash,
+                    dry_run: dry_run, warn_on_error: warn_on_error)
     end
   end
 
@@ -102,7 +103,11 @@ class GitHubPackages
   end
 
   def self.image_formula_name(formula_name)
+    # invalid docker name characters
+    # / makes sense because we already use it to separate repo/formula
+    # x makes sense because we already use it in Formulary
     formula_name.tr("@", "/")
+                .tr("+", "x")
   end
 
   private
@@ -168,7 +173,7 @@ class GitHubPackages
     exit 1
   end
 
-  def upload_bottle(user, token, skopeo, formula_full_name, bottle_hash, dry_run:)
+  def upload_bottle(user, token, skopeo, formula_full_name, bottle_hash, dry_run:, warn_on_error:)
     formula_name = bottle_hash["formula"]["name"]
 
     _, org, repo, = *bottle_hash["bottle"]["root_url"].match(URL_REGEX)
@@ -177,6 +182,27 @@ class GitHubPackages
     version = bottle_hash["formula"]["pkg_version"]
     rebuild = bottle_hash["bottle"]["rebuild"]
     version_rebuild = GitHubPackages.version_rebuild(version, rebuild)
+
+    image_formula_name = GitHubPackages.image_formula_name(formula_name)
+    image_tag = "#{GitHubPackages.root_url(org, repo, DOCKER_PREFIX)}/#{image_formula_name}:#{version_rebuild}"
+
+    puts
+    inspect_args = ["inspect", image_tag.to_s]
+    if dry_run
+      puts "#{skopeo} #{inspect_args.join(" ")} --dest-creds=#{user}:$HOMEBREW_GITHUB_PACKAGES_TOKEN"
+    else
+      inspect_args << "--dest-creds=#{user}:#{token}"
+      inspect_result = system_command(skopeo, args: args)
+      if inspect_result.status.success?
+        if warn_on_error
+          opoo "#{image_tag} already exists, skipping upload!"
+          return
+        else
+          odie "#{image_tag} already exists!"
+        end
+      end
+    end
+
     root = Pathname("#{formula_name}--#{version_rebuild}")
     FileUtils.rm_rf root
 
@@ -315,9 +341,6 @@ class GitHubPackages
 
     write_index_json(index_json_sha256, index_json_size, root,
                      "org.opencontainers.image.ref.name" => version_rebuild)
-
-    image_formula_name = GitHubPackages.image_formula_name(formula_name)
-    image_tag = "#{GitHubPackages.root_url(org, repo, DOCKER_PREFIX)}/#{image_formula_name}:#{version_rebuild}"
 
     puts
     args = ["copy", "--all", "oci:#{root}", image_tag.to_s]
