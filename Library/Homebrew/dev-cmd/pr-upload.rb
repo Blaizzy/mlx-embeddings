@@ -163,7 +163,9 @@ module Homebrew
     elsif github_packages?(bottles_hash)
       github_org = args.github_org || "homebrew"
       github_packages = GitHubPackages.new(org: github_org)
-      github_packages.upload_bottles(bottles_hash, dry_run: args.dry_run?)
+      github_packages.upload_bottles(bottles_hash,
+                                     dry_run:       args.dry_run?,
+                                     warn_on_error: args.warn_on_upload_failure?)
     else
       odie "Service specified by root_url is not recognized"
     end
