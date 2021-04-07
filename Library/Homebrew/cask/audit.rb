@@ -316,6 +316,7 @@ module Cask
       case cask.url.to_s
       when %r{sourceforge.net/(\S+)}
         return if cask.version.latest?
+        return unless online?
 
         add_error "Download is hosted on SourceForge, #{add_livecheck}"
       when %r{dl.devmate.com/(\S+)}

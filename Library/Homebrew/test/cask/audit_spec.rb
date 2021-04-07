@@ -630,6 +630,7 @@ describe Cask::Audit, :cask do
 
       context "when the download is hosted on SourceForge and does not have a livecheck" do
         let(:cask_token) { "sourceforge-correct-url-format" }
+        let(:online) { true }
 
         it { is_expected.to fail_with(message) }
       end
