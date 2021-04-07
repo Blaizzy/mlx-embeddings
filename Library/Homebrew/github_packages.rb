@@ -182,7 +182,7 @@ class GitHubPackages
     formula_name = bottle_hash["formula"]["name"]
 
     _, org, repo, = *bottle_hash["bottle"]["root_url"].match(URL_REGEX)
-    repo = "homebrew-#{repo}" unless HOMEBREW_OFFICIAL_REPO_PREFIXES_REGEX.match?(repo)
+    repo = "homebrew-#{repo}" unless repo.start_with?("homebrew-")
 
     version = bottle_hash["formula"]["pkg_version"]
     rebuild = bottle_hash["bottle"]["rebuild"]
