@@ -110,6 +110,11 @@ class GitHubPackages
                 .tr("+", "x")
   end
 
+  def self.image_version_rebuild(version_rebuild)
+    # invalid docker tag characters
+    version_rebuild.tr("+", ".")
+  end
+
   private
 
   IMAGE_CONFIG_SCHEMA_URI = "https://opencontainers.org/schema/image/config"
@@ -183,11 +188,12 @@ class GitHubPackages
     rebuild = bottle_hash["bottle"]["rebuild"]
     version_rebuild = GitHubPackages.version_rebuild(version, rebuild)
 
-    image_formula_name = GitHubPackages.image_formula_name(formula_name)
-    image_tag = "#{GitHubPackages.root_url(org, repo, DOCKER_PREFIX)}/#{image_formula_name}:#{version_rebuild}"
+    image_name = GitHubPackages.image_formula_name(formula_name)
+    image_tag = GitHubPackages.image_version_rebuild(version_rebuild)
+    image_uri = "#{GitHubPackages.root_url(org, repo, DOCKER_PREFIX)}/#{image_name}:#{image_tag}"
 
     puts
-    inspect_args = ["inspect", image_tag.to_s]
+    inspect_args = ["inspect", image_uri.to_s]
     if dry_run
       puts "#{skopeo} #{inspect_args.join(" ")} --dest-creds=#{user}:$HOMEBREW_GITHUB_PACKAGES_TOKEN"
     else
@@ -195,10 +201,10 @@ class GitHubPackages
       inspect_result = system_command(skopeo, args: inspect_args)
       if inspect_result.status.success?
         if warn_on_error
-          opoo "#{image_tag} already exists, skipping upload!"
+          opoo "#{image_uri} already exists, skipping upload!"
           return
         else
-          odie "#{image_tag} already exists!"
+          odie "#{image_uri} already exists!"
         end
       end
     end
@@ -343,7 +349,7 @@ class GitHubPackages
                      "org.opencontainers.image.ref.name" => version_rebuild)
 
     puts
-    args = ["copy", "--all", "oci:#{root}", image_tag.to_s]
+    args = ["copy", "--all", "oci:#{root}", image_uri.to_s]
     if dry_run
       puts "#{skopeo} #{args.join(" ")} --dest-creds=#{user}:$HOMEBREW_GITHUB_PACKAGES_TOKEN"
     else
