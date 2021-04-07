@@ -403,7 +403,8 @@ class Bottle
       resource.version(version_rebuild)
 
       image_name = GitHubPackages.image_formula_name(@name)
-      resource.url("#{@spec.root_url}/#{image_name}/manifests/#{version_rebuild}", {
+      image_tag = GitHubPackages.image_version_rebuild(version_rebuild)
+      resource.url("#{@spec.root_url}/#{image_name}/manifests/#{image_tag}", {
         using:   CurlGitHubPackagesDownloadStrategy,
         headers: ["Accept: application/vnd.oci.image.index.v1+json"],
       })
