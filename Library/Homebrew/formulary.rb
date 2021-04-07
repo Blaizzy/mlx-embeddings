@@ -61,7 +61,7 @@ module Formulary
       # access them from within the formula's class scope.
       mod.const_set(:BUILD_FLAGS, flags)
       mod.module_eval(contents, path)
-    rescue NameError, ArgumentError, ScriptError, MethodDeprecatedError => e
+    rescue NameError, ArgumentError, ScriptError, MethodDeprecatedError, MacOSVersionError => e
       remove_const(namespace)
       raise FormulaUnreadableError.new(name, e)
     end
@@ -246,7 +246,7 @@ module Formulary
     end
 
     def load_file(flags:)
-      if %r{githubusercontent.com/[\w-]+/[\w-]+/[a-f0-9]{40}(?:/Formula)?/(?<formula_name>[\w+-.@]+).rb} =~ url # rubocop:disable Style/CaseLikeIf
+      if %r{githubusercontent.com/[\w-]+/[\w-]+/[a-f0-9]{40}(?:/Formula)?/(?<formula_name>[\w+-.@]+).rb} =~ url
         raise UsageError, "Installation of #{formula_name} from a GitHub commit URL is unsupported! " \
                   "`brew extract #{formula_name}` to a stable tap on GitHub instead."
       elsif url.match?(%r{^(https?|ftp)://})

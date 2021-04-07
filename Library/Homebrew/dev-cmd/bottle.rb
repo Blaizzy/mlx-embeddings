@@ -531,7 +531,11 @@ module Homebrew
           "tap_git_path"     => f.path.to_s.delete_prefix("#{tap_path}/"),
           "tap_git_revision" => tap_git_revision,
           "tap_git_remote"   => tap_git_remote,
-          "desc"             => f.desc,
+          # descriptions can contain emoji. sigh.
+          "desc"             => f.desc.encode(
+            Encoding.find("ASCII"),
+            invalid: :replace, undef: :replace, replace: "",
+          ).strip,
           "license"          => SPDX.license_expression_to_string(f.license),
           "homepage"         => f.homepage,
         },

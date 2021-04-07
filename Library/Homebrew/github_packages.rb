@@ -195,9 +195,9 @@ class GitHubPackages
     puts
     inspect_args = ["inspect", image_uri.to_s]
     if dry_run
-      puts "#{skopeo} #{inspect_args.join(" ")} --dest-creds=#{user}:$HOMEBREW_GITHUB_PACKAGES_TOKEN"
+      puts "#{skopeo} #{inspect_args.join(" ")} --creds=#{user}:$HOMEBREW_GITHUB_PACKAGES_TOKEN"
     else
-      inspect_args << "--dest-creds=#{user}:#{token}"
+      inspect_args << "--creds=#{user}:#{token}"
       inspect_result = system_command(skopeo, args: inspect_args)
       if inspect_result.status.success?
         if warn_on_error
