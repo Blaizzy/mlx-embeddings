@@ -192,7 +192,7 @@ class GitHubPackages
       puts "#{skopeo} #{inspect_args.join(" ")} --dest-creds=#{user}:$HOMEBREW_GITHUB_PACKAGES_TOKEN"
     else
       inspect_args << "--dest-creds=#{user}:#{token}"
-      inspect_result = system_command(skopeo, args: args)
+      inspect_result = system_command(skopeo, args: inspect_args)
       if inspect_result.status.success?
         if warn_on_error
           opoo "#{image_tag} already exists, skipping upload!"
