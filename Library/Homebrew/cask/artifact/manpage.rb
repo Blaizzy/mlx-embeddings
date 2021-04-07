@@ -12,7 +12,7 @@ module Cask
       attr_reader :section
 
       def self.from_args(cask, source)
-        section = source.to_s[/\.([1-8]|n|l)$/, 1]
+        section = source.to_s[/\.([1-8]|n|l)(?:\.gz)?$/, 1]
 
         raise CaskInvalidError, "'#{source}' is not a valid man page name" unless section
 
