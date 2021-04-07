@@ -128,9 +128,9 @@ class URL < Delegator
     private :url
 
     # @api public
-    def method_missing(method, *args, **options, &block)
+    def method_missing(method, *args, &block)
       if @dsl.respond_to?(method)
-        T.unsafe(@dsl).public_send(method, *args, **options, &block)
+        T.unsafe(@dsl).public_send(method, *args, &block)
       else
         super
       end
