@@ -679,8 +679,10 @@ module Homebrew
       old_hexdigest = old_checksum_hash[:checksum].hexdigest
       old_cellar = old_checksum_hash[:cellar]
       new_value = new_bottle_hash.dig("tags", tag.to_s)
-      if new_value.present?
-        mismatches << "sha256 => #{tag}"
+      if new_value.present? && new_value["sha256"] != old_hexdigest
+        mismatches << "sha256 #{tag}: old: #{old_hexdigest.inspect}, new: #{new_value["sha256"].inspect}"
+      elsif new_value.present? && new_value["cellar"] != old_cellar.to_s
+        mismatches << "cellar #{tag}: old: #{old_cellar.to_s.inspect}, new: #{new_value["cellar"].inspect}"
       else
         checksums << { cellar: old_cellar, tag => old_hexdigest }
       end
