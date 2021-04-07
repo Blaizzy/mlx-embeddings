@@ -580,13 +580,15 @@ describe "brew bottle" do
 
       it "checks for conflicting checksums" do
         old_spec = BottleSpecification.new
-        old_spec.sha256(catalina: "109c0cb581a7b5d84da36d84b221fb9dd0f8a927b3044d82611791c9907e202e")
+        old_catalina_sha256 = "109c0cb581a7b5d84da36d84b221fb9dd0f8a927b3044d82611791c9907e202e"
+        old_spec.sha256(catalina: old_catalina_sha256)
         old_spec.sha256(mojave: "7571772bf7a0c9fe193e70e521318b53993bee6f351976c9b6e01e00d13d6c3f")
-        new_hash = { "tags" => { "catalina" => "ec6d7f08412468f28dee2be17ad8cd8b883b16b34329efcecce019b8c9736428" } }
+        new_catalina_sha256 = "ec6d7f08412468f28dee2be17ad8cd8b883b16b34329efcecce019b8c9736428"
+        new_hash = { "tags" => { "catalina" => { "sha256" => new_catalina_sha256 } } }
         expected_checksum_hash = { mojave: "7571772bf7a0c9fe193e70e521318b53993bee6f351976c9b6e01e00d13d6c3f" }
         expected_checksum_hash[:cellar] = Homebrew::DEFAULT_CELLAR
         expect(homebrew.merge_bottle_spec([:sha256], old_spec, new_hash)).to eq [
-          ["sha256 => catalina"],
+          ["sha256 catalina: old: #{old_catalina_sha256.inspect}, new: #{new_catalina_sha256.inspect}"],
           [expected_checksum_hash],
         ]
       end
