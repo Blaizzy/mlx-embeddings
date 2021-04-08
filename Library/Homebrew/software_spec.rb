@@ -447,15 +447,14 @@ class BottleSpecification
 
   def root_url(var = nil, specs = {})
     if var.nil?
-      @root_url ||= if Homebrew::EnvConfig.bottle_domain.match?(GitHubPackages::URL_REGEX)
-        GitHubPackages.root_url(tap.user, tap.repo).to_s
+      @root_url ||= if (github_packages_url = GitHubPackages.root_url_if_match(Homebrew::EnvConfig.bottle_domain))
+        github_packages_url
       else
         "#{Homebrew::EnvConfig.bottle_domain}/#{Utils::Bottles::Bintray.repository(tap)}"
       end
     else
-      @root_url = if var.to_s.start_with? "docker://"
-        _, registry, org, repo = *var.match(%r{docker://([\w.-]+)/([\w-]+)/([\w-]+)})
-        GitHubPackages.root_url(org, repo, "https://#{registry}/v2/").to_s
+      @root_url = if (github_packages_url = GitHubPackages.root_url_if_match(var))
+        github_packages_url
       else
         var
       end

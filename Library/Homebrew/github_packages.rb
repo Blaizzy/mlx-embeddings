@@ -15,8 +15,11 @@ class GitHubPackages
   URL_DOMAIN = "ghcr.io"
   URL_PREFIX = "https://#{URL_DOMAIN}/v2/"
   DOCKER_PREFIX = "docker://#{URL_DOMAIN}/"
+  private_constant :URL_DOMAIN
+  private_constant :URL_PREFIX
+  private_constant :DOCKER_PREFIX
+
   URL_REGEX = %r{(?:#{Regexp.escape(URL_PREFIX)}|#{Regexp.escape(DOCKER_PREFIX)})([\w-]+)/([\w-]+)}.freeze
-  GITHUB_PACKAGE_TYPE = "homebrew_bottle"
 
   # Translate Homebrew tab.arch to OCI platform.architecture
   TAB_ARCH_TO_PLATFORM_ARCHITECTURE = {
@@ -102,6 +105,15 @@ class GitHubPackages
     "#{prefix}#{org}/#{repo_without_prefix(repo)}"
   end
 
+  def self.root_url_if_match(url)
+    return if url.blank?
+
+    _, org, repo, = *url.to_s.match(URL_REGEX)
+    return if org.blank? || repo.blank?
+
+    root_url(org, repo)
+  end
+
   def self.image_formula_name(formula_name)
     # invalid docker name characters
     # / makes sense because we already use it to separate repo/formula
@@ -123,6 +135,8 @@ class GitHubPackages
   IMAGE_INDEX_SCHEMA_URI = "https://opencontainers.org/schema/image/index"
   IMAGE_LAYOUT_SCHEMA_URI = "https://opencontainers.org/schema/image/layout"
   IMAGE_MANIFEST_SCHEMA_URI = "https://opencontainers.org/schema/image/manifest"
+
+  GITHUB_PACKAGE_TYPE = "homebrew_bottle"
 
   def load_schemas!
     schema_uri("content-descriptor",
