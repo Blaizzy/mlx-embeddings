@@ -12,7 +12,8 @@ require "erb"
 
 BOTTLE_ERB = <<-EOS
   bottle do
-    <% if root_url != "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}/bottles" %>
+    <% if [HOMEBREW_BOTTLE_DEFAULT_DOMAIN.to_s,
+           "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}/bottles"].exclude?(root_url) %>
     root_url "<%= root_url %>"
     <% end %>
     <% if ![HOMEBREW_DEFAULT_PREFIX,
