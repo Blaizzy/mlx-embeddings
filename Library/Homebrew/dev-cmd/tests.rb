@@ -114,7 +114,7 @@ module Homebrew
         %W[
           --combine-stderr
           --serialize-stdout
-          --runtime-log "#{parallel_rspec_log_path}"
+          --runtime-log #{parallel_rspec_log_path}
         ]
       else
         %w[
