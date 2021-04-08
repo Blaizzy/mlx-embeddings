@@ -9,10 +9,10 @@ describe BottleSpecification do
   describe "#sha256" do
     it "works without cellar" do
       checksums = {
-        snow_leopard_32: "deadbeef" * 8,
-        snow_leopard:    "faceb00c" * 8,
-        lion:            "baadf00d" * 8,
-        mountain_lion:   "8badf00d" * 8,
+        arm64_big_sur: "deadbeef" * 8,
+        big_sur:       "faceb00c" * 8,
+        catalina:      "baadf00d" * 8,
+        mojave:        "8badf00d" * 8,
       }
 
       checksums.each_pair do |cat, digest|
@@ -24,10 +24,10 @@ describe BottleSpecification do
 
     it "works with cellar" do
       checksums = [
-        { cellar: :any_skip_relocation, tag: :snow_leopard_32, digest: "deadbeef" * 8 },
-        { cellar: :any, tag: :snow_leopard, digest: "faceb00c" * 8 },
-        { cellar: "/usr/local/Cellar", tag: :lion, digest: "baadf00d" * 8 },
-        { cellar: Homebrew::DEFAULT_CELLAR, tag: :mountain_lion, digest: "8badf00d" * 8 },
+        { cellar: :any_skip_relocation, tag: :arm64_big_sur,  digest: "deadbeef" * 8 },
+        { cellar: :any, tag: :big_sur, digest: "faceb00c" * 8 },
+        { cellar: "/usr/local/Cellar", tag: :catalina, digest: "baadf00d" * 8 },
+        { cellar: Homebrew::DEFAULT_CELLAR, tag: :mojave, digest: "8badf00d" * 8 },
       ]
 
       checksums.each do |checksum|

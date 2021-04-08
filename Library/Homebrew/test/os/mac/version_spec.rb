@@ -66,19 +66,6 @@ describe OS::Mac::Version do
     it "creates a new version from a valid macOS version" do
       string_version = described_class.new("11")
       expect(string_version).to eq(:big_sur)
-      expect(string_version.arch).to eq(:intel)
-    end
-
-    it "creates a new version from a valid macOS version with architecture" do
-      string_version = described_class.new("11-arm64")
-      expect(string_version).to eq(:big_sur)
-      expect(string_version.arch).to eq(:arm64)
-    end
-
-    it "creates a new version from a valid macOS version and architecture" do
-      string_version = described_class.new("11", arch: "arm64")
-      expect(string_version).to eq(:big_sur)
-      expect(string_version.arch).to eq(:arm64)
     end
   end
 
@@ -92,13 +79,6 @@ describe OS::Mac::Version do
     it "creates a new version from a valid macOS version" do
       symbol_version = described_class.from_symbol(:mojave)
       expect(symbol_version).to eq(version)
-      expect(symbol_version.arch).to eq(:intel)
-    end
-
-    it "creates a new version from a valid macOS version with architecture" do
-      symbol_version = described_class.from_symbol(:arm64_big_sur)
-      expect(symbol_version).to eq(:big_sur)
-      expect(symbol_version.arch).to eq(:arm64)
     end
   end
 

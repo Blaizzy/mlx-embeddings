@@ -46,25 +46,28 @@ module Homebrew
     repo.gsub!("linux", "home") unless args.tap
 
     if (macos = args.macos)
-      # Fixup version for ARM/Apple Silicon
-      # TODO: fix label name to be 11-arm64 instead and remove this.
-      macos.gsub!(/^11-arm$/, "11-arm64")
-
-      macos = macos.yield_self do |s|
-        MacOS::Version.from_symbol(s.to_sym)
-      rescue MacOSVersionError
-        MacOS::Version.new(s)
+      # We accept runner name syntax (11-arm64) or bottle syntax (arm64_big_sur)
+      os, arch = macos.yield_self do |s|
+        tag = Utils::Bottles::Tag.from_symbol(s.to_sym)
+        [tag.to_macos_version, tag.arch]
+      rescue ArgumentError, MacOSVersionError
+        os, arch = s.split("-", 2)
+        [MacOS::Version.new(os), arch&.to_sym]
       end
 
-      # Fixup label for ARM/Apple Silicon
-      macos_label = if macos.arch == :arm64
-        # TODO: fix label name to be 11-arm64 instead.
-        "#{macos}-arm"
+      # TODO: fix label name to be 11-arm64 instead.
+      arch = :arm if arch == :arm64
+
+      macos_label = if arch.present? && arch != :x86_64
+        "#{os}-#{arch}"
       else
-        macos.to_s
+        os.to_s
       end
 
-      dispatching_for = "macOS #{macos}"
+      # TODO: fix label name to be 11 instead.
+      macos_label = "11.0" if macos_label == "11"
+
+      dispatching_for = "macOS #{macos_label}"
     elsif T.unsafe(args).linux?
       workflow = args.workflow || "linux-#{workflow}"
       dispatching_for = "Linux"

@@ -34,7 +34,11 @@ module Homebrew
 
     Formulary.enable_factory_cache!
 
-    @bottle_tag = args.tag.presence&.to_sym || Utils::Bottles.tag
+    @bottle_tag = if (tag = args.tag)
+      Utils::Bottles::Tag.from_symbol(tag.to_sym)
+    else
+      Utils::Bottles.tag
+    end
 
     if args.named.blank?
       ohai "Getting formulae..."
@@ -165,7 +169,7 @@ module Homebrew
       end
 
       requirements = f.recursive_requirements
-      if @bottle_tag.to_s.end_with?("_linux")
+      if @bottle_tag.linux?
         if requirements.any?(MacOSRequirement)
           puts "#{Tty.bold}#{Tty.red}#{name}#{Tty.reset}: requires macOS" if any_named_args
           next
@@ -174,7 +178,7 @@ module Homebrew
         puts "#{Tty.bold}#{Tty.red}#{name}#{Tty.reset}: requires Linux" if any_named_args
         next
       else
-        macos_version = MacOS::Version.from_symbol(@bottle_tag)
+        macos_version = @bottle_tag.to_macos_version
         macos_satisfied = requirements.all? do |r|
           case r
           when MacOSRequirement

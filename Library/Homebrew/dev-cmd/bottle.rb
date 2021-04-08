@@ -284,7 +284,11 @@ module Homebrew
       [tag_string.to_sym, rebuild_string.to_i]
     end
 
-    bottle_tag ||= Utils::Bottles.tag
+    bottle_tag = if bottle_tag
+      Utils::Bottles::Tag.from_symbol(bottle_tag)
+    else
+      Utils::Bottles.tag
+    end
 
     rebuild ||= if args.no_rebuild? || !tap
       0
@@ -298,7 +302,7 @@ module Homebrew
       rebuilds.empty? ? 0 : rebuilds.max.to_i + 1
     end
 
-    filename = Bottle::Filename.create(f, bottle_tag, rebuild)
+    filename = Bottle::Filename.create(f, bottle_tag.to_sym, rebuild)
     local_filename = filename.to_s
     bottle_path = Pathname.pwd/filename
 
@@ -343,16 +347,8 @@ module Homebrew
       relocatable = [:any, :any_skip_relocation].include?(bottle_cellar)
       skip_relocation = bottle_cellar == :any_skip_relocation
 
-      if bottle_tag.to_s.end_with?("_linux")
-        prefix = HOMEBREW_LINUX_DEFAULT_PREFIX.to_s
-        cellar = Homebrew::DEFAULT_LINUX_CELLAR
-      elsif bottle_tag.to_s.start_with?("arm64_")
-        prefix = HOMEBREW_MACOS_ARM_DEFAULT_PREFIX.to_s
-        cellar = Homebrew::DEFAULT_MACOS_ARM_CELLAR
-      else
-        prefix = HOMEBREW_DEFAULT_PREFIX.to_s
-        cellar = Homebrew::DEFAULT_MACOS_CELLAR
-      end
+      prefix = bottle_tag.default_prefix
+      cellar = bottle_tag.default_cellar
     else
       tar_filename = filename.to_s.sub(/.gz$/, "")
       tar_path = Pathname.pwd/tar_filename
@@ -486,7 +482,7 @@ module Homebrew
     end
     bottle.rebuild rebuild
     sha256 = bottle_path.sha256
-    bottle.sha256 sha256 => bottle_tag
+    bottle.sha256 sha256 => bottle_tag.to_sym
 
     old_spec = f.bottle_specification
     if args.keep_old? && !old_spec.checksums.empty?

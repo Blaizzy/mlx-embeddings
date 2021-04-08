@@ -12,7 +12,8 @@ module Utils
       extend T::Sig
 
       def tag
-        @tag ||= "#{ENV["HOMEBREW_PROCESSOR"]}_#{ENV["HOMEBREW_SYSTEM"]}".downcase.to_sym
+        @tag ||= Tag.new(system: T.must(ENV["HOMEBREW_SYSTEM"]).downcase.to_sym,
+                         arch:   T.must(ENV["HOMEBREW_PROCESSOR"]).downcase.to_sym)
       end
 
       def built_as?(f)
@@ -78,6 +79,98 @@ module Utils
       end
     end
 
+    # Denotes the arch and OS of a bottle.
+    class Tag
+      extend T::Sig
+
+      attr_reader :system, :arch
+
+      sig { params(value: Symbol).returns(T.attached_class) }
+      def self.from_symbol(value)
+        @all_archs_regex ||= begin
+          all_archs = Hardware::CPU::ALL_ARCHS.map(&:to_s)
+          /
+            ^((?<arch>#{Regexp.union(all_archs)})_)?
+            (?<system>[\w.]+)$
+          /x
+        end
+        match = @all_archs_regex.match(value.to_s)
+        raise ArgumentError, "Invalid bottle tag symbol" unless match
+
+        system = match[:system].to_sym
+        arch = match[:arch]&.to_sym || :x86_64
+        new(system: system, arch: arch)
+      end
+
+      sig { params(system: Symbol, arch: Symbol).void }
+      def initialize(system:, arch:)
+        @system = system
+        @arch = arch
+      end
+
+      def ==(other)
+        if other.is_a?(Symbol)
+          to_sym == other
+        else
+          self.class == other.class && system == other.system && arch == other.arch
+        end
+      end
+
+      sig { returns(Symbol) }
+      def to_sym
+        if macos? && arch == :x86_64
+          system
+        else
+          "#{arch}_#{system}".to_sym
+        end
+      end
+
+      sig { returns(String) }
+      def to_s
+        to_sym.to_s
+      end
+
+      sig { returns(OS::Mac::Version) }
+      def to_macos_version
+        @to_macos_version ||= OS::Mac::Version.from_symbol(system)
+      end
+
+      sig { returns(T::Boolean) }
+      def linux?
+        system == :linux
+      end
+
+      sig { returns(T::Boolean) }
+      def macos?
+        to_macos_version
+        true
+      rescue MacOSVersionError
+        false
+      end
+
+      sig { returns(String) }
+      def default_prefix
+        if linux?
+          HOMEBREW_LINUX_DEFAULT_PREFIX
+        elsif arch == :arm64
+          HOMEBREW_MACOS_ARM_DEFAULT_PREFIX
+        else
+          HOMEBREW_DEFAULT_PREFIX
+        end
+      end
+
+      sig { returns(String) }
+      def default_cellar
+        if linux?
+          Homebrew::DEFAULT_LINUX_CELLAR
+        elsif arch == :arm64
+          Homebrew::DEFAULT_MACOS_ARM_CELLAR
+        else
+          Homebrew::DEFAULT_MACOS_CELLAR
+        end
+      end
+    end
+
     # Helper functions for bottles hosted on Bintray.
     module Bintray
       def self.package(formula_name)
@@ -109,16 +202,24 @@ module Utils
         @checksums = {}
       end
 
-      sig { params(tag: Symbol, exact: T::Boolean).returns(T.nilable([Checksum, Symbol, T.any(Symbol, String)])) }
+      sig {
+        params(
+          tag:   T.any(Symbol, Utils::Bottles::Tag),
+          exact: T::Boolean,
+        ).returns(
+          T.nilable([Checksum, Symbol, T.any(Symbol, String)]),
+        )
+      }
       def fetch_checksum_for(tag, exact: false)
-        tag = find_matching_tag(tag, exact: exact)
+        tag = Utils::Bottles::Tag.from_symbol(tag) if tag.is_a?(Symbol)
+        tag = find_matching_tag(tag, exact: exact)&.to_sym
         return self[tag][:checksum], tag, self[tag][:cellar] if tag
       end
 
       private
 
       def find_matching_tag(tag, exact: false)
-        tag if key?(tag)
+        tag if key?(tag.to_sym)
       end
     end
   end

@@ -471,7 +471,9 @@ class BottleSpecification
     #   )
     # end
 
-    return collector.dig(Utils::Bottles.tag, :cellar) || @all_tags_cellar || Homebrew::DEFAULT_CELLAR if val.nil?
+    if val.nil?
+      return collector.dig(Utils::Bottles.tag.to_sym, :cellar) || @all_tags_cellar || Homebrew::DEFAULT_CELLAR
+    end
 
     @all_tags_cellar = val
   end
@@ -494,7 +496,7 @@ class BottleSpecification
     cellar == :any_skip_relocation
   end
 
-  sig { params(tag: Symbol, exact: T::Boolean).returns(T::Boolean) }
+  sig { params(tag: T.any(Symbol, Utils::Bottles::Tag), exact: T::Boolean).returns(T::Boolean) }
   def tag?(tag, exact: false)
     checksum_for(tag, exact: exact) ? true : false
   end
@@ -532,32 +534,36 @@ class BottleSpecification
       # end
     end
 
-    cellar ||= all_tags_cellar
-    cellar ||= if tag.to_s.end_with?("_linux")
-      Homebrew::DEFAULT_LINUX_CELLAR
-    elsif tag.to_s.start_with?("arm64_")
-      Homebrew::DEFAULT_MACOS_ARM_CELLAR
-    else
-      Homebrew::DEFAULT_MACOS_CELLAR
-    end
+    tag = Utils::Bottles::Tag.from_symbol(tag)
 
-    collector[tag] = { checksum: Checksum.new(digest), cellar: cellar }
+    cellar ||= all_tags_cellar
+    cellar ||= tag.default_cellar
+
+    collector[tag.to_sym] = { checksum: Checksum.new(digest), cellar: cellar }
   end
 
-  sig { params(tag: Symbol, exact: T::Boolean).returns(T.nilable([Checksum, Symbol, T.any(Symbol, String)])) }
+  sig {
+    params(
+      tag:   T.any(Symbol, Utils::Bottles::Tag),
+      exact: T::Boolean,
+    ).returns(
+      T.nilable([Checksum, Symbol, T.any(Symbol, String)]),
+    )
+  }
   def checksum_for(tag, exact: false)
     collector.fetch_checksum_for(tag, exact: exact)
   end
 
   def checksums
-    tags = collector.keys.sort_by do |tag|
-      version = OS::Mac::Version.from_symbol(tag)
+    tags = collector.keys.sort_by do |sym|
+      tag = Utils::Bottles::Tag.from_symbol(sym)
+      version = tag.to_macos_version
       # Give arm64 bottles a higher priority so they are first
-      priority = version.arch == :arm64 ? "2" : "1"
-      "#{priority}.#{version}_#{tag}"
+      priority = tag.arch == :arm64 ? "2" : "1"
+      "#{priority}.#{version}_#{sym}"
     rescue MacOSVersionError
       # Sort non-MacOS tags below MacOS tags.
-      "0.#{tag}"
+      "0.#{sym}"
     end
     tags.reverse.map do |tag|
       {

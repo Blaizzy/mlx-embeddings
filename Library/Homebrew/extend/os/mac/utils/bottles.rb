@@ -7,11 +7,7 @@ module Utils
       undef tag
 
       def tag
-        if Hardware::CPU.intel?
-          MacOS.version.to_sym
-        else
-          "#{Hardware::CPU.arch}_#{MacOS.version.to_sym}".to_sym
-        end
+        Utils::Bottles::Tag.new(system: MacOS.version.to_sym, arch: Hardware::CPU.arch)
       end
     end
 
@@ -34,7 +30,7 @@ module Utils
       # Find a bottle built for a previous version of macOS.
       def find_older_compatible_tag(tag)
         tag_version = begin
-          MacOS::Version.from_symbol(tag)
+          tag.to_macos_version
         rescue MacOSVersionError
           nil
         end
@@ -42,10 +38,10 @@ module Utils
         return if tag_version.blank?
 
         keys.find do |key|
-          key_version = MacOS::Version.from_symbol(key)
-          next if key_version.arch != tag_version.arch
+          key_tag = Tag.from_symbol(key)
+          next if key_tag.arch != tag.arch
 
-          key_version <= tag_version
+          key_tag.to_macos_version <= tag_version
         rescue MacOSVersionError
           false
         end
