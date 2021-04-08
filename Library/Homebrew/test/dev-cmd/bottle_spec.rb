@@ -108,7 +108,6 @@ describe "brew bottle" do
       }.to output(<<~EOS).to_stdout
         ==> testball
           bottle do
-            root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
             sha256 cellar: :any_skip_relocation, arm64_big_sur: "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149"
             sha256 cellar: :any_skip_relocation, big_sur:       "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
             sha256 cellar: :any_skip_relocation, catalina:      "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
@@ -123,7 +122,6 @@ describe "brew bottle" do
           sha256 "#{tarball.sha256}"
 
           bottle do
-            root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
             sha256 cellar: :any_skip_relocation, arm64_big_sur: "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149"
             sha256 cellar: :any_skip_relocation, big_sur:       "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
             sha256 cellar: :any_skip_relocation, catalina:      "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
@@ -154,7 +152,6 @@ describe "brew bottle" do
         setup_test_formula "testball", bottle_block: <<~EOS
 
           bottle do
-            root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
             cellar :any_skip_relocation
             sha256 "6b276491297d4052538bd2fd22d5129389f27d90a98f831987236a5b90511b98" => :big_sur
             sha256 "c3c650d75f5188f5d6edd351dd3215e141b73b8ec1cf9144f30e39cbc45de72e" => :arm64_big_sur
@@ -175,7 +172,6 @@ describe "brew bottle" do
       }.to output(<<~EOS).to_stdout
         ==> testball
           bottle do
-            root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
             sha256 cellar: :any_skip_relocation, arm64_big_sur: "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149"
             sha256 cellar: :any_skip_relocation, big_sur:       "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
             sha256 cellar: :any_skip_relocation, catalina:      "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
@@ -192,7 +188,6 @@ describe "brew bottle" do
           option "with-foo", "Build with foo"
 
           bottle do
-            root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
             sha256 cellar: :any_skip_relocation, arm64_big_sur: "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149"
             sha256 cellar: :any_skip_relocation, big_sur:       "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
             sha256 cellar: :any_skip_relocation, catalina:      "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
@@ -221,7 +216,6 @@ describe "brew bottle" do
         setup_test_formula "testball", bottle_block: <<~EOS
 
           bottle do
-            root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
             sha256 cellar: :any_skip_relocation, arm64_big_sur: "c3c650d75f5188f5d6edd351dd3215e141b73b8ec1cf9144f30e39cbc45de72e"
             sha256 cellar: :any_skip_relocation, big_sur:       "6b276491297d4052538bd2fd22d5129389f27d90a98f831987236a5b90511b98"
             sha256 cellar: :any_skip_relocation, catalina:      "16cf230afdfcb6306c208d169549cf8773c831c8653d2c852315a048960d7e72"
@@ -241,7 +235,6 @@ describe "brew bottle" do
       }.to output(<<~EOS).to_stdout
         ==> testball
           bottle do
-            root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
             sha256 cellar: :any_skip_relocation, arm64_big_sur: "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149"
             sha256 cellar: :any_skip_relocation, big_sur:       "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
             sha256 cellar: :any_skip_relocation, catalina:      "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
@@ -258,7 +251,6 @@ describe "brew bottle" do
           option "with-foo", "Build with foo"
 
           bottle do
-            root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
             sha256 cellar: :any_skip_relocation, arm64_big_sur: "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149"
             sha256 cellar: :any_skip_relocation, big_sur:       "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
             sha256 cellar: :any_skip_relocation, catalina:      "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
@@ -306,7 +298,6 @@ describe "brew bottle" do
         setup_test_formula "testball", bottle_block: <<~EOS
 
           bottle do
-            root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
             cellar :any
             sha256 "6971b6eebf4c00eaaed72a1104a49be63861eabc95d679a0c84040398e320059" => :high_sierra
           end
@@ -326,7 +317,6 @@ describe "brew bottle" do
       }.to output(<<~EOS).to_stdout
         ==> testball
           bottle do
-            root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
             sha256 cellar: :any_skip_relocation, arm64_big_sur: "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149"
             sha256 cellar: :any_skip_relocation, big_sur:       "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
             sha256 cellar: :any_skip_relocation, catalina:      "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
@@ -344,7 +334,6 @@ describe "brew bottle" do
           option "with-foo", "Build with foo"
 
           bottle do
-            root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
             sha256 cellar: :any_skip_relocation, arm64_big_sur: "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149"
             sha256 cellar: :any_skip_relocation, big_sur:       "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
             sha256 cellar: :any_skip_relocation, catalina:      "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
@@ -374,7 +363,6 @@ describe "brew bottle" do
         setup_test_formula "testball", bottle_block: <<~EOS
 
           bottle do
-            root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
             sha256 cellar: :any, high_sierra: "6971b6eebf4c00eaaed72a1104a49be63861eabc95d679a0c84040398e320059"
           end
         EOS
@@ -393,7 +381,6 @@ describe "brew bottle" do
       }.to output(<<~EOS).to_stdout
         ==> testball
           bottle do
-            root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
             sha256 cellar: :any_skip_relocation, arm64_big_sur: "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149"
             sha256 cellar: :any_skip_relocation, big_sur:       "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
             sha256 cellar: :any_skip_relocation, catalina:      "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
@@ -411,7 +398,6 @@ describe "brew bottle" do
           option "with-foo", "Build with foo"
 
           bottle do
-            root_url "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}"
             sha256 cellar: :any_skip_relocation, arm64_big_sur: "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149"
             sha256 cellar: :any_skip_relocation, big_sur:       "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f"
             sha256 cellar: :any_skip_relocation, catalina:      "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac"
