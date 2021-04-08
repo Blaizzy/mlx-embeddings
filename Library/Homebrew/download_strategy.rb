@@ -564,7 +564,7 @@ class CurlGitHubPackagesDownloadStrategy < CurlDownloadStrategy
   def initialize(url, name, version, **meta)
     meta ||= {}
     meta[:headers] ||= []
-    meta[:headers] << ["Authorization: Bearer"]
+    meta[:headers] << ["Authorization: Bearer QQ=="]
     super(url, name, version, meta)
   end
 
