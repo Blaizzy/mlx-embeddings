@@ -204,21 +204,21 @@ module Utils
 
       sig {
         params(
-          tag:   T.any(Symbol, Utils::Bottles::Tag),
-          exact: T::Boolean,
+          tag:               T.any(Symbol, Utils::Bottles::Tag),
+          no_older_versions: T::Boolean,
         ).returns(
           T.nilable([Checksum, Symbol, T.any(Symbol, String)]),
         )
       }
-      def fetch_checksum_for(tag, exact: false)
+      def fetch_checksum_for(tag, no_older_versions: false)
         tag = Utils::Bottles::Tag.from_symbol(tag) if tag.is_a?(Symbol)
-        tag = find_matching_tag(tag, exact: exact)&.to_sym
+        tag = find_matching_tag(tag, no_older_versions: no_older_versions)&.to_sym
         return self[tag][:checksum], tag, self[tag][:cellar] if tag
       end
 
       private
 
-      def find_matching_tag(tag, exact: false)
+      def find_matching_tag(tag, no_older_versions: false)
         tag if key?(tag.to_sym)
       end
     end

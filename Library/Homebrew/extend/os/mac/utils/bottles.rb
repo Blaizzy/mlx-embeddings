@@ -16,10 +16,10 @@ module Utils
 
       alias generic_find_matching_tag find_matching_tag
 
-      def find_matching_tag(tag, exact: false)
+      def find_matching_tag(tag, no_older_versions: false)
         # Used primarily by developers testing beta macOS releases.
-        if exact || (OS::Mac.prerelease? && Homebrew::EnvConfig.developer? &&
-                     Homebrew::EnvConfig.skip_or_later_bottles?)
+        if no_older_versions ||
+           (OS::Mac.prerelease? && Homebrew::EnvConfig.developer? && Homebrew::EnvConfig.skip_or_later_bottles?)
           generic_find_matching_tag(tag)
         else
           generic_find_matching_tag(tag) ||

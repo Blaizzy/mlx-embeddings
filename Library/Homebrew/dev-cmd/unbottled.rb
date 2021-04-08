@@ -158,7 +158,7 @@ module Homebrew
 
     formulae.each do |f|
       name = f.name.downcase
-      if f.bottle_specification.tag?(@bottle_tag, exact: true)
+      if f.bottle_specification.tag?(@bottle_tag, no_older_versions: true)
         puts "#{Tty.bold}#{Tty.green}#{name}#{Tty.reset}: already bottled" if any_named_args
         next
       end

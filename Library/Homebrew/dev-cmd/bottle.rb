@@ -344,7 +344,7 @@ module Homebrew
         end
       end
 
-      _, _, bottle_cellar = Formula[f.name].bottle_specification.checksum_for(bottle_tag, exact: true)
+      _, _, bottle_cellar = Formula[f.name].bottle_specification.checksum_for(bottle_tag, no_older_versions: true)
       relocatable = [:any, :any_skip_relocation].include?(bottle_cellar)
       skip_relocation = bottle_cellar == :any_skip_relocation
 
