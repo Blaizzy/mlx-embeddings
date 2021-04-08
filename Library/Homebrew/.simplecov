@@ -36,13 +36,11 @@ SimpleCov.start do
 
     SimpleCov.at_exit do
       # Just save result, but don't write formatted output.
-      coverage_result = Coverage.result
-      coverage_result_dup = coverage_result.dup
+      coverage_result = Coverage.result.dup
       Dir[files].each do |file|
         absolute_path = File.expand_path(file)
-        coverage_result_dup[absolute_path] ||= SimpleCov::SimulateCoverage.call(absolute_path)
+        coverage_result[absolute_path] ||= SimpleCov::SimulateCoverage.call(absolute_path)
       end
-      coverage_result = coverage_result_dup
       simplecov_result = SimpleCov::Result.new(coverage_result)
       SimpleCov::ResultMerger.store_result(simplecov_result)
 
