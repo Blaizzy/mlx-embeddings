@@ -380,7 +380,7 @@ class GitHubPackages
       args << "--dest-creds=#{user}:#{token}"
       system_command!(skopeo, verbose: true, print_stdout: true, args: args)
       package_name = "#{GitHubPackages.repo_without_prefix(repo)}/#{image_name}"
-      ohai "Uploaded to https://github.com/orgs/Homebrew/packages/container/package/#{package_name}"
+      ohai "Uploaded to https://github.com/orgs/#{org}/packages/container/package/#{package_name}"
     end
   end
 
