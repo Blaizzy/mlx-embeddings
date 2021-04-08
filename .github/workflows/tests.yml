@@ -209,7 +209,7 @@ jobs:
         with:
           path: tests
           key: ${{ runner.os }}-${{ matrix.test-flags }}-parallel_runtime_rspec-${{ github.sha }}
-          restore-keys: ${{ runner.os }}-${{ matrix.test-flags }}-parallel_runtime_rspec
+          restore-keys: ${{ runner.os }}-${{ matrix.test-flags }}-parallel_runtime_rspec-
 
       - name: Run brew tests
         run: |
@@ -301,7 +301,7 @@ jobs:
         with:
           path: tests
           key: ${{ runner.os }}-parallel_runtime_rspec-${{ github.sha }}
-          restore-keys: ${{ runner.os }}-parallel_runtime_rspec
+          restore-keys: ${{ runner.os }}-parallel_runtime_rspec-
 
       - name: Run brew tests
         run: brew tests --online --coverage
