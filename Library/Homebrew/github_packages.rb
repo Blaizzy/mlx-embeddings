@@ -221,7 +221,15 @@ class GitHubPackages
 
     git_path = bottle_hash["formula"]["tap_git_path"]
     git_revision = bottle_hash["formula"]["tap_git_revision"]
-    source = "https://github.com/#{org}/#{repo}/blob/#{git_revision.presence || "HEAD"}/#{git_path}"
+
+    # we're uploading Homebrew/linuxbrew-core bottles to Linuxbrew with a core/
+    # prefix.
+    source_org_repo = if org.casecmp("linuxbrew").zero? && repo == "homebrew-core"
+      "Homebrew/linuxbrew-core"
+    else
+      "#{org}/#{repo}"
+    end
+    source = "https://github.com/#{source_org_repo}/blob/#{git_revision.presence || "HEAD"}/#{git_path}"
 
     formula_core_tap = formula_full_name.exclude?("/")
     documentation = if formula_core_tap
