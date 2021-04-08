@@ -430,7 +430,6 @@ class BottleSpecification
   def initialize
     @rebuild = 0
     @prefix = Homebrew::DEFAULT_PREFIX
-    @all_tags_cellar = Homebrew::DEFAULT_CELLAR
     @repository = Homebrew::DEFAULT_REPOSITORY
     @collector = Utils::Bottles::Collector.new
     @root_url_specs = {}
@@ -472,7 +471,7 @@ class BottleSpecification
     #   )
     # end
 
-    return collector.dig(Utils::Bottles.tag, :cellar) || @all_tags_cellar if val.nil?
+    return collector.dig(Utils::Bottles.tag, :cellar) || @all_tags_cellar || Homebrew::DEFAULT_CELLAR if val.nil?
 
     @all_tags_cellar = val
   end
@@ -534,6 +533,14 @@ class BottleSpecification
     end
 
     cellar ||= all_tags_cellar
+    cellar ||= if tag.to_s.end_with?("_linux")
+      Homebrew::DEFAULT_LINUX_CELLAR
+    elsif tag.to_s.start_with?("arm64_")
+      Homebrew::DEFAULT_MACOS_ARM_CELLAR
+    else
+      Homebrew::DEFAULT_MACOS_CELLAR
+    end
+
     collector[tag] = { checksum: Checksum.new(digest), cellar: cellar }
   end
 
