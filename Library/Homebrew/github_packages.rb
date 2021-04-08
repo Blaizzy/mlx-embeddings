@@ -112,7 +112,9 @@ class GitHubPackages
 
   def self.image_version_rebuild(version_rebuild)
     # invalid docker tag characters
-    version_rebuild.tr("+", ".")
+    # TODO: consider changing the actual versions here and make an audit to
+    # avoid these weird characters being used
+    version_rebuild.gsub(/[+#~]/, ".")
   end
 
   private
