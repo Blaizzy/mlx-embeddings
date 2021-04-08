@@ -444,7 +444,7 @@ fi
 
 if [[ -n "$HOMEBREW_MACOS" || -n "$HOMEBREW_FORCE_HOMEBREW_ON_LINUX" ]]
 then
-  HOMEBREW_BOTTLE_DEFAULT_DOMAIN="https://homebrew.bintray.com"
+  HOMEBREW_BOTTLE_DEFAULT_DOMAIN="https://ghcr.io/v2/homebrew/core"
 else
   HOMEBREW_BOTTLE_DEFAULT_DOMAIN="https://linuxbrew.bintray.com"
 fi

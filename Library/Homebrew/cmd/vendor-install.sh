@@ -17,17 +17,19 @@ if [[ -n "$HOMEBREW_MACOS" ]]
 then
   if [[ "$HOMEBREW_PROCESSOR" = "Intel" ]]
   then
-    ruby_URL="https://github.com/Homebrew/homebrew-portable-ruby/releases/download/2.6.3_2/portable-ruby-2.6.3_2.yosemite.bottle.tar.gz"
-    ruby_URL2="$HOMEBREW_BOTTLE_DOMAIN/bottles-portable-ruby/portable-ruby-2.6.3_2.yosemite.bottle.tar.gz"
+    ruby_FILENAME="portable-ruby-2.6.3_2.yosemite.bottle.tar.gz"
     ruby_SHA="b065e5e3783954f3e65d8d3a6377ca51649bfcfa21b356b0dd70490f74c6bd86"
+    ruby_URL="https://ghcr.io/v2/homebrew/portable-ruby/portable-ruby/blobs/sha256:$ruby_SHA"
+    ruby_URL2="https://homebrew.bintray.com/bottles-portable-ruby/$ruby_FILENAME"
   fi
 elif [[ -n "$HOMEBREW_LINUX" ]]
 then
   case "$HOMEBREW_PROCESSOR" in
     x86_64)
-      ruby_URL="https://github.com/Homebrew/homebrew-portable-ruby/releases/download/2.6.3_2/portable-ruby-2.6.3_2.x86_64_linux.bottle.tar.gz"
-      ruby_URL2="$HOMEBREW_BOTTLE_DOMAIN/bottles-portable-ruby/portable-ruby-2.6.3_2.x86_64_linux.bottle.tar.gz"
+      ruby_FILENAME="portable-ruby-2.6.3_2.x86_64_linux.bottle.tar.gz"
       ruby_SHA="97e639a64dcec285392b53ad804b5334c324f1d2a8bdc2b5087b8bf8051e332f"
+      ruby_URL="$HOMEBREW_BOTTLE_DOMAIN/bottles-portable-ruby/$ruby_FILENAME"
+      ruby_URL2="https://github.com/Homebrew/homebrew-portable-ruby/releases/download/2.6.3_2/$ruby_FILENAME"
       ;;
   esac
 fi
@@ -81,11 +83,13 @@ fetch() {
     curl_args[${#curl_args[*]}]="-q"
   fi
 
+  # Authorization is needed for GitHub Packages but harmless on Bintray/GitHub Releases
   curl_args+=(
     --fail
     --remote-time
     --location
     --user-agent "$HOMEBREW_USER_AGENT_CURL"
+    --header "Authorization: Bearer QQ=="
   )
 
   if [[ -n "$HOMEBREW_QUIET" ]]
@@ -197,7 +201,7 @@ install() {
   fi
 
   safe_cd "$VENDOR_DIR"
-  [[ -n "$HOMEBREW_QUIET" ]] || ohai "Pouring $(basename "$VENDOR_URL")" >&2
+  [[ -n "$HOMEBREW_QUIET" ]] || ohai "Pouring $VENDOR_FILENAME" >&2
   tar "$tar_args" "$CACHED_LOCATION"
   safe_cd "$VENDOR_DIR/portable-$VENDOR_NAME"
 
@@ -249,12 +253,14 @@ homebrew-vendor-install() {
   [[ -n "$HOMEBREW_DEBUG" ]] && set -x
   check_linux_glibc_version
 
+  filename_var="${VENDOR_NAME}_FILENAME"
+  sha_var="${VENDOR_NAME}_SHA"
   url_var="${VENDOR_NAME}_URL"
   url2_var="${VENDOR_NAME}_URL2"
-  sha_var="${VENDOR_NAME}_SHA"
+  VENDOR_FILENAME="${!filename_var}"
+  VENDOR_SHA="${!sha_var}"
   VENDOR_URL="${!url_var}"
   VENDOR_URL2="${!url2_var}"
-  VENDOR_SHA="${!sha_var}"
   VENDOR_VERSION="$(<"$VENDOR_DIR/portable-$VENDOR_NAME-version")"
 
   if [[ -z "$VENDOR_URL" || -z "$VENDOR_SHA" ]]
@@ -262,7 +268,7 @@ homebrew-vendor-install() {
     odie "No Homebrew $VENDOR_NAME $VENDOR_VERSION available for $HOMEBREW_PROCESSOR processors!"
   fi
 
-  CACHED_LOCATION="$HOMEBREW_CACHE/$(basename "$VENDOR_URL")"
+  CACHED_LOCATION="$HOMEBREW_CACHE/$VENDOR_FILENAME"
 
   lock "vendor-install-$VENDOR_NAME"
   fetch
