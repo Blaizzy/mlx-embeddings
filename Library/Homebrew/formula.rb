@@ -392,11 +392,6 @@ class Formula
   # @see .livecheckable?
   delegate livecheckable?: :"self.class"
 
-  # The service specification for the software.
-  # @!method service
-  # @see .service=
-  delegate service: :"self.class"
-
   # Is a service specification defined for the software?
   # @!method service?
   # @see .service?
@@ -971,6 +966,13 @@ class Formula
   sig { returns(Pathname) }
   def plist_path
     prefix/"#{plist_name}.plist"
+  end
+
+  # The service specification of the software.
+  def service
+    return Homebrew::Service.new(self, &self.class.service) if service?
+
+    nil
   end
 
   # @private
@@ -2397,7 +2399,7 @@ class Formula
     # It returns true when a service block is present in the {Formula} and
     # false otherwise, and is used by service.
     def service?
-      @service.present?
+      @service_block.present?
     end
 
     # The `:startup` attribute set by {.plist_options}.
@@ -2874,10 +2876,9 @@ class Formula
     #   run [opt_bin/"foo"]
     # end</pre>
     def service(&block)
-      @service ||= Homebrew::Service.new(self)
-      return @service unless block
+      return @service_block unless block
 
-      @service.instance_eval(&block)
+      @service_block = block
     end
 
     # Defines whether the {Formula}'s bottle can be used on the given Homebrew

@@ -15,12 +15,10 @@ describe Homebrew::Service do
   let(:spec) { :stable }
   let(:f) { klass.new(name, path, spec) }
 
-  let(:service) { described_class.new(f) }
-
   describe "#to_plist" do
     it "returns valid plist" do
-      service.instance_eval do
-        run [opt_bin/"beanstalkd"]
+      f.class.service do
+        run opt_bin/"beanstalkd"
         run_type :immediate
         environment_variables PATH: std_service_path_env
         error_log_path var/"log/beanstalkd.error.log"
@@ -29,7 +27,7 @@ describe Homebrew::Service do
         keep_alive true
       end
 
-      plist = service.to_plist
+      plist = f.service.to_plist
       expect(plist).to include("<key>Label</key>")
       expect(plist).to include("<string>homebrew.mxcl.#{name}</string>")
       expect(plist).to include("<key>KeepAlive</key>")
@@ -48,12 +46,12 @@ describe Homebrew::Service do
     end
 
     it "returns valid partial plist" do
-      service.instance_eval do
-        run ["#{HOMEBREW_PREFIX}/bin/beanstalkd"]
+      f.class.service do
+        run bin/"beanstalkd"
         run_type :immediate
       end
 
-      plist = service.to_plist
+      plist = f.service.to_plist
       expect(plist).to include("<string>homebrew.mxcl.#{name}</string>")
       expect(plist).to include("<key>Label</key>")
       expect(plist).not_to include("<key>KeepAlive</key>")

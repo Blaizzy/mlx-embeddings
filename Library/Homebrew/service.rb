@@ -7,16 +7,18 @@ module Homebrew
   # also return the related instance variable when no argument is provided.
   class Service
     extend T::Sig
+    extend Forwardable
 
     RUN_TYPE_IMMEDIATE = "immediate"
     RUN_TYPE_INTERVAL = "interval"
     RUN_TYPE_CRON = "cron"
 
     # sig { params(formula: Formula).void }
-    def initialize(formula)
+    def initialize(formula, &block)
       @formula = formula
       @run_type = RUN_TYPE_IMMEDIATE
       @environment_variables = {}
+      @service_block = block
     end
 
     sig { params(command: T.nilable(T.any(T::Array[String], String, Pathname))).returns(T.nilable(Array)) }
@@ -109,47 +111,14 @@ module Homebrew
       end
     end
 
-    # The directory where the formula's variable files should be installed.
-    # This directory is not inside the `HOMEBREW_CELLAR` so it persists
-    # across upgrades.
-    sig { returns(Pathname) }
-    def var
-      HOMEBREW_PREFIX/"var"
-    end
-
-    # The directory where the formula's configuration files should be installed.
-    # Anything using `etc.install` will not overwrite other files on e.g. upgrades
-    # but will write a new file named `*.default`.
-    # This directory is not inside the `HOMEBREW_CELLAR` so it persists
-    # across upgrades.
-    sig { returns(Pathname) }
-    def etc
-      HOMEBREW_PREFIX/"etc"
-    end
-
-    # The directory where the formula's binaries should be installed.
-    # This is symlinked into `HOMEBREW_PREFIX` after installation or with
-    # `brew link` for formulae that are not keg-only.
-    sig { returns(Pathname) }
-    def opt_bin
-      opt_prefix/"bin"
-    end
-
-    # The directory where the formula's binaries should be installed.
-    # This is symlinked into `HOMEBREW_PREFIX` after installation or with
-    # `brew link` for formulae that are not keg-only.
-    sig { returns(Pathname) }
-    def opt_sbin
-      opt_prefix/"sbin"
-    end
-
-    # A stable path for this formula, when installed. Contains the formula name
-    # but no version number. Only the active version will be linked here if
-    # multiple versions are installed.
-    sig { returns(Pathname) }
-    def opt_prefix
-      HOMEBREW_PREFIX/"opt/#{@formula.name}"
-    end
+    delegate [ # rubocop:disable Layout/HashAlignment
+      :bin,
+      :var,
+      :etc,
+      :opt_bin,
+      :opt_sbin,
+      :opt_prefix,
+    ] => :@formula
 
     sig { returns(String) }
     def std_service_path_env
@@ -160,7 +129,9 @@ module Homebrew
     # @return [String]
     sig { returns(String) }
     def to_plist
-      clean_command = @run.select {|i| i.is_a?(Pathname)}
+      instance_eval(&@service_block)
+
+      clean_command = @run.select { |i| i.is_a?(Pathname) }
                           .map(&:to_s)
 
       base = {
