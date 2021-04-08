@@ -5637,11 +5637,6 @@ class Cask::Artifact::AbstractArtifact
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class Cask::Audit
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 module Cask::Cache
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -8307,7 +8302,47 @@ module Homebrew::Livecheck::SkipConditions
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class Homebrew::Livecheck::Strategy::Apache
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Homebrew::Livecheck::Strategy::Bitbucket
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Homebrew::Livecheck::Strategy::Cpan
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class Homebrew::Livecheck::Strategy::ElectronBuilder
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Homebrew::Livecheck::Strategy::Git
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Homebrew::Livecheck::Strategy::GithubLatest
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Homebrew::Livecheck::Strategy::Gnome
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Homebrew::Livecheck::Strategy::Gnu
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Homebrew::Livecheck::Strategy::Hackage
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -8317,9 +8352,35 @@ class Homebrew::Livecheck::Strategy::HeaderMatch
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class Homebrew::Livecheck::Strategy::Launchpad
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Homebrew::Livecheck::Strategy::Npm
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class Homebrew::Livecheck::Strategy::PageMatch
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Homebrew::Livecheck::Strategy::Pypi
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Homebrew::Livecheck::Strategy::Sourceforge
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Homebrew::Livecheck::Strategy::Sparkle::Item
+  def short_version(*args, &block); end
+
+  def version(*args, &block); end
 end
 
 class Homebrew::Livecheck::Strategy::Sparkle::Item
@@ -8333,12 +8394,12 @@ class Homebrew::Livecheck::Strategy::Sparkle
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-module Homebrew::Livecheck::Strategy
+class Homebrew::Livecheck::Strategy::Xorg
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-module Homebrew::Livecheck
+module Homebrew::Livecheck::Strategy
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
