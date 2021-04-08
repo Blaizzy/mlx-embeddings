@@ -91,7 +91,7 @@ module Homebrew
     return merge(args: args) if args.merge?
 
     ensure_relocation_formulae_installed! unless args.skip_relocation?
-    args.named.to_resolved_formulae.each do |f|
+    args.named.to_resolved_formulae(uniq: false).each do |f|
       bottle_formula f, args: args
     end
   end
