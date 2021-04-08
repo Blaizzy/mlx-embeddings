@@ -87,6 +87,8 @@ module Utils
 
       sig { params(value: Symbol).returns(T.attached_class) }
       def self.from_symbol(value)
+        return new(system: :all, arch: :all) if value == :all
+
         @all_archs_regex ||= begin
           all_archs = Hardware::CPU::ALL_ARCHS.map(&:to_s)
           /
@@ -118,7 +120,9 @@ module Utils
 
       sig { returns(Symbol) }
       def to_sym
-        if macos? && arch == :x86_64
+        if system == :all && arch == :all
+          :all
+        elsif macos? && arch == :x86_64
           system
         else
           "#{arch}_#{system}".to_sym
@@ -219,7 +223,11 @@ module Utils
       private
 
       def find_matching_tag(tag, no_older_versions: false)
-        tag if key?(tag.to_sym)
+        if key?(tag.to_sym)
+          tag
+        elsif key?(:all)
+          Tag.from_symbol(:all)
+        end
       end
     end
   end

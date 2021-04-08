@@ -585,6 +585,12 @@ module Homebrew
   def merge(args:)
     bottles_hash = merge_json_files(parse_json_files(args.named))
 
+    # TODO: deduplicate --no-json bottles by:
+    # 1. throwing away bottles for newer versions of macOS if their SHA256 is
+    #    identical
+    # 2. generating `all: $SHA256` bottles that can be used on macOS and Linux
+    #    i.e. need to be `any_skip_relocation` and contain no ELF/MachO files.
+
     any_cellars = ["any", "any_skip_relocation"]
     bottles_hash.each do |formula_name, bottle_hash|
       ohai formula_name
