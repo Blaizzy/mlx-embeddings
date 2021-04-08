@@ -24,8 +24,8 @@ describe Utils::Bottles::Collector do
 
     it "uses older tags when needed", :needs_macos do
       collector[:mojave] = "foo"
-      expect(collector.send(:find_matching_tag, :mojave)).to eq(:mojave)
-      expect(collector.send(:find_matching_tag, :catalina)).to eq(:mojave)
+      expect(collector.send(:find_matching_tag, Utils::Bottles::Tag.from_symbol(:mojave))).to eq(:mojave)
+      expect(collector.send(:find_matching_tag, Utils::Bottles::Tag.from_symbol(:catalina))).to eq(:mojave)
     end
 
     it "does not use older tags when requested not to", :needs_macos do
@@ -33,16 +33,16 @@ describe Utils::Bottles::Collector do
       allow(Homebrew::EnvConfig).to receive(:skip_or_later_bottles?).and_return(true)
       allow(OS::Mac).to receive(:prerelease?).and_return(true)
       collector[:mojave] = "foo"
-      expect(collector.send(:find_matching_tag, :mojave)).to eq(:mojave)
-      expect(collector.send(:find_matching_tag, :catalina)).to be_nil
+      expect(collector.send(:find_matching_tag, Utils::Bottles::Tag.from_symbol(:mojave))).to eq(:mojave)
+      expect(collector.send(:find_matching_tag, Utils::Bottles::Tag.from_symbol(:catalina))).to be_nil
     end
 
     it "ignores HOMEBREW_SKIP_OR_LATER_BOTTLES on release versions", :needs_macos do
       allow(Homebrew::EnvConfig).to receive(:skip_or_later_bottles?).and_return(true)
       allow(OS::Mac).to receive(:prerelease?).and_return(false)
       collector[:mojave] = "foo"
-      expect(collector.send(:find_matching_tag, :mojave)).to eq(:mojave)
-      expect(collector.send(:find_matching_tag, :catalina)).to eq(:mojave)
+      expect(collector.send(:find_matching_tag, Utils::Bottles::Tag.from_symbol(:mojave))).to eq(:mojave)
+      expect(collector.send(:find_matching_tag, Utils::Bottles::Tag.from_symbol(:catalina))).to eq(:mojave)
     end
   end
 end

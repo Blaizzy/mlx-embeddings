@@ -831,7 +831,7 @@ describe Formula do
 
       bottle do
         cellar(:any)
-        sha256(TEST_SHA256 => Utils::Bottles.tag)
+        sha256(TEST_SHA256 => Utils::Bottles.tag.to_sym)
       end
     end
 

@@ -572,7 +572,7 @@ describe "brew bottle" do
         new_catalina_sha256 = "ec6d7f08412468f28dee2be17ad8cd8b883b16b34329efcecce019b8c9736428"
         new_hash = { "tags" => { "catalina" => { "sha256" => new_catalina_sha256 } } }
         expected_checksum_hash = { mojave: "7571772bf7a0c9fe193e70e521318b53993bee6f351976c9b6e01e00d13d6c3f" }
-        expected_checksum_hash[:cellar] = Homebrew::DEFAULT_CELLAR
+        expected_checksum_hash[:cellar] = Homebrew::DEFAULT_MACOS_CELLAR
         expect(homebrew.merge_bottle_spec([:sha256], old_spec, new_hash)).to eq [
           ["sha256 catalina: old: #{old_catalina_sha256.inspect}, new: #{new_catalina_sha256.inspect}"],
           [expected_checksum_hash],

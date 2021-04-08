@@ -13,9 +13,6 @@ module OS
     class Version < ::Version
       extend T::Sig
 
-      sig { returns(Symbol) }
-      attr_reader :arch
-
       SYMBOLS = {
         big_sur:     "11",
         catalina:    "10.15",
@@ -26,43 +23,20 @@ module OS
         yosemite:    "10.10",
       }.freeze
 
-      sig { params(sym: Symbol).returns(T.attached_class) }
-      def self.from_symbol(sym)
-        version, arch = version_arch(sym)
-        version ||= sym
-        str = SYMBOLS.fetch(version.to_sym) { raise MacOSVersionError, sym }
-        new(str, arch: arch)
+      sig { params(version: Symbol).returns(T.attached_class) }
+      def self.from_symbol(version)
+        str = SYMBOLS.fetch(version) { raise MacOSVersionError, version }
+        new(str)
       end
 
-      sig { params(value: T.any(String, Symbol)).returns(T.any([], [String, T.nilable(String)])) }
-      def self.version_arch(value)
-        @all_archs_regex ||= begin
-          all_archs = Hardware::CPU::ALL_ARCHS.map(&:to_s)
-          /
-            ^((?<prefix_arch>#{Regexp.union(all_archs)})_)?
-            (?<version>[\w.]+)
-            (-(?<suffix_arch>#{Regexp.union(all_archs)}))?$
-          /x
-        end
-        match = @all_archs_regex.match(value.to_s)
-        return [] unless match
-
-        version = match[:version]
-        arch = match[:prefix_arch] || match[:suffix_arch]
-        [version, arch]
-      end
-
-      sig { params(value: T.nilable(String), arch: T.nilable(String)).void }
-      def initialize(value, arch: nil)
-        version, arch = Version.version_arch(value) if value.present? && arch.nil?
+      sig { params(value: T.nilable(String)).void }
+      def initialize(value)
         version ||= value
-        arch    ||= "intel"
 
         raise MacOSVersionError, version unless /\A1\d+(?:\.\d+){0,2}\Z/.match?(version)
 
         super(version)
 
-        @arch = arch.to_sym
         @comparison_cache = {}
       end
 
