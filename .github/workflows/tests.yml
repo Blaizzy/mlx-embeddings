@@ -201,6 +201,16 @@ jobs:
       - name: Install Bundler RubyGems
         run: brew install-bundler-gems
 
+      - name: Create parallel test log directory
+        run: mkdir tests
+
+      - name: Cache parallel tests log
+        uses: actions/cache@v1
+        with:
+          path: tests
+          key: ${{ runner.os }}-${{ matrix.test-flags }}-parallel_runtime_rspec-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-${{ matrix.test-flags }}-parallel_runtime_rspec-
+
       - name: Run brew tests
         run: |
           # brew tests doesn't like world writable directories
@@ -282,6 +292,16 @@ jobs:
           brew sh -c "svn --homebrew=print-path"
           which svn
           which svnadmin
+
+      - name: Create parallel test log directory
+        run: mkdir tests
+
+      - name: Cache parallel tests log
+        uses: actions/cache@v1
+        with:
+          path: tests
+          key: ${{ runner.os }}-parallel_runtime_rspec-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-parallel_runtime_rspec-
 
       - name: Run brew tests
         run: brew tests --online --coverage
