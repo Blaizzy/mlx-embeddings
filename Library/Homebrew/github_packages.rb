@@ -269,24 +269,20 @@ class GitHubPackages
     }.reject { |_, v| v.blank? }
 
     manifests = bottle_hash["bottle"]["tags"].map do |bottle_tag, tag_hash|
+      bottle_tag = Utils::Bottles::Tag.from_symbol(bottle_tag.to_sym)
+
       local_file = tag_hash["local_filename"]
       odebug "Uploading #{local_file}"
 
       tar_gz_sha256 = write_tar_gz(local_file, blobs)
 
       tab = tag_hash["tab"]
-      architecture = if tab["arch"].present?
-        TAB_ARCH_TO_PLATFORM_ARCHITECTURE[tab["arch"]]
-      elsif bottle_tag.to_s.start_with?("arm64")
-        "arm64"
-      else
-        "amd64"
-      end
+      architecture = TAB_ARCH_TO_PLATFORM_ARCHITECTURE[tab["arch"].presence || bottle_tag.arch.to_s]
       raise TypeError, "unknown tab['arch']: #{tab["arch"]}" if architecture.blank?
 
       os = if tab["built_on"].present? && tab["built_on"]["os"].present?
         BUILT_ON_OS_TO_PLATFORM_OS[tab["built_on"]["os"]]
-      elsif bottle_tag.to_s.end_with?("_linux")
+      elsif bottle_tag.linux?
         "linux"
       else
         "darwin"
@@ -296,7 +292,7 @@ class GitHubPackages
       os_version = tab["built_on"]["os_version"].presence if tab["built_on"].present?
       case os
       when "darwin"
-        os_version ||= "macOS #{MacOS::Version.from_symbol(bottle_tag)}"
+        os_version ||= "macOS #{bottle_tag.to_macos_version}"
       when "linux"
         os_version&.delete_suffix!(" LTS")
         os_version ||= OS::CI_OS_VERSION
@@ -320,7 +316,7 @@ class GitHubPackages
       formulae_dir = tag_hash["formulae_brew_sh_path"]
       documentation = "https://formulae.brew.sh/#{formulae_dir}/#{formula_name}" if formula_core_tap
 
-      tag = GitHubPackages.version_rebuild(version, rebuild, bottle_tag)
+      tag = GitHubPackages.version_rebuild(version, rebuild, bottle_tag.to_s)
 
       descriptor_annotations_hash = {
         "org.opencontainers.image.ref.name" => tag,
