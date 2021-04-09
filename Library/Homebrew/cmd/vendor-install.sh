@@ -19,8 +19,6 @@ then
   then
     ruby_FILENAME="portable-ruby-2.6.3_2.yosemite.bottle.tar.gz"
     ruby_SHA="b065e5e3783954f3e65d8d3a6377ca51649bfcfa21b356b0dd70490f74c6bd86"
-    ruby_URL="https://ghcr.io/v2/homebrew/portable-ruby/portable-ruby/blobs/sha256:$ruby_SHA"
-    ruby_URL2="https://homebrew.bintray.com/bottles-portable-ruby/$ruby_FILENAME"
   fi
 elif [[ -n "$HOMEBREW_LINUX" ]]
 then
@@ -28,10 +26,16 @@ then
     x86_64)
       ruby_FILENAME="portable-ruby-2.6.3_2.x86_64_linux.bottle.tar.gz"
       ruby_SHA="97e639a64dcec285392b53ad804b5334c324f1d2a8bdc2b5087b8bf8051e332f"
-      ruby_URL="$HOMEBREW_BOTTLE_DOMAIN/bottles-portable-ruby/$ruby_FILENAME"
-      ruby_URL2="https://github.com/Homebrew/homebrew-portable-ruby/releases/download/2.6.3_2/$ruby_FILENAME"
       ;;
   esac
+fi
+
+# Dynamic variables can't be detected by shellcheck
+# shellcheck disable=SC2034
+if [[ -n "$ruby_SHA" && -n "$ruby_FILENAME" ]]
+then
+  ruby_URL="https://ghcr.io/v2/homebrew/portable-ruby/portable-ruby/blobs/sha256:$ruby_SHA"
+  ruby_URL2="https://github.com/Homebrew/homebrew-portable-ruby/releases/download/2.6.3_2/$ruby_FILENAME"
 fi
 
 check_linux_glibc_version() {
