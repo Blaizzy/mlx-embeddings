@@ -44,10 +44,14 @@ module Homebrew
       # If both a formula and cask with the same name exist, returns
       # the formula and prints a warning unless `only` is specified.
       sig {
-        params(only: T.nilable(Symbol), ignore_unavailable: T.nilable(T::Boolean), method: T.nilable(Symbol))
-          .returns(T::Array[T.any(Formula, Keg, Cask::Cask)])
+        params(
+          only:               T.nilable(Symbol),
+          ignore_unavailable: T.nilable(T::Boolean),
+          method:             T.nilable(Symbol),
+          uniq:               T::Boolean,
+        ).returns(T::Array[T.any(Formula, Keg, Cask::Cask)])
       }
-      def to_formulae_and_casks(only: parent&.only_formula_or_cask, ignore_unavailable: nil, method: nil)
+      def to_formulae_and_casks(only: parent&.only_formula_or_cask, ignore_unavailable: nil, method: nil, uniq: true)
         @to_formulae_and_casks ||= {}
         @to_formulae_and_casks[only] ||= downcased_unique_named.flat_map do |name|
           load_formula_or_cask(name, only: only, method: method)
@@ -59,7 +63,13 @@ module Homebrew
           raise
         rescue NoSuchKegError, FormulaUnavailableError, Cask::CaskUnavailableError, FormulaOrCaskUnavailableError
           ignore_unavailable ? [] : raise
-        end.uniq.freeze
+        end.freeze
+
+        if uniq
+          @to_formulae_and_casks[only].uniq.freeze
+        else
+          @to_formulae_and_casks[only]
+        end
       end
 
       def to_formulae_to_casks(only: parent&.only_formula_or_cask, method: nil)
@@ -149,9 +159,9 @@ module Homebrew
       end
       private :resolve_formula
 
-      sig { returns(T::Array[Formula]) }
-      def to_resolved_formulae
-        @to_resolved_formulae ||= to_formulae_and_casks(only: :formula, method: :resolve)
+      sig { params(uniq: T::Boolean).returns(T::Array[Formula]) }
+      def to_resolved_formulae(uniq: true)
+        @to_resolved_formulae ||= to_formulae_and_casks(only: :formula, method: :resolve, uniq: uniq)
                                   .freeze
       end
 
