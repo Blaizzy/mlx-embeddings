@@ -1896,17 +1896,23 @@ class Formula
     bottle_spec = stable.bottle_specification
     hash = {
       "rebuild"  => bottle_spec.rebuild,
-      "cellar"   => (cellar = bottle_spec.cellar).is_a?(Symbol) ? cellar.inspect : cellar,
-      "prefix"   => bottle_spec.prefix,
       "root_url" => bottle_spec.root_url,
       "files"    => {},
     }
     bottle_spec.collector.each_key do |os|
-      bottle_url = "#{bottle_spec.root_url}/#{Bottle::Filename.create(self, os, bottle_spec.rebuild).bintray}"
-      checksum = bottle_spec.collector[os][:checksum]
+      collector_os = bottle_spec.collector[os]
+      os_cellar = collector_os[:cellar]
+      os_cellar = os_cellar.is_a?(Symbol) ? os_cellar.inspect : os_cellar
+
+      checksum = collector_os[:checksum].hexdigest
+      filename = Bottle::Filename.create(self, os, bottle_spec.rebuild).bintray
+      path, = bottle_spec.path_resolved_basename(name, checksum, filename)
+      url = "#{bottle_spec.root_url}/#{path}"
+
       hash["files"][os] = {
-        "url"    => bottle_url,
-        "sha256" => checksum.hexdigest,
+        "cellar" => os_cellar,
+        "url"    => url,
+        "sha256" => checksum,
       }
     end
     hash
