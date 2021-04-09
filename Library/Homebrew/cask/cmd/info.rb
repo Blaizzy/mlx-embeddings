@@ -39,7 +39,7 @@ module Cask
       sig { void }
       def run
         if args.json == "v1"
-          puts JSON.generate(args.named.to_casks.map(&:to_h))
+          puts JSON.pretty_generate(args.named.to_casks.map(&:to_h))
         elsif args.github?
           raise CaskUnspecifiedError if args.no_named?
 

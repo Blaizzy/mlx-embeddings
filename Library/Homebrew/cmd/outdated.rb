@@ -64,7 +64,7 @@ module Homebrew
         "formulae" => json_info(formulae, args: args),
         "casks"    => json_info(casks, args: args),
       }
-      puts JSON.generate(json)
+      puts JSON.pretty_generate(json)
 
       outdated = formulae + casks
 

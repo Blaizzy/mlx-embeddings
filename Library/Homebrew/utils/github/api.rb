@@ -193,7 +193,7 @@ module GitHub
       data_tmpfile = nil
       if data
         begin
-          data = JSON.generate data
+          data = JSON.pretty_generate data
           data_tmpfile = Tempfile.new("github_api_post", HOMEBREW_TEMP)
         rescue JSON::ParserError => e
           raise Error, "Failed to parse JSON request:\n#{e.message}\n#{data}", e.backtrace

@@ -306,13 +306,7 @@ class Bottle
 
     filename = Filename.create(formula, tag, spec.rebuild).bintray
 
-    # TODO: this will need adjusted when if we use GitHub Packages by default
-    path, resolved_basename = if spec.root_url.match?(GitHubPackages::URL_REGEX)
-      image_name = GitHubPackages.image_formula_name(@name)
-      ["#{image_name}/blobs/sha256:#{checksum}", filename]
-    else
-      filename
-    end
+    path, resolved_basename = spec.path_resolved_basename(@name, checksum, filename)
 
     @resource.url("#{spec.root_url}/#{path}", select_download_strategy(spec.root_url_specs))
     @resource.downloader.resolved_basename = resolved_basename if resolved_basename.present?
@@ -424,7 +418,7 @@ class BottleSpecification
 
   attr_rw :rebuild
   attr_accessor :tap
-  attr_reader :all_tags_cellar, :checksum, :collector, :root_url_specs, :repository, :prefix
+  attr_reader :all_tags_cellar, :collector, :root_url_specs, :repository, :prefix
 
   sig { void }
   def initialize
@@ -449,6 +443,16 @@ class BottleSpecification
         var
       end
       @root_url_specs.merge!(specs)
+    end
+  end
+
+  def path_resolved_basename(name, checksum, filename)
+    if root_url.match?(GitHubPackages::URL_REGEX)
+      image_name = GitHubPackages.image_formula_name(name)
+      ["#{image_name}/blobs/sha256:#{checksum}", filename]
+    else
+      # TODO: this can be removed when we no longer use Bintray
+      filename
     end
   end
 

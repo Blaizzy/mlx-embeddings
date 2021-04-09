@@ -235,7 +235,7 @@ RSpec.shared_context "integration test" do # rubocop:disable RSpec/ContextWordin
       brew "install", old_name
 
       (tap_path/"Formula/#{old_name}.rb").unlink
-      (tap_path/"formula_renames.json").write JSON.generate(old_name => new_name)
+      (tap_path/"formula_renames.json").write JSON.pretty_generate(old_name => new_name)
 
       system "git", "add", "--all"
       system "git", "commit", "-m",
