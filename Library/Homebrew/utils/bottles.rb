@@ -87,6 +87,8 @@ module Utils
 
       sig { params(value: Symbol).returns(T.attached_class) }
       def self.from_symbol(value)
+        return new(system: :all, arch: :all) if value == :all
+
         @all_archs_regex ||= begin
           all_archs = Hardware::CPU::ALL_ARCHS.map(&:to_s)
           /
@@ -118,7 +120,9 @@ module Utils
 
       sig { returns(Symbol) }
       def to_sym
-        if macos? && arch == :x86_64
+        if system == :all && arch == :all
+          :all
+        elsif macos? && arch == :x86_64
           system
         else
           "#{arch}_#{system}".to_sym
@@ -204,22 +208,26 @@ module Utils
 
       sig {
         params(
-          tag:   T.any(Symbol, Utils::Bottles::Tag),
-          exact: T::Boolean,
+          tag:               T.any(Symbol, Utils::Bottles::Tag),
+          no_older_versions: T::Boolean,
         ).returns(
           T.nilable([Checksum, Symbol, T.any(Symbol, String)]),
         )
       }
-      def fetch_checksum_for(tag, exact: false)
+      def fetch_checksum_for(tag, no_older_versions: false)
         tag = Utils::Bottles::Tag.from_symbol(tag) if tag.is_a?(Symbol)
-        tag = find_matching_tag(tag, exact: exact)&.to_sym
+        tag = find_matching_tag(tag, no_older_versions: no_older_versions)&.to_sym
         return self[tag][:checksum], tag, self[tag][:cellar] if tag
       end
 
       private
 
-      def find_matching_tag(tag, exact: false)
-        tag if key?(tag.to_sym)
+      def find_matching_tag(tag, no_older_versions: false)
+        if key?(tag.to_sym)
+          tag
+        elsif key?(:all)
+          Tag.from_symbol(:all)
+        end
       end
     end
   end

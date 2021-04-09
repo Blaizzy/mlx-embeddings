@@ -339,7 +339,7 @@ module Homebrew
         end
       end
 
-      _, _, bottle_cellar = Formula[f.name].bottle_specification.checksum_for(bottle_tag, exact: true)
+      _, _, bottle_cellar = Formula[f.name].bottle_specification.checksum_for(bottle_tag, no_older_versions: true)
       relocatable = [:any, :any_skip_relocation].include?(bottle_cellar)
       skip_relocation = bottle_cellar == :any_skip_relocation
 
@@ -578,6 +578,12 @@ module Homebrew
 
   def merge(args:)
     bottles_hash = merge_json_files(parse_json_files(args.named))
+
+    # TODO: deduplicate --no-json bottles by:
+    # 1. throwing away bottles for newer versions of macOS if their SHA256 is
+    #    identical
+    # 2. generating `all: $SHA256` bottles that can be used on macOS and Linux
+    #    i.e. need to be `any_skip_relocation` and contain no ELF/MachO files.
 
     any_cellars = ["any", "any_skip_relocation"]
     bottles_hash.each do |formula_name, bottle_hash|

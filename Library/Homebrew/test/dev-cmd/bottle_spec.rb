@@ -493,37 +493,43 @@ describe "brew bottle" do
       end
     end
 
-    specify "::merge_json_files" do
-      bottles_hash = homebrew.merge_json_files(
-        [hello_hash_big_sur, hello_hash_catalina, unzip_hash_big_sur, unzip_hash_catalina],
-      )
+    describe "::merge_json_files" do
+      it "merges JSON files" do
+        bottles_hash = homebrew.merge_json_files(
+          [hello_hash_big_sur, hello_hash_catalina, unzip_hash_big_sur, unzip_hash_catalina],
+        )
 
-      hello_hash = bottles_hash["hello"]
-      expect(hello_hash["bottle"]["tags"]["big_sur"]["cellar"]).to eq("any_skip_relocation")
-      expect(hello_hash["bottle"]["tags"]["big_sur"]["filename"]).to eq("hello-1.0.big_sur.bottle.tar.gz")
-      expect(hello_hash["bottle"]["tags"]["big_sur"]["local_filename"]).to eq("hello--1.0.big_sur.bottle.tar.gz")
-      expect(hello_hash["bottle"]["tags"]["big_sur"]["sha256"]).to eq(
-        "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f",
-      )
-      expect(hello_hash["bottle"]["tags"]["catalina"]["cellar"]).to eq("any_skip_relocation")
-      expect(hello_hash["bottle"]["tags"]["catalina"]["filename"]).to eq("hello-1.0.catalina.bottle.tar.gz")
-      expect(hello_hash["bottle"]["tags"]["catalina"]["local_filename"]).to eq("hello--1.0.catalina.bottle.tar.gz")
-      expect(hello_hash["bottle"]["tags"]["catalina"]["sha256"]).to eq(
-        "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac",
-      )
-      unzip_hash = bottles_hash["unzip"]
-      expect(unzip_hash["bottle"]["tags"]["big_sur"]["cellar"]).to eq("any_skip_relocation")
-      expect(unzip_hash["bottle"]["tags"]["big_sur"]["filename"]).to eq("unzip-2.0.big_sur.bottle.tar.gz")
-      expect(unzip_hash["bottle"]["tags"]["big_sur"]["local_filename"]).to eq("unzip--2.0.big_sur.bottle.tar.gz")
-      expect(unzip_hash["bottle"]["tags"]["big_sur"]["sha256"]).to eq(
-        "16cf230afdfcb6306c208d169549cf8773c831c8653d2c852315a048960d7e72",
-      )
-      expect(unzip_hash["bottle"]["tags"]["catalina"]["cellar"]).to eq("any")
-      expect(unzip_hash["bottle"]["tags"]["catalina"]["filename"]).to eq("unzip-2.0.catalina.bottle.tar.gz")
-      expect(unzip_hash["bottle"]["tags"]["catalina"]["local_filename"]).to eq("unzip--2.0.catalina.bottle.tar.gz")
-      expect(unzip_hash["bottle"]["tags"]["catalina"]["sha256"]).to eq(
-        "d9cc50eec8ac243148a121049c236cba06af4a0b1156ab397d0a2850aa79c137",
-      )
+        hello_hash = bottles_hash["hello"]
+        expect(hello_hash["bottle"]["tags"]["big_sur"]["cellar"]).to eq("any_skip_relocation")
+        expect(hello_hash["bottle"]["tags"]["big_sur"]["filename"]).to eq("hello-1.0.big_sur.bottle.tar.gz")
+        expect(hello_hash["bottle"]["tags"]["big_sur"]["local_filename"]).to eq("hello--1.0.big_sur.bottle.tar.gz")
+        expect(hello_hash["bottle"]["tags"]["big_sur"]["sha256"]).to eq(
+          "a0af7dcbb5c83f6f3f7ecd507c2d352c1a018f894d51ad241ce8492fa598010f",
+        )
+        expect(hello_hash["bottle"]["tags"]["catalina"]["cellar"]).to eq("any_skip_relocation")
+        expect(hello_hash["bottle"]["tags"]["catalina"]["filename"]).to eq("hello-1.0.catalina.bottle.tar.gz")
+        expect(hello_hash["bottle"]["tags"]["catalina"]["local_filename"]).to eq("hello--1.0.catalina.bottle.tar.gz")
+        expect(hello_hash["bottle"]["tags"]["catalina"]["sha256"]).to eq(
+          "5334dd344986e46b2aa4f0471cac7b0914bd7de7cb890a34415771788d03f2ac",
+        )
+        unzip_hash = bottles_hash["unzip"]
+        expect(unzip_hash["bottle"]["tags"]["big_sur"]["cellar"]).to eq("any_skip_relocation")
+        expect(unzip_hash["bottle"]["tags"]["big_sur"]["filename"]).to eq("unzip-2.0.big_sur.bottle.tar.gz")
+        expect(unzip_hash["bottle"]["tags"]["big_sur"]["local_filename"]).to eq("unzip--2.0.big_sur.bottle.tar.gz")
+        expect(unzip_hash["bottle"]["tags"]["big_sur"]["sha256"]).to eq(
+          "16cf230afdfcb6306c208d169549cf8773c831c8653d2c852315a048960d7e72",
+        )
+        expect(unzip_hash["bottle"]["tags"]["catalina"]["cellar"]).to eq("any")
+        expect(unzip_hash["bottle"]["tags"]["catalina"]["filename"]).to eq("unzip-2.0.catalina.bottle.tar.gz")
+        expect(unzip_hash["bottle"]["tags"]["catalina"]["local_filename"]).to eq("unzip--2.0.catalina.bottle.tar.gz")
+        expect(unzip_hash["bottle"]["tags"]["catalina"]["sha256"]).to eq(
+          "d9cc50eec8ac243148a121049c236cba06af4a0b1156ab397d0a2850aa79c137",
+        )
+      end
+
+      # TODO: add deduplication tests e.g.
+      # it "deduplicates JSON files with matching macOS checksums"
+      # it "deduplicates JSON files with matching OS checksums" do
     end
 
     describe "#merge_bottle_spec" do
