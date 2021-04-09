@@ -1750,7 +1750,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 - `HOMEBREW_BOTTLE_DOMAIN`
   <br>Use this URL as the download mirror for bottles. If bottles at that URL are temporarily unavailable, the default bottle domain will be used as a fallback mirror. For example, `HOMEBREW_BOTTLE_DOMAIN=http://localhost:8080` will cause all bottles to download from the prefix `http://localhost:8080/`. If bottles are not available at `HOMEBREW_BOTTLE_DOMAIN` they will be downloaded from the default bottle domain.
 
-  *Default:* macOS: `https://ghcr.io/v2/homebrew/core`, Linux: `https://linuxbrew.bintray.com`.
+  *Default:* macOS: `https://ghcr.io/v2/homebrew/core`, Linux: `https://ghcr.io/v2/linuxbrew/core`.
 
 - `HOMEBREW_BREW_GIT_REMOTE`
   <br>Use this URL as the Homebrew/brew `git`(1) remote.
