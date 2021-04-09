@@ -63,7 +63,7 @@ Read our [contribution guidelines](https://github.com/Homebrew/brew/blob/HEAD/CO
 ## Why do you compile everything?
 Homebrew provides pre-compiled versions for many formulae. These
 pre-compiled versions are referred to as [bottles](Bottles.md) and are available
-at <https://bintray.com/homebrew/bottles>.
+at <https://github.com/Homebrew/homebrew-core/packages>.
 
 If available, bottled binaries will be used by default except under the
 following conditions:

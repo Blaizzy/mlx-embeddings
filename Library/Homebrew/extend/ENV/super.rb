@@ -294,31 +294,8 @@ module Superenv
   end
 
   sig { void }
-  def universal_binary
-    odisabled "ENV.universal_binary"
-
-    check_for_compiler_universal_support
-
-    self["HOMEBREW_ARCHFLAGS"] = Hardware::CPU.universal_archs.as_arch_flags
-  end
-
-  sig { void }
   def permit_arch_flags
     append_to_cccfg "K"
-  end
-
-  sig { void }
-  def m32
-    odisabled "ENV.m32"
-
-    append "HOMEBREW_ARCHFLAGS", "-m32"
-  end
-
-  sig { void }
-  def m64
-    odisabled "ENV.m64"
-
-    append "HOMEBREW_ARCHFLAGS", "-m64"
   end
 
   sig { void }
@@ -332,36 +309,16 @@ module Superenv
     append_to_cccfg "g" if compiler == :clang
   end
 
-  sig { void }
-  def libstdcxx
-    odisabled "ENV.libstdcxx"
-
-    append_to_cccfg "h" if compiler == :clang
-  end
-
   # @private
   sig { void }
   def refurbish_args
     append_to_cccfg "O"
   end
 
-  %w[O3 O2 Os].each do |opt|
-    define_method opt do
-      odisabled "ENV.#{opt}"
-
-      send(:[]=, "HOMEBREW_OPTIMIZATION_LEVEL", opt)
-    end
-  end
-
   %w[O1 O0].each do |opt|
     define_method opt do
       send(:[]=, "HOMEBREW_OPTIMIZATION_LEVEL", opt)
     end
-  end
-
-  sig { void }
-  def set_x11_env_if_installed
-    odisabled "ENV.set_x11_env_if_installed"
   end
 end
 

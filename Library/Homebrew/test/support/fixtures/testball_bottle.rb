@@ -8,9 +8,8 @@ class TestballBottle < Formula
       stable.url "file://#{TEST_FIXTURE_DIR}/tarballs/testball-0.1.tbz"
       stable.sha256 TESTBALL_SHA256
       stable.bottle do
-        cellar :any_skip_relocation
         root_url "file://#{TEST_FIXTURE_DIR}/bottles"
-        sha256 "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149" => Utils::Bottles.tag.to_sym
+        sha256 cellar: :any_skip_relocation, Utils::Bottles.tag.to_sym => "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149"
       end
       cxxstdlib_check :skip
     end

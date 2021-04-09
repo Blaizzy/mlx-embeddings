@@ -348,14 +348,14 @@ _brew___repository() {
 # brew -S
 _brew__s() {
   _arguments \
-    '--cask[Without text, list all locally available casks (including tapped ones, no online search is performed). With text, search online and locally for casks]' \
+    '--cask[Search online and locally for casks]' \
     '(--open)--closed[Search for only closed GitHub pull requests]' \
     '(--macports --fink --opensuse --fedora --ubuntu)--debian[Search for text in the given package manager'\''s list]' \
     '--debug[Display any debugging information]' \
     '(--pull-request)--desc[Search for formulae with a description matching text and casks with a name matching text]' \
     '(--macports --fink --opensuse --debian --ubuntu)--fedora[Search for text in the given package manager'\''s list]' \
     '(--macports --opensuse --fedora --debian --ubuntu)--fink[Search for text in the given package manager'\''s list]' \
-    '--formula[Without text, list all locally available formulae (no online search is performed). With text, search online and locally for formulae]' \
+    '--formula[Search online and locally for formulae]' \
     '--help[Show this message]' \
     '(--fink --opensuse --fedora --debian --ubuntu)--macports[Search for text in the given package manager'\''s list]' \
     '(--closed)--open[Search for only open GitHub pull requests]' \
@@ -909,7 +909,7 @@ _brew_instal() {
     '--debug[If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory]' \
     '(--formula)--dictionarydir[Target location for Dictionaries (default: `~/Library/Dictionaries`)]' \
     '(--cask)--display-times[Print install times for each formula at the end of the run]' \
-    '(--cask)--env[If `std` is passed, use the standard build environment instead of superenv. If `super` is passed, use superenv even if the formula specifies the standard build environment]' \
+    '(--cask)--env[Disabled other than for internal Homebrew use]' \
     '(--cask)--fetch-HEAD[Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository'\''s HEAD will only be checked for updates when a new stable or development version has been released]' \
     '(--formula)--fontdir[Target location for Fonts (default: `~/Library/Fonts`)]' \
     '--force[Install formulae without checking for previously installed keg-only or non-migrated versions. When installing casks, overwrite existing files (binaries and symlinks are excluded, unless originally from the same cask)]' \
@@ -961,7 +961,7 @@ _brew_install() {
     '--debug[If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory]' \
     '(--formula)--dictionarydir[Target location for Dictionaries (default: `~/Library/Dictionaries`)]' \
     '(--cask)--display-times[Print install times for each formula at the end of the run]' \
-    '(--cask)--env[If `std` is passed, use the standard build environment instead of superenv. If `super` is passed, use superenv even if the formula specifies the standard build environment]' \
+    '(--cask)--env[Disabled other than for internal Homebrew use]' \
     '(--cask)--fetch-HEAD[Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository'\''s HEAD will only be checked for updates when a new stable or development version has been released]' \
     '(--formula)--fontdir[Target location for Fonts (default: `~/Library/Fonts`)]' \
     '--force[Install formulae without checking for previously installed keg-only or non-migrated versions. When installing casks, overwrite existing files (binaries and symlinks are excluded, unless originally from the same cask)]' \
@@ -1472,14 +1472,14 @@ _brew_ruby() {
 # brew search
 _brew_search() {
   _arguments \
-    '--cask[Without text, list all locally available casks (including tapped ones, no online search is performed). With text, search online and locally for casks]' \
+    '--cask[Search online and locally for casks]' \
     '(--open)--closed[Search for only closed GitHub pull requests]' \
     '(--macports --fink --opensuse --fedora --ubuntu)--debian[Search for text in the given package manager'\''s list]' \
     '--debug[Display any debugging information]' \
     '(--pull-request)--desc[Search for formulae with a description matching text and casks with a name matching text]' \
     '(--macports --fink --opensuse --debian --ubuntu)--fedora[Search for text in the given package manager'\''s list]' \
     '(--macports --opensuse --fedora --debian --ubuntu)--fink[Search for text in the given package manager'\''s list]' \
-    '--formula[Without text, list all locally available formulae (no online search is performed). With text, search online and locally for formulae]' \
+    '--formula[Search online and locally for formulae]' \
     '--help[Show this message]' \
     '(--fink --opensuse --fedora --debian --ubuntu)--macports[Search for text in the given package manager'\''s list]' \
     '(--closed)--open[Search for only open GitHub pull requests]' \

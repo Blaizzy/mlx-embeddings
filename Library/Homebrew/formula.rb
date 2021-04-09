@@ -2871,8 +2871,8 @@ class Formula
     # @see https://docs.brew.sh/Deprecating-Disabling-and-Removing-Formulae
     # @see DeprecateDisable::DEPRECATE_DISABLE_REASONS
     def deprecate!(date: nil, because: nil)
-      odeprecated "`deprecate!` without a reason", "`deprecate! because: \"reason\"`" if because.blank?
-      odeprecated "`deprecate!` without a date", "`deprecate! date: \"#{Date.today}\"`" if date.blank?
+      odisabled "`deprecate!` without a reason", "`deprecate! because: \"reason\"`" if because.blank?
+      odisabled "`deprecate!` without a date", "`deprecate! date: \"#{Date.today}\"`" if date.blank?
 
       @deprecation_date = Date.parse(date) if date.present?
 
@@ -2910,8 +2910,8 @@ class Formula
     # @see https://docs.brew.sh/Deprecating-Disabling-and-Removing-Formulae
     # @see DeprecateDisable::DEPRECATE_DISABLE_REASONS
     def disable!(date: nil, because: nil)
-      odeprecated "`disable!` without a reason", "`disable! because: \"reason\"`" if because.blank?
-      odeprecated "`disable!` without a date", "`disable! date: \"#{Date.today}\"`" if date.blank?
+      odisabled "`disable!` without a reason", "`disable! because: \"reason\"`" if because.blank?
+      odisabled "`disable!` without a date", "`disable! date: \"#{Date.today}\"`" if date.blank?
 
       @disable_date = Date.parse(date) if date.present?
 

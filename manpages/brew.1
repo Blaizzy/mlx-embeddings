@@ -346,7 +346,7 @@ Treat all named arguments as formulae\.
 .
 .TP
 \fB\-\-env\fR
-If \fBstd\fR is passed, use the standard build environment instead of superenv\. If \fBsuper\fR is passed, use superenv even if the formula specifies the standard build environment\.
+Disabled other than for internal Homebrew use\.
 .
 .TP
 \fB\-\-ignore\-dependencies\fR
@@ -654,19 +654,16 @@ Disable/enable quarantining of downloads (default: enabled)\.
 \fB\-\-skip\-cask\-deps\fR
 Skip installing cask dependencies\.
 .
-.SS "\fBsearch\fR, \fB\-S\fR [\fIoptions\fR] [\fItext\fR|\fB/\fR\fIregex\fR\fB/\fR \.\.\.]"
+.SS "\fBsearch\fR, \fB\-S\fR [\fIoptions\fR] \fItext\fR|\fB/\fR\fIregex\fR\fB/\fR [\.\.\.]"
 Perform a substring search of cask tokens and formula names for \fItext\fR\. If \fItext\fR is flanked by slashes, it is interpreted as a regular expression\. The search for \fItext\fR is extended online to \fBhomebrew/core\fR and \fBhomebrew/cask\fR\.
-.
-.P
-If no \fItext\fR is provided, list all locally available formulae (including tapped ones)\. No online search is performed\.
 .
 .TP
 \fB\-\-formula\fR
-Without \fItext\fR, list all locally available formulae (no online search is performed)\. With \fItext\fR, search online and locally for formulae\.
+Search online and locally for formulae\.
 .
 .TP
 \fB\-\-cask\fR
-Without \fItext\fR, list all locally available casks (including tapped ones, no online search is performed)\. With \fItext\fR, search online and locally for casks\.
+Search online and locally for casks\.
 .
 .TP
 \fB\-\-desc\fR
@@ -1551,21 +1548,6 @@ Generate Homebrew\'s manpages\.
 .TP
 \fB\-\-fail\-if\-not\-changed\fR
 Return a failing status code if no changes are detected in the manpage outputs\. This can be used to notify CI when the manpages are out of date\. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date)\.
-.
-.SS "\fBmirror\fR [\fIoptions\fR] \fIformula\fR [\.\.\.]"
-Reupload the stable URL of a formula to Bintray for use as a mirror\.
-.
-.TP
-\fB\-\-bintray\-org\fR
-Upload to the specified Bintray organisation (default: \fBhomebrew\fR)\.
-.
-.TP
-\fB\-\-bintray\-repo\fR
-Upload to the specified Bintray repository (default: \fBmirror\fR)\.
-.
-.TP
-\fB\-\-no\-publish\fR
-Upload to Bintray, but don\'t publish\.
 .
 .SS "\fBpr\-automerge\fR [\fIoptions\fR]"
 Find pull requests that can be automatically merged using \fBbrew pr\-publish\fR\.

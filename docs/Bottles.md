@@ -8,7 +8,7 @@ If a bottle is available and usable it will be downloaded and poured automatical
 Bottles will not be used if the user requests it (see above), if the formula requests it (with `pour_bottle?`), if any options are specified during installation (bottles are all compiled with default options), if the bottle is not up to date (e.g. lacking a checksum) or if the bottle's `cellar` is not `:any` nor equal to the current `HOMEBREW_CELLAR`.
 
 ## Creation
-Bottles are created using the [Brew Test Bot](Brew-Test-Bot.md), usually when people submit pull requests to Homebrew. The `bottle do` block is updated by maintainers when they merge a pull request. For the Homebrew organisations' taps they are uploaded to and downloaded from [Bintray](https://bintray.com/homebrew).
+Bottles are created using the [Brew Test Bot](Brew-Test-Bot.md), usually when people submit pull requests to Homebrew. The `bottle do` block is updated by maintainers when they merge a pull request. For the Homebrew organisations' taps they are uploaded to and downloaded from [GitHub Packages](https://github.com/orgs/Homebrew/packages).
 
 By default, bottles will be built for the oldest CPU supported by the OS/architecture you're building for (Core 2 for 64-bit OSs). This ensures that bottles are compatible with all computers you might distribute them to. If you *really* want your bottles to be optimised for something else, you can pass the `--bottle-arch=` option to build for another architecture; for example, `brew install foo --build-bottle --bottle-arch=penryn`. Just remember that if you build for a newer architecture some of your users might get binaries they can't run and that would be sad!
 

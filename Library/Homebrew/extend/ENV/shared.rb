@@ -241,31 +241,13 @@ module SharedEnvExtension
   # @see https://bugs.python.org/issue6848
   sig { void }
   def ncurses_define
-    odeprecated "ENV.ncurses_define"
-
-    append "CPPFLAGS", "-DNCURSES_OPAQUE=0"
+    odisabled "ENV.ncurses_define"
   end
 
   # @private
   sig { void }
   def userpaths!
-    odeprecated "ENV.userpaths!"
-
-    path = PATH.new(self["PATH"]).select do |p|
-      # put Superenv.bin and opt path at the first
-      p.start_with?("#{HOMEBREW_REPOSITORY}/Library/ENV", "#{HOMEBREW_PREFIX}/opt")
-    end
-    path.append(HOMEBREW_PREFIX/"bin") # XXX hot fix to prefer brewed stuff (e.g. python) over /usr/bin.
-    path.append(self["PATH"]) # reset of self["PATH"]
-    path.append(
-      # user paths
-      ORIGINAL_PATHS.map do |p|
-        p.realpath.to_s
-      rescue
-        nil
-      end - %w[/usr/X11/bin /opt/X11/bin],
-    )
-    self["PATH"] = path
+    odisabled "ENV.userpaths!"
   end
 
   sig { void }
@@ -347,7 +329,7 @@ module SharedEnvExtension
 
   sig { void }
   def permit_weak_imports
-    odeprecated "ENV.permit_weak_imports"
+    odisabled "ENV.permit_weak_imports"
   end
 
   # @private

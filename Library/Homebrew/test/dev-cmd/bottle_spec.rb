@@ -530,7 +530,7 @@ describe "brew bottle" do
       it "allows new bottle hash to be empty" do
         valid_keys = [:root_url, :prefix, :cellar, :rebuild, :sha256]
         old_spec = BottleSpecification.new
-        old_spec.sha256("f59bc65c91e4e698f6f050e1efea0040f57372d4dcf0996cbb8f97ced320403b" => :big_sur)
+        old_spec.sha256(big_sur: "f59bc65c91e4e698f6f050e1efea0040f57372d4dcf0996cbb8f97ced320403b")
         expect { homebrew.merge_bottle_spec(valid_keys, old_spec, {}) }.not_to raise_error
       end
 
@@ -540,16 +540,6 @@ describe "brew bottle" do
         new_hash = { "root_url" => "https://testbrew.bintray.com/bottles" }
         expect(homebrew.merge_bottle_spec([:root_url], old_spec, new_hash)).to eq [
           ['root_url: old: "https://failbrew.bintray.com/bottles", new: "https://testbrew.bintray.com/bottles"'],
-          [],
-        ]
-      end
-
-      it "checks for conflicting prefix" do
-        old_spec = BottleSpecification.new
-        old_spec.prefix("/opt/failbrew")
-        new_hash = { "prefix" => "/opt/testbrew" }
-        expect(homebrew.merge_bottle_spec([:prefix], old_spec, new_hash)).to eq [
-          ['prefix: old: "/opt/failbrew", new: "/opt/testbrew"'],
           [],
         ]
       end

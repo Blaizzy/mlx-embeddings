@@ -44,8 +44,7 @@ module Homebrew
           description: "Treat all named arguments as formulae.",
         }],
         [:flag, "--env=", {
-          description: "If `std` is passed, use the standard build environment instead of superenv. If `super` is " \
-                       "passed, use superenv even if the formula specifies the standard build environment.",
+          description: "Disabled other than for internal Homebrew use.",
         }],
         [:switch, "--ignore-dependencies", {
           description: "An unsupported Homebrew development flag to skip installing any dependencies of any kind. " \
@@ -132,8 +131,10 @@ module Homebrew
     args = install_args.parse
 
     if args.env.present?
-      # TODO: use `replacement: false` for 3.1.0.
-      odeprecated "brew install --env", "`env :std` in specific formula files"
+      # Can't use `replacement: false` because `install_args` are used by
+      # `build.rb`. Instead, `hide_from_man_page` and don't do anything with
+      # this argument here.
+      odisabled "brew install --env", "`env :std` in specific formula files"
     end
 
     args.named.each do |name|
@@ -406,7 +407,6 @@ module Homebrew
         only_deps:                  args.only_dependencies?,
         include_test_formulae:      args.include_test_formulae,
         build_from_source_formulae: args.build_from_source_formulae,
-        env:                        args.env,
         cc:                         args.cc,
         git:                        args.git?,
         interactive:                args.interactive?,

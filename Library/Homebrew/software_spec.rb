@@ -422,9 +422,9 @@ end
 class BottleSpecification
   extend T::Sig
 
-  attr_rw :prefix, :rebuild
+  attr_rw :rebuild
   attr_accessor :tap
-  attr_reader :all_tags_cellar, :checksum, :collector, :root_url_specs, :repository
+  attr_reader :all_tags_cellar, :checksum, :collector, :root_url_specs, :repository, :prefix
 
   sig { void }
   def initialize
@@ -433,15 +433,6 @@ class BottleSpecification
     @repository = Homebrew::DEFAULT_REPOSITORY
     @collector = Utils::Bottles::Collector.new
     @root_url_specs = {}
-  end
-
-  def prefix=(prefix)
-    if [HOMEBREW_DEFAULT_PREFIX,
-        HOMEBREW_MACOS_ARM_DEFAULT_PREFIX,
-        HOMEBREW_LINUX_DEFAULT_PREFIX].exclude?(prefix)
-      odisabled "setting 'prefix' for bottles"
-    end
-    @prefix = prefix
   end
 
   def root_url(var = nil, specs = {})
@@ -462,13 +453,12 @@ class BottleSpecification
   end
 
   def cellar(val = nil)
-    # TODO: (3.1) uncomment to deprecate the old bottle syntax
-    # if val.present?
-    #   odeprecated(
-    #     "`cellar` in a bottle block",
-    #     "`brew style --fix` on the formula to update the style or use `sha256` with a `cellar:` argument",
-    #   )
-    # end
+    if val.present?
+      odeprecated(
+        "`cellar` in a bottle block",
+        "`brew style --fix` on the formula to update the style or use `sha256` with a `cellar:` argument",
+      )
+    end
 
     if val.nil?
       return collector.dig(Utils::Bottles.tag.to_sym, :cellar) || @all_tags_cellar || Homebrew::DEFAULT_CELLAR
@@ -524,13 +514,12 @@ class BottleSpecification
         key.is_a?(String) && value.is_a?(Symbol) && key.match?(sha256_regex)
       end
 
-      # TODO: (3.1) uncomment to deprecate the old bottle syntax
-      # if digest && tag
-      #   odeprecated(
-      #     '`sha256 "digest" => :tag` in a bottle block',
-      #     '`brew style --fix` on the formula to update the style or use `sha256 tag: "digest"`',
-      #   )
-      # end
+      if digest && tag
+        odeprecated(
+          '`sha256 "digest" => :tag` in a bottle block',
+          '`brew style --fix` on the formula to update the style or use `sha256 tag: "digest"`',
+        )
+      end
     end
 
     tag = Utils::Bottles::Tag.from_symbol(tag)
