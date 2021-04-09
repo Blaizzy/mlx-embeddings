@@ -6,7 +6,7 @@ Features, usage and installation instructions are [summarised on the homepage](h
 
 ## What Packages Are Available?
 
-1. Type `brew search` for a list.
+1. Type `brew formulae` for a list.
 2. Or visit [formulae.brew.sh](https://formulae.brew.sh) to browse packages online.
 3. Or use `brew search --desc <keyword>` to browse packages from the command line.
 
