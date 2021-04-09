@@ -533,7 +533,7 @@ module Homebrew
         rescue ArgumentError => e
           raise unless e.message.include?("unknown keyword: cask")
 
-          odisabled "`def self.find_versions` in `#{strategy}` without a `cask` parameter"
+          odeprecated "`def self.find_versions` in `#{strategy}` without a `cask` parameter"
         end
         match_version_map = strategy_data[:matches]
         regex = strategy_data[:regex]
