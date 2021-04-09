@@ -274,7 +274,7 @@ module Homebrew
         end
       end
 
-      puts JSON.generate(formulae_checked.compact)
+      puts JSON.pretty_generate(formulae_checked.compact)
     end
 
     sig { params(formula_or_cask: T.any(Formula, Cask::Cask), full_name: T::Boolean).returns(String) }

@@ -202,7 +202,7 @@ module Homebrew
       raise
     end
 
-    puts JSON.generate(json)
+    puts JSON.pretty_generate(json)
   end
 
   def github_remote_path(remote, path)

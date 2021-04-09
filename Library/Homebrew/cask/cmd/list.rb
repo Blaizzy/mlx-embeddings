@@ -45,7 +45,7 @@ module Cask
         end
 
         if json
-          puts JSON.generate(output.map(&:to_h))
+          puts JSON.pretty_generate(output.map(&:to_h))
         elsif one
           puts output.map(&:to_s)
         elsif full_name

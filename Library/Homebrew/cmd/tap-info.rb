@@ -88,6 +88,6 @@ module Homebrew
   end
 
   def print_tap_json(taps)
-    puts JSON.generate(taps.map(&:to_hash))
+    puts JSON.pretty_generate(taps.map(&:to_hash))
   end
 end
