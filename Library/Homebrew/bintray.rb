@@ -218,8 +218,8 @@ class Bintray
       bottle_count = bottle_hash["bottle"]["tags"].length
 
       bottle_hash["bottle"]["tags"].each do |tag, tag_hash|
-        filename = Bottle::Filename.create(bottle_hash["formula"]["name"], tag,
-                                           bottle_hash["bottle"]["rebuild"]).bintray
+        filename = Bottle::Filename.new(bottle_hash["formula"]["name"], bottle_hash["formula"]["pkg_version"],
+                                        tag, bottle_hash["bottle"]["rebuild"]).bintray
         sha256 = tag_hash["sha256"]
         delete_instructions = file_delete_instructions(bintray_repo, bintray_package, filename)
 
