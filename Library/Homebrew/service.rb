@@ -111,14 +111,7 @@ module Homebrew
       end
     end
 
-    delegate [ # rubocop:disable Layout/HashAlignment
-      :bin,
-      :var,
-      :etc,
-      :opt_bin,
-      :opt_sbin,
-      :opt_prefix,
-    ] => :@formula
+    delegate [:bin, :var, :etc, :opt_bin, :opt_sbin, :opt_prefix] => :@formula
 
     sig { returns(String) }
     def std_service_path_env

@@ -970,9 +970,9 @@ class Formula
 
   # The service specification of the software.
   def service
-    return Homebrew::Service.new(self, &self.class.service) if service?
+    return unless service?
 
-    nil
+    Homebrew::Service.new(self, &self.class.service)
   end
 
   # @private
