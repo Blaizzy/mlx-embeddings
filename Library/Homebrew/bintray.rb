@@ -217,8 +217,9 @@ class Bintray
       bintray_repo = bottle_hash["bintray"]["repository"]
       bottle_count = bottle_hash["bottle"]["tags"].length
 
-      bottle_hash["bottle"]["tags"].each do |_tag, tag_hash|
-        filename = tag_hash["filename"] # URL encoded in Bottle::Filename#bintray
+      bottle_hash["bottle"]["tags"].each do |tag, tag_hash|
+        filename = Bottle::Filename.create(bottle_hash["formula"]["name"], tag,
+                                           bottle_hash["bottle"]["rebuild"]).bintray
         sha256 = tag_hash["sha256"]
         delete_instructions = file_delete_instructions(bintray_repo, bintray_package, filename)
 
