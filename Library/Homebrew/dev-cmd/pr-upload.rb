@@ -164,6 +164,7 @@ module Homebrew
       github_org = args.github_org || "homebrew"
       github_packages = GitHubPackages.new(org: github_org)
       github_packages.upload_bottles(bottles_hash,
+                                     keep_old:      args.keep_old?,
                                      dry_run:       args.dry_run?,
                                      warn_on_error: args.warn_on_upload_failure?)
     else

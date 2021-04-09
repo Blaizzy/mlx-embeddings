@@ -47,8 +47,15 @@ class GitHubPackages
     ENV["HOMEBREW_FORCE_HOMEBREW_ON_LINUX"] = "1" if @github_org == "homebrew" && !OS.mac?
   end
 
-  sig { params(bottles_hash: T::Hash[String, T.untyped], dry_run: T::Boolean, warn_on_error: T::Boolean).void }
-  def upload_bottles(bottles_hash, dry_run:, warn_on_error:)
+  sig {
+    params(
+      bottles_hash:  T::Hash[String, T.untyped],
+      keep_old:      T::Boolean,
+      dry_run:       T::Boolean,
+      warn_on_error: T::Boolean,
+    ).void
+  }
+  def upload_bottles(bottles_hash, keep_old:, dry_run:, warn_on_error:)
     user = Homebrew::EnvConfig.github_packages_user
     token = Homebrew::EnvConfig.github_packages_token
 
@@ -75,7 +82,7 @@ class GitHubPackages
 
     bottles_hash.each do |formula_full_name, bottle_hash|
       upload_bottle(user, token, skopeo, formula_full_name, bottle_hash,
-                    dry_run: dry_run, warn_on_error: warn_on_error)
+                    keep_old: keep_old, dry_run: dry_run, warn_on_error: warn_on_error)
     end
   end
 
@@ -194,7 +201,18 @@ class GitHubPackages
     exit 1
   end
 
-  def upload_bottle(user, token, skopeo, formula_full_name, bottle_hash, dry_run:, warn_on_error:)
+  def download(user, token, skopeo, image_uri, root, dry_run:)
+    puts
+    args = ["copy", "--all", image_uri.to_s, "oci:#{root}"]
+    if dry_run
+      puts "#{skopeo} #{args.join(" ")} --src-creds=#{user}:$HOMEBREW_GITHUB_PACKAGES_TOKEN"
+    else
+      args << "--src-creds=#{user}:#{token}"
+      system_command!(skopeo, verbose: true, print_stdout: true, args: args)
+    end
+  end
+
+  def upload_bottle(user, token, skopeo, formula_full_name, bottle_hash, keep_old:, dry_run:, warn_on_error:)
     formula_name = bottle_hash["formula"]["name"]
 
     _, org, repo, = *bottle_hash["bottle"]["root_url"].match(URL_REGEX)
@@ -215,7 +233,10 @@ class GitHubPackages
     else
       inspect_args << "--creds=#{user}:#{token}"
       inspect_result = system_command(skopeo, print_stderr: false, args: inspect_args)
-      if inspect_result.status.success?
+      if keep_old
+        # Tag doesn't exist so ignore --keep-old
+        keep_old = false unless inspect_result.status.success?
+      elsif inspect_result.status.success?
         if warn_on_error
           opoo "#{image_uri} already exists, skipping upload!"
           return
@@ -228,7 +249,11 @@ class GitHubPackages
     root = Pathname("#{formula_name}--#{version_rebuild}")
     FileUtils.rm_rf root
 
-    write_image_layout(root)
+    if keep_old
+      download(user, token, skopeo, image_uri, root, dry_run: dry_run)
+    else
+      write_image_layout(root)
+    end
 
     blobs = root/"blobs/sha256"
     blobs.mkpath
@@ -253,23 +278,48 @@ class GitHubPackages
     end
 
     created_date = bottle_hash["bottle"]["date"]
-    formula_annotations_hash = {
-      "com.github.package.type"                => GITHUB_PACKAGE_TYPE,
-      "org.opencontainers.image.created"       => created_date,
-      "org.opencontainers.image.description"   => bottle_hash["formula"]["desc"],
-      "org.opencontainers.image.documentation" => documentation,
-      "org.opencontainers.image.license"       => bottle_hash["formula"]["license"],
-      "org.opencontainers.image.ref.name"      => version_rebuild,
-      "org.opencontainers.image.revision"      => git_revision,
-      "org.opencontainers.image.source"        => source,
-      "org.opencontainers.image.title"         => formula_full_name,
-      "org.opencontainers.image.url"           => bottle_hash["formula"]["homepage"],
-      "org.opencontainers.image.vendor"        => org,
-      "org.opencontainers.image.version"       => version,
-    }.reject { |_, v| v.blank? }
+    if keep_old
+      index = JSON.parse((root/"index.json").read)
+      image_index_sha256 = index["manifests"].first["digest"].delete_prefix("sha256:")
+      image_index = JSON.parse((blobs/image_index_sha256).read)
+      (blobs/image_index_sha256).unlink
 
-    manifests = bottle_hash["bottle"]["tags"].map do |bottle_tag, tag_hash|
+      formula_annotations_hash = image_index["annotations"]
+      manifests = image_index["manifests"]
+    else
+      formula_annotations_hash = {
+        "com.github.package.type"                => GITHUB_PACKAGE_TYPE,
+        "org.opencontainers.image.created"       => created_date,
+        "org.opencontainers.image.description"   => bottle_hash["formula"]["desc"],
+        "org.opencontainers.image.documentation" => documentation,
+        "org.opencontainers.image.license"       => bottle_hash["formula"]["license"],
+        "org.opencontainers.image.ref.name"      => version_rebuild,
+        "org.opencontainers.image.revision"      => git_revision,
+        "org.opencontainers.image.source"        => source,
+        "org.opencontainers.image.title"         => formula_full_name,
+        "org.opencontainers.image.url"           => bottle_hash["formula"]["homepage"],
+        "org.opencontainers.image.vendor"        => org,
+        "org.opencontainers.image.version"       => version,
+      }.reject { |_, v| v.blank? }
+      manifests = []
+    end
+
+    processed_image_refs = Set.new
+    manifests.each do |manifest|
+      processed_image_refs << manifest["annotations"]["org.opencontainers.image.ref.name"]
+    end
+
+    manifests += bottle_hash["bottle"]["tags"].map do |bottle_tag, tag_hash|
       bottle_tag = Utils::Bottles::Tag.from_symbol(bottle_tag.to_sym)
+
+      tag = GitHubPackages.version_rebuild(version, rebuild, bottle_tag.to_s)
+
+      if processed_image_refs.include?(tag)
+        puts
+        odie "A bottle JSON for #{bottle_tag} is present, but it is already in the image index!"
+      else
+        processed_image_refs << tag
+      end
 
       local_file = tag_hash["local_filename"]
       odebug "Uploading #{local_file}"
@@ -315,8 +365,6 @@ class GitHubPackages
 
       formulae_dir = tag_hash["formulae_brew_sh_path"]
       documentation = "https://formulae.brew.sh/#{formulae_dir}/#{formula_name}" if formula_core_tap
-
-      tag = GitHubPackages.version_rebuild(version, rebuild, bottle_tag.to_s)
 
       descriptor_annotations_hash = {
         "org.opencontainers.image.ref.name" => tag,
