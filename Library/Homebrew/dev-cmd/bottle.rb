@@ -481,14 +481,8 @@ module Homebrew
 
     old_spec = f.bottle_specification
     if args.keep_old? && !old_spec.checksums.empty?
-      mismatches = [:root_url, :prefix, :cellar, :rebuild].reject do |key|
+      mismatches = [:root_url, :prefix, :rebuild].reject do |key|
         old_spec.send(key) == bottle.send(key)
-      end
-      if (old_spec.cellar == :any && bottle.cellar == :any_skip_relocation) ||
-         (old_spec.cellar == cellar &&
-          [:any, :any_skip_relocation].include?(bottle.cellar))
-        mismatches.delete(:cellar)
-        bottle.cellar old_spec.cellar
       end
       unless mismatches.empty?
         bottle_path.unlink if bottle_path.exist?
