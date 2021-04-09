@@ -14,6 +14,7 @@ require "build_options"
 require "formulary"
 require "software_spec"
 require "livecheck"
+require "service"
 require "install_renamed"
 require "pkg_version"
 require "keg"
@@ -390,6 +391,11 @@ class Formula
   # @!method livecheckable?
   # @see .livecheckable?
   delegate livecheckable?: :"self.class"
+
+  # Is a service specification defined for the software?
+  # @!method service?
+  # @see .service?
+  delegate service?: :"self.class"
 
   # The version for the currently active {SoftwareSpec}.
   # The version is autodetected from the URL and/or tag so only needs to be
@@ -960,6 +966,13 @@ class Formula
   sig { returns(Pathname) }
   def plist_path
     prefix/"#{plist_name}.plist"
+  end
+
+  # The service specification of the software.
+  def service
+    return unless service?
+
+    Homebrew::Service.new(self, &self.class.service)
   end
 
   # @private
@@ -2382,6 +2395,13 @@ class Formula
       @livecheckable == true
     end
 
+    # Whether a service specification is defined or not.
+    # It returns true when a service block is present in the {Formula} and
+    # false otherwise, and is used by service.
+    def service?
+      @service_block.present?
+    end
+
     # The `:startup` attribute set by {.plist_options}.
     # @private
     attr_reader :plist_startup
@@ -2844,6 +2864,21 @@ class Formula
 
       @livecheckable = true
       @livecheck.instance_eval(&block)
+    end
+
+    # @!attribute [w] service
+    # Service can be used to define services.
+    # This method evaluates the DSL specified in the service block of the
+    # {Formula} (if it exists) and sets the instance variables of a Service
+    # object accordingly. This is used by `brew install` to generate a plist.
+    #
+    # <pre>service do
+    #   run [opt_bin/"foo"]
+    # end</pre>
+    def service(&block)
+      return @service_block unless block
+
+      @service_block = block
     end
 
     # Defines whether the {Formula}'s bottle can be used on the given Homebrew

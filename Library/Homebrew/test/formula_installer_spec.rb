@@ -218,4 +218,79 @@ describe FormulaInstaller do
       formula_installer.caveats
     end
   end
+
+  describe "#install_service" do
+    it "works if plist is set" do
+      formula = Testball.new
+      path = formula.plist_path
+      formula.prefix.mkpath
+
+      expect(formula).to receive(:plist).twice.and_return("PLIST")
+      expect(formula).to receive(:plist_path).and_call_original
+
+      installer = described_class.new(formula)
+      expect {
+        installer.install_service
+      }.not_to output(/Error: Failed to install plist file/).to_stderr
+
+      expect(path).to exist
+    end
+
+    it "works if service is set" do
+      formula = Testball.new
+      path = formula.plist_path
+      service = Homebrew::Service.new(formula)
+      formula.prefix.mkpath
+
+      expect(formula).to receive(:plist).and_return(nil)
+      expect(formula).to receive(:service?).twice.and_return(true)
+      expect(formula).to receive(:service).and_return(service)
+      expect(formula).to receive(:plist_path).and_call_original
+
+      expect(service).to receive(:to_plist).and_return("plist")
+
+      installer = described_class.new(formula)
+      expect {
+        installer.install_service
+      }.not_to output(/Error: Failed to install plist file/).to_stderr
+
+      expect(path).to exist
+    end
+
+    it "returns without definition" do
+      formula = Testball.new
+      path = formula.plist_path
+      formula.prefix.mkpath
+
+      expect(formula).to receive(:plist).and_return(nil)
+      expect(formula).to receive(:service?).twice.and_return(nil)
+      expect(formula).not_to receive(:plist_path)
+
+      installer = described_class.new(formula)
+      expect {
+        installer.install_service
+      }.not_to output(/Error: Failed to install plist file/).to_stderr
+
+      expect(path).not_to exist
+    end
+
+    it "errors with duplicate definition" do
+      formula = Testball.new
+      path = formula.plist_path
+      formula.prefix.mkpath
+
+      expect(formula).to receive(:plist).and_return("plist")
+      expect(formula).to receive(:service?).and_return(true)
+      expect(formula).not_to receive(:service)
+      expect(formula).not_to receive(:plist_path)
+
+      installer = described_class.new(formula)
+      expect {
+        installer.install_service
+      }.to output("Error: Formula specified both service and plist\n").to_stderr
+
+      expect(Homebrew).to have_failed
+      expect(path).not_to exist
+    end
+  end
 end
