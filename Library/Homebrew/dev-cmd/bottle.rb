@@ -538,7 +538,7 @@ module Homebrew
           "date"     => Pathname(local_filename).mtime.strftime("%F"),
           "tags"     => {
             bottle_tag.to_s => {
-              "filename"              => filename.bintray,
+              "filename"              => filename.github_packages,
               "local_filename"        => local_filename,
               "sha256"                => sha256,
               "formulae_brew_sh_path" => formulae_brew_sh_path,

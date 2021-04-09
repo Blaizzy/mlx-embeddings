@@ -281,6 +281,10 @@ class Bottle
       ERB::Util.url_encode("#{name}-#{version}#{extname}")
     end
 
+    def github_packages
+      "#{name}--#{version}#{extname}"
+    end
+
     sig { returns(String) }
     def extname
       s = rebuild.positive? ? ".#{rebuild}" : ""
@@ -304,12 +308,13 @@ class Bottle
 
     checksum, tag, cellar = spec.checksum_for(Utils::Bottles.tag)
 
-    filename = Filename.create(formula, tag, spec.rebuild).bintray
+    filename = Filename.create(formula, tag, spec.rebuild)
 
     path, resolved_basename = spec.path_resolved_basename(@name, checksum, filename)
 
     @resource.url("#{spec.root_url}/#{path}", select_download_strategy(spec.root_url_specs))
     @resource.downloader.resolved_basename = resolved_basename if resolved_basename.present?
+    p resolved_basename
     @resource.version = formula.pkg_version
     @resource.checksum = checksum
     @prefix = spec.prefix
@@ -449,10 +454,10 @@ class BottleSpecification
   def path_resolved_basename(name, checksum, filename)
     if root_url.match?(GitHubPackages::URL_REGEX)
       image_name = GitHubPackages.image_formula_name(name)
-      ["#{image_name}/blobs/sha256:#{checksum}", filename]
+      ["#{image_name}/blobs/sha256:#{checksum}", filename&.github_packages]
     else
       # TODO: this can be removed when we no longer use Bintray
-      filename
+      filename&.bintray
     end
   end
 
