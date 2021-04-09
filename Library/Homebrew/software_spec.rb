@@ -314,7 +314,6 @@ class Bottle
 
     @resource.url("#{spec.root_url}/#{path}", select_download_strategy(spec.root_url_specs))
     @resource.downloader.resolved_basename = resolved_basename if resolved_basename.present?
-    p resolved_basename
     @resource.version = formula.pkg_version
     @resource.checksum = checksum
     @prefix = spec.prefix
