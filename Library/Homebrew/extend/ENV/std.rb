@@ -98,15 +98,6 @@ module Stdenv
     old
   end
 
-  %w[O3 O2 Os].each do |opt|
-    define_method opt do
-      odisabled "ENV.#{opt}"
-
-      send(:remove_from_cflags, /-O./)
-      send(:append_to_cflags, "-#{opt}")
-    end
-  end
-
   %w[O1 O0].each do |opt|
     define_method opt do
       send(:remove_from_cflags, /-O./)
@@ -148,38 +139,6 @@ module Stdenv
   end
 
   sig { void }
-  def m64
-    odisabled "ENV.m64"
-
-    append_to_cflags "-m64"
-    append "LDFLAGS", "-arch #{Hardware::CPU.arch_64_bit}"
-  end
-
-  sig { void }
-  def m32
-    odisabled "ENV.m32"
-
-    append_to_cflags "-m32"
-    append "LDFLAGS", "-arch #{Hardware::CPU.arch_32_bit}"
-  end
-
-  sig { void }
-  def universal_binary
-    odisabled "ENV.universal_binary"
-
-    check_for_compiler_universal_support
-
-    append_to_cflags Hardware::CPU.universal_archs.as_arch_flags
-    append "LDFLAGS", Hardware::CPU.universal_archs.as_arch_flags
-
-    return if compiler_any_clang?
-    return unless Hardware::CPU.is_32_bit?
-
-    # Can't mix "-march" for a 32-bit CPU with "-arch x86_64"
-    replace_in_cflags(/-march=\S*/, "-Xarch_#{Hardware::CPU.arch_32_bit} \\0")
-  end
-
-  sig { void }
   def cxx11
     append "CXX", "-std=c++11"
     libcxx
@@ -188,13 +147,6 @@ module Stdenv
   sig { void }
   def libcxx
     append "CXX", "-stdlib=libc++" if compiler == :clang
-  end
-
-  sig { void }
-  def libstdcxx
-    odisabled "ENV.libstdcxx"
-
-    append "CXX", "-stdlib=libstdc++" if compiler == :clang
   end
 
   # @private
@@ -224,11 +176,6 @@ module Stdenv
     remove flags, /-msse4(\.\d)?/
     append flags, xarch unless xarch.empty?
     append flags, map.fetch(effective_arch)
-  end
-
-  sig { void }
-  def x11
-    odisabled "ENV.x11", "depends_on specific X11 formula(e)"
   end
 
   # @private

@@ -42,18 +42,18 @@ module Homebrew
       assert_not_same:        :refute_same,
     }.each do |old_method, new_method|
       define_method(old_method) do |*args|
-        # odeprecated old_method, new_method
+        odeprecated old_method, new_method
         send(new_method, *args)
       end
     end
 
     def assert_true(act, msg = nil)
-      # odeprecated "assert_true", "assert(...) or assert_equal(true, ...)"
+      odeprecated "assert_true", "assert(...) or assert_equal(true, ...)"
       assert_equal(true, act, msg)
     end
 
     def assert_false(act, msg = nil)
-      # odeprecated "assert_false", "assert(!...) or assert_equal(false, ...)"
+      odeprecated "assert_false", "assert(!...) or assert_equal(false, ...)"
       assert_equal(false, act, msg)
     end
 

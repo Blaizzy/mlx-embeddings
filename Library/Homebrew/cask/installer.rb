@@ -260,7 +260,6 @@ timeout: timeout)
 
       macos_dependencies
       arch_dependencies
-      x11_dependencies
       cask_and_formula_dependencies
     end
 
@@ -284,11 +283,6 @@ timeout: timeout)
             "Cask #{@cask} depends on hardware architecture being one of " \
             "[#{@cask.depends_on.arch.map(&:to_s).join(", ")}], " \
             "but you are running #{@current_arch}."
-    end
-
-    def x11_dependencies
-      return unless @cask.depends_on.x11
-      raise CaskX11DependencyError, @cask.token unless MacOS::XQuartz.installed?
     end
 
     def graph_dependencies(cask_or_formula, acc = TopologicalHash.new)

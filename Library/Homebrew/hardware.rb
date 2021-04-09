@@ -82,9 +82,7 @@ module Hardware
       end
 
       def universal_archs
-        odeprecated "Hardware::CPU.universal_archs"
-
-        [arch].extend ArchitectureListExtension
+        odisabled "Hardware::CPU.universal_archs"
       end
 
       sig { returns(Symbol) }

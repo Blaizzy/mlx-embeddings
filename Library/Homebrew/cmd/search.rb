@@ -34,16 +34,11 @@ module Homebrew
         Perform a substring search of cask tokens and formula names for <text>. If <text>
         is flanked by slashes, it is interpreted as a regular expression.
         The search for <text> is extended online to `homebrew/core` and `homebrew/cask`.
-
-        If no <text> is provided, list all locally available formulae (including tapped ones).
-        No online search is performed.
       EOS
       switch "--formula", "--formulae",
-             description: "Without <text>, list all locally available formulae (no online search is performed). " \
-                          "With <text>, search online and locally for formulae."
+             description: "Search online and locally for formulae."
       switch "--cask", "--casks",
-             description: "Without <text>, list all locally available casks (including tapped ones, no online " \
-                          "search is performed). With <text>, search online and locally for casks."
+             description: "Search online and locally for casks."
       switch "--desc",
              description: "Search for formulae with a description matching <text> and casks with "\
                           "a name matching <text>."
@@ -65,8 +60,7 @@ module Homebrew
       conflicts "--open", "--closed"
       conflicts(*package_manager_switches)
 
-      # TODO: (3.1) add `min: 1` when the `odeprecated`/`odisabled` for `brew search` with no arguments is removed
-      named_args :text_or_regex
+      named_args :text_or_regex, min: 1
     end
   end
 
@@ -76,19 +70,6 @@ module Homebrew
     if (package_manager = PACKAGE_MANAGERS.find { |name,| args[:"#{name}?"] })
       _, url = package_manager
       exec_browser url.call(URI.encode_www_form_component(args.named.join(" ")))
-      return
-    end
-
-    if args.no_named?
-      if args.cask?
-        raise UsageError, "specifying both --formula and --cask requires <text>" if args.formula?
-
-        puts Formatter.columns(Cask::Cask.to_a.map(&:full_name).sort)
-      else
-        odisabled "`brew search` with no arguments to output formulae", "`brew formulae`"
-        puts Formatter.columns(Formula.full_names.sort)
-      end
-
       return
     end
 
@@ -140,7 +121,6 @@ module Homebrew
     end
 
     return unless $stdout.tty?
-    return if args.no_named?
 
     metacharacters = %w[\\ | ( ) [ ] { } ^ $ * + ?].freeze
     return unless metacharacters.any? do |char|

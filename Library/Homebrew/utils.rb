@@ -403,7 +403,7 @@ module Kernel
 
   # Returns array of architectures that the given command or library is built for.
   def archs_for_command(cmd)
-    odeprecated "archs_for_command"
+    odisabled "archs_for_command"
 
     cmd = which(cmd) unless Pathname.new(cmd).absolute?
     Pathname.new(cmd).archs

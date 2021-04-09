@@ -17,7 +17,7 @@ class AbstractDownloadStrategy
       rescue ArgumentError => e
         raise unless e.message.include?("timeout")
 
-        odeprecated "`def _fetch` in a subclass of `CurlDownloadStrategy`"
+        odisabled "`def _fetch` in a subclass of `CurlDownloadStrategy`"
         options.delete(:timeout)
         super(*args, **options)
       end
@@ -27,9 +27,9 @@ class AbstractDownloadStrategy
   class << self
     def method_added(method)
       if method == :fetch && instance_method(method).arity.zero?
-        odeprecated "`def fetch` in a subclass of `#{self}`",
-                    "`def fetch(timeout: nil, **options)` and output a warning " \
-                    "when `options` contains new unhandled options"
+        odisabled "`def fetch` in a subclass of `#{self}`",
+                  "`def fetch(timeout: nil, **options)` and output a warning " \
+                  "when `options` contains new unhandled options"
 
         class_eval do
           prepend CompatFetch

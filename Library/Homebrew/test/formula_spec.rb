@@ -830,8 +830,7 @@ describe Formula do
       url "foo-1.0"
 
       bottle do
-        cellar(:any)
-        sha256(TEST_SHA256 => Utils::Bottles.tag.to_sym)
+        sha256 cellar: :any, Utils::Bottles.tag.to_sym => TEST_SHA256
       end
     end
 

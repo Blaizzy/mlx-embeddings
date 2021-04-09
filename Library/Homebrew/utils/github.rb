@@ -14,7 +14,7 @@ module GitHub
   module_function
 
   def open_api(url, data: nil, data_binary_path: nil, request_method: nil, scopes: [].freeze, parse_json: true)
-    odeprecated "GitHub.open_api", "GitHub::API.open_rest"
+    odisabled "GitHub.open_api", "GitHub::API.open_rest"
     API.open_rest(url, data: data, data_binary_path: data_binary_path, request_method: request_method,
                   scopes: scopes, parse_json: parse_json)
   end

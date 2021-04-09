@@ -86,10 +86,6 @@ Our macOS continuous integration infrastructure is hosted by [MacStadium's Orka]
 
 [![Powered by MacStadium](https://cloud.githubusercontent.com/assets/125011/22776032/097557ac-eea6-11e6-8ba8-eff22dfd58f1.png)](https://www.macstadium.com)
 
-Our bottles (binary packages) are hosted by [Bintray](https://bintray.com/homebrew).
-
-[![Downloads by Bintray](https://bintray.com/docs/images/downloads_by_bintray_96.png)](https://bintray.com/homebrew)
-
 Secure password storage and syncing is provided by [1Password for Teams](https://1password.com/teams/).
 
 [![1Password](https://1password.com/img/redesign/press/logo.c757be5591a513da9c768f8b80829318.svg)](https://1password.com)

@@ -16,11 +16,6 @@ BOTTLE_ERB = <<-EOS
            "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}/bottles"].exclude?(root_url) %>
     root_url "<%= root_url %>"
     <% end %>
-    <% if ![HOMEBREW_DEFAULT_PREFIX,
-            HOMEBREW_MACOS_ARM_DEFAULT_PREFIX,
-            HOMEBREW_LINUX_DEFAULT_PREFIX].include?(prefix) %>
-    prefix "<%= prefix %>"
-    <% end %>
     <% if rebuild.positive? %>
     rebuild <%= rebuild %>
     <% end %>
@@ -471,19 +466,18 @@ module Homebrew
     bottle = BottleSpecification.new
     bottle.tap = tap
     bottle.root_url(root_url) if root_url
-    if relocatable
+    bottle_cellar = if relocatable
       if skip_relocation
-        bottle.cellar :any_skip_relocation
+        :any_skip_relocation
       else
-        bottle.cellar :any
+        :any
       end
     else
-      bottle.cellar cellar
-      bottle.prefix prefix
+      cellar
     end
     bottle.rebuild rebuild
     sha256 = bottle_path.sha256
-    bottle.sha256 sha256 => bottle_tag.to_sym
+    bottle.sha256 cellar: bottle_cellar, bottle_tag.to_sym => sha256
 
     old_spec = f.bottle_specification
     if args.keep_old? && !old_spec.checksums.empty?
@@ -591,7 +585,6 @@ module Homebrew
 
       bottle = BottleSpecification.new
       bottle.root_url bottle_hash["bottle"]["root_url"]
-      bottle.prefix bottle_hash["bottle"]["prefix"]
       bottle.rebuild bottle_hash["bottle"]["rebuild"]
       bottle_hash["bottle"]["tags"].each do |tag, tag_hash|
         cellar = tag_hash["cellar"]

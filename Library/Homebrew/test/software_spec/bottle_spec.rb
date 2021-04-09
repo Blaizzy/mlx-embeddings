@@ -16,7 +16,7 @@ describe BottleSpecification do
       }
 
       checksums.each_pair do |cat, digest|
-        bottle_spec.sha256(digest => cat)
+        bottle_spec.sha256(cat => digest)
         checksum, = bottle_spec.checksum_for(cat)
         expect(Checksum.new(digest)).to eq(checksum)
       end
@@ -31,7 +31,7 @@ describe BottleSpecification do
       ]
 
       checksums.each do |checksum|
-        bottle_spec.sha256(checksum[:tag] => checksum[:digest], cellar: checksum[:cellar])
+        bottle_spec.sha256(cellar: checksum[:cellar], checksum[:tag] => checksum[:digest])
         digest, tag, cellar = bottle_spec.checksum_for(checksum[:tag])
         expect(Checksum.new(checksum[:digest])).to eq(digest)
         expect(checksum[:tag]).to eq(tag)
@@ -41,7 +41,7 @@ describe BottleSpecification do
     end
   end
 
-  %w[root_url prefix cellar rebuild].each do |method|
+  %w[root_url rebuild].each do |method|
     specify "##{method}" do
       object = Object.new
       bottle_spec.public_send(method, object)
