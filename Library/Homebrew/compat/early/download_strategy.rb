@@ -17,7 +17,7 @@ class AbstractDownloadStrategy
       rescue ArgumentError => e
         raise unless e.message.include?("timeout")
 
-        odisabled "`def _fetch` in a subclass of `CurlDownloadStrategy`"
+        odeprecated "`def _fetch` in a subclass of `CurlDownloadStrategy`"
         options.delete(:timeout)
         super(*args, **options)
       end
