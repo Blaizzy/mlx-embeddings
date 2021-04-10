@@ -8404,6 +8404,11 @@ module Homebrew::Livecheck::Strategy
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class Homebrew::Service
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 module Homebrew::Settings
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
