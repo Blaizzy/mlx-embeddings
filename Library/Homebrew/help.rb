@@ -16,7 +16,7 @@ module Homebrew
     # NOTE: Keep lines less than 80 characters! Wrapping is just not cricket.
     HOMEBREW_HELP = <<~EOS
       Example usage:
-        brew search [TEXT|/REGEX/]
+        brew search TEXT|/REGEX/
         brew info [FORMULA|CASK...]
         brew install FORMULA|CASK...
         brew update
@@ -30,7 +30,7 @@ module Homebrew
         brew install --verbose --debug FORMULA|CASK
 
       Contributing:
-        brew create [URL [--no-fetch]]
+        brew create URL [--no-fetch]
         brew edit [FORMULA|CASK...]
 
       Further help:
