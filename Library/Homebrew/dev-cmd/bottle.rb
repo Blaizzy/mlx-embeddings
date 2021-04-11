@@ -527,7 +527,7 @@ module Homebrew
         "bottle"  => {
           "root_url" => bottle.root_url,
           "prefix"   => bottle.prefix,
-          "cellar"   => bottle.cellar.to_s,
+          "cellar"   => bottle_cellar.to_s,
           "rebuild"  => bottle.rebuild,
           "date"     => Pathname(local_filename).mtime.strftime("%F"),
           "tags"     => {
