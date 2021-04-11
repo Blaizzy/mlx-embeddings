@@ -176,7 +176,7 @@ module Homebrew
       if files.empty?
         files = [
           HOMEBREW_BREW_FILE,
-          # TODO: HOMEBREW_REPOSITORY/"completions/bash/brew",
+          HOMEBREW_REPOSITORY/"completions/bash/brew",
           *HOMEBREW_LIBRARY.glob("Homebrew/*.sh"),
           *HOMEBREW_LIBRARY.glob("Homebrew/shims/**/*").map(&:realpath).uniq
                            .reject { |path| path.directory? || path.basename.to_s == "cc" },

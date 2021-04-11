@@ -51,50 +51,56 @@ __brewcomp() {
   done
 
   IFS="$sep"
-  COMPREPLY+=($(compgen -W "$list" -- "$cur"))
+  while read -r line; do COMPREPLY+=("$line"); done < <(compgen -W "$list" -- "$cur")
 }
 
 # Don't use __brewcomp() in any of the __brew_complete_foo functions, as
 # it is too slow and is not worth it just for duplicate elimination.
 __brew_complete_formulae() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
-  local formulae="$(brew formulae)"
-  COMPREPLY+=($(compgen -W "$formulae" -- "$cur"))
+  local formulae
+  formulae="$(brew formulae)"
+  while read -r line; do COMPREPLY+=("$line"); done < <(compgen -W "$formulae" -- "$cur")
 }
 
 __brew_complete_casks() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
-  local casks="$(brew casks)"
-  COMPREPLY+=($(compgen -W "$casks" -- "$cur"))
+  local casks
+  casks="$(brew casks)"
+  while read -r line; do COMPREPLY+=("$line"); done < <(compgen -W "$casks" -- "$cur")
 }
 
 __brew_complete_installed_formulae() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
-  local installed_formulae="$(command ls "$(brew --cellar)" 2>/dev/null)"
-  COMPREPLY+=($(compgen -W "$installed_formulae" -- "$cur"))
+  local installed_formulae
+  installed_formulae="$(command ls "$(brew --cellar)" 2>/dev/null)"
+  while read -r line; do COMPREPLY+=("$line"); done < <(compgen -W "$installed_formulae" -- "$cur")
 }
 
 __brew_complete_installed_casks() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
-  local installed_casks="$(command ls "$(brew --caskroom)" 2>/dev/null)"
-  COMPREPLY+=($(compgen -W "$installed_casks" -- "$cur"))
+  local installed_casks
+  installed_casks="$(command ls "$(brew --caskroom)" 2>/dev/null)"
+  while read -r line; do COMPREPLY+=("$line"); done < <(compgen -W "$installed_casks" -- "$cur")
 }
 
 __brew_complete_outdated_formulae() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
-  local outdated_formulae="$(brew outdated --formula --quiet)"
-  COMPREPLY+=($(compgen -W "$outdated_formulae" -- "$cur"))
+  local outdated_formulae
+  outdated_formulae="$(brew outdated --formula --quiet)"
+  while read -r line; do COMPREPLY+=("$line"); done < <(compgen -W "$outdated_formulae" -- "$cur")
 }
 
 __brew_complete_outdated_casks() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
-  local outdated_casks="$(brew outdated --cask --quiet)"
-  COMPREPLY+=($(compgen -W "$outdated_casks" -- "$cur"))
+  local outdated_casks
+  outdated_casks="$(brew outdated --cask --quiet)"
+  while read -r line; do COMPREPLY+=("$line"); done < <(compgen -W "$outdated_casks" -- "$cur")
 }
 
 __brew_complete_tapped() {
-  local taplib="$(brew --repository)/Library/Taps"
-  local dir taps
+  local dir taps taplib
+  taplib="$(brew --repository)/Library/Taps"
 
   for dir in "$taplib"/*/*
   do
@@ -108,13 +114,17 @@ __brew_complete_tapped() {
 
 __brew_complete_commands() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
+  local cmds
   HOMEBREW_CACHE=$(brew --cache)
   HOMEBREW_REPOSITORY=$(brew --repo)
   # Do not auto-complete "*instal" or "*uninstal" aliases for "*install" commands.
-  [[ -f "$HOMEBREW_CACHE/all_commands_list.txt" ]] &&
-    local cmds="$(cat "$HOMEBREW_CACHE/all_commands_list.txt" | \grep -v instal$)" ||
-    local cmds="$(cat "$HOMEBREW_REPOSITORY/completions/internal_commands_list.txt" | \grep -v instal$)"
-  COMPREPLY+=($(compgen -W "$cmds" -- "$cur"))
+  if [[ -f "$HOMEBREW_CACHE/all_commands_list.txt" ]]
+  then
+    cmds="$(< "$HOMEBREW_CACHE/all_commands_list.txt" \grep -v instal$)"
+  else
+    cmds="$(< "$HOMEBREW_REPOSITORY/completions/internal_commands_list.txt" \grep -v instal$)"
+  fi
+  while read -r line; do COMPREPLY+=("$line"); done < <(compgen -W "$cmds" -- "$cur")
 }
 
 # compopt is only available in newer versions of bash
