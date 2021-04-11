@@ -227,16 +227,28 @@ class GitHubPackages
     image_uri = "#{GitHubPackages.root_url(org, repo, DOCKER_PREFIX)}/#{image_name}:#{image_tag}"
 
     puts
-    inspect_args = ["inspect", image_uri.to_s]
+    inspect_args = ["inspect", "--raw", image_uri.to_s]
     if dry_run
       puts "#{skopeo} #{inspect_args.join(" ")} --creds=#{user}:$HOMEBREW_GITHUB_PACKAGES_TOKEN"
     else
       inspect_args << "--creds=#{user}:#{token}"
       inspect_result = system_command(skopeo, print_stderr: false, args: inspect_args)
-      if keep_old
-        # Tag doesn't exist so ignore --keep-old
+
+      # Order here is important
+      if !inspect_result.status.success? && inspect_result.stderr.exclude?("name unknown")
+        # We got an error, and it was not about the tag or package being unknown.
+        if warn_on_error
+          opoo "#{image_uri} inspection returned an error, skipping upload!\n#{inspect_result.stderr}"
+          return
+        else
+          odie "#{image_uri} inspection returned an error!\n#{inspect_result.stderr}"
+        end
+      elsif keep_old
+        # If the tag doesn't exist, ignore --keep-old.
         keep_old = false unless inspect_result.status.success?
+        # Otherwise, do nothing - the tag already existing is expected behaviour for --keep-old.
       elsif inspect_result.status.success?
+        # The tag already exists, and we are not passing --keep-old.
         if warn_on_error
           opoo "#{image_uri} already exists, skipping upload!"
           return
