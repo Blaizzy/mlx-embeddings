@@ -9,6 +9,8 @@ require "formula_versions"
 require "cli/parser"
 require "utils/inreplace"
 require "erb"
+require "archive"
+require "bintray"
 
 BOTTLE_ERB = <<-EOS
   bottle do
@@ -510,7 +512,7 @@ module Homebrew
     bottle_filename = if bottle.root_url.match?(GitHubPackages::URL_REGEX)
       filename.github_packages
     else
-      filename.bintray
+      filename.url_encode
     end
 
     json = {
@@ -546,12 +548,18 @@ module Homebrew
             },
           },
         },
-        "bintray" => {
-          "package"    => Utils::Bottles::Bintray.package(f.name),
-          "repository" => Utils::Bottles::Bintray.repository(tap),
-        },
       },
     }
+
+    if bottle.root_url.match?(::Bintray::URL_REGEX) ||
+       # TODO: given the naming: ideally the Internet Archive uploader wouldn't use this.
+       bottle.root_url.start_with?("#{::Archive::URL_PREFIX}/")
+      json[f.full_name]["bintray"] = {
+        "package"    => Utils::Bottles::Bintray.package(f.name),
+        "repository" => Utils::Bottles::Bintray.repository(tap),
+      }
+    end
+
     File.open(filename.json, "w") do |file|
       file.write JSON.pretty_generate json
     end

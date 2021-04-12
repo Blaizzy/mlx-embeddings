@@ -31,8 +31,12 @@ describe Bottle::Filename do
     its(:to_str) { is_expected.to eq "foo--1.0.tag.bottle.tar.gz" }
   end
 
-  describe "#bintray" do
-    its(:bintray) { is_expected.to eq "foo-1.0.tag.bottle.tar.gz" }
+  describe "#url_encode" do
+    its(:url_encode) { is_expected.to eq "foo-1.0.tag.bottle.tar.gz" }
+  end
+
+  describe "#github_packages" do
+    its(:github_packages) { is_expected.to eq "foo--1.0.tag.bottle.tar.gz" }
   end
 
   describe "#json" do
