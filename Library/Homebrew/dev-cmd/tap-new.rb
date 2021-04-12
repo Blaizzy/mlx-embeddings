@@ -36,7 +36,7 @@ module Homebrew
     branch = args.branch || "main"
 
     tap = args.named.to_taps.first
-    odie "Invalid tap name '#{tap_name}'" unless tap.path.to_s.match?(HOMEBREW_TAP_PATH_REGEX)
+    odie "Invalid tap name '#{tap}'" unless tap.path.to_s.match?(HOMEBREW_TAP_PATH_REGEX)
 
     titleized_user = tap.user.dup
     titleized_repo = tap.repo.dup
