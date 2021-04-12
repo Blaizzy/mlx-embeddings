@@ -15,4 +15,9 @@ describe "brew create" do
     expect(formula_file).to exist
     expect(formula_file.read).to match(%Q(sha256 "#{TESTBALL_SHA256}"))
   end
+
+  it "generates valid cask tokens" do
+    t = Cask::Utils.token_from("A Foo@Bar_Baz++!")
+    expect(t).to eq("a-foo-at-bar-baz-plus-plus")
+  end
 end
