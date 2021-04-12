@@ -22,9 +22,9 @@ SimpleCov.start do
     SimpleCov.print_error_status = false
   end
   excludes = ["test", "vendor"]
-  subdirs = Dir.chdir(SimpleCov.root) { Dir.glob("*") }
-               .reject { |d| d.end_with?(".rb") || excludes.include?(d) }
-               .map { |d| "#{d}/**/*.rb" }.join(",")
+  subdirs = Dir.chdir(SimpleCov.root) { Pathname.glob("*") }
+               .reject { |p| p.extname == ".rb" || excludes.include?(p.to_s) }
+               .map { |p| "#{p}/**/*.rb" }.join(",")
   files = "#{SimpleCov.root}/{#{subdirs},*.rb}"
 
   if ENV["HOMEBREW_INTEGRATION_TEST"]
