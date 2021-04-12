@@ -525,7 +525,7 @@ module Homebrew
           "tap_git_revision" => tap_git_revision,
           "tap_git_remote"   => tap_git_remote,
           # descriptions can contain emoji. sigh.
-          "desc"             => f.desc.encode(
+          "desc"             => f.desc.to_s.encode(
             Encoding.find("ASCII"),
             invalid: :replace, undef: :replace, replace: "",
           ).strip,
