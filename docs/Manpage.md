@@ -1626,6 +1626,8 @@ Only supports GitHub Actions as a CI provider. This is because Homebrew uses Git
   Run `brew bottle --keep-old` to build new bottles for a single platform.
 * `--skip-relocation`:
   Run `brew bottle --skip-relocation` to build new bottles that don't require relocation.
+* `--only-json-tab`:
+  Run `brew bottle --only-json-tab` to build new bottles that do not contain a tab.
 * `--local`:
   Ask Homebrew to write verbose logs under `./logs/` and set `$HOME` to `./home/`
 * `--tap`:
