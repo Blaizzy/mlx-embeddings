@@ -13,6 +13,7 @@ require "patch"
 require "compilers"
 require "os/mac/version"
 require "extend/on_os"
+require "bintray"
 
 class SoftwareSpec
   extend T::Sig
@@ -313,9 +314,9 @@ class Bottle
     path, resolved_basename = spec.path_resolved_basename(@name, checksum, filename)
 
     @resource.url("#{spec.root_url}/#{path}", select_download_strategy(spec.root_url_specs))
-    @resource.downloader.resolved_basename = resolved_basename if resolved_basename.present?
     @resource.version = formula.pkg_version
     @resource.checksum = checksum
+    @resource.downloader.resolved_basename = resolved_basename if resolved_basename.present?
     @prefix = spec.prefix
     @cellar = cellar
     @rebuild = spec.rebuild
@@ -437,7 +438,7 @@ class BottleSpecification
     if var.nil?
       @root_url ||= if (github_packages_url = GitHubPackages.root_url_if_match(Homebrew::EnvConfig.bottle_domain))
         github_packages_url
-      elsif Homebrew::EnvConfig.bottle_domain.match?(Bintray::URL_REGEX)
+      elsif Homebrew::EnvConfig.bottle_domain.match?(::Bintray::URL_REGEX)
         "#{Homebrew::EnvConfig.bottle_domain}/#{Utils::Bottles::Bintray.repository(tap)}"
       else
         Homebrew::EnvConfig.bottle_domain
