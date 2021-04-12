@@ -235,7 +235,7 @@ class GitHubPackages
       inspect_result = system_command(skopeo, print_stderr: false, args: inspect_args)
 
       # Order here is important
-      if !inspect_result.status.success? && inspect_result.stderr.exclude?("name unknown")
+      if !inspect_result.status.success? && !inspect_result.stderr.match?(/(name|manifest) unknown/)
         # We got an error, and it was not about the tag or package being unknown.
         if warn_on_error
           opoo "#{image_uri} inspection returned an error, skipping upload!\n#{inspect_result.stderr}"
