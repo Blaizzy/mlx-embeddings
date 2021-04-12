@@ -55,17 +55,11 @@ module Homebrew
         [MacOS::Version.new(os), arch&.to_sym]
       end
 
-      # TODO: fix label name to be 11-arm64 instead.
-      arch = :arm if arch == :arm64
-
       macos_label = if arch.present? && arch != :x86_64
         "#{os}-#{arch}"
       else
         os.to_s
       end
-
-      # TODO: fix label name to be 11 instead.
-      macos_label = "11.0" if macos_label == "11"
 
       dispatching_for = "macOS #{macos_label}"
     elsif T.unsafe(args).linux?
