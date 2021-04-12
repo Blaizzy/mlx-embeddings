@@ -31,7 +31,7 @@ module Homebrew
   def mirror
     args = mirror_args.parse
 
-    odeprecated "brew mirror"
+    odeprecated "brew mirror (Bintray will be shut down on 1st May 2021)"
 
     bintray_org = args.bintray_org || "homebrew"
     bintray_repo = args.bintray_repo || "mirror"

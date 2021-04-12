@@ -152,6 +152,8 @@ module Homebrew
       archive.upload_bottles(bottles_hash,
                              warn_on_error: args.warn_on_upload_failure?)
     elsif bintray?(bottles_hash)
+      odeprecated "brew pr-upload for Bintray (Bintray will be shut down on 1st May 2021)"
+
       bintray_org = args.bintray_org || "homebrew"
       bintray = Bintray.new(org: bintray_org)
       bintray.upload_bottles(bottles_hash,

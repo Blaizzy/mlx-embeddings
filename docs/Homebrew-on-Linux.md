@@ -94,9 +94,3 @@ eval $(~/.linuxbrew/bin/brew shellenv)
 - [@HomebrewOnLinux on Twitter](https://twitter.com/HomebrewOnLinux)
 - [Homebrew/linuxbrew-core on GitHub](https://github.com/Homebrew/linuxbrew-core)
 - [Homebrew/discussions (forum)](https://github.com/homebrew/discussions/discussions)
-
-## Sponsors
-
-Our binary packages (bottles) are built on [GitHub Actions](https://github.com/features/actions) and hosted by [Bintray](https://bintray.com/linuxbrew).
-
-[![Downloads by Bintray](https://bintray.com/docs/images/downloads_by_bintray_96.png)](https://bintray.com/linuxbrew)

@@ -277,7 +277,7 @@ class Bottle
       "#{name}--#{version}.#{tag}.bottle.json"
     end
 
-    def bintray
+    def url_encode
       ERB::Util.url_encode("#{name}-#{version}#{extname}")
     end
 
@@ -437,8 +437,10 @@ class BottleSpecification
     if var.nil?
       @root_url ||= if (github_packages_url = GitHubPackages.root_url_if_match(Homebrew::EnvConfig.bottle_domain))
         github_packages_url
-      else
+      elsif Homebrew::EnvConfig.bottle_domain.match?(Bintray::URL_REGEX)
         "#{Homebrew::EnvConfig.bottle_domain}/#{Utils::Bottles::Bintray.repository(tap)}"
+      else
+        Homebrew::EnvConfig.bottle_domain
       end
     else
       @root_url = if (github_packages_url = GitHubPackages.root_url_if_match(var))
@@ -455,8 +457,7 @@ class BottleSpecification
       image_name = GitHubPackages.image_formula_name(name)
       ["#{image_name}/blobs/sha256:#{checksum}", filename&.github_packages]
     else
-      # TODO: this can be removed when we no longer use Bintray
-      filename&.bintray
+      filename&.url_encode
     end
   end
 
