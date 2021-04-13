@@ -118,19 +118,23 @@ module Homebrew
       "#{HOMEBREW_PREFIX}/bin:#{HOMEBREW_PREFIX}/sbin:/usr/bin:/bin:/usr/sbin:/sbin"
     end
 
+    sig { returns(T::Array[String]) }
+    def command
+      instance_eval(&@service_block)
+      @run.select { |i| i.is_a?(Pathname) }
+          .map(&:to_s)
+    end
+
     # Returns a `String` plist.
     # @return [String]
     sig { returns(String) }
     def to_plist
       instance_eval(&@service_block)
 
-      clean_command = @run.select { |i| i.is_a?(Pathname) }
-                          .map(&:to_s)
-
       base = {
         Label:            @formula.plist_name,
         RunAtLoad:        @run_type == RUN_TYPE_IMMEDIATE,
-        ProgramArguments: clean_command,
+        ProgramArguments: command.join,
       }
 
       base[:KeepAlive] = @keep_alive if @keep_alive == true
@@ -148,16 +152,13 @@ module Homebrew
     def to_systemd_unit
       instance_eval(&@service_block)
 
-      clean_command = @run.select { |i| i.is_a?(Pathname) }
-                          .map(&:to_s)
-
       unit = <<~EOS
         [Unit]
         Description=Homebrew generated unit for #{@formula.name}
 
         [Service]
         Type=simple
-        ExecStart=#{clean_command.join}
+        ExecStart=#{command.join}
       EOS
 
       options = []
