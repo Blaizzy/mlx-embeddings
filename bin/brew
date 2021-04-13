@@ -87,7 +87,7 @@ then
 fi
 
 # Set CI variable for Azure Pipelines and Jenkins
-# (Set by default on Circle and Travis CI)
+# (Set by default on GitHub Actions, Circle and Travis CI)
 if [[ -z "$CI" ]] && [[ -n "$TF_BUILD" || -n "$JENKINS_HOME" ]]
 then
   export CI="1"
