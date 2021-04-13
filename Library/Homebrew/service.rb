@@ -141,5 +141,36 @@ module Homebrew
 
       base.to_plist
     end
+
+    # Returns a `String` systemd unit.
+    # @return [String]
+    sig { returns(String) }
+    def to_systemd_unit
+      instance_eval(&@service_block)
+
+      clean_command = @run.select { |i| i.is_a?(Pathname) }
+                          .map(&:to_s)
+
+      unit = <<~EOS
+        [Unit]
+        Description=Homebrew generated unit for #{@formula.name}
+
+        [Service]
+        Type=simple
+        ExecStart=#{clean_command.join}
+      EOS
+
+      options = []
+      options << "Restart=always" if @keep_alive == true
+      options << "WorkingDirectory=#{@working_dir}" if @working_dir.present?
+      options << "StandardOutput=append:#{@log_path}" if @log_path.present?
+      options << "StandardError=append:#{@error_log_path}" if @error_log_path.present?
+      if @environment_variables.present?
+        list = @environment_variables.map { |k, v| "#{k}=#{v}" }.join("&")
+        options << "Environment=\"#{list}\""
+      end
+
+      unit + options.join("\n")
+    end
   end
 end
