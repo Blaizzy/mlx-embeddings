@@ -587,11 +587,6 @@ then
   export HOMEBREW_RUBY_WARNINGS="-W1"
 fi
 
-if [[ -z "$HOMEBREW_BOTTLE_DOMAIN" ]]
-then
-  export HOMEBREW_BOTTLE_DOMAIN="$HOMEBREW_BOTTLE_DEFAULT_DOMAIN"
-fi
-
 export HOMEBREW_BREW_DEFAULT_GIT_REMOTE="https://github.com/Homebrew/brew"
 if [[ -z "$HOMEBREW_BREW_GIT_REMOTE" ]]
 then
