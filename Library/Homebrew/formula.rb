@@ -1905,7 +1905,8 @@ class Formula
       os_cellar = os_cellar.is_a?(Symbol) ? os_cellar.inspect : os_cellar
 
       checksum = collector_os[:checksum].hexdigest
-      path, = bottle_spec.path_resolved_basename(name, checksum, nil)
+      filename = Bottle::Filename.create(self, os, bottle_spec.rebuild)
+      path, = bottle_spec.path_resolved_basename(name, checksum, filename)
       url = "#{bottle_spec.root_url}/#{path}"
 
       hash["files"][os] = {
