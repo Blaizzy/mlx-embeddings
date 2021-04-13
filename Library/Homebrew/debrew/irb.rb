@@ -5,8 +5,6 @@ require "irb"
 
 # @private
 module IRB
-  def self.parse_opts(argv: nil); end
-
   def self.start_within(binding)
     unless @setup_done
       setup(nil, argv: [])
@@ -19,7 +17,7 @@ module IRB
     @CONF[:IRB_RC]&.call(irb.context)
     @CONF[:MAIN_CONTEXT] = irb.context
 
-    trap("SIGINT") do
+    prev_trap = trap("SIGINT") do
       irb.signal_handle
     end
 
@@ -28,6 +26,7 @@ module IRB
         irb.eval_input
       end
     ensure
+      trap("SIGINT", prev_trap)
       irb_at_exit
     end
   end
