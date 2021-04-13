@@ -234,7 +234,7 @@ jobs:
 
       - run: brew test-bot --only-cleanup-before
 
-      - run: brew test-bot --only-formulae --test-default-formula
+      - run: brew test-bot --only-formulae --only-json-tab --test-default-formula
 
   test-everything:
     name: test everything (macOS)

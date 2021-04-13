@@ -40,32 +40,40 @@ module Utils
         HOMEBREW_BOTTLES_EXTNAME_REGEX.match(filename).to_a
       end
 
+      def bottle_file_list(bottle_file)
+        @bottle_file_list ||= {}
+        @bottle_file_list[bottle_file] ||= Utils.popen_read("tar", "-tzf", bottle_file)
+                                                .lines
+                                                .map(&:chomp)
+      end
+
       def receipt_path(bottle_file)
-        path = Utils.popen_read("tar", "-tzf", bottle_file).lines.map(&:chomp).find do |line|
+        bottle_file_list(bottle_file).find do |line|
           line =~ %r{.+/.+/INSTALL_RECEIPT.json}
         end
-        raise "This bottle does not contain the file INSTALL_RECEIPT.json: #{bottle_file}" unless path
-
-        path
       end
 
       def resolve_formula_names(bottle_file)
-        receipt_file_path = receipt_path bottle_file
-        receipt_file = Utils.popen_read("tar", "-xOzf", bottle_file, receipt_file_path)
-        name = receipt_file_path.split("/").first
-        tap = Tab.from_file_content(receipt_file, "#{bottle_file}/#{receipt_file_path}").tap
-
-        full_name = if tap.nil? || tap.core_tap?
-          name
-        else
-          "#{tap}/#{name}"
+        name = bottle_file_list(bottle_file).first.to_s.split("/").first
+        full_name = if (receipt_file_path = receipt_path(bottle_file))
+          receipt_file = Utils.popen_read("tar", "-xOzf", bottle_file, receipt_file_path)
+          tap = Tab.from_file_content(receipt_file, "#{bottle_file}/#{receipt_file_path}").tap
+          "#{tap}/#{name}" if tap.present? && !tap.core_tap?
+        elsif (bottle_json_path = Pathname(bottle_file.sub(/\.tar\.gz$/, ".json"))) &&
+              bottle_json_path.exist? &&
+              (bottle_json_path_contents = bottle_json_path.read.presence) &&
+              (bottle_json = JSON.parse(bottle_json_path_contents).presence) &&
+              bottle_json.is_a?(Hash)
+          bottle_json.keys.first.presence
         end
+        full_name ||= name
 
         [name, full_name]
       end
 
       def resolve_version(bottle_file)
-        PkgVersion.parse receipt_path(bottle_file).split("/").second
+        version = bottle_file_list(bottle_file).first.to_s.split("/").second
+        PkgVersion.parse(version)
       end
 
       def formula_contents(bottle_file,
