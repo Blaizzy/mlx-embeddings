@@ -3,41 +3,13 @@
 
 require "mutex_m"
 require "debrew/irb"
-require "warnings"
-Warnings.ignore(/warning: callcc is obsolete; use Fiber instead/) do
-  require "continuation"
-end
+require "ignorable"
 
 # Helper module for debugging formulae.
 #
 # @api private
 module Debrew
   extend Mutex_m
-
-  # Marks exceptions which can be ignored and provides
-  # the ability to jump back to where it was raised.
-  module Ignorable
-    attr_accessor :continuation
-
-    def ignore
-      continuation.call
-    end
-  end
-
-  # Module for allowing to ignore exceptions.
-  module Raise
-    def raise(*)
-      callcc do |continuation|
-        super
-      rescue Exception => e # rubocop:disable Lint/RescueException
-        e.extend(Ignorable)
-        e.continuation = continuation
-        super(e)
-      end
-    end
-
-    alias fail raise
-  end
 
   # Module for allowing to debug formulae.
   module Formula
@@ -106,28 +78,28 @@ module Debrew
 
   class << self
     extend Predicable
-    alias original_raise raise
     attr_predicate :active?
     attr_reader :debugged_exceptions
   end
 
   def self.debrew
     @active = true
-    Object.include Raise
+    Ignorable.hook_raise
 
     begin
       yield
     rescue SystemExit
-      original_raise
+      raise
     rescue Exception => e # rubocop:disable Lint/RescueException
       e.ignore if debug(e) == :ignore # execution jumps back to where the exception was thrown
     ensure
+      Ignorable.unhook_raise
       @active = false
     end
   end
 
   def self.debug(e)
-    original_raise(e) if !active? || !debugged_exceptions.add?(e) || !try_lock
+    raise(e) if !active? || !debugged_exceptions.add?(e) || !try_lock
 
     begin
       puts e.backtrace.first.to_s
@@ -137,15 +109,15 @@ module Debrew
         Menu.choose do |menu|
           menu.prompt = "Choose an action: "
 
-          menu.choice(:raise) { original_raise(e) }
-          menu.choice(:ignore) { return :ignore } if e.is_a?(Ignorable)
+          menu.choice(:raise) { raise(e) }
+          menu.choice(:ignore) { return :ignore } if e.is_a?(Ignorable::ExceptionMixin)
           menu.choice(:backtrace) { puts e.backtrace }
 
-          if e.is_a?(Ignorable)
+          if e.is_a?(Ignorable::ExceptionMixin)
             menu.choice(:irb) do
               puts "When you exit this IRB session, execution will continue."
               set_trace_func proc { |event, _, _, id, binding, klass|
-                if klass == Raise && id == :raise && event == "return"
+                if klass == Object && id == :raise && event == "return"
                   set_trace_func(nil)
                   synchronize { IRB.start_within(binding) }
                 end
