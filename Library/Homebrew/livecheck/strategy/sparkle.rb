@@ -36,6 +36,8 @@ module Homebrew
         Item = Struct.new(
           # @api public
           :title,
+          # @api private
+          :pub_date,
           # @api public
           :url,
           # @api private
@@ -72,6 +74,7 @@ module Homebrew
             version ||= (item > "version").first&.text&.strip
 
             title = (item > "title").first&.text&.strip
+            pub_date = (item > "pubDate").first&.text&.strip&.yield_self { |d| Time.parse(d) }
 
             if (match = title&.match(/(\d+(?:\.\d+)*)\s*(\([^)]+\))?\Z/))
               short_version ||= match[1]
@@ -84,6 +87,7 @@ module Homebrew
 
             data = {
               title:          title,
+              pub_date:       pub_date,
               url:            url,
               bundle_version: bundle_version,
             }.compact
@@ -91,7 +95,7 @@ module Homebrew
             Item.new(**data) unless data.empty?
           end.compact
 
-          items.first
+          items.max_by { |item| [item.pub_date, item.bundle_version] }
         end
 
         # Checks the content at the URL for new versions.
