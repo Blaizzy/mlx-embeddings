@@ -326,6 +326,8 @@ module Homebrew
       local_filename = bottle_path.basename.to_s
 
       tab_path = Utils::Bottles.receipt_path(f.local_bottle_path)
+      raise "This bottle does not contain the file INSTALL_RECEIPT.json: #{bottle_path}" unless tab_path
+
       tab_json = Utils.safe_popen_read("tar", "xfO", f.local_bottle_path, tab_path)
       tab = Tab.from_file_content(tab_json, tab_path)
 
