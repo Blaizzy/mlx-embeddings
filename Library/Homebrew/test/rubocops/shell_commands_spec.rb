@@ -5,7 +5,7 @@ require "rubocops/shell_commands"
 
 module RuboCop
   module Cop
-    module Style
+    module Homebrew
       describe ShellCommands do
         subject(:cop) { described_class.new }
 

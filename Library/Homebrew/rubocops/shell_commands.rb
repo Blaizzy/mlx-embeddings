@@ -6,7 +6,7 @@ require "rubocops/shared/helper_functions"
 
 module RuboCop
   module Cop
-    module Style
+    module Homebrew
       # https://github.com/ruby/ruby/blob/v2_6_3/process.c#L2430-L2460
       SHELL_BUILTINS = %w[
         !
