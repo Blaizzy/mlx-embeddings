@@ -567,7 +567,7 @@ module Homebrew
 
   def parse_json_files(filenames)
     filenames.map do |filename|
-      JSON.parse(IO.read(filename))
+      JSON.parse(File.read(filename))
     end
   end
 
