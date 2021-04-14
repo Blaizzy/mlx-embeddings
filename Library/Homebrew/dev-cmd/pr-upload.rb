@@ -91,7 +91,7 @@ module Homebrew
     odie "No bottle JSON files found in the current working directory" if json_files.empty?
 
     bottles_hash = json_files.reduce({}) do |hash, json_file|
-      hash.deep_merge(JSON.parse(IO.read(json_file)))
+      hash.deep_merge(JSON.parse(File.read(json_file)))
     end
 
     if args.root_url
