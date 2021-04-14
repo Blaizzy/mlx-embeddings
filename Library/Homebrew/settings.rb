@@ -1,12 +1,15 @@
 # typed: true
 # frozen_string_literal: true
 
+require "system_command"
+
 module Homebrew
   # Helper functions for reading and writing settings.
   #
   # @api private
   module Settings
     extend T::Sig
+    include SystemCommand::Mixin
 
     module_function
 
@@ -24,7 +27,7 @@ module Homebrew
       return unless (repo/".git/config").exist?
 
       repo.cd do
-        safe_system "git", "config", "--replace-all", "homebrew.#{setting}", value.to_s
+        system_command! "git", args: ["config", "--replace-all", "homebrew.#{setting}", value.to_s]
       end
     end
 
@@ -34,7 +37,7 @@ module Homebrew
       return if read(setting, repo: repo).blank?
 
       repo.cd do
-        safe_system "git", "config", "--unset-all", "homebrew.#{setting}"
+        system_command! "git", args: ["config", "--unset-all", "homebrew.#{setting}"]
       end
     end
   end
