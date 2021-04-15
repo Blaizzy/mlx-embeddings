@@ -85,6 +85,15 @@ module Utils
 
         contents
       end
+
+      def path_resolved_basename(root_url, name, checksum, filename)
+        if root_url.match?(GitHubPackages::URL_REGEX)
+          image_name = GitHubPackages.image_formula_name(name)
+          ["#{image_name}/blobs/sha256:#{checksum}", filename&.github_packages]
+        else
+          filename&.url_encode
+        end
+      end
     end
 
     # Denotes the arch and OS of a bottle.
