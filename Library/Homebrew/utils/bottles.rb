@@ -40,23 +40,20 @@ module Utils
         HOMEBREW_BOTTLES_EXTNAME_REGEX.match(filename).to_a
       end
 
-      def bottle_file_list(bottle_file)
-        @bottle_file_list ||= {}
-        @bottle_file_list[bottle_file] ||= Utils.popen_read("tar", "-tzf", bottle_file)
-                                                .lines
-                                                .map(&:chomp)
-      end
-
       def receipt_path(bottle_file)
         bottle_file_list(bottle_file).find do |line|
           line =~ %r{.+/.+/INSTALL_RECEIPT.json}
         end
       end
 
+      def file_from_bottle(bottle_file, file_path)
+        Utils.popen_read("tar", "--extract", "--stdout", "--file", bottle_file, file_path)
+      end
+
       def resolve_formula_names(bottle_file)
         name = bottle_file_list(bottle_file).first.to_s.split("/").first
         full_name = if (receipt_file_path = receipt_path(bottle_file))
-          receipt_file = Utils.popen_read("tar", "-xOzf", bottle_file, receipt_file_path)
+          receipt_file = file_from_bottle(bottle_file, receipt_file_path)
           tap = Tab.from_file_content(receipt_file, "#{bottle_file}/#{receipt_file_path}").tap
           "#{tap}/#{name}" if tap.present? && !tap.core_tap?
         elsif (bottle_json_path = Pathname(bottle_file.sub(/\.tar\.gz$/, ".json"))) &&
@@ -80,7 +77,7 @@ module Utils
                            name: resolve_formula_names(bottle_file)[0])
         bottle_version = resolve_version bottle_file
         formula_path = "#{name}/#{bottle_version}/.brew/#{name}.rb"
-        contents = Utils.popen_read "tar", "-xOzf", bottle_file, formula_path
+        contents = file_from_bottle(bottle_file, formula_path)
         raise BottleFormulaUnavailableError.new(bottle_file, formula_path) unless $CHILD_STATUS.success?
 
         contents
@@ -93,6 +90,15 @@ module Utils
         else
           filename&.url_encode
         end
+      end
+
+      private
+
+      def bottle_file_list(bottle_file)
+        @bottle_file_list ||= {}
+        @bottle_file_list[bottle_file] ||= Utils.popen_read("tar", "--list", "--file", bottle_file)
+                                                .lines
+                                                .map(&:chomp)
       end
     end
 
