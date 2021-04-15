@@ -2,7 +2,7 @@
 set +o posix
 
 # Fail fast with concise message when cwd does not exist
-if ! [[ -d "$PWD" ]]; then
+if ! [[ -d "${PWD}" ]]; then
   echo "Error: The current working directory doesn't exist, cannot proceed." >&2
   exit 1
 fi
@@ -14,17 +14,17 @@ quiet_cd() {
 symlink_target_directory() {
   local target target_dirname
   target="$(readlink "$1")"
-  target_dirname="$(dirname "$target")"
+  target_dirname="$(dirname "${target}")"
   local directory="$2"
-  quiet_cd "$directory" && quiet_cd "$target_dirname" && pwd -P
+  quiet_cd "${directory}" && quiet_cd "${target_dirname}" && pwd -P
 }
 
 # Enable and use default Bash builtins rather than user-defined functions
 builtin enable compgen unset
 for cmd in $(builtin compgen -A builtin)
 do
-  builtin unset -f "$cmd"
-  builtin enable "$cmd"
+  builtin unset -f "${cmd}"
+  builtin enable "${cmd}"
 done
 unset cmd
 
@@ -33,26 +33,26 @@ HOMEBREW_BREW_FILE="${BREW_FILE_DIRECTORY%/}/${0##*/}"
 HOMEBREW_PREFIX="${HOMEBREW_BREW_FILE%/*/*}"
 
 # Default to / prefix if unset or the bin/brew file.
-if [[ -z "$HOMEBREW_PREFIX" || "$HOMEBREW_PREFIX" = "$HOMEBREW_BREW_FILE" ]]
+if [[ -z "${HOMEBREW_PREFIX}" || "${HOMEBREW_PREFIX}" = "${HOMEBREW_BREW_FILE}" ]]
 then
   HOMEBREW_PREFIX="/"
 fi
 
-HOMEBREW_REPOSITORY="$HOMEBREW_PREFIX"
+HOMEBREW_REPOSITORY="${HOMEBREW_PREFIX}"
 
 # Resolve the bin/brew symlink to find Homebrew's repository
-if [[ -L "$HOMEBREW_BREW_FILE" ]]
+if [[ -L "${HOMEBREW_BREW_FILE}" ]]
 then
-  BREW_FILE_DIRECTORY="$(symlink_target_directory "$HOMEBREW_BREW_FILE" "$BREW_FILE_DIRECTORY")"
+  BREW_FILE_DIRECTORY="$(symlink_target_directory "${HOMEBREW_BREW_FILE}" "${BREW_FILE_DIRECTORY}")"
   HOMEBREW_REPOSITORY="${BREW_FILE_DIRECTORY%/*}"
 fi
 
 # Try to find a /usr/local HOMEBREW_PREFIX where possible (for bottles)
-if [[ -L "/usr/local/bin/brew" && ! -L "$HOMEBREW_PREFIX/Cellar" ]]
+if [[ -L "/usr/local/bin/brew" && ! -L "${HOMEBREW_PREFIX}/Cellar" ]]
 then
   USR_LOCAL_BREW_FILE_DIRECTORY="$(symlink_target_directory "/usr/local/bin/brew" "/usr/local/bin")"
   USR_LOCAL_HOMEBREW_REPOSITORY="${USR_LOCAL_BREW_FILE_DIRECTORY%/*}"
-  if [[ "$HOMEBREW_REPOSITORY" = "$USR_LOCAL_HOMEBREW_REPOSITORY" ]]
+  if [[ "${HOMEBREW_REPOSITORY}" = "${USR_LOCAL_HOMEBREW_REPOSITORY}" ]]
   then
     HOMEBREW_PREFIX="/usr/local"
   fi
@@ -60,7 +60,7 @@ fi
 
 # If the location of HOMEBREW_LIBRARY changes
 # keg_relocate.rb, formula_cellar_checks.rb, and test/global_spec.rb need to change.
-HOMEBREW_LIBRARY="$HOMEBREW_REPOSITORY/Library"
+HOMEBREW_LIBRARY="${HOMEBREW_REPOSITORY}/Library"
 
 # Copy and export all HOMEBREW_* variables previously mentioned in
 # manpage or used elsewhere by Homebrew.
@@ -72,7 +72,7 @@ do
   VAR_NEW="HOMEBREW_${VAR}"
   # Skip if existing HOMEBREW_* variable is set.
   [[ -n "${!VAR_NEW}" ]] && continue
-  export "$VAR_NEW"="${!VAR}"
+  export "${VAR_NEW}"="${!VAR}"
 done
 
 export HOMEBREW_BREW_FILE
@@ -80,20 +80,23 @@ export HOMEBREW_PREFIX
 export HOMEBREW_REPOSITORY
 export HOMEBREW_LIBRARY
 
+# shellcheck disable=SC2154
 # Use VISUAL if HOMEBREW_EDITOR and EDITOR are unset.
-if [[ -z "$HOMEBREW_EDITOR" && -n "$VISUAL" ]]
+if [[ -z "${HOMEBREW_EDITOR}" && -n "${VISUAL}" ]]
 then
-  export HOMEBREW_EDITOR="$VISUAL"
+  export HOMEBREW_EDITOR="${VISUAL}"
 fi
 
+# shellcheck disable=SC2154
 # Set CI variable for Azure Pipelines and Jenkins
 # (Set by default on GitHub Actions, Circle and Travis CI)
-if [[ -z "$CI" ]] && [[ -n "$TF_BUILD" || -n "$JENKINS_HOME" ]]
+if [[ -z "${CI}" ]] && [[ -n "${TF_BUILD}" || -n "${JENKINS_HOME}" ]]
 then
   export CI="1"
 fi
 
-if [[ -z "$HOMEBREW_NO_ENV_FILTERING" ]]
+# shellcheck disable=SC2154
+if [[ -z "${HOMEBREW_NO_ENV_FILTERING}" ]]
 then
   PATH="/usr/bin:/bin:/usr/sbin:/sbin"
 
@@ -111,11 +114,11 @@ then
     FILTERED_ENV+=( "${VAR}=${!VAR}" )
   done
 
-  exec /usr/bin/env -i "${FILTERED_ENV[@]}" /bin/bash "$HOMEBREW_LIBRARY/Homebrew/brew.sh" "$@"
+  exec /usr/bin/env -i "${FILTERED_ENV[@]}" /bin/bash "${HOMEBREW_LIBRARY}/Homebrew/brew.sh" "$@"
 else
   echo "Warning: HOMEBREW_NO_ENV_FILTERING is undocumented, deprecated and will be removed in a future Homebrew release (because it breaks many things)!" >&2
 
   # Don't need shellcheck to follow this `source`.
   # shellcheck disable=SC1090
-  source "$HOMEBREW_LIBRARY/Homebrew/brew.sh"
+  source "${HOMEBREW_LIBRARY}/Homebrew/brew.sh"
 fi
