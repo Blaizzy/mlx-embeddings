@@ -53,6 +53,8 @@ module Homebrew
       comma_array "--mirror",
                   description: "Use the specified <URL> as a mirror URL. If <URL> is a comma-separated list "\
                                "of URLs, multiple mirrors will be added."
+      flag   "--fork-org=",
+             description: "Use the specified GitHub organization for forking."
       flag   "--version=",
              description: "Use the specified <version> to override the value parsed from the URL or tag. Note "\
                           "that `--version=0` can be used to delete an existing version override from a "\
