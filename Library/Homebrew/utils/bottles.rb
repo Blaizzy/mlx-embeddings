@@ -47,7 +47,7 @@ module Utils
       end
 
       def file_from_bottle(bottle_file, file_path)
-        Utils.popen_read("tar", "--extract", "--stdout", "--file", bottle_file, file_path)
+        Utils.popen_read("tar", "--extract", "--to-stdout", "--file", bottle_file, file_path)
       end
 
       def resolve_formula_names(bottle_file)
