@@ -331,18 +331,6 @@ module Homebrew
       tab_json = Utils.safe_popen_read("tar", "xfO", f.local_bottle_path, tab_path)
       tab = Tab.from_file_content(tab_json, tab_path)
 
-      # TODO: most of this logic can be removed when we're done with bulk GitHub Packages bottle uploading
-      tap_git_revision = tab["source"]["tap_git_head"]
-      if tap.core_tap?
-        if bottle_tag.to_s.end_with?("_linux")
-          tap_git_remote = "https://github.com/Homebrew/linuxbrew-core"
-          formulae_brew_sh_path = "formula-linux"
-        else
-          tap_git_remote = "https://github.com/Homebrew/homebrew-core"
-          formulae_brew_sh_path = "formula"
-        end
-      end
-
       _, _, bottle_cellar = Formula[f.name].bottle_specification.checksum_for(bottle_tag, no_older_versions: true)
       relocatable = [:any, :any_skip_relocation].include?(bottle_cellar)
       skip_relocation = bottle_cellar == :any_skip_relocation
