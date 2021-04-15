@@ -80,6 +80,7 @@ export HOMEBREW_PREFIX
 export HOMEBREW_REPOSITORY
 export HOMEBREW_LIBRARY
 
+# set from user environment
 # shellcheck disable=SC2154
 # Use VISUAL if HOMEBREW_EDITOR and EDITOR are unset.
 if [[ -z "${HOMEBREW_EDITOR}" && -n "${VISUAL}" ]]
@@ -87,6 +88,7 @@ then
   export HOMEBREW_EDITOR="${VISUAL}"
 fi
 
+# set from user environment
 # shellcheck disable=SC2154
 # Set CI variable for Azure Pipelines and Jenkins
 # (Set by default on GitHub Actions, Circle and Travis CI)
@@ -95,6 +97,7 @@ then
   export CI="1"
 fi
 
+# set from user environment
 # shellcheck disable=SC2154
 if [[ -z "${HOMEBREW_NO_ENV_FILTERING}" ]]
 then
