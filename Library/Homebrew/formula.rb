@@ -364,7 +364,7 @@ class Formula
   # @private
   sig { returns(T.nilable(Bottle)) }
   def bottle
-    Bottle.new(self, bottle_specification) if bottled?
+    @bottle ||= Bottle.new(self, bottle_specification) if bottled?
   end
 
   # The description of the software.
@@ -1906,7 +1906,7 @@ class Formula
 
       checksum = collector_os[:checksum].hexdigest
       filename = Bottle::Filename.create(self, os, bottle_spec.rebuild)
-      path, = bottle_spec.path_resolved_basename(name, checksum, filename)
+      path, = Utils::Bottles.path_resolved_basename(bottle_spec.root_url, name, checksum, filename)
       url = "#{bottle_spec.root_url}/#{path}"
 
       hash["files"][os] = {

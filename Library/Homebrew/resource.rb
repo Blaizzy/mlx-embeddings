@@ -174,6 +174,7 @@ class Resource
     @specs.merge!(specs)
     @using = @specs.delete(:using)
     @download_strategy = DownloadStrategyDetector.detect(url, using)
+    @downloader = nil
   end
 
   def version(val = nil)

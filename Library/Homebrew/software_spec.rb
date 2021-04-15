@@ -309,29 +309,24 @@ class Bottle
 
     checksum, tag, cellar = spec.checksum_for(Utils::Bottles.tag)
 
-    filename = Filename.create(formula, tag, spec.rebuild)
-
-    path, resolved_basename = spec.path_resolved_basename(@name, checksum, filename)
-
-    @resource.url("#{spec.root_url}/#{path}", select_download_strategy(spec.root_url_specs))
-    @resource.version = formula.pkg_version
-    @resource.checksum = checksum
-    @resource.downloader.resolved_basename = resolved_basename if resolved_basename.present?
     @prefix = spec.prefix
+    @tag = tag
     @cellar = cellar
     @rebuild = spec.rebuild
+
+    @resource.version = formula.pkg_version
+    @resource.checksum = checksum
+
+    root_url(spec.root_url, spec.root_url_specs)
   end
 
   def fetch(verify_download_integrity: true)
-    # add the default bottle domain as a fallback mirror
-    if @resource.download_strategy == CurlDownloadStrategy &&
-       @resource.url.start_with?(Homebrew::EnvConfig.bottle_domain)
-      fallback_url = @resource.url
-                              .sub(/^#{Regexp.escape(Homebrew::EnvConfig.bottle_domain)}/,
-                                   HOMEBREW_BOTTLE_DEFAULT_DOMAIN)
-      @resource.mirror(fallback_url) if [@resource.url, *@resource.mirrors].exclude?(fallback_url)
-    end
     @resource.fetch(verify_download_integrity: verify_download_integrity)
+  rescue DownloadError
+    raise unless fallback_on_error
+
+    fetch_tab
+    retry
   end
 
   def clear_cache
@@ -355,6 +350,10 @@ class Bottle
   def fetch_tab
     # a checksum is used later identifying the correct tab but we do not have the checksum for the manifest/tab
     github_packages_manifest_resource&.fetch(verify_download_integrity: false)
+  rescue DownloadError
+    raise unless fallback_on_error
+
+    retry
   end
 
   def tab_attributes
@@ -403,7 +402,7 @@ class Bottle
 
       image_name = GitHubPackages.image_formula_name(@name)
       image_tag = GitHubPackages.image_version_rebuild(version_rebuild)
-      resource.url("#{@spec.root_url}/#{image_name}/manifests/#{image_tag}", {
+      resource.url("#{root_url}/#{image_name}/manifests/#{image_tag}", {
         using:   CurlGitHubPackagesDownloadStrategy,
         headers: ["Accept: application/vnd.oci.image.index.v1+json"],
       })
@@ -413,8 +412,32 @@ class Bottle
   end
 
   def select_download_strategy(specs)
-    specs[:using] ||= DownloadStrategyDetector.detect(@spec.root_url)
+    specs[:using] ||= DownloadStrategyDetector.detect(@root_url)
     specs
+  end
+
+  def fallback_on_error
+    # Use the default bottle domain as a fallback mirror
+    if @resource.url.start_with?(Homebrew::EnvConfig.bottle_domain) &&
+       Homebrew::EnvConfig.bottle_domain != HOMEBREW_BOTTLE_DEFAULT_DOMAIN
+      opoo "Bottle missing, falling back to the default domain..."
+      root_url(HOMEBREW_BOTTLE_DEFAULT_DOMAIN)
+      @github_packages_manifest_resource = nil
+      true
+    else
+      false
+    end
+  end
+
+  def root_url(val = nil, specs = {})
+    return @root_url if val.nil?
+
+    @root_url = val
+
+    filename = Filename.create(resource.owner, @tag, @spec.rebuild)
+    path, resolved_basename = Utils::Bottles.path_resolved_basename(val, name, resource.checksum, filename)
+    @resource.url("#{val}/#{path}", select_download_strategy(specs))
+    @resource.downloader.resolved_basename = resolved_basename if resolved_basename.present?
   end
 end
 
@@ -450,15 +473,6 @@ class BottleSpecification
         var
       end
       @root_url_specs.merge!(specs)
-    end
-  end
-
-  def path_resolved_basename(name, checksum, filename)
-    if root_url.match?(GitHubPackages::URL_REGEX)
-      image_name = GitHubPackages.image_formula_name(name)
-      ["#{image_name}/blobs/sha256:#{checksum}", filename&.github_packages]
-    else
-      filename&.url_encode
     end
   end
 
