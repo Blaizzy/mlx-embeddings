@@ -91,7 +91,7 @@ module Homebrew
             Item.new(**data) unless data.empty?
           end.compact
 
-          items.max_by(&:bundle_version)
+          items.first
         end
 
         # Checks the content at the URL for new versions.
