@@ -12647,8 +12647,8 @@ end
 class Object
   include ::Minitest::Expectations
   include ::ActiveSupport::Tryable
-  include ::Utils::Curl
   include ::SystemCommand::Mixin
+  include ::Utils::Curl
   include ::ActiveSupport::Dependencies::Loadable
   include ::ActiveSupport::ForkTracker::CoreExtPrivate
   include ::ActiveSupport::ForkTracker::CoreExt
