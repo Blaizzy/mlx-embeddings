@@ -442,6 +442,17 @@ Your Git executable: $(unset git && type -p $HOMEBREW_GIT)"
   unset HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH
 fi
 
+# A bug in the auto-update process prior to 3.1.2 means $HOMEBREW_BOTTLE_DOMAIN
+# could be passed down with the default domain.
+# This is problematic as this is will be the old bottle domain.
+# This workaround is necessary for many CI images starting on old version,
+# and will only be unnecessary when updating from <3.1.2 is not a concern.
+# That will be when macOS 12 is the minimum required version.
+if [[ -n "$HOMEBREW_BOTTLE_DEFAULT_DOMAIN" && "$HOMEBREW_BOTTLE_DOMAIN" = "$HOMEBREW_BOTTLE_DEFAULT_DOMAIN" ]]
+then
+  unset HOMEBREW_BOTTLE_DOMAIN
+fi
+
 if [[ -n "$HOMEBREW_MACOS" || -n "$HOMEBREW_FORCE_HOMEBREW_ON_LINUX" ]]
 then
   HOMEBREW_BOTTLE_DEFAULT_DOMAIN="https://ghcr.io/v2/homebrew/core"
