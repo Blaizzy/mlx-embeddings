@@ -512,12 +512,6 @@ module Homebrew
 
     return unless args.json?
 
-    bottle_filename = if bottle.root_url.match?(GitHubPackages::URL_REGEX)
-      filename.github_packages
-    else
-      filename.url_encode
-    end
-
     json = {
       f.full_name => {
         "formula" => {
@@ -543,7 +537,7 @@ module Homebrew
           "date"     => Pathname(local_filename).mtime.strftime("%F"),
           "tags"     => {
             bottle_tag.to_s => {
-              "filename"              => bottle_filename,
+              "filename"              => filename.url_encode,
               "local_filename"        => local_filename,
               "sha256"                => sha256,
               "formulae_brew_sh_path" => formulae_brew_sh_path,
