@@ -15,6 +15,23 @@ describe Homebrew::Service do
   let(:spec) { :stable }
   let(:f) { klass.new(name, path, spec) }
 
+  describe "#std_service_path_env" do
+    it "returns valid std_service_path_env" do
+      f.class.service do
+        run opt_bin/"beanstalkd"
+        run_type :immediate
+        environment_variables PATH: std_service_path_env
+        error_log_path var/"log/beanstalkd.error.log"
+        log_path var/"log/beanstalkd.log"
+        working_dir var
+        keep_alive true
+      end
+
+      path = f.service.std_service_path_env
+      expect(path).to eq("#{HOMEBREW_PREFIX}/bin:#{HOMEBREW_PREFIX}/sbin:/usr/bin:/bin:/usr/sbin:/sbin")
+    end
+  end
+
   describe "#to_plist" do
     it "returns valid plist" do
       f.class.service do
@@ -61,6 +78,49 @@ describe Homebrew::Service do
       expect(plist).not_to include("<key>StandardOutPath</key>")
       expect(plist).not_to include("<key>StandardErrorPath</key>")
       expect(plist).not_to include("<key>EnvironmentVariables</key>")
+    end
+  end
+
+  describe "#to_systemd_unit" do
+    it "returns valid unit" do
+      f.class.service do
+        run opt_bin/"beanstalkd"
+        run_type :immediate
+        environment_variables PATH: std_service_path_env
+        error_log_path var/"log/beanstalkd.error.log"
+        log_path var/"log/beanstalkd.log"
+        working_dir var
+        keep_alive true
+      end
+
+      unit = f.service.to_systemd_unit
+      expect(unit).to include("Description=Homebrew generated unit for formula_name")
+      expect(unit).to include("Type=simple")
+      expect(unit).to include("ExecStart=#{HOMEBREW_PREFIX}/opt/#{name}/bin/beanstalkd")
+      expect(unit).to include("Restart=always")
+      expect(unit).to include("WorkingDirectory=#{HOMEBREW_PREFIX}/var")
+      expect(unit).to include("StandardOutput=append:#{HOMEBREW_PREFIX}/var/log/beanstalkd.log")
+      expect(unit).to include("StandardError=append:#{HOMEBREW_PREFIX}/var/log/beanstalkd.error.log")
+      std_path = "#{HOMEBREW_PREFIX}/bin:#{HOMEBREW_PREFIX}/sbin:/usr/bin:/bin:/usr/sbin:/sbin"
+      expect(unit).to include("Environment=\"PATH=#{std_path}\"")
+    end
+
+    it "returns valid partial unit" do
+      f.class.service do
+        run opt_bin/"beanstalkd"
+        run_type :immediate
+      end
+
+      unit = f.service.to_systemd_unit
+      expect(unit).to include("Description=Homebrew generated unit for formula_name")
+      expect(unit).to include("Type=simple")
+      expect(unit).to include("ExecStart=#{HOMEBREW_PREFIX}/opt/#{name}/bin/beanstalkd")
+      expect(unit).not_to include("Restart=always")
+      expect(unit).not_to include("WorkingDirectory=#{HOMEBREW_PREFIX}/var")
+      expect(unit).not_to include("StandardOutput=append:#{HOMEBREW_PREFIX}/var/log/beanstalkd.log")
+      expect(unit).not_to include("StandardError=append:#{HOMEBREW_PREFIX}/var/log/beanstalkd.error.log")
+      std_path = "#{HOMEBREW_PREFIX}/bin:#{HOMEBREW_PREFIX}/sbin:/usr/bin:/bin:/usr/sbin:/sbin"
+      expect(unit).not_to include("Environment=\"PATH=#{std_path}\"")
     end
   end
 end
