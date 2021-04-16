@@ -1457,6 +1457,7 @@ class Formula
       -DCMAKE_FIND_FRAMEWORK=LAST
       -DCMAKE_VERBOSE_MAKEFILE=ON
       -Wno-dev
+      -DBUILD_TESTING=OFF
     ]
 
     # Avoid false positives for clock_gettime support on 10.11.
