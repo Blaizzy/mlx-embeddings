@@ -389,7 +389,14 @@ module Homebrew
           sudo_purge
           # Unset the owner/group for reproducible bottles.
           # Tar then gzip for reproducible bottles.
-          safe_system "tar", "--create", "--numeric-owner", "--file", tar_path, "#{f.name}/#{f.pkg_version}"
+          owner_group_args = if OS.mac?
+            ["--uid",   "0", "--gid",   "0"]
+          else
+            ["--owner", "0", "--group", "0"]
+          end
+          safe_system "tar", "--create", "--numeric-owner",
+                      *owner_group_args,
+                      "--file", tar_path, "#{f.name}/#{f.pkg_version}"
           sudo_purge
           # Set more times for reproducible bottles.
           tar_path.utime(tab.source_modified_time, tab.source_modified_time)
