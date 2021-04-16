@@ -377,6 +377,7 @@ module Homebrew
         end
 
         keg.find do |file|
+          # Set the times for reproducible bottles.
           if file.symlink?
             File.lutime(tab.source_modified_time, tab.source_modified_time, file)
           else
@@ -386,8 +387,11 @@ module Homebrew
 
         cd cellar do
           sudo_purge
-          safe_system "tar", "cf", tar_path, "#{f.name}/#{f.pkg_version}"
+          # Unset the owner/group for reproducible bottles.
+          # Tar then gzip for reproducible bottles.
+          safe_system "tar", "--create", "--numeric-owner", "--file", tar_path, "#{f.name}/#{f.pkg_version}"
           sudo_purge
+          # Set more times for reproducible bottles.
           tar_path.utime(tab.source_modified_time, tab.source_modified_time)
           relocatable_tar_path = "#{f}-bottle.tar"
           mv tar_path, relocatable_tar_path
