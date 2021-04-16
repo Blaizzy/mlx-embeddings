@@ -26,7 +26,7 @@ module Utils
 
         path = Pathname.new(path)
         return unless TAR_FILE_EXTENSIONS.include? path.extname
-        return if Utils.popen_read(executable, "-tf", path).match?(%r{/.*\.})
+        return if Utils.popen_read(executable, "--list", "--file", path).match?(%r{/.*\.})
 
         odie "#{path} is not a valid tar file!"
       end

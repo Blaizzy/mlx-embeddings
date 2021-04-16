@@ -325,23 +325,11 @@ module Homebrew
       bottle_path = f.local_bottle_path
       local_filename = bottle_path.basename.to_s
 
-      tab_path = Utils::Bottles.receipt_path(f.local_bottle_path)
+      tab_path = Utils::Bottles.receipt_path(bottle_path)
       raise "This bottle does not contain the file INSTALL_RECEIPT.json: #{bottle_path}" unless tab_path
 
-      tab_json = Utils.safe_popen_read("tar", "xfO", f.local_bottle_path, tab_path)
+      tab_json = Utils::Bottles.file_from_bottle(bottle_path, tab_path)
       tab = Tab.from_file_content(tab_json, tab_path)
-
-      # TODO: most of this logic can be removed when we're done with bulk GitHub Packages bottle uploading
-      tap_git_revision = tab["source"]["tap_git_head"]
-      if tap.core_tap?
-        if bottle_tag.to_s.end_with?("_linux")
-          tap_git_remote = "https://github.com/Homebrew/linuxbrew-core"
-          formulae_brew_sh_path = "formula-linux"
-        else
-          tap_git_remote = "https://github.com/Homebrew/homebrew-core"
-          formulae_brew_sh_path = "formula"
-        end
-      end
 
       _, _, bottle_cellar = Formula[f.name].bottle_specification.checksum_for(bottle_tag, no_older_versions: true)
       relocatable = [:any, :any_skip_relocation].include?(bottle_cellar)
@@ -389,6 +377,7 @@ module Homebrew
         end
 
         keg.find do |file|
+          # Set the times for reproducible bottles.
           if file.symlink?
             File.lutime(tab.source_modified_time, tab.source_modified_time, file)
           else
@@ -398,8 +387,11 @@ module Homebrew
 
         cd cellar do
           sudo_purge
-          safe_system "tar", "cf", tar_path, "#{f.name}/#{f.pkg_version}"
+          # Unset the owner/group for reproducible bottles.
+          # Tar then gzip for reproducible bottles.
+          safe_system "tar", "--create", "--numeric-owner", "--file", tar_path, "#{f.name}/#{f.pkg_version}"
           sudo_purge
+          # Set more times for reproducible bottles.
           tar_path.utime(tab.source_modified_time, tab.source_modified_time)
           relocatable_tar_path = "#{f}-bottle.tar"
           mv tar_path, relocatable_tar_path

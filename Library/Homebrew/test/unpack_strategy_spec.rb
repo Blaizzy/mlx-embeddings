@@ -32,7 +32,7 @@ describe UnpackStrategy do
         (mktmpdir/"file.tar").tap do |path|
           mktmpdir do |dir|
             (dir/directories).mkpath
-            system "tar", "-c", "-f", path, "-C", dir, "A/"
+            system "tar", "--create", "--file", path, "--directory", dir, "A/"
           end
         end
       }
@@ -49,7 +49,7 @@ describe UnpackStrategy do
         (mktmpdir/basename).tap do |path|
           mktmpdir do |dir|
             FileUtils.touch dir/"file.txt"
-            system "tar", "-c", "-f", path, "-C", dir, "file.txt"
+            system "tar", "--create", "--file", path, "--directory", dir, "file.txt"
           end
         end
       }
