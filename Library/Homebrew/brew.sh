@@ -3,6 +3,7 @@
 ##### able to `source` in shell configuration quick.
 #####
 
+# Doesn't need a default case because we don't support other OSs
 # shellcheck disable=SC2249
 HOMEBREW_PROCESSOR="$(uname -m)"
 HOMEBREW_SYSTEM="$(uname -s)"
@@ -14,6 +15,7 @@ esac
 # If we're running under macOS Rosetta 2, and it was requested by setting
 # HOMEBREW_CHANGE_ARCH_TO_ARM (for example in CI), then we re-exec this
 # same file under the native architecture
+# These variables are set from the user environment.
 # shellcheck disable=SC2154
 if [[ "${HOMEBREW_CHANGE_ARCH_TO_ARM}" = "1" ]] && \
    [[ "${HOMEBREW_MACOS}" = "1" ]] && \
@@ -24,6 +26,7 @@ fi
 
 # Where we store built products; a Cellar in HOMEBREW_PREFIX (often /usr/local
 # for bottles) unless there's already a Cellar in HOMEBREW_REPOSITORY.
+# These variables are set by bin/brew
 # shellcheck disable=SC2154
 if [[ -d "${HOMEBREW_REPOSITORY}/Cellar" ]]
 then
@@ -49,6 +52,8 @@ HOMEBREW_LOGS="${HOMEBREW_LOGS:-${HOMEBREW_DEFAULT_LOGS}}"
 HOMEBREW_TEMP="${HOMEBREW_TEMP:-${HOMEBREW_DEFAULT_TEMP}}"
 
 # Don't need shellcheck to follow these `source`.
+# These referenced variables are set by bin/brew
+# Don't need to handle a default case.
 # shellcheck disable=SC1090,SC2154,SC2249
 case "$*" in
   --cellar)            echo "${HOMEBREW_CELLAR}"; exit 0 ;;
@@ -66,6 +71,7 @@ esac
 ##### Next, define all helper functions.
 #####
 
+# These variables are set from the user environment.
 # shellcheck disable=SC2154
 ohai() {
   if [[ -n "${HOMEBREW_COLOR}" || (-t 1 && -z "${HOMEBREW_NO_COLOR}") ]] # check whether stdout is a tty.
@@ -154,6 +160,7 @@ update-preinstall-timer() {
   echo 'Updating Homebrew...' >&2
 }
 
+# These variables are set from various Homebrew scripts.
 # shellcheck disable=SC2154
 update-preinstall() {
   [[ -z "${HOMEBREW_HELP}" ]] || return
@@ -165,22 +172,10 @@ update-preinstall() {
   # If we've checked for updates, we don't need to check again.
   export HOMEBREW_AUTO_UPDATE_CHECKED="1"
 
-  if [[ "${HOMEBREW_COMMAND}" = "cask" ]]
-  then
-    if [[ "${HOMEBREW_CASK_COMMAND}" != "upgrade" && ${HOMEBREW_ARG_COUNT} -lt 3 ]]
-    then
-      return
-    fi
-  elif [[ "${HOMEBREW_COMMAND}" != "upgrade" && ${HOMEBREW_ARG_COUNT} -lt 2 ]]
-  then
-    return
-  fi
-
   if [[ "${HOMEBREW_COMMAND}" = "install" || "${HOMEBREW_COMMAND}" = "upgrade" ||
         "${HOMEBREW_COMMAND}" = "bump-formula-pr" || "${HOMEBREW_COMMAND}" = "bump-cask-pr" ||
         "${HOMEBREW_COMMAND}" = "bundle" || "${HOMEBREW_COMMAND}" = "release" ||
-        "${HOMEBREW_COMMAND}" = "tap" && ${HOMEBREW_ARG_COUNT} -gt 1 ||
-        "${HOMEBREW_CASK_COMMAND}" = "install" || "${HOMEBREW_CASK_COMMAND}" = "upgrade" ]]
+        "${HOMEBREW_COMMAND}" = "tap" && ${HOMEBREW_ARG_COUNT} -gt 1 ]]
   then
     export HOMEBREW_AUTO_UPDATING="1"
 
@@ -189,14 +184,9 @@ update-preinstall() {
       HOMEBREW_AUTO_UPDATE_SECS="300"
     fi
 
-    # Skip auto-update if the cask/core tap has been updated in the
+    # Skip auto-update if the core tap has been updated in the
     # last $HOMEBREW_AUTO_UPDATE_SECS.
-    if [[ "${HOMEBREW_COMMAND}" = "cask" ]]
-    then
-      tap_fetch_head="${HOMEBREW_CASK_REPOSITORY}/.git/FETCH_HEAD"
-    else
-      tap_fetch_head="${HOMEBREW_CORE_REPOSITORY}/.git/FETCH_HEAD"
-    fi
+    tap_fetch_head="${HOMEBREW_CORE_REPOSITORY}/.git/FETCH_HEAD"
     if [[ -f "${tap_fetch_head}" &&
           -n "$(find "${tap_fetch_head}" -type f -mtime -"${HOMEBREW_AUTO_UPDATE_SECS}"s 2>/dev/null)" ]]
     then
@@ -229,6 +219,7 @@ update-preinstall() {
 #####
 
 # Colorize output on GitHub Actions.
+# This is set by the user environment.
 # shellcheck disable=SC2154
 if [[ -n "${GITHUB_ACTIONS}" ]]; then
   export HOMEBREW_COLOR="1"
@@ -288,6 +279,7 @@ export USER=${USER:-$(id -un)}
 # Higher depths mean this command was invoked by another Homebrew command.
 export HOMEBREW_COMMAND_DEPTH=$((HOMEBREW_COMMAND_DEPTH + 1))
 
+# This is set by the user environment.
 # shellcheck disable=SC2154
 if [[ -n "${HOMEBREW_FORCE_BREWED_CURL}" &&
       -x "${HOMEBREW_PREFIX}/opt/curl/bin/curl" ]] &&
@@ -301,6 +293,7 @@ else
   HOMEBREW_CURL="curl"
 fi
 
+# This is set by the user environment.
 # shellcheck disable=SC2154
 if [[ -n "${HOMEBREW_FORCE_BREWED_GIT}" &&
       -x "${HOMEBREW_PREFIX}/opt/git/bin/git" ]] &&
@@ -322,7 +315,6 @@ then
   HOMEBREW_USER_AGENT_VERSION="2.X.Y"
 fi
 
-HOMEBREW_CASK_REPOSITORY="${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-cask"
 HOMEBREW_CORE_REPOSITORY="${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core"
 
 # Don't need shellcheck to follow these `source`.
@@ -393,6 +385,8 @@ else
   [[ -n "${HOMEBREW_LINUX}" ]] && HOMEBREW_OS_VERSION="$(lsb_release -sd 2>/dev/null)"
   : "${HOMEBREW_OS_VERSION:=$(uname -r)}"
   HOMEBREW_OS_USER_AGENT_VERSION="${HOMEBREW_OS_VERSION}"
+
+  # This is set by the user environment.
   # shellcheck disable=SC2154
   if [[ -n "${HOMEBREW_FORCE_HOMEBREW_ON_LINUX}" && -n "${HOMEBREW_ON_DEBIAN7}" ]]
   then
@@ -459,6 +453,7 @@ fi
 # This workaround is necessary for many CI images starting on old version,
 # and will only be unnecessary when updating from <3.1.2 is not a concern.
 # That will be when macOS 12 is the minimum required version.
+# HOMEBREW_BOTTLE_DOMAIN is set from the user environment
 # shellcheck disable=SC2154
 if [[ -n "${HOMEBREW_BOTTLE_DEFAULT_DOMAIN}" && "${HOMEBREW_BOTTLE_DOMAIN}" = "${HOMEBREW_BOTTLE_DEFAULT_DOMAIN}" ]]
 then
@@ -575,15 +570,6 @@ case "${HOMEBREW_COMMAND}" in
   -v)          HOMEBREW_COMMAND="--version" ;;
 esac
 
-if [[ "${HOMEBREW_COMMAND}" = "cask" ]]
-then
-  HOMEBREW_CASK_COMMAND="$1"
-
-  case "${HOMEBREW_CASK_COMMAND}" in
-    instal) HOMEBREW_CASK_COMMAND="install" ;; # gem does the same
-  esac
-fi
-
 # Set HOMEBREW_DEV_CMD_RUN for users who have run a development command.
 # This makes them behave like HOMEBREW_DEVELOPERs for brew update.
 if [[ -z "${HOMEBREW_DEVELOPER}" ]]
@@ -686,6 +672,7 @@ else
 
   # Unshift command back into argument list (unless argument list was empty).
   [[ "${HOMEBREW_ARG_COUNT}" -gt 0 ]] && set -- "${HOMEBREW_COMMAND}" "$@"
+  # HOMEBREW_RUBY_PATH set by utils/ruby.sh
   # shellcheck disable=SC2154
   { update-preinstall "$@"; exec "${HOMEBREW_RUBY_PATH}" "${HOMEBREW_RUBY_WARNINGS}" "${RUBY_DISABLE_OPTIONS}" "${HOMEBREW_LIBRARY}/Homebrew/brew.rb" "$@"; }
 fi
