@@ -465,6 +465,7 @@ _brew_bump_formula_pr() {
       --debug
       --dry-run
       --force
+      --fork-org
       --help
       --message
       --mirror

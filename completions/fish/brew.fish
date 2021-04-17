@@ -415,6 +415,7 @@ __fish_brew_complete_arg 'bump-formula-pr' -l commit -d 'When passed with `--wri
 __fish_brew_complete_arg 'bump-formula-pr' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'bump-formula-pr' -l dry-run -d 'Print what would be done rather than doing it'
 __fish_brew_complete_arg 'bump-formula-pr' -l force -d 'Ignore duplicate open PRs. Remove all mirrors if `--mirror` was not specified'
+__fish_brew_complete_arg 'bump-formula-pr' -l fork-org -d 'Use the specified GitHub organization for forking'
 __fish_brew_complete_arg 'bump-formula-pr' -l help -d 'Show this message'
 __fish_brew_complete_arg 'bump-formula-pr' -l message -d 'Append message to the default pull request message'
 __fish_brew_complete_arg 'bump-formula-pr' -l mirror -d 'Use the specified URL as a mirror URL. If URL is a comma-separated list of URLs, multiple mirrors will be added'

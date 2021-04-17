@@ -914,6 +914,8 @@ nor vice versa. It must use whichever style specification the formula already us
   Don't try to fork the repository.
 * `--mirror`:
   Use the specified *`URL`* as a mirror URL. If *`URL`* is a comma-separated list of URLs, multiple mirrors will be added.
+* `--fork-org`:
+  Use the specified GitHub organization for forking.
 * `--version`:
   Use the specified *`version`* to override the value parsed from the URL or tag. Note that `--version=0` can be used to delete an existing version override from a formula if it has become redundant.
 * `--message`:
