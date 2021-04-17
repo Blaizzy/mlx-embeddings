@@ -115,17 +115,18 @@ module GitHub
     puts "No pull requests found for #{query.inspect}" if open_prs.blank? && closed_prs.blank?
   end
 
-  def create_fork(repo)
+  def create_fork(repo, org: nil)
     url = "#{API_URL}/repos/#{repo}/forks"
     data = {}
+    data[:organization] = org if org
     scopes = CREATE_ISSUE_FORK_OR_PR_SCOPES
     API.open_rest(url, data: data, scopes: scopes)
   end
 
-  def check_fork_exists(repo)
+  def check_fork_exists(repo, org: nil)
     _, reponame = repo.split("/")
 
-    username = API.open_rest(url_to("user")) { |json| json["login"] }
+    username = org || API.open_rest(url_to("user")) { |json| json["login"] }
     json = API.open_rest(url_to("repos", username, reponame))
 
     return false if json["message"] == "Not Found"
@@ -450,10 +451,10 @@ module GitHub
     end
   end
 
-  def forked_repo_info!(tap_remote_repo)
-    response = create_fork(tap_remote_repo)
+  def forked_repo_info!(tap_remote_repo, org: nil)
+    response = create_fork(tap_remote_repo, org: org)
     # GitHub API responds immediately but fork takes a few seconds to be ready.
-    sleep 1 until check_fork_exists(tap_remote_repo)
+    sleep 1 until check_fork_exists(tap_remote_repo, org: org)
     remote_url = if system("git", "config", "--local", "--get-regexp", "remote\..*\.url", "git@github.com:.*")
       response.fetch("ssh_url")
     else
@@ -487,7 +488,11 @@ module GitHub
       changed_files += additional_files if additional_files.present?
 
       if args.dry_run? || (args.write? && !args.commit?)
-        ohai "try to fork repository with GitHub API" unless args.no_fork?
+        unless args.no_fork?
+          fork_message = "try to fork repository with GitHub API" \
+                         "#{" into `#{args.fork_org}` organization" if args.fork_org}"
+          ohai fork_message
+        end
         ohai "git fetch --unshallow origin" if shallow
         ohai "git add #{changed_files.join(" ")}"
         ohai "git checkout --no-track -b #{branch} #{remote}/#{remote_branch}"
@@ -504,7 +509,7 @@ module GitHub
             username = tap.user
           else
             begin
-              remote_url, username = forked_repo_info!(tap_remote_repo)
+              remote_url, username = forked_repo_info!(tap_remote_repo, org: args.fork_org)
             rescue *API::ERRORS => e
               sourcefile_path.atomic_write(old_contents)
               odie "Unable to fork: #{e.message}!"
