@@ -515,6 +515,7 @@ _brew_bump_formula_pr() {
     '--debug[Display any debugging information]' \
     '(--write)--dry-run[Print what would be done rather than doing it]' \
     '--force[Ignore duplicate open PRs. Remove all mirrors if `--mirror` was not specified]' \
+    '--fork-org[Use the specified GitHub organization for forking]' \
     '--help[Show this message]' \
     '--message[Append message to the default pull request message]' \
     '--mirror[Use the specified URL as a mirror URL. If URL is a comma-separated list of URLs, multiple mirrors will be added]' \
