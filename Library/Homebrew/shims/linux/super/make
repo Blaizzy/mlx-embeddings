@@ -1,26 +1,27 @@
 #!/bin/bash
 
+# shellcheck disable=SC2154,SC2250
 pathremove() {
         local IFS=':' NEWPATH="" DIR="" PATHVARIABLE=${2:-PATH}
         for DIR in ${!PATHVARIABLE} ; do
-                if [ "$DIR" != "$1" ] ; then
-                  NEWPATH=${NEWPATH:+$NEWPATH:}$DIR
+                if [ "${DIR}" != "$1" ] ; then
+                  NEWPATH=${NEWPATH:+$NEWPATH:}${DIR}
                 fi
         done
-        export "$PATHVARIABLE"="$NEWPATH"
+        export "${PATHVARIABLE}"="${NEWPATH}"
 }
 
-if [[ -n "$HOMEBREW_MAKE" && "$HOMEBREW_MAKE" != "make" ]]
+if [[ -n "${HOMEBREW_MAKE}" && "${HOMEBREW_MAKE}" != "make" ]]
 then
-  export MAKE="$HOMEBREW_MAKE"
+  export MAKE="${HOMEBREW_MAKE}"
 else
-  SAVED_PATH="$PATH"
-  pathremove "$HOMEBREW_LIBRARY/Homebrew/shims/linux/super"
-  MAKE="$(which make)"
+  SAVED_PATH="${PATH}"
+  pathremove "${HOMEBREW_LIBRARY}/Homebrew/shims/linux/super"
+  MAKE="$(command -v make)"
   export MAKE
-  export PATH="$SAVED_PATH"
+  export PATH="${SAVED_PATH}"
 fi
 
-export HOMEBREW_CCCFG="O$HOMEBREW_CCCFG"
+export HOMEBREW_CCCFG="O${HOMEBREW_CCCFG}"
 
-exec "$MAKE" "$@"
+exec "${MAKE}" "$@"
