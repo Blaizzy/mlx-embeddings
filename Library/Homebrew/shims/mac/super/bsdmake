@@ -1,4 +1,4 @@
 #!/bin/bash
 
-export HOMEBREW_CCCFG="O$HOMEBREW_CCCFG"
+export HOMEBREW_CCCFG="O${HOMEBREW_CCCFG}"
 exec xcrun bsdmake "$@"
