@@ -491,6 +491,7 @@ _brew_bump_cask_pr() {
     '--debug[Display any debugging information]' \
     '(--write)--dry-run[Print what would be done rather than doing it]' \
     '--force[Ignore duplicate open PRs]' \
+    '--fork-org[Use the specified GitHub organization for forking]' \
     '--help[Show this message]' \
     '--message[Append message to the default pull request message]' \
     '(--online)--no-audit[Don'\''t run `brew audit` before opening the PR]' \
