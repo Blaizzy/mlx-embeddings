@@ -874,6 +874,8 @@ supplied by the user.
   Specify the *`URL`* for the new download.
 * `--sha256`:
   Specify the *`SHA-256`* checksum of the new download.
+* `--fork-org`:
+  Use the specified GitHub organization for forking.
 * `-f`, `--force`:
   Ignore duplicate open PRs.
 
