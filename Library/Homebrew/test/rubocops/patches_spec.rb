@@ -181,7 +181,8 @@ describe RuboCop::Cop::FormulaAudit::Patches do
         "https://github.com/uber/h3/pull/362.patch?full_index=1",
         "https://gitlab.gnome.org/GNOME/gitg/-/merge_requests/142.diff",
         "https://github.com/michaeldv/pit/commit/f64978d.diff?full_index=1",
-        "https://gitlab.gnome.org/GNOME/msitools/commit/248450a.diff",
+        # TODO: Uncomment once the corresponding check is re-enabled
+        # "https://gitlab.gnome.org/GNOME/msitools/commit/248450a.patch",
       ]
       patch_urls.each do |patch_url|
         source = <<~RUBY
@@ -223,10 +224,11 @@ describe RuboCop::Cop::FormulaAudit::Patches do
           expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 8, source: source
             GitHub patches should end with .patch, not .diff: #{patch_url}
           EOS
-        elsif patch_url.match?(%r{.*gitlab.*/commit/})
-          expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 8, source: source
-            GitLab patches should end with .patch, not .diff: #{patch_url}
-          EOS
+        # TODO: Uncomment once the corresponding check is re-enabled
+        # elsif patch_url.match?(%r{.*gitlab.*/commit/})
+        #   expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 8, source: source
+        #     GitLab patches should end with .diff, not .patch: #{patch_url}
+        #   EOS
         # rubocop:disable Layout/LineLength
         elsif patch_url.match?(%r{https?://patch-diff\.githubusercontent\.com/raw/(.+)/(.+)/pull/(.+)\.(?:diff|patch)})
           # rubocop:enable Layout/LineLength
