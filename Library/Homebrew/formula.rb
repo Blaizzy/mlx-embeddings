@@ -1523,6 +1523,12 @@ class Formula
     "#{name}#{infix}.dylib"
   end
 
+  # Executable/Library RPATH according to platform conventions.
+  sig { returns(String) }
+  def rpath
+    "@loader_path/../lib"
+  end
+
   # an array of all core {Formula} names
   # @private
   def self.core_names

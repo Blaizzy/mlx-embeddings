@@ -3,6 +3,7 @@
 
 class Formula
   undef shared_library
+  undef rpath
 
   def shared_library(name, version = nil)
     suffix = if version == "*" || (name == "*" && version.blank?)
@@ -11,6 +12,10 @@ class Formula
       ".#{version}"
     end
     "#{name}.so#{suffix}"
+  end
+
+  def rpath
+    "'$ORIGIN/../lib'"
   end
 
   class << self
