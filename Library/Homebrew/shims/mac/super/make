@@ -1,10 +1,12 @@
 #!/bin/bash
 
-if [[ -n "$HOMEBREW_MAKE" && "$HOMEBREW_MAKE" != "make" ]]
+# shellcheck disable=SC2154
+# HOMEBREW_CCCFG is set by extend/ENV/super.rb
+if [[ -n "${HOMEBREW_MAKE}" && "${HOMEBREW_MAKE}" != "make" ]]
 then
-  export MAKE="$HOMEBREW_MAKE"
+  export MAKE="${HOMEBREW_MAKE}"
 else
   MAKE="make"
 fi
-export HOMEBREW_CCCFG="O$HOMEBREW_CCCFG"
-exec xcrun "$MAKE" "$@"
+export HOMEBREW_CCCFG="O${HOMEBREW_CCCFG}"
+exec xcrun "${MAKE}" "$@"

@@ -11,7 +11,7 @@ absdir() {
 dirbasepath() {
   local dir="$1"
   local base="${2##*/}"
-  echo "$dir/$base"
+  echo "${dir}/${base}"
 }
 
 realpath() {
@@ -19,28 +19,28 @@ realpath() {
   local dir
   local dest
 
-  dir="$(absdir "$path")"
-  path="$(dirbasepath "$dir" "$path")"
+  dir="$(absdir "${path}")"
+  path="$(dirbasepath "${dir}" "${path}")"
 
-  while [[ -L "$path" ]]
+  while [[ -L "${path}" ]]
   do
-    dest="$(readlink "$path")"
-    if [[ "$dest" = "/"* ]]
+    dest="$(readlink "${path}")"
+    if [[ "${dest}" = "/"* ]]
     then
-      path="$dest"
+      path="${dest}"
     else
-      path="$dir/$dest"
+      path="${dir}/${dest}"
     fi
-    dir="$(absdir "$path")"
-    path="$(dirbasepath "$dir" "$path")"
+    dir="$(absdir "${path}")"
+    path="$(dirbasepath "${dir}" "${path}")"
   done
 
-  echo "$path"
+  echo "${path}"
 }
 
 executable() {
   local file="$1"
-  [[ -f "$file" && -x "$file" ]]
+  [[ -f "${file}" && -x "${file}" ]]
 }
 
 lowercase() {
@@ -49,22 +49,22 @@ lowercase() {
 
 safe_exec() {
   local arg0="$1"
-  if ! executable "$arg0"
+  if ! executable "${arg0}"
   then
     return
   fi
   # prevent fork-bombs
-  if [[ "$(lowercase "$arg0")" = "$SHIM_FILE" || "$(realpath "$arg0")" = "$SHIM_REAL" ]]
+  if [[ "$(lowercase "${arg0}")" = "${SHIM_FILE}" || "$(realpath "${arg0}")" = "${SHIM_REAL}" ]]
   then
     return
   fi
-  if [[ "$HOMEBREW" = "print-path" ]]
+  if [[ "${HOMEBREW}" = "print-path" ]]
   then
     local dir
     dir="$(quiet_safe_cd "${arg0%/*}/" && pwd)"
     local path
-    path="$(dirbasepath "$dir" "$arg0")"
-    echo "$path"
+    path="$(dirbasepath "${dir}" "${arg0}")"
+    echo "${path}"
     exit
   fi
   exec "$@"
@@ -75,11 +75,11 @@ try_exec_non_system() {
   shift
 
 	IFS=$'\n'
-	for path in $(type -aP "$file")
+	for path in $(type -aP "${file}")
 	do
-	  if [[ "$path" != "/usr/bin/$file" ]]
+	  if [[ "${path}" != "/usr/bin/${file}" ]]
 	  then
-	    safe_exec "$path" "$@"
+	    safe_exec "${path}" "$@"
 	  fi
 	done
 	unset IFS
