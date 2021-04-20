@@ -254,6 +254,35 @@ module Homebrew
     system "/usr/bin/sudo", "--non-interactive", "/usr/sbin/purge"
   end
 
+  def setup_tar_owner_group_args!
+    # Unset the owner/group for reproducible bottles.
+    # Use gnu-tar on Linux
+    return ["--owner", "0", "--group", "0"].freeze if OS.linux?
+
+    bsdtar_args = ["--uid", "0", "--gid", "0"].freeze
+
+    # System bsdtar is new enough on macOS Catalina and above.
+    return bsdtar_args if OS.mac? && MacOS.version >= :catalina
+
+    # Use newish libarchive on older macOS versions for reproducibility.
+    begin
+      libarchive = Formula["libarchive"]
+    rescue FormulaUnavailableError
+      return [].freeze
+    end
+
+    unless libarchive.installed?
+      ohai "Installing `libarchive` for bottling..."
+      safe_system HOMEBREW_BREW_FILE, "install", "--formula", libarchive.full_name
+    end
+
+    path = PATH.new(ENV["PATH"])
+    path.prepend(libarchive.opt_bin.to_s)
+    ENV["PATH"] = path
+
+    bsdtar_args
+  end
+
   def bottle_formula(f, args:)
     local_bottle_json = args.json? && f.local_bottle_path.present?
 
@@ -387,9 +416,11 @@ module Homebrew
 
         cd cellar do
           sudo_purge
-          # Unset the owner/group for reproducible bottles.
           # Tar then gzip for reproducible bottles.
-          safe_system "tar", "--create", "--numeric-owner", "--file", tar_path, "#{f.name}/#{f.pkg_version}"
+          owner_group_args = setup_tar_owner_group_args!
+          safe_system "tar", "--create", "--numeric-owner",
+                      *owner_group_args,
+                      "--file", tar_path, "#{f.name}/#{f.pkg_version}"
           sudo_purge
           # Set more times for reproducible bottles.
           tar_path.utime(tab.source_modified_time, tab.source_modified_time)
