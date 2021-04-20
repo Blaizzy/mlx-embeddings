@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# HOMEBREW_CCCFG is set by extend/ENV/super.rb
+# HOMEBREW_LIBRARY is set by bin/brew
 # shellcheck disable=SC2154,SC2250
 pathremove() {
         local IFS=':' NEWPATH="" DIR="" PATHVARIABLE=${2:-PATH}

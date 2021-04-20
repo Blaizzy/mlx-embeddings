@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# HOMEBREW_CCCFG and HOMEBREW_SDKROOT are set by extend/ENV/super.rb
 # shellcheck disable=SC2154
 if [[ "${HOMEBREW_CCCFG}" = *a* ]]
 then

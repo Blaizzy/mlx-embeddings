@@ -3,6 +3,11 @@
 # This script because we support $HOMEBREW_GIT, $HOMEBREW_SVN, etc., Xcode-only and
 # no Xcode/CLT configurations. Order is careful to be what the user would want.
 
+# HOMEBREW_LIBRARY is set by bin/brew
+# SHIM_FILE is set by shims/utils.sh
+# HOMEBREW_GIT is set by brew.sh
+# HOMEBREW_SVN is from the user environment.
+# HOMEBREW_PREFIX is set extend/ENV/super.rb
 # shellcheck disable=SC2154
 if [ -z "${HOMEBREW_LIBRARY}" ]
 then

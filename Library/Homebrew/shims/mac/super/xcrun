@@ -5,6 +5,7 @@
 # it and attempts to avoid these issues.
 
 # These could be used in conjunction with `--sdk` which ignores SDKROOT.
+# HOMEBREW_DEVELOPER_DIR, HOMEBREW_SDKROOT and HOMEBREW_PREFER_CLT_PROXIES are set by extend/ENV/super.rb
 # shellcheck disable=SC2154
 if [[ "$*" =~ (^| )-?-show-sdk-(path|version|build) && -n "${HOMEBREW_DEVELOPER_DIR}" ]]; then
   export DEVELOPER_DIR=${HOMEBREW_DEVELOPER_DIR}
