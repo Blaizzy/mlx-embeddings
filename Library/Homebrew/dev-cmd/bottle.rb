@@ -607,12 +607,6 @@ module Homebrew
   def merge(args:)
     bottles_hash = merge_json_files(parse_json_files(args.named))
 
-    # TODO: deduplicate --no-json bottles by:
-    # 1. throwing away bottles for newer versions of macOS if their SHA256 is
-    #    identical
-    # 2. generating `all: $SHA256` bottles that can be used on macOS and Linux
-    #    i.e. need to be `any_skip_relocation` and contain no ELF/MachO files.
-
     any_cellars = ["any", "any_skip_relocation"]
     bottles_hash.each do |formula_name, bottle_hash|
       ohai formula_name
@@ -620,14 +614,63 @@ module Homebrew
       bottle = BottleSpecification.new
       bottle.root_url bottle_hash["bottle"]["root_url"]
       bottle.rebuild bottle_hash["bottle"]["rebuild"]
+
+      # if all the cellars and checksums are the same: we can create an
+      # `all: $SHA256` bottle.
+      tag_hashes = bottle_hash["bottle"]["tags"].values
+      all_bottle = (tag_hashes.count > 1) && tag_hashes.uniq do |tag_hash|
+        "#{tag_hash["cellar"]}-#{tag_hash["sha256"]}"
+      end.count == 1
+
       bottle_hash["bottle"]["tags"].each do |tag, tag_hash|
         cellar = tag_hash["cellar"]
         cellar = cellar.to_sym if any_cellars.include?(cellar)
-        sha256_hash = { cellar: cellar, tag.to_sym => tag_hash["sha256"] }
+
+        tag_sym = if all_bottle
+          :all
+        else
+          tag.to_sym
+        end
+
+        sha256_hash = { cellar: cellar, tag_sym => tag_hash["sha256"] }
         bottle.sha256 sha256_hash
+
+        break if all_bottle
       end
 
       if args.write?
+        if all_bottle
+          all_bottle_hash = nil
+          bottle_hash["bottle"]["tags"].each do |tag, tag_hash|
+            local_filename = tag_hash["local_filename"]
+            local_json_filename = local_filename.sub(/\.tar\.gz$/, ".json")
+
+            if all_bottle_hash.nil?
+              all_filename = tag_hash["filename"].sub(tag, "all")
+              all_local_filename = local_filename.sub(tag, "all")
+              all_local_json_filename = local_json_filename.sub(tag, "all")
+
+              all_bottle_tag_hash = tag_hash.dup
+              all_bottle_tag_hash["filename"] = all_filename
+              all_bottle_tag_hash["local_filename"] = all_local_filename
+              cellar = all_bottle_tag_hash.delete("cellar")
+
+              all_bottle_formula_hash = bottle_hash.dup
+              all_bottle_formula_hash["bottle"]["cellar"] = cellar
+              all_bottle_formula_hash["bottle"]["tags"] = { all: all_bottle_tag_hash }
+
+              all_bottle_hash = { formula_name => all_bottle_formula_hash }
+
+              FileUtils.cp local_filename, all_local_filename
+              all_local_json_path = Pathname(all_local_json_filename)
+              all_local_json_path.unlink if all_local_json_path.exist?
+              all_local_json_path.write(JSON.pretty_generate(all_bottle_hash))
+            end
+
+            FileUtils.rm_f [local_filename, local_json_filename]
+          end
+        end
+
         Homebrew.install_bundler_gems!
         require "utils/ast"
 
