@@ -271,7 +271,7 @@ module Homebrew
       return [].freeze
     end
 
-    unless libarchive.installed?
+    unless libarchive.any_version_installed?
       ohai "Installing `libarchive` for bottling..."
       safe_system HOMEBREW_BREW_FILE, "install", "--formula", libarchive.full_name
     end
