@@ -9694,6 +9694,7 @@ module IRB
 end
 
 class Integer
+  include ::JSON::Ext::Generator::GeneratorMethods::Integer
   include ::MessagePack::CoreExt
   def to_bn(); end
 end
