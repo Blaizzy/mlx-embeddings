@@ -168,7 +168,9 @@ module Utils
         details[:headers].match?(/^Set-Cookie: incap_ses_/i)
     end
 
-    def curl_check_http_content(url, specs: {}, user_agents: [:default], check_content: false, strict: false)
+    def curl_check_http_content(
+      url, url_type, specs: {}, user_agents: [:default], check_content: false, strict: false
+    )
       return unless url.start_with? "http"
 
       secure_url = url.sub(/\Ahttp:/, "https:")
@@ -202,18 +204,18 @@ module Utils
         # Hack around https://github.com/Homebrew/brew/issues/3199
         return if MacOS.version == :el_capitan
 
-        return "The URL #{url} is not reachable"
+        return "The #{url_type} #{url} is not reachable"
       end
 
       unless http_status_ok?(details[:status])
         return if url_protected_by_cloudflare?(details) || url_protected_by_incapsula?(details)
 
-        return "The URL #{url} is not reachable (HTTP status code #{details[:status]})"
+        return "The #{url_type} #{url} is not reachable (HTTP status code #{details[:status]})"
       end
 
       if url.start_with?("https://") && Homebrew::EnvConfig.no_insecure_redirect? &&
          !details[:final_url].start_with?("https://")
-        return "The URL #{url} redirects back to HTTP"
+        return "The #{url_type} #{url} redirects back to HTTP"
       end
 
       return unless secure_details
@@ -230,7 +232,7 @@ module Utils
       if (etag_match || content_length_match || file_match) &&
          secure_details[:final_url].start_with?("https://") &&
          url.start_with?("http://")
-        return "The URL #{url} should use HTTPS rather than HTTP"
+        return "The #{url_type} #{url} should use HTTPS rather than HTTP"
       end
 
       return unless check_content
@@ -242,7 +244,7 @@ module Utils
       # Check for the same content after removing all protocols
       if (http_content && https_content) && (http_content == https_content) &&
          url.start_with?("http://") && secure_details[:final_url].start_with?("https://")
-        return "The URL #{url} should use HTTPS rather than HTTP"
+        return "The #{url_type} #{url} should use HTTPS rather than HTTP"
       end
 
       return unless strict
@@ -250,13 +252,13 @@ module Utils
       # Same size, different content after normalization
       # (typical causes: Generated ID, Timestamp, Unix time)
       if http_content.length == https_content.length
-        return "The URL #{url} may be able to use HTTPS rather than HTTP. Please verify it in a browser."
+        return "The #{url_type} #{url} may be able to use HTTPS rather than HTTP. Please verify it in a browser."
       end
 
       lenratio = (100 * https_content.length / http_content.length).to_i
       return unless (90..110).cover?(lenratio)
 
-      "The URL #{url} may be able to use HTTPS rather than HTTP. Please verify it in a browser."
+      "The #{url_type} #{url} may be able to use HTTPS rather than HTTP. Please verify it in a browser."
     end
 
     def curl_http_content_headers_and_checksum(url, specs: {}, hash_needed: false, user_agent: :default)

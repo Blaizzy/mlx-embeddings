@@ -733,20 +733,24 @@ module Cask
     def check_https_availability
       return unless download
 
-      check_url_for_https_availability(cask.url, user_agents: [cask.url.user_agent]) if cask.url && !cask.url.using
+      if cask.url && !cask.url.using
+        check_url_for_https_availability(cask.url, "binary URL",
+                                         user_agents: [cask.url.user_agent])
+      end
 
-      check_url_for_https_availability(cask.appcast, check_content: true) if cask.appcast && appcast?
+      check_url_for_https_availability(cask.appcast, "appcast URL", check_content: true) if cask.appcast && appcast?
 
       return unless cask.homepage
 
       check_url_for_https_availability(cask.homepage,
+                                       "homepage URL",
                                        user_agents:   [:browser, :default],
                                        check_content: true,
                                        strict:        strict?)
     end
 
-    def check_url_for_https_availability(url_to_check, **options)
-      problem = curl_check_http_content(url_to_check.to_s, **options)
+    def check_url_for_https_availability(url_to_check, url_type, **options)
+      problem = curl_check_http_content(url_to_check.to_s, url_type, **options)
       add_error problem if problem
     end
   end
