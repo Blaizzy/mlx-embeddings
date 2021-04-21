@@ -2,12 +2,13 @@
 
 # HOMEBREW_PREFIX is set by bin/brew
 # shellcheck disable=SC2154
-POD2MAN="$(type -P /usr/bin/pod2man ||
+POD2MAN="$(type -P pod2man ||
            type -P pod2man5.30 ||
            type -P pod2man5.28 ||
            type -P pod2man5.18 ||
            type -P pod2man5.16 ||
            type -P pod2man5.12 ||
+           type -P /usr/bin/pod2man ||
            type -P "${HOMEBREW_PREFIX}/opt/pod2man/bin/pod2man" ||
            echo /usr/bin/pod2man)"
 exec "${POD2MAN}" "$@"
