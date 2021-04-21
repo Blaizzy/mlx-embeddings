@@ -13,16 +13,11 @@ pathremove() {
         export "${PATHVARIABLE}"="${NEWPATH}"
 }
 
-if [[ -n "${HOMEBREW_MAKE}" && "${HOMEBREW_MAKE}" != "make" ]]
-then
-  export MAKE="${HOMEBREW_MAKE}"
-else
-  SAVED_PATH="${PATH}"
-  pathremove "${HOMEBREW_LIBRARY}/Homebrew/shims/linux/super"
-  MAKE="$(command -v make)"
-  export MAKE
-  export PATH="${SAVED_PATH}"
-fi
+SAVED_PATH="${PATH}"
+pathremove "${HOMEBREW_LIBRARY}/Homebrew/shims/linux/super"
+MAKE="$(command -v make)"
+export MAKE
+export PATH="${SAVED_PATH}"
 
 export HOMEBREW_CCCFG="O${HOMEBREW_CCCFG}"
 
