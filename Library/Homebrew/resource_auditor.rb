@@ -101,7 +101,7 @@ module Homebrew
 
         strategy = DownloadStrategyDetector.detect(url, using)
         if strategy <= CurlDownloadStrategy && !url.start_with?("file")
-          if (http_content_problem = curl_check_http_content(url, specs: specs))
+          if (http_content_problem = curl_check_http_content(url, "source URL", specs: specs))
             problem http_content_problem
           end
         elsif strategy <= GitDownloadStrategy
