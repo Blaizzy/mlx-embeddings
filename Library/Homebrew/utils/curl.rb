@@ -168,9 +168,8 @@ module Utils
         details[:headers].match?(/^Set-Cookie: incap_ses_/i)
     end
 
-    def curl_check_http_content(
-      url, url_type, specs: {}, user_agents: [:default], check_content: false, strict: false
-    )
+    def curl_check_http_content(url, url_type, specs: {}, user_agents: [:default],
+                                check_content: false, strict: false)
       return unless url.start_with? "http"
 
       secure_url = url.sub(/\Ahttp:/, "https:")
