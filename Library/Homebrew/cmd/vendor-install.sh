@@ -3,8 +3,6 @@
 #:
 #:  Install Homebrew's portable Ruby.
 
-# Don't need shellcheck to follow this `source`.
-# shellcheck disable=SC1090
 source "$HOMEBREW_LIBRARY/Homebrew/utils/lock.sh"
 
 VENDOR_DIR="$HOMEBREW_LIBRARY/Homebrew/vendor"
@@ -119,6 +117,8 @@ fetch() {
   else
     if [[ -f "$temporary_path" ]]
     then
+      # HOMEBREW_CURL is set by brew.sh (and isn't mispelt here)
+      # shellcheck disable=SC2153
       "$HOMEBREW_CURL" "${curl_args[@]}" -C - "$VENDOR_URL" -o "$temporary_path"
       if [[ $? -eq 33 ]]
       then

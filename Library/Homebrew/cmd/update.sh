@@ -9,8 +9,6 @@
 #:      -d, --debug                      Display a trace of all shell commands as they are executed.
 #:      -h, --help                       Show this message.
 
-# Don't need shellcheck to follow this `source`.
-# shellcheck disable=SC1090
 source "$HOMEBREW_LIBRARY/Homebrew/utils/lock.sh"
 
 # Replaces the function in Library/Homebrew/brew.sh to cache the Git executable to
@@ -522,6 +520,9 @@ EOS
     # the refspec ensures that the default upstream branch gets updated
     (
       UPSTREAM_REPOSITORY_URL="$(git config remote.origin.url)"
+
+      # HOMEBREW_UPDATE_FORCE and HOMEBREW_UPDATE_PREINSTALL aren't modified here so ignore subshell warning.
+      # shellcheck disable=SC2030
       if [[ "$UPSTREAM_REPOSITORY_URL" = "https://github.com/"* ]]
       then
         UPSTREAM_REPOSITORY="${UPSTREAM_REPOSITORY_URL#https://github.com/}"
@@ -542,6 +543,8 @@ EOS
           GITHUB_API_ENDPOINT="commits/$UPSTREAM_BRANCH_DIR"
         fi
 
+        # HOMEBREW_CURL is set by brew.sh (and isn't mispelt here)
+        # shellcheck disable=SC2153
         UPSTREAM_SHA_HTTP_CODE="$("$HOMEBREW_CURL" \
            "${CURL_DISABLE_CURLRC_ARGS[@]}" \
            --silent --max-time 3 \
@@ -565,6 +568,9 @@ EOS
         fi
       fi
 
+
+      # HOMEBREW_VERBOSE isn't modified here so ignore subshell warning.
+      # shellcheck disable=SC2030
       if [[ -n "$HOMEBREW_VERBOSE" ]]
       then
         echo "Fetching $DIR..."
@@ -636,6 +642,8 @@ EOS
     PREFETCH_REVISION="${!PREFETCH_REVISION_VAR}"
     POSTFETCH_REVISION="$(git rev-parse -q --verify refs/remotes/origin/"$UPSTREAM_BRANCH")"
 
+    # HOMEBREW_UPDATE_FORCE and HOMEBREW_VERBOSE weren't modified in subshell.
+    # shellcheck disable=SC2031
     if [[ -n "$HOMEBREW_SIMULATE_FROM_CURRENT_BRANCH" ]]
     then
       simulate_from_current_branch "$DIR" "$TAP_VAR" "$UPSTREAM_BRANCH" "$CURRENT_REVISION"
@@ -653,6 +661,8 @@ EOS
 
   safe_cd "$HOMEBREW_REPOSITORY"
 
+  # HOMEBREW_UPDATE_PREINSTALL wasn't modified in subshell.
+  # shellcheck disable=SC2031
   if [[ -n "$HOMEBREW_UPDATED" ||
         -n "$HOMEBREW_UPDATE_FAILED" ||
         -n "$HOMEBREW_FAILED_FETCH_DIRS" ||

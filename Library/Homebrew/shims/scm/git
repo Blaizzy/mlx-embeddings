@@ -15,8 +15,6 @@ then
   exit 1
 fi
 
-# Don't need shellcheck to follow the `source`.
-# shellcheck disable=SC1090
 source "${HOMEBREW_LIBRARY}/Homebrew/shims/utils.sh"
 
 # shellcheck disable=SC2249
