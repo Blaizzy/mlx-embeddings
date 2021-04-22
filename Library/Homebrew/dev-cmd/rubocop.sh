@@ -8,8 +8,6 @@
 # HOMEBREW_BREW_FILE is set by extend/ENV/super.rb
 # shellcheck disable=SC2154
 homebrew-rubocop() {
-  # Don't need shellcheck to follow this `source`.
-  # shellcheck disable=SC1090
   source "${HOMEBREW_LIBRARY}/Homebrew/utils/ruby.sh"
   setup-ruby-path
 

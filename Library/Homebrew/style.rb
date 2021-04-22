@@ -186,7 +186,7 @@ module Homebrew
       end
 
       # TODO: Add `--enable=all` to check for more problems.
-      args = ["--shell=bash", "--external-sources", "--", *files]
+      args = ["--shell=bash", "--external-sources", "--source-path=#{HOMEBREW_LIBRARY}", "--", *files]
 
       case output_type
       when :print

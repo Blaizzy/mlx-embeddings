@@ -51,10 +51,9 @@ HOMEBREW_CACHE="${HOMEBREW_CACHE:-${HOMEBREW_DEFAULT_CACHE}}"
 HOMEBREW_LOGS="${HOMEBREW_LOGS:-${HOMEBREW_DEFAULT_LOGS}}"
 HOMEBREW_TEMP="${HOMEBREW_TEMP:-${HOMEBREW_DEFAULT_TEMP}}"
 
-# Don't need shellcheck to follow these `source`.
 # These referenced variables are set by bin/brew
 # Don't need to handle a default case.
-# shellcheck disable=SC1090,SC2154,SC2249
+# shellcheck disable=SC2154,SC2249
 case "$*" in
   --cellar)            echo "${HOMEBREW_CELLAR}"; exit 0 ;;
   --repository|--repo) echo "${HOMEBREW_REPOSITORY}"; exit 0 ;;
@@ -317,8 +316,6 @@ fi
 
 HOMEBREW_CORE_REPOSITORY="${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core"
 
-# Don't need shellcheck to follow these `source`.
-# shellcheck disable=SC1090
 case "$*" in
   --version|-v) source "${HOMEBREW_LIBRARY}/Homebrew/cmd/--version.sh"; homebrew-version; exit 0 ;;
 esac
@@ -648,8 +645,6 @@ access to all bottles."
 EOS
 fi
 
-# Don't need shellcheck to follow this `source`.
-# shellcheck disable=SC1090
 source "${HOMEBREW_LIBRARY}/Homebrew/utils/analytics.sh"
 setup-analytics
 
@@ -660,13 +655,11 @@ then
   # a Ruby script and avoids hard-to-debug issues if the Bash script is updated
   # at the same time as being run.
   #
-  # Don't need shellcheck to follow this `source`.
+  # Shellcheck can't follow this dynamic `source`.
   # shellcheck disable=SC1090
   source "${HOMEBREW_BASH_COMMAND}"
   { update-preinstall "$@"; "homebrew-${HOMEBREW_COMMAND}" "$@"; exit $?; }
 else
-  # Don't need shellcheck to follow this `source`.
-  # shellcheck disable=SC1090
   source "${HOMEBREW_LIBRARY}/Homebrew/utils/ruby.sh"
   setup-ruby-path
 
