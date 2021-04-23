@@ -94,7 +94,7 @@ module Homebrew
 
     if root_url
       bottles_hash.each_value do |bottle_hash|
-        bottle_hash["bottle"]["root_url"] = args.root_url
+        bottle_hash["bottle"]["root_url"] = root_url
       end
     end
 
