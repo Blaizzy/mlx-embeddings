@@ -3,19 +3,18 @@
 #:
 #:  Install Homebrew's portable Ruby.
 
-source "$HOMEBREW_LIBRARY/Homebrew/utils/lock.sh"
+# HOMEBREW_CURLRC, HOMEBREW_LIBRARY, HOMEBREW_STDERR is from the user environment
+# HOMEBREW_CACHE, HOMEBREW_CURL, HOMEBREW_LINUX, HOMEBREW_LINUX_MINIMUM_GLIBC_VERSION, HOMEBREW_MACOS, HOMEBREW_MACOS_VERSION_NUMERIC, HOMEBREW_PROCESSOR is set by brew.sh
+# shellcheck disable=SC2154
+source "${HOMEBREW_LIBRARY}/Homebrew/utils/lock.sh"
 
 VENDOR_DIR="${HOMEBREW_LIBRARY}/Homebrew/vendor"
 
 # Built from https://github.com/Homebrew/homebrew-portable-ruby.
 #
 # Dynamic variables can't be detected by shellcheck
-# set from user environment
-# shellcheck disable=SC2034,SC2154
 if [[ -n "${HOMEBREW_MACOS}" ]]
 then
-  # set from user environment
-  # shellcheck disable=SC2154
   if [[ "${HOMEBREW_PROCESSOR}" = "Intel" ]]
   then
     ruby_FILENAME="portable-ruby-2.6.3_2.yosemite.bottle.tar.gz"
@@ -41,8 +40,6 @@ then
 fi
 
 check_linux_glibc_version() {
-  # set from user environment
-  # shellcheck disable=SC2154
   if [[ -z ${HOMEBREW_LINUX} || -z ${HOMEBREW_LINUX_MINIMUM_GLIBC_VERSION} ]]
   then
     return 0
@@ -71,8 +68,6 @@ check_linux_glibc_version() {
 
 # Execute the specified command, and suppress stderr unless HOMEBREW_STDERR is set.
 quiet_stderr() {
-  # set from user environment
-  # shellcheck disable=SC2154
   if [[ -z "${HOMEBREW_STDERR}" ]]; then
     command "$@" 2>/dev/null
   else
@@ -87,8 +82,6 @@ fetch() {
 
   curl_args=()
 
-  # set from user environment
-  # shellcheck disable=SC2154
   # do not load .curlrc unless requested (must be the first argument)
   if [[ -z "${HOMEBREW_CURLRC}" ]]
   then
@@ -112,8 +105,6 @@ fetch() {
     curl_args[${#curl_args[*]}]="--progress-bar"
   fi
 
-  # set from user environment
-  # shellcheck disable=SC2154
   if [[ "${HOMEBREW_MACOS_VERSION_NUMERIC}" -lt "100600" ]]
   then
     curl_args[${#curl_args[*]}]="--insecure"
@@ -121,8 +112,6 @@ fetch() {
 
   temporary_path="${CACHED_LOCATION}.incomplete"
 
-  # set from user environment
-  # shellcheck disable=SC2154
   mkdir -p "${HOMEBREW_CACHE}"
   [[ -n "${HOMEBREW_QUIET}" ]] || ohai "Downloading ${VENDOR_URL}" >&2
   if [[ -f "${CACHED_LOCATION}" ]]
@@ -132,8 +121,7 @@ fetch() {
     if [[ -f "${temporary_path}" ]]
     then
       # HOMEBREW_CURL is set by brew.sh (and isn't mispelt here)
-      # shellcheck disable=SC2153
-      "$HOMEBREW_CURL" "${curl_args[@]}" -C - "$VENDOR_URL" -o "$temporary_path"
+      "${HOMEBREW_CURL}" "${curl_args[@]}" -C - "${VENDOR_URL}" -o "${temporary_path}"
       if [[ $? -eq 33 ]]
       then
         [[ -n "${HOMEBREW_QUIET}" ]] || echo "Trying a full download" >&2
