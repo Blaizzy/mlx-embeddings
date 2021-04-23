@@ -31,8 +31,7 @@ This is all that really matters:
 - Thank people for contributing.
 
 Checking dependencies is important, because they will probably stick around
-forever. Nobody really checks if they are necessary or not. Use the
-`:optional` and `:recommended` modifiers as appropriate.
+forever. Nobody really checks if they are necessary or not.
 
 Depend on as little stuff as possible. Disable X11 functionality if possible.
 For example, we build Wireshark, but not the heavy GUI.
