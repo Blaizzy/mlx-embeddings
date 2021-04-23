@@ -2113,6 +2113,51 @@ Show this message\.
 .
 .SH "OFFICIAL EXTERNAL COMMANDS"
 .
+.SS "\fBalias\fR [\fIalias\fR \.\.\. | \fIalias\fR=\fIcommand\fR]"
+Show existing aliases\. If no aliases are given, print the whole list\.
+.
+.TP
+\fB\-\-edit\fR
+Edit aliases in a text editor\. Either one or all aliases may be opened at once\. If the given alias doesn\'t exist it\'ll be pre\-populated with a template\.
+.
+.SS "\fBautoupdate\fR \fIsubcommand\fR [\fIinterval\fR] [\fIoptions\fR]"
+An easy, convenient way to automatically update Homebrew\.
+.
+.P
+This script will run \fBbrew update\fR in the background once every 24 hours (by default) until explicitly told to stop, utilising \fBlaunchd\fR\.
+.
+.P
+\fBbrew autoupdate start\fR [\fI\fBinterval\fR\fR] [\fI\fBoptions\fR\fR]
+    Start autoupdating either once every \fBinterval\fR hours or once every 24 hours\. Please note the interval has to be passed in seconds, so 12 hours would be \fBbrew autoupdate start 43200\fR\. Pass \fB\-\-upgrade\fR or \fB\-\-cleanup\fR to automatically run \fBbrew upgrade\fR and/or \fBbrew cleanup\fR respectively\. Pass \fB\-\-enable\-notification\fR to send a notification when the autoupdate process has finished successfully\.
+.
+.P
+\fBbrew autoupdate stop\fR
+    Stop autoupdating, but retain plist & logs\.
+.
+.P
+\fBbrew autoupdate delete\fR
+    Cancel the autoupdate, delete the plist and logs\.
+.
+.P
+\fBbrew autoupdate status\fR
+    Prints the current status of this tool\.
+.
+.P
+\fBbrew autoupdate version\fR
+    Output this tool\'s current version\.
+.
+.TP
+\fB\-\-upgrade\fR
+Automatically upgrade your installed formulae\. If the Caskroom exists locally Casks will be upgraded as well\. Must be passed with \fBstart\fR\.
+.
+.TP
+\fB\-\-cleanup\fR
+Automatically clean brew\'s cache and logs\. Must be passed with \fBstart\fR\.
+.
+.TP
+\fB\-\-enable\-notification\fR
+Send a notification when the autoupdate process has finished successfully, if \fBterminal\-notifier\fR is installed & found\. Note that currently a new experimental notifier runs automatically on macOS Big Sur, without requiring any external dependencies\. Must be passed with \fBstart\fR\.
+.
 .SS "\fBbundle\fR [\fIsubcommand\fR]"
 Bundler for non\-Ruby dependencies from Homebrew, Homebrew Cask, Mac App Store and Whalebrew\.
 .
@@ -2224,6 +2269,9 @@ Read the \fBBrewfile\fR from \fB~/\.Brewfile\fR\.
 .TP
 \fB\-\-zap\fR
 \fBcleanup\fR casks using the \fBzap\fR command instead of \fBuninstall\fR\.
+.
+.SS "\fBcommand\-not\-found\-init\fR"
+Print instructions for setting up the command\-not\-found hook for your shell\. If the output is not to a tty, print the appropriate handler script for your shell\.
 .
 .SS "\fBservices\fR [\fIsubcommand\fR]"
 Manage background services with macOS\' \fBlaunchctl\fR(1) daemon manager\.
@@ -2360,6 +2408,39 @@ Only run the formulae steps\.
 .TP
 \fB\-\-only\-cleanup\-after\fR
 Only run the post\-cleanup step\. Needs \fB\-\-cleanup\fR\.
+.
+.SS "\fBunalias\fR \fIalias\fR [\.\.\.]"
+Remove aliases\.
+.
+.SS "\fBwhich\-formula\fR [\fI\-\-explain\fR] \fIcommand\fR [\.\.\.]"
+Prints the formula(e) which provides the given command\.
+.
+.TP
+\fB\-\-explain\fR
+Output explanation of how to get \'cmd\' by installing one of the providing formulae\.
+.
+.SS "\fBwhich\-update\fR [\fIoptions\fR] [\fIdatabase\fR]"
+Database update for \fBbrew which\-formula\fR
+.
+.TP
+\fB\-\-stats\fR
+Print statistics about the database contents (number of commands and formulae, list of missing formulae)\.
+.
+.TP
+\fB\-\-commit\fR
+Commit the changes using \fBgit\fR\.
+.
+.TP
+\fB\-\-update\-existing\fR
+Update database entries with outdated formula versions\.
+.
+.TP
+\fB\-\-install\-missing\fR
+Install and update formulae that are missing from the database and don\'t have bottles\.
+.
+.TP
+\fB\-\-max\-downloads\fR
+Specify a maximum number of formulae to download and update\.
 .
 .SH "CUSTOM EXTERNAL COMMANDS"
 Homebrew, like \fBgit\fR(1), supports external commands\. These are executable scripts that reside somewhere in the \fBPATH\fR, named \fBbrew\-\fR\fIcmdname\fR or \fBbrew\-\fR\fIcmdname\fR\fB\.rb\fR, which can be invoked like \fBbrew\fR \fIcmdname\fR\. This allows you to create your own commands without modifying Homebrew\'s internals\.

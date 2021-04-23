@@ -1515,6 +1515,46 @@ These options are applicable across multiple subcommands.
 
 ## OFFICIAL EXTERNAL COMMANDS
 
+### `alias` [*`alias`* ... | *`alias`*=*`command`*]
+
+Show existing aliases. If no aliases are given, print the whole list.
+
+* `--edit`:
+  Edit aliases in a text editor. Either one or all aliases may be opened at once. If the given alias doesn't exist it'll be pre-populated with a template.
+
+### `autoupdate` *`subcommand`* [*`interval`*] [*`options`*]
+
+An easy, convenient way to automatically update Homebrew.
+
+This script will run `brew update` in the background once every 24 hours (by default)
+until explicitly told to stop, utilising `launchd`.
+
+`brew autoupdate start` [*``interval``*] [*``options``*]
+<br>Start autoupdating either once every `interval` hours or once every 24 hours.
+Please note the interval has to be passed in seconds, so 12 hours would be
+`brew autoupdate start 43200`. Pass `--upgrade` or `--cleanup` to automatically
+run `brew upgrade` and/or `brew cleanup` respectively. Pass `--enable-notification`
+to send a notification when the autoupdate process has finished successfully.
+
+`brew autoupdate stop`
+<br>Stop autoupdating, but retain plist & logs.
+
+`brew autoupdate delete`
+<br>Cancel the autoupdate, delete the plist and logs.
+
+`brew autoupdate status`
+<br>Prints the current status of this tool.
+
+`brew autoupdate version`
+<br>Output this tool's current version.
+
+* `--upgrade`:
+  Automatically upgrade your installed formulae. If the Caskroom exists locally Casks will be upgraded as well. Must be passed with `start`.
+* `--cleanup`:
+  Automatically clean brew's cache and logs. Must be passed with `start`.
+* `--enable-notification`:
+  Send a notification when the autoupdate process has finished successfully, if `terminal-notifier` is installed & found. Note that currently a new experimental notifier runs automatically on macOS Big Sur, without requiring any external dependencies. Must be passed with `start`.
+
 ### `bundle` [*`subcommand`*]
 
 Bundler for non-Ruby dependencies from Homebrew, Homebrew Cask, Mac App Store and Whalebrew.
@@ -1583,6 +1623,11 @@ This sanitized build environment ignores unrequested dependencies, which makes s
   `dump` does not add `restart_service` to formula lines.
 * `--zap`:
   `cleanup` casks using the `zap` command instead of `uninstall`.
+
+### `command-not-found-init`
+
+Print instructions for setting up the command-not-found hook for your shell.
+If the output is not to a tty, print the appropriate handler script for your shell.
 
 ### `services` [*`subcommand`*]
 
@@ -1666,6 +1711,32 @@ Only supports GitHub Actions as a CI provider. This is because Homebrew uses Git
   Only run the formulae steps.
 * `--only-cleanup-after`:
   Only run the post-cleanup step. Needs `--cleanup`.
+
+### `unalias` *`alias`* [...]
+
+Remove aliases.
+
+### `which-formula` [*`--explain`*] *`command`* [...]
+
+Prints the formula(e) which provides the given command.
+
+* `--explain`:
+  Output explanation of how to get 'cmd' by installing one of the providing formulae.
+
+### `which-update` [*`options`*] [*`database`*]
+
+Database update for `brew which-formula`
+
+* `--stats`:
+  Print statistics about the database contents (number of commands and formulae, list of missing formulae).
+* `--commit`:
+  Commit the changes using `git`.
+* `--update-existing`:
+  Update database entries with outdated formula versions.
+* `--install-missing`:
+  Install and update formulae that are missing from the database and don't have bottles.
+* `--max-downloads`:
+  Specify a maximum number of formulae to download and update.
 
 ## CUSTOM EXTERNAL COMMANDS
 

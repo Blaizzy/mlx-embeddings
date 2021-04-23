@@ -88,6 +88,7 @@ jobs:
           git -C "$HOMEBREW_CORE_REPOSITORY" checkout --force -B master homebrew_core/master
 
           brew tap homebrew/aliases
+          brew tap homebrew/autoupdate
           brew tap homebrew/bundle
           brew tap homebrew/cask
           brew tap homebrew/cask-drivers
@@ -121,6 +122,7 @@ jobs:
                                          homebrew/test-bot
 
           brew style --display-cop-names homebrew/aliases\
+                                         homebrew/autoupdate\
                                          homebrew/command-not-found \
                                          homebrew/formula-analytics \
                                          homebrew/linux-dev \

@@ -108,10 +108,10 @@ module Commands
   end
 
   def official_external_commands_paths(quiet:)
-    %w[bundle services test-bot].map do |cmd|
-      tap = Tap.fetch("Homebrew/#{cmd}")
+    OFFICIAL_CMD_TAPS.flat_map do |tap_name, cmds|
+      tap = Tap.fetch(tap_name)
       tap.install(quiet: quiet) unless tap.installed?
-      external_ruby_v2_cmd_path(cmd)
+      cmds.map(&method(:external_ruby_v2_cmd_path)).compact
     end
   end
 
