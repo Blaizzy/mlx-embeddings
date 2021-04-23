@@ -84,9 +84,9 @@ module Homebrew
     end
   end
 
-  def bottles_hash_from_json_files(root_url)
+  def json_files_and_bottles_hash_(root_url)
     json_files = Dir["*.bottle.json"]
-    odie "No bottle JSON files found in the current working directory" if json_files.empty?
+    odie "No bottle JSON files found in the current working directory" if json_files.blank?
 
     bottles_hash = json_files.reduce({}) do |hash, json_file|
       hash.deep_merge(JSON.parse(File.read(json_file)))
@@ -98,13 +98,13 @@ module Homebrew
       end
     end
 
-    bottles_hash
+    [json_files, bottles_hash]
   end
 
   def pr_upload
     args = pr_upload_args.parse
 
-    bottles_hash = bottles_hash_from_json_files(args.root_url)
+    json_files, bottles_hash = json_files_and_bottles_hash_(args.root_url)
 
     bottle_args = ["bottle", "--merge", "--write"]
     bottle_args << "--verbose" if args.verbose?
@@ -145,7 +145,7 @@ module Homebrew
 
     # Reload the JSON files (in case `brew bottle --merge` generated
     # `all: $SHA256` bottles)
-    bottles_hash = bottles_hash_from_json_files(args.root_url)
+    _, bottles_hash = json_files_and_bottles_hash_(args.root_url)
 
     # Check the bottle commits did not break `brew audit`
     unless args.no_commit?
