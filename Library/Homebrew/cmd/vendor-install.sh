@@ -119,6 +119,7 @@ fetch() {
   else
     if [[ -f "${temporary_path}" ]]
     then
+      # shellcheck disable=SC2153
       "${HOMEBREW_CURL}" "${curl_args[@]}" -C - "${VENDOR_URL}" -o "${temporary_path}"
       if [[ $? -eq 33 ]]
       then
