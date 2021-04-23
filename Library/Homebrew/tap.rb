@@ -146,6 +146,7 @@ class Tap
     return unless remote
 
     @remote_repo ||= remote.delete_prefix("https://github.com/")
+                           .delete_prefix("git@github.com:")
                            .delete_suffix(".git")
   end
 

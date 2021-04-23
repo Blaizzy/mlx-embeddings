@@ -206,7 +206,7 @@ describe Tap do
   end
 
   describe "#remote_repo" do
-    it "returns the remote repository" do
+    it "returns the remote https repository" do
       setup_git_repo
 
       expect(homebrew_foo_tap.remote_repo).to eq("Homebrew/homebrew-foo")
@@ -217,6 +217,21 @@ describe Tap do
       services_tap.path.cd do
         system "git", "init"
         system "git", "remote", "add", "origin", "https://github.com/Homebrew/homebrew-bar"
+      end
+      expect(services_tap.remote_repo).to eq("Homebrew/homebrew-bar")
+    end
+
+    it "returns the remote ssh repository" do
+      setup_git_repo
+
+      expect(homebrew_foo_tap.remote_repo).to eq("Homebrew/homebrew-foo")
+      expect { described_class.new("Homebrew", "bar").remote_repo }.to raise_error(TapUnavailableError)
+
+      services_tap = described_class.new("Homebrew", "services")
+      services_tap.path.mkpath
+      services_tap.path.cd do
+        system "git", "init"
+        system "git", "remote", "add", "origin", "git@github.com:Homebrew/homebrew-bar"
       end
       expect(services_tap.remote_repo).to eq("Homebrew/homebrew-bar")
     end
