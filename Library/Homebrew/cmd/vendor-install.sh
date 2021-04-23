@@ -4,15 +4,14 @@
 #:  Install Homebrew's portable Ruby.
 
 # HOMEBREW_CURLRC, HOMEBREW_LIBRARY, HOMEBREW_STDERR is from the user environment
-# HOMEBREW_CACHE, HOMEBREW_CURL, HOMEBREW_LINUX, HOMEBREW_LINUX_MINIMUM_GLIBC_VERSION, HOMEBREW_MACOS, HOMEBREW_MACOS_VERSION_NUMERIC, HOMEBREW_PROCESSOR is set by brew.sh
+# HOMEBREW_CACHE, HOMEBREW_CURL, HOMEBREW_LINUX, HOMEBREW_LINUX_MINIMUM_GLIBC_VERSION, HOMEBREW_MACOS,
+# HOMEBREW_MACOS_VERSION_NUMERIC and HOMEBREW_PROCESSOR are set by brew.sh
 # shellcheck disable=SC2154
 source "${HOMEBREW_LIBRARY}/Homebrew/utils/lock.sh"
 
 VENDOR_DIR="${HOMEBREW_LIBRARY}/Homebrew/vendor"
 
 # Built from https://github.com/Homebrew/homebrew-portable-ruby.
-#
-# Dynamic variables can't be detected by shellcheck
 if [[ -n "${HOMEBREW_MACOS}" ]]
 then
   if [[ "${HOMEBREW_PROCESSOR}" = "Intel" ]]
@@ -120,7 +119,6 @@ fetch() {
   else
     if [[ -f "${temporary_path}" ]]
     then
-      # HOMEBREW_CURL is set by brew.sh (and isn't mispelt here)
       "${HOMEBREW_CURL}" "${curl_args[@]}" -C - "${VENDOR_URL}" -o "${temporary_path}"
       if [[ $? -eq 33 ]]
       then
