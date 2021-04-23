@@ -521,8 +521,8 @@ class Tapioca::Generator < ::Thor::Shell::Color
   def move(old_filename, new_filename); end
   sig { void }
   def perform_additions; end
-  sig { params(dir: Pathname, constant_lookup: T::Hash[String, String]).void }
-  def perform_dsl_verification(dir, constant_lookup); end
+  sig { params(dir: Pathname).void }
+  def perform_dsl_verification(dir); end
   sig { void }
   def perform_removals; end
   sig { params(files: T::Set[Pathname]).void }
@@ -561,7 +561,7 @@ module Tapioca::GenericTypeRegistry
     sig { params(constant: Module, name: String).returns(Module) }
     def create_generic_type(constant, name); end
     sig { params(constant: Class).returns(Class) }
-    def create_sealed_safe_subclass(constant); end
+    def create_safe_subclass(constant); end
     sig { params(constant: Module).returns(T::Hash[Integer, String]) }
     def lookup_or_initialize_type_variables(constant); end
     sig { params(constant: Module).returns(T.nilable(String)) }
