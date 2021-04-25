@@ -752,7 +752,7 @@ The symlinks created by [`install_symlink`](https://rubydoc.brew.sh/Pathname#ins
 
 ### Rewriting a script shebang
 
-In some cases, the formula goal is to install a script written in an interpreted language, such as Python or Perl, and use it as an executable. Homebrew provides utilities to rewrite the shebang of a script so its path matches the interpreter dependency. For example, the [`icdiff` formula](https://github.com/Homebrew/homebrew-core/blob/7beae5ab57c65249403699b2b0700fbccf14e6cb/Formula/icdiff.rb) uses such utility.
+In some cases, the formula goal is to install a script written in an interpreted language, such as Python or Perl, to be used as an executable. Homebrew provides a `rewrite_shebang` method to rewrite the shebang of a script to point to the correct interpreter path. For example, the [`icdiff` formula](https://github.com/Homebrew/homebrew-core/blob/7beae5ab57c65249403699b2b0700fbccf14e6cb/Formula/icdiff.rb#L16) uses such utility.
 
 ### Handling files that should persist over formula upgrades
 
