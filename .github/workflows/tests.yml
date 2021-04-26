@@ -40,6 +40,7 @@ jobs:
 
   tap-syntax:
     name: tap syntax (Linux)
+    needs: syntax
     if: startsWith(github.repository, 'Homebrew/')
     runs-on: ubuntu-latest
     steps:
@@ -157,6 +158,7 @@ jobs:
         run: git diff --stat --exit-code Library/Homebrew/vendor/bundle/ruby
 
   docker:
+    needs: syntax
     runs-on: ubuntu-latest
     steps:
       - name: Set up Homebrew
@@ -180,6 +182,7 @@ jobs:
 
   tests:
     name: ${{ matrix.name }}
+    needs: syntax
     runs-on: ubuntu-latest
     strategy:
       matrix:
