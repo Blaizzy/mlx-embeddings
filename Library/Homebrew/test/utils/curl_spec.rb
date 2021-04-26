@@ -4,6 +4,173 @@
 require "utils/curl"
 
 describe "Utils::Curl" do
+  let(:location_urls) {
+    %w[
+      https://example.com/example/
+      https://example.com/example1/
+      https://example.com/example2/
+    ]
+  }
+
+  let(:response_hash) {
+    response_hash = {}
+
+    response_hash[:ok] = {
+      status_code: "200",
+      status_text: "OK",
+      headers:     {
+        "cache-control"  => "max-age=604800",
+        "content-type"   => "text/html; charset=UTF-8",
+        "date"           => "Wed, 1 Jan 2020 01:23:45 GMT",
+        "expires"        => "Wed, 31 Jan 2020 01:23:45 GMT",
+        "last-modified"  => "Thu, 1 Jan 2019 01:23:45 GMT",
+        "content-length" => "123",
+      },
+    }
+
+    response_hash[:redirection] = {
+      status_code: "301",
+      status_text: "Moved Permanently",
+      headers:     {
+        "cache-control"  => "max-age=604800",
+        "content-type"   => "text/html; charset=UTF-8",
+        "date"           => "Wed, 1 Jan 2020 01:23:45 GMT",
+        "expires"        => "Wed, 31 Jan 2020 01:23:45 GMT",
+        "last-modified"  => "Thu, 1 Jan 2019 01:23:45 GMT",
+        "content-length" => "123",
+        "location"       => location_urls[0],
+      },
+    }
+
+    response_hash[:redirection1] = {
+      status_code: "301",
+      status_text: "Moved Permanently",
+      headers:     {
+        "cache-control"  => "max-age=604800",
+        "content-type"   => "text/html; charset=UTF-8",
+        "date"           => "Wed, 1 Jan 2020 01:23:45 GMT",
+        "expires"        => "Wed, 31 Jan 2020 01:23:45 GMT",
+        "last-modified"  => "Thu, 1 Jan 2019 01:23:45 GMT",
+        "content-length" => "123",
+        "location"       => location_urls[1],
+      },
+    }
+
+    response_hash[:redirection2] = {
+      status_code: "301",
+      status_text: "Moved Permanently",
+      headers:     {
+        "cache-control"  => "max-age=604800",
+        "content-type"   => "text/html; charset=UTF-8",
+        "date"           => "Wed, 1 Jan 2020 01:23:45 GMT",
+        "expires"        => "Wed, 31 Jan 2020 01:23:45 GMT",
+        "last-modified"  => "Thu, 1 Jan 2019 01:23:45 GMT",
+        "content-length" => "123",
+        "location"       => location_urls[2],
+      },
+    }
+
+    response_hash[:redirection_no_scheme] = {
+      status_code: "301",
+      status_text: "Moved Permanently",
+      headers:     {
+        "cache-control"  => "max-age=604800",
+        "content-type"   => "text/html; charset=UTF-8",
+        "date"           => "Wed, 1 Jan 2020 01:23:45 GMT",
+        "expires"        => "Wed, 31 Jan 2020 01:23:45 GMT",
+        "last-modified"  => "Thu, 1 Jan 2019 01:23:45 GMT",
+        "content-length" => "123",
+        "location"       => "//www.example.com/example/",
+      },
+    }
+
+    response_hash[:redirection_root_relative] = {
+      status_code: "301",
+      status_text: "Moved Permanently",
+      headers:     {
+        "cache-control"  => "max-age=604800",
+        "content-type"   => "text/html; charset=UTF-8",
+        "date"           => "Wed, 1 Jan 2020 01:23:45 GMT",
+        "expires"        => "Wed, 31 Jan 2020 01:23:45 GMT",
+        "last-modified"  => "Thu, 1 Jan 2019 01:23:45 GMT",
+        "content-length" => "123",
+        "location"       => "/example/",
+      },
+    }
+
+    response_hash[:redirection_parent_relative] = {
+      status_code: "301",
+      status_text: "Moved Permanently",
+      headers:     {
+        "cache-control"  => "max-age=604800",
+        "content-type"   => "text/html; charset=UTF-8",
+        "date"           => "Wed, 1 Jan 2020 01:23:45 GMT",
+        "expires"        => "Wed, 31 Jan 2020 01:23:45 GMT",
+        "last-modified"  => "Thu, 1 Jan 2019 01:23:45 GMT",
+        "content-length" => "123",
+        "location"       => "./example/",
+      },
+    }
+
+    response_hash
+  }
+
+  let(:response_text) {
+    response_text = {}
+
+    response_text[:ok] = <<~EOS
+      HTTP/1.1 #{response_hash[:ok][:status_code]} #{response_hash[:ok][:status_text]}\r
+      Cache-Control: #{response_hash[:ok][:headers]["cache-control"]}\r
+      Content-Type: #{response_hash[:ok][:headers]["content-type"]}\r
+      Date: #{response_hash[:ok][:headers]["date"]}\r
+      Expires: #{response_hash[:ok][:headers]["expires"]}\r
+      Last-Modified: #{response_hash[:ok][:headers]["last-modified"]}\r
+      Content-Length: #{response_hash[:ok][:headers]["content-length"]}\r
+      \r
+    EOS
+
+    response_text[:redirection] = response_text[:ok].sub(
+      "HTTP/1.1 #{response_hash[:ok][:status_code]} #{response_hash[:ok][:status_text]}\r",
+      "HTTP/1.1 #{response_hash[:redirection][:status_code]} #{response_hash[:redirection][:status_text]}\r\n" \
+      "Location: #{response_hash[:redirection][:headers]["location"]}\r",
+    )
+
+    response_text[:redirection_to_ok] = "#{response_text[:redirection]}#{response_text[:ok]}"
+
+    response_text[:redirections_to_ok] = <<~EOS
+      #{response_text[:redirection].sub(location_urls[0], location_urls[2])}
+      #{response_text[:redirection].sub(location_urls[0], location_urls[1])}
+      #{response_text[:redirection]}
+      #{response_text[:ok]}
+    EOS
+
+    response_text
+  }
+
+  let(:body) {
+    body = {}
+
+    body[:default] = <<~EOS
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>Example</title>
+        </head>
+        <body>
+          <h1>Example</h1>
+          <p>Hello, world!</p>
+        </body>
+      </html>
+    EOS
+
+    body[:with_carriage_returns] = body[:default].sub("<html>\n", "<html>\r\n\r\n")
+
+    body[:with_http_status_line] = body[:default].sub("<html>", "HTTP/1.1 200\r\n<html>")
+
+    body
+  }
+
   describe "curl_args" do
     let(:args) { ["foo"] }
     let(:user_agent_string) { "Lorem ipsum dolor sit amet" }
@@ -99,6 +266,119 @@ describe "Utils::Curl" do
       expect(curl_args(*args, show_output: nil).join(" ")).to include("--fail")
       expect(curl_args(*args).join(" ")).to include("--fail")
       expect(curl_args(*args, show_output: true).join(" ")).not_to include("--fail")
+    end
+  end
+
+  describe "#parse_curl_output" do
+    it "returns a correct hash when curl output contains response(s) and body" do
+      expect(parse_curl_output("#{response_text[:ok]}#{body[:default]}"))
+        .to eq({ responses: [response_hash[:ok]], body: body[:default] })
+      expect(parse_curl_output("#{response_text[:ok]}#{body[:with_carriage_returns]}"))
+        .to eq({ responses: [response_hash[:ok]], body: body[:with_carriage_returns] })
+      expect(parse_curl_output("#{response_text[:ok]}#{body[:with_http_status_line]}"))
+        .to eq({ responses: [response_hash[:ok]], body: body[:with_http_status_line] })
+      expect(parse_curl_output("#{response_text[:redirection_to_ok]}#{body[:default]}"))
+        .to eq({ responses: [response_hash[:redirection], response_hash[:ok]], body: body[:default] })
+      expect(parse_curl_output("#{response_text[:redirections_to_ok]}#{body[:default]}"))
+        .to eq({
+          responses: [
+            response_hash[:redirection2],
+            response_hash[:redirection1],
+            response_hash[:redirection],
+            response_hash[:ok],
+          ],
+          body:      body[:default],
+        })
+    end
+
+    it "returns a correct hash when curl output contains HTTP response text and no body" do
+      expect(parse_curl_output(response_text[:ok])).to eq({ responses: [response_hash[:ok]], body: "" })
+    end
+
+    it "returns a correct hash when curl output contains body and no HTTP response text" do
+      expect(parse_curl_output(body[:default])).to eq({ responses: [], body: body[:default] })
+      expect(parse_curl_output(body[:with_carriage_returns]))
+        .to eq({ responses: [], body: body[:with_carriage_returns] })
+      expect(parse_curl_output(body[:with_http_status_line]))
+        .to eq({ responses: [], body: body[:with_http_status_line] })
+    end
+
+    it "returns correct hash when curl output is blank" do
+      expect(parse_curl_output("")).to eq({ responses: [], body: "" })
+    end
+  end
+
+  describe "#parse_curl_response" do
+    it "returns a correct hash when given HTTP response text" do
+      expect(parse_curl_response(response_text[:ok])).to eq(response_hash[:ok])
+      expect(parse_curl_response(response_text[:redirection])).to eq(response_hash[:redirection])
+    end
+
+    it "returns an empty hash when given an empty string" do
+      expect(parse_curl_response("")).to eq({})
+    end
+  end
+
+  describe "#curl_response_last_location" do
+    it "returns the last location header when given an array of HTTP response hashes" do
+      expect(curl_response_last_location([
+        response_hash[:redirection],
+        response_hash[:ok],
+      ])).to eq(response_hash[:redirection][:headers]["location"])
+
+      expect(curl_response_last_location([
+        response_hash[:redirection2],
+        response_hash[:redirection1],
+        response_hash[:redirection],
+        response_hash[:ok],
+      ])).to eq(response_hash[:redirection][:headers]["location"])
+    end
+
+    it "returns the location as given, by default or when absolutize is false" do
+      expect(curl_response_last_location([
+        response_hash[:redirection_no_scheme],
+        response_hash[:ok],
+      ])).to eq(response_hash[:redirection_no_scheme][:headers]["location"])
+
+      expect(curl_response_last_location([
+        response_hash[:redirection_root_relative],
+        response_hash[:ok],
+      ])).to eq(response_hash[:redirection_root_relative][:headers]["location"])
+
+      expect(curl_response_last_location([
+        response_hash[:redirection_parent_relative],
+        response_hash[:ok],
+      ])).to eq(response_hash[:redirection_parent_relative][:headers]["location"])
+    end
+
+    it "returns an absolute URL when absolutize is true and a base URL is provided" do
+      expect(
+        curl_response_last_location(
+          [response_hash[:redirection_no_scheme], response_hash[:ok]],
+          absolutize: true,
+          base_url:   "https://brew.sh/test",
+        ),
+      ).to eq("https:#{response_hash[:redirection_no_scheme][:headers]["location"]}")
+
+      expect(
+        curl_response_last_location(
+          [response_hash[:redirection_root_relative], response_hash[:ok]],
+          absolutize: true,
+          base_url:   "https://brew.sh/test",
+        ),
+      ).to eq("https://brew.sh#{response_hash[:redirection_root_relative][:headers]["location"]}")
+
+      expect(
+        curl_response_last_location(
+          [response_hash[:redirection_parent_relative], response_hash[:ok]],
+          absolutize: true,
+          base_url:   "https://brew.sh/test1/test2",
+        ),
+      ).to eq(response_hash[:redirection_parent_relative][:headers]["location"].sub(/^\./, "https://brew.sh/test1"))
+    end
+
+    it "returns nil when the response hash doesn't contain a location header" do
+      expect(curl_response_last_location([response_hash[:ok]])).to be_nil
     end
   end
 end

@@ -14,6 +14,17 @@ module Utils
 
     using TimeRemaining
 
+    # HTTP responses and body content are typically separated by a double
+    # `CRLF` (whereas HTTP header lines are separated by a single `CRLF`).
+    # In rare cases, this can also be a double newline (`\n\n`).
+    HTTP_RESPONSE_BODY_SEPARATOR = "\r\n\r\n"
+
+    # This regex is used to isolate the parts of an HTTP status line, namely
+    # the status code and any following descriptive text (e.g., `Not Found`).
+    HTTP_STATUS_LINE_REGEX = %r{^HTTP/.* (?<code>\d+)(?: (?<text>[^\r\n]+))?}.freeze
+
+    private_constant :HTTP_RESPONSE_BODY_SEPARATOR, :HTTP_STATUS_LINE_REGEX
+
     module_function
 
     def curl_executable(use_homebrew_curl: false)
@@ -366,6 +377,95 @@ module Utils
 
     def http_status_ok?(status)
       (100..299).cover?(status.to_i)
+    end
+
+    # Separates the output text from `curl` into an array of HTTP responses and
+    # the final response body (i.e. content). Response hashes contain the
+    # `:status_code`, `:status_text`, and `:headers`.
+    # @param output [String] The output text from `curl` containing HTTP
+    #   responses, body content, or both.
+    # @return [Hash] A hash containing an array of response hashes and the body
+    #   content, if found.
+    sig { params(output: String).returns(T::Hash[Symbol, T.untyped]) }
+    def parse_curl_output(output)
+      responses = []
+
+      max_iterations = 5
+      iterations = 0
+      output = output.lstrip
+      while output.match?(%r{\AHTTP/[\d.]+ \d+}) && output.include?(HTTP_RESPONSE_BODY_SEPARATOR)
+        iterations += 1
+        raise "Too many redirects (max = #{max_iterations})" if iterations > max_iterations
+
+        response_text, _, output = output.partition(HTTP_RESPONSE_BODY_SEPARATOR)
+        output = output.lstrip
+        next if response_text.blank?
+
+        response_text.chomp!
+        response = parse_curl_response(response_text)
+        responses << response if response.present?
+      end
+
+      { responses: responses, body: output }
+    end
+
+    # Returns the URL from the last location header found in cURL responses,
+    # if any.
+    # @param responses [Array<Hash>] An array of hashes containing response
+    #   status information and headers from `#parse_curl_response`.
+    # @param absolutize [true, false] Whether to make the location URL absolute.
+    # @param base_url [String, nil] The URL to use as a base for making the
+    #   `location` URL absolute.
+    # @return [String, nil] The URL from the last-occurring `location` header
+    #   in the responses or `nil` (if no `location` headers found).
+    sig {
+      params(
+        responses:  T::Array[T::Hash[Symbol, T.untyped]],
+        absolutize: T::Boolean,
+        base_url:   T.nilable(String),
+      ).returns(T.nilable(String))
+    }
+    def curl_response_last_location(responses, absolutize: false, base_url: nil)
+      responses.reverse_each do |response|
+        next if response[:headers].blank?
+
+        location = response[:headers]["location"]
+        next if location.blank?
+
+        absolute_url = URI.join(base_url, location).to_s if absolutize && base_url.present?
+        return absolute_url || location
+      end
+
+      nil
+    end
+
+    private
+
+    # Parses HTTP response text from `curl` output into a hash containing the
+    # information from the status line (status code and, optionally,
+    # descriptive text) and headers.
+    # @param response_text [String] The text of a `curl` response, consisting
+    #   of a status line followed by header lines.
+    # @return [Hash] A hash containing the response status information and
+    #   headers (as a hash with header names as keys).
+    sig { params(response_text: String).returns(T::Hash[Symbol, T.untyped]) }
+    def parse_curl_response(response_text)
+      response = {}
+      return response unless response_text.match?(HTTP_STATUS_LINE_REGEX)
+
+      # Parse the status line and remove it
+      match = response_text.match(HTTP_STATUS_LINE_REGEX)
+      response[:status_code] = match["code"] if match["code"].present?
+      response[:status_text] = match["text"] if match["text"].present?
+      response_text = response_text.sub(%r{^HTTP/.* (\d+).*$\s*}, "")
+
+      # Create a hash from the header lines
+      response[:headers] =
+        response_text.split("\r\n")
+                     .to_h { |header| header.split(/:\s*/, 2) }
+                     .transform_keys(&:downcase)
+
+      response
     end
   end
 end
