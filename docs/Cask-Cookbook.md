@@ -105,7 +105,7 @@ The first non-comment line in a Cask follows the form:
 cask "<cask-token>" do
 ```
 
-[`<cask-token>`](token_reference.md) should match the Cask filename, without the `.rb` extension,
+[`<cask-token>`](#token-reference) should match the Cask filename, without the `.rb` extension,
 enclosed in single quotes.
 
 There are currently some arbitrary limitations on Cask tokens which are in the process of being removed. The Travis bot will catch any errors during the transition.
@@ -1455,4 +1455,3 @@ When the token for a new Cask would otherwise conflict with the token of an alre
 If the token for a piece of unofficial software that interacts with a popular service would make it look official and the vendor is not authorised to use the name, [a prefix must be added](Acceptable-Casks.md#forks-and-apps-with-conflicting-names) for disambiguation.
 
 In cases where the prefix is ambiguous and would make the app appear official, the `-unofficial` suffix may be used.
-
