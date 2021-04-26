@@ -216,7 +216,7 @@ module Homebrew
       end
 
       deps = Array(deps_hash[f.name]).reject do |dep|
-        dep.bottle_specification.tag?(@bottle_tag, exact: true) || dep.bottle_unneeded?
+        dep.bottle_specification.tag?(@bottle_tag, no_older_versions: true) || dep.bottle_unneeded?
       end
 
       if deps.blank?
