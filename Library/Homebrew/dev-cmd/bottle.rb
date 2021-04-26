@@ -254,33 +254,32 @@ module Homebrew
     system "/usr/bin/sudo", "--non-interactive", "/usr/sbin/purge"
   end
 
-  def setup_tar_owner_group_args!
+  def setup_tar_and_args!
     # Unset the owner/group for reproducible bottles.
-    # Use gnu-tar on Linux
-    return ["--owner", "0", "--group", "0"].freeze if OS.linux?
-
-    bsdtar_args = ["--uid", "0", "--gid", "0"].freeze
 
     # System bsdtar is new enough on macOS Catalina and above.
-    return bsdtar_args if OS.mac? && MacOS.version >= :catalina
+    # Set uid and gid for reproducible bottles.
+    return ["tar", ["--uid", "0", "--gid", "0"]].freeze if OS.mac? && MacOS.version >= :catalina
 
-    # Use newish libarchive on older macOS versions for reproducibility.
+    # Use gnu-tar on Linux
+    # Set owner and group for reproducible bottles.
+    gnutar_args = ["--owner", "0", "--group", "0"]
+    return ["tar", gnutar_args].freeze if OS.linux?
+
+    # Use gnu-tar on older macOS versions for `--owner`/`--group` support (which
+    # old `libarchive` doesn't have).
     begin
-      libarchive = Formula["libarchive"]
+      gnu_tar = Formula["gnu-tar"]
     rescue FormulaUnavailableError
-      return [].freeze
+      return ["tar", []].freeze
     end
 
-    unless libarchive.any_version_installed?
-      ohai "Installing `libarchive` for bottling..."
-      safe_system HOMEBREW_BREW_FILE, "install", "--formula", libarchive.full_name
+    unless gnu_tar.any_version_installed?
+      ohai "Installing `gnu-tar` for bottling..."
+      safe_system HOMEBREW_BREW_FILE, "install", "--formula", gnu_tar.full_name
     end
 
-    path = PATH.new(ENV["PATH"])
-    path.prepend(libarchive.opt_bin.to_s)
-    ENV["PATH"] = path
-
-    bsdtar_args
+    ["#{gnu_tar.opt_bin}/gtar", gnutar_args]
   end
 
   def bottle_formula(f, args:)
@@ -417,9 +416,10 @@ module Homebrew
         cd cellar do
           sudo_purge
           # Tar then gzip for reproducible bottles.
-          owner_group_args = setup_tar_owner_group_args!
-          safe_system "tar", "--create", "--numeric-owner",
-                      *owner_group_args,
+          tar, tar_args = setup_tar_and_args!
+          # Use portable tar format to match libarchive format.
+          safe_system tar, "--create", "--numeric-owner", "--format", "ustar",
+                      *tar_args,
                       "--file", tar_path, "#{f.name}/#{f.pkg_version}"
           sudo_purge
           # Set more times for reproducible bottles.
