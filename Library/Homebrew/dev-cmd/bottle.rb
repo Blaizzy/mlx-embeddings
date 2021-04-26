@@ -254,24 +254,26 @@ module Homebrew
     system "/usr/bin/sudo", "--non-interactive", "/usr/sbin/purge"
   end
 
-  def setup_tar_and_args!
-    # Unset the owner/group for reproducible bottles.
+  def setup_tar_and_args!(args)
+    # Without --only-json-tab bottles are never reproducible
+    default_tar_args = ["tar", [].freeze].freeze
+    return default_tar_args unless args.only_json_tab?
 
-    # System bsdtar is new enough on macOS Catalina and above.
-    # Set uid and gid for reproducible bottles.
-    return ["tar", ["--uid", "0", "--gid", "0"]].freeze if OS.mac? && MacOS.version >= :catalina
+    # Ensure tar is set up for reproducibility.
+    # https://reproducible-builds.org/docs/archives/
+    gnutar_args = [
+      "--format", "pax", "--owner", "0", "--group", "0", "--sort", "name",
+      # Set exthdr names to exclude PID (for GNU tar <1.33). Also don't store atime and ctime.
+      "--pax-option", "globexthdr.name=/GlobalHead.%n,exthdr.name=%d/PaxHeaders/%f,delete=atime,delete=ctime"
+    ].freeze
 
-    # Use gnu-tar on Linux
-    # Set owner and group for reproducible bottles.
-    gnutar_args = ["--owner", "0", "--group", "0"]
     return ["tar", gnutar_args].freeze if OS.linux?
 
-    # Use gnu-tar on older macOS versions for `--owner`/`--group` support (which
-    # old `libarchive` doesn't have).
+    # Use gnu-tar on macOS as it can be set up for reproducibility better than libarchive.
     begin
       gnu_tar = Formula["gnu-tar"]
     rescue FormulaUnavailableError
-      return ["tar", []].freeze
+      return default_tar_args
     end
 
     unless gnu_tar.any_version_installed?
@@ -279,7 +281,7 @@ module Homebrew
       safe_system HOMEBREW_BREW_FILE, "install", "--formula", gnu_tar.full_name
     end
 
-    ["#{gnu_tar.opt_bin}/gtar", gnutar_args]
+    ["#{gnu_tar.opt_bin}/gtar", gnutar_args].freeze
   end
 
   def bottle_formula(f, args:)
@@ -416,9 +418,8 @@ module Homebrew
         cd cellar do
           sudo_purge
           # Tar then gzip for reproducible bottles.
-          tar, tar_args = setup_tar_and_args!
-          # Use portable tar format to match libarchive format.
-          safe_system tar, "--create", "--numeric-owner", "--format", "ustar",
+          tar, tar_args = setup_tar_and_args!(args)
+          safe_system tar, "--create", "--numeric-owner",
                       *tar_args,
                       "--file", tar_path, "#{f.name}/#{f.pkg_version}"
           sudo_purge
