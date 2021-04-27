@@ -275,12 +275,22 @@ module FormulaCellarChecks
     "Python formulae that are keg-only should not create `pip3` and `wheel3` symlinks."
   end
 
+  def check_service_command(formula)
+    return unless formula.prefix.directory?
+    return unless formula.service?
+
+    return "Service command blank" if formula.service.command.blank?
+
+    "Service command does not exist" unless File.exist?(formula.service.command.first)
+  end
+
   def audit_installed
     @new_formula ||= false
 
     problem_if_output(check_manpages)
     problem_if_output(check_infopages)
     problem_if_output(check_jars)
+    problem_if_output(check_service_command(formula))
     problem_if_output(check_non_libraries) if @new_formula
     problem_if_output(check_non_executables(formula.bin))
     problem_if_output(check_generic_executables(formula.bin))

@@ -488,6 +488,67 @@ module Homebrew
       end
     end
 
+    describe "#check_service_command" do
+      specify "Not installed" do
+        fa = formula_auditor "foo", <<~RUBY
+          class Foo < Formula
+            url "https://brew.sh/foo-1.0.tgz"
+            homepage "https://brew.sh"
+
+            service do
+              run []
+            end
+          end
+        RUBY
+
+        expect(fa.check_service_command(fa.formula)).to match nil
+      end
+
+      specify "No service" do
+        fa = formula_auditor "foo", <<~RUBY
+          class Foo < Formula
+            url "https://brew.sh/foo-1.0.tgz"
+            homepage "https://brew.sh"
+          end
+        RUBY
+
+        mkdir_p fa.formula.prefix
+        expect(fa.check_service_command(fa.formula)).to match nil
+      end
+
+      specify "No command" do
+        fa = formula_auditor "foo", <<~RUBY
+          class Foo < Formula
+            url "https://brew.sh/foo-1.0.tgz"
+            homepage "https://brew.sh"
+
+            service do
+              run []
+            end
+          end
+        RUBY
+
+        mkdir_p fa.formula.prefix
+        expect(fa.check_service_command(fa.formula)).to match "Service command blank"
+      end
+
+      specify "Invalid command" do
+        fa = formula_auditor "foo", <<~RUBY
+          class Foo < Formula
+            url "https://brew.sh/foo-1.0.tgz"
+            homepage "https://brew.sh"
+
+            service do
+              run [HOMEBREW_PREFIX/"bin/something"]
+            end
+          end
+        RUBY
+
+        mkdir_p fa.formula.prefix
+        expect(fa.check_service_command(fa.formula)).to match "Service command does not exist"
+      end
+    end
+
     describe "#audit_github_repository" do
       specify "#audit_github_repository when HOMEBREW_NO_GITHUB_API is set" do
         ENV["HOMEBREW_NO_GITHUB_API"] = "1"

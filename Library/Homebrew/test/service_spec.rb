@@ -123,4 +123,16 @@ describe Homebrew::Service do
       expect(unit).not_to include("Environment=\"PATH=#{std_path}\"")
     end
   end
+
+  describe "#command" do
+    it "returns @run data" do
+      f.class.service do
+        run opt_bin/"beanstalkd"
+        run_type :immediate
+      end
+
+      command = f.service.command
+      expect(command).to eq(["#{HOMEBREW_PREFIX}/opt/#{name}/bin/beanstalkd"])
+    end
+  end
 end
