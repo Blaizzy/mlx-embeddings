@@ -318,11 +318,14 @@ module Homebrew
           next unless FISH_NAMED_ARGS_COMPLETION_FUNCTION_MAPPING.key? type
 
           named_arg_function = FISH_NAMED_ARGS_COMPLETION_FUNCTION_MAPPING[type]
-          named_arg_prefix = "complete -f -c brew -n '__fish_brew_command #{command}; and not __fish_seen_argument"
+          named_arg_prefix = "__fish_brew_complete_arg '#{command}; and not __fish_seen_argument"
 
-          named_args << if type == :formula && named_args_types.include?(:cask)
+          formula_option = command_options(command).key?("--formula")
+          cask_option = command_options(command).key?("--cask")
+
+          named_args << if formula_option && cask_option && type.to_s.end_with?("formula")
             "#{named_arg_prefix} -l cask -l casks' -a '(#{named_arg_function})'"
-          elsif type == :cask && named_args_types.include?(:formula)
+          elsif formula_option && cask_option && type.to_s.end_with?("cask")
             "#{named_arg_prefix} -l formula -l formulae' -a '(#{named_arg_function})'"
           else
             "__fish_brew_complete_arg '#{command}' -a '(#{named_arg_function})'"
