@@ -37,6 +37,7 @@
 
 - [How To Open A Pull Request (and get it merged)](How-To-Open-a-Homebrew-Pull-Request.md)
 - [Formula Cookbook](Formula-Cookbook.md)
+- [Cask Cookbook](Cask-Cookbook.md)
 - [Acceptable Formulae](Acceptable-Formulae.md)
 - [Acceptable Casks](Acceptable-Casks.md)
 - [License Guidelines](License-Guidelines.md)
