@@ -24,6 +24,8 @@ Your taps are Git repositories located at `$(brew --repository)/Library/Taps`.
 
 *   [lifepillar/appleii](https://github.com/lifepillar/homebrew-appleii): Formulae for vintage Apple emulation.
 
+*   [gromgit/fuse](https://github.com/gromgit/homebrew-fuse): macOS FUSE formulae that are no longer available in Homebrew core.
+
 ## Unsupported interesting forks
 
 *   [mistydemeo/tigerbrew](https://github.com/mistydemeo/tigerbrew): Experimental Tiger PowerPC version.
