@@ -403,6 +403,90 @@ describe "brew bottle" do
     end
   end
 
+  describe "--merge with --root-url-specs", :integration_test do
+    let(:core_tap) { CoreTap.new }
+    let(:tarball) do
+      if OS.linux?
+        TEST_FIXTURE_DIR/"tarballs/testball-0.1-linux.tbz"
+      else
+        TEST_FIXTURE_DIR/"tarballs/testball-0.1.tbz"
+      end
+    end
+
+    before do
+      Pathname("#{TEST_TMPDIR}/testball-1.0.arm64_big_sur.bottle.json").write stub_hash(
+        name:           "testball",
+        version:        "1.0",
+        path:           "#{core_tap.path}/Formula/testball.rb",
+        cellar:         "any_skip_relocation",
+        os:             "arm64_big_sur",
+        filename:       "testball-1.0.arm64_big_sur.bottle.tar.gz",
+        local_filename: "testball--1.0.arm64_big_sur.bottle.tar.gz",
+        root_url:       "https://example.com/",
+        sha256:         "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149",
+      )
+    end
+
+    after do
+      FileUtils.rm_f "#{TEST_TMPDIR}/testball-1.0.arm64_big_sur.bottle.json"
+    end
+
+    it "adds a formula block with a custom root_url spec" do
+      core_tap.path.cd do
+        system "git", "init"
+        setup_test_formula "testball"
+        system "git", "add", "--all"
+        system "git", "commit", "-m", "testball 0.1"
+      end
+
+      expect {
+        brew "bottle",
+             "--merge",
+             "--write",
+             "--root-url-specs=using: MyCustomStrategy",
+             "#{TEST_TMPDIR}/testball-1.0.arm64_big_sur.bottle.json"
+      }.to output(<<~EOS).to_stdout
+        ==> testball
+          bottle do
+            root_url "https://example.com/",
+              using: MyCustomStrategy
+            sha256 cellar: :any_skip_relocation, arm64_big_sur: "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149"
+          end
+      EOS
+
+      expect((core_tap.path/"Formula/testball.rb").read).to eq <<~EOS
+        class Testball < Formula
+          desc "Some test"
+          homepage "https://brew.sh/testball"
+          url "file://#{tarball}"
+          sha256 "#{tarball.sha256}"
+
+          bottle do
+            root_url "https://example.com/",
+              using: MyCustomStrategy
+            sha256 cellar: :any_skip_relocation, arm64_big_sur: "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149"
+          end
+
+          option "with-foo", "Build with foo"
+
+          def install
+            (prefix/"foo"/"test").write("test") if build.with? "foo"
+            prefix.install Dir["*"]
+            (buildpath/"test.c").write \
+            "#include <stdio.h>\\nint main(){printf(\\"test\\");return 0;}"
+            bin.mkpath
+            system ENV.cc, "test.c", "-o", bin/"test"
+          end
+
+
+
+          # something here
+
+        end
+      EOS
+    end
+  end
+
   describe Homebrew do
     subject(:homebrew) { described_class }
 
@@ -636,7 +720,7 @@ def stub_hash(parameters)
             "path":"#{parameters[:path]}"
          },
          "bottle":{
-            "root_url":"#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}",
+            "root_url":"#{parameters[:root_url] || HOMEBREW_BOTTLE_DEFAULT_DOMAIN}",
             "prefix":"/usr/local",
             "cellar":"#{parameters[:cellar]}",
             "rebuild":0,
