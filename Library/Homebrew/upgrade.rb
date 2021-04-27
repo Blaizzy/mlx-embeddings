@@ -302,7 +302,7 @@ module Homebrew
           formula,
           flags:                      flags,
           force_bottle:               force_bottle,
-          build_from_source_formulae: build_from_source_formulae + [formula],
+          build_from_source_formulae: build_from_source_formulae + [formula.full_name],
           interactive:                interactive,
           keep_tmp:                   keep_tmp,
           force:                      force,
