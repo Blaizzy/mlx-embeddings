@@ -21,8 +21,6 @@ module Homebrew
     Homebrew::CLI::Parser.new do
       description <<~EOS
         Generate Homebrew's manpages.
-
-        *Note:* Not (yet) working on Apple Silicon.
       EOS
       switch "--fail-if-not-changed",
              description: "Return a failing status code if no changes are detected in the manpage outputs. "\
@@ -34,11 +32,6 @@ module Homebrew
   end
 
   def man
-    # TODO: update description above if removing this.
-    if !ENV["HOMEBREW_SILICON_DEVELOPER"] && Hardware::CPU.arm?
-      raise UsageError, "not (yet) working on Apple Silicon!"
-    end
-
     args = man_args.parse
 
     Commands.rebuild_internal_commands_completion_list
