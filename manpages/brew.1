@@ -1550,9 +1550,6 @@ Only check casks\.
 .SS "\fBman\fR [\fI\-\-fail\-if\-not\-changed\fR]"
 Generate Homebrew\'s manpages\.
 .
-.P
-\fINote:\fR Not (yet) working on Apple Silicon\.
-.
 .TP
 \fB\-\-fail\-if\-not\-changed\fR
 Return a failing status code if no changes are detected in the manpage outputs\. This can be used to notify CI when the manpages are out of date\. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date)\.
@@ -1735,9 +1732,6 @@ Use the specified \fIURL\fR as the root of the bottle\'s URL instead of Homebrew
 .
 .SS "\fBprof\fR [\fI\-\-stackprof\fR] \fIcommand\fR [\.\.\.]"
 Run Homebrew with a Ruby profiler\. For example, \fBbrew prof readall\fR\.
-.
-.P
-\fINote:\fR Not (yet) working on Apple Silicon\.
 .
 .TP
 \fB\-\-stackprof\fR
