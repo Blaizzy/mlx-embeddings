@@ -1545,7 +1545,7 @@ to send a notification when the autoupdate process has finished successfully.
 <br>Output this tool's current version.
 
 * `--upgrade`:
-  Automatically upgrade your installed formulae. If the Caskroom exists locally Casks will be upgraded as well.  Must be passed with `start`.
+  Automatically upgrade your installed formulae. If the Caskroom exists locally Casks will be upgraded as well. Must be passed with `start`.
 * `--cleanup`:
   Automatically clean brew's cache and logs. Must be passed with `start`.
 * `--enable-notification`:
