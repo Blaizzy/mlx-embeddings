@@ -40,6 +40,8 @@ module Homebrew
              description: "Upload to the specified GitHub organisation's GitHub Packages (default: `homebrew`)."
       flag   "--root-url=",
              description: "Use the specified <URL> as the root of the bottle's URL instead of Homebrew's default."
+      flag   "--root-url-specs=",
+             description: "Append the specified specs to the root_url line in the generated DSL"
 
       named_args :none
     end
@@ -114,6 +116,7 @@ module Homebrew
     bottle_args << "--root-url=#{args.root_url}" if args.root_url
     bottle_args << "--committer=#{args.committer}" if args.committer
     bottle_args << "--no-commit" if args.no_commit?
+    bottle_args << "--root-url-specs=#{args.root_url_specs}" if args.root_url_specs
     bottle_args += json_files
 
     if args.dry_run?

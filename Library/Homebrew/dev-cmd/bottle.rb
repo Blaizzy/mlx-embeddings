@@ -16,7 +16,9 @@ BOTTLE_ERB = <<-EOS
   bottle do
     <% if [HOMEBREW_BOTTLE_DEFAULT_DOMAIN.to_s,
            "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}/bottles"].exclude?(root_url) %>
-    root_url "<%= root_url %>"
+    root_url "<%= root_url %>"<% unless root_url_specs.blank? %>,
+      <%= root_url_specs %>
+    <% end %>
     <% end %>
     <% if rebuild.positive? %>
     rebuild <%= rebuild %>
@@ -75,6 +77,8 @@ module Homebrew
              description: "Specify a committer name and email in `git`'s standard author format."
       flag   "--root-url=",
              description: "Use the specified <URL> as the root of the bottle's URL instead of Homebrew's default."
+      flag   "--root-url-specs=",
+             description: "Append the specified specs to the root_url line in the generated DSL"
 
       conflicts "--no-rebuild", "--keep-old"
 
@@ -221,7 +225,7 @@ module Homebrew
     %Q(#{line}"#{digest}")
   end
 
-  def bottle_output(bottle)
+  def bottle_output(bottle, root_url_specs)
     cellars = bottle.checksums.map do |checksum|
       cellar = checksum["cellar"]
       next unless cellar_parameter_needed? cellar
@@ -244,6 +248,7 @@ module Homebrew
     end
     erb_binding = bottle.instance_eval { binding }
     erb_binding.local_variable_set(:sha256_lines, sha256_lines)
+    erb_binding.local_variable_set(:root_url_specs, root_url_specs)
     erb = ERB.new BOTTLE_ERB
     erb.result(erb_binding).gsub(/^\s*$\n/, "")
   end
@@ -529,7 +534,7 @@ module Homebrew
       end
     end
 
-    output = bottle_output bottle
+    output = bottle_output(bottle, args.root_url_specs)
 
     puts "./#{local_filename}"
     puts output
@@ -641,7 +646,7 @@ module Homebrew
       end
 
       unless args.write?
-        puts bottle_output(bottle)
+        puts bottle_output(bottle, args.root_url_specs)
         next
       end
 
@@ -720,7 +725,7 @@ module Homebrew
       update_or_add = checksums.nil? ? "add" : "update"
 
       checksums&.each(&bottle.method(:sha256))
-      output = bottle_output(bottle)
+      output = bottle_output(bottle, args.root_url_specs)
       puts output
 
       case update_or_add
