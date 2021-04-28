@@ -16,7 +16,7 @@ BOTTLE_ERB = <<-EOS
   bottle do
     <% if [HOMEBREW_BOTTLE_DEFAULT_DOMAIN.to_s,
            "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}/bottles"].exclude?(root_url) %>
-    root_url "<%= root_url %>"<% unless download_strategy.blank? %>,
+    root_url "<%= root_url %>"<% if download_strategy.present? %>,
       using: <%= download_strategy %>
     <% end %>
     <% end %>
