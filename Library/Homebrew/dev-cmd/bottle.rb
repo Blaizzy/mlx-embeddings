@@ -662,7 +662,7 @@ module Homebrew
 
               all_bottle_hash = { formula_name => all_bottle_formula_hash }
 
-              "Copying #{local_filename} to #{all_local_filename}" if args.verbose?
+              puts "Copying #{local_filename} to #{all_local_filename}" if args.verbose?
               FileUtils.cp local_filename, all_local_filename
 
               all_local_json_path = Pathname(all_local_json_filename)
@@ -670,7 +670,7 @@ module Homebrew
               all_local_json_path.write(JSON.pretty_generate(all_bottle_hash))
             end
 
-            "Removing #{local_filename} and #{local_json_filename}" if args.verbose?
+            puts "Removing #{local_filename} and #{local_json_filename}" if args.verbose?
             FileUtils.rm_f [local_filename, local_json_filename]
           end
         end
