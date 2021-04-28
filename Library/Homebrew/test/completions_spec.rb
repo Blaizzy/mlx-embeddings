@@ -403,10 +403,13 @@ describe Homebrew::Completions do
 
       it "returns appropriate completion for a command with multiple named arg types" do
         completion = described_class.generate_fish_subcommand_completion("upgrade")
+        expected_line_start = "__fish_brew_complete_arg 'upgrade; and not __fish_seen_argument"
         expect(completion).to match(
-          /__fish_brew_complete_arg 'upgrade' -a '\(__fish_brew_suggest_formulae_outdated\)'/,
+          /#{expected_line_start} -l cask -l casks' -a '\(__fish_brew_suggest_formulae_outdated\)'/,
         )
-        expect(completion).to match(/__fish_brew_complete_arg 'upgrade' -a '\(__fish_brew_suggest_casks_outdated\)'/)
+        expect(completion).to match(
+          /#{expected_line_start} -l formula -l formulae' -a '\(__fish_brew_suggest_casks_outdated\)'/,
+        )
       end
     end
 
