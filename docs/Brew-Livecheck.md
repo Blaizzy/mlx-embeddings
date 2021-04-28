@@ -11,7 +11,7 @@ When livecheck isn't given instructions for how to check for upstream versions, 
 1. If a strategy can be applied, use it to check for new versions.
 1. Return the newest version (or an error if versions could not be found at any available URLs).
 
-It's sometimes necessary to override this default behavior to create a working check for a formula/cask. If a source doesn't provide the newest version, we need to check a different one. If livecheck doesn't correctly match version text, we need to provide an appropriate regex.
+It's sometimes necessary to override this default behavior to create a working check. If a source doesn't provide the newest version, we need to check a different one. If livecheck doesn't correctly match version text, we need to provide an appropriate regex or `strategy` block.
 
 This can be accomplished by adding a `livecheck` block to the formula/cask. For more information on the available methods, please refer to the [`Livecheck` class documentation](https://rubydoc.brew.sh/Livecheck.html).
 
@@ -25,9 +25,9 @@ This can be accomplished by adding a `livecheck` block to the formula/cask. For 
 
 ### General guidelines
 
-* **Only use `strategy` when it's necessary**. For example, if livecheck is already using `Git` for a URL, it's not necessary to use `strategy :git`. However, if `Git` applies to a URL but we need to use `PageMatch`, it's necessary to use `strategy :page_match`.
+* **Only use `strategy` when it's necessary**. For example, if livecheck is already using `Git` for a URL, it's not necessary to use `strategy :git`. However, if `Git` applies to a URL but we need to use `PageMatch`, it's necessary to specify `strategy :page_match`.
 
-* **Only use the `GithubLatest` strategy when it's necessary and correct**. Github.com rate limits requests and we try to minimize our use of this strategy to avoid hitting the rate limit on CI or when using `brew livecheck --tap` on large taps (e.g. homebrew/core). The `Git` strategy is often sufficient and we only need to use `GithubLatest` when the "latest" release is different than the newest version from the tags.
+* **Only use the `GithubLatest` strategy when it's necessary and correct**. `github.com` rate limits requests and we try to minimize our use of this strategy to avoid hitting the rate limit on CI or when using `brew livecheck --tap` on large taps (e.g. homebrew/core). The `Git` strategy is often sufficient and we only need to use `GithubLatest` when the "latest" release is different than the newest version from the tags.
 
 ### URL guidelines
 
@@ -61,77 +61,95 @@ When in doubt, start with one of these examples instead of copy-pasting a `livec
 
 ### File names
 
-```ruby
-  livecheck do
-    url "https://www.example.com/downloads/"
-    regex(/href=.*?example[._-]v?(\d+(?:\.\d+)+)\.t/i)
-  end
-```
-
 When matching the version from a file name on an HTML page, we often restrict matching to `href` attributes. `href=.*?` will match the opening delimiter (`"`, `'`) as well as any part of the URL before the file name.
+
+```ruby
+livecheck do
+  url "https://www.example.com/downloads/"
+  regex(/href=.*?example[._-]v?(\d+(?:\.\d+)+)\.t/i)
+end
+```
 
 We sometimes make this more explicit to exclude unwanted matches. URLs with a preceding path can use `href=.*?/` and others can use `href=["']?`. For example, this is necessary when the page also contains unwanted files with a longer prefix (`another-example-1.2.tar.gz`).
 
 ### Version directories
 
-```ruby
-  livecheck do
-    url "https://www.example.com/releases/example/"
-    regex(%r{href=["']?v?(\d+(?:\.\d+)+)/?["' >]}i)
-  end
-```
-
 When checking a directory listing page, sometimes files are separated into version directories (e.g. `1.2.3/`). In this case, we must identify versions from the directory names.
+
+```ruby
+livecheck do
+  url "https://www.example.com/releases/example/"
+  regex(%r{href=["']?v?(\d+(?:\.\d+)+)/?["' >]}i)
+end
+```
 
 ### Git tags
 
-```ruby
-  livecheck do
-    url :stable
-    regex(/^v?(\d+(?:\.\d+)+)$/i)
-  end
-```
+When the `stable` URL uses the `Git` strategy, the following example will only match tags like `1.2`/`v1.2`, etc.
 
-When the `stable` URL uses the `Git` strategy, the regex above will only match tags like `1.2`/`v1.2`, etc.
+```ruby
+livecheck do
+  url :stable
+  regex(/^v?(\d+(?:\.\d+)+)$/i)
+end
+```
 
 If tags include the software name as a prefix (e.g. `example-1.2.3`), it's easy to modify the regex accordingly: `/^example[._-]v?(\d+(?:\.\d+)+)$/i`
 
-### `PageMatch` `strategy` block
+### `strategy` blocks
+
+If the upstream version format needs to be manipulated to match the formula/cask format, a `strategy` block can be used instead of a `regex`.
+
+#### `PageMatch` `strategy` block
+
+In the example below, we're converting a date format like `2020-01-01` into `20200101`.
 
 ```ruby
-  livecheck do
-    url :homepage
-    regex(/href=.*?example[._-]v?(\d{4}-\d{2}-\d{2})\.t/i)
-    strategy :page_match do |page, regex|
-      page.scan(regex).map { |match| match&.first&.gsub(/\D/, "") }
-    end
+livecheck do
+  url :homepage
+  strategy :page_match do |page|
+    page.scan(/href=.*?example[._-]v?(\d{4}-\d{2}-\d{2})\.t/i)
+        .map { |match| match&.first&.gsub(/\D/, "") }
   end
+end
 ```
-
-When necessary, a `strategy` block allows us to have greater flexibility in how upstream version information is matched and processed. Currently, they're only used when the upstream version format needs to be manipulated to match the formula/cask format. In the example above, we're converting a date format like `2020-01-01` into `20200101`.
 
 The `PageMatch` `strategy` block style seen here also applies to any strategy that uses `PageMatch` internally.
 
-### `Git` `strategy` block
-
-```ruby
-  livecheck do
-    url :stable
-    regex(/^(\d{4}-\d{2}-\d{2})$/i)
-    strategy :git do |tags, regex|
-      tags.map { |tag| tag[regex, 1]&.gsub(/\D/, "") }.compact
-    end
-  end
-```
+#### `Git` `strategy` block
 
 A `strategy` block for `Git` is a bit different, as the block receives an array of tag strings instead of a page content string. Similar to the `PageMatch` example, this is converting tags with a date format like `2020-01-01` into `20200101`.
 
-### Skip
-
 ```ruby
-  livecheck do
-    skip "No version information available"
+livecheck do
+  url :stable
+  strategy :git do |tags|
+    tags.map { |tag| tag[/^(\d{4}-\d{2}-\d{2})$/i, 1]&.gsub(/\D/, "") }.compact
   end
+end
 ```
 
+#### `Sparkle` `strategy` block
+
+A `strategy` block for `Sparkle` receives an `item` which has methods for the `short_version`, `version`, `url` and `title`.
+
+The default pattern for the `Sparkle` strategy is `"#{item.short_version},#{item.version}"` if both are set. In the example below, the `url` also includes a download ID which is needed:
+
+```ruby
+livecheck do
+  url "https://www.example.com/example.xml"
+  strategy :sparkle do |item|
+    "#{item.short_version},#{item.version}:#{item.url[%r{/(\d+)/[^/]+\.zip}i, 1]}"
+  end
+end
+```
+
+### `skip`
+
 Livecheck automatically skips some formulae/casks for a number of reasons (deprecated, disabled, discontinued, etc.). However, on rare occasions we need to use a `livecheck` block to do a manual skip. The `skip` method takes a string containing a very brief reason for skipping.
+
+```ruby
+livecheck do
+  skip "No version information available"
+end
+```
