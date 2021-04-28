@@ -315,6 +315,7 @@ then
 fi
 
 HOMEBREW_CORE_REPOSITORY="${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core"
+HOMEBREW_CASK_REPOSITORY="${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-cask"
 
 case "$*" in
   --version|-v) source "${HOMEBREW_LIBRARY}/Homebrew/cmd/--version.sh"; homebrew-version; exit 0 ;;
