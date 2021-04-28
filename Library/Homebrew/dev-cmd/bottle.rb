@@ -558,11 +558,11 @@ module Homebrew
           "prefix"   => bottle.prefix,
           "cellar"   => bottle_cellar.to_s,
           "rebuild"  => bottle.rebuild,
-          "date"     => Pathname(local_filename).mtime.strftime("%F"),
+          "date"     => Pathname(filename.to_s).mtime.strftime("%F"),
           "tags"     => {
             bottle_tag.to_s => {
               "filename"              => filename.url_encode,
-              "local_filename"        => local_filename,
+              "local_filename"        => filename.to_s,
               "sha256"                => sha256,
               "formulae_brew_sh_path" => formulae_brew_sh_path,
               "tab"                   => tab.to_bottle_hash,
@@ -581,9 +581,9 @@ module Homebrew
       }
     end
 
-    File.open(filename.json, "w") do |file|
-      file.write JSON.pretty_generate json
-    end
+    json_path = Pathname(filename.json)
+    json_path.unlink if json_path.exist?
+    json_path.write(JSON.pretty_generate(json))
   end
 
   def parse_json_files(filenames)
@@ -643,17 +643,25 @@ module Homebrew
         if all_bottle
           all_bottle_hash = nil
           bottle_hash["bottle"]["tags"].each do |tag, tag_hash|
-            local_filename = tag_hash["local_filename"]
-            local_json_filename = local_filename.sub(/\.tar\.gz$/, ".json")
+            filename = Bottle::Filename.new(
+              formula_name,
+              bottle_hash["formula"]["pkg_version"],
+              tag,
+              bottle_hash["bottle"]["rebuild"],
+            )
 
             if all_bottle_hash.nil?
-              all_filename = tag_hash["filename"].sub(tag, "all")
-              all_local_filename = local_filename.sub(tag, "all")
-              all_local_json_filename = local_json_filename.sub(tag, "all")
-
               all_bottle_tag_hash = tag_hash.dup
-              all_bottle_tag_hash["filename"] = all_filename
-              all_bottle_tag_hash["local_filename"] = all_local_filename
+
+              all_filename = Bottle::Filename.new(
+                formula_name,
+                bottle_hash["formula"]["pkg_version"],
+                "all",
+                bottle_hash["bottle"]["rebuild"],
+              )
+
+              all_bottle_tag_hash["filename"] = all_filename.url_encode
+              all_bottle_tag_hash["local_filename"] = all_filename.to_s
               cellar = all_bottle_tag_hash.delete("cellar")
 
               all_bottle_formula_hash = bottle_hash.dup
@@ -662,16 +670,16 @@ module Homebrew
 
               all_bottle_hash = { formula_name => all_bottle_formula_hash }
 
-              puts "Copying #{local_filename} to #{all_local_filename}" if args.verbose?
-              FileUtils.cp local_filename, all_local_filename
+              puts "Copying #{filename} to #{all_filename}" if args.verbose?
+              FileUtils.cp filename.to_s, all_filename.to_s
 
-              all_local_json_path = Pathname(all_local_json_filename)
+              all_local_json_path = Pathname(filename.json)
               all_local_json_path.unlink if all_local_json_path.exist?
               all_local_json_path.write(JSON.pretty_generate(all_bottle_hash))
             end
 
-            puts "Removing #{local_filename} and #{local_json_filename}" if args.verbose?
-            FileUtils.rm_f [local_filename, local_json_filename]
+            puts "Removing #{filename} and #{filename.json}" if args.verbose?
+            FileUtils.rm_f [filename.to_s, filename.json]
           end
         end
 
