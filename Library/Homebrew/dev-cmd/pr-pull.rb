@@ -61,8 +61,8 @@ module Homebrew
              description: "Target tap repository (default: `homebrew/core`)."
       flag   "--root-url=",
              description: "Use the specified <URL> as the root of the bottle's URL instead of Homebrew's default."
-      flag   "--root-url-specs=",
-             description: "Append the specified specs to the root_url line in the generated DSL"
+      flag   "--download-strategy=",
+             description: "Use the specified download strategy for the root_url in the generated DSL"
       flag   "--bintray-mirror=",
              description: "Use the specified Bintray repository to automatically mirror stable URLs "\
                           "defined in the formulae (default: `mirror`)."
@@ -445,7 +445,7 @@ module Homebrew
           upload_args << "--warn-on-upload-failure" if args.warn_on_upload_failure?
           upload_args << "--committer=#{args.committer}" if args.committer
           upload_args << "--root-url=#{args.root_url}" if args.root_url
-          upload_args << "--root-url-specs=#{args.root_url_specs}" if args.root_url_specs
+          upload_args << "--download-strategy=#{args.download_strategy}" if args.download_strategy
           upload_args << if archive_item.present?
             "--archive-item=#{archive_item}"
           else

@@ -403,90 +403,6 @@ describe "brew bottle" do
     end
   end
 
-  describe "--merge with --root-url-specs", :integration_test do
-    let(:core_tap) { CoreTap.new }
-    let(:tarball) do
-      if OS.linux?
-        TEST_FIXTURE_DIR/"tarballs/testball-0.1-linux.tbz"
-      else
-        TEST_FIXTURE_DIR/"tarballs/testball-0.1.tbz"
-      end
-    end
-
-    before do
-      Pathname("#{TEST_TMPDIR}/testball-1.0.arm64_big_sur.bottle.json").write stub_hash(
-        name:           "testball",
-        version:        "1.0",
-        path:           "#{core_tap.path}/Formula/testball.rb",
-        cellar:         "any_skip_relocation",
-        os:             "arm64_big_sur",
-        filename:       "testball-1.0.arm64_big_sur.bottle.tar.gz",
-        local_filename: "testball--1.0.arm64_big_sur.bottle.tar.gz",
-        root_url:       "https://example.com/",
-        sha256:         "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149",
-      )
-    end
-
-    after do
-      FileUtils.rm_f "#{TEST_TMPDIR}/testball-1.0.arm64_big_sur.bottle.json"
-    end
-
-    it "adds a formula block with a custom root_url spec" do
-      core_tap.path.cd do
-        system "git", "init"
-        setup_test_formula "testball"
-        system "git", "add", "--all"
-        system "git", "commit", "-m", "testball 0.1"
-      end
-
-      expect {
-        brew "bottle",
-             "--merge",
-             "--write",
-             "--root-url-specs=using: MyCustomStrategy",
-             "#{TEST_TMPDIR}/testball-1.0.arm64_big_sur.bottle.json"
-      }.to output(<<~EOS).to_stdout
-        ==> testball
-          bottle do
-            root_url "https://example.com/",
-              using: MyCustomStrategy
-            sha256 cellar: :any_skip_relocation, arm64_big_sur: "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149"
-          end
-      EOS
-
-      expect((core_tap.path/"Formula/testball.rb").read).to eq <<~EOS
-        class Testball < Formula
-          desc "Some test"
-          homepage "https://brew.sh/testball"
-          url "file://#{tarball}"
-          sha256 "#{tarball.sha256}"
-
-          bottle do
-            root_url "https://example.com/",
-              using: MyCustomStrategy
-            sha256 cellar: :any_skip_relocation, arm64_big_sur: "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149"
-          end
-
-          option "with-foo", "Build with foo"
-
-          def install
-            (prefix/"foo"/"test").write("test") if build.with? "foo"
-            prefix.install Dir["*"]
-            (buildpath/"test.c").write \
-            "#include <stdio.h>\\nint main(){printf(\\"test\\");return 0;}"
-            bin.mkpath
-            system ENV.cc, "test.c", "-o", bin/"test"
-          end
-
-
-
-          # something here
-
-        end
-      EOS
-    end
-  end
-
   describe Homebrew do
     subject(:homebrew) { described_class }
 
@@ -706,6 +622,39 @@ describe "brew bottle" do
             RUBY
           )
         end
+      end
+    end
+
+    describe "::bottle_output" do
+      it "includes a custom root_url" do
+        bottle = BottleSpecification.new
+        bottle.root_url("https://example.com")
+        bottle.sha256(catalina: "109c0cb581a7b5d84da36d84b221fb9dd0f8a927b3044d82611791c9907e202e")
+
+        expect(homebrew.bottle_output(bottle, nil)).to eq(
+          <<~RUBY.indent(2),
+            bottle do
+              root_url "https://example.com"
+              sha256 catalina: "109c0cb581a7b5d84da36d84b221fb9dd0f8a927b3044d82611791c9907e202e"
+            end
+          RUBY
+        )
+      end
+
+      it "includes download strategy for custom root_url" do
+        bottle = BottleSpecification.new
+        bottle.root_url("https://example.com")
+        bottle.sha256(catalina: "109c0cb581a7b5d84da36d84b221fb9dd0f8a927b3044d82611791c9907e202e")
+
+        expect(homebrew.bottle_output(bottle, "ExampleStrategy")).to eq(
+          <<~RUBY.indent(2),
+            bottle do
+              root_url "https://example.com",
+                using: ExampleStrategy
+              sha256 catalina: "109c0cb581a7b5d84da36d84b221fb9dd0f8a927b3044d82611791c9907e202e"
+            end
+          RUBY
+        )
       end
     end
   end
