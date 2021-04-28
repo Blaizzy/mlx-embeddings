@@ -674,8 +674,8 @@ module Homebrew
               puts "Copying #{filename} to #{all_filename}" if args.verbose?
               FileUtils.cp filename.to_s, all_filename.to_s
 
-              puts "Writing #{filename.json}" if args.verbose?
-              all_local_json_path = Pathname(filename.json)
+              puts "Writing #{all_filename.json}" if args.verbose?
+              all_local_json_path = Pathname(all_filename.json)
               all_local_json_path.unlink if all_local_json_path.exist?
               all_local_json_path.write(JSON.pretty_generate(all_bottle_hash))
             end
