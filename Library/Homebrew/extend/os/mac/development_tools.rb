@@ -64,8 +64,9 @@ class DevelopmentTools
 
     def build_system_info
       build_info = {
-        "xcode" => MacOS::Xcode.version.to_s.presence,
-        "clt"   => MacOS::CLT.version.to_s.presence,
+        "xcode"          => MacOS::Xcode.version.to_s.presence,
+        "clt"            => MacOS::CLT.version.to_s.presence,
+        "preferred_perl" => MacOS.preferred_perl_version,
       }
       generic_build_system_info.merge build_info
     end
